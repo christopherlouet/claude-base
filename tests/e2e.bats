@@ -56,12 +56,13 @@ teardown() {
     # 2. Modification d'un fichier
     echo "# Custom modification" >> "$TEST_DIR/.claude/commands/work-explore.md"
 
-    # 3. Diff détecte la modification
+    # 3. Diff détecte la modification (retourne 1 car il y a des différences)
     run "$DIFF_SCRIPT" "$TEST_DIR"
-    [ "$status" -eq 0 ]
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"work-explore.md"* ]]
 
     # 4. Update restaure les fichiers
-    run "$UPDATE_SCRIPT" -y "$TEST_DIR"
+    run "$UPDATE_SCRIPT" -y --force "$TEST_DIR"
     [ "$status" -eq 0 ]
 }
 

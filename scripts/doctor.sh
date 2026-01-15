@@ -433,8 +433,8 @@ main() {
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
 
     if [[ "$OUTPUT_FORMAT" == "json" ]]; then
-        # Mode JSON: rediriger la sortie texte vers /dev/null
-        exec 3>&1 1>/dev/null
+        # Mode JSON: rediriger stdout et stderr vers /dev/null
+        exec 3>&1 4>&2 1>/dev/null 2>/dev/null
     fi
 
     title "Diagnostic Claude Code"
@@ -448,8 +448,8 @@ main() {
     check_socle
 
     if [[ "$OUTPUT_FORMAT" == "json" ]]; then
-        # Restaurer la sortie et afficher le JSON
-        exec 1>&3 3>&-
+        # Restaurer stdout et stderr, puis afficher le JSON
+        exec 1>&3 2>&4 3>&- 4>&-
         print_json
     else
         print_summary
