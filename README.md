@@ -1,10 +1,12 @@
 # claude-socle
 
-[![CI](https://github.com/anthropics/claude-socle/actions/workflows/ci.yml/badge.svg)](https://github.com/anthropics/claude-socle/actions/workflows/ci.yml)
-[![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/anthropics/claude-socle/actions)
-[![Bats](https://img.shields.io/badge/Bats-2089%20lines-blue)](./tests)
-[![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
+[![CI](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml)
+[![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
+[![Tests](https://img.shields.io/badge/tests-195%20passing-brightgreen)](./tests)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Version](https://img.shields.io/badge/version-1.2.0-blue)](./VERSION)
+[![GitHub release](https://img.shields.io/github/v/release/christopherlouet/claude-socle)](https://github.com/christopherlouet/claude-socle/releases)
 
 Template de configuration Claude Code pour un workflow de développement optimal.
 
