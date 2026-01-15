@@ -151,7 +151,7 @@ ask_question() {
     shift 2
     local options=("$@")
 
-    ((TOTAL_QUESTIONS++))
+    ((TOTAL_QUESTIONS++)) || true
 
     echo -e "${CYAN}Question:${NC} $question"
     echo ""
@@ -168,7 +168,7 @@ ask_question() {
     echo ""
 
     if [[ "$answer" == "$correct" ]]; then
-        ((SCORE++))
+        ((SCORE++)) || true
         echo -e "${GREEN}✓ Correct !${NC}"
         return 0
     else
@@ -181,7 +181,7 @@ ask_yes_no() {
     local question="$1"
     local correct="$2"  # "y" ou "n"
 
-    ((TOTAL_QUESTIONS++))
+    ((TOTAL_QUESTIONS++)) || true
 
     echo -e "${CYAN}Vrai ou Faux:${NC} $question"
     echo ""
@@ -196,7 +196,7 @@ ask_yes_no() {
     [[ "$answer" == "1" ]] && user_answer="y"
 
     if [[ "$user_answer" == "$correct" ]]; then
-        ((SCORE++))
+        ((SCORE++)) || true
         echo -e "${GREEN}✓ Correct !${NC}"
         return 0
     else

@@ -124,6 +124,10 @@ main() {
                 show_help
                 exit 0
                 ;;
+            --version)
+                echo "claude-socle test v${VERSION}"
+                exit 0
+                ;;
             -v|--verbose)
                 VERBOSE=true
                 shift

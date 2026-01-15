@@ -29,6 +29,7 @@ TARGET_DIR=""
 KEEP_CLAUDE_MD=false
 KEEP_BACKUP=true
 FORCE=false
+REMOVE_LOCAL_FILES=false
 
 # =============================================================================
 # Aide
@@ -119,6 +120,10 @@ parse_args() {
                 ;;
             --no-backup)
                 KEEP_BACKUP=false
+                shift
+                ;;
+            --all)
+                REMOVE_LOCAL_FILES=true
                 shift
                 ;;
             -*)
@@ -241,8 +246,12 @@ uninstall() {
     fi
 
     if [[ -f "$TARGET_DIR/CLAUDE.local.md" ]]; then
-        echo "  - CLAUDE.local.md"
-        files_to_remove+=("CLAUDE.local.md")
+        if $REMOVE_LOCAL_FILES; then
+            echo "  - CLAUDE.local.md"
+            files_to_remove+=("CLAUDE.local.md")
+        else
+            echo -e "  - CLAUDE.local.md ${DIM}(conservé)${NC}"
+        fi
     fi
 
     if [[ -f "$TARGET_DIR/CLAUDE.local.md.example" ]]; then
@@ -275,7 +284,9 @@ uninstall() {
         remove_file "$TARGET_DIR/CLAUDE.md" "CLAUDE.md"
     fi
 
-    remove_file "$TARGET_DIR/CLAUDE.local.md" "CLAUDE.local.md"
+    if $REMOVE_LOCAL_FILES; then
+        remove_file "$TARGET_DIR/CLAUDE.local.md" "CLAUDE.local.md"
+    fi
     remove_file "$TARGET_DIR/CLAUDE.local.md.example" "CLAUDE.local.md.example"
 
     # Nettoyer .gitignore si présent
