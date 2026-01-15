@@ -34,6 +34,7 @@ else
     YELLOW=''
     BLUE=''
     CYAN=''
+    # shellcheck disable=SC2034  # Available for use by scripts
     MAGENTA=''
     BOLD=''
     DIM=''
@@ -57,8 +58,9 @@ DRY_RUN=${DRY_RUN:-false}   # Mode simulation
 #   $1 - Message à afficher
 # Sortie: Rien si QUIET=true
 info() {
-    $QUIET && return
-    echo -e "${BLUE}[INFO]${NC} $1"
+    if ! $QUIET; then
+        echo -e "${BLUE}[INFO]${NC} $1"
+    fi
 }
 
 # Affiche un message de succès
@@ -66,8 +68,9 @@ info() {
 #   $1 - Message à afficher
 # Sortie: Rien si QUIET=true
 success() {
-    $QUIET && return
-    echo -e "${GREEN}[OK]${NC} $1"
+    if ! $QUIET; then
+        echo -e "${GREEN}[OK]${NC} $1"
+    fi
 }
 
 # Affiche un avertissement (toujours sur stderr)
@@ -97,7 +100,10 @@ error_no_exit() {
 # Arguments:
 #   $1 - Message à afficher
 debug() {
-    $VERBOSE && echo -e "${DIM}[DEBUG]${NC} $1"
+    if $VERBOSE; then
+        echo -e "${DIM}[DEBUG]${NC} $1"
+    fi
+    return 0
 }
 
 # Affiche une invite de commande
@@ -111,8 +117,9 @@ prompt() {
 # Arguments:
 #   $1 - Message à afficher
 detected() {
-    $QUIET && return
-    echo -e "${GREEN}[AUTO]${NC} $1"
+    if ! $QUIET; then
+        echo -e "${GREEN}[AUTO]${NC} $1"
+    fi
 }
 
 # =============================================================================
@@ -329,11 +336,23 @@ validate_json() {
     fi
 
     if command_exists jq; then
-        jq empty "$file" 2>/dev/null
+        if jq empty "$file" 2>/dev/null; then
+            return 0
+        else
+            return 1
+        fi
     elif command_exists python3; then
-        python3 -c "import json; json.load(open('$file'))" 2>/dev/null
+        if python3 -c "import json; json.load(open('$file'))" 2>/dev/null; then
+            return 0
+        else
+            return 1
+        fi
     elif command_exists node; then
-        node -e "JSON.parse(require('fs').readFileSync('$file'))" 2>/dev/null
+        if node -e "JSON.parse(require('fs').readFileSync('$file'))" 2>/dev/null; then
+            return 0
+        else
+            return 1
+        fi
     else
         # Pas de validateur disponible, on considère valide
         return 0
