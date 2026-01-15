@@ -30,7 +30,6 @@ OUTPUT_FORMAT="text"
 CHECKS_PASSED=0
 CHECKS_FAILED=0
 CHECKS_WARNED=0
-JSON_CHECKS="[]"
 
 # =============================================================================
 # Aide
