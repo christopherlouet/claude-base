@@ -326,15 +326,15 @@ Vulnérabilités deps: [N]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:security` | Audit sécurité approfondi |
-| `/project:rgpd` | Audit RGPD approfondi |
-| `/project:a11y` | Audit accessibilité approfondi |
-| `/project:perf` | Audit performance approfondi |
-| `/project:health` | Check rapide avant audit |
+| `/security` | Audit sécurité approfondi |
+| `/rgpd` | Audit RGPD approfondi |
+| `/a11y` | Audit accessibilité approfondi |
+| `/perf` | Audit performance approfondi |
+| `/health` | Check rapide avant audit |
 
 ---
 
-IMPORTANT: Cet audit fournit une vue d'ensemble. Pour un audit approfondi d'un domaine spécifique, utiliser l'agent dédié (/project:security, /project:rgpd, /project:a11y, /project:perf).
+IMPORTANT: Cet audit fournit une vue d'ensemble. Pour un audit approfondi d'un domaine spécifique, utiliser l'agent dédié (/security, /rgpd, /a11y, /perf).
 
 YOU MUST prioriser les problèmes par criticité et fournir des actions concrètes.
 

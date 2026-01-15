@@ -199,10 +199,10 @@ Table dim_customer {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:data-pipeline` | Alimenter le modèle |
-| `/project:data-analytics` | Analyser les données |
-| `/project:ops-database` | Optimiser les performances |
-| `/project:doc-architecture` | Documenter l'architecture |
+| `/data-pipeline` | Alimenter le modèle |
+| `/data-analytics` | Analyser les données |
+| `/ops-database` | Optimiser les performances |
+| `/doc-architecture` | Documenter l'architecture |
 
 ---
 

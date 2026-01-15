@@ -219,11 +219,11 @@ npm install package3@latest
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:security` | Audit vulnérabilités |
-| `/project:test` | Tester après mise à jour |
-| `/project:migrate` | Migration majeure |
-| `/project:ci` | Automatiser les updates |
-| `/project:audit` | Audit qualité complet |
+| `/security` | Audit vulnérabilités |
+| `/test` | Tester après mise à jour |
+| `/migrate` | Migration majeure |
+| `/ci` | Automatiser les updates |
+| `/audit` | Audit qualité complet |
 
 ---
 

@@ -224,10 +224,10 @@ import { [ComponentName] } from '@/components/[ComponentName]';
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:hook` | Créer un hook associé |
-| `/project:test` | Tests complémentaires |
-| `/project:a11y` | Audit accessibilité du composant |
-| `/project:responsive` | Vérifier le responsive |
+| `/hook` | Créer un hook associé |
+| `/test` | Tests complémentaires |
+| `/a11y` | Audit accessibilité du composant |
+| `/responsive` | Vérifier le responsive |
 
 ---
 

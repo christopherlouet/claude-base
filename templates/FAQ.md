@@ -31,7 +31,7 @@ cp -r chemin/vers/claude-socle/.claude votre-projet/
 # 3. C'est prêt !
 cd votre-projet
 claude
-/project:explore
+/explore
 ```
 
 ---
@@ -99,12 +99,12 @@ Oui ! Les agents sont de simples fichiers Markdown. Vous pouvez :
 
 ```bash
 # Syntaxe
-/project:agent-name argument1 argument2
+/agent-name argument1 argument2
 
 # Exemples
-/project:explore src/services/
-/project:review AuthService
-/project:commit "feat: add login"
+/explore src/services/
+/review AuthService
+/commit "feat: add login"
 ```
 
 Les arguments sont injectés via le placeholder `$ARGUMENTS` dans l'agent.
@@ -126,12 +126,12 @@ Quelques raisons possibles :
 ### Quel est le workflow recommandé ?
 
 ```
-1. /project:explore  → Comprendre le code existant
-2. /project:plan     → Planifier les modifications
-3. /project:tdd      → Développer avec tests
-4. /project:review   → Vérifier la qualité
-5. /project:commit   → Commiter les changements
-6. /project:pr       → Créer la Pull Request
+1. /explore  → Comprendre le code existant
+2. /plan     → Planifier les modifications
+3. /tdd      → Développer avec tests
+4. /review   → Vérifier la qualité
+5. /commit   → Commiter les changements
+6. /pr       → Créer la Pull Request
 ```
 
 ---
@@ -149,12 +149,12 @@ Non, c'est une recommandation. Adaptez selon vos besoins :
 
 ---
 
-### Quand utiliser `/project:explore` vs `/project:onboard` ?
+### Quand utiliser `/explore` vs `/onboard` ?
 
 | Agent | Usage |
 |-------|-------|
-| `/project:explore` | Exploration ciblée d'une partie du code |
-| `/project:onboard` | Découverte complète d'un nouveau codebase |
+| `/explore` | Exploration ciblée d'une partie du code |
+| `/onboard` | Découverte complète d'un nouveau codebase |
 
 ---
 
@@ -302,7 +302,7 @@ Les agents peuvent **référencer** d'autres agents dans leurs instructions, mai
 Les agents n'ont pas accès direct aux variables d'environnement. Passez les valeurs via `$ARGUMENTS` :
 
 ```bash
-/project:deploy production $MY_API_KEY
+/deploy production $MY_API_KEY
 ```
 
 ---

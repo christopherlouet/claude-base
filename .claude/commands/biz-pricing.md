@@ -176,11 +176,11 @@ Positionnement: [budget/value/premium]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:model` | Business model global |
-| `/project:market` | Étude de marché et concurrence |
-| `/project:ab-test` | Tester différents prix |
-| `/project:analytics` | Mesurer l'impact du pricing |
-| `/project:launch` | Lancement avec le pricing |
+| `/model` | Business model global |
+| `/market` | Étude de marché et concurrence |
+| `/ab-test` | Tester différents prix |
+| `/analytics` | Mesurer l'impact du pricing |
+| `/launch` | Lancement avec le pricing |
 
 ---
 

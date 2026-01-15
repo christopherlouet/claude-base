@@ -6,7 +6,7 @@ Ce dossier contient des **Skills** - des connaissances domaine réutilisables qu
 
 | Aspect | Commands (`.claude/commands/`) | Skills (`.claude/skills/`) |
 |--------|-------------------------------|---------------------------|
-| **Invocation** | Explicite: `/project:nom` | Automatique ou `/nom` |
+| **Invocation** | Explicite: `/nom` | Automatique ou `/nom` |
 | **Format** | Un fichier `.md` | Dossier avec `SKILL.md` + ressources |
 | **Déclenchement** | Manuel uniquement | Basé sur la description (sémantique) |
 | **Ressources** | Non | Oui (examples/, scripts/, references/) |

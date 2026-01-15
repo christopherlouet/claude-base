@@ -513,10 +513,10 @@ Nous nous engageons à répondre dans un délai de 30 jours.
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:rgpd` | Audit conformité RGPD complet |
-| `/project:terms-of-service` | CGU du service |
-| `/project:legal-docs` | Autres documents légaux |
-| `/project:security` | Mesures de sécurité |
+| `/rgpd` | Audit conformité RGPD complet |
+| `/terms-of-service` | CGU du service |
+| `/legal-docs` | Autres documents légaux |
+| `/security` | Mesures de sécurité |
 
 ---
 

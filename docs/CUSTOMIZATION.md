@@ -143,7 +143,7 @@ npm run deploy:prod
 NEVER déployer en production sans review.
 ```
 
-Usage: `/project:deploy staging` ou `/project:deploy production`
+Usage: `/deploy staging` ou `/deploy production`
 
 ### Variables disponibles
 

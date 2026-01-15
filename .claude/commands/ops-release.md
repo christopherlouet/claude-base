@@ -141,11 +141,11 @@ gh release create vX.Y.Z --title "vX.Y.Z" --notes-file CHANGELOG.md
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:changelog` | Générer le changelog |
-| `/project:ci` | Automatiser la release |
-| `/project:test` | Tests pré-release |
-| `/project:security` | Audit avant release |
-| `/project:monitoring` | Vérifier post-release |
+| `/changelog` | Générer le changelog |
+| `/ci` | Automatiser la release |
+| `/test` | Tests pré-release |
+| `/security` | Audit avant release |
+| `/monitoring` | Vérifier post-release |
 
 ---
 

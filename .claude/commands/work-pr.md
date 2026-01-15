@@ -125,10 +125,10 @@ Avant de demander une review, vérifie :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:review` | Self-review avant PR |
-| `/project:commit` | Préparer les commits |
-| `/project:explore` | Vérifier l'impact des changements |
-| `/project:security` | Review sécurité si applicable |
+| `/review` | Self-review avant PR |
+| `/commit` | Préparer les commits |
+| `/explore` | Vérifier l'impact des changements |
+| `/security` | Review sécurité si applicable |
 
 ---
 

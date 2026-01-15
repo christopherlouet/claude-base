@@ -526,10 +526,10 @@ test.describe('Visual Regression', () => {
 
 | Agent | Usage |
 |-------|-------|
-| `/project:dev-testing-setup` | Configuration initiale |
-| `/project:dev-tdd` | Développement TDD |
-| `/project:ops-ci` | Pipeline CI/CD |
-| `/project:perf` | Tests de performance |
+| `/dev-testing-setup` | Configuration initiale |
+| `/dev-tdd` | Développement TDD |
+| `/ops-ci` | Pipeline CI/CD |
+| `/perf` | Tests de performance |
 
 ---
 

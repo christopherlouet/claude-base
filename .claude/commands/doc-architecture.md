@@ -461,11 +461,11 @@ PostgreSQL pour :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:readme` | Documentation README |
-| `/project:api-spec` | Documentation API |
-| `/project:infra-code` | Infrastructure as Code |
-| `/project:onboard` | Onboarding développeurs |
-| `/project:explore` | Explorer le code existant |
+| `/readme` | Documentation README |
+| `/api-spec` | Documentation API |
+| `/infra-code` | Infrastructure as Code |
+| `/onboard` | Onboarding développeurs |
+| `/explore` | Explorer le code existant |
 
 ---
 

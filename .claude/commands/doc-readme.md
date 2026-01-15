@@ -561,10 +561,10 @@ curl -X POST https://api.example.com/auth/login \\
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:doc` | Documentation détaillée |
-| `/project:changelog` | Changelog du projet |
-| `/project:api-spec` | Documentation API |
-| `/project:onboard` | Onboarding développeurs |
+| `/doc` | Documentation détaillée |
+| `/changelog` | Changelog du projet |
+| `/api-spec` | Documentation API |
+| `/onboard` | Onboarding développeurs |
 
 ---
 

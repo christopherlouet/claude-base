@@ -139,7 +139,7 @@ grep -rn -E "(aws|gcp|azure|cloudflare|stripe|twilio|sendgrid|mailchimp|segment|
 - [ ] Formation des équipes
 - [ ] Procédure de gestion des incidents
 
-> Pour un audit technique approfondi, utiliser `/project:security`
+> Pour un audit technique approfondi, utiliser `/security`
 
 ### 8. Privacy by Design (Art. 25)
 
@@ -223,10 +223,10 @@ Niveau de conformité estimé: [Faible/Moyen/Bon/Excellent]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:legal` | Documents légaux complets |
-| `/project:privacy-policy` | Politique de confidentialité |
-| `/project:security` | Sécurité des données |
-| `/project:analytics` | Vérifier le tracking analytics |
+| `/legal` | Documents légaux complets |
+| `/privacy-policy` | Politique de confidentialité |
+| `/security` | Sécurité des données |
+| `/analytics` | Vérifier le tracking analytics |
 
 ---
 

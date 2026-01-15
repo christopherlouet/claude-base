@@ -267,11 +267,11 @@ Stockage: [S3 + Glacier]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:disaster-recovery` | Plan de reprise complet |
-| `/project:database` | Migrations et schéma DB |
-| `/project:infra-code` | Infrastructure backup |
-| `/project:monitoring` | Alertes sur backups |
-| `/project:security` | Audit sécurité des backups |
+| `/disaster-recovery` | Plan de reprise complet |
+| `/database` | Migrations et schéma DB |
+| `/infra-code` | Infrastructure backup |
+| `/monitoring` | Alertes sur backups |
+| `/security` | Audit sécurité des backups |
 
 ---
 

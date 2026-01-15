@@ -382,28 +382,28 @@ setup_vscode_snippets() {
     "Claude Explore": {
         "prefix": ["claude-explore", "/explore"],
         "body": [
-            "/project:work-explore ${1:cible}"
+            "/work-explore ${1:cible}"
         ],
         "description": "Explorer et comprendre le code"
     },
     "Claude Plan": {
         "prefix": ["claude-plan", "/plan"],
         "body": [
-            "/project:work-plan ${1:feature}"
+            "/work-plan ${1:feature}"
         ],
         "description": "Planifier une implémentation"
     },
     "Claude Commit": {
         "prefix": ["claude-commit", "/commit"],
         "body": [
-            "/project:work-commit"
+            "/work-commit"
         ],
         "description": "Créer un commit propre"
     },
     "Claude PR": {
         "prefix": ["claude-pr", "/pr"],
         "body": [
-            "/project:work-pr ${1:description}"
+            "/work-pr ${1:description}"
         ],
         "description": "Créer une Pull Request"
     },
@@ -412,28 +412,28 @@ setup_vscode_snippets() {
     "Claude TDD": {
         "prefix": ["claude-tdd", "/tdd"],
         "body": [
-            "/project:dev-tdd ${1:feature}"
+            "/dev-tdd ${1:feature}"
         ],
         "description": "Développement TDD"
     },
     "Claude Test": {
         "prefix": ["claude-test", "/test"],
         "body": [
-            "/project:dev-test ${1:cible}"
+            "/dev-test ${1:cible}"
         ],
         "description": "Générer des tests"
     },
     "Claude Debug": {
         "prefix": ["claude-debug", "/debug"],
         "body": [
-            "/project:dev-debug ${1:problème}"
+            "/dev-debug ${1:problème}"
         ],
         "description": "Déboguer un problème"
     },
     "Claude Refactor": {
         "prefix": ["claude-refactor", "/refactor"],
         "body": [
-            "/project:dev-refactor ${1:cible}"
+            "/dev-refactor ${1:cible}"
         ],
         "description": "Refactoring guidé"
     },
@@ -442,14 +442,14 @@ setup_vscode_snippets() {
     "Claude Review": {
         "prefix": ["claude-review", "/review"],
         "body": [
-            "/project:qa-review ${1:cible}"
+            "/qa-review ${1:cible}"
         ],
         "description": "Code review détaillée"
     },
     "Claude Security": {
         "prefix": ["claude-security", "/security"],
         "body": [
-            "/project:qa-security ${1:cible}"
+            "/qa-security ${1:cible}"
         ],
         "description": "Audit de sécurité OWASP"
     },
@@ -458,14 +458,14 @@ setup_vscode_snippets() {
     "Claude Flow Feature": {
         "prefix": ["claude-flow-feature", "/flow-feature"],
         "body": [
-            "/project:work-flow-feature \"${1:description}\""
+            "/work-flow-feature \"${1:description}\""
         ],
         "description": "Workflow complet pour nouvelle feature"
     },
     "Claude Flow Bugfix": {
         "prefix": ["claude-flow-bugfix", "/flow-bugfix"],
         "body": [
-            "/project:work-flow-bugfix \"${1:description}\""
+            "/work-flow-bugfix \"${1:description}\""
         ],
         "description": "Workflow complet pour bugfix"
     },
@@ -818,11 +818,11 @@ setup_vim() {
 " =============================================================================
 
 " Abréviations pour les commandes Claude
-iabbrev cexplore /project:work-explore
-iabbrev cplan /project:work-plan
-iabbrev ccommit /project:work-commit
-iabbrev ctdd /project:dev-tdd
-iabbrev creview /project:qa-review
+iabbrev cexplore /work-explore
+iabbrev cplan /work-plan
+iabbrev ccommit /work-commit
+iabbrev ctdd /dev-tdd
+iabbrev creview /qa-review
 
 " Mappings pour les scripts
 nnoremap <leader>cv :!./scripts/validate.sh .<CR>

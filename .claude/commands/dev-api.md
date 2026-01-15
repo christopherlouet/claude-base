@@ -171,11 +171,11 @@ async function createUserHandler(req: Request, res: Response) {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:api-spec` | Générer spec OpenAPI/Swagger |
-| `/project:api-versioning` | Gérer le versioning d'API |
-| `/project:test` | Tester les endpoints |
-| `/project:security` | Audit sécurité de l'API |
-| `/project:review` | Code review de l'API |
+| `/api-spec` | Générer spec OpenAPI/Swagger |
+| `/api-versioning` | Gérer le versioning d'API |
+| `/test` | Tester les endpoints |
+| `/security` | Audit sécurité de l'API |
+| `/review` | Code review de l'API |
 
 ---
 

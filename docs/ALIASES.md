@@ -4,7 +4,7 @@
 
 ## Comment utiliser
 
-Les commandes complètes suivent le format `/project:categorie-action`.
+Les commandes complètes suivent le format `/categorie-action`.
 Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 ---
@@ -13,19 +13,19 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/ex` | `/project:work-explore` | Explorer le code |
-| `/pl` | `/project:work-plan` | Planifier |
-| `/co` | `/project:work-commit` | Commiter |
-| `/pr` | `/project:work-pr` | Pull Request |
+| `/ex` | `/work-explore` | Explorer le code |
+| `/pl` | `/work-plan` | Planifier |
+| `/co` | `/work-commit` | Commiter |
+| `/pr` | `/work-pr` | Pull Request |
 
 ## Workflows Chaînés
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/feat` | `/project:work-flow-feature` | Workflow feature complet |
-| `/bugf` | `/project:work-flow-bugfix` | Workflow bugfix complet |
-| `/rel` | `/project:work-flow-release` | Workflow release complet |
-| `/launch` | `/project:work-flow-launch` | Workflow lancement complet |
+| `/feat` | `/work-flow-feature` | Workflow feature complet |
+| `/bugf` | `/work-flow-bugfix` | Workflow bugfix complet |
+| `/rel` | `/work-flow-release` | Workflow release complet |
+| `/launch` | `/work-flow-launch` | Workflow lancement complet |
 
 ---
 
@@ -33,13 +33,13 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/tdd` | `/project:dev-tdd` | Test-Driven Development |
-| `/test` | `/project:dev-test` | Générer des tests |
-| `/dbg` | `/project:dev-debug` | Déboguer |
-| `/ref` | `/project:dev-refactor` | Refactoring |
-| `/api` | `/project:dev-api` | API endpoints |
-| `/comp` | `/project:dev-component` | Créer un composant |
-| `/hook` | `/project:dev-hook` | Créer un hook |
+| `/tdd` | `/dev-tdd` | Test-Driven Development |
+| `/test` | `/dev-test` | Générer des tests |
+| `/dbg` | `/dev-debug` | Déboguer |
+| `/ref` | `/dev-refactor` | Refactoring |
+| `/api` | `/dev-api` | API endpoints |
+| `/comp` | `/dev-component` | Créer un composant |
+| `/hook` | `/dev-hook` | Créer un hook |
 
 ---
 
@@ -47,12 +47,12 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/rev` | `/project:qa-review` | Code review |
-| `/sec` | `/project:qa-security` | Audit sécurité |
-| `/perf` | `/project:qa-perf` | Performance |
-| `/a11y` | `/project:qa-a11y` | Accessibilité |
-| `/audit` | `/project:qa-audit` | Audit complet |
-| `/resp` | `/project:qa-responsive` | Responsive |
+| `/rev` | `/qa-review` | Code review |
+| `/sec` | `/qa-security` | Audit sécurité |
+| `/perf` | `/qa-perf` | Performance |
+| `/a11y` | `/qa-a11y` | Accessibilité |
+| `/audit` | `/qa-audit` | Audit complet |
+| `/resp` | `/qa-responsive` | Responsive |
 
 ---
 
@@ -60,17 +60,17 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/hot` | `/project:ops-hotfix` | Hotfix urgent |
-| `/rls` | `/project:ops-release` | Release |
-| `/deps` | `/project:ops-deps` | Dépendances |
-| `/dock` | `/project:ops-docker` | Docker |
-| `/mig` | `/project:ops-migrate` | Migration |
-| `/ci` | `/project:ops-ci` | CI/CD |
-| `/mon` | `/project:ops-monitoring` | Monitoring |
-| `/db` | `/project:ops-database` | Base de données |
-| `/health` | `/project:ops-health` | Health check |
-| `/env` | `/project:ops-env` | Environnements |
-| `/bak` | `/project:ops-backup` | Backup |
+| `/hot` | `/ops-hotfix` | Hotfix urgent |
+| `/rls` | `/ops-release` | Release |
+| `/deps` | `/ops-deps` | Dépendances |
+| `/dock` | `/ops-docker` | Docker |
+| `/mig` | `/ops-migrate` | Migration |
+| `/ci` | `/ops-ci` | CI/CD |
+| `/mon` | `/ops-monitoring` | Monitoring |
+| `/db` | `/ops-database` | Base de données |
+| `/health` | `/ops-health` | Health check |
+| `/env` | `/ops-env` | Environnements |
+| `/bak` | `/ops-backup` | Backup |
 
 ---
 
@@ -78,13 +78,13 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/doc` | `/project:doc-generate` | Générer doc |
-| `/chg` | `/project:doc-changelog` | Changelog |
-| `/exp` | `/project:doc-explain` | Expliquer code |
-| `/onb` | `/project:doc-onboard` | Onboarding |
-| `/i18n` | `/project:doc-i18n` | Internationalisation |
-| `/fix` | `/project:doc-fix-issue` | Fix issue |
-| `/spec` | `/project:doc-api-spec` | OpenAPI spec |
+| `/doc` | `/doc-generate` | Générer doc |
+| `/chg` | `/doc-changelog` | Changelog |
+| `/exp` | `/doc-explain` | Expliquer code |
+| `/onb` | `/doc-onboard` | Onboarding |
+| `/i18n` | `/doc-i18n` | Internationalisation |
+| `/fix` | `/doc-fix-issue` | Fix issue |
+| `/spec` | `/doc-api-spec` | OpenAPI spec |
 
 ---
 
@@ -92,15 +92,15 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/biz` | `/project:biz-model` | Business model |
-| `/mkt` | `/project:biz-market` | Analyse marché |
-| `/mvp` | `/project:biz-mvp` | Définir MVP |
-| `/price` | `/project:biz-pricing` | Pricing |
-| `/pitch` | `/project:biz-pitch` | Pitch deck |
-| `/road` | `/project:biz-roadmap` | Roadmap |
-| `/lnch` | `/project:biz-launch` | Lancement |
-| `/comp` | `/project:biz-competitor` | Analyse concurrent |
-| `/okr` | `/project:biz-okr` | OKRs |
+| `/biz` | `/biz-model` | Business model |
+| `/mkt` | `/biz-market` | Analyse marché |
+| `/mvp` | `/biz-mvp` | Définir MVP |
+| `/price` | `/biz-pricing` | Pricing |
+| `/pitch` | `/biz-pitch` | Pitch deck |
+| `/road` | `/biz-roadmap` | Roadmap |
+| `/lnch` | `/biz-launch` | Lancement |
+| `/comp` | `/biz-competitor` | Analyse concurrent |
+| `/okr` | `/biz-okr` | OKRs |
 
 ---
 
@@ -108,12 +108,12 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/land` | `/project:growth-landing` | Landing page |
-| `/seo` | `/project:growth-seo` | SEO |
-| `/ana` | `/project:growth-analytics` | Analytics |
-| `/ux` | `/project:growth-onboarding` | UX Onboarding |
-| `/email` | `/project:growth-email` | Templates email |
-| `/ab` | `/project:growth-ab-test` | A/B testing |
+| `/land` | `/growth-landing` | Landing page |
+| `/seo` | `/growth-seo` | SEO |
+| `/ana` | `/growth-analytics` | Analytics |
+| `/ux` | `/growth-onboarding` | UX Onboarding |
+| `/email` | `/growth-email` | Templates email |
+| `/ab` | `/growth-ab-test` | A/B testing |
 
 ---
 
@@ -121,9 +121,9 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/legal` | `/project:legal-docs` | Documents légaux |
-| `/rgpd` | `/project:legal-rgpd` | Conformité RGPD |
-| `/pay` | `/project:legal-payment` | Paiement |
+| `/legal` | `/legal-docs` | Documents légaux |
+| `/rgpd` | `/legal-rgpd` | Conformité RGPD |
+| `/pay` | `/legal-payment` | Paiement |
 
 ---
 
@@ -147,27 +147,27 @@ LEGAL  = Légal (docs, rgpd, payment)
 ### Workflow quotidien
 ```bash
 # Nouvelle feature
-/project:work-explore "comprendre l'auth"
-/project:work-plan "ajouter 2FA"
-/project:dev-tdd "implémenter 2FA"
-/project:qa-review
-/project:work-commit
-/project:work-pr
+/work-explore "comprendre l'auth"
+/work-plan "ajouter 2FA"
+/dev-tdd "implémenter 2FA"
+/qa-review
+/work-commit
+/work-pr
 ```
 
 ### Workflow complet automatisé
 ```bash
 # Feature complète
-/project:work-flow-feature "ajouter dark mode"
+/work-flow-feature "ajouter dark mode"
 
 # Bug fix complet
-/project:work-flow-bugfix "bug #123"
+/work-flow-bugfix "bug #123"
 
 # Release
-/project:work-flow-release "v2.0.0"
+/work-flow-release "v2.0.0"
 
 # Lancement produit
-/project:work-flow-launch "mon nouveau SaaS"
+/work-flow-launch "mon nouveau SaaS"
 ```
 
 ---
@@ -175,14 +175,14 @@ LEGAL  = Légal (docs, rgpd, payment)
 ## Note
 
 Les alias présentés dans ce document sont des **raccourcis mentaux** pour mémoriser les commandes.
-La commande réelle à taper reste `/project:categorie-action`.
+La commande réelle à taper reste `/categorie-action`.
 
 Pour une intégration shell avec de vrais alias, vous pouvez configurer votre `.bashrc` ou `.zshrc` :
 
 ```bash
 # Exemple d'alias shell (optionnel)
-alias cex="claude /project:work-explore"
-alias cpl="claude /project:work-plan"
-alias cco="claude /project:work-commit"
-alias cpr="claude /project:work-pr"
+alias cex="claude /work-explore"
+alias cpl="claude /work-plan"
+alias cco="claude /work-commit"
+alias cpr="claude /work-pr"
 ```

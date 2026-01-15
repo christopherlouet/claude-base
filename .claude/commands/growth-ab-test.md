@@ -253,10 +253,10 @@ Confidence interval:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:analytics` | Définir les métriques à tracker |
-| `/project:landing` | Optimiser les landing pages testées |
-| `/project:retention` | Mesurer l'impact sur la rétention |
-| `/project:funnel` | Analyser l'impact sur le funnel |
+| `/analytics` | Définir les métriques à tracker |
+| `/landing` | Optimiser les landing pages testées |
+| `/retention` | Mesurer l'impact sur la rétention |
+| `/funnel` | Analyser l'impact sur le funnel |
 
 ---
 

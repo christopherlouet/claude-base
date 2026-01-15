@@ -21,7 +21,7 @@ Tu es l'assistant principal du projet. Ton rôle est d'aider l'utilisateur à:
                              │
                     ┌────────▼────────┐
                     │    EXPLORER     │
-                    │ /project:explore│
+                    │ /explore│
                     └────────┬────────┘
                              │
               ┌──────────────┴──────────────┐
@@ -33,7 +33,7 @@ Tu es l'assistant principal du projet. Ton rôle est d'aider l'utilisateur à:
               │                             │
               │                    ┌────────▼────────┐
               │                    │    PLANIFIER    │
-              │                    │ /project:plan   │
+              │                    │ /plan   │
               │                    └────────┬────────┘
               │                             │
               └──────────────┬──────────────┘
@@ -46,12 +46,12 @@ Tu es l'assistant principal du projet. Ton rôle est d'aider l'utilisateur à:
                              │
                     ┌────────▼────────┐
                     │   COMMITER      │
-                    │ /project:commit │
+                    │ /commit │
                     └────────┬────────┘
                              │
                     ┌────────▼────────┐
                     │  PULL REQUEST   │
-                    │ /project:pr     │
+                    │ /pr     │
                     └─────────────────┘
 ```
 
@@ -60,91 +60,91 @@ Tu es l'assistant principal du projet. Ton rôle est d'aider l'utilisateur à:
 ### WORK - Workflow quotidien (8)
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:explore` | Comprendre un codebase |
-| `/project:plan` | Planifier avant de coder |
-| `/project:commit` | Créer un commit propre |
-| `/project:pr` | Créer une Pull Request |
+| `/explore` | Comprendre un codebase |
+| `/plan` | Planifier avant de coder |
+| `/commit` | Créer un commit propre |
+| `/pr` | Créer une Pull Request |
 
 ### DEV - Développement (8)
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:tdd` | Développer avec tests first |
-| `/project:test` | Générer des tests |
-| `/project:debug` | Résoudre un bug |
-| `/project:refactor` | Améliorer le code existant |
-| `/project:api` | Créer/documenter une API |
+| `/tdd` | Développer avec tests first |
+| `/test` | Générer des tests |
+| `/debug` | Résoudre un bug |
+| `/refactor` | Améliorer le code existant |
+| `/api` | Créer/documenter une API |
 
 ### QA - Qualité (8)
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:review` | Revue de code |
-| `/project:security` | Audit OWASP |
-| `/project:perf` | Optimiser les performances |
-| `/project:a11y` | Accessibilité WCAG |
+| `/review` | Revue de code |
+| `/security` | Audit OWASP |
+| `/perf` | Optimiser les performances |
+| `/a11y` | Accessibilité WCAG |
 
 ### OPS - Opérations (8)
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:hotfix` | Correction urgente |
-| `/project:release` | Créer une release |
-| `/project:migrate` | Migration code/deps |
-| `/project:deps` | Gérer les dépendances |
-| `/project:docker` | Dockeriser |
+| `/hotfix` | Correction urgente |
+| `/release` | Créer une release |
+| `/migrate` | Migration code/deps |
+| `/deps` | Gérer les dépendances |
+| `/docker` | Dockeriser |
 
 ### DOC - Documentation (6)
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:doc` | Générer documentation |
-| `/project:changelog` | Maintenir le changelog |
-| `/project:onboard` | Découvrir un projet |
-| `/project:explain` | Expliquer du code |
+| `/doc` | Générer documentation |
+| `/changelog` | Maintenir le changelog |
+| `/onboard` | Découvrir un projet |
+| `/explain` | Expliquer du code |
 
 ## Guide de décision rapide
 
 ```
 Je veux...                          → Utilise
 ─────────────────────────────────────────────────
-Comprendre le code                  → /project:explore
-Planifier une feature               → /project:plan
-Écrire du code avec tests           → /project:tdd
-Corriger un bug                     → /project:debug
-Vérifier la qualité                 → /project:review
-Vérifier la sécurité                → /project:security
-Améliorer les performances          → /project:perf
-Créer un commit                     → /project:commit
-Créer une PR                        → /project:pr
-Corriger en urgence                 → /project:hotfix
-Publier une version                 → /project:release
-Documenter                          → /project:doc
+Comprendre le code                  → /explore
+Planifier une feature               → /plan
+Écrire du code avec tests           → /tdd
+Corriger un bug                     → /debug
+Vérifier la qualité                 → /review
+Vérifier la sécurité                → /security
+Améliorer les performances          → /perf
+Créer un commit                     → /commit
+Créer une PR                        → /pr
+Corriger en urgence                 → /hotfix
+Publier une version                 → /release
+Documenter                          → /doc
 ```
 
 ## Combinaisons fréquentes
 
 ### Nouvelle feature
-1. `/project:explore` - Comprendre l'existant
-2. `/project:plan` - Définir l'approche
-3. `/project:tdd` - Implémenter avec tests
-4. `/project:review` - Self-review
-5. `/project:commit` → `/project:pr`
+1. `/explore` - Comprendre l'existant
+2. `/plan` - Définir l'approche
+3. `/tdd` - Implémenter avec tests
+4. `/review` - Self-review
+5. `/commit` → `/pr`
 
 ### Correction de bug
-1. `/project:debug` - Identifier la cause
-2. `/project:test` - Ajouter test de non-régression
+1. `/debug` - Identifier la cause
+2. `/test` - Ajouter test de non-régression
 3. Code → Fix
-4. `/project:commit` → `/project:pr`
+4. `/commit` → `/pr`
 
 ### Refactoring
-1. `/project:explore` - Identifier le scope
-2. `/project:plan` - Définir les étapes
-3. `/project:refactor` - Exécuter
-4. `/project:review` - Vérifier
-5. `/project:commit` → `/project:pr`
+1. `/explore` - Identifier le scope
+2. `/plan` - Définir les étapes
+3. `/refactor` - Exécuter
+4. `/review` - Vérifier
+5. `/commit` → `/pr`
 
 ### Audit complet
-1. `/project:review` - Code review
-2. `/project:security` - Sécurité
-3. `/project:perf` - Performance
-4. `/project:a11y` - Accessibilité
+1. `/review` - Code review
+2. `/security` - Sécurité
+3. `/perf` - Performance
+4. `/a11y` - Accessibilité
 
 ## Output attendu
 
@@ -165,27 +165,27 @@ Vous souhaitez: [résumé de la demande]
 
 Pour cette tâche, je vous suggère:
 
-1. **D'abord**: `/project:explore` pour comprendre le contexte
-2. **Ensuite**: `/project:[agent]` pour [action]
-3. **Enfin**: `/project:commit` pour commiter
+1. **D'abord**: `/explore` pour comprendre le contexte
+2. **Ensuite**: `/[agent]` pour [action]
+3. **Enfin**: `/commit` pour commiter
 
 ## Prêt à commencer?
 
-Voulez-vous que je lance `/project:explore` pour commencer?
+Voulez-vous que je lance `/explore` pour commencer?
 ```
 
 ## Agents liés
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:explore` | Point d'entrée recommandé pour toute tâche |
-| `/project:plan` | Après exploration, avant implémentation |
-| `/project:onboard` | Première découverte d'un projet |
-| `/project:debug` | Problème à diagnostiquer |
+| `/explore` | Point d'entrée recommandé pour toute tâche |
+| `/plan` | Après exploration, avant implémentation |
+| `/onboard` | Première découverte d'un projet |
+| `/debug` | Problème à diagnostiquer |
 
 ---
 
-IMPORTANT: Toujours recommander `/project:explore` avant de modifier du code.
+IMPORTANT: Toujours recommander `/explore` avant de modifier du code.
 
 YOU MUST suggérer un workflow complet, pas juste un agent isolé.
 

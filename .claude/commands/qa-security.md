@@ -153,10 +153,10 @@ const API_KEY = process.env.API_KEY;
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:audit` | Audit complet (inclut sécu) |
-| `/project:rgpd` | Conformité données personnelles |
-| `/project:deps` | Vérifier les vulnérabilités deps |
-| `/project:secrets` | Gestion sécurisée des secrets |
+| `/audit` | Audit complet (inclut sécu) |
+| `/rgpd` | Conformité données personnelles |
+| `/deps` | Vérifier les vulnérabilités deps |
+| `/secrets` | Gestion sécurisée des secrets |
 
 ---
 

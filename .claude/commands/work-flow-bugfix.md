@@ -294,10 +294,10 @@ Status: Ready for review/merge
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:debug` | Diagnostic approfondi |
-| `/project:test` | Générer les tests de régression |
-| `/project:hotfix` | Bug critique en production |
-| `/project:commit` | Format de commit |
+| `/debug` | Diagnostic approfondi |
+| `/test` | Générer les tests de régression |
+| `/hotfix` | Bug critique en production |
+| `/commit` | Format de commit |
 
 ---
 

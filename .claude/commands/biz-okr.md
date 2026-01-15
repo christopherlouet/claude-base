@@ -246,11 +246,11 @@ O2: [Titre]                    [████░░░░░░] 40%
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:roadmap` | Roadmap alignée sur les OKRs |
-| `/project:analytics` | Mesurer les Key Results |
-| `/project:plan` | Planifier les initiatives |
-| `/project:model` | Business model de référence |
-| `/project:funnel` | Métriques de conversion |
+| `/roadmap` | Roadmap alignée sur les OKRs |
+| `/analytics` | Mesurer les Key Results |
+| `/plan` | Planifier les initiatives |
+| `/model` | Business model de référence |
+| `/funnel` | Métriques de conversion |
 
 ---
 

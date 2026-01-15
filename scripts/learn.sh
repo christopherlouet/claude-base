@@ -254,23 +254,23 @@ Chaque étape du workflow a un rôle précis :
 
 EOF
 
-    echo -e "${BOLD}1. EXPLORE${NC} (/project:work-explore)"
+    echo -e "${BOLD}1. EXPLORE${NC} (/work-explore)"
     echo "   Comprendre le code existant AVANT de modifier"
     echo "   → Identifier les patterns et conventions en place"
     echo ""
 
-    echo -e "${BOLD}2. PLAN${NC} (/project:work-plan)"
+    echo -e "${BOLD}2. PLAN${NC} (/work-plan)"
     echo "   Proposer une architecture AVANT d'implémenter"
     echo "   → Lister les fichiers à créer/modifier"
     echo "   → Attendre validation avant de coder"
     echo ""
 
-    echo -e "${BOLD}3. CODE${NC} (/project:dev-tdd ou direct)"
+    echo -e "${BOLD}3. CODE${NC} (/dev-tdd ou direct)"
     echo "   Implémenter en suivant le plan validé"
     echo "   → Tests first si applicable (TDD)"
     echo ""
 
-    echo -e "${BOLD}4. COMMIT${NC} (/project:work-commit)"
+    echo -e "${BOLD}4. COMMIT${NC} (/work-commit)"
     echo "   Message de commit descriptif"
     echo "   → Conventional Commits (feat, fix, refactor...)"
     echo ""
@@ -300,26 +300,26 @@ Claude-socle inclut 79 agents organisés en catégories :
 EOF
 
     echo -e "${BOLD}WORK-${NC} : Workflow principal (8 agents)"
-    echo "  /project:work-explore, /project:work-plan, /project:work-commit..."
+    echo "  /work-explore, /work-plan, /work-commit..."
     echo ""
 
     echo -e "${BOLD}DEV-${NC} : Développement (10 agents)"
-    echo "  /project:dev-tdd, /project:dev-test, /project:dev-refactor..."
+    echo "  /dev-tdd, /dev-test, /dev-refactor..."
     echo ""
 
     echo -e "${BOLD}QA-${NC} : Qualité (8 agents)"
-    echo "  /project:qa-review, /project:qa-security, /project:qa-perf..."
+    echo "  /qa-review, /qa-security, /qa-perf..."
     echo ""
 
     echo -e "${BOLD}OPS-${NC} : Opérations (16 agents)"
-    echo "  /project:ops-hotfix, /project:ops-release, /project:ops-docker..."
+    echo "  /ops-hotfix, /ops-release, /ops-docker..."
     echo ""
 
     echo -e "${BOLD}DOC-${NC} : Documentation (9 agents)"
-    echo "  /project:doc-generate, /project:doc-changelog, /project:doc-readme..."
+    echo "  /doc-generate, /doc-changelog, /doc-readme..."
     echo ""
 
-    echo -e "${DIM}Astuce: Utilisez /project:assistant pour obtenir de l'aide sur le choix d'agent${NC}"
+    echo -e "${DIM}Astuce: Utilisez /assistant pour obtenir de l'aide sur le choix d'agent${NC}"
 
     wait_for_enter
 
@@ -363,9 +363,9 @@ EOF
     echo "       └──────▶ Répéter"
     echo ""
 
-    echo -e "${CYAN}Commande:${NC} /project:dev-tdd [feature]"
+    echo -e "${CYAN}Commande:${NC} /dev-tdd [feature]"
     echo ""
-    echo -e "${DIM}Exemple: /project:dev-tdd validation email${NC}"
+    echo -e "${DIM}Exemple: /dev-tdd validation email${NC}"
 
     wait_for_enter
 
@@ -406,7 +406,7 @@ EOF
     echo "  refactor(utils): extract validation helpers"
     echo ""
 
-    echo -e "${CYAN}Commande:${NC} /project:work-commit"
+    echo -e "${CYAN}Commande:${NC} /work-commit"
 
     wait_for_enter
 
@@ -434,36 +434,36 @@ Scénario : Ajouter une fonctionnalité de validation d'email
 EOF
 
     echo -e "${BOLD}Étape 1: Explorer${NC}"
-    echo -e "  ${CYAN}/project:work-explore${NC} le système de validation actuel"
+    echo -e "  ${CYAN}/work-explore${NC} le système de validation actuel"
     echo ""
 
     echo -e "${BOLD}Étape 2: Planifier${NC}"
-    echo -e "  ${CYAN}/project:work-plan${NC} ajouter validation email avec regex"
+    echo -e "  ${CYAN}/work-plan${NC} ajouter validation email avec regex"
     echo ""
 
     echo -e "${BOLD}Étape 3: Coder en TDD${NC}"
-    echo -e "  ${CYAN}/project:dev-tdd${NC} email validation function"
+    echo -e "  ${CYAN}/dev-tdd${NC} email validation function"
     echo ""
 
     echo -e "${BOLD}Étape 4: Review${NC}"
-    echo -e "  ${CYAN}/project:qa-review${NC} les changements"
+    echo -e "  ${CYAN}/qa-review${NC} les changements"
     echo ""
 
     echo -e "${BOLD}Étape 5: Commit${NC}"
-    echo -e "  ${CYAN}/project:work-commit${NC}"
+    echo -e "  ${CYAN}/work-commit${NC}"
     echo ""
 
     echo -e "${DIM}Ou utilisez le workflow complet :${NC}"
-    echo -e "  ${CYAN}/project:work-flow-feature${NC} \"validation email\""
+    echo -e "  ${CYAN}/work-flow-feature${NC} \"validation email\""
 
     wait_for_enter
 
     # Quiz final
     ask_question "Pour une nouvelle feature, quel workflow utiliser ?" "4" \
-        "/project:ops-hotfix" \
-        "/project:work-flow-bugfix" \
-        "/project:qa-security" \
-        "/project:work-flow-feature"
+        "/ops-hotfix" \
+        "/work-flow-bugfix" \
+        "/qa-security" \
+        "/work-flow-feature"
 
     wait_for_enter
 }
@@ -503,13 +503,13 @@ EOF
                     COMMANDES ESSENTIELLES
 ═══════════════════════════════════════════════════════════════
 
-  /project:work-explore [cible]   → Comprendre le code
-  /project:work-plan [feature]    → Planifier
-  /project:work-commit            → Créer un commit
-  /project:dev-tdd [feature]      → Développer en TDD
-  /project:qa-review              → Code review
+  /work-explore [cible]   → Comprendre le code
+  /work-plan [feature]    → Planifier
+  /work-commit            → Créer un commit
+  /dev-tdd [feature]      → Développer en TDD
+  /qa-review              → Code review
 
-  /project:assistant              → Aide pour choisir un agent
+  /assistant              → Aide pour choisir un agent
 
 EOF
     wait_for_enter
@@ -524,13 +524,13 @@ EOF
 ═══════════════════════════════════════════════════════════════
 
   Pour une nouvelle feature :
-    /project:work-flow-feature "description"
+    /work-flow-feature "description"
 
   Pour un bugfix :
-    /project:work-flow-bugfix "description"
+    /work-flow-bugfix "description"
 
   Pour une release :
-    /project:work-flow-release "v2.0.0"
+    /work-flow-release "v2.0.0"
 
   Ces workflows combinent automatiquement les bonnes étapes !
 
@@ -607,7 +607,7 @@ learn_agent() {
     fi
 
     clear_screen
-    print_header "APPRENTISSAGE: /project:$agent"
+    print_header "APPRENTISSAGE: /$agent"
 
     # Extraire les informations de l'agent
     echo -e "${BOLD}Description:${NC}"
@@ -619,7 +619,7 @@ learn_agent() {
     echo ""
 
     echo -e "${BOLD}Exemple d'utilisation:${NC}"
-    echo "  /project:$agent [arguments]"
+    echo "  /$agent [arguments]"
     echo ""
 
     echo -e "${DIM}Fichier: $found${NC}"
@@ -747,8 +747,8 @@ EOF
     echo ""
     echo -e "${BOLD}Prochaines étapes :${NC}"
     echo ""
-    echo "  1. Essayez /project:work-explore sur votre projet"
-    echo "  2. Planifiez une feature avec /project:work-plan"
+    echo "  1. Essayez /work-explore sur votre projet"
+    echo "  2. Planifiez une feature avec /work-plan"
     echo "  3. Consultez docs/CHEATSHEET.md pour la référence rapide"
     echo ""
 

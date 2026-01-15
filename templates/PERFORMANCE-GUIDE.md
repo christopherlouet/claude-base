@@ -41,20 +41,20 @@ Optimisez l'utilisation de Claude Code pour des réponses plus rapides et une co
 
 ```bash
 # ❌ Éviter - lit potentiellement tout
-/project:explore
+/explore
 
 # ✅ Préférer - cible les fichiers pertinents
-/project:explore src/services/auth.ts
+/explore src/services/auth.ts
 ```
 
 #### Utiliser des chemins précis
 
 ```bash
 # ❌ Trop large
-/project:review src/
+/review src/
 
 # ✅ Plus ciblé
-/project:review src/services/user-service.ts
+/review src/services/user-service.ts
 ```
 
 #### Décomposer les tâches complexes
@@ -64,9 +64,9 @@ Optimisez l'utilisation de Claude Code pour des réponses plus rapides et une co
 "Analyse tout le projet, trouve les bugs, refactorise et optimise"
 
 # ✅ Plusieurs requêtes ciblées
-/project:explore src/services/
-/project:review src/services/user-service.ts
-/project:refactor UserService
+/explore src/services/
+/review src/services/user-service.ts
+/refactor UserService
 ```
 
 ## Choix de l'agent optimal
@@ -75,11 +75,11 @@ Optimisez l'utilisation de Claude Code pour des réponses plus rapides et une co
 
 | Tâche | Agent optimal | Pourquoi |
 |-------|---------------|----------|
-| Comprendre du code | `/project:explore` | Optimisé pour l'analyse |
-| Bug à corriger | `/project:debug` | Workflow de débogage |
-| Nouveau code | `/project:tdd` | Structure TDD |
-| Review de PR | `/project:review` | Checklist qualité |
-| Commit | `/project:commit` | Format conventionnel |
+| Comprendre du code | `/explore` | Optimisé pour l'analyse |
+| Bug à corriger | `/debug` | Workflow de débogage |
+| Nouveau code | `/tdd` | Structure TDD |
+| Review de PR | `/review` | Checklist qualité |
+| Commit | `/commit` | Format conventionnel |
 
 ### Éviter les agents génériques
 
@@ -88,7 +88,7 @@ Optimisez l'utilisation de Claude Code pour des réponses plus rapides et une co
 "Peux-tu regarder ce code et me dire s'il y a des problèmes de sécurité ?"
 
 # ✅ Agent spécialisé
-/project:security src/api/
+/security src/api/
 ```
 
 ## Réduire les allers-retours
@@ -104,14 +104,14 @@ Claude: [analyse]
 User: "Compare les deux"
 
 # ✅ Contexte complet
-/project:review "Compare AuthService et UserService, identifie les duplications"
+/review "Compare AuthService et UserService, identifie les duplications"
 ```
 
 ### Utiliser des arguments structurés
 
 ```bash
 # ✅ Arguments clairs et complets
-/project:api POST /api/users {name: string, email: string} -> {id: string, created: Date}
+/api POST /api/users {name: string, email: string} -> {id: string, created: Date}
 ```
 
 ## Optimisation des agents
@@ -169,39 +169,39 @@ Tokens ≈ (Fichiers lus × ~100-500 lignes × 4 tokens/ligne)
 
 ```bash
 # 1. Scout (rapide, peu de tokens)
-/project:explore src/auth/ --quick
+/explore src/auth/ --quick
 
 # 2. Identifier les fichiers clés
 # -> src/auth/service.ts, src/auth/middleware.ts
 
 # 3. Act (ciblé)
-/project:review src/auth/service.ts src/auth/middleware.ts
+/review src/auth/service.ts src/auth/middleware.ts
 ```
 
 ### Pattern "Divide and Conquer"
 
 ```bash
 # Diviser une grosse tâche
-/project:plan "Refactoring module auth"
+/plan "Refactoring module auth"
 # -> Liste des sous-tâches
 
 # Exécuter chaque sous-tâche séparément
-/project:refactor src/auth/login.ts
-/project:refactor src/auth/session.ts
-/project:refactor src/auth/token.ts
+/refactor src/auth/login.ts
+/refactor src/auth/session.ts
+/refactor src/auth/token.ts
 ```
 
 ### Pattern "Progressive Detail"
 
 ```bash
 # 1. Vue d'ensemble
-/project:onboard --quick
+/onboard --quick
 
 # 2. Zoom sur un module
-/project:explore src/services/
+/explore src/services/
 
 # 3. Détail d'un fichier
-/project:explain src/services/complex-algorithm.ts
+/explain src/services/complex-algorithm.ts
 ```
 
 ## Configuration recommandée
@@ -250,7 +250,7 @@ Tokens: ~50k
 ```
 Temps: ~20s
 Tokens: ~8k
-/project:review src/services/auth-service.ts
+/review src/services/auth-service.ts
 ```
 
 ### Exemple : Debug
@@ -266,7 +266,7 @@ Tokens: ~80k
 ```
 Temps: ~30s
 Tokens: ~10k
-/project:debug "Error: Token invalid" src/auth/
+/debug "Error: Token invalid" src/auth/
 ```
 
 ## Checklist d'optimisation

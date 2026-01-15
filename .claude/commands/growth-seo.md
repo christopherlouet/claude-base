@@ -240,11 +240,11 @@ Score global: [X/100]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:landing` | Optimiser les landing pages |
-| `/project:perf` | Améliorer les Core Web Vitals |
-| `/project:a11y` | Accessibilité (impact indirect SEO) |
-| `/project:i18n` | SEO international multilingue |
-| `/project:analytics` | Tracker les performances SEO |
+| `/landing` | Optimiser les landing pages |
+| `/perf` | Améliorer les Core Web Vitals |
+| `/a11y` | Accessibilité (impact indirect SEO) |
+| `/i18n` | SEO international multilingue |
+| `/analytics` | Tracker les performances SEO |
 
 ---
 

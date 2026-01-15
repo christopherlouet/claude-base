@@ -207,12 +207,12 @@ Status: Ready for review
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:explore` | Étape 1 - Exploration |
-| `/project:plan` | Étape 2 - Planification |
-| `/project:tdd` | Étape 3 - Développement |
-| `/project:review` | Étape 4 - Auto-review |
-| `/project:commit` | Étape 5 - Commit |
-| `/project:pr` | Étape 6 - Pull Request |
+| `/explore` | Étape 1 - Exploration |
+| `/plan` | Étape 2 - Planification |
+| `/tdd` | Étape 3 - Développement |
+| `/review` | Étape 4 - Auto-review |
+| `/commit` | Étape 5 - Commit |
+| `/pr` | Étape 6 - Pull Request |
 
 ---
 

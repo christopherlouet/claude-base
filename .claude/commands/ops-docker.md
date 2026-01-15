@@ -306,11 +306,11 @@ docker compose down
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:ci` | Configurer CI/CD avec Docker |
-| `/project:infra-code` | Infrastructure as Code |
-| `/project:env` | Gestion des environnements |
-| `/project:secrets-management` | Gestion des secrets |
-| `/project:monitoring` | Monitoring des containers |
+| `/ci` | Configurer CI/CD avec Docker |
+| `/infra-code` | Infrastructure as Code |
+| `/env` | Gestion des environnements |
+| `/secrets-management` | Gestion des secrets |
+| `/monitoring` | Monitoring des containers |
 
 ---
 

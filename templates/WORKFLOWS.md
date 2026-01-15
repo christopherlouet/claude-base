@@ -26,38 +26,38 @@ Ce document décrit les workflows recommandés pour différents scénarios de d�
 #### 1. EXPLORE - Comprendre le contexte
 ```bash
 # Comprendre le code existant
-/project:explore src/services/user
+/explore src/services/user
 
 # Si code complexe, demander une explication
-/project:explain src/services/user/auth.ts
+/explain src/services/user/auth.ts
 ```
 **Objectif :** Ne jamais coder sans comprendre l'existant
 
 #### 2. PLAN - Planifier l'implémentation
 ```bash
 # Créer un plan d'implémentation
-/project:plan Ajouter l'authentification OAuth2
+/plan Ajouter l'authentification OAuth2
 ```
 **Objectif :** Définir l'architecture avant de coder
 
 #### 3. CODE - Implémenter
 ```bash
 # Option A: TDD (recommandé)
-/project:tdd src/services/auth/oauth.ts
+/tdd src/services/auth/oauth.ts
 
 # Option B: Code puis tests
 # ... coder ...
-/project:test src/services/auth/oauth.ts
+/test src/services/auth/oauth.ts
 ```
 **Objectif :** Code testé et fonctionnel
 
 #### 4. COMMIT - Versionner
 ```bash
 # Créer un commit propre
-/project:commit
+/commit
 
 # Ou créer une PR directement
-/project:pr
+/pr
 ```
 **Objectif :** Historique git propre et traçable
 
@@ -87,26 +87,26 @@ Ce document décrit les workflows recommandés pour différents scénarios de d�
 # Créer un cas de test qui échoue
 
 # 2. Diagnostiquer
-/project:debug L'utilisateur reçoit une erreur 500 lors de la connexion
+/debug L'utilisateur reçoit une erreur 500 lors de la connexion
 
 # 3. Corriger
 # ... appliquer le fix ...
 
 # 4. Vérifier
-/project:test src/services/auth/login.ts  # Test de non-régression
+/test src/services/auth/login.ts  # Test de non-régression
 
 # 5. Commiter
-/project:commit
+/commit
 ```
 
 ### Pour les issues GitHub
 ```bash
-/project:fix-issue #123
+/fix-issue #123
 ```
 
 ### Pour les urgences production
 ```bash
-/project:hotfix Bug critique de paiement en production
+/hotfix Bug critique de paiement en production
 ```
 
 ---
@@ -131,16 +131,16 @@ Ce document décrit les workflows recommandés pour différents scénarios de d�
 
 ```bash
 # 1. Comprendre les changements
-/project:explore src/features/new-feature
+/explore src/features/new-feature
 
 # 2. Review de code
-/project:review src/features/new-feature
+/review src/features/new-feature
 
 # 3. Review de sécurité (si applicable)
-/project:security src/features/new-feature
+/security src/features/new-feature
 
 # 4. Review performance (si applicable)
-/project:perf src/features/new-feature
+/perf src/features/new-feature
 
 # 5. Approuver et merger
 ```
@@ -168,15 +168,15 @@ Ce document décrit les workflows recommandés pour différents scénarios de d�
 
 ```bash
 # 1. Audit complet
-/project:audit
-/project:security
-/project:coverage
+/audit
+/security
+/coverage
 
 # 2. Préparer le changelog
-/project:changelog
+/changelog
 
 # 3. Créer la release
-/project:release 1.2.0
+/release 1.2.0
 
 # 4. Déploiement automatique via CI/CD
 ```
@@ -210,21 +210,21 @@ Ce document décrit les workflows recommandés pour différents scénarios de d�
 
 ```bash
 # 1. Analyser le code à refactorer
-/project:explore src/services/legacy
-/project:review src/services/legacy
+/explore src/services/legacy
+/review src/services/legacy
 
 # 2. Vérifier la couverture de tests
-/project:coverage src/services/legacy
+/coverage src/services/legacy
 
 # 3. Ajouter tests si nécessaire (coverage < 80%)
-/project:test src/services/legacy
+/test src/services/legacy
 
 # 4. Refactorer par petites étapes
-/project:refactor src/services/legacy
+/refactor src/services/legacy
 
 # 5. Vérifier après chaque étape
 npm test
-/project:commit  # Commit atomique
+/commit  # Commit atomique
 
 # Répéter 4-5 jusqu'à terminé
 ```
@@ -251,18 +251,18 @@ npm test
 
 ### Phase 1 : Business
 ```bash
-/project:model       # Business model canvas
-/project:market      # Étude de marché
-/project:mvp         # Définir le MVP
-/project:roadmap     # Planifier la roadmap
+/model       # Business model canvas
+/market      # Étude de marché
+/mvp         # Définir le MVP
+/roadmap     # Planifier la roadmap
 ```
 
 ### Phase 2 : Setup technique
 ```bash
-/project:docker      # Configuration Docker
-/project:ci          # Pipeline CI/CD
-/project:env         # Variables d'environnement
-/project:infra-code  # Infrastructure as Code
+/docker      # Configuration Docker
+/ci          # Pipeline CI/CD
+/env         # Variables d'environnement
+/infra-code  # Infrastructure as Code
 ```
 
 ### Phase 3 : Développement
@@ -270,11 +270,11 @@ Utiliser le workflow Feature Development pour chaque feature
 
 ### Phase 4 : Lancement
 ```bash
-/project:security    # Audit sécurité
-/project:launch      # Checklist lancement
-/project:landing     # Landing page
-/project:seo         # Optimisation SEO
-/project:analytics   # Setup analytics
+/security    # Audit sécurité
+/launch      # Checklist lancement
+/landing     # Landing page
+/seo         # Optimisation SEO
+/analytics   # Setup analytics
 ```
 
 ---
@@ -298,16 +298,16 @@ Utiliser le workflow Feature Development pour chaque feature
 
 ### Pour les dépendances
 ```bash
-/project:deps        # Analyser les dépendances
-/project:migrate     # Migrer la dépendance
+/deps        # Analyser les dépendances
+/migrate     # Migrer la dépendance
 ```
 
 ### Pour les bases de données
 ```bash
-/project:database    # Planifier la migration
-/project:backup      # Backup avant migration
+/database    # Planifier la migration
+/backup      # Backup avant migration
 # Migration
-/project:health      # Vérifier post-migration
+/health      # Vérifier post-migration
 ```
 
 ---
@@ -341,8 +341,8 @@ Utiliser le workflow Feature Development pour chaque feature
 # - Scaling up
 
 # 3. Fix
-/project:debug       # Identifier la cause
-/project:hotfix      # Appliquer le fix
+/debug       # Identifier la cause
+/hotfix      # Appliquer le fix
 
 # 4. Post-mortem
 # Documentation de l'incident
@@ -383,29 +383,29 @@ npm run dev
 ### Jour 2-3 : Découverte
 ```bash
 # Comprendre le projet
-/project:onboard
+/onboard
 
 # Explorer les parties clés
-/project:explore src/services
-/project:explore src/api
+/explore src/services
+/explore src/api
 ```
 
 ### Semaine 1 : Apprentissage
 ```bash
 # Comprendre le code complexe
-/project:explain src/services/auth
+/explain src/services/auth
 
 # Observer les patterns
-/project:review src/features/recent-feature
+/review src/features/recent-feature
 ```
 
 ### Semaine 2+ : Pratique
 ```bash
 # Première feature (simple)
-/project:plan
-/project:tdd
-/project:commit
-/project:pr
+/plan
+/tdd
+/commit
+/pr
 ```
 
 ---
@@ -429,17 +429,17 @@ npm run dev
 ## Bonnes Pratiques
 
 ### Toujours
-- Commencer par `/project:explore` ou `/project:onboard`
-- Planifier avec `/project:plan` avant de coder
-- Tester avec `/project:tdd` ou `/project:test`
-- Commiter proprement avec `/project:commit`
+- Commencer par `/explore` ou `/onboard`
+- Planifier avec `/plan` avant de coder
+- Tester avec `/tdd` ou `/test`
+- Commiter proprement avec `/commit`
 
 ### Avant une release
-- `/project:security` - Audit de sécurité
-- `/project:coverage` - Vérifier la couverture
-- `/project:changelog` - Mettre à jour le changelog
+- `/security` - Audit de sécurité
+- `/coverage` - Vérifier la couverture
+- `/changelog` - Mettre à jour le changelog
 
 ### En cas de doute
-- `/project:explain` - Pour comprendre du code
-- `/project:review` - Pour vérifier la qualité
-- `/project:debug` - Pour diagnostiquer un problème
+- `/explain` - Pour comprendre du code
+- `/review` - Pour vérifier la qualité
+- `/debug` - Pour diagnostiquer un problème

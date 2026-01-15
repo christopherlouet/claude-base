@@ -29,7 +29,7 @@ $ARGUMENTS
 | Type de service | (SaaS, e-commerce, marketplace, contenu) |
 | Modèle économique | (gratuit, freemium, abonnement, achat) |
 | Cible | (B2B, B2C, les deux) |
-| Données collectées | (voir `/project:rgpd`) |
+| Données collectées | (voir `/rgpd`) |
 
 ### 2. Documents à générer
 
@@ -339,10 +339,10 @@ CNIL : www.cnil.fr
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:rgpd` | Audit et conformité RGPD |
-| `/project:privacy-policy` | Politique de confidentialité détaillée |
-| `/project:terms-of-service` | CGU détaillées |
-| `/project:payment` | Aspects légaux des paiements |
+| `/rgpd` | Audit et conformité RGPD |
+| `/privacy-policy` | Politique de confidentialité détaillée |
+| `/terms-of-service` | CGU détaillées |
+| `/payment` | Aspects légaux des paiements |
 
 ---
 

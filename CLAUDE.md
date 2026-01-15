@@ -30,23 +30,23 @@
 
 ## Workflow Obligatoire : Explore → Plan → Code → Commit
 
-### 1. EXPLORE (`/project:work-explore`)
+### 1. EXPLORE (`/work-explore`)
 - Lire et comprendre le code existant AVANT de modifier
 - Identifier les patterns et conventions en place
 - NE JAMAIS coder sans avoir exploré
 
-### 2. PLAN (`/project:work-plan`)
+### 2. PLAN (`/work-plan`)
 - Proposer une architecture AVANT d'implémenter
 - Lister les fichiers à créer/modifier
 - Identifier les risques potentiels
 - Attendre validation avant de coder
 
-### 3. CODE (`/project:dev-tdd` ou direct)
+### 3. CODE (`/dev-tdd` ou direct)
 - Implémenter en suivant le plan validé
 - Tests first si applicable (TDD)
 - Commits atomiques et fréquents
 
-### 4. COMMIT (`/project:work-commit` ou `/project:work-pr`)
+### 4. COMMIT (`/work-commit` ou `/work-pr`)
 - Message de commit descriptif
 - Référencer les issues si applicable
 - PR avec description complète
@@ -142,121 +142,121 @@ type(scope): description courte
 ### Orchestrateur
 | Commande | Usage |
 |----------|-------|
-| `/project:assistant` | Guide de choix des agents et workflows |
+| `/assistant` | Guide de choix des agents et workflows |
 
 ### WORK- : Workflow Principal (8)
 | Commande | Usage |
 |----------|-------|
-| `/project:work-explore` | Explorer et comprendre le code |
-| `/project:work-plan` | Planifier une implémentation |
-| `/project:work-commit` | Créer un commit propre |
-| `/project:work-pr` | Créer une Pull Request |
-| `/project:work-flow-feature` | Workflow complet feature |
-| `/project:work-flow-bugfix` | Workflow complet bugfix |
-| `/project:work-flow-release` | Workflow complet release |
-| `/project:work-flow-launch` | Workflow complet lancement produit |
+| `/work-explore` | Explorer et comprendre le code |
+| `/work-plan` | Planifier une implémentation |
+| `/work-commit` | Créer un commit propre |
+| `/work-pr` | Créer une Pull Request |
+| `/work-flow-feature` | Workflow complet feature |
+| `/work-flow-bugfix` | Workflow complet bugfix |
+| `/work-flow-release` | Workflow complet release |
+| `/work-flow-launch` | Workflow complet lancement produit |
 
 ### DEV- : Développement (10)
 | Commande | Usage |
 |----------|-------|
-| `/project:dev-tdd` | Développement TDD |
-| `/project:dev-test` | Générer des tests |
-| `/project:dev-testing-setup` | Configurer l'infrastructure de tests |
-| `/project:dev-debug` | Déboguer un problème |
-| `/project:dev-refactor` | Refactoring guidé |
-| `/project:dev-api` | Créer/documenter API |
-| `/project:dev-api-versioning` | Versioning d'API |
-| `/project:dev-component` | Créer un composant UI complet |
-| `/project:dev-hook` | Créer un hook React/Vue |
-| `/project:dev-error-handling` | Stratégie de gestion d'erreurs |
+| `/dev-tdd` | Développement TDD |
+| `/dev-test` | Générer des tests |
+| `/dev-testing-setup` | Configurer l'infrastructure de tests |
+| `/dev-debug` | Déboguer un problème |
+| `/dev-refactor` | Refactoring guidé |
+| `/dev-api` | Créer/documenter API |
+| `/dev-api-versioning` | Versioning d'API |
+| `/dev-component` | Créer un composant UI complet |
+| `/dev-hook` | Créer un hook React/Vue |
+| `/dev-error-handling` | Stratégie de gestion d'erreurs |
 
 ### QA- : Qualité (8)
 | Commande | Usage |
 |----------|-------|
-| `/project:qa-review` | Code review approfondie |
-| `/project:qa-security` | Audit de sécurité OWASP |
-| `/project:qa-perf` | Analyse de performance |
-| `/project:qa-a11y` | Audit accessibilité WCAG |
-| `/project:qa-audit` | Audit qualité complet |
-| `/project:qa-responsive` | Audit responsive/mobile |
-| `/project:qa-automation` | Automatisation des tests |
-| `/project:qa-coverage` | Analyse couverture de tests |
+| `/qa-review` | Code review approfondie |
+| `/qa-security` | Audit de sécurité OWASP |
+| `/qa-perf` | Analyse de performance |
+| `/qa-a11y` | Audit accessibilité WCAG |
+| `/qa-audit` | Audit qualité complet |
+| `/qa-responsive` | Audit responsive/mobile |
+| `/qa-automation` | Automatisation des tests |
+| `/qa-coverage` | Analyse couverture de tests |
 
 ### OPS- : Opérations (16)
 | Commande | Usage |
 |----------|-------|
-| `/project:ops-hotfix` | Correction urgente production |
-| `/project:ops-release` | Créer une release |
-| `/project:ops-deps` | Audit et MAJ des dépendances |
-| `/project:ops-docker` | Dockeriser un projet |
-| `/project:ops-migrate` | Migration de code/dépendances |
-| `/project:ops-ci` | Configuration CI/CD |
-| `/project:ops-monitoring` | Logs, métriques, alertes |
-| `/project:ops-database` | Schéma, migrations DB |
-| `/project:ops-health` | Health check rapide |
-| `/project:ops-env` | Gestion des environnements |
-| `/project:ops-backup` | Stratégie backup/restore |
-| `/project:ops-load-testing` | Tests de charge et stress |
-| `/project:ops-cost-optimization` | Optimisation coûts cloud |
-| `/project:ops-disaster-recovery` | Plan de reprise après sinistre |
-| `/project:ops-infra-code` | Infrastructure as Code (Terraform) |
-| `/project:ops-secrets-management` | Gestion sécurisée des secrets |
+| `/ops-hotfix` | Correction urgente production |
+| `/ops-release` | Créer une release |
+| `/ops-deps` | Audit et MAJ des dépendances |
+| `/ops-docker` | Dockeriser un projet |
+| `/ops-migrate` | Migration de code/dépendances |
+| `/ops-ci` | Configuration CI/CD |
+| `/ops-monitoring` | Logs, métriques, alertes |
+| `/ops-database` | Schéma, migrations DB |
+| `/ops-health` | Health check rapide |
+| `/ops-env` | Gestion des environnements |
+| `/ops-backup` | Stratégie backup/restore |
+| `/ops-load-testing` | Tests de charge et stress |
+| `/ops-cost-optimization` | Optimisation coûts cloud |
+| `/ops-disaster-recovery` | Plan de reprise après sinistre |
+| `/ops-infra-code` | Infrastructure as Code (Terraform) |
+| `/ops-secrets-management` | Gestion sécurisée des secrets |
 
 ### DOC- : Documentation (9)
 | Commande | Usage |
 |----------|-------|
-| `/project:doc-generate` | Générer de la documentation |
-| `/project:doc-changelog` | Générer/maintenir le changelog |
-| `/project:doc-explain` | Expliquer du code complexe |
-| `/project:doc-onboard` | Découvrir un codebase |
-| `/project:doc-i18n` | Internationalisation |
-| `/project:doc-fix-issue` | Corriger une issue GitHub |
-| `/project:doc-api-spec` | Générer spec OpenAPI/Swagger |
-| `/project:doc-readme` | Créer/améliorer README |
-| `/project:doc-architecture` | Documenter l'architecture |
+| `/doc-generate` | Générer de la documentation |
+| `/doc-changelog` | Générer/maintenir le changelog |
+| `/doc-explain` | Expliquer du code complexe |
+| `/doc-onboard` | Découvrir un codebase |
+| `/doc-i18n` | Internationalisation |
+| `/doc-fix-issue` | Corriger une issue GitHub |
+| `/doc-api-spec` | Générer spec OpenAPI/Swagger |
+| `/doc-readme` | Créer/améliorer README |
+| `/doc-architecture` | Documenter l'architecture |
 
 ### BIZ- : Business (11)
 | Commande | Usage |
 |----------|-------|
-| `/project:biz-model` | Business model, Lean Canvas |
-| `/project:biz-market` | Étude de marché |
-| `/project:biz-mvp` | Définir le MVP |
-| `/project:biz-pricing` | Stratégie de pricing |
-| `/project:biz-pitch` | Créer un pitch deck |
-| `/project:biz-roadmap` | Planifier la roadmap |
-| `/project:biz-launch` | Workflow lancement complet |
-| `/project:biz-competitor` | Analyse concurrentielle |
-| `/project:biz-okr` | Définir les OKRs |
-| `/project:biz-personas` | Créer des personas utilisateur |
-| `/project:biz-research` | Recherche utilisateur |
+| `/biz-model` | Business model, Lean Canvas |
+| `/biz-market` | Étude de marché |
+| `/biz-mvp` | Définir le MVP |
+| `/biz-pricing` | Stratégie de pricing |
+| `/biz-pitch` | Créer un pitch deck |
+| `/biz-roadmap` | Planifier la roadmap |
+| `/biz-launch` | Workflow lancement complet |
+| `/biz-competitor` | Analyse concurrentielle |
+| `/biz-okr` | Définir les OKRs |
+| `/biz-personas` | Créer des personas utilisateur |
+| `/biz-research` | Recherche utilisateur |
 
 ### GROWTH- : Croissance (8)
 | Commande | Usage |
 |----------|-------|
-| `/project:growth-landing` | Créer/optimiser landing page |
-| `/project:growth-seo` | Audit SEO |
-| `/project:growth-analytics` | Setup tracking et KPIs |
-| `/project:growth-onboarding` | Parcours d'onboarding UX |
-| `/project:growth-email` | Templates email marketing |
-| `/project:growth-ab-test` | Planifier A/B tests |
-| `/project:growth-retention` | Stratégies de rétention |
-| `/project:growth-funnel` | Analyse et optimisation funnels |
+| `/growth-landing` | Créer/optimiser landing page |
+| `/growth-seo` | Audit SEO |
+| `/growth-analytics` | Setup tracking et KPIs |
+| `/growth-onboarding` | Parcours d'onboarding UX |
+| `/growth-email` | Templates email marketing |
+| `/growth-ab-test` | Planifier A/B tests |
+| `/growth-retention` | Stratégies de rétention |
+| `/growth-funnel` | Analyse et optimisation funnels |
 
 ### DATA- : Données (3)
 | Commande | Usage |
 |----------|-------|
-| `/project:data-pipeline` | Concevoir pipelines ETL/ELT |
-| `/project:data-analytics` | Analyse de données et rapports |
-| `/project:data-modeling` | Modélisation data warehouse |
+| `/data-pipeline` | Concevoir pipelines ETL/ELT |
+| `/data-analytics` | Analyse de données et rapports |
+| `/data-modeling` | Modélisation data warehouse |
 
 ### LEGAL- : Légal (5)
 | Commande | Usage |
 |----------|-------|
-| `/project:legal-docs` | CGU, CGV, mentions légales |
-| `/project:legal-rgpd` | Conformité RGPD/GDPR |
-| `/project:legal-payment` | Intégration paiement |
-| `/project:legal-terms-of-service` | Conditions Générales d'Utilisation |
-| `/project:legal-privacy-policy` | Politique de Confidentialité |
+| `/legal-docs` | CGU, CGV, mentions légales |
+| `/legal-rgpd` | Conformité RGPD/GDPR |
+| `/legal-payment` | Intégration paiement |
+| `/legal-terms-of-service` | Conditions Générales d'Utilisation |
+| `/legal-privacy-policy` | Politique de Confidentialité |
 
 ## Documentation de Navigation
 
@@ -268,29 +268,29 @@ Pour choisir le bon agent :
 
 ### Nouvelle feature
 ```bash
-/project:work-flow-feature "description de la feature"
+/work-flow-feature "description de la feature"
 # ou manuellement:
-/project:work-explore → /project:work-plan → /project:dev-tdd → /project:work-pr
+/work-explore → /work-plan → /dev-tdd → /work-pr
 ```
 
 ### Correction de bug
 ```bash
-/project:work-flow-bugfix "description du bug"
+/work-flow-bugfix "description du bug"
 ```
 
 ### Nouvelle release
 ```bash
-/project:work-flow-release "v2.0.0"
+/work-flow-release "v2.0.0"
 ```
 
 ### Lancement produit
 ```bash
-/project:work-flow-launch "mon nouveau SaaS"
+/work-flow-launch "mon nouveau SaaS"
 ```
 
 ### Audit complet
 ```bash
-/project:qa-audit  # Sécurité + RGPD + A11y + Perf
+/qa-audit  # Sécurité + RGPD + A11y + Perf
 ```
 
 ## Hooks (Claude Code 2.1+)

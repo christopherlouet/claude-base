@@ -450,10 +450,10 @@ L'Application peut demander l'accès à :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:privacy-policy` | Politique de confidentialité |
-| `/project:rgpd` | Conformité RGPD |
-| `/project:legal-docs` | Autres documents légaux |
-| `/project:payment` | CGV et paiements |
+| `/privacy-policy` | Politique de confidentialité |
+| `/rgpd` | Conformité RGPD |
+| `/legal-docs` | Autres documents légaux |
+| `/payment` | CGV et paiements |
 
 ---
 

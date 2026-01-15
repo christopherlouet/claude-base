@@ -261,11 +261,11 @@ deploy:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:secrets-management` | Gestion sécurisée des secrets |
-| `/project:docker` | Configuration Docker |
-| `/project:infra-code` | Variables Terraform |
-| `/project:ci` | Secrets en CI/CD |
-| `/project:security` | Audit des secrets |
+| `/secrets-management` | Gestion sécurisée des secrets |
+| `/docker` | Configuration Docker |
+| `/infra-code` | Variables Terraform |
+| `/ci` | Secrets en CI/CD |
+| `/security` | Audit des secrets |
 
 ---
 

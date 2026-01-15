@@ -158,11 +158,11 @@ Cible prioritaire: [segment]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:model` | Business model après étude marché |
-| `/project:competitor` | Analyse concurrentielle détaillée |
-| `/project:personas` | Définir les personas cibles |
-| `/project:research` | Recherche utilisateur approfondie |
-| `/project:pricing` | Stratégie de pricing |
+| `/model` | Business model après étude marché |
+| `/competitor` | Analyse concurrentielle détaillée |
+| `/personas` | Définir les personas cibles |
+| `/research` | Recherche utilisateur approfondie |
+| `/pricing` | Stratégie de pricing |
 
 ---
 

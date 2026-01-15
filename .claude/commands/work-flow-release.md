@@ -393,11 +393,11 @@ Documentation : [lien]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:audit` | Étape 1 - Audit qualité |
-| `/project:changelog` | Étape 2 - Changelog |
-| `/project:test` | Étape 4 - Tests complets |
-| `/project:release` | Alternative simplifiée |
-| `/project:monitoring` | Post-déploiement |
+| `/audit` | Étape 1 - Audit qualité |
+| `/changelog` | Étape 2 - Changelog |
+| `/test` | Étape 4 - Tests complets |
+| `/release` | Alternative simplifiée |
+| `/monitoring` | Post-déploiement |
 
 ---
 

@@ -416,11 +416,11 @@ const isOwner = (user: User, resource: Resource) =>
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:explore` | Comprendre le code avant refactoring |
-| `/project:test` | Ajouter tests manquants |
-| `/project:review` | Review post-refactoring |
-| `/project:commit` | Commits atomiques |
-| `/project:explain` | Comprendre du code complexe |
+| `/explore` | Comprendre le code avant refactoring |
+| `/test` | Ajouter tests manquants |
+| `/review` | Review post-refactoring |
+| `/commit` | Commits atomiques |
+| `/explain` | Comprendre du code complexe |
 
 ---
 

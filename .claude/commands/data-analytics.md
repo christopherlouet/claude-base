@@ -172,10 +172,10 @@ fig.write_html('dashboard.html')
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:data-pipeline` | Préparer les données |
-| `/project:data-modeling` | Structurer le modèle de données |
-| `/project:doc-generate` | Documenter l'analyse |
-| `/project:biz-okr` | Définir les KPIs |
+| `/data-pipeline` | Préparer les données |
+| `/data-modeling` | Structurer le modèle de données |
+| `/doc-generate` | Documenter l'analyse |
+| `/biz-okr` | Définir les KPIs |
 
 ---
 

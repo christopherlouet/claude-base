@@ -152,7 +152,7 @@ $ARGUMENTS                    ← Placeholder OBLIGATOIRE
 ## Agents liés
 | Agent | Usage |
 |-------|-------|
-| /project:xxx | Description |
+| /xxx | Description |
 
 ---
 
@@ -179,9 +179,9 @@ Think hard sur [Aspect à considérer]
 Fichier: .claude/commands/[categorie]-[nom].md
 
 Exemples:
-  dev-tdd.md         → /project:dev-tdd
-  ops-ci.md          → /project:ops-ci
-  work-explore.md    → /project:work-explore
+  dev-tdd.md         → /dev-tdd
+  ops-ci.md          → /ops-ci
+  work-explore.md    → /work-explore
 ```
 
 ## Flux de données
@@ -195,7 +195,7 @@ Exemples:
 │                                                             │
 │  Utilisateur                                                │
 │      │                                                      │
-│      │  /project:explore src/auth                           │
+│      │  /explore src/auth                           │
 │      ▼                                                      │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │                   Claude Code                        │   │
