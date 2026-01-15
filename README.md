@@ -5,7 +5,7 @@
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
 [![Tests](https://img.shields.io/badge/tests-195%20passing-brightgreen)](./tests)
 [![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
-[![Release](https://img.shields.io/github/v/release/christopherlouet/claude-socle?color=blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
+[![Release](https://img.shields.io/badge/release-v1.2.0-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 
 Template de configuration Claude Code pour un workflow de développement optimal.
 
