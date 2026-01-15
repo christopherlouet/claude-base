@@ -4,6 +4,7 @@
 
 ## Commandes Essentielles
 
+### Web (Node/React)
 | Commande | Description |
 |----------|-------------|
 | `npm install` | Installer les dépendances |
@@ -15,8 +16,21 @@
 | `npm run build` | Build de production |
 | `npm run typecheck` | Vérifier les types TypeScript |
 
+### Mobile (Flutter)
+| Commande | Description |
+|----------|-------------|
+| `flutter pub get` | Installer les dépendances |
+| `flutter run` | Lancer sur device/émulateur |
+| `flutter test` | Lancer les tests |
+| `flutter analyze` | Analyser le code (lint) |
+| `dart fix --apply` | Corriger automatiquement |
+| `flutter build apk` | Build Android |
+| `flutter build ios` | Build iOS |
+| `flutter build web` | Build Web |
+
 ## Structure du Projet
 
+### Web (React/Node)
 ```
 /src
 ├── /components     # Composants UI réutilisables
@@ -26,6 +40,21 @@
 ├── /types          # Types et interfaces TypeScript
 ├── /config         # Configuration de l'application
 └── /tests          # Tests unitaires et d'intégration
+```
+
+### Mobile (Flutter)
+```
+/lib
+├── /core           # Constantes, erreurs, réseau, utils
+├── /features       # Features par domaine (Clean Architecture)
+│   └── /[feature]
+│       ├── /data          # Datasources, models, repositories impl
+│       ├── /domain        # Entities, repositories interfaces, usecases
+│       └── /presentation  # BLoC, pages, widgets
+├── /shared         # Widgets et thème partagés
+├── /l10n           # Traductions (ARB)
+└── /config         # Routes (GoRouter), injection (get_it)
+/test               # Tests unitaires, widget, integration
 ```
 
 ## Workflow Obligatoire : Explore → Plan → Code → Commit

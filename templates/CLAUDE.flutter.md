@@ -391,11 +391,438 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 ```
 
+## Gestion des Environnements
+
+### Configuration par environnement
+```dart
+// lib/config/env.dart
+enum Environment { dev, staging, prod }
+
+class EnvConfig {
+  static late Environment current;
+
+  static String get supabaseUrl => switch (current) {
+    Environment.dev => 'https://xxx.supabase.co',
+    Environment.staging => 'https://yyy.supabase.co',
+    Environment.prod => 'https://zzz.supabase.co',
+  };
+
+  static String get supabaseAnonKey => switch (current) {
+    Environment.dev => const String.fromEnvironment('SUPABASE_ANON_KEY_DEV'),
+    Environment.staging => const String.fromEnvironment('SUPABASE_ANON_KEY_STAGING'),
+    Environment.prod => const String.fromEnvironment('SUPABASE_ANON_KEY_PROD'),
+  };
+}
+```
+
+### Lancement par environnement
+```bash
+# Développement
+flutter run --dart-define=ENV=dev --dart-define=SUPABASE_ANON_KEY_DEV=xxx
+
+# Staging
+flutter run --dart-define=ENV=staging --dart-define=SUPABASE_ANON_KEY_STAGING=yyy
+
+# Production
+flutter build apk --dart-define=ENV=prod --dart-define=SUPABASE_ANON_KEY_PROD=zzz
+```
+
+### Fichiers .env (avec flutter_dotenv)
+```yaml
+# .env.dev
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_ANON_KEY=xxx
+
+# .env.prod
+SUPABASE_URL=https://zzz.supabase.co
+SUPABASE_ANON_KEY=zzz
+```
+
+## CI/CD Flutter (GitHub Actions)
+
+### Workflow de base
+```yaml
+# .github/workflows/flutter-ci.yml
+name: Flutter CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze --fatal-infos
+
+      - name: Run tests
+        run: flutter test --coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage/lcov.info
+
+  build-android:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          cache: true
+
+      - name: Build APK
+        run: flutter build apk --release
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ios:
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          cache: true
+
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+```
+
+### Cache des dépendances
+```yaml
+- name: Cache Flutter dependencies
+  uses: actions/cache@v3
+  with:
+    path: |
+      ~/.pub-cache
+      .dart_tool
+    key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+```
+
+## Distribution (Stores)
+
+### Android - Google Play Store
+
+#### Préparation
+```bash
+# 1. Générer une keystore
+keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA \
+  -keysize 2048 -validity 10000 -alias upload
+
+# 2. Créer key.properties (NE PAS COMMITER)
+# android/key.properties
+storePassword=<password>
+keyPassword=<password>
+keyAlias=upload
+storeFile=/path/to/upload-keystore.jks
+```
+
+#### Configuration Gradle
+```groovy
+// android/app/build.gradle
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
+```
+
+#### Build et upload
+```bash
+# Build App Bundle (recommandé pour Play Store)
+flutter build appbundle --release
+
+# Upload via fastlane ou manuellement
+# Le fichier est dans build/app/outputs/bundle/release/app-release.aab
+```
+
+### iOS - App Store
+
+#### Préparation
+1. Compte Apple Developer ($99/an)
+2. Certificat de distribution dans Keychain
+3. Provisioning profile dans Xcode
+
+#### Configuration Xcode
+```bash
+# Ouvrir dans Xcode
+open ios/Runner.xcworkspace
+```
+- Product → Scheme → Edit Scheme → Archive → Build Configuration: Release
+- Signing & Capabilities → Team: Votre équipe
+- Bundle Identifier: com.votrecompany.votreapp
+
+#### Build et upload
+```bash
+# Build IPA
+flutter build ipa --release
+
+# Ou via Xcode: Product → Archive → Distribute App
+```
+
+### Fastlane (automatisation)
+```ruby
+# ios/fastlane/Fastfile
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new release build to TestFlight"
+  lane :beta do
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      export_method: "app-store"
+    )
+    upload_to_testflight
+  end
+end
+```
+
+```ruby
+# android/fastlane/Fastfile
+default_platform(:android)
+
+platform :android do
+  desc "Deploy to Play Store internal track"
+  lane :internal do
+    upload_to_play_store(
+      track: 'internal',
+      aab: '../build/app/outputs/bundle/release/app-release.aab'
+    )
+  end
+end
+```
+
+## Push Notifications
+
+### Configuration Firebase Cloud Messaging (FCM)
+
+#### Installation
+```yaml
+# pubspec.yaml
+dependencies:
+  firebase_core: ^2.24.0
+  firebase_messaging: ^14.7.0
+```
+
+#### Configuration
+```dart
+// lib/core/notifications/notification_service.dart
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  // Traitement en background
+}
+
+class NotificationService {
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+
+  Future<void> initialize() async {
+    // Demander permission (iOS)
+    final settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      // Récupérer le token FCM
+      final token = await _messaging.getToken();
+      // Envoyer au backend pour associer à l'utilisateur
+      await _saveTokenToBackend(token);
+
+      // Écouter les changements de token
+      _messaging.onTokenRefresh.listen(_saveTokenToBackend);
+    }
+
+    // Handler background
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    // Handler foreground
+    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+
+    // Handler quand l'app est ouverte via notification
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
+  }
+
+  void _handleForegroundMessage(RemoteMessage message) {
+    // Afficher notification locale ou snackbar
+  }
+
+  void _handleNotificationTap(RemoteMessage message) {
+    // Navigation vers la page appropriée
+  }
+
+  Future<void> _saveTokenToBackend(String? token) async {
+    if (token != null) {
+      // Sauvegarder via Supabase ou API
+    }
+  }
+}
+```
+
+#### Configuration Android
+```xml
+<!-- android/app/src/main/AndroidManifest.xml -->
+<manifest>
+  <application>
+    <!-- Channel par défaut -->
+    <meta-data
+      android:name="com.google.firebase.messaging.default_notification_channel_id"
+      android:value="high_importance_channel" />
+  </application>
+</manifest>
+```
+
+#### Configuration iOS
+```xml
+<!-- ios/Runner/Info.plist -->
+<key>UIBackgroundModes</key>
+<array>
+  <string>fetch</string>
+  <string>remote-notification</string>
+</array>
+```
+
+### Notifications locales (flutter_local_notifications)
+```dart
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+class LocalNotificationService {
+  final FlutterLocalNotificationsPlugin _plugin =
+      FlutterLocalNotificationsPlugin();
+
+  Future<void> initialize() async {
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosSettings = DarwinInitializationSettings();
+
+    await _plugin.initialize(
+      const InitializationSettings(
+        android: androidSettings,
+        iOS: iosSettings,
+      ),
+      onDidReceiveNotificationResponse: _onNotificationTap,
+    );
+  }
+
+  Future<void> showNotification({
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    const androidDetails = AndroidNotificationDetails(
+      'default_channel',
+      'Default',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    await _plugin.show(
+      DateTime.now().millisecond,
+      title,
+      body,
+      const NotificationDetails(android: androidDetails),
+      payload: payload,
+    );
+  }
+
+  void _onNotificationTap(NotificationResponse response) {
+    // Gérer le tap
+  }
+}
+```
+
+## Performance et Optimisation
+
+### Taille de l'APK
+```bash
+# Analyser la taille
+flutter build apk --analyze-size
+
+# Build avec split par ABI (réduit ~60%)
+flutter build apk --split-per-abi
+
+# Build optimisé
+flutter build apk --release --shrink --obfuscate --split-debug-info=./debug-info
+```
+
+### Optimisation des images
+```yaml
+# pubspec.yaml - utiliser des assets optimisés
+flutter:
+  assets:
+    - assets/images/1.5x/
+    - assets/images/2.0x/
+    - assets/images/3.0x/
+```
+
+### Lazy loading
+```dart
+// Charger les modules à la demande
+final widget = await loadLibrary(() => import('package:heavy_feature/heavy_feature.dart'));
+```
+
+### Checklist performance
+- [ ] Utiliser `const` constructors partout
+- [ ] Éviter `setState` dans les boucles
+- [ ] Utiliser `ListView.builder` pour les longues listes
+- [ ] Implémenter pagination pour les données
+- [ ] Compresser les images avant upload
+- [ ] Utiliser le cache réseau (cached_network_image)
+- [ ] Profile avec DevTools (flutter pub global run devtools)
+
 ## Anti-patterns à éviter
 
 - NEVER mettre de logique métier dans les widgets
 - NEVER utiliser `dynamic` sauf pour JSON parsing
 - NEVER oublier de dispose les controllers/streams
 - NEVER hardcoder les strings (utiliser l10n)
+- NEVER stocker les secrets dans le code (utiliser --dart-define)
+- NEVER ignorer les permissions iOS (Info.plist)
 - Éviter les `!` (null assertion) - préférer le pattern matching
 - Éviter les widgets trop profondément imbriqués (extraire en sous-widgets)

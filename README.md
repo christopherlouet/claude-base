@@ -14,7 +14,7 @@ Template de configuration Claude Code pour un workflow de développement optimal
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://docs.anthropic.com/en/docs/claude-code) qui permet de :
 
 - Structurer ton workflow de développement : **Explore → Plan → Code → Commit**
-- Disposer de **79 agents spécialisés** pour différentes tâches
+- Disposer de **83 agents spécialisés** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
 - Intégrer CI/CD et hooks pre-commit prêts à l'emploi
@@ -63,7 +63,7 @@ claude-socle/
 ├── .claude/
 │   ├── settings.json            # Permissions et hooks
 │   ├── skills/                  # 9 skills spécialisés
-│   └── commands/                # 79 agents disponibles
+│   └── commands/                # 83 agents disponibles
 │       ├── explore.md           # Exploration de code
 │       ├── plan.md              # Planification
 │       ├── commit.md            # Commits
@@ -130,7 +130,8 @@ claude-socle/
 │   ├── CLAUDE.go.md             # Go
 │   ├── CLAUDE.rust.md           # Rust
 │   ├── CLAUDE.java.md           # Java/Spring
-│   └── CLAUDE.vue.md            # Vue.js
+│   ├── CLAUDE.vue.md            # Vue.js
+│   └── CLAUDE.flutter.md        # Flutter/Dart (Mobile)
 │
 └── docs/                        # Documentation
     ├── CHEATSHEET.md            # Référence rapide
@@ -139,7 +140,7 @@ claude-socle/
     └── ALIASES.md               # Alias de commandes
 ```
 
-## Agents Disponibles (79)
+## Agents Disponibles (83)
 
 ### Workflow Principal
 
@@ -190,6 +191,14 @@ claude-socle/
 | `/onboard [cible]` | Découvrir un codebase |
 | `/explain [code]` | Expliquer du code |
 
+### Mobile (Flutter)
+
+| Commande | Description |
+|----------|-------------|
+| `/flutter [widget]` | Créer widgets/screens Flutter |
+| `/supabase [feature]` | Backend Supabase (Auth, DB, Storage) |
+| `/mobile [cible]` | Audit qualité app mobile |
+
 ## Workflow Recommandé
 
 ```
@@ -198,7 +207,7 @@ claude-socle/
 └─────────┘    └─────────┘    └─────────┘    └─────────┘
 ```
 
-### Exemple pratique
+### Exemple pratique (Web)
 
 ```bash
 # 1. Explorer le système existant
@@ -217,7 +226,29 @@ claude-socle/
 /pr OAuth2 Google authentication
 ```
 
-## Templates Disponibles (8)
+### Exemple pratique (Mobile Flutter)
+
+```bash
+# 1. Explorer l'architecture existante
+/explore la structure des features
+
+# 2. Planifier le nouveau screen
+/plan ajouter écran de profil utilisateur
+
+# 3. Créer le widget/screen Flutter
+/flutter UserProfileScreen avec BLoC
+
+# 4. Configurer le backend Supabase
+/supabase endpoint profil utilisateur
+
+# 5. Audit qualité mobile
+/mobile vérifier performance et accessibilité
+
+# 6. Créer la PR
+/pr écran profil utilisateur
+```
+
+## Templates Disponibles (9)
 
 | Template | Langage/Framework |
 |----------|-------------------|
@@ -229,6 +260,7 @@ claude-socle/
 | `CLAUDE.rust.md` | Rust |
 | `CLAUDE.java.md` | Java / Spring Boot |
 | `CLAUDE.fullstack.md` | Monorepo fullstack |
+| `CLAUDE.flutter.md` | Flutter / Dart (Mobile) |
 
 ```bash
 # Utiliser un template
@@ -282,7 +314,7 @@ Le socle inclut un tutoriel interactif pour apprendre à l'utiliser efficacement
 
 Le tutoriel couvre :
 - Le workflow Explore → Plan → Code → Commit
-- Les 79 agents spécialisés
+- Les 83 agents spécialisés
 - Le développement TDD
 - Les Conventional Commits
 - Quiz interactifs avec score
