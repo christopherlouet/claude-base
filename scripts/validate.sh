@@ -11,6 +11,7 @@ VERSION="1.1.0"
 
 # Charger la librairie commune
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC2034  # Used by sourced scripts
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
@@ -100,7 +101,7 @@ parse_args() {
                 exit 0
                 ;;
             -q|--quiet)
-                QUIET=true
+                export QUIET=true
                 shift
                 ;;
             --json)
@@ -112,7 +113,7 @@ parse_args() {
                 shift
                 ;;
             --verbose)
-                VERBOSE=true
+                export VERBOSE=true
                 shift
                 ;;
             -*)

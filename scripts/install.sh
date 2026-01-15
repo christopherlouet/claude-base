@@ -110,11 +110,11 @@ parse_args() {
                 shift
                 ;;
             -q|--quiet)
-                QUIET=true
+                export QUIET=true
                 shift
                 ;;
             --verbose)
-                VERBOSE=true
+                export VERBOSE=true
                 shift
                 ;;
             --ci)

@@ -582,6 +582,7 @@ EOF
 
 learn_agent() {
     local agent="$1"
+    # shellcheck disable=SC2034  # Used for path resolution
     local agent_file="$SOCLE_DIR/.claude/commands/${agent}.md"
 
     # Normaliser le nom de l'agent

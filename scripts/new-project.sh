@@ -489,15 +489,15 @@ extract_npm_scripts() {
     # Extraire les scripts avec une approche simple
     if command -v node &> /dev/null; then
         # Utiliser Node.js si disponible
-        DETECTED_SCRIPTS=($(node -e "
+        mapfile -t DETECTED_SCRIPTS < <(node -e "
             const pkg = require('$package_json');
             if (pkg.scripts) {
                 Object.keys(pkg.scripts).forEach(s => console.log(s));
             }
-        " 2>/dev/null))
+        " 2>/dev/null)
     else
         # Fallback: extraction basique avec sed (compatible macOS/Linux)
-        DETECTED_SCRIPTS=($(sed -n 's/.*"\([^"]*\)"[[:space:]]*:.*/\1/p' "$package_json" 2>/dev/null | head -20))
+        mapfile -t DETECTED_SCRIPTS < <(sed -n 's/.*"\([^"]*\)"[[:space:]]*:.*/\1/p' "$package_json" 2>/dev/null | head -20)
     fi
 }
 
@@ -505,14 +505,14 @@ extract_main_dependencies() {
     local package_json="$1"
 
     if command -v node &> /dev/null; then
-        DETECTED_MAIN_DEPS=($(node -e "
+        mapfile -t DETECTED_MAIN_DEPS < <(node -e "
             const pkg = require('$package_json');
             const deps = { ...pkg.dependencies, ...pkg.devDependencies };
             const important = ['react', 'vue', 'angular', 'next', 'nuxt', 'express', 'fastify', 'nestjs', 'prisma', 'typeorm', 'sequelize', 'mongoose', 'jest', 'vitest', 'cypress', 'playwright', 'tailwindcss', 'styled-components', 'emotion'];
             important.forEach(dep => {
                 if (deps[dep] || deps['@' + dep + '/core']) console.log(dep);
             });
-        " 2>/dev/null))
+        " 2>/dev/null)
     fi
 }
 
@@ -520,7 +520,7 @@ extract_python_dependencies() {
     local dir="$1"
 
     if [[ -f "$dir/requirements.txt" ]]; then
-        DETECTED_MAIN_DEPS=($(grep -oP '^[a-zA-Z][a-zA-Z0-9_-]*' "$dir/requirements.txt" 2>/dev/null | head -10))
+        mapfile -t DETECTED_MAIN_DEPS < <(grep -oP '^[a-zA-Z][a-zA-Z0-9_-]*' "$dir/requirements.txt" 2>/dev/null | head -10)
     fi
 }
 
@@ -533,7 +533,8 @@ detect_folder_structure() {
     for folder in "${common_folders[@]}"; do
         if [[ -d "$dir/$folder" ]]; then
             # Compter les fichiers dans le dossier
-            local count=$(find "$dir/$folder" -type f 2>/dev/null | wc -l)
+            local count
+            count=$(find "$dir/$folder" -type f 2>/dev/null | wc -l)
             if [[ $count -gt 0 ]]; then
                 DETECTED_FOLDERS+=("$folder:$count")
             fi
