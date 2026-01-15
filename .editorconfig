@@ -1,0 +1,52 @@
+# EditorConfig - Configuration de formatage cohérente
+# https://editorconfig.org
+
+root = true
+
+# Configuration par défaut
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Scripts Bash
+[*.sh]
+indent_size = 4
+shell_variant = bash
+
+# Fichiers de configuration JSON
+[*.json]
+indent_size = 2
+
+# Fichiers YAML
+[*.{yml,yaml}]
+indent_size = 2
+
+# Fichiers Markdown
+[*.md]
+trim_trailing_whitespace = false
+indent_size = 2
+
+# Fichiers TOML
+[*.toml]
+indent_size = 2
+
+# Makefiles (nécessitent des tabs)
+[Makefile]
+indent_style = tab
+
+# Fichiers de test Bats
+[*.bats]
+indent_size = 4
+shell_variant = bash
+
+# Fichiers Docker
+[Dockerfile*]
+indent_size = 4
+
+# Fichiers de configuration Git
+[.git*]
+indent_size = 4

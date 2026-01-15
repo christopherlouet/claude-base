@@ -1,0 +1,102 @@
+# CODEOWNERS - Définit les reviewers obligatoires pour les fichiers sensibles
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @anthropics/claude-socle-maintainers
+
+# =============================================================================
+# Security-sensitive files - Require security team review
+# =============================================================================
+
+# Claude Code configuration (permissions, hooks)
+.claude/settings.json @anthropics/claude-socle-security
+.claude/settings.local.json @anthropics/claude-socle-security
+
+# Secret detection configuration
+.gitleaks.toml @anthropics/claude-socle-security
+.pre-commit-config.yaml @anthropics/claude-socle-security
+.secrets.baseline @anthropics/claude-socle-security
+
+# Security documentation
+SECURITY.md @anthropics/claude-socle-security
+
+# =============================================================================
+# CI/CD and Infrastructure - Require DevOps review
+# =============================================================================
+
+# GitHub Actions workflows
+.github/workflows/ @anthropics/claude-socle-devops
+.github/dependabot.yml @anthropics/claude-socle-devops
+
+# Docker configuration
+Dockerfile @anthropics/claude-socle-devops
+docker-compose*.yml @anthropics/claude-socle-devops
+.dockerignore @anthropics/claude-socle-devops
+
+# =============================================================================
+# Scripts - Require careful review
+# =============================================================================
+
+# All shell scripts
+scripts/*.sh @anthropics/claude-socle-maintainers
+scripts/lib/*.sh @anthropics/claude-socle-maintainers
+
+# Installation scripts (can modify user systems)
+scripts/install.sh @anthropics/claude-socle-security @anthropics/claude-socle-maintainers
+scripts/uninstall.sh @anthropics/claude-socle-security @anthropics/claude-socle-maintainers
+scripts/update.sh @anthropics/claude-socle-security @anthropics/claude-socle-maintainers
+
+# =============================================================================
+# Documentation - Require docs team review
+# =============================================================================
+
+# Main documentation
+README.md @anthropics/claude-socle-docs
+CLAUDE.md @anthropics/claude-socle-docs
+CHANGELOG.md @anthropics/claude-socle-docs
+docs/*.md @anthropics/claude-socle-docs
+
+# Legal documents
+LICENSE @anthropics/claude-socle-legal
+
+# =============================================================================
+# Claude Agents and Skills - Require maintainer review
+# =============================================================================
+
+# Agent definitions
+.claude/commands/*.md @anthropics/claude-socle-maintainers
+
+# Skills
+.claude/skills/ @anthropics/claude-socle-maintainers
+
+# =============================================================================
+# Templates - Require maintainer review
+# =============================================================================
+
+templates/*.md @anthropics/claude-socle-maintainers
+templates/**/*.yml @anthropics/claude-socle-devops
+
+# =============================================================================
+# Tests - Standard review
+# =============================================================================
+
+tests/*.bats @anthropics/claude-socle-maintainers
+
+# =============================================================================
+# Configuration files
+# =============================================================================
+
+# Git configuration
+.gitignore @anthropics/claude-socle-maintainers
+.gitattributes @anthropics/claude-socle-maintainers
+
+# Linting and formatting
+.lintstagedrc.json @anthropics/claude-socle-maintainers
+.commitlintrc.json @anthropics/claude-socle-maintainers
+.editorconfig @anthropics/claude-socle-maintainers
+
+# Husky hooks
+.husky/ @anthropics/claude-socle-maintainers
+
+# Version
+VERSION @anthropics/claude-socle-maintainers

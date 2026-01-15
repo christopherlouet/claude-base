@@ -1,0 +1,83 @@
+name: PR Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pr-validation:
+    name: Validate PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR title format
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            chore
+            revert
+            hotfix
+          requireScope: false
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            Le titre doit commencer par une minuscule.
+            Exemple: "feat: add user authentication"
+
+      - name: Check commit messages
+        uses: wagoid/commitlint-github-action@v5
+        continue-on-error: true
+
+      - name: Check for WIP
+        run: |
+          if [[ "${{ github.event.pull_request.title }}" == *"WIP"* ]]; then
+            echo "::warning::Cette PR est marquée comme WIP"
+            exit 1
+          fi
+
+  size-check:
+    name: Check PR Size
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR size
+        uses: codelytv/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          xs_label: 'size/XS'
+          xs_max_size: 10
+          s_label: 'size/S'
+          s_max_size: 100
+          m_label: 'size/M'
+          m_max_size: 500
+          l_label: 'size/L'
+          l_max_size: 1000
+          xl_label: 'size/XL'
+          fail_if_xl: false
+          message_if_xl: |
+            Cette PR est très grande. Considérez la diviser en PRs plus petites.
+
+  auto-label:
+    name: Auto Label
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label based on files
+        uses: actions/labeler@v5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

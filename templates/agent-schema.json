@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude-socle/agent-schema.json",
+  "title": "Claude-Socle Agent Schema",
+  "description": "Schema de validation pour les agents claude-socle",
+  "type": "object",
+  "required": ["title", "description", "context", "objective"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Titre de l'agent au format '# Agent NOM'",
+      "pattern": "^# Agent [A-Z][A-Z0-9-]*$"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description courte de l'agent (1-2 lignes)",
+      "minLength": 10,
+      "maxLength": 200
+    },
+    "context": {
+      "type": "string",
+      "description": "Section contenant le placeholder $ARGUMENTS",
+      "pattern": "\\$ARGUMENTS"
+    },
+    "objective": {
+      "type": "string",
+      "description": "Objectif principal de l'agent",
+      "minLength": 20
+    },
+    "sections": {
+      "type": "array",
+      "description": "Sections de contenu de l'agent",
+      "items": {
+        "type": "object",
+        "properties": {
+          "heading": {
+            "type": "string",
+            "description": "Titre de la section (## Heading)"
+          },
+          "content": {
+            "type": "string",
+            "description": "Contenu de la section"
+          }
+        },
+        "required": ["heading"]
+      }
+    },
+    "checklist": {
+      "type": "array",
+      "description": "Liste des étapes à suivre",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "relatedAgents": {
+      "type": "array",
+      "description": "Agents liés",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^/project:[a-z]+-?[a-z-]*$"
+          },
+          "usage": {
+            "type": "string"
+          }
+        },
+        "required": ["name", "usage"]
+      }
+    },
+    "instructions": {
+      "type": "object",
+      "description": "Instructions spéciales en fin de fichier",
+      "properties": {
+        "important": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "youMust": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "never": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "thinkHard": {
+          "type": "string"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Métadonnées de l'agent",
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": ["work", "dev", "qa", "ops", "doc", "biz", "growth", "legal"],
+          "description": "Catégorie de l'agent"
+        },
+        "complexity": {
+          "type": "string",
+          "enum": ["simple", "medium", "complex"],
+          "description": "Complexité de l'agent"
+        },
+        "minLines": {
+          "type": "integer",
+          "minimum": 50,
+          "description": "Nombre minimum de lignes recommandé"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        }
+      }
+    }
+  }
+}

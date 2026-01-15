@@ -1,0 +1,189 @@
+END USER LICENSE AGREEMENT (EULA)
+
+claude-socle - Configuration Template for Claude Code
+
+Version 1.1.0
+Effective Date: January 2025
+
+IMPORTANT: PLEASE READ THIS END USER LICENSE AGREEMENT ("AGREEMENT") CAREFULLY
+BEFORE USING THIS SOFTWARE.
+
+================================================================================
+1. DEFINITIONS
+================================================================================
+
+"Software" refers to claude-socle, including all scripts, configuration files,
+documentation, agents, skills, and associated materials.
+
+"Licensor" refers to the creator and copyright holder of claude-socle.
+
+"User" or "You" refers to any individual or entity using the Software.
+
+"Commercial Use" means use of the Software for direct or indirect financial gain.
+
+"Derivative Work" means any modification, adaptation, or work based on the Software.
+
+================================================================================
+2. GRANT OF LICENSE
+================================================================================
+
+Subject to the terms of this Agreement, Licensor grants You a non-exclusive,
+non-transferable, limited license to:
+
+a) USE the Software for personal and commercial projects
+b) COPY the Software for backup and archival purposes
+c) MODIFY the Software for your own use
+d) DISTRIBUTE the Software as part of your development workflow
+e) CREATE Derivative Works based on the Software
+
+================================================================================
+3. PERMITTED USES
+================================================================================
+
+You ARE permitted to:
+
+- Install the Software in any number of projects
+- Use the Software for commercial software development
+- Modify configuration files (CLAUDE.md, settings.json) for your needs
+- Add custom agents and skills
+- Share the Software with team members within your organization
+- Use the Software in CI/CD pipelines
+- Create and distribute projects that include the Software configuration
+
+================================================================================
+4. RESTRICTIONS
+================================================================================
+
+You are NOT permitted to:
+
+a) SELL the Software itself as a standalone product
+b) REMOVE or alter any copyright notices or this license
+c) CLAIM ownership of the original Software
+d) USE the Software to develop competing configuration templates without
+   significant modifications and added value
+e) SUBLICENSE the Software to third parties as a separate product
+f) USE the Software for any illegal purpose
+
+================================================================================
+5. INTELLECTUAL PROPERTY
+================================================================================
+
+The Software is protected by copyright laws. Licensor retains all rights,
+title, and interest in and to the Software, including all intellectual
+property rights.
+
+You acknowledge that:
+- The Software contains proprietary information
+- No title to the intellectual property is transferred to You
+- You will not reverse engineer the Software (except as permitted by law)
+
+================================================================================
+6. CONTRIBUTIONS
+================================================================================
+
+If You submit contributions (bug fixes, improvements, new agents) to the
+Software:
+
+a) You grant Licensor a perpetual, worldwide, non-exclusive, royalty-free
+   license to use, modify, and distribute your contributions
+b) You represent that you have the right to make such contributions
+c) Your contributions will be licensed under the same terms as this Agreement
+
+================================================================================
+7. DISCLAIMER OF WARRANTIES
+================================================================================
+
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+LICENSOR DOES NOT WARRANT THAT:
+- The Software will meet your requirements
+- The Software will be uninterrupted or error-free
+- Defects in the Software will be corrected
+- The Software is free of viruses or harmful components
+
+================================================================================
+8. LIMITATION OF LIABILITY
+================================================================================
+
+IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY:
+- Direct, indirect, incidental, special, or consequential damages
+- Loss of profits, data, or business opportunities
+- Damages arising from use or inability to use the Software
+
+This limitation applies regardless of the theory of liability (contract,
+tort, or otherwise) and even if Licensor has been advised of the possibility
+of such damages.
+
+MAXIMUM LIABILITY: In no event shall Licensor's total liability exceed the
+amount paid by You for the Software (if any).
+
+================================================================================
+9. INDEMNIFICATION
+================================================================================
+
+You agree to indemnify, defend, and hold harmless Licensor from any claims,
+damages, losses, or expenses (including attorney fees) arising from:
+
+a) Your use of the Software
+b) Your violation of this Agreement
+c) Your violation of any third-party rights
+
+================================================================================
+10. TERMINATION
+================================================================================
+
+This Agreement is effective until terminated.
+
+AUTOMATIC TERMINATION: Your rights under this Agreement terminate automatically
+without notice if You fail to comply with any term of this Agreement.
+
+UPON TERMINATION:
+- You must cease all use of the Software
+- You must destroy all copies of the Software in your possession
+- Sections 5, 7, 8, 9, and 11 survive termination
+
+================================================================================
+11. GENERAL PROVISIONS
+================================================================================
+
+a) ENTIRE AGREEMENT: This Agreement constitutes the entire agreement between
+   You and Licensor regarding the Software.
+
+b) AMENDMENTS: Licensor may modify this Agreement at any time. Continued use
+   of the Software after modifications constitutes acceptance.
+
+c) SEVERABILITY: If any provision is found unenforceable, the remaining
+   provisions remain in full force.
+
+d) WAIVER: Failure to enforce any provision does not constitute a waiver.
+
+e) GOVERNING LAW: This Agreement is governed by applicable local laws.
+
+f) DISPUTE RESOLUTION: Any disputes shall be resolved through good-faith
+   negotiation before pursuing legal remedies.
+
+================================================================================
+12. CONTACT INFORMATION
+================================================================================
+
+For questions about this Agreement or the Software:
+- GitHub: https://github.com/anthropics/claude-code
+- Issues: https://github.com/anthropics/claude-socle/issues
+
+================================================================================
+13. ACKNOWLEDGMENT
+================================================================================
+
+BY USING THE SOFTWARE, YOU ACKNOWLEDGE THAT:
+- You have read and understood this Agreement
+- You agree to be bound by its terms and conditions
+- You have the authority to enter into this Agreement
+
+================================================================================
+
+Copyright (c) 2025 claude-socle contributors
+All rights reserved.
+
+================================================================================

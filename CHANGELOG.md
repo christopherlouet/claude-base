@@ -1,0 +1,92 @@
+# Changelog
+
+Toutes les modifications notables de ce projet sont documentées dans ce fichier.
+
+Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
+et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/).
+
+## [1.2.0] - 2025-01-15
+
+### Ajouté
+- **Mode apprentissage interactif** (`learn.sh`) : Tutoriel pour maîtriser claude-socle
+  - Tutoriel complet (15-20 min) avec 6 leçons
+  - Mode rapide (5 min) pour l'essentiel
+  - Apprentissage par agent spécifique (`--agent tdd`, `--agent commit`)
+  - Quiz interactifs avec système de score et niveau
+  - Couverture : workflow, agents, TDD, Conventional Commits
+- **Intégration IDE** (`ide.sh`) : Configuration automatique des IDE
+  - Support VSCode/Cursor : settings, tasks, extensions, snippets
+  - Support IntelliJ IDEA : run configurations, code style, templates
+  - Support Vim/Neovim : abréviations, mappings, autocmds
+  - Commandes setup/check/remove pour chaque IDE
+  - Option `--force` pour écraser les configurations existantes
+- Fichier `.editorconfig` pour formatage cohérent
+- Tests bats pour `learn.sh` (40+ tests)
+- Tests bats pour `ide.sh` (50+ tests)
+
+### Modifié
+- README mis à jour avec documentation des nouvelles fonctionnalités
+- Compteur de lignes de tests mis à jour (1664+ lignes)
+
+## [1.1.0] - 2025-01-15
+
+### Ajouté
+- **Analyse CI/CD intelligente** : `new-project.sh` analyse maintenant les workflows existants et propose des améliorations
+- Fonction `analyze_existing_cicd()` pour détecter 7 aspects de CI/CD (tests, lint, sécurité, cache, coverage, PR, release)
+- Fonction `suggest_cicd_improvements()` avec score de qualité CI/CD
+- Fonction `merge_cicd_workflows()` pour ajouter uniquement les workflows manquants
+- Menu interactif pour choisir entre garder/améliorer/remplacer la CI/CD existante
+- Tests bats pour `gitleaks.bats`
+- Configuration `.gitleaks.toml` avec 24+ règles de détection de secrets
+
+### Modifié
+- `get_options()` propose maintenant des améliorations quand une CI/CD existe
+- `create_project()` supporte les actions "merge" et "replace" pour la CI/CD
+- Migration de `[ ]` vers `[[ ]]` pour la cohérence bash
+
+### Sécurité
+- Hook gitleaks pré-écriture pour détecter les secrets avant commit
+- Hook post-commit pour scanner les secrets après commit
+
+## [1.0.0] - 2025-01-14
+
+### Ajouté
+- **79 agents Claude Code** organisés par catégorie :
+  - WORK (8) : Workflow principal (explore, plan, commit, pr)
+  - DEV (10) : Développement (tdd, test, debug, refactor, api)
+  - QA (8) : Qualité (review, security, perf, a11y, audit)
+  - OPS (16) : Opérations (hotfix, release, deps, docker, ci)
+  - DOC (9) : Documentation (generate, changelog, explain, onboard)
+  - BIZ (11) : Business (model, market, mvp, pricing, pitch)
+  - GROWTH (8) : Croissance (landing, seo, analytics, onboarding)
+  - DATA (3) : Données (pipeline, analytics, modeling)
+  - LEGAL (5) : Légal (docs, rgpd, payment, terms, privacy)
+- **9 skills** avec déclenchement automatique contextuel
+- **8 hooks** Claude Code (protection main, auto-format, type-check, gitleaks)
+- Script `new-project.sh` pour créer/configurer des projets
+- Script `install.sh` pour installer le socle dans un projet existant
+- Script `validate.sh` pour valider une configuration Claude Code
+- Script `doctor.sh` pour diagnostiquer l'environnement
+- Script `diff.sh` pour comparer avec la version installée
+- Script `update.sh` pour mettre à jour le socle
+- Script `uninstall.sh` pour supprimer la configuration
+- Librairie partagée `lib/common.sh` avec 30+ fonctions utilitaires
+- 17 templates CLAUDE.md par stack (react, vue, node-api, python, go, rust, java, fullstack)
+- Configuration pre-commit avec detect-secrets et commitlint
+- Workflows GitHub Actions (ci.yml, pr-check.yml, release.yml)
+- Documentation complète (guides, cheatsheet, workflows)
+
+### Configuration
+- Permissions granulaires pour Claude Code
+- Protection automatique de la branche main/master
+- Validation des commits (Conventional Commits)
+- Auto-formatage TypeScript/JavaScript après modifications
+
+## Types de changements
+
+- `Ajouté` pour les nouvelles fonctionnalités
+- `Modifié` pour les changements aux fonctionnalités existantes
+- `Déprécié` pour les fonctionnalités qui seront supprimées
+- `Supprimé` pour les fonctionnalités supprimées
+- `Corrigé` pour les corrections de bugs
+- `Sécurité` pour les vulnérabilités corrigées

@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "includeCoAuthoredBy": false,
+  "env": {
+    "INSIDE_CLAUDE_CODE": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(npm test:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh pr:*)",
+      "Bash(gitleaks:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(rm -rf /*:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "description": "Empêcher les modifications sur la branche main/master",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$BRANCH\" = \"main\" ] || [ \"$BRANCH\" = \"master\" ]; then echo \"BLOQUE: Creez une branche feature avant de modifier des fichiers.\"; exit 1; fi'",
+            "timeout": 5000,
+            "onFailure": "block"
+          }
+        ]
+      },
+      {
+        "description": "Exécuter les tests avant un commit",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_INPUT\" | grep -q \"git commit\"; then echo \"Execution des tests avant commit...\"; npm test --silent 2>&1 || { echo \"BLOQUE: Les tests echouent.\"; exit 1; }; fi'",
+            "timeout": 120000,
+            "onFailure": "block"
+          }
+        ]
+      },
+      {
+        "description": "Détecter les secrets avec gitleaks avant écriture",
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if command -v gitleaks >/dev/null 2>&1; then RESULT=$(echo \"$TOOL_CONTENT\" | gitleaks detect --no-git --pipe --config .gitleaks.toml 2>&1); if [ $? -eq 1 ]; then echo \"BLOQUE: Secret detecte par gitleaks.\"; echo \"$RESULT\"; exit 1; fi; fi'",
+            "timeout": 10000,
+            "onFailure": "block"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "description": "Auto-format TypeScript/JavaScript après modification",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx)$\"; then npx prettier --write \"$TOOL_FILE\" 2>/dev/null || true; fi'",
+            "timeout": 10000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Vérifier les types après modification TypeScript",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.tsx?$\"; then npx tsc --noEmit 2>&1 | head -20 || true; fi'",
+            "timeout": 30000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Vérifier ESLint après modification",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx)$\"; then npx eslint \"$TOOL_FILE\" --max-warnings 0 2>&1 | head -10 || true; fi'",
+            "timeout": 15000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto-install après modification de package.json",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"package.json\"; then npm install 2>&1 | tail -5; fi'",
+            "timeout": 60000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Vérifier la couverture de tests après modification de fichiers de test",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(test|spec)\\.(ts|tsx|js|jsx)$\"; then echo \"Verification couverture...\"; npm run test:coverage -- --silent 2>&1 | grep -E \"(Statements|Branches|Functions|Lines)\" | head -4 || true; fi'",
+            "timeout": 60000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Scanner les secrets avec gitleaks après commit",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_INPUT\" | grep -q \"git commit\"; then if command -v gitleaks >/dev/null 2>&1; then echo \"Scan gitleaks post-commit...\"; gitleaks detect --source . --config .gitleaks.toml -v 2>&1 | tail -5 || true; fi; fi'",
+            "timeout": 30000,
+            "onFailure": "ignore"
+          }
+        ]
+      }
+    ]
+  }
+}
