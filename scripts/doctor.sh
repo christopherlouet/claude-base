@@ -26,9 +26,11 @@ check_base_requirements
 
 TARGET_DIR=""
 FIX_ISSUES=false
+OUTPUT_FORMAT="text"
 CHECKS_PASSED=0
 CHECKS_FAILED=0
 CHECKS_WARNED=0
+JSON_CHECKS="[]"
 
 # =============================================================================
 # Aide
@@ -412,10 +414,29 @@ print_summary() {
 # Main
 # =============================================================================
 
+print_json() {
+    cat << EOF
+{
+  "target": "$TARGET_DIR",
+  "checks": {
+    "passed": $CHECKS_PASSED,
+    "failed": $CHECKS_FAILED,
+    "warned": $CHECKS_WARNED
+  },
+  "success": $([ $CHECKS_FAILED -eq 0 ] && echo "true" || echo "false")
+}
+EOF
+}
+
 main() {
     parse_args "$@"
 
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
+
+    if [[ "$OUTPUT_FORMAT" == "json" ]]; then
+        # Mode JSON: rediriger la sortie texte vers /dev/null
+        exec 3>&1 1>/dev/null
+    fi
 
     title "Diagnostic Claude Code"
     info "Répertoire: $TARGET_DIR"
@@ -427,7 +448,13 @@ main() {
     check_project_config
     check_socle
 
-    print_summary
+    if [[ "$OUTPUT_FORMAT" == "json" ]]; then
+        # Restaurer la sortie et afficher le JSON
+        exec 1>&3 3>&-
+        print_json
+    else
+        print_summary
+    fi
 
     # Code de sortie
     if [[ $CHECKS_FAILED -gt 0 ]]; then

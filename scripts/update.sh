@@ -219,11 +219,11 @@ update_command_file() {
                 cp "$src" "$dest"
             fi
             success "  $filename mis à jour"
-            ((UPDATED++))
+            ((UPDATED++)) || true
         elif ${NON_INTERACTIVE:-false}; then
             # Mode non-interactif sans force: ignorer
             warning "  $filename ignoré (utilisez --force pour écraser)"
-            ((SKIPPED++))
+            ((SKIPPED++)) || true
         else
             # Mode interactif: demander
             echo ""
@@ -242,20 +242,20 @@ update_command_file() {
                     if confirm "Écraser $filename?" "n"; then
                         cp "$src" "$dest"
                         success "  $filename mis à jour"
-                        ((UPDATED++))
+                        ((UPDATED++)) || true
                     else
                         warning "  $filename ignoré"
-                        ((SKIPPED++))
+                        ((SKIPPED++)) || true
                     fi
                     ;;
                 y|Y)
                     cp "$src" "$dest"
                     success "  $filename mis à jour"
-                    ((UPDATED++))
+                    ((UPDATED++)) || true
                     ;;
                 *)
                     warning "  $filename ignoré"
-                    ((SKIPPED++))
+                    ((SKIPPED++)) || true
                     ;;
             esac
         fi
@@ -267,7 +267,7 @@ update_command_file() {
             cp "$src" "$dest"
         fi
         success "  $filename ajouté (nouveau)"
-        ((ADDED++))
+        ((ADDED++)) || true
     fi
 }
 
