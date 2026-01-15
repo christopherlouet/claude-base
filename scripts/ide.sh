@@ -11,6 +11,7 @@ VERSION="1.0.0"
 
 # Charger la librairie commune
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC2034  # Used by sourced scripts
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
@@ -18,6 +19,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 # Variables
 TARGET_DIR=""
+# shellcheck disable=SC2034  # Set via command-line parsing
 IDE_TYPE=""
 DRY_RUN=false
 FORCE=false
@@ -805,6 +807,7 @@ setup_vim() {
     info "Configuration Vim/Neovim..."
 
     local vimrc="$dir/.vimrc.claude"
+    # shellcheck disable=SC2034  # Reserved for future Neovim support
     local nvim_dir="$dir/.config/nvim"
 
     # Créer un fichier de configuration Vim
@@ -946,7 +949,7 @@ parse_args() {
                 exit 0
                 ;;
             -n|--dry-run)
-                DRY_RUN=true
+                export DRY_RUN=true
                 shift
                 ;;
             -f|--force)

@@ -95,14 +95,16 @@ parse_args() {
                 exit 0
                 ;;
             -q|--quiet)
-                QUIET=true
+                export QUIET=true
                 shift
                 ;;
             --fix)
+                # shellcheck disable=SC2034  # Reserved for future implementation
                 FIX_ISSUES=true
                 shift
                 ;;
             --json)
+                # shellcheck disable=SC2034  # Used in output formatting
                 OUTPUT_FORMAT="json"
                 shift
                 ;;
@@ -358,10 +360,14 @@ check_socle() {
         check_pass "Socle trouvé: $SOCLE_DIR"
 
         # Statistiques
-        local agents=$(count_agents "$SOCLE_DIR")
-        local skills=$(count_skills "$SOCLE_DIR")
-        local hooks=$(count_hooks "$SOCLE_DIR")
-        local templates=$(count_templates "$SOCLE_DIR")
+        local agents
+        local skills
+        local hooks
+        local templates
+        agents=$(count_agents "$SOCLE_DIR")
+        skills=$(count_skills "$SOCLE_DIR")
+        hooks=$(count_hooks "$SOCLE_DIR")
+        templates=$(count_templates "$SOCLE_DIR")
 
         check_pass "Agents disponibles: $agents"
         check_pass "Skills disponibles: $skills"
@@ -379,6 +385,7 @@ print_summary() {
     separator "="
     echo ""
 
+    # shellcheck disable=SC2034  # Used for display calculation
     local total=$((CHECKS_PASSED + CHECKS_FAILED + CHECKS_WARNED))
 
     echo -e "  ${GREEN}✓ Réussis:${NC}      $CHECKS_PASSED"

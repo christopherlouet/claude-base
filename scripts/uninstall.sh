@@ -11,6 +11,7 @@ VERSION="1.0.0"
 
 # Charger la librairie commune
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC2034  # Used by sourced scripts
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
@@ -109,7 +110,7 @@ parse_args() {
                 shift
                 ;;
             -q|--quiet)
-                QUIET=true
+                export QUIET=true
                 shift
                 ;;
             --keep-claude-md)
@@ -142,7 +143,8 @@ parse_args() {
 # =============================================================================
 
 create_backup() {
-    local backup_dir="$TARGET_DIR/.claude-backup.$(date +%Y%m%d_%H%M%S)"
+    local backup_dir
+    backup_dir="$TARGET_DIR/.claude-backup.$(date +%Y%m%d_%H%M%S)"
 
     info "Création d'une sauvegarde..."
 
@@ -223,8 +225,10 @@ uninstall() {
     local files_to_remove=()
 
     if [[ -d "$TARGET_DIR/.claude" ]]; then
-        local cmd_count=$(count_files "$TARGET_DIR/.claude/commands" "*.md")
-        local skills_count=$(count_dirs "$TARGET_DIR/.claude/skills")
+        local cmd_count
+        local skills_count
+        cmd_count=$(count_files "$TARGET_DIR/.claude/commands" "*.md")
+        skills_count=$(count_dirs "$TARGET_DIR/.claude/skills")
         echo "  - .claude/ ($cmd_count commandes, $skills_count skills)"
         files_to_remove+=(".claude/")
     fi

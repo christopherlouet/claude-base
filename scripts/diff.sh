@@ -157,6 +157,7 @@ compare_file() {
     local socle_file="$1"
     local local_file="$2"
     local filename="$3"
+    # shellcheck disable=SC2034  # Reserved for future category-based filtering
     local category="$4"
 
     if [[ -f "$local_file" ]]; then
@@ -289,6 +290,7 @@ print_summary() {
     separator "="
     echo ""
 
+    # shellcheck disable=SC2034  # Used for summary display
     local total=$((NEW_FILES + MODIFIED_FILES + DELETED_FILES + IDENTICAL_FILES))
 
     echo -e "  ${GREEN}+ Nouveaux:${NC}    $NEW_FILES fichier(s) à ajouter"

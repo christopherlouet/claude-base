@@ -29,6 +29,7 @@ FORCE_UPDATE=false
 BACKUP_ONLY=false
 UPDATE_SETTINGS=false
 UPDATE_SKILLS=false
+# shellcheck disable=SC2034  # Reserved for future implementation
 SHOW_CHANGELOG=false
 
 # Compteurs
@@ -131,11 +132,11 @@ parse_args() {
                 shift
                 ;;
             -q|--quiet)
-                QUIET=true
+                export QUIET=true
                 shift
                 ;;
             --verbose)
-                VERBOSE=true
+                export VERBOSE=true
                 shift
                 ;;
             --backup-only)
@@ -181,7 +182,8 @@ parse_args() {
 # =============================================================================
 
 create_backup() {
-    local backup_dir="$TARGET_DIR/.claude/commands.backup.$(date +%Y%m%d_%H%M%S)"
+    local backup_dir
+    backup_dir="$TARGET_DIR/.claude/commands.backup.$(date +%Y%m%d_%H%M%S)"
 
     if [[ -d "$TARGET_DIR/.claude/commands" ]]; then
         if $DRY_RUN; then

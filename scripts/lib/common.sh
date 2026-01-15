@@ -8,6 +8,7 @@
 # Version lue depuis le fichier VERSION centralisé
 _COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _SOCLE_ROOT="$(dirname "$(dirname "$_COMMON_SCRIPT_DIR")")"
+# shellcheck disable=SC2034  # Exported for use by other scripts
 COMMON_LIB_VERSION=$(cat "$_SOCLE_ROOT/VERSION" 2>/dev/null || echo "1.0.0")
 unset _COMMON_SCRIPT_DIR _SOCLE_ROOT
 
@@ -22,6 +23,7 @@ if [[ -t 1 ]] && [[ -z "${NO_COLOR:-}" ]]; then
     YELLOW=$'\033[1;33m'
     BLUE=$'\033[0;34m'
     CYAN=$'\033[0;36m'
+    # shellcheck disable=SC2034  # Available for use by scripts
     MAGENTA=$'\033[0;35m'
     BOLD=$'\033[1m'
     DIM=$'\033[2m'
