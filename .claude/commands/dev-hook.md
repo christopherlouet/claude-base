@@ -295,10 +295,10 @@ const { data, isLoading, error, refetch } = use[HookName]({
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:component` | Composant utilisant le hook |
-| `/project:test` | Tests complémentaires |
-| `/project:doc` | Documenter le hook |
-| `/project:perf` | Optimiser les performances |
+| `/component` | Composant utilisant le hook |
+| `/test` | Tests complémentaires |
+| `/doc` | Documenter le hook |
+| `/perf` | Optimiser les performances |
 
 ---
 

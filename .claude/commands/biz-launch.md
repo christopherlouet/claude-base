@@ -8,7 +8,7 @@ $ARGUMENTS
 ## Objectif
 
 Cet agent se concentre sur la **phase de validation business** AVANT le développement.
-Pour le workflow technique (dev → déploiement), utiliser `/project:work-flow-launch`.
+Pour le workflow technique (dev → déploiement), utiliser `/work-flow-launch`.
 
 ## Scope de cet agent
 
@@ -343,16 +343,16 @@ Time to market estimé: [estimation]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:work-flow-launch` | Après validation business → workflow technique |
-| `/project:biz-market` | Approfondir l'analyse de marché |
-| `/project:biz-mvp` | Détailler la définition du MVP |
-| `/project:biz-pricing` | Affiner la stratégie de pricing |
-| `/project:legal-rgpd` | Détail conformité RGPD |
-| `/project:legal-cgu` | Rédiger les documents légaux |
+| `/work-flow-launch` | Après validation business → workflow technique |
+| `/biz-market` | Approfondir l'analyse de marché |
+| `/biz-mvp` | Détailler la définition du MVP |
+| `/biz-pricing` | Affiner la stratégie de pricing |
+| `/legal-rgpd` | Détail conformité RGPD |
+| `/legal-cgu` | Rédiger les documents légaux |
 
 ---
 
-IMPORTANT: Cet agent fournit l'analyse business. Pour le workflow technique de développement, utiliser `/project:work-flow-launch`.
+IMPORTANT: Cet agent fournit l'analyse business. Pour le workflow technique de développement, utiliser `/work-flow-launch`.
 
 YOU MUST fournir des recommandations actionnables et priorisées.
 

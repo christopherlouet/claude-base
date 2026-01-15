@@ -220,10 +220,10 @@ describe('i18n', () => {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:seo` | SEO international |
-| `/project:email` | Emails multilingues |
-| `/project:test` | Tester les traductions |
-| `/project:component` | Composants i18n-ready |
+| `/seo` | SEO international |
+| `/email` | Emails multilingues |
+| `/test` | Tester les traductions |
+| `/component` | Composants i18n-ready |
 
 ---
 

@@ -175,9 +175,9 @@ gh release create v1.2.0 --notes-file CHANGELOG.md
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:release` | Workflow complet de release |
-| `/project:commit` | Commits conventionnels |
-| `/project:pr` | Pull requests avec changelog |
+| `/release` | Workflow complet de release |
+| `/commit` | Commits conventionnels |
+| `/pr` | Pull requests avec changelog |
 
 ---
 

@@ -368,11 +368,11 @@ model User {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:migrate` | Migrations de données |
-| `/project:backup` | Stratégie de backup |
-| `/project:perf` | Performance des requêtes |
-| `/project:security` | Audit sécurité DB |
-| `/project:infra-code` | Provisioning DB |
+| `/migrate` | Migrations de données |
+| `/backup` | Stratégie de backup |
+| `/perf` | Performance des requêtes |
+| `/security` | Audit sécurité DB |
+| `/infra-code` | Provisioning DB |
 
 ---
 

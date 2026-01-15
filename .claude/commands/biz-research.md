@@ -484,11 +484,11 @@ La recherche sera réussie si nous pouvons :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:personas` | Créer/mettre à jour personas |
-| `/project:analytics` | Compléter avec données quanti |
-| `/project:ab-test` | Valider des hypothèses |
-| `/project:plan` | Intégrer insights en roadmap |
-| `/project:onboarding` | Améliorer parcours utilisateur |
+| `/personas` | Créer/mettre à jour personas |
+| `/analytics` | Compléter avec données quanti |
+| `/ab-test` | Valider des hypothèses |
+| `/plan` | Intégrer insights en roadmap |
+| `/onboarding` | Améliorer parcours utilisateur |
 
 ---
 

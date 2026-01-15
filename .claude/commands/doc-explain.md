@@ -145,10 +145,10 @@ Toujours accompagner d'exemples avec des valeurs réelles.
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:onboard` | Découvrir un codebase complet |
-| `/project:explore` | Explorer avant d'expliquer |
-| `/project:doc` | Documenter après explication |
-| `/project:review` | Reviewer du code expliqué |
+| `/onboard` | Découvrir un codebase complet |
+| `/explore` | Explorer avant d'expliquer |
+| `/doc` | Documenter après explication |
+| `/review` | Reviewer du code expliqué |
 
 ---
 

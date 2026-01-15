@@ -266,7 +266,7 @@ stripe trigger checkout.session.completed
 - [ ] Politique de remboursement
 - [ ] Politique d'annulation
 
-> Pour les aspects légaux complets, utiliser `/project:legal`
+> Pour les aspects légaux complets, utiliser `/legal`
 
 ## Output attendu
 
@@ -306,10 +306,10 @@ Intégration: [Checkout hosted/embedded/custom]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:legal` | CGV et mentions légales |
-| `/project:rgpd` | Conformité données de paiement |
-| `/project:security` | Sécurité des transactions |
-| `/project:pricing` | Définir la stratégie de prix |
+| `/legal` | CGV et mentions légales |
+| `/rgpd` | Conformité données de paiement |
+| `/security` | Sécurité des transactions |
+| `/pricing` | Définir la stratégie de prix |
 
 ---
 

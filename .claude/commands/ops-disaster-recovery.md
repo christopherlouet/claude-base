@@ -414,9 +414,9 @@ groups:
 
 | Agent | Usage |
 |-------|-------|
-| `/project:ops-monitoring` | Monitoring du DR |
-| `/project:ops-cost-optimization` | Optimiser les coûts DR |
-| `/project:security` | Sécurité des backups |
+| `/ops-monitoring` | Monitoring du DR |
+| `/ops-cost-optimization` | Optimiser les coûts DR |
+| `/security` | Sécurité des backups |
 
 ---
 

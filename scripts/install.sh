@@ -337,7 +337,7 @@ print_summary() {
     echo ""
 
     info "Commandes disponibles:"
-    echo "  /project:explore, /project:plan, /project:commit, etc."
+    echo "  /explore, /plan, /commit, etc."
     echo ""
 }
 

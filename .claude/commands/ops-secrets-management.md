@@ -750,11 +750,11 @@ resource "aws_cloudwatch_log_metric_filter" "secret_rotation_failure" {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:security` | Audit sécurité complet |
-| `/project:infra-code` | Provisionner Secrets Manager |
-| `/project:env` | Configuration environnements |
-| `/project:ci` | Injection secrets en CI |
-| `/project:audit` | Audit des accès |
+| `/security` | Audit sécurité complet |
+| `/infra-code` | Provisionner Secrets Manager |
+| `/env` | Configuration environnements |
+| `/ci` | Injection secrets en CI |
+| `/audit` | Audit des accès |
 
 ---
 

@@ -906,12 +906,12 @@ EOF
 
 | Catégorie | Commandes |
 |-----------|-----------|
-| **Workflow** | \`/project:explore\`, \`/project:plan\`, \`/project:commit\`, \`/project:pr\` |
-| **Développement** | \`/project:tdd\`, \`/project:test\`, \`/project:debug\`, \`/project:refactor\`, \`/project:api\` |
-| **Qualité** | \`/project:review\`, \`/project:security\`, \`/project:perf\`, \`/project:a11y\` |
-| **Ops** | \`/project:hotfix\`, \`/project:release\`, \`/project:migrate\`, \`/project:docker\` |
+| **Workflow** | \`/work-explore\`, \`/work-plan\`, \`/work-commit\`, \`/work-pr\` |
+| **Développement** | \`/dev-tdd\`, \`/dev-test\`, \`/dev-debug\`, \`/dev-refactor\`, \`/dev-api\` |
+| **Qualité** | \`/qa-review\`, \`/qa-security\`, \`/qa-perf\`, \`/qa-a11y\` |
+| **Ops** | \`/ops-hotfix\`, \`/ops-release\`, \`/ops-migrate\`, \`/ops-docker\` |
 
-Utilisez \`/project:onboard\` pour découvrir tous les agents disponibles.
+Utilisez \`/doc-onboard\` pour découvrir tous les agents disponibles.
 
 EOF
 
@@ -1477,7 +1477,7 @@ print_next_steps() {
     fi
 
     echo -e "  ${CYAN}Commandes disponibles:${NC}"
-    echo -e "     /project:explore, /project:plan, /project:commit, etc."
+    echo -e "     /work-explore, /work-plan, /work-commit, etc."
     echo ""
     echo -e "${BOLD}═══════════════════════════════════════════════════════════════${NC}"
     echo ""

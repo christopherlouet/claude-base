@@ -137,16 +137,16 @@
 ║                                                                               ║
 ║  WORKFLOW QUOTIDIEN:                                                          ║
 ║  ┌────────────────────────────────────────────────────────────────────────┐  ║
-║  │  /project:work-explore → /project:work-plan → CODE → /project:work-pr │  ║
+║  │  /work-explore → /work-plan → CODE → /work-pr │  ║
 ║  └────────────────────────────────────────────────────────────────────────┘  ║
 ║                                                                               ║
-║  NOUVELLE FEATURE:        /project:work-flow-feature "description"            ║
-║  CORRECTION BUG:          /project:work-flow-bugfix "issue #123"              ║
-║  NOUVELLE RELEASE:        /project:work-flow-release "v2.0"                   ║
-║  LANCEMENT PRODUIT:       /project:work-flow-launch "mon SaaS"                ║
+║  NOUVELLE FEATURE:        /work-flow-feature "description"            ║
+║  CORRECTION BUG:          /work-flow-bugfix "issue #123"              ║
+║  NOUVELLE RELEASE:        /work-flow-release "v2.0"                   ║
+║  LANCEMENT PRODUIT:       /work-flow-launch "mon SaaS"                ║
 ║                                                                               ║
-║  AUDIT COMPLET:           /project:qa-audit                                   ║
-║  HEALTH CHECK RAPIDE:     /project:ops-health                                 ║
+║  AUDIT COMPLET:           /qa-audit                                   ║
+║  HEALTH CHECK RAPIDE:     /ops-health                                 ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -159,98 +159,98 @@
 
 | Commande | Usage |
 |----------|-------|
-| `/project:work-explore` | Explorer et comprendre le code |
-| `/project:work-plan` | Planifier une implémentation |
-| `/project:work-commit` | Créer un commit propre |
-| `/project:work-pr` | Créer une Pull Request |
-| `/project:work-flow-feature` | Workflow feature complet |
-| `/project:work-flow-bugfix` | Workflow bugfix complet |
-| `/project:work-flow-release` | Workflow release complet |
-| `/project:work-flow-launch` | Workflow lancement complet |
+| `/work-explore` | Explorer et comprendre le code |
+| `/work-plan` | Planifier une implémentation |
+| `/work-commit` | Créer un commit propre |
+| `/work-pr` | Créer une Pull Request |
+| `/work-flow-feature` | Workflow feature complet |
+| `/work-flow-bugfix` | Workflow bugfix complet |
+| `/work-flow-release` | Workflow release complet |
+| `/work-flow-launch` | Workflow lancement complet |
 
 ### DEV- : Développement (7)
 
 | Commande | Usage |
 |----------|-------|
-| `/project:dev-tdd` | Développement TDD |
-| `/project:dev-test` | Générer des tests |
-| `/project:dev-debug` | Déboguer un problème |
-| `/project:dev-refactor` | Refactoring guidé |
-| `/project:dev-api` | Créer/documenter API |
-| `/project:dev-component` | Créer un composant UI complet |
-| `/project:dev-hook` | Créer un hook React/Vue |
+| `/dev-tdd` | Développement TDD |
+| `/dev-test` | Générer des tests |
+| `/dev-debug` | Déboguer un problème |
+| `/dev-refactor` | Refactoring guidé |
+| `/dev-api` | Créer/documenter API |
+| `/dev-component` | Créer un composant UI complet |
+| `/dev-hook` | Créer un hook React/Vue |
 
 ### QA- : Qualité (6)
 
 | Commande | Usage |
 |----------|-------|
-| `/project:qa-review` | Code review |
-| `/project:qa-security` | Audit sécurité OWASP |
-| `/project:qa-perf` | Analyse performance |
-| `/project:qa-a11y` | Audit accessibilité WCAG |
-| `/project:qa-audit` | Audit complet (tout en un) |
-| `/project:qa-responsive` | Audit responsive/mobile |
+| `/qa-review` | Code review |
+| `/qa-security` | Audit sécurité OWASP |
+| `/qa-perf` | Analyse performance |
+| `/qa-a11y` | Audit accessibilité WCAG |
+| `/qa-audit` | Audit complet (tout en un) |
+| `/qa-responsive` | Audit responsive/mobile |
 
 ### OPS- : Opérations (11)
 
 | Commande | Usage |
 |----------|-------|
-| `/project:ops-hotfix` | Correction urgente prod |
-| `/project:ops-release` | Créer une release |
-| `/project:ops-deps` | Audit et MAJ dépendances |
-| `/project:ops-docker` | Dockeriser |
-| `/project:ops-migrate` | Migration code/deps |
-| `/project:ops-ci` | Pipelines CI/CD |
-| `/project:ops-monitoring` | Logs, métriques, alertes |
-| `/project:ops-database` | Schéma, migrations DB |
-| `/project:ops-health` | Health check rapide |
-| `/project:ops-env` | Gestion environnements |
-| `/project:ops-backup` | Stratégie backup/restore |
+| `/ops-hotfix` | Correction urgente prod |
+| `/ops-release` | Créer une release |
+| `/ops-deps` | Audit et MAJ dépendances |
+| `/ops-docker` | Dockeriser |
+| `/ops-migrate` | Migration code/deps |
+| `/ops-ci` | Pipelines CI/CD |
+| `/ops-monitoring` | Logs, métriques, alertes |
+| `/ops-database` | Schéma, migrations DB |
+| `/ops-health` | Health check rapide |
+| `/ops-env` | Gestion environnements |
+| `/ops-backup` | Stratégie backup/restore |
 
 ### DOC- : Documentation (7)
 
 | Commande | Usage |
 |----------|-------|
-| `/project:doc-generate` | Générer documentation |
-| `/project:doc-changelog` | Changelog |
-| `/project:doc-explain` | Expliquer code complexe |
-| `/project:doc-onboard` | Découvrir un codebase |
-| `/project:doc-i18n` | Internationalisation |
-| `/project:doc-fix-issue` | Corriger issue GitHub |
-| `/project:doc-api-spec` | Spec OpenAPI/Swagger |
+| `/doc-generate` | Générer documentation |
+| `/doc-changelog` | Changelog |
+| `/doc-explain` | Expliquer code complexe |
+| `/doc-onboard` | Découvrir un codebase |
+| `/doc-i18n` | Internationalisation |
+| `/doc-fix-issue` | Corriger issue GitHub |
+| `/doc-api-spec` | Spec OpenAPI/Swagger |
 
 ### BIZ- : Business (9)
 
 | Commande | Usage |
 |----------|-------|
-| `/project:biz-model` | Business model, Lean Canvas |
-| `/project:biz-market` | Étude de marché |
-| `/project:biz-mvp` | Définir le MVP |
-| `/project:biz-pricing` | Stratégie tarifaire |
-| `/project:biz-pitch` | Pitch deck |
-| `/project:biz-roadmap` | Roadmap produit |
-| `/project:biz-launch` | Workflow lancement |
-| `/project:biz-competitor` | Analyse concurrentielle |
-| `/project:biz-okr` | OKRs |
+| `/biz-model` | Business model, Lean Canvas |
+| `/biz-market` | Étude de marché |
+| `/biz-mvp` | Définir le MVP |
+| `/biz-pricing` | Stratégie tarifaire |
+| `/biz-pitch` | Pitch deck |
+| `/biz-roadmap` | Roadmap produit |
+| `/biz-launch` | Workflow lancement |
+| `/biz-competitor` | Analyse concurrentielle |
+| `/biz-okr` | OKRs |
 
 ### GROWTH- : Croissance (6)
 
 | Commande | Usage |
 |----------|-------|
-| `/project:growth-landing` | Landing page |
-| `/project:growth-seo` | Audit SEO |
-| `/project:growth-analytics` | Tracking et KPIs |
-| `/project:growth-onboarding` | Parcours utilisateur |
-| `/project:growth-email` | Templates email |
-| `/project:growth-ab-test` | A/B testing |
+| `/growth-landing` | Landing page |
+| `/growth-seo` | Audit SEO |
+| `/growth-analytics` | Tracking et KPIs |
+| `/growth-onboarding` | Parcours utilisateur |
+| `/growth-email` | Templates email |
+| `/growth-ab-test` | A/B testing |
 
 ### LEGAL- : Légal (3)
 
 | Commande | Usage |
 |----------|-------|
-| `/project:legal-docs` | CGU, CGV, mentions légales |
-| `/project:legal-rgpd` | Conformité RGPD/GDPR |
-| `/project:legal-payment` | Intégration paiement |
+| `/legal-docs` | CGU, CGV, mentions légales |
+| `/legal-rgpd` | Conformité RGPD/GDPR |
+| `/legal-payment` | Intégration paiement |
 
 ---
 
@@ -258,44 +258,44 @@
 
 ### Nouveau projet
 ```
-/project:doc-onboard     → Comprendre la structure
-/project:work-explore    → Explorer le code
-/project:work-plan       → Planifier le travail
+/doc-onboard     → Comprendre la structure
+/work-explore    → Explorer le code
+/work-plan       → Planifier le travail
 ```
 
 ### Nouvelle feature (rapide)
 ```
-/project:work-explore    → Comprendre l'existant
-/project:work-plan       → Designer la solution
-/project:dev-tdd         → Implémenter avec tests
-/project:work-commit     → Commiter proprement
-/project:work-pr         → Créer la PR
+/work-explore    → Comprendre l'existant
+/work-plan       → Designer la solution
+/dev-tdd         → Implémenter avec tests
+/work-commit     → Commiter proprement
+/work-pr         → Créer la PR
 ```
 
 ### Nouvelle feature (workflow complet)
 ```
-/project:work-flow-feature "ajouter dark mode"
+/work-flow-feature "ajouter dark mode"
 ```
 
 ### Correction de bug
 ```
-/project:work-flow-bugfix "#123 - utilisateur ne peut pas se connecter"
+/work-flow-bugfix "#123 - utilisateur ne peut pas se connecter"
 ```
 
 ### Avant mise en prod
 ```
-/project:qa-audit        → Audit complet
-/project:ops-health      → Health check rapide
+/qa-audit        → Audit complet
+/ops-health      → Health check rapide
 ```
 
 ### Nouvelle release
 ```
-/project:work-flow-release "v2.0.0"
+/work-flow-release "v2.0.0"
 ```
 
 ### Lancer un nouveau business
 ```
-/project:work-flow-launch "mon nouveau SaaS"
+/work-flow-launch "mon nouveau SaaS"
 ```
 
 ---
@@ -303,7 +303,7 @@
 ## Format des Commandes
 
 ```
-/project:{category}-{action} "context"
+/{category}-{action} "context"
 
 Categories:
 • work-   → Workflow de base

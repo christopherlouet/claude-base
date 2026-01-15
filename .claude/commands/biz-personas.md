@@ -422,11 +422,11 @@ Pour chaque feature, vérifier :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:research` | Recherche utilisateur |
-| `/project:market` | Étude de marché |
-| `/project:mvp` | Définir le MVP pour un persona |
-| `/project:onboarding` | Parcours par persona |
-| `/project:ab-test` | Tester hypothèses persona |
+| `/research` | Recherche utilisateur |
+| `/market` | Étude de marché |
+| `/mvp` | Définir le MVP pour un persona |
+| `/onboarding` | Parcours par persona |
+| `/ab-test` | Tester hypothèses persona |
 
 ---
 

@@ -120,9 +120,9 @@ function example() {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:agent-avant` | Avant cet agent |
-| `/project:agent-apres` | Après cet agent |
-| `/project:agent-support` | En support si nécessaire |
+| `/agent-avant` | Avant cet agent |
+| `/agent-apres` | Après cet agent |
+| `/agent-support` | En support si nécessaire |
 
 ---
 

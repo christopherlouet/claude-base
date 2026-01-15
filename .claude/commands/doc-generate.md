@@ -117,10 +117,10 @@ Accepté | En discussion | Remplacé par ADR-XXX
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:api-spec` | Documentation OpenAPI |
-| `/project:readme` | README du projet |
-| `/project:architecture` | Documentation d'architecture |
-| `/project:explain` | Expliquer du code complexe |
+| `/api-spec` | Documentation OpenAPI |
+| `/readme` | README du projet |
+| `/architecture` | Documentation d'architecture |
+| `/explain` | Expliquer du code complexe |
 
 ---
 

@@ -252,11 +252,11 @@ Nos clients comme [exemple] ont choisi notre solution car [raison]."
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:market` | Étude de marché complète |
-| `/project:model` | Affiner le business model |
-| `/project:pitch` | Préparer le pitch deck |
-| `/project:seo` | Analyser le SEO concurrent |
-| `/project:pricing` | Comparer les pricings |
+| `/market` | Étude de marché complète |
+| `/model` | Affiner le business model |
+| `/pitch` | Préparer le pitch deck |
+| `/seo` | Analyser le SEO concurrent |
+| `/pricing` | Comparer les pricings |
 
 ---
 

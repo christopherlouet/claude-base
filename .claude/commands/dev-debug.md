@@ -318,11 +318,11 @@ du cas où l'utilisateur n'est pas trouvé.
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:explore` | Comprendre le contexte du code |
-| `/project:test` | Ajouter tests de régression |
-| `/project:commit` | Commiter le fix |
-| `/project:hotfix` | Si correction urgente en prod |
-| `/project:explain` | Comprendre du code complexe |
+| `/explore` | Comprendre le contexte du code |
+| `/test` | Ajouter tests de régression |
+| `/commit` | Commiter le fix |
+| `/hotfix` | Si correction urgente en prod |
+| `/explain` | Comprendre du code complexe |
 
 ---
 

@@ -475,11 +475,11 @@ ICE = (Impact × Confidence × Ease) / 10
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:analytics` | Configurer le tracking |
-| `/project:ab-test` | Lancer des tests |
-| `/project:landing` | Optimiser landing page |
-| `/project:onboarding` | Améliorer activation |
-| `/project:retention` | Post-conversion |
+| `/analytics` | Configurer le tracking |
+| `/ab-test` | Lancer des tests |
+| `/landing` | Optimiser landing page |
+| `/onboarding` | Améliorer activation |
+| `/retention` | Post-conversion |
 
 ---
 

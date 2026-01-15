@@ -201,7 +201,7 @@ function track<T extends keyof AnalyticsEvents>(
 - [ ] Droit d'accès et suppression
 - [ ] Documentation des traitements
 
-> Pour un audit complet, utiliser `/project:rgpd`
+> Pour un audit complet, utiliser `/rgpd`
 
 ## Output attendu
 
@@ -245,11 +245,11 @@ Fréquence: [mesure]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:funnel` | Analyser les conversions par étape |
-| `/project:retention` | Mesurer la rétention utilisateurs |
-| `/project:ab-test` | Tester les hypothèses |
-| `/project:rgpd` | S'assurer de la conformité RGPD |
-| `/project:monitoring` | Monitoring technique complémentaire |
+| `/funnel` | Analyser les conversions par étape |
+| `/retention` | Mesurer la rétention utilisateurs |
+| `/ab-test` | Tester les hypothèses |
+| `/rgpd` | S'assurer de la conformité RGPD |
+| `/monitoring` | Monitoring technique complémentaire |
 
 ---
 

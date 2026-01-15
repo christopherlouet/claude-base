@@ -145,50 +145,50 @@ claude-socle/
 
 | Commande | Description |
 |----------|-------------|
-| `/project:explore [cible]` | Explorer et comprendre du code |
-| `/project:plan [feature]` | Planifier une implémentation |
-| `/project:commit [contexte]` | Créer un commit propre |
-| `/project:pr [contexte]` | Créer une Pull Request |
+| `/explore [cible]` | Explorer et comprendre du code |
+| `/plan [feature]` | Planifier une implémentation |
+| `/commit [contexte]` | Créer un commit propre |
+| `/pr [contexte]` | Créer une Pull Request |
 
 ### Développement
 
 | Commande | Description |
 |----------|-------------|
-| `/project:tdd [feature]` | Test-Driven Development |
-| `/project:test [cible]` | Générer des tests |
-| `/project:debug [problème]` | Déboguer méthodiquement |
-| `/project:refactor [cible]` | Refactoring guidé |
-| `/project:api [endpoint]` | Créer/documenter API |
+| `/tdd [feature]` | Test-Driven Development |
+| `/test [cible]` | Générer des tests |
+| `/debug [problème]` | Déboguer méthodiquement |
+| `/refactor [cible]` | Refactoring guidé |
+| `/api [endpoint]` | Créer/documenter API |
 
 ### Qualité
 
 | Commande | Description |
 |----------|-------------|
-| `/project:review [cible]` | Code review détaillée |
-| `/project:security [cible]` | Audit sécurité OWASP |
-| `/project:perf [cible]` | Analyse performance |
-| `/project:a11y [cible]` | Audit accessibilité WCAG |
+| `/review [cible]` | Code review détaillée |
+| `/security [cible]` | Audit sécurité OWASP |
+| `/perf [cible]` | Analyse performance |
+| `/a11y [cible]` | Audit accessibilité WCAG |
 
 ### Maintenance
 
 | Commande | Description |
 |----------|-------------|
-| `/project:hotfix [problème]` | Correction urgente |
-| `/project:release [version]` | Créer une release |
-| `/project:migrate [cible]` | Migration code/deps |
-| `/project:deps [cible]` | Audit et MAJ dépendances |
-| `/project:changelog [ctx]` | Générer/maintenir changelog |
-| `/project:docker [cible]` | Dockeriser un projet |
-| `/project:doc [cible]` | Documentation |
-| `/project:fix-issue [#]` | Corriger une issue GitHub |
-| `/project:i18n [cible]` | Internationalisation |
+| `/hotfix [problème]` | Correction urgente |
+| `/release [version]` | Créer une release |
+| `/migrate [cible]` | Migration code/deps |
+| `/deps [cible]` | Audit et MAJ dépendances |
+| `/changelog [ctx]` | Générer/maintenir changelog |
+| `/docker [cible]` | Dockeriser un projet |
+| `/doc [cible]` | Documentation |
+| `/fix-issue [#]` | Corriger une issue GitHub |
+| `/i18n [cible]` | Internationalisation |
 
 ### Découverte
 
 | Commande | Description |
 |----------|-------------|
-| `/project:onboard [cible]` | Découvrir un codebase |
-| `/project:explain [code]` | Expliquer du code |
+| `/onboard [cible]` | Découvrir un codebase |
+| `/explain [code]` | Expliquer du code |
 
 ## Workflow Recommandé
 
@@ -202,19 +202,19 @@ claude-socle/
 
 ```bash
 # 1. Explorer le système existant
-/project:explore le système d'authentification
+/explore le système d'authentification
 
 # 2. Planifier la nouvelle feature
-/project:plan ajouter OAuth2 Google
+/plan ajouter OAuth2 Google
 
 # 3. Implémenter en TDD
-/project:tdd OAuth2 authentication flow
+/tdd OAuth2 authentication flow
 
 # 4. Review avant commit
-/project:review les changements
+/review les changements
 
 # 5. Créer la PR
-/project:pr OAuth2 Google authentication
+/pr OAuth2 Google authentication
 ```
 
 ## Templates Disponibles (8)

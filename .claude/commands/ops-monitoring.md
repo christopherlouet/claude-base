@@ -422,11 +422,11 @@ groups:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:health` | Health check rapide |
-| `/project:infra-code` | Provisionner monitoring |
-| `/project:ci` | Intégrer dans CI/CD |
-| `/project:perf` | Analyse performance |
-| `/project:security` | Audit des logs |
+| `/health` | Health check rapide |
+| `/infra-code` | Provisionner monitoring |
+| `/ci` | Intégrer dans CI/CD |
+| `/perf` | Analyse performance |
+| `/security` | Audit des logs |
 
 ---
 

@@ -386,9 +386,9 @@ jobs:
 
 | Agent | Usage |
 |-------|-------|
-| `/project:qa-perf` | Optimisation performance |
-| `/project:ops-monitoring` | Monitoring en production |
-| `/project:ops-cost-optimization` | Optimiser les coûts |
+| `/qa-perf` | Optimisation performance |
+| `/ops-monitoring` | Monitoring en production |
+| `/ops-cost-optimization` | Optimiser les coûts |
 
 ---
 

@@ -15,7 +15,7 @@ Guide de résolution des problèmes courants avec Claude Code et les agents clau
 
 ### L'agent ne se lance pas
 
-**Symptôme**: `/project:agent-name` ne fait rien ou retourne une erreur.
+**Symptôme**: `/agent-name` ne fait rien ou retourne une erreur.
 
 **Causes possibles**:
 
@@ -198,7 +198,7 @@ Think hard sur [aspect à considérer]
    ```
 
 3. **Utiliser le bon agent**
-   - `/project:explore` pour la découverte rapide
+   - `/explore` pour la découverte rapide
    - Agents spécialisés pour les tâches ciblées
 
 ---
@@ -289,8 +289,8 @@ chmod 755 dossier/
 **Solution**:
 ```bash
 # Le nom de commande est basé sur le nom du fichier
-.claude/commands/mon-agent.md  →  /project:mon-agent
-.claude/commands/MonAgent.md   →  /project:MonAgent
+.claude/commands/mon-agent.md  →  /mon-agent
+.claude/commands/MonAgent.md   →  /MonAgent
 ```
 
 ---

@@ -122,10 +122,10 @@ Architecture: [pattern principal]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:explore` | Explorer en profondeur |
-| `/project:explain` | Comprendre du code spécifique |
-| `/project:health` | Évaluer la santé du projet |
-| `/project:readme` | Consulter/créer le README |
+| `/explore` | Explorer en profondeur |
+| `/explain` | Comprendre du code spécifique |
+| `/health` | Évaluer la santé du projet |
+| `/readme` | Consulter/créer le README |
 
 ---
 

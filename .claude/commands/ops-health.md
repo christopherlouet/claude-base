@@ -234,10 +234,10 @@ npm run build 2>/dev/null | tail -5 || echo "Build non configuré"
 ### Prochaines Étapes
 
 Pour un diagnostic plus approfondi :
-- `/project:security` - Audit sécurité complet
-- `/project:perf` - Analyse performance détaillée
-- `/project:deps` - Audit dépendances complet
-- `/project:audit-full` - Audit qualité complet
+- `/security` - Audit sécurité complet
+- `/perf` - Analyse performance détaillée
+- `/deps` - Audit dépendances complet
+- `/audit-full` - Audit qualité complet
 
 ---
 
@@ -245,15 +245,15 @@ Pour un diagnostic plus approfondi :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:audit` | Audit complet |
-| `/project:monitoring` | Monitoring continu |
-| `/project:security` | Audit sécurité |
-| `/project:deps` | Mise à jour dépendances |
-| `/project:perf` | Analyse performance |
+| `/audit` | Audit complet |
+| `/monitoring` | Monitoring continu |
+| `/security` | Audit sécurité |
+| `/deps` | Mise à jour dépendances |
+| `/perf` | Analyse performance |
 
 ---
 
-IMPORTANT: Ce health-check est un diagnostic rapide. Pour un audit complet, utiliser `/project:audit`.
+IMPORTANT: Ce health-check est un diagnostic rapide. Pour un audit complet, utiliser `/audit`.
 
 YOU MUST signaler immédiatement tout problème de sécurité critique (secrets exposés, vulnérabilités critiques).
 

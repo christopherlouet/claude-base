@@ -199,10 +199,10 @@ Desktop: [OK/KO]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:a11y` | Accessibilité mobile |
-| `/project:perf` | Performance mobile |
-| `/project:component` | Créer des composants responsives |
-| `/project:landing` | Landing pages responsives |
+| `/a11y` | Accessibilité mobile |
+| `/perf` | Performance mobile |
+| `/component` | Créer des composants responsives |
+| `/landing` | Landing pages responsives |
 
 ---
 

@@ -345,11 +345,11 @@ await sendEmail({
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:onboarding` | Séquence d'emails d'activation |
-| `/project:retention` | Emails de réengagement |
-| `/project:analytics` | Tracker les performances email |
-| `/project:rgpd` | Conformité des emails marketing |
-| `/project:i18n` | Emails multilingues |
+| `/onboarding` | Séquence d'emails d'activation |
+| `/retention` | Emails de réengagement |
+| `/analytics` | Tracker les performances email |
+| `/rgpd` | Conformité des emails marketing |
+| `/i18n` | Emails multilingues |
 
 ---
 

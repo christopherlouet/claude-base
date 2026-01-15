@@ -130,10 +130,10 @@ getLCP(console.log);
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:monitoring` | Monitoring des perfs en prod |
-| `/project:database` | Optimiser les requêtes DB |
-| `/project:audit` | Audit complet (inclut perf) |
-| `/project:seo` | Core Web Vitals pour SEO |
+| `/monitoring` | Monitoring des perfs en prod |
+| `/database` | Optimiser les requêtes DB |
+| `/audit` | Audit complet (inclut perf) |
+| `/seo` | Core Web Vitals pour SEO |
 
 ---
 

@@ -413,10 +413,10 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:api` | Créer ou modifier l'API |
-| `/project:doc` | Documentation générale |
-| `/project:test` | Tester les endpoints documentés |
-| `/project:security` | Vérifier la sécurité de l'API |
+| `/api` | Créer ou modifier l'API |
+| `/doc` | Documentation générale |
+| `/test` | Tester les endpoints documentés |
+| `/security` | Vérifier la sécurité de l'API |
 
 ---
 

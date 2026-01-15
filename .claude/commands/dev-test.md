@@ -393,11 +393,11 @@ npm test -- --coverage --collectCoverageFrom='src/services/**/*.ts'
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:explore` | Comprendre le code à tester |
-| `/project:tdd` | Développer en TDD |
-| `/project:testing-setup` | Configurer l'infrastructure de tests |
-| `/project:review` | Review des tests |
-| `/project:coverage` | Analyser la couverture |
+| `/explore` | Comprendre le code à tester |
+| `/tdd` | Développer en TDD |
+| `/testing-setup` | Configurer l'infrastructure de tests |
+| `/review` | Review des tests |
+| `/coverage` | Analyser la couverture |
 
 ---
 

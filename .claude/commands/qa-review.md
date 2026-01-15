@@ -218,12 +218,12 @@ const apiKey = process.env.API_KEY;
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:explore` | Comprendre le contexte avant review |
-| `/project:security` | Review de sécurité approfondie |
-| `/project:perf` | Review de performance détaillée |
-| `/project:a11y` | Review accessibilité |
-| `/project:commit` | Après corrections suite à review |
-| `/project:refactor` | Si refactoring majeur nécessaire |
+| `/explore` | Comprendre le contexte avant review |
+| `/security` | Review de sécurité approfondie |
+| `/perf` | Review de performance détaillée |
+| `/a11y` | Review accessibilité |
+| `/commit` | Après corrections suite à review |
+| `/refactor` | Si refactoring majeur nécessaire |
 
 ---
 

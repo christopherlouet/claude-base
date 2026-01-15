@@ -105,11 +105,11 @@ git reset --hard [commit-avant-migration]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:database` | Migrations de schéma |
-| `/project:test` | Tester après migration |
-| `/project:backup` | Backup avant migration |
-| `/project:deps` | Migration de dépendances |
-| `/project:review` | Review du plan de migration |
+| `/database` | Migrations de schéma |
+| `/test` | Tester après migration |
+| `/backup` | Backup avant migration |
+| `/deps` | Migration de dépendances |
+| `/review` | Review du plan de migration |
 
 ---
 

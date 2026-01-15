@@ -40,7 +40,7 @@ Avant de planifier, s'assurer d'avoir exploré :
 - [ ] Tests existants
 - [ ] Documentation disponible
 
-> Si l'exploration n'est pas faite, utiliser `/project:work-explore` d'abord.
+> Si l'exploration n'est pas faite, utiliser `/work-explore` d'abord.
 
 ### 3. Conception de la solution
 
@@ -206,10 +206,10 @@ Avant de planifier, s'assurer d'avoir exploré :
 
 | Avant | Agent | Après |
 |-------|-------|-------|
-| `/project:work-explore` | Exploration | |
+| `/work-explore` | Exploration | |
 | | **PLAN** | |
-| | | `/project:dev-tdd` |
-| | | `/project:dev-api` |
+| | | `/dev-tdd` |
+| | | `/dev-api` |
 
 ---
 

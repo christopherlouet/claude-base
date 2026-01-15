@@ -140,7 +140,7 @@ Le cœur de claude-socle est un workflow en 4 étapes qui garantit un code de qu
 ### Commande
 
 ```
-/project:explore [cible]
+/explore [cible]
 ```
 
 ### Quand l'utiliser ?
@@ -152,7 +152,7 @@ Le cœur de claude-socle est un workflow en 4 étapes qui garantit un code de qu
 ### Exemple pratique
 
 ```
-Utilisateur: /project:explore le système d'authentification
+Utilisateur: /explore le système d'authentification
 
 Claude: Je vais explorer le système d'authentification...
 
@@ -183,7 +183,7 @@ Avant toute modification, considérez :
 ### Commande
 
 ```
-/project:plan [fonctionnalité]
+/plan [fonctionnalité]
 ```
 
 ### Quand l'utiliser ?
@@ -195,7 +195,7 @@ Avant toute modification, considérez :
 ### Exemple pratique
 
 ```
-Utilisateur: /project:plan ajouter l'authentification OAuth2 Google
+Utilisateur: /plan ajouter l'authentification OAuth2 Google
 
 Claude: Je vais planifier l'implémentation d'OAuth2 Google...
 
@@ -237,14 +237,14 @@ Souhaitez-vous que je commence l'implémentation ?
 
 | Commande | Usage |
 |----------|-------|
-| `/project:tdd [feature]` | Développement Test-Driven |
-| `/project:api [endpoint]` | Création d'API |
-| `/project:refactor [cible]` | Refactoring guidé |
+| `/tdd [feature]` | Développement Test-Driven |
+| `/api [endpoint]` | Création d'API |
+| `/refactor [cible]` | Refactoring guidé |
 
 ### Exemple TDD
 
 ```
-Utilisateur: /project:tdd GoogleStrategy
+Utilisateur: /tdd GoogleStrategy
 
 Claude: Je démarre le cycle TDD Red-Green-Refactor...
 
@@ -297,7 +297,7 @@ Test lancé... [OK] SUCCÈS
 ### Commande
 
 ```
-/project:commit [contexte]
+/commit [contexte]
 ```
 
 ### Ce que fait l'agent
@@ -310,7 +310,7 @@ Test lancé... [OK] SUCCÈS
 ### Exemple
 
 ```
-Utilisateur: /project:commit
+Utilisateur: /commit
 
 Claude: J'analyse les changements pour créer le commit...
 
@@ -350,19 +350,19 @@ Voulez-vous que je crée ce commit ?
 
 | Agent | Commande | Description |
 |-------|----------|-------------|
-| Explore | `/project:explore` | Explorer le code existant |
-| Plan | `/project:plan` | Planifier une implémentation |
-| Commit | `/project:commit` | Créer un commit propre |
-| PR | `/project:pr` | Créer une Pull Request |
-| Flow Feature | `/project:flow-feature` | Workflow complet feature |
-| Flow Bugfix | `/project:flow-bugfix` | Workflow correction bug |
-| Flow Release | `/project:flow-release` | Workflow release |
-| Flow Launch | `/project:flow-launch` | Workflow lancement |
+| Explore | `/explore` | Explorer le code existant |
+| Plan | `/plan` | Planifier une implémentation |
+| Commit | `/commit` | Créer un commit propre |
+| PR | `/pr` | Créer une Pull Request |
+| Flow Feature | `/flow-feature` | Workflow complet feature |
+| Flow Bugfix | `/flow-bugfix` | Workflow correction bug |
+| Flow Release | `/flow-release` | Workflow release |
+| Flow Launch | `/flow-launch` | Workflow lancement |
 
 ### Exemple : Flow Feature complet
 
 ```
-Utilisateur: /project:flow-feature ajouter le dark mode
+Utilisateur: /flow-feature ajouter le dark mode
 
 Claude: Je lance le workflow complet pour la feature "dark mode"...
 
@@ -387,21 +387,21 @@ git checkout -b feature/dark-mode
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| TDD | `/project:tdd` | Test-Driven Development |
-| Test | `/project:test` | Générer des tests |
-| Debug | `/project:debug` | Débogage méthodique |
-| Refactor | `/project:refactor` | Refactoring guidé |
-| API | `/project:api` | Créer/documenter API |
-| Component | `/project:component` | Créer un composant |
-| Error Handling | `/project:error-handling` | Gestion d'erreurs |
-| API Versioning | `/project:api-versioning` | Versioning d'API |
-| Feature Flag | `/project:feature-flag` | Feature flags |
-| State | `/project:state` | Gestion d'état |
+| TDD | `/tdd` | Test-Driven Development |
+| Test | `/test` | Générer des tests |
+| Debug | `/debug` | Débogage méthodique |
+| Refactor | `/refactor` | Refactoring guidé |
+| API | `/api` | Créer/documenter API |
+| Component | `/component` | Créer un composant |
+| Error Handling | `/error-handling` | Gestion d'erreurs |
+| API Versioning | `/api-versioning` | Versioning d'API |
+| Feature Flag | `/feature-flag` | Feature flags |
+| State | `/state` | Gestion d'état |
 
 ### Exemple : Debug
 
 ```
-Utilisateur: /project:debug l'erreur "Cannot read property 'user' of undefined"
+Utilisateur: /debug l'erreur "Cannot read property 'user' of undefined"
 
 Claude: Je lance une investigation méthodique...
 
@@ -455,19 +455,19 @@ Voulez-vous que j'applique cette correction ?
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Review | `/project:review` | Code review détaillée |
-| Security | `/project:security` | Audit sécurité OWASP |
-| Performance | `/project:perf` | Analyse performance |
-| A11y | `/project:a11y` | Audit accessibilité |
-| Lint | `/project:lint` | Analyse statique |
-| Coverage | `/project:coverage` | Couverture de tests |
-| Complexity | `/project:complexity` | Analyse complexité |
-| Dependencies | `/project:deps` | Audit dépendances |
+| Review | `/review` | Code review détaillée |
+| Security | `/security` | Audit sécurité OWASP |
+| Performance | `/perf` | Analyse performance |
+| A11y | `/a11y` | Audit accessibilité |
+| Lint | `/lint` | Analyse statique |
+| Coverage | `/coverage` | Couverture de tests |
+| Complexity | `/complexity` | Analyse complexité |
+| Dependencies | `/deps` | Audit dépendances |
 
 ### Exemple : Security Audit
 
 ```
-Utilisateur: /project:security src/api/
+Utilisateur: /security src/api/
 
 Claude: Je lance un audit de sécurité OWASP Top 10...
 
@@ -513,36 +513,36 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Docker | `/project:docker` | Dockeriser |
-| K8s | `/project:k8s` | Kubernetes |
-| CI/CD | `/project:cicd` | Pipelines |
-| Deploy | `/project:deploy` | Déploiement |
-| Monitor | `/project:monitor` | Monitoring |
-| Backup | `/project:backup` | Sauvegardes |
-| Hotfix | `/project:hotfix` | Fix urgent |
-| Release | `/project:release` | Releases |
-| Rollback | `/project:rollback` | Rollback |
-| Scale | `/project:scale` | Scaling |
-| Migrate DB | `/project:migrate-db` | Migration DB |
-| Infra | `/project:infra` | Infrastructure |
-| SSL | `/project:ssl` | Certificats |
-| DNS | `/project:dns` | Configuration DNS |
-| CDN | `/project:cdn` | Configuration CDN |
-| Logs | `/project:logs` | Analyse logs |
+| Docker | `/docker` | Dockeriser |
+| K8s | `/k8s` | Kubernetes |
+| CI/CD | `/cicd` | Pipelines |
+| Deploy | `/deploy` | Déploiement |
+| Monitor | `/monitor` | Monitoring |
+| Backup | `/backup` | Sauvegardes |
+| Hotfix | `/hotfix` | Fix urgent |
+| Release | `/release` | Releases |
+| Rollback | `/rollback` | Rollback |
+| Scale | `/scale` | Scaling |
+| Migrate DB | `/migrate-db` | Migration DB |
+| Infra | `/infra` | Infrastructure |
+| SSL | `/ssl` | Certificats |
+| DNS | `/dns` | Configuration DNS |
+| CDN | `/cdn` | Configuration CDN |
+| Logs | `/logs` | Analyse logs |
 
 ## Documentation (9 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Doc | `/project:doc` | Documentation |
-| API Doc | `/project:api-doc` | Doc API |
-| README | `/project:readme` | README |
-| Changelog | `/project:changelog` | Changelog |
-| ADR | `/project:adr` | Architecture Decision |
-| Tutorial | `/project:tutorial` | Tutoriels |
-| Diagram | `/project:diagram` | Diagrammes |
-| Onboard | `/project:onboard` | Onboarding |
-| Explain | `/project:explain` | Explications |
+| Doc | `/doc` | Documentation |
+| API Doc | `/api-doc` | Doc API |
+| README | `/readme` | README |
+| Changelog | `/changelog` | Changelog |
+| ADR | `/adr` | Architecture Decision |
+| Tutorial | `/tutorial` | Tutoriels |
+| Diagram | `/diagram` | Diagrammes |
+| Onboard | `/onboard` | Onboarding |
+| Explain | `/explain` | Explications |
 
 \newpage
 
@@ -834,20 +834,20 @@ Format de sortie souhaité.
 
 ```
 [X] "Ajoute une fonction de login"
-[OK] "/project:explore le système d'auth" puis "Ajoute..."
+[OK] "/explore le système d'auth" puis "Ajoute..."
 ```
 
 ### 2. Toujours planifier les features complexes
 
 ```
 [X] "Implémente OAuth2"
-[OK] "/project:plan OAuth2" → validation → implémentation
+[OK] "/plan OAuth2" → validation → implémentation
 ```
 
 ### 3. Utiliser TDD pour le code critique
 
 ```
-[OK] /project:tdd pour les services et utilitaires
+[OK] /tdd pour les services et utilitaires
 ```
 
 ### 4. Commits atomiques et fréquents
@@ -860,19 +860,19 @@ Format de sortie souhaité.
 ### 5. Review avant merge
 
 ```
-[OK] /project:review avant chaque PR
+[OK] /review avant chaque PR
 ```
 
 ### 6. Security audit sur le code sensible
 
 ```
-[OK] /project:security sur auth, payments, user data
+[OK] /security sur auth, payments, user data
 ```
 
 ### 7. Documenter les décisions
 
 ```
-[OK] /project:adr pour les choix architecturaux
+[OK] /adr pour les choix architecturaux
 ```
 
 ### 8. Utiliser les templates adaptés
@@ -961,14 +961,14 @@ jq '.hooks' .claude/settings.json
 
 | Tâche | Commande |
 |-------|----------|
-| Explorer du code | `/project:explore [cible]` |
-| Planifier une feature | `/project:plan [feature]` |
-| Développer en TDD | `/project:tdd [feature]` |
-| Créer un commit | `/project:commit` |
-| Créer une PR | `/project:pr` |
-| Review de code | `/project:review [cible]` |
-| Audit sécurité | `/project:security [cible]` |
-| Déboguer | `/project:debug [problème]` |
+| Explorer du code | `/explore [cible]` |
+| Planifier une feature | `/plan [feature]` |
+| Développer en TDD | `/tdd [feature]` |
+| Créer un commit | `/commit` |
+| Créer une PR | `/pr` |
+| Review de code | `/review [cible]` |
+| Audit sécurité | `/security [cible]` |
+| Déboguer | `/debug [problème]` |
 
 ## Scripts utilitaires
 

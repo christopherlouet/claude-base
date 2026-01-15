@@ -378,12 +378,12 @@ validate_coherence() {
     if [[ -f "$TARGET_DIR/CLAUDE.md" ]] && [[ -d "$TARGET_DIR/.claude/commands" ]]; then
         # Extraire les commandes mentionnées dans CLAUDE.md
         local mentioned_commands
-        mentioned_commands=$(grep -oE '/project:[a-z0-9-]+' "$TARGET_DIR/CLAUDE.md" 2>/dev/null | sort -u || true)
+        mentioned_commands=$(grep -oE '/[a-z0-9-]+' "$TARGET_DIR/CLAUDE.md" 2>/dev/null | sort -u || true)
 
         local missing=0
         local found=0
         for cmd in $mentioned_commands; do
-            local cmd_name="${cmd#/project:}"
+            local cmd_name="${cmd#/}"
             # Chercher avec différents préfixes possibles
             if [[ -f "$TARGET_DIR/.claude/commands/$cmd_name.md" ]] || \
                [[ -f "$TARGET_DIR/.claude/commands/work-$cmd_name.md" ]] || \

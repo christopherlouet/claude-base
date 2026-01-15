@@ -382,11 +382,11 @@ CONTACT
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:model` | Business model à présenter |
-| `/project:market` | Données de marché |
-| `/project:roadmap` | Vision produit |
-| `/project:competitor` | Positionnement concurrentiel |
-| `/project:analytics` | Métriques à présenter |
+| `/model` | Business model à présenter |
+| `/market` | Données de marché |
+| `/roadmap` | Vision produit |
+| `/competitor` | Positionnement concurrentiel |
+| `/analytics` | Métriques à présenter |
 
 ---
 

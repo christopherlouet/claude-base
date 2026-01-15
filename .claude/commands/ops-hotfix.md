@@ -122,11 +122,11 @@ Fixes #[issue-number]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/project:debug` | Diagnostiquer le problème |
-| `/project:test` | Test de non-régression |
-| `/project:release` | Release après hotfix |
-| `/project:monitoring` | Vérifier post-déploiement |
-| `/project:disaster-recovery` | Si incident majeur |
+| `/debug` | Diagnostiquer le problème |
+| `/test` | Test de non-régression |
+| `/release` | Release après hotfix |
+| `/monitoring` | Vérifier post-déploiement |
+| `/disaster-recovery` | Si incident majeur |
 
 ---
 
