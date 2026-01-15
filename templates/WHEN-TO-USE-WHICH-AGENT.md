@@ -67,6 +67,17 @@ Ce guide vous aide à choisir le bon agent selon votre situation.
 /seo       → Optimiser le SEO
 ```
 
+### "Je développe une app mobile (Flutter)"
+```
+/explore   → Comprendre l'architecture existante
+/plan      → Planifier la feature mobile
+/flutter   → Créer widgets et screens
+/supabase  → Configurer le backend (Auth, DB, Storage)
+/mobile    → Audit qualité mobile (perf, a11y, responsive)
+/commit    → Commiter avec scope mobile
+/pr        → Pull Request
+```
+
 ---
 
 ## Par Type de Tâche
@@ -80,6 +91,15 @@ Ce guide vous aide à choisir le bon agent selon votre situation.
 | Créer une API | `/api` | Endpoint RESTful/GraphQL |
 | Développer en TDD | `/tdd` | Test-Driven Development |
 | Gérer les erreurs | `/error-handling` | Stratégie d'erreurs |
+
+### Mobile (Flutter)
+
+| Tâche | Agent | Description |
+|-------|-------|-------------|
+| Widget/Screen Flutter | `/flutter` | Widgets, screens, BLoC |
+| Backend Supabase | `/supabase` | Auth, Database, Storage, Realtime |
+| Audit qualité mobile | `/mobile` | Perf, a11y, responsive, devices |
+| API GraphQL | `/graphql` | Client/serveur GraphQL |
 
 ### Qualité
 
@@ -203,9 +223,15 @@ Que voulez-vous faire ?
 │  │  ├─ Tests d'abord? → /tdd
 │  │  └─ Tests après? → /test
 │  │
-│  ├─ Composant React → /component
-│  ├─ Custom Hook → /hook
-│  └─ API endpoint → /api
+│  ├─ Web
+│  │  ├─ Composant React → /component
+│  │  ├─ Custom Hook → /hook
+│  │  └─ API endpoint → /api
+│  │
+│  └─ Mobile (Flutter)
+│     ├─ Widget/Screen → /flutter
+│     ├─ Backend Supabase → /supabase
+│     └─ GraphQL client → /graphql
 │
 ├─ Corriger un problème
 │  ├─ Bug connu → /debug
@@ -289,4 +315,15 @@ Que voulez-vous faire ?
 /coverage    # 2. Couverture tests
 /perf        # 3. Performance
 /refactor    # 4. Refactoring
+```
+
+### Application mobile Flutter
+```bash
+/explore     # 1. Comprendre l'existant
+/plan        # 2. Planifier la feature
+/flutter     # 3. Créer widgets/screens
+/supabase    # 4. Backend si nécessaire
+/mobile      # 5. Audit qualité mobile
+/commit      # 6. Commiter
+/pr          # 7. Pull Request
 ```

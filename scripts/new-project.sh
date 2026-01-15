@@ -104,6 +104,7 @@ ${BOLD}TYPES DE PROJET${NC}
     rust        Rust (Actix, Axum, Rocket)
     java        Java / Spring Boot
     fullstack   Monorepo (Turborepo, Nx)
+    flutter     Flutter / Dart (iOS, Android, Web)
     generic     Autre / Générique
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
@@ -379,6 +380,45 @@ detect_stack() {
         fi
     fi
 
+    # Détecter Flutter / Dart
+    if [[ -f "$dir/pubspec.yaml" ]]; then
+        if [[ -z "$DETECTED_TYPE" ]]; then
+            DETECTED_TYPE="flutter"
+            DETECTED_FRAMEWORK="Flutter"
+        fi
+        DETECTED_DEPENDENCIES+=("Flutter" "Dart")
+
+        # Détecter les packages Flutter courants
+        if grep -q "supabase" "$dir/pubspec.yaml" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("Supabase")
+        fi
+        if grep -q "firebase" "$dir/pubspec.yaml" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("Firebase")
+        fi
+        if grep -q "riverpod\|flutter_riverpod" "$dir/pubspec.yaml" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("Riverpod")
+        elif grep -q "provider" "$dir/pubspec.yaml" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("Provider")
+        elif grep -q "bloc\|flutter_bloc" "$dir/pubspec.yaml" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("BLoC")
+        fi
+        if grep -q "graphql" "$dir/pubspec.yaml" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("GraphQL")
+        fi
+
+        # Détecter les plateformes cibles
+        local platforms=()
+        [[ -d "$dir/android" ]] && platforms+=("Android")
+        [[ -d "$dir/ios" ]] && platforms+=("iOS")
+        [[ -d "$dir/web" ]] && platforms+=("Web")
+        [[ -d "$dir/macos" ]] && platforms+=("macOS")
+        [[ -d "$dir/linux" ]] && platforms+=("Linux")
+        [[ -d "$dir/windows" ]] && platforms+=("Windows")
+        if [[ ${#platforms[@]} -gt 0 ]]; then
+            DETECTED_DEPENDENCIES+=("Platforms: ${platforms[*]}")
+        fi
+    fi
+
     # Détecter Monorepo / Fullstack
     if [[ -d "$dir/packages" ]] || [[ -d "$dir/apps" ]]; then
         if [[ -f "$dir/package.json" ]] && grep -q '"workspaces"' "$dir/package.json" 2>/dev/null; then
@@ -527,8 +567,8 @@ extract_python_dependencies() {
 detect_folder_structure() {
     local dir="$1"
 
-    # Détecter les dossiers courants
-    local common_folders=("src" "lib" "app" "pages" "components" "services" "utils" "hooks" "api" "routes" "controllers" "models" "views" "tests" "test" "__tests__" "spec" "public" "static" "assets" "styles" "config" "scripts" "docs" "packages" "apps")
+    # Détecter les dossiers courants (incluant Flutter: lib, android, ios, web, macos, linux, windows)
+    local common_folders=("src" "lib" "app" "pages" "components" "services" "utils" "hooks" "api" "routes" "controllers" "models" "views" "tests" "test" "__tests__" "spec" "public" "static" "assets" "styles" "config" "scripts" "docs" "packages" "apps" "android" "ios" "web" "macos" "linux" "windows" "widgets" "screens" "providers" "blocs" "repositories")
 
     for folder in "${common_folders[@]}"; do
         if [[ -d "$dir/$folder" ]]; then
@@ -784,6 +824,19 @@ EOF
 | `go build` | Compiler |
 EOF
                 ;;
+            flutter)
+                cat >> "$output_file" << 'EOF'
+| Commande | Description |
+|----------|-------------|
+| `flutter pub get` | Installer les dépendances |
+| `flutter run` | Lancer en mode debug |
+| `flutter test` | Lancer les tests |
+| `flutter build apk` | Build Android |
+| `flutter build ios` | Build iOS |
+| `flutter build web` | Build Web |
+| `flutter analyze` | Analyser le code |
+EOF
+                ;;
             *)
                 cat >> "$output_file" << 'EOF'
 | Commande | Description |
@@ -834,6 +887,16 @@ EOF
                 docs)        desc="Documentation" ;;
                 packages)    desc="Packages du monorepo" ;;
                 apps)        desc="Applications du monorepo" ;;
+                android)     desc="Code Android natif" ;;
+                ios)         desc="Code iOS natif" ;;
+                macos)       desc="Code macOS natif" ;;
+                linux)       desc="Code Linux natif" ;;
+                windows)     desc="Code Windows natif" ;;
+                widgets)     desc="Widgets Flutter réutilisables" ;;
+                screens)     desc="Écrans de l'application" ;;
+                providers)   desc="State management (Provider/Riverpod)" ;;
+                blocs)       desc="State management (BLoC)" ;;
+                repositories) desc="Couche d'accès aux données" ;;
                 *)           desc="$folder" ;;
             esac
 
@@ -993,6 +1056,7 @@ get_project_type() {
         rust)      default_choice="6" ;;
         java)      default_choice="7" ;;
         fullstack) default_choice="8" ;;
+        flutter)   default_choice="9" ;;
         *)         default_choice="" ;;
     esac
 
@@ -1015,16 +1079,16 @@ get_project_type() {
     print_option "6" "Rust"
     print_option "7" "Java / Spring Boot"
     print_option "8" "Fullstack (Monorepo)"
-    print_option "9" "Autre / Générique"
+    print_option "9" "Flutter / Mobile"
+    print_option "10" "Autre / Générique"
     echo ""
 
     if [[ -n "$default_choice" ]]; then
-        prompt "Choix [1-9] (défaut: $default_choice):"
+        prompt "Choix [1-10] (défaut: $default_choice): "
     else
-        prompt "Choix [1-9]:"
+        prompt "Choix [1-10]: "
     fi
-    read -r -n 1 choice
-    echo ""
+    read -r choice
 
     # Utiliser le défaut si entrée vide
     if [[ -z "$choice" ]] && [[ -n "$default_choice" ]]; then
@@ -1040,7 +1104,8 @@ get_project_type() {
         6) PROJECT_TYPE="rust" ;;
         7) PROJECT_TYPE="java" ;;
         8) PROJECT_TYPE="fullstack" ;;
-        9) PROJECT_TYPE="generic" ;;
+        9) PROJECT_TYPE="flutter" ;;
+        10) PROJECT_TYPE="generic" ;;
         *) PROJECT_TYPE="${DETECTED_TYPE:-generic}" ;;
     esac
 }
@@ -1201,6 +1266,7 @@ create_project() {
                 rust)      cp "$SOCLE_DIR/templates/CLAUDE.rust.md" CLAUDE.md ;;
                 java)      cp "$SOCLE_DIR/templates/CLAUDE.java.md" CLAUDE.md ;;
                 fullstack) cp "$SOCLE_DIR/templates/CLAUDE.fullstack.md" CLAUDE.md ;;
+                flutter)   cp "$SOCLE_DIR/templates/CLAUDE.flutter.md" CLAUDE.md ;;
                 *)         cp "$SOCLE_DIR/CLAUDE.md" CLAUDE.md ;;
             esac
 
@@ -1388,6 +1454,23 @@ WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
+EOF
+            ;;
+        flutter)
+            cat > Dockerfile << 'EOF'
+# Flutter Web Build
+FROM ghcr.io/cirruslabs/flutter:stable AS builder
+WORKDIR /app
+COPY pubspec.* ./
+RUN flutter pub get
+COPY . .
+RUN flutter build web --release
+
+# Production stage (nginx for web)
+FROM nginx:alpine
+COPY --from=builder /app/build/web /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
 EOF
             ;;
         *)
