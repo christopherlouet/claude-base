@@ -137,7 +137,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (79)
+## Agents Disponibles (83)
 
 ### Orchestrateur
 | Commande | Usage |
@@ -156,7 +156,7 @@ type(scope): description courte
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (10)
+### DEV- : Développement (13)
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD |
@@ -169,8 +169,11 @@ type(scope): description courte
 | `/dev-component` | Créer un composant UI complet |
 | `/dev-hook` | Créer un hook React/Vue |
 | `/dev-error-handling` | Stratégie de gestion d'erreurs |
+| `/dev-flutter` | Widgets et screens Flutter |
+| `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
+| `/dev-graphql` | API GraphQL client/serveur |
 
-### QA- : Qualité (8)
+### QA- : Qualité (9)
 | Commande | Usage |
 |----------|-------|
 | `/qa-review` | Code review approfondie |
@@ -178,9 +181,10 @@ type(scope): description courte
 | `/qa-perf` | Analyse de performance |
 | `/qa-a11y` | Audit accessibilité WCAG |
 | `/qa-audit` | Audit qualité complet |
-| `/qa-responsive` | Audit responsive/mobile |
+| `/qa-responsive` | Audit responsive/mobile web |
 | `/qa-automation` | Automatisation des tests |
 | `/qa-coverage` | Analyse couverture de tests |
+| `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
 
 ### OPS- : Opérations (16)
 | Commande | Usage |
@@ -291,6 +295,11 @@ Pour choisir le bon agent :
 ### Audit complet
 ```bash
 /qa-audit  # Sécurité + RGPD + A11y + Perf
+```
+
+### Application mobile Flutter
+```bash
+/work-explore → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
 ```
 
 ## Hooks (Claude Code 2.1+)

@@ -279,6 +279,75 @@ Utiliser le workflow Feature Development pour chaque feature
 
 ---
 
+## Workflow : Application Mobile Flutter
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                   MOBILE APP WORKFLOW (Flutter)                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐     │
+│  │ EXPLORE  │ → │  PLAN    │ → │   DEV    │ → │   QA     │      │
+│  └──────────┘    └──────────┘    └──────────┘    └──────────┘     │
+│       ↓               ↓               ↓               ↓            │
+│  /explore         /plan          /flutter        /mobile           │
+│  Archi Flutter                   /supabase       /a11y             │
+│                                  /graphql        /perf             │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Phase 1 : Exploration et planification
+```bash
+# Comprendre l'architecture Flutter existante (si applicable)
+/explore lib/features
+
+# Planifier la feature mobile
+/plan Créer un écran de profil utilisateur avec édition
+```
+
+### Phase 2 : Développement
+```bash
+# Créer les widgets et screens Flutter
+/flutter UserProfileScreen avec BLoC et Clean Architecture
+
+# Configurer le backend Supabase
+/supabase Auth + Database pour la feature profil
+
+# Ou utiliser GraphQL si préféré
+/graphql Queries et mutations pour le profil utilisateur
+```
+
+### Phase 3 : Qualité
+```bash
+# Audit complet mobile
+/mobile    # Performance, accessibilité, responsive
+
+# Tests complémentaires si nécessaire
+/a11y      # Accessibilité approfondie
+/perf      # Performance détaillée
+```
+
+### Phase 4 : Commit et PR
+```bash
+/commit
+/pr
+```
+
+### Structure de projet Flutter recommandée
+```
+lib/
+├── features/[feature]/
+│   ├── data/          # Sources de données, models, repos impl
+│   ├── domain/        # Entities, repos interfaces, usecases
+│   └── presentation/  # BLoC, pages, widgets
+├── core/              # Constantes, erreurs, utils
+├── shared/            # Widgets et thèmes partagés
+└── config/            # Routes, injection
+```
+
+---
+
 ## Workflow : Migration
 
 ```
@@ -420,6 +489,7 @@ npm run dev
 | Release | Release | audit → changelog → release |
 | Refactoring | Refactoring | coverage → test → refactor |
 | Nouveau projet | New Project | model → mvp → docker → ci |
+| App mobile Flutter | Mobile App | flutter → supabase → mobile |
 | Migration | Migration | migrate → test → verify |
 | Incident | Incident | monitoring → hotfix |
 | Onboarding | Onboarding | onboard → explore → explain |
