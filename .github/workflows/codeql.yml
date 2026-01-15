@@ -30,7 +30,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check for source files
+        id: check-files
+        run: |
+          if find . -type f \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \) -not -path "./node_modules/*" | grep -q .; then
+            echo "has_source=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_source=false" >> $GITHUB_OUTPUT
+            echo "::notice::No JavaScript/TypeScript source files found, skipping CodeQL analysis"
+          fi
+
       - name: Initialize CodeQL
+        if: steps.check-files.outputs.has_source == 'true'
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
@@ -39,9 +50,11 @@ jobs:
 
       # Autobuild attempts to build any compiled languages
       - name: Autobuild
+        if: steps.check-files.outputs.has_source == 'true'
         uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
+        if: steps.check-files.outputs.has_source == 'true'
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"
