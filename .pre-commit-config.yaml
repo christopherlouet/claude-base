@@ -1,0 +1,81 @@
+# Pre-commit hooks configuration
+# Installation: pip install pre-commit && pre-commit install
+
+repos:
+  # General hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML syntax
+      - id: check-json
+        name: Check JSON syntax
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: detect-private-key
+        name: Detect private keys
+      - id: no-commit-to-branch
+        name: Prevent commits to main
+        args: ['--branch', 'main']
+
+  # Commit message format
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.13.0
+    hooks:
+      - id: commitizen
+        name: Check commit message format
+        stages: [commit-msg]
+
+  # JavaScript/TypeScript
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: npx eslint --fix
+        language: system
+        types: [javascript, jsx, ts, tsx]
+        pass_filenames: true
+
+      - id: prettier
+        name: Prettier
+        entry: npx prettier --write
+        language: system
+        types: [javascript, jsx, ts, tsx, json, css, scss, md]
+        pass_filenames: true
+
+      - id: typecheck
+        name: TypeScript Check
+        entry: npx tsc --noEmit
+        language: system
+        types: [ts, tsx]
+        pass_filenames: false
+
+  # Tests (optional - can be slow)
+  # - repo: local
+  #   hooks:
+  #     - id: test
+  #       name: Run tests
+  #       entry: npm test --
+  #       language: system
+  #       pass_filenames: false
+  #       stages: [push]
+
+  # Security
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        name: Detect secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: package-lock.json
+
+# Configuration
+default_stages: [commit]
+fail_fast: false

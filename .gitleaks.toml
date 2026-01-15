@@ -1,0 +1,195 @@
+# =============================================================================
+# Gitleaks Configuration for claude-socle
+# Documentation: https://github.com/gitleaks/gitleaks
+# =============================================================================
+
+title = "claude-socle gitleaks config"
+
+# =============================================================================
+# Rules - Patterns de secrets à détecter
+# =============================================================================
+
+[[rules]]
+id = "aws-access-key-id"
+description = "AWS Access Key ID"
+regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+tags = ["aws", "credentials"]
+
+[[rules]]
+id = "aws-secret-access-key"
+description = "AWS Secret Access Key"
+regex = '''(?i)aws_secret_access_key\s*[=:]\s*['"]?[A-Za-z0-9/+=]{40}['"]?'''
+tags = ["aws", "credentials"]
+
+[[rules]]
+id = "github-token"
+description = "GitHub Token"
+regex = '''(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,}'''
+tags = ["github", "token"]
+
+[[rules]]
+id = "github-fine-grained-token"
+description = "GitHub Fine-Grained Personal Access Token"
+regex = '''github_pat_[A-Za-z0-9_]{22,}'''
+tags = ["github", "token"]
+
+[[rules]]
+id = "gitlab-token"
+description = "GitLab Token"
+regex = '''glpat-[A-Za-z0-9\-=_]{20,}'''
+tags = ["gitlab", "token"]
+
+[[rules]]
+id = "google-api-key"
+description = "Google API Key"
+regex = '''AIza[0-9A-Za-z\-_]{35}'''
+tags = ["google", "api"]
+
+[[rules]]
+id = "stripe-secret-key"
+description = "Stripe Secret Key"
+regex = '''sk_live_[0-9a-zA-Z]{24,}'''
+tags = ["stripe", "payment"]
+
+[[rules]]
+id = "stripe-publishable-key"
+description = "Stripe Publishable Key"
+regex = '''pk_live_[0-9a-zA-Z]{24,}'''
+tags = ["stripe", "payment"]
+
+[[rules]]
+id = "slack-token"
+description = "Slack Token"
+regex = '''xox[baprs]-[0-9]{10,13}-[0-9]{10,13}[a-zA-Z0-9-]*'''
+tags = ["slack", "token"]
+
+[[rules]]
+id = "slack-webhook"
+description = "Slack Webhook URL"
+regex = '''https://hooks\.slack\.com/services/T[A-Z0-9]+/B[A-Z0-9]+/[A-Za-z0-9]+'''
+tags = ["slack", "webhook"]
+
+[[rules]]
+id = "twilio-api-key"
+description = "Twilio API Key"
+regex = '''SK[0-9a-fA-F]{32}'''
+tags = ["twilio", "api"]
+
+[[rules]]
+id = "sendgrid-api-key"
+description = "SendGrid API Key"
+regex = '''SG\.[A-Za-z0-9\-_]{22}\.[A-Za-z0-9\-_]{43}'''
+tags = ["sendgrid", "api"]
+
+[[rules]]
+id = "mailgun-api-key"
+description = "Mailgun API Key"
+regex = '''key-[0-9a-zA-Z]{32}'''
+tags = ["mailgun", "api"]
+
+[[rules]]
+id = "npm-token"
+description = "NPM Access Token"
+regex = '''npm_[A-Za-z0-9]{36}'''
+tags = ["npm", "token"]
+
+[[rules]]
+id = "pypi-token"
+description = "PyPI API Token"
+regex = '''pypi-AgEIcHlwaS5vcmc[A-Za-z0-9\-_]{50,}'''
+tags = ["pypi", "token"]
+
+[[rules]]
+id = "heroku-api-key"
+description = "Heroku API Key"
+regex = '''(?i)heroku[_-]?api[_-]?key\s*[=:]\s*['"]?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}['"]?'''
+tags = ["heroku", "api"]
+
+[[rules]]
+id = "firebase-key"
+description = "Firebase API Key"
+regex = '''(?i)firebase[_-]?api[_-]?key\s*[=:]\s*['"]?AIza[0-9A-Za-z\-_]{35}['"]?'''
+tags = ["firebase", "api"]
+
+[[rules]]
+id = "jwt-token"
+description = "JWT Token"
+regex = '''eyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+'''
+tags = ["jwt", "token"]
+
+[[rules]]
+id = "private-key"
+description = "Private Key"
+regex = '''-----BEGIN (RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY( BLOCK)?-----'''
+tags = ["key", "private"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(api[_-]?key|apikey)\s*[=:]\s*['"]?[A-Za-z0-9_\-]{20,}['"]?'''
+tags = ["generic", "api"]
+
+[[rules]]
+id = "generic-secret"
+description = "Generic Secret"
+regex = '''(?i)(secret|password|passwd|pwd)\s*[=:]\s*['"]?[^\s'"]{8,}['"]?'''
+tags = ["generic", "secret"]
+
+[[rules]]
+id = "database-url"
+description = "Database Connection String"
+regex = '''(?i)(mongodb|postgres|mysql|redis|amqp)://[^\s'"]+:[^\s'"]+@[^\s'"]+'''
+tags = ["database", "credentials"]
+
+[[rules]]
+id = "basic-auth-header"
+description = "Basic Auth Header"
+regex = '''(?i)authorization:\s*basic\s+[A-Za-z0-9+/=]{20,}'''
+tags = ["auth", "header"]
+
+[[rules]]
+id = "bearer-token"
+description = "Bearer Token"
+regex = '''(?i)authorization:\s*bearer\s+[A-Za-z0-9\-_.]+'''
+tags = ["auth", "token"]
+
+# =============================================================================
+# Allowlist - Patterns à ignorer (faux positifs)
+# =============================================================================
+
+[allowlist]
+description = "Allowlist for false positives"
+
+paths = [
+    '''\.example$''',
+    '''\.sample$''',
+    '''\.template$''',
+    '''\.md$''',
+    '''\.txt$''',
+    '''node_modules/''',
+    '''\.git/''',
+    '''dist/''',
+    '''build/''',
+    '''coverage/''',
+    '''__pycache__/''',
+    '''\.venv/''',
+    '''venv/'''
+]
+
+regexes = [
+    '''test[-_]?secret''',
+    '''fake[-_]?key''',
+    '''mock[-_]?token''',
+    '''dummy[-_]?password''',
+    '''example[-_]?api[-_]?key''',
+    '''placeholder''',
+    '''your[-_]?api[-_]?key[-_]?here''',
+    '''xxx+''',
+    '''CHANGE[-_]?ME''',
+    '''<[A-Z_]+>''',
+    '''\$\{[A-Z_]+\}''',
+    '''process\.env\.[A-Z_]+''',
+    '''env\(['"][A-Z_]+['"]\)'''
+]
+
+commits = []
