@@ -45,6 +45,67 @@ Faire quelque chose.
 EOF
 }
 
+# Créer un fichier de commande dans un sous-répertoire (nouvelle structure)
+create_test_command_in_subdir() {
+    local category="$1"
+    local name="$2"
+    local dir="${3:-$TEST_DIR}"
+    mkdir -p "$dir/.claude/commands/$category"
+    cat > "$dir/.claude/commands/$category/$name.md" << EOF
+# Agent $name
+
+Description de test pour $name.
+
+## Instructions
+
+Faire quelque chose.
+EOF
+}
+
+# Créer un skill de test
+create_test_skill() {
+    local name="$1"
+    local dir="${2:-$TEST_DIR}"
+    mkdir -p "$dir/.claude/skills/$name"
+    cat > "$dir/.claude/skills/$name/SKILL.md" << EOF
+---
+name: $name
+description: Skill de test
+---
+
+# Skill $name
+
+Instructions du skill.
+EOF
+}
+
+# Créer un settings.json avec hooks
+create_settings_with_hooks() {
+    local dir="${1:-$TEST_DIR}"
+    cat > "$dir/.claude/settings.json" << EOF
+{
+  "permissions": {
+    "allow": ["Edit", "Write"],
+    "deny": ["Bash(rm -rf:*)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "command": "echo pre-edit"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "command": "echo post-edit"
+      }
+    ]
+  }
+}
+EOF
+}
+
 # Vérifier si gitleaks est installé
 skip_if_no_gitleaks() {
     if ! command -v gitleaks &>/dev/null; then
