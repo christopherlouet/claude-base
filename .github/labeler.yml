@@ -1,0 +1,73 @@
+# Labeler configuration for automatic PR labeling
+# See: https://github.com/actions/labeler
+
+# Documentation
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'docs/**'
+      - '*.md'
+      - 'templates/*.md'
+
+# Scripts
+scripts:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'scripts/**'
+
+# Agents/Commands
+agents:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.claude/commands/**'
+
+# Skills
+skills:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.claude/skills/**'
+
+# Configuration
+config:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.claude/settings*.json'
+      - '.mcp.json'
+      - '*.toml'
+      - '*.json'
+
+# CI/CD
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+
+# Tests
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'tests/**'
+      - '*.bats'
+
+# Templates
+templates:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'templates/**'
+
+# Neovim
+neovim:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'templates/CLAUDE.neovim.md'
+      - '.claude/commands/dev-neovim.md'
+      - '.claude/commands/qa-neovim.md'
+
+# Flutter/Mobile
+flutter:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'templates/CLAUDE.flutter.md'
+      - '.claude/commands/dev-flutter.md'
+      - '.claude/commands/dev-supabase.md'
+      - '.claude/commands/qa-mobile.md'
