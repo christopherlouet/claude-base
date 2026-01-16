@@ -166,7 +166,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (86)
+## Agents Disponibles (88)
 
 ### Orchestrateur
 | Commande | Usage |
@@ -185,7 +185,7 @@ type(scope): description courte
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (15)
+### DEV- : Développement (16)
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD |
@@ -199,12 +199,13 @@ type(scope): description courte
 | `/dev-hook` | Créer un hook React/Vue |
 | `/dev-error-handling` | Stratégie de gestion d'erreurs |
 | `/dev-react-perf` | Optimisation performance React/Next.js |
+| `/dev-mcp` | Créer des serveurs MCP (Model Context Protocol) |
 | `/dev-flutter` | Widgets et screens Flutter |
 | `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
 | `/dev-graphql` | API GraphQL client/serveur |
 | `/dev-neovim` | Plugins et config Neovim/Lua |
 
-### QA- : Qualité (10)
+### QA- : Qualité (11)
 | Commande | Usage |
 |----------|-------|
 | `/qa-review` | Code review approfondie |
@@ -215,6 +216,7 @@ type(scope): description courte
 | `/qa-responsive` | Audit responsive/mobile web |
 | `/qa-automation` | Automatisation des tests |
 | `/qa-coverage` | Analyse couverture de tests |
+| `/qa-kaizen` | Amélioration continue (PDCA, Muda) |
 | `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
 | `/qa-neovim` | Audit config Neovim (perf, keymaps) |
 
