@@ -54,12 +54,12 @@ teardown() {
     [ "$status" -eq 0 ]
 
     # 2. Modification d'un fichier
-    echo "# Custom modification" >> "$TEST_DIR/.claude/commands/work-explore.md"
+    echo "# Custom modification" >> "$TEST_DIR/.claude/commands/work/work-explore.md"
 
     # 3. Diff détecte la modification (retourne 1 car il y a des différences)
     run "$DIFF_SCRIPT" "$TEST_DIR"
     [ "$status" -eq 1 ]
-    [[ "$output" == *"work-explore.md"* ]]
+    [[ "$output" == *"work/work-explore.md"* ]] || [[ "$output" == *"work-explore.md"* ]]
 
     # 4. Update restaure les fichiers
     run "$UPDATE_SCRIPT" -y --force "$TEST_DIR"
@@ -242,15 +242,15 @@ EOF
 @test "E2E: Tous les agents sont présents et valides" {
     SOCLE_DIR="$BATS_TEST_DIRNAME/.."
 
-    # Compter les agents
-    agent_count=$(ls "$SOCLE_DIR/.claude/commands/"*.md 2>/dev/null | wc -l)
+    # Compter les agents (récursivement dans les sous-répertoires)
+    agent_count=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l)
     [ "$agent_count" -ge 70 ]
 
     # Vérifier que chaque agent a un titre
-    for agent in "$SOCLE_DIR/.claude/commands/"*.md; do
+    while IFS= read -r agent; do
         run head -1 "$agent"
         [[ "$output" == "# "* ]]
-    done
+    done < <(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null)
 }
 
 @test "E2E: Tous les skills sont présents et valides" {
