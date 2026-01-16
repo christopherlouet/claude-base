@@ -1305,11 +1305,17 @@ create_project() {
 
     # Générer ou copier CLAUDE.md
     if [[ ! -f "CLAUDE.md" ]]; then
-        if $EXISTING_PROJECT && [[ ${#DETECTED_SCRIPTS[@]} -gt 0 || ${#DETECTED_FOLDERS[@]} -gt 0 ]]; then
-            # Générer un CLAUDE.md intelligent pour les projets existants
-            generate_smart_claude_md "CLAUDE.md"
-        else
-            # Copier le template pour les nouveaux projets
+        # Utiliser le template spécifique si un type est détecté
+        # La génération intelligente est réservée aux projets sans template dédié
+        local use_template=false
+        case $PROJECT_TYPE in
+            react|vue|node-api|python|go|rust|java|fullstack|flutter|neovim)
+                use_template=true
+                ;;
+        esac
+
+        if $use_template; then
+            # Copier le template spécifique au type de projet
             info "Configuration du template CLAUDE.md..."
             case $PROJECT_TYPE in
                 react)     cp "$SOCLE_DIR/templates/CLAUDE.react.md" CLAUDE.md ;;
@@ -1322,8 +1328,15 @@ create_project() {
                 fullstack) cp "$SOCLE_DIR/templates/CLAUDE.fullstack.md" CLAUDE.md ;;
                 flutter)   cp "$SOCLE_DIR/templates/CLAUDE.flutter.md" CLAUDE.md ;;
                 neovim)    cp "$SOCLE_DIR/templates/CLAUDE.neovim.md" CLAUDE.md ;;
-                *)         cp "$SOCLE_DIR/CLAUDE.md" CLAUDE.md ;;
             esac
+            success "Template CLAUDE.md configuré (${PROJECT_TYPE})"
+        elif $EXISTING_PROJECT && [[ ${#DETECTED_SCRIPTS[@]} -gt 0 || ${#DETECTED_FOLDERS[@]} -gt 0 ]]; then
+            # Générer un CLAUDE.md intelligent pour les projets existants sans template
+            generate_smart_claude_md "CLAUDE.md"
+        else
+            # Copier le template générique
+            info "Configuration du template CLAUDE.md..."
+            cp "$SOCLE_DIR/CLAUDE.md" CLAUDE.md
 
             # Remplacer le nom du projet dans CLAUDE.md
             sed -i "s/# Projet .*/# Projet ${PROJECT_NAME}/" CLAUDE.md 2>/dev/null || \
