@@ -79,6 +79,11 @@ Ce projet est une application e-commerce B2B.
 - **Projet**: `.claude/commands/` (partagé via git)
 - **Personnel**: `~/.claude/commands/` (global)
 
+> **Note**: Les commandes du socle sont organisées en sous-répertoires par catégorie
+> (work/, dev/, qa/, ops/, doc/, biz/, growth/, data/, legal/).
+> Vos commandes personnalisées peuvent être à la racine de `.claude/commands/`
+> ou dans un sous-répertoire de votre choix.
+
 ### Structure d'une commande
 
 ```markdown

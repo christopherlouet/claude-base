@@ -15,7 +15,7 @@ Template de configuration Claude Code pour un workflow de développement optimal
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://docs.anthropic.com/en/docs/claude-code) qui permet de :
 
 - Structurer ton workflow de développement : **Explore → Plan → Code → Commit**
-- Disposer de **85 agents spécialisés** pour différentes tâches
+- Disposer de **88 agents spécialisés** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
 - Intégrer CI/CD et hooks pre-commit prêts à l'emploi
@@ -64,31 +64,28 @@ claude-socle/
 ├── .claude/
 │   ├── settings.json            # Permissions et hooks
 │   ├── skills/                  # 9 skills spécialisés
-│   └── commands/                # 85 agents disponibles
-│       ├── explore.md           # Exploration de code
-│       ├── plan.md              # Planification
-│       ├── commit.md            # Commits
-│       ├── pr.md                # Pull Requests
-│       ├── review.md            # Code review
-│       ├── tdd.md               # Test-Driven Development
-│       ├── test.md              # Génération de tests
-│       ├── debug.md             # Débogage
-│       ├── refactor.md          # Refactoring
-│       ├── security.md          # Audit sécurité
-│       ├── perf.md              # Performance
-│       ├── migrate.md           # Migrations
-│       ├── doc.md               # Documentation
-│       ├── fix-issue.md         # Correction d'issues
-│       ├── hotfix.md            # Corrections urgentes
-│       ├── release.md           # Releases
-│       ├── onboard.md           # Onboarding
-│       ├── explain.md           # Explications de code
-│       ├── api.md               # Création d'API
-│       ├── a11y.md              # Accessibilité
-│       ├── i18n.md              # Internationalisation
-│       ├── changelog.md         # Génération changelog
-│       ├── deps.md              # Audit dépendances
-│       └── docker.md            # Dockerisation
+│   └── commands/                # 88 agents disponibles
+│       ├── assistant.md         # Orchestrateur principal
+│       ├── work/                # Workflow (8 agents)
+│       │   ├── work-explore.md
+│       │   ├── work-plan.md
+│       │   ├── work-commit.md
+│       │   ├── work-pr.md
+│       │   └── ...
+│       ├── dev/                 # Développement (16 agents)
+│       │   ├── dev-tdd.md
+│       │   ├── dev-api.md
+│       │   └── ...
+│       ├── qa/                  # Qualité (11 agents)
+│       │   ├── qa-review.md
+│       │   ├── qa-security.md
+│       │   └── ...
+│       ├── ops/                 # Opérations (16 agents)
+│       ├── doc/                 # Documentation (9 agents)
+│       ├── biz/                 # Business (11 agents)
+│       ├── growth/              # Croissance (8 agents)
+│       ├── data/                # Données (3 agents)
+│       └── legal/               # Légal (5 agents)
 │
 ├── .mcp.json                    # Configuration MCP
 │
@@ -141,7 +138,7 @@ claude-socle/
     └── ALIASES.md               # Alias de commandes
 ```
 
-## Agents Disponibles (85)
+## Agents Disponibles (88)
 
 ### Workflow Principal
 
