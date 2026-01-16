@@ -395,6 +395,71 @@ nvim --startuptime /tmp/startup.log
 | Syntax check | PostToolUse | `nvim --headless "+luafile %" +qa` |
 | Détection secrets | PreToolUse | Bloque les secrets hardcodés |
 
+### Configuration des hooks Lua
+
+Ajouter dans `.claude/settings.local.json` :
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v stylua &>/dev/null && [[ \"$CLAUDE_FILE\" == *.lua ]]; then stylua \"$CLAUDE_FILE\"; fi",
+            "description": "Format Lua with stylua"
+          },
+          {
+            "type": "command",
+            "command": "if command -v luacheck &>/dev/null && [[ \"$CLAUDE_FILE\" == *.lua ]]; then luacheck \"$CLAUDE_FILE\" --no-color 2>&1 | head -20; fi",
+            "description": "Lint Lua with luacheck"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Outils de qualité Lua
+
+Installation :
+```bash
+# macOS
+brew install stylua luacheck
+
+# Linux (via luarocks)
+luarocks install luacheck
+cargo install stylua
+
+# Avec mise (gestionnaire de versions)
+mise use -g stylua
+mise use -g luacheck
+```
+
+Configuration recommandée :
+
+```toml
+# .stylua.toml
+column_width = 120
+line_endings = "Unix"
+indent_type = "Spaces"
+indent_width = 2
+quote_style = "AutoPreferDouble"
+call_parentheses = "Always"
+```
+
+```lua
+-- .luacheckrc
+std = "lua51+luajit"
+cache = true
+max_line_length = 120
+globals = { "vim" }
+ignore = { "212" }  -- Unused argument
+```
+
 ## Skills disponibles
 
 | Skill | Déclenchement | Usage |
