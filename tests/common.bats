@@ -108,6 +108,16 @@ teardown() {
     [ "$output" -eq 1 ]
 }
 
+@test "count_agents compte les fichiers .md dans les sous-répertoires" {
+    create_minimal_project
+    create_test_command_in_subdir "work" "work-explore"
+    create_test_command_in_subdir "work" "work-plan"
+    create_test_command_in_subdir "dev" "dev-tdd"
+    run count_agents "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ "$output" -eq 3 ]
+}
+
 @test "count_skills compte les répertoires dans skills" {
     create_minimal_project
     mkdir -p "$TEST_DIR/.claude/skills/skill1"
@@ -115,4 +125,49 @@ teardown() {
     run count_skills "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ "$output" -eq 2 ]
+}
+
+# =============================================================================
+# Tests des fonctions d'affichage (smoke tests)
+# =============================================================================
+
+@test "title ne génère pas d'erreur" {
+    run title "Test Title"
+    [ "$status" -eq 0 ]
+}
+
+@test "section ne génère pas d'erreur" {
+    run section "Test Section"
+    [ "$status" -eq 0 ]
+}
+
+@test "separator ne génère pas d'erreur" {
+    run separator
+    [ "$status" -eq 0 ]
+}
+
+@test "success ne génère pas d'erreur" {
+    run success "Test success"
+    [ "$status" -eq 0 ]
+}
+
+@test "warning ne génère pas d'erreur" {
+    run warning "Test warning"
+    [ "$status" -eq 0 ]
+}
+
+@test "info ne génère pas d'erreur" {
+    run info "Test info"
+    [ "$status" -eq 0 ]
+}
+
+# =============================================================================
+# Tests SOCLE_DIR (via test_helper)
+# =============================================================================
+
+@test "SOCLE_DIR est défini et pointe vers le socle" {
+    [ -n "$SOCLE_DIR" ]
+    [ -d "$SOCLE_DIR" ]
+    [ -d "$SOCLE_DIR/scripts" ]
+    [ -f "$SOCLE_DIR/VERSION" ]
 }
