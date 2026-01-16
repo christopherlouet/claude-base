@@ -105,6 +105,7 @@ ${BOLD}TYPES DE PROJET${NC}
     java        Java / Spring Boot
     fullstack   Monorepo (Turborepo, Nx)
     flutter     Flutter / Dart (iOS, Android, Web)
+    neovim      Neovim / Lua config
     generic     Autre / Générique
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
@@ -416,6 +417,32 @@ detect_stack() {
         [[ -d "$dir/windows" ]] && platforms+=("Windows")
         if [[ ${#platforms[@]} -gt 0 ]]; then
             DETECTED_DEPENDENCIES+=("Platforms: ${platforms[*]}")
+        fi
+    fi
+
+    # Détecter Neovim config
+    if [[ -f "$dir/init.lua" ]] && [[ -d "$dir/lua" ]]; then
+        if [[ -z "$DETECTED_TYPE" ]]; then
+            DETECTED_TYPE="neovim"
+            DETECTED_FRAMEWORK="Neovim"
+        fi
+        DETECTED_DEPENDENCIES+=("Lua" "Neovim")
+
+        # Détecter le plugin manager
+        if grep -rq "lazy.nvim\|folke/lazy" "$dir/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("lazy.nvim")
+        elif grep -rq "packer.nvim\|wbthomason/packer" "$dir/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("packer.nvim")
+        fi
+
+        # Détecter LSP
+        if grep -rq "nvim-lspconfig\|neovim/nvim-lspconfig" "$dir/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("LSP")
+        fi
+
+        # Détecter Treesitter
+        if grep -rq "nvim-treesitter" "$dir/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("Treesitter")
         fi
     fi
 
@@ -1057,6 +1084,7 @@ get_project_type() {
         java)      default_choice="7" ;;
         fullstack) default_choice="8" ;;
         flutter)   default_choice="9" ;;
+        neovim)    default_choice="10" ;;
         *)         default_choice="" ;;
     esac
 
@@ -1080,13 +1108,14 @@ get_project_type() {
     print_option "7" "Java / Spring Boot"
     print_option "8" "Fullstack (Monorepo)"
     print_option "9" "Flutter / Mobile"
-    print_option "10" "Autre / Générique"
+    print_option "10" "Neovim / Lua"
+    print_option "11" "Autre / Générique"
     echo ""
 
     if [[ -n "$default_choice" ]]; then
-        prompt "Choix [1-10] (défaut: $default_choice): "
+        prompt "Choix [1-11] (défaut: $default_choice): "
     else
-        prompt "Choix [1-10]: "
+        prompt "Choix [1-11]: "
     fi
     read -r choice
 
@@ -1105,7 +1134,8 @@ get_project_type() {
         7) PROJECT_TYPE="java" ;;
         8) PROJECT_TYPE="fullstack" ;;
         9) PROJECT_TYPE="flutter" ;;
-        10) PROJECT_TYPE="generic" ;;
+        10) PROJECT_TYPE="neovim" ;;
+        11) PROJECT_TYPE="generic" ;;
         *) PROJECT_TYPE="${DETECTED_TYPE:-generic}" ;;
     esac
 }
@@ -1267,6 +1297,7 @@ create_project() {
                 java)      cp "$SOCLE_DIR/templates/CLAUDE.java.md" CLAUDE.md ;;
                 fullstack) cp "$SOCLE_DIR/templates/CLAUDE.fullstack.md" CLAUDE.md ;;
                 flutter)   cp "$SOCLE_DIR/templates/CLAUDE.flutter.md" CLAUDE.md ;;
+                neovim)    cp "$SOCLE_DIR/templates/CLAUDE.neovim.md" CLAUDE.md ;;
                 *)         cp "$SOCLE_DIR/CLAUDE.md" CLAUDE.md ;;
             esac
 

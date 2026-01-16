@@ -248,7 +248,7 @@ claude-socle/
 /pr écran profil utilisateur
 ```
 
-## Templates Disponibles (9)
+## Templates Disponibles (10)
 
 | Template | Langage/Framework |
 |----------|-------------------|
@@ -261,6 +261,7 @@ claude-socle/
 | `CLAUDE.java.md` | Java / Spring Boot |
 | `CLAUDE.fullstack.md` | Monorepo fullstack |
 | `CLAUDE.flutter.md` | Flutter / Dart (Mobile) |
+| `CLAUDE.neovim.md` | Neovim / Lua config |
 
 ```bash
 # Utiliser un template
