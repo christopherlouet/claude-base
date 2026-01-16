@@ -380,9 +380,10 @@ validate_coherence() {
 
     add_check 2
     if [[ -f "$TARGET_DIR/CLAUDE.md" ]] && [[ -d "$TARGET_DIR/.claude/commands" ]]; then
-        # Extraire les commandes mentionnées dans CLAUDE.md
+        # Extraire uniquement les commandes du socle mentionnées dans CLAUDE.md
+        # Patterns: /work-*, /dev-*, /qa-*, /ops-*, /doc-*, /biz-*, /growth-*, /data-*, /legal-*, /assistant
         local mentioned_commands
-        mentioned_commands=$(grep -oE '/[a-z0-9-]+' "$TARGET_DIR/CLAUDE.md" 2>/dev/null | sort -u || true)
+        mentioned_commands=$(grep -oE '/(work|dev|qa|ops|doc|biz|growth|data|legal)-[a-z0-9-]+|/assistant' "$TARGET_DIR/CLAUDE.md" 2>/dev/null | sort -u || true)
 
         local missing=0
         local found=0
@@ -390,14 +391,6 @@ validate_coherence() {
             local cmd_name="${cmd#/}"
             # Chercher récursivement dans les sous-répertoires
             if find "$TARGET_DIR/.claude/commands" -name "$cmd_name.md" -type f 2>/dev/null | grep -q .; then
-                ((found++)) || true
-            elif find "$TARGET_DIR/.claude/commands" -name "work-$cmd_name.md" -type f 2>/dev/null | grep -q .; then
-                ((found++)) || true
-            elif find "$TARGET_DIR/.claude/commands" -name "dev-$cmd_name.md" -type f 2>/dev/null | grep -q .; then
-                ((found++)) || true
-            elif find "$TARGET_DIR/.claude/commands" -name "qa-$cmd_name.md" -type f 2>/dev/null | grep -q .; then
-                ((found++)) || true
-            elif find "$TARGET_DIR/.claude/commands" -name "ops-$cmd_name.md" -type f 2>/dev/null | grep -q .; then
                 ((found++)) || true
             else
                 ((missing++)) || true

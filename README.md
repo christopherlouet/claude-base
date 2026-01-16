@@ -4,7 +4,7 @@
 [![CodeQL](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml)
 [![Coverage](https://codecov.io/gh/christopherlouet/claude-socle/branch/main/graph/badge.svg)](https://codecov.io/gh/christopherlouet/claude-socle)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
-[![Tests](https://img.shields.io/badge/tests-195%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-216%20passing-brightgreen)](./tests)
 [![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
 [![Release](https://img.shields.io/badge/release-v1.2.0-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 
