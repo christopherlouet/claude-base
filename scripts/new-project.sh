@@ -62,7 +62,7 @@ ${BOLD}USAGE${NC}
 
 ${BOLD}DESCRIPTION${NC}
     Crée un nouveau projet ou configure un projet existant avec Claude Code.
-    Installe 79 agents spécialisés et configure le workflow Explore → Plan → Code → Commit.
+    Installe 85 agents spécialisés et configure le workflow Explore → Plan → Code → Commit.
 
 ${BOLD}ARGUMENTS${NC}
     CHEMIN              Chemin vers un projet existant à configurer (optionnel)
@@ -105,10 +105,11 @@ ${BOLD}TYPES DE PROJET${NC}
     java        Java / Spring Boot
     fullstack   Monorepo (Turborepo, Nx)
     flutter     Flutter / Dart (iOS, Android, Web)
+    neovim      Neovim / Lua config
     generic     Autre / Générique
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
-    .claude/commands/   79 agents Claude Code
+    .claude/commands/   85 agents Claude Code
     .claude/skills/     9 skills spécialisés
     .claude/settings.json (8 hooks configurés)
     CLAUDE.md           Instructions du projet (généré intelligemment)
@@ -416,6 +417,56 @@ detect_stack() {
         [[ -d "$dir/windows" ]] && platforms+=("Windows")
         if [[ ${#platforms[@]} -gt 0 ]]; then
             DETECTED_DEPENDENCIES+=("Platforms: ${platforms[*]}")
+        fi
+    fi
+
+    # Détecter Neovim config
+    # Cherche init.lua + lua/ à la racine ou dans nvim/ (dotfiles pattern)
+    local nvim_root=""
+    if [[ -f "$dir/init.lua" ]] && [[ -d "$dir/lua" ]]; then
+        nvim_root="$dir"
+    elif [[ -f "$dir/nvim/init.lua" ]] && [[ -d "$dir/nvim/lua" ]]; then
+        nvim_root="$dir/nvim"
+    elif [[ -f "$dir/.config/nvim/init.lua" ]] && [[ -d "$dir/.config/nvim/lua" ]]; then
+        nvim_root="$dir/.config/nvim"
+    fi
+
+    if [[ -n "$nvim_root" ]]; then
+        if [[ -z "$DETECTED_TYPE" ]]; then
+            DETECTED_TYPE="neovim"
+            DETECTED_FRAMEWORK="Neovim"
+        fi
+        DETECTED_DEPENDENCIES+=("Lua" "Neovim")
+
+        # Indiquer si la config est dans un sous-dossier
+        if [[ "$nvim_root" != "$dir" ]]; then
+            local subdir="${nvim_root#$dir/}"
+            DETECTED_DEPENDENCIES+=("(config in $subdir/)")
+        fi
+
+        # Détecter le plugin manager
+        if grep -rq "lazy.nvim\|folke/lazy" "$nvim_root/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("lazy.nvim")
+        elif grep -rq "packer.nvim\|wbthomason/packer" "$nvim_root/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("packer.nvim")
+        fi
+
+        # Détecter LSP
+        if grep -rq "nvim-lspconfig\|neovim/nvim-lspconfig" "$nvim_root/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("LSP")
+        fi
+
+        # Détecter Treesitter
+        if grep -rq "nvim-treesitter" "$nvim_root/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("Treesitter")
+        fi
+
+        # Détecter d'autres plugins courants
+        if grep -rq "telescope.nvim\|nvim-telescope" "$nvim_root/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("Telescope")
+        fi
+        if grep -rq "nvim-cmp\|hrsh7th/nvim-cmp" "$nvim_root/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("nvim-cmp")
         fi
     fi
 
@@ -965,7 +1016,7 @@ EOF
 
     # Section Agents Disponibles
     cat >> "$output_file" << 'EOF'
-## Agents Disponibles (79 agents)
+## Agents Disponibles (85 agents)
 
 | Catégorie | Commandes |
 |-----------|-----------|
@@ -1057,6 +1108,7 @@ get_project_type() {
         java)      default_choice="7" ;;
         fullstack) default_choice="8" ;;
         flutter)   default_choice="9" ;;
+        neovim)    default_choice="10" ;;
         *)         default_choice="" ;;
     esac
 
@@ -1080,13 +1132,14 @@ get_project_type() {
     print_option "7" "Java / Spring Boot"
     print_option "8" "Fullstack (Monorepo)"
     print_option "9" "Flutter / Mobile"
-    print_option "10" "Autre / Générique"
+    print_option "10" "Neovim / Lua"
+    print_option "11" "Autre / Générique"
     echo ""
 
     if [[ -n "$default_choice" ]]; then
-        prompt "Choix [1-10] (défaut: $default_choice): "
+        prompt "Choix [1-11] (défaut: $default_choice): "
     else
-        prompt "Choix [1-10]: "
+        prompt "Choix [1-11]: "
     fi
     read -r choice
 
@@ -1105,7 +1158,8 @@ get_project_type() {
         7) PROJECT_TYPE="java" ;;
         8) PROJECT_TYPE="fullstack" ;;
         9) PROJECT_TYPE="flutter" ;;
-        10) PROJECT_TYPE="generic" ;;
+        10) PROJECT_TYPE="neovim" ;;
+        11) PROJECT_TYPE="generic" ;;
         *) PROJECT_TYPE="${DETECTED_TYPE:-generic}" ;;
     esac
 }
@@ -1247,15 +1301,21 @@ create_project() {
         mkdir -p .claude/skills
         cp -r "$SOCLE_DIR/.claude/skills/"* .claude/skills/
     fi
-    success "Commandes Claude installées (79 agents, 9 skills, 8 hooks)"
+    success "Commandes Claude installées (85 agents, 9 skills, 8 hooks)"
 
     # Générer ou copier CLAUDE.md
     if [[ ! -f "CLAUDE.md" ]]; then
-        if $EXISTING_PROJECT && [[ ${#DETECTED_SCRIPTS[@]} -gt 0 || ${#DETECTED_FOLDERS[@]} -gt 0 ]]; then
-            # Générer un CLAUDE.md intelligent pour les projets existants
-            generate_smart_claude_md "CLAUDE.md"
-        else
-            # Copier le template pour les nouveaux projets
+        # Utiliser le template spécifique si un type est détecté
+        # La génération intelligente est réservée aux projets sans template dédié
+        local use_template=false
+        case $PROJECT_TYPE in
+            react|vue|node-api|python|go|rust|java|fullstack|flutter|neovim)
+                use_template=true
+                ;;
+        esac
+
+        if $use_template; then
+            # Copier le template spécifique au type de projet
             info "Configuration du template CLAUDE.md..."
             case $PROJECT_TYPE in
                 react)     cp "$SOCLE_DIR/templates/CLAUDE.react.md" CLAUDE.md ;;
@@ -1267,8 +1327,16 @@ create_project() {
                 java)      cp "$SOCLE_DIR/templates/CLAUDE.java.md" CLAUDE.md ;;
                 fullstack) cp "$SOCLE_DIR/templates/CLAUDE.fullstack.md" CLAUDE.md ;;
                 flutter)   cp "$SOCLE_DIR/templates/CLAUDE.flutter.md" CLAUDE.md ;;
-                *)         cp "$SOCLE_DIR/CLAUDE.md" CLAUDE.md ;;
+                neovim)    cp "$SOCLE_DIR/templates/CLAUDE.neovim.md" CLAUDE.md ;;
             esac
+            success "Template CLAUDE.md configuré (${PROJECT_TYPE})"
+        elif $EXISTING_PROJECT && [[ ${#DETECTED_SCRIPTS[@]} -gt 0 || ${#DETECTED_FOLDERS[@]} -gt 0 ]]; then
+            # Générer un CLAUDE.md intelligent pour les projets existants sans template
+            generate_smart_claude_md "CLAUDE.md"
+        else
+            # Copier le template générique
+            info "Configuration du template CLAUDE.md..."
+            cp "$SOCLE_DIR/CLAUDE.md" CLAUDE.md
 
             # Remplacer le nom du projet dans CLAUDE.md
             sed -i "s/# Projet .*/# Projet ${PROJECT_NAME}/" CLAUDE.md 2>/dev/null || \
