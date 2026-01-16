@@ -62,7 +62,7 @@ ${BOLD}USAGE${NC}
 
 ${BOLD}DESCRIPTION${NC}
     Crée un nouveau projet ou configure un projet existant avec Claude Code.
-    Installe 79 agents spécialisés et configure le workflow Explore → Plan → Code → Commit.
+    Installe 85 agents spécialisés et configure le workflow Explore → Plan → Code → Commit.
 
 ${BOLD}ARGUMENTS${NC}
     CHEMIN              Chemin vers un projet existant à configurer (optionnel)
@@ -109,7 +109,7 @@ ${BOLD}TYPES DE PROJET${NC}
     generic     Autre / Générique
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
-    .claude/commands/   79 agents Claude Code
+    .claude/commands/   85 agents Claude Code
     .claude/skills/     9 skills spécialisés
     .claude/settings.json (8 hooks configurés)
     CLAUDE.md           Instructions du projet (généré intelligemment)
@@ -1016,7 +1016,7 @@ EOF
 
     # Section Agents Disponibles
     cat >> "$output_file" << 'EOF'
-## Agents Disponibles (79 agents)
+## Agents Disponibles (85 agents)
 
 | Catégorie | Commandes |
 |-----------|-----------|
@@ -1301,7 +1301,7 @@ create_project() {
         mkdir -p .claude/skills
         cp -r "$SOCLE_DIR/.claude/skills/"* .claude/skills/
     fi
-    success "Commandes Claude installées (79 agents, 9 skills, 8 hooks)"
+    success "Commandes Claude installées (85 agents, 9 skills, 8 hooks)"
 
     # Générer ou copier CLAUDE.md
     if [[ ! -f "CLAUDE.md" ]]; then
