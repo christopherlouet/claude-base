@@ -221,7 +221,7 @@ Bienvenue dans le tutoriel claude-socle !
 Claude-socle est un template de configuration pour Claude Code qui vous aide à :
 
   • Structurer votre workflow de développement
-  • Utiliser 79 agents spécialisés
+  • Utiliser 85 agents spécialisés
   • Suivre les meilleures pratiques
   • Automatiser les tâches répétitives
 
@@ -295,7 +295,7 @@ lesson_agents() {
     print_header "LEÇON 3: Les Agents Spécialisés"
 
     cat << 'EOF'
-Claude-socle inclut 79 agents organisés en catégories :
+Claude-socle inclut 85 agents organisés en catégories :
 
 EOF
 
@@ -654,7 +654,7 @@ learn_agent() {
                 "Les 10 langages les plus sûrs"
             ;;
         *)
-            ask_yes_no "Cet agent fait partie des 79 agents disponibles" "y"
+            ask_yes_no "Cet agent fait partie des 85 agents disponibles" "y"
             ;;
     esac
 
@@ -712,7 +712,7 @@ Ce tutoriel interactif vous guidera à travers :
 
   1. Introduction à claude-socle
   2. Le workflow Explore → Plan → Code → Commit
-  3. Les 79 agents spécialisés
+  3. Les 85 agents spécialisés
   4. Le développement TDD
   5. Les Conventional Commits
   6. Mise en pratique

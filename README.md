@@ -14,7 +14,7 @@ Template de configuration Claude Code pour un workflow de développement optimal
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://docs.anthropic.com/en/docs/claude-code) qui permet de :
 
 - Structurer ton workflow de développement : **Explore → Plan → Code → Commit**
-- Disposer de **83 agents spécialisés** pour différentes tâches
+- Disposer de **85 agents spécialisés** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
 - Intégrer CI/CD et hooks pre-commit prêts à l'emploi
@@ -63,7 +63,7 @@ claude-socle/
 ├── .claude/
 │   ├── settings.json            # Permissions et hooks
 │   ├── skills/                  # 9 skills spécialisés
-│   └── commands/                # 83 agents disponibles
+│   └── commands/                # 85 agents disponibles
 │       ├── explore.md           # Exploration de code
 │       ├── plan.md              # Planification
 │       ├── commit.md            # Commits
@@ -140,7 +140,7 @@ claude-socle/
     └── ALIASES.md               # Alias de commandes
 ```
 
-## Agents Disponibles (83)
+## Agents Disponibles (85)
 
 ### Workflow Principal
 
@@ -160,6 +160,7 @@ claude-socle/
 | `/debug [problème]` | Déboguer méthodiquement |
 | `/refactor [cible]` | Refactoring guidé |
 | `/api [endpoint]` | Créer/documenter API |
+| `/dev-neovim [plugin]` | Plugins et config Neovim/Lua |
 
 ### Qualité
 
@@ -169,6 +170,7 @@ claude-socle/
 | `/security [cible]` | Audit sécurité OWASP |
 | `/perf [cible]` | Analyse performance |
 | `/a11y [cible]` | Audit accessibilité WCAG |
+| `/qa-neovim` | Audit config Neovim |
 
 ### Maintenance
 
@@ -248,7 +250,7 @@ claude-socle/
 /pr écran profil utilisateur
 ```
 
-## Templates Disponibles (9)
+## Templates Disponibles (10)
 
 | Template | Langage/Framework |
 |----------|-------------------|
@@ -261,6 +263,7 @@ claude-socle/
 | `CLAUDE.java.md` | Java / Spring Boot |
 | `CLAUDE.fullstack.md` | Monorepo fullstack |
 | `CLAUDE.flutter.md` | Flutter / Dart (Mobile) |
+| `CLAUDE.neovim.md` | Neovim / Lua config |
 
 ```bash
 # Utiliser un template
@@ -314,7 +317,7 @@ Le socle inclut un tutoriel interactif pour apprendre à l'utiliser efficacement
 
 Le tutoriel couvre :
 - Le workflow Explore → Plan → Code → Commit
-- Les 83 agents spécialisés
+- Les 85 agents spécialisés
 - Le développement TDD
 - Les Conventional Commits
 - Quiz interactifs avec score
