@@ -146,6 +146,110 @@ debugger; // S'arrête ici si DevTools ouvert
 | **Memory leak** | Event listeners, closures, références circulaires |
 | **Régression** | Changement récent, effet de bord, dépendance MAJ |
 
+## Techniques avancées de Root-Cause Analysis
+
+### 5 Whys (Technique Toyota)
+
+Poser "Pourquoi ?" 5 fois pour remonter à la cause racine.
+
+```markdown
+**Problème:** L'application crash au login
+
+1. **Pourquoi ?** → Le token JWT est invalide
+2. **Pourquoi ?** → Le token a expiré
+3. **Pourquoi ?** → Le refresh token n'a pas été appelé
+4. **Pourquoi ?** → L'interceptor HTTP n'a pas détecté l'expiration
+5. **Pourquoi ?** → La comparaison de date utilise le mauvais timezone
+
+**Root cause:** Bug de timezone dans la logique de refresh token
+```
+
+### Fishbone Diagram (Ishikawa)
+
+Catégoriser les causes possibles par domaine.
+
+```
+                           ┌─────────────────────┐
+        Code               │                     │  Environnement
+          │                │      PROBLÈME       │        │
+    ┌─────┴─────┐          │                     │  ┌─────┴─────┐
+    │ Logic bug │          │   Application       │  │ Config    │
+    │ Type error│          │   crash au          │  │ Réseau    │
+    │ Race cond │          │   démarrage         │  │ Resources │
+    └───────────┘          │                     │  └───────────┘
+                           └─────────────────────┘
+    ┌───────────┐                                   ┌───────────┐
+    │ Version   │          Dépendances              │ Données   │
+    │ Compat.   │              │                    │ corrupted │
+    │ Missing   │              │                    │ Format    │
+    └─────┬─────┘              │                    └─────┬─────┘
+          │              Données                          │
+       Dépendances                                    Input
+```
+
+**Catégories à analyser :**
+| Catégorie | Questions |
+|-----------|-----------|
+| **Code** | Logic error? Type mismatch? Race condition? |
+| **Données** | Input invalide? Format changé? Encoding? |
+| **Dépendances** | Version incompatible? API changée? |
+| **Environnement** | Config manquante? Permissions? Réseau? |
+| **Infrastructure** | Mémoire? CPU? Disk? Timeout? |
+
+### Fault Tree Analysis (FTA)
+
+Arbre logique des causes (AND/OR).
+
+```
+                    [Application Crash]
+                           │
+              ┌────────────┴────────────┐
+              │           OR            │
+       ┌──────┴──────┐          ┌───────┴───────┐
+   [Memory Issue]          [Unhandled Exception]
+        │                         │
+   ┌────┴────┐               ┌────┴────┐
+   │   AND   │               │   OR    │
+┌──┴──┐  ┌───┴───┐     ┌─────┴─────┐  ┌────┴────┐
+[Leak] [High Load]  [Null Ref]  [Network Error]
+```
+
+### Timeline Analysis
+
+Reconstruire la séquence d'événements.
+
+```markdown
+| Timestamp | Event | État système | Notes |
+|-----------|-------|--------------|-------|
+| 10:23:01 | User login | OK | Token généré |
+| 10:23:15 | API call /users | OK | 200 response |
+| 10:23:45 | API call /data | SLOW | 5s response time |
+| 10:24:02 | Memory spike | WARNING | 85% RAM |
+| 10:24:15 | API call /export | FAIL | OOM Error ← BUG |
+```
+
+**Questions clés :**
+- Qu'est-ce qui a changé entre "ça marchait" et "ça ne marche plus" ?
+- Y a-t-il un pattern temporel (heure, jour, charge) ?
+- Quel événement précède systématiquement le bug ?
+
+### Rubber Duck Debugging
+
+Expliquer le problème à haute voix (ou par écrit) force à structurer sa pensée.
+
+```markdown
+## Explication du bug (Rubber Duck)
+
+Je cherche pourquoi [décrire le symptôme].
+
+Le code fait ceci :
+1. [Étape 1]
+2. [Étape 2]
+3. [Étape 3] ← Attends, ici je m'attends à X mais...
+
+💡 En expliquant, j'ai réalisé que [insight].
+```
+
 ## Étape 4 : Investigation
 
 ### Techniques d'investigation

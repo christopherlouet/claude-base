@@ -33,7 +33,15 @@ Ce guide vous aide à choisir le bon agent selon votre situation.
 /refactor   → Refactoring guidé
 /perf       → Optimiser les performances (générique)
 /react-perf → Optimiser React/Next.js (45 règles priorisées)
+/kaizen     → Amélioration continue (PDCA)
 /review     → Code review du refactoring
+```
+
+### "Je crée une intégration LLM"
+```
+/mcp        → Créer un serveur MCP (Python/TypeScript)
+/api        → Créer l'API sous-jacente
+/test       → Tester le serveur
 ```
 
 ### "Je prépare une release"
@@ -93,6 +101,7 @@ Ce guide vous aide à choisir le bon agent selon votre situation.
 | Développer en TDD | `/tdd` | Test-Driven Development |
 | Gérer les erreurs | `/error-handling` | Stratégie d'erreurs |
 | Optimiser React/Next.js | `/react-perf` | 45 règles priorisées par impact |
+| Créer un serveur MCP | `/mcp` | Model Context Protocol (Python/TS) |
 
 ### Mobile (Flutter)
 
@@ -113,6 +122,7 @@ Ce guide vous aide à choisir le bon agent selon votre situation.
 | Audit performance | `/perf` | Analyse performance |
 | Couverture tests | `/coverage` | Analyser la couverture |
 | Tests responsive | `/responsive` | Tests multi-écrans |
+| Amélioration continue | `/kaizen` | PDCA, élimination des gaspillages |
 
 ### Documentation
 
@@ -230,10 +240,13 @@ Que voulez-vous faire ?
 │  │  ├─ Custom Hook → /hook
 │  │  └─ API endpoint → /api
 │  │
-│  └─ Mobile (Flutter)
-│     ├─ Widget/Screen → /flutter
-│     ├─ Backend Supabase → /supabase
-│     └─ GraphQL client → /graphql
+│  ├─ Mobile (Flutter)
+│  │  ├─ Widget/Screen → /flutter
+│  │  ├─ Backend Supabase → /supabase
+│  │  └─ GraphQL client → /graphql
+│  │
+│  └─ Intégration LLM
+│     └─ Serveur MCP → /mcp
 │
 ├─ Corriger un problème
 │  ├─ Bug connu → /debug
@@ -244,6 +257,7 @@ Que voulez-vous faire ?
 │  ├─ Refactoring → /refactor
 │  ├─ Performance générique → /perf
 │  ├─ Performance React/Next.js → /react-perf
+│  ├─ Amélioration continue → /kaizen
 │  └─ Review → /review
 │
 ├─ Déployer
