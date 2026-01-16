@@ -39,3 +39,49 @@ jobs:
           echo "## Bats Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Tests completed. Check the logs above for detailed results." >> $GITHUB_STEP_SUMMARY
+
+  coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Coverage is informational, not blocking
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Bats
+        uses: bats-core/bats-action@3.0.1
+
+      - name: Install kcov
+        run: |
+          # Install kcov build dependencies
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ pkg-config libcurl4-openssl-dev libelf-dev libdw-dev zlib1g-dev
+          # Build and install kcov from source
+          git clone --depth 1 https://github.com/SimonKagstrom/kcov.git /tmp/kcov
+          cd /tmp/kcov
+          mkdir build && cd build
+          cmake ..
+          make -j$(nproc)
+          sudo make install
+
+      - name: Run tests with coverage
+        run: |
+          mkdir -p coverage
+          kcov --include-path=./scripts coverage bats tests/*.bats || true
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./coverage
+          fail_ci_if_error: false
+
+      - name: Generate coverage summary
+        if: always()
+        run: |
+          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/bats/coverage.json ]; then
+            echo "Coverage report generated. See Codecov for details." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Coverage report not available." >> $GITHUB_STEP_SUMMARY
+          fi

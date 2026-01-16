@@ -582,8 +582,6 @@ EOF
 
 learn_agent() {
     local agent="$1"
-    # shellcheck disable=SC2034  # Used for path resolution
-    local agent_file="$SOCLE_DIR/.claude/commands/${agent}.md"
 
     # Normaliser le nom de l'agent
     agent="${agent#work-}"
@@ -592,11 +590,13 @@ learn_agent() {
     agent="${agent#ops-}"
     agent="${agent#doc-}"
 
-    # Trouver le fichier de l'agent
+    # Trouver le fichier de l'agent (recherche récursive dans les sous-répertoires)
     local found=""
     for prefix in "" "work-" "dev-" "qa-" "ops-" "doc-" "biz-" "growth-" "data-" "legal-"; do
-        if [[ -f "$SOCLE_DIR/.claude/commands/${prefix}${agent}.md" ]]; then
-            found="$SOCLE_DIR/.claude/commands/${prefix}${agent}.md"
+        local search_result
+        search_result=$(find "$SOCLE_DIR/.claude/commands" -name "${prefix}${agent}.md" -type f 2>/dev/null | head -1)
+        if [[ -n "$search_result" ]]; then
+            found="$search_result"
             agent="${prefix}${agent}"
             break
         fi

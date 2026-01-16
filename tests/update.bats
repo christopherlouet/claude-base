@@ -80,13 +80,13 @@ teardown() {
     [ "$status" -eq 0 ]
 
     # Simuler une ancienne version en supprimant un fichier
-    rm "$TEST_DIR/.claude/commands/work-explore.md" 2>/dev/null || true
+    rm "$TEST_DIR/.claude/commands/work/work-explore.md" 2>/dev/null || true
 
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Le fichier devrait être restauré
-    [ -f "$TEST_DIR/.claude/commands/work-explore.md" ]
+    [ -f "$TEST_DIR/.claude/commands/work/work-explore.md" ]
 }
 
 # =============================================================================
@@ -98,13 +98,13 @@ teardown() {
     [ "$status" -eq 0 ]
 
     # Supprimer un fichier
-    rm "$TEST_DIR/.claude/commands/work-explore.md"
+    rm "$TEST_DIR/.claude/commands/work/work-explore.md"
 
     run "$UPDATE_SCRIPT" -y -n "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Le fichier ne devrait PAS être restauré en dry-run
-    [ ! -f "$TEST_DIR/.claude/commands/work-explore.md" ]
+    [ ! -f "$TEST_DIR/.claude/commands/work/work-explore.md" ]
 }
 
 @test "update.sh affiche les changements" {

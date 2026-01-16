@@ -284,7 +284,7 @@ check_project_config() {
         # commands/
         if [[ -d "$target/.claude/commands" ]]; then
             local cmd_count
-            cmd_count=$(count_files "$target/.claude/commands" "*.md")
+            cmd_count=$(find "$target/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
             if [[ "$cmd_count" -gt 0 ]]; then
                 check_pass ".claude/commands/: $cmd_count commandes"
             else

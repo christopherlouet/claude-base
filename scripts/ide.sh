@@ -832,6 +832,7 @@ nnoremap <leader>cl :!./scripts/lint.sh<CR>
 
 " Configuration pour les fichiers du socle
 autocmd BufRead,BufNewFile *.md setlocal spell spelllang=fr,en
+autocmd BufRead,BufNewFile .claude/commands/**/*.md setlocal filetype=markdown
 autocmd BufRead,BufNewFile .claude/commands/*.md setlocal filetype=markdown
 
 " Snippets Conventional Commits (avec vim-snippets)
