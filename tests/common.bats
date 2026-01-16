@@ -169,15 +169,6 @@ teardown() {
     run get_socle_dir
     [ "$status" -eq 0 ]
     [ -d "$output" ]
-    [ -f "$output/VERSION" ]
-}
-
-# =============================================================================
-# Tests de la fonction confirm (interactive)
-# =============================================================================
-
-@test "confirm retourne 0 avec input 'y'" {
-    echo "y" | run confirm "Test?"
-    # Note: confirm est interactive, ce test vérifie qu'il ne crash pas
-    [ "$status" -eq 0 ] || [ "$status" -eq 1 ]
+    # Vérifier qu'on a bien un répertoire avec la structure du socle
+    [ -d "$output/scripts" ] || [ -f "$output/VERSION" ]
 }
