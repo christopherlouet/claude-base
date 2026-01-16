@@ -203,21 +203,25 @@ compare_commands() {
     local socle_dir="$SOCLE_DIR/.claude/commands"
     local local_dir="$TARGET_DIR/.claude/commands"
 
-    # Créer une liste unique de tous les fichiers
+    # Créer une liste unique de tous les fichiers avec chemins relatifs
     local all_files=()
 
-    # Fichiers du socle
+    # Fichiers du socle (récursif)
     if [[ -d "$socle_dir" ]]; then
-        for f in "$socle_dir/"*.md; do
-            [[ -f "$f" ]] && all_files+=("$(basename "$f")")
-        done
+        while IFS= read -r f; do
+            # Calculer le chemin relatif
+            local rel_path="${f#$socle_dir/}"
+            all_files+=("$rel_path")
+        done < <(find "$socle_dir" -name "*.md" -type f 2>/dev/null)
     fi
 
-    # Fichiers locaux
+    # Fichiers locaux (récursif)
     if [[ -d "$local_dir" ]]; then
-        for f in "$local_dir/"*.md; do
-            [[ -f "$f" ]] && all_files+=("$(basename "$f")")
-        done
+        while IFS= read -r f; do
+            # Calculer le chemin relatif
+            local rel_path="${f#$local_dir/}"
+            all_files+=("$rel_path")
+        done < <(find "$local_dir" -name "*.md" -type f 2>/dev/null)
     fi
 
     # Dédupliquer et trier
@@ -225,8 +229,8 @@ compare_commands() {
     unique_files=$(printf '%s\n' "${all_files[@]}" | sort -u)
 
     # Comparer chaque fichier
-    for filename in $unique_files; do
-        compare_file "$socle_dir/$filename" "$local_dir/$filename" "$filename" "commands"
+    for rel_path in $unique_files; do
+        compare_file "$socle_dir/$rel_path" "$local_dir/$rel_path" "$rel_path" "commands"
     done
 }
 

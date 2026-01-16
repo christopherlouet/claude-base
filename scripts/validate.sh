@@ -204,9 +204,9 @@ validate_structure() {
     # .claude/commands/
     add_check 2
     if [[ -d "$TARGET_DIR/.claude/commands" ]]; then
-        # Utiliser find au lieu de ls pour éviter les problèmes avec trop de fichiers
+        # Utiliser find récursif pour compter les fichiers dans les sous-répertoires
         local cmd_count
-        cmd_count=$(find "$TARGET_DIR/.claude/commands" -maxdepth 1 -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        cmd_count=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
         if [[ "$cmd_count" -gt 0 ]]; then
             add_success ".claude/commands/ contient $cmd_count commande(s)" "structure" 2
         else
@@ -235,14 +235,17 @@ validate_structure() {
 validate_commands() {
     [[ "$OUTPUT_FORMAT" == "text" ]] && section "2. Commandes standard"
 
-    local standard_commands=("work-explore" "work-plan" "work-commit" "qa-review")
+    # Les commandes sont maintenant dans des sous-répertoires par catégorie
+    local standard_commands=("work/work-explore" "work/work-plan" "work/work-commit" "qa/qa-review")
 
     for cmd in "${standard_commands[@]}"; do
         add_check 1
+        local cmd_name
+        cmd_name=$(basename "$cmd")
         if [[ -f "$TARGET_DIR/.claude/commands/$cmd.md" ]]; then
-            add_success "Commande $cmd présente" "commands" 1
+            add_success "Commande $cmd_name présente" "commands" 1
         else
-            add_warning "Commande $cmd manquante (recommandée)" "commands"
+            add_warning "Commande $cmd_name manquante (recommandée)" "commands"
         fi
     done
 }
@@ -307,7 +310,8 @@ validate_command_files() {
     local checked=0
     local valid=0
 
-    for cmd_file in "$TARGET_DIR/.claude/commands/"*.md; do
+    # Recherche récursive dans tous les sous-répertoires
+    while IFS= read -r cmd_file; do
         if [[ -f "$cmd_file" ]]; then
             ((checked++)) || true
             local filename
@@ -329,7 +333,7 @@ validate_command_files() {
 
             $is_valid && { ((valid++)) || true; }
         fi
-    done
+    done < <(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null)
 
     add_check 2
     if [[ "$checked" -gt 0 ]]; then
@@ -384,12 +388,16 @@ validate_coherence() {
         local found=0
         for cmd in $mentioned_commands; do
             local cmd_name="${cmd#/}"
-            # Chercher avec différents préfixes possibles
-            if [[ -f "$TARGET_DIR/.claude/commands/$cmd_name.md" ]] || \
-               [[ -f "$TARGET_DIR/.claude/commands/work-$cmd_name.md" ]] || \
-               [[ -f "$TARGET_DIR/.claude/commands/dev-$cmd_name.md" ]] || \
-               [[ -f "$TARGET_DIR/.claude/commands/qa-$cmd_name.md" ]] || \
-               [[ -f "$TARGET_DIR/.claude/commands/ops-$cmd_name.md" ]]; then
+            # Chercher récursivement dans les sous-répertoires
+            if find "$TARGET_DIR/.claude/commands" -name "$cmd_name.md" -type f 2>/dev/null | grep -q .; then
+                ((found++)) || true
+            elif find "$TARGET_DIR/.claude/commands" -name "work-$cmd_name.md" -type f 2>/dev/null | grep -q .; then
+                ((found++)) || true
+            elif find "$TARGET_DIR/.claude/commands" -name "dev-$cmd_name.md" -type f 2>/dev/null | grep -q .; then
+                ((found++)) || true
+            elif find "$TARGET_DIR/.claude/commands" -name "qa-$cmd_name.md" -type f 2>/dev/null | grep -q .; then
+                ((found++)) || true
+            elif find "$TARGET_DIR/.claude/commands" -name "ops-$cmd_name.md" -type f 2>/dev/null | grep -q .; then
                 ((found++)) || true
             else
                 ((missing++)) || true

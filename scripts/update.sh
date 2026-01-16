@@ -198,9 +198,17 @@ create_backup() {
 
 update_command_file() {
     local src="$1"
+    local rel_path="$2"  # Chemin relatif depuis commands/ (ex: work/work-explore.md)
     local filename
     filename=$(basename "$src")
-    local dest="$TARGET_DIR/.claude/commands/$filename"
+    local dest="$TARGET_DIR/.claude/commands/$rel_path"
+
+    # Créer le sous-répertoire si nécessaire
+    local dest_dir
+    dest_dir=$(dirname "$dest")
+    if [[ ! -d "$dest_dir" ]] && ! $DRY_RUN; then
+        mkdir -p "$dest_dir"
+    fi
 
     if [[ -f "$dest" ]]; then
         # Le fichier existe, vérifier s'il a changé
@@ -275,16 +283,20 @@ update_commands() {
     section "Mise à jour des commandes"
 
     local before
-    before=$(count_files "$TARGET_DIR/.claude/commands" "*.md")
+    before=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
 
-    for cmd in "$SOCLE_DIR/.claude/commands/"*.md; do
+    # Parcourir récursivement les commandes du socle
+    local socle_commands_dir="$SOCLE_DIR/.claude/commands"
+    while IFS= read -r cmd; do
         if [[ -f "$cmd" ]]; then
-            update_command_file "$cmd"
+            # Calculer le chemin relatif depuis commands/
+            local rel_path="${cmd#$socle_commands_dir/}"
+            update_command_file "$cmd" "$rel_path"
         fi
-    done
+    done < <(find "$socle_commands_dir" -name "*.md" -type f 2>/dev/null)
 
     local after
-    after=$(count_files "$TARGET_DIR/.claude/commands" "*.md")
+    after=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
 
     info "Commandes: $before → $after"
 }
