@@ -107,11 +107,13 @@ jobs:
           sarif_file: results.sarif
         continue-on-error: true
 
-  # Dependency review for PRs
+  # Dependency review for PRs (optional - requires GitHub Advanced Security)
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    # Continue even if this job fails (GitHub Advanced Security may not be enabled)
+    continue-on-error: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
