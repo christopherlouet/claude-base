@@ -421,28 +421,52 @@ detect_stack() {
     fi
 
     # Détecter Neovim config
+    # Cherche init.lua + lua/ à la racine ou dans nvim/ (dotfiles pattern)
+    local nvim_root=""
     if [[ -f "$dir/init.lua" ]] && [[ -d "$dir/lua" ]]; then
+        nvim_root="$dir"
+    elif [[ -f "$dir/nvim/init.lua" ]] && [[ -d "$dir/nvim/lua" ]]; then
+        nvim_root="$dir/nvim"
+    elif [[ -f "$dir/.config/nvim/init.lua" ]] && [[ -d "$dir/.config/nvim/lua" ]]; then
+        nvim_root="$dir/.config/nvim"
+    fi
+
+    if [[ -n "$nvim_root" ]]; then
         if [[ -z "$DETECTED_TYPE" ]]; then
             DETECTED_TYPE="neovim"
             DETECTED_FRAMEWORK="Neovim"
         fi
         DETECTED_DEPENDENCIES+=("Lua" "Neovim")
 
+        # Indiquer si la config est dans un sous-dossier
+        if [[ "$nvim_root" != "$dir" ]]; then
+            local subdir="${nvim_root#$dir/}"
+            DETECTED_DEPENDENCIES+=("(config in $subdir/)")
+        fi
+
         # Détecter le plugin manager
-        if grep -rq "lazy.nvim\|folke/lazy" "$dir/lua" 2>/dev/null; then
+        if grep -rq "lazy.nvim\|folke/lazy" "$nvim_root/lua" 2>/dev/null; then
             DETECTED_DEPENDENCIES+=("lazy.nvim")
-        elif grep -rq "packer.nvim\|wbthomason/packer" "$dir/lua" 2>/dev/null; then
+        elif grep -rq "packer.nvim\|wbthomason/packer" "$nvim_root/lua" 2>/dev/null; then
             DETECTED_DEPENDENCIES+=("packer.nvim")
         fi
 
         # Détecter LSP
-        if grep -rq "nvim-lspconfig\|neovim/nvim-lspconfig" "$dir/lua" 2>/dev/null; then
+        if grep -rq "nvim-lspconfig\|neovim/nvim-lspconfig" "$nvim_root/lua" 2>/dev/null; then
             DETECTED_DEPENDENCIES+=("LSP")
         fi
 
         # Détecter Treesitter
-        if grep -rq "nvim-treesitter" "$dir/lua" 2>/dev/null; then
+        if grep -rq "nvim-treesitter" "$nvim_root/lua" 2>/dev/null; then
             DETECTED_DEPENDENCIES+=("Treesitter")
+        fi
+
+        # Détecter d'autres plugins courants
+        if grep -rq "telescope.nvim\|nvim-telescope" "$nvim_root/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("Telescope")
+        fi
+        if grep -rq "nvim-cmp\|hrsh7th/nvim-cmp" "$nvim_root/lua" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("nvim-cmp")
         fi
     fi
 
