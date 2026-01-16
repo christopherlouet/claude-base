@@ -30,9 +30,10 @@ Ce guide vous aide à choisir le bon agent selon votre situation.
 
 ### "Je dois améliorer le code existant"
 ```
-/refactor → Refactoring guidé
-/perf     → Optimiser les performances
-/review   → Code review du refactoring
+/refactor   → Refactoring guidé
+/perf       → Optimiser les performances (générique)
+/react-perf → Optimiser React/Next.js (45 règles priorisées)
+/review     → Code review du refactoring
 ```
 
 ### "Je prépare une release"
@@ -91,6 +92,7 @@ Ce guide vous aide à choisir le bon agent selon votre situation.
 | Créer une API | `/api` | Endpoint RESTful/GraphQL |
 | Développer en TDD | `/tdd` | Test-Driven Development |
 | Gérer les erreurs | `/error-handling` | Stratégie d'erreurs |
+| Optimiser React/Next.js | `/react-perf` | 45 règles priorisées par impact |
 
 ### Mobile (Flutter)
 
@@ -240,7 +242,8 @@ Que voulez-vous faire ?
 │
 ├─ Améliorer le code
 │  ├─ Refactoring → /refactor
-│  ├─ Performance → /perf
+│  ├─ Performance générique → /perf
+│  ├─ Performance React/Next.js → /react-perf
 │  └─ Review → /review
 │
 ├─ Déployer
