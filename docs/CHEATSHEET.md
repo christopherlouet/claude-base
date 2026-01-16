@@ -376,7 +376,7 @@ refactor(user): extract validation logic
 | `CLAUDE.local.md` | Config locale (gitignore) |
 | `.claude/settings.json` | Permissions |
 | `.claude/hooks.json` | Hooks automatiques |
-| `.claude/commands/*.md` | Commandes custom |
+| `.claude/commands/**/*.md` | Commandes (organisées par catégorie) |
 | `.mcp.json` | Serveurs MCP |
 
 ---

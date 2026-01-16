@@ -454,13 +454,13 @@ section() {
 # Statistiques du socle
 # =============================================================================
 
-# Compte le nombre d'agents (fichiers .md dans commands/)
+# Compte le nombre d'agents (fichiers .md dans commands/ et sous-répertoires)
 # Arguments:
 #   $1 - Chemin du socle (optionnel)
 # Retour: Nombre d'agents
 count_agents() {
     local socle_dir="${1:-$(get_socle_dir)}"
-    count_files "$socle_dir/.claude/commands" "*.md"
+    find "$socle_dir/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
 }
 
 # Compte le nombre de skills (répertoires dans skills/)

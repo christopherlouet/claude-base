@@ -77,7 +77,7 @@ teardown() {
     [ "$status" -eq 0 ]
 
     # Modifier un fichier
-    echo "# Modification" >> "$TEST_DIR/.claude/commands/work-explore.md"
+    echo "# Modification" >> "$TEST_DIR/.claude/commands/work/work-explore.md"
 
     run "$DIFF_SCRIPT" "$TEST_DIR"
     [[ "$output" == *"modifi"* ]] || [[ "$output" == *"changed"* ]] || [[ "$output" == *"M"* ]] || true
@@ -100,7 +100,7 @@ teardown() {
     [ "$status" -eq 0 ]
 
     # Modifier un fichier
-    echo "# Test" >> "$TEST_DIR/.claude/commands/work-explore.md"
+    echo "# Test" >> "$TEST_DIR/.claude/commands/work/work-explore.md"
 
     run "$DIFF_SCRIPT" --content "$TEST_DIR"
     # Devrait montrer du contenu de diff
