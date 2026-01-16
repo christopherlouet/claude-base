@@ -162,13 +162,12 @@ teardown() {
 }
 
 # =============================================================================
-# Tests get_socle_dir
+# Tests SOCLE_DIR (via test_helper)
 # =============================================================================
 
-@test "get_socle_dir retourne le répertoire du socle" {
-    run get_socle_dir
-    [ "$status" -eq 0 ]
-    [ -d "$output" ]
-    # Vérifier qu'on a bien un répertoire avec la structure du socle
-    [ -d "$output/scripts" ] || [ -f "$output/VERSION" ]
+@test "SOCLE_DIR est défini et pointe vers le socle" {
+    [ -n "$SOCLE_DIR" ]
+    [ -d "$SOCLE_DIR" ]
+    [ -d "$SOCLE_DIR/scripts" ]
+    [ -f "$SOCLE_DIR/VERSION" ]
 }
