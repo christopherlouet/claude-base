@@ -1,6 +1,6 @@
 # Agent A11Y (Accessibilité)
 
-Audit d'accessibilité basé sur WCAG 2.1.
+Audit d'accessibilité basé sur WCAG 2.1 et Web Interface Guidelines.
 
 ## Cible de l'audit
 $ARGUMENTS
@@ -98,6 +98,96 @@ $ARGUMENTS
 - [ ] ARIA correctement utilisé
 - [ ] Nom, rôle, valeur programmatiques
 - [ ] Messages de statut accessibles
+
+## Web Interface Guidelines (Compléments UX)
+
+### 5. Focus States
+
+- [ ] **Focus visible** : Indicateur visible sur tous les éléments interactifs
+  ```css
+  /* Utiliser :focus-visible au lieu de :focus */
+  button:focus-visible {
+    outline: 2px solid var(--focus-color);
+    outline-offset: 2px;
+  }
+  ```
+- [ ] **:focus-within** : Style parent quand enfant a le focus
+- [ ] **Pas de `outline: none`** sans alternative visible
+- [ ] **Ordre de focus** : Cohérent avec l'ordre visuel
+
+### 6. Formulaires avancés
+
+- [ ] **Autocomplete** : Attributs appropriés sur tous les champs
+  ```html
+  <input type="email" autocomplete="email" />
+  <input type="tel" autocomplete="tel" />
+  <input type="text" autocomplete="name" />
+  ```
+- [ ] **Input types** : Types HTML5 corrects (email, tel, url, number)
+- [ ] **Paste autorisé** : Ne jamais bloquer le collage (mots de passe inclus)
+- [ ] **Validation** : Messages d'erreur clairs et associés aux champs
+- [ ] **Labels visibles** : Pas uniquement des placeholders
+
+### 7. Animation & Motion
+
+- [ ] **prefers-reduced-motion** : Respecter la préférence utilisateur
+  ```css
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  ```
+- [ ] **Propriétés performantes** : Animer uniquement transform et opacity
+- [ ] **Animations interruptibles** : Pouvoir stopper/annuler
+- [ ] **Pas de `transition: all`** : Spécifier les propriétés explicitement
+
+### 8. Touch & Interaction
+
+- [ ] **Tap targets** : Minimum 44x44px pour les cibles tactiles
+- [ ] **Safe areas** : Respecter les encoches (env(safe-area-inset-*))
+- [ ] **Touch feedback** : `-webkit-tap-highlight-color` approprié
+- [ ] **Scroll containment** : `overscroll-behavior` pour éviter les scrolls parasites
+- [ ] **Drag behavior** : Alternatives pour les actions drag-and-drop
+
+### 9. Dark Mode & Theming
+
+- [ ] **color-scheme** : Déclarer le support
+  ```css
+  :root {
+    color-scheme: light dark;
+  }
+  ```
+- [ ] **theme-color meta** : Adapter la barre du navigateur
+  ```html
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+  ```
+- [ ] **Couleurs explicites** : Ne pas s'appuyer sur les valeurs par défaut
+- [ ] **Contraste maintenu** : Vérifier le contraste dans les deux modes
+
+### 10. Locale & Internationalisation
+
+- [ ] **Intl.DateTimeFormat** : Pour formater les dates
+  ```typescript
+  new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(date);
+  ```
+- [ ] **Intl.NumberFormat** : Pour les nombres et devises
+- [ ] **Intl.RelativeTimeFormat** : Pour "il y a 3 jours"
+- [ ] **Direction du texte** : Support RTL si nécessaire (`dir="rtl"`)
+
+### 11. Anti-patterns à éviter
+
+| Anti-pattern | Problème | Solution |
+|--------------|----------|----------|
+| `user-scalable=no` | Bloque le zoom | Retirer de viewport meta |
+| `outline: none` sans alternative | Focus invisible | Utiliser `:focus-visible` |
+| `transition: all` | Performance, effets inattendus | Lister les propriétés |
+| `-webkit-tap-highlight-color: transparent` global | Pas de feedback tactile | Cibler spécifiquement |
+| Bloquer le paste | UX horrible, sécurité réduite | Autoriser toujours |
+| Placeholder comme label | Disparaît au focus | Label visible permanent |
+| Timeouts trop courts | Stress utilisateur | Timeouts généreux ou infinis |
 
 ## Tests automatisés
 

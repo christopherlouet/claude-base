@@ -166,7 +166,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (85)
+## Agents Disponibles (86)
 
 ### Orchestrateur
 | Commande | Usage |
@@ -185,7 +185,7 @@ type(scope): description courte
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (14)
+### DEV- : Développement (15)
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD |
@@ -198,6 +198,7 @@ type(scope): description courte
 | `/dev-component` | Créer un composant UI complet |
 | `/dev-hook` | Créer un hook React/Vue |
 | `/dev-error-handling` | Stratégie de gestion d'erreurs |
+| `/dev-react-perf` | Optimisation performance React/Next.js |
 | `/dev-flutter` | Widgets et screens Flutter |
 | `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
 | `/dev-graphql` | API GraphQL client/serveur |
