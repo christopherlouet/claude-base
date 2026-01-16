@@ -342,13 +342,15 @@ validate_json() {
             return 1
         fi
     elif command_exists python3; then
-        if python3 -c "import json; json.load(open('$file'))" 2>/dev/null; then
+        # Use stdin to avoid command injection via filename
+        if python3 -c "import json, sys; json.load(sys.stdin)" < "$file" 2>/dev/null; then
             return 0
         else
             return 1
         fi
     elif command_exists node; then
-        if node -e "JSON.parse(require('fs').readFileSync('$file'))" 2>/dev/null; then
+        # Use stdin to avoid command injection via filename
+        if node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{try{JSON.parse(d)}catch(e){process.exit(1)}})" < "$file" 2>/dev/null; then
             return 0
         else
             return 1
@@ -371,7 +373,11 @@ json_get() {
     if command_exists jq; then
         jq -r "$key" "$file" 2>/dev/null
     elif command_exists python3; then
-        python3 -c "import json; print(json.load(open('$file'))$key)" 2>/dev/null
+        # Use stdin to avoid command injection via filename
+        # Convert jq-style key to Python dict access (e.g., ".version" -> "['version']")
+        local py_key
+        py_key=$(echo "$key" | sed 's/^\.//' | sed "s/\.\([^.]*\)/['\1']/g" | sed "s/^\([^[]*\)/['\1']/")
+        python3 -c "import json, sys; data=json.load(sys.stdin); print(data$py_key)" < "$file" 2>/dev/null
     else
         echo ""
     fi

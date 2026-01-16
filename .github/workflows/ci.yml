@@ -32,3 +32,10 @@ jobs:
 
       - name: Run Bats tests
         run: bats tests/*.bats
+
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## Bats Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tests completed. Check the logs above for detailed results." >> $GITHUB_STEP_SUMMARY
