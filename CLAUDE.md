@@ -166,7 +166,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (83)
+## Agents Disponibles (85)
 
 ### Orchestrateur
 | Commande | Usage |
@@ -185,7 +185,7 @@ type(scope): description courte
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (13)
+### DEV- : Développement (14)
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD |
@@ -201,8 +201,9 @@ type(scope): description courte
 | `/dev-flutter` | Widgets et screens Flutter |
 | `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
 | `/dev-graphql` | API GraphQL client/serveur |
+| `/dev-neovim` | Plugins et config Neovim/Lua |
 
-### QA- : Qualité (9)
+### QA- : Qualité (10)
 | Commande | Usage |
 |----------|-------|
 | `/qa-review` | Code review approfondie |
@@ -214,6 +215,7 @@ type(scope): description courte
 | `/qa-automation` | Automatisation des tests |
 | `/qa-coverage` | Analyse couverture de tests |
 | `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
+| `/qa-neovim` | Audit config Neovim (perf, keymaps) |
 
 ### OPS- : Opérations (16)
 | Commande | Usage |
