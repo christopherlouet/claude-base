@@ -72,7 +72,7 @@ Avant de recommander, identifie le type de projet:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Étape 3: Catalogue complet des commandes (96)
+## Étape 3: Catalogue complet des commandes (100)
 
 ### WORK- : Workflow Principal (10)
 | Commande | Usage |
@@ -123,11 +123,15 @@ Avant de recommander, identifie le type de projet:
 | `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
 | `/qa-neovim` | Audit config Neovim |
 
-### OPS- : Opérations (21)
+### OPS- : Opérations (25)
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente production |
 | `/ops-release` | Créer une release |
+| `/ops-gitflow-init` | Initialiser GitFlow (créer develop) |
+| `/ops-gitflow-feature` | Gérer les branches feature (start/finish) |
+| `/ops-gitflow-release` | Gérer les branches release (start/finish) |
+| `/ops-gitflow-hotfix` | Gérer les hotfixes (start/finish) |
 | `/ops-deps` | Audit et MAJ des dépendances |
 | `/ops-docker` | Dockeriser un projet |
 | `/ops-k8s` | Déploiement Kubernetes |
@@ -233,6 +237,9 @@ Avant de recommander, identifie le type de projet:
 │ Créer une PR                            →  /work-pr                    │
 │ Corriger en urgence                     →  /ops-hotfix                 │
 │ Publier une version                     →  /ops-release                │
+│ Initialiser GitFlow                     →  /ops-gitflow-init           │
+│ Gérer les features GitFlow              →  /ops-gitflow-feature        │
+│ Gérer les releases GitFlow              →  /ops-gitflow-release        │
 │ Dockeriser                              →  /ops-docker                 │
 │ Configurer CI/CD                        →  /ops-ci                     │
 │ Créer des dashboards                    →  /ops-grafana-dashboard      │
