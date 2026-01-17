@@ -12,11 +12,11 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "generate": "ts-node --esm scripts/generate-all.ts",
-    "generate:commands": "ts-node --esm scripts/generate-command-docs.ts",
-    "generate:agents": "ts-node --esm scripts/generate-agent-docs.ts",
-    "generate:skills": "ts-node --esm scripts/generate-skill-docs.ts",
-    "generate:rules": "ts-node --esm scripts/generate-rule-docs.ts"
+    "generate": "tsx scripts/generate-all.ts",
+    "generate:commands": "tsx scripts/generate-command-docs.ts",
+    "generate:agents": "tsx scripts/generate-agent-docs.ts",
+    "generate:skills": "tsx scripts/generate-skill-docs.ts",
+    "generate:rules": "tsx scripts/generate-rule-docs.ts"
   },
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
@@ -34,7 +34,7 @@
     "@easyops-cn/docusaurus-search-local": "^0.44.5",
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.0"
   },
   "browserslist": {

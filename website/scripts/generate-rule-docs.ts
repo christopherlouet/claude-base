@@ -15,6 +15,7 @@ import {
   extractFirstHeading,
   extractDescription,
   generateFrontmatter,
+  escapeMdx,
 } from './utils/parse-frontmatter.js';
 
 const CLAUDE_DIR = path.resolve(__dirname, '../../.claude');
@@ -58,13 +59,48 @@ function parseRuleFile(filePath: string): RuleInfo | null {
 }
 
 /**
+ * Wrap code blocks in markdown to prevent MDX parsing issues
+ * Only escape content outside of code blocks
+ */
+function escapeNonCodeContent(content: string): string {
+  const parts: string[] = [];
+  let lastIndex = 0;
+
+  // Match code blocks (fenced with ``` or indented)
+  const codeBlockRegex = /```[\s\S]*?```/g;
+  let match;
+
+  while ((match = codeBlockRegex.exec(content)) !== null) {
+    // Escape content before this code block
+    if (match.index > lastIndex) {
+      parts.push(escapeMdx(content.slice(lastIndex, match.index)));
+    }
+    // Keep code block as-is
+    parts.push(match[0]);
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Escape remaining content after last code block
+  if (lastIndex < content.length) {
+    parts.push(escapeMdx(content.slice(lastIndex)));
+  }
+
+  return parts.join('');
+}
+
+/**
  * Generate the Docusaurus page content for a rule
  */
 function generateRulePage(rule: RuleInfo, position: number): string {
+  // Escape description for frontmatter (no curly braces allowed)
+  const safeDescription = rule.description
+    .replace(/[{}<>]/g, '')
+    .slice(0, 150);
+
   const frontmatter = generateFrontmatter({
     sidebar_position: position,
     title: rule.name,
-    description: rule.description,
+    description: safeDescription,
     tags: ['rule', rule.name],
   });
 
@@ -72,11 +108,15 @@ function generateRulePage(rule: RuleInfo, position: number): string {
     ? rule.paths.map((p) => `- \`${p}\``).join('\n')
     : '_Toutes les fichiers_';
 
+  // Escape content outside code blocks
+  const safeContent = escapeNonCodeContent(rule.content);
+  const safeDesc = escapeMdx(rule.description);
+
   return `${frontmatter}
 
 # Regles: ${rule.name}
 
-> ${rule.description}
+> ${safeDesc}
 
 ## Fichiers concernes
 
@@ -86,7 +126,7 @@ ${pathsList}
 
 ## Regles detaillees
 
-${rule.content}
+${safeContent}
 
 ## Application automatique
 
@@ -116,8 +156,13 @@ function generateRulesIndex(rules: RuleInfo[]): string {
 
   const rulesTable = rules
     .map(
-      (r) =>
-        `| [\`${r.name}\`](/docs/rules/${r.name}) | ${r.description.slice(0, 50)}${r.description.length > 50 ? '...' : ''} | ${r.paths.slice(0, 2).map((p) => `\`${p}\``).join(', ')}${r.paths.length > 2 ? '...' : ''} |`
+      (r) => {
+        const desc = escapeMdx(r.description.slice(0, 50)) + (r.description.length > 50 ? '...' : '');
+        const pathsDisplay = r.paths.length > 0
+          ? r.paths.slice(0, 2).map((p) => `\`${p}\``).join(', ') + (r.paths.length > 2 ? '...' : '')
+          : '-';
+        return `| [\`${r.name}\`](/docs/rules/${r.name}) | ${desc} | ${pathsDisplay} |`;
+      }
     )
     .join('\n');
 

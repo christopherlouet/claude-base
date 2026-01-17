@@ -173,3 +173,16 @@ export function extractSection(content: string, heading: string): string | null 
   const match = content.match(regex);
   return match ? match[1].trim() : null;
 }
+
+/**
+ * Escape special MDX characters in text
+ * This prevents MDX from interpreting { } < > as JSX expressions
+ */
+export function escapeMdx(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/\{/g, '\\{')
+    .replace(/\}/g, '\\}')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}

@@ -44,7 +44,7 @@ export interface GenerationResult {
   errors: string[];
 }
 
-export type Domain = 'work' | 'dev' | 'qa' | 'ops' | 'doc' | 'biz' | 'growth' | 'data' | 'legal' | 'assistant';
+export type Domain = 'work' | 'dev' | 'qa' | 'ops' | 'doc' | 'biz' | 'growth' | 'data' | 'legal' | 'other';
 
 export const DOMAIN_LABELS: Record<Domain, string> = {
   work: 'WORK',
@@ -56,7 +56,7 @@ export const DOMAIN_LABELS: Record<Domain, string> = {
   growth: 'GROWTH',
   data: 'DATA',
   legal: 'LEGAL',
-  assistant: 'ASSISTANT',
+  other: 'Autres',
 };
 
 export const DOMAIN_DESCRIPTIONS: Record<Domain, string> = {
@@ -69,5 +69,5 @@ export const DOMAIN_DESCRIPTIONS: Record<Domain, string> = {
   growth: 'Croissance (SEO, analytics, landing, funnel)',
   data: 'Donnees (pipeline, analytics, modeling)',
   legal: 'Legal (RGPD, CGU, paiement)',
-  assistant: 'Orchestrateur (point d\'entree unique)',
+  other: 'Commandes diverses et orchestrateurs',
 };
