@@ -12,8 +12,8 @@ description: Reference rapide et matrices
 
 | Reference | Description |
 |-----------|-------------|
-| [Matrice des Commands](/docs/reference/commands-matrix) | 100 commandes avec domaine et description |
-| [Matrice des Agents](/docs/reference/agents-matrix) | 37 agents avec modele et outils |
+| [Matrice des Commands](/docs/reference/commands-matrix) | 108 commandes avec domaine et description |
+| [Matrice des Agents](/docs/reference/agents-matrix) | 45 agents avec modele et outils |
 | [Cheatsheet](/docs/reference/cheatsheet) | Aide-memoire rapide |
 
 ## Navigation rapide

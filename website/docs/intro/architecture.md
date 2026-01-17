@@ -15,7 +15,7 @@ claude-socle est compose de plusieurs types de composants qui travaillent ensemb
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 100 commandes manuelles (/nom)
+│   ├── commands/       # 108 commandes manuelles (/nom)
 │   │   ├── work/       # Workflow principal
 │   │   ├── dev/        # Developpement
 │   │   ├── qa/         # Qualite
@@ -25,9 +25,9 @@ claude-socle/
 │   │   ├── growth/     # Croissance
 │   │   ├── data/       # Donnees
 │   │   └── legal/      # Legal
-│   ├── agents/         # 37 sub-agents autonomes
-│   ├── skills/         # 24 skills auto-declenches
-│   ├── rules/          # 15 regles par technologie
+│   ├── agents/         # 45 sub-agents autonomes
+│   ├── skills/         # 27 skills auto-declenches
+│   ├── rules/          # 17 regles par technologie
 │   ├── templates/      # Templates de specs/plans
 │   ├── output-styles/  # Styles de sortie
 │   └── settings.json   # Configuration et hooks
@@ -183,4 +183,4 @@ Activez les serveurs selon vos besoins pour etendre les capacites de Claude.
 
 - [Installation](/docs/intro/installation) - Guide d'installation complet
 - [Workflows](/docs/workflow) - Voir les workflows en action
-- [Commands](/docs/commands) - Explorer les 100 commandes
+- [Commands](/docs/commands) - Explorer les 108 commandes
