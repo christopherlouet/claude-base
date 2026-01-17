@@ -228,7 +228,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (96 commands, 37 sub-agents, 24 skills)
+## Agents Disponibles (100 commands, 37 sub-agents, 24 skills)
 
 ### Orchestrateur
 | Commande | Usage |
@@ -284,11 +284,15 @@ type(scope): description courte
 | `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
 | `/qa-neovim` | Audit config Neovim (perf, keymaps) |
 
-### OPS- : Opérations (21)
+### OPS- : Opérations (25)
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente production |
 | `/ops-release` | Créer une release |
+| `/ops-gitflow-init` | Initialiser GitFlow (créer develop, configurer) |
+| `/ops-gitflow-feature` | Gérer les branches feature (start/finish) |
+| `/ops-gitflow-release` | Gérer les branches release (start/finish) |
+| `/ops-gitflow-hotfix` | Gérer les hotfixes GitFlow (start/finish) |
 | `/ops-deps` | Audit et MAJ des dépendances |
 | `/ops-docker` | Dockeriser un projet |
 | `/ops-k8s` | Déploiement Kubernetes (manifests, Helm) |
@@ -421,6 +425,27 @@ type(scope): description courte
 ### Application mobile Flutter
 ```bash
 /work-explore → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+```
+
+### GitFlow (gestion avancée des branches)
+```bash
+# Initialiser GitFlow sur le repo
+/ops-gitflow-init
+
+# Workflow feature
+/ops-gitflow-feature start "user-auth"
+# ... développer ...
+/ops-gitflow-feature finish "user-auth"
+
+# Workflow release
+/ops-gitflow-release start "v1.2.0"
+# ... bump version, changelog ...
+/ops-gitflow-release finish "v1.2.0"
+
+# Hotfix urgent
+/ops-gitflow-hotfix start "critical-bug"
+# ... fix ...
+/ops-gitflow-hotfix finish "critical-bug"
 ```
 
 ## Hooks (Claude Code 2.1+)
