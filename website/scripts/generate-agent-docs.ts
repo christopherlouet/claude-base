@@ -54,14 +54,24 @@ function parseAgentFile(filePath: string): AgentInfo | null {
     const heading = extractFirstHeading(markdownContent);
     const description = extractDescription(markdownContent);
 
+    // Tools can be a string "Read, Grep" or an array ["Read", "Grep"]
+    const parseToolsField = (tools: string | string[] | undefined): string[] => {
+      if (!tools) return [];
+      if (Array.isArray(tools)) return tools;
+      if (typeof tools === 'string') {
+        return tools.split(',').map((t) => t.trim()).filter(Boolean);
+      }
+      return [];
+    };
+
     return {
       name: fileName,
       model: (data.model as 'haiku' | 'sonnet' | 'opus') || 'haiku',
       description: description || heading || `Agent ${fileName}`,
-      tools: data.tools || [],
+      tools: parseToolsField(data.tools as string | string[] | undefined),
       permissionMode: data.permissionMode || 'default',
-      disallowedTools: data.disallowedTools || [],
-      skills: data.skills || [],
+      disallowedTools: parseToolsField(data.disallowedTools as string | string[] | undefined),
+      skills: Array.isArray(data.skills) ? data.skills : [],
       content: markdownContent,
     };
   } catch (error) {
@@ -169,8 +179,15 @@ function generateAgentsIndex(agents: AgentInfo[]): string {
   const generateTable = (agentList: AgentInfo[]) =>
     agentList
       .map(
-        (a) =>
-          `| [\`${a.name}\`](/docs/agents/${a.name}) | ${a.description.slice(0, 60)}${a.description.length > 60 ? '...' : ''} | ${a.tools.slice(0, 3).join(', ')}${a.tools.length > 3 ? '...' : ''} |`
+        (a) => {
+          const desc = a.description || '';
+          const tools = a.tools || [];
+          const truncatedDesc = desc.slice(0, 60) + (desc.length > 60 ? '...' : '');
+          const toolsDisplay = tools.length > 0
+            ? tools.slice(0, 3).join(', ') + (tools.length > 3 ? '...' : '')
+            : '-';
+          return `| [\`${a.name}\`](/docs/agents/${a.name}) | ${truncatedDesc} | ${toolsDisplay} |`;
+        }
       )
       .join('\n');
 

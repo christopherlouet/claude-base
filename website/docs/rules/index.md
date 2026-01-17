@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
-title: Rules
-description: Catalogue des 15 regles par technologie
+title: "Rules"
+description: "Catalogue des 15 regles par technologie"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -12,7 +12,7 @@ import Stats from '@site/src/components/Stats';
 
 <Stats items={[
   { number: 15, label: 'Regles' },
-  { number: 50, label: 'Patterns' },
+  { number: 51, label: 'Patterns' },
 ]} />
 
 ## Qu'est-ce qu'une Rule ?
@@ -26,30 +26,66 @@ Les **rules** sont des conventions appliquees automatiquement :
 
 ## Liste des regles
 
-| Regle | Paths |
-|-------|-------|
-| `typescript` | `**/*.ts`, `**/*.tsx` |
-| `react` | `**/*.tsx`, `**/components/**` |
-| `flutter` | `**/*.dart`, `**/lib/**` |
-| `testing` | `**/*.test.ts`, `**/__tests__/**` |
-| `security` | `**/auth/**`, `**/api/**` |
-| `api` | `**/api/**`, `**/routes/**` |
-| `git` | - |
-| `workflow` | - |
-| `python` | `**/*.py` |
-| `go` | `**/*.go` |
-| `rust` | `**/*.rs` |
-| `java` | `**/*.java` |
-| `php` | `**/*.php` |
-| `ruby` | `**/*.rb` |
-| `csharp` | `**/*.cs` |
+| Regle | Description | Paths |
+|-------|-------------|-------|
+| [`api`](/docs/rules/api) | // Error \{ "success": false, "error": \{ "code": "V... | `**/api/**`, `**/routes/**`... |
+| [`csharp`](/docs/rules/csharp) | // 2. Champs prives readonly private readonly IUse... | `**/*.cs`, `**/*.csproj`... |
+| [`flutter`](/docs/rules/flutter) | // State abstract class AuthState \{\} class AuthIni... | `**/*.dart`, `**/lib/**`... |
+| [`git`](/docs/rules/git) | [corps optionnel - details sur le "quoi" et "pourq... | - |
+| [`go`](/docs/rules/go) | // Custom errors var ErrUserNotFound = errors.New(... | `**/*.go`, `**/go.mod`... |
+| [`java`](/docs/rules/java) | // 2. Champs statiques private static final Logger... | `**/*.java`, `**/pom.xml`... |
+| [`php`](/docs/rules/php) | declare(strict_types=1); | `**/*.php`, `**/composer.json` |
+| [`python`](/docs/rules/python) | import requests from pydantic import BaseModel | `**/*.py`, `**/requirements*.txt`... |
+| [`react`](/docs/rules/react) | export function MyComponent(\{ title, onAction \}: P... | `**/*.tsx`, `**/components/**`... |
+| [`ruby`](/docs/rules/ruby) | users.each do |user| puts user.name puts user.emai... | `**/*.rb`, `**/Gemfile`... |
+| [`rust`](/docs/rules/rust) | // 2. Constants const MAX_CONNECTIONS: usize = 100... | `**/*.rs`, `**/Cargo.toml` |
+| [`security`](/docs/rules/security) | Security Rules | `**/auth/**`, `**/api/**`... |
+| [`testing`](/docs/rules/testing) | // Act - Executer l'action const result = function... | `**/*.test.ts`, `**/*.test.tsx`... |
+| [`typescript`](/docs/rules/typescript) | TypeScript Rules | `**/*.ts`, `**/*.tsx`... |
+| [`workflow`](/docs/rules/workflow) | Workflow Rules | - |
 
-## Application
+## Categories
 
-Les regles s'appliquent automatiquement lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+### Langages
+
+- [csharp](/docs/rules/csharp)
+- [go](/docs/rules/go)
+- [java](/docs/rules/java)
+- [php](/docs/rules/php)
+- [python](/docs/rules/python)
+- [ruby](/docs/rules/ruby)
+- [rust](/docs/rules/rust)
+- [typescript](/docs/rules/typescript)
+
+### Frameworks
+
+- [flutter](/docs/rules/flutter)
+- [react](/docs/rules/react)
+
+### Pratiques
+
+- [api](/docs/rules/api)
+- [git](/docs/rules/git)
+- [security](/docs/rules/security)
+- [testing](/docs/rules/testing)
+- [workflow](/docs/rules/workflow)
+
+## Comment ajouter une regle personnalisee
+
+Creez un fichier `.claude/rules/my-rule.md` :
+
+```markdown
+---
+paths:
+  - "**/my-folder/**"
+  - "**/*.custom"
+---
+
+# Mes regles personnalisees
+
+- Regle 1
+- Regle 2
+```
 
 ---
 
