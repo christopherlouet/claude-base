@@ -228,7 +228,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (100 commands, 37 sub-agents, 24 skills)
+## Agents Disponibles (108 commands, 45 sub-agents, 27 skills)
 
 ### Orchestrateur (Point d'entrée unique)
 | Commande | Usage |
@@ -249,7 +249,7 @@ type(scope): description courte
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (16)
+### DEV- : Développement (22)
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD |
@@ -268,8 +268,13 @@ type(scope): description courte
 | `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
 | `/dev-graphql` | API GraphQL client/serveur |
 | `/dev-neovim` | Plugins et config Neovim/Lua |
+| `/dev-prompt-engineering` | Optimisation de prompts LLM |
+| `/dev-rag` | Systèmes RAG (Retrieval-Augmented Generation) |
+| `/dev-design-system` | Design tokens et bibliothèque de composants |
+| `/dev-prisma` | ORM Prisma (schema, migrations, queries) |
+| `/dev-trpc` | APIs type-safe avec tRPC |
 
-### QA- : Qualité (11)
+### QA- : Qualité (12)
 | Commande | Usage |
 |----------|-------|
 | `/qa-review` | Code review approfondie |
@@ -283,8 +288,9 @@ type(scope): description courte
 | `/qa-kaizen` | Amélioration continue (PDCA, Muda) |
 | `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
 | `/qa-neovim` | Audit config Neovim (perf, keymaps) |
+| `/qa-e2e` | Tests End-to-End (Playwright, Cypress) |
 
-### OPS- : Opérations (25)
+### OPS- : Opérations (27)
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente production |
@@ -312,6 +318,8 @@ type(scope): description courte
 | `/ops-infra-code` | Infrastructure as Code (Terraform) |
 | `/ops-secrets-management` | Gestion sécurisée des secrets |
 | `/ops-mobile-release` | Publication App Store / Google Play |
+| `/ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
+| `/ops-vercel` | Configuration et déploiement Vercel |
 
 ### DOC- : Documentation (9)
 | Commande | Usage |
@@ -461,7 +469,7 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 
 ## Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **24 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **27 Skills** dans `.claude/skills/`:
 
 ### Skills de base
 | Skill | Déclenchement automatique | Context |
@@ -494,6 +502,9 @@ En plus des commandes, le projet inclut **24 Skills** dans `.claude/skills/`:
 | `mobile-release` | "App Store", "Play Store", "Fastlane" | fork |
 | `data-pipeline` | "ETL", "Airflow", "dbt" | fork |
 | `performance-optimization` | "optimiser", "latence", "TTFB" | fork |
+| `prompt-engineering` | "prompt", "instruction", "few-shot", "LLM" | fork |
+| `e2e-testing` | "E2E", "Playwright", "Cypress", "parcours utilisateur" | fork |
+| `feature-flags` | "feature flag", "A/B test", "deploiement progressif" | fork |
 
 ### Configuration des Skills
 
@@ -522,7 +533,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 - **Modèle optimisé** : Haiku pour tâches simples (économie de tokens)
 - **Parallélisation** : Plusieurs agents peuvent tourner simultanément
 
-### Agents disponibles (37)
+### Agents disponibles (45)
 
 #### Exploration & Documentation
 | Agent | Modèle | Outils | Usage |
@@ -542,6 +553,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `qa-a11y` | haiku | Read, Grep, Glob | Audit accessibilité WCAG 2.1 |
 | `qa-coverage` | haiku | Read, Grep, Glob, Bash | Analyse couverture de tests |
 | `qa-responsive` | haiku | Read, Grep, Glob | Audit responsive/mobile-first |
+| `qa-e2e` | sonnet | Read, Grep, Glob, Bash | Tests E2E Playwright/Cypress |
 
 #### Opérations
 | Agent | Modèle | Outils | Usage |
@@ -552,6 +564,8 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `ops-ci` | haiku | Read, Grep, Glob, Bash | Configuration CI/CD |
 | `ops-database` | sonnet | Read, Grep, Glob, Bash | Schémas et migrations DB |
 | `ops-monitoring` | haiku | Read, Grep, Glob, Bash | Instrumentation et monitoring |
+| `ops-serverless` | haiku | Read, Grep, Glob, Bash | Déploiement serverless |
+| `ops-vercel` | haiku | Read, Grep, Glob, Bash | Configuration Vercel |
 
 #### Développement
 | Agent | Modèle | Outils | Usage |
@@ -561,6 +575,11 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `dev-test` | haiku | Read, Grep, Glob, Bash | Génération de tests |
 | `dev-flutter` | sonnet | Read, Grep, Glob | Widgets et screens Flutter |
 | `dev-supabase` | sonnet | Read, Grep, Glob, Bash | Backend Supabase |
+| `dev-prompt-engineering` | sonnet | Read, Grep, Glob, WebFetch | Optimisation prompts LLM |
+| `dev-rag` | sonnet | Read, Grep, Glob, Bash | Architecture RAG |
+| `dev-design-system` | haiku | Read, Grep, Glob | Design tokens et composants |
+| `dev-prisma` | haiku | Read, Grep, Glob, Bash | ORM Prisma |
+| `dev-trpc` | haiku | Read, Grep, Glob | APIs type-safe tRPC |
 
 #### Business & Growth
 | Agent | Modèle | Outils | Usage |
@@ -611,7 +630,7 @@ Chaque agent définit:
 
 ## Modular Rules (Claude Code 2.1+)
 
-Les règles sont organisées de manière modulaire dans `.claude/rules/` (15 règles):
+Les règles sont organisées de manière modulaire dans `.claude/rules/` (17 règles):
 
 ### Règles par langage
 | Fichier | Paths | Contenu |
@@ -635,6 +654,8 @@ Les règles sont organisées de manière modulaire dans `.claude/rules/` (15 rè
 | `api.md` | `**/api/**`, `**/routes/**` | REST, validation, status codes |
 | `git.md` | - | Conventional commits, branches |
 | `workflow.md` | - | Explore → Plan → Code → Commit |
+| `accessibility.md` | `**/*.tsx`, `**/components/**` | WCAG 2.1 AA, a11y patterns |
+| `performance.md` | `**/*.tsx`, `**/pages/**` | Core Web Vitals, optimisation |
 
 ### Path-Specific Rules
 

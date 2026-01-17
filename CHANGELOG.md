@@ -5,6 +5,38 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/).
 
+## [Unreleased]
+
+### Ajouté
+- **8 nouveaux Agents** (total: 45 agents)
+  - DEV: `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-prompt-engineering`, `dev-rag`
+  - OPS: `ops-serverless`, `ops-vercel`
+  - QA: `qa-e2e`
+- **3 nouveaux Skills** (total: 27 skills)
+  - `e2e-testing` : Tests End-to-End avec Playwright/Cypress
+  - `feature-flags` : Gestion de feature flags et déploiement progressif
+  - `prompt-engineering` : Optimisation de prompts pour LLMs
+- **2 nouvelles Rules** (total: 17 rules)
+  - `accessibility.md` : WCAG 2.1 AA, patterns d'accessibilité
+  - `performance.md` : Core Web Vitals, optimisation frontend
+- **8 nouvelles Commands** (total: 108 commands)
+  - `/dev-design-system` : Design tokens et bibliothèque de composants
+  - `/dev-prisma` : ORM Prisma (schema, migrations, queries)
+  - `/dev-trpc` : APIs type-safe avec tRPC
+  - `/dev-prompt-engineering` : Optimisation de prompts LLM
+  - `/dev-rag` : Systèmes RAG (Retrieval-Augmented Generation)
+  - `/ops-serverless` : Déploiement serverless (Lambda, Vercel, CF Workers)
+  - `/ops-vercel` : Configuration et déploiement Vercel
+  - `/qa-e2e` : Tests End-to-End avec Playwright ou Cypress
+- **Documentation**
+  - `docs/QUICKSTART.md` : Guide de démarrage rapide en 5 minutes
+  - `WHEN-TO-USE-WHICH-AGENT.md` : Guide de choix des agents
+
+### Corrigé
+- Cohérence des chiffres dans la documentation (108/45/27/17)
+
+---
+
 ## [1.3.0] - 2025-01-17
 
 ### Ajouté
