@@ -145,8 +145,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple de revue de code</strong></summary>
+### 1. Exemple de revue de code
 
 # Exemple de revue de code
 
@@ -264,8 +263,6 @@ Bonne implémentation globale, mais **2 problèmes de sécurité critiques** à 
 
 Une fois corrigés, approuvé pour merge.
 
-
-</details>
 
 
 ---

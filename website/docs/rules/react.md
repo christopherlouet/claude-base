@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 12
 title: "react"
 description: "export function MyComponent( title, onAction : Props)  const [state, setState] = useStatestring('');"
 tags:

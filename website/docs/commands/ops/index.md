@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **25 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
+Ce domaine contient **27 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
 
 ## Liste des commandes
 
@@ -43,6 +43,8 @@ Ce domaine contient **25 commandes** pour operations (ci/cd, docker, monitoring,
 | [`/ops-observability-stack`](/docs/commands/ops/ops-observability-stack) | Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager). |
 | [`/ops-release`](/docs/commands/ops/ops-release) | Workflow de release avec changelog et versioning. |
 | [`/ops-secrets-management`](/docs/commands/ops/ops-secrets-management) | Implémente une gestion sécurisée des secrets et credentials. |
+| [`/ops-serverless`](/docs/commands/ops/ops-serverless) | Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers). |
+| [`/ops-vercel`](/docs/commands/ops/ops-vercel) | Deploiement et configuration sur Vercel. |
 | [`/ops-vps`](/docs/commands/ops/ops-vps) | Deploiement sur serveur VPS (OVH, Hetzner, DigitalOcean, Scaleway, etc.). |
 
 ## Commandes en detail
@@ -191,6 +193,18 @@ Ce domaine contient **25 commandes** pour operations (ci/cd, docker, monitoring,
     description="Implémente une gestion sécurisée des secrets et credentials."
     domain="ops"
     href="/docs/commands/ops/ops-secrets-management"
+  />
+  <CommandCard
+    name="ops-serverless"
+    description="Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers)."
+    domain="ops"
+    href="/docs/commands/ops/ops-serverless"
+  />
+  <CommandCard
+    name="ops-vercel"
+    description="Deploiement et configuration sur Vercel."
+    domain="ops"
+    href="/docs/commands/ops/ops-vercel"
   />
   <CommandCard
     name="ops-vps"

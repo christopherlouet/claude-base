@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: "git"
 description: "[corps optionnel - details sur le \"quoi\" et \"pourquoi\"]"
 tags:

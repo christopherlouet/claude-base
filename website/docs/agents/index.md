@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Catalogue des Agents
 
-> **37 sub-agents** avec contexte isole pour des taches autonomes
+> **45 sub-agents** avec contexte isole pour des taches autonomes
 
 <Stats items={[
-  { number: 17, label: 'Agents Haiku' },
-  { number: 20, label: 'Agents Sonnet' },
-  { number: 37, label: 'Total' },
+  { number: 22, label: 'Agents Haiku' },
+  { number: 23, label: 'Agents Sonnet' },
+  { number: 45, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Agent ?
@@ -29,7 +29,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole :
 
 ## Agents par modele
 
-### Haiku (17 agents)
+### Haiku (22 agents)
 
 Agents rapides et economiques pour les taches simples.
 
@@ -39,6 +39,9 @@ Agents rapides et economiques pour les taches simples.
 | [`biz-model`](/docs/agents/biz-model) | Analyse business et proposition de business model pour un pr... | Read, Grep, Glob... |
 | [`biz-mvp`](/docs/agents/biz-mvp) | Definition et planification du Minimum Viable Product. | Read, Grep, Glob... |
 | [`biz-personas`](/docs/agents/biz-personas) | Creation de personas utilisateur bases sur des donnees. | Read, Grep, Glob... |
+| [`dev-design-system`](/docs/agents/dev-design-system) | Design systems et bibliotheques de composants. | Read, Grep, Glob |
+| [`dev-prisma`](/docs/agents/dev-prisma) | Prisma ORM pour bases de donnees type-safe. | Read, Grep, Glob... |
+| [`dev-trpc`](/docs/agents/dev-trpc) | APIs type-safe avec tRPC. | Read, Grep, Glob |
 | [`doc-changelog`](/docs/agents/doc-changelog) | Gestion du changelog selon la convention Keep a Changelog. | Read, Grep, Glob... |
 | [`doc-explain`](/docs/agents/doc-explain) | Explication pedagogique de code complexe. | Read, Grep, Glob |
 | [`doc-generate`](/docs/agents/doc-generate) | Generation de documentation complete et maintenable. | Read, Grep, Glob... |
@@ -48,12 +51,14 @@ Agents rapides et economiques pour les taches simples.
 | [`legal-terms-of-service`](/docs/agents/legal-terms-of-service) | Creation de Conditions Generales d'Utilisation conformes. | Read, Grep, Glob... |
 | [`ops-deps`](/docs/agents/ops-deps) | Audit, analyse et recommandations pour les dependances du pr... | Read, Grep, Glob... |
 | [`ops-health`](/docs/agents/ops-health) | Health check rapide pour evaluer l'etat general d'un projet. | Read, Grep, Glob... |
+| [`ops-serverless`](/docs/agents/ops-serverless) | Deploiement d'applications serverless. | Read, Grep, Glob... |
+| [`ops-vercel`](/docs/agents/ops-vercel) | Deploiement sur Vercel. | Read, Grep, Glob... |
 | [`qa-a11y`](/docs/agents/qa-a11y) | Audit d'accessibilite selon les normes WCAG 2.1 niveau AA. | Read, Grep, Glob |
 | [`qa-coverage`](/docs/agents/qa-coverage) | Analyse de la couverture de tests et de la qualite des tests... | Read, Grep, Glob... |
 | [`qa-responsive`](/docs/agents/qa-responsive) | Audit de la conception responsive et de l'experience mobile. | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | Tu es en mode EXPLORATION. Analyse le codebase sans jamais m... | Read, Grep, Glob |
 
-### Sonnet (20 agents)
+### Sonnet (23 agents)
 
 Agents pour les taches complexes necessitant une analyse approfondie.
 
@@ -65,6 +70,8 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`dev-component`](/docs/agents/dev-component) | Creation de composants UI modulaires et reutilisables. | Read, Grep, Glob... |
 | [`dev-debug`](/docs/agents/dev-debug) | Diagnostic et resolution de bugs de maniere methodique. | Read, Grep, Glob... |
 | [`dev-flutter`](/docs/agents/dev-flutter) | Developpement d'applications Flutter avec bonnes pratiques. | Read, Grep, Glob... |
+| [`dev-prompt-engineering`](/docs/agents/dev-prompt-engineering) | Optimisation systematique de prompts pour applications LLM. | Read, Grep, Glob... |
+| [`dev-rag`](/docs/agents/dev-rag) | Architecture et implementation de systemes RAG. | Read, Grep, Glob... |
 | [`dev-supabase`](/docs/agents/dev-supabase) | Integration complete de Supabase comme backend. | Read, Grep, Glob... |
 | [`dev-test`](/docs/agents/dev-test) | Generation de tests complets et maintenables. | Read, Grep, Glob... |
 | [`growth-analytics`](/docs/agents/growth-analytics) | Implementation de l'analytics et du tracking. | Read, Grep, Glob... |
@@ -77,6 +84,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`ops-docker`](/docs/agents/ops-docker) | Containerisation Docker optimisee pour la production. | Read, Grep, Glob... |
 | [`ops-monitoring`](/docs/agents/ops-monitoring) | Instrumentation complete pour observabilite. | Read, Grep, Glob... |
 | [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet d'un projet couvrant securite, RGPD, a... | Read, Grep, Glob... |
+| [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
 | [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
 | [`qa-security`](/docs/agents/qa-security) | Audit de securite approfondi base sur OWASP Top 10. | Read, Grep, Glob... |
 
@@ -149,6 +157,13 @@ Agents pour les taches complexes necessitant une analyse approfondie.
     href="/docs/agents/dev-debug"
   />
   <AgentCard
+    name="dev-design-system"
+    description="Design systems et bibliotheques de composants."
+    model="haiku"
+    tools={["Read","Grep","Glob"]}
+    href="/docs/agents/dev-design-system"
+  />
+  <AgentCard
     name="dev-flutter"
     description="Developpement d'applications Flutter avec bonnes pratiques."
     model="sonnet"
@@ -156,18 +171,11 @@ Agents pour les taches complexes necessitant une analyse approfondie.
     href="/docs/agents/dev-flutter"
   />
   <AgentCard
-    name="dev-supabase"
-    description="Integration complete de Supabase comme backend."
-    model="sonnet"
-    tools={["Read","Grep","Glob","Edit"]}
-    href="/docs/agents/dev-supabase"
-  />
-  <AgentCard
-    name="dev-test"
-    description="Generation de tests complets et maintenables."
-    model="sonnet"
-    tools={["Read","Grep","Glob","Edit"]}
-    href="/docs/agents/dev-test"
+    name="dev-prisma"
+    description="Prisma ORM pour bases de donnees type-safe."
+    model="haiku"
+    tools={["Read","Grep","Glob","Bash"]}
+    href="/docs/agents/dev-prisma"
   />
 </AgentGrid>
 

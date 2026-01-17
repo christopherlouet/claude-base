@@ -164,8 +164,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple de Pull Request</strong></summary>
+### 1. Exemple de Pull Request
 
 # Exemple de Pull Request
 
@@ -311,8 +310,6 @@ https://github.com/example/app/pull/456
 
 **PR #456 créée avec succès.**
 
-
-</details>
 
 
 ---

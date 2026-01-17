@@ -217,8 +217,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple de développement d'API</strong></summary>
+### 1. Exemple de développement d'API
 
 # Exemple de développement d'API
 
@@ -460,8 +459,6 @@ Endpoint créé avec:
 - Tests d'intégration
 - Authentification requise
 
-
-</details>
 
 
 ---

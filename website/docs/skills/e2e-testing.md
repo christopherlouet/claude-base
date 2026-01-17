@@ -197,8 +197,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple E2E : Test de parcours de connexion</strong></summary>
+### 1. Exemple E2E : Test de parcours de connexion
 
 # Exemple E2E : Test de parcours de connexion
 
@@ -418,8 +417,6 @@ npx playwright test --debug
 4. **Isolation** : Chaque test doit etre independant
 5. **CI/CD** : Configurer les retries et screenshots en CI
 
-
-</details>
 
 
 ---

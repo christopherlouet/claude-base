@@ -58,7 +58,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 
 
 
-### [DEV](/docs/commands/dev) (16)
+### [DEV](/docs/commands/dev) (21)
 
 > Developpement (TDD, API, composants, debug)
 
@@ -66,8 +66,8 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/dev-api-versioning`](/docs/commands/dev/dev-api-versioning)
 - [`/dev-component`](/docs/commands/dev/dev-component)
 - [`/dev-debug`](/docs/commands/dev/dev-debug)
-- [`/dev-error-handling`](/docs/commands/dev/dev-error-handling)
-- [... et 11 autres](/docs/commands/dev)
+- [`/dev-design-system`](/docs/commands/dev/dev-design-system)
+- [... et 16 autres](/docs/commands/dev)
 
 
 ### [DOC](/docs/commands/doc) (9)
@@ -106,7 +106,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 
 
 
-### [OPS](/docs/commands/ops) (25)
+### [OPS](/docs/commands/ops) (27)
 
 > Operations (CI/CD, Docker, monitoring, GitFlow)
 
@@ -115,10 +115,10 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization)
 - [`/ops-database`](/docs/commands/ops/ops-database)
 - [`/ops-deps`](/docs/commands/ops/ops-deps)
-- [... et 20 autres](/docs/commands/ops)
+- [... et 22 autres](/docs/commands/ops)
 
 
-### [QA](/docs/commands/qa) (11)
+### [QA](/docs/commands/qa) (12)
 
 > Qualite (review, securite, performance, accessibilite)
 
@@ -126,8 +126,8 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/qa-audit`](/docs/commands/qa/qa-audit)
 - [`/qa-automation`](/docs/commands/qa/qa-automation)
 - [`/qa-coverage`](/docs/commands/qa/qa-coverage)
-- [`/qa-kaizen`](/docs/commands/qa/qa-kaizen)
-- [... et 6 autres](/docs/commands/qa)
+- [`/qa-e2e`](/docs/commands/qa/qa-e2e)
+- [... et 7 autres](/docs/commands/qa)
 
 
 ### [WORK](/docs/commands/work) (10)

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 25
+sidebar_position: 30
 title: "legal-terms-of-service"
 description: "Creation de Conditions Generales d'Utilisation conformes."
 tags:

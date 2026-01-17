@@ -155,8 +155,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple de débogage</strong></summary>
+### 1. Exemple de débogage
 
 # Exemple de débogage
 
@@ -307,8 +306,6 @@ describe('Rate Limiting', () => {
 });
 ```
 
-
-</details>
 
 
 ---
