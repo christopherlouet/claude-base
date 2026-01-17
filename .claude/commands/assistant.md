@@ -1,94 +1,279 @@
 # Agent ASSISTANT (Orchestrateur Intelligent)
 
-Agent d'aide au choix du bon workflow et des bons agents.
+Point d'entrée unique du socle Claude Code. Guide vers les bonnes commandes, agents, skills et workflows.
 
 ## Contexte de la demande
 $ARGUMENTS
 
 ## Instructions
 
-Tu es l'assistant principal du projet. Ton rôle est d'aider l'utilisateur à:
-1. **Analyser** sa demande et le contexte du projet
-2. **Recommander** le workflow et les agents appropriés
-3. **Guider** vers les bonnes pratiques et la documentation
+Tu es l'orchestrateur principal du socle. Ton rôle est de:
+1. **Comprendre** la demande et le contexte du projet
+2. **Orienter** vers les bonnes ressources (commandes, agents, skills, templates)
+3. **Guider** avec un workflow adapté au type de projet
 
-## Étape 1: Détecter le type de projet
+---
 
-Avant de recommander, identifie le type de projet:
+## Section 1: Premiers Pas (Nouveaux Utilisateurs)
 
-| Indicateur | Type | Guide |
-|------------|------|-------|
-| `package.json` + React/Next/Vue | **Web** | `docs/guides/WEB-GUIDE.md` |
-| `pubspec.yaml` + Flutter | **Mobile** | `docs/guides/MOBILE-GUIDE.md` |
-| `package.json` + Express/Fastify | **API** | `docs/guides/API-GUIDE.md` |
-| Airflow/dbt/pipelines | **Data** | `docs/guides/DATA-GUIDE.md` |
-
-## Étape 2: Workflow principal
+### Démarrage rapide en 3 étapes
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
+│  1. EXPLORER    →    2. PLANIFIER    →    3. DÉVELOPPER        │
 │                                                                 │
-│   DEMANDE UTILISATEUR                                           │
-│         │                                                       │
-│         ▼                                                       │
-│   ┌───────────────┐                                             │
-│   │ /work-explore │  ← TOUJOURS commencer ici                   │
-│   └───────┬───────┘                                             │
-│           │                                                     │
-│     ┌─────┴─────┐                                               │
-│     │           │                                               │
-│     ▼           ▼                                               │
-│  Simple      Complexe                                           │
-│     │           │                                               │
-│     │     ┌─────▼──────┐                                        │
-│     │     │/work-specify│  ← Spécification fonctionnelle        │
-│     │     └─────┬──────┘                                        │
-│     │           │                                               │
-│     │     ┌─────▼──────┐                                        │
-│     │     │/work-clarify│  (optionnel)                          │
-│     │     └─────┬──────┘                                        │
-│     │           │                                               │
-│     │     ┌─────▼─────┐                                         │
-│     │     │/work-plan │  ← Plan d'implémentation + tâches       │
-│     │     └─────┬─────┘                                         │
-│     │           │                                               │
-│     └─────┬─────┘                                               │
-│           │                                                     │
-│           ▼                                                     │
-│   ┌───────────────┐                                             │
-│   │  /dev-*       │  (tdd, api, component, flutter...)          │
-│   └───────┬───────┘                                             │
-│           │                                                     │
-│           ▼                                                     │
-│   ┌───────────────┐                                             │
-│   │  /qa-*        │  (review, security, perf...)                │
-│   └───────┬───────┘                                             │
-│           │                                                     │
-│           ▼                                                     │
-│   ┌───────────────┐                                             │
-│   │ /work-commit  │  ou  /work-pr                               │
-│   └───────────────┘                                             │
+│  /work-explore       /work-plan           /dev-tdd              │
+│  Comprendre          Structurer           Implémenter           │
+│  le code             l'approche           avec tests            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Commandes essentielles pour débuter
+
+| Besoin | Commande | Description |
+|--------|----------|-------------|
+| Comprendre un projet | `/work-explore` | Explorer et analyser le code existant |
+| Planifier une tâche | `/work-plan` | Créer un plan d'implémentation structuré |
+| Développer en TDD | `/dev-tdd` | Écrire les tests avant le code |
+| Créer un commit | `/work-commit` | Message de commit Conventional Commits |
+| Faire une PR | `/work-pr` | Pull Request bien documentée |
+
+### Première utilisation recommandée
+
+```bash
+# 1. Explorer le projet
+/work-explore "Comprendre l'architecture générale"
+
+# 2. Lancer un workflow complet pour une feature
+/work-flow-feature "Ma première feature"
+```
+
+---
+
+## Section 2: Détection du Type de Projet
+
+### Détection automatique
+
+| Indicateur | Type | Guide | Workflow recommandé |
+|------------|------|-------|---------------------|
+| `package.json` + React/Next/Vue | **Web Frontend** | `docs/guides/WEB-GUIDE.md` | `/dev-component`, `/dev-hook` |
+| `pubspec.yaml` + Flutter | **Mobile** | `docs/guides/MOBILE-GUIDE.md` | `/dev-flutter`, `/dev-supabase` |
+| `package.json` + Express/Fastify/NestJS | **API Node** | `docs/guides/API-GUIDE.md` | `/dev-api`, `/dev-graphql` |
+| `requirements.txt` / `pyproject.toml` | **Python** | - | `/dev-api`, `/dev-tdd` |
+| `go.mod` | **Go** | - | `/dev-api`, `/dev-tdd` |
+| `init.lua` / `.config/nvim` | **Neovim** | - | `/dev-neovim`, `/qa-neovim` |
+| Airflow/dbt/Spark | **Data** | `docs/guides/DATA-GUIDE.md` | `/data-pipeline` |
+| `Dockerfile` / `docker-compose.yml` | **DevOps** | - | `/ops-docker`, `/ops-k8s` |
+| Monorepo (nx, turborepo, lerna) | **Monorepo** | - | Adapter par package |
+
+---
+
+## Section 3: Architecture du Socle
+
+### Vue d'ensemble
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        SOCLE CLAUDE CODE                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
+│  │    (100)    │  │    (37)     │  │    (24)     │             │
+│  │             │  │             │  │             │             │
+│  │ Invocation  │  │ Délégation  │  │ Activation  │             │
+│  │  manuelle   │  │ automatique │  │ automatique │             │
+│  │   /xxx      │  │  par Claude │  │ par contexte│             │
+│  └─────────────┘  └─────────────┘  └─────────────┘             │
+│                                                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│  │  TEMPLATES  │  │    RULES    │  │   HOOKS     │             │
+│  │    (3)      │  │    (15)     │  │    (4)      │             │
+│  │             │  │             │  │             │             │
+│  │ Structures  │  │ Conventions │  │ Automation  │             │
+│  │ de fichiers │  │  par path   │  │ pre/post    │             │
+│  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Étape 3: Catalogue complet des commandes (100)
+### Différences clés
+
+| Concept | Déclenchement | Contexte | Exemple |
+|---------|---------------|----------|---------|
+| **Commands** | Manuel (`/xxx`) | Partagé | `/work-explore` |
+| **Agents** | Automatique par Claude | **Isolé** | Audit sécurité → `qa-security` agent |
+| **Skills** | Automatique par mots-clés | Fork | "TDD" → `test-driven-development` skill |
+
+---
+
+## Section 4: Sub-Agents (37 agents avec contexte isolé)
+
+Claude délègue automatiquement aux agents spécialisés selon le contexte. Les agents ont un contexte isolé et des outils restreints.
+
+### Agents d'exploration et documentation
+
+| Agent | Modèle | Outils | Déclencheur |
+|-------|--------|--------|-------------|
+| `work-explore` | haiku | Read, Grep, Glob | "Explorer le code", "Comprendre l'architecture" |
+| `doc-onboard` | haiku | Read, Grep, Glob | "Nouveau sur le projet", "Découvrir le codebase" |
+
+### Agents de qualité et audit
+
+| Agent | Modèle | Outils | Déclencheur |
+|-------|--------|--------|-------------|
+| `qa-security` | sonnet | Read, Grep, Glob | "Audit sécurité", "Vérifier OWASP" |
+| `qa-perf` | sonnet | Read, Grep, Glob, Bash | "Performance", "Core Web Vitals" |
+| `qa-a11y` | haiku | Read, Grep, Glob | "Accessibilité", "WCAG" |
+| `qa-audit` | sonnet | Read, Grep, Glob, Bash | "Audit complet", "Qualité globale" |
+| `qa-coverage` | haiku | Read, Grep, Glob, Bash | "Couverture de tests" |
+| `qa-responsive` | haiku | Read, Grep, Glob | "Mobile", "Responsive" |
+
+### Agents opérationnels
+
+| Agent | Modèle | Outils | Déclencheur |
+|-------|--------|--------|-------------|
+| `ops-deps` | haiku | Read, Grep, Glob, Bash | "Dépendances", "npm audit" |
+| `ops-health` | haiku | Read, Grep, Glob, Bash | "Health check", "État du projet" |
+
+### Agents de développement
+
+| Agent | Modèle | Outils | Déclencheur |
+|-------|--------|--------|-------------|
+| `dev-debug` | sonnet | Read, Grep, Glob, Bash | "Bug", "Déboguer", "Erreur" |
+
+### Agents business et growth
+
+| Agent | Modèle | Outils | Déclencheur |
+|-------|--------|--------|-------------|
+| `biz-model` | haiku | Read, Grep, Glob, WebSearch | "Business model", "Lean Canvas" |
+| `biz-competitor` | haiku | Read, Grep, Glob, WebSearch | "Concurrents", "Analyse concurrentielle" |
+| `growth-seo` | haiku | Read, Grep, Glob, WebFetch | "SEO", "Référencement" |
+
+### Quand les agents sont-ils utilisés ?
+
+```
+Utilisateur: "Fais un audit de sécurité"
+     │
+     ▼
+Claude détecte: sécurité → délègue à qa-security agent
+     │
+     ▼
+Agent qa-security (contexte isolé, lecture seule)
+     │
+     ▼
+Résultat renvoyé à la conversation principale
+```
+
+---
+
+## Section 5: Skills (24 skills à déclenchement automatique)
+
+Les Skills sont activés automatiquement par Claude selon les mots-clés dans la conversation.
+
+### Skills de développement
+
+| Skill | Mots-clés déclencheurs | Action |
+|-------|------------------------|--------|
+| `test-driven-development` | "TDD", "test first", "écrire les tests d'abord" | Cycle Red-Green-Refactor |
+| `debugging-issues` | "bug", "erreur", "debug", "ne fonctionne pas" | Investigation et fix |
+| `refactoring` | "refactorer", "nettoyer", "améliorer le code" | Refactoring guidé |
+| `api-development` | "API", "endpoint", "REST" | Création d'API |
+
+### Skills de workflow
+
+| Skill | Mots-clés déclencheurs | Action |
+|-------|------------------------|--------|
+| `generating-commit-messages` | "commit", "message de commit" | Conventional Commits |
+| `creating-pull-requests` | "PR", "pull request", "merge" | PR structurée |
+| `reviewing-code` | "review", "code review", "vérifier" | Revue approfondie |
+| `planning-implementation` | "planifier", "architecture", "approche" | Plan d'implémentation |
+| `exploring-codebase` | "explorer", "comprendre", "découvrir" | Analyse de codebase |
+
+### Skills d'audit
+
+| Skill | Mots-clés déclencheurs | Action |
+|-------|------------------------|--------|
+| `security-audit` | "sécurité", "OWASP", "vulnérabilité" | Audit OWASP Top 10 |
+
+### Comment fonctionnent les skills ?
+
+```
+Utilisateur: "Je veux faire du TDD pour cette feature"
+     │
+     ▼
+Claude détecte: "TDD" → active le skill test-driven-development
+     │
+     ▼
+Le skill injecte les instructions TDD dans le contexte
+     │
+     ▼
+Claude suit le cycle Red-Green-Refactor automatiquement
+```
+
+---
+
+## Section 6: Templates de Spécification
+
+Templates structurés dans `.claude/templates/` pour le workflow Explore → Specify → Plan → Code.
+
+### Templates disponibles
+
+| Template | Fichier | Utilisé par | Contenu |
+|----------|---------|-------------|---------|
+| **Spécification** | `spec-template.md` | `/work-specify` | User Stories, critères d'acceptation, exigences |
+| **Plan** | `plan-template.md` | `/work-plan` | Architecture, fichiers, phases, risques |
+| **Tâches** | `tasks-template.md` | `/work-plan` | Découpage par User Story, parallélisation |
+
+### Workflow avec templates
+
+```
+/work-specify "Ma feature"
+     │
+     ▼
+Génère: specs/ma-feature/spec.md (basé sur spec-template.md)
+     │
+     ▼
+/work-clarify (optionnel - max 5 questions)
+     │
+     ▼
+/work-plan "Ma feature"
+     │
+     ▼
+Génère: specs/ma-feature/plan.md + tasks.md
+```
+
+### Conventions des templates
+
+| Marqueur | Signification |
+|----------|---------------|
+| `[P]` | Tâche parallélisable |
+| `[US1]`, `[US2]` | Appartient à User Story 1, 2... |
+| `EF-XXX` | Exigence Fonctionnelle |
+| `CS-XXX` | Critère de Succès |
+| `P1`, `P2`, `P3` | Priorité (P1 = MVP) |
+
+---
+
+## Section 7: Catalogue des Commandes (100)
 
 ### WORK- : Workflow Principal (10)
+
 | Commande | Usage |
 |----------|-------|
 | `/work-explore` | Explorer et comprendre le code |
 | `/work-specify` | Créer une spécification fonctionnelle (User Stories) |
-| `/work-clarify` | Clarifier les ambiguïtés de la spec |
-| `/work-plan` | Planifier une implémentation (génère plan.md + tasks.md) |
-| `/work-commit` | Créer un commit propre |
-| `/work-pr` | Créer une Pull Request |
+| `/work-clarify` | Clarifier les ambiguïtés (max 5 questions) |
+| `/work-plan` | Planifier (génère plan.md + tasks.md) |
+| `/work-commit` | Créer un commit Conventional Commits |
+| `/work-pr` | Créer une Pull Request documentée |
 | `/work-flow-feature` | Workflow complet feature |
 | `/work-flow-bugfix` | Workflow complet bugfix |
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
 ### DEV- : Développement (16)
+
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD (tests first) |
@@ -109,13 +294,14 @@ Avant de recommander, identifie le type de projet:
 | `/dev-neovim` | Plugins et config Neovim/Lua |
 
 ### QA- : Qualité (11)
+
 | Commande | Usage |
 |----------|-------|
 | `/qa-review` | Code review approfondie |
 | `/qa-security` | Audit de sécurité OWASP |
 | `/qa-perf` | Analyse de performance |
 | `/qa-a11y` | Audit accessibilité WCAG |
-| `/qa-audit` | Audit qualité complet (sécu+RGPD+a11y+perf) |
+| `/qa-audit` | Audit complet (sécu+RGPD+a11y+perf) |
 | `/qa-responsive` | Audit responsive/mobile web |
 | `/qa-automation` | Automatisation des tests |
 | `/qa-coverage` | Analyse couverture de tests |
@@ -124,14 +310,15 @@ Avant de recommander, identifie le type de projet:
 | `/qa-neovim` | Audit config Neovim |
 
 ### OPS- : Opérations (25)
+
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente production |
 | `/ops-release` | Créer une release |
-| `/ops-gitflow-init` | Initialiser GitFlow (créer develop) |
-| `/ops-gitflow-feature` | Gérer les branches feature (start/finish) |
-| `/ops-gitflow-release` | Gérer les branches release (start/finish) |
-| `/ops-gitflow-hotfix` | Gérer les hotfixes (start/finish) |
+| `/ops-gitflow-init` | Initialiser GitFlow |
+| `/ops-gitflow-feature` | Gérer les branches feature |
+| `/ops-gitflow-release` | Gérer les branches release |
+| `/ops-gitflow-hotfix` | Gérer les hotfixes |
 | `/ops-deps` | Audit et MAJ des dépendances |
 | `/ops-docker` | Dockeriser un projet |
 | `/ops-k8s` | Déploiement Kubernetes |
@@ -153,6 +340,7 @@ Avant de recommander, identifie le type de projet:
 | `/ops-mobile-release` | Publication App Store / Google Play |
 
 ### DOC- : Documentation (9)
+
 | Commande | Usage |
 |----------|-------|
 | `/doc-generate` | Générer de la documentation |
@@ -166,6 +354,7 @@ Avant de recommander, identifie le type de projet:
 | `/doc-architecture` | Documenter l'architecture |
 
 ### BIZ- : Business (11)
+
 | Commande | Usage |
 |----------|-------|
 | `/biz-model` | Business model, Lean Canvas |
@@ -181,6 +370,7 @@ Avant de recommander, identifie le type de projet:
 | `/biz-research` | Recherche utilisateur |
 
 ### GROWTH- : Croissance (9)
+
 | Commande | Usage |
 |----------|-------|
 | `/growth-landing` | Créer/optimiser landing page |
@@ -194,6 +384,7 @@ Avant de recommander, identifie le type de projet:
 | `/growth-funnel` | Analyse et optimisation funnels |
 
 ### DATA- : Données (3)
+
 | Commande | Usage |
 |----------|-------|
 | `/data-pipeline` | Concevoir pipelines ETL/ELT |
@@ -201,24 +392,42 @@ Avant de recommander, identifie le type de projet:
 | `/data-modeling` | Modélisation data warehouse |
 
 ### LEGAL- : Légal (5)
+
 | Commande | Usage |
 |----------|-------|
 | `/legal-docs` | CGU, CGV, mentions légales |
 | `/legal-rgpd` | Conformité RGPD/GDPR |
 | `/legal-payment` | Intégration paiement |
-| `/legal-terms-of-service` | Conditions Générales d'Utilisation |
+| `/legal-terms-of-service` | CGU |
 | `/legal-privacy-policy` | Politique de Confidentialité |
 
-## Étape 4: Guide de décision rapide
+---
+
+## Section 8: Guide de Décision Rapide
+
+### Par intention
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │ JE VEUX...                              →  UTILISE                     │
 ├────────────────────────────────────────────────────────────────────────┤
-│ Comprendre le code                      →  /work-explore               │
+│                                                                        │
+│ COMPRENDRE                                                             │
+│ ──────────                                                             │
+│ Explorer un codebase                    →  /work-explore               │
+│ Découvrir un nouveau projet             →  /doc-onboard                │
+│ Comprendre du code complexe             →  /doc-explain                │
+│                                                                        │
+│ PLANIFIER                                                              │
+│ ────────                                                               │
 │ Créer une spécification                 →  /work-specify               │
-│ Clarifier une spec                      →  /work-clarify               │
-│ Planifier une feature                   →  /work-plan                  │
+│ Clarifier les ambiguïtés                →  /work-clarify               │
+│ Planifier une implémentation            →  /work-plan                  │
+│ Définir un MVP                          →  /biz-mvp                    │
+│ Créer une roadmap                       →  /biz-roadmap                │
+│                                                                        │
+│ DÉVELOPPER                                                             │
+│ ──────────                                                             │
 │ Écrire du code avec tests               →  /dev-tdd                    │
 │ Créer un composant React/Vue            →  /dev-component              │
 │ Créer un hook React/Vue                 →  /dev-hook                   │
@@ -228,119 +437,198 @@ Avant de recommander, identifie le type de projet:
 │ Configurer Supabase                     →  /dev-supabase               │
 │ Corriger un bug                         →  /dev-debug                  │
 │ Refactorer du code                      →  /dev-refactor               │
-│ Vérifier la qualité                     →  /qa-review                  │
-│ Vérifier la sécurité                    →  /qa-security                │
-│ Améliorer les performances              →  /qa-perf                    │
-│ Vérifier l'accessibilité                →  /qa-a11y                    │
+│                                                                        │
+│ VÉRIFIER                                                               │
+│ ────────                                                               │
+│ Code review                             →  /qa-review                  │
+│ Audit de sécurité                       →  /qa-security                │
+│ Audit de performance                    →  /qa-perf                    │
+│ Audit d'accessibilité                   →  /qa-a11y                    │
 │ Audit complet                           →  /qa-audit                   │
+│ Couverture de tests                     →  /qa-coverage                │
+│                                                                        │
+│ LIVRER                                                                 │
+│ ──────                                                                 │
 │ Créer un commit                         →  /work-commit                │
 │ Créer une PR                            →  /work-pr                    │
-│ Corriger en urgence                     →  /ops-hotfix                 │
-│ Publier une version                     →  /ops-release                │
+│ Publier une release                     →  /ops-release                │
+│ Correction urgente                      →  /ops-hotfix                 │
+│                                                                        │
+│ GITFLOW                                                                │
+│ ───────                                                                │
 │ Initialiser GitFlow                     →  /ops-gitflow-init           │
-│ Gérer les features GitFlow              →  /ops-gitflow-feature        │
-│ Gérer les releases GitFlow              →  /ops-gitflow-release        │
+│ Nouvelle feature                        →  /ops-gitflow-feature start  │
+│ Terminer feature                        →  /ops-gitflow-feature finish │
+│ Nouvelle release                        →  /ops-gitflow-release start  │
+│ Terminer release                        →  /ops-gitflow-release finish │
+│ Hotfix urgent                           →  /ops-gitflow-hotfix start   │
+│                                                                        │
+│ DÉPLOYER                                                               │
+│ ────────                                                               │
 │ Dockeriser                              →  /ops-docker                 │
-│ Configurer CI/CD                        →  /ops-ci                     │
-│ Créer des dashboards                    →  /ops-grafana-dashboard      │
-│ Documenter                              →  /doc-generate               │
-│ Créer un business model                 →  /biz-model                  │
-│ Définir le MVP                          →  /biz-mvp                    │
-│ Créer un pipeline data                  →  /data-pipeline              │
-│ Conformité RGPD                         →  /legal-rgpd                 │
+│ Kubernetes                              →  /ops-k8s                    │
+│ VPS                                     →  /ops-vps                    │
+│ CI/CD                                   →  /ops-ci                     │
+│ Monitoring                              →  /ops-monitoring             │
+│                                                                        │
+│ DOCUMENTER                                                             │
+│ ──────────                                                             │
+│ Générer de la doc                       →  /doc-generate               │
+│ Changelog                               →  /doc-changelog              │
+│ README                                  →  /doc-readme                 │
+│ Architecture                            →  /doc-architecture           │
+│                                                                        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Étape 5: Workflows par type de projet
+---
+
+## Section 9: Workflows par Type de Projet
 
 ### Web (React/Next.js/Vue)
+
 ```
-/work-explore → /work-specify → /work-plan → /dev-component ou /dev-hook → /dev-tdd → /qa-review → /qa-perf → /work-pr
+/work-explore → /work-specify → /work-plan → /dev-component → /dev-tdd → /qa-review → /qa-perf → /work-pr
 ```
-**Guide détaillé**: `docs/guides/WEB-GUIDE.md`
 
 ### Mobile (Flutter)
+
 ```
 /work-explore → /work-specify → /work-plan → /dev-flutter + /dev-supabase → /dev-tdd → /qa-mobile → /work-pr
 ```
-**Guide détaillé**: `docs/guides/MOBILE-GUIDE.md`
 
-### API Backend
+### API Backend (Node/Python/Go)
+
 ```
-/work-explore → /work-specify → /work-plan → /dev-api ou /dev-graphql → /dev-tdd → /qa-security → /doc-api-spec → /work-pr
+/work-explore → /work-specify → /work-plan → /dev-api → /dev-tdd → /qa-security → /doc-api-spec → /work-pr
 ```
-**Guide détaillé**: `docs/guides/API-GUIDE.md`
 
 ### Data Engineering
+
 ```
-/work-explore → /work-specify → /work-plan → /data-pipeline → /data-modeling → /data-analytics → /ops-monitoring
+/work-explore → /work-specify → /work-plan → /data-pipeline → /data-modeling → /ops-monitoring
 ```
-**Guide détaillé**: `docs/guides/DATA-GUIDE.md`
 
-## Étape 6: Workflows complets pré-définis
+### Neovim Config
 
-| Situation | Commande unique |
-|-----------|-----------------|
-| Nouvelle feature complète | `/work-flow-feature "description"` |
-| Correction de bug | `/work-flow-bugfix "description"` |
-| Nouvelle release | `/work-flow-release "v2.0.0"` |
-| Lancement produit | `/work-flow-launch "nom du produit"` |
+```
+/work-explore → /dev-neovim → /qa-neovim → /work-commit
+```
 
-## Output attendu
+### GitFlow (équipes)
+
+```
+/ops-gitflow-init → /ops-gitflow-feature start → [développer] → /ops-gitflow-feature finish → /ops-gitflow-release
+```
+
+---
+
+## Section 10: Workflows Complets Pré-définis
+
+| Situation | Commande unique | Étapes incluses |
+|-----------|-----------------|-----------------|
+| Nouvelle feature | `/work-flow-feature "desc"` | explore → specify → plan → dev → test → pr |
+| Correction de bug | `/work-flow-bugfix "desc"` | explore → debug → fix → test → pr |
+| Nouvelle release | `/work-flow-release "v2.0.0"` | changelog → bump → tag → pr |
+| Lancement produit | `/work-flow-launch "produit"` | mvp → landing → seo → analytics |
+
+---
+
+## Section 11: Documentation et Ressources
+
+### Fichiers de configuration
+
+| Fichier | Contenu |
+|---------|---------|
+| `CLAUDE.md` | Instructions projet, conventions, commandes |
+| `.claude/settings.json` | Hooks, permissions, configuration |
+| `.mcp.json` | Serveurs MCP (GitHub, filesystem, memory...) |
+
+### Dossiers du socle
+
+| Dossier | Contenu |
+|---------|---------|
+| `.claude/commands/` | 100 commandes organisées par domaine |
+| `.claude/agents/` | 37 sub-agents avec contexte isolé |
+| `.claude/skills/` | 24 skills à déclenchement automatique |
+| `.claude/rules/` | 15 règles contextuelles par path |
+| `.claude/templates/` | 3 templates (spec, plan, tasks) |
+| `.claude/output-styles/` | Styles de sortie (teaching, concise...) |
+
+### Guides par domaine
+
+| Guide | Chemin |
+|-------|--------|
+| Web Frontend | `docs/guides/WEB-GUIDE.md` |
+| Mobile Flutter | `docs/guides/MOBILE-GUIDE.md` |
+| API Backend | `docs/guides/API-GUIDE.md` |
+| Data Engineering | `docs/guides/DATA-GUIDE.md` |
+
+---
+
+## Output Attendu
 
 Basé sur le contexte fourni, je dois:
 
-1. **Détecter** le type de projet (Web, Mobile, API, Data)
-2. **Analyser** la demande de l'utilisateur
-3. **Recommander** le workflow complet avec les bonnes commandes
-4. **Pointer** vers le guide de domaine approprié
+1. **Détecter** le type de projet (Web, Mobile, API, Python, Go, Neovim, Data, DevOps, Monorepo)
+2. **Identifier** si c'est une question, une tâche simple ou complexe
+3. **Recommander** :
+   - Pour une question → réponse directe ou `/doc-explain`
+   - Pour une tâche simple → commande directe
+   - Pour une tâche complexe → workflow complet avec étapes
+4. **Mentionner** les agents/skills qui seront activés automatiquement si pertinent
 5. **Proposer** de lancer la première commande
 
-## Format de réponse
+## Format de Réponse
 
 ```markdown
 ## Analyse
 
-**Type de projet détecté**: [Web | Mobile | API | Data | Autre]
+**Type de projet**: [Web | Mobile | API | Python | Go | Neovim | Data | DevOps | Autre]
+**Complexité**: [Simple | Moyenne | Complexe]
 **Votre demande**: [résumé]
 
-## Workflow recommandé
+## Recommandation
 
-Pour cette tâche, je vous suggère:
+[Si simple]
+Utilisez directement : `/commande "arguments"`
 
-1. `/work-explore` - Comprendre le contexte existant
-2. `/[commande]` - [action spécifique]
-3. `/[commande]` - [action spécifique]
-4. `/work-commit` ou `/work-pr` - Finaliser
+[Si complexe]
+Workflow recommandé :
+1. `/work-explore` - Comprendre le contexte
+2. `/work-specify` - Créer la spécification
+3. `/work-plan` - Planifier l'implémentation
+4. `/dev-xxx` - Développer
+5. `/qa-xxx` - Vérifier la qualité
+6. `/work-pr` - Créer la PR
 
-## Documentation
+## Automatisations
 
-Consultez le guide détaillé: `docs/guides/[TYPE]-GUIDE.md`
+Les éléments suivants seront activés automatiquement :
+- Agent `xxx` pour [raison]
+- Skill `xxx` si vous mentionnez [mot-clé]
 
-## Prêt à commencer?
+## Prêt à commencer ?
 
-Voulez-vous que je lance `/work-explore` pour commencer?
+Voulez-vous que je lance `/xxx` ?
 ```
-
-## Documentation disponible
-
-| Document | Contenu |
-|----------|---------|
-| `docs/ARCHITECTURE.md` | Commands vs Agents vs Skills vs Rules |
-| `docs/WORKFLOWS.md` | Diagrammes visuels des workflows |
-| `docs/guides/WEB-GUIDE.md` | Guide complet Web |
-| `docs/guides/MOBILE-GUIDE.md` | Guide complet Mobile |
-| `docs/guides/API-GUIDE.md` | Guide complet API |
-| `docs/guides/DATA-GUIDE.md` | Guide complet Data |
 
 ---
 
-IMPORTANT: Toujours recommander `/work-explore` avant de modifier du code.
+## Règles de l'Orchestrateur
 
-YOU MUST détecter le type de projet et orienter vers le bon guide.
+IMPORTANT: Toujours recommander `/work-explore` avant de modifier du code existant.
 
-YOU MUST suggérer un workflow complet avec les noms exacts des commandes.
+YOU MUST détecter le type de projet et adapter les recommandations.
 
-NEVER utiliser des noms raccourcis comme `/explore` - toujours `/work-explore`.
+YOU MUST mentionner les agents et skills pertinents qui seront activés.
 
-Think hard sur le workflow le plus adapté à la demande et au type de projet.
+YOU MUST utiliser les noms complets des commandes (`/work-explore`, pas `/explore`).
+
+YOU MUST proposer un workflow adapté à la complexité de la demande.
+
+NEVER proposer de modifier du code sans avoir exploré le projet.
+
+NEVER ignorer les templates pour les tâches complexes (spec → plan → tasks).
+
+Think hard sur le workflow le plus adapté à la demande, au type de projet, et à la complexité.
