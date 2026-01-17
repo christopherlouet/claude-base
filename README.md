@@ -15,8 +15,8 @@ Template de configuration Claude Code pour un workflow de développement optimal
 
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://docs.anthropic.com/en/docs/claude-code) qui permet de :
 
-- Structurer ton workflow de développement : **Explore → Plan → Code → Commit**
-- Disposer de **88 agents spécialisés** pour différentes tâches
+- Structurer ton workflow de développement : **Explore → Specify → Plan → Code → Commit**
+- Disposer de **108 commandes** et **45 agents spécialisés** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
 - Intégrer CI/CD et hooks pre-commit prêts à l'emploi
@@ -64,29 +64,29 @@ claude-socle/
 │
 ├── .claude/
 │   ├── settings.json            # Permissions et hooks
-│   ├── skills/                  # 9 skills spécialisés
-│   └── commands/                # 88 agents disponibles
+│   ├── skills/                  # 27 skills spécialisés
+│   └── commands/                # 108 commandes disponibles
 │       ├── assistant.md         # Orchestrateur principal
-│       ├── work/                # Workflow (8 agents)
+│       ├── work/                # Workflow (10 commandes)
 │       │   ├── work-explore.md
 │       │   ├── work-plan.md
 │       │   ├── work-commit.md
 │       │   ├── work-pr.md
 │       │   └── ...
-│       ├── dev/                 # Développement (16 agents)
+│       ├── dev/                 # Développement (22 commandes)
 │       │   ├── dev-tdd.md
 │       │   ├── dev-api.md
 │       │   └── ...
-│       ├── qa/                  # Qualité (11 agents)
+│       ├── qa/                  # Qualité (12 commandes)
 │       │   ├── qa-review.md
 │       │   ├── qa-security.md
 │       │   └── ...
-│       ├── ops/                 # Opérations (16 agents)
-│       ├── doc/                 # Documentation (9 agents)
-│       ├── biz/                 # Business (11 agents)
-│       ├── growth/              # Croissance (8 agents)
-│       ├── data/                # Données (3 agents)
-│       └── legal/               # Légal (5 agents)
+│       ├── ops/                 # Opérations (27 commandes)
+│       ├── doc/                 # Documentation (9 commandes)
+│       ├── biz/                 # Business (11 commandes)
+│       ├── growth/              # Croissance (9 commandes)
+│       ├── data/                # Données (3 commandes)
+│       └── legal/               # Légal (5 commandes)
 │
 ├── .mcp.json                    # Configuration MCP
 │
@@ -139,7 +139,7 @@ claude-socle/
     └── ALIASES.md               # Alias de commandes
 ```
 
-## Agents Disponibles (88)
+## Commandes Disponibles (100)
 
 ### Workflow Principal
 
@@ -203,9 +203,9 @@ claude-socle/
 ## Workflow Recommandé
 
 ```
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
-│ EXPLORE │───▶│  PLAN   │───▶│  CODE   │───▶│ COMMIT  │
-└─────────┘    └─────────┘    └─────────┘    └─────────┘
+┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
+│ EXPLORE │───▶│ SPECIFY │───▶│  PLAN   │───▶│  CODE   │───▶│ COMMIT  │
+└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
 ```
 
 ### Exemple pratique (Web)
@@ -315,8 +315,8 @@ Le socle inclut un tutoriel interactif pour apprendre à l'utiliser efficacement
 ```
 
 Le tutoriel couvre :
-- Le workflow Explore → Plan → Code → Commit
-- Les 85 agents spécialisés
+- Le workflow Explore → Specify → Plan → Code → Commit
+- Les 108 commandes et 45 agents spécialisés
 - Le développement TDD
 - Les Conventional Commits
 - Quiz interactifs avec score
@@ -381,8 +381,8 @@ La documentation complète est disponible sur **[https://christopherlouet.github
 
 Elle contient :
 - Guide de démarrage rapide
-- Catalogue des 100 commandes
-- Documentation des 37 agents et 24 skills
+- Catalogue des 108 commandes
+- Documentation des 45 agents et 27 skills
 - Workflows recommandés
 - Guides par type de projet
 

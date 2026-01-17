@@ -107,7 +107,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 
 ---
 
-## Section 4: Sub-Agents (37 agents avec contexte isolé)
+## Section 4: Sub-Agents (45 agents avec contexte isolé)
 
 Claude délègue automatiquement aux agents spécialisés selon le contexte. Les agents ont un contexte isolé et des outils restreints.
 
@@ -167,7 +167,7 @@ Résultat renvoyé à la conversation principale
 
 ---
 
-## Section 5: Skills (24 skills à déclenchement automatique)
+## Section 5: Skills (27 skills à déclenchement automatique)
 
 Les Skills sont activés automatiquement par Claude selon les mots-clés dans la conversation.
 
@@ -548,10 +548,10 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 | Dossier | Contenu |
 |---------|---------|
-| `.claude/commands/` | 100 commandes organisées par domaine |
-| `.claude/agents/` | 37 sub-agents avec contexte isolé |
-| `.claude/skills/` | 24 skills à déclenchement automatique |
-| `.claude/rules/` | 15 règles contextuelles par path |
+| `.claude/commands/` | 108 commandes organisées par domaine |
+| `.claude/agents/` | 45 sub-agents avec contexte isolé |
+| `.claude/skills/` | 27 skills à déclenchement automatique |
+| `.claude/rules/` | 17 règles contextuelles par path |
 | `.claude/templates/` | 3 templates (spec, plan, tasks) |
 | `.claude/output-styles/` | Styles de sortie (teaching, concise...) |
 
