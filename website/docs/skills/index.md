@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Skills"
-description: "Catalogue des 24 skills auto-declenches"
+description: "Catalogue des 27 skills auto-declenches"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **24 skills** auto-declenches par mots-cles
+> **27 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 24, label: 'Skills Fork' },
+  { number: 27, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 24, label: 'Total' },
+  { number: 27, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?
@@ -29,7 +29,7 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (24 skills)
+### Fork (27 skills)
 
 Skills avec contexte isole.
 
