@@ -1,5 +1,5 @@
 ---
-sidebar_position: 12
+sidebar_position: 16
 title: "dev-supabase"
 description: "Integration complete de Supabase comme backend."
 tags:

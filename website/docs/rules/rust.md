@@ -1,5 +1,5 @@
 ---
-sidebar_position: 12
+sidebar_position: 14
 title: "rust"
 description: "// 2. Constants const MAX_CONNECTIONS: usize = 100;"
 tags:

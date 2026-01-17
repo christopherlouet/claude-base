@@ -132,8 +132,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple d'exploration de codebase</strong></summary>
+### 1. Exemple d'exploration de codebase
 
 # Exemple d'exploration de codebase
 
@@ -210,8 +209,6 @@ src/
 - Explorer `src/components/` pour les composants UI
 ```
 
-
-</details>
 
 
 ---

@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **11 commandes** pour qualite (review, securite, performance, accessibilite).
+Ce domaine contient **12 commandes** pour qualite (review, securite, performance, accessibilite).
 
 ## Liste des commandes
 
@@ -23,6 +23,7 @@ Ce domaine contient **11 commandes** pour qualite (review, securite, performance
 | [`/qa-audit`](/docs/commands/qa/qa-audit) | Audit qualité complet d'un projet. Combine les analyses de sécurité, RGPD, accessibilité et performance. |
 | [`/qa-automation`](/docs/commands/qa/qa-automation) | Mettre en place une stratégie d'automatisation des tests complète. |
 | [`/qa-coverage`](/docs/commands/qa/qa-coverage) | Analyse et améliore la couverture de tests du code. |
+| [`/qa-e2e`](/docs/commands/qa/qa-e2e) | Tests End-to-End avec Playwright ou Cypress. |
 | [`/qa-kaizen`](/docs/commands/qa/qa-kaizen) | Amélioration continue du code et des processus avec la méthodologie Kaizen. |
 | [`/qa-mobile`](/docs/commands/qa/qa-mobile) | Audit de qualité spécifique aux applications mobiles (Flutter, React Native). |
 | [`/qa-neovim`](/docs/commands/qa/qa-neovim) | Audit qualité et performance d'une configuration Neovim. |
@@ -57,6 +58,12 @@ Ce domaine contient **11 commandes** pour qualite (review, securite, performance
     description="Analyse et améliore la couverture de tests du code."
     domain="qa"
     href="/docs/commands/qa/qa-coverage"
+  />
+  <CommandCard
+    name="qa-e2e"
+    description="Tests End-to-End avec Playwright ou Cypress."
+    domain="qa"
+    href="/docs/commands/qa/qa-e2e"
   />
   <CommandCard
     name="qa-kaizen"

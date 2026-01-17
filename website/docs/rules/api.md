@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: "api"
 description: "// Error  \"success\": false, \"error\":  \"code\": \"VALIDATION_ERROR\", \"message\": \"Email is required\", \"details\": [...]   ```"
 tags:

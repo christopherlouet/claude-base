@@ -131,8 +131,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple de planification d'implémentation</strong></summary>
+### 1. Exemple de planification d'implémentation
 
 # Exemple de planification d'implémentation
 
@@ -231,8 +230,6 @@ npm install socket.io socket.io-client ioredis
 - [x] Risques acceptés
 - [ ] **Prêt pour implémentation**
 
-
-</details>
 
 
 ---

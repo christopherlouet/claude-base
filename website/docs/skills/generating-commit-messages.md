@@ -146,8 +146,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemples de Messages de Commit</strong></summary>
+### 1. Exemples de Messages de Commit
 
 # Exemples de Messages de Commit
 
@@ -281,8 +280,6 @@ Migration: Update all login handlers to destructure new response format.
 Refs: #789
 ```
 
-
-</details>
 
 
 ---

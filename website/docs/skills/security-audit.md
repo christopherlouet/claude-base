@@ -197,8 +197,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple d'audit de sécurité</strong></summary>
+### 1. Exemple d'audit de sécurité
 
 # Exemple d'audit de sécurité
 
@@ -378,8 +377,6 @@ npm audit
 npx secretlint "**/*"
 ```
 
-
-</details>
 
 
 ---

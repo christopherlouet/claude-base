@@ -8,11 +8,11 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Regles
 
-> **15 regles** appliquees automatiquement par chemin de fichier
+> **17 regles** appliquees automatiquement par chemin de fichier
 
 <Stats items={[
-  { number: 15, label: 'Regles' },
-  { number: 51, label: 'Patterns' },
+  { number: 17, label: 'Regles' },
+  { number: 62, label: 'Patterns' },
 ]} />
 
 ## Qu'est-ce qu'une Rule ?
@@ -28,12 +28,14 @@ Les **rules** sont des conventions appliquees automatiquement :
 
 | Regle | Description | Paths |
 |-------|-------------|-------|
+| [`accessibility`](/docs/rules/accessibility) | // BON - Image decorative &lt;img src="decoration.png... | `**/*.tsx`, `**/*.jsx`... |
 | [`api`](/docs/rules/api) | // Error \{ "success": false, "error": \{ "code": "V... | `**/api/**`, `**/routes/**`... |
 | [`csharp`](/docs/rules/csharp) | // 2. Champs prives readonly private readonly IUse... | `**/*.cs`, `**/*.csproj`... |
 | [`flutter`](/docs/rules/flutter) | // State abstract class AuthState \{\} class AuthIni... | `**/*.dart`, `**/lib/**`... |
 | [`git`](/docs/rules/git) | [corps optionnel - details sur le "quoi" et "pourq... | - |
 | [`go`](/docs/rules/go) | // Custom errors var ErrUserNotFound = errors.New(... | `**/*.go`, `**/go.mod`... |
 | [`java`](/docs/rules/java) | // 2. Champs statiques private static final Logger... | `**/*.java`, `**/pom.xml`... |
+| [`performance`](/docs/rules/performance) | &lt;Image src="/hero.jpg" alt="Hero" width=\{1200\} hei... | `**/*.tsx`, `**/*.jsx`... |
 | [`php`](/docs/rules/php) | declare(strict_types=1); | `**/*.php`, `**/composer.json` |
 | [`python`](/docs/rules/python) | import requests from pydantic import BaseModel | `**/*.py`, `**/requirements*.txt`... |
 | [`react`](/docs/rules/react) | export function MyComponent(\{ title, onAction \}: P... | `**/*.tsx`, `**/components/**`... |

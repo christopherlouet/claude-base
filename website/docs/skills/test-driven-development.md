@@ -130,8 +130,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple TDD : Fonction de calcul de prix avec remise</strong></summary>
+### 1. Exemple TDD : Fonction de calcul de prix avec remise
 
 # Exemple TDD : Fonction de calcul de prix avec remise
 
@@ -239,8 +238,6 @@ git commit -m "feat(pricing): implement calculatePrice with discount
 - Extract validation to separate function"
 ```
 
-
-</details>
 
 
 ---
