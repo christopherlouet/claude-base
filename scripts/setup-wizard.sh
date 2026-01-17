@@ -160,27 +160,27 @@ choose_project_type() {
 choose_languages() {
     print_header "Langages de programmation"
 
-    local languages=("TypeScript" "JavaScript" "Dart (Flutter)" "Python" "Go" "Rust" "Java" "C#" "Ruby" "PHP")
-    local selected
-    selected=$(ask_multiple "Quels langages utilisez-vous?" "${languages[@]}")
+    local lang_options=("TypeScript" "JavaScript" "Dart (Flutter)" "Python" "Go" "Rust" "Java" "C#" "Ruby" "PHP")
+    local selected_langs
+    selected_langs=$(ask_multiple "Quels langages utilisez-vous?" "${lang_options[@]}")
 
-    echo "$selected"
+    echo "$selected_langs"
 }
 
 choose_features() {
     print_header "Fonctionnalités"
 
-    local features=("CI/CD (GitHub Actions)" "Docker" "Testing (Jest/Vitest)" "Linting (ESLint/Prettier)" "Database (PostgreSQL/MongoDB)" "Auth (JWT/OAuth)" "Monitoring" "Documentation")
-    local selected
-    selected=$(ask_multiple "Quelles fonctionnalités avez-vous besoin?" "${features[@]}")
+    local feature_options=("CI/CD (GitHub Actions)" "Docker" "Testing (Jest/Vitest)" "Linting (ESLint/Prettier)" "Database (PostgreSQL/MongoDB)" "Auth (JWT/OAuth)" "Monitoring" "Documentation")
+    local selected_features
+    selected_features=$(ask_multiple "Quelles fonctionnalités avez-vous besoin?" "${feature_options[@]}")
 
-    echo "$selected"
+    echo "$selected_features"
 }
 
 generate_config() {
     local project_type="$1"
-    local languages="$2"
-    local features="$3"
+    local lang_list="$2"
+    local feature_list="$3"
 
     print_header "Generation de la configuration"
 
@@ -197,14 +197,14 @@ generate_config() {
 
     # Generate settings.json based on project type
     print_step "Generation de settings.json..."
-    generate_settings "$project_type" "$features"
+    generate_settings "$project_type" "$feature_list"
 
     # Generate customized CLAUDE.md
     print_step "Generation de CLAUDE.md..."
-    generate_claude_md "$project_type" "$languages"
+    generate_claude_md "$project_type" "$lang_list"
 
     # Copy MCP config if needed
-    if [[ "$features" == *"Database"* ]] || [[ "$features" == *"Monitoring"* ]]; then
+    if [[ "$feature_list" == *"Database"* ]] || [[ "$feature_list" == *"Monitoring"* ]]; then
         print_step "Configuration MCP..."
         cp "$SOCLE_DIR/.mcp.json" "$TARGET_DIR/" 2>/dev/null || true
     fi
@@ -515,15 +515,15 @@ main() {
     project_type=$(choose_project_type)
 
     # Choose languages
-    local languages
-    languages=$(choose_languages)
+    local selected_langs
+    selected_langs=$(choose_languages)
 
     # Choose features
-    local features
-    features=$(choose_features)
+    local selected_features
+    selected_features=$(choose_features)
 
     # Generate config
-    generate_config "$project_type" "$languages" "$features"
+    generate_config "$project_type" "$selected_langs" "$selected_features"
 
     # Show summary
     show_summary
