@@ -1,28 +1,92 @@
 ---
 sidebar_position: 1
-title: GROWTH
-description: Commandes GROWTH - Croissance
+title: "GROWTH"
+description: "Commandes GROWTH - Croissance (SEO, analytics, landing, funnel)"
 ---
+
+import { CommandGrid } from '@site/src/components/CommandCard';
+import CommandCard from '@site/src/components/CommandCard';
 
 # Commandes GROWTH
 
 > Croissance (SEO, analytics, landing, funnel)
 
-Ce domaine contient **9 commandes** pour la croissance.
+## Vue d'ensemble
+
+Ce domaine contient **9 commandes** pour croissance (seo, analytics, landing, funnel).
 
 ## Liste des commandes
 
 | Commande | Description |
 |----------|-------------|
-| `/growth-landing` | Landing page |
-| `/growth-seo` | Audit SEO |
-| `/growth-analytics` | Setup tracking |
-| `/growth-onboarding` | Parcours onboarding |
-| `/growth-email` | Email marketing |
-| `/growth-ab-test` | Planifier A/B tests |
-| `/growth-retention` | Strategies retention |
-| `/growth-funnel` | Optimisation funnels |
-| `/growth-app-store-analytics` | Analytics App Store |
+| [`/growth-ab-test`](/docs/commands/growth/growth-ab-test) | Planifier et analyser un A/B test. |
+| [`/growth-analytics`](/docs/commands/growth/growth-analytics) | Mise en place du tracking et définition des KPIs pour un projet. |
+| [`/growth-app-store-analytics`](/docs/commands/growth/growth-app-store-analytics) | Monitoring des metriques App Store et Google Play via APIs officielles (gratuites). |
+| [`/growth-email`](/docs/commands/growth/growth-email) | Créer des templates d'emails transactionnels et marketing. |
+| [`/growth-funnel`](/docs/commands/growth/growth-funnel) | Analyse et optimise les funnels de conversion pour maximiser les taux de conversion. |
+| [`/growth-landing`](/docs/commands/growth/growth-landing) | Créer ou optimiser une landing page efficace. |
+| [`/growth-onboarding`](/docs/commands/growth/growth-onboarding) | Concevoir un parcours d'onboarding utilisateur efficace. |
+| [`/growth-retention`](/docs/commands/growth/growth-retention) | Analyse et améliore la rétention utilisateur avec des stratégies data-driven. |
+| [`/growth-seo`](/docs/commands/growth/growth-seo) | Audit SEO et recommandations d'optimisation pour le référencement naturel. |
+
+## Commandes en detail
+
+<CommandGrid>
+  <CommandCard
+    name="growth-ab-test"
+    description="Planifier et analyser un A/B test."
+    domain="growth"
+    href="/docs/commands/growth/growth-ab-test"
+  />
+  <CommandCard
+    name="growth-analytics"
+    description="Mise en place du tracking et définition des KPIs pour un projet."
+    domain="growth"
+    href="/docs/commands/growth/growth-analytics"
+  />
+  <CommandCard
+    name="growth-app-store-analytics"
+    description="Monitoring des metriques App Store et Google Play via APIs officielles (gratuites)."
+    domain="growth"
+    href="/docs/commands/growth/growth-app-store-analytics"
+  />
+  <CommandCard
+    name="growth-email"
+    description="Créer des templates d'emails transactionnels et marketing."
+    domain="growth"
+    href="/docs/commands/growth/growth-email"
+  />
+  <CommandCard
+    name="growth-funnel"
+    description="Analyse et optimise les funnels de conversion pour maximiser les taux de conversion."
+    domain="growth"
+    href="/docs/commands/growth/growth-funnel"
+  />
+  <CommandCard
+    name="growth-landing"
+    description="Créer ou optimiser une landing page efficace."
+    domain="growth"
+    href="/docs/commands/growth/growth-landing"
+  />
+  <CommandCard
+    name="growth-onboarding"
+    description="Concevoir un parcours d'onboarding utilisateur efficace."
+    domain="growth"
+    href="/docs/commands/growth/growth-onboarding"
+  />
+  <CommandCard
+    name="growth-retention"
+    description="Analyse et améliore la rétention utilisateur avec des stratégies data-driven."
+    domain="growth"
+    href="/docs/commands/growth/growth-retention"
+  />
+  <CommandCard
+    name="growth-seo"
+    description="Audit SEO et recommandations d'optimisation pour le référencement naturel."
+    domain="growth"
+    href="/docs/commands/growth/growth-seo"
+  />
+</CommandGrid>
 
 ---
 

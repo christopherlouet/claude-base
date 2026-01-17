@@ -112,7 +112,12 @@ export function extractDomain(filePath: string): string {
   const parts = filePath.split(path.sep);
   const commandsIndex = parts.indexOf('commands');
   if (commandsIndex >= 0 && parts.length > commandsIndex + 1) {
-    return parts[commandsIndex + 1];
+    const domainOrFile = parts[commandsIndex + 1];
+    // If this is a file directly in commands/, it's the "other" domain
+    if (domainOrFile.endsWith('.md')) {
+      return 'other';
+    }
+    return domainOrFile;
   }
   return 'other';
 }
