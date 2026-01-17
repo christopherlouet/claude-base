@@ -58,6 +58,7 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"
+        continue-on-error: true  # Don't fail if Code Scanning is not enabled
 
   # Additional security scanning for shell scripts
   shellcheck-security:
@@ -93,19 +94,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: .gitleaks.toml
-
-  # SARIF upload for GitHub Security tab
-  sarif-upload:
-    name: SARIF Upload
-    runs-on: ubuntu-latest
-    needs: [analyze]
-    if: always()
-    steps:
-      - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: results.sarif
-        continue-on-error: true
 
   # Dependency review for PRs (optional - requires GitHub Advanced Security)
   dependency-review:
