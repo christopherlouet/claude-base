@@ -294,13 +294,109 @@ validate_hooks() {
 
     add_check 2
     if [[ -f "$TARGET_DIR/.claude/settings.json" ]] && command_exists jq; then
-        local hooks_count
-        hooks_count=$(jq '.hooks | ((.PreToolUse // []) | length) + ((.PostToolUse // []) | length)' "$TARGET_DIR/.claude/settings.json" 2>/dev/null || echo "0")
+        local pre_hooks post_hooks session_hooks
+        pre_hooks=$(jq '.hooks.PreToolUse // [] | length' "$TARGET_DIR/.claude/settings.json" 2>/dev/null || echo "0")
+        post_hooks=$(jq '.hooks.PostToolUse // [] | length' "$TARGET_DIR/.claude/settings.json" 2>/dev/null || echo "0")
+        session_hooks=$(jq '.hooks.SessionStart // [] | length' "$TARGET_DIR/.claude/settings.json" 2>/dev/null || echo "0")
+        local hooks_count=$((pre_hooks + post_hooks + session_hooks))
+
         if [[ "$hooks_count" -gt 0 ]]; then
-            add_success "$hooks_count hook(s) configuré(s) dans settings.json" "hooks" 2
+            add_success "$hooks_count hook(s) configuré(s): $pre_hooks Pre, $post_hooks Post, $session_hooks SessionStart" "hooks" 2
         else
             add_warning "Aucun hook configuré dans settings.json" "hooks"
         fi
+
+        # Vérifier si SessionStart est configuré
+        add_check 1
+        if [[ "$session_hooks" -gt 0 ]]; then
+            add_success "Hook SessionStart configuré" "hooks" 1
+        else
+            add_warning "Hook SessionStart non configuré (recommandé)" "hooks"
+        fi
+    fi
+}
+
+validate_agents() {
+    [[ "$OUTPUT_FORMAT" == "text" ]] && section "4b. Agents"
+
+    add_check 2
+    if [[ -d "$TARGET_DIR/.claude/agents" ]]; then
+        local agents_count
+        agents_count=$(find "$TARGET_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        if [[ "$agents_count" -gt 0 ]]; then
+            add_success ".claude/agents/ contient $agents_count agent(s)" "agents" 1
+
+            # Vérifier le frontmatter des agents
+            add_check 1
+            local valid_agents=0
+            while IFS= read -r agent_file; do
+                if head -1 "$agent_file" | grep -q "^---"; then
+                    # Vérifier les champs requis
+                    if grep -q "^name:" "$agent_file" && grep -q "^tools:" "$agent_file"; then
+                        ((valid_agents++)) || true
+                    fi
+                fi
+            done < <(find "$TARGET_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null)
+
+            if [[ "$valid_agents" -eq "$agents_count" ]]; then
+                add_success "Tous les agents ont un frontmatter valide" "agents" 1
+            else
+                add_warning "$valid_agents/$agents_count agents avec frontmatter valide" "agents"
+            fi
+        else
+            add_warning ".claude/agents/ est vide" "agents"
+        fi
+    else
+        add_warning ".claude/agents/ manquant" "agents"
+    fi
+}
+
+validate_rules() {
+    [[ "$OUTPUT_FORMAT" == "text" ]] && section "4c. Rules"
+
+    add_check 2
+    if [[ -d "$TARGET_DIR/.claude/rules" ]]; then
+        local rules_count
+        rules_count=$(find "$TARGET_DIR/.claude/rules" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        if [[ "$rules_count" -gt 0 ]]; then
+            add_success ".claude/rules/ contient $rules_count règle(s)" "rules" 1
+
+            # Vérifier le frontmatter des rules (optionnel mais recommandé)
+            add_check 1
+            local rules_with_paths=0
+            while IFS= read -r rule_file; do
+                if head -5 "$rule_file" | grep -q "^paths:"; then
+                    ((rules_with_paths++)) || true
+                fi
+            done < <(find "$TARGET_DIR/.claude/rules" -name "*.md" -type f 2>/dev/null)
+
+            if [[ "$rules_with_paths" -gt 0 ]]; then
+                add_success "$rules_with_paths règle(s) avec filtrage par path" "rules" 1
+            else
+                add_warning "Aucune règle avec filtrage par path configuré" "rules"
+            fi
+        else
+            add_warning ".claude/rules/ est vide" "rules"
+        fi
+    else
+        add_warning ".claude/rules/ manquant" "rules"
+    fi
+}
+
+validate_output_styles() {
+    [[ "$OUTPUT_FORMAT" == "text" ]] && section "4d. Output Styles"
+
+    add_check 1
+    if [[ -d "$TARGET_DIR/.claude/output-styles" ]]; then
+        local styles_count
+        styles_count=$(find "$TARGET_DIR/.claude/output-styles" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        if [[ "$styles_count" -gt 0 ]]; then
+            add_success ".claude/output-styles/ contient $styles_count style(s)" "output-styles" 1
+        else
+            add_warning ".claude/output-styles/ est vide" "output-styles"
+        fi
+    else
+        add_warning ".claude/output-styles/ manquant" "output-styles"
     fi
 }
 
@@ -528,6 +624,9 @@ main() {
     validate_commands
     validate_skills
     validate_hooks
+    validate_agents
+    validate_rules
+    validate_output_styles
     validate_command_files
     validate_security
     validate_coherence

@@ -222,3 +222,61 @@ EOF
     [[ "$output" == *"CLAUDE.local.md"* ]]
     [[ "$output" == *".env"* ]]
 }
+
+# =============================================================================
+# Tests des nouveaux répertoires (agents, rules, output-styles)
+# =============================================================================
+
+@test "new-project.sh crée le répertoire agents" {
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -d "$TEST_DIR/.claude/agents" ]
+
+    # Vérifier qu'il y a des fichiers
+    local count
+    count=$(find "$TEST_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    [ "$count" -gt 0 ]
+}
+
+@test "new-project.sh crée le répertoire rules" {
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -d "$TEST_DIR/.claude/rules" ]
+
+    # Vérifier qu'il y a des fichiers
+    local count
+    count=$(find "$TEST_DIR/.claude/rules" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    [ "$count" -gt 0 ]
+}
+
+@test "new-project.sh crée le répertoire output-styles" {
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -d "$TEST_DIR/.claude/output-styles" ]
+
+    # Vérifier qu'il y a des fichiers
+    local count
+    count=$(find "$TEST_DIR/.claude/output-styles" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    [ "$count" -gt 0 ]
+}
+
+# =============================================================================
+# Tests du nettoyage avant copie
+# =============================================================================
+
+@test "new-project.sh nettoie les anciens fichiers avant installation" {
+    # Créer une première installation
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Ajouter un fichier obsolète dans commands
+    echo "# Old command" > "$TEST_DIR/.claude/commands/old-command.md"
+    [ -f "$TEST_DIR/.claude/commands/old-command.md" ]
+
+    # Réinstaller
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Le fichier obsolète ne devrait plus exister
+    [ ! -f "$TEST_DIR/.claude/commands/old-command.md" ]
+}

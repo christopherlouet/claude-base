@@ -4,6 +4,8 @@ description: Génère des messages de commit clairs suivant Conventional Commits
 allowed-tools:
   - Bash
   - Read
+  - Grep
+context: fork
 ---
 
 # Génération de Messages de Commit

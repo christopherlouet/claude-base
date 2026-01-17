@@ -5,7 +5,7 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-  - Bash
+context: fork
 ---
 
 # Explorer un Codebase

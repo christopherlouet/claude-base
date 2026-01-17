@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-VERSION="1.1.0"
+VERSION="1.2.0"
 
 # Charger la librairie commune
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -29,6 +29,12 @@ FORCE_UPDATE=false
 BACKUP_ONLY=false
 UPDATE_SETTINGS=false
 UPDATE_SKILLS=false
+UPDATE_AGENTS=false
+UPDATE_RULES=false
+UPDATE_STYLES=false
+CLEAN_BEFORE_UPDATE=false
+DETECT_ORPHANS=false
+REMOVE_ORPHANS=false
 # shellcheck disable=SC2034  # Reserved for future implementation
 SHOW_CHANGELOG=false
 
@@ -36,6 +42,8 @@ SHOW_CHANGELOG=false
 UPDATED=0
 ADDED=0
 SKIPPED=0
+ORPHANS_FOUND=0
+ORPHANS_REMOVED=0
 
 # =============================================================================
 # Aide
@@ -64,9 +72,15 @@ ${BOLD}OPTIONS${NC}
     -q, --quiet         Mode silencieux
     --verbose           Mode verbeux (debug)
     --backup-only       Crée uniquement un backup sans mettre à jour
+    --clean             Supprime les anciens fichiers avant mise à jour
+    --detect-orphans    Detecte les fichiers absents du socle (orphelins)
+    --remove-orphans    Supprime les fichiers orphelins (implique --detect-orphans)
     --settings          Met aussi à jour settings.json
     --skills            Met aussi à jour le répertoire skills/
-    --all               Met à jour tout (commandes, settings, skills)
+    --agents            Met aussi à jour le répertoire agents/
+    --rules             Met aussi à jour le répertoire rules/
+    --styles            Met aussi à jour le répertoire output-styles/
+    --all               Met à jour tout (commandes, settings, skills, agents, rules, styles)
     --changelog         Affiche les nouveautés du socle
 
 ${BOLD}EXEMPLES${NC}
@@ -81,6 +95,12 @@ ${BOLD}EXEMPLES${NC}
 
     # Voir ce qui serait mis à jour
     $(basename "$0") --dry-run ./mon-projet
+
+    # Detecter les fichiers orphelins
+    $(basename "$0") --detect-orphans ./mon-projet
+
+    # Supprimer les fichiers orphelins
+    $(basename "$0") --remove-orphans ./mon-projet
 
 ${BOLD}STATISTIQUES DU SOCLE${NC}
     Agents:    $(count_agents "$SOCLE_DIR")
@@ -143,6 +163,19 @@ parse_args() {
                 BACKUP_ONLY=true
                 shift
                 ;;
+            --clean)
+                CLEAN_BEFORE_UPDATE=true
+                shift
+                ;;
+            --detect-orphans)
+                DETECT_ORPHANS=true
+                shift
+                ;;
+            --remove-orphans)
+                DETECT_ORPHANS=true
+                REMOVE_ORPHANS=true
+                shift
+                ;;
             --settings)
                 UPDATE_SETTINGS=true
                 shift
@@ -151,9 +184,25 @@ parse_args() {
                 UPDATE_SKILLS=true
                 shift
                 ;;
+            --agents)
+                UPDATE_AGENTS=true
+                shift
+                ;;
+            --rules)
+                UPDATE_RULES=true
+                shift
+                ;;
+            --styles)
+                UPDATE_STYLES=true
+                shift
+                ;;
             --all)
                 UPDATE_SETTINGS=true
                 UPDATE_SKILLS=true
+                UPDATE_AGENTS=true
+                UPDATE_RULES=true
+                UPDATE_STYLES=true
+                CLEAN_BEFORE_UPDATE=true
                 shift
                 ;;
             --changelog)
@@ -282,8 +331,13 @@ update_command_file() {
 update_commands() {
     section "Mise à jour des commandes"
 
+    # Créer le répertoire s'il n'existe pas
+    if [[ ! -d "$TARGET_DIR/.claude/commands" ]]; then
+        make_dir "$TARGET_DIR/.claude/commands"
+    fi
+
     local before
-    before=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    before=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 
     # Parcourir récursivement les commandes du socle
     local socle_commands_dir="$SOCLE_DIR/.claude/commands"
@@ -293,10 +347,10 @@ update_commands() {
             local rel_path="${cmd#$socle_commands_dir/}"
             update_command_file "$cmd" "$rel_path"
         fi
-    done < <(find "$socle_commands_dir" -name "*.md" -type f 2>/dev/null)
+    done < <(find "$socle_commands_dir" -name "*.md" -type f 2>/dev/null || true)
 
     local after
-    after=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    after=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 
     info "Commandes: $before → $after"
 }
@@ -361,6 +415,223 @@ update_skills() {
     fi
 }
 
+update_agents() {
+    section "Mise à jour des agents"
+
+    local src_dir="$SOCLE_DIR/.claude/agents"
+    local dest_dir="$TARGET_DIR/.claude/agents"
+
+    if [[ ! -d "$src_dir" ]]; then
+        warning "Répertoire agents source non trouvé"
+        return
+    fi
+
+    if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
+        make_dir "$dest_dir"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Copie agents/"
+        else
+            cp -r "$src_dir/"* "$dest_dir/"
+        fi
+        local count
+        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        success "Agents mis à jour ($count agents)"
+    elif [[ -d "$dest_dir" ]]; then
+        if confirm "Mettre à jour .claude/agents/?" "n"; then
+            cp -r "$src_dir/"* "$dest_dir/"
+            success "Agents mis à jour"
+        else
+            warning "Agents ignorés"
+        fi
+    else
+        make_dir "$dest_dir"
+        cp -r "$src_dir/"* "$dest_dir/"
+        local count
+        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        success "Agents créés ($count agents)"
+    fi
+}
+
+update_rules() {
+    section "Mise à jour des rules"
+
+    local src_dir="$SOCLE_DIR/.claude/rules"
+    local dest_dir="$TARGET_DIR/.claude/rules"
+
+    if [[ ! -d "$src_dir" ]]; then
+        warning "Répertoire rules source non trouvé"
+        return
+    fi
+
+    if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
+        make_dir "$dest_dir"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Copie rules/"
+        else
+            cp -r "$src_dir/"* "$dest_dir/"
+        fi
+        local count
+        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        success "Rules mis à jour ($count rules)"
+    elif [[ -d "$dest_dir" ]]; then
+        if confirm "Mettre à jour .claude/rules/?" "n"; then
+            cp -r "$src_dir/"* "$dest_dir/"
+            success "Rules mis à jour"
+        else
+            warning "Rules ignorés"
+        fi
+    else
+        make_dir "$dest_dir"
+        cp -r "$src_dir/"* "$dest_dir/"
+        local count
+        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        success "Rules créés ($count rules)"
+    fi
+}
+
+update_styles() {
+    section "Mise à jour des output-styles"
+
+    local src_dir="$SOCLE_DIR/.claude/output-styles"
+    local dest_dir="$TARGET_DIR/.claude/output-styles"
+
+    if [[ ! -d "$src_dir" ]]; then
+        warning "Répertoire output-styles source non trouvé"
+        return
+    fi
+
+    if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
+        make_dir "$dest_dir"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Copie output-styles/"
+        else
+            cp -r "$src_dir/"* "$dest_dir/"
+        fi
+        local count
+        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        success "Output-styles mis à jour ($count styles)"
+    elif [[ -d "$dest_dir" ]]; then
+        if confirm "Mettre à jour .claude/output-styles/?" "n"; then
+            cp -r "$src_dir/"* "$dest_dir/"
+            success "Output-styles mis à jour"
+        else
+            warning "Output-styles ignorés"
+        fi
+    else
+        make_dir "$dest_dir"
+        cp -r "$src_dir/"* "$dest_dir/"
+        local count
+        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        success "Output-styles créés ($count styles)"
+    fi
+}
+
+detect_orphan_files() {
+    local subdir="$1"
+    local target_dir="$TARGET_DIR/.claude/$subdir"
+    local socle_dir="$SOCLE_DIR/.claude/$subdir"
+
+    if [[ ! -d "$target_dir" ]]; then
+        return
+    fi
+
+    # Trouver les fichiers .md dans le target
+    while IFS= read -r target_file; do
+        if [[ -f "$target_file" ]]; then
+            # Calculer le chemin relatif
+            local rel_path="${target_file#$target_dir/}"
+            local socle_file="$socle_dir/$rel_path"
+
+            # Verifier si le fichier existe dans le socle
+            if [[ ! -f "$socle_file" ]]; then
+                ((ORPHANS_FOUND++)) || true
+                local filename
+                filename=$(basename "$target_file")
+
+                if $REMOVE_ORPHANS; then
+                    if $DRY_RUN; then
+                        echo -e "${DIM}[DRY-RUN]${NC} Suppression orphelin: $subdir/$rel_path"
+                    else
+                        rm -f "$target_file"
+                        ((ORPHANS_REMOVED++)) || true
+                    fi
+                    warning "  $filename supprime (orphelin)"
+                elif ${NON_INTERACTIVE:-false}; then
+                    warning "  $filename est orphelin (absent du socle)"
+                else
+                    echo ""
+                    prompt "$filename est absent du socle. Que faire?"
+                    echo "  [d] Supprimer  [k] Garder"
+                    read -r -n 1 choice
+                    echo
+
+                    case "$choice" in
+                        d|D)
+                            if ! $DRY_RUN; then
+                                rm -f "$target_file"
+                                ((ORPHANS_REMOVED++)) || true
+                            fi
+                            warning "  $filename supprime"
+                            ;;
+                        *)
+                            info "  $filename conserve"
+                            ;;
+                    esac
+                fi
+            fi
+        fi
+    done < <(find "$target_dir" -name "*.md" -type f 2>/dev/null || true)
+
+    # Nettoyer les repertoires vides
+    if $REMOVE_ORPHANS && ! $DRY_RUN; then
+        find "$target_dir" -type d -empty -delete 2>/dev/null || true
+    fi
+}
+
+detect_all_orphans() {
+    section "Detection des fichiers orphelins"
+
+    local dirs_to_check=("commands" "skills" "agents" "rules" "output-styles")
+
+    for subdir in "${dirs_to_check[@]}"; do
+        if [[ -d "$TARGET_DIR/.claude/$subdir" ]]; then
+            debug "Verification de .claude/$subdir"
+            detect_orphan_files "$subdir"
+        fi
+    done
+
+    if [[ $ORPHANS_FOUND -eq 0 ]]; then
+        success "Aucun fichier orphelin detecte"
+    else
+        if $REMOVE_ORPHANS; then
+            success "$ORPHANS_REMOVED/$ORPHANS_FOUND fichiers orphelins supprimes"
+        else
+            warning "$ORPHANS_FOUND fichiers orphelins detectes"
+            info "Utilisez --remove-orphans pour les supprimer"
+        fi
+    fi
+}
+
+clean_claude_dirs() {
+    section "Nettoyage des anciens fichiers"
+
+    # Liste des sous-dossiers à nettoyer
+    local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles")
+
+    for subdir in "${dirs_to_clean[@]}"; do
+        if [[ -d "$TARGET_DIR/.claude/$subdir" ]]; then
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Suppression: .claude/$subdir"
+            else
+                rm -rf "$TARGET_DIR/.claude/$subdir"
+                debug "Supprimé: .claude/$subdir"
+            fi
+        fi
+    done
+
+    success "Anciens fichiers nettoyés"
+}
+
 print_summary() {
     echo ""
     separator "="
@@ -372,6 +643,9 @@ print_summary() {
     echo "  Ajoutés:    $ADDED"
     echo "  Mis à jour: $UPDATED"
     echo "  Ignorés:    $SKIPPED"
+    if $DETECT_ORPHANS; then
+        echo "  Orphelins:  $ORPHANS_FOUND (${ORPHANS_REMOVED} supprimés)"
+    fi
     echo ""
 
     if [[ -n "${BACKUP_DIR:-}" ]] && [[ -d "${BACKUP_DIR:-}" ]]; then
@@ -408,6 +682,11 @@ main() {
         exit 0
     fi
 
+    # Nettoyage des anciens fichiers si demandé
+    if $CLEAN_BEFORE_UPDATE; then
+        clean_claude_dirs
+    fi
+
     # Mise à jour des commandes
     update_commands
 
@@ -429,6 +708,41 @@ main() {
         if confirm "Mettre à jour .claude/skills/?" "n"; then
             update_skills
         fi
+    fi
+
+    # Mise à jour optionnelle des agents
+    if $UPDATE_AGENTS; then
+        update_agents
+    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
+        echo ""
+        if confirm "Mettre à jour .claude/agents/?" "n"; then
+            update_agents
+        fi
+    fi
+
+    # Mise à jour optionnelle des rules
+    if $UPDATE_RULES; then
+        update_rules
+    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
+        echo ""
+        if confirm "Mettre à jour .claude/rules/?" "n"; then
+            update_rules
+        fi
+    fi
+
+    # Mise à jour optionnelle des output-styles
+    if $UPDATE_STYLES; then
+        update_styles
+    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
+        echo ""
+        if confirm "Mettre à jour .claude/output-styles/?" "n"; then
+            update_styles
+        fi
+    fi
+
+    # Detection des fichiers orphelins
+    if $DETECT_ORPHANS; then
+        detect_all_orphans
     fi
 
     # Résumé

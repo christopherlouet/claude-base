@@ -5,6 +5,8 @@ allowed-tools:
   - Read
   - Bash
   - Grep
+  - Glob
+context: fork
 ---
 
 # Créer une Pull Request

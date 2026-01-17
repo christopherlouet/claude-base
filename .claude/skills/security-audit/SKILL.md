@@ -6,6 +6,7 @@ allowed-tools:
   - Grep
   - Glob
   - Bash
+context: fork
 ---
 
 # Audit de Sécurité

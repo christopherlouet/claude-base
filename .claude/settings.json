@@ -34,6 +34,28 @@
     ]
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "description": "Afficher les informations du projet au démarrage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"=== Claude Code Session ===\"; if [ -f VERSION ]; then echo \"Version socle: $(cat VERSION)\"; fi; if [ -d .claude/commands ]; then echo \"Commandes: $(find .claude/commands -name \"*.md\" -type f 2>/dev/null | wc -l | tr -d \" \")\"; fi; if [ -d .claude/agents ]; then echo \"Agents: $(find .claude/agents -name \"*.md\" -type f 2>/dev/null | wc -l | tr -d \" \")\"; fi; echo \"===========================\"'",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "description": "Vérifier que npm install a été exécuté",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [ -f package.json ] && [ ! -d node_modules ]; then echo \"ATTENTION: node_modules manquant. Executez npm install.\"; fi'",
+            "timeout": 3000
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "description": "Empêcher les modifications sur la branche main/master",

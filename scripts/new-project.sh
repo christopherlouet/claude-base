@@ -1277,6 +1277,24 @@ confirm_choices() {
     fi
 }
 
+clean_claude_dirs() {
+    local dir="$1"
+
+    info "Nettoyage des anciens fichiers Claude..."
+
+    # Liste des sous-dossiers à nettoyer
+    local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles")
+
+    for subdir in "${dirs_to_clean[@]}"; do
+        if [[ -d "$dir/.claude/$subdir" ]]; then
+            rm -rf "$dir/.claude/$subdir"
+            debug "Supprimé: .claude/$subdir"
+        fi
+    done
+
+    success "Anciens fichiers nettoyés"
+}
+
 create_project() {
     echo ""
     if $EXISTING_PROJECT; then
@@ -1288,12 +1306,36 @@ create_project() {
 
     cd "$PROJECT_PATH"
 
+    # Nettoyer les anciens fichiers Claude si le dossier existe
+    if [[ -d ".claude" ]]; then
+        clean_claude_dirs "$(pwd)"
+    fi
+
     # Créer la structure de base
     mkdir -p .claude/commands
 
     # Copier les commandes Claude
     info "Installation des commandes Claude..."
     cp -r "$SOCLE_DIR/.claude/commands/"* .claude/commands/
+
+    # Copier les agents
+    if [[ -d "$SOCLE_DIR/.claude/agents" ]]; then
+        mkdir -p .claude/agents
+        cp -r "$SOCLE_DIR/.claude/agents/"* .claude/agents/
+    fi
+
+    # Copier les rules
+    if [[ -d "$SOCLE_DIR/.claude/rules" ]]; then
+        mkdir -p .claude/rules
+        cp -r "$SOCLE_DIR/.claude/rules/"* .claude/rules/
+    fi
+
+    # Copier les output-styles
+    if [[ -d "$SOCLE_DIR/.claude/output-styles" ]]; then
+        mkdir -p .claude/output-styles
+        cp -r "$SOCLE_DIR/.claude/output-styles/"* .claude/output-styles/
+    fi
+
     cp "$SOCLE_DIR/.claude/settings.json" .claude/
 
     # Copier les skills
@@ -1301,7 +1343,7 @@ create_project() {
         mkdir -p .claude/skills
         cp -r "$SOCLE_DIR/.claude/skills/"* .claude/skills/
     fi
-    success "Commandes Claude installées (85 agents, 9 skills, 8 hooks)"
+    success "Commandes Claude installées (88 agents, 14 subagents, 9 skills, 8 rules)"
 
     # Générer ou copier CLAUDE.md
     if [[ ! -f "CLAUDE.md" ]]; then

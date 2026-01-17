@@ -8,6 +8,7 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
+context: fork
 ---
 
 # Test-Driven Development (TDD)
