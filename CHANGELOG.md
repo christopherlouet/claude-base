@@ -8,6 +8,11 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 ## [1.3.0] - 2025-01-17
 
 ### Ajouté
+- **Site de documentation Docusaurus** sur GitHub Pages
+  - Documentation complète : 100 commandes, 37 agents, 24 skills, 15 rules
+  - Auto-génération depuis les fichiers `.claude/`
+  - Déploiement automatique via GitHub Actions
+  - URL : https://christopherlouet.github.io/claude-socle/
 - **37 Sub-Agents** avec contexte isolé (était 14)
   - DEV: `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`
   - OPS: `ops-docker`, `ops-ci`, `ops-database`, `ops-monitoring`
