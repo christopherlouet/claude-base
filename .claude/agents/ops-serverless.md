@@ -18,8 +18,8 @@ Configurer et deployer des fonctions serverless.
 | Plateforme | Cold start | Use case |
 |------------|------------|----------|
 | AWS Lambda | 100-500ms | Backend complet |
-| Vercel | <50ms | Frontend + API |
-| Cloudflare Workers | <5ms | Edge computing |
+| Vercel | ~50ms | Frontend + API |
+| Cloudflare Workers | ~5ms | Edge computing |
 
 ## AWS Lambda (Serverless Framework)
 
