@@ -40,8 +40,16 @@ Avant de recommander, identifie le type de projet:
 │     ▼           ▼                                               │
 │  Simple      Complexe                                           │
 │     │           │                                               │
+│     │     ┌─────▼──────┐                                        │
+│     │     │/work-specify│  ← Spécification fonctionnelle        │
+│     │     └─────┬──────┘                                        │
+│     │           │                                               │
+│     │     ┌─────▼──────┐                                        │
+│     │     │/work-clarify│  (optionnel)                          │
+│     │     └─────┬──────┘                                        │
+│     │           │                                               │
 │     │     ┌─────▼─────┐                                         │
-│     │     │/work-plan │                                         │
+│     │     │/work-plan │  ← Plan d'implémentation + tâches       │
 │     │     └─────┬─────┘                                         │
 │     │           │                                               │
 │     └─────┬─────┘                                               │
@@ -64,13 +72,15 @@ Avant de recommander, identifie le type de projet:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Étape 3: Catalogue complet des commandes (94)
+## Étape 3: Catalogue complet des commandes (96)
 
-### WORK- : Workflow Principal (8)
+### WORK- : Workflow Principal (10)
 | Commande | Usage |
 |----------|-------|
 | `/work-explore` | Explorer et comprendre le code |
-| `/work-plan` | Planifier une implémentation |
+| `/work-specify` | Créer une spécification fonctionnelle (User Stories) |
+| `/work-clarify` | Clarifier les ambiguïtés de la spec |
+| `/work-plan` | Planifier une implémentation (génère plan.md + tasks.md) |
 | `/work-commit` | Créer un commit propre |
 | `/work-pr` | Créer une Pull Request |
 | `/work-flow-feature` | Workflow complet feature |
@@ -202,6 +212,8 @@ Avant de recommander, identifie le type de projet:
 │ JE VEUX...                              →  UTILISE                     │
 ├────────────────────────────────────────────────────────────────────────┤
 │ Comprendre le code                      →  /work-explore               │
+│ Créer une spécification                 →  /work-specify               │
+│ Clarifier une spec                      →  /work-clarify               │
 │ Planifier une feature                   →  /work-plan                  │
 │ Écrire du code avec tests               →  /dev-tdd                    │
 │ Créer un composant React/Vue            →  /dev-component              │
@@ -236,25 +248,25 @@ Avant de recommander, identifie le type de projet:
 
 ### Web (React/Next.js/Vue)
 ```
-/work-explore → /work-plan → /dev-component ou /dev-hook → /dev-tdd → /qa-review → /qa-perf → /work-pr
+/work-explore → /work-specify → /work-plan → /dev-component ou /dev-hook → /dev-tdd → /qa-review → /qa-perf → /work-pr
 ```
 **Guide détaillé**: `docs/guides/WEB-GUIDE.md`
 
 ### Mobile (Flutter)
 ```
-/work-explore → /work-plan → /dev-flutter + /dev-supabase → /dev-tdd → /qa-mobile → /work-pr
+/work-explore → /work-specify → /work-plan → /dev-flutter + /dev-supabase → /dev-tdd → /qa-mobile → /work-pr
 ```
 **Guide détaillé**: `docs/guides/MOBILE-GUIDE.md`
 
 ### API Backend
 ```
-/work-explore → /work-plan → /dev-api ou /dev-graphql → /dev-tdd → /qa-security → /doc-api-spec → /work-pr
+/work-explore → /work-specify → /work-plan → /dev-api ou /dev-graphql → /dev-tdd → /qa-security → /doc-api-spec → /work-pr
 ```
 **Guide détaillé**: `docs/guides/API-GUIDE.md`
 
 ### Data Engineering
 ```
-/work-explore → /work-plan → /data-pipeline → /data-modeling → /data-analytics → /ops-monitoring
+/work-explore → /work-specify → /work-plan → /data-pipeline → /data-modeling → /data-analytics → /ops-monitoring
 ```
 **Guide détaillé**: `docs/guides/DATA-GUIDE.md`
 
