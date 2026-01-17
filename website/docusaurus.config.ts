@@ -82,6 +82,12 @@ const config: Config = {
         },
         {
           type: 'docSidebar',
+          sidebarId: 'conceptsSidebar',
+          position: 'left',
+          label: 'Concepts',
+        },
+        {
+          type: 'docSidebar',
           sidebarId: 'workflowSidebar',
           position: 'left',
           label: 'Workflows',
@@ -100,17 +106,17 @@ const config: Config = {
             {
               type: 'docSidebar',
               sidebarId: 'agentsSidebar',
-              label: 'Agents (37)',
+              label: 'Agents (45)',
             },
             {
               type: 'docSidebar',
               sidebarId: 'skillsSidebar',
-              label: 'Skills (24)',
+              label: 'Skills (27)',
             },
             {
               type: 'docSidebar',
               sidebarId: 'rulesSidebar',
-              label: 'Rules (15)',
+              label: 'Rules (17)',
             },
           ],
         },
@@ -145,6 +151,10 @@ const config: Config = {
               to: '/docs/intro/quick-start',
             },
             {
+              label: 'Concepts Claude Code',
+              to: '/docs/concepts',
+            },
+            {
               label: 'Architecture',
               to: '/docs/intro/architecture',
             },
@@ -158,15 +168,15 @@ const config: Config = {
           title: 'Composants',
           items: [
             {
-              label: 'Commands (100)',
+              label: 'Commands (108)',
               to: '/docs/commands',
             },
             {
-              label: 'Agents (37)',
+              label: 'Agents (45)',
               to: '/docs/agents',
             },
             {
-              label: 'Skills (24)',
+              label: 'Skills (27)',
               to: '/docs/skills',
             },
           ],

@@ -16,6 +16,28 @@ const sidebars: SidebarsConfig = {
     },
   ],
 
+  // Concepts Claude Code sidebar
+  conceptsSidebar: [
+    {
+      type: 'category',
+      label: 'Concepts Claude Code',
+      collapsed: false,
+      link: {
+        type: 'doc',
+        id: 'concepts/index',
+      },
+      items: [
+        'concepts/commands',
+        'concepts/agents',
+        'concepts/skills',
+        'concepts/rules',
+        'concepts/hooks',
+        'concepts/mcp-servers',
+        'concepts/output-styles',
+      ],
+    },
+  ],
+
   // Workflow sidebar
   workflowSidebar: [
     {

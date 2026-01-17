@@ -214,14 +214,11 @@ ${skill.examples.length > 0 ? `
 
 ## Exemples pratiques
 
-${skill.examples.map((ex) => `
-<details>
-<summary><strong>${ex.title}</strong></summary>
+${skill.examples.map((ex, idx) => `
+### ${idx + 1}. ${ex.title}
 
 ${ex.content}
-
-</details>
-`).join('\n')}
+`).join('\n---\n')}
 ` : ''}
 ---
 
