@@ -31,3 +31,9 @@ coverage/
 # Claude Code local config
 CLAUDE.local.md
 .claude/settings.local.json
+
+# Docusaurus
+website/node_modules/
+website/build/
+website/.docusaurus/
+website/.cache-loader/
