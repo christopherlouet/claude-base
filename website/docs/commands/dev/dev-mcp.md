@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "/dev-mcp"
 description: "Guide pour créer des serveurs MCP (Model Context Protocol) de qualité."
 tags:

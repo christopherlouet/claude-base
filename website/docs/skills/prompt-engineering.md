@@ -176,8 +176,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple Prompt Engineering : Optimisation d'un prompt de code review</strong></summary>
+### 1. Exemple Prompt Engineering : Optimisation d'un prompt de code review
 
 # Exemple Prompt Engineering : Optimisation d'un prompt de code review
 
@@ -393,8 +392,6 @@ Format: CVSS score + remediation pour chaque issue.
 4. **Mesurer** : Evaluer la coherence des resultats
 5. **Documenter** : Expliquer les choix pour l'equipe
 
-
-</details>
 
 
 ---

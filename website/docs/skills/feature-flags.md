@@ -227,8 +227,7 @@ Ce skill est automatiquement active lorsque :
 ## Exemples pratiques
 
 
-<details>
-<summary><strong>Exemple Feature Flags : Nouveau systeme de paiement</strong></summary>
+### 1. Exemple Feature Flags : Nouveau systeme de paiement
 
 # Exemple Feature Flags : Nouveau systeme de paiement
 
@@ -555,8 +554,6 @@ describe('FeatureFlagService', () => {
 5. **Documentation** : Maintenir une liste des flags actifs
 6. **Fallback** : Toujours prevoir un comportement par defaut
 
-
-</details>
 
 
 ---
