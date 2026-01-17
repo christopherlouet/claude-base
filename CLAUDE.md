@@ -1,6 +1,6 @@
 # Projet claude-socle
 
-> Template de configuration Claude Code pour un workflow optimal : Explore → Plan → Code → Commit
+> Template de configuration Claude Code pour un workflow optimal : Explore → Specify → Plan → Code → Commit
 
 ## Commandes Essentielles
 
@@ -110,25 +110,34 @@ go.mod              # Dépendances
 go.sum              # Checksums
 ```
 
-## Workflow Obligatoire : Explore → Plan → Code → Commit
+## Workflow Obligatoire : Explore → Specify → Plan → Code → Commit
 
 ### 1. EXPLORE (`/work-explore`)
 - Lire et comprendre le code existant AVANT de modifier
 - Identifier les patterns et conventions en place
 - NE JAMAIS coder sans avoir exploré
 
-### 2. PLAN (`/work-plan`)
+### 2. SPECIFY (`/work-specify`) - NOUVEAU
+- Créer une spécification fonctionnelle structurée
+- Définir les User Stories prioritisées (P1 = MVP, P2, P3)
+- Rédiger les critères d'acceptation (Given/When/Then)
+- Focus sur le QUOI et POURQUOI, pas le COMMENT
+- Optionnel : `/work-clarify` pour réduire les ambiguïtés
+
+### 3. PLAN (`/work-plan`)
 - Proposer une architecture AVANT d'implémenter
 - Lister les fichiers à créer/modifier
+- Découper en tâches par User Story ([US1], [US2]...)
+- Marquer les tâches parallélisables [P]
 - Identifier les risques potentiels
-- Attendre validation avant de coder
+- Génère `specs/[feature]/plan.md` et `tasks.md`
 
-### 3. CODE (`/dev-tdd` ou direct)
+### 4. CODE (`/dev-tdd` ou direct)
 - Implémenter en suivant le plan validé
 - Tests first si applicable (TDD)
 - Commits atomiques et fréquents
 
-### 4. COMMIT (`/work-commit` ou `/work-pr`)
+### 5. COMMIT (`/work-commit` ou `/work-pr`)
 - Message de commit descriptif
 - Référencer les issues si applicable
 - PR avec description complète
@@ -219,18 +228,20 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (94 commands, 37 sub-agents, 24 skills)
+## Agents Disponibles (96 commands, 37 sub-agents, 24 skills)
 
 ### Orchestrateur
 | Commande | Usage |
 |----------|-------|
 | `/assistant` | Guide de choix des agents et workflows |
 
-### WORK- : Workflow Principal (8)
+### WORK- : Workflow Principal (10)
 | Commande | Usage |
 |----------|-------|
 | `/work-explore` | Explorer et comprendre le code |
-| `/work-plan` | Planifier une implémentation |
+| `/work-specify` | Créer une spécification fonctionnelle (User Stories, critères) |
+| `/work-clarify` | Clarifier les ambiguïtés de la spec (questions ciblées) |
+| `/work-plan` | Planifier une implémentation (génère plan.md + tasks.md) |
 | `/work-commit` | Créer un commit propre |
 | `/work-pr` | Créer une Pull Request |
 | `/work-flow-feature` | Workflow complet feature |
@@ -627,6 +638,44 @@ Modes d'interaction personnalisés dans `.claude/output-styles/` (7 styles):
 | `structured` | Structure ASCII avec séparateurs | `/output-style structured` |
 
 Voir `.claude/output-styles/README.md` pour la documentation complète avec exemples.
+
+## Templates de Spécification (inspirés de Spec-Kit)
+
+Templates structurés pour le workflow Explore → Specify → Plan → Code dans `.claude/templates/`:
+
+| Template | Description | Utilisé par |
+|----------|-------------|-------------|
+| `spec-template.md` | Spécification fonctionnelle avec User Stories | `/work-specify` |
+| `plan-template.md` | Plan d'implémentation technique | `/work-plan` |
+| `tasks-template.md` | Découpage en tâches par User Story | `/work-plan` |
+
+### Structure d'une Spécification
+
+```
+specs/[feature]/
+├── spec.md           # Spécification fonctionnelle
+├── plan.md           # Plan d'implémentation
+├── tasks.md          # Découpage en tâches
+└── clarifications.md # Historique des clarifications (opt)
+```
+
+### Conventions
+
+| Marqueur | Signification |
+|----------|---------------|
+| `P1` | Priorité MVP (essentiel) |
+| `P2` | Priorité Important |
+| `P3` | Priorité Nice-to-have |
+| `[P]` | Tâche parallélisable |
+| `[US1]` | Appartient à User Story 1 |
+| `EF-XXX` | Exigence Fonctionnelle |
+| `CS-XXX` | Critère de Succès |
+
+### Workflow Spec-Driven
+
+```
+/work-explore → /work-specify → /work-clarify (opt) → /work-plan → /dev-tdd
+```
 
 ## MCP Configuration (Claude Code 2.1+)
 

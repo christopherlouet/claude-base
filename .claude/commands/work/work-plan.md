@@ -8,43 +8,44 @@ $ARGUMENTS
 ## Objectif
 
 Créer un plan d'implémentation complet et validable avant d'écrire du code.
-La planification est la deuxième étape du workflow : **EXPLORE → PLAN → CODE → COMMIT**
+La planification fait partie du workflow : **EXPLORE → SPECIFY → PLAN → CODE → COMMIT**
+
+## Templates disponibles
+
+Utiliser les templates dans `.claude/templates/` :
+- `plan-template.md` - Structure du plan d'implémentation
+- `tasks-template.md` - Découpage en tâches
 
 ## Processus de planification
 
-### 1. Analyse des requirements
+### 1. Vérification des prérequis
 
 ```
-┌─────────────────────────────────────────┐
-│          ANALYSE INITIALE               │
-├─────────────────────────────────────────┤
-│  1. Comprendre la demande               │
-│  2. Identifier les contraintes          │
-│  3. Définir les critères de succès      │
-│  4. Lister les dépendances              │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    VÉRIFICATION PRÉREQUIS                       │
+├─────────────────────────────────────────────────────────────────┤
+│  ☐ Spécification existe ? (specs/[feature]/spec.md)             │
+│    → Si non : suggérer /work-specify                            │
+│  ☐ Exploration faite ?                                          │
+│    → Si non : suggérer /work-explore                            │
+│  ☐ Clarifications résolues ? (pas de [CLARIFICATION NÉCESSAIRE])│
+│    → Si non : suggérer /work-clarify                            │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Questions à se poser
-- Quel est le problème à résoudre ?
-- Quels sont les cas d'usage principaux ?
-- Quelles sont les contraintes techniques ?
-- Y a-t-il des dépendances externes ?
-- Quel est le niveau de qualité attendu ?
+### 2. Analyse de la spécification
 
-### 2. Exploration préalable
+Si une spec existe, extraire :
+- **User Stories** avec leurs priorités (P1, P2, P3)
+- **Exigences Fonctionnelles** (EF-XXX)
+- **Critères de Succès** (CS-XXX)
+- **Entités** et leurs relations
+- **Contraintes** et hypothèses
 
-Avant de planifier, s'assurer d'avoir exploré :
-- [ ] Code existant lié à la feature
-- [ ] Patterns et conventions en place
-- [ ] Tests existants
-- [ ] Documentation disponible
-
-> Si l'exploration n'est pas faite, utiliser `/work-explore` d'abord.
-
-### 3. Conception de la solution
+### 3. Conception technique
 
 #### Architecture
+
 ```
 ┌─────────────────┐
 │   Composant A   │
@@ -59,6 +60,7 @@ Avant de planifier, s'assurer d'avoir exploré :
 ```
 
 #### Patterns à considérer
+
 | Pattern | Quand l'utiliser |
 |---------|------------------|
 | Service | Logique métier isolée |
@@ -67,65 +69,82 @@ Avant de planifier, s'assurer d'avoir exploré :
 | Strategy | Algorithmes interchangeables |
 | Observer | Événements et notifications |
 
-### 4. Plan d'implémentation
+### 4. Structure du plan (basée sur template)
 
-#### Structure du plan
+Générer le plan dans `specs/[feature]/plan.md` avec :
 
 ```markdown
-## Plan : [Nom de la feature]
+# Plan d'implémentation : [Feature]
 
-### Résumé
+## Résumé
 [1-2 phrases décrivant la solution]
 
-### Approche choisie
-[Justification de l'architecture retenue]
+## Contexte Technique
+| Aspect | Choix |
+|--------|-------|
+| Langage | [TypeScript, Python...] |
+| Framework | [Next.js, FastAPI...] |
+| Tests | [Jest, pytest...] |
 
-### Fichiers impactés
+## Fichiers Impactés
 
-#### À créer
+### À créer
 | Fichier | Responsabilité |
 |---------|----------------|
 | src/services/xxx.ts | [description] |
-| src/types/xxx.ts | [description] |
 
-#### À modifier
+### À modifier
 | Fichier | Modification |
 |---------|--------------|
 | src/routes/xxx.ts | [changement] |
 
-### Étapes d'implémentation
+## Phases d'Implémentation
 
-1. **[Étape 1]** - [description]
-   - Sous-tâche 1.1
-   - Sous-tâche 1.2
+### Phase 1 : Fondation (bloquant)
+- [ ] T001 - Setup structure
+- [ ] T002 - Types/interfaces
 
-2. **[Étape 2]** - [description]
-   - Sous-tâche 2.1
+### Phase 2 : User Story 1 (P1 - MVP) 🎯
+- [ ] T003 - [P] [US1] Modèle A
+- [ ] T004 - [US1] Service (dépend T003)
 
-### Tests requis
+### Phase 3 : User Story 2 (P2)
+- [ ] T005 - [P] [US2] Composant B
 
-#### Tests unitaires
-- [ ] Test du cas nominal
-- [ ] Test des edge cases
-- [ ] Test des erreurs
+## Risques et Mitigations
+| Risque | Mitigation |
+|--------|------------|
+| [X] | [Y] |
 
-#### Tests d'intégration
-- [ ] Test du flux complet
-
-### Risques et mitigations
-
-| Risque | Impact | Mitigation |
-|--------|--------|------------|
-| [Risque 1] | Élevé | [Solution] |
-| [Risque 2] | Moyen | [Solution] |
-
-### Critères de validation
-- [ ] Tous les tests passent
+## Critères de Validation
+- [ ] Tests passent
 - [ ] Code review approuvée
-- [ ] Documentation mise à jour
 ```
 
-### 5. Estimation de complexité
+### 5. Découpage en tâches
+
+Générer aussi `specs/[feature]/tasks.md` avec le découpage détaillé :
+
+#### Conventions de tâches
+
+| Marqueur | Signification |
+|----------|---------------|
+| `[P]` | Parallélisable (pas de dépendance) |
+| `[US1]` | Appartient à User Story 1 |
+| `[US2]` | Appartient à User Story 2 |
+| Chemin exact | `src/services/user.ts` |
+
+#### Ordre d'exécution
+
+```
+Phase 1 (Setup) ──▶ Phase 2 (Fondation) ──┬──▶ Phase 3 (US1)
+                                          │
+                                          ├──▶ Phase 4 (US2)
+                                          │
+                                          └──▶ Phase 5 (US3)
+```
+
+### 6. Estimation de complexité
 
 | Complexité | Critères |
 |------------|----------|
@@ -133,11 +152,12 @@ Avant de planifier, s'assurer d'avoir exploré :
 | **Moyenne** | 3-5 fichiers, risques identifiés, 100-500 lignes |
 | **Complexe** | > 5 fichiers, risques élevés, > 500 lignes |
 
-### 6. Checklist de validation du plan
+### 7. Checklist de validation du plan
 
 #### Complétude
 - [ ] Tous les fichiers identifiés
-- [ ] Toutes les étapes listées
+- [ ] Toutes les tâches listées avec chemins
+- [ ] User stories tracées ([US1], [US2]...)
 - [ ] Tests planifiés
 - [ ] Risques documentés
 
@@ -150,56 +170,46 @@ Avant de planifier, s'assurer d'avoir exploré :
 - [ ] Respecte les conventions du projet
 - [ ] Maintenable et testable
 - [ ] Pas d'over-engineering
+- [ ] Chaque US testable indépendamment
 
 ## Output attendu
 
-```markdown
-# Plan d'implémentation : [Feature]
+Créer deux fichiers :
 
-## Résumé
-[Description courte de la solution proposée]
+### 1. `specs/[feature]/plan.md`
+Plan d'implémentation complet basé sur le template.
 
-## Approche
-[Justification technique]
+### 2. `specs/[feature]/tasks.md`
+Découpage en tâches avec :
+- Phases clairement définies
+- Tâches avec IDs (T001, T002...)
+- Marqueurs [P] pour parallélisation
+- Marqueurs [US?] pour traçabilité
+- Chemins de fichiers exacts
 
-## Fichiers impactés
+## Workflow complet
 
-### À créer
-- `src/services/feature.ts` - Service principal
-- `src/types/feature.ts` - Types TypeScript
-
-### À modifier
-- `src/routes/index.ts` - Ajout route
-- `src/tests/feature.test.ts` - Tests
-
-## Étapes d'implémentation
-
-### Phase 1 : Foundation
-1. Créer les types/interfaces
-2. Implémenter le service de base
-
-### Phase 2 : Intégration
-3. Ajouter la route API
-4. Connecter au frontend
-
-### Phase 3 : Qualité
-5. Écrire les tests
-6. Documenter
-
-## Tests requis
-- [ ] Test unitaire service
-- [ ] Test intégration API
-- [ ] Test E2E (si applicable)
-
-## Risques
-| Risque | Mitigation |
-|--------|------------|
-| [X] | [Y] |
-
-## Prêt pour validation
-- [ ] Plan complet
-- [ ] Risques identifiés
-- [ ] Estimation réaliste
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│   /work-explore ──▶ /work-specify ──▶ /work-clarify (opt)       │
+│                            │                                    │
+│                            ▼                                    │
+│                    ┌───────────────┐                            │
+│                    │  /work-plan   │ ◄── VOUS ÊTES ICI          │
+│                    └───────┬───────┘                            │
+│                            │                                    │
+│              Génère:       │                                    │
+│              • plan.md     │                                    │
+│              • tasks.md    │                                    │
+│                            │                                    │
+│                            ▼                                    │
+│                    ┌───────────────┐                            │
+│                    │   /dev-tdd    │                            │
+│                    │   /dev-api    │                            │
+│                    └───────────────┘                            │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Agents liés
@@ -207,18 +217,27 @@ Avant de planifier, s'assurer d'avoir exploré :
 | Avant | Agent | Après |
 |-------|-------|-------|
 | `/work-explore` | Exploration | |
+| `/work-specify` | Spécification | |
+| `/work-clarify` | Clarification (opt) | |
 | | **PLAN** | |
 | | | `/dev-tdd` |
 | | | `/dev-api` |
+| | | `/dev-component` |
 
 ---
 
 IMPORTANT: Ne jamais coder en mode planification - plan seulement.
 
-YOU MUST identifier tous les fichiers à créer/modifier.
+YOU MUST vérifier si une spec existe et suggérer `/work-specify` si absente.
 
-YOU MUST lister les risques et leurs mitigations.
+YOU MUST identifier tous les fichiers à créer/modifier avec chemins exacts.
+
+YOU MUST découper les tâches par User Story avec traçabilité [US1], [US2]...
+
+YOU MUST marquer les tâches parallélisables avec [P].
+
+YOU MUST générer plan.md ET tasks.md dans specs/[feature]/.
 
 NEVER sous-estimer la complexité - mieux vaut surestimer.
 
-Think hard sur l'architecture avant de proposer le plan.
+Think hard sur l'architecture et le découpage avant de proposer le plan.
