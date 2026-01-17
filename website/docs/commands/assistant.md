@@ -43,10 +43,10 @@ Il propose les commandes adaptees selon :
 ### Vue d'ensemble
 
 Il donne acces a :
-- 100 commandes par domaine
-- 37 agents specialises
-- 24 skills auto-declenches
-- 15 rules par technologie
+- 108 commandes par domaine
+- 45 agents specialises
+- 27 skills auto-declenches
+- 17 rules par technologie
 
 ## Exemple
 
