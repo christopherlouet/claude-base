@@ -44,8 +44,10 @@ Skills avec contexte isole.
 | [`debugging-issues`](/docs/skills/debugging-issues) | Déboguer et résoudre des problèmes. Utiliser quand... | debugging, issues |
 | [`docker-containerization`](/docs/skills/docker-containerization) | Containerisation Docker et Docker Compose. Declenc... | docker, containerization, node |
 | [`documentation-generation`](/docs/skills/documentation-generation) | Generation de documentation technique. Declencher ... | documentation, generation, uuid |
+| [`e2e-testing`](/docs/skills/e2e-testing) | Tests End-to-End avec Playwright ou Cypress. Decle... | e2e, testing, end-to-end |
 | [`error-handling`](/docs/skills/error-handling) | Strategie de gestion des erreurs. Declencher quand... | error, handling |
 | [`exploring-codebase`](/docs/skills/exploring-codebase) | Explorer et comprendre un codebase existant. Utili... | exploring, codebase |
+| [`feature-flags`](/docs/skills/feature-flags) | Gestion de feature flags et toggles. Declencher qu... | feature, flags, feature flag |
 | [`flutter-development`](/docs/skills/flutter-development) | Developpement Flutter avec Clean Architecture et B... | flutter, development |
 | [`generating-commit-messages`](/docs/skills/generating-commit-messages) | Génère des messages de commit clairs suivant Conve... | generating, commit, messages |
 | [`graphql-development`](/docs/skills/graphql-development) | Developpement d'APIs GraphQL. Declencher quand l'u... | graphql, development |
@@ -53,6 +55,7 @@ Skills avec contexte isole.
 | [`monitoring-instrumentation`](/docs/skills/monitoring-instrumentation) | Instrumentation d'applications pour monitoring. De... | monitoring, instrumentation |
 | [`performance-optimization`](/docs/skills/performance-optimization) | Optimisation des performances d'applications. Decl... | performance, optimization, /photo.jpg |
 | [`planning-implementation`](/docs/skills/planning-implementation) | Planifier l'implémentation d'une fonctionnalité. U... | planning, implementation, pattern_similaire |
+| [`prompt-engineering`](/docs/skills/prompt-engineering) | Optimisation de prompts pour LLMs. Declencher quan... | prompt, engineering, instruction |
 | [`react-performance`](/docs/skills/react-performance) | Optimisation des performances React/Next.js. Decle... | react, performance, /photo.jpg |
 | [`refactoring`](/docs/skills/refactoring) | Refactoring de code pour ameliorer la qualite. Dec... | refactoring |
 | [`reviewing-code`](/docs/skills/reviewing-code) | Effectuer une revue de code approfondie. Utiliser ... | reviewing, code |
@@ -129,6 +132,13 @@ Skills avec contexte isole.
     href="/docs/skills/documentation-generation"
   />
   <SkillCard
+    name="e2e-testing"
+    description="Tests End-to-End avec Playwright ou Cypress. Declencher quand l'utilisateur veut"
+    keywords={["e2e","testing","end-to-end","test de bout en bout"]}
+    context="fork"
+    href="/docs/skills/e2e-testing"
+  />
+  <SkillCard
     name="error-handling"
     description="Strategie de gestion des erreurs. Declencher quand l'utilisateur veut implemente"
     keywords={["error","handling"]}
@@ -141,13 +151,6 @@ Skills avec contexte isole.
     keywords={["exploring","codebase"]}
     context="fork"
     href="/docs/skills/exploring-codebase"
-  />
-  <SkillCard
-    name="flutter-development"
-    description="Developpement Flutter avec Clean Architecture et BLoC. Declencher quand l'utilis"
-    keywords={["flutter","development"]}
-    context="fork"
-    href="/docs/skills/flutter-development"
   />
 </SkillGrid>
 
