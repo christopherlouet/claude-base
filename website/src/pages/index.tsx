@@ -1,0 +1,184 @@
+import React from 'react';
+import clsx from 'clsx';
+import Link from '@docusaurus/Link';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import Layout from '@theme/Layout';
+import Heading from '@theme/Heading';
+
+import styles from './index.module.css';
+
+function HomepageHeader() {
+  const {siteConfig} = useDocusaurusContext();
+  return (
+    <header className={clsx('hero hero--primary', styles.heroBanner)}>
+      <div className="container">
+        <Heading as="h1" className="hero__title">
+          {siteConfig.title}
+        </Heading>
+        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <div className={styles.buttons}>
+          <Link
+            className="button button--secondary button--lg"
+            to="/docs/intro/quick-start">
+            Quick Start - 5min
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+type FeatureItem = {
+  title: string;
+  description: JSX.Element;
+  emoji: string;
+};
+
+const FeatureList: FeatureItem[] = [
+  {
+    title: '100 Commands',
+    emoji: '🎯',
+    description: (
+      <>
+        Des commandes slash pour chaque situation : workflow, dev, QA, ops, docs, business, growth, data et legal.
+      </>
+    ),
+  },
+  {
+    title: '37 Sub-Agents',
+    emoji: '🤖',
+    description: (
+      <>
+        Des agents autonomes avec contexte isole pour les audits, explorations et analyses complexes.
+      </>
+    ),
+  },
+  {
+    title: '24 Skills',
+    emoji: '⚡',
+    description: (
+      <>
+        Des skills auto-declenches par mots-cles pour TDD, commits, debugging, reviews et plus.
+      </>
+    ),
+  },
+  {
+    title: '15 Rules',
+    emoji: '📏',
+    description: (
+      <>
+        Des regles modulaires par langage : TypeScript, React, Flutter, Python, Go, Rust et plus.
+      </>
+    ),
+  },
+];
+
+function Feature({title, emoji, description}: FeatureItem) {
+  return (
+    <div className={clsx('col col--3')}>
+      <div className="text--center">
+        <span style={{fontSize: '3rem'}}>{emoji}</span>
+      </div>
+      <div className="text--center padding-horiz--md">
+        <Heading as="h3">{title}</Heading>
+        <p>{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function HomepageFeatures(): JSX.Element {
+  return (
+    <section className={styles.features}>
+      <div className="container">
+        <div className="row">
+          {FeatureList.map((props, idx) => (
+            <Feature key={idx} {...props} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HomepageWorkflow(): JSX.Element {
+  return (
+    <section className={styles.workflow}>
+      <div className="container">
+        <Heading as="h2" className="text--center margin-bottom--lg">
+          Workflow Recommande
+        </Heading>
+        <div className={styles.workflowDiagram}>
+          <div className={styles.workflowStep}>
+            <span className={styles.stepNumber}>1</span>
+            <span className={styles.stepName}>EXPLORE</span>
+            <code>/work-explore</code>
+          </div>
+          <span className={styles.arrow}>→</span>
+          <div className={styles.workflowStep}>
+            <span className={styles.stepNumber}>2</span>
+            <span className={styles.stepName}>PLAN</span>
+            <code>/work-plan</code>
+          </div>
+          <span className={styles.arrow}>→</span>
+          <div className={styles.workflowStep}>
+            <span className={styles.stepNumber}>3</span>
+            <span className={styles.stepName}>CODE</span>
+            <code>/dev-tdd</code>
+          </div>
+          <span className={styles.arrow}>→</span>
+          <div className={styles.workflowStep}>
+            <span className={styles.stepNumber}>4</span>
+            <span className={styles.stepName}>COMMIT</span>
+            <code>/work-pr</code>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HomepageCTA(): JSX.Element {
+  return (
+    <section className={styles.cta}>
+      <div className="container">
+        <div className="row">
+          <div className="col col--6 col--offset-3 text--center">
+            <Heading as="h2">Pret a commencer ?</Heading>
+            <p>
+              Installez claude-socle dans votre projet en quelques secondes.
+            </p>
+            <div className={styles.buttons}>
+              <Link
+                className="button button--primary button--lg margin-right--md"
+                to="/docs/intro/quick-start">
+                Installation
+              </Link>
+              <Link
+                className="button button--secondary button--lg"
+                to="/docs/commands">
+                Voir les Commands
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function Home(): JSX.Element {
+  const {siteConfig} = useDocusaurusContext();
+  return (
+    <Layout
+      title="Accueil"
+      description={siteConfig.tagline}>
+      <HomepageHeader />
+      <main>
+        <HomepageFeatures />
+        <HomepageWorkflow />
+        <HomepageCTA />
+      </main>
+    </Layout>
+  );
+}
