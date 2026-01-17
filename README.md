@@ -7,6 +7,7 @@
 [![Tests](https://img.shields.io/badge/tests-215%20passing-brightgreen)](./tests)
 [![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
 [![Release](https://img.shields.io/badge/release-v1.2.0-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
+[![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
 
 Template de configuration Claude Code pour un workflow de développement optimal.
 
@@ -373,6 +374,19 @@ npx husky install
 ```
 
 ## Documentation
+
+### Documentation en ligne
+
+La documentation complète est disponible sur **[https://christopherlouet.github.io/claude-socle/](https://christopherlouet.github.io/claude-socle/)**.
+
+Elle contient :
+- Guide de démarrage rapide
+- Catalogue des 100 commandes
+- Documentation des 37 agents et 24 skills
+- Workflows recommandés
+- Guides par type de projet
+
+### Documentation locale
 
 - **[CHEATSHEET.md](docs/CHEATSHEET.md)** : Référence rapide des commandes
 - **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)** : Guide de personnalisation
