@@ -28,6 +28,30 @@
 | `flutter build ios` | Build iOS |
 | `flutter build web` | Build Web |
 
+### Backend (Python)
+| Commande | Description |
+|----------|-------------|
+| `pip install -r requirements.txt` | Installer les dépendances |
+| `python -m venv .venv` | Créer un environnement virtuel |
+| `source .venv/bin/activate` | Activer l'environnement (Linux/Mac) |
+| `pytest` | Lancer les tests |
+| `pytest --cov` | Tests avec couverture |
+| `ruff check .` | Linter rapide |
+| `ruff format .` | Formater le code |
+| `mypy .` | Vérifier les types |
+
+### Backend (Go)
+| Commande | Description |
+|----------|-------------|
+| `go mod download` | Installer les dépendances |
+| `go run .` | Lancer l'application |
+| `go test ./...` | Lancer les tests |
+| `go test -cover ./...` | Tests avec couverture |
+| `go build` | Compiler le binaire |
+| `go fmt ./...` | Formater le code |
+| `go vet ./...` | Analyser le code |
+| `golangci-lint run` | Linter complet |
+
 ## Structure du Projet
 
 ### Web (React/Node)
@@ -55,6 +79,35 @@
 ├── /l10n           # Traductions (ARB)
 └── /config         # Routes (GoRouter), injection (get_it)
 /test               # Tests unitaires, widget, integration
+```
+
+### Backend (Python)
+```
+/src
+├── /api            # Routes FastAPI/Flask
+├── /core           # Config, security, dependencies
+├── /models         # SQLAlchemy/Pydantic models
+├── /schemas        # Pydantic DTOs
+├── /services       # Logique métier
+├── /repositories   # Accès données
+└── /utils          # Fonctions utilitaires
+/tests              # Tests pytest
+pyproject.toml      # Config projet (deps, tools)
+```
+
+### Backend (Go)
+```
+/cmd
+└── /app            # Point d'entrée (main.go)
+/internal
+├── /api            # Handlers HTTP
+├── /domain         # Entities, interfaces
+├── /service        # Logique métier
+├── /repository     # Accès données
+└── /config         # Configuration
+/pkg                # Code réutilisable externe
+go.mod              # Dépendances
+go.sum              # Checksums
 ```
 
 ## Workflow Obligatoire : Explore → Plan → Code → Commit
@@ -166,7 +219,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (88)
+## Agents Disponibles (94 commands, 37 sub-agents, 24 skills)
 
 ### Orchestrateur
 | Commande | Usage |
@@ -220,16 +273,20 @@ type(scope): description courte
 | `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
 | `/qa-neovim` | Audit config Neovim (perf, keymaps) |
 
-### OPS- : Opérations (16)
+### OPS- : Opérations (21)
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente production |
 | `/ops-release` | Créer une release |
 | `/ops-deps` | Audit et MAJ des dépendances |
 | `/ops-docker` | Dockeriser un projet |
+| `/ops-k8s` | Déploiement Kubernetes (manifests, Helm) |
+| `/ops-vps` | Déploiement VPS (OVH, Hetzner, DigitalOcean) |
 | `/ops-migrate` | Migration de code/dépendances |
 | `/ops-ci` | Configuration CI/CD |
-| `/ops-monitoring` | Logs, métriques, alertes |
+| `/ops-monitoring` | Instrumentation code (logs, métriques, traces) |
+| `/ops-observability-stack` | Déployer Prometheus, Grafana, Loki, Alertmanager |
+| `/ops-grafana-dashboard` | Créer dashboards Grafana (templates, alertes) |
 | `/ops-database` | Schéma, migrations DB |
 | `/ops-health` | Health check rapide |
 | `/ops-env` | Gestion des environnements |
@@ -239,6 +296,7 @@ type(scope): description courte
 | `/ops-disaster-recovery` | Plan de reprise après sinistre |
 | `/ops-infra-code` | Infrastructure as Code (Terraform) |
 | `/ops-secrets-management` | Gestion sécurisée des secrets |
+| `/ops-mobile-release` | Publication App Store / Google Play |
 
 ### DOC- : Documentation (9)
 | Commande | Usage |
@@ -268,12 +326,13 @@ type(scope): description courte
 | `/biz-personas` | Créer des personas utilisateur |
 | `/biz-research` | Recherche utilisateur |
 
-### GROWTH- : Croissance (8)
+### GROWTH- : Croissance (9)
 | Commande | Usage |
 |----------|-------|
 | `/growth-landing` | Créer/optimiser landing page |
 | `/growth-seo` | Audit SEO |
 | `/growth-analytics` | Setup tracking et KPIs |
+| `/growth-app-store-analytics` | Métriques App Store / Google Play |
 | `/growth-onboarding` | Parcours d'onboarding UX |
 | `/growth-email` | Templates email marketing |
 | `/growth-ab-test` | Planifier A/B tests |
@@ -298,9 +357,26 @@ type(scope): description courte
 
 ## Documentation de Navigation
 
-Pour choisir le bon agent :
-- **WHEN-TO-USE-WHICH-AGENT.md** : Guide par situation et type de tâche
-- **WORKFLOWS.md** : Workflows recommandés détaillés
+### Guides principaux
+| Document | Description |
+|----------|-------------|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Architecture Commands vs Agents vs Skills vs Rules |
+| [docs/WORKFLOWS.md](docs/WORKFLOWS.md) | Diagrammes visuels des workflows |
+| [WHEN-TO-USE-WHICH-AGENT.md](WHEN-TO-USE-WHICH-AGENT.md) | Guide de choix des agents |
+
+### Guides par domaine
+| Guide | Stack |
+|-------|-------|
+| [docs/guides/WEB-GUIDE.md](docs/guides/WEB-GUIDE.md) | React, Next.js, Vue, Node.js |
+| [docs/guides/MOBILE-GUIDE.md](docs/guides/MOBILE-GUIDE.md) | Flutter, Clean Architecture, BLoC |
+| [docs/guides/API-GUIDE.md](docs/guides/API-GUIDE.md) | REST, GraphQL, Express, Fastify |
+| [docs/guides/DATA-GUIDE.md](docs/guides/DATA-GUIDE.md) | ETL, Airflow, dbt, Data Warehouse |
+
+### Setup
+```bash
+# Configuration automatique du socle
+./scripts/setup-wizard.sh
+```
 
 ## Workflows Recommandés
 
@@ -349,14 +425,224 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 
 ## Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut des **Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **24 Skills** dans `.claude/skills/`:
 
-| Skill | Déclenchement automatique |
-|-------|---------------------------|
-| `test-driven-development` | "TDD", "test first", "écrire les tests" |
-| `generating-commit-messages` | "commit", "message de commit" |
+### Skills de base
+| Skill | Déclenchement automatique | Context |
+|-------|---------------------------|---------|
+| `test-driven-development` | "TDD", "test first", "écrire les tests" | fork |
+| `generating-commit-messages` | "commit", "message de commit" | fork |
+| `debugging-issues` | "bug", "erreur", "debug" | fork |
+| `reviewing-code` | "review", "code review" | fork |
+| `security-audit` | "audit sécurité", "OWASP" | fork |
+| `planning-implementation` | "planifier", "architecture" | fork |
+| `exploring-codebase` | "explorer", "comprendre le code" | fork |
+| `creating-pull-requests` | "PR", "pull request" | fork |
+| `api-development` | "API", "endpoint", "REST" | fork |
+
+### Skills additionnels
+| Skill | Déclenchement automatique | Context |
+|-------|---------------------------|---------|
+| `flutter-development` | "Flutter", "widget", "BLoC" | fork |
+| `supabase-development` | "Supabase", "auth", "RLS" | fork |
+| `react-performance` | "React perf", "re-render", "memo" | fork |
+| `docker-containerization` | "Docker", "container", "Dockerfile" | fork |
+| `ci-cd-pipeline` | "CI/CD", "GitHub Actions", "pipeline" | fork |
+| `database-design` | "schema", "migration", "index" | fork |
+| `monitoring-instrumentation` | "logs", "métriques", "traces" | fork |
+| `documentation-generation` | "documenter", "README", "JSDoc" | fork |
+| `changelog-maintenance` | "changelog", "release notes" | fork |
+| `refactoring` | "refactorer", "clean code", "restructurer" | fork |
+| `error-handling` | "gestion erreurs", "exceptions", "error boundary" | fork |
+| `graphql-development` | "GraphQL", "resolver", "schema" | fork |
+| `mobile-release` | "App Store", "Play Store", "Fastlane" | fork |
+| `data-pipeline` | "ETL", "Airflow", "dbt" | fork |
+| `performance-optimization` | "optimiser", "latence", "TTFB" | fork |
+
+### Configuration des Skills
+
+Chaque skill définit:
+- **allowed-tools**: Outils autorisés pour le skill
+- **context: fork**: Exécution dans un contexte isolé (recommandé)
 
 Les Skills sont déclenchés automatiquement par Claude selon le contexte.
+
+## Sub-Agents (Claude Code 2.1+)
+
+Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui bénéficient d'un contexte isolé.
+
+### Différence Commands vs Skills vs Agents
+
+| Concept | Dossier | Déclenchement | Contexte |
+|---------|---------|---------------|----------|
+| **Commands** | `.claude/commands/` | Manuel (`/nom`) | Partagé |
+| **Skills** | `.claude/skills/` | Automatique | Partagé |
+| **Agents** | `.claude/agents/` | Délégation auto | **Isolé** |
+
+### Avantages des Sub-Agents
+
+- **Contexte isolé** : Ne pollue pas la conversation principale
+- **Outils restreints** : Accès limité (lecture seule pour les audits)
+- **Modèle optimisé** : Haiku pour tâches simples (économie de tokens)
+- **Parallélisation** : Plusieurs agents peuvent tourner simultanément
+
+### Agents disponibles (37)
+
+#### Exploration & Documentation
+| Agent | Modèle | Outils | Usage |
+|-------|--------|--------|-------|
+| `work-explore` | haiku | Read, Grep, Glob | Explorer un codebase (lecture seule) |
+| `doc-onboard` | haiku | Read, Grep, Glob | Onboarding nouveau développeur |
+| `doc-generate` | haiku | Read, Grep, Glob | Génération documentation |
+| `doc-changelog` | haiku | Read, Grep, Glob | Maintenance changelog |
+| `doc-explain` | haiku | Read, Grep, Glob | Explication de code |
+
+#### Qualité & Audits
+| Agent | Modèle | Outils | Usage |
+|-------|--------|--------|-------|
+| `qa-audit` | sonnet | Read, Grep, Glob, Bash | Audit complet (sécu + RGPD + a11y + perf) |
+| `qa-security` | sonnet | Read, Grep, Glob | Audit sécurité OWASP Top 10 |
+| `qa-perf` | sonnet | Read, Grep, Glob, Bash | Audit performance, Core Web Vitals |
+| `qa-a11y` | haiku | Read, Grep, Glob | Audit accessibilité WCAG 2.1 |
+| `qa-coverage` | haiku | Read, Grep, Glob, Bash | Analyse couverture de tests |
+| `qa-responsive` | haiku | Read, Grep, Glob | Audit responsive/mobile-first |
+
+#### Opérations
+| Agent | Modèle | Outils | Usage |
+|-------|--------|--------|-------|
+| `ops-deps` | haiku | Read, Grep, Glob, Bash | Audit dépendances, vulnérabilités |
+| `ops-health` | haiku | Read, Grep, Glob, Bash | Health check rapide du projet |
+| `ops-docker` | haiku | Read, Grep, Glob, Bash | Containerisation Docker |
+| `ops-ci` | haiku | Read, Grep, Glob, Bash | Configuration CI/CD |
+| `ops-database` | sonnet | Read, Grep, Glob, Bash | Schémas et migrations DB |
+| `ops-monitoring` | haiku | Read, Grep, Glob, Bash | Instrumentation et monitoring |
+
+#### Développement
+| Agent | Modèle | Outils | Usage |
+|-------|--------|--------|-------|
+| `dev-debug` | sonnet | Read, Grep, Glob, Bash | Investigation et diagnostic de bugs |
+| `dev-component` | haiku | Read, Grep, Glob | Création composants UI |
+| `dev-test` | haiku | Read, Grep, Glob, Bash | Génération de tests |
+| `dev-flutter` | sonnet | Read, Grep, Glob | Widgets et screens Flutter |
+| `dev-supabase` | sonnet | Read, Grep, Glob, Bash | Backend Supabase |
+
+#### Business & Growth
+| Agent | Modèle | Outils | Usage |
+|-------|--------|--------|-------|
+| `biz-model` | haiku | Read, Grep, Glob, WebSearch | Analyse business model, Lean Canvas |
+| `biz-competitor` | haiku | Read, Grep, Glob, WebSearch | Analyse concurrentielle |
+| `biz-mvp` | haiku | Read, Grep, Glob | Définition MVP |
+| `biz-personas` | haiku | Read, Grep, Glob, WebSearch | Création personas |
+| `growth-seo` | haiku | Read, Grep, Glob, WebFetch | Audit SEO technique |
+| `growth-analytics` | haiku | Read, Grep, Glob | Setup analytics |
+| `growth-landing` | haiku | Read, Grep, Glob | Optimisation landing |
+| `growth-funnel` | haiku | Read, Grep, Glob | Analyse funnels |
+
+#### Data
+| Agent | Modèle | Outils | Usage |
+|-------|--------|--------|-------|
+| `data-pipeline` | sonnet | Read, Grep, Glob, Bash | Pipelines ETL/ELT |
+| `data-analytics` | haiku | Read, Grep, Glob | Analyse de données |
+| `data-modeling` | sonnet | Read, Grep, Glob | Modélisation DW |
+
+#### Légal
+| Agent | Modèle | Outils | Usage |
+|-------|--------|--------|-------|
+| `legal-rgpd` | haiku | Read, Grep, Glob | Conformité RGPD |
+| `legal-payment` | sonnet | Read, Grep, Glob | Intégration paiement |
+| `legal-privacy-policy` | haiku | Read, Grep, Glob | Politique confidentialité |
+| `legal-terms-of-service` | haiku | Read, Grep, Glob | CGU
+
+### Utilisation
+
+Claude délègue automatiquement aux agents appropriés selon le contexte :
+
+```
+"Explore le code d'authentification"     → work-explore (haiku, lecture seule)
+"Fais un audit de sécurité"              → qa-security (sonnet, OWASP)
+"Vérifie les dépendances"                → ops-deps (haiku, npm audit)
+"Analyse les concurrents"                → biz-competitor (haiku, recherche web)
+```
+
+### Configuration des Agents
+
+Chaque agent définit:
+- **model**: `haiku` (rapide/économique) ou `sonnet` (complexe)
+- **permissionMode**: `plan` (lecture seule) ou `default`
+- **disallowedTools**: Outils interdits (ex: `Edit, Write, NotebookEdit`)
+- **hooks**: Validations automatiques (PreToolUse, PostToolUse)
+- **skills**: Skills injectés dans l'agent (ex: `security-audit`, `exploring-codebase`)
+
+## Modular Rules (Claude Code 2.1+)
+
+Les règles sont organisées de manière modulaire dans `.claude/rules/` (15 règles):
+
+### Règles par langage
+| Fichier | Paths | Contenu |
+|---------|-------|---------|
+| `typescript.md` | `**/*.ts`, `**/*.tsx` | Strict mode, types, conventions |
+| `react.md` | `**/*.tsx`, `**/components/**` | Composants, hooks, performance |
+| `flutter.md` | `**/*.dart`, `**/lib/**` | Clean Architecture, BLoC, widgets |
+| `python.md` | `**/*.py`, `**/pyproject.toml` | Type hints, PEP 8, async patterns |
+| `go.md` | `**/*.go`, `**/go.mod` | Error handling, interfaces, concurrency |
+| `java.md` | `**/*.java` | Optional, Streams, Spring Boot |
+| `csharp.md` | `**/*.cs` | Nullable, async/await, .NET patterns |
+| `ruby.md` | `**/*.rb`, `**/Gemfile` | Rails conventions, RSpec |
+| `php.md` | `**/*.php` | PSR-12, Laravel, type declarations |
+| `rust.md` | `**/*.rs`, `**/Cargo.toml` | Ownership, error handling, traits |
+
+### Règles transversales
+| Fichier | Paths | Contenu |
+|---------|-------|---------|
+| `testing.md` | `**/*.test.ts`, `**/__tests__/**` | Couverture, mocks, edge cases |
+| `security.md` | `**/auth/**`, `**/api/**` | Validation, XSS, SQL injection |
+| `api.md` | `**/api/**`, `**/routes/**` | REST, validation, status codes |
+| `git.md` | - | Conventional commits, branches |
+| `workflow.md` | - | Explore → Plan → Code → Commit |
+
+### Path-Specific Rules
+
+Les règles peuvent être conditionnelles par chemin de fichier:
+```yaml
+---
+paths:
+  - "**/*.tsx"
+  - "**/components/**"
+---
+# Règles appliquées uniquement à ces fichiers
+```
+
+## Output Styles (Claude Code 2.1+)
+
+Modes d'interaction personnalisés dans `.claude/output-styles/` (7 styles):
+
+| Style | Utilisation | Commande |
+|-------|-------------|----------|
+| `teaching` | Mode pédagogique avec explications | `/output-style teaching` |
+| `concise` | Réponses brèves et directes | `/output-style concise` |
+| `technical` | Détails techniques approfondis | `/output-style technical` |
+| `review` | Revue de code structurée | `/output-style review` |
+| `emoji` | Réponses enrichies d'emojis | `/output-style emoji` |
+| `minimal` | Réponses épurées sans décoration | `/output-style minimal` |
+| `structured` | Structure ASCII avec séparateurs | `/output-style structured` |
+
+Voir `.claude/output-styles/README.md` pour la documentation complète avec exemples.
+
+## MCP Configuration (Claude Code 2.1+)
+
+Configuration centralisée des MCP servers dans `.mcp.json`:
+
+| Server | Usage | Activé |
+|--------|-------|--------|
+| `filesystem` | Accès avancé aux fichiers | Non |
+| `memory` | Mémoire persistante | Non |
+| `fetch` | Requêtes HTTP externes | Non |
+| `github` | Intégration GitHub | Non |
+| `postgres` | Connexion PostgreSQL | Non |
+| `sqlite` | Base SQLite locale | Non |
+| `puppeteer` | Automatisation navigateur | Non |
+
+Pour activer un server: `"enabled": true` dans `.mcp.json`
 
 ## Anti-patterns à Éviter
 

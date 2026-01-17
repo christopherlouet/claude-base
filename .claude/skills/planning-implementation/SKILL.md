@@ -6,6 +6,7 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+context: fork
 ---
 
 # Planifier une Implémentation

@@ -1,6 +1,6 @@
 # Agent MONITORING
 
-Mise en place du monitoring, logging et alerting.
+Instrumentation du code pour le monitoring, logging et alerting.
 
 ## Contexte
 $ARGUMENTS
@@ -11,39 +11,43 @@ $ARGUMENTS
 
 ```bash
 # Stack technique
-cat package.json 2>/dev/null | grep -E "sentry|datadog|newrelic|pino|winston"
-cat requirements.txt 2>/dev/null | grep -E "sentry|datadog|structlog|logging"
+cat package.json 2>/dev/null | grep -E "sentry|datadog|newrelic|pino|winston|opentelemetry"
+cat requirements.txt 2>/dev/null | grep -E "sentry|datadog|structlog|opentelemetry|prometheus"
+cat go.mod 2>/dev/null | grep -E "sentry|zap|prometheus|otel"
 
 # Configuration existante
 ls -la src/lib/logger* 2>/dev/null
 ls -la src/config/monitoring* 2>/dev/null
-grep -rn "console.log\|logger\." --include="*.ts" | head -10
 ```
 
-### 2. Les 3 piliers de l'observabilité
+### 2. Les 3 piliers de l'observabilite
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    OBSERVABILITÉ                         │
+│                    OBSERVABILITE                         │
 ├─────────────────┬─────────────────┬─────────────────────┤
 │     LOGS        │    METRICS      │     TRACES          │
 │                 │                 │                     │
-│ Événements      │ Mesures         │ Parcours requêtes   │
-│ textuels        │ numériques      │ distribuées         │
+│ Evenements      │ Mesures         │ Parcours requetes   │
+│ textuels        │ numeriques      │ distribuees         │
 │                 │                 │                     │
-│ Winston, Pino   │ Prometheus      │ OpenTelemetry       │
-│ Datadog Logs    │ Datadog         │ Jaeger, Zipkin      │
+│ Pino, Zap       │ Prometheus      │ OpenTelemetry       │
+│ structlog       │ prom-client     │ Jaeger, Tempo       │
 └─────────────────┴─────────────────┴─────────────────────┘
 ```
 
-### 3. Error Tracking (Sentry)
+---
+
+## Node.js / TypeScript
+
+### Error Tracking (Sentry)
 
 #### Installation
 ```bash
 npm install @sentry/node @sentry/profiling-node
 ```
 
-#### Configuration Node.js/Express
+#### Configuration
 ```typescript
 // lib/sentry.ts
 import * as Sentry from '@sentry/node';
@@ -53,9 +57,7 @@ Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: process.env.NODE_ENV,
   release: process.env.npm_package_version,
-  integrations: [
-    new ProfilingIntegration(),
-  ],
+  integrations: [new ProfilingIntegration()],
   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
   profilesSampleRate: 0.1,
 });
@@ -65,50 +67,19 @@ export { Sentry };
 
 #### Middleware Express
 ```typescript
-// app.ts
 import * as Sentry from '@sentry/node';
 
 const app = express();
-
-// RequestHandler crée une transaction par requête
 Sentry.setupExpressErrorHandler(app);
 
-// Après toutes les routes
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   Sentry.captureException(err);
   res.status(500).json({ error: 'Internal server error' });
 });
 ```
 
-#### Capturer des erreurs manuellement
-```typescript
-try {
-  await riskyOperation();
-} catch (error) {
-  Sentry.captureException(error, {
-    tags: { feature: 'payment' },
-    extra: { userId, orderId },
-  });
-  throw error;
-}
-```
+### Logging structure (Pino)
 
-#### Frontend (React/Next.js)
-```typescript
-// lib/sentry-client.ts
-import * as Sentry from '@sentry/nextjs';
-
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  tracesSampleRate: 0.1,
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
-});
-```
-
-### 4. Logging structuré
-
-#### Pino (Node.js - recommandé)
 ```typescript
 // lib/logger.ts
 import pino from 'pino';
@@ -119,16 +90,16 @@ export const logger = pino({
     ? { target: 'pino-pretty' }
     : undefined,
   redact: {
-    paths: ['req.headers.authorization', 'password', 'token'],
+    paths: ['req.headers.authorization', 'password', 'token', 'email'],
     censor: '[REDACTED]',
   },
   base: {
     service: 'my-api',
     version: process.env.npm_package_version,
+    env: process.env.NODE_ENV,
   },
 });
 
-// Contexte par requête
 export function createRequestLogger(req: Request) {
   return logger.child({
     requestId: req.id,
@@ -139,48 +110,15 @@ export function createRequestLogger(req: Request) {
 }
 ```
 
-#### Utilisation
-```typescript
-// Dans les handlers
-app.get('/users/:id', async (req, res) => {
-  const log = createRequestLogger(req);
+### Metriques (Prometheus)
 
-  log.info({ userId: req.params.id }, 'Fetching user');
-
-  try {
-    const user = await userService.getById(req.params.id);
-    log.info({ user: user.id }, 'User fetched successfully');
-    res.json(user);
-  } catch (error) {
-    log.error({ error, userId: req.params.id }, 'Failed to fetch user');
-    throw error;
-  }
-});
-```
-
-#### Niveaux de log
-| Niveau | Usage |
-|--------|-------|
-| `fatal` | Erreur fatale, crash imminent |
-| `error` | Erreur, mais l'app continue |
-| `warn` | Situation anormale mais gérée |
-| `info` | Événements business importants |
-| `debug` | Détails pour le debugging |
-| `trace` | Détails très fins |
-
-### 5. Métriques (Prometheus)
-
-#### Exposition des métriques
 ```typescript
 // lib/metrics.ts
 import { Registry, Counter, Histogram, collectDefaultMetrics } from 'prom-client';
 
 export const registry = new Registry();
-
-// Métriques par défaut (CPU, memory, etc.)
 collectDefaultMetrics({ register: registry });
 
-// Métriques custom
 export const httpRequestDuration = new Histogram({
   name: 'http_request_duration_seconds',
   help: 'Duration of HTTP requests in seconds',
@@ -196,23 +134,9 @@ export const httpRequestTotal = new Counter({
   registers: [registry],
 });
 
-// Métriques business
-export const ordersCreated = new Counter({
-  name: 'orders_created_total',
-  help: 'Total number of orders created',
-  labelNames: ['status', 'payment_method'],
-  registers: [registry],
-});
-```
-
-#### Middleware Express
-```typescript
-// middleware/metrics.ts
-import { httpRequestDuration, httpRequestTotal } from '../lib/metrics';
-
+// Middleware
 export function metricsMiddleware(req: Request, res: Response, next: NextFunction) {
   const start = Date.now();
-
   res.on('finish', () => {
     const duration = (Date.now() - start) / 1000;
     const labels = {
@@ -220,220 +144,519 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
       route: req.route?.path || req.path,
       status: res.statusCode.toString(),
     };
-
     httpRequestDuration.observe(labels, duration);
     httpRequestTotal.inc(labels);
   });
-
   next();
 }
 
-// Endpoint /metrics
+// Endpoint
 app.get('/metrics', async (req, res) => {
   res.set('Content-Type', registry.contentType);
   res.send(await registry.metrics());
 });
 ```
 
-### 6. Health Checks
+### OpenTelemetry (Tracing)
+
+```bash
+npm install @opentelemetry/api @opentelemetry/sdk-node \
+  @opentelemetry/auto-instrumentations-node \
+  @opentelemetry/exporter-trace-otlp-http
+```
 
 ```typescript
-// routes/health.ts
-import { Router } from 'express';
-import { prisma } from '../lib/prisma';
-import { redis } from '../lib/redis';
+// lib/tracing.ts
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { Resource } from '@opentelemetry/resources';
+import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
 
-const router = Router();
+const sdk = new NodeSDK({
+  resource: new Resource({
+    [SemanticResourceAttributes.SERVICE_NAME]: 'my-api',
+    [SemanticResourceAttributes.SERVICE_VERSION]: process.env.npm_package_version,
+    [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: process.env.NODE_ENV,
+  }),
+  traceExporter: new OTLPTraceExporter({
+    url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://localhost:4318/v1/traces',
+  }),
+  instrumentations: [getNodeAutoInstrumentations()],
+});
 
-// Liveness: l'app tourne-t-elle?
+sdk.start();
+
+process.on('SIGTERM', () => {
+  sdk.shutdown().then(() => process.exit(0));
+});
+```
+
+---
+
+## Python
+
+### Error Tracking (Sentry)
+
+```bash
+pip install sentry-sdk[fastapi]  # ou [flask], [django]
+```
+
+```python
+# lib/sentry.py
+import sentry_sdk
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_DSN"),
+    environment=os.environ.get("ENV", "development"),
+    release=os.environ.get("VERSION"),
+    traces_sample_rate=0.1 if os.environ.get("ENV") == "production" else 1.0,
+    profiles_sample_rate=0.1,
+    integrations=[FastApiIntegration()],
+)
+```
+
+### Logging structure (structlog)
+
+```bash
+pip install structlog
+```
+
+```python
+# lib/logger.py
+import structlog
+import logging
+
+structlog.configure(
+    processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.processors.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        structlog.processors.JSONRenderer() if os.environ.get("ENV") == "production"
+        else structlog.dev.ConsoleRenderer(),
+    ],
+    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
+    context_class=dict,
+    logger_factory=structlog.PrintLoggerFactory(),
+    cache_logger_on_first_use=True,
+)
+
+logger = structlog.get_logger()
+
+# Utilisation
+logger.info("user_created", user_id=user.id, email="[REDACTED]")
+logger.error("payment_failed", order_id=order.id, error=str(e))
+```
+
+### Metriques (prometheus_client)
+
+```bash
+pip install prometheus-client
+```
+
+```python
+# lib/metrics.py
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from fastapi import Response
+
+REQUEST_COUNT = Counter(
+    'http_requests_total',
+    'Total HTTP requests',
+    ['method', 'endpoint', 'status']
+)
+
+REQUEST_LATENCY = Histogram(
+    'http_request_duration_seconds',
+    'HTTP request latency',
+    ['method', 'endpoint'],
+    buckets=[0.01, 0.05, 0.1, 0.5, 1, 5]
+)
+
+# Middleware FastAPI
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    start = time.time()
+    response = await call_next(request)
+    duration = time.time() - start
+
+    REQUEST_COUNT.labels(
+        method=request.method,
+        endpoint=request.url.path,
+        status=response.status_code
+    ).inc()
+
+    REQUEST_LATENCY.labels(
+        method=request.method,
+        endpoint=request.url.path
+    ).observe(duration)
+
+    return response
+
+# Endpoint
+@app.get("/metrics")
+async def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+```
+
+### OpenTelemetry (Tracing)
+
+```bash
+pip install opentelemetry-api opentelemetry-sdk \
+  opentelemetry-instrumentation-fastapi \
+  opentelemetry-exporter-otlp
+```
+
+```python
+# lib/tracing.py
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+resource = Resource.create({
+    "service.name": "my-api",
+    "service.version": os.environ.get("VERSION", "unknown"),
+    "deployment.environment": os.environ.get("ENV", "development"),
+})
+
+provider = TracerProvider(resource=resource)
+processor = BatchSpanProcessor(OTLPSpanExporter(
+    endpoint=os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4318/v1/traces")
+))
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+
+# Instrumenter FastAPI
+FastAPIInstrumentor.instrument_app(app)
+```
+
+---
+
+## Go
+
+### Error Tracking (Sentry)
+
+```bash
+go get github.com/getsentry/sentry-go
+```
+
+```go
+// lib/sentry.go
+package lib
+
+import (
+    "log"
+    "os"
+    "github.com/getsentry/sentry-go"
+)
+
+func InitSentry() {
+    err := sentry.Init(sentry.ClientOptions{
+        Dsn:              os.Getenv("SENTRY_DSN"),
+        Environment:      os.Getenv("ENV"),
+        Release:          os.Getenv("VERSION"),
+        TracesSampleRate: 0.1,
+    })
+    if err != nil {
+        log.Fatalf("sentry.Init: %s", err)
+    }
+}
+
+// Middleware Gin
+func SentryMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        defer sentry.Recover()
+        c.Next()
+    }
+}
+```
+
+### Logging structure (zap)
+
+```bash
+go get go.uber.org/zap
+```
+
+```go
+// lib/logger.go
+package lib
+
+import (
+    "os"
+    "go.uber.org/zap"
+    "go.uber.org/zap/zapcore"
+)
+
+var Logger *zap.Logger
+
+func InitLogger() {
+    var config zap.Config
+
+    if os.Getenv("ENV") == "production" {
+        config = zap.NewProductionConfig()
+        config.EncoderConfig.TimeKey = "timestamp"
+        config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+    } else {
+        config = zap.NewDevelopmentConfig()
+        config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+    }
+
+    config.InitialFields = map[string]interface{}{
+        "service": "my-api",
+        "version": os.Getenv("VERSION"),
+    }
+
+    var err error
+    Logger, err = config.Build()
+    if err != nil {
+        panic(err)
+    }
+}
+
+// Utilisation
+Logger.Info("user created",
+    zap.String("user_id", user.ID),
+    zap.String("action", "create"),
+)
+
+Logger.Error("payment failed",
+    zap.Error(err),
+    zap.String("order_id", order.ID),
+)
+```
+
+### Metriques (prometheus/client_golang)
+
+```bash
+go get github.com/prometheus/client_golang/prometheus
+go get github.com/prometheus/client_golang/prometheus/promhttp
+```
+
+```go
+// lib/metrics.go
+package lib
+
+import (
+    "github.com/prometheus/client_golang/prometheus"
+    "github.com/prometheus/client_golang/prometheus/promauto"
+    "github.com/prometheus/client_golang/prometheus/promhttp"
+)
+
+var (
+    HttpRequestsTotal = promauto.NewCounterVec(
+        prometheus.CounterOpts{
+            Name: "http_requests_total",
+            Help: "Total number of HTTP requests",
+        },
+        []string{"method", "endpoint", "status"},
+    )
+
+    HttpRequestDuration = promauto.NewHistogramVec(
+        prometheus.HistogramOpts{
+            Name:    "http_request_duration_seconds",
+            Help:    "HTTP request duration in seconds",
+            Buckets: []float64{0.01, 0.05, 0.1, 0.5, 1, 5},
+        },
+        []string{"method", "endpoint"},
+    )
+)
+
+// Middleware Gin
+func MetricsMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        start := time.Now()
+        c.Next()
+        duration := time.Since(start).Seconds()
+
+        HttpRequestsTotal.WithLabelValues(
+            c.Request.Method,
+            c.FullPath(),
+            strconv.Itoa(c.Writer.Status()),
+        ).Inc()
+
+        HttpRequestDuration.WithLabelValues(
+            c.Request.Method,
+            c.FullPath(),
+        ).Observe(duration)
+    }
+}
+
+// Handler
+router.GET("/metrics", gin.WrapH(promhttp.Handler()))
+```
+
+### OpenTelemetry (Tracing)
+
+```bash
+go get go.opentelemetry.io/otel
+go get go.opentelemetry.io/otel/sdk
+go get go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp
+go get go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin
+```
+
+```go
+// lib/tracing.go
+package lib
+
+import (
+    "context"
+    "go.opentelemetry.io/otel"
+    "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+    "go.opentelemetry.io/otel/sdk/resource"
+    "go.opentelemetry.io/otel/sdk/trace"
+    semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+    "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+)
+
+func InitTracer() func() {
+    ctx := context.Background()
+
+    exporter, err := otlptracehttp.New(ctx,
+        otlptracehttp.WithEndpoint(os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")),
+        otlptracehttp.WithInsecure(),
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    res := resource.NewWithAttributes(
+        semconv.SchemaURL,
+        semconv.ServiceName("my-api"),
+        semconv.ServiceVersion(os.Getenv("VERSION")),
+        semconv.DeploymentEnvironment(os.Getenv("ENV")),
+    )
+
+    tp := trace.NewTracerProvider(
+        trace.WithBatcher(exporter),
+        trace.WithResource(res),
+    )
+    otel.SetTracerProvider(tp)
+
+    return func() { tp.Shutdown(ctx) }
+}
+
+// Middleware Gin
+router.Use(otelgin.Middleware("my-api"))
+```
+
+---
+
+## Health Checks
+
+```typescript
+// Node.js
 router.get('/health/live', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Readiness: l'app peut-elle servir du trafic?
 router.get('/health/ready', async (req, res) => {
   const checks = {
-    database: false,
-    redis: false,
+    database: await checkDatabase(),
+    redis: await checkRedis(),
   };
-
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    checks.database = true;
-  } catch (e) {
-    // DB down
-  }
-
-  try {
-    await redis.ping();
-    checks.redis = true;
-  } catch (e) {
-    // Redis down
-  }
-
-  const allHealthy = Object.values(checks).every(Boolean);
-  res.status(allHealthy ? 200 : 503).json({
-    status: allHealthy ? 'ok' : 'degraded',
-    checks,
-    timestamp: new Date().toISOString(),
-  });
+  const healthy = Object.values(checks).every(Boolean);
+  res.status(healthy ? 200 : 503).json({ status: healthy ? 'ok' : 'degraded', checks });
 });
-
-export { router as healthRouter };
 ```
 
-### 7. Alerting
+```python
+# Python (FastAPI)
+@app.get("/health/live")
+async def liveness():
+    return {"status": "ok"}
 
-#### Règles d'alerte recommandées
+@app.get("/health/ready")
+async def readiness():
+    checks = {
+        "database": await check_database(),
+        "redis": await check_redis(),
+    }
+    healthy = all(checks.values())
+    status_code = 200 if healthy else 503
+    return JSONResponse({"status": "ok" if healthy else "degraded", "checks": checks}, status_code)
+```
 
-| Métrique | Condition | Sévérité | Action |
+```go
+// Go (Gin)
+router.GET("/health/live", func(c *gin.Context) {
+    c.JSON(200, gin.H{"status": "ok"})
+})
+
+router.GET("/health/ready", func(c *gin.Context) {
+    checks := map[string]bool{
+        "database": checkDatabase(),
+        "redis":    checkRedis(),
+    }
+    healthy := true
+    for _, v := range checks {
+        if !v { healthy = false }
+    }
+    status := 200
+    if !healthy { status = 503 }
+    c.JSON(status, gin.H{"status": "ok", "checks": checks})
+})
+```
+
+---
+
+## Niveaux de log
+
+| Niveau | Usage |
+|--------|-------|
+| `fatal` | Erreur fatale, crash imminent |
+| `error` | Erreur, mais l'app continue |
+| `warn` | Situation anormale mais geree |
+| `info` | Evenements business importants |
+| `debug` | Details pour le debugging |
+| `trace` | Details tres fins |
+
+---
+
+## Regles d'alerte recommandees
+
+| Metrique | Condition | Severite | Action |
 |----------|-----------|----------|--------|
 | Error rate | > 1% sur 5min | Critical | Page on-call |
 | Latency P99 | > 2s sur 5min | Warning | Notification |
 | CPU | > 80% sur 10min | Warning | Scale up |
 | Memory | > 90% | Critical | Investigate |
-| Disk | > 85% | Warning | Cleanup |
 | 5xx responses | > 10/min | Critical | Investigate |
-
-#### Sentry Alerts
-```
-Configuration Sentry:
-1. Alerts → Create Alert Rule
-2. Conditions:
-   - First seen issue
-   - Issue frequency > 10 in 1 hour
-3. Actions:
-   - Send Slack notification
-   - Send email to team
-```
-
-#### Prometheus Alerting (alertmanager)
-```yaml
-# alerts.yml
-groups:
-  - name: api
-    rules:
-      - alert: HighErrorRate
-        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.01
-        for: 5m
-        labels:
-          severity: critical
-        annotations:
-          summary: "High error rate detected"
-          description: "Error rate is {{ $value | humanizePercentage }}"
-
-      - alert: HighLatency
-        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 2
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "High latency detected"
-```
-
-### 8. Dashboard
-
-#### Métriques clés à afficher
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    DASHBOARD                             │
-├───────────────┬───────────────┬─────────────────────────┤
-│   Requests    │   Errors      │   Latency P50/P99       │
-│   12.5k/min   │   0.1%        │   45ms / 230ms          │
-├───────────────┴───────────────┴─────────────────────────┤
-│                                                         │
-│   [Graphe: Requêtes par minute sur 24h]                │
-│                                                         │
-├───────────────┬───────────────┬─────────────────────────┤
-│   CPU         │   Memory      │   Disk                  │
-│   34%         │   62%         │   45%                   │
-├───────────────┴───────────────┴─────────────────────────┤
-│                                                         │
-│   [Graphe: Erreurs par type sur 24h]                   │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-### 9. Stack recommandée
-
-#### Option 1: SaaS (recommandé pour débuter)
-| Besoin | Outil | Coût |
-|--------|-------|------|
-| Errors | Sentry | Gratuit jusqu'à 5k events |
-| Logs | Datadog / Logtail | Variable |
-| Metrics | Datadog | Variable |
-| Uptime | BetterUptime / Pingdom | Gratuit/Payant |
-
-#### Option 2: Self-hosted
-| Besoin | Outil |
-|--------|-------|
-| Errors | Sentry (self-hosted) |
-| Logs | Loki + Grafana |
-| Metrics | Prometheus + Grafana |
-| Traces | Jaeger |
-| Alerting | Alertmanager |
-
-### 10. Checklist de mise en place
-
-- [ ] Error tracking configuré (Sentry)
-- [ ] Logging structuré implémenté
-- [ ] Health checks exposés
-- [ ] Métriques de base exposées
-- [ ] Dashboard créé
-- [ ] Alertes configurées
-- [ ] Runbook documenté
-
-## Output attendu
-
-### Architecture monitoring
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│    App      │────>│   Sentry    │────>│   Slack     │
-│             │     └─────────────┘     │   Email     │
-│             │     ┌─────────────┐     └─────────────┘
-│             │────>│ Prometheus  │────>│  Grafana    │
-│             │     └─────────────┘     └─────────────┘
-└─────────────┘
-```
-
-### Configuration recommandée
-| Composant | Outil | Configuration |
-|-----------|-------|---------------|
-| Errors | Sentry | DSN configuré |
-| Logs | Pino | JSON structuré |
-| Metrics | Prometheus | /metrics exposé |
-| Dashboards | Grafana | Panels créés |
-| Alerts | Sentry + Alertmanager | Rules définies |
-
-### Code à implémenter
-[Snippets prêts à l'emploi]
-
-### Alertes configurées
-| Alerte | Seuil | Notification |
-|--------|-------|--------------|
-| Error rate | > 1% | Slack + Email |
-| Latency P99 | > 2s | Slack |
-| Memory | > 90% | Email |
 
 ---
 
-## Agents liés
+## Checklist de mise en place
+
+- [ ] Error tracking configure (Sentry)
+- [ ] Logging structure implemente
+- [ ] Health checks exposes (/health/live, /health/ready)
+- [ ] Metriques Prometheus exposees (/metrics)
+- [ ] OpenTelemetry configure (optionnel)
+- [ ] Alertes configurees
+- [ ] Donnees sensibles masquees (RGPD)
+
+---
+
+## Agents lies
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
+| `/observability-stack` | Deployer Prometheus, Grafana, Loki |
 | `/health` | Health check rapide |
-| `/infra-code` | Provisionner monitoring |
-| `/ci` | Intégrer dans CI/CD |
 | `/perf` | Analyse performance |
-| `/security` | Audit des logs |
+| `/security` | Audit des logs (RGPD) |
 
 ---
 
-IMPORTANT: Ne pas logger de données personnelles (RGPD) - utiliser la redaction.
+IMPORTANT: Ne pas logger de donnees personnelles (RGPD) - utiliser la redaction.
 
 YOU MUST avoir des health checks pour Kubernetes/load balancers.
 
-NEVER ignorer les alertes - chaque alerte doit être actionnable.
+NEVER ignorer les alertes - chaque alerte doit etre actionnable.
 
-Think hard sur ce qui est vraiment critique vs nice-to-have pour les alertes.
+Pour deployer la stack de monitoring (Prometheus, Grafana, Loki), utilisez `/observability-stack`.

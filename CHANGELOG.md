@@ -5,6 +5,70 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/).
 
+## [1.3.0] - 2025-01-17
+
+### Ajouté
+- **37 Sub-Agents** avec contexte isolé (était 14)
+  - DEV: `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`
+  - OPS: `ops-docker`, `ops-ci`, `ops-database`, `ops-monitoring`
+  - DOC: `doc-generate`, `doc-changelog`, `doc-explain`
+  - LEGAL: `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service`
+  - DATA: `data-pipeline`, `data-analytics`, `data-modeling`
+  - GROWTH: `growth-analytics`, `growth-landing`, `growth-funnel`
+  - BIZ: `biz-mvp`, `biz-personas`
+- **24 Skills** avec déclenchement automatique (était 9)
+  - `flutter-development`, `supabase-development`, `react-performance`
+  - `docker-containerization`, `ci-cd-pipeline`, `database-design`
+  - `monitoring-instrumentation`, `documentation-generation`, `changelog-maintenance`
+  - `refactoring`, `error-handling`, `graphql-development`
+  - `mobile-release`, `data-pipeline`, `performance-optimization`
+- **15 Rules modulaires** par langage
+  - Nouvelles: `java.md`, `csharp.md`, `ruby.md`, `php.md`, `rust.md`
+- **7 Output Styles** documentés avec exemples
+  - `teaching`, `concise`, `technical`, `review`, `emoji`, `minimal`, `structured`
+- **4 Guides par domaine** dans `docs/guides/`
+  - `WEB-GUIDE.md` (React/Next.js/Vue)
+  - `MOBILE-GUIDE.md` (Flutter/Clean Architecture)
+  - `API-GUIDE.md` (REST/GraphQL)
+  - `DATA-GUIDE.md` (ETL/Airflow/dbt)
+- **Documentation architecture** (`docs/ARCHITECTURE.md`)
+  - Matrice Commands vs Agents vs Skills vs Rules
+  - Diagrammes de flux de données
+- **Diagrammes workflows** (`docs/WORKFLOWS.md`)
+  - Flowcharts ASCII et Mermaid
+  - Workflows: Feature, Bugfix, Release, Audit, Mobile, API, Data
+- **Setup Wizard** (`scripts/setup-wizard.sh`)
+  - Configuration interactive par type de projet
+  - Détection automatique des technologies
+  - Génération de settings.json personnalisé
+- **6 nouvelles commandes OPS**
+  - `/ops-grafana-dashboard` : Création dashboards Grafana avec templates
+  - `/ops-observability-stack` : Déploiement Prometheus/Grafana/Loki
+  - `/ops-k8s` : Déploiement Kubernetes (manifests, Helm)
+  - `/ops-vps` : Déploiement VPS (OVH, Hetzner, DigitalOcean)
+  - `/ops-mobile-release` : Publication App Store/Google Play avec Fastlane
+  - `/growth-app-store-analytics` : Métriques stores mobiles
+
+### Modifié
+- **`/assistant`** : Orchestrateur intelligent amélioré
+  - Catalogue complet des 94 commandes
+  - Détection du type de projet (Web, Mobile, API, Data)
+  - Workflows spécifiques par domaine
+  - Références aux guides de domaine
+- **CLAUDE.md** : Documentation complète mise à jour
+  - 94 commandes, 37 agents, 24 skills, 15 rules
+  - Section guides et documentation enrichie
+- **`/ops-monitoring`** : Enrichi avec instrumentation complète
+- Scripts `update.sh`, `validate.sh`, `new-project.sh` améliorés
+
+### Statistiques
+- Commands: 94 (était 88)
+- Sub-Agents: 37 (était 14)
+- Skills: 24 (était 9)
+- Rules: 15 (était 10)
+- Output Styles: 7 (documentés)
+- Guides domaine: 4 (nouveaux)
+
 ## [1.2.0] - 2025-01-15
 
 ### Ajouté

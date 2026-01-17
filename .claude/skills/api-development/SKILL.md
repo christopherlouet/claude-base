@@ -8,6 +8,7 @@ allowed-tools:
   - Bash
   - Grep
   - Glob
+context: fork
 ---
 
 # Développer une API
