@@ -2,6 +2,48 @@
 
 > Comprendre la difference entre Commands, Agents, Skills et Rules
 
+## Pourquoi certains fichiers existent dans commands/ ET agents/ ?
+
+La duplication est **intentionnelle** et sert des objectifs differents :
+
+- **commands/xxx.md** = Prompt interactif invoque manuellement (`/xxx`)
+- **agents/xxx.md** = Version delegable avec frontmatter YAML (model, tools, skills)
+
+Claude Code utilise :
+1. La **command** quand l'utilisateur tape `/xxx` explicitement
+2. L'**agent** quand Claude delegue automatiquement une sous-tache
+
+### Differences cles
+
+| Aspect | Command | Agent |
+|--------|---------|-------|
+| Declenchement | Manuel (`/xxx`) | Automatique (delegation) |
+| Frontmatter | Non | Oui (model, tools, skills) |
+| Contexte | Partage | **Isole** |
+| Variable | `$ARGUMENTS` | Non |
+| Modele | Default | Configurable (haiku/sonnet) |
+| Outils | Tous | Restreints (configurable) |
+
+### Exemple concret
+
+```bash
+# L'utilisateur tape explicitement la commande
+/qa-security
+
+# → Claude charge commands/qa/qa-security.md (prompt)
+# → Claude delegue a agents/qa-security.md (contexte isole, model: sonnet)
+# → L'agent utilise le skill security-audit
+# → Resultat retourne au contexte principal
+```
+
+Cette architecture permet :
+- **Flexibilite** : L'utilisateur controle via commands
+- **Optimisation** : Claude delegue avec le bon modele
+- **Isolation** : Les agents ne polluent pas le contexte
+- **Securite** : Outils restreints pour les audits
+
+---
+
 ## Vue d'ensemble
 
 ```
@@ -48,7 +90,7 @@
 | **Modele** | Default | Default | Configurable | N/A |
 | **Cas d'usage** | Actions explicites | Patterns detectes | Taches isolees | Contraintes |
 
-## Commands (94 disponibles)
+## Commands (100 disponibles)
 
 ### Definition
 Prompts invoques manuellement avec la syntaxe `/nom-commande`.
@@ -232,7 +274,7 @@ Effectue un audit de securite complet base sur OWASP Top 10...
 - Parallelisation
 - Economie de tokens (haiku)
 
-## Rules (10 disponibles)
+## Rules (15 disponibles)
 
 ### Definition
 Contraintes et conventions injectees automatiquement selon le chemin des fichiers.
