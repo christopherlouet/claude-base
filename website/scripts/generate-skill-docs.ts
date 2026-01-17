@@ -28,6 +28,12 @@ interface SkillFrontmatter {
   context?: string;
 }
 
+interface SkillExample {
+  name: string;
+  title: string;
+  content: string;
+}
+
 interface SkillInfo {
   name: string;
   description: string;
@@ -35,6 +41,7 @@ interface SkillInfo {
   context: 'fork' | 'shared';
   keywords: string[];
   content: string;
+  examples: SkillExample[];
 }
 
 /**
@@ -70,6 +77,42 @@ function extractKeywords(content: string, name: string): string[] {
 }
 
 /**
+ * Read examples from the examples/ directory of a skill
+ */
+function readSkillExamples(dirPath: string): SkillExample[] {
+  const examplesDir = path.join(dirPath, 'examples');
+  const examples: SkillExample[] = [];
+
+  if (!fs.existsSync(examplesDir)) {
+    return examples;
+  }
+
+  try {
+    const files = fs.readdirSync(examplesDir).filter((f) => f.endsWith('.md'));
+
+    for (const file of files) {
+      const filePath = path.join(examplesDir, file);
+      const content = readFileContent(filePath);
+      const name = path.basename(file, '.md');
+
+      // Extract title from first heading
+      const titleMatch = content.match(/^#\s+(.+)$/m);
+      const title = titleMatch ? titleMatch[1] : name;
+
+      examples.push({
+        name,
+        title,
+        content,
+      });
+    }
+  } catch (error) {
+    console.error(`Error reading examples from ${examplesDir}:`, error);
+  }
+
+  return examples;
+}
+
+/**
  * Parse a skill file and extract metadata
  */
 function parseSkillFile(dirPath: string): SkillInfo | null {
@@ -94,6 +137,7 @@ function parseSkillFile(dirPath: string): SkillInfo | null {
       context: (data.context as 'fork' | 'shared') || 'fork',
       keywords: extractKeywords(markdownContent, skillName),
       content: markdownContent,
+      examples: readSkillExamples(dirPath),
     };
   } catch (error) {
     console.error(`Error parsing ${dirPath}:`, error);
@@ -165,7 +209,20 @@ ${skill.context === 'fork' ? `
 - Modifications visibles immediatement
 - Ideal pour les taches interactives
 `}
+${skill.examples.length > 0 ? `
+---
 
+## Exemples pratiques
+
+${skill.examples.map((ex) => `
+<details>
+<summary><strong>${ex.title}</strong></summary>
+
+${ex.content}
+
+</details>
+`).join('\n')}
+` : ''}
 ---
 
 ## Voir aussi
