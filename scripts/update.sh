@@ -32,6 +32,7 @@ UPDATE_SKILLS=false
 UPDATE_AGENTS=false
 UPDATE_RULES=false
 UPDATE_STYLES=false
+UPDATE_TEMPLATES=false
 CLEAN_BEFORE_UPDATE=false
 DETECT_ORPHANS=false
 REMOVE_ORPHANS=false
@@ -80,7 +81,8 @@ ${BOLD}OPTIONS${NC}
     --agents            Met aussi à jour le répertoire agents/
     --rules             Met aussi à jour le répertoire rules/
     --styles            Met aussi à jour le répertoire output-styles/
-    --all               Met à jour tout (commandes, settings, skills, agents, rules, styles)
+    --templates         Met aussi à jour le répertoire templates/
+    --all               Met à jour tout (commandes, settings, skills, agents, rules, styles, templates)
     --changelog         Affiche les nouveautés du socle
 
 ${BOLD}EXEMPLES${NC}
@@ -196,12 +198,17 @@ parse_args() {
                 UPDATE_STYLES=true
                 shift
                 ;;
+            --templates)
+                UPDATE_TEMPLATES=true
+                shift
+                ;;
             --all)
                 UPDATE_SETTINGS=true
                 UPDATE_SKILLS=true
                 UPDATE_AGENTS=true
                 UPDATE_RULES=true
                 UPDATE_STYLES=true
+                UPDATE_TEMPLATES=true
                 CLEAN_BEFORE_UPDATE=true
                 shift
                 ;;
@@ -526,6 +533,43 @@ update_styles() {
     fi
 }
 
+update_templates() {
+    section "Mise à jour des templates"
+
+    local src_dir="$SOCLE_DIR/.claude/templates"
+    local dest_dir="$TARGET_DIR/.claude/templates"
+
+    if [[ ! -d "$src_dir" ]]; then
+        warning "Répertoire templates source non trouvé"
+        return
+    fi
+
+    if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
+        make_dir "$dest_dir"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Copie templates/"
+        else
+            cp -r "$src_dir/"* "$dest_dir/"
+        fi
+        local count
+        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        success "Templates mis à jour ($count templates)"
+    elif [[ -d "$dest_dir" ]]; then
+        if confirm "Mettre à jour .claude/templates/?" "n"; then
+            cp -r "$src_dir/"* "$dest_dir/"
+            success "Templates mis à jour"
+        else
+            warning "Templates ignorés"
+        fi
+    else
+        make_dir "$dest_dir"
+        cp -r "$src_dir/"* "$dest_dir/"
+        local count
+        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        success "Templates créés ($count templates)"
+    fi
+}
+
 detect_orphan_files() {
     local subdir="$1"
     local target_dir="$TARGET_DIR/.claude/$subdir"
@@ -591,7 +635,7 @@ detect_orphan_files() {
 detect_all_orphans() {
     section "Detection des fichiers orphelins"
 
-    local dirs_to_check=("commands" "skills" "agents" "rules" "output-styles")
+    local dirs_to_check=("commands" "skills" "agents" "rules" "output-styles" "templates")
 
     for subdir in "${dirs_to_check[@]}"; do
         if [[ -d "$TARGET_DIR/.claude/$subdir" ]]; then
@@ -616,7 +660,7 @@ clean_claude_dirs() {
     section "Nettoyage des anciens fichiers"
 
     # Liste des sous-dossiers à nettoyer
-    local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles")
+    local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles" "templates")
 
     for subdir in "${dirs_to_clean[@]}"; do
         if [[ -d "$TARGET_DIR/.claude/$subdir" ]]; then
@@ -737,6 +781,16 @@ main() {
         echo ""
         if confirm "Mettre à jour .claude/output-styles/?" "n"; then
             update_styles
+        fi
+    fi
+
+    # Mise à jour optionnelle des templates
+    if $UPDATE_TEMPLATES; then
+        update_templates
+    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
+        echo ""
+        if confirm "Mettre à jour .claude/templates/?" "n"; then
+            update_templates
         fi
     fi
 
