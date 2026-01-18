@@ -271,3 +271,4 @@ chmod +x .claude/scripts/*.sh
 - [Quick Start](/docs/intro/quick-start) - Premier workflow en 5 minutes
 - [Architecture](/docs/intro/architecture) - Comprendre les composants
 - [Workflows](/docs/workflow) - Voir les workflows detailles
+- [Scripts utilitaires](/docs/reference/scripts) - Tous les scripts disponibles
