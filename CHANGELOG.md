@@ -7,6 +7,10 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ## [Unreleased]
 
+---
+
+## [1.4.0] - 2025-01-18
+
 ### Ajouté
 - **8 nouveaux Agents** (total: 45 agents)
   - DEV: `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-prompt-engineering`, `dev-rag`
@@ -34,6 +38,12 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ### Corrigé
 - Cohérence des chiffres dans la documentation (108/45/27/17)
+
+### Statistiques
+- Commands: 108 (était 94)
+- Sub-Agents: 45 (était 37)
+- Skills: 27 (était 24)
+- Rules: 17 (était 15)
 
 ---
 
