@@ -9,6 +9,21 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.4.1] - 2025-01-18
+
+### Ajouté
+- **Scripts**
+  - Option `--templates` dans `update.sh` pour synchroniser `.claude/templates/`
+  - Inclusion de templates dans `--all`, `--detect-orphans` et `--clean`
+- **Documentation**
+  - Nouvelle page `docs/concepts/templates.md` documentant les 3 templates de spécification
+  - Mise à jour de l'index des concepts (8 concepts au lieu de 7)
+
+### Corrigé
+- Templates de spécification (spec, plan, tasks) maintenant synchronisés par `update.sh`
+
+---
+
 ## [1.4.0] - 2025-01-18
 
 ### Ajouté
