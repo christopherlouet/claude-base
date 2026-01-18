@@ -262,6 +262,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'reference/commands-matrix',
         'reference/agents-matrix',
+        'reference/scripts',
         'reference/cheatsheet',
       ],
     },
