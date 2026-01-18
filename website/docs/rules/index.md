@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Rules"
-description: "Catalogue des 17 regles par technologie"
+description: "Catalogue des 15 regles par technologie"
 ---
 
 import Stats from '@site/src/components/Stats';
