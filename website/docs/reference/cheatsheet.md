@@ -170,4 +170,4 @@ https://christopherlouet.github.io/claude-socle/
 
 ---
 
-**claude-socle** | 100 Commands | 37 Agents | 24 Skills | 15 Rules
+**claude-socle** | 108 Commands | 45 Agents | 27 Skills | 17 Rules
