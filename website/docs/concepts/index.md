@@ -25,17 +25,17 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 │  │   /xxx    │  │ par Claude│  │ mots-cles │  │           │   │
 │  └───────────┘  └───────────┘  └───────────┘  └───────────┘   │
 │                                                                 │
-│  ┌───────────┐  ┌───────────┐  ┌───────────┐                  │
-│  │   HOOKS   │  │    MCP    │  │  OUTPUT   │                  │
-│  │           │  │  SERVERS  │  │  STYLES   │                  │
-│  │ Pre/Post  │  │           │  │           │                  │
-│  │ ToolUse   │  │ Extensions│  │ Formatage │                  │
-│  └───────────┘  └───────────┘  └───────────┘                  │
+│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐   │
+│  │   HOOKS   │  │    MCP    │  │  OUTPUT   │  │ TEMPLATES │   │
+│  │           │  │  SERVERS  │  │  STYLES   │  │           │   │
+│  │ Pre/Post  │  │           │  │           │  │ Specs &   │   │
+│  │ ToolUse   │  │ Extensions│  │ Formatage │  │ Plans     │   │
+│  └───────────┘  └───────────┘  └───────────┘  └───────────┘   │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Les 7 concepts cles
+## Les 8 concepts cles
 
 | Concept | Description | Declenchement |
 |---------|-------------|---------------|
@@ -46,6 +46,7 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 | [**Hooks**](/docs/concepts/hooks) | Actions avant/apres utilisation d'outils | PreToolUse / PostToolUse |
 | [**MCP Servers**](/docs/concepts/mcp-servers) | Extensions via Model Context Protocol | Configuration .mcp.json |
 | [**Output Styles**](/docs/concepts/output-styles) | Styles de formatage des reponses | `/output-style nom` |
+| [**Templates**](/docs/concepts/templates) | Modeles pour specs, plans et taches | `/work-specify`, `/work-plan` |
 
 ## Comparaison rapide
 
@@ -143,6 +144,7 @@ Utilisateur tape: "Fais un audit de securite"
 2. **Comprendre l'automatisation?** Lisez [Skills](./skills) et [Agents](./agents)
 3. **Personnaliser le comportement?** Explorez [Hooks](/docs/concepts/hooks) et [Rules](/docs/concepts/rules)
 4. **Etendre les capacites?** Decouvrez [MCP Servers](/docs/concepts/mcp-servers)
+5. **Structurer vos features?** Utilisez les [Templates](/docs/concepts/templates)
 
 ---
 
