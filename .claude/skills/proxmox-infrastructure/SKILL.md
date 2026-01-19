@@ -1,7 +1,13 @@
 ---
 name: proxmox-infrastructure
 description: Infrastructure Proxmox VE avec Terraform (VMs, LXC, réseau, stockage, backup)
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
 context: fork
 ---
 
