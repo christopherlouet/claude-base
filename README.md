@@ -16,7 +16,7 @@ Template de configuration Claude Code pour un workflow de développement optimal
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://docs.anthropic.com/en/docs/claude-code) qui permet de :
 
 - Structurer ton workflow de développement : **Explore → Specify → Plan → Code → Commit**
-- Disposer de **108 commandes** et **45 agents spécialisés** pour différentes tâches
+- Disposer de **109 commandes** et **47 agents spécialisés** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
 - Intégrer CI/CD et hooks pre-commit prêts à l'emploi
@@ -64,8 +64,8 @@ claude-socle/
 │
 ├── .claude/
 │   ├── settings.json            # Permissions et hooks
-│   ├── skills/                  # 27 skills spécialisés
-│   └── commands/                # 108 commandes disponibles
+│   ├── skills/                  # 29 skills spécialisés
+│   └── commands/                # 109 commandes disponibles
 │       ├── assistant.md         # Orchestrateur principal
 │       ├── work/                # Workflow (10 commandes)
 │       │   ├── work-explore.md
@@ -316,7 +316,7 @@ Le socle inclut un tutoriel interactif pour apprendre à l'utiliser efficacement
 
 Le tutoriel couvre :
 - Le workflow Explore → Specify → Plan → Code → Commit
-- Les 108 commandes et 45 agents spécialisés
+- Les 109 commandes et 47 agents spécialisés
 - Le développement TDD
 - Les Conventional Commits
 - Quiz interactifs avec score

@@ -228,7 +228,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (108 commands, 45 sub-agents, 27 skills)
+## Agents Disponibles (109 commands, 47 sub-agents, 29 skills)
 
 ### Orchestrateur (Point d'entrée unique)
 | Commande | Usage |
@@ -290,7 +290,7 @@ type(scope): description courte
 | `/qa-neovim` | Audit config Neovim (perf, keymaps) |
 | `/qa-e2e` | Tests End-to-End (Playwright, Cypress) |
 
-### OPS- : Opérations (27)
+### OPS- : Opérations (28)
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente production |
@@ -320,6 +320,7 @@ type(scope): description courte
 | `/ops-mobile-release` | Publication App Store / Google Play |
 | `/ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
 | `/ops-vercel` | Configuration et déploiement Vercel |
+| `/ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
 
 ### DOC- : Documentation (9)
 | Commande | Usage |
@@ -469,7 +470,7 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 
 ## Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **27 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **29 Skills** dans `.claude/skills/`:
 
 ### Skills de base
 | Skill | Déclenchement automatique | Context |
@@ -505,6 +506,8 @@ En plus des commandes, le projet inclut **27 Skills** dans `.claude/skills/`:
 | `prompt-engineering` | "prompt", "instruction", "few-shot", "LLM" | fork |
 | `e2e-testing` | "E2E", "Playwright", "Cypress", "parcours utilisateur" | fork |
 | `feature-flags` | "feature flag", "A/B test", "deploiement progressif" | fork |
+| `infrastructure-as-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | fork |
+| `proxmox-infrastructure` | "Proxmox", "PVE", "VM Proxmox", "LXC", "PBS" | fork |
 
 ### Configuration des Skills
 
@@ -533,7 +536,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 - **Modèle optimisé** : Haiku pour tâches simples (économie de tokens)
 - **Parallélisation** : Plusieurs agents peuvent tourner simultanément
 
-### Agents disponibles (45)
+### Agents disponibles (47)
 
 #### Exploration & Documentation
 | Agent | Modèle | Outils | Usage |
@@ -566,6 +569,8 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `ops-monitoring` | haiku | Read, Grep, Glob, Bash | Instrumentation et monitoring |
 | `ops-serverless` | haiku | Read, Grep, Glob, Bash | Déploiement serverless |
 | `ops-vercel` | haiku | Read, Grep, Glob, Bash | Configuration Vercel |
+| `ops-infra-code` | sonnet | Read, Grep, Glob, Edit, Write, Bash | Infrastructure as Code (Terraform/OpenTofu) |
+| `ops-proxmox` | sonnet | Read, Grep, Glob, Edit, Write, Bash | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
 
 #### Développement
 | Agent | Modèle | Outils | Usage |
@@ -722,6 +727,18 @@ specs/[feature]/
 ```
 /work-explore → /work-specify → /work-clarify (opt) → /work-plan → /dev-tdd
 ```
+
+### Templates Proxmox (Terraform)
+
+Templates pour la gestion d'infrastructure Proxmox VE dans `.claude/templates/proxmox/`:
+
+| Template | Description |
+|----------|-------------|
+| `provider-template.tf` | Configuration provider bpg/proxmox |
+| `vm-module-template.tf` | Module VM avec cloud-init |
+| `lxc-module-template.tf` | Module conteneur LXC |
+| `infrastructure-template.tf` | Infrastructure type complète |
+| `README.md` | Guide d'utilisation des templates |
 
 ## MCP Configuration (Claude Code 2.1+)
 

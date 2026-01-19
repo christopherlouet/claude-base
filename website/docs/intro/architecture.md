@@ -15,7 +15,7 @@ claude-socle est compose de plusieurs types de composants qui travaillent ensemb
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 108 commandes manuelles (/nom)
+│   ├── commands/       # 109 commandes manuelles (/nom)
 │   │   ├── work/       # Workflow principal
 │   │   ├── dev/        # Developpement
 │   │   ├── qa/         # Qualite
@@ -25,8 +25,8 @@ claude-socle/
 │   │   ├── growth/     # Croissance
 │   │   ├── data/       # Donnees
 │   │   └── legal/      # Legal
-│   ├── agents/         # 45 sub-agents autonomes
-│   ├── skills/         # 27 skills auto-declenches
+│   ├── agents/         # 47 sub-agents autonomes
+│   ├── skills/         # 29 skills auto-declenches
 │   ├── rules/          # 17 regles par technologie
 │   ├── templates/      # Templates de specs/plans
 │   ├── output-styles/  # Styles de sortie
@@ -37,7 +37,7 @@ claude-socle/
 
 ## Composants principaux
 
-### Commands (100)
+### Commands (109)
 
 Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 
@@ -54,7 +54,7 @@ Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 /qa-security
 ```
 
-### Agents (37)
+### Agents (47)
 
 Les **agents** sont des sub-agents autonomes avec un contexte isole.
 
@@ -70,7 +70,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole.
 "Explore le code d'auth" → Claude delegue a l'agent work-explore (haiku)
 ```
 
-### Skills (24)
+### Skills (29)
 
 Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 
@@ -86,7 +86,7 @@ Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 "Fais un commit" → Skill generating-commit-messages active
 ```
 
-### Rules (15)
+### Rules (17)
 
 Les **rules** sont des regles appliquees par chemin de fichier.
 
@@ -183,4 +183,4 @@ Activez les serveurs selon vos besoins pour etendre les capacites de Claude.
 
 - [Installation](/docs/intro/installation) - Guide d'installation complet
 - [Workflows](/docs/workflow) - Voir les workflows en action
-- [Commands](/docs/commands) - Explorer les 108 commandes
+- [Commands](/docs/commands) - Explorer les 109 commandes

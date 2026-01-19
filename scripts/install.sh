@@ -73,9 +73,13 @@ ${BOLD}EXEMPLES${NC}
     $(basename "$0") --dry-run ./mon-projet
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
-    .claude/commands/   $(count_agents "$SOCLE_DIR") agents
-    .claude/skills/     $(count_skills "$SOCLE_DIR") skills
-    .claude/settings.json ($(count_hooks "$SOCLE_DIR") hooks)
+    .claude/commands/       Commandes (109)
+    .claude/skills/         Skills ($(count_skills "$SOCLE_DIR"))
+    .claude/agents/         Agents (47)
+    .claude/rules/          Rules contextuelles
+    .claude/output-styles/  Styles de sortie
+    .claude/templates/      Templates (spec, Proxmox, etc.)
+    .claude/settings.json   Hooks ($(count_hooks "$SOCLE_DIR"))
     CLAUDE.md
     CLAUDE.local.md.example
 
@@ -186,6 +190,10 @@ install_claude_config() {
     info "Création de la structure..."
     make_dir "$TARGET_DIR/.claude/commands"
     make_dir "$TARGET_DIR/.claude/skills"
+    make_dir "$TARGET_DIR/.claude/agents"
+    make_dir "$TARGET_DIR/.claude/rules"
+    make_dir "$TARGET_DIR/.claude/output-styles"
+    make_dir "$TARGET_DIR/.claude/templates"
 
     # Copier les fichiers de configuration Claude
     info "Copie des fichiers de configuration Claude..."
@@ -211,7 +219,47 @@ install_claude_config() {
         fi
     fi
 
-    success "Commandes, skills et configuration copiées"
+    # Copier les agents
+    if [[ -d "$SOCLE_DIR/.claude/agents" ]]; then
+        debug "Copie des agents..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/agents/* → $TARGET_DIR/.claude/agents/"
+        else
+            cp -r "$SOCLE_DIR/.claude/agents/"* "$TARGET_DIR/.claude/agents/"
+        fi
+    fi
+
+    # Copier les rules
+    if [[ -d "$SOCLE_DIR/.claude/rules" ]]; then
+        debug "Copie des rules..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/rules/* → $TARGET_DIR/.claude/rules/"
+        else
+            cp -r "$SOCLE_DIR/.claude/rules/"* "$TARGET_DIR/.claude/rules/"
+        fi
+    fi
+
+    # Copier les output-styles
+    if [[ -d "$SOCLE_DIR/.claude/output-styles" ]]; then
+        debug "Copie des output-styles..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/output-styles/* → $TARGET_DIR/.claude/output-styles/"
+        else
+            cp -r "$SOCLE_DIR/.claude/output-styles/"* "$TARGET_DIR/.claude/output-styles/"
+        fi
+    fi
+
+    # Copier les templates
+    if [[ -d "$SOCLE_DIR/.claude/templates" ]]; then
+        debug "Copie des templates..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/templates/* → $TARGET_DIR/.claude/templates/"
+        else
+            cp -r "$SOCLE_DIR/.claude/templates/"* "$TARGET_DIR/.claude/templates/"
+        fi
+    fi
+
+    success "Commandes, skills, agents, rules, styles et templates copiés"
 
     # Copier CLAUDE.md (si n'existe pas)
     if [[ -f "$TARGET_DIR/CLAUDE.md" ]]; then
@@ -323,9 +371,13 @@ print_summary() {
     echo ""
 
     info "Fichiers installés:"
-    echo "  - .claude/commands/ ($(count_agents "$SOCLE_DIR") agents)"
-    echo "  - .claude/skills/ ($(count_skills "$SOCLE_DIR") skills)"
-    echo "  - .claude/settings.json ($(count_hooks "$SOCLE_DIR") hooks)"
+    echo "  - .claude/commands/      (109 commandes)"
+    echo "  - .claude/skills/        ($(count_skills "$SOCLE_DIR") skills)"
+    echo "  - .claude/agents/        (47 agents)"
+    echo "  - .claude/rules/         (règles contextuelles)"
+    echo "  - .claude/output-styles/ (styles de sortie)"
+    echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
+    echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
     echo "  - CLAUDE.md"
     echo "  - CLAUDE.local.md.example"
     echo ""

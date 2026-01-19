@@ -64,6 +64,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 | `init.lua` / `.config/nvim` | **Neovim** | - | `/dev-neovim`, `/qa-neovim` |
 | Airflow/dbt/Spark | **Data** | `docs/guides/DATA-GUIDE.md` | `/data-pipeline` |
 | `Dockerfile` / `docker-compose.yml` | **DevOps** | - | `/ops-docker`, `/ops-k8s` |
+| Proxmox / `bpg/proxmox` provider | **Infrastructure Proxmox** | - | `/ops-proxmox`, `/ops-infra-code` |
 | Monorepo (nx, turborepo, lerna) | **Monorepo** | - | Adapter par package |
 
 ---
@@ -79,7 +80,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
-│  │    (100)    │  │    (37)     │  │    (24)     │             │
+│  │    (109)    │  │    (47)     │  │    (29)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Délégation  │  │ Activation  │             │
 │  │  manuelle   │  │ automatique │  │ automatique │             │
@@ -107,7 +108,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 
 ---
 
-## Section 4: Sub-Agents (45 agents avec contexte isolé)
+## Section 4: Sub-Agents (47 agents avec contexte isolé)
 
 Claude délègue automatiquement aux agents spécialisés selon le contexte. Les agents ont un contexte isolé et des outils restreints.
 
@@ -128,6 +129,7 @@ Claude délègue automatiquement aux agents spécialisés selon le contexte. Les
 | `qa-audit` | sonnet | Read, Grep, Glob, Bash | "Audit complet", "Qualité globale" |
 | `qa-coverage` | haiku | Read, Grep, Glob, Bash | "Couverture de tests" |
 | `qa-responsive` | haiku | Read, Grep, Glob | "Mobile", "Responsive" |
+| `qa-e2e` | sonnet | Read, Grep, Glob, Bash | "E2E", "Playwright", "Cypress" |
 
 ### Agents opérationnels
 
@@ -135,12 +137,29 @@ Claude délègue automatiquement aux agents spécialisés selon le contexte. Les
 |-------|--------|--------|-------------|
 | `ops-deps` | haiku | Read, Grep, Glob, Bash | "Dépendances", "npm audit" |
 | `ops-health` | haiku | Read, Grep, Glob, Bash | "Health check", "État du projet" |
+| `ops-proxmox` | sonnet | Read, Grep, Glob, Edit, Write, Bash | "Proxmox", "VM", "LXC", "PBS" |
+| `ops-infra-code` | sonnet | Read, Grep, Glob, Edit, Write, Bash | "Terraform", "IaC", "Infrastructure" |
+| `ops-docker` | haiku | Read, Grep, Glob, Bash | "Docker", "Container" |
+| `ops-ci` | haiku | Read, Grep, Glob, Bash | "CI/CD", "GitHub Actions" |
+| `ops-database` | sonnet | Read, Grep, Glob, Bash | "Schema", "Migration DB" |
+| `ops-monitoring` | haiku | Read, Grep, Glob, Bash | "Logs", "Métriques", "Traces" |
+| `ops-serverless` | haiku | Read, Grep, Glob, Bash | "Lambda", "Serverless" |
+| `ops-vercel` | haiku | Read, Grep, Glob, Bash | "Vercel", "Déploiement" |
 
 ### Agents de développement
 
 | Agent | Modèle | Outils | Déclencheur |
 |-------|--------|--------|-------------|
 | `dev-debug` | sonnet | Read, Grep, Glob, Bash | "Bug", "Déboguer", "Erreur" |
+| `dev-component` | haiku | Read, Grep, Glob | "Composant", "UI" |
+| `dev-test` | haiku | Read, Grep, Glob, Bash | "Tests", "Jest", "Vitest" |
+| `dev-flutter` | sonnet | Read, Grep, Glob | "Flutter", "Widget" |
+| `dev-supabase` | sonnet | Read, Grep, Glob, Bash | "Supabase", "Auth" |
+| `dev-prisma` | haiku | Read, Grep, Glob, Bash | "Prisma", "ORM" |
+| `dev-prompt-engineering` | sonnet | Read, Grep, Glob, WebFetch | "Prompt", "LLM" |
+| `dev-rag` | sonnet | Read, Grep, Glob, Bash | "RAG", "Embeddings" |
+| `dev-design-system` | haiku | Read, Grep, Glob | "Design system", "Tokens" |
+| `dev-trpc` | haiku | Read, Grep, Glob | "tRPC", "Type-safe API" |
 
 ### Agents business et growth
 
@@ -148,7 +167,37 @@ Claude délègue automatiquement aux agents spécialisés selon le contexte. Les
 |-------|--------|--------|-------------|
 | `biz-model` | haiku | Read, Grep, Glob, WebSearch | "Business model", "Lean Canvas" |
 | `biz-competitor` | haiku | Read, Grep, Glob, WebSearch | "Concurrents", "Analyse concurrentielle" |
+| `biz-mvp` | haiku | Read, Grep, Glob | "MVP", "Minimum viable" |
+| `biz-personas` | haiku | Read, Grep, Glob, WebSearch | "Personas", "Utilisateurs cibles" |
 | `growth-seo` | haiku | Read, Grep, Glob, WebFetch | "SEO", "Référencement" |
+| `growth-analytics` | haiku | Read, Grep, Glob | "Analytics", "KPIs", "Tracking" |
+| `growth-landing` | haiku | Read, Grep, Glob | "Landing page", "Conversion" |
+| `growth-funnel` | haiku | Read, Grep, Glob | "Funnel", "Parcours utilisateur" |
+
+### Agents data
+
+| Agent | Modèle | Outils | Déclencheur |
+|-------|--------|--------|-------------|
+| `data-pipeline` | sonnet | Read, Grep, Glob, Bash | "ETL", "Pipeline", "Airflow" |
+| `data-modeling` | sonnet | Read, Grep, Glob | "Data warehouse", "Modélisation" |
+| `data-analytics` | haiku | Read, Grep, Glob | "Analyse données", "Rapports" |
+
+### Agents documentation
+
+| Agent | Modèle | Outils | Déclencheur |
+|-------|--------|--------|-------------|
+| `doc-generate` | haiku | Read, Grep, Glob | "Documentation", "Générer doc" |
+| `doc-changelog` | haiku | Read, Grep, Glob | "Changelog", "Release notes" |
+| `doc-explain` | haiku | Read, Grep, Glob | "Expliquer code", "Comment ça marche" |
+
+### Agents légal
+
+| Agent | Modèle | Outils | Déclencheur |
+|-------|--------|--------|-------------|
+| `legal-rgpd` | haiku | Read, Grep, Glob | "RGPD", "GDPR", "Données personnelles" |
+| `legal-payment` | sonnet | Read, Grep, Glob | "Paiement", "Stripe", "PCI-DSS" |
+| `legal-privacy-policy` | haiku | Read, Grep, Glob | "Politique confidentialité" |
+| `legal-terms-of-service` | haiku | Read, Grep, Glob | "CGU", "Conditions" |
 
 ### Quand les agents sont-ils utilisés ?
 
@@ -167,7 +216,7 @@ Résultat renvoyé à la conversation principale
 
 ---
 
-## Section 5: Skills (27 skills à déclenchement automatique)
+## Section 5: Skills (29 skills à déclenchement automatique)
 
 Les Skills sont activés automatiquement par Claude selon les mots-clés dans la conversation.
 
@@ -179,6 +228,12 @@ Les Skills sont activés automatiquement par Claude selon les mots-clés dans la
 | `debugging-issues` | "bug", "erreur", "debug", "ne fonctionne pas" | Investigation et fix |
 | `refactoring` | "refactorer", "nettoyer", "améliorer le code" | Refactoring guidé |
 | `api-development` | "API", "endpoint", "REST" | Création d'API |
+| `error-handling` | "gestion erreurs", "exceptions", "error boundary" | Stratégie d'erreurs |
+| `graphql-development` | "GraphQL", "resolver", "schema" | API GraphQL |
+| `flutter-development` | "Flutter", "widget", "BLoC" | Développement Flutter |
+| `supabase-development` | "Supabase", "auth", "RLS" | Backend Supabase |
+| `react-performance` | "React perf", "re-render", "memo" | Optimisation React |
+| `prompt-engineering` | "prompt", "instruction", "few-shot", "LLM" | Optimisation prompts |
 
 ### Skills de workflow
 
@@ -189,12 +244,30 @@ Les Skills sont activés automatiquement par Claude selon les mots-clés dans la
 | `reviewing-code` | "review", "code review", "vérifier" | Revue approfondie |
 | `planning-implementation` | "planifier", "architecture", "approche" | Plan d'implémentation |
 | `exploring-codebase` | "explorer", "comprendre", "découvrir" | Analyse de codebase |
+| `changelog-maintenance` | "changelog", "release notes" | Maintenance changelog |
+| `documentation-generation` | "documenter", "README", "JSDoc" | Génération doc |
 
-### Skills d'audit
+### Skills d'audit et qualité
 
 | Skill | Mots-clés déclencheurs | Action |
 |-------|------------------------|--------|
 | `security-audit` | "sécurité", "OWASP", "vulnérabilité" | Audit OWASP Top 10 |
+| `e2e-testing` | "E2E", "Playwright", "Cypress" | Tests End-to-End |
+| `performance-optimization` | "optimiser", "latence", "TTFB" | Optimisation perf |
+
+### Skills d'infrastructure
+
+| Skill | Mots-clés déclencheurs | Action |
+|-------|------------------------|--------|
+| `infrastructure-as-code` | "Terraform", "IaC", "OpenTofu" | Infrastructure as Code |
+| `proxmox-infrastructure` | "Proxmox", "PVE", "VM", "LXC", "PBS" | Infrastructure Proxmox |
+| `docker-containerization` | "Docker", "container", "Dockerfile" | Containerisation |
+| `ci-cd-pipeline` | "CI/CD", "GitHub Actions", "pipeline" | Pipeline CI/CD |
+| `database-design` | "schema", "migration", "index" | Conception DB |
+| `monitoring-instrumentation` | "logs", "métriques", "traces" | Monitoring |
+| `data-pipeline` | "ETL", "Airflow", "dbt" | Pipelines data |
+| `mobile-release` | "App Store", "Play Store", "Fastlane" | Publication mobile |
+| `feature-flags` | "feature flag", "A/B test", "déploiement progressif" | Feature flags |
 
 ### Comment fonctionnent les skills ?
 
@@ -255,7 +328,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 ---
 
-## Section 7: Catalogue des Commandes (100)
+## Section 7: Catalogue des Commandes (109)
 
 ### WORK- : Workflow Principal (10)
 
@@ -272,7 +345,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (16)
+### DEV- : Développement (21)
 
 | Commande | Usage |
 |----------|-------|
@@ -292,8 +365,13 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
 | `/dev-graphql` | API GraphQL client/serveur |
 | `/dev-neovim` | Plugins et config Neovim/Lua |
+| `/dev-design-system` | Design tokens et bibliothèque de composants |
+| `/dev-prisma` | ORM Prisma (schema, migrations, queries) |
+| `/dev-prompt-engineering` | Optimisation de prompts LLM |
+| `/dev-rag` | Systèmes RAG (Retrieval-Augmented Generation) |
+| `/dev-trpc` | APIs type-safe avec tRPC |
 
-### QA- : Qualité (11)
+### QA- : Qualité (12)
 
 | Commande | Usage |
 |----------|-------|
@@ -305,11 +383,12 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/qa-responsive` | Audit responsive/mobile web |
 | `/qa-automation` | Automatisation des tests |
 | `/qa-coverage` | Analyse couverture de tests |
+| `/qa-e2e` | Tests End-to-End (Playwright, Cypress) |
 | `/qa-kaizen` | Amélioration continue (PDCA, Muda) |
 | `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
 | `/qa-neovim` | Audit config Neovim |
 
-### OPS- : Opérations (25)
+### OPS- : Opérations (28)
 
 | Commande | Usage |
 |----------|-------|
@@ -336,7 +415,10 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/ops-cost-optimization` | Optimisation coûts cloud |
 | `/ops-disaster-recovery` | Plan de reprise après sinistre |
 | `/ops-infra-code` | Infrastructure as Code (Terraform) |
+| `/ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
 | `/ops-secrets-management` | Gestion sécurisée des secrets |
+| `/ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
+| `/ops-vercel` | Configuration et déploiement Vercel |
 | `/ops-mobile-release` | Publication App Store / Google Play |
 
 ### DOC- : Documentation (9)
@@ -468,6 +550,8 @@ Génère: specs/ma-feature/plan.md + tasks.md
 │ Dockeriser                              →  /ops-docker                 │
 │ Kubernetes                              →  /ops-k8s                    │
 │ VPS                                     →  /ops-vps                    │
+│ Proxmox (VMs, LXC)                      →  /ops-proxmox                │
+│ Infrastructure as Code                  →  /ops-infra-code             │
 │ CI/CD                                   →  /ops-ci                     │
 │ Monitoring                              →  /ops-monitoring             │
 │                                                                        │
@@ -515,6 +599,12 @@ Génère: specs/ma-feature/plan.md + tasks.md
 /work-explore → /dev-neovim → /qa-neovim → /work-commit
 ```
 
+### Infrastructure Proxmox
+
+```
+/work-explore → /ops-proxmox → /ops-monitoring → /ops-backup
+```
+
 ### GitFlow (équipes)
 
 ```
@@ -548,9 +638,9 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 | Dossier | Contenu |
 |---------|---------|
-| `.claude/commands/` | 108 commandes organisées par domaine |
-| `.claude/agents/` | 45 sub-agents avec contexte isolé |
-| `.claude/skills/` | 27 skills à déclenchement automatique |
+| `.claude/commands/` | 109 commandes organisées par domaine |
+| `.claude/agents/` | 47 sub-agents avec contexte isolé |
+| `.claude/skills/` | 29 skills à déclenchement automatique |
 | `.claude/rules/` | 17 règles contextuelles par path |
 | `.claude/templates/` | 3 templates (spec, plan, tasks) |
 | `.claude/output-styles/` | Styles de sortie (teaching, concise...) |
