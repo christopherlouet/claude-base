@@ -99,8 +99,8 @@ jobs:
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
-    # Skip for Dependabot PRs and require GHAS (not available on private repos without license)
-    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+    # Skip for Dependabot PRs (GHAS not available on private repos without license)
+    if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
     # Continue even if this job fails (GitHub Advanced Security may not be enabled)
     continue-on-error: true
     steps:

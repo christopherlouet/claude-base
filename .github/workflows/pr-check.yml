@@ -77,7 +77,7 @@ jobs:
     name: Auto Label
     runs-on: ubuntu-latest
     # Skip for Dependabot PRs (token doesn't have write permissions for labels)
-    if: github.actor != 'dependabot[bot]'
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
     steps:
       - name: Label based on files
         uses: actions/labeler@v6
