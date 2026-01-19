@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Skills"
-description: "Catalogue des 29 skills auto-declenches"
+description: "Catalogue des 30 skills auto-declenches"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **29 skills** auto-declenches par mots-cles
+> **30 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 29, label: 'Skills Fork' },
+  { number: 30, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 29, label: 'Total' },
+  { number: 30, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?
@@ -29,7 +29,7 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (29 skills)
+### Fork (30 skills)
 
 Skills avec contexte isole.
 
@@ -53,6 +53,7 @@ Skills avec contexte isole.
 | [`graphql-development`](/docs/skills/graphql-development) | Developpement d'APIs GraphQL. Declencher quand l'u... | graphql, development |
 | [`infrastructure-as-code`](/docs/skills/infrastructure-as-code) | Infrastructure as Code avec Terraform/OpenTofu. De... | Terraform, IaC, OpenTofu, module |
 | [`mobile-release`](/docs/skills/mobile-release) | Publication d'apps sur App Store et Google Play. D... | mobile, release, deploy to testflight |
+| [`proxmox-infrastructure`](/docs/skills/proxmox-infrastructure) | Infrastructure Proxmox VE avec Terraform (VMs, LXC... | Proxmox, PVE, LXC, VM, PBS |
 | [`monitoring-instrumentation`](/docs/skills/monitoring-instrumentation) | Instrumentation d'applications pour monitoring. De... | monitoring, instrumentation |
 | [`performance-optimization`](/docs/skills/performance-optimization) | Optimisation des performances d'applications. Decl... | performance, optimization, /photo.jpg |
 | [`planning-implementation`](/docs/skills/planning-implementation) | Planifier l'implémentation d'une fonctionnalité. U... | planning, implementation, pattern_similaire |
