@@ -552,7 +552,7 @@ update_templates() {
             cp -r "$src_dir/"* "$dest_dir/"
         fi
         local count
-        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        count=$(find "$src_dir" -type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null | wc -l | tr -d ' ')
         success "Templates mis à jour ($count templates)"
     elif [[ -d "$dest_dir" ]]; then
         if confirm "Mettre à jour .claude/templates/?" "n"; then
@@ -565,7 +565,7 @@ update_templates() {
         make_dir "$dest_dir"
         cp -r "$src_dir/"* "$dest_dir/"
         local count
-        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        count=$(find "$src_dir" -type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null | wc -l | tr -d ' ')
         success "Templates créés ($count templates)"
     fi
 }
@@ -579,7 +579,7 @@ detect_orphan_files() {
         return
     fi
 
-    # Trouver les fichiers .md dans le target
+    # Trouver les fichiers dans le target (md, tf, yaml, yml, json)
     while IFS= read -r target_file; do
         if [[ -f "$target_file" ]]; then
             # Calculer le chemin relatif
@@ -624,7 +624,7 @@ detect_orphan_files() {
                 fi
             fi
         fi
-    done < <(find "$target_dir" -name "*.md" -type f 2>/dev/null || true)
+    done < <(find "$target_dir" -type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null || true)
 
     # Nettoyer les repertoires vides
     if $REMOVE_ORPHANS && ! $DRY_RUN; then

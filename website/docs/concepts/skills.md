@@ -171,6 +171,7 @@ Ce skill s'active quand l'utilisateur mentionne:
 | `docker-containerization` | Docker, container | Dockerisation |
 | `ci-cd-pipeline` | CI/CD, pipeline | Configuration CI |
 | `monitoring-instrumentation` | logs, metriques | Instrumentation |
+| `infrastructure-as-code` | Terraform, IaC, OpenTofu, module, Proxmox | Modules Terraform/OpenTofu, Infrastructure Proxmox |
 
 ## Exemples de skills
 
