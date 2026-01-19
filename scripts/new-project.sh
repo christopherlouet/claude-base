@@ -62,7 +62,7 @@ ${BOLD}USAGE${NC}
 
 ${BOLD}DESCRIPTION${NC}
     Crée un nouveau projet ou configure un projet existant avec Claude Code.
-    Installe 85 agents spécialisés et configure le workflow Explore → Plan → Code → Commit.
+    Installe 109 commandes, 47 agents et 29 skills pour le workflow Explore → Plan → Code → Commit.
 
 ${BOLD}ARGUMENTS${NC}
     CHEMIN              Chemin vers un projet existant à configurer (optionnel)
@@ -109,10 +109,14 @@ ${BOLD}TYPES DE PROJET${NC}
     generic     Autre / Générique
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
-    .claude/commands/   85 agents Claude Code
-    .claude/skills/     9 skills spécialisés
-    .claude/settings.json (8 hooks configurés)
-    CLAUDE.md           Instructions du projet (généré intelligemment)
+    .claude/commands/       109 commandes Claude Code
+    .claude/skills/         29 skills spécialisés
+    .claude/agents/         47 agents avec contexte isolé
+    .claude/rules/          Règles contextuelles par path
+    .claude/output-styles/  Styles de sortie
+    .claude/templates/      Templates (spec, Proxmox, etc.)
+    .claude/settings.json   Hooks configurés
+    CLAUDE.md               Instructions du projet (généré intelligemment)
 
 ${BOLD}PLUS D'INFOS${NC}
     https://github.com/anthropics/claude-code
@@ -1016,7 +1020,7 @@ EOF
 
     # Section Agents Disponibles
     cat >> "$output_file" << 'EOF'
-## Agents Disponibles (85 agents)
+## Agents Disponibles (109 commandes, 47 agents)
 
 | Catégorie | Commandes |
 |-----------|-----------|
@@ -1283,7 +1287,7 @@ clean_claude_dirs() {
     info "Nettoyage des anciens fichiers Claude..."
 
     # Liste des sous-dossiers à nettoyer
-    local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles")
+    local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles" "templates")
 
     for subdir in "${dirs_to_clean[@]}"; do
         if [[ -d "$dir/.claude/$subdir" ]]; then
@@ -1336,6 +1340,12 @@ create_project() {
         cp -r "$SOCLE_DIR/.claude/output-styles/"* .claude/output-styles/
     fi
 
+    # Copier les templates
+    if [[ -d "$SOCLE_DIR/.claude/templates" ]]; then
+        mkdir -p .claude/templates
+        cp -r "$SOCLE_DIR/.claude/templates/"* .claude/templates/
+    fi
+
     cp "$SOCLE_DIR/.claude/settings.json" .claude/
 
     # Copier les skills
@@ -1343,7 +1353,7 @@ create_project() {
         mkdir -p .claude/skills
         cp -r "$SOCLE_DIR/.claude/skills/"* .claude/skills/
     fi
-    success "Commandes Claude installées (88 agents, 14 subagents, 9 skills, 8 rules)"
+    success "Commandes Claude installées (109 commandes, 47 agents, 29 skills)"
 
     # Générer ou copier CLAUDE.md
     if [[ ! -f "CLAUDE.md" ]]; then
