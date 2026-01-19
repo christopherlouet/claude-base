@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Catalogue des Agents
 
-> **47 sub-agents** avec contexte isole pour des taches autonomes
+> **48 sub-agents** avec contexte isole pour des taches autonomes
 
 <Stats items={[
   { number: 22, label: 'Agents Haiku' },
-  { number: 25, label: 'Agents Sonnet' },
-  { number: 47, label: 'Total' },
+  { number: 26, label: 'Agents Sonnet' },
+  { number: 48, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Agent ?
@@ -87,6 +87,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
 | [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
 | [`ops-infra-code`](/docs/agents/ops-infra-code) | Infrastructure as Code (Terraform, OpenTofu). Creer des modul... | Read, Grep, Glob... |
+| [`ops-proxmox`](/docs/agents/ops-proxmox) | Gestion d'infrastructure Proxmox VE (VMs, LXC, storage, reseau... | Read, Grep, Glob... |
 | [`qa-security`](/docs/agents/qa-security) | Audit de securite approfondi base sur OWASP Top 10. | Read, Grep, Glob... |
 
 
