@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalogue des 37 sub-agents claude-socle"
+description: "Catalogue des 47 sub-agents claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Catalogue des Agents
 
-> **45 sub-agents** avec contexte isole pour des taches autonomes
+> **47 sub-agents** avec contexte isole pour des taches autonomes
 
 <Stats items={[
   { number: 22, label: 'Agents Haiku' },
-  { number: 23, label: 'Agents Sonnet' },
-  { number: 45, label: 'Total' },
+  { number: 25, label: 'Agents Sonnet' },
+  { number: 47, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Agent ?
@@ -58,7 +58,7 @@ Agents rapides et economiques pour les taches simples.
 | [`qa-responsive`](/docs/agents/qa-responsive) | Audit de la conception responsive et de l'experience mobile. | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | Tu es en mode EXPLORATION. Analyse le codebase sans jamais m... | Read, Grep, Glob |
 
-### Sonnet (23 agents)
+### Sonnet (24 agents)
 
 Agents pour les taches complexes necessitant une analyse approfondie.
 
@@ -86,6 +86,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet d'un projet couvrant securite, RGPD, a... | Read, Grep, Glob... |
 | [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
 | [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
+| [`ops-infra-code`](/docs/agents/ops-infra-code) | Infrastructure as Code (Terraform, OpenTofu). Creer des modul... | Read, Grep, Glob... |
 | [`qa-security`](/docs/agents/qa-security) | Audit de securite approfondi base sur OWASP Top 10. | Read, Grep, Glob... |
 
 

@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: Matrice des Agents
-description: Liste complete des 45 agents
+description: Liste complete des 47 agents
 ---
 
 # Matrice des Agents
 
-> **45 sub-agents** avec modele et outils
+> **47 sub-agents** avec modele et outils
 
 ## Par modele
 
@@ -47,6 +47,7 @@ description: Liste complete des 45 agents
 | `ops-database` | Schema DB | Read, Grep, Glob |
 | `ops-docker` | Docker | Read, Grep, Glob |
 | `ops-monitoring` | Monitoring | Read, Grep, Glob |
+| `ops-infra-code` | Infrastructure as Code (Terraform) | Read, Grep, Glob, Edit, Write, Bash |
 
 ### Sonnet (Complexe/Analyse)
 
@@ -90,6 +91,7 @@ description: Liste complete des 45 agents
 | `ops-database` | haiku | Schema et migrations |
 | `ops-docker` | haiku | Dockerisation |
 | `ops-monitoring` | haiku | Monitoring et alertes |
+| `ops-infra-code` | sonnet | Infrastructure as Code (Terraform, OpenTofu) |
 
 ### Developpement
 

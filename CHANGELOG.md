@@ -9,6 +9,38 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.5.0] - 2025-01-19
+
+### Ajouté
+- **Proxmox Infrastructure Support**
+  - Nouvelle commande `/ops-proxmox` : Gestion complète Proxmox VE (VMs, LXC, réseau, stockage, backup)
+  - Nouvel agent `ops-proxmox` : Provisioning infrastructure Proxmox avec Terraform
+  - Nouveaux templates Terraform dans `.claude/templates/proxmox/` :
+    - `provider-template.tf` : Configuration provider bpg/proxmox
+    - `vm-module-template.tf` : Module VM QEMU/KVM avec cloud-init
+    - `lxc-module-template.tf` : Module conteneur LXC
+    - `infrastructure-template.tf` : Infrastructure complète multi-VMs/LXC
+- **Infrastructure as Code**
+  - Nouveau skill `infrastructure-as-code` : Terraform/OpenTofu avec best practices
+  - Nouvel agent `ops-infra-code` : Création de modules Terraform, gestion state, HCL idiomatique
+- **Scripts**
+  - `install.sh` : Copie maintenant agents, rules, output-styles, templates
+  - `new-project.sh` : Inclut templates et compteurs mis à jour
+  - `update.sh` : Support des fichiers `.tf`, `.yaml`, `.yml`, `.json` pour les templates
+
+### Corrigé
+- Synchronisation des compteurs dans toute la documentation (109 commandes, 47 agents, 29 skills)
+- `learn.sh` : Correction du nombre d'agents (était 85, maintenant 47)
+- Documentation Docusaurus : Tous les compteurs mis à jour
+
+### Statistiques
+- Commands: 109 (était 108)
+- Sub-Agents: 47 (était 45)
+- Skills: 29 (était 27)
+- Templates: 7 (nouveau dossier proxmox avec 4 templates)
+
+---
+
 ## [1.4.1] - 2025-01-18
 
 ### Ajouté
