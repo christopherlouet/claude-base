@@ -9,6 +9,23 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.7.0] - 2025-01-20
+
+### Ajouté
+- **Option `--path` pour `new-project.sh`**
+  - Permet de spécifier le dossier parent où créer le projet
+  - Exemple : `./scripts/new-project.sh --path ~/projects mon-app`
+  - Crée automatiquement le dossier parent s'il n'existe pas (avec confirmation)
+  - Mode interactif : demande le dossier si non spécifié
+
+### Corrigé
+- **Synchronisation des compteurs dans les scripts**
+  - `scripts/new-project.sh` : Compteurs mis à jour (111 commandes, 51 agents, 32 skills)
+  - `scripts/install.sh` : Compteurs synchronisés
+  - `scripts/learn.sh` : Compteurs synchronisés
+
+---
+
 ## [1.6.1] - 2025-01-20
 
 ### Ajouté
