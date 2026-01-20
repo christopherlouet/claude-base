@@ -9,6 +9,51 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.8.0] - 2026-01-20
+
+### Ajouté
+- **8 tutoriels progressifs** (`docs/tutorials/`)
+  - 01 - Premier projet : workflow de base (débutant)
+  - 02 - Feature React : composant et hook complets (débutant)
+  - 03 - API REST Node.js : TDD et documentation OpenAPI (intermédiaire)
+  - 04 - Flutter + Supabase : app mobile avec backend (intermédiaire)
+  - 05 - Audit de sécurité : OWASP Top 10 (intermédiaire)
+  - 06 - Pipeline CI/CD : GitHub Actions (intermédiaire)
+  - 07 - Refactoring Legacy : approche méthodique (avancé)
+  - 08 - Infrastructure Proxmox : Terraform et monitoring (avancé)
+
+- **Guides utilisateur** (`docs/guides/`)
+  - `faq.md` : 20+ questions fréquentes avec réponses détaillées
+  - `troubleshooting.md` : 15+ problèmes courants et solutions
+  - `migration.md` : guide complet de migration vers claude-socle
+
+- **12 exemples de code** (`docs/examples/`)
+  - Web : React component, custom hook, Next.js API route
+  - Mobile : Flutter screen (Clean Architecture), BLoC pattern
+  - API : REST endpoint, GraphQL resolver, tRPC procedure
+  - Ops : Docker multi-stage, CI/CD pipeline, Terraform module, Proxmox VM
+
+- **Composants React Docusaurus**
+  - `TutorialCard.tsx` : cartes de tutoriel avec durée et difficulté
+  - `DifficultyBadge.tsx` : badges beginner/intermediate/advanced
+
+- **Diagrammes Mermaid**
+  - Workflow principal dans `cheatsheet.md`
+  - Arbre de décision dans `choosing-workflow.md`
+  - Séquence dans `explore-plan-code-commit.md`
+  - Vue d'ensemble architecture dans `intro/architecture.md`
+
+### Modifié
+- **Skill infrastructure-as-code** : suppression des liens vers fichiers de référence inexistants
+- **Sidebars** : ajout des tutoriels, exemples et guides
+
+### Corrigé
+- Liens internes dans les tutoriels (suppression préfixes numériques des IDs)
+- Lien vers agent `qa-tech-debt` (était incorrectement lié à commands)
+- Lien vers guide ops (remplacé par exemples)
+
+---
+
 ## [1.7.0] - 2025-01-20
 
 ### Ajouté
