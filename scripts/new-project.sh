@@ -24,6 +24,7 @@ check_base_requirements
 PROJECT_NAME=""
 PROJECT_TYPE=""
 PROJECT_PATH=""
+PARENT_PATH=""
 EXISTING_PROJECT=false
 INCLUDE_CICD=false
 INCLUDE_HOOKS=false
@@ -73,6 +74,7 @@ ${BOLD}OPTIONS${NC}
     -v, --version       Affiche la version
     -y, --yes           Mode non-interactif (accepte les valeurs par défaut)
     -t, --type TYPE     Force le type de projet (react, vue, node-api, python, go, rust, java, fullstack, generic)
+    -p, --path CHEMIN   Dossier parent où créer le projet (défaut: répertoire courant)
     --ci                Inclut GitHub Actions (CI/CD)
     --hooks             Inclut pre-commit hooks (husky)
     --mcp               Inclut configuration MCP
@@ -83,14 +85,17 @@ ${BOLD}EXEMPLES${NC}
     # Nouveau projet interactif
     $(basename "$0")
 
+    # Nouveau projet dans un dossier spécifique
+    $(basename "$0") --path ~/projects
+
     # Configurer un projet existant
     $(basename "$0") ./mon-projet
 
     # Mode non-interactif avec détection auto
     $(basename "$0") -y ./mon-projet
 
-    # Nouveau projet React avec CI/CD
-    $(basename "$0") -y -t react --ci ./nouveau-projet
+    # Nouveau projet React avec CI/CD dans un dossier spécifique
+    $(basename "$0") -y -t react --ci --path /var/www mon-app
 
     # Tout inclure
     $(basename "$0") -y --all ./mon-projet
@@ -148,6 +153,10 @@ parse_args() {
                 ;;
             -t|--type)
                 FORCE_TYPE="$2"
+                shift 2
+                ;;
+            -p|--path)
+                PARENT_PATH="$2"
                 shift 2
                 ;;
             --ci)
@@ -1057,6 +1066,75 @@ print_banner() {
     echo -e "${NC}"
 }
 
+get_project_path() {
+    # Si --path a été fourni, valider et utiliser
+    if [[ -n "$PARENT_PATH" ]]; then
+        # Convertir en chemin absolu
+        if [[ "$PARENT_PATH" = /* ]]; then
+            PARENT_PATH="$PARENT_PATH"
+        else
+            PARENT_PATH="$(cd "$PWD" && cd "$PARENT_PATH" 2>/dev/null && pwd)" || PARENT_PATH="$PWD/$PARENT_PATH"
+        fi
+
+        # Créer le dossier parent s'il n'existe pas
+        if [[ ! -d "$PARENT_PATH" ]]; then
+            if $NON_INTERACTIVE; then
+                mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
+            else
+                warning "Le dossier '$PARENT_PATH' n'existe pas"
+                prompt "Voulez-vous le créer? (Y/n)"
+                read -r -n 1 CREATE_PARENT
+                echo
+                if [[ ! $CREATE_PARENT =~ ^[Nn]$ ]]; then
+                    mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
+                    success "Dossier créé: $PARENT_PATH"
+                else
+                    error "Dossier parent requis pour créer le projet"
+                fi
+            fi
+        fi
+        return
+    fi
+
+    # Mode interactif : demander le chemin
+    if ! $NON_INTERACTIVE; then
+        echo ""
+        prompt "Dossier où créer le projet (défaut: répertoire courant):"
+        read -r INPUT_PATH
+
+        if [[ -n "$INPUT_PATH" ]]; then
+            # Expansion du tilde
+            INPUT_PATH="${INPUT_PATH/#\~/$HOME}"
+
+            # Convertir en chemin absolu
+            if [[ "$INPUT_PATH" = /* ]]; then
+                PARENT_PATH="$INPUT_PATH"
+            else
+                PARENT_PATH="$PWD/$INPUT_PATH"
+            fi
+
+            # Créer si n'existe pas
+            if [[ ! -d "$PARENT_PATH" ]]; then
+                warning "Le dossier '$PARENT_PATH' n'existe pas"
+                prompt "Voulez-vous le créer? (Y/n)"
+                read -r -n 1 CREATE_PARENT
+                echo
+                if [[ ! $CREATE_PARENT =~ ^[Nn]$ ]]; then
+                    mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
+                    success "Dossier créé: $PARENT_PATH"
+                else
+                    PARENT_PATH="$PWD"
+                    info "Utilisation du répertoire courant"
+                fi
+            fi
+        else
+            PARENT_PATH="$PWD"
+        fi
+    else
+        PARENT_PATH="$PWD"
+    fi
+}
+
 get_project_name() {
     if $EXISTING_PROJECT; then
         PROJECT_NAME=$(basename "$PROJECT_PATH")
@@ -1064,6 +1142,9 @@ get_project_name() {
         echo ""
         return
     fi
+
+    # D'abord, obtenir le chemin parent
+    get_project_path
 
     while true; do
         prompt "Nom du projet (ex: my-awesome-app):"
@@ -1079,10 +1160,10 @@ get_project_name() {
             continue
         fi
 
-        PROJECT_PATH="${PWD}/${PROJECT_NAME}"
+        PROJECT_PATH="${PARENT_PATH}/${PROJECT_NAME}"
 
         if [[ -d "$PROJECT_PATH" ]]; then
-            warning "Le dossier '$PROJECT_NAME' existe déjà"
+            warning "Le dossier '$PROJECT_PATH' existe déjà"
             prompt "Voulez-vous l'utiliser quand même? (y/N)"
             read -r -n 1 USE_EXISTING
             echo
@@ -1701,7 +1782,34 @@ main() {
 
     # Vérifier si un chemin est passé en argument
     if [[ -n "$PROJECT_PATH" ]]; then
-        if [[ -d "$PROJECT_PATH" ]]; then
+        # Si --path est aussi fourni, PROJECT_PATH est le nom du projet
+        if [[ -n "$PARENT_PATH" ]]; then
+            PROJECT_NAME="$PROJECT_PATH"
+            # Valider le nom du projet
+            if [[ ! "$PROJECT_NAME" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]]; then
+                error "Le nom du projet doit commencer par une lettre et contenir uniquement lettres, chiffres, - et _"
+            fi
+            # Résoudre le chemin parent
+            if [[ "$PARENT_PATH" = /* ]]; then
+                PARENT_PATH="$PARENT_PATH"
+            else
+                PARENT_PATH="$(cd "$PWD" && cd "$PARENT_PATH" 2>/dev/null && pwd)" || PARENT_PATH="$PWD/$PARENT_PATH"
+            fi
+            # Créer le dossier parent si nécessaire
+            if [[ ! -d "$PARENT_PATH" ]]; then
+                mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
+            fi
+            PROJECT_PATH="${PARENT_PATH}/${PROJECT_NAME}"
+            if [[ -d "$PROJECT_PATH" ]]; then
+                EXISTING_PROJECT=true
+                PROJECT_PATH="$(cd "$PROJECT_PATH" && pwd)"
+                info "Analyse du projet existant: $PROJECT_PATH"
+                echo ""
+                detect_stack "$PROJECT_PATH"
+            else
+                info "Création du nouveau projet: $PROJECT_PATH"
+            fi
+        elif [[ -d "$PROJECT_PATH" ]]; then
             PROJECT_PATH="$(cd "$PROJECT_PATH" && pwd)"
             EXISTING_PROJECT=true
             info "Analyse du projet existant: $PROJECT_PATH"
@@ -1731,7 +1839,12 @@ main() {
                 PROJECT_NAME=$(basename "$PROJECT_PATH")
             else
                 PROJECT_NAME="new-project"
-                PROJECT_PATH="${PWD}/${PROJECT_NAME}"
+                # Utiliser PARENT_PATH si fourni, sinon PWD
+                local base_path="${PARENT_PATH:-$PWD}"
+                if [[ -n "$PARENT_PATH" ]] && [[ ! -d "$PARENT_PATH" ]]; then
+                    mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
+                fi
+                PROJECT_PATH="${base_path}/${PROJECT_NAME}"
                 mkdir -p "$PROJECT_PATH"
             fi
         fi
