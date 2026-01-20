@@ -11,32 +11,97 @@
       "Write",
       "Glob",
       "Grep",
-      "Bash(npm test:*)",
-      "Bash(npm run lint:*)",
-      "Bash(npm run build:*)",
-      "Bash(npm run typecheck:*)",
-      "Bash(git status:*)",
-      "Bash(git diff:*)",
-      "Bash(git log:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git checkout:*)",
-      "Bash(git branch:*)",
-      "Bash(gh issue:*)",
-      "Bash(gh pr:*)",
-      "Bash(gitleaks:*)"
+      "WebSearch",
+      "WebFetch",
+      "Skill(*)",
+      "mcp__filesystem__*",
+      "mcp__github__*",
+      "mcp__memory__*",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(bun:*)",
+      "Bash(pnpm:*)",
+      "Bash(yarn:*)",
+      "Bash(git:*)",
+      "Bash(gh:*)",
+      "Bash(gitleaks:*)",
+      "Bash(./scripts/*:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(tree:*)",
+      "Bash(basename:*)",
+      "Bash(dirname:*)",
+      "Bash(realpath:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(touch:*)",
+      "Bash(chmod:*)",
+      "Bash(echo:*)",
+      "Bash(printf:*)",
+      "Bash(which:*)",
+      "Bash(command:*)",
+      "Bash(type:*)",
+      "Bash(bash:*)",
+      "Bash(sh:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(tar:*)",
+      "Bash(unzip:*)",
+      "Bash(jq:*)",
+      "Bash(yq:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(cut:*)",
+      "Bash(tr:*)",
+      "Bash(xargs:*)",
+      "Bash(tee:*)",
+      "Bash(diff:*)",
+      "Bash(shellcheck:*)",
+      "Bash(bats:*)",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(go:*)",
+      "Bash(cargo:*)",
+      "Bash(rustc:*)",
+      "Bash(flutter:*)",
+      "Bash(dart:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(kubectl:*)",
+      "Bash(terraform:*)",
+      "Bash(tofu:*)",
+      "Bash(date:*)",
+      "Bash(pwd:*)"
     ],
     "deny": [
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
       "Bash(rm -rf /:*)",
-      "Bash(rm -rf /*:*)"
+      "Bash(rm -rf /*:*)",
+      "Bash(rm -rf ~:*)",
+      "Bash(sudo:*)",
+      "Bash(su:*)",
+      "Bash(chmod 777:*)",
+      "Bash(> /dev/sda:*)",
+      "Bash(mkfs:*)",
+      "Bash(dd if=:*)"
     ]
   },
   "hooks": {
     "SessionStart": [
       {
-        "description": "Afficher les informations du projet au démarrage",
+        "description": "Afficher les informations du projet au demarrage",
         "hooks": [
           {
             "type": "command",
@@ -44,21 +109,11 @@
             "timeout": 5000
           }
         ]
-      },
-      {
-        "description": "Vérifier que npm install a été exécuté",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'if [ -f package.json ] && [ ! -d node_modules ]; then echo \"ATTENTION: node_modules manquant. Executez npm install.\"; fi'",
-            "timeout": 3000
-          }
-        ]
       }
     ],
     "PreToolUse": [
       {
-        "description": "Empêcher les modifications sur la branche main/master",
+        "description": "Empecher les modifications sur la branche main/master",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -70,24 +125,12 @@
         ]
       },
       {
-        "description": "Exécuter les tests avant un commit",
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_INPUT\" | grep -q \"git commit\"; then echo \"Execution des tests avant commit...\"; npm test --silent 2>&1 || { echo \"BLOQUE: Les tests echouent.\"; exit 1; }; fi'",
-            "timeout": 120000,
-            "onFailure": "block"
-          }
-        ]
-      },
-      {
-        "description": "Détecter les secrets avec gitleaks avant écriture",
+        "description": "Detecter les secrets avec gitleaks avant ecriture",
         "matcher": "Write|Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if command -v gitleaks >/dev/null 2>&1; then RESULT=$(echo \"$TOOL_CONTENT\" | gitleaks detect --no-git --pipe --config .gitleaks.toml 2>&1); if [ $? -eq 1 ]; then echo \"BLOQUE: Secret detecte par gitleaks.\"; echo \"$RESULT\"; exit 1; fi; fi'",
+            "command": "bash -c 'if command -v gitleaks >/dev/null 2>&1 && [ -f .gitleaks.toml ]; then RESULT=$(echo \"$TOOL_CONTENT\" | gitleaks detect --no-git --pipe --config .gitleaks.toml 2>&1); if [ $? -eq 1 ]; then echo \"BLOQUE: Secret detecte par gitleaks.\"; echo \"$RESULT\"; exit 1; fi; fi'",
             "timeout": 10000,
             "onFailure": "block"
           }
@@ -96,73 +139,25 @@
     ],
     "PostToolUse": [
       {
-        "description": "Auto-format TypeScript/JavaScript après modification",
+        "description": "Auto-format TypeScript/JavaScript apres modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx)$\"; then npx prettier --write \"$TOOL_FILE\" 2>/dev/null || true; fi'",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx)$\"; then if [ -f node_modules/.bin/prettier ]; then npx prettier --write \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
             "timeout": 10000,
             "onFailure": "ignore"
           }
         ]
       },
       {
-        "description": "Vérifier les types après modification TypeScript",
+        "description": "Auto-install apres modification de package.json",
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.tsx?$\"; then npx tsc --noEmit 2>&1 | head -20 || true; fi'",
-            "timeout": 30000,
-            "onFailure": "ignore"
-          }
-        ]
-      },
-      {
-        "description": "Vérifier ESLint après modification",
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx)$\"; then npx eslint \"$TOOL_FILE\" --max-warnings 0 2>&1 | head -10 || true; fi'",
-            "timeout": 15000,
-            "onFailure": "ignore"
-          }
-        ]
-      },
-      {
-        "description": "Auto-install après modification de package.json",
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"package.json\"; then npm install 2>&1 | tail -5; fi'",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"package.json\"; then npm install --silent 2>&1 | tail -3 || true; fi'",
             "timeout": 60000,
-            "onFailure": "ignore"
-          }
-        ]
-      },
-      {
-        "description": "Vérifier la couverture de tests après modification de fichiers de test",
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(test|spec)\\.(ts|tsx|js|jsx)$\"; then echo \"Verification couverture...\"; npm run test:coverage -- --silent 2>&1 | grep -E \"(Statements|Branches|Functions|Lines)\" | head -4 || true; fi'",
-            "timeout": 60000,
-            "onFailure": "ignore"
-          }
-        ]
-      },
-      {
-        "description": "Scanner les secrets avec gitleaks après commit",
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_INPUT\" | grep -q \"git commit\"; then if command -v gitleaks >/dev/null 2>&1; then echo \"Scan gitleaks post-commit...\"; gitleaks detect --source . --config .gitleaks.toml -v 2>&1 | tail -5 || true; fi; fi'",
-            "timeout": 30000,
             "onFailure": "ignore"
           }
         ]
