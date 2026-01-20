@@ -14,6 +14,42 @@
 | Auth | NextAuth, Clerk, Supabase Auth |
 | Deploy | Vercel, Netlify, AWS, Railway |
 
+## Architecture Recommandee
+
+### React/Next.js
+
+```
+src/
+├── app/                  # Next.js App Router (pages et layouts)
+│   ├── (auth)/          # Groupe de routes auth
+│   ├── (dashboard)/     # Groupe de routes dashboard
+│   └── api/             # API Routes
+├── components/          # Composants UI reutilisables
+│   ├── ui/              # Composants primitifs (Button, Input, Card)
+│   └── features/        # Composants metier (UserCard, ProductList)
+├── hooks/               # Custom hooks React
+├── lib/                 # Utilitaires et configurations
+├── services/            # Logique metier et appels API
+├── stores/              # State management (Zustand/Redux)
+├── types/               # Types TypeScript
+└── utils/               # Fonctions utilitaires pures
+```
+
+### Vue.js
+
+```
+src/
+├── views/               # Pages/vues principales
+├── components/          # Composants reutilisables
+│   ├── base/            # Composants de base
+│   └── features/        # Composants metier
+├── composables/         # Logique reutilisable (hooks Vue)
+├── stores/              # Pinia stores
+├── services/            # Appels API
+├── types/               # Types TypeScript
+└── utils/               # Utilitaires
+```
+
 ## Workflow Recommande
 
 ```

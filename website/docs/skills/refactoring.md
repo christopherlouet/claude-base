@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 27
 title: "refactoring"
 description: "Refactoring de code pour ameliorer la qualite. Declencher quand l'utilisateur veut nettoyer, restructurer, ou ameliorer du code existant."
 tags:

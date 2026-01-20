@@ -1,5 +1,5 @@
 ---
-sidebar_position: 26
+sidebar_position: 29
 title: "security-audit"
 description: "Effectuer un audit de sécurité basé sur OWASP. Utiliser quand l'utilisateur veut vérifier la sécurité, chercher des vulnérabilités, ou avant un déploiement en production."
 tags:

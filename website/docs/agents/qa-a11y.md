@@ -1,5 +1,5 @@
 ---
-sidebar_position: 39
+sidebar_position: 44
 title: "qa-a11y"
 description: "Audit d'accessibilite selon les normes WCAG 2.1 niveau AA."
 tags:

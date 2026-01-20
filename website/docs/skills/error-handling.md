@@ -1,5 +1,5 @@
 ---
-sidebar_position: 12
+sidebar_position: 13
 title: "error-handling"
 description: "Strategie de gestion des erreurs. Declencher quand l'utilisateur veut implementer la gestion d'erreurs, exceptions, ou error boundaries."
 tags:

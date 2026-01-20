@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalogue des 47 sub-agents claude-socle"
+description: "Catalogue des 37 sub-agents claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Catalogue des Agents
 
-> **48 sub-agents** avec contexte isole pour des taches autonomes
+> **51 sub-agents** avec contexte isole pour des taches autonomes
 
 <Stats items={[
-  { number: 22, label: 'Agents Haiku' },
-  { number: 26, label: 'Agents Sonnet' },
-  { number: 48, label: 'Total' },
+  { number: 24, label: 'Agents Haiku' },
+  { number: 27, label: 'Agents Sonnet' },
+  { number: 51, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Agent ?
@@ -29,7 +29,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole :
 
 ## Agents par modele
 
-### Haiku (22 agents)
+### Haiku (24 agents)
 
 Agents rapides et economiques pour les taches simples.
 
@@ -46,6 +46,7 @@ Agents rapides et economiques pour les taches simples.
 | [`doc-explain`](/docs/agents/doc-explain) | Explication pedagogique de code complexe. | Read, Grep, Glob |
 | [`doc-generate`](/docs/agents/doc-generate) | Generation de documentation complete et maintenable. | Read, Grep, Glob... |
 | [`doc-onboard`](/docs/agents/doc-onboard) | Guide de decouverte et comprehension d'un codebase. | Read, Grep, Glob |
+| [`growth-localization`](/docs/agents/growth-localization) | Strategie de localisation et expansion internationale. | Read, Grep, Glob |
 | [`growth-seo`](/docs/agents/growth-seo) | Audit SEO technique et recommandations d'optimisation. | Read, Grep, Glob... |
 | [`legal-privacy-policy`](/docs/agents/legal-privacy-policy) | Creation de politique de confidentialite conforme RGPD. | Read, Grep, Glob... |
 | [`legal-terms-of-service`](/docs/agents/legal-terms-of-service) | Creation de Conditions Generales d'Utilisation conformes. | Read, Grep, Glob... |
@@ -56,9 +57,10 @@ Agents rapides et economiques pour les taches simples.
 | [`qa-a11y`](/docs/agents/qa-a11y) | Audit d'accessibilite selon les normes WCAG 2.1 niveau AA. | Read, Grep, Glob |
 | [`qa-coverage`](/docs/agents/qa-coverage) | Analyse de la couverture de tests et de la qualite des tests... | Read, Grep, Glob... |
 | [`qa-responsive`](/docs/agents/qa-responsive) | Audit de la conception responsive et de l'experience mobile. | Read, Grep, Glob |
+| [`qa-tech-debt`](/docs/agents/qa-tech-debt) | Identification et priorisation de la dette technique dans le... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | Tu es en mode EXPLORATION. Analyse le codebase sans jamais m... | Read, Grep, Glob |
 
-### Sonnet (24 agents)
+### Sonnet (27 agents)
 
 Agents pour les taches complexes necessitant une analyse approfondie.
 
@@ -67,6 +69,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`data-analytics`](/docs/agents/data-analytics) | Analyse de donnees et generation d'insights. | Read, Grep, Glob... |
 | [`data-modeling`](/docs/agents/data-modeling) | Conception de modeles de donnees pour analytics. | Read, Grep, Glob... |
 | [`data-pipeline`](/docs/agents/data-pipeline) | Conception et implementation de pipelines de donnees. | Read, Grep, Glob... |
+| [`dev-ai-integration`](/docs/agents/dev-ai-integration) | Integration de modeles de langage (LLM) et APIs IA dans les ... | Read, Grep, Glob... |
 | [`dev-component`](/docs/agents/dev-component) | Creation de composants UI modulaires et reutilisables. | Read, Grep, Glob... |
 | [`dev-debug`](/docs/agents/dev-debug) | Diagnostic et resolution de bugs de maniere methodique. | Read, Grep, Glob... |
 | [`dev-flutter`](/docs/agents/dev-flutter) | Developpement d'applications Flutter avec bonnes pratiques. | Read, Grep, Glob... |
@@ -82,12 +85,13 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`ops-ci`](/docs/agents/ops-ci) | Configuration de pipelines CI/CD complets. | Read, Grep, Glob... |
 | [`ops-database`](/docs/agents/ops-database) | Conception et gestion de bases de donnees. | Read, Grep, Glob... |
 | [`ops-docker`](/docs/agents/ops-docker) | Containerisation Docker optimisee pour la production. | Read, Grep, Glob... |
+| [`ops-infra-code`](/docs/agents/ops-infra-code) | Agent specialise pour l'Infrastructure as Code avec Terrafor... | Read, Grep, Glob... |
+| [`ops-migration`](/docs/agents/ops-migration) | Planification et execution de migrations techniques. | Read, Grep, Glob... |
 | [`ops-monitoring`](/docs/agents/ops-monitoring) | Instrumentation complete pour observabilite. | Read, Grep, Glob... |
+| [`ops-proxmox`](/docs/agents/ops-proxmox) | Gestion complète de l'infrastructure Proxmox VE : provisioni... | Read, Grep, Glob... |
 | [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet d'un projet couvrant securite, RGPD, a... | Read, Grep, Glob... |
 | [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
 | [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
-| [`ops-infra-code`](/docs/agents/ops-infra-code) | Infrastructure as Code (Terraform, OpenTofu). Creer des modul... | Read, Grep, Glob... |
-| [`ops-proxmox`](/docs/agents/ops-proxmox) | Gestion d'infrastructure Proxmox VE (VMs, LXC, storage, reseau... | Read, Grep, Glob... |
 | [`qa-security`](/docs/agents/qa-security) | Audit de securite approfondi base sur OWASP Top 10. | Read, Grep, Glob... |
 
 
@@ -145,6 +149,13 @@ Agents pour les taches complexes necessitant une analyse approfondie.
     href="/docs/agents/data-pipeline"
   />
   <AgentCard
+    name="dev-ai-integration"
+    description="Integration de modeles de langage (LLM) et APIs IA dans les applications."
+    model="sonnet"
+    tools={["Read","Grep","Glob","Bash"]}
+    href="/docs/agents/dev-ai-integration"
+  />
+  <AgentCard
     name="dev-component"
     description="Creation de composants UI modulaires et reutilisables."
     model="sonnet"
@@ -171,13 +182,6 @@ Agents pour les taches complexes necessitant une analyse approfondie.
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/dev-flutter"
-  />
-  <AgentCard
-    name="dev-prisma"
-    description="Prisma ORM pour bases de donnees type-safe."
-    model="haiku"
-    tools={["Read","Grep","Glob","Bash"]}
-    href="/docs/agents/dev-prisma"
   />
 </AgentGrid>
 

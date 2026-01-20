@@ -1,5 +1,5 @@
 ---
-sidebar_position: 26
+sidebar_position: 28
 title: "growth-seo"
 description: "Audit SEO technique et recommandations d'optimisation."
 tags:

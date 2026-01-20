@@ -1,5 +1,5 @@
 ---
-sidebar_position: 40
+sidebar_position: 45
 title: "qa-audit"
 description: "Audit qualite complet d'un projet couvrant securite, RGPD, accessibilite et performance."
 tags:
