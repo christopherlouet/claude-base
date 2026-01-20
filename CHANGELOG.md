@@ -9,6 +9,39 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.9.0] - 2026-01-20
+
+### Modifié
+- **Configuration settings.json optimisée**
+  - Permissions génériques avec wildcards (npm, git, docker, terraform, etc.)
+  - Support multi-stack : Node.js, Python, Go, Rust, Flutter, Docker, Kubernetes, Terraform
+  - Wildcards pour Skills (`Skill(*)`) et MCP tools (`mcp__*`)
+  - Scripts locaux via pattern relatif `Bash(./scripts/*:*)`
+  - Hooks conditionnels vérifiant l'existence des outils avant exécution
+
+### Supprimé
+- **Hooks redondants**
+  - Vérification npm install au démarrage
+  - TypeScript type-check après modification (bruit)
+  - ESLint check après modification (bruit)
+  - Couverture de tests après modification (bruit)
+  - Scan gitleaks post-commit (redondant avec PreToolUse)
+
+### Sécurité
+- **Deny list étendue**
+  - `git reset --hard` bloqué
+  - `rm -rf ~` bloqué
+  - `sudo` et `su` bloqués
+  - `chmod 777` bloqué
+  - Commandes destructives bas niveau bloquées (mkfs, dd)
+
+### Amélioré
+- **Portabilité** : Plus de chemins absolus, configuration universelle
+- **Moins d'interactions** : Permissions élargies réduisent les prompts
+- **Maintenance** : settings.local.json minimal (11 lignes vs 135)
+
+---
+
 ## [1.8.0] - 2026-01-20
 
 ### Ajouté
