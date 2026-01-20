@@ -1,27 +1,39 @@
 ---
 sidebar_position: 100
 title: /assistant
-description: Point d'entree unique claude-socle
-tags: [assistant, command]
+description: Point d'entree unique claude-socle (mode guide)
+tags: [assistant, command, orchestrator]
 ---
 
 # /assistant
 
 <span className="badge badge--assistant">ASSISTANT</span>
 
-> Point d'entree unique vers toutes les commandes, agents, skills et workflows
+> Point d'entree unique vers toutes les commandes, agents, skills et workflows (mode guide)
 
 ## Description
 
-L'assistant est le point d'entree unique de claude-socle. Il vous guide vers les bonnes commandes selon votre contexte et vos besoins.
+L'assistant est le point d'entree unique de claude-socle en **mode guide**. Il analyse votre demande, recommande un workflow adapte, et **attend votre confirmation** avant d'executer.
+
+Pour une execution automatique sans confirmation, utilisez [`/assistant-auto`](/docs/commands/assistant-auto).
+
+## Deux modes disponibles
+
+| Commande | Mode | Comportement |
+|----------|------|--------------|
+| **`/assistant`** | Guide | Analyse → Recommande → **Attend confirmation** |
+| `/assistant-auto` | Automatique | Analyse → Execute directement |
 
 ## Usage
 
 ```bash
 /assistant
 
-# Ou avec une question
+# Ou avec une demande
 /assistant "Comment ajouter une nouvelle feature ?"
+
+# Pour une execution directe (sans confirmation)
+/assistant-auto "Ajouter une feature d'authentification"
 ```
 
 ## Fonctionnalites
@@ -65,6 +77,8 @@ Il donne acces a :
 
 ## Voir aussi
 
+- [/assistant-auto](/docs/commands/assistant-auto) - Mode automatique (execution directe)
+- [Orchestrateur (concept)](/docs/concepts/orchestrator) - Documentation complete
 - [Workflows](/docs/workflow)
 - [Commands](/docs/commands)
 - [Quick Start](/docs/intro/quick-start)

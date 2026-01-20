@@ -667,7 +667,7 @@ Basé sur le contexte fourni, je dois:
    - Pour une tâche simple → commande directe
    - Pour une tâche complexe → workflow complet avec étapes
 4. **Mentionner** les agents/skills qui seront activés automatiquement si pertinent
-5. **Proposer** de lancer la première commande
+5. **Proposer** de lancer la première commande (attendre confirmation)
 
 ## Format de Réponse
 
@@ -701,6 +701,8 @@ Les éléments suivants seront activés automatiquement :
 ## Prêt à commencer ?
 
 Voulez-vous que je lance `/xxx` ?
+
+💡 **Astuce**: Utilisez `/assistant-auto "votre demande"` pour exécuter directement sans confirmation.
 ```
 
 ---
@@ -708,6 +710,8 @@ Voulez-vous que je lance `/xxx` ?
 ## Règles de l'Orchestrateur
 
 IMPORTANT: Toujours recommander `/work-explore` avant de modifier du code existant.
+
+IMPORTANT: Toujours ATTENDRE la confirmation de l'utilisateur avant d'exécuter.
 
 YOU MUST détecter le type de projet et adapter les recommandations.
 
@@ -717,8 +721,10 @@ YOU MUST utiliser les noms complets des commandes (`/work-explore`, pas `/explor
 
 YOU MUST proposer un workflow adapté à la complexité de la demande.
 
+YOU MUST mentionner `/assistant-auto` comme alternative pour l'exécution automatique.
+
 NEVER proposer de modifier du code sans avoir exploré le projet.
 
-NEVER ignorer les templates pour les tâches complexes (spec → plan → tasks).
+NEVER exécuter un workflow sans confirmation explicite de l'utilisateur.
 
 Think hard sur le workflow le plus adapté à la demande, au type de projet, et à la complexité.

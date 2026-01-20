@@ -10,78 +10,193 @@ description: Point d'entree unique qui orchestre commandes, agents et skills
 
 ## Qu'est-ce que l'Orchestrateur ?
 
-L'**orchestrateur** (commande `/assistant`) est le point d'entree unique de claude-socle. Il analyse votre demande, detecte le contexte de votre projet, et vous oriente vers les commandes, agents et skills les plus adaptes.
+L'**orchestrateur** est le point d'entree unique de claude-socle. Il analyse votre demande, detecte le contexte de votre projet, et vous oriente vers les commandes, agents et skills les plus adaptes.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      ORCHESTRATEUR                               │
-│                       /assistant                                 │
+│                        SOCLE CLAUDE CODE                        │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│    ┌─────────┐     ┌─────────┐     ┌─────────┐                 │
-│    │ Analyse │ ──▶ │ Detecte │ ──▶ │ Oriente │                 │
-│    │ demande │     │ contexte│     │  vers   │                 │
-│    └─────────┘     └─────────┘     └─────────┘                 │
-│                                         │                       │
-│         ┌───────────────────────────────┼───────────────────┐  │
-│         │                               │                   │  │
-│         ▼                               ▼                   ▼  │
-│    ┌─────────┐                    ┌─────────┐         ┌───────┐│
-│    │COMMANDS │                    │ AGENTS  │         │SKILLS ││
-│    │  (110)  │                    │  (51)   │         │ (32)  ││
-│    └─────────┘                    └─────────┘         └───────┘│
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
+│  │    (111)    │  │    (51)     │  │    (32)     │             │
+│  │             │  │             │  │             │             │
+│  │ Invocation  │  │ Delegation  │  │ Activation  │             │
+│  │  manuelle   │  │ automatique │  │ automatique │             │
+│  │   /xxx      │  │  par Claude │  │ par contexte│             │
+│  └─────────────┘  └─────────────┘  └─────────────┘             │
+│                                                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│  │  TEMPLATES  │  │    RULES    │  │   HOOKS     │             │
+│  │    (3)      │  │    (17)     │  │    (4)      │             │
+│  │             │  │             │  │             │             │
+│  │ Structures  │  │ Conventions │  │ Automation  │             │
+│  │ de fichiers │  │  par path   │  │ pre/post    │             │
+│  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Pourquoi utiliser l'Orchestrateur ?
+## Deux modes disponibles
 
-### 1. Simplification
+| Commande | Mode | Comportement |
+|----------|------|--------------|
+| `/assistant` | **Guide** | Analyse → Recommande → Attend confirmation |
+| `/assistant-auto` | **Automatique** | Analyse → Execute directement le workflow |
 
-Au lieu de memoriser 110 commandes, demandez simplement ce que vous voulez faire :
+### Mode Guide (`/assistant`)
+
+Pour les **nouveaux utilisateurs** ou quand vous voulez **valider** avant d'executer :
 
 ```bash
-# Au lieu de chercher la bonne commande...
-/assistant "Je veux ajouter une feature d'authentification"
+/assistant "Ajouter une feature d'authentification"
 
-# L'orchestrateur propose le workflow adapte :
-# 1. /work-explore - Comprendre le code existant
-# 2. /work-specify - Creer la specification
-# 3. /work-plan - Planifier l'implementation
-# 4. /dev-tdd - Developper avec tests
-# 5. /qa-security - Auditer la securite
-# 6. /work-pr - Creer la PR
+# Claude analyse et propose :
+# → Workflow recommande: /work-flow-feature
+# → "Voulez-vous que je lance ce workflow ?"
+# → Attend votre confirmation
 ```
 
-### 2. Detection automatique du contexte
+### Mode Automatique (`/assistant-auto`)
 
-L'orchestrateur detecte automatiquement :
+Pour les **utilisateurs avances** qui veulent une **execution immediate** :
 
-| Detection | Indicateurs | Actions proposees |
-|-----------|-------------|-------------------|
-| **Type de projet** | package.json, pubspec.yaml, go.mod... | Commandes adaptees au stack |
-| **Technologies** | React, Flutter, Python, Go... | Skills et agents specialises |
-| **Situation** | Bug, feature, release... | Workflow complet |
+```bash
+/assistant-auto "Ajouter une feature d'authentification"
 
-### 3. Recommandations intelligentes
+# Claude analyse et execute directement :
+# → Detecte: nouvelle feature
+# → Lance: /work-flow-feature "Ajouter une feature d'authentification"
+```
+
+## Detection automatique du contexte
+
+L'orchestrateur detecte automatiquement votre environnement :
+
+| Indicateur | Type de projet | Commandes recommandees |
+|------------|----------------|------------------------|
+| `package.json` + React/Next/Vue | **Web Frontend** | `/dev-component`, `/dev-hook`, `/dev-react-perf` |
+| `pubspec.yaml` + Flutter | **Mobile** | `/dev-flutter`, `/dev-supabase`, `/qa-mobile` |
+| `package.json` + Express/Fastify/NestJS | **API Node** | `/dev-api`, `/dev-graphql`, `/dev-trpc` |
+| `requirements.txt` / `pyproject.toml` | **Python** | `/dev-api`, `/dev-tdd` |
+| `go.mod` | **Go** | `/dev-api`, `/dev-tdd` |
+| `init.lua` / `.config/nvim` | **Neovim** | `/dev-neovim`, `/qa-neovim` |
+| Airflow/dbt/Spark | **Data** | `/data-pipeline`, `/data-modeling` |
+| `Dockerfile` / `docker-compose.yml` | **DevOps** | `/ops-docker`, `/ops-k8s` |
+| Proxmox / `bpg/proxmox` provider | **Infrastructure** | `/ops-proxmox`, `/ops-infra-code` |
+
+## Guide de decision rapide
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│ DETECTION                           RECOMMANDATION                      │
+│ JE VEUX...                              →  UTILISE                     │
 ├────────────────────────────────────────────────────────────────────────┤
 │                                                                        │
-│ package.json + React          ──▶   /dev-component, /dev-hook          │
-│ pubspec.yaml + Flutter        ──▶   /dev-flutter, /dev-supabase        │
-│ "bug" dans la demande         ──▶   /work-flow-bugfix                  │
-│ "release" dans la demande     ──▶   /work-flow-release                 │
-│ "audit" dans la demande       ──▶   /qa-audit                          │
+│ COMPRENDRE                                                             │
+│ Explorer un codebase                    →  /work-explore               │
+│ Decouvrir un nouveau projet             →  /doc-onboard                │
+│ Comprendre du code complexe             →  /doc-explain                │
+│                                                                        │
+│ PLANIFIER                                                              │
+│ Creer une specification                 →  /work-specify               │
+│ Planifier une implementation            →  /work-plan                  │
+│ Definir un MVP                          →  /biz-mvp                    │
+│                                                                        │
+│ DEVELOPPER                                                             │
+│ Ecrire du code avec tests               →  /dev-tdd                    │
+│ Creer un composant React/Vue            →  /dev-component              │
+│ Creer une API REST                      →  /dev-api                    │
+│ Creer un screen Flutter                 →  /dev-flutter                │
+│ Corriger un bug                         →  /dev-debug                  │
+│                                                                        │
+│ VERIFIER                                                               │
+│ Code review                             →  /qa-review                  │
+│ Audit de securite                       →  /qa-security                │
+│ Audit complet                           →  /qa-audit                   │
+│                                                                        │
+│ LIVRER                                                                 │
+│ Creer un commit                         →  /work-commit                │
+│ Creer une PR                            →  /work-pr                    │
+│ Publier une release                     →  /ops-release                │
+│                                                                        │
+│ DEPLOYER                                                               │
+│ Dockeriser                              →  /ops-docker                 │
+│ Infrastructure as Code                  →  /ops-infra-code             │
+│ CI/CD                                   →  /ops-ci                     │
 │                                                                        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Comment fonctionne l'Orchestrateur ?
+## Workflows par type de projet
 
-### Flux de decision
+### Web (React/Next.js/Vue)
+
+```
+/work-explore → /work-specify → /work-plan → /dev-component → /dev-tdd → /qa-review → /work-pr
+```
+
+### Mobile (Flutter)
+
+```
+/work-explore → /work-specify → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+```
+
+### API Backend (Node/Python/Go)
+
+```
+/work-explore → /work-specify → /work-plan → /dev-api → /dev-tdd → /qa-security → /doc-api-spec → /work-pr
+```
+
+### Infrastructure Proxmox
+
+```
+/work-explore → /ops-proxmox → /ops-monitoring → /ops-backup
+```
+
+## Sub-Agents actives automatiquement
+
+L'orchestrateur connait les 51 agents specialises et les active selon le contexte :
+
+| Contexte detecte | Agent active | Modele |
+|------------------|--------------|--------|
+| "Explorer le code" | `work-explore` | haiku |
+| "Audit securite", "OWASP" | `qa-security` | sonnet |
+| "Performance", "Core Web Vitals" | `qa-perf` | sonnet |
+| "Accessibilite", "WCAG" | `qa-a11y` | haiku |
+| "Bug", "Deboguer" | `dev-debug` | sonnet |
+| "Flutter", "Widget" | `dev-flutter` | sonnet |
+| "Terraform", "IaC" | `ops-infra-code` | sonnet |
+| "Proxmox", "VM", "LXC" | `ops-proxmox` | sonnet |
+| "Docker", "Container" | `ops-docker` | haiku |
+
+```
+Utilisateur: "Fais un audit de securite"
+     │
+     ▼
+Claude detecte: securite → delegue a qa-security agent
+     │
+     ▼
+Agent qa-security (contexte isole, lecture seule)
+     │
+     ▼
+Resultat renvoye a la conversation principale
+```
+
+## Skills declenches automatiquement
+
+Les 32 skills s'activent selon les mots-cles dans la conversation :
+
+| Mots-cles | Skill active | Action |
+|-----------|--------------|--------|
+| "TDD", "test first" | `test-driven-development` | Cycle Red-Green-Refactor |
+| "commit", "message" | `generating-commit-messages` | Conventional Commits |
+| "review", "code review" | `reviewing-code` | Revue approfondie |
+| "PR", "pull request" | `creating-pull-requests` | PR structuree |
+| "Terraform", "IaC" | `infrastructure-as-code` | Infrastructure as Code |
+| "Proxmox", "PVE" | `proxmox-infrastructure` | Gestion Proxmox |
+| "Docker", "Dockerfile" | `docker-containerization` | Containerisation |
+
+## Flux de decision
 
 ```
 Utilisateur: "/assistant Je veux corriger un bug de login"
@@ -116,33 +231,47 @@ Utilisateur: "/assistant Je veux corriger un bug de login"
     └─────────────────────────────────────┘
 ```
 
-### Integration avec l'ecosysteme
-
-L'orchestrateur connait et utilise tous les composants :
-
-| Composant | Utilisation par l'orchestrateur |
-|-----------|--------------------------------|
-| **Commands** | Propose les commandes adaptees au contexte |
-| **Agents** | Mentionne les agents qui seront actives automatiquement |
-| **Skills** | Indique les skills qui se declencheront |
-| **Templates** | Guide vers les templates pour les taches complexes |
-| **Workflows** | Recommande les workflows complets quand pertinent |
-
 ## Quand utiliser l'Orchestrateur ?
 
-### Utilisez `/assistant` quand :
+### Utilisez `/assistant` (mode guide) quand :
 
 - Vous etes **nouveau** sur claude-socle
 - Vous ne savez pas **quelle commande** utiliser
-- Vous voulez un **workflow complet** pour une tache
+- Vous voulez **valider** le workflow avant execution
 - Vous changez de **type de projet** (Web → Mobile par exemple)
 - Vous voulez une **vue d'ensemble** des options disponibles
+
+### Utilisez `/assistant-auto` (mode automatique) quand :
+
+- Vous etes **familier** avec claude-socle
+- Vous voulez une **execution immediate** sans confirmation
+- Vous faites des taches **repetitives** (features, bugfixes)
+- Vous preferez la **rapidite** a la validation
 
 ### Utilisez les commandes directes quand :
 
 - Vous connaissez deja la commande exacte
 - Vous voulez une action rapide et precise
 - Vous etes en milieu de workflow
+
+## Mapping automatique (`/assistant-auto`)
+
+| Votre demande contient... | Workflow execute |
+|---------------------------|------------------|
+| feature, ajouter, creer | `/work-flow-feature` |
+| bug, fix, corriger, erreur | `/work-flow-bugfix` |
+| release, version, tag | `/work-flow-release` |
+| lancement, MVP, produit | `/work-flow-launch` |
+| audit securite, OWASP | `/qa-security` |
+| audit complet, qualite | `/qa-audit` |
+| explorer, comprendre | `/work-explore` |
+| commit | `/work-commit` |
+| PR, pull request | `/work-pr` |
+| tests, TDD | `/dev-tdd` |
+| refactoring, nettoyer | `/dev-refactor` |
+| debug, deboguer | `/dev-debug` |
+| Docker, container | `/ops-docker` |
+| CI/CD, pipeline | `/ops-ci` |
 
 ## Exemples d'utilisation
 
@@ -220,10 +349,11 @@ L'orchestrateur est le **chef d'orchestre** qui :
 
 ## Bonnes pratiques
 
-1. **Commencez par l'orchestrateur** si vous etes nouveau
-2. **Soyez descriptif** dans vos demandes ("Je veux..." plutot que juste "auth")
-3. **Mentionnez le contexte** si pertinent ("pour l'app mobile", "en production")
-4. **Suivez les workflows proposes** pour des resultats optimaux
+1. **Commencez par `/assistant`** si vous etes nouveau (mode guide)
+2. **Passez a `/assistant-auto`** une fois familier avec les workflows
+3. **Soyez descriptif** dans vos demandes ("Je veux..." plutot que juste "auth")
+4. **Mentionnez le contexte** si pertinent ("pour l'app mobile", "en production")
+5. **Suivez les workflows proposes** pour des resultats optimaux
 
 ---
 
@@ -232,4 +362,5 @@ L'orchestrateur est le **chef d'orchestre** qui :
 - [Commands](/docs/concepts/commands) - Commandes manuelles
 - [Agents](/docs/concepts/agents) - Sub-agents autonomes
 - [Skills](/docs/concepts/skills) - Skills auto-declenches
-- [Reference /assistant](/docs/commands/assistant) - Documentation complete de la commande
+- [Reference /assistant](/docs/commands/assistant) - Mode guide (avec confirmation)
+- [Reference /assistant-auto](/docs/commands/assistant-auto) - Mode automatique (execution directe)
