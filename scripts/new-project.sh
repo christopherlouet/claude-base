@@ -62,7 +62,7 @@ ${BOLD}USAGE${NC}
 
 ${BOLD}DESCRIPTION${NC}
     Crée un nouveau projet ou configure un projet existant avec Claude Code.
-    Installe 109 commandes, 47 agents et 29 skills pour le workflow Explore → Plan → Code → Commit.
+    Installe 111 commandes, 51 agents et 32 skills pour le workflow Explore → Plan → Code → Commit.
 
 ${BOLD}ARGUMENTS${NC}
     CHEMIN              Chemin vers un projet existant à configurer (optionnel)
@@ -109,9 +109,9 @@ ${BOLD}TYPES DE PROJET${NC}
     generic     Autre / Générique
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
-    .claude/commands/       109 commandes Claude Code
-    .claude/skills/         29 skills spécialisés
-    .claude/agents/         47 agents avec contexte isolé
+    .claude/commands/       111 commandes Claude Code
+    .claude/skills/         32 skills spécialisés
+    .claude/agents/         51 agents avec contexte isolé
     .claude/rules/          Règles contextuelles par path
     .claude/output-styles/  Styles de sortie
     .claude/templates/      Templates (spec, Proxmox, etc.)
@@ -1020,7 +1020,7 @@ EOF
 
     # Section Agents Disponibles
     cat >> "$output_file" << 'EOF'
-## Agents Disponibles (109 commandes, 47 agents)
+## Agents Disponibles (111 commandes, 51 agents)
 
 | Catégorie | Commandes |
 |-----------|-----------|
@@ -1353,7 +1353,7 @@ create_project() {
         mkdir -p .claude/skills
         cp -r "$SOCLE_DIR/.claude/skills/"* .claude/skills/
     fi
-    success "Commandes Claude installées (109 commandes, 47 agents, 29 skills)"
+    success "Commandes Claude installées (111 commandes, 51 agents, 32 skills)"
 
     # Générer ou copier CLAUDE.md
     if [[ ! -f "CLAUDE.md" ]]; then
