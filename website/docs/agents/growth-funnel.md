@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 25
 title: "growth-funnel"
 description: "Analyse et optimisation des funnels de conversion."
 tags:

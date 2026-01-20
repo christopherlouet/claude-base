@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Skills"
-description: "Catalogue des 30 skills auto-declenches"
+description: "Catalogue des 27 skills auto-declenches"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **30 skills** auto-declenches par mots-cles
+> **32 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 30, label: 'Skills Fork' },
+  { number: 32, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 30, label: 'Total' },
+  { number: 32, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?
@@ -29,13 +29,14 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (30 skills)
+### Fork (32 skills)
 
 Skills avec contexte isole.
 
 | Skill | Description | Mots-cles |
 |-------|-------------|-----------|
 | [`api-development`](/docs/skills/api-development) | Développer et documenter une API REST ou GraphQL. ... | api, development, success |
+| [`api-mocking`](/docs/skills/api-mocking) | Configuration de mocks API pour les tests. Declenc... | api, mocking, mock api |
 | [`changelog-maintenance`](/docs/skills/changelog-maintenance) | Maintenance du CHANGELOG selon Keep a Changelog. D... | changelog, maintenance |
 | [`ci-cd-pipeline`](/docs/skills/ci-cd-pipeline) | Configuration de pipelines CI/CD. Declencher quand... | pipeline |
 | [`creating-pull-requests`](/docs/skills/creating-pull-requests) | Créer une Pull Request complète et bien documentée... | creating, pull, requests |
@@ -51,18 +52,20 @@ Skills avec contexte isole.
 | [`flutter-development`](/docs/skills/flutter-development) | Developpement Flutter avec Clean Architecture et B... | flutter, development |
 | [`generating-commit-messages`](/docs/skills/generating-commit-messages) | Génère des messages de commit clairs suivant Conve... | generating, commit, messages |
 | [`graphql-development`](/docs/skills/graphql-development) | Developpement d'APIs GraphQL. Declencher quand l'u... | graphql, development |
-| [`infrastructure-as-code`](/docs/skills/infrastructure-as-code) | Infrastructure as Code avec Terraform/OpenTofu. De... | Terraform, IaC, OpenTofu, module |
+| [`infrastructure-as-code`](/docs/skills/infrastructure-as-code) | Infrastructure as Code avec Terraform/OpenTofu. De... | infrastructure, code, aws_instance |
 | [`mobile-release`](/docs/skills/mobile-release) | Publication d'apps sur App Store et Google Play. D... | mobile, release, deploy to testflight |
-| [`proxmox-infrastructure`](/docs/skills/proxmox-infrastructure) | Infrastructure Proxmox VE avec Terraform (VMs, LXC... | Proxmox, PVE, LXC, VM, PBS |
 | [`monitoring-instrumentation`](/docs/skills/monitoring-instrumentation) | Instrumentation d'applications pour monitoring. De... | monitoring, instrumentation |
 | [`performance-optimization`](/docs/skills/performance-optimization) | Optimisation des performances d'applications. Decl... | performance, optimization, /photo.jpg |
 | [`planning-implementation`](/docs/skills/planning-implementation) | Planifier l'implémentation d'une fonctionnalité. U... | planning, implementation, pattern_similaire |
 | [`prompt-engineering`](/docs/skills/prompt-engineering) | Optimisation de prompts pour LLMs. Declencher quan... | prompt, engineering, instruction |
+| [`proxmox-infrastructure`](/docs/skills/proxmox-infrastructure) | Infrastructure Proxmox VE avec Terraform (VMs, LXC... | proxmox, infrastructure, pve |
 | [`react-performance`](/docs/skills/react-performance) | Optimisation des performances React/Next.js. Decle... | react, performance, /photo.jpg |
 | [`refactoring`](/docs/skills/refactoring) | Refactoring de code pour ameliorer la qualite. Dec... | refactoring |
 | [`reviewing-code`](/docs/skills/reviewing-code) | Effectuer une revue de code approfondie. Utiliser ... | reviewing, code |
 | [`security-audit`](/docs/skills/security-audit) | Effectuer un audit de sécurité basé sur OWASP. Uti... | security, audit, **/* |
+| [`state-management`](/docs/skills/state-management) | Patterns et implementation de state management. De... | state, management, state management |
 | [`supabase-development`](/docs/skills/supabase-development) | Developpement backend avec Supabase. Declencher qu... | supabase, development, users read own profile |
+| [`tech-debt-management`](/docs/skills/tech-debt-management) | Gestion et priorisation de la dette technique. Dec... | tech, debt, management |
 | [`test-driven-development`](/docs/skills/test-driven-development) | Développement TDD avec cycle Red-Green-Refactor. U... | test, driven, development |
 
 
@@ -76,6 +79,13 @@ Skills avec contexte isole.
     keywords={["api","development","success","data"]}
     context="fork"
     href="/docs/skills/api-development"
+  />
+  <SkillCard
+    name="api-mocking"
+    description="Configuration de mocks API pour les tests. Declencher quand l'utilisateur veut m"
+    keywords={["api","mocking","mock api","msw"]}
+    context="fork"
+    href="/docs/skills/api-mocking"
   />
   <SkillCard
     name="changelog-maintenance"
@@ -146,13 +156,6 @@ Skills avec contexte isole.
     keywords={["error","handling"]}
     context="fork"
     href="/docs/skills/error-handling"
-  />
-  <SkillCard
-    name="exploring-codebase"
-    description="Explorer et comprendre un codebase existant. Utiliser quand l'utilisateur veut c"
-    keywords={["exploring","codebase"]}
-    context="fork"
-    href="/docs/skills/exploring-codebase"
   />
 </SkillGrid>
 

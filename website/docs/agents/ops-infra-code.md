@@ -1,7 +1,7 @@
 ---
-sidebar_position: 46
+sidebar_position: 38
 title: "ops-infra-code"
-description: "Infrastructure as Code (Terraform, OpenTofu). Utiliser pour créer des modules, auditer l'infrastructure existante, ou configurer le state management."
+description: "Agent specialise pour l'Infrastructure as Code avec Terraform et OpenTofu."
 tags:
   - "agent"
   - "sonnet"
@@ -11,7 +11,7 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Infrastructure as Code (Terraform, OpenTofu). Utiliser pour créer des modules, auditer l'infrastructure existante, ou configurer le state management.
+> Agent specialise pour l'Infrastructure as Code avec Terraform et OpenTofu.
 
 ## Configuration
 
@@ -23,14 +23,20 @@ tags:
 | **Outils interdits** | _Aucun_ |
 | **Skills injectes** | `infrastructure-as-code` |
 
+## Description detaillee
+
+# Agent OPS-INFRA-CODE
+
+Agent specialise pour l'Infrastructure as Code avec Terraform et OpenTofu.
+
 ## Objectif
 
-Aider à :
-- Créer des modules Terraform/OpenTofu idiomatiques
+Aider a :
+- Creer des modules Terraform/OpenTofu idiomatiques
 - Auditer l'infrastructure existante
 - Configurer le state management (backend S3, etc.)
-- Implémenter les bonnes pratiques IaC
-- Écrire des tests pour modules
+- Implementer les bonnes pratiques IaC
+- Ecrire des tests pour modules
 
 ## Workflow d'Analyse
 
@@ -43,50 +49,50 @@ find . -name "*.tf" -o -name "*.tfvars"
 # Analyser la structure
 tree -I '.terraform|.git' --dirsfirst
 
-# Vérifier les versions
+# Verifier les versions
 grep -r "required_version" --include="*.tf"
 grep -r "required_providers" --include="*.tf"
 ```
 
 ### 2. Analyser le Code
 
-- Identifier les patterns utilisés
-- Vérifier les conventions de nommage
-- Évaluer la structure des modules
-- Détecter les anti-patterns
+- Identifier les patterns utilises
+- Verifier les conventions de nommage
+- Evaluer la structure des modules
+- Detecter les anti-patterns
 
-### 3. Proposer des Améliorations
+### 3. Proposer des Ameliorations
 
 - Migration vers features modernes (try(), optional(), etc.)
 - Restructuration en modules
 - Ajout de validation et tests
-- Sécurisation du state
+- Securisation du state
 
 ## Checklist Audit
 
 ### Structure
-- [ ] Séparation environnements / modules
+- [ ] Separation environnements / modules
 - [ ] Fichiers standards (main.tf, variables.tf, outputs.tf, versions.tf)
 - [ ] README.md avec documentation d'usage
-- [ ] Examples/ pour démonstration
+- [ ] Examples/ pour demonstration
 
 ### Code Quality
 - [ ] Variables avec description
 - [ ] Types explicites sur toutes les variables
 - [ ] Outputs avec description
-- [ ] Pas de valeurs hardcodées
+- [ ] Pas de valeurs hardcodees
 - [ ] Utilisation de locals pour calculs
 
-### Sécurité
+### Securite
 - [ ] Remote state avec chiffrement
 - [ ] Pas de secrets dans le code
 - [ ] Security groups restrictifs
-- [ ] Chiffrement activé sur ressources
+- [ ] Chiffrement active sur ressources
 
 ### Tests
-- [ ] Pre-commit hooks configurés
+- [ ] Pre-commit hooks configures
 - [ ] Tests natifs ou Terratest
-- [ ] Scanning sécurité (trivy/checkov)
+- [ ] Scanning securite (trivy/checkov)
 
 ## Templates
 
@@ -113,7 +119,7 @@ variable "name" {
 }
 
 variable "tags" {
-  description = "Tags à appliquer"
+  description = "Tags a appliquer"
   type        = map(string)
   default     = {}
 }
@@ -168,6 +174,14 @@ repos:
       - id: terraform_docs
 ```
 
+## Output Attendu
+
+1. **Analyse** : Rapport sur l'etat actuel de l'infrastructure
+2. **Recommandations** : Liste priorisee d'ameliorations
+3. **Code** : Modules ou configurations selon la demande
+4. **Tests** : Tests natifs ou Terratest selon le besoin
+5. **Documentation** : README et commentaires
+
 ## Commandes Utiles
 
 ```bash
@@ -176,7 +190,7 @@ terraform fmt -check -recursive
 terraform validate
 tflint --recursive
 
-# Sécurité
+# Securite
 trivy config .
 checkov -d .
 
@@ -189,23 +203,30 @@ terraform plan -out=tfplan
 terraform show -json tfplan | jq '.'
 ```
 
-## Output Attendu
-
-1. **Analyse** : Rapport sur l'état actuel de l'infrastructure
-2. **Recommandations** : Liste priorisée d'améliorations
-3. **Code** : Modules ou configurations selon la demande
-4. **Tests** : Tests natifs ou Terratest selon le besoin
-5. **Documentation** : README et commentaires
-
 ## Attribution
 
-Basé sur les bonnes pratiques de [terraform-skill](https://github.com/antonbabenko/terraform-skill) par Anton Babenko.
+Base sur les bonnes pratiques de [terraform-skill](https://github.com/antonbabenko/terraform-skill) par Anton Babenko.
 Ressources : [terraform-best-practices.com](https://terraform-best-practices.com)
+
+## Quand cet agent est-il utilise ?
+
+Cet agent est automatiquement delegue par Claude lorsque :
+- Une tache correspond a son domaine d'expertise
+- Le contexte isole est preferable
+- Les outils requis correspondent a sa configuration
+
+## Caracteristiques du modele sonnet
+
+
+**Sonnet** est optimise pour :
+- Taches complexes necessitant analyse
+- Equilibre performance/cout
+- Audits et diagnostics
+
 
 ---
 
 ## Voir aussi
 
-- [/ops-infra-code](/docs/commands/ops/ops-infra-code) - Commande associée
-- [Skill infrastructure-as-code](/docs/skills/infrastructure-as-code) - Skill auto-déclenché
-- [Agent ops-proxmox](/docs/agents/ops-proxmox) - Infrastructure Proxmox spécifique
+- [Retour aux agents](/docs/agents)
+- [Architecture](/docs/intro/architecture)

@@ -35,10 +35,11 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Les 8 concepts cles
+## Les 9 concepts cles
 
 | Concept | Description | Declenchement |
 |---------|-------------|---------------|
+| [**Orchestrateur**](/docs/concepts/orchestrator) | Point d'entree unique qui guide vers les bonnes ressources | `/assistant` |
 | [**Commands**](/docs/concepts/commands) | Instructions invoquees manuellement | `/nom-commande` |
 | [**Agents**](/docs/concepts/agents) | Sub-agents autonomes avec contexte isole | Delegation automatique |
 | [**Skills**](/docs/concepts/skills) | Comportements actives par mots-cles | Detection automatique |
@@ -140,11 +141,12 @@ Utilisateur tape: "Fais un audit de securite"
 
 ## Prochaines etapes
 
-1. **Nouveau sur Claude Code?** Commencez par [Commands](./commands)
-2. **Comprendre l'automatisation?** Lisez [Skills](./skills) et [Agents](./agents)
-3. **Personnaliser le comportement?** Explorez [Hooks](/docs/concepts/hooks) et [Rules](/docs/concepts/rules)
-4. **Etendre les capacites?** Decouvrez [MCP Servers](/docs/concepts/mcp-servers)
-5. **Structurer vos features?** Utilisez les [Templates](/docs/concepts/templates)
+1. **Nouveau sur Claude Code?** Commencez par l'[Orchestrateur](/docs/concepts/orchestrator) (`/assistant`)
+2. **Comprendre les commandes?** Lisez [Commands](./commands)
+3. **Comprendre l'automatisation?** Lisez [Skills](./skills) et [Agents](./agents)
+4. **Personnaliser le comportement?** Explorez [Hooks](/docs/concepts/hooks) et [Rules](/docs/concepts/rules)
+5. **Etendre les capacites?** Decouvrez [MCP Servers](/docs/concepts/mcp-servers)
+6. **Structurer vos features?** Utilisez les [Templates](/docs/concepts/templates)
 
 ---
 

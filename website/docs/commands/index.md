@@ -1,17 +1,17 @@
 ---
 sidebar_position: 1
 title: "Commands"
-description: "Catalogue des 109 commandes claude-socle"
+description: "Catalogue des 108 commandes claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
 
 # Catalogue des Commandes
 
-> **109 commandes** organisees en **10 domaines**
+> **110 commandes** organisees en **10 domaines**
 
 <Stats items={[
-  { number: 109, label: 'Commandes' },
+  { number: 110, label: 'Commandes' },
   { number: 10, label: 'Domaines' },
 ]} />
 
@@ -106,7 +106,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 
 
 
-### [OPS](/docs/commands/ops) (27)
+### [OPS](/docs/commands/ops) (29)
 
 > Operations (CI/CD, Docker, monitoring, GitFlow)
 
@@ -115,7 +115,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization)
 - [`/ops-database`](/docs/commands/ops/ops-database)
 - [`/ops-deps`](/docs/commands/ops/ops-deps)
-- [... et 22 autres](/docs/commands/ops)
+- [... et 24 autres](/docs/commands/ops)
 
 
 ### [QA](/docs/commands/qa) (12)

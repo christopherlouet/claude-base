@@ -1,5 +1,5 @@
 ---
-sidebar_position: 32
+sidebar_position: 34
 title: "ops-database"
 description: "Conception et gestion de bases de donnees."
 tags:

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: "changelog-maintenance"
 description: "Maintenance du CHANGELOG selon Keep a Changelog. Declencher quand l'utilisateur veut documenter les changements ou preparer une release."
 tags:

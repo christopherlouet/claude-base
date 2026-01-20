@@ -9,6 +9,46 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.6.0] - 2025-01-20
+
+### Ajouté
+- **4 nouveaux Agents** (total: 51 agents)
+  - `dev-ai-integration` : Intégration LLMs et APIs AI (OpenAI, Claude, Gemini)
+  - `growth-localization` : Stratégie de localisation et internationalisation multi-marchés
+  - `ops-migration` : Migrations de frameworks, versions et dépendances
+  - `qa-tech-debt` : Identification et priorisation de la dette technique
+- **3 nouveaux Skills** (total: 32 skills)
+  - `api-mocking` : Configuration de mocks API avec MSW pour les tests
+  - `state-management` : Patterns de state management (Redux, Zustand, Jotai)
+  - `tech-debt-management` : Gestion et priorisation de la dette technique
+- **1 nouvelle Command** (total: 110 commands)
+  - `/ops-rollback` : Procédure de rollback sécurisée (Git, Vercel, K8s, Docker)
+- **Documentation Docusaurus**
+  - Nouveau chapitre `concepts/orchestrator.md` : Documentation dédiée de `/assistant` comme point d'entrée
+  - `docs/README.md` : Index de navigation pour la documentation
+  - 9 concepts clés documentés (ajout de l'Orchestrateur)
+- **Guides améliorés**
+  - `WEB-GUIDE.md` : Ajout section Architecture (React/Next.js et Vue.js)
+  - `API-GUIDE.md` : Amélioration phase Testing avec objectifs de couverture
+
+### Modifié
+- **WHEN-TO-USE-WHICH-AGENT.md** : Guide de choix enrichi avec les 51 agents
+- **CLAUDE.md** : Mise à jour sections agents, skills et commands
+- **Concepts index** : L'Orchestrateur est maintenant le 1er concept recommandé aux nouveaux utilisateurs
+
+### Corrigé
+- Synchronisation de tous les compteurs dans la documentation (110 commandes, 51 agents, 32 skills)
+- Compteurs dans README.md, CHEATSHEET.md, et toute la documentation Docusaurus
+- Section legal agents tronquée dans CLAUDE.md
+
+### Statistiques
+- Commands: 110 (+1)
+- Sub-Agents: 51 (+4)
+- Skills: 32 (+3)
+- Concepts documentés: 9 (+1 Orchestrateur)
+
+---
+
 ## [1.5.0] - 2025-01-19
 
 ### Ajouté
