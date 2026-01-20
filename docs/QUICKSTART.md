@@ -75,7 +75,8 @@
 
 ## Aide
 
-- `/assistant` - Point d'entree intelligent qui guide vers les bonnes commandes
+- `/assistant` - Point d'entree intelligent qui guide vers les bonnes commandes (mode guide)
+- `/assistant-auto` - Execution automatique du workflow adapte (mode auto)
 - Voir [CLAUDE.md](../CLAUDE.md) pour la documentation complete
 - Voir [ARCHITECTURE.md](./ARCHITECTURE.md) pour comprendre Commands vs Agents vs Skills
 

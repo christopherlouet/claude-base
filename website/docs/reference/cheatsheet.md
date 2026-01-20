@@ -23,7 +23,8 @@ description: Aide-memoire rapide claude-socle
 
 | Commande | Usage |
 |----------|-------|
-| `/assistant` | Guide complet, aide au choix |
+| `/assistant` | Guide complet, aide au choix (avec confirmation) |
+| `/assistant-auto` | Execution automatique du workflow adapte |
 | `/work-explore` | Comprendre le code |
 | `/work-plan` | Planifier les changements |
 | `/dev-tdd` | Developper en TDD |
@@ -131,10 +132,10 @@ description: Aide-memoire rapide claude-socle
 
 | Type | Nombre | Declenchement |
 |------|--------|---------------|
-| Commands | 100 | Manuel (`/nom`) |
-| Agents | 37 | Automatique |
-| Skills | 24 | Mots-cles |
-| Rules | 15 | Par fichier |
+| Commands | 111 | Manuel (`/nom`) |
+| Agents | 51 | Automatique |
+| Skills | 32 | Mots-cles |
+| Rules | 17 | Par fichier |
 
 ## Modeles d'agents
 
@@ -158,11 +159,14 @@ Types: `feat`, `fix`, `refactor`, `test`, `docs`, `style`, `chore`, `perf`
 ## Aide
 
 ```bash
-# Point d'entree
+# Point d'entree (mode guide, avec confirmation)
 /assistant
 
 # Choisir le bon workflow
 /assistant "Comment faire X ?"
+
+# Execution automatique (utilisateurs avances)
+/assistant-auto "Ajouter une feature d'authentification"
 
 # Documentation
 https://christopherlouet.github.io/claude-socle/
@@ -170,4 +174,4 @@ https://christopherlouet.github.io/claude-socle/
 
 ---
 
-**claude-socle** | 108 Commands | 45 Agents | 27 Skills | 17 Rules
+**claude-socle** | 111 Commands | 51 Agents | 32 Skills | 17 Rules

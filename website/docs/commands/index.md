@@ -1,17 +1,17 @@
 ---
 sidebar_position: 1
 title: "Commands"
-description: "Catalogue des 108 commandes claude-socle"
+description: "Catalogue des 111 commandes claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
 
 # Catalogue des Commandes
 
-> **110 commandes** organisees en **10 domaines**
+> **111 commandes** organisees en **10 domaines** + l'orchestrateur
 
 <Stats items={[
-  { number: 110, label: 'Commandes' },
+  { number: 111, label: 'Commandes' },
   { number: 10, label: 'Domaines' },
 ]} />
 
@@ -25,14 +25,18 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 /qa-security
 ```
 
+## Orchestrateur (Point d'entree)
+
+> Le point d'entree unique qui vous guide vers les bonnes commandes
+
+| Commande | Mode | Description |
+|----------|------|-------------|
+| [`/assistant`](/docs/commands/assistant) | Guide | Analyse, recommande, **attend confirmation** |
+| [`/assistant-auto`](/docs/commands/assistant-auto) | Auto | Analyse et **execute directement** |
+
+Pour plus de details, voir [Orchestrateur (concept)](/docs/concepts/orchestrator).
+
 ## Domaines
-
-
-### [Autres](/docs/commands/other) (1)
-
-> Commandes diverses et orchestrateurs
-
-- [`/assistant`](/docs/commands/other/assistant)
 
 
 

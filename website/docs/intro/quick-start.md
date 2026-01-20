@@ -121,7 +121,8 @@ Ou une Pull Request complete :
 
 | Commande | Usage |
 |----------|-------|
-| `/assistant` | Point d'entree - guide vers les bonnes commandes |
+| `/assistant` | Point d'entree - guide vers les bonnes commandes (mode guide) |
+| `/assistant-auto` | Execution automatique du workflow adapte (mode auto) |
 | `/work-explore` | Explorer et comprendre le code |
 | `/work-plan` | Planifier une modification |
 | `/dev-tdd` | Developper en TDD |
@@ -149,15 +150,18 @@ Pour les taches courantes, utilisez les workflows complets :
 ## Obtenir de l'aide
 
 ```bash
-# Guide complet des commandes
+# Guide complet des commandes (mode guide avec confirmation)
 /assistant
 
 # Aide sur une commande specifique
 /assistant "Comment utiliser /dev-tdd ?"
+
+# Execution automatique sans confirmation (utilisateurs avances)
+/assistant-auto "Ajouter une feature d'authentification"
 ```
 
 ## Prochaines etapes
 
 - [Comprendre l'architecture](/docs/intro/architecture) - Difference entre Commands, Agents et Skills
 - [Voir les workflows](/docs/workflow) - Workflows detailles par type de tache
-- [Explorer les commandes](/docs/commands) - Catalogue complet des 109 commandes
+- [Explorer les commandes](/docs/commands) - Catalogue complet des 111 commandes
