@@ -377,6 +377,154 @@ pre {
   }
 }
 
+/* Difficulty badges */
+.difficulty-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.difficulty-badge--beginner {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.difficulty-badge--intermediate {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.difficulty-badge--advanced {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+[data-theme='dark'] .difficulty-badge--beginner {
+  background-color: #166534;
+  color: #dcfce7;
+}
+
+[data-theme='dark'] .difficulty-badge--intermediate {
+  background-color: #92400e;
+  color: #fef3c7;
+}
+
+[data-theme='dark'] .difficulty-badge--advanced {
+  background-color: #991b1b;
+  color: #fee2e2;
+}
+
+.difficulty-badge__icon {
+  font-size: 0.875rem;
+}
+
+.difficulty-badge__label {
+  font-weight: 600;
+}
+
+/* Tutorial cards grid */
+.tutorial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+/* Tutorial card */
+.tutorial-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  background: var(--ifm-background-surface-color);
+  text-decoration: none;
+  color: inherit;
+}
+
+.tutorial-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  border-color: var(--ifm-color-primary);
+  text-decoration: none;
+  color: inherit;
+}
+
+[data-theme='dark'] .tutorial-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.tutorial-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.tutorial-card__duration {
+  font-size: 0.75rem;
+  color: var(--ifm-color-content-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tutorial-card__duration::before {
+  content: '⏱️';
+}
+
+.tutorial-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--ifm-color-content);
+}
+
+.tutorial-card__description {
+  font-size: 0.875rem;
+  color: var(--ifm-color-content-secondary);
+  line-height: 1.5;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.tutorial-card__prerequisites {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.tutorial-card__prerequisites-label {
+  font-size: 0.7rem;
+  color: var(--ifm-color-content-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.tutorial-card__prerequisite {
+  font-size: 0.7rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  background-color: var(--ifm-color-emphasis-100);
+  color: var(--ifm-color-content-secondary);
+}
+
+/* Responsive adjustments for tutorials */
+@media (max-width: 768px) {
+  .tutorial-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Print styles */
 @media print {
   .navbar,

@@ -3,6 +3,28 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
+  // Enable Mermaid diagrams
+  markdown: {
+    mermaid: true,
+  },
+  themes: [
+    '@docusaurus/theme-mermaid',
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        hashed: true,
+        language: ['fr', 'en'],
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+        indexDocs: true,
+        indexBlog: false,
+        indexPages: false,
+        docsRouteBasePath: '/docs',
+        searchResultLimits: 10,
+        searchResultContextMaxLength: 50,
+      },
+    ],
+  ],
   title: 'claude-socle',
   tagline: 'Template de configuration Claude Code pour un workflow optimal : Explore → Plan → Code → Commit',
   favicon: 'img/favicon.ico',
@@ -40,24 +62,6 @@ const config: Config = {
     ],
   ],
 
-  themes: [
-    [
-      '@easyops-cn/docusaurus-search-local',
-      {
-        hashed: true,
-        language: ['fr', 'en'],
-        highlightSearchTermsOnTargetPage: true,
-        explicitSearchResultPath: true,
-        indexDocs: true,
-        indexBlog: false,
-        indexPages: false,
-        docsRouteBasePath: '/docs',
-        searchResultLimits: 10,
-        searchResultContextMaxLength: 50,
-      },
-    ],
-  ],
-
   themeConfig: {
     image: 'img/social-card.png',
 
@@ -91,6 +95,12 @@ const config: Config = {
           sidebarId: 'workflowSidebar',
           position: 'left',
           label: 'Workflows',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'tutorialsSidebar',
+          position: 'left',
+          label: 'Tutoriels',
         },
         {
           type: 'docSidebar',

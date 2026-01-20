@@ -12,6 +12,44 @@ Le workflow fondamental qui garantit un code de qualite.
 
 <WorkflowDiagram steps={MAIN_WORKFLOW} />
 
+## Diagramme de séquence
+
+```mermaid
+sequenceDiagram
+    participant U as Utilisateur
+    participant C as Claude
+    participant R as Repository
+
+    Note over U,R: Phase 1 - EXPLORE
+    U->>C: /work-explore "auth system"
+    C->>R: Lecture fichiers
+    R-->>C: Code source
+    C-->>U: Analyse structure et patterns
+
+    Note over U,R: Phase 2 - SPECIFY (optionnel)
+    U->>C: /work-specify "Add 2FA"
+    C-->>U: Spécification fonctionnelle
+    U->>C: Validation ✓
+
+    Note over U,R: Phase 3 - PLAN
+    U->>C: /work-plan
+    C-->>U: Plan d'implémentation
+    U->>C: Validation ✓
+
+    Note over U,R: Phase 4 - CODE
+    U->>C: /dev-tdd
+    loop Pour chaque tâche
+        C->>R: Écriture tests
+        C->>R: Écriture code
+        C->>R: Validation tests
+    end
+
+    Note over U,R: Phase 5 - COMMIT
+    U->>C: /work-commit
+    C->>R: git add + commit
+    R-->>U: Commit créé ✓
+```
+
 ## Pourquoi ce workflow ?
 
 ### Sans workflow structure

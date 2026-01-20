@@ -12,10 +12,43 @@ claude-socle est compose de plusieurs types de composants qui travaillent ensemb
 
 ## Vue d'ensemble
 
+```mermaid
+graph TB
+    subgraph "Votre Projet"
+        CLAUDE[CLAUDE.md<br/>Instructions principales]
+        MCP[.mcp.json<br/>Config MCP]
+    end
+
+    subgraph ".claude/"
+        CMDS[commands/<br/>111 commandes]
+        AGENTS[agents/<br/>51 sub-agents]
+        SKILLS[skills/<br/>32 skills]
+        RULES[rules/<br/>17 rules]
+        TPL[templates/<br/>Specs & Plans]
+        SETTINGS[settings.json<br/>Hooks]
+    end
+
+    CLAUDE --> CMDS
+    CLAUDE --> AGENTS
+    CLAUDE --> SKILLS
+
+    CMDS --> |"Manuel /nom"| USER((Utilisateur))
+    AGENTS --> |"Auto délégation"| USER
+    SKILLS --> |"Auto mots-clés"| USER
+    RULES --> |"Auto par fichier"| CODE[Code source]
+
+    style CLAUDE fill:#e1f5fe
+    style CMDS fill:#c8e6c9
+    style AGENTS fill:#fff3e0
+    style SKILLS fill:#f3e5f5
+```
+
+### Structure des fichiers
+
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 110 commandes manuelles (/nom)
+│   ├── commands/       # 111 commandes manuelles (/nom)
 │   │   ├── work/       # Workflow principal
 │   │   ├── dev/        # Developpement
 │   │   ├── qa/         # Qualite
@@ -110,6 +143,27 @@ paths:
 <FeatureComparison />
 
 ## Quand utiliser quoi ?
+
+```mermaid
+flowchart TD
+    START((Besoin)) --> Q1{Action<br/>explicite ?}
+
+    Q1 -->|Oui| CMD[/"Utilisez une<br/>COMMAND<br/>/nom"/]
+    Q1 -->|Non| Q2{Tâche<br/>autonome ?}
+
+    Q2 -->|Oui| Q3{Contexte<br/>isolé ?}
+    Q2 -->|Non| Q4{Mots-clés<br/>récurrents ?}
+
+    Q3 -->|Oui| AGENT[/"AGENT<br/>délégation auto"/]
+    Q3 -->|Non| CMD
+
+    Q4 -->|Oui| SKILL[/"SKILL<br/>auto-déclenché"/]
+    Q4 -->|Non| CMD
+
+    style CMD fill:#c8e6c9,stroke:#2e7d32
+    style AGENT fill:#fff3e0,stroke:#ef6c00
+    style SKILL fill:#f3e5f5,stroke:#7b1fa2
+```
 
 ### Utilisez une Command quand :
 - Vous voulez une action explicite et controlee

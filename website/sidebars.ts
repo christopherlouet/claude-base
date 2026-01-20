@@ -238,6 +238,84 @@ const sidebars: SidebarsConfig = {
     },
   ],
 
+  // Tutorials sidebar
+  tutorialsSidebar: [
+    {
+      type: 'category',
+      label: 'Tutoriels',
+      collapsed: false,
+      link: {
+        type: 'doc',
+        id: 'tutorials/index',
+      },
+      items: [
+        'tutorials/premier-projet',
+        'tutorials/feature-react',
+        'tutorials/api-rest-node',
+        'tutorials/flutter-supabase',
+        'tutorials/audit-securite',
+        'tutorials/cicd-github',
+        'tutorials/refactoring-legacy',
+        'tutorials/proxmox-infra',
+      ],
+    },
+  ],
+
+  // Examples sidebar
+  examplesSidebar: [
+    {
+      type: 'category',
+      label: 'Exemples',
+      collapsed: false,
+      link: {
+        type: 'doc',
+        id: 'examples/index',
+      },
+      items: [
+        {
+          type: 'category',
+          label: 'Web',
+          collapsed: true,
+          items: [
+            'examples/web/react-component',
+            'examples/web/react-hook',
+            'examples/web/nextjs-api',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Mobile',
+          collapsed: true,
+          items: [
+            'examples/mobile/flutter-screen',
+            'examples/mobile/flutter-bloc',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'API',
+          collapsed: true,
+          items: [
+            'examples/api/rest-endpoint',
+            'examples/api/graphql-resolver',
+            'examples/api/trpc-procedure',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Ops',
+          collapsed: true,
+          items: [
+            'examples/ops/docker-setup',
+            'examples/ops/ci-pipeline',
+            'examples/ops/terraform-module',
+            'examples/ops/proxmox-vm',
+          ],
+        },
+      ],
+    },
+  ],
+
   // Guides sidebar
   guidesSidebar: [
     {
@@ -254,6 +332,9 @@ const sidebars: SidebarsConfig = {
         'guides/api-development',
         'guides/data-engineering',
         'guides/startup',
+        'guides/faq',
+        'guides/troubleshooting',
+        'guides/migration',
       ],
     },
   ],
