@@ -371,9 +371,9 @@ print_summary() {
     echo ""
 
     info "Fichiers installés:"
-    echo "  - .claude/commands/      (109 commandes)"
+    echo "  - .claude/commands/      (111 commandes)"
     echo "  - .claude/skills/        ($(count_skills "$SOCLE_DIR") skills)"
-    echo "  - .claude/agents/        (47 agents)"
+    echo "  - .claude/agents/        (51 agents)"
     echo "  - .claude/rules/         (règles contextuelles)"
     echo "  - .claude/output-styles/ (styles de sortie)"
     echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
