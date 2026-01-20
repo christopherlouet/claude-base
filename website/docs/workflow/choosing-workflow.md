@@ -10,39 +10,45 @@ Guide pour selectionner le workflow adapte a votre situation.
 
 ## Arbre de decision
 
-```
-                    ┌──────────────────┐
-                    │  Quel est votre  │
-                    │     besoin ?     │
-                    └────────┬─────────┘
-                             │
-        ┌────────────────────┼────────────────────┐
-        │                    │                    │
-        ▼                    ▼                    ▼
-┌───────────────┐  ┌───────────────┐  ┌───────────────┐
-│   Nouvelle    │  │   Corriger    │  │   Deployer    │
-│   feature     │  │   un bug      │  │   une version │
-└───────┬───────┘  └───────┬───────┘  └───────┬───────┘
-        │                  │                  │
-        ▼                  ▼                  ▼
-/work-flow-feature  /work-flow-bugfix  /work-flow-release
+```mermaid
+flowchart TD
+    START((Besoin ?)) --> DEV{Développement ?}
+    START --> OPS{Opérations ?}
+    START --> QUALITY{Qualité ?}
+    START --> BIZ{Business ?}
 
+    %% Développement
+    DEV -->|Nouvelle feature| FEAT["/work-flow-feature"]
+    DEV -->|Corriger bug| BUG{Critique ?}
+    BUG -->|Oui| HOTFIX["/ops-hotfix"]
+    BUG -->|Non| BUGFIX["/work-flow-bugfix"]
+    DEV -->|Comprendre| EXPLORE["/work-explore"]
+    DEV -->|TDD| TDD["/dev-tdd"]
 
-                    ┌──────────────────┐
-                    │   Autre type     │
-                    │   de tache ?     │
-                    └────────┬─────────┘
-                             │
-        ┌────────────────────┼────────────────────┐
-        │                    │                    │
-        ▼                    ▼                    ▼
-┌───────────────┐  ┌───────────────┐  ┌───────────────┐
-│   Lancer un   │  │   Comprendre  │  │   Faire un    │
-│   produit     │  │   le code     │  │   audit       │
-└───────┬───────┘  └───────┬───────┘  └───────┬───────┘
-        │                  │                  │
-        ▼                  ▼                  ▼
-/work-flow-launch    /work-explore       /qa-audit
+    %% Opérations
+    OPS -->|Release| RELEASE["/work-flow-release"]
+    OPS -->|Déploiement| DEPLOY{Type ?}
+    DEPLOY -->|Docker| DOCKER["/ops-docker"]
+    DEPLOY -->|Kubernetes| K8S["/ops-k8s"]
+    DEPLOY -->|Vercel| VERCEL["/ops-vercel"]
+
+    %% Qualité
+    QUALITY -->|Audit complet| AUDIT["/qa-audit"]
+    QUALITY -->|Sécurité| SEC["/qa-security"]
+    QUALITY -->|Performance| PERF["/qa-perf"]
+    QUALITY -->|Review| REVIEW["/qa-review"]
+
+    %% Business
+    BIZ -->|Lancement| LAUNCH["/work-flow-launch"]
+    BIZ -->|MVP| MVP["/biz-mvp"]
+    BIZ -->|Business model| MODEL["/biz-model"]
+
+    %% Styles
+    style FEAT fill:#c8e6c9
+    style HOTFIX fill:#ffcdd2
+    style BUGFIX fill:#fff3e0
+    style AUDIT fill:#e1f5fe
+    style LAUNCH fill:#f3e5f5
 ```
 
 ## Guide rapide

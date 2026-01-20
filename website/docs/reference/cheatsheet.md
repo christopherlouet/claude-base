@@ -10,13 +10,16 @@ description: Aide-memoire rapide claude-socle
 
 ## Workflow principal
 
-```
-┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
-│ EXPLORE  │ → │   PLAN   │ → │   CODE   │ → │  COMMIT  │
-│          │   │          │   │          │   │          │
-│ /work-   │   │ /work-   │   │ /dev-tdd │   │ /work-   │
-│ explore  │   │ plan     │   │          │   │ commit   │
-└──────────┘   └──────────┘   └──────────┘   └──────────┘
+```mermaid
+graph LR
+    E[🔍 EXPLORE<br/>/work-explore] --> P[📋 PLAN<br/>/work-plan]
+    P --> C[💻 CODE<br/>/dev-tdd]
+    C --> M[✅ COMMIT<br/>/work-commit]
+
+    style E fill:#e3f2fd
+    style P fill:#fff3e0
+    style C fill:#e8f5e9
+    style M fill:#fce4ec
 ```
 
 ## Commandes essentielles

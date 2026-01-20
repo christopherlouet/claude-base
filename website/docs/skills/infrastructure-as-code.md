@@ -284,12 +284,14 @@ version = ">= 5.0"     # Minimum (risque - breaking changes)
 
 ## Guides Detailles
 
-Ce skill utilise le **progressive disclosure** - informations essentielles dans ce fichier, guides detailles disponibles a la demande :
+Ce skill utilise le **progressive disclosure** - informations essentielles dans ce fichier, guides détaillés disponibles via les ressources externes :
 
-- **[Module Patterns](references/module-patterns.md)** - Structure, variables/outputs, DO vs DON'T
-- **[Code Patterns](references/code-patterns.md)** - Features modernes, refactoring, locals
-- **[Testing Frameworks](references/testing-frameworks.md)** - Analyse statique, tests natifs, Terratest
-- **[Security & Compliance](references/security-compliance.md)** - Trivy/Checkov, gestion secrets, state file
+- **Module Patterns** - Structure, variables/outputs, DO vs DON'T
+- **Code Patterns** - Features modernes, refactoring, locals
+- **Testing Frameworks** - Analyse statique, tests natifs, Terratest
+- **Security & Compliance** - Trivy/Checkov, gestion secrets, state file
+
+Consultez [terraform-best-practices.com](https://terraform-best-practices.com) pour les guides complets.
 
 ## Attribution
 
