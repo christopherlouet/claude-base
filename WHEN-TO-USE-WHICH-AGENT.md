@@ -341,7 +341,7 @@ Debug complexe, securite, performance, architecture, data modeling
 
 1. Verifier cette page
 2. Lister les agents : `ls .claude/agents/`
-3. Demander a `/assistant`
+3. Demander a `/assistant` (mode guide) ou `/assistant-auto` (execution directe)
 
 ### Puis-je combiner plusieurs agents ?
 
@@ -352,7 +352,7 @@ Oui ! Les workflows chaines sont recommandes :
 
 ### Que faire si aucun agent ne correspond ?
 
-1. Utiliser `/assistant` pour etre guide
+1. Utiliser `/assistant` pour etre guide (ou `/assistant-auto` pour execution directe)
 2. Creer une commande personnalisee dans `.claude/commands/`
 3. Demander directement a Claude avec le contexte
 
@@ -370,7 +370,11 @@ cat .claude/agents/qa-security.md
 Si vous ne savez pas quelle commande utiliser, demandez a l'orchestrateur :
 
 ```bash
+# Mode guide (recommande pour les nouveaux, attend confirmation)
 /assistant
+
+# Mode automatique (execution directe, utilisateurs avances)
+/assistant-auto "Votre demande"
 ```
 
 Il analysera votre besoin et vous orientera vers la bonne commande.

@@ -9,6 +9,30 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.6.1] - 2025-01-20
+
+### Ajouté
+- **Documentation Docusaurus Orchestrateur**
+  - Catégorie "Orchestrateur (2)" dans le sidebar avec `/assistant` et `/assistant-auto`
+  - Page `concepts/orchestrator.md` enrichie : guide de décision rapide, workflows par type de projet, agents activés, skills déclenchés
+  - Section dédiée dans `commands/index.md` pour mettre en avant le point d'entrée unique
+
+### Modifié
+- **Consolidation de la documentation**
+  - Suppression des pages dupliquées dans `commands/other/` (contenu fusionné dans orchestrator.md)
+  - Liens corrigés dans toute la documentation
+- **Compteurs mis à jour**
+  - `reference/cheatsheet.md` : 111 Commands, 51 Agents, 32 Skills, 17 Rules
+  - `intro/quick-start.md` : 111 commandes
+  - `commands/index.md` : 111 commandes en 10 domaines + orchestrateur
+
+### Supprimé
+- `website/docs/commands/other/assistant.md` (fusionné dans orchestrator.md)
+- `website/docs/commands/other/assistant-auto.md` (fusionné dans orchestrator.md)
+- `website/docs/commands/other/index.md` (dossier supprimé)
+
+---
+
 ## [1.6.0] - 2025-01-20
 
 ### Ajouté

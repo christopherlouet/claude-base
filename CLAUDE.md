@@ -231,9 +231,10 @@ type(scope): description courte
 ## Agents Disponibles (110 commands, 51 sub-agents, 32 skills)
 
 ### Orchestrateur (Point d'entrée unique)
-| Commande | Usage |
-|----------|-------|
-| `/assistant` | Point d'entrée unique : guide vers commandes, agents, skills, templates et workflows |
+| Commande | Mode | Usage |
+|----------|------|-------|
+| `/assistant` | Guidé | Analyse → Recommande → Attend confirmation |
+| `/assistant-auto` | Automatique | Analyse → Exécute directement le workflow |
 
 ### WORK- : Workflow Principal (10)
 | Commande | Usage |
