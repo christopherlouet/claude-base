@@ -1,5 +1,5 @@
 ---
-sidebar_position: 31
+sidebar_position: 33
 title: "ops-ci"
 description: "Configuration de pipelines CI/CD complets."
 tags:

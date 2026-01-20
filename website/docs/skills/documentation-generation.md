@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "documentation-generation"
 description: "Generation de documentation technique. Declencher quand l'utilisateur veut creer README, docs API, ou guides."
 tags:

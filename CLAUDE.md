@@ -228,7 +228,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (109 commands, 47 sub-agents, 29 skills)
+## Agents Disponibles (110 commands, 51 sub-agents, 32 skills)
 
 ### Orchestrateur (Point d'entrée unique)
 | Commande | Usage |
@@ -249,7 +249,7 @@ type(scope): description courte
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (22)
+### DEV- : Développement (23)
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD |
@@ -273,8 +273,9 @@ type(scope): description courte
 | `/dev-design-system` | Design tokens et bibliothèque de composants |
 | `/dev-prisma` | ORM Prisma (schema, migrations, queries) |
 | `/dev-trpc` | APIs type-safe avec tRPC |
+| `/dev-ai-integration` | Intégration LLMs (OpenAI, Claude API) |
 
-### QA- : Qualité (12)
+### QA- : Qualité (13)
 | Commande | Usage |
 |----------|-------|
 | `/qa-review` | Code review approfondie |
@@ -289,8 +290,9 @@ type(scope): description courte
 | `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
 | `/qa-neovim` | Audit config Neovim (perf, keymaps) |
 | `/qa-e2e` | Tests End-to-End (Playwright, Cypress) |
+| `/qa-tech-debt` | Identifier et prioriser la dette technique |
 
-### OPS- : Opérations (28)
+### OPS- : Opérations (29)
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente production |
@@ -321,6 +323,7 @@ type(scope): description courte
 | `/ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
 | `/ops-vercel` | Configuration et déploiement Vercel |
 | `/ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
+| `/ops-rollback` | Procédure de rollback sécurisée |
 
 ### DOC- : Documentation (9)
 | Commande | Usage |
@@ -350,7 +353,7 @@ type(scope): description courte
 | `/biz-personas` | Créer des personas utilisateur |
 | `/biz-research` | Recherche utilisateur |
 
-### GROWTH- : Croissance (9)
+### GROWTH- : Croissance (10)
 | Commande | Usage |
 |----------|-------|
 | `/growth-landing` | Créer/optimiser landing page |
@@ -362,6 +365,7 @@ type(scope): description courte
 | `/growth-ab-test` | Planifier A/B tests |
 | `/growth-retention` | Stratégies de rétention |
 | `/growth-funnel` | Analyse et optimisation funnels |
+| `/growth-localization` | Stratégie de localisation multi-marchés |
 
 ### DATA- : Données (3)
 | Commande | Usage |
@@ -470,7 +474,7 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 
 ## Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **29 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **32 Skills** dans `.claude/skills/`:
 
 ### Skills de base
 | Skill | Déclenchement automatique | Context |
@@ -508,6 +512,9 @@ En plus des commandes, le projet inclut **29 Skills** dans `.claude/skills/`:
 | `feature-flags` | "feature flag", "A/B test", "deploiement progressif" | fork |
 | `infrastructure-as-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | fork |
 | `proxmox-infrastructure` | "Proxmox", "PVE", "VM Proxmox", "LXC", "PBS" | fork |
+| `tech-debt-management` | "dette technique", "tech debt", "refactoring priorité" | fork |
+| `api-mocking` | "mock API", "MSW", "test sans backend" | fork |
+| `state-management` | "state", "Redux", "Zustand", "store" | fork |
 
 ### Configuration des Skills
 
@@ -536,7 +543,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 - **Modèle optimisé** : Haiku pour tâches simples (économie de tokens)
 - **Parallélisation** : Plusieurs agents peuvent tourner simultanément
 
-### Agents disponibles (47)
+### Agents disponibles (51)
 
 #### Exploration & Documentation
 | Agent | Modèle | Outils | Usage |
@@ -557,6 +564,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `qa-coverage` | haiku | Read, Grep, Glob, Bash | Analyse couverture de tests |
 | `qa-responsive` | haiku | Read, Grep, Glob | Audit responsive/mobile-first |
 | `qa-e2e` | sonnet | Read, Grep, Glob, Bash | Tests E2E Playwright/Cypress |
+| `qa-tech-debt` | haiku | Read, Grep, Glob | Identifier et prioriser la dette technique |
 
 #### Opérations
 | Agent | Modèle | Outils | Usage |
@@ -571,6 +579,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `ops-vercel` | haiku | Read, Grep, Glob, Bash | Configuration Vercel |
 | `ops-infra-code` | sonnet | Read, Grep, Glob, Edit, Write, Bash | Infrastructure as Code (Terraform/OpenTofu) |
 | `ops-proxmox` | sonnet | Read, Grep, Glob, Edit, Write, Bash | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
+| `ops-migration` | sonnet | Read, Grep, Glob, Bash | Migration de frameworks et versions |
 
 #### Développement
 | Agent | Modèle | Outils | Usage |
@@ -585,6 +594,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `dev-design-system` | haiku | Read, Grep, Glob | Design tokens et composants |
 | `dev-prisma` | haiku | Read, Grep, Glob, Bash | ORM Prisma |
 | `dev-trpc` | haiku | Read, Grep, Glob | APIs type-safe tRPC |
+| `dev-ai-integration` | sonnet | Read, Grep, Glob, Bash | Intégration LLMs (OpenAI, Claude) |
 
 #### Business & Growth
 | Agent | Modèle | Outils | Usage |
@@ -597,6 +607,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `growth-analytics` | haiku | Read, Grep, Glob | Setup analytics |
 | `growth-landing` | haiku | Read, Grep, Glob | Optimisation landing |
 | `growth-funnel` | haiku | Read, Grep, Glob | Analyse funnels |
+| `growth-localization` | haiku | Read, Grep, Glob | Stratégie de localisation multi-marchés |
 
 #### Data
 | Agent | Modèle | Outils | Usage |
@@ -611,7 +622,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `legal-rgpd` | haiku | Read, Grep, Glob | Conformité RGPD |
 | `legal-payment` | sonnet | Read, Grep, Glob | Intégration paiement |
 | `legal-privacy-policy` | haiku | Read, Grep, Glob | Politique confidentialité |
-| `legal-terms-of-service` | haiku | Read, Grep, Glob | CGU
+| `legal-terms-of-service` | haiku | Read, Grep, Glob | CGU |
 
 ### Utilisation
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 26
 title: "react-performance"
 description: "Optimisation des performances React/Next.js. Declencher quand l'utilisateur veut optimiser le rendu, reduire les re-renders, ou ameliorer les Core Web Vitals."
 tags:

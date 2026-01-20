@@ -80,7 +80,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
-│  │    (109)    │  │    (47)     │  │    (29)     │             │
+│  │    (110)    │  │    (51)     │  │    (32)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Délégation  │  │ Activation  │             │
 │  │  manuelle   │  │ automatique │  │ automatique │             │
@@ -108,7 +108,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 
 ---
 
-## Section 4: Sub-Agents (47 agents avec contexte isolé)
+## Section 4: Sub-Agents (51 agents avec contexte isolé)
 
 Claude délègue automatiquement aux agents spécialisés selon le contexte. Les agents ont un contexte isolé et des outils restreints.
 
@@ -216,7 +216,7 @@ Résultat renvoyé à la conversation principale
 
 ---
 
-## Section 5: Skills (29 skills à déclenchement automatique)
+## Section 5: Skills (32 skills à déclenchement automatique)
 
 Les Skills sont activés automatiquement par Claude selon les mots-clés dans la conversation.
 
@@ -328,7 +328,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 ---
 
-## Section 7: Catalogue des Commandes (109)
+## Section 7: Catalogue des Commandes (110)
 
 ### WORK- : Workflow Principal (10)
 
@@ -638,9 +638,9 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 | Dossier | Contenu |
 |---------|---------|
-| `.claude/commands/` | 109 commandes organisées par domaine |
-| `.claude/agents/` | 47 sub-agents avec contexte isolé |
-| `.claude/skills/` | 29 skills à déclenchement automatique |
+| `.claude/commands/` | 110 commandes organisées par domaine |
+| `.claude/agents/` | 51 sub-agents avec contexte isolé |
+| `.claude/skills/` | 32 skills à déclenchement automatique |
 | `.claude/rules/` | 17 règles contextuelles par path |
 | `.claude/templates/` | 3 templates (spec, plan, tasks) |
 | `.claude/output-styles/` | Styles de sortie (teaching, concise...) |

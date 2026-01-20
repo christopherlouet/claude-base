@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 57 agents | 8 catégories | 4 workflows                                ║
+║  Total: 47 agents | 8 catégories | 4 workflows                                ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -153,7 +153,7 @@
 
 ---
 
-## Agents par Catégorie (57)
+## Agents par Catégorie (47)
 
 ### WORK- : Workflow Principal (8)
 
@@ -399,4 +399,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Socle v2.0 - 57 agents - 8 catégories*
+*Claude-Socle v2.0 - 47 agents - 8 catégories*

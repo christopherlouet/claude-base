@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 title: "dev-component"
 description: "Creation de composants UI modulaires et reutilisables."
 tags:

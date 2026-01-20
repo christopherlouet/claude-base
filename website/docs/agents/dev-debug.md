@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "dev-debug"
 description: "Diagnostic et resolution de bugs de maniere methodique."
 tags:

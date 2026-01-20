@@ -15,7 +15,7 @@ claude-socle est compose de plusieurs types de composants qui travaillent ensemb
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 109 commandes manuelles (/nom)
+│   ├── commands/       # 110 commandes manuelles (/nom)
 │   │   ├── work/       # Workflow principal
 │   │   ├── dev/        # Developpement
 │   │   ├── qa/         # Qualite
@@ -25,8 +25,8 @@ claude-socle/
 │   │   ├── growth/     # Croissance
 │   │   ├── data/       # Donnees
 │   │   └── legal/      # Legal
-│   ├── agents/         # 47 sub-agents autonomes
-│   ├── skills/         # 29 skills auto-declenches
+│   ├── agents/         # 51 sub-agents autonomes
+│   ├── skills/         # 32 skills auto-declenches
 │   ├── rules/          # 17 regles par technologie
 │   ├── templates/      # Templates de specs/plans
 │   ├── output-styles/  # Styles de sortie
@@ -37,7 +37,7 @@ claude-socle/
 
 ## Composants principaux
 
-### Commands (109)
+### Commands (110)
 
 Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 
@@ -54,7 +54,7 @@ Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 /qa-security
 ```
 
-### Agents (47)
+### Agents (51)
 
 Les **agents** sont des sub-agents autonomes avec un contexte isole.
 
@@ -70,7 +70,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole.
 "Explore le code d'auth" → Claude delegue a l'agent work-explore (haiku)
 ```
 
-### Skills (29)
+### Skills (32)
 
 Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 

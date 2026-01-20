@@ -170,6 +170,26 @@ Strategies:
 | Integration | API endpoint | `POST /api/products` |
 | E2E | Workflow complet | Creer + Modifier + Supprimer |
 
+### Couverture de tests
+
+```bash
+/qa-coverage
+```
+
+Cibles recommandees:
+| Metrique | Cible |
+|----------|-------|
+| Couverture lignes | > 80% |
+| Couverture branches | > 70% |
+| Services critiques | 100% |
+| Endpoints publics | 100% |
+
+### Tests E2E API
+
+```bash
+/qa-e2e "workflow complet de commande: creation, paiement, confirmation"
+```
+
 ## Phase 5: Documentation
 
 ### Generer spec OpenAPI

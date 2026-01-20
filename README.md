@@ -139,7 +139,7 @@ claude-socle/
     └── ALIASES.md               # Alias de commandes
 ```
 
-## Commandes Disponibles (100)
+## Commandes Disponibles (109)
 
 ### Workflow Principal
 
