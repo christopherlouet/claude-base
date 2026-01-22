@@ -6,7 +6,7 @@ model: sonnet
 permissionMode: plan
 disallowedTools: Edit, Write, NotebookEdit
 skills:
-  - security-audit
+  - qa-security
 hooks:
   PreToolUse:
     - matcher: "Bash"

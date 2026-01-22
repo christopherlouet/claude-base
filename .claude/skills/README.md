@@ -26,7 +26,7 @@ skill-name/
 
 ```yaml
 ---
-name: nom-du-skill
+name: domaine-action
 description: Description claire de ce que fait le skill et QUAND l'utiliser.
 allowed-tools:        # Optionnel - limite les outils disponibles
   - Read
@@ -43,30 +43,43 @@ allowed-tools:        # Optionnel - limite les outils disponibles
 [Exemples d'utilisation]
 ```
 
+## Convention de nommage
+
+Les skills suivent la même convention que les commandes : `domaine-action`
+
+| Domaine | Exemples |
+|---------|----------|
+| `work-` | `work-explore`, `work-plan`, `work-commit`, `work-pr` |
+| `dev-` | `dev-tdd`, `dev-debug`, `dev-api`, `dev-flutter` |
+| `qa-` | `qa-review`, `qa-security`, `qa-perf`, `qa-e2e` |
+| `ops-` | `ops-docker`, `ops-ci`, `ops-database`, `ops-monitoring` |
+| `doc-` | `doc-generate`, `doc-changelog` |
+| `data-` | `data-pipeline` |
+
 ## Skills disponibles
 
 | Skill | Description | Déclencheurs |
 |-------|-------------|--------------|
-| `exploring-codebase` | Explorer et comprendre un codebase | "explorer", "comprendre le code", "découvrir" |
-| `planning-implementation` | Planifier une implémentation | "planifier", "architecture", "plan" |
-| `test-driven-development` | Cycle TDD Red-Green-Refactor | "TDD", "test first", "écrire les tests" |
-| `reviewing-code` | Revue de code approfondie | "review", "relire", "vérifier le code" |
-| `debugging-issues` | Déboguer et résoudre des problèmes | "debug", "bug", "erreur", "ne fonctionne pas" |
-| `generating-commit-messages` | Messages Conventional Commits | "commit", "message de commit" |
-| `creating-pull-requests` | Créer une PR complète | "PR", "pull request", "merger" |
-| `api-development` | Développer une API REST/GraphQL | "API", "endpoint", "route", "REST" |
-| `security-audit` | Audit de sécurité OWASP | "sécurité", "audit", "vulnérabilité", "OWASP" |
+| `work-explore` | Explorer et comprendre un codebase | "explorer", "comprendre le code", "découvrir" |
+| `work-plan` | Planifier une implémentation | "planifier", "architecture", "plan" |
+| `work-commit` | Messages Conventional Commits | "commit", "message de commit" |
+| `work-pr` | Créer une PR complète | "PR", "pull request", "merger" |
+| `dev-tdd` | Cycle TDD Red-Green-Refactor | "TDD", "test first", "écrire les tests" |
+| `dev-debug` | Déboguer et résoudre des problèmes | "debug", "bug", "erreur", "ne fonctionne pas" |
+| `dev-api` | Développer une API REST/GraphQL | "API", "endpoint", "route", "REST" |
+| `qa-review` | Revue de code approfondie | "review", "relire", "vérifier le code" |
+| `qa-security` | Audit de sécurité OWASP | "sécurité", "audit", "vulnérabilité", "OWASP" |
 
 ## Créer un nouveau Skill
 
-1. Créer le dossier: `mkdir .claude/skills/mon-skill`
+1. Créer le dossier: `mkdir .claude/skills/domaine-action`
 2. Créer `SKILL.md` avec frontmatter YAML
 3. Ajouter des exemples dans `examples/` (recommandé)
 4. La description doit inclure les déclencheurs (quand utiliser)
 
 ## Bonnes pratiques
 
+- **Nommage cohérent**: Utiliser le format `domaine-action` (ex: `dev-tdd`, `qa-security`)
 - **Description riche**: Inclure tous les mots-clés déclencheurs
 - **SKILL.md < 500 lignes**: Détails dans `references/`
 - **Exemples concrets**: Montrer le bon ET le mauvais pattern
-- **Noms en gerund**: `generating-`, `testing-`, `debugging-`
