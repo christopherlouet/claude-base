@@ -9,6 +9,22 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.12.1] - 2026-01-22
+
+### Ajouté
+- **Documentation Docusaurus Skills** : 29 nouvelles pages de documentation pour les skills
+  - Skills WORK : `work-commit`, `work-explore`, `work-plan`, `work-pr`
+  - Skills DEV : `dev-api`, `dev-debug`, `dev-error-handling`, `dev-flutter`, `dev-graphql`, `dev-prompt-engineering`, `dev-react-perf`, `dev-refactor`, `dev-supabase`, `dev-tdd`
+  - Skills DOC : `doc-changelog`, `doc-generate`
+  - Skills OPS : `ops-ci`, `ops-database`, `ops-docker`, `ops-infra-code`, `ops-mobile-release`, `ops-monitoring`, `ops-opnsense`, `ops-proxmox`
+  - Skills QA : `qa-e2e`, `qa-perf`, `qa-review`, `qa-security`, `qa-tech-debt`
+
+### Modifié
+- **Agent ops-opnsense** : Ajout des métadonnées standardisées (name, description, tools) dans le frontmatter
+- **Documentation agents** : Mise à jour des métadonnées (outils, skills injectés)
+
+---
+
 ## [1.12.0] - 2026-01-22
 
 ### Ajouté

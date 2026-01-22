@@ -21,7 +21,7 @@ tags:
 | **Permission Mode** | default |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
 | **Outils interdits** | _Aucun_ |
-| **Skills injectes** | `test-driven-development` |
+| **Skills injectes** | `dev-tdd` |
 
 ## Description detaillee
 

@@ -21,7 +21,7 @@ tags:
 | **Permission Mode** | default |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
 | **Outils interdits** | _Aucun_ |
-| **Skills injectes** | `proxmox-infrastructure`, `infrastructure-as-code` |
+| **Skills injectes** | `ops-proxmox`, `ops-infra-code` |
 
 ## Description detaillee
 

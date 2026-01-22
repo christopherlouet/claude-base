@@ -21,7 +21,7 @@ tags:
 | **Permission Mode** | plan |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
 | **Outils interdits** | `Edit`, `Write`, `NotebookEdit` |
-| **Skills injectes** | `security-audit` |
+| **Skills injectes** | `qa-security` |
 
 ## Description detaillee
 

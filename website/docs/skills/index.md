@@ -35,39 +35,39 @@ Skills avec contexte isole.
 
 | Skill | Description | Mots-cles |
 |-------|-------------|-----------|
-| [`api-development`](/docs/skills/api-development) | Développer et documenter une API REST ou GraphQL. ... | api, development, success |
 | [`api-mocking`](/docs/skills/api-mocking) | Configuration de mocks API pour les tests. Declenc... | api, mocking, mock api |
-| [`changelog-maintenance`](/docs/skills/changelog-maintenance) | Maintenance du CHANGELOG selon Keep a Changelog. D... | changelog, maintenance |
-| [`ci-cd-pipeline`](/docs/skills/ci-cd-pipeline) | Configuration de pipelines CI/CD. Declencher quand... | pipeline |
-| [`creating-pull-requests`](/docs/skills/creating-pull-requests) | Créer une Pull Request complète et bien documentée... | creating, pull, requests |
 | [`data-pipeline`](/docs/skills/data-pipeline) | Conception de pipelines ETL/ELT. Declencher quand ... | data, pipeline, duplicate ids |
-| [`database-design`](/docs/skills/database-design) | Conception de schemas de base de donnees. Declench... | database, design |
-| [`debugging-issues`](/docs/skills/debugging-issues) | Déboguer et résoudre des problèmes. Utiliser quand... | debugging, issues |
-| [`docker-containerization`](/docs/skills/docker-containerization) | Containerisation Docker et Docker Compose. Declenc... | docker, containerization, node |
-| [`documentation-generation`](/docs/skills/documentation-generation) | Generation de documentation technique. Declencher ... | documentation, generation, uuid |
-| [`e2e-testing`](/docs/skills/e2e-testing) | Tests End-to-End avec Playwright ou Cypress. Decle... | e2e, testing, end-to-end |
-| [`error-handling`](/docs/skills/error-handling) | Strategie de gestion des erreurs. Declencher quand... | error, handling |
-| [`exploring-codebase`](/docs/skills/exploring-codebase) | Explorer et comprendre un codebase existant. Utili... | exploring, codebase |
+| [`dev-api`](/docs/skills/dev-api) | Développer et documenter une API REST ou GraphQL. ... | dev, api, success |
+| [`dev-debug`](/docs/skills/dev-debug) | Déboguer et résoudre des problèmes. Utiliser quand... | dev, debug |
+| [`dev-error-handling`](/docs/skills/dev-error-handling) | Strategie de gestion des erreurs. Declencher quand... | dev, error, handling |
+| [`dev-flutter`](/docs/skills/dev-flutter) | Developpement Flutter avec Clean Architecture et B... | dev, flutter |
+| [`dev-graphql`](/docs/skills/dev-graphql) | Developpement d'APIs GraphQL. Declencher quand l'u... | dev, graphql |
+| [`dev-prompt-engineering`](/docs/skills/dev-prompt-engineering) | Optimisation de prompts pour LLMs. Declencher quan... | dev, prompt, engineering |
+| [`dev-react-perf`](/docs/skills/dev-react-perf) | Optimisation des performances React/Next.js. Decle... | dev, react, perf |
+| [`dev-refactor`](/docs/skills/dev-refactor) | Refactoring de code pour ameliorer la qualite. Dec... | dev, refactor |
+| [`dev-supabase`](/docs/skills/dev-supabase) | Developpement backend avec Supabase. Declencher qu... | dev, supabase, users read own profile |
+| [`dev-tdd`](/docs/skills/dev-tdd) | Développement TDD avec cycle Red-Green-Refactor. U... | dev, tdd, nom du test |
+| [`doc-changelog`](/docs/skills/doc-changelog) | Maintenance du CHANGELOG selon Keep a Changelog. D... | doc, changelog |
+| [`doc-generate`](/docs/skills/doc-generate) | Generation de documentation technique. Declencher ... | doc, generate, uuid |
 | [`feature-flags`](/docs/skills/feature-flags) | Gestion de feature flags et toggles. Declencher qu... | feature, flags, feature flag |
-| [`flutter-development`](/docs/skills/flutter-development) | Developpement Flutter avec Clean Architecture et B... | flutter, development |
-| [`generating-commit-messages`](/docs/skills/generating-commit-messages) | Génère des messages de commit clairs suivant Conve... | generating, commit, messages |
-| [`graphql-development`](/docs/skills/graphql-development) | Developpement d'APIs GraphQL. Declencher quand l'u... | graphql, development |
-| [`infrastructure-as-code`](/docs/skills/infrastructure-as-code) | Infrastructure as Code avec Terraform/OpenTofu. De... | infrastructure, code, aws_instance |
-| [`mobile-release`](/docs/skills/mobile-release) | Publication d'apps sur App Store et Google Play. D... | mobile, release, deploy to testflight |
-| [`monitoring-instrumentation`](/docs/skills/monitoring-instrumentation) | Instrumentation d'applications pour monitoring. De... | monitoring, instrumentation |
-| [`opnsense-configuration`](/docs/skills/opnsense-configuration) | Configuration OPNsense via Terraform. Declencher p... | opnsense, configuration, browningluke/opnsense |
-| [`performance-optimization`](/docs/skills/performance-optimization) | Optimisation des performances d'applications. Decl... | performance, optimization, /photo.jpg |
-| [`planning-implementation`](/docs/skills/planning-implementation) | Planifier l'implémentation d'une fonctionnalité. U... | planning, implementation, pattern_similaire |
-| [`prompt-engineering`](/docs/skills/prompt-engineering) | Optimisation de prompts pour LLMs. Declencher quan... | prompt, engineering, instruction |
-| [`proxmox-infrastructure`](/docs/skills/proxmox-infrastructure) | Infrastructure Proxmox VE avec Terraform (VMs, LXC... | proxmox, infrastructure, pve |
-| [`react-performance`](/docs/skills/react-performance) | Optimisation des performances React/Next.js. Decle... | react, performance, /photo.jpg |
-| [`refactoring`](/docs/skills/refactoring) | Refactoring de code pour ameliorer la qualite. Dec... | refactoring |
-| [`reviewing-code`](/docs/skills/reviewing-code) | Effectuer une revue de code approfondie. Utiliser ... | reviewing, code |
-| [`security-audit`](/docs/skills/security-audit) | Effectuer un audit de sécurité basé sur OWASP. Uti... | security, audit, **/* |
+| [`ops-ci`](/docs/skills/ops-ci) | Configuration de pipelines CI/CD. Declencher quand... | ops |
+| [`ops-database`](/docs/skills/ops-database) | Conception de schemas de base de donnees. Declench... | ops, database |
+| [`ops-docker`](/docs/skills/ops-docker) | Containerisation Docker et Docker Compose. Declenc... | ops, docker, node |
+| [`ops-infra-code`](/docs/skills/ops-infra-code) | Infrastructure as Code avec Terraform/OpenTofu. De... | ops, infra, code |
+| [`ops-mobile-release`](/docs/skills/ops-mobile-release) | Publication d'apps sur App Store et Google Play. D... | ops, mobile, release |
+| [`ops-monitoring`](/docs/skills/ops-monitoring) | Instrumentation d'applications pour monitoring. De... | ops, monitoring |
+| [`ops-opnsense`](/docs/skills/ops-opnsense) | Configuration OPNsense via Terraform. Declencher p... | ops, opnsense, browningluke/opnsense |
+| [`ops-proxmox`](/docs/skills/ops-proxmox) | Infrastructure Proxmox VE avec Terraform (VMs, LXC... | ops, proxmox, pve |
+| [`qa-e2e`](/docs/skills/qa-e2e) | Tests End-to-End avec Playwright ou Cypress. Decle... | e2e, end-to-end, test de bout en bout |
+| [`qa-perf`](/docs/skills/qa-perf) | Optimisation des performances d'applications. Decl... | perf, /photo.jpg |
+| [`qa-review`](/docs/skills/qa-review) | Effectuer une revue de code approfondie. Utiliser ... | review |
+| [`qa-security`](/docs/skills/qa-security) | Effectuer un audit de sécurité basé sur OWASP. Uti... | security, **/*, password\s*= |
+| [`qa-tech-debt`](/docs/skills/qa-tech-debt) | Gestion et priorisation de la dette technique. Dec... | tech, debt, dette technique |
 | [`state-management`](/docs/skills/state-management) | Patterns et implementation de state management. De... | state, management, state management |
-| [`supabase-development`](/docs/skills/supabase-development) | Developpement backend avec Supabase. Declencher qu... | supabase, development, users read own profile |
-| [`tech-debt-management`](/docs/skills/tech-debt-management) | Gestion et priorisation de la dette technique. Dec... | tech, debt, management |
-| [`test-driven-development`](/docs/skills/test-driven-development) | Développement TDD avec cycle Red-Green-Refactor. U... | test, driven, development |
+| [`work-commit`](/docs/skills/work-commit) | Génère des messages de commit clairs suivant Conve... | work, commit, quoi |
+| [`work-explore`](/docs/skills/work-explore) | Explorer et comprendre un codebase existant. Utili... | work, explore |
+| [`work-plan`](/docs/skills/work-plan) | Planifier l'implémentation d'une fonctionnalité. U... | work, plan, pattern_similaire |
+| [`work-pr`](/docs/skills/work-pr) | Créer une Pull Request complète et bien documentée... | work, type(scope): description, $(cat pr_body.md) |
 
 
 
@@ -75,39 +75,11 @@ Skills avec contexte isole.
 
 <SkillGrid>
   <SkillCard
-    name="api-development"
-    description="Développer et documenter une API REST ou GraphQL. Utiliser quand l'utilisateur v"
-    keywords={["api","development","success","data"]}
-    context="fork"
-    href="/docs/skills/api-development"
-  />
-  <SkillCard
     name="api-mocking"
     description="Configuration de mocks API pour les tests. Declencher quand l'utilisateur veut m"
     keywords={["api","mocking","mock api","msw"]}
     context="fork"
     href="/docs/skills/api-mocking"
-  />
-  <SkillCard
-    name="changelog-maintenance"
-    description="Maintenance du CHANGELOG selon Keep a Changelog. Declencher quand l'utilisateur "
-    keywords={["changelog","maintenance"]}
-    context="fork"
-    href="/docs/skills/changelog-maintenance"
-  />
-  <SkillCard
-    name="ci-cd-pipeline"
-    description="Configuration de pipelines CI/CD. Declencher quand l'utilisateur veut configurer"
-    keywords={["pipeline"]}
-    context="fork"
-    href="/docs/skills/ci-cd-pipeline"
-  />
-  <SkillCard
-    name="creating-pull-requests"
-    description="Créer une Pull Request complète et bien documentée. Utiliser quand l'utilisateur"
-    keywords={["creating","pull","requests","type(scope): description"]}
-    context="fork"
-    href="/docs/skills/creating-pull-requests"
   />
   <SkillCard
     name="data-pipeline"
@@ -117,46 +89,74 @@ Skills avec contexte isole.
     href="/docs/skills/data-pipeline"
   />
   <SkillCard
-    name="database-design"
-    description="Conception de schemas de base de donnees. Declencher quand l'utilisateur veut cr"
-    keywords={["database","design"]}
+    name="dev-api"
+    description="Développer et documenter une API REST ou GraphQL. Utiliser quand l'utilisateur v"
+    keywords={["dev","api","success","data"]}
     context="fork"
-    href="/docs/skills/database-design"
+    href="/docs/skills/dev-api"
   />
   <SkillCard
-    name="debugging-issues"
+    name="dev-debug"
     description="Déboguer et résoudre des problèmes. Utiliser quand l'utilisateur a un bug, une e"
-    keywords={["debugging","issues"]}
+    keywords={["dev","debug"]}
     context="fork"
-    href="/docs/skills/debugging-issues"
+    href="/docs/skills/dev-debug"
   />
   <SkillCard
-    name="docker-containerization"
-    description="Containerisation Docker et Docker Compose. Declencher quand l'utilisateur veut d"
-    keywords={["docker","containerization","node","dist/index.js"]}
-    context="fork"
-    href="/docs/skills/docker-containerization"
-  />
-  <SkillCard
-    name="documentation-generation"
-    description="Generation de documentation technique. Declencher quand l'utilisateur veut creer"
-    keywords={["documentation","generation","uuid","email"]}
-    context="fork"
-    href="/docs/skills/documentation-generation"
-  />
-  <SkillCard
-    name="e2e-testing"
-    description="Tests End-to-End avec Playwright ou Cypress. Declencher quand l'utilisateur veut"
-    keywords={["e2e","testing","end-to-end","test de bout en bout"]}
-    context="fork"
-    href="/docs/skills/e2e-testing"
-  />
-  <SkillCard
-    name="error-handling"
+    name="dev-error-handling"
     description="Strategie de gestion des erreurs. Declencher quand l'utilisateur veut implemente"
-    keywords={["error","handling"]}
+    keywords={["dev","error","handling"]}
     context="fork"
-    href="/docs/skills/error-handling"
+    href="/docs/skills/dev-error-handling"
+  />
+  <SkillCard
+    name="dev-flutter"
+    description="Developpement Flutter avec Clean Architecture et BLoC. Declencher quand l'utilis"
+    keywords={["dev","flutter"]}
+    context="fork"
+    href="/docs/skills/dev-flutter"
+  />
+  <SkillCard
+    name="dev-graphql"
+    description="Developpement d'APIs GraphQL. Declencher quand l'utilisateur veut creer des sche"
+    keywords={["dev","graphql"]}
+    context="fork"
+    href="/docs/skills/dev-graphql"
+  />
+  <SkillCard
+    name="dev-prompt-engineering"
+    description="Optimisation de prompts pour LLMs. Declencher quand l'utilisateur veut ameliorer"
+    keywords={["dev","prompt","engineering","instruction"]}
+    context="fork"
+    href="/docs/skills/dev-prompt-engineering"
+  />
+  <SkillCard
+    name="dev-react-perf"
+    description="Optimisation des performances React/Next.js. Declencher quand l'utilisateur veut"
+    keywords={["dev","react","perf","/photo.jpg"]}
+    context="fork"
+    href="/docs/skills/dev-react-perf"
+  />
+  <SkillCard
+    name="dev-refactor"
+    description="Refactoring de code pour ameliorer la qualite. Declencher quand l'utilisateur ve"
+    keywords={["dev","refactor"]}
+    context="fork"
+    href="/docs/skills/dev-refactor"
+  />
+  <SkillCard
+    name="dev-supabase"
+    description="Developpement backend avec Supabase. Declencher quand l'utilisateur veut configu"
+    keywords={["dev","supabase","users read own profile","users update own profile"]}
+    context="fork"
+    href="/docs/skills/dev-supabase"
+  />
+  <SkillCard
+    name="dev-tdd"
+    description="Développement TDD avec cycle Red-Green-Refactor. Utiliser pour implémenter une f"
+    keywords={["dev","tdd","nom du test"]}
+    context="fork"
+    href="/docs/skills/dev-tdd"
   />
 </SkillGrid>
 
