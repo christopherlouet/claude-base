@@ -228,7 +228,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (110 commands, 51 sub-agents, 32 skills)
+## Agents Disponibles (114 commands, 52 sub-agents, 32 skills)
 
 ### Orchestrateur (Point d'entrée unique)
 | Commande | Mode | Usage |
@@ -544,7 +544,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 - **Modèle optimisé** : Haiku pour tâches simples (économie de tokens)
 - **Parallélisation** : Plusieurs agents peuvent tourner simultanément
 
-### Agents disponibles (51)
+### Agents disponibles (52)
 
 #### Exploration & Documentation
 | Agent | Modèle | Outils | Usage |

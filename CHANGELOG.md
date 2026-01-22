@@ -9,6 +9,34 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.10.0] - 2026-01-22
+
+### Ajouté
+- **Nouvel Agent**
+  - `dev-tdd` : Agent TDD pour le développement guidé par les tests
+- **3 nouvelles Commandes** (total: 114 commandes)
+  - `/dev-ai-integration` : Intégration LLMs et APIs AI (OpenAI, Claude, Gemini)
+  - `/growth-localization` : Stratégie de localisation et internationalisation multi-marchés
+  - `/qa-tech-debt` : Identifier et prioriser la dette technique
+
+### Modifié
+- **Fusion de `install.sh` dans `new-project.sh`**
+  - Nouveau mode `--simple` (ou `--install-only`) pour installation rapide
+  - Options ajoutées : `--dry-run`, `--quiet`, `--verbose`, `--skip-prompts`
+  - L'ancien comportement de `install.sh` est maintenant accessible via `new-project.sh --simple .`
+- **Compteurs mis à jour** dans la documentation : 114 commandes, 52 agents, 32 skills
+
+### Supprimé
+- **`scripts/install.sh`** : Fonctionnalités fusionnées dans `new-project.sh --simple`
+- **`tests/install.bats`** : Tests migrés vers les tests de `new-project.sh`
+
+### Statistiques
+- Commands: 114 (+3)
+- Sub-Agents: 52 (+1)
+- Skills: 32 (inchangé)
+
+---
+
 ## [1.9.0] - 2026-01-20
 
 ### Modifié

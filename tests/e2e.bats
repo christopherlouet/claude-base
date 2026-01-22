@@ -7,7 +7,6 @@
 
 load 'test_helper'
 
-INSTALL_SCRIPT="$BATS_TEST_DIRNAME/../scripts/install.sh"
 VALIDATE_SCRIPT="$BATS_TEST_DIRNAME/../scripts/validate.sh"
 UPDATE_SCRIPT="$BATS_TEST_DIRNAME/../scripts/update.sh"
 DIFF_SCRIPT="$BATS_TEST_DIRNAME/../scripts/diff.sh"
@@ -27,9 +26,9 @@ teardown() {
 # E2E: Workflow complet d'installation
 # =============================================================================
 
-@test "E2E: Workflow install → validate → doctor → uninstall" {
-    # 1. Installation
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+@test "E2E: Workflow new-project → validate → doctor → uninstall" {
+    # 1. Installation avec new-project.sh --simple
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.claude" ]
     [ -f "$TEST_DIR/CLAUDE.md" ]
@@ -48,9 +47,9 @@ teardown() {
     [ ! -d "$TEST_DIR/.claude" ]
 }
 
-@test "E2E: Workflow install → modify → diff → update" {
+@test "E2E: Workflow new-project → modify → diff → update" {
     # 1. Installation
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # 2. Modification d'un fichier
@@ -66,9 +65,9 @@ teardown() {
     [ "$status" -eq 0 ]
 }
 
-@test "E2E: Workflow install --all avec toutes les options" {
+@test "E2E: Workflow new-project --all avec toutes les options" {
     # Installation complète
-    run "$INSTALL_SCRIPT" -y --all "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple --all "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Vérifier tous les composants
@@ -136,7 +135,7 @@ EOF
 
 @test "E2E: Les fichiers locaux sont préservés durant tout le cycle" {
     # Installation
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Créer des fichiers locaux
@@ -271,7 +270,7 @@ EOF
 # =============================================================================
 
 @test "E2E: Gestion gracieuse des erreurs - répertoire inexistant" {
-    run "$INSTALL_SCRIPT" -y "/nonexistent/path/that/does/not/exist"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "/nonexistent/path/that/does/not/exist"
     # Doit échouer proprement
     [ "$status" -ne 0 ]
 }
@@ -285,7 +284,7 @@ EOF
     mkdir -p "$TEST_DIR/readonly"
     chmod 444 "$TEST_DIR/readonly"
 
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR/readonly"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/readonly"
     # Doit échouer ou avertir
     [[ "$status" -ne 0 ]] || [[ "$output" == *"permission"* ]] || [[ "$output" == *"Permission"* ]] || true
 

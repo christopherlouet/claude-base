@@ -33,6 +33,10 @@ INCLUDE_DOCKER=false
 NON_INTERACTIVE=false
 FORCE_TYPE=""
 
+# Nouvelles options (mode simple / installation directe)
+SIMPLE_MODE=false
+SKIP_PROMPTS=false
+
 # Variables de détection
 DETECTED_TYPE=""
 DETECTED_FRAMEWORK=""
@@ -63,7 +67,7 @@ ${BOLD}USAGE${NC}
 
 ${BOLD}DESCRIPTION${NC}
     Crée un nouveau projet ou configure un projet existant avec Claude Code.
-    Installe 111 commandes, 51 agents et 32 skills pour le workflow Explore → Plan → Code → Commit.
+    Installe 114 commandes, 52 agents et 32 skills pour le workflow Explore → Plan → Code → Commit.
 
 ${BOLD}ARGUMENTS${NC}
     CHEMIN              Chemin vers un projet existant à configurer (optionnel)
@@ -73,6 +77,9 @@ ${BOLD}OPTIONS${NC}
     -h, --help          Affiche cette aide
     -v, --version       Affiche la version
     -y, --yes           Mode non-interactif (accepte les valeurs par défaut)
+    -n, --dry-run       Simule l'installation sans rien copier
+    -q, --quiet         Mode silencieux (erreurs uniquement)
+    --verbose           Mode verbeux (debug)
     -t, --type TYPE     Force le type de projet (react, vue, node-api, python, go, rust, java, fullstack, generic)
     -p, --path CHEMIN   Dossier parent où créer le projet (défaut: répertoire courant)
     --ci                Inclut GitHub Actions (CI/CD)
@@ -80,6 +87,9 @@ ${BOLD}OPTIONS${NC}
     --mcp               Inclut configuration MCP
     --docker            Inclut Dockerfile
     --all               Inclut toutes les options (ci, hooks, mcp, docker)
+    --skip-prompts      Saute les questions optionnelles (utilise les flags fournis)
+    --simple            Mode installation simple (équivalent à l'ancien install.sh)
+    --install-only      Alias pour --simple
 
 ${BOLD}EXEMPLES${NC}
     # Nouveau projet interactif
@@ -100,6 +110,17 @@ ${BOLD}EXEMPLES${NC}
     # Tout inclure
     $(basename "$0") -y --all ./mon-projet
 
+    # Mode simple (installation rapide sans détection)
+    $(basename "$0") --simple .
+    $(basename "$0") --simple --all ./mon-projet
+
+    # Mode dry-run (simulation)
+    $(basename "$0") --dry-run --simple .
+    $(basename "$0") -n -y ./mon-projet
+
+    # Mode verbeux pour debug
+    $(basename "$0") --verbose ./mon-projet
+
 ${BOLD}TYPES DE PROJET${NC}
     react       React / Next.js
     vue         Vue.js / Nuxt.js
@@ -114,9 +135,9 @@ ${BOLD}TYPES DE PROJET${NC}
     generic     Autre / Générique
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
-    .claude/commands/       111 commandes Claude Code
+    .claude/commands/       114 commandes Claude Code
     .claude/skills/         32 skills spécialisés
-    .claude/agents/         51 agents avec contexte isolé
+    .claude/agents/         52 agents avec contexte isolé
     .claude/rules/          Règles contextuelles par path
     .claude/output-styles/  Styles de sortie
     .claude/templates/      Templates (spec, Proxmox, etc.)
@@ -151,6 +172,18 @@ parse_args() {
                 NON_INTERACTIVE=true
                 shift
                 ;;
+            -n|--dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            -q|--quiet)
+                export QUIET=true
+                shift
+                ;;
+            --verbose)
+                export VERBOSE=true
+                shift
+                ;;
             -t|--type)
                 FORCE_TYPE="$2"
                 shift 2
@@ -180,6 +213,16 @@ parse_args() {
                 INCLUDE_HOOKS=true
                 INCLUDE_MCP=true
                 INCLUDE_DOCKER=true
+                shift
+                ;;
+            --skip-prompts)
+                SKIP_PROMPTS=true
+                shift
+                ;;
+            --simple|--install-only)
+                SIMPLE_MODE=true
+                NON_INTERACTIVE=true
+                SKIP_PROMPTS=true
                 shift
                 ;;
             -*)
@@ -773,7 +816,7 @@ merge_cicd_workflows() {
     info "Ajout des workflows manquants..."
 
     # Créer le dossier workflows si nécessaire
-    mkdir -p "$dir/.github/workflows"
+    make_dir "$dir/.github/workflows"
 
     # Mapping des fonctionnalités manquantes vers les fichiers
     for missing in "${CICD_MISSING[@]}"; do
@@ -781,25 +824,290 @@ merge_cicd_workflows() {
             "Audit sécurité"|"Cache dépendances"|"Upload couverture"|"Tests automatisés"|"Linting")
                 # Ces fonctionnalités sont dans ci.yml
                 if [[ "$added_ci" == false ]] && [[ ! -f "$dir/.github/workflows/ci.yml" ]]; then
-                    cp "$SOCLE_DIR/.github/workflows/ci.yml" "$dir/.github/workflows/"
+                    copy_file "$SOCLE_DIR/.github/workflows/ci.yml" "$dir/.github/workflows/"
                     success "ci.yml ajouté (lint, test, build, security)"
                     added_ci=true
                 fi
                 ;;
             "Validation PR")
                 if [[ ! -f "$dir/.github/workflows/pr-check.yml" ]]; then
-                    cp "$SOCLE_DIR/.github/workflows/pr-check.yml" "$dir/.github/workflows/"
+                    copy_file "$SOCLE_DIR/.github/workflows/pr-check.yml" "$dir/.github/workflows/"
                     success "pr-check.yml ajouté (validation PR, labels)"
                 fi
                 ;;
             "Release automatisée")
                 if [[ ! -f "$dir/.github/workflows/release.yml" ]]; then
-                    cp "$SOCLE_DIR/.github/workflows/release.yml" "$dir/.github/workflows/"
+                    copy_file "$SOCLE_DIR/.github/workflows/release.yml" "$dir/.github/workflows/"
                     success "release.yml ajouté (changelog, GitHub Release)"
                 fi
                 ;;
         esac
     done
+}
+
+# =============================================================================
+# Fonctions d'installation (mode simple / réutilisables)
+# =============================================================================
+
+# Installe tous les fichiers .claude/ (commands, skills, agents, rules, etc.)
+# Arguments:
+#   $1 - Répertoire cible (chemin absolu)
+install_claude_files() {
+    local target_dir="$1"
+
+    info "Installation des fichiers Claude..."
+
+    # Créer la structure de base
+    make_dir "$target_dir/.claude/commands"
+    make_dir "$target_dir/.claude/skills"
+    make_dir "$target_dir/.claude/agents"
+    make_dir "$target_dir/.claude/rules"
+    make_dir "$target_dir/.claude/output-styles"
+    make_dir "$target_dir/.claude/templates"
+
+    # Copier les commandes
+    debug "Copie des commandes..."
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/commands/* → $target_dir/.claude/commands/"
+    else
+        cp -r "$SOCLE_DIR/.claude/commands/"* "$target_dir/.claude/commands/"
+    fi
+
+    # Copier settings.json
+    copy_file "$SOCLE_DIR/.claude/settings.json" "$target_dir/.claude/"
+
+    # Copier les skills
+    if [[ -d "$SOCLE_DIR/.claude/skills" ]]; then
+        debug "Copie des skills..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/skills/* → $target_dir/.claude/skills/"
+        else
+            cp -r "$SOCLE_DIR/.claude/skills/"* "$target_dir/.claude/skills/"
+        fi
+    fi
+
+    # Copier les agents
+    if [[ -d "$SOCLE_DIR/.claude/agents" ]]; then
+        debug "Copie des agents..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/agents/* → $target_dir/.claude/agents/"
+        else
+            cp -r "$SOCLE_DIR/.claude/agents/"* "$target_dir/.claude/agents/"
+        fi
+    fi
+
+    # Copier les rules
+    if [[ -d "$SOCLE_DIR/.claude/rules" ]]; then
+        debug "Copie des rules..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/rules/* → $target_dir/.claude/rules/"
+        else
+            cp -r "$SOCLE_DIR/.claude/rules/"* "$target_dir/.claude/rules/"
+        fi
+    fi
+
+    # Copier les output-styles
+    if [[ -d "$SOCLE_DIR/.claude/output-styles" ]]; then
+        debug "Copie des output-styles..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/output-styles/* → $target_dir/.claude/output-styles/"
+        else
+            cp -r "$SOCLE_DIR/.claude/output-styles/"* "$target_dir/.claude/output-styles/"
+        fi
+    fi
+
+    # Copier les templates
+    if [[ -d "$SOCLE_DIR/.claude/templates" ]]; then
+        debug "Copie des templates..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/templates/* → $target_dir/.claude/templates/"
+        else
+            cp -r "$SOCLE_DIR/.claude/templates/"* "$target_dir/.claude/templates/"
+        fi
+    fi
+
+    success "Commandes, skills, agents, rules, styles et templates copiés"
+}
+
+# Installe GitHub Actions
+# Arguments:
+#   $1 - Répertoire cible (chemin absolu)
+install_cicd_files() {
+    local target_dir="$1"
+
+    info "Installation de GitHub Actions..."
+    make_dir "$target_dir/.github/workflows"
+
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.github/workflows/* → $target_dir/.github/workflows/"
+    else
+        cp -r "$SOCLE_DIR/.github/workflows/"* "$target_dir/.github/workflows/"
+    fi
+
+    success "GitHub Actions installés"
+}
+
+# Installe pre-commit hooks (husky)
+# Arguments:
+#   $1 - Répertoire cible (chemin absolu)
+install_hooks_files() {
+    local target_dir="$1"
+
+    info "Installation des pre-commit hooks..."
+    make_dir "$target_dir/.husky"
+
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} cp -r husky + config files → $target_dir/"
+    else
+        cp -r "$SOCLE_DIR/.husky/"* "$target_dir/.husky/"
+        cp "$SOCLE_DIR/.pre-commit-config.yaml" "$target_dir/" 2>/dev/null || true
+        cp "$SOCLE_DIR/.lintstagedrc.json" "$target_dir/"
+        cp "$SOCLE_DIR/.commitlintrc.json" "$target_dir/"
+        chmod +x "$target_dir/.husky/"* 2>/dev/null || true
+    fi
+
+    success "Pre-commit hooks installés"
+}
+
+# Installe la configuration MCP
+# Arguments:
+#   $1 - Répertoire cible (chemin absolu)
+install_mcp_file() {
+    local target_dir="$1"
+
+    info "Installation de la configuration MCP..."
+    copy_file "$SOCLE_DIR/.mcp.json" "$target_dir/"
+    success "Configuration MCP installée"
+}
+
+# Met à jour ou crée .gitignore
+# Arguments:
+#   $1 - Répertoire cible (chemin absolu)
+update_gitignore_file() {
+    local target_dir="$1"
+
+    if [[ -f "$target_dir/.gitignore" ]]; then
+        if ! grep -q "CLAUDE.local.md" "$target_dir/.gitignore" 2>/dev/null; then
+            if ! $DRY_RUN; then
+                echo "" >> "$target_dir/.gitignore"
+                echo "# Claude Code local config" >> "$target_dir/.gitignore"
+                echo "CLAUDE.local.md" >> "$target_dir/.gitignore"
+                echo ".claude/settings.local.json" >> "$target_dir/.gitignore"
+            else
+                echo -e "${DIM}[DRY-RUN]${NC} Ajout entrées Claude à .gitignore"
+            fi
+            success ".gitignore mis à jour"
+        fi
+    else
+        copy_file "$SOCLE_DIR/.gitignore" "$target_dir/"
+        success ".gitignore créé"
+    fi
+}
+
+# Installe CLAUDE.md (copie le template générique)
+# Arguments:
+#   $1 - Répertoire cible (chemin absolu)
+install_claude_md_file() {
+    local target_dir="$1"
+
+    if [[ -f "$target_dir/CLAUDE.md" ]]; then
+        warning "CLAUDE.md existe déjà, ignoré"
+    else
+        copy_file "$SOCLE_DIR/CLAUDE.md" "$target_dir/"
+        success "CLAUDE.md copié"
+    fi
+
+    # Copier CLAUDE.local.md.example
+    if [[ ! -f "$target_dir/CLAUDE.local.md.example" ]]; then
+        copy_file "$SOCLE_DIR/CLAUDE.local.md.example" "$target_dir/"
+        success "CLAUDE.local.md.example copié"
+    fi
+}
+
+# Affiche le résumé d'installation (mode simple)
+print_simple_summary() {
+    local target_dir="$1"
+
+    echo ""
+    separator "="
+    success "Installation terminée!"
+    separator "="
+    echo ""
+
+    info "Fichiers installés:"
+    echo "  - .claude/commands/      (114 commandes)"
+    echo "  - .claude/skills/        ($(count_skills "$SOCLE_DIR") skills)"
+    echo "  - .claude/agents/        (52 agents)"
+    echo "  - .claude/rules/         (règles contextuelles)"
+    echo "  - .claude/output-styles/ (styles de sortie)"
+    echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
+    echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
+    echo "  - CLAUDE.md"
+    echo "  - CLAUDE.local.md.example"
+    echo ""
+
+    info "Prochaines étapes:"
+    echo "  1. Personnalisez CLAUDE.md selon votre projet"
+    echo "  2. Copiez CLAUDE.local.md.example en CLAUDE.local.md"
+    echo "  3. Lancez Claude Code: cd $target_dir && claude"
+    echo ""
+
+    info "Commandes disponibles:"
+    echo "  /explore, /plan, /commit, etc."
+    echo ""
+}
+
+# Exécution du mode simple (installation directe sans détection)
+run_simple_mode() {
+    local target_dir
+
+    # Déterminer le répertoire cible
+    if [[ -n "$PROJECT_PATH" ]]; then
+        target_dir="$PROJECT_PATH"
+    else
+        target_dir="."
+    fi
+
+    # Convertir en chemin absolu
+    if [[ ! -d "$target_dir" ]]; then
+        if ! $DRY_RUN; then
+            mkdir -p "$target_dir" || error "Impossible de créer le dossier: $target_dir"
+        fi
+    fi
+    target_dir="$(get_absolute_path "$target_dir")"
+
+    info "Installation de claude-socle dans: $target_dir"
+    $DRY_RUN && warning "Mode dry-run activé - aucune modification ne sera effectuée"
+    echo ""
+
+    # Nettoyer les anciens fichiers Claude si le dossier existe
+    if [[ -d "$target_dir/.claude" ]]; then
+        clean_claude_dirs "$target_dir"
+    fi
+
+    # Installation des fichiers Claude
+    install_claude_files "$target_dir"
+
+    # Installation CLAUDE.md
+    install_claude_md_file "$target_dir"
+
+    # Composants optionnels
+    $INCLUDE_CICD && install_cicd_files "$target_dir"
+    $INCLUDE_HOOKS && install_hooks_files "$target_dir"
+    $INCLUDE_MCP && install_mcp_file "$target_dir"
+    $INCLUDE_DOCKER && create_dockerfile_in_dir "$target_dir"
+
+    # Mettre à jour .gitignore
+    update_gitignore_file "$target_dir"
+
+    # Initialiser git si pas déjà fait
+    if [[ ! -d "$target_dir/.git" ]] && ! $DRY_RUN; then
+        (cd "$target_dir" && git init -q)
+        success "Repository git initialisé"
+    fi
+
+    # Afficher le résumé
+    print_simple_summary "$target_dir"
 }
 
 # =============================================================================
@@ -1029,7 +1337,7 @@ EOF
 
     # Section Agents Disponibles
     cat >> "$output_file" << 'EOF'
-## Agents Disponibles (111 commandes, 51 agents)
+## Agents Disponibles (114 commandes, 52 agents)
 
 | Catégorie | Commandes |
 |-----------|-----------|
@@ -1250,6 +1558,16 @@ get_project_type() {
 }
 
 get_options() {
+    # Si --skip-prompts est activé, utiliser les flags fournis sans poser de questions
+    if $SKIP_PROMPTS; then
+        debug "Skip prompts activé - utilisation des flags CLI"
+        # Respecter la détection pour éviter les doublons
+        $DETECTED_CICD && INCLUDE_CICD=false
+        $DETECTED_HOOKS && INCLUDE_HOOKS=false
+        $DETECTED_DOCKER && INCLUDE_DOCKER=false
+        return
+    fi
+
     echo ""
     info "Options supplémentaires:"
     echo ""
@@ -1372,7 +1690,11 @@ clean_claude_dirs() {
 
     for subdir in "${dirs_to_clean[@]}"; do
         if [[ -d "$dir/.claude/$subdir" ]]; then
-            rm -rf "$dir/.claude/$subdir"
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} rm -rf $dir/.claude/$subdir"
+            else
+                rm -rf "$dir/.claude/$subdir"
+            fi
             debug "Supprimé: .claude/$subdir"
         fi
     done
@@ -1382,62 +1704,96 @@ clean_claude_dirs() {
 
 create_project() {
     echo ""
+
+    # Convertir PROJECT_PATH en chemin absolu (TARGET_DIR)
+    local TARGET_DIR
     if $EXISTING_PROJECT; then
         info "Configuration du projet existant..."
+        TARGET_DIR="$(get_absolute_path "$PROJECT_PATH")"
     else
         info "Création du projet..."
-        mkdir -p "$PROJECT_PATH"
+        if ! $DRY_RUN; then
+            mkdir -p "$PROJECT_PATH"
+        else
+            echo -e "${DIM}[DRY-RUN]${NC} mkdir -p $PROJECT_PATH"
+        fi
+        TARGET_DIR="$(get_absolute_path "$PROJECT_PATH")"
     fi
 
-    cd "$PROJECT_PATH"
+    debug "Répertoire cible: $TARGET_DIR"
+    $DRY_RUN && warning "Mode dry-run activé - aucune modification ne sera effectuée"
 
     # Nettoyer les anciens fichiers Claude si le dossier existe
-    if [[ -d ".claude" ]]; then
-        clean_claude_dirs "$(pwd)"
+    if [[ -d "$TARGET_DIR/.claude" ]]; then
+        clean_claude_dirs "$TARGET_DIR"
     fi
 
     # Créer la structure de base
-    mkdir -p .claude/commands
+    make_dir "$TARGET_DIR/.claude/commands"
 
     # Copier les commandes Claude
     info "Installation des commandes Claude..."
-    cp -r "$SOCLE_DIR/.claude/commands/"* .claude/commands/
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/commands/* → $TARGET_DIR/.claude/commands/"
+    else
+        cp -r "$SOCLE_DIR/.claude/commands/"* "$TARGET_DIR/.claude/commands/"
+    fi
 
     # Copier les agents
     if [[ -d "$SOCLE_DIR/.claude/agents" ]]; then
-        mkdir -p .claude/agents
-        cp -r "$SOCLE_DIR/.claude/agents/"* .claude/agents/
+        make_dir "$TARGET_DIR/.claude/agents"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/agents/* → $TARGET_DIR/.claude/agents/"
+        else
+            cp -r "$SOCLE_DIR/.claude/agents/"* "$TARGET_DIR/.claude/agents/"
+        fi
     fi
 
     # Copier les rules
     if [[ -d "$SOCLE_DIR/.claude/rules" ]]; then
-        mkdir -p .claude/rules
-        cp -r "$SOCLE_DIR/.claude/rules/"* .claude/rules/
+        make_dir "$TARGET_DIR/.claude/rules"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/rules/* → $TARGET_DIR/.claude/rules/"
+        else
+            cp -r "$SOCLE_DIR/.claude/rules/"* "$TARGET_DIR/.claude/rules/"
+        fi
     fi
 
     # Copier les output-styles
     if [[ -d "$SOCLE_DIR/.claude/output-styles" ]]; then
-        mkdir -p .claude/output-styles
-        cp -r "$SOCLE_DIR/.claude/output-styles/"* .claude/output-styles/
+        make_dir "$TARGET_DIR/.claude/output-styles"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/output-styles/* → $TARGET_DIR/.claude/output-styles/"
+        else
+            cp -r "$SOCLE_DIR/.claude/output-styles/"* "$TARGET_DIR/.claude/output-styles/"
+        fi
     fi
 
     # Copier les templates
     if [[ -d "$SOCLE_DIR/.claude/templates" ]]; then
-        mkdir -p .claude/templates
-        cp -r "$SOCLE_DIR/.claude/templates/"* .claude/templates/
+        make_dir "$TARGET_DIR/.claude/templates"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/templates/* → $TARGET_DIR/.claude/templates/"
+        else
+            cp -r "$SOCLE_DIR/.claude/templates/"* "$TARGET_DIR/.claude/templates/"
+        fi
     fi
 
-    cp "$SOCLE_DIR/.claude/settings.json" .claude/
+    copy_file "$SOCLE_DIR/.claude/settings.json" "$TARGET_DIR/.claude/"
 
     # Copier les skills
     if [[ -d "$SOCLE_DIR/.claude/skills" ]]; then
-        mkdir -p .claude/skills
-        cp -r "$SOCLE_DIR/.claude/skills/"* .claude/skills/
+        make_dir "$TARGET_DIR/.claude/skills"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/skills/* → $TARGET_DIR/.claude/skills/"
+        else
+            cp -r "$SOCLE_DIR/.claude/skills/"* "$TARGET_DIR/.claude/skills/"
+        fi
     fi
-    success "Commandes Claude installées (111 commandes, 51 agents, 32 skills)"
+    success "Commandes Claude installées (114 commandes, 52 agents, 32 skills)"
 
     # Générer ou copier CLAUDE.md
-    if [[ ! -f "CLAUDE.md" ]]; then
+    if [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then
         # Utiliser le template spécifique si un type est détecté
         # La génération intelligente est réservée aux projets sans template dédié
         local use_template=false
@@ -1451,29 +1807,31 @@ create_project() {
             # Copier le template spécifique au type de projet
             info "Configuration du template CLAUDE.md..."
             case $PROJECT_TYPE in
-                react)     cp "$SOCLE_DIR/templates/CLAUDE.react.md" CLAUDE.md ;;
-                vue)       cp "$SOCLE_DIR/templates/CLAUDE.vue.md" CLAUDE.md ;;
-                node-api)  cp "$SOCLE_DIR/templates/CLAUDE.node-api.md" CLAUDE.md ;;
-                python)    cp "$SOCLE_DIR/templates/CLAUDE.python.md" CLAUDE.md ;;
-                go)        cp "$SOCLE_DIR/templates/CLAUDE.go.md" CLAUDE.md ;;
-                rust)      cp "$SOCLE_DIR/templates/CLAUDE.rust.md" CLAUDE.md ;;
-                java)      cp "$SOCLE_DIR/templates/CLAUDE.java.md" CLAUDE.md ;;
-                fullstack) cp "$SOCLE_DIR/templates/CLAUDE.fullstack.md" CLAUDE.md ;;
-                flutter)   cp "$SOCLE_DIR/templates/CLAUDE.flutter.md" CLAUDE.md ;;
-                neovim)    cp "$SOCLE_DIR/templates/CLAUDE.neovim.md" CLAUDE.md ;;
+                react)     copy_file "$SOCLE_DIR/templates/CLAUDE.react.md" "$TARGET_DIR/CLAUDE.md" ;;
+                vue)       copy_file "$SOCLE_DIR/templates/CLAUDE.vue.md" "$TARGET_DIR/CLAUDE.md" ;;
+                node-api)  copy_file "$SOCLE_DIR/templates/CLAUDE.node-api.md" "$TARGET_DIR/CLAUDE.md" ;;
+                python)    copy_file "$SOCLE_DIR/templates/CLAUDE.python.md" "$TARGET_DIR/CLAUDE.md" ;;
+                go)        copy_file "$SOCLE_DIR/templates/CLAUDE.go.md" "$TARGET_DIR/CLAUDE.md" ;;
+                rust)      copy_file "$SOCLE_DIR/templates/CLAUDE.rust.md" "$TARGET_DIR/CLAUDE.md" ;;
+                java)      copy_file "$SOCLE_DIR/templates/CLAUDE.java.md" "$TARGET_DIR/CLAUDE.md" ;;
+                fullstack) copy_file "$SOCLE_DIR/templates/CLAUDE.fullstack.md" "$TARGET_DIR/CLAUDE.md" ;;
+                flutter)   copy_file "$SOCLE_DIR/templates/CLAUDE.flutter.md" "$TARGET_DIR/CLAUDE.md" ;;
+                neovim)    copy_file "$SOCLE_DIR/templates/CLAUDE.neovim.md" "$TARGET_DIR/CLAUDE.md" ;;
             esac
             success "Template CLAUDE.md configuré (${PROJECT_TYPE})"
         elif $EXISTING_PROJECT && [[ ${#DETECTED_SCRIPTS[@]} -gt 0 || ${#DETECTED_FOLDERS[@]} -gt 0 ]]; then
             # Générer un CLAUDE.md intelligent pour les projets existants sans template
-            generate_smart_claude_md "CLAUDE.md"
+            generate_smart_claude_md "$TARGET_DIR/CLAUDE.md"
         else
             # Copier le template générique
             info "Configuration du template CLAUDE.md..."
-            cp "$SOCLE_DIR/CLAUDE.md" CLAUDE.md
+            copy_file "$SOCLE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
 
             # Remplacer le nom du projet dans CLAUDE.md
-            sed -i "s/# Projet .*/# Projet ${PROJECT_NAME}/" CLAUDE.md 2>/dev/null || \
-            sed -i '' "s/# Projet .*/# Projet ${PROJECT_NAME}/" CLAUDE.md 2>/dev/null || true
+            if ! $DRY_RUN; then
+                sed -i "s/# Projet .*/# Projet ${PROJECT_NAME}/" "$TARGET_DIR/CLAUDE.md" 2>/dev/null || \
+                sed -i '' "s/# Projet .*/# Projet ${PROJECT_NAME}/" "$TARGET_DIR/CLAUDE.md" 2>/dev/null || true
+            fi
 
             success "Template CLAUDE.md configuré (${PROJECT_TYPE})"
         fi
@@ -1482,8 +1840,8 @@ create_project() {
     fi
 
     # Copier CLAUDE.local.md.example (seulement si n'existe pas)
-    if [[ ! -f "CLAUDE.local.md.example" ]]; then
-        cp "$SOCLE_DIR/CLAUDE.local.md.example" .
+    if [[ ! -f "$TARGET_DIR/CLAUDE.local.md.example" ]]; then
+        copy_file "$SOCLE_DIR/CLAUDE.local.md.example" "$TARGET_DIR/"
         success "CLAUDE.local.md.example copié"
     fi
 
@@ -1491,63 +1849,81 @@ create_project() {
     # Gestion CI/CD selon l'action choisie
     if $INCLUDE_CICD; then
         info "Installation de GitHub Actions..."
-        mkdir -p .github/workflows
-        cp -r "$SOCLE_DIR/.github/workflows/"* .github/workflows/
+        make_dir "$TARGET_DIR/.github/workflows"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.github/workflows/* → $TARGET_DIR/.github/workflows/"
+        else
+            cp -r "$SOCLE_DIR/.github/workflows/"* "$TARGET_DIR/.github/workflows/"
+        fi
         success "GitHub Actions installés"
     elif [[ "$CICD_ACTION" == "merge" ]]; then
-        merge_cicd_workflows "$(pwd)"
+        merge_cicd_workflows "$TARGET_DIR"
     elif [[ "$CICD_ACTION" == "replace" ]]; then
         warning "Remplacement des workflows existants..."
-        mkdir -p .github/workflows
-        rm -f .github/workflows/*.yml .github/workflows/*.yaml 2>/dev/null || true
-        cp -r "$SOCLE_DIR/.github/workflows/"* .github/workflows/
+        make_dir "$TARGET_DIR/.github/workflows"
+        if ! $DRY_RUN; then
+            rm -f "$TARGET_DIR/.github/workflows/"*.yml "$TARGET_DIR/.github/workflows/"*.yaml 2>/dev/null || true
+            cp -r "$SOCLE_DIR/.github/workflows/"* "$TARGET_DIR/.github/workflows/"
+        else
+            echo -e "${DIM}[DRY-RUN]${NC} Remplacement des workflows dans $TARGET_DIR/.github/workflows/"
+        fi
         success "GitHub Actions remplacés par les templates du socle"
     fi
 
     # Pre-commit hooks
     if $INCLUDE_HOOKS; then
         info "Installation des pre-commit hooks..."
-        mkdir -p .husky
-        cp -r "$SOCLE_DIR/.husky/"* .husky/
-        cp "$SOCLE_DIR/.lintstagedrc.json" .
-        cp "$SOCLE_DIR/.commitlintrc.json" .
-        cp "$SOCLE_DIR/.pre-commit-config.yaml" . 2>/dev/null || true
-        chmod +x .husky/* 2>/dev/null || true
+        make_dir "$TARGET_DIR/.husky"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r husky + config files → $TARGET_DIR/"
+        else
+            cp -r "$SOCLE_DIR/.husky/"* "$TARGET_DIR/.husky/"
+            cp "$SOCLE_DIR/.lintstagedrc.json" "$TARGET_DIR/"
+            cp "$SOCLE_DIR/.commitlintrc.json" "$TARGET_DIR/"
+            cp "$SOCLE_DIR/.pre-commit-config.yaml" "$TARGET_DIR/" 2>/dev/null || true
+            chmod +x "$TARGET_DIR/.husky/"* 2>/dev/null || true
+        fi
         success "Pre-commit hooks installés"
     fi
 
     # MCP
     if $INCLUDE_MCP; then
         info "Installation de la configuration MCP..."
-        cp "$SOCLE_DIR/.mcp.json" .
+        copy_file "$SOCLE_DIR/.mcp.json" "$TARGET_DIR/"
         success "Configuration MCP installée"
     fi
 
     # Docker
     if $INCLUDE_DOCKER; then
-        info "Création des fichiers Docker..."
-        create_dockerfile
-        success "Fichiers Docker créés"
+        create_dockerfile_in_dir "$TARGET_DIR"
     fi
 
     # .gitignore (merge si existe déjà)
-    if [[ -f ".gitignore" ]]; then
+    if [[ -f "$TARGET_DIR/.gitignore" ]]; then
         # Ajouter les entrées Claude si pas déjà présentes
-        if ! grep -q "CLAUDE.local.md" .gitignore 2>/dev/null; then
-            echo "" >> .gitignore
-            echo "# Claude Code" >> .gitignore
-            echo "CLAUDE.local.md" >> .gitignore
-            echo ".claude/settings.local.json" >> .gitignore
+        if ! grep -q "CLAUDE.local.md" "$TARGET_DIR/.gitignore" 2>/dev/null; then
+            if ! $DRY_RUN; then
+                echo "" >> "$TARGET_DIR/.gitignore"
+                echo "# Claude Code" >> "$TARGET_DIR/.gitignore"
+                echo "CLAUDE.local.md" >> "$TARGET_DIR/.gitignore"
+                echo ".claude/settings.local.json" >> "$TARGET_DIR/.gitignore"
+            else
+                echo -e "${DIM}[DRY-RUN]${NC} Ajout entrées Claude à .gitignore"
+            fi
             success ".gitignore mis à jour"
         fi
     else
-        cp "$SOCLE_DIR/.gitignore" .
+        copy_file "$SOCLE_DIR/.gitignore" "$TARGET_DIR/"
         success ".gitignore créé"
     fi
 
     # Initialiser git si pas déjà fait
-    if [[ ! -d .git ]]; then
-        git init -q
+    if [[ ! -d "$TARGET_DIR/.git" ]]; then
+        if ! $DRY_RUN; then
+            (cd "$TARGET_DIR" && git init -q)
+        else
+            echo -e "${DIM}[DRY-RUN]${NC} git init dans $TARGET_DIR"
+        fi
         success "Repository git initialisé"
     fi
 }
@@ -1712,6 +2088,183 @@ EOF
     fi
 }
 
+# Crée un Dockerfile dans un répertoire spécifié (pour mode simple)
+# Arguments:
+#   $1 - Répertoire cible (chemin absolu)
+create_dockerfile_in_dir() {
+    local target_dir="$1"
+
+    info "Création des fichiers Docker..."
+
+    # Ne pas écraser un Dockerfile existant
+    if [[ -f "$target_dir/Dockerfile" ]]; then
+        warning "Dockerfile existe déjà, ignoré"
+        return
+    fi
+
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} Création de Dockerfile dans $target_dir"
+        return
+    fi
+
+    # Utiliser le type détecté ou générique
+    local type="${PROJECT_TYPE:-generic}"
+
+    # Créer un Dockerfile basique selon le type de projet
+    case $type in
+        react|vue)
+            cat > "$target_dir/Dockerfile" << 'EOF'
+# Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+EOF
+            ;;
+        node-api)
+            cat > "$target_dir/Dockerfile" << 'EOF'
+# Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine
+WORKDIR /app
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/package.json ./
+USER nodejs
+EXPOSE 3000
+CMD ["node", "dist/index.js"]
+EOF
+            ;;
+        python)
+            cat > "$target_dir/Dockerfile" << 'EOF'
+FROM python:3.12-slim
+WORKDIR /app
+RUN useradd --create-home appuser
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=appuser:appuser . .
+USER appuser
+EXPOSE 8000
+CMD ["python", "main.py"]
+EOF
+            ;;
+        go)
+            cat > "$target_dir/Dockerfile" << 'EOF'
+FROM golang:1.22-alpine AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main .
+
+FROM scratch
+COPY --from=builder /app/main /main
+EXPOSE 8080
+ENTRYPOINT ["/main"]
+EOF
+            ;;
+        rust)
+            cat > "$target_dir/Dockerfile" << 'EOF'
+FROM rust:1.75-alpine AS builder
+WORKDIR /app
+RUN apk add --no-cache musl-dev
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+RUN cargo build --release
+
+FROM alpine:latest
+COPY --from=builder /app/target/release/app /app
+EXPOSE 8080
+ENTRYPOINT ["/app"]
+EOF
+            ;;
+        java)
+            cat > "$target_dir/Dockerfile" << 'EOF'
+FROM eclipse-temurin:21-jdk-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN ./mvnw package -DskipTests
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+EOF
+            ;;
+        flutter)
+            cat > "$target_dir/Dockerfile" << 'EOF'
+# Flutter Web Build
+FROM ghcr.io/cirruslabs/flutter:stable AS builder
+WORKDIR /app
+COPY pubspec.* ./
+RUN flutter pub get
+COPY . .
+RUN flutter build web --release
+
+# Production stage (nginx for web)
+FROM nginx:alpine
+COPY --from=builder /app/build/web /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+EOF
+            ;;
+        *)
+            cat > "$target_dir/Dockerfile" << 'EOF'
+FROM ubuntu:22.04
+WORKDIR /app
+COPY . .
+# Customize this Dockerfile for your project
+CMD ["bash"]
+EOF
+            ;;
+    esac
+
+    # Créer .dockerignore si n'existe pas
+    if [[ ! -f "$target_dir/.dockerignore" ]]; then
+        cat > "$target_dir/.dockerignore" << 'EOF'
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+.env.*
+Dockerfile*
+docker-compose*
+.dockerignore
+README.md
+.vscode
+.idea
+coverage
+dist
+build
+*.log
+__pycache__
+*.pyc
+.pytest_cache
+target
+EOF
+    fi
+
+    success "Fichiers Docker créés"
+}
+
 print_next_steps() {
     echo ""
     echo -e "${BOLD}${GREEN}═══════════════════════════════════════════════════════════════${NC}"
@@ -1774,6 +2327,18 @@ print_next_steps() {
 main() {
     # Parser les arguments en premier
     parse_args "$@"
+
+    # Mode simple: installation directe sans détection de stack
+    if $SIMPLE_MODE; then
+        # Afficher le banner (sauf en mode silencieux)
+        if ! $QUIET; then
+            echo ""
+            echo -e "${BOLD}${CYAN}Claude-Socle - Installation Simple${NC}"
+            echo ""
+        fi
+        run_simple_mode
+        exit 0
+    fi
 
     # Afficher le banner (sauf en mode non-interactif silencieux)
     if ! $NON_INTERACTIVE; then
