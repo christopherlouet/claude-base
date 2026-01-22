@@ -554,15 +554,15 @@ Les skills sont des comportements automatiques qui se déclenchent selon le cont
 
 | Skill | Déclencheur | Action |
 |-------|-------------|--------|
-| `exploring-codebase` | Exploration de code | Guide l'exploration méthodique |
-| `planning-implementation` | Planification | Structure le plan d'implémentation |
-| `generating-commit-messages` | Commit | Génère des messages Conventional Commits |
-| `creating-pull-requests` | PR | Crée des PR complètes |
-| `reviewing-code` | Review | Effectue des reviews approfondies |
-| `debugging-issues` | Bug | Guide le débogage |
-| `test-driven-development` | TDD | Applique le cycle Red-Green-Refactor |
-| `api-development` | API | Guide la création d'API |
-| `security-audit` | Sécurité | Applique OWASP Top 10 |
+| `work-explore` | Exploration de code | Guide l'exploration méthodique |
+| `work-plan` | Planification | Structure le plan d'implémentation |
+| `work-commit` | Commit | Génère des messages Conventional Commits |
+| `work-pr` | PR | Crée des PR complètes |
+| `qa-review` | Review | Effectue des reviews approfondies |
+| `dev-debug` | Bug | Guide le débogage |
+| `dev-tdd` | TDD | Applique le cycle Red-Green-Refactor |
+| `dev-api` | API | Guide la création d'API |
+| `qa-security` | Sécurité | Applique OWASP Top 10 |
 
 ## Comment fonctionnent les skills ?
 

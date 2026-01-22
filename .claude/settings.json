@@ -53,7 +53,6 @@
       "Bash(wget | bash:*)",
       "Bash(curl | sh:*)",
       "Bash(wget | sh:*)",
-      "Bash(:(){ :|:& };:*)",
       "Bash(shutdown:*)",
       "Bash(reboot:*)",
       "Bash(halt:*)",

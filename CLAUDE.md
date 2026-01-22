@@ -485,41 +485,41 @@ En plus des commandes, le projet inclut **32 Skills** dans `.claude/skills/`:
 ### Skills de base
 | Skill | Déclenchement automatique | Context |
 |-------|---------------------------|---------|
-| `test-driven-development` | "TDD", "test first", "écrire les tests" | fork |
-| `generating-commit-messages` | "commit", "message de commit" | fork |
-| `debugging-issues` | "bug", "erreur", "debug" | fork |
-| `reviewing-code` | "review", "code review" | fork |
-| `security-audit` | "audit sécurité", "OWASP" | fork |
-| `planning-implementation` | "planifier", "architecture" | fork |
-| `exploring-codebase` | "explorer", "comprendre le code" | fork |
-| `creating-pull-requests` | "PR", "pull request" | fork |
-| `api-development` | "API", "endpoint", "REST" | fork |
+| `dev-tdd` | "TDD", "test first", "écrire les tests" | fork |
+| `work-commit` | "commit", "message de commit" | fork |
+| `dev-debug` | "bug", "erreur", "debug" | fork |
+| `qa-review` | "review", "code review" | fork |
+| `qa-security` | "audit sécurité", "OWASP" | fork |
+| `work-plan` | "planifier", "architecture" | fork |
+| `work-explore` | "explorer", "comprendre le code" | fork |
+| `work-pr` | "PR", "pull request" | fork |
+| `dev-api` | "API", "endpoint", "REST" | fork |
 
 ### Skills additionnels
 | Skill | Déclenchement automatique | Context |
 |-------|---------------------------|---------|
-| `flutter-development` | "Flutter", "widget", "BLoC" | fork |
-| `supabase-development` | "Supabase", "auth", "RLS" | fork |
-| `react-performance` | "React perf", "re-render", "memo" | fork |
-| `docker-containerization` | "Docker", "container", "Dockerfile" | fork |
-| `ci-cd-pipeline` | "CI/CD", "GitHub Actions", "pipeline" | fork |
-| `database-design` | "schema", "migration", "index" | fork |
-| `monitoring-instrumentation` | "logs", "métriques", "traces" | fork |
-| `documentation-generation` | "documenter", "README", "JSDoc" | fork |
-| `changelog-maintenance` | "changelog", "release notes" | fork |
-| `refactoring` | "refactorer", "clean code", "restructurer" | fork |
-| `error-handling` | "gestion erreurs", "exceptions", "error boundary" | fork |
-| `graphql-development` | "GraphQL", "resolver", "schema" | fork |
-| `mobile-release` | "App Store", "Play Store", "Fastlane" | fork |
+| `dev-flutter` | "Flutter", "widget", "BLoC" | fork |
+| `dev-supabase` | "Supabase", "auth", "RLS" | fork |
+| `dev-react-perf` | "React perf", "re-render", "memo" | fork |
+| `ops-docker` | "Docker", "container", "Dockerfile" | fork |
+| `ops-ci` | "CI/CD", "GitHub Actions", "pipeline" | fork |
+| `ops-database` | "schema", "migration", "index" | fork |
+| `ops-monitoring` | "logs", "métriques", "traces" | fork |
+| `doc-generate` | "documenter", "README", "JSDoc" | fork |
+| `doc-changelog` | "changelog", "release notes" | fork |
+| `dev-refactor` | "refactorer", "clean code", "restructurer" | fork |
+| `dev-error-handling` | "gestion erreurs", "exceptions", "error boundary" | fork |
+| `dev-graphql` | "GraphQL", "resolver", "schema" | fork |
+| `ops-mobile-release` | "App Store", "Play Store", "Fastlane" | fork |
 | `data-pipeline` | "ETL", "Airflow", "dbt" | fork |
-| `performance-optimization` | "optimiser", "latence", "TTFB" | fork |
-| `prompt-engineering` | "prompt", "instruction", "few-shot", "LLM" | fork |
-| `e2e-testing` | "E2E", "Playwright", "Cypress", "parcours utilisateur" | fork |
+| `qa-perf` | "optimiser", "latence", "TTFB" | fork |
+| `dev-prompt-engineering` | "prompt", "instruction", "few-shot", "LLM" | fork |
+| `qa-e2e` | "E2E", "Playwright", "Cypress", "parcours utilisateur" | fork |
 | `feature-flags` | "feature flag", "A/B test", "deploiement progressif" | fork |
-| `infrastructure-as-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | fork |
-| `proxmox-infrastructure` | "Proxmox", "PVE", "VM Proxmox", "LXC", "PBS" | fork |
-| `opnsense-configuration` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | fork |
-| `tech-debt-management` | "dette technique", "tech debt", "refactoring priorité" | fork |
+| `ops-infra-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | fork |
+| `ops-proxmox` | "Proxmox", "PVE", "VM Proxmox", "LXC", "PBS" | fork |
+| `ops-opnsense` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | fork |
+| `qa-tech-debt` | "dette technique", "tech debt", "refactoring priorité" | fork |
 | `api-mocking` | "mock API", "MSW", "test sans backend" | fork |
 | `state-management` | "state", "Redux", "Zustand", "store" | fork |
 
@@ -650,7 +650,7 @@ Chaque agent définit:
 - **permissionMode**: `plan` (lecture seule) ou `default`
 - **disallowedTools**: Outils interdits (ex: `Edit, Write, NotebookEdit`)
 - **hooks**: Validations automatiques (PreToolUse, PostToolUse)
-- **skills**: Skills injectés dans l'agent (ex: `security-audit`, `exploring-codebase`)
+- **skills**: Skills injectés dans l'agent (ex: `qa-security`, `work-explore`)
 
 ## Modular Rules (Claude Code 2.1+)
 
