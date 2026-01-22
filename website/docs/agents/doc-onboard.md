@@ -21,7 +21,7 @@ tags:
 | **Permission Mode** | plan |
 | **Outils autorises** | `Read`, `Grep`, `Glob` |
 | **Outils interdits** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
-| **Skills injectes** | `exploring-codebase` |
+| **Skills injectes** | `work-explore` |
 
 ## Description detaillee
 

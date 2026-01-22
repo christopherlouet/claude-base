@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 title: "api-mocking"
 description: "Configuration de mocks API pour les tests. Declencher quand l'utilisateur veut mocker des APIs, utiliser MSW, ou tester sans backend."
 tags:

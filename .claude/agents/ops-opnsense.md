@@ -1,7 +1,9 @@
 ---
+name: ops-opnsense
+description: Configuration OPNsense via Terraform (interfaces, firewall, NAT, DHCP/DNS, aliases)
+tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
-disallowedTools: []
 skills:
   - ops-infra-code
   - ops-opnsense

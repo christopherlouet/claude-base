@@ -21,7 +21,7 @@ tags:
 | **Permission Mode** | default |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
 | **Outils interdits** | _Aucun_ |
-| **Skills injectes** | `debugging-issues` |
+| **Skills injectes** | `dev-debug` |
 
 ## Description detaillee
 

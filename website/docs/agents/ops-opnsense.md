@@ -19,9 +19,9 @@ tags:
 |-----------|--------|
 | **Modele** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | _Aucun outil specifie_ |
+| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
 | **Outils interdits** | _Aucun_ |
-| **Skills injectes** | `infrastructure-as-code`, `opnsense-configuration` |
+| **Skills injectes** | `ops-infra-code`, `ops-opnsense` |
 
 ## Description detaillee
 
