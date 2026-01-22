@@ -9,7 +9,7 @@ import Stats, { SOCLE_STATS } from '@site/src/components/Stats';
 
 # Bienvenue sur claude-socle
 
-> **Template de configuration Claude Code pour un workflow optimal : Explore → Plan → Code → Commit**
+> **Template de configuration Claude Code pour un workflow optimal : Explore → Plan → TDD → Commit**
 
 claude-socle est un ensemble complet de configurations, commandes et automatisations pour maximiser votre productivite avec Claude Code. Il propose un workflow structure et des agents specialises pour chaque type de tache.
 
@@ -30,7 +30,7 @@ Quand on utilise Claude Code sans structure :
 claude-socle impose un workflow structure :
 
 ```
-Explore → Plan → Code → Commit
+Explore → Plan → TDD → Commit
 ```
 
 Chaque etape a ses commandes dediees, ses agents specialises et ses bonnes pratiques.
