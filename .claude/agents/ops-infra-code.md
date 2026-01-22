@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
 skills:
-  - infrastructure-as-code
+  - ops-infra-code
 ---
 
 # Agent OPS-INFRA-CODE

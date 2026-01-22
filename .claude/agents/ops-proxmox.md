@@ -5,8 +5,8 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
 skills:
-  - proxmox-infrastructure
-  - infrastructure-as-code
+  - ops-proxmox
+  - ops-infra-code
 ---
 
 # Agent OPS-PROXMOX

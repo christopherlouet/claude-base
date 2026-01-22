@@ -6,7 +6,7 @@ model: haiku
 permissionMode: plan
 disallowedTools: Edit, Write, Bash, NotebookEdit
 skills:
-  - exploring-codebase
+  - work-explore
 ---
 
 # Agent DOC-ONBOARD

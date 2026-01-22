@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
 skills:
-  - test-driven-development
+  - dev-tdd
 hooks:
   PreToolUse:
     - matcher: "Edit|Write"

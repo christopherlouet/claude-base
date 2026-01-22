@@ -3,8 +3,8 @@ model: sonnet
 permissionMode: default
 disallowedTools: []
 skills:
-  - infrastructure-as-code
-  - opnsense-configuration
+  - ops-infra-code
+  - ops-opnsense
 ---
 
 # Agent OPS-OPNSENSE
