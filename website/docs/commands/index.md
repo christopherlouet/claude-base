@@ -8,10 +8,10 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Commandes
 
-> **114 commandes** organisees en **10 domaines**
+> **115 commandes** organisees en **10 domaines**
 
 <Stats items={[
-  { number: 114, label: 'Commandes' },
+  { number: 115, label: 'Commandes' },
   { number: 10, label: 'Domaines' },
 ]} />
 
@@ -107,7 +107,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 
 
 
-### [OPS](/docs/commands/ops) (29)
+### [OPS](/docs/commands/ops) (30)
 
 > Operations (CI/CD, Docker, monitoring, GitFlow)
 
@@ -116,7 +116,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization)
 - [`/ops-database`](/docs/commands/ops/ops-database)
 - [`/ops-deps`](/docs/commands/ops/ops-deps)
-- [... et 24 autres](/docs/commands/ops)
+- [... et 25 autres](/docs/commands/ops)
 
 
 ### [QA](/docs/commands/qa) (13)

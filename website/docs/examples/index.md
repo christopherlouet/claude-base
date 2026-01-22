@@ -31,7 +31,7 @@ Exemples pratiques et prêts à l'emploi pour démarrer rapidement avec claude-s
 | [Resolver GraphQL](/docs/examples/api/graphql-resolver) | `/dev-graphql` | Query et Mutation |
 | [Procedure tRPC](/docs/examples/api/trpc-procedure) | `/dev-trpc` | Procedure type-safe |
 
-## Ops (Docker/CI/Terraform)
+## Ops (Docker/CI/Terraform/Proxmox/OPNsense)
 
 | Exemple | Commande | Description |
 |---------|----------|-------------|
@@ -39,6 +39,7 @@ Exemples pratiques et prêts à l'emploi pour démarrer rapidement avec claude-s
 | [Pipeline CI](/docs/examples/ops/ci-pipeline) | `/ops-ci` | GitHub Actions workflow |
 | [Module Terraform](/docs/examples/ops/terraform-module) | `/ops-infra-code` | Module réutilisable |
 | [VM Proxmox](/docs/examples/ops/proxmox-vm) | `/ops-proxmox` | VM avec cloud-init |
+| [Firewall OPNsense](/docs/examples/ops/opnsense-config) | `/ops-opnsense` | OPNsense derrière box Orange |
 
 ---
 

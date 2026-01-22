@@ -9,6 +9,44 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.12.0] - 2026-01-22
+
+### Ajouté
+- **Support IaC OPNsense** : Configuration complète du firewall OPNsense via Terraform
+  - Nouvelle commande `/ops-opnsense` pour gérer OPNsense en Infrastructure as Code
+  - Nouvel agent `ops-opnsense` (modèle sonnet) avec skills infrastructure-as-code et opnsense-configuration
+  - Nouveau skill `opnsense-configuration` avec patterns et bonnes pratiques
+
+- **Templates Terraform OPNsense** (`.claude/templates/opnsense/`)
+  - `provider-template.tf` : Configuration provider `browningluke/opnsense`
+  - `interfaces-module.tf` : Interfaces WAN/LAN/VLAN avec gateway
+  - `firewall-module.tf` : Règles firewall avec anti-lockout obligatoire
+  - `nat-module.tf` : NAT outbound et port forwarding
+  - `services-module.tf` : DHCP server et DNS Unbound
+  - `aliases-module.tf` : Groupes d'adresses, ports et réseaux
+
+- **Exemple complet Orange Box DMZ** (`examples/orange-box-dmz/`)
+  - Configuration OPNsense derrière une box Orange en mode DMZ
+  - 7 règles firewall (anti-lockout, web, DNS, NTP, ICMP, block-all)
+  - DHCP, DNS forwarders Cloudflare, outputs avec résumé ASCII
+
+- **Documentation Docusaurus**
+  - Page commande `/ops-opnsense` (auto-générée)
+  - Page agent `ops-opnsense` (auto-générée)
+  - Page skill `opnsense-configuration` (auto-générée)
+  - Exemple `opnsense-config.md` : Configuration complète avec code Terraform
+  - Tutoriel `opnsense-firewall.md` : Guide pas-à-pas (45 min, niveau intermédiaire)
+
+### Modifié
+- **CLAUDE.md** : Ajout `/ops-opnsense` (115 commandes, 53 agents, 33 skills)
+- **sidebars.ts** : OPS (24 → 30), ajout tutoriel et exemple OPNsense
+- **Index pages** : Exemples et tutoriels mis à jour
+
+### Corrigé
+- **Provider OPNsense** : `allow_insecure_cert` → `allow_insecure` (attribut correct)
+
+---
+
 ## [1.11.0] - 2026-01-22
 
 ### Ajouté
