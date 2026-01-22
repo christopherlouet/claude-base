@@ -1,6 +1,6 @@
 # Projet claude-socle
 
-> Template de configuration Claude Code pour un workflow optimal : Explore → Specify → Plan → Code → Commit
+> Template de configuration Claude Code pour un workflow optimal : Explore → Specify → Plan → TDD → Commit
 
 ## Commandes Essentielles
 
@@ -110,7 +110,7 @@ go.mod              # Dépendances
 go.sum              # Checksums
 ```
 
-## Workflow Obligatoire : Explore → Specify → Plan → Code → Commit
+## Workflow Obligatoire : Explore → Specify → Plan → TDD → Commit
 
 ### 1. EXPLORE (`/work-explore`)
 - Lire et comprendre le code existant AVANT de modifier
@@ -132,9 +132,13 @@ go.sum              # Checksums
 - Identifier les risques potentiels
 - Génère `specs/[feature]/plan.md` et `tasks.md`
 
-### 4. CODE (`/dev-tdd` ou direct)
-- Implémenter en suivant le plan validé
-- Tests first si applicable (TDD)
+### 4. TDD (`/dev-tdd`) - OBLIGATOIRE
+- IMPORTANT: Toujours écrire les tests AVANT le code
+- Cycle Red-Green-Refactor obligatoire:
+  1. RED: Écrire un test qui échoue
+  2. GREEN: Écrire le code minimal pour passer le test
+  3. REFACTOR: Améliorer le code sans casser les tests
+- Couverture minimum 80% sur nouveau code
 - Commits atomiques et fréquents
 
 ### 5. COMMIT (`/work-commit` ou `/work-pr`)
@@ -412,7 +416,7 @@ type(scope): description courte
 ### Nouvelle feature
 ```bash
 /work-flow-feature "description de la feature"
-# ou manuellement:
+# ou manuellement (TDD obligatoire):
 /work-explore → /work-plan → /dev-tdd → /work-pr
 ```
 
@@ -438,7 +442,7 @@ type(scope): description courte
 
 ### Application mobile Flutter
 ```bash
-/work-explore → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+/work-explore → /work-plan → /dev-tdd → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
 ```
 
 ### GitFlow (gestion avancée des branches)
@@ -772,6 +776,7 @@ Pour activer un server: `"enabled": true` dans `.mcp.json`
 
 - ❌ Coder sans comprendre l'existant
 - ❌ Implémenter sans plan validé
+- ❌ Coder AVANT d'écrire les tests (violer TDD)
 - ❌ Commits géants multi-fonctionnalités
 - ❌ Tests avec trop de mocks
 - ❌ any partout en TypeScript
