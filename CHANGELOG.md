@@ -23,6 +23,9 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 - **Agent ops-opnsense** : Ajout des métadonnées standardisées (name, description, tools) dans le frontmatter
 - **Documentation agents** : Mise à jour des métadonnées (outils, skills injectés)
 
+### Corrigé
+- **Tests smoke** : Mise à jour des noms de skills après harmonisation (test-driven-development → dev-tdd, etc.)
+
 ---
 
 ## [1.12.0] - 2026-01-22
