@@ -7,7 +7,7 @@
 load 'test_helper'
 
 UPDATE_SCRIPT="$BATS_TEST_DIRNAME/../scripts/update.sh"
-INSTALL_SCRIPT="$BATS_TEST_DIRNAME/../scripts/install.sh"
+NEW_PROJECT_SCRIPT="$BATS_TEST_DIRNAME/../scripts/new-project.sh"
 
 setup() {
     setup_test_dir
@@ -50,8 +50,8 @@ teardown() {
 }
 
 @test "update.sh fonctionne sur un projet configuré" {
-    # Installer d'abord
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    # Installer d'abord avec new-project.sh --simple
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Puis mettre à jour
@@ -60,7 +60,7 @@ teardown() {
 }
 
 @test "update.sh préserve les fichiers locaux" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Créer un fichier local
@@ -76,7 +76,7 @@ teardown() {
 }
 
 @test "update.sh met à jour les commandes" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Simuler une ancienne version en supprimant un fichier
@@ -94,7 +94,7 @@ teardown() {
 # =============================================================================
 
 @test "update.sh --dry-run ne modifie rien" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Supprimer un fichier
@@ -108,7 +108,7 @@ teardown() {
 }
 
 @test "update.sh affiche les changements" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
@@ -121,7 +121,7 @@ teardown() {
 # =============================================================================
 
 @test "update.sh --clean supprime les anciens fichiers" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Ajouter un fichier obsolète dans commands (dans un sous-répertoire existant)
@@ -136,7 +136,7 @@ teardown() {
 }
 
 @test "update.sh --agents met à jour les agents" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Supprimer un agent
@@ -152,7 +152,7 @@ teardown() {
 }
 
 @test "update.sh --rules met à jour les rules" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Supprimer les rules
@@ -168,7 +168,7 @@ teardown() {
 }
 
 @test "update.sh --styles met à jour les output-styles" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Supprimer les styles
@@ -184,7 +184,7 @@ teardown() {
 }
 
 @test "update.sh --all met à jour tout avec nettoyage" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Ajouter un fichier obsolète dans commands (dans un sous-répertoire)
@@ -222,7 +222,7 @@ teardown() {
 # =============================================================================
 
 @test "update.sh --detect-orphans detecte les fichiers absents du socle" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Ajouter un fichier orphelin (absent du socle)
@@ -240,7 +240,7 @@ teardown() {
 }
 
 @test "update.sh --remove-orphans supprime les fichiers absents du socle" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Ajouter un fichier orphelin
@@ -258,7 +258,7 @@ teardown() {
 }
 
 @test "update.sh --detect-orphans --dry-run ne supprime pas les fichiers" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Ajouter un fichier orphelin

@@ -7,7 +7,7 @@
 load 'test_helper'
 
 DIFF_SCRIPT="$BATS_TEST_DIRNAME/../scripts/diff.sh"
-INSTALL_SCRIPT="$BATS_TEST_DIRNAME/../scripts/install.sh"
+NEW_PROJECT_SCRIPT="$BATS_TEST_DIRNAME/../scripts/new-project.sh"
 
 setup() {
     setup_test_dir
@@ -55,8 +55,8 @@ teardown() {
 }
 
 @test "diff.sh compare un projet installé" {
-    # Installer le socle d'abord
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    # Installer le socle avec new-project.sh --simple
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Puis comparer
@@ -65,7 +65,7 @@ teardown() {
 }
 
 @test "diff.sh détecte les fichiers identiques" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     run "$DIFF_SCRIPT" "$TEST_DIR"
@@ -73,7 +73,7 @@ teardown() {
 }
 
 @test "diff.sh détecte les fichiers modifiés" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Modifier un fichier
@@ -88,7 +88,7 @@ teardown() {
 # =============================================================================
 
 @test "diff.sh --modified montre seulement les modifiés" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     run "$DIFF_SCRIPT" --modified "$TEST_DIR"
@@ -96,7 +96,7 @@ teardown() {
 }
 
 @test "diff.sh --content montre le contenu des différences" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Modifier un fichier
@@ -112,7 +112,7 @@ teardown() {
 # =============================================================================
 
 @test "diff.sh affiche un résumé" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     run "$DIFF_SCRIPT" "$TEST_DIR"

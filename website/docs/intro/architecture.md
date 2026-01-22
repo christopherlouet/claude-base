@@ -20,8 +20,8 @@ graph TB
     end
 
     subgraph ".claude/"
-        CMDS[commands/<br/>111 commandes]
-        AGENTS[agents/<br/>51 sub-agents]
+        CMDS[commands/<br/>114 commandes]
+        AGENTS[agents/<br/>52 sub-agents]
         SKILLS[skills/<br/>32 skills]
         RULES[rules/<br/>17 rules]
         TPL[templates/<br/>Specs & Plans]
@@ -48,7 +48,7 @@ graph TB
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 111 commandes manuelles (/nom)
+│   ├── commands/       # 114 commandes manuelles (/nom)
 │   │   ├── work/       # Workflow principal
 │   │   ├── dev/        # Developpement
 │   │   ├── qa/         # Qualite
@@ -58,7 +58,7 @@ claude-socle/
 │   │   ├── growth/     # Croissance
 │   │   ├── data/       # Donnees
 │   │   └── legal/      # Legal
-│   ├── agents/         # 51 sub-agents autonomes
+│   ├── agents/         # 52 sub-agents autonomes
 │   ├── skills/         # 32 skills auto-declenches
 │   ├── rules/          # 17 regles par technologie
 │   ├── templates/      # Templates de specs/plans
@@ -87,7 +87,7 @@ Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 /qa-security
 ```
 
-### Agents (51)
+### Agents (52)
 
 Les **agents** sont des sub-agents autonomes avec un contexte isole.
 

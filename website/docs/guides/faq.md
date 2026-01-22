@@ -13,8 +13,8 @@ Retrouvez ici les réponses aux questions les plus courantes sur claude-socle.
 ### Qu'est-ce que claude-socle ?
 
 **claude-socle** est un template de configuration pour Claude Code qui fournit :
-- **111 commandes** organisées par domaine (WORK, DEV, QA, OPS, etc.)
-- **51 agents** spécialisés avec contexte isolé
+- **114 commandes** organisées par domaine (WORK, DEV, QA, OPS, etc.)
+- **52 agents** spécialisés avec contexte isolé
 - **32 skills** à déclenchement automatique
 - **17 rules** contextuelles par langage
 - Un workflow structuré : **Explore → Plan → Code → Commit**
@@ -23,9 +23,9 @@ Retrouvez ici les réponses aux questions les plus courantes sur claude-socle.
 
 | Aspect | Claude Code standard | claude-socle |
 |--------|---------------------|--------------|
-| Commandes | Commandes de base | 111 commandes spécialisées |
+| Commandes | Commandes de base | 114 commandes spécialisées |
 | Workflow | Libre | Structuré (Explore → Plan → Code) |
-| Agents | Non | 51 agents avec contexte isolé |
+| Agents | Non | 52 agents avec contexte isolé |
 | Skills | Non | 32 skills automatiques |
 | Rules | Manuelles | 17 rules par langage |
 | Templates | Non | Spec, Plan, Tasks |

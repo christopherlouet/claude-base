@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalogue des 37 sub-agents claude-socle"
+description: "Catalogue des 52 sub-agents claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Catalogue des Agents
 
-> **51 sub-agents** avec contexte isole pour des taches autonomes
+> **52 sub-agents** avec contexte isole pour des taches autonomes
 
 <Stats items={[
   { number: 24, label: 'Agents Haiku' },
-  { number: 27, label: 'Agents Sonnet' },
-  { number: 51, label: 'Total' },
+  { number: 28, label: 'Agents Sonnet' },
+  { number: 52, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Agent ?

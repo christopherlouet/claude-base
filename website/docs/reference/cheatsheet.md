@@ -136,7 +136,7 @@ graph LR
 | Type | Nombre | Declenchement |
 |------|--------|---------------|
 | Commands | 111 | Manuel (`/nom`) |
-| Agents | 51 | Automatique |
+| Agents | 52 | Automatique |
 | Skills | 32 | Mots-cles |
 | Rules | 17 | Par fichier |
 
@@ -177,4 +177,4 @@ https://christopherlouet.github.io/claude-socle/
 
 ---
 
-**claude-socle** | 111 Commands | 51 Agents | 32 Skills | 17 Rules
+**claude-socle** | 111 Commands | 52 Agents | 32 Skills | 17 Rules

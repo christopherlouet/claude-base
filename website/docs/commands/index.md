@@ -8,10 +8,10 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Commandes
 
-> **111 commandes** organisees en **10 domaines**
+> **114 commandes** organisees en **10 domaines**
 
 <Stats items={[
-  { number: 111, label: 'Commandes' },
+  { number: 114, label: 'Commandes' },
   { number: 10, label: 'Domaines' },
 ]} />
 

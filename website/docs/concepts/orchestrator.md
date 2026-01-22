@@ -19,7 +19,7 @@ L'**orchestrateur** est le point d'entree unique de claude-socle. Il analyse vot
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
-│  │    (111)    │  │    (51)     │  │    (32)     │             │
+│  │    (111)    │  │    (52)     │  │    (32)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Delegation  │  │ Activation  │             │
 │  │  manuelle   │  │ automatique │  │ automatique │             │
@@ -155,7 +155,7 @@ L'orchestrateur detecte automatiquement votre environnement :
 
 ## Sub-Agents actives automatiquement
 
-L'orchestrateur connait les 51 agents specialises et les active selon le contexte :
+L'orchestrateur connait les 52 agents specialises et les active selon le contexte :
 
 | Contexte detecte | Agent active | Modele |
 |------------------|--------------|--------|
