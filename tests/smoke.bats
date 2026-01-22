@@ -87,15 +87,15 @@ load 'test_helper'
 }
 
 @test "smoke: les skills essentiels existent" {
-    [ -f "$SOCLE_DIR/.claude/skills/test-driven-development/SKILL.md" ]
-    [ -f "$SOCLE_DIR/.claude/skills/generating-commit-messages/SKILL.md" ]
-    [ -f "$SOCLE_DIR/.claude/skills/reviewing-code/SKILL.md" ]
-    [ -f "$SOCLE_DIR/.claude/skills/security-audit/SKILL.md" ]
-    [ -f "$SOCLE_DIR/.claude/skills/exploring-codebase/SKILL.md" ]
+    [ -f "$SOCLE_DIR/.claude/skills/dev-tdd/SKILL.md" ]
+    [ -f "$SOCLE_DIR/.claude/skills/work-commit/SKILL.md" ]
+    [ -f "$SOCLE_DIR/.claude/skills/qa-review/SKILL.md" ]
+    [ -f "$SOCLE_DIR/.claude/skills/qa-security/SKILL.md" ]
+    [ -f "$SOCLE_DIR/.claude/skills/work-explore/SKILL.md" ]
 }
 
 @test "smoke: les skills ont un frontmatter YAML valide" {
-    local skill_file="$SOCLE_DIR/.claude/skills/test-driven-development/SKILL.md"
+    local skill_file="$SOCLE_DIR/.claude/skills/dev-tdd/SKILL.md"
     # Vérifie que le fichier commence par ---
     head -1 "$skill_file" | grep -q "^---$"
 }
