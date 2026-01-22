@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 24
 title: "doc-onboard"
 description: "Guide de decouverte et comprehension d'un codebase."
 tags:

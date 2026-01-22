@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **9 commandes** pour croissance (seo, analytics, landing, funnel).
+Ce domaine contient **10 commandes** pour croissance (seo, analytics, landing, funnel).
 
 ## Liste des commandes
 
@@ -25,6 +25,7 @@ Ce domaine contient **9 commandes** pour croissance (seo, analytics, landing, fu
 | [`/growth-email`](/docs/commands/growth/growth-email) | Créer des templates d'emails transactionnels et marketing. |
 | [`/growth-funnel`](/docs/commands/growth/growth-funnel) | Analyse et optimise les funnels de conversion pour maximiser les taux de conversion. |
 | [`/growth-landing`](/docs/commands/growth/growth-landing) | Créer ou optimiser une landing page efficace. |
+| [`/growth-localization`](/docs/commands/growth/growth-localization) | Strategie de localisation et expansion internationale. |
 | [`/growth-onboarding`](/docs/commands/growth/growth-onboarding) | Concevoir un parcours d'onboarding utilisateur efficace. |
 | [`/growth-retention`](/docs/commands/growth/growth-retention) | Analyse et améliore la rétention utilisateur avec des stratégies data-driven. |
 | [`/growth-seo`](/docs/commands/growth/growth-seo) | Audit SEO et recommandations d'optimisation pour le référencement naturel. |
@@ -67,6 +68,12 @@ Ce domaine contient **9 commandes** pour croissance (seo, analytics, landing, fu
     description="Créer ou optimiser une landing page efficace."
     domain="growth"
     href="/docs/commands/growth/growth-landing"
+  />
+  <CommandCard
+    name="growth-localization"
+    description="Strategie de localisation et expansion internationale."
+    domain="growth"
+    href="/docs/commands/growth/growth-localization"
   />
   <CommandCard
     name="growth-onboarding"

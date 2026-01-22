@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 25
 title: "growth-analytics"
 description: "Implementation de l'analytics et du tracking."
 tags:

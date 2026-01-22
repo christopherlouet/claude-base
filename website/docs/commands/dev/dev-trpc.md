@@ -1,5 +1,5 @@
 ---
-sidebar_position: 22
+sidebar_position: 23
 title: "/dev-trpc"
 description: "Creation d'APIs type-safe avec tRPC."
 tags:

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: "/dev-api"
 description: "Créer ou documenter des endpoints REST/GraphQL."
 tags:

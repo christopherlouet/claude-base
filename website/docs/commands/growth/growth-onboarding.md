@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 title: "/growth-onboarding"
 description: "Concevoir un parcours d'onboarding utilisateur efficace."
 tags:

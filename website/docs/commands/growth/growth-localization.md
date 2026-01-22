@@ -1,33 +1,24 @@
 ---
-sidebar_position: 28
-title: "growth-localization"
+sidebar_position: 8
+title: "/growth-localization"
 description: "Strategie de localisation et expansion internationale."
 tags:
-  - "agent"
-  - "haiku"
+  - "growth"
+  - "command"
 ---
 
-# Agent: growth-localization
 
-<span className="badge badge--haiku">Haiku</span>
+import CommandCard from '@site/src/components/CommandCard';
 
-> Strategie de localisation et expansion internationale.
+<span className="badge badge--growth">GROWTH</span>
 
-## Configuration
-
-| Propriete | Valeur |
-|-----------|--------|
-| **Modele** | haiku |
-| **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob` |
-| **Outils interdits** | `Edit`, `Write`, `NotebookEdit`, `Bash` |
-| **Skills injectes** | _Aucun_ |
-
-## Description detaillee
 
 # Agent GROWTH-LOCALIZATION
 
 Strategie de localisation et expansion internationale.
+
+## Contexte
+`&lt;arguments&gt;`
 
 ## Dimensions de la Localisation
 
@@ -121,8 +112,8 @@ src/
 | Pratique | Description |
 |----------|-------------|
 | Keys semantiques | `auth.login.button` vs `login_btn` |
-| Contexte pluriel | `{count, plural, one {# item} other {# items}}` |
-| Variables | `Hello {name}` pas de concatenation |
+| Contexte pluriel | `\{count, plural, one \{# item\} other \{# items\}\}` |
+| Variables | `Hello \{name\}` pas de concatenation |
 | Fallback | Langue par defaut si traduction manquante |
 
 ### Outils Recommandes
@@ -238,36 +229,33 @@ npm run i18n:init [locale]
 | Metrique | Description | Cible |
 |----------|-------------|-------|
 | Coverage | % strings traduites | 100% |
-| Quality score | Note traduction | > 4/5 |
-| Time to translate | Delai moyen | < 48h |
-| Error rate | Strings manquantes en prod | < 0.1% |
+| Quality score | Note traduction | &gt; 4/5 |
+| Time to translate | Delai moyen | &lt; 48h |
+| Error rate | Strings manquantes en prod | &lt; 0.1% |
 
-## Contraintes
+## Agents lies
 
-- Ne pas traduire noms de marque sans validation
-- Considerer les variations regionales (fr-FR vs fr-CA)
-- Tester avec des utilisateurs natifs
-- Planifier la maintenance long terme
+| Agent | Usage |
+|-------|-------|
+| `/doc-i18n` | Implementation i18n technique |
+| `/legal-rgpd` | Conformite RGPD |
+| `/growth-seo` | SEO international |
+| `/biz-market` | Etude de marche |
 
-## Quand cet agent est-il utilise ?
+---
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+IMPORTANT: Ne pas traduire noms de marque sans validation.
 
-## Caracteristiques du modele haiku
+IMPORTANT: Considerer les variations regionales (fr-FR vs fr-CA).
 
+YOU MUST tester avec des utilisateurs natifs.
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+NEVER sous-estimer la maintenance long terme des traductions.
 
 
 ---
 
 ## Voir aussi
 
-- [Retour aux agents](/docs/agents)
-- [Architecture](/docs/intro/architecture)
+- [Retour aux commandes GROWTH](/docs/commands/growth)
+- [Toutes les commandes](/docs/commands)

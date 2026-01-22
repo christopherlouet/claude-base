@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **12 commandes** pour qualite (review, securite, performance, accessibilite).
+Ce domaine contient **13 commandes** pour qualite (review, securite, performance, accessibilite).
 
 ## Liste des commandes
 
@@ -31,6 +31,7 @@ Ce domaine contient **12 commandes** pour qualite (review, securite, performance
 | [`/qa-responsive`](/docs/commands/qa/qa-responsive) | Audit responsive et mobile-first d'une application web. |
 | [`/qa-review`](/docs/commands/qa/qa-review) | Effectue une code review approfondie et constructive. |
 | [`/qa-security`](/docs/commands/qa/qa-security) | Audit de sécurité basé sur OWASP Top 10. |
+| [`/qa-tech-debt`](/docs/commands/qa/qa-tech-debt) | Identification et priorisation de la dette technique dans le codebase. |
 
 ## Commandes en detail
 
@@ -106,6 +107,12 @@ Ce domaine contient **12 commandes** pour qualite (review, securite, performance
     description="Audit de sécurité basé sur OWASP Top 10."
     domain="qa"
     href="/docs/commands/qa/qa-security"
+  />
+  <CommandCard
+    name="qa-tech-debt"
+    description="Identification et priorisation de la dette technique dans le codebase."
+    domain="qa"
+    href="/docs/commands/qa/qa-tech-debt"
   />
 </CommandGrid>
 
