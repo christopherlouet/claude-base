@@ -17,16 +17,60 @@
       "mcp__filesystem__*",
       "mcp__github__*",
       "mcp__memory__*",
+
       "Bash(npm:*)",
       "Bash(npx:*)",
       "Bash(node:*)",
       "Bash(bun:*)",
       "Bash(pnpm:*)",
       "Bash(yarn:*)",
+
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(uv:*)",
+      "Bash(pytest:*)",
+      "Bash(ruff:*)",
+      "Bash(mypy:*)",
+
+      "Bash(go:*)",
+      "Bash(cargo:*)",
+      "Bash(rustc:*)",
+      "Bash(flutter:*)",
+      "Bash(dart:*)",
+      "Bash(ruby:*)",
+      "Bash(bundle:*)",
+      "Bash(gem:*)",
+      "Bash(java:*)",
+      "Bash(javac:*)",
+      "Bash(mvn:*)",
+      "Bash(gradle:*)",
+      "Bash(dotnet:*)",
+
+      "Bash(nvim:*)",
+      "Bash(luacheck:*)",
+      "Bash(stylua:*)",
+
       "Bash(git:*)",
       "Bash(gh:*)",
       "Bash(gitleaks:*)",
+      "Bash(pre-commit:*)",
+
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(docker compose:*)",
+      "Bash(kubectl:*)",
+      "Bash(helm:*)",
+      "Bash(terraform:*)",
+      "Bash(tofu:*)",
+      "Bash(ansible:*)",
+      "Bash(pulumi:*)",
+
       "Bash(./scripts/*:*)",
+      "Bash(make:*)",
+      "Bash(cmake:*)",
+
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(head:*)",
@@ -35,26 +79,48 @@
       "Bash(grep:*)",
       "Bash(wc:*)",
       "Bash(sort:*)",
+      "Bash(uniq:*)",
       "Bash(tree:*)",
       "Bash(basename:*)",
       "Bash(dirname:*)",
       "Bash(realpath:*)",
+      "Bash(readlink:*)",
+      "Bash(file:*)",
+      "Bash(stat:*)",
+
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(mv:*)",
       "Bash(touch:*)",
       "Bash(chmod:*)",
+      "Bash(chown:*)",
+      "Bash(ln:*)",
+
       "Bash(echo:*)",
       "Bash(printf:*)",
       "Bash(which:*)",
       "Bash(command:*)",
       "Bash(type:*)",
+      "Bash(env:*)",
+      "Bash(export:*)",
+      "Bash(source:*)",
       "Bash(bash:*)",
       "Bash(sh:*)",
+      "Bash(zsh:*)",
+
       "Bash(curl:*)",
       "Bash(wget:*)",
+      "Bash(nc:*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(rsync:*)",
+
       "Bash(tar:*)",
+      "Bash(gzip:*)",
+      "Bash(gunzip:*)",
+      "Bash(zip:*)",
       "Bash(unzip:*)",
+
       "Bash(jq:*)",
       "Bash(yq:*)",
       "Bash(sed:*)",
@@ -64,38 +130,65 @@
       "Bash(xargs:*)",
       "Bash(tee:*)",
       "Bash(diff:*)",
+      "Bash(comm:*)",
+      "Bash(paste:*)",
+      "Bash(join:*)",
+
       "Bash(shellcheck:*)",
       "Bash(bats:*)",
-      "Bash(python3:*)",
-      "Bash(python:*)",
-      "Bash(pip:*)",
-      "Bash(pip3:*)",
-      "Bash(go:*)",
-      "Bash(cargo:*)",
-      "Bash(rustc:*)",
-      "Bash(flutter:*)",
-      "Bash(dart:*)",
-      "Bash(docker:*)",
-      "Bash(docker-compose:*)",
-      "Bash(kubectl:*)",
-      "Bash(terraform:*)",
-      "Bash(tofu:*)",
+
       "Bash(date:*)",
-      "Bash(pwd:*)"
+      "Bash(pwd:*)",
+      "Bash(whoami:*)",
+      "Bash(hostname:*)",
+      "Bash(uname:*)",
+      "Bash(id:*)",
+      "Bash(test:*)",
+      "Bash([:*)",
+      "Bash(sleep:*)",
+      "Bash(timeout:*)",
+      "Bash(time:*)",
+
+      "Bash(ps:*)",
+      "Bash(pgrep:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)",
+      "Bash(lsof:*)",
+      "Bash(top:*)",
+      "Bash(htop:*)",
+      "Bash(free:*)",
+      "Bash(df:*)",
+      "Bash(du:*)",
+
+      "Bash(systemctl:*)",
+      "Bash(journalctl:*)",
+      "Bash(service:*)"
     ],
     "deny": [
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
       "Bash(git reset --hard:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(git checkout .:*)",
       "Bash(rm -rf /:*)",
       "Bash(rm -rf /*:*)",
       "Bash(rm -rf ~:*)",
+      "Bash(rm -rf .:*)",
+      "Bash(rm -rf ..:*)",
       "Bash(sudo:*)",
-      "Bash(su:*)",
+      "Bash(su -:*)",
       "Bash(chmod 777:*)",
+      "Bash(chmod -R 777:*)",
       "Bash(> /dev/sda:*)",
+      "Bash(> /dev/nvme:*)",
       "Bash(mkfs:*)",
-      "Bash(dd if=:*)"
+      "Bash(dd if=:*)",
+      "Bash(:(){ :|:& };::*)",
+      "Bash(eval:*)",
+      "Bash(curl | bash:*)",
+      "Bash(wget | bash:*)",
+      "Bash(curl | sh:*)",
+      "Bash(wget | sh:*)"
     ]
   },
   "hooks": {
@@ -113,12 +206,12 @@
     ],
     "PreToolUse": [
       {
-        "description": "Empecher les modifications sur la branche main/master",
+        "description": "Empecher les modifications sur la branche main/master (desactiver avec ALLOW_MAIN_EDIT=1)",
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$BRANCH\" = \"main\" ] || [ \"$BRANCH\" = \"master\" ]; then echo \"BLOQUE: Creez une branche feature avant de modifier des fichiers.\"; exit 1; fi'",
+            "command": "bash -c 'if [ \"$ALLOW_MAIN_EDIT\" = \"1\" ]; then exit 0; fi; BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$BRANCH\" = \"main\" ] || [ \"$BRANCH\" = \"master\" ]; then echo \"BLOQUE: Creez une branche feature avant de modifier des fichiers.\"; echo \"Conseil: git checkout -b feature/ma-feature\"; exit 1; fi'",
             "timeout": 5000,
             "onFailure": "block"
           }
@@ -144,7 +237,67 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx)$\"; then if [ -f node_modules/.bin/prettier ]; then npx prettier --write \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx|mjs|cjs)$\"; then if [ -f node_modules/.bin/prettier ]; then npx prettier --write \"$TOOL_FILE\" 2>/dev/null || true; elif command -v prettier >/dev/null 2>&1; then prettier --write \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
+            "timeout": 10000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto-format Python apres modification",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.py$\"; then if command -v ruff >/dev/null 2>&1; then ruff format \"$TOOL_FILE\" 2>/dev/null || true; ruff check --fix \"$TOOL_FILE\" 2>/dev/null || true; elif command -v black >/dev/null 2>&1; then black \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
+            "timeout": 10000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto-format Lua apres modification",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.lua$\"; then if command -v stylua >/dev/null 2>&1; then stylua \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
+            "timeout": 10000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto-format Go apres modification",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.go$\"; then if command -v gofmt >/dev/null 2>&1; then gofmt -w \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
+            "timeout": 10000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto-format Rust apres modification",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.rs$\"; then if command -v rustfmt >/dev/null 2>&1; then rustfmt \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
+            "timeout": 10000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto-format Dart/Flutter apres modification",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.dart$\"; then if command -v dart >/dev/null 2>&1; then dart format \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
             "timeout": 10000,
             "onFailure": "ignore"
           }
@@ -156,7 +309,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"package.json\"; then npm install --silent 2>&1 | tail -3 || true; fi'",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"package.json$\"; then if [ -f bun.lockb ]; then bun install --silent 2>&1 | tail -3 || true; elif [ -f pnpm-lock.yaml ]; then pnpm install --silent 2>&1 | tail -3 || true; elif [ -f yarn.lock ]; then yarn install --silent 2>&1 | tail -3 || true; else npm install --silent 2>&1 | tail -3 || true; fi; fi'",
+            "timeout": 60000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto-sync apres modification de pyproject.toml",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"pyproject.toml$\"; then if command -v uv >/dev/null 2>&1 && [ -f uv.lock ]; then uv sync 2>&1 | tail -3 || true; elif command -v pip >/dev/null 2>&1; then pip install -e . 2>&1 | tail -3 || true; fi; fi'",
             "timeout": 60000,
             "onFailure": "ignore"
           }

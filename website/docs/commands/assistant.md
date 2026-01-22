@@ -56,7 +56,7 @@ Il propose les commandes adaptees selon :
 
 Il donne acces a :
 - 110 commandes par domaine
-- 51 agents specialises
+- 52 agents specialises
 - 32 skills auto-declenches
 - 17 rules par technologie
 

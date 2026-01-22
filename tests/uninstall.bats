@@ -7,7 +7,7 @@
 load 'test_helper'
 
 UNINSTALL_SCRIPT="$BATS_TEST_DIRNAME/../scripts/uninstall.sh"
-INSTALL_SCRIPT="$BATS_TEST_DIRNAME/../scripts/install.sh"
+NEW_PROJECT_SCRIPT="$BATS_TEST_DIRNAME/../scripts/new-project.sh"
 
 setup() {
     setup_test_dir
@@ -50,8 +50,8 @@ teardown() {
 }
 
 @test "uninstall.sh supprime .claude" {
-    # Installer d'abord
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    # Installer d'abord avec new-project.sh --simple
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.claude" ]
 
@@ -64,7 +64,7 @@ teardown() {
 }
 
 @test "uninstall.sh supprime CLAUDE.md" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/CLAUDE.md" ]
 
@@ -75,7 +75,7 @@ teardown() {
 }
 
 @test "uninstall.sh préserve CLAUDE.local.md par défaut" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Créer un fichier local
@@ -93,7 +93,7 @@ teardown() {
 # =============================================================================
 
 @test "uninstall.sh --dry-run ne supprime rien" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     run "$UNINSTALL_SCRIPT" -y -n "$TEST_DIR"
@@ -105,7 +105,7 @@ teardown() {
 }
 
 @test "uninstall.sh --all supprime tout y compris les fichiers locaux" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     echo "# Local" > "$TEST_DIR/CLAUDE.local.md"
@@ -123,7 +123,7 @@ teardown() {
 # =============================================================================
 
 @test "uninstall.sh ne supprime pas les fichiers hors .claude" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # Créer un fichier utilisateur
@@ -137,7 +137,7 @@ teardown() {
 }
 
 @test "uninstall.sh affiche ce qui sera supprimé" {
-    run "$INSTALL_SCRIPT" -y "$TEST_DIR"
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     run "$UNINSTALL_SCRIPT" -y "$TEST_DIR"
