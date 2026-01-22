@@ -107,7 +107,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'OPS (24)',
+          label: 'OPS (30)',
           collapsed: true,
           link: {
             type: 'doc',
@@ -257,6 +257,7 @@ const sidebars: SidebarsConfig = {
         'tutorials/cicd-github',
         'tutorials/refactoring-legacy',
         'tutorials/proxmox-infra',
+        'tutorials/opnsense-firewall',
       ],
     },
   ],
@@ -310,6 +311,7 @@ const sidebars: SidebarsConfig = {
             'examples/ops/ci-pipeline',
             'examples/ops/terraform-module',
             'examples/ops/proxmox-vm',
+            'examples/ops/opnsense-config',
           ],
         },
       ],

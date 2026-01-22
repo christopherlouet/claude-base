@@ -1,5 +1,5 @@
 ---
-sidebar_position: 47
+sidebar_position: 48
 title: "qa-coverage"
 description: "Analyse de la couverture de tests et de la qualite des tests existants."
 tags:

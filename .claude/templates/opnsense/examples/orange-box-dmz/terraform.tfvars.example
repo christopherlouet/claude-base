@@ -1,0 +1,47 @@
+# =============================================================================
+# Exemple de configuration - COPIER vers terraform.tfvars
+# =============================================================================
+# NE PAS COMMITER terraform.tfvars (contient des secrets)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Connexion API OPNsense
+# -----------------------------------------------------------------------------
+
+opnsense_uri           = "https://192.168.10.1"
+opnsense_api_key       = "votre-api-key"
+opnsense_api_secret    = "votre-api-secret"
+opnsense_allow_insecure = true  # Certificat auto-signé
+
+# -----------------------------------------------------------------------------
+# Interfaces (adapter selon votre configuration VM)
+# -----------------------------------------------------------------------------
+
+wan_interface = "vtnet0"  # Interface connectée à la box Orange
+lan_interface = "vtnet1"  # Interface connectée au réseau local
+
+# -----------------------------------------------------------------------------
+# Réseau LAN
+# -----------------------------------------------------------------------------
+
+lan_ip           = "192.168.10.1"
+lan_subnet       = 24
+lan_network_base = "192.168.10.0"
+
+# -----------------------------------------------------------------------------
+# Firewall
+# -----------------------------------------------------------------------------
+
+log_blocked_traffic = true
+
+# -----------------------------------------------------------------------------
+# Port Forwarding (optionnel)
+# -----------------------------------------------------------------------------
+# Laisser vide ("") pour désactiver
+
+# Serveur web interne
+web_server_ip = ""  # ex: "192.168.10.20"
+
+# Serveur SSH interne
+ssh_server_ip     = ""    # ex: "192.168.10.10"
+ssh_external_port = "2222"  # Port non-standard recommandé

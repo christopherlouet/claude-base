@@ -232,7 +232,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (114 commands, 52 sub-agents, 32 skills)
+## Agents Disponibles (115 commands, 53 sub-agents, 33 skills)
 
 ### Orchestrateur (Point d'entrée unique)
 | Commande | Mode | Usage |
@@ -297,7 +297,7 @@ type(scope): description courte
 | `/qa-e2e` | Tests End-to-End (Playwright, Cypress) |
 | `/qa-tech-debt` | Identifier et prioriser la dette technique |
 
-### OPS- : Opérations (29)
+### OPS- : Opérations (30)
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente production |
@@ -328,6 +328,7 @@ type(scope): description courte
 | `/ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
 | `/ops-vercel` | Configuration et déploiement Vercel |
 | `/ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
+| `/ops-opnsense` | Configuration OPNsense via Terraform (firewall, NAT, DHCP/DNS) |
 | `/ops-rollback` | Procédure de rollback sécurisée |
 
 ### DOC- : Documentation (9)
@@ -517,6 +518,7 @@ En plus des commandes, le projet inclut **32 Skills** dans `.claude/skills/`:
 | `feature-flags` | "feature flag", "A/B test", "deploiement progressif" | fork |
 | `infrastructure-as-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | fork |
 | `proxmox-infrastructure` | "Proxmox", "PVE", "VM Proxmox", "LXC", "PBS" | fork |
+| `opnsense-configuration` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | fork |
 | `tech-debt-management` | "dette technique", "tech debt", "refactoring priorité" | fork |
 | `api-mocking` | "mock API", "MSW", "test sans backend" | fork |
 | `state-management` | "state", "Redux", "Zustand", "store" | fork |
@@ -584,6 +586,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `ops-vercel` | haiku | Read, Grep, Glob, Bash | Configuration Vercel |
 | `ops-infra-code` | sonnet | Read, Grep, Glob, Edit, Write, Bash | Infrastructure as Code (Terraform/OpenTofu) |
 | `ops-proxmox` | sonnet | Read, Grep, Glob, Edit, Write, Bash | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
+| `ops-opnsense` | sonnet | Read, Grep, Glob, Edit, Write, Bash | Configuration OPNsense (interfaces, firewall, NAT, DHCP/DNS) |
 | `ops-migration` | sonnet | Read, Grep, Glob, Bash | Migration de frameworks et versions |
 
 #### Développement
