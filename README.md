@@ -4,9 +4,9 @@
 [![CodeQL](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml)
 [![Coverage](https://codecov.io/gh/christopherlouet/claude-socle/branch/main/graph/badge.svg)](https://codecov.io/gh/christopherlouet/claude-socle)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
-[![Tests](https://img.shields.io/badge/tests-215%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-250%20passing-brightgreen)](./tests)
 [![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
-[![Release](https://img.shields.io/badge/release-v1.3.0-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
+[![Release](https://img.shields.io/badge/release-v1.10.0-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
 
 Template de configuration Claude Code pour un workflow de développement optimal.
@@ -16,10 +16,11 @@ Template de configuration Claude Code pour un workflow de développement optimal
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://docs.anthropic.com/en/docs/claude-code) qui permet de :
 
 - Structurer ton workflow de développement : **Explore → Specify → Plan → Code → Commit**
-- Disposer de **109 commandes** et **47 agents spécialisés** pour différentes tâches
+- Disposer de **114 commandes**, **52 sub-agents** et **32 skills** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
 - Intégrer CI/CD et hooks pre-commit prêts à l'emploi
+- Support multi-stack : Node.js, Python, Go, Rust, Flutter, Docker, K8s, Terraform, Proxmox
 
 ## Installation
 
@@ -27,10 +28,13 @@ Template de configuration Claude Code pour un workflow de développement optimal
 
 ```bash
 # Installer dans un projet existant
-./scripts/install.sh /chemin/vers/votre-projet
+./scripts/new-project.sh --simple /chemin/vers/votre-projet
 
 # Ou depuis le projet cible
-/chemin/vers/claude-socle/scripts/install.sh .
+/chemin/vers/claude-socle/scripts/new-project.sh --simple .
+
+# Installation complète avec CI/CD, hooks, Docker
+./scripts/new-project.sh --all /chemin/vers/votre-projet
 ```
 
 ### Option 2 : Copie manuelle
@@ -479,6 +483,79 @@ brew install bats-core
 
 | Fichier | Description |
 |---------|-------------|
+| `smoke.bats` | Tests de smoke (validation rapide de l'intégrité) |
 | `common.bats` | Tests des fonctions utilitaires |
 | `validate.bats` | Tests du script de validation |
 | `gitleaks.bats` | Tests de la configuration gitleaks |
+| `new-project.bats` | Tests du script d'installation |
+| `doctor.bats` | Tests du script de diagnostic |
+| `lint.bats` | Tests du script de linting |
+
+## Migration et Breaking Changes
+
+### Mise à jour vers v1.10.x
+
+#### Breaking Changes
+
+| Changement | Impact | Migration |
+|------------|--------|-----------|
+| `install.sh` supprimé | Scripts d'installation | Utiliser `new-project.sh --simple` |
+| Structure agents YAML | Fichiers agents | Re-copier depuis le socle |
+
+#### Nouvelles fonctionnalités
+
+- **Agent `dev-tdd`** : Développement TDD avec cycle Red-Green-Refactor
+- **Commandes** : `/dev-ai-integration`, `/growth-localization`, `/qa-tech-debt`
+- **Permissions génériques** : Wildcards pour npm, git, docker, terraform, etc.
+
+#### Guide de migration
+
+```bash
+# 1. Sauvegarder vos personnalisations
+cp CLAUDE.md CLAUDE.md.backup
+cp .claude/settings.local.json .claude/settings.local.json.backup
+
+# 2. Mettre à jour le socle
+cd /chemin/vers/claude-socle
+git pull origin main
+
+# 3. Réinstaller (écrase les anciens fichiers)
+./scripts/new-project.sh --simple /chemin/vers/votre-projet
+
+# 4. Restaurer vos personnalisations
+# Fusionner manuellement CLAUDE.md.backup avec le nouveau CLAUDE.md
+```
+
+### Politique de versioning
+
+| Version | Support | Notes |
+|---------|---------|-------|
+| 1.10.x | Actuel | Version stable |
+| 1.9.x | Supporté | Corrections de sécurité |
+| 1.8.x | Supporté | Corrections de sécurité |
+| < 1.8 | Non supporté | Mise à jour recommandée |
+
+### Changelog
+
+Voir [CHANGELOG.md](CHANGELOG.md) pour l'historique complet des changements.
+
+## Production Readiness
+
+Le projet claude-socle est **prêt pour la production** avec :
+
+| Critère | Status | Score |
+|---------|--------|-------|
+| Fonctionnalités | ✅ Mature | 9/10 |
+| Tests | ✅ Complet | 8/10 |
+| CI/CD | ✅ Mature | 8/10 |
+| Sécurité | ✅ Mature | 9/10 |
+| Documentation | ✅ Mature | 9/10 |
+
+### Mesures de sécurité
+
+- **Gitleaks** : 24+ règles de détection de secrets
+- **Deny list** : Commandes dangereuses bloquées (`rm -rf /`, `sudo`, `git push --force`)
+- **Hooks de protection** : Blocage des modifications sur main/master
+- **CodeQL** : Analyse de sécurité dans CI
+
+Voir [SECURITY.md](SECURITY.md) pour la politique de sécurité complète.

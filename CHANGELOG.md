@@ -9,6 +9,23 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.10.1] - 2026-01-22
+
+### Corrigé
+- **Correction settings.json** : Erreurs de syntaxe des permissions
+  - `Bash(*)` → `Bash` (syntaxe correcte pour autoriser toutes les commandes)
+  - Suppression du pattern fork bomb invalide
+  - Ajout de `Task(*)` dans les permissions
+
+### Ajouté
+- **Tests de smoke** (`tests/smoke.bats`) : Validation rapide de l'intégrité du socle
+
+### Documentation
+- **README.md** : Mise à jour badges (250 tests), section migration v1.10.x
+- **SECURITY.md** : Mise à jour versions supportées (1.8.x à 1.10.x)
+
+---
+
 ## [1.10.0] - 2026-01-22
 
 ### Ajouté
