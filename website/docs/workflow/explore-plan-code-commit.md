@@ -1,14 +1,14 @@
 ---
 sidebar_position: 2
-title: Explore → Plan → Code → Commit
-description: Le workflow principal de claude-socle
+title: Explore → Plan → TDD → Commit
+description: Le workflow principal de claude-socle avec TDD obligatoire
 ---
 
 import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDiagram';
 
-# Workflow principal : Explore → Plan → Code → Commit
+# Workflow principal : Explore → Plan → TDD → Commit
 
-Le workflow fondamental qui garantit un code de qualite.
+Le workflow fondamental qui garantit un code de qualite avec TDD obligatoire.
 
 <WorkflowDiagram steps={MAIN_WORKFLOW} />
 
@@ -36,12 +36,12 @@ sequenceDiagram
     C-->>U: Plan d'implémentation
     U->>C: Validation ✓
 
-    Note over U,R: Phase 4 - CODE
+    Note over U,R: Phase 4 - TDD (obligatoire)
     U->>C: /dev-tdd
-    loop Pour chaque tâche
-        C->>R: Écriture tests
-        C->>R: Écriture code
-        C->>R: Validation tests
+    loop Cycle Red-Green-Refactor
+        C->>R: RED: Écriture test qui échoue
+        C->>R: GREEN: Code minimal pour passer
+        C->>R: REFACTOR: Amélioration
     end
 
     Note over U,R: Phase 5 - COMMIT
@@ -57,6 +57,7 @@ sequenceDiagram
 ```
 ❌ Coder sans comprendre → Bugs et regressions
 ❌ Implementer sans plan → Refactoring constant
+❌ Coder avant les tests → Code non teste
 ❌ Commits geants → Historique illisible
 ```
 
@@ -65,6 +66,7 @@ sequenceDiagram
 ```
 ✅ Explorer d'abord → Comprendre le contexte
 ✅ Planifier avant → Architecture solide
+✅ TDD obligatoire → Code teste et fiable
 ✅ Commits atomiques → Historique clair
 ```
 
@@ -141,24 +143,26 @@ sequenceDiagram
 Attendez la validation du plan avant de coder !
 :::
 
-## Etape 3 : Code
+## Etape 3 : TDD (Obligatoire)
 
-**Commande** : `/dev-tdd` (recommande) ou implementation directe
+**Commande** : `/dev-tdd`
 
-**Objectif** : Implementer en suivant le plan valide.
+**Objectif** : Implementer en suivant le cycle Red-Green-Refactor.
 
 ```bash
-# En TDD (recommande)
 /dev-tdd "Implementer le service 2FA"
-
-# Ou implementation directe
-# Claude suivra le plan valide automatiquement
 ```
 
+**Cycle TDD obligatoire** :
+1. **RED** : Ecrire un test qui echoue
+2. **GREEN** : Ecrire le code minimal pour passer le test
+3. **REFACTOR** : Ameliorer le code sans casser les tests
+
 **Bonnes pratiques** :
+- Toujours ecrire les tests AVANT le code
 - Suivre le plan strictement
 - Un commit par changement logique
-- Tests a chaque etape
+- Couverture minimum 80% sur nouveau code
 
 ## Etape 4 : Commit
 
@@ -208,10 +212,13 @@ Closes #123
 # Claude propose un plan detaille
 # Vous validez ou demandez des modifications
 
-# 3. Implementer en TDD
+# 3. Implementer en TDD (obligatoire)
 > /dev-tdd "Implementer le service 2FA selon le plan"
 
-# Claude ecrit les tests d'abord, puis le code
+# Claude suit le cycle Red-Green-Refactor :
+# - RED: Ecrit les tests qui echouent
+# - GREEN: Ecrit le code minimal pour passer
+# - REFACTOR: Ameliore le code
 
 # 4. Creer la PR
 > /work-pr

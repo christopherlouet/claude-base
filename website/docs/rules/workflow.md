@@ -21,7 +21,7 @@ _Toutes les fichiers_
 
 # Workflow Rules
 
-## Cycle Obligatoire: Explore -&gt; Plan -&gt; Code -&gt; Commit
+## Cycle Obligatoire: Explore -&gt; Plan -&gt; TDD -&gt; Commit
 
 ### 1. EXPLORE (obligatoire)
 
@@ -38,12 +38,17 @@ _Toutes les fichiers_
 - Attendre validation avant de coder
 - Utiliser `/work-plan`
 
-### 3. CODE
+### 3. TDD (obligatoire)
 
-- Implementer en suivant le plan valide
-- Tests first si applicable (TDD avec `/dev-tdd`)
+- IMPORTANT: Toujours ecrire les tests AVANT le code
+- Cycle Red-Green-Refactor obligatoire:
+  1. RED: Ecrire un test qui echoue
+  2. GREEN: Ecrire le code minimal pour passer le test
+  3. REFACTOR: Ameliorer le code sans casser les tests
+- Utiliser `/dev-tdd` pour le cycle complet
 - Commits atomiques et frequents
 - Respecter les conventions du projet
+- Couverture minimum 80% sur nouveau code
 
 ### 4. COMMIT
 
@@ -56,6 +61,7 @@ _Toutes les fichiers_
 
 - Coder sans comprendre l'existant
 - Implementer sans plan valide
+- Coder AVANT d'ecrire les tests (violer TDD)
 - Commits geants multi-fonctionnalites
 - Tests avec trop de mocks
 - `any` partout en TypeScript
@@ -68,7 +74,7 @@ _Toutes les fichiers_
 ### Nouvelle feature
 ```
 /work-flow-feature "description"
-# ou manuellement:
+# ou manuellement (TDD obligatoire):
 /work-explore -> /work-plan -> /dev-tdd -> /work-pr
 ```
 

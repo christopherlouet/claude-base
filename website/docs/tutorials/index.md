@@ -8,7 +8,7 @@ import TutorialCard, { TutorialGrid } from '@site/src/components/TutorialCard';
 
 # Tutoriels
 
-Bienvenue dans les tutoriels claude-socle ! Ces guides pratiques vous accompagnent pas-à-pas pour maîtriser le workflow **Explore → Plan → Code → Commit**.
+Bienvenue dans les tutoriels claude-socle ! Ces guides pratiques vous accompagnent pas-à-pas pour maîtriser le workflow **Explore → Plan → TDD → Commit**.
 
 ## Parcours recommandé
 

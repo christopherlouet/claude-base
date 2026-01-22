@@ -26,7 +26,7 @@ const config: Config = {
     ],
   ],
   title: 'claude-socle',
-  tagline: 'Template de configuration Claude Code pour un workflow optimal : Explore → Plan → Code → Commit',
+  tagline: 'Template de configuration Claude Code pour un workflow optimal : Explore → Plan → TDD → Commit',
   favicon: 'img/favicon.ico',
 
   // GitHub Pages configuration
