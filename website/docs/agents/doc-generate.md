@@ -1,5 +1,5 @@
 ---
-sidebar_position: 22
+sidebar_position: 23
 title: "doc-generate"
 description: "Generation de documentation complete et maintenable."
 tags:

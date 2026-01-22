@@ -59,16 +59,16 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 
 
 
-### [DEV](/docs/commands/dev) (21)
+### [DEV](/docs/commands/dev) (22)
 
 > Developpement (TDD, API, composants, debug)
 
+- [`/dev-ai-integration`](/docs/commands/dev/dev-ai-integration)
 - [`/dev-api`](/docs/commands/dev/dev-api)
 - [`/dev-api-versioning`](/docs/commands/dev/dev-api-versioning)
 - [`/dev-component`](/docs/commands/dev/dev-component)
 - [`/dev-debug`](/docs/commands/dev/dev-debug)
-- [`/dev-design-system`](/docs/commands/dev/dev-design-system)
-- [... et 16 autres](/docs/commands/dev)
+- [... et 17 autres](/docs/commands/dev)
 
 
 ### [DOC](/docs/commands/doc) (9)
@@ -83,7 +83,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [... et 4 autres](/docs/commands/doc)
 
 
-### [GROWTH](/docs/commands/growth) (9)
+### [GROWTH](/docs/commands/growth) (10)
 
 > Croissance (SEO, analytics, landing, funnel)
 
@@ -92,7 +92,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/growth-app-store-analytics`](/docs/commands/growth/growth-app-store-analytics)
 - [`/growth-email`](/docs/commands/growth/growth-email)
 - [`/growth-funnel`](/docs/commands/growth/growth-funnel)
-- [... et 4 autres](/docs/commands/growth)
+- [... et 5 autres](/docs/commands/growth)
 
 
 ### [LEGAL](/docs/commands/legal) (5)
@@ -119,7 +119,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [... et 24 autres](/docs/commands/ops)
 
 
-### [QA](/docs/commands/qa) (12)
+### [QA](/docs/commands/qa) (13)
 
 > Qualite (review, securite, performance, accessibilite)
 
@@ -128,7 +128,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/qa-automation`](/docs/commands/qa/qa-automation)
 - [`/qa-coverage`](/docs/commands/qa/qa-coverage)
 - [`/qa-e2e`](/docs/commands/qa/qa-e2e)
-- [... et 7 autres](/docs/commands/qa)
+- [... et 8 autres](/docs/commands/qa)
 
 
 ### [WORK](/docs/commands/work) (10)

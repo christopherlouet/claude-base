@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: "/dev-api-versioning"
 description: "Mettre en place une stratégie de versioning d'API robuste."
 tags:

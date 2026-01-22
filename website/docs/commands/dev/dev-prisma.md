@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 14
 title: "/dev-prisma"
 description: "Configuration et utilisation de Prisma ORM."
 tags:

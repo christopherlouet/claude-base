@@ -1,5 +1,5 @@
 ---
-sidebar_position: 31
+sidebar_position: 32
 title: "legal-rgpd"
 description: "Conformite RGPD (Reglement General sur la Protection des Donnees)."
 tags:

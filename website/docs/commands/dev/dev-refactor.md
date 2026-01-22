@@ -1,5 +1,5 @@
 ---
-sidebar_position: 17
+sidebar_position: 18
 title: "/dev-refactor"
 description: "Refactoring de code avec préservation du comportement et amélioration de la qualité."
 tags:

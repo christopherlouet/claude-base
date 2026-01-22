@@ -9,6 +9,43 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.11.0] - 2026-01-22
+
+### Ajouté
+- **TDD obligatoire** dans le workflow d'implémentation
+  - Le cycle Red-Green-Refactor devient obligatoire pour toute feature
+  - Workflow mis à jour : Explore → Plan → **TDD** → Commit
+  - Anti-pattern ajouté : "Coder AVANT d'écrire les tests"
+  - Documentation Docusaurus mise à jour (13 fichiers)
+
+- **Permissions optimisées** dans `settings.json`
+  - `NotebookEdit` : Édition notebooks Jupyter sans confirmation
+  - `TodoRead` / `TodoWrite` : Gestion todo list sans confirmation
+  - `AskFollowup` : Questions de suivi sans confirmation
+  - `mcp__*` : Tous les serveurs MCP autorisés
+
+- **Nouveaux hooks d'auto-installation**
+  - `pubspec.yaml` → `flutter pub get` automatique
+  - `go.mod` → `go mod tidy` automatique
+  - `Cargo.toml` → `cargo check` automatique
+
+### Modifié
+- **Deny list renforcée** (+10 patterns de sécurité)
+  - `git restore .`, `git checkout .` bloqués
+  - `rm -rf node_modules` bloqué
+  - `shutdown`, `reboot`, `halt`, `poweroff` bloqués
+  - Fork bomb et pipes dangereux bloqués
+
+### Corrigé
+- **CVE-2025-13465** : Patch lodash-es via npm overrides
+
+### Documentation
+- Mise à jour du workflow dans 13 fichiers Docusaurus
+- WorkflowDiagram.tsx : Code → TDD dans les diagrammes
+- FAQ et guides mis à jour
+
+---
+
 ## [1.10.1] - 2026-01-22
 
 ### Corrigé
