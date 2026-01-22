@@ -21,7 +21,7 @@ tags:
 | **Permission Mode** | default |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
 | **Outils interdits** | _Aucun_ |
-| **Skills injectes** | `infrastructure-as-code` |
+| **Skills injectes** | `ops-infra-code` |
 
 ## Description detaillee
 

@@ -89,7 +89,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`ops-infra-code`](/docs/agents/ops-infra-code) | Agent specialise pour l'Infrastructure as Code avec Terrafor... | Read, Grep, Glob... |
 | [`ops-migration`](/docs/agents/ops-migration) | Planification et execution de migrations techniques. | Read, Grep, Glob... |
 | [`ops-monitoring`](/docs/agents/ops-monitoring) | Instrumentation complete pour observabilite. | Read, Grep, Glob... |
-| [`ops-opnsense`](/docs/agents/ops-opnsense) | Agent spécialisé pour la gestion d'OPNsense en Infrastructur... | - |
+| [`ops-opnsense`](/docs/agents/ops-opnsense) | Agent spécialisé pour la gestion d'OPNsense en Infrastructur... | Read, Grep, Glob... |
 | [`ops-proxmox`](/docs/agents/ops-proxmox) | Gestion complète de l'infrastructure Proxmox VE : provisioni... | Read, Grep, Glob... |
 | [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet d'un projet couvrant securite, RGPD, a... | Read, Grep, Glob... |
 | [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
