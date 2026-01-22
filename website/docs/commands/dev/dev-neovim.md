@@ -1,5 +1,5 @@
 ---
-sidebar_position: 12
+sidebar_position: 13
 title: "/dev-neovim"
 description: "Créer et configurer des plugins, LSP, keymaps et fonctionnalités Neovim en Lua."
 tags:

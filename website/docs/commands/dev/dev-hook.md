@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "/dev-hook"
 description: "Créer un custom hook React/Vue avec tests et documentation."
 tags:

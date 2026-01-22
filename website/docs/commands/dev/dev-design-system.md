@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 title: "/dev-design-system"
 description: "Creation et maintenance de design systems et bibliotheques de composants."
 tags:

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 16
+sidebar_position: 17
 title: "/dev-react-perf"
 description: "Optimisation performance React/Next.js basée sur 45 règles priorisées par impact."
 tags:

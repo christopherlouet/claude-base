@@ -13,12 +13,13 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **21 commandes** pour developpement (tdd, api, composants, debug).
+Ce domaine contient **22 commandes** pour developpement (tdd, api, composants, debug).
 
 ## Liste des commandes
 
 | Commande | Description |
 |----------|-------------|
+| [`/dev-ai-integration`](/docs/commands/dev/dev-ai-integration) | Integration de modeles de langage (LLM) et APIs IA dans les applications. |
 | [`/dev-api`](/docs/commands/dev/dev-api) | Créer ou documenter des endpoints REST/GraphQL. |
 | [`/dev-api-versioning`](/docs/commands/dev/dev-api-versioning) | Mettre en place une stratégie de versioning d'API robuste. |
 | [`/dev-component`](/docs/commands/dev/dev-component) | Générer un composant UI complet avec tests, types et documentation. |
@@ -44,6 +45,12 @@ Ce domaine contient **21 commandes** pour developpement (tdd, api, composants, d
 ## Commandes en detail
 
 <CommandGrid>
+  <CommandCard
+    name="dev-ai-integration"
+    description="Integration de modeles de langage (LLM) et APIs IA dans les applications."
+    domain="dev"
+    href="/docs/commands/dev/dev-ai-integration"
+  />
   <CommandCard
     name="dev-api"
     description="Créer ou documenter des endpoints REST/GraphQL."

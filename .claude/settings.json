@@ -13,29 +13,37 @@
       "Grep",
       "WebSearch",
       "WebFetch",
+      "NotebookEdit",
+      "TodoRead",
+      "TodoWrite",
+      "AskFollowup",
       "Skill(*)",
       "Task(*)",
-      "mcp__filesystem__*",
-      "mcp__github__*",
-      "mcp__memory__*",
+      "mcp__*",
 
       "Bash"
     ],
     "deny": [
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
+      "Bash(git push origin --force:*)",
+      "Bash(git push origin -f:*)",
       "Bash(git reset --hard:*)",
       "Bash(git clean -fd:*)",
+      "Bash(git clean -fdx:*)",
       "Bash(git checkout .:*)",
+      "Bash(git restore .:*)",
       "Bash(rm -rf /:*)",
       "Bash(rm -rf /*:*)",
       "Bash(rm -rf ~:*)",
       "Bash(rm -rf .:*)",
       "Bash(rm -rf ..:*)",
+      "Bash(rm -rf node_modules:*)",
       "Bash(sudo:*)",
       "Bash(su -:*)",
       "Bash(chmod 777:*)",
       "Bash(chmod -R 777:*)",
+      "Bash(chown -R:*)",
       "Bash(> /dev/sda:*)",
       "Bash(> /dev/nvme:*)",
       "Bash(mkfs:*)",
@@ -44,7 +52,12 @@
       "Bash(curl | bash:*)",
       "Bash(wget | bash:*)",
       "Bash(curl | sh:*)",
-      "Bash(wget | sh:*)"
+      "Bash(wget | sh:*)",
+      "Bash(:(){ :|:& };:*)",
+      "Bash(shutdown:*)",
+      "Bash(reboot:*)",
+      "Bash(halt:*)",
+      "Bash(poweroff:*)"
     ]
   },
   "hooks": {
@@ -179,6 +192,42 @@
             "type": "command",
             "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"pyproject.toml$\"; then if command -v uv >/dev/null 2>&1 && [ -f uv.lock ]; then uv sync 2>&1 | tail -3 || true; elif command -v pip >/dev/null 2>&1; then pip install -e . 2>&1 | tail -3 || true; fi; fi'",
             "timeout": 60000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto pub get apres modification de pubspec.yaml",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"pubspec.yaml$\"; then if command -v flutter >/dev/null 2>&1; then flutter pub get 2>&1 | tail -3 || true; elif command -v dart >/dev/null 2>&1; then dart pub get 2>&1 | tail -3 || true; fi; fi'",
+            "timeout": 60000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto go mod tidy apres modification de go.mod",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"go.mod$\"; then if command -v go >/dev/null 2>&1; then go mod tidy 2>&1 | tail -3 || true; fi; fi'",
+            "timeout": 60000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Auto cargo check apres modification de Cargo.toml",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"Cargo.toml$\"; then if command -v cargo >/dev/null 2>&1; then cargo check 2>&1 | tail -5 || true; fi; fi'",
+            "timeout": 120000,
             "onFailure": "ignore"
           }
         ]

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalogue des 52 sub-agents claude-socle"
+description: "Catalogue des 37 sub-agents claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -60,7 +60,7 @@ Agents rapides et economiques pour les taches simples.
 | [`qa-tech-debt`](/docs/agents/qa-tech-debt) | Identification et priorisation de la dette technique dans le... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | Tu es en mode EXPLORATION. Analyse le codebase sans jamais m... | Read, Grep, Glob |
 
-### Sonnet (27 agents)
+### Sonnet (28 agents)
 
 Agents pour les taches complexes necessitant une analyse approfondie.
 
@@ -76,6 +76,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`dev-prompt-engineering`](/docs/agents/dev-prompt-engineering) | Optimisation systematique de prompts pour applications LLM. | Read, Grep, Glob... |
 | [`dev-rag`](/docs/agents/dev-rag) | Architecture et implementation de systemes RAG. | Read, Grep, Glob... |
 | [`dev-supabase`](/docs/agents/dev-supabase) | Integration complete de Supabase comme backend. | Read, Grep, Glob... |
+| [`dev-tdd`](/docs/agents/dev-tdd) | Developpement guide par les tests avec le cycle Red-Green-Re... | Read, Grep, Glob... |
 | [`dev-test`](/docs/agents/dev-test) | Generation de tests complets et maintenables. | Read, Grep, Glob... |
 | [`growth-analytics`](/docs/agents/growth-analytics) | Implementation de l'analytics et du tracking. | Read, Grep, Glob... |
 | [`growth-funnel`](/docs/agents/growth-funnel) | Analyse et optimisation des funnels de conversion. | Read, Grep, Glob... |

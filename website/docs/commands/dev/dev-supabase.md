@@ -1,5 +1,5 @@
 ---
-sidebar_position: 18
+sidebar_position: 19
 title: "/dev-supabase"
 description: "Configurer et utiliser Supabase comme backend (Auth, Database, Storage, Realtime, Edge Functions)."
 tags:
