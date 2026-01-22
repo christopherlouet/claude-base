@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 25
 title: "prompt-engineering"
 description: "Optimisation de prompts pour LLMs. Declencher quand l'utilisateur veut ameliorer un prompt, ajouter des exemples, ou structurer des instructions."
 tags:

@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **29 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
+Ce domaine contient **30 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
 
 ## Liste des commandes
 
@@ -41,6 +41,7 @@ Ce domaine contient **29 commandes** pour operations (ci/cd, docker, monitoring,
 | [`/ops-mobile-release`](/docs/commands/ops/ops-mobile-release) | Publication d'applications mobiles sur les stores (App Store, Google Play). |
 | [`/ops-monitoring`](/docs/commands/ops/ops-monitoring) | Instrumentation du code pour le monitoring, logging et alerting. |
 | [`/ops-observability-stack`](/docs/commands/ops/ops-observability-stack) | Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager). |
+| [`/ops-opnsense`](/docs/commands/ops/ops-opnsense) | Infrastructure as Code pour OPNsense. Configurer et gérer un pare-feu OPNsense via Terraform. |
 | [`/ops-proxmox`](/docs/commands/ops/ops-proxmox) | Gestion complète de l'infrastructure Proxmox VE : provisioning de VMs et conteneurs LXC, configuration réseau, stockage, backup avec PBS, et automatisation avec Terraform. |
 | [`/ops-release`](/docs/commands/ops/ops-release) | Workflow de release avec changelog et versioning. |
 | [`/ops-rollback`](/docs/commands/ops/ops-rollback) | Procedure de rollback securisee pour revenir a une version stable. |
@@ -183,6 +184,12 @@ Ce domaine contient **29 commandes** pour operations (ci/cd, docker, monitoring,
     description="Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager)."
     domain="ops"
     href="/docs/commands/ops/ops-observability-stack"
+  />
+  <CommandCard
+    name="ops-opnsense"
+    description="Infrastructure as Code pour OPNsense. Configurer et gérer un pare-feu OPNsense via Terraform."
+    domain="ops"
+    href="/docs/commands/ops/ops-opnsense"
   />
   <CommandCard
     name="ops-proxmox"

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 28
+sidebar_position: 29
 title: "/ops-serverless"
 description: "Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers)."
 tags:

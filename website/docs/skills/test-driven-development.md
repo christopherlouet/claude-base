@@ -1,5 +1,5 @@
 ---
-sidebar_position: 33
+sidebar_position: 34
 title: "test-driven-development"
 description: "Développement TDD avec cycle Red-Green-Refactor. Utiliser pour implémenter une fonctionnalité en écrivant les tests AVANT le code. Déclencher quand l'utilisateur demande du TDD, veut écrire des tests d'abord, ou mentionne \"test first\"."
 tags:

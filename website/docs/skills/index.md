@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **32 skills** auto-declenches par mots-cles
+> **33 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 32, label: 'Skills Fork' },
+  { number: 33, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 32, label: 'Total' },
+  { number: 33, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?
@@ -29,7 +29,7 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (32 skills)
+### Fork (33 skills)
 
 Skills avec contexte isole.
 
@@ -55,6 +55,7 @@ Skills avec contexte isole.
 | [`infrastructure-as-code`](/docs/skills/infrastructure-as-code) | Infrastructure as Code avec Terraform/OpenTofu. De... | infrastructure, code, aws_instance |
 | [`mobile-release`](/docs/skills/mobile-release) | Publication d'apps sur App Store et Google Play. D... | mobile, release, deploy to testflight |
 | [`monitoring-instrumentation`](/docs/skills/monitoring-instrumentation) | Instrumentation d'applications pour monitoring. De... | monitoring, instrumentation |
+| [`opnsense-configuration`](/docs/skills/opnsense-configuration) | Configuration OPNsense via Terraform. Declencher p... | opnsense, configuration, browningluke/opnsense |
 | [`performance-optimization`](/docs/skills/performance-optimization) | Optimisation des performances d'applications. Decl... | performance, optimization, /photo.jpg |
 | [`planning-implementation`](/docs/skills/planning-implementation) | Planifier l'implémentation d'une fonctionnalité. U... | planning, implementation, pattern_similaire |
 | [`prompt-engineering`](/docs/skills/prompt-engineering) | Optimisation de prompts pour LLMs. Declencher quan... | prompt, engineering, instruction |

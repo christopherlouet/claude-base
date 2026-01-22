@@ -78,6 +78,14 @@ Suivez ces tutoriels dans l'ordre pour une progression optimale :
     href="/docs/tutorials/proxmox-infra"
     prerequisites={['Proxmox', 'Terraform']}
   />
+  <TutorialCard
+    title="Firewall OPNsense"
+    description="Configurez OPNsense comme firewall derrière une box opérateur avec Terraform."
+    duration="45 min"
+    difficulty="intermediate"
+    href="/docs/tutorials/opnsense-firewall"
+    prerequisites={['OPNsense', 'Terraform']}
+  />
 </TutorialGrid>
 
 ## Prérequis généraux

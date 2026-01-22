@@ -1,5 +1,5 @@
 ---
-sidebar_position: 26
+sidebar_position: 27
 title: "/ops-rollback"
 description: "Procedure de rollback securisee pour revenir a une version stable."
 tags:
