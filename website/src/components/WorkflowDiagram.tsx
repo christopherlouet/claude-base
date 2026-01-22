@@ -98,7 +98,7 @@ export default function WorkflowDiagram({
 export const MAIN_WORKFLOW: WorkflowStep[] = [
   { id: 'explore', label: 'Explore', command: '/work-explore', description: 'Comprendre le code' },
   { id: 'plan', label: 'Plan', command: '/work-plan', description: 'Planifier les changements' },
-  { id: 'code', label: 'Code', command: '/dev-tdd', description: 'Implementer' },
+  { id: 'tdd', label: 'TDD', command: '/dev-tdd', description: 'Tests first (obligatoire)' },
   { id: 'commit', label: 'Commit', command: '/work-commit', description: 'Valider' },
 ];
 
@@ -106,7 +106,7 @@ export const FEATURE_WORKFLOW: WorkflowStep[] = [
   { id: 'explore', label: 'Explore', command: '/work-explore' },
   { id: 'specify', label: 'Specify', command: '/work-specify' },
   { id: 'plan', label: 'Plan', command: '/work-plan' },
-  { id: 'code', label: 'Code', command: '/dev-tdd' },
+  { id: 'tdd', label: 'TDD', command: '/dev-tdd' },
   { id: 'review', label: 'Review', command: '/qa-review' },
   { id: 'pr', label: 'PR', command: '/work-pr' },
 ];

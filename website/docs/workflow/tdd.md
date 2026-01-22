@@ -1,12 +1,17 @@
 ---
 sidebar_position: 7
 title: TDD
-description: Developpement guide par les tests
+description: Developpement guide par les tests (obligatoire)
 ---
 
 # Workflow : TDD (Test-Driven Development)
 
 Developpement guide par les tests avec le cycle Red-Green-Refactor.
+
+:::tip TDD est obligatoire
+Depuis la version 1.11, **TDD est obligatoire** dans le workflow principal.
+Le cycle Explore → Plan → **TDD** → Commit impose d'ecrire les tests AVANT le code.
+:::
 
 ## Commande
 
