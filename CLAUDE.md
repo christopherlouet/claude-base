@@ -654,7 +654,7 @@ Chaque agent définit:
 
 ## Modular Rules (Claude Code 2.1+)
 
-Les règles sont organisées de manière modulaire dans `.claude/rules/` (17 règles):
+Les règles sont organisées de manière modulaire dans `.claude/rules/` (18 règles):
 
 ### Règles par langage
 | Fichier | Paths | Contenu |
@@ -673,6 +673,7 @@ Les règles sont organisées de manière modulaire dans `.claude/rules/` (17 rè
 ### Règles transversales
 | Fichier | Paths | Contenu |
 |---------|-------|---------|
+| `tdd-enforcement.md` | `**/*.ts`, `**/*.tsx`, `**/*.dart`, `**/*.py`, `**/*.go`, etc. | **TDD proactif obligatoire** |
 | `testing.md` | `**/*.test.ts`, `**/__tests__/**` | Couverture, mocks, edge cases |
 | `security.md` | `**/auth/**`, `**/api/**` | Validation, XSS, SQL injection |
 | `api.md` | `**/api/**`, `**/routes/**` | REST, validation, status codes |

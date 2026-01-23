@@ -20,6 +20,20 @@ Créer un custom hook React/Vue avec tests et documentation.
 ## Contexte
 `&lt;arguments&gt;`
 
+## Pre-requis TDD
+
+IMPORTANT: Cette commande suit l'approche TDD. Les tests seront ecrits AVANT le code du hook.
+
+**Ordre de creation obligatoire:**
+1. Definir les types (Options, Return)
+2. Ecrire les tests du hook avec `renderHook` (RED)
+3. Implementer le hook (GREEN)
+4. Refactorer si necessaire (REFACTOR)
+
+Si vous souhaitez proceder autrement, utilisez `/dev-hook --skip-tdd` (non recommande).
+
+---
+
 ## Processus de création
 
 ### 1. Définir le hook

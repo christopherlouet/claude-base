@@ -8,9 +8,11 @@ description: Developpement guide par les tests (obligatoire)
 
 Developpement guide par les tests avec le cycle Red-Green-Refactor.
 
-:::tip TDD est obligatoire
+:::tip TDD est obligatoire et proactif
 Depuis la version 1.11, **TDD est obligatoire** dans le workflow principal.
 Le cycle Explore → Plan → **TDD** → Commit impose d'ecrire les tests AVANT le code.
+
+**Nouveau (v1.12+)** : La [rule `tdd-enforcement`](/docs/rules/tdd-enforcement) declenche automatiquement TDD quand vous demandez d'implementer, ajouter, creer ou corriger du code.
 :::
 
 ## Commande
@@ -171,6 +173,8 @@ describe('NomDuModule', () => {
 
 ## Voir aussi
 
+- [Rule tdd-enforcement](/docs/rules/tdd-enforcement) - Declenchement proactif du TDD
+- [Skill test-driven-development](/docs/skills/test-driven-development) - Skill auto-declenche
 - [Tests](/docs/commands/dev/dev-test)
 - [Testing Setup](/docs/commands/dev/dev-testing-setup)
 - [Coverage](/docs/commands/qa/qa-coverage)
