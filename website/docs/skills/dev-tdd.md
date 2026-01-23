@@ -1,7 +1,7 @@
 ---
 sidebar_position: 13
 title: "dev-tdd"
-description: "Développement TDD avec cycle Red-Green-Refactor. Utiliser pour implémenter une fonctionnalité en écrivant les tests AVANT le code. Déclencher quand l'utilisateur demande du TDD, veut écrire des tests d'abord, ou mentionne \"test first\"."
+description: "Développement TDD avec cycle Red-Green-Refactor. Utiliser pour implémenter une fonctionnalité en écrivant les tests AVANT le code. Déclencher automatiquement quand l'utilisateur demande du TDD, veut écrire des tests d'abord, mentionne \"test first\", ou demande d'implémenter, ajouter, créer, fixer, corriger du code, une nouvelle feature, un bugfix, ou une fonctionnalité."
 tags:
   - "skill"
   - "fork"
@@ -11,7 +11,7 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Développement TDD avec cycle Red-Green-Refactor. Utiliser pour implémenter une fonctionnalité en écrivant les tests AVANT le code. Déclencher quand l'utilisateur demande du TDD, veut écrire des tests d'abord, ou mentionne "test first".
+> Développement TDD avec cycle Red-Green-Refactor. Utiliser pour implémenter une fonctionnalité en écrivant les tests AVANT le code. Déclencher automatiquement quand l'utilisateur demande du TDD, veut écrire des tests d'abord, mentionne "test first", ou demande d'implémenter, ajouter, créer, fixer, corriger du code, une nouvelle feature, un bugfix, ou une fonctionnalité.
 
 ## Configuration
 

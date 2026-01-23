@@ -9,6 +9,32 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.13.0] - 2026-01-23
+
+### Ajouté
+- **Règle TDD Enforcement** : Nouvelle règle `.claude/rules/tdd-enforcement.md` pour déclencher proactivement le TDD
+  - S'applique à tous les fichiers source (TS, JS, Dart, Python, Go, Rust, Java, C#, Ruby, PHP)
+  - Mots-clés déclencheurs : "implémenter", "ajouter", "créer", "fixer", "corriger", "feature", "bugfix"
+  - Exceptions définies : fichiers de config, documentation, refactoring mineur
+
+- **Documentation Docusaurus** : Page `/docs/rules/tdd-enforcement` avec exemples et intégration
+
+### Modifié
+- **Skill dev-tdd** : Description élargie avec nouveaux mots-clés déclencheurs automatiques
+- **Agent dev-tdd** : Description alignée avec le skill pour déclenchement étendu
+- **Commandes dev-*** : Ajout de la section "Pré-requis TDD" obligatoire
+  - `/dev-component` : Ordre de création TDD (types → tests → composant → stories)
+  - `/dev-api` : Ordre de création TDD (spec → tests → handler → doc)
+  - `/dev-hook` : Ordre de création TDD (types → tests → hook)
+- **CLAUDE.md** : Compteur de règles mis à jour (17 → 18), documentation tdd-enforcement
+- **Docusaurus** : Mise à jour de l'index des règles, skill TDD et workflow TDD avec cross-links
+
+### Technique
+- Score d'enforcement TDD amélioré de 5.4/10 à ~8/10
+- Cross-linking établi entre rule, skill et workflow TDD
+
+---
+
 ## [1.12.1] - 2026-01-22
 
 ### Ajouté

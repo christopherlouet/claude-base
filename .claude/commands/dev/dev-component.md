@@ -5,6 +5,21 @@ Générer un composant UI complet avec tests, types et documentation.
 ## Contexte
 $ARGUMENTS
 
+## Pre-requis TDD
+
+IMPORTANT: Cette commande suit l'approche TDD. Les tests seront ecrits AVANT le code du composant.
+
+**Ordre de creation obligatoire:**
+1. `[ComponentName].types.ts` - Definir les types d'abord
+2. `[ComponentName].test.tsx` - Ecrire les tests (RED)
+3. `[ComponentName].tsx` - Implementer le composant (GREEN)
+4. Refactorer si necessaire (REFACTOR)
+5. `[ComponentName].stories.tsx` - Documentation Storybook
+
+Si vous souhaitez proceder autrement, utilisez `/dev-component --skip-tdd` (non recommande).
+
+---
+
 ## Processus de création
 
 ### 1. Définir le composant

@@ -8,11 +8,11 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Regles
 
-> **17 regles** appliquees automatiquement par chemin de fichier
+> **18 regles** appliquees automatiquement par chemin de fichier
 
 <Stats items={[
-  { number: 17, label: 'Regles' },
-  { number: 62, label: 'Patterns' },
+  { number: 18, label: 'Regles' },
+  { number: 74, label: 'Patterns' },
 ]} />
 
 ## Qu'est-ce qu'une Rule ?
@@ -42,6 +42,7 @@ Les **rules** sont des conventions appliquees automatiquement :
 | [`ruby`](/docs/rules/ruby) | users.each do |user| puts user.name puts user.emai... | `**/*.rb`, `**/Gemfile`... |
 | [`rust`](/docs/rules/rust) | // 2. Constants const MAX_CONNECTIONS: usize = 100... | `**/*.rs`, `**/Cargo.toml` |
 | [`security`](/docs/rules/security) | Security Rules | `**/auth/**`, `**/api/**`... |
+| [`tdd-enforcement`](/docs/rules/tdd-enforcement) | IMPORTANT: Quand l'utilisateur demande d'implement... | `**/*.ts`, `**/*.tsx`... |
 | [`testing`](/docs/rules/testing) | // Act - Executer l'action const result = function... | `**/*.test.ts`, `**/*.test.tsx`... |
 | [`typescript`](/docs/rules/typescript) | TypeScript Rules | `**/*.ts`, `**/*.tsx`... |
 | [`workflow`](/docs/rules/workflow) | Workflow Rules | - |
