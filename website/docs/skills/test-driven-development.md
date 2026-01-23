@@ -1,17 +1,23 @@
 ---
 sidebar_position: 34
 title: "test-driven-development"
-description: "Développement TDD avec cycle Red-Green-Refactor. Utiliser pour implémenter une fonctionnalité en écrivant les tests AVANT le code. Déclencher quand l'utilisateur demande du TDD, veut écrire des tests d'abord, ou mentionne \"test first\"."
+description: "Développement TDD avec cycle Red-Green-Refactor. Déclenché automatiquement pour implémenter, ajouter, créer, fixer ou corriger du code."
 tags:
   - "skill"
   - "fork"
+  - "tdd"
+  - "testing"
 ---
 
 # Skill: test-driven-development
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Développement TDD avec cycle Red-Green-Refactor. Utiliser pour implémenter une fonctionnalité en écrivant les tests AVANT le code. Déclencher quand l'utilisateur demande du TDD, veut écrire des tests d'abord, ou mentionne "test first".
+> Développement TDD avec cycle Red-Green-Refactor. Déclenché automatiquement quand l'utilisateur demande d'implémenter, ajouter, créer, fixer, corriger du code, une nouvelle feature, un bugfix, ou mentionne "TDD" / "test first".
+
+:::tip Declenchement elargi (v1.12+)
+Ce skill est maintenant declenche automatiquement pour **toute demande d'implementation de code**, pas seulement quand "TDD" est explicitement mentionne. Voir la [rule tdd-enforcement](/docs/rules/tdd-enforcement) pour plus de details.
+:::
 
 ## Configuration
 
@@ -19,7 +25,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `test`, `driven`, `development`, `nom du test` |
+| **Mots-cles** | `implementer`, `ajouter`, `creer`, `fixer`, `corriger`, `feature`, `bugfix`, `TDD`, `test first` |
 
 ## Description detaillee
 
@@ -107,14 +113,18 @@ npm test -- --grep "nom du test"
 ## Declenchement automatique
 
 Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+- L'utilisateur demande d'**implementer**, **ajouter**, **creer**, **fixer** ou **corriger** du code
+- Les mots "TDD", "test first", "tests d'abord" sont mentionnes
+- Une **nouvelle feature** ou un **bugfix** est demande
 
 ### Exemples de declenchement
 
-- _"Je veux test..."_
-- _"Je veux driven..."_
-- _"Je veux development..."_
+- _"Implemente une fonction de validation d'email"_
+- _"Ajoute un bouton de logout"_
+- _"Cree un hook useDebounce"_
+- _"Fixe le bug d'authentification"_
+- _"Corrige l'erreur dans le calcul de prix"_
+- _"Nouvelle feature : notifications push"_
 
 ## Contexte fork
 
@@ -244,5 +254,7 @@ git commit -m "feat(pricing): implement calculatePrice with discount
 
 ## Voir aussi
 
+- [Rule tdd-enforcement](/docs/rules/tdd-enforcement) - Regle de declenchement proactif
+- [Workflow TDD](/docs/workflow/tdd) - Cycle Red-Green-Refactor detaille
 - [Retour aux skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

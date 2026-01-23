@@ -5,6 +5,21 @@ Créer ou documenter des endpoints REST/GraphQL.
 ## Endpoint ou API à traiter
 $ARGUMENTS
 
+## Pre-requis TDD
+
+IMPORTANT: Cette commande suit l'approche TDD. Les tests seront ecrits AVANT le code de l'endpoint.
+
+**Ordre de creation obligatoire:**
+1. Definir le contrat API (spec OpenAPI/types)
+2. Ecrire les tests d'integration (RED)
+3. Implementer le handler (GREEN)
+4. Refactorer si necessaire (REFACTOR)
+5. Documenter (Swagger/OpenAPI)
+
+Si vous souhaitez proceder autrement, utilisez `/dev-api --skip-tdd` (non recommande).
+
+---
+
 ## Modes disponibles
 
 ### Mode 1 : Créer un nouvel endpoint
