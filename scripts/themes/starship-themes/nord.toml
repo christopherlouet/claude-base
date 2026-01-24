@@ -1,0 +1,139 @@
+# Nord Theme for Starship
+# Cool blue tones from the Arctic
+# Based on https://www.nordtheme.com
+
+palette = "nord"
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$cmd_duration\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[➜](bold nord_green)"
+error_symbol = "[➜](bold nord_red)"
+vimcmd_symbol = "[➜](bold nord_purple)"
+
+[username]
+show_always = false
+style_user = "nord_cyan bold"
+style_root = "nord_red bold"
+format = "[$user]($style)@"
+
+[hostname]
+ssh_only = true
+style = "nord_blue"
+format = "[$hostname]($style):"
+
+[directory]
+style = "bold nord_blue"
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
+truncate_to_repo = true
+read_only = " "
+read_only_style = "nord_red"
+
+[git_branch]
+symbol = " "
+style = "bold nord_cyan"
+format = "on [$symbol$branch]($style) "
+
+[git_status]
+style = "nord_yellow"
+format = '([\[$all_status$ahead_behind\]]($style) )'
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+conflicted = "="
+untracked = "?"
+stashed = "$"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bold nord_orange"
+
+[cmd_duration]
+min_time = 2_000
+style = "nord_frost3"
+format = "took [$duration]($style) "
+
+[line_break]
+disabled = false
+
+# Language indicators
+[nodejs]
+symbol = " "
+style = "nord_green"
+format = "[$symbol($version)]($style) "
+
+[python]
+symbol = " "
+style = "nord_yellow"
+format = "[$symbol$pyenv_prefix($version)]($style) "
+
+[rust]
+symbol = " "
+style = "nord_orange"
+format = "[$symbol($version)]($style) "
+
+[golang]
+symbol = " "
+style = "nord_cyan"
+format = "[$symbol($version)]($style) "
+
+[docker_context]
+symbol = " "
+style = "nord_blue"
+format = "[$symbol$context]($style) "
+
+[kubernetes]
+symbol = "⎈ "
+style = "nord_purple"
+format = "[$symbol$context]($style) "
+disabled = true
+
+[aws]
+symbol = " "
+style = "nord_orange"
+format = "[$symbol($profile)]($style) "
+disabled = true
+
+[time]
+disabled = true
+style = "nord_snow0"
+format = "[$time]($style) "
+
+[palettes.nord]
+# Polar Night
+nord_polar0 = "#2e3440"
+nord_polar1 = "#3b4252"
+nord_polar2 = "#434c5e"
+nord_polar3 = "#4c566a"
+# Snow Storm
+nord_snow0 = "#d8dee9"
+nord_snow1 = "#e5e9f0"
+nord_snow2 = "#eceff4"
+# Frost
+nord_frost0 = "#8fbcbb"
+nord_frost1 = "#88c0d0"
+nord_frost2 = "#81a1c1"
+nord_frost3 = "#5e81ac"
+# Aurora
+nord_red = "#bf616a"
+nord_orange = "#d08770"
+nord_yellow = "#ebcb8b"
+nord_green = "#a3be8c"
+nord_purple = "#b48ead"
+# Aliases for convenience
+nord_cyan = "#88c0d0"
+nord_blue = "#81a1c1"
