@@ -1,0 +1,139 @@
+# Gruvbox Theme for Starship
+# Retro warm colors with excellent contrast
+# Based on https://github.com/morhetz/gruvbox (Dark mode)
+
+palette = "gruvbox_dark"
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$cmd_duration\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[❱](bold gruvbox_green)"
+error_symbol = "[❱](bold gruvbox_red)"
+vimcmd_symbol = "[❰](bold gruvbox_aqua)"
+
+[username]
+show_always = false
+style_user = "gruvbox_yellow bold"
+style_root = "gruvbox_red bold"
+format = "[$user]($style)@"
+
+[hostname]
+ssh_only = true
+style = "gruvbox_blue"
+format = "[$hostname]($style):"
+
+[directory]
+style = "bold gruvbox_yellow"
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
+truncate_to_repo = true
+read_only = " "
+read_only_style = "gruvbox_red"
+
+[git_branch]
+symbol = " "
+style = "bold gruvbox_aqua"
+format = "on [$symbol$branch]($style) "
+
+[git_status]
+style = "gruvbox_orange"
+format = '([$all_status$ahead_behind]($style) )'
+ahead = "↑${count}"
+behind = "↓${count}"
+diverged = "↕↑${ahead_count}↓${behind_count}"
+conflicted = "≠"
+untracked = "?"
+stashed = "≡"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bold gruvbox_purple"
+
+[cmd_duration]
+min_time = 2_000
+style = "gruvbox_gray"
+format = "took [$duration]($style) "
+
+[line_break]
+disabled = false
+
+# Language indicators
+[nodejs]
+symbol = " "
+style = "gruvbox_green"
+format = "[$symbol($version)]($style) "
+
+[python]
+symbol = " "
+style = "gruvbox_blue"
+format = "[$symbol$pyenv_prefix($version)]($style) "
+
+[rust]
+symbol = " "
+style = "gruvbox_orange"
+format = "[$symbol($version)]($style) "
+
+[golang]
+symbol = " "
+style = "gruvbox_aqua"
+format = "[$symbol($version)]($style) "
+
+[docker_context]
+symbol = " "
+style = "gruvbox_blue"
+format = "[$symbol$context]($style) "
+
+[kubernetes]
+symbol = "⎈ "
+style = "gruvbox_purple"
+format = "[$symbol$context]($style) "
+disabled = true
+
+[aws]
+symbol = " "
+style = "gruvbox_orange"
+format = "[$symbol($profile)]($style) "
+disabled = true
+
+[time]
+disabled = true
+style = "gruvbox_gray"
+format = "[$time]($style) "
+
+[palettes.gruvbox_dark]
+# Background
+gruvbox_bg0_h = "#1d2021"
+gruvbox_bg0 = "#282828"
+gruvbox_bg1 = "#3c3836"
+gruvbox_bg2 = "#504945"
+gruvbox_bg3 = "#665c54"
+gruvbox_bg4 = "#7c6f64"
+# Foreground
+gruvbox_fg0 = "#fbf1c7"
+gruvbox_fg1 = "#ebdbb2"
+gruvbox_fg2 = "#d5c4a1"
+gruvbox_fg3 = "#bdae93"
+gruvbox_fg4 = "#a89984"
+# Gray
+gruvbox_gray = "#928374"
+# Colors (bright)
+gruvbox_red = "#fb4934"
+gruvbox_green = "#b8bb26"
+gruvbox_yellow = "#fabd2f"
+gruvbox_blue = "#83a598"
+gruvbox_purple = "#d3869b"
+gruvbox_aqua = "#8ec07c"
+gruvbox_orange = "#fe8019"

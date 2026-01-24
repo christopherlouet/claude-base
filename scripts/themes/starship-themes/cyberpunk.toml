@@ -1,0 +1,132 @@
+# Cyberpunk Theme for Starship
+# Neon pink and cyan, futuristic aesthetics
+# "Welcome to Night City, choom"
+
+palette = "cyberpunk"
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$cmd_duration\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[◈](bold neon_cyan)"
+error_symbol = "[◈](bold neon_red)"
+vimcmd_symbol = "[◇](bold neon_pink)"
+
+[username]
+show_always = false
+style_user = "neon_pink bold"
+style_root = "neon_red bold"
+format = "[$user]($style)@"
+
+[hostname]
+ssh_only = true
+style = "neon_cyan"
+format = "[$hostname]($style):"
+
+[directory]
+style = "bold neon_pink"
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
+truncate_to_repo = true
+read_only = " "
+read_only_style = "neon_red"
+
+[git_branch]
+symbol = "⟫ "
+style = "bold neon_cyan"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "neon_yellow"
+format = '([$all_status$ahead_behind]($style) )'
+ahead = "⚡${count}"
+behind = "⬇${count}"
+diverged = "⚡⬆${ahead_count}⬇${behind_count}"
+conflicted = "⚔"
+untracked = "★"
+stashed = "📦"
+modified = "✎"
+staged = "✚"
+renamed = "➜"
+deleted = "✖"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bold neon_orange"
+
+[cmd_duration]
+min_time = 2_000
+style = "neon_purple"
+format = "⏱ [$duration]($style) "
+
+[line_break]
+disabled = false
+
+# Language/Tool indicators with cyberpunk symbols
+[nodejs]
+symbol = "⬡ "
+style = "neon_green"
+format = "[$symbol($version)]($style) "
+
+[python]
+symbol = " "
+style = "neon_yellow"
+format = "[$symbol$pyenv_prefix($version)]($style) "
+
+[rust]
+symbol = " "
+style = "neon_orange"
+format = "[$symbol($version)]($style) "
+
+[golang]
+symbol = " "
+style = "neon_cyan"
+format = "[$symbol($version)]($style) "
+
+[docker_context]
+symbol = " "
+style = "neon_blue"
+format = "[$symbol$context]($style) "
+
+[kubernetes]
+symbol = "☸ "
+style = "neon_purple"
+format = "[$symbol$context]($style) "
+disabled = true
+
+[aws]
+symbol = " "
+style = "neon_orange"
+format = "[$symbol($profile)]($style) "
+disabled = true
+
+[time]
+disabled = true
+style = "neon_cyan"
+format = "⏰ [$time]($style) "
+
+[battery]
+disabled = true
+
+[[battery.display]]
+threshold = 30
+style = "neon_red bold"
+
+[palettes.cyberpunk]
+neon_pink = "#ff00ff"
+neon_cyan = "#00ffff"
+neon_yellow = "#ffff00"
+neon_green = "#39ff14"
+neon_orange = "#ff6600"
+neon_purple = "#bf00ff"
+neon_blue = "#00bfff"
+neon_red = "#ff0040"
+dark_bg = "#0a0a0f"

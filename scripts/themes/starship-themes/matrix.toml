@@ -1,0 +1,122 @@
+# Matrix Theme for Starship
+# Green on black, classic hacker aesthetic
+# "Wake up, Neo..."
+
+palette = "matrix"
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$cmd_duration\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[❯](bold matrix_green)"
+error_symbol = "[❯](bold matrix_red)"
+vimcmd_symbol = "[❮](bold matrix_green)"
+
+[username]
+show_always = false
+style_user = "matrix_green bold"
+style_root = "matrix_red bold"
+format = "[$user]($style)@"
+
+[hostname]
+ssh_only = true
+style = "matrix_bright_green"
+format = "[$hostname]($style):"
+
+[directory]
+style = "bold matrix_green"
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
+truncate_to_repo = true
+read_only = " 🔒"
+read_only_style = "matrix_red"
+
+[git_branch]
+symbol = " "
+style = "bold matrix_bright_green"
+format = "on [$symbol$branch]($style) "
+
+[git_status]
+style = "matrix_green"
+format = '([\[$all_status$ahead_behind\]]($style) )'
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+conflicted = "="
+untracked = "?"
+stashed = "$"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bold matrix_yellow"
+
+[cmd_duration]
+min_time = 2_000
+style = "matrix_dim_green"
+format = "took [$duration]($style) "
+
+[line_break]
+disabled = false
+
+# Language/Tool indicators
+[nodejs]
+symbol = " "
+style = "matrix_green"
+format = "[$symbol($version)]($style) "
+
+[python]
+symbol = " "
+style = "matrix_green"
+format = "[$symbol$pyenv_prefix($version)]($style) "
+
+[rust]
+symbol = " "
+style = "matrix_green"
+format = "[$symbol($version)]($style) "
+
+[golang]
+symbol = " "
+style = "matrix_green"
+format = "[$symbol($version)]($style) "
+
+[docker_context]
+symbol = " "
+style = "matrix_bright_green"
+format = "[$symbol$context]($style) "
+
+[kubernetes]
+symbol = "⎈ "
+style = "matrix_green"
+format = "[$symbol$context]($style) "
+disabled = true
+
+[aws]
+symbol = " "
+style = "matrix_yellow"
+format = "[$symbol($profile)]($style) "
+disabled = true
+
+[time]
+disabled = true
+style = "matrix_dim_green"
+format = "[$time]($style) "
+
+[palettes.matrix]
+matrix_green = "#00ff00"
+matrix_bright_green = "#00ff41"
+matrix_dim_green = "#008f11"
+matrix_yellow = "#ccff00"
+matrix_red = "#ff0000"
+matrix_black = "#0d0d0d"

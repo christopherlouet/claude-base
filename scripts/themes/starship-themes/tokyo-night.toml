@@ -1,0 +1,148 @@
+# Tokyo Night Theme for Starship
+# Dark theme inspired by Tokyo city lights
+# Based on https://github.com/enkia/tokyo-night-vscode-theme
+
+palette = "tokyo_night"
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$cmd_duration\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[▸](bold tokyo_green)"
+error_symbol = "[▸](bold tokyo_red)"
+vimcmd_symbol = "[◂](bold tokyo_purple)"
+
+[username]
+show_always = false
+style_user = "tokyo_magenta bold"
+style_root = "tokyo_red bold"
+format = "[$user]($style)@"
+
+[hostname]
+ssh_only = true
+style = "tokyo_blue"
+format = "[$hostname]($style):"
+
+[directory]
+style = "bold tokyo_blue"
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
+truncate_to_repo = true
+read_only = " 󰌾"
+read_only_style = "tokyo_red"
+
+[git_branch]
+symbol = "⎇ "
+style = "bold tokyo_purple"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "tokyo_cyan"
+format = '([$all_status$ahead_behind]($style) )'
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+conflicted = "⚡"
+untracked = "?"
+stashed = "📦"
+modified = "✎"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bold tokyo_orange"
+
+[cmd_duration]
+min_time = 2_000
+style = "tokyo_yellow"
+format = "⏱ [$duration]($style) "
+
+[line_break]
+disabled = false
+
+# Language indicators
+[nodejs]
+symbol = " "
+style = "tokyo_green"
+format = "[$symbol($version)]($style) "
+
+[python]
+symbol = " "
+style = "tokyo_yellow"
+format = "[$symbol$pyenv_prefix($version)]($style) "
+
+[rust]
+symbol = " "
+style = "tokyo_orange"
+format = "[$symbol($version)]($style) "
+
+[golang]
+symbol = " "
+style = "tokyo_cyan"
+format = "[$symbol($version)]($style) "
+
+[docker_context]
+symbol = " "
+style = "tokyo_blue"
+format = "[$symbol$context]($style) "
+
+[kubernetes]
+symbol = "☸ "
+style = "tokyo_purple"
+format = "[$symbol$context]($style) "
+disabled = true
+
+[aws]
+symbol = " "
+style = "tokyo_orange"
+format = "[$symbol($profile)]($style) "
+disabled = true
+
+[time]
+disabled = true
+style = "tokyo_comment"
+format = "[$time]($style) "
+
+[palettes.tokyo_night]
+# Background
+tokyo_bg = "#1a1b26"
+tokyo_bg_dark = "#16161e"
+tokyo_bg_highlight = "#292e42"
+tokyo_terminal_black = "#414868"
+# Foreground
+tokyo_fg = "#c0caf5"
+tokyo_fg_dark = "#a9b1d6"
+tokyo_fg_gutter = "#3b4261"
+tokyo_comment = "#565f89"
+# Colors
+tokyo_dark3 = "#545c7e"
+tokyo_dark5 = "#737aa2"
+tokyo_blue0 = "#3d59a1"
+tokyo_blue = "#7aa2f7"
+tokyo_cyan = "#7dcfff"
+tokyo_blue1 = "#2ac3de"
+tokyo_blue2 = "#0db9d7"
+tokyo_blue5 = "#89ddff"
+tokyo_blue6 = "#b4f9f8"
+tokyo_blue7 = "#394b70"
+tokyo_magenta = "#bb9af7"
+tokyo_magenta2 = "#ff007c"
+tokyo_purple = "#9d7cd8"
+tokyo_orange = "#ff9e64"
+tokyo_yellow = "#e0af68"
+tokyo_green = "#9ece6a"
+tokyo_green1 = "#73daca"
+tokyo_green2 = "#41a6b5"
+tokyo_teal = "#1abc9c"
+tokyo_red = "#f7768e"
+tokyo_red1 = "#db4b4b"
