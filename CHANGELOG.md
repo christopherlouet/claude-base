@@ -9,6 +9,25 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.14.0] - 2026-01-24
+
+### Ajouté
+- **Collection de thèmes terminal** : 7 thèmes visuels complets dans `scripts/themes/`
+  - Thèmes disponibles : matrix, cyberpunk, dracula, catppuccin, nord, gruvbox, tokyo-night
+  - Chaque thème inclut 3 composants :
+    - Configuration Starship (prompt) : `starship-themes/<theme>.toml`
+    - Couleurs eza (listing moderne) : `eza-<theme>.sh`
+    - Couleurs LS_COLORS (ls natif) : `ls-<theme>.sh`
+  - Script d'installation interactif : `install-starship-theme.sh`
+  - Documentation complète avec palettes de couleurs et aliases
+
+### Technique
+- 23 nouveaux fichiers de configuration de thèmes
+- Support True Color (RGB 24-bit) pour tous les thèmes
+- Aliases inclus : `ls`, `ll`, `la`, `lt`, `l`
+
+---
+
 ## [1.13.0] - 2026-01-23
 
 ### Ajouté
