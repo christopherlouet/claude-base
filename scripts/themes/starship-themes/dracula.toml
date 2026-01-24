@@ -1,0 +1,127 @@
+# Dracula Theme for Starship
+# Popular dark theme with purple accents
+# Based on https://draculatheme.com
+
+palette = "dracula"
+
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$cmd_duration\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[λ](bold dracula_purple)"
+error_symbol = "[λ](bold dracula_red)"
+vimcmd_symbol = "[ν](bold dracula_green)"
+
+[username]
+show_always = false
+style_user = "dracula_pink bold"
+style_root = "dracula_red bold"
+format = "[$user]($style)@"
+
+[hostname]
+ssh_only = true
+style = "dracula_cyan"
+format = "[$hostname]($style):"
+
+[directory]
+style = "bold dracula_cyan"
+format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 4
+truncate_to_repo = true
+read_only = " 󰌾"
+read_only_style = "dracula_red"
+
+[git_branch]
+symbol = " "
+style = "bold dracula_purple"
+format = "on [$symbol$branch]($style) "
+
+[git_status]
+style = "dracula_pink"
+format = '([\[$all_status$ahead_behind\]]($style) )'
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+conflicted = "="
+untracked = "?"
+stashed = "$"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bold dracula_yellow"
+
+[cmd_duration]
+min_time = 2_000
+style = "dracula_yellow"
+format = "took [$duration]($style) "
+
+[line_break]
+disabled = false
+
+# Language indicators
+[nodejs]
+symbol = " "
+style = "dracula_green"
+format = "[$symbol($version)]($style) "
+
+[python]
+symbol = " "
+style = "dracula_yellow"
+format = "[$symbol$pyenv_prefix($version)]($style) "
+
+[rust]
+symbol = " "
+style = "dracula_orange"
+format = "[$symbol($version)]($style) "
+
+[golang]
+symbol = " "
+style = "dracula_cyan"
+format = "[$symbol($version)]($style) "
+
+[docker_context]
+symbol = " "
+style = "dracula_cyan"
+format = "[$symbol$context]($style) "
+
+[kubernetes]
+symbol = "⎈ "
+style = "dracula_purple"
+format = "[$symbol$context]($style) "
+disabled = true
+
+[aws]
+symbol = " "
+style = "dracula_orange"
+format = "[$symbol($profile)]($style) "
+disabled = true
+
+[time]
+disabled = true
+style = "dracula_comment"
+format = "[$time]($style) "
+
+[palettes.dracula]
+dracula_background = "#282a36"
+dracula_current = "#44475a"
+dracula_foreground = "#f8f8f2"
+dracula_comment = "#6272a4"
+dracula_cyan = "#8be9fd"
+dracula_green = "#50fa7b"
+dracula_orange = "#ffb86c"
+dracula_pink = "#ff79c6"
+dracula_purple = "#bd93f9"
+dracula_red = "#ff5555"
+dracula_yellow = "#f1fa8c"
