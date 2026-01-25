@@ -9,6 +9,24 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.15.0] - 2026-01-25
+
+### Ajouté
+- **Nouveaux hooks de qualité** (synchronisés depuis pve-home)
+  - `SessionStart` : Vérification de node_modules manquant
+  - `PreToolUse` : Exécution des tests avant commit (désactivable via `SKIP_PRE_COMMIT_TESTS=1`)
+  - `PostToolUse` : Type-check TypeScript (`tsc --noEmit`) après modification
+  - `PostToolUse` : Vérification ESLint après modification JS/TS
+  - `PostToolUse` : Vérification couverture de tests après modification de fichiers `.test.ts`
+
+### Technique
+- 5 nouveaux hooks dans `.claude/settings.json`
+- Synchronisation des fonctionnalités depuis le projet pve-home
+- Variables d'environnement pour désactiver les hooks (SKIP_PRE_COMMIT_TESTS, ALLOW_MAIN_EDIT)
+- Détection secrets gitleaks en PreToolUse (avant écriture) - pas de scan post-commit redondant
+
+---
+
 ## [1.14.0] - 2026-01-24
 
 ### Ajouté
