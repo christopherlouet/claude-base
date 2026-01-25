@@ -70,6 +70,16 @@
             "timeout": 5000
           }
         ]
+      },
+      {
+        "description": "Verifier que node_modules existe si package.json present",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [ -f package.json ] && [ ! -d node_modules ]; then echo \"[ALERT] node_modules manquant. Executez: npm install\"; fi'",
+            "timeout": 3000
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -96,6 +106,18 @@
             "onFailure": "block"
           }
         ]
+      },
+      {
+        "description": "Executer les tests avant un commit (desactiver avec SKIP_PRE_COMMIT_TESTS=1)",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [ \"$SKIP_PRE_COMMIT_TESTS\" = \"1\" ]; then exit 0; fi; if echo \"$TOOL_INPUT\" | grep -q \"git commit\"; then if [ -f package.json ] && grep -q \"\\\"test\\\"\" package.json; then echo \"Execution des tests avant commit...\"; npm test 2>&1 | tail -20; if [ ${PIPESTATUS[0]} -ne 0 ]; then echo \"BLOQUE: Tests en echec. Corrigez avant de commit.\"; exit 1; fi; fi; fi'",
+            "timeout": 120000,
+            "onFailure": "block"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -107,6 +129,30 @@
             "type": "command",
             "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx|mjs|cjs)$\"; then if [ -f node_modules/.bin/prettier ]; then npx prettier --write \"$TOOL_FILE\" 2>/dev/null || true; elif command -v prettier >/dev/null 2>&1; then prettier --write \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
             "timeout": 10000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Type-check TypeScript apres modification",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx)$\"; then if [ -f tsconfig.json ] && [ -f node_modules/.bin/tsc ]; then npx tsc --noEmit 2>&1 | head -20 || true; fi; fi'",
+            "timeout": 30000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "ESLint verification apres modification JS/TS",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx)$\"; then if [ -f node_modules/.bin/eslint ]; then npx eslint \"$TOOL_FILE\" --max-warnings 0 2>&1 | head -20 || true; fi; fi'",
+            "timeout": 15000,
             "onFailure": "ignore"
           }
         ]
@@ -227,6 +273,18 @@
             "type": "command",
             "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -q \"Cargo.toml$\"; then if command -v cargo >/dev/null 2>&1; then cargo check 2>&1 | tail -5 || true; fi; fi'",
             "timeout": 120000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Verifier couverture de tests apres modification de tests",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(test|spec)\\.(ts|tsx|js|jsx)$\"; then if [ -f package.json ] && grep -q \"test:coverage\" package.json; then echo \"Verification couverture...\"; npm run test:coverage -- --silent 2>&1 | grep -E \"(All files|Statements|Branches|Functions|Lines)\" | head -5 || true; fi; fi'",
+            "timeout": 60000,
             "onFailure": "ignore"
           }
         ]
