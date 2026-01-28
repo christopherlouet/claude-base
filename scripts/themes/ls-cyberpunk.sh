@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # LS_COLORS Cyberpunk Theme
 # Neon pink & cyan, futuristic Night City vibes
 #

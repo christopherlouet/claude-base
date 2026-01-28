@@ -196,7 +196,8 @@ apply_theme() {
 
     # Backup de l'ancienne config si elle existe
     if [[ -f "$STARSHIP_CONFIG" ]]; then
-        local backup="${STARSHIP_CONFIG}.backup.$(date +%Y%m%d_%H%M%S)"
+        local backup
+        backup="${STARSHIP_CONFIG}.backup.$(date +%Y%m%d_%H%M%S)"
         cp "$STARSHIP_CONFIG" "$backup"
         echo -e "${BLUE}►${NC} Backup créé: $backup"
     fi

@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # EZA Matrix Theme
 # Source this file in your .zshrc or .bashrc for Matrix-style ls colors
 #

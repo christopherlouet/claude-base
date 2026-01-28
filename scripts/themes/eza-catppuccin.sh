@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # EZA Catppuccin Theme (Mocha)
 # Soft pastel colors, easy on the eyes
 #
