@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # EZA Cyberpunk Theme
 # Neon pink & cyan, futuristic Night City vibes
 #

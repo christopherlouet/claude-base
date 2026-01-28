@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # LS_COLORS Dracula Theme
 # Popular dark theme with purple accents
 #

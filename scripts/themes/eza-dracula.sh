@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # EZA Dracula Theme
 # Popular dark theme with purple accents
 #

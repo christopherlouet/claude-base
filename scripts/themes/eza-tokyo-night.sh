@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # EZA Tokyo Night Theme
 # Dark theme inspired by Tokyo city lights
 #
