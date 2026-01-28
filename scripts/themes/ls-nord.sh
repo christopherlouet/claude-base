@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # LS_COLORS Nord Theme
 # Cool Arctic blue tones
 #

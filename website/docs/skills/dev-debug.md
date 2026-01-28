@@ -88,7 +88,7 @@ git bisect reset
 
 ## Output attendu
 
-```markdown
+````markdown
 ## Diagnostic : [Description du bug]
 
 ### Symptôme
@@ -121,7 +121,7 @@ code_corrigé();
 - [ ] Cause identifiée
 - [ ] Fix testé
 - [ ] Non-régression vérifiée
-```
+````
 
 ## Règles
 

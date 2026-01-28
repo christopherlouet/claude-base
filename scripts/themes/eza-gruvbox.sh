@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # EZA Gruvbox Theme (Dark)
 # Retro warm colors with excellent contrast
 #

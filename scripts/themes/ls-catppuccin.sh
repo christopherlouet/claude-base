@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # LS_COLORS Catppuccin Theme (Mocha)
 # Soft pastel colors, easy on the eyes
 #

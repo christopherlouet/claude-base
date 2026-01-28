@@ -140,19 +140,22 @@ generate_uuid() {
 create_new_profile() {
     local theme_key=$1
     local profile_name="${THEMES[${theme_key}_name]}"
-    local new_uuid=$(generate_uuid)
+    local new_uuid
+    new_uuid=$(generate_uuid)
 
     echo -e "${CYAN}Création du profil '${profile_name}'...${NC}"
 
     # Récupérer la liste actuelle des profils
-    local current_list=$(dconf read /org/gnome/terminal/legacy/profiles:/list)
+    local current_list
+    current_list=$(dconf read /org/gnome/terminal/legacy/profiles:/list)
 
     if [[ -z "$current_list" || "$current_list" == "@as []" ]]; then
         # Aucun profil, créer la liste
         dconf write /org/gnome/terminal/legacy/profiles:/list "['$new_uuid']"
     else
         # Ajouter à la liste existante
-        local new_list=$(echo "$current_list" | sed "s/]$/, '$new_uuid']/")
+        local new_list
+        new_list=$(echo "$current_list" | sed "s/]$/, '$new_uuid']/")
         dconf write /org/gnome/terminal/legacy/profiles:/list "$new_list"
     fi
 
@@ -175,7 +178,8 @@ create_new_profile() {
 
 apply_to_default_profile() {
     local theme_key=$1
-    local default_uuid=$(get_default_profile)
+    local default_uuid
+    default_uuid=$(get_default_profile)
 
     if [[ -z "$default_uuid" ]]; then
         echo -e "${YELLOW}Aucun profil par défaut trouvé, création d'un nouveau profil...${NC}"
@@ -223,7 +227,8 @@ theme_number_to_key() {
 }
 
 theme_name_to_key() {
-    local name=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+    local name
+    name=$(echo "$1" | tr '[:upper:]' '[:lower:]')
     case $name in
         matrix|cyberpunk|dracula|catppuccin|nord|gruvbox|tokyo-night)
             echo "$name"
@@ -241,7 +246,8 @@ install_all_themes() {
     echo -e "${CYAN}Installation de tous les thèmes...${NC}\n"
 
     for theme in matrix cyberpunk dracula catppuccin nord gruvbox tokyo-night; do
-        local uuid=$(create_new_profile "$theme")
+        local uuid
+        uuid=$(create_new_profile "$theme")
         echo -e "  ${GREEN}✓${NC} ${THEMES[${theme}_name]} installé (profil: ${uuid:0:8}...)"
     done
 

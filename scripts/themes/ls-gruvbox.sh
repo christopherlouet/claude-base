@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # LS_COLORS Gruvbox Theme (Dark)
 # Retro warm colors with excellent contrast
 #
