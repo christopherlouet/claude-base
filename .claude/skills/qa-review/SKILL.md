@@ -98,9 +98,47 @@ Types:
 - [ ] Performance acceptable
 ```
 
-## Règles
+## Analyse de nommage
 
-- Être constructif, pas destructif
+### Regles de nommage a verifier
+
+| Element | Convention | Exemples bons | Exemples mauvais |
+|---------|-----------|---------------|------------------|
+| Variables | Descriptif, camelCase | `userCount`, `isActive` | `x`, `tmp`, `data` |
+| Fonctions | Verbe + nom, camelCase | `getUserById`, `validateEmail` | `process`, `handle`, `do` |
+| Booleens | Prefixe is/has/can/should | `isValid`, `hasPermission` | `valid`, `permission` |
+| Constantes | SCREAMING_SNAKE | `MAX_RETRY_COUNT` | `maxRetry` |
+| Classes | PascalCase, nom | `UserService`, `OrderRepository` | `Manager`, `Helper` |
+| Interfaces | PascalCase, descriptif | `UserProfile`, `PaymentMethod` | `IUser`, `DataType` |
+
+### Smells de nommage a detecter
+
+| Smell | Probleme | Correction |
+|-------|----------|------------|
+| **Nom generique** | `data`, `result`, `temp`, `info` | Nommer selon le contenu |
+| **Abbreviation** | `usr`, `btn`, `msg`, `idx` | Ecrire en entier |
+| **Negation double** | `!isNotValid`, `!disableButton` | `isValid`, `enableButton` |
+| **Type dans le nom** | `userArray`, `nameString` | `users`, `name` |
+| **Longueur inappropriee** | Variable globale courte, locale longue | Inverse : global long, local court |
+| **Nom trompeur** | `getUser` qui modifie | `fetchAndUpdateUser` |
+
+### Patterns a rechercher
+
+```
+# Variables a un caractere (sauf i, j dans les boucles)
+\b[a-z]\b\s*[=:]
+
+# Noms generiques
+\b(data|result|temp|tmp|info|item|obj|val|res)\b\s*[=:]
+
+# Booleens sans prefixe
+\b(active|valid|visible|enabled|disabled|open|closed)\b\s*[=:]
+```
+
+## Regles
+
+- Etre constructif, pas destructif
 - Expliquer le POURQUOI
 - Proposer des alternatives
 - Distinguer bloquant vs nice-to-have
+- Verifier la coherence du nommage dans le code review

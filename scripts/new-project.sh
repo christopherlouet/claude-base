@@ -67,7 +67,7 @@ ${BOLD}USAGE${NC}
 
 ${BOLD}DESCRIPTION${NC}
     Crée un nouveau projet ou configure un projet existant avec Claude Code.
-    Installe 114 commandes, 52 agents et 32 skills pour le workflow Explore → Plan → Code → Commit.
+    Installe 118 commandes, 56 agents et 40 skills pour le workflow Explore → Plan → Code → Commit.
 
 ${BOLD}ARGUMENTS${NC}
     CHEMIN              Chemin vers un projet existant à configurer (optionnel)
@@ -135,9 +135,9 @@ ${BOLD}TYPES DE PROJET${NC}
     generic     Autre / Générique
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
-    .claude/commands/       114 commandes Claude Code
-    .claude/skills/         32 skills spécialisés
-    .claude/agents/         52 agents avec contexte isolé
+    .claude/commands/       118 commandes Claude Code
+    .claude/skills/         40 skills spécialisés
+    .claude/agents/         56 agents avec contexte isolé
     .claude/rules/          Règles contextuelles par path
     .claude/output-styles/  Styles de sortie
     .claude/templates/      Templates (spec, Proxmox, etc.)
@@ -1035,9 +1035,9 @@ print_simple_summary() {
     echo ""
 
     info "Fichiers installés:"
-    echo "  - .claude/commands/      (114 commandes)"
+    echo "  - .claude/commands/      (118 commandes)"
     echo "  - .claude/skills/        ($(count_skills "$SOCLE_DIR") skills)"
-    echo "  - .claude/agents/        (52 agents)"
+    echo "  - .claude/agents/        (56 agents)"
     echo "  - .claude/rules/         (règles contextuelles)"
     echo "  - .claude/output-styles/ (styles de sortie)"
     echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
@@ -1337,7 +1337,7 @@ EOF
 
     # Section Agents Disponibles
     cat >> "$output_file" << 'EOF'
-## Agents Disponibles (114 commandes, 52 agents)
+## Agents Disponibles (118 commandes, 56 agents)
 
 | Catégorie | Commandes |
 |-----------|-----------|
@@ -1790,7 +1790,7 @@ create_project() {
             cp -r "$SOCLE_DIR/.claude/skills/"* "$TARGET_DIR/.claude/skills/"
         fi
     fi
-    success "Commandes Claude installées (114 commandes, 52 agents, 32 skills)"
+    success "Commandes Claude installées (118 commandes, 56 agents, 40 skills)"
 
     # Générer ou copier CLAUDE.md
     if [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then

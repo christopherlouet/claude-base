@@ -116,12 +116,12 @@ const config: Config = {
             {
               type: 'docSidebar',
               sidebarId: 'agentsSidebar',
-              label: 'Agents (45)',
+              label: 'Agents (56)',
             },
             {
               type: 'docSidebar',
               sidebarId: 'skillsSidebar',
-              label: 'Skills (27)',
+              label: 'Skills (40)',
             },
             {
               type: 'docSidebar',
@@ -178,15 +178,15 @@ const config: Config = {
           title: 'Composants',
           items: [
             {
-              label: 'Commands (108)',
+              label: 'Commands (118)',
               to: '/docs/commands',
             },
             {
-              label: 'Agents (45)',
+              label: 'Agents (56)',
               to: '/docs/agents',
             },
             {
-              label: 'Skills (27)',
+              label: 'Skills (40)',
               to: '/docs/skills',
             },
           ],

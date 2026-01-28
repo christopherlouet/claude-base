@@ -10,11 +10,11 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Catalogue des Agents
 
-> **53 sub-agents** avec contexte isole pour des taches autonomes
+> **56 sub-agents** avec contexte isole pour des taches autonomes
 
 <Stats items={[
-  { number: 24, label: 'Agents Haiku' },
-  { number: 29, label: 'Agents Sonnet' },
+  { number: 26, label: 'Agents Haiku' },
+  { number: 30, label: 'Agents Sonnet' },
   { number: 53, label: 'Total' },
 ]} />
 

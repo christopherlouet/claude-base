@@ -1,6 +1,6 @@
 # Terminal Themes Collection
 
-Collection de thèmes visuels complets pour le terminal : prompt (Starship), listing de fichiers (eza/ls).
+Collection de thèmes visuels complets pour le terminal : prompt (Starship), listing de fichiers (eza/ls), et **GNOME Terminal** (Ubuntu).
 
 ## Thèmes disponibles
 
@@ -25,6 +25,27 @@ Chaque theme inclut 3 fichiers :
 | `ls-<theme>.sh` | ls (natif) | Listing fichiers standard |
 
 ## Installation rapide
+
+### 0. GNOME Terminal (Ubuntu)
+
+```bash
+# Mode interactif (recommandé)
+./install-gnome-terminal-theme.sh
+
+# Installer un thème spécifique (crée un nouveau profil)
+./install-gnome-terminal-theme.sh dracula
+
+# Appliquer au profil par défaut
+./install-gnome-terminal-theme.sh -d tokyo-night
+
+# Installer TOUS les thèmes d'un coup
+./install-gnome-terminal-theme.sh --all
+
+# Lister les thèmes disponibles
+./install-gnome-terminal-theme.sh --list
+```
+
+Après installation, change de profil via: **Clic droit → Profils → [Thème]**
 
 ### 1. Starship (prompt)
 

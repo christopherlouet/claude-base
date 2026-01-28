@@ -1,6 +1,6 @@
 # Guide de Choix des Agents et Commandes
 
-> Comment choisir le bon agent parmi les 47 disponibles dans claude-socle.
+> Comment choisir le bon agent parmi les 56 disponibles dans claude-socle.
 
 ## Matrice de Decision Rapide
 
@@ -34,7 +34,7 @@
 
 ---
 
-## Agents par Categorie (47)
+## Agents par Categorie (56)
 
 ### WORK- : Workflow Principal (1 agent)
 
@@ -48,17 +48,20 @@
 → Agent work-explore analyse le code en lecture seule
 ```
 
-### DEV- : Developpement (11 agents)
+### DEV- : Developpement (13 agents)
 
 | Agent | Quand l'utiliser | Modele |
 |-------|------------------|--------|
 | `dev-debug` | Diagnostiquer et resoudre un bug | sonnet |
 | `dev-component` | Creer un composant UI complet | haiku |
 | `dev-test` | Generer des tests unitaires/integration | haiku |
+| `dev-tdd` | Developpement TDD (Red-Green-Refactor) | sonnet |
 | `dev-flutter` | Creer widgets et screens Flutter | sonnet |
 | `dev-supabase` | Configurer Auth, DB, Storage Supabase | sonnet |
 | `dev-prompt-engineering` | Optimiser des prompts LLM | sonnet |
 | `dev-rag` | Architecturer des systemes RAG | sonnet |
+| `dev-ai-integration` | Integrer LLMs (OpenAI, Claude API) | sonnet |
+| `dev-document` | Generer documents (PDF, DOCX, XLSX, PPTX) | sonnet |
 | `dev-design-system` | Creer design tokens et composants | haiku |
 | `dev-prisma` | Schema, migrations, queries Prisma | haiku |
 | `dev-trpc` | APIs type-safe avec tRPC | haiku |
@@ -67,7 +70,7 @@
 - **haiku** (rapide, economique) : taches simples, generation de code standard
 - **sonnet** (approfondi) : debug complexe, architecture, integration
 
-### QA- : Qualite (7 agents)
+### QA- : Qualite (9 agents)
 
 | Agent | Quand l'utiliser | Modele |
 |-------|------------------|--------|
@@ -78,6 +81,8 @@
 | `qa-coverage` | Analyser la couverture de tests | haiku |
 | `qa-responsive` | Audit responsive/mobile-first | haiku |
 | `qa-e2e` | Tests E2E Playwright/Cypress | sonnet |
+| `qa-tech-debt` | Identifier et prioriser la dette technique | haiku |
+| `qa-design` | Audit UI/UX (100+ regles design web) | haiku |
 
 **Avant mise en production :**
 ```bash
@@ -98,13 +103,15 @@
 | `ops-vercel` | Configuration et deploiement Vercel | haiku |
 | `ops-infra-code` | Infrastructure as Code (Terraform) | sonnet |
 | `ops-proxmox` | Infrastructure Proxmox VE | sonnet |
+| `ops-opnsense` | Configuration OPNsense (firewall, NAT, DHCP) | sonnet |
+| `ops-migration` | Migration de frameworks et versions | sonnet |
 
 **Health check rapide :**
 ```bash
 /ops-health  # Diagnostic en 30 secondes
 ```
 
-### DOC- : Documentation (5 agents)
+### DOC- : Documentation (4 agents)
 
 | Agent | Quand l'utiliser | Modele |
 |-------|------------------|--------|
@@ -122,7 +129,7 @@
 | `biz-mvp` | Definition MVP | haiku |
 | `biz-personas` | Creation personas utilisateur | haiku |
 
-### GROWTH- : Croissance (4 agents)
+### GROWTH- : Croissance (6 agents)
 
 | Agent | Quand l'utiliser | Modele |
 |-------|------------------|--------|
@@ -130,6 +137,8 @@
 | `growth-analytics` | Setup tracking et KPIs | haiku |
 | `growth-landing` | Optimisation landing pages | haiku |
 | `growth-funnel` | Analyse funnels de conversion | haiku |
+| `growth-localization` | Strategie localisation multi-marches | haiku |
+| `growth-cro` | Optimisation taux de conversion (CRO) | haiku |
 
 ### DATA- : Donnees (3 agents)
 
@@ -270,14 +279,14 @@
 
 | Modele | Cas d'usage | Nombre |
 |--------|-------------|--------|
-| **haiku** | Taches simples, rapides | 28 agents |
-| **sonnet** | Taches complexes, analyse approfondie | 19 agents |
+| **haiku** | Taches simples, rapides | 26 agents |
+| **sonnet** | Taches complexes, analyse approfondie | 30 agents |
 
-### Agents Haiku (28)
+### Agents Haiku (26)
 Exploration, documentation, audits simples, generation standard
 
-### Agents Sonnet (19)
-Debug complexe, securite, performance, architecture, data modeling
+### Agents Sonnet (30)
+Debug complexe, securite, performance, architecture, data modeling, infrastructure
 
 ---
 
