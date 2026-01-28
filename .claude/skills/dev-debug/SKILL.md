@@ -105,7 +105,7 @@ Root cause: Bug de timezone dans la logique de refresh
 |-------------|-------------------|
 | **Null/Undefined** | Donnees manquantes, race condition, API changed |
 | **Type error** | Mauvais type, parsing JSON, conversion implicite |
-| **Off-by-one** | Index array, boucle, comparaison < vs <= |
+| **Off-by-one** | Index array, boucle, comparaison `<` vs `<=` |
 | **Race condition** | Async non await, state partage, timing |
 | **Memory leak** | Event listeners, closures, references circulaires |
 | **Regression** | Changement recent, effet de bord, dependance MAJ |
