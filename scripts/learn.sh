@@ -221,7 +221,7 @@ Bienvenue dans le tutoriel claude-socle !
 Claude-socle est un template de configuration pour Claude Code qui vous aide à :
 
   • Structurer votre workflow de développement
-  • Utiliser 52 agents spécialisés
+  • Utiliser 56 agents spécialisés
   • Suivre les meilleures pratiques
   • Automatiser les tâches répétitives
 
@@ -295,28 +295,44 @@ lesson_agents() {
     print_header "LEÇON 3: Les Agents Spécialisés"
 
     cat << 'EOF'
-Claude-socle inclut 52 agents organisés en catégories :
+Claude-socle inclut 56 agents organisés en catégories :
 
 EOF
 
-    echo -e "${BOLD}WORK-${NC} : Workflow principal (8 agents)"
+    echo -e "${BOLD}WORK-${NC} : Workflow principal (10 commandes, 1 agent)"
     echo "  /work-explore, /work-plan, /work-commit..."
     echo ""
 
-    echo -e "${BOLD}DEV-${NC} : Développement (10 agents)"
+    echo -e "${BOLD}DEV-${NC} : Développement (23 commandes, 13 agents)"
     echo "  /dev-tdd, /dev-test, /dev-refactor..."
     echo ""
 
-    echo -e "${BOLD}QA-${NC} : Qualité (8 agents)"
+    echo -e "${BOLD}QA-${NC} : Qualité (14 commandes, 9 agents)"
     echo "  /qa-review, /qa-security, /qa-perf..."
     echo ""
 
-    echo -e "${BOLD}OPS-${NC} : Opérations (16 agents)"
+    echo -e "${BOLD}OPS-${NC} : Opérations (30 commandes, 12 agents)"
     echo "  /ops-hotfix, /ops-release, /ops-docker..."
     echo ""
 
-    echo -e "${BOLD}DOC-${NC} : Documentation (9 agents)"
+    echo -e "${BOLD}DOC-${NC} : Documentation (9 commandes, 4 agents)"
     echo "  /doc-generate, /doc-changelog, /doc-readme..."
+    echo ""
+
+    echo -e "${BOLD}BIZ-${NC} : Business (11 commandes, 4 agents)"
+    echo "  /biz-model, /biz-mvp, /biz-competitor..."
+    echo ""
+
+    echo -e "${BOLD}GROWTH-${NC} : Croissance (11 commandes, 6 agents)"
+    echo "  /growth-seo, /growth-landing, /growth-cro..."
+    echo ""
+
+    echo -e "${BOLD}DATA-${NC} : Données (3 commandes, 3 agents)"
+    echo "  /data-pipeline, /data-analytics, /data-modeling"
+    echo ""
+
+    echo -e "${BOLD}LEGAL-${NC} : Légal (5 commandes, 4 agents)"
+    echo "  /legal-rgpd, /legal-payment, /legal-privacy-policy..."
     echo ""
 
     echo -e "${DIM}Astuce: Utilisez /assistant pour obtenir de l'aide sur le choix d'agent${NC}"
@@ -654,7 +670,7 @@ learn_agent() {
                 "Les 10 langages les plus sûrs"
             ;;
         *)
-            ask_yes_no "Cet agent fait partie des 52 agents disponibles" "y"
+            ask_yes_no "Cet agent fait partie des 56 agents disponibles" "y"
             ;;
     esac
 
@@ -712,7 +728,7 @@ Ce tutoriel interactif vous guidera à travers :
 
   1. Introduction à claude-socle
   2. Le workflow Explore → Plan → Code → Commit
-  3. Les 52 agents spécialisés
+  3. Les 56 agents spécialisés
   4. Le développement TDD
   5. Les Conventional Commits
   6. Mise en pratique

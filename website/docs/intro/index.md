@@ -39,22 +39,22 @@ Chaque etape a ses commandes dediees, ses agents specialises et ses bonnes prati
 
 | Composant | Nombre | Description |
 |-----------|--------|-------------|
-| **Commands** | 100 | Commandes declenchees manuellement (`/nom`) |
-| **Agents** | 37 | Sub-agents autonomes avec contexte isole |
-| **Skills** | 24 | Auto-declenchement sur mots-cles |
-| **Rules** | 15 | Regles par technologie/fichier |
+| **Commands** | 118 | Commandes declenchees manuellement (`/nom`) |
+| **Agents** | 56 | Sub-agents autonomes avec contexte isole |
+| **Skills** | 40 | Auto-declenchement sur mots-cles |
+| **Rules** | 20 | Regles par technologie/fichier |
 
 ## Domaines couverts
 
 | Domaine | Commandes | Description |
 |---------|-----------|-------------|
 | **WORK** | 10 | Workflow principal (explore, plan, commit, PR) |
-| **DEV** | 16 | Developpement (TDD, API, composants, debug) |
-| **QA** | 11 | Qualite (review, securite, performance, a11y) |
-| **OPS** | 24 | Operations (CI/CD, Docker, monitoring, GitFlow) |
+| **DEV** | 23 | Developpement (TDD, API, composants, debug) |
+| **QA** | 14 | Qualite (review, securite, performance, a11y) |
+| **OPS** | 30 | Operations (CI/CD, Docker, monitoring, GitFlow) |
 | **DOC** | 9 | Documentation (changelog, README, architecture) |
 | **BIZ** | 11 | Business (model, MVP, pricing, pitch) |
-| **GROWTH** | 9 | Croissance (SEO, analytics, landing, funnel) |
+| **GROWTH** | 11 | Croissance (SEO, analytics, landing, funnel) |
 | **DATA** | 3 | Donnees (pipeline, analytics, modeling) |
 | **LEGAL** | 5 | Legal (RGPD, CGU, paiement) |
 

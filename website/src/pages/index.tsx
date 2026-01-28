@@ -36,7 +36,7 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: '108 Commands',
+    title: '118 Commands',
     emoji: '🎯',
     description: (
       <>
@@ -45,7 +45,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '45 Sub-Agents',
+    title: '56 Sub-Agents',
     emoji: '🤖',
     description: (
       <>
@@ -54,7 +54,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '27 Skills',
+    title: '40 Skills',
     emoji: '⚡',
     description: (
       <>
@@ -63,7 +63,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '17 Rules',
+    title: '20 Rules',
     emoji: '📏',
     description: (
       <>

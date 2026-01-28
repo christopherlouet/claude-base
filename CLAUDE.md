@@ -232,7 +232,7 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
-## Agents Disponibles (115 commands, 53 sub-agents, 33 skills)
+## Agents Disponibles (118 commands, 56 sub-agents, 40 skills)
 
 ### Orchestrateur (Point d'entrée unique)
 | Commande | Mode | Usage |
@@ -254,14 +254,15 @@ type(scope): description courte
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (23)
+### DEV- : Développement (24)
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD |
 | `/dev-test` | Générer des tests |
 | `/dev-testing-setup` | Configurer l'infrastructure de tests |
-| `/dev-debug` | Déboguer un problème |
-| `/dev-refactor` | Refactoring guidé |
+| `/dev-debug` | Déboguer un problème (méthodologie 4 phases) |
+| `/dev-refactor` | Refactoring guidé + réduction d'entropie |
+| `/dev-document` | Génération de documents (PDF, DOCX, XLSX, PPTX) |
 | `/dev-api` | Créer/documenter API |
 | `/dev-api-versioning` | Versioning d'API |
 | `/dev-component` | Créer un composant UI complet |
@@ -270,7 +271,7 @@ type(scope): description courte
 | `/dev-react-perf` | Optimisation performance React/Next.js |
 | `/dev-mcp` | Créer des serveurs MCP (Model Context Protocol) |
 | `/dev-flutter` | Widgets et screens Flutter |
-| `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
+| `/dev-supabase` | Backend Supabase (Auth, DB, Storage, Postgres perf) |
 | `/dev-graphql` | API GraphQL client/serveur |
 | `/dev-neovim` | Plugins et config Neovim/Lua |
 | `/dev-prompt-engineering` | Optimisation de prompts LLM |
@@ -280,14 +281,15 @@ type(scope): description courte
 | `/dev-trpc` | APIs type-safe avec tRPC |
 | `/dev-ai-integration` | Intégration LLMs (OpenAI, Claude API) |
 
-### QA- : Qualité (13)
+### QA- : Qualité (14)
 | Commande | Usage |
 |----------|-------|
-| `/qa-review` | Code review approfondie |
+| `/qa-review` | Code review approfondie + analyse de nommage |
 | `/qa-security` | Audit de sécurité OWASP |
 | `/qa-perf` | Analyse de performance |
 | `/qa-a11y` | Audit accessibilité WCAG |
 | `/qa-audit` | Audit qualité complet |
+| `/qa-design` | Audit UI/UX (100+ règles design web) |
 | `/qa-responsive` | Audit responsive/mobile web |
 | `/qa-automation` | Automatisation des tests |
 | `/qa-coverage` | Analyse couverture de tests |
@@ -359,7 +361,7 @@ type(scope): description courte
 | `/biz-personas` | Créer des personas utilisateur |
 | `/biz-research` | Recherche utilisateur |
 
-### GROWTH- : Croissance (10)
+### GROWTH- : Croissance (11)
 | Commande | Usage |
 |----------|-------|
 | `/growth-landing` | Créer/optimiser landing page |
@@ -372,6 +374,7 @@ type(scope): description courte
 | `/growth-retention` | Stratégies de rétention |
 | `/growth-funnel` | Analyse et optimisation funnels |
 | `/growth-localization` | Stratégie de localisation multi-marchés |
+| `/growth-cro` | Optimisation du taux de conversion (CRO) |
 
 ### DATA- : Données (3)
 | Commande | Usage |
@@ -480,7 +483,7 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 
 ## Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **32 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **39 Skills** dans `.claude/skills/`:
 
 ### Skills de base
 | Skill | Déclenchement automatique | Context |
@@ -520,8 +523,15 @@ En plus des commandes, le projet inclut **32 Skills** dans `.claude/skills/`:
 | `ops-proxmox` | "Proxmox", "PVE", "VM Proxmox", "LXC", "PBS" | fork |
 | `ops-opnsense` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | fork |
 | `qa-tech-debt` | "dette technique", "tech debt", "refactoring priorité" | fork |
+| `qa-design` | "audit design", "UI/UX", "interface utilisateur" | fork |
 | `api-mocking` | "mock API", "MSW", "test sans backend" | fork |
 | `state-management` | "state", "Redux", "Zustand", "store" | fork |
+| `dev-document` | "PDF", "DOCX", "XLSX", "PPTX", "document", "rapport" | fork |
+| `growth-cro` | "conversion", "CRO", "signup flow", "onboarding", "paywall" | fork |
+| `parallel-agents` | "parallele", "concurrent", "fan-out", "multi-agents" | fork |
+| `session-handoff` | "handoff", "reprise", "transfert session", "contexte" | fork |
+| `git-worktrees` | "worktree", "dev parallele", "branches simultanées" | fork |
+| `writing-skills` | "créer skill", "nouveau skill", "écrire un skill" | fork |
 
 ### Configuration des Skills
 
@@ -550,7 +560,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 - **Modèle optimisé** : Haiku pour tâches simples (économie de tokens)
 - **Parallélisation** : Plusieurs agents peuvent tourner simultanément
 
-### Agents disponibles (52)
+### Agents disponibles (56)
 
 #### Exploration & Documentation
 | Agent | Modèle | Outils | Usage |
@@ -572,6 +582,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `qa-responsive` | haiku | Read, Grep, Glob | Audit responsive/mobile-first |
 | `qa-e2e` | sonnet | Read, Grep, Glob, Bash | Tests E2E Playwright/Cypress |
 | `qa-tech-debt` | haiku | Read, Grep, Glob | Identifier et prioriser la dette technique |
+| `qa-design` | haiku | Read, Grep, Glob | Audit UI/UX (100+ règles design web) |
 
 #### Opérations
 | Agent | Modèle | Outils | Usage |
@@ -603,6 +614,8 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `dev-prisma` | haiku | Read, Grep, Glob, Bash | ORM Prisma |
 | `dev-trpc` | haiku | Read, Grep, Glob | APIs type-safe tRPC |
 | `dev-ai-integration` | sonnet | Read, Grep, Glob, Bash | Intégration LLMs (OpenAI, Claude) |
+| `dev-document` | sonnet | Read, Grep, Glob, Edit, Write, Bash | Génération documents (PDF, DOCX, XLSX, PPTX) |
+| `dev-tdd` | sonnet | Read, Grep, Glob, Edit, Write, Bash | Développement TDD (Red-Green-Refactor) |
 
 #### Business & Growth
 | Agent | Modèle | Outils | Usage |
@@ -616,6 +629,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `growth-landing` | haiku | Read, Grep, Glob | Optimisation landing |
 | `growth-funnel` | haiku | Read, Grep, Glob | Analyse funnels |
 | `growth-localization` | haiku | Read, Grep, Glob | Stratégie de localisation multi-marchés |
+| `growth-cro` | haiku | Read, Grep, Glob | Optimisation taux de conversion (CRO) |
 
 #### Data
 | Agent | Modèle | Outils | Usage |
@@ -654,7 +668,7 @@ Chaque agent définit:
 
 ## Modular Rules (Claude Code 2.1+)
 
-Les règles sont organisées de manière modulaire dans `.claude/rules/` (18 règles):
+Les règles sont organisées de manière modulaire dans `.claude/rules/` (20 règles):
 
 ### Règles par langage
 | Fichier | Paths | Contenu |
@@ -681,6 +695,8 @@ Les règles sont organisées de manière modulaire dans `.claude/rules/` (18 rè
 | `workflow.md` | - | Explore → Plan → Code → Commit |
 | `accessibility.md` | `**/*.tsx`, `**/components/**` | WCAG 2.1 AA, a11y patterns |
 | `performance.md` | `**/*.tsx`, `**/pages/**` | Core Web Vitals, optimisation |
+| `nextjs.md` | `**/app/**`, `**/pages/**`, `**/next.config.*` | RSC, data fetching, caching, App Router |
+| `verification.md` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, etc. | Vérification avant completion (4 phases) |
 
 ### Path-Specific Rules
 

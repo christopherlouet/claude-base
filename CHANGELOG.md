@@ -9,6 +9,57 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.16.0] - 2026-01-28
+
+### Ajouté
+- **3 nouveaux agents** : `dev-document`, `growth-cro`, `qa-design`
+  - `dev-document` (sonnet) : Génération de documents (PDF, DOCX, XLSX, PPTX)
+  - `growth-cro` (haiku) : Optimisation du taux de conversion (CRO)
+  - `qa-design` (haiku) : Audit UI/UX (100+ règles design web)
+- **3 nouvelles commandes** : `/dev-document`, `/growth-cro`, `/qa-design`
+- **7 nouveaux skills** :
+  - `dev-document` : Génération de documents bureautiques
+  - `growth-cro` : Optimisation CRO (conversion, signup, onboarding, paywall)
+  - `qa-design` : Audit design UI/UX
+  - `git-worktrees` : Développement parallèle avec git worktrees
+  - `parallel-agents` : Orchestration d'agents parallèles (fan-out)
+  - `session-handoff` : Transfert de contexte entre sessions IA
+  - `writing-skills` : Guide pour créer de nouveaux skills
+- **2 nouvelles règles** :
+  - `nextjs.md` : Règles Next.js (RSC, App Router, data fetching, caching)
+  - `verification.md` : Vérification avant completion (4 phases)
+- **2 nouveaux scripts** :
+  - `scripts/bump-version.sh` : Mise à jour unifiée de la version dans tous les fichiers
+  - `scripts/validate-counts.sh` : Validation de la cohérence des compteurs (commands/agents/skills/rules)
+- **Script thème GNOME Terminal** : `scripts/themes/install-gnome-terminal-theme.sh`
+
+### Modifié
+- **Skills enrichis** : Contenu étendu pour `dev-debug`, `dev-react-perf`, `dev-refactor`, `dev-supabase`, `qa-review`
+- **Commandes enrichies** : `assistant`, `assistant-auto`, `doc-architecture`
+- **Documentation complètement synchronisée** :
+  - Tous les compteurs alignés sur 118 commands, 56 agents, 40 skills, 20 rules
+  - README.md : badge version corrigé (v1.12.1 → v1.15.0), compteurs catégories corrigés
+  - Website : 8 fichiers corrigés (index.tsx, architecture.md, quick-start.md, cheatsheet.md, FeatureComparison.tsx, docusaurus.config.ts, intro/index.md)
+  - Politique de versioning mise à jour dans README.md
+
+### Corrigé
+- **Badge README.md** : Version affichée corrigée de v1.12.1 à v1.15.0 (maintenant v1.16.0)
+- **Compteurs README.md** : dev (22→23), qa (12→14), ops (27→30), growth (9→11)
+- **Website quick-start** : Version et compteurs obsolètes (v1.4.1/109/47 → v1.16.0/118/56)
+- **Website architecture** : Compteurs mixtes corrigés (110/52/32/17 → 118/56/40/20)
+- **Website index.tsx** : Compteurs homepage corrigés (108/45/27/17 → 118/56/40/20)
+- **Website FeatureComparison** : Compteurs comparaison corrigés (100/37/24 → 118/56/40)
+- **Website cheatsheet** : Compteurs footer corrigés (111/52/32/17 → 118/56/40/20)
+- **Website docusaurus.config.ts** : Labels footer corrigés
+
+### Technique
+- Compteurs totaux : 118 commands (+0), 56 agents (+3), 40 skills (+7), 20 rules (+2)
+- Nouveau script `bump-version.sh` pour éviter les désynchronisations futures
+- Nouveau script `validate-counts.sh` pour validation CI des compteurs
+- 38+ fichiers modifiés, ~1000 lignes ajoutées
+
+---
+
 ## [1.15.0] - 2026-01-25
 
 ### Ajouté
