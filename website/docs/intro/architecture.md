@@ -20,10 +20,10 @@ graph TB
     end
 
     subgraph ".claude/"
-        CMDS[commands/<br/>114 commandes]
-        AGENTS[agents/<br/>52 sub-agents]
-        SKILLS[skills/<br/>32 skills]
-        RULES[rules/<br/>17 rules]
+        CMDS[commands/<br/>118 commandes]
+        AGENTS[agents/<br/>56 sub-agents]
+        SKILLS[skills/<br/>40 skills]
+        RULES[rules/<br/>20 rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
     end
@@ -48,7 +48,7 @@ graph TB
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 114 commandes manuelles (/nom)
+│   ├── commands/       # 118 commandes manuelles (/nom)
 │   │   ├── work/       # Workflow principal
 │   │   ├── dev/        # Developpement
 │   │   ├── qa/         # Qualite
@@ -58,9 +58,9 @@ claude-socle/
 │   │   ├── growth/     # Croissance
 │   │   ├── data/       # Donnees
 │   │   └── legal/      # Legal
-│   ├── agents/         # 52 sub-agents autonomes
-│   ├── skills/         # 32 skills auto-declenches
-│   ├── rules/          # 17 regles par technologie
+│   ├── agents/         # 56 sub-agents autonomes
+│   ├── skills/         # 40 skills auto-declenches
+│   ├── rules/          # 20 regles par technologie
 │   ├── templates/      # Templates de specs/plans
 │   ├── output-styles/  # Styles de sortie
 │   └── settings.json   # Configuration et hooks
@@ -70,7 +70,7 @@ claude-socle/
 
 ## Composants principaux
 
-### Commands (110)
+### Commands (118)
 
 Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 
@@ -87,7 +87,7 @@ Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 /qa-security
 ```
 
-### Agents (52)
+### Agents (56)
 
 Les **agents** sont des sub-agents autonomes avec un contexte isole.
 
@@ -103,7 +103,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole.
 "Explore le code d'auth" → Claude delegue a l'agent work-explore (haiku)
 ```
 
-### Skills (32)
+### Skills (40)
 
 Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 
@@ -119,7 +119,7 @@ Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 "Fais un commit" → Skill generating-commit-messages active
 ```
 
-### Rules (17)
+### Rules (20)
 
 Les **rules** sont des regles appliquees par chemin de fichier.
 
@@ -237,4 +237,4 @@ Activez les serveurs selon vos besoins pour etendre les capacites de Claude.
 
 - [Installation](/docs/intro/installation) - Guide d'installation complet
 - [Workflows](/docs/workflow) - Voir les workflows en action
-- [Commands](/docs/commands) - Explorer les 109 commandes
+- [Commands](/docs/commands) - Explorer les 118 commandes

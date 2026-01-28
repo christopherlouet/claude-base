@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 47 agents | 8 catégories | 4 workflows                                ║
+║  Total: 118 commands | 56 agents | 40 skills | 9 catégories                    ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -153,104 +153,168 @@
 
 ---
 
-## Agents par Catégorie (47)
+## Commandes par Categorie (118)
 
-### WORK- : Workflow Principal (8)
+### WORK- : Workflow Principal (10)
 
 | Commande | Usage |
 |----------|-------|
 | `/work-explore` | Explorer et comprendre le code |
-| `/work-plan` | Planifier une implémentation |
-| `/work-commit` | Créer un commit propre |
-| `/work-pr` | Créer une Pull Request |
+| `/work-specify` | Creer une specification fonctionnelle |
+| `/work-clarify` | Clarifier les ambiguites |
+| `/work-plan` | Planifier une implementation |
+| `/work-commit` | Creer un commit propre |
+| `/work-pr` | Creer une Pull Request |
 | `/work-flow-feature` | Workflow feature complet |
 | `/work-flow-bugfix` | Workflow bugfix complet |
 | `/work-flow-release` | Workflow release complet |
 | `/work-flow-launch` | Workflow lancement complet |
 
-### DEV- : Développement (7)
+### DEV- : Developpement (23)
 
 | Commande | Usage |
 |----------|-------|
-| `/dev-tdd` | Développement TDD |
-| `/dev-test` | Générer des tests |
-| `/dev-debug` | Déboguer un problème |
-| `/dev-refactor` | Refactoring guidé |
-| `/dev-api` | Créer/documenter API |
-| `/dev-component` | Créer un composant UI complet |
-| `/dev-hook` | Créer un hook React/Vue |
+| `/dev-tdd` | Developpement TDD |
+| `/dev-test` | Generer des tests |
+| `/dev-testing-setup` | Configurer infrastructure tests |
+| `/dev-debug` | Deboguer un probleme |
+| `/dev-refactor` | Refactoring guide |
+| `/dev-document` | Generation documents (PDF, DOCX, XLSX, PPTX) |
+| `/dev-api` | Creer/documenter API |
+| `/dev-api-versioning` | Versioning d'API |
+| `/dev-component` | Creer un composant UI complet |
+| `/dev-hook` | Creer un hook React/Vue |
+| `/dev-error-handling` | Strategie gestion d'erreurs |
+| `/dev-react-perf` | Optimisation React/Next.js |
+| `/dev-mcp` | Creer des serveurs MCP |
+| `/dev-flutter` | Widgets et screens Flutter |
+| `/dev-supabase` | Backend Supabase |
+| `/dev-graphql` | API GraphQL |
+| `/dev-neovim` | Plugins et config Neovim |
+| `/dev-design-system` | Design tokens et composants |
+| `/dev-prisma` | ORM Prisma |
+| `/dev-prompt-engineering` | Optimisation prompts LLM |
+| `/dev-rag` | Systemes RAG |
+| `/dev-trpc` | APIs type-safe tRPC |
+| `/dev-ai-integration` | Integration LLMs (OpenAI, Claude) |
 
-### QA- : Qualité (6)
+### QA- : Qualite (14)
 
 | Commande | Usage |
 |----------|-------|
-| `/qa-review` | Code review |
-| `/qa-security` | Audit sécurité OWASP |
+| `/qa-review` | Code review + analyse nommage |
+| `/qa-security` | Audit securite OWASP |
 | `/qa-perf` | Analyse performance |
-| `/qa-a11y` | Audit accessibilité WCAG |
+| `/qa-a11y` | Audit accessibilite WCAG |
 | `/qa-audit` | Audit complet (tout en un) |
+| `/qa-design` | Audit UI/UX (100+ regles) |
 | `/qa-responsive` | Audit responsive/mobile |
+| `/qa-automation` | Automatisation des tests |
+| `/qa-coverage` | Analyse couverture tests |
+| `/qa-e2e` | Tests E2E (Playwright, Cypress) |
+| `/qa-kaizen` | Amelioration continue |
+| `/qa-mobile` | Audit qualite apps mobiles |
+| `/qa-neovim` | Audit config Neovim |
+| `/qa-tech-debt` | Dette technique |
 
-### OPS- : Opérations (11)
+### OPS- : Operations (30)
 
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente prod |
-| `/ops-release` | Créer une release |
-| `/ops-deps` | Audit et MAJ dépendances |
+| `/ops-release` | Creer une release |
+| `/ops-rollback` | Rollback securise |
+| `/ops-gitflow-init` | Initialiser GitFlow |
+| `/ops-gitflow-feature` | Branches feature |
+| `/ops-gitflow-release` | Branches release |
+| `/ops-gitflow-hotfix` | Hotfixes GitFlow |
+| `/ops-deps` | Audit et MAJ dependances |
 | `/ops-docker` | Dockeriser |
+| `/ops-k8s` | Deploiement Kubernetes |
+| `/ops-vps` | Deploiement VPS |
 | `/ops-migrate` | Migration code/deps |
 | `/ops-ci` | Pipelines CI/CD |
-| `/ops-monitoring` | Logs, métriques, alertes |
-| `/ops-database` | Schéma, migrations DB |
+| `/ops-monitoring` | Logs, metriques, alertes |
+| `/ops-observability-stack` | Prometheus, Grafana, Loki |
+| `/ops-grafana-dashboard` | Dashboards Grafana |
+| `/ops-database` | Schema, migrations DB |
 | `/ops-health` | Health check rapide |
 | `/ops-env` | Gestion environnements |
-| `/ops-backup` | Stratégie backup/restore |
+| `/ops-backup` | Strategie backup/restore |
+| `/ops-load-testing` | Tests de charge |
+| `/ops-cost-optimization` | Optimisation couts cloud |
+| `/ops-disaster-recovery` | Plan reprise sinistre |
+| `/ops-infra-code` | Infrastructure as Code |
+| `/ops-proxmox` | Infrastructure Proxmox VE |
+| `/ops-opnsense` | Configuration OPNsense |
+| `/ops-secrets-management` | Gestion secrets |
+| `/ops-serverless` | Deploiement serverless |
+| `/ops-vercel` | Configuration Vercel |
+| `/ops-mobile-release` | Publication App/Play Store |
 
-### DOC- : Documentation (7)
+### DOC- : Documentation (9)
 
 | Commande | Usage |
 |----------|-------|
-| `/doc-generate` | Générer documentation |
+| `/doc-generate` | Generer documentation |
 | `/doc-changelog` | Changelog |
 | `/doc-explain` | Expliquer code complexe |
-| `/doc-onboard` | Découvrir un codebase |
+| `/doc-onboard` | Decouvrir un codebase |
 | `/doc-i18n` | Internationalisation |
 | `/doc-fix-issue` | Corriger issue GitHub |
 | `/doc-api-spec` | Spec OpenAPI/Swagger |
+| `/doc-readme` | Creer/ameliorer README |
+| `/doc-architecture` | Documenter l'architecture |
 
-### BIZ- : Business (9)
+### BIZ- : Business (11)
 
 | Commande | Usage |
 |----------|-------|
 | `/biz-model` | Business model, Lean Canvas |
-| `/biz-market` | Étude de marché |
-| `/biz-mvp` | Définir le MVP |
-| `/biz-pricing` | Stratégie tarifaire |
+| `/biz-market` | Etude de marche |
+| `/biz-mvp` | Definir le MVP |
+| `/biz-pricing` | Strategie tarifaire |
 | `/biz-pitch` | Pitch deck |
 | `/biz-roadmap` | Roadmap produit |
 | `/biz-launch` | Workflow lancement |
 | `/biz-competitor` | Analyse concurrentielle |
 | `/biz-okr` | OKRs |
+| `/biz-personas` | Personas utilisateur |
+| `/biz-research` | Recherche utilisateur |
 
-### GROWTH- : Croissance (6)
+### GROWTH- : Croissance (11)
 
 | Commande | Usage |
 |----------|-------|
 | `/growth-landing` | Landing page |
 | `/growth-seo` | Audit SEO |
 | `/growth-analytics` | Tracking et KPIs |
+| `/growth-app-store-analytics` | Metriques App/Play Store |
 | `/growth-onboarding` | Parcours utilisateur |
 | `/growth-email` | Templates email |
 | `/growth-ab-test` | A/B testing |
+| `/growth-retention` | Strategies retention |
+| `/growth-funnel` | Analyse funnels |
+| `/growth-localization` | Localisation multi-marches |
+| `/growth-cro` | Optimisation conversion (CRO) |
 
-### LEGAL- : Légal (3)
+### DATA- : Donnees (3)
 
 | Commande | Usage |
 |----------|-------|
-| `/legal-docs` | CGU, CGV, mentions légales |
-| `/legal-rgpd` | Conformité RGPD/GDPR |
-| `/legal-payment` | Intégration paiement |
+| `/data-pipeline` | Pipelines ETL/ELT |
+| `/data-analytics` | Analyse de donnees |
+| `/data-modeling` | Modelisation data warehouse |
+
+### LEGAL- : Legal (5)
+
+| Commande | Usage |
+|----------|-------|
+| `/legal-docs` | CGU, CGV, mentions legales |
+| `/legal-rgpd` | Conformite RGPD/GDPR |
+| `/legal-payment` | Integration paiement |
+| `/legal-terms-of-service` | CGU |
+| `/legal-privacy-policy` | Politique confidentialite |
 
 ---
 
@@ -399,4 +463,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Socle v2.0 - 47 agents - 8 catégories*
+*Claude-Socle v2.0 - 118 commands - 56 agents - 40 skills - 20 rules*

@@ -90,7 +90,7 @@ Cette architecture permet :
 | **Modele** | Default | Default | Configurable | N/A |
 | **Cas d'usage** | Actions explicites | Patterns detectes | Taches isolees | Contraintes |
 
-## Commands (100 disponibles)
+## Commands (118 disponibles)
 
 ### Definition
 Prompts invoques manuellement avec la syntaxe `/nom-commande`.
@@ -137,7 +137,7 @@ $ARGUMENTS - Arguments passes par l'utilisateur
 - Actions specifiques
 - Taches complexes necessitant un prompt detaille
 
-## Skills (24 disponibles)
+## Skills (40 disponibles)
 
 ### Definition
 Patterns declenches automatiquement par Claude selon le contexte de la conversation.
@@ -197,7 +197,7 @@ Quand l'utilisateur mentionne "TDD", "test first", ou "ecrire les tests d'abord"
 - Declenchement contextuel desire
 - Standardisation de comportements
 
-## Agents (37 disponibles)
+## Agents (56 disponibles)
 
 ### Definition
 Sub-agents specialises avec contexte isole, delegation automatique.
@@ -274,7 +274,7 @@ Effectue un audit de securite complet base sur OWASP Top 10...
 - Parallelisation
 - Economie de tokens (haiku)
 
-## Rules (15 disponibles)
+## Rules (20 disponibles)
 
 ### Definition
 Contraintes et conventions injectees automatiquement selon le chemin des fichiers.

@@ -6,7 +6,7 @@
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
 [![Tests](https://img.shields.io/badge/tests-250%20passing-brightgreen)](./tests)
 [![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
-[![Release](https://img.shields.io/badge/release-v1.12.1-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
+[![Release](https://img.shields.io/badge/release-v1.16.0-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
 
 Template de configuration Claude Code pour un workflow de développement optimal.
@@ -16,7 +16,7 @@ Template de configuration Claude Code pour un workflow de développement optimal
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://docs.anthropic.com/en/docs/claude-code) qui permet de :
 
 - Structurer ton workflow de développement : **Explore → Specify → Plan → Code → Commit**
-- Disposer de **114 commandes**, **52 sub-agents** et **32 skills** pour différentes tâches
+- Disposer de **118 commandes**, **56 sub-agents** et **40 skills** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
 - Intégrer CI/CD et hooks pre-commit prêts à l'emploi
@@ -68,8 +68,8 @@ claude-socle/
 │
 ├── .claude/
 │   ├── settings.json            # Permissions et hooks
-│   ├── skills/                  # 29 skills spécialisés
-│   └── commands/                # 109 commandes disponibles
+│   ├── skills/                  # 40 skills spécialisés
+│   └── commands/                # 118 commandes disponibles
 │       ├── assistant.md         # Orchestrateur principal
 │       ├── work/                # Workflow (10 commandes)
 │       │   ├── work-explore.md
@@ -77,18 +77,18 @@ claude-socle/
 │       │   ├── work-commit.md
 │       │   ├── work-pr.md
 │       │   └── ...
-│       ├── dev/                 # Développement (22 commandes)
+│       ├── dev/                 # Développement (23 commandes)
 │       │   ├── dev-tdd.md
 │       │   ├── dev-api.md
 │       │   └── ...
-│       ├── qa/                  # Qualité (12 commandes)
+│       ├── qa/                  # Qualité (14 commandes)
 │       │   ├── qa-review.md
 │       │   ├── qa-security.md
 │       │   └── ...
-│       ├── ops/                 # Opérations (27 commandes)
+│       ├── ops/                 # Opérations (30 commandes)
 │       ├── doc/                 # Documentation (9 commandes)
 │       ├── biz/                 # Business (11 commandes)
-│       ├── growth/              # Croissance (9 commandes)
+│       ├── growth/              # Croissance (11 commandes)
 │       ├── data/                # Données (3 commandes)
 │       └── legal/               # Légal (5 commandes)
 │
@@ -143,7 +143,7 @@ claude-socle/
     └── ALIASES.md               # Alias de commandes
 ```
 
-## Commandes Disponibles (109)
+## Commandes Disponibles (118)
 
 ### Workflow Principal
 
@@ -320,7 +320,7 @@ Le socle inclut un tutoriel interactif pour apprendre à l'utiliser efficacement
 
 Le tutoriel couvre :
 - Le workflow Explore → Specify → Plan → Code → Commit
-- Les 109 commandes et 47 agents spécialisés
+- Les 118 commandes et 56 agents spécialisés
 - Le développement TDD
 - Les Conventional Commits
 - Quiz interactifs avec score
@@ -385,8 +385,8 @@ La documentation complète est disponible sur **[https://christopherlouet.github
 
 Elle contient :
 - Guide de démarrage rapide
-- Catalogue des 108 commandes
-- Documentation des 45 agents et 27 skills
+- Catalogue des 118 commandes
+- Documentation des 56 agents et 40 skills
 - Workflows recommandés
 - Guides par type de projet
 
@@ -530,10 +530,10 @@ git pull origin main
 
 | Version | Support | Notes |
 |---------|---------|-------|
-| 1.10.x | Actuel | Version stable |
-| 1.9.x | Supporté | Corrections de sécurité |
-| 1.8.x | Supporté | Corrections de sécurité |
-| < 1.8 | Non supporté | Mise à jour recommandée |
+| 1.16.x | Actuel | Version stable |
+| 1.15.x | Supporté | Corrections de sécurité |
+| 1.14.x | Supporté | Corrections de sécurité |
+| < 1.14 | Non supporté | Mise à jour recommandée |
 
 ### Changelog
 
