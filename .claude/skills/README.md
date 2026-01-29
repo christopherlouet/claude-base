@@ -1,14 +1,14 @@
 # Claude Code Skills
 
-Ce dossier contient des **Skills** - des connaissances domaine réutilisables qui enseignent à Claude les patterns et conventions du projet.
+Ce dossier contient des **Skills** - des connaissances domaine reutilisables qui enseignent a Claude les patterns et conventions du projet.
 
-## Différence entre Commands et Skills
+## Difference entre Commands et Skills
 
 | Aspect | Commands (`.claude/commands/`) | Skills (`.claude/skills/`) |
 |--------|-------------------------------|---------------------------|
 | **Invocation** | Explicite: `/nom` | Automatique ou `/nom` |
 | **Format** | Un fichier `.md` | Dossier avec `SKILL.md` + ressources |
-| **Déclenchement** | Manuel uniquement | Basé sur la description (sémantique) |
+| **Declenchement** | Manuel uniquement | Base sur la description (semantique) |
 | **Ressources** | Non | Oui (examples/, scripts/, references/) |
 
 ## Structure d'un Skill
@@ -22,30 +22,54 @@ skill-name/
 └── scripts/           # Scripts helper (optionnel)
 ```
 
-## Format SKILL.md
+## Skills disponibles (40)
 
-```yaml
----
-name: domaine-action
-description: Description claire de ce que fait le skill et QUAND l'utiliser.
-allowed-tools:        # Optionnel - limite les outils disponibles
-  - Read
-  - Edit
-  - Bash
----
-
-# Titre du Skill
-
-## Instructions
-[Instructions détaillées pour Claude]
-
-## Exemples
-[Exemples d'utilisation]
-```
+| Skill | Mots-cles declencheurs | Description |
+|-------|----------------------|-------------|
+| `api-mocking` | mock API, MSW, test sans backend | Configuration de mocks API pour les tests |
+| `data-pipeline` | ETL, Airflow, dbt | Conception de pipelines ETL/ELT |
+| `dev-api` | API, endpoint, REST, route | Developper et documenter une API REST ou GraphQL |
+| `dev-debug` | bug, erreur, debug, ne fonctionne pas | Deboguer et resoudre des problemes |
+| `dev-document` | PDF, DOCX, XLSX, PPTX, rapport | Generation de documents bureautiques |
+| `dev-error-handling` | gestion erreurs, exceptions, error boundary | Strategie de gestion des erreurs |
+| `dev-flutter` | Flutter, widget, BLoC | Developpement Flutter avec Clean Architecture |
+| `dev-graphql` | GraphQL, resolver, schema | Developpement d'APIs GraphQL |
+| `dev-prompt-engineering` | prompt, instruction, few-shot, LLM | Optimisation de prompts pour LLMs |
+| `dev-react-perf` | React perf, re-render, memo | Optimisation performances React/Next.js |
+| `dev-refactor` | refactorer, clean code, restructurer | Refactoring de code |
+| `dev-supabase` | Supabase, auth, RLS, storage | Developpement backend Supabase |
+| `dev-tdd` | TDD, test first, ecrire les tests | Cycle TDD Red-Green-Refactor |
+| `doc-changelog` | changelog, release notes | Maintenance du CHANGELOG |
+| `doc-generate` | documenter, README, JSDoc | Generation de documentation technique |
+| `feature-flags` | feature flag, A/B test, deploiement progressif | Gestion de feature flags et toggles |
+| `git-worktrees` | worktree, dev parallele, branches simultanees | Git worktrees pour dev parallele |
+| `growth-cro` | conversion, CRO, signup flow, onboarding | Optimisation du taux de conversion |
+| `ops-ci` | CI/CD, GitHub Actions, pipeline | Configuration de pipelines CI/CD |
+| `ops-database` | schema, migration, index | Conception de schemas de base de donnees |
+| `ops-docker` | Docker, container, Dockerfile | Containerisation Docker et Docker Compose |
+| `ops-infra-code` | Terraform, IaC, OpenTofu | Infrastructure as Code |
+| `ops-mobile-release` | App Store, Play Store, Fastlane | Publication d'apps mobiles |
+| `ops-monitoring` | logs, metriques, traces | Instrumentation d'applications |
+| `ops-opnsense` | OPNsense, firewall, NAT, DHCP | Configuration OPNsense via Terraform |
+| `ops-proxmox` | Proxmox, PVE, VM, LXC, PBS | Infrastructure Proxmox VE avec Terraform |
+| `parallel-agents` | parallele, concurrent, fan-out, multi-agents | Orchestration d'agents paralleles |
+| `qa-design` | audit design, UI/UX, interface | Audit de design UI/UX |
+| `qa-e2e` | E2E, Playwright, Cypress | Tests End-to-End |
+| `qa-perf` | optimiser, latence, TTFB | Optimisation des performances |
+| `qa-review` | review, relire, verifier le code | Revue de code approfondie |
+| `qa-security` | securite, audit, vulnerabilite, OWASP | Audit de securite OWASP |
+| `qa-tech-debt` | dette technique, tech debt, refactoring priorite | Gestion de la dette technique |
+| `session-handoff` | handoff, reprise, transfert session | Transfert de contexte entre sessions |
+| `state-management` | state, Redux, Zustand, store | Patterns de state management |
+| `work-commit` | commit, message de commit | Messages Conventional Commits |
+| `work-explore` | explorer, comprendre le code, decouvrir | Explorer et comprendre un codebase |
+| `work-plan` | planifier, architecture, plan | Planifier une implementation |
+| `work-pr` | PR, pull request, merger | Creer une Pull Request complete |
+| `writing-skills` | creer skill, nouveau skill, ecrire un skill | Guide pour creer de nouveaux skills |
 
 ## Convention de nommage
 
-Les skills suivent la même convention que les commandes : `domaine-action`
+Les skills suivent la convention `domaine-action` :
 
 | Domaine | Exemples |
 |---------|----------|
@@ -54,32 +78,19 @@ Les skills suivent la même convention que les commandes : `domaine-action`
 | `qa-` | `qa-review`, `qa-security`, `qa-perf`, `qa-e2e` |
 | `ops-` | `ops-docker`, `ops-ci`, `ops-database`, `ops-monitoring` |
 | `doc-` | `doc-generate`, `doc-changelog` |
+| `growth-` | `growth-cro` |
 | `data-` | `data-pipeline` |
 
-## Skills disponibles
+## Creer un nouveau Skill
 
-| Skill | Description | Déclencheurs |
-|-------|-------------|--------------|
-| `work-explore` | Explorer et comprendre un codebase | "explorer", "comprendre le code", "découvrir" |
-| `work-plan` | Planifier une implémentation | "planifier", "architecture", "plan" |
-| `work-commit` | Messages Conventional Commits | "commit", "message de commit" |
-| `work-pr` | Créer une PR complète | "PR", "pull request", "merger" |
-| `dev-tdd` | Cycle TDD Red-Green-Refactor | "TDD", "test first", "écrire les tests" |
-| `dev-debug` | Déboguer et résoudre des problèmes | "debug", "bug", "erreur", "ne fonctionne pas" |
-| `dev-api` | Développer une API REST/GraphQL | "API", "endpoint", "route", "REST" |
-| `qa-review` | Revue de code approfondie | "review", "relire", "vérifier le code" |
-| `qa-security` | Audit de sécurité OWASP | "sécurité", "audit", "vulnérabilité", "OWASP" |
-
-## Créer un nouveau Skill
-
-1. Créer le dossier: `mkdir .claude/skills/domaine-action`
-2. Créer `SKILL.md` avec frontmatter YAML
-3. Ajouter des exemples dans `examples/` (recommandé)
-4. La description doit inclure les déclencheurs (quand utiliser)
+1. Creer le dossier: `mkdir .claude/skills/domaine-action`
+2. Creer `SKILL.md` avec frontmatter YAML
+3. Ajouter des exemples dans `examples/` (recommande)
+4. La description doit inclure les declencheurs (quand utiliser)
 
 ## Bonnes pratiques
 
-- **Nommage cohérent**: Utiliser le format `domaine-action` (ex: `dev-tdd`, `qa-security`)
-- **Description riche**: Inclure tous les mots-clés déclencheurs
-- **SKILL.md < 500 lignes**: Détails dans `references/`
+- **Nommage coherent**: Utiliser le format `domaine-action` (ex: `dev-tdd`, `qa-security`)
+- **Description riche**: Inclure tous les mots-cles declencheurs
+- **SKILL.md < 500 lignes**: Details dans `references/`
 - **Exemples concrets**: Montrer le bon ET le mauvais pattern

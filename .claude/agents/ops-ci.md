@@ -56,7 +56,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}  # Use GitHub Secrets in production
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -175,8 +175,8 @@ test:
   services:
     - postgres:16
   variables:
-    POSTGRES_PASSWORD: postgres
-    DATABASE_URL: postgres://postgres:postgres@postgres:5432/test
+    POSTGRES_PASSWORD: $POSTGRES_PASSWORD  # Use CI/CD variables in production
+    DATABASE_URL: postgres://postgres:$POSTGRES_PASSWORD@postgres:5432/test
   script:
     - npm ci
     - npm test -- --coverage

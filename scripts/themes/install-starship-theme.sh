@@ -140,11 +140,19 @@ install_starship() {
         if command -v brew &> /dev/null; then
             brew install starship
         else
-            curl -sS https://starship.rs/install.sh | sh
+            local tmp_installer
+            tmp_installer="$(mktemp)"
+            curl -sS https://starship.rs/install.sh -o "$tmp_installer"
+            sh "$tmp_installer"
+            rm -f "$tmp_installer"
         fi
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         # Linux
-        curl -sS https://starship.rs/install.sh | sh
+        local tmp_installer
+        tmp_installer="$(mktemp)"
+        curl -sS https://starship.rs/install.sh -o "$tmp_installer"
+        sh "$tmp_installer"
+        rm -f "$tmp_installer"
     else
         echo -e "${RED}✗${NC} OS non supporté. Installez manuellement: https://starship.rs"
         exit 1

@@ -232,6 +232,23 @@ type(scope): description courte
 - Ne jamais logger de données sensibles
 - Dépendances à jour (`npm audit`)
 
+### Gestion des secrets
+- IMPORTANT: Ne jamais commiter de secrets (.env, credentials, API keys)
+- Utiliser des variables d'environnement pour les valeurs sensibles
+- Dans les exemples et templates, utiliser des placeholders : `${POSTGRES_PASSWORD:?required}`, `${{ secrets.API_KEY }}`
+- Référencer `.env.example` avec des valeurs fictives, jamais de vrais secrets
+
+### MCP Security
+- Tous les serveurs MCP sont désactivés par défaut dans `.mcp.json`
+- N'activer que les serveurs nécessaires au projet
+- Vérifier les permissions accordées avant activation (filesystem, réseau, DB)
+- Ne jamais exposer de credentials dans la configuration MCP
+
+### curl | bash
+- Éviter le pattern `curl URL | sh` qui exécute du code distant sans vérification
+- Préférer : télécharger le script, vérifier son contenu/checksum, puis exécuter
+- Voir `scripts/lib/common.sh` pour les fonctions `sanitize_input()` et `validate_input()`
+
 ## Agents Disponibles (118 commands, 56 sub-agents, 40 skills)
 
 ### Orchestrateur (Point d'entrée unique)

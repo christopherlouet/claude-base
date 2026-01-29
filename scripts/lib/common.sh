@@ -384,6 +384,49 @@ json_get() {
 }
 
 # =============================================================================
+# Fonctions de validation d'input
+# =============================================================================
+
+# Supprime les caracteres de controle et trim les espaces
+# Arguments:
+#   $1 - Chaine a nettoyer
+# Retour: Chaine nettoyee (stdout)
+sanitize_input() {
+    local input="${1:-}"
+    # Remove control characters (except newline/tab) and trim whitespace
+    printf '%s' "$input" | tr -d '\000-\010\013\014\016-\037' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+# Valide un input contre un pattern regex ERE
+# Arguments:
+#   $1 - Chaine a valider
+#   $2 - Pattern regex ERE (ex: '^[a-zA-Z0-9_-]+$')
+#   $3 - Nom du champ (pour le message d'erreur, optionnel)
+# Retour: 0 si valide, 1 sinon (message d'erreur sur stderr)
+validate_input() {
+    local input="${1:-}"
+    local pattern="${2:-}"
+    local field_name="${3:-input}"
+
+    if [[ -z "$input" ]]; then
+        echo "Error: ${field_name} is empty" >&2
+        return 1
+    fi
+
+    if [[ -z "$pattern" ]]; then
+        echo "Error: validation pattern is empty" >&2
+        return 1
+    fi
+
+    if ! echo "$input" | grep -qE "$pattern"; then
+        echo "Error: ${field_name} does not match expected format" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+# =============================================================================
 # Fonctions de versioning
 # =============================================================================
 
