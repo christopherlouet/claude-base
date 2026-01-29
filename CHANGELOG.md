@@ -9,6 +9,22 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.16.1] - 2026-01-29
+
+### Corrige
+- **Compteur DEV** : correction dans CLAUDE.md (24 → 23 commandes)
+- **Compteur Skills** : correction dans CLAUDE.md (39 → 40 skills)
+- **Index agents** : description mise a jour (37 → 56 sub-agents)
+- **Workflows** : ajout de l'etape `/work-specify` dans les exemples de workflows
+- **CI/docs** : echappement des chevrons dans dev-debug SKILL.md pour MDX
+- **CI** : correction des erreurs ShellCheck et MDX build
+
+### Ajoute
+- **CONTRIBUTING.md** : guide de contribution avec setup, conventions et checklist
+- **Synchronisation docs** : mise a jour complete de la documentation website (138 fichiers)
+
+---
+
 ## [1.16.0] - 2026-01-28
 
 ### Ajouté
