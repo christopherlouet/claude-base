@@ -254,7 +254,7 @@ type(scope): description courte
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (24)
+### DEV- : Développement (23)
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD |
@@ -421,7 +421,7 @@ type(scope): description courte
 ```bash
 /work-flow-feature "description de la feature"
 # ou manuellement (TDD obligatoire):
-/work-explore → /work-plan → /dev-tdd → /work-pr
+/work-explore → /work-specify → /work-plan → /dev-tdd → /work-pr
 ```
 
 ### Correction de bug
@@ -446,7 +446,7 @@ type(scope): description courte
 
 ### Application mobile Flutter
 ```bash
-/work-explore → /work-plan → /dev-tdd → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+/work-explore → /work-specify → /work-plan → /dev-tdd → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
 ```
 
 ### GitFlow (gestion avancée des branches)
@@ -483,7 +483,7 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 
 ## Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **39 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **40 Skills** dans `.claude/skills/`:
 
 ### Skills de base
 | Skill | Déclenchement automatique | Context |
