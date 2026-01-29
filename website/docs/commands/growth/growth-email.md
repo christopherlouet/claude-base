@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: "/growth-email"
 description: "Créer des templates d'emails transactionnels et marketing."
 tags:

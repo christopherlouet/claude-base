@@ -95,7 +95,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
-│  │    (110)    │  │    (52)     │  │    (32)     │             │
+│  │    (118)    │  │    (56)     │  │    (40)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Délégation  │  │ Activation  │             │
 │  │  manuelle   │  │ automatique │  │ automatique │             │
@@ -104,7 +104,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  TEMPLATES  │  │    RULES    │  │   HOOKS     │             │
-│  │    (3)      │  │    (15)     │  │    (4)      │             │
+│  │    (3)      │  │    (20)     │  │    (4)      │             │
 │  │             │  │             │  │             │             │
 │  │ Structures  │  │ Conventions │  │ Automation  │             │
 │  │ de fichiers │  │  par path   │  │ pre/post    │             │
@@ -145,6 +145,8 @@ Claude délègue automatiquement aux agents spécialisés selon le contexte. Les
 | `qa-coverage` | haiku | Read, Grep, Glob, Bash | "Couverture de tests" |
 | `qa-responsive` | haiku | Read, Grep, Glob | "Mobile", "Responsive" |
 | `qa-e2e` | sonnet | Read, Grep, Glob, Bash | "E2E", "Playwright", "Cypress" |
+| `qa-tech-debt` | haiku | Read, Grep, Glob | "Dette technique", "Tech debt" |
+| `qa-design` | haiku | Read, Grep, Glob | "Audit UI/UX", "Design review" |
 
 ### Agents opérationnels
 
@@ -160,6 +162,8 @@ Claude délègue automatiquement aux agents spécialisés selon le contexte. Les
 | `ops-monitoring` | haiku | Read, Grep, Glob, Bash | "Logs", "Métriques", "Traces" |
 | `ops-serverless` | haiku | Read, Grep, Glob, Bash | "Lambda", "Serverless" |
 | `ops-vercel` | haiku | Read, Grep, Glob, Bash | "Vercel", "Déploiement" |
+| `ops-opnsense` | sonnet | Read, Grep, Glob, Edit, Write, Bash | "OPNsense", "Firewall", "NAT" |
+| `ops-migration` | sonnet | Read, Grep, Glob, Bash | "Migration", "Upgrade framework" |
 
 ### Agents de développement
 
@@ -175,6 +179,9 @@ Claude délègue automatiquement aux agents spécialisés selon le contexte. Les
 | `dev-rag` | sonnet | Read, Grep, Glob, Bash | "RAG", "Embeddings" |
 | `dev-design-system` | haiku | Read, Grep, Glob | "Design system", "Tokens" |
 | `dev-trpc` | haiku | Read, Grep, Glob | "tRPC", "Type-safe API" |
+| `dev-ai-integration` | sonnet | Read, Grep, Glob, Bash | "OpenAI", "Claude API", "LLM integration" |
+| `dev-document` | sonnet | Read, Grep, Glob, Edit, Write, Bash | "PDF", "DOCX", "Document", "Rapport" |
+| `dev-tdd` | sonnet | Read, Grep, Glob, Edit, Write, Bash | "TDD", "Red-Green-Refactor" |
 
 ### Agents business et growth
 
@@ -188,6 +195,8 @@ Claude délègue automatiquement aux agents spécialisés selon le contexte. Les
 | `growth-analytics` | haiku | Read, Grep, Glob | "Analytics", "KPIs", "Tracking" |
 | `growth-landing` | haiku | Read, Grep, Glob | "Landing page", "Conversion" |
 | `growth-funnel` | haiku | Read, Grep, Glob | "Funnel", "Parcours utilisateur" |
+| `growth-localization` | haiku | Read, Grep, Glob | "Localisation", "i18n multi-marchés" |
+| `growth-cro` | haiku | Read, Grep, Glob | "CRO", "Taux de conversion", "Optimisation conversion" |
 
 ### Agents data
 
@@ -249,6 +258,13 @@ Les Skills sont activés automatiquement par Claude selon les mots-clés dans la
 | `supabase-development` | "Supabase", "auth", "RLS" | Backend Supabase |
 | `react-performance` | "React perf", "re-render", "memo" | Optimisation React |
 | `prompt-engineering` | "prompt", "instruction", "few-shot", "LLM" | Optimisation prompts |
+| `dev-document` | "PDF", "DOCX", "document", "rapport", "export" | Génération de documents |
+| `dev-ai-integration` | "OpenAI", "Claude API", "LLM integration" | Intégration LLMs |
+| `dev-prisma` | "Prisma", "ORM", "schema" | ORM Prisma |
+| `dev-trpc` | "tRPC", "type-safe API" | APIs type-safe |
+| `dev-design-system` | "design system", "tokens", "Storybook" | Design tokens |
+| `dev-neovim` | "Neovim", "init.lua", "lazy.nvim" | Config Neovim |
+| `dev-rag` | "RAG", "embeddings", "retrieval" | Systèmes RAG |
 
 ### Skills de workflow
 
@@ -269,6 +285,20 @@ Les Skills sont activés automatiquement par Claude selon les mots-clés dans la
 | `security-audit` | "sécurité", "OWASP", "vulnérabilité" | Audit OWASP Top 10 |
 | `e2e-testing` | "E2E", "Playwright", "Cypress" | Tests End-to-End |
 | `performance-optimization` | "optimiser", "latence", "TTFB" | Optimisation perf |
+| `qa-tech-debt` | "dette technique", "tech debt", "refactoring priorité" | Dette technique |
+| `qa-design` | "audit UI", "design review", "UX audit" | Audit UI/UX |
+
+### Skills utilitaires et meta
+
+| Skill | Mots-clés déclencheurs | Action |
+|-------|------------------------|--------|
+| `parallel-agents` | "parallèle", "agents simultanés", "fan-out" | Orchestration parallèle |
+| `session-handoff` | "handoff", "transférer contexte", "reprendre session" | Transfert de contexte |
+| `git-worktrees` | "worktree", "branches parallèles", "dev parallèle" | Git worktrees |
+| `writing-skills` | "créer un skill", "nouveau skill", "écrire un skill" | Créer des skills |
+| `api-mocking` | "mock API", "MSW", "test sans backend" | Mocking d'APIs |
+| `state-management` | "state", "Redux", "Zustand", "store" | State management |
+| `growth-cro` | "CRO", "taux de conversion", "optimisation conversion" | Optimisation CRO |
 
 ### Skills d'infrastructure
 
@@ -283,6 +313,9 @@ Les Skills sont activés automatiquement par Claude selon les mots-clés dans la
 | `data-pipeline` | "ETL", "Airflow", "dbt" | Pipelines data |
 | `mobile-release` | "App Store", "Play Store", "Fastlane" | Publication mobile |
 | `feature-flags` | "feature flag", "A/B test", "déploiement progressif" | Feature flags |
+| `ops-opnsense` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | Config OPNsense |
+| `ops-proxmox` | "Proxmox", "PVE", "VM Proxmox", "LXC", "PBS" | Infrastructure Proxmox |
+| `ops-infra-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | Infrastructure as Code |
 
 ### Comment fonctionnent les skills ?
 
@@ -343,7 +376,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 ---
 
-## Section 7: Catalogue des Commandes (110)
+## Section 7: Catalogue des Commandes (118)
 
 ### WORK- : Workflow Principal (10)
 
@@ -360,15 +393,16 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/work-flow-release` | Workflow complet release |
 | `/work-flow-launch` | Workflow complet lancement produit |
 
-### DEV- : Développement (21)
+### DEV- : Développement (23)
 
 | Commande | Usage |
 |----------|-------|
 | `/dev-tdd` | Développement TDD (tests first) |
 | `/dev-test` | Générer des tests |
 | `/dev-testing-setup` | Configurer l'infrastructure de tests |
-| `/dev-debug` | Déboguer un problème |
-| `/dev-refactor` | Refactoring guidé |
+| `/dev-debug` | Déboguer un problème (méthodologie 4 phases) |
+| `/dev-refactor` | Refactoring guidé + réduction d'entropie |
+| `/dev-document` | Génération de documents (PDF, DOCX, XLSX, PPTX) |
 | `/dev-api` | Créer/documenter API REST |
 | `/dev-api-versioning` | Versioning d'API |
 | `/dev-component` | Créer un composant UI complet |
@@ -377,7 +411,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/dev-react-perf` | Optimisation performance React/Next.js |
 | `/dev-mcp` | Créer des serveurs MCP |
 | `/dev-flutter` | Widgets et screens Flutter |
-| `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
+| `/dev-supabase` | Backend Supabase (Auth, DB, Storage, Postgres perf) |
 | `/dev-graphql` | API GraphQL client/serveur |
 | `/dev-neovim` | Plugins et config Neovim/Lua |
 | `/dev-design-system` | Design tokens et bibliothèque de composants |
@@ -385,16 +419,18 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/dev-prompt-engineering` | Optimisation de prompts LLM |
 | `/dev-rag` | Systèmes RAG (Retrieval-Augmented Generation) |
 | `/dev-trpc` | APIs type-safe avec tRPC |
+| `/dev-ai-integration` | Intégration LLMs (OpenAI, Claude API) |
 
-### QA- : Qualité (12)
+### QA- : Qualité (14)
 
 | Commande | Usage |
 |----------|-------|
-| `/qa-review` | Code review approfondie |
+| `/qa-review` | Code review approfondie + analyse de nommage |
 | `/qa-security` | Audit de sécurité OWASP |
 | `/qa-perf` | Analyse de performance |
 | `/qa-a11y` | Audit accessibilité WCAG |
 | `/qa-audit` | Audit complet (sécu+RGPD+a11y+perf) |
+| `/qa-design` | Audit UI/UX (100+ règles design web) |
 | `/qa-responsive` | Audit responsive/mobile web |
 | `/qa-automation` | Automatisation des tests |
 | `/qa-coverage` | Analyse couverture de tests |
@@ -402,13 +438,15 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/qa-kaizen` | Amélioration continue (PDCA, Muda) |
 | `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
 | `/qa-neovim` | Audit config Neovim |
+| `/qa-tech-debt` | Identifier et prioriser la dette technique |
 
-### OPS- : Opérations (28)
+### OPS- : Opérations (30)
 
 | Commande | Usage |
 |----------|-------|
 | `/ops-hotfix` | Correction urgente production |
 | `/ops-release` | Créer une release |
+| `/ops-rollback` | Procédure de rollback sécurisée |
 | `/ops-gitflow-init` | Initialiser GitFlow |
 | `/ops-gitflow-feature` | Gérer les branches feature |
 | `/ops-gitflow-release` | Gérer les branches release |
@@ -431,6 +469,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/ops-disaster-recovery` | Plan de reprise après sinistre |
 | `/ops-infra-code` | Infrastructure as Code (Terraform) |
 | `/ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
+| `/ops-opnsense` | Configuration OPNsense via Terraform (firewall, NAT, DHCP/DNS) |
 | `/ops-secrets-management` | Gestion sécurisée des secrets |
 | `/ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
 | `/ops-vercel` | Configuration et déploiement Vercel |
@@ -466,7 +505,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/biz-personas` | Créer des personas utilisateur |
 | `/biz-research` | Recherche utilisateur |
 
-### GROWTH- : Croissance (9)
+### GROWTH- : Croissance (11)
 
 | Commande | Usage |
 |----------|-------|
@@ -479,6 +518,8 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/growth-ab-test` | Planifier A/B tests |
 | `/growth-retention` | Stratégies de rétention |
 | `/growth-funnel` | Analyse et optimisation funnels |
+| `/growth-localization` | Stratégie de localisation multi-marchés |
+| `/growth-cro` | Optimisation du taux de conversion (CRO) |
 
 ### DATA- : Données (3)
 
@@ -534,6 +575,8 @@ Génère: specs/ma-feature/plan.md + tasks.md
 │ Configurer Supabase                     →  /dev-supabase               │
 │ Corriger un bug                         →  /dev-debug                  │
 │ Refactorer du code                      →  /dev-refactor               │
+│ Générer un document (PDF, DOCX...)      →  /dev-document               │
+│ Intégrer une IA (OpenAI, Claude)        →  /dev-ai-integration         │
 │                                                                        │
 │ VÉRIFIER                                                               │
 │ ────────                                                               │
@@ -543,6 +586,9 @@ Génère: specs/ma-feature/plan.md + tasks.md
 │ Audit d'accessibilité                   →  /qa-a11y                    │
 │ Audit complet                           →  /qa-audit                   │
 │ Couverture de tests                     →  /qa-coverage                │
+│ Audit UI/UX design                      →  /qa-design                  │
+│ Dette technique                         →  /qa-tech-debt               │
+│ Optimisation conversion (CRO)           →  /growth-cro                 │
 │                                                                        │
 │ LIVRER                                                                 │
 │ ──────                                                                 │
@@ -569,6 +615,8 @@ Génère: specs/ma-feature/plan.md + tasks.md
 │ Infrastructure as Code                  →  /ops-infra-code             │
 │ CI/CD                                   →  /ops-ci                     │
 │ Monitoring                              →  /ops-monitoring             │
+│ OPNsense (firewall)                     →  /ops-opnsense               │
+│ Rollback                                →  /ops-rollback               │
 │                                                                        │
 │ DOCUMENTER                                                             │
 │ ──────────                                                             │

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 title: "/growth-landing"
 description: "Créer ou optimiser une landing page efficace."
 tags:

@@ -49,6 +49,22 @@ Tu es l'orchestrateur en **mode automatique**. Ton rôle est de:
 | Composant, UI | `dev:dev-component` |
 | Docker, container | `ops:ops-docker` |
 | CI/CD, pipeline | `ops:ops-ci` |
+| Document, PDF, DOCX, rapport | `dev:dev-document` |
+| Audit UI/UX, design review | `qa:qa-design` |
+| CRO, conversion, optimisation funnel | `growth:growth-cro` |
+| Dette technique, tech debt | `qa:qa-tech-debt` |
+| Proxmox, VM, LXC, conteneur | `ops:ops-proxmox` |
+| OPNsense, firewall, NAT | `ops:ops-opnsense` |
+| Terraform, IaC, infrastructure | `ops:ops-infra-code` |
+| IA, LLM, OpenAI, Claude API | `dev:dev-ai-integration` |
+| SEO, référencement | `growth:growth-seo` |
+| Flutter, widget, mobile | `dev:dev-flutter` |
+| Supabase, auth, RLS | `dev:dev-supabase` |
+| GraphQL, resolver | `dev:dev-graphql` |
+| Accessibilité, WCAG, a11y | `qa:qa-a11y` |
+| Performance, latence, perf | `qa:qa-perf` |
+| E2E, Playwright, Cypress | `qa:qa-e2e` |
+| Landing page, conversion page | `growth:growth-landing` |
 | Question simple, explication | Réponse directe (pas de workflow) |
 
 ---

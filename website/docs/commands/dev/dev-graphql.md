@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "/dev-graphql"
 description: "Concevoir et implémenter des APIs GraphQL avec client Flutter."
 tags:

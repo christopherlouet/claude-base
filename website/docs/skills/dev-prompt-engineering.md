@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 title: "dev-prompt-engineering"
 description: "Optimisation de prompts pour LLMs. Declencher quand l'utilisateur veut ameliorer un prompt, ajouter des exemples, ou structurer des instructions."
 tags:

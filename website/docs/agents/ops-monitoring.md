@@ -1,5 +1,5 @@
 ---
-sidebar_position: 41
+sidebar_position: 43
 title: "ops-monitoring"
 description: "Instrumentation complete pour observabilite."
 tags:

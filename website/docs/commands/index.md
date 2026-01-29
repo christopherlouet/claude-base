@@ -59,7 +59,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 
 
 
-### [DEV](/docs/commands/dev) (22)
+### [DEV](/docs/commands/dev) (23)
 
 > Developpement (TDD, API, composants, debug)
 
@@ -68,7 +68,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/dev-api-versioning`](/docs/commands/dev/dev-api-versioning)
 - [`/dev-component`](/docs/commands/dev/dev-component)
 - [`/dev-debug`](/docs/commands/dev/dev-debug)
-- [... et 17 autres](/docs/commands/dev)
+- [... et 18 autres](/docs/commands/dev)
 
 
 ### [DOC](/docs/commands/doc) (9)
@@ -83,16 +83,16 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [... et 4 autres](/docs/commands/doc)
 
 
-### [GROWTH](/docs/commands/growth) (10)
+### [GROWTH](/docs/commands/growth) (11)
 
 > Croissance (SEO, analytics, landing, funnel)
 
 - [`/growth-ab-test`](/docs/commands/growth/growth-ab-test)
 - [`/growth-analytics`](/docs/commands/growth/growth-analytics)
 - [`/growth-app-store-analytics`](/docs/commands/growth/growth-app-store-analytics)
+- [`/growth-cro`](/docs/commands/growth/growth-cro)
 - [`/growth-email`](/docs/commands/growth/growth-email)
-- [`/growth-funnel`](/docs/commands/growth/growth-funnel)
-- [... et 5 autres](/docs/commands/growth)
+- [... et 6 autres](/docs/commands/growth)
 
 
 ### [LEGAL](/docs/commands/legal) (5)
@@ -119,7 +119,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [... et 25 autres](/docs/commands/ops)
 
 
-### [QA](/docs/commands/qa) (13)
+### [QA](/docs/commands/qa) (14)
 
 > Qualite (review, securite, performance, accessibilite)
 
@@ -127,8 +127,8 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/qa-audit`](/docs/commands/qa/qa-audit)
 - [`/qa-automation`](/docs/commands/qa/qa-automation)
 - [`/qa-coverage`](/docs/commands/qa/qa-coverage)
-- [`/qa-e2e`](/docs/commands/qa/qa-e2e)
-- [... et 8 autres](/docs/commands/qa)
+- [`/qa-design`](/docs/commands/qa/qa-design)
+- [... et 9 autres](/docs/commands/qa)
 
 
 ### [WORK](/docs/commands/work) (10)

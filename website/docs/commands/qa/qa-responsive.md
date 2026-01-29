@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
 title: "/qa-responsive"
 description: "Audit responsive et mobile-first d'une application web."
 tags:
