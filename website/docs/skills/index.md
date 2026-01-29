@@ -38,7 +38,8 @@ Skills avec contexte isole.
 | [`api-mocking`](/docs/skills/api-mocking) | Configuration de mocks API pour les tests. Declenc... | api, mocking, mock api |
 | [`data-pipeline`](/docs/skills/data-pipeline) | Conception de pipelines ETL/ELT. Declencher quand ... | data, pipeline, duplicate ids |
 | [`dev-api`](/docs/skills/dev-api) | Développer et documenter une API REST ou GraphQL. ... | dev, api, success |
-| [`dev-debug`](/docs/skills/dev-debug) | Déboguer et résoudre des problèmes. Utiliser quand... | dev, debug |
+| [`dev-debug`](/docs/skills/dev-debug) | Deboguer et resoudre des problemes. Utiliser quand... | dev, debug |
+| [`dev-document`](/docs/skills/dev-document) | Generation de documents (PDF, DOCX, XLSX, PPTX). D... | dev, document |
 | [`dev-error-handling`](/docs/skills/dev-error-handling) | Strategie de gestion des erreurs. Declencher quand... | dev, error, handling |
 | [`dev-flutter`](/docs/skills/dev-flutter) | Developpement Flutter avec Clean Architecture et B... | dev, flutter |
 | [`dev-graphql`](/docs/skills/dev-graphql) | Developpement d'APIs GraphQL. Declencher quand l'u... | dev, graphql |
@@ -50,6 +51,8 @@ Skills avec contexte isole.
 | [`doc-changelog`](/docs/skills/doc-changelog) | Maintenance du CHANGELOG selon Keep a Changelog. D... | doc, changelog |
 | [`doc-generate`](/docs/skills/doc-generate) | Generation de documentation technique. Declencher ... | doc, generate, uuid |
 | [`feature-flags`](/docs/skills/feature-flags) | Gestion de feature flags et toggles. Declencher qu... | feature, flags, feature flag |
+| [`git-worktrees`](/docs/skills/git-worktrees) | Utilisation de git worktrees pour le developpement... | git, worktrees |
+| [`growth-cro`](/docs/skills/growth-cro) | Optimisation du taux de conversion (CRO). Declench... | growth, cro, comment |
 | [`ops-ci`](/docs/skills/ops-ci) | Configuration de pipelines CI/CD. Declencher quand... | ops |
 | [`ops-database`](/docs/skills/ops-database) | Conception de schemas de base de donnees. Declench... | ops, database |
 | [`ops-docker`](/docs/skills/ops-docker) | Containerisation Docker et Docker Compose. Declenc... | ops, docker, node |
@@ -58,16 +61,20 @@ Skills avec contexte isole.
 | [`ops-monitoring`](/docs/skills/ops-monitoring) | Instrumentation d'applications pour monitoring. De... | ops, monitoring |
 | [`ops-opnsense`](/docs/skills/ops-opnsense) | Configuration OPNsense via Terraform. Declencher p... | ops, opnsense, browningluke/opnsense |
 | [`ops-proxmox`](/docs/skills/ops-proxmox) | Infrastructure Proxmox VE avec Terraform (VMs, LXC... | ops, proxmox, pve |
+| [`parallel-agents`](/docs/skills/parallel-agents) | Orchestration d'agents paralleles pour maximiser l... | parallel, agents, qa-security |
+| [`qa-design`](/docs/skills/qa-design) | Audit de design UI/UX et verification des bonnes p... | design, '][^, `, ` |
 | [`qa-e2e`](/docs/skills/qa-e2e) | Tests End-to-End avec Playwright ou Cypress. Decle... | e2e, end-to-end, test de bout en bout |
 | [`qa-perf`](/docs/skills/qa-perf) | Optimisation des performances d'applications. Decl... | perf, /photo.jpg |
 | [`qa-review`](/docs/skills/qa-review) | Effectuer une revue de code approfondie. Utiliser ... | review |
 | [`qa-security`](/docs/skills/qa-security) | Effectuer un audit de sécurité basé sur OWASP. Uti... | security, **/*, password\s*= |
 | [`qa-tech-debt`](/docs/skills/qa-tech-debt) | Gestion et priorisation de la dette technique. Dec... | tech, debt, dette technique |
+| [`session-handoff`](/docs/skills/session-handoff) | Transfert de contexte entre sessions IA. Declenche... | session, handoff |
 | [`state-management`](/docs/skills/state-management) | Patterns et implementation de state management. De... | state, management, state management |
 | [`work-commit`](/docs/skills/work-commit) | Génère des messages de commit clairs suivant Conve... | work, commit, quoi |
 | [`work-explore`](/docs/skills/work-explore) | Explorer et comprendre un codebase existant. Utili... | work, explore |
 | [`work-plan`](/docs/skills/work-plan) | Planifier l'implémentation d'une fonctionnalité. U... | work, plan, pattern_similaire |
 | [`work-pr`](/docs/skills/work-pr) | Créer une Pull Request complète et bien documentée... | work, type(scope): description, $(cat pr_body.md) |
+| [`writing-skills`](/docs/skills/writing-skills) | Guide pour creer de nouveaux skills pour le socle ... | writing, skills, output attendu |
 
 
 
@@ -97,10 +104,17 @@ Skills avec contexte isole.
   />
   <SkillCard
     name="dev-debug"
-    description="Déboguer et résoudre des problèmes. Utiliser quand l'utilisateur a un bug, une e"
+    description="Deboguer et resoudre des problemes. Utiliser quand l'utilisateur a un bug, une e"
     keywords={["dev","debug"]}
     context="fork"
     href="/docs/skills/dev-debug"
+  />
+  <SkillCard
+    name="dev-document"
+    description="Generation de documents (PDF, DOCX, XLSX, PPTX). Declencher quand l'utilisateur "
+    keywords={["dev","document"]}
+    context="fork"
+    href="/docs/skills/dev-document"
   />
   <SkillCard
     name="dev-error-handling"
@@ -150,13 +164,6 @@ Skills avec contexte isole.
     keywords={["dev","supabase","users read own profile","users update own profile"]}
     context="fork"
     href="/docs/skills/dev-supabase"
-  />
-  <SkillCard
-    name="dev-tdd"
-    description="Développement TDD avec cycle Red-Green-Refactor. Utiliser pour implémenter une f"
-    keywords={["dev","tdd","nom du test"]}
-    context="fork"
-    href="/docs/skills/dev-tdd"
   />
 </SkillGrid>
 

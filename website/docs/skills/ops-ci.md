@@ -1,5 +1,5 @@
 ---
-sidebar_position: 17
+sidebar_position: 20
 title: "ops-ci"
 description: "Configuration de pipelines CI/CD. Declencher quand l'utilisateur veut configurer GitHub Actions, GitLab CI, ou automatiser les deployments."
 tags:

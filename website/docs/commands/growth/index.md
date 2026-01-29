@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **10 commandes** pour croissance (seo, analytics, landing, funnel).
+Ce domaine contient **11 commandes** pour croissance (seo, analytics, landing, funnel).
 
 ## Liste des commandes
 
@@ -22,6 +22,7 @@ Ce domaine contient **10 commandes** pour croissance (seo, analytics, landing, f
 | [`/growth-ab-test`](/docs/commands/growth/growth-ab-test) | Planifier et analyser un A/B test. |
 | [`/growth-analytics`](/docs/commands/growth/growth-analytics) | Mise en place du tracking et définition des KPIs pour un projet. |
 | [`/growth-app-store-analytics`](/docs/commands/growth/growth-app-store-analytics) | Monitoring des metriques App Store et Google Play via APIs officielles (gratuites). |
+| [`/growth-cro`](/docs/commands/growth/growth-cro) | Optimisation du taux de conversion (CRO) pour pages, formulaires, signup flows, onboarding et paywalls. |
 | [`/growth-email`](/docs/commands/growth/growth-email) | Créer des templates d'emails transactionnels et marketing. |
 | [`/growth-funnel`](/docs/commands/growth/growth-funnel) | Analyse et optimise les funnels de conversion pour maximiser les taux de conversion. |
 | [`/growth-landing`](/docs/commands/growth/growth-landing) | Créer ou optimiser une landing page efficace. |
@@ -50,6 +51,12 @@ Ce domaine contient **10 commandes** pour croissance (seo, analytics, landing, f
     description="Monitoring des metriques App Store et Google Play via APIs officielles (gratuites)."
     domain="growth"
     href="/docs/commands/growth/growth-app-store-analytics"
+  />
+  <CommandCard
+    name="growth-cro"
+    description="Optimisation du taux de conversion (CRO) pour pages, formulaires, signup flows, onboarding et paywalls."
+    domain="growth"
+    href="/docs/commands/growth/growth-cro"
   />
   <CommandCard
     name="growth-email"

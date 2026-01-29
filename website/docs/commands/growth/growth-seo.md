@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
 title: "/growth-seo"
 description: "Audit SEO et recommandations d'optimisation pour le référencement naturel."
 tags:

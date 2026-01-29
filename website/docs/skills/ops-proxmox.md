@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 27
 title: "ops-proxmox"
 description: "Infrastructure Proxmox VE avec Terraform (VMs, LXC, réseau, stockage, backup)"
 tags:

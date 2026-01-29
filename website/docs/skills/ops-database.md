@@ -1,5 +1,5 @@
 ---
-sidebar_position: 18
+sidebar_position: 21
 title: "ops-database"
 description: "Conception de schemas de base de donnees. Declencher quand l'utilisateur veut creer des tables, migrations, ou optimiser des requetes."
 tags:

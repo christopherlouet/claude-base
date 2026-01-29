@@ -1,5 +1,5 @@
 ---
-sidebar_position: 31
+sidebar_position: 33
 title: "legal-privacy-policy"
 description: "Creation de politique de confidentialite conforme RGPD."
 tags:

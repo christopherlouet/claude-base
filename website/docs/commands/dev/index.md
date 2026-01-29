@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **22 commandes** pour developpement (tdd, api, composants, debug).
+Ce domaine contient **23 commandes** pour developpement (tdd, api, composants, debug).
 
 ## Liste des commandes
 
@@ -25,6 +25,7 @@ Ce domaine contient **22 commandes** pour developpement (tdd, api, composants, d
 | [`/dev-component`](/docs/commands/dev/dev-component) | Générer un composant UI complet avec tests, types et documentation. |
 | [`/dev-debug`](/docs/commands/dev/dev-debug) | Diagnostic et résolution de bugs de manière méthodique et systématique. |
 | [`/dev-design-system`](/docs/commands/dev/dev-design-system) | Creation et maintenance de design systems et bibliotheques de composants. |
+| [`/dev-document`](/docs/commands/dev/dev-document) | Generation de documents professionnels dans differents formats bureautiques. |
 | [`/dev-error-handling`](/docs/commands/dev/dev-error-handling) | Implémente une stratégie de gestion d'erreurs robuste et cohérente. |
 | [`/dev-flutter`](/docs/commands/dev/dev-flutter) | Créer des widgets, screens et features Flutter avec Clean Architecture. |
 | [`/dev-graphql`](/docs/commands/dev/dev-graphql) | Concevoir et implémenter des APIs GraphQL avec client Flutter. |
@@ -80,6 +81,12 @@ Ce domaine contient **22 commandes** pour developpement (tdd, api, composants, d
     description="Creation et maintenance de design systems et bibliotheques de composants."
     domain="dev"
     href="/docs/commands/dev/dev-design-system"
+  />
+  <CommandCard
+    name="dev-document"
+    description="Generation de documents professionnels dans differents formats bureautiques."
+    domain="dev"
+    href="/docs/commands/dev/dev-document"
   />
   <CommandCard
     name="dev-error-handling"

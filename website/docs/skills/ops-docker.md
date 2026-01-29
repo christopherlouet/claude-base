@@ -1,5 +1,5 @@
 ---
-sidebar_position: 19
+sidebar_position: 22
 title: "ops-docker"
 description: "Containerisation Docker et Docker Compose. Declencher quand l'utilisateur veut dockeriser une application ou creer des containers."
 tags:

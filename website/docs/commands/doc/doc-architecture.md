@@ -418,15 +418,137 @@ PostgreSQL pour :
 | Workers | Horizontal | Queue depth |
 ```
 
-## Templates de diagrammes
+## Diagrammes C4 avec Mermaid
 
-### C4 Model - Niveaux
+### Niveau 1 : Context Diagram
+
+```mermaid
+C4Context
+    title System Context Diagram
+
+    Person(user, "Utilisateur", "Utilisateur final de l'application")
+    System(system, "Notre Systeme", "Description du systeme principal")
+    System_Ext(email, "Service Email", "SendGrid, SES")
+    System_Ext(payment, "Service Paiement", "Stripe")
+    System_Ext(storage, "Storage", "AWS S3")
+
+    Rel(user, system, "Utilise", "HTTPS")
+    Rel(system, email, "Envoie des emails", "API")
+    Rel(system, payment, "Traite les paiements", "API")
+    Rel(system, storage, "Stocke les fichiers", "SDK")
+```
+
+### Niveau 2 : Container Diagram
+
+```mermaid
+C4Container
+    title Container Diagram
+
+    Person(user, "Utilisateur")
+
+    Container_Boundary(system, "Notre Systeme") {
+        Container(webapp, "Web Application", "React/Next.js", "Interface utilisateur")
+        Container(api, "API Backend", "Node.js/Express", "Logique metier et API REST")
+        Container(worker, "Worker", "Node.js/BullMQ", "Jobs asynchrones")
+        ContainerDb(db, "Database", "PostgreSQL", "Donnees metier")
+        ContainerDb(cache, "Cache", "Redis", "Sessions et cache")
+        ContainerDb(queue, "Message Queue", "Redis/BullMQ", "Jobs async")
+    }
+
+    Rel(user, webapp, "Utilise", "HTTPS")
+    Rel(webapp, api, "Appelle", "REST/JSON")
+    Rel(api, db, "Lit/Ecrit", "SQL")
+    Rel(api, cache, "Cache", "Redis protocol")
+    Rel(api, queue, "Enqueue", "BullMQ")
+    Rel(worker, queue, "Dequeue", "BullMQ")
+    Rel(worker, db, "Lit/Ecrit", "SQL")
+```
+
+### Niveau 3 : Component Diagram
+
+```mermaid
+C4Component
+    title Component Diagram - API Backend
+
+    Container_Boundary(api, "API Backend") {
+        Component(auth, "Auth Controller", "Express Router", "Authentification et autorisation")
+        Component(users, "User Controller", "Express Router", "Gestion des utilisateurs")
+        Component(orders, "Order Controller", "Express Router", "Gestion des commandes")
+        Component(middleware, "Middleware", "Express", "Auth, validation, rate limiting")
+        Component(services, "Business Services", "TypeScript", "Logique metier")
+        Component(repos, "Repositories", "TypeScript", "Acces donnees")
+    }
+
+    Rel(middleware, auth, "Route")
+    Rel(middleware, users, "Route")
+    Rel(middleware, orders, "Route")
+    Rel(auth, services, "Utilise")
+    Rel(users, services, "Utilise")
+    Rel(orders, services, "Utilise")
+    Rel(services, repos, "Utilise")
+```
+
+### Diagramme de sequence (flux)
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant A as API
+    participant S as Service
+    participant D as Database
+
+    C->>A: POST /login
+    A->>S: validateCredentials()
+    S->>D: SELECT user WHERE email=?
+    D-->>S: User data
+    S-->>A: JWT token
+    A-->>C: 200 { token }
+```
+
+### Diagramme d'architecture (flowchart)
+
+```mermaid
+graph TB
+    subgraph "Frontend"
+        WEB[Web App<br/>React/Next.js]
+        MOB[Mobile App<br/>Flutter/RN]
+    end
+
+    subgraph "API Gateway"
+        GW[API Gateway<br/>Rate Limit + Auth]
+    end
+
+    subgraph "Services"
+        AUTH[Auth Service]
+        USER[User Service]
+        ORDER[Order Service]
+    end
+
+    subgraph "Data"
+        DB[(PostgreSQL)]
+        CACHE[(Redis)]
+        S3[(S3 Storage)]
+    end
+
+    WEB --> GW
+    MOB --> GW
+    GW --> AUTH
+    GW --> USER
+    GW --> ORDER
+    AUTH --> DB
+    AUTH --> CACHE
+    USER --> DB
+    ORDER --> DB
+    ORDER --> S3
+```
+
+### Templates de diagrammes ASCII (fallback)
 
 ```markdown
 ### Niveau 1 : Context
 
 \`\`\`
-[Utilisateur] --> [Système] --> [Systèmes externes]
+[Utilisateur] --> [Systeme] --> [Systemes externes]
 \`\`\`
 
 ### Niveau 2 : Container

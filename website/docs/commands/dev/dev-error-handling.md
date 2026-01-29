@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 title: "/dev-error-handling"
 description: "Implémente une stratégie de gestion d'erreurs robuste et cohérente."
 tags:

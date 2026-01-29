@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 title: "performance"
 description: "Image src=\"/hero.jpg\" alt=\"Hero\" width=1200 height=600 priority // Pour images above-the-fold placeholder=\"blur\" blurDataURL=blurData /"
 tags:

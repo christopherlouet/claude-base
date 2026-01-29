@@ -1,5 +1,5 @@
 ---
-sidebar_position: 21
+sidebar_position: 24
 title: "ops-mobile-release"
 description: "Publication d'apps sur App Store et Google Play. Declencher quand l'utilisateur veut deployer une app mobile ou configurer Fastlane."
 tags:

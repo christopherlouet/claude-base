@@ -12,7 +12,7 @@ import Stats from '@site/src/components/Stats';
 
 <Stats items={[
   { number: 20, label: 'Regles' },
-  { number: 74, label: 'Patterns' },
+  { number: 87, label: 'Patterns' },
 ]} />
 
 ## Qu'est-ce qu'une Rule ?
@@ -35,6 +35,7 @@ Les **rules** sont des conventions appliquees automatiquement :
 | [`git`](/docs/rules/git) | [corps optionnel - details sur le "quoi" et "pourq... | - |
 | [`go`](/docs/rules/go) | // Custom errors var ErrUserNotFound = errors.New(... | `**/*.go`, `**/go.mod`... |
 | [`java`](/docs/rules/java) | // 2. Champs statiques private static final Logger... | `**/*.java`, `**/pom.xml`... |
+| [`nextjs`](/docs/rules/nextjs) | **Regles RSC :** - Les Server Components ne peuven... | `**/next.config.*`, `**/app/**`... |
 | [`performance`](/docs/rules/performance) | &lt;Image src="/hero.jpg" alt="Hero" width=\{1200\} hei... | `**/*.tsx`, `**/*.jsx`... |
 | [`php`](/docs/rules/php) | declare(strict_types=1); | `**/*.php`, `**/composer.json` |
 | [`python`](/docs/rules/python) | import requests from pydantic import BaseModel | `**/*.py`, `**/requirements*.txt`... |
@@ -45,6 +46,7 @@ Les **rules** sont des conventions appliquees automatiquement :
 | [`tdd-enforcement`](/docs/rules/tdd-enforcement) | IMPORTANT: Quand l'utilisateur demande d'implement... | `**/*.ts`, `**/*.tsx`... |
 | [`testing`](/docs/rules/testing) | // Act - Executer l'action const result = function... | `**/*.test.ts`, `**/*.test.tsx`... |
 | [`typescript`](/docs/rules/typescript) | TypeScript Rules | `**/*.ts`, `**/*.tsx`... |
+| [`verification`](/docs/rules/verification) | Toute implementation doit etre verifiee AVANT d'et... | `**/*.ts`, `**/*.tsx`... |
 | [`workflow`](/docs/rules/workflow) | Workflow Rules | - |
 
 ## Categories
