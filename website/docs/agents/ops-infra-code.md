@@ -1,5 +1,5 @@
 ---
-sidebar_position: 39
+sidebar_position: 41
 title: "ops-infra-code"
 description: "Agent specialise pour l'Infrastructure as Code avec Terraform et OpenTofu."
 tags:

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 26
 title: "ops-opnsense"
 description: "Configuration OPNsense via Terraform. Declencher pour interfaces, firewall, NAT, DHCP/DNS, aliases."
 tags:

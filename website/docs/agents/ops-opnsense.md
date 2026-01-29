@@ -1,5 +1,5 @@
 ---
-sidebar_position: 42
+sidebar_position: 44
 title: "ops-opnsense"
 description: "Agent spécialisé pour la gestion d'OPNsense en Infrastructure as Code avec Terraform."
 tags:
