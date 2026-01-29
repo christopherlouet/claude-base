@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalogue des 37 sub-agents claude-socle"
+description: "Catalogue des 56 sub-agents claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -15,7 +15,7 @@ import AgentCard from '@site/src/components/AgentCard';
 <Stats items={[
   { number: 26, label: 'Agents Haiku' },
   { number: 30, label: 'Agents Sonnet' },
-  { number: 53, label: 'Total' },
+  { number: 56, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Agent ?
@@ -29,7 +29,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole :
 
 ## Agents par modele
 
-### Haiku (24 agents)
+### Haiku (26 agents)
 
 Agents rapides et economiques pour les taches simples.
 
@@ -46,6 +46,7 @@ Agents rapides et economiques pour les taches simples.
 | [`doc-explain`](/docs/agents/doc-explain) | Explication pedagogique de code complexe. | Read, Grep, Glob |
 | [`doc-generate`](/docs/agents/doc-generate) | Generation de documentation complete et maintenable. | Read, Grep, Glob... |
 | [`doc-onboard`](/docs/agents/doc-onboard) | Guide de decouverte et comprehension d'un codebase. | Read, Grep, Glob |
+| [`growth-cro`](/docs/agents/growth-cro) | Audit et optimisation du taux de conversion. | Read, Grep, Glob |
 | [`growth-localization`](/docs/agents/growth-localization) | Strategie de localisation et expansion internationale. | Read, Grep, Glob |
 | [`growth-seo`](/docs/agents/growth-seo) | Audit SEO technique et recommandations d'optimisation. | Read, Grep, Glob... |
 | [`legal-privacy-policy`](/docs/agents/legal-privacy-policy) | Creation de politique de confidentialite conforme RGPD. | Read, Grep, Glob... |
@@ -56,11 +57,12 @@ Agents rapides et economiques pour les taches simples.
 | [`ops-vercel`](/docs/agents/ops-vercel) | Deploiement sur Vercel. | Read, Grep, Glob... |
 | [`qa-a11y`](/docs/agents/qa-a11y) | Audit d'accessibilite selon les normes WCAG 2.1 niveau AA. | Read, Grep, Glob |
 | [`qa-coverage`](/docs/agents/qa-coverage) | Analyse de la couverture de tests et de la qualite des tests... | Read, Grep, Glob... |
+| [`qa-design`](/docs/agents/qa-design) | Audit de design UI/UX avec 100+ regles de verification. | Read, Grep, Glob |
 | [`qa-responsive`](/docs/agents/qa-responsive) | Audit de la conception responsive et de l'experience mobile. | Read, Grep, Glob |
 | [`qa-tech-debt`](/docs/agents/qa-tech-debt) | Identification et priorisation de la dette technique dans le... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | Tu es en mode EXPLORATION. Analyse le codebase sans jamais m... | Read, Grep, Glob |
 
-### Sonnet (29 agents)
+### Sonnet (30 agents)
 
 Agents pour les taches complexes necessitant une analyse approfondie.
 
@@ -72,6 +74,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`dev-ai-integration`](/docs/agents/dev-ai-integration) | Integration de modeles de langage (LLM) et APIs IA dans les ... | Read, Grep, Glob... |
 | [`dev-component`](/docs/agents/dev-component) | Creation de composants UI modulaires et reutilisables. | Read, Grep, Glob... |
 | [`dev-debug`](/docs/agents/dev-debug) | Diagnostic et resolution de bugs de maniere methodique. | Read, Grep, Glob... |
+| [`dev-document`](/docs/agents/dev-document) | Generation de documents bureautiques et rapports. | Read, Grep, Glob... |
 | [`dev-flutter`](/docs/agents/dev-flutter) | Developpement d'applications Flutter avec bonnes pratiques. | Read, Grep, Glob... |
 | [`dev-prompt-engineering`](/docs/agents/dev-prompt-engineering) | Optimisation systematique de prompts pour applications LLM. | Read, Grep, Glob... |
 | [`dev-rag`](/docs/agents/dev-rag) | Architecture et implementation de systemes RAG. | Read, Grep, Glob... |
@@ -179,11 +182,11 @@ Agents pour les taches complexes necessitant une analyse approfondie.
     href="/docs/agents/dev-design-system"
   />
   <AgentCard
-    name="dev-flutter"
-    description="Developpement d'applications Flutter avec bonnes pratiques."
+    name="dev-document"
+    description="Generation de documents bureautiques et rapports."
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
-    href="/docs/agents/dev-flutter"
+    href="/docs/agents/dev-document"
   />
 </AgentGrid>
 
