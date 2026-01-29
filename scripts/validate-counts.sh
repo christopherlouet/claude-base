@@ -82,17 +82,17 @@ done
 info "Comptage des fichiers reels..."
 echo ""
 
-# Count commands (md files in commands/ subdirectories)
-ACTUAL_COMMANDS=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f | wc -l)
+# Count commands (md files in commands/ subdirectories, exclude README.md index files)
+ACTUAL_COMMANDS=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f | wc -l)
 
-# Count agents
-ACTUAL_AGENTS=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l)
+# Count agents (exclude README.md index files)
+ACTUAL_AGENTS=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l)
 
 # Count skills (directories with SKILL.md)
 ACTUAL_SKILLS=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l)
 
-# Count rules
-ACTUAL_RULES=$(find "$SOCLE_DIR/.claude/rules" -name "*.md" -type f 2>/dev/null | wc -l)
+# Count rules (exclude README.md index files)
+ACTUAL_RULES=$(find "$SOCLE_DIR/.claude/rules" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l)
 
 echo "  Commands : $ACTUAL_COMMANDS"
 echo "  Agents   : $ACTUAL_AGENTS"

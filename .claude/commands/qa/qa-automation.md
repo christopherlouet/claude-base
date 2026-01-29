@@ -353,7 +353,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_PASSWORD: test
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}  # Use GitHub Secrets in production
           POSTGRES_DB: test
         options: >-
           --health-cmd pg_isready
