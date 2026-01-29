@@ -9,6 +9,26 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.17.0] - 2026-01-29
+
+### Securite
+- **Mots de passe exemples** : remplacement de tous les `POSTGRES_PASSWORD=pass` par `${POSTGRES_PASSWORD:?required}` ou `${{ secrets.POSTGRES_PASSWORD }}` dans ops-docker, ops-ci, qa-automation
+- **curl|sh** : remplacement du pattern `curl | sh` par download-then-execute dans `install-starship-theme.sh`
+- **Avertissement curl|sh** : ajout d'un bloc securite dans `ops-vps.md` documentant le risque
+- **CLAUDE.md** : enrichissement de la section Securite avec gestion des secrets, MCP security, curl|bash
+- **Input validation** : ajout de `sanitize_input()` et `validate_input()` dans `scripts/lib/common.sh`
+
+### Ajoute
+- **`.claude/rules/README.md`** : index des 20 regles avec paths cibles et descriptions
+- **`.claude/skills/README.md`** : mise a jour complete avec les 40 skills (etait 9)
+- **CI validate-counts** : nouveau job `validate-counts` dans le pipeline CI
+- **CI Semgrep SAST** : nouveau job `semgrep` (informatif) pour l'analyse statique de securite
+
+### Corrige
+- **validate-counts.sh** : exclusion des fichiers `README.md` du comptage (commands, agents, rules)
+
+---
+
 ## [1.16.1] - 2026-01-29
 
 ### Corrige
