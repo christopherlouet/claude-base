@@ -54,6 +54,56 @@ context: fork  # Toujours fork pour isolation
 [Regles obligatoires pour le skill]
 ```
 
+## Champs Frontmatter Disponibles (Claude Code 2.1+)
+
+Tous les champs disponibles dans le frontmatter YAML d'un skill :
+
+| Champ | Requis | Description |
+|-------|--------|-------------|
+| `name` | Non | Nom du skill (defaut: nom du dossier). Minuscules, chiffres, tirets (max 64 chars) |
+| `description` | Recommande | Ce que fait le skill et quand l'utiliser. Claude utilise ceci pour decider quand charger le skill |
+| `allowed-tools` | Non | Outils autorises sans demande de permission |
+| `context` | Non | `fork` pour execution dans un sub-agent isole |
+| `model` | Non | Modele a utiliser: `sonnet`, `opus`, `haiku`, `inherit` (defaut: herite du contexte) |
+| `agent` | Non | Type de sub-agent quand `context: fork` (`Explore`, `Plan`, `general-purpose`, ou agent custom) |
+| `disable-model-invocation` | Non | `true` = invocation manuelle uniquement (Claude ne peut pas auto-charger). Defaut: `false` |
+| `user-invocable` | Non | `false` = invisible dans le menu `/` (skills background). Defaut: `true` |
+| `argument-hint` | Non | Hint d'autocompletion affiche dans le menu `/`. Ex: `[issue-number]` ou `[filename] [format]` |
+| `hooks` | Non | Hooks scopes au lifecycle du skill (PreToolUse, PostToolUse, Stop) |
+
+### Substitutions de variables
+
+| Variable | Description |
+|----------|-------------|
+| `$ARGUMENTS` | Tous les arguments passes au skill |
+| `$ARGUMENTS[N]` | Argument par index (0-based) |
+| `$N` | Raccourci pour `$ARGUMENTS[N]` |
+| `${CLAUDE_SESSION_ID}` | ID de la session courante |
+
+### Injection de contexte dynamique
+
+Utiliser la syntaxe backtick-bang pour injecter des donnees live:
+- Exemple: `!` suivi de backtick puis `gh pr diff` puis backtick
+- La commande s'execute AVANT que Claude ne voie le contenu
+- Le resultat remplace le placeholder
+
+Exemple:
+```markdown
+## Contexte PR
+- Diff: !`gh pr diff`
+- Fichiers: !`gh pr diff --name-only`
+```
+
+### Bonnes pratiques frontmatter
+
+- SKILL.md < 500 lignes (deporter le detail dans des fichiers de reference via `supporting files`)
+- Budget descriptions: 15,000 chars max (variable `SLASH_COMMAND_TOOL_CHAR_BUDGET`)
+- Fichiers de support: `examples/`, `scripts/`, `reference.md` dans le dossier du skill
+- Utiliser `disable-model-invocation: true` pour les skills qui ne doivent etre lances que manuellement (ex: commit, PR, plan)
+- Utiliser `user-invocable: false` pour les skills de contexte/background que Claude charge automatiquement (state-management, api-mocking)
+- Utiliser `model: sonnet` pour les skills complexes necessitant un raisonnement approfondi (debug, securite, TDD, perf)
+- Utiliser `argument-hint` pour guider l'utilisateur sur les parametres attendus
+
 ## Checklist de qualite d'un skill
 
 ### Structure

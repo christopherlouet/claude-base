@@ -9,6 +9,8 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+model: sonnet
+argument-hint: "[page-or-endpoint]"
 ---
 
 # Performance Optimization

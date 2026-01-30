@@ -9,6 +9,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+disable-model-invocation: true
 ---
 
 # CI/CD Pipeline

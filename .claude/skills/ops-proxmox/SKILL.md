@@ -9,6 +9,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+argument-hint: "[resource-type]"
 ---
 
 # Skill Proxmox Infrastructure

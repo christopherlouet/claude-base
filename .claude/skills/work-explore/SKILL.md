@@ -6,6 +6,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+disable-model-invocation: true
 ---
 
 # Explorer un Codebase
