@@ -9,6 +9,14 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.19.1] - 2026-01-30
+
+### Corrige
+- **Compteurs documentation** : alignement des compteurs (119 cmd, 57 agents, 41 skills, 21 rules) dans README badge, Docusaurus config (navbar/footer), quick-start, commands/index, skills/index, CONTRIBUTING, assistant.md
+- **Badge version README** : correction v1.17.0 → v1.19.0
+
+---
+
 ## [1.19.0] - 2026-01-30
 
 ### Ajoute
