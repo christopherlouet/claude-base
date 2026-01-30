@@ -1,14 +1,14 @@
 ---
 sidebar_position: 1
 title: "Rules"
-description: "Catalogue des 20 regles par technologie"
+description: "Catalogue des 21 regles par technologie"
 ---
 
 import Stats from '@site/src/components/Stats';
 
 # Catalogue des Regles
 
-> **20 regles** appliquees automatiquement par chemin de fichier
+> **21 regles** appliquees automatiquement par chemin de fichier
 
 <Stats items={[
   { number: 20, label: 'Regles' },

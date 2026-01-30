@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Skills"
-description: "Catalogue des 40 skills auto-declenches"
+description: "Catalogue des 41 skills auto-declenches"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,7 +10,7 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **40 skills** auto-declenches par mots-cles
+> **41 skills** auto-declenches par mots-cles
 
 <Stats items={[
   { number: 40, label: 'Skills Fork' },
@@ -29,7 +29,7 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (40 skills)
+### Fork (41 skills)
 
 Skills avec contexte isole.
 
