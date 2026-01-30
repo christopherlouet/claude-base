@@ -515,14 +515,26 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 
 | Event | Type | Description |
 |-------|------|-------------|
-| `SessionStart` | command | Déclenché au démarrage d'une session |
-| `PreToolUse` | command | Avant l'exécution d'un outil (matcher: `Edit\|Write`, `Bash`) |
-| `PostToolUse` | command | Après l'exécution d'un outil |
+| `SessionStart` | command | Déclenché au démarrage d'une session (matchers: `startup`, `resume`, `clear`, `compact`) |
+| `UserPromptSubmit` | command | Quand l'utilisateur soumet un prompt (validation, contexte additionnel) |
+| `PreToolUse` | command/prompt | Avant l'exécution d'un outil (matcher: `Edit\|Write`, `Bash`) |
+| `PermissionRequest` | command/prompt | Quand un dialog de permission est affiché |
+| `PostToolUse` | command | Après l'exécution réussie d'un outil |
+| `PostToolUseFailure` | command | Après l'échec d'un outil |
+| `SubagentStart` | command | Démarrage d'un sub-agent |
+| `SubagentStop` | command/prompt | Fin d'exécution d'un sub-agent |
+| `Stop` | command/prompt | Quand Claude finit de répondre |
 | `Setup` | command | Initialisation (`init`) et maintenance (`maintenance`) du projet |
-| `Notification` | command | Notifications (`permission_prompt`, `idle_prompt`) |
-| `SubagentStop` | command | Fin d'exécution d'un sub-agent |
+| `Notification` | command | Notifications (`permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`) |
+| `PreCompact` | command | Avant compaction du contexte (matchers: `manual`, `auto`) |
 | `SessionEnd` | command | Fin de session |
-| `PreCompact` | command | Avant compaction du contexte |
+
+### Types de hooks
+
+| Type | Description |
+|------|-------------|
+| `command` | Exécute un script bash (déterministe, rapide) |
+| `prompt` | Évalue via un LLM Haiku (contextuel, intelligent) - pour `Stop`, `SubagentStop`, `PreToolUse` |
 
 ### Hooks configurés
 
@@ -915,6 +927,58 @@ Configuration centralisée des MCP servers dans `.mcp.json`:
 | `puppeteer` | Automatisation navigateur | Non |
 
 Pour activer un server: `"enabled": true` dans `.mcp.json`
+
+## CLAUDE.md @imports
+
+Les fichiers CLAUDE.md supportent l'import de fichiers avec la syntaxe `@path/to/file` :
+
+```markdown
+# Importer des fichiers dans CLAUDE.md
+See @README for project overview and @package.json for npm commands.
+
+# Instructions individuelles (non committées)
+@~/.claude/my-project-instructions.md
+```
+
+### Règles d'import
+- Chemins relatifs et absolus supportés
+- Imports récursifs (max 5 niveaux)
+- Non évalués dans les blocs de code markdown
+- Alternative à CLAUDE.local.md pour les worktrees multiples
+- Voir les imports chargés avec `/memory`
+
+## Plugins (Claude Code 2.1+)
+
+Système de plugins pour distribuer skills, agents, hooks et MCP servers :
+
+### Structure d'un plugin
+```
+mon-plugin/
+├── .claude-plugin/
+│   └── plugin.json       # Manifeste (nom, version, description)
+├── commands/              # Commandes / skills legacy
+├── skills/                # Skills avec SKILL.md
+├── agents/                # Sub-agents
+├── hooks/
+│   └── hooks.json         # Hooks du plugin
+├── .mcp.json              # Serveurs MCP
+└── .lsp.json              # Serveurs LSP
+```
+
+### Utilisation
+```bash
+# Tester un plugin localement
+claude --plugin-dir ./mon-plugin
+
+# Les skills sont namespacés
+/mon-plugin:skill-name
+```
+
+### Quand utiliser plugins vs standalone
+| Approche | Nommage skills | Usage |
+|----------|---------------|-------|
+| Standalone (`.claude/`) | `/hello` | Personnel, un seul projet |
+| Plugin | `/plugin:hello` | Partage équipe, distribution, multi-projets |
 
 ## LSP (Language Server Protocol)
 

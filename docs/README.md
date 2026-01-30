@@ -82,7 +82,7 @@ docs/
 
 - [Documentation Docusaurus](https://christopherlouet.github.io/claude-socle/) - Site de documentation complet
 - [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) - Bonnes pratiques Anthropic
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code) - Documentation officielle
+- [Claude Code Documentation](https://code.claude.com/docs/en/overview) - Documentation officielle
 
 ## Voir Aussi
 

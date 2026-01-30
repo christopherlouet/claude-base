@@ -2,7 +2,7 @@
 title: "Guide Utilisateur claude-socle"
 subtitle: "Maîtrisez Claude Code avec un workflow professionnel"
 author: "claude-socle"
-date: "Janvier 2025"
+date: "Janvier 2026"
 lang: fr
 toc: true
 toc-depth: 3
@@ -26,7 +26,7 @@ header-includes:
 
 **claude-socle** est un template de configuration pour Claude Code qui transforme votre assistant IA en un véritable partenaire de développement. Il fournit :
 
-- **79 agents spécialisés** pour différentes tâches de développement
+- **83 agents spécialisés** répartis en 10 catégories
 - **9 skills** pour des comportements automatiques intelligents
 - **8 hooks** pour automatiser les vérifications et le formatage
 - **8 templates** adaptés à différents langages et frameworks
@@ -346,18 +346,24 @@ Voulez-vous que je crée ce commit ?
 
 # Les Agents par Catégorie
 
+## Orchestrateur (1 agent)
+
+| Agent | Commande | Description |
+|-------|----------|-------------|
+| Assistant | `/assistant` | Guide de choix des agents et workflows |
+
 ## Workflow Principal (8 agents)
 
 | Agent | Commande | Description |
 |-------|----------|-------------|
-| Explore | `/explore` | Explorer le code existant |
-| Plan | `/plan` | Planifier une implémentation |
-| Commit | `/commit` | Créer un commit propre |
-| PR | `/pr` | Créer une Pull Request |
-| Flow Feature | `/flow-feature` | Workflow complet feature |
-| Flow Bugfix | `/flow-bugfix` | Workflow correction bug |
-| Flow Release | `/flow-release` | Workflow release |
-| Flow Launch | `/flow-launch` | Workflow lancement |
+| Explore | `/work-explore` | Explorer le code existant |
+| Plan | `/work-plan` | Planifier une implémentation |
+| Commit | `/work-commit` | Créer un commit propre |
+| PR | `/work-pr` | Créer une Pull Request |
+| Flow Feature | `/work-flow-feature` | Workflow complet feature |
+| Flow Bugfix | `/work-flow-bugfix` | Workflow correction bug |
+| Flow Release | `/work-flow-release` | Workflow release |
+| Flow Launch | `/work-flow-launch` | Workflow lancement |
 
 ### Exemple : Flow Feature complet
 
@@ -383,20 +389,23 @@ git checkout -b feature/dark-mode
 [Sera créée après l'implémentation]
 ```
 
-## Développement (10 agents)
+## Développement (13 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| TDD | `/tdd` | Test-Driven Development |
-| Test | `/test` | Générer des tests |
-| Debug | `/debug` | Débogage méthodique |
-| Refactor | `/refactor` | Refactoring guidé |
-| API | `/api` | Créer/documenter API |
-| Component | `/component` | Créer un composant |
-| Error Handling | `/error-handling` | Gestion d'erreurs |
-| API Versioning | `/api-versioning` | Versioning d'API |
-| Feature Flag | `/feature-flag` | Feature flags |
-| State | `/state` | Gestion d'état |
+| TDD | `/dev-tdd` | Test-Driven Development |
+| Test | `/dev-test` | Générer des tests |
+| Testing Setup | `/dev-testing-setup` | Configurer l'infra de tests |
+| Debug | `/dev-debug` | Débogage méthodique |
+| Refactor | `/dev-refactor` | Refactoring guidé |
+| API | `/dev-api` | Créer/documenter API REST |
+| API Versioning | `/dev-api-versioning` | Versioning d'API |
+| Component | `/dev-component` | Créer un composant |
+| Hook | `/dev-hook` | Créer un hook React/Vue |
+| Error Handling | `/dev-error-handling` | Gestion d'erreurs |
+| Flutter | `/dev-flutter` | Widgets et screens Flutter |
+| Supabase | `/dev-supabase` | Backend Supabase |
+| GraphQL | `/dev-graphql` | API GraphQL client/serveur |
 
 ### Exemple : Debug
 
@@ -451,18 +460,19 @@ export const requireAuth = (req, res, next) => {
 Voulez-vous que j'applique cette correction ?
 ```
 
-## Qualité (8 agents)
+## Qualité (9 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Review | `/review` | Code review détaillée |
-| Security | `/security` | Audit sécurité OWASP |
-| Performance | `/perf` | Analyse performance |
-| A11y | `/a11y` | Audit accessibilité |
-| Lint | `/lint` | Analyse statique |
-| Coverage | `/coverage` | Couverture de tests |
-| Complexity | `/complexity` | Analyse complexité |
-| Dependencies | `/deps` | Audit dépendances |
+| Review | `/qa-review` | Code review détaillée |
+| Security | `/qa-security` | Audit sécurité OWASP |
+| Performance | `/qa-perf` | Analyse performance |
+| A11y | `/qa-a11y` | Audit accessibilité WCAG |
+| Audit | `/qa-audit` | Audit complet (tout en un) |
+| Responsive | `/qa-responsive` | Audit responsive/mobile web |
+| Automation | `/qa-automation` | Automatisation des tests |
+| Coverage | `/qa-coverage` | Couverture de tests |
+| Mobile | `/qa-mobile` | Audit qualité apps mobiles |
 
 ### Exemple : Security Audit
 
@@ -509,40 +519,87 @@ const JWT_SECRET = process.env.JWT_SECRET;
 - [OK] Logs sans données sensibles
 ```
 
-## Operations (16 agents)
+## Opérations (16 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Docker | `/docker` | Dockeriser |
-| K8s | `/k8s` | Kubernetes |
-| CI/CD | `/cicd` | Pipelines |
-| Deploy | `/deploy` | Déploiement |
-| Monitor | `/monitor` | Monitoring |
-| Backup | `/backup` | Sauvegardes |
-| Hotfix | `/hotfix` | Fix urgent |
-| Release | `/release` | Releases |
-| Rollback | `/rollback` | Rollback |
-| Scale | `/scale` | Scaling |
-| Migrate DB | `/migrate-db` | Migration DB |
-| Infra | `/infra` | Infrastructure |
-| SSL | `/ssl` | Certificats |
-| DNS | `/dns` | Configuration DNS |
-| CDN | `/cdn` | Configuration CDN |
-| Logs | `/logs` | Analyse logs |
+| Hotfix | `/ops-hotfix` | Correction urgente prod |
+| Release | `/ops-release` | Créer une release |
+| Deps | `/ops-deps` | Audit et MAJ dépendances |
+| Docker | `/ops-docker` | Dockeriser |
+| Migrate | `/ops-migrate` | Migration code/deps |
+| CI | `/ops-ci` | Pipelines CI/CD |
+| Monitoring | `/ops-monitoring` | Logs, métriques, alertes |
+| Database | `/ops-database` | Schéma, migrations DB |
+| Health | `/ops-health` | Health check rapide |
+| Env | `/ops-env` | Gestion environnements |
+| Backup | `/ops-backup` | Stratégie backup/restore |
+| Load Testing | `/ops-load-testing` | Tests de charge et stress |
+| Cost Optim | `/ops-cost-optimization` | Optimisation coûts cloud |
+| Disaster Recovery | `/ops-disaster-recovery` | Plan de reprise |
+| Infra Code | `/ops-infra-code` | Infrastructure as Code |
+| Secrets | `/ops-secrets-management` | Gestion des secrets |
 
 ## Documentation (9 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Doc | `/doc` | Documentation |
-| API Doc | `/api-doc` | Doc API |
-| README | `/readme` | README |
-| Changelog | `/changelog` | Changelog |
-| ADR | `/adr` | Architecture Decision |
-| Tutorial | `/tutorial` | Tutoriels |
-| Diagram | `/diagram` | Diagrammes |
-| Onboard | `/onboard` | Onboarding |
-| Explain | `/explain` | Explications |
+| Generate | `/doc-generate` | Générer documentation |
+| Changelog | `/doc-changelog` | Changelog |
+| Explain | `/doc-explain` | Expliquer code complexe |
+| Onboard | `/doc-onboard` | Découvrir un codebase |
+| I18n | `/doc-i18n` | Internationalisation |
+| Fix Issue | `/doc-fix-issue` | Corriger issue GitHub |
+| API Spec | `/doc-api-spec` | Spec OpenAPI/Swagger |
+| README | `/doc-readme` | Créer/améliorer README |
+| Architecture | `/doc-architecture` | Documenter l'architecture |
+
+## Business (11 agents)
+
+| Agent | Commande | Usage |
+|-------|----------|-------|
+| Model | `/biz-model` | Business model, Lean Canvas |
+| Market | `/biz-market` | Étude de marché |
+| MVP | `/biz-mvp` | Définir le MVP |
+| Pricing | `/biz-pricing` | Stratégie tarifaire |
+| Pitch | `/biz-pitch` | Pitch deck |
+| Roadmap | `/biz-roadmap` | Roadmap produit |
+| Launch | `/biz-launch` | Workflow lancement |
+| Competitor | `/biz-competitor` | Analyse concurrentielle |
+| OKR | `/biz-okr` | OKRs |
+| Research | `/biz-research` | Recherche utilisateur |
+| Personas | `/biz-personas` | Créer des personas |
+
+## Croissance (8 agents)
+
+| Agent | Commande | Usage |
+|-------|----------|-------|
+| Landing | `/growth-landing` | Landing page |
+| SEO | `/growth-seo` | Audit SEO |
+| Analytics | `/growth-analytics` | Tracking et KPIs |
+| Onboarding | `/growth-onboarding` | Parcours utilisateur |
+| Email | `/growth-email` | Templates email |
+| AB Test | `/growth-ab-test` | A/B testing |
+| Retention | `/growth-retention` | Stratégies de rétention |
+| Funnel | `/growth-funnel` | Analyse et optimisation funnels |
+
+## Données (3 agents)
+
+| Agent | Commande | Usage |
+|-------|----------|-------|
+| Pipeline | `/data-pipeline` | Concevoir pipelines ETL/ELT |
+| Analytics | `/data-analytics` | Analyse de données et rapports |
+| Modeling | `/data-modeling` | Modélisation data warehouse |
+
+## Légal (5 agents)
+
+| Agent | Commande | Usage |
+|-------|----------|-------|
+| Docs | `/legal-docs` | CGU, CGV, mentions légales |
+| RGPD | `/legal-rgpd` | Conformité RGPD/GDPR |
+| Payment | `/legal-payment` | Intégration paiement |
+| Terms | `/legal-terms-of-service` | CGU complètes |
+| Privacy | `/legal-privacy-policy` | Politique de confidentialité |
 
 \newpage
 
@@ -996,4 +1053,4 @@ mon-projet/
 
 ---
 
-*Guide généré pour claude-socle v1.1.0*
+*Guide généré pour claude-socle v2.1 - 83 agents - 10 catégories - 9 skills*

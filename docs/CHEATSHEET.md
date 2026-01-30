@@ -6,8 +6,16 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 118 commands | 56 agents | 40 skills | 9 catégories                    ║
+║  Total: 119 commands | 57 agents | 41 skills | 9 catégories                  ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              ASSISTANT                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│   ┌────────────┐                                                            │
+│   │ ASSISTANT  │  Orchestrateur : guide le choix des agents et workflows    │
+│   └────────────┘                                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           WORK- : WORKFLOW PRINCIPAL                        │
@@ -35,25 +43,30 @@
 │   │ 🔴→🟢→♻️ │  │ Génère  │  │ Diagnos │  │ Améliore │  │ REST    │        │
 │   └─────────┘  └─────────┘  └─────────┘  └──────────┘  └─────────┘        │
 │                                                                             │
-│   ┌───────────┐  ┌─────────┐                                               │
-│   │ COMPONENT │  │  HOOK   │                                               │
-│   │ UI+Tests  │  │ Custom  │                                               │
-│   └───────────┘  └─────────┘                                               │
+│   ┌───────────┐  ┌─────────┐  ┌──────────────┐  ┌───────────────┐         │
+│   │ COMPONENT │  │  HOOK   │  │ERROR-HANDLING│  │ API-VERSIONING│         │
+│   │ UI+Tests  │  │ Custom  │  │ Gestion err  │  │ Versions API  │         │
+│   └───────────┘  └─────────┘  └──────────────┘  └───────────────┘         │
+│                                                                             │
+│   ┌──────────────┐  ┌─────────┐  ┌──────────┐  ┌─────────┐                │
+│   │ TESTING-SETUP│  │ FLUTTER │  │ SUPABASE │  │ GRAPHQL │                │
+│   │ Config tests │  │ Mobile  │  │ Backend  │  │ API GQL │                │
+│   └──────────────┘  └─────────┘  └──────────┘  └─────────┘                │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              QA- : QUALITÉ                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌──────────┐  ┌──────────┐  ┌─────────┐  ┌─────────┐                    │
-│   │  REVIEW  │  │ SECURITY │  │  PERF   │  │  A11Y   │                    │
-│   │ Code Rev │  │ OWASP    │  │ Optim   │  │ WCAG    │                    │
-│   └──────────┘  └──────────┘  └─────────┘  └─────────┘                    │
+│   ┌──────────┐  ┌──────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐       │
+│   │  REVIEW  │  │ SECURITY │  │  PERF   │  │  A11Y   │  │  AUDIT  │       │
+│   │ Code Rev │  │ OWASP    │  │ Optim   │  │ WCAG    │  │ Complet │       │
+│   └──────────┘  └──────────┘  └─────────┘  └─────────┘  └─────────┘       │
 │                                                                             │
-│   ┌─────────┐  ┌────────────┐                                              │
-│   │  AUDIT  │  │ RESPONSIVE │                                              │
-│   │ Complet │  │ Mobile     │                                              │
-│   └─────────┘  └────────────┘                                              │
+│   ┌────────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐              │
+│   │ RESPONSIVE │  │ AUTOMATION │  │ COVERAGE │  │  MOBILE  │              │
+│   │ Mobile web │  │ Tests auto │  │ Couvert. │  │ Flutter  │              │
+│   └────────────┘  └────────────┘  └──────────┘  └──────────┘              │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -65,30 +78,35 @@
 │   │ Urgent  │  │ Version │  │ MAJ     │  │ Contain │  │ Code    │        │
 │   └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘        │
 │                                                                             │
-│   ┌─────────┐  ┌────────────┐  ┌──────────┐  ┌─────────┐                  │
-│   │   CI    │  │ MONITORING │  │ DATABASE │  │ HEALTH  │                  │
-│   │ CI/CD   │  │ Observ     │  │ Schema   │  │ Check   │                  │
-│   └─────────┘  └────────────┘  └──────────┘  └─────────┘                  │
+│   ┌─────────┐  ┌────────────┐  ┌──────────┐  ┌─────────┐  ┌─────────┐    │
+│   │   CI    │  │ MONITORING │  │ DATABASE │  │ HEALTH  │  │   ENV   │    │
+│   │ CI/CD   │  │ Observ     │  │ Schema   │  │ Check   │  │ Config  │    │
+│   └─────────┘  └────────────┘  └──────────┘  └─────────┘  └─────────┘    │
 │                                                                             │
-│   ┌─────────┐  ┌─────────┐                                                 │
-│   │   ENV   │  │ BACKUP  │                                                 │
-│   │ Config  │  │ Restore │                                                 │
-│   └─────────┘  └─────────┘                                                 │
+│   ┌─────────┐  ┌──────────────┐  ┌─────────────────┐  ┌───────────────┐   │
+│   │ BACKUP  │  │ LOAD-TESTING │  │ COST-OPTIMIZ.   │  │DISASTER-RECOV │   │
+│   │ Restore │  │ Stress test  │  │ Réduire coûts   │  │ Plan reprise  │   │
+│   └─────────┘  └──────────────┘  └─────────────────┘  └───────────────┘   │
+│                                                                             │
+│   ┌────────────┐  ┌───────────────────┐                                    │
+│   │ INFRA-CODE │  │ SECRETS-MANAGEMENT│                                    │
+│   │ Terraform  │  │ Gestion secrets   │                                    │
+│   └────────────┘  └───────────────────┘                                    │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                          DOC- : DOCUMENTATION                               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌──────────┐  ┌───────────┐  ┌─────────┐  ┌─────────┐                   │
-│   │ GENERATE │  │ CHANGELOG │  │ EXPLAIN │  │ ONBOARD │                   │
-│   │ Auto doc │  │ History   │  │ Pédago  │  │ Découvre│                   │
-│   └──────────┘  └───────────┘  └─────────┘  └─────────┘                   │
+│   ┌──────────┐  ┌───────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     │
+│   │ GENERATE │  │ CHANGELOG │  │ EXPLAIN │  │ ONBOARD │  │  I18N   │     │
+│   │ Auto doc │  │ History   │  │ Pédago  │  │ Découvre│  │ Traduc  │     │
+│   └──────────┘  └───────────┘  └─────────┘  └─────────┘  └─────────┘     │
 │                                                                             │
-│   ┌─────────┐  ┌───────────┐  ┌──────────┐                                │
-│   │  I18N   │  │ FIX-ISSUE │  │ API-SPEC │                                │
-│   │ Traduc  │  │ GitHub    │  │ OpenAPI  │                                │
-│   └─────────┘  └───────────┘  └──────────┘                                │
+│   ┌───────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐            │
+│   │ FIX-ISSUE │  │ API-SPEC │  │  README  │  │ ARCHITECTURE │            │
+│   │ GitHub    │  │ OpenAPI  │  │ Readme   │  │ Doc archi    │            │
+│   └───────────┘  └──────────┘  └──────────┘  └──────────────┘            │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -100,35 +118,55 @@
 │   │ Canvas  │  │ TAM/SAM │  │ Minimum │  │ Stratég │  │ Deck    │        │
 │   └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘        │
 │                                                                             │
-│   ┌─────────┐  ┌─────────┐  ┌────────────┐  ┌─────────┐                   │
-│   │ ROADMAP │  │ LAUNCH  │  │ COMPETITOR │  │   OKR   │                   │
-│   │ Planning│  │ Go-to   │  │ Analyse    │  │ Object  │                   │
-│   └─────────┘  └─────────┘  └────────────┘  └─────────┘                   │
+│   ┌─────────┐  ┌─────────┐  ┌────────────┐  ┌─────────┐  ┌──────────┐    │
+│   │ ROADMAP │  │ LAUNCH  │  │ COMPETITOR │  │   OKR   │  │ RESEARCH │    │
+│   │ Planning│  │ Go-to   │  │ Analyse    │  │ Object  │  │ User res │    │
+│   └─────────┘  └─────────┘  └────────────┘  └─────────┘  └──────────┘    │
+│                                                                             │
+│   ┌──────────┐                                                             │
+│   │ PERSONAS │                                                             │
+│   │ Profils  │                                                             │
+│   └──────────┘                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                          GROWTH- : CROISSANCE                               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌─────────┐  ┌─────────┐  ┌───────────┐  ┌────────────┐                 │
-│   │ LANDING │  │   SEO   │  │ ANALYTICS │  │ ONBOARDING │                 │
-│   │ Page    │  │ Ranking │  │ Tracking  │  │ UX Flow    │                 │
-│   └─────────┘  └─────────┘  └───────────┘  └────────────┘                 │
+│   ┌─────────┐  ┌─────────┐  ┌───────────┐  ┌────────────┐  ┌─────────┐   │
+│   │ LANDING │  │   SEO   │  │ ANALYTICS │  │ ONBOARDING │  │  EMAIL  │   │
+│   │ Page    │  │ Ranking │  │ Tracking  │  │ UX Flow    │  │ Templat │   │
+│   └─────────┘  └─────────┘  └───────────┘  └────────────┘  └─────────┘   │
 │                                                                             │
-│   ┌─────────┐  ┌─────────┐                                                 │
-│   │  EMAIL  │  │ AB-TEST │                                                 │
-│   │ Templat │  │ Expérim │                                                 │
-│   └─────────┘  └─────────┘                                                 │
+│   ┌─────────┐  ┌───────────┐  ┌─────────┐                                 │
+│   │ AB-TEST │  │ RETENTION │  │ FUNNEL  │                                 │
+│   │ Expérim │  │ Fidélis.  │  │ Tunnel  │                                 │
+│   └─────────┘  └───────────┘  └─────────┘                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                             DATA- : DONNÉES                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌──────────┐  ┌───────────┐  ┌──────────┐                               │
+│   │ PIPELINE │  │ ANALYTICS │  │ MODELING │                               │
+│   │ ETL/ELT  │  │ Rapports  │  │ DWH      │                               │
+│   └──────────┘  └───────────┘  └──────────┘                               │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                             LEGAL- : LÉGAL                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌─────────┐  ┌─────────┐  ┌─────────┐                                   │
-│   │  DOCS   │  │  RGPD   │  │ PAYMENT │                                   │
-│   │ CGU/CGV │  │ GDPR    │  │ Stripe  │                                   │
-│   └─────────┘  └─────────┘  └─────────┘                                   │
+│   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌──────────────────┐             │
+│   │  DOCS   │  │  RGPD   │  │ PAYMENT │  │ TERMS-OF-SERVICE │             │
+│   │ CGU/CGV │  │ GDPR    │  │ Stripe  │  │ CGU détaillées   │             │
+│   └─────────┘  └─────────┘  └─────────┘  └──────────────────┘             │
+│                                                                             │
+│   ┌────────────────┐                                                       │
+│   │ PRIVACY-POLICY │                                                       │
+│   │ Confidentialité│                                                       │
+│   └────────────────┘                                                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ╔═══════════════════════════════════════════════════════════════════════════════╗
@@ -153,102 +191,109 @@
 
 ---
 
-## Commandes par Categorie (118)
+## Commandes par Catégorie (119)
+
+### Orchestrateur (1)
+
+| Commande | Usage |
+|----------|-------|
+| `/assistant` | Guide de choix des agents et workflows |
 
 ### WORK- : Workflow Principal (10)
 
 | Commande | Usage |
 |----------|-------|
 | `/work-explore` | Explorer et comprendre le code |
-| `/work-specify` | Creer une specification fonctionnelle |
-| `/work-clarify` | Clarifier les ambiguites |
-| `/work-plan` | Planifier une implementation |
-| `/work-commit` | Creer un commit propre |
-| `/work-pr` | Creer une Pull Request |
+| `/work-specify` | Créer une spécification fonctionnelle |
+| `/work-clarify` | Clarifier les ambiguïtés |
+| `/work-plan` | Planifier une implémentation |
+| `/work-commit` | Créer un commit propre |
+| `/work-pr` | Créer une Pull Request |
 | `/work-flow-feature` | Workflow feature complet |
 | `/work-flow-bugfix` | Workflow bugfix complet |
 | `/work-flow-release` | Workflow release complet |
 | `/work-flow-launch` | Workflow lancement complet |
 
-### DEV- : Developpement (23)
+### DEV- : Développement (23)
 
 | Commande | Usage |
 |----------|-------|
-| `/dev-tdd` | Developpement TDD |
-| `/dev-test` | Generer des tests |
+| `/dev-tdd` | Développement TDD |
+| `/dev-test` | Générer des tests |
 | `/dev-testing-setup` | Configurer infrastructure tests |
-| `/dev-debug` | Deboguer un probleme |
-| `/dev-refactor` | Refactoring guide |
-| `/dev-document` | Generation documents (PDF, DOCX, XLSX, PPTX) |
-| `/dev-api` | Creer/documenter API |
+| `/dev-debug` | Déboguer un problème |
+| `/dev-refactor` | Refactoring guidé |
+| `/dev-document` | Génération documents (PDF, DOCX, XLSX, PPTX) |
+| `/dev-api` | Créer/documenter API REST |
 | `/dev-api-versioning` | Versioning d'API |
-| `/dev-component` | Creer un composant UI complet |
-| `/dev-hook` | Creer un hook React/Vue |
-| `/dev-error-handling` | Strategie gestion d'erreurs |
+| `/dev-component` | Créer un composant UI complet |
+| `/dev-hook` | Créer un hook React/Vue |
+| `/dev-error-handling` | Stratégie de gestion d'erreurs |
 | `/dev-react-perf` | Optimisation React/Next.js |
-| `/dev-mcp` | Creer des serveurs MCP |
+| `/dev-mcp` | Créer des serveurs MCP |
 | `/dev-flutter` | Widgets et screens Flutter |
-| `/dev-supabase` | Backend Supabase |
-| `/dev-graphql` | API GraphQL |
+| `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
+| `/dev-graphql` | API GraphQL client/serveur |
 | `/dev-neovim` | Plugins et config Neovim |
 | `/dev-design-system` | Design tokens et composants |
 | `/dev-prisma` | ORM Prisma |
 | `/dev-prompt-engineering` | Optimisation prompts LLM |
-| `/dev-rag` | Systemes RAG |
+| `/dev-rag` | Systèmes RAG |
 | `/dev-trpc` | APIs type-safe tRPC |
-| `/dev-ai-integration` | Integration LLMs (OpenAI, Claude) |
+| `/dev-ai-integration` | Intégration LLMs (OpenAI, Claude) |
 
-### QA- : Qualite (14)
+### QA- : Qualité (15)
 
 | Commande | Usage |
 |----------|-------|
 | `/qa-review` | Code review + analyse nommage |
-| `/qa-security` | Audit securite OWASP |
+| `/qa-security` | Audit sécurité OWASP |
 | `/qa-perf` | Analyse performance |
-| `/qa-a11y` | Audit accessibilite WCAG |
+| `/qa-a11y` | Audit accessibilité WCAG |
 | `/qa-audit` | Audit complet (tout en un) |
-| `/qa-design` | Audit UI/UX (100+ regles) |
+| `/qa-design` | Audit UI/UX (100+ règles) |
 | `/qa-responsive` | Audit responsive/mobile |
 | `/qa-automation` | Automatisation des tests |
 | `/qa-coverage` | Analyse couverture tests |
 | `/qa-e2e` | Tests E2E (Playwright, Cypress) |
-| `/qa-kaizen` | Amelioration continue |
-| `/qa-mobile` | Audit qualite apps mobiles |
+| `/qa-kaizen` | Amélioration continue |
+| `/qa-mobile` | Audit qualité apps mobiles |
 | `/qa-neovim` | Audit config Neovim |
 | `/qa-tech-debt` | Dette technique |
+| `/qa-chrome` | Tests visuels Chrome |
 
-### OPS- : Operations (30)
+### OPS- : Opérations (30)
 
 | Commande | Usage |
 |----------|-------|
-| `/ops-hotfix` | Correction urgente prod |
-| `/ops-release` | Creer une release |
-| `/ops-rollback` | Rollback securise |
+| `/ops-hotfix` | Correction urgente production |
+| `/ops-release` | Créer une release |
+| `/ops-rollback` | Rollback sécurisé |
 | `/ops-gitflow-init` | Initialiser GitFlow |
 | `/ops-gitflow-feature` | Branches feature |
 | `/ops-gitflow-release` | Branches release |
 | `/ops-gitflow-hotfix` | Hotfixes GitFlow |
-| `/ops-deps` | Audit et MAJ dependances |
+| `/ops-deps` | Audit et MAJ dépendances |
 | `/ops-docker` | Dockeriser |
-| `/ops-k8s` | Deploiement Kubernetes |
-| `/ops-vps` | Deploiement VPS |
+| `/ops-k8s` | Déploiement Kubernetes |
+| `/ops-vps` | Déploiement VPS |
 | `/ops-migrate` | Migration code/deps |
 | `/ops-ci` | Pipelines CI/CD |
-| `/ops-monitoring` | Logs, metriques, alertes |
+| `/ops-monitoring` | Logs, métriques, alertes |
 | `/ops-observability-stack` | Prometheus, Grafana, Loki |
 | `/ops-grafana-dashboard` | Dashboards Grafana |
 | `/ops-database` | Schema, migrations DB |
 | `/ops-health` | Health check rapide |
 | `/ops-env` | Gestion environnements |
-| `/ops-backup` | Strategie backup/restore |
+| `/ops-backup` | Stratégie backup/restore |
 | `/ops-load-testing` | Tests de charge |
-| `/ops-cost-optimization` | Optimisation couts cloud |
+| `/ops-cost-optimization` | Optimisation coûts cloud |
 | `/ops-disaster-recovery` | Plan reprise sinistre |
 | `/ops-infra-code` | Infrastructure as Code |
 | `/ops-proxmox` | Infrastructure Proxmox VE |
 | `/ops-opnsense` | Configuration OPNsense |
 | `/ops-secrets-management` | Gestion secrets |
-| `/ops-serverless` | Deploiement serverless |
+| `/ops-serverless` | Déploiement serverless |
 | `/ops-vercel` | Configuration Vercel |
 | `/ops-mobile-release` | Publication App/Play Store |
 
@@ -256,14 +301,14 @@
 
 | Commande | Usage |
 |----------|-------|
-| `/doc-generate` | Generer documentation |
+| `/doc-generate` | Générer documentation |
 | `/doc-changelog` | Changelog |
 | `/doc-explain` | Expliquer code complexe |
-| `/doc-onboard` | Decouvrir un codebase |
+| `/doc-onboard` | Découvrir un codebase |
 | `/doc-i18n` | Internationalisation |
 | `/doc-fix-issue` | Corriger issue GitHub |
 | `/doc-api-spec` | Spec OpenAPI/Swagger |
-| `/doc-readme` | Creer/ameliorer README |
+| `/doc-readme` | Créer/améliorer README |
 | `/doc-architecture` | Documenter l'architecture |
 
 ### BIZ- : Business (11)
@@ -271,9 +316,9 @@
 | Commande | Usage |
 |----------|-------|
 | `/biz-model` | Business model, Lean Canvas |
-| `/biz-market` | Etude de marche |
-| `/biz-mvp` | Definir le MVP |
-| `/biz-pricing` | Strategie tarifaire |
+| `/biz-market` | Étude de marché |
+| `/biz-mvp` | Définir le MVP |
+| `/biz-pricing` | Stratégie tarifaire |
 | `/biz-pitch` | Pitch deck |
 | `/biz-roadmap` | Roadmap produit |
 | `/biz-launch` | Workflow lancement |
@@ -289,32 +334,32 @@
 | `/growth-landing` | Landing page |
 | `/growth-seo` | Audit SEO |
 | `/growth-analytics` | Tracking et KPIs |
-| `/growth-app-store-analytics` | Metriques App/Play Store |
+| `/growth-app-store-analytics` | Métriques App/Play Store |
 | `/growth-onboarding` | Parcours utilisateur |
 | `/growth-email` | Templates email |
 | `/growth-ab-test` | A/B testing |
-| `/growth-retention` | Strategies retention |
+| `/growth-retention` | Stratégies rétention |
 | `/growth-funnel` | Analyse funnels |
-| `/growth-localization` | Localisation multi-marches |
+| `/growth-localization` | Localisation multi-marchés |
 | `/growth-cro` | Optimisation conversion (CRO) |
 
-### DATA- : Donnees (3)
+### DATA- : Données (3)
 
 | Commande | Usage |
 |----------|-------|
 | `/data-pipeline` | Pipelines ETL/ELT |
-| `/data-analytics` | Analyse de donnees |
-| `/data-modeling` | Modelisation data warehouse |
+| `/data-analytics` | Analyse de données |
+| `/data-modeling` | Modélisation data warehouse |
 
-### LEGAL- : Legal (5)
+### LEGAL- : Légal (5)
 
 | Commande | Usage |
 |----------|-------|
-| `/legal-docs` | CGU, CGV, mentions legales |
-| `/legal-rgpd` | Conformite RGPD/GDPR |
-| `/legal-payment` | Integration paiement |
-| `/legal-terms-of-service` | CGU |
-| `/legal-privacy-policy` | Politique confidentialite |
+| `/legal-docs` | CGU, CGV, mentions légales |
+| `/legal-rgpd` | Conformité RGPD/GDPR |
+| `/legal-payment` | Intégration paiement |
+| `/legal-terms-of-service` | Conditions Générales d'Utilisation |
+| `/legal-privacy-policy` | Politique de Confidentialité |
 
 ---
 
@@ -362,6 +407,11 @@
 /work-flow-launch "mon nouveau SaaS"
 ```
 
+### Application mobile Flutter
+```
+/work-explore → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+```
+
 ---
 
 ## Format des Commandes
@@ -370,6 +420,7 @@
 /{category}-{action} "context"
 
 Categories:
+• assistant → Orchestrateur
 • work-   → Workflow de base
 • dev-    → Développement
 • qa-     → Qualité
@@ -377,6 +428,7 @@ Categories:
 • doc-    → Documentation
 • biz-    → Business
 • growth- → Croissance
+• data-   → Données
 • legal-  → Légal
 ```
 
@@ -438,9 +490,11 @@ refactor(user): extract validation logic
 |---------|------|
 | `CLAUDE.md` | Instructions projet |
 | `CLAUDE.local.md` | Config locale (gitignore) |
-| `.claude/settings.json` | Permissions |
-| `.claude/hooks.json` | Hooks automatiques |
+| `.claude/settings.json` | Permissions et hooks |
 | `.claude/commands/**/*.md` | Commandes (organisées par catégorie) |
+| `.claude/skills/` | Skills automatiques |
+| `.claude/agents/` | Sub-agents isolés |
+| `.claude/rules/` | Règles contextuelles par path |
 | `.mcp.json` | Serveurs MCP |
 
 ---
@@ -459,8 +513,8 @@ refactor(user): extract validation logic
 ## Ressources
 
 - [Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
-- [Documentation](https://docs.anthropic.com/en/docs/claude-code)
+- [Documentation officielle](https://code.claude.com/docs/en/overview)
 
 ---
 
-*Claude-Socle v2.0 - 118 commands - 56 agents - 40 skills - 20 rules*
+*Claude-Socle v1.19.0 - 119 commands - 57 agents - 41 skills - 21 rules*

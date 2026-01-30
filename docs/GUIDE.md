@@ -1,11 +1,12 @@
 # Guide Complet : Maîtriser claude-socle
 
-> Ce guide vous accompagne pas à pas pour utiliser efficacement les 57 agents de claude-socle et adopter le workflow optimal.
+> Ce guide vous accompagne pas à pas pour utiliser efficacement les 83 agents de claude-socle et adopter le workflow optimal.
 
 ## Table des matières
 
 - [1. Le Workflow Fondamental](#1-le-workflow-fondamental)
-- [2. Les 57 Agents par Catégorie](#2-les-57-agents-par-catégorie)
+- [2. Les 83 Agents par Catégorie](#2-les-83-agents-par-catégorie)
+  - [2.0 Orchestrateur](#20-orchestrateur)
   - [2.1 WORK- : Workflow Principal](#21-work---workflow-principal)
   - [2.2 DEV- : Développement](#22-dev---développement)
   - [2.3 QA- : Qualité](#23-qa---qualité)
@@ -13,7 +14,8 @@
   - [2.5 DOC- : Documentation](#25-doc---documentation)
   - [2.6 BIZ- : Business](#26-biz---business)
   - [2.7 GROWTH- : Croissance](#27-growth---croissance)
-  - [2.8 LEGAL- : Légal](#28-legal---légal)
+  - [2.8 DATA- : Données](#28-data---données)
+  - [2.9 LEGAL- : Légal](#29-legal---légal)
 - [3. Scénarios Pratiques](#3-scénarios-pratiques)
 - [4. Configuration Avancée](#4-configuration-avancée)
 - [5. Astuces de Pro](#5-astuces-de-pro)
@@ -40,6 +42,7 @@
 /{category}-{action} "contexte"
 
 Categories:
+• assistant → Orchestrateur
 • work-   → Workflow de base
 • dev-    → Développement
 • qa-     → Qualité
@@ -47,6 +50,7 @@ Categories:
 • doc-    → Documentation
 • biz-    → Business
 • growth- → Croissance
+• data-   → Données
 • legal-  → Légal
 ```
 
@@ -59,7 +63,23 @@ Categories:
 
 ---
 
-## 2. Les 57 Agents par Catégorie
+## 2. Les 83 Agents par Catégorie
+
+### 2.0 Orchestrateur (1 agent)
+
+#### `/assistant` - Le Guide
+
+**Quand l'utiliser :**
+- Quand vous ne savez pas quel agent utiliser
+- Pour obtenir des recommandations de workflow
+- Pour découvrir les agents disponibles
+
+**Exemple pratique :**
+```
+/assistant je veux améliorer les performances de mon app
+```
+
+---
 
 ### 2.1 WORK- : Workflow Principal (8 agents)
 
@@ -134,7 +154,7 @@ Closes #123
 
 ---
 
-### 2.2 DEV- : Développement (7 agents)
+### 2.2 DEV- : Développement (13 agents)
 
 #### `/dev-tdd` - Le Testeur First
 
@@ -162,6 +182,18 @@ Closes #123
 
 ---
 
+#### `/dev-testing-setup` - Le Configurateur de Tests
+
+**Quand l'utiliser :**
+- Pour configurer l'infrastructure de tests d'un projet
+- Pour mettre en place Jest, Vitest, Pytest, etc.
+
+```
+/dev-testing-setup configurer Vitest avec couverture
+```
+
+---
+
 #### `/dev-debug` - Le Détective
 
 ```
@@ -178,10 +210,18 @@ Closes #123
 
 ---
 
-#### `/dev-api` - L'API Designer
+#### `/dev-api` - L'API Designer REST
 
 ```
 /dev-api créer endpoint CRUD pour les produits
+```
+
+---
+
+#### `/dev-api-versioning` - Le Gestionnaire de Versions API
+
+```
+/dev-api-versioning migrer v1 vers v2 avec rétrocompatibilité
 ```
 
 ---
@@ -214,7 +254,54 @@ Closes #123
 
 ---
 
-### 2.3 QA- : Qualité (6 agents)
+#### `/dev-error-handling` - Le Gestionnaire d'Erreurs
+
+```
+/dev-error-handling implémenter une stratégie de gestion d'erreurs
+```
+
+---
+
+#### `/dev-flutter` - Le Développeur Mobile
+
+**Pour les applications Flutter :**
+- Widgets et screens
+- Intégration BLoC
+- Tests widget
+
+```
+/dev-flutter créer un écran de profil utilisateur
+```
+
+---
+
+#### `/dev-supabase` - Le Backend Supabase
+
+**Pour l'intégration Supabase :**
+- Auth, Database, Storage
+- Row Level Security
+- Edge Functions
+
+```
+/dev-supabase configurer l'authentification avec magic link
+```
+
+---
+
+#### `/dev-graphql` - L'API GraphQL
+
+**Pour GraphQL client et serveur :**
+- Schémas et resolvers
+- Queries et mutations
+- Subscriptions
+
+```
+/dev-graphql créer un schéma pour les utilisateurs
+```
+
+---
+
+### 2.3 QA- : Qualité (9 agents)
 
 #### `/qa-review` - Le Reviewer
 
@@ -267,7 +354,7 @@ Closes #123
 
 ---
 
-#### `/qa-responsive` - Le Mobile Expert
+#### `/qa-responsive` - Le Mobile Expert Web
 
 **Audit responsive et mobile-first**
 
@@ -277,7 +364,36 @@ Closes #123
 
 ---
 
-### 2.4 OPS- : Opérations (11 agents)
+#### `/qa-automation` - L'Automatiseur de Tests
+
+```
+/qa-automation mettre en place les tests E2E avec Playwright
+```
+
+---
+
+#### `/qa-coverage` - L'Analyste de Couverture
+
+```
+/qa-coverage analyser la couverture et identifier les manques
+```
+
+---
+
+#### `/qa-mobile` - L'Expert Apps Mobiles
+
+**Audit qualité pour Flutter/React Native :**
+- Performance mobile
+- UX mobile
+- Tests sur devices
+
+```
+/qa-mobile auditer l'application Flutter
+```
+
+---
+
+### 2.4 OPS- : Opérations (16 agents)
 
 #### `/ops-hotfix` - Le Pompier
 
@@ -369,7 +485,47 @@ Closes #123
 
 ---
 
-### 2.5 DOC- : Documentation (7 agents)
+#### `/ops-load-testing` - Le Testeur de Charge
+
+```
+/ops-load-testing simuler 1000 utilisateurs concurrents
+```
+
+---
+
+#### `/ops-cost-optimization` - L'Optimiseur de Coûts
+
+```
+/ops-cost-optimization réduire la facture AWS
+```
+
+---
+
+#### `/ops-disaster-recovery` - Le Planificateur de Reprise
+
+```
+/ops-disaster-recovery créer un plan de reprise après sinistre
+```
+
+---
+
+#### `/ops-infra-code` - L'Infrastructure as Code
+
+```
+/ops-infra-code créer l'infrastructure Terraform pour AWS
+```
+
+---
+
+#### `/ops-secrets-management` - Le Gardien des Secrets
+
+```
+/ops-secrets-management migrer vers HashiCorp Vault
+```
+
+---
+
+### 2.5 DOC- : Documentation (9 agents)
 
 #### `/doc-generate` - Le Documentaliste
 
@@ -429,7 +585,23 @@ Closes #123
 
 ---
 
-### 2.6 BIZ- : Business (9 agents)
+#### `/doc-readme` - Le Rédacteur README
+
+```
+/doc-readme créer un README complet
+```
+
+---
+
+#### `/doc-architecture` - L'Architecte Documentaire
+
+```
+/doc-architecture documenter l'architecture du projet
+```
+
+---
+
+### 2.6 BIZ- : Business (11 agents)
 
 #### `/biz-model` - L'Analyste Business
 
@@ -505,7 +677,23 @@ Closes #123
 
 ---
 
-### 2.7 GROWTH- : Croissance (6 agents)
+#### `/biz-research` - Le Chercheur Utilisateur
+
+```
+/biz-research mener une étude utilisateur
+```
+
+---
+
+#### `/biz-personas` - Le Créateur de Personas
+
+```
+/biz-personas créer les personas pour notre SaaS B2B
+```
+
+---
+
+### 2.7 GROWTH- : Croissance (8 agents)
 
 #### `/growth-landing` - Le Convertisseur
 
@@ -555,7 +743,49 @@ Closes #123
 
 ---
 
-### 2.8 LEGAL- : Légal (3 agents)
+#### `/growth-retention` - Le Fidélisateur
+
+```
+/growth-retention améliorer la rétention utilisateur
+```
+
+---
+
+#### `/growth-funnel` - L'Optimiseur de Tunnel
+
+```
+/growth-funnel analyser et optimiser le funnel d'acquisition
+```
+
+---
+
+### 2.8 DATA- : Données (3 agents)
+
+#### `/data-pipeline` - L'Ingénieur Data
+
+```
+/data-pipeline concevoir un pipeline ETL pour les logs
+```
+
+---
+
+#### `/data-analytics` - L'Analyste Data
+
+```
+/data-analytics créer un dashboard de métriques
+```
+
+---
+
+#### `/data-modeling` - Le Modélisateur
+
+```
+/data-modeling concevoir le schéma du data warehouse
+```
+
+---
+
+### 2.9 LEGAL- : Légal (5 agents)
 
 #### `/legal-docs` - Le Juriste
 
@@ -577,6 +807,22 @@ Closes #123
 
 ```
 /legal-payment intégrer Stripe pour les abonnements
+```
+
+---
+
+#### `/legal-terms-of-service` - Le Rédacteur CGU
+
+```
+/legal-terms-of-service créer des CGU complètes
+```
+
+---
+
+#### `/legal-privacy-policy` - Le Rédacteur Confidentialité
+
+```
+/legal-privacy-policy créer une politique de confidentialité RGPD
 ```
 
 ---
@@ -661,6 +907,14 @@ Closes #123
 
 ---
 
+### Scénario G : Application Mobile Flutter
+
+```bash
+/work-explore → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+```
+
+---
+
 ## 4. Configuration Avancée
 
 ### 4.1 Permissions (`.claude/settings.json`)
@@ -682,20 +936,38 @@ Closes #123
 }
 ```
 
-### 4.2 Hooks (`.claude/hooks.json`)
+### 4.2 Hooks (`.claude/settings.json`)
+
+Les hooks sont configurés dans la section `hooks` du fichier `settings.json` :
 
 ```json
 {
   "hooks": {
-    "post-edit": {
-      "commands": [
-        {
-          "pattern": "*.ts",
-          "command": "npx eslint --fix ${file}",
-          "enabled": true
-        }
-      ]
-    }
+    "PreToolUse": [
+      {
+        "description": "Protection branche main",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c '[script de vérification]'",
+            "onFailure": "block"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "description": "Auto-format après édition",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx prettier --write $CLAUDE_FILE_PATH"
+          }
+        ]
+      }
+    ]
   }
 }
 ```
@@ -714,10 +986,10 @@ Closes #123
 ### Astuce 2 : Être précis dans les demandes
 
 ```bash
-# ❌ Trop vague
+# Trop vague
 /dev-debug ça marche pas
 
-# ✅ Précis et actionnable
+# Précis et actionnable
 /dev-debug erreur 401 sur POST /api/users quand token expiré
 ```
 
@@ -735,12 +1007,19 @@ Closes #123
 /qa-audit
 ```
 
+### Astuce 5 : Utiliser l'orchestrateur
+
+```bash
+# Quand vous ne savez pas par où commencer
+/assistant je veux améliorer mon app
+```
+
 ---
 
 ## 6. Pièges à Éviter
 
-| ❌ Ne pas faire | ✅ Faire |
-|-----------------|----------|
+| Ne pas faire | Faire |
+|--------------|-------|
 | Coder sans `/work-explore` | Toujours explorer d'abord |
 | Implémenter sans `/work-plan` | Valider le plan avant de coder |
 | Commits géants multi-features | Un commit = une préoccupation |
@@ -770,18 +1049,23 @@ Closes #123
 | Bugfix complet | `/work-flow-bugfix` |
 | Release complète | `/work-flow-release` |
 | Lancement produit | `/work-flow-launch` |
+| App mobile Flutter | `/dev-flutter` |
+| Backend Supabase | `/dev-supabase` |
+| API GraphQL | `/dev-graphql` |
 
 ### Par catégorie
 
 ```
-WORK   (8)  = Workflow de base + workflows chaînés
-DEV    (7)  = Développement (tdd, test, debug, refactor, api, component, hook)
-QA     (6)  = Qualité (review, security, perf, a11y, audit, responsive)
-OPS   (11)  = Opérations (hotfix, release, deps, docker, migrate, ci, monitoring, database, health, env, backup)
-DOC    (7)  = Documentation (generate, changelog, explain, onboard, i18n, fix-issue, api-spec)
-BIZ    (9)  = Business (model, market, mvp, pricing, pitch, roadmap, launch, competitor, okr)
-GROWTH (6)  = Croissance (landing, seo, analytics, onboarding, email, ab-test)
-LEGAL  (3)  = Légal (docs, rgpd, payment)
+ASSISTANT (1) = Orchestrateur
+WORK      (8) = Workflow de base + workflows chaînés
+DEV      (13) = Développement (tdd, test, debug, refactor, api, component, hook, flutter, supabase, graphql...)
+QA        (9) = Qualité (review, security, perf, a11y, audit, responsive, automation, coverage, mobile)
+OPS      (16) = Opérations (hotfix, release, deps, docker, migrate, ci, monitoring, database, health, env, backup, load-testing, cost-optimization, disaster-recovery, infra-code, secrets-management)
+DOC       (9) = Documentation (generate, changelog, explain, onboard, i18n, fix-issue, api-spec, readme, architecture)
+BIZ      (11) = Business (model, market, mvp, pricing, pitch, roadmap, launch, competitor, okr, research, personas)
+GROWTH    (8) = Croissance (landing, seo, analytics, onboarding, email, ab-test, retention, funnel)
+DATA      (3) = Données (pipeline, analytics, modeling)
+LEGAL     (5) = Légal (docs, rgpd, payment, terms-of-service, privacy-policy)
 ```
 
 ---
@@ -792,4 +1076,10 @@ Le principe clé de claude-socle est simple : **toujours EXPLORE → PLAN → CO
 
 Les workflows chaînés (`/work-flow-*`) automatisent ce processus pour les cas courants.
 
+Utilisez `/assistant` quand vous ne savez pas par où commencer.
+
 Bonne programmation !
+
+---
+
+*Claude-Socle v2.1 - 83 agents - 10 catégories - 9 skills*

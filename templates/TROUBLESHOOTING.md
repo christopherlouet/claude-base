@@ -337,7 +337,7 @@ mv .claude.backup .claude
 
 Si le problème persiste:
 
-1. **Documentation officielle**: https://docs.anthropic.com/claude-code
+1. **Documentation officielle**: https://code.claude.com/docs/en/overview
 2. **GitHub Issues**: https://github.com/anthropics/claude-code/issues
 3. **Community Discord**: [lien vers discord si applicable]
 
