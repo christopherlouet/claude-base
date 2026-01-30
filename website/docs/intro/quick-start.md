@@ -12,7 +12,7 @@ Soyez productif avec claude-socle en moins de 5 minutes.
 
 ## Prerequis
 
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) installe et configure
+- [Claude Code](https://code.claude.com/docs/en/overview) installe et configure
 - Un projet existant ou un nouveau repertoire
 
 ## Installation

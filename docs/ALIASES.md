@@ -9,6 +9,12 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 ---
 
+## Orchestrateur
+
+| Alias | Commande complète | Usage |
+|-------|-------------------|-------|
+| `/assist` | `/assistant` | Guide de choix des agents |
+
 ## Workflow Principal
 
 | Alias | Commande complète | Usage |
@@ -35,11 +41,17 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 |-------|-------------------|-------|
 | `/tdd` | `/dev-tdd` | Test-Driven Development |
 | `/test` | `/dev-test` | Générer des tests |
+| `/testsetup` | `/dev-testing-setup` | Configurer l'infra de tests |
 | `/dbg` | `/dev-debug` | Déboguer |
 | `/ref` | `/dev-refactor` | Refactoring |
-| `/api` | `/dev-api` | API endpoints |
+| `/api` | `/dev-api` | API endpoints REST |
+| `/apiv` | `/dev-api-versioning` | Versioning d'API |
 | `/comp` | `/dev-component` | Créer un composant |
 | `/hook` | `/dev-hook` | Créer un hook |
+| `/err` | `/dev-error-handling` | Gestion d'erreurs |
+| `/flutter` | `/dev-flutter` | Widgets Flutter |
+| `/supa` | `/dev-supabase` | Backend Supabase |
+| `/gql` | `/dev-graphql` | API GraphQL |
 
 ---
 
@@ -53,6 +65,9 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 | `/a11y` | `/qa-a11y` | Accessibilité |
 | `/audit` | `/qa-audit` | Audit complet |
 | `/resp` | `/qa-responsive` | Responsive |
+| `/auto` | `/qa-automation` | Tests automatisés |
+| `/cov` | `/qa-coverage` | Couverture de tests |
+| `/mob` | `/qa-mobile` | Audit apps mobiles |
 
 ---
 
@@ -71,6 +86,11 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 | `/health` | `/ops-health` | Health check |
 | `/env` | `/ops-env` | Environnements |
 | `/bak` | `/ops-backup` | Backup |
+| `/load` | `/ops-load-testing` | Tests de charge |
+| `/cost` | `/ops-cost-optimization` | Optimisation coûts |
+| `/disaster` | `/ops-disaster-recovery` | Plan de reprise |
+| `/infra` | `/ops-infra-code` | Infrastructure as Code |
+| `/secrets` | `/ops-secrets-management` | Gestion des secrets |
 
 ---
 
@@ -85,6 +105,8 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 | `/i18n` | `/doc-i18n` | Internationalisation |
 | `/fix` | `/doc-fix-issue` | Fix issue |
 | `/spec` | `/doc-api-spec` | OpenAPI spec |
+| `/readme` | `/doc-readme` | README |
+| `/arch` | `/doc-architecture` | Architecture |
 
 ---
 
@@ -99,8 +121,10 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 | `/pitch` | `/biz-pitch` | Pitch deck |
 | `/road` | `/biz-roadmap` | Roadmap |
 | `/lnch` | `/biz-launch` | Lancement |
-| `/comp` | `/biz-competitor` | Analyse concurrent |
+| `/competitor` | `/biz-competitor` | Analyse concurrent |
 | `/okr` | `/biz-okr` | OKRs |
+| `/research` | `/biz-research` | Recherche utilisateur |
+| `/personas` | `/biz-personas` | Personas |
 
 ---
 
@@ -114,6 +138,18 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 | `/ux` | `/growth-onboarding` | UX Onboarding |
 | `/email` | `/growth-email` | Templates email |
 | `/ab` | `/growth-ab-test` | A/B testing |
+| `/retain` | `/growth-retention` | Rétention |
+| `/funnel` | `/growth-funnel` | Funnels |
+
+---
+
+## Données (data-)
+
+| Alias | Commande complète | Usage |
+|-------|-------------------|-------|
+| `/pipe` | `/data-pipeline` | Pipelines ETL/ELT |
+| `/dataana` | `/data-analytics` | Analyse de données |
+| `/model` | `/data-modeling` | Modélisation DWH |
 
 ---
 
@@ -124,20 +160,24 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 | `/legal` | `/legal-docs` | Documents légaux |
 | `/rgpd` | `/legal-rgpd` | Conformité RGPD |
 | `/pay` | `/legal-payment` | Paiement |
+| `/terms` | `/legal-terms-of-service` | CGU |
+| `/privacy` | `/legal-privacy-policy` | Confidentialité |
 
 ---
 
 ## Mémo par catégorie
 
 ```
-WORK   = Workflow de base (explore, plan, commit, pr)
-DEV    = Développement (tdd, test, debug, refactor, api, component, hook)
-QA     = Qualité (review, security, perf, a11y, audit, responsive)
-OPS    = Opérations (hotfix, release, deps, docker, migrate, ci, monitoring, database, health, env, backup)
-DOC    = Documentation (generate, changelog, explain, onboard, i18n, fix-issue, api-spec)
-BIZ    = Business (model, market, mvp, pricing, pitch, roadmap, launch, competitor, okr)
-GROWTH = Croissance (landing, seo, analytics, onboarding, email, ab-test)
-LEGAL  = Légal (docs, rgpd, payment)
+ASSISTANT = Orchestrateur (guide de choix des agents)
+WORK      = Workflow de base (explore, plan, commit, pr) + workflows chaînés
+DEV       = Développement (tdd, test, debug, refactor, api, component, hook, flutter, supabase, graphql...)
+QA        = Qualité (review, security, perf, a11y, audit, responsive, automation, coverage, mobile)
+OPS       = Opérations (hotfix, release, deps, docker, migrate, ci, monitoring, database, health, env, backup, load-testing, cost-optimization, disaster-recovery, infra-code, secrets-management)
+DOC       = Documentation (generate, changelog, explain, onboard, i18n, fix-issue, api-spec, readme, architecture)
+BIZ       = Business (model, market, mvp, pricing, pitch, roadmap, launch, competitor, okr, research, personas)
+GROWTH    = Croissance (landing, seo, analytics, onboarding, email, ab-test, retention, funnel)
+DATA      = Données (pipeline, analytics, modeling)
+LEGAL     = Légal (docs, rgpd, payment, terms-of-service, privacy-policy)
 ```
 
 ---
@@ -170,6 +210,11 @@ LEGAL  = Légal (docs, rgpd, payment)
 /work-flow-launch "mon nouveau SaaS"
 ```
 
+### Application mobile Flutter
+```bash
+/work-explore → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+```
+
 ---
 
 ## Note
@@ -186,3 +231,7 @@ alias cpl="claude /work-plan"
 alias cco="claude /work-commit"
 alias cpr="claude /work-pr"
 ```
+
+---
+
+*Claude-Socle v2.1 - 83 agents - 10 catégories - 9 skills*

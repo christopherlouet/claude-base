@@ -235,7 +235,7 @@ projet/
 ### Où trouver de l'aide ?
 
 1. **TROUBLESHOOTING.md** : Guide de résolution des problèmes
-2. **Documentation Claude Code** : https://docs.anthropic.com/claude-code
+2. **Documentation Claude Code** : https://code.claude.com/docs/en/overview
 3. **GitHub Issues** : https://github.com/anthropics/claude-code/issues
 
 ---
