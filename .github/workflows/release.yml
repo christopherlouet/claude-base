@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -24,10 +24,20 @@ jobs:
       - name: Run tests
         run: bats tests/*.bats
 
-      - name: Validate scripts
+      - name: Validate
         run: |
           chmod +x scripts/*.sh
           ./scripts/validate.sh . || true
+
+      - name: Read version and counts
+        id: meta
+        run: |
+          echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+          echo "commands=$(find .claude/commands -name '*.md' -not -name 'README.md' | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
+          echo "agents=$(find .claude/agents -name '*.md' -not -name 'README.md' | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
+          echo "skills=$(find .claude/skills -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
+          echo "rules=$(find .claude/rules -name '*.md' -not -name 'README.md' | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
+          echo "styles=$(find .claude/output-styles -name '*.md' -not -name 'README.md' | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
 
       - name: Generate changelog
         id: changelog
@@ -45,20 +55,19 @@ jobs:
             ## Installation
 
             ```bash
-            # Clone the repository
             git clone https://github.com/${{ github.repository }}.git
 
             # Or use the install script in your project
-            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/scripts/install.sh | bash
+            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/scripts/new-project.sh | bash
             ```
 
             ## Contenu de cette release
 
-            - 94 Commands (agents Claude Code)
-            - 37 Sub-Agents avec contexte isolé
-            - 24 Skills avec déclenchement automatique
-            - 15 Rules modulaires par langage
-            - 7 Output Styles documentés
+            - ${{ steps.meta.outputs.commands }} Commands
+            - ${{ steps.meta.outputs.agents }} Sub-Agents avec contexte isolé
+            - ${{ steps.meta.outputs.skills }} Skills avec déclenchement automatique
+            - ${{ steps.meta.outputs.rules }} Rules modulaires par langage
+            - ${{ steps.meta.outputs.styles }} Output Styles
             - 4 Guides par domaine (Web, Mobile, API, Data)
             - Setup Wizard interactif
           draft: false

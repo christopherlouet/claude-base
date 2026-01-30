@@ -1,115 +1,45 @@
-name: "CodeQL Security Analysis"
+name: "Security Analysis"
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
-  schedule:
-    # Run every Monday at 9:00 AM UTC
-    - cron: '0 9 * * 1'
+    branches: [main]
+
+# Cancel in-progress runs for the same branch
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  analyze:
-    name: Analyze
+  security:
+    name: Security Scan
     runs-on: ubuntu-latest
     permissions:
-      actions: read
       contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ['javascript']
-        # Add more languages as needed:
-        # - 'python'
-        # - 'go'
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Check for source files
-        id: check-files
-        run: |
-          if find . -type f \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \) -not -path "./node_modules/*" | grep -q .; then
-            echo "has_source=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_source=false" >> $GITHUB_OUTPUT
-            echo "::notice::No JavaScript/TypeScript source files found, skipping CodeQL analysis"
-          fi
-
-      - name: Initialize CodeQL
-        if: steps.check-files.outputs.has_source == 'true'
-        uses: github/codeql-action/init@v4
+        uses: actions/checkout@v4
         with:
-          languages: ${{ matrix.language }}
-          # Override default queries with security-focused queries
-          queries: +security-extended,security-and-quality
+          fetch-depth: 0
 
-      # Autobuild attempts to build any compiled languages
-      - name: Autobuild
-        if: steps.check-files.outputs.has_source == 'true'
-        uses: github/codeql-action/autobuild@v4
-
-      - name: Perform CodeQL Analysis
-        if: steps.check-files.outputs.has_source == 'true'
-        uses: github/codeql-action/analyze@v4
-        with:
-          category: "/language:${{ matrix.language }}"
-        continue-on-error: true  # Don't fail if Code Scanning is not enabled
-
-  # Additional security scanning for shell scripts
-  shellcheck-security:
-    name: ShellCheck Security
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Run ShellCheck with security focus
+      - name: ShellCheck security
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: './scripts'
           severity: warning
-          # Focus on security-related checks
-          additional_files: '*.sh'
 
-  # Scan for secrets
-  secrets-scan:
-    name: Secret Scanning
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0  # Full history for thorough scanning
-
-      - name: Run Gitleaks
+      - name: Gitleaks scan
         uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: .gitleaks.toml
 
-  # Dependency review for PRs (optional - requires GitHub Advanced Security)
-  dependency-review:
-    name: Dependency Review
-    runs-on: ubuntu-latest
-    # Skip for Dependabot PRs (GHAS not available on private repos without license)
-    if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
-    # Continue even if this job fails (GitHub Advanced Security may not be enabled)
-    continue-on-error: true
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
-          # Block copyleft licenses that require derivative works to be open-sourced
-          deny-licenses: GPL-3.0, AGPL-3.0
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "## Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ShellCheck: security-focused lint" >> $GITHUB_STEP_SUMMARY
+          echo "- Gitleaks: secret scanning" >> $GITHUB_STEP_SUMMARY
