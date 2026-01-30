@@ -164,4 +164,4 @@ Pour les taches courantes, utilisez les workflows complets :
 
 - [Comprendre l'architecture](/docs/intro/architecture) - Difference entre Commands, Agents et Skills
 - [Voir les workflows](/docs/workflow) - Workflows detailles par type de tache
-- [Explorer les commandes](/docs/commands) - Catalogue complet des 118 commandes
+- [Explorer les commandes](/docs/commands) - Catalogue complet des 119 commandes

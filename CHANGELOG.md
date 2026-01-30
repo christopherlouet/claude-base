@@ -9,6 +9,33 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.18.0] - 2026-01-30
+
+### Ajoute
+- **LSP Configuration** : `.lsp.json` avec support de 12 langages (TypeScript, Python, Go, Rust, Java, C/C++, C#, PHP, Kotlin, Ruby, HTML, CSS)
+- **Regle LSP** : `.claude/rules/lsp.md` pour guider l'utilisation LSP vs Grep (navigation semantique)
+- **Hooks Setup** : hook `Setup` avec `init` (install dependances) et `maintenance` (audit + update)
+- **Hooks Notification** : hook `Notification` pour `permission_prompt` et `idle_prompt`
+- **Hook SubagentStop** : log de fin des sub-agents pour tracabilite
+- **Hook SessionEnd** : log de fin de session pour analytics
+- **Hook PreCompact** : log avant compaction du contexte pour debugging
+- **Skill qa-chrome** : tests visuels Chrome (debugging DOM, responsive, captures GIF)
+- **Agent qa-chrome** : agent audit visuel Chrome (sonnet, Bash/Read/Grep/Glob)
+- **Commande /qa-chrome** : commande pour invoquer les tests Chrome
+- **Script setup-deps.sh** : script hook Setup detectant le type de projet et installant les dependances
+- **Section CLI Flags** dans CLAUDE.md : 14 flags documentes (`--agent`, `--chrome`, `--teleport`, `--remote`, `--init`, `--maintenance`, `--max-budget-usd`, etc.)
+- **Section LSP** dans CLAUDE.md : activation, langages supportes, guide LSP vs Grep
+- **Section Bonnes Pratiques Skills** dans CLAUDE.md : taille, budget, frontmatter, substitutions, dynamic context injection
+
+### Modifie
+- **Hooks settings.json** : ajout de 5 nouveaux hook events (Setup, Notification, SubagentStop, SessionEnd, PreCompact)
+- **Section Hooks CLAUDE.md** : reecrite avec tableau complet des 23 hooks configures et variables d'environnement
+- **Skills frontmatter** : enrichissement de 26 skills avec `disable-model-invocation`, `argument-hint`, `model`, `user-invocable`
+- **writing-skills/SKILL.md** : documentation complete des nouveaux champs frontmatter Claude Code 2.1+
+- **Compteurs** : 119 commandes, 57 sub-agents, 41 skills, 21 regles (README, CLAUDE.md, website)
+
+---
+
 ## [1.17.0] - 2026-01-29
 
 ### Securite

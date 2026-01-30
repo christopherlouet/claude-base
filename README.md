@@ -16,7 +16,7 @@ Template de configuration Claude Code pour un workflow de développement optimal
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://docs.anthropic.com/en/docs/claude-code) qui permet de :
 
 - Structurer ton workflow de développement : **Explore → Specify → Plan → Code → Commit**
-- Disposer de **118 commandes**, **56 sub-agents** et **40 skills** pour différentes tâches
+- Disposer de **119 commandes**, **57 sub-agents** et **41 skills** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
 - Intégrer CI/CD et hooks pre-commit prêts à l'emploi
@@ -68,8 +68,8 @@ claude-socle/
 │
 ├── .claude/
 │   ├── settings.json            # Permissions et hooks
-│   ├── skills/                  # 40 skills spécialisés
-│   └── commands/                # 118 commandes disponibles
+│   ├── skills/                  # 41 skills spécialisés
+│   └── commands/                # 119 commandes disponibles
 │       ├── assistant.md         # Orchestrateur principal
 │       ├── work/                # Workflow (10 commandes)
 │       │   ├── work-explore.md
@@ -143,7 +143,7 @@ claude-socle/
     └── ALIASES.md               # Alias de commandes
 ```
 
-## Commandes Disponibles (118)
+## Commandes Disponibles (119)
 
 ### Workflow Principal
 
@@ -320,7 +320,7 @@ Le socle inclut un tutoriel interactif pour apprendre à l'utiliser efficacement
 
 Le tutoriel couvre :
 - Le workflow Explore → Specify → Plan → Code → Commit
-- Les 118 commandes et 56 agents spécialisés
+- Les 119 commandes et 57 agents spécialisés
 - Le développement TDD
 - Les Conventional Commits
 - Quiz interactifs avec score
@@ -385,8 +385,8 @@ La documentation complète est disponible sur **[https://christopherlouet.github
 
 Elle contient :
 - Guide de démarrage rapide
-- Catalogue des 118 commandes
-- Documentation des 56 agents et 40 skills
+- Catalogue des 119 commandes
+- Documentation des 57 agents et 41 skills
 - Workflows recommandés
 - Guides par type de projet
 
