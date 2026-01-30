@@ -13,9 +13,9 @@ import SkillCard from '@site/src/components/SkillCard';
 > **41 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 40, label: 'Skills Fork' },
+  { number: 41, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 40, label: 'Total' },
+  { number: 41, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?

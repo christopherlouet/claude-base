@@ -53,9 +53,9 @@ claude
 Vous devriez voir au demarrage :
 ```
 === Claude Code Session ===
-Version socle: 1.17.0
-Commandes: 118
-Agents: 56
+Version socle: 1.19.0
+Commandes: 119
+Agents: 57
 ===========================
 ```
 
