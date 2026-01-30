@@ -236,7 +236,7 @@ function generateSkillsIndex(skills: SkillInfo[]): string {
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: 'Skills',
-    description: 'Catalogue des 40 skills auto-declenches',
+    description: 'Catalogue des 41 skills auto-declenches',
   });
 
   const forkSkills = skills.filter((s) => s.context === 'fork');
