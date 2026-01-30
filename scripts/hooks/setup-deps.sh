@@ -1,0 +1,60 @@
+#!/bin/bash
+# Hook Setup: Installation automatique des dépendances
+# Déclenché par: claude --init ou claude --init-only
+
+set -euo pipefail
+
+echo "=== Setup: Installation des dépendances ==="
+
+# Node.js
+if [ -f package.json ] && [ ! -d node_modules ]; then
+  if [ -f bun.lockb ]; then bun install
+  elif [ -f pnpm-lock.yaml ]; then pnpm install
+  elif [ -f yarn.lock ]; then yarn install
+  else npm install
+  fi
+  echo "✓ Node.js dependencies installed"
+fi
+
+# Python
+if [ -f pyproject.toml ]; then
+  if command -v uv >/dev/null 2>&1; then uv sync
+  elif [ -f requirements.txt ]; then pip install -r requirements.txt
+  fi
+  echo "✓ Python dependencies installed"
+fi
+
+# Go
+if [ -f go.mod ]; then
+  go mod download
+  echo "✓ Go dependencies installed"
+fi
+
+# Flutter/Dart
+if [ -f pubspec.yaml ]; then
+  if command -v flutter >/dev/null 2>&1; then flutter pub get
+  elif command -v dart >/dev/null 2>&1; then dart pub get
+  fi
+  echo "✓ Dart dependencies installed"
+fi
+
+# Rust
+if [ -f Cargo.toml ]; then
+  cargo fetch 2>/dev/null || true
+  echo "✓ Rust dependencies fetched"
+fi
+
+# Ruby
+if [ -f Gemfile ] && ! [ -d vendor/bundle ]; then
+  bundle install 2>/dev/null || true
+  echo "✓ Ruby dependencies installed"
+fi
+
+# PHP
+if [ -f composer.json ] && ! [ -d vendor ]; then
+  composer install 2>/dev/null || true
+  echo "✓ PHP dependencies installed"
+fi
+
+echo "=== Setup complete ==="
+exit 0

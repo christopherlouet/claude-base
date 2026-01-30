@@ -9,6 +9,7 @@ allowed-tools:
   - Grep
   - Glob
 context: fork
+argument-hint: "[endpoint-name]"
 ---
 
 # Développer une API

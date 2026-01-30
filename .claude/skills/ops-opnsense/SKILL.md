@@ -9,6 +9,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+argument-hint: "[component]"
 ---
 
 # Configuration OPNsense (Terraform)

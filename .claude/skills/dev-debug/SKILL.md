@@ -7,6 +7,8 @@ allowed-tools:
   - Grep
   - Bash
 context: fork
+model: sonnet
+argument-hint: "[error-description]"
 ---
 
 # Deboguer un Probleme

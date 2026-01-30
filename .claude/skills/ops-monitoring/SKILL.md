@@ -9,6 +9,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+disable-model-invocation: true
 ---
 
 # Monitoring Instrumentation

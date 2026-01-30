@@ -6,6 +6,7 @@ allowed-tools:
   - Read
   - Grep
 context: fork
+disable-model-invocation: true
 ---
 
 # Génération de Messages de Commit

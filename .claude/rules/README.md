@@ -2,7 +2,7 @@
 
 Regles modulaires appliquees automatiquement selon les fichiers modifies (path-specific rules).
 
-## Regles disponibles (20)
+## Regles disponibles (21)
 
 | Regle | Paths cibles | Description |
 |-------|-------------|-------------|
@@ -13,6 +13,7 @@ Regles modulaires appliquees automatiquement selon les fichiers modifies (path-s
 | `git` | _(global)_ | Conventional commits, branches, safety rules |
 | `go` | `**/*.go`, `**/go.mod` | Error handling, interfaces, concurrency |
 | `java` | `**/*.java`, `**/pom.xml`, `**/build.gradle` | Optional, Streams, Spring Boot |
+| `lsp` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.rs`, `**/*.java`, `**/*.cs`, `**/*.rb`, `**/*.php`, `**/*.kt`, `**/*.dart` | LSP vs Grep, navigation semantique, activation |
 | `nextjs` | `**/next.config.*`, `**/app/**`, `**/pages/**` | RSC, data fetching, caching, App Router |
 | `performance` | `**/*.tsx`, `**/*.ts`, `**/pages/**` | Core Web Vitals, lazy loading, memoization |
 | `php` | `**/*.php`, `**/composer.json` | PSR-12, Laravel, type declarations |

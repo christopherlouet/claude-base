@@ -9,6 +9,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+argument-hint: "[file-or-module]"
 ---
 
 # Code Refactoring

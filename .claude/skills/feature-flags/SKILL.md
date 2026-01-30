@@ -8,6 +8,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+user-invocable: false
 ---
 
 # Feature Flags Skill
