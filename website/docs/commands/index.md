@@ -11,7 +11,7 @@ import Stats from '@site/src/components/Stats';
 > **119 commandes** organisees en **10 domaines**
 
 <Stats items={[
-  { number: 118, label: 'Commandes' },
+  { number: 119, label: 'Commandes' },
   { number: 10, label: 'Domaines' },
 ]} />
 
