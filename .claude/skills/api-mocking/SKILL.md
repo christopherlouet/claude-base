@@ -9,6 +9,7 @@ allowed-tools:
   - Grep
   - Bash
 context: fork
+user-invocable: false
 ---
 
 # API Mocking

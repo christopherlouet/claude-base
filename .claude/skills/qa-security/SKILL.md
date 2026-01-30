@@ -7,6 +7,8 @@ allowed-tools:
   - Glob
   - Bash
 context: fork
+model: sonnet
+argument-hint: "[scope-or-module]"
 ---
 
 # Audit de Sécurité

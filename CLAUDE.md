@@ -52,6 +52,25 @@
 | `go vet ./...` | Analyser le code |
 | `golangci-lint run` | Linter complet |
 
+## CLI Flags Avancés
+
+| Flag | Description | Exemple |
+|------|-------------|---------|
+| `--agent <name>` | Lancer un agent spécifique directement | `claude --agent qa-security` |
+| `--agents` | Lister tous les agents disponibles | `claude --agents` |
+| `--chrome` | Activer l'intégration Chrome (tests visuels) | `claude --chrome` |
+| `--teleport` | Activer la connexion Teleport (remote) | `claude --teleport` |
+| `--remote` | Se connecter à une session distante | `claude --remote <session-id>` |
+| `--fallback-model` | Modèle de secours si le principal est indisponible | `claude --fallback-model haiku` |
+| `--plugin-dir` | Répertoire de plugins à charger | `claude --plugin-dir ./plugins` |
+| `--tools` | Restreindre les outils disponibles | `claude --tools "Read,Grep,Glob"` |
+| `--init` | Initialiser le projet (hook Setup init) | `claude --init` |
+| `--init-only` | Initialiser sans démarrer de session | `claude --init-only` |
+| `--maintenance` | Lancer la maintenance (hook Setup maintenance) | `claude --maintenance` |
+| `--max-budget-usd` | Budget maximum en USD pour la session | `claude --max-budget-usd 5.00` |
+| `--fork-session` | Forker une session existante | `claude --fork-session <id>` |
+| `--strict-mcp-config` | Mode strict pour la config MCP | `claude --strict-mcp-config` |
+
 ## Structure du Projet
 
 ### Web (React/Node)
@@ -249,7 +268,7 @@ type(scope): description courte
 - Préférer : télécharger le script, vérifier son contenu/checksum, puis exécuter
 - Voir `scripts/lib/common.sh` pour les fonctions `sanitize_input()` et `validate_input()`
 
-## Agents Disponibles (118 commands, 56 sub-agents, 40 skills)
+## Agents Disponibles (119 commands, 57 sub-agents, 41 skills)
 
 ### Orchestrateur (Point d'entrée unique)
 | Commande | Mode | Usage |
@@ -298,7 +317,7 @@ type(scope): description courte
 | `/dev-trpc` | APIs type-safe avec tRPC |
 | `/dev-ai-integration` | Intégration LLMs (OpenAI, Claude API) |
 
-### QA- : Qualité (14)
+### QA- : Qualité (15)
 | Commande | Usage |
 |----------|-------|
 | `/qa-review` | Code review approfondie + analyse de nommage |
@@ -306,6 +325,7 @@ type(scope): description courte
 | `/qa-perf` | Analyse de performance |
 | `/qa-a11y` | Audit accessibilité WCAG |
 | `/qa-audit` | Audit qualité complet |
+| `/qa-chrome` | Tests visuels Chrome (debugging DOM, responsive, captures) |
 | `/qa-design` | Audit UI/UX (100+ règles design web) |
 | `/qa-responsive` | Audit responsive/mobile web |
 | `/qa-automation` | Automatisation des tests |
@@ -491,16 +511,57 @@ type(scope): description courte
 
 Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 
+### Hook Events disponibles
+
+| Event | Type | Description |
+|-------|------|-------------|
+| `SessionStart` | command | Déclenché au démarrage d'une session |
+| `PreToolUse` | command | Avant l'exécution d'un outil (matcher: `Edit\|Write`, `Bash`) |
+| `PostToolUse` | command | Après l'exécution d'un outil |
+| `Setup` | command | Initialisation (`init`) et maintenance (`maintenance`) du projet |
+| `Notification` | command | Notifications (`permission_prompt`, `idle_prompt`) |
+| `SubagentStop` | command | Fin d'exécution d'un sub-agent |
+| `SessionEnd` | command | Fin de session |
+| `PreCompact` | command | Avant compaction du contexte |
+
+### Hooks configurés
+
 | Hook | Déclencheur | Action |
 |------|-------------|--------|
-| **Protection main** | Avant Edit/Write | Bloque modifications sur main/master |
-| **Auto-format** | Après Edit/Write | Prettier sur fichiers TS/JS |
-| **Type-check** | Après Edit/Write | Vérifie les types TypeScript |
-| **Auto-install** | Après Edit package.json | Exécute npm install |
+| **Protection main** | PreToolUse (Edit/Write) | Bloque modifications sur main/master |
+| **Détection secrets** | PreToolUse (Write/Edit) | Gitleaks vérifie les secrets avant écriture |
+| **Tests pre-commit** | PreToolUse (Bash git commit) | Exécute les tests avant un commit |
+| **Auto-format TS/JS** | PostToolUse (Edit/Write) | Prettier sur fichiers TS/JS |
+| **Auto-format Python** | PostToolUse (Edit/Write) | Ruff/Black sur fichiers .py |
+| **Auto-format Go** | PostToolUse (Edit/Write) | gofmt sur fichiers .go |
+| **Auto-format Rust** | PostToolUse (Edit/Write) | rustfmt sur fichiers .rs |
+| **Auto-format Dart** | PostToolUse (Edit/Write) | dart format sur fichiers .dart |
+| **Auto-format Lua** | PostToolUse (Edit/Write) | stylua sur fichiers .lua |
+| **Type-check** | PostToolUse (Edit/Write) | Vérifie les types TypeScript |
+| **ESLint** | PostToolUse (Edit/Write) | Lint JS/TS après modification |
+| **Auto-install** | PostToolUse (Edit package.json) | npm/yarn/pnpm/bun install |
+| **Auto-sync Python** | PostToolUse (Edit pyproject.toml) | uv sync ou pip install |
+| **Auto pub get** | PostToolUse (Edit pubspec.yaml) | flutter/dart pub get |
+| **Auto go mod tidy** | PostToolUse (Edit go.mod) | go mod tidy |
+| **Auto cargo check** | PostToolUse (Edit Cargo.toml) | cargo check |
+| **Coverage check** | PostToolUse (Edit test files) | Vérifie la couverture de tests |
+| **Setup init** | Setup (init) | Installe les dépendances au premier lancement |
+| **Setup maintenance** | Setup (maintenance) | Audit et mise à jour périodique |
+| **Notification** | Notification | Log les demandes de permission et idle |
+| **SubagentStop** | SubagentStop | Log la fin des sub-agents |
+| **SessionEnd** | SessionEnd | Log la fin de session |
+| **PreCompact** | PreCompact | Log avant compaction du contexte |
+
+### Variables d'environnement des hooks
+
+| Variable | Usage |
+|----------|-------|
+| `ALLOW_MAIN_EDIT=1` | Désactiver la protection de branche main |
+| `SKIP_PRE_COMMIT_TESTS=1` | Désactiver les tests avant commit |
 
 ## Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **40 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **41 Skills** dans `.claude/skills/`:
 
 ### Skills de base
 | Skill | Déclenchement automatique | Context |
@@ -548,6 +609,7 @@ En plus des commandes, le projet inclut **40 Skills** dans `.claude/skills/`:
 | `parallel-agents` | "parallele", "concurrent", "fan-out", "multi-agents" | fork |
 | `session-handoff` | "handoff", "reprise", "transfert session", "contexte" | fork |
 | `git-worktrees` | "worktree", "dev parallele", "branches simultanées" | fork |
+| `qa-chrome` | "Chrome", "test visuel", "debugging DOM", "capture" | fork |
 | `writing-skills` | "créer skill", "nouveau skill", "écrire un skill" | fork |
 
 ### Configuration des Skills
@@ -557,6 +619,49 @@ Chaque skill définit:
 - **context: fork**: Exécution dans un contexte isolé (recommandé)
 
 Les Skills sont déclenchés automatiquement par Claude selon le contexte.
+
+### Bonnes Pratiques Skills
+
+#### Taille et Budget
+- SKILL.md < 500 lignes (déporter le contenu volumineux dans des fichiers de référence)
+- Budget descriptions : 15k caractères max (`SLASH_COMMAND_TOOL_CHAR_BUDGET`)
+- Utiliser des fichiers de support : `examples/`, `scripts/`, `reference.md`
+
+#### Frontmatter complet
+```yaml
+---
+name: mon-skill
+description: Description courte du skill
+allowed-tools: Read, Grep, Glob, Bash
+context: fork
+disable-model-invocation: true   # Ne pas déclencher automatiquement
+user-invocable: false             # Skill background-only
+argument-hint: "[description]"    # Hint pour les arguments
+model: sonnet                     # Modèle préféré (haiku, sonnet, opus)
+agent: mon-agent                  # Agent associé
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "echo validation"
+---
+```
+
+#### Substitutions de variables
+| Variable | Description |
+|----------|-------------|
+| `$ARGUMENTS` | Tous les arguments passés au skill |
+| `$ARGUMENTS[N]` | Argument à l'index N (0-based) |
+| `$N` | Raccourci pour `$ARGUMENTS[N]` |
+| `${CLAUDE_SESSION_ID}` | ID de la session en cours |
+
+#### Dynamic Context Injection
+Injecter du contenu dynamique dans un skill avec la syntaxe :
+```
+!`command`
+```
+Exemple : `` !`cat package.json | jq .scripts` `` injecte les scripts npm dans le contexte du skill.
 
 ## Sub-Agents (Claude Code 2.1+)
 
@@ -577,7 +682,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 - **Modèle optimisé** : Haiku pour tâches simples (économie de tokens)
 - **Parallélisation** : Plusieurs agents peuvent tourner simultanément
 
-### Agents disponibles (56)
+### Agents disponibles (57)
 
 #### Exploration & Documentation
 | Agent | Modèle | Outils | Usage |
@@ -600,6 +705,7 @@ Le projet inclut des **Sub-Agents** dans `.claude/agents/` pour les tâches qui 
 | `qa-e2e` | sonnet | Read, Grep, Glob, Bash | Tests E2E Playwright/Cypress |
 | `qa-tech-debt` | haiku | Read, Grep, Glob | Identifier et prioriser la dette technique |
 | `qa-design` | haiku | Read, Grep, Glob | Audit UI/UX (100+ règles design web) |
+| `qa-chrome` | sonnet | Read, Grep, Glob, Bash | Tests visuels Chrome (DOM, console, responsive) |
 
 #### Opérations
 | Agent | Modèle | Outils | Usage |
@@ -685,7 +791,7 @@ Chaque agent définit:
 
 ## Modular Rules (Claude Code 2.1+)
 
-Les règles sont organisées de manière modulaire dans `.claude/rules/` (20 règles):
+Les règles sont organisées de manière modulaire dans `.claude/rules/` (21 règles):
 
 ### Règles par langage
 | Fichier | Paths | Contenu |
@@ -714,6 +820,7 @@ Les règles sont organisées de manière modulaire dans `.claude/rules/` (20 rè
 | `performance.md` | `**/*.tsx`, `**/pages/**` | Core Web Vitals, optimisation |
 | `nextjs.md` | `**/app/**`, `**/pages/**`, `**/next.config.*` | RSC, data fetching, caching, App Router |
 | `verification.md` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, etc. | Vérification avant completion (4 phases) |
+| `lsp.md` | `**/*.ts`, `**/*.py`, `**/*.go`, `**/*.rs`, `**/*.java`, etc. | LSP vs Grep, navigation sémantique |
 
 ### Path-Specific Rules
 
@@ -808,6 +915,45 @@ Configuration centralisée des MCP servers dans `.mcp.json`:
 | `puppeteer` | Automatisation navigateur | Non |
 
 Pour activer un server: `"enabled": true` dans `.mcp.json`
+
+## LSP (Language Server Protocol)
+
+Configuration LSP dans `.lsp.json` pour la navigation sémantique du code.
+
+### Activation
+
+```bash
+export ENABLE_LSP_TOOL=1
+```
+
+### Langages supportés (12)
+
+| Langage | Serveur | Extensions |
+|---------|---------|------------|
+| TypeScript/JavaScript | `typescript-language-server` | `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs` |
+| Python | `pylsp` | `.py`, `.pyi` |
+| Go | `gopls` | `.go` |
+| Rust | `rust-analyzer` | `.rs` |
+| Java | `jdtls` | `.java` |
+| C/C++ | `clangd` | `.c`, `.cpp`, `.h`, `.hpp` |
+| C# | `omnisharp` | `.cs` |
+| PHP | `phpactor` | `.php` |
+| Kotlin | `kotlin-language-server` | `.kt`, `.kts` |
+| Ruby | `solargraph` | `.rb` |
+| HTML | `vscode-html-language-server` | `.html`, `.htm` |
+| CSS | `vscode-css-language-server` | `.css`, `.scss`, `.less` |
+
+### LSP vs Grep
+
+| Besoin | Outil | Pourquoi |
+|--------|-------|----------|
+| Définition d'un symbole | LSP `goToDefinition` | Résolution sémantique (imports, héritage) |
+| Toutes les références | LSP `findReferences` | Trouve les usages réels, pas les faux positifs |
+| Recherche de texte/pattern | Grep | Plus rapide pour les recherches textuelles |
+| Navigation de structure | LSP `documentSymbol` | Arbre des classes/fonctions |
+| Erreurs de type | LSP `getDiagnostics` | Diagnostics en temps réel |
+
+Voir `.claude/rules/lsp.md` pour les règles détaillées.
 
 ## Anti-patterns à Éviter
 

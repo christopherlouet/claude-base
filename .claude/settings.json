@@ -289,6 +289,90 @@
           }
         ]
       }
+    ],
+    "Setup": [
+      {
+        "matcher": "init",
+        "description": "Installer les dependances du projet au premier lancement",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/hooks/setup-deps.sh",
+            "timeout": 120000
+          }
+        ]
+      },
+      {
+        "matcher": "maintenance",
+        "description": "Maintenance periodique: audit et mise a jour",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"=== Maintenance ===\"; if [ -f package.json ]; then npm audit --audit-level=moderate 2>&1 | tail -10 || true; npm outdated 2>&1 | head -20 || true; fi; echo \"=== Maintenance complete ===\"'",
+            "timeout": 60000
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "description": "Logger les notifications de permission",
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[NOTIFICATION] Permission demandee: $(echo $HOOK_INPUT | head -c 200)\" >> /tmp/claude-notifications.log 2>/dev/null || true'",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "description": "Logger quand Claude attend l'utilisateur",
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[IDLE] Claude attend une reponse utilisateur\" >> /tmp/claude-notifications.log 2>/dev/null || true'",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "description": "Logger la fin des sub-agents pour tracabilite",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[SUBAGENT] Agent termine\" >> /tmp/claude-agents.log 2>/dev/null || true'",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "description": "Logger la fin de session",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[SESSION] Fin de session $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "description": "Logger avant compaction du contexte",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[COMPACT] Compaction du contexte $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "timeout": 5000
+          }
+        ]
+      }
     ]
   }
 }

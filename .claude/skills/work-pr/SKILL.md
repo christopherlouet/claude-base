@@ -7,6 +7,7 @@ allowed-tools:
   - Grep
   - Glob
 context: fork
+disable-model-invocation: true
 ---
 
 # Créer une Pull Request

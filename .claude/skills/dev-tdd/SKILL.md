@@ -9,6 +9,8 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+model: sonnet
+argument-hint: "[feature-description]"
 ---
 
 # Test-Driven Development (TDD)

@@ -7,6 +7,7 @@ allowed-tools:
   - Grep
   - Bash
 context: fork
+disable-model-invocation: true
 ---
 
 # Planifier une Implémentation
