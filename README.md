@@ -13,7 +13,7 @@ Template de configuration Claude Code pour un workflow de développement optimal
 
 ## Qu'est-ce que c'est ?
 
-**claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://docs.anthropic.com/en/docs/claude-code) qui permet de :
+**claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://code.claude.com/docs/en/overview) qui permet de :
 
 - Structurer ton workflow de développement : **Explore → Specify → Plan → Code → Commit**
 - Disposer de **119 commandes**, **57 sub-agents** et **41 skills** pour différentes tâches
@@ -407,7 +407,7 @@ Elle contient :
 ## Ressources
 
 - [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
+- [Claude Code Documentation](https://code.claude.com/docs/en/overview)
 - [How Anthropic Teams Use Claude Code](https://www.anthropic.com/news/how-anthropic-teams-use-claude-code)
 
 ## Détection de Secrets (gitleaks)

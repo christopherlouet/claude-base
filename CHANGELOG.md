@@ -9,6 +9,28 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.19.0] - 2026-01-30
+
+### Ajoute
+- **Sync documentation officielle** : alignement avec code.claude.com (nouveau domaine docs Anthropic)
+- **Nouveaux Hook Events** : `UserPromptSubmit`, `PermissionRequest`, `PostToolUseFailure`, `SubagentStart`, `Stop` documentes dans CLAUDE.md
+- **Prompt-based hooks** : documentation du type `prompt` (evaluation LLM) en plus du type `command`
+- **CLAUDE.md @imports** : documentation de la syntaxe `@path/to/file` pour importer des fichiers
+- **Plugins system** : documentation du systeme de plugins (`.claude-plugin/plugin.json`, marketplace, namespacing)
+- **SessionStart matchers** : documentation des matchers `startup`, `resume`, `clear`, `compact`
+- **Notification types** : ajout de `auth_success` et `elicitation_dialog`
+
+### Modifie
+- **URLs documentation** : migration de `docs.anthropic.com` vers `code.claude.com` dans tous les fichiers MD
+- **Hook Events CLAUDE.md** : table enrichie avec 13 events (etait 8), types command/prompt
+- **docs/CHEATSHEET.md** : mise a jour complete avec tous les 119 commandes par categorie, accents corriges
+- **docs/ALIASES.md** : enrichissement avec orchestrateur, nouveaux alias dev/qa/ops/growth
+- **docs/GUIDE.md** : restructuration et enrichissement du guide complet
+- **docs/GUIDE-UTILISATEUR.md** : mise a jour du guide utilisateur
+- **docs/CUSTOMIZATION.md** : mise a jour du guide de personnalisation
+
+---
+
 ## [1.18.0] - 2026-01-30
 
 ### Ajoute

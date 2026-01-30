@@ -212,28 +212,38 @@ Créez `.claude/settings.local.json` (gitignore) pour des permissions locales pl
 
 ## 4. Configurer les hooks
 
-### Fichier `.claude/hooks.json`
+### Dans `.claude/settings.json`
+
+Les hooks sont configurés directement dans le fichier `settings.json` :
 
 ```json
 {
   "hooks": {
-    "post-edit": {
-      "commands": [
-        {
-          "pattern": "*.ts",
-          "command": "npx eslint --fix ${file}",
-          "enabled": true
-        }
-      ]
-    },
-    "pre-commit": {
-      "commands": [
-        {
-          "command": "npm test",
-          "enabled": true
-        }
-      ]
-    }
+    "PreToolUse": [
+      {
+        "description": "Protection branche main",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then echo \"Modification bloquée sur $branch\"; exit 1; fi'",
+            "onFailure": "block"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "description": "Auto-format après édition",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx prettier --write $CLAUDE_FILE_PATH"
+          }
+        ]
+      }
+    ]
   }
 }
 ```
@@ -242,18 +252,32 @@ Créez `.claude/settings.local.json` (gitignore) pour des permissions locales pl
 
 | Hook | Déclencheur |
 |------|-------------|
-| `pre-edit` | Avant modification de fichier |
-| `post-edit` | Après modification de fichier |
-| `pre-commit` | Avant commit |
-| `post-commit` | Après commit |
-| `session-start` | Au démarrage de session |
+| `PreToolUse` | Avant l'utilisation d'un outil (Edit, Write, Bash...) |
+| `PostToolUse` | Après l'utilisation d'un outil |
 
-### Variables dans les hooks
+### Matchers disponibles
+
+| Matcher | Outils ciblés |
+|---------|---------------|
+| `Edit` | Modifications de fichiers |
+| `Write` | Création de fichiers |
+| `Bash` | Commandes shell |
+| `Edit\|Write` | Plusieurs outils (regex) |
+
+### Variables d'environnement
 
 | Variable | Description |
 |----------|-------------|
-| `${file}` | Chemin du fichier modifié |
-| `${dir}` | Dossier du fichier |
+| `$CLAUDE_FILE_PATH` | Chemin du fichier concerné |
+| `$CLAUDE_TOOL_NAME` | Nom de l'outil utilisé |
+
+### Comportement en cas d'échec
+
+| onFailure | Effet |
+|-----------|-------|
+| `block` | Bloque l'action (PreToolUse uniquement) |
+| `continue` | Continue malgré l'erreur |
+| (absent) | Continue par défaut |
 
 ---
 
