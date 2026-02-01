@@ -195,7 +195,7 @@ Mentionnez explicitement l'agent dans votre demande :
 "Fais un audit de sécurité en utilisant l'agent qa-security"
 
 # Ou utilisez la commande correspondante
-/qa-security
+/qa:qa-security
 ```
 
 ### Haiku vs Sonnet pour les agents ?
@@ -238,16 +238,16 @@ Le workflow recommandé :
 
 ```mermaid
 flowchart LR
-    A["/work-explore"] --> B["/work-specify"]
-    B --> C["/work-plan"]
+    A["/work:work-explore"] --> B["/work:work-specify"]
+    B --> C["/work:work-plan"]
     C --> D["Code"]
-    D --> E["/work-commit"]
+    D --> E["/work:work-commit"]
 ```
 
 1. **Explore** - Comprendre le code existant
 2. **Specify** - Définir les user stories (optionnel)
 3. **Plan** - Planifier l'implémentation
-4. **Code** - Développer (`/dev-*`)
+4. **Code** - Développer (`/dev:dev-*`)
 5. **Commit** - Créer un commit propre
 
 ### Puis-je sauter des étapes ?
@@ -262,7 +262,7 @@ flowchart LR
 | Nouveau sur le projet | Toujours Explore d'abord |
 
 :::warning Explorer d'abord
-Sautez `/work-explore` à vos risques et périls. Comprendre le code existant évite les incohérences.
+Sautez `/work:work-explore` à vos risques et périls. Comprendre le code existant évite les incohérences.
 :::
 
 ### Comment reprendre un workflow interrompu ?
@@ -273,16 +273,16 @@ Claude garde le contexte de la conversation. Vous pouvez :
 2. **Reprendre une étape** : "Reprenons le plan"
 3. **Voir l'état** : "Où en sommes-nous ?"
 
-Si vous avez fermé Claude Code, recommencez par `/work-explore` pour récupérer le contexte.
+Si vous avez fermé Claude Code, recommencez par `/work:work-explore` pour récupérer le contexte.
 
 ### Quelle commande utiliser en premier ?
 
-**Toujours `/work-explore`** pour un nouveau projet ou une nouvelle feature.
+**Toujours `/work:work-explore`** pour un nouveau projet ou une nouvelle feature.
 
 Pour des tâches simples sur un projet connu :
-- Bug simple → `/dev-debug`
-- Commit → `/work-commit`
-- Question → `/doc-explain`
+- Bug simple → `/dev:dev-debug`
+- Commit → `/work:work-commit`
+- Question → `/doc:doc-explain`
 
 ### Comment documenter mon workflow ?
 
@@ -290,9 +290,9 @@ Le workflow génère automatiquement de la documentation dans `specs/` :
 
 ```
 specs/ma-feature/
-├── spec.md     # /work-specify
-├── plan.md     # /work-plan
-└── tasks.md    # /work-plan
+├── spec.md     # /work:work-specify
+├── plan.md     # /work:work-plan
+└── tasks.md    # /work:work-plan
 ```
 
 Ces fichiers sont versionnables et servent de documentation.
@@ -310,15 +310,15 @@ Ces fichiers sont versionnables et servent de documentation.
 
 **Solutions** :
 - Soyez plus spécifique dans votre demande
-- Utilisez `/work-explore` d'abord
+- Utilisez `/work:work-explore` d'abord
 - Mentionnez explicitement les contraintes
 
 ### Les tests ne passent pas après une modification
 
 **Actions** :
 1. Vérifier que les tests étaient passants avant
-2. Lancer `/dev-debug` pour investiguer
-3. Utiliser `/qa-coverage` pour voir la couverture
+2. Lancer `/dev:dev-debug` pour investiguer
+3. Utiliser `/qa:qa-coverage` pour voir la couverture
 
 ### Le build est cassé
 
@@ -327,23 +327,23 @@ Ces fichiers sont versionnables et servent de documentation.
 npm run build
 
 # Utiliser l'agent de debug
-/dev-debug "Le build échoue avec l'erreur X"
+/dev:dev-debug "Le build échoue avec l'erreur X"
 
 # Vérifier les dépendances
-/ops-deps
+/ops:ops-deps
 ```
 
 ### Je ne comprends pas le code existant
 
 ```bash
 # Explorer le codebase
-/work-explore "Comprendre l'architecture générale"
+/work:work-explore "Comprendre l'architecture générale"
 
 # Expliquer un fichier spécifique
-/doc-explain "Explique le fichier src/services/auth.ts"
+/doc:doc-explain "Explique le fichier src/services/auth.ts"
 
 # Onboarding complet
-/doc-onboard
+/doc:doc-onboard
 ```
 
 ---

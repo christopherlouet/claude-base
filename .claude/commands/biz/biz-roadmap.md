@@ -297,11 +297,11 @@ North Star Metric: [Métrique]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/plan` | Planifier une initiative |
-| `/okr` | Définir les OKRs liés |
-| `/mvp` | Définir le scope MVP |
-| `/release` | Créer une release |
-| `/changelog` | Documenter les releases |
+| `/work:work-plan` | Planifier une initiative |
+| `/biz:biz-okr` | Définir les OKRs liés |
+| `/biz:biz-mvp` | Définir le scope MVP |
+| `/ops:ops-release` | Créer une release |
+| `/doc:doc-changelog` | Documenter les releases |
 
 ---
 

@@ -21,27 +21,27 @@ Guide complet pour les projets React, Next.js et Node.js.
 
 | Commande | Usage |
 |----------|-------|
-| `/dev-component` | Creer un composant React complet |
-| `/dev-hook` | Creer un hook personnalise |
-| `/dev-react-perf` | Optimiser les performances React |
-| `/dev-tdd` | Developper en TDD |
+| `/dev:dev-component` | Creer un composant React complet |
+| `/dev:dev-hook` | Creer un hook personnalise |
+| `/dev:dev-react-perf` | Optimiser les performances React |
+| `/dev:dev-tdd` | Developper en TDD |
 
 ### Qualite
 
 | Commande | Usage |
 |----------|-------|
-| `/qa-review` | Code review |
-| `/qa-a11y` | Audit accessibilite |
-| `/qa-perf` | Audit performance |
-| `/qa-responsive` | Audit responsive |
+| `/qa:qa-review` | Code review |
+| `/qa:qa-a11y` | Audit accessibilite |
+| `/qa:qa-perf` | Audit performance |
+| `/qa:qa-responsive` | Audit responsive |
 
 ### Operations
 
 | Commande | Usage |
 |----------|-------|
-| `/ops-ci` | Configuration CI/CD |
-| `/ops-docker` | Dockerisation |
-| `/ops-deps` | Mise a jour dependances |
+| `/ops:ops-ci` | Configuration CI/CD |
+| `/ops:ops-docker` | Dockerisation |
+| `/ops:ops-deps` | Mise a jour dependances |
 
 ## Workflow type
 
@@ -49,33 +49,33 @@ Guide complet pour les projets React, Next.js et Node.js.
 
 ```bash
 # 1. Explorer le code existant
-/work-explore "systeme de composants"
+/work:work-explore "systeme de composants"
 
 # 2. Planifier
-/work-plan "Ajouter un composant DataTable"
+/work:work-plan "Ajouter un composant DataTable"
 
 # 3. Creer le composant
-/dev-component "DataTable avec tri et pagination"
+/dev:dev-component "DataTable avec tri et pagination"
 
 # 4. Optimiser si necessaire
-/dev-react-perf
+/dev:dev-react-perf
 
 # 5. Review et PR
-/qa-review
-/work-pr
+/qa:qa-review
+/work:work-pr
 ```
 
 ### Nouveau hook
 
 ```bash
 # 1. Planifier
-/work-plan "Hook useDebounce"
+/work:work-plan "Hook useDebounce"
 
 # 2. Developper en TDD
-/dev-tdd "Creer useDebounce"
+/dev:dev-tdd "Creer useDebounce"
 
 # 3. Commit
-/work-commit
+/work:work-commit
 ```
 
 ## Bonnes pratiques
@@ -143,7 +143,7 @@ Les regles suivantes s'appliquent automatiquement :
 ```bash
 # Creer une page de dashboard
 
-> /work-flow-feature "Page Dashboard avec widgets"
+> /work:work-flow-feature "Page Dashboard avec widgets"
 
 # Claude :
 # 1. Explore la structure existante

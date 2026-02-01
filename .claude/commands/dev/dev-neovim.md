@@ -515,10 +515,10 @@ end
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/qa-neovim` | Auditer la config (perf, keymaps) |
-| `/dev-debug` | Déboguer un problème |
-| `/work-explore` | Comprendre une config existante |
-| `/dev-test` | Écrire plus de tests |
+| `/qa:qa-neovim` | Auditer la config (perf, keymaps) |
+| `/dev:dev-debug` | Déboguer un problème |
+| `/work:work-explore` | Comprendre une config existante |
+| `/dev:dev-test` | Écrire plus de tests |
 
 ---
 

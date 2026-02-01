@@ -1,6 +1,6 @@
 ---
 sidebar_position: 7
-title: "/dev-design-system"
+title: "/dev:dev-design-system"
 description: "Creation et maintenance de design systems et bibliotheques de composants."
 tags:
   - "dev"
@@ -496,9 +496,9 @@ export const useTheme = () => {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-component` | Creer des composants |
-| `/qa-a11y` | Accessibilite |
-| `/doc-generate` | Documentation |
+| `/dev:dev-component` | Creer des composants |
+| `/qa:qa-a11y` | Accessibilite |
+| `/doc:doc-generate` | Documentation |
 
 ---
 

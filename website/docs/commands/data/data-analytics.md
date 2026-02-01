@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: "/data-analytics"
+title: "/data:data-analytics"
 description: "Analyser des données et créer des visualisations/rapports."
 tags:
   - "data"
@@ -187,10 +187,10 @@ fig.write_html('dashboard.html')
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/data-pipeline` | Préparer les données |
-| `/data-modeling` | Structurer le modèle de données |
-| `/doc-generate` | Documenter l'analyse |
-| `/biz-okr` | Définir les KPIs |
+| `/data:data-pipeline` | Préparer les données |
+| `/data:data-modeling` | Structurer le modèle de données |
+| `/doc:doc-generate` | Documenter l'analyse |
+| `/biz:biz-okr` | Définir les KPIs |
 
 ---
 

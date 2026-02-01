@@ -153,10 +153,10 @@ find . -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -rn | head -20
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-refactor` | Execution du refactoring |
-| `/qa-coverage` | Analyse couverture tests |
-| `/qa-review` | Code review approfondie |
-| `/work-plan` | Planification du refactoring |
+| `/dev:dev-refactor` | Execution du refactoring |
+| `/qa:qa-coverage` | Analyse couverture tests |
+| `/qa:qa-review` | Code review approfondie |
+| `/work:work-plan` | Planification du refactoring |
 
 ---
 

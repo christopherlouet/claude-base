@@ -96,24 +96,24 @@ export default function WorkflowDiagram({
 
 // Pre-defined workflow configurations
 export const MAIN_WORKFLOW: WorkflowStep[] = [
-  { id: 'explore', label: 'Explore', command: '/work-explore', description: 'Comprendre le code' },
-  { id: 'plan', label: 'Plan', command: '/work-plan', description: 'Planifier les changements' },
-  { id: 'tdd', label: 'TDD', command: '/dev-tdd', description: 'Tests first (obligatoire)' },
-  { id: 'commit', label: 'Commit', command: '/work-commit', description: 'Valider' },
+  { id: 'explore', label: 'Explore', command: '/work:work-explore', description: 'Comprendre le code' },
+  { id: 'plan', label: 'Plan', command: '/work:work-plan', description: 'Planifier les changements' },
+  { id: 'tdd', label: 'TDD', command: '/dev:dev-tdd', description: 'Tests first (obligatoire)' },
+  { id: 'commit', label: 'Commit', command: '/work:work-commit', description: 'Valider' },
 ];
 
 export const FEATURE_WORKFLOW: WorkflowStep[] = [
-  { id: 'explore', label: 'Explore', command: '/work-explore' },
-  { id: 'specify', label: 'Specify', command: '/work-specify' },
-  { id: 'plan', label: 'Plan', command: '/work-plan' },
-  { id: 'tdd', label: 'TDD', command: '/dev-tdd' },
-  { id: 'review', label: 'Review', command: '/qa-review' },
-  { id: 'pr', label: 'PR', command: '/work-pr' },
+  { id: 'explore', label: 'Explore', command: '/work:work-explore' },
+  { id: 'specify', label: 'Specify', command: '/work:work-specify' },
+  { id: 'plan', label: 'Plan', command: '/work:work-plan' },
+  { id: 'tdd', label: 'TDD', command: '/dev:dev-tdd' },
+  { id: 'review', label: 'Review', command: '/qa:qa-review' },
+  { id: 'pr', label: 'PR', command: '/work:work-pr' },
 ];
 
 export const BUGFIX_WORKFLOW: WorkflowStep[] = [
-  { id: 'debug', label: 'Debug', command: '/dev-debug' },
-  { id: 'fix', label: 'Fix', command: '/dev-tdd' },
-  { id: 'review', label: 'Review', command: '/qa-review' },
-  { id: 'commit', label: 'Commit', command: '/work-commit' },
+  { id: 'debug', label: 'Debug', command: '/dev:dev-debug' },
+  { id: 'fix', label: 'Fix', command: '/dev:dev-tdd' },
+  { id: 'review', label: 'Review', command: '/qa:qa-review' },
+  { id: 'commit', label: 'Commit', command: '/work:work-commit' },
 ];

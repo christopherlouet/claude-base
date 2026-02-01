@@ -17,31 +17,31 @@
 ### 1. Explorer le projet
 
 ```bash
-/work-explore "Comprendre l'architecture"
+/work:work-explore "Comprendre l'architecture"
 ```
 
 ### 2. Specifier la feature
 
 ```bash
-/work-specify "Ajouter authentification OAuth"
+/work:work-specify "Ajouter authentification OAuth"
 ```
 
 ### 3. Planifier l'implementation
 
 ```bash
-/work-plan "Implementer OAuth Google"
+/work:work-plan "Implementer OAuth Google"
 ```
 
 ### 4. Developper
 
 ```bash
-/dev-tdd "OAuth authentication flow"
+/dev:dev-tdd "OAuth authentication flow"
 ```
 
 ### 5. Commiter
 
 ```bash
-/work-commit
+/work:work-commit
 ```
 
 ## Workflow complet
@@ -56,22 +56,22 @@
 
 | Commande | Usage |
 |----------|-------|
-| `/work-explore` | Comprendre le code existant |
-| `/work-specify` | Creer une specification fonctionnelle |
-| `/work-plan` | Planifier une implementation |
-| `/dev-tdd` | Developper avec tests |
-| `/work-commit` | Creer un commit propre |
-| `/work-pr` | Creer une Pull Request |
-| `/qa-security` | Audit de securite OWASP |
-| `/qa-audit` | Audit complet (secu + RGPD + a11y + perf) |
+| `/work:work-explore` | Comprendre le code existant |
+| `/work:work-specify` | Creer une specification fonctionnelle |
+| `/work:work-plan` | Planifier une implementation |
+| `/dev:dev-tdd` | Developper avec tests |
+| `/work:work-commit` | Creer un commit propre |
+| `/work:work-pr` | Creer une Pull Request |
+| `/qa:qa-security` | Audit de securite OWASP |
+| `/qa:qa-audit` | Audit complet (secu + RGPD + a11y + perf) |
 
 ## Workflows raccourcis
 
 | Commande | Description |
 |----------|-------------|
-| `/work-flow-feature` | Workflow complet pour nouvelle feature |
-| `/work-flow-bugfix` | Workflow complet pour correction de bug |
-| `/work-flow-release` | Workflow complet pour release |
+| `/work:work-flow-feature` | Workflow complet pour nouvelle feature |
+| `/work:work-flow-bugfix` | Workflow complet pour correction de bug |
+| `/work:work-flow-release` | Workflow complet pour release |
 
 ## Aide
 

@@ -250,10 +250,10 @@ async function monitoredComplete(prompt: string) {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-rag` | Systemes RAG |
-| `/dev-prompt-engineering` | Optimiser les prompts |
-| `/dev-api` | Endpoints API |
-| `/ops-monitoring` | Monitoring production |
+| `/dev:dev-rag` | Systemes RAG |
+| `/dev:dev-prompt-engineering` | Optimiser les prompts |
+| `/dev:dev-api` | Endpoints API |
+| `/ops:ops-monitoring` | Monitoring production |
 
 ---
 

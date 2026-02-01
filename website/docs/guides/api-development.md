@@ -21,25 +21,25 @@ Guide complet pour les APIs REST et GraphQL.
 
 | Commande | Usage |
 |----------|-------|
-| `/dev-api` | Creer endpoints REST |
-| `/dev-graphql` | API GraphQL |
-| `/dev-api-versioning` | Versioning d'API |
-| `/dev-error-handling` | Gestion des erreurs |
+| `/dev:dev-api` | Creer endpoints REST |
+| `/dev:dev-graphql` | API GraphQL |
+| `/dev:dev-api-versioning` | Versioning d'API |
+| `/dev:dev-error-handling` | Gestion des erreurs |
 
 ### Documentation
 
 | Commande | Usage |
 |----------|-------|
-| `/doc-api-spec` | Spec OpenAPI |
-| `/doc-generate` | Documentation |
+| `/doc:doc-api-spec` | Spec OpenAPI |
+| `/doc:doc-generate` | Documentation |
 
 ### Qualite
 
 | Commande | Usage |
 |----------|-------|
-| `/qa-security` | Audit securite |
-| `/qa-perf` | Performance API |
-| `/ops-load-testing` | Tests de charge |
+| `/qa:qa-security` | Audit securite |
+| `/qa:qa-perf` | Performance API |
+| `/ops:ops-load-testing` | Tests de charge |
 
 ## Workflow type
 
@@ -47,33 +47,33 @@ Guide complet pour les APIs REST et GraphQL.
 
 ```bash
 # 1. Explorer l'API existante
-/work-explore "endpoints utilisateurs"
+/work:work-explore "endpoints utilisateurs"
 
 # 2. Planifier
-/work-plan "Ajouter endpoint PATCH /users/:id"
+/work:work-plan "Ajouter endpoint PATCH /users/:id"
 
 # 3. Developper
-/dev-api "Endpoint de mise a jour partielle utilisateur"
+/dev:dev-api "Endpoint de mise a jour partielle utilisateur"
 
 # 4. Documenter
-/doc-api-spec
+/doc:doc-api-spec
 
 # 5. Tests et PR
-/qa-security
-/work-pr
+/qa:qa-security
+/work:work-pr
 ```
 
 ### Nouvelle API GraphQL
 
 ```bash
 # 1. Planifier le schema
-/work-plan "Schema GraphQL produits"
+/work:work-plan "Schema GraphQL produits"
 
 # 2. Developper
-/dev-graphql "Type Product avec queries et mutations"
+/dev:dev-graphql "Type Product avec queries et mutations"
 
 # 3. PR
-/work-pr
+/work:work-pr
 ```
 
 ## Bonnes pratiques
@@ -169,7 +169,7 @@ Toujours appliquer :
 
 ```bash
 # Audit de securite avant deploy
-/qa-security
+/qa:qa-security
 ```
 
 ## Status codes HTTP

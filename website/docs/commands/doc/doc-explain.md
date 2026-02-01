@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-title: "/doc-explain"
+title: "/doc:doc-explain"
 description: "Expliquer du code complexe en détail."
 tags:
   - "doc"
@@ -160,10 +160,10 @@ Toujours accompagner d'exemples avec des valeurs réelles.
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/onboard` | Découvrir un codebase complet |
-| `/explore` | Explorer avant d'expliquer |
-| `/doc` | Documenter après explication |
-| `/review` | Reviewer du code expliqué |
+| `/doc:doc-onboard` | Découvrir un codebase complet |
+| `/work:work-explore` | Explorer avant d'expliquer |
+| `/doc:doc-generate` | Documenter après explication |
+| `/qa:qa-review` | Reviewer du code expliqué |
 
 ---
 

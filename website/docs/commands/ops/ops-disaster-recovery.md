@@ -1,6 +1,6 @@
 ---
 sidebar_position: 7
-title: "/ops-disaster-recovery"
+title: "/ops:ops-disaster-recovery"
 description: "Mettre en place une stratégie de reprise après sinistre (Disaster Recovery)."
 tags:
   - "ops"
@@ -429,9 +429,9 @@ groups:
 
 | Agent | Usage |
 |-------|-------|
-| `/ops-monitoring` | Monitoring du DR |
-| `/ops-cost-optimization` | Optimiser les coûts DR |
-| `/security` | Sécurité des backups |
+| `/ops:ops-monitoring` | Monitoring du DR |
+| `/ops:ops-cost-optimization` | Optimiser les coûts DR |
+| `/qa:qa-security` | Sécurité des backups |
 
 ---
 

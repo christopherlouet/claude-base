@@ -11,7 +11,7 @@ Cet exemple montre comment implémenter le pattern BLoC pour la gestion d'état 
 ## Commande utilisée
 
 ```bash
-/dev-flutter "Créer un BLoC pour l'authentification avec login/logout"
+/dev:dev-flutter "Créer un BLoC pour l'authentification avec login/logout"
 ```
 
 ## Structure générée
@@ -658,9 +658,9 @@ class LoginPage extends StatelessWidget {
 
 ## Commandes associées
 
-- `/dev-test` - Générer plus de tests
-- `/dev-supabase` - Intégrer avec Supabase Auth
-- `/qa-mobile` - Audit qualité
+- `/dev:dev-test` - Générer plus de tests
+- `/dev:dev-supabase` - Intégrer avec Supabase Auth
+- `/qa:qa-mobile` - Audit qualité
 
 ---
 

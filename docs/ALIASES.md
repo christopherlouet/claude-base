@@ -19,19 +19,19 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/ex` | `/work-explore` | Explorer le code |
-| `/pl` | `/work-plan` | Planifier |
-| `/co` | `/work-commit` | Commiter |
-| `/pr` | `/work-pr` | Pull Request |
+| `/ex` | `/work:work-explore` | Explorer le code |
+| `/pl` | `/work:work-plan` | Planifier |
+| `/co` | `/work:work-commit` | Commiter |
+| `/work:work-pr` | `/work:work-pr` | Pull Request |
 
 ## Workflows Chaînés
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/feat` | `/work-flow-feature` | Workflow feature complet |
-| `/bugf` | `/work-flow-bugfix` | Workflow bugfix complet |
-| `/rel` | `/work-flow-release` | Workflow release complet |
-| `/launch` | `/work-flow-launch` | Workflow lancement complet |
+| `/feat` | `/work:work-flow-feature` | Workflow feature complet |
+| `/bugf` | `/work:work-flow-bugfix` | Workflow bugfix complet |
+| `/rel` | `/work:work-flow-release` | Workflow release complet |
+| `/biz:biz-launch` | `/work:work-flow-launch` | Workflow lancement complet |
 
 ---
 
@@ -39,19 +39,19 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/tdd` | `/dev-tdd` | Test-Driven Development |
-| `/test` | `/dev-test` | Générer des tests |
-| `/testsetup` | `/dev-testing-setup` | Configurer l'infra de tests |
-| `/dbg` | `/dev-debug` | Déboguer |
-| `/ref` | `/dev-refactor` | Refactoring |
-| `/api` | `/dev-api` | API endpoints REST |
-| `/apiv` | `/dev-api-versioning` | Versioning d'API |
-| `/comp` | `/dev-component` | Créer un composant |
-| `/hook` | `/dev-hook` | Créer un hook |
-| `/err` | `/dev-error-handling` | Gestion d'erreurs |
-| `/flutter` | `/dev-flutter` | Widgets Flutter |
-| `/supa` | `/dev-supabase` | Backend Supabase |
-| `/gql` | `/dev-graphql` | API GraphQL |
+| `/dev:dev-tdd` | `/dev:dev-tdd` | Test-Driven Development |
+| `/dev:dev-test` | `/dev:dev-test` | Générer des tests |
+| `/testsetup` | `/dev:dev-testing-setup` | Configurer l'infra de tests |
+| `/dbg` | `/dev:dev-debug` | Déboguer |
+| `/ref` | `/dev:dev-refactor` | Refactoring |
+| `/dev:dev-api` | `/dev:dev-api` | API endpoints REST |
+| `/apiv` | `/dev:dev-api-versioning` | Versioning d'API |
+| `/comp` | `/dev:dev-component` | Créer un composant |
+| `/dev:dev-hook` | `/dev:dev-hook` | Créer un hook |
+| `/err` | `/dev:dev-error-handling` | Gestion d'erreurs |
+| `/dev:dev-flutter` | `/dev:dev-flutter` | Widgets Flutter |
+| `/supa` | `/dev:dev-supabase` | Backend Supabase |
+| `/gql` | `/dev:dev-graphql` | API GraphQL |
 
 ---
 
@@ -59,15 +59,15 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/rev` | `/qa-review` | Code review |
-| `/sec` | `/qa-security` | Audit sécurité |
-| `/perf` | `/qa-perf` | Performance |
-| `/a11y` | `/qa-a11y` | Accessibilité |
-| `/audit` | `/qa-audit` | Audit complet |
-| `/resp` | `/qa-responsive` | Responsive |
-| `/auto` | `/qa-automation` | Tests automatisés |
-| `/cov` | `/qa-coverage` | Couverture de tests |
-| `/mob` | `/qa-mobile` | Audit apps mobiles |
+| `/rev` | `/qa:qa-review` | Code review |
+| `/sec` | `/qa:qa-security` | Audit sécurité |
+| `/qa:qa-perf` | `/qa:qa-perf` | Performance |
+| `/qa:qa-a11y` | `/qa:qa-a11y` | Accessibilité |
+| `/qa:qa-audit` | `/qa:qa-audit` | Audit complet |
+| `/resp` | `/qa:qa-responsive` | Responsive |
+| `/auto` | `/qa:qa-automation` | Tests automatisés |
+| `/cov` | `/qa:qa-coverage` | Couverture de tests |
+| `/mob` | `/qa:qa-mobile` | Audit apps mobiles |
 
 ---
 
@@ -75,22 +75,22 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/hot` | `/ops-hotfix` | Hotfix urgent |
-| `/rls` | `/ops-release` | Release |
-| `/deps` | `/ops-deps` | Dépendances |
-| `/dock` | `/ops-docker` | Docker |
-| `/mig` | `/ops-migrate` | Migration |
-| `/ci` | `/ops-ci` | CI/CD |
-| `/mon` | `/ops-monitoring` | Monitoring |
-| `/db` | `/ops-database` | Base de données |
-| `/health` | `/ops-health` | Health check |
-| `/env` | `/ops-env` | Environnements |
-| `/bak` | `/ops-backup` | Backup |
-| `/load` | `/ops-load-testing` | Tests de charge |
-| `/cost` | `/ops-cost-optimization` | Optimisation coûts |
-| `/disaster` | `/ops-disaster-recovery` | Plan de reprise |
-| `/infra` | `/ops-infra-code` | Infrastructure as Code |
-| `/secrets` | `/ops-secrets-management` | Gestion des secrets |
+| `/hot` | `/ops:ops-hotfix` | Hotfix urgent |
+| `/rls` | `/ops:ops-release` | Release |
+| `/ops:ops-deps` | `/ops:ops-deps` | Dépendances |
+| `/dock` | `/ops:ops-docker` | Docker |
+| `/mig` | `/ops:ops-migrate` | Migration |
+| `/ops:ops-ci` | `/ops:ops-ci` | CI/CD |
+| `/mon` | `/ops:ops-monitoring` | Monitoring |
+| `/db` | `/ops:ops-database` | Base de données |
+| `/ops:ops-health` | `/ops:ops-health` | Health check |
+| `/ops:ops-env` | `/ops:ops-env` | Environnements |
+| `/bak` | `/ops:ops-backup` | Backup |
+| `/load` | `/ops:ops-load-testing` | Tests de charge |
+| `/cost` | `/ops:ops-cost-optimization` | Optimisation coûts |
+| `/disaster` | `/ops:ops-disaster-recovery` | Plan de reprise |
+| `/infra` | `/ops:ops-infra-code` | Infrastructure as Code |
+| `/ops:ops-secrets-management` | `/ops:ops-secrets-management` | Gestion des secrets |
 
 ---
 
@@ -98,15 +98,15 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/doc` | `/doc-generate` | Générer doc |
-| `/chg` | `/doc-changelog` | Changelog |
-| `/exp` | `/doc-explain` | Expliquer code |
-| `/onb` | `/doc-onboard` | Onboarding |
-| `/i18n` | `/doc-i18n` | Internationalisation |
-| `/fix` | `/doc-fix-issue` | Fix issue |
-| `/spec` | `/doc-api-spec` | OpenAPI spec |
-| `/readme` | `/doc-readme` | README |
-| `/arch` | `/doc-architecture` | Architecture |
+| `/doc:doc-generate` | `/doc:doc-generate` | Générer doc |
+| `/chg` | `/doc:doc-changelog` | Changelog |
+| `/exp` | `/doc:doc-explain` | Expliquer code |
+| `/onb` | `/doc:doc-onboard` | Onboarding |
+| `/doc:doc-i18n` | `/doc:doc-i18n` | Internationalisation |
+| `/fix` | `/doc:doc-fix-issue` | Fix issue |
+| `/spec` | `/doc:doc-api-spec` | OpenAPI spec |
+| `/doc:doc-readme` | `/doc:doc-readme` | README |
+| `/arch` | `/doc:doc-architecture` | Architecture |
 
 ---
 
@@ -114,17 +114,17 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/biz` | `/biz-model` | Business model |
-| `/mkt` | `/biz-market` | Analyse marché |
-| `/mvp` | `/biz-mvp` | Définir MVP |
-| `/price` | `/biz-pricing` | Pricing |
-| `/pitch` | `/biz-pitch` | Pitch deck |
-| `/road` | `/biz-roadmap` | Roadmap |
-| `/lnch` | `/biz-launch` | Lancement |
-| `/competitor` | `/biz-competitor` | Analyse concurrent |
-| `/okr` | `/biz-okr` | OKRs |
-| `/research` | `/biz-research` | Recherche utilisateur |
-| `/personas` | `/biz-personas` | Personas |
+| `/biz` | `/biz:biz-model` | Business model |
+| `/mkt` | `/biz:biz-market` | Analyse marché |
+| `/biz:biz-mvp` | `/biz:biz-mvp` | Définir MVP |
+| `/price` | `/biz:biz-pricing` | Pricing |
+| `/biz:biz-pitch` | `/biz:biz-pitch` | Pitch deck |
+| `/road` | `/biz:biz-roadmap` | Roadmap |
+| `/lnch` | `/biz:biz-launch` | Lancement |
+| `/biz:biz-competitor` | `/biz:biz-competitor` | Analyse concurrent |
+| `/biz:biz-okr` | `/biz:biz-okr` | OKRs |
+| `/biz:biz-research` | `/biz:biz-research` | Recherche utilisateur |
+| `/biz:biz-personas` | `/biz:biz-personas` | Personas |
 
 ---
 
@@ -132,14 +132,14 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/land` | `/growth-landing` | Landing page |
-| `/seo` | `/growth-seo` | SEO |
-| `/ana` | `/growth-analytics` | Analytics |
-| `/ux` | `/growth-onboarding` | UX Onboarding |
-| `/email` | `/growth-email` | Templates email |
-| `/ab` | `/growth-ab-test` | A/B testing |
-| `/retain` | `/growth-retention` | Rétention |
-| `/funnel` | `/growth-funnel` | Funnels |
+| `/land` | `/growth:growth-landing` | Landing page |
+| `/growth:growth-seo` | `/growth:growth-seo` | SEO |
+| `/ana` | `/growth:growth-analytics` | Analytics |
+| `/ux` | `/growth:growth-onboarding` | UX Onboarding |
+| `/growth:growth-email` | `/growth:growth-email` | Templates email |
+| `/ab` | `/growth:growth-ab-test` | A/B testing |
+| `/retain` | `/growth:growth-retention` | Rétention |
+| `/growth:growth-funnel` | `/growth:growth-funnel` | Funnels |
 
 ---
 
@@ -147,9 +147,9 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/pipe` | `/data-pipeline` | Pipelines ETL/ELT |
-| `/dataana` | `/data-analytics` | Analyse de données |
-| `/model` | `/data-modeling` | Modélisation DWH |
+| `/pipe` | `/data:data-pipeline` | Pipelines ETL/ELT |
+| `/dataana` | `/data:data-analytics` | Analyse de données |
+| `/biz:biz-model` | `/data:data-modeling` | Modélisation DWH |
 
 ---
 
@@ -157,11 +157,11 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 
 | Alias | Commande complète | Usage |
 |-------|-------------------|-------|
-| `/legal` | `/legal-docs` | Documents légaux |
-| `/rgpd` | `/legal-rgpd` | Conformité RGPD |
-| `/pay` | `/legal-payment` | Paiement |
-| `/terms` | `/legal-terms-of-service` | CGU |
-| `/privacy` | `/legal-privacy-policy` | Confidentialité |
+| `/legal:legal-docs` | `/legal:legal-docs` | Documents légaux |
+| `/legal:legal-rgpd` | `/legal:legal-rgpd` | Conformité RGPD |
+| `/pay` | `/legal:legal-payment` | Paiement |
+| `/terms` | `/legal:legal-terms-of-service` | CGU |
+| `/privacy` | `/legal:legal-privacy-policy` | Confidentialité |
 
 ---
 
@@ -187,32 +187,32 @@ LEGAL     = Légal (docs, rgpd, payment, terms-of-service, privacy-policy)
 ### Workflow quotidien
 ```bash
 # Nouvelle feature
-/work-explore "comprendre l'auth"
-/work-plan "ajouter 2FA"
-/dev-tdd "implémenter 2FA"
-/qa-review
-/work-commit
-/work-pr
+/work:work-explore "comprendre l'auth"
+/work:work-plan "ajouter 2FA"
+/dev:dev-tdd "implémenter 2FA"
+/qa:qa-review
+/work:work-commit
+/work:work-pr
 ```
 
 ### Workflow complet automatisé
 ```bash
 # Feature complète
-/work-flow-feature "ajouter dark mode"
+/work:work-flow-feature "ajouter dark mode"
 
 # Bug fix complet
-/work-flow-bugfix "bug #123"
+/work:work-flow-bugfix "bug #123"
 
 # Release
-/work-flow-release "v2.0.0"
+/work:work-flow-release "v2.0.0"
 
 # Lancement produit
-/work-flow-launch "mon nouveau SaaS"
+/work:work-flow-launch "mon nouveau SaaS"
 ```
 
 ### Application mobile Flutter
 ```bash
-/work-explore → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+/work:work-explore → /work:work-plan → /dev:dev-flutter + /dev:dev-supabase → /qa:qa-mobile → /work:work-pr
 ```
 
 ---
@@ -226,10 +226,10 @@ Pour une intégration shell avec de vrais alias, vous pouvez configurer votre `.
 
 ```bash
 # Exemple d'alias shell (optionnel)
-alias cex="claude /work-explore"
-alias cpl="claude /work-plan"
-alias cco="claude /work-commit"
-alias cpr="claude /work-pr"
+alias cex="claude /work:work-explore"
+alias cpl="claude /work:work-plan"
+alias cco="claude /work:work-commit"
+alias cpr="claude /work:work-pr"
 ```
 
 ---

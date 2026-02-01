@@ -175,16 +175,16 @@
 ║                                                                               ║
 ║  WORKFLOW QUOTIDIEN:                                                          ║
 ║  ┌────────────────────────────────────────────────────────────────────────┐  ║
-║  │  /work-explore → /work-plan → CODE → /work-pr │  ║
+║  │  /work:work-explore → /work:work-plan → CODE → /work:work-pr │  ║
 ║  └────────────────────────────────────────────────────────────────────────┘  ║
 ║                                                                               ║
-║  NOUVELLE FEATURE:        /work-flow-feature "description"            ║
-║  CORRECTION BUG:          /work-flow-bugfix "issue #123"              ║
-║  NOUVELLE RELEASE:        /work-flow-release "v2.0"                   ║
-║  LANCEMENT PRODUIT:       /work-flow-launch "mon SaaS"                ║
+║  NOUVELLE FEATURE:        /work:work-flow-feature "description"            ║
+║  CORRECTION BUG:          /work:work-flow-bugfix "issue #123"              ║
+║  NOUVELLE RELEASE:        /work:work-flow-release "v2.0"                   ║
+║  LANCEMENT PRODUIT:       /work:work-flow-launch "mon SaaS"                ║
 ║                                                                               ║
-║  AUDIT COMPLET:           /qa-audit                                   ║
-║  HEALTH CHECK RAPIDE:     /ops-health                                 ║
+║  AUDIT COMPLET:           /qa:qa-audit                                   ║
+║  HEALTH CHECK RAPIDE:     /ops:ops-health                                 ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -203,163 +203,163 @@
 
 | Commande | Usage |
 |----------|-------|
-| `/work-explore` | Explorer et comprendre le code |
-| `/work-specify` | Créer une spécification fonctionnelle |
-| `/work-clarify` | Clarifier les ambiguïtés |
-| `/work-plan` | Planifier une implémentation |
-| `/work-commit` | Créer un commit propre |
-| `/work-pr` | Créer une Pull Request |
-| `/work-flow-feature` | Workflow feature complet |
-| `/work-flow-bugfix` | Workflow bugfix complet |
-| `/work-flow-release` | Workflow release complet |
-| `/work-flow-launch` | Workflow lancement complet |
+| `/work:work-explore` | Explorer et comprendre le code |
+| `/work:work-specify` | Créer une spécification fonctionnelle |
+| `/work:work-clarify` | Clarifier les ambiguïtés |
+| `/work:work-plan` | Planifier une implémentation |
+| `/work:work-commit` | Créer un commit propre |
+| `/work:work-pr` | Créer une Pull Request |
+| `/work:work-flow-feature` | Workflow feature complet |
+| `/work:work-flow-bugfix` | Workflow bugfix complet |
+| `/work:work-flow-release` | Workflow release complet |
+| `/work:work-flow-launch` | Workflow lancement complet |
 
 ### DEV- : Développement (23)
 
 | Commande | Usage |
 |----------|-------|
-| `/dev-tdd` | Développement TDD |
-| `/dev-test` | Générer des tests |
-| `/dev-testing-setup` | Configurer infrastructure tests |
-| `/dev-debug` | Déboguer un problème |
-| `/dev-refactor` | Refactoring guidé |
-| `/dev-document` | Génération documents (PDF, DOCX, XLSX, PPTX) |
-| `/dev-api` | Créer/documenter API REST |
-| `/dev-api-versioning` | Versioning d'API |
-| `/dev-component` | Créer un composant UI complet |
-| `/dev-hook` | Créer un hook React/Vue |
-| `/dev-error-handling` | Stratégie de gestion d'erreurs |
-| `/dev-react-perf` | Optimisation React/Next.js |
-| `/dev-mcp` | Créer des serveurs MCP |
-| `/dev-flutter` | Widgets et screens Flutter |
-| `/dev-supabase` | Backend Supabase (Auth, DB, Storage) |
-| `/dev-graphql` | API GraphQL client/serveur |
-| `/dev-neovim` | Plugins et config Neovim |
-| `/dev-design-system` | Design tokens et composants |
-| `/dev-prisma` | ORM Prisma |
-| `/dev-prompt-engineering` | Optimisation prompts LLM |
-| `/dev-rag` | Systèmes RAG |
-| `/dev-trpc` | APIs type-safe tRPC |
-| `/dev-ai-integration` | Intégration LLMs (OpenAI, Claude) |
+| `/dev:dev-tdd` | Développement TDD |
+| `/dev:dev-test` | Générer des tests |
+| `/dev:dev-testing-setup` | Configurer infrastructure tests |
+| `/dev:dev-debug` | Déboguer un problème |
+| `/dev:dev-refactor` | Refactoring guidé |
+| `/dev:dev-document` | Génération documents (PDF, DOCX, XLSX, PPTX) |
+| `/dev:dev-api` | Créer/documenter API REST |
+| `/dev:dev-api-versioning` | Versioning d'API |
+| `/dev:dev-component` | Créer un composant UI complet |
+| `/dev:dev-hook` | Créer un hook React/Vue |
+| `/dev:dev-error-handling` | Stratégie de gestion d'erreurs |
+| `/dev:dev-react-perf` | Optimisation React/Next.js |
+| `/dev:dev-mcp` | Créer des serveurs MCP |
+| `/dev:dev-flutter` | Widgets et screens Flutter |
+| `/dev:dev-supabase` | Backend Supabase (Auth, DB, Storage) |
+| `/dev:dev-graphql` | API GraphQL client/serveur |
+| `/dev:dev-neovim` | Plugins et config Neovim |
+| `/dev:dev-design-system` | Design tokens et composants |
+| `/dev:dev-prisma` | ORM Prisma |
+| `/dev:dev-prompt-engineering` | Optimisation prompts LLM |
+| `/dev:dev-rag` | Systèmes RAG |
+| `/dev:dev-trpc` | APIs type-safe tRPC |
+| `/dev:dev-ai-integration` | Intégration LLMs (OpenAI, Claude) |
 
 ### QA- : Qualité (15)
 
 | Commande | Usage |
 |----------|-------|
-| `/qa-review` | Code review + analyse nommage |
-| `/qa-security` | Audit sécurité OWASP |
-| `/qa-perf` | Analyse performance |
-| `/qa-a11y` | Audit accessibilité WCAG |
-| `/qa-audit` | Audit complet (tout en un) |
-| `/qa-design` | Audit UI/UX (100+ règles) |
-| `/qa-responsive` | Audit responsive/mobile |
-| `/qa-automation` | Automatisation des tests |
-| `/qa-coverage` | Analyse couverture tests |
-| `/qa-e2e` | Tests E2E (Playwright, Cypress) |
-| `/qa-kaizen` | Amélioration continue |
-| `/qa-mobile` | Audit qualité apps mobiles |
-| `/qa-neovim` | Audit config Neovim |
-| `/qa-tech-debt` | Dette technique |
-| `/qa-chrome` | Tests visuels Chrome |
+| `/qa:qa-review` | Code review + analyse nommage |
+| `/qa:qa-security` | Audit sécurité OWASP |
+| `/qa:qa-perf` | Analyse performance |
+| `/qa:qa-a11y` | Audit accessibilité WCAG |
+| `/qa:qa-audit` | Audit complet (tout en un) |
+| `/qa:qa-design` | Audit UI/UX (100+ règles) |
+| `/qa:qa-responsive` | Audit responsive/mobile |
+| `/qa:qa-automation` | Automatisation des tests |
+| `/qa:qa-coverage` | Analyse couverture tests |
+| `/qa:qa-e2e` | Tests E2E (Playwright, Cypress) |
+| `/qa:qa-kaizen` | Amélioration continue |
+| `/qa:qa-mobile` | Audit qualité apps mobiles |
+| `/qa:qa-neovim` | Audit config Neovim |
+| `/qa:qa-tech-debt` | Dette technique |
+| `/qa:qa-chrome` | Tests visuels Chrome |
 
 ### OPS- : Opérations (30)
 
 | Commande | Usage |
 |----------|-------|
-| `/ops-hotfix` | Correction urgente production |
-| `/ops-release` | Créer une release |
-| `/ops-rollback` | Rollback sécurisé |
-| `/ops-gitflow-init` | Initialiser GitFlow |
-| `/ops-gitflow-feature` | Branches feature |
-| `/ops-gitflow-release` | Branches release |
-| `/ops-gitflow-hotfix` | Hotfixes GitFlow |
-| `/ops-deps` | Audit et MAJ dépendances |
-| `/ops-docker` | Dockeriser |
-| `/ops-k8s` | Déploiement Kubernetes |
-| `/ops-vps` | Déploiement VPS |
-| `/ops-migrate` | Migration code/deps |
-| `/ops-ci` | Pipelines CI/CD |
-| `/ops-monitoring` | Logs, métriques, alertes |
-| `/ops-observability-stack` | Prometheus, Grafana, Loki |
-| `/ops-grafana-dashboard` | Dashboards Grafana |
-| `/ops-database` | Schema, migrations DB |
-| `/ops-health` | Health check rapide |
-| `/ops-env` | Gestion environnements |
-| `/ops-backup` | Stratégie backup/restore |
-| `/ops-load-testing` | Tests de charge |
-| `/ops-cost-optimization` | Optimisation coûts cloud |
-| `/ops-disaster-recovery` | Plan reprise sinistre |
-| `/ops-infra-code` | Infrastructure as Code |
-| `/ops-proxmox` | Infrastructure Proxmox VE |
-| `/ops-opnsense` | Configuration OPNsense |
-| `/ops-secrets-management` | Gestion secrets |
-| `/ops-serverless` | Déploiement serverless |
-| `/ops-vercel` | Configuration Vercel |
-| `/ops-mobile-release` | Publication App/Play Store |
+| `/ops:ops-hotfix` | Correction urgente production |
+| `/ops:ops-release` | Créer une release |
+| `/ops:ops-rollback` | Rollback sécurisé |
+| `/ops:ops-gitflow-init` | Initialiser GitFlow |
+| `/ops:ops-gitflow-feature` | Branches feature |
+| `/ops:ops-gitflow-release` | Branches release |
+| `/ops:ops-gitflow-hotfix` | Hotfixes GitFlow |
+| `/ops:ops-deps` | Audit et MAJ dépendances |
+| `/ops:ops-docker` | Dockeriser |
+| `/ops:ops-k8s` | Déploiement Kubernetes |
+| `/ops:ops-vps` | Déploiement VPS |
+| `/ops:ops-migrate` | Migration code/deps |
+| `/ops:ops-ci` | Pipelines CI/CD |
+| `/ops:ops-monitoring` | Logs, métriques, alertes |
+| `/ops:ops-observability-stack` | Prometheus, Grafana, Loki |
+| `/ops:ops-grafana-dashboard` | Dashboards Grafana |
+| `/ops:ops-database` | Schema, migrations DB |
+| `/ops:ops-health` | Health check rapide |
+| `/ops:ops-env` | Gestion environnements |
+| `/ops:ops-backup` | Stratégie backup/restore |
+| `/ops:ops-load-testing` | Tests de charge |
+| `/ops:ops-cost-optimization` | Optimisation coûts cloud |
+| `/ops:ops-disaster-recovery` | Plan reprise sinistre |
+| `/ops:ops-infra-code` | Infrastructure as Code |
+| `/ops:ops-proxmox` | Infrastructure Proxmox VE |
+| `/ops:ops-opnsense` | Configuration OPNsense |
+| `/ops:ops-secrets-management` | Gestion secrets |
+| `/ops:ops-serverless` | Déploiement serverless |
+| `/ops:ops-vercel` | Configuration Vercel |
+| `/ops:ops-mobile-release` | Publication App/Play Store |
 
 ### DOC- : Documentation (9)
 
 | Commande | Usage |
 |----------|-------|
-| `/doc-generate` | Générer documentation |
-| `/doc-changelog` | Changelog |
-| `/doc-explain` | Expliquer code complexe |
-| `/doc-onboard` | Découvrir un codebase |
-| `/doc-i18n` | Internationalisation |
-| `/doc-fix-issue` | Corriger issue GitHub |
-| `/doc-api-spec` | Spec OpenAPI/Swagger |
-| `/doc-readme` | Créer/améliorer README |
-| `/doc-architecture` | Documenter l'architecture |
+| `/doc:doc-generate` | Générer documentation |
+| `/doc:doc-changelog` | Changelog |
+| `/doc:doc-explain` | Expliquer code complexe |
+| `/doc:doc-onboard` | Découvrir un codebase |
+| `/doc:doc-i18n` | Internationalisation |
+| `/doc:doc-fix-issue` | Corriger issue GitHub |
+| `/doc:doc-api-spec` | Spec OpenAPI/Swagger |
+| `/doc:doc-readme` | Créer/améliorer README |
+| `/doc:doc-architecture` | Documenter l'architecture |
 
 ### BIZ- : Business (11)
 
 | Commande | Usage |
 |----------|-------|
-| `/biz-model` | Business model, Lean Canvas |
-| `/biz-market` | Étude de marché |
-| `/biz-mvp` | Définir le MVP |
-| `/biz-pricing` | Stratégie tarifaire |
-| `/biz-pitch` | Pitch deck |
-| `/biz-roadmap` | Roadmap produit |
-| `/biz-launch` | Workflow lancement |
-| `/biz-competitor` | Analyse concurrentielle |
-| `/biz-okr` | OKRs |
-| `/biz-personas` | Personas utilisateur |
-| `/biz-research` | Recherche utilisateur |
+| `/biz:biz-model` | Business model, Lean Canvas |
+| `/biz:biz-market` | Étude de marché |
+| `/biz:biz-mvp` | Définir le MVP |
+| `/biz:biz-pricing` | Stratégie tarifaire |
+| `/biz:biz-pitch` | Pitch deck |
+| `/biz:biz-roadmap` | Roadmap produit |
+| `/biz:biz-launch` | Workflow lancement |
+| `/biz:biz-competitor` | Analyse concurrentielle |
+| `/biz:biz-okr` | OKRs |
+| `/biz:biz-personas` | Personas utilisateur |
+| `/biz:biz-research` | Recherche utilisateur |
 
 ### GROWTH- : Croissance (11)
 
 | Commande | Usage |
 |----------|-------|
-| `/growth-landing` | Landing page |
-| `/growth-seo` | Audit SEO |
-| `/growth-analytics` | Tracking et KPIs |
-| `/growth-app-store-analytics` | Métriques App/Play Store |
-| `/growth-onboarding` | Parcours utilisateur |
-| `/growth-email` | Templates email |
-| `/growth-ab-test` | A/B testing |
-| `/growth-retention` | Stratégies rétention |
-| `/growth-funnel` | Analyse funnels |
-| `/growth-localization` | Localisation multi-marchés |
-| `/growth-cro` | Optimisation conversion (CRO) |
+| `/growth:growth-landing` | Landing page |
+| `/growth:growth-seo` | Audit SEO |
+| `/growth:growth-analytics` | Tracking et KPIs |
+| `/growth:growth-app-store-analytics` | Métriques App/Play Store |
+| `/growth:growth-onboarding` | Parcours utilisateur |
+| `/growth:growth-email` | Templates email |
+| `/growth:growth-ab-test` | A/B testing |
+| `/growth:growth-retention` | Stratégies rétention |
+| `/growth:growth-funnel` | Analyse funnels |
+| `/growth:growth-localization` | Localisation multi-marchés |
+| `/growth:growth-cro` | Optimisation conversion (CRO) |
 
 ### DATA- : Données (3)
 
 | Commande | Usage |
 |----------|-------|
-| `/data-pipeline` | Pipelines ETL/ELT |
-| `/data-analytics` | Analyse de données |
-| `/data-modeling` | Modélisation data warehouse |
+| `/data:data-pipeline` | Pipelines ETL/ELT |
+| `/data:data-analytics` | Analyse de données |
+| `/data:data-modeling` | Modélisation data warehouse |
 
 ### LEGAL- : Légal (5)
 
 | Commande | Usage |
 |----------|-------|
-| `/legal-docs` | CGU, CGV, mentions légales |
-| `/legal-rgpd` | Conformité RGPD/GDPR |
-| `/legal-payment` | Intégration paiement |
-| `/legal-terms-of-service` | Conditions Générales d'Utilisation |
-| `/legal-privacy-policy` | Politique de Confidentialité |
+| `/legal:legal-docs` | CGU, CGV, mentions légales |
+| `/legal:legal-rgpd` | Conformité RGPD/GDPR |
+| `/legal:legal-payment` | Intégration paiement |
+| `/legal:legal-terms-of-service` | Conditions Générales d'Utilisation |
+| `/legal:legal-privacy-policy` | Politique de Confidentialité |
 
 ---
 
@@ -367,49 +367,49 @@
 
 ### Nouveau projet
 ```
-/doc-onboard     → Comprendre la structure
-/work-explore    → Explorer le code
-/work-plan       → Planifier le travail
+/doc:doc-onboard     → Comprendre la structure
+/work:work-explore    → Explorer le code
+/work:work-plan       → Planifier le travail
 ```
 
 ### Nouvelle feature (rapide)
 ```
-/work-explore    → Comprendre l'existant
-/work-plan       → Designer la solution
-/dev-tdd         → Implémenter avec tests
-/work-commit     → Commiter proprement
-/work-pr         → Créer la PR
+/work:work-explore    → Comprendre l'existant
+/work:work-plan       → Designer la solution
+/dev:dev-tdd         → Implémenter avec tests
+/work:work-commit     → Commiter proprement
+/work:work-pr         → Créer la PR
 ```
 
 ### Nouvelle feature (workflow complet)
 ```
-/work-flow-feature "ajouter dark mode"
+/work:work-flow-feature "ajouter dark mode"
 ```
 
 ### Correction de bug
 ```
-/work-flow-bugfix "#123 - utilisateur ne peut pas se connecter"
+/work:work-flow-bugfix "#123 - utilisateur ne peut pas se connecter"
 ```
 
 ### Avant mise en prod
 ```
-/qa-audit        → Audit complet
-/ops-health      → Health check rapide
+/qa:qa-audit        → Audit complet
+/ops:ops-health      → Health check rapide
 ```
 
 ### Nouvelle release
 ```
-/work-flow-release "v2.0.0"
+/work:work-flow-release "v2.0.0"
 ```
 
 ### Lancer un nouveau business
 ```
-/work-flow-launch "mon nouveau SaaS"
+/work:work-flow-launch "mon nouveau SaaS"
 ```
 
 ### Application mobile Flutter
 ```
-/work-explore → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+/work:work-explore → /work:work-plan → /dev:dev-flutter + /dev:dev-supabase → /qa:qa-mobile → /work:work-pr
 ```
 
 ---

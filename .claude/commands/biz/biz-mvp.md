@@ -171,11 +171,11 @@ Métrique de succès: [KPI principal]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/plan` | Planifier l'implémentation du MVP |
-| `/tdd` | Développer avec tests |
-| `/roadmap` | Roadmap post-MVP |
-| `/launch` | Lancement du MVP |
-| `/model` | Valider le business model |
+| `/work:work-plan` | Planifier l'implémentation du MVP |
+| `/dev:dev-tdd` | Développer avec tests |
+| `/biz:biz-roadmap` | Roadmap post-MVP |
+| `/biz:biz-launch` | Lancement du MVP |
+| `/biz:biz-model` | Valider le business model |
 
 ---
 

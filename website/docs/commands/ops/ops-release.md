@@ -1,6 +1,6 @@
 ---
 sidebar_position: 26
-title: "/ops-release"
+title: "/ops:ops-release"
 description: "Workflow de release avec changelog et versioning."
 tags:
   - "ops"
@@ -156,11 +156,11 @@ gh release create vX.Y.Z --title "vX.Y.Z" --notes-file CHANGELOG.md
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/changelog` | Générer le changelog |
-| `/ci` | Automatiser la release |
-| `/test` | Tests pré-release |
-| `/security` | Audit avant release |
-| `/monitoring` | Vérifier post-release |
+| `/doc:doc-changelog` | Générer le changelog |
+| `/ops:ops-ci` | Automatiser la release |
+| `/dev:dev-test` | Tests pré-release |
+| `/qa:qa-security` | Audit avant release |
+| `/ops:ops-monitoring` | Vérifier post-release |
 
 ---
 

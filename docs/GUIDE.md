@@ -83,7 +83,7 @@ Categories:
 
 ### 2.1 WORK- : Workflow Principal (8 agents)
 
-#### `/work-explore` - L'Enquêteur
+#### `/work:work-explore` - L'Enquêteur
 
 **Quand l'utiliser :**
 - Avant de toucher au code existant
@@ -92,14 +92,14 @@ Categories:
 
 **Exemples pratiques :**
 ```
-/work-explore le système d'authentification
-/work-explore comment les erreurs sont gérées
-/work-explore la structure de la base de données
+/work:work-explore le système d'authentification
+/work:work-explore comment les erreurs sont gérées
+/work:work-explore la structure de la base de données
 ```
 
 ---
 
-#### `/work-plan` - L'Architecte
+#### `/work:work-plan` - L'Architecte
 
 **Quand l'utiliser :**
 - Avant toute fonctionnalité non-triviale
@@ -107,13 +107,13 @@ Categories:
 
 **Exemples pratiques :**
 ```
-/work-plan ajouter l'authentification OAuth2 Google
-/work-plan migrer de REST à GraphQL
+/work:work-plan ajouter l'authentification OAuth2 Google
+/work:work-plan migrer de REST à GraphQL
 ```
 
 ---
 
-#### `/work-commit` - Le Scribe
+#### `/work:work-commit` - Le Scribe
 
 **Format Conventional Commits :**
 ```
@@ -126,7 +126,7 @@ Closes #123
 
 ---
 
-#### `/work-pr` - Le Communicant
+#### `/work:work-pr` - Le Communicant
 
 **Quand l'utiliser :**
 - Après avoir terminé une feature branch
@@ -138,15 +138,15 @@ Closes #123
 
 | Commande | Usage |
 |----------|-------|
-| `/work-flow-feature` | Workflow complet feature (explore→plan→code→pr) |
-| `/work-flow-bugfix` | Workflow complet bugfix (debug→test→fix→pr) |
-| `/work-flow-release` | Workflow complet release (audit→changelog→tag→deploy) |
-| `/work-flow-launch` | Workflow complet lancement produit |
+| `/work:work-flow-feature` | Workflow complet feature (explore→plan→code→pr) |
+| `/work:work-flow-bugfix` | Workflow complet bugfix (debug→test→fix→pr) |
+| `/work:work-flow-release` | Workflow complet release (audit→changelog→tag→deploy) |
+| `/work:work-flow-launch` | Workflow complet lancement produit |
 
 **Exemple :**
 ```bash
 # Au lieu de faire manuellement chaque étape
-/work-flow-feature "ajouter le dark mode"
+/work:work-flow-feature "ajouter le dark mode"
 
 # Le workflow enchaîne automatiquement:
 # 1. Explore → 2. Plan → 3. TDD → 4. Review → 5. Commit → 6. PR
@@ -156,7 +156,7 @@ Closes #123
 
 ### 2.2 DEV- : Développement (13 agents)
 
-#### `/dev-tdd` - Le Testeur First
+#### `/dev:dev-tdd` - Le Testeur First
 
 **Le cycle TDD :**
 ```
@@ -169,64 +169,64 @@ Closes #123
 
 **Exemple :**
 ```
-/dev-tdd fonction de validation d'email
+/dev:dev-tdd fonction de validation d'email
 ```
 
 ---
 
-#### `/dev-test` - Le Générateur de Tests
+#### `/dev:dev-test` - Le Générateur de Tests
 
 ```
-/dev-test src/services/user-service.ts
+/dev:dev-test src/services/user-service.ts
 ```
 
 ---
 
-#### `/dev-testing-setup` - Le Configurateur de Tests
+#### `/dev:dev-testing-setup` - Le Configurateur de Tests
 
 **Quand l'utiliser :**
 - Pour configurer l'infrastructure de tests d'un projet
 - Pour mettre en place Jest, Vitest, Pytest, etc.
 
 ```
-/dev-testing-setup configurer Vitest avec couverture
+/dev:dev-testing-setup configurer Vitest avec couverture
 ```
 
 ---
 
-#### `/dev-debug` - Le Détective
+#### `/dev:dev-debug` - Le Détective
 
 ```
-/dev-debug erreur 500 sur /api/orders quand panier vide
-```
-
----
-
-#### `/dev-refactor` - Le Chirurgien
-
-```
-/dev-refactor src/components/UserForm.tsx
+/dev:dev-debug erreur 500 sur /api/orders quand panier vide
 ```
 
 ---
 
-#### `/dev-api` - L'API Designer REST
+#### `/dev:dev-refactor` - Le Chirurgien
 
 ```
-/dev-api créer endpoint CRUD pour les produits
-```
-
----
-
-#### `/dev-api-versioning` - Le Gestionnaire de Versions API
-
-```
-/dev-api-versioning migrer v1 vers v2 avec rétrocompatibilité
+/dev:dev-refactor src/components/UserForm.tsx
 ```
 
 ---
 
-#### `/dev-component` - Le Créateur de Composants
+#### `/dev:dev-api` - L'API Designer REST
+
+```
+/dev:dev-api créer endpoint CRUD pour les produits
+```
+
+---
+
+#### `/dev:dev-api-versioning` - Le Gestionnaire de Versions API
+
+```
+/dev:dev-api-versioning migrer v1 vers v2 avec rétrocompatibilité
+```
+
+---
+
+#### `/dev:dev-component` - Le Créateur de Composants
 
 **Crée un composant complet avec :**
 - Code du composant
@@ -235,12 +235,12 @@ Closes #123
 - Types TypeScript
 
 ```
-/dev-component créer un composant Button avec variantes
+/dev:dev-component créer un composant Button avec variantes
 ```
 
 ---
 
-#### `/dev-hook` - Le Créateur de Hooks
+#### `/dev:dev-hook` - Le Créateur de Hooks
 
 **Crée un hook React/Vue avec :**
 - Code du hook
@@ -249,20 +249,20 @@ Closes #123
 - Exemples d'utilisation
 
 ```
-/dev-hook créer un hook useLocalStorage
+/dev:dev-hook créer un hook useLocalStorage
 ```
 
 ---
 
-#### `/dev-error-handling` - Le Gestionnaire d'Erreurs
+#### `/dev:dev-error-handling` - Le Gestionnaire d'Erreurs
 
 ```
-/dev-error-handling implémenter une stratégie de gestion d'erreurs
+/dev:dev-error-handling implémenter une stratégie de gestion d'erreurs
 ```
 
 ---
 
-#### `/dev-flutter` - Le Développeur Mobile
+#### `/dev:dev-flutter` - Le Développeur Mobile
 
 **Pour les applications Flutter :**
 - Widgets et screens
@@ -270,12 +270,12 @@ Closes #123
 - Tests widget
 
 ```
-/dev-flutter créer un écran de profil utilisateur
+/dev:dev-flutter créer un écran de profil utilisateur
 ```
 
 ---
 
-#### `/dev-supabase` - Le Backend Supabase
+#### `/dev:dev-supabase` - Le Backend Supabase
 
 **Pour l'intégration Supabase :**
 - Auth, Database, Storage
@@ -283,12 +283,12 @@ Closes #123
 - Edge Functions
 
 ```
-/dev-supabase configurer l'authentification avec magic link
+/dev:dev-supabase configurer l'authentification avec magic link
 ```
 
 ---
 
-#### `/dev-graphql` - L'API GraphQL
+#### `/dev:dev-graphql` - L'API GraphQL
 
 **Pour GraphQL client et serveur :**
 - Schémas et resolvers
@@ -296,50 +296,50 @@ Closes #123
 - Subscriptions
 
 ```
-/dev-graphql créer un schéma pour les utilisateurs
+/dev:dev-graphql créer un schéma pour les utilisateurs
 ```
 
 ---
 
 ### 2.3 QA- : Qualité (9 agents)
 
-#### `/qa-review` - Le Reviewer
+#### `/qa:qa-review` - Le Reviewer
 
 ```
-/qa-review mes changements avant PR
+/qa:qa-review mes changements avant PR
 ```
 
 ---
 
-#### `/qa-security` - Le Gardien
+#### `/qa:qa-security` - Le Gardien
 
 **Audit OWASP Top 10**
 
 ```
-/qa-security audit du module de paiement
+/qa:qa-security audit du module de paiement
 ```
 
 ---
 
-#### `/qa-perf` - L'Optimiseur
+#### `/qa:qa-perf` - L'Optimiseur
 
 ```
-/qa-perf la page Dashboard charge en 8s
+/qa:qa-perf la page Dashboard charge en 8s
 ```
 
 ---
 
-#### `/qa-a11y` - L'Inclusif
+#### `/qa:qa-a11y` - L'Inclusif
 
 **Audit WCAG 2.1**
 
 ```
-/qa-a11y audit du formulaire d'inscription
+/qa:qa-a11y audit du formulaire d'inscription
 ```
 
 ---
 
-#### `/qa-audit` - L'Auditeur Complet
+#### `/qa:qa-audit` - L'Auditeur Complet
 
 **Combine tous les audits en un :**
 - Sécurité (OWASP)
@@ -349,38 +349,38 @@ Closes #123
 - Qualité de code
 
 ```
-/qa-audit avant mise en production
+/qa:qa-audit avant mise en production
 ```
 
 ---
 
-#### `/qa-responsive` - Le Mobile Expert Web
+#### `/qa:qa-responsive` - Le Mobile Expert Web
 
 **Audit responsive et mobile-first**
 
 ```
-/qa-responsive vérifier l'affichage mobile
+/qa:qa-responsive vérifier l'affichage mobile
 ```
 
 ---
 
-#### `/qa-automation` - L'Automatiseur de Tests
+#### `/qa:qa-automation` - L'Automatiseur de Tests
 
 ```
-/qa-automation mettre en place les tests E2E avec Playwright
-```
-
----
-
-#### `/qa-coverage` - L'Analyste de Couverture
-
-```
-/qa-coverage analyser la couverture et identifier les manques
+/qa:qa-automation mettre en place les tests E2E avec Playwright
 ```
 
 ---
 
-#### `/qa-mobile` - L'Expert Apps Mobiles
+#### `/qa:qa-coverage` - L'Analyste de Couverture
+
+```
+/qa:qa-coverage analyser la couverture et identifier les manques
+```
+
+---
+
+#### `/qa:qa-mobile` - L'Expert Apps Mobiles
 
 **Audit qualité pour Flutter/React Native :**
 - Performance mobile
@@ -388,441 +388,441 @@ Closes #123
 - Tests sur devices
 
 ```
-/qa-mobile auditer l'application Flutter
+/qa:qa-mobile auditer l'application Flutter
 ```
 
 ---
 
 ### 2.4 OPS- : Opérations (16 agents)
 
-#### `/ops-hotfix` - Le Pompier
+#### `/ops:ops-hotfix` - Le Pompier
 
 ```
-/ops-hotfix les paiements échouent en production
-```
-
----
-
-#### `/ops-release` - Le Release Manager
-
-```
-/ops-release 2.1.0
+/ops:ops-hotfix les paiements échouent en production
 ```
 
 ---
 
-#### `/ops-deps` - Le Gardien des Dépendances
+#### `/ops:ops-release` - Le Release Manager
 
 ```
-/ops-deps audit et mise à jour
-```
-
----
-
-#### `/ops-docker` - Le Containeriseur
-
-```
-/ops-docker containeriser l'application
+/ops:ops-release 2.1.0
 ```
 
 ---
 
-#### `/ops-migrate` - Le Migrateur
+#### `/ops:ops-deps` - Le Gardien des Dépendances
 
 ```
-/ops-migrate de Express à Fastify
-```
-
----
-
-#### `/ops-ci` - L'Automatiseur CI/CD
-
-```
-/ops-ci configurer GitHub Actions
+/ops:ops-deps audit et mise à jour
 ```
 
 ---
 
-#### `/ops-monitoring` - L'Observateur
+#### `/ops:ops-docker` - Le Containeriseur
 
 ```
-/ops-monitoring mettre en place les alertes
-```
-
----
-
-#### `/ops-database` - Le DBA
-
-```
-/ops-database optimiser les requêtes lentes
+/ops:ops-docker containeriser l'application
 ```
 
 ---
 
-#### `/ops-health` - Le Médecin Express
+#### `/ops:ops-migrate` - Le Migrateur
+
+```
+/ops:ops-migrate de Express à Fastify
+```
+
+---
+
+#### `/ops:ops-ci` - L'Automatiseur CI/CD
+
+```
+/ops:ops-ci configurer GitHub Actions
+```
+
+---
+
+#### `/ops:ops-monitoring` - L'Observateur
+
+```
+/ops:ops-monitoring mettre en place les alertes
+```
+
+---
+
+#### `/ops:ops-database` - Le DBA
+
+```
+/ops:ops-database optimiser les requêtes lentes
+```
+
+---
+
+#### `/ops:ops-health` - Le Médecin Express
 
 **Diagnostic rapide (5 min) :**
 
 ```
-/ops-health
+/ops:ops-health
 ```
 
 ---
 
-#### `/ops-env` - Le Gestionnaire d'Environnements
+#### `/ops:ops-env` - Le Gestionnaire d'Environnements
 
 ```
-/ops-env configurer les variables par environnement
-```
-
----
-
-#### `/ops-backup` - Le Protecteur de Données
-
-```
-/ops-backup stratégie de backup PostgreSQL
+/ops:ops-env configurer les variables par environnement
 ```
 
 ---
 
-#### `/ops-load-testing` - Le Testeur de Charge
+#### `/ops:ops-backup` - Le Protecteur de Données
 
 ```
-/ops-load-testing simuler 1000 utilisateurs concurrents
-```
-
----
-
-#### `/ops-cost-optimization` - L'Optimiseur de Coûts
-
-```
-/ops-cost-optimization réduire la facture AWS
+/ops:ops-backup stratégie de backup PostgreSQL
 ```
 
 ---
 
-#### `/ops-disaster-recovery` - Le Planificateur de Reprise
+#### `/ops:ops-load-testing` - Le Testeur de Charge
 
 ```
-/ops-disaster-recovery créer un plan de reprise après sinistre
-```
-
----
-
-#### `/ops-infra-code` - L'Infrastructure as Code
-
-```
-/ops-infra-code créer l'infrastructure Terraform pour AWS
+/ops:ops-load-testing simuler 1000 utilisateurs concurrents
 ```
 
 ---
 
-#### `/ops-secrets-management` - Le Gardien des Secrets
+#### `/ops:ops-cost-optimization` - L'Optimiseur de Coûts
 
 ```
-/ops-secrets-management migrer vers HashiCorp Vault
+/ops:ops-cost-optimization réduire la facture AWS
+```
+
+---
+
+#### `/ops:ops-disaster-recovery` - Le Planificateur de Reprise
+
+```
+/ops:ops-disaster-recovery créer un plan de reprise après sinistre
+```
+
+---
+
+#### `/ops:ops-infra-code` - L'Infrastructure as Code
+
+```
+/ops:ops-infra-code créer l'infrastructure Terraform pour AWS
+```
+
+---
+
+#### `/ops:ops-secrets-management` - Le Gardien des Secrets
+
+```
+/ops:ops-secrets-management migrer vers HashiCorp Vault
 ```
 
 ---
 
 ### 2.5 DOC- : Documentation (9 agents)
 
-#### `/doc-generate` - Le Documentaliste
+#### `/doc:doc-generate` - Le Documentaliste
 
 ```
-/doc-generate API endpoints
-```
-
----
-
-#### `/doc-changelog` - L'Historien
-
-```
-/doc-changelog depuis la dernière release
+/doc:doc-generate API endpoints
 ```
 
 ---
 
-#### `/doc-explain` - Le Professeur
+#### `/doc:doc-changelog` - L'Historien
 
 ```
-/doc-explain src/services/payment-processor.ts
-```
-
----
-
-#### `/doc-onboard` - Le Guide
-
-```
-/doc-onboard
+/doc:doc-changelog depuis la dernière release
 ```
 
 ---
 
-#### `/doc-i18n` - L'Internationalisateur
+#### `/doc:doc-explain` - Le Professeur
 
 ```
-/doc-i18n ajouter le support français
-```
-
----
-
-#### `/doc-fix-issue` - Le Résolveur d'Issues
-
-```
-/doc-fix-issue #42
+/doc:doc-explain src/services/payment-processor.ts
 ```
 
 ---
 
-#### `/doc-api-spec` - Le Spécificateur
+#### `/doc:doc-onboard` - Le Guide
+
+```
+/doc:doc-onboard
+```
+
+---
+
+#### `/doc:doc-i18n` - L'Internationalisateur
+
+```
+/doc:doc-i18n ajouter le support français
+```
+
+---
+
+#### `/doc:doc-fix-issue` - Le Résolveur d'Issues
+
+```
+/doc:doc-fix-issue #42
+```
+
+---
+
+#### `/doc:doc-api-spec` - Le Spécificateur
 
 **Génère une spec OpenAPI/Swagger**
 
 ```
-/doc-api-spec générer la documentation API
+/doc:doc-api-spec générer la documentation API
 ```
 
 ---
 
-#### `/doc-readme` - Le Rédacteur README
+#### `/doc:doc-readme` - Le Rédacteur README
 
 ```
-/doc-readme créer un README complet
+/doc:doc-readme créer un README complet
 ```
 
 ---
 
-#### `/doc-architecture` - L'Architecte Documentaire
+#### `/doc:doc-architecture` - L'Architecte Documentaire
 
 ```
-/doc-architecture documenter l'architecture du projet
+/doc:doc-architecture documenter l'architecture du projet
 ```
 
 ---
 
 ### 2.6 BIZ- : Business (11 agents)
 
-#### `/biz-model` - L'Analyste Business
+#### `/biz:biz-model` - L'Analyste Business
 
 ```
-/biz-model analyser ce projet SaaS
-```
-
----
-
-#### `/biz-market` - L'Analyste Marché
-
-```
-/biz-market analyse concurrentielle pour un outil de gestion
+/biz:biz-model analyser ce projet SaaS
 ```
 
 ---
 
-#### `/biz-mvp` - Le Stratège Produit
+#### `/biz:biz-market` - L'Analyste Marché
 
 ```
-/biz-mvp définir le MVP pour une app de livraison
-```
-
----
-
-#### `/biz-pricing` - Le Stratège Prix
-
-```
-/biz-pricing définir les plans tarifaires
+/biz:biz-market analyse concurrentielle pour un outil de gestion
 ```
 
 ---
 
-#### `/biz-pitch` - Le Présentateur
+#### `/biz:biz-mvp` - Le Stratège Produit
 
 ```
-/biz-pitch préparer une présentation investisseurs
-```
-
----
-
-#### `/biz-roadmap` - Le Planificateur
-
-```
-/biz-roadmap planifier les 6 prochains mois
+/biz:biz-mvp définir le MVP pour une app de livraison
 ```
 
 ---
 
-#### `/biz-launch` - Le Lanceur
+#### `/biz:biz-pricing` - Le Stratège Prix
+
+```
+/biz:biz-pricing définir les plans tarifaires
+```
+
+---
+
+#### `/biz:biz-pitch` - Le Présentateur
+
+```
+/biz:biz-pitch préparer une présentation investisseurs
+```
+
+---
+
+#### `/biz:biz-roadmap` - Le Planificateur
+
+```
+/biz:biz-roadmap planifier les 6 prochains mois
+```
+
+---
+
+#### `/biz:biz-launch` - Le Lanceur
 
 **Workflow complet de lancement business**
 
 ```
-/biz-launch nouveau SaaS de gestion de projet
+/biz:biz-launch nouveau SaaS de gestion de projet
 ```
 
 ---
 
-#### `/biz-competitor` - L'Analyste Concurrentiel
+#### `/biz:biz-competitor` - L'Analyste Concurrentiel
 
 ```
-/biz-competitor analyser Notion comme concurrent
-```
-
----
-
-#### `/biz-okr` - Le Définisseur d'Objectifs
-
-```
-/biz-okr définir les OKRs du trimestre
+/biz:biz-competitor analyser Notion comme concurrent
 ```
 
 ---
 
-#### `/biz-research` - Le Chercheur Utilisateur
+#### `/biz:biz-okr` - Le Définisseur d'Objectifs
 
 ```
-/biz-research mener une étude utilisateur
+/biz:biz-okr définir les OKRs du trimestre
 ```
 
 ---
 
-#### `/biz-personas` - Le Créateur de Personas
+#### `/biz:biz-research` - Le Chercheur Utilisateur
 
 ```
-/biz-personas créer les personas pour notre SaaS B2B
+/biz:biz-research mener une étude utilisateur
+```
+
+---
+
+#### `/biz:biz-personas` - Le Créateur de Personas
+
+```
+/biz:biz-personas créer les personas pour notre SaaS B2B
 ```
 
 ---
 
 ### 2.7 GROWTH- : Croissance (8 agents)
 
-#### `/growth-landing` - Le Convertisseur
+#### `/growth:growth-landing` - Le Convertisseur
 
 ```
-/growth-landing créer la landing page du produit
-```
-
----
-
-#### `/growth-seo` - L'Optimiseur SEO
-
-```
-/growth-seo audit complet du site
+/growth:growth-landing créer la landing page du produit
 ```
 
 ---
 
-#### `/growth-analytics` - Le Data Analyst
+#### `/growth:growth-seo` - L'Optimiseur SEO
 
 ```
-/growth-analytics définir les KPIs produit
-```
-
----
-
-#### `/growth-onboarding` - Le Guide Utilisateur
-
-```
-/growth-onboarding concevoir l'onboarding utilisateur
+/growth:growth-seo audit complet du site
 ```
 
 ---
 
-#### `/growth-email` - Le Marketeur Email
+#### `/growth:growth-analytics` - Le Data Analyst
 
 ```
-/growth-email créer les templates d'onboarding
-```
-
----
-
-#### `/growth-ab-test` - L'Expérimentateur
-
-```
-/growth-ab-test planifier un test sur le CTA principal
+/growth:growth-analytics définir les KPIs produit
 ```
 
 ---
 
-#### `/growth-retention` - Le Fidélisateur
+#### `/growth:growth-onboarding` - Le Guide Utilisateur
 
 ```
-/growth-retention améliorer la rétention utilisateur
+/growth:growth-onboarding concevoir l'onboarding utilisateur
 ```
 
 ---
 
-#### `/growth-funnel` - L'Optimiseur de Tunnel
+#### `/growth:growth-email` - Le Marketeur Email
 
 ```
-/growth-funnel analyser et optimiser le funnel d'acquisition
+/growth:growth-email créer les templates d'onboarding
+```
+
+---
+
+#### `/growth:growth-ab-test` - L'Expérimentateur
+
+```
+/growth:growth-ab-test planifier un test sur le CTA principal
+```
+
+---
+
+#### `/growth:growth-retention` - Le Fidélisateur
+
+```
+/growth:growth-retention améliorer la rétention utilisateur
+```
+
+---
+
+#### `/growth:growth-funnel` - L'Optimiseur de Tunnel
+
+```
+/growth:growth-funnel analyser et optimiser le funnel d'acquisition
 ```
 
 ---
 
 ### 2.8 DATA- : Données (3 agents)
 
-#### `/data-pipeline` - L'Ingénieur Data
+#### `/data:data-pipeline` - L'Ingénieur Data
 
 ```
-/data-pipeline concevoir un pipeline ETL pour les logs
-```
-
----
-
-#### `/data-analytics` - L'Analyste Data
-
-```
-/data-analytics créer un dashboard de métriques
+/data:data-pipeline concevoir un pipeline ETL pour les logs
 ```
 
 ---
 
-#### `/data-modeling` - Le Modélisateur
+#### `/data:data-analytics` - L'Analyste Data
 
 ```
-/data-modeling concevoir le schéma du data warehouse
+/data:data-analytics créer un dashboard de métriques
+```
+
+---
+
+#### `/data:data-modeling` - Le Modélisateur
+
+```
+/data:data-modeling concevoir le schéma du data warehouse
 ```
 
 ---
 
 ### 2.9 LEGAL- : Légal (5 agents)
 
-#### `/legal-docs` - Le Juriste
+#### `/legal:legal-docs` - Le Juriste
 
 ```
-/legal-docs générer les CGU et CGV
-```
-
----
-
-#### `/legal-rgpd` - Le Protecteur des Données
-
-```
-/legal-rgpd audit complet de l'application
+/legal:legal-docs générer les CGU et CGV
 ```
 
 ---
 
-#### `/legal-payment` - L'Intégrateur Paiements
+#### `/legal:legal-rgpd` - Le Protecteur des Données
 
 ```
-/legal-payment intégrer Stripe pour les abonnements
-```
-
----
-
-#### `/legal-terms-of-service` - Le Rédacteur CGU
-
-```
-/legal-terms-of-service créer des CGU complètes
+/legal:legal-rgpd audit complet de l'application
 ```
 
 ---
 
-#### `/legal-privacy-policy` - Le Rédacteur Confidentialité
+#### `/legal:legal-payment` - L'Intégrateur Paiements
 
 ```
-/legal-privacy-policy créer une politique de confidentialité RGPD
+/legal:legal-payment intégrer Stripe pour les abonnements
+```
+
+---
+
+#### `/legal:legal-terms-of-service` - Le Rédacteur CGU
+
+```
+/legal:legal-terms-of-service créer des CGU complètes
+```
+
+---
+
+#### `/legal:legal-privacy-policy` - Le Rédacteur Confidentialité
+
+```
+/legal:legal-privacy-policy créer une politique de confidentialité RGPD
 ```
 
 ---
@@ -833,15 +833,15 @@ Closes #123
 
 ```bash
 # Option 1 : Workflow automatisé
-/work-flow-feature "ajouter notifications push mobile"
+/work:work-flow-feature "ajouter notifications push mobile"
 
 # Option 2 : Manuellement
-/work-explore le système de notifications actuel
-/work-plan ajouter notifications push mobile
-/dev-tdd service de notifications push
-/qa-review mes changements
-/work-commit
-/work-pr notifications push mobile
+/work:work-explore le système de notifications actuel
+/work:work-plan ajouter notifications push mobile
+/dev:dev-tdd service de notifications push
+/qa:qa-review mes changements
+/work:work-commit
+/work:work-pr notifications push mobile
 ```
 
 ---
@@ -850,12 +850,12 @@ Closes #123
 
 ```bash
 # Option 1 : Workflow automatisé
-/work-flow-bugfix "#123 - emails de confirmation n'arrivent pas"
+/work:work-flow-bugfix "#123 - emails de confirmation n'arrivent pas"
 
 # Option 2 : Manuellement
-/dev-debug les emails de confirmation n'arrivent pas
-/dev-tdd fix du service email
-/work-commit
+/dev:dev-debug les emails de confirmation n'arrivent pas
+/dev:dev-tdd fix du service email
+/work:work-commit
 ```
 
 ---
@@ -864,7 +864,7 @@ Closes #123
 
 ```bash
 # Workflow automatisé
-/work-flow-release "v2.0.0"
+/work:work-flow-release "v2.0.0"
 ```
 
 ---
@@ -873,20 +873,20 @@ Closes #123
 
 ```bash
 # Option 1 : Workflow automatisé complet
-/work-flow-launch "mon nouveau SaaS"
+/work:work-flow-launch "mon nouveau SaaS"
 
 # Option 2 : Étape par étape
-/biz-model analyser le potentiel commercial
-/biz-market étude concurrentielle
-/biz-mvp définir les fonctionnalités essentielles
-/biz-pricing définir les plans tarifaires
-/growth-landing créer la landing page
-/growth-seo optimiser pour le référencement
-/legal-payment intégrer Stripe
-/legal-docs générer CGU, CGV
-/legal-rgpd audit conformité
-/growth-analytics définir les KPIs
-/biz-pitch préparer le deck investisseurs
+/biz:biz-model analyser le potentiel commercial
+/biz:biz-market étude concurrentielle
+/biz:biz-mvp définir les fonctionnalités essentielles
+/biz:biz-pricing définir les plans tarifaires
+/growth:growth-landing créer la landing page
+/growth:growth-seo optimiser pour le référencement
+/legal:legal-payment intégrer Stripe
+/legal:legal-docs générer CGU, CGV
+/legal:legal-rgpd audit conformité
+/growth:growth-analytics définir les KPIs
+/biz:biz-pitch préparer le deck investisseurs
 ```
 
 ---
@@ -894,7 +894,7 @@ Closes #123
 ### Scénario E : Audit Complet Avant Production
 
 ```bash
-/qa-audit
+/qa:qa-audit
 ```
 
 ---
@@ -902,7 +902,7 @@ Closes #123
 ### Scénario F : Health Check Rapide
 
 ```bash
-/ops-health
+/ops:ops-health
 ```
 
 ---
@@ -910,7 +910,7 @@ Closes #123
 ### Scénario G : Application Mobile Flutter
 
 ```bash
-/work-explore → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+/work:work-explore → /work:work-plan → /dev:dev-flutter + /dev:dev-supabase → /qa:qa-mobile → /work:work-pr
 ```
 
 ---
@@ -980,31 +980,31 @@ Les hooks sont configurés dans la section `hooks` du fichier `settings.json` :
 
 ```bash
 # Au lieu de 6 commandes manuelles
-/work-flow-feature "ajouter dark mode"
+/work:work-flow-feature "ajouter dark mode"
 ```
 
 ### Astuce 2 : Être précis dans les demandes
 
 ```bash
 # Trop vague
-/dev-debug ça marche pas
+/dev:dev-debug ça marche pas
 
 # Précis et actionnable
-/dev-debug erreur 401 sur POST /api/users quand token expiré
+/dev:dev-debug erreur 401 sur POST /api/users quand token expiré
 ```
 
 ### Astuce 3 : Health check quotidien
 
 ```bash
 # Chaque matin
-/ops-health
+/ops:ops-health
 ```
 
 ### Astuce 4 : Audit complet avant release
 
 ```bash
 # Avant chaque mise en production
-/qa-audit
+/qa:qa-audit
 ```
 
 ### Astuce 5 : Utiliser l'orchestrateur
@@ -1020,10 +1020,10 @@ Les hooks sont configurés dans la section `hooks` du fichier `settings.json` :
 
 | Ne pas faire | Faire |
 |--------------|-------|
-| Coder sans `/work-explore` | Toujours explorer d'abord |
-| Implémenter sans `/work-plan` | Valider le plan avant de coder |
+| Coder sans `/work:work-explore` | Toujours explorer d'abord |
+| Implémenter sans `/work:work-plan` | Valider le plan avant de coder |
 | Commits géants multi-features | Un commit = une préoccupation |
-| Ignorer `/qa-security` | Audit régulier |
+| Ignorer `/qa:qa-security` | Audit régulier |
 | `any` partout en TypeScript | Définir des types stricts |
 | Skip les tests | Minimum 80% de couverture |
 
@@ -1035,23 +1035,23 @@ Les hooks sont configurés dans la section `hooks` du fichier `settings.json` :
 
 | Besoin | Agent |
 |--------|-------|
-| Comprendre du code | `/work-explore` |
-| Planifier une feature | `/work-plan` |
-| Développer avec tests | `/dev-tdd` |
-| Corriger un bug | `/dev-debug` |
-| Code review | `/qa-review` |
-| Vérifier la sécurité | `/qa-security` |
-| Audit complet | `/qa-audit` |
-| Health check rapide | `/ops-health` |
-| Créer un commit | `/work-commit` |
-| Créer une PR | `/work-pr` |
-| Feature complète | `/work-flow-feature` |
-| Bugfix complet | `/work-flow-bugfix` |
-| Release complète | `/work-flow-release` |
-| Lancement produit | `/work-flow-launch` |
-| App mobile Flutter | `/dev-flutter` |
-| Backend Supabase | `/dev-supabase` |
-| API GraphQL | `/dev-graphql` |
+| Comprendre du code | `/work:work-explore` |
+| Planifier une feature | `/work:work-plan` |
+| Développer avec tests | `/dev:dev-tdd` |
+| Corriger un bug | `/dev:dev-debug` |
+| Code review | `/qa:qa-review` |
+| Vérifier la sécurité | `/qa:qa-security` |
+| Audit complet | `/qa:qa-audit` |
+| Health check rapide | `/ops:ops-health` |
+| Créer un commit | `/work:work-commit` |
+| Créer une PR | `/work:work-pr` |
+| Feature complète | `/work:work-flow-feature` |
+| Bugfix complet | `/work:work-flow-bugfix` |
+| Release complète | `/work:work-flow-release` |
+| Lancement produit | `/work:work-flow-launch` |
+| App mobile Flutter | `/dev:dev-flutter` |
+| Backend Supabase | `/dev:dev-supabase` |
+| API GraphQL | `/dev:dev-graphql` |
 
 ### Par catégorie
 
@@ -1074,7 +1074,7 @@ LEGAL     (5) = Légal (docs, rgpd, payment, terms-of-service, privacy-policy)
 
 Le principe clé de claude-socle est simple : **toujours EXPLORE → PLAN → CODE → COMMIT** pour un workflow professionnel et maintenable.
 
-Les workflows chaînés (`/work-flow-*`) automatisent ce processus pour les cas courants.
+Les workflows chaînés (`/work:work-flow-*`) automatisent ce processus pour les cas courants.
 
 Utilisez `/assistant` quand vous ne savez pas par où commencer.
 

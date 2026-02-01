@@ -75,10 +75,10 @@ Puis dans Claude Code :
 /assistant
 
 # Commencer par explorer le code
-/work-explore
+/work:work-explore
 
 # Planifier une modification
-/work-plan
+/work:work-plan
 ```
 
 ## Prochaines etapes

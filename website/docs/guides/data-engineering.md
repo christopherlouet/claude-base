@@ -21,17 +21,17 @@ Guide complet pour les pipelines de donnees et l'analytics.
 
 | Commande | Usage |
 |----------|-------|
-| `/data-pipeline` | Pipelines ETL/ELT |
-| `/data-modeling` | Modelisation |
-| `/data-analytics` | Rapports et analyses |
-| `/ops-database` | Schema et migrations |
+| `/data:data-pipeline` | Pipelines ETL/ELT |
+| `/data:data-modeling` | Modelisation |
+| `/data:data-analytics` | Rapports et analyses |
+| `/ops:ops-database` | Schema et migrations |
 
 ### Qualite
 
 | Commande | Usage |
 |----------|-------|
-| `/qa-perf` | Performance queries |
-| `/qa-security` | Securite donnees |
+| `/qa:qa-perf` | Performance queries |
+| `/qa:qa-security` | Securite donnees |
 
 ## Workflow type
 
@@ -39,32 +39,32 @@ Guide complet pour les pipelines de donnees et l'analytics.
 
 ```bash
 # 1. Comprendre les sources
-/work-explore "sources de donnees existantes"
+/work:work-explore "sources de donnees existantes"
 
 # 2. Planifier le pipeline
-/work-plan "Pipeline ETL clients -> data warehouse"
+/work:work-plan "Pipeline ETL clients -> data warehouse"
 
 # 3. Developper
-/data-pipeline "Extraction CRM, transformation, chargement DWH"
+/data:data-pipeline "Extraction CRM, transformation, chargement DWH"
 
 # 4. Tests et monitoring
-/ops-monitoring
+/ops:ops-monitoring
 
 # 5. PR
-/work-pr
+/work:work-pr
 ```
 
 ### Nouveau modele de donnees
 
 ```bash
 # 1. Analyser les besoins
-/work-plan "Dimension clients avec historique"
+/work:work-plan "Dimension clients avec historique"
 
 # 2. Modeliser
-/data-modeling "Schema dimensionnel clients"
+/data:data-modeling "Schema dimensionnel clients"
 
 # 3. Migrations
-/ops-database "Creer les tables"
+/ops:ops-database "Creer les tables"
 ```
 
 ## Architecture type
@@ -173,7 +173,7 @@ models:
 
 ```bash
 # Configurer le monitoring des pipelines
-/ops-monitoring "Alertes sur echecs pipeline et latence"
+/ops:ops-monitoring "Alertes sur echecs pipeline et latence"
 ```
 
 Elements a monitorer :

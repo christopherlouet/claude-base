@@ -1,6 +1,6 @@
 ---
 sidebar_position: 8
-title: "/doc-i18n"
+title: "/doc:doc-i18n"
 description: "Internationalisation et localisation du code."
 tags:
   - "doc"
@@ -235,10 +235,10 @@ describe('i18n', () => {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/seo` | SEO international |
-| `/email` | Emails multilingues |
-| `/test` | Tester les traductions |
-| `/component` | Composants i18n-ready |
+| `/growth:growth-seo` | SEO international |
+| `/growth:growth-email` | Emails multilingues |
+| `/dev:dev-test` | Tester les traductions |
+| `/dev:dev-component` | Composants i18n-ready |
 
 ---
 

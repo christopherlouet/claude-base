@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-title: "/growth-analytics"
+title: "/growth:growth-analytics"
 description: "Mise en place du tracking et définition des KPIs pour un projet."
 tags:
   - "growth"
@@ -216,7 +216,7 @@ function track<T extends keyof AnalyticsEvents>(
 - [ ] Droit d'accès et suppression
 - [ ] Documentation des traitements
 
-&gt; Pour un audit complet, utiliser `/rgpd`
+&gt; Pour un audit complet, utiliser `/legal:legal-rgpd`
 
 ## Output attendu
 
@@ -260,11 +260,11 @@ Fréquence: [mesure]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/funnel` | Analyser les conversions par étape |
-| `/retention` | Mesurer la rétention utilisateurs |
-| `/ab-test` | Tester les hypothèses |
-| `/rgpd` | S'assurer de la conformité RGPD |
-| `/monitoring` | Monitoring technique complémentaire |
+| `/growth:growth-funnel` | Analyser les conversions par étape |
+| `/growth:growth-retention` | Mesurer la rétention utilisateurs |
+| `/growth:growth-ab-test` | Tester les hypothèses |
+| `/legal:legal-rgpd` | S'assurer de la conformité RGPD |
+| `/ops:ops-monitoring` | Monitoring technique complémentaire |
 
 ---
 

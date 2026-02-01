@@ -1,6 +1,6 @@
 ---
 sidebar_position: 20
-title: "/ops-migrate"
+title: "/ops:ops-migrate"
 description: "Migration de code, dépendances ou données."
 tags:
   - "ops"
@@ -120,11 +120,11 @@ git reset --hard [commit-avant-migration]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/database` | Migrations de schéma |
-| `/test` | Tester après migration |
-| `/backup` | Backup avant migration |
-| `/deps` | Migration de dépendances |
-| `/review` | Review du plan de migration |
+| `/ops:ops-database` | Migrations de schéma |
+| `/dev:dev-test` | Tester après migration |
+| `/ops:ops-backup` | Backup avant migration |
+| `/ops:ops-deps` | Migration de dépendances |
+| `/qa:qa-review` | Review du plan de migration |
 
 ---
 

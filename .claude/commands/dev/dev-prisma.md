@@ -438,9 +438,9 @@ main()
 
 | Agent | Usage |
 |-------|-------|
-| `/ops-database` | Migrations, optimisations |
-| `/dev-api` | Endpoints CRUD |
-| `/qa-security` | Securite des queries |
+| `/ops:ops-database` | Migrations, optimisations |
+| `/dev:dev-api` | Endpoints CRUD |
+| `/qa:qa-security` | Securite des queries |
 
 ---
 

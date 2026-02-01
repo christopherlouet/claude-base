@@ -15,8 +15,8 @@ Ce tutoriel vous montre comment déployer et gérer une infrastructure Proxmox V
 ## Objectifs
 
 À la fin de ce tutoriel, vous saurez :
-- Utiliser `/ops-proxmox` pour gérer Proxmox
-- Utiliser `/ops-infra-code` pour l'Infrastructure as Code
+- Utiliser `/ops:ops-proxmox` pour gérer Proxmox
+- Utiliser `/ops:ops-infra-code` pour l'Infrastructure as Code
 - Créer des VMs et conteneurs LXC avec Terraform
 - Mettre en place le monitoring et les backups
 
@@ -47,7 +47,7 @@ Dans Proxmox :
 ### Configurer Terraform
 
 ```bash
-/ops-infra-code "Configurer le provider Proxmox avec le provider bpg/proxmox"
+/ops:ops-infra-code "Configurer le provider Proxmox avec le provider bpg/proxmox"
 ```
 
 **`providers.tf`**
@@ -112,7 +112,7 @@ target_node       = "pve"
 ## Étape 2 : Créer les VMs avec cloud-init
 
 ```bash
-/ops-proxmox "Créer 2 VMs Ubuntu 22.04 avec cloud-init pour une application web"
+/ops:ops-proxmox "Créer 2 VMs Ubuntu 22.04 avec cloud-init pour une application web"
 ```
 
 **`modules/vm/main.tf`**
@@ -256,7 +256,7 @@ module "web_vm_2" {
 ## Étape 3 : Créer le conteneur LXC pour la base de données
 
 ```bash
-/ops-proxmox "Créer un conteneur LXC pour PostgreSQL"
+/ops:ops-proxmox "Créer un conteneur LXC pour PostgreSQL"
 ```
 
 **`modules/lxc/main.tf`**
@@ -354,7 +354,7 @@ module "db_container" {
 ## Étape 4 : Configurer les backups
 
 ```bash
-/ops-backup "Configurer les backups automatiques Proxmox"
+/ops:ops-backup "Configurer les backups automatiques Proxmox"
 ```
 
 **`backup.tf`**
@@ -385,7 +385,7 @@ resource "proxmox_virtual_environment_cluster_backup" "daily_backup" {
 ## Étape 5 : Ajouter le monitoring
 
 ```bash
-/ops-monitoring "Ajouter le monitoring pour l'infrastructure Proxmox"
+/ops:ops-monitoring "Ajouter le monitoring pour l'infrastructure Proxmox"
 ```
 
 **Script d'installation sur chaque VM :**
@@ -487,7 +487,7 @@ output "ssh_commands" {
 ## Étape 8 : Commiter
 
 ```bash
-/work-commit
+/work:work-commit
 ```
 
 **Message suggéré :**
@@ -539,8 +539,8 @@ infrastructure/
 ## Prochaines étapes
 
 - [Exemples Ops](/docs/examples)
-- [Commande /ops-infra-code](/docs/commands/ops/ops-infra-code)
-- [Commande /ops-monitoring](/docs/commands/ops/ops-monitoring)
+- [Commande /ops:ops-infra-code](/docs/commands/ops/ops-infra-code)
+- [Commande /ops:ops-monitoring](/docs/commands/ops/ops-monitoring)
 
 ---
 

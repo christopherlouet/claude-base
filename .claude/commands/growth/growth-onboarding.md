@@ -296,11 +296,11 @@ analytics.track('onboarding_abandoned', {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/analytics` | Tracker les étapes d'onboarding |
-| `/retention` | Mesurer l'impact sur la rétention |
-| `/email` | Séquence d'emails d'accompagnement |
-| `/component` | Créer les composants UI |
-| `/a11y` | Accessibilité du parcours |
+| `/growth:growth-analytics` | Tracker les étapes d'onboarding |
+| `/growth:growth-retention` | Mesurer l'impact sur la rétention |
+| `/growth:growth-email` | Séquence d'emails d'accompagnement |
+| `/dev:dev-component` | Créer les composants UI |
+| `/qa:qa-a11y` | Accessibilité du parcours |
 
 ---
 

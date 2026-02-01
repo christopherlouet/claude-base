@@ -11,7 +11,7 @@ Cet exemple montre comment configurer un firewall OPNsense en Infrastructure as 
 ## Commande utilisée
 
 ```bash
-/ops-opnsense "Configurer OPNsense derrière box Orange avec firewall, DHCP et DNS"
+/ops:ops-opnsense "Configurer OPNsense derrière box Orange avec firewall, DHCP et DNS"
 ```
 
 ## Architecture
@@ -382,7 +382,7 @@ pfctl -e          # Réactiver le firewall
 
 ## Voir aussi
 
-- [Commande `/ops-opnsense`](/docs/commands/ops/ops-opnsense)
+- [Commande `/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense)
 - [Skill `opnsense-configuration`](/docs/skills/opnsense-configuration)
 - [Agent `ops-opnsense`](/docs/agents/ops-opnsense)
 - [Exemple VM Proxmox](/docs/examples/ops/proxmox-vm)

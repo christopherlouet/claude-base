@@ -1,6 +1,6 @@
 ---
 sidebar_position: 18
-title: "/dev-react-perf"
+title: "/dev:dev-react-perf"
 description: "Optimisation performance React/Next.js basée sur 45 règles priorisées par impact."
 tags:
   - "dev"
@@ -253,10 +253,10 @@ npx lighthouse https://example.com --only-categories=performance
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/qa-perf` | Audit performance générique (pas spécifique React) |
-| `/refactor` | Après identification des optimisations |
-| `/component` | Créer des composants optimisés dès le départ |
-| `/review` | Review incluant la performance |
+| `/qa:qa-perf` | Audit performance générique (pas spécifique React) |
+| `/dev:dev-refactor` | Après identification des optimisations |
+| `/dev:dev-component` | Créer des composants optimisés dès le départ |
+| `/qa:qa-review` | Review incluant la performance |
 
 ---
 

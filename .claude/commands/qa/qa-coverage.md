@@ -553,11 +553,11 @@ jobs:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/test` | Générer les tests manquants |
-| `/tdd` | Développer avec TDD |
-| `/review` | Review des tests |
-| `/ci` | Configurer CI avec coverage |
-| `/audit` | Audit qualité global |
+| `/dev:dev-test` | Générer les tests manquants |
+| `/dev:dev-tdd` | Développer avec TDD |
+| `/qa:qa-review` | Review des tests |
+| `/ops:ops-ci` | Configurer CI avec coverage |
+| `/qa:qa-audit` | Audit qualité global |
 
 ---
 

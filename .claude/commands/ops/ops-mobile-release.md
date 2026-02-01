@@ -461,11 +461,11 @@ workflows:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/flutter` | Developper l'app Flutter |
-| `/ci` | Pipeline CI/CD complet |
-| `/release` | Gestion des versions |
-| `/changelog` | Generer les release notes |
-| `/secrets-management` | Stocker les credentials |
+| `/dev:dev-flutter` | Developper l'app Flutter |
+| `/ops:ops-ci` | Pipeline CI/CD complet |
+| `/ops:ops-release` | Gestion des versions |
+| `/doc:doc-changelog` | Generer les release notes |
+| `/ops:ops-secrets-management` | Stocker les credentials |
 
 ---
 

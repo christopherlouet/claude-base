@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-title: "/growth-cro"
+title: "/growth:growth-cro"
 description: "Optimisation du taux de conversion (CRO) pour pages, formulaires, signup flows, onboarding et paywalls."
 tags:
   - "growth"
@@ -108,12 +108,12 @@ grep -rn 'button\|submit\|cta\|action' --include="*.tsx" -i | head -30
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/growth-landing` | Creer/optimiser landing page |
-| `/growth-funnel` | Analyse de funnel detaillee |
-| `/growth-analytics` | Setup tracking et KPIs |
-| `/growth-ab-test` | Planifier des A/B tests |
-| `/qa-design` | Audit UI/UX complet |
-| `/growth-onboarding` | Parcours d'onboarding |
+| `/growth:growth-landing` | Creer/optimiser landing page |
+| `/growth:growth-funnel` | Analyse de funnel detaillee |
+| `/growth:growth-analytics` | Setup tracking et KPIs |
+| `/growth:growth-ab-test` | Planifier des A/B tests |
+| `/qa:qa-design` | Audit UI/UX complet |
+| `/growth:growth-onboarding` | Parcours d'onboarding |
 
 ---
 

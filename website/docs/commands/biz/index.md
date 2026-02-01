@@ -19,17 +19,17 @@ Ce domaine contient **11 commandes** pour business (model, mvp, pricing, pitch).
 
 | Commande | Description |
 |----------|-------------|
-| [`/biz-competitor`](/docs/commands/biz/biz-competitor) | Analyse détaillée d'un concurrent spécifique. |
-| [`/biz-launch`](/docs/commands/biz/biz-launch) | Analyse business et stratégique pour le lancement d'un nouveau produit/service. |
-| [`/biz-market`](/docs/commands/biz/biz-market) | Analyse de marché et étude concurrentielle pour un projet. |
-| [`/biz-model`](/docs/commands/biz/biz-model) | Analyse un projet pour proposer un business model et les éléments clés d'un business plan. |
-| [`/biz-mvp`](/docs/commands/biz/biz-mvp) | Définir le Minimum Viable Product et prioriser les fonctionnalités. |
-| [`/biz-okr`](/docs/commands/biz/biz-okr) | Définir les OKRs (Objectives and Key Results) pour une période donnée. |
-| [`/biz-personas`](/docs/commands/biz/biz-personas) | Crée des personas utilisateur détaillés et actionnables pour guider les décisions produit. |
-| [`/biz-pitch`](/docs/commands/biz/biz-pitch) | Créer un pitch deck et préparer la présentation d'un projet. |
-| [`/biz-pricing`](/docs/commands/biz/biz-pricing) | Définir la stratégie de pricing pour un produit ou service. |
-| [`/biz-research`](/docs/commands/biz/biz-research) | Conduit une recherche utilisateur structurée pour informer les décisions produit. |
-| [`/biz-roadmap`](/docs/commands/biz/biz-roadmap) | Planifier et visualiser la roadmap produit. |
+| [`/biz:biz-competitor`](/docs/commands/biz/biz-competitor) | Analyse détaillée d'un concurrent spécifique. |
+| [`/biz:biz-launch`](/docs/commands/biz/biz-launch) | Analyse business et stratégique pour le lancement d'un nouveau produit/service. |
+| [`/biz:biz-market`](/docs/commands/biz/biz-market) | Analyse de marché et étude concurrentielle pour un projet. |
+| [`/biz:biz-model`](/docs/commands/biz/biz-model) | Analyse un projet pour proposer un business model et les éléments clés d'un business plan. |
+| [`/biz:biz-mvp`](/docs/commands/biz/biz-mvp) | Définir le Minimum Viable Product et prioriser les fonctionnalités. |
+| [`/biz:biz-okr`](/docs/commands/biz/biz-okr) | Définir les OKRs (Objectives and Key Results) pour une période donnée. |
+| [`/biz:biz-personas`](/docs/commands/biz/biz-personas) | Crée des personas utilisateur détaillés et actionnables pour guider les décisions produit. |
+| [`/biz:biz-pitch`](/docs/commands/biz/biz-pitch) | Créer un pitch deck et préparer la présentation d'un projet. |
+| [`/biz:biz-pricing`](/docs/commands/biz/biz-pricing) | Définir la stratégie de pricing pour un produit ou service. |
+| [`/biz:biz-research`](/docs/commands/biz/biz-research) | Conduit une recherche utilisateur structurée pour informer les décisions produit. |
+| [`/biz:biz-roadmap`](/docs/commands/biz/biz-roadmap) | Planifier et visualiser la roadmap produit. |
 
 ## Commandes en detail
 

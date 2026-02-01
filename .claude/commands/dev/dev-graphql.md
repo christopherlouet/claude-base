@@ -787,10 +787,10 @@ await cache.store.reset();
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/dev-flutter` | Widgets et screens |
-| `/dev-supabase` | Alternative/complément Supabase |
-| `/dev-api` | Design d'API REST |
-| `/doc-api-spec` | Documentation OpenAPI |
+| `/dev:dev-flutter` | Widgets et screens |
+| `/dev:dev-supabase` | Alternative/complément Supabase |
+| `/dev:dev-api` | Design d'API REST |
+| `/doc:doc-api-spec` | Documentation OpenAPI |
 
 ---
 
