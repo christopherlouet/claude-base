@@ -4,9 +4,9 @@
 [![CodeQL](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml)
 [![Coverage](https://codecov.io/gh/christopherlouet/claude-socle/branch/main/graph/badge.svg)](https://codecov.io/gh/christopherlouet/claude-socle)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
-[![Tests](https://img.shields.io/badge/tests-250%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-258%20passing-brightgreen)](./tests)
 [![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
-[![Release](https://img.shields.io/badge/release-v1.19.1-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
+[![Release](https://img.shields.io/badge/release-v1.20.0-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
 
 Template de configuration Claude Code pour un workflow de développement optimal.
