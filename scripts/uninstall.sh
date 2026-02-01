@@ -294,7 +294,7 @@ uninstall() {
         # Supprimer les lignes Claude Code du .gitignore
         if grep -q "CLAUDE.local.md" "$TARGET_DIR/.gitignore" 2>/dev/null; then
             # Créer un fichier temporaire sans les lignes Claude
-            grep -v "CLAUDE.local.md\|.claude/settings.local.json\|# Claude Code" "$TARGET_DIR/.gitignore" > "$TARGET_DIR/.gitignore.tmp" 2>/dev/null || true
+            grep -v "CLAUDE.local.md\|CLAUDE.md\|\.claude/\|.claude/settings.local.json\|# Claude Code" "$TARGET_DIR/.gitignore" > "$TARGET_DIR/.gitignore.tmp" 2>/dev/null || true
             mv "$TARGET_DIR/.gitignore.tmp" "$TARGET_DIR/.gitignore"
             success "Nettoyé: .gitignore"
         fi
