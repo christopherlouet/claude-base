@@ -195,11 +195,11 @@ CTA: [texte du bouton]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/seo` | Optimiser le référencement |
-| `/ab-test` | Tester les variantes |
-| `/analytics` | Tracker les conversions |
-| `/perf` | Optimiser la performance |
-| `/a11y` | Accessibilité de la page |
+| `/growth:growth-seo` | Optimiser le référencement |
+| `/growth:growth-ab-test` | Tester les variantes |
+| `/growth:growth-analytics` | Tracker les conversions |
+| `/qa:qa-perf` | Optimiser la performance |
+| `/qa:qa-a11y` | Accessibilité de la page |
 
 ---
 

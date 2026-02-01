@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-title: "/dev-api-versioning"
+title: "/dev:dev-api-versioning"
 description: "Mettre en place une stratégie de versioning d'API robuste."
 tags:
   - "dev"
@@ -374,9 +374,9 @@ function apiMetrics(version: string) {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-api` | Créer des endpoints |
-| `/doc-api-spec` | Documenter l'API |
-| `/doc-changelog` | Changelog des versions |
+| `/dev:dev-api` | Créer des endpoints |
+| `/doc:doc-api-spec` | Documenter l'API |
+| `/doc:doc-changelog` | Changelog des versions |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 29
-title: "/ops-serverless"
+title: "/ops:ops-serverless"
 description: "Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers)."
 tags:
   - "ops"
@@ -487,10 +487,10 @@ esbuild.build({
 
 | Agent | Usage |
 |-------|-------|
-| `/ops-ci` | CI/CD serverless |
-| `/ops-monitoring` | Observabilite |
-| `/qa-perf` | Performance |
-| `/ops-cost-optimization` | Optimisation couts |
+| `/ops:ops-ci` | CI/CD serverless |
+| `/ops:ops-monitoring` | Observabilite |
+| `/qa:qa-perf` | Performance |
+| `/ops:ops-cost-optimization` | Optimisation couts |
 
 ---
 

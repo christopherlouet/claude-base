@@ -94,7 +94,7 @@ npm run lint
 
 | Erreur | Solution |
 |--------|----------|
-| Type error | `/dev-debug "Corriger l'erreur de type"` |
+| Type error | `/dev:dev-debug "Corriger l'erreur de type"` |
 | Import manquant | Vérifier les exports/imports |
 | Dépendance manquante | `npm install` |
 | Version incompatible | Vérifier `package.json` |
@@ -113,7 +113,7 @@ npm install
 npm install --legacy-peer-deps
 
 # Utiliser l'agent deps
-/ops-deps
+/ops:ops-deps
 ```
 
 ---
@@ -136,7 +136,7 @@ npm test -- --grep "nom du test"
 | Symptôme | Cause probable | Solution |
 |----------|----------------|----------|
 | Tous les tests échouent | Setup cassé | Vérifier jest.config |
-| Un test échoue | Code ou test incorrect | `/dev-debug` |
+| Un test échoue | Code ou test incorrect | `/dev:dev-debug` |
 | Tests lents | Pas de mock | Mocker les dépendances |
 | Timeout | Async non géré | Ajouter async/await |
 
@@ -150,10 +150,10 @@ npm run test:coverage
 **Solution** :
 ```bash
 # Analyser la couverture
-/qa-coverage
+/qa:qa-coverage
 
 # Générer les tests manquants
-/dev-test "Ajouter des tests pour le fichier X"
+/dev:dev-test "Ajouter des tests pour le fichier X"
 ```
 
 ---
@@ -198,7 +198,7 @@ git diff --name-only --diff-filter=U
 **Solution** :
 ```bash
 # Demander de l'aide
-/dev-debug "Résoudre le conflit de merge dans fichier X"
+/dev:dev-debug "Résoudre le conflit de merge dans fichier X"
 ```
 
 ---
@@ -212,20 +212,20 @@ git diff --name-only --diff-filter=U
 **Solutions** :
 1. **Reprendre** : "Continue le workflow"
 2. **Réexécuter** : Relancer la dernière commande
-3. **Recommencer** : `/work-explore` puis continuer
+3. **Recommencer** : `/work:work-explore` puis continuer
 
 ### Incohérence dans le code généré
 
 **Problème** : Le code généré ne suit pas les conventions du projet.
 
 **Solutions** :
-1. Toujours commencer par `/work-explore`
+1. Toujours commencer par `/work:work-explore`
 2. Vérifier les rules dans `.claude/rules/`
 3. Ajouter des conventions dans `CLAUDE.md`
 
 ```bash
 # Forcer l'exploration
-/work-explore "Analyser les conventions de nommage et patterns"
+/work:work-explore "Analyser les conventions de nommage et patterns"
 ```
 
 ---
@@ -264,26 +264,26 @@ git diff --name-only --diff-filter=U
 
 ```bash
 # Health check du projet
-/ops-health
+/ops:ops-health
 
 # Vérifier les dépendances
-/ops-deps
+/ops:ops-deps
 
 # Audit de sécurité
-/qa-security
+/qa:qa-security
 ```
 
 ### Debug approfondi
 
 ```bash
 # Debug un problème spécifique
-/dev-debug "Description du problème"
+/dev:dev-debug "Description du problème"
 
 # Explorer le code lié au problème
-/work-explore "Comprendre comment X fonctionne"
+/work:work-explore "Comprendre comment X fonctionne"
 
 # Analyser la dette technique
-/qa-tech-debt
+/qa:qa-tech-debt
 ```
 
 ---
@@ -325,7 +325,7 @@ tail -f logs/app.log
 1. Relire le message d'erreur complet
 2. Chercher dans cette page (Ctrl+F)
 3. Consulter la [FAQ](/docs/guides/faq)
-4. Utiliser `/dev-debug "votre erreur"`
+4. Utiliser `/dev:dev-debug "votre erreur"`
 
 ### Support communautaire
 
@@ -367,5 +367,5 @@ tail -f logs/app.log
 ---
 
 :::tip Prévention
-La meilleure façon d'éviter les problèmes est de **toujours commencer par `/work-explore`** et de **commiter fréquemment** avec `/work-commit`.
+La meilleure façon d'éviter les problèmes est de **toujours commencer par `/work:work-explore`** et de **commiter fréquemment** avec `/work:work-commit`.
 :::

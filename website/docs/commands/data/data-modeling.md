@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-title: "/data-modeling"
+title: "/data:data-modeling"
 description: "Concevoir et implémenter des modèles de données (schémas, ERD, data warehouse)."
 tags:
   - "data"
@@ -214,10 +214,10 @@ Table dim_customer {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/data-pipeline` | Alimenter le modèle |
-| `/data-analytics` | Analyser les données |
-| `/ops-database` | Optimiser les performances |
-| `/doc-architecture` | Documenter l'architecture |
+| `/data:data-pipeline` | Alimenter le modèle |
+| `/data:data-analytics` | Analyser les données |
+| `/ops:ops-database` | Optimiser les performances |
+| `/doc:doc-architecture` | Documenter l'architecture |
 
 ---
 

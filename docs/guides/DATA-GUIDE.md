@@ -36,7 +36,7 @@ data-platform/
 ## Workflow Recommande
 
 ```
-/work-explore → /work-plan → /data-pipeline → /data-modeling → /data-analytics
+/work:work-explore → /work:work-plan → /data:data-pipeline → /data:data-modeling → /data:data-analytics
 ```
 
 ## Phase 1: Exploration
@@ -44,7 +44,7 @@ data-platform/
 ### Comprendre les sources
 
 ```bash
-/work-explore
+/work:work-explore
 ```
 
 ### Questions a clarifier
@@ -59,7 +59,7 @@ data-platform/
 ### Planifier un pipeline
 
 ```bash
-/work-plan "ETL pour donnees e-commerce vers BigQuery"
+/work:work-plan "ETL pour donnees e-commerce vers BigQuery"
 ```
 
 ### Structure de plan type
@@ -96,7 +96,7 @@ data-platform/
 ### Creer un pipeline ETL
 
 ```bash
-/data-pipeline "extraction quotidienne des commandes vers BigQuery"
+/data:data-pipeline "extraction quotidienne des commandes vers BigQuery"
 ```
 
 ### DAG Airflow genere
@@ -157,7 +157,7 @@ with DAG(
 ### Creer modeles dbt
 
 ```bash
-/data-modeling "data mart pour analyse des ventes"
+/data:data-modeling "data mart pour analyse des ventes"
 ```
 
 ### Structure dbt generee
@@ -270,7 +270,7 @@ def validate_orders(df):
 ### Creer des rapports
 
 ```bash
-/data-analytics "rapport hebdomadaire des ventes par categorie"
+/data:data-analytics "rapport hebdomadaire des ventes par categorie"
 ```
 
 ### Dashboard Metabase/Superset
@@ -306,7 +306,7 @@ def check_revenue_drop():
 ### Monitoring pipelines
 
 ```bash
-/ops-monitoring
+/ops:ops-monitoring
 ```
 
 ### Metriques a suivre
@@ -322,7 +322,7 @@ def check_revenue_drop():
 ### Grafana dashboard
 
 ```bash
-/ops-grafana-dashboard "monitoring pipelines data"
+/ops:ops-grafana-dashboard "monitoring pipelines data"
 ```
 
 ## Commandes par Use Case
@@ -330,36 +330,36 @@ def check_revenue_drop():
 ### Nouveau pipeline ETL
 
 ```bash
-1. /work-explore       # Comprendre les sources
-2. /work-plan          # Architecture pipeline
-3. /data-pipeline      # Creer DAG Airflow
-4. /data-modeling      # Modeles dbt
-5. /ops-ci             # CI/CD dbt + Airflow
+1. /work:work-explore       # Comprendre les sources
+2. /work:work-plan          # Architecture pipeline
+3. /data:data-pipeline      # Creer DAG Airflow
+4. /data:data-modeling      # Modeles dbt
+5. /ops:ops-ci             # CI/CD dbt + Airflow
 ```
 
 ### Nouveau data mart
 
 ```bash
-1. /data-modeling      # Schema dimensionnel
-2. /dev-tdd            # Tests dbt
-3. /data-analytics     # Dashboards
-4. /doc-generate       # Documentation lineage
+1. /data:data-modeling      # Schema dimensionnel
+2. /dev:dev-tdd            # Tests dbt
+3. /data:data-analytics     # Dashboards
+4. /doc:doc-generate       # Documentation lineage
 ```
 
 ### Debug pipeline
 
 ```bash
-1. /dev-debug          # Identifier le probleme
-2. /ops-health         # Verifier l'infra
-3. /data-pipeline      # Corriger le DAG
+1. /dev:dev-debug          # Identifier le probleme
+2. /ops:ops-health         # Verifier l'infra
+3. /data:data-pipeline      # Corriger le DAG
 ```
 
 ### Optimisation
 
 ```bash
-1. /qa-perf            # Identifier bottlenecks
-2. /ops-database       # Index, partitions
-3. /data-modeling      # Incremental models
+1. /qa:qa-perf            # Identifier bottlenecks
+2. /ops:ops-database       # Index, partitions
+3. /data:data-modeling      # Incremental models
 ```
 
 ## Agents Automatiques

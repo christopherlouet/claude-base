@@ -1,6 +1,6 @@
 ---
 sidebar_position: 13
-title: "/qa-review"
+title: "/qa:qa-review"
 description: "Effectue une code review approfondie et constructive."
 tags:
   - "qa"
@@ -233,12 +233,12 @@ const apiKey = process.env.API_KEY;
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/explore` | Comprendre le contexte avant review |
-| `/security` | Review de sécurité approfondie |
-| `/perf` | Review de performance détaillée |
-| `/a11y` | Review accessibilité |
-| `/commit` | Après corrections suite à review |
-| `/refactor` | Si refactoring majeur nécessaire |
+| `/work:work-explore` | Comprendre le contexte avant review |
+| `/qa:qa-security` | Review de sécurité approfondie |
+| `/qa:qa-perf` | Review de performance détaillée |
+| `/qa:qa-a11y` | Review accessibilité |
+| `/work:work-commit` | Après corrections suite à review |
+| `/dev:dev-refactor` | Si refactoring majeur nécessaire |
 
 ---
 

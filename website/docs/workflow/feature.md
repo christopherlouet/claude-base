@@ -15,7 +15,7 @@ Guide complet pour ajouter une nouvelle fonctionnalite.
 ## Commande rapide
 
 ```bash
-/work-flow-feature "Description de la feature"
+/work:work-flow-feature "Description de la feature"
 ```
 
 Cette commande lance automatiquement le workflow complet.
@@ -25,7 +25,7 @@ Cette commande lance automatiquement le workflow complet.
 ### 1. Explore
 
 ```bash
-/work-explore
+/work:work-explore
 ```
 
 Comprendre le code existant et identifier :
@@ -36,7 +36,7 @@ Comprendre le code existant et identifier :
 ### 2. Specify (optionnel)
 
 ```bash
-/work-specify "Description de la feature"
+/work:work-specify "Description de la feature"
 ```
 
 Creer une specification formelle si la feature est complexe :
@@ -47,7 +47,7 @@ Creer une specification formelle si la feature est complexe :
 ### 3. Plan
 
 ```bash
-/work-plan
+/work:work-plan
 ```
 
 Planifier l'implementation :
@@ -59,7 +59,7 @@ Planifier l'implementation :
 ### 4. Code
 
 ```bash
-/dev-tdd "Implementer la feature"
+/dev:dev-tdd "Implementer la feature"
 ```
 
 Developper en TDD :
@@ -70,7 +70,7 @@ Developper en TDD :
 ### 5. Review
 
 ```bash
-/qa-review
+/qa:qa-review
 ```
 
 Verifier la qualite :
@@ -81,7 +81,7 @@ Verifier la qualite :
 ### 6. PR
 
 ```bash
-/work-pr
+/work:work-pr
 ```
 
 Creer une Pull Request :
@@ -94,7 +94,7 @@ Creer une Pull Request :
 ```bash
 # Ajouter un systeme de notifications
 
-> /work-flow-feature "Ajouter un systeme de notifications push"
+> /work:work-flow-feature "Ajouter un systeme de notifications push"
 
 # Claude enchaine automatiquement :
 # 1. Explore le code existant
@@ -125,12 +125,12 @@ Avec GitFlow active :
 
 ```bash
 # Creer la branche feature
-/ops-gitflow-feature start "notification-system"
+/ops:ops-gitflow-feature start "notification-system"
 
 # Developper...
 
 # Terminer la feature
-/ops-gitflow-feature finish "notification-system"
+/ops:ops-gitflow-feature finish "notification-system"
 ```
 
 ---

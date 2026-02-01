@@ -311,10 +311,10 @@ async function hydeRetrieval(query: string): Promise<Document[]> {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-prompt-engineering` | Optimiser les prompts |
-| `/dev-api` | Endpoints RAG |
-| `/ops-database` | Configuration DB |
-| `/qa-perf` | Performance du systeme |
+| `/dev:dev-prompt-engineering` | Optimiser les prompts |
+| `/dev:dev-api` | Endpoints RAG |
+| `/ops:ops-database` | Configuration DB |
+| `/qa:qa-perf` | Performance du systeme |
 
 ---
 

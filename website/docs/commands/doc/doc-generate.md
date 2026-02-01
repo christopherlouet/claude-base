@@ -1,6 +1,6 @@
 ---
 sidebar_position: 7
-title: "/doc-generate"
+title: "/doc:doc-generate"
 description: "Génération de documentation pour le code."
 tags:
   - "doc"
@@ -132,10 +132,10 @@ Accepté | En discussion | Remplacé par ADR-XXX
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/api-spec` | Documentation OpenAPI |
-| `/readme` | README du projet |
-| `/architecture` | Documentation d'architecture |
-| `/explain` | Expliquer du code complexe |
+| `/doc:doc-api-spec` | Documentation OpenAPI |
+| `/doc:doc-readme` | README du projet |
+| `/doc:doc-architecture` | Documentation d'architecture |
+| `/doc:doc-explain` | Expliquer du code complexe |
 
 ---
 

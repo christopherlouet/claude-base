@@ -1,6 +1,6 @@
 ---
 sidebar_position: 23
-title: "/dev-testing-setup"
+title: "/dev:dev-testing-setup"
 description: "Configure l'infrastructure de tests pour un projet."
 tags:
   - "dev"
@@ -373,10 +373,10 @@ project/
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-tdd` | Développer en TDD |
-| `/dev-test` | Générer des tests |
-| `/ops-ci` | Configuration CI/CD |
-| `/qa-automation` | Automatisation des tests |
+| `/dev:dev-tdd` | Développer en TDD |
+| `/dev:dev-test` | Générer des tests |
+| `/ops:ops-ci` | Configuration CI/CD |
+| `/qa:qa-automation` | Automatisation des tests |
 
 ---
 

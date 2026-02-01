@@ -11,7 +11,7 @@ Guide pour preparer et publier une nouvelle version.
 ## Commande rapide
 
 ```bash
-/work-flow-release "v2.0.0"
+/work:work-flow-release "v2.0.0"
 ```
 
 ## Etapes detaillees
@@ -20,7 +20,7 @@ Guide pour preparer et publier une nouvelle version.
 
 ```bash
 # Verifier que develop est stable
-/qa-audit
+/qa:qa-audit
 ```
 
 Checklist pre-release :
@@ -32,7 +32,7 @@ Checklist pre-release :
 ### 2. Creer la branche release
 
 ```bash
-/ops-gitflow-release start "v2.0.0"
+/ops:ops-gitflow-release start "v2.0.0"
 ```
 
 ### 3. Bump de version
@@ -45,7 +45,7 @@ Mettre a jour les fichiers de version :
 ### 4. Changelog
 
 ```bash
-/doc-changelog
+/doc:doc-changelog
 ```
 
 Generer le changelog depuis les commits :
@@ -67,7 +67,7 @@ Generer le changelog depuis les commits :
 ### 5. Tests finaux
 
 ```bash
-/qa-audit
+/qa:qa-audit
 ```
 
 Verifier une derniere fois :
@@ -78,7 +78,7 @@ Verifier une derniere fois :
 ### 6. Finaliser la release
 
 ```bash
-/ops-gitflow-release finish "v2.0.0"
+/ops:ops-gitflow-release finish "v2.0.0"
 ```
 
 Cela :
@@ -107,7 +107,7 @@ npm run deploy
 ```bash
 # Preparer la release 2.0.0
 
-> /work-flow-release "v2.0.0"
+> /work:work-flow-release "v2.0.0"
 
 # Claude :
 # 1. Verifie l'etat de develop

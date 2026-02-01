@@ -12,9 +12,9 @@ description: Aide-memoire rapide claude-socle
 
 ```mermaid
 graph LR
-    E[🔍 EXPLORE<br/>/work-explore] --> P[📋 PLAN<br/>/work-plan]
-    P --> C[💻 CODE<br/>/dev-tdd]
-    C --> M[✅ COMMIT<br/>/work-commit]
+    E[🔍 EXPLORE<br/>/work:work-explore] --> P[📋 PLAN<br/>/work:work-plan]
+    P --> C[💻 CODE<br/>/dev:dev-tdd]
+    C --> M[✅ COMMIT<br/>/work:work-commit]
 
     style E fill:#e3f2fd
     style P fill:#fff3e0
@@ -28,107 +28,107 @@ graph LR
 |----------|-------|
 | `/assistant` | Guide complet, aide au choix (avec confirmation) |
 | `/assistant-auto` | Execution automatique du workflow adapte |
-| `/work-explore` | Comprendre le code |
-| `/work-plan` | Planifier les changements |
-| `/dev-tdd` | Developper en TDD |
-| `/work-commit` | Commit propre |
-| `/work-pr` | Pull Request |
-| `/qa-audit` | Audit complet |
+| `/work:work-explore` | Comprendre le code |
+| `/work:work-plan` | Planifier les changements |
+| `/dev:dev-tdd` | Developper en TDD |
+| `/work:work-commit` | Commit propre |
+| `/work:work-pr` | Pull Request |
+| `/qa:qa-audit` | Audit complet |
 
 ## Workflows pre-definis
 
 | Commande | Pour |
 |----------|------|
-| `/work-flow-feature` | Nouvelle feature |
-| `/work-flow-bugfix` | Correction bug |
-| `/work-flow-release` | Preparer release |
-| `/work-flow-launch` | Lancer produit |
+| `/work:work-flow-feature` | Nouvelle feature |
+| `/work:work-flow-bugfix` | Correction bug |
+| `/work:work-flow-release` | Preparer release |
+| `/work:work-flow-launch` | Lancer produit |
 
 ## Par domaine
 
 ### WORK (Workflow)
 ```bash
-/work-explore      # Comprendre
-/work-plan         # Planifier
-/work-commit       # Commiter
-/work-pr           # Pull Request
+/work:work-explore      # Comprendre
+/work:work-plan         # Planifier
+/work:work-commit       # Commiter
+/work:work-pr           # Pull Request
 ```
 
 ### DEV (Developpement)
 ```bash
-/dev-tdd           # TDD
-/dev-test          # Tests
-/dev-debug         # Debug
-/dev-api           # API REST
-/dev-component     # Composant UI
+/dev:dev-tdd           # TDD
+/dev:dev-test          # Tests
+/dev:dev-debug         # Debug
+/dev:dev-api           # API REST
+/dev:dev-component     # Composant UI
 ```
 
 ### QA (Qualite)
 ```bash
-/qa-review         # Code review
-/qa-security       # Securite OWASP
-/qa-perf           # Performance
-/qa-a11y           # Accessibilite
-/qa-audit          # Audit complet
+/qa:qa-review         # Code review
+/qa:qa-security       # Securite OWASP
+/qa:qa-perf           # Performance
+/qa:qa-a11y           # Accessibilite
+/qa:qa-audit          # Audit complet
 ```
 
 ### OPS (Operations)
 ```bash
-/ops-release       # Release
-/ops-hotfix        # Hotfix urgent
-/ops-ci            # CI/CD
-/ops-docker        # Docker
-/ops-monitoring    # Monitoring
+/ops:ops-release       # Release
+/ops:ops-hotfix        # Hotfix urgent
+/ops:ops-ci            # CI/CD
+/ops:ops-docker        # Docker
+/ops:ops-monitoring    # Monitoring
 ```
 
 ### DOC (Documentation)
 ```bash
-/doc-changelog     # Changelog
-/doc-readme        # README
-/doc-api-spec      # OpenAPI
-/doc-architecture  # Architecture
+/doc:doc-changelog     # Changelog
+/doc:doc-readme        # README
+/doc:doc-api-spec      # OpenAPI
+/doc:doc-architecture  # Architecture
 ```
 
 ### BIZ (Business)
 ```bash
-/biz-model         # Business model
-/biz-mvp           # Definition MVP
-/biz-pricing       # Pricing
-/biz-pitch         # Pitch deck
+/biz:biz-model         # Business model
+/biz:biz-mvp           # Definition MVP
+/biz:biz-pricing       # Pricing
+/biz:biz-pitch         # Pitch deck
 ```
 
 ### GROWTH (Croissance)
 ```bash
-/growth-landing    # Landing page
-/growth-seo        # SEO
-/growth-analytics  # Analytics
-/growth-funnel     # Funnel
+/growth:growth-landing    # Landing page
+/growth:growth-seo        # SEO
+/growth:growth-analytics  # Analytics
+/growth:growth-funnel     # Funnel
 ```
 
 ### LEGAL (Legal)
 ```bash
-/legal-rgpd        # RGPD
-/legal-terms-of-service   # CGU
-/legal-privacy-policy     # Privacy
+/legal:legal-rgpd        # RGPD
+/legal:legal-terms-of-service   # CGU
+/legal:legal-privacy-policy     # Privacy
 ```
 
 ## GitFlow
 
 ```bash
 # Initialiser
-/ops-gitflow-init
+/ops:ops-gitflow-init
 
 # Feature
-/ops-gitflow-feature start "ma-feature"
-/ops-gitflow-feature finish "ma-feature"
+/ops:ops-gitflow-feature start "ma-feature"
+/ops:ops-gitflow-feature finish "ma-feature"
 
 # Release
-/ops-gitflow-release start "v1.0.0"
-/ops-gitflow-release finish "v1.0.0"
+/ops:ops-gitflow-release start "v1.0.0"
+/ops:ops-gitflow-release finish "v1.0.0"
 
 # Hotfix urgent
-/ops-gitflow-hotfix start "fix-critical"
-/ops-gitflow-hotfix finish "fix-critical"
+/ops:ops-gitflow-hotfix start "fix-critical"
+/ops:ops-gitflow-hotfix finish "fix-critical"
 ```
 
 ## Composants

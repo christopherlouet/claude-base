@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-title: "/doc-changelog"
+title: "/doc:doc-changelog"
 description: "Génération et maintenance du changelog du projet."
 tags:
   - "doc"
@@ -190,9 +190,9 @@ gh release create v1.2.0 --notes-file CHANGELOG.md
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/release` | Workflow complet de release |
-| `/commit` | Commits conventionnels |
-| `/pr` | Pull requests avec changelog |
+| `/ops:ops-release` | Workflow complet de release |
+| `/work:work-commit` | Commits conventionnels |
+| `/work:work-pr` | Pull requests avec changelog |
 
 ---
 

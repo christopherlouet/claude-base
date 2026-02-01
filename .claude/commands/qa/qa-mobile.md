@@ -499,10 +499,10 @@ APK Size: 12.4MB
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/dev-flutter` | Corriger les widgets |
-| `/qa-perf` | Audit performance approfondi |
-| `/qa-a11y` | Accessibilité approfondie |
-| `/qa-responsive` | Responsive web détaillé |
+| `/dev:dev-flutter` | Corriger les widgets |
+| `/qa:qa-perf` | Audit performance approfondi |
+| `/qa:qa-a11y` | Accessibilité approfondie |
+| `/qa:qa-responsive` | Responsive web détaillé |
 
 ---
 

@@ -66,11 +66,11 @@ Il donne acces a :
 > /assistant "Je veux ajouter un systeme d'authentification"
 
 # Claude propose :
-# 1. /work-explore pour comprendre le code existant
-# 2. /work-plan pour planifier l'implementation
-# 3. /dev-tdd pour developper en TDD
-# 4. /qa-security pour auditer la securite
-# 5. /work-pr pour creer la PR
+# 1. /work:work-explore pour comprendre le code existant
+# 2. /work:work-plan pour planifier l'implementation
+# 3. /dev:dev-tdd pour developper en TDD
+# 4. /qa:qa-security pour auditer la securite
+# 5. /work:work-pr pour creer la PR
 ```
 
 ---

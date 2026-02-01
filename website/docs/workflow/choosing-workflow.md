@@ -18,30 +18,30 @@ flowchart TD
     START --> BIZ{Business ?}
 
     %% Développement
-    DEV -->|Nouvelle feature| FEAT["/work-flow-feature"]
+    DEV -->|Nouvelle feature| FEAT["/work:work-flow-feature"]
     DEV -->|Corriger bug| BUG{Critique ?}
-    BUG -->|Oui| HOTFIX["/ops-hotfix"]
-    BUG -->|Non| BUGFIX["/work-flow-bugfix"]
-    DEV -->|Comprendre| EXPLORE["/work-explore"]
-    DEV -->|TDD| TDD["/dev-tdd"]
+    BUG -->|Oui| HOTFIX["/ops:ops-hotfix"]
+    BUG -->|Non| BUGFIX["/work:work-flow-bugfix"]
+    DEV -->|Comprendre| EXPLORE["/work:work-explore"]
+    DEV -->|TDD| TDD["/dev:dev-tdd"]
 
     %% Opérations
-    OPS -->|Release| RELEASE["/work-flow-release"]
+    OPS -->|Release| RELEASE["/work:work-flow-release"]
     OPS -->|Déploiement| DEPLOY{Type ?}
-    DEPLOY -->|Docker| DOCKER["/ops-docker"]
-    DEPLOY -->|Kubernetes| K8S["/ops-k8s"]
-    DEPLOY -->|Vercel| VERCEL["/ops-vercel"]
+    DEPLOY -->|Docker| DOCKER["/ops:ops-docker"]
+    DEPLOY -->|Kubernetes| K8S["/ops:ops-k8s"]
+    DEPLOY -->|Vercel| VERCEL["/ops:ops-vercel"]
 
     %% Qualité
-    QUALITY -->|Audit complet| AUDIT["/qa-audit"]
-    QUALITY -->|Sécurité| SEC["/qa-security"]
-    QUALITY -->|Performance| PERF["/qa-perf"]
-    QUALITY -->|Review| REVIEW["/qa-review"]
+    QUALITY -->|Audit complet| AUDIT["/qa:qa-audit"]
+    QUALITY -->|Sécurité| SEC["/qa:qa-security"]
+    QUALITY -->|Performance| PERF["/qa:qa-perf"]
+    QUALITY -->|Review| REVIEW["/qa:qa-review"]
 
     %% Business
-    BIZ -->|Lancement| LAUNCH["/work-flow-launch"]
-    BIZ -->|MVP| MVP["/biz-mvp"]
-    BIZ -->|Business model| MODEL["/biz-model"]
+    BIZ -->|Lancement| LAUNCH["/work:work-flow-launch"]
+    BIZ -->|MVP| MVP["/biz:biz-mvp"]
+    BIZ -->|Business model| MODEL["/biz:biz-model"]
 
     %% Styles
     style FEAT fill:#c8e6c9
@@ -55,16 +55,16 @@ flowchart TD
 
 | Situation | Workflow | Commande |
 |-----------|----------|----------|
-| Ajouter une fonctionnalite | Feature | `/work-flow-feature` |
-| Corriger un bug | Bugfix | `/work-flow-bugfix` |
-| Bug critique en prod | Hotfix | `/ops-gitflow-hotfix` |
-| Preparer une version | Release | `/work-flow-release` |
-| Lancer un produit | Launch | `/work-flow-launch` |
-| Comprendre le code | Explore | `/work-explore` |
-| Planifier un changement | Plan | `/work-plan` |
-| Developper avec tests | TDD | `/dev-tdd` |
-| Audit qualite | Audit | `/qa-audit` |
-| Review de code | Review | `/qa-review` |
+| Ajouter une fonctionnalite | Feature | `/work:work-flow-feature` |
+| Corriger un bug | Bugfix | `/work:work-flow-bugfix` |
+| Bug critique en prod | Hotfix | `/ops:ops-gitflow-hotfix` |
+| Preparer une version | Release | `/work:work-flow-release` |
+| Lancer un produit | Launch | `/work:work-flow-launch` |
+| Comprendre le code | Explore | `/work:work-explore` |
+| Planifier un changement | Plan | `/work:work-plan` |
+| Developper avec tests | TDD | `/dev:dev-tdd` |
+| Audit qualite | Audit | `/qa:qa-audit` |
+| Review de code | Review | `/qa:qa-review` |
 
 ## Par type de projet
 
@@ -72,64 +72,64 @@ flowchart TD
 
 ```bash
 # Nouvelle feature
-/work-explore → /work-plan → /dev-tdd → /work-pr
+/work:work-explore → /work:work-plan → /dev:dev-tdd → /work:work-pr
 
 # Commandes recommandees
-/dev-component    # Creer des composants
-/dev-hook        # Creer des hooks
-/dev-react-perf  # Optimiser les performances
+/dev:dev-component    # Creer des composants
+/dev:dev-hook        # Creer des hooks
+/dev:dev-react-perf  # Optimiser les performances
 ```
 
 ### Projet Mobile (Flutter)
 
 ```bash
 # Nouvelle feature
-/work-explore → /work-plan → /dev-flutter → /work-pr
+/work:work-explore → /work:work-plan → /dev:dev-flutter → /work:work-pr
 
 # Commandes recommandees
-/dev-flutter     # Widgets et screens
-/dev-supabase    # Backend Supabase
-/qa-mobile       # Audit mobile
+/dev:dev-flutter     # Widgets et screens
+/dev:dev-supabase    # Backend Supabase
+/qa:qa-mobile       # Audit mobile
 ```
 
 ### API Backend
 
 ```bash
 # Nouvelle feature
-/work-explore → /work-plan → /dev-api → /work-pr
+/work:work-explore → /work:work-plan → /dev:dev-api → /work:work-pr
 
 # Commandes recommandees
-/dev-api         # Endpoints REST
-/dev-graphql     # API GraphQL
-/doc-api-spec    # Documentation OpenAPI
+/dev:dev-api         # Endpoints REST
+/dev:dev-graphql     # API GraphQL
+/doc:doc-api-spec    # Documentation OpenAPI
 ```
 
 ### Startup / SaaS
 
 ```bash
 # Lancement
-/biz-model → /biz-mvp → /work-flow-launch
+/biz:biz-model → /biz:biz-mvp → /work:work-flow-launch
 
 # Commandes recommandees
-/biz-*           # Business
-/growth-*        # Croissance
-/legal-*         # Legal
+/biz:biz-*           # Business
+/growth:growth-*        # Croissance
+/legal:legal-*         # Legal
 ```
 
 ## FAQ
 
-### Quelle est la difference entre /work-flow-feature et le workflow principal ?
+### Quelle est la difference entre /work:work-flow-feature et le workflow principal ?
 
-`/work-flow-feature` est un **raccourci** qui enchaine automatiquement toutes les etapes du workflow principal (explore, plan, code, commit, PR).
+`/work:work-flow-feature` est un **raccourci** qui enchaine automatiquement toutes les etapes du workflow principal (explore, plan, code, commit, PR).
 
-### Quand utiliser /ops-hotfix vs /work-flow-bugfix ?
+### Quand utiliser /ops:ops-hotfix vs /work:work-flow-bugfix ?
 
 - **hotfix** : Bug critique en production, besoin immediat
 - **bugfix** : Bug normal, peut attendre la prochaine release
 
 ### Comment savoir si j'ai besoin d'un audit ?
 
-Utilisez `/qa-audit` :
+Utilisez `/qa:qa-audit` :
 - Avant une release majeure
 - Avant un audit externe
 - Apres des changements importants
@@ -140,7 +140,7 @@ Utilisez `/qa-audit` :
 Oui ! Par exemple :
 ```bash
 # Feature avec audit de securite
-/work-flow-feature "Auth" → /qa-security → /work-pr
+/work:work-flow-feature "Auth" → /qa:qa-security → /work:work-pr
 ```
 
 ---

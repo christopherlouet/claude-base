@@ -8,19 +8,19 @@
 
 | Je veux... | Agent Recommande | Commande |
 |------------|------------------|----------|
-| Comprendre du code existant | `work-explore` | `/work-explore` |
-| Creer une specification | - | `/work-specify` |
-| Clarifier les ambiguites | - | `/work-clarify` |
-| Planifier une feature | - | `/work-plan` |
-| Debugger un probleme | `dev-debug` | `/dev-debug` |
-| Faire une code review | - | `/qa-review` |
-| Verifier la securite | `qa-security` | `/qa-security` |
-| Auditer la performance | `qa-perf` | `/qa-perf` |
-| Verifier l'accessibilite | `qa-a11y` | `/qa-a11y` |
-| Creer des tests | `dev-test` | `/dev-test` |
-| Refactorer du code | - | `/dev-refactor` |
-| Creer un commit | - | `/work-commit` |
-| Creer une PR | - | `/work-pr` |
+| Comprendre du code existant | `work-explore` | `/work:work-explore` |
+| Creer une specification | - | `/work:work-specify` |
+| Clarifier les ambiguites | - | `/work:work-clarify` |
+| Planifier une feature | - | `/work:work-plan` |
+| Debugger un probleme | `dev-debug` | `/dev:dev-debug` |
+| Faire une code review | - | `/qa:qa-review` |
+| Verifier la securite | `qa-security` | `/qa:qa-security` |
+| Auditer la performance | `qa-perf` | `/qa:qa-perf` |
+| Verifier l'accessibilite | `qa-a11y` | `/qa:qa-a11y` |
+| Creer des tests | `dev-test` | `/dev:dev-test` |
+| Refactorer du code | - | `/dev:dev-refactor` |
+| Creer un commit | - | `/work:work-commit` |
+| Creer une PR | - | `/work:work-pr` |
 
 ### Par Type de Projet
 
@@ -86,7 +86,7 @@
 
 **Avant mise en production :**
 ```bash
-/qa-audit  # Audit complet recommande
+/qa:qa-audit  # Audit complet recommande
 ```
 
 ### OPS- : Operations (12 agents)
@@ -108,7 +108,7 @@
 
 **Health check rapide :**
 ```bash
-/ops-health  # Diagnostic en 30 secondes
+/ops:ops-health  # Diagnostic en 30 secondes
 ```
 
 ### DOC- : Documentation (4 agents)
@@ -165,38 +165,38 @@
 
 | Commande | Usage |
 |----------|-------|
-| `/work-explore` | Comprendre le code, patterns, architecture |
-| `/doc-onboard` | Decouvrir un nouveau codebase |
-| `/doc-explain` | Expliquer du code complexe |
+| `/work:work-explore` | Comprendre le code, patterns, architecture |
+| `/doc:doc-onboard` | Decouvrir un nouveau codebase |
+| `/doc:doc-explain` | Expliquer du code complexe |
 
 ### Phase SPECIFY
 
 | Commande | Usage |
 |----------|-------|
-| `/work-specify` | Creer User Stories et criteres d'acceptation |
-| `/work-clarify` | Reduire les ambiguites de la spec |
+| `/work:work-specify` | Creer User Stories et criteres d'acceptation |
+| `/work:work-clarify` | Reduire les ambiguites de la spec |
 
 ### Phase PLAN
 
 | Commande | Usage |
 |----------|-------|
-| `/work-plan` | Planifier architecture et taches |
+| `/work:work-plan` | Planifier architecture et taches |
 
 ### Phase CODE
 
 | Commande | Usage |
 |----------|-------|
-| `/dev-tdd` | Developper en Test-Driven Development |
-| `/dev-test` | Generer des tests |
-| `/dev-refactor` | Refactorer proprement |
-| `/dev-debug` | Investiguer un bug |
+| `/dev:dev-tdd` | Developper en Test-Driven Development |
+| `/dev:dev-test` | Generer des tests |
+| `/dev:dev-refactor` | Refactorer proprement |
+| `/dev:dev-debug` | Investiguer un bug |
 
 ### Phase COMMIT
 
 | Commande | Usage |
 |----------|-------|
-| `/work-commit` | Commit avec message Conventional Commits |
-| `/work-pr` | Creer une Pull Request complete |
+| `/work:work-commit` | Commit avec message Conventional Commits |
+| `/work:work-pr` | Creer une Pull Request complete |
 
 ---
 
@@ -205,51 +205,51 @@
 ### Nouvelle Feature
 
 ```
-/work-explore → /work-specify → /work-plan → /dev-tdd → /qa-review → /work-pr
+/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-tdd → /qa:qa-review → /work:work-pr
 ```
 
 | Etape | Agent/Commande | Action |
 |-------|----------------|--------|
-| 1 | `/work-explore` | Comprendre l'existant |
-| 2 | `/work-specify` | Specifier la feature |
-| 3 | `/work-plan` | Planifier l'implementation |
-| 4 | `/dev-tdd` | Developper avec tests |
-| 5 | `/qa-review` | Code review |
-| 6 | `/work-pr` | Creer la PR |
+| 1 | `/work:work-explore` | Comprendre l'existant |
+| 2 | `/work:work-specify` | Specifier la feature |
+| 3 | `/work:work-plan` | Planifier l'implementation |
+| 4 | `/dev:dev-tdd` | Developper avec tests |
+| 5 | `/qa:qa-review` | Code review |
+| 6 | `/work:work-pr` | Creer la PR |
 
 ### Correction de Bug
 
 ```
-/dev-debug → /dev-test → /work-commit
+/dev:dev-debug → /dev:dev-test → /work:work-commit
 ```
 
 | Etape | Agent/Commande | Action |
 |-------|----------------|--------|
-| 1 | `/dev-debug` | Diagnostiquer la cause |
-| 2 | `/dev-test` | Ajouter test de non-regression |
-| 3 | `/work-commit` | Commit avec reference issue |
+| 1 | `/dev:dev-debug` | Diagnostiquer la cause |
+| 2 | `/dev:dev-test` | Ajouter test de non-regression |
+| 3 | `/work:work-commit` | Commit avec reference issue |
 
 ### Audit Avant Production
 
 ```
-/qa-audit (ou /qa-security + /qa-perf + /qa-a11y)
+/qa:qa-audit (ou /qa:qa-security + /qa:qa-perf + /qa:qa-a11y)
 ```
 
 | Priorite | Agent | Focus |
 |----------|-------|-------|
-| P0 | `/qa-security` | Vulnerabilites OWASP |
-| P1 | `/qa-perf` | Core Web Vitals |
-| P2 | `/qa-a11y` | Accessibilite WCAG |
-| ALL | `/qa-audit` | Audit complet |
+| P0 | `/qa:qa-security` | Vulnerabilites OWASP |
+| P1 | `/qa:qa-perf` | Core Web Vitals |
+| P2 | `/qa:qa-a11y` | Accessibilite WCAG |
+| ALL | `/qa:qa-audit` | Audit complet |
 
 ### Workflows Complets
 
 | Situation | Workflow |
 |-----------|----------|
-| Nouvelle feature | `/work-flow-feature "description"` |
-| Correction de bug | `/work-flow-bugfix "description"` |
-| Nouvelle release | `/work-flow-release "v1.2.0"` |
-| Lancement produit | `/work-flow-launch "nom du produit"` |
+| Nouvelle feature | `/work:work-flow-feature "description"` |
+| Correction de bug | `/work:work-flow-bugfix "description"` |
+| Nouvelle release | `/work:work-flow-release "v1.2.0"` |
+| Lancement produit | `/work:work-flow-launch "nom du produit"` |
 
 ---
 
@@ -296,51 +296,51 @@ Debug complexe, securite, performance, architecture, data modeling, infrastructu
 
 | Tache | Commande |
 |-------|----------|
-| Optimiser les performances React | `/dev-react-perf` |
-| Creer un composant | `/dev-component` |
-| Creer un hook | `/dev-hook` |
-| Audit accessibilite | `/qa-a11y` |
-| Audit responsive | `/qa-responsive` |
+| Optimiser les performances React | `/dev:dev-react-perf` |
+| Creer un composant | `/dev:dev-component` |
+| Creer un hook | `/dev:dev-hook` |
+| Audit accessibilite | `/qa:qa-a11y` |
+| Audit responsive | `/qa:qa-responsive` |
 
 ### Mobile (Flutter)
 
 | Tache | Commande |
 |-------|----------|
-| Creer widget/screen | `/dev-flutter` |
-| Backend Supabase | `/dev-supabase` |
-| Audit qualite mobile | `/qa-mobile` |
-| Publication stores | `/ops-mobile-release` |
+| Creer widget/screen | `/dev:dev-flutter` |
+| Backend Supabase | `/dev:dev-supabase` |
+| Audit qualite mobile | `/qa:qa-mobile` |
+| Publication stores | `/ops:ops-mobile-release` |
 
 ### API
 
 | Tache | Commande |
 |-------|----------|
-| Creer endpoint REST | `/dev-api` |
-| Creer API GraphQL | `/dev-graphql` |
-| Versioning API | `/dev-api-versioning` |
-| Documenter API | `/doc-api-spec` |
+| Creer endpoint REST | `/dev:dev-api` |
+| Creer API GraphQL | `/dev:dev-graphql` |
+| Versioning API | `/dev:dev-api-versioning` |
+| Documenter API | `/doc:doc-api-spec` |
 
 ### Operations
 
 | Besoin | Commande |
 |--------|----------|
-| Dockeriser | `/ops-docker` |
-| Configurer CI/CD | `/ops-ci` |
-| Gerer les dependances | `/ops-deps` |
-| Creer une release | `/ops-release` |
-| Hotfix urgent | `/ops-hotfix` |
-| Health check | `/ops-health` |
+| Dockeriser | `/ops:ops-docker` |
+| Configurer CI/CD | `/ops:ops-ci` |
+| Gerer les dependances | `/ops:ops-deps` |
+| Creer une release | `/ops:ops-release` |
+| Hotfix urgent | `/ops:ops-hotfix` |
+| Health check | `/ops:ops-health` |
 
 ### Business
 
 | Besoin | Commande |
 |--------|----------|
-| Business model / Lean Canvas | `/biz-model` |
-| Definir le MVP | `/biz-mvp` |
-| Analyse concurrentielle | `/biz-competitor` |
-| Creer des personas | `/biz-personas` |
-| Strategie de pricing | `/biz-pricing` |
-| Roadmap produit | `/biz-roadmap` |
+| Business model / Lean Canvas | `/biz:biz-model` |
+| Definir le MVP | `/biz:biz-mvp` |
+| Analyse concurrentielle | `/biz:biz-competitor` |
+| Creer des personas | `/biz:biz-personas` |
+| Strategie de pricing | `/biz:biz-pricing` |
+| Roadmap produit | `/biz:biz-roadmap` |
 
 ---
 
@@ -356,7 +356,7 @@ Debug complexe, securite, performance, architecture, data modeling, infrastructu
 
 Oui ! Les workflows chaines sont recommandes :
 ```bash
-/work-flow-feature "ma feature"  # Enchaine automatiquement
+/work:work-flow-feature "ma feature"  # Enchaine automatiquement
 ```
 
 ### Que faire si aucun agent ne correspond ?

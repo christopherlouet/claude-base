@@ -95,7 +95,7 @@ Si l'utilisateur dit `/assistant-auto Ajouter une authentification JWT` :
 ## Exécution automatique
 
 **Demande**: Ajouter authentification JWT
-**Workflow**: /work-flow-feature
+**Workflow**: /work:work-flow-feature
 
 Lancement...
 ```
@@ -120,7 +120,7 @@ YOU MUST passer la demande originale en argument au workflow.
 
 Pour les questions simples (explication, aide, "comment faire"), répondre directement sans workflow.
 
-En cas de doute sur le type de demande, privilégier `/work-flow-feature` pour les ajouts et `/work-flow-bugfix` pour les corrections.
+En cas de doute sur le type de demande, privilégier `/work:work-flow-feature` pour les ajouts et `/work:work-flow-bugfix` pour les corrections.
 
 
 ---

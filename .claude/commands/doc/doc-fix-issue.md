@@ -122,7 +122,7 @@ find src/ -name "*auth*" -o -name "*login*"
 - [ ] Identifier les dépendances
 - [ ] Vérifier les tests existants
 
-> Utiliser `/work-explore` si l'exploration est complexe.
+> Utiliser `/work:work-explore` si l'exploration est complexe.
 
 ## Étape 4 : Planifier la solution
 
@@ -297,11 +297,11 @@ gh pr create --title "fix(scope): description" --body-file PR_BODY.md
 
 | Agent | Usage |
 |-------|-------|
-| `/work-explore` | Explorer le code concerné |
-| `/dev-debug` | Debug approfondi si nécessaire |
-| `/dev-tdd` | Approche TDD pour le fix |
-| `/work-commit` | Format du commit |
-| `/work-pr` | Création de la PR |
+| `/work:work-explore` | Explorer le code concerné |
+| `/dev:dev-debug` | Debug approfondi si nécessaire |
+| `/dev:dev-tdd` | Approche TDD pour le fix |
+| `/work:work-commit` | Format du commit |
+| `/work:work-pr` | Création de la PR |
 
 ---
 

@@ -15,7 +15,7 @@ Ce tutoriel vous montre comment réaliser un audit de sécurité complet basé s
 ## Objectifs
 
 À la fin de ce tutoriel, vous saurez :
-- Utiliser `/qa-security` pour un audit OWASP
+- Utiliser `/qa:qa-security` pour un audit OWASP
 - Identifier les vulnérabilités courantes
 - Corriger les problèmes de sécurité
 - Mettre en place des bonnes pratiques
@@ -45,7 +45,7 @@ L'OWASP Top 10 liste les vulnérabilités web les plus critiques :
 ## Étape 1 : Lancer l'audit
 
 ```bash
-/qa-security
+/qa:qa-security
 ```
 
 Claude va analyser votre projet et produire un rapport détaillé.
@@ -147,7 +147,7 @@ En React, n'utilisez **jamais** `dangerouslySetInnerHTML` avec des données util
 ## Étape 4 : Mettre à jour les dépendances
 
 ```bash
-/ops-deps
+/ops:ops-deps
 ```
 
 Claude va :
@@ -237,7 +237,7 @@ app.post('/login', async (req, res) => {
 Relancez l'audit :
 
 ```bash
-/qa-security
+/qa:qa-security
 ```
 
 Le rapport devrait maintenant montrer :
@@ -260,7 +260,7 @@ Le rapport devrait maintenant montrer :
 ## Étape 8 : Commiter
 
 ```bash
-/work-commit
+/work:work-commit
 ```
 
 **Message suggéré :**
@@ -311,10 +311,10 @@ Utilisez cette checklist pour vos projets :
 
 - [Tutoriel 06 : Pipeline CI/CD](/docs/tutorials/cicd-github) - Automatiser les audits
 - [Guide API](/docs/guides/api-development) - Sécurité des APIs
-- [Commande /qa-audit](/docs/commands/qa/qa-audit) - Audit complet
+- [Commande /qa:qa-audit](/docs/commands/qa/qa-audit) - Audit complet
 
 ---
 
 :::tip Automatisation
-Ajoutez `/qa-security` dans votre pipeline CI/CD pour détecter les vulnérabilités avant le déploiement.
+Ajoutez `/qa:qa-security` dans votre pipeline CI/CD pour détecter les vulnérabilités avant le déploiement.
 :::

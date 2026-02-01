@@ -575,11 +575,11 @@ free -m
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/docker` | Containeriser l'application |
-| `/ci` | Pipeline CI/CD |
-| `/monitoring` | Monitoring et alertes |
-| `/backup` | Strategie de sauvegarde |
-| `/secrets-management` | Gestion des credentials |
+| `/ops:ops-docker` | Containeriser l'application |
+| `/ops:ops-ci` | Pipeline CI/CD |
+| `/ops:ops-monitoring` | Monitoring et alertes |
+| `/ops:ops-backup` | Strategie de sauvegarde |
+| `/ops:ops-secrets-management` | Gestion des credentials |
 
 ---
 

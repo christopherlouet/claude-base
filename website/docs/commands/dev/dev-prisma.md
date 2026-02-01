@@ -1,6 +1,6 @@
 ---
 sidebar_position: 15
-title: "/dev-prisma"
+title: "/dev:dev-prisma"
 description: "Configuration et utilisation de Prisma ORM."
 tags:
   - "dev"
@@ -453,9 +453,9 @@ main()
 
 | Agent | Usage |
 |-------|-------|
-| `/ops-database` | Migrations, optimisations |
-| `/dev-api` | Endpoints CRUD |
-| `/qa-security` | Securite des queries |
+| `/ops:ops-database` | Migrations, optimisations |
+| `/dev:dev-api` | Endpoints CRUD |
+| `/qa:qa-security` | Securite des queries |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 15
-title: "/ops-health"
+title: "/ops:ops-health"
 description: "Vérification rapide de la santé d'un projet. Diagnostic express en 5 minutes."
 tags:
   - "ops"
@@ -249,10 +249,10 @@ npm run build 2>/dev/null | tail -5 || echo "Build non configuré"
 ### Prochaines Étapes
 
 Pour un diagnostic plus approfondi :
-- `/security` - Audit sécurité complet
-- `/perf` - Analyse performance détaillée
-- `/deps` - Audit dépendances complet
-- `/audit-full` - Audit qualité complet
+- `/qa:qa-security` - Audit sécurité complet
+- `/qa:qa-perf` - Analyse performance détaillée
+- `/ops:ops-deps` - Audit dépendances complet
+- `/qa:qa-audit` - Audit qualité complet
 
 ---
 
@@ -260,15 +260,15 @@ Pour un diagnostic plus approfondi :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/audit` | Audit complet |
-| `/monitoring` | Monitoring continu |
-| `/security` | Audit sécurité |
-| `/deps` | Mise à jour dépendances |
-| `/perf` | Analyse performance |
+| `/qa:qa-audit` | Audit complet |
+| `/ops:ops-monitoring` | Monitoring continu |
+| `/qa:qa-security` | Audit sécurité |
+| `/ops:ops-deps` | Mise à jour dépendances |
+| `/qa:qa-perf` | Analyse performance |
 
 ---
 
-IMPORTANT: Ce health-check est un diagnostic rapide. Pour un audit complet, utiliser `/audit`.
+IMPORTANT: Ce health-check est un diagnostic rapide. Pour un audit complet, utiliser `/qa:qa-audit`.
 
 YOU MUST signaler immédiatement tout problème de sécurité critique (secrets exposés, vulnérabilités critiques).
 

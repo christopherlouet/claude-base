@@ -30,32 +30,32 @@ Pour un mode guide avec confirmation, utilisez [`/assistant`](/docs/commands/ass
 # Execution automatique d'une feature
 /assistant-auto "Ajouter une feature d'authentification"
 # → Detecte: nouvelle feature
-# → Execute: /work-flow-feature "Ajouter une feature d'authentification"
+# → Execute: /work:work-flow-feature "Ajouter une feature d'authentification"
 
 # Correction de bug automatique
 /assistant-auto "Fix le bug de login"
 # → Detecte: correction de bug
-# → Execute: /work-flow-bugfix "Fix le bug de login"
+# → Execute: /work:work-flow-bugfix "Fix le bug de login"
 
 # Audit automatique
 /assistant-auto "Audit de securite"
 # → Detecte: audit securite
-# → Execute: /qa-security
+# → Execute: /qa:qa-security
 ```
 
 ## Mapping automatique
 
 | Votre demande contient... | Workflow execute |
 |---------------------------|------------------|
-| feature, ajouter, creer | `/work-flow-feature` |
-| bug, fix, corriger, erreur | `/work-flow-bugfix` |
-| release, version, tag | `/work-flow-release` |
-| lancement, MVP, produit | `/work-flow-launch` |
-| audit securite, OWASP | `/qa-security` |
-| audit complet, qualite | `/qa-audit` |
-| explorer, comprendre | `/work-explore` |
-| commit | `/work-commit` |
-| PR, pull request | `/work-pr` |
+| feature, ajouter, creer | `/work:work-flow-feature` |
+| bug, fix, corriger, erreur | `/work:work-flow-bugfix` |
+| release, version, tag | `/work:work-flow-release` |
+| lancement, MVP, produit | `/work:work-flow-launch` |
+| audit securite, OWASP | `/qa:qa-security` |
+| audit complet, qualite | `/qa:qa-audit` |
+| explorer, comprendre | `/work:work-explore` |
+| commit | `/work:work-commit` |
+| PR, pull request | `/work:work-pr` |
 
 ## Quand utiliser `/assistant-auto` ?
 
@@ -81,17 +81,17 @@ Pour un mode guide avec confirmation, utilisez [`/assistant`](/docs/commands/ass
 ## Execution automatique
 
 **Demande**: Ajouter un bouton de deconnexion dans le header
-**Workflow**: /work-flow-feature
+**Workflow**: /work:work-flow-feature
 
 Lancement...
 
-# Le workflow /work-flow-feature s'execute avec les etapes :
-# 1. /work-explore - Comprendre le code existant
-# 2. /work-specify - Creer la specification
-# 3. /work-plan - Planifier l'implementation
+# Le workflow /work:work-flow-feature s'execute avec les etapes :
+# 1. /work:work-explore - Comprendre le code existant
+# 2. /work:work-specify - Creer la specification
+# 3. /work:work-plan - Planifier l'implementation
 # 4. Implementation du code
-# 5. /qa-review - Revue de code
-# 6. /work-pr - Creer la PR
+# 5. /qa:qa-review - Revue de code
+# 6. /work:work-pr - Creer la PR
 ```
 
 ---

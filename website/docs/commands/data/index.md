@@ -19,9 +19,9 @@ Ce domaine contient **3 commandes** pour donnees (pipeline, analytics, modeling)
 
 | Commande | Description |
 |----------|-------------|
-| [`/data-analytics`](/docs/commands/data/data-analytics) | Analyser des données et créer des visualisations/rapports. |
-| [`/data-modeling`](/docs/commands/data/data-modeling) | Concevoir et implémenter des modèles de données (schémas, ERD, data warehouse). |
-| [`/data-pipeline`](/docs/commands/data/data-pipeline) | Concevoir et implémenter des pipelines de données ETL/ELT. |
+| [`/data:data-analytics`](/docs/commands/data/data-analytics) | Analyser des données et créer des visualisations/rapports. |
+| [`/data:data-modeling`](/docs/commands/data/data-modeling) | Concevoir et implémenter des modèles de données (schémas, ERD, data warehouse). |
+| [`/data:data-pipeline`](/docs/commands/data/data-pipeline) | Concevoir et implémenter des pipelines de données ETL/ELT. |
 
 ## Commandes en detail
 

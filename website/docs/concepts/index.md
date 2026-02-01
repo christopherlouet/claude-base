@@ -47,7 +47,7 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 | [**Hooks**](/docs/concepts/hooks) | Actions avant/apres utilisation d'outils | PreToolUse / PostToolUse |
 | [**MCP Servers**](/docs/concepts/mcp-servers) | Extensions via Model Context Protocol | Configuration .mcp.json |
 | [**Output Styles**](/docs/concepts/output-styles) | Styles de formatage des reponses | `/output-style nom` |
-| [**Templates**](/docs/concepts/templates) | Modeles pour specs, plans et taches | `/work-specify`, `/work-plan` |
+| [**Templates**](/docs/concepts/templates) | Modeles pour specs, plans et taches | `/work:work-specify`, `/work:work-plan` |
 
 ## Comparaison rapide
 
@@ -59,9 +59,9 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 │  COMMAND                    SKILL                   AGENT      │
 │  ────────                   ─────                   ─────      │
 │                                                                │
-│  /work-explore              "Je veux faire         Delegation  │
-│  /dev-tdd                    du TDD"               automatique │
-│  /qa-security                                      par Claude  │
+│  /work:work-explore              "Je veux faire         Delegation  │
+│  /dev:dev-tdd                    du TDD"               automatique │
+│  /qa:qa-security                                      par Claude  │
 │                                                                │
 │  ┌──────────┐              ┌──────────┐          ┌──────────┐ │
 │  │ Declench.│              │ Declench.│          │ Declench.│ │

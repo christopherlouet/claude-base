@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-title: "/qa-design"
+title: "/qa:qa-design"
 description: "Audit de design UI/UX et verification des bonnes pratiques web."
 tags:
   - "qa"
@@ -156,11 +156,11 @@ find . -name "*.webp" -o -name "*.avif" | wc -l
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/qa-a11y` | Audit accessibilite WCAG detaille |
-| `/qa-responsive` | Audit responsive/mobile |
-| `/qa-perf` | Audit performance detaille |
-| `/dev-component` | Creer des composants UI |
-| `/dev-design-system` | Design tokens et systeme de design |
+| `/qa:qa-a11y` | Audit accessibilite WCAG detaille |
+| `/qa:qa-responsive` | Audit responsive/mobile |
+| `/qa:qa-perf` | Audit performance detaille |
+| `/dev:dev-component` | Creer des composants UI |
+| `/dev:dev-design-system` | Design tokens et systeme de design |
 
 ---
 

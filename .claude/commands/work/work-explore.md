@@ -133,9 +133,9 @@ Chercher et lire :
 
 | Après exploration | Usage |
 |-------------------|-------|
-| `/work-plan` | Planifier les modifications |
-| `/doc-explain` | Expliquer du code complexe |
-| `/doc-onboard` | Découverte complète d'un projet |
+| `/work:work-plan` | Planifier les modifications |
+| `/doc:doc-explain` | Expliquer du code complexe |
+| `/doc:doc-onboard` | Découverte complète d'un projet |
 
 ---
 

@@ -270,10 +270,10 @@ lighthouse https://example.com --only-categories=accessibility
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/responsive` | Design responsive mobile |
-| `/audit` | Audit complet (inclut a11y) |
-| `/component` | Créer des composants accessibles |
-| `/seo` | SEO (impact indirect de l'a11y) |
+| `/qa:qa-responsive` | Design responsive mobile |
+| `/qa:qa-audit` | Audit complet (inclut a11y) |
+| `/dev:dev-component` | Créer des composants accessibles |
+| `/growth:growth-seo` | SEO (impact indirect de l'a11y) |
 
 ---
 
