@@ -764,11 +764,11 @@ export function getUserTier(points: number): RewardTier {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/analytics` | Configurer le tracking |
-| `/onboarding` | Améliorer activation |
-| `/email` | Campagnes ré-engagement |
-| `/ab-test` | Tester stratégies |
-| `/funnel` | Analyser conversions |
+| `/growth:growth-analytics` | Configurer le tracking |
+| `/growth:growth-onboarding` | Améliorer activation |
+| `/growth:growth-email` | Campagnes ré-engagement |
+| `/growth:growth-ab-test` | Tester stratégies |
+| `/growth:growth-funnel` | Analyser conversions |
 
 ---
 

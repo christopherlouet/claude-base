@@ -512,11 +512,11 @@ helm list -n production
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/docker` | Creer l'image Docker |
-| `/ci` | Pipeline CI/CD |
-| `/infra-code` | Provisionner le cluster (Terraform) |
-| `/monitoring` | Observabilite du cluster |
-| `/secrets-management` | Gestion des secrets |
+| `/ops:ops-docker` | Creer l'image Docker |
+| `/ops:ops-ci` | Pipeline CI/CD |
+| `/ops:ops-infra-code` | Provisionner le cluster (Terraform) |
+| `/ops:ops-monitoring` | Observabilite du cluster |
+| `/ops:ops-secrets-management` | Gestion des secrets |
 
 ---
 

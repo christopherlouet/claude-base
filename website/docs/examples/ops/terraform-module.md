@@ -11,7 +11,7 @@ Cet exemple montre comment créer un module Terraform professionnel et réutilis
 ## Commande utilisée
 
 ```bash
-/ops-infra-code "Créer un module Terraform pour une infrastructure AWS avec VPC, ECS et RDS"
+/ops:ops-infra-code "Créer un module Terraform pour une infrastructure AWS avec VPC, ECS et RDS"
 ```
 
 ## Structure générée
@@ -728,9 +728,9 @@ module "api_service" {
 
 ## Commandes associées
 
-- `/ops-ci` - Pipeline avec terraform plan/apply
-- `/ops-proxmox` - Module pour infrastructure Proxmox
-- `/qa-security` - Audit sécurité Terraform
+- `/ops:ops-ci` - Pipeline avec terraform plan/apply
+- `/ops:ops-proxmox` - Module pour infrastructure Proxmox
+- `/qa:qa-security` - Audit sécurité Terraform
 
 ---
 

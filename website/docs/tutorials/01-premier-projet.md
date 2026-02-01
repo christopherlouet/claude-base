@@ -15,9 +15,9 @@ Ce tutoriel vous guide dans la création de votre première feature en utilisant
 ## Objectifs
 
 À la fin de ce tutoriel, vous saurez :
-- Utiliser `/work-explore` pour comprendre un codebase
-- Utiliser `/work-plan` pour planifier une implémentation
-- Utiliser `/work-flow-feature` pour créer une feature complète
+- Utiliser `/work:work-explore` pour comprendre un codebase
+- Utiliser `/work:work-plan` pour planifier une implémentation
+- Utiliser `/work:work-flow-feature` pour créer une feature complète
 - Comprendre le cycle de développement avec claude-socle
 
 ## Prérequis
@@ -32,7 +32,7 @@ Avant de modifier quoi que ce soit, commencez **toujours** par explorer le code 
 ### Lancez la commande d'exploration
 
 ```bash
-/work-explore "Comprendre l'architecture générale du projet"
+/work:work-explore "Comprendre l'architecture générale du projet"
 ```
 
 ### Résultat attendu
@@ -76,7 +76,7 @@ Maintenant que vous comprenez le projet, planifiez votre feature.
 ### Lancez la planification
 
 ```bash
-/work-plan "Ajouter un bouton de thème sombre"
+/work:work-plan "Ajouter un bouton de thème sombre"
 ```
 
 ### Résultat attendu
@@ -116,7 +116,7 @@ Pour une implémentation guidée de bout en bout, utilisez le workflow feature.
 ### Lancez le workflow
 
 ```bash
-/work-flow-feature "Ajouter un bouton de thème sombre"
+/work:work-flow-feature "Ajouter un bouton de thème sombre"
 ```
 
 ### Ce qui se passe
@@ -162,7 +162,7 @@ Si tout est correct, créez un commit propre.
 ### Utilisez la commande commit
 
 ```bash
-/work-commit
+/work:work-commit
 ```
 
 ### Résultat attendu
@@ -188,17 +188,17 @@ Vous avez appris le workflow de base :
 
 ```mermaid
 flowchart LR
-    A["/work-explore"] --> B["/work-plan"]
-    B --> C["/work-flow-feature"]
-    C --> D["/work-commit"]
+    A["/work:work-explore"] --> B["/work:work-plan"]
+    B --> C["/work:work-flow-feature"]
+    C --> D["/work:work-commit"]
 ```
 
 | Commande | Usage |
 |----------|-------|
-| `/work-explore` | Comprendre le code avant de modifier |
-| `/work-plan` | Planifier avant d'implémenter |
-| `/work-flow-feature` | Workflow complet pour une feature |
-| `/work-commit` | Commit propre avec message formaté |
+| `/work:work-explore` | Comprendre le code avant de modifier |
+| `/work:work-plan` | Planifier avant d'implémenter |
+| `/work:work-flow-feature` | Workflow complet pour une feature |
+| `/work:work-commit` | Commit propre avec message formaté |
 
 ## Prochaines étapes
 

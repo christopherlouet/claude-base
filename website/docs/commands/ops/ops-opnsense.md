@@ -1,6 +1,6 @@
 ---
 sidebar_position: 24
-title: "/ops-opnsense"
+title: "/ops:ops-opnsense"
 description: "Infrastructure as Code pour OPNsense. Configurer et gérer un pare-feu OPNsense via Terraform."
 tags:
   - "ops"
@@ -134,25 +134,25 @@ export TF_VAR_opnsense_api_secret="your-api-secret"
 ### Configurer les interfaces
 
 ```
-/ops-opnsense configurer interfaces WAN en DHCP et LAN en 192.168.10.1/24
+/ops:ops-opnsense configurer interfaces WAN en DHCP et LAN en 192.168.10.1/24
 ```
 
 ### Ajouter des règles firewall
 
 ```
-/ops-opnsense ajouter règle autorisant HTTP/HTTPS sortant depuis le LAN
+/ops:ops-opnsense ajouter règle autorisant HTTP/HTTPS sortant depuis le LAN
 ```
 
 ### Configurer port forwarding
 
 ```
-/ops-opnsense rediriger le port 443 vers le serveur web 192.168.10.20
+/ops:ops-opnsense rediriger le port 443 vers le serveur web 192.168.10.20
 ```
 
 ### Configuration complète
 
 ```
-/ops-opnsense créer configuration complète pour réseau derrière box Orange
+/ops:ops-opnsense créer configuration complète pour réseau derrière box Orange
 ```
 
 ## Sécurité
@@ -191,9 +191,9 @@ curl -k -u "api-key:api-secret" \
 
 | Agent | Usage |
 |-------|-------|
-| `/ops-proxmox` | Provisioning VM OPNsense |
-| `/ops-infra-code` | Patterns Terraform généraux |
-| `/qa-security` | Audit sécurité configuration |
+| `/ops:ops-proxmox` | Provisioning VM OPNsense |
+| `/ops:ops-infra-code` | Patterns Terraform généraux |
+| `/qa:qa-security` | Audit sécurité configuration |
 
 ## Ressources
 

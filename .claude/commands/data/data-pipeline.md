@@ -169,10 +169,10 @@ def process_with_retry(data, max_retries=3):
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/data-modeling` | Modéliser les données |
-| `/data-analytics` | Analyser les résultats |
-| `/ops-monitoring` | Configurer le monitoring |
-| `/dev-test` | Tester le pipeline |
+| `/data:data-modeling` | Modéliser les données |
+| `/data:data-analytics` | Analyser les résultats |
+| `/ops:ops-monitoring` | Configurer le monitoring |
+| `/dev:dev-test` | Tester le pipeline |
 
 ---
 

@@ -53,7 +53,7 @@ src/
 ## Workflow Recommande
 
 ```
-/work-explore → /work-plan → /dev-component → /dev-tdd → /qa-review → /work-pr
+/work:work-explore → /work:work-plan → /dev:dev-component → /dev:dev-tdd → /qa:qa-review → /work:work-pr
 ```
 
 ## Phase 1: Exploration
@@ -61,7 +61,7 @@ src/
 ### Comprendre le projet existant
 
 ```bash
-/work-explore
+/work:work-explore
 ```
 
 Ou avec l'agent dedie:
@@ -82,7 +82,7 @@ Ou avec l'agent dedie:
 ### Planifier une feature
 
 ```bash
-/work-plan "Ajouter un systeme de panier d'achat"
+/work:work-plan "Ajouter un systeme de panier d'achat"
 ```
 
 ### Structure de plan type
@@ -115,7 +115,7 @@ Ou avec l'agent dedie:
 ### Creer un composant
 
 ```bash
-/dev-component "ProductCard avec image, titre, prix et bouton add to cart"
+/dev:dev-component "ProductCard avec image, titre, prix et bouton add to cart"
 ```
 
 ### Structure composant generee
@@ -132,36 +132,36 @@ src/components/ProductCard/
 ### Creer un hook
 
 ```bash
-/dev-hook "useCart pour gerer le panier avec localStorage"
+/dev:dev-hook "useCart pour gerer le panier avec localStorage"
 ```
 
 ### Bonnes pratiques React
 
 | Pattern | Commande | Utilisation |
 |---------|----------|-------------|
-| Composant | `/dev-component` | UI reutilisable |
-| Hook | `/dev-hook` | Logique partagee |
-| Optimisation | `/dev-react-perf` | Performance |
-| State | `/work-plan` | Architecture |
+| Composant | `/dev:dev-component` | UI reutilisable |
+| Hook | `/dev:dev-hook` | Logique partagee |
+| Optimisation | `/dev:dev-react-perf` | Performance |
+| State | `/work:work-plan` | Architecture |
 
 ## Phase 4: Tests
 
 ### TDD pour logique metier
 
 ```bash
-/dev-tdd "calcul du total panier avec reductions"
+/dev:dev-tdd "calcul du total panier avec reductions"
 ```
 
 ### Generer tests composant
 
 ```bash
-/dev-test "tester ProductCard avec differents etats"
+/dev:dev-test "tester ProductCard avec differents etats"
 ```
 
 ### Couverture
 
 ```bash
-/qa-coverage
+/qa:qa-coverage
 ```
 
 ## Phase 5: Qualite
@@ -169,13 +169,13 @@ src/components/ProductCard/
 ### Review de code
 
 ```bash
-/qa-review
+/qa:qa-review
 ```
 
 ### Audit performance
 
 ```bash
-/qa-perf
+/qa:qa-perf
 ```
 
 Metriques cibles:
@@ -189,13 +189,13 @@ Metriques cibles:
 ### Audit accessibilite
 
 ```bash
-/qa-a11y
+/qa:qa-a11y
 ```
 
 ### Audit responsive
 
 ```bash
-/qa-responsive
+/qa:qa-responsive
 ```
 
 ## Phase 6: Deploy
@@ -203,19 +203,19 @@ Metriques cibles:
 ### Configuration CI/CD
 
 ```bash
-/ops-ci "GitHub Actions pour Next.js avec Vercel"
+/ops:ops-ci "GitHub Actions pour Next.js avec Vercel"
 ```
 
 ### Docker (si necessaire)
 
 ```bash
-/ops-docker "Next.js standalone"
+/ops:ops-docker "Next.js standalone"
 ```
 
 ### Variables d'environnement
 
 ```bash
-/ops-env
+/ops:ops-env
 ```
 
 ## Commandes par Use Case
@@ -223,37 +223,37 @@ Metriques cibles:
 ### Nouveau projet
 
 ```bash
-1. /work-explore        # Comprendre le boilerplate
-2. /work-plan          # Definir l'architecture
-3. /ops-env            # Configurer les environments
-4. /ops-ci             # Setup CI/CD
+1. /work:work-explore        # Comprendre le boilerplate
+2. /work:work-plan          # Definir l'architecture
+3. /ops:ops-env            # Configurer les environments
+4. /ops:ops-ci             # Setup CI/CD
 ```
 
 ### Nouvelle feature
 
 ```bash
-1. /work-explore       # Comprendre le contexte
-2. /work-plan         # Planifier la feature
-3. /dev-component     # Creer les composants
-4. /dev-hook          # Creer les hooks
-5. /dev-tdd           # Tests
-6. /qa-review         # Review
-7. /work-pr           # Pull Request
+1. /work:work-explore       # Comprendre le contexte
+2. /work:work-plan         # Planifier la feature
+3. /dev:dev-component     # Creer les composants
+4. /dev:dev-hook          # Creer les hooks
+5. /dev:dev-tdd           # Tests
+6. /qa:qa-review         # Review
+7. /work:work-pr           # Pull Request
 ```
 
 ### Bug fix
 
 ```bash
-1. /dev-debug         # Identifier la cause
-2. /work-flow-bugfix  # Workflow complet
+1. /dev:dev-debug         # Identifier la cause
+2. /work:work-flow-bugfix  # Workflow complet
 ```
 
 ### Optimisation
 
 ```bash
-1. /qa-perf           # Identifier les problemes
-2. /dev-react-perf    # Optimiser React
-3. /qa-a11y           # Verifier accessibilite
+1. /qa:qa-perf           # Identifier les problemes
+2. /dev:dev-react-perf    # Optimiser React
+3. /qa:qa-a11y           # Verifier accessibilite
 ```
 
 ## Agents Automatiques

@@ -140,7 +140,7 @@ Acteurs externes:
 **API principale :**
 | Endpoint | Méthode | Description |
 |----------|---------|-------------|
-| `/users` | GET | Liste des utilisateurs |
+| `/biz:biz-personas` | GET | Liste des utilisateurs |
 | `/users/:id` | GET | Détail utilisateur |
 | `/auth/login` | POST | Authentification |
 | `/auth/refresh` | POST | Renouvellement token |
@@ -583,11 +583,11 @@ graph TB
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/readme` | Documentation README |
-| `/api-spec` | Documentation API |
-| `/infra-code` | Infrastructure as Code |
-| `/onboard` | Onboarding développeurs |
-| `/explore` | Explorer le code existant |
+| `/doc:doc-readme` | Documentation README |
+| `/doc:doc-api-spec` | Documentation API |
+| `/ops:ops-infra-code` | Infrastructure as Code |
+| `/doc:doc-onboard` | Onboarding développeurs |
+| `/work:work-explore` | Explorer le code existant |
 
 ---
 

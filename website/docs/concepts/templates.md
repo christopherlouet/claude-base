@@ -15,7 +15,7 @@ Un **template** est un modele de document structure qui guide la creation de spe
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│  /work-specify                /work-plan                       │
+│  /work:work-specify                /work:work-plan                       │
 │  ─────────────                ──────────                       │
 │        │                           │                           │
 │        ▼                           ▼                           │
@@ -50,7 +50,7 @@ Les templates sont dans `.claude/templates/`:
 
 ### 1. spec-template.md - Specification Fonctionnelle
 
-Utilise par `/work-specify` pour creer une specification centree sur la **valeur utilisateur**.
+Utilise par `/work:work-specify` pour creer une specification centree sur la **valeur utilisateur**.
 
 **Contenu principal:**
 
@@ -79,7 +79,7 @@ Utilise par `/work-specify` pour creer une specification centree sur la **valeur
 
 ### 2. plan-template.md - Plan d'Implementation
 
-Utilise par `/work-plan` pour definir l'**architecture technique** et les phases.
+Utilise par `/work:work-plan` pour definir l'**architecture technique** et les phases.
 
 **Contenu principal:**
 
@@ -111,7 +111,7 @@ Utilise par `/work-plan` pour definir l'**architecture technique** et les phases
 
 ### 3. tasks-template.md - Decoupage en Taches
 
-Genere par `/work-plan` pour lister les **taches atomiques** avec dependances.
+Genere par `/work:work-plan` pour lister les **taches atomiques** avec dependances.
 
 **Contenu principal:**
 
@@ -136,16 +136,16 @@ Genere par `/work-plan` pour lister les **taches atomiques** avec dependances.
 ### Commandes associees
 
 ```
-/work-specify "Ma feature"
+/work:work-specify "Ma feature"
       │
       ▼
   Genere: specs/ma-feature/spec.md
       │
       ▼
-/work-clarify (optionnel)
+/work:work-clarify (optionnel)
       │
       ▼
-/work-plan "Ma feature"
+/work:work-plan "Ma feature"
       │
       ▼
   Genere: specs/ma-feature/plan.md
@@ -282,6 +282,6 @@ specs/[feature]/
 ## Voir aussi
 
 - [Workflow Explore → Plan → Code](/docs/workflow/explore-plan-code-commit) - Workflow complet
-- [/work-specify](/docs/commands/work/work-specify) - Commande de specification
-- [/work-plan](/docs/commands/work/work-plan) - Commande de planification
-- [/work-clarify](/docs/commands/work/work-clarify) - Clarification des ambiguites
+- [/work:work-specify](/docs/commands/work/work-specify) - Commande de specification
+- [/work:work-plan](/docs/commands/work/work-plan) - Commande de planification
+- [/work:work-clarify](/docs/commands/work/work-clarify) - Clarification des ambiguites

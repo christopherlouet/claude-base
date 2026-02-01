@@ -11,7 +11,7 @@ Cet exemple montre comment créer un pipeline CI/CD complet avec GitHub Actions 
 ## Commande utilisée
 
 ```bash
-/ops-ci "Configurer GitHub Actions avec tests, lint, build et déploiement"
+/ops:ops-ci "Configurer GitHub Actions avec tests, lint, build et déploiement"
 ```
 
 ## Structure générée
@@ -525,9 +525,9 @@ updates:
 
 ## Commandes associées
 
-- `/ops-docker` - Dockerfile optimisé
-- `/ops-k8s` - Manifests Kubernetes
-- `/qa-security` - Audit sécurité complet
+- `/ops:ops-docker` - Dockerfile optimisé
+- `/ops:ops-k8s` - Manifests Kubernetes
+- `/qa:qa-security` - Audit sécurité complet
 
 ---
 

@@ -62,7 +62,7 @@
 specs/[feature]/
 ├── spec.md           # Spécification fonctionnelle
 ├── plan.md           # Ce fichier
-├── tasks.md          # Découpage en tâches (généré par /work-plan)
+├── tasks.md          # Découpage en tâches (généré par /work:work-plan)
 ├── clarifications.md # Historique des clarifications (si applicable)
 └── research.md       # Notes de recherche technique (si applicable)
 ```

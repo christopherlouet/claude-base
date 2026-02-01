@@ -37,7 +37,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 ┌─────────────────────────────────────────────────────────────────┐
 │  1. EXPLORER    →    2. PLANIFIER    →    3. DÉVELOPPER        │
 │                                                                 │
-│  /work-explore       /work-plan           /dev-tdd              │
+│  /work:work-explore       /work:work-plan           /dev:dev-tdd              │
 │  Comprendre          Structurer           Implémenter           │
 │  le code             l'approche           avec tests            │
 └─────────────────────────────────────────────────────────────────┘
@@ -47,20 +47,20 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 
 | Besoin | Commande | Description |
 |--------|----------|-------------|
-| Comprendre un projet | `/work-explore` | Explorer et analyser le code existant |
-| Planifier une tâche | `/work-plan` | Créer un plan d'implémentation structuré |
-| Développer en TDD | `/dev-tdd` | Écrire les tests avant le code |
-| Créer un commit | `/work-commit` | Message de commit Conventional Commits |
-| Faire une PR | `/work-pr` | Pull Request bien documentée |
+| Comprendre un projet | `/work:work-explore` | Explorer et analyser le code existant |
+| Planifier une tâche | `/work:work-plan` | Créer un plan d'implémentation structuré |
+| Développer en TDD | `/dev:dev-tdd` | Écrire les tests avant le code |
+| Créer un commit | `/work:work-commit` | Message de commit Conventional Commits |
+| Faire une PR | `/work:work-pr` | Pull Request bien documentée |
 
 ### Première utilisation recommandée
 
 ```bash
 # 1. Explorer le projet
-/work-explore "Comprendre l'architecture générale"
+/work:work-explore "Comprendre l'architecture générale"
 
 # 2. Lancer un workflow complet pour une feature
-/work-flow-feature "Ma première feature"
+/work:work-flow-feature "Ma première feature"
 ```
 
 ---
@@ -71,15 +71,15 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 
 | Indicateur | Type | Guide | Workflow recommandé |
 |------------|------|-------|---------------------|
-| `package.json` + React/Next/Vue | **Web Frontend** | `docs/guides/WEB-GUIDE.md` | `/dev-component`, `/dev-hook` |
-| `pubspec.yaml` + Flutter | **Mobile** | `docs/guides/MOBILE-GUIDE.md` | `/dev-flutter`, `/dev-supabase` |
-| `package.json` + Express/Fastify/NestJS | **API Node** | `docs/guides/API-GUIDE.md` | `/dev-api`, `/dev-graphql` |
-| `requirements.txt` / `pyproject.toml` | **Python** | - | `/dev-api`, `/dev-tdd` |
-| `go.mod` | **Go** | - | `/dev-api`, `/dev-tdd` |
-| `init.lua` / `.config/nvim` | **Neovim** | - | `/dev-neovim`, `/qa-neovim` |
-| Airflow/dbt/Spark | **Data** | `docs/guides/DATA-GUIDE.md` | `/data-pipeline` |
-| `Dockerfile` / `docker-compose.yml` | **DevOps** | - | `/ops-docker`, `/ops-k8s` |
-| Proxmox / `bpg/proxmox` provider | **Infrastructure Proxmox** | - | `/ops-proxmox`, `/ops-infra-code` |
+| `package.json` + React/Next/Vue | **Web Frontend** | `docs/guides/WEB-GUIDE.md` | `/dev:dev-component`, `/dev:dev-hook` |
+| `pubspec.yaml` + Flutter | **Mobile** | `docs/guides/MOBILE-GUIDE.md` | `/dev:dev-flutter`, `/dev:dev-supabase` |
+| `package.json` + Express/Fastify/NestJS | **API Node** | `docs/guides/API-GUIDE.md` | `/dev:dev-api`, `/dev:dev-graphql` |
+| `requirements.txt` / `pyproject.toml` | **Python** | - | `/dev:dev-api`, `/dev:dev-tdd` |
+| `go.mod` | **Go** | - | `/dev:dev-api`, `/dev:dev-tdd` |
+| `init.lua` / `.config/nvim` | **Neovim** | - | `/dev:dev-neovim`, `/qa:qa-neovim` |
+| Airflow/dbt/Spark | **Data** | `docs/guides/DATA-GUIDE.md` | `/data:data-pipeline` |
+| `Dockerfile` / `docker-compose.yml` | **DevOps** | - | `/ops:ops-docker`, `/ops:ops-k8s` |
+| Proxmox / `bpg/proxmox` provider | **Infrastructure Proxmox** | - | `/ops:ops-proxmox`, `/ops:ops-infra-code` |
 | Monorepo (nx, turborepo, lerna) | **Monorepo** | - | Adapter par package |
 
 ---
@@ -117,7 +117,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 
 | Concept | Déclenchement | Contexte | Exemple |
 |---------|---------------|----------|---------|
-| **Commands** | Manuel (`/xxx`) | Partagé | `/work-explore` |
+| **Commands** | Manuel (`/xxx`) | Partagé | `/work:work-explore` |
 | **Agents** | Automatique par Claude | **Isolé** | Audit sécurité → `qa-security` agent |
 | **Skills** | Automatique par mots-clés | Fork | "TDD" → `test-driven-development` skill |
 
@@ -342,23 +342,23 @@ Templates structurés dans `.claude/templates/` pour le workflow Explore → Spe
 
 | Template | Fichier | Utilisé par | Contenu |
 |----------|---------|-------------|---------|
-| **Spécification** | `spec-template.md` | `/work-specify` | User Stories, critères d'acceptation, exigences |
-| **Plan** | `plan-template.md` | `/work-plan` | Architecture, fichiers, phases, risques |
-| **Tâches** | `tasks-template.md` | `/work-plan` | Découpage par User Story, parallélisation |
+| **Spécification** | `spec-template.md` | `/work:work-specify` | User Stories, critères d'acceptation, exigences |
+| **Plan** | `plan-template.md` | `/work:work-plan` | Architecture, fichiers, phases, risques |
+| **Tâches** | `tasks-template.md` | `/work:work-plan` | Découpage par User Story, parallélisation |
 
 ### Workflow avec templates
 
 ```
-/work-specify "Ma feature"
+/work:work-specify "Ma feature"
      │
      ▼
 Génère: specs/ma-feature/spec.md (basé sur spec-template.md)
      │
      ▼
-/work-clarify (optionnel - max 5 questions)
+/work:work-clarify (optionnel - max 5 questions)
      │
      ▼
-/work-plan "Ma feature"
+/work:work-plan "Ma feature"
      │
      ▼
 Génère: specs/ma-feature/plan.md + tasks.md
@@ -382,162 +382,162 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 | Commande | Usage |
 |----------|-------|
-| `/work-explore` | Explorer et comprendre le code |
-| `/work-specify` | Créer une spécification fonctionnelle (User Stories) |
-| `/work-clarify` | Clarifier les ambiguïtés (max 5 questions) |
-| `/work-plan` | Planifier (génère plan.md + tasks.md) |
-| `/work-commit` | Créer un commit Conventional Commits |
-| `/work-pr` | Créer une Pull Request documentée |
-| `/work-flow-feature` | Workflow complet feature |
-| `/work-flow-bugfix` | Workflow complet bugfix |
-| `/work-flow-release` | Workflow complet release |
-| `/work-flow-launch` | Workflow complet lancement produit |
+| `/work:work-explore` | Explorer et comprendre le code |
+| `/work:work-specify` | Créer une spécification fonctionnelle (User Stories) |
+| `/work:work-clarify` | Clarifier les ambiguïtés (max 5 questions) |
+| `/work:work-plan` | Planifier (génère plan.md + tasks.md) |
+| `/work:work-commit` | Créer un commit Conventional Commits |
+| `/work:work-pr` | Créer une Pull Request documentée |
+| `/work:work-flow-feature` | Workflow complet feature |
+| `/work:work-flow-bugfix` | Workflow complet bugfix |
+| `/work:work-flow-release` | Workflow complet release |
+| `/work:work-flow-launch` | Workflow complet lancement produit |
 
 ### DEV- : Développement (23)
 
 | Commande | Usage |
 |----------|-------|
-| `/dev-tdd` | Développement TDD (tests first) |
-| `/dev-test` | Générer des tests |
-| `/dev-testing-setup` | Configurer l'infrastructure de tests |
-| `/dev-debug` | Déboguer un problème (méthodologie 4 phases) |
-| `/dev-refactor` | Refactoring guidé + réduction d'entropie |
-| `/dev-document` | Génération de documents (PDF, DOCX, XLSX, PPTX) |
-| `/dev-api` | Créer/documenter API REST |
-| `/dev-api-versioning` | Versioning d'API |
-| `/dev-component` | Créer un composant UI complet |
-| `/dev-hook` | Créer un hook React/Vue |
-| `/dev-error-handling` | Stratégie de gestion d'erreurs |
-| `/dev-react-perf` | Optimisation performance React/Next.js |
-| `/dev-mcp` | Créer des serveurs MCP |
-| `/dev-flutter` | Widgets et screens Flutter |
-| `/dev-supabase` | Backend Supabase (Auth, DB, Storage, Postgres perf) |
-| `/dev-graphql` | API GraphQL client/serveur |
-| `/dev-neovim` | Plugins et config Neovim/Lua |
-| `/dev-design-system` | Design tokens et bibliothèque de composants |
-| `/dev-prisma` | ORM Prisma (schema, migrations, queries) |
-| `/dev-prompt-engineering` | Optimisation de prompts LLM |
-| `/dev-rag` | Systèmes RAG (Retrieval-Augmented Generation) |
-| `/dev-trpc` | APIs type-safe avec tRPC |
-| `/dev-ai-integration` | Intégration LLMs (OpenAI, Claude API) |
+| `/dev:dev-tdd` | Développement TDD (tests first) |
+| `/dev:dev-test` | Générer des tests |
+| `/dev:dev-testing-setup` | Configurer l'infrastructure de tests |
+| `/dev:dev-debug` | Déboguer un problème (méthodologie 4 phases) |
+| `/dev:dev-refactor` | Refactoring guidé + réduction d'entropie |
+| `/dev:dev-document` | Génération de documents (PDF, DOCX, XLSX, PPTX) |
+| `/dev:dev-api` | Créer/documenter API REST |
+| `/dev:dev-api-versioning` | Versioning d'API |
+| `/dev:dev-component` | Créer un composant UI complet |
+| `/dev:dev-hook` | Créer un hook React/Vue |
+| `/dev:dev-error-handling` | Stratégie de gestion d'erreurs |
+| `/dev:dev-react-perf` | Optimisation performance React/Next.js |
+| `/dev:dev-mcp` | Créer des serveurs MCP |
+| `/dev:dev-flutter` | Widgets et screens Flutter |
+| `/dev:dev-supabase` | Backend Supabase (Auth, DB, Storage, Postgres perf) |
+| `/dev:dev-graphql` | API GraphQL client/serveur |
+| `/dev:dev-neovim` | Plugins et config Neovim/Lua |
+| `/dev:dev-design-system` | Design tokens et bibliothèque de composants |
+| `/dev:dev-prisma` | ORM Prisma (schema, migrations, queries) |
+| `/dev:dev-prompt-engineering` | Optimisation de prompts LLM |
+| `/dev:dev-rag` | Systèmes RAG (Retrieval-Augmented Generation) |
+| `/dev:dev-trpc` | APIs type-safe avec tRPC |
+| `/dev:dev-ai-integration` | Intégration LLMs (OpenAI, Claude API) |
 
 ### QA- : Qualité (14)
 
 | Commande | Usage |
 |----------|-------|
-| `/qa-review` | Code review approfondie + analyse de nommage |
-| `/qa-security` | Audit de sécurité OWASP |
-| `/qa-perf` | Analyse de performance |
-| `/qa-a11y` | Audit accessibilité WCAG |
-| `/qa-audit` | Audit complet (sécu+RGPD+a11y+perf) |
-| `/qa-design` | Audit UI/UX (100+ règles design web) |
-| `/qa-responsive` | Audit responsive/mobile web |
-| `/qa-automation` | Automatisation des tests |
-| `/qa-coverage` | Analyse couverture de tests |
-| `/qa-e2e` | Tests End-to-End (Playwright, Cypress) |
-| `/qa-kaizen` | Amélioration continue (PDCA, Muda) |
-| `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
-| `/qa-neovim` | Audit config Neovim |
-| `/qa-tech-debt` | Identifier et prioriser la dette technique |
+| `/qa:qa-review` | Code review approfondie + analyse de nommage |
+| `/qa:qa-security` | Audit de sécurité OWASP |
+| `/qa:qa-perf` | Analyse de performance |
+| `/qa:qa-a11y` | Audit accessibilité WCAG |
+| `/qa:qa-audit` | Audit complet (sécu+RGPD+a11y+perf) |
+| `/qa:qa-design` | Audit UI/UX (100+ règles design web) |
+| `/qa:qa-responsive` | Audit responsive/mobile web |
+| `/qa:qa-automation` | Automatisation des tests |
+| `/qa:qa-coverage` | Analyse couverture de tests |
+| `/qa:qa-e2e` | Tests End-to-End (Playwright, Cypress) |
+| `/qa:qa-kaizen` | Amélioration continue (PDCA, Muda) |
+| `/qa:qa-mobile` | Audit qualité apps mobiles (Flutter) |
+| `/qa:qa-neovim` | Audit config Neovim |
+| `/qa:qa-tech-debt` | Identifier et prioriser la dette technique |
 
 ### OPS- : Opérations (30)
 
 | Commande | Usage |
 |----------|-------|
-| `/ops-hotfix` | Correction urgente production |
-| `/ops-release` | Créer une release |
-| `/ops-rollback` | Procédure de rollback sécurisée |
-| `/ops-gitflow-init` | Initialiser GitFlow |
-| `/ops-gitflow-feature` | Gérer les branches feature |
-| `/ops-gitflow-release` | Gérer les branches release |
-| `/ops-gitflow-hotfix` | Gérer les hotfixes |
-| `/ops-deps` | Audit et MAJ des dépendances |
-| `/ops-docker` | Dockeriser un projet |
-| `/ops-k8s` | Déploiement Kubernetes |
-| `/ops-vps` | Déploiement VPS |
-| `/ops-migrate` | Migration de code/dépendances |
-| `/ops-ci` | Configuration CI/CD |
-| `/ops-monitoring` | Instrumentation (logs, métriques, traces) |
-| `/ops-observability-stack` | Déployer Prometheus, Grafana, Loki |
-| `/ops-grafana-dashboard` | Créer dashboards Grafana |
-| `/ops-database` | Schéma, migrations DB |
-| `/ops-health` | Health check rapide |
-| `/ops-env` | Gestion des environnements |
-| `/ops-backup` | Stratégie backup/restore |
-| `/ops-load-testing` | Tests de charge et stress |
-| `/ops-cost-optimization` | Optimisation coûts cloud |
-| `/ops-disaster-recovery` | Plan de reprise après sinistre |
-| `/ops-infra-code` | Infrastructure as Code (Terraform) |
-| `/ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
-| `/ops-opnsense` | Configuration OPNsense via Terraform (firewall, NAT, DHCP/DNS) |
-| `/ops-secrets-management` | Gestion sécurisée des secrets |
-| `/ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
-| `/ops-vercel` | Configuration et déploiement Vercel |
-| `/ops-mobile-release` | Publication App Store / Google Play |
+| `/ops:ops-hotfix` | Correction urgente production |
+| `/ops:ops-release` | Créer une release |
+| `/ops:ops-rollback` | Procédure de rollback sécurisée |
+| `/ops:ops-gitflow-init` | Initialiser GitFlow |
+| `/ops:ops-gitflow-feature` | Gérer les branches feature |
+| `/ops:ops-gitflow-release` | Gérer les branches release |
+| `/ops:ops-gitflow-hotfix` | Gérer les hotfixes |
+| `/ops:ops-deps` | Audit et MAJ des dépendances |
+| `/ops:ops-docker` | Dockeriser un projet |
+| `/ops:ops-k8s` | Déploiement Kubernetes |
+| `/ops:ops-vps` | Déploiement VPS |
+| `/ops:ops-migrate` | Migration de code/dépendances |
+| `/ops:ops-ci` | Configuration CI/CD |
+| `/ops:ops-monitoring` | Instrumentation (logs, métriques, traces) |
+| `/ops:ops-observability-stack` | Déployer Prometheus, Grafana, Loki |
+| `/ops:ops-grafana-dashboard` | Créer dashboards Grafana |
+| `/ops:ops-database` | Schéma, migrations DB |
+| `/ops:ops-health` | Health check rapide |
+| `/ops:ops-env` | Gestion des environnements |
+| `/ops:ops-backup` | Stratégie backup/restore |
+| `/ops:ops-load-testing` | Tests de charge et stress |
+| `/ops:ops-cost-optimization` | Optimisation coûts cloud |
+| `/ops:ops-disaster-recovery` | Plan de reprise après sinistre |
+| `/ops:ops-infra-code` | Infrastructure as Code (Terraform) |
+| `/ops:ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
+| `/ops:ops-opnsense` | Configuration OPNsense via Terraform (firewall, NAT, DHCP/DNS) |
+| `/ops:ops-secrets-management` | Gestion sécurisée des secrets |
+| `/ops:ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
+| `/ops:ops-vercel` | Configuration et déploiement Vercel |
+| `/ops:ops-mobile-release` | Publication App Store / Google Play |
 
 ### DOC- : Documentation (9)
 
 | Commande | Usage |
 |----------|-------|
-| `/doc-generate` | Générer de la documentation |
-| `/doc-changelog` | Générer/maintenir le changelog |
-| `/doc-explain` | Expliquer du code complexe |
-| `/doc-onboard` | Découvrir un codebase |
-| `/doc-i18n` | Internationalisation |
-| `/doc-fix-issue` | Corriger une issue GitHub |
-| `/doc-api-spec` | Générer spec OpenAPI/Swagger |
-| `/doc-readme` | Créer/améliorer README |
-| `/doc-architecture` | Documenter l'architecture |
+| `/doc:doc-generate` | Générer de la documentation |
+| `/doc:doc-changelog` | Générer/maintenir le changelog |
+| `/doc:doc-explain` | Expliquer du code complexe |
+| `/doc:doc-onboard` | Découvrir un codebase |
+| `/doc:doc-i18n` | Internationalisation |
+| `/doc:doc-fix-issue` | Corriger une issue GitHub |
+| `/doc:doc-api-spec` | Générer spec OpenAPI/Swagger |
+| `/doc:doc-readme` | Créer/améliorer README |
+| `/doc:doc-architecture` | Documenter l'architecture |
 
 ### BIZ- : Business (11)
 
 | Commande | Usage |
 |----------|-------|
-| `/biz-model` | Business model, Lean Canvas |
-| `/biz-market` | Étude de marché |
-| `/biz-mvp` | Définir le MVP |
-| `/biz-pricing` | Stratégie de pricing |
-| `/biz-pitch` | Créer un pitch deck |
-| `/biz-roadmap` | Planifier la roadmap |
-| `/biz-launch` | Workflow lancement complet |
-| `/biz-competitor` | Analyse concurrentielle |
-| `/biz-okr` | Définir les OKRs |
-| `/biz-personas` | Créer des personas utilisateur |
-| `/biz-research` | Recherche utilisateur |
+| `/biz:biz-model` | Business model, Lean Canvas |
+| `/biz:biz-market` | Étude de marché |
+| `/biz:biz-mvp` | Définir le MVP |
+| `/biz:biz-pricing` | Stratégie de pricing |
+| `/biz:biz-pitch` | Créer un pitch deck |
+| `/biz:biz-roadmap` | Planifier la roadmap |
+| `/biz:biz-launch` | Workflow lancement complet |
+| `/biz:biz-competitor` | Analyse concurrentielle |
+| `/biz:biz-okr` | Définir les OKRs |
+| `/biz:biz-personas` | Créer des personas utilisateur |
+| `/biz:biz-research` | Recherche utilisateur |
 
 ### GROWTH- : Croissance (11)
 
 | Commande | Usage |
 |----------|-------|
-| `/growth-landing` | Créer/optimiser landing page |
-| `/growth-seo` | Audit SEO |
-| `/growth-analytics` | Setup tracking et KPIs |
-| `/growth-app-store-analytics` | Métriques App Store / Google Play |
-| `/growth-onboarding` | Parcours d'onboarding UX |
-| `/growth-email` | Templates email marketing |
-| `/growth-ab-test` | Planifier A/B tests |
-| `/growth-retention` | Stratégies de rétention |
-| `/growth-funnel` | Analyse et optimisation funnels |
-| `/growth-localization` | Stratégie de localisation multi-marchés |
-| `/growth-cro` | Optimisation du taux de conversion (CRO) |
+| `/growth:growth-landing` | Créer/optimiser landing page |
+| `/growth:growth-seo` | Audit SEO |
+| `/growth:growth-analytics` | Setup tracking et KPIs |
+| `/growth:growth-app-store-analytics` | Métriques App Store / Google Play |
+| `/growth:growth-onboarding` | Parcours d'onboarding UX |
+| `/growth:growth-email` | Templates email marketing |
+| `/growth:growth-ab-test` | Planifier A/B tests |
+| `/growth:growth-retention` | Stratégies de rétention |
+| `/growth:growth-funnel` | Analyse et optimisation funnels |
+| `/growth:growth-localization` | Stratégie de localisation multi-marchés |
+| `/growth:growth-cro` | Optimisation du taux de conversion (CRO) |
 
 ### DATA- : Données (3)
 
 | Commande | Usage |
 |----------|-------|
-| `/data-pipeline` | Concevoir pipelines ETL/ELT |
-| `/data-analytics` | Analyse de données et rapports |
-| `/data-modeling` | Modélisation data warehouse |
+| `/data:data-pipeline` | Concevoir pipelines ETL/ELT |
+| `/data:data-analytics` | Analyse de données et rapports |
+| `/data:data-modeling` | Modélisation data warehouse |
 
 ### LEGAL- : Légal (5)
 
 | Commande | Usage |
 |----------|-------|
-| `/legal-docs` | CGU, CGV, mentions légales |
-| `/legal-rgpd` | Conformité RGPD/GDPR |
-| `/legal-payment` | Intégration paiement |
-| `/legal-terms-of-service` | CGU |
-| `/legal-privacy-policy` | Politique de Confidentialité |
+| `/legal:legal-docs` | CGU, CGV, mentions légales |
+| `/legal:legal-rgpd` | Conformité RGPD/GDPR |
+| `/legal:legal-payment` | Intégration paiement |
+| `/legal:legal-terms-of-service` | CGU |
+| `/legal:legal-privacy-policy` | Politique de Confidentialité |
 
 ---
 
@@ -552,78 +552,78 @@ Génère: specs/ma-feature/plan.md + tasks.md
 │                                                                        │
 │ COMPRENDRE                                                             │
 │ ──────────                                                             │
-│ Explorer un codebase                    →  /work-explore               │
-│ Découvrir un nouveau projet             →  /doc-onboard                │
-│ Comprendre du code complexe             →  /doc-explain                │
+│ Explorer un codebase                    →  /work:work-explore               │
+│ Découvrir un nouveau projet             →  /doc:doc-onboard                │
+│ Comprendre du code complexe             →  /doc:doc-explain                │
 │                                                                        │
 │ PLANIFIER                                                              │
 │ ────────                                                               │
-│ Créer une spécification                 →  /work-specify               │
-│ Clarifier les ambiguïtés                →  /work-clarify               │
-│ Planifier une implémentation            →  /work-plan                  │
-│ Définir un MVP                          →  /biz-mvp                    │
-│ Créer une roadmap                       →  /biz-roadmap                │
+│ Créer une spécification                 →  /work:work-specify               │
+│ Clarifier les ambiguïtés                →  /work:work-clarify               │
+│ Planifier une implémentation            →  /work:work-plan                  │
+│ Définir un MVP                          →  /biz:biz-mvp                    │
+│ Créer une roadmap                       →  /biz:biz-roadmap                │
 │                                                                        │
 │ DÉVELOPPER                                                             │
 │ ──────────                                                             │
-│ Écrire du code avec tests               →  /dev-tdd                    │
-│ Créer un composant React/Vue            →  /dev-component              │
-│ Créer un hook React/Vue                 →  /dev-hook                   │
-│ Créer une API REST                      →  /dev-api                    │
-│ Créer une API GraphQL                   →  /dev-graphql                │
-│ Créer un screen Flutter                 →  /dev-flutter                │
-│ Configurer Supabase                     →  /dev-supabase               │
-│ Corriger un bug                         →  /dev-debug                  │
-│ Refactorer du code                      →  /dev-refactor               │
-│ Générer un document (PDF, DOCX...)      →  /dev-document               │
-│ Intégrer une IA (OpenAI, Claude)        →  /dev-ai-integration         │
+│ Écrire du code avec tests               →  /dev:dev-tdd                    │
+│ Créer un composant React/Vue            →  /dev:dev-component              │
+│ Créer un hook React/Vue                 →  /dev:dev-hook                   │
+│ Créer une API REST                      →  /dev:dev-api                    │
+│ Créer une API GraphQL                   →  /dev:dev-graphql                │
+│ Créer un screen Flutter                 →  /dev:dev-flutter                │
+│ Configurer Supabase                     →  /dev:dev-supabase               │
+│ Corriger un bug                         →  /dev:dev-debug                  │
+│ Refactorer du code                      →  /dev:dev-refactor               │
+│ Générer un document (PDF, DOCX...)      →  /dev:dev-document               │
+│ Intégrer une IA (OpenAI, Claude)        →  /dev:dev-ai-integration         │
 │                                                                        │
 │ VÉRIFIER                                                               │
 │ ────────                                                               │
-│ Code review                             →  /qa-review                  │
-│ Audit de sécurité                       →  /qa-security                │
-│ Audit de performance                    →  /qa-perf                    │
-│ Audit d'accessibilité                   →  /qa-a11y                    │
-│ Audit complet                           →  /qa-audit                   │
-│ Couverture de tests                     →  /qa-coverage                │
-│ Audit UI/UX design                      →  /qa-design                  │
-│ Dette technique                         →  /qa-tech-debt               │
-│ Optimisation conversion (CRO)           →  /growth-cro                 │
+│ Code review                             →  /qa:qa-review                  │
+│ Audit de sécurité                       →  /qa:qa-security                │
+│ Audit de performance                    →  /qa:qa-perf                    │
+│ Audit d'accessibilité                   →  /qa:qa-a11y                    │
+│ Audit complet                           →  /qa:qa-audit                   │
+│ Couverture de tests                     →  /qa:qa-coverage                │
+│ Audit UI/UX design                      →  /qa:qa-design                  │
+│ Dette technique                         →  /qa:qa-tech-debt               │
+│ Optimisation conversion (CRO)           →  /growth:growth-cro                 │
 │                                                                        │
 │ LIVRER                                                                 │
 │ ──────                                                                 │
-│ Créer un commit                         →  /work-commit                │
-│ Créer une PR                            →  /work-pr                    │
-│ Publier une release                     →  /ops-release                │
-│ Correction urgente                      →  /ops-hotfix                 │
+│ Créer un commit                         →  /work:work-commit                │
+│ Créer une PR                            →  /work:work-pr                    │
+│ Publier une release                     →  /ops:ops-release                │
+│ Correction urgente                      →  /ops:ops-hotfix                 │
 │                                                                        │
 │ GITFLOW                                                                │
 │ ───────                                                                │
-│ Initialiser GitFlow                     →  /ops-gitflow-init           │
-│ Nouvelle feature                        →  /ops-gitflow-feature start  │
-│ Terminer feature                        →  /ops-gitflow-feature finish │
-│ Nouvelle release                        →  /ops-gitflow-release start  │
-│ Terminer release                        →  /ops-gitflow-release finish │
-│ Hotfix urgent                           →  /ops-gitflow-hotfix start   │
+│ Initialiser GitFlow                     →  /ops:ops-gitflow-init           │
+│ Nouvelle feature                        →  /ops:ops-gitflow-feature start  │
+│ Terminer feature                        →  /ops:ops-gitflow-feature finish │
+│ Nouvelle release                        →  /ops:ops-gitflow-release start  │
+│ Terminer release                        →  /ops:ops-gitflow-release finish │
+│ Hotfix urgent                           →  /ops:ops-gitflow-hotfix start   │
 │                                                                        │
 │ DÉPLOYER                                                               │
 │ ────────                                                               │
-│ Dockeriser                              →  /ops-docker                 │
-│ Kubernetes                              →  /ops-k8s                    │
-│ VPS                                     →  /ops-vps                    │
-│ Proxmox (VMs, LXC)                      →  /ops-proxmox                │
-│ Infrastructure as Code                  →  /ops-infra-code             │
-│ CI/CD                                   →  /ops-ci                     │
-│ Monitoring                              →  /ops-monitoring             │
-│ OPNsense (firewall)                     →  /ops-opnsense               │
-│ Rollback                                →  /ops-rollback               │
+│ Dockeriser                              →  /ops:ops-docker                 │
+│ Kubernetes                              →  /ops:ops-k8s                    │
+│ VPS                                     →  /ops:ops-vps                    │
+│ Proxmox (VMs, LXC)                      →  /ops:ops-proxmox                │
+│ Infrastructure as Code                  →  /ops:ops-infra-code             │
+│ CI/CD                                   →  /ops:ops-ci                     │
+│ Monitoring                              →  /ops:ops-monitoring             │
+│ OPNsense (firewall)                     →  /ops:ops-opnsense               │
+│ Rollback                                →  /ops:ops-rollback               │
 │                                                                        │
 │ DOCUMENTER                                                             │
 │ ──────────                                                             │
-│ Générer de la doc                       →  /doc-generate               │
-│ Changelog                               →  /doc-changelog              │
-│ README                                  →  /doc-readme                 │
-│ Architecture                            →  /doc-architecture           │
+│ Générer de la doc                       →  /doc:doc-generate               │
+│ Changelog                               →  /doc:doc-changelog              │
+│ README                                  →  /doc:doc-readme                 │
+│ Architecture                            →  /doc:doc-architecture           │
 │                                                                        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -635,43 +635,43 @@ Génère: specs/ma-feature/plan.md + tasks.md
 ### Web (React/Next.js/Vue)
 
 ```
-/work-explore → /work-specify → /work-plan → /dev-component → /dev-tdd → /qa-review → /qa-perf → /work-pr
+/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-component → /dev:dev-tdd → /qa:qa-review → /qa:qa-perf → /work:work-pr
 ```
 
 ### Mobile (Flutter)
 
 ```
-/work-explore → /work-specify → /work-plan → /dev-flutter + /dev-supabase → /dev-tdd → /qa-mobile → /work-pr
+/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-flutter + /dev:dev-supabase → /dev:dev-tdd → /qa:qa-mobile → /work:work-pr
 ```
 
 ### API Backend (Node/Python/Go)
 
 ```
-/work-explore → /work-specify → /work-plan → /dev-api → /dev-tdd → /qa-security → /doc-api-spec → /work-pr
+/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-api → /dev:dev-tdd → /qa:qa-security → /doc:doc-api-spec → /work:work-pr
 ```
 
 ### Data Engineering
 
 ```
-/work-explore → /work-specify → /work-plan → /data-pipeline → /data-modeling → /ops-monitoring
+/work:work-explore → /work:work-specify → /work:work-plan → /data:data-pipeline → /data:data-modeling → /ops:ops-monitoring
 ```
 
 ### Neovim Config
 
 ```
-/work-explore → /dev-neovim → /qa-neovim → /work-commit
+/work:work-explore → /dev:dev-neovim → /qa:qa-neovim → /work:work-commit
 ```
 
 ### Infrastructure Proxmox
 
 ```
-/work-explore → /ops-proxmox → /ops-monitoring → /ops-backup
+/work:work-explore → /ops:ops-proxmox → /ops:ops-monitoring → /ops:ops-backup
 ```
 
 ### GitFlow (équipes)
 
 ```
-/ops-gitflow-init → /ops-gitflow-feature start → [développer] → /ops-gitflow-feature finish → /ops-gitflow-release
+/ops:ops-gitflow-init → /ops:ops-gitflow-feature start → [développer] → /ops:ops-gitflow-feature finish → /ops:ops-gitflow-release
 ```
 
 ---
@@ -680,10 +680,10 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 | Situation | Commande unique | Étapes incluses |
 |-----------|-----------------|-----------------|
-| Nouvelle feature | `/work-flow-feature "desc"` | explore → specify → plan → dev → test → pr |
-| Correction de bug | `/work-flow-bugfix "desc"` | explore → debug → fix → test → pr |
-| Nouvelle release | `/work-flow-release "v2.0.0"` | changelog → bump → tag → pr |
-| Lancement produit | `/work-flow-launch "produit"` | mvp → landing → seo → analytics |
+| Nouvelle feature | `/work:work-flow-feature "desc"` | explore → specify → plan → dev → test → pr |
+| Correction de bug | `/work:work-flow-bugfix "desc"` | explore → debug → fix → test → pr |
+| Nouvelle release | `/work:work-flow-release "v2.0.0"` | changelog → bump → tag → pr |
+| Lancement produit | `/work:work-flow-launch "produit"` | mvp → landing → seo → analytics |
 
 ---
 
@@ -726,7 +726,7 @@ Basé sur le contexte fourni, je dois:
 1. **Détecter** le type de projet (Web, Mobile, API, Python, Go, Neovim, Data, DevOps, Monorepo)
 2. **Identifier** si c'est une question, une tâche simple ou complexe
 3. **Recommander** :
-   - Pour une question → réponse directe ou `/doc-explain`
+   - Pour une question → réponse directe ou `/doc:doc-explain`
    - Pour une tâche simple → commande directe
    - Pour une tâche complexe → workflow complet avec étapes
 4. **Mentionner** les agents/skills qui seront activés automatiquement si pertinent
@@ -748,12 +748,12 @@ Utilisez directement : `/commande "arguments"`
 
 [Si complexe]
 Workflow recommandé :
-1. `/work-explore` - Comprendre le contexte
-2. `/work-specify` - Créer la spécification
-3. `/work-plan` - Planifier l'implémentation
-4. `/dev-xxx` - Développer
-5. `/qa-xxx` - Vérifier la qualité
-6. `/work-pr` - Créer la PR
+1. `/work:work-explore` - Comprendre le contexte
+2. `/work:work-specify` - Créer la spécification
+3. `/work:work-plan` - Planifier l'implémentation
+4. `/dev:dev-xxx` - Développer
+5. `/qa:qa-xxx` - Vérifier la qualité
+6. `/work:work-pr` - Créer la PR
 
 ## Automatisations
 
@@ -772,7 +772,7 @@ Voulez-vous que je lance `/xxx` ?
 
 ## Règles de l'Orchestrateur
 
-IMPORTANT: Toujours recommander `/work-explore` avant de modifier du code existant.
+IMPORTANT: Toujours recommander `/work:work-explore` avant de modifier du code existant.
 
 IMPORTANT: Toujours ATTENDRE la confirmation de l'utilisateur avant d'exécuter.
 
@@ -780,7 +780,7 @@ YOU MUST détecter le type de projet et adapter les recommandations.
 
 YOU MUST mentionner les agents et skills pertinents qui seront activés.
 
-YOU MUST utiliser les noms complets des commandes (`/work-explore`, pas `/explore`).
+YOU MUST utiliser les noms complets des commandes (`/work:work-explore`, pas `/explore`).
 
 YOU MUST proposer un workflow adapté à la complexité de la demande.
 

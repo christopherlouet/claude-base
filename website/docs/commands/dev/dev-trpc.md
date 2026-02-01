@@ -1,6 +1,6 @@
 ---
 sidebar_position: 24
-title: "/dev-trpc"
+title: "/dev:dev-trpc"
 description: "Creation d'APIs type-safe avec tRPC."
 tags:
   - "dev"
@@ -464,9 +464,9 @@ export function UserList() {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-prisma` | Base de donnees |
-| `/dev-api` | Documentation API |
-| `/qa-security` | Securite |
+| `/dev:dev-prisma` | Base de donnees |
+| `/dev:dev-api` | Documentation API |
+| `/qa:qa-security` | Securite |
 
 ---
 

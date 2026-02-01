@@ -11,7 +11,7 @@ Cet exemple montre comment containeriser une application avec un Dockerfile mult
 ## Commande utilisée
 
 ```bash
-/ops-docker "Dockeriser une application Next.js avec PostgreSQL"
+/ops:ops-docker "Dockeriser une application Next.js avec PostgreSQL"
 ```
 
 ## Structure générée
@@ -467,9 +467,9 @@ export default async function handler(
 
 ## Commandes associées
 
-- `/ops-ci` - Pipeline CI avec build Docker
-- `/ops-k8s` - Déploiement Kubernetes
-- `/qa-security` - Scan de vulnérabilités image
+- `/ops:ops-ci` - Pipeline CI avec build Docker
+- `/ops:ops-k8s` - Déploiement Kubernetes
+- `/qa:qa-security` - Scan de vulnérabilités image
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 17
-title: "/ops-infra-code"
+title: "/ops:ops-infra-code"
 description: "Implémente l'Infrastructure as Code (IaC) avec Terraform, CloudFormation ou Pulumi."
 tags:
   - "ops"
@@ -793,11 +793,11 @@ jobs:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/docker` | Containeriser l'application |
-| `/ci` | Pipeline CI/CD |
-| `/secrets-management` | Gestion des secrets |
-| `/monitoring` | Monitoring infrastructure |
-| `/cost-optimization` | Optimiser les coûts |
+| `/ops:ops-docker` | Containeriser l'application |
+| `/ops:ops-ci` | Pipeline CI/CD |
+| `/ops:ops-secrets-management` | Gestion des secrets |
+| `/ops:ops-monitoring` | Monitoring infrastructure |
+| `/ops:ops-cost-optimization` | Optimiser les coûts |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-title: "/legal-rgpd"
+title: "/legal:legal-rgpd"
 description: "Audit de conformité RGPD (Règlement Général sur la Protection des Données) d'un projet."
 tags:
   - "legal"
@@ -154,7 +154,7 @@ grep -rn -E "(aws|gcp|azure|cloudflare|stripe|twilio|sendgrid|mailchimp|segment|
 - [ ] Formation des équipes
 - [ ] Procédure de gestion des incidents
 
-&gt; Pour un audit technique approfondi, utiliser `/security`
+&gt; Pour un audit technique approfondi, utiliser `/qa:qa-security`
 
 ### 8. Privacy by Design (Art. 25)
 
@@ -238,10 +238,10 @@ Niveau de conformité estimé: [Faible/Moyen/Bon/Excellent]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/legal` | Documents légaux complets |
-| `/privacy-policy` | Politique de confidentialité |
-| `/security` | Sécurité des données |
-| `/analytics` | Vérifier le tracking analytics |
+| `/legal:legal-docs` | Documents légaux complets |
+| `/legal:legal-privacy-policy` | Politique de confidentialité |
+| `/qa:qa-security` | Sécurité des données |
+| `/growth:growth-analytics` | Vérifier le tracking analytics |
 
 ---
 

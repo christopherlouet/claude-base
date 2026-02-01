@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-title: "/legal-terms-of-service"
+title: "/legal:legal-terms-of-service"
 description: "Génère des Conditions Générales d'Utilisation complètes et conformes."
 tags:
   - "legal"
@@ -465,10 +465,10 @@ L'Application peut demander l'accès à :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/privacy-policy` | Politique de confidentialité |
-| `/rgpd` | Conformité RGPD |
-| `/legal-docs` | Autres documents légaux |
-| `/payment` | CGV et paiements |
+| `/legal:legal-privacy-policy` | Politique de confidentialité |
+| `/legal:legal-rgpd` | Conformité RGPD |
+| `/legal:legal-docs` | Autres documents légaux |
+| `/legal:legal-payment` | CGV et paiements |
 
 ---
 

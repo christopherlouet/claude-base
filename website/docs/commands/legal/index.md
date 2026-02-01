@@ -19,11 +19,11 @@ Ce domaine contient **5 commandes** pour legal (rgpd, cgu, paiement).
 
 | Commande | Description |
 |----------|-------------|
-| [`/legal-docs`](/docs/commands/legal/legal-docs) | Génération des documents légaux (CGU, CGV, Mentions légales, Politique de confidentialité). |
-| [`/legal-payment`](/docs/commands/legal/legal-payment) | Intégration de paiements et gestion des abonnements. |
-| [`/legal-privacy-policy`](/docs/commands/legal/legal-privacy-policy) | Génère une Politique de Confidentialité conforme au RGPD et aux standards internationaux. |
-| [`/legal-rgpd`](/docs/commands/legal/legal-rgpd) | Audit de conformité RGPD (Règlement Général sur la Protection des Données) d'un projet. |
-| [`/legal-terms-of-service`](/docs/commands/legal/legal-terms-of-service) | Génère des Conditions Générales d'Utilisation complètes et conformes. |
+| [`/legal:legal-docs`](/docs/commands/legal/legal-docs) | Génération des documents légaux (CGU, CGV, Mentions légales, Politique de confidentialité). |
+| [`/legal:legal-payment`](/docs/commands/legal/legal-payment) | Intégration de paiements et gestion des abonnements. |
+| [`/legal:legal-privacy-policy`](/docs/commands/legal/legal-privacy-policy) | Génère une Politique de Confidentialité conforme au RGPD et aux standards internationaux. |
+| [`/legal:legal-rgpd`](/docs/commands/legal/legal-rgpd) | Audit de conformité RGPD (Règlement Général sur la Protection des Données) d'un projet. |
+| [`/legal:legal-terms-of-service`](/docs/commands/legal/legal-terms-of-service) | Génère des Conditions Générales d'Utilisation complètes et conformes. |
 
 ## Commandes en detail
 

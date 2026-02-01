@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-title: "/doc-fix-issue"
+title: "/doc:doc-fix-issue"
 description: "Corrige une issue GitHub de manière autonome et complète."
 tags:
   - "doc"
@@ -137,7 +137,7 @@ find src/ -name "*auth*" -o -name "*login*"
 - [ ] Identifier les dépendances
 - [ ] Vérifier les tests existants
 
-&gt; Utiliser `/work-explore` si l'exploration est complexe.
+&gt; Utiliser `/work:work-explore` si l'exploration est complexe.
 
 ## Étape 4 : Planifier la solution
 
@@ -312,11 +312,11 @@ gh pr create --title "fix(scope): description" --body-file PR_BODY.md
 
 | Agent | Usage |
 |-------|-------|
-| `/work-explore` | Explorer le code concerné |
-| `/dev-debug` | Debug approfondi si nécessaire |
-| `/dev-tdd` | Approche TDD pour le fix |
-| `/work-commit` | Format du commit |
-| `/work-pr` | Création de la PR |
+| `/work:work-explore` | Explorer le code concerné |
+| `/dev:dev-debug` | Debug approfondi si nécessaire |
+| `/dev:dev-tdd` | Approche TDD pour le fix |
+| `/work:work-commit` | Format du commit |
+| `/work:work-pr` | Création de la PR |
 
 ---
 

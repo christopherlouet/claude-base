@@ -1,6 +1,6 @@
 ---
 sidebar_position: 12
-title: "/ops-gitflow-init"
+title: "/ops:ops-gitflow-init"
 description: "Initialiser GitFlow sur le repository."
 tags:
   - "ops"
@@ -133,12 +133,12 @@ git push -u origin develop 2>/dev/null || true
 ### Commandes disponibles
 | Action | Commande |
 |--------|----------|
-| Nouvelle feature | `/ops-gitflow-feature start "nom"` |
-| Terminer feature | `/ops-gitflow-feature finish "nom"` |
-| Nouvelle release | `/ops-gitflow-release start "v1.2.0"` |
-| Terminer release | `/ops-gitflow-release finish "v1.2.0"` |
-| Hotfix urgent | `/ops-gitflow-hotfix start "nom"` |
-| Terminer hotfix | `/ops-gitflow-hotfix finish "nom"` |
+| Nouvelle feature | `/ops:ops-gitflow-feature start "nom"` |
+| Terminer feature | `/ops:ops-gitflow-feature finish "nom"` |
+| Nouvelle release | `/ops:ops-gitflow-release start "v1.2.0"` |
+| Terminer release | `/ops:ops-gitflow-release finish "v1.2.0"` |
+| Hotfix urgent | `/ops:ops-gitflow-hotfix start "nom"` |
+| Terminer hotfix | `/ops:ops-gitflow-hotfix finish "nom"` |
 
 ### Workflow recommandé
 1. Développer sur `feature/*` depuis `develop`
@@ -159,9 +159,9 @@ git push -u origin develop 2>/dev/null || true
 
 | Commande | Usage |
 |----------|-------|
-| `/ops-gitflow-feature` | Gérer les branches feature |
-| `/ops-gitflow-release` | Gérer les branches release |
-| `/ops-gitflow-hotfix` | Gérer les hotfixes |
+| `/ops:ops-gitflow-feature` | Gérer les branches feature |
+| `/ops:ops-gitflow-release` | Gérer les branches release |
+| `/ops:ops-gitflow-hotfix` | Gérer les hotfixes |
 
 ---
 

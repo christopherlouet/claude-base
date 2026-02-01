@@ -32,7 +32,7 @@ Corriger rapidement un bug critique en production avec merge bidirectionnel (mai
 
 ### START - Créer un hotfix
 
-**Syntaxe**: `/ops-gitflow-hotfix start "nom-du-hotfix"`
+**Syntaxe**: `/ops:ops-gitflow-hotfix start "nom-du-hotfix"`
 
 ```bash
 # 1. Partir de main (production)
@@ -68,13 +68,13 @@ git push -u origin hotfix/nom-du-hotfix
 - Ne pas attendre - c'est urgent
 
 ### Commandes
-- `/dev-debug` - Investiguer le bug
-- `/ops-gitflow-hotfix finish "nom-du-hotfix"` - Terminer
+- `/dev:dev-debug` - Investiguer le bug
+- `/ops:ops-gitflow-hotfix finish "nom-du-hotfix"` - Terminer
 ```
 
 ### FINISH - Terminer un hotfix
 
-**Syntaxe**: `/ops-gitflow-hotfix finish "nom-du-hotfix" "vX.X.X"`
+**Syntaxe**: `/ops:ops-gitflow-hotfix finish "nom-du-hotfix" "vX.X.X"`
 
 La version est optionnelle. Si non fournie, le patch version sera incrémenté automatiquement.
 
@@ -144,7 +144,7 @@ Le hotfix est prêt pour déploiement immédiat en production.
 
 ### LIST - Lister les hotfixes en cours
 
-**Syntaxe**: `/ops-gitflow-hotfix list`
+**Syntaxe**: `/ops:ops-gitflow-hotfix list`
 
 ```bash
 git branch -a | grep hotfix/
@@ -210,8 +210,8 @@ git commit -m "Resolve conflicts"
 | Urgence | Commande | Usage |
 |---------|----------|-------|
 | HAUTE | **HOTFIX** | Bug critique production |
-| Normale | `/ops-hotfix` | Correction urgente (simplifié) |
-| Basse | `/work-flow-bugfix` | Bug non critique |
+| Normale | `/ops:ops-hotfix` | Correction urgente (simplifié) |
+| Basse | `/work:work-flow-bugfix` | Bug non critique |
 
 ---
 

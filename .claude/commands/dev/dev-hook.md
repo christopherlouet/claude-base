@@ -15,7 +15,7 @@ IMPORTANT: Cette commande suit l'approche TDD. Les tests seront ecrits AVANT le 
 3. Implementer le hook (GREEN)
 4. Refactorer si necessaire (REFACTOR)
 
-Si vous souhaitez proceder autrement, utilisez `/dev-hook --skip-tdd` (non recommande).
+Si vous souhaitez proceder autrement, utilisez `/dev:dev-hook --skip-tdd` (non recommande).
 
 ---
 
@@ -309,10 +309,10 @@ const { data, isLoading, error, refetch } = use[HookName]({
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/component` | Composant utilisant le hook |
-| `/test` | Tests complémentaires |
-| `/doc` | Documenter le hook |
-| `/perf` | Optimiser les performances |
+| `/dev:dev-component` | Composant utilisant le hook |
+| `/dev:dev-test` | Tests complémentaires |
+| `/doc:doc-generate` | Documenter le hook |
+| `/qa:qa-perf` | Optimiser les performances |
 
 ---
 

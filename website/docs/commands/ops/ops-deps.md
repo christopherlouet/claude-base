@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-title: "/ops-deps"
+title: "/ops:ops-deps"
 description: "Audit, analyse et mise à jour des dépendances du projet."
 tags:
   - "ops"
@@ -234,11 +234,11 @@ npm install package3@latest
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/security` | Audit vulnérabilités |
-| `/test` | Tester après mise à jour |
-| `/migrate` | Migration majeure |
-| `/ci` | Automatiser les updates |
-| `/audit` | Audit qualité complet |
+| `/qa:qa-security` | Audit vulnérabilités |
+| `/dev:dev-test` | Tester après mise à jour |
+| `/ops:ops-migrate` | Migration majeure |
+| `/ops:ops-ci` | Automatiser les updates |
+| `/qa:qa-audit` | Audit qualité complet |
 
 ---
 

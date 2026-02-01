@@ -13,18 +13,44 @@ Ce workflow enchaîne les étapes suivantes :
 ┌─────────────────────────────────────────────────────────────┐
 │                    WORKFLOW FEATURE                          │
 ├─────────────────────────────────────────────────────────────┤
-│  1. EXPLORE    → Comprendre le code existant                │
-│  2. PLAN       → Définir l'architecture                     │
-│  3. TDD        → Développer avec tests                      │
-│  4. REVIEW     → Auto-review du code                        │
-│  5. COMMIT     → Commit propre                              │
-│  6. PR         → Créer la Pull Request                      │
+│  0. BRANCH    → Créer la branche feature                    │
+│  1. EXPLORE   → Comprendre le code existant                 │
+│  2. PLAN      → Définir l'architecture                      │
+│  3. TDD       → Développer avec tests                       │
+│  4. REVIEW    → Auto-review du code                         │
+│  5. COMMIT    → Commit propre                               │
+│  6. PR        → Créer la Pull Request                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ÉTAPE 1/6 : EXPLORATION
+## ÉTAPE 0/7 : BRANCHE
+
+### Objectif
+Créer une branche feature dédiée.
+
+### Actions
+1. Vérifier qu'on n'est pas déjà sur une branche feature
+2. Créer la branche depuis main/develop
+
+```bash
+# S'assurer d'être à jour
+git fetch origin
+BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+git checkout "$BASE_BRANCH" && git pull --rebase
+
+# Créer la branche feature
+git checkout -b feature/[nom-court-derive-de-ARGUMENTS]
+```
+
+### Checklist branche
+- [ ] Branche créée depuis main à jour
+- [ ] Nom descriptif (feature/xxx)
+
+---
+
+## ÉTAPE 1/7 : EXPLORATION
 
 ### Objectif
 Comprendre le contexte avant de coder.
@@ -43,7 +69,7 @@ Comprendre le contexte avant de coder.
 
 ---
 
-## ÉTAPE 2/6 : PLANIFICATION
+## ÉTAPE 2/7 : PLANIFICATION
 
 ### Objectif
 Définir clairement ce qui va être fait.
@@ -76,7 +102,7 @@ Définir clairement ce qui va être fait.
 
 ---
 
-## ÉTAPE 3/6 : DÉVELOPPEMENT TDD
+## ÉTAPE 3/7 : DÉVELOPPEMENT TDD
 
 ### Objectif
 Implémenter avec une approche test-first.
@@ -100,7 +126,7 @@ Implémenter avec une approche test-first.
 
 ---
 
-## ÉTAPE 4/6 : AUTO-REVIEW
+## ÉTAPE 4/7 : AUTO-REVIEW
 
 ### Objectif
 Vérifier la qualité avant de commiter.
@@ -124,7 +150,7 @@ Vérifier la qualité avant de commiter.
 
 ---
 
-## ÉTAPE 5/6 : COMMIT
+## ÉTAPE 5/7 : COMMIT
 
 ### Objectif
 Créer un commit atomique et descriptif.
@@ -147,15 +173,22 @@ Refs: #123
 
 ---
 
-## ÉTAPE 6/6 : PULL REQUEST
+## ÉTAPE 6/7 : PULL REQUEST
 
 ### Objectif
-Créer une PR complète pour review.
+Créer automatiquement la PR vers main.
 
-### Template PR
-```markdown
-## Description
-[Ce que fait cette PR]
+### Actions
+
+```bash
+# Pousser la branche
+git push -u origin $(git rev-parse --abbrev-ref HEAD)
+
+# Créer la PR
+gh pr create \
+  --title "feat(scope): [description]" \
+  --body "## Description
+[Résumé des changements]
 
 ## Type de changement
 - [x] Nouvelle fonctionnalité
@@ -167,11 +200,13 @@ Créer une PR complète pour review.
 ## Checklist
 - [x] Tests passent
 - [x] Code reviewé
-- [x] Documentation à jour
+- [x] Documentation à jour" \
+  --label "feature"
 ```
 
 ### Checklist PR
-- [ ] Description complète
+- [ ] Branche poussée
+- [ ] PR créée avec description complète
 - [ ] Reviewers assignés
 - [ ] Labels ajoutés
 - [ ] CI verte
@@ -207,12 +242,12 @@ Status: Ready for review
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/explore` | Étape 1 - Exploration |
-| `/plan` | Étape 2 - Planification |
-| `/tdd` | Étape 3 - Développement |
-| `/review` | Étape 4 - Auto-review |
-| `/commit` | Étape 5 - Commit |
-| `/pr` | Étape 6 - Pull Request |
+| `/work:work-explore` | Étape 1 - Exploration |
+| `/work:work-plan` | Étape 2 - Planification |
+| `/dev:dev-tdd` | Étape 3 - Développement |
+| `/qa:qa-review` | Étape 4 - Auto-review |
+| `/work:work-commit` | Étape 5 - Commit |
+| `/work:work-pr` | Étape 6 - Pull Request |
 
 ---
 

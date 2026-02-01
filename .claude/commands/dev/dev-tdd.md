@@ -286,13 +286,13 @@ export function calculatePrice(price: number, discountPercent: number): number {
 
 | Avant | Usage |
 |-------|-------|
-| `/work-plan` | Planifier avant de coder |
-| `/work-explore` | Comprendre le contexte |
+| `/work:work-plan` | Planifier avant de coder |
+| `/work:work-explore` | Comprendre le contexte |
 
 | Après | Usage |
 |-------|-------|
-| `/qa-review` | Review du code |
-| `/work-commit` | Commiter proprement |
+| `/qa:qa-review` | Review du code |
+| `/work:work-commit` | Commiter proprement |
 
 ---
 

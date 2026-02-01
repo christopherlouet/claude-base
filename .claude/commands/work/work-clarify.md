@@ -151,7 +151,7 @@ Scanner la spécification selon cette taxonomie et marquer le statut : **Clair**
 │   4. RAPPORT de clarification                                   │
 │              │                                                  │
 │              ▼                                                  │
-│   5. Suggérer /work-plan                                        │
+│   5. Suggérer /work:work-plan                                        │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -201,8 +201,8 @@ Après chaque réponse acceptée :
 
 ### Recommandation
 
-[Si tout est clair] : Prêt pour `/work-plan`
-[Si des points restent] : Envisager une autre session `/work-clarify` après le plan
+[Si tout est clair] : Prêt pour `/work:work-plan`
+[Si des points restent] : Envisager une autre session `/work:work-clarify` après le plan
 ```
 
 ## Comportements spéciaux
@@ -212,13 +212,13 @@ Après chaque réponse acceptée :
 Aucune ambiguïté critique détectée nécessitant clarification.
 La spécification est suffisamment complète pour procéder.
 
-Recommandation : Lancer `/work-plan` pour créer le plan d'implémentation.
+Recommandation : Lancer `/work:work-plan` pour créer le plan d'implémentation.
 ```
 
 ### Spécification non trouvée
 ```
 Fichier de spécification non trouvé.
-Veuillez d'abord créer une spécification avec `/work-specify`.
+Veuillez d'abord créer une spécification avec `/work:work-specify`.
 ```
 
 ### Arrêt anticipé par l'utilisateur
@@ -231,9 +231,9 @@ Si l'utilisateur dit "stop", "done", "c'est bon", "ok pour la suite" :
 
 | Avant | Agent | Après |
 |-------|-------|-------|
-| `/work-specify` | Spécification | |
+| `/work:work-specify` | Spécification | |
 | | **CLARIFY** | |
-| | | `/work-plan` |
+| | | `/work:work-plan` |
 
 ---
 

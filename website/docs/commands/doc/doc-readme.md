@@ -1,6 +1,6 @@
 ---
 sidebar_position: 10
-title: "/doc-readme"
+title: "/doc:doc-readme"
 description: "Génère ou améliore le README d'un projet pour maximiser son adoption et sa compréhension."
 tags:
   - "doc"
@@ -576,10 +576,10 @@ curl -X POST https://api.example.com/auth/login \\
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/doc` | Documentation détaillée |
-| `/changelog` | Changelog du projet |
-| `/api-spec` | Documentation API |
-| `/onboard` | Onboarding développeurs |
+| `/doc:doc-generate` | Documentation détaillée |
+| `/doc:doc-changelog` | Changelog du projet |
+| `/doc:doc-api-spec` | Documentation API |
+| `/doc:doc-onboard` | Onboarding développeurs |
 
 ---
 

@@ -422,11 +422,11 @@ Pour chaque feature, vérifier :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/research` | Recherche utilisateur |
-| `/market` | Étude de marché |
-| `/mvp` | Définir le MVP pour un persona |
-| `/onboarding` | Parcours par persona |
-| `/ab-test` | Tester hypothèses persona |
+| `/biz:biz-research` | Recherche utilisateur |
+| `/biz:biz-market` | Étude de marché |
+| `/biz:biz-mvp` | Définir le MVP pour un persona |
+| `/growth:growth-onboarding` | Parcours par persona |
+| `/growth:growth-ab-test` | Tester hypothèses persona |
 
 ---
 

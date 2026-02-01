@@ -16,7 +16,7 @@ IMPORTANT: Cette commande suit l'approche TDD. Les tests seront ecrits AVANT le 
 4. Refactorer si necessaire (REFACTOR)
 5. Documenter (Swagger/OpenAPI)
 
-Si vous souhaitez proceder autrement, utilisez `/dev-api --skip-tdd` (non recommande).
+Si vous souhaitez proceder autrement, utilisez `/dev:dev-api --skip-tdd` (non recommande).
 
 ---
 
@@ -186,11 +186,11 @@ async function createUserHandler(req: Request, res: Response) {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/api-spec` | Générer spec OpenAPI/Swagger |
-| `/api-versioning` | Gérer le versioning d'API |
-| `/test` | Tester les endpoints |
-| `/security` | Audit sécurité de l'API |
-| `/review` | Code review de l'API |
+| `/doc:doc-api-spec` | Générer spec OpenAPI/Swagger |
+| `/dev:dev-api-versioning` | Gérer le versioning d'API |
+| `/dev:dev-test` | Tester les endpoints |
+| `/qa:qa-security` | Audit sécurité de l'API |
+| `/qa:qa-review` | Code review de l'API |
 
 ---
 

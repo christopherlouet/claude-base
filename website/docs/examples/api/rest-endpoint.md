@@ -11,7 +11,7 @@ Cet exemple montre comment créer un endpoint REST professionnel avec Express, v
 ## Commande utilisée
 
 ```bash
-/dev-api "Créer un endpoint CRUD pour les articles avec pagination"
+/dev:dev-api "Créer un endpoint CRUD pour les articles avec pagination"
 ```
 
 ## Structure générée
@@ -653,9 +653,9 @@ describe('Articles API', () => {
 
 ## Commandes associées
 
-- `/qa-security` - Audit sécurité de l'API
-- `/doc-api-spec` - Générer OpenAPI spec
-- `/dev-test` - Ajouter plus de tests
+- `/qa:qa-security` - Audit sécurité de l'API
+- `/doc:doc-api-spec` - Générer OpenAPI spec
+- `/dev:dev-test` - Ajouter plus de tests
 
 ---
 

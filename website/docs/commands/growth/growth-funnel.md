@@ -1,6 +1,6 @@
 ---
 sidebar_position: 7
-title: "/growth-funnel"
+title: "/growth:growth-funnel"
 description: "Analyse et optimise les funnels de conversion pour maximiser les taux de conversion."
 tags:
   - "growth"
@@ -490,11 +490,11 @@ ICE = (Impact × Confidence × Ease) / 10
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/analytics` | Configurer le tracking |
-| `/ab-test` | Lancer des tests |
-| `/landing` | Optimiser landing page |
-| `/onboarding` | Améliorer activation |
-| `/retention` | Post-conversion |
+| `/growth:growth-analytics` | Configurer le tracking |
+| `/growth:growth-ab-test` | Lancer des tests |
+| `/growth:growth-landing` | Optimiser landing page |
+| `/growth:growth-onboarding` | Améliorer activation |
+| `/growth:growth-retention` | Post-conversion |
 
 ---
 

@@ -15,9 +15,9 @@ Ce tutoriel vous montre comment refactorer méthodiquement un projet legacy en u
 ## Objectifs
 
 À la fin de ce tutoriel, vous saurez :
-- Utiliser `/work-explore` pour cartographier un legacy
-- Utiliser `/qa-tech-debt` pour prioriser le refactoring
-- Utiliser `/dev-tdd` pour refactorer en sécurité
+- Utiliser `/work:work-explore` pour cartographier un legacy
+- Utiliser `/qa:qa-tech-debt` pour prioriser le refactoring
+- Utiliser `/dev:dev-tdd` pour refactorer en sécurité
 - Appliquer les patterns de refactoring progressif
 
 ## Prérequis
@@ -38,7 +38,7 @@ Le refactoring d'un legacy est risqué. Sans tests, chaque modification peut int
 ## Étape 1 : Cartographier le projet
 
 ```bash
-/work-explore "Analyser ce projet legacy : architecture, dépendances, points de douleur"
+/work:work-explore "Analyser ce projet legacy : architecture, dépendances, points de douleur"
 ```
 
 Claude va identifier :
@@ -89,7 +89,7 @@ src/
 ## Étape 2 : Prioriser la dette technique
 
 ```bash
-/qa-tech-debt
+/qa:qa-tech-debt
 ```
 
 Claude va prioriser les éléments à traiter :
@@ -135,7 +135,7 @@ npm start # Vérifier que ça fonctionne
 ### Corriger les dépendances
 
 ```bash
-/ops-deps
+/ops:ops-deps
 ```
 
 ```bash
@@ -169,7 +169,7 @@ const getOrder = async (req, res) => {
 Avant de refactorer, on capture le comportement actuel avec des tests.
 
 ```bash
-/dev-tdd "Ajouter des tests de caractérisation pour orderController"
+/dev:dev-tdd "Ajouter des tests de caractérisation pour orderController"
 ```
 
 **Tests de caractérisation :**
@@ -237,7 +237,7 @@ mkdir -p src/features/orders/{domain,application,infrastructure}
 ### Extraire le domaine
 
 ```bash
-/dev-refactor "Extraire la logique métier de orderController vers un service dédié"
+/dev:dev-refactor "Extraire la logique métier de orderController vers un service dédié"
 ```
 
 **Nouveau service :**
@@ -295,7 +295,7 @@ const getOrder = async (req, res) => {
 ## Étape 6 : Migrer vers TypeScript progressivement
 
 ```bash
-/ops-migrate "Migrer progressivement vers TypeScript"
+/ops:ops-migrate "Migrer progressivement vers TypeScript"
 ```
 
 ### Configuration
@@ -336,7 +336,7 @@ npm test
 npm run test:coverage
 
 # Audit de sécurité final
-/qa-security
+/qa:qa-security
 ```
 
 ## Étape 8 : Commiter par étapes
@@ -378,7 +378,7 @@ git add -A && git commit -m "refactor: migrate orders to TypeScript"
 
 - [Tutoriel 08 : Infrastructure Proxmox](/docs/tutorials/proxmox-infra)
 - [Agent qa-tech-debt](/docs/agents/qa-tech-debt)
-- [Commande /dev-refactor](/docs/commands/dev/dev-refactor)
+- [Commande /dev:dev-refactor](/docs/commands/dev/dev-refactor)
 
 ---
 

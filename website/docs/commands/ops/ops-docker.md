@@ -1,6 +1,6 @@
 ---
 sidebar_position: 8
-title: "/ops-docker"
+title: "/ops:ops-docker"
 description: "Dockerisation et containerisation de projets."
 tags:
   - "ops"
@@ -321,11 +321,11 @@ docker compose down
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/ci` | Configurer CI/CD avec Docker |
-| `/infra-code` | Infrastructure as Code |
-| `/env` | Gestion des environnements |
-| `/secrets-management` | Gestion des secrets |
-| `/monitoring` | Monitoring des containers |
+| `/ops:ops-ci` | Configurer CI/CD avec Docker |
+| `/ops:ops-infra-code` | Infrastructure as Code |
+| `/ops:ops-env` | Gestion des environnements |
+| `/ops:ops-secrets-management` | Gestion des secrets |
+| `/ops:ops-monitoring` | Monitoring des containers |
 
 ---
 

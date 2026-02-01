@@ -11,7 +11,7 @@ Cet exemple montre comment créer un custom hook professionnel avec TypeScript e
 ## Commande utilisée
 
 ```bash
-/dev-hook "Créer un hook useDebounce pour retarder les mises à jour"
+/dev:dev-hook "Créer un hook useDebounce pour retarder les mises à jour"
 ```
 
 ## Structure générée
@@ -443,9 +443,9 @@ function EmailInput({ onValidate }) {
 
 ## Commandes associées
 
-- `/dev-test` - Ajouter plus de tests
-- `/dev-component` - Créer un composant utilisant ce hook
-- `/doc-explain` - Comprendre le fonctionnement
+- `/dev:dev-test` - Ajouter plus de tests
+- `/dev:dev-component` - Créer un composant utilisant ce hook
+- `/doc:doc-explain` - Comprendre le fonctionnement
 
 ---
 

@@ -15,7 +15,7 @@ Guide pour diagnostiquer et corriger un bug efficacement.
 ## Commande rapide
 
 ```bash
-/work-flow-bugfix "Description du bug"
+/work:work-flow-bugfix "Description du bug"
 ```
 
 ## Etapes detaillees
@@ -23,7 +23,7 @@ Guide pour diagnostiquer et corriger un bug efficacement.
 ### 1. Debug
 
 ```bash
-/dev-debug "Description du probleme"
+/dev:dev-debug "Description du probleme"
 ```
 
 Diagnostiquer le bug :
@@ -34,7 +34,7 @@ Diagnostiquer le bug :
 ### 2. Fix
 
 ```bash
-/dev-tdd "Corriger le bug"
+/dev:dev-tdd "Corriger le bug"
 ```
 
 Corriger en TDD :
@@ -45,7 +45,7 @@ Corriger en TDD :
 ### 3. Review
 
 ```bash
-/qa-review
+/qa:qa-review
 ```
 
 Verifier la correction :
@@ -56,7 +56,7 @@ Verifier la correction :
 ### 4. Commit
 
 ```bash
-/work-commit
+/work:work-commit
 ```
 
 Format recommande :
@@ -74,7 +74,7 @@ Fixes #issue-number
 ```bash
 # Bug : "Le login echoue avec des emails en majuscules"
 
-> /work-flow-bugfix "Le login echoue avec des emails en majuscules"
+> /work:work-flow-bugfix "Le login echoue avec des emails en majuscules"
 
 # Claude :
 # 1. Analyse le flux de login
@@ -91,11 +91,11 @@ Pour les bugs critiques :
 
 ```bash
 # Hotfix avec GitFlow
-/ops-gitflow-hotfix start "critical-login-bug"
+/ops:ops-gitflow-hotfix start "critical-login-bug"
 
 # Corriger...
 
-/ops-gitflow-hotfix finish "critical-login-bug"
+/ops:ops-gitflow-hotfix finish "critical-login-bug"
 ```
 
 Cela merge automatiquement dans `main` ET `develop`.
