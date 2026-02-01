@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-title: "/work-flow-bugfix"
+title: "/work:work-flow-bugfix"
 description: "Workflow complet pour corriger un bug, du diagnostic au déploiement."
 tags:
   - "work"
@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Workflow complet pour corriger un bug, du diagnostic au déploiement.
 
 ## Contexte
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Workflow automatisé
 
@@ -26,18 +26,44 @@ Workflow complet pour corriger un bug, du diagnostic au déploiement.
 ┌─────────────────────────────────────────────────────────────┐
 │                    WORKFLOW BUGFIX                           │
 ├─────────────────────────────────────────────────────────────┤
-│  1. DEBUG      → Identifier la cause racine                 │
-│  2. TEST       → Écrire le test qui reproduit               │
-│  3. FIX        → Implémenter la correction                  │
-│  4. VERIFY     → Vérifier la non-régression                 │
-│  5. COMMIT     → Commit avec référence issue                │
-│  6. PR/HOTFIX  → PR normale ou hotfix selon urgence         │
+│  0. BRANCH    → Créer la branche fix                        │
+│  1. DEBUG     → Identifier la cause racine                  │
+│  2. TEST      → Écrire le test qui reproduit                │
+│  3. FIX       → Implémenter la correction                   │
+│  4. VERIFY    → Vérifier la non-régression                  │
+│  5. COMMIT    → Commit avec référence issue                 │
+│  6. PR/HOTFIX → PR normale ou hotfix selon urgence          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ÉTAPE 1/6 : DIAGNOSTIC
+## ÉTAPE 0/7 : BRANCHE
+
+### Objectif
+Créer une branche fix dédiée.
+
+### Actions
+1. Vérifier qu'on n'est pas déjà sur une branche fix
+2. Créer la branche depuis main/develop
+
+```bash
+# S'assurer d'être à jour
+git fetch origin
+BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+git checkout "$BASE_BRANCH" && git pull --rebase
+
+# Créer la branche fix
+git checkout -b fix/[nom-court-derive-de-ARGUMENTS]
+```
+
+### Checklist branche
+- [ ] Branche créée depuis main à jour
+- [ ] Nom descriptif (fix/xxx)
+
+---
+
+## ÉTAPE 1/7 : DIAGNOSTIC
 
 ### Objectif
 Identifier la cause racine du bug.
@@ -91,7 +117,7 @@ Identifier la cause racine du bug.
 
 ---
 
-## ÉTAPE 2/6 : TEST DE RÉGRESSION
+## ÉTAPE 2/7 : TEST DE RÉGRESSION
 
 ### Objectif
 Écrire un test qui échoue et prouve le bug.
@@ -123,7 +149,7 @@ describe('Bug #[numero]', () => {
 
 ---
 
-## ÉTAPE 3/6 : CORRECTION
+## ÉTAPE 3/7 : CORRECTION
 
 ### Objectif
 Implémenter la correction minimale.
@@ -134,7 +160,7 @@ Implémenter la correction minimale.
 - **Sûr** : Ne pas introduire de régression
 
 ### Anti-patterns à éviter
-| ❌ Ne pas faire | ✅ Faire |
+| Ne pas faire | Faire |
 |-----------------|----------|
 | Refactorer autour | Fix minimal |
 | Corriger d'autres bugs | Un bug = un fix |
@@ -149,7 +175,7 @@ Implémenter la correction minimale.
 
 ---
 
-## ÉTAPE 4/6 : VÉRIFICATION
+## ÉTAPE 4/7 : VÉRIFICATION
 
 ### Objectif
 S'assurer qu'il n'y a pas de régression.
@@ -183,7 +209,7 @@ npm run build
 
 ---
 
-## ÉTAPE 5/6 : COMMIT
+## ÉTAPE 5/7 : COMMIT
 
 ### Objectif
 Commit propre avec traçabilité.
@@ -216,7 +242,7 @@ Fixes #456
 
 ---
 
-## ÉTAPE 6/6 : PR OU HOTFIX
+## ÉTAPE 6/7 : PR OU HOTFIX
 
 ### Décision : PR normale ou Hotfix ?
 
@@ -237,9 +263,16 @@ Fixes #456
  (bypass)            rapide      standard
 ```
 
-### Option A : PR normale
-```markdown
-## Bug Fix: [Description]
+### Option A : PR normale (automatique)
+
+```bash
+# Pousser la branche
+git push -u origin $(git rev-parse --abbrev-ref HEAD)
+
+# Créer la PR
+gh pr create \
+  --title "fix(scope): [description]" \
+  --body "## Bug Fix: [Description]
 
 ### Issue
 Fixes #[numero]
@@ -256,7 +289,8 @@ Fixes #[numero]
 
 ### Vérification
 - [ ] Code review
-- [ ] QA validation
+- [ ] QA validation" \
+  --label "bugfix"
 ```
 
 ### Option B : Hotfix (urgent)
@@ -273,6 +307,7 @@ git cherry-pick [commit] # ou coder
 ```
 
 ### Checklist PR/Hotfix
+- [ ] Branche poussée
 - [ ] PR créée avec description complète
 - [ ] Reviewers assignés
 - [ ] CI verte
@@ -309,10 +344,10 @@ Status: Ready for review/merge
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/debug` | Diagnostic approfondi |
-| `/test` | Générer les tests de régression |
-| `/hotfix` | Bug critique en production |
-| `/commit` | Format de commit |
+| `/dev:dev-debug` | Diagnostic approfondi |
+| `/dev:dev-test` | Générer les tests de régression |
+| `/ops:ops-hotfix` | Bug critique en production |
+| `/work:work-commit` | Format de commit |
 
 ---
 
