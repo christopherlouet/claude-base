@@ -40,5 +40,5 @@ jobs:
           echo "## CI Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- ShellCheck: lint on \`scripts/\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Bats: 250 tests" >> $GITHUB_STEP_SUMMARY
+          echo "- Bats: 258 tests" >> $GITHUB_STEP_SUMMARY
           echo "- Counts: documentation consistency" >> $GITHUB_STEP_SUMMARY

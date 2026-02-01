@@ -9,6 +9,21 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.20.0] - 2026-02-01
+
+### Ajoute
+- **Auto CLAUDE.md** : generation automatique du CLAUDE.md lors de `update.sh` si absent
+- **Default .gitignore** : ajout de `.claude/` et `CLAUDE.md` dans le .gitignore par defaut des nouveaux projets
+- **Migration CLAUDE.md** : option `--upgrade-claude-md` dans `update.sh` pour migrer les anciens projets vers les @imports
+
+### Modifie
+- **CLAUDE.md @imports** : refactoring du CLAUDE.md pour utiliser des @imports vers `docs/reference/` (commands, project-structures, agents-catalog, hooks-reference, skills-catalog, advanced-features)
+
+### Corrige
+- **CI workflows** : optimisation pour les repos prives (reduction de la consommation de minutes GitHub Actions)
+
+---
+
 ## [1.19.1] - 2026-01-30
 
 ### Corrige
