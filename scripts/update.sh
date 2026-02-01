@@ -871,6 +871,16 @@ main() {
     # Mise à jour des commandes
     update_commands
 
+    # Ajouter CLAUDE.md s'il est absent
+    if [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Ajout: CLAUDE.md"
+        else
+            cp "$SOCLE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
+        fi
+        success "CLAUDE.md ajouté (absent du projet)"
+    fi
+
     # Mise à jour optionnelle de settings.json
     if $UPDATE_SETTINGS; then
         update_settings
