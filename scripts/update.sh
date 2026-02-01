@@ -38,6 +38,7 @@ DETECT_ORPHANS=false
 REMOVE_ORPHANS=false
 # shellcheck disable=SC2034  # Reserved for future implementation
 SHOW_CHANGELOG=false
+UPGRADE_CLAUDE_MD=false
 
 # Compteurs
 UPDATED=0
@@ -83,6 +84,7 @@ ${BOLD}OPTIONS${NC}
     --styles            Met aussi à jour le répertoire output-styles/
     --templates         Met aussi à jour le répertoire templates/
     --all               Met à jour tout (commandes, settings, skills, agents, rules, styles, templates)
+    --upgrade-claude-md Migrer CLAUDE.md vers @imports (copie docs/reference/)
     --changelog         Affiche les nouveautés du socle
 
 ${BOLD}EXEMPLES${NC}
@@ -202,6 +204,10 @@ parse_args() {
                 UPDATE_TEMPLATES=true
                 shift
                 ;;
+            --upgrade-claude-md)
+                UPGRADE_CLAUDE_MD=true
+                shift
+                ;;
             --all)
                 UPDATE_SETTINGS=true
                 UPDATE_SKILLS=true
@@ -209,6 +215,7 @@ parse_args() {
                 UPDATE_RULES=true
                 UPDATE_STYLES=true
                 UPDATE_TEMPLATES=true
+                UPGRADE_CLAUDE_MD=true
                 CLEAN_BEFORE_UPDATE=true
                 shift
                 ;;
@@ -570,6 +577,136 @@ update_templates() {
     fi
 }
 
+upgrade_claude_md() {
+    section "Migration CLAUDE.md vers @imports"
+
+    local claude_md="$TARGET_DIR/CLAUDE.md"
+
+    # Vérifier que CLAUDE.md existe
+    if [[ ! -f "$claude_md" ]]; then
+        warning "CLAUDE.md non trouvé dans $TARGET_DIR"
+        return
+    fi
+
+    # Vérifier si @imports déjà présents
+    if grep -q "@docs/reference/" "$claude_md" 2>/dev/null; then
+        success "CLAUDE.md contient déjà les @imports, skip"
+        return
+    fi
+
+    # Copier docs/reference/ du socle vers le projet
+    local src_ref="$SOCLE_DIR/docs/reference"
+    local dest_ref="$TARGET_DIR/docs/reference"
+
+    if [[ ! -d "$src_ref" ]]; then
+        warning "docs/reference/ non trouvé dans le socle"
+        return
+    fi
+
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/reference/"
+        echo -e "${DIM}[DRY-RUN]${NC} Backup CLAUDE.md"
+        echo -e "${DIM}[DRY-RUN]${NC} Insertion @imports dans CLAUDE.md"
+        echo -e "${DIM}[DRY-RUN]${NC} Détection sections dupliquées"
+        return
+    fi
+
+    make_dir "$TARGET_DIR/docs"
+    make_dir "$dest_ref"
+    cp -r "$src_ref/"* "$dest_ref/"
+    local ref_count
+    ref_count=$(find "$dest_ref" -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+    success "docs/reference/ copié ($ref_count fichiers)"
+
+    # Créer un backup
+    local backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
+    cp "$claude_md" "$backup_file"
+    success "Backup créé: $backup_file"
+
+    # Insérer les @imports après la première ligne vide (après le titre)
+    local imports_block
+    imports_block="@docs/reference/commands.md
+@docs/reference/project-structures.md
+@docs/reference/agents-catalog.md
+@docs/reference/hooks-reference.md
+@docs/reference/skills-catalog.md
+@docs/reference/advanced-features.md"
+
+    # Trouver la première ligne vide et insérer après
+    local tmp_file
+    tmp_file=$(mktemp)
+    local inserted=false
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        echo "$line" >> "$tmp_file"
+        if [[ "$inserted" == false ]] && [[ -z "$line" ]]; then
+            echo "$imports_block" >> "$tmp_file"
+            echo "" >> "$tmp_file"
+            inserted=true
+        fi
+    done < "$claude_md"
+
+    # Si pas de ligne vide trouvée, ajouter à la fin
+    if [[ "$inserted" == false ]]; then
+        echo "" >> "$tmp_file"
+        echo "$imports_block" >> "$tmp_file"
+    fi
+
+    cp "$tmp_file" "$claude_md"
+    rm -f "$tmp_file"
+    success "@imports insérés dans CLAUDE.md"
+
+    # Détecter et proposer de supprimer les sections dupliquées
+    local -a duplicate_sections=(
+        "## Commandes Essentielles"
+        "## Structure Recommandée"
+        "## Structure Clean Architecture"
+        "## Agents Recommandés"
+    )
+
+    local found_duplicates=false
+    for section_title in "${duplicate_sections[@]}"; do
+        if grep -q "^${section_title}" "$claude_md" 2>/dev/null; then
+            found_duplicates=true
+
+            if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
+                # Supprimer automatiquement la section
+                local tmp_cleaned
+                tmp_cleaned=$(mktemp)
+                awk -v title="$section_title" '
+                    BEGIN { skip=0 }
+                    $0 == title { skip=1; next }
+                    skip && /^## / { skip=0 }
+                    !skip { print }
+                ' "$claude_md" > "$tmp_cleaned"
+                cp "$tmp_cleaned" "$claude_md"
+                rm -f "$tmp_cleaned"
+                success "Section supprimée: $section_title"
+            else
+                warning "Section dupliquée détectée: $section_title"
+                if confirm "Supprimer cette section (remplacée par @imports)?" "y"; then
+                    local tmp_cleaned
+                    tmp_cleaned=$(mktemp)
+                    awk -v title="$section_title" '
+                        BEGIN { skip=0 }
+                        $0 == title { skip=1; next }
+                        skip && /^## / { skip=0 }
+                        !skip { print }
+                    ' "$claude_md" > "$tmp_cleaned"
+                    cp "$tmp_cleaned" "$claude_md"
+                    rm -f "$tmp_cleaned"
+                    success "Section supprimée: $section_title"
+                else
+                    info "Section conservée: $section_title"
+                fi
+            fi
+        fi
+    done
+
+    if ! $found_duplicates; then
+        info "Aucune section dupliquée détectée"
+    fi
+}
+
 detect_orphan_files() {
     local subdir="$1"
     local target_dir="$TARGET_DIR/.claude/$subdir"
@@ -791,6 +928,16 @@ main() {
         echo ""
         if confirm "Mettre à jour .claude/templates/?" "n"; then
             update_templates
+        fi
+    fi
+
+    # Migration CLAUDE.md vers @imports
+    if $UPGRADE_CLAUDE_MD; then
+        upgrade_claude_md
+    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
+        echo ""
+        if confirm "Migrer CLAUDE.md vers @imports (docs/reference/)?" "n"; then
+            upgrade_claude_md
         fi
     fi
 
