@@ -164,6 +164,6 @@ terraform refresh
 
 ## Voir aussi
 
-- Agent `/ops-proxmox` - Assistance à la gestion Proxmox
+- Agent `/ops:ops-proxmox` - Assistance à la gestion Proxmox
 - Skill `proxmox-infrastructure` - Déclenchement automatique
 - Skill `infrastructure-as-code` - Bonnes pratiques Terraform

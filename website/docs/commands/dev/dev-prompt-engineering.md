@@ -1,6 +1,6 @@
 ---
 sidebar_position: 16
-title: "/dev-prompt-engineering"
+title: "/dev:dev-prompt-engineering"
 description: "Optimisation systematique de prompts pour applications LLM."
 tags:
   - "dev"
@@ -205,9 +205,9 @@ Continue jusqu'a avoir resolu le probleme.
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-rag` | Systemes de retrieval |
-| `/dev-api` | Integration API LLM |
-| `/qa-perf` | Performance des prompts |
+| `/dev:dev-rag` | Systemes de retrieval |
+| `/dev:dev-api` | Integration API LLM |
+| `/qa:qa-perf` | Performance des prompts |
 
 ---
 

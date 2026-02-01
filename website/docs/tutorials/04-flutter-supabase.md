@@ -15,8 +15,8 @@ Ce tutoriel vous montre comment créer une application mobile Flutter avec un ba
 ## Objectifs
 
 À la fin de ce tutoriel, vous saurez :
-- Utiliser `/dev-supabase` pour configurer Supabase
-- Utiliser `/dev-flutter` pour créer des screens et widgets
+- Utiliser `/dev:dev-supabase` pour configurer Supabase
+- Utiliser `/dev:dev-flutter` pour créer des screens et widgets
 - Implémenter l'authentification avec Supabase Auth
 - Structurer une app Flutter en Clean Architecture
 
@@ -46,7 +46,7 @@ Nous allons créer une **app de notes** avec :
 ### Configurer avec claude-socle
 
 ```bash
-/dev-supabase "Configurer Supabase pour une app de notes avec auth et CRUD"
+/dev:dev-supabase "Configurer Supabase pour une app de notes avec auth et CRUD"
 ```
 
 Claude va créer :
@@ -105,7 +105,7 @@ create policy "Users can delete their own notes"
 ## Étape 2 : Créer le modèle et repository
 
 ```bash
-/dev-flutter "Note entity et repository pour les opérations CRUD avec Supabase"
+/dev:dev-flutter "Note entity et repository pour les opérations CRUD avec Supabase"
 ```
 
 **`lib/features/notes/domain/entities/note.dart`**
@@ -201,7 +201,7 @@ class NoteRepositoryImpl implements NoteRepository {
 ## Étape 3 : Créer le BLoC
 
 ```bash
-/dev-flutter "NotesBloc pour gérer l'état des notes avec les événements CRUD"
+/dev:dev-flutter "NotesBloc pour gérer l'état des notes avec les événements CRUD"
 ```
 
 **`lib/features/notes/presentation/bloc/notes_bloc.dart`**
@@ -332,7 +332,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
 ## Étape 4 : Créer les screens
 
 ```bash
-/dev-flutter "NotesListScreen avec liste des notes, FAB pour ajouter et swipe to delete"
+/dev:dev-flutter "NotesListScreen avec liste des notes, FAB pour ajouter et swipe to delete"
 ```
 
 **`lib/features/notes/presentation/pages/notes_list_screen.dart`**
@@ -457,7 +457,7 @@ Vérifiez que :
 ## Étape 6 : Audit qualité mobile
 
 ```bash
-/qa-mobile
+/qa:qa-mobile
 ```
 
 Claude va vérifier :
@@ -469,7 +469,7 @@ Claude va vérifier :
 ## Étape 7 : Commiter
 
 ```bash
-/work-commit
+/work:work-commit
 ```
 
 **Message suggéré :**
@@ -520,10 +520,10 @@ lib/
 
 - [Tutoriel 05 : Audit sécurité](/docs/tutorials/audit-securite)
 - [Guide Mobile](/docs/guides/mobile-development)
-- [Commande /dev-flutter](/docs/commands/dev/dev-flutter)
+- [Commande /dev:dev-flutter](/docs/commands/dev/dev-flutter)
 
 ---
 
 :::tip Supabase RLS
-Activez **toujours** Row Level Security sur vos tables Supabase. Claude le configure automatiquement avec `/dev-supabase`.
+Activez **toujours** Row Level Security sur vos tables Supabase. Claude le configure automatiquement avec `/dev:dev-supabase`.
 :::

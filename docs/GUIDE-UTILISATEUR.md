@@ -237,14 +237,14 @@ Souhaitez-vous que je commence l'implémentation ?
 
 | Commande | Usage |
 |----------|-------|
-| `/tdd [feature]` | Développement Test-Driven |
-| `/api [endpoint]` | Création d'API |
-| `/refactor [cible]` | Refactoring guidé |
+| `/dev:dev-tdd [feature]` | Développement Test-Driven |
+| `/dev:dev-api [endpoint]` | Création d'API |
+| `/dev:dev-refactor [cible]` | Refactoring guidé |
 
 ### Exemple TDD
 
 ```
-Utilisateur: /tdd GoogleStrategy
+Utilisateur: /dev:dev-tdd GoogleStrategy
 
 Claude: Je démarre le cycle TDD Red-Green-Refactor...
 
@@ -356,14 +356,14 @@ Voulez-vous que je crée ce commit ?
 
 | Agent | Commande | Description |
 |-------|----------|-------------|
-| Explore | `/work-explore` | Explorer le code existant |
-| Plan | `/work-plan` | Planifier une implémentation |
-| Commit | `/work-commit` | Créer un commit propre |
-| PR | `/work-pr` | Créer une Pull Request |
-| Flow Feature | `/work-flow-feature` | Workflow complet feature |
-| Flow Bugfix | `/work-flow-bugfix` | Workflow correction bug |
-| Flow Release | `/work-flow-release` | Workflow release |
-| Flow Launch | `/work-flow-launch` | Workflow lancement |
+| Explore | `/work:work-explore` | Explorer le code existant |
+| Plan | `/work:work-plan` | Planifier une implémentation |
+| Commit | `/work:work-commit` | Créer un commit propre |
+| PR | `/work:work-pr` | Créer une Pull Request |
+| Flow Feature | `/work:work-flow-feature` | Workflow complet feature |
+| Flow Bugfix | `/work:work-flow-bugfix` | Workflow correction bug |
+| Flow Release | `/work:work-flow-release` | Workflow release |
+| Flow Launch | `/work:work-flow-launch` | Workflow lancement |
 
 ### Exemple : Flow Feature complet
 
@@ -393,19 +393,19 @@ git checkout -b feature/dark-mode
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| TDD | `/dev-tdd` | Test-Driven Development |
-| Test | `/dev-test` | Générer des tests |
-| Testing Setup | `/dev-testing-setup` | Configurer l'infra de tests |
-| Debug | `/dev-debug` | Débogage méthodique |
-| Refactor | `/dev-refactor` | Refactoring guidé |
-| API | `/dev-api` | Créer/documenter API REST |
-| API Versioning | `/dev-api-versioning` | Versioning d'API |
-| Component | `/dev-component` | Créer un composant |
-| Hook | `/dev-hook` | Créer un hook React/Vue |
-| Error Handling | `/dev-error-handling` | Gestion d'erreurs |
-| Flutter | `/dev-flutter` | Widgets et screens Flutter |
-| Supabase | `/dev-supabase` | Backend Supabase |
-| GraphQL | `/dev-graphql` | API GraphQL client/serveur |
+| TDD | `/dev:dev-tdd` | Test-Driven Development |
+| Test | `/dev:dev-test` | Générer des tests |
+| Testing Setup | `/dev:dev-testing-setup` | Configurer l'infra de tests |
+| Debug | `/dev:dev-debug` | Débogage méthodique |
+| Refactor | `/dev:dev-refactor` | Refactoring guidé |
+| API | `/dev:dev-api` | Créer/documenter API REST |
+| API Versioning | `/dev:dev-api-versioning` | Versioning d'API |
+| Component | `/dev:dev-component` | Créer un composant |
+| Hook | `/dev:dev-hook` | Créer un hook React/Vue |
+| Error Handling | `/dev:dev-error-handling` | Gestion d'erreurs |
+| Flutter | `/dev:dev-flutter` | Widgets et screens Flutter |
+| Supabase | `/dev:dev-supabase` | Backend Supabase |
+| GraphQL | `/dev:dev-graphql` | API GraphQL client/serveur |
 
 ### Exemple : Debug
 
@@ -464,15 +464,15 @@ Voulez-vous que j'applique cette correction ?
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Review | `/qa-review` | Code review détaillée |
-| Security | `/qa-security` | Audit sécurité OWASP |
-| Performance | `/qa-perf` | Analyse performance |
-| A11y | `/qa-a11y` | Audit accessibilité WCAG |
-| Audit | `/qa-audit` | Audit complet (tout en un) |
-| Responsive | `/qa-responsive` | Audit responsive/mobile web |
-| Automation | `/qa-automation` | Automatisation des tests |
-| Coverage | `/qa-coverage` | Couverture de tests |
-| Mobile | `/qa-mobile` | Audit qualité apps mobiles |
+| Review | `/qa:qa-review` | Code review détaillée |
+| Security | `/qa:qa-security` | Audit sécurité OWASP |
+| Performance | `/qa:qa-perf` | Analyse performance |
+| A11y | `/qa:qa-a11y` | Audit accessibilité WCAG |
+| Audit | `/qa:qa-audit` | Audit complet (tout en un) |
+| Responsive | `/qa:qa-responsive` | Audit responsive/mobile web |
+| Automation | `/qa:qa-automation` | Automatisation des tests |
+| Coverage | `/qa:qa-coverage` | Couverture de tests |
+| Mobile | `/qa:qa-mobile` | Audit qualité apps mobiles |
 
 ### Exemple : Security Audit
 
@@ -523,83 +523,83 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Hotfix | `/ops-hotfix` | Correction urgente prod |
-| Release | `/ops-release` | Créer une release |
-| Deps | `/ops-deps` | Audit et MAJ dépendances |
-| Docker | `/ops-docker` | Dockeriser |
-| Migrate | `/ops-migrate` | Migration code/deps |
-| CI | `/ops-ci` | Pipelines CI/CD |
-| Monitoring | `/ops-monitoring` | Logs, métriques, alertes |
-| Database | `/ops-database` | Schéma, migrations DB |
-| Health | `/ops-health` | Health check rapide |
-| Env | `/ops-env` | Gestion environnements |
-| Backup | `/ops-backup` | Stratégie backup/restore |
-| Load Testing | `/ops-load-testing` | Tests de charge et stress |
-| Cost Optim | `/ops-cost-optimization` | Optimisation coûts cloud |
-| Disaster Recovery | `/ops-disaster-recovery` | Plan de reprise |
-| Infra Code | `/ops-infra-code` | Infrastructure as Code |
-| Secrets | `/ops-secrets-management` | Gestion des secrets |
+| Hotfix | `/ops:ops-hotfix` | Correction urgente prod |
+| Release | `/ops:ops-release` | Créer une release |
+| Deps | `/ops:ops-deps` | Audit et MAJ dépendances |
+| Docker | `/ops:ops-docker` | Dockeriser |
+| Migrate | `/ops:ops-migrate` | Migration code/deps |
+| CI | `/ops:ops-ci` | Pipelines CI/CD |
+| Monitoring | `/ops:ops-monitoring` | Logs, métriques, alertes |
+| Database | `/ops:ops-database` | Schéma, migrations DB |
+| Health | `/ops:ops-health` | Health check rapide |
+| Env | `/ops:ops-env` | Gestion environnements |
+| Backup | `/ops:ops-backup` | Stratégie backup/restore |
+| Load Testing | `/ops:ops-load-testing` | Tests de charge et stress |
+| Cost Optim | `/ops:ops-cost-optimization` | Optimisation coûts cloud |
+| Disaster Recovery | `/ops:ops-disaster-recovery` | Plan de reprise |
+| Infra Code | `/ops:ops-infra-code` | Infrastructure as Code |
+| Secrets | `/ops:ops-secrets-management` | Gestion des secrets |
 
 ## Documentation (9 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Generate | `/doc-generate` | Générer documentation |
-| Changelog | `/doc-changelog` | Changelog |
-| Explain | `/doc-explain` | Expliquer code complexe |
-| Onboard | `/doc-onboard` | Découvrir un codebase |
-| I18n | `/doc-i18n` | Internationalisation |
-| Fix Issue | `/doc-fix-issue` | Corriger issue GitHub |
-| API Spec | `/doc-api-spec` | Spec OpenAPI/Swagger |
-| README | `/doc-readme` | Créer/améliorer README |
-| Architecture | `/doc-architecture` | Documenter l'architecture |
+| Generate | `/doc:doc-generate` | Générer documentation |
+| Changelog | `/doc:doc-changelog` | Changelog |
+| Explain | `/doc:doc-explain` | Expliquer code complexe |
+| Onboard | `/doc:doc-onboard` | Découvrir un codebase |
+| I18n | `/doc:doc-i18n` | Internationalisation |
+| Fix Issue | `/doc:doc-fix-issue` | Corriger issue GitHub |
+| API Spec | `/doc:doc-api-spec` | Spec OpenAPI/Swagger |
+| README | `/doc:doc-readme` | Créer/améliorer README |
+| Architecture | `/doc:doc-architecture` | Documenter l'architecture |
 
 ## Business (11 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Model | `/biz-model` | Business model, Lean Canvas |
-| Market | `/biz-market` | Étude de marché |
-| MVP | `/biz-mvp` | Définir le MVP |
-| Pricing | `/biz-pricing` | Stratégie tarifaire |
-| Pitch | `/biz-pitch` | Pitch deck |
-| Roadmap | `/biz-roadmap` | Roadmap produit |
-| Launch | `/biz-launch` | Workflow lancement |
-| Competitor | `/biz-competitor` | Analyse concurrentielle |
-| OKR | `/biz-okr` | OKRs |
-| Research | `/biz-research` | Recherche utilisateur |
-| Personas | `/biz-personas` | Créer des personas |
+| Model | `/biz:biz-model` | Business model, Lean Canvas |
+| Market | `/biz:biz-market` | Étude de marché |
+| MVP | `/biz:biz-mvp` | Définir le MVP |
+| Pricing | `/biz:biz-pricing` | Stratégie tarifaire |
+| Pitch | `/biz:biz-pitch` | Pitch deck |
+| Roadmap | `/biz:biz-roadmap` | Roadmap produit |
+| Launch | `/biz:biz-launch` | Workflow lancement |
+| Competitor | `/biz:biz-competitor` | Analyse concurrentielle |
+| OKR | `/biz:biz-okr` | OKRs |
+| Research | `/biz:biz-research` | Recherche utilisateur |
+| Personas | `/biz:biz-personas` | Créer des personas |
 
 ## Croissance (8 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Landing | `/growth-landing` | Landing page |
-| SEO | `/growth-seo` | Audit SEO |
-| Analytics | `/growth-analytics` | Tracking et KPIs |
-| Onboarding | `/growth-onboarding` | Parcours utilisateur |
-| Email | `/growth-email` | Templates email |
-| AB Test | `/growth-ab-test` | A/B testing |
-| Retention | `/growth-retention` | Stratégies de rétention |
-| Funnel | `/growth-funnel` | Analyse et optimisation funnels |
+| Landing | `/growth:growth-landing` | Landing page |
+| SEO | `/growth:growth-seo` | Audit SEO |
+| Analytics | `/growth:growth-analytics` | Tracking et KPIs |
+| Onboarding | `/growth:growth-onboarding` | Parcours utilisateur |
+| Email | `/growth:growth-email` | Templates email |
+| AB Test | `/growth:growth-ab-test` | A/B testing |
+| Retention | `/growth:growth-retention` | Stratégies de rétention |
+| Funnel | `/growth:growth-funnel` | Analyse et optimisation funnels |
 
 ## Données (3 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Pipeline | `/data-pipeline` | Concevoir pipelines ETL/ELT |
-| Analytics | `/data-analytics` | Analyse de données et rapports |
-| Modeling | `/data-modeling` | Modélisation data warehouse |
+| Pipeline | `/data:data-pipeline` | Concevoir pipelines ETL/ELT |
+| Analytics | `/data:data-analytics` | Analyse de données et rapports |
+| Modeling | `/data:data-modeling` | Modélisation data warehouse |
 
 ## Légal (5 agents)
 
 | Agent | Commande | Usage |
 |-------|----------|-------|
-| Docs | `/legal-docs` | CGU, CGV, mentions légales |
-| RGPD | `/legal-rgpd` | Conformité RGPD/GDPR |
-| Payment | `/legal-payment` | Intégration paiement |
-| Terms | `/legal-terms-of-service` | CGU complètes |
-| Privacy | `/legal-privacy-policy` | Politique de confidentialité |
+| Docs | `/legal:legal-docs` | CGU, CGV, mentions légales |
+| RGPD | `/legal:legal-rgpd` | Conformité RGPD/GDPR |
+| Payment | `/legal:legal-payment` | Intégration paiement |
+| Terms | `/legal:legal-terms-of-service` | CGU complètes |
+| Privacy | `/legal:legal-privacy-policy` | Politique de confidentialité |
 
 \newpage
 
@@ -1018,14 +1018,14 @@ jq '.hooks' .claude/settings.json
 
 | Tâche | Commande |
 |-------|----------|
-| Explorer du code | `/explore [cible]` |
-| Planifier une feature | `/plan [feature]` |
-| Développer en TDD | `/tdd [feature]` |
-| Créer un commit | `/commit` |
-| Créer une PR | `/pr` |
-| Review de code | `/review [cible]` |
-| Audit sécurité | `/security [cible]` |
-| Déboguer | `/debug [problème]` |
+| Explorer du code | `/work:work-explore [cible]` |
+| Planifier une feature | `/work:work-plan [feature]` |
+| Développer en TDD | `/dev:dev-tdd [feature]` |
+| Créer un commit | `/work:work-commit` |
+| Créer une PR | `/work:work-pr` |
+| Review de code | `/qa:qa-review [cible]` |
+| Audit sécurité | `/qa:qa-security [cible]` |
+| Déboguer | `/dev:dev-debug [problème]` |
 
 ## Scripts utilitaires
 

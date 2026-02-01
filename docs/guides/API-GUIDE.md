@@ -33,7 +33,7 @@ src/
 ## Workflow Recommande
 
 ```
-/work-explore → /work-plan → /dev-api → /dev-tdd → /qa-security → /work-pr
+/work:work-explore → /work:work-plan → /dev:dev-api → /dev:dev-tdd → /qa:qa-security → /work:work-pr
 ```
 
 ## Phase 1: Exploration
@@ -41,7 +41,7 @@ src/
 ### Comprendre l'API existante
 
 ```bash
-/work-explore
+/work:work-explore
 ```
 
 ### Questions a clarifier
@@ -56,7 +56,7 @@ src/
 ### Planifier un endpoint
 
 ```bash
-/work-plan "API de gestion des commandes e-commerce"
+/work:work-plan "API de gestion des commandes e-commerce"
 ```
 
 ### Structure de plan type
@@ -94,13 +94,13 @@ src/
 ### Creer un endpoint REST
 
 ```bash
-/dev-api "endpoint CRUD pour les produits avec pagination et filtres"
+/dev:dev-api "endpoint CRUD pour les produits avec pagination et filtres"
 ```
 
 ### Creer une API GraphQL
 
 ```bash
-/dev-graphql "schema et resolvers pour gestion des utilisateurs"
+/dev:dev-graphql "schema et resolvers pour gestion des utilisateurs"
 ```
 
 ### Structure endpoint generee
@@ -138,7 +138,7 @@ export const listProducts = async (req: Request, res: Response) => {
 ### Versioning API
 
 ```bash
-/dev-api-versioning
+/dev:dev-api-versioning
 ```
 
 Strategies:
@@ -153,13 +153,13 @@ Strategies:
 ### TDD pour services
 
 ```bash
-/dev-tdd "service de calcul de prix avec taxes et reductions"
+/dev:dev-tdd "service de calcul de prix avec taxes et reductions"
 ```
 
 ### Tests d'integration API
 
 ```bash
-/dev-test "tester les endpoints CRUD produits"
+/dev:dev-test "tester les endpoints CRUD produits"
 ```
 
 ### Types de tests
@@ -173,7 +173,7 @@ Strategies:
 ### Couverture de tests
 
 ```bash
-/qa-coverage
+/qa:qa-coverage
 ```
 
 Cibles recommandees:
@@ -187,7 +187,7 @@ Cibles recommandees:
 ### Tests E2E API
 
 ```bash
-/qa-e2e "workflow complet de commande: creation, paiement, confirmation"
+/qa:qa-e2e "workflow complet de commande: creation, paiement, confirmation"
 ```
 
 ## Phase 5: Documentation
@@ -195,7 +195,7 @@ Cibles recommandees:
 ### Generer spec OpenAPI
 
 ```bash
-/doc-api-spec
+/doc:doc-api-spec
 ```
 
 ### Documentation generee
@@ -235,7 +235,7 @@ paths:
 ### Audit securite API
 
 ```bash
-/qa-security
+/qa:qa-security
 ```
 
 ### Checklist OWASP API
@@ -282,14 +282,14 @@ app.use(helmet());
 ### Audit performance
 
 ```bash
-/qa-perf
+/qa:qa-perf
 ```
 
 ### Optimisations
 
 | Technique | Commande | Gain |
 |-----------|----------|------|
-| Caching | `/dev-api` + Redis | -70% latence |
+| Caching | `/dev:dev-api` + Redis | -70% latence |
 | Pagination | Cursor-based | O(1) vs O(n) |
 | N+1 | DataLoader | -90% queries |
 | Compression | gzip/brotli | -70% bandwidth |
@@ -297,7 +297,7 @@ app.use(helmet());
 ### Load testing
 
 ```bash
-/ops-load-testing
+/ops:ops-load-testing
 ```
 
 ## Phase 8: Deploy
@@ -305,19 +305,19 @@ app.use(helmet());
 ### Configuration CI/CD
 
 ```bash
-/ops-ci "GitHub Actions pour API Node.js"
+/ops:ops-ci "GitHub Actions pour API Node.js"
 ```
 
 ### Docker
 
 ```bash
-/ops-docker "API Node.js avec multi-stage"
+/ops:ops-docker "API Node.js avec multi-stage"
 ```
 
 ### Monitoring
 
 ```bash
-/ops-monitoring
+/ops:ops-monitoring
 ```
 
 ## Commandes par Use Case
@@ -325,37 +325,37 @@ app.use(helmet());
 ### Nouvelle API
 
 ```bash
-1. /work-plan          # Architecture API
-2. /dev-api            # Creer endpoints
-3. /doc-api-spec       # Documentation OpenAPI
-4. /qa-security        # Audit securite
-5. /ops-ci             # CI/CD
+1. /work:work-plan          # Architecture API
+2. /dev:dev-api            # Creer endpoints
+3. /doc:doc-api-spec       # Documentation OpenAPI
+4. /qa:qa-security        # Audit securite
+5. /ops:ops-ci             # CI/CD
 ```
 
 ### Nouvel endpoint
 
 ```bash
-1. /work-explore       # Comprendre l'existant
-2. /dev-api            # Creer l'endpoint
-3. /dev-tdd            # Tests
-4. /doc-api-spec       # Mettre a jour doc
-5. /work-pr            # Pull Request
+1. /work:work-explore       # Comprendre l'existant
+2. /dev:dev-api            # Creer l'endpoint
+3. /dev:dev-tdd            # Tests
+4. /doc:doc-api-spec       # Mettre a jour doc
+5. /work:work-pr            # Pull Request
 ```
 
 ### Migration API v1 → v2
 
 ```bash
-1. /dev-api-versioning # Strategie
-2. /work-plan          # Plan migration
-3. /doc-changelog      # Documenter breaking changes
+1. /dev:dev-api-versioning # Strategie
+2. /work:work-plan          # Plan migration
+3. /doc:doc-changelog      # Documenter breaking changes
 ```
 
 ### Debug performance
 
 ```bash
-1. /qa-perf            # Identifier bottlenecks
-2. /ops-monitoring     # Ajouter traces
-3. /dev-api            # Optimiser (cache, index)
+1. /qa:qa-perf            # Identifier bottlenecks
+2. /ops:ops-monitoring     # Ajouter traces
+3. /dev:dev-api            # Optimiser (cache, index)
 ```
 
 ## Agents Automatiques

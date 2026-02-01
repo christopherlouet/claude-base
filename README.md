@@ -163,7 +163,7 @@ claude-socle/
 | `/debug [problème]` | Déboguer méthodiquement |
 | `/refactor [cible]` | Refactoring guidé |
 | `/api [endpoint]` | Créer/documenter API |
-| `/dev-neovim [plugin]` | Plugins et config Neovim/Lua |
+| `/dev:dev-neovim [plugin]` | Plugins et config Neovim/Lua |
 
 ### Qualité
 
@@ -173,7 +173,7 @@ claude-socle/
 | `/security [cible]` | Audit sécurité OWASP |
 | `/perf [cible]` | Analyse performance |
 | `/a11y [cible]` | Audit accessibilité WCAG |
-| `/qa-neovim` | Audit config Neovim |
+| `/qa:qa-neovim` | Audit config Neovim |
 
 ### Maintenance
 
@@ -505,7 +505,7 @@ brew install bats-core
 #### Nouvelles fonctionnalités
 
 - **Agent `dev-tdd`** : Développement TDD avec cycle Red-Green-Refactor
-- **Commandes** : `/dev-ai-integration`, `/growth-localization`, `/qa-tech-debt`
+- **Commandes** : `/dev:dev-ai-integration`, `/growth:growth-localization`, `/qa:qa-tech-debt`
 - **Permissions génériques** : Wildcards pour npm, git, docker, terraform, etc.
 
 #### Guide de migration

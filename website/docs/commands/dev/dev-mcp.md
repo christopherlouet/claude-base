@@ -1,6 +1,6 @@
 ---
 sidebar_position: 13
-title: "/dev-mcp"
+title: "/dev:dev-mcp"
 description: "Guide pour créer des serveurs MCP (Model Context Protocol) de qualité."
 tags:
   - "dev"
@@ -352,9 +352,9 @@ mon-mcp-server/
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-api` | Si création d'API REST en parallèle |
-| `/dev-test` | Tests du serveur MCP |
-| `/doc-api-spec` | Documentation OpenAPI de l'API cible |
+| `/dev:dev-api` | Si création d'API REST en parallèle |
+| `/dev:dev-test` | Tests du serveur MCP |
+| `/doc:doc-api-spec` | Documentation OpenAPI de l'API cible |
 
 ---
 

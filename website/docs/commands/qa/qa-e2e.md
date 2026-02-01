@@ -1,6 +1,6 @@
 ---
 sidebar_position: 7
-title: "/qa-e2e"
+title: "/qa:qa-e2e"
 description: "Tests End-to-End avec Playwright ou Cypress."
 tags:
   - "qa"
@@ -389,10 +389,10 @@ e2e/
 
 | Agent | Usage |
 |-------|-------|
-| `/qa-automation` | Strategie d'automatisation |
-| `/qa-coverage` | Couverture des tests |
-| `/qa-a11y` | Accessibilite |
-| `/ops-ci` | Integration CI/CD |
+| `/qa:qa-automation` | Strategie d'automatisation |
+| `/qa:qa-coverage` | Couverture des tests |
+| `/qa:qa-a11y` | Accessibilite |
+| `/ops:ops-ci` | Integration CI/CD |
 
 ---
 

@@ -15,7 +15,7 @@ Ce tutoriel vous montre comment configurer un firewall OPNsense en Infrastructur
 ## Objectifs
 
 À la fin de ce tutoriel, vous saurez :
-- Utiliser `/ops-opnsense` pour gérer OPNsense via Terraform
+- Utiliser `/ops:ops-opnsense` pour gérer OPNsense via Terraform
 - Configurer les interfaces WAN/LAN
 - Créer des règles firewall sécurisées
 - Configurer DHCP et DNS
@@ -73,7 +73,7 @@ Ce tutoriel vous montre comment configurer un firewall OPNsense en Infrastructur
 ## Étape 2 : Initialiser le projet Terraform
 
 ```bash
-/ops-opnsense "Créer la structure de projet pour configurer OPNsense"
+/ops:ops-opnsense "Créer la structure de projet pour configurer OPNsense"
 ```
 
 ### Structure de fichiers
@@ -183,7 +183,7 @@ EOF
 ## Étape 3 : Configurer les interfaces
 
 ```bash
-/ops-opnsense "Configurer les interfaces WAN (DHCP) et LAN (statique)"
+/ops:ops-opnsense "Configurer les interfaces WAN (DHCP) et LAN (statique)"
 ```
 
 **`main.tf`** - Section Interfaces
@@ -225,7 +225,7 @@ Pour connaître les noms de vos interfaces :
 Les aliases permettent de grouper des adresses IP ou des ports pour simplifier les règles.
 
 ```bash
-/ops-opnsense "Créer des aliases pour les ports web et DNS publics"
+/ops:ops-opnsense "Créer des aliases pour les ports web et DNS publics"
 ```
 
 **`main.tf`** - Section Aliases
@@ -266,7 +266,7 @@ La règle anti-lockout doit **TOUJOURS** être en sequence 1. Sans elle, vous pe
 :::
 
 ```bash
-/ops-opnsense "Créer les règles firewall avec anti-lockout"
+/ops:ops-opnsense "Créer les règles firewall avec anti-lockout"
 ```
 
 **`main.tf`** - Section Firewall
@@ -384,7 +384,7 @@ resource "opnsense_firewall_filter" "lan_block_all" {
 ## Étape 6 : Configurer DHCP et DNS
 
 ```bash
-/ops-opnsense "Configurer le serveur DHCP et les forwarders DNS"
+/ops:ops-opnsense "Configurer le serveur DHCP et les forwarders DNS"
 ```
 
 **`main.tf`** - Section Services
@@ -564,12 +564,12 @@ Vous avez appris à :
 
 | Commande | Usage |
 |----------|-------|
-| `/ops-opnsense` | Configuration OPNsense complète |
-| `/ops-infra-code` | Infrastructure as Code générique |
+| `/ops:ops-opnsense` | Configuration OPNsense complète |
+| `/ops:ops-infra-code` | Infrastructure as Code générique |
 
 ## Voir aussi
 
-- [Commande `/ops-opnsense`](/docs/commands/ops/ops-opnsense)
+- [Commande `/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense)
 - [Skill `opnsense-configuration`](/docs/skills/opnsense-configuration)
 - [Exemple OPNsense](/docs/examples/ops/opnsense-config)
 - [Tutorial Proxmox](/docs/tutorials/proxmox-infra)

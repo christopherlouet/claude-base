@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: "/growth-ab-test"
+title: "/growth:growth-ab-test"
 description: "Planifier et analyser un A/B test."
 tags:
   - "growth"
@@ -268,10 +268,10 @@ Confidence interval:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/analytics` | Définir les métriques à tracker |
-| `/landing` | Optimiser les landing pages testées |
-| `/retention` | Mesurer l'impact sur la rétention |
-| `/funnel` | Analyser l'impact sur le funnel |
+| `/growth:growth-analytics` | Définir les métriques à tracker |
+| `/growth:growth-landing` | Optimiser les landing pages testées |
+| `/growth:growth-retention` | Mesurer l'impact sur la rétention |
+| `/growth:growth-funnel` | Analyser l'impact sur le funnel |
 
 ---
 

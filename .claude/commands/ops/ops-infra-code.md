@@ -778,11 +778,11 @@ jobs:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/docker` | Containeriser l'application |
-| `/ci` | Pipeline CI/CD |
-| `/secrets-management` | Gestion des secrets |
-| `/monitoring` | Monitoring infrastructure |
-| `/cost-optimization` | Optimiser les coûts |
+| `/ops:ops-docker` | Containeriser l'application |
+| `/ops:ops-ci` | Pipeline CI/CD |
+| `/ops:ops-secrets-management` | Gestion des secrets |
+| `/ops:ops-monitoring` | Monitoring infrastructure |
+| `/ops:ops-cost-optimization` | Optimiser les coûts |
 
 ---
 

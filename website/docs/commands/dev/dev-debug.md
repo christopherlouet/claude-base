@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-title: "/dev-debug"
+title: "/dev:dev-debug"
 description: "Diagnostic et résolution de bugs de manière méthodique et systématique."
 tags:
   - "dev"
@@ -437,11 +437,11 @@ du cas où l'utilisateur n'est pas trouvé.
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/explore` | Comprendre le contexte du code |
-| `/test` | Ajouter tests de régression |
-| `/commit` | Commiter le fix |
-| `/hotfix` | Si correction urgente en prod |
-| `/explain` | Comprendre du code complexe |
+| `/work:work-explore` | Comprendre le contexte du code |
+| `/dev:dev-test` | Ajouter tests de régression |
+| `/work:work-commit` | Commiter le fix |
+| `/ops:ops-hotfix` | Si correction urgente en prod |
+| `/doc:doc-explain` | Comprendre du code complexe |
 
 ---
 

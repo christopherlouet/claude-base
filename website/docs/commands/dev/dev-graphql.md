@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "/dev-graphql"
+title: "/dev:dev-graphql"
 description: "Concevoir et implémenter des APIs GraphQL avec client Flutter."
 tags:
   - "dev"
@@ -802,10 +802,10 @@ await cache.store.reset();
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/dev-flutter` | Widgets et screens |
-| `/dev-supabase` | Alternative/complément Supabase |
-| `/dev-api` | Design d'API REST |
-| `/doc-api-spec` | Documentation OpenAPI |
+| `/dev:dev-flutter` | Widgets et screens |
+| `/dev:dev-supabase` | Alternative/complément Supabase |
+| `/dev:dev-api` | Design d'API REST |
+| `/doc:doc-api-spec` | Documentation OpenAPI |
 
 ---
 

@@ -481,9 +481,9 @@ export const useTheme = () => {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-component` | Creer des composants |
-| `/qa-a11y` | Accessibilite |
-| `/doc-generate` | Documentation |
+| `/dev:dev-component` | Creer des composants |
+| `/qa:qa-a11y` | Accessibilite |
+| `/doc:doc-generate` | Documentation |
 
 ---
 

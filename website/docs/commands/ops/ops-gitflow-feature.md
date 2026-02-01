@@ -1,6 +1,6 @@
 ---
 sidebar_position: 10
-title: "/ops-gitflow-feature"
+title: "/ops:ops-gitflow-feature"
 description: "Gérer les branches feature avec GitFlow."
 tags:
   - "ops"
@@ -46,7 +46,7 @@ Créer, développer et finaliser des branches feature selon le workflow GitFlow.
 
 ### START - Créer une nouvelle feature
 
-**Syntaxe**: `/ops-gitflow-feature start "nom-de-la-feature"`
+**Syntaxe**: `/ops:ops-gitflow-feature start "nom-de-la-feature"`
 
 ```bash
 # 1. S'assurer d'être à jour sur develop
@@ -70,17 +70,17 @@ git push -u origin feature/nom-de-la-feature
 ### Prochaines étapes
 1. Développer la feature avec des commits atomiques
 2. Pousser régulièrement : `git push`
-3. Quand terminé : `/ops-gitflow-feature finish "nom-de-la-feature"`
+3. Quand terminé : `/ops:ops-gitflow-feature finish "nom-de-la-feature"`
 
 ### Commandes utiles
-- `/dev-tdd` - Développer en TDD
-- `/work-commit` - Créer des commits propres
-- `/qa-review` - Vérifier la qualité avant finish
+- `/dev:dev-tdd` - Développer en TDD
+- `/work:work-commit` - Créer des commits propres
+- `/qa:qa-review` - Vérifier la qualité avant finish
 ```
 
 ### FINISH - Terminer une feature
 
-**Syntaxe**: `/ops-gitflow-feature finish "nom-de-la-feature"`
+**Syntaxe**: `/ops:ops-gitflow-feature finish "nom-de-la-feature"`
 
 ```bash
 # 1. S'assurer que tout est commité
@@ -116,13 +116,13 @@ git push origin --delete feature/nom-de-la-feature
 
 ### Prochaines étapes
 - Continuer le développement sur `develop`
-- Ou créer une nouvelle feature : `/ops-gitflow-feature start "autre-feature"`
-- Préparer une release : `/ops-gitflow-release start "vX.X.X"`
+- Ou créer une nouvelle feature : `/ops:ops-gitflow-feature start "autre-feature"`
+- Préparer une release : `/ops:ops-gitflow-release start "vX.X.X"`
 ```
 
 ### LIST - Lister les features en cours
 
-**Syntaxe**: `/ops-gitflow-feature list`
+**Syntaxe**: `/ops:ops-gitflow-feature list`
 
 ```bash
 git branch -a | grep feature/
@@ -130,7 +130,7 @@ git branch -a | grep feature/
 
 ### PUBLISH - Publier une feature (pour collaboration)
 
-**Syntaxe**: `/ops-gitflow-feature publish "nom-de-la-feature"`
+**Syntaxe**: `/ops:ops-gitflow-feature publish "nom-de-la-feature"`
 
 ```bash
 git push -u origin feature/nom-de-la-feature
@@ -138,7 +138,7 @@ git push -u origin feature/nom-de-la-feature
 
 ### PULL - Récupérer une feature distante
 
-**Syntaxe**: `/ops-gitflow-feature pull "nom-de-la-feature"`
+**Syntaxe**: `/ops:ops-gitflow-feature pull "nom-de-la-feature"`
 
 ```bash
 git fetch origin feature/nom-de-la-feature
@@ -201,11 +201,11 @@ git push origin develop
 
 | Avant | Commande | Après |
 |-------|----------|-------|
-| `/ops-gitflow-init` | | |
+| `/ops:ops-gitflow-init` | | |
 | | **FEATURE** | |
-| | | `/ops-gitflow-release` |
-| | | `/work-commit` |
-| | | `/work-pr` |
+| | | `/ops:ops-gitflow-release` |
+| | | `/work:work-commit` |
+| | | `/work:work-pr` |
 
 ---
 

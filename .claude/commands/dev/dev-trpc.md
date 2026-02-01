@@ -449,9 +449,9 @@ export function UserList() {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-prisma` | Base de donnees |
-| `/dev-api` | Documentation API |
-| `/qa-security` | Securite |
+| `/dev:dev-prisma` | Base de donnees |
+| `/dev:dev-api` | Documentation API |
+| `/qa:qa-security` | Securite |
 
 ---
 

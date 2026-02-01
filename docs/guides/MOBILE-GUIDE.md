@@ -36,7 +36,7 @@ lib/
 ## Workflow Recommande
 
 ```
-/work-explore → /work-plan → /dev-flutter → /dev-tdd → /qa-mobile → /work-pr
+/work:work-explore → /work:work-plan → /dev:dev-flutter → /dev:dev-tdd → /qa:qa-mobile → /work:work-pr
 ```
 
 ## Phase 1: Exploration
@@ -44,7 +44,7 @@ lib/
 ### Comprendre le projet
 
 ```bash
-/work-explore
+/work:work-explore
 ```
 
 ### Questions a clarifier
@@ -59,7 +59,7 @@ lib/
 ### Planifier une feature
 
 ```bash
-/work-plan "Ajouter l'authentification avec Supabase"
+/work:work-plan "Ajouter l'authentification avec Supabase"
 ```
 
 ### Structure de plan type
@@ -97,13 +97,13 @@ lib/
 ### Creer une feature Flutter
 
 ```bash
-/dev-flutter "ecran de liste de produits avec infinite scroll"
+/dev:dev-flutter "ecran de liste de produits avec infinite scroll"
 ```
 
 ### Creer un backend Supabase
 
 ```bash
-/dev-supabase "table products avec RLS et fonction de recherche"
+/dev:dev-supabase "table products avec RLS et fonction de recherche"
 ```
 
 ### Structure BLoC generee
@@ -141,7 +141,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 ### TDD pour use cases
 
 ```bash
-/dev-tdd "use case de login avec validation email"
+/dev:dev-tdd "use case de login avec validation email"
 ```
 
 ### Types de tests Flutter
@@ -155,7 +155,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 ### Generer tests
 
 ```bash
-/dev-test "tester le BLoC d'authentification"
+/dev:dev-test "tester le BLoC d'authentification"
 ```
 
 ## Phase 5: Qualite
@@ -163,7 +163,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 ### Audit mobile complet
 
 ```bash
-/qa-mobile
+/qa:qa-mobile
 ```
 
 Checklist:
@@ -184,7 +184,7 @@ dart fix --apply
 ### Couverture
 
 ```bash
-/qa-coverage
+/qa:qa-coverage
 flutter test --coverage
 ```
 
@@ -193,13 +193,13 @@ flutter test --coverage
 ### Configuration Fastlane
 
 ```bash
-/ops-mobile-release
+/ops:ops-mobile-release
 ```
 
 ### Workflow release
 
 ```bash
-/work-flow-release "v2.0.0"
+/work:work-flow-release "v2.0.0"
 ```
 
 ### Checklist pre-release
@@ -221,7 +221,7 @@ flutter test --coverage
 ### Analytics stores
 
 ```bash
-/growth-app-store-analytics
+/growth:growth-app-store-analytics
 ```
 
 ## Commandes par Use Case
@@ -230,37 +230,37 @@ flutter test --coverage
 
 ```bash
 1. flutter create --org com.example my_app
-2. /work-explore        # Structure Clean Architecture
-3. /work-plan          # Definir les features
-4. /dev-supabase       # Backend si Supabase
-5. /ops-ci             # Codemagic/GitHub Actions
+2. /work:work-explore        # Structure Clean Architecture
+3. /work:work-plan          # Definir les features
+4. /dev:dev-supabase       # Backend si Supabase
+5. /ops:ops-ci             # Codemagic/GitHub Actions
 ```
 
 ### Nouvelle feature
 
 ```bash
-1. /work-explore       # Comprendre le domaine
-2. /work-plan         # Planifier Clean Architecture
-3. /dev-flutter       # Creer la feature
-4. /dev-tdd           # Tests unitaires
-5. /qa-mobile         # Audit qualite
-6. /work-pr           # Pull Request
+1. /work:work-explore       # Comprendre le domaine
+2. /work:work-plan         # Planifier Clean Architecture
+3. /dev:dev-flutter       # Creer la feature
+4. /dev:dev-tdd           # Tests unitaires
+5. /qa:qa-mobile         # Audit qualite
+6. /work:work-pr           # Pull Request
 ```
 
 ### Bug fix mobile
 
 ```bash
-1. /dev-debug         # Identifier la cause
-2. /work-flow-bugfix  # Workflow complet
+1. /dev:dev-debug         # Identifier la cause
+2. /work:work-flow-bugfix  # Workflow complet
 ```
 
 ### Release
 
 ```bash
-1. /qa-mobile         # Audit pre-release
-2. /doc-changelog     # Mettre a jour changelog
-3. /ops-mobile-release # Configurer Fastlane
-4. /work-flow-release # Release workflow
+1. /qa:qa-mobile         # Audit pre-release
+2. /doc:doc-changelog     # Mettre a jour changelog
+3. /ops:ops-mobile-release # Configurer Fastlane
+4. /work:work-flow-release # Release workflow
 ```
 
 ## Agents Automatiques

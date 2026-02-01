@@ -15,7 +15,7 @@ Ce tutoriel vous montre comment configurer un pipeline CI/CD complet avec GitHub
 ## Objectifs
 
 À la fin de ce tutoriel, vous saurez :
-- Utiliser `/ops-ci` pour créer un pipeline
+- Utiliser `/ops:ops-ci` pour créer un pipeline
 - Configurer les tests automatisés
 - Mettre en place le déploiement continu
 - Gérer les secrets et environnements
@@ -29,7 +29,7 @@ Ce tutoriel vous montre comment configurer un pipeline CI/CD complet avec GitHub
 ## Étape 1 : Créer le pipeline de base
 
 ```bash
-/ops-ci "Pipeline CI/CD pour une app Next.js avec tests, lint et déploiement Vercel"
+/ops:ops-ci "Pipeline CI/CD pour une app Next.js avec tests, lint et déploiement Vercel"
 ```
 
 Claude va créer :
@@ -153,7 +153,7 @@ jobs:
 Ajoutons des tests Playwright au pipeline :
 
 ```bash
-/qa-e2e "Configurer Playwright pour les tests E2E dans le pipeline CI"
+/qa:qa-e2e "Configurer Playwright pour les tests E2E dans le pipeline CI"
 ```
 
 **Ajout au workflow :**
@@ -413,7 +413,7 @@ jobs:
 ## Étape 8 : Commiter
 
 ```bash
-/work-commit
+/work:work-commit
 ```
 
 **Message suggéré :**
@@ -450,7 +450,7 @@ flowchart TD
 
 - [Tutoriel 07 : Refactoring Legacy](/docs/tutorials/refactoring-legacy)
 - [Guide Web](/docs/guides/web-development)
-- [Commande /ops-monitoring](/docs/commands/ops/ops-monitoring)
+- [Commande /ops:ops-monitoring](/docs/commands/ops/ops-monitoring)
 
 ---
 

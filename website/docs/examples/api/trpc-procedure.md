@@ -11,7 +11,7 @@ Cet exemple montre comment créer des procedures tRPC professionnelles avec vali
 ## Commande utilisée
 
 ```bash
-/dev-trpc "Créer un router pour les tâches avec CRUD et filtres"
+/dev:dev-trpc "Créer un router pour les tâches avec CRUD et filtres"
 ```
 
 ## Structure générée
@@ -570,9 +570,9 @@ function TaskList() {
 
 ## Commandes associées
 
-- `/dev-test` - Générer tests de procedures
-- `/dev-prisma` - Schéma Prisma associé
-- `/qa-security` - Audit sécurité
+- `/dev:dev-test` - Générer tests de procedures
+- `/dev:dev-prisma` - Schéma Prisma associé
+- `/qa:qa-security` - Audit sécurité
 
 ---
 

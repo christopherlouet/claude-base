@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-title: "/work-explore"
+title: "/work:work-explore"
 description: "Tu es en mode EXPLORATION. Analyse le codebase sans écrire de code."
 tags:
   - "work"
@@ -148,9 +148,9 @@ Chercher et lire :
 
 | Après exploration | Usage |
 |-------------------|-------|
-| `/work-plan` | Planifier les modifications |
-| `/doc-explain` | Expliquer du code complexe |
-| `/doc-onboard` | Découverte complète d'un projet |
+| `/work:work-plan` | Planifier les modifications |
+| `/doc:doc-explain` | Expliquer du code complexe |
+| `/doc:doc-onboard` | Découverte complète d'un projet |
 
 ---
 

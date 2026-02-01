@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-title: "/ops-database"
+title: "/ops:ops-database"
 description: "Design de schéma, migrations et optimisation de base de données."
 tags:
   - "ops"
@@ -383,11 +383,11 @@ model User {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/migrate` | Migrations de données |
-| `/backup` | Stratégie de backup |
-| `/perf` | Performance des requêtes |
-| `/security` | Audit sécurité DB |
-| `/infra-code` | Provisioning DB |
+| `/ops:ops-migrate` | Migrations de données |
+| `/ops:ops-backup` | Stratégie de backup |
+| `/qa:qa-perf` | Performance des requêtes |
+| `/qa:qa-security` | Audit sécurité DB |
+| `/ops:ops-infra-code` | Provisioning DB |
 
 ---
 

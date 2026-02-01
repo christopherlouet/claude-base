@@ -7,7 +7,7 @@
 - Lire et comprendre le code existant AVANT de modifier
 - Identifier les patterns et conventions en place
 - NE JAMAIS coder sans avoir explore
-- Utiliser `/work-explore` ou l'agent `work-explore`
+- Utiliser `/work:work-explore` ou l'agent `work-explore`
 
 ### 2. PLAN (obligatoire pour features complexes)
 
@@ -15,7 +15,7 @@
 - Lister les fichiers a creer/modifier
 - Identifier les risques potentiels
 - Attendre validation avant de coder
-- Utiliser `/work-plan`
+- Utiliser `/work:work-plan`
 
 ### 3. TDD (obligatoire)
 
@@ -24,7 +24,7 @@
   1. RED: Ecrire un test qui echoue
   2. GREEN: Ecrire le code minimal pour passer le test
   3. REFACTOR: Ameliorer le code sans casser les tests
-- Utiliser `/dev-tdd` pour le cycle complet
+- Utiliser `/dev:dev-tdd` pour le cycle complet
 - Commits atomiques et frequents
 - Respecter les conventions du projet
 - Couverture minimum 80% sur nouveau code
@@ -34,7 +34,7 @@
 - Message de commit descriptif (Conventional Commits)
 - Referencer les issues si applicable
 - PR avec description complete
-- Utiliser `/work-commit` ou `/work-pr`
+- Utiliser `/work:work-commit` ou `/work:work-pr`
 
 ## Anti-patterns a Eviter
 
@@ -52,22 +52,22 @@
 
 ### Nouvelle feature
 ```
-/work-flow-feature "description"
+/work:work-flow-feature "description"
 # ou manuellement (TDD obligatoire):
-/work-explore -> /work-plan -> /dev-tdd -> /work-pr
+/work:work-explore -> /work:work-plan -> /dev:dev-tdd -> /work:work-pr
 ```
 
 ### Correction de bug
 ```
-/work-flow-bugfix "description du bug"
+/work:work-flow-bugfix "description du bug"
 ```
 
 ### Nouvelle release
 ```
-/work-flow-release "v2.0.0"
+/work:work-flow-release "v2.0.0"
 ```
 
 ### Audit complet
 ```
-/qa-audit  # Securite + RGPD + A11y + Perf
+/qa:qa-audit  # Securite + RGPD + A11y + Perf
 ```

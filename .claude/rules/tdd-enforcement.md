@@ -38,7 +38,7 @@ Proposer TDD automatiquement quand l'utilisateur mentionne:
 
 1. **AVANT toute modification de code source**:
    - Proposer: "Je recommande d'utiliser l'approche TDD. Voulez-vous que je commence par ecrire les tests ?"
-   - Ou directement utiliser `/dev-tdd` si le contexte est clair
+   - Ou directement utiliser `/dev:dev-tdd` si le contexte est clair
 
 2. **Si l'utilisateur refuse TDD**:
    - Respecter son choix mais rappeler les risques
@@ -64,7 +64,7 @@ Cycle TDD:
 
 ### Integration avec les commandes
 
-Quand une commande de developpement est utilisee (`/dev-component`, `/dev-api`, `/dev-hook`, etc.), Claude DOIT:
+Quand une commande de developpement est utilisee (`/dev:dev-component`, `/dev:dev-api`, `/dev:dev-hook`, etc.), Claude DOIT:
 1. Verifier si des tests existent pour le code concerne
 2. Si non, proposer de commencer par les tests
 3. Si oui, s'assurer que les tests passent avant modification

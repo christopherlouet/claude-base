@@ -11,7 +11,7 @@ Cet exemple montre comment créer des resolvers GraphQL professionnels avec Apol
 ## Commande utilisée
 
 ```bash
-/dev-graphql "Créer des queries et mutations pour les utilisateurs"
+/dev:dev-graphql "Créer des queries et mutations pour les utilisateurs"
 ```
 
 ## Structure générée
@@ -571,9 +571,9 @@ mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
 
 ## Commandes associées
 
-- `/dev-test` - Générer tests de resolvers
-- `/qa-security` - Audit sécurité GraphQL
-- `/doc-api-spec` - Documentation schema
+- `/dev:dev-test` - Générer tests de resolvers
+- `/qa:qa-security` - Audit sécurité GraphQL
+- `/doc:doc-api-spec` - Documentation schema
 
 ---
 

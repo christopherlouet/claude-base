@@ -11,7 +11,7 @@ Guide complet pour lancer un nouveau produit ou SaaS.
 ## Commande rapide
 
 ```bash
-/work-flow-launch "Mon nouveau SaaS"
+/work:work-flow-launch "Mon nouveau SaaS"
 ```
 
 ## Vue d'ensemble
@@ -29,7 +29,7 @@ Le workflow de lancement couvre :
 ### 1. Business
 
 ```bash
-/biz-model "Mon SaaS de gestion de projets"
+/biz:biz-model "Mon SaaS de gestion de projets"
 ```
 
 Definir :
@@ -41,9 +41,9 @@ Definir :
 ### 2. Legal
 
 ```bash
-/legal-rgpd
-/legal-terms-of-service
-/legal-privacy-policy
+/legal:legal-rgpd
+/legal:legal-terms-of-service
+/legal:legal-privacy-policy
 ```
 
 Preparer :
@@ -55,9 +55,9 @@ Preparer :
 ### 3. Infrastructure
 
 ```bash
-/ops-ci
-/ops-monitoring
-/ops-backup
+/ops:ops-ci
+/ops:ops-monitoring
+/ops:ops-backup
 ```
 
 Configurer :
@@ -69,8 +69,8 @@ Configurer :
 ### 4. Securite
 
 ```bash
-/qa-security
-/qa-audit
+/qa:qa-security
+/qa:qa-audit
 ```
 
 Verifier :
@@ -82,8 +82,8 @@ Verifier :
 ### 5. Performance
 
 ```bash
-/qa-perf
-/ops-load-testing
+/qa:qa-perf
+/ops:ops-load-testing
 ```
 
 Optimiser :
@@ -95,9 +95,9 @@ Optimiser :
 ### 6. Growth
 
 ```bash
-/growth-landing
-/growth-seo
-/growth-analytics
+/growth:growth-landing
+/growth:growth-seo
+/growth:growth-analytics
 ```
 
 Preparer :
@@ -109,7 +109,7 @@ Preparer :
 ### 7. Go-Live
 
 ```bash
-/ops-release
+/ops:ops-release
 ```
 
 Deployer :
@@ -153,7 +153,7 @@ Deployer :
 ## Exemple concret
 
 ```bash
-> /work-flow-launch "TaskFlow - Gestion de projets simplifiee"
+> /work:work-flow-launch "TaskFlow - Gestion de projets simplifiee"
 
 # Claude enchaine automatiquement :
 # 1. Analyse le projet

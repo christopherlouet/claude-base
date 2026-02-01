@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-title: "/qa-automation"
+title: "/qa:qa-automation"
 description: "Mettre en place une stratégie d'automatisation des tests complète."
 tags:
   - "qa"
@@ -541,10 +541,10 @@ test.describe('Visual Regression', () => {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-testing-setup` | Configuration initiale |
-| `/dev-tdd` | Développement TDD |
-| `/ops-ci` | Pipeline CI/CD |
-| `/perf` | Tests de performance |
+| `/dev:dev-testing-setup` | Configuration initiale |
+| `/dev:dev-tdd` | Développement TDD |
+| `/ops:ops-ci` | Pipeline CI/CD |
+| `/qa:qa-perf` | Tests de performance |
 
 ---
 

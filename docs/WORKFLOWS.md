@@ -14,9 +14,9 @@
 │   └──────────┘    └──────────┘    └──────────┘    └──────────┘     │
 │        │               │               │               │            │
 │        ▼               ▼               ▼               ▼            │
-│   /work-explore   /work-plan      /dev-tdd       /work-commit      │
-│                                   /dev-api       /work-pr          │
-│                                   /dev-component                   │
+│   /work:work-explore   /work:work-plan      /dev:dev-tdd       /work:work-commit      │
+│                                   /dev:dev-api       /work:work-pr          │
+│                                   /dev:dev-component                   │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -28,20 +28,20 @@ flowchart LR
     B --> C[CODE]
     C --> D[COMMIT]
 
-    A --> A1[/work-explore]
-    B --> B1[/work-plan]
-    C --> C1[/dev-tdd]
-    C --> C2[/dev-api]
-    C --> C3[/dev-component]
-    D --> D1[/work-commit]
-    D --> D2[/work-pr]
+    A --> A1[/work:work-explore]
+    B --> B1[/work:work-plan]
+    C --> C1[/dev:dev-tdd]
+    C --> C2[/dev:dev-api]
+    C --> C3[/dev:dev-component]
+    D --> D1[/work:work-commit]
+    D --> D2[/work:work-pr]
 ```
 
 ## Workflow Feature Complete
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           /work-flow-feature                                 │
+│                           /work:work-flow-feature                                 │
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                                                                       │  │
@@ -112,7 +112,7 @@ flowchart TD
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           /work-flow-bugfix                                  │
+│                           /work:work-flow-bugfix                                  │
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                                                                       │  │
@@ -184,7 +184,7 @@ flowchart TD
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           /work-flow-release                                 │
+│                           /work:work-flow-release                                 │
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                                                                       │  │
@@ -255,7 +255,7 @@ flowchart TD
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              /qa-audit                                       │
+│                              /qa:qa-audit                                       │
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                                                                       │  │
@@ -298,7 +298,7 @@ flowchart TD
 ### Mermaid
 ```mermaid
 flowchart TD
-    AUDIT([/qa-audit]) --> ORCHESTRATOR[Orchestrateur]
+    AUDIT([/qa:qa-audit]) --> ORCHESTRATOR[Orchestrateur]
 
     ORCHESTRATOR --> SEC{{Agent qa-security<br/>sonnet}}
     ORCHESTRATOR --> PERF{{Agent qa-perf<br/>sonnet}}

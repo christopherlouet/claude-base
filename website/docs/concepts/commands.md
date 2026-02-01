@@ -14,9 +14,9 @@ Une **command** est un fichier Markdown qui contient des instructions pour Claud
 
 ```bash
 # Exemples d'invocation
-/work-explore "Comprendre l'architecture"
-/dev-tdd "Implementer le service utilisateur"
-/qa-security
+/work:work-explore "Comprendre l'architecture"
+/dev:dev-tdd "Implementer le service utilisateur"
+/qa:qa-security
 ```
 
 ## Structure des fichiers
@@ -92,7 +92,7 @@ $ARGUMENTS
 La variable `$ARGUMENTS` est remplacee par les arguments passes a la commande:
 
 ```bash
-/dev-tdd "Implementer l'authentification JWT"
+/dev:dev-tdd "Implementer l'authentification JWT"
 ```
 
 Dans le fichier `dev-tdd.md`:
@@ -193,7 +193,7 @@ Fournir un rapport structure.
 ### 3. Tester
 
 ```bash
-/dev-ma-commande "Test de la commande"
+/dev:dev-ma-commande "Test de la commande"
 ```
 
 ## Exemples de commands
@@ -233,22 +233,22 @@ $ARGUMENTS
 ## Etapes
 
 ### 1. Exploration
-Utiliser /work-explore pour comprendre le contexte.
+Utiliser /work:work-explore pour comprendre le contexte.
 
 ### 2. Specification
-Utiliser /work-specify pour definir les User Stories.
+Utiliser /work:work-specify pour definir les User Stories.
 
 ### 3. Planification
-Utiliser /work-plan pour creer le plan d'implementation.
+Utiliser /work:work-plan pour creer le plan d'implementation.
 
 ### 4. Developpement
-Utiliser /dev-tdd pour implementer avec tests.
+Utiliser /dev:dev-tdd pour implementer avec tests.
 
 ### 5. Revue
-Utiliser /qa-review pour verifier la qualite.
+Utiliser /qa:qa-review pour verifier la qualite.
 
 ### 6. Livraison
-Utiliser /work-pr pour creer la Pull Request.
+Utiliser /work:work-pr pour creer la Pull Request.
 ```
 
 ## Lister les commands disponibles
