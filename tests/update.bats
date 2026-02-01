@@ -257,6 +257,139 @@ teardown() {
     [ -f "$TEST_DIR/.claude/commands/work/work-explore.md" ]
 }
 
+# =============================================================================
+# Tests de --upgrade-claude-md
+# =============================================================================
+
+@test "update.sh --upgrade-claude-md copie docs/reference/" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Supprimer docs/reference/ s'il existe déjà
+    rm -rf "$TEST_DIR/docs/reference"
+
+    # Supprimer les @imports du CLAUDE.md pour simuler un ancien projet
+    sed -i '/@docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+
+    run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # docs/reference/ doit exister avec des fichiers
+    [ -d "$TEST_DIR/docs/reference" ]
+    local count
+    count=$(find "$TEST_DIR/docs/reference" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    [ "$count" -gt 0 ]
+}
+
+@test "update.sh --upgrade-claude-md ajoute les @imports dans CLAUDE.md" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Supprimer docs/reference/ et les @imports
+    rm -rf "$TEST_DIR/docs/reference"
+    sed -i '/@docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+
+    run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # CLAUDE.md doit contenir les @imports
+    grep -q "@docs/reference/commands.md" "$TEST_DIR/CLAUDE.md"
+    grep -q "@docs/reference/agents-catalog.md" "$TEST_DIR/CLAUDE.md"
+    grep -q "@docs/reference/skills-catalog.md" "$TEST_DIR/CLAUDE.md"
+}
+
+@test "update.sh --upgrade-claude-md crée un backup" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Supprimer les @imports pour déclencher la migration
+    rm -rf "$TEST_DIR/docs/reference"
+    sed -i '/@docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+
+    run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Un fichier backup doit exister
+    local backup_count
+    backup_count=$(find "$TEST_DIR" -maxdepth 1 -name "CLAUDE.md.backup.*" -type f 2>/dev/null | wc -l | tr -d ' ')
+    [ "$backup_count" -ge 1 ]
+}
+
+@test "update.sh --upgrade-claude-md skip si @imports déjà présents" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # S'assurer que les @imports sont déjà là
+    if ! grep -q "@docs/reference/" "$TEST_DIR/CLAUDE.md"; then
+        # Ajouter un @import pour le test
+        sed -i '1a @docs/reference/commands.md' "$TEST_DIR/CLAUDE.md"
+    fi
+
+    run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Pas de backup créé (skip)
+    [[ "$output" == *"skip"* ]] || [[ "$output" == *"déjà"* ]]
+}
+
+@test "update.sh --upgrade-claude-md détecte les sections dupliquées" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Supprimer les @imports et ajouter une section dupliquée
+    rm -rf "$TEST_DIR/docs/reference"
+    sed -i '/@docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+    echo "" >> "$TEST_DIR/CLAUDE.md"
+    echo "## Commandes Essentielles" >> "$TEST_DIR/CLAUDE.md"
+    echo "Contenu inline ancien" >> "$TEST_DIR/CLAUDE.md"
+
+    run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # La section dupliquée doit être supprimée (mode -y)
+    ! grep -q "^## Commandes Essentielles" "$TEST_DIR/CLAUDE.md"
+}
+
+@test "update.sh --all inclut la migration CLAUDE.md" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Supprimer les @imports
+    rm -rf "$TEST_DIR/docs/reference"
+    sed -i '/@docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+
+    run "$UPDATE_SCRIPT" -y --all "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # docs/reference/ doit exister
+    [ -d "$TEST_DIR/docs/reference" ]
+    # @imports doivent être présents
+    grep -q "@docs/reference/" "$TEST_DIR/CLAUDE.md"
+}
+
+@test "update.sh --dry-run --upgrade-claude-md ne modifie rien" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Supprimer les @imports
+    rm -rf "$TEST_DIR/docs/reference"
+    sed -i '/@docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+
+    run "$UPDATE_SCRIPT" -y -n --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # docs/reference/ ne doit PAS exister
+    [ ! -d "$TEST_DIR/docs/reference" ]
+    # @imports ne doivent PAS être présents
+    ! grep -q "@docs/reference/" "$TEST_DIR/CLAUDE.md"
+}
+
+@test "update.sh --help affiche --upgrade-claude-md" {
+    run "$UPDATE_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"--upgrade-claude-md"* ]]
+}
+
 @test "update.sh --detect-orphans --dry-run ne supprime pas les fichiers" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
