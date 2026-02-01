@@ -8,7 +8,7 @@ $ARGUMENTS
 ## Objectif
 
 Cet agent couvre le **workflow technique** de développement et déploiement.
-Pour l'analyse business préalable, utiliser `/biz-launch`.
+Pour l'analyse business préalable, utiliser `/biz:biz-launch`.
 
 ## Scope de cet agent
 
@@ -58,7 +58,7 @@ Pour l'analyse business préalable, utiliser `/biz-launch`.
 ## Prérequis
 
 Avant de commencer ce workflow, assurez-vous d'avoir :
-- [ ] Analyse business complétée (`/biz-launch`)
+- [ ] Analyse business complétée (`/biz:biz-launch`)
 - [ ] MVP défini et scope validé
 - [ ] Budget et timeline approuvés
 
@@ -298,17 +298,17 @@ Status: LIVE 🟢
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/biz-launch` | Analyse business préalable |
-| `/dev-testing-setup` | Configurer les tests |
-| `/ops-ci` | Configuration CI/CD avancée |
-| `/qa-automation` | Automatisation des tests |
-| `/security` | Audit de sécurité |
-| `/growth-seo` | SEO avancé |
-| `/growth-analytics` | Analytics avancé |
+| `/biz:biz-launch` | Analyse business préalable |
+| `/dev:dev-testing-setup` | Configurer les tests |
+| `/ops:ops-ci` | Configuration CI/CD avancée |
+| `/qa:qa-automation` | Automatisation des tests |
+| `/qa:qa-security` | Audit de sécurité |
+| `/growth:growth-seo` | SEO avancé |
+| `/growth:growth-analytics` | Analytics avancé |
 
 ---
 
-IMPORTANT: Faire d'abord l'analyse business avec `/biz-launch` avant ce workflow.
+IMPORTANT: Faire d'abord l'analyse business avec `/biz:biz-launch` avant ce workflow.
 
 YOU MUST avoir le legal en place avant le go-live (CGU, CGV, RGPD).
 

@@ -190,9 +190,9 @@ Continue jusqu'a avoir resolu le probleme.
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-rag` | Systemes de retrieval |
-| `/dev-api` | Integration API LLM |
-| `/qa-perf` | Performance des prompts |
+| `/dev:dev-rag` | Systemes de retrieval |
+| `/dev:dev-api` | Integration API LLM |
+| `/qa:qa-perf` | Performance des prompts |
 
 ---
 

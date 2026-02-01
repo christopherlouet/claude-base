@@ -1,6 +1,6 @@
 ---
 sidebar_position: 14
-title: "/ops-grafana-dashboard"
+title: "/ops:ops-grafana-dashboard"
 description: "Creation de dashboards Grafana avec provisioning automatique."
 tags:
   - "ops"
@@ -1048,10 +1048,10 @@ volumes:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/ops-monitoring` | Instrumenter le code pour exposer les metriques |
-| `/ops-observability-stack` | Deployer Prometheus/Grafana/Loki |
-| `/ops-k8s` | Deploiement Kubernetes |
-| `/qa-perf` | Identifier les metriques a surveiller |
+| `/ops:ops-monitoring` | Instrumenter le code pour exposer les metriques |
+| `/ops:ops-observability-stack` | Deployer Prometheus/Grafana/Loki |
+| `/ops:ops-k8s` | Deploiement Kubernetes |
+| `/qa:qa-perf` | Identifier les metriques a surveiller |
 
 ---
 

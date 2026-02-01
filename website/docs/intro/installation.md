@@ -89,8 +89,8 @@ Le fichier `CLAUDE.md` a la racine contient les instructions principales. Adapte
 - Tests obligatoires
 
 ## Workflows
-- /work-flow-feature pour les features
-- /work-flow-bugfix pour les bugs
+- /work:work-flow-feature pour les features
+- /work:work-flow-bugfix pour les bugs
 ```
 
 ### Fichier .mcp.json
@@ -164,7 +164,7 @@ claude
 
 ```bash
 # Testez le workflow d'exploration
-/work-explore
+/work:work-explore
 
 # Claude devrait analyser votre projet
 ```

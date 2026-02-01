@@ -358,10 +358,10 @@ project/
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-tdd` | Développer en TDD |
-| `/dev-test` | Générer des tests |
-| `/ops-ci` | Configuration CI/CD |
-| `/qa-automation` | Automatisation des tests |
+| `/dev:dev-tdd` | Développer en TDD |
+| `/dev:dev-test` | Générer des tests |
+| `/ops:ops-ci` | Configuration CI/CD |
+| `/qa:qa-automation` | Automatisation des tests |
 
 ---
 

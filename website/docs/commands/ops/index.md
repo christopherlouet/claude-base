@@ -19,36 +19,36 @@ Ce domaine contient **30 commandes** pour operations (ci/cd, docker, monitoring,
 
 | Commande | Description |
 |----------|-------------|
-| [`/ops-backup`](/docs/commands/ops/ops-backup) | Stratégie de backup et restore pour les données critiques. |
-| [`/ops-ci`](/docs/commands/ops/ops-ci) | Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.). |
-| [`/ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization) | Analyser et optimiser les coûts d'infrastructure cloud. |
-| [`/ops-database`](/docs/commands/ops/ops-database) | Design de schéma, migrations et optimisation de base de données. |
-| [`/ops-deps`](/docs/commands/ops/ops-deps) | Audit, analyse et mise à jour des dépendances du projet. |
-| [`/ops-disaster-recovery`](/docs/commands/ops/ops-disaster-recovery) | Mettre en place une stratégie de reprise après sinistre (Disaster Recovery). |
-| [`/ops-docker`](/docs/commands/ops/ops-docker) | Dockerisation et containerisation de projets. |
-| [`/ops-env`](/docs/commands/ops/ops-env) | Gestion des environnements (dev, staging, prod) et des variables d'environnement. |
-| [`/ops-gitflow-feature`](/docs/commands/ops/ops-gitflow-feature) | Gérer les branches feature avec GitFlow. |
-| [`/ops-gitflow-hotfix`](/docs/commands/ops/ops-gitflow-hotfix) | Gérer les hotfixes urgents avec GitFlow. |
-| [`/ops-gitflow-init`](/docs/commands/ops/ops-gitflow-init) | Initialiser GitFlow sur le repository. |
-| [`/ops-gitflow-release`](/docs/commands/ops/ops-gitflow-release) | Gérer les branches release avec GitFlow. |
-| [`/ops-grafana-dashboard`](/docs/commands/ops/ops-grafana-dashboard) | Creation de dashboards Grafana avec provisioning automatique. |
-| [`/ops-health`](/docs/commands/ops/ops-health) | Vérification rapide de la santé d'un projet. Diagnostic express en 5 minutes. |
-| [`/ops-hotfix`](/docs/commands/ops/ops-hotfix) | Workflow de correction urgente en production. |
-| [`/ops-infra-code`](/docs/commands/ops/ops-infra-code) | Implémente l'Infrastructure as Code (IaC) avec Terraform, CloudFormation ou Pulumi. |
-| [`/ops-k8s`](/docs/commands/ops/ops-k8s) | Deploiement et orchestration Kubernetes. |
-| [`/ops-load-testing`](/docs/commands/ops/ops-load-testing) | Mettre en place et exécuter des tests de charge et de stress. |
-| [`/ops-migrate`](/docs/commands/ops/ops-migrate) | Migration de code, dépendances ou données. |
-| [`/ops-mobile-release`](/docs/commands/ops/ops-mobile-release) | Publication d'applications mobiles sur les stores (App Store, Google Play). |
-| [`/ops-monitoring`](/docs/commands/ops/ops-monitoring) | Instrumentation du code pour le monitoring, logging et alerting. |
-| [`/ops-observability-stack`](/docs/commands/ops/ops-observability-stack) | Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager). |
-| [`/ops-opnsense`](/docs/commands/ops/ops-opnsense) | Infrastructure as Code pour OPNsense. Configurer et gérer un pare-feu OPNsense via Terraform. |
-| [`/ops-proxmox`](/docs/commands/ops/ops-proxmox) | Gestion complète de l'infrastructure Proxmox VE : provisioning de VMs et conteneurs LXC, configuration réseau, stockage, backup avec PBS, et automatisation avec Terraform. |
-| [`/ops-release`](/docs/commands/ops/ops-release) | Workflow de release avec changelog et versioning. |
-| [`/ops-rollback`](/docs/commands/ops/ops-rollback) | Procedure de rollback securisee pour revenir a une version stable. |
-| [`/ops-secrets-management`](/docs/commands/ops/ops-secrets-management) | Implémente une gestion sécurisée des secrets et credentials. |
-| [`/ops-serverless`](/docs/commands/ops/ops-serverless) | Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers). |
-| [`/ops-vercel`](/docs/commands/ops/ops-vercel) | Deploiement et configuration sur Vercel. |
-| [`/ops-vps`](/docs/commands/ops/ops-vps) | Deploiement sur serveur VPS (OVH, Hetzner, DigitalOcean, Scaleway, etc.). |
+| [`/ops:ops-backup`](/docs/commands/ops/ops-backup) | Stratégie de backup et restore pour les données critiques. |
+| [`/ops:ops-ci`](/docs/commands/ops/ops-ci) | Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.). |
+| [`/ops:ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization) | Analyser et optimiser les coûts d'infrastructure cloud. |
+| [`/ops:ops-database`](/docs/commands/ops/ops-database) | Design de schéma, migrations et optimisation de base de données. |
+| [`/ops:ops-deps`](/docs/commands/ops/ops-deps) | Audit, analyse et mise à jour des dépendances du projet. |
+| [`/ops:ops-disaster-recovery`](/docs/commands/ops/ops-disaster-recovery) | Mettre en place une stratégie de reprise après sinistre (Disaster Recovery). |
+| [`/ops:ops-docker`](/docs/commands/ops/ops-docker) | Dockerisation et containerisation de projets. |
+| [`/ops:ops-env`](/docs/commands/ops/ops-env) | Gestion des environnements (dev, staging, prod) et des variables d'environnement. |
+| [`/ops:ops-gitflow-feature`](/docs/commands/ops/ops-gitflow-feature) | Gérer les branches feature avec GitFlow. |
+| [`/ops:ops-gitflow-hotfix`](/docs/commands/ops/ops-gitflow-hotfix) | Gérer les hotfixes urgents avec GitFlow. |
+| [`/ops:ops-gitflow-init`](/docs/commands/ops/ops-gitflow-init) | Initialiser GitFlow sur le repository. |
+| [`/ops:ops-gitflow-release`](/docs/commands/ops/ops-gitflow-release) | Gérer les branches release avec GitFlow. |
+| [`/ops:ops-grafana-dashboard`](/docs/commands/ops/ops-grafana-dashboard) | Creation de dashboards Grafana avec provisioning automatique. |
+| [`/ops:ops-health`](/docs/commands/ops/ops-health) | Vérification rapide de la santé d'un projet. Diagnostic express en 5 minutes. |
+| [`/ops:ops-hotfix`](/docs/commands/ops/ops-hotfix) | Workflow de correction urgente en production. |
+| [`/ops:ops-infra-code`](/docs/commands/ops/ops-infra-code) | Implémente l'Infrastructure as Code (IaC) avec Terraform, CloudFormation ou Pulumi. |
+| [`/ops:ops-k8s`](/docs/commands/ops/ops-k8s) | Deploiement et orchestration Kubernetes. |
+| [`/ops:ops-load-testing`](/docs/commands/ops/ops-load-testing) | Mettre en place et exécuter des tests de charge et de stress. |
+| [`/ops:ops-migrate`](/docs/commands/ops/ops-migrate) | Migration de code, dépendances ou données. |
+| [`/ops:ops-mobile-release`](/docs/commands/ops/ops-mobile-release) | Publication d'applications mobiles sur les stores (App Store, Google Play). |
+| [`/ops:ops-monitoring`](/docs/commands/ops/ops-monitoring) | Instrumentation du code pour le monitoring, logging et alerting. |
+| [`/ops:ops-observability-stack`](/docs/commands/ops/ops-observability-stack) | Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager). |
+| [`/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense) | Infrastructure as Code pour OPNsense. Configurer et gérer un pare-feu OPNsense via Terraform. |
+| [`/ops:ops-proxmox`](/docs/commands/ops/ops-proxmox) | Gestion complète de l'infrastructure Proxmox VE : provisioning de VMs et conteneurs LXC, configuration réseau, stockage, backup avec PBS, et automatisation avec Terraform. |
+| [`/ops:ops-release`](/docs/commands/ops/ops-release) | Workflow de release avec changelog et versioning. |
+| [`/ops:ops-rollback`](/docs/commands/ops/ops-rollback) | Procedure de rollback securisee pour revenir a une version stable. |
+| [`/ops:ops-secrets-management`](/docs/commands/ops/ops-secrets-management) | Implémente une gestion sécurisée des secrets et credentials. |
+| [`/ops:ops-serverless`](/docs/commands/ops/ops-serverless) | Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers). |
+| [`/ops:ops-vercel`](/docs/commands/ops/ops-vercel) | Deploiement et configuration sur Vercel. |
+| [`/ops:ops-vps`](/docs/commands/ops/ops-vps) | Deploiement sur serveur VPS (OVH, Hetzner, DigitalOcean, Scaleway, etc.). |
 
 ## Commandes en detail
 

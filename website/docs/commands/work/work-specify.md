@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "/work-specify"
+title: "/work:work-specify"
 description: "Tu es en mode SPÉCIFICATION. Crée une spécification fonctionnelle structurée."
 tags:
   - "work"
@@ -125,7 +125,7 @@ Utiliser le template suivant pour créer la spécification :
 
 ## Points de Clarification
 
-> Si des zones d'ombre subsistent, les lister ici pour `/work-clarify`
+> Si des zones d'ombre subsistent, les lister ici pour `/work:work-clarify`
 
 - [CLARIFICATION NÉCESSAIRE: question spécifique 1]
 - [CLARIFICATION NÉCESSAIRE: question spécifique 2]
@@ -198,16 +198,16 @@ Générer un fichier de spécification dans `specs/[nom-feature]/spec.md` avec :
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                                                                 │
-│   /work-explore                                                 │
+│   /work:work-explore                                                 │
 │         │                                                       │
 │         ▼                                                       │
 │   ┌─────────────────┐                                           │
-│   │ /work-specify   │  ← VOUS ÊTES ICI                          │
+│   │ /work:work-specify   │  ← VOUS ÊTES ICI                          │
 │   └────────┬────────┘                                           │
 │            │                                                    │
 │            ▼                                                    │
 │   ┌─────────────────┐     ┌─────────────────┐                   │
-│   │ Points de       │────▶│ /work-clarify   │                   │
+│   │ Points de       │────▶│ /work:work-clarify   │                   │
 │   │ clarification?  │     │ (si nécessaire) │                   │
 │   └────────┬────────┘     └────────┬────────┘                   │
 │            │                       │                            │
@@ -215,7 +215,7 @@ Générer un fichier de spécification dans `specs/[nom-feature]/spec.md` avec :
 │                        │                                        │
 │                        ▼                                        │
 │              ┌─────────────────┐                                │
-│              │   /work-plan    │                                │
+│              │   /work:work-plan    │                                │
 │              └─────────────────┘                                │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -225,10 +225,10 @@ Générer un fichier de spécification dans `specs/[nom-feature]/spec.md` avec :
 
 | Avant | Agent | Après |
 |-------|-------|-------|
-| `/work-explore` | Exploration | |
+| `/work:work-explore` | Exploration | |
 | | **SPECIFY** | |
-| | | `/work-clarify` (si ambiguïtés) |
-| | | `/work-plan` |
+| | | `/work:work-clarify` (si ambiguïtés) |
+| | | `/work:work-plan` |
 
 ---
 

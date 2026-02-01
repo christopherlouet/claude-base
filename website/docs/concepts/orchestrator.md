@@ -52,7 +52,7 @@ Pour les **nouveaux utilisateurs** ou quand vous voulez **valider** avant d'exec
 /assistant "Ajouter une feature d'authentification"
 
 # Claude analyse et propose :
-# → Workflow recommande: /work-flow-feature
+# → Workflow recommande: /work:work-flow-feature
 # → "Voulez-vous que je lance ce workflow ?"
 # → Attend votre confirmation
 ```
@@ -66,7 +66,7 @@ Pour les **utilisateurs avances** qui veulent une **execution immediate** :
 
 # Claude analyse et execute directement :
 # → Detecte: nouvelle feature
-# → Lance: /work-flow-feature "Ajouter une feature d'authentification"
+# → Lance: /work:work-flow-feature "Ajouter une feature d'authentification"
 ```
 
 ## Detection automatique du contexte
@@ -75,15 +75,15 @@ L'orchestrateur detecte automatiquement votre environnement :
 
 | Indicateur | Type de projet | Commandes recommandees |
 |------------|----------------|------------------------|
-| `package.json` + React/Next/Vue | **Web Frontend** | `/dev-component`, `/dev-hook`, `/dev-react-perf` |
-| `pubspec.yaml` + Flutter | **Mobile** | `/dev-flutter`, `/dev-supabase`, `/qa-mobile` |
-| `package.json` + Express/Fastify/NestJS | **API Node** | `/dev-api`, `/dev-graphql`, `/dev-trpc` |
-| `requirements.txt` / `pyproject.toml` | **Python** | `/dev-api`, `/dev-tdd` |
-| `go.mod` | **Go** | `/dev-api`, `/dev-tdd` |
-| `init.lua` / `.config/nvim` | **Neovim** | `/dev-neovim`, `/qa-neovim` |
-| Airflow/dbt/Spark | **Data** | `/data-pipeline`, `/data-modeling` |
-| `Dockerfile` / `docker-compose.yml` | **DevOps** | `/ops-docker`, `/ops-k8s` |
-| Proxmox / `bpg/proxmox` provider | **Infrastructure** | `/ops-proxmox`, `/ops-infra-code` |
+| `package.json` + React/Next/Vue | **Web Frontend** | `/dev:dev-component`, `/dev:dev-hook`, `/dev:dev-react-perf` |
+| `pubspec.yaml` + Flutter | **Mobile** | `/dev:dev-flutter`, `/dev:dev-supabase`, `/qa:qa-mobile` |
+| `package.json` + Express/Fastify/NestJS | **API Node** | `/dev:dev-api`, `/dev:dev-graphql`, `/dev:dev-trpc` |
+| `requirements.txt` / `pyproject.toml` | **Python** | `/dev:dev-api`, `/dev:dev-tdd` |
+| `go.mod` | **Go** | `/dev:dev-api`, `/dev:dev-tdd` |
+| `init.lua` / `.config/nvim` | **Neovim** | `/dev:dev-neovim`, `/qa:qa-neovim` |
+| Airflow/dbt/Spark | **Data** | `/data:data-pipeline`, `/data:data-modeling` |
+| `Dockerfile` / `docker-compose.yml` | **DevOps** | `/ops:ops-docker`, `/ops:ops-k8s` |
+| Proxmox / `bpg/proxmox` provider | **Infrastructure** | `/ops:ops-proxmox`, `/ops:ops-infra-code` |
 
 ## Guide de decision rapide
 
@@ -93,36 +93,36 @@ L'orchestrateur detecte automatiquement votre environnement :
 ├────────────────────────────────────────────────────────────────────────┤
 │                                                                        │
 │ COMPRENDRE                                                             │
-│ Explorer un codebase                    →  /work-explore               │
-│ Decouvrir un nouveau projet             →  /doc-onboard                │
-│ Comprendre du code complexe             →  /doc-explain                │
+│ Explorer un codebase                    →  /work:work-explore               │
+│ Decouvrir un nouveau projet             →  /doc:doc-onboard                │
+│ Comprendre du code complexe             →  /doc:doc-explain                │
 │                                                                        │
 │ PLANIFIER                                                              │
-│ Creer une specification                 →  /work-specify               │
-│ Planifier une implementation            →  /work-plan                  │
-│ Definir un MVP                          →  /biz-mvp                    │
+│ Creer une specification                 →  /work:work-specify               │
+│ Planifier une implementation            →  /work:work-plan                  │
+│ Definir un MVP                          →  /biz:biz-mvp                    │
 │                                                                        │
 │ DEVELOPPER                                                             │
-│ Ecrire du code avec tests               →  /dev-tdd                    │
-│ Creer un composant React/Vue            →  /dev-component              │
-│ Creer une API REST                      →  /dev-api                    │
-│ Creer un screen Flutter                 →  /dev-flutter                │
-│ Corriger un bug                         →  /dev-debug                  │
+│ Ecrire du code avec tests               →  /dev:dev-tdd                    │
+│ Creer un composant React/Vue            →  /dev:dev-component              │
+│ Creer une API REST                      →  /dev:dev-api                    │
+│ Creer un screen Flutter                 →  /dev:dev-flutter                │
+│ Corriger un bug                         →  /dev:dev-debug                  │
 │                                                                        │
 │ VERIFIER                                                               │
-│ Code review                             →  /qa-review                  │
-│ Audit de securite                       →  /qa-security                │
-│ Audit complet                           →  /qa-audit                   │
+│ Code review                             →  /qa:qa-review                  │
+│ Audit de securite                       →  /qa:qa-security                │
+│ Audit complet                           →  /qa:qa-audit                   │
 │                                                                        │
 │ LIVRER                                                                 │
-│ Creer un commit                         →  /work-commit                │
-│ Creer une PR                            →  /work-pr                    │
-│ Publier une release                     →  /ops-release                │
+│ Creer un commit                         →  /work:work-commit                │
+│ Creer une PR                            →  /work:work-pr                    │
+│ Publier une release                     →  /ops:ops-release                │
 │                                                                        │
 │ DEPLOYER                                                               │
-│ Dockeriser                              →  /ops-docker                 │
-│ Infrastructure as Code                  →  /ops-infra-code             │
-│ CI/CD                                   →  /ops-ci                     │
+│ Dockeriser                              →  /ops:ops-docker                 │
+│ Infrastructure as Code                  →  /ops:ops-infra-code             │
+│ CI/CD                                   →  /ops:ops-ci                     │
 │                                                                        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -132,25 +132,25 @@ L'orchestrateur detecte automatiquement votre environnement :
 ### Web (React/Next.js/Vue)
 
 ```
-/work-explore → /work-specify → /work-plan → /dev-component → /dev-tdd → /qa-review → /work-pr
+/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-component → /dev:dev-tdd → /qa:qa-review → /work:work-pr
 ```
 
 ### Mobile (Flutter)
 
 ```
-/work-explore → /work-specify → /work-plan → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-flutter + /dev:dev-supabase → /qa:qa-mobile → /work:work-pr
 ```
 
 ### API Backend (Node/Python/Go)
 
 ```
-/work-explore → /work-specify → /work-plan → /dev-api → /dev-tdd → /qa-security → /doc-api-spec → /work-pr
+/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-api → /dev:dev-tdd → /qa:qa-security → /doc:doc-api-spec → /work:work-pr
 ```
 
 ### Infrastructure Proxmox
 
 ```
-/work-explore → /ops-proxmox → /ops-monitoring → /ops-backup
+/work:work-explore → /ops:ops-proxmox → /ops:ops-monitoring → /ops:ops-backup
 ```
 
 ## Sub-Agents actives automatiquement
@@ -218,10 +218,10 @@ Utilisateur: "/assistant Je veux corriger un bug de login"
          ▼
     ┌─────────────────────────────────────┐
     │ 3. RECOMMANDATION                   │
-    │    - Workflow: /work-flow-bugfix    │
+    │    - Workflow: /work:work-flow-bugfix    │
     │    - Ou etapes manuelles:           │
-    │      /work-explore → /dev-debug     │
-    │      → /dev-test → /work-pr         │
+    │      /work:work-explore → /dev:dev-debug     │
+    │      → /dev:dev-test → /work:work-pr         │
     └─────────────────────────────────────┘
          │
          ▼
@@ -258,20 +258,20 @@ Utilisateur: "/assistant Je veux corriger un bug de login"
 
 | Votre demande contient... | Workflow execute |
 |---------------------------|------------------|
-| feature, ajouter, creer | `/work-flow-feature` |
-| bug, fix, corriger, erreur | `/work-flow-bugfix` |
-| release, version, tag | `/work-flow-release` |
-| lancement, MVP, produit | `/work-flow-launch` |
-| audit securite, OWASP | `/qa-security` |
-| audit complet, qualite | `/qa-audit` |
-| explorer, comprendre | `/work-explore` |
-| commit | `/work-commit` |
-| PR, pull request | `/work-pr` |
-| tests, TDD | `/dev-tdd` |
-| refactoring, nettoyer | `/dev-refactor` |
-| debug, deboguer | `/dev-debug` |
-| Docker, container | `/ops-docker` |
-| CI/CD, pipeline | `/ops-ci` |
+| feature, ajouter, creer | `/work:work-flow-feature` |
+| bug, fix, corriger, erreur | `/work:work-flow-bugfix` |
+| release, version, tag | `/work:work-flow-release` |
+| lancement, MVP, produit | `/work:work-flow-launch` |
+| audit securite, OWASP | `/qa:qa-security` |
+| audit complet, qualite | `/qa:qa-audit` |
+| explorer, comprendre | `/work:work-explore` |
+| commit | `/work:work-commit` |
+| PR, pull request | `/work:work-pr` |
+| tests, TDD | `/dev:dev-tdd` |
+| refactoring, nettoyer | `/dev:dev-refactor` |
+| debug, deboguer | `/dev:dev-debug` |
+| Docker, container | `/ops:ops-docker` |
+| CI/CD, pipeline | `/ops:ops-ci` |
 
 ## Exemples d'utilisation
 
@@ -283,13 +283,13 @@ Utilisateur: "/assistant Je veux corriger un bug de login"
 # Reponse de l'orchestrateur :
 # Type de projet: Mobile (Flutter detecte)
 # Workflow recommande:
-# 1. /work-explore - Comprendre l'architecture actuelle
-# 2. /work-specify - Specifier les User Stories
-# 3. /work-plan - Planifier l'implementation
-# 4. /dev-flutter - Creer les widgets
-# 5. /dev-supabase - Configurer le backend
-# 6. /qa-mobile - Tester sur devices
-# 7. /work-pr - Creer la PR
+# 1. /work:work-explore - Comprendre l'architecture actuelle
+# 2. /work:work-specify - Specifier les User Stories
+# 3. /work:work-plan - Planifier l'implementation
+# 4. /dev:dev-flutter - Creer les widgets
+# 5. /dev:dev-supabase - Configurer le backend
+# 6. /qa:qa-mobile - Tester sur devices
+# 7. /work:work-pr - Creer la PR
 ```
 
 ### Correction de bug
@@ -299,12 +299,12 @@ Utilisateur: "/assistant Je veux corriger un bug de login"
 
 # Reponse de l'orchestrateur :
 # Situation detectee: Bug critique
-# Commande recommandee: /work-flow-bugfix
+# Commande recommandee: /work:work-flow-bugfix
 # Ou workflow manuel:
-# 1. /work-explore - Localiser le probleme
-# 2. /dev-debug - Investiguer la cause
-# 3. /dev-test - Ecrire un test de regression
-# 4. /work-commit - Commiter le fix
+# 1. /work:work-explore - Localiser le probleme
+# 2. /dev:dev-debug - Investiguer la cause
+# 3. /dev:dev-test - Ecrire un test de regression
+# 4. /work:work-commit - Commiter le fix
 ```
 
 ### Question generale
@@ -314,7 +314,7 @@ Utilisateur: "/assistant Je veux corriger un bug de login"
 
 # Reponse de l'orchestrateur :
 # Type de demande: Exploration/Comprehension
-# Commande recommandee: /work-explore ou /doc-explain
+# Commande recommandee: /work:work-explore ou /doc:doc-explain
 # Agent active automatiquement: work-explore (haiku)
 ```
 

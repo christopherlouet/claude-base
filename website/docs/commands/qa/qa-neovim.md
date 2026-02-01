@@ -1,6 +1,6 @@
 ---
 sidebar_position: 10
-title: "/qa-neovim"
+title: "/qa:qa-neovim"
 description: "Audit qualité et performance d'une configuration Neovim."
 tags:
   - "qa"
@@ -256,10 +256,10 @@ nvim/
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/dev-neovim` | Implémenter les corrections |
-| `/dev-refactor` | Restructurer la config |
-| `/work-explore` | Comprendre la config actuelle |
-| `/dev-debug` | Investiguer un problème spécifique |
+| `/dev:dev-neovim` | Implémenter les corrections |
+| `/dev:dev-refactor` | Restructurer la config |
+| `/work:work-explore` | Comprendre la config actuelle |
+| `/dev:dev-debug` | Investiguer un problème spécifique |
 
 ---
 

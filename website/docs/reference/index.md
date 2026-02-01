@@ -49,21 +49,21 @@ description: Reference rapide et matrices
 
 ```bash
 /assistant       # Guide complet
-/work-explore    # Explorer le code
-/work-plan       # Planifier
-/dev-tdd         # Developper en TDD
-/work-commit     # Commit propre
-/work-pr         # Pull Request
-/qa-audit        # Audit complet
+/work:work-explore    # Explorer le code
+/work:work-plan       # Planifier
+/dev:dev-tdd         # Developper en TDD
+/work:work-commit     # Commit propre
+/work:work-pr         # Pull Request
+/qa:qa-audit        # Audit complet
 ```
 
 ### Workflows pre-definis
 
 ```bash
-/work-flow-feature "..."   # Nouvelle feature
-/work-flow-bugfix "..."    # Correction bug
-/work-flow-release "..."   # Release
-/work-flow-launch "..."    # Lancement produit
+/work:work-flow-feature "..."   # Nouvelle feature
+/work:work-flow-bugfix "..."    # Correction bug
+/work:work-flow-release "..."   # Release
+/work:work-flow-launch "..."    # Lancement produit
 ```
 
 ---

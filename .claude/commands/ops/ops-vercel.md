@@ -428,10 +428,10 @@ export async function generateStaticParams() {
 
 | Agent | Usage |
 |-------|-------|
-| `/ops-ci` | CI/CD |
-| `/ops-monitoring` | Observabilite |
-| `/qa-perf` | Performance |
-| `/ops-env` | Gestion environnements |
+| `/ops:ops-ci` | CI/CD |
+| `/ops:ops-monitoring` | Observabilite |
+| `/qa:qa-perf` | Performance |
+| `/ops:ops-env` | Gestion environnements |
 
 ---
 

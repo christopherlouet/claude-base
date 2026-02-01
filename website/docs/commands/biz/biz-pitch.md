@@ -1,6 +1,6 @@
 ---
 sidebar_position: 9
-title: "/biz-pitch"
+title: "/biz:biz-pitch"
 description: "Créer un pitch deck et préparer la présentation d'un projet."
 tags:
   - "biz"
@@ -397,11 +397,11 @@ CONTACT
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/model` | Business model à présenter |
-| `/market` | Données de marché |
-| `/roadmap` | Vision produit |
-| `/competitor` | Positionnement concurrentiel |
-| `/analytics` | Métriques à présenter |
+| `/biz:biz-model` | Business model à présenter |
+| `/biz:biz-market` | Données de marché |
+| `/biz:biz-roadmap` | Vision produit |
+| `/biz:biz-competitor` | Positionnement concurrentiel |
+| `/growth:growth-analytics` | Métriques à présenter |
 
 ---
 

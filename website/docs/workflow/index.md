@@ -25,22 +25,22 @@ Le workflow principal de claude-socle suit 4 etapes obligatoires :
 
 | Workflow | Description | Commandes |
 |----------|-------------|-----------|
-| [Explore → Plan → TDD → Commit](/docs/workflow/explore-plan-code-commit) | Workflow principal (TDD obligatoire) | `/work-explore`, `/work-plan`, `/dev-tdd`, `/work-commit` |
-| [Nouvelle Feature](/docs/workflow/feature) | Ajouter une fonctionnalite | `/work-flow-feature` |
-| [Correction de Bug](/docs/workflow/bugfix) | Corriger un probleme | `/work-flow-bugfix` |
-| [Release](/docs/workflow/release) | Preparer une version | `/work-flow-release` |
-| [Lancement Produit](/docs/workflow/launch) | Lancer un produit | `/work-flow-launch` |
-| [TDD](/docs/workflow/tdd) | Developpement guide par les tests | `/dev-tdd` |
+| [Explore → Plan → TDD → Commit](/docs/workflow/explore-plan-code-commit) | Workflow principal (TDD obligatoire) | `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/work:work-commit` |
+| [Nouvelle Feature](/docs/workflow/feature) | Ajouter une fonctionnalite | `/work:work-flow-feature` |
+| [Correction de Bug](/docs/workflow/bugfix) | Corriger un probleme | `/work:work-flow-bugfix` |
+| [Release](/docs/workflow/release) | Preparer une version | `/work:work-flow-release` |
+| [Lancement Produit](/docs/workflow/launch) | Lancer un produit | `/work:work-flow-launch` |
+| [TDD](/docs/workflow/tdd) | Developpement guide par les tests | `/dev:dev-tdd` |
 
 ## Choisir le bon workflow
 
 ```mermaid
 graph TD
     A[Nouvelle tache] --> B{Type ?}
-    B -->|Feature| C[/work-flow-feature]
-    B -->|Bug| D[/work-flow-bugfix]
-    B -->|Release| E[/work-flow-release]
-    B -->|Lancement| F[/work-flow-launch]
+    B -->|Feature| C[/work:work-flow-feature]
+    B -->|Bug| D[/work:work-flow-bugfix]
+    B -->|Release| E[/work:work-flow-release]
+    B -->|Lancement| F[/work:work-flow-launch]
     B -->|Autre| G[Workflow principal]
 ```
 

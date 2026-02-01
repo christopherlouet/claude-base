@@ -359,9 +359,9 @@ function apiMetrics(version: string) {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-api` | Créer des endpoints |
-| `/doc-api-spec` | Documenter l'API |
-| `/doc-changelog` | Changelog des versions |
+| `/dev:dev-api` | Créer des endpoints |
+| `/doc:doc-api-spec` | Documenter l'API |
+| `/doc:doc-changelog` | Changelog des versions |
 
 ---
 

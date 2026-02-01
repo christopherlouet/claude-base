@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: "/ops-backup"
+title: "/ops:ops-backup"
 description: "Stratégie de backup et restore pour les données critiques."
 tags:
   - "ops"
@@ -282,11 +282,11 @@ Stockage: [S3 + Glacier]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/disaster-recovery` | Plan de reprise complet |
-| `/database` | Migrations et schéma DB |
-| `/infra-code` | Infrastructure backup |
-| `/monitoring` | Alertes sur backups |
-| `/security` | Audit sécurité des backups |
+| `/ops:ops-disaster-recovery` | Plan de reprise complet |
+| `/ops:ops-database` | Migrations et schéma DB |
+| `/ops:ops-infra-code` | Infrastructure backup |
+| `/ops:ops-monitoring` | Alertes sur backups |
+| `/qa:qa-security` | Audit sécurité des backups |
 
 ---
 

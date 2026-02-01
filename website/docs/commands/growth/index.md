@@ -19,17 +19,17 @@ Ce domaine contient **11 commandes** pour croissance (seo, analytics, landing, f
 
 | Commande | Description |
 |----------|-------------|
-| [`/growth-ab-test`](/docs/commands/growth/growth-ab-test) | Planifier et analyser un A/B test. |
-| [`/growth-analytics`](/docs/commands/growth/growth-analytics) | Mise en place du tracking et définition des KPIs pour un projet. |
-| [`/growth-app-store-analytics`](/docs/commands/growth/growth-app-store-analytics) | Monitoring des metriques App Store et Google Play via APIs officielles (gratuites). |
-| [`/growth-cro`](/docs/commands/growth/growth-cro) | Optimisation du taux de conversion (CRO) pour pages, formulaires, signup flows, onboarding et paywalls. |
-| [`/growth-email`](/docs/commands/growth/growth-email) | Créer des templates d'emails transactionnels et marketing. |
-| [`/growth-funnel`](/docs/commands/growth/growth-funnel) | Analyse et optimise les funnels de conversion pour maximiser les taux de conversion. |
-| [`/growth-landing`](/docs/commands/growth/growth-landing) | Créer ou optimiser une landing page efficace. |
-| [`/growth-localization`](/docs/commands/growth/growth-localization) | Strategie de localisation et expansion internationale. |
-| [`/growth-onboarding`](/docs/commands/growth/growth-onboarding) | Concevoir un parcours d'onboarding utilisateur efficace. |
-| [`/growth-retention`](/docs/commands/growth/growth-retention) | Analyse et améliore la rétention utilisateur avec des stratégies data-driven. |
-| [`/growth-seo`](/docs/commands/growth/growth-seo) | Audit SEO et recommandations d'optimisation pour le référencement naturel. |
+| [`/growth:growth-ab-test`](/docs/commands/growth/growth-ab-test) | Planifier et analyser un A/B test. |
+| [`/growth:growth-analytics`](/docs/commands/growth/growth-analytics) | Mise en place du tracking et définition des KPIs pour un projet. |
+| [`/growth:growth-app-store-analytics`](/docs/commands/growth/growth-app-store-analytics) | Monitoring des metriques App Store et Google Play via APIs officielles (gratuites). |
+| [`/growth:growth-cro`](/docs/commands/growth/growth-cro) | Optimisation du taux de conversion (CRO) pour pages, formulaires, signup flows, onboarding et paywalls. |
+| [`/growth:growth-email`](/docs/commands/growth/growth-email) | Créer des templates d'emails transactionnels et marketing. |
+| [`/growth:growth-funnel`](/docs/commands/growth/growth-funnel) | Analyse et optimise les funnels de conversion pour maximiser les taux de conversion. |
+| [`/growth:growth-landing`](/docs/commands/growth/growth-landing) | Créer ou optimiser une landing page efficace. |
+| [`/growth:growth-localization`](/docs/commands/growth/growth-localization) | Strategie de localisation et expansion internationale. |
+| [`/growth:growth-onboarding`](/docs/commands/growth/growth-onboarding) | Concevoir un parcours d'onboarding utilisateur efficace. |
+| [`/growth:growth-retention`](/docs/commands/growth/growth-retention) | Analyse et améliore la rétention utilisateur avec des stratégies data-driven. |
+| [`/growth:growth-seo`](/docs/commands/growth/growth-seo) | Audit SEO et recommandations d'optimisation pour le référencement naturel. |
 
 ## Commandes en detail
 

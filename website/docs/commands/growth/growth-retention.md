@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "/growth-retention"
+title: "/growth:growth-retention"
 description: "Analyse et améliore la rétention utilisateur avec des stratégies data-driven."
 tags:
   - "growth"
@@ -779,11 +779,11 @@ export function getUserTier(points: number): RewardTier {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/analytics` | Configurer le tracking |
-| `/onboarding` | Améliorer activation |
-| `/email` | Campagnes ré-engagement |
-| `/ab-test` | Tester stratégies |
-| `/funnel` | Analyser conversions |
+| `/growth:growth-analytics` | Configurer le tracking |
+| `/growth:growth-onboarding` | Améliorer activation |
+| `/growth:growth-email` | Campagnes ré-engagement |
+| `/growth:growth-ab-test` | Tester stratégies |
+| `/growth:growth-funnel` | Analyser conversions |
 
 ---
 

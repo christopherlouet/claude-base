@@ -19,20 +19,20 @@ Ce domaine contient **14 commandes** pour qualite (review, securite, performance
 
 | Commande | Description |
 |----------|-------------|
-| [`/qa-a11y`](/docs/commands/qa/qa-a11y) | Audit d'accessibilité basé sur WCAG 2.1 et Web Interface Guidelines. |
-| [`/qa-audit`](/docs/commands/qa/qa-audit) | Audit qualité complet d'un projet. Combine les analyses de sécurité, RGPD, accessibilité et performance. |
-| [`/qa-automation`](/docs/commands/qa/qa-automation) | Mettre en place une stratégie d'automatisation des tests complète. |
-| [`/qa-coverage`](/docs/commands/qa/qa-coverage) | Analyse et améliore la couverture de tests du code. |
-| [`/qa-design`](/docs/commands/qa/qa-design) | Audit de design UI/UX et verification des bonnes pratiques web. |
-| [`/qa-e2e`](/docs/commands/qa/qa-e2e) | Tests End-to-End avec Playwright ou Cypress. |
-| [`/qa-kaizen`](/docs/commands/qa/qa-kaizen) | Amélioration continue du code et des processus avec la méthodologie Kaizen. |
-| [`/qa-mobile`](/docs/commands/qa/qa-mobile) | Audit de qualité spécifique aux applications mobiles (Flutter, React Native). |
-| [`/qa-neovim`](/docs/commands/qa/qa-neovim) | Audit qualité et performance d'une configuration Neovim. |
-| [`/qa-perf`](/docs/commands/qa/qa-perf) | Analyse et optimisation des performances. |
-| [`/qa-responsive`](/docs/commands/qa/qa-responsive) | Audit responsive et mobile-first d'une application web. |
-| [`/qa-review`](/docs/commands/qa/qa-review) | Effectue une code review approfondie et constructive. |
-| [`/qa-security`](/docs/commands/qa/qa-security) | Audit de sécurité basé sur OWASP Top 10. |
-| [`/qa-tech-debt`](/docs/commands/qa/qa-tech-debt) | Identification et priorisation de la dette technique dans le codebase. |
+| [`/qa:qa-a11y`](/docs/commands/qa/qa-a11y) | Audit d'accessibilité basé sur WCAG 2.1 et Web Interface Guidelines. |
+| [`/qa:qa-audit`](/docs/commands/qa/qa-audit) | Audit qualité complet d'un projet. Combine les analyses de sécurité, RGPD, accessibilité et performance. |
+| [`/qa:qa-automation`](/docs/commands/qa/qa-automation) | Mettre en place une stratégie d'automatisation des tests complète. |
+| [`/qa:qa-coverage`](/docs/commands/qa/qa-coverage) | Analyse et améliore la couverture de tests du code. |
+| [`/qa:qa-design`](/docs/commands/qa/qa-design) | Audit de design UI/UX et verification des bonnes pratiques web. |
+| [`/qa:qa-e2e`](/docs/commands/qa/qa-e2e) | Tests End-to-End avec Playwright ou Cypress. |
+| [`/qa:qa-kaizen`](/docs/commands/qa/qa-kaizen) | Amélioration continue du code et des processus avec la méthodologie Kaizen. |
+| [`/qa:qa-mobile`](/docs/commands/qa/qa-mobile) | Audit de qualité spécifique aux applications mobiles (Flutter, React Native). |
+| [`/qa:qa-neovim`](/docs/commands/qa/qa-neovim) | Audit qualité et performance d'une configuration Neovim. |
+| [`/qa:qa-perf`](/docs/commands/qa/qa-perf) | Analyse et optimisation des performances. |
+| [`/qa:qa-responsive`](/docs/commands/qa/qa-responsive) | Audit responsive et mobile-first d'une application web. |
+| [`/qa:qa-review`](/docs/commands/qa/qa-review) | Effectue une code review approfondie et constructive. |
+| [`/qa:qa-security`](/docs/commands/qa/qa-security) | Audit de sécurité basé sur OWASP Top 10. |
+| [`/qa:qa-tech-debt`](/docs/commands/qa/qa-tech-debt) | Identification et priorisation de la dette technique dans le codebase. |
 
 ## Commandes en detail
 

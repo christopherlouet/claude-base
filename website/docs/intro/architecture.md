@@ -82,9 +82,9 @@ Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 
 **Exemple :**
 ```bash
-/work-explore
-/dev-tdd "Implementer le service utilisateur"
-/qa-security
+/work:work-explore
+/dev:dev-tdd "Implementer le service utilisateur"
+/qa:qa-security
 ```
 
 ### Agents (57)

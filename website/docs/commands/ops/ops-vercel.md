@@ -1,6 +1,6 @@
 ---
 sidebar_position: 30
-title: "/ops-vercel"
+title: "/ops:ops-vercel"
 description: "Deploiement et configuration sur Vercel."
 tags:
   - "ops"
@@ -443,10 +443,10 @@ export async function generateStaticParams() {
 
 | Agent | Usage |
 |-------|-------|
-| `/ops-ci` | CI/CD |
-| `/ops-monitoring` | Observabilite |
-| `/qa-perf` | Performance |
-| `/ops-env` | Gestion environnements |
+| `/ops:ops-ci` | CI/CD |
+| `/ops:ops-monitoring` | Observabilite |
+| `/qa:qa-perf` | Performance |
+| `/ops:ops-env` | Gestion environnements |
 
 ---
 

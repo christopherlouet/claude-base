@@ -112,25 +112,25 @@ function HomepageWorkflow(): JSX.Element {
           <div className={styles.workflowStep}>
             <span className={styles.stepNumber}>1</span>
             <span className={styles.stepName}>EXPLORE</span>
-            <code>/work-explore</code>
+            <code>/work:work-explore</code>
           </div>
           <span className={styles.arrow}>→</span>
           <div className={styles.workflowStep}>
             <span className={styles.stepNumber}>2</span>
             <span className={styles.stepName}>PLAN</span>
-            <code>/work-plan</code>
+            <code>/work:work-plan</code>
           </div>
           <span className={styles.arrow}>→</span>
           <div className={styles.workflowStep}>
             <span className={styles.stepNumber}>3</span>
             <span className={styles.stepName}>CODE</span>
-            <code>/dev-tdd</code>
+            <code>/dev:dev-tdd</code>
           </div>
           <span className={styles.arrow}>→</span>
           <div className={styles.workflowStep}>
             <span className={styles.stepNumber}>4</span>
             <span className={styles.stepName}>COMMIT</span>
-            <code>/work-pr</code>
+            <code>/work:work-pr</code>
           </div>
         </div>
       </div>

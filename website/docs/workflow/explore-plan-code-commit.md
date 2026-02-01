@@ -21,23 +21,23 @@ sequenceDiagram
     participant R as Repository
 
     Note over U,R: Phase 1 - EXPLORE
-    U->>C: /work-explore "auth system"
+    U->>C: /work:work-explore "auth system"
     C->>R: Lecture fichiers
     R-->>C: Code source
     C-->>U: Analyse structure et patterns
 
     Note over U,R: Phase 2 - SPECIFY (optionnel)
-    U->>C: /work-specify "Add 2FA"
+    U->>C: /work:work-specify "Add 2FA"
     C-->>U: Spécification fonctionnelle
     U->>C: Validation ✓
 
     Note over U,R: Phase 3 - PLAN
-    U->>C: /work-plan
+    U->>C: /work:work-plan
     C-->>U: Plan d'implémentation
     U->>C: Validation ✓
 
     Note over U,R: Phase 4 - TDD (obligatoire)
-    U->>C: /dev-tdd
+    U->>C: /dev:dev-tdd
     loop Cycle Red-Green-Refactor
         C->>R: RED: Écriture test qui échoue
         C->>R: GREEN: Code minimal pour passer
@@ -45,7 +45,7 @@ sequenceDiagram
     end
 
     Note over U,R: Phase 5 - COMMIT
-    U->>C: /work-commit
+    U->>C: /work:work-commit
     C->>R: git add + commit
     R-->>U: Commit créé ✓
 ```
@@ -72,15 +72,15 @@ sequenceDiagram
 
 ## Etape 1 : Explore
 
-**Commande** : `/work-explore`
+**Commande** : `/work:work-explore`
 
 **Objectif** : Comprendre le code existant avant de modifier.
 
 ```bash
-/work-explore
+/work:work-explore
 
 # Ou avec un focus specifique
-/work-explore "le systeme d'authentification"
+/work:work-explore "le systeme d'authentification"
 ```
 
 **Claude analysera** :
@@ -107,12 +107,12 @@ sequenceDiagram
 
 ## Etape 2 : Plan
 
-**Commande** : `/work-plan`
+**Commande** : `/work:work-plan`
 
 **Objectif** : Planifier les modifications avant d'implementer.
 
 ```bash
-/work-plan "Ajouter l'authentification 2FA"
+/work:work-plan "Ajouter l'authentification 2FA"
 ```
 
 **Claude proposera** :
@@ -145,12 +145,12 @@ Attendez la validation du plan avant de coder !
 
 ## Etape 3 : TDD (Obligatoire)
 
-**Commande** : `/dev-tdd`
+**Commande** : `/dev:dev-tdd`
 
 **Objectif** : Implementer en suivant le cycle Red-Green-Refactor.
 
 ```bash
-/dev-tdd "Implementer le service 2FA"
+/dev:dev-tdd "Implementer le service 2FA"
 ```
 
 **Cycle TDD obligatoire** :
@@ -166,16 +166,16 @@ Attendez la validation du plan avant de coder !
 
 ## Etape 4 : Commit
 
-**Commande** : `/work-commit` ou `/work-pr`
+**Commande** : `/work:work-commit` ou `/work:work-pr`
 
 **Objectif** : Creer des commits propres et descriptifs.
 
 ```bash
 # Commit simple
-/work-commit
+/work:work-commit
 
 # Ou Pull Request complete
-/work-pr
+/work:work-pr
 ```
 
 **Format de commit** :
@@ -202,18 +202,18 @@ Closes #123
 
 ```bash
 # 1. Explorer le code d'auth existant
-> /work-explore "systeme d'authentification"
+> /work:work-explore "systeme d'authentification"
 
 # Claude analyse et explique la structure
 
 # 2. Planifier l'ajout de 2FA
-> /work-plan "Ajouter l'authentification 2FA"
+> /work:work-plan "Ajouter l'authentification 2FA"
 
 # Claude propose un plan detaille
 # Vous validez ou demandez des modifications
 
 # 3. Implementer en TDD (obligatoire)
-> /dev-tdd "Implementer le service 2FA selon le plan"
+> /dev:dev-tdd "Implementer le service 2FA selon le plan"
 
 # Claude suit le cycle Red-Green-Refactor :
 # - RED: Ecrit les tests qui echouent
@@ -221,7 +221,7 @@ Closes #123
 # - REFACTOR: Ameliore le code
 
 # 4. Creer la PR
-> /work-pr
+> /work:work-pr
 
 # Claude cree une PR complete avec description
 ```
@@ -231,7 +231,7 @@ Closes #123
 Pour une nouvelle feature, utilisez directement :
 
 ```bash
-/work-flow-feature "Ajouter l'authentification 2FA"
+/work:work-flow-feature "Ajouter l'authentification 2FA"
 ```
 
 Cette commande enchaine automatiquement les 4 etapes.

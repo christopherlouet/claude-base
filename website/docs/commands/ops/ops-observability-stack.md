@@ -1,6 +1,6 @@
 ---
 sidebar_position: 23
-title: "/ops-observability-stack"
+title: "/ops:ops-observability-stack"
 description: "Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager)."
 tags:
   - "ops"
@@ -857,11 +857,11 @@ kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/monitoring` | Instrumenter le code applicatif |
-| `/k8s` | Deployer sur Kubernetes |
-| `/docker` | Containeriser les services |
-| `/ci` | Integrer dans CI/CD |
-| `/secrets-management` | Gerer les credentials |
+| `/ops:ops-monitoring` | Instrumenter le code applicatif |
+| `/ops:ops-k8s` | Deployer sur Kubernetes |
+| `/ops:ops-docker` | Containeriser les services |
+| `/ops:ops-ci` | Integrer dans CI/CD |
+| `/ops:ops-secrets-management` | Gerer les credentials |
 
 ---
 

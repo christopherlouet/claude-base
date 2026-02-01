@@ -222,10 +222,10 @@ npm run i18n:init [locale]
 
 | Agent | Usage |
 |-------|-------|
-| `/doc-i18n` | Implementation i18n technique |
-| `/legal-rgpd` | Conformite RGPD |
-| `/growth-seo` | SEO international |
-| `/biz-market` | Etude de marche |
+| `/doc:doc-i18n` | Implementation i18n technique |
+| `/legal:legal-rgpd` | Conformite RGPD |
+| `/growth:growth-seo` | SEO international |
+| `/biz:biz-market` | Etude de marche |
 
 ---
 

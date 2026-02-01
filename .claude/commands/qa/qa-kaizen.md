@@ -309,11 +309,11 @@ identifier et implémenter des améliorations incrémentales et durables.
 
 | Agent | Usage |
 |-------|-------|
-| `/refactor` | Implémenter les améliorations de code |
-| `/perf` | Améliorer les performances |
-| `/coverage` | Améliorer la couverture de tests |
-| `/ci` | Améliorer le pipeline CI/CD |
-| `/review` | Review des améliorations |
+| `/dev:dev-refactor` | Implémenter les améliorations de code |
+| `/qa:qa-perf` | Améliorer les performances |
+| `/qa:qa-coverage` | Améliorer la couverture de tests |
+| `/ops:ops-ci` | Améliorer le pipeline CI/CD |
+| `/qa:qa-review` | Review des améliorations |
 
 ---
 

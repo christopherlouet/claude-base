@@ -73,7 +73,7 @@ Ouvrez Claude Code dans votre projet et testez :
 
 ```bash
 # Doit fonctionner
-/work-explore "Analyser ce projet"
+/work:work-explore "Analyser ce projet"
 ```
 
 Si l'exploration fonctionne, la migration est réussie.
@@ -118,9 +118,9 @@ Si l'exploration fonctionne, la migration est réussie.
 ```
 
 **Commandes recommandées** :
-- `/dev-component` - Créer des composants
-- `/dev-hook` - Créer des hooks
-- `/qa-perf` - Audit de performance
+- `/dev:dev-component` - Créer des composants
+- `/dev:dev-hook` - Créer des hooks
+- `/qa:qa-perf` - Audit de performance
 
 ### Projet Mobile (Flutter)
 
@@ -159,9 +159,9 @@ Si l'exploration fonctionne, la migration est réussie.
 ```
 
 **Commandes recommandées** :
-- `/dev-flutter` - Créer des screens/widgets
-- `/dev-supabase` - Backend Supabase
-- `/qa-mobile` - Audit qualité mobile
+- `/dev:dev-flutter` - Créer des screens/widgets
+- `/dev:dev-supabase` - Backend Supabase
+- `/qa:qa-mobile` - Audit qualité mobile
 
 ### Projet API (Node/Python/Go)
 
@@ -196,9 +196,9 @@ Si l'exploration fonctionne, la migration est réussie.
 ```
 
 **Commandes recommandées** :
-- `/dev-api` - Créer des endpoints
-- `/dev-tdd` - Développement TDD
-- `/qa-security` - Audit sécurité
+- `/dev:dev-api` - Créer des endpoints
+- `/dev:dev-tdd` - Développement TDD
+- `/qa:qa-security` - Audit sécurité
 
 ---
 
@@ -211,7 +211,7 @@ Si vous utilisez déjà Claude Code sans claude-socle :
 | Aspect | Avant | Après |
 |--------|-------|-------|
 | Workflow | Ad-hoc | Explore → Plan → Code |
-| Commandes | Manuel | `/work-*`, `/dev-*`, etc. |
+| Commandes | Manuel | `/work:work-*`, `/dev:dev-*`, etc. |
 | Conventions | Répétées | Dans CLAUDE.md et rules |
 | Agents | Non | 57 agents spécialisés |
 
@@ -235,7 +235,7 @@ Si vous utilisez déjà Claude Code sans claude-socle :
 
 4. **Tester**
    ```bash
-   /work-explore "Analyser le projet"
+   /work:work-explore "Analyser le projet"
    ```
 
 ---
@@ -327,9 +327,9 @@ Après la migration, vérifiez :
 
 ### Commandes
 
-- [ ] `/work-explore` fonctionne
-- [ ] `/work-plan` fonctionne
-- [ ] `/work-commit` fonctionne
+- [ ] `/work:work-explore` fonctionne
+- [ ] `/work:work-plan` fonctionne
+- [ ] `/work:work-commit` fonctionne
 
 ### Personnalisation
 
@@ -341,8 +341,8 @@ Après la migration, vérifiez :
 
 ```bash
 # Test complet
-/work-explore "Analyser ce projet et ses conventions"
-/work-plan "Ajouter un exemple de feature"
+/work:work-explore "Analyser ce projet et ses conventions"
+/work:work-plan "Ajouter un exemple de feature"
 # (Annuler si nécessaire)
 ```
 
@@ -392,5 +392,5 @@ cat .claude/rules/typescript.md | head -10
 ---
 
 :::tip Conseil
-Après la migration, passez quelques minutes à explorer avec `/work-explore`. Cela aide Claude à comprendre votre projet et à donner de meilleures recommandations.
+Après la migration, passez quelques minutes à explorer avec `/work:work-explore`. Cela aide Claude à comprendre votre projet et à donner de meilleures recommandations.
 :::

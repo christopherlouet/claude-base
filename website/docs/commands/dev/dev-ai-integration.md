@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: "/dev-ai-integration"
+title: "/dev:dev-ai-integration"
 description: "Integration de modeles de langage (LLM) et APIs IA dans les applications."
 tags:
   - "dev"
@@ -265,10 +265,10 @@ async function monitoredComplete(prompt: string) {
 
 | Agent | Usage |
 |-------|-------|
-| `/dev-rag` | Systemes RAG |
-| `/dev-prompt-engineering` | Optimiser les prompts |
-| `/dev-api` | Endpoints API |
-| `/ops-monitoring` | Monitoring production |
+| `/dev:dev-rag` | Systemes RAG |
+| `/dev:dev-prompt-engineering` | Optimiser les prompts |
+| `/dev:dev-api` | Endpoints API |
+| `/ops:ops-monitoring` | Monitoring production |
 
 ---
 

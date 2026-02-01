@@ -1,6 +1,6 @@
 ---
 sidebar_position: 12
-title: "/qa-responsive"
+title: "/qa:qa-responsive"
 description: "Audit responsive et mobile-first d'une application web."
 tags:
   - "qa"
@@ -214,10 +214,10 @@ Desktop: [OK/KO]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/a11y` | Accessibilité mobile |
-| `/perf` | Performance mobile |
-| `/component` | Créer des composants responsives |
-| `/landing` | Landing pages responsives |
+| `/qa:qa-a11y` | Accessibilité mobile |
+| `/qa:qa-perf` | Performance mobile |
+| `/dev:dev-component` | Créer des composants responsives |
+| `/growth:growth-landing` | Landing pages responsives |
 
 ---
 

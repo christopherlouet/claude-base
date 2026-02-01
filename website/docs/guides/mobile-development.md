@@ -22,24 +22,24 @@ Guide complet pour les projets Flutter.
 
 | Commande | Usage |
 |----------|-------|
-| `/dev-flutter` | Creer widgets et screens |
-| `/dev-supabase` | Backend Supabase |
-| `/dev-tdd` | Developper en TDD |
+| `/dev:dev-flutter` | Creer widgets et screens |
+| `/dev:dev-supabase` | Backend Supabase |
+| `/dev:dev-tdd` | Developper en TDD |
 
 ### Qualite
 
 | Commande | Usage |
 |----------|-------|
-| `/qa-mobile` | Audit qualite mobile |
-| `/qa-review` | Code review |
-| `/qa-perf` | Performance |
+| `/qa:qa-mobile` | Audit qualite mobile |
+| `/qa:qa-review` | Code review |
+| `/qa:qa-perf` | Performance |
 
 ### Operations
 
 | Commande | Usage |
 |----------|-------|
-| `/ops-mobile-release` | Release App Store/Play Store |
-| `/ops-ci` | CI/CD mobile |
+| `/ops:ops-mobile-release` | Release App Store/Play Store |
+| `/ops:ops-ci` | CI/CD mobile |
 
 ## Architecture Clean + BLoC
 
@@ -77,19 +77,19 @@ lib/
 
 ```bash
 # 1. Explorer le code existant
-/work-explore "feature authentification"
+/work:work-explore "feature authentification"
 
 # 2. Planifier avec Clean Architecture
-/work-plan "Ajouter feature notifications"
+/work:work-plan "Ajouter feature notifications"
 
 # 3. Creer la feature
-/dev-flutter "Feature notifications avec BLoC"
+/dev:dev-flutter "Feature notifications avec BLoC"
 
 # 4. Audit mobile
-/qa-mobile
+/qa:qa-mobile
 
 # 5. PR
-/work-pr
+/work:work-pr
 ```
 
 ## Bonnes pratiques
@@ -161,7 +161,7 @@ Les regles suivantes s'appliquent automatiquement :
 ```bash
 # Ajouter un systeme de paiement
 
-> /work-flow-feature "Integration paiement Stripe"
+> /work:work-flow-feature "Integration paiement Stripe"
 
 # Claude :
 # 1. Explore l'architecture existante

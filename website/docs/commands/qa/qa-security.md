@@ -1,6 +1,6 @@
 ---
 sidebar_position: 14
-title: "/qa-security"
+title: "/qa:qa-security"
 description: "Audit de sécurité basé sur OWASP Top 10."
 tags:
   - "qa"
@@ -168,10 +168,10 @@ const API_KEY = process.env.API_KEY;
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/audit` | Audit complet (inclut sécu) |
-| `/rgpd` | Conformité données personnelles |
-| `/deps` | Vérifier les vulnérabilités deps |
-| `/secrets` | Gestion sécurisée des secrets |
+| `/qa:qa-audit` | Audit complet (inclut sécu) |
+| `/legal:legal-rgpd` | Conformité données personnelles |
+| `/ops:ops-deps` | Vérifier les vulnérabilités deps |
+| `/ops:ops-secrets-management` | Gestion sécurisée des secrets |
 
 ---
 

@@ -796,11 +796,11 @@ async function getUserWithFallback(id: string): Promise<User> {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/debug` | Diagnostiquer des erreurs |
-| `/test` | Tester les cas d'erreur |
-| `/monitoring` | Alertes sur erreurs |
-| `/api` | Documenter les erreurs API |
-| `/review` | Review gestion d'erreurs |
+| `/dev:dev-debug` | Diagnostiquer des erreurs |
+| `/dev:dev-test` | Tester les cas d'erreur |
+| `/ops:ops-monitoring` | Alertes sur erreurs |
+| `/dev:dev-api` | Documenter les erreurs API |
+| `/qa:qa-review` | Review gestion d'erreurs |
 
 ---
 

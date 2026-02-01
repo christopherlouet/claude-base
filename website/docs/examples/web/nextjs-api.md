@@ -11,7 +11,7 @@ Cet exemple montre comment créer une route API Next.js professionnelle avec val
 ## Commande utilisée
 
 ```bash
-/dev-api "Créer un endpoint CRUD pour les utilisateurs avec validation"
+/dev:dev-api "Créer un endpoint CRUD pour les utilisateurs avec validation"
 ```
 
 ## Structure générée
@@ -473,9 +473,9 @@ describe('POST /api/users', () => {
 
 ## Commandes associées
 
-- `/dev-test` - Générer plus de tests
-- `/qa-security` - Audit sécurité de l'API
-- `/doc-api-spec` - Générer OpenAPI spec
+- `/dev:dev-test` - Générer plus de tests
+- `/qa:qa-security` - Audit sécurité de l'API
+- `/doc:doc-api-spec` - Générer OpenAPI spec
 
 ---
 

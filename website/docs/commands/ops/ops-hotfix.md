@@ -1,6 +1,6 @@
 ---
 sidebar_position: 16
-title: "/ops-hotfix"
+title: "/ops:ops-hotfix"
 description: "Workflow de correction urgente en production."
 tags:
   - "ops"
@@ -137,11 +137,11 @@ Fixes #[issue-number]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/debug` | Diagnostiquer le problème |
-| `/test` | Test de non-régression |
-| `/release` | Release après hotfix |
-| `/monitoring` | Vérifier post-déploiement |
-| `/disaster-recovery` | Si incident majeur |
+| `/dev:dev-debug` | Diagnostiquer le problème |
+| `/dev:dev-test` | Test de non-régression |
+| `/ops:ops-release` | Release après hotfix |
+| `/ops:ops-monitoring` | Vérifier post-déploiement |
+| `/ops:ops-disaster-recovery` | Si incident majeur |
 
 ---
 

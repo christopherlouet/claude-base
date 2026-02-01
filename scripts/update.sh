@@ -619,7 +619,8 @@ upgrade_claude_md() {
     success "docs/reference/ copié ($ref_count fichiers)"
 
     # Créer un backup
-    local backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
+    local backup_file
+    backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
     cp "$claude_md" "$backup_file"
     success "Backup créé: $backup_file"
 

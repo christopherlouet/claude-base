@@ -28,7 +28,7 @@ Claude Code utilise :
 
 ```bash
 # L'utilisateur tape explicitement la commande
-/qa-security
+/qa:qa-security
 
 # → Claude charge commands/qa/qa-security.md (prompt)
 # → Claude delegue a agents/qa-security.md (contexte isole, model: sonnet)
@@ -127,9 +127,9 @@ $ARGUMENTS - Arguments passes par l'utilisateur
 
 ### Exemple d'utilisation
 ```bash
-/work-explore "comprendre le systeme d'authentification"
-/dev-api "endpoint CRUD pour les utilisateurs"
-/qa-security
+/work:work-explore "comprendre le systeme d'authentification"
+/dev:dev-api "endpoint CRUD pour les utilisateurs"
+/qa:qa-security
 ```
 
 ### Quand utiliser
@@ -360,10 +360,10 @@ paths:
 ### Scenario 1: Nouvelle feature
 
 ```
-1. /work-explore        → Command (explicite)
+1. /work:work-explore        → Command (explicite)
 2. Pattern TDD detecte  → Skill (auto)
 3. Audit securite       → Agent (isole)
-4. /work-pr             → Command (explicite)
+4. /work:work-pr             → Command (explicite)
 
 Rules appliquees: typescript.md, react.md, security.md
 ```
@@ -371,16 +371,16 @@ Rules appliquees: typescript.md, react.md, security.md
 ### Scenario 2: Bug fix urgent
 
 ```
-1. /dev-debug           → Command (explicite)
+1. /dev:dev-debug           → Command (explicite)
 2. Investigation        → Agent dev-debug (isole)
 3. Fix applique         → Rules typescript.md
-4. /work-commit         → Command (explicite)
+4. /work:work-commit         → Command (explicite)
 ```
 
 ### Scenario 3: Audit complet
 
 ```
-1. /qa-audit            → Command (explicite)
+1. /qa:qa-audit            → Command (explicite)
    ├── qa-security      → Agent (parallele)
    ├── qa-perf          → Agent (parallele)
    ├── qa-a11y          → Agent (parallele)
@@ -392,7 +392,7 @@ Tous en lecture seule, contextes isoles
 ## Bonnes Pratiques
 
 ### Commands
-- Noms explicites (`/work-explore` pas `/we`)
+- Noms explicites (`/work:work-explore` pas `/we`)
 - Grouper par domaine (`work-`, `dev-`, `qa-`)
 - Documenter les arguments attendus
 
@@ -416,11 +416,11 @@ Tous en lecture seule, contextes isoles
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│  User: "/qa-security"                                          │
+│  User: "/qa:qa-security"                                          │
 │       │                                                        │
 │       ▼                                                        │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │ COMMAND: /qa-security                                    │   │
+│  │ COMMAND: /qa:qa-security                                    │   │
 │  │ → Charge le prompt qa-security.md                        │   │
 │  │ → Detecte fichiers *.ts → Injecte rules/typescript.md   │   │
 │  │ → Detecte dossier api/ → Injecte rules/api.md           │   │

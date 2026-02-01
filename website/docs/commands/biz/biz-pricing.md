@@ -1,6 +1,6 @@
 ---
 sidebar_position: 10
-title: "/biz-pricing"
+title: "/biz:biz-pricing"
 description: "Définir la stratégie de pricing pour un produit ou service."
 tags:
   - "biz"
@@ -191,11 +191,11 @@ Positionnement: [budget/value/premium]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/model` | Business model global |
-| `/market` | Étude de marché et concurrence |
-| `/ab-test` | Tester différents prix |
-| `/analytics` | Mesurer l'impact du pricing |
-| `/launch` | Lancement avec le pricing |
+| `/biz:biz-model` | Business model global |
+| `/biz:biz-market` | Étude de marché et concurrence |
+| `/growth:growth-ab-test` | Tester différents prix |
+| `/growth:growth-analytics` | Mesurer l'impact du pricing |
+| `/biz:biz-launch` | Lancement avec le pricing |
 
 ---
 

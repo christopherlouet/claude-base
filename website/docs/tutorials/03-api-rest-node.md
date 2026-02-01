@@ -15,9 +15,9 @@ Ce tutoriel vous montre comment développer une API REST professionnelle en util
 ## Objectifs
 
 À la fin de ce tutoriel, vous saurez :
-- Utiliser `/dev-api` pour créer des endpoints
-- Utiliser `/dev-tdd` pour le développement piloté par les tests
-- Utiliser `/doc-api-spec` pour générer la documentation OpenAPI
+- Utiliser `/dev:dev-api` pour créer des endpoints
+- Utiliser `/dev:dev-tdd` pour le développement piloté par les tests
+- Utiliser `/doc:doc-api-spec` pour générer la documentation OpenAPI
 - Structurer une API Node.js de manière professionnelle
 
 ## Prérequis
@@ -37,7 +37,7 @@ Nous allons créer une API de gestion de **tâches (todos)** avec :
 ## Étape 1 : Explorer la structure existante
 
 ```bash
-/work-explore "Analyser la structure de l'API existante et les patterns utilisés"
+/work:work-explore "Analyser la structure de l'API existante et les patterns utilisés"
 ```
 
 Claude va identifier :
@@ -49,7 +49,7 @@ Claude va identifier :
 ## Étape 2 : Planifier l'API
 
 ```bash
-/work-plan "API CRUD pour les tâches (todos) avec validation et documentation"
+/work:work-plan "API CRUD pour les tâches (todos) avec validation et documentation"
 ```
 
 **Plan attendu :**
@@ -78,7 +78,7 @@ Utilisons le TDD pour garantir la qualité.
 ### Lancez le développement TDD
 
 ```bash
-/dev-tdd "Créer l'endpoint POST /api/todos pour créer une nouvelle tâche"
+/dev:dev-tdd "Créer l'endpoint POST /api/todos pour créer une nouvelle tâche"
 ```
 
 ### Cycle TDD
@@ -174,19 +174,19 @@ Après que les tests passent, Claude propose des améliorations :
 Continuez avec les autres endpoints :
 
 ```bash
-/dev-api "GET /api/todos - Liste paginée des tâches avec filtres"
+/dev:dev-api "GET /api/todos - Liste paginée des tâches avec filtres"
 ```
 
 ```bash
-/dev-api "GET /api/todos/:id - Récupérer une tâche par son ID"
+/dev:dev-api "GET /api/todos/:id - Récupérer une tâche par son ID"
 ```
 
 ```bash
-/dev-api "PUT /api/todos/:id - Mettre à jour une tâche"
+/dev:dev-api "PUT /api/todos/:id - Mettre à jour une tâche"
 ```
 
 ```bash
-/dev-api "DELETE /api/todos/:id - Supprimer une tâche"
+/dev:dev-api "DELETE /api/todos/:id - Supprimer une tâche"
 ```
 
 ### Résultat final
@@ -246,7 +246,7 @@ export default router;
 ## Étape 5 : Générer la documentation OpenAPI
 
 ```bash
-/doc-api-spec
+/doc:doc-api-spec
 ```
 
 Claude va générer une spécification OpenAPI complète :
@@ -321,7 +321,7 @@ components:
 ## Étape 6 : Vérifier la sécurité
 
 ```bash
-/qa-security
+/qa:qa-security
 ```
 
 Claude va vérifier :
@@ -341,7 +341,7 @@ Vérifiez que tous les tests passent.
 ## Étape 8 : Commiter
 
 ```bash
-/work-commit
+/work:work-commit
 ```
 
 **Message suggéré :**
@@ -380,19 +380,19 @@ tests/
 
 | Commande | Ce qu'elle fait |
 |----------|-----------------|
-| `/dev-tdd` | Développement Test-Driven |
-| `/dev-api` | Crée un endpoint avec validation |
-| `/doc-api-spec` | Génère la doc OpenAPI |
-| `/qa-security` | Audit de sécurité |
+| `/dev:dev-tdd` | Développement Test-Driven |
+| `/dev:dev-api` | Crée un endpoint avec validation |
+| `/doc:doc-api-spec` | Génère la doc OpenAPI |
+| `/qa:qa-security` | Audit de sécurité |
 
 ## Prochaines étapes
 
 - [Tutoriel 04 : Flutter + Supabase](/docs/tutorials/flutter-supabase) - Backend mobile
 - [Guide API](/docs/guides/api-development) - Bonnes pratiques API
-- [Commande /dev-graphql](/docs/commands/dev/dev-graphql) - API GraphQL
+- [Commande /dev:dev-graphql](/docs/commands/dev/dev-graphql) - API GraphQL
 
 ---
 
 :::tip TDD en pratique
-Le TDD peut sembler plus lent au début, mais il garantit une meilleure couverture de tests et un code plus maintenable. Utilisez `/dev-tdd` pour les fonctionnalités critiques.
+Le TDD peut sembler plus lent au début, mais il garantit une meilleure couverture de tests et un code plus maintenable. Utilisez `/dev:dev-tdd` pour les fonctionnalités critiques.
 :::

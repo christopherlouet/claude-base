@@ -16,7 +16,7 @@ IMPORTANT: Cette commande suit l'approche TDD. Les tests seront ecrits AVANT le 
 4. Refactorer si necessaire (REFACTOR)
 5. `[ComponentName].stories.tsx` - Documentation Storybook
 
-Si vous souhaitez proceder autrement, utilisez `/dev-component --skip-tdd` (non recommande).
+Si vous souhaitez proceder autrement, utilisez `/dev:dev-component --skip-tdd` (non recommande).
 
 ---
 
@@ -239,10 +239,10 @@ import { [ComponentName] } from '@/components/[ComponentName]';
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/hook` | Créer un hook associé |
-| `/test` | Tests complémentaires |
-| `/a11y` | Audit accessibilité du composant |
-| `/responsive` | Vérifier le responsive |
+| `/dev:dev-hook` | Créer un hook associé |
+| `/dev:dev-test` | Tests complémentaires |
+| `/qa:qa-a11y` | Audit accessibilité du composant |
+| `/qa:qa-responsive` | Vérifier le responsive |
 
 ---
 

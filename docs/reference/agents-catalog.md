@@ -9,155 +9,155 @@
 ## WORK- : Workflow Principal (10)
 | Commande | Usage |
 |----------|-------|
-| `/work-explore` | Explorer et comprendre le code |
-| `/work-specify` | Créer une spécification fonctionnelle (User Stories, critères) |
-| `/work-clarify` | Clarifier les ambiguïtés de la spec (questions ciblées) |
-| `/work-plan` | Planifier une implémentation (génère plan.md + tasks.md) |
-| `/work-commit` | Créer un commit propre |
-| `/work-pr` | Créer une Pull Request |
-| `/work-flow-feature` | Workflow complet feature |
-| `/work-flow-bugfix` | Workflow complet bugfix |
-| `/work-flow-release` | Workflow complet release |
-| `/work-flow-launch` | Workflow complet lancement produit |
+| `/work:work-explore` | Explorer et comprendre le code |
+| `/work:work-specify` | Créer une spécification fonctionnelle (User Stories, critères) |
+| `/work:work-clarify` | Clarifier les ambiguïtés de la spec (questions ciblées) |
+| `/work:work-plan` | Planifier une implémentation (génère plan.md + tasks.md) |
+| `/work:work-commit` | Créer un commit propre |
+| `/work:work-pr` | Créer une Pull Request |
+| `/work:work-flow-feature` | Workflow complet feature |
+| `/work:work-flow-bugfix` | Workflow complet bugfix |
+| `/work:work-flow-release` | Workflow complet release |
+| `/work:work-flow-launch` | Workflow complet lancement produit |
 
 ## DEV- : Développement (23)
 | Commande | Usage |
 |----------|-------|
-| `/dev-tdd` | Développement TDD |
-| `/dev-test` | Générer des tests |
-| `/dev-testing-setup` | Configurer l'infrastructure de tests |
-| `/dev-debug` | Déboguer un problème (méthodologie 4 phases) |
-| `/dev-refactor` | Refactoring guidé + réduction d'entropie |
-| `/dev-document` | Génération de documents (PDF, DOCX, XLSX, PPTX) |
-| `/dev-api` | Créer/documenter API |
-| `/dev-api-versioning` | Versioning d'API |
-| `/dev-component` | Créer un composant UI complet |
-| `/dev-hook` | Créer un hook React/Vue |
-| `/dev-error-handling` | Stratégie de gestion d'erreurs |
-| `/dev-react-perf` | Optimisation performance React/Next.js |
-| `/dev-mcp` | Créer des serveurs MCP (Model Context Protocol) |
-| `/dev-flutter` | Widgets et screens Flutter |
-| `/dev-supabase` | Backend Supabase (Auth, DB, Storage, Postgres perf) |
-| `/dev-graphql` | API GraphQL client/serveur |
-| `/dev-neovim` | Plugins et config Neovim/Lua |
-| `/dev-prompt-engineering` | Optimisation de prompts LLM |
-| `/dev-rag` | Systèmes RAG (Retrieval-Augmented Generation) |
-| `/dev-design-system` | Design tokens et bibliothèque de composants |
-| `/dev-prisma` | ORM Prisma (schema, migrations, queries) |
-| `/dev-trpc` | APIs type-safe avec tRPC |
-| `/dev-ai-integration` | Intégration LLMs (OpenAI, Claude API) |
+| `/dev:dev-tdd` | Développement TDD |
+| `/dev:dev-test` | Générer des tests |
+| `/dev:dev-testing-setup` | Configurer l'infrastructure de tests |
+| `/dev:dev-debug` | Déboguer un problème (méthodologie 4 phases) |
+| `/dev:dev-refactor` | Refactoring guidé + réduction d'entropie |
+| `/dev:dev-document` | Génération de documents (PDF, DOCX, XLSX, PPTX) |
+| `/dev:dev-api` | Créer/documenter API |
+| `/dev:dev-api-versioning` | Versioning d'API |
+| `/dev:dev-component` | Créer un composant UI complet |
+| `/dev:dev-hook` | Créer un hook React/Vue |
+| `/dev:dev-error-handling` | Stratégie de gestion d'erreurs |
+| `/dev:dev-react-perf` | Optimisation performance React/Next.js |
+| `/dev:dev-mcp` | Créer des serveurs MCP (Model Context Protocol) |
+| `/dev:dev-flutter` | Widgets et screens Flutter |
+| `/dev:dev-supabase` | Backend Supabase (Auth, DB, Storage, Postgres perf) |
+| `/dev:dev-graphql` | API GraphQL client/serveur |
+| `/dev:dev-neovim` | Plugins et config Neovim/Lua |
+| `/dev:dev-prompt-engineering` | Optimisation de prompts LLM |
+| `/dev:dev-rag` | Systèmes RAG (Retrieval-Augmented Generation) |
+| `/dev:dev-design-system` | Design tokens et bibliothèque de composants |
+| `/dev:dev-prisma` | ORM Prisma (schema, migrations, queries) |
+| `/dev:dev-trpc` | APIs type-safe avec tRPC |
+| `/dev:dev-ai-integration` | Intégration LLMs (OpenAI, Claude API) |
 
 ## QA- : Qualité (15)
 | Commande | Usage |
 |----------|-------|
-| `/qa-review` | Code review approfondie + analyse de nommage |
-| `/qa-security` | Audit de sécurité OWASP |
-| `/qa-perf` | Analyse de performance |
-| `/qa-a11y` | Audit accessibilité WCAG |
-| `/qa-audit` | Audit qualité complet |
-| `/qa-chrome` | Tests visuels Chrome (debugging DOM, responsive, captures) |
-| `/qa-design` | Audit UI/UX (100+ règles design web) |
-| `/qa-responsive` | Audit responsive/mobile web |
-| `/qa-automation` | Automatisation des tests |
-| `/qa-coverage` | Analyse couverture de tests |
-| `/qa-kaizen` | Amélioration continue (PDCA, Muda) |
-| `/qa-mobile` | Audit qualité apps mobiles (Flutter) |
-| `/qa-neovim` | Audit config Neovim (perf, keymaps) |
-| `/qa-e2e` | Tests End-to-End (Playwright, Cypress) |
-| `/qa-tech-debt` | Identifier et prioriser la dette technique |
+| `/qa:qa-review` | Code review approfondie + analyse de nommage |
+| `/qa:qa-security` | Audit de sécurité OWASP |
+| `/qa:qa-perf` | Analyse de performance |
+| `/qa:qa-a11y` | Audit accessibilité WCAG |
+| `/qa:qa-audit` | Audit qualité complet |
+| `/qa:qa-chrome` | Tests visuels Chrome (debugging DOM, responsive, captures) |
+| `/qa:qa-design` | Audit UI/UX (100+ règles design web) |
+| `/qa:qa-responsive` | Audit responsive/mobile web |
+| `/qa:qa-automation` | Automatisation des tests |
+| `/qa:qa-coverage` | Analyse couverture de tests |
+| `/qa:qa-kaizen` | Amélioration continue (PDCA, Muda) |
+| `/qa:qa-mobile` | Audit qualité apps mobiles (Flutter) |
+| `/qa:qa-neovim` | Audit config Neovim (perf, keymaps) |
+| `/qa:qa-e2e` | Tests End-to-End (Playwright, Cypress) |
+| `/qa:qa-tech-debt` | Identifier et prioriser la dette technique |
 
 ## OPS- : Opérations (30)
 | Commande | Usage |
 |----------|-------|
-| `/ops-hotfix` | Correction urgente production |
-| `/ops-release` | Créer une release |
-| `/ops-gitflow-init` | Initialiser GitFlow (créer develop, configurer) |
-| `/ops-gitflow-feature` | Gérer les branches feature (start/finish) |
-| `/ops-gitflow-release` | Gérer les branches release (start/finish) |
-| `/ops-gitflow-hotfix` | Gérer les hotfixes GitFlow (start/finish) |
-| `/ops-deps` | Audit et MAJ des dépendances |
-| `/ops-docker` | Dockeriser un projet |
-| `/ops-k8s` | Déploiement Kubernetes (manifests, Helm) |
-| `/ops-vps` | Déploiement VPS (OVH, Hetzner, DigitalOcean) |
-| `/ops-migrate` | Migration de code/dépendances |
-| `/ops-ci` | Configuration CI/CD |
-| `/ops-monitoring` | Instrumentation code (logs, métriques, traces) |
-| `/ops-observability-stack` | Déployer Prometheus, Grafana, Loki, Alertmanager |
-| `/ops-grafana-dashboard` | Créer dashboards Grafana (templates, alertes) |
-| `/ops-database` | Schéma, migrations DB |
-| `/ops-health` | Health check rapide |
-| `/ops-env` | Gestion des environnements |
-| `/ops-backup` | Stratégie backup/restore |
-| `/ops-load-testing` | Tests de charge et stress |
-| `/ops-cost-optimization` | Optimisation coûts cloud |
-| `/ops-disaster-recovery` | Plan de reprise après sinistre |
-| `/ops-infra-code` | Infrastructure as Code (Terraform) |
-| `/ops-secrets-management` | Gestion sécurisée des secrets |
-| `/ops-mobile-release` | Publication App Store / Google Play |
-| `/ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
-| `/ops-vercel` | Configuration et déploiement Vercel |
-| `/ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
-| `/ops-opnsense` | Configuration OPNsense via Terraform (firewall, NAT, DHCP/DNS) |
-| `/ops-rollback` | Procédure de rollback sécurisée |
+| `/ops:ops-hotfix` | Correction urgente production |
+| `/ops:ops-release` | Créer une release |
+| `/ops:ops-gitflow-init` | Initialiser GitFlow (créer develop, configurer) |
+| `/ops:ops-gitflow-feature` | Gérer les branches feature (start/finish) |
+| `/ops:ops-gitflow-release` | Gérer les branches release (start/finish) |
+| `/ops:ops-gitflow-hotfix` | Gérer les hotfixes GitFlow (start/finish) |
+| `/ops:ops-deps` | Audit et MAJ des dépendances |
+| `/ops:ops-docker` | Dockeriser un projet |
+| `/ops:ops-k8s` | Déploiement Kubernetes (manifests, Helm) |
+| `/ops:ops-vps` | Déploiement VPS (OVH, Hetzner, DigitalOcean) |
+| `/ops:ops-migrate` | Migration de code/dépendances |
+| `/ops:ops-ci` | Configuration CI/CD |
+| `/ops:ops-monitoring` | Instrumentation code (logs, métriques, traces) |
+| `/ops:ops-observability-stack` | Déployer Prometheus, Grafana, Loki, Alertmanager |
+| `/ops:ops-grafana-dashboard` | Créer dashboards Grafana (templates, alertes) |
+| `/ops:ops-database` | Schéma, migrations DB |
+| `/ops:ops-health` | Health check rapide |
+| `/ops:ops-env` | Gestion des environnements |
+| `/ops:ops-backup` | Stratégie backup/restore |
+| `/ops:ops-load-testing` | Tests de charge et stress |
+| `/ops:ops-cost-optimization` | Optimisation coûts cloud |
+| `/ops:ops-disaster-recovery` | Plan de reprise après sinistre |
+| `/ops:ops-infra-code` | Infrastructure as Code (Terraform) |
+| `/ops:ops-secrets-management` | Gestion sécurisée des secrets |
+| `/ops:ops-mobile-release` | Publication App Store / Google Play |
+| `/ops:ops-serverless` | Déploiement serverless (Lambda, Vercel, CF Workers) |
+| `/ops:ops-vercel` | Configuration et déploiement Vercel |
+| `/ops:ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, réseau, backup) |
+| `/ops:ops-opnsense` | Configuration OPNsense via Terraform (firewall, NAT, DHCP/DNS) |
+| `/ops:ops-rollback` | Procédure de rollback sécurisée |
 
 ## DOC- : Documentation (9)
 | Commande | Usage |
 |----------|-------|
-| `/doc-generate` | Générer de la documentation |
-| `/doc-changelog` | Générer/maintenir le changelog |
-| `/doc-explain` | Expliquer du code complexe |
-| `/doc-onboard` | Découvrir un codebase |
-| `/doc-i18n` | Internationalisation |
-| `/doc-fix-issue` | Corriger une issue GitHub |
-| `/doc-api-spec` | Générer spec OpenAPI/Swagger |
-| `/doc-readme` | Créer/améliorer README |
-| `/doc-architecture` | Documenter l'architecture |
+| `/doc:doc-generate` | Générer de la documentation |
+| `/doc:doc-changelog` | Générer/maintenir le changelog |
+| `/doc:doc-explain` | Expliquer du code complexe |
+| `/doc:doc-onboard` | Découvrir un codebase |
+| `/doc:doc-i18n` | Internationalisation |
+| `/doc:doc-fix-issue` | Corriger une issue GitHub |
+| `/doc:doc-api-spec` | Générer spec OpenAPI/Swagger |
+| `/doc:doc-readme` | Créer/améliorer README |
+| `/doc:doc-architecture` | Documenter l'architecture |
 
 ## BIZ- : Business (11)
 | Commande | Usage |
 |----------|-------|
-| `/biz-model` | Business model, Lean Canvas |
-| `/biz-market` | Étude de marché |
-| `/biz-mvp` | Définir le MVP |
-| `/biz-pricing` | Stratégie de pricing |
-| `/biz-pitch` | Créer un pitch deck |
-| `/biz-roadmap` | Planifier la roadmap |
-| `/biz-launch` | Workflow lancement complet |
-| `/biz-competitor` | Analyse concurrentielle |
-| `/biz-okr` | Définir les OKRs |
-| `/biz-personas` | Créer des personas utilisateur |
-| `/biz-research` | Recherche utilisateur |
+| `/biz:biz-model` | Business model, Lean Canvas |
+| `/biz:biz-market` | Étude de marché |
+| `/biz:biz-mvp` | Définir le MVP |
+| `/biz:biz-pricing` | Stratégie de pricing |
+| `/biz:biz-pitch` | Créer un pitch deck |
+| `/biz:biz-roadmap` | Planifier la roadmap |
+| `/biz:biz-launch` | Workflow lancement complet |
+| `/biz:biz-competitor` | Analyse concurrentielle |
+| `/biz:biz-okr` | Définir les OKRs |
+| `/biz:biz-personas` | Créer des personas utilisateur |
+| `/biz:biz-research` | Recherche utilisateur |
 
 ## GROWTH- : Croissance (11)
 | Commande | Usage |
 |----------|-------|
-| `/growth-landing` | Créer/optimiser landing page |
-| `/growth-seo` | Audit SEO |
-| `/growth-analytics` | Setup tracking et KPIs |
-| `/growth-app-store-analytics` | Métriques App Store / Google Play |
-| `/growth-onboarding` | Parcours d'onboarding UX |
-| `/growth-email` | Templates email marketing |
-| `/growth-ab-test` | Planifier A/B tests |
-| `/growth-retention` | Stratégies de rétention |
-| `/growth-funnel` | Analyse et optimisation funnels |
-| `/growth-localization` | Stratégie de localisation multi-marchés |
-| `/growth-cro` | Optimisation du taux de conversion (CRO) |
+| `/growth:growth-landing` | Créer/optimiser landing page |
+| `/growth:growth-seo` | Audit SEO |
+| `/growth:growth-analytics` | Setup tracking et KPIs |
+| `/growth:growth-app-store-analytics` | Métriques App Store / Google Play |
+| `/growth:growth-onboarding` | Parcours d'onboarding UX |
+| `/growth:growth-email` | Templates email marketing |
+| `/growth:growth-ab-test` | Planifier A/B tests |
+| `/growth:growth-retention` | Stratégies de rétention |
+| `/growth:growth-funnel` | Analyse et optimisation funnels |
+| `/growth:growth-localization` | Stratégie de localisation multi-marchés |
+| `/growth:growth-cro` | Optimisation du taux de conversion (CRO) |
 
 ## DATA- : Données (3)
 | Commande | Usage |
 |----------|-------|
-| `/data-pipeline` | Concevoir pipelines ETL/ELT |
-| `/data-analytics` | Analyse de données et rapports |
-| `/data-modeling` | Modélisation data warehouse |
+| `/data:data-pipeline` | Concevoir pipelines ETL/ELT |
+| `/data:data-analytics` | Analyse de données et rapports |
+| `/data:data-modeling` | Modélisation data warehouse |
 
 ## LEGAL- : Légal (5)
 | Commande | Usage |
 |----------|-------|
-| `/legal-docs` | CGU, CGV, mentions légales |
-| `/legal-rgpd` | Conformité RGPD/GDPR |
-| `/legal-payment` | Intégration paiement |
-| `/legal-terms-of-service` | Conditions Générales d'Utilisation |
-| `/legal-privacy-policy` | Politique de Confidentialité |
+| `/legal:legal-docs` | CGU, CGV, mentions légales |
+| `/legal:legal-rgpd` | Conformité RGPD/GDPR |
+| `/legal:legal-payment` | Intégration paiement |
+| `/legal:legal-terms-of-service` | Conditions Générales d'Utilisation |
+| `/legal:legal-privacy-policy` | Politique de Confidentialité |
 
 ## Sub-Agents (Claude Code 2.1+)
 

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "/biz-research"
+title: "/biz:biz-research"
 description: "Conduit une recherche utilisateur structurée pour informer les décisions produit."
 tags:
   - "biz"
@@ -499,11 +499,11 @@ La recherche sera réussie si nous pouvons :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/personas` | Créer/mettre à jour personas |
-| `/analytics` | Compléter avec données quanti |
-| `/ab-test` | Valider des hypothèses |
-| `/plan` | Intégrer insights en roadmap |
-| `/onboarding` | Améliorer parcours utilisateur |
+| `/biz:biz-personas` | Créer/mettre à jour personas |
+| `/growth:growth-analytics` | Compléter avec données quanti |
+| `/growth:growth-ab-test` | Valider des hypothèses |
+| `/work:work-plan` | Intégrer insights en roadmap |
+| `/growth:growth-onboarding` | Améliorer parcours utilisateur |
 
 ---
 

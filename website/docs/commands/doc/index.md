@@ -19,15 +19,15 @@ Ce domaine contient **9 commandes** pour documentation (changelog, readme, archi
 
 | Commande | Description |
 |----------|-------------|
-| [`/doc-api-spec`](/docs/commands/doc/doc-api-spec) | Générer une spécification OpenAPI/Swagger pour une API. |
-| [`/doc-architecture`](/docs/commands/doc/doc-architecture) | Documente l'architecture technique d'un projet de manière claire et maintenable. |
-| [`/doc-changelog`](/docs/commands/doc/doc-changelog) | Génération et maintenance du changelog du projet. |
-| [`/doc-explain`](/docs/commands/doc/doc-explain) | Expliquer du code complexe en détail. |
-| [`/doc-fix-issue`](/docs/commands/doc/doc-fix-issue) | Corrige une issue GitHub de manière autonome et complète. |
-| [`/doc-generate`](/docs/commands/doc/doc-generate) | Génération de documentation pour le code. |
-| [`/doc-i18n`](/docs/commands/doc/doc-i18n) | Internationalisation et localisation du code. |
-| [`/doc-onboard`](/docs/commands/doc/doc-onboard) | Onboarding rapide sur un codebase inconnu. |
-| [`/doc-readme`](/docs/commands/doc/doc-readme) | Génère ou améliore le README d'un projet pour maximiser son adoption et sa compréhension. |
+| [`/doc:doc-api-spec`](/docs/commands/doc/doc-api-spec) | Générer une spécification OpenAPI/Swagger pour une API. |
+| [`/doc:doc-architecture`](/docs/commands/doc/doc-architecture) | Documente l'architecture technique d'un projet de manière claire et maintenable. |
+| [`/doc:doc-changelog`](/docs/commands/doc/doc-changelog) | Génération et maintenance du changelog du projet. |
+| [`/doc:doc-explain`](/docs/commands/doc/doc-explain) | Expliquer du code complexe en détail. |
+| [`/doc:doc-fix-issue`](/docs/commands/doc/doc-fix-issue) | Corrige une issue GitHub de manière autonome et complète. |
+| [`/doc:doc-generate`](/docs/commands/doc/doc-generate) | Génération de documentation pour le code. |
+| [`/doc:doc-i18n`](/docs/commands/doc/doc-i18n) | Internationalisation et localisation du code. |
+| [`/doc:doc-onboard`](/docs/commands/doc/doc-onboard) | Onboarding rapide sur un codebase inconnu. |
+| [`/doc:doc-readme`](/docs/commands/doc/doc-readme) | Génère ou améliore le README d'un projet pour maximiser son adoption et sa compréhension. |
 
 ## Commandes en detail
 
