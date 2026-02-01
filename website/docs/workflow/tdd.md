@@ -18,7 +18,7 @@ Le cycle Explore → Plan → **TDD** → Commit impose d'ecrire les tests AVANT
 ## Commande
 
 ```bash
-/dev-tdd "Description de la fonctionnalite"
+/dev:dev-tdd "Description de la fonctionnalite"
 ```
 
 ## Le cycle Red-Green-Refactor
@@ -110,7 +110,7 @@ Ameliorer le code sans casser les tests.
 ## Exemple avec Claude
 
 ```bash
-> /dev-tdd "Creer un service de validation d'email"
+> /dev:dev-tdd "Creer un service de validation d'email"
 
 # Claude :
 # 1. Propose les cas de test

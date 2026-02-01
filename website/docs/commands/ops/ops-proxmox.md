@@ -1,6 +1,6 @@
 ---
 sidebar_position: 25
-title: "/ops-proxmox"
+title: "/ops:ops-proxmox"
 description: "Gestion complète de l'infrastructure Proxmox VE : provisioning de VMs et conteneurs LXC, configuration réseau, stockage, backup avec PBS, et automatis"
 tags:
   - "ops"
@@ -619,10 +619,10 @@ Utilisez les templates dans `.claude/templates/proxmox/` :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/ops-infra-code` | IaC générique (AWS, GCP, Azure) |
-| `/ops-monitoring` | Monitoring infrastructure |
-| `/ops-backup` | Stratégie backup avancée |
-| `/ops-ci` | Pipeline CI/CD pour Terraform |
+| `/ops:ops-infra-code` | IaC générique (AWS, GCP, Azure) |
+| `/ops:ops-monitoring` | Monitoring infrastructure |
+| `/ops:ops-backup` | Stratégie backup avancée |
+| `/ops:ops-ci` | Pipeline CI/CD pour Terraform |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 8
-title: "/dev-document"
+title: "/dev:dev-document"
 description: "Generation de documents professionnels dans differents formats bureautiques."
 tags:
   - "dev"
@@ -186,10 +186,10 @@ function generatePPTX(slides: { title: string; content: string; bullets?: string
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/doc-generate` | Documentation technique (Markdown) |
-| `/doc-api-spec` | Specification API (OpenAPI) |
-| `/biz-pitch` | Presentation pitch deck |
-| `/data-analytics` | Rapport d'analyse avec donnees |
+| `/doc:doc-generate` | Documentation technique (Markdown) |
+| `/doc:doc-api-spec` | Specification API (OpenAPI) |
+| `/biz:biz-pitch` | Presentation pitch deck |
+| `/data:data-analytics` | Rapport d'analyse avec donnees |
 
 ---
 

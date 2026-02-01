@@ -463,11 +463,11 @@ Deploy: [Vercel / AWS / Docker]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/docker` | Build images Docker |
-| `/test` | Configuration des tests |
-| `/release` | Automatiser les releases |
-| `/secrets-management` | Gestion des secrets CI |
-| `/infra-code` | Déploiement infrastructure |
+| `/ops:ops-docker` | Build images Docker |
+| `/dev:dev-test` | Configuration des tests |
+| `/ops:ops-release` | Automatiser les releases |
+| `/ops:ops-secrets-management` | Gestion des secrets CI |
+| `/ops:ops-infra-code` | Déploiement infrastructure |
 
 ---
 

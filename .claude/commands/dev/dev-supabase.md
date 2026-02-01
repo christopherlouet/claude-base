@@ -663,10 +663,10 @@ final result = await functionsService.invoke(
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/dev-flutter` | Widgets et screens |
-| `/dev-graphql` | Alternative/complément GraphQL |
-| `/ops-database` | Design de schéma |
-| `/qa-security` | Audit sécurité RLS |
+| `/dev:dev-flutter` | Widgets et screens |
+| `/dev:dev-graphql` | Alternative/complément GraphQL |
+| `/ops:ops-database` | Design de schéma |
+| `/qa:qa-security` | Audit sécurité RLS |
 
 ---
 

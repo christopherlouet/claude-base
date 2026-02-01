@@ -1,6 +1,6 @@
 ---
 sidebar_position: 8
-title: "/biz-personas"
+title: "/biz:biz-personas"
 description: "Crée des personas utilisateur détaillés et actionnables pour guider les décisions produit."
 tags:
   - "biz"
@@ -437,11 +437,11 @@ Pour chaque feature, vérifier :
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/research` | Recherche utilisateur |
-| `/market` | Étude de marché |
-| `/mvp` | Définir le MVP pour un persona |
-| `/onboarding` | Parcours par persona |
-| `/ab-test` | Tester hypothèses persona |
+| `/biz:biz-research` | Recherche utilisateur |
+| `/biz:biz-market` | Étude de marché |
+| `/biz:biz-mvp` | Définir le MVP pour un persona |
+| `/growth:growth-onboarding` | Parcours par persona |
+| `/growth:growth-ab-test` | Tester hypothèses persona |
 
 ---
 

@@ -1059,11 +1059,11 @@ if __name__ == "__main__":
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/ops-mobile-release` | Publier sur les stores |
-| `/growth-analytics` | Analytics in-app (Firebase, Mixpanel) |
-| `/ops-grafana-dashboard` | Creer des dashboards personnalises |
-| `/growth-retention` | Strategies de retention |
-| `/growth-funnel` | Analyse du funnel d'acquisition |
+| `/ops:ops-mobile-release` | Publier sur les stores |
+| `/growth:growth-analytics` | Analytics in-app (Firebase, Mixpanel) |
+| `/ops:ops-grafana-dashboard` | Creer des dashboards personnalises |
+| `/growth:growth-retention` | Strategies de retention |
+| `/growth:growth-funnel` | Analyse du funnel d'acquisition |
 
 ---
 

@@ -15,9 +15,9 @@ Ce tutoriel vous montre comment créer un composant React complet avec son hook,
 ## Objectifs
 
 À la fin de ce tutoriel, vous saurez :
-- Utiliser `/dev-component` pour créer un composant
-- Utiliser `/dev-hook` pour créer un hook personnalisé
-- Utiliser `/qa-review` pour vérifier la qualité
+- Utiliser `/dev:dev-component` pour créer un composant
+- Utiliser `/dev:dev-hook` pour créer un hook personnalisé
+- Utiliser `/qa:qa-review` pour vérifier la qualité
 - Structurer une feature React de manière professionnelle
 
 ## Prérequis
@@ -38,7 +38,7 @@ Nous allons créer une feature de **carte utilisateur** comprenant :
 Commençons par comprendre la structure existante.
 
 ```bash
-/work-explore "Comprendre la structure des composants React existants"
+/work:work-explore "Comprendre la structure des composants React existants"
 ```
 
 Claude va identifier :
@@ -53,7 +53,7 @@ Commençons par le hook qui gère les données.
 ### Lancez la création du hook
 
 ```bash
-/dev-hook "useUser - Hook pour récupérer et gérer les données d'un utilisateur par son ID"
+/dev:dev-hook "useUser - Hook pour récupérer et gérer les données d'un utilisateur par son ID"
 ```
 
 ### Résultat attendu
@@ -165,7 +165,7 @@ Maintenant, créons le composant qui utilise ce hook.
 ### Lancez la création du composant
 
 ```bash
-/dev-component "UserCard - Carte affichant les informations d'un utilisateur avec avatar, nom, email et indicateur de statut"
+/dev:dev-component "UserCard - Carte affichant les informations d'un utilisateur avec avatar, nom, email et indicateur de statut"
 ```
 
 ### Résultat attendu
@@ -313,7 +313,7 @@ Avant de commiter, vérifions la qualité du code.
 ### Lancez une review
 
 ```bash
-/qa-review
+/qa:qa-review
 ```
 
 ### Résultat attendu
@@ -360,7 +360,7 @@ Tous les tests devraient passer.
 Créez un commit propre pour cette feature.
 
 ```bash
-/work-commit
+/work:work-commit
 ```
 
 **Message de commit suggéré :**
@@ -393,18 +393,18 @@ src/
 
 | Commande | Ce qu'elle fait |
 |----------|-----------------|
-| `/dev-hook` | Crée un hook avec types et tests |
-| `/dev-component` | Crée un composant avec tests |
-| `/qa-review` | Vérifie la qualité du code |
+| `/dev:dev-hook` | Crée un hook avec types et tests |
+| `/dev:dev-component` | Crée un composant avec tests |
+| `/qa:qa-review` | Vérifie la qualité du code |
 
 ## Prochaines étapes
 
 - [Tutoriel 03 : API REST](/docs/tutorials/api-rest-node) - Créer un backend
 - [Guide Web](/docs/guides/web-development) - Bonnes pratiques React
-- [Commande /dev-design-system](/docs/commands/dev/dev-design-system) - Créer un design system
+- [Commande /dev:dev-design-system](/docs/commands/dev/dev-design-system) - Créer un design system
 
 ---
 
 :::tip Astuce
-Utilisez `/dev-component` même pour des composants simples. Claude adapte la complexité du code généré au besoin décrit.
+Utilisez `/dev:dev-component` même pour des composants simples. Claude adapte la complexité du code généré au besoin décrit.
 :::

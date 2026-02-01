@@ -11,7 +11,7 @@ Cet exemple montre comment créer un composant React professionnel avec TypeScri
 ## Commande utilisée
 
 ```bash
-/dev-component "Créer un composant UserCard avec avatar, nom et rôle"
+/dev:dev-component "Créer un composant UserCard avec avatar, nom et rôle"
 ```
 
 ## Structure générée
@@ -327,15 +327,15 @@ export type { UserCardProps } from './UserCard';
 
 ## Commandes associées
 
-- `/dev-test` - Générer plus de tests
-- `/qa-a11y` - Vérifier l'accessibilité
-- `/doc-generate` - Générer la documentation API
+- `/dev:dev-test` - Générer plus de tests
+- `/qa:qa-a11y` - Vérifier l'accessibilité
+- `/doc:doc-generate` - Générer la documentation API
 
 ---
 
 :::tip Variantes Tailwind
 Si vous utilisez Tailwind CSS, demandez à Claude de générer la version Tailwind :
 ```bash
-/dev-component "Créer UserCard avec Tailwind CSS"
+/dev:dev-component "Créer UserCard avec Tailwind CSS"
 ```
 :::

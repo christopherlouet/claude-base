@@ -182,9 +182,9 @@ UserValidator class for better testability and reuse."
 
 | Agent | Usage |
 |-------|-------|
-| `/work-pr` | Créer une PR après commit |
-| `/qa-review` | Review avant commit |
-| `/doc-changelog` | Mettre à jour le changelog |
+| `/work:work-pr` | Créer une PR après commit |
+| `/qa:qa-review` | Review avant commit |
+| `/doc:doc-changelog` | Mettre à jour le changelog |
 
 ---
 

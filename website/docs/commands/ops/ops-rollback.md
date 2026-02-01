@@ -1,6 +1,6 @@
 ---
 sidebar_position: 27
-title: "/ops-rollback"
+title: "/ops:ops-rollback"
 description: "Procedure de rollback securisee pour revenir a une version stable."
 tags:
   - "ops"
@@ -231,10 +231,10 @@ Prochaines etapes: [Investigation]
 
 | Agent | Usage |
 |-------|-------|
-| `/ops-hotfix` | Correction rapide apres rollback |
-| `/ops-monitoring` | Verifier les metriques |
-| `/ops-health` | Health check rapide |
-| `/dev-debug` | Investigation post-incident |
+| `/ops:ops-hotfix` | Correction rapide apres rollback |
+| `/ops:ops-monitoring` | Verifier les metriques |
+| `/ops:ops-health` | Health check rapide |
+| `/dev:dev-debug` | Investigation post-incident |
 
 ---
 

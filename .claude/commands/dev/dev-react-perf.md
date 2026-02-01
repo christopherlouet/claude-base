@@ -238,10 +238,10 @@ npx lighthouse https://example.com --only-categories=performance
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/qa-perf` | Audit performance générique (pas spécifique React) |
-| `/refactor` | Après identification des optimisations |
-| `/component` | Créer des composants optimisés dès le départ |
-| `/review` | Review incluant la performance |
+| `/qa:qa-perf` | Audit performance générique (pas spécifique React) |
+| `/dev:dev-refactor` | Après identification des optimisations |
+| `/dev:dev-component` | Créer des composants optimisés dès le départ |
+| `/qa:qa-review` | Review incluant la performance |
 
 ---
 

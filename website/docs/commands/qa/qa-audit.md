@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-title: "/qa-audit"
+title: "/qa:qa-audit"
 description: "Audit qualité complet d'un projet. Combine les analyses de sécurité, RGPD, accessibilité et performance."
 tags:
   - "qa"
@@ -341,11 +341,11 @@ Vulnérabilités deps: [N]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/security` | Audit sécurité approfondi |
-| `/rgpd` | Audit RGPD approfondi |
-| `/a11y` | Audit accessibilité approfondi |
-| `/perf` | Audit performance approfondi |
-| `/health` | Check rapide avant audit |
+| `/qa:qa-security` | Audit sécurité approfondi |
+| `/legal:legal-rgpd` | Audit RGPD approfondi |
+| `/qa:qa-a11y` | Audit accessibilité approfondi |
+| `/qa:qa-perf` | Audit performance approfondi |
+| `/ops:ops-health` | Check rapide avant audit |
 
 ---
 

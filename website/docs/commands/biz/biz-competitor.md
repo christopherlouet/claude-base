@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: "/biz-competitor"
+title: "/biz:biz-competitor"
 description: "Analyse détaillée d'un concurrent spécifique."
 tags:
   - "biz"
@@ -267,11 +267,11 @@ Nos clients comme [exemple] ont choisi notre solution car [raison]."
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/market` | Étude de marché complète |
-| `/model` | Affiner le business model |
-| `/pitch` | Préparer le pitch deck |
-| `/seo` | Analyser le SEO concurrent |
-| `/pricing` | Comparer les pricings |
+| `/biz:biz-market` | Étude de marché complète |
+| `/biz:biz-model` | Affiner le business model |
+| `/biz:biz-pitch` | Préparer le pitch deck |
+| `/growth:growth-seo` | Analyser le SEO concurrent |
+| `/biz:biz-pricing` | Comparer les pricings |
 
 ---
 

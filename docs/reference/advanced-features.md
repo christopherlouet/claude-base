@@ -22,9 +22,9 @@ Templates structurés pour le workflow Explore → Specify → Plan → Code dan
 
 | Template | Description | Utilisé par |
 |----------|-------------|-------------|
-| `spec-template.md` | Spécification fonctionnelle avec User Stories | `/work-specify` |
-| `plan-template.md` | Plan d'implémentation technique | `/work-plan` |
-| `tasks-template.md` | Découpage en tâches par User Story | `/work-plan` |
+| `spec-template.md` | Spécification fonctionnelle avec User Stories | `/work:work-specify` |
+| `plan-template.md` | Plan d'implémentation technique | `/work:work-plan` |
+| `tasks-template.md` | Découpage en tâches par User Story | `/work:work-plan` |
 
 ### Structure d'une Spécification
 
@@ -51,7 +51,7 @@ specs/[feature]/
 ### Workflow Spec-Driven
 
 ```
-/work-explore → /work-specify → /work-clarify (opt) → /work-plan → /dev-tdd
+/work:work-explore → /work:work-specify → /work:work-clarify (opt) → /work:work-plan → /dev:dev-tdd
 ```
 
 ### Templates Proxmox (Terraform)

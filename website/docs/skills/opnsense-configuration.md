@@ -38,7 +38,7 @@ Guide complet pour configurer OPNsense de manière déclarative avec Terraform e
 
 **Ne pas utiliser pour :**
 - Installation initiale OPNsense (voir documentation manuelle)
-- Provisioning VM (utiliser `/ops-proxmox`)
+- Provisioning VM (utiliser `/ops:ops-proxmox`)
 - Plugins OPNsense avancés (HAProxy, Suricata)
 
 ## Provider Terraform

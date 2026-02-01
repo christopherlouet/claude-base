@@ -1,6 +1,6 @@
 ---
 sidebar_position: 19
-title: "/dev-refactor"
+title: "/dev:dev-refactor"
 description: "Refactoring de code avec préservation du comportement et amélioration de la qualité."
 tags:
   - "dev"
@@ -431,11 +431,11 @@ const isOwner = (user: User, resource: Resource) =>
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/explore` | Comprendre le code avant refactoring |
-| `/test` | Ajouter tests manquants |
-| `/review` | Review post-refactoring |
-| `/commit` | Commits atomiques |
-| `/explain` | Comprendre du code complexe |
+| `/work:work-explore` | Comprendre le code avant refactoring |
+| `/dev:dev-test` | Ajouter tests manquants |
+| `/qa:qa-review` | Review post-refactoring |
+| `/work:work-commit` | Commits atomiques |
+| `/doc:doc-explain` | Comprendre du code complexe |
 
 ---
 

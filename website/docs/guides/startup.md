@@ -20,38 +20,38 @@ Idee → Validation → MVP → Lancement → Croissance
 
 | Commande | Usage |
 |----------|-------|
-| `/biz-model` | Business model, Lean Canvas |
-| `/biz-market` | Etude de marche |
-| `/biz-personas` | Personas utilisateurs |
-| `/biz-competitor` | Analyse concurrentielle |
+| `/biz:biz-model` | Business model, Lean Canvas |
+| `/biz:biz-market` | Etude de marche |
+| `/biz:biz-personas` | Personas utilisateurs |
+| `/biz:biz-competitor` | Analyse concurrentielle |
 
 ### Phase 2 : MVP
 
 | Commande | Usage |
 |----------|-------|
-| `/biz-mvp` | Definition du MVP |
-| `/biz-pricing` | Strategie de pricing |
-| `/work-plan` | Plan technique |
+| `/biz:biz-mvp` | Definition du MVP |
+| `/biz:biz-pricing` | Strategie de pricing |
+| `/work:work-plan` | Plan technique |
 
 ### Phase 3 : Lancement
 
 | Commande | Usage |
 |----------|-------|
-| `/legal-rgpd` | Conformite RGPD |
-| `/legal-terms-of-service` | CGU |
-| `/legal-privacy-policy` | Politique de confidentialite |
-| `/growth-landing` | Landing page |
-| `/growth-seo` | SEO |
+| `/legal:legal-rgpd` | Conformite RGPD |
+| `/legal:legal-terms-of-service` | CGU |
+| `/legal:legal-privacy-policy` | Politique de confidentialite |
+| `/growth:growth-landing` | Landing page |
+| `/growth:growth-seo` | SEO |
 
 ### Phase 4 : Croissance
 
 | Commande | Usage |
 |----------|-------|
-| `/growth-analytics` | Analytics |
-| `/growth-funnel` | Optimisation funnel |
-| `/growth-onboarding` | Parcours utilisateur |
-| `/growth-email` | Email marketing |
-| `/growth-retention` | Retention |
+| `/growth:growth-analytics` | Analytics |
+| `/growth:growth-funnel` | Optimisation funnel |
+| `/growth:growth-onboarding` | Parcours utilisateur |
+| `/growth:growth-email` | Email marketing |
+| `/growth:growth-retention` | Retention |
 
 ## Workflow complet
 
@@ -59,59 +59,59 @@ Idee → Validation → MVP → Lancement → Croissance
 
 ```bash
 # Creer le Lean Canvas
-/biz-model "Mon SaaS de gestion de projets"
+/biz:biz-model "Mon SaaS de gestion de projets"
 
 # Analyser le marche
-/biz-market
+/biz:biz-market
 
 # Definir les personas
-/biz-personas
+/biz:biz-personas
 
 # Analyser la concurrence
-/biz-competitor
+/biz:biz-competitor
 ```
 
 ### 2. Definir le MVP
 
 ```bash
 # Scope du MVP
-/biz-mvp
+/biz:biz-mvp
 
 # Strategie de prix
-/biz-pricing
+/biz:biz-pricing
 ```
 
 ### 3. Preparer le legal
 
 ```bash
 # RGPD
-/legal-rgpd
+/legal:legal-rgpd
 
 # CGU
-/legal-terms-of-service
+/legal:legal-terms-of-service
 
 # Privacy Policy
-/legal-privacy-policy
+/legal:legal-privacy-policy
 ```
 
 ### 4. Preparer le lancement
 
 ```bash
 # Landing page
-/growth-landing
+/growth:growth-landing
 
 # SEO
-/growth-seo
+/growth:growth-seo
 
 # Analytics
-/growth-analytics
+/growth:growth-analytics
 ```
 
 ### 5. Lancer
 
 ```bash
 # Workflow complet
-/work-flow-launch "Mon SaaS"
+/work:work-flow-launch "Mon SaaS"
 ```
 
 ## Lean Canvas

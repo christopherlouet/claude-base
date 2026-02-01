@@ -339,9 +339,9 @@ lifecycle_rules:
 
 | Agent | Usage |
 |-------|-------|
-| `/ops-monitoring` | Métriques d'utilisation |
-| `/ops-load-testing` | Valider le sizing |
-| `/ops-disaster-recovery` | Coûts de DR |
+| `/ops:ops-monitoring` | Métriques d'utilisation |
+| `/ops:ops-load-testing` | Valider le sizing |
+| `/ops:ops-disaster-recovery` | Coûts de DR |
 
 ---
 

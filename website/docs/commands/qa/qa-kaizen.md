@@ -1,6 +1,6 @@
 ---
 sidebar_position: 8
-title: "/qa-kaizen"
+title: "/qa:qa-kaizen"
 description: "Amélioration continue du code et des processus avec la méthodologie Kaizen."
 tags:
   - "qa"
@@ -324,11 +324,11 @@ identifier et implémenter des améliorations incrémentales et durables.
 
 | Agent | Usage |
 |-------|-------|
-| `/refactor` | Implémenter les améliorations de code |
-| `/perf` | Améliorer les performances |
-| `/coverage` | Améliorer la couverture de tests |
-| `/ci` | Améliorer le pipeline CI/CD |
-| `/review` | Review des améliorations |
+| `/dev:dev-refactor` | Implémenter les améliorations de code |
+| `/qa:qa-perf` | Améliorer les performances |
+| `/qa:qa-coverage` | Améliorer la couverture de tests |
+| `/ops:ops-ci` | Améliorer le pipeline CI/CD |
+| `/qa:qa-review` | Review des améliorations |
 
 ---
 

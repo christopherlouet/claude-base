@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: "/doc-api-spec"
+title: "/doc:doc-api-spec"
 description: "Générer une spécification OpenAPI/Swagger pour une API."
 tags:
   - "doc"
@@ -428,10 +428,10 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/api` | Créer ou modifier l'API |
-| `/doc` | Documentation générale |
-| `/test` | Tester les endpoints documentés |
-| `/security` | Vérifier la sécurité de l'API |
+| `/dev:dev-api` | Créer ou modifier l'API |
+| `/doc:doc-generate` | Documentation générale |
+| `/dev:dev-test` | Tester les endpoints documentés |
+| `/qa:qa-security` | Vérifier la sécurité de l'API |
 
 ---
 

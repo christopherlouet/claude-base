@@ -1,6 +1,6 @@
 ---
 sidebar_position: 13
-title: "/ops-gitflow-release"
+title: "/ops:ops-gitflow-release"
 description: "Gérer les branches release avec GitFlow."
 tags:
   - "ops"
@@ -50,7 +50,7 @@ Créer, préparer et finaliser des releases selon le workflow GitFlow avec merge
 
 ### START - Créer une nouvelle release
 
-**Syntaxe**: `/ops-gitflow-release start "vX.X.X"`
+**Syntaxe**: `/ops:ops-gitflow-release start "vX.X.X"`
 
 ```bash
 # 1. S'assurer d'être à jour sur develop
@@ -85,9 +85,9 @@ git push -u origin release/vX.X.X
 - [ ] Pas de nouvelles features (features = develop)
 
 ### Commandes utiles
-- `/doc-changelog` - Générer le changelog
-- `/qa-audit` - Audit qualité avant release
-- `/ops-gitflow-release finish "vX.X.X"` - Terminer la release
+- `/doc:doc-changelog` - Générer le changelog
+- `/qa:qa-audit` - Audit qualité avant release
+- `/ops:ops-gitflow-release finish "vX.X.X"` - Terminer la release
 
 ### Règles importantes
 - Seuls les bugfixes sont autorisés sur cette branche
@@ -96,7 +96,7 @@ git push -u origin release/vX.X.X
 
 ### FINISH - Terminer une release
 
-**Syntaxe**: `/ops-gitflow-release finish "vX.X.X"`
+**Syntaxe**: `/ops:ops-gitflow-release finish "vX.X.X"`
 
 ```bash
 # 1. S'assurer que tout est commité
@@ -150,7 +150,7 @@ La release est prête pour le déploiement en production.
 
 ### LIST - Lister les releases en cours
 
-**Syntaxe**: `/ops-gitflow-release list`
+**Syntaxe**: `/ops:ops-gitflow-release list`
 
 ```bash
 # Branches release en cours
@@ -187,8 +187,8 @@ git tag -l "v*" | tail -10
 
 ### Recommandé
 - [ ] Documentation à jour
-- [ ] Audit de sécurité (`/qa-security`)
-- [ ] Tests de performance (`/qa-perf`)
+- [ ] Audit de sécurité (`/qa:qa-security`)
+- [ ] Tests de performance (`/qa:qa-perf`)
 - [ ] Notes de release préparées
 
 ## Gestion des conflits
@@ -218,10 +218,10 @@ gh release create vX.X.X \
 
 | Avant | Commande | Après |
 |-------|----------|-------|
-| `/ops-gitflow-feature` (features terminées) | | |
+| `/ops:ops-gitflow-feature` (features terminées) | | |
 | | **RELEASE** | |
-| | | `/doc-changelog` |
-| | | `/qa-audit` |
+| | | `/doc:doc-changelog` |
+| | | `/qa:qa-audit` |
 | | | Déploiement production |
 
 ---

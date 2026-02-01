@@ -11,7 +11,7 @@ Cet exemple montre comment créer un screen Flutter professionnel avec Clean Arc
 ## Commande utilisée
 
 ```bash
-/dev-flutter "Créer un screen de liste de produits avec pagination"
+/dev:dev-flutter "Créer un screen de liste de produits avec pagination"
 ```
 
 ## Structure générée
@@ -641,9 +641,9 @@ class _StockBadge extends StatelessWidget {
 
 ## Commandes associées
 
-- `/dev-test` - Générer tests widget et BLoC
-- `/qa-mobile` - Audit qualité mobile
-- `/dev-supabase` - Backend Supabase
+- `/dev:dev-test` - Générer tests widget et BLoC
+- `/qa:qa-mobile` - Audit qualité mobile
+- `/dev:dev-supabase` - Backend Supabase
 
 ---
 

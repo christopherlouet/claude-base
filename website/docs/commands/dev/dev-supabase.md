@@ -1,6 +1,6 @@
 ---
 sidebar_position: 20
-title: "/dev-supabase"
+title: "/dev:dev-supabase"
 description: "Configurer et utiliser Supabase comme backend (Auth, Database, Storage, Realtime, Edge Functions)."
 tags:
   - "dev"
@@ -678,10 +678,10 @@ final result = await functionsService.invoke(
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/dev-flutter` | Widgets et screens |
-| `/dev-graphql` | Alternative/complément GraphQL |
-| `/ops-database` | Design de schéma |
-| `/qa-security` | Audit sécurité RLS |
+| `/dev:dev-flutter` | Widgets et screens |
+| `/dev:dev-graphql` | Alternative/complément GraphQL |
+| `/ops:ops-database` | Design de schéma |
+| `/qa:qa-security` | Audit sécurité RLS |
 
 ---
 

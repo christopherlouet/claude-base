@@ -11,7 +11,7 @@ Cet exemple montre comment créer une VM Proxmox avec Terraform, cloud-init et c
 ## Commande utilisée
 
 ```bash
-/ops-proxmox "Créer une VM Ubuntu avec cloud-init et configuration réseau"
+/ops:ops-proxmox "Créer une VM Ubuntu avec cloud-init et configuration réseau"
 ```
 
 ## Structure générée
@@ -569,9 +569,9 @@ vms = {
 
 ## Commandes associées
 
-- `/ops-proxmox` - Commande dédiée Proxmox
-- `/ops-infra-code` - Modules Terraform génériques
-- `/ops-backup` - Configuration backup Proxmox
+- `/ops:ops-proxmox` - Commande dédiée Proxmox
+- `/ops:ops-infra-code` - Modules Terraform génériques
+- `/ops:ops-backup` - Configuration backup Proxmox
 
 ---
 

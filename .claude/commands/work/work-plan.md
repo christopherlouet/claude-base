@@ -25,11 +25,11 @@ Utiliser les templates dans `.claude/templates/` :
 │                    VÉRIFICATION PRÉREQUIS                       │
 ├─────────────────────────────────────────────────────────────────┤
 │  ☐ Spécification existe ? (specs/[feature]/spec.md)             │
-│    → Si non : suggérer /work-specify                            │
+│    → Si non : suggérer /work:work-specify                            │
 │  ☐ Exploration faite ?                                          │
-│    → Si non : suggérer /work-explore                            │
+│    → Si non : suggérer /work:work-explore                            │
 │  ☐ Clarifications résolues ? (pas de [CLARIFICATION NÉCESSAIRE])│
-│    → Si non : suggérer /work-clarify                            │
+│    → Si non : suggérer /work:work-clarify                            │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -192,11 +192,11 @@ Découpage en tâches avec :
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                                                                 │
-│   /work-explore ──▶ /work-specify ──▶ /work-clarify (opt)       │
+│   /work:work-explore ──▶ /work:work-specify ──▶ /work:work-clarify (opt)       │
 │                            │                                    │
 │                            ▼                                    │
 │                    ┌───────────────┐                            │
-│                    │  /work-plan   │ ◄── VOUS ÊTES ICI          │
+│                    │  /work:work-plan   │ ◄── VOUS ÊTES ICI          │
 │                    └───────┬───────┘                            │
 │                            │                                    │
 │              Génère:       │                                    │
@@ -205,8 +205,8 @@ Découpage en tâches avec :
 │                            │                                    │
 │                            ▼                                    │
 │                    ┌───────────────┐                            │
-│                    │   /dev-tdd    │                            │
-│                    │   /dev-api    │                            │
+│                    │   /dev:dev-tdd    │                            │
+│                    │   /dev:dev-api    │                            │
 │                    └───────────────┘                            │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -216,19 +216,19 @@ Découpage en tâches avec :
 
 | Avant | Agent | Après |
 |-------|-------|-------|
-| `/work-explore` | Exploration | |
-| `/work-specify` | Spécification | |
-| `/work-clarify` | Clarification (opt) | |
+| `/work:work-explore` | Exploration | |
+| `/work:work-specify` | Spécification | |
+| `/work:work-clarify` | Clarification (opt) | |
 | | **PLAN** | |
-| | | `/dev-tdd` |
-| | | `/dev-api` |
-| | | `/dev-component` |
+| | | `/dev:dev-tdd` |
+| | | `/dev:dev-api` |
+| | | `/dev:dev-component` |
 
 ---
 
 IMPORTANT: Ne jamais coder en mode planification - plan seulement.
 
-YOU MUST vérifier si une spec existe et suggérer `/work-specify` si absente.
+YOU MUST vérifier si une spec existe et suggérer `/work:work-specify` si absente.
 
 YOU MUST identifier tous les fichiers à créer/modifier avec chemins exacts.
 

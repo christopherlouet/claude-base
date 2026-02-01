@@ -646,10 +646,10 @@ router.GET("/health/ready", func(c *gin.Context) {
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/observability-stack` | Deployer Prometheus, Grafana, Loki |
-| `/health` | Health check rapide |
-| `/perf` | Analyse performance |
-| `/security` | Audit des logs (RGPD) |
+| `/ops:ops-observability-stack` | Deployer Prometheus, Grafana, Loki |
+| `/ops:ops-health` | Health check rapide |
+| `/qa:qa-perf` | Analyse performance |
+| `/qa:qa-security` | Audit des logs (RGPD) |
 
 ---
 
@@ -659,4 +659,4 @@ YOU MUST avoir des health checks pour Kubernetes/load balancers.
 
 NEVER ignorer les alertes - chaque alerte doit etre actionnable.
 
-Pour deployer la stack de monitoring (Prometheus, Grafana, Loki), utilisez `/observability-stack`.
+Pour deployer la stack de monitoring (Prometheus, Grafana, Loki), utilisez `/ops:ops-observability-stack`.

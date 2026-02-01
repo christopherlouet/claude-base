@@ -658,11 +658,11 @@ Pour une feature complète:
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/dev-supabase` | Configuration backend Supabase |
-| `/dev-graphql` | Intégration GraphQL |
-| `/qa-mobile` | Audit performance et accessibilité mobile |
-| `/qa-a11y` | Accessibilité approfondie |
-| `/dev-test` | Tests complémentaires |
+| `/dev:dev-supabase` | Configuration backend Supabase |
+| `/dev:dev-graphql` | Intégration GraphQL |
+| `/qa:qa-mobile` | Audit performance et accessibilité mobile |
+| `/qa:qa-a11y` | Accessibilité approfondie |
+| `/dev:dev-test` | Tests complémentaires |
 
 ---
 

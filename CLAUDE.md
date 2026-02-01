@@ -7,19 +7,19 @@
 
 ## Workflow Obligatoire : Explore → Specify → Plan → TDD → Commit
 
-### 1. EXPLORE (`/work-explore`)
+### 1. EXPLORE (`/work:work-explore`)
 - Lire et comprendre le code existant AVANT de modifier
 - Identifier les patterns et conventions en place
 - NE JAMAIS coder sans avoir exploré
 
-### 2. SPECIFY (`/work-specify`) - NOUVEAU
+### 2. SPECIFY (`/work:work-specify`) - NOUVEAU
 - Créer une spécification fonctionnelle structurée
 - Définir les User Stories prioritisées (P1 = MVP, P2, P3)
 - Rédiger les critères d'acceptation (Given/When/Then)
 - Focus sur le QUOI et POURQUOI, pas le COMMENT
-- Optionnel : `/work-clarify` pour réduire les ambiguïtés
+- Optionnel : `/work:work-clarify` pour réduire les ambiguïtés
 
-### 3. PLAN (`/work-plan`)
+### 3. PLAN (`/work:work-plan`)
 - Proposer une architecture AVANT d'implémenter
 - Lister les fichiers à créer/modifier
 - Découper en tâches par User Story ([US1], [US2]...)
@@ -27,7 +27,7 @@
 - Identifier les risques potentiels
 - Génère `specs/[feature]/plan.md` et `tasks.md`
 
-### 4. TDD (`/dev-tdd`) - OBLIGATOIRE
+### 4. TDD (`/dev:dev-tdd`) - OBLIGATOIRE
 - IMPORTANT: Toujours écrire les tests AVANT le code
 - Cycle Red-Green-Refactor obligatoire:
   1. RED: Écrire un test qui échoue
@@ -36,7 +36,7 @@
 - Couverture minimum 80% sur nouveau code
 - Commits atomiques et fréquents
 
-### 5. COMMIT (`/work-commit` ou `/work-pr`)
+### 5. COMMIT (`/work:work-commit` ou `/work:work-pr`)
 - Message de commit descriptif
 - Référencer les issues si applicable
 - PR avec description complète
@@ -137,55 +137,55 @@ describe('ModuleName', () => {
 
 ### Nouvelle feature
 ```bash
-/work-flow-feature "description de la feature"
+/work:work-flow-feature "description de la feature"
 # ou manuellement (TDD obligatoire):
-/work-explore → /work-specify → /work-plan → /dev-tdd → /work-pr
+/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-tdd → /work:work-pr
 ```
 
 ### Correction de bug
 ```bash
-/work-flow-bugfix "description du bug"
+/work:work-flow-bugfix "description du bug"
 ```
 
 ### Nouvelle release
 ```bash
-/work-flow-release "v2.0.0"
+/work:work-flow-release "v2.0.0"
 ```
 
 ### Lancement produit
 ```bash
-/work-flow-launch "mon nouveau SaaS"
+/work:work-flow-launch "mon nouveau SaaS"
 ```
 
 ### Audit complet
 ```bash
-/qa-audit  # Sécurité + RGPD + A11y + Perf
+/qa:qa-audit  # Sécurité + RGPD + A11y + Perf
 ```
 
 ### Application mobile Flutter
 ```bash
-/work-explore → /work-specify → /work-plan → /dev-tdd → /dev-flutter + /dev-supabase → /qa-mobile → /work-pr
+/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-tdd → /dev:dev-flutter + /dev:dev-supabase → /qa:qa-mobile → /work:work-pr
 ```
 
 ### GitFlow (gestion avancée des branches)
 ```bash
 # Initialiser GitFlow sur le repo
-/ops-gitflow-init
+/ops:ops-gitflow-init
 
 # Workflow feature
-/ops-gitflow-feature start "user-auth"
+/ops:ops-gitflow-feature start "user-auth"
 # ... développer ...
-/ops-gitflow-feature finish "user-auth"
+/ops:ops-gitflow-feature finish "user-auth"
 
 # Workflow release
-/ops-gitflow-release start "v1.2.0"
+/ops:ops-gitflow-release start "v1.2.0"
 # ... bump version, changelog ...
-/ops-gitflow-release finish "v1.2.0"
+/ops:ops-gitflow-release finish "v1.2.0"
 
 # Hotfix urgent
-/ops-gitflow-hotfix start "critical-bug"
+/ops:ops-gitflow-hotfix start "critical-bug"
 # ... fix ...
-/ops-gitflow-hotfix finish "critical-bug"
+/ops:ops-gitflow-hotfix finish "critical-bug"
 ```
 
 @docs/reference/hooks-reference.md

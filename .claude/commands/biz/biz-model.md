@@ -161,11 +161,11 @@ Business model recommandé: [modèle + justification courte]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/mvp` | Définir le MVP après le business model |
-| `/market` | Approfondir l'étude de marché |
-| `/pricing` | Définir la stratégie de prix |
-| `/pitch` | Préparer un pitch deck |
-| `/roadmap` | Planifier la roadmap produit |
+| `/biz:biz-mvp` | Définir le MVP après le business model |
+| `/biz:biz-market` | Approfondir l'étude de marché |
+| `/biz:biz-pricing` | Définir la stratégie de prix |
+| `/biz:biz-pitch` | Préparer un pitch deck |
+| `/biz:biz-roadmap` | Planifier la roadmap produit |
 
 ---
 
