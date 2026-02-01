@@ -444,7 +444,7 @@ validate_command_files() {
 validate_security() {
     [[ "$OUTPUT_FORMAT" == "text" ]] && section "6. Sécurité"
 
-    # Vérifier .gitignore pour CLAUDE.local.md
+    # Vérifier .gitignore pour les entrées Claude Code
     add_check 1
     if [[ -f "$TARGET_DIR/.gitignore" ]]; then
         if grep -q "CLAUDE.local.md" "$TARGET_DIR/.gitignore" 2>/dev/null; then
@@ -454,6 +454,24 @@ validate_security() {
         fi
     else
         add_warning ".gitignore manquant" "security"
+    fi
+
+    add_check 1
+    if [[ -f "$TARGET_DIR/.gitignore" ]]; then
+        if grep -q "\.claude/" "$TARGET_DIR/.gitignore" 2>/dev/null; then
+            add_success ".claude/ dans .gitignore" "security" 1
+        else
+            add_warning ".claude/ devrait être dans .gitignore" "security"
+        fi
+    fi
+
+    add_check 1
+    if [[ -f "$TARGET_DIR/.gitignore" ]]; then
+        if grep -q "^CLAUDE\.md$" "$TARGET_DIR/.gitignore" 2>/dev/null; then
+            add_success "CLAUDE.md dans .gitignore" "security" 1
+        else
+            add_warning "CLAUDE.md devrait être dans .gitignore" "security"
+        fi
     fi
 
     # Vérifier les permissions dangereuses

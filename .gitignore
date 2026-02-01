@@ -28,7 +28,9 @@ npm-debug.log*
 # Test coverage
 coverage/
 
-# Claude Code local config
+# Claude Code (l'utilisateur peut retirer ces lignes si besoin)
+.claude/
+CLAUDE.md
 CLAUDE.local.md
 .claude/settings.local.json
 

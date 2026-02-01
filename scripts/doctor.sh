@@ -351,6 +351,16 @@ check_project_config() {
         else
             check_warn ".gitignore: CLAUDE.local.md non inclus" "Ajoutez CLAUDE.local.md à .gitignore"
         fi
+        if grep -q "\.claude/" "$target/.gitignore" 2>/dev/null; then
+            check_pass ".gitignore: .claude/ inclus"
+        else
+            check_warn ".gitignore: .claude/ non inclus" "Ajoutez .claude/ à .gitignore"
+        fi
+        if grep -q "^CLAUDE\.md$" "$target/.gitignore" 2>/dev/null; then
+            check_pass ".gitignore: CLAUDE.md inclus"
+        else
+            check_warn ".gitignore: CLAUDE.md non inclus" "Ajoutez CLAUDE.md à .gitignore"
+        fi
     fi
 }
 
