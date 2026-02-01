@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if [ \"$ALLOW_MAIN_EDIT\" = \"1\" ]; then exit 0; fi; BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$BRANCH\" = \"main\" ] || [ \"$BRANCH\" = \"master\" ]; then echo \"BLOQUE: Creez une branche feature avant de modifier des fichiers.\"; echo \"Conseil: git checkout -b feature/ma-feature\"; exit 1; fi'",
+            "command": "bash -c 'if [ \"$ALLOW_MAIN_EDIT\" = \"1\" ]; then exit 0; fi; BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$BRANCH\" = \"main\" ] || [ \"$BRANCH\" = \"master\" ]; then NEW_BRANCH=\"feature/auto-$(date +%Y%m%d-%H%M%S)\"; git checkout -b \"$NEW_BRANCH\" 2>/dev/null; echo \"Branche $NEW_BRANCH creee automatiquement (vous etiez sur $BRANCH).\"; echo \"Conseil: renommez-la avec git branch -m feature/nom-descriptif\"; exit 0; fi'",
             "timeout": 5000,
             "onFailure": "block"
           }

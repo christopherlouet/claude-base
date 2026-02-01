@@ -11,19 +11,45 @@ $ARGUMENTS
 ┌─────────────────────────────────────────────────────────────┐
 │                    WORKFLOW RELEASE                          │
 ├─────────────────────────────────────────────────────────────┤
-│  1. AUDIT      → Vérifier la qualité du code                │
-│  2. CHANGELOG  → Mettre à jour le changelog                 │
-│  3. VERSION    → Bump de version                            │
-│  4. TEST       → Tests complets                             │
-│  5. BUILD      → Build de production                        │
-│  6. TAG        → Tag et release notes                       │
-│  7. DEPLOY     → Déploiement                                │
+│  0. BRANCH    → Créer la branche release                    │
+│  1. AUDIT     → Vérifier la qualité du code                 │
+│  2. CHANGELOG → Mettre à jour le changelog                  │
+│  3. VERSION   → Bump de version                             │
+│  4. TEST      → Tests complets                              │
+│  5. BUILD     → Build de production                         │
+│  6. TAG       → Tag et release notes                        │
+│  7. DEPLOY    → Déploiement                                 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ÉTAPE 1/7 : AUDIT QUALITÉ
+## ÉTAPE 0/8 : BRANCHE
+
+### Objectif
+Créer une branche release dédiée pour préparer sans impacter main.
+
+### Actions
+1. Vérifier qu'on n'est pas déjà sur une branche release
+2. Créer la branche depuis main/develop
+
+```bash
+# S'assurer d'être à jour
+git fetch origin
+BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+git checkout "$BASE_BRANCH" && git pull --rebase
+
+# Créer la branche release
+git checkout -b release/[version-from-ARGUMENTS]
+```
+
+### Checklist branche
+- [ ] Branche créée depuis main à jour
+- [ ] Nom descriptif (release/vX.Y.Z)
+
+---
+
+## ÉTAPE 1/8 : AUDIT QUALITÉ
 
 ### Objectif
 S'assurer que le code est prêt pour la release.
@@ -67,7 +93,7 @@ npm run build
 
 ---
 
-## ÉTAPE 2/7 : CHANGELOG
+## ÉTAPE 2/8 : CHANGELOG
 
 ### Objectif
 Documenter tous les changements depuis la dernière release.
@@ -114,7 +140,7 @@ git log $(git describe --tags --abbrev=0)..HEAD --oneline
 
 ---
 
-## ÉTAPE 3/7 : VERSIONING
+## ÉTAPE 3/8 : VERSIONING
 
 ### Objectif
 Déterminer et appliquer le bon numéro de version.
@@ -169,7 +195,7 @@ npm version prerelease --preid=beta
 
 ---
 
-## ÉTAPE 4/7 : TESTS COMPLETS
+## ÉTAPE 4/8 : TESTS COMPLETS
 
 ### Objectif
 Validation complète avant release.
@@ -215,7 +241,7 @@ npm run test:coverage
 
 ---
 
-## ÉTAPE 5/7 : BUILD PRODUCTION
+## ÉTAPE 5/8 : BUILD PRODUCTION
 
 ### Objectif
 Générer les artifacts de production.
@@ -251,7 +277,7 @@ npm run preview # ou serve
 
 ---
 
-## ÉTAPE 6/7 : TAG & RELEASE
+## ÉTAPE 6/8 : TAG & RELEASE
 
 ### Objectif
 Créer le tag Git et les release notes.
@@ -270,15 +296,15 @@ git push origin v1.2.3
 # Release v1.2.3
 
 ## Highlights
-- ✨ Feature majeure 1
-- 🚀 Amélioration performance
-- 🐛 Fix critique
+- Feature majeure 1
+- Amélioration performance
+- Fix critique
 
 ## What's Changed
 [Changelog complet]
 
 ## Breaking Changes
-⚠️ [Si applicable]
+[Si applicable]
 
 ## Migration Guide
 [Si breaking changes]
@@ -306,7 +332,7 @@ gh release create v1.2.3 \
 
 ---
 
-## ÉTAPE 7/7 : DÉPLOIEMENT
+## ÉTAPE 7/8 : DÉPLOIEMENT
 
 ### Objectif
 Déployer en production.
@@ -376,7 +402,7 @@ Release: https://github.com/org/repo/releases/tag/v[X.Y.Z]
 
 ### Communication
 ```markdown
-🚀 **Release v[X.Y.Z] déployée !**
+**Release v[X.Y.Z] déployée !**
 
 Nouveautés :
 - Feature 1
@@ -393,11 +419,11 @@ Documentation : [lien]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/audit` | Étape 1 - Audit qualité |
-| `/changelog` | Étape 2 - Changelog |
-| `/test` | Étape 4 - Tests complets |
-| `/release` | Alternative simplifiée |
-| `/monitoring` | Post-déploiement |
+| `/qa:qa-audit` | Étape 1 - Audit qualité |
+| `/doc:doc-changelog` | Étape 2 - Changelog |
+| `/dev:dev-test` | Étape 4 - Tests complets |
+| `/ops:ops-release` | Alternative simplifiée |
+| `/ops:ops-monitoring` | Post-déploiement |
 
 ---
 
