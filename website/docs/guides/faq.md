@@ -42,7 +42,7 @@ cp claude-socle/CLAUDE.md votre-projet/
 cp claude-socle/.mcp.json votre-projet/
 
 # Ou utiliser le script d'installation
-./claude-socle/scripts/setup-wizard.sh
+./claude-socle/scripts/new-project.sh --simple .
 ```
 
 Voir le guide [Installation](/docs/intro/installation) pour plus de détails.
