@@ -16,6 +16,7 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 TARGET_DIR="${1:-.}"
+SOCLE_VERSION="$(git -C "$SOCLE_DIR" describe --tags --abbrev=0 2>/dev/null || echo 'v0.0.0')"
 
 # Helpers
 print_header() {
@@ -194,6 +195,7 @@ generate_config() {
     cp -r "$SOCLE_DIR/.claude/rules" "$TARGET_DIR/.claude/" 2>/dev/null || true
     cp -r "$SOCLE_DIR/.claude/agents" "$TARGET_DIR/.claude/" 2>/dev/null || true
     cp -r "$SOCLE_DIR/.claude/output-styles" "$TARGET_DIR/.claude/" 2>/dev/null || true
+    cp -r "$SOCLE_DIR/.claude/templates" "$TARGET_DIR/.claude/" 2>/dev/null || true
 
     # Generate settings.json based on project type
     print_step "Generation de settings.json..."
@@ -219,9 +221,9 @@ generate_settings() {
     local settings_file="$TARGET_DIR/.claude/settings.json"
 
     # Start with base settings
-    cat > "$settings_file" << 'EOF'
+    cat > "$settings_file" << EOF
 {
-  "version": "1.0",
+  "version": "$SOCLE_VERSION",
   "hooks": {
     "PreToolUse": [
 EOF
@@ -307,7 +309,7 @@ generate_claude_md() {
 ## Workflow Obligatoire
 
 \`\`\`
-/work-explore → /work-plan → /dev-* → /work-commit
+/work:work-explore → /work:work-plan → /dev:dev-tdd → /work:work-commit
 \`\`\`
 
 EOF
@@ -339,11 +341,11 @@ EOF
 
 ## Agents Recommandés
 
-- `/work-explore` - Explorer le code
-- `/dev-component` - Créer des composants
-- `/dev-hook` - Créer des hooks
-- `/qa-perf` - Optimiser les performances
-- `/qa-a11y` - Accessibilité
+- `/work:work-explore` - Explorer le code
+- `/dev:dev-component` - Créer des composants
+- `/dev:dev-hook` - Créer des hooks
+- `/qa:qa-perf` - Optimiser les performances
+- `/qa:qa-a11y` - Accessibilité
 EOF
             ;;
 
@@ -375,10 +377,10 @@ EOF
 
 ## Agents Recommandés
 
-- `/work-explore` - Explorer le code
-- `/dev-flutter` - Créer des widgets/screens
-- `/dev-supabase` - Backend Supabase
-- `/qa-mobile` - Audit mobile
+- `/work:work-explore` - Explorer le code
+- `/dev:dev-flutter` - Créer des widgets/screens
+- `/dev:dev-supabase` - Backend Supabase
+- `/qa:qa-mobile` - Audit mobile
 EOF
             ;;
 
@@ -407,10 +409,10 @@ EOF
 
 ## Agents Recommandés
 
-- `/dev-api` - Créer des endpoints
-- `/dev-api-versioning` - Versioning API
-- `/doc-api-spec` - Documentation OpenAPI
-- `/qa-security` - Audit sécurité OWASP
+- `/dev:dev-api` - Créer des endpoints
+- `/dev:dev-api-versioning` - Versioning API
+- `/doc:doc-api-spec` - Documentation OpenAPI
+- `/qa:qa-security` - Audit sécurité OWASP
 EOF
             ;;
 
@@ -437,10 +439,10 @@ EOF
 
 ## Agents Recommandés
 
-- `/data-pipeline` - Créer des pipelines ETL
-- `/data-modeling` - Modèles dbt
-- `/data-analytics` - Dashboards et KPIs
-- `/ops-monitoring` - Monitoring pipelines
+- `/data:data-pipeline` - Créer des pipelines ETL
+- `/data:data-modeling` - Modèles dbt
+- `/data:data-analytics` - Dashboards et KPIs
+- `/ops:ops-monitoring` - Monitoring pipelines
 EOF
             ;;
     esac
@@ -480,21 +482,23 @@ show_summary() {
     echo -e "  ${GREEN}✓${NC} .claude/rules/"
     echo -e "  ${GREEN}✓${NC} .claude/agents/"
     echo -e "  ${GREEN}✓${NC} .claude/output-styles/"
+    echo -e "  ${GREEN}✓${NC} .claude/templates/"
     echo -e "  ${GREEN}✓${NC} .claude/settings.json"
     echo -e "  ${GREEN}✓${NC} CLAUDE.md"
 
     echo ""
     echo -e "${CYAN}Prochaines etapes:${NC}"
     echo "  1. Reviser CLAUDE.md pour l'adapter a votre projet"
-    echo "  2. Tester avec: claude"
-    echo "  3. Commencer avec: /work-explore"
+    echo "  2. Personnaliser le style: /output-style teaching|concise|technical"
+    echo "  3. Tester avec: claude"
+    echo "  4. Commencer avec: /work:work-explore"
     echo ""
-    echo -e "${GREEN}Configuration terminee!${NC}"
+    echo -e "${GREEN}Configuration terminee! (socle $SOCLE_VERSION)${NC}"
 }
 
 # Main
 main() {
-    print_header "Claude Code Setup Wizard v1.0"
+    print_header "Claude Code Setup Wizard $SOCLE_VERSION"
     echo "Ce wizard va configurer le socle Claude Code pour votre projet."
     echo ""
 
