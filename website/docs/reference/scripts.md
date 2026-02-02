@@ -324,19 +324,6 @@ Valide la configuration Claude Code et calcule un score de qualite.
 
 ## Scripts Outils
 
-### setup-wizard.sh (deprecie)
-
-:::caution Deprecie
-`setup-wizard.sh` est un alias vers `new-project.sh --simple`. Utilisez directement `new-project.sh --simple` a la place.
-:::
-
-```bash
-# Equivalent a : ./scripts/new-project.sh --simple [CHEMIN]
-./scripts/setup-wizard.sh [CHEMIN]
-```
-
----
-
 ### ide.sh
 
 Configure les IDE pour une integration optimale avec claude-socle.
@@ -487,6 +474,5 @@ chmod +x /tmp/new-project.sh
 | `uninstall.sh` | Desinstaller | `./scripts/uninstall.sh` |
 | `doctor.sh` | Diagnostiquer | `./scripts/doctor.sh --fix` |
 | `validate.sh` | Valider la config | `./scripts/validate.sh` |
-| `setup-wizard.sh` | Alias pour `new-project.sh --simple` (deprecie) | `./scripts/new-project.sh --simple .` |
 | `ide.sh` | Configurer les IDE | `./scripts/ide.sh setup vscode` |
 | `learn.sh` | Tutoriel interactif | `./scripts/learn.sh --quick` |
