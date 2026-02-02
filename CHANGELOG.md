@@ -9,6 +9,13 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.22.1] - 2026-02-02
+
+### Supprime
+- **setup-wizard.sh supprime** : le wrapper de compatibilite est retire, utiliser `new-project.sh --simple` directement
+
+---
+
 ## [1.22.0] - 2026-02-02
 
 ### Modifie
