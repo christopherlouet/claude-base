@@ -130,7 +130,7 @@ describe('ModuleName', () => {
 ### Setup
 ```bash
 # Configuration automatique du socle
-./scripts/setup-wizard.sh
+./scripts/new-project.sh --simple .
 ```
 
 ## Workflows Recommandés

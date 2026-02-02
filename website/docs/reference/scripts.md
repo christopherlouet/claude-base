@@ -24,7 +24,7 @@ Les scripts sont organises en 4 categories :
 | **Installation** | `new-project.sh`, `install.sh` | Installer le socle |
 | **Maintenance** | `update.sh`, `diff.sh`, `uninstall.sh` | Maintenir le socle |
 | **Diagnostic** | `doctor.sh`, `validate.sh` | Verifier l'installation |
-| **Outils** | `setup-wizard.sh`, `ide.sh`, `learn.sh` | Configuration avancee |
+| **Outils** | `ide.sh`, `learn.sh` | Configuration avancee |
 
 ---
 
@@ -324,46 +324,15 @@ Valide la configuration Claude Code et calcule un score de qualite.
 
 ## Scripts Outils
 
-### setup-wizard.sh
+### setup-wizard.sh (deprecie)
 
-Assistant de configuration interactif qui detecte le type de projet et propose une configuration optimale.
+:::caution Deprecie
+`setup-wizard.sh` est un alias vers `new-project.sh --simple`. Utilisez directement `new-project.sh --simple` a la place.
+:::
 
 ```bash
+# Equivalent a : ./scripts/new-project.sh --simple [CHEMIN]
 ./scripts/setup-wizard.sh [CHEMIN]
-```
-
-**Fonctionnalites :**
-
-1. **Detection automatique** du type de projet (React, Vue, Node, Python, Go, Flutter)
-2. **Analyse des dependances** et frameworks utilises
-3. **Configuration personnalisee** des hooks et settings
-4. **Generation de CLAUDE.md** adapte au projet
-
-**Exemple :**
-
-```bash
-# Lancer le wizard dans le repertoire courant
-./scripts/setup-wizard.sh
-
-# Lancer pour un projet specifique
-./scripts/setup-wizard.sh /chemin/vers/projet
-```
-
-**Workflow interactif :**
-
-```
-═══════════════════════════════════════════════════════════════
-  Setup Wizard - Configuration intelligente
-═══════════════════════════════════════════════════════════════
-
-→ Detection du type de projet...
-✓ Projet detecte: React + TypeScript
-
-→ Souhaitez-vous activer les hooks Claude Code? [Y/n]
-→ Souhaitez-vous configurer les serveurs MCP? [Y/n]
-→ Souhaitez-vous generer un CLAUDE.md personnalise? [Y/n]
-
-✓ Configuration terminee!
 ```
 
 ---
@@ -518,6 +487,6 @@ chmod +x /tmp/new-project.sh
 | `uninstall.sh` | Desinstaller | `./scripts/uninstall.sh` |
 | `doctor.sh` | Diagnostiquer | `./scripts/doctor.sh --fix` |
 | `validate.sh` | Valider la config | `./scripts/validate.sh` |
-| `setup-wizard.sh` | Configuration guidee | `./scripts/setup-wizard.sh` |
+| `setup-wizard.sh` | Alias pour `new-project.sh --simple` (deprecie) | `./scripts/new-project.sh --simple .` |
 | `ide.sh` | Configurer les IDE | `./scripts/ide.sh setup vscode` |
 | `learn.sh` | Tutoriel interactif | `./scripts/learn.sh --quick` |
