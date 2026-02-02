@@ -9,6 +9,14 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.22.2] - 2026-02-02
+
+### Modifie
+- **README** : migration des commandes vers le format namespace, correction badge release, arbre structure et politique de versioning
+- **CI** : bump actions/checkout, actions/setup-node et actions/cache via Dependabot
+
+---
+
 ## [1.22.1] - 2026-02-02
 
 ### Supprime
