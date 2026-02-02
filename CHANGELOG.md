@@ -9,6 +9,26 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.22.0] - 2026-02-02
+
+### Modifie
+- **setup-wizard.sh deprecie** : remplace par un wrapper de 14 lignes qui redirige vers `new-project.sh --simple`, eliminant 520+ lignes de code duplique
+
+---
+
+## [1.21.0] - 2026-02-02
+
+### Ajoute
+- **Auto-creation de branches** : les workflows feature/bugfix/release creent automatiquement une branche et une PR active
+
+### Modifie
+- **Commandes namespacees** : toutes les references de commandes utilisent le format namespace (`/work:work-explore` au lieu de `/work-explore`)
+
+### Corrige
+- **CI ShellCheck** : resolution de SC2155 (declare and assign separately) dans `update.sh`
+
+---
+
 ## [1.20.0] - 2026-02-01
 
 ### Ajoute
