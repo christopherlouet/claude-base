@@ -6,7 +6,7 @@
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
 [![Tests](https://img.shields.io/badge/tests-258%20passing-brightgreen)](./tests)
 [![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
-[![Release](https://img.shields.io/badge/release-v1.20.0-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
+[![Release](https://img.shields.io/badge/release-v1.22.1-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
 
 Template de configuration Claude Code pour un workflow de développement optimal.
@@ -116,10 +116,12 @@ claude-socle/
 │
 ├── .gitleaks.toml               # Configuration gitleaks (secrets)
 ├── VERSION                      # Version centralisée du socle
+│
+├── scripts/                     # Scripts utilitaires
+│   ├── new-project.sh           # Création projet interactif
 │   ├── install.sh               # Installation
 │   ├── update.sh                # Mise à jour
 │   ├── validate.sh              # Validation
-│   ├── new-project.sh           # Création projet interactif
 │   ├── uninstall.sh             # Désinstallation
 │   ├── doctor.sh                # Diagnostic
 │   ├── diff.sh                  # Comparaison avec socle
@@ -149,60 +151,61 @@ claude-socle/
 
 | Commande | Description |
 |----------|-------------|
-| `/explore [cible]` | Explorer et comprendre du code |
-| `/plan [feature]` | Planifier une implémentation |
-| `/commit [contexte]` | Créer un commit propre |
-| `/pr [contexte]` | Créer une Pull Request |
+| `/work:work-explore [cible]` | Explorer et comprendre du code |
+| `/work:work-specify [feature]` | Creer une specification fonctionnelle |
+| `/work:work-plan [feature]` | Planifier une implementation |
+| `/work:work-commit [contexte]` | Creer un commit propre |
+| `/work:work-pr [contexte]` | Creer une Pull Request |
 
-### Développement
+### Developpement
 
 | Commande | Description |
 |----------|-------------|
-| `/tdd [feature]` | Test-Driven Development |
-| `/test [cible]` | Générer des tests |
-| `/debug [problème]` | Déboguer méthodiquement |
-| `/refactor [cible]` | Refactoring guidé |
-| `/api [endpoint]` | Créer/documenter API |
+| `/dev:dev-tdd [feature]` | Test-Driven Development |
+| `/dev:dev-test [cible]` | Generer des tests |
+| `/dev:dev-debug [probleme]` | Deboguer methodiquement |
+| `/dev:dev-refactor [cible]` | Refactoring guide |
+| `/dev:dev-api [endpoint]` | Creer/documenter API |
 | `/dev:dev-neovim [plugin]` | Plugins et config Neovim/Lua |
 
-### Qualité
+### Qualite
 
 | Commande | Description |
 |----------|-------------|
-| `/review [cible]` | Code review détaillée |
-| `/security [cible]` | Audit sécurité OWASP |
-| `/perf [cible]` | Analyse performance |
-| `/a11y [cible]` | Audit accessibilité WCAG |
+| `/qa:qa-review [cible]` | Code review detaillee |
+| `/qa:qa-security [cible]` | Audit securite OWASP |
+| `/qa:qa-perf [cible]` | Analyse performance |
+| `/qa:qa-a11y [cible]` | Audit accessibilite WCAG |
 | `/qa:qa-neovim` | Audit config Neovim |
 
 ### Maintenance
 
 | Commande | Description |
 |----------|-------------|
-| `/hotfix [problème]` | Correction urgente |
-| `/release [version]` | Créer une release |
-| `/migrate [cible]` | Migration code/deps |
-| `/deps [cible]` | Audit et MAJ dépendances |
-| `/changelog [ctx]` | Générer/maintenir changelog |
-| `/docker [cible]` | Dockeriser un projet |
-| `/doc [cible]` | Documentation |
-| `/fix-issue [#]` | Corriger une issue GitHub |
-| `/i18n [cible]` | Internationalisation |
+| `/ops:ops-hotfix [probleme]` | Correction urgente |
+| `/ops:ops-release [version]` | Creer une release |
+| `/ops:ops-migrate [cible]` | Migration code/deps |
+| `/ops:ops-deps [cible]` | Audit et MAJ dependances |
+| `/doc:doc-changelog [ctx]` | Generer/maintenir changelog |
+| `/ops:ops-docker [cible]` | Dockeriser un projet |
+| `/doc:doc-generate [cible]` | Documentation |
+| `/doc:doc-fix-issue [#]` | Corriger une issue GitHub |
+| `/doc:doc-i18n [cible]` | Internationalisation |
 
-### Découverte
+### Decouverte
 
 | Commande | Description |
 |----------|-------------|
-| `/onboard [cible]` | Découvrir un codebase |
-| `/explain [code]` | Expliquer du code |
+| `/doc:doc-onboard [cible]` | Decouvrir un codebase |
+| `/doc:doc-explain [code]` | Expliquer du code |
 
 ### Mobile (Flutter)
 
 | Commande | Description |
 |----------|-------------|
-| `/flutter [widget]` | Créer widgets/screens Flutter |
-| `/supabase [feature]` | Backend Supabase (Auth, DB, Storage) |
-| `/mobile [cible]` | Audit qualité app mobile |
+| `/dev:dev-flutter [widget]` | Creer widgets/screens Flutter |
+| `/dev:dev-supabase [feature]` | Backend Supabase (Auth, DB, Storage) |
+| `/qa:qa-mobile [cible]` | Audit qualite app mobile |
 
 ## Workflow Recommandé
 
@@ -215,42 +218,42 @@ claude-socle/
 ### Exemple pratique (Web)
 
 ```bash
-# 1. Explorer le système existant
-/explore le système d'authentification
+# 1. Explorer le systeme existant
+/work:work-explore le systeme d'authentification
 
 # 2. Planifier la nouvelle feature
-/plan ajouter OAuth2 Google
+/work:work-plan ajouter OAuth2 Google
 
-# 3. Implémenter en TDD
-/tdd OAuth2 authentication flow
+# 3. Implementer en TDD
+/dev:dev-tdd OAuth2 authentication flow
 
 # 4. Review avant commit
-/review les changements
+/qa:qa-review les changements
 
-# 5. Créer la PR
-/pr OAuth2 Google authentication
+# 5. Creer la PR
+/work:work-pr OAuth2 Google authentication
 ```
 
 ### Exemple pratique (Mobile Flutter)
 
 ```bash
 # 1. Explorer l'architecture existante
-/explore la structure des features
+/work:work-explore la structure des features
 
 # 2. Planifier le nouveau screen
-/plan ajouter écran de profil utilisateur
+/work:work-plan ajouter ecran de profil utilisateur
 
-# 3. Créer le widget/screen Flutter
-/flutter UserProfileScreen avec BLoC
+# 3. Creer le widget/screen Flutter
+/dev:dev-flutter UserProfileScreen avec BLoC
 
 # 4. Configurer le backend Supabase
-/supabase endpoint profil utilisateur
+/dev:dev-supabase endpoint profil utilisateur
 
-# 5. Audit qualité mobile
-/mobile vérifier performance et accessibilité
+# 5. Audit qualite mobile
+/qa:qa-mobile verifier performance et accessibilite
 
-# 6. Créer la PR
-/pr écran profil utilisateur
+# 6. Creer la PR
+/work:work-pr ecran profil utilisateur
 ```
 
 ## Templates Disponibles (10)
@@ -530,10 +533,10 @@ git pull origin main
 
 | Version | Support | Notes |
 |---------|---------|-------|
-| 1.16.x | Actuel | Version stable |
-| 1.15.x | Supporté | Corrections de sécurité |
-| 1.14.x | Supporté | Corrections de sécurité |
-| < 1.14 | Non supporté | Mise à jour recommandée |
+| 1.22.x | Actuel | Version stable |
+| 1.21.x | Supporte | Corrections de securite |
+| 1.20.x | Supporte | Corrections de securite |
+| < 1.20 | Non supporte | Mise a jour recommandee |
 
 ### Changelog
 
