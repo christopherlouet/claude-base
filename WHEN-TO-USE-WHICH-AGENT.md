@@ -1,6 +1,6 @@
 # Guide de Choix des Agents et Commandes
 
-> Comment choisir le bon agent parmi les 56 disponibles dans claude-socle.
+> Comment choisir le bon agent parmi les 57 disponibles dans claude-socle.
 
 ## Matrice de Decision Rapide
 
@@ -34,7 +34,7 @@
 
 ---
 
-## Agents par Categorie (56)
+## Agents par Categorie (57)
 
 ### WORK- : Workflow Principal (1 agent)
 
