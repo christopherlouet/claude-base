@@ -28,7 +28,7 @@ cd website && npm install && cd ..
 
 ```
 .claude/
-  commands/    # 119 commandes (source de verite)
+  commands/    # 120 commandes (source de verite)
   agents/      # 57 sub-agents
   skills/      # 41 skills
   rules/       # 21 regles contextuelles

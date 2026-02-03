@@ -40,7 +40,7 @@ const comparisonData: ComparisonRow[] = [
   },
   {
     aspect: 'Nombre',
-    commands: '119',
+    commands: 120,
     agents: '57',
     skills: '41',
   },

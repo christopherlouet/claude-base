@@ -328,8 +328,8 @@ teardown() {
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Pas de backup créé (skip)
-    [[ "$output" == *"skip"* ]] || [[ "$output" == *"déjà"* ]]
+    # Pas de backup créé (skip) - contient tous les @imports
+    [[ "$output" == *"skip"* ]] || [[ "$output" == *"déjà"* ]] || [[ "$output" == *"contient tous les @imports"* ]]
 }
 
 @test "update.sh --upgrade-claude-md détecte les sections dupliquées" {

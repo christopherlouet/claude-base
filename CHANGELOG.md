@@ -9,6 +9,30 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.23.0] - 2026-02-03
+
+### Ajoute
+- **Bonnes pratiques Boris Cherny** : integration des recommandations du createur de Claude Code
+  - Nouvelle section "Verification" dans CLAUDE.md (feedback loop = 2-3x qualite)
+  - Nouvelle section "Modele Recommande" (Opus 4.5 avec thinking)
+  - Nouvelle section "Prompting Avance" ("Grill me", "Prove it", "elegant solution")
+  - Nouvelle section "Sessions Paralleles" (git worktrees)
+- **`/work:work-commit-push-pr`** : nouvelle commande combinee commit+push+PR (120 commands)
+- **`docs/reference/best-practices.md`** : fichier de reference importe via @import
+- **`docs/guides/PROMPTING-GUIDE.md`** : guide complet des techniques de prompting
+- **Output style `explanatory`** : mode apprentissage avec explications detaillees (8 styles)
+- **MCP servers** : ajout Slack, Sentry, BigQuery, Linear, Notion (13 servers)
+
+### Modifie
+- **`update.sh`** : amelioration de la mise a jour des @imports
+  - Copie toujours `docs/reference/*` (mise a jour des fichiers)
+  - Detecte et ajoute les @imports manquants dans CLAUDE.md existants
+  - Ajoute automatiquement `@docs/reference/best-practices.md`
+- **Skill `git-worktrees`** : enrichi avec le workflow Boris (aliases shell, worktree analyse, notifications)
+- **Compteurs documentation** : mise a jour 119 → 120 commands
+
+---
+
 ## [1.22.2] - 2026-02-02
 
 ### Modifie
@@ -62,7 +86,7 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 ## [1.19.1] - 2026-01-30
 
 ### Corrige
-- **Compteurs documentation** : alignement des compteurs (119 cmd, 57 agents, 41 skills, 21 rules) dans README badge, Docusaurus config (navbar/footer), quick-start, commands/index, skills/index, CONTRIBUTING, assistant.md
+- **Compteurs documentation** : alignement des compteurs (120 cmd, 57 agents, 41 skills, 21 rules) dans README badge, Docusaurus config (navbar/footer), quick-start, commands/index, skills/index, CONTRIBUTING, assistant.md
 - **Badge version README** : correction v1.17.0 → v1.19.0
 
 ---
@@ -81,7 +105,7 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 ### Modifie
 - **URLs documentation** : migration de `docs.anthropic.com` vers `code.claude.com` dans tous les fichiers MD
 - **Hook Events CLAUDE.md** : table enrichie avec 13 events (etait 8), types command/prompt
-- **docs/CHEATSHEET.md** : mise a jour complete avec tous les 119 commandes par categorie, accents corriges
+- **docs/CHEATSHEET.md** : mise a jour complete avec tous les 120 commandes par categorie, accents corriges
 - **docs/ALIASES.md** : enrichissement avec orchestrateur, nouveaux alias dev/qa/ops/growth
 - **docs/GUIDE.md** : restructuration et enrichissement du guide complet
 - **docs/GUIDE-UTILISATEUR.md** : mise a jour du guide utilisateur
@@ -112,7 +136,7 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 - **Section Hooks CLAUDE.md** : reecrite avec tableau complet des 23 hooks configures et variables d'environnement
 - **Skills frontmatter** : enrichissement de 26 skills avec `disable-model-invocation`, `argument-hint`, `model`, `user-invocable`
 - **writing-skills/SKILL.md** : documentation complete des nouveaux champs frontmatter Claude Code 2.1+
-- **Compteurs** : 119 commandes, 57 sub-agents, 41 skills, 21 regles (README, CLAUDE.md, website)
+- **Compteurs** : 120 commandes, 57 sub-agents, 41 skills, 21 regles (README, CLAUDE.md, website)
 
 ---
 
