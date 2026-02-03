@@ -701,7 +701,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 | Dossier | Contenu |
 |---------|---------|
-| `.claude/commands/` | 119 commandes organisées par domaine |
+| `.claude/commands/` | 120 commandes organisées par domaine |
 | `.claude/agents/` | 57 sub-agents avec contexte isolé |
 | `.claude/skills/` | 41 skills à déclenchement automatique |
 | `.claude/rules/` | 21 règles contextuelles par path |

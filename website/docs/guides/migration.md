@@ -58,7 +58,7 @@ ls -la .claude/
 Vous devriez voir :
 ```
 .claude/
-├── commands/      # 119 commandes
+├── commands/      # 120 commandes
 ├── agents/        # 57 agents
 ├── skills/        # 41 skills
 ├── rules/         # 21 rules

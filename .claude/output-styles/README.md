@@ -9,6 +9,7 @@ Les **Output Styles** permettent de personnaliser le format des reponses de Clau
 | Style | Commande | Description | Cas d'usage |
 |-------|----------|-------------|-------------|
 | **teaching** | `/output-style teaching` | Mode pedagogique | Apprentissage, formation, explications |
+| **explanatory** | `/output-style explanatory` | Raisonnement detaille | Comprendre le pourquoi, onboarding, debug |
 | **concise** | `/output-style concise` | Bref et direct | Dev experimente, rapidite |
 | **technical** | `/output-style technical` | Technique approfondi | Architecture, decisions techniques |
 | **review** | `/output-style review` | Revue de code | Code review, PR, audits |
@@ -31,12 +32,15 @@ Les **Output Styles** permettent de personnaliser le format des reponses de Clau
 | Tache | Style recommande |
 |-------|------------------|
 | Apprendre un concept | teaching |
+| Comprendre du code existant | explanatory |
 | Fix rapide | concise |
 | Decisions d'architecture | technical |
 | Code review | review |
 | Documentation README | emoji |
 | Rapport d'audit | structured |
 | Script CI/CD | minimal |
+| Debug complexe | explanatory |
+| Onboarding nouveau dev | explanatory |
 
 ### Par contexte
 
