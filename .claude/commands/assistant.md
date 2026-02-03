@@ -80,7 +80,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
-│  │    (118)    │  │    (56)     │  │    (40)     │             │
+│  │    (120)    │  │    (57)     │  │    (41)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Délégation  │  │ Activation  │             │
 │  │  manuelle   │  │ automatique │  │ automatique │             │
@@ -361,9 +361,9 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 ---
 
-## Section 7: Catalogue des Commandes (118)
+## Section 7: Catalogue des Commandes (120)
 
-### WORK- : Workflow Principal (10)
+### WORK- : Workflow Principal (11)
 
 | Commande | Usage |
 |----------|-------|
@@ -372,6 +372,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/work:work-clarify` | Clarifier les ambiguïtés (max 5 questions) |
 | `/work:work-plan` | Planifier (génère plan.md + tasks.md) |
 | `/work:work-commit` | Créer un commit Conventional Commits |
+| `/work:work-commit-push-pr` | Commit + Push + PR en une seule commande |
 | `/work:work-pr` | Créer une Pull Request documentée |
 | `/work:work-flow-feature` | Workflow complet feature |
 | `/work:work-flow-bugfix` | Workflow complet bugfix |
@@ -578,6 +579,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 │ LIVRER                                                                 │
 │ ──────                                                                 │
 │ Créer un commit                         →  /work:work-commit                │
+│ Commit + Push + PR en un                →  /work:work-commit-push-pr        │
 │ Créer une PR                            →  /work:work-pr                    │
 │ Publier une release                     →  /ops:ops-release                │
 │ Correction urgente                      →  /ops:ops-hotfix                 │
