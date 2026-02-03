@@ -126,6 +126,7 @@ describe('ModuleName', () => {
 | [docs/guides/MOBILE-GUIDE.md](docs/guides/MOBILE-GUIDE.md) | Flutter, Clean Architecture, BLoC |
 | [docs/guides/API-GUIDE.md](docs/guides/API-GUIDE.md) | REST, GraphQL, Express, Fastify |
 | [docs/guides/DATA-GUIDE.md](docs/guides/DATA-GUIDE.md) | ETL, Airflow, dbt, Data Warehouse |
+| [docs/guides/PROMPTING-GUIDE.md](docs/guides/PROMPTING-GUIDE.md) | Techniques de prompting avance (Boris Cherny) |
 
 ### Setup
 ```bash
@@ -191,6 +192,7 @@ describe('ModuleName', () => {
 @docs/reference/hooks-reference.md
 @docs/reference/skills-catalog.md
 @docs/reference/advanced-features.md
+@docs/reference/best-practices.md
 
 ## Anti-patterns à Éviter
 
@@ -203,3 +205,5 @@ describe('ModuleName', () => {
 - Copier-coller sans adapter
 - Optimiser prématurément
 - Ignorer les warnings de lint/types
+- **Ne pas donner de moyen de vérification à Claude**
+- **Prompts vagues sans contexte ni exemples**

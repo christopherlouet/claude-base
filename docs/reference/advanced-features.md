@@ -2,11 +2,12 @@
 
 ## Output Styles (Claude Code 2.1+)
 
-Modes d'interaction personnalisés dans `.claude/output-styles/` (7 styles):
+Modes d'interaction personnalisés dans `.claude/output-styles/` (8 styles):
 
 | Style | Utilisation | Commande |
 |-------|-------------|----------|
 | `teaching` | Mode pédagogique avec explications | `/output-style teaching` |
+| `explanatory` | Raisonnement détaillé, comprendre le pourquoi (recommandé par Boris) | `/output-style explanatory` |
 | `concise` | Réponses brèves et directes | `/output-style concise` |
 | `technical` | Détails techniques approfondis | `/output-style technical` |
 | `review` | Revue de code structurée | `/output-style review` |
@@ -70,6 +71,8 @@ Templates pour la gestion d'infrastructure Proxmox VE dans `.claude/templates/pr
 
 Configuration centralisée des MCP servers dans `.mcp.json`:
 
+### Serveurs de base
+
 | Server | Usage | Activé |
 |--------|-------|--------|
 | `filesystem` | Accès avancé aux fichiers | Non |
@@ -79,8 +82,46 @@ Configuration centralisée des MCP servers dans `.mcp.json`:
 | `postgres` | Connexion PostgreSQL | Non |
 | `sqlite` | Base SQLite locale | Non |
 | `puppeteer` | Automatisation navigateur | Non |
+| `sequential-thinking` | Raisonnement structuré étape par étape | Non |
+
+### Serveurs recommandés par Boris Cherny
+
+| Server | Usage | Activé |
+|--------|-------|--------|
+| `slack` | Recherche de bugs dans les threads, communication équipe | Non |
+| `sentry` | Analyse d'erreurs et monitoring en production | Non |
+| `bigquery` | Requêtes analytics directes (élimine l'écriture SQL manuelle) | Non |
+| `linear` | Gestion de projet et issues | Non |
+| `notion` | Documentation et bases de connaissances | Non |
 
 Pour activer un server: `"enabled": true` dans `.mcp.json`
+
+### Configuration des variables d'environnement
+
+Créez un fichier `.env` avec les tokens nécessaires :
+
+```bash
+# GitHub
+GITHUB_TOKEN=ghp_xxxxx
+
+# Slack
+SLACK_BOT_TOKEN=xoxb-xxxxx
+SLACK_TEAM_ID=T0123456789
+
+# Sentry
+SENTRY_AUTH_TOKEN=sntrys_xxxxx
+SENTRY_ORG=my-org
+
+# BigQuery
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+BIGQUERY_PROJECT_ID=my-project
+
+# Linear
+LINEAR_API_KEY=lin_api_xxxxx
+
+# Notion
+NOTION_API_KEY=secret_xxxxx
+```
 
 ## CLAUDE.md @imports
 
