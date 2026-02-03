@@ -9,6 +9,20 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.23.1] - 2026-02-03
+
+### Corrige
+- **Compteurs documentation** : correction des incohérences dans tous les fichiers
+  - `Stats.tsx` : 100→120 commands, 37→57 agents, 24→41 skills, 15→21 rules
+  - `website/docs/intro/index.md` : Rules 20→21, WORK 10→11
+  - `website/docs/reference/index.md` : Commands 119→120, Rules 20→21, WORK 10→11
+  - `WHEN-TO-USE-WHICH-AGENT.md` : 56→57 agents
+  - `docs/ARCHITECTURE.md` : Skills 40→41, Agents 56→57, Rules 20→21
+  - `.claude/skills/README.md` : 40→41 skills
+- **`/assistant`** : ajout de `/work:work-commit-push-pr` dans le catalogue (11 WORK commands)
+
+---
+
 ## [1.23.0] - 2026-02-03
 
 ### Ajoute
