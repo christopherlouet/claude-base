@@ -42,13 +42,13 @@ Chaque etape a ses commandes dediees, ses agents specialises et ses bonnes prati
 | **Commands** | 120 | Commandes declenchees manuellement (`/nom`) |
 | **Agents** | 57 | Sub-agents autonomes avec contexte isole |
 | **Skills** | 41 | Auto-declenchement sur mots-cles |
-| **Rules** | 20 | Regles par technologie/fichier |
+| **Rules** | 21 | Regles par technologie/fichier |
 
 ## Domaines couverts
 
 | Domaine | Commandes | Description |
 |---------|-----------|-------------|
-| **WORK** | 10 | Workflow principal (explore, plan, commit, PR) |
+| **WORK** | 11 | Workflow principal (explore, plan, commit, PR) |
 | **DEV** | 23 | Developpement (TDD, API, composants, debug) |
 | **QA** | 14 | Qualite (review, securite, performance, a11y) |
 | **OPS** | 30 | Operations (CI/CD, Docker, monitoring, GitFlow) |

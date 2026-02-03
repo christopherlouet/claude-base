@@ -22,7 +22,7 @@ skill-name/
 └── scripts/           # Scripts helper (optionnel)
 ```
 
-## Skills disponibles (40)
+## Skills disponibles (41)
 
 | Skill | Mots-cles declencheurs | Description |
 |-------|----------------------|-------------|

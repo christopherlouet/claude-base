@@ -23,7 +23,7 @@ description: Reference rapide et matrices
 
 | Domaine | Commandes | Description |
 |---------|-----------|-------------|
-| [WORK](/docs/commands/work) | 10 | Workflow principal |
+| [WORK](/docs/commands/work) | 11 | Workflow principal |
 | [DEV](/docs/commands/dev) | 16 | Developpement |
 | [QA](/docs/commands/qa) | 11 | Qualite |
 | [OPS](/docs/commands/ops) | 24 | Operations |
@@ -37,10 +37,10 @@ description: Reference rapide et matrices
 
 | Composant | Nombre | Lien |
 |-----------|--------|------|
-| Commands | 119 | [Voir](/docs/commands) |
+| Commands | 120 | [Voir](/docs/commands) |
 | Agents | 57 | [Voir](/docs/agents) |
 | Skills | 41 | [Voir](/docs/skills) |
-| Rules | 20 | [Voir](/docs/rules) |
+| Rules | 21 | [Voir](/docs/rules) |
 | Scripts | 12 | [Voir](/docs/reference/scripts) |
 
 ## Raccourcis
