@@ -588,13 +588,7 @@ upgrade_claude_md() {
         return
     fi
 
-    # Vérifier si @imports déjà présents
-    if grep -q "@docs/reference/" "$claude_md" 2>/dev/null; then
-        success "CLAUDE.md contient déjà les @imports, skip"
-        return
-    fi
-
-    # Copier docs/reference/ du socle vers le projet
+    # Copier docs/reference/ du socle vers le projet (toujours, pour mettre à jour)
     local src_ref="$SOCLE_DIR/docs/reference"
     local dest_ref="$TARGET_DIR/docs/reference"
 
@@ -605,9 +599,8 @@ upgrade_claude_md() {
 
     if $DRY_RUN; then
         echo -e "${DIM}[DRY-RUN]${NC} Copie docs/reference/"
-        echo -e "${DIM}[DRY-RUN]${NC} Backup CLAUDE.md"
-        echo -e "${DIM}[DRY-RUN]${NC} Insertion @imports dans CLAUDE.md"
-        echo -e "${DIM}[DRY-RUN]${NC} Détection sections dupliquées"
+        echo -e "${DIM}[DRY-RUN]${NC} Vérification @imports manquants"
+        echo -e "${DIM}[DRY-RUN]${NC} Backup CLAUDE.md si modifications"
         return
     fi
 
@@ -617,6 +610,57 @@ upgrade_claude_md() {
     local ref_count
     ref_count=$(find "$dest_ref" -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
     success "docs/reference/ copié ($ref_count fichiers)"
+
+    # Vérifier si @imports déjà présents
+    if grep -q "@docs/reference/" "$claude_md" 2>/dev/null; then
+        # Vérifier les @imports manquants et les ajouter
+        local missing_imports=()
+        local all_imports=(
+            "@docs/reference/commands.md"
+            "@docs/reference/project-structures.md"
+            "@docs/reference/agents-catalog.md"
+            "@docs/reference/hooks-reference.md"
+            "@docs/reference/skills-catalog.md"
+            "@docs/reference/advanced-features.md"
+            "@docs/reference/best-practices.md"
+        )
+
+        for import in "${all_imports[@]}"; do
+            if ! grep -qF "$import" "$claude_md" 2>/dev/null; then
+                missing_imports+=("$import")
+            fi
+        done
+
+        if [[ ${#missing_imports[@]} -eq 0 ]]; then
+            success "CLAUDE.md contient tous les @imports"
+            return
+        fi
+
+        # Ajouter les imports manquants
+        info "Ajout de ${#missing_imports[@]} @import(s) manquant(s)..."
+
+        # Backup
+        local backup_file
+        backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$claude_md" "$backup_file"
+
+        # Trouver le dernier @import existant et ajouter après
+        local last_import_line
+        last_import_line=$(grep -n "@docs/reference/" "$claude_md" | tail -1 | cut -d: -f1)
+
+        if [[ -n "$last_import_line" ]]; then
+            local tmp_file
+            tmp_file=$(mktemp)
+            head -n "$last_import_line" "$claude_md" > "$tmp_file"
+            for import in "${missing_imports[@]}"; do
+                echo "$import" >> "$tmp_file"
+            done
+            tail -n +"$((last_import_line + 1))" "$claude_md" >> "$tmp_file"
+            mv "$tmp_file" "$claude_md"
+            success "Ajouté: ${missing_imports[*]}"
+        fi
+        return
+    fi
 
     # Créer un backup
     local backup_file
@@ -631,7 +675,8 @@ upgrade_claude_md() {
 @docs/reference/agents-catalog.md
 @docs/reference/hooks-reference.md
 @docs/reference/skills-catalog.md
-@docs/reference/advanced-features.md"
+@docs/reference/advanced-features.md
+@docs/reference/best-practices.md"
 
     # Trouver la première ligne vide et insérer après
     local tmp_file

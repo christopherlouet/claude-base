@@ -234,7 +234,7 @@ Créer un endpoint pour gérer les produits d'un e-commerce.
 {
   "name": "iPhone 15 Pro",
   "description": "Smartphone Apple dernière génération",
-  "price": 1199.99,
+  "price": 1209.99,
   "category": "electronics",
   "stock": 50
 }
@@ -250,7 +250,7 @@ Créer un endpoint pour gérer les produits d'un e-commerce.
     "id": "prod_abc123",
     "name": "iPhone 15 Pro",
     "description": "Smartphone Apple dernière génération",
-    "price": 1199.99,
+    "price": 1209.99,
     "category": "electronics",
     "stock": 50,
     "createdAt": "2024-01-15T10:30:00Z"

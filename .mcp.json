@@ -54,6 +54,54 @@
       "args": ["-y", "@anthropics/mcp-server-sequential-thinking"],
       "description": "Raisonnement structure etape par etape",
       "enabled": false
+    },
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-slack"],
+      "env": {
+        "SLACK_BOT_TOKEN": "${SLACK_BOT_TOKEN}",
+        "SLACK_TEAM_ID": "${SLACK_TEAM_ID}"
+      },
+      "description": "Integration Slack pour recherche de bugs, analyse de threads, et communication equipe (recommande par Boris Cherny)",
+      "enabled": false
+    },
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-sentry"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
+        "SENTRY_ORG": "${SENTRY_ORG}"
+      },
+      "description": "Integration Sentry pour analyse d'erreurs et monitoring (recommande par Boris Cherny)",
+      "enabled": false
+    },
+    "bigquery": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-bigquery"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}",
+        "BIGQUERY_PROJECT_ID": "${BIGQUERY_PROJECT_ID}"
+      },
+      "description": "Integration BigQuery pour requetes analytics directes (recommande par Boris Cherny - elimine l'ecriture manuelle de SQL)",
+      "enabled": false
+    },
+    "linear": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-linear"],
+      "env": {
+        "LINEAR_API_KEY": "${LINEAR_API_KEY}"
+      },
+      "description": "Integration Linear pour gestion de projet et issues",
+      "enabled": false
+    },
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-notion"],
+      "env": {
+        "NOTION_API_KEY": "${NOTION_API_KEY}"
+      },
+      "description": "Integration Notion pour documentation et bases de connaissances",
+      "enabled": false
     }
   }
 }
