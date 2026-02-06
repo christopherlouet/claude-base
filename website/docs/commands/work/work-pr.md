@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "/work:work-pr"
 description: "Crée une Pull Request complète et bien documentée."
 tags:

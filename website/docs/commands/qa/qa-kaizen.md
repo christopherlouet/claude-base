@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 title: "/qa:qa-kaizen"
 description: "Amélioration continue du code et des processus avec la méthodologie Kaizen."
 tags:

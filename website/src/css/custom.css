@@ -525,6 +525,37 @@ pre {
   }
 }
 
+/* Focus/Keyboard accessibility */
+.command-card:focus-visible,
+.agent-card:focus-visible,
+.skill-card:focus-visible,
+.tutorial-card:focus-visible {
+  outline: 3px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.15);
+}
+
+.command-card a:focus-visible,
+.agent-card a:focus-visible,
+.skill-card a:focus-visible,
+.tutorial-card a:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.stat-card:focus-visible {
+  outline: 3px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a.button:focus-visible {
+  outline: 3px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.15);
+}
+
 /* Print styles */
 @media print {
   .navbar,
