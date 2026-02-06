@@ -1,4 +1,4 @@
-name: Build Documentation
+name: Deploy Documentation
 
 on:
   push:
@@ -8,6 +8,11 @@ on:
       - '.claude/**'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 # Cancel in-progress runs
 concurrency:
@@ -43,16 +48,19 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=4096
 
-      - name: Generate summary
-        if: always()
-        run: |
-          echo "## Documentation Build" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -d "website/build" ]; then
-            echo "Build successful." >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "To deploy, make the repo public and enable GitHub Pages," >> $GITHUB_STEP_SUMMARY
-            echo "or use \`workflow_dispatch\` after configuring deployment." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "Build failed. Check logs above." >> $GITHUB_STEP_SUMMARY
-          fi
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: website/build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
