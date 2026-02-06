@@ -62,6 +62,7 @@ Skills avec contexte isole.
 | [`ops-opnsense`](/docs/skills/ops-opnsense) | Configuration OPNsense via Terraform. Declencher p... | ops, opnsense, browningluke/opnsense |
 | [`ops-proxmox`](/docs/skills/ops-proxmox) | Infrastructure Proxmox VE avec Terraform (VMs, LXC... | ops, proxmox, pve |
 | [`parallel-agents`](/docs/skills/parallel-agents) | Orchestration d'agents paralleles pour maximiser l... | parallel, agents, qa-security |
+| [`qa-chrome`](/docs/skills/qa-chrome) | Tests visuels et debugging navigateur via Chrome. ... | Chrome, test visuel, navigateur, DOM |
 | [`qa-design`](/docs/skills/qa-design) | Audit de design UI/UX et verification des bonnes p... | design, '][^, `, ` |
 | [`qa-e2e`](/docs/skills/qa-e2e) | Tests End-to-End avec Playwright ou Cypress. Decle... | e2e, end-to-end, test de bout en bout |
 | [`qa-perf`](/docs/skills/qa-perf) | Optimisation des performances d'applications. Decl... | perf, /photo.jpg |

@@ -31,6 +31,8 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 
 | Hook | Déclencheur | Action |
 |------|-------------|--------|
+| **Session info** | SessionStart (startup) | Affiche les informations du projet au démarrage |
+| **Check node_modules** | SessionStart (startup) | Vérifie que node_modules existe si package.json présent |
 | **Protection main** | PreToolUse (Edit/Write) | Bloque modifications sur main/master |
 | **Détection secrets** | PreToolUse (Write/Edit) | Gitleaks vérifie les secrets avant écriture |
 | **Tests pre-commit** | PreToolUse (Bash git commit) | Exécute les tests avant un commit |
@@ -50,7 +52,8 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | **Coverage check** | PostToolUse (Edit test files) | Vérifie la couverture de tests |
 | **Setup init** | Setup (init) | Installe les dépendances au premier lancement |
 | **Setup maintenance** | Setup (maintenance) | Audit et mise à jour périodique |
-| **Notification** | Notification | Log les demandes de permission et idle |
+| **Notification permission** | Notification (permission_prompt) | Log les demandes de permission |
+| **Notification idle** | Notification (idle_prompt) | Log quand Claude attend l'utilisateur |
 | **SubagentStop** | SubagentStop | Log la fin des sub-agents |
 | **SessionEnd** | SessionEnd | Log la fin de session |
 | **PreCompact** | PreCompact | Log avant compaction du contexte |
