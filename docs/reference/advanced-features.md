@@ -67,6 +67,57 @@ Templates pour la gestion d'infrastructure Proxmox VE dans `.claude/templates/pr
 | `infrastructure-template.tf` | Infrastructure type complète |
 | `README.md` | Guide d'utilisation des templates |
 
+## Opus 4.6 : Nouvelles Capacites
+
+Claude Opus 4.6 (`claude-opus-4-6`) apporte des ameliorations majeures pour Claude Code.
+
+### Adaptive Thinking
+
+Remplace le toggle "extended thinking" par 4 niveaux d'effort :
+
+| Niveau | Usage | Cout relatif |
+|--------|-------|-------------|
+| `low` | Taches simples, reformulations | $ |
+| `medium` | Code standard, analyses moderees | $$ |
+| `high` | Problemes complexes, audits approfondis | $$$ |
+| `max` | Taches critiques, architecture, debugging avance | $$$$ |
+
+Le modele ajuste automatiquement son effort selon la complexite detectee. Il est aussi possible de forcer un niveau via l'API :
+
+```typescript
+const response = await anthropic.messages.create({
+  model: 'claude-opus-4-6',
+  max_tokens: 16384,
+  thinking: {
+    type: 'enabled',
+    budget_tokens: 10000,  // budget pour le raisonnement
+    effort: 'high',        // low | medium | high | max
+  },
+  messages: [{ role: 'user', content: prompt }],
+});
+```
+
+### Fenetre de contexte 1M tokens (beta)
+
+Opus 4.6 supporte jusqu'a **1 million de tokens** en entree (beta). La tarification standard s'applique jusqu'a 200k tokens, avec une tarification premium au-dela.
+
+| Tranche | Tarification |
+|---------|-------------|
+| 0 - 200k tokens | Standard |
+| 200k - 1M tokens | Premium (tarif majore) |
+
+### 128k tokens de sortie
+
+La limite de sortie passe a **128k tokens** (contre 8k-32k precedemment), permettant la generation de fichiers complets, de documentation extensive, ou de refactorings massifs en une seule reponse.
+
+### Context Compaction
+
+Resume automatiquement le contexte ancien pour maintenir la coherence sur de longues sessions. Particulierement utile avec les sessions paralleles (git worktrees) et les taches complexes multi-fichiers.
+
+### Agent Teams
+
+Coordination parallele d'agents sur des taches complexes. Permet de lancer plusieurs agents simultanement avec synchronisation automatique des resultats.
+
 ## MCP Configuration (Claude Code 2.1+)
 
 Configuration centralisée des MCP servers dans `.mcp.json`:
