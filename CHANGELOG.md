@@ -9,6 +9,21 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.24.2] - 2026-02-06
+
+### Ajoute
+- **GitHub Pages** : deploiement automatique de la documentation Docusaurus
+  - Workflow `docs.yml` : ajout des jobs `upload-pages-artifact` et `deploy-pages`
+  - Permissions `pages: write` et `id-token: write` configurees
+  - Site accessible sur https://christopherlouet.github.io/claude-socle/
+
+### Corrige
+- **Workflow Specify** : ajout de l'etape manquante "Specify" dans 16 references
+  - Toutes les occurrences affichent desormais le workflow complet en 5 etapes : Explore → Specify → Plan → TDD → Commit
+  - Fichiers corriges : `docusaurus.config.ts`, pages intro, guides, FAQ, workflows, tutorials, `GUIDE.md`
+
+---
+
 ## [1.24.1] - 2026-02-06
 
 ### Corrige
