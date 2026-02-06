@@ -89,7 +89,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  TEMPLATES  │  │    RULES    │  │   HOOKS     │             │
-│  │    (3)      │  │    (20)     │  │    (4)      │             │
+│  │    (3)      │  │    (21)     │  │    (26)     │             │
 │  │             │  │             │  │             │             │
 │  │ Structures  │  │ Conventions │  │ Automation  │             │
 │  │ de fichiers │  │  par path   │  │ pre/post    │             │
