@@ -100,7 +100,7 @@ function generateCommandPage(command: CommandInfo, position: number): string {
 
   const frontmatter = generateFrontmatter({
     sidebar_position: position,
-    title: `/${command.name}`,
+    title: command.domain === 'other' ? `/${command.name}` : `/${command.domain}:${command.name}`,
     description: safeDescription,
     tags: [command.domain, 'command'],
   });
@@ -151,8 +151,10 @@ function generateDomainIndex(domain: Domain, commands: CommandInfo[]): string {
 
   const commandsList = commands
     .map(
-      (cmd) =>
-        `| [\`/${cmd.name}\`](/docs/commands/${domain}/${cmd.name}) | ${cmd.description} |`
+      (cmd) => {
+        const cmdLabel = domain === 'other' ? `/${cmd.name}` : `/${domain}:${cmd.name}`;
+        return `| [\`${cmdLabel}\`](/docs/commands/${domain}/${cmd.name}) | ${cmd.description} |`;
+      }
     )
     .join('\n');
 
@@ -215,7 +217,10 @@ function generateMainIndex(commandsByDomain: Map<Domain, CommandInfo[]>): string
 
 > ${description}
 
-${commands.slice(0, 5).map((cmd) => `- [\`/${cmd.name}\`](/docs/commands/${domain}/${cmd.name})`).join('\n')}
+${commands.slice(0, 5).map((cmd) => {
+    const cmdLabel = domain === 'other' ? `/${cmd.name}` : `/${domain}:${cmd.name}`;
+    return `- [\`${cmdLabel}\`](/docs/commands/${domain}/${cmd.name})`;
+  }).join('\n')}
 ${commands.length > 5 ? `- [... et ${commands.length - 5} autres](/docs/commands/${domain})` : ''}
 `);
   }
@@ -238,9 +243,9 @@ import Stats from '@site/src/components/Stats';
 Les commandes sont declenchees manuellement avec le prefixe \`/\` :
 
 \`\`\`bash
-/work-explore
-/dev-tdd "Description de la feature"
-/qa-security
+/work:work-explore
+/dev:dev-tdd "Description de la feature"
+/qa:qa-security
 \`\`\`
 
 ## Domaines
@@ -251,14 +256,15 @@ ${domainSections.join('\n')}
 
 | Besoin | Commande recommandee |
 |--------|---------------------|
-| Explorer le code | \`/work-explore\` |
-| Planifier une modification | \`/work-plan\` |
-| Developper en TDD | \`/dev-tdd\` |
-| Creer un commit | \`/work-commit\` |
-| Audit de securite | \`/qa-security\` |
-| Audit complet | \`/qa-audit\` |
-| Creer une PR | \`/work-pr\` |
-| Release | \`/ops-release\` |
+| Explorer le code | \`/work:work-explore\` |
+| Specifier le besoin | \`/work:work-specify\` |
+| Planifier une modification | \`/work:work-plan\` |
+| Developper en TDD | \`/dev:dev-tdd\` |
+| Creer un commit | \`/work:work-commit\` |
+| Audit de securite | \`/qa:qa-security\` |
+| Audit complet | \`/qa:qa-audit\` |
+| Creer une PR | \`/work:work-pr\` |
+| Release | \`/ops:ops-release\` |
 
 ---
 

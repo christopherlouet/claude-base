@@ -74,7 +74,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
       POSTGRES_DB: app
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d app"]

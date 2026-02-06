@@ -71,7 +71,7 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'category',
-          label: 'WORK (10)',
+          label: 'WORK (11)',
           collapsed: true,
           link: {
             type: 'doc',
@@ -83,7 +83,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'DEV (16)',
+          label: 'DEV (23)',
           collapsed: true,
           link: {
             type: 'doc',
@@ -95,7 +95,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'QA (11)',
+          label: 'QA (15)',
           collapsed: true,
           link: {
             type: 'doc',
@@ -143,7 +143,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'GROWTH (9)',
+          label: 'GROWTH (11)',
           collapsed: true,
           link: {
             type: 'doc',
@@ -182,8 +182,8 @@ const sidebars: SidebarsConfig = {
           label: 'Orchestrateur (2)',
           collapsed: false,
           items: [
-            'commands/assistant',
-            'commands/assistant-auto',
+            'commands/other/assistant',
+            'commands/other/assistant-auto',
           ],
         },
       ],

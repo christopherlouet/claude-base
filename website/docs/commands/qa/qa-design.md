@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 title: "/qa:qa-design"
 description: "Audit de design UI/UX et verification des bonnes pratiques web."
 tags:

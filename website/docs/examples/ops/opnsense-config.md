@@ -383,6 +383,6 @@ pfctl -e          # Réactiver le firewall
 ## Voir aussi
 
 - [Commande `/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense)
-- [Skill `opnsense-configuration`](/docs/skills/opnsense-configuration)
+- [Skill `ops-opnsense`](/docs/skills/ops-opnsense)
 - [Agent `ops-opnsense`](/docs/agents/ops-opnsense)
 - [Exemple VM Proxmox](/docs/examples/ops/proxmox-vm)

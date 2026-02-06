@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 title: "/qa:qa-mobile"
 description: "Audit de qualité spécifique aux applications mobiles (Flutter, React Native)."
 tags:

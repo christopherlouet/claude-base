@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: "/qa:qa-coverage"
 description: "Analyse et améliore la couverture de tests du code."
 tags:
