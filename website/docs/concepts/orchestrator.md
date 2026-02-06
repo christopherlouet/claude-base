@@ -19,7 +19,7 @@ L'**orchestrateur** est le point d'entree unique de claude-socle. Il analyse vot
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
-│  │    (111)    │  │    (52)     │  │    (32)     │             │
+│  │    (120)    │  │    (57)     │  │    (41)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Delegation  │  │ Activation  │             │
 │  │  manuelle   │  │ automatique │  │ automatique │             │
@@ -28,7 +28,7 @@ L'**orchestrateur** est le point d'entree unique de claude-socle. Il analyse vot
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  TEMPLATES  │  │    RULES    │  │   HOOKS     │             │
-│  │    (3)      │  │    (17)     │  │    (4)      │             │
+│  │    (3)      │  │    (21)     │  │    (26)     │             │
 │  │             │  │             │  │             │             │
 │  │ Structures  │  │ Conventions │  │ Automation  │             │
 │  │ de fichiers │  │  par path   │  │ pre/post    │             │
@@ -188,13 +188,13 @@ Les 41 skills s'activent selon les mots-cles dans la conversation :
 
 | Mots-cles | Skill active | Action |
 |-----------|--------------|--------|
-| "TDD", "test first" | `test-driven-development` | Cycle Red-Green-Refactor |
-| "commit", "message" | `generating-commit-messages` | Conventional Commits |
-| "review", "code review" | `reviewing-code` | Revue approfondie |
-| "PR", "pull request" | `creating-pull-requests` | PR structuree |
-| "Terraform", "IaC" | `infrastructure-as-code` | Infrastructure as Code |
-| "Proxmox", "PVE" | `proxmox-infrastructure` | Gestion Proxmox |
-| "Docker", "Dockerfile" | `docker-containerization` | Containerisation |
+| "TDD", "test first" | `dev-tdd` | Cycle Red-Green-Refactor |
+| "commit", "message" | `work-commit` | Conventional Commits |
+| "review", "code review" | `qa-review` | Revue approfondie |
+| "PR", "pull request" | `work-pr` | PR structuree |
+| "Terraform", "IaC" | `ops-infra-code` | Infrastructure as Code |
+| "Proxmox", "PVE" | `ops-proxmox` | Gestion Proxmox |
+| "Docker", "Dockerfile" | `ops-docker` | Containerisation |
 
 ## Flux de decision
 
