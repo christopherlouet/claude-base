@@ -1,5 +1,5 @@
 ---
-sidebar_position: 31
+sidebar_position: 32
 title: "qa-perf"
 description: "Optimisation des performances d'applications. Declencher quand l'utilisateur veut ameliorer la vitesse, reduire la latence, ou optimiser les ressources."
 tags:

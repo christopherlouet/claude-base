@@ -1,5 +1,5 @@
 ---
-sidebar_position: 15
+sidebar_position: 16
 title: "/qa:qa-tech-debt"
 description: "Identification et priorisation de la dette technique dans le codebase."
 tags:

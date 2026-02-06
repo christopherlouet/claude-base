@@ -21,7 +21,7 @@ Ce domaine contient **11 commandes** pour workflow principal (explore, plan, com
 |----------|-------------|
 | [`/work:work-clarify`](/docs/commands/work/work-clarify) | Tu es en mode CLARIFICATION. Pose des questions ciblées pour réduire l'ambiguïté. |
 | [`/work:work-commit`](/docs/commands/work/work-commit) | Prépare et effectue un commit propre suivant les conventions. |
-| [`/work:work-commit-push-pr`](/docs/commands/work/work-commit-push-pr) | Workflow complet: commit + push + PR en une seule commande. |
+| [`/work:work-commit-push-pr`](/docs/commands/work/work-commit-push-pr) | Workflow complet: commit + push + PR en une seule commande. Inspire par le workflow de Boris Cherny (createur de Claude Code). |
 | [`/work:work-explore`](/docs/commands/work/work-explore) | Tu es en mode EXPLORATION. Analyse le codebase sans écrire de code. |
 | [`/work:work-flow-bugfix`](/docs/commands/work/work-flow-bugfix) | Workflow complet pour corriger un bug, du diagnostic au déploiement. |
 | [`/work:work-flow-feature`](/docs/commands/work/work-flow-feature) | Workflow complet pour développer une nouvelle fonctionnalité, de l'exploration au merge. |
@@ -48,7 +48,7 @@ Ce domaine contient **11 commandes** pour workflow principal (explore, plan, com
   />
   <CommandCard
     name="work-commit-push-pr"
-    description="Workflow complet: commit + push + PR en une seule commande."
+    description="Workflow complet: commit + push + PR en une seule commande. Inspire par le workflow de Boris Cherny (createur de Claude Code)."
     domain="work"
     href="/docs/commands/work/work-commit-push-pr"
   />

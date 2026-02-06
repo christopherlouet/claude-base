@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: "/work:work-flow-bugfix"
 description: "Workflow complet pour corriger un bug, du diagnostic au déploiement."
 tags:
@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Workflow complet pour corriger un bug, du diagnostic au déploiement.
 
 ## Contexte
-`<arguments>`
+`&lt;arguments&gt;`
 
 ## Workflow automatisé
 

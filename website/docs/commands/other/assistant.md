@@ -95,7 +95,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
-│  │    (118)    │  │    (56)     │  │    (40)     │             │
+│  │    (120)    │  │    (57)     │  │    (41)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Délégation  │  │ Activation  │             │
 │  │  manuelle   │  │ automatique │  │ automatique │             │
@@ -104,7 +104,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  TEMPLATES  │  │    RULES    │  │   HOOKS     │             │
-│  │    (3)      │  │    (20)     │  │    (4)      │             │
+│  │    (3)      │  │    (21)     │  │    (26)     │             │
 │  │             │  │             │  │             │             │
 │  │ Structures  │  │ Conventions │  │ Automation  │             │
 │  │ de fichiers │  │  par path   │  │ pre/post    │             │
@@ -119,7 +119,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 |---------|---------------|----------|---------|
 | **Commands** | Manuel (`/xxx`) | Partagé | `/work:work-explore` |
 | **Agents** | Automatique par Claude | **Isolé** | Audit sécurité → `qa-security` agent |
-| **Skills** | Automatique par mots-clés | Fork | "TDD" → `test-driven-development` skill |
+| **Skills** | Automatique par mots-clés | Fork | "TDD" → `dev-tdd` skill |
 
 ---
 
@@ -147,6 +147,7 @@ Claude délègue automatiquement aux agents spécialisés selon le contexte. Les
 | `qa-e2e` | sonnet | Read, Grep, Glob, Bash | "E2E", "Playwright", "Cypress" |
 | `qa-tech-debt` | haiku | Read, Grep, Glob | "Dette technique", "Tech debt" |
 | `qa-design` | haiku | Read, Grep, Glob | "Audit UI/UX", "Design review" |
+| `qa-chrome` | sonnet | Read, Grep, Glob, Bash | "Chrome", "Test visuel", "Debugging DOM" |
 
 ### Agents opérationnels
 
@@ -248,45 +249,40 @@ Les Skills sont activés automatiquement par Claude selon les mots-clés dans la
 
 | Skill | Mots-clés déclencheurs | Action |
 |-------|------------------------|--------|
-| `test-driven-development` | "TDD", "test first", "écrire les tests d'abord" | Cycle Red-Green-Refactor |
-| `debugging-issues` | "bug", "erreur", "debug", "ne fonctionne pas" | Investigation et fix |
-| `refactoring` | "refactorer", "nettoyer", "améliorer le code" | Refactoring guidé |
-| `api-development` | "API", "endpoint", "REST" | Création d'API |
-| `error-handling` | "gestion erreurs", "exceptions", "error boundary" | Stratégie d'erreurs |
-| `graphql-development` | "GraphQL", "resolver", "schema" | API GraphQL |
-| `flutter-development` | "Flutter", "widget", "BLoC" | Développement Flutter |
-| `supabase-development` | "Supabase", "auth", "RLS" | Backend Supabase |
-| `react-performance` | "React perf", "re-render", "memo" | Optimisation React |
-| `prompt-engineering` | "prompt", "instruction", "few-shot", "LLM" | Optimisation prompts |
+| `dev-tdd` | "TDD", "test first", "écrire les tests d'abord" | Cycle Red-Green-Refactor |
+| `dev-debug` | "bug", "erreur", "debug", "ne fonctionne pas" | Investigation et fix |
+| `dev-refactor` | "refactorer", "nettoyer", "améliorer le code" | Refactoring guidé |
+| `dev-api` | "API", "endpoint", "REST" | Création d'API |
+| `dev-error-handling` | "gestion erreurs", "exceptions", "error boundary" | Stratégie d'erreurs |
+| `dev-graphql` | "GraphQL", "resolver", "schema" | API GraphQL |
+| `dev-flutter` | "Flutter", "widget", "BLoC" | Développement Flutter |
+| `dev-supabase` | "Supabase", "auth", "RLS" | Backend Supabase |
+| `dev-react-perf` | "React perf", "re-render", "memo" | Optimisation React |
+| `dev-prompt-engineering` | "prompt", "instruction", "few-shot", "LLM" | Optimisation prompts |
 | `dev-document` | "PDF", "DOCX", "document", "rapport", "export" | Génération de documents |
-| `dev-ai-integration` | "OpenAI", "Claude API", "LLM integration" | Intégration LLMs |
-| `dev-prisma` | "Prisma", "ORM", "schema" | ORM Prisma |
-| `dev-trpc` | "tRPC", "type-safe API" | APIs type-safe |
-| `dev-design-system` | "design system", "tokens", "Storybook" | Design tokens |
-| `dev-neovim` | "Neovim", "init.lua", "lazy.nvim" | Config Neovim |
-| `dev-rag` | "RAG", "embeddings", "retrieval" | Systèmes RAG |
 
 ### Skills de workflow
 
 | Skill | Mots-clés déclencheurs | Action |
 |-------|------------------------|--------|
-| `generating-commit-messages` | "commit", "message de commit" | Conventional Commits |
-| `creating-pull-requests` | "PR", "pull request", "merge" | PR structurée |
-| `reviewing-code` | "review", "code review", "vérifier" | Revue approfondie |
-| `planning-implementation` | "planifier", "architecture", "approche" | Plan d'implémentation |
-| `exploring-codebase` | "explorer", "comprendre", "découvrir" | Analyse de codebase |
-| `changelog-maintenance` | "changelog", "release notes" | Maintenance changelog |
-| `documentation-generation` | "documenter", "README", "JSDoc" | Génération doc |
+| `work-commit` | "commit", "message de commit" | Conventional Commits |
+| `work-pr` | "PR", "pull request", "merge" | PR structurée |
+| `qa-review` | "review", "code review", "vérifier" | Revue approfondie |
+| `work-plan` | "planifier", "architecture", "approche" | Plan d'implémentation |
+| `work-explore` | "explorer", "comprendre", "découvrir" | Analyse de codebase |
+| `doc-changelog` | "changelog", "release notes" | Maintenance changelog |
+| `doc-generate` | "documenter", "README", "JSDoc" | Génération doc |
 
 ### Skills d'audit et qualité
 
 | Skill | Mots-clés déclencheurs | Action |
 |-------|------------------------|--------|
-| `security-audit` | "sécurité", "OWASP", "vulnérabilité" | Audit OWASP Top 10 |
-| `e2e-testing` | "E2E", "Playwright", "Cypress" | Tests End-to-End |
-| `performance-optimization` | "optimiser", "latence", "TTFB" | Optimisation perf |
+| `qa-security` | "sécurité", "OWASP", "vulnérabilité" | Audit OWASP Top 10 |
+| `qa-e2e` | "E2E", "Playwright", "Cypress" | Tests End-to-End |
+| `qa-perf` | "optimiser", "latence", "TTFB" | Optimisation perf |
 | `qa-tech-debt` | "dette technique", "tech debt", "refactoring priorité" | Dette technique |
 | `qa-design` | "audit UI", "design review", "UX audit" | Audit UI/UX |
+| `qa-chrome` | "Chrome", "test visuel", "debugging DOM", "capture" | Tests visuels Chrome |
 
 ### Skills utilitaires et meta
 
@@ -304,18 +300,16 @@ Les Skills sont activés automatiquement par Claude selon les mots-clés dans la
 
 | Skill | Mots-clés déclencheurs | Action |
 |-------|------------------------|--------|
-| `infrastructure-as-code` | "Terraform", "IaC", "OpenTofu" | Infrastructure as Code |
-| `proxmox-infrastructure` | "Proxmox", "PVE", "VM", "LXC", "PBS" | Infrastructure Proxmox |
-| `docker-containerization` | "Docker", "container", "Dockerfile" | Containerisation |
-| `ci-cd-pipeline` | "CI/CD", "GitHub Actions", "pipeline" | Pipeline CI/CD |
-| `database-design` | "schema", "migration", "index" | Conception DB |
-| `monitoring-instrumentation` | "logs", "métriques", "traces" | Monitoring |
-| `data-pipeline` | "ETL", "Airflow", "dbt" | Pipelines data |
-| `mobile-release` | "App Store", "Play Store", "Fastlane" | Publication mobile |
-| `feature-flags` | "feature flag", "A/B test", "déploiement progressif" | Feature flags |
-| `ops-opnsense` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | Config OPNsense |
-| `ops-proxmox` | "Proxmox", "PVE", "VM Proxmox", "LXC", "PBS" | Infrastructure Proxmox |
 | `ops-infra-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | Infrastructure as Code |
+| `ops-proxmox` | "Proxmox", "PVE", "VM", "LXC", "PBS" | Infrastructure Proxmox |
+| `ops-docker` | "Docker", "container", "Dockerfile" | Containerisation |
+| `ops-ci` | "CI/CD", "GitHub Actions", "pipeline" | Pipeline CI/CD |
+| `ops-database` | "schema", "migration", "index" | Conception DB |
+| `ops-monitoring` | "logs", "métriques", "traces" | Monitoring |
+| `ops-opnsense` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | Config OPNsense |
+| `ops-mobile-release` | "App Store", "Play Store", "Fastlane" | Publication mobile |
+| `data-pipeline` | "ETL", "Airflow", "dbt" | Pipelines data |
+| `feature-flags` | "feature flag", "A/B test", "déploiement progressif" | Feature flags |
 
 ### Comment fonctionnent les skills ?
 
@@ -323,7 +317,7 @@ Les Skills sont activés automatiquement par Claude selon les mots-clés dans la
 Utilisateur: "Je veux faire du TDD pour cette feature"
      │
      ▼
-Claude détecte: "TDD" → active le skill test-driven-development
+Claude détecte: "TDD" → active le skill dev-tdd
      │
      ▼
 Le skill injecte les instructions TDD dans le contexte
@@ -376,9 +370,9 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 ---
 
-## Section 7: Catalogue des Commandes (118)
+## Section 7: Catalogue des Commandes (120)
 
-### WORK- : Workflow Principal (10)
+### WORK- : Workflow Principal (11)
 
 | Commande | Usage |
 |----------|-------|
@@ -387,6 +381,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/work:work-clarify` | Clarifier les ambiguïtés (max 5 questions) |
 | `/work:work-plan` | Planifier (génère plan.md + tasks.md) |
 | `/work:work-commit` | Créer un commit Conventional Commits |
+| `/work:work-commit-push-pr` | Commit + Push + PR en une seule commande |
 | `/work:work-pr` | Créer une Pull Request documentée |
 | `/work:work-flow-feature` | Workflow complet feature |
 | `/work:work-flow-bugfix` | Workflow complet bugfix |
@@ -421,7 +416,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/dev:dev-trpc` | APIs type-safe avec tRPC |
 | `/dev:dev-ai-integration` | Intégration LLMs (OpenAI, Claude API) |
 
-### QA- : Qualité (14)
+### QA- : Qualité (15)
 
 | Commande | Usage |
 |----------|-------|
@@ -430,6 +425,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/qa:qa-perf` | Analyse de performance |
 | `/qa:qa-a11y` | Audit accessibilité WCAG |
 | `/qa:qa-audit` | Audit complet (sécu+RGPD+a11y+perf) |
+| `/qa:qa-chrome` | Tests visuels Chrome (debugging DOM, responsive, captures) |
 | `/qa:qa-design` | Audit UI/UX (100+ règles design web) |
 | `/qa:qa-responsive` | Audit responsive/mobile web |
 | `/qa:qa-automation` | Automatisation des tests |
@@ -593,6 +589,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 │ LIVRER                                                                 │
 │ ──────                                                                 │
 │ Créer un commit                         →  /work:work-commit                │
+│ Commit + Push + PR en un                →  /work:work-commit-push-pr        │
 │ Créer une PR                            →  /work:work-pr                    │
 │ Publier une release                     →  /ops:ops-release                │
 │ Correction urgente                      →  /ops:ops-hotfix                 │

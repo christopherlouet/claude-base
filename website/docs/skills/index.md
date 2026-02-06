@@ -51,7 +51,7 @@ Skills avec contexte isole.
 | [`doc-changelog`](/docs/skills/doc-changelog) | Maintenance du CHANGELOG selon Keep a Changelog. D... | doc, changelog |
 | [`doc-generate`](/docs/skills/doc-generate) | Generation de documentation technique. Declencher ... | doc, generate, uuid |
 | [`feature-flags`](/docs/skills/feature-flags) | Gestion de feature flags et toggles. Declencher qu... | feature, flags, feature flag |
-| [`git-worktrees`](/docs/skills/git-worktrees) | Utilisation de git worktrees pour le developpement... | git, worktrees |
+| [`git-worktrees`](/docs/skills/git-worktrees) | Utilisation de git worktrees pour le developpement... | git, worktrees, cd ~/projects/myapp |
 | [`growth-cro`](/docs/skills/growth-cro) | Optimisation du taux de conversion (CRO). Declench... | growth, cro, comment |
 | [`ops-ci`](/docs/skills/ops-ci) | Configuration de pipelines CI/CD. Declencher quand... | ops |
 | [`ops-database`](/docs/skills/ops-database) | Conception de schemas de base de donnees. Declench... | ops, database |
@@ -62,7 +62,7 @@ Skills avec contexte isole.
 | [`ops-opnsense`](/docs/skills/ops-opnsense) | Configuration OPNsense via Terraform. Declencher p... | ops, opnsense, browningluke/opnsense |
 | [`ops-proxmox`](/docs/skills/ops-proxmox) | Infrastructure Proxmox VE avec Terraform (VMs, LXC... | ops, proxmox, pve |
 | [`parallel-agents`](/docs/skills/parallel-agents) | Orchestration d'agents paralleles pour maximiser l... | parallel, agents, qa-security |
-| [`qa-chrome`](/docs/skills/qa-chrome) | Tests visuels et debugging navigateur via Chrome. ... | Chrome, test visuel, navigateur, DOM |
+| [`qa-chrome`](/docs/skills/qa-chrome) | Tests visuels et debugging navigateur via Chrome. ... | chrome, claude in chrome |
 | [`qa-design`](/docs/skills/qa-design) | Audit de design UI/UX et verification des bonnes p... | design, '][^, `, ` |
 | [`qa-e2e`](/docs/skills/qa-e2e) | Tests End-to-End avec Playwright ou Cypress. Decle... | e2e, end-to-end, test de bout en bout |
 | [`qa-perf`](/docs/skills/qa-perf) | Optimisation des performances d'applications. Decl... | perf, /photo.jpg |

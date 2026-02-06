@@ -22,7 +22,7 @@ Ce domaine contient **15 commandes** pour qualite (review, securite, performance
 | [`/qa:qa-a11y`](/docs/commands/qa/qa-a11y) | Audit d'accessibilité basé sur WCAG 2.1 et Web Interface Guidelines. |
 | [`/qa:qa-audit`](/docs/commands/qa/qa-audit) | Audit qualité complet d'un projet. Combine les analyses de sécurité, RGPD, accessibilité et performance. |
 | [`/qa:qa-automation`](/docs/commands/qa/qa-automation) | Mettre en place une stratégie d'automatisation des tests complète. |
-| [`/qa:qa-chrome`](/docs/commands/qa/qa-chrome) | Tests visuels et debugging navigateur via Chrome. |
+| [`/qa:qa-chrome`](/docs/commands/qa/qa-chrome) | Tests visuels et debugging navigateur via l'integration Chrome de Claude Code. |
 | [`/qa:qa-coverage`](/docs/commands/qa/qa-coverage) | Analyse et améliore la couverture de tests du code. |
 | [`/qa:qa-design`](/docs/commands/qa/qa-design) | Audit de design UI/UX et verification des bonnes pratiques web. |
 | [`/qa:qa-e2e`](/docs/commands/qa/qa-e2e) | Tests End-to-End avec Playwright ou Cypress. |
@@ -58,7 +58,7 @@ Ce domaine contient **15 commandes** pour qualite (review, securite, performance
   />
   <CommandCard
     name="qa-chrome"
-    description="Tests visuels et debugging navigateur via Chrome."
+    description="Tests visuels et debugging navigateur via l'integration Chrome de Claude Code."
     domain="qa"
     href="/docs/commands/qa/qa-chrome"
   />

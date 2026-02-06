@@ -9,6 +9,24 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.24.1] - 2026-02-06
+
+### Corrige
+- **Website Docusaurus** : build casse corrige et ameliorations multiples
+  - `sidebars.ts` : chemins orchestrateur corriges (`commands/assistant` → `commands/other/assistant`), compteurs domaines mis a jour (WORK 11, DEV 23, QA 15, GROWTH 11)
+  - Liens casses corriges dans `concepts/orchestrator.md`, `workflow/choosing-workflow.md`, `workflow/tdd.md`, `examples/ops/opnsense-config.md`, `tutorials/opnsense-firewall.md`
+  - `generate-command-docs.ts` : syntaxe commandes corrigee (`/command` → `/{domain}:{command}`), ajout etape Specify dans le guide rapide
+  - `docusaurus.config.ts` : `onBrokenLinks` passe de `warn` a `throw`, migration `onBrokenMarkdownLinks` vers `markdown.hooks` (Docusaurus v4)
+
+### Ajoute
+- **Assets statiques** : `favicon.svg` et `social-card.svg` (Open Graph 1200x630)
+- **Homepage** : workflow aligne avec CLAUDE.md (5 etapes : Explore → Specify → Plan → TDD → Commit)
+- **`WorkflowDiagram.tsx`** : etape Specify ajoutee au `MAIN_WORKFLOW`
+- **Accessibilite** : styles `:focus-visible` pour cards, boutons et liens dans `custom.css`
+- **`FeatureComparison.tsx`** : refactorise avec props `columns` et `data` (retrocompatible)
+
+---
+
 ## [1.24.0] - 2026-02-06
 
 ### Modifie

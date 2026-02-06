@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalogue des 57 sub-agents claude-socle"
+description: "Catalogue des 37 sub-agents claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -95,7 +95,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`ops-opnsense`](/docs/agents/ops-opnsense) | Agent spécialisé pour la gestion d'OPNsense en Infrastructur... | Read, Grep, Glob... |
 | [`ops-proxmox`](/docs/agents/ops-proxmox) | Gestion complète de l'infrastructure Proxmox VE : provisioni... | Read, Grep, Glob... |
 | [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet d'un projet couvrant securite, RGPD, a... | Read, Grep, Glob... |
-| [`qa-chrome`](/docs/agents/qa-chrome) | Audit visuel et tests navigateur via Chrome. | Read, Grep, Glob... |
+| [`qa-chrome`](/docs/agents/qa-chrome) | Audit visuel et tests navigateur via l'integration Chrome de... | Read, Grep, Glob... |
 | [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
 | [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
 | [`qa-security`](/docs/agents/qa-security) | Audit de securite approfondi base sur OWASP Top 10. | Read, Grep, Glob... |
@@ -188,13 +188,6 @@ Agents pour les taches complexes necessitant une analyse approfondie.
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/dev-document"
-  />
-  <AgentCard
-    name="qa-chrome"
-    description="Audit visuel et tests navigateur via Chrome."
-    model="sonnet"
-    tools={["Read","Grep","Glob","Bash"]}
-    href="/docs/agents/qa-chrome"
   />
 </AgentGrid>
 

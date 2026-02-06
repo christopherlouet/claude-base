@@ -97,6 +97,7 @@ export default function WorkflowDiagram({
 // Pre-defined workflow configurations
 export const MAIN_WORKFLOW: WorkflowStep[] = [
   { id: 'explore', label: 'Explore', command: '/work:work-explore', description: 'Comprendre le code' },
+  { id: 'specify', label: 'Specify', command: '/work:work-specify', description: 'Specifier le besoin' },
   { id: 'plan', label: 'Plan', command: '/work:work-plan', description: 'Planifier les changements' },
   { id: 'tdd', label: 'TDD', command: '/dev:dev-tdd', description: 'Tests first (obligatoire)' },
   { id: 'commit', label: 'Commit', command: '/work:work-commit', description: 'Valider' },

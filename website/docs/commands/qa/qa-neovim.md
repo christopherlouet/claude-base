@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "/qa:qa-neovim"
 description: "Audit qualité et performance d'une configuration Neovim."
 tags:
