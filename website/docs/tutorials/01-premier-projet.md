@@ -10,7 +10,7 @@ import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
 <DifficultyBadge level="beginner" /> **Durée estimée : 15 minutes**
 
-Ce tutoriel vous guide dans la création de votre première feature en utilisant le workflow **Explore → Plan → TDD → Commit**.
+Ce tutoriel vous guide dans la création de votre première feature en utilisant le workflow **Explore → Specify → Plan → TDD → Commit**.
 
 ## Objectifs
 

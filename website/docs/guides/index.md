@@ -39,7 +39,7 @@ description: Guides thematiques par type de projet
 Quel que soit votre contexte, le workflow reste le meme :
 
 ```
-Explore → Plan → TDD → Commit
+Explore → Specify → Plan → TDD → Commit
 ```
 
 Les guides vous montrent quelles commandes utiliser a chaque etape selon votre stack.

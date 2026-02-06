@@ -149,7 +149,7 @@ Closes #123
 /work:work-flow-feature "ajouter le dark mode"
 
 # Le workflow enchaîne automatiquement:
-# 1. Explore → 2. Plan → 3. TDD → 4. Review → 5. Commit → 6. PR
+# 1. Explore → 2. Specify → 3. Plan → 4. TDD → 5. Review → 6. Commit → 7. PR
 ```
 
 ---
