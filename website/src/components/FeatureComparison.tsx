@@ -45,9 +45,9 @@ const DEFAULT_DATA: ComparisonRow[] = [
   },
   {
     aspect: 'Nombre',
-    Commands: '120',
+    Commands: '121',
     Agents: '57',
-    Skills: '41',
+    Skills: '42',
   },
 ];
 

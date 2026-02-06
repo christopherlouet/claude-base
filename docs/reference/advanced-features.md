@@ -114,9 +114,83 @@ La limite de sortie passe a **128k tokens** (contre 8k-32k precedemment), permet
 
 Resume automatiquement le contexte ancien pour maintenir la coherence sur de longues sessions. Particulierement utile avec les sessions paralleles (git worktrees) et les taches complexes multi-fichiers.
 
-### Agent Teams
+### Agent Teams (Experimental)
 
-Coordination parallele d'agents sur des taches complexes. Permet de lancer plusieurs agents simultanement avec synchronisation automatique des resultats.
+Coordination parallele d'equipes d'agents sur des taches complexes. Un agent lead orchestre des teammates qui travaillent en parallele avec communication directe entre eux.
+
+> **Activation requise** : Feature experimentale desactivee par defaut.
+
+#### Activation
+
+```json
+// .claude/settings.json ou .claude/settings.local.json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}
+```
+
+#### Modes d'affichage
+
+| Mode | Description | Prerequis |
+|------|-------------|-----------|
+| `auto` (defaut) | Split-panes si dans tmux, sinon in-process | - |
+| `in-process` | Tous les agents dans le terminal principal | Aucun |
+| `tmux` | Chaque agent dans son propre pane | tmux installe |
+
+```bash
+# Forcer un mode
+claude --teammate-mode tmux
+```
+
+#### Comparaison des approches paralleles
+
+| | Sub-Agents (Task) | Agent Teams | Sessions manuelles (worktrees) |
+|---|---|---|---|
+| **Communication** | Retour au parent | Messagerie directe | Aucune |
+| **Coordination** | Parent gere | Taches partagees | Manuelle |
+| **Cout tokens** | Faible | Eleve | Eleve |
+| **Ideal pour** | Taches focalisees | Collaboration complexe | Branches independantes |
+
+#### Raccourcis clavier
+
+| Raccourci | Action |
+|-----------|--------|
+| `Shift+Up/Down` | Naviguer entre teammates |
+| `Shift+Tab` | Mode delegate (lead = coordination) |
+| `Ctrl+T` | Afficher la liste de taches |
+
+#### Variables d'environnement
+
+| Variable | Description |
+|----------|-------------|
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | Active la fonctionnalite (valeur: `1`) |
+| `CLAUDE_CODE_TASK_LIST_ID` | Partage une task list entre sessions |
+
+#### Limitations
+
+- Pas de resume des teammates in-process apres `/resume`
+- Un seul team par session
+- Pas d'equipes imbriquees
+- Split-panes non supporte dans VS Code / Windows Terminal / Ghostty
+
+#### Usage dans le socle
+
+Le socle fournit un skill `agent-teams` et une commande `/work:work-team` avec des patterns pre-configures :
+
+```bash
+# Audit parallele (3 agents: securite, perf, a11y)
+/work:work-team "audit complet du projet"
+
+# Feature en equipe (frontend, backend, tests)
+/work:work-team "implementer les notifications"
+
+# Debug collaboratif (hypotheses concurrentes)
+/work:work-team "investiguer le bug de connexion"
+```
+
+Voir `.claude/skills/agent-teams/SKILL.md` pour la documentation complete.
 
 ## MCP Configuration (Claude Code 2.1+)
 
