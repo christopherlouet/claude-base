@@ -71,7 +71,7 @@ claude-socle/
 │   ├── skills/                  # 41 skills spécialisés
 │   └── commands/                # 120 commandes disponibles
 │       ├── assistant.md         # Orchestrateur principal
-│       ├── work/                # Workflow (10 commandes)
+│       ├── work/                # Workflow (11 commandes)
 │       │   ├── work-explore.md
 │       │   ├── work-plan.md
 │       │   ├── work-commit.md
@@ -81,7 +81,7 @@ claude-socle/
 │       │   ├── dev-tdd.md
 │       │   ├── dev-api.md
 │       │   └── ...
-│       ├── qa/                  # Qualité (14 commandes)
+│       ├── qa/                  # Qualité (15 commandes)
 │       │   ├── qa-review.md
 │       │   ├── qa-security.md
 │       │   └── ...

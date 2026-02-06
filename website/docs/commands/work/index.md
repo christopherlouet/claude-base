@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **10 commandes** pour workflow principal (explore, plan, commit, pr).
+Ce domaine contient **11 commandes** pour workflow principal (explore, plan, commit, pr).
 
 ## Liste des commandes
 
@@ -21,6 +21,7 @@ Ce domaine contient **10 commandes** pour workflow principal (explore, plan, com
 |----------|-------------|
 | [`/work:work-clarify`](/docs/commands/work/work-clarify) | Tu es en mode CLARIFICATION. Pose des questions ciblées pour réduire l'ambiguïté. |
 | [`/work:work-commit`](/docs/commands/work/work-commit) | Prépare et effectue un commit propre suivant les conventions. |
+| [`/work:work-commit-push-pr`](/docs/commands/work/work-commit-push-pr) | Workflow complet: commit + push + PR en une seule commande. |
 | [`/work:work-explore`](/docs/commands/work/work-explore) | Tu es en mode EXPLORATION. Analyse le codebase sans écrire de code. |
 | [`/work:work-flow-bugfix`](/docs/commands/work/work-flow-bugfix) | Workflow complet pour corriger un bug, du diagnostic au déploiement. |
 | [`/work:work-flow-feature`](/docs/commands/work/work-flow-feature) | Workflow complet pour développer une nouvelle fonctionnalité, de l'exploration au merge. |
@@ -44,6 +45,12 @@ Ce domaine contient **10 commandes** pour workflow principal (explore, plan, com
     description="Prépare et effectue un commit propre suivant les conventions."
     domain="work"
     href="/docs/commands/work/work-commit"
+  />
+  <CommandCard
+    name="work-commit-push-pr"
+    description="Workflow complet: commit + push + PR en une seule commande."
+    domain="work"
+    href="/docs/commands/work/work-commit-push-pr"
   />
   <CommandCard
     name="work-explore"

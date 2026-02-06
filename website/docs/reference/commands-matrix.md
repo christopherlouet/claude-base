@@ -8,22 +8,23 @@ description: Liste complete des 120 commandes
 
 > **120 commandes** organisees par domaine
 
-## WORK - Workflow (10)
+## WORK - Workflow (11)
 
 | Commande | Description |
 |----------|-------------|
 | `/work:work-explore` | Explorer et comprendre le code |
-| `/work:work-plan` | Planifier une implementation |
-| `/work:work-commit` | Creer un commit propre |
-| `/work:work-pr` | Creer une Pull Request |
 | `/work:work-specify` | Creer une specification |
 | `/work:work-clarify` | Clarifier les exigences |
+| `/work:work-plan` | Planifier une implementation |
+| `/work:work-commit` | Creer un commit propre |
+| `/work:work-commit-push-pr` | Workflow complet: commit + push + PR |
+| `/work:work-pr` | Creer une Pull Request |
 | `/work:work-flow-feature` | Workflow feature complet |
 | `/work:work-flow-bugfix` | Workflow bugfix complet |
 | `/work:work-flow-release` | Workflow release complet |
 | `/work:work-flow-launch` | Workflow lancement complet |
 
-## DEV - Developpement (16)
+## DEV - Developpement (23)
 
 | Commande | Description |
 |----------|-------------|
@@ -32,6 +33,7 @@ description: Liste complete des 120 commandes
 | `/dev:dev-testing-setup` | Configurer l'infrastructure de tests |
 | `/dev:dev-debug` | Deboguer un probleme |
 | `/dev:dev-refactor` | Refactoring guide |
+| `/dev:dev-document` | Generation de documents (PDF, DOCX, XLSX, PPTX) |
 | `/dev:dev-api` | Creer/documenter API REST |
 | `/dev:dev-api-versioning` | Versioning d'API |
 | `/dev:dev-component` | Creer un composant UI |
@@ -43,8 +45,14 @@ description: Liste complete des 120 commandes
 | `/dev:dev-supabase` | Backend Supabase |
 | `/dev:dev-graphql` | API GraphQL |
 | `/dev:dev-neovim` | Plugins Neovim |
+| `/dev:dev-prompt-engineering` | Optimisation de prompts LLM |
+| `/dev:dev-rag` | Systemes RAG (Retrieval-Augmented Generation) |
+| `/dev:dev-design-system` | Design tokens et bibliotheque de composants |
+| `/dev:dev-prisma` | ORM Prisma (schema, migrations, queries) |
+| `/dev:dev-trpc` | APIs type-safe avec tRPC |
+| `/dev:dev-ai-integration` | Integration LLMs (OpenAI, Claude API) |
 
-## QA - Qualite (11)
+## QA - Qualite (15)
 
 | Commande | Description |
 |----------|-------------|
@@ -53,14 +61,18 @@ description: Liste complete des 120 commandes
 | `/qa:qa-perf` | Analyse de performance |
 | `/qa:qa-a11y` | Audit accessibilite WCAG |
 | `/qa:qa-audit` | Audit qualite complet |
+| `/qa:qa-chrome` | Tests visuels Chrome (debugging DOM, responsive, captures) |
+| `/qa:qa-design` | Audit UI/UX (100+ regles design web) |
 | `/qa:qa-responsive` | Audit responsive/mobile |
 | `/qa:qa-automation` | Automatisation des tests |
 | `/qa:qa-coverage` | Analyse couverture tests |
+| `/qa:qa-e2e` | Tests End-to-End (Playwright, Cypress) |
 | `/qa:qa-kaizen` | Amelioration continue |
 | `/qa:qa-mobile` | Audit qualite mobile |
 | `/qa:qa-neovim` | Audit config Neovim |
+| `/qa:qa-tech-debt` | Identifier et prioriser la dette technique |
 
-## OPS - Operations (24)
+## OPS - Operations (30)
 
 | Commande | Description |
 |----------|-------------|
@@ -71,6 +83,8 @@ description: Liste complete des 120 commandes
 | `/ops:ops-migrate` | Migration de code |
 | `/ops:ops-ci` | Configuration CI/CD |
 | `/ops:ops-monitoring` | Logs, metriques, alertes |
+| `/ops:ops-observability-stack` | Deployer Prometheus, Grafana, Loki, Alertmanager |
+| `/ops:ops-grafana-dashboard` | Dashboard Grafana |
 | `/ops:ops-database` | Schema, migrations DB |
 | `/ops:ops-health` | Health check rapide |
 | `/ops:ops-env` | Gestion des environnements |
@@ -83,11 +97,15 @@ description: Liste complete des 120 commandes
 | `/ops:ops-k8s` | Kubernetes |
 | `/ops:ops-vps` | Configuration VPS |
 | `/ops:ops-mobile-release` | Release mobile |
+| `/ops:ops-serverless` | Deploiement serverless (Lambda, Vercel, CF Workers) |
+| `/ops:ops-vercel` | Configuration et deploiement Vercel |
+| `/ops:ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, reseau, backup) |
+| `/ops:ops-opnsense` | Configuration OPNsense via Terraform |
+| `/ops:ops-rollback` | Procedure de rollback securisee |
 | `/ops:ops-gitflow-init` | Initialiser GitFlow |
 | `/ops:ops-gitflow-feature` | Feature GitFlow |
 | `/ops:ops-gitflow-release` | Release GitFlow |
 | `/ops:ops-gitflow-hotfix` | Hotfix GitFlow |
-| `/ops:ops-grafana-dashboard` | Dashboard Grafana |
 
 ## DOC - Documentation (9)
 
@@ -119,18 +137,20 @@ description: Liste complete des 120 commandes
 | `/biz:biz-personas` | Creer des personas |
 | `/biz:biz-research` | Recherche utilisateur |
 
-## GROWTH - Croissance (9)
+## GROWTH - Croissance (11)
 
 | Commande | Description |
 |----------|-------------|
 | `/growth:growth-landing` | Landing page |
 | `/growth:growth-seo` | Audit SEO |
 | `/growth:growth-analytics` | Setup tracking |
+| `/growth:growth-cro` | Optimisation du taux de conversion (CRO) |
 | `/growth:growth-onboarding` | Parcours onboarding |
 | `/growth:growth-email` | Email marketing |
 | `/growth:growth-ab-test` | Planifier A/B tests |
 | `/growth:growth-retention` | Strategies retention |
 | `/growth:growth-funnel` | Optimisation funnels |
+| `/growth:growth-localization` | Strategie de localisation multi-marches |
 | `/growth:growth-app-store-analytics` | Analytics App Store |
 
 ## DATA - Donnees (3)
@@ -151,11 +171,12 @@ description: Liste complete des 120 commandes
 | `/legal:legal-terms-of-service` | CGU |
 | `/legal:legal-privacy-policy` | Politique de confidentialite |
 
-## ASSISTANT (1)
+## ASSISTANT (2)
 
 | Commande | Description |
 |----------|-------------|
 | `/assistant` | Point d'entree unique, guide complet |
+| `/assistant-auto` | Mode automatique, analyse et execute directement |
 
 ---
 

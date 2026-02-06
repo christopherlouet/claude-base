@@ -24,12 +24,12 @@ description: Reference rapide et matrices
 | Domaine | Commandes | Description |
 |---------|-----------|-------------|
 | [WORK](/docs/commands/work) | 11 | Workflow principal |
-| [DEV](/docs/commands/dev) | 16 | Developpement |
-| [QA](/docs/commands/qa) | 11 | Qualite |
-| [OPS](/docs/commands/ops) | 24 | Operations |
+| [DEV](/docs/commands/dev) | 23 | Developpement |
+| [QA](/docs/commands/qa) | 15 | Qualite |
+| [OPS](/docs/commands/ops) | 30 | Operations |
 | [DOC](/docs/commands/doc) | 9 | Documentation |
 | [BIZ](/docs/commands/biz) | 11 | Business |
-| [GROWTH](/docs/commands/growth) | 9 | Croissance |
+| [GROWTH](/docs/commands/growth) | 11 | Croissance |
 | [DATA](/docs/commands/data) | 3 | Donnees |
 | [LEGAL](/docs/commands/legal) | 5 | Legal |
 
