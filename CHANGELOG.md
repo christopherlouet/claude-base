@@ -9,6 +9,24 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.24.0] - 2026-02-06
+
+### Modifie
+- **Documentation Opus 4.6** : mise a jour des references pour Claude Opus 4.6
+  - `docs/reference/best-practices.md` : citation Boris Cherny et recommandations mises a jour (Opus 4.5 → 4.6), ajout section Adaptive Thinking (4 niveaux d'effort), mention Context Compaction
+  - `docs/reference/advanced-features.md` : nouvelle section "Opus 4.6 : Nouvelles Capacites" (Adaptive Thinking, 1M contexte beta, 128k sortie, Context Compaction, Agent Teams)
+  - `templates/FAQ.md` : fenetre de contexte mise a jour (200k → 1M beta), nouvelle FAQ Adaptive Thinking
+  - `docs/ARCHITECTURE.md` : tableau des modeles enrichi avec contexte et sortie max
+  - `dev-ai-integration` (agent, commande, page Docusaurus) : modeles Anthropic mis a jour, nouvel exemple Opus 4.6 avec Adaptive Thinking
+
+### Corrige
+- **`new-project.sh`** : copie de `docs/reference/`, `docs/guides/`, `docs/ARCHITECTURE.md` et `docs/WORKFLOWS.md` lors de l'installation
+  - Les @imports de CLAUDE.md (`@docs/reference/*.md`) sont maintenant resolus dans les nouveaux projets
+  - Les liens de navigation du CLAUDE.md vers les guides et l'architecture sont disponibles
+- **`update.sh`** : `--upgrade-claude-md` copie aussi `docs/ARCHITECTURE.md`, `docs/WORKFLOWS.md` et `docs/guides/` en plus de `docs/reference/`
+
+---
+
 ## [1.23.2] - 2026-02-06
 
 ### Corrige
@@ -48,7 +66,7 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 ### Ajoute
 - **Bonnes pratiques Boris Cherny** : integration des recommandations du createur de Claude Code
   - Nouvelle section "Verification" dans CLAUDE.md (feedback loop = 2-3x qualite)
-  - Nouvelle section "Modele Recommande" (Opus 4.5 avec thinking)
+  - Nouvelle section "Modele Recommande" (Opus 4.5 avec thinking, mis a jour vers Opus 4.6 en v1.24)
   - Nouvelle section "Prompting Avance" ("Grill me", "Prove it", "elegant solution")
   - Nouvelle section "Sessions Paralleles" (git worktrees)
 - **`/work:work-commit-push-pr`** : nouvelle commande combinee commit+push+PR (120 commands)

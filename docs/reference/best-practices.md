@@ -49,15 +49,28 @@ La vérification est **la recommandation la plus importante** pour obtenir des r
 
 ## Modèle Recommandé
 
-> "I use Opus 4.5 with thinking for everything. It's the best coding model I've ever used, and even though it's bigger & slower than Sonnet, since you have to steer it less and it's better at tool use, it is almost always faster than using a smaller model in the end." — Boris Cherny
+> "I use Opus 4.6 with adaptive thinking for everything. It's the best coding model I've ever used, and even though it's bigger & slower than Sonnet, since you have to steer it less and it's better at tool use, it is almost always faster than using a smaller model in the end." — Boris Cherny
 
 ### Recommandations
 
 | Contexte | Modèle | Justification |
 |----------|--------|---------------|
-| Tâches complexes | **Opus 4.5** | Meilleur raisonnement, moins de corrections |
+| Tâches complexes | **Opus 4.6** | Meilleur raisonnement, adaptive thinking, 1M contexte |
 | Audits et analyses | **Sonnet** | Bon équilibre vitesse/qualité |
 | Tâches simples | **Haiku** | Rapide pour les opérations triviales |
+
+### Adaptive Thinking (Opus 4.6)
+
+Opus 4.6 remplace le toggle "extended thinking" par 4 niveaux d'effort adaptatifs :
+
+| Niveau | Usage | Latence | Qualite |
+|--------|-------|---------|---------|
+| `low` | Taches simples, reformulations | Rapide | Standard |
+| `medium` | Code standard, analyses moderees | Moyenne | Bon |
+| `high` | Problemes complexes, audits approfondis | Elevee | Excellent |
+| `max` | Taches critiques, architecture, debugging avance | Maximale | Optimal |
+
+Le modele ajuste automatiquement son effort de raisonnement selon la complexite de la tache. Il est aussi possible de forcer un niveau via l'API.
 
 ### Configuration
 
@@ -138,6 +151,7 @@ cd ../myapp-fix-login && claude
 | Travail parallèle | Plusieurs features simultanément |
 | Worktree analyse | Requêtes sans risque de modification |
 | Isolation | Un bug dans une session n'affecte pas les autres |
+| Context Compaction | Opus 4.6 resume automatiquement le contexte ancien pour maximiser la fenetre utile |
 
 ### Aliases recommandés
 
