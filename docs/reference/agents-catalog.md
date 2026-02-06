@@ -1,4 +1,4 @@
-# Agents Disponibles (120 commands, 57 sub-agents, 41 skills)
+# Agents Disponibles (121 commands, 57 sub-agents, 42 skills)
 
 ## Orchestrateur (Point d'entrée unique)
 | Commande | Mode | Usage |
@@ -6,7 +6,7 @@
 | `/assistant` | Guidé | Analyse → Recommande → Attend confirmation |
 | `/assistant-auto` | Automatique | Analyse → Exécute directement le workflow |
 
-## WORK- : Workflow Principal (11)
+## WORK- : Workflow Principal (12)
 | Commande | Usage |
 |----------|-------|
 | `/work:work-explore` | Explorer et comprendre le code |
@@ -16,6 +16,7 @@
 | `/work:work-commit` | Créer un commit propre |
 | `/work:work-pr` | Créer une Pull Request |
 | `/work:work-commit-push-pr` | **Workflow complet: commit + push + PR (recommandé par Boris Cherny)** |
+| `/work:work-team` | Lancer une équipe d'agents coordonnés (Agent Teams) |
 | `/work:work-flow-feature` | Workflow complet feature |
 | `/work:work-flow-bugfix` | Workflow complet bugfix |
 | `/work:work-flow-release` | Workflow complet release |

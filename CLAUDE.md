@@ -163,6 +163,13 @@ describe('ModuleName', () => {
 /qa:qa-audit  # Sécurité + RGPD + A11y + Perf
 ```
 
+### Équipe d'agents (Agent Teams)
+```bash
+/work:work-team "audit complet du projet"       # Audit parallèle (3 agents)
+/work:work-team "implémenter les notifications"  # Feature en équipe
+/work:work-team "investiguer le bug de connexion" # Debug collaboratif
+```
+
 ### Application mobile Flutter
 ```bash
 /work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-tdd → /dev:dev-flutter + /dev:dev-supabase → /qa:qa-mobile → /work:work-pr

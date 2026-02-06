@@ -66,3 +66,4 @@
 | `--max-budget-usd` | Budget maximum en USD pour la session | `claude --max-budget-usd 5.00` |
 | `--fork-session` | Forker une session existante | `claude --fork-session <id>` |
 | `--strict-mcp-config` | Mode strict pour la config MCP | `claude --strict-mcp-config` |
+| `--teammate-mode` | Mode d'affichage Agent Teams (auto, in-process, tmux) | `claude --teammate-mode tmux` |
