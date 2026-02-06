@@ -6,7 +6,7 @@
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
 [![Tests](https://img.shields.io/badge/tests-258%20passing-brightgreen)](./tests)
 [![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
-[![Release](https://img.shields.io/badge/release-v1.22.1-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
+[![Release](https://img.shields.io/badge/release-v1.25.1-blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
 
 Template de configuration Claude Code pour un workflow de développement optimal.
@@ -533,7 +533,7 @@ git pull origin main
 
 | Version | Support | Notes |
 |---------|---------|-------|
-| 1.22.x | Actuel | Version stable |
+| 1.25.x | Actuel | Version stable |
 | 1.21.x | Supporte | Corrections de securite |
 | 1.20.x | Supporte | Corrections de securite |
 | < 1.20 | Non supporte | Mise a jour recommandee |

@@ -35,7 +35,7 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Les 9 concepts cles
+## Les 10 concepts cles
 
 | Concept | Description | Declenchement |
 |---------|-------------|---------------|
@@ -48,6 +48,7 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 | [**MCP Servers**](/docs/concepts/mcp-servers) | Extensions via Model Context Protocol | Configuration .mcp.json |
 | [**Output Styles**](/docs/concepts/output-styles) | Styles de formatage des reponses | `/output-style nom` |
 | [**Templates**](/docs/concepts/templates) | Modeles pour specs, plans et taches | `/work:work-specify`, `/work:work-plan` |
+| [**Fonctionnalites Avancees**](/docs/concepts/advanced-features) | Opus 4.6, Agent Teams, Plugins, LSP | Configuration avancee |
 
 ## Comparaison rapide
 

@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **11 commandes** pour workflow principal (explore, plan, commit, pr).
+Ce domaine contient **12 commandes** pour workflow principal (explore, plan, commit, pr).
 
 ## Liste des commandes
 
@@ -30,6 +30,7 @@ Ce domaine contient **11 commandes** pour workflow principal (explore, plan, com
 | [`/work:work-plan`](/docs/commands/work/work-plan) | Tu es en mode PLANIFICATION. Conçois un plan d'implémentation détaillé. |
 | [`/work:work-pr`](/docs/commands/work/work-pr) | Crée une Pull Request complète et bien documentée. |
 | [`/work:work-specify`](/docs/commands/work/work-specify) | Tu es en mode SPÉCIFICATION. Crée une spécification fonctionnelle structurée. |
+| [`/work:work-team`](/docs/commands/work/work-team) | Lancer une equipe d'agents coordonnes (Agent Teams) pour paralleliser le travail. |
 
 ## Commandes en detail
 
@@ -99,6 +100,12 @@ Ce domaine contient **11 commandes** pour workflow principal (explore, plan, com
     description="Tu es en mode SPÉCIFICATION. Crée une spécification fonctionnelle structurée."
     domain="work"
     href="/docs/commands/work/work-specify"
+  />
+  <CommandCard
+    name="work-team"
+    description="Lancer une equipe d'agents coordonnes (Agent Teams) pour paralleliser le travail."
+    domain="work"
+    href="/docs/commands/work/work-team"
   />
 </CommandGrid>
 

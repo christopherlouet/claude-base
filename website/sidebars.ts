@@ -35,6 +35,7 @@ const sidebars: SidebarsConfig = {
         'concepts/hooks',
         'concepts/mcp-servers',
         'concepts/output-styles',
+        'concepts/advanced-features',
       ],
     },
   ],
@@ -71,7 +72,7 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'category',
-          label: 'WORK (11)',
+          label: 'WORK (12)',
           collapsed: true,
           link: {
             type: 'doc',
@@ -334,6 +335,7 @@ const sidebars: SidebarsConfig = {
         'guides/api-development',
         'guides/data-engineering',
         'guides/startup',
+        'guides/best-practices',
         'guides/faq',
         'guides/troubleshooting',
         'guides/migration',

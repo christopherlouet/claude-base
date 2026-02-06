@@ -123,7 +123,7 @@ const config: Config = {
             {
               type: 'docSidebar',
               sidebarId: 'skillsSidebar',
-              label: 'Skills (41)',
+              label: 'Skills (42)',
             },
             {
               type: 'docSidebar',
@@ -188,7 +188,7 @@ const config: Config = {
               to: '/docs/agents',
             },
             {
-              label: 'Skills (41)',
+              label: 'Skills (42)',
               to: '/docs/skills',
             },
           ],

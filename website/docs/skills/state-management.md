@@ -1,5 +1,5 @@
 ---
-sidebar_position: 37
+sidebar_position: 38
 title: "state-management"
 description: "Patterns et implementation de state management. Declencher quand l'utilisateur veut gerer l'etat global, utiliser Redux, Zustand, ou d'autres solutions."
 tags:
