@@ -9,6 +9,25 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.25.0] - 2026-02-06
+
+### Ajoute
+- **Agent Teams** : integration native de l'orchestration multi-agents (TeammateTool)
+  - Skill `agent-teams` avec documentation complete (activation, architecture, modes, raccourcis)
+  - 4 patterns pre-configures : Audit (3-4 agents), Feature (2-3 agents), Debug (3-5 agents), Review (3 agents)
+  - Commande `/work:work-team` avec detection automatique du pattern adapte
+  - Workflow en 5 etapes : Analyser → Creer → Coordonner → Synthetiser → Cleanup
+  - Support tmux (split-panes) et mode in-process
+  - Raccourcis clavier : Shift+Up/Down (navigation), Shift+Tab (delegate), Ctrl+T (task list)
+- **Documentation** : reference croisee Agent Teams dans le skill `parallel-agents`
+- **CLI** : flag `--teammate-mode` documente (auto, in-process, tmux)
+
+### Modifie
+- Compteurs mis a jour : 121 commandes, 42 skills (README, website, docs)
+- Section WORK passe de 11 a 12 commandes dans le catalogue
+
+---
+
 ## [1.24.2] - 2026-02-06
 
 ### Ajoute
