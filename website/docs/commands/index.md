@@ -119,28 +119,28 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [... et 25 autres](/docs/commands/ops)
 
 
-### [QA](/docs/commands/qa) (14)
+### [QA](/docs/commands/qa) (15)
 
 > Qualite (review, securite, performance, accessibilite)
 
 - [`/qa:qa-a11y`](/docs/commands/qa/qa-a11y)
 - [`/qa:qa-audit`](/docs/commands/qa/qa-audit)
 - [`/qa:qa-automation`](/docs/commands/qa/qa-automation)
+- [`/qa:qa-chrome`](/docs/commands/qa/qa-chrome)
 - [`/qa:qa-coverage`](/docs/commands/qa/qa-coverage)
-- [`/qa:qa-design`](/docs/commands/qa/qa-design)
-- [... et 9 autres](/docs/commands/qa)
+- [... et 10 autres](/docs/commands/qa)
 
 
-### [WORK](/docs/commands/work) (10)
+### [WORK](/docs/commands/work) (11)
 
 > Workflow principal (explore, plan, commit, PR)
 
 - [`/work:work-clarify`](/docs/commands/work/work-clarify)
 - [`/work:work-commit`](/docs/commands/work/work-commit)
+- [`/work:work-commit-push-pr`](/docs/commands/work/work-commit-push-pr)
 - [`/work:work-explore`](/docs/commands/work/work-explore)
 - [`/work:work-flow-bugfix`](/docs/commands/work/work-flow-bugfix)
-- [`/work:work-flow-feature`](/docs/commands/work/work-flow-feature)
-- [... et 5 autres](/docs/commands/work)
+- [... et 6 autres](/docs/commands/work)
 
 
 ## Guide de choix rapide
