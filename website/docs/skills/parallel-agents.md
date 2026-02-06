@@ -1,5 +1,5 @@
 ---
-sidebar_position: 28
+sidebar_position: 29
 title: "parallel-agents"
 description: "Orchestration d'agents paralleles pour maximiser l'efficacite. Declencher quand une tache peut etre decomposee en sous-taches independantes executables en parallele."
 tags:
@@ -160,6 +160,21 @@ Utiliser le tool Task avec plusieurs appels dans un seul message:
 - Utiliser `run_in_background: true` pour les taches longues
 - Combiner les resultats avec une synthese de haut niveau
 - Limiter a 3-5 agents paralleles pour la lisibilite
+
+## Agent Teams natif (recommande pour equipes > 2 agents)
+
+Pour les orchestrations complexes necessitant communication inter-agents, preferer **Agent Teams natif** :
+
+| | Sub-Agents (Task) | Agent Teams |
+|---|---|---|
+| **Communication** | Retour au parent uniquement | Messagerie directe entre agents |
+| **Coordination** | Agent principal gere tout | Liste de taches partagee |
+| **Cout tokens** | Faible | Eleve (1 contexte par agent) |
+| **Ideal pour** | Taches focalisees, resultats combines | Collaboration complexe, debat, consensus |
+
+**Recommandation** : Utiliser les sub-agents Task (ce skill) pour les taches focalisees et independantes. Utiliser Agent Teams (`/work:work-team`) pour les equipes de 3+ agents necessitant discussion et coordination.
+
+Voir le skill `agent-teams` pour la documentation complete.
 
 ## Regles
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 19
+sidebar_position: 20
 title: "growth-cro"
 description: "Optimisation du taux de conversion (CRO). Declencher quand l'utilisateur veut optimiser les conversions, ameliorer un formulaire d'inscription, un checkout, une landing page, ou un onboarding."
 tags:

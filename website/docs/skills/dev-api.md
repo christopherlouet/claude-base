@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: "dev-api"
 description: "Développer et documenter une API REST ou GraphQL. Utiliser quand l'utilisateur veut créer un endpoint, une route, ou structurer une API."
 tags:

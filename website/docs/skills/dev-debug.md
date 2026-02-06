@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: "dev-debug"
 description: "Deboguer et resoudre des problemes. Utiliser quand l'utilisateur a un bug, une erreur, un comportement inattendu, ou veut comprendre pourquoi quelque chose ne fonctionne pas."
 tags:

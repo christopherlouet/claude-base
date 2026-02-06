@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **41 skills** auto-declenches par mots-cles
+> **42 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 41, label: 'Skills Fork' },
+  { number: 42, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 41, label: 'Total' },
+  { number: 42, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?
@@ -29,12 +29,13 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (41 skills)
+### Fork (42 skills)
 
 Skills avec contexte isole.
 
 | Skill | Description | Mots-cles |
 |-------|-------------|-----------|
+| [`agent-teams`](/docs/skills/agent-teams) | Orchestration d'equipes d'agents avec Agent Teams ... | agent, teams, env |
 | [`api-mocking`](/docs/skills/api-mocking) | Configuration de mocks API pour les tests. Declenc... | api, mocking, mock api |
 | [`data-pipeline`](/docs/skills/data-pipeline) | Conception de pipelines ETL/ELT. Declencher quand ... | data, pipeline, duplicate ids |
 | [`dev-api`](/docs/skills/dev-api) | Développer et documenter une API REST ou GraphQL. ... | dev, api, success |
@@ -82,6 +83,13 @@ Skills avec contexte isole.
 ## Vue en cartes
 
 <SkillGrid>
+  <SkillCard
+    name="agent-teams"
+    description="Orchestration d'equipes d'agents avec Agent Teams natif. Declencher quand l'util"
+    keywords={["agent","teams","env","teammatemode"]}
+    context="fork"
+    href="/docs/skills/agent-teams"
+  />
   <SkillCard
     name="api-mocking"
     description="Configuration de mocks API pour les tests. Declencher quand l'utilisateur veut m"
@@ -158,13 +166,6 @@ Skills avec contexte isole.
     keywords={["dev","refactor"]}
     context="fork"
     href="/docs/skills/dev-refactor"
-  />
-  <SkillCard
-    name="dev-supabase"
-    description="Developpement backend avec Supabase. Declencher quand l'utilisateur veut configu"
-    keywords={["dev","supabase","users read own profile","users update own profile"]}
-    context="fork"
-    href="/docs/skills/dev-supabase"
   />
 </SkillGrid>
 
