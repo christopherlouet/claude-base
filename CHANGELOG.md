@@ -9,6 +9,26 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.23.2] - 2026-02-06
+
+### Corrige
+- **Documentation Docusaurus** : correction de la coherence et suppression des fichiers dupliques
+  - Suppression de 29 pages de skills dupliquees (anciens noms descriptifs)
+  - Suppression de 2 fichiers assistant dupliques a la racine des commandes
+  - Correction des compteurs dans 8+ fichiers (commands, agents, reference, concepts)
+  - Reecriture complete de `agents-matrix.md` (37 → 57 agents)
+  - Correction de `concepts/orchestrator.md` (compteurs et noms de skills obsoletes)
+- **Pages manquantes** : creation des pages documentation absentes
+  - `qa-chrome` : skill, agent et commande
+  - `work-commit-push-pr` : commande
+- **Matrices de reference** : ajout des commandes manquantes
+  - DEV : 7 commandes ajoutees (dev-ai-integration, dev-design-system, dev-document, dev-prisma, dev-prompt-engineering, dev-rag, dev-trpc)
+  - QA : 4 commandes ajoutees (qa-chrome, qa-design, qa-e2e, qa-tech-debt)
+  - OPS : 6 commandes ajoutees (ops-observability-stack, ops-opnsense, ops-proxmox, ops-rollback, ops-serverless, ops-vercel)
+  - GROWTH : 2 commandes ajoutees (growth-cro, growth-localization)
+
+---
+
 ## [1.23.1] - 2026-02-03
 
 ### Corrige
