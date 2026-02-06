@@ -1,5 +1,5 @@
 ---
-sidebar_position: 36
+sidebar_position: 37
 title: "session-handoff"
 description: "Transfert de contexte entre sessions IA. Declencher quand l'utilisateur veut sauvegarder le contexte, reprendre une tache, ou transmettre le travail a une autre session."
 tags:

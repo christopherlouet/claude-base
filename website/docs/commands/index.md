@@ -8,10 +8,10 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Commandes
 
-> **120 commandes** organisees en **10 domaines**
+> **121 commandes** organisees en **10 domaines**
 
 <Stats items={[
-  { number: 120, label: 'Commandes' },
+  { number: 121, label: 'Commandes' },
   { number: 10, label: 'Domaines' },
 ]} />
 
@@ -131,7 +131,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [... et 10 autres](/docs/commands/qa)
 
 
-### [WORK](/docs/commands/work) (11)
+### [WORK](/docs/commands/work) (12)
 
 > Workflow principal (explore, plan, commit, PR)
 
@@ -140,7 +140,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/work:work-commit-push-pr`](/docs/commands/work/work-commit-push-pr)
 - [`/work:work-explore`](/docs/commands/work/work-explore)
 - [`/work:work-flow-bugfix`](/docs/commands/work/work-flow-bugfix)
-- [... et 6 autres](/docs/commands/work)
+- [... et 7 autres](/docs/commands/work)
 
 
 ## Guide de choix rapide

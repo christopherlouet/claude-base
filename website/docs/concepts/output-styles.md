@@ -43,6 +43,7 @@ Les output styles sont dans `.claude/output-styles/`:
 .claude/output-styles/
 ├── README.md           # Documentation
 ├── teaching.md         # Mode pedagogique
+├── explanatory.md      # Raisonnement detaille (recommande par Boris)
 ├── concise.md          # Reponses breves
 ├── technical.md        # Details techniques
 ├── review.md           # Revue de code
@@ -93,6 +94,46 @@ Le ticket peut etre:
 - Rejete (rejected) - plus de cafe disponible
 
 Maintenant, regardons le code..."
+```
+
+### Explanatory (Raisonnement detaille)
+
+**Quand l'utiliser:** Comprendre le raisonnement, apprendre, onboarding
+
+> Recommande par Boris Cherny : "Enable 'Explanatory' output style in /config for understanding rationale behind changes."
+
+```markdown
+## Caracteristiques
+
+- Explique le POURQUOI avant le COMMENT
+- Montre le raisonnement etape par etape
+- Compare les alternatives et justifie le choix
+- Anticipe les questions "mais pourquoi pas X ?"
+
+## Exemple de reponse
+
+"## Analyse du probleme
+
+Ce composant recalcule filteredItems a chaque render, meme quand
+les inputs n'ont pas change.
+
+## Options considerees
+
+### Option A: useMemo
+Memoize le resultat. Recalcul uniquement si deps changent.
+
+### Option B: Deplacer dans le parent
+Plus simple mais couple le parent a la logique.
+
+## Choix retenu: useMemo
+
+**Raison principale**: Solution la plus simple pour notre cas (1-5k items).
+
+## Points cles a retenir
+
+1. useMemo evite les recalculs couteux, pas les renders
+2. Toujours mesurer AVANT d'optimiser
+3. La liste de dependances doit etre exhaustive"
 ```
 
 ### Concise (Bref)
@@ -371,6 +412,7 @@ Exemple de reponse avec ce style.
 | Situation | Style |
 |-----------|-------|
 | Onboarding nouveau dev | `teaching` |
+| Comprendre un choix technique | `explanatory` |
 | Code review PR | `review` |
 | Debug rapide | `concise` |
 | Discussion architecture | `technical` |

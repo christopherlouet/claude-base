@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: "data-pipeline"
 description: "Conception de pipelines ETL/ELT. Declencher quand l'utilisateur veut creer des flux de donnees, transformations, ou orchestration."
 tags:
