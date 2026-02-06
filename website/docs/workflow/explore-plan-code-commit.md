@@ -1,12 +1,12 @@
 ---
 sidebar_position: 2
-title: Explore → Plan → TDD → Commit
+title: Explore → Specify → Plan → TDD → Commit
 description: Le workflow principal de claude-socle avec TDD obligatoire
 ---
 
 import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDiagram';
 
-# Workflow principal : Explore → Plan → TDD → Commit
+# Workflow principal : Explore → Specify → Plan → TDD → Commit
 
 Le workflow fondamental qui garantit un code de qualite avec TDD obligatoire.
 
