@@ -17,6 +17,7 @@ description: Guides thematiques par type de projet
 | [Developpement API](/docs/guides/api-development) | Backend developers | `dev-api`, `dev-graphql`, `doc-api-spec` |
 | [Data Engineering](/docs/guides/data-engineering) | Data engineers | `data-pipeline`, `data-modeling`, `data-analytics` |
 | [Startup](/docs/guides/startup) | Entrepreneurs | `biz-*`, `growth-*`, `legal-*` |
+| [Bonnes Pratiques](/docs/guides/best-practices) | Tous | Verification, Opus 4.6, prompting, sessions paralleles |
 
 ## Choisir son guide
 

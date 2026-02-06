@@ -9,6 +9,22 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.25.1] - 2026-02-06
+
+### Ajoute
+- **Documentation Docusaurus** : mise a jour complete pour combler les ecarts avec le socle v1.25.0
+  - Page [Fonctionnalites Avancees](/docs/concepts/advanced-features) dans Concepts : Opus 4.6, Agent Teams, Plugins, LSP, MCP, @imports
+  - Page [Bonnes Pratiques](/docs/guides/best-practices) dans Guides : recommandations Boris Cherny (verification, modele, prompting, sessions paralleles, commit-push-pr)
+  - Style `explanatory` documente dans la page Output Styles (recommande par Boris Cherny)
+
+### Modifie
+- Compteurs Docusaurus corriges : Skills 41 → 42 (navbar, footer, index), WORK 11 → 12 (sidebar, index)
+- Concepts passe de 9 a 10 concepts cles (ajout Fonctionnalites Avancees)
+- Sidebar mise a jour avec les 2 nouvelles pages (concepts + guides)
+- Guide index enrichi avec la page Bonnes Pratiques
+
+---
+
 ## [1.25.0] - 2026-02-06
 
 ### Ajoute

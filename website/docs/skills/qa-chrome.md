@@ -1,5 +1,5 @@
 ---
-sidebar_position: 29
+sidebar_position: 30
 title: "qa-chrome"
 description: "Tests visuels et debugging navigateur via Chrome. Utiliser pour tester des pages web, vérifier le rendu visuel, débuguer avec la console, ou automatiser des actions navigateur. Déclencher quand l'utilisateur mentionne \"test visuel\", \"Chrome\", \"navigateur\", \"console browser\", \"DOM\", \"screenshot\", \"GIF\"."
 tags:
