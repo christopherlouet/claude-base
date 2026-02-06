@@ -20,9 +20,9 @@ graph TB
     end
 
     subgraph ".claude/"
-        CMDS[commands/<br/>120 commandes]
+        CMDS[commands/<br/>121 commandes]
         AGENTS[agents/<br/>57 sub-agents]
-        SKILLS[skills/<br/>41 skills]
+        SKILLS[skills/<br/>42 skills]
         RULES[rules/<br/>21 rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
@@ -48,7 +48,7 @@ graph TB
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 120 commandes manuelles (/nom)
+│   ├── commands/       # 121 commandes manuelles (/nom)
 │   │   ├── work/       # Workflow principal
 │   │   ├── dev/        # Developpement
 │   │   ├── qa/         # Qualite
@@ -59,7 +59,7 @@ claude-socle/
 │   │   ├── data/       # Donnees
 │   │   └── legal/      # Legal
 │   ├── agents/         # 57 sub-agents autonomes
-│   ├── skills/         # 41 skills auto-declenches
+│   ├── skills/         # 42 skills auto-declenches
 │   ├── rules/          # 21 regles par technologie
 │   ├── templates/      # Templates de specs/plans
 │   ├── output-styles/  # Styles de sortie
@@ -70,7 +70,7 @@ claude-socle/
 
 ## Composants principaux
 
-### Commands (120)
+### Commands (121)
 
 Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 
@@ -103,7 +103,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole.
 "Explore le code d'auth" → Claude delegue a l'agent work-explore (haiku)
 ```
 
-### Skills (41)
+### Skills (42)
 
 Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 
@@ -237,4 +237,4 @@ Activez les serveurs selon vos besoins pour etendre les capacites de Claude.
 
 - [Installation](/docs/intro/installation) - Guide d'installation complet
 - [Workflows](/docs/workflow) - Voir les workflows en action
-- [Commands](/docs/commands) - Explorer les 120 commandes
+- [Commands](/docs/commands) - Explorer les 121 commandes
