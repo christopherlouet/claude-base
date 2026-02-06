@@ -242,11 +242,11 @@ Instructions pour l'agent...
 
 ### Modeles disponibles
 
-| Modele | Usage | Cout | Vitesse |
-|--------|-------|------|---------|
-| haiku | Taches simples, lecture | $ | Rapide |
-| sonnet | Taches complexes, analyse | $$ | Medium |
-| opus | Taches critiques | $$$ | Plus lent |
+| Modele | Usage | Cout | Vitesse | Contexte | Sortie max |
+|--------|-------|------|---------|----------|------------|
+| haiku | Taches simples, lecture | $ | Rapide | 200k | 8k |
+| sonnet | Taches complexes, analyse | $$ | Medium | 200k | 64k |
+| opus (4.6) | Taches critiques, adaptive thinking | $$$ | Plus lent | 1M (beta) | 128k |
 
 ### Exemple d'agent
 ```yaml
