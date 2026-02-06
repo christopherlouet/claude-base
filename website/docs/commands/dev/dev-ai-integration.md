@@ -24,7 +24,7 @@ Integration de modeles de langage (LLM) et APIs IA dans les applications.
 
 | Provider | SDK | Modeles Principaux |
 |----------|-----|-------------------|
-| Anthropic | @anthropic-ai/sdk | Claude 3.5 Sonnet, Claude 3 Opus |
+| Anthropic | @anthropic-ai/sdk | Claude Opus 4.6, Claude Sonnet 4.5, Claude Haiku 4.5 |
 | OpenAI | openai | GPT-4o, GPT-4 Turbo |
 | Google | @google/generative-ai | Gemini Pro, Gemini Ultra |
 | Mistral | @mistralai/mistralai | Mistral Large, Mistral Medium |
@@ -117,6 +117,32 @@ async function ragQuery(query: string) {
     system: `Use the following context to answer questions:\n\n${context}`,
     messages: [{ role: 'user', content: query }],
   });
+}
+```
+
+### 5. Opus 4.6 avec Adaptive Thinking
+
+```typescript
+// Utiliser Opus 4.6 avec controle du niveau d'effort
+async function adaptiveComplete(
+  prompt: string,
+  effort: 'low' | 'medium' | 'high' | 'max' = 'high'
+): Promise&lt;string&gt; {
+  const response = await anthropic.messages.create({
+    model: 'claude-opus-4-6',
+    max_tokens: 16384,
+    thinking: {
+      type: 'enabled',
+      budget_tokens: 10000,
+      effort,
+    },
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  return response.content
+    .filter(block =&gt; block.type === 'text')
+    .map(block =&gt; block.text)
+    .join('');
 }
 ```
 

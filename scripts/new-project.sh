@@ -926,7 +926,41 @@ install_claude_files() {
         fi
     fi
 
-    success "Commandes, skills, agents, rules, styles et templates copiés"
+    # Copier docs/reference/ (requis pour les @imports de CLAUDE.md)
+    if [[ -d "$SOCLE_DIR/docs/reference" ]]; then
+        debug "Copie de docs/reference/ (requis pour @imports CLAUDE.md)..."
+        make_dir "$target_dir/docs/reference"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/reference/* → $target_dir/docs/reference/"
+        else
+            cp -r "$SOCLE_DIR/docs/reference/"* "$target_dir/docs/reference/"
+        fi
+    fi
+
+    # Copier les docs supplementaires referencees par CLAUDE.md
+    for doc_file in "docs/ARCHITECTURE.md" "docs/WORKFLOWS.md"; do
+        if [[ -f "$SOCLE_DIR/$doc_file" ]]; then
+            debug "Copie de $doc_file..."
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} cp $SOCLE_DIR/$doc_file → $target_dir/$doc_file"
+            else
+                cp "$SOCLE_DIR/$doc_file" "$target_dir/$doc_file"
+            fi
+        fi
+    done
+
+    # Copier docs/guides/ (reference dans CLAUDE.md)
+    if [[ -d "$SOCLE_DIR/docs/guides" ]]; then
+        debug "Copie de docs/guides/..."
+        make_dir "$target_dir/docs/guides"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/guides/* → $target_dir/docs/guides/"
+        else
+            cp -r "$SOCLE_DIR/docs/guides/"* "$target_dir/docs/guides/"
+        fi
+    fi
+
+    success "Commandes, skills, agents, rules, styles, templates et docs copiés"
 }
 
 # Installe GitHub Actions
@@ -1044,6 +1078,8 @@ print_simple_summary() {
     echo "  - .claude/output-styles/ (styles de sortie)"
     echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
     echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
+    echo "  - docs/reference/        (fichiers @import CLAUDE.md)"
+    echo "  - docs/guides/           (guides par domaine)"
     echo "  - CLAUDE.md"
     echo "  - CLAUDE.local.md.example"
     echo ""
