@@ -180,7 +180,7 @@ const config: Config = {
           title: 'Composants',
           items: [
             {
-              label: 'Commands (120)',
+              label: 'Commands (121)',
               to: '/docs/commands',
             },
             {

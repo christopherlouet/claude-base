@@ -1,6 +1,6 @@
 # Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **41 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **42 Skills** dans `.claude/skills/`:
 
 ## Skills de base
 | Skill | Déclenchement automatique | Context |
@@ -46,6 +46,7 @@ En plus des commandes, le projet inclut **41 Skills** dans `.claude/skills/`:
 | `dev-document` | "PDF", "DOCX", "XLSX", "PPTX", "document", "rapport" | fork |
 | `growth-cro` | "conversion", "CRO", "signup flow", "onboarding", "paywall" | fork |
 | `parallel-agents` | "parallele", "concurrent", "fan-out", "multi-agents" | fork |
+| `agent-teams` | "agent team", "swarm", "équipe d'agents", "parallèle agents" | fork |
 | `session-handoff` | "handoff", "reprise", "transfert session", "contexte" | fork |
 | `git-worktrees` | "worktree", "dev parallele", "branches simultanées" | fork |
 | `qa-chrome` | "Chrome", "test visuel", "debugging DOM", "capture" | fork |
