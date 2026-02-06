@@ -599,6 +599,8 @@ upgrade_claude_md() {
 
     if $DRY_RUN; then
         echo -e "${DIM}[DRY-RUN]${NC} Copie docs/reference/"
+        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/ARCHITECTURE.md, docs/WORKFLOWS.md"
+        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/guides/"
         echo -e "${DIM}[DRY-RUN]${NC} Vérification @imports manquants"
         echo -e "${DIM}[DRY-RUN]${NC} Backup CLAUDE.md si modifications"
         return
@@ -610,6 +612,23 @@ upgrade_claude_md() {
     local ref_count
     ref_count=$(find "$dest_ref" -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
     success "docs/reference/ copié ($ref_count fichiers)"
+
+    # Copier les docs supplementaires referencees par CLAUDE.md
+    for doc_file in "docs/ARCHITECTURE.md" "docs/WORKFLOWS.md"; do
+        if [[ -f "$SOCLE_DIR/$doc_file" ]]; then
+            cp "$SOCLE_DIR/$doc_file" "$TARGET_DIR/$doc_file"
+            debug "Copié: $doc_file"
+        fi
+    done
+
+    # Copier docs/guides/ (reference dans CLAUDE.md)
+    if [[ -d "$SOCLE_DIR/docs/guides" ]]; then
+        make_dir "$TARGET_DIR/docs/guides"
+        cp -r "$SOCLE_DIR/docs/guides/"* "$TARGET_DIR/docs/guides/"
+        local guides_count
+        guides_count=$(find "$TARGET_DIR/docs/guides" -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+        success "docs/guides/ copié ($guides_count fichiers)"
+    fi
 
     # Vérifier si @imports déjà présents
     if grep -q "@docs/reference/" "$claude_md" 2>/dev/null; then
