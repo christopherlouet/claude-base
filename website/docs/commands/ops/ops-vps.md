@@ -101,6 +101,16 @@ systemctl start fail2ban
 ## Deploiement avec Docker
 
 ### Installation Docker
+
+&gt; **Securite**: Le pattern `curl | sh` execute du code distant sans verification.
+&gt; En production, preferez telecharger le script, verifier son contenu/checksum, puis executer:
+&gt; ```bash
+> curl -fsSL https://get.docker.com -o install-docker.sh
+> # Verifier le contenu du script avant execution
+> sh install-docker.sh
+> rm -f install-docker.sh
+> ```
+
 ```bash
 # Installation
 curl -fsSL https://get.docker.com | sh

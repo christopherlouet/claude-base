@@ -6,6 +6,9 @@ const config: Config = {
   // Enable Mermaid diagrams
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
   },
   themes: [
     '@docusaurus/theme-mermaid',
@@ -27,7 +30,7 @@ const config: Config = {
   ],
   title: 'claude-socle',
   tagline: 'Template de configuration Claude Code pour un workflow optimal : Explore → Plan → TDD → Commit',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   // GitHub Pages configuration
   url: 'https://christopherlouet.github.io',
@@ -36,8 +39,7 @@ const config: Config = {
   projectName: 'claude-socle',
   trailingSlash: false,
 
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'throw',
 
   i18n: {
     defaultLocale: 'fr',
@@ -63,7 +65,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/social-card.png',
+    image: 'img/social-card.svg',
 
     colorMode: {
       defaultMode: 'light',

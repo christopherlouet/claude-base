@@ -174,7 +174,7 @@ describe('NomDuModule', () => {
 ## Voir aussi
 
 - [Rule tdd-enforcement](/docs/rules/tdd-enforcement) - Declenchement proactif du TDD
-- [Skill test-driven-development](/docs/skills/test-driven-development) - Skill auto-declenche
+- [Skill dev-tdd](/docs/skills/dev-tdd) - Skill auto-declenche
 - [Tests](/docs/commands/dev/dev-test)
 - [Testing Setup](/docs/commands/dev/dev-testing-setup)
 - [Coverage](/docs/commands/qa/qa-coverage)

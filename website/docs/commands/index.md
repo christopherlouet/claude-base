@@ -148,6 +148,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 | Besoin | Commande recommandee |
 |--------|---------------------|
 | Explorer le code | `/work:work-explore` |
+| Specifier le besoin | `/work:work-specify` |
 | Planifier une modification | `/work:work-plan` |
 | Developper en TDD | `/dev:dev-tdd` |
 | Creer un commit | `/work:work-commit` |
