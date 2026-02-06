@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 title: "nextjs"
 description: "**Regles RSC :** - Les Server Components ne peuvent PAS utiliser hooks (useState, useEffect) - Les Server Components ne peuvent PAS acceder au DOM ou "
 tags:

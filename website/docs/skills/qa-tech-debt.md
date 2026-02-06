@@ -1,5 +1,5 @@
 ---
-sidebar_position: 34
+sidebar_position: 35
 title: "qa-tech-debt"
 description: "Gestion et priorisation de la dette technique. Declencher quand l'utilisateur veut identifier, prioriser ou planifier le remboursement de la dette technique."
 tags:

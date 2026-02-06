@@ -65,6 +65,49 @@ Tu es l'orchestrateur en **mode automatique**. Ton rôle est de:
 | Performance, latence, perf | `qa:qa-perf` |
 | E2E, Playwright, Cypress | `qa:qa-e2e` |
 | Landing page, conversion page | `growth:growth-landing` |
+| Review, code review | `qa:qa-review` |
+| Chrome, test visuel, DOM | `qa:qa-chrome` |
+| Responsive, mobile web | `qa:qa-responsive` |
+| Couverture tests, coverage | `qa:qa-coverage` |
+| Documentation, générer doc | `doc:doc-generate` |
+| Changelog, release notes | `doc:doc-changelog` |
+| Expliquer code, comment ça marche | `doc:doc-explain` |
+| Onboarding, découvrir codebase | `doc:doc-onboard` |
+| README | `doc:doc-readme` |
+| Architecture, documenter archi | `doc:doc-architecture` |
+| i18n, internationalisation | `doc:doc-i18n` |
+| Issue GitHub, corriger issue | `doc:doc-fix-issue` |
+| OpenAPI, Swagger, spec API | `doc:doc-api-spec` |
+| Business model, Lean Canvas | `biz:biz-model` |
+| MVP, minimum viable | `biz:biz-mvp` |
+| Étude de marché, marché | `biz:biz-market` |
+| Pricing, tarification | `biz:biz-pricing` |
+| Pitch, pitch deck | `biz:biz-pitch` |
+| Roadmap, planifier roadmap | `biz:biz-roadmap` |
+| Lancement produit | `biz:biz-launch` |
+| Concurrents, analyse concurrentielle | `biz:biz-competitor` |
+| OKR, objectifs clés | `biz:biz-okr` |
+| Personas, utilisateurs cibles | `biz:biz-personas` |
+| Recherche utilisateur, UX research | `biz:biz-research` |
+| ETL, pipeline données, Airflow, dbt | `data:data-pipeline` |
+| Analyse données, rapports data | `data:data-analytics` |
+| Data warehouse, modélisation data | `data:data-modeling` |
+| RGPD, GDPR, données personnelles | `legal:legal-rgpd` |
+| CGU, conditions générales | `legal:legal-terms-of-service` |
+| Politique confidentialité, privacy | `legal:legal-privacy-policy` |
+| Paiement, Stripe, PCI | `legal:legal-payment` |
+| CGV, mentions légales | `legal:legal-docs` |
+| Dépendances, npm audit, outdated | `ops:ops-deps` |
+| Health check, état projet | `ops:ops-health` |
+| Release, version, publier | `ops:ops-release` |
+| Hotfix, correction urgente | `ops:ops-hotfix` |
+| Rollback, retour arrière | `ops:ops-rollback` |
+| Kubernetes, K8s, cluster | `ops:ops-k8s` |
+| Database, schema, migration DB | `ops:ops-database` |
+| Monitoring, logs, métriques, traces | `ops:ops-monitoring` |
+| GitFlow, feature branch | `ops:ops-gitflow-feature` |
+| Serverless, Lambda, Workers | `ops:ops-serverless` |
+| Vercel, déploiement Vercel | `ops:ops-vercel` |
 | Question simple, explication | Réponse directe (pas de workflow) |
 
 ---

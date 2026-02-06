@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 title: "/work:work-flow-feature"
 description: "Workflow complet pour développer une nouvelle fonctionnalité, de l'exploration au merge."
 tags:
@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Workflow complet pour développer une nouvelle fonctionnalité, de l'exploration au merge.
 
 ## Contexte
-`<arguments>`
+`&lt;arguments&gt;`
 
 ## Workflow automatisé
 

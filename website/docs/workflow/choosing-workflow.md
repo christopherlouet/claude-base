@@ -149,4 +149,4 @@ Oui ! Par exemple :
 
 - [Tous les workflows](/docs/workflow)
 - [Commands](/docs/commands)
-- [Assistant](/docs/commands/assistant)
+- [Assistant](/docs/commands/other/assistant)

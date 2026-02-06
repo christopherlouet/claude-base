@@ -1,7 +1,7 @@
 ---
-sidebar_position: 56
+sidebar_position: 50
 title: "qa-chrome"
-description: "Audit visuel et tests navigateur via Chrome."
+description: "Audit visuel et tests navigateur via l'integration Chrome de Claude Code."
 tags:
   - "agent"
   - "sonnet"
@@ -11,7 +11,7 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Audit visuel et tests navigateur via Chrome.
+> Audit visuel et tests navigateur via l'integration Chrome de Claude Code.
 
 ## Configuration
 
@@ -20,6 +20,7 @@ tags:
 | **Modele** | sonnet |
 | **Permission Mode** | default |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Outils interdits** | _Aucun_ |
 | **Skills injectes** | `qa-chrome`, `qa-design` |
 
 ## Description detaillee

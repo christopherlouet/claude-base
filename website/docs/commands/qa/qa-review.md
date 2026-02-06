@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 14
 title: "/qa:qa-review"
 description: "Effectue une code review approfondie et constructive."
 tags:
