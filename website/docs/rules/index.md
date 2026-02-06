@@ -11,8 +11,8 @@ import Stats from '@site/src/components/Stats';
 > **21 regles** appliquees automatiquement par chemin de fichier
 
 <Stats items={[
-  { number: 20, label: 'Regles' },
-  { number: 87, label: 'Patterns' },
+  { number: 21, label: 'Regles' },
+  { number: 98, label: 'Patterns' },
 ]} />
 
 ## Qu'est-ce qu'une Rule ?
@@ -35,6 +35,7 @@ Les **rules** sont des conventions appliquees automatiquement :
 | [`git`](/docs/rules/git) | [corps optionnel - details sur le "quoi" et "pourq... | - |
 | [`go`](/docs/rules/go) | // Custom errors var ErrUserNotFound = errors.New(... | `**/*.go`, `**/go.mod`... |
 | [`java`](/docs/rules/java) | // 2. Champs statiques private static final Logger... | `**/*.java`, `**/pom.xml`... |
+| [`lsp`](/docs/rules/lsp) | LSP disponible via `ENABLE_LSP_TOOL=1` ou plugins ... | `**/*.ts`, `**/*.tsx`... |
 | [`nextjs`](/docs/rules/nextjs) | **Regles RSC :** - Les Server Components ne peuven... | `**/next.config.*`, `**/app/**`... |
 | [`performance`](/docs/rules/performance) | &lt;Image src="/hero.jpg" alt="Hero" width=\{1200\} hei... | `**/*.tsx`, `**/*.jsx`... |
 | [`php`](/docs/rules/php) | declare(strict_types=1); | `**/*.php`, `**/composer.json` |

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 title: "/qa:qa-e2e"
 description: "Tests End-to-End avec Playwright ou Cypress."
 tags:

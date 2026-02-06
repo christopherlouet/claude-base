@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 title: "/work:work-flow-release"
 description: "Workflow complet pour préparer et publier une release."
 tags:
@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Workflow complet pour préparer et publier une release.
 
 ## Contexte
-`<arguments>`
+`&lt;arguments&gt;`
 
 ## Workflow automatisé
 
@@ -311,15 +311,15 @@ git push origin v1.2.3
 # Release v1.2.3
 
 ## Highlights
-- ✨ Feature majeure 1
-- 🚀 Amélioration performance
-- 🐛 Fix critique
+- Feature majeure 1
+- Amélioration performance
+- Fix critique
 
 ## What's Changed
 [Changelog complet]
 
 ## Breaking Changes
-⚠️ [Si applicable]
+[Si applicable]
 
 ## Migration Guide
 [Si breaking changes]
@@ -417,7 +417,7 @@ Release: https://github.com/org/repo/releases/tag/v[X.Y.Z]
 
 ### Communication
 ```markdown
-🚀 **Release v[X.Y.Z] déployée !**
+**Release v[X.Y.Z] déployée !**
 
 Nouveautés :
 - Feature 1

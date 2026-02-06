@@ -1,70 +1,78 @@
 import React from 'react';
 
-interface ComparisonRow {
+export interface ComparisonRow {
   aspect: string;
-  commands: string;
-  agents: string;
-  skills: string;
+  [key: string]: string | number;
 }
 
-const comparisonData: ComparisonRow[] = [
+export interface FeatureComparisonProps {
+  columns?: string[];
+  data?: ComparisonRow[];
+}
+
+const DEFAULT_COLUMNS = ['Commands', 'Agents', 'Skills'];
+
+const DEFAULT_DATA: ComparisonRow[] = [
   {
     aspect: 'Declenchement',
-    commands: 'Manuel (/nom)',
-    agents: 'Automatique (delegation)',
-    skills: 'Automatique (mots-cles)',
+    Commands: 'Manuel (/nom)',
+    Agents: 'Automatique (delegation)',
+    Skills: 'Automatique (mots-cles)',
   },
   {
     aspect: 'Contexte',
-    commands: 'Partage',
-    agents: 'Isole',
-    skills: 'Fork ou partage',
+    Commands: 'Partage',
+    Agents: 'Isole',
+    Skills: 'Fork ou partage',
   },
   {
     aspect: 'Modele',
-    commands: 'Herite du parent',
-    agents: 'Haiku ou Sonnet',
-    skills: 'Herite du parent',
+    Commands: 'Herite du parent',
+    Agents: 'Haiku ou Sonnet',
+    Skills: 'Herite du parent',
   },
   {
     aspect: 'Outils',
-    commands: 'Tous disponibles',
-    agents: 'Restreints',
-    skills: 'Restreints (allowed-tools)',
+    Commands: 'Tous disponibles',
+    Agents: 'Restreints',
+    Skills: 'Restreints (allowed-tools)',
   },
   {
-    aspect: 'Cas d\'usage',
-    commands: 'Actions explicites',
-    agents: 'Taches autonomes',
-    skills: 'Declenchement contextuel',
+    aspect: "Cas d'usage",
+    Commands: 'Actions explicites',
+    Agents: 'Taches autonomes',
+    Skills: 'Declenchement contextuel',
   },
   {
     aspect: 'Nombre',
-    commands: 120,
-    agents: '57',
-    skills: '41',
+    Commands: '120',
+    Agents: '57',
+    Skills: '41',
   },
 ];
 
-export default function FeatureComparison(): JSX.Element {
+export default function FeatureComparison({
+  columns = DEFAULT_COLUMNS,
+  data = DEFAULT_DATA,
+}: FeatureComparisonProps): JSX.Element {
   return (
     <div className="feature-comparison">
       <table>
         <thead>
           <tr>
             <th>Aspect</th>
-            <th>Commands</th>
-            <th>Agents</th>
-            <th>Skills</th>
+            {columns.map((col) => (
+              <th key={col}>{col}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {comparisonData.map((row) => (
+          {data.map((row) => (
             <tr key={row.aspect}>
               <td><strong>{row.aspect}</strong></td>
-              <td>{row.commands}</td>
-              <td>{row.agents}</td>
-              <td>{row.skills}</td>
+              {columns.map((col) => (
+                <td key={col}>{row[col] ?? ''}</td>
+              ))}
             </tr>
           ))}
         </tbody>

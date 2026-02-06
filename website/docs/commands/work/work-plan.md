@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 title: "/work:work-plan"
 description: "Tu es en mode PLANIFICATION. Conçois un plan d'implémentation détaillé."
 tags:

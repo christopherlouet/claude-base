@@ -362,5 +362,5 @@ L'orchestrateur est le **chef d'orchestre** qui :
 - [Commands](/docs/concepts/commands) - Commandes manuelles
 - [Agents](/docs/concepts/agents) - Sub-agents autonomes
 - [Skills](/docs/concepts/skills) - Skills auto-declenches
-- [Reference /assistant](/docs/commands/assistant) - Mode guide (avec confirmation)
-- [Reference /assistant-auto](/docs/commands/assistant-auto) - Mode automatique (execution directe)
+- [Reference /assistant](/docs/commands/other/assistant) - Mode guide (avec confirmation)
+- [Reference /assistant-auto](/docs/commands/other/assistant-auto) - Mode automatique (execution directe)

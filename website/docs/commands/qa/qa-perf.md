@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
 title: "/qa:qa-perf"
 description: "Analyse et optimisation des performances."
 tags:
