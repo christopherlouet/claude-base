@@ -1,340 +1,67 @@
-# Fonctionnalités Avancées
+# Fonctionnalites Avancees
 
-## Output Styles (Claude Code 2.1+)
+## Output Styles
 
-Modes d'interaction personnalisés dans `.claude/output-styles/` (8 styles):
+8 modes d'interaction dans `.claude/output-styles/`: `teaching`, `explanatory` (recommande), `concise`, `technical`, `review`, `emoji`, `minimal`, `structured`.
 
-| Style | Utilisation | Commande |
-|-------|-------------|----------|
-| `teaching` | Mode pédagogique avec explications | `/output-style teaching` |
-| `explanatory` | Raisonnement détaillé, comprendre le pourquoi (recommandé par Boris) | `/output-style explanatory` |
-| `concise` | Réponses brèves et directes | `/output-style concise` |
-| `technical` | Détails techniques approfondis | `/output-style technical` |
-| `review` | Revue de code structurée | `/output-style review` |
-| `emoji` | Réponses enrichies d'emojis | `/output-style emoji` |
-| `minimal` | Réponses épurées sans décoration | `/output-style minimal` |
-| `structured` | Structure ASCII avec séparateurs | `/output-style structured` |
+## Templates de Specification
 
-Voir `.claude/output-styles/README.md` pour la documentation complète avec exemples.
+Templates dans `.claude/templates/` pour le workflow Explore → Specify → Plan → Code:
 
-## Templates de Spécification (inspirés de Spec-Kit)
-
-Templates structurés pour le workflow Explore → Specify → Plan → Code dans `.claude/templates/`:
-
-| Template | Description | Utilisé par |
-|----------|-------------|-------------|
-| `spec-template.md` | Spécification fonctionnelle avec User Stories | `/work:work-specify` |
-| `plan-template.md` | Plan d'implémentation technique | `/work:work-plan` |
-| `tasks-template.md` | Découpage en tâches par User Story | `/work:work-plan` |
-
-### Structure d'une Spécification
-
-```
-specs/[feature]/
-├── spec.md           # Spécification fonctionnelle
-├── plan.md           # Plan d'implémentation
-├── tasks.md          # Découpage en tâches
-└── clarifications.md # Historique des clarifications (opt)
-```
-
-### Conventions
-
-| Marqueur | Signification |
-|----------|---------------|
-| `P1` | Priorité MVP (essentiel) |
-| `P2` | Priorité Important |
-| `P3` | Priorité Nice-to-have |
-| `[P]` | Tâche parallélisable |
-| `[US1]` | Appartient à User Story 1 |
-| `EF-XXX` | Exigence Fonctionnelle |
-| `CS-XXX` | Critère de Succès |
-
-### Workflow Spec-Driven
-
-```
-/work:work-explore → /work:work-specify → /work:work-clarify (opt) → /work:work-plan → /dev:dev-tdd
-```
-
-### Templates Proxmox (Terraform)
-
-Templates pour la gestion d'infrastructure Proxmox VE dans `.claude/templates/proxmox/`:
-
-| Template | Description |
+| Template | Utilise par |
 |----------|-------------|
-| `provider-template.tf` | Configuration provider bpg/proxmox |
-| `vm-module-template.tf` | Module VM avec cloud-init |
-| `lxc-module-template.tf` | Module conteneur LXC |
-| `infrastructure-template.tf` | Infrastructure type complète |
-| `README.md` | Guide d'utilisation des templates |
+| `spec-template.md` | `/work:work-specify` |
+| `plan-template.md` | `/work:work-plan` |
+| `tasks-template.md` | `/work:work-plan` |
 
-## Opus 4.6 : Nouvelles Capacites
+Structure: `specs/[feature]/` contient `spec.md`, `plan.md`, `tasks.md`, `clarifications.md` (opt).
 
-Claude Opus 4.6 (`claude-opus-4-6`) apporte des ameliorations majeures pour Claude Code.
+Conventions: `P1`=MVP, `P2`=Important, `P3`=Nice-to-have, `[P]`=parallelisable, `[US1]`=User Story 1.
 
-### Adaptive Thinking
+Templates Proxmox (Terraform) disponibles dans `.claude/templates/proxmox/`.
 
-Remplace le toggle "extended thinking" par 4 niveaux d'effort :
+## Opus 4.6
 
-| Niveau | Usage | Cout relatif |
-|--------|-------|-------------|
-| `low` | Taches simples, reformulations | $ |
-| `medium` | Code standard, analyses moderees | $$ |
-| `high` | Problemes complexes, audits approfondis | $$$ |
-| `max` | Taches critiques, architecture, debugging avance | $$$$ |
+Adaptive Thinking avec 4 niveaux d'effort (`low`, `medium`, `high`, `max`) - le modele ajuste automatiquement. Fenetre 1M tokens (beta), 128k tokens de sortie, Context Compaction automatique.
 
-Le modele ajuste automatiquement son effort selon la complexite detectee. Il est aussi possible de forcer un niveau via l'API :
+## Agent Teams (Experimental)
 
-```typescript
-const response = await anthropic.messages.create({
-  model: 'claude-opus-4-6',
-  max_tokens: 16384,
-  thinking: {
-    type: 'enabled',
-    budget_tokens: 10000,  // budget pour le raisonnement
-    effort: 'high',        // low | medium | high | max
-  },
-  messages: [{ role: 'user', content: prompt }],
-});
-```
+Coordination parallele d'equipes d'agents. Activation: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` dans `.claude/settings.json`.
 
-### Fenetre de contexte 1M tokens (beta)
-
-Opus 4.6 supporte jusqu'a **1 million de tokens** en entree (beta). La tarification standard s'applique jusqu'a 200k tokens, avec une tarification premium au-dela.
-
-| Tranche | Tarification |
-|---------|-------------|
-| 0 - 200k tokens | Standard |
-| 200k - 1M tokens | Premium (tarif majore) |
-
-### 128k tokens de sortie
-
-La limite de sortie passe a **128k tokens** (contre 8k-32k precedemment), permettant la generation de fichiers complets, de documentation extensive, ou de refactorings massifs en une seule reponse.
-
-### Context Compaction
-
-Resume automatiquement le contexte ancien pour maintenir la coherence sur de longues sessions. Particulierement utile avec les sessions paralleles (git worktrees) et les taches complexes multi-fichiers.
-
-### Agent Teams (Experimental)
-
-Coordination parallele d'equipes d'agents sur des taches complexes. Un agent lead orchestre des teammates qui travaillent en parallele avec communication directe entre eux.
-
-> **Activation requise** : Feature experimentale desactivee par defaut.
-
-#### Activation
-
-```json
-// .claude/settings.json ou .claude/settings.local.json
-{
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  }
-}
-```
-
-#### Modes d'affichage
-
-| Mode | Description | Prerequis |
-|------|-------------|-----------|
-| `auto` (defaut) | Split-panes si dans tmux, sinon in-process | - |
-| `in-process` | Tous les agents dans le terminal principal | Aucun |
-| `tmux` | Chaque agent dans son propre pane | tmux installe |
-
-```bash
-# Forcer un mode
-claude --teammate-mode tmux
-```
-
-#### Comparaison des approches paralleles
-
-| | Sub-Agents (Task) | Agent Teams | Sessions manuelles (worktrees) |
-|---|---|---|---|
-| **Communication** | Retour au parent | Messagerie directe | Aucune |
-| **Coordination** | Parent gere | Taches partagees | Manuelle |
-| **Cout tokens** | Faible | Eleve | Eleve |
-| **Ideal pour** | Taches focalisees | Collaboration complexe | Branches independantes |
-
-#### Raccourcis clavier
-
-| Raccourci | Action |
-|-----------|--------|
-| `Shift+Up/Down` | Naviguer entre teammates |
-| `Shift+Tab` | Mode delegate (lead = coordination) |
-| `Ctrl+T` | Afficher la liste de taches |
-
-#### Variables d'environnement
-
-| Variable | Description |
-|----------|-------------|
-| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | Active la fonctionnalite (valeur: `1`) |
-| `CLAUDE_CODE_TASK_LIST_ID` | Partage une task list entre sessions |
-
-#### Limitations
-
-- Pas de resume des teammates in-process apres `/resume`
-- Un seul team par session
-- Pas d'equipes imbriquees
-- Split-panes non supporte dans VS Code / Windows Terminal / Ghostty
-
-#### Usage dans le socle
-
-Le socle fournit un skill `agent-teams` et une commande `/work:work-team` avec des patterns pre-configures :
-
-```bash
-# Audit parallele (3 agents: securite, perf, a11y)
-/work:work-team "audit complet du projet"
-
-# Feature en equipe (frontend, backend, tests)
-/work:work-team "implementer les notifications"
-
-# Debug collaboratif (hypotheses concurrentes)
-/work:work-team "investiguer le bug de connexion"
-```
+Modes: `auto` (defaut), `in-process`, `tmux`. Commande: `/work:work-team "description"`.
 
 Voir `.claude/skills/agent-teams/SKILL.md` pour la documentation complete.
 
-## MCP Configuration (Claude Code 2.1+)
+## MCP Configuration
 
-Configuration centralisée des MCP servers dans `.mcp.json`:
+Serveurs MCP dans `.mcp.json` (tous desactives par defaut):
 
-### Serveurs de base
+| Server | Usage |
+|--------|-------|
+| `filesystem` | Acces avance aux fichiers |
+| `memory` | Memoire persistante |
+| `github` | Integration GitHub |
+| `postgres` | Connexion PostgreSQL |
+| `puppeteer` | Automatisation navigateur |
+| `slack` | Communication equipe |
+| `sentry` | Monitoring erreurs |
+| `linear` | Gestion de projet |
 
-| Server | Usage | Activé |
-|--------|-------|--------|
-| `filesystem` | Accès avancé aux fichiers | Non |
-| `memory` | Mémoire persistante | Non |
-| `fetch` | Requêtes HTTP externes | Non |
-| `github` | Intégration GitHub | Non |
-| `postgres` | Connexion PostgreSQL | Non |
-| `sqlite` | Base SQLite locale | Non |
-| `puppeteer` | Automatisation navigateur | Non |
-| `sequential-thinking` | Raisonnement structuré étape par étape | Non |
-
-### Serveurs recommandés par Boris Cherny
-
-| Server | Usage | Activé |
-|--------|-------|--------|
-| `slack` | Recherche de bugs dans les threads, communication équipe | Non |
-| `sentry` | Analyse d'erreurs et monitoring en production | Non |
-| `bigquery` | Requêtes analytics directes (élimine l'écriture SQL manuelle) | Non |
-| `linear` | Gestion de projet et issues | Non |
-| `notion` | Documentation et bases de connaissances | Non |
-
-Pour activer un server: `"enabled": true` dans `.mcp.json`
-
-### Configuration des variables d'environnement
-
-Créez un fichier `.env` avec les tokens nécessaires :
-
-```bash
-# GitHub
-GITHUB_TOKEN=ghp_xxxxx
-
-# Slack
-SLACK_BOT_TOKEN=xoxb-xxxxx
-SLACK_TEAM_ID=T0123456789
-
-# Sentry
-SENTRY_AUTH_TOKEN=sntrys_xxxxx
-SENTRY_ORG=my-org
-
-# BigQuery
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
-BIGQUERY_PROJECT_ID=my-project
-
-# Linear
-LINEAR_API_KEY=lin_api_xxxxx
-
-# Notion
-NOTION_API_KEY=secret_xxxxx
-```
+Pour activer: `"enabled": true` dans `.mcp.json`. Variables d'environnement dans `.env`.
 
 ## CLAUDE.md @imports
 
-Les fichiers CLAUDE.md supportent l'import de fichiers avec la syntaxe `@path/to/file` :
+Syntaxe `@path/to/file` pour importer des fichiers. Chemins relatifs et absolus supportes, imports recursifs (max 5 niveaux). Voir imports charges avec `/memory`.
 
-```markdown
-# Importer des fichiers dans CLAUDE.md
-See @README for project overview and @package.json for npm commands.
+## Plugins
 
-# Instructions individuelles (non committées)
-@~/.claude/my-project-instructions.md
-```
-
-### Règles d'import
-- Chemins relatifs et absolus supportés
-- Imports récursifs (max 5 niveaux)
-- Non évalués dans les blocs de code markdown
-- Alternative à CLAUDE.local.md pour les worktrees multiples
-- Voir les imports chargés avec `/memory`
-
-## Plugins (Claude Code 2.1+)
-
-Système de plugins pour distribuer skills, agents, hooks et MCP servers :
-
-### Structure d'un plugin
-```
-mon-plugin/
-├── .claude-plugin/
-│   └── plugin.json       # Manifeste (nom, version, description)
-├── commands/              # Commandes / skills legacy
-├── skills/                # Skills avec SKILL.md
-├── agents/                # Sub-agents
-├── hooks/
-│   └── hooks.json         # Hooks du plugin
-├── .mcp.json              # Serveurs MCP
-└── .lsp.json              # Serveurs LSP
-```
-
-### Utilisation
-```bash
-# Tester un plugin localement
-claude --plugin-dir ./mon-plugin
-
-# Les skills sont namespacés
-/mon-plugin:skill-name
-```
-
-### Quand utiliser plugins vs standalone
-| Approche | Nommage skills | Usage |
-|----------|---------------|-------|
-| Standalone (`.claude/`) | `/hello` | Personnel, un seul projet |
-| Plugin | `/plugin:hello` | Partage équipe, distribution, multi-projets |
+Distribuer skills, agents, hooks et MCP servers via plugins (`--plugin-dir ./mon-plugin`). Skills namespaces: `/mon-plugin:skill-name`.
 
 ## LSP (Language Server Protocol)
 
-Configuration LSP dans `.lsp.json` pour la navigation sémantique du code.
+Navigation semantique du code via `.lsp.json`. Activation: `export ENABLE_LSP_TOOL=1`.
 
-### Activation
+12 langages supportes (TypeScript, Python, Go, Rust, Java, C/C++, C#, PHP, Kotlin, Ruby, HTML, CSS).
 
-```bash
-export ENABLE_LSP_TOOL=1
-```
-
-### Langages supportés (12)
-
-| Langage | Serveur | Extensions |
-|---------|---------|------------|
-| TypeScript/JavaScript | `typescript-language-server` | `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs` |
-| Python | `pylsp` | `.py`, `.pyi` |
-| Go | `gopls` | `.go` |
-| Rust | `rust-analyzer` | `.rs` |
-| Java | `jdtls` | `.java` |
-| C/C++ | `clangd` | `.c`, `.cpp`, `.h`, `.hpp` |
-| C# | `omnisharp` | `.cs` |
-| PHP | `phpactor` | `.php` |
-| Kotlin | `kotlin-language-server` | `.kt`, `.kts` |
-| Ruby | `solargraph` | `.rb` |
-| HTML | `vscode-html-language-server` | `.html`, `.htm` |
-| CSS | `vscode-css-language-server` | `.css`, `.scss`, `.less` |
-
-### LSP vs Grep
-
-| Besoin | Outil | Pourquoi |
-|--------|-------|----------|
-| Définition d'un symbole | LSP `goToDefinition` | Résolution sémantique (imports, héritage) |
-| Toutes les références | LSP `findReferences` | Trouve les usages réels, pas les faux positifs |
-| Recherche de texte/pattern | Grep | Plus rapide pour les recherches textuelles |
-| Navigation de structure | LSP `documentSymbol` | Arbre des classes/fonctions |
-| Erreurs de type | LSP `getDiagnostics` | Diagnostics en temps réel |
-
-Voir `.claude/rules/lsp.md` pour les règles détaillées.
+LSP pour: definitions de symboles, references, diagnostics. Grep pour: recherches textuelles.
+Voir `.claude/rules/lsp.md` pour les regles detaillees.
