@@ -849,6 +849,89 @@ merge_cicd_workflows() {
 # Fonctions d'installation (mode simple / réutilisables)
 # =============================================================================
 
+# Retourne la liste des rules à copier selon le type de projet détecté.
+# Les rules universelles sont toujours incluses. Les rules spécifiques
+# ne sont copiées que si le langage correspondant est détecté.
+# Arguments:
+#   $1 - Type de projet détecté (react, vue, node-api, python, go, flutter, etc.)
+# Output: Liste de noms de fichiers rules à copier (un par ligne)
+get_rules_for_type() {
+    local project_type="$1"
+
+    # Rules universelles (toujours copiées)
+    local rules=("git.md" "workflow.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "README.md")
+
+    # Rules spécifiques au type de projet
+    case "$project_type" in
+        react|vue|node-api|fullstack|generic)
+            rules+=("typescript.md" "react.md" "nextjs.md" "accessibility.md" "performance.md" "api.md")
+            ;;
+        flutter)
+            rules+=("flutter.md")
+            ;;
+        python)
+            rules+=("python.md")
+            ;;
+        go)
+            rules+=("go.md")
+            ;;
+        rust)
+            rules+=("rust.md")
+            ;;
+        java)
+            rules+=("java.md")
+            ;;
+    esac
+
+    # Si type non reconnu ou generic, ajouter TS/web par défaut (cas le plus courant)
+    if [[ "$project_type" == "generic" || -z "$project_type" ]]; then
+        rules+=("typescript.md" "react.md" "accessibility.md" "performance.md" "api.md")
+    fi
+
+    # Dédupliquer et retourner
+    printf '%s\n' "${rules[@]}" | sort -u
+}
+
+# Copie les rules filtrées par type de projet
+# Arguments:
+#   $1 - Répertoire source des rules
+#   $2 - Répertoire cible des rules
+#   $3 - Type de projet détecté
+copy_filtered_rules() {
+    local source_dir="$1"
+    local target_dir="$2"
+    local project_type="$3"
+
+    if [[ ! -d "$source_dir" ]]; then
+        return
+    fi
+
+    local rules_list
+    rules_list=$(get_rules_for_type "$project_type")
+    local copied=0
+    local skipped=0
+
+    while IFS= read -r rule_file; do
+        if [[ -f "$source_dir/$rule_file" ]]; then
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} cp $source_dir/$rule_file → $target_dir/$rule_file"
+            else
+                cp "$source_dir/$rule_file" "$target_dir/$rule_file"
+            fi
+            ((copied++)) || true
+        fi
+    done <<< "$rules_list"
+
+    # Compter les rules non copiées
+    local total_rules
+    total_rules=$(find "$source_dir" -name "*.md" -maxdepth 1 | wc -l)
+    skipped=$((total_rules - copied))
+
+    if [[ $skipped -gt 0 ]]; then
+        debug "Rules: $copied copiées, $skipped ignorées (langages non détectés)"
+    fi
+}
+
 # Installe tous les fichiers .claude/ (commands, skills, agents, rules, etc.)
 # Arguments:
 #   $1 - Répertoire cible (chemin absolu)
@@ -896,15 +979,9 @@ install_claude_files() {
         fi
     fi
 
-    # Copier les rules
-    if [[ -d "$SOCLE_DIR/.claude/rules" ]]; then
-        debug "Copie des rules..."
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/rules/* → $target_dir/.claude/rules/"
-        else
-            cp -r "$SOCLE_DIR/.claude/rules/"* "$target_dir/.claude/rules/"
-        fi
-    fi
+    # Copier les rules (filtrées par type de projet)
+    debug "Copie des rules filtrées pour type: ${DETECTED_TYPE:-generic}..."
+    copy_filtered_rules "$SOCLE_DIR/.claude/rules" "$target_dir/.claude/rules" "${DETECTED_TYPE:-generic}"
 
     # Copier les output-styles
     if [[ -d "$SOCLE_DIR/.claude/output-styles" ]]; then
@@ -1787,15 +1864,10 @@ create_project() {
         fi
     fi
 
-    # Copier les rules
-    if [[ -d "$SOCLE_DIR/.claude/rules" ]]; then
-        make_dir "$TARGET_DIR/.claude/rules"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/rules/* → $TARGET_DIR/.claude/rules/"
-        else
-            cp -r "$SOCLE_DIR/.claude/rules/"* "$TARGET_DIR/.claude/rules/"
-        fi
-    fi
+    # Copier les rules (filtrées par type de projet)
+    make_dir "$TARGET_DIR/.claude/rules"
+    debug "Copie des rules filtrées pour type: ${DETECTED_TYPE:-generic}..."
+    copy_filtered_rules "$SOCLE_DIR/.claude/rules" "$TARGET_DIR/.claude/rules" "${DETECTED_TYPE:-generic}"
 
     # Copier les output-styles
     if [[ -d "$SOCLE_DIR/.claude/output-styles" ]]; then
