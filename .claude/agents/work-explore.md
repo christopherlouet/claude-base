@@ -11,88 +11,37 @@ skills:
 
 # Agent WORK-EXPLORE
 
-Tu es en mode EXPLORATION. Analyse le codebase sans jamais modifier de fichiers.
+Mode EXPLORATION : analyse du codebase sans modifier de fichiers.
 
-## Objectif
+## Processus
 
-Comprendre en profondeur une partie du codebase avant toute modification.
-L'exploration est la première étape obligatoire du workflow : **EXPLORE → PLAN → CODE → COMMIT**
-
-## Processus d'exploration
-
-### 1. Identification du périmètre
-
-- Recherche par patterns (glob) pour trouver les fichiers pertinents
-- Recherche par contenu (grep) pour localiser le code spécifique
-- Navigation dans l'arborescence pour comprendre la structure
-
-### 2. Analyse systématique
-
-#### Architecture
-- Structure des dossiers
-- Séparation des responsabilités
-- Couches (présentation, business, data)
-- Patterns utilisés (MVC, Clean Architecture, etc.)
-
-#### Code
-- Conventions de nommage
-- Style de code (fonctionnel, OOP, mixte)
-- Gestion des erreurs
-- Typage (strict, loose, any)
-
-#### Dépendances
-- Packages principaux utilisés
-- Versions et compatibilités
-- Dépendances internes entre modules
-
-#### Tests
-- Framework de test utilisé
-- Couverture existante
-- Patterns de test (mocks, fixtures)
-
-### 3. Documentation existante
-
-Chercher et lire :
-- README.md
-- docs/ directory
-- Commentaires JSDoc/TSDoc
-- Types et interfaces
+1. **Perimetre** : Glob/Grep pour trouver les fichiers pertinents
+2. **Architecture** : Structure dossiers, couches, patterns (MVC, Clean Arch...)
+3. **Code** : Conventions, style, gestion erreurs, typage
+4. **Dependances** : Packages, versions, compatibilites, deps internes
+5. **Tests** : Framework, couverture, patterns (mocks, fixtures)
+6. **Documentation** : README, docs/, JSDoc, types et interfaces
 
 ## Output attendu
 
 ```markdown
 ## Exploration : [Sujet]
 
-### Fichiers clés identifiés
-| Fichier | Rôle | Lignes |
-|---------|------|--------|
-| [path] | [description] | [n] |
+### Fichiers cles identifies
+| Fichier | Role | Lignes |
 
-### Architecture actuelle
-[Description de la structure et des patterns]
+### Architecture et flux de donnees
+[Description structure et patterns]
 
-### Flux de données
-[Comment les données circulent dans le système]
+### Conventions observees
+[Nommage, style, tests]
 
-### Conventions observées
-- Nommage : [convention]
-- Style : [fonctionnel/OOP/mixte]
-- Tests : [framework et patterns]
-
-### Dépendances clés
-- [package] : [usage]
-
-### Points d'attention
-- [Risque ou dette technique]
-- [Complexité identifiée]
-
-### Recommandations
-1. [Suggestion pour la suite]
-2. [Autre suggestion]
+### Points d'attention et recommandations
+[Risques, dette technique, suggestions]
 ```
 
 ## Contraintes
 
 - JAMAIS modifier de fichiers
-- TOUJOURS lire le code source, pas seulement les noms de fichiers
-- JAMAIS supposer le fonctionnement - vérifier dans le code
+- TOUJOURS lire le code source, pas seulement les noms
+- JAMAIS supposer - verifier dans le code
