@@ -2,7 +2,7 @@
 
 > Template de configuration Claude Code pour un workflow optimal : Explore → Specify → Plan → TDD → Commit
 
-@docs/reference/commands.md
+@docs/reference/best-practices.md
 @docs/reference/project-structures.md
 
 ## Workflow Obligatoire : Explore → Specify → Plan → TDD → Commit
@@ -26,30 +26,25 @@
 - MCP servers desactives par defaut dans `.mcp.json`
 - Eviter `curl URL | sh`, preferer telecharger + verifier + executer
 
-@docs/reference/agents-catalog.md
+## Documentation et References
 
-## Documentation de Navigation
+| Reference | Chemin |
+|-----------|--------|
+| Commandes disponibles | `docs/reference/commands.md` |
+| Catalogue agents/commands | `docs/reference/agents-catalog.md` |
+| Hooks configures | `docs/reference/hooks-reference.md` |
+| Skills disponibles | `docs/reference/skills-catalog.md` |
+| Features avancees | `docs/reference/advanced-features.md` |
+| Architecture | `docs/ARCHITECTURE.md` |
+| Workflows visuels | `docs/WORKFLOWS.md` |
+| Guide choix agents | `WHEN-TO-USE-WHICH-AGENT.md` |
+| Guide Web | `docs/guides/WEB-GUIDE.md` |
+| Guide Mobile | `docs/guides/MOBILE-GUIDE.md` |
+| Guide API | `docs/guides/API-GUIDE.md` |
+| Guide Data | `docs/guides/DATA-GUIDE.md` |
+| Guide Prompting | `docs/guides/PROMPTING-GUIDE.md` |
 
-### Guides principaux
-| Document | Description |
-|----------|-------------|
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Architecture Commands vs Agents vs Skills vs Rules |
-| [docs/WORKFLOWS.md](docs/WORKFLOWS.md) | Diagrammes visuels des workflows |
-| [WHEN-TO-USE-WHICH-AGENT.md](WHEN-TO-USE-WHICH-AGENT.md) | Guide de choix des agents |
-
-### Guides par domaine
-| Guide | Stack |
-|-------|-------|
-| [docs/guides/WEB-GUIDE.md](docs/guides/WEB-GUIDE.md) | React, Next.js, Vue, Node.js |
-| [docs/guides/MOBILE-GUIDE.md](docs/guides/MOBILE-GUIDE.md) | Flutter, Clean Architecture, BLoC |
-| [docs/guides/API-GUIDE.md](docs/guides/API-GUIDE.md) | REST, GraphQL, Express, Fastify |
-| [docs/guides/DATA-GUIDE.md](docs/guides/DATA-GUIDE.md) | ETL, Airflow, dbt, Data Warehouse |
-| [docs/guides/PROMPTING-GUIDE.md](docs/guides/PROMPTING-GUIDE.md) | Techniques de prompting avance (Boris Cherny) |
-
-### Setup
-```bash
-./scripts/new-project.sh --simple .
-```
+Setup: `./scripts/new-project.sh --simple .`
 
 ## Workflows Recommandes
 
@@ -63,11 +58,6 @@
 | Equipe d'agents | `/work:work-team "description"` |
 
 Workflow manuel : `/work:work-explore` → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/work:work-pr`
-
-@docs/reference/hooks-reference.md
-@docs/reference/skills-catalog.md
-@docs/reference/advanced-features.md
-@docs/reference/best-practices.md
 
 ## Anti-patterns a Eviter
 
