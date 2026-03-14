@@ -49,6 +49,43 @@ Serveurs MCP dans `.mcp.json` (tous desactives par defaut):
 
 Pour activer: `"enabled": true` dans `.mcp.json`. Variables d'environnement dans `.env`.
 
+### MCP Elicitation (CLI 2.1.76+)
+
+Les serveurs MCP peuvent demander un input structure a l'utilisateur en cours de tache via des dialogues interactifs. Hooks associes: `Elicitation` (demande) et `ElicitationResult` (reponse).
+
+## Async Hooks (CLI 2.1.70+)
+
+Propriete `"async": true` pour executer un hook en arriere-plan sans bloquer la session. Recommande pour les hooks de logging et notification. Les hooks de securite (gitleaks, tests pre-commit) doivent rester synchrones.
+
+| Hook | Mode | Raison |
+|------|------|--------|
+| SessionStart, PreToolUse, PostToolUse, Setup | **sync** | Actions critiques (securite, formatage) |
+| SessionEnd, PreCompact, PostCompact, SubagentStop, Notification | **async** | Logging, pas d'impact sur le workflow |
+| TeammateIdle, TaskCompleted, InstructionsLoaded | **async** | Observabilite, non-bloquant |
+| Elicitation, ElicitationResult | **async** | Logging MCP |
+
+## HTTP Hooks (CLI 2.1.70+)
+
+Type `"http"` pour envoyer un POST JSON vers une URL externe (webhook). Exemple de configuration webhook generique:
+
+```json
+{
+  "type": "http",
+  "url": "https://your-webhook-url.example.com/hook",
+  "headers": { "Authorization": "Bearer ${WEBHOOK_TOKEN}" },
+  "timeout": 5000,
+  "async": true
+}
+```
+
+Recommandations: toujours `async: true` et `onFailure: "ignore"` pour eviter de bloquer la session si le service distant est indisponible.
+
+## Claude Code Security (Enterprise/Team)
+
+Outil de scan de vulnerabilites utilisant Opus 4.6 pour analyser le code au-dela de l'analyse statique traditionnelle. Raisonne sur les flux de donnees, interactions entre composants et patterns architecturaux.
+
+Prerequis: plan Enterprise ou Team. Complement de `/qa:qa-security` pour un audit approfondi. Voir [annonce Anthropic](https://www.anthropic.com/news/claude-code-security).
+
 ## CLAUDE.md @imports
 
 Syntaxe `@path/to/file` pour importer des fichiers. Chemins relatifs et absolus supportes, imports recursifs (max 5 niveaux). Voir imports charges avec `/memory`.
