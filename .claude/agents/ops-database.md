@@ -10,164 +10,22 @@ permissionMode: default
 
 Conception et gestion de bases de donnees.
 
-## Objectif
+## Workflow
 
-- Concevoir des schemas optimises
-- Creer des migrations versionnees
-- Optimiser les requetes
-- Configurer les index
+1. **Schema** : conventions (snake_case, UUID PK, TIMESTAMPTZ), Prisma ou SQL DDL
+2. **Migrations** : versionnees, trigger updated_at, index sur colonnes WHERE
+3. **Index** : B-tree (WHERE), GIN (texte/JSON), GiST (geo), EXPLAIN ANALYZE pour valider
+4. **Optimisation** : eviter N+1 (use include/join), cursor-based pagination
+5. **Backup** : pg_dump automatise, scripts de restore
 
-## Schema Design
+## Conventions
 
-### Conventions de nommage
-
-| Element | Convention | Exemple |
-|---------|------------|---------|
-| Tables | snake_case pluriel | users, order_items |
-| Colonnes | snake_case | created_at, user_id |
-| Primary key | id | id UUID |
-| Foreign key | table_id | user_id |
-| Index | idx_table_columns | idx_users_email |
-
-### Types recommandes
-
-```sql
--- PostgreSQL
-id UUID PRIMARY KEY DEFAULT gen_random_uuid()
-created_at TIMESTAMPTZ DEFAULT NOW()
-updated_at TIMESTAMPTZ DEFAULT NOW()
-deleted_at TIMESTAMPTZ  -- Soft delete
-status TEXT CHECK (status IN ('active', 'inactive'))
-metadata JSONB DEFAULT '{}'
-```
-
-## Migrations
-
-### Prisma
-
-```prisma
-// prisma/schema.prisma
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  posts     Post[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("users")
-}
-
-model Post {
-  id        String   @id @default(uuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String   @map("author_id")
-
-  @@index([authorId])
-  @@map("posts")
-}
-```
-
-### SQL Migration
-
-```sql
--- migrations/001_create_users.sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email TEXT UNIQUE NOT NULL,
-  name TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_users_email ON users(email);
-
--- Trigger for updated_at
-CREATE OR REPLACE FUNCTION update_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER users_updated_at
-  BEFORE UPDATE ON users
-  FOR EACH ROW
-  EXECUTE FUNCTION update_updated_at();
-```
-
-## Index Strategy
-
-### Quand creer un index
-
-| Situation | Type d'index |
-|-----------|--------------|
-| WHERE sur colonne | B-tree (default) |
-| Recherche texte | GIN + pg_trgm |
-| JSON queries | GIN |
-| Range queries | B-tree |
-| Geolocation | GiST |
-
-### Analyse
-
-```sql
--- Voir les requetes lentes
-SELECT * FROM pg_stat_statements
-ORDER BY total_time DESC LIMIT 10;
-
--- Analyser une requete
-EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
-
--- Index manquants
-SELECT * FROM pg_stat_user_indexes WHERE idx_scan = 0;
-```
-
-## Optimisation
-
-### N+1 Queries
-
-```typescript
-// Mauvais - N+1
-const users = await prisma.user.findMany();
-for (const user of users) {
-  const posts = await prisma.post.findMany({ where: { authorId: user.id } });
-}
-
-// Bon - Include
-const users = await prisma.user.findMany({
-  include: { posts: true }
-});
-```
-
-### Pagination
-
-```sql
--- Offset (lent sur grandes tables)
-SELECT * FROM posts ORDER BY created_at DESC LIMIT 20 OFFSET 100;
-
--- Cursor-based (performant)
-SELECT * FROM posts
-WHERE created_at < '2024-01-15'
-ORDER BY created_at DESC
-LIMIT 20;
-```
-
-## Backup
-
-```bash
-# PostgreSQL dump
-pg_dump -Fc database_name > backup.dump
-
-# Restore
-pg_restore -d database_name backup.dump
-
-# Automated backup (cron)
-0 2 * * * pg_dump -Fc mydb > /backups/mydb_$(date +\%Y\%m\%d).dump
-```
+- Tables : snake_case pluriel (`users`, `order_items`)
+- PK : `id UUID DEFAULT gen_random_uuid()`
+- FK : `table_id` (ex: `user_id`)
+- Index : `idx_table_columns`
+- Audit : `created_at`, `updated_at` TIMESTAMPTZ
+- Soft delete : `deleted_at` TIMESTAMPTZ nullable
 
 ## Output attendu
 
@@ -175,3 +33,13 @@ pg_restore -d database_name backup.dump
 2. Migrations versionnees
 3. Index recommandes
 4. Scripts de backup
+
+## Directives
+
+- NEVER oublier les index sur les foreign keys
+- IMPORTANT: Utiliser cursor-based pagination sur les grandes tables
+- YOU MUST inclure EXPLAIN ANALYZE pour valider les requetes critiques
+- IMPORTANT: Trigger updated_at sur toutes les tables
+- NEVER stocker des donnees sensibles en clair
+
+Think hard about les performances des requetes.
