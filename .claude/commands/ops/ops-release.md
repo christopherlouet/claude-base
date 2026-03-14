@@ -2,150 +2,39 @@
 
 Workflow de release avec changelog et versioning.
 
-## Version ou contexte
+## Contexte de la demande
 $ARGUMENTS
 
-## Workflow de Release
+## Objectif
 
-### 1. Préparation
-```bash
-# S'assurer d'être à jour
-git checkout develop
-git pull origin develop
+Guider le processus complet de release : version bump, changelog,
+branche release, tag, merge et GitHub Release.
 
-# Vérifier l'état
-git status
-npm test
-npm run build
-```
+## Workflow
 
-### 2. Déterminer la version
+- Verifier l'etat du projet (tests passent, build OK, dependances a jour)
+- Determiner la version selon SemVer (MAJOR, MINOR, PATCH)
+- Generer le changelog (Added, Changed, Fixed, Deprecated, Removed, Security)
+- Creer la branche release et bump la version
+- Merger dans main, creer le tag, pousser
+- Merger dans develop, creer la GitHub Release
+- Post-release : verifier le deploiement, annoncer, documenter
 
-#### Semantic Versioning (SemVer)
-| Type | Quand | Exemple |
-|------|-------|---------|
-| MAJOR (X.0.0) | Breaking changes | 1.0.0 → 2.0.0 |
-| MINOR (0.X.0) | Nouvelles features backward-compatible | 1.0.0 → 1.1.0 |
-| PATCH (0.0.X) | Bug fixes backward-compatible | 1.0.0 → 1.0.1 |
+## Output attendu
 
-### 3. Générer le Changelog
+1. **Version** determinee avec justification
+2. **Changelog** au format Keep a Changelog
+3. **Commandes** executees (branch, tag, merge, push)
+4. **Checklist** pre et post-release
 
-#### Format
-```markdown
-# Changelog
+## Agents lies
 
-## [X.Y.Z] - YYYY-MM-DD
-
-### Added
-- Nouvelle fonctionnalité A (#123)
-- Nouvelle fonctionnalité B (#124)
-
-### Changed
-- Amélioration de X (#125)
-
-### Fixed
-- Correction du bug Y (#126)
-- Correction du bug Z (#127)
-
-### Deprecated
-- Fonction X sera supprimée en v3.0
-
-### Removed
-- Suppression de la fonction obsolète Y
-
-### Security
-- Correction de vulnérabilité CVE-XXXX
-```
-
-### 4. Créer la release
-
-```bash
-# Créer branche release
-git checkout -b release/vX.Y.Z
-
-# Mettre à jour la version
-npm version X.Y.Z --no-git-tag-version
-
-# Mettre à jour CHANGELOG.md
-# ... éditer le fichier ...
-
-# Commit
-git add package.json package-lock.json CHANGELOG.md
-git commit -m "chore(release): prepare vX.Y.Z"
-```
-
-### 5. Finaliser
-
-```bash
-# Merger dans main
-git checkout main
-git merge release/vX.Y.Z
-
-# Tag
-git tag -a vX.Y.Z -m "Release vX.Y.Z"
-
-# Push
-git push origin main --tags
-
-# Merger dans develop
-git checkout develop
-git merge main
-git push origin develop
-
-# Créer GitHub Release
-gh release create vX.Y.Z --title "vX.Y.Z" --notes-file CHANGELOG.md
-```
-
-### 6. Post-release
-- [ ] Vérifier le déploiement
-- [ ] Annoncer la release (si public)
-- [ ] Mettre à jour la documentation
-- [ ] Supprimer la branche release
-
-## Checklist pré-release
-
-- [ ] Tous les tests passent
-- [ ] Build de production OK
-- [ ] Documentation à jour
-- [ ] CHANGELOG complet
-- [ ] Breaking changes documentés
-- [ ] Migration guide si nécessaire
-- [ ] Dépendances à jour (npm audit clean)
-
-## Template de release notes
-
-```markdown
-# Release vX.Y.Z
-
-## Highlights
-[Résumé des changements majeurs en 2-3 phrases]
-
-## What's New
-- Feature 1: [description]
-- Feature 2: [description]
-
-## Bug Fixes
-- Fix 1: [description] (#issue)
-
-## Breaking Changes
-- [Description du breaking change et comment migrer]
-
-## Upgrade Guide
-[Instructions de mise à jour si nécessaire]
-
-## Contributors
-@contributor1, @contributor2
-```
-
-## Agents liés
-
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/doc:doc-changelog` | Générer le changelog |
+| Agent | Usage |
+|-------|-------|
+| `/doc:doc-changelog` | Generer le changelog |
 | `/ops:ops-ci` | Automatiser la release |
-| `/dev:dev-test` | Tests pré-release |
 | `/qa:qa-security` | Audit avant release |
-| `/ops:ops-monitoring` | Vérifier post-release |
+| `/ops:ops-monitoring` | Verifier post-release |
 
 ---
 
@@ -153,6 +42,6 @@ IMPORTANT: Tester la release en staging avant production.
 
 IMPORTANT: Toujours avoir un plan de rollback.
 
-YOU MUST mettre à jour le changelog.
+YOU MUST mettre a jour le changelog.
 
 NEVER release un vendredi soir (sauf urgence).
