@@ -76,6 +76,43 @@ npm run lint       # ou ruff, golangci-lint
 - Valider les preconditions en entree de fonction
 - Logger les etats inattendus sans crasher
 
+## Gate Function (obligatoire avant toute affirmation de completion)
+
+```
+AVANT de declarer un statut ou exprimer une satisfaction:
+
+1. IDENTIFIER: Quelle commande prouve cette affirmation ?
+2. EXECUTER: Lancer la commande COMPLETE (fresh, pas un run precedent)
+3. LIRE: Sortie complete, verifier le code retour, compter les erreurs
+4. CONFIRMER: La sortie confirme-t-elle l'affirmation ?
+   - Si NON: Donner le statut reel avec preuves
+   - Si OUI: Affirmer AVEC les preuves
+5. SEULEMENT ALORS: Faire l'affirmation
+
+Sauter une etape = affirmation non verifiee
+```
+
+## Red Flags — STOP immediat
+
+| Signal d'alerte | Reaction |
+|-----------------|----------|
+| Utiliser "devrait", "probablement", "semble" | STOP — lancer la verification |
+| Exprimer une satisfaction avant verification ("Super!", "Parfait!", "Fait!") | STOP — evidence d'abord |
+| Sur le point de commit/push/PR sans verification | STOP — Gate Function |
+| Se fier au rapport de succes d'un sub-agent | STOP — verifier independamment |
+| Se contenter d'une verification partielle | STOP — partiel ne prouve rien |
+| "Juste cette fois" ou "Ca devrait marcher" | STOP — pas d'exception |
+
+## Table de preuve requise
+
+| Affirmation | Preuve requise | Insuffisant |
+|-------------|---------------|-------------|
+| "Les tests passent" | Sortie test: 0 echecs | Run precedent, "devrait passer" |
+| "Le linter est propre" | Sortie linter: 0 erreurs | Verification partielle |
+| "Le build reussit" | Commande build: exit 0 | "Le linter passe donc ca build" |
+| "Le bug est corrige" | Test du symptome original: passe | "J'ai change le code" |
+| "Les exigences sont remplies" | Checklist ligne par ligne | "Les tests passent" |
+
 ## Regles
 
 IMPORTANT: Ne JAMAIS dire "c'est corrige" sans avoir lance les tests.
@@ -83,3 +120,5 @@ IMPORTANT: Ne JAMAIS dire "c'est corrige" sans avoir lance les tests.
 IMPORTANT: Toujours verifier le diff complet avant de commiter.
 
 NEVER presumer qu'un changement est safe. Le prouver.
+
+NEVER exprimer de satisfaction ou de completion sans preuve fraiche.
