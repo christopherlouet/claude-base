@@ -36,6 +36,30 @@ Techniques: "Grill me on these changes", "Prove to me this works", "Knowing ever
 
 Voir `docs/guides/PROMPTING-GUIDE.md` pour le guide complet.
 
+## Effort Levels
+
+> Adapter le niveau de raisonnement a la tache.
+
+| Tache | Effort | Pourquoi |
+|-------|--------|----------|
+| Explorer du code, lire des fichiers | `low` | Pas besoin de raisonnement profond |
+| Implementer une feature standard | `medium` | Equilibre vitesse/qualite |
+| Concevoir une architecture, auditer | `high` | Raisonnement approfondi necessaire |
+
+Commande: `/effort low`, `/effort medium`, `/effort high`.
+
+## Memoire Automatique (CLI 2.1.76+)
+
+Claude Code memorise automatiquement preferences, decisions et contexte projet dans `~/.claude/memory/`.
+
+| Memoriser (auto) | CLAUDE.md (git) | Rules (auto-activees) |
+|-------------------|-----------------|----------------------|
+| Preferences personnelles | Conventions projet | Regles par langage |
+| Decisions d'architecture | Workflow obligatoire | Patterns de code |
+| Contexte equipe | References documentation | Checklist verification |
+
+Ne pas dupliquer : si c'est dans CLAUDE.md, pas besoin de le memoriser. Utiliser "remember that..." pour forcer une memorisation explicite.
+
 ## Sessions Paralleles
 
 > "The single biggest productivity unlock." -- Boris Cherny
