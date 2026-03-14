@@ -7,11 +7,12 @@
 
 set -euo pipefail
 
-VERSION="1.2.0"
-
 # Charger la librairie commune
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Version lue depuis le fichier VERSION
+VERSION=$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null || echo "unknown")
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -19,6 +20,17 @@ source "$SCRIPT_DIR/lib/common.sh"
 # Activer le handler d'erreur et vérifier les prérequis
 enable_error_handler
 check_base_requirements
+
+# =============================================================================
+# Path constants
+# =============================================================================
+
+COMMANDS_SUBDIR=".claude/commands"
+SKILLS_SUBDIR=".claude/skills"
+AGENTS_SUBDIR=".claude/agents"
+RULES_SUBDIR=".claude/rules"
+STYLES_SUBDIR=".claude/output-styles"
+TEMPLATES_SUBDIR=".claude/templates"
 
 # =============================================================================
 # Variables
@@ -36,9 +48,8 @@ UPDATE_TEMPLATES=false
 CLEAN_BEFORE_UPDATE=false
 DETECT_ORPHANS=false
 REMOVE_ORPHANS=false
-# shellcheck disable=SC2034  # Reserved for future implementation
-SHOW_CHANGELOG=false
 UPGRADE_CLAUDE_MD=false
+RESTORE_BACKUP=""
 
 # Compteurs
 UPDATED=0
@@ -46,6 +57,28 @@ ADDED=0
 SKIPPED=0
 ORPHANS_FOUND=0
 ORPHANS_REMOVED=0
+
+# Temp files tracking for cleanup
+_TEMP_FILES=()
+
+# =============================================================================
+# Cleanup trap
+# =============================================================================
+
+cleanup_temp_files() {
+    for f in "${_TEMP_FILES[@]}"; do
+        rm -f "$f" 2>/dev/null || true
+    done
+}
+trap cleanup_temp_files EXIT
+
+# Safe mktemp wrapper with error checking
+safe_mktemp() {
+    local tmp
+    tmp=$(mktemp) || error "Cannot create temp file"
+    _TEMP_FILES+=("$tmp")
+    echo "$tmp"
+}
 
 # =============================================================================
 # Aide
@@ -86,6 +119,7 @@ ${BOLD}OPTIONS${NC}
     --all               Met à jour tout (commandes, settings, skills, agents, rules, styles, templates)
     --upgrade-claude-md Migrer CLAUDE.md vers @imports (copie docs/reference/)
     --changelog         Affiche les nouveautés du socle
+    --restore BACKUP    Restaure depuis un backup précédent
 
 ${BOLD}EXEMPLES${NC}
     # Mise à jour interactive
@@ -105,6 +139,9 @@ ${BOLD}EXEMPLES${NC}
 
     # Supprimer les fichiers orphelins
     $(basename "$0") --remove-orphans ./mon-projet
+
+    # Restaurer depuis un backup
+    $(basename "$0") --restore .claude/commands.backup.20240101_120000 ./mon-projet
 
 ${BOLD}STATISTIQUES DU SOCLE${NC}
     Agents:    $(count_agents "$SOCLE_DIR")
@@ -223,6 +260,13 @@ parse_args() {
                 show_changelog
                 exit 0
                 ;;
+            --restore)
+                if [[ -z "${2:-}" ]]; then
+                    error "Option --restore requiert un argument (chemin du backup)"
+                fi
+                RESTORE_BACKUP="$2"
+                shift 2
+                ;;
             -*)
                 error "Option inconnue: $1\nUtilisez --help pour l'aide"
                 ;;
@@ -246,17 +290,66 @@ parse_args() {
 
 create_backup() {
     local backup_dir
-    backup_dir="$TARGET_DIR/.claude/commands.backup.$(date +%Y%m%d_%H%M%S)"
+    backup_dir="$TARGET_DIR/$COMMANDS_SUBDIR.backup.$(date +%Y%m%d_%H%M%S)"
 
-    if [[ -d "$TARGET_DIR/.claude/commands" ]]; then
+    if [[ -d "$TARGET_DIR/$COMMANDS_SUBDIR" ]]; then
         if $DRY_RUN; then
             echo -e "${DIM}[DRY-RUN]${NC} Backup → $backup_dir"
+            # Set BACKUP_DIR even in DRY_RUN so downstream code doesn't break
+            echo "$backup_dir"
         else
-            cp -r "$TARGET_DIR/.claude/commands" "$backup_dir"
+            cp -r "$TARGET_DIR/$COMMANDS_SUBDIR" "$backup_dir"
             success "Backup créé: $backup_dir"
+            echo "$backup_dir"
         fi
-        echo "$backup_dir"
     fi
+}
+
+restore_backup() {
+    local backup_path="$1"
+
+    # Resolve relative to TARGET_DIR if not absolute
+    if [[ "$backup_path" != /* ]]; then
+        backup_path="$TARGET_DIR/$backup_path"
+    fi
+
+    if [[ ! -d "$backup_path" ]]; then
+        # List available backups
+        info "Backups disponibles:"
+        local found=false
+        while IFS= read -r bdir; do
+            if [[ -d "$bdir" ]]; then
+                echo "  $(basename "$bdir")"
+                found=true
+            fi
+        done < <(find "$TARGET_DIR/$COMMANDS_SUBDIR".backup.* -maxdepth 0 -type d 2>/dev/null | sort -r || true)
+
+        if ! $found; then
+            info "  (aucun backup trouvé)"
+        fi
+
+        error "Backup non trouvé: $backup_path"
+    fi
+
+    section "Restauration depuis backup"
+    info "Source: $backup_path"
+
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} Restauration de $backup_path vers $TARGET_DIR/$COMMANDS_SUBDIR"
+        return
+    fi
+
+    if [[ -d "$TARGET_DIR/$COMMANDS_SUBDIR" ]]; then
+        # Create a safety backup before restoring
+        local safety_backup
+        safety_backup="$TARGET_DIR/$COMMANDS_SUBDIR.pre-restore.$(date +%Y%m%d_%H%M%S)"
+        cp -r "$TARGET_DIR/$COMMANDS_SUBDIR" "$safety_backup"
+        info "Backup de sécurité: $safety_backup"
+    fi
+
+    rm -rf "$TARGET_DIR/$COMMANDS_SUBDIR"
+    cp -r "$backup_path" "$TARGET_DIR/$COMMANDS_SUBDIR"
+    success "Restauration terminée depuis $(basename "$backup_path")"
 }
 
 update_command_file() {
@@ -264,7 +357,7 @@ update_command_file() {
     local rel_path="$2"  # Chemin relatif depuis commands/ (ex: work/work-explore.md)
     local filename
     filename=$(basename "$src")
-    local dest="$TARGET_DIR/.claude/commands/$rel_path"
+    local dest="$TARGET_DIR/$COMMANDS_SUBDIR/$rel_path"
 
     # Créer le sous-répertoire si nécessaire
     local dest_dir
@@ -346,25 +439,25 @@ update_commands() {
     section "Mise à jour des commandes"
 
     # Créer le répertoire s'il n'existe pas
-    if [[ ! -d "$TARGET_DIR/.claude/commands" ]]; then
-        make_dir "$TARGET_DIR/.claude/commands"
+    if [[ ! -d "$TARGET_DIR/$COMMANDS_SUBDIR" ]]; then
+        make_dir "$TARGET_DIR/$COMMANDS_SUBDIR"
     fi
 
     local before
-    before=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+    before=$(find "$TARGET_DIR/$COMMANDS_SUBDIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 
     # Parcourir récursivement les commandes du socle
-    local socle_commands_dir="$SOCLE_DIR/.claude/commands"
+    local socle_commands_dir="$SOCLE_DIR/$COMMANDS_SUBDIR"
     while IFS= read -r cmd; do
         if [[ -f "$cmd" ]]; then
             # Calculer le chemin relatif depuis commands/
-            local rel_path="${cmd#$socle_commands_dir/}"
+            local rel_path="${cmd#"$socle_commands_dir"/}"
             update_command_file "$cmd" "$rel_path"
         fi
     done < <(find "$socle_commands_dir" -name "*.md" -type f 2>/dev/null || true)
 
     local after
-    after=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+    after=$(find "$TARGET_DIR/$COMMANDS_SUBDIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 
     info "Commandes: $before → $after"
 }
@@ -396,185 +489,113 @@ update_settings() {
     fi
 }
 
-update_skills() {
-    section "Mise à jour des skills"
+# =============================================================================
+# Generic directory update function (replaces update_skills/agents/rules/styles/templates)
+# =============================================================================
 
-    local src_dir="$SOCLE_DIR/.claude/skills"
-    local dest_dir="$TARGET_DIR/.claude/skills"
+# Count files in a source directory for a given type
+_count_dir_files() {
+    local src_dir="$1"
+    local name="$2"
+
+    case "$name" in
+        templates)
+            find "$src_dir" -type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null | wc -l | tr -d ' '
+            ;;
+        skills)
+            count_dirs "$src_dir"
+            ;;
+        *)
+            find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
+            ;;
+    esac
+}
+
+# Generic update for a .claude/ subdirectory
+# Arguments:
+#   $1 - name: internal identifier (skills, agents, rules, styles, templates)
+#   $2 - src_subdir: relative path from socle root (.claude/skills, etc.)
+#   $3 - label: display name for messages (Skills, Agents, etc.)
+update_directory() {
+    local name="$1"
+    local src_subdir="$2"
+    local label="$3"
+
+    section "Mise à jour des $label"
+
+    local src_dir="$SOCLE_DIR/$src_subdir"
+    local dest_dir="$TARGET_DIR/$src_subdir"
 
     if [[ ! -d "$src_dir" ]]; then
-        warning "Répertoire skills source non trouvé"
+        warning "Répertoire $label source non trouvé"
         return
     fi
+
+    local count
+    count=$(_count_dir_files "$src_dir" "$name")
 
     if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
         make_dir "$dest_dir"
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Copie skills/"
+            echo -e "${DIM}[DRY-RUN]${NC} Copie $src_subdir/"
         else
             cp -r "$src_dir/"* "$dest_dir/"
         fi
-        success "Skills mis à jour ($(count_skills "$SOCLE_DIR") skills)"
+        success "$label mis à jour ($count $name)"
     elif [[ -d "$dest_dir" ]]; then
-        if confirm "Mettre à jour .claude/skills/?" "n"; then
+        if confirm "Mettre à jour $src_subdir/?" "n"; then
             cp -r "$src_dir/"* "$dest_dir/"
-            success "Skills mis à jour"
+            success "$label mis à jour"
         else
-            warning "Skills ignorés"
+            warning "$label ignorés"
         fi
     else
         make_dir "$dest_dir"
         cp -r "$src_dir/"* "$dest_dir/"
-        success "Skills créés ($(count_skills "$SOCLE_DIR") skills)"
+        success "$label créés ($count $name)"
     fi
 }
 
-update_agents() {
-    section "Mise à jour des agents"
 
-    local src_dir="$SOCLE_DIR/.claude/agents"
-    local dest_dir="$TARGET_DIR/.claude/agents"
+# =============================================================================
+# CLAUDE.md upgrade
+# =============================================================================
 
-    if [[ ! -d "$src_dir" ]]; then
-        warning "Répertoire agents source non trouvé"
+# Escape a string for safe use in awk comparisons
+# Uses grep+sed instead of awk -v to avoid awk injection
+_remove_section_from_file() {
+    local file="$1"
+    local section_title="$2"
+    local tmp_cleaned
+    tmp_cleaned=$(safe_mktemp)
+
+    # Use grep -n to find the section start line, then sed to remove the block
+    local start_line
+    start_line=$(grep -nF "$section_title" "$file" | head -1 | cut -d: -f1)
+
+    if [[ -z "$start_line" ]]; then
+        # Section not found, copy as-is
+        cp "$file" "$tmp_cleaned"
+        echo "$tmp_cleaned"
         return
     fi
 
-    if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
-        make_dir "$dest_dir"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Copie agents/"
-        else
-            cp -r "$src_dir/"* "$dest_dir/"
-        fi
-        local count
-        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-        success "Agents mis à jour ($count agents)"
-    elif [[ -d "$dest_dir" ]]; then
-        if confirm "Mettre à jour .claude/agents/?" "n"; then
-            cp -r "$src_dir/"* "$dest_dir/"
-            success "Agents mis à jour"
-        else
-            warning "Agents ignorés"
-        fi
+    # Find the next ## heading after start_line
+    local end_line
+    end_line=$(tail -n +"$((start_line + 1))" "$file" | grep -n "^## " | head -1 | cut -d: -f1)
+
+    if [[ -n "$end_line" ]]; then
+        # end_line is relative to start_line+1, convert to absolute
+        end_line=$((start_line + end_line))
+        # Keep lines before section and from next section onward
+        head -n "$((start_line - 1))" "$file" > "$tmp_cleaned"
+        tail -n +"$end_line" "$file" >> "$tmp_cleaned"
     else
-        make_dir "$dest_dir"
-        cp -r "$src_dir/"* "$dest_dir/"
-        local count
-        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-        success "Agents créés ($count agents)"
-    fi
-}
-
-update_rules() {
-    section "Mise à jour des rules"
-
-    local src_dir="$SOCLE_DIR/.claude/rules"
-    local dest_dir="$TARGET_DIR/.claude/rules"
-
-    if [[ ! -d "$src_dir" ]]; then
-        warning "Répertoire rules source non trouvé"
-        return
+        # No next section: remove from start_line to end of file
+        head -n "$((start_line - 1))" "$file" > "$tmp_cleaned"
     fi
 
-    if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
-        make_dir "$dest_dir"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Copie rules/"
-        else
-            cp -r "$src_dir/"* "$dest_dir/"
-        fi
-        local count
-        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-        success "Rules mis à jour ($count rules)"
-    elif [[ -d "$dest_dir" ]]; then
-        if confirm "Mettre à jour .claude/rules/?" "n"; then
-            cp -r "$src_dir/"* "$dest_dir/"
-            success "Rules mis à jour"
-        else
-            warning "Rules ignorés"
-        fi
-    else
-        make_dir "$dest_dir"
-        cp -r "$src_dir/"* "$dest_dir/"
-        local count
-        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-        success "Rules créés ($count rules)"
-    fi
-}
-
-update_styles() {
-    section "Mise à jour des output-styles"
-
-    local src_dir="$SOCLE_DIR/.claude/output-styles"
-    local dest_dir="$TARGET_DIR/.claude/output-styles"
-
-    if [[ ! -d "$src_dir" ]]; then
-        warning "Répertoire output-styles source non trouvé"
-        return
-    fi
-
-    if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
-        make_dir "$dest_dir"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Copie output-styles/"
-        else
-            cp -r "$src_dir/"* "$dest_dir/"
-        fi
-        local count
-        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-        success "Output-styles mis à jour ($count styles)"
-    elif [[ -d "$dest_dir" ]]; then
-        if confirm "Mettre à jour .claude/output-styles/?" "n"; then
-            cp -r "$src_dir/"* "$dest_dir/"
-            success "Output-styles mis à jour"
-        else
-            warning "Output-styles ignorés"
-        fi
-    else
-        make_dir "$dest_dir"
-        cp -r "$src_dir/"* "$dest_dir/"
-        local count
-        count=$(find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-        success "Output-styles créés ($count styles)"
-    fi
-}
-
-update_templates() {
-    section "Mise à jour des templates"
-
-    local src_dir="$SOCLE_DIR/.claude/templates"
-    local dest_dir="$TARGET_DIR/.claude/templates"
-
-    if [[ ! -d "$src_dir" ]]; then
-        warning "Répertoire templates source non trouvé"
-        return
-    fi
-
-    if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
-        make_dir "$dest_dir"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Copie templates/"
-        else
-            cp -r "$src_dir/"* "$dest_dir/"
-        fi
-        local count
-        count=$(find "$src_dir" -type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null | wc -l | tr -d ' ')
-        success "Templates mis à jour ($count templates)"
-    elif [[ -d "$dest_dir" ]]; then
-        if confirm "Mettre à jour .claude/templates/?" "n"; then
-            cp -r "$src_dir/"* "$dest_dir/"
-            success "Templates mis à jour"
-        else
-            warning "Templates ignorés"
-        fi
-    else
-        make_dir "$dest_dir"
-        cp -r "$src_dir/"* "$dest_dir/"
-        local count
-        count=$(find "$src_dir" -type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null | wc -l | tr -d ' ')
-        success "Templates créés ($count templates)"
-    fi
+    echo "$tmp_cleaned"
 }
 
 upgrade_claude_md() {
@@ -669,7 +690,7 @@ upgrade_claude_md() {
 
         if [[ -n "$last_import_line" ]]; then
             local tmp_file
-            tmp_file=$(mktemp)
+            tmp_file=$(safe_mktemp)
             head -n "$last_import_line" "$claude_md" > "$tmp_file"
             for import in "${missing_imports[@]}"; do
                 echo "$import" >> "$tmp_file"
@@ -699,7 +720,7 @@ upgrade_claude_md() {
 
     # Trouver la première ligne vide et insérer après
     local tmp_file
-    tmp_file=$(mktemp)
+    tmp_file=$(safe_mktemp)
     local inserted=false
     while IFS= read -r line || [[ -n "$line" ]]; do
         echo "$line" >> "$tmp_file"
@@ -717,7 +738,6 @@ upgrade_claude_md() {
     fi
 
     cp "$tmp_file" "$claude_md"
-    rm -f "$tmp_file"
     success "@imports insérés dans CLAUDE.md"
 
     # Détecter et proposer de supprimer les sections dupliquées
@@ -730,35 +750,21 @@ upgrade_claude_md() {
 
     local found_duplicates=false
     for section_title in "${duplicate_sections[@]}"; do
-        if grep -q "^${section_title}" "$claude_md" 2>/dev/null; then
+        if grep -qF "$section_title" "$claude_md" 2>/dev/null; then
             found_duplicates=true
 
             if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
                 # Supprimer automatiquement la section
-                local tmp_cleaned
-                tmp_cleaned=$(mktemp)
-                awk -v title="$section_title" '
-                    BEGIN { skip=0 }
-                    $0 == title { skip=1; next }
-                    skip && /^## / { skip=0 }
-                    !skip { print }
-                ' "$claude_md" > "$tmp_cleaned"
-                cp "$tmp_cleaned" "$claude_md"
-                rm -f "$tmp_cleaned"
+                local cleaned_file
+                cleaned_file=$(_remove_section_from_file "$claude_md" "$section_title")
+                cp "$cleaned_file" "$claude_md"
                 success "Section supprimée: $section_title"
             else
                 warning "Section dupliquée détectée: $section_title"
                 if confirm "Supprimer cette section (remplacée par @imports)?" "y"; then
-                    local tmp_cleaned
-                    tmp_cleaned=$(mktemp)
-                    awk -v title="$section_title" '
-                        BEGIN { skip=0 }
-                        $0 == title { skip=1; next }
-                        skip && /^## / { skip=0 }
-                        !skip { print }
-                    ' "$claude_md" > "$tmp_cleaned"
-                    cp "$tmp_cleaned" "$claude_md"
-                    rm -f "$tmp_cleaned"
+                    local cleaned_file
+                    cleaned_file=$(_remove_section_from_file "$claude_md" "$section_title")
+                    cp "$cleaned_file" "$claude_md"
                     success "Section supprimée: $section_title"
                 else
                     info "Section conservée: $section_title"
@@ -771,6 +777,10 @@ upgrade_claude_md() {
         info "Aucune section dupliquée détectée"
     fi
 }
+
+# =============================================================================
+# Orphan detection
+# =============================================================================
 
 detect_orphan_files() {
     local subdir="$1"
@@ -785,14 +795,25 @@ detect_orphan_files() {
     while IFS= read -r target_file; do
         if [[ -f "$target_file" ]]; then
             # Calculer le chemin relatif
-            local rel_path="${target_file#$target_dir/}"
+            local rel_path="${target_file#"$target_dir"/}"
             local socle_file="$socle_dir/$rel_path"
 
-            # Verifier si le fichier existe dans le socle
+            # Verifier si le fichier existe dans le socle (also check for renames by basename)
             if [[ ! -f "$socle_file" ]]; then
                 ((ORPHANS_FOUND++)) || true
                 local filename
                 filename=$(basename "$target_file")
+
+                # Check if the file might have been renamed (same basename exists elsewhere in socle)
+                local possible_rename=""
+                if [[ -d "$socle_dir" ]]; then
+                    possible_rename=$(find "$socle_dir" -name "$filename" -type f 2>/dev/null | head -1 || true)
+                fi
+
+                if [[ -n "$possible_rename" ]]; then
+                    local socle_rel="${possible_rename#"$socle_dir"/}"
+                    info "  $filename peut-être déplacé vers $socle_rel dans le socle"
+                fi
 
                 if $REMOVE_ORPHANS; then
                     if $DRY_RUN; then
@@ -801,7 +822,7 @@ detect_orphan_files() {
                         rm -f "$target_file"
                         ((ORPHANS_REMOVED++)) || true
                     fi
-                    warning "  $filename supprime (orphelin)"
+                    warning "  $filename supprimé (orphelin)"
                 elif ${NON_INTERACTIVE:-false}; then
                     warning "  $filename est orphelin (absent du socle)"
                 else
@@ -817,10 +838,10 @@ detect_orphan_files() {
                                 rm -f "$target_file"
                                 ((ORPHANS_REMOVED++)) || true
                             fi
-                            warning "  $filename supprime"
+                            warning "  $filename supprimé"
                             ;;
                         *)
-                            info "  $filename conserve"
+                            info "  $filename conservé"
                             ;;
                     esac
                 fi
@@ -828,31 +849,31 @@ detect_orphan_files() {
         fi
     done < <(find "$target_dir" -type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null || true)
 
-    # Nettoyer les repertoires vides
+    # Nettoyer les repertoires vides (including non-empty orphan dirs with only orphan files already removed)
     if $REMOVE_ORPHANS && ! $DRY_RUN; then
         find "$target_dir" -type d -empty -delete 2>/dev/null || true
     fi
 }
 
 detect_all_orphans() {
-    section "Detection des fichiers orphelins"
+    section "Détection des fichiers orphelins"
 
     local dirs_to_check=("commands" "skills" "agents" "rules" "output-styles" "templates")
 
     for subdir in "${dirs_to_check[@]}"; do
         if [[ -d "$TARGET_DIR/.claude/$subdir" ]]; then
-            debug "Verification de .claude/$subdir"
+            debug "Vérification de .claude/$subdir"
             detect_orphan_files "$subdir"
         fi
     done
 
     if [[ $ORPHANS_FOUND -eq 0 ]]; then
-        success "Aucun fichier orphelin detecte"
+        success "Aucun fichier orphelin détecté"
     else
         if $REMOVE_ORPHANS; then
-            success "$ORPHANS_REMOVED/$ORPHANS_FOUND fichiers orphelins supprimes"
+            success "$ORPHANS_REMOVED/$ORPHANS_FOUND fichier(s) orphelin(s) supprimé(s)"
         else
-            warning "$ORPHANS_FOUND fichiers orphelins detectes"
+            warning "$ORPHANS_FOUND fichier(s) orphelin(s) détecté(s)"
             info "Utilisez --remove-orphans pour les supprimer"
         fi
     fi
@@ -890,7 +911,7 @@ print_summary() {
     echo "  Mis à jour: $UPDATED"
     echo "  Ignorés:    $SKIPPED"
     if $DETECT_ORPHANS; then
-        echo "  Orphelins:  $ORPHANS_FOUND (${ORPHANS_REMOVED} supprimés)"
+        echo "  Orphelins:  $ORPHANS_FOUND (${ORPHANS_REMOVED} supprimé(s))"
     fi
     echo ""
 
@@ -901,7 +922,7 @@ print_summary() {
 }
 
 # =============================================================================
-# Main
+# Main — data-driven optional updates
 # =============================================================================
 
 main() {
@@ -913,6 +934,12 @@ main() {
     fi
 
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
+
+    # Handle --restore
+    if [[ -n "$RESTORE_BACKUP" ]]; then
+        restore_backup "$RESTORE_BACKUP"
+        exit 0
+    fi
 
     title "Mise à jour Claude Code"
     info "Projet: $TARGET_DIR"
@@ -946,75 +973,43 @@ main() {
         success "CLAUDE.md ajouté (absent du projet)"
     fi
 
-    # Mise à jour optionnelle de settings.json
-    if $UPDATE_SETTINGS; then
-        update_settings
-    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
-        echo ""
-        if confirm "Mettre à jour .claude/settings.json?" "n"; then
-            update_settings
-        fi
-    fi
+    # Data-driven optional updates
+    # Format: flag_name|type|confirm_message|args...
+    # type=settings: calls update_settings
+    # type=dir: calls update_directory with remaining args (name|subdir|label)
+    # type=claude_md: calls upgrade_claude_md
+    local -a update_entries=(
+        "UPDATE_SETTINGS|settings|Mettre à jour .claude/settings.json?"
+        "UPDATE_SKILLS|dir|Mettre à jour .claude/skills/?|skills|$SKILLS_SUBDIR|Skills"
+        "UPDATE_AGENTS|dir|Mettre à jour .claude/agents/?|agents|$AGENTS_SUBDIR|Agents"
+        "UPDATE_RULES|dir|Mettre à jour .claude/rules/?|rules|$RULES_SUBDIR|Rules"
+        "UPDATE_STYLES|dir|Mettre à jour .claude/output-styles/?|styles|$STYLES_SUBDIR|Output-styles"
+        "UPDATE_TEMPLATES|dir|Mettre à jour .claude/templates/?|templates|$TEMPLATES_SUBDIR|Templates"
+        "UPGRADE_CLAUDE_MD|claude_md|Migrer CLAUDE.md vers @imports (docs/reference/)?"
+    )
 
-    # Mise à jour optionnelle des skills
-    if $UPDATE_SKILLS; then
-        update_skills
-    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
-        echo ""
-        if confirm "Mettre à jour .claude/skills/?" "n"; then
-            update_skills
-        fi
-    fi
+    for entry in "${update_entries[@]}"; do
+        IFS='|' read -r flag_name entry_type confirm_msg arg1 arg2 arg3 <<< "$entry"
+        local flag_value="${!flag_name}"
+        local should_run=false
 
-    # Mise à jour optionnelle des agents
-    if $UPDATE_AGENTS; then
-        update_agents
-    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
-        echo ""
-        if confirm "Mettre à jour .claude/agents/?" "n"; then
-            update_agents
+        if [[ "$flag_value" == "true" ]]; then
+            should_run=true
+        elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
+            echo ""
+            if confirm "$confirm_msg" "n"; then
+                should_run=true
+            fi
         fi
-    fi
 
-    # Mise à jour optionnelle des rules
-    if $UPDATE_RULES; then
-        update_rules
-    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
-        echo ""
-        if confirm "Mettre à jour .claude/rules/?" "n"; then
-            update_rules
+        if $should_run; then
+            case "$entry_type" in
+                settings)  update_settings ;;
+                dir)       update_directory "$arg1" "$arg2" "$arg3" ;;
+                claude_md) upgrade_claude_md ;;
+            esac
         fi
-    fi
-
-    # Mise à jour optionnelle des output-styles
-    if $UPDATE_STYLES; then
-        update_styles
-    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
-        echo ""
-        if confirm "Mettre à jour .claude/output-styles/?" "n"; then
-            update_styles
-        fi
-    fi
-
-    # Mise à jour optionnelle des templates
-    if $UPDATE_TEMPLATES; then
-        update_templates
-    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
-        echo ""
-        if confirm "Mettre à jour .claude/templates/?" "n"; then
-            update_templates
-        fi
-    fi
-
-    # Migration CLAUDE.md vers @imports
-    if $UPGRADE_CLAUDE_MD; then
-        upgrade_claude_md
-    elif ! ${NON_INTERACTIVE:-false} && ! $FORCE_UPDATE; then
-        echo ""
-        if confirm "Migrer CLAUDE.md vers @imports (docs/reference/)?" "n"; then
-            upgrade_claude_md
-        fi
-    fi
+    done
 
     # Detection des fichiers orphelins
     if $DETECT_ORPHANS; then
