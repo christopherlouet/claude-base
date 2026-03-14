@@ -35,6 +35,8 @@ Cree une equipe pour auditer ce projet :
 Chacun produit un rapport. Synthetise les resultats quand tous ont termine.
 ```
 
+**Complement**: pour les equipes Enterprise/Team, Claude Code Security peut completer cet audit avec un scan de vulnerabilites approfondi (raisonnement sur les flux de donnees et patterns architecturaux).
+
 ---
 
 ## Pattern 2 : Feature en Equipe
