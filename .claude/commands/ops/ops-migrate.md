@@ -1,122 +1,45 @@
 # Agent MIGRATE
 
-Migration de code, dépendances ou données.
+Migration de code, dependances ou donnees.
 
-## Migration à effectuer
+## Contexte de la demande
 $ARGUMENTS
 
-## Types de migrations supportés
+## Objectif
 
-### 1. Migration de dépendances
-```bash
-# Vérifier les outdated
-npm outdated
+Planifier et executer une migration securisee avec plan de rollback,
+qu'il s'agisse de dependances, code, schema ou donnees.
 
-# Vérifier les vulnérabilités
-npm audit
-```
+## Workflow
 
-### 2. Migration de version majeure (breaking changes)
-- Lire le CHANGELOG/release notes
-- Identifier les breaking changes
-- Planifier les modifications nécessaires
-
-### 3. Migration de code (refactoring à grande échelle)
-- Renommage de fonctions/classes
-- Changement de patterns
-- Migration de syntaxe
-
-### 4. Migration de données/schéma
-- Scripts de migration up/down
-- Backup avant migration
-- Plan de rollback
-
-## Workflow de migration
-
-### Phase 1 - Préparation
-1. [ ] Documenter l'état actuel
-2. [ ] Identifier toutes les occurrences à migrer
-3. [ ] Créer une branche dédiée
-4. [ ] S'assurer que tous les tests passent
-
-### Phase 2 - Planification
-1. [ ] Lister les étapes de migration
-2. [ ] Estimer l'impact sur chaque partie du code
-3. [ ] Identifier les dépendances entre étapes
-4. [ ] Préparer le plan de rollback
-
-### Phase 3 - Exécution
-```
-Pour chaque étape:
-1. Effectuer la modification
-2. Lancer les tests
-3. Si OK → commit
-4. Si KO → analyser et corriger ou rollback
-```
-
-### Phase 4 - Validation
-1. [ ] Tous les tests passent
-2. [ ] Build en production OK
-3. [ ] Smoke tests manuels
-4. [ ] Documentation mise à jour
-
-## Techniques de migration sécurisée
-
-### Strangler Fig Pattern
-- Nouvelle implémentation en parallèle
-- Redirection progressive du trafic
-- Suppression de l'ancien code une fois validé
-
-### Feature Flags
-```typescript
-if (featureFlags.useNewImplementation) {
-  return newImplementation();
-} else {
-  return oldImplementation();
-}
-```
-
-### Codemods
-- Scripts automatisés pour transformations de code
-- jscodeshift pour JavaScript/TypeScript
+- Identifier le type de migration (dependances, version majeure, code, schema)
+- Documenter l'etat actuel et identifier toutes les occurrences
+- Planifier les etapes de migration avec estimation d'impact
+- Preparer le plan de rollback
+- Executer par etapes incrementales (modifier, tester, commiter)
+- Valider (tests passent, build OK, smoke tests manuels)
+- Appliquer les techniques de migration securisee si necessaire (Strangler Fig, Feature Flags, Codemods)
 
 ## Output attendu
 
-### Plan de migration
-| Étape | Description | Fichiers impactés | Risque |
-|-------|-------------|-------------------|--------|
-| 1     | ...         | X fichiers        | Faible |
+1. **Plan de migration** : etapes, fichiers impactes, risque
+2. **Checklist** de migration par etape
+3. **Rollback plan** avec commandes
 
-### Checklist de migration
-- [ ] Étape 1 complétée
-- [ ] Étape 2 complétée
-- [ ] Tests passent
-- [ ] Review effectuée
+## Agents lies
 
-### Rollback plan
-```bash
-# En cas de problème
-git revert [commits]
-# ou
-git reset --hard [commit-avant-migration]
-```
-
-## Agents liés
-
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/ops:ops-database` | Migrations de schéma |
-| `/dev:dev-test` | Tester après migration |
+| Agent | Usage |
+|-------|-------|
+| `/ops:ops-database` | Migrations de schema |
 | `/ops:ops-backup` | Backup avant migration |
-| `/ops:ops-deps` | Migration de dépendances |
-| `/qa:qa-review` | Review du plan de migration |
+| `/ops:ops-deps` | Migration de dependances |
 
 ---
 
-IMPORTANT: Toujours avoir un plan de rollback testé.
+IMPORTANT: Toujours avoir un plan de rollback teste.
 
-IMPORTANT: Petits commits, migrations incrémentales.
+IMPORTANT: Petits commits, migrations incrementales.
 
-YOU MUST sauvegarder les données avant toute migration.
+YOU MUST sauvegarder les donnees avant toute migration.
 
-NEVER migrer en production sans avoir testé en staging.
+NEVER migrer en production sans avoir teste en staging.

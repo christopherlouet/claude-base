@@ -1,252 +1,52 @@
 # Agent WORK-CLARIFY
 
-Tu es en mode CLARIFICATION. Pose des questions ciblées pour réduire l'ambiguïté.
+Pose des questions ciblees pour reduire l'ambiguite dans une specification.
 
 ## Contexte
 $ARGUMENTS
 
 ## Objectif
 
-Identifier et résoudre les zones d'ambiguïté dans la spécification actuelle en posant des questions ciblées.
-La clarification permet de réduire le risque de retravail en aval.
+Identifier et resoudre les zones d'ambiguite dans la specification actuelle.
+La clarification reduit le risque de retravail en aval.
+Charger la spec depuis `specs/[feature]/spec.md` ou le fichier specifie.
 
-## Processus de clarification
+## Workflow
 
-### 1. Charger la spécification
+- Charger et lire la specification
+- Scanner les ambiguites par categorie : scope fonctionnel, modele de donnees, flux UX, qualite non-fonctionnelle, integrations, cas limites
+- Marquer chaque categorie : **Clair** | **Partiel** | **Manquant**
+- Generer max 5 questions priorisees par impact (scope > securite > UX > technique)
+- Poser UNE question a la fois, attendre la reponse
+- Chaque question : choix multiple (2-5 options) OU reponse courte (5 mots max)
+- Toujours proposer une recommandation basee sur les bonnes pratiques
+- Apres chaque reponse acceptee, mettre a jour la spec
+- Generer le rapport de fin de session avec couverture par categorie
 
-Localiser et lire le fichier de spécification :
-- `specs/[feature]/spec.md`
-- Ou le fichier spécifié par l'utilisateur
+## Output attendu
 
-### 2. Analyse des ambiguïtés
+1. **Questions** : Max 5, une a la fois, avec contexte + recommandation
+2. **Spec mise a jour** : Sections modifiees apres chaque reponse
+3. **Rapport** : Questions posees, sections modifiees, couverture par categorie, recommandation suite
 
-Scanner la spécification selon cette taxonomie et marquer le statut : **Clair** | **Partiel** | **Manquant**
+## Agents lies
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│              CATÉGORIES D'ANALYSE                               │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  📋 SCOPE FONCTIONNEL                                           │
-│     • Objectifs et critères de succès                           │
-│     • Déclarations hors-scope explicites                        │
-│     • Différenciation des rôles utilisateurs                    │
-│                                                                 │
-│  🗂️ MODÈLE DE DONNÉES                                           │
-│     • Entités, attributs, relations                             │
-│     • Règles d'identité et d'unicité                            │
-│     • Transitions d'état / cycle de vie                         │
-│     • Hypothèses de volume / échelle                            │
-│                                                                 │
-│  🎯 FLUX UX / INTERACTIONS                                      │
-│     • Parcours utilisateur critiques                            │
-│     • États d'erreur / vide / chargement                        │
-│     • Accessibilité / localisation                              │
-│                                                                 │
-│  ⚡ QUALITÉ NON-FONCTIONNELLE                                   │
-│     • Performance (latence, débit)                              │
-│     • Fiabilité et disponibilité                                │
-│     • Sécurité et confidentialité                               │
-│                                                                 │
-│  🔗 INTÉGRATIONS EXTERNES                                       │
-│     • Services/APIs externes                                    │
-│     • Formats d'import/export                                   │
-│     • Modes de défaillance                                      │
-│                                                                 │
-│  ⚠️ CAS LIMITES                                                 │
-│     • Scénarios négatifs                                        │
-│     • Limites et seuils                                         │
-│     • Résolution de conflits                                    │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Avant | Usage |
+|-------|-------|
+| `/work:work-specify` | Creer la specification |
 
-### 3. Règles de génération des questions
-
-#### Contraintes
-- **Maximum 5 questions** par session
-- Chaque question doit être répondable par :
-  - Un **choix multiple** (2-5 options distinctes), OU
-  - Une **réponse courte** (≤ 5 mots)
-- Ne poser que des questions dont la réponse impacte :
-  - L'architecture
-  - Le modèle de données
-  - Les tests d'acceptation
-  - L'expérience utilisateur
-  - La conformité/sécurité
-
-#### Priorisation (Impact × Incertitude)
-1. Scope et comportement fonctionnel
-2. Sécurité et confidentialité
-3. Expérience utilisateur
-4. Détails techniques
-
-### 4. Format des questions
-
-#### Question à choix multiple
-
-```markdown
-## Question [N] : [Sujet]
-
-**Contexte** : [Citation de la section concernée de la spec]
-
-**Ce qu'on doit savoir** : [Question spécifique]
-
-**Recommandation** : Option [X] - [Justification en 1-2 phrases basée sur les bonnes pratiques]
-
-| Option | Description | Implications |
-|--------|-------------|--------------|
-| A | [Première option] | [Impact sur la feature] |
-| B | [Deuxième option] | [Impact sur la feature] |
-| C | [Troisième option] | [Impact sur la feature] |
-| Autre | Réponse personnalisée | [Expliquer] |
-
-**Votre choix** : Répondez avec la lettre (ex: "A") ou "oui" pour accepter la recommandation.
-```
-
-#### Question à réponse courte
-
-```markdown
-## Question [N] : [Sujet]
-
-**Contexte** : [Citation de la section concernée de la spec]
-
-**Ce qu'on doit savoir** : [Question spécifique]
-
-**Suggestion** : [Réponse proposée] - [Justification]
-
-**Format** : Réponse courte (≤ 5 mots). Dites "oui" pour accepter la suggestion.
-```
-
-### 5. Processus interactif
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                                                                 │
-│   1. CHARGER la spécification                                   │
-│              │                                                  │
-│              ▼                                                  │
-│   2. ANALYSER les ambiguïtés (taxonomie)                        │
-│              │                                                  │
-│              ▼                                                  │
-│   3. GÉNÉRER la file de questions (max 5)                       │
-│              │                                                  │
-│              ▼                                                  │
-│   ┌─────────────────────────────────────────┐                   │
-│   │  Pour chaque question (1 à la fois) :   │◄────┐             │
-│   │                                         │     │             │
-│   │  • Présenter la question                │     │             │
-│   │  • Attendre la réponse                  │     │             │
-│   │  • Valider la réponse                   │     │             │
-│   │  • Mettre à jour la spec                │     │             │
-│   │  • Passer à la suivante                 │     │             │
-│   └────────────────┬────────────────────────┘     │             │
-│                    │                              │             │
-│                    ▼                              │             │
-│   Arrêter si : • 5 questions posées              │             │
-│                • Plus d'ambiguïtés critiques     │             │
-│                • Utilisateur dit "stop/done"     │             │
-│                                                                 │
-│              ▼                                                  │
-│   4. RAPPORT de clarification                                   │
-│              │                                                  │
-│              ▼                                                  │
-│   5. Suggérer /work:work-plan                                        │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### 6. Mise à jour de la spécification
-
-Après chaque réponse acceptée :
-
-1. **Ajouter une section Clarifications** (si absente) :
-```markdown
-## Clarifications
-
-### Session [DATE]
-- Q: [Question posée] → R: [Réponse finale]
-```
-
-2. **Mettre à jour la section appropriée** :
-   - Ambiguïté fonctionnelle → Mettre à jour Exigences Fonctionnelles
-   - Distinction d'acteur → Mettre à jour User Stories
-   - Entité/donnée → Mettre à jour Entités Clés
-   - Contrainte non-fonctionnelle → Ajouter critère mesurable
-   - Cas limite → Ajouter dans Cas Limites
-
-3. **Supprimer les marqueurs [CLARIFICATION NÉCESSAIRE]** résolus
-
-### 7. Rapport de fin de session
-
-```markdown
-## Rapport de clarification
-
-**Questions posées** : [N] / 5
-**Spec mise à jour** : specs/[feature]/spec.md
-
-### Sections modifiées
-- [Liste des sections touchées]
-
-### Couverture par catégorie
-
-| Catégorie | Statut |
-|-----------|--------|
-| Scope fonctionnel | ✅ Résolu |
-| Modèle de données | ✅ Clair |
-| Flux UX | ⏸️ Différé |
-| Qualité non-fonctionnelle | ⚠️ Partiel |
-| Intégrations | ✅ Clair |
-| Cas limites | ⚠️ À surveiller |
-
-### Recommandation
-
-[Si tout est clair] : Prêt pour `/work:work-plan`
-[Si des points restent] : Envisager une autre session `/work:work-clarify` après le plan
-```
-
-## Comportements spéciaux
-
-### Aucune ambiguïté détectée
-```
-Aucune ambiguïté critique détectée nécessitant clarification.
-La spécification est suffisamment complète pour procéder.
-
-Recommandation : Lancer `/work:work-plan` pour créer le plan d'implémentation.
-```
-
-### Spécification non trouvée
-```
-Fichier de spécification non trouvé.
-Veuillez d'abord créer une spécification avec `/work:work-specify`.
-```
-
-### Arrêt anticipé par l'utilisateur
-Si l'utilisateur dit "stop", "done", "c'est bon", "ok pour la suite" :
-- Terminer la session immédiatement
-- Sauvegarder les clarifications déjà faites
-- Générer le rapport partiel
-
-## Agents liés
-
-| Avant | Agent | Après |
-|-------|-------|-------|
-| `/work:work-specify` | Spécification | |
-| | **CLARIFY** | |
-| | | `/work:work-plan` |
+| Apres | Usage |
+|-------|-------|
+| `/work:work-plan` | Planifier l'implementation |
 
 ---
 
 IMPORTANT: Maximum 5 questions par session - prioriser par impact.
 
-YOU MUST poser UNE question à la fois et attendre la réponse.
+YOU MUST poser UNE question a la fois et attendre la reponse.
 
-YOU MUST toujours proposer une recommandation basée sur les bonnes pratiques.
+YOU MUST mettre a jour la spec apres CHAQUE reponse acceptee.
 
-YOU MUST mettre à jour la spec après CHAQUE réponse acceptée.
-
-NEVER révéler les questions suivantes à l'avance.
-
-NEVER poser de questions dont la réponse n'impacte pas significativement l'implémentation.
+NEVER reveler les questions suivantes a l'avance.
 
 Think hard sur l'impact de chaque clarification avant de poser la question.
