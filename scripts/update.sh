@@ -39,6 +39,7 @@ TEMPLATES_SUBDIR=".claude/templates"
 TARGET_DIR=""
 FORCE_UPDATE=false
 BACKUP_ONLY=false
+ADD_HOOK=""
 UPDATE_SETTINGS=false
 UPDATE_SKILLS=false
 UPDATE_AGENTS=false
@@ -120,6 +121,10 @@ ${BOLD}OPTIONS${NC}
     --upgrade-claude-md Migrer CLAUDE.md vers @imports (copie docs/reference/)
     --changelog         Affiche les nouveautés du socle
     --restore BACKUP    Restaure depuis un backup précédent
+    --add-hook HOOK     Ajoute un hook au settings.json existant sans ecraser (ex: rtk)
+
+${BOLD}HOOKS DISPONIBLES${NC}
+    rtk                 RTK token optimizer (reduit les tokens de 60-90%, necessite: brew install rtk)
 
 ${BOLD}EXEMPLES${NC}
     # Mise à jour interactive
@@ -142,6 +147,9 @@ ${BOLD}EXEMPLES${NC}
 
     # Restaurer depuis un backup
     $(basename "$0") --restore .claude/commands.backup.20240101_120000 ./mon-projet
+
+    # Ajouter le hook RTK (token optimizer) sans ecraser settings.json
+    $(basename "$0") --add-hook rtk ./mon-projet
 
 ${BOLD}STATISTIQUES DU SOCLE${NC}
     Agents:    $(count_agents "$SOCLE_DIR")
@@ -259,6 +267,13 @@ parse_args() {
             --changelog)
                 show_changelog
                 exit 0
+                ;;
+            --add-hook)
+                if [[ -z "${2:-}" ]]; then
+                    error "Option --add-hook requiert un argument (nom du hook, ex: rtk)"
+                fi
+                ADD_HOOK="$2"
+                shift 2
                 ;;
             --restore)
                 if [[ -z "${2:-}" ]]; then
@@ -460,6 +475,64 @@ update_commands() {
     after=$(find "$TARGET_DIR/$COMMANDS_SUBDIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 
     info "Commandes: $before → $after"
+}
+
+add_hook() {
+    local hook_name="$1"
+    local settings_file="$TARGET_DIR/.claude/settings.json"
+
+    if [[ ! -f "$settings_file" ]]; then
+        error "settings.json non trouve dans $TARGET_DIR/.claude/"
+    fi
+
+    if ! command -v jq &>/dev/null; then
+        error "jq est requis pour --add-hook. Installez-le: https://jqlang.github.io/jq/download/"
+    fi
+
+    case "$hook_name" in
+        rtk)
+            section "Ajout du hook RTK (token optimizer)"
+
+            # Check if hook already exists
+            if jq -e '.hooks.PreToolUse[]? | select(.description | test("RTK"))' "$settings_file" >/dev/null 2>&1; then
+                success "Hook RTK deja present dans settings.json"
+                return
+            fi
+
+            local rtk_hook
+            rtk_hook=$(cat <<'HOOKJSON'
+{
+    "description": "RTK token optimizer - reecrit les commandes pour reduire les tokens de 60-90% (installer rtk: brew install rtk)",
+    "matcher": "Bash",
+    "hooks": [
+        {
+            "type": "command",
+            "command": "bash -c 'command -v rtk >/dev/null 2>&1 || exit 0; command -v jq >/dev/null 2>&1 || exit 0; INPUT=$(cat); CMD=$(echo \"$INPUT\" | jq -r \".tool_input.command // empty\"); [ -z \"$CMD\" ] && exit 0; REWRITTEN=$(rtk rewrite \"$CMD\" 2>/dev/null) || exit 0; [ \"$CMD\" = \"$REWRITTEN\" ] && exit 0; ORIGINAL_INPUT=$(echo \"$INPUT\" | jq -c \".tool_input\"); UPDATED_INPUT=$(echo \"$ORIGINAL_INPUT\" | jq --arg cmd \"$REWRITTEN\" \".command = \\$cmd\"); jq -n --argjson updated \"$UPDATED_INPUT\" \"{\\\"hookSpecificOutput\\\":{\\\"hookEventName\\\":\\\"PreToolUse\\\",\\\"permissionDecision\\\":\\\"allow\\\",\\\"permissionDecisionReason\\\":\\\"RTK auto-rewrite\\\",\\\"updatedInput\\\":\\$updated}}\"'",
+            "timeout": 5000,
+            "onFailure": "ignore"
+        }
+    ]
+}
+HOOKJSON
+)
+
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Ajout du hook RTK dans settings.json"
+                return
+            fi
+
+            local tmp
+            tmp=$(safe_mktemp)
+            jq --argjson hook "$rtk_hook" '.hooks.PreToolUse += [$hook]' "$settings_file" > "$tmp"
+            cp "$tmp" "$settings_file"
+            rm -f "$tmp"
+            success "Hook RTK ajoute a settings.json"
+            info "Installez RTK: brew install rtk (ou cargo install --git https://github.com/rtk-ai/rtk)"
+            ;;
+        *)
+            error "Hook inconnu: $hook_name. Hooks disponibles: rtk"
+            ;;
+    esac
 }
 
 update_settings() {
@@ -938,6 +1011,12 @@ main() {
     # Handle --restore
     if [[ -n "$RESTORE_BACKUP" ]]; then
         restore_backup "$RESTORE_BACKUP"
+        exit 0
+    fi
+
+    # Handle --add-hook
+    if [[ -n "$ADD_HOOK" ]]; then
+        add_hook "$ADD_HOOK"
         exit 0
     fi
 
