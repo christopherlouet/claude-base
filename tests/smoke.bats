@@ -162,7 +162,8 @@ load 'test_helper'
     [ -s "$SOCLE_DIR/CLAUDE.md" ]
     local lines
     lines=$(wc -l < "$SOCLE_DIR/CLAUDE.md")
-    [ "$lines" -gt 100 ]
+    # CLAUDE.md uses @imports since PR#29, baseline is ~70 lines
+    [ "$lines" -gt 30 ]
 }
 
 @test "smoke: VERSION existe et contient une version valide" {
