@@ -20,6 +20,40 @@ source "$SCRIPT_DIR/lib/common.sh"
 enable_error_handler
 check_base_requirements
 
+# Path constants
+COMMANDS_DIR=".claude/commands"
+AGENTS_DIR=".claude/agents"
+SKILLS_DIR=".claude/skills"
+RULES_DIR=".claude/rules"
+STYLES_DIR=".claude/output-styles"
+TEMPLATES_DIR=".claude/templates"
+
+# Cached counts (computed once, reused everywhere)
+_CACHED_CMD_COUNT=""
+_CACHED_AGENT_COUNT=""
+_CACHED_SKILL_COUNT=""
+
+count_commands_cached() {
+    if [[ -z "$_CACHED_CMD_COUNT" ]]; then
+        _CACHED_CMD_COUNT=$(find "$SOCLE_DIR/$COMMANDS_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    fi
+    echo "$_CACHED_CMD_COUNT"
+}
+
+count_agents_cached() {
+    if [[ -z "$_CACHED_AGENT_COUNT" ]]; then
+        _CACHED_AGENT_COUNT=$(find "$SOCLE_DIR/$AGENTS_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    fi
+    echo "$_CACHED_AGENT_COUNT"
+}
+
+count_skills_cached() {
+    if [[ -z "$_CACHED_SKILL_COUNT" ]]; then
+        _CACHED_SKILL_COUNT=$(count_skills "$SOCLE_DIR")
+    fi
+    echo "$_CACHED_SKILL_COUNT"
+}
+
 # Variables du projet
 PROJECT_NAME=""
 PROJECT_TYPE=""
@@ -245,6 +279,332 @@ parse_args() {
 # Fonctions de détection
 # =============================================================================
 
+detect_nodejs() {
+    local dir="$1"
+
+    # Détecter le gestionnaire de paquets
+    if [[ -f "$dir/bun.lockb" ]] || [[ -f "$dir/bun.lock" ]]; then
+        DETECTED_PKG_MANAGER="bun"
+    elif [[ -f "$dir/pnpm-lock.yaml" ]]; then
+        DETECTED_PKG_MANAGER="pnpm"
+    elif [[ -f "$dir/yarn.lock" ]]; then
+        DETECTED_PKG_MANAGER="yarn"
+    else
+        DETECTED_PKG_MANAGER="npm"
+    fi
+
+    [[ -f "$dir/package.json" ]] || return 0
+
+    DETECTED_DEPENDENCIES+=("Node.js")
+    if [[ "$DETECTED_PKG_MANAGER" != "npm" ]]; then
+        DETECTED_DEPENDENCIES+=("$DETECTED_PKG_MANAGER")
+    fi
+
+    extract_npm_scripts "$dir/package.json"
+    extract_main_dependencies "$dir/package.json"
+
+    # Détecter le framework
+    if grep -q '"react"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_TYPE="react"
+        DETECTED_FRAMEWORK="React"
+        if grep -q '"next"' "$dir/package.json" 2>/dev/null; then
+            DETECTED_FRAMEWORK="Next.js"
+        fi
+    elif grep -q '"vue"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_TYPE="vue"
+        DETECTED_FRAMEWORK="Vue.js"
+        if grep -q '"nuxt"' "$dir/package.json" 2>/dev/null; then
+            DETECTED_FRAMEWORK="Nuxt.js"
+        fi
+    elif grep -q '"angular"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_TYPE="generic"
+        DETECTED_FRAMEWORK="Angular"
+    elif grep -q '"svelte"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_TYPE="generic"
+        DETECTED_FRAMEWORK="Svelte"
+    elif grep -q '"express"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_TYPE="node-api"
+        DETECTED_FRAMEWORK="Express.js"
+    elif grep -q '"fastify"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_TYPE="node-api"
+        DETECTED_FRAMEWORK="Fastify"
+    elif grep -q '"nestjs"' "$dir/package.json" 2>/dev/null || grep -q '"@nestjs"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_TYPE="node-api"
+        DETECTED_FRAMEWORK="NestJS"
+    else
+        DETECTED_TYPE="node-api"
+        DETECTED_FRAMEWORK="Node.js"
+    fi
+
+    # TypeScript
+    if [[ -f "$dir/tsconfig.json" ]] || grep -q '"typescript"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("TypeScript")
+    fi
+
+    # Test tools
+    for tool in jest vitest cypress playwright; do
+        if grep -q "\"$tool\"" "$dir/package.json" 2>/dev/null; then
+            local tool_name="${tool^}"  # capitalize first letter
+            DETECTED_DEPENDENCIES+=("$tool_name")
+        fi
+    done
+
+    # Build tools
+    for tool in vite webpack; do
+        if grep -q "\"$tool\"" "$dir/package.json" 2>/dev/null; then
+            local tool_name="${tool^}"
+            DETECTED_DEPENDENCIES+=("$tool_name")
+        fi
+    done
+
+    # Husky/lint-staged
+    if grep -q '"husky"' "$dir/package.json" 2>/dev/null || [[ -d "$dir/.husky" ]]; then
+        DETECTED_HOOKS=true
+        DETECTED_DEPENDENCIES+=("Husky")
+    fi
+
+    # Deno
+    if [[ -f "$dir/deno.json" ]] || [[ -f "$dir/deno.jsonc" ]]; then
+        DETECTED_DEPENDENCIES+=("Deno")
+        DETECTED_PKG_MANAGER="deno"
+    fi
+
+    # Monorepo / Fullstack
+    if [[ -d "$dir/packages" ]] || [[ -d "$dir/apps" ]]; then
+        if grep -q '"workspaces"' "$dir/package.json" 2>/dev/null; then
+            DETECTED_TYPE="fullstack"
+            DETECTED_FRAMEWORK="Monorepo"
+            DETECTED_DEPENDENCIES+=("Workspaces")
+        fi
+    fi
+    if [[ -f "$dir/turbo.json" ]]; then
+        DETECTED_TYPE="fullstack"
+        DETECTED_FRAMEWORK="Turborepo"
+        DETECTED_DEPENDENCIES+=("Turborepo")
+    fi
+    if [[ -f "$dir/nx.json" ]]; then
+        DETECTED_TYPE="fullstack"
+        DETECTED_FRAMEWORK="Nx"
+        DETECTED_DEPENDENCIES+=("Nx")
+    fi
+}
+
+detect_python() {
+    local dir="$1"
+    [[ -f "$dir/requirements.txt" ]] || [[ -f "$dir/pyproject.toml" ]] || [[ -f "$dir/setup.py" ]] || [[ -f "$dir/Pipfile" ]] || return 0
+
+    if [[ -z "$DETECTED_TYPE" ]]; then
+        DETECTED_TYPE="python"
+        DETECTED_FRAMEWORK="Python"
+    fi
+    DETECTED_DEPENDENCIES+=("Python")
+
+    extract_python_dependencies "$dir"
+
+    # Détecter le framework Python
+    for config_file in "$dir/requirements.txt" "$dir/pyproject.toml"; do
+        if [[ -f "$config_file" ]]; then
+            if grep -qi "django" "$config_file" 2>/dev/null; then
+                DETECTED_FRAMEWORK="Django"
+            elif grep -qi "fastapi" "$config_file" 2>/dev/null; then
+                DETECTED_FRAMEWORK="FastAPI"
+            elif grep -qi "flask" "$config_file" 2>/dev/null; then
+                DETECTED_FRAMEWORK="Flask"
+            fi
+        fi
+    done
+}
+
+detect_go() {
+    local dir="$1"
+    [[ -f "$dir/go.mod" ]] || return 0
+
+    if [[ -z "$DETECTED_TYPE" ]]; then
+        DETECTED_TYPE="go"
+        DETECTED_FRAMEWORK="Go"
+    fi
+    DETECTED_DEPENDENCIES+=("Go")
+
+    if grep -q "gin-gonic" "$dir/go.mod" 2>/dev/null; then
+        DETECTED_FRAMEWORK="Gin"
+    elif grep -q "echo" "$dir/go.mod" 2>/dev/null; then
+        DETECTED_FRAMEWORK="Echo"
+    elif grep -q "fiber" "$dir/go.mod" 2>/dev/null; then
+        DETECTED_FRAMEWORK="Fiber"
+    fi
+}
+
+detect_rust() {
+    local dir="$1"
+    [[ -f "$dir/Cargo.toml" ]] || return 0
+
+    if [[ -z "$DETECTED_TYPE" ]]; then
+        DETECTED_TYPE="rust"
+        DETECTED_FRAMEWORK="Rust"
+    fi
+    DETECTED_DEPENDENCIES+=("Rust")
+
+    if grep -q "actix-web" "$dir/Cargo.toml" 2>/dev/null; then
+        DETECTED_FRAMEWORK="Actix Web"
+    elif grep -q "axum" "$dir/Cargo.toml" 2>/dev/null; then
+        DETECTED_FRAMEWORK="Axum"
+    elif grep -q "rocket" "$dir/Cargo.toml" 2>/dev/null; then
+        DETECTED_FRAMEWORK="Rocket"
+    fi
+}
+
+detect_java() {
+    local dir="$1"
+    [[ -f "$dir/pom.xml" ]] || [[ -f "$dir/build.gradle" ]] || [[ -f "$dir/build.gradle.kts" ]] || return 0
+
+    if [[ -z "$DETECTED_TYPE" ]]; then
+        DETECTED_TYPE="java"
+        DETECTED_FRAMEWORK="Java"
+    fi
+    DETECTED_DEPENDENCIES+=("Java")
+
+    if { [[ -f "$dir/pom.xml" ]] && grep -q "spring-boot" "$dir/pom.xml" 2>/dev/null; } || \
+       { [[ -f "$dir/build.gradle" ]] && grep -q "spring-boot" "$dir/build.gradle" 2>/dev/null; }; then
+        DETECTED_FRAMEWORK="Spring Boot"
+    fi
+}
+
+detect_flutter() {
+    local dir="$1"
+    [[ -f "$dir/pubspec.yaml" ]] || return 0
+
+    if [[ -z "$DETECTED_TYPE" ]]; then
+        DETECTED_TYPE="flutter"
+        DETECTED_FRAMEWORK="Flutter"
+    fi
+    DETECTED_DEPENDENCIES+=("Flutter" "Dart")
+
+    # Packages Flutter courants
+    for pkg in supabase firebase; do
+        if grep -q "$pkg" "$dir/pubspec.yaml" 2>/dev/null; then
+            DETECTED_DEPENDENCIES+=("${pkg^}")
+        fi
+    done
+    if grep -q "riverpod\|flutter_riverpod" "$dir/pubspec.yaml" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("Riverpod")
+    elif grep -q "provider" "$dir/pubspec.yaml" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("Provider")
+    elif grep -q "bloc\|flutter_bloc" "$dir/pubspec.yaml" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("BLoC")
+    fi
+    if grep -q "graphql" "$dir/pubspec.yaml" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("GraphQL")
+    fi
+
+    # Plateformes cibles
+    local platforms=()
+    [[ -d "$dir/android" ]] && platforms+=("Android")
+    [[ -d "$dir/ios" ]] && platforms+=("iOS")
+    [[ -d "$dir/web" ]] && platforms+=("Web")
+    [[ -d "$dir/macos" ]] && platforms+=("macOS")
+    [[ -d "$dir/linux" ]] && platforms+=("Linux")
+    [[ -d "$dir/windows" ]] && platforms+=("Windows")
+    if [[ ${#platforms[@]} -gt 0 ]]; then
+        DETECTED_DEPENDENCIES+=("Platforms: ${platforms[*]}")
+    fi
+}
+
+detect_neovim() {
+    local dir="$1"
+
+    # Cherche init.lua + lua/ à la racine ou dans nvim/ (dotfiles pattern)
+    local nvim_root=""
+    if [[ -f "$dir/init.lua" ]] && [[ -d "$dir/lua" ]]; then
+        nvim_root="$dir"
+    elif [[ -f "$dir/nvim/init.lua" ]] && [[ -d "$dir/nvim/lua" ]]; then
+        nvim_root="$dir/nvim"
+    elif [[ -f "$dir/.config/nvim/init.lua" ]] && [[ -d "$dir/.config/nvim/lua" ]]; then
+        nvim_root="$dir/.config/nvim"
+    fi
+
+    [[ -n "$nvim_root" ]] || return 0
+
+    if [[ -z "$DETECTED_TYPE" ]]; then
+        DETECTED_TYPE="neovim"
+        DETECTED_FRAMEWORK="Neovim"
+    fi
+    DETECTED_DEPENDENCIES+=("Lua" "Neovim")
+
+    if [[ "$nvim_root" != "$dir" ]]; then
+        local subdir="${nvim_root#$dir/}"
+        DETECTED_DEPENDENCIES+=("(config in $subdir/)")
+    fi
+
+    # Plugin manager
+    if grep -rq "lazy.nvim\|folke/lazy" "$nvim_root/lua" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("lazy.nvim")
+    elif grep -rq "packer.nvim\|wbthomason/packer" "$nvim_root/lua" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("packer.nvim")
+    fi
+
+    # LSP, Treesitter, plugins
+    if grep -rq "nvim-lspconfig\|neovim/nvim-lspconfig" "$nvim_root/lua" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("LSP")
+    fi
+    if grep -rq "nvim-treesitter" "$nvim_root/lua" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("Treesitter")
+    fi
+    if grep -rq "telescope.nvim\|nvim-telescope" "$nvim_root/lua" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("Telescope")
+    fi
+    if grep -rq "nvim-cmp\|hrsh7th/nvim-cmp" "$nvim_root/lua" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("nvim-cmp")
+    fi
+}
+
+detect_database() {
+    local dir="$1"
+
+    local db_files
+    db_files=$(find "$dir" -maxdepth 2 \( -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name ".env*" -o -name "docker-compose*" \) -type f 2>/dev/null | head -20)
+    [[ -n "$db_files" ]] || return 0
+
+    if echo "$db_files" | xargs grep -lq "postgres\|postgresql" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("PostgreSQL")
+    fi
+    if echo "$db_files" | xargs grep -lq "mongodb\|mongo" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("MongoDB")
+    fi
+    if echo "$db_files" | xargs grep -lq "redis" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("Redis")
+    fi
+}
+
+detect_cicd() {
+    local dir="$1"
+
+    # Docker
+    if [[ -f "$dir/Dockerfile" ]] || [[ -f "$dir/docker-compose.yml" ]] || [[ -f "$dir/docker-compose.yaml" ]]; then
+        DETECTED_DOCKER=true
+        DETECTED_DEPENDENCIES+=("Docker")
+    fi
+
+    # CI/CD
+    if [[ -d "$dir/.github/workflows" ]]; then
+        DETECTED_CICD=true
+        DETECTED_DEPENDENCIES+=("GitHub Actions")
+    fi
+    if [[ -f "$dir/.gitlab-ci.yml" ]]; then
+        DETECTED_CICD=true
+        DETECTED_DEPENDENCIES+=("GitLab CI")
+    fi
+    if [[ -f "$dir/bitbucket-pipelines.yml" ]]; then
+        DETECTED_CICD=true
+        DETECTED_DEPENDENCIES+=("Bitbucket Pipelines")
+    fi
+
+    # Pre-commit
+    if [[ -f "$dir/.pre-commit-config.yaml" ]]; then
+        DETECTED_HOOKS=true
+        DETECTED_DEPENDENCIES+=("pre-commit")
+    fi
+}
+
 detect_stack() {
     local dir="$1"
 
@@ -262,337 +622,16 @@ detect_stack() {
     DETECTED_FOLDERS=()
     DETECTED_MAIN_DEPS=()
 
-    # Détecter le gestionnaire de paquets
-    if [[ -f "$dir/bun.lockb" ]] || [[ -f "$dir/bun.lock" ]]; then
-        DETECTED_PKG_MANAGER="bun"
-    elif [[ -f "$dir/pnpm-lock.yaml" ]]; then
-        DETECTED_PKG_MANAGER="pnpm"
-    elif [[ -f "$dir/yarn.lock" ]]; then
-        DETECTED_PKG_MANAGER="yarn"
-    else
-        DETECTED_PKG_MANAGER="npm"
-    fi
-
-    # Détecter Node.js / JavaScript
-    if [[ -f "$dir/package.json" ]]; then
-        DETECTED_DEPENDENCIES+=("Node.js")
-        if [[ "$DETECTED_PKG_MANAGER" != "npm" ]]; then
-            DETECTED_DEPENDENCIES+=("$DETECTED_PKG_MANAGER")
-        fi
-
-        # Extraire les scripts
-        extract_npm_scripts "$dir/package.json"
-
-        # Extraire les dépendances principales
-        extract_main_dependencies "$dir/package.json"
-
-        # Lire package.json pour détecter le framework
-        if grep -q '"react"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_TYPE="react"
-            DETECTED_FRAMEWORK="React"
-            if grep -q '"next"' "$dir/package.json" 2>/dev/null; then
-                DETECTED_FRAMEWORK="Next.js"
-            fi
-        elif grep -q '"vue"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_TYPE="vue"
-            DETECTED_FRAMEWORK="Vue.js"
-            if grep -q '"nuxt"' "$dir/package.json" 2>/dev/null; then
-                DETECTED_FRAMEWORK="Nuxt.js"
-            fi
-        elif grep -q '"angular"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_TYPE="generic"
-            DETECTED_FRAMEWORK="Angular"
-        elif grep -q '"svelte"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_TYPE="generic"
-            DETECTED_FRAMEWORK="Svelte"
-        elif grep -q '"express"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_TYPE="node-api"
-            DETECTED_FRAMEWORK="Express.js"
-        elif grep -q '"fastify"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_TYPE="node-api"
-            DETECTED_FRAMEWORK="Fastify"
-        elif grep -q '"nestjs"' "$dir/package.json" 2>/dev/null || grep -q '"@nestjs"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_TYPE="node-api"
-            DETECTED_FRAMEWORK="NestJS"
-        else
-            DETECTED_TYPE="node-api"
-            DETECTED_FRAMEWORK="Node.js"
-        fi
-
-        # Détecter TypeScript
-        if [[ -f "$dir/tsconfig.json" ]] || grep -q '"typescript"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("TypeScript")
-        fi
-
-        # Détecter les outils de test
-        if grep -q '"jest"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Jest")
-        fi
-        if grep -q '"vitest"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Vitest")
-        fi
-        if grep -q '"cypress"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Cypress")
-        fi
-        if grep -q '"playwright"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Playwright")
-        fi
-
-        # Détecter les outils de build
-        if grep -q '"vite"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Vite")
-        fi
-        if grep -q '"webpack"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Webpack")
-        fi
-
-        # Détecter husky/lint-staged
-        if grep -q '"husky"' "$dir/package.json" 2>/dev/null || [[ -d "$dir/.husky" ]]; then
-            DETECTED_HOOKS=true
-            DETECTED_DEPENDENCIES+=("Husky")
-        fi
-    fi
-
-    # Détecter Python
-    if [[ -f "$dir/requirements.txt" ]] || [[ -f "$dir/pyproject.toml" ]] || [[ -f "$dir/setup.py" ]] || [[ -f "$dir/Pipfile" ]]; then
-        if [[ -z "$DETECTED_TYPE" ]]; then
-            DETECTED_TYPE="python"
-            DETECTED_FRAMEWORK="Python"
-        fi
-        DETECTED_DEPENDENCIES+=("Python")
-
-        # Extraire les dépendances Python
-        extract_python_dependencies "$dir"
-
-        # Détecter le framework Python
-        if [[ -f "$dir/requirements.txt" ]]; then
-            if grep -qi "django" "$dir/requirements.txt" 2>/dev/null; then
-                DETECTED_FRAMEWORK="Django"
-            elif grep -qi "fastapi" "$dir/requirements.txt" 2>/dev/null; then
-                DETECTED_FRAMEWORK="FastAPI"
-            elif grep -qi "flask" "$dir/requirements.txt" 2>/dev/null; then
-                DETECTED_FRAMEWORK="Flask"
-            fi
-        fi
-        if [[ -f "$dir/pyproject.toml" ]]; then
-            if grep -qi "django" "$dir/pyproject.toml" 2>/dev/null; then
-                DETECTED_FRAMEWORK="Django"
-            elif grep -qi "fastapi" "$dir/pyproject.toml" 2>/dev/null; then
-                DETECTED_FRAMEWORK="FastAPI"
-            elif grep -qi "flask" "$dir/pyproject.toml" 2>/dev/null; then
-                DETECTED_FRAMEWORK="Flask"
-            fi
-        fi
-    fi
-
-    # Détecter Go
-    if [[ -f "$dir/go.mod" ]]; then
-        if [[ -z "$DETECTED_TYPE" ]]; then
-            DETECTED_TYPE="go"
-            DETECTED_FRAMEWORK="Go"
-        fi
-        DETECTED_DEPENDENCIES+=("Go")
-
-        # Détecter le framework Go
-        if grep -q "gin-gonic" "$dir/go.mod" 2>/dev/null; then
-            DETECTED_FRAMEWORK="Gin"
-        elif grep -q "echo" "$dir/go.mod" 2>/dev/null; then
-            DETECTED_FRAMEWORK="Echo"
-        elif grep -q "fiber" "$dir/go.mod" 2>/dev/null; then
-            DETECTED_FRAMEWORK="Fiber"
-        fi
-    fi
-
-    # Détecter Rust
-    if [[ -f "$dir/Cargo.toml" ]]; then
-        if [[ -z "$DETECTED_TYPE" ]]; then
-            DETECTED_TYPE="rust"
-            DETECTED_FRAMEWORK="Rust"
-        fi
-        DETECTED_DEPENDENCIES+=("Rust")
-
-        # Détecter le framework Rust
-        if grep -q "actix-web" "$dir/Cargo.toml" 2>/dev/null; then
-            DETECTED_FRAMEWORK="Actix Web"
-        elif grep -q "axum" "$dir/Cargo.toml" 2>/dev/null; then
-            DETECTED_FRAMEWORK="Axum"
-        elif grep -q "rocket" "$dir/Cargo.toml" 2>/dev/null; then
-            DETECTED_FRAMEWORK="Rocket"
-        fi
-    fi
-
-    # Détecter Java
-    if [[ -f "$dir/pom.xml" ]] || [[ -f "$dir/build.gradle" ]] || [[ -f "$dir/build.gradle.kts" ]]; then
-        if [[ -z "$DETECTED_TYPE" ]]; then
-            DETECTED_TYPE="java"
-            DETECTED_FRAMEWORK="Java"
-        fi
-        DETECTED_DEPENDENCIES+=("Java")
-
-        # Détecter Spring Boot
-        if [[ -f "$dir/pom.xml" ]] && grep -q "spring-boot" "$dir/pom.xml" 2>/dev/null; then
-            DETECTED_FRAMEWORK="Spring Boot"
-        elif [[ -f "$dir/build.gradle" ]] && grep -q "spring-boot" "$dir/build.gradle" 2>/dev/null; then
-            DETECTED_FRAMEWORK="Spring Boot"
-        fi
-    fi
-
-    # Détecter Flutter / Dart
-    if [[ -f "$dir/pubspec.yaml" ]]; then
-        if [[ -z "$DETECTED_TYPE" ]]; then
-            DETECTED_TYPE="flutter"
-            DETECTED_FRAMEWORK="Flutter"
-        fi
-        DETECTED_DEPENDENCIES+=("Flutter" "Dart")
-
-        # Détecter les packages Flutter courants
-        if grep -q "supabase" "$dir/pubspec.yaml" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Supabase")
-        fi
-        if grep -q "firebase" "$dir/pubspec.yaml" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Firebase")
-        fi
-        if grep -q "riverpod\|flutter_riverpod" "$dir/pubspec.yaml" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Riverpod")
-        elif grep -q "provider" "$dir/pubspec.yaml" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Provider")
-        elif grep -q "bloc\|flutter_bloc" "$dir/pubspec.yaml" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("BLoC")
-        fi
-        if grep -q "graphql" "$dir/pubspec.yaml" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("GraphQL")
-        fi
-
-        # Détecter les plateformes cibles
-        local platforms=()
-        [[ -d "$dir/android" ]] && platforms+=("Android")
-        [[ -d "$dir/ios" ]] && platforms+=("iOS")
-        [[ -d "$dir/web" ]] && platforms+=("Web")
-        [[ -d "$dir/macos" ]] && platforms+=("macOS")
-        [[ -d "$dir/linux" ]] && platforms+=("Linux")
-        [[ -d "$dir/windows" ]] && platforms+=("Windows")
-        if [[ ${#platforms[@]} -gt 0 ]]; then
-            DETECTED_DEPENDENCIES+=("Platforms: ${platforms[*]}")
-        fi
-    fi
-
-    # Détecter Neovim config
-    # Cherche init.lua + lua/ à la racine ou dans nvim/ (dotfiles pattern)
-    local nvim_root=""
-    if [[ -f "$dir/init.lua" ]] && [[ -d "$dir/lua" ]]; then
-        nvim_root="$dir"
-    elif [[ -f "$dir/nvim/init.lua" ]] && [[ -d "$dir/nvim/lua" ]]; then
-        nvim_root="$dir/nvim"
-    elif [[ -f "$dir/.config/nvim/init.lua" ]] && [[ -d "$dir/.config/nvim/lua" ]]; then
-        nvim_root="$dir/.config/nvim"
-    fi
-
-    if [[ -n "$nvim_root" ]]; then
-        if [[ -z "$DETECTED_TYPE" ]]; then
-            DETECTED_TYPE="neovim"
-            DETECTED_FRAMEWORK="Neovim"
-        fi
-        DETECTED_DEPENDENCIES+=("Lua" "Neovim")
-
-        # Indiquer si la config est dans un sous-dossier
-        if [[ "$nvim_root" != "$dir" ]]; then
-            local subdir="${nvim_root#$dir/}"
-            DETECTED_DEPENDENCIES+=("(config in $subdir/)")
-        fi
-
-        # Détecter le plugin manager
-        if grep -rq "lazy.nvim\|folke/lazy" "$nvim_root/lua" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("lazy.nvim")
-        elif grep -rq "packer.nvim\|wbthomason/packer" "$nvim_root/lua" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("packer.nvim")
-        fi
-
-        # Détecter LSP
-        if grep -rq "nvim-lspconfig\|neovim/nvim-lspconfig" "$nvim_root/lua" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("LSP")
-        fi
-
-        # Détecter Treesitter
-        if grep -rq "nvim-treesitter" "$nvim_root/lua" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Treesitter")
-        fi
-
-        # Détecter d'autres plugins courants
-        if grep -rq "telescope.nvim\|nvim-telescope" "$nvim_root/lua" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Telescope")
-        fi
-        if grep -rq "nvim-cmp\|hrsh7th/nvim-cmp" "$nvim_root/lua" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("nvim-cmp")
-        fi
-    fi
-
-    # Détecter Monorepo / Fullstack
-    if [[ -d "$dir/packages" ]] || [[ -d "$dir/apps" ]]; then
-        if [[ -f "$dir/package.json" ]] && grep -q '"workspaces"' "$dir/package.json" 2>/dev/null; then
-            DETECTED_TYPE="fullstack"
-            DETECTED_FRAMEWORK="Monorepo"
-            DETECTED_DEPENDENCIES+=("Workspaces")
-        fi
-    fi
-    if [[ -f "$dir/turbo.json" ]]; then
-        DETECTED_TYPE="fullstack"
-        DETECTED_FRAMEWORK="Turborepo"
-        DETECTED_DEPENDENCIES+=("Turborepo")
-    fi
-    if [[ -f "$dir/nx.json" ]]; then
-        DETECTED_TYPE="fullstack"
-        DETECTED_FRAMEWORK="Nx"
-        DETECTED_DEPENDENCIES+=("Nx")
-    fi
-
-    # Détecter Docker
-    if [[ -f "$dir/Dockerfile" ]] || [[ -f "$dir/docker-compose.yml" ]] || [[ -f "$dir/docker-compose.yaml" ]]; then
-        DETECTED_DOCKER=true
-        DETECTED_DEPENDENCIES+=("Docker")
-    fi
-
-    # Détecter CI/CD
-    if [[ -d "$dir/.github/workflows" ]]; then
-        DETECTED_CICD=true
-        DETECTED_DEPENDENCIES+=("GitHub Actions")
-    fi
-    if [[ -f "$dir/.gitlab-ci.yml" ]]; then
-        DETECTED_CICD=true
-        DETECTED_DEPENDENCIES+=("GitLab CI")
-    fi
-    if [[ -f "$dir/bitbucket-pipelines.yml" ]]; then
-        DETECTED_CICD=true
-        DETECTED_DEPENDENCIES+=("Bitbucket Pipelines")
-    fi
-
-    # Détecter pre-commit
-    if [[ -f "$dir/.pre-commit-config.yaml" ]]; then
-        DETECTED_HOOKS=true
-        DETECTED_DEPENDENCIES+=("pre-commit")
-    fi
-
-    # Détecter bases de données (limiter la profondeur pour la performance)
-    local db_files
-    db_files=$(find "$dir" -maxdepth 2 \( -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name ".env*" -o -name "docker-compose*" \) -type f 2>/dev/null | head -20)
-    if [[ -n "$db_files" ]]; then
-        if echo "$db_files" | xargs grep -lq "postgres\|postgresql" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("PostgreSQL")
-        fi
-        if echo "$db_files" | xargs grep -lq "mongodb\|mongo" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("MongoDB")
-        fi
-        if echo "$db_files" | xargs grep -lq "redis" 2>/dev/null; then
-            DETECTED_DEPENDENCIES+=("Redis")
-        fi
-    fi
-
-    # Détecter Deno
-    if [[ -f "$dir/deno.json" ]] || [[ -f "$dir/deno.jsonc" ]]; then
-        DETECTED_DEPENDENCIES+=("Deno")
-        DETECTED_PKG_MANAGER="deno"
-    fi
-
-    # Détecter la structure de dossiers
+    # Run all sub-detectors
+    detect_nodejs "$dir"
+    detect_python "$dir"
+    detect_go "$dir"
+    detect_rust "$dir"
+    detect_java "$dir"
+    detect_flutter "$dir"
+    detect_neovim "$dir"
+    detect_database "$dir"
+    detect_cicd "$dir"
     detect_folder_structure "$dir"
 
     # Afficher les résultats de la détection
@@ -635,9 +674,9 @@ extract_npm_scripts() {
 
     # Extraire les scripts avec une approche simple
     if command -v node &> /dev/null; then
-        # Utiliser Node.js si disponible
-        mapfile -t DETECTED_SCRIPTS < <(node -e "
-            const pkg = require('$package_json');
+        # Utiliser Node.js si disponible (NODE_PATH pour éviter l'injection de commande)
+        mapfile -t DETECTED_SCRIPTS < <(NODE_PKG_PATH="$package_json" node -e "
+            const pkg = require(process.env.NODE_PKG_PATH);
             if (pkg.scripts) {
                 Object.keys(pkg.scripts).forEach(s => console.log(s));
             }
@@ -652,8 +691,8 @@ extract_main_dependencies() {
     local package_json="$1"
 
     if command -v node &> /dev/null; then
-        mapfile -t DETECTED_MAIN_DEPS < <(node -e "
-            const pkg = require('$package_json');
+        mapfile -t DETECTED_MAIN_DEPS < <(NODE_PKG_PATH="$package_json" node -e "
+            const pkg = require(process.env.NODE_PKG_PATH);
             const deps = { ...pkg.dependencies, ...pkg.devDependencies };
             const important = ['react', 'vue', 'angular', 'next', 'nuxt', 'express', 'fastify', 'nestjs', 'prisma', 'typeorm', 'sequelize', 'mongoose', 'jest', 'vitest', 'cypress', 'playwright', 'tailwindcss', 'styled-components', 'emotion'];
             important.forEach(dep => {
@@ -935,73 +974,49 @@ copy_filtered_rules() {
 # Installe tous les fichiers .claude/ (commands, skills, agents, rules, etc.)
 # Arguments:
 #   $1 - Répertoire cible (chemin absolu)
+# Copies a socle subdirectory to target, with dry-run support
+# Arguments:
+#   $1 - Relative subdirectory (e.g. ".claude/commands")
+#   $2 - Target base directory
+#   $3 - Label for debug output
+copy_socle_dir() {
+    local subdir="$1"
+    local target_dir="$2"
+    local label="$3"
+
+    if [[ -d "$SOCLE_DIR/$subdir" ]]; then
+        debug "Copie des $label..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/$subdir/* → $target_dir/$subdir/"
+        else
+            cp -r "$SOCLE_DIR/$subdir/"* "$target_dir/$subdir/"
+        fi
+    fi
+}
+
 install_claude_files() {
     local target_dir="$1"
 
     info "Installation des fichiers Claude..."
 
     # Créer la structure de base
-    make_dir "$target_dir/.claude/commands"
-    make_dir "$target_dir/.claude/skills"
-    make_dir "$target_dir/.claude/agents"
-    make_dir "$target_dir/.claude/rules"
-    make_dir "$target_dir/.claude/output-styles"
-    make_dir "$target_dir/.claude/templates"
+    for dir in "$COMMANDS_DIR" "$SKILLS_DIR" "$AGENTS_DIR" "$RULES_DIR" "$STYLES_DIR" "$TEMPLATES_DIR"; do
+        make_dir "$target_dir/$dir"
+    done
 
-    # Copier les commandes
-    debug "Copie des commandes..."
-    if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/commands/* → $target_dir/.claude/commands/"
-    else
-        cp -r "$SOCLE_DIR/.claude/commands/"* "$target_dir/.claude/commands/"
-    fi
+    # Copier les sous-répertoires
+    copy_socle_dir "$COMMANDS_DIR" "$target_dir" "commandes"
+    copy_socle_dir "$SKILLS_DIR" "$target_dir" "skills"
+    copy_socle_dir "$AGENTS_DIR" "$target_dir" "agents"
+    copy_socle_dir "$STYLES_DIR" "$target_dir" "output-styles"
+    copy_socle_dir "$TEMPLATES_DIR" "$target_dir" "templates"
 
     # Copier settings.json
     copy_file "$SOCLE_DIR/.claude/settings.json" "$target_dir/.claude/"
 
-    # Copier les skills
-    if [[ -d "$SOCLE_DIR/.claude/skills" ]]; then
-        debug "Copie des skills..."
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/skills/* → $target_dir/.claude/skills/"
-        else
-            cp -r "$SOCLE_DIR/.claude/skills/"* "$target_dir/.claude/skills/"
-        fi
-    fi
-
-    # Copier les agents
-    if [[ -d "$SOCLE_DIR/.claude/agents" ]]; then
-        debug "Copie des agents..."
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/agents/* → $target_dir/.claude/agents/"
-        else
-            cp -r "$SOCLE_DIR/.claude/agents/"* "$target_dir/.claude/agents/"
-        fi
-    fi
-
     # Copier les rules (filtrées par type de projet)
     debug "Copie des rules filtrées pour type: ${DETECTED_TYPE:-generic}..."
-    copy_filtered_rules "$SOCLE_DIR/.claude/rules" "$target_dir/.claude/rules" "${DETECTED_TYPE:-generic}"
-
-    # Copier les output-styles
-    if [[ -d "$SOCLE_DIR/.claude/output-styles" ]]; then
-        debug "Copie des output-styles..."
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/output-styles/* → $target_dir/.claude/output-styles/"
-        else
-            cp -r "$SOCLE_DIR/.claude/output-styles/"* "$target_dir/.claude/output-styles/"
-        fi
-    fi
-
-    # Copier les templates
-    if [[ -d "$SOCLE_DIR/.claude/templates" ]]; then
-        debug "Copie des templates..."
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/templates/* → $target_dir/.claude/templates/"
-        else
-            cp -r "$SOCLE_DIR/.claude/templates/"* "$target_dir/.claude/templates/"
-        fi
-    fi
+    copy_filtered_rules "$SOCLE_DIR/$RULES_DIR" "$target_dir/$RULES_DIR" "${DETECTED_TYPE:-generic}"
 
     # Copier docs/reference/ (requis pour les @imports de CLAUDE.md)
     if [[ -d "$SOCLE_DIR/docs/reference" ]]; then
@@ -1074,7 +1089,9 @@ install_hooks_files() {
         cp "$SOCLE_DIR/.pre-commit-config.yaml" "$target_dir/" 2>/dev/null || true
         cp "$SOCLE_DIR/.lintstagedrc.json" "$target_dir/"
         cp "$SOCLE_DIR/.commitlintrc.json" "$target_dir/"
-        chmod +x "$target_dir/.husky/"* 2>/dev/null || true
+        if ! chmod +x "$target_dir/.husky/"* 2>/dev/null; then
+                warning "Impossible de rendre les hooks husky exécutables"
+            fi
     fi
 
     success "Pre-commit hooks installés"
@@ -1148,9 +1165,9 @@ print_simple_summary() {
     echo ""
 
     info "Fichiers installés:"
-    echo "  - .claude/commands/      ($(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ') commandes)"
-    echo "  - .claude/skills/        ($(count_skills "$SOCLE_DIR") skills)"
-    echo "  - .claude/agents/        ($(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ') agents)"
+    echo "  - .claude/commands/      ($(count_commands_cached) commandes)"
+    echo "  - .claude/skills/        ($(count_skills_cached) skills)"
+    echo "  - .claude/agents/        ($(count_agents_cached) agents)"
     echo "  - .claude/rules/         (règles contextuelles)"
     echo "  - .claude/output-styles/ (styles de sortie)"
     echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
@@ -1210,15 +1227,18 @@ run_simple_mode() {
     $INCLUDE_CICD && install_cicd_files "$target_dir"
     $INCLUDE_HOOKS && install_hooks_files "$target_dir"
     $INCLUDE_MCP && install_mcp_file "$target_dir"
-    $INCLUDE_DOCKER && create_dockerfile_in_dir "$target_dir"
+    $INCLUDE_DOCKER && create_dockerfile "$target_dir"
 
     # Mettre à jour .gitignore
     update_gitignore_file "$target_dir"
 
     # Initialiser git si pas déjà fait
     if [[ ! -d "$target_dir/.git" ]] && ! $DRY_RUN; then
-        (cd "$target_dir" && git init -q)
-        success "Repository git initialisé"
+        if (cd "$target_dir" && git init -q); then
+            success "Repository git initialisé"
+        else
+            warning "Échec de git init dans $target_dir"
+        fi
     fi
 
     # Afficher le résumé
@@ -1451,10 +1471,7 @@ EOF
 EOF
 
     # Section Agents Disponibles
-    local _cmd_count _agent_count
-    _cmd_count=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    _agent_count=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    echo "## Agents Disponibles (${_cmd_count} commandes, ${_agent_count} agents)" >> "$output_file"
+    echo "## Agents Disponibles ($(count_commands_cached) commandes, $(count_agents_cached) agents)" >> "$output_file"
     echo "" >> "$output_file"
     cat >> "$output_file" << 'EOF'
 | Catégorie | Commandes |
@@ -1846,68 +1863,9 @@ create_project() {
         clean_claude_dirs "$TARGET_DIR"
     fi
 
-    # Créer la structure de base
-    make_dir "$TARGET_DIR/.claude/commands"
-
-    # Copier les commandes Claude
-    info "Installation des commandes Claude..."
-    if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/commands/* → $TARGET_DIR/.claude/commands/"
-    else
-        cp -r "$SOCLE_DIR/.claude/commands/"* "$TARGET_DIR/.claude/commands/"
-    fi
-
-    # Copier les agents
-    if [[ -d "$SOCLE_DIR/.claude/agents" ]]; then
-        make_dir "$TARGET_DIR/.claude/agents"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/agents/* → $TARGET_DIR/.claude/agents/"
-        else
-            cp -r "$SOCLE_DIR/.claude/agents/"* "$TARGET_DIR/.claude/agents/"
-        fi
-    fi
-
-    # Copier les rules (filtrées par type de projet)
-    make_dir "$TARGET_DIR/.claude/rules"
-    debug "Copie des rules filtrées pour type: ${DETECTED_TYPE:-generic}..."
-    copy_filtered_rules "$SOCLE_DIR/.claude/rules" "$TARGET_DIR/.claude/rules" "${DETECTED_TYPE:-generic}"
-
-    # Copier les output-styles
-    if [[ -d "$SOCLE_DIR/.claude/output-styles" ]]; then
-        make_dir "$TARGET_DIR/.claude/output-styles"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/output-styles/* → $TARGET_DIR/.claude/output-styles/"
-        else
-            cp -r "$SOCLE_DIR/.claude/output-styles/"* "$TARGET_DIR/.claude/output-styles/"
-        fi
-    fi
-
-    # Copier les templates
-    if [[ -d "$SOCLE_DIR/.claude/templates" ]]; then
-        make_dir "$TARGET_DIR/.claude/templates"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/templates/* → $TARGET_DIR/.claude/templates/"
-        else
-            cp -r "$SOCLE_DIR/.claude/templates/"* "$TARGET_DIR/.claude/templates/"
-        fi
-    fi
-
-    copy_file "$SOCLE_DIR/.claude/settings.json" "$TARGET_DIR/.claude/"
-
-    # Copier les skills
-    if [[ -d "$SOCLE_DIR/.claude/skills" ]]; then
-        make_dir "$TARGET_DIR/.claude/skills"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.claude/skills/* → $TARGET_DIR/.claude/skills/"
-        else
-            cp -r "$SOCLE_DIR/.claude/skills/"* "$TARGET_DIR/.claude/skills/"
-        fi
-    fi
-    local _cmd_ct _agent_ct _skill_ct
-    _cmd_ct=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    _agent_ct=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    _skill_ct=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    success "Commandes Claude installées (${_cmd_ct} commandes, ${_agent_ct} agents, ${_skill_ct} skills)"
+    # Installer les fichiers Claude (commandes, agents, skills, rules, styles, templates)
+    install_claude_files "$TARGET_DIR"
+    success "Commandes Claude installées ($(count_commands_cached) commandes, $(count_agents_cached) agents, $(count_skills_cached) skills)"
 
     # Générer ou copier CLAUDE.md
     if [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then
@@ -1946,8 +1904,10 @@ create_project() {
 
             # Remplacer le nom du projet dans CLAUDE.md
             if ! $DRY_RUN; then
-                sed -i "s/# Projet .*/# Projet ${PROJECT_NAME}/" "$TARGET_DIR/CLAUDE.md" 2>/dev/null || \
-                sed -i '' "s/# Projet .*/# Projet ${PROJECT_NAME}/" "$TARGET_DIR/CLAUDE.md" 2>/dev/null || true
+                # Escape PROJECT_NAME for safe sed substitution (use | delimiter)
+                local safe_name="${PROJECT_NAME//|/\\|}"
+                sed -i "s|# Projet .*|# Projet ${safe_name}|" "$TARGET_DIR/CLAUDE.md" 2>/dev/null || \
+                sed -i '' "s|# Projet .*|# Projet ${safe_name}|" "$TARGET_DIR/CLAUDE.md" 2>/dev/null || true
             fi
 
             success "Template CLAUDE.md configuré (${PROJECT_TYPE})"
@@ -1962,17 +1922,9 @@ create_project() {
         success "CLAUDE.local.md.example copié"
     fi
 
-    # GitHub Actions
-    # Gestion CI/CD selon l'action choisie
+    # Composants optionnels (using shared functions)
     if $INCLUDE_CICD; then
-        info "Installation de GitHub Actions..."
-        make_dir "$TARGET_DIR/.github/workflows"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.github/workflows/* → $TARGET_DIR/.github/workflows/"
-        else
-            cp -r "$SOCLE_DIR/.github/workflows/"* "$TARGET_DIR/.github/workflows/"
-        fi
-        success "GitHub Actions installés"
+        install_cicd_files "$TARGET_DIR"
     elif [[ "$CICD_ACTION" == "merge" ]]; then
         merge_cicd_workflows "$TARGET_DIR"
     elif [[ "$CICD_ACTION" == "replace" ]]; then
@@ -1986,232 +1938,31 @@ create_project() {
         fi
         success "GitHub Actions remplacés par les templates du socle"
     fi
+    $INCLUDE_HOOKS && install_hooks_files "$TARGET_DIR"
+    $INCLUDE_MCP && install_mcp_file "$TARGET_DIR"
+    $INCLUDE_DOCKER && create_dockerfile "$TARGET_DIR"
 
-    # Pre-commit hooks
-    if $INCLUDE_HOOKS; then
-        info "Installation des pre-commit hooks..."
-        make_dir "$TARGET_DIR/.husky"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r husky + config files → $TARGET_DIR/"
-        else
-            cp -r "$SOCLE_DIR/.husky/"* "$TARGET_DIR/.husky/"
-            cp "$SOCLE_DIR/.lintstagedrc.json" "$TARGET_DIR/"
-            cp "$SOCLE_DIR/.commitlintrc.json" "$TARGET_DIR/"
-            cp "$SOCLE_DIR/.pre-commit-config.yaml" "$TARGET_DIR/" 2>/dev/null || true
-            chmod +x "$TARGET_DIR/.husky/"* 2>/dev/null || true
-        fi
-        success "Pre-commit hooks installés"
-    fi
+    # .gitignore et git init
+    update_gitignore_file "$TARGET_DIR"
 
-    # MCP
-    if $INCLUDE_MCP; then
-        info "Installation de la configuration MCP..."
-        copy_file "$SOCLE_DIR/.mcp.json" "$TARGET_DIR/"
-        success "Configuration MCP installée"
-    fi
-
-    # Docker
-    if $INCLUDE_DOCKER; then
-        create_dockerfile_in_dir "$TARGET_DIR"
-    fi
-
-    # .gitignore (merge si existe déjà)
-    if [[ -f "$TARGET_DIR/.gitignore" ]]; then
-        # Ajouter les entrées Claude si pas déjà présentes
-        if ! grep -q "CLAUDE.local.md" "$TARGET_DIR/.gitignore" 2>/dev/null; then
-            if ! $DRY_RUN; then
-                echo "" >> "$TARGET_DIR/.gitignore"
-                echo "# Claude Code (l'utilisateur peut retirer ces lignes si besoin)" >> "$TARGET_DIR/.gitignore"
-                echo ".claude/" >> "$TARGET_DIR/.gitignore"
-                echo "CLAUDE.md" >> "$TARGET_DIR/.gitignore"
-                echo "CLAUDE.local.md" >> "$TARGET_DIR/.gitignore"
-                echo ".claude/settings.local.json" >> "$TARGET_DIR/.gitignore"
-            else
-                echo -e "${DIM}[DRY-RUN]${NC} Ajout entrées Claude à .gitignore"
-            fi
-            success ".gitignore mis à jour"
-        fi
-    else
-        copy_file "$SOCLE_DIR/.gitignore" "$TARGET_DIR/"
-        success ".gitignore créé"
-    fi
-
-    # Initialiser git si pas déjà fait
     if [[ ! -d "$TARGET_DIR/.git" ]]; then
         if ! $DRY_RUN; then
-            (cd "$TARGET_DIR" && git init -q)
+            if (cd "$TARGET_DIR" && git init -q); then
+                success "Repository git initialisé"
+            else
+                warning "Échec de git init dans $TARGET_DIR"
+            fi
         else
             echo -e "${DIM}[DRY-RUN]${NC} git init dans $TARGET_DIR"
         fi
-        success "Repository git initialisé"
     fi
 }
 
-create_dockerfile() {
-    # Ne pas écraser un Dockerfile existant
-    if [[ -f "Dockerfile" ]]; then
-        warning "Dockerfile existe déjà, ignoré"
-        return
-    fi
-
-    # Créer un Dockerfile basique selon le type de projet
-    case $PROJECT_TYPE in
-        react|vue)
-            cat > Dockerfile << 'EOF'
-# Build stage
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-# Production stage
-FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-EOF
-            ;;
-        node-api)
-            cat > Dockerfile << 'EOF'
-# Build stage
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-RUN npm run build
-
-# Production stage
-FROM node:20-alpine
-WORKDIR /app
-RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nodejs:nodejs /app/package.json ./
-USER nodejs
-EXPOSE 3000
-CMD ["node", "dist/index.js"]
-EOF
-            ;;
-        python)
-            cat > Dockerfile << 'EOF'
-FROM python:3.12-slim
-WORKDIR /app
-RUN useradd --create-home appuser
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY --chown=appuser:appuser . .
-USER appuser
-EXPOSE 8000
-CMD ["python", "main.py"]
-EOF
-            ;;
-        go)
-            cat > Dockerfile << 'EOF'
-FROM golang:1.22-alpine AS builder
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main .
-
-FROM scratch
-COPY --from=builder /app/main /main
-EXPOSE 8080
-ENTRYPOINT ["/main"]
-EOF
-            ;;
-        rust)
-            cat > Dockerfile << 'EOF'
-FROM rust:1.75-alpine AS builder
-WORKDIR /app
-RUN apk add --no-cache musl-dev
-COPY Cargo.toml Cargo.lock ./
-COPY src ./src
-RUN cargo build --release
-
-FROM alpine:latest
-COPY --from=builder /app/target/release/app /app
-EXPOSE 8080
-ENTRYPOINT ["/app"]
-EOF
-            ;;
-        java)
-            cat > Dockerfile << 'EOF'
-FROM eclipse-temurin:21-jdk-alpine AS builder
-WORKDIR /app
-COPY . .
-RUN ./mvnw package -DskipTests
-
-FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
-EOF
-            ;;
-        flutter)
-            cat > Dockerfile << 'EOF'
-# Flutter Web Build
-FROM ghcr.io/cirruslabs/flutter:stable AS builder
-WORKDIR /app
-COPY pubspec.* ./
-RUN flutter pub get
-COPY . .
-RUN flutter build web --release
-
-# Production stage (nginx for web)
-FROM nginx:alpine
-COPY --from=builder /app/build/web /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-EOF
-            ;;
-        *)
-            cat > Dockerfile << 'EOF'
-FROM ubuntu:22.04
-WORKDIR /app
-COPY . .
-# Customize this Dockerfile for your project
-CMD ["bash"]
-EOF
-            ;;
-    esac
-
-    # Créer .dockerignore si n'existe pas
-    if [[ ! -f ".dockerignore" ]]; then
-        cat > .dockerignore << 'EOF'
-node_modules
-npm-debug.log
-.git
-.gitignore
-.env
-.env.*
-Dockerfile*
-docker-compose*
-.dockerignore
-README.md
-.vscode
-.idea
-coverage
-dist
-build
-*.log
-__pycache__
-*.pyc
-.pytest_cache
-target
-EOF
-    fi
-}
-
-# Crée un Dockerfile dans un répertoire spécifié (pour mode simple)
+# Crée un Dockerfile dans un répertoire spécifié
 # Arguments:
-#   $1 - Répertoire cible (chemin absolu)
-create_dockerfile_in_dir() {
-    local target_dir="$1"
+#   $1 - Répertoire cible (chemin absolu, défaut: répertoire courant)
+create_dockerfile() {
+    local target_dir="${1:-.}"
 
     info "Création des fichiers Docker..."
 
@@ -2443,9 +2194,18 @@ print_next_steps() {
 # Main
 # =============================================================================
 
+validate_socle_dirs() {
+    for required_dir in "$COMMANDS_DIR" "$SKILLS_DIR" "$AGENTS_DIR" "$RULES_DIR"; do
+        [[ -d "$SOCLE_DIR/$required_dir" ]] || error "Socle directory missing: $SOCLE_DIR/$required_dir"
+    done
+}
+
 main() {
     # Parser les arguments en premier
     parse_args "$@"
+
+    # Validate that the socle installation is intact
+    validate_socle_dirs
 
     # Mode simple: installation directe sans détection de stack
     if $SIMPLE_MODE; then
