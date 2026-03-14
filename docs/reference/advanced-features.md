@@ -2,7 +2,7 @@
 
 ## Output Styles
 
-8 modes d'interaction dans `.claude/output-styles/`: `teaching`, `explanatory` (recommande), `concise`, `technical`, `review`, `emoji`, `minimal`, `structured`.
+10 modes d'interaction dans `.claude/output-styles/`: `teaching`, `explanatory` (recommande), `concise`, `technical`, `review`, `emoji`, `minimal`, `structured`, `debug`, `metrics`.
 
 ## Templates de Specification
 
@@ -19,6 +19,68 @@ Structure: `specs/[feature]/` contient `spec.md`, `plan.md`, `tasks.md`, `clarif
 Conventions: `P1`=MVP, `P2`=Important, `P3`=Nice-to-have, `[P]`=parallelisable, `[US1]`=User Story 1.
 
 Templates Proxmox (Terraform) disponibles dans `.claude/templates/proxmox/`.
+
+## Memoire Automatique (CLI 2.1.76+)
+
+Claude Code enregistre et rappelle automatiquement des souvenirs au fil du travail (preferences, decisions, contexte projet). Les souvenirs sont stockes dans `~/.claude/memory/`.
+
+| A memoriser | A mettre dans CLAUDE.md | A mettre dans rules/ |
+|-------------|------------------------|---------------------|
+| Preferences personnelles | Conventions du projet | Regles par langage/framework |
+| Decisions d'architecture | Workflow obligatoire | Patterns de code |
+| Contexte equipe | References documentation | Checklist de verification |
+
+Bonnes pratiques:
+- Laisser Claude memoriser les preferences et decisions (evite de repeter)
+- Garder dans CLAUDE.md ce qui est partage avec l'equipe (versionne dans git)
+- Ne pas dupliquer : si c'est dans CLAUDE.md, pas besoin de le memoriser
+- Utiliser "remember that..." pour forcer une memorisation explicite
+
+## Effort Levels (CLI 2.1.76+)
+
+Commande `/effort` pour controler le niveau de raisonnement:
+
+| Niveau | Commande | Cas d'usage |
+|--------|----------|-------------|
+| `low` | `/effort low` | Exploration, formatage, taches simples |
+| `medium` | `/effort medium` | Developpement standard, corrections |
+| `high` | `/effort high` | Architecture, audit, refactoring complexe |
+
+Recommandations par workflow du socle:
+
+| Phase | Effort recommande |
+|-------|-------------------|
+| `/work:work-explore` | low |
+| `/work:work-specify`, `/work:work-plan` | high |
+| `/dev:dev-tdd` | medium |
+| `/qa:qa-audit`, `/qa:qa-security` | high |
+| `/work:work-commit` | low |
+
+## Sessions Nommees (CLI 2.1.76+)
+
+Flag `--name` / `-n` pour nommer une session au demarrage:
+
+```bash
+claude --name "feature-auth"
+claude -n "fix-login-bug"
+```
+
+Combine avec git worktrees pour des sessions isolees et identifiables:
+
+```bash
+git worktree add ../myapp-auth -b feature/auth
+cd ../myapp-auth && claude -n "auth-feature"
+```
+
+## VSCode URI Handler (CLI 2.1.76+)
+
+Ouvrir un tab Claude Code programmatiquement depuis VSCode:
+
+```
+vscode://anthropic.claude-code/open
+```
+
+Utile pour: integration CI/CD, scripts de setup, hooks de notification.
 
 ## Opus 4.6
 
