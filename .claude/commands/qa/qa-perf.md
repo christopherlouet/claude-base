@@ -5,142 +5,51 @@ Analyse et optimisation des performances.
 ## Cible
 $ARGUMENTS
 
-## Méthodologie
+## Objectif
 
-### 1. Mesurer AVANT d'optimiser
-- IMPORTANT: Pas d'optimisation sans mesure préalable
-- Établir une baseline de performance
-- Identifier les métriques clés (temps, mémoire, CPU)
+Mesurer, identifier les bottlenecks et optimiser les performances en suivant une approche data-driven (profiling avant optimisation).
 
-### 2. Identifier les bottlenecks
+## Workflow
 
-#### Code
-- [ ] Boucles inefficaces (O(n²) évitables)
-- [ ] Calculs redondants (memoization possible)
-- [ ] Allocations mémoire excessives
-- [ ] Opérations synchrones bloquantes
-- [ ] Requêtes N+1 (base de données)
-
-#### Frontend
-- [ ] Bundle size trop important
-- [ ] Renders inutiles (React)
-- [ ] Images non optimisées
-- [ ] Pas de lazy loading
-- [ ] CSS bloquant
-
-#### Backend
-- [ ] Requêtes DB non optimisées (index manquants)
-- [ ] Pas de cache
-- [ ] Sérialisation/désérialisation coûteuse
-- [ ] Connexions non poolées
-
-### 3. Profiling
-
-#### Node.js
-```bash
-# Profiling CPU
-node --prof app.js
-node --prof-process isolate-*.log > profile.txt
-
-# Profiling mémoire avec heapdump
-node --expose-gc app.js
-# Dans le code: global.gc(); require('heapdump').writeSnapshot();
-
-# Diagnostic en temps réel
-node --inspect app.js
-# Puis ouvrir chrome://inspect
-```
-
-#### Chrome DevTools
-- Performance tab pour le frontend
-- Memory tab pour les fuites mémoire
-- Network tab pour les requêtes
-- Lighthouse pour audit complet
-
-#### Outils de profiling
-```bash
-# Lighthouse CLI
-npx lighthouse https://example.com --output=json --output-path=./report.json
-
-# Autocannon pour les API
-npx autocannon -c 100 -d 30 http://localhost:3000/api
-
-# 0x pour flamegraphs Node.js
-npx 0x app.js
-```
-
-### 4. Core Web Vitals (SEO & UX)
-
-| Métrique | Description | Objectif | Impact |
-|----------|-------------|----------|--------|
-| **LCP** | Largest Contentful Paint | < 2.5s | SEO + UX |
-| **FID** | First Input Delay | < 100ms | UX |
-| **CLS** | Cumulative Layout Shift | < 0.1 | UX |
-| **TTFB** | Time to First Byte | < 800ms | Perf serveur |
-| **INP** | Interaction to Next Paint | < 200ms | UX |
-
-```typescript
-// Mesurer les Web Vitals
-import { getCLS, getFID, getLCP } from 'web-vitals';
-
-getCLS(console.log);
-getFID(console.log);
-getLCP(console.log);
-```
-
-### 5. Optimisations par priorité
-
-| Priorité | Type | Impact | Effort |
-|----------|------|--------|--------|
-| 1 | Algorithme | Très élevé | Variable |
-| 2 | Caching | Élevé | Faible |
-| 3 | Lazy loading | Moyen | Faible |
-| 4 | Parallélisation | Moyen | Moyen |
-| 5 | Micro-optimisations | Faible | Élevé |
-
-### 6. Techniques d'optimisation
-- Memoization (useMemo, useCallback, cache manuel)
-- Pagination / Infinite scroll
-- Debounce / Throttle
-- Web Workers pour calculs lourds
-- Connection pooling
-- Index de base de données
-- Compression (gzip, brotli)
-- CDN pour assets statiques
+- Mesurer la baseline de performance (temps, memoire, CPU)
+- Identifier les bottlenecks (code, frontend, backend)
+- Profiler avec les outils adaptes (DevTools, Lighthouse, autocannon)
+- Verifier les Core Web Vitals (LCP, FID, CLS, TTFB, INP)
+- Proposer des optimisations par priorite (algorithme > cache > lazy loading)
+- Mesurer apres optimisation pour valider l'impact
 
 ## Output attendu
 
 ### Baseline
-- Métrique 1: [valeur initiale]
-- Métrique 2: [valeur initiale]
+- Metrique 1: [valeur initiale]
+- Metrique 2: [valeur initiale]
 
-### Bottlenecks identifiés
-| Localisation | Problème | Impact estimé |
+### Bottlenecks identifies
+| Localisation | Probleme | Impact estime |
 |--------------|----------|---------------|
-| fichier:ligne | Description | Élevé/Moyen/Faible |
 
-### Optimisations proposées
-1. [Optimisation 1] - Gain estimé: [X%]
-2. [Optimisation 2] - Gain estimé: [X%]
+### Optimisations proposees
+1. [Optimisation 1] - Gain estime: [X%]
+2. [Optimisation 2] - Gain estime: [X%]
 
-### Résultats après optimisation
-- Métrique 1: [avant] → [après] ([X% amélioration])
+### Resultats apres optimisation
+- Metrique 1: [avant] -> [apres] ([X% amelioration])
 
-## Agents liés
+## Agents lies
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
 | `/ops:ops-monitoring` | Monitoring des perfs en prod |
-| `/ops:ops-database` | Optimiser les requêtes DB |
+| `/ops:ops-database` | Optimiser les requetes DB |
 | `/qa:qa-audit` | Audit complet (inclut perf) |
 | `/growth:growth-seo` | Core Web Vitals pour SEO |
 
 ---
 
-IMPORTANT: "Premature optimization is the root of all evil" - Knuth. Optimise uniquement ce qui est mesuré comme lent.
+IMPORTANT: "Premature optimization is the root of all evil" - Knuth. Optimise uniquement ce qui est mesure comme lent.
 
-YOU MUST mesurer avant et après chaque optimisation pour valider l'impact.
+YOU MUST mesurer avant et apres chaque optimisation pour valider l'impact.
 
-NEVER optimiser sans profiling préalable - identifier le vrai bottleneck.
+NEVER optimiser sans profiling prealable - identifier le vrai bottleneck.
 
-Think hard sur le rapport coût/bénéfice de chaque optimisation.
+Think hard sur le rapport cout/benefice de chaque optimisation.
