@@ -2,7 +2,7 @@
 name: biz-competitor
 description: Analyse concurrentielle. Utiliser pour identifier les concurrents, comparer les fonctionnalites, ou definir un positionnement differentiant.
 tools: Read, Grep, Glob, WebSearch
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: Edit, Write, Bash, NotebookEdit
 ---

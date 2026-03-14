@@ -3,7 +3,7 @@
 **Branche**: `feature/doc-improvements`
 **Date**: 2026-01-20
 **Spec**: [specs/doc-improvements/spec.md](./spec.md)
-**Statut**: Draft
+**Statut**: Completed
 
 ---
 

@@ -2,7 +2,7 @@
 name: biz-mvp
 description: Definition du MVP (Minimum Viable Product). Utiliser pour identifier les features essentielles et planifier le lancement.
 tools: Read, Grep, Glob, Edit, Write
-model: haiku
+model: sonnet
 permissionMode: plan
 ---
 
