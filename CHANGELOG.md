@@ -9,6 +9,49 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.26.0] - 2026-03-14
+
+### Ajoute
+- **Sync CLI 2.1.76** : 6 nouveaux hooks (PostCompact, TeammateIdle, TaskCompleted, InstructionsLoaded, Elicitation, ElicitationResult) avec mode async (#30)
+- **Securite hooks/MCP** : hooks SessionStart pour verification .env/.gitignore et warning hooks tiers (#30)
+- **Documentation CLI 2.1.76** : memoire automatique, /effort levels, --name sessions nommees, VSCode URI handler (#37)
+- **3 guides domaine** : INFRA-GUIDE.md (30 ops), BIZ-GUIDE.md (11 biz), GROWTH-GUIDE.md (11 growth) (#34)
+- **2 output styles** : debug (Error/RootCause/Evidence/Fix) et metrics (numbers-first, trend arrows) (#34)
+- **15 exemples skills** : ops-ci, ops-docker, ops-monitoring, ops-database, dev-supabase, dev-flutter, dev-graphql, dev-refactor, dev-error-handling, qa-perf, qa-tech-debt, qa-design, data-pipeline, doc-generate, growth-cro (#36)
+- **Script generate-commands-doc.sh** : generation automatique de docs/reference/commands.md avec --output et --check (#34)
+- **.mcp.env.example** : documentation des variables d'environnement MCP (#33)
+- **Rule precedence** : matrice de priorite des rules dans rules/README.md (security > verification > tdd > language > framework) (#33)
+- **Gate Function** : enrichissement de la rule verification avec 5 etapes obligatoires et Red Flags (#31)
+- **Documentation** : sections async hooks, HTTP hooks, worktree.sparsePaths, Claude Code Security, MCP Elicitation dans advanced-features.md (#30)
+
+### Modifie
+- **Commands trimmes -85%** : 121 commandes de 41,527 a 6,116 lignes (avg 343 → 50 lignes/fichier), skills comme source de verite (#34, #35)
+- **Agents trimmes -61%** : 57 agents de 7,079 a 2,784 lignes (avg 124 → 48 lignes/fichier), 0 agents > 80 lignes (#36)
+- **Scripts securises** : fix injection commande dans new-project.sh (node -e, sed), safe_mktemp dans update.sh, fix awk injection (#38)
+- **Scripts refactores** : detect_stack() decoupe en 8 sous-fonctions, update_directory() remplace 5 fonctions identiques, main() data-driven (#38)
+- **Modeles agents** : biz-mvp, biz-competitor, biz-personas, growth-seo, doc-generate passes de haiku a sonnet (#33)
+- **Hooks logging en async** : SessionEnd, PreCompact, SubagentStop, Notification passes en mode non-bloquant (#30)
+- **VERSION dynamique** : new-project.sh et update.sh lisent VERSION depuis le fichier (#38, #39)
+- **Compteurs dynamiques** : new-project.sh utilise find au lieu de comptes hardcodes (#33)
+- **Commandes namespace** : toutes les references utilisent /category:command au lieu de /category-command (#39)
+
+### Corrige
+- **2 tests en echec** : smoke test CLAUDE.md > 100 lignes (ajuste a 30), update.sh @imports skip detection (#32)
+- **detect_database()** : utilise find -exec au lieu de xargs fragile (#39)
+- **copy_socle_dir()** : protection contre les repertoires vides (glob safety) (#39)
+- **generate_smart_claude_md** : extraction test tools reecrite (etait pipe casse) (#39)
+
+### Supprime
+- **4 specs archivees** : agent-teams, opnsense-iac, doc-improvements, claude-code-sync-2026 deplaces vers specs/archived/ (#33)
+- **~38,000 lignes de duplication** : methodologie retiree des commands et agents (vit dans les skills) (#35, #36)
+
+### Securite
+- **5 vulnerabilites corrigees** : injection node -e, injection sed, mktemp sans verification, injection awk, quoting variables (#38, #39)
+- **Documentation risques depots tiers** : 3 vecteurs d'attaque (hooks, MCP, env vars) documentes dans security.md (#30)
+- **--restore option** : update.sh permet de restaurer depuis un backup (#38)
+
+---
+
 ## [1.25.1] - 2026-02-06
 
 ### Ajoute
