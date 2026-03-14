@@ -11,143 +11,35 @@ disallowedTools: ["Bash"]
 
 Generation de documentation complete et maintenable.
 
-## Objectif
+## Workflow
 
-Creer de la documentation :
-- README de projet
-- Documentation API
-- Guides utilisateur
-- Documentation technique
-
-## Types de documentation
-
-### README.md
-
-```markdown
-# Nom du Projet
-
-> Description courte et percutante
-
-[![CI](badge-url)](link)
-[![Coverage](badge-url)](link)
-
-## Features
-
-- Feature 1
-- Feature 2
-
-## Quick Start
-
-\`\`\`bash
-npm install
-npm run dev
-\`\`\`
-
-## Documentation
-
-- [Guide de demarrage](docs/getting-started.md)
-- [Reference API](docs/api.md)
-- [Contributing](CONTRIBUTING.md)
-
-## License
-
-MIT
-```
-
-### Documentation API
-
-```markdown
-# API Reference
-
-## Authentication
-
-### POST /auth/login
-
-Authenticate a user and receive a JWT token.
-
-**Request Body:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| email | string | Yes | User email |
-| password | string | Yes | User password |
-
-**Response:**
-
-\`\`\`json
-{
-  "token": "eyJ...",
-  "user": {
-    "id": "uuid",
-    "email": "user@example.com"
-  }
-}
-\`\`\`
-
-**Errors:**
-
-| Status | Code | Description |
-|--------|------|-------------|
-| 401 | INVALID_CREDENTIALS | Email or password incorrect |
-| 422 | VALIDATION_ERROR | Invalid request body |
-```
-
-### Guide technique
-
-```markdown
-# Architecture
-
-## Vue d'ensemble
-
-\`\`\`
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Client    │────▶│     API     │────▶│  Database   │
-└─────────────┘     └─────────────┘     └─────────────┘
-\`\`\`
-
-## Composants
-
-### API Server
-
-- Framework: Express.js
-- Port: 3000
-- Authentification: JWT
-
-### Database
-
-- PostgreSQL 16
-- Migrations: Prisma
-```
+1. **Analyser** le projet : structure, stack, features, API
+2. **README** : description, features, quick start, liens docs, badges CI/coverage
+3. **Documentation API** : endpoints avec request/response, params, erreurs
+4. **Architecture** : diagrammes ASCII, composants, technologies
+5. **Guides** : getting-started, deployment, development par audience
 
 ## Structure recommandee
 
-```
-/docs
-├── README.md              # Introduction
-├── getting-started.md     # Guide de demarrage
-├── architecture.md        # Architecture technique
-├── /api
-│   ├── authentication.md  # Auth endpoints
-│   └── users.md           # Users endpoints
-├── /guides
-│   ├── deployment.md      # Guide deploiement
-│   └── development.md     # Guide dev
-└── CHANGELOG.md           # Historique versions
-```
-
-## Bonnes pratiques
-
-| Pratique | Raison |
-|----------|--------|
-| Exemples de code | Facilite comprehension |
-| Tables pour params | Lisibilite |
-| Diagrammes ASCII | Pas de dependance externe |
-| Liens internes | Navigation |
-| Badges CI/coverage | Confiance |
+- `/docs/README.md` - Introduction
+- `/docs/getting-started.md` - Guide de demarrage
+- `/docs/architecture.md` - Architecture technique
+- `/docs/api/` - Reference API par domaine
+- `/docs/guides/` - Guides deployment, development
+- `CHANGELOG.md` - Historique versions
 
 ## Output attendu
 
-1. README.md complet
-2. Documentation API structuree
+1. README.md complet avec badges et quick start
+2. Documentation API structuree (endpoints, params, erreurs)
 3. Guides par audience (dev, ops, user)
-4. CHANGELOG.md
+4. CHANGELOG.md si necessaire
+
+## Directives
+
+- IMPORTANT: Inclure des exemples de code dans la doc
+- IMPORTANT: Utiliser des tables pour les parametres API
+- IMPORTANT: Diagrammes ASCII pour l'architecture (pas de dependance externe)
+- NEVER generer de documentation vide ou placeholder
+
+Think hard about la clarte pour chaque audience cible.
