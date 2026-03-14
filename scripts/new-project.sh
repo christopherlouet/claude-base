@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-VERSION="1.1.0"
+VERSION=$(cat "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/VERSION" 2>/dev/null || echo "1.1.0")
 
 # Charger la librairie commune
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -560,17 +560,14 @@ detect_neovim() {
 detect_database() {
     local dir="$1"
 
-    local db_files
-    db_files=$(find "$dir" -maxdepth 2 \( -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name ".env*" -o -name "docker-compose*" \) -type f 2>/dev/null | head -20)
-    [[ -n "$db_files" ]] || return 0
-
-    if echo "$db_files" | xargs grep -lq "postgres\|postgresql" 2>/dev/null; then
+    # Use -exec grep instead of xargs to handle filenames with spaces safely
+    if find "$dir" -maxdepth 2 \( -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name ".env*" -o -name "docker-compose*" \) -type f -exec grep -lq "postgres\|postgresql" {} + 2>/dev/null; then
         DETECTED_DEPENDENCIES+=("PostgreSQL")
     fi
-    if echo "$db_files" | xargs grep -lq "mongodb\|mongo" 2>/dev/null; then
+    if find "$dir" -maxdepth 2 \( -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name ".env*" -o -name "docker-compose*" \) -type f -exec grep -lq "mongodb\|mongo" {} + 2>/dev/null; then
         DETECTED_DEPENDENCIES+=("MongoDB")
     fi
-    if echo "$db_files" | xargs grep -lq "redis" 2>/dev/null; then
+    if find "$dir" -maxdepth 2 \( -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name ".env*" -o -name "docker-compose*" \) -type f -exec grep -lq "redis" {} + 2>/dev/null; then
         DETECTED_DEPENDENCIES+=("Redis")
     fi
 }
@@ -985,11 +982,14 @@ copy_socle_dir() {
     local label="$3"
 
     if [[ -d "$SOCLE_DIR/$subdir" ]]; then
-        debug "Copie des $label..."
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/$subdir/* → $target_dir/$subdir/"
-        else
-            cp -r "$SOCLE_DIR/$subdir/"* "$target_dir/$subdir/"
+        # Check directory is not empty before copying
+        if find "$SOCLE_DIR/$subdir" -maxdepth 1 -mindepth 1 -print -quit | grep -q .; then
+            debug "Copie des $label..."
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/$subdir/* → $target_dir/$subdir/"
+            else
+                cp -r "$SOCLE_DIR/$subdir/"* "$target_dir/$subdir/"
+            fi
         fi
     fi
 }
@@ -1050,6 +1050,11 @@ install_claude_files() {
         else
             cp -r "$SOCLE_DIR/docs/guides/"* "$target_dir/docs/guides/"
         fi
+    fi
+
+    # Copier .mcp.env.example si disponible
+    if [[ -f "$SOCLE_DIR/.mcp.env.example" ]] && [[ ! -f "$target_dir/.mcp.env.example" ]]; then
+        copy_file "$SOCLE_DIR/.mcp.env.example" "$target_dir/"
     fi
 
     success "Commandes, skills, agents, rules, styles, templates et docs copiés"
@@ -1168,7 +1173,9 @@ print_simple_summary() {
     echo "  - .claude/commands/      ($(count_commands_cached) commandes)"
     echo "  - .claude/skills/        ($(count_skills_cached) skills)"
     echo "  - .claude/agents/        ($(count_agents_cached) agents)"
-    echo "  - .claude/rules/         (règles contextuelles)"
+    local rules_count
+    rules_count=$(find "$target_dir/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    echo "  - .claude/rules/         ($rules_count règles contextuelles)"
     echo "  - .claude/output-styles/ (styles de sortie)"
     echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
     echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
@@ -1185,7 +1192,7 @@ print_simple_summary() {
     echo ""
 
     info "Commandes disponibles:"
-    echo "  /explore, /plan, /commit, etc."
+    echo "  /work:work-explore, /work:work-plan, /work:work-commit, etc."
     echo ""
 }
 
@@ -1434,8 +1441,16 @@ EOF
             echo "- **Langage**: TypeScript" >> "$output_file"
         fi
 
-        if [[ " ${DETECTED_DEPENDENCIES[*]} " =~ " Jest " ]] || [[ " ${DETECTED_DEPENDENCIES[*]} " =~ " Vitest " ]]; then
-            echo "- **Tests**: ${DETECTED_DEPENDENCIES[*]}" | grep -oE "(Jest|Vitest|Cypress|Playwright)" | tr '\n' ', ' | sed 's/,$/\n/' >> "$output_file" 2>/dev/null || true
+        # Extract test frameworks from detected dependencies
+        local test_tools=()
+        for dep in "${DETECTED_DEPENDENCIES[@]}"; do
+            case "$dep" in
+                Jest|Vitest|Cypress|Playwright) test_tools+=("$dep") ;;
+            esac
+        done
+        if [[ ${#test_tools[@]} -gt 0 ]]; then
+            local IFS=','
+            echo "- **Tests**: ${test_tools[*]}" >> "$output_file"
         fi
 
         echo "" >> "$output_file"
@@ -1476,12 +1491,12 @@ EOF
     cat >> "$output_file" << 'EOF'
 | Catégorie | Commandes |
 |-----------|-----------|
-| **Workflow** | \`/work-explore\`, \`/work-plan\`, \`/work-commit\`, \`/work-pr\` |
-| **Développement** | \`/dev-tdd\`, \`/dev-test\`, \`/dev-debug\`, \`/dev-refactor\`, \`/dev-api\` |
-| **Qualité** | \`/qa-review\`, \`/qa-security\`, \`/qa-perf\`, \`/qa-a11y\` |
-| **Ops** | \`/ops-hotfix\`, \`/ops-release\`, \`/ops-migrate\`, \`/ops-docker\` |
+| **Workflow** | \`/work:work-explore\`, \`/work:work-plan\`, \`/work:work-commit\`, \`/work:work-pr\` |
+| **Développement** | \`/dev:dev-tdd\`, \`/dev:dev-test\`, \`/dev:dev-debug\`, \`/dev:dev-refactor\`, \`/dev:dev-api\` |
+| **Qualité** | \`/qa:qa-review\`, \`/qa:qa-security\`, \`/qa:qa-perf\`, \`/qa:qa-a11y\` |
+| **Ops** | \`/ops:ops-hotfix\`, \`/ops:ops-release\`, \`/ops:ops-migrate\`, \`/ops:ops-docker\` |
 
-Utilisez \`/doc-onboard\` pour découvrir tous les agents disponibles.
+Utilisez \`/doc:doc-onboard\` pour découvrir tous les agents disponibles.
 
 EOF
 
@@ -2184,7 +2199,7 @@ print_next_steps() {
     fi
 
     echo -e "  ${CYAN}Commandes disponibles:${NC}"
-    echo -e "     /work-explore, /work-plan, /work-commit, etc."
+    echo -e "     /work:work-explore, /work:work-plan, /work:work-commit, etc."
     echo ""
     echo -e "${BOLD}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
