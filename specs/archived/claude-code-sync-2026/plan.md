@@ -2,7 +2,7 @@
 
 **Branche**: `feature/claude-code-sync-2026`
 **Date**: 2026-01-30
-**Statut**: Draft
+**Statut**: Archived
 
 ---
 
