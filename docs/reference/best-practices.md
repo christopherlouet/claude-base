@@ -48,6 +48,18 @@ Voir `docs/guides/PROMPTING-GUIDE.md` pour le guide complet.
 
 Commande: `/effort low`, `/effort medium`, `/effort high`.
 
+## Memoire Automatique (CLI 2.1.76+)
+
+Claude Code memorise automatiquement preferences, decisions et contexte projet dans `~/.claude/memory/`.
+
+| Memoriser (auto) | CLAUDE.md (git) | Rules (auto-activees) |
+|-------------------|-----------------|----------------------|
+| Preferences personnelles | Conventions projet | Regles par langage |
+| Decisions d'architecture | Workflow obligatoire | Patterns de code |
+| Contexte equipe | References documentation | Checklist verification |
+
+Ne pas dupliquer : si c'est dans CLAUDE.md, pas besoin de le memoriser. Utiliser "remember that..." pour forcer une memorisation explicite.
+
 ## Sessions Paralleles
 
 > "The single biggest productivity unlock." -- Boris Cherny
