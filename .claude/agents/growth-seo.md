@@ -2,7 +2,7 @@
 name: growth-seo
 description: Audit SEO et recommandations d'optimisation. Utiliser pour ameliorer le referencement, identifier les problemes techniques SEO, ou definir une strategie de contenu.
 tools: Read, Grep, Glob, WebFetch
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: Edit, Write, Bash, NotebookEdit
 ---

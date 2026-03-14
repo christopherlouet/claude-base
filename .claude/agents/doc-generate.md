@@ -2,7 +2,7 @@
 name: doc-generate
 description: Generation de documentation technique. Utiliser pour creer README, guides, references API, et documentation utilisateur.
 tools: Read, Grep, Glob, Edit, Write
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: ["Bash"]
 ---

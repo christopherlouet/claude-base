@@ -67,7 +67,7 @@ ${BOLD}USAGE${NC}
 
 ${BOLD}DESCRIPTION${NC}
     Crée un nouveau projet ou configure un projet existant avec Claude Code.
-    Installe 118 commandes, 56 agents et 40 skills pour le workflow Explore → Plan → Code → Commit.
+    Installe commandes, agents et skills pour le workflow Explore → Plan → Code → Commit.
 
 ${BOLD}ARGUMENTS${NC}
     CHEMIN              Chemin vers un projet existant à configurer (optionnel)
@@ -135,9 +135,9 @@ ${BOLD}TYPES DE PROJET${NC}
     generic     Autre / Générique
 
 ${BOLD}FICHIERS INSTALLÉS${NC}
-    .claude/commands/       118 commandes Claude Code
-    .claude/skills/         40 skills spécialisés
-    .claude/agents/         56 agents avec contexte isolé
+    .claude/commands/       Commandes Claude Code
+    .claude/skills/         Skills spécialisés
+    .claude/agents/         Agents avec contexte isolé
     .claude/rules/          Règles contextuelles par path
     .claude/output-styles/  Styles de sortie
     .claude/templates/      Templates (spec, Proxmox, etc.)
@@ -1148,9 +1148,9 @@ print_simple_summary() {
     echo ""
 
     info "Fichiers installés:"
-    echo "  - .claude/commands/      (118 commandes)"
+    echo "  - .claude/commands/      ($(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ') commandes)"
     echo "  - .claude/skills/        ($(count_skills "$SOCLE_DIR") skills)"
-    echo "  - .claude/agents/        (56 agents)"
+    echo "  - .claude/agents/        ($(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ') agents)"
     echo "  - .claude/rules/         (règles contextuelles)"
     echo "  - .claude/output-styles/ (styles de sortie)"
     echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
@@ -1451,9 +1451,12 @@ EOF
 EOF
 
     # Section Agents Disponibles
+    local _cmd_count _agent_count
+    _cmd_count=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    _agent_count=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    echo "## Agents Disponibles (${_cmd_count} commandes, ${_agent_count} agents)" >> "$output_file"
+    echo "" >> "$output_file"
     cat >> "$output_file" << 'EOF'
-## Agents Disponibles (118 commandes, 56 agents)
-
 | Catégorie | Commandes |
 |-----------|-----------|
 | **Workflow** | \`/work-explore\`, \`/work-plan\`, \`/work-commit\`, \`/work-pr\` |
@@ -1900,7 +1903,11 @@ create_project() {
             cp -r "$SOCLE_DIR/.claude/skills/"* "$TARGET_DIR/.claude/skills/"
         fi
     fi
-    success "Commandes Claude installées (118 commandes, 56 agents, 40 skills)"
+    local _cmd_ct _agent_ct _skill_ct
+    _cmd_ct=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    _agent_ct=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    _skill_ct=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    success "Commandes Claude installées (${_cmd_ct} commandes, ${_agent_ct} agents, ${_skill_ct} skills)"
 
     # Générer ou copier CLAUDE.md
     if [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then
