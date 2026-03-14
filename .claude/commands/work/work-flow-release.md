@@ -1,436 +1,49 @@
 # Agent WORK-FLOW-RELEASE
 
-Workflow complet pour préparer et publier une release.
+Workflow complet pour preparer et publier une release.
 
 ## Contexte
 $ARGUMENTS
 
-## Workflow automatisé
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    WORKFLOW RELEASE                          │
-├─────────────────────────────────────────────────────────────┤
-│  0. BRANCH    → Créer la branche release                    │
-│  1. AUDIT     → Vérifier la qualité du code                 │
-│  2. CHANGELOG → Mettre à jour le changelog                  │
-│  3. VERSION   → Bump de version                             │
-│  4. TEST      → Tests complets                              │
-│  5. BUILD     → Build de production                         │
-│  6. TAG       → Tag et release notes                        │
-│  7. DEPLOY    → Déploiement                                 │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## ÉTAPE 0/8 : BRANCHE
-
-### Objectif
-Créer une branche release dédiée pour préparer sans impacter main.
-
-### Actions
-1. Vérifier qu'on n'est pas déjà sur une branche release
-2. Créer la branche depuis main/develop
-
-```bash
-# S'assurer d'être à jour
-git fetch origin
-BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
-git checkout "$BASE_BRANCH" && git pull --rebase
-
-# Créer la branche release
-git checkout -b release/[version-from-ARGUMENTS]
-```
-
-### Checklist branche
-- [ ] Branche créée depuis main à jour
-- [ ] Nom descriptif (release/vX.Y.Z)
-
----
-
-## ÉTAPE 1/8 : AUDIT QUALITÉ
-
-### Objectif
-S'assurer que le code est prêt pour la release.
-
-### Checks à effectuer
-```bash
-# Tests
-npm test
-
-# Lint
-npm run lint
-
-# Types
-npm run typecheck
-
-# Sécurité
-npm audit
-
-# Build
-npm run build
-```
-
-### Critères de go/no-go
-
-| Critère | Seuil | Status |
-|---------|-------|--------|
-| Tests | 100% pass | |
-| Coverage | > 80% | |
-| Lint | 0 errors | |
-| Types | 0 errors | |
-| Audit | 0 critical | |
-| Build | Success | |
-
-### Checklist audit
-- [ ] Tous les tests passent
-- [ ] Couverture suffisante
-- [ ] Pas d'erreur lint
-- [ ] Pas d'erreur TypeScript
-- [ ] Pas de vulnérabilité critique
-- [ ] Build réussi
-
----
-
-## ÉTAPE 2/8 : CHANGELOG
-
-### Objectif
-Documenter tous les changements depuis la dernière release.
-
-### Structure
-```markdown
-# Changelog
-
-## [X.Y.Z] - YYYY-MM-DD
-
-### Added
-- Nouvelle fonctionnalité A
-- Nouvelle fonctionnalité B
-
-### Changed
-- Modification de X
-- Amélioration de Y
-
-### Fixed
-- Correction du bug #123
-- Fix de la régression #456
-
-### Deprecated
-- Feature Z sera retirée en vX.Y.Z
-
-### Removed
-- Suppression de la feature obsolète
-
-### Security
-- Correction de la faille CVE-XXXX
-```
-
-### Commande utile
-```bash
-# Lister les commits depuis le dernier tag
-git log $(git describe --tags --abbrev=0)..HEAD --oneline
-```
-
-### Checklist changelog
-- [ ] Tous les changements listés
-- [ ] Catégorisation correcte
-- [ ] Breaking changes signalés
-- [ ] Liens vers issues/PRs
-
----
-
-## ÉTAPE 3/8 : VERSIONING
-
-### Objectif
-Déterminer et appliquer le bon numéro de version.
-
-### Semantic Versioning
-```
-MAJOR.MINOR.PATCH
-
-MAJOR → Breaking changes
-MINOR → Nouvelles features (backward compatible)
-PATCH → Bug fixes (backward compatible)
-```
-
-### Arbre de décision
-```
-         Y a-t-il des breaking changes ?
-                     │
-           ┌─────────┴─────────┐
-           │                   │
-          Oui                 Non
-           │                   │
-      MAJOR++            Nouvelles features ?
-      (X.0.0)                  │
-                     ┌─────────┴─────────┐
-                     │                   │
-                    Oui                 Non
-                     │                   │
-                 MINOR++             PATCH++
-                 (X.Y.0)             (X.Y.Z)
-```
-
-### Commandes
-```bash
-# Patch release (bug fixes)
-npm version patch
-
-# Minor release (features)
-npm version minor
-
-# Major release (breaking changes)
-npm version major
-
-# Pre-release
-npm version prerelease --preid=beta
-```
-
-### Checklist version
-- [ ] Type de release déterminé
-- [ ] Version cohérente avec les changements
-- [ ] package.json mis à jour
-- [ ] Autres fichiers de version mis à jour
-
----
-
-## ÉTAPE 4/8 : TESTS COMPLETS
-
-### Objectif
-Validation complète avant release.
-
-### Niveaux de tests
-```
-┌─────────────────────────────────┐
-│        Tests E2E                │  ← Scénarios utilisateur
-├─────────────────────────────────┤
-│    Tests d'intégration          │  ← Composants ensemble
-├─────────────────────────────────┤
-│      Tests unitaires            │  ← Fonctions isolées
-└─────────────────────────────────┘
-```
-
-### Commandes
-```bash
-# Tests unitaires
-npm test
-
-# Tests d'intégration
-npm run test:integration
-
-# Tests E2E
-npm run test:e2e
-
-# Tous les tests avec couverture
-npm run test:coverage
-```
-
-### Tests manuels critiques
-- [ ] Flow principal fonctionne
-- [ ] Authentification OK
-- [ ] Paiement (si applicable) OK
-- [ ] Responsive/Mobile OK
-
-### Checklist tests
-- [ ] Tests unitaires : 100% pass
-- [ ] Tests intégration : 100% pass
-- [ ] Tests E2E : 100% pass
-- [ ] Tests manuels validés
-- [ ] Coverage acceptable
-
----
-
-## ÉTAPE 5/8 : BUILD PRODUCTION
-
-### Objectif
-Générer les artifacts de production.
-
-### Process
-```bash
-# 1. Clean
-rm -rf dist/ build/
-
-# 2. Build production
-NODE_ENV=production npm run build
-
-# 3. Vérifier la taille du bundle
-npm run analyze # si disponible
-
-# 4. Test du build
-npm run preview # ou serve
-```
-
-### Vérifications
-| Check | Attendu | Actuel |
-|-------|---------|--------|
-| Build success | ✓ | |
-| Bundle size | < X MB | |
-| No warnings | ✓ | |
-| Assets générés | ✓ | |
-
-### Checklist build
-- [ ] Build réussi sans erreur
-- [ ] Taille de bundle acceptable
-- [ ] Assets correctement générés
-- [ ] Variables d'env production
-
----
-
-## ÉTAPE 6/8 : TAG & RELEASE
-
-### Objectif
-Créer le tag Git et les release notes.
-
-### Création du tag
-```bash
-# Tag annoté avec message
-git tag -a v1.2.3 -m "Release v1.2.3"
-
-# Push du tag
-git push origin v1.2.3
-```
-
-### Release Notes (GitHub)
-```markdown
-# Release v1.2.3
-
-## Highlights
-- Feature majeure 1
-- Amélioration performance
-- Fix critique
-
-## What's Changed
-[Changelog complet]
-
-## Breaking Changes
-[Si applicable]
-
-## Migration Guide
-[Si breaking changes]
-
-## Contributors
-@contributor1, @contributor2
-
-## Full Changelog
-https://github.com/org/repo/compare/v1.2.2...v1.2.3
-```
-
-### Commande GitHub CLI
-```bash
-gh release create v1.2.3 \
-  --title "Release v1.2.3" \
-  --notes-file RELEASE_NOTES.md
-```
-
-### Checklist tag
-- [ ] Tag créé
-- [ ] Tag pushé
-- [ ] Release créée sur GitHub
-- [ ] Release notes complètes
-- [ ] Assets attachés (si applicable)
-
----
-
-## ÉTAPE 7/8 : DÉPLOIEMENT
-
-### Objectif
-Déployer en production.
-
-### Stratégie de déploiement
-```
-      ┌─────────────┐
-      │   Staging   │  ← Validation finale
-      └──────┬──────┘
-             │
-      ┌──────▼──────┐
-      │  Canary     │  ← 5% du trafic
-      │  (optionnel)│
-      └──────┬──────┘
-             │
-      ┌──────▼──────┐
-      │ Production  │  ← 100% du trafic
-      └─────────────┘
-```
-
-### Checklist pré-déploiement
-- [ ] Backup effectué
-- [ ] Rollback plan prêt
-- [ ] Monitoring alertes configurées
-- [ ] Équipe notifiée
-
-### Déploiement
-```bash
-# Selon votre infra
-npm run deploy:production
-# ou
-git push production main
-# ou
-kubectl apply -f k8s/
-```
-
-### Vérifications post-déploiement
-- [ ] Application accessible
-- [ ] Health checks OK
-- [ ] Pas d'erreurs dans les logs
-- [ ] Métriques normales
-- [ ] Smoke tests passent
-
----
-
-## Output final attendu
-
-### Release Summary
-```
-✅ RELEASE v[X.Y.Z] TERMINÉE
-
-Version: [X.Y.Z]
-Date: [YYYY-MM-DD]
-Type: [Major/Minor/Patch]
-
-Changements:
-- [N] features
-- [N] fixes
-- [N] improvements
-
-Tests: ✅ All passed
-Build: ✅ Success
-Deploy: ✅ Production
-
-Release: https://github.com/org/repo/releases/tag/v[X.Y.Z]
-```
-
-### Communication
-```markdown
-**Release v[X.Y.Z] déployée !**
-
-Nouveautés :
-- Feature 1
-- Feature 2
-
-Corrections :
-- Fix 1
-- Fix 2
-
-Documentation : [lien]
-```
-
-## Agents liés
-
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/qa:qa-audit` | Étape 1 - Audit qualité |
-| `/doc:doc-changelog` | Étape 2 - Changelog |
-| `/dev:dev-test` | Étape 4 - Tests complets |
-| `/ops:ops-release` | Alternative simplifiée |
-| `/ops:ops-monitoring` | Post-déploiement |
+## Objectif
+
+Executer le cycle complet de release : branche, audit qualite, changelog,
+versioning semantique, tests complets, build production, tag, deploiement.
+
+## Workflow
+
+- **BRANCH** : Creer branche `release/vX.Y.Z` depuis main a jour
+- **AUDIT** : Tests, lint, typecheck, `npm audit`, build (tous doivent passer)
+- **CHANGELOG** : Lister les changements depuis le dernier tag (Added, Changed, Fixed, Deprecated, Removed, Security)
+- **VERSION** : Semantic Versioning (breaking = MAJOR, features = MINOR, fixes = PATCH)
+- **TESTS** : Validation complete (unitaires, integration, E2E, manuels)
+- **BUILD** : Build production, verifier taille bundle et assets
+- **TAG** : Tag annote `git tag -a vX.Y.Z`, push, release GitHub avec notes
+- **DEPLOY** : Deploiement production avec rollback plan pret
+
+## Output attendu
+
+1. **Audit** : Rapport qualite go/no-go
+2. **Changelog** : CHANGELOG.md mis a jour
+3. **Release** : Tag + release notes sur GitHub
+4. **Deploy** : Application deployee, monitoring OK
+
+## Agents lies
+
+| Agent | Usage |
+|-------|-------|
+| `/qa:qa-audit` | Audit qualite |
+| `/doc:doc-changelog` | Changelog |
+| `/dev:dev-test` | Tests complets |
+| `/ops:ops-release` | Alternative simplifiee |
+| `/ops:ops-monitoring` | Post-deploiement |
 
 ---
 
 IMPORTANT: Ne jamais skip les tests avant une release.
 
-YOU MUST avoir un plan de rollback prêt avant de déployer.
+YOU MUST avoir un plan de rollback pret avant de deployer.
 
-NEVER déployer un vendredi soir (sauf hotfix critique).
+NEVER deployer un vendredi soir (sauf hotfix critique).
 
 Think hard sur l'impact de chaque changement pour les utilisateurs.
