@@ -319,12 +319,11 @@ teardown() {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # S'assurer que les @imports sont déjà là
-    if ! grep -q "@docs/reference/" "$TEST_DIR/CLAUDE.md"; then
-        # Ajouter un @import pour le test
-        sed -i '1a @docs/reference/commands.md' "$TEST_DIR/CLAUDE.md"
-    fi
+    # Premier run: ajoute les @imports manquants
+    run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
 
+    # Second run: tous les @imports sont présents, doit skip
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
