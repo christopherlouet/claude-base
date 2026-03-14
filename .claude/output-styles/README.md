@@ -16,6 +16,8 @@ Les **Output Styles** permettent de personnaliser le format des reponses de Clau
 | **emoji** | `/output-style emoji` | Enrichi d'emojis | Presentations, documentation |
 | **minimal** | `/output-style minimal` | Epure, sans decoration | Terminal, logs, CI/CD |
 | **structured** | `/output-style structured` | Structure ASCII | Rapports, analyses |
+| **debug** | `/output-style debug` | Diagnostic methodique | Debugging, troubleshooting |
+| **metrics** | `/output-style metrics` | Chiffres et benchmarks | Performance, rapports |
 
 ## Matrice de Choix
 
@@ -39,7 +41,8 @@ Les **Output Styles** permettent de personnaliser le format des reponses de Clau
 | Documentation README | emoji |
 | Rapport d'audit | structured |
 | Script CI/CD | minimal |
-| Debug complexe | explanatory |
+| Debug complexe | debug |
+| Rapport de performance | metrics |
 | Onboarding nouveau dev | explanatory |
 
 ### Par contexte
@@ -53,6 +56,8 @@ Les **Output Styles** permettent de personnaliser le format des reponses de Clau
 | Demo client | emoji |
 | Logs serveur | minimal |
 | Rapport de sprint | structured |
+| Troubleshooting | debug |
+| Benchmarks | metrics |
 
 ## Exemples Comparatifs
 
