@@ -36,6 +36,18 @@ Techniques: "Grill me on these changes", "Prove to me this works", "Knowing ever
 
 Voir `docs/guides/PROMPTING-GUIDE.md` pour le guide complet.
 
+## Effort Levels
+
+> Adapter le niveau de raisonnement a la tache.
+
+| Tache | Effort | Pourquoi |
+|-------|--------|----------|
+| Explorer du code, lire des fichiers | `low` | Pas besoin de raisonnement profond |
+| Implementer une feature standard | `medium` | Equilibre vitesse/qualite |
+| Concevoir une architecture, auditer | `high` | Raisonnement approfondi necessaire |
+
+Commande: `/effort low`, `/effort medium`, `/effort high`.
+
 ## Sessions Paralleles
 
 > "The single biggest productivity unlock." -- Boris Cherny
