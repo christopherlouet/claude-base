@@ -18,14 +18,29 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | `Setup` | command | Initialisation (`init`) et maintenance (`maintenance`) du projet |
 | `Notification` | command | Notifications (`permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`) |
 | `PreCompact` | command | Avant compaction du contexte (matchers: `manual`, `auto`) |
+| `PostCompact` | command | Apres compaction du contexte |
 | `SessionEnd` | command | Fin de session |
+| `TeammateIdle` | command | Quand un agent teammate devient inactif (Agent Teams) |
+| `TaskCompleted` | command | Quand une tache est marquee terminee |
+| `InstructionsLoaded` | command | Quand CLAUDE.md et rules sont charges |
+| `Elicitation` | command | Quand un serveur MCP demande un input structure |
+| `ElicitationResult` | command | Quand l'utilisateur repond a une Elicitation MCP |
 
 ## Types de hooks
 
 | Type | Description |
 |------|-------------|
-| `command` | Exécute un script bash (déterministe, rapide) |
-| `prompt` | Évalue via un LLM Haiku (contextuel, intelligent) - pour `Stop`, `SubagentStop`, `PreToolUse` |
+| `command` | Execute un script bash (deterministe, rapide) |
+| `prompt` | Evalue via un LLM Haiku (contextuel, intelligent) - pour `Stop`, `SubagentStop`, `PreToolUse` |
+| `http` | Envoie un POST JSON vers une URL (webhook externe) - CLI 2.1.70+ |
+
+## Proprietes des hooks
+
+| Propriete | Description |
+|-----------|-------------|
+| `async` | `true` pour executer en arriere-plan sans bloquer (CLI 2.1.70+) |
+| `onFailure` | `"block"` pour bloquer, `"ignore"` pour continuer |
+| `timeout` | Timeout en millisecondes |
 
 ## Hooks configurés
 
@@ -57,6 +72,14 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | **SubagentStop** | SubagentStop | Log la fin des sub-agents |
 | **SessionEnd** | SessionEnd | Log la fin de session |
 | **PreCompact** | PreCompact | Log avant compaction du contexte |
+| **PostCompact** | PostCompact | Log apres compaction du contexte (async) |
+| **TeammateIdle** | TeammateIdle | Log quand un teammate devient inactif (async) |
+| **TaskCompleted** | TaskCompleted | Log quand une tache est terminee (async) |
+| **InstructionsLoaded** | InstructionsLoaded | Log le chargement des instructions (async) |
+| **Elicitation** | Elicitation | Log les demandes MCP Elicitation (async) |
+| **ElicitationResult** | ElicitationResult | Log les reponses MCP Elicitation (async) |
+| **Check .env** | SessionStart | Verifie que .env est dans .gitignore |
+| **Warning hooks tiers** | SessionStart | Avertit si des hooks personnalises sont detectes |
 
 ## Variables d'environnement des hooks
 

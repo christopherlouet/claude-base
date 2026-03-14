@@ -80,6 +80,26 @@
             "timeout": 3000
           }
         ]
+      },
+      {
+        "description": "Verifier que .env est dans .gitignore si present",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [ -f .env ] && [ -f .gitignore ]; then if ! grep -qE \"^\\.env$|^\\*\\.env$\" .gitignore; then echo \"[SECURITY] .env existe mais n est pas dans .gitignore! Ajoutez-le pour eviter de commiter des secrets.\"; fi; fi'",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "description": "Avertir si le projet contient des hooks personnalises",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [ -f .claude/settings.local.json ]; then echo \"[INFO] Hooks personnalises detectes dans .claude/settings.local.json - verifiez leur contenu si ce depot n est pas de confiance.\"; fi'",
+            "timeout": 3000
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -322,7 +342,8 @@
           {
             "type": "command",
             "command": "bash -c 'echo \"[NOTIFICATION] Permission demandee: $(echo $HOOK_INPUT | head -c 200)\" >> /tmp/claude-notifications.log 2>/dev/null || true'",
-            "timeout": 5000
+            "timeout": 5000,
+            "async": true
           }
         ]
       },
@@ -333,7 +354,8 @@
           {
             "type": "command",
             "command": "bash -c 'echo \"[IDLE] Claude attend une reponse utilisateur\" >> /tmp/claude-notifications.log 2>/dev/null || true'",
-            "timeout": 5000
+            "timeout": 5000,
+            "async": true
           }
         ]
       }
@@ -345,7 +367,34 @@
           {
             "type": "command",
             "command": "bash -c 'echo \"[SUBAGENT] Agent termine\" >> /tmp/claude-agents.log 2>/dev/null || true'",
-            "timeout": 5000
+            "timeout": 5000,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "description": "Logger quand un agent teammate devient inactif",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[TEAM] Teammate idle $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-agents.log 2>/dev/null || true'",
+            "timeout": 5000,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "description": "Logger quand une tache est terminee",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[TASK] Task completed $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "timeout": 5000,
+            "async": true
           }
         ]
       }
@@ -357,7 +406,8 @@
           {
             "type": "command",
             "command": "bash -c 'echo \"[SESSION] Fin de session $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
-            "timeout": 5000
+            "timeout": 5000,
+            "async": true
           }
         ]
       }
@@ -369,7 +419,60 @@
           {
             "type": "command",
             "command": "bash -c 'echo \"[COMPACT] Compaction du contexte $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
-            "timeout": 5000
+            "timeout": 5000,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "description": "Logger apres compaction du contexte",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[COMPACT] Post-compaction $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "timeout": 5000,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "InstructionsLoaded": [
+      {
+        "description": "Logger le chargement des instructions (CLAUDE.md et rules)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[INIT] Instructions loaded $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "timeout": 5000,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Elicitation": [
+      {
+        "description": "Logger les demandes d'input MCP Elicitation",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[MCP] Elicitation request $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-mcp.log 2>/dev/null || true'",
+            "timeout": 5000,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "ElicitationResult": [
+      {
+        "description": "Logger les reponses d'Elicitation MCP",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[MCP] Elicitation result $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-mcp.log 2>/dev/null || true'",
+            "timeout": 5000,
+            "async": true
           }
         ]
       }

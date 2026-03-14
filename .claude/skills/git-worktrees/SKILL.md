@@ -238,6 +238,34 @@ osascript -e 'display notification "Claude needs input" with title "Claude Code"
 notify-send "Claude Code" "Claude needs input"
 ```
 
+## Sparse Paths pour Monorepos (CLI 2.1.76+)
+
+Configuration `worktree.sparsePaths` pour limiter les fichiers inclus dans un worktree. Utile pour les monorepos volumineux:
+
+```json
+// Dans .claude/settings.json
+{
+  "worktree": {
+    "sparsePaths": [
+      "packages/frontend/**",
+      "packages/shared/**",
+      "package.json",
+      "tsconfig.json"
+    ]
+  }
+}
+```
+
+Exemples de configurations courantes:
+
+| Contexte | sparsePaths |
+|----------|-------------|
+| Frontend only | `packages/frontend/**`, `packages/shared/**`, `*.json` |
+| Backend only | `packages/api/**`, `packages/shared/**`, `*.json` |
+| Full-stack | `packages/frontend/**`, `packages/api/**`, `packages/shared/**` |
+
+Avantages: operations plus rapides, moins de bruit dans l'exploration, contexte Claude Code plus cible.
+
 ## Limitations
 
 - Une branche ne peut etre utilisee que dans UN worktree a la fois
