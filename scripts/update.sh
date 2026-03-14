@@ -177,6 +177,8 @@ show_changelog() {
 # Parsing des arguments
 # =============================================================================
 
+# shellcheck disable=SC2034
+# UPDATE_* and UPGRADE_* variables are used via ${!flag_name} indirection in main()
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -225,34 +227,13 @@ parse_args() {
                 REMOVE_ORPHANS=true
                 shift
                 ;;
-            --settings)
-                UPDATE_SETTINGS=true
-                shift
-                ;;
-            --skills)
-                UPDATE_SKILLS=true
-                shift
-                ;;
-            --agents)
-                UPDATE_AGENTS=true
-                shift
-                ;;
-            --rules)
-                UPDATE_RULES=true
-                shift
-                ;;
-            --styles)
-                UPDATE_STYLES=true
-                shift
-                ;;
-            --templates)
-                UPDATE_TEMPLATES=true
-                shift
-                ;;
-            --upgrade-claude-md)
-                UPGRADE_CLAUDE_MD=true
-                shift
-                ;;
+            --settings)       UPDATE_SETTINGS=true;    shift ;;
+            --skills)         UPDATE_SKILLS=true;      shift ;;
+            --agents)         UPDATE_AGENTS=true;      shift ;;
+            --rules)          UPDATE_RULES=true;       shift ;;
+            --styles)         UPDATE_STYLES=true;      shift ;;
+            --templates)      UPDATE_TEMPLATES=true;   shift ;;
+            --upgrade-claude-md) UPGRADE_CLAUDE_MD=true; shift ;;
             --all)
                 UPDATE_SETTINGS=true
                 UPDATE_SKILLS=true
@@ -362,7 +343,7 @@ restore_backup() {
         info "Backup de sécurité: $safety_backup"
     fi
 
-    rm -rf "$TARGET_DIR/$COMMANDS_SUBDIR"
+    rm -rf "${TARGET_DIR:?}/${COMMANDS_SUBDIR:?}"
     cp -r "$backup_path" "$TARGET_DIR/$COMMANDS_SUBDIR"
     success "Restauration terminée depuis $(basename "$backup_path")"
 }
