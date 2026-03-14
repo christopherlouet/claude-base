@@ -34,6 +34,11 @@ CLAUDE.md
 CLAUDE.local.md
 .claude/settings.local.json
 
+# Terraform artifacts in templates
+.claude/templates/**/.terraform/
+.claude/templates/**/*.tfstate
+.claude/templates/**/*.tfstate.backup
+
 # Docusaurus
 website/node_modules/
 website/build/

@@ -2,7 +2,7 @@
 name: biz-personas
 description: Creation de personas utilisateur. Utiliser pour definir les profils types de clients et leurs besoins.
 tools: Read, Grep, Glob, Edit, Write
-model: haiku
+model: sonnet
 permissionMode: plan
 ---
 
