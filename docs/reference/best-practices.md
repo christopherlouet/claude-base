@@ -66,6 +66,14 @@ Ne pas dupliquer : si c'est dans CLAUDE.md, pas besoin de le memoriser. Utiliser
 
 Utiliser git worktrees pour 5+ sessions Claude Code en parallele. Voir le skill `git-worktrees` pour les details.
 
+## Optimisation Tokens (RTK)
+
+> Reduire la consommation de tokens de 60-90% avec [RTK](https://github.com/rtk-ai/rtk).
+
+Installation: `brew install rtk`. Le socle inclut un hook PreToolUse qui reecrit automatiquement les commandes. Transparent si RTK n'est pas installe.
+
+`rtk gain` pour voir les economies. `rtk discover` pour trouver les commandes non optimisees.
+
 ## Commande Rapide
 
 `/work:work-commit-push-pr "description"` -- commit + push + PR en une seule commande.

@@ -51,6 +51,7 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | **Protection main** | PreToolUse (Edit/Write) | Bloque modifications sur main/master |
 | **Détection secrets** | PreToolUse (Write/Edit) | Gitleaks vérifie les secrets avant écriture |
 | **Tests pre-commit** | PreToolUse (Bash git commit) | Exécute les tests avant un commit |
+| **RTK token optimizer** | PreToolUse (Bash) | Reecrit les commandes via RTK pour reduire les tokens (-60-90%). Transparent si RTK non installe |
 | **Auto-format TS/JS** | PostToolUse (Edit/Write) | Prettier sur fichiers TS/JS |
 | **Auto-format Python** | PostToolUse (Edit/Write) | Ruff/Black sur fichiers .py |
 | **Auto-format Go** | PostToolUse (Edit/Write) | gofmt sur fichiers .go |
