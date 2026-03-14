@@ -5,133 +5,15 @@ Audit de sécurité basé sur OWASP Top 10.
 ## Cible de l'audit
 $ARGUMENTS
 
-## Checklist OWASP Top 10
+## Objectif
 
-### A01 - Broken Access Control
-- [ ] Vérification des autorisations sur chaque endpoint
-- [ ] Principe du moindre privilège appliqué
-- [ ] Pas d'accès direct aux objets via ID prévisibles (IDOR)
-- [ ] CORS correctement configuré
+Identifier les vulnérabilités de sécurité dans le code et proposer des remédiations concrètes.
 
-### A02 - Cryptographic Failures
-- [ ] Données sensibles chiffrées au repos et en transit
-- [ ] Pas de secrets hardcodés dans le code
-- [ ] Algorithmes de hash sécurisés (bcrypt, argon2)
-- [ ] TLS/HTTPS forcé
+Utilise le skill `qa-security` pour la checklist OWASP Top 10 détaillée et les patterns de recherche.
 
-### A03 - Injection
-- [ ] SQL: Requêtes paramétrées / ORM
-- [ ] NoSQL: Validation des entrées
-- [ ] Command injection: Pas de shell avec input utilisateur
-- [ ] XSS: Échappement des outputs HTML
+## Catégories OWASP à vérifier
 
-### A04 - Insecure Design
-- [ ] Validation côté serveur (pas seulement client)
-- [ ] Rate limiting sur les endpoints sensibles
-- [ ] Séparation des environnements (dev/prod)
-
-### A05 - Security Misconfiguration
-- [ ] Headers de sécurité (CSP, X-Frame-Options, etc.)
-- [ ] Pas de stack traces en production
-- [ ] Dépendances à jour
-- [ ] Permissions fichiers correctes
-
-### A06 - Vulnerable Components
-- [ ] `npm audit` sans vulnérabilités critiques
-- [ ] Dépendances maintenues et à jour
-- [ ] Pas de packages abandonnés
-
-### A07 - Authentication Failures
-- [ ] Mots de passe hashés correctement
-- [ ] Protection contre brute force
-- [ ] Sessions sécurisées (httpOnly, secure, sameSite)
-- [ ] Logout invalide les tokens
-
-### A08 - Data Integrity Failures
-- [ ] Validation des données entrantes
-- [ ] Intégrité des mises à jour (CI/CD sécurisé)
-- [ ] Désérialisation sécurisée
-
-### A09 - Logging Failures
-- [ ] Logs des événements de sécurité
-- [ ] Pas de données sensibles dans les logs
-- [ ] Alertes sur activités suspectes
-
-### A10 - SSRF
-- [ ] Validation des URLs fournies par l'utilisateur
-- [ ] Whitelist des domaines autorisés
-- [ ] Pas de requêtes vers réseau interne
-
-## Outils d'analyse automatisée
-
-```bash
-# Audit des dépendances npm
-npm audit
-npm audit --audit-level=moderate
-
-# Audit avec Snyk (plus complet)
-npx snyk test
-npx snyk monitor
-
-# Recherche de secrets dans le code
-npx secretlint "**/*"
-
-# Analyse statique de sécurité
-npx eslint --plugin security src/
-
-# Scan des conteneurs Docker
-docker scan myimage:latest
-```
-
-## Headers de sécurité HTTP
-
-```typescript
-// Headers recommandés (Express.js)
-const helmet = require('helmet');
-app.use(helmet());
-
-// Configuration manuelle
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('Content-Security-Policy', "default-src 'self'");
-  next();
-});
-```
-
-## Exemples de vulnérabilités courantes
-
-### SQL Injection (A03)
-```typescript
-// ❌ VULNÉRABLE
-const query = `SELECT * FROM users WHERE id = ${userId}`;
-
-// ✅ SÉCURISÉ
-const query = 'SELECT * FROM users WHERE id = ?';
-db.query(query, [userId]);
-```
-
-### XSS (A03)
-```typescript
-// ❌ VULNÉRABLE
-element.innerHTML = userInput;
-
-// ✅ SÉCURISÉ
-element.textContent = userInput;
-// ou avec sanitization
-element.innerHTML = DOMPurify.sanitize(userInput);
-```
-
-### Secrets exposés (A02)
-```typescript
-// ❌ VULNÉRABLE
-const API_KEY = "sk-1234567890abcdef";
-
-// ✅ SÉCURISÉ
-const API_KEY = process.env.API_KEY;
-```
+A01 Broken Access Control | A02 Cryptographic Failures | A03 Injection | A04 Insecure Design | A05 Security Misconfiguration | A06 Vulnerable Components | A07 Authentication Failures | A08 Data Integrity Failures | A09 Logging Failures | A10 SSRF
 
 ## Output attendu
 
@@ -142,7 +24,6 @@ const API_KEY = process.env.API_KEY;
 ### Vulnérabilités détaillées
 | Sévérité | Catégorie | Fichier:Ligne | Description | Remediation |
 |----------|-----------|---------------|-------------|-------------|
-| CRITIQUE | A03       | auth.ts:45    | SQL injection | Utiliser requête paramétrée |
 
 ### Recommandations prioritaires
 1. [Action immédiate]
@@ -156,7 +37,6 @@ const API_KEY = process.env.API_KEY;
 | `/qa:qa-audit` | Audit complet (inclut sécu) |
 | `/legal:legal-rgpd` | Conformité données personnelles |
 | `/ops:ops-deps` | Vérifier les vulnérabilités deps |
-| `/ops:ops-secrets-management` | Gestion sécurisée des secrets |
 
 ---
 
