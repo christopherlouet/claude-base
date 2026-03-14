@@ -87,3 +87,14 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 |----------|-------|
 | `ALLOW_MAIN_EDIT=1` | Désactiver la protection de branche main |
 | `SKIP_PRE_COMMIT_TESTS=1` | Désactiver les tests avant commit |
+
+## Fichiers de logs
+
+Les hooks de logging ecrivent dans `/tmp/` (mode append, nettoyes au redemarrage):
+
+| Fichier | Contenu |
+|---------|---------|
+| `/tmp/claude-sessions.log` | Demarrage, fin de session, compaction, taches |
+| `/tmp/claude-agents.log` | Activite des sub-agents et teammates |
+| `/tmp/claude-notifications.log` | Permissions et attentes utilisateur |
+| `/tmp/claude-mcp.log` | Evenements MCP Elicitation |

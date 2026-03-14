@@ -3,7 +3,7 @@
 **Branche**: `feature/agent-teams`
 **Date**: 2026-02-06
 **Spec**: [specs/agent-teams/spec.md](spec.md)
-**Statut**: Draft
+**Statut**: Completed
 
 ---
 

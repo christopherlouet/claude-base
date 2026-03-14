@@ -28,6 +28,27 @@ Regles modulaires appliquees automatiquement selon les fichiers modifies (path-s
 | `verification` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, ... | Verification 4 phases avant completion |
 | `workflow` | _(global)_ | Explore → Plan → TDD → Commit |
 
+## Ordre de priorité des rules
+
+Quand un fichier correspond à plusieurs rules (ex: `.tsx` active typescript + react + accessibility + performance + verification + tdd-enforcement), toutes s'appliquent simultanément. En cas de conflit:
+
+| Priorité | Rule | Raison |
+|----------|------|--------|
+| 1 (max) | `security` | La sécurité prime sur tout |
+| 2 | `verification` | Vérification obligatoire avant completion |
+| 3 | `tdd-enforcement` | TDD obligatoire pour tout code |
+| 4 | Rules de langage (`typescript`, `python`, `go`...) | Conventions spécifiques au langage |
+| 5 | Rules de framework (`react`, `nextjs`, `flutter`...) | Conventions spécifiques au framework |
+| 6 | `testing` | Normes de tests |
+| 7 | `performance`, `accessibility` | Optimisations et bonnes pratiques |
+| 8 | `api`, `lsp` | Conventions d'interface |
+
+### Exemple: modification de `src/components/Button.tsx`
+
+Rules activées: `typescript` + `react` + `accessibility` + `performance` + `verification` + `tdd-enforcement`
+
+Résolution: sécurité d'abord, puis vérification, puis TDD, puis conventions TypeScript, puis React, puis accessibilité et performance.
+
 ## Fonctionnement
 
 Les regles sont activees automatiquement quand un fichier correspondant aux `paths` est modifie. Les regles globales (sans paths) s'appliquent toujours.
