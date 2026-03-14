@@ -20,104 +20,40 @@ Analyse et optimisation des performances.
 
 ## Methodologie
 
-### 1. Mesurer AVANT d'optimiser
+1. **Mesurer AVANT** : baseline (temps, memoire, CPU), Core Web Vitals
+2. **Identifier bottlenecks** : code (O(n2), N+1), frontend (bundle, renders, images), backend (index, cache, pool)
+3. **Optimiser par priorite** : algorithme > caching > lazy loading > parallelisation > micro-optimisations
+4. **Mesurer APRES** : valider le gain
 
-- Etablir une baseline de performance
-- Identifier les metriques cles (temps, memoire, CPU)
-- Ne jamais optimiser sans mesure prealable
+## Core Web Vitals
 
-### 2. Identifier les bottlenecks
+| Metrique | Objectif |
+|----------|----------|
+| LCP | < 2.5s |
+| FID | < 100ms |
+| CLS | < 0.1 |
+| TTFB | < 800ms |
+| INP | < 200ms |
 
-#### Code
-- Boucles inefficaces (O(n2) evitables)
-- Calculs redondants (memoization possible)
-- Allocations memoire excessives
-- Operations synchrones bloquantes
-- Requetes N+1 (base de donnees)
+## Patterns a rechercher
 
-#### Frontend
-- Bundle size trop important
-- Renders inutiles (React)
-- Images non optimisees
-- Pas de lazy loading
-- CSS bloquant
-
-#### Backend
-- Requetes DB non optimisees (index manquants)
-- Pas de cache
-- Serialisation/deserialisation couteuse
-- Connexions non poolees
-
-### 3. Core Web Vitals
-
-| Metrique | Description | Objectif |
-|----------|-------------|----------|
-| **LCP** | Largest Contentful Paint | < 2.5s |
-| **FID** | First Input Delay | < 100ms |
-| **CLS** | Cumulative Layout Shift | < 0.1 |
-| **TTFB** | Time to First Byte | < 800ms |
-| **INP** | Interaction to Next Paint | < 200ms |
-
-### 4. Patterns a rechercher
-
-```
-# Boucles imbriquees
-for.*for|forEach.*forEach|map.*map
-
-# Console.log en production
-console\.(log|debug|info)
-
-# Imports lourds
-import \* from|require\(
-
-# Requetes dans des boucles
-await.*for|for.*await
-```
-
-### 5. Techniques d'optimisation
-
-| Priorite | Type | Impact | Effort |
-|----------|------|--------|--------|
-| 1 | Algorithme | Tres eleve | Variable |
-| 2 | Caching | Eleve | Faible |
-| 3 | Lazy loading | Moyen | Faible |
-| 4 | Parallelisation | Moyen | Moyen |
-| 5 | Micro-optimisations | Faible | Eleve |
-
-## Commandes utiles
-
-```bash
-# Taille du bundle
-npm run build && du -sh dist/
-
-# Profiling Node.js
-node --prof app.js
-
-# Lighthouse CLI
-npx lighthouse https://example.com --output=json
-
-# Autocannon pour API
-npx autocannon -c 100 -d 30 http://localhost:3000/api
-```
+- Boucles imbriquees (O(n2))
+- console.log en production
+- Imports `*` lourds
+- Requetes dans des boucles (N+1)
 
 ## Output attendu
 
-### Baseline
-- Metrique 1: [valeur initiale]
-- Metrique 2: [valeur initiale]
+1. Baseline de performance
+2. Bottlenecks identifies (fichier:ligne, probleme, impact)
+3. Optimisations proposees avec gain estime
+4. Mesures avant/apres
 
-### Bottlenecks identifies
-| Localisation | Probleme | Impact estime |
-|--------------|----------|---------------|
-| fichier:ligne | Description | Eleve/Moyen/Faible |
+## Directives
 
-### Optimisations proposees
-1. [Optimisation 1] - Gain estime: [X%]
-2. [Optimisation 2] - Gain estime: [X%]
+- NEVER optimiser sans profiling prealable
+- IMPORTANT: Mesurer avant et apres chaque optimisation
+- IMPORTANT: Prioriser par rapport cout/benefice
+- NEVER faire de micro-optimisations avant les gains algorithmiques
 
-## Contraintes
-
-- Mesurer avant et apres chaque optimisation
-- Ne jamais optimiser sans profiling prealable
-- Prioriser par rapport cout/benefice
-- "Premature optimization is the root of all evil" - Knuth
+Think hard about les vrais bottlenecks, pas les optimisations prematurees.
