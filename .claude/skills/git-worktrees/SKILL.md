@@ -192,7 +192,7 @@ Exemples:
 
 ## Workflow Boris Cherny (5+ sessions paralleles)
 
-### Setup complet
+### Setup complet avec sessions nommees (CLI 2.1.76+)
 
 ```bash
 # 1. Creer les worktrees
@@ -202,13 +202,15 @@ git worktree add ../myapp-fix -b fix/login-bug
 git worktree add ../myapp-review main
 git worktree add ../myapp-analysis main
 
-# 2. Lancer Claude dans chaque worktree (onglets separes)
-# Tab 1: cd ../myapp && claude
-# Tab 2: cd ../myapp-feature-1 && claude
-# Tab 3: cd ../myapp-feature-2 && claude
-# Tab 4: cd ../myapp-fix && claude
-# Tab 5: cd ../myapp-analysis && claude
+# 2. Lancer Claude dans chaque worktree avec --name
+# Tab 1: cd ../myapp && claude -n "main"
+# Tab 2: cd ../myapp-feature-1 && claude -n "auth"
+# Tab 3: cd ../myapp-feature-2 && claude -n "payment"
+# Tab 4: cd ../myapp-fix && claude -n "fix-login"
+# Tab 5: cd ../myapp-analysis && claude -n "analysis"
 ```
+
+Le flag `--name` / `-n` nomme la session pour l'identifier dans les logs et le terminal. Pattern recommande: 1 worktree = 1 branche = 1 session nommee.
 
 ### Avantages cles
 
