@@ -148,6 +148,23 @@ Outil de scan de vulnerabilites utilisant Opus 4.6 pour analyser le code au-dela
 
 Prerequis: plan Enterprise ou Team. Complement de `/qa:qa-security` pour un audit approfondi. Voir [annonce Anthropic](https://www.anthropic.com/news/claude-code-security).
 
+## RTK - Optimisation Tokens (optionnel)
+
+[RTK](https://github.com/rtk-ai/rtk) (Rust Token Killer) est un proxy CLI qui compresse les sorties de commandes avant qu'elles n'atteignent le contexte LLM. Reduction de 60-90% des tokens consommes.
+
+Installation: `brew install rtk` (ou `cargo install --git https://github.com/rtk-ai/rtk`)
+
+Le socle inclut un hook PreToolUse qui reecrit automatiquement les commandes si RTK est installe:
+- `git status` → `rtk git status` (~10 tokens au lieu de ~200)
+- `cat file.rs` → `rtk read file.rs` (signatures only en mode agressif)
+- `cargo test` → `rtk cargo test` (-90% sur les sorties de test)
+
+Le hook est transparent: si RTK n'est pas installe, rien ne change. Desactiver avec `RTK_DISABLED=1`.
+
+Commandes utiles:
+- `rtk gain` : voir les economies de tokens
+- `rtk discover` : identifier les commandes non optimisees dans l'historique
+
 ## CLAUDE.md @imports
 
 Syntaxe `@path/to/file` pour importer des fichiers. Chemins relatifs et absolus supportes, imports recursifs (max 5 niveaux). Voir imports charges avec `/memory`.
