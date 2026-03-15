@@ -70,7 +70,7 @@ Utiliser git worktrees pour 5+ sessions Claude Code en parallele. Voir le skill 
 
 > Reduire la consommation de tokens de 60-90% avec [RTK](https://github.com/rtk-ai/rtk).
 
-Installation: `brew install rtk`. Le socle inclut un hook PreToolUse qui reecrit automatiquement les commandes. Transparent si RTK n'est pas installe.
+Installation: `brew install rtk`. Le socle inclut un hook PreToolUse qui reecrit automatiquement les commandes. Desactive par defaut, activer avec `ENABLE_RTK=1` dans la section `env` de `.claude/settings.json` ou `.claude/settings.local.json`.
 
 `rtk gain` pour voir les economies. `rtk discover` pour trouver les commandes non optimisees.
 
