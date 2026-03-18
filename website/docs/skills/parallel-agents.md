@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Glob`, `Grep`, `Bash` |
-| **Mots-cles** | `parallel`, `agents`, `qa-security`, `auditer...`, `qa-perf`, `analyser...`, `qa-a11y` |
+| **Mots-cles** | `parallel`, `agents`, `qa-security`, `auditer...`, `qa-perf`, `analyser...`, `wcag-audit` |
 
 ## Description detaillee
 
@@ -89,7 +89,7 @@ Decomposer les taches complexes en sous-taches independantes et les executer en 
 
 | Tache | Agents paralleles | Resultat |
 |-------|-------------------|----------|
-| Audit complet | `qa-security` + `qa-perf` + `qa-a11y` | Rapport combine |
+| Audit complet | `qa-security` + `qa-perf` + `wcag-audit` | Rapport combine |
 | Code review | `qa-review` par module/fichier | Liste issues |
 | Exploration | `work-explore` par domaine fonctionnel | Map du code |
 
@@ -137,7 +137,7 @@ Utiliser le tool Task avec plusieurs appels dans un seul message:
 ```
 [Appel 1] Task(subagent_type="qa-security", prompt="Auditer...")
 [Appel 2] Task(subagent_type="qa-perf", prompt="Analyser...")
-[Appel 3] Task(subagent_type="qa-a11y", prompt="Verifier...")
+[Appel 3] Task(subagent_type="wcag-audit", prompt="Verifier...")
 ```
 
 ### Etape 3: Combiner les resultats

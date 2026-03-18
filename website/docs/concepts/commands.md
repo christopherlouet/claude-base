@@ -37,7 +37,7 @@ Les commands sont organisees par domaine dans `.claude/commands/`:
 ├── qa/                      # Qualite
 │   ├── qa-security.md
 │   ├── qa-perf.md
-│   └── qa-a11y.md
+│   └── wcag-audit.md
 ├── ops/                     # Operations
 ├── doc/                     # Documentation
 ├── biz/                     # Business

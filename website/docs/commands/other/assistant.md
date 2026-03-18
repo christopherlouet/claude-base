@@ -140,7 +140,7 @@ Claude délègue automatiquement aux agents spécialisés selon le contexte. Les
 |-------|--------|--------|-------------|
 | `qa-security` | sonnet | Read, Grep, Glob | "Audit sécurité", "Vérifier OWASP" |
 | `qa-perf` | sonnet | Read, Grep, Glob, Bash | "Performance", "Core Web Vitals" |
-| `qa-a11y` | haiku | Read, Grep, Glob | "Accessibilité", "WCAG" |
+| `wcag-audit` | haiku | Read, Grep, Glob | "Accessibilité", "WCAG" |
 | `qa-audit` | sonnet | Read, Grep, Glob, Bash | "Audit complet", "Qualité globale" |
 | `qa-coverage` | haiku | Read, Grep, Glob, Bash | "Couverture de tests" |
 | `qa-responsive` | haiku | Read, Grep, Glob | "Mobile", "Responsive" |
@@ -423,7 +423,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 | `/qa:qa-review` | Code review approfondie + analyse de nommage |
 | `/qa:qa-security` | Audit de sécurité OWASP |
 | `/qa:qa-perf` | Analyse de performance |
-| `/qa:qa-a11y` | Audit accessibilité WCAG |
+| `/qa:wcag-audit` | Audit accessibilité WCAG |
 | `/qa:qa-audit` | Audit complet (sécu+RGPD+a11y+perf) |
 | `/qa:qa-chrome` | Tests visuels Chrome (debugging DOM, responsive, captures) |
 | `/qa:qa-design` | Audit UI/UX (100+ règles design web) |
@@ -579,7 +579,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 │ Code review                             →  /qa:qa-review                  │
 │ Audit de sécurité                       →  /qa:qa-security                │
 │ Audit de performance                    →  /qa:qa-perf                    │
-│ Audit d'accessibilité                   →  /qa:qa-a11y                    │
+│ Audit d'accessibilité                   →  /qa:wcag-audit                    │
 │ Audit complet                           →  /qa:qa-audit                   │
 │ Couverture de tests                     →  /qa:qa-coverage                │
 │ Audit UI/UX design                      →  /qa:qa-design                  │

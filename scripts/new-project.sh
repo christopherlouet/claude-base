@@ -1493,7 +1493,7 @@ EOF
 |-----------|-----------|
 | **Workflow** | \`/work:work-explore\`, \`/work:work-plan\`, \`/work:work-commit\`, \`/work:work-pr\` |
 | **Développement** | \`/dev:dev-tdd\`, \`/dev:dev-test\`, \`/dev:dev-debug\`, \`/dev:dev-refactor\`, \`/dev:dev-api\` |
-| **Qualité** | \`/qa:qa-review\`, \`/qa:qa-security\`, \`/qa:qa-perf\`, \`/qa:qa-a11y\` |
+| **Qualité** | \`/qa:qa-review\`, \`/qa:qa-security\`, \`/qa:qa-perf\`, \`/qa:wcag-audit\` |
 | **Ops** | \`/ops:ops-hotfix\`, \`/ops:ops-release\`, \`/ops:ops-migrate\`, \`/ops:ops-docker\` |
 
 Utilisez \`/doc:doc-onboard\` pour découvrir tous les agents disponibles.

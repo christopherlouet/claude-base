@@ -175,7 +175,7 @@ claude-socle/
 | `/qa:qa-review [cible]` | Code review detaillee |
 | `/qa:qa-security [cible]` | Audit securite OWASP |
 | `/qa:qa-perf [cible]` | Analyse performance |
-| `/qa:qa-a11y [cible]` | Audit accessibilite WCAG |
+| `/qa:wcag-audit [cible]` | Audit accessibilite WCAG |
 | `/qa:qa-neovim` | Audit config Neovim |
 
 ### Maintenance

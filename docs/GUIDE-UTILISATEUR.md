@@ -467,7 +467,7 @@ Voulez-vous que j'applique cette correction ?
 | Review | `/qa:qa-review` | Code review détaillée |
 | Security | `/qa:qa-security` | Audit sécurité OWASP |
 | Performance | `/qa:qa-perf` | Analyse performance |
-| A11y | `/qa:qa-a11y` | Audit accessibilité WCAG |
+| A11y | `/qa:wcag-audit` | Audit accessibilité WCAG |
 | Audit | `/qa:qa-audit` | Audit complet (tout en un) |
 | Responsive | `/qa:qa-responsive` | Audit responsive/mobile web |
 | Automation | `/qa:qa-automation` | Automatisation des tests |

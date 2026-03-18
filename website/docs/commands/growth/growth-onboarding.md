@@ -315,7 +315,7 @@ analytics.track('onboarding_abandoned', {
 | `/growth:growth-retention` | Mesurer l'impact sur la rétention |
 | `/growth:growth-email` | Séquence d'emails d'accompagnement |
 | `/dev:dev-component` | Créer les composants UI |
-| `/qa:qa-a11y` | Accessibilité du parcours |
+| `/qa:wcag-audit` | Accessibilité du parcours |
 
 ---
 
