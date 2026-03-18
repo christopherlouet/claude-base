@@ -132,7 +132,7 @@ CLAUDE.md                     # MODIFIÉ - Workflow Agent Teams ajouté
 │       │         │                                               │
 │       │         ├──→ Teammate 1 (qa-security)                   │
 │       │         ├──→ Teammate 2 (qa-perf)                       │
-│       │         └──→ Teammate 3 (qa-a11y)                       │
+│       │         └──→ Teammate 3 (wcag-audit)                       │
 │       │                                                         │
 │       └──→ /assistant "tâche complexe"                          │
 │                 │                                               │

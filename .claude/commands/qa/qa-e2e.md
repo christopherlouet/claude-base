@@ -40,7 +40,7 @@ Mettre en place et executer des tests E2E sur les parcours utilisateur critiques
 |-------|-------|
 | `/qa:qa-automation` | Strategie d'automatisation |
 | `/qa:qa-coverage` | Couverture des tests |
-| `/qa:qa-a11y` | Accessibilite |
+| `/qa:wcag-audit` | Accessibilite |
 | `/ops:ops-ci` | Integration CI/CD |
 
 ---

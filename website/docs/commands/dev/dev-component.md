@@ -256,7 +256,7 @@ import { [ComponentName] } from '@/components/[ComponentName]';
 |-------|------------------|
 | `/dev:dev-hook` | Créer un hook associé |
 | `/dev:dev-test` | Tests complémentaires |
-| `/qa:qa-a11y` | Audit accessibilité du composant |
+| `/qa:wcag-audit` | Audit accessibilité du composant |
 | `/qa:qa-responsive` | Vérifier le responsive |
 
 ---

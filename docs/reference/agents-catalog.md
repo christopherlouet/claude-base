@@ -55,7 +55,7 @@
 | `/qa:qa-review` | Code review approfondie + analyse de nommage |
 | `/qa:qa-security` | Audit de securite OWASP |
 | `/qa:qa-perf` | Analyse de performance |
-| `/qa:qa-a11y` | Audit accessibilite WCAG |
+| `/qa:wcag-audit` | Audit accessibilite WCAG |
 | `/qa:qa-audit` | Audit qualite complet |
 | `/qa:qa-chrome` | Tests visuels Chrome (debugging DOM, responsive, captures) |
 | `/qa:qa-design` | Audit UI/UX (100+ regles design web) |
@@ -178,7 +178,7 @@ Claude delegue automatiquement aux agents specialises (contexte isole, outils re
 | Domaine | Agents | Modeles |
 |---------|--------|---------|
 | Exploration & Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
-| Qualite & Audits | `qa-audit`, `qa-security`, `qa-perf`, `qa-a11y`, `qa-coverage`, `qa-responsive`, `qa-e2e`, `qa-tech-debt`, `qa-design`, `qa-chrome` | haiku/sonnet |
+| Qualite & Audits | `qa-audit`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-coverage`, `qa-responsive`, `qa-e2e`, `qa-tech-debt`, `qa-design`, `qa-chrome` | haiku/sonnet |
 | Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-serverless`, `ops-vercel`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
 | Developpement | `dev-debug`, `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`, `dev-prompt-engineering`, `dev-rag`, `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-ai-integration`, `dev-document`, `dev-tdd` | haiku/sonnet |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |

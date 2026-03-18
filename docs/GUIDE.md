@@ -329,12 +329,12 @@ Closes #123
 
 ---
 
-#### `/qa:qa-a11y` - L'Inclusif
+#### `/qa:wcag-audit` - L'Inclusif
 
 **Audit WCAG 2.1**
 
 ```
-/qa:qa-a11y audit du formulaire d'inscription
+/qa:wcag-audit audit du formulaire d'inscription
 ```
 
 ---

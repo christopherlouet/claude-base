@@ -31,7 +31,7 @@ Audit du design system existant ou plan de creation par phases
 | Agent | Usage |
 |-------|-------|
 | `/dev:dev-component` | Creer des composants |
-| `/qa:qa-a11y` | Accessibilite |
+| `/qa:wcag-audit` | Accessibilite |
 | `/doc:doc-generate` | Documentation |
 
 ---

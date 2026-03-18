@@ -34,7 +34,7 @@ description: Liste complete des 57 agents
 | `ops-health` | Health check rapide | Read, Grep, Glob, Bash |
 | `ops-serverless` | Deploiement serverless | Read, Grep, Glob, Bash |
 | `ops-vercel` | Deploiement Vercel | Read, Grep, Glob, Bash |
-| `qa-a11y` | Audit accessibilite WCAG | Read, Grep, Glob |
+| `wcag-audit` | Audit accessibilite WCAG | Read, Grep, Glob |
 | `qa-coverage` | Couverture de tests | Read, Grep, Glob, Bash |
 | `qa-design` | Audit UI/UX | Read, Grep, Glob |
 | `qa-responsive` | Audit responsive | Read, Grep, Glob |
@@ -98,7 +98,7 @@ description: Liste complete des 57 agents
 | `qa-perf` | sonnet | Audit performance, Core Web Vitals |
 | `qa-chrome` | sonnet | Tests visuels et debugging Chrome |
 | `qa-e2e` | sonnet | Tests End-to-End (Playwright, Cypress) |
-| `qa-a11y` | haiku | Audit accessibilite WCAG 2.1 |
+| `wcag-audit` | haiku | Audit accessibilite WCAG 2.1 |
 | `qa-coverage` | haiku | Analyse couverture de tests |
 | `qa-design` | haiku | Audit UI/UX (100+ regles) |
 | `qa-responsive` | haiku | Audit responsive/mobile-first |

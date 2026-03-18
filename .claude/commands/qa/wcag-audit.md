@@ -1,4 +1,4 @@
-# Agent A11Y (Accessibilite)
+# Agent WCAG-AUDIT (Accessibilite)
 
 Audit d'accessibilite base sur WCAG 2.1/2.2 et referentiel axe-core.
 

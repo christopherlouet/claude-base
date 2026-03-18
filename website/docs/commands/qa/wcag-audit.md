@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
-title: "/qa:qa-a11y"
-description: "Audit d'accessibilité basé sur WCAG 2.1 et Web Interface Guidelines."
+title: "/qa:wcag-audit"
+description: "Audit d'accessibilite selon WCAG 2.1/2.2 et referentiel axe-core."
 tags:
   - "qa"
   - "command"
@@ -13,9 +13,9 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--qa">QA</span>
 
 
-# Agent A11Y (Accessibilité)
+# Agent WCAG-AUDIT (Accessibilite)
 
-Audit d'accessibilité basé sur WCAG 2.1 et Web Interface Guidelines.
+Audit d'accessibilite selon WCAG 2.1/2.2 et referentiel axe-core.
 
 ## Cible de l'audit
 `&lt;arguments&gt;`

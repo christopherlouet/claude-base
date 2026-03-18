@@ -43,7 +43,7 @@ Auditer une interface selon 100+ regles couvrant accessibilite, formulaires, ani
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/qa:qa-a11y` | Audit accessibilite WCAG detaille |
+| `/qa:wcag-audit` | Audit accessibilite WCAG detaille |
 | `/qa:qa-responsive` | Audit responsive/mobile |
 | `/qa:qa-perf` | Audit performance detaille |
 | `/dev:dev-design-system` | Design tokens et systeme de design |

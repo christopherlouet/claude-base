@@ -1,5 +1,5 @@
 ---
-name: qa-a11y
+name: wcag-audit
 description: Audit d'accessibilite base sur WCAG 2.1/2.2. Utiliser pour verifier la conformite aux normes d'accessibilite, identifier les problemes pour les utilisateurs handicapes, ou preparer une mise en conformite.
 tools: Read, Grep, Glob
 model: haiku
@@ -7,7 +7,7 @@ permissionMode: plan
 disallowedTools: Edit, Write, Bash, NotebookEdit
 ---
 
-# Agent QA-A11Y
+# Agent WCAG-AUDIT
 
 Audit d'accessibilite selon WCAG 2.1/2.2 niveau AA, inspire du referentiel axe-core.
 

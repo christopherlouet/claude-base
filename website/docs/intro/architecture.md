@@ -184,7 +184,7 @@ flowchart TD
 
 | Modele | Usage | Agents |
 |--------|-------|--------|
-| **Haiku** | Taches rapides, economiques | work-explore, doc-onboard, qa-a11y |
+| **Haiku** | Taches rapides, economiques | work-explore, doc-onboard, wcag-audit |
 | **Sonnet** | Taches complexes, analyses | qa-security, qa-audit, dev-debug |
 | **Opus** | Maximum de capacites | (Non utilise par defaut) |
 

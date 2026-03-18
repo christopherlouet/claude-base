@@ -68,7 +68,7 @@ graph LR
 /qa:qa-review         # Code review
 /qa:qa-security       # Securite OWASP
 /qa:qa-perf           # Performance
-/qa:qa-a11y           # Accessibilite
+/qa:wcag-audit           # Accessibilite
 /qa:qa-audit          # Audit complet
 ```
 

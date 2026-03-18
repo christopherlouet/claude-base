@@ -156,7 +156,7 @@ find . -name "*.webp" -o -name "*.avif" | wc -l
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/qa:qa-a11y` | Audit accessibilite WCAG detaille |
+| `/qa:wcag-audit` | Audit accessibilite WCAG detaille |
 | `/qa:qa-responsive` | Audit responsive/mobile |
 | `/qa:qa-perf` | Audit performance detaille |
 | `/dev:dev-component` | Creer des composants UI |
