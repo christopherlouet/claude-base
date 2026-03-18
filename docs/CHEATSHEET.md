@@ -249,7 +249,7 @@
 | `/qa:qa-review` | Code review + analyse nommage |
 | `/qa:qa-security` | Audit sécurité OWASP |
 | `/qa:qa-perf` | Analyse performance |
-| `/qa:qa-a11y` | Audit accessibilité WCAG |
+| `/qa:wcag-audit` | Audit accessibilité WCAG |
 | `/qa:qa-audit` | Audit complet (tout en un) |
 | `/qa:qa-design` | Audit UI/UX (100+ règles) |
 | `/qa:qa-responsive` | Audit responsive/mobile |

@@ -42,7 +42,7 @@ et l'executer immediatement via l'outil Skill (sans demander confirmation).
 | Flutter, mobile | `dev:dev-flutter` |
 | Supabase, auth, RLS | `dev:dev-supabase` |
 | GraphQL, resolver | `dev:dev-graphql` |
-| Accessibilite, WCAG | `qa:qa-a11y` |
+| Accessibilite, WCAG | `qa:wcag-audit` |
 | Performance, latence | `qa:qa-perf` |
 | E2E, Playwright | `qa:qa-e2e` |
 | Landing page | `growth:growth-landing` |
