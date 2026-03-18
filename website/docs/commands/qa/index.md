@@ -19,7 +19,7 @@ Ce domaine contient **15 commandes** pour qualite (review, securite, performance
 
 | Commande | Description |
 |----------|-------------|
-| [`/qa:qa-a11y`](/docs/commands/qa/qa-a11y) | Audit d'accessibilité basé sur WCAG 2.1 et Web Interface Guidelines. |
+| [`/qa:wcag-audit`](/docs/commands/qa/wcag-audit) | Audit d'accessibilité basé sur WCAG 2.1 et Web Interface Guidelines. |
 | [`/qa:qa-audit`](/docs/commands/qa/qa-audit) | Audit qualité complet d'un projet. Combine les analyses de sécurité, RGPD, accessibilité et performance. |
 | [`/qa:qa-automation`](/docs/commands/qa/qa-automation) | Mettre en place une stratégie d'automatisation des tests complète. |
 | [`/qa:qa-chrome`](/docs/commands/qa/qa-chrome) | Tests visuels et debugging navigateur via l'integration Chrome de Claude Code. |
@@ -39,10 +39,10 @@ Ce domaine contient **15 commandes** pour qualite (review, securite, performance
 
 <CommandGrid>
   <CommandCard
-    name="qa-a11y"
+    name="wcag-audit"
     description="Audit d'accessibilité basé sur WCAG 2.1 et Web Interface Guidelines."
     domain="qa"
-    href="/docs/commands/qa/qa-a11y"
+    href="/docs/commands/qa/wcag-audit"
   />
   <CommandCard
     name="qa-audit"

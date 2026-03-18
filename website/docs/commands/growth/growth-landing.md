@@ -214,7 +214,7 @@ CTA: [texte du bouton]
 | `/growth:growth-ab-test` | Tester les variantes |
 | `/growth:growth-analytics` | Tracker les conversions |
 | `/qa:qa-perf` | Optimiser la performance |
-| `/qa:qa-a11y` | Accessibilité de la page |
+| `/qa:wcag-audit` | Accessibilité de la page |
 
 ---
 

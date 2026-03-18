@@ -59,7 +59,7 @@ description: Liste complete des 120 commandes
 | `/qa:qa-review` | Code review approfondie |
 | `/qa:qa-security` | Audit securite OWASP |
 | `/qa:qa-perf` | Analyse de performance |
-| `/qa:qa-a11y` | Audit accessibilite WCAG |
+| `/qa:wcag-audit` | Audit accessibilite WCAG |
 | `/qa:qa-audit` | Audit qualite complet |
 | `/qa:qa-chrome` | Tests visuels Chrome (debugging DOM, responsive, captures) |
 | `/qa:qa-design` | Audit UI/UX (100+ regles design web) |

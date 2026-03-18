@@ -195,7 +195,7 @@ flowchart TD
 │  │   │              AUDITS PARALLELES                │                   │  │
 │  │   │                                               │                   │  │
 │  │   │  ┌─────────┐  ┌─────────┐  ┌─────────┐       │                   │  │
-│  │   │  │qa-security│  qa-perf │  qa-a11y │        │                   │  │
+│  │   │  │qa-security│  qa-perf │  wcag-audit │        │                   │  │
 │  │   │  │  AGENT  │  │ AGENT   │  │ AGENT  │        │                   │  │
 │  │   │  └────┬────┘  └────┬────┘  └───┬────┘        │                   │  │
 │  │   │       │            │           │              │                   │  │
@@ -239,7 +239,7 @@ flowchart TD
     subgraph AUDITS[Audits Parallèles]
         SEC[qa-security]
         PERF[qa-perf]
-        A11Y[qa-a11y]
+        A11Y[wcag-audit]
     end
 
     AUDITS --> ISSUES{Problèmes?}
@@ -266,7 +266,7 @@ flowchart TD
 │  │       ▼                   ▼                   ▼                       │  │
 │  │  ┌─────────┐        ┌─────────┐         ┌─────────┐                   │  │
 │  │  │ AGENT   │        │ AGENT   │         │ AGENT   │                   │  │
-│  │  │qa-security│       qa-perf │         │qa-a11y  │                   │  │
+│  │  │qa-security│       qa-perf │         │wcag-audit  │                   │  │
 │  │  │(sonnet) │        │(sonnet) │         │(haiku)  │                   │  │
 │  │  └────┬────┘        └────┬────┘         └────┬────┘                   │  │
 │  │       │                  │                   │                        │  │
@@ -302,7 +302,7 @@ flowchart TD
 
     ORCHESTRATOR --> SEC{{Agent qa-security<br/>sonnet}}
     ORCHESTRATOR --> PERF{{Agent qa-perf<br/>sonnet}}
-    ORCHESTRATOR --> A11Y{{Agent qa-a11y<br/>haiku}}
+    ORCHESTRATOR --> A11Y{{Agent wcag-audit<br/>haiku}}
 
     SEC --> RSEC[Rapport Sécurité]
     PERF --> RPERF[Rapport Perf]

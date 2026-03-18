@@ -343,7 +343,7 @@ Vulnérabilités deps: [N]
 |-------|------------------|
 | `/qa:qa-security` | Audit sécurité approfondi |
 | `/legal:legal-rgpd` | Audit RGPD approfondi |
-| `/qa:qa-a11y` | Audit accessibilité approfondi |
+| `/qa:wcag-audit` | Audit accessibilité approfondi |
 | `/qa:qa-perf` | Audit performance approfondi |
 | `/ops:ops-health` | Check rapide avant audit |
 

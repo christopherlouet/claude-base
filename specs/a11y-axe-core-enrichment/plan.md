@@ -56,10 +56,10 @@ Enrichir les 3 fichiers a11y du socle (rule, agent, command) en s'inspirant du r
 | Fichier | Modification |
 |---------|--------------|
 | `.claude/rules/accessibility.md` | Ajouter 6 nouvelles catégories de règles + niveaux d'impact |
-| `.claude/agents/qa-a11y.md` | Enrichir patterns regex + classification d'impact + catégories |
-| `.claude/commands/qa/qa-a11y.md` | Ajouter recommandation axe-core/Playwright + catégories enrichies |
+| `.claude/agents/wcag-audit.md` | Enrichir patterns regex + classification d'impact + catégories |
+| `.claude/commands/qa/wcag-audit.md` | Ajouter recommandation axe-core/Playwright + catégories enrichies |
 | `website/docs/rules/accessibility.md` | Ajouter exemples de code pour nouvelles catégories |
-| `website/docs/agents/qa-a11y.md` | Mettre à jour la checklist et le format de sortie |
+| `website/docs/agents/wcag-audit.md` | Mettre à jour la checklist et le format de sortie |
 
 ### Aucun fichier à créer
 
@@ -80,12 +80,12 @@ Enrichissement en 3 couches :
 │  + Niveaux d'impact (Critical/Serious/Moderate/Minor)     │
 │  + Mapping WCAG explicite                                 │
 ├──────────────────────────────────────────────────────────┤
-│  Agent (qa-a11y.md)                                       │
+│  Agent (wcag-audit.md)                                       │
 │  = Patterns regex enrichis pour détection automatique     │
 │  + Format de sortie avec impact levels                    │
 │  + Distinction violation / needs-review                   │
 ├──────────────────────────────────────────────────────────┤
-│  Command (qa-a11y.md)                                     │
+│  Command (wcag-audit.md)                                     │
 │  = Orchestration + recommandation outils runtime          │
 │  + Catégories d'audit enrichies                           │
 ├──────────────────────────────────────────────────────────┤
@@ -146,7 +146,7 @@ Enrichir l'existant plutôt que recréer : on garde notre structure rule/agent/c
 
 ### Phase 2 : Agent enrichi (P1)
 
-**Objectif** : Enrichir `.claude/agents/qa-a11y.md` avec les patterns de détection et le format de sortie
+**Objectif** : Enrichir `.claude/agents/wcag-audit.md` avec les patterns de détection et le format de sortie
 
 - [ ] T009 - Ajouter les patterns regex pour ARIA (attrs invalides, rôles inconnus)
 - [ ] T010 - [P] Ajouter les patterns regex pour structure (lang manquant, title vide, landmarks)
@@ -158,7 +158,7 @@ Enrichir l'existant plutôt que recréer : on garde notre structure rule/agent/c
 
 ### Phase 3 : Command enrichi (P2)
 
-**Objectif** : Enrichir `.claude/commands/qa/qa-a11y.md` avec les catégories et recommandations outils
+**Objectif** : Enrichir `.claude/commands/qa/wcag-audit.md` avec les catégories et recommandations outils
 
 - [ ] T014 - Ajouter les catégories d'audit enrichies au workflow
 - [ ] T015 - Ajouter la recommandation d'outils runtime (axe-core + Playwright)
@@ -174,7 +174,7 @@ Enrichir l'existant plutôt que recréer : on garde notre structure rule/agent/c
 - [ ] T018 - [P] Ajouter exemples Tables accessibles
 - [ ] T019 - [P] Ajouter exemples Frames/Iframes
 - [ ] T020 - [P] Ajouter exemples WCAG 2.2 (target-size)
-- [ ] T021 - Mettre à jour `website/docs/agents/qa-a11y.md` avec le nouveau format
+- [ ] T021 - Mettre à jour `website/docs/agents/wcag-audit.md` avec le nouveau format
 
 **Checkpoint** : Documentation complète avec exemples pour chaque catégorie.
 

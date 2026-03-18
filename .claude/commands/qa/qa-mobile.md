@@ -41,7 +41,7 @@ Auditer la performance, l'accessibilite, le responsive et la stabilite d'une app
 |-------|------------------|
 | `/dev:dev-flutter` | Corriger les widgets |
 | `/qa:qa-perf` | Audit performance approfondi |
-| `/qa:qa-a11y` | Accessibilite approfondie |
+| `/qa:wcag-audit` | Accessibilite approfondie |
 | `/qa:qa-responsive` | Responsive web detaille |
 
 ---

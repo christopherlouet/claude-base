@@ -33,11 +33,11 @@
 
 **Objectif** : Enrichir les patterns de détection et le format de sortie
 
-- [ ] T009 - Ajouter patterns regex ARIA dans `.claude/agents/qa-a11y.md` : `role="[invalide]"`, `aria-[inconnu]`, `aria-hidden.*tabindex`, `aria-required` sans attrs requis
-- [ ] T010 - [P] Ajouter patterns regex structure dans `.claude/agents/qa-a11y.md` : `<html` sans `lang`, `<title></title>` vide, heading sauts (h1→h3), absence landmarks
-- [ ] T011 - [P] Ajouter patterns regex tables/frames dans `.claude/agents/qa-a11y.md` : `<table` sans headers, `<iframe` sans title, `<th` sans scope
-- [ ] T012 - Restructurer format de sortie dans `.claude/agents/qa-a11y.md` : tableau avec colonnes Impact (Critical/Serious/Moderate/Minor) + WCAG ref + Type (violation/needs-review)
-- [ ] T013 - Ajouter section "Needs Review" dans `.claude/agents/qa-a11y.md` : items non détectables automatiquement (contraste dynamique, contenu généré, ordre de lecture)
+- [ ] T009 - Ajouter patterns regex ARIA dans `.claude/agents/wcag-audit.md` : `role="[invalide]"`, `aria-[inconnu]`, `aria-hidden.*tabindex`, `aria-required` sans attrs requis
+- [ ] T010 - [P] Ajouter patterns regex structure dans `.claude/agents/wcag-audit.md` : `<html` sans `lang`, `<title></title>` vide, heading sauts (h1→h3), absence landmarks
+- [ ] T011 - [P] Ajouter patterns regex tables/frames dans `.claude/agents/wcag-audit.md` : `<table` sans headers, `<iframe` sans title, `<th` sans scope
+- [ ] T012 - Restructurer format de sortie dans `.claude/agents/wcag-audit.md` : tableau avec colonnes Impact (Critical/Serious/Moderate/Minor) + WCAG ref + Type (violation/needs-review)
+- [ ] T013 - Ajouter section "Needs Review" dans `.claude/agents/wcag-audit.md` : items non détectables automatiquement (contraste dynamique, contenu généré, ordre de lecture)
 
 **Checkpoint** : Agent détecte et classifie les nouvelles catégories.
 
@@ -47,8 +47,8 @@
 
 **Objectif** : Enrichir les catégories d'audit et recommander les outils runtime
 
-- [ ] T014 - Ajouter les catégories d'audit enrichies dans `.claude/commands/qa/qa-a11y.md` : ARIA, Structure, Tables, Frames, Dépréciés, WCAG 2.2
-- [ ] T015 - Ajouter section "Outils complémentaires recommandés" dans `.claude/commands/qa/qa-a11y.md` : axe-core (npx @axe-core/cli), Playwright+axe (@axe-core/playwright), Pa11y, Lighthouse
+- [ ] T014 - Ajouter les catégories d'audit enrichies dans `.claude/commands/qa/wcag-audit.md` : ARIA, Structure, Tables, Frames, Dépréciés, WCAG 2.2
+- [ ] T015 - Ajouter section "Outils complémentaires recommandés" dans `.claude/commands/qa/wcag-audit.md` : axe-core (npx @axe-core/cli), Playwright+axe (@axe-core/playwright), Pa11y, Lighthouse
 
 **Checkpoint** : Command couvre toutes les catégories.
 
@@ -63,7 +63,7 @@
 - [ ] T018 - [P] Ajouter exemples **Tables** dans `website/docs/rules/accessibility.md` : headers, scope, caption
 - [ ] T019 - [P] Ajouter exemples **Frames** dans `website/docs/rules/accessibility.md` : iframe title, focus
 - [ ] T020 - [P] Ajouter exemples **WCAG 2.2** dans `website/docs/rules/accessibility.md` : target-size CSS, focus-not-obscured
-- [ ] T021 - Mettre à jour `website/docs/agents/qa-a11y.md` : checklist enrichie, nouveau format de sortie avec impact levels
+- [ ] T021 - Mettre à jour `website/docs/agents/wcag-audit.md` : checklist enrichie, nouveau format de sortie avec impact levels
 
 **Checkpoint** : Documentation complète avec exemples.
 

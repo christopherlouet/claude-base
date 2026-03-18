@@ -41,7 +41,7 @@ Verifier que l'application fonctionne correctement sur tous les breakpoints (320
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/qa:qa-a11y` | Accessibilite mobile |
+| `/qa:wcag-audit` | Accessibilite mobile |
 | `/qa:qa-perf` | Performance mobile |
 | `/dev:dev-component` | Creer des composants responsives |
 | `/growth:growth-landing` | Landing pages responsives |
