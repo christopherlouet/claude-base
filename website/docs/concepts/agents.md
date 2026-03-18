@@ -180,7 +180,7 @@ Claude delegue automatiquement aux agents selon le contexte:
 |-------|--------|-------------|
 | `qa-security` | sonnet | Audit OWASP Top 10 |
 | `qa-perf` | sonnet | Audit performance |
-| `qa-a11y` | haiku | Audit accessibilite |
+| `wcag-audit` | haiku | Audit accessibilite |
 | `qa-audit` | sonnet | Audit complet |
 
 ### Operations

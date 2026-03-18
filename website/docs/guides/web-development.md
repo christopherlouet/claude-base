@@ -31,7 +31,7 @@ Guide complet pour les projets React, Next.js et Node.js.
 | Commande | Usage |
 |----------|-------|
 | `/qa:qa-review` | Code review |
-| `/qa:qa-a11y` | Audit accessibilite |
+| `/qa:wcag-audit` | Audit accessibilite |
 | `/qa:qa-perf` | Audit performance |
 | `/qa:qa-responsive` | Audit responsive |
 

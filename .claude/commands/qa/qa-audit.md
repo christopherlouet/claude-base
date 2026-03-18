@@ -44,7 +44,7 @@ Executer un audit multi-domaines et fournir un rapport consolide avec scores, pr
 |-------|------------------|
 | `/qa:qa-security` | Audit securite approfondi |
 | `/legal:legal-rgpd` | Audit RGPD approfondi |
-| `/qa:qa-a11y` | Audit accessibilite approfondi |
+| `/qa:wcag-audit` | Audit accessibilite approfondi |
 | `/qa:qa-perf` | Audit performance approfondi |
 | `/ops:ops-health` | Check rapide avant audit |
 

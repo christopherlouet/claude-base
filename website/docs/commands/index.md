@@ -123,7 +123,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 
 > Qualite (review, securite, performance, accessibilite)
 
-- [`/qa:qa-a11y`](/docs/commands/qa/qa-a11y)
+- [`/qa:wcag-audit`](/docs/commands/qa/wcag-audit)
 - [`/qa:qa-audit`](/docs/commands/qa/qa-audit)
 - [`/qa:qa-automation`](/docs/commands/qa/qa-automation)
 - [`/qa:qa-chrome`](/docs/commands/qa/qa-chrome)

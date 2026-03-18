@@ -676,7 +676,7 @@ Pour une feature complète:
 | `/dev:dev-supabase` | Configuration backend Supabase |
 | `/dev:dev-graphql` | Intégration GraphQL |
 | `/qa:qa-mobile` | Audit performance et accessibilité mobile |
-| `/qa:qa-a11y` | Accessibilité approfondie |
+| `/qa:wcag-audit` | Accessibilité approfondie |
 | `/dev:dev-test` | Tests complémentaires |
 
 ---

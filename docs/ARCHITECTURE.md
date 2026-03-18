@@ -383,7 +383,7 @@ Rules appliquees: typescript.md, react.md, security.md
 1. /qa:qa-audit            → Command (explicite)
    ├── qa-security      → Agent (parallele)
    ├── qa-perf          → Agent (parallele)
-   ├── qa-a11y          → Agent (parallele)
+   ├── wcag-audit          → Agent (parallele)
    └── qa-coverage      → Agent (parallele)
 
 Tous en lecture seule, contextes isoles

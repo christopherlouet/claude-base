@@ -214,7 +214,7 @@ Desktop: [OK/KO]
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/qa:qa-a11y` | Accessibilité mobile |
+| `/qa:wcag-audit` | Accessibilité mobile |
 | `/qa:qa-perf` | Performance mobile |
 | `/dev:dev-component` | Créer des composants responsives |
 | `/growth:growth-landing` | Landing pages responsives |

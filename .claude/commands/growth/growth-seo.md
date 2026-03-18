@@ -38,7 +38,7 @@ Auditer le SEO technique, on-page et contenu, puis fournir des recommandations p
 |-------|------------------|
 | `/growth:growth-landing` | Optimiser les landing pages |
 | `/qa:qa-perf` | Ameliorer les Core Web Vitals |
-| `/qa:qa-a11y` | Accessibilite (impact indirect SEO) |
+| `/qa:wcag-audit` | Accessibilite (impact indirect SEO) |
 | `/growth:growth-analytics` | Tracker les performances SEO |
 
 ---
