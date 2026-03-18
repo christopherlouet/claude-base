@@ -55,7 +55,7 @@ Agents rapides et economiques pour les taches simples.
 | [`ops-health`](/docs/agents/ops-health) | Health check rapide pour evaluer l'etat general d'un projet. | Read, Grep, Glob... |
 | [`ops-serverless`](/docs/agents/ops-serverless) | Deploiement d'applications serverless. | Read, Grep, Glob... |
 | [`ops-vercel`](/docs/agents/ops-vercel) | Deploiement sur Vercel. | Read, Grep, Glob... |
-| [`qa-a11y`](/docs/agents/qa-a11y) | Audit d'accessibilite selon les normes WCAG 2.1 niveau AA. | Read, Grep, Glob |
+| [`wcag-audit`](/docs/agents/wcag-audit) | Audit d'accessibilite selon les normes WCAG 2.1 niveau AA. | Read, Grep, Glob |
 | [`qa-coverage`](/docs/agents/qa-coverage) | Analyse de la couverture de tests et de la qualite des tests... | Read, Grep, Glob... |
 | [`qa-design`](/docs/agents/qa-design) | Audit de design UI/UX avec 100+ regles de verification. | Read, Grep, Glob |
 | [`qa-responsive`](/docs/agents/qa-responsive) | Audit de la conception responsive et de l'experience mobile. | Read, Grep, Glob |

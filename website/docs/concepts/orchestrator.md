@@ -162,7 +162,7 @@ L'orchestrateur connait les 57 agents specialises et les active selon le context
 | "Explorer le code" | `work-explore` | haiku |
 | "Audit securite", "OWASP" | `qa-security` | sonnet |
 | "Performance", "Core Web Vitals" | `qa-perf` | sonnet |
-| "Accessibilite", "WCAG" | `qa-a11y` | haiku |
+| "Accessibilite", "WCAG" | `wcag-audit` | haiku |
 | "Bug", "Deboguer" | `dev-debug` | sonnet |
 | "Flutter", "Widget" | `dev-flutter` | sonnet |
 | "Terraform", "IaC" | `ops-infra-code` | sonnet |

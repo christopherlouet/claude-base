@@ -62,7 +62,7 @@ Cette page fournit des raccourcis mentaux pour les mémoriser plus facilement.
 | `/rev` | `/qa:qa-review` | Code review |
 | `/sec` | `/qa:qa-security` | Audit sécurité |
 | `/qa:qa-perf` | `/qa:qa-perf` | Performance |
-| `/qa:qa-a11y` | `/qa:qa-a11y` | Accessibilité |
+| `/qa:wcag-audit` | `/qa:wcag-audit` | Accessibilité |
 | `/qa:qa-audit` | `/qa:qa-audit` | Audit complet |
 | `/resp` | `/qa:qa-responsive` | Responsive |
 | `/auto` | `/qa:qa-automation` | Tests automatisés |

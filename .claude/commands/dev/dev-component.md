@@ -34,7 +34,7 @@ types d'abord, puis tests (RED), implementation (GREEN), refactoring et Storyboo
 |-------|------------------|
 | `/dev:dev-hook` | Creer un hook associe |
 | `/dev:dev-test` | Tests complementaires |
-| `/qa:qa-a11y` | Audit accessibilite du composant |
+| `/qa:wcag-audit` | Audit accessibilite du composant |
 | `/qa:qa-responsive` | Verifier le responsive |
 
 ---

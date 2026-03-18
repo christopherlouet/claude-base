@@ -257,7 +257,7 @@ Score global: [X/100]
 |-------|------------------|
 | `/growth:growth-landing` | Optimiser les landing pages |
 | `/qa:qa-perf` | Améliorer les Core Web Vitals |
-| `/qa:qa-a11y` | Accessibilité (impact indirect SEO) |
+| `/qa:wcag-audit` | Accessibilité (impact indirect SEO) |
 | `/doc:doc-i18n` | SEO international multilingue |
 | `/growth:growth-analytics` | Tracker les performances SEO |
 

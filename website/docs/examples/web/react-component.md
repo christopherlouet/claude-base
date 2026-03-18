@@ -328,7 +328,7 @@ export type { UserCardProps } from './UserCard';
 ## Commandes associées
 
 - `/dev:dev-test` - Générer plus de tests
-- `/qa:qa-a11y` - Vérifier l'accessibilité
+- `/qa:wcag-audit` - Vérifier l'accessibilité
 - `/doc:doc-generate` - Générer la documentation API
 
 ---

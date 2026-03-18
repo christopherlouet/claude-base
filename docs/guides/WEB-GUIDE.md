@@ -189,7 +189,7 @@ Metriques cibles:
 ### Audit accessibilite
 
 ```bash
-/qa:qa-a11y
+/qa:wcag-audit
 ```
 
 ### Audit responsive
@@ -253,7 +253,7 @@ Metriques cibles:
 ```bash
 1. /qa:qa-perf           # Identifier les problemes
 2. /dev:dev-react-perf    # Optimiser React
-3. /qa:qa-a11y           # Verifier accessibilite
+3. /qa:wcag-audit           # Verifier accessibilite
 ```
 
 ## Agents Automatiques

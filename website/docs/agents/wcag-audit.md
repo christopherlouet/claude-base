@@ -1,13 +1,13 @@
 ---
 sidebar_position: 48
-title: "qa-a11y"
+title: "wcag-audit"
 description: "Audit d'accessibilite selon WCAG 2.1/2.2 niveau AA, inspire du referentiel axe-core."
 tags:
   - "agent"
   - "haiku"
 ---
 
-# Agent: qa-a11y
+# Agent: wcag-audit
 
 <span className="badge badge--haiku">Haiku</span>
 
@@ -25,7 +25,7 @@ tags:
 
 ## Description detaillee
 
-# Agent QA-A11Y
+# Agent WCAG-AUDIT
 
 Audit d'accessibilite selon WCAG 2.1/2.2 niveau AA, inspire du referentiel axe-core (93+ regles).
 

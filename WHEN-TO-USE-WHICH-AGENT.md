@@ -16,7 +16,7 @@
 | Faire une code review | - | `/qa:qa-review` |
 | Verifier la securite | `qa-security` | `/qa:qa-security` |
 | Auditer la performance | `qa-perf` | `/qa:qa-perf` |
-| Verifier l'accessibilite | `qa-a11y` | `/qa:qa-a11y` |
+| Verifier l'accessibilite | `wcag-audit` | `/qa:wcag-audit` |
 | Creer des tests | `dev-test` | `/dev:dev-test` |
 | Refactorer du code | - | `/dev:dev-refactor` |
 | Creer un commit | - | `/work:work-commit` |
@@ -77,7 +77,7 @@
 | `qa-audit` | Audit complet (secu + RGPD + a11y + perf) | sonnet |
 | `qa-security` | Audit securite OWASP Top 10 | sonnet |
 | `qa-perf` | Audit performance, Core Web Vitals | sonnet |
-| `qa-a11y` | Audit accessibilite WCAG 2.1 | haiku |
+| `wcag-audit` | Audit accessibilite WCAG 2.1 | haiku |
 | `qa-coverage` | Analyser la couverture de tests | haiku |
 | `qa-responsive` | Audit responsive/mobile-first | haiku |
 | `qa-e2e` | Tests E2E Playwright/Cypress | sonnet |
@@ -232,14 +232,14 @@
 ### Audit Avant Production
 
 ```
-/qa:qa-audit (ou /qa:qa-security + /qa:qa-perf + /qa:qa-a11y)
+/qa:qa-audit (ou /qa:qa-security + /qa:qa-perf + /qa:wcag-audit)
 ```
 
 | Priorite | Agent | Focus |
 |----------|-------|-------|
 | P0 | `/qa:qa-security` | Vulnerabilites OWASP |
 | P1 | `/qa:qa-perf` | Core Web Vitals |
-| P2 | `/qa:qa-a11y` | Accessibilite WCAG |
+| P2 | `/qa:wcag-audit` | Accessibilite WCAG |
 | ALL | `/qa:qa-audit` | Audit complet |
 
 ### Workflows Complets
@@ -299,7 +299,7 @@ Debug complexe, securite, performance, architecture, data modeling, infrastructu
 | Optimiser les performances React | `/dev:dev-react-perf` |
 | Creer un composant | `/dev:dev-component` |
 | Creer un hook | `/dev:dev-hook` |
-| Audit accessibilite | `/qa:qa-a11y` |
+| Audit accessibilite | `/qa:wcag-audit` |
 | Audit responsive | `/qa:qa-responsive` |
 
 ### Mobile (Flutter)

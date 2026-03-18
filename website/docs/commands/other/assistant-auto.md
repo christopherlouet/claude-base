@@ -61,7 +61,7 @@ Tu es l'orchestrateur en **mode automatique**. Ton rôle est de:
 | Flutter, widget, mobile | `dev:dev-flutter` |
 | Supabase, auth, RLS | `dev:dev-supabase` |
 | GraphQL, resolver | `dev:dev-graphql` |
-| Accessibilité, WCAG, a11y | `qa:qa-a11y` |
+| Accessibilité, WCAG, a11y | `qa:wcag-audit` |
 | Performance, latence, perf | `qa:qa-perf` |
 | E2E, Playwright, Cypress | `qa:qa-e2e` |
 | Landing page, conversion page | `growth:growth-landing` |
