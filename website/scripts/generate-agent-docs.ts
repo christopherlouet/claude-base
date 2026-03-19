@@ -169,7 +169,7 @@ function generateAgentsIndex(agents: AgentInfo[]): string {
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: 'Agents',
-    description: 'Catalogue des 37 sub-agents claude-socle',
+    description: 'Catalogue des 59 sub-agents claude-socle',
   });
 
   const haikuAgents = agents.filter((a) => a.model === 'haiku');

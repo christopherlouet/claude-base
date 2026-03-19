@@ -24,8 +24,8 @@ export default function Stats({ items }: StatsProps): JSX.Element {
 
 // Pre-defined stats for claude-socle
 export const SOCLE_STATS: StatItem[] = [
-  { number: 121, label: 'Commands' },
-  { number: 57, label: 'Agents' },
+  { number: 123, label: 'Commands' },
+  { number: 59, label: 'Agents' },
   { number: 42, label: 'Skills' },
-  { number: 21, label: 'Rules' },
+  { number: 24, label: 'Rules' },
 ];

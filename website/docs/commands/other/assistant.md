@@ -95,7 +95,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
-│  │    (120)    │  │    (57)     │  │    (41)     │             │
+│  │    (123)    │  │    (59)     │  │    (42)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Délégation  │  │ Activation  │             │
 │  │  manuelle   │  │ automatique │  │ automatique │             │
@@ -104,7 +104,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  TEMPLATES  │  │    RULES    │  │   HOOKS     │             │
-│  │    (3)      │  │    (21)     │  │    (26)     │             │
+│  │    (3)      │  │    (24)     │  │    (26)     │             │
 │  │             │  │             │  │             │             │
 │  │ Structures  │  │ Conventions │  │ Automation  │             │
 │  │ de fichiers │  │  par path   │  │ pre/post    │             │
@@ -123,7 +123,7 @@ Tu es l'orchestrateur principal du socle. Ton rôle est de:
 
 ---
 
-## Section 4: Sub-Agents (57 agents avec contexte isolé)
+## Section 4: Sub-Agents (59 agents avec contexte isolé)
 
 Claude délègue automatiquement aux agents spécialisés selon le contexte. Les agents ont un contexte isolé et des outils restreints.
 
@@ -241,7 +241,7 @@ Résultat renvoyé à la conversation principale
 
 ---
 
-## Section 5: Skills (41 skills à déclenchement automatique)
+## Section 5: Skills (42 skills à déclenchement automatique)
 
 Les Skills sont activés automatiquement par Claude selon les mots-clés dans la conversation.
 
@@ -370,7 +370,7 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 ---
 
-## Section 7: Catalogue des Commandes (120)
+## Section 7: Catalogue des Commandes (123)
 
 ### WORK- : Workflow Principal (11)
 
@@ -698,10 +698,10 @@ Génère: specs/ma-feature/plan.md + tasks.md
 
 | Dossier | Contenu |
 |---------|---------|
-| `.claude/commands/` | 120 commandes organisées par domaine |
-| `.claude/agents/` | 57 sub-agents avec contexte isolé |
-| `.claude/skills/` | 41 skills à déclenchement automatique |
-| `.claude/rules/` | 21 règles contextuelles par path |
+| `.claude/commands/` | 123 commandes organisées par domaine |
+| `.claude/agents/` | 59 sub-agents avec contexte isolé |
+| `.claude/skills/` | 42 skills à déclenchement automatique |
+| `.claude/rules/` | 24 règles contextuelles par path |
 | `.claude/templates/` | 3 templates (spec, plan, tasks) |
 | `.claude/output-styles/` | Styles de sortie (teaching, concise...) |
 

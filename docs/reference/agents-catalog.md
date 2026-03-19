@@ -1,4 +1,4 @@
-# Agents Disponibles (121 commands, 57 sub-agents, 42 skills)
+# Agents Disponibles (123 commands, 59 sub-agents, 42 skills)
 
 ## Orchestrateur (Point d'entree unique)
 | Commande | Mode | Usage |
@@ -49,7 +49,7 @@
 | `/dev:dev-trpc` | APIs type-safe avec tRPC |
 | `/dev:dev-ai-integration` | Integration LLMs (OpenAI, Claude API) |
 
-## QA- : Qualite (15)
+## QA- : Qualite (16)
 | Commande | Usage |
 |----------|-------|
 | `/qa:qa-review` | Code review approfondie + analyse de nommage |
@@ -62,13 +62,14 @@
 | `/qa:qa-responsive` | Audit responsive/mobile web |
 | `/qa:qa-automation` | Automatisation des tests |
 | `/qa:qa-coverage` | Analyse couverture de tests |
+| `/qa:qa-loop` | Boucle autonome audit-fix avec criteres d'arret |
 | `/qa:qa-kaizen` | Amelioration continue (PDCA, Muda) |
 | `/qa:qa-mobile` | Audit qualite apps mobiles (Flutter) |
 | `/qa:qa-neovim` | Audit config Neovim (perf, keymaps) |
 | `/qa:qa-e2e` | Tests End-to-End (Playwright, Cypress) |
 | `/qa:qa-tech-debt` | Identifier et prioriser la dette technique |
 
-## OPS- : Operations (30)
+## OPS- : Operations (31)
 | Commande | Usage |
 |----------|-------|
 | `/ops:ops-hotfix` | Correction urgente production |
@@ -100,6 +101,7 @@
 | `/ops:ops-vercel` | Configuration et deploiement Vercel |
 | `/ops:ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, reseau, backup) |
 | `/ops:ops-opnsense` | Configuration OPNsense via Terraform (firewall, NAT, DHCP/DNS) |
+| `/ops:ops-deploy` | Deploiement securise avec checklist pre-deploy |
 | `/ops:ops-rollback` | Procedure de rollback securisee |
 
 ## DOC- : Documentation (9)
@@ -161,7 +163,7 @@
 | `/legal:legal-terms-of-service` | Conditions Generales d'Utilisation |
 | `/legal:legal-privacy-policy` | Politique de Confidentialite |
 
-## Sub-Agents (57)
+## Sub-Agents (59)
 
 Claude delegue automatiquement aux agents specialises (contexte isole, outils restreints).
 
@@ -178,8 +180,8 @@ Claude delegue automatiquement aux agents specialises (contexte isole, outils re
 | Domaine | Agents | Modeles |
 |---------|--------|---------|
 | Exploration & Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
-| Qualite & Audits | `qa-audit`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-coverage`, `qa-responsive`, `qa-e2e`, `qa-tech-debt`, `qa-design`, `qa-chrome` | haiku/sonnet |
-| Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-serverless`, `ops-vercel`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
+| Qualite & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-coverage`, `qa-responsive`, `qa-e2e`, `qa-tech-debt`, `qa-design`, `qa-chrome` | haiku/sonnet |
+| Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-serverless`, `ops-vercel`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
 | Developpement | `dev-debug`, `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`, `dev-prompt-engineering`, `dev-rag`, `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-ai-integration`, `dev-document`, `dev-tdd` | haiku/sonnet |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |
 | Data | `data-pipeline`, `data-analytics`, `data-modeling` | haiku/sonnet |
