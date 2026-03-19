@@ -28,10 +28,10 @@ cd website && npm install && cd ..
 
 ```
 .claude/
-  commands/    # 120 commandes (source de verite)
-  agents/      # 57 sub-agents
-  skills/      # 41 skills
-  rules/       # 21 regles contextuelles
+  commands/    # 123 commandes (source de verite)
+  agents/      # 59 sub-agents
+  skills/      # 42 skills
+  rules/       # 24 regles contextuelles
   templates/   # Templates de specification
   settings.json # Hooks et permissions
 website/       # Site Docusaurus (docs generees)

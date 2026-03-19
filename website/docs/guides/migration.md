@@ -58,10 +58,10 @@ ls -la .claude/
 Vous devriez voir :
 ```
 .claude/
-├── commands/      # 120 commandes
-├── agents/        # 57 agents
-├── skills/        # 41 skills
-├── rules/         # 21 rules
+├── commands/      # 123 commandes
+├── agents/        # 59 agents
+├── skills/        # 42 skills
+├── rules/         # 24 rules
 ├── templates/     # Templates de spec
 ├── output-styles/ # Styles de sortie
 └── settings.json  # Configuration
@@ -213,7 +213,7 @@ Si vous utilisez déjà Claude Code sans claude-socle :
 | Workflow | Ad-hoc | Explore → Plan → Code |
 | Commandes | Manuel | `/work:work-*`, `/dev:dev-*`, etc. |
 | Conventions | Répétées | Dans CLAUDE.md et rules |
-| Agents | Non | 57 agents spécialisés |
+| Agents | Non | 59 agents spécialisés |
 
 ### Étapes de migration
 

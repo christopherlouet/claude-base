@@ -201,7 +201,7 @@ function generateMainIndex(commandsByDomain: Map<Domain, CommandInfo[]>): string
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: 'Commands',
-    description: 'Catalogue des 120 commandes claude-socle',
+    description: 'Catalogue des 123 commandes claude-socle',
   });
 
   let totalCommands = 0;
