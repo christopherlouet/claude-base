@@ -19,7 +19,7 @@ L'**orchestrateur** est le point d'entree unique de claude-socle. Il analyse vot
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  COMMANDS   │  │   AGENTS    │  │   SKILLS    │             │
-│  │    (120)    │  │    (57)     │  │    (41)     │             │
+│  │    (123)    │  │    (59)     │  │    (42)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Delegation  │  │ Activation  │             │
 │  │  manuelle   │  │ automatique │  │ automatique │             │
@@ -28,7 +28,7 @@ L'**orchestrateur** est le point d'entree unique de claude-socle. Il analyse vot
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  TEMPLATES  │  │    RULES    │  │   HOOKS     │             │
-│  │    (3)      │  │    (21)     │  │    (26)     │             │
+│  │    (3)      │  │    (24)     │  │    (26)     │             │
 │  │             │  │             │  │             │             │
 │  │ Structures  │  │ Conventions │  │ Automation  │             │
 │  │ de fichiers │  │  par path   │  │ pre/post    │             │
@@ -155,7 +155,7 @@ L'orchestrateur detecte automatiquement votre environnement :
 
 ## Sub-Agents actives automatiquement
 
-L'orchestrateur connait les 57 agents specialises et les active selon le contexte :
+L'orchestrateur connait les 59 agents specialises et les active selon le contexte :
 
 | Contexte detecte | Agent active | Modele |
 |------------------|--------------|--------|
@@ -184,7 +184,7 @@ Resultat renvoye a la conversation principale
 
 ## Skills declenches automatiquement
 
-Les 41 skills s'activent selon les mots-cles dans la conversation :
+Les 42 skills s'activent selon les mots-cles dans la conversation :
 
 | Mots-cles | Skill active | Action |
 |-----------|--------------|--------|

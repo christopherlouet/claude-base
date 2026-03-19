@@ -1,6 +1,6 @@
 # Guide de Choix des Agents et Commandes
 
-> Comment choisir le bon agent parmi les 57 disponibles dans claude-socle.
+> Comment choisir le bon agent parmi les 59 disponibles dans claude-socle.
 
 ## Matrice de Decision Rapide
 
@@ -30,11 +30,11 @@
 | **Mobile Flutter** | `work-explore`, `dev-flutter`, `dev-supabase`, `qa-mobile` |
 | **API REST/GraphQL** | `work-explore`, `qa-security`, `doc-generate` |
 | **Data/ETL** | `data-pipeline`, `data-modeling`, `data-analytics` |
-| **Infrastructure** | `ops-docker`, `ops-ci`, `ops-infra-code`, `ops-proxmox` |
+| **Infrastructure** | `ops-deploy`, `ops-docker`, `ops-ci`, `ops-infra-code`, `ops-proxmox` |
 
 ---
 
-## Agents par Categorie (57)
+## Agents par Categorie (59)
 
 ### WORK- : Workflow Principal (1 agent)
 
@@ -70,11 +70,12 @@
 - **haiku** (rapide, economique) : taches simples, generation de code standard
 - **sonnet** (approfondi) : debug complexe, architecture, integration
 
-### QA- : Qualite (9 agents)
+### QA- : Qualite (10 agents)
 
 | Agent | Quand l'utiliser | Modele |
 |-------|------------------|--------|
 | `qa-audit` | Audit complet (secu + RGPD + a11y + perf) | sonnet |
+| `qa-loop` | Boucle autonome audit-fix jusqu'au score cible | sonnet |
 | `qa-security` | Audit securite OWASP Top 10 | sonnet |
 | `qa-perf` | Audit performance, Core Web Vitals | sonnet |
 | `wcag-audit` | Audit accessibilite WCAG 2.1 | haiku |
@@ -86,15 +87,18 @@
 
 **Avant mise en production :**
 ```bash
-/qa:qa-audit  # Audit complet recommande
+/qa:qa-audit          # Audit complet (lecture seule)
+/qa:qa-loop           # Audit + fix automatique jusqu'a score 85+
+/qa:qa-loop "score 90"  # Score cible personnalise
 ```
 
-### OPS- : Operations (12 agents)
+### OPS- : Operations (13 agents)
 
 | Agent | Quand l'utiliser | Modele |
 |-------|------------------|--------|
 | `ops-deps` | Audit dependances, vulnerabilites | haiku |
 | `ops-health` | Health check rapide du projet | haiku |
+| `ops-deploy` | Deploiement securise avec checklist pre-deploy | sonnet |
 | `ops-docker` | Dockeriser une application | haiku |
 | `ops-ci` | Configurer GitHub Actions, GitLab CI | haiku |
 | `ops-database` | Schemas et migrations DB | sonnet |
@@ -240,7 +244,8 @@
 | P0 | `/qa:qa-security` | Vulnerabilites OWASP |
 | P1 | `/qa:qa-perf` | Core Web Vitals |
 | P2 | `/qa:wcag-audit` | Accessibilite WCAG |
-| ALL | `/qa:qa-audit` | Audit complet |
+| ALL | `/qa:qa-audit` | Audit complet (lecture seule) |
+| ALL+FIX | `/qa:qa-loop` | Audit + fix autonome en boucle |
 
 ### Workflows Complets
 
@@ -324,6 +329,7 @@ Debug complexe, securite, performance, architecture, data modeling, infrastructu
 
 | Besoin | Commande |
 |--------|----------|
+| Deployer en production | `/ops:ops-deploy` |
 | Dockeriser | `/ops:ops-docker` |
 | Configurer CI/CD | `/ops:ops-ci` |
 | Gerer les dependances | `/ops:ops-deps` |

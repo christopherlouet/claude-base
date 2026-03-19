@@ -12,8 +12,8 @@ description: Reference rapide et matrices
 
 | Reference | Description |
 |-----------|-------------|
-| [Matrice des Commands](/docs/reference/commands-matrix) | 120 commandes avec domaine et description |
-| [Matrice des Agents](/docs/reference/agents-matrix) | 57 agents avec modele et outils |
+| [Matrice des Commands](/docs/reference/commands-matrix) | 123 commandes avec domaine et description |
+| [Matrice des Agents](/docs/reference/agents-matrix) | 59 agents avec modele et outils |
 | [Scripts utilitaires](/docs/reference/scripts) | 12 scripts d'installation et maintenance |
 | [Cheatsheet](/docs/reference/cheatsheet) | Aide-memoire rapide |
 
@@ -37,10 +37,10 @@ description: Reference rapide et matrices
 
 | Composant | Nombre | Lien |
 |-----------|--------|------|
-| Commands | 120 | [Voir](/docs/commands) |
-| Agents | 57 | [Voir](/docs/agents) |
-| Skills | 41 | [Voir](/docs/skills) |
-| Rules | 21 | [Voir](/docs/rules) |
+| Commands | 123 | [Voir](/docs/commands) |
+| Agents | 59 | [Voir](/docs/agents) |
+| Skills | 42 | [Voir](/docs/skills) |
+| Rules | 24 | [Voir](/docs/rules) |
 | Scripts | 12 | [Voir](/docs/reference/scripts) |
 
 ## Raccourcis

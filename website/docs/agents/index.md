@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalogue des 37 sub-agents claude-socle"
+description: "Catalogue des 59 sub-agents claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Catalogue des Agents
 
-> **57 sub-agents** avec contexte isole pour des taches autonomes
+> **59 sub-agents** avec contexte isole pour des taches autonomes
 
 <Stats items={[
   { number: 26, label: 'Agents Haiku' },
-  { number: 31, label: 'Agents Sonnet' },
-  { number: 57, label: 'Total' },
+  { number: 33, label: 'Agents Sonnet' },
+  { number: 59, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Agent ?
@@ -62,7 +62,7 @@ Agents rapides et economiques pour les taches simples.
 | [`qa-tech-debt`](/docs/agents/qa-tech-debt) | Identification et priorisation de la dette technique dans le... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | Tu es en mode EXPLORATION. Analyse le codebase sans jamais m... | Read, Grep, Glob |
 
-### Sonnet (31 agents)
+### Sonnet (33 agents)
 
 Agents pour les taches complexes necessitant une analyse approfondie.
 
@@ -88,6 +88,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`legal-rgpd`](/docs/agents/legal-rgpd) | Conformite RGPD (Reglement General sur la Protection des Don... | Read, Grep, Glob... |
 | [`ops-ci`](/docs/agents/ops-ci) | Configuration de pipelines CI/CD complets. | Read, Grep, Glob... |
 | [`ops-database`](/docs/agents/ops-database) | Conception et gestion de bases de donnees. | Read, Grep, Glob... |
+| [`ops-deploy`](/docs/agents/ops-deploy) | Deploiement securise avec checklist pre-deploy obligatoire. | Read, Grep, Glob... |
 | [`ops-docker`](/docs/agents/ops-docker) | Containerisation Docker optimisee pour la production. | Read, Grep, Glob... |
 | [`ops-infra-code`](/docs/agents/ops-infra-code) | Agent specialise pour l'Infrastructure as Code avec Terrafor... | Read, Grep, Glob... |
 | [`ops-migration`](/docs/agents/ops-migration) | Planification et execution de migrations techniques. | Read, Grep, Glob... |
@@ -95,6 +96,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`ops-opnsense`](/docs/agents/ops-opnsense) | Agent spécialisé pour la gestion d'OPNsense en Infrastructur... | Read, Grep, Glob... |
 | [`ops-proxmox`](/docs/agents/ops-proxmox) | Gestion complète de l'infrastructure Proxmox VE : provisioni... | Read, Grep, Glob... |
 | [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet d'un projet couvrant securite, RGPD, a... | Read, Grep, Glob... |
+| [`qa-loop`](/docs/agents/qa-loop) | Boucle autonome audit-fix-test-re-audit avec criteres d'arret. | Read, Grep, Glob... |
 | [`qa-chrome`](/docs/agents/qa-chrome) | Audit visuel et tests navigateur via l'integration Chrome de... | Read, Grep, Glob... |
 | [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
 | [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
