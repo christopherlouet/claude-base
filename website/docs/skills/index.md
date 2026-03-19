@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Skills"
-description: "Catalogue des 41 skills auto-declenches"
+description: "Catalogue des 42 skills auto-declenches"
 ---
 
 import Stats from '@site/src/components/Stats';

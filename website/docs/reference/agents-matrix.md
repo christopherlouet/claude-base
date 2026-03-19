@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: Matrice des Agents
-description: Liste complete des 57 agents
+description: Liste complete des 59 agents
 ---
 
 # Matrice des Agents
 
-> **57 sub-agents** avec modele et outils
+> **59 sub-agents** avec modele et outils
 
 ## Par modele
 

@@ -1,12 +1,12 @@
 ---
 sidebar_position: 2
 title: Matrice des Commands
-description: Liste complete des 120 commandes
+description: Liste complete des 123 commandes
 ---
 
 # Matrice des Commands
 
-> **120 commandes** organisees par domaine
+> **123 commandes** organisees par domaine
 
 ## WORK - Workflow (11)
 

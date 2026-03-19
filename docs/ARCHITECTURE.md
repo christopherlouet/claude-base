@@ -197,7 +197,7 @@ Quand l'utilisateur mentionne "TDD", "test first", ou "ecrire les tests d'abord"
 - Declenchement contextuel desire
 - Standardisation de comportements
 
-## Agents (57 disponibles)
+## Agents (59 disponibles)
 
 ### Definition
 Sub-agents specialises avec contexte isole, delegation automatique.

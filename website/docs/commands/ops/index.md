@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **30 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
+Ce domaine contient **31 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
 
 ## Liste des commandes
 
@@ -23,6 +23,7 @@ Ce domaine contient **30 commandes** pour operations (ci/cd, docker, monitoring,
 | [`/ops:ops-ci`](/docs/commands/ops/ops-ci) | Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.). |
 | [`/ops:ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization) | Analyser et optimiser les coûts d'infrastructure cloud. |
 | [`/ops:ops-database`](/docs/commands/ops/ops-database) | Design de schéma, migrations et optimisation de base de données. |
+| [`/ops:ops-deploy`](/docs/commands/ops/ops-deploy) | Deploiement securise avec checklist pre-deploy obligatoire. |
 | [`/ops:ops-deps`](/docs/commands/ops/ops-deps) | Audit, analyse et mise à jour des dépendances du projet. |
 | [`/ops:ops-disaster-recovery`](/docs/commands/ops/ops-disaster-recovery) | Mettre en place une stratégie de reprise après sinistre (Disaster Recovery). |
 | [`/ops:ops-docker`](/docs/commands/ops/ops-docker) | Dockerisation et containerisation de projets. |
@@ -76,6 +77,12 @@ Ce domaine contient **30 commandes** pour operations (ci/cd, docker, monitoring,
     description="Design de schéma, migrations et optimisation de base de données."
     domain="ops"
     href="/docs/commands/ops/ops-database"
+  />
+  <CommandCard
+    name="ops-deploy"
+    description="Deploiement securise avec checklist pre-deploy obligatoire."
+    domain="ops"
+    href="/docs/commands/ops/ops-deploy"
   />
   <CommandCard
     name="ops-deps"

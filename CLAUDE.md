@@ -55,6 +55,8 @@ Setup: `./scripts/new-project.sh --simple .`
 | Nouvelle release | `/work:work-flow-release "v2.0.0"` |
 | Lancement produit | `/work:work-flow-launch "mon SaaS"` |
 | Audit complet | `/qa:qa-audit` |
+| Audit + fix en boucle | `/qa:qa-loop` ou `/qa:qa-loop "score 90"` |
+| Deploiement securise | `/ops:ops-deploy` |
 | Equipe d'agents | `/work:work-team "description"` |
 
 Workflow manuel : `/work:work-explore` → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/work:work-pr`
