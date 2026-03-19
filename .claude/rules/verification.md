@@ -113,6 +113,32 @@ Sauter une etape = affirmation non verifiee
 | "Le bug est corrige" | Test du symptome original: passe | "J'ai change le code" |
 | "Les exigences sont remplies" | Checklist ligne par ligne | "Les tests passent" |
 
+## Gate Operations Destructives
+
+Avant toute operation qui supprime ou modifie en masse des donnees:
+
+| Operation | Verification obligatoire |
+|-----------|-------------------------|
+| `DELETE FROM` / `TRUNCATE` | Compter les lignes affectees avec `SELECT COUNT(*)` d'abord |
+| `DROP TABLE` / `DROP DATABASE` | Confirmer avec l'utilisateur + backup |
+| `rm -rf` sur uploads/media/storage | Lister les fichiers d'abord, confirmer le nombre |
+| `prisma migrate reset` / `--force` | Backup de la DB avant execution |
+| Cleanup/purge de donnees | Dry-run d'abord (`SELECT` avant `DELETE`) |
+
+```
+AVANT une operation destructive:
+1. COMPTER: Combien d'elements seront affectes ?
+2. ECHANTILLONNER: Montrer 5 exemples a l'utilisateur
+3. CONFIRMER: Attendre validation explicite
+4. BACKUP: Creer une sauvegarde si possible
+5. EXECUTER: Lancer l'operation
+6. VERIFIER: Confirmer le resultat attendu
+```
+
+IMPORTANT: Ne JAMAIS executer de DELETE/DROP/TRUNCATE/rm sur des donnees de production sans confirmation explicite de l'utilisateur.
+
+IMPORTANT: Toujours faire un dry-run (SELECT/ls) avant une suppression en masse.
+
 ## Regles
 
 IMPORTANT: Ne JAMAIS dire "c'est corrige" sans avoir lance les tests.

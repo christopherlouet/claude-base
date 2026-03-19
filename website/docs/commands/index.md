@@ -1,17 +1,17 @@
 ---
 sidebar_position: 1
 title: "Commands"
-description: "Catalogue des 120 commandes claude-socle"
+description: "Catalogue des 123 commandes claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
 
 # Catalogue des Commandes
 
-> **121 commandes** organisees en **10 domaines**
+> **123 commandes** organisees en **10 domaines**
 
 <Stats items={[
-  { number: 121, label: 'Commandes' },
+  { number: 123, label: 'Commandes' },
   { number: 10, label: 'Domaines' },
 ]} />
 
