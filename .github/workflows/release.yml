@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Bats
-        uses: bats-core/bats-action@3.0.1
+        uses: bats-core/bats-action@4.0.0
 
       - name: Run tests
         run: bats tests/*.bats
