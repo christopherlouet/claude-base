@@ -70,7 +70,7 @@ claude-socle/
 
 ## Composants principaux
 
-### Commands (121)
+### Commands (123)
 
 Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 
@@ -87,7 +87,7 @@ Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 /qa:qa-security
 ```
 
-### Agents (57)
+### Agents (59)
 
 Les **agents** sont des sub-agents autonomes avec un contexte isole.
 
@@ -119,7 +119,7 @@ Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 "Fais un commit" → Skill generating-commit-messages active
 ```
 
-### Rules (21)
+### Rules (24)
 
 Les **rules** sont des regles appliquees par chemin de fichier.
 
