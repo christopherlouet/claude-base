@@ -2,23 +2,26 @@
 
 Regles modulaires appliquees automatiquement selon les fichiers modifies (path-specific rules).
 
-## Regles disponibles (21)
+## Regles disponibles (24)
 
 | Regle | Paths cibles | Description |
 |-------|-------------|-------------|
 | `accessibility` | `**/*.tsx`, `**/*.jsx`, `**/components/**`, `**/pages/**` | WCAG 2.1 AA, aria, semantic HTML |
 | `api` | `**/api/**`, `**/routes/**`, `**/controllers/**` | REST conventions, validation, status codes |
 | `csharp` | `**/*.cs`, `**/*.csproj` | Nullable, async/await, .NET patterns |
+| `deploy-safety` | `**/docker-compose*`, `**/Dockerfile*`, `**/deploy*`, `**/.env*` | Checklist pre-deploy, env parity |
 | `flutter` | `**/*.dart`, `**/lib/**`, `**/test/**` | Clean Architecture, BLoC, widgets |
 | `git` | _(global)_ | Conventional commits, branches, safety rules |
 | `go` | `**/*.go`, `**/go.mod` | Error handling, interfaces, concurrency |
 | `java` | `**/*.java`, `**/pom.xml`, `**/build.gradle` | Optional, Streams, Spring Boot |
 | `lsp` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.rs`, `**/*.java`, `**/*.cs`, `**/*.rb`, `**/*.php`, `**/*.kt`, `**/*.dart` | LSP vs Grep, navigation semantique, activation |
+| `migration-safety` | `**/package.json`, `**/tsconfig.json`, `**/next.config.*`, `**/.eslintrc*`, `**/eslint.config.*`, `**/pyproject.toml`, `**/go.mod` | Checklist migration framework, caches |
 | `nextjs` | `**/next.config.*`, `**/app/**`, `**/pages/**` | RSC, data fetching, caching, App Router |
 | `performance` | `**/*.tsx`, `**/*.ts`, `**/pages/**` | Core Web Vitals, lazy loading, memoization |
 | `php` | `**/*.php`, `**/composer.json` | PSR-12, Laravel, type declarations |
 | `python` | `**/*.py`, `**/pyproject.toml` | Type hints, PEP 8, async patterns |
 | `react` | `**/*.tsx`, `**/components/**`, `**/hooks/**` | Composants, hooks, performance |
+| `research` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.dart`, `**/*.rs` | Verifier natif avant build custom |
 | `ruby` | `**/*.rb`, `**/Gemfile` | Rails conventions, RSpec |
 | `rust` | `**/*.rs`, `**/Cargo.toml` | Ownership, error handling, traits |
 | `security` | `**/auth/**`, `**/api/**`, `**/middleware/**` | XSS, SQL injection, CSRF, auth |
@@ -42,6 +45,7 @@ Quand un fichier correspond à plusieurs rules (ex: `.tsx` active typescript + r
 | 6 | `testing` | Normes de tests |
 | 7 | `performance`, `accessibility` | Optimisations et bonnes pratiques |
 | 8 | `api`, `lsp` | Conventions d'interface |
+| 9 | `research`, `deploy-safety` | Garde-fous process |
 
 ### Exemple: modification de `src/components/Button.tsx`
 

@@ -3,6 +3,3 @@
 
 # Run lint-staged for staged files only
 npx lint-staged
-
-# Optional: Run type check
-# npm run typecheck

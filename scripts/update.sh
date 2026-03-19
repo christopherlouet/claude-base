@@ -566,6 +566,7 @@ _count_dir_files() {
 }
 
 # Generic update for a .claude/ subdirectory
+# Uses per-file diff checking to avoid overwriting user customizations.
 # Arguments:
 #   $1 - name: internal identifier (skills, agents, rules, styles, templates)
 #   $2 - src_subdir: relative path from socle root (.claude/skills, etc.)
@@ -585,29 +586,126 @@ update_directory() {
         return
     fi
 
-    local count
-    count=$(_count_dir_files "$src_dir" "$name")
+    make_dir "$dest_dir"
 
-    if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
-        make_dir "$dest_dir"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Copie $src_subdir/"
-        else
-            cp -r "$src_dir/"* "$dest_dir/"
+    local dir_updated=0
+    local dir_added=0
+    local dir_skipped=0
+    local dir_identical=0
+
+    # Find all files in source directory
+    local find_pattern
+    case "$name" in
+        templates)
+            find_pattern='-type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \)'
+            ;;
+        *)
+            find_pattern='-type f -name "*.md"'
+            ;;
+    esac
+
+    while IFS= read -r src_file; do
+        if [[ ! -f "$src_file" ]]; then
+            continue
         fi
-        success "$label mis à jour ($count $name)"
-    elif [[ -d "$dest_dir" ]]; then
-        if confirm "Mettre à jour $src_subdir/?" "n"; then
-            cp -r "$src_dir/"* "$dest_dir/"
-            success "$label mis à jour"
-        else
-            warning "$label ignorés"
+
+        local rel_path="${src_file#"$src_dir"/}"
+        local dest_file="$dest_dir/$rel_path"
+        local filename
+        filename=$(basename "$src_file")
+
+        # Create subdirectory if needed
+        local file_dest_dir
+        file_dest_dir=$(dirname "$dest_file")
+        if [[ ! -d "$file_dest_dir" ]] && ! $DRY_RUN; then
+            mkdir -p "$file_dest_dir"
         fi
-    else
-        make_dir "$dest_dir"
-        cp -r "$src_dir/"* "$dest_dir/"
-        success "$label créés ($count $name)"
+
+        if [[ -f "$dest_file" ]]; then
+            # File exists — check if identical
+            if diff -q "$src_file" "$dest_file" > /dev/null 2>&1; then
+                debug "$rel_path: identique"
+                ((dir_identical++)) || true
+                continue
+            fi
+
+            # File differs
+            if $FORCE_UPDATE; then
+                if $DRY_RUN; then
+                    echo -e "${DIM}[DRY-RUN]${NC} Mise à jour: $rel_path"
+                else
+                    cp "$src_file" "$dest_file"
+                fi
+                debug "  $rel_path mis à jour"
+                ((dir_updated++)) || true
+            elif ${NON_INTERACTIVE:-false}; then
+                warning "  $rel_path ignoré (utilisez --force pour écraser)"
+                ((dir_skipped++)) || true
+            else
+                echo ""
+                prompt "$rel_path a été modifié. Que faire?"
+                echo "  [y] Écraser  [n] Ignorer  [d] Voir le diff"
+                read -r -n 1 choice
+                echo
+
+                case "$choice" in
+                    d|D)
+                        echo ""
+                        echo -e "${DIM}--- Local${NC}"
+                        echo -e "${DIM}+++ Socle${NC}"
+                        diff "$dest_file" "$src_file" || true
+                        echo ""
+                        if confirm "Écraser $rel_path?" "n"; then
+                            cp "$src_file" "$dest_file"
+                            debug "  $rel_path mis à jour"
+                            ((dir_updated++)) || true
+                        else
+                            warning "  $rel_path ignoré"
+                            ((dir_skipped++)) || true
+                        fi
+                        ;;
+                    y|Y)
+                        cp "$src_file" "$dest_file"
+                        debug "  $rel_path mis à jour"
+                        ((dir_updated++)) || true
+                        ;;
+                    *)
+                        warning "  $rel_path ignoré"
+                        ((dir_skipped++)) || true
+                        ;;
+                esac
+            fi
+        else
+            # New file
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Ajout: $rel_path"
+            else
+                cp "$src_file" "$dest_file"
+            fi
+            debug "  $rel_path ajouté (nouveau)"
+            ((dir_added++)) || true
+        fi
+    done < <(eval "find \"$src_dir\" $find_pattern 2>/dev/null" || true)
+
+    # Copy non-md files for skills (SKILL.md subdirs may have examples/, etc.)
+    if [[ "$name" == "skills" ]]; then
+        while IFS= read -r src_file; do
+            local rel_path="${src_file#"$src_dir"/}"
+            local dest_file="$dest_dir/$rel_path"
+            local file_dest_dir
+            file_dest_dir=$(dirname "$dest_file")
+            if [[ ! -d "$file_dest_dir" ]] && ! $DRY_RUN; then
+                mkdir -p "$file_dest_dir"
+            fi
+            if [[ ! -f "$dest_file" ]] || $FORCE_UPDATE; then
+                if ! $DRY_RUN; then
+                    cp "$src_file" "$dest_file"
+                fi
+            fi
+        done < <(find "$src_dir" -type f ! -name "*.md" 2>/dev/null || true)
     fi
+
+    success "$label: $dir_added ajouté(s), $dir_updated mis à jour, $dir_identical identique(s), $dir_skipped ignoré(s)"
 }
 
 
@@ -688,21 +786,45 @@ upgrade_claude_md() {
     ref_count=$(find "$dest_ref" -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
     success "docs/reference/ copié ($ref_count fichiers)"
 
-    # Copier les docs supplementaires referencees par CLAUDE.md
+    # Copier les docs supplementaires UNIQUEMENT si elles n'existent pas
+    # Ces fichiers deviennent specifiques au projet une fois crees
     for doc_file in "docs/ARCHITECTURE.md" "docs/WORKFLOWS.md"; do
         if [[ -f "$SOCLE_DIR/$doc_file" ]]; then
-            cp "$SOCLE_DIR/$doc_file" "$TARGET_DIR/$doc_file"
-            debug "Copié: $doc_file"
+            if [[ -f "$TARGET_DIR/$doc_file" ]]; then
+                debug "Conservé (spécifique au projet): $doc_file"
+            else
+                cp "$SOCLE_DIR/$doc_file" "$TARGET_DIR/$doc_file"
+                success "Créé (nouveau): $doc_file"
+            fi
         fi
     done
 
-    # Copier docs/guides/ (reference dans CLAUDE.md)
+    # Copier docs/guides/ — uniquement les nouveaux fichiers
+    # Les guides existants sont conserves (potentiellement personnalises)
     if [[ -d "$SOCLE_DIR/docs/guides" ]]; then
         make_dir "$TARGET_DIR/docs/guides"
-        cp -r "$SOCLE_DIR/docs/guides/"* "$TARGET_DIR/docs/guides/"
-        local guides_count
-        guides_count=$(find "$TARGET_DIR/docs/guides" -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
-        success "docs/guides/ copié ($guides_count fichiers)"
+        local guides_added=0
+        local guides_skipped=0
+        while IFS= read -r guide_file; do
+            local guide_rel="${guide_file#"$SOCLE_DIR"/docs/guides/}"
+            local guide_dest="$TARGET_DIR/docs/guides/$guide_rel"
+            if [[ -f "$guide_dest" ]]; then
+                debug "Conservé (existant): docs/guides/$guide_rel"
+                ((guides_skipped++)) || true
+            else
+                local guide_dest_dir
+                guide_dest_dir=$(dirname "$guide_dest")
+                [[ -d "$guide_dest_dir" ]] || mkdir -p "$guide_dest_dir"
+                cp "$guide_file" "$guide_dest"
+                debug "Ajouté: docs/guides/$guide_rel"
+                ((guides_added++)) || true
+            fi
+        done < <(find "$SOCLE_DIR/docs/guides" -name "*.md" -type f 2>/dev/null || true)
+        if [[ $guides_added -gt 0 ]]; then
+            success "docs/guides/: $guides_added ajouté(s), $guides_skipped conservé(s)"
+        else
+            info "docs/guides/: $guides_skipped fichier(s) existant(s) conservé(s)"
+        fi
     fi
 
     # Vérifier si @imports déjà présents

@@ -50,7 +50,9 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | **Check node_modules** | SessionStart (startup) | Vérifie que node_modules existe si package.json présent |
 | **Protection main** | PreToolUse (Edit/Write) | Bloque modifications sur main/master |
 | **Détection secrets** | PreToolUse (Write/Edit) | Gitleaks vérifie les secrets avant écriture |
-| **Tests pre-commit** | PreToolUse (Bash git commit) | Exécute les tests avant un commit |
+| **Tests pre-commit** | PreToolUse (Bash git commit) | Exécute les tests avant un commit. Detecte et repare Husky si necessaire |
+| **CI locale pre-push** | PreToolUse (Bash git push) | Lint + type-check + tests avant push. Desactivable avec `SKIP_PRE_PUSH_CI=1` |
+| **Destructive ops guard** | PreToolUse (Bash) | Bloque les DELETE/DROP/TRUNCATE/rm destructifs sans confirmation |
 | **RTK token optimizer** | PreToolUse (Bash) | Reecrit les commandes via RTK pour reduire les tokens (-60-90%). Desactive par defaut, activer avec `ENABLE_RTK=1` |
 | **Auto-format TS/JS** | PostToolUse (Edit/Write) | Prettier sur fichiers TS/JS |
 | **Auto-format Python** | PostToolUse (Edit/Write) | Ruff/Black sur fichiers .py |

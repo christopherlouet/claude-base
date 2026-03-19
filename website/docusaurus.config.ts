@@ -118,7 +118,7 @@ const config: Config = {
             {
               type: 'docSidebar',
               sidebarId: 'agentsSidebar',
-              label: 'Agents (57)',
+              label: 'Agents (59)',
             },
             {
               type: 'docSidebar',
@@ -128,7 +128,7 @@ const config: Config = {
             {
               type: 'docSidebar',
               sidebarId: 'rulesSidebar',
-              label: 'Rules (21)',
+              label: 'Rules (24)',
             },
           ],
         },
@@ -180,11 +180,11 @@ const config: Config = {
           title: 'Composants',
           items: [
             {
-              label: 'Commands (121)',
+              label: 'Commands (123)',
               to: '/docs/commands',
             },
             {
-              label: 'Agents (57)',
+              label: 'Agents (59)',
               to: '/docs/agents',
             },
             {

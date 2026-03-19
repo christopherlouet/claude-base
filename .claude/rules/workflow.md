@@ -2,6 +2,14 @@
 
 ## Cycle Obligatoire: Explore -> Plan -> TDD -> Commit
 
+### 0. CI BASELINE (recommande)
+
+Avant de commencer a travailler sur un projet existant :
+
+- Lancer lint, type-check et tests pour connaitre l'etat CI actuel
+- Noter les erreurs PRE-EXISTANTES pour ne pas les confondre avec les nouvelles
+- Si CI est deja en echec, le signaler a l'utilisateur avant de commencer
+
 ### 1. EXPLORE (obligatoire)
 
 - Lire et comprendre le code existant AVANT de modifier
@@ -36,6 +44,22 @@
 - PR avec description complete
 - Utiliser `/work:work-commit` ou `/work:work-pr`
 
+## Gestion du scope
+
+Les sessions avec un scope trop large (15+ taches) generent systematiquement des regressions. Preferer des sessions focalisees :
+
+| Scope | Approche recommandee |
+|-------|---------------------|
+| 1-5 taches | Session unique, workflow standard |
+| 6-10 taches | Decouper en 2-3 commits logiques |
+| 10-15 taches | Decouper en sessions separees par domaine |
+| 15+ taches | STOP — decouper en features independantes, une PR par feature |
+
+Signaux d'alerte :
+- Plus de 10 fichiers modifies sans commit intermediaire → commiter maintenant
+- Un fix introduit une regression → revert, commiter ce qui marche, traiter le reste separement
+- Le scope grossit pendant le travail → s'arreter, commiter l'etat stable, replanifier
+
 ## Anti-patterns a Eviter
 
 - Coder sans comprendre l'existant
@@ -47,6 +71,8 @@
 - Copier-coller sans adapter
 - Optimiser prematurement
 - Ignorer les warnings de lint/types
+- Sessions trop ambitieuses (15+ taches dans une session)
+- Confondre erreurs CI pre-existantes et nouvelles erreurs
 
 ## Workflows Recommandes
 
@@ -69,5 +95,16 @@
 
 ### Audit complet
 ```
-/qa:qa-audit  # Securite + RGPD + A11y + Perf
+/qa:qa-audit  # Securite + RGPD + A11y + Perf (lecture seule)
+```
+
+### Audit + fix en boucle
+```
+/qa:qa-loop                  # Audit + fix P0/P1 jusqu'a score 85+
+/qa:qa-loop "score 90"       # Score cible personnalise
+```
+
+### Deploiement securise
+```
+/ops:ops-deploy              # Checklist pre-deploy + deploy + post-deploy
 ```
