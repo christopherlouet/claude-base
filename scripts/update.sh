@@ -705,7 +705,6 @@ update_directory() {
         done < <(find "$src_dir" -type f ! -name "*.md" 2>/dev/null || true)
     fi
 
-    local total=$((dir_added + dir_updated + dir_skipped + dir_identical))
     success "$label: $dir_added ajouté(s), $dir_updated mis à jour, $dir_identical identique(s), $dir_skipped ignoré(s)"
 }
 
