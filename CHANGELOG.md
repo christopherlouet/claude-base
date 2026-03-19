@@ -9,6 +9,58 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.27.0] - 2026-03-19
+
+### Ajoute
+- **Agent `qa-loop`** : boucle autonome audit → fix → test → re-audit avec criteres d'arret (score cible, max iterations, detection regression) (#46)
+- **Agent `ops-deploy`** : deploiement securise avec checklist pre-deploy, post-deploy health checks et commande de rollback (#46)
+- **Rule `research`** : verifier les capacites natives du framework avant d'implementer une solution custom (#46)
+- **Rule `deploy-safety`** : checklist pre-deploiement (env vars, cookies secure, CSP, migrations DB, logs Docker) (#46)
+- **Rule `migration-safety`** : checklist migration de framework avec table des pieges courants et caches a vider (#46)
+- **Hook pre-push CI** : lint + type-check + tests avant chaque push, supporte Node.js/Python/Go (desactivable avec `SKIP_PRE_PUSH_CI=1`) (#46)
+- **Hook destructive ops guard** : bloque DELETE/DROP/TRUNCATE/rm sur donnees sans confirmation (desactivable avec `SKIP_DESTRUCTIVE_CHECK=1`) (#46)
+- **Gate operations destructives** : workflow dry-run obligatoire dans verification.md (compter → echantillonner → confirmer → backup → executer) (#46)
+- **CI baseline check** : etape 0 dans workflow.md pour distinguer erreurs CI pre-existantes des nouvelles (#46)
+- **Scope guard** : guidance dans workflow.md pour decouper les sessions trop ambitieuses (15+ taches = regressions) (#46)
+- **7 pages Docusaurus** : qa-loop, ops-deploy, research, deploy-safety, migration-safety (commands + agents + rules) (#46)
+
+### Modifie
+- **`update.sh` securise** : `update_directory()` utilise le diff par fichier au lieu de `cp -r` aveugle, protege docs projet (ARCHITECTURE.md, WORKFLOWS.md, guides/) (#46)
+- **Hook pre-commit ameliore** : detecte Husky non installe et tente reparation auto, supporte Python (pytest) et Go (go test) (#46)
+- **Agent `ops-docker`** : enrichi avec checklist pre-deploiement et directives logs Docker (#46)
+- **Skill `parallel-agents`** : prevention des conflits de fichiers inter-agents avec carte des fichiers et file-locking (#46)
+- **CLAUDE.md** : ajout workflows `qa-loop` et `ops-deploy` dans le tableau recommande (#46)
+- **Compteurs mis a jour** : 123 commands, 59 agents, 42 skills, 24 rules dans toute la documentation (#46)
+
+### Corrige
+- **ShellCheck SC2034** : variable `total` inutilisee supprimee dans update.sh (#46)
+- **Husky templates** : restaures comme templates pour new-project.sh (supprimes par erreur) (#46)
+- **Compteurs stales** : 27+ fichiers avec anciens compteurs (120/121 commands, 37/57 agents, 41 skills, 21 rules) corriges (#46)
+
+### Securite
+- **Pre-push CI hook** : empeche de pousser du code qui ne passe pas lint/typecheck/tests (#46)
+- **Destructive ops guard** : empeche les suppressions en masse de donnees sans confirmation (#46)
+- **Deploy safety rule** : empeche le deploiement de configs dev en production (#46)
+
+---
+
+### Refactore
+- **Renommage `qa-a11y` → `wcag-audit`** : agent, commande et documentation renommes dans tout le codebase (#45)
+
+### Ajoute (accessibilite)
+- **Rule `accessibility` enrichie** : 100+ regles inspirees d'axe-core, audit WCAG 2.1 AA complet (#45)
+
+### Modifie (dependances)
+- **`bats-core/bats-action`** : 3.0.1 → 4.0.0 (#28)
+
+### Modifie (hooks)
+- **RTK desactive par defaut** : necessite `ENABLE_RTK=1` pour activer (#44)
+- **`update.sh --add-hook rtk`** : ajout de hooks sans ecraser settings.json (#42)
+- **RTK token optimizer** : integration optionnelle, -60-90% tokens (#41)
+
+### Corrige
+- **ShellCheck warnings** : corrections dans update.sh (#43)
+
 ## [1.26.0] - 2026-03-14
 
 ### Ajoute
