@@ -1055,26 +1055,6 @@ detect_all_orphans() {
     fi
 }
 
-clean_claude_dirs() {
-    section "Nettoyage des anciens fichiers"
-
-    # Liste des sous-dossiers à nettoyer
-    local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles" "templates")
-
-    for subdir in "${dirs_to_clean[@]}"; do
-        if [[ -d "$TARGET_DIR/.claude/$subdir" ]]; then
-            if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} Suppression: .claude/$subdir"
-            else
-                rm -rf "$TARGET_DIR/.claude/$subdir"
-                debug "Supprimé: .claude/$subdir"
-            fi
-        fi
-    done
-
-    success "Anciens fichiers nettoyés"
-}
-
 print_summary() {
     echo ""
     separator "="
@@ -1139,7 +1119,7 @@ main() {
 
     # Nettoyage des anciens fichiers si demandé
     if $CLEAN_BEFORE_UPDATE; then
-        clean_claude_dirs
+        clean_claude_dirs "$TARGET_DIR"
     fi
 
     # Mise à jour des commandes

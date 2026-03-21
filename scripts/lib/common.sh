@@ -618,6 +618,33 @@ CACHEEOF
 }
 
 # =============================================================================
+# Nettoyage des dossiers Claude
+# =============================================================================
+
+# Supprime les sous-dossiers Claude pour reinstallation propre
+# Arguments: $1=repertoire projet
+clean_claude_dirs() {
+    local dir="$1"
+
+    info "Nettoyage des anciens fichiers Claude..."
+
+    local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles" "templates")
+
+    for subdir in "${dirs_to_clean[@]}"; do
+        if [[ -d "$dir/.claude/$subdir" ]]; then
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} rm -rf $dir/.claude/$subdir"
+            else
+                rm -rf "$dir/.claude/$subdir"
+            fi
+            debug "Supprimé: .claude/$subdir"
+        fi
+    done
+
+    success "Anciens fichiers nettoyés"
+}
+
+# =============================================================================
 # Gestion des erreurs
 # =============================================================================
 
@@ -651,3 +678,4 @@ export -f separator title section
 export -f count_agents count_skills count_hooks count_templates show_socle_stats
 export -f on_error enable_error_handler
 export -f cache_init cache_valid cache_read cache_write
+export -f clean_claude_dirs
