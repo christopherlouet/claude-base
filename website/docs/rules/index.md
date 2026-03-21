@@ -12,7 +12,7 @@ import Stats from '@site/src/components/Stats';
 
 <Stats items={[
   { number: 24, label: 'Regles' },
-  { number: 117, label: 'Patterns' },
+  { number: 123, label: 'Patterns' },
 ]} />
 
 ## Qu'est-ce qu'une Rule ?
@@ -28,30 +28,30 @@ Les **rules** sont des conventions appliquees automatiquement :
 
 | Regle | Description | Paths |
 |-------|-------------|-------|
-| [`accessibility`](/docs/rules/accessibility) | // BON - Image decorative &lt;img src="decoration.png... | `**/*.tsx`, `**/*.jsx`... |
+| [`accessibility`](/docs/rules/accessibility) | IMPORTANT: Chaque image doit avoir un attribut alt... | `**/*.tsx`, `**/*.jsx`... |
 | [`api`](/docs/rules/api) | // Error \{ "success": false, "error": \{ "code": "V... | `**/api/**`, `**/routes/**`... |
 | [`csharp`](/docs/rules/csharp) | // 2. Champs prives readonly private readonly IUse... | `**/*.cs`, `**/*.csproj`... |
-| [`deploy-safety`](/docs/rules/deploy-safety) | Deploy Safety Rules | `**/docker-compose*.yml`, `**/Dockerfile*`... |
+| [`deploy-safety`](/docs/rules/deploy-safety) | Chaque deploiement doit etre valide avant executio... | `**/docker-compose*.yml`, `**/docker-compose*.yaml`... |
 | [`flutter`](/docs/rules/flutter) | // State abstract class AuthState \{\} class AuthIni... | `**/*.dart`, `**/lib/**`... |
 | [`git`](/docs/rules/git) | [corps optionnel - details sur le "quoi" et "pourq... | - |
 | [`go`](/docs/rules/go) | // Custom errors var ErrUserNotFound = errors.New(... | `**/*.go`, `**/go.mod`... |
 | [`java`](/docs/rules/java) | // 2. Champs statiques private static final Logger... | `**/*.java`, `**/pom.xml`... |
 | [`lsp`](/docs/rules/lsp) | LSP disponible via `ENABLE_LSP_TOOL=1` ou plugins ... | `**/*.ts`, `**/*.tsx`... |
-| [`migration-safety`](/docs/rules/migration-safety) | Migration Safety Rules | `**/package.json`, `**/tsconfig.json`... |
-| [`nextjs`](/docs/rules/nextjs) | **Regles RSC :** - Les Server Components ne peuven... | `**/next.config.*`, `**/app/**`... |
-| [`performance`](/docs/rules/performance) | &lt;Image src="/hero.jpg" alt="Hero" width=\{1200\} hei... | `**/*.tsx`, `**/*.jsx`... |
+| [`migration-safety`](/docs/rules/migration-safety) | Les migrations majeures de framework ou dependance... | `**/package.json`, `**/tsconfig.json`... |
+| [`nextjs`](/docs/rules/nextjs) | Next.js Rules | `**/next.config.*`, `**/app/**`... |
+| [`performance`](/docs/rules/performance) | IMPORTANT: LCP &lt; 2.5s - Optimiser les images above... | `**/*.tsx`, `**/*.jsx`... |
 | [`php`](/docs/rules/php) | declare(strict_types=1); | `**/*.php`, `**/composer.json` |
 | [`python`](/docs/rules/python) | import requests from pydantic import BaseModel | `**/*.py`, `**/requirements*.txt`... |
 | [`react`](/docs/rules/react) | export function MyComponent(\{ title, onAction \}: P... | `**/*.tsx`, `**/components/**`... |
-| [`research`](/docs/rules/research) | Research Before Build | `**/*.ts`, `**/*.tsx`... |
+| [`research`](/docs/rules/research) | Avant d'implementer une solution custom, verifier ... | `**/*.ts`, `**/*.tsx`... |
 | [`ruby`](/docs/rules/ruby) | users.each do |user| puts user.name puts user.emai... | `**/*.rb`, `**/Gemfile`... |
 | [`rust`](/docs/rules/rust) | // 2. Constants const MAX_CONNECTIONS: usize = 100... | `**/*.rs`, `**/Cargo.toml` |
-| [`security`](/docs/rules/security) | Security Rules | `**/auth/**`, `**/api/**`... |
+| [`security`](/docs/rules/security) | 3 vecteurs d'attaque identifies (fev. 2026) lors d... | `**/auth/**`, `**/api/**`... |
 | [`tdd-enforcement`](/docs/rules/tdd-enforcement) | IMPORTANT: Quand l'utilisateur demande d'implement... | `**/*.ts`, `**/*.tsx`... |
 | [`testing`](/docs/rules/testing) | // Act - Executer l'action const result = function... | `**/*.test.ts`, `**/*.test.tsx`... |
 | [`typescript`](/docs/rules/typescript) | TypeScript Rules | `**/*.ts`, `**/*.tsx`... |
 | [`verification`](/docs/rules/verification) | Toute implementation doit etre verifiee AVANT d'et... | `**/*.ts`, `**/*.tsx`... |
-| [`workflow`](/docs/rules/workflow) | Workflow Rules | - |
+| [`workflow`](/docs/rules/workflow) | Avant de commencer a travailler sur un projet exis... | - |
 
 ## Categories
 
@@ -74,10 +74,7 @@ Les **rules** sont des conventions appliquees automatiquement :
 ### Pratiques
 
 - [api](/docs/rules/api)
-- [deploy-safety](/docs/rules/deploy-safety)
 - [git](/docs/rules/git)
-- [migration-safety](/docs/rules/migration-safety)
-- [research](/docs/rules/research)
 - [security](/docs/rules/security)
 - [testing](/docs/rules/testing)
 - [workflow](/docs/rules/workflow)

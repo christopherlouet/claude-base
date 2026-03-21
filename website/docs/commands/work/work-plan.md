@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: "/work:work-plan"
-description: "Tu es en mode PLANIFICATION. Conçois un plan d'implémentation détaillé."
+description: "Concois un plan d'implementation detaille. Mode PLANIFICATION uniquement."
 tags:
   - "work"
   - "command"
@@ -15,247 +15,60 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent WORK-PLAN
 
-Tu es en mode PLANIFICATION. Conçois un plan d'implémentation détaillé.
+Concois un plan d'implementation detaille. Mode PLANIFICATION uniquement.
 
 ## Contexte
 `&lt;arguments&gt;`
 
 ## Objectif
 
-Créer un plan d'implémentation complet et validable avant d'écrire du code.
-La planification fait partie du workflow : **EXPLORE → SPECIFY → PLAN → CODE → COMMIT**
+Creer un plan d'implementation complet et validable avant d'ecrire du code.
+Fait partie du workflow : **EXPLORE -&gt; SPECIFY -&gt; PLAN -&gt; CODE -&gt; COMMIT**
+Utiliser les templates dans `.claude/templates/` (plan-template.md, tasks-template.md).
 
-## Templates disponibles
+## Workflow
 
-Utiliser les templates dans `.claude/templates/` :
-- `plan-template.md` - Structure du plan d'implémentation
-- `tasks-template.md` - Découpage en tâches
-
-## Processus de planification
-
-### 1. Vérification des prérequis
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    VÉRIFICATION PRÉREQUIS                       │
-├─────────────────────────────────────────────────────────────────┤
-│  ☐ Spécification existe ? (specs/[feature]/spec.md)             │
-│    → Si non : suggérer /work:work-specify                            │
-│  ☐ Exploration faite ?                                          │
-│    → Si non : suggérer /work:work-explore                            │
-│  ☐ Clarifications résolues ? (pas de [CLARIFICATION NÉCESSAIRE])│
-│    → Si non : suggérer /work:work-clarify                            │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### 2. Analyse de la spécification
-
-Si une spec existe, extraire :
-- **User Stories** avec leurs priorités (P1, P2, P3)
-- **Exigences Fonctionnelles** (EF-XXX)
-- **Critères de Succès** (CS-XXX)
-- **Entités** et leurs relations
-- **Contraintes** et hypothèses
-
-### 3. Conception technique
-
-#### Architecture
-
-```
-┌─────────────────┐
-│   Composant A   │
-│   (nouveau)     │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐     ┌─────────────────┐
-│   Composant B   │────▶│   Composant C   │
-│   (modifié)     │     │   (existant)    │
-└─────────────────┘     └─────────────────┘
-```
-
-#### Patterns à considérer
-
-| Pattern | Quand l'utiliser |
-|---------|------------------|
-| Service | Logique métier isolée |
-| Repository | Accès aux données |
-| Factory | Création d'objets complexes |
-| Strategy | Algorithmes interchangeables |
-| Observer | Événements et notifications |
-
-### 4. Structure du plan (basée sur template)
-
-Générer le plan dans `specs/[feature]/plan.md` avec :
-
-```markdown
-# Plan d'implémentation : [Feature]
-
-## Résumé
-[1-2 phrases décrivant la solution]
-
-## Contexte Technique
-| Aspect | Choix |
-|--------|-------|
-| Langage | [TypeScript, Python...] |
-| Framework | [Next.js, FastAPI...] |
-| Tests | [Jest, pytest...] |
-
-## Fichiers Impactés
-
-### À créer
-| Fichier | Responsabilité |
-|---------|----------------|
-| src/services/xxx.ts | [description] |
-
-### À modifier
-| Fichier | Modification |
-|---------|--------------|
-| src/routes/xxx.ts | [changement] |
-
-## Phases d'Implémentation
-
-### Phase 1 : Fondation (bloquant)
-- [ ] T001 - Setup structure
-- [ ] T002 - Types/interfaces
-
-### Phase 2 : User Story 1 (P1 - MVP) 🎯
-- [ ] T003 - [P] [US1] Modèle A
-- [ ] T004 - [US1] Service (dépend T003)
-
-### Phase 3 : User Story 2 (P2)
-- [ ] T005 - [P] [US2] Composant B
-
-## Risques et Mitigations
-| Risque | Mitigation |
-|--------|------------|
-| [X] | [Y] |
-
-## Critères de Validation
-- [ ] Tests passent
-- [ ] Code review approuvée
-```
-
-### 5. Découpage en tâches
-
-Générer aussi `specs/[feature]/tasks.md` avec le découpage détaillé :
-
-#### Conventions de tâches
-
-| Marqueur | Signification |
-|----------|---------------|
-| `[P]` | Parallélisable (pas de dépendance) |
-| `[US1]` | Appartient à User Story 1 |
-| `[US2]` | Appartient à User Story 2 |
-| Chemin exact | `src/services/user.ts` |
-
-#### Ordre d'exécution
-
-```
-Phase 1 (Setup) ──▶ Phase 2 (Fondation) ──┬──▶ Phase 3 (US1)
-                                          │
-                                          ├──▶ Phase 4 (US2)
-                                          │
-                                          └──▶ Phase 5 (US3)
-```
-
-### 6. Estimation de complexité
-
-| Complexité | Critères |
-|------------|----------|
-| **Simple** | 1-2 fichiers, pas de risque, &lt; 100 lignes |
-| **Moyenne** | 3-5 fichiers, risques identifiés, 100-500 lignes |
-| **Complexe** | &gt; 5 fichiers, risques élevés, &gt; 500 lignes |
-
-### 7. Checklist de validation du plan
-
-#### Complétude
-- [ ] Tous les fichiers identifiés
-- [ ] Toutes les tâches listées avec chemins
-- [ ] User stories tracées ([US1], [US2]...)
-- [ ] Tests planifiés
-- [ ] Risques documentés
-
-#### Faisabilité
-- [ ] Solution techniquement réalisable
-- [ ] Pas de dépendance bloquante
-- [ ] Cohérent avec l'existant
-
-#### Qualité
-- [ ] Respecte les conventions du projet
-- [ ] Maintenable et testable
-- [ ] Pas d'over-engineering
-- [ ] Chaque US testable indépendamment
+- Verifier les prerequis : spec existe ? exploration faite ? clarifications resolues ?
+- Analyser la spec : User Stories (P1/P2/P3), exigences (EF-XXX), entites, contraintes
+- Concevoir l'architecture : composants, patterns, interactions
+- Lister les fichiers a creer et a modifier avec chemins exacts
+- Decouper en phases et taches (T001, T002...) par User Story
+- Marquer les taches parallelisables avec `[P]` et la tracabilite `[US1]`, `[US2]`...
+- Evaluer la complexite (Simple/Moyenne/Complexe)
+- Identifier les risques et mitigations
+- Generer `specs/[feature]/plan.md` ET `specs/[feature]/tasks.md`
 
 ## Output attendu
 
-Créer deux fichiers :
+1. **`specs/[feature]/plan.md`** : Resume, contexte technique, fichiers impactes, phases, risques
+2. **`specs/[feature]/tasks.md`** : Taches avec IDs, marqueurs [P], [US?], chemins exacts
 
-### 1. `specs/[feature]/plan.md`
-Plan d'implémentation complet basé sur le template.
+## Agents lies
 
-### 2. `specs/[feature]/tasks.md`
-Découpage en tâches avec :
-- Phases clairement définies
-- Tâches avec IDs (T001, T002...)
-- Marqueurs [P] pour parallélisation
-- Marqueurs [US?] pour traçabilité
-- Chemins de fichiers exacts
+| Avant | Usage |
+|-------|-------|
+| `/work:work-explore` | Exploration |
+| `/work:work-specify` | Specification |
+| `/work:work-clarify` | Clarification (opt) |
 
-## Workflow complet
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                                                                 │
-│   /work:work-explore ──▶ /work:work-specify ──▶ /work:work-clarify (opt)       │
-│                            │                                    │
-│                            ▼                                    │
-│                    ┌───────────────┐                            │
-│                    │  /work:work-plan   │ ◄── VOUS ÊTES ICI          │
-│                    └───────┬───────┘                            │
-│                            │                                    │
-│              Génère:       │                                    │
-│              • plan.md     │                                    │
-│              • tasks.md    │                                    │
-│                            │                                    │
-│                            ▼                                    │
-│                    ┌───────────────┐                            │
-│                    │   /dev:dev-tdd    │                            │
-│                    │   /dev:dev-api    │                            │
-│                    └───────────────┘                            │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-## Agents liés
-
-| Avant | Agent | Après |
-|-------|-------|-------|
-| `/work:work-explore` | Exploration | |
-| `/work:work-specify` | Spécification | |
-| `/work:work-clarify` | Clarification (opt) | |
-| | **PLAN** | |
-| | | `/dev:dev-tdd` |
-| | | `/dev:dev-api` |
-| | | `/dev:dev-component` |
+| Apres | Usage |
+|-------|-------|
+| `/dev:dev-tdd` | Developper en TDD |
+| `/dev:dev-api` | Developper une API |
 
 ---
 
 IMPORTANT: Ne jamais coder en mode planification - plan seulement.
 
-YOU MUST vérifier si une spec existe et suggérer `/work:work-specify` si absente.
+YOU MUST verifier si une spec existe et suggerer `/work:work-specify` si absente.
 
-YOU MUST identifier tous les fichiers à créer/modifier avec chemins exacts.
+YOU MUST identifier tous les fichiers a creer/modifier avec chemins exacts.
 
-YOU MUST découper les tâches par User Story avec traçabilité [US1], [US2]...
+YOU MUST generer plan.md ET tasks.md dans specs/[feature]/.
 
-YOU MUST marquer les tâches parallélisables avec [P].
+NEVER sous-estimer la complexite - mieux vaut surestimer.
 
-YOU MUST générer plan.md ET tasks.md dans specs/[feature]/.
-
-NEVER sous-estimer la complexité - mieux vaut surestimer.
-
-Think hard sur l'architecture et le découpage avant de proposer le plan.
+Think hard sur l'architecture et le decoupage avant de proposer le plan.
 
 
 ---

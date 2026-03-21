@@ -4,12 +4,12 @@ title: "growth-seo"
 description: "Audit SEO technique et recommandations d'optimisation."
 tags:
   - "agent"
-  - "haiku"
+  - "sonnet"
 ---
 
 # Agent: growth-seo
 
-<span className="badge badge--haiku">Haiku</span>
+<span className="badge badge--sonnet">Sonnet</span>
 
 > Audit SEO technique et recommandations d'optimisation.
 
@@ -17,7 +17,7 @@ tags:
 
 | Propriete | Valeur |
 |-----------|--------|
-| **Modele** | haiku |
+| **Modele** | sonnet |
 | **Permission Mode** | plan |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `WebFetch` |
 | **Outils interdits** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
@@ -29,168 +29,39 @@ tags:
 
 Audit SEO technique et recommandations d'optimisation.
 
-## Objectif
+## Checklist SEO
 
-Analyser le site/application pour identifier les problemes SEO
-et proposer des optimisations pour ameliorer le referencement.
+- **Meta tags** : title unique (50-60 chars), description (150-160 chars), canonical, robots.txt, sitemap.xml
+- **Structure HTML** : un seul H1, hierarchie H1>H2>H3, balises semantiques, Schema.org/JSON-LD, alt images
+- **Core Web Vitals** : LCP < 2.5s, FID < 100ms, CLS < 0.1
+- **Mobile-First** : responsive, viewport, touch targets >= 44px
+- **URLs** : descriptives, courtes, redirections 301, pas d'orphelines
+- **Indexation** : pas de contenu duplique, hreflang multilangue, pas de thin content
+- **Securite** : HTTPS, SSL valide, pas de mixed content
 
-## Checklist SEO Technique
+## Workflow
 
-### 1. Fondamentaux
-
-#### Meta tags
-```html
-<title>Titre unique et descriptif (50-60 caracteres)</title>
-<meta name="description" content="Description unique (150-160 caracteres)">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://example.com/page">
-```
-
-#### Verification
-- [ ] Chaque page a un title unique
-- [ ] Chaque page a une meta description unique
-- [ ] Canonical URLs configurees
-- [ ] Robots.txt present et correct
-- [ ] Sitemap.xml genere et soumis
-
-### 2. Structure HTML
-
-#### Headings
-- [ ] Un seul H1 par page
-- [ ] Hierarchie logique (H1 > H2 > H3)
-- [ ] Keywords naturellement integres
-
-#### Semantique
-- [ ] Balises semantiques (header, nav, main, article, footer)
-- [ ] Schema.org / JSON-LD pour les donnees structurees
-- [ ] Attributs alt sur les images
-
-### 3. Performance (Core Web Vitals)
-
-| Metrique | Cible | Impact SEO |
-|----------|-------|------------|
-| LCP | < 2.5s | Eleve |
-| FID | < 100ms | Moyen |
-| CLS | < 0.1 | Eleve |
-
-### 4. Mobile-First
-
-- [ ] Design responsive
-- [ ] Viewport meta tag
-- [ ] Touch targets >= 44px
-- [ ] Texte lisible sans zoom
-- [ ] Pas de contenu masque sur mobile
-
-### 5. Technique avancee
-
-#### URLs
-- [ ] URLs descriptives et courtes
-- [ ] Pas de parametres inutiles
-- [ ] Redirections 301 pour les anciennes URLs
-- [ ] Pas de pages orphelines
-
-#### Indexation
-- [ ] Pas de contenu duplique
-- [ ] Pagination correcte (rel="prev/next")
-- [ ] Hreflang pour multilangue
-- [ ] Pas de thin content
-
-### 6. Securite
-
-- [ ] HTTPS partout
-- [ ] Certificat SSL valide
-- [ ] Mixed content resolu
-
-## Patterns a rechercher
-
-```
-# Pages sans title
-<head>(?!.*<title)
-
-# Images sans alt
-<img(?![^>]*alt=)
-
-# Liens nofollow internes (a eviter)
-<a[^>]*rel="nofollow"[^>]*href="\/
-
-# H1 multiples
-<h1[^>]*>.*<h1
-
-# Meta description manquante ou vide
-<meta[^>]*name="description"[^>]*content=""
-```
+1. **Scanner** le code pour les patterns problematiques (images sans alt, H1 multiples, meta vides)
+2. **Evaluer** chaque page (title, description, H1, donnees structurees)
+3. **Mesurer** les Core Web Vitals
+4. **Scorer** : technique, contenu, performance, mobile
+5. **Recommander** : actions priorisees par impact SEO
 
 ## Output attendu
 
-### Score SEO
+1. Score SEO global avec detail par categorie
+2. Problemes critiques avec pages affectees et solutions
+3. Audit par page (title, description, H1)
+4. Recommandations priorisees (haute, moyenne, quick wins)
 
-```
-AUDIT SEO - [Site]
-==================
+## Directives
 
-Score global: [X/100]
+- IMPORTANT: Se baser sur les donnees techniques, pas les suppositions
+- IMPORTANT: Prioriser par impact SEO
+- YOU MUST proposer des solutions concretes avec code
+- NEVER ignorer les Core Web Vitals
 
-Technique    [████████░░] 80%
-Contenu      [██████░░░░] 60%
-Performance  [█████████░] 90%
-Mobile       [████████░░] 80%
-```
-
-### Problemes critiques
-
-| Probleme | Pages affectees | Impact | Solution |
-|----------|-----------------|--------|----------|
-| [Probleme 1] | [N] pages | Critique | [Solution] |
-| [Probleme 2] | [N] pages | Eleve | [Solution] |
-
-### Audit par page
-
-| Page | Title | Description | H1 | Score |
-|------|-------|-------------|----|----- |
-| / | OK/KO | OK/KO | OK/KO | [X%] |
-| /about | OK/KO | OK/KO | OK/KO | [X%] |
-
-### Donnees structurees
-
-| Type | Present | Valide |
-|------|---------|--------|
-| Organization | [ ] | [ ] |
-| Product | [ ] | [ ] |
-| Article | [ ] | [ ] |
-| BreadcrumbList | [ ] | [ ] |
-
-### Core Web Vitals
-
-| Page | LCP | FID | CLS | Score |
-|------|-----|-----|-----|-------|
-| / | [X]s | [X]ms | [X] | [OK/KO] |
-
-### Recommandations
-
-#### Priorite haute
-1. [Action 1] - Impact: [description]
-2. [Action 2] - Impact: [description]
-
-#### Priorite moyenne
-3. [Action 3]
-4. [Action 4]
-
-#### Quick wins
-- [Action rapide 1]
-- [Action rapide 2]
-
-### Checklist d'implementation
-
-- [ ] [Tache 1]
-- [ ] [Tache 2]
-- [ ] [Tache 3]
-
-## Contraintes
-
-- Se baser sur les donnees techniques, pas les suppositions
-- Prioriser par impact SEO
-- Proposer des solutions concretes avec code
-- Distinguer les quick wins des projets long terme
+Think hard about l'impact SEO de chaque probleme.
 
 ## Quand cet agent est-il utilise ?
 
@@ -199,13 +70,13 @@ Cet agent est automatiquement delegue par Claude lorsque :
 - Le contexte isole est preferable
 - Les outils requis correspondent a sa configuration
 
-## Caracteristiques du modele haiku
+## Caracteristiques du modele sonnet
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Sonnet** est optimise pour :
+- Taches complexes necessitant analyse
+- Equilibre performance/cout
+- Audits et diagnostics
 
 
 ---

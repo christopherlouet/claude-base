@@ -1,7 +1,7 @@
 ---
 sidebar_position: 7
 title: "/doc:doc-generate"
-description: "Génération de documentation pour le code."
+description: "Generation de documentation pour le code."
 tags:
   - "doc"
   - "command"
@@ -15,120 +15,31 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DOC
 
-Génération de documentation pour le code.
+Generation de documentation pour le code.
 
 ## Cible
 `&lt;arguments&gt;`
 
-## Types de documentation
+## Objectif
 
-### 1. Documentation inline (JSDoc/TSDoc)
-```typescript
-/**
- * Description courte de la fonction.
- *
- * Description détaillée si nécessaire, expliquant
- * le comportement, les cas particuliers, etc.
- *
- * @param paramName - Description du paramètre
- * @returns Description de la valeur retournée
- * @throws {ErrorType} Quand cette erreur est levée
- * @example
- * ```typescript
- * const result = maFonction('input');
- * // result === 'expected'
- * ```
- */
-```
+Generer la documentation appropriee (inline JSDoc/TSDoc, README de module, documentation API, ADR) en documentant le "pourquoi" et non le "quoi".
 
-### 2. README de module
-```markdown
-# Nom du Module
+## Workflow
 
-## Description
-[Ce que fait ce module]
-
-## Installation
-[Comment l'installer/configurer]
-
-## Utilisation
-[Exemples d'utilisation basiques]
-
-## API
-[Documentation des fonctions publiques]
-
-## Exemples
-[Cas d'utilisation courants]
-```
-
-### 3. Documentation d'API (endpoints)
-```markdown
-## POST /api/resource
-
-Crée une nouvelle ressource.
-
-### Request
-- **Headers**: `Authorization: Bearer <token>`
-- **Body**:
-```json
-\{
-  "field": "value"
-\}
-```
-
-### Response
-- **200 OK**:
-```json
-\{
-  "id": "123",
-  "field": "value"
-\}
-```
-- **400 Bad Request**: Validation error
-- **401 Unauthorized**: Token invalide
-```
-
-### 4. Documentation d'architecture (ADR)
-```markdown
-# ADR-001: [Titre de la décision]
-
-## Statut
-Accepté | En discussion | Remplacé par ADR-XXX
-
-## Contexte
-[Pourquoi cette décision est nécessaire]
-
-## Décision
-[Ce qui a été décidé]
-
-## Conséquences
-[Impact de cette décision]
-```
-
-## Règles de documentation
-
-### À documenter
-- [ ] Fonctions publiques/exportées
-- [ ] Interfaces et types complexes
-- [ ] Comportements non évidents
-- [ ] Décisions d'architecture importantes
-- [ ] Configuration requise
-
-### À NE PAS documenter
-- Code auto-explicatif
-- Détails d'implémentation évidents
-- Commentaires qui répètent le code
+- Identifier le type de documentation necessaire (inline, README, API, ADR)
+- Analyser les fonctions publiques/exportees et interfaces complexes
+- Documenter les comportements non evidents et decisions d'architecture
+- Ajouter des exemples d'utilisation
+- Ne pas documenter le code auto-explicatif
 
 ## Output attendu
 
-### Documentation générée
+### Documentation generee
 - Type: [inline/README/API/ADR]
-- Fichiers créés/modifiés: [liste]
+- Fichiers crees/modifies: [liste]
+- Contenu genere
 
-### Contenu
-[Documentation générée]
-
-## Agents liés
+## Agents lies
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
@@ -143,7 +54,7 @@ IMPORTANT: La meilleure documentation est un code lisible.
 
 YOU MUST documenter le "pourquoi", pas le "quoi".
 
-NEVER documenter ce qui est évident dans le code.
+NEVER documenter ce qui est evident dans le code.
 
 Think hard sur ce qui manque pour comprendre le code.
 

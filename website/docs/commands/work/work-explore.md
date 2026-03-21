@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "/work:work-explore"
-description: "Tu es en mode EXPLORATION. Analyse le codebase sans écrire de code."
+description: "Analyse le codebase sans ecrire de code. Mode EXPLORATION uniquement."
 tags:
   - "work"
   - "command"
@@ -15,7 +15,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent WORK-EXPLORE
 
-Tu es en mode EXPLORATION. Analyse le codebase sans écrire de code.
+Analyse le codebase sans ecrire de code. Mode EXPLORATION uniquement.
 
 ## Contexte
 `&lt;arguments&gt;`
@@ -23,144 +23,45 @@ Tu es en mode EXPLORATION. Analyse le codebase sans écrire de code.
 ## Objectif
 
 Comprendre en profondeur une partie du codebase avant toute modification.
-L'exploration est la première étape obligatoire du workflow : **EXPLORE → PLAN → CODE → COMMIT**
+L'exploration est la premiere etape obligatoire : **EXPLORE -&gt; PLAN -&gt; CODE -&gt; COMMIT**
 
-## Processus d'exploration
+## Workflow
 
-### 1. Identification du périmètre
-
-```
-Contexte demandé
-      │
-      ▼
-┌─────────────────────────────────────────┐
-│  Identifier les fichiers pertinents     │
-│  - Recherche par nom (glob)             │
-│  - Recherche par contenu (grep)         │
-│  - Navigation dans l'arborescence       │
-└─────────────────────────────────────────┘
-      │
-      ▼
-┌─────────────────────────────────────────┐
-│  Lecture et analyse du code             │
-│  - Point d'entrée principal             │
-│  - Flux de données                      │
-│  - Dépendances internes/externes        │
-└─────────────────────────────────────────┘
-```
-
-### 2. Techniques de recherche
-
-#### Recherche par patterns
-```bash
-# Trouver les fichiers liés à un concept
-glob "**/*auth*" "**/*user*" "**/*login*"
-
-# Rechercher dans le contenu
-grep "function authenticate" "class User"
-```
-
-#### Points d'entrée typiques
-| Type de projet | Fichiers à examiner |
-|----------------|---------------------|
-| API REST | routes/, controllers/, middleware/ |
-| Frontend React | App.tsx, pages/, components/ |
-| CLI | bin/, commands/, index.ts |
-| Library | src/index.ts, exports |
-
-### 3. Analyse systématique
-
-#### Architecture
-- [ ] Structure des dossiers
-- [ ] Séparation des responsabilités
-- [ ] Couches (présentation, business, data)
-- [ ] Patterns utilisés (MVC, Clean Architecture, etc.)
-
-#### Code
-- [ ] Conventions de nommage
-- [ ] Style de code (fonctionnel, OOP, mixte)
-- [ ] Gestion des erreurs
-- [ ] Typage (strict, loose, any)
-
-#### Dépendances
-- [ ] Packages principaux utilisés
-- [ ] Versions et compatibilités
-- [ ] Dépendances internes entre modules
-
-#### Tests
-- [ ] Framework de test utilisé
-- [ ] Couverture existante
-- [ ] Patterns de test (mocks, fixtures)
-
-### 4. Documentation existante
-
-Chercher et lire :
-- README.md
-- docs/ directory
-- Commentaires JSDoc/TSDoc
-- Types et interfaces
+- Identifier le perimetre : recherche par nom (glob), par contenu (grep), navigation arborescence
+- Localiser les points d'entree (routes, App.tsx, index.ts, bin/, commands/)
+- Analyser l'architecture : structure dossiers, separation responsabilites, patterns (MVC, Clean Arch...)
+- Analyser le code : conventions de nommage, style (fonctionnel/OOP), gestion erreurs, typage
+- Lister les dependances principales et internes
+- Examiner les tests : framework, couverture, patterns (mocks, fixtures)
+- Lire la documentation existante (README, docs/, JSDoc, types)
+- Identifier les risques et la dette technique
 
 ## Output attendu
 
-### Résumé de l'exploration
+1. **Fichiers cles** : Tableau (fichier, role, lignes)
+2. **Architecture** : Structure et patterns identifies
+3. **Conventions** : Nommage, style, tests
+4. **Dependances** : Packages et leurs usages
+5. **Points d'attention** : Risques et dette technique
+6. **Recommandations** : Suggestions pour la suite
 
-```markdown
-## Exploration : [Sujet]
+## Agents lies
 
-### Fichiers clés identifiés
-| Fichier | Rôle | Lignes |
-|---------|------|--------|
-| [path] | [description] | [n] |
-
-### Architecture actuelle
-[Description de la structure et des patterns]
-
-### Flux de données
-[Comment les données circulent dans le système]
-
-### Conventions observées
-- Nommage : [convention]
-- Style : [fonctionnel/OOP/mixte]
-- Tests : [framework et patterns]
-
-### Dépendances clés
-- [package] : [usage]
-
-### Points d'attention
-- ⚠️ [Risque ou dette technique]
-- ⚠️ [Complexité identifiée]
-
-### Recommandations
-1. [Suggestion pour la suite]
-2. [Autre suggestion]
-```
-
-## Checklist de qualité
-
-- [ ] Tous les fichiers pertinents identifiés
-- [ ] Architecture comprise et documentée
-- [ ] Patterns et conventions notés
-- [ ] Dépendances listées
-- [ ] Risques et dette technique identifiés
-- [ ] Recommandations formulées
-
-## Agents liés
-
-| Après exploration | Usage |
-|-------------------|-------|
+| Apres | Usage |
+|-------|-------|
 | `/work:work-plan` | Planifier les modifications |
 | `/doc:doc-explain` | Expliquer du code complexe |
-| `/doc:doc-onboard` | Découverte complète d'un projet |
+| `/doc:doc-onboard` | Decouverte complete d'un projet |
 
 ---
 
-IMPORTANT: Ne jamais écrire de code en mode exploration - analyse seulement.
+IMPORTANT: Ne jamais ecrire de code en mode exploration - analyse seulement.
 
 YOU MUST lire le code source, pas seulement les noms de fichiers.
 
-NEVER supposer le fonctionnement - vérifier dans le code.
+NEVER supposer le fonctionnement - verifier dans le code.
 
-Think hard avant de répondre pour fournir une analyse complète et utile.
+Think hard avant de repondre pour fournir une analyse complete et utile.
 
 
 ---
