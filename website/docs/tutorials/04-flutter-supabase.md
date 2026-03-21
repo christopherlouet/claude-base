@@ -519,7 +519,7 @@ lib/
 ## Prochaines étapes
 
 - [Tutoriel 05 : Audit sécurité](/docs/tutorials/audit-securite)
-- [Guide Mobile](/docs/guides/mobile-development)
+- [Guide Mobile](/docs/guides/mobile-guide)
 - [Commande /dev:dev-flutter](/docs/commands/dev/dev-flutter)
 
 ---

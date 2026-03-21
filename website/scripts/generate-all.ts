@@ -7,6 +7,7 @@ import { generateCommandDocs } from './generate-command-docs.js';
 import { generateAgentDocs } from './generate-agent-docs.js';
 import { generateSkillDocs } from './generate-skill-docs.js';
 import { generateRuleDocs } from './generate-rule-docs.js';
+import { syncDocs } from './sync-docs.js';
 
 interface GenerationStats {
   commands: number;
@@ -52,6 +53,11 @@ async function generateAll(): Promise<GenerationStats> {
     console.log('\n📏 Generating rule documentation...');
     console.log('─'.repeat(50));
     await generateRuleDocs();
+
+    // Sync docs/ to website/docs/
+    console.log('\n📄 Syncing docs/ to website/docs/...');
+    console.log('─'.repeat(50));
+    await syncDocs();
 
     const endTime = Date.now();
     stats.totalTime = (endTime - startTime) / 1000;

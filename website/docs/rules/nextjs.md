@@ -1,7 +1,7 @@
 ---
-sidebar_position: 10
+sidebar_position: 12
 title: "nextjs"
-description: "**Regles RSC :** - Les Server Components ne peuvent PAS utiliser hooks (useState, useEffect) - Les Server Components ne peuvent PAS acceder au DOM ou "
+description: "Next.js Rules"
 tags:
   - "rule"
   - "nextjs"
@@ -9,7 +9,7 @@ tags:
 
 # Regles: nextjs
 
-> **Regles RSC :** - Les Server Components ne peuvent PAS utiliser hooks (useState, useEffect) - Les Server Components ne peuvent PAS acceder au DOM ou browser APIs - Les Client Components ne peuvent PA
+> Next.js Rules
 
 ## Fichiers concernes
 
@@ -25,143 +25,51 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 
 # Next.js Rules
 
-## Architecture
+## App Router (Next.js 13+)
 
-### App Router (Next.js 13+)
+- Utiliser le App Router (`app/`) sauf migration depuis `pages/`
+- Fichiers speciaux : `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`
 
-- Utiliser le App Router (`app/`) sauf si migration depuis `pages/`
-- Chaque route est un dossier avec `page.tsx`
-- Fichiers speciaux : `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`
+## Server vs Client Components
 
-### Server vs Client Components
-
-```
-Par defaut : Server Component (RSC)
-'use client' : Client Component (interactivite)
-'use server' : Server Action (mutations)
-```
-
-**Regles RSC :**
-- Les Server Components ne peuvent PAS utiliser hooks (useState, useEffect)
-- Les Server Components ne peuvent PAS acceder au DOM ou browser APIs
-- Les Client Components ne peuvent PAS utiliser `async/await` directement
-- Pousser `'use client'` le plus bas possible dans l'arbre
-
-### Patterns de composition
-
-```typescript
-// BON : Server Component parent, Client Component enfant
-// app/page.tsx (Server)
-export default async function Page() {
-  const data = await fetchData(); // Fetch cote serveur
-  return <ClientComponent data={data} />;
-}
-
-// MAUVAIS : Client Component en haut qui englobe tout
-'use client'
-export default function Page() {
-  const [data, setData] = useState(null);
-  useEffect(() => { fetch('/api/data')... }, []);
-  return <div>{/* tout est client */}</div>;
-}
-```
+- Par defaut : Server Component (RSC)
+- `'use client'` : Client Component (interactivite) - pousser le plus bas possible
+- `'use server'` : Server Action (mutations)
+- RSC ne peuvent PAS utiliser hooks (useState, useEffect) ni acceder au DOM
+- Client Components ne peuvent PAS utiliser `async/await` directement
 
 ## Data Fetching
 
-### Patterns recommandes
+| Pattern | Quand |
+|---------|-------|
+| Server Component fetch | Donnees statiques/SSR |
+| Server Actions | Mutations (forms) |
+| Route Handlers | API endpoints (`app/api/route.ts`) |
+| Client fetch (SWR/Query) | Donnees temps reel |
 
-| Pattern | Quand | Comment |
-|---------|-------|---------|
-| **Server Component fetch** | Donnees statiques/SSR | `async function Page() \{ const data = await fetch(...) \}` |
-| **Server Actions** | Mutations (forms) | `'use server'` + `action=\{serverAction\}` |
-| **Route Handlers** | API endpoints | `app/api/route.ts` |
-| **Client fetch** | Donnees temps reel | `useSWR` ou `useQuery` |
-
-### Eviter les cascades de requetes
-
-```typescript
-// MAUVAIS : Sequential (cascade)
-const user = await getUser(id);
-const posts = await getPosts(user.id);
-const comments = await getComments(posts[0].id);
-
-// BON : Parallel
-const [user, posts] = await Promise.all([
-  getUser(id),
-  getPosts(id),
-]);
-```
+- Paralleliser avec `Promise.all()` (eviter les cascades sequentielles)
 
 ## Caching et revalidation
-
-### Strategies
 
 | Methode | Usage |
 |---------|-------|
 | `revalidatePath()` | Invalider une page apres mutation |
 | `revalidateTag()` | Invalider par tag de cache |
-| `unstable_cache()` | Cache de fonctions avec tags |
 | `export const revalidate = 60` | ISR (revalidation periodique) |
 
 ## Performance
 
-### Optimisations essentielles
-
-- Utiliser `next/image` pour toutes les images (optimisation auto)
-- Utiliser `next/font` pour les polices (elimination du layout shift)
-- Utiliser `next/link` pour la navigation (prefetch auto)
-- Utiliser `loading.tsx` pour les Suspense boundaries
-- Lazy load les composants lourds avec `dynamic()`
-
-```typescript
-import dynamic from 'next/dynamic';
-
-const HeavyChart = dynamic(() => import('./Chart'), {
-  loading: () => <Skeleton />,
-  ssr: false, // Si le composant necessite window/document
-});
-```
-
-### Metadata et SEO
-
-```typescript
-// Metadata statique
-export const metadata: Metadata = {
-  title: 'Page Title',
-  description: 'Description',
-};
-
-// Metadata dynamique
-export async function generateMetadata({ params }): Promise<Metadata> {
-  const product = await getProduct(params.id);
-  return { title: product.name };
-}
-```
+- `next/image` pour toutes les images, `next/font` pour les polices, `next/link` pour la navigation
+- `loading.tsx` pour les Suspense boundaries
+- `dynamic()` avec `ssr: false` pour composants lourds
+- Metadata statique (`export const metadata`) ou dynamique (`generateMetadata`)
 
 ## Anti-patterns
 
 - NE PAS utiliser `'use client'` sur les pages/layouts sauf necessite absolue
-- NE PAS fetch des donnees dans useEffect si un Server Component peut les fournir
+- NE PAS fetch dans useEffect si un Server Component peut fournir les donnees
 - NE PAS utiliser `router.push()` quand un `&lt;Link&gt;` suffit
-- NE PAS ignorer les erreurs de build avec `// @ts-ignore` ou `any`
-- NE PAS utiliser `getServerSideProps` / `getStaticProps` avec App Router
-
-## Middleware
-
-```typescript
-// middleware.ts (racine du projet)
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-
-export function middleware(request: NextRequest) {
-  // Auth check, redirect, headers...
-  return NextResponse.next();
-}
-
-export const config = {
-  matcher: ['/dashboard/:path*', '/api/:path*'],
-};
-```
+- NE PAS utiliser `getServerSideProps`/`getStaticProps` avec App Router
 
 ## Application automatique
 

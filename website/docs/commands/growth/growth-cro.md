@@ -24,85 +24,28 @@ Optimisation du taux de conversion (CRO) pour pages, formulaires, signup flows, 
 
 Identifier les points de friction dans les parcours utilisateur et proposer des optimisations basees sur les bonnes pratiques pour maximiser le taux de conversion.
 
-## Domaines d'analyse
+Utilise le skill `growth-cro` pour les checklists detaillees et patterns CRO.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    CRO ANALYSIS                              │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  1. PAGE CRO        → Landing pages, home, pricing         │
-│  ═══════════                                                │
-│                                                             │
-│  2. SIGNUP FLOW     → Inscription, creation de compte      │
-│  ═════════════                                              │
-│                                                             │
-│  3. ONBOARDING      → Time-to-value, activation            │
-│  ════════════                                               │
-│                                                             │
-│  4. FORMULAIRES     → Lead capture, contact                │
-│  ═════════════                                              │
-│                                                             │
-│  5. POPUPS/MODALS   → Overlays, notifications              │
-│  ═══════════════                                            │
-│                                                             │
-│  6. PAYWALL/UPGRADE → Upsells, pricing, trials             │
-│  ═════════════════                                          │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
+## Workflow
 
-## Instructions
-
-### 1. Analyser les pages de conversion
-
-```bash
-# Trouver les pages de landing/pricing/signup
-find . -path "*/pages/*" -o -path "*/app/*" | grep -i 'landing\|pricing\|signup\|login\|register\|onboard'
-
-# Trouver les formulaires
-grep -rn '<form' --include="*.tsx" --include="*.jsx" --include="*.vue"
-
-# Trouver les CTA
-grep -rn 'button\|submit\|cta\|action' --include="*.tsx" -i | head -30
-```
-
-### 2. Auditer le parcours de conversion
-
-- Identifier le funnel principal (visite → action)
-- Reperer les points de friction (etapes inutiles, champs superflus)
-- Verifier la clarte des CTA
-- Evaluer la proposition de valeur
-
-### 3. Proposer des optimisations
-
-- Quick wins (changements rapides, fort impact)
-- Ameliorations structurelles (refonte de parcours)
-- Tests A/B recommandes (hypotheses a valider)
+- Analyser les pages de conversion (landing, pricing, signup, forms)
+- Auditer le parcours de conversion (funnel, etapes inutiles, champs superflus)
+- Verifier la clarte des CTA et la proposition de valeur
+- Identifier les points de friction par domaine (page, signup, onboarding, formulaires, popups, paywall)
+- Proposer des quick wins et ameliorations structurelles
+- Recommander des tests A/B avec hypotheses
 
 ## Output attendu
 
-```markdown
-## Audit CRO : [Page/Flow]
-
-### Funnel identifie
-[Visite] → [Etape 1] → [Etape 2] → [Conversion]
-
-### Score CRO : X/100
+### Audit CRO : [Page/Flow]
+- Funnel identifie avec taux par etape
+- Score CRO : X/100
 
 ### Quick wins
 1. [Action] - Impact estime: +X%
-2. [Action] - Impact estime: +X%
 
 ### Ameliorations structurelles
-1. [Action] - Implementation detaillee
-
-### Tests A/B recommandes
-1. Hypothese: [...]
-   - Variante A: [actuel]
-   - Variante B: [propose]
-   - Metrique: [mesure de succes]
-```
+### Tests A/B recommandes avec hypotheses et metriques
 
 ## Agents lies
 
@@ -112,7 +55,6 @@ grep -rn 'button\|submit\|cta\|action' --include="*.tsx" -i | head -30
 | `/growth:growth-funnel` | Analyse de funnel detaillee |
 | `/growth:growth-analytics` | Setup tracking et KPIs |
 | `/growth:growth-ab-test` | Planifier des A/B tests |
-| `/qa:qa-design` | Audit UI/UX complet |
 | `/growth:growth-onboarding` | Parcours d'onboarding |
 
 ---

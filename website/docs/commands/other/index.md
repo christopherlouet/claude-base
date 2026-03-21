@@ -19,21 +19,21 @@ Ce domaine contient **2 commandes** pour commandes diverses et orchestrateurs.
 
 | Commande | Description |
 |----------|-------------|
-| [`/assistant`](/docs/commands/other/assistant) | Point d'entrée unique du socle Claude Code. Guide vers les bonnes commandes, agents, skills et workflows. |
-| [`/assistant-auto`](/docs/commands/other/assistant-auto) | Orchestrateur en mode automatique. Analyse et exécute immédiatement le workflow approprié. |
+| [`/assistant`](/docs/commands/other/assistant) | Point d'entree unique du socle Claude Code. Guide vers les bonnes commandes, agents, skills et workflows. |
+| [`/assistant-auto`](/docs/commands/other/assistant-auto) | Orchestrateur en mode automatique. Analyse et execute immediatement le workflow approprie. |
 
 ## Commandes en detail
 
 <CommandGrid>
   <CommandCard
     name="assistant"
-    description="Point d'entrée unique du socle Claude Code. Guide vers les bonnes commandes, agents, skills et workflows."
+    description="Point d'entree unique du socle Claude Code. Guide vers les bonnes commandes, agents, skills et workflows."
     domain="other"
     href="/docs/commands/other/assistant"
   />
   <CommandCard
     name="assistant-auto"
-    description="Orchestrateur en mode automatique. Analyse et exécute immédiatement le workflow approprié."
+    description="Orchestrateur en mode automatique. Analyse et execute immediatement le workflow approprie."
     domain="other"
     href="/docs/commands/other/assistant-auto"
   />

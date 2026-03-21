@@ -1,7 +1,7 @@
 ---
-sidebar_position: 17
+sidebar_position: 20
 title: "security"
-description: "Security Rules"
+description: "3 vecteurs d'attaque identifies (fev. 2026) lors du clonage de depots non-fiables:"
 tags:
   - "rule"
   - "security"
@@ -9,7 +9,7 @@ tags:
 
 # Regles: security
 
-> Security Rules
+> 3 vecteurs d'attaque identifies (fev. 2026) lors du clonage de depots non-fiables:
 
 ## Fichiers concernes
 
@@ -73,6 +73,20 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 - Implementer une protection contre brute force
 - Utiliser des sessions securisees (httpOnly, secure, sameSite)
 - Implementer une expiration des tokens
+
+## Claude Code Security (depots tiers)
+
+3 vecteurs d'attaque identifies (fev. 2026) lors du clonage de depots non-fiables:
+
+- **Hooks malveillants**: un `.claude/settings.json` du depot peut contenir des hooks executant des commandes arbitraires
+- **MCP non-fiables**: un `.mcp.json` peut configurer des serveurs MCP exfiltrant des donnees
+- **Variables d'environnement**: des hooks peuvent lire et transmettre le contenu de `.env` ou des secrets systeme
+
+Bonnes pratiques:
+- Verifier le contenu de `.claude/settings.json` et `.mcp.json` avant d'ouvrir un depot tiers avec Claude Code
+- Garder les serveurs MCP desactives par defaut
+- S'assurer que `.env` est dans `.gitignore`
+- Le socle inclut des hooks SessionStart de verification automatique
 
 ## Application automatique
 

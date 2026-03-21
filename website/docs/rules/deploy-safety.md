@@ -1,7 +1,7 @@
 ---
-sidebar_position: 23
+sidebar_position: 5
 title: "deploy-safety"
-description: "Deploy Safety Rules"
+description: "Chaque deploiement doit etre valide avant execution. Ne jamais deployer de config dev en production."
 tags:
   - "rule"
   - "deploy-safety"
@@ -9,7 +9,7 @@ tags:
 
 # Regles: deploy-safety
 
-> Deploy Safety Rules
+> Chaque deploiement doit etre valide avant execution. Ne jamais deployer de config dev en production.
 
 ## Fichiers concernes
 
@@ -44,15 +44,15 @@ Chaque deploiement doit etre valide avant execution. Ne jamais deployer de confi
 | Tests passent | `npm test` / `pytest` / `go test` | Oui |
 | Build reussit | `docker build .` ou `npm run build` | Oui |
 
-## Red Flags -- STOP immediat
+## Red Flags — STOP immediat
 
 | Signal | Reaction |
 |--------|----------|
-| Copier docker-compose.yml (dev) vers le serveur | STOP -- utiliser docker-compose.prod.yml |
-| Variables d'env avec valeurs par defaut de dev | STOP -- verifier les valeurs production |
-| `secure: true` pour cookies en environnement HTTP | STOP -- adapter a l'environnement cible |
-| Deployer sans avoir lance les tests | STOP -- tests obligatoires avant deploy |
-| Migration Prisma/DB avec `--force` sans backup | STOP -- backup d'abord |
+| Copier docker-compose.yml (dev) vers le serveur | STOP — utiliser docker-compose.prod.yml |
+| Variables d'env avec valeurs par defaut de dev | STOP — verifier les valeurs production |
+| `secure: true` pour cookies en environnement HTTP | STOP — adapter a l'environnement cible |
+| Deployer sans avoir lance les tests | STOP — tests obligatoires avant deploy |
+| Migration Prisma/DB avec `--force` sans backup | STOP — backup d'abord |
 
 ## Environnements
 
@@ -61,6 +61,16 @@ Chaque deploiement doit etre valide avant execution. Ne jamais deployer de confi
 | Dev (HTTP) | `false` | Permissif | `true` | Locale |
 | Staging (HTTPS) | `true` | Comme prod | `false` | Copie anonymisee |
 | Prod (HTTPS) | `true` | Strict | `false` | Production |
+
+## Regles
+
+IMPORTANT: Toujours verifier que le docker-compose utilise est celui de PRODUCTION avant de deployer.
+
+IMPORTANT: Ne JAMAIS deployer sans avoir verifie que toutes les variables d'environnement sont configurees pour la production.
+
+NEVER copier un fichier de configuration de dev vers la production sans verification explicite.
+
+NEVER deployer avec des migrations DB en attente sans les avoir executees ou verifiees.
 
 ## Application automatique
 

@@ -19,52 +19,52 @@ Ce domaine contient **9 commandes** pour documentation (changelog, readme, archi
 
 | Commande | Description |
 |----------|-------------|
-| [`/doc:doc-api-spec`](/docs/commands/doc/doc-api-spec) | Générer une spécification OpenAPI/Swagger pour une API. |
-| [`/doc:doc-architecture`](/docs/commands/doc/doc-architecture) | Documente l'architecture technique d'un projet de manière claire et maintenable. |
-| [`/doc:doc-changelog`](/docs/commands/doc/doc-changelog) | Génération et maintenance du changelog du projet. |
-| [`/doc:doc-explain`](/docs/commands/doc/doc-explain) | Expliquer du code complexe en détail. |
-| [`/doc:doc-fix-issue`](/docs/commands/doc/doc-fix-issue) | Corrige une issue GitHub de manière autonome et complète. |
-| [`/doc:doc-generate`](/docs/commands/doc/doc-generate) | Génération de documentation pour le code. |
+| [`/doc:doc-api-spec`](/docs/commands/doc/doc-api-spec) | Generer une specification OpenAPI/Swagger pour une API. |
+| [`/doc:doc-architecture`](/docs/commands/doc/doc-architecture) | Documente l'architecture technique d'un projet de maniere claire et maintenable. |
+| [`/doc:doc-changelog`](/docs/commands/doc/doc-changelog) | Generation et maintenance du changelog du projet. |
+| [`/doc:doc-explain`](/docs/commands/doc/doc-explain) | Expliquer du code complexe en detail. |
+| [`/doc:doc-fix-issue`](/docs/commands/doc/doc-fix-issue) | Corrige une issue GitHub de maniere autonome et complete. |
+| [`/doc:doc-generate`](/docs/commands/doc/doc-generate) | Generation de documentation pour le code. |
 | [`/doc:doc-i18n`](/docs/commands/doc/doc-i18n) | Internationalisation et localisation du code. |
 | [`/doc:doc-onboard`](/docs/commands/doc/doc-onboard) | Onboarding rapide sur un codebase inconnu. |
-| [`/doc:doc-readme`](/docs/commands/doc/doc-readme) | Génère ou améliore le README d'un projet pour maximiser son adoption et sa compréhension. |
+| [`/doc:doc-readme`](/docs/commands/doc/doc-readme) | Genere ou ameliore le README d'un projet pour maximiser son adoption et sa comprehension. |
 
 ## Commandes en detail
 
 <CommandGrid>
   <CommandCard
     name="doc-api-spec"
-    description="Générer une spécification OpenAPI/Swagger pour une API."
+    description="Generer une specification OpenAPI/Swagger pour une API."
     domain="doc"
     href="/docs/commands/doc/doc-api-spec"
   />
   <CommandCard
     name="doc-architecture"
-    description="Documente l'architecture technique d'un projet de manière claire et maintenable."
+    description="Documente l'architecture technique d'un projet de maniere claire et maintenable."
     domain="doc"
     href="/docs/commands/doc/doc-architecture"
   />
   <CommandCard
     name="doc-changelog"
-    description="Génération et maintenance du changelog du projet."
+    description="Generation et maintenance du changelog du projet."
     domain="doc"
     href="/docs/commands/doc/doc-changelog"
   />
   <CommandCard
     name="doc-explain"
-    description="Expliquer du code complexe en détail."
+    description="Expliquer du code complexe en detail."
     domain="doc"
     href="/docs/commands/doc/doc-explain"
   />
   <CommandCard
     name="doc-fix-issue"
-    description="Corrige une issue GitHub de manière autonome et complète."
+    description="Corrige une issue GitHub de maniere autonome et complete."
     domain="doc"
     href="/docs/commands/doc/doc-fix-issue"
   />
   <CommandCard
     name="doc-generate"
-    description="Génération de documentation pour le code."
+    description="Generation de documentation pour le code."
     domain="doc"
     href="/docs/commands/doc/doc-generate"
   />
@@ -82,7 +82,7 @@ Ce domaine contient **9 commandes** pour documentation (changelog, readme, archi
   />
   <CommandCard
     name="doc-readme"
-    description="Génère ou améliore le README d'un projet pour maximiser son adoption et sa compréhension."
+    description="Genere ou ameliore le README d'un projet pour maximiser son adoption et sa comprehension."
     domain="doc"
     href="/docs/commands/doc/doc-readme"
   />

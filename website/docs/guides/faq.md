@@ -128,7 +128,7 @@ Utilisez l'**orchestrateur** :
 
 L'orchestrateur analysera votre demande et recommandera les commandes appropriées.
 
-Ou consultez le [guide de décision](/docs/reference/cheatsheet).
+Ou consultez le [guide de décision](/docs/reference/commands).
 
 ### Comment voir toutes les commandes disponibles ?
 
@@ -352,7 +352,7 @@ npm run build
 
 - [Troubleshooting](/docs/guides/troubleshooting) - Erreurs et diagnostics
 - [Tutoriels](/docs/tutorials) - Guides pas-à-pas
-- [Reference](/docs/reference/cheatsheet) - Cheatsheet rapide
+- [Reference](/docs/reference/commands) - Cheatsheet rapide
 - [GitHub Issues](https://github.com/christopherlouet/claude-socle/issues) - Signaler un problème
 
 ---
