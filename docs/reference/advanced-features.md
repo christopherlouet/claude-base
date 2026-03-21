@@ -44,7 +44,8 @@ Commande `/effort` pour controler le niveau de raisonnement:
 |--------|----------|-------------|
 | `low` | `/effort low` | Exploration, formatage, taches simples |
 | `medium` | `/effort medium` | Developpement standard, corrections |
-| `high` | `/effort high` | Architecture, audit, refactoring complexe |
+| `high` | `/effort high` | Architecture, refactoring complexe |
+| `max` | `/effort max` | Audit critique, debug complexe (Opus 4.6 uniquement) |
 
 Recommandations par workflow du socle:
 
@@ -53,7 +54,7 @@ Recommandations par workflow du socle:
 | `/work:work-explore` | low |
 | `/work:work-specify`, `/work:work-plan` | high |
 | `/dev:dev-tdd` | medium |
-| `/qa:qa-audit`, `/qa:qa-security` | high |
+| `/qa:qa-audit`, `/qa:qa-security` | max (Opus 4.6) |
 | `/work:work-commit` | low |
 
 ## Sessions Nommees (CLI 2.1.76+)
@@ -84,7 +85,41 @@ Utile pour: integration CI/CD, scripts de setup, hooks de notification.
 
 ## Opus 4.6
 
-Adaptive Thinking avec 4 niveaux d'effort (`low`, `medium`, `high`, `max`) - le modele ajuste automatiquement. Fenetre 1M tokens (beta), 128k tokens de sortie, Context Compaction automatique.
+Adaptive Thinking : Claude ajuste automatiquement la profondeur de son raisonnement selon la complexite de la tache. Remplace `budget_tokens` (deprecie). 4 niveaux d'effort (`low`, `medium`, `high`, `max`) pour guider le raisonnement — `max` est exclusif a Opus 4.6.
+
+Fenetre 1M tokens, 128k tokens de sortie, Context Compaction automatique. Le raisonnement s'intercale entre les appels d'outils (interleaved thinking) pour les workflows agentiques.
+
+## Checkpoint / Rewind
+
+Claude Code sauvegarde automatiquement l'etat du code avant chaque modification (checkpoint). Pour revenir a un etat precedent :
+
+| Methode | Action |
+|---------|--------|
+| `Esc` × 2 | Annuler la derniere modification et revenir au checkpoint |
+| `/rewind` | Choisir un checkpoint specifique dans l'historique |
+
+Recommande en phase Refactor du TDD : si le refactoring casse les tests, `/rewind` est plus rapide qu'un revert git manuel.
+
+## Fast Mode (Research Preview)
+
+Meme modele Opus 4.6, sortie 2.5x plus rapide. Toggle avec `/fast`. Cout premium (voir pricing Anthropic).
+
+| Cas d'usage | Recommandation |
+|-------------|----------------|
+| Exploration, commits, taches simples | Fast mode adapte |
+| Architecture, audit, debug complexe | Mode standard recommande |
+
+## Context Compaction
+
+La compaction resume automatiquement le contexte quand la fenetre approche sa limite. Declenchement manuel avec `/compact`.
+
+| Commande | Effet | Quand utiliser |
+|----------|-------|----------------|
+| `/compact` | Resume le contexte, conserve l'essentiel | Entre phases longues du workflow |
+| `/clear` | Efface tout le contexte | Changement de sujet complet |
+| _(auto)_ | Compaction automatique si necessaire | Sessions longues sans action requise |
+
+Hooks associes : `PreCompact` (avant compaction, matcher `manual` ou `auto`) et `PostCompact` (apres). Voir `docs/reference/hooks-reference.md`.
 
 ## Agent Teams (Experimental)
 
@@ -110,6 +145,12 @@ Serveurs MCP dans `.mcp.json` (tous desactives par defaut):
 | `linear` | Gestion de projet |
 
 Pour activer: `"enabled": true` dans `.mcp.json`. Variables d'environnement dans `.env`.
+
+### MCP Channels (Research Preview)
+
+Les serveurs MCP peuvent pousser des messages dans une session via `--channels`. Utile pour recevoir des notifications en temps reel (ex: alerte Sentry pendant le dev, message Slack d'un collegue, mise a jour Linear).
+
+Serveurs compatibles : `slack`, `sentry`, `linear`. Activation : `claude --channels` au demarrage.
 
 ### MCP Elicitation (CLI 2.1.76+)
 

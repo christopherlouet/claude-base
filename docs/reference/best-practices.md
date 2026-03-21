@@ -44,9 +44,10 @@ Voir `docs/guides/PROMPTING-GUIDE.md` pour le guide complet.
 |-------|--------|----------|
 | Explorer du code, lire des fichiers | `low` | Pas besoin de raisonnement profond |
 | Implementer une feature standard | `medium` | Equilibre vitesse/qualite |
-| Concevoir une architecture, auditer | `high` | Raisonnement approfondi necessaire |
+| Concevoir une architecture, refactoring | `high` | Raisonnement approfondi necessaire |
+| Audit critique, debug complexe | `max` | Raisonnement maximum (Opus 4.6 uniquement) |
 
-Commande: `/effort low`, `/effort medium`, `/effort high`.
+Commande: `/effort low`, `/effort medium`, `/effort high`, `/effort max`.
 
 ## Memoire Automatique (CLI 2.1.76+)
 
@@ -65,6 +66,18 @@ Ne pas dupliquer : si c'est dans CLAUDE.md, pas besoin de le memoriser. Utiliser
 > "The single biggest productivity unlock." -- Boris Cherny
 
 Utiliser git worktrees pour 5+ sessions Claude Code en parallele. Voir le skill `git-worktrees` pour les details.
+
+## Gestion du Contexte
+
+| Situation | Action | Quand |
+|-----------|--------|-------|
+| Session longue, contexte intact | `/compact` | Entre phases (Explore → Plan → TDD) |
+| Changement de sujet total | `/clear` | Nouvelle tache sans rapport |
+| Session normale | Laisser faire | Auto-compaction si necessaire |
+
+## Recuperation Rapide
+
+Si un refactoring casse tout : `/rewind` (revient au dernier etat stable). Plus rapide que `git stash` ou `git checkout`. Checkpoints sauvegardes automatiquement avant chaque modification.
 
 ## Optimisation Tokens (RTK)
 
