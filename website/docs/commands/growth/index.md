@@ -20,16 +20,16 @@ Ce domaine contient **11 commandes** pour croissance (seo, analytics, landing, f
 | Commande | Description |
 |----------|-------------|
 | [`/growth:growth-ab-test`](/docs/commands/growth/growth-ab-test) | Planifier et analyser un A/B test. |
-| [`/growth:growth-analytics`](/docs/commands/growth/growth-analytics) | Mise en place du tracking et définition des KPIs pour un projet. |
-| [`/growth:growth-app-store-analytics`](/docs/commands/growth/growth-app-store-analytics) | Monitoring des metriques App Store et Google Play via APIs officielles (gratuites). |
+| [`/growth:growth-analytics`](/docs/commands/growth/growth-analytics) | Mise en place du tracking et definition des KPIs pour un projet. |
+| [`/growth:growth-app-store-analytics`](/docs/commands/growth/growth-app-store-analytics) | Monitoring des metriques App Store et Google Play via APIs officielles. |
 | [`/growth:growth-cro`](/docs/commands/growth/growth-cro) | Optimisation du taux de conversion (CRO) pour pages, formulaires, signup flows, onboarding et paywalls. |
-| [`/growth:growth-email`](/docs/commands/growth/growth-email) | Créer des templates d'emails transactionnels et marketing. |
-| [`/growth:growth-funnel`](/docs/commands/growth/growth-funnel) | Analyse et optimise les funnels de conversion pour maximiser les taux de conversion. |
-| [`/growth:growth-landing`](/docs/commands/growth/growth-landing) | Créer ou optimiser une landing page efficace. |
+| [`/growth:growth-email`](/docs/commands/growth/growth-email) | Creer des templates d'emails transactionnels et marketing. |
+| [`/growth:growth-funnel`](/docs/commands/growth/growth-funnel) | Analyse et optimise les funnels de conversion. |
+| [`/growth:growth-landing`](/docs/commands/growth/growth-landing) | Creer ou optimiser une landing page efficace. |
 | [`/growth:growth-localization`](/docs/commands/growth/growth-localization) | Strategie de localisation et expansion internationale. |
 | [`/growth:growth-onboarding`](/docs/commands/growth/growth-onboarding) | Concevoir un parcours d'onboarding utilisateur efficace. |
-| [`/growth:growth-retention`](/docs/commands/growth/growth-retention) | Analyse et améliore la rétention utilisateur avec des stratégies data-driven. |
-| [`/growth:growth-seo`](/docs/commands/growth/growth-seo) | Audit SEO et recommandations d'optimisation pour le référencement naturel. |
+| [`/growth:growth-retention`](/docs/commands/growth/growth-retention) | Analyse et ameliore la retention utilisateur avec des strategies data-driven. |
+| [`/growth:growth-seo`](/docs/commands/growth/growth-seo) | Audit SEO et recommandations d'optimisation pour le referencement naturel. |
 
 ## Commandes en detail
 
@@ -42,13 +42,13 @@ Ce domaine contient **11 commandes** pour croissance (seo, analytics, landing, f
   />
   <CommandCard
     name="growth-analytics"
-    description="Mise en place du tracking et définition des KPIs pour un projet."
+    description="Mise en place du tracking et definition des KPIs pour un projet."
     domain="growth"
     href="/docs/commands/growth/growth-analytics"
   />
   <CommandCard
     name="growth-app-store-analytics"
-    description="Monitoring des metriques App Store et Google Play via APIs officielles (gratuites)."
+    description="Monitoring des metriques App Store et Google Play via APIs officielles."
     domain="growth"
     href="/docs/commands/growth/growth-app-store-analytics"
   />
@@ -60,19 +60,19 @@ Ce domaine contient **11 commandes** pour croissance (seo, analytics, landing, f
   />
   <CommandCard
     name="growth-email"
-    description="Créer des templates d'emails transactionnels et marketing."
+    description="Creer des templates d'emails transactionnels et marketing."
     domain="growth"
     href="/docs/commands/growth/growth-email"
   />
   <CommandCard
     name="growth-funnel"
-    description="Analyse et optimise les funnels de conversion pour maximiser les taux de conversion."
+    description="Analyse et optimise les funnels de conversion."
     domain="growth"
     href="/docs/commands/growth/growth-funnel"
   />
   <CommandCard
     name="growth-landing"
-    description="Créer ou optimiser une landing page efficace."
+    description="Creer ou optimiser une landing page efficace."
     domain="growth"
     href="/docs/commands/growth/growth-landing"
   />
@@ -90,13 +90,13 @@ Ce domaine contient **11 commandes** pour croissance (seo, analytics, landing, f
   />
   <CommandCard
     name="growth-retention"
-    description="Analyse et améliore la rétention utilisateur avec des stratégies data-driven."
+    description="Analyse et ameliore la retention utilisateur avec des strategies data-driven."
     domain="growth"
     href="/docs/commands/growth/growth-retention"
   />
   <CommandCard
     name="growth-seo"
-    description="Audit SEO et recommandations d'optimisation pour le référencement naturel."
+    description="Audit SEO et recommandations d'optimisation pour le referencement naturel."
     domain="growth"
     href="/docs/commands/growth/growth-seo"
   />

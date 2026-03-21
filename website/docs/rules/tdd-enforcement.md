@@ -1,5 +1,5 @@
 ---
-sidebar_position: 18
+sidebar_position: 21
 title: "tdd-enforcement"
 description: "IMPORTANT: Quand l'utilisateur demande d'implementer, ajouter, creer, fixer ou corriger du code, Claude DOIT proposer l'approche TDD AVANT de commence"
 tags:

@@ -17,130 +17,43 @@ import CommandCard from '@site/src/components/CommandCard';
 
 Onboarding rapide sur un codebase inconnu.
 
-## Projet ou zone à explorer
+## Projet ou zone a explorer
 `&lt;arguments&gt;`
 
-## Processus d'onboarding
+## Objectif
 
-### 1. Vue d'ensemble (5 min)
-```bash
-# Structure du projet
-ls -la
-tree -L 2 -I 'node_modules|.git|dist|build'
+Comprendre rapidement un projet en 30 minutes : type, stack, architecture, flux de donnees, conventions et points d'attention.
 
-# Fichiers de configuration
-cat package.json  # ou requirements.txt, Cargo.toml, etc.
-cat README.md
-```
+## Workflow
 
-#### Questions à répondre :
-- Quel type de projet ? (frontend, backend, fullstack, lib)
-- Quel(s) langage(s) / framework(s) ?
-- Comment lancer le projet ?
-- Comment lancer les tests ?
-
-### 2. Architecture (10 min)
-
-#### Identifier les couches
-- [ ] Entry points (main, index, app)
-- [ ] Routes / Controllers
-- [ ] Services / Business logic
-- [ ] Data access / Models
-- [ ] Utilitaires / Helpers
-
-#### Identifier les patterns
-- [ ] Architecture (MVC, Clean, Hexagonal, etc.)
-- [ ] State management
-- [ ] Error handling
-- [ ] Logging
-- [ ] Configuration
-
-### 3. Flux de données (10 min)
-
-#### Tracer un flux complet
-1. Entrée utilisateur / Requête API
-2. Validation
-3. Traitement métier
-4. Accès données
-5. Réponse
-
-#### Identifier les dépendances
-- Services externes (APIs, DBs)
-- Librairies clés
-- Configuration requise
-
-### 4. Conventions du projet (5 min)
-
-- [ ] Style de code (linter config)
-- [ ] Conventions de nommage
-- [ ] Structure des tests
-- [ ] Format des commits
-- [ ] Process de review
-
-### 5. Points d'attention
-
-#### Dette technique potentielle
-- Code dupliqué
-- Tests manquants
-- TODO/FIXME dans le code
-- Dépendances obsolètes
-
-#### Zones sensibles
-- Authentification / Autorisation
-- Paiements / Transactions
-- Données personnelles
+- Vue d'ensemble (5 min) : structure, package.json/README, comment lancer/tester
+- Architecture (10 min) : entry points, couches, patterns (MVC, Clean, Hexagonal)
+- Flux de donnees (10 min) : tracer un flux complet, identifier les dependances
+- Conventions (5 min) : style, nommage, tests, commits, review process
+- Points d'attention : dette technique, zones sensibles (auth, paiements)
 
 ## Output attendu
 
-### Résumé du projet
-```
-Nom: [nom]
-Type: [frontend/backend/fullstack/lib]
-Stack: [langages et frameworks]
-Architecture: [pattern principal]
-```
+### Resume du projet
+- Type, stack, architecture, comment demarrer
 
-### Comment démarrer
-```bash
-# Installation
-[commandes]
+### Structure cle
+- Dossiers principaux avec description
 
-# Lancement
-[commandes]
+### Points d'entree importants
+- Fichiers cles avec leur role
 
-# Tests
-[commandes]
-```
+### Dependances critiques
+### Prochaines etapes recommandees
 
-### Structure clé
-```
-/src
-├── [dossier1]  # [description]
-├── [dossier2]  # [description]
-└── [dossier3]  # [description]
-```
-
-### Points d'entrée importants
-- `[fichier1]` - [rôle]
-- `[fichier2]` - [rôle]
-
-### Dépendances critiques
-- `[dep1]` - [usage]
-- `[dep2]` - [usage]
-
-### Prochaines étapes recommandées
-1. [Suggestion 1]
-2. [Suggestion 2]
-3. [Suggestion 3]
-
-## Agents liés
+## Agents lies
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
 | `/work:work-explore` | Explorer en profondeur |
-| `/doc:doc-explain` | Comprendre du code spécifique |
-| `/ops:ops-health` | Évaluer la santé du projet |
-| `/doc:doc-readme` | Consulter/créer le README |
+| `/doc:doc-explain` | Comprendre du code specifique |
+| `/ops:ops-health` | Evaluer la sante du projet |
+| `/doc:doc-readme` | Consulter/creer le README |
 
 ---
 
@@ -150,7 +63,7 @@ YOU MUST comprendre l'architecture avant de modifier du code.
 
 NEVER modifier du code sans avoir compris le contexte.
 
-Think hard sur l'architecture globale avant de plonger dans les détails.
+Think hard sur l'architecture globale avant de plonger dans les details.
 
 
 ---
