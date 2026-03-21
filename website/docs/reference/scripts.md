@@ -8,11 +8,11 @@ import Stats from '@site/src/components/Stats';
 
 # Scripts Utilitaires
 
-> **12 scripts** pour installer, configurer et maintenir claude-socle
+> **14 scripts** pour installer, configurer et maintenir claude-socle
 
 <Stats items={[
-  { number: 12, label: 'Scripts' },
-  { number: 4, label: 'Categories' },
+  { number: 14, label: 'Scripts' },
+  { number: 5, label: 'Categories' },
 ]} />
 
 ## Vue d'ensemble
@@ -21,10 +21,11 @@ Les scripts sont organises en 4 categories :
 
 | Categorie | Scripts | Description |
 |-----------|---------|-------------|
-| **Installation** | `new-project.sh`, `install.sh` | Installer le socle |
-| **Maintenance** | `update.sh`, `diff.sh`, `uninstall.sh` | Maintenir le socle |
-| **Diagnostic** | `doctor.sh`, `validate.sh` | Verifier l'installation |
+| **Installation** | `new-project.sh` | Installer le socle |
+| **Maintenance** | `update.sh`, `diff.sh`, `uninstall.sh`, `check-updates.sh` | Maintenir le socle |
+| **Diagnostic** | `doctor.sh`, `validate.sh`, `validate-counts.sh` | Verifier l'installation |
 | **Outils** | `ide.sh`, `learn.sh` | Configuration avancee |
+| **Internes** | `lint.sh`, `test.sh`, `bump-version.sh`, `generate-commands-doc.sh` | CI et maintenance du socle |
 
 ---
 
@@ -73,35 +74,6 @@ cd mon-projet-existant
 
 ---
 
-### install.sh
-
-Installe la configuration Claude Code dans un projet existant (version simplifiee de `new-project.sh`).
-
-```bash
-./scripts/install.sh [OPTIONS] [CHEMIN]
-```
-
-**Options :**
-
-| Option | Description |
-|--------|-------------|
-| `--cicd` | Inclure les workflows CI/CD |
-| `--hooks` | Inclure les hooks Git |
-| `--mcp` | Inclure la configuration MCP |
-| `-y, --yes` | Mode non-interactif |
-
-**Exemple :**
-
-```bash
-# Installation basique
-./scripts/install.sh .
-
-# Installation complete
-./scripts/install.sh --cicd --hooks --mcp /chemin/vers/projet
-```
-
----
-
 ## Scripts de Maintenance
 
 ### update.sh
@@ -141,6 +113,48 @@ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/
 
 # Mise a jour des skills uniquement
 ./scripts/update.sh --skills
+```
+
+---
+
+### check-updates.sh
+
+Verifie les mises a jour disponibles pour Claude Code CLI et les skills communautaires.
+
+```bash
+./scripts/check-updates.sh [OPTIONS]
+```
+
+**Options :**
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Sortie au format JSON |
+| `--quiet` | Mode silencieux (uniquement si mises a jour) |
+| `--force` | Ignorer le cache (TTL 24h par defaut) |
+| `--no-cli` | Ne pas verifier Claude Code CLI |
+| `--no-skills` | Ne pas verifier skills.sh |
+| `--timeout N` | Timeout reseau en secondes (defaut: 10) |
+
+**Codes de retour :**
+
+| Code | Signification |
+|------|---------------|
+| 0 | Tout est a jour |
+| 1 | Mises a jour disponibles |
+| 2 | Erreur lors de la verification |
+
+**Exemple :**
+
+```bash
+# Verification complete
+./scripts/check-updates.sh
+
+# Sortie JSON pour CI/CD
+./scripts/check-updates.sh --json
+
+# CLI uniquement, sans cache
+./scripts/check-updates.sh --no-skills --force
 ```
 
 ---
@@ -468,8 +482,8 @@ chmod +x /tmp/new-project.sh
 | Script | Usage principal | Commande rapide |
 |--------|-----------------|-----------------|
 | `new-project.sh` | Creer/configurer un projet | `curl ... \| bash` |
-| `install.sh` | Installer le socle | `./scripts/install.sh .` |
 | `update.sh` | Mettre a jour | `curl ... \| bash` |
+| `check-updates.sh` | Verifier les mises a jour | `./scripts/check-updates.sh` |
 | `diff.sh` | Comparer avec le socle | `./scripts/diff.sh` |
 | `uninstall.sh` | Desinstaller | `./scripts/uninstall.sh` |
 | `doctor.sh` | Diagnostiquer | `./scripts/doctor.sh --fix` |

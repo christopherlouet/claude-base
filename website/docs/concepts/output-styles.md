@@ -49,7 +49,9 @@ Les output styles sont dans `.claude/output-styles/`:
 ├── review.md           # Revue de code
 ├── emoji.md            # Avec emojis
 ├── minimal.md          # Ultra minimal
-└── structured.md       # Structure ASCII
+├── structured.md       # Structure ASCII
+├── debug.md            # Diagnostic et investigation
+└── metrics.md          # Metriques et tableaux de bord
 ```
 
 ## Utilisation
