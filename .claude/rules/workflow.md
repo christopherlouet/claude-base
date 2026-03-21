@@ -31,7 +31,7 @@ Avant de commencer a travailler sur un projet existant :
 - Cycle Red-Green-Refactor obligatoire:
   1. RED: Ecrire un test qui echoue
   2. GREEN: Ecrire le code minimal pour passer le test
-  3. REFACTOR: Ameliorer le code sans casser les tests
+  3. REFACTOR: Ameliorer le code sans casser les tests (si ca casse → `/rewind` pour revenir au dernier etat stable)
 - Utiliser `/dev:dev-tdd` pour le cycle complet
 - Commits atomiques et frequents
 - Respecter les conventions du projet
@@ -59,6 +59,18 @@ Signaux d'alerte :
 - Plus de 10 fichiers modifies sans commit intermediaire → commiter maintenant
 - Un fix introduit une regression → revert, commiter ce qui marche, traiter le reste separement
 - Le scope grossit pendant le travail → s'arreter, commiter l'etat stable, replanifier
+
+## Gestion du contexte
+
+| Situation | Action | Commande |
+|-----------|--------|----------|
+| Entre Explore et Plan | Compacter si exploration longue | `/compact` |
+| Entre Plan et TDD | Compacter si plan detaille | `/compact` |
+| Changement de sujet complet | Effacer le contexte | `/clear` |
+| Session normale | Laisser l'auto-compaction gerer | _(rien)_ |
+| Refactoring casse tout | Revenir au dernier etat stable | `/rewind` |
+
+Preferer `/compact` a `/clear` : la compaction conserve l'essentiel du contexte (decisions, conventions apprises) alors que `/clear` efface tout.
 
 ## Anti-patterns a Eviter
 
