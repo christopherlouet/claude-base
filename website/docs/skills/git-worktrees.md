@@ -206,7 +206,7 @@ Exemples:
 
 ## Workflow Boris Cherny (5+ sessions paralleles)
 
-### Setup complet
+### Setup complet avec sessions nommees (CLI 2.1.76+)
 
 ```bash
 # 1. Creer les worktrees
@@ -216,13 +216,15 @@ git worktree add ../myapp-fix -b fix/login-bug
 git worktree add ../myapp-review main
 git worktree add ../myapp-analysis main
 
-# 2. Lancer Claude dans chaque worktree (onglets separes)
-# Tab 1: cd ../myapp && claude
-# Tab 2: cd ../myapp-feature-1 && claude
-# Tab 3: cd ../myapp-feature-2 && claude
-# Tab 4: cd ../myapp-fix && claude
-# Tab 5: cd ../myapp-analysis && claude
+# 2. Lancer Claude dans chaque worktree avec --name
+# Tab 1: cd ../myapp && claude -n "main"
+# Tab 2: cd ../myapp-feature-1 && claude -n "auth"
+# Tab 3: cd ../myapp-feature-2 && claude -n "payment"
+# Tab 4: cd ../myapp-fix && claude -n "fix-login"
+# Tab 5: cd ../myapp-analysis && claude -n "analysis"
 ```
+
+Le flag `--name` / `-n` nomme la session pour l'identifier dans les logs et le terminal. Pattern recommande: 1 worktree = 1 branche = 1 session nommee.
 
 ### Avantages cles
 
@@ -251,6 +253,34 @@ osascript -e 'display notification "Claude needs input" with title "Claude Code"
 # Linux (notify-send)
 notify-send "Claude Code" "Claude needs input"
 ```
+
+## Sparse Paths pour Monorepos (CLI 2.1.76+)
+
+Configuration `worktree.sparsePaths` pour limiter les fichiers inclus dans un worktree. Utile pour les monorepos volumineux:
+
+```json
+// Dans .claude/settings.json
+{
+  "worktree": {
+    "sparsePaths": [
+      "packages/frontend/**",
+      "packages/shared/**",
+      "package.json",
+      "tsconfig.json"
+    ]
+  }
+}
+```
+
+Exemples de configurations courantes:
+
+| Contexte | sparsePaths |
+|----------|-------------|
+| Frontend only | `packages/frontend/**`, `packages/shared/**`, `*.json` |
+| Backend only | `packages/api/**`, `packages/shared/**`, `*.json` |
+| Full-stack | `packages/frontend/**`, `packages/api/**`, `packages/shared/**` |
+
+Avantages: operations plus rapides, moins de bruit dans l'exploration, contexte Claude Code plus cible.
 
 ## Limitations
 

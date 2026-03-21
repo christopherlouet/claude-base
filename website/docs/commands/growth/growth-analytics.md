@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "/growth:growth-analytics"
-description: "Mise en place du tracking et définition des KPIs pour un projet."
+description: "Mise en place du tracking et definition des KPIs pour un projet."
 tags:
   - "growth"
   - "command"
@@ -15,266 +15,51 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent ANALYTICS
 
-Mise en place du tracking et définition des KPIs pour un projet.
+Mise en place du tracking et definition des KPIs pour un projet.
 
 ## Contexte
 `&lt;arguments&gt;`
 
-## Processus de mise en place
+## Objectif
 
-### 1. Comprendre les objectifs business
+Definir la North Star Metric, les KPIs AARRR, les evenements a tracker, et mettre en place l'infrastructure analytics avec respect du RGPD.
 
-#### Questions clés
-- Quel est l'objectif principal du produit ?
-- Comment définissez-vous le succès ?
-- Quelles décisions devront être prises grâce aux données ?
+## Workflow
 
-#### Types d'objectifs
-| Type | Exemples |
-|------|----------|
-| Acquisition | Visiteurs, inscriptions, téléchargements |
-| Activation | Onboarding complété, première action clé |
-| Rétention | Retour J7, J30, usage mensuel |
-| Revenu | Conversion paid, ARPU, LTV |
-| Référral | Invitations, partages |
-
-### 2. Définir les KPIs (AARRR Framework)
-
-#### Acquisition
-| KPI | Description | Cible |
-|-----|-------------|-------|
-| Visiteurs uniques | Nombre de visiteurs/mois | |
-| Sources de trafic | Répartition par canal | |
-| Coût par acquisition (CPA) | Budget / Nouveaux users | |
-
-#### Activation
-| KPI | Description | Cible |
-|-----|-------------|-------|
-| Taux d'inscription | Visiteurs → Inscrits | &gt; X% |
-| Onboarding completion | Inscrits → Onboarding fini | &gt; X% |
-| Time to value | Temps pour première valeur | &lt; X min |
-
-#### Rétention
-| KPI | Description | Cible |
-|-----|-------------|-------|
-| DAU/MAU | Utilisateurs actifs quotidiens/mensuels | |
-| Rétention J1/J7/J30 | % utilisateurs revenus | |
-| Churn rate | % utilisateurs perdus/mois | &lt; X% |
-
-#### Revenu
-| KPI | Description | Cible |
-|-----|-------------|-------|
-| Taux de conversion | Free → Paid | &gt; X% |
-| MRR/ARR | Revenu récurrent | |
-| ARPU | Revenu moyen par utilisateur | |
-| LTV | Valeur vie client | &gt; 3× CAC |
-
-#### Referral
-| KPI | Description | Cible |
-|-----|-------------|-------|
-| NPS | Net Promoter Score | &gt; 50 |
-| Coefficient viral | Invitations × Conversion | &gt; 1 |
-| Taux de partage | % utilisateurs qui partagent | |
-
-### 3. Identifier les événements à tracker
-
-#### Événements standards
-```javascript
-// Page views
-analytics.page('Home');
-analytics.page('Pricing');
-
-// Identification
-analytics.identify(userId, {
-  email: user.email,
-  plan: user.plan,
-  createdAt: user.createdAt
-});
-```
-
-#### Événements métier
-| Catégorie | Événement | Propriétés |
-|-----------|-----------|------------|
-| **Auth** | `user_signed_up` | method, source |
-| | `user_logged_in` | method |
-| | `user_logged_out` | |
-| **Onboarding** | `onboarding_started` | |
-| | `onboarding_step_completed` | step, step_name |
-| | `onboarding_completed` | duration |
-| **Core Action** | `[action]_created` | type, properties |
-| | `[action]_updated` | |
-| | `[action]_deleted` | |
-| **Conversion** | `trial_started` | plan |
-| | `subscription_created` | plan, price, period |
-| | `subscription_cancelled` | reason |
-| **Engagement** | `feature_used` | feature_name |
-| | `invite_sent` | |
-| | `feedback_submitted` | type, rating |
-
-### 4. Plan d'implémentation
-
-#### Choix des outils
-
-| Besoin | Options | Recommandation |
-|--------|---------|----------------|
-| Analytics produit | Mixpanel, Amplitude, PostHog | PostHog (self-hosted possible) |
-| Web analytics | GA4, Plausible, Fathom | Plausible (privacy-friendly) |
-| Session replay | Hotjar, FullStory, PostHog | PostHog |
-| A/B testing | Optimizely, VWO, GrowthBook | GrowthBook (open source) |
-| Error tracking | Sentry, Bugsnag | Sentry |
-
-#### Architecture recommandée
-```
-┌─────────────────────────────────────────────┐
-│                 Application                  │
-├─────────────────────────────────────────────┤
-│          Analytics Wrapper/SDK               │
-├──────────┬──────────┬──────────┬────────────┤
-│ PostHog  │ Plausible│  Sentry  │  Custom    │
-│ (Produit)│  (Web)   │ (Errors) │    DW      │
-└──────────┴──────────┴──────────┴────────────┘
-```
-
-### 5. Code d'implémentation
-
-#### Wrapper analytics (exemple)
-```typescript
-// analytics.ts
-interface AnalyticsEvent {
-  name: string;
-  properties?: Record<string, unknown>;
-}
-
-class Analytics {
-  track(event: AnalyticsEvent) {
-    // PostHog
-    posthog?.capture(event.name, event.properties);
-
-    // Autres providers...
-  }
-
-  identify(userId: string, traits: Record<string, unknown>) {
-    posthog?.identify(userId, traits);
-  }
-
-  page(name: string) {
-    posthog?.capture('$pageview', { page: name });
-  }
-}
-
-export const analytics = new Analytics();
-```
-
-#### Événements typés (TypeScript)
-```typescript
-// events.ts
-type AnalyticsEvents = {
-  user_signed_up: { method: 'email' | 'google' | 'github' };
-  onboarding_completed: { duration_seconds: number };
-  subscription_created: { plan: string; price: number };
-  // ...
-};
-
-function track<T extends keyof AnalyticsEvents>(
-  event: T,
-  properties: AnalyticsEvents[T]
-) {
-  analytics.track({ name: event, properties });
-}
-```
-
-### 6. Dashboard et reporting
-
-#### Dashboard principal (North Star + KPIs)
-```
-┌────────────────────────────────────────────────────┐
-│  NORTH STAR METRIC: [Métrique principale]          │
-│  ████████████████░░░░ 75% of target                │
-├─────────────────┬─────────────────┬────────────────┤
-│   ACQUISITION   │   ACTIVATION    │   RETENTION    │
-│   +12% ▲        │   68% ▲         │   45% ▼        │
-├─────────────────┼─────────────────┼────────────────┤
-│     REVENUE     │    REFERRAL     │                │
-│   $12,450       │   NPS: 45       │                │
-└─────────────────┴─────────────────┴────────────────┘
-```
-
-#### Fréquence de reporting
-| Fréquence | Métriques |
-|-----------|-----------|
-| Temps réel | Erreurs, incidents |
-| Quotidien | DAU, signups, conversions |
-| Hebdomadaire | Tendances, funnel, rétention |
-| Mensuel | MRR, LTV, cohort analysis |
-
-### 7. RGPD et privacy
-
-#### Checklist conformité
-- [ ] Consentement avant tracking non-essentiel
-- [ ] Anonymisation des IPs (GA4)
-- [ ] Pas de données personnelles dans les events
-- [ ] Droit d'accès et suppression
-- [ ] Documentation des traitements
-
-&gt; Pour un audit complet, utiliser `/legal:legal-rgpd`
+- Comprendre les objectifs business et definir la North Star Metric
+- Definir les KPIs par categorie AARRR (Acquisition, Activation, Retention, Revenue, Referral)
+- Identifier les evenements a tracker (auth, onboarding, core actions, conversion, engagement)
+- Choisir les outils (PostHog, Plausible, Sentry recommandes)
+- Implementer le wrapper analytics type-safe (TypeScript)
+- Configurer les dashboards et la frequence de reporting
+- Verifier la conformite RGPD (consentement, anonymisation)
 
 ## Output attendu
 
 ### North Star Metric
-```
-Métrique: [nom]
-Définition: [formule/description]
-Cible: [valeur]
-Fréquence: [mesure]
-```
+### KPIs par categorie AARRR
+### Evenements a implementer (avec priorite)
+### Stack analytics recommandee
+### Code d'implementation (snippets)
 
-### KPIs par catégorie AARRR
-| Catégorie | KPI | Définition | Cible | Outil |
-|-----------|-----|------------|-------|-------|
-| Acquisition | | | | |
-| Activation | | | | |
-| Retention | | | | |
-| Revenue | | | | |
-| Referral | | | | |
-
-### Événements à implémenter
-| Événement | Trigger | Propriétés | Priorité |
-|-----------|---------|------------|----------|
-| | | | Haute |
-| | | | Moyenne |
-| | | | Basse |
-
-### Stack analytics recommandée
-| Besoin | Outil | Coût estimé |
-|--------|-------|-------------|
-| | | |
-
-### Code d'implémentation
-[Snippets de code prêts à l'emploi]
-
-### Dashboards à créer
-1. [Dashboard 1] - [Audience]
-2. [Dashboard 2] - [Audience]
-
-## Agents liés
+## Agents lies
 
 | Agent | Quand l'utiliser |
 |-------|------------------|
-| `/growth:growth-funnel` | Analyser les conversions par étape |
-| `/growth:growth-retention` | Mesurer la rétention utilisateurs |
-| `/growth:growth-ab-test` | Tester les hypothèses |
-| `/legal:legal-rgpd` | S'assurer de la conformité RGPD |
-| `/ops:ops-monitoring` | Monitoring technique complémentaire |
+| `/growth:growth-funnel` | Analyser les conversions |
+| `/growth:growth-retention` | Mesurer la retention |
+| `/growth:growth-ab-test` | Tester les hypotheses |
+| `/legal:legal-rgpd` | Conformite RGPD |
 
 ---
 
-IMPORTANT: Commencer simple - 5-10 événements clés valent mieux que 100 événements jamais analysés.
+IMPORTANT: Commencer simple - 5-10 evenements cles valent mieux que 100 jamais analyses.
 
-YOU MUST définir une North Star Metric unique et alignée avec la valeur business.
+YOU MUST definir une North Star Metric unique alignee avec la valeur business.
 
-NEVER tracker des données personnelles sans consentement - respecter le RGPD.
+NEVER tracker des donnees personnelles sans consentement - respecter le RGPD.
 
-Think hard sur ce qui drive vraiment la valeur du produit avant de définir les KPIs.
+Think hard sur ce qui drive vraiment la valeur du produit.
 
 
 ---

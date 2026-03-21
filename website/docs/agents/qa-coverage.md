@@ -29,127 +29,31 @@ tags:
 
 Analyse de la couverture de tests et de la qualite des tests existants.
 
-## Objectif
+## Workflow
 
-Evaluer la couverture de tests et identifier les zones critiques non testees.
-
-## Analyse de la couverture
-
-### 1. Collecte des metriques
-
-```bash
-# Generer rapport de couverture
-npm run test:coverage
-
-# Lire le rapport
-cat coverage/lcov-report/index.html 2>/dev/null || cat coverage/coverage-summary.json 2>/dev/null
-```
-
-### 2. Types de couverture
-
-| Type | Description | Seuil recommande |
-|------|-------------|------------------|
-| **Statements** | Lignes executees | >= 80% |
-| **Branches** | Chemins conditionnels | >= 75% |
-| **Functions** | Fonctions appelees | >= 80% |
-| **Lines** | Lignes de code | >= 80% |
-
-### 3. Analyse qualitative
-
-#### Fichiers critiques a verifier
-- Services metier (business logic)
-- Utilitaires partages
-- Validateurs et parsers
-- Handlers d'API/routes
-
-#### Patterns de tests a verifier
-- Tests des cas nominaux
-- Tests des edge cases (null, undefined, empty)
-- Tests des cas d'erreur
-- Tests d'integration
-
-### 4. Zones a risque
-
-Identifier les fichiers avec :
-- Couverture < 50%
-- Complexite cyclomatique elevee
-- Logique metier critique
-- Historique de bugs
-
-## Patterns a rechercher
-
-```
-# Fichiers sans tests associes
-src/**/*.ts sans __tests__/**/*.test.ts correspondant
-
-# Tests avec trop de mocks
-jest.mock|sinon.stub|vi.mock
-
-# Tests sans assertions
-it\([^)]*\)\s*\{\s*\}
-
-# Tests commentes ou skipped
-it\.skip|describe\.skip|xit\(|xdescribe\(
-```
+1. **Collecter** les metriques : `npm run test:coverage`
+2. **Evaluer** : Statements >= 80%, Branches >= 75%, Functions >= 80%, Lines >= 80%
+3. **Identifier zones critiques** : fichiers < 50%, complexite elevee, logique metier, historique bugs
+4. **Analyser qualite** : isolation, lisibilite, pertinence assertions, tests skipped
+5. **Red flags** : fichiers sans tests, trop de mocks, tests sans assertions, tests commentes
 
 ## Output attendu
 
-### Resume de couverture
+1. Resume couverture (Statements/Branches/Functions/Lines avec seuils)
+2. Fichiers critiques non couverts (fichier, couverture, criticite)
+3. Tests manquants recommandes (cas nominal, edge cases, erreurs)
+4. Qualite des tests existants (isolation, lisibilite, assertions)
+5. Plan d'amelioration priorise
 
-```
-Couverture globale
-==================
-Statements : [XX%] ████████░░
-Branches   : [XX%] ██████░░░░
-Functions  : [XX%] ████████░░
-Lines      : [XX%] ████████░░
+## Directives
 
-Seuil projet : 80%
-Statut       : [OK / A AMELIORER]
-```
+- NEVER se fier uniquement au pourcentage de couverture
+- IMPORTANT: Verifier la qualite des assertions, pas juste leur presence
+- YOU MUST identifier les tests qui passent sans vraiment tester
+- IMPORTANT: Prioriser la couverture des chemins critiques (business logic)
+- NEVER ignorer les tests skipped ou commentes
 
-### Fichiers critiques non couverts
-
-| Fichier | Couverture | Criticite | Raison |
-|---------|------------|-----------|--------|
-| src/services/payment.ts | 45% | HAUTE | Logique paiement |
-| src/utils/validation.ts | 30% | MOYENNE | Utilise partout |
-
-### Tests manquants recommandes
-
-1. **[fichier.ts]**
-   - Test du cas nominal pour `functionName()`
-   - Test edge case: input null
-   - Test erreur: validation echouee
-
-2. **[autre-fichier.ts]**
-   - Test d'integration avec service X
-
-### Qualite des tests existants
-
-| Aspect | Evaluation | Commentaire |
-|--------|------------|-------------|
-| Isolation | [Bonne/Moyenne/Faible] | |
-| Lisibilite | [Bonne/Moyenne/Faible] | |
-| Maintenabilite | [Bonne/Moyenne/Faible] | |
-| Pertinence des assertions | [Bonne/Moyenne/Faible] | |
-
-### Plan d'amelioration
-
-#### Priorite 1 - Critique
-- [ ] Ajouter tests pour [fichier critique]
-- [ ] Couvrir branch manquante dans [fichier]
-
-#### Priorite 2 - Important
-- [ ] Ameliorer tests de [module]
-- [ ] Ajouter tests d'integration
-
-## Contraintes
-
-- Ne pas se fier uniquement au pourcentage de couverture
-- Verifier la qualite des assertions, pas juste leur presence
-- Identifier les tests qui passent sans vraiment tester
-- Prioriser la couverture des chemins critiques
+Think hard about les zones critiques non testees.
 
 ## Quand cet agent est-il utilise ?
 

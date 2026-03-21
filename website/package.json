@@ -16,7 +16,8 @@
     "generate:commands": "tsx scripts/generate-command-docs.ts",
     "generate:agents": "tsx scripts/generate-agent-docs.ts",
     "generate:skills": "tsx scripts/generate-skill-docs.ts",
-    "generate:rules": "tsx scripts/generate-rule-docs.ts"
+    "generate:rules": "tsx scripts/generate-rule-docs.ts",
+    "generate:sync-docs": "tsx scripts/sync-docs.ts"
   },
   "dependencies": {
     "@docusaurus/core": "^3.7.0",

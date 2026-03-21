@@ -153,13 +153,47 @@ Utiliser le tool Task avec plusieurs appels dans un seul message:
 [Vue d'ensemble et priorites]
 ```
 
+## Prevention des conflits de fichiers
+
+IMPORTANT: Les agents paralleles qui editent les memes fichiers causent des race conditions et des builds casses.
+
+### Avant de paralleliser, etablir une carte des fichiers
+
+```markdown
+### Fichiers par agent:
+- Agent A: src/auth/ (exclusif)
+- Agent B: src/api/ (exclusif)
+- Agent C: src/utils/helpers.ts (CONFLIT avec A et B!)
+
+→ Solution: Agent C en sequentiel apres A et B
+```
+
+### Regles de file-locking
+
+| Situation | Action |
+|-----------|--------|
+| 2 agents modifient le meme fichier | SEQUENTIEL obligatoire |
+| 2 agents modifient le meme dossier | Verifier les fichiers specifiques |
+| Agents en lecture seule (audit) | PARALLELE toujours OK |
+| Config partagee (package.json, tsconfig) | SEQUENTIEL pour les edits |
+
+### Fichiers typiquement partages (attention)
+
+- `package.json` — deps ajoutees par plusieurs agents
+- `tsconfig.json` — paths modifies
+- `src/index.ts` — exports ajoutes
+- `.env.example` — variables ajoutees
+- Fichiers de routing/navigation
+
 ## Bonnes pratiques
 
 - Verifier l'independance des sous-taches AVANT de paralleliser
+- Etablir la carte des fichiers modifies par agent AVANT de lancer
 - Donner a chaque agent un scope clair et delimite
 - Utiliser `run_in_background: true` pour les taches longues
 - Combiner les resultats avec une synthese de haut niveau
 - Limiter a 3-5 agents paralleles pour la lisibilite
+- Preferer `isolation: "worktree"` pour les agents qui editent beaucoup de fichiers
 
 ## Agent Teams natif (recommande pour equipes > 2 agents)
 
@@ -180,8 +214,10 @@ Voir le skill `agent-teams` pour la documentation complete.
 
 - TOUJOURS verifier les dependances entre sous-taches
 - NE JAMAIS paralleliser des modifications sur les memes fichiers
+- TOUJOURS etablir la carte des fichiers modifies AVANT de lancer les agents
 - TOUJOURS fournir un contexte complet a chaque agent
 - COMBINER les resultats en un rapport coherent
+- PREFERER `isolation: "worktree"` quand les agents modifient beaucoup de fichiers
 
 ## Declenchement automatique
 
