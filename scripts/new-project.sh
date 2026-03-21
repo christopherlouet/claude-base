@@ -77,15 +77,17 @@ FORCE_TYPE=""
 SIMPLE_MODE=false
 SKIP_PROMPTS=false
 
-# Variables de détection
+# Variables de détection (used by lib/detection.sh functions)
 DETECTED_TYPE=""
 DETECTED_FRAMEWORK=""
 DETECTED_CICD=false
 DETECTED_HOOKS=false
 DETECTED_DOCKER=false
+# shellcheck disable=SC2034  # Used by lib/detection.sh
 DETECTED_DEPENDENCIES=()
 DETECTED_SCRIPTS=()
 DETECTED_FOLDERS=()
+# shellcheck disable=SC2034  # Used by lib/detection.sh
 DETECTED_MAIN_DEPS=()
 DETECTED_PKG_MANAGER="npm"
 
