@@ -436,6 +436,7 @@ extract_python_dependencies() {
     local dir="$1"
 
     if [[ -f "$dir/requirements.txt" ]]; then
+        # shellcheck disable=SC2034  # Global variable used by caller
         mapfile -t DETECTED_MAIN_DEPS < <(grep -oP '^[a-zA-Z][a-zA-Z0-9_-]*' "$dir/requirements.txt" 2>/dev/null | head -10)
     fi
 }
