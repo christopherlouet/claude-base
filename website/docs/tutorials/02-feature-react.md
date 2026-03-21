@@ -400,7 +400,7 @@ src/
 ## Prochaines étapes
 
 - [Tutoriel 03 : API REST](/docs/tutorials/api-rest-node) - Créer un backend
-- [Guide Web](/docs/guides/web-development) - Bonnes pratiques React
+- [Guide Web](/docs/guides/web-guide) - Bonnes pratiques React
 - [Commande /dev:dev-design-system](/docs/commands/dev/dev-design-system) - Créer un design system
 
 ---

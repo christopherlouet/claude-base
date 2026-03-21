@@ -107,7 +107,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 
 
 
-### [OPS](/docs/commands/ops) (30)
+### [OPS](/docs/commands/ops) (31)
 
 > Operations (CI/CD, Docker, monitoring, GitFlow)
 
@@ -115,20 +115,20 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/ops:ops-ci`](/docs/commands/ops/ops-ci)
 - [`/ops:ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization)
 - [`/ops:ops-database`](/docs/commands/ops/ops-database)
-- [`/ops:ops-deps`](/docs/commands/ops/ops-deps)
-- [... et 25 autres](/docs/commands/ops)
+- [`/ops:ops-deploy`](/docs/commands/ops/ops-deploy)
+- [... et 26 autres](/docs/commands/ops)
 
 
-### [QA](/docs/commands/qa) (15)
+### [QA](/docs/commands/qa) (16)
 
 > Qualite (review, securite, performance, accessibilite)
 
-- [`/qa:wcag-audit`](/docs/commands/qa/wcag-audit)
 - [`/qa:qa-audit`](/docs/commands/qa/qa-audit)
 - [`/qa:qa-automation`](/docs/commands/qa/qa-automation)
 - [`/qa:qa-chrome`](/docs/commands/qa/qa-chrome)
 - [`/qa:qa-coverage`](/docs/commands/qa/qa-coverage)
-- [... et 10 autres](/docs/commands/qa)
+- [`/qa:qa-design`](/docs/commands/qa/qa-design)
+- [... et 11 autres](/docs/commands/qa)
 
 
 ### [WORK](/docs/commands/work) (12)

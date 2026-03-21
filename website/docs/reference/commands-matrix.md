@@ -183,4 +183,4 @@ description: Liste complete des 123 commandes
 ## Voir aussi
 
 - [Matrice des Agents](/docs/reference/agents-matrix)
-- [Cheatsheet](/docs/reference/cheatsheet)
+- [Cheatsheet](/docs/reference/commands)

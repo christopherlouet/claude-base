@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 4
 title: "/qa:qa-chrome"
 description: "Tests visuels et debugging navigateur via l'integration Chrome de Claude Code."
 tags:

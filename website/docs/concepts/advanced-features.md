@@ -328,7 +328,7 @@ export ENABLE_LSP_TOOL=1
 ## Voir aussi
 
 - [Output Styles](/docs/concepts/output-styles) - Styles de formatage
-- [Bonnes Pratiques](/docs/guides/best-practices) - Recommandations Boris Cherny
+- [Bonnes Pratiques](/docs/reference/best-practices) - Recommandations Boris Cherny
 - [Skill agent-teams](/docs/skills/agent-teams) - Documentation Agent Teams
 - [Commande /work:work-team](/docs/commands/work/work-team) - Lancement Agent Teams
 - [Retour aux concepts](/docs/concepts)
