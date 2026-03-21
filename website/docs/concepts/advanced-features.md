@@ -155,7 +155,7 @@ Le socle fournit un [skill agent-teams](/docs/skills/agent-teams) et une [comman
 
 ## Output Styles
 
-Modes d'interaction personnalises dans `.claude/output-styles/` (8 styles):
+Modes d'interaction personnalises dans `.claude/output-styles/` (10 styles):
 
 | Style | Utilisation | Commande |
 |-------|-------------|----------|
@@ -167,6 +167,8 @@ Modes d'interaction personnalises dans `.claude/output-styles/` (8 styles):
 | `emoji` | Reponses enrichies d'emojis | `/output-style emoji` |
 | `minimal` | Reponses epurees sans decoration | `/output-style minimal` |
 | `structured` | Structure ASCII avec separateurs | `/output-style structured` |
+| `debug` | Diagnostic et investigation de bugs | `/output-style debug` |
+| `metrics` | Metriques et tableaux de bord | `/output-style metrics` |
 
 Voir la page [Output Styles](/docs/concepts/output-styles) pour la documentation complete.
 
