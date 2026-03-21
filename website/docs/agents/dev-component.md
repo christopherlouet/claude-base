@@ -29,83 +29,39 @@ tags:
 
 Creation de composants UI modulaires et reutilisables.
 
-## Objectif
+## Workflow
 
-Creer des composants UI complets avec :
-- Code du composant
-- Tests unitaires
-- Stories Storybook (si applicable)
-- Documentation props
+1. **Structure** : creer le dossier composant (Component.tsx, Component.test.tsx, Component.stories.tsx, index.ts)
+2. **Props** : definir l'interface TypeScript avec types stricts et valeurs par defaut
+3. **Implementation** : composition over inheritance, accessibilite (aria-*), responsive
+4. **Tests** : couvrir tous les etats (default, loading, disabled, error) a 80%+
+5. **Stories** : une story par variante Storybook si applicable
+6. **Export** : re-export propre dans index.ts
 
-## Structure attendue
+## Checklist
 
-### React/TypeScript
-
-```
-/components
-└── /Button
-    ├── Button.tsx           # Composant principal
-    ├── Button.test.tsx      # Tests unitaires
-    ├── Button.stories.tsx   # Storybook stories
-    ├── Button.module.css    # Styles (ou styled-components)
-    └── index.ts             # Export
-```
-
-### Flutter
-
-```
-/lib/shared/widgets
-└── /custom_button
-    ├── custom_button.dart       # Widget
-    ├── custom_button_test.dart  # Tests
-    └── README.md                # Documentation
-```
-
-## Checklist composant
-
-- [ ] Props typees avec interface/type
-- [ ] Valeurs par defaut definies
-- [ ] Accessibilite (aria-*, semantique)
-- [ ] Responsive design
-- [ ] Tests couvrant tous les etats
-- [ ] Stories pour chaque variante
-- [ ] Documentation des props
-
-## Patterns recommandes
-
-### Composition over inheritance
-
-```tsx
-// Bon
-<Card>
-  <Card.Header />
-  <Card.Body />
-  <Card.Footer />
-</Card>
-
-// A eviter
-<Card headerTitle="..." bodyContent="..." />
-```
-
-### Props interface
-
-```tsx
-interface ButtonProps {
-  variant: 'primary' | 'secondary' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-  loading?: boolean;
-  onClick?: () => void;
-  children: React.ReactNode;
-}
-```
+- Props typees avec interface/type
+- Valeurs par defaut definies
+- Accessibilite (aria-*, semantique HTML)
+- Responsive design
+- Tests couvrant tous les etats
+- Documentation des props
 
 ## Output attendu
 
-1. Fichier composant avec types
+1. Fichier composant avec types stricts
 2. Fichier de tests (80%+ coverage)
 3. Stories Storybook si applicable
 4. Export dans index.ts
+
+## Directives
+
+- NEVER utiliser `any` dans les props
+- IMPORTANT: Preferer la composition a l'heritage
+- YOU MUST inclure les attributs d'accessibilite
+- IMPORTANT: Tester chaque variante du composant
+
+Think hard about la reutilisabilite et l'accessibilite.
 
 ## Quand cet agent est-il utilise ?
 

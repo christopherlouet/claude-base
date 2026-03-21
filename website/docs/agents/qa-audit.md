@@ -1,7 +1,7 @@
 ---
 sidebar_position: 49
 title: "qa-audit"
-description: "Audit qualite complet d'un projet couvrant securite, RGPD, accessibilite et performance."
+description: "Audit qualite complet couvrant 5 domaines."
 tags:
   - "agent"
   - "sonnet"
@@ -11,7 +11,7 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Audit qualite complet d'un projet couvrant securite, RGPD, accessibilite et performance.
+> Audit qualite complet couvrant 5 domaines.
 
 ## Configuration
 
@@ -27,84 +27,15 @@ tags:
 
 # Agent QA-AUDIT
 
-Audit qualite complet d'un projet couvrant securite, RGPD, accessibilite et performance.
+Audit qualite complet couvrant 5 domaines.
 
-## Perimetre de l'audit
+## Perimetre
 
-1. Securite (OWASP Top 10)
-2. RGPD (Conformite donnees personnelles)
-3. Accessibilite (WCAG 2.1)
-4. Performance (Core Web Vitals)
-5. Qualite de code
-
-## Phase 1 : Securite (OWASP Top 10)
-
-### Checklist
-| # | Vulnerabilite | Statut | Details |
-|---|---------------|--------|---------|
-| 1 | Injection (SQL, NoSQL, OS) | | |
-| 2 | Broken Authentication | | |
-| 3 | Sensitive Data Exposure | | |
-| 4 | XML External Entities (XXE) | | |
-| 5 | Broken Access Control | | |
-| 6 | Security Misconfiguration | | |
-| 7 | Cross-Site Scripting (XSS) | | |
-| 8 | Insecure Deserialization | | |
-| 9 | Known Vulnerabilities | | |
-| 10 | Insufficient Logging | | |
-
-### Verifications supplementaires
-- HTTPS force
-- Headers de securite (CSP, HSTS, X-Frame-Options)
-- CORS configure correctement
-- Rate limiting en place
-- Secrets hors du code
-
-## Phase 2 : RGPD
-
-### Donnees personnelles
-- Identifier les donnees collectees
-- Verifier les bases legales
-- Controler les durees de conservation
-
-### Droits des personnes
-- Droit d'acces
-- Droit de rectification
-- Droit a l'effacement
-- Droit a la portabilite
-
-## Phase 3 : Accessibilite (WCAG 2.1 AA)
-
-### Perceptible
-- Textes alternatifs pour images
-- Contraste suffisant (4.5:1)
-- Redimensionnement sans perte
-
-### Utilisable
-- Navigation au clavier complete
-- Focus visible
-- Titres de page descriptifs
-
-### Comprehensible
-- Langue de la page definie
-- Labels sur les formulaires
-- Messages d'erreur clairs
-
-## Phase 4 : Performance
-
-### Core Web Vitals
-| Metrique | Cible | Actuel |
-|----------|-------|--------|
-| LCP | < 2.5s | |
-| FID | < 100ms | |
-| CLS | < 0.1 | |
-
-## Phase 5 : Qualite de code
-
-- Tests presents et couverture
-- Linting configure
-- Documentation technique
-- Dependances a jour
+1. **Securite** (OWASP Top 10) : Injections, auth, XSS, CORS, secrets, headers
+2. **RGPD** : Donnees collectees, bases legales, droits des personnes
+3. **Accessibilite** (WCAG 2.1 AA) : Alt text, contraste, clavier, labels, focus
+4. **Performance** (Core Web Vitals) : LCP < 2.5s, INP < 200ms, CLS < 0.1
+5. **Qualite de code** : Tests, linting, documentation, dependances
 
 ## Output attendu
 
@@ -123,19 +54,6 @@ Problemes Critiques: [N]
 Actions immediates:
 1. [Action 1]
 2. [Action 2]
-```
-
-## Commandes utiles
-
-```bash
-# Audit npm
-npm audit
-
-# Recherche secrets
-grep -rn "password\|secret\|api.key\|token" --include="*.ts" --include="*.js"
-
-# Linting
-npm run lint
 ```
 
 ## Contraintes

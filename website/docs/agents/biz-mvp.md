@@ -4,12 +4,12 @@ title: "biz-mvp"
 description: "Definition et planification du Minimum Viable Product."
 tags:
   - "agent"
-  - "haiku"
+  - "sonnet"
 ---
 
 # Agent: biz-mvp
 
-<span className="badge badge--haiku">Haiku</span>
+<span className="badge badge--sonnet">Sonnet</span>
 
 > Definition et planification du Minimum Viable Product.
 
@@ -17,7 +17,7 @@ tags:
 
 | Propriete | Valeur |
 |-----------|--------|
-| **Modele** | haiku |
+| **Modele** | sonnet |
 | **Permission Mode** | plan |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
 | **Outils interdits** | _Aucun_ |
@@ -29,183 +29,31 @@ tags:
 
 Definition et planification du Minimum Viable Product.
 
-## Objectif
+## Workflow
 
-- Identifier les features essentielles
-- Prioriser par valeur/effort
-- Definir les criteres de succes
-- Planifier le lancement
-
-## Framework MVP
-
-### 1. Problem/Solution Fit
-
-```markdown
-## Probleme
-
-**Pour** [segment cible]
-**Qui** [ont ce probleme]
-**Notre produit** [nom]
-**Est une** [categorie]
-**Qui** [benefice cle]
-**Contrairement a** [alternatives]
-**Notre solution** [differentiation]
-```
-
-### 2. User Stories essentielles
-
-```markdown
-## Epic: [Nom de l'epic]
-
-### User Story 1 (MUST HAVE)
-**En tant que** [persona]
-**Je veux** [action]
-**Afin de** [benefice]
-
-**Criteres d'acceptation:**
-- [ ] Critere 1
-- [ ] Critere 2
-
-**Story points:** [estimation]
-```
-
-## Priorisation MoSCoW
-
-```
-┌─────────────────────────────────────┐
-│  MUST HAVE (MVP)                    │
-│  - Feature essentielle 1            │
-│  - Feature essentielle 2            │
-│  - Feature essentielle 3            │
-└─────────────────────────────────────┘
-          ↓
-┌─────────────────────────────────────┐
-│  SHOULD HAVE (V1.1)                 │
-│  - Feature importante 1             │
-│  - Feature importante 2             │
-└─────────────────────────────────────┘
-          ↓
-┌─────────────────────────────────────┐
-│  COULD HAVE (V1.2+)                 │
-│  - Nice to have 1                   │
-│  - Nice to have 2                   │
-└─────────────────────────────────────┘
-          ↓
-┌─────────────────────────────────────┐
-│  WON'T HAVE (this release)          │
-│  - Future feature 1                 │
-│  - Future feature 2                 │
-└─────────────────────────────────────┘
-```
-
-## Matrice Valeur/Effort
-
-```
-Valeur
-  ^
-  │  Quick Wins  │  Big Bets
-  │  (Faire)     │  (Planifier)
-  │──────────────┼──────────────
-  │  Fill-ins    │  Money Pits
-  │  (Plus tard) │  (Eviter)
-  │
-  └───────────────────────────> Effort
-```
-
-| Quadrant | Action | MVP? |
-|----------|--------|------|
-| Quick Wins | Faire en premier | Oui |
-| Big Bets | Evaluer soigneusement | Peut-etre |
-| Fill-ins | Backlog | Non |
-| Money Pits | Eviter | Non |
-
-## Criteres de succes
-
-### Metriques MVP
-
-```markdown
-## Objectifs quantitatifs
-
-| Metrique | Objectif | Timeline |
-|----------|----------|----------|
-| Sign-ups | 100 | Semaine 1 |
-| Activation rate | 30% | Semaine 2 |
-| Retention D7 | 20% | Semaine 3 |
-| NPS | > 30 | Semaine 4 |
-
-## Criteres de validation
-
-- [ ] 10 utilisateurs payants
-- [ ] Retention D7 > 20%
-- [ ] 5 feedbacks positifs spontanes
-- [ ] < 50% churn M1
-```
-
-### Signaux a surveiller
-
-| Signal positif | Signal negatif |
-|----------------|----------------|
-| Utilisateurs reviennent | Churn eleve |
-| Recommandations spontanees | Plaintes frequentes |
-| Demandes de features | Confusion sur la valeur |
-| Paiement sans friction | Abandon a l'onboarding |
-
-## Timeline MVP
-
-```
-Semaine 1-2: Validation probleme
-├── Interviews utilisateurs (10+)
-├── Landing page test
-└── Waitlist
-
-Semaine 3-4: Prototype
-├── Design core features
-├── Prototype clickable
-└── Tests utilisateurs
-
-Semaine 5-8: Developpement
-├── Sprint 1: Core feature 1
-├── Sprint 2: Core feature 2
-└── Sprint 3: Polish + bugs
-
-Semaine 9: Lancement beta
-├── 50 beta testers
-├── Feedback loop
-└── Iterations rapides
-
-Semaine 10+: Lancement public
-├── Marketing initial
-├── Metriques
-└── Decision pivot/persevere
-```
-
-## Anti-patterns MVP
-
-### A eviter
-
-| Anti-pattern | Pourquoi |
-|--------------|----------|
-| Feature creep | Retarde le lancement |
-| Perfectionnisme | Le MVP doit etre "viable", pas parfait |
-| Pas de metriques | Impossible de valider |
-| Trop de segments | Focus dilue |
-| Pas d'hypotheses | Pas de validation |
-
-### Mindset
-
-```
-"If you're not embarrassed by the first version
-of your product, you've launched too late."
-— Reid Hoffman
-```
+1. **Problem/Solution Fit** : definir le probleme, segment cible, differentiation
+2. **User Stories** : rediger les stories essentielles avec criteres d'acceptation
+3. **Priorisation MoSCoW** : MUST HAVE (MVP) / SHOULD HAVE (V1.1) / COULD HAVE / WON'T HAVE
+4. **Matrice Valeur/Effort** : Quick Wins d'abord, eviter les Money Pits
+5. **Metriques de succes** : sign-ups, activation, retention D7, NPS
+6. **Timeline** : validation (S1-2), prototype (S3-4), dev (S5-8), beta (S9), launch (S10+)
 
 ## Output attendu
 
-1. Liste features MVP (MoSCoW)
-2. User stories prioritaires
-3. Metriques de succes
+1. Liste features MVP priorisee (MoSCoW)
+2. User stories prioritaires avec criteres d'acceptation
+3. Metriques de succes et criteres de validation
 4. Timeline de lancement
 5. Plan de validation
+
+## Directives
+
+- NEVER ajouter de features sans les prioriser (eviter le feature creep)
+- IMPORTANT: Le MVP doit etre "viable", pas parfait
+- IMPORTANT: Definir des metriques mesurables pour valider les hypotheses
+- NEVER cibler trop de segments a la fois
+
+Think hard about les features strictement necessaires pour valider l'hypothese.
 
 ## Quand cet agent est-il utilise ?
 
@@ -214,13 +62,13 @@ Cet agent est automatiquement delegue par Claude lorsque :
 - Le contexte isole est preferable
 - Les outils requis correspondent a sa configuration
 
-## Caracteristiques du modele haiku
+## Caracteristiques du modele sonnet
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Sonnet** est optimise pour :
+- Taches complexes necessitant analyse
+- Equilibre performance/cout
+- Audits et diagnostics
 
 
 ---

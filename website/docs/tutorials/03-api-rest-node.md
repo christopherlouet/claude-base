@@ -388,7 +388,7 @@ tests/
 ## Prochaines étapes
 
 - [Tutoriel 04 : Flutter + Supabase](/docs/tutorials/flutter-supabase) - Backend mobile
-- [Guide API](/docs/guides/api-development) - Bonnes pratiques API
+- [Guide API](/docs/guides/api-guide) - Bonnes pratiques API
 - [Commande /dev:dev-graphql](/docs/commands/dev/dev-graphql) - API GraphQL
 
 ---

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 16
+sidebar_position: 17
 title: "/ops:ops-hotfix"
 description: "Workflow de correction urgente en production."
 tags:
@@ -17,141 +17,49 @@ import CommandCard from '@site/src/components/CommandCard';
 
 Workflow de correction urgente en production.
 
-## Problème à corriger
+## Contexte de la demande
 `&lt;arguments&gt;`
 
-## Workflow Hotfix
+## Objectif
 
-### 1. Classification de l'incident
+Guider la correction rapide et securisee d'un bug en production,
+avec classification d'incident, fix minimal et post-mortem.
 
-| Sévérité | Description | Temps de réponse | Exemples |
-|----------|-------------|------------------|----------|
-| **P0 - Critique** | Service totalement indisponible | &lt; 15 min | Crash total, perte de données |
-| **P1 - Élevé** | Fonctionnalité majeure cassée | &lt; 1h | Paiements KO, auth cassée |
-| **P2 - Moyen** | Impact limité, workaround existe | &lt; 4h | Bug UI, perf dégradée |
-| **P3 - Faible** | Impact mineur | &lt; 24h | Faute d'orthographe, style |
+## Workflow
 
-### 2. Évaluation de l'urgence
-- [ ] Impact utilisateur (critique/élevé/moyen)
-- [ ] Nombre d'utilisateurs affectés
-- [ ] Workaround disponible ?
-- [ ] Rollback possible ?
-- [ ] Données utilisateurs compromises ?
+- Classifier l'incident (P0 critique, P1 eleve, P2 moyen, P3 faible)
+- Evaluer l'urgence (impact utilisateur, workaround, rollback possible)
+- Creer la branche hotfix depuis main/production
+- Diagnostiquer rapidement (logs, monitoring, code)
+- Appliquer le fix minimal (UNIQUEMENT le probleme immediat)
+- Valider avec tests critiques et smoke test
+- Creer la PR avec label hotfix et reference au probleme
+- Post-mortem : documenter, identifier ameliorations, merger dans develop
 
-### 3. Préparation
-```bash
-# Créer branche hotfix depuis main/production
-git checkout main
-git pull origin main
-git checkout -b hotfix/[description-courte]
-```
+## Output attendu
 
-### 4. Diagnostic rapide
-- Identifier la cause root (logs, monitoring)
-- Localiser le code problématique
-- Évaluer le scope du fix (1 fichier ? plusieurs ?)
+1. **Classification** de l'incident avec severite
+2. **Branche hotfix** creee avec fix minimal
+3. **Commit** avec reference au probleme et root cause
+4. **Checklist** post-mortem
 
-### 5. Fix minimal
-- IMPORTANT: Corriger UNIQUEMENT le problème immédiat
-- IMPORTANT: Pas de refactoring, pas d'améliorations
-- Le fix le plus petit et sûr possible
+## Agents lies
 
-### 6. Validation accélérée
-```bash
-# Tests critiques uniquement
-npm test -- --grep "critical"
-
-# Smoke test manuel si possible
-npm run build
-```
-
-### 7. Déploiement
-```bash
-# Commit avec référence au problème
-git commit -m "hotfix: [description]
-
-Fixes #[issue]
-Impact: [description de l'impact]
-Root cause: [cause identifiée]"
-
-# PR vers main avec review accélérée
-gh pr create --title "HOTFIX: [description]" --label "hotfix,urgent"
-```
-
-### 8. Post-mortem (après déploiement)
-- [ ] Documenter l'incident
-- [ ] Identifier les améliorations pour éviter récurrence
-- [ ] Créer tickets pour corrections long-terme
-- [ ] Merger hotfix dans develop
-
-## Communication d'incident
-
-### Pendant l'incident
-```markdown
-🔴 INCIDENT EN COURS - [Titre]
-Statut: Investigation / Identification / Correction en cours
-Impact: [Description de l'impact utilisateur]
-Heure de début: [HH:MM UTC]
-Prochaine mise à jour: [HH:MM UTC]
-```
-
-### Après résolution
-```markdown
-✅ INCIDENT RÉSOLU - [Titre]
-Durée: [X heures Y minutes]
-Cause: [Description courte]
-Actions: [Ce qui a été fait]
-Post-mortem: [Lien vers le document]
-```
-
-## Alternatives au hotfix
-
-| Approche | Quand l'utiliser | Avantages |
-|----------|------------------|-----------|
-| **Feature flag** | Code déjà en prod, désactivable | Rollback instantané |
-| **Rollback** | Version précédente stable | Rapide, sûr |
-| **Forward fix** | Bug simple, fix rapide | Pas de perte de fonctionnalité |
-| **Hotfix** | Correction urgente complexe | Ciblé, minimal |
-
-## Checklist de sécurité
-
-- [ ] Le fix n'introduit pas de régression
-- [ ] Le fix n'expose pas de données sensibles
-- [ ] Les logs ne contiennent pas d'info sensible
-- [ ] Le fix a été testé en staging si possible
-- [ ] Rollback préparé et testé
-
-## Template de commit hotfix
-
-```
-hotfix(scope): description courte du fix
-
-Incident: [lien vers incident/alert]
-Impact: [X utilisateurs affectés pendant Y minutes]
-Root cause: [description technique]
-
-Fixes #[issue-number]
-```
-
-## Agents liés
-
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/dev:dev-debug` | Diagnostiquer le problème |
-| `/dev:dev-test` | Test de non-régression |
-| `/ops:ops-release` | Release après hotfix |
-| `/ops:ops-monitoring` | Vérifier post-déploiement |
-| `/ops:ops-disaster-recovery` | Si incident majeur |
+| Agent | Usage |
+|-------|-------|
+| `/dev:dev-debug` | Diagnostiquer le probleme |
+| `/ops:ops-release` | Release apres hotfix |
+| `/ops:ops-monitoring` | Verifier post-deploiement |
 
 ---
 
-IMPORTANT: Vitesse ET sécurité. Ne pas sacrifier la sécurité pour la vitesse.
+IMPORTANT: Vitesse ET securite. Ne pas sacrifier la securite pour la vitesse.
 
-IMPORTANT: Un hotfix = UN problème. Pas de "tant qu'on y est".
+IMPORTANT: Un hotfix = UN probleme. Pas de "tant qu'on y est".
 
-YOU MUST tester le hotfix avant déploiement prod.
+YOU MUST tester le hotfix avant deploiement prod.
 
-NEVER déployer un hotfix sans possibilité de rollback.
+NEVER deployer un hotfix sans possibilite de rollback.
 
 
 ---

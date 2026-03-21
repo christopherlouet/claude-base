@@ -176,5 +176,5 @@ description: Liste complete des 59 agents
 ## Voir aussi
 
 - [Matrice des Commands](/docs/reference/commands-matrix)
-- [Cheatsheet](/docs/reference/cheatsheet)
+- [Cheatsheet](/docs/reference/commands)
 - [Architecture](/docs/intro/architecture)

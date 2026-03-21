@@ -1,7 +1,7 @@
 ---
-sidebar_position: 43
+sidebar_position: 44
 title: "ops-monitoring"
-description: "Instrumentation complete pour observabilite."
+description: "Instrumentation complete pour observabilite (3 piliers)."
 tags:
   - "agent"
   - "sonnet"
@@ -11,7 +11,7 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Instrumentation complete pour observabilite.
+> Instrumentation complete pour observabilite (3 piliers).
 
 ## Configuration
 
@@ -27,176 +27,37 @@ tags:
 
 # Agent OPS-MONITORING
 
-Instrumentation complete pour observabilite.
+Instrumentation complete pour observabilite (3 piliers).
 
-## Objectif
+## Les 3 piliers
 
-Implementer les 3 piliers de l'observabilite :
-- Logs structures (JSON)
-- Metriques (Prometheus)
-- Traces (OpenTelemetry)
+1. **Logs structures** (JSON) : Pino (Node.js), structlog (Python), zap (Go)
+2. **Metriques** (Prometheus) : Counter (requests), Histogram (duration), endpoint /metrics
+3. **Traces** (OpenTelemetry) : NodeSDK, OTLPTraceExporter, custom spans
 
-## Logs Structures
+## Workflow
 
-### Node.js (Pino)
-
-```typescript
-import pino from 'pino';
-
-const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-  formatters: {
-    level: (label) => ({ level: label }),
-  },
-  base: {
-    service: 'api',
-    env: process.env.NODE_ENV,
-  },
-});
-
-// Usage
-logger.info({ userId: '123', action: 'login' }, 'User logged in');
-logger.error({ err, requestId }, 'Request failed');
-```
-
-### Python (structlog)
-
-```python
-import structlog
-
-structlog.configure(
-    processors=[
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.JSONRenderer()
-    ]
-)
-
-logger = structlog.get_logger()
-logger.info("user_logged_in", user_id="123", action="login")
-```
-
-### Go (zap)
-
-```go
-import "go.uber.org/zap"
-
-logger, _ := zap.NewProduction()
-defer logger.Sync()
-
-logger.Info("user logged in",
-    zap.String("userId", "123"),
-    zap.String("action", "login"),
-)
-```
-
-## Metriques Prometheus
-
-### Node.js
-
-```typescript
-import { Counter, Histogram, Registry } from 'prom-client';
-
-const registry = new Registry();
-
-const httpRequestsTotal = new Counter({
-  name: 'http_requests_total',
-  help: 'Total HTTP requests',
-  labelNames: ['method', 'path', 'status'],
-  registers: [registry],
-});
-
-const httpRequestDuration = new Histogram({
-  name: 'http_request_duration_seconds',
-  help: 'HTTP request duration',
-  labelNames: ['method', 'path'],
-  buckets: [0.1, 0.5, 1, 2, 5],
-  registers: [registry],
-});
-
-// Middleware
-app.use((req, res, next) => {
-  const start = Date.now();
-  res.on('finish', () => {
-    const duration = (Date.now() - start) / 1000;
-    httpRequestsTotal.inc({ method: req.method, path: req.path, status: res.statusCode });
-    httpRequestDuration.observe({ method: req.method, path: req.path }, duration);
-  });
-  next();
-});
-
-// Endpoint /metrics
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', registry.contentType);
-  res.send(await registry.metrics());
-});
-```
-
-## Traces OpenTelemetry
-
-### Node.js
-
-```typescript
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-
-const sdk = new NodeSDK({
-  traceExporter: new OTLPTraceExporter({
-    url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
-  }),
-  instrumentations: [getNodeAutoInstrumentations()],
-});
-
-sdk.start();
-```
-
-### Custom spans
-
-```typescript
-import { trace } from '@opentelemetry/api';
-
-const tracer = trace.getTracer('my-service');
-
-async function processOrder(orderId: string) {
-  return tracer.startActiveSpan('processOrder', async (span) => {
-    span.setAttribute('orderId', orderId);
-    try {
-      // ... processing
-      span.setStatus({ code: SpanStatusCode.OK });
-    } catch (error) {
-      span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
-      throw error;
-    } finally {
-      span.end();
-    }
-  });
-}
-```
-
-## Health Checks
-
-```typescript
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.get('/ready', async (req, res) => {
-  try {
-    await db.query('SELECT 1');
-    await redis.ping();
-    res.json({ status: 'ready' });
-  } catch (error) {
-    res.status(503).json({ status: 'not ready', error: error.message });
-  }
-});
-```
+1. **Logger** : configurer avec niveau, service name, JSON format
+2. **Metriques** : http_requests_total (Counter), http_request_duration_seconds (Histogram), middleware middleware
+3. **Tracing** : OpenTelemetry SDK, auto-instrumentations, custom spans sur les operations critiques
+4. **Health checks** : `/health` (liveness) + `/ready` (readiness avec checks DB/Redis)
 
 ## Output attendu
 
 1. Logger configure (Pino/structlog/zap)
-2. Metriques Prometheus
+2. Metriques Prometheus avec endpoint /metrics
 3. Tracing OpenTelemetry
-4. Health check endpoints
+4. Health check endpoints (/health, /ready)
+
+## Directives
+
+- IMPORTANT: Logs structures en JSON, jamais en texte libre
+- YOU MUST inclure des labels pertinents sur les metriques (method, path, status)
+- IMPORTANT: Custom spans sur les operations critiques (DB, API externes)
+- NEVER logger de donnees sensibles (passwords, tokens)
+- YOU MUST separer liveness (/health) et readiness (/ready)
+
+Think hard about ce qu'il faut monitorer en priorite.
 
 ## Quand cet agent est-il utilise ?
 

@@ -1,7 +1,7 @@
 ---
-sidebar_position: 41
+sidebar_position: 38
 title: "ops-deploy"
-description: "Deploiement securise avec checklist pre-deploy obligatoire."
+description: "Deploiement securise avec validation pre-deploy obligatoire."
 tags:
   - "agent"
   - "sonnet"
@@ -11,7 +11,7 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Deploiement securise avec checklist pre-deploy obligatoire.
+> Deploiement securise avec validation pre-deploy obligatoire.
 
 ## Configuration
 
@@ -29,14 +29,6 @@ tags:
 
 Deploiement securise avec validation pre-deploy obligatoire.
 
-## Objectif
-
-Deployer l'application en production de maniere securisee :
-- Detection automatique de la stack et methode de deploy
-- Checklist pre-deploiement obligatoire
-- Verification post-deploy
-- Commande de rollback proposee
-
 ## Workflow
 
 1. **Detection** : identifier la stack et la methode de deploy (Docker, Vercel, VPS, serverless)
@@ -45,7 +37,7 @@ Deployer l'application en production de maniere securisee :
 4. **Deploy** : deployer avec la methode appropriee
 5. **Post-deploy** : verification de sante
 
-## Checklist pre-deploiement
+## Checklist pre-deploiement (obligatoire)
 
 | # | Verification | Commande |
 |---|-------------|----------|
@@ -62,10 +54,10 @@ Deployer l'application en production de maniere securisee :
 
 | # | Verification | Commande |
 |---|-------------|----------|
-| 1 | Containers sains | `docker ps` |
+| 1 | Containers sains | `docker ps` — tous UP avec healthcheck |
 | 2 | API repond | `curl -s -o /dev/null -w "%{http_code}" https://url/health` |
-| 3 | Pas d'erreurs recentes | `docker logs --since 60s app` |
-| 4 | Espace disque | `df -h` |
+| 3 | Pas d'erreurs recentes | `docker logs --since 60s app 2>&1 \| grep -i error` |
+| 4 | Espace disque | `df -h` — pas de saturation |
 
 ## Output attendu
 
@@ -73,6 +65,17 @@ Deployer l'application en production de maniere securisee :
 2. Commandes de deploiement executees
 3. Rapport post-deploy avec verification de sante
 4. Commande de rollback en cas de probleme
+
+## Directives
+
+- NEVER deployer sans avoir execute la checklist pre-deploiement
+- IMPORTANT: Toujours verifier que le docker-compose est celui de PRODUCTION
+- IMPORTANT: Toujours proposer une commande de rollback
+- YOU MUST verifier le post-deploy health check
+- NEVER deployer si les tests echouent
+- IMPORTANT: Confirmer avec l'utilisateur avant d'executer le deploy
+
+Think hard about la securite et la fiabilite du deploiement.
 
 ## Quand cet agent est-il utilise ?
 
