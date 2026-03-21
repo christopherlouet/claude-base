@@ -561,6 +561,63 @@ show_socle_stats() {
 }
 
 # =============================================================================
+# Cache persistant (~/.cache/claude-socle/)
+# =============================================================================
+
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/claude-socle"
+CACHE_DEFAULT_TTL=86400  # 24h
+
+# Initialise le répertoire de cache
+cache_init() {
+    mkdir -p "$CACHE_DIR" 2>/dev/null || true
+}
+
+# Vérifie si une entrée cache est encore valide
+# Arguments: $1=clé, $2=ttl en secondes (défaut: 86400)
+# Retourne: 0 si valide, 1 sinon
+cache_valid() {
+    local key="$1"
+    local ttl="${2:-$CACHE_DEFAULT_TTL}"
+    local file="$CACHE_DIR/${key}.json"
+
+    [[ -f "$file" ]] || return 1
+
+    local timestamp
+    timestamp=$(json_get "$file" ".timestamp" 2>/dev/null) || return 1
+    [[ -z "$timestamp" ]] && return 1
+
+    local now
+    now=$(date +%s)
+    (( now - timestamp < ttl ))
+}
+
+# Lit une valeur du cache
+# Arguments: $1=clé
+# Retourne: contenu du champ .data (stdout), 1 si absent
+cache_read() {
+    local key="$1"
+    local file="$CACHE_DIR/${key}.json"
+
+    [[ -f "$file" ]] || return 1
+    json_get "$file" ".data" 2>/dev/null
+}
+
+# Écrit une valeur dans le cache
+# Arguments: $1=clé, $2=données (string)
+cache_write() {
+    local key="$1"
+    local data="$2"
+    local now
+    now=$(date +%s)
+
+    cache_init
+
+    cat > "$CACHE_DIR/${key}.json" << CACHEEOF
+{"data": "$data", "timestamp": $now}
+CACHEEOF
+}
+
+# =============================================================================
 # Gestion des erreurs
 # =============================================================================
 
@@ -593,3 +650,4 @@ export -f get_socle_version version_gte
 export -f separator title section
 export -f count_agents count_skills count_hooks count_templates show_socle_stats
 export -f on_error enable_error_handler
+export -f cache_init cache_valid cache_read cache_write
