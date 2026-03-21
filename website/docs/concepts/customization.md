@@ -14,17 +14,6 @@ Comment adapter claude-socle à vos besoins spécifiques.
 
 ---
 
-## Table des matières
-
-1. [Personnaliser CLAUDE.md](#1-personnaliser-claudemd)
-2. [Créer des commandes personnalisées](#2-créer-des-commandes-personnalisées)
-3. [Configurer les permissions](#3-configurer-les-permissions)
-4. [Configurer les hooks](#4-configurer-les-hooks)
-5. [Intégrer des serveurs MCP](#5-intégrer-des-serveurs-mcp)
-6. [Adapter pour votre équipe](#6-adapter-pour-votre-équipe)
-
----
-
 ## 1. Personnaliser CLAUDE.md
 
 ### Structure recommandée
