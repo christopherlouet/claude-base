@@ -99,7 +99,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'QA (15)',
+          label: 'QA (16)',
           collapsed: true,
           link: {
             type: 'doc',
@@ -111,7 +111,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'OPS (30)',
+          label: 'OPS (31)',
           collapsed: true,
           link: {
             type: 'doc',
