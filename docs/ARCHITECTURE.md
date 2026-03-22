@@ -90,7 +90,7 @@ Cette architecture permet :
 | **Modele** | Default | Default | Configurable | N/A |
 | **Cas d'usage** | Actions explicites | Patterns detectes | Taches isolees | Contraintes |
 
-## Commands (118 disponibles)
+## Commands (123 disponibles)
 
 ### Definition
 Prompts invoques manuellement avec la syntaxe `/nom-commande`.
