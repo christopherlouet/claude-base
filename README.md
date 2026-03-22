@@ -15,7 +15,7 @@ Template de configuration Claude Code pour un workflow de développement optimal
 
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://code.claude.com/docs/en/overview) qui permet de :
 
-- Structurer ton workflow de développement : **Explore → Specify → Plan → Code → Commit**
+- Structurer ton workflow de développement : **Explore → Specify → Plan → TDD → Audit → Commit**
 - Disposer de **123 commandes**, **59 sub-agents** et **42 skills** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
@@ -81,11 +81,11 @@ claude-socle/
 │       │   ├── dev-tdd.md
 │       │   ├── dev-api.md
 │       │   └── ...
-│       ├── qa/                  # Qualité (15 commandes)
+│       ├── qa/                  # Qualité (16 commandes)
 │       │   ├── qa-review.md
 │       │   ├── qa-security.md
 │       │   └── ...
-│       ├── ops/                 # Opérations (30 commandes)
+│       ├── ops/                 # Opérations (31 commandes)
 │       ├── doc/                 # Documentation (9 commandes)
 │       ├── biz/                 # Business (11 commandes)
 │       ├── growth/              # Croissance (11 commandes)
@@ -210,9 +210,9 @@ claude-socle/
 ## Workflow Recommandé
 
 ```
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
-│ EXPLORE │───▶│ SPECIFY │───▶│  PLAN   │───▶│  CODE   │───▶│ COMMIT  │
-└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
+┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
+│ EXPLORE │───▶│ SPECIFY │───▶│  PLAN   │───▶│   TDD   │───▶│  AUDIT  │───▶│ COMMIT  │
+└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
 ```
 
 ### Exemple pratique (Web)
@@ -300,6 +300,12 @@ cp templates/CLAUDE.react.md CLAUDE.md
 
 # Désinstaller
 ./scripts/uninstall.sh /chemin/projet
+
+# Intégration IDE (VSCode, IntelliJ, Vim/Neovim)
+./scripts/ide.sh setup vscode
+
+# Tutoriel interactif sur le workflow
+./scripts/learn.sh
 ```
 
 ## Apprentissage Interactif
@@ -322,7 +328,7 @@ Le socle inclut un tutoriel interactif pour apprendre à l'utiliser efficacement
 ```
 
 Le tutoriel couvre :
-- Le workflow Explore → Specify → Plan → Code → Commit
+- Le workflow Explore → Specify → Plan → TDD → Audit → Commit
 - Les 123 commandes et 59 agents spécialisés
 - Le développement TDD
 - Les Conventional Commits
