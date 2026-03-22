@@ -17,6 +17,7 @@ fix minimal, verification, commit avec reference issue, PR ou hotfix.
 - **TEST** : Ecrire un test qui echoue et prouve le bug (DOIT echouer avant le fix)
 - **FIX** : Implementer la correction minimale (pas de refactoring opportuniste)
 - **VERIFY** : Lancer tous les tests, lint, typecheck, build, test manuel
+- **AUDIT** : Review rapide pour bugfix simple (`/qa:qa-review`), audit complet + fix en boucle pour bug critique (`/qa:qa-loop "score 90"`)
 - **COMMIT** : Format `fix(scope): description` avec cause, solution, `Fixes #issue`
 - **PR/HOTFIX** : PR normale ou hotfix selon urgence (bug prod critique = hotfix)
 
@@ -33,6 +34,8 @@ fix minimal, verification, commit avec reference issue, PR ou hotfix.
 |-------|-------|
 | `/dev:dev-debug` | Diagnostic approfondi |
 | `/dev:dev-test` | Generer les tests de regression |
+| `/qa:qa-review` | Review rapide (bugfix simple) |
+| `/qa:qa-loop` | Audit + fix en boucle (bug critique, score 90) |
 | `/ops:ops-hotfix` | Bug critique en production |
 | `/work:work-commit` | Format de commit |
 

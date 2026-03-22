@@ -1,17 +1,18 @@
 # Projet claude-socle
 
-> Template de configuration Claude Code pour un workflow optimal : Explore → Specify → Plan → TDD → Commit
+> Template de configuration Claude Code pour un workflow optimal : Explore → Specify → Plan → TDD → Audit → Commit
 
 @docs/reference/best-practices.md
 @docs/reference/project-structures.md
 
-## Workflow Obligatoire : Explore → Specify → Plan → TDD → Commit
+## Workflow Obligatoire : Explore → Specify → Plan → TDD → Audit → Commit
 
 1. **EXPLORE** (`/work:work-explore`) - Lire et comprendre le code AVANT de modifier
 2. **SPECIFY** (`/work:work-specify`) - User Stories prioritisees (P1=MVP), criteres d'acceptation (Given/When/Then)
 3. **PLAN** (`/work:work-plan`) - Architecture, fichiers, taches par User Story, risques
 4. **TDD** (`/dev:dev-tdd`) - Tests AVANT le code, cycle Red-Green-Refactor, couverture 80%+
-5. **COMMIT** (`/work:work-commit` ou `/work:work-pr`) - Conventional Commits, reference issues
+5. **AUDIT** (`/qa:qa-loop "score 90"`) - Audit adaptatif + correction en boucle jusqu'au score 90
+6. **COMMIT** (`/work:work-commit` ou `/work:work-pr`) - Conventional Commits, reference issues
 
 ## Conventions de Code
 
@@ -55,17 +56,18 @@ Setup: `./scripts/new-project.sh --simple .`
 | Nouvelle release | `/work:work-flow-release "v2.0.0"` |
 | Lancement produit | `/work:work-flow-launch "mon SaaS"` |
 | Audit complet | `/qa:qa-audit` |
-| Audit + fix en boucle | `/qa:qa-loop` ou `/qa:qa-loop "score 90"` |
+| Audit + fix en boucle | `/qa:qa-loop` (score 90 par defaut) |
 | Deploiement securise | `/ops:ops-deploy` |
 | Equipe d'agents | `/work:work-team "description"` |
 
-Workflow manuel : `/work:work-explore` → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/work:work-pr`
+Workflow manuel : `/work:work-explore` → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/qa:qa-loop "score 90"` → `/work:work-pr`
 
 ## Anti-patterns a Eviter
 
 - Coder sans comprendre l'existant
 - Implementer sans plan valide
 - Coder AVANT d'ecrire les tests (violer TDD)
+- Commiter sans audit (sauter la phase Audit)
 - Commits geants multi-fonctionnalites
 - Tests avec trop de mocks
 - any partout en TypeScript

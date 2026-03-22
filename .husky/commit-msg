@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
-# Validate commit message format (conventional commits)
-npx --no -- commitlint --edit "$1"
+# Validate commit message format (conventional commits, requires package.json with commitlint)
+if command -v npx >/dev/null 2>&1 && [ -f "package.json" ]; then
+  npx --no -- commitlint --edit "$1"
+fi
