@@ -20,9 +20,9 @@ graph TB
     end
 
     subgraph ".claude/"
-        CMDS[commands/<br/>123 commandes]
-        AGENTS[agents/<br/>59 sub-agents]
-        SKILLS[skills/<br/>42 skills]
+        CMDS[commands/<br/>126 commandes]
+        AGENTS[agents/<br/>62 sub-agents]
+        SKILLS[skills/<br/>44 skills]
         RULES[rules/<br/>24 rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
@@ -48,7 +48,7 @@ graph TB
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 123 commandes manuelles (/nom)
+│   ├── commands/       # 126 commandes manuelles (/nom)
 │   │   ├── work/       # Workflow principal
 │   │   ├── dev/        # Developpement
 │   │   ├── qa/         # Qualite
@@ -58,8 +58,8 @@ claude-socle/
 │   │   ├── growth/     # Croissance
 │   │   ├── data/       # Donnees
 │   │   └── legal/      # Legal
-│   ├── agents/         # 59 sub-agents autonomes
-│   ├── skills/         # 42 skills auto-declenches
+│   ├── agents/         # 62 sub-agents autonomes
+│   ├── skills/         # 44 skills auto-declenches
 │   ├── rules/          # 24 regles par technologie
 │   ├── templates/      # Templates de specs/plans
 │   ├── output-styles/  # Styles de sortie
@@ -70,7 +70,7 @@ claude-socle/
 
 ## Composants principaux
 
-### Commands (123)
+### Commands (126)
 
 Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 
@@ -87,7 +87,7 @@ Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 /qa:qa-security
 ```
 
-### Agents (59)
+### Agents (62)
 
 Les **agents** sont des sub-agents autonomes avec un contexte isole.
 
@@ -103,7 +103,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole.
 "Explore le code d'auth" → Claude delegue a l'agent work-explore (haiku)
 ```
 
-### Skills (42)
+### Skills (44)
 
 Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 
@@ -237,4 +237,4 @@ Activez les serveurs selon vos besoins pour etendre les capacites de Claude.
 
 - [Installation](/docs/intro/installation) - Guide d'installation complet
 - [Workflows](/docs/workflow) - Voir les workflows en action
-- [Commands](/docs/commands) - Explorer les 123 commandes
+- [Commands](/docs/commands) - Explorer les 126 commandes
