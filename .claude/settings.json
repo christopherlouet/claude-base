@@ -164,6 +164,18 @@
         ]
       },
       {
+        "description": "Pre-deploy safety: verify build prod passes before deploying (desactiver avec SKIP_PRE_DEPLOY_BUILD=1)",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'if [ \"$SKIP_PRE_DEPLOY_BUILD\" = \"1\" ]; then exit 0; fi; if ! echo \"$TOOL_INPUT\" | grep -qiE \"deploy.*deploy|deploy\\.sh|deploy-.*\\.sh deploy\"; then exit 0; fi; echo \"=== Pre-deploy build check ===\"; if [ -f package.json ] && grep -q \"\\\"build\\\"\" package.json; then echo \"[1/1] Build prod...\"; npm run build --silent 2>&1 | tail -5; if [ ${PIPESTATUS[0]} -ne 0 ]; then echo \"BLOQUE: Build prod en echec. Corrigez avant de deployer.\"; exit 1; fi; echo \"Build OK\"; elif [ -f go.mod ]; then echo \"[1/1] Go build...\"; go build ./... 2>&1 | tail -5; fi; echo \"=== Pre-deploy check OK ===\"'",
+            "timeout": 300000,
+            "onFailure": "block"
+          }
+        ]
+      },
+      {
         "description": "Validation de securite des commandes Bash (desactiver avec SKIP_COMMAND_VALIDATOR=1)",
         "matcher": "Bash",
         "hooks": [
