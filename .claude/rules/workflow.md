@@ -1,5 +1,13 @@
 # Workflow Rules
 
+## Choix du Workflow
+
+| Complexite | Workflow | Commande |
+|------------|----------|----------|
+| Trivial (typo, rename, 1-3 fichiers) | Quick | `/work:work-quick` |
+| Standard (feature, bugfix) | Complet | Explore → Plan → TDD → Audit → Commit |
+| Batch (backlog de stories) | Batch | `/work:work-batch "prd.json"` |
+
 ## Cycle Obligatoire: Explore -> Plan -> TDD -> Audit -> Commit
 
 ### 0. CI BASELINE (recommande)

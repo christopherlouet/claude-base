@@ -59,6 +59,9 @@ Setup: `./scripts/new-project.sh --simple .`
 | Audit + fix en boucle | `/qa:qa-loop` (score 90 par defaut) |
 | Deploiement securise | `/ops:ops-deploy` |
 | Equipe d'agents | `/work:work-team "description"` |
+| Changement trivial | `/work:work-quick "description"` |
+| Batch de stories | `/work:work-batch "prd.json"` |
+| Suivi des couts | `/ops:ops-cost` |
 
 Workflow manuel : `/work:work-explore` → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/qa:qa-loop "score 90"` → `/work:work-pr`
 
