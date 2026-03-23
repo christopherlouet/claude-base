@@ -44,6 +44,7 @@
 | Guide API | `docs/guides/API-GUIDE.md` |
 | Guide Data | `docs/guides/DATA-GUIDE.md` |
 | Guide Prompting | `docs/guides/PROMPTING-GUIDE.md` |
+| Parcours Novice a Pro | `website/docs/guides/learning-path.md` |
 
 Setup: `./scripts/new-project.sh --simple .`
 
