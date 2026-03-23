@@ -164,6 +164,18 @@
         ]
       },
       {
+        "description": "Validation de securite des commandes Bash (desactiver avec SKIP_COMMAND_VALIDATOR=1)",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/command-validator.sh",
+            "timeout": 5000,
+            "onFailure": "block"
+          }
+        ]
+      },
+      {
         "description": "RTK token optimizer - reecrit les commandes pour reduire les tokens de 60-90% (activer avec ENABLE_RTK=1, installer rtk: brew install rtk)",
         "matcher": "Bash",
         "hooks": [
