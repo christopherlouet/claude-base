@@ -60,7 +60,8 @@ Vous tapez une commande
 
 | Votre profil | Chemin recommande |
 |-------------|-------------------|
-| **Debutant** total | [Parcours d'apprentissage](/docs/guides/learning-path) (9h30, 5 niveaux) |
+| **Jamais utilise Claude Code** | [Formation Claude Code](/docs/guides/claude-code-training) (3h45, 9 modules) |
+| **Connait Claude Code, decouvre le socle** | [Parcours socle](/docs/guides/learning-path) (9h30, 5 niveaux) |
 | **Presse** (5 min) | [Quick Start](/docs/intro/quick-start) |
 | **Developpeur web** | [Guide Web](/docs/guides/web-guide) |
 | **Developpeur mobile** | [Guide Mobile](/docs/guides/mobile-guide) |
@@ -72,10 +73,10 @@ Vous tapez une commande
 import Link from '@docusaurus/Link';
 
 <div className="quick-actions">
-  <Link className="button button--primary button--lg" to="/docs/guides/learning-path">
-    Parcours d'apprentissage (recommande)
+  <Link className="button button--primary button--lg" to="/docs/guides/claude-code-training">
+    Formation Claude Code (prerequis)
   </Link>
-  <Link className="button button--secondary button--lg" to="/docs/intro/quick-start">
-    Quick Start en 5 min
+  <Link className="button button--secondary button--lg" to="/docs/guides/learning-path">
+    Parcours socle (apres la formation)
   </Link>
 </div>
