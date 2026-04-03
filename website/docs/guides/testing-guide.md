@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 24
 title: "Guide Strategie de Tests"
 description: " Couverture complete, tests maintenables, confiance maximale dans le code"
 tags:
