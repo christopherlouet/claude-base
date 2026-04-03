@@ -59,6 +59,8 @@
 | `--remote` | Se connecter à une session distante | `claude --remote <session-id>` |
 | `--fallback-model` | Modèle de secours si le principal est indisponible | `claude --fallback-model haiku` |
 | `--plugin-dir` | Répertoire de plugins à charger | `claude --plugin-dir ./plugins` |
+| `--bare` | Mode scripté minimal (skip hooks, LSP, plugins, skills) | `claude -p --bare "query"` |
+| `--channels` | Activer les channels (Telegram, Discord, iMessage) | `claude --channels` |
 | `--tools` | Restreindre les outils disponibles | `claude --tools "Read,Grep,Glob"` |
 | `--init` | Initialiser le projet (hook Setup init) | `claude --init` |
 | `--init-only` | Initialiser sans démarrer de session | `claude --init-only` |

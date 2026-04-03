@@ -112,8 +112,7 @@ Ces quatre commandes sont les premieres a maitriser. Elles fonctionnent dans n'i
 |--------|----------|-----------------|
 | Faible | `/effort low` | Exploration, lecture de fichiers, taches simples |
 | Moyen | `/effort medium` | Developpement standard, corrections |
-| Eleve | `/effort high` | Architecture, refactoring complexe |
-| Maximum | `/effort max` | Audit critique, debug complexe |
+| Eleve | `/effort high` | Architecture, audit, refactoring complexe, debug |
 
 Par defaut, Claude Code ajuste son niveau automatiquement. Utilisez `/effort` pour forcer un niveau specifique.
 
@@ -1083,13 +1082,12 @@ La premiere implementation explore le probleme. La deuxieme beneficie des appren
 
 #### Niveaux d'effort : adapter la profondeur de raisonnement
 
-Claude Code supporte 4 niveaux d'effort qui controlent la profondeur du raisonnement :
+Claude Code supporte 3 niveaux d'effort qui controlent la profondeur du raisonnement :
 
 ```bash
 /effort low      # Exploration, lecture de fichiers, formatage
 /effort medium   # Implementation standard, corrections
-/effort high     # Architecture, refactoring complexe
-/effort max      # Audit critique, debug complexe (Opus 4.6 uniquement)
+/effort high     # Architecture, audit, refactoring complexe, debug
 ```
 
 Guide par phase du workflow :
@@ -1099,10 +1097,10 @@ Guide par phase du workflow :
 | `/work:work-explore` | `low` | Lecture seule, pas de raisonnement profond necessaire |
 | `/work:work-specify`, `/work:work-plan` | `high` | Decisions d'architecture importantes |
 | `/dev:dev-tdd` | `medium` | Implementation standard |
-| `/qa:qa-audit`, `/qa:qa-security` | `max` | Audit critique (Opus 4.6) |
+| `/qa:qa-audit`, `/qa:qa-security` | `high` | Audit critique |
 | `/work:work-commit` | `low` | Operation simple |
 
-L'effort `max` est exclusif au modele Opus 4.6 avec adaptive thinking. Il est inutile de l'utiliser pour reformatter du code ou ecrire un message de commit.
+L'effort `high` active le raisonnement approfondi. Reservez-le aux taches complexes (architecture, audit, debug). Il est inutile de l'utiliser pour reformatter du code ou ecrire un message de commit.
 
 #### Verification explicite : le multiplicateur de qualite
 
@@ -1547,7 +1545,7 @@ Le corps du fichier agent doit etre minimal (30-55 lignes) : il orchestre, le sk
 |--------|-------------------|---------------------|
 | `haiku` | Exploration, documentation, generation standard, audits simples | 26 agents |
 | `sonnet` | Debug complexe, securite, architecture, integration | 30 agents |
-| `opus` | Reserve aux taches critiques avec `/effort max` | Sur demande |
+| `opus` | Reserve aux taches critiques avec `/effort high` | Sur demande |
 
 Regle pratique : si l'agent lit sans modifier, utilisez `haiku`. S'il analyse pour proposer des corrections ou des decisions architecturales, utilisez `sonnet`.
 
@@ -1970,8 +1968,7 @@ Preferer `/compact` a `/clear` : la compaction conserve l'essentiel (decisions p
 |--------|----------|---------------------|-------|
 | `low` | `/effort low` | Minimum | Exploration, lecture, commits |
 | `medium` | `/effort medium` | Standard | Dev standard, corrections |
-| `high` | `/effort high` | Eleve | Architecture, refactoring |
-| `max` | `/effort max` | Maximum (Opus 4.6 requis) | Audit critique, debug complexe |
+| `high` | `/effort high` | Eleve | Architecture, audit, refactoring, debug |
 
 #### Choisir le bon modele
 
@@ -1979,7 +1976,7 @@ Preferer `/compact` a `/clear` : la compaction conserve l'essentiel (decisions p
 |--------|---------------|-------------|
 | Haiku | Taches simples, generation standard, documentation | Tres faible |
 | Sonnet | Analyse, debug, decisions | Moyen |
-| Opus 4.6 | Audit critique, architecture complexe, `/effort max` | Eleve |
+| Opus 4.6 | Audit critique, architecture complexe, `/effort high` | Eleve |
 
 Bonne pratique : utilisez Haiku pour les 70% de taches routinieres (generation de tests, documentation, composants standard), Sonnet pour les 25% qui demandent du raisonnement, et reservez Opus pour les 5% critiques.
 

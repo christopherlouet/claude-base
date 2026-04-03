@@ -1,0 +1,53 @@
+# Claude Code Action - Review securite sur fichiers critiques
+# Se declenche uniquement quand des fichiers sensibles sont modifies
+#
+# Prerequis: cle API Anthropic (pay-per-use), pas compatible plan Max (OAuth).
+# Setup: meme que claude-review.yml (ANTHROPIC_API_KEY requis)
+
+name: Claude Security Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "src/auth/**"
+      - "src/api/**"
+      - "**/middleware/**"
+      - "**/.env*"
+      - "**/docker-compose*"
+      - "**/Dockerfile*"
+
+jobs:
+  security-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            This PR modifies security-critical files. Perform a security-focused review:
+
+            - Authentication and authorization flows
+            - Input validation and sanitization
+            - SQL injection, XSS, CSRF vulnerabilities
+            - Hardcoded secrets or credentials
+            - Docker security (non-root, minimal images)
+            - Environment variable exposure
+
+            Flag any OWASP Top 10 issues found.
+            Use inline comments for specific security concerns.
+            Post a summary with severity levels (Critical/High/Medium/Low).
+
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
