@@ -1,5 +1,5 @@
 ---
-sidebar_position: 15
+sidebar_position: 18
 title: "Guide Infrastructure & Operations"
 description: " Workflow complet pour infrastructure, deploiement et operations"
 tags:

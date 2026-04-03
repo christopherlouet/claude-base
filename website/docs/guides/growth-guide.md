@@ -1,5 +1,5 @@
 ---
-sidebar_position: 14
+sidebar_position: 17
 title: "Guide Growth & Marketing"
 description: " Workflow complet pour mesurer, analyser, optimiser et scaler la croissance"
 tags:

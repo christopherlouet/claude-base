@@ -42,8 +42,14 @@
 | Guide Web | `docs/guides/WEB-GUIDE.md` |
 | Guide Mobile | `docs/guides/MOBILE-GUIDE.md` |
 | Guide API | `docs/guides/API-GUIDE.md` |
+| Guide Python | `docs/guides/PYTHON-GUIDE.md` |
+| Guide Go | `docs/guides/GO-GUIDE.md` |
 | Guide Data | `docs/guides/DATA-GUIDE.md` |
 | Guide Infra & Ops | `docs/guides/INFRA-GUIDE.md` |
+| Guide Auth | `docs/guides/AUTH-GUIDE.md` |
+| Guide Testing | `docs/guides/TESTING-GUIDE.md` |
+| Guide Database | `docs/guides/DATABASE-GUIDE.md` |
+| Guide Observabilite | `docs/guides/OBSERVABILITY-GUIDE.md` |
 | Guide Business | `docs/guides/BIZ-GUIDE.md` |
 | Guide Growth | `docs/guides/GROWTH-GUIDE.md` |
 | Guide Prompting | `docs/guides/PROMPTING-GUIDE.md` |

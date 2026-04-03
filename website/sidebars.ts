@@ -360,8 +360,21 @@ const sidebars: SidebarsConfig = {
             'guides/web-guide',
             'guides/mobile-guide',
             'guides/api-guide',
+            'guides/python-guide',
+            'guides/go-guide',
             'guides/data-guide',
             'guides/infra-guide',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Transversal',
+          collapsed: true,
+          items: [
+            'guides/auth-guide',
+            'guides/testing-guide',
+            'guides/database-guide',
+            'guides/observability-guide',
           ],
         },
         {
