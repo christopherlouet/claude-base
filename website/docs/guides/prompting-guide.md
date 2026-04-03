@@ -1,5 +1,5 @@
 ---
-sidebar_position: 16
+sidebar_position: 17
 title: "Guide de Prompting Avance"
 description: " Techniques de prompting recommandees par Boris Cherny (createur de Claude Code) pour maximiser la qualite des resultats."
 tags:
@@ -229,3 +229,205 @@ Boris recommande d'utiliser la dictee vocale (fn x2 sur macOS) pour des prompts 
 - [How Boris Uses Claude Code](https://howborisusesclaudecode.com/)
 - [10 Claude Code Tips from Boris](https://ykdojo.github.io/claude-code-tips/content/boris-claude-code-tips)
 - [Claude Code Best Practices (Anthropic)](https://docs.anthropic.com/en/docs/claude-code)
+
+---
+
+## Techniques Avancees
+
+### Prompting Iteratif
+
+Le prompting efficace suit rarement un chemin direct. Le pattern recommande est : large d'abord, puis resserrement progressif.
+
+**Pattern : Large -&gt; Precis -&gt; Raffine**
+
+**Tour 1 - Large (exploration)**
+```
+"Je veux ameliorer les performances de l'API. Quels sont les goulots
+d'etranglement classiques dans une API Node.js/PostgreSQL ?"
+```
+
+**Tour 2 - Precis (focalisation)**
+```
+"Pour les N+1 queries que tu as identifiees, montre-moi comment les
+detecter dans ce fichier : src/services/userService.ts"
+```
+
+**Tour 3 - Raffine (implementation)**
+```
+"Knowing everything you know now, implement the fix using DataLoader.
+Constraints: do NOT change the public API, keep TypeScript strict mode."
+```
+
+**Quand recommencer vs continuer a raffiner**
+
+| Signal | Action |
+|--------|--------|
+| Claude derive du sujet principal | Nouveau tour de recadrage |
+| La solution proposee ne correspond pas au contexte | `/clear` et repartir avec plus de contexte initial |
+| La conversation depasse 30 tours | Compacter (`/compact`) ou redemarrer |
+| Une hypothese de base etait fausse | Corriger explicitement : "En fait, contrairement a ce que j'ai dit plus tot..." |
+
+**Technique "Knowing everything you know now"**
+
+Apres plusieurs tours d'echanges, Claude accumule du contexte implicite. Exploiter ce contexte :
+
+```
+"Knowing everything you know now about this codebase and the constraints
+we've discussed, implement the cleanest possible solution. Forget the
+intermediate versions."
+```
+
+Cette formulation pousse Claude a synthetiser les apprentissages de la conversation plutot que de continuer sur la trajectoire incrementale.
+
+---
+
+### Prompting par Niveau de Complexite
+
+Adapter la structure du prompt a la complexite de la tache reduit les iterations inutiles.
+
+| Complexite | Lignes | Structure recommandee | Exemple |
+|------------|--------|-----------------------|---------|
+| Simple | 1 ligne | Instruction directe | `"Rename variable userId to accountId in auth.ts"` |
+| Moyenne | 2-3 lignes | Contexte + instruction + contrainte | `"In the payment module, add input validation for the amount field. Reject negative values and values above 10000."` |
+| Complexe | 5+ lignes | Contexte + exemples + contraintes + criteres de verification | Voir gabarit ci-dessous |
+
+**Gabarit pour taches complexes**
+
+```
+Context: [what exists, what the system does, relevant constraints]
+
+Task: [precise instruction, single verb, single outcome]
+
+Examples:
+  Input:  [exemple d'entree]
+  Output: [exemple de sortie attendue]
+
+Constraints:
+  - DO: [ce qui est obligatoire]
+  - DO NOT: [ce qui est interdit]
+
+Verification: after implementing, run [commande] and show me the output.
+```
+
+---
+
+### Prompting Multi-Agents
+
+Quand un workflow delegue du travail a des sous-agents (via `/work:work-team` ou un orchestrateur), le briefing de chaque sous-agent doit etre autonome : l'agent ne voit pas la conversation parente.
+
+**Principes de briefing d'un sous-agent**
+
+1. Inclure le contexte minimal suffisant (pas toute la conversation)
+2. Specifier le livrable attendu de facon non ambigue
+3. Indiquer les fichiers a lire avant d'agir
+4. Definir la commande de verification a executer
+5. Preciser le format de sortie si le resultat est consomme par un autre agent
+
+**Gabarit de handoff de contexte**
+
+```
+You are working on [projet], a [description courte].
+
+Relevant files:
+  - [fichier A] : [son role]
+  - [fichier B] : [son role]
+
+Your task: [instruction precise]
+
+Constraints: [contraintes techniques]
+
+When done: run [commande de verification] and report the result.
+Output format: [format si consomme par un autre agent]
+```
+
+**Quand utiliser Agent Teams vs sequentiel**
+
+| Situation | Approche |
+|-----------|----------|
+| Taches independantes (pas de dependance entre elles) | Agent Teams (parallelisme) |
+| Tache B depend du livrable de tache A | Sequentiel |
+| Meme domaine de code, ordre importe | Sequentiel pour eviter les conflits |
+| Audit + implementation sur des modules distincts | Agent Teams |
+
+---
+
+### Patterns Avances
+
+**Pattern "Grill Me" (challenger)**
+
+Utilise avant une decision irreversible ou un merge important. Claude prend le role d'un reviewer hostile.
+
+```
+"Before we proceed, grill me on this architecture decision.
+Ask me the hardest questions a skeptical senior engineer would ask.
+Do not let me move forward until I've answered convincingly."
+```
+
+Variante pour du code :
+```
+"Grill me on this implementation. Find every assumption I'm making
+that could be wrong in production."
+```
+
+**Pattern "Prove It Works" (justification par la preuve)**
+
+Claude ne peut pas se contenter d'affirmer qu'une solution fonctionne - il doit le demontrer.
+
+```
+"Prove to me this fix works. Show me:
+1. The exact lines changed (diff)
+2. The test that was failing and now passes
+3. Why the root cause is eliminated, not just masked"
+```
+
+**Pattern "Scrap and Redo" (repartir proprement)**
+
+Quand une premiere iteration fonctionne mais est trop complexe pour etre maintenue :
+
+```
+"This works but it's too complex. Scrap it. Knowing everything you
+know now about the requirements and edge cases, implement the
+simplest possible version that still handles all cases correctly."
+```
+
+A utiliser apres un premier cycle Red-Green, avant de commiter, quand le code "sent mauvais".
+
+**Pattern Chain-of-Verification**
+
+Force Claude a verifier son propre travail etape par etape avant de livrer :
+
+```
+"After implementing, verify your work in this order:
+1. Does it compile / pass type-check ?
+2. Do all existing tests still pass ?
+3. Does the new test I described pass ?
+4. Is there any input that could cause a crash ?
+Only report completion after all four checks are green."
+```
+
+**Negative Prompting ("DO NOT")**
+
+Les contraintes negatives sont souvent plus efficaces que les contraintes positives pour eviter les erreurs repetees :
+
+```
+"DO NOT:
+- Introduce new dependencies without asking
+- Change the public API surface
+- Use any (TypeScript strict mode is required)
+- Leave console.log statements
+- Modify test files unless explicitly asked"
+```
+
+A placer en debut de prompt pour les contraintes critiques, en fin de prompt pour les preferences.
+
+---
+
+### Anti-Patterns Detailles
+
+| Anti-pattern | Pourquoi ca echoue | Alternative |
+|---|---|---|
+| Prompt vague sans contexte ("fix it", "make it better") | Claude invente le contexte manquant et resout le mauvais probleme | Decrire le comportement observe, le comportement attendu, et le fichier concerne |
+| Sur-contraindre chaque detail ("use exactly 4 spaces, name the variable x, add a comment every 3 lines") | Claude passe du temps a respecter des contraintes arbitraires au lieu de resoudre le probleme | Contraindre l'interface et le comportement, pas l'implementation interne |
+| Demander une confirmation a chaque etape ("tell me before you do anything", "ask me before each file") | Multiplie les tours de conversation, fragmente le contexte, ralentit sans apporter de valeur | Definir les contraintes en amont dans un seul prompt, laisser Claude executer |
+| Ne pas fournir de moyen de verification | Claude ne peut pas detecter ses propres erreurs silencieuses | Toujours inclure une commande de verification : `npm test`, `npm run typecheck`, `./scripts/validate.sh` |
+| Corriger Claude en cours de route sans reformuler | Les corrections ponctuelles s'accumulent et le contexte devient incohérent | Si plus de 2 corrections sont necessaires, redemarrer avec un prompt reformule integrant les corrections |
