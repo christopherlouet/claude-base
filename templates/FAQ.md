@@ -181,7 +181,7 @@ Claude a une fenetre de contexte de 200k tokens (1M en beta avec Opus 4.6). Pour
 
 ### Qu'est-ce que l'Adaptive Thinking d'Opus 4.6 ?
 
-L'Adaptive Thinking remplace le toggle "extended thinking" par 4 niveaux d'effort (`low`, `medium`, `high`, `max`). Le modele ajuste automatiquement son raisonnement selon la complexite de la tache. Cela permet d'optimiser le rapport cout/qualite sans configuration manuelle.
+L'Adaptive Thinking remplace le toggle "extended thinking" par 3 niveaux d'effort (`low`, `medium`, `high`). Le modele ajuste automatiquement son raisonnement selon la complexite de la tache. Cela permet d'optimiser le rapport cout/qualite sans configuration manuelle.
 
 ---
 
