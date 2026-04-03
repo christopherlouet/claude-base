@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 24
 title: "/ops:ops-monitoring"
 description: "Instrumentation du code pour le monitoring, logging et alerting."
 tags:

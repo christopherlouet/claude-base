@@ -1,5 +1,5 @@
 ---
-sidebar_position: 43
+sidebar_position: 45
 title: "writing-skills"
 description: "Guide pour creer de nouveaux skills pour le socle Claude Code. Declencher quand l'utilisateur veut creer un skill, ajouter une commande, ou etendre le socle."
 tags:

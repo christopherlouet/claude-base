@@ -1,5 +1,5 @@
 ---
-sidebar_position: 16
+sidebar_position: 17
 title: "/ops:ops-health"
 description: "Verification rapide de la sante d'un projet. Diagnostic express en 5 minutes."
 tags:

@@ -28,7 +28,7 @@ atteindre le score cible ou les criteres d'arret.
 
 ## Parametres (extraire de `&lt;arguments&gt;`)
 
-- **Score cible** : score minimum pour arreter (defaut: 85/100)
+- **Score cible** : score minimum pour arreter (defaut: 90/100)
 - **Max iterations** : nombre maximum de cycles (defaut: 5)
 - **Domaines** : securite, a11y, perf, qualite, ux (defaut: tous)
 - **Severite** : P0+P1 (defaut), ou P0 uniquement
@@ -65,8 +65,8 @@ AUDIT (lecture) → FIX (P0/P1 avec TDD) → VERIFY (tests) → CHECK (criteres)
 ## Exemples d'utilisation
 
 ```
-/qa:qa-loop                           # Defaut: score 85, max 5 iterations
-/qa:qa-loop "score 90"                # Score cible 90/100
+/qa:qa-loop                           # Defaut: score 90, max 5 iterations
+/qa:qa-loop "score 95"                # Score cible 95/100
 /qa:qa-loop "securite+perf, max 3"    # 2 domaines, 3 iterations max
 /qa:qa-loop "P0 uniquement"           # Ne corriger que les critiques
 ```

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 45
+sidebar_position: 46
 title: "ops-opnsense"
 description: "Configuration OPNsense en IaC avec Terraform. Le skill `ops-opnsense` fournit les patterns detailles."
 tags:

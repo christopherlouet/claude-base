@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: "/work:work-commit"
 description: "Prepare et effectue un commit propre suivant les conventions."
 tags:

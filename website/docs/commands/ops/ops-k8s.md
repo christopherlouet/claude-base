@@ -1,5 +1,5 @@
 ---
-sidebar_position: 19
+sidebar_position: 20
 title: "/ops:ops-k8s"
 description: "Deploiement et orchestration Kubernetes."
 tags:

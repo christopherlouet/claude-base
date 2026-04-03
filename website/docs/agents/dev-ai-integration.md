@@ -43,7 +43,7 @@ Integration de LLMs et APIs IA dans les applications.
 2. **Streaming** : `.stream()` pour reponses incrementales
 3. **Tool Use** : Function calling avec input_schema
 4. **RAG** : Embed query → similarity search → generate with context
-5. **Adaptive Thinking** : Opus 4.6 avec `thinking.effort` (low/medium/high)
+5. **Adaptive Thinking** : Opus 4.6 avec `thinking.effort` (low/medium/high/max)
 
 ## Bonnes Pratiques
 

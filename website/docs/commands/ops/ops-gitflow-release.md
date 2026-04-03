@@ -1,5 +1,5 @@
 ---
-sidebar_position: 14
+sidebar_position: 15
 title: "/ops:ops-gitflow-release"
 description: "Gerer les branches release avec GitFlow (start, finish, list)."
 tags:

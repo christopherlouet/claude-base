@@ -1,5 +1,5 @@
 ---
-sidebar_position: 22
+sidebar_position: 23
 title: "/ops:ops-mobile-release"
 description: "Publication d'applications mobiles sur les stores (App Store, Google Play)."
 tags:

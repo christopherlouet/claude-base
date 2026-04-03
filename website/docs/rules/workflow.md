@@ -1,5 +1,5 @@
 ---
-sidebar_position: 25
+sidebar_position: 26
 title: "workflow"
 description: "Avant de commencer a travailler sur un projet existant :"
 tags:
@@ -21,7 +21,15 @@ _Toutes les fichiers_
 
 # Workflow Rules
 
-## Cycle Obligatoire: Explore -&gt; Plan -&gt; TDD -&gt; Commit
+## Choix du Workflow
+
+| Complexite | Workflow | Commande |
+|------------|----------|----------|
+| Trivial (typo, rename, 1-3 fichiers) | Quick | `/work:work-quick` |
+| Standard (feature, bugfix) | Complet | Explore → Plan → TDD → Audit → Commit |
+| Batch (backlog de stories) | Batch | `/work:work-batch "prd.json"` |
+
+## Cycle Obligatoire: Explore -&gt; Plan -&gt; TDD -&gt; Audit -&gt; Commit
 
 ### 0. CI BASELINE (recommande)
 
@@ -58,7 +66,23 @@ Avant de commencer a travailler sur un projet existant :
 - Respecter les conventions du projet
 - Couverture minimum 80% sur nouveau code
 
-### 4. COMMIT
+### 4. AUDIT (adaptatif selon criticite)
+
+Audit qualite apres TDD, avec correction en boucle jusqu'au score cible de 90.
+
+| Type de changement | Niveau d'audit | Commande |
+|-------------------|----------------|----------|
+| Critique (auth, paiement, donnees sensibles) | Audit complet + fix en boucle | `/qa:qa-loop "score 90"` |
+| Feature UI/UX | Design + accessibilite | `/qa:qa-design` + `/qa:wcag-audit` |
+| Feature standard | Review + fix en boucle | `/qa:qa-loop "score 90"` |
+| Bugfix simple | Review rapide | `/qa:qa-review` |
+
+- IMPORTANT: Ne pas commiter sans avoir atteint le score cible (90)
+- Le TDD valide le comportement, l'audit valide la qualite globale (securite, perf, a11y)
+- Si le score est insuffisant, corriger et re-auditer en boucle
+- Utiliser `/qa:qa-loop "score 90"` par defaut
+
+### 5. COMMIT
 
 - Message de commit descriptif (Conventional Commits)
 - Referencer les issues si applicable
@@ -87,6 +111,7 @@ Signaux d'alerte :
 |-----------|--------|----------|
 | Entre Explore et Plan | Compacter si exploration longue | `/compact` |
 | Entre Plan et TDD | Compacter si plan detaille | `/compact` |
+| Entre TDD et Audit | Compacter si TDD long | `/compact` |
 | Changement de sujet complet | Effacer le contexte | `/clear` |
 | Session normale | Laisser l'auto-compaction gerer | _(rien)_ |
 | Refactoring casse tout | Revenir au dernier etat stable | `/rewind` |
@@ -98,6 +123,7 @@ Preferer `/compact` a `/clear` : la compaction conserve l'essentiel du contexte 
 - Coder sans comprendre l'existant
 - Implementer sans plan valide
 - Coder AVANT d'ecrire les tests (violer TDD)
+- Commiter sans audit (sauter la phase Audit)
 - Commits geants multi-fonctionnalites
 - Tests avec trop de mocks
 - `any` partout en TypeScript
@@ -113,7 +139,7 @@ Preferer `/compact` a `/clear` : la compaction conserve l'essentiel du contexte 
 ```
 /work:work-flow-feature "description"
 # ou manuellement (TDD obligatoire):
-/work:work-explore -> /work:work-plan -> /dev:dev-tdd -> /work:work-pr
+/work:work-explore -> /work:work-plan -> /dev:dev-tdd -> /qa:qa-loop "score 90" -> /work:work-pr
 ```
 
 ### Correction de bug
@@ -133,8 +159,8 @@ Preferer `/compact` a `/clear` : la compaction conserve l'essentiel du contexte 
 
 ### Audit + fix en boucle
 ```
-/qa:qa-loop                  # Audit + fix P0/P1 jusqu'a score 85+
-/qa:qa-loop "score 90"       # Score cible personnalise
+/qa:qa-loop                  # Audit + fix P0/P1 jusqu'a score 90 (defaut)
+/qa:qa-loop "score 95"       # Score cible personnalise
 ```
 
 ### Deploiement securise

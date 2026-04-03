@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 title: "/work:work-flow-release"
 description: "Workflow complet pour preparer et publier une release."
 tags:
