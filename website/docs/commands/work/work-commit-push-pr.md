@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: "/work:work-commit-push-pr"
 description: "Workflow complet: commit + push + PR en une seule commande."
 tags:

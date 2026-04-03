@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 15
 title: "/work:work-team"
 description: "Lance une equipe d'agents coordonnes (Agent Teams) pour paralleliser le travail."
 tags:

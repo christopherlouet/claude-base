@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Glob`, `Grep`, `Bash` |
-| **Mots-cles** | `dev`, `debug` |
+| **Mots-cles** | `dev`, `debug`, `quick fix pour l'instant`, `essayons juste de changer x` |
 
 ## Description detaillee
 
@@ -232,6 +232,35 @@ function processPayment(amount: number, userId: string) {
 - Documenter chaque hypothese testee, meme celles infirmees
 - Le fix doit etre MINIMAL - pas de refactoring opportuniste
 
+## Iron Law : Pas de fix sans root cause
+
+IMPORTANT: Ne JAMAIS proposer un fix avant d'avoir identifie la root cause. Les fix de symptomes masquent le vrai probleme et creent de nouveaux bugs.
+
+### Red flags (rationalisations a eviter)
+
+| Phrase | Probleme |
+|--------|----------|
+| "Quick fix pour l'instant" | Evite la root cause |
+| "Essayons juste de changer X" | Guess-and-check, pas systematique |
+| "Je ne comprends pas bien mais ca devrait marcher" | Fix aveugle |
+| "C'est urgent, pas le temps d'investiguer" | L'investigation systematique est PLUS rapide |
+
+### Regle des 3 echecs
+
+Apres 3 tentatives de fix echouees : STOP. Ne pas tenter un 4eme fix.
+
+1. Remettre en question les hypotheses de base
+2. Elargir le perimetre de recherche
+3. Verifier si le probleme est architectural (pas juste un bug local)
+4. Envisager `git bisect` pour trouver le commit fautif
+
+### Metriques
+
+| Approche | Temps moyen | Taux de fix 1ere tentative |
+|----------|-------------|---------------------------|
+| Systematique (4 phases) | 15-30 min | ~95% |
+| Random fixing (guess-and-check) | 2-3h | ~40% |
+
 ## Declenchement automatique
 
 Ce skill est automatiquement active lorsque :
@@ -242,6 +271,7 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux dev..."_
 - _"Je veux debug..."_
+- _"Je veux quick fix pour l'instant..."_
 
 ## Contexte fork
 

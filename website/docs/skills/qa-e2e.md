@@ -159,17 +159,98 @@ npx playwright codegen http://localhost:3000
 npx playwright show-report
 ```
 
+## Fixtures personnalisees
+
+Les fixtures Playwright centralisent le setup et injectent les Page Objects dans les tests :
+
+```typescript
+// e2e/fixtures/index.ts
+import { test as base } from '@playwright/test';
+import { LoginPage } from '../pages/login.page';
+import { DashboardPage } from '../pages/dashboard.page';
+
+type Fixtures = {
+  loginPage: LoginPage;
+  dashboardPage: DashboardPage;
+};
+
+export const test = base.extend<Fixtures>({
+  loginPage: async ({ page }, use) => {
+    await use(new LoginPage(page));
+  },
+  dashboardPage: async ({ page }, use) => {
+    await use(new DashboardPage(page));
+  },
+});
+
+export { expect } from '@playwright/test';
+```
+
+```typescript
+// e2e/tests/auth/login.spec.ts (avec fixtures)
+import { test, expect } from '../../fixtures';
+
+test('should login with valid credentials', async ({ loginPage, page }) => {
+  await loginPage.goto();
+  await loginPage.login('user@example.com', 'password');
+  await expect(page).toHaveURL('/dashboard');
+});
+```
+
+## Fixture d'authentification reutilisable
+
+```typescript
+// e2e/fixtures/auth.ts
+import { test as base } from '@playwright/test';
+
+export const test = base.extend({
+  authenticatedPage: async ({ page }, use) => {
+    await page.goto('/login');
+    await page.getByLabel('Email').fill('user@example.com');
+    await page.getByLabel('Password').fill('password');
+    await page.getByRole('button', { name: 'Login' }).click();
+    await page.waitForURL('/dashboard');
+    await use(page);
+  },
+});
+```
+
+## Bonnes pratiques Playwright
+
+| Pratique | Description |
+|----------|-------------|
+| **Contexte frais** | Chaque test demarre dans un browser context isole (pas de state partage) |
+| **Auto-waiting** | Ne pas ajouter de `waitForTimeout` - Playwright attend automatiquement |
+| **Web-first assertions** | Utiliser `expect(locator)` qui retry automatiquement, pas `expect(await locator.textContent())` |
+| **Parallelisme** | `fullyParallel: true` dans la config pour execution parallele |
+| **Traces** | `trace: 'on-first-retry'` pour debugger les tests flaky |
+
+## Anti-patterns
+
+| Anti-pattern | Alternative |
+|-------------|-------------|
+| `page.waitForTimeout(3000)` | `await expect(locator).toBeVisible()` |
+| `page.$('.my-class')` | `page.getByRole('button', { name: '...' })` |
+| Selecteurs XPath | Selecteurs role/label/text |
+| Tests dependants entre eux | Chaque test est independant |
+| `page.evaluate()` pour assertions | Web-first assertions avec `expect` |
+| Page Objects avec logique metier | Page Objects = actions + locators uniquement |
+
 ## Regles
 
 IMPORTANT: Les tests E2E sont lents - les reserver aux parcours critiques (10% de la pyramide).
 
 IMPORTANT: Toujours utiliser des selecteurs accessibles (role, label).
 
+IMPORTANT: Utiliser les fixtures Playwright pour injecter les Page Objects - pas de `new Page()` dans chaque test.
+
 YOU MUST implementer le Page Object Model pour la maintenabilite.
 
 NEVER tester les details d'implementation - tester le comportement utilisateur.
 
 NEVER utiliser de selecteurs CSS fragiles (classes, IDs dynamiques).
+
+NEVER utiliser `waitForTimeout` - utiliser les web-first assertions qui retry automatiquement.
 
 ## Declenchement automatique
 

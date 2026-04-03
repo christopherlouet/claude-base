@@ -8,11 +8,11 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Regles
 
-> **24 regles** appliquees automatiquement par chemin de fichier
+> **25 regles** appliquees automatiquement par chemin de fichier
 
 <Stats items={[
-  { number: 24, label: 'Regles' },
-  { number: 123, label: 'Patterns' },
+  { number: 25, label: 'Regles' },
+  { number: 133, label: 'Patterns' },
 ]} />
 
 ## Qu'est-ce qu'une Rule ?
@@ -47,6 +47,7 @@ Les **rules** sont des conventions appliquees automatiquement :
 | [`ruby`](/docs/rules/ruby) | users.each do |user| puts user.name puts user.emai... | `**/*.rb`, `**/Gemfile`... |
 | [`rust`](/docs/rules/rust) | // 2. Constants const MAX_CONNECTIONS: usize = 100... | `**/*.rs`, `**/Cargo.toml` |
 | [`security`](/docs/rules/security) | 3 vecteurs d'attaque identifies (fev. 2026) lors d... | `**/auth/**`, `**/api/**`... |
+| [`service-worker`](/docs/rules/service-worker) | The SW must NEVER cache `request.mode === "navigat... | `**/sw.js`, `**/service-worker*`... |
 | [`tdd-enforcement`](/docs/rules/tdd-enforcement) | IMPORTANT: Quand l'utilisateur demande d'implement... | `**/*.ts`, `**/*.tsx`... |
 | [`testing`](/docs/rules/testing) | // Act - Executer l'action const result = function... | `**/*.test.ts`, `**/*.test.tsx`... |
 | [`typescript`](/docs/rules/typescript) | TypeScript Rules | `**/*.ts`, `**/*.tsx`... |
