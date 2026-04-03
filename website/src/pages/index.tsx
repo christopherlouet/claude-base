@@ -152,18 +152,18 @@ function HomepageCTA(): JSX.Element {
           <div className="col col--6 col--offset-3 text--center">
             <Heading as="h2">Pret a commencer ?</Heading>
             <p>
-              Installez claude-socle dans votre projet en quelques secondes.
+              Du debutant a l'expert en 5 niveaux progressifs, ou demarrez en 5 minutes.
             </p>
             <div className={styles.buttons}>
               <Link
                 className="button button--primary button--lg margin-right--md"
-                to="/docs/intro/quick-start">
-                Installation
+                to="/docs/guides/learning-path">
+                Parcours d'apprentissage
               </Link>
               <Link
                 className="button button--secondary button--lg"
-                to="/docs/commands">
-                Voir les Commands
+                to="/docs/intro/quick-start">
+                Quick Start (5 min)
               </Link>
             </div>
           </div>
