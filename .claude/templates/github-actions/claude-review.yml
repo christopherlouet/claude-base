@@ -1,6 +1,10 @@
 # Claude Code Action - Review automatique des PRs
 # Source: https://github.com/anthropics/claude-code-action
 #
+# Prerequis: une cle API Anthropic (pay-per-use). Le plan Max (OAuth) ne
+#   fonctionne pas en CI car il necessite une authentification interactive.
+#   Alternatives: Amazon Bedrock, Google Vertex AI, ou Microsoft Foundry.
+#
 # Setup:
 #   1. Ajouter ANTHROPIC_API_KEY dans Settings > Secrets > Actions
 #   2. Copier ce fichier dans .github/workflows/claude-review.yml

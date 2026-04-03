@@ -1,6 +1,7 @@
 # Claude Code Action - Review securite sur fichiers critiques
 # Se declenche uniquement quand des fichiers sensibles sont modifies
 #
+# Prerequis: cle API Anthropic (pay-per-use), pas compatible plan Max (OAuth).
 # Setup: meme que claude-review.yml (ANTHROPIC_API_KEY requis)
 
 name: Claude Security Review

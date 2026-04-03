@@ -130,6 +130,8 @@ Action officielle Anthropic pour integrer Claude dans les workflows GitHub. Revi
 | Review securite (fichiers critiques) | `pull_request: paths: src/auth/**, src/api/**` | `.claude/templates/github-actions/claude-security-review.yml` |
 | Mention @claude | `issue_comment: @claude` | Inclus dans `claude-review.yml` |
 
+Prerequis : une **cle API Anthropic** (pay-per-use) ou un cloud provider (Bedrock, Vertex, Foundry). Le plan Max (OAuth interactif) ne fonctionne pas en CI/CD.
+
 Setup rapide : `/install-github-app` dans Claude Code, ou ajouter `ANTHROPIC_API_KEY` dans les secrets GitHub puis copier le template dans `.github/workflows/`.
 
 Source : [anthropics/claude-code-action](https://github.com/anthropics/claude-code-action)
