@@ -339,6 +339,7 @@ const sidebars: SidebarsConfig = {
           label: 'Parcours',
           collapsed: false,
           items: [
+            'guides/claude-code-training',
             'guides/learning-path',
             'guides/prompting-guide',
           ],
