@@ -120,6 +120,20 @@ La compaction resume automatiquement le contexte quand la fenetre approche sa li
 
 Hooks associes : `PreCompact` (avant compaction, matcher `manual` ou `auto`) et `PostCompact` (apres). Voir `docs/reference/hooks-reference.md`.
 
+## Claude Code Action (GitHub)
+
+Action officielle Anthropic pour integrer Claude dans les workflows GitHub. Review PRs, repond aux @claude mentions, implemente des changements.
+
+| Scenario | Declencheur | Template |
+|----------|------------|----------|
+| Review automatique des PRs | `pull_request: opened, synchronize` | `.claude/templates/github-actions/claude-review.yml` |
+| Review securite (fichiers critiques) | `pull_request: paths: src/auth/**, src/api/**` | `.claude/templates/github-actions/claude-security-review.yml` |
+| Mention @claude | `issue_comment: @claude` | Inclus dans `claude-review.yml` |
+
+Setup rapide : `/install-github-app` dans Claude Code, ou ajouter `ANTHROPIC_API_KEY` dans les secrets GitHub puis copier le template dans `.github/workflows/`.
+
+Source : [anthropics/claude-code-action](https://github.com/anthropics/claude-code-action)
+
 ## Agent Teams (Experimental)
 
 Coordination parallele d'equipes d'agents. Activation: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` dans `.claude/settings.json`.
