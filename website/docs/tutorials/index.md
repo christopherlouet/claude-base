@@ -88,6 +88,19 @@ Suivez ces tutoriels dans l'ordre pour une progression optimale :
   />
 </TutorialGrid>
 
+## Projet fil rouge
+
+<TutorialGrid>
+  <TutorialCard
+    title="Projet complet : TaskFlow"
+    description="Construisez un mini-SaaS de A a Z en utilisant tout le workflow du socle : Specify, Plan, TDD, Audit, CI/CD, Deploy."
+    duration="3-4h"
+    difficulty="advanced"
+    href="/docs/tutorials/projet-complet"
+    prerequisites={['Tutoriels 01-06', 'Node.js', 'React']}
+  />
+</TutorialGrid>
+
 ## Prérequis généraux
 
 Avant de commencer, assurez-vous d'avoir :
