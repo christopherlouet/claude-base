@@ -65,8 +65,11 @@ Vous tapez une commande
 | **Presse** (5 min) | [Quick Start](/docs/intro/quick-start) |
 | **Developpeur web** | [Guide Web](/docs/guides/web-guide) |
 | **Developpeur mobile** | [Guide Mobile](/docs/guides/mobile-guide) |
-| **Backend/API** | [Guide API](/docs/guides/api-guide) |
+| **Backend Node.js** | [Guide API](/docs/guides/api-guide) |
+| **Backend Python** | [Guide Python](/docs/guides/python-guide) |
+| **Backend Go** | [Guide Go](/docs/guides/go-guide) |
 | **DevOps/Infra** | [Guide Infra](/docs/guides/infra-guide) |
+| **Tech lead / equipe** | [Guide Equipe](/docs/guides/team-guide) |
 
 ## Prochaine etape
 

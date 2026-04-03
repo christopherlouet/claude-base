@@ -2254,3 +2254,16 @@ Revisitez votre `CLAUDE.md` apres chaque sprint : ajoutez les conventions emerge
 8. Etre specifique dans les prompts (anti-pattern : "fix this bug")
 9. Adapter le modele a la tache (Haiku pour le routinier, Sonnet pour le complexe)
 10. Iterer en boucle courte plutot qu'en session geante (max 10 fichiers par session)
+
+---
+
+## Prochaines etapes
+
+Vous avez termine le parcours d'apprentissage. Passez a la pratique :
+
+| Etape suivante | Description |
+|----------------|-------------|
+| [Tutoriels hands-on](/docs/tutorials) | 10 tutoriels progressifs pour pratiquer (15 min a 4h) |
+| [Projet fil rouge TaskFlow](/docs/tutorials/projet-complet) | Construire un mini-SaaS de A a Z avec tout le workflow |
+| [Guides par technologie](/docs/guides) | Approfondir votre stack (Web, Mobile, API, Python, Go, Infra) |
+| [Etendre le socle](/docs/guides/extending-guide) | Creer vos propres rules, skills et agents |

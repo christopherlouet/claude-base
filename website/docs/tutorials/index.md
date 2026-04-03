@@ -86,6 +86,22 @@ Suivez ces tutoriels dans l'ordre pour une progression optimale :
     href="/docs/tutorials/opnsense-firewall"
     prerequisites={['OPNsense', 'Terraform']}
   />
+  <TutorialCard
+    title="API Python FastAPI"
+    description="Developpez une API REST FastAPI avec TDD pytest, validation Pydantic et documentation OpenAPI."
+    duration="45 min"
+    difficulty="intermediate"
+    href="/docs/tutorials/api-python"
+    prerequisites={['Python 3.11+', 'uv ou pip']}
+  />
+  <TutorialCard
+    title="API Go"
+    description="Developpez une API REST Go avec Chi, TDD table-driven et documentation OpenAPI."
+    duration="45 min"
+    difficulty="intermediate"
+    href="/docs/tutorials/api-go"
+    prerequisites={['Go 1.22+']}
+  />
 </TutorialGrid>
 
 ## Projet fil rouge
