@@ -43,7 +43,12 @@
 | Guide Mobile | `docs/guides/MOBILE-GUIDE.md` |
 | Guide API | `docs/guides/API-GUIDE.md` |
 | Guide Data | `docs/guides/DATA-GUIDE.md` |
+| Guide Infra & Ops | `docs/guides/INFRA-GUIDE.md` |
+| Guide Business | `docs/guides/BIZ-GUIDE.md` |
+| Guide Growth | `docs/guides/GROWTH-GUIDE.md` |
 | Guide Prompting | `docs/guides/PROMPTING-GUIDE.md` |
+| Guide Troubleshooting | `docs/guides/TROUBLESHOOTING-GUIDE.md` |
+| Guide Extension du socle | `docs/guides/EXTENDING-GUIDE.md` |
 | Parcours Novice a Pro | `website/docs/guides/learning-path.md` |
 
 Setup: `./scripts/new-project.sh --simple .`

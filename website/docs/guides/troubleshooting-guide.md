@@ -1,7 +1,7 @@
 ---
-sidebar_position: 21
-title: "Guide Troubleshooting"
-description: "Diagnostic et resolution des problemes courants"
+sidebar_position: 18
+title: "Guide de Depannage"
+description: " Resoudre les problemes courants avec Claude Code et le socle claude-socle"
 tags:
   - "guide"
 ---
@@ -10,7 +10,7 @@ tags:
 
 # Guide de Depannage
 
-> Resoudre les problemes courants avec Claude Code et le socle claude-socle
+&gt; Resoudre les problemes courants avec Claude Code et le socle claude-socle
 
 ## Sections
 
@@ -407,7 +407,7 @@ git checkout -b feature/nouvelle-tentative
 | Session longue, meme sujet | `/compact` | Preserve les decisions et conventions apprises |
 | Entre deux phases du workflow | `/compact` | Garde le contexte du plan et de l'exploration |
 | Changement de feature sans rapport | `/clear` | Evite que l'ancien contexte pollue le nouveau |
-| Context window > 80% utilisee | `/compact` | Preventif avant saturation |
+| Context window &gt; 80% utilisee | `/compact` | Preventif avant saturation |
 | Context corrompu ou incohérent | `/clear` | Repartir sur une base saine |
 
 Regle : preferer `/compact` a `/clear`. La compaction preserve l'essentiel (decisions, conventions, structure du projet) alors que `/clear` efface tout et oblige a reexplorer.
@@ -476,7 +476,7 @@ Fichiers et repertoires a ne jamais lire entierement :
 
 ## Ressources
 
-- [Hooks configures](../reference/hooks-reference.md) - Liste complete des hooks et leurs variables
-- [Commandes disponibles](../reference/commands.md) - Catalogue des commandes `/work:`, `/dev:`, `/qa:`, `/ops:`
-- [Fonctionnalites avancees](../reference/advanced-features.md) - Workflow Explore → Specify → Plan → TDD → Audit → Commit
-- [Bonnes pratiques](../reference/best-practices.md) - Verification, modeles, effort levels
+- [Hooks configures](/docs/reference/hooks-reference) - Liste complete des hooks et leurs variables
+- [Commandes disponibles](/docs/reference/commands) - Catalogue des commandes `/work:`, `/dev:`, `/qa:`, `/ops:`
+- [Fonctionnalites avancees](/docs/reference/advanced-features) - Workflow Explore → Specify → Plan → TDD → Audit → Commit
+- [Bonnes pratiques](/docs/reference/best-practices) - Verification, modeles, effort levels
