@@ -263,6 +263,8 @@ const sidebars: SidebarsConfig = {
         'tutorials/refactoring-legacy',
         'tutorials/proxmox-infra',
         'tutorials/opnsense-firewall',
+        'tutorials/api-python',
+        'tutorials/api-go',
         {
           type: 'category',
           label: 'Projet fil rouge',
@@ -385,6 +387,7 @@ const sidebars: SidebarsConfig = {
             'guides/startup',
             'guides/biz-guide',
             'guides/growth-guide',
+            'guides/team-guide',
           ],
         },
         {

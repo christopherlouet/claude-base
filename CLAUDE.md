@@ -52,6 +52,7 @@
 | Guide Observabilite | `docs/guides/OBSERVABILITY-GUIDE.md` |
 | Guide Business | `docs/guides/BIZ-GUIDE.md` |
 | Guide Growth | `docs/guides/GROWTH-GUIDE.md` |
+| Guide Equipe | `docs/guides/TEAM-GUIDE.md` |
 | Guide Prompting | `docs/guides/PROMPTING-GUIDE.md` |
 | Guide Troubleshooting | `docs/guides/TROUBLESHOOTING-GUIDE.md` |
 | Guide Extension du socle | `docs/guides/EXTENDING-GUIDE.md` |
