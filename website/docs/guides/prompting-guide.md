@@ -1,5 +1,5 @@
 ---
-sidebar_position: 17
+sidebar_position: 21
 title: "Guide de Prompting Avance"
 description: " Techniques de prompting recommandees par Boris Cherny (createur de Claude Code) pour maximiser la qualite des resultats."
 tags:
