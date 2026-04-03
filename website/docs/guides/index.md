@@ -44,6 +44,7 @@ description: Guides thematiques par type de projet et niveau
 | [Startup](/docs/guides/startup) | Entrepreneurs | `biz-*`, `growth-*`, `legal-*` |
 | [Business & Strategie](/docs/guides/biz-guide) | Product managers | `biz-model`, `biz-mvp`, `biz-pricing` |
 | [Growth & Marketing](/docs/guides/growth-guide) | Growth hackers | `growth-seo`, `growth-cro`, `growth-analytics` |
+| [Setup Equipe](/docs/guides/team-guide) | Tech leads | CLAUDE.md partage, onboarding, conventions |
 
 ## Guides avances
 
