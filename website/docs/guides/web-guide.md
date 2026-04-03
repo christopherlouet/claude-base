@@ -1,5 +1,5 @@
 ---
-sidebar_position: 19
+sidebar_position: 25
 title: "Guide Developpement Web"
 description: " Workflow complet pour applications web avec React/Next.js/Vue"
 tags:

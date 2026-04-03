@@ -22,9 +22,20 @@ description: Guides thematiques par type de projet et niveau
 |-------|----------|----------------|
 | [Developpement Web](/docs/guides/web-guide) | Developpeurs React/Next.js/Vue | `dev-component`, `dev-hook`, `dev-react-perf` |
 | [Developpement Mobile](/docs/guides/mobile-guide) | Developpeurs Flutter | `dev-flutter`, `dev-supabase`, `qa-mobile` |
-| [Developpement API](/docs/guides/api-guide) | Backend developers | `dev-api`, `dev-graphql`, `doc-api-spec` |
+| [Developpement API](/docs/guides/api-guide) | Backend Node.js | `dev-api`, `dev-graphql`, `doc-api-spec` |
+| [Backend Python](/docs/guides/python-guide) | Backend Python | `dev-api`, `dev-tdd`, FastAPI/Django |
+| [Backend Go](/docs/guides/go-guide) | Backend Go | `dev-api`, `dev-tdd`, Chi/gRPC |
 | [Data Engineering](/docs/guides/data-guide) | Data engineers | `data-pipeline`, `data-modeling`, `data-analytics` |
 | [Infrastructure & Ops](/docs/guides/infra-guide) | DevOps / SRE | `ops-docker`, `ops-ci`, `ops-k8s`, `ops-monitoring` |
+
+## Transversal (tous profils)
+
+| Guide | Description | Commandes cles |
+|-------|-------------|----------------|
+| [Authentification](/docs/guides/auth-guide) | JWT, OAuth2, RBAC, solutions managees | `qa-security`, `dev-api` |
+| [Strategie de tests](/docs/guides/testing-guide) | Pyramide des tests, patterns, CI | `dev-tdd`, `dev-test`, `qa-e2e`, `qa-coverage` |
+| [Base de donnees](/docs/guides/database-guide) | Schema design, migrations, optimisation | `ops-database`, `dev-prisma`, `data-modeling` |
+| [Observabilite](/docs/guides/observability-guide) | Logs, metriques, traces, alerting | `ops-monitoring`, `ops-observability-stack` |
 
 ## Par role
 
