@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
 title: "Guide Business & Strategie"
 description: " Workflow complet de l'idee au lancement produit"
 tags:

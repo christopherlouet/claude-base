@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 15
 title: "Guide d'Extension du Socle"
 description: " Comment personnaliser et etendre le socle claude-socle pour vos propres projets."
 tags:
