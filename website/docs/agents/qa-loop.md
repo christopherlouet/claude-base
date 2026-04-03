@@ -1,5 +1,5 @@
 ---
-sidebar_position: 54
+sidebar_position: 55
 title: "qa-loop"
 description: "Boucle autonome audit → fix → test → re-audit avec criteres d'arret."
 tags:
@@ -59,7 +59,7 @@ Boucle autonome audit → fix → test → re-audit avec criteres d'arret.
 
 | Parametre | Defaut | Description |
 |-----------|--------|-------------|
-| Score cible | 85/100 | Score minimum pour arreter la boucle |
+| Score cible | 90/100 | Score minimum pour arreter la boucle |
 | Max iterations | 5 | Nombre maximum de cycles audit-fix |
 | Domaines | tous | securite, rgpd, a11y, perf, qualite |
 | Severite fix | P0+P1 | Ne corriger que les problemes critiques et hauts |
@@ -104,7 +104,7 @@ Evaluer si la boucle doit s'arreter :
 
 | Critere | Condition d'arret |
 |---------|-------------------|
-| Score global | >= score cible (defaut 85) |
+| Score global | >= score cible (defaut 90) |
 | Problemes P0 | 0 restant |
 | Problemes P1 | 0 restant |
 | Max iterations | Atteint |

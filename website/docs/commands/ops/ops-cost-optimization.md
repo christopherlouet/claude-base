@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: "/ops:ops-cost-optimization"
 description: "Analyser et optimiser les couts d'infrastructure cloud."
 tags:

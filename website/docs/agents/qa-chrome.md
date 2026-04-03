@@ -1,5 +1,5 @@
 ---
-sidebar_position: 50
+sidebar_position: 51
 title: "qa-chrome"
 description: "Audit visuel et tests navigateur. Prerequis : `claude --chrome` + extension Chrome."
 tags:

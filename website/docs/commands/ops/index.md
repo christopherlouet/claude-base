@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **31 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
+Ce domaine contient **32 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
 
 ## Liste des commandes
 
@@ -21,6 +21,7 @@ Ce domaine contient **31 commandes** pour operations (ci/cd, docker, monitoring,
 |----------|-------------|
 | [`/ops:ops-backup`](/docs/commands/ops/ops-backup) | Strategie de backup et restore pour les donnees critiques du projet. |
 | [`/ops:ops-ci`](/docs/commands/ops/ops-ci) | Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.). |
+| [`/ops:ops-cost`](/docs/commands/ops/ops-cost) | Suivi de la consommation de tokens et des couts Claude Code. |
 | [`/ops:ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization) | Analyser et optimiser les couts d'infrastructure cloud. |
 | [`/ops:ops-database`](/docs/commands/ops/ops-database) | Design de schema, migrations et optimisation de base de donnees. |
 | [`/ops:ops-deploy`](/docs/commands/ops/ops-deploy) | Deploiement securise avec checklist pre-deploy obligatoire. |
@@ -65,6 +66,12 @@ Ce domaine contient **31 commandes** pour operations (ci/cd, docker, monitoring,
     description="Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.)."
     domain="ops"
     href="/docs/commands/ops/ops-ci"
+  />
+  <CommandCard
+    name="ops-cost"
+    description="Suivi de la consommation de tokens et des couts Claude Code."
+    domain="ops"
+    href="/docs/commands/ops/ops-cost"
   />
   <CommandCard
     name="ops-cost-optimization"

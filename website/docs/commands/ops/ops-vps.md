@@ -1,5 +1,5 @@
 ---
-sidebar_position: 32
+sidebar_position: 33
 title: "/ops:ops-vps"
 description: "Deploiement sur serveur VPS (OVH, Hetzner, DigitalOcean, Scaleway, etc.)."
 tags:
