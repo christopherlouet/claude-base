@@ -1,13 +1,3 @@
----
-sidebar_position: 21
-title: "Guide Troubleshooting"
-description: "Diagnostic et resolution des problemes courants"
-tags:
-  - "guide"
----
-
-<!-- Auto-generated from docs/ - DO NOT EDIT -->
-
 # Guide de Depannage
 
 > Resoudre les problemes courants avec Claude Code et le socle claude-socle
