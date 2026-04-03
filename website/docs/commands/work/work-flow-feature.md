@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 title: "/work:work-flow-feature"
 description: "Workflow complet pour developper une nouvelle fonctionnalite, de l'exploration au merge."
 tags:
@@ -23,7 +23,7 @@ Workflow complet pour developper une nouvelle fonctionnalite, de l'exploration a
 ## Objectif
 
 Executer le cycle complet de developpement d'une feature :
-branche, exploration, planification, TDD, review, commit, PR.
+branche, exploration, planification, TDD, audit, commit, PR.
 
 ## Workflow
 
@@ -31,7 +31,7 @@ branche, exploration, planification, TDD, review, commit, PR.
 - **EXPLORE** : Analyser le code existant, identifier patterns et dependances
 - **PLAN** : Definir fichiers a creer/modifier, tests a ecrire, risques
 - **TDD** : Cycle Red-Green-Refactor, tests avant le code, couverture 80%+
-- **REVIEW** : Auto-review (code propre, types stricts, pas de console.log, lint OK)
+- **AUDIT** : Audit adaptatif + correction en boucle jusqu'au score 90 (critique → `/qa:qa-loop "score 90"`, standard → `/qa:qa-loop "score 90"`, UI → `/qa:qa-design` + `/qa:wcag-audit`)
 - **COMMIT** : Format `feat(scope): description`, changements atomiques
 - **PR** : Push + `gh pr create` avec description, tests, checklist
 
@@ -48,6 +48,7 @@ branche, exploration, planification, TDD, review, commit, PR.
 | `/work:work-explore` | Exploration |
 | `/work:work-plan` | Planification |
 | `/dev:dev-tdd` | Developpement TDD |
+| `/qa:qa-loop` | Audit + fix en boucle (score 90) |
 | `/qa:qa-review` | Auto-review |
 | `/work:work-commit` | Commit |
 | `/work:work-pr` | Pull Request |

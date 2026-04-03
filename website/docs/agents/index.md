@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Catalogue des Agents
 
-> **59 sub-agents** avec contexte isole pour des taches autonomes
+> **62 sub-agents** avec contexte isole pour des taches autonomes
 
 <Stats items={[
-  { number: 21, label: 'Agents Haiku' },
-  { number: 38, label: 'Agents Sonnet' },
-  { number: 59, label: 'Total' },
+  { number: 22, label: 'Agents Haiku' },
+  { number: 40, label: 'Agents Sonnet' },
+  { number: 62, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Agent ?
@@ -29,7 +29,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole :
 
 ## Agents par modele
 
-### Haiku (21 agents)
+### Haiku (22 agents)
 
 Agents rapides et economiques pour les taches simples.
 
@@ -46,6 +46,7 @@ Agents rapides et economiques pour les taches simples.
 | [`growth-localization`](/docs/agents/growth-localization) | Strategie de localisation et expansion internationale. | Read, Grep, Glob |
 | [`legal-privacy-policy`](/docs/agents/legal-privacy-policy) | Creation de politique de confidentialite conforme RGPD. | Read, Grep, Glob... |
 | [`legal-terms-of-service`](/docs/agents/legal-terms-of-service) | Creation de Conditions Generales d'Utilisation conformes. | Read, Grep, Glob... |
+| [`ops-cost`](/docs/agents/ops-cost) | Analyse de la consommation de tokens et recommandations d'op... | Read, Grep, Glob... |
 | [`ops-deps`](/docs/agents/ops-deps) | Audit, analyse et recommandations pour les dependances du pr... | Read, Grep, Glob... |
 | [`ops-health`](/docs/agents/ops-health) | Health check rapide pour evaluer l'etat general d'un projet. | Read, Grep, Glob... |
 | [`ops-serverless`](/docs/agents/ops-serverless) | Deploiement d'applications serverless. | Read, Grep, Glob... |
@@ -57,7 +58,7 @@ Agents rapides et economiques pour les taches simples.
 | [`wcag-audit`](/docs/agents/wcag-audit) | Audit d'accessibilite selon WCAG 2.1/2.2 niveau AA, inspire ... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | Mode EXPLORATION : analyse du codebase sans modifier de fich... | Read, Grep, Glob |
 
-### Sonnet (38 agents)
+### Sonnet (40 agents)
 
 Agents pour les taches complexes necessitant une analyse approfondie.
 
@@ -101,6 +102,8 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`qa-loop`](/docs/agents/qa-loop) | Boucle autonome audit → fix → test → re-audit avec criteres ... | Read, Grep, Glob... |
 | [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
 | [`qa-security`](/docs/agents/qa-security) | Audit de securite OWASP Top 10. Le skill `qa-security` fourn... | Read, Grep, Glob... |
+| [`work-batch`](/docs/agents/work-batch) | Execution autonome de stories depuis un PRD. Le skill `work-... | Read, Grep, Glob... |
+| [`work-quick`](/docs/agents/work-quick) | Workflow rapide pour changements triviaux. Le skill `work-qu... | Read, Grep, Glob... |
 
 
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 12
+sidebar_position: 14
 title: "/work:work-specify"
 description: "Cree une specification fonctionnelle structuree. Mode SPECIFICATION uniquement."
 tags:

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 25
 title: "/ops:ops-observability-stack"
 description: "Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager)."
 tags:

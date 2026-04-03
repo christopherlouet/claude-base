@@ -13,12 +13,13 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **12 commandes** pour workflow principal (explore, plan, commit, pr).
+Ce domaine contient **14 commandes** pour workflow principal (explore, plan, commit, pr).
 
 ## Liste des commandes
 
 | Commande | Description |
 |----------|-------------|
+| [`/work:work-batch`](/docs/commands/work/work-batch) | Execution autonome et sequentielle de user stories depuis un fichier PRD (JSON ou Markdown). |
 | [`/work:work-clarify`](/docs/commands/work/work-clarify) | Pose des questions ciblees pour reduire l'ambiguite dans une specification. |
 | [`/work:work-commit`](/docs/commands/work/work-commit) | Prepare et effectue un commit propre suivant les conventions. |
 | [`/work:work-commit-push-pr`](/docs/commands/work/work-commit-push-pr) | Workflow complet: commit + push + PR en une seule commande. |
@@ -29,12 +30,19 @@ Ce domaine contient **12 commandes** pour workflow principal (explore, plan, com
 | [`/work:work-flow-release`](/docs/commands/work/work-flow-release) | Workflow complet pour preparer et publier une release. |
 | [`/work:work-plan`](/docs/commands/work/work-plan) | Concois un plan d'implementation detaille. Mode PLANIFICATION uniquement. |
 | [`/work:work-pr`](/docs/commands/work/work-pr) | Cree une Pull Request complete et bien documentee. |
+| [`/work:work-quick`](/docs/commands/work/work-quick) | Workflow rapide pour changements triviaux (1-3 fichiers, < 50 lignes, zero risque). |
 | [`/work:work-specify`](/docs/commands/work/work-specify) | Cree une specification fonctionnelle structuree. Mode SPECIFICATION uniquement. |
 | [`/work:work-team`](/docs/commands/work/work-team) | Lance une equipe d'agents coordonnes (Agent Teams) pour paralleliser le travail. |
 
 ## Commandes en detail
 
 <CommandGrid>
+  <CommandCard
+    name="work-batch"
+    description="Execution autonome et sequentielle de user stories depuis un fichier PRD (JSON ou Markdown)."
+    domain="work"
+    href="/docs/commands/work/work-batch"
+  />
   <CommandCard
     name="work-clarify"
     description="Pose des questions ciblees pour reduire l'ambiguite dans une specification."
@@ -94,6 +102,12 @@ Ce domaine contient **12 commandes** pour workflow principal (explore, plan, com
     description="Cree une Pull Request complete et bien documentee."
     domain="work"
     href="/docs/commands/work/work-pr"
+  />
+  <CommandCard
+    name="work-quick"
+    description="Workflow rapide pour changements triviaux (1-3 fichiers, < 50 lignes, zero risque)."
+    domain="work"
+    href="/docs/commands/work/work-quick"
   />
   <CommandCard
     name="work-specify"

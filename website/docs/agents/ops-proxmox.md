@@ -1,5 +1,5 @@
 ---
-sidebar_position: 46
+sidebar_position: 47
 title: "ops-proxmox"
 description: "Gestion d'infrastructure Proxmox VE avec Terraform. Le skill `ops-proxmox` fournit les patterns detailles."
 tags:

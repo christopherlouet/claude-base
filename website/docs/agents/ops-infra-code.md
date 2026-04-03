@@ -1,5 +1,5 @@
 ---
-sidebar_position: 42
+sidebar_position: 43
 title: "ops-infra-code"
 description: "Infrastructure as Code avec Terraform/OpenTofu. Le skill `ops-infra-code` fournit les patterns detailles."
 tags:

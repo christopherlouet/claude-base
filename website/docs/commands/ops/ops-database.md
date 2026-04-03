@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: "/ops:ops-database"
 description: "Design de schema, migrations et optimisation de base de donnees."
 tags:

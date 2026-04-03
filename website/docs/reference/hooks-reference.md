@@ -35,6 +35,9 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | `InstructionsLoaded` | command | Quand CLAUDE.md et rules sont charges |
 | `Elicitation` | command | Quand un serveur MCP demande un input structure |
 | `ElicitationResult` | command | Quand l'utilisateur repond a une Elicitation MCP |
+| `PermissionDenied` | command | Apres un refus de permission par l'auto mode classifier. Retourner `\{retry: true\}` pour retenter |
+| `CwdChanged` | command | Quand le repertoire de travail change |
+| `FileChanged` | command | Quand un fichier est modifie |
 
 ## Types de hooks
 
@@ -51,6 +54,11 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | `async` | `true` pour executer en arriere-plan sans bloquer (CLI 2.1.70+) |
 | `onFailure` | `"block"` pour bloquer, `"ignore"` pour continuer |
 | `timeout` | Timeout en millisecondes |
+| `if` | Condition d'activation utilisant la syntaxe permission rules (CLI 2.1.90+) |
+
+### Permission `defer` (PreToolUse)
+
+Les hooks PreToolUse peuvent retourner `"defer"` comme decision de permission. La session headless se met en pause au tool call et peut reprendre avec `-p --resume` pour re-evaluer le hook. Utile pour les workflows CI/CD necessitant une approbation humaine.
 
 ## Hooks configurés
 
@@ -63,6 +71,7 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | **Tests pre-commit** | PreToolUse (Bash git commit) | Exécute les tests avant un commit. Detecte et repare Husky si necessaire |
 | **CI locale pre-push** | PreToolUse (Bash git push) | Lint + type-check + tests avant push. Desactivable avec `SKIP_PRE_PUSH_CI=1` |
 | **Destructive ops guard** | PreToolUse (Bash) | Bloque les DELETE/DROP/TRUNCATE/rm destructifs sans confirmation |
+| **Command validator** | PreToolUse (Bash) | Valide les commandes contre 8 categories de risque (fork bombs, pipe-to-shell, disk destruction, privilege escalation, etc.). Desactivable avec `SKIP_COMMAND_VALIDATOR=1` |
 | **RTK token optimizer** | PreToolUse (Bash) | Reecrit les commandes via RTK pour reduire les tokens (-60-90%). Desactive par defaut, activer avec `ENABLE_RTK=1` |
 | **Auto-format TS/JS** | PostToolUse (Edit/Write) | Prettier sur fichiers TS/JS |
 | **Auto-format Python** | PostToolUse (Edit/Write) | Ruff/Black sur fichiers .py |
@@ -100,6 +109,10 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 |----------|-------|
 | `ALLOW_MAIN_EDIT=1` | Désactiver la protection de branche main |
 | `SKIP_PRE_COMMIT_TESTS=1` | Désactiver les tests avant commit |
+| `SKIP_COMMAND_VALIDATOR=1` | Désactiver la validation de sécurité des commandes |
+| `SKIP_PRE_PUSH_CI=1` | Désactiver la vérification CI locale avant push |
+| `SKIP_DESTRUCTIVE_CHECK=1` | Désactiver la protection contre les opérations destructives |
+| `ENABLE_RTK=1` | Activer l'optimisation de tokens RTK |
 
 ## Fichiers de logs
 

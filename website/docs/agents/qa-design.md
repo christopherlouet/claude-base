@@ -1,5 +1,5 @@
 ---
-sidebar_position: 52
+sidebar_position: 53
 title: "qa-design"
 description: "Audit de design UI/UX avec 100+ regles de verification."
 tags:

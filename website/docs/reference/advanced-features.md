@@ -130,6 +130,22 @@ La compaction resume automatiquement le contexte quand la fenetre approche sa li
 
 Hooks associes : `PreCompact` (avant compaction, matcher `manual` ou `auto`) et `PostCompact` (apres). Voir `docs/reference/hooks-reference.md`.
 
+## Claude Code Action (GitHub)
+
+Action officielle Anthropic pour integrer Claude dans les workflows GitHub. Review PRs, repond aux @claude mentions, implemente des changements.
+
+| Scenario | Declencheur | Template |
+|----------|------------|----------|
+| Review automatique des PRs | `pull_request: opened, synchronize` | `.claude/templates/github-actions/claude-review.yml` |
+| Review securite (fichiers critiques) | `pull_request: paths: src/auth/**, src/api/**` | `.claude/templates/github-actions/claude-security-review.yml` |
+| Mention @claude | `issue_comment: @claude` | Inclus dans `claude-review.yml` |
+
+Prerequis : une **cle API Anthropic** (pay-per-use) ou un cloud provider (Bedrock, Vertex, Foundry). Le plan Max (OAuth interactif) ne fonctionne pas en CI/CD.
+
+Setup rapide : `/install-github-app` dans Claude Code, ou ajouter `ANTHROPIC_API_KEY` dans les secrets GitHub puis copier le template dans `.github/workflows/`.
+
+Source : [anthropics/claude-code-action](https://github.com/anthropics/claude-code-action)
+
 ## Agent Teams (Experimental)
 
 Coordination parallele d'equipes d'agents. Activation: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` dans `.claude/settings.json`.
@@ -155,11 +171,20 @@ Serveurs MCP dans `.mcp.json` (tous desactives par defaut):
 
 Pour activer: `"enabled": true` dans `.mcp.json`. Variables d'environnement dans `.env`.
 
-### MCP Channels (Research Preview)
+### MCP Channels
 
-Les serveurs MCP peuvent pousser des messages dans une session via `--channels`. Utile pour recevoir des notifications en temps reel (ex: alerte Sentry pendant le dev, message Slack d'un collegue, mise a jour Linear).
+Les serveurs MCP peuvent pousser des messages dans une session via `--channels`. Disponible via des plugins channel (Telegram, Discord, iMessage) qui s'installent comme MCP servers.
 
-Serveurs compatibles : `slack`, `sentry`, `linear`. Activation : `claude --channels` au demarrage.
+| Channel | Plugin | Usage |
+|---------|--------|-------|
+| Telegram | `telegram-channel` | Messages et commandes depuis Telegram |
+| Discord | `discord-channel` | Messages depuis un serveur Discord |
+| iMessage | `imessage-channel` | Messages depuis iMessage (macOS) |
+| Slack | `slack` (MCP natif) | Notifications et messages Slack |
+
+Activation : `claude --channels` au demarrage. Les channels ont acces au filesystem, MCP et git de la session locale.
+
+Permission relay : les channels declarant la capability `permission` peuvent relayer les demandes d'approbation vers votre telephone.
 
 ### MCP Elicitation (CLI 2.1.76+)
 
@@ -221,7 +246,62 @@ Syntaxe `@path/to/file` pour importer des fichiers. Chemins relatifs et absolus 
 
 ## Plugins
 
-Distribuer skills, agents, hooks et MCP servers via plugins (`--plugin-dir ./mon-plugin`). Skills namespaces: `/mon-plugin:skill-name`.
+Ecosysteme d'extensions communautaires pour Claude Code. Un plugin peut contenir des skills, agents, hooks et MCP servers.
+
+| Action | Commande |
+|--------|----------|
+| Charger un plugin local | `claude --plugin-dir ./mon-plugin` |
+| Skills namespaces | `/mon-plugin:skill-name` |
+| Executables plugin | Fichiers dans `bin/` invocables comme commandes Bash |
+
+Les plugins peuvent etre distribues via un repertoire Anthropic-managed. Setting `disableSkillShellExecution` pour desactiver l'execution shell dans les plugins non verifies.
+
+## Scheduled Tasks (Cloud)
+
+Jobs recurrents executes sur l'infrastructure cloud Anthropic. Utile pour les taches operationnelles continues sans session locale active.
+
+| Cas d'usage | Description |
+|-------------|-------------|
+| PR reviews | Revue automatique des pull requests |
+| CI monitoring | Surveillance continue du pipeline CI |
+| Dependency audits | Audit periodique des dependances |
+| Doc syncing | Synchronisation de documentation |
+
+Configuration via `/tasks` ou l'API. Necessite un plan Pro/Max/Team/Enterprise.
+
+## Computer Use
+
+Integration directe dans Claude Code (Pro/Max). Permet d'ouvrir des fichiers, lancer des outils de dev, cliquer et naviguer dans l'interface sans setup additionnel.
+
+Utile pour: tests visuels, interactions UI, workflows necessitant un navigateur ou un emulateur.
+
+## `/loop` Command
+
+Executer un prompt ou une commande a intervalles reguliers:
+
+```bash
+/loop 5m "run tests and report failures"   # toutes les 5 minutes
+/loop "check CI status"                     # defaut: toutes les 10 minutes
+```
+
+## `/powerup` Command
+
+Lessons interactives et demos animees pour decouvrir les fonctionnalites de Claude Code. Utile pour l'onboarding de nouveaux utilisateurs.
+
+## Variables d'Environnement Avancees
+
+| Variable | Description |
+|----------|-------------|
+| `CLAUDE_CODE_NO_FLICKER=1` | Rendu alt-screen sans scintillement (virtualized scrollback) |
+| `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` | Supprime les credentials des variables d'env des subprocesses |
+| `MCP_CONNECTION_NONBLOCKING=true` | Skip l'attente de connexion MCP en mode `-p` (headless/CI) |
+
+## Settings Avances
+
+| Setting | Description |
+|---------|-------------|
+| `disableSkillShellExecution` | Desactive l'execution shell inline dans les skills, commandes et plugins |
+| `managed-settings.d/` | Repertoire drop-in pour policy fragments (Team/Enterprise) |
 
 ## LSP (Language Server Protocol)
 

@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **42 skills** auto-declenches par mots-cles
+> **44 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 42, label: 'Skills Fork' },
+  { number: 44, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 42, label: 'Total' },
+  { number: 44, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?
@@ -29,7 +29,7 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (42 skills)
+### Fork (44 skills)
 
 Skills avec contexte isole.
 
@@ -39,7 +39,7 @@ Skills avec contexte isole.
 | [`api-mocking`](/docs/skills/api-mocking) | Configuration de mocks API pour les tests. Declenc... | api, mocking, mock api |
 | [`data-pipeline`](/docs/skills/data-pipeline) | Conception de pipelines ETL/ELT. Declencher quand ... | data, pipeline, duplicate ids |
 | [`dev-api`](/docs/skills/dev-api) | Développer et documenter une API REST ou GraphQL. ... | dev, api, success |
-| [`dev-debug`](/docs/skills/dev-debug) | Deboguer et resoudre des problemes. Utiliser quand... | dev, debug |
+| [`dev-debug`](/docs/skills/dev-debug) | Deboguer et resoudre des problemes. Utiliser quand... | dev, debug, quick fix pour l'instant |
 | [`dev-document`](/docs/skills/dev-document) | Generation de documents (PDF, DOCX, XLSX, PPTX). D... | dev, document |
 | [`dev-error-handling`](/docs/skills/dev-error-handling) | Strategie de gestion des erreurs. Declencher quand... | dev, error, handling |
 | [`dev-flutter`](/docs/skills/dev-flutter) | Developpement Flutter avec Clean Architecture et B... | dev, flutter |
@@ -72,10 +72,12 @@ Skills avec contexte isole.
 | [`qa-tech-debt`](/docs/skills/qa-tech-debt) | Gestion et priorisation de la dette technique. Dec... | tech, debt, dette technique |
 | [`session-handoff`](/docs/skills/session-handoff) | Transfert de contexte entre sessions IA. Declenche... | session, handoff |
 | [`state-management`](/docs/skills/state-management) | Patterns et implementation de state management. De... | state, management, state management |
+| [`work-batch`](/docs/skills/work-batch) | Execution sequentielle de user stories depuis un f... | work, batch, project |
 | [`work-commit`](/docs/skills/work-commit) | Génère des messages de commit clairs suivant Conve... | work, commit, quoi |
 | [`work-explore`](/docs/skills/work-explore) | Explorer et comprendre un codebase existant. Utili... | work, explore |
 | [`work-plan`](/docs/skills/work-plan) | Planifier l'implémentation d'une fonctionnalité. U... | work, plan, pattern_similaire |
 | [`work-pr`](/docs/skills/work-pr) | Créer une Pull Request complète et bien documentée... | work, type(scope): description, $(cat pr_body.md) |
+| [`work-quick`](/docs/skills/work-quick) | Workflow rapide pour changements triviaux (single-... | work, quick, fix(scope): description |
 | [`writing-skills`](/docs/skills/writing-skills) | Guide pour creer de nouveaux skills pour le socle ... | writing, skills, output attendu |
 
 
@@ -114,7 +116,7 @@ Skills avec contexte isole.
   <SkillCard
     name="dev-debug"
     description="Deboguer et resoudre des problemes. Utiliser quand l'utilisateur a un bug, une e"
-    keywords={["dev","debug"]}
+    keywords={["dev","debug","quick fix pour l'instant","essayons juste de changer x"]}
     context="fork"
     href="/docs/skills/dev-debug"
   />
