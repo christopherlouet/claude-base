@@ -42,7 +42,7 @@ Chaque etape a ses commandes dediees, ses agents specialises et ses bonnes prati
 | **Commands** | 126 | Commandes declenchees manuellement (`/nom`) |
 | **Agents** | 62 | Sub-agents autonomes avec contexte isole |
 | **Skills** | 44 | Auto-declenchement sur mots-cles |
-| **Rules** | 24 | Regles par technologie/fichier |
+| **Rules** | 25 | Regles par technologie/fichier |
 
 ## Domaines couverts
 
@@ -86,13 +86,13 @@ Puis dans Claude Code :
 import Link from '@docusaurus/Link';
 
 <div className="quick-actions">
+  <Link className="quick-action" to="/docs/guides/learning-path">
+    Parcours d'apprentissage (9h30, 5 niveaux)
+  </Link>
   <Link className="quick-action" to="/docs/intro/quick-start">
     Quick Start en 5 min
   </Link>
-  <Link className="quick-action" to="/docs/intro/architecture">
-    Comprendre l'architecture
-  </Link>
-  <Link className="quick-action" to="/docs/workflow">
-    Voir les workflows
+  <Link className="quick-action" to="/docs/intro/what-is-claude-code">
+    Qu'est-ce que Claude Code ?
   </Link>
 </div>

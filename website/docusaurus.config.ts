@@ -87,6 +87,12 @@ const config: Config = {
           label: 'Introduction',
         },
         {
+          type: 'doc',
+          docId: 'guides/learning-path',
+          position: 'left',
+          label: 'Parcours',
+        },
+        {
           type: 'docSidebar',
           sidebarId: 'conceptsSidebar',
           position: 'left',
@@ -128,7 +134,7 @@ const config: Config = {
             {
               type: 'docSidebar',
               sidebarId: 'rulesSidebar',
-              label: 'Rules (24)',
+              label: 'Rules (25)',
             },
           ],
         },
