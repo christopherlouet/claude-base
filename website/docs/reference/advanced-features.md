@@ -54,8 +54,7 @@ Commande `/effort` pour controler le niveau de raisonnement:
 |--------|----------|-------------|
 | `low` | `/effort low` | Exploration, formatage, taches simples |
 | `medium` | `/effort medium` | Developpement standard, corrections |
-| `high` | `/effort high` | Architecture, refactoring complexe |
-| `max` | `/effort max` | Audit critique, debug complexe (Opus 4.6 uniquement) |
+| `high` | `/effort high` | Architecture, audit, refactoring complexe, debug |
 
 Recommandations par workflow du socle:
 
@@ -64,7 +63,7 @@ Recommandations par workflow du socle:
 | `/work:work-explore` | low |
 | `/work:work-specify`, `/work:work-plan` | high |
 | `/dev:dev-tdd` | medium |
-| `/qa:qa-audit`, `/qa:qa-security` | max (Opus 4.6) |
+| `/qa:qa-audit`, `/qa:qa-security` | high |
 | `/work:work-commit` | low |
 
 ## Sessions Nommees (CLI 2.1.76+)
@@ -95,7 +94,7 @@ Utile pour: integration CI/CD, scripts de setup, hooks de notification.
 
 ## Opus 4.6
 
-Adaptive Thinking : Claude ajuste automatiquement la profondeur de son raisonnement selon la complexite de la tache. Remplace `budget_tokens` (deprecie). 4 niveaux d'effort (`low`, `medium`, `high`, `max`) pour guider le raisonnement — `max` est exclusif a Opus 4.6.
+Adaptive Thinking : Claude ajuste automatiquement la profondeur de son raisonnement selon la complexite de la tache. Remplace `budget_tokens` (deprecie). 3 niveaux d'effort (`low`, `medium`, `high`) pour guider le raisonnement.
 
 Fenetre 1M tokens, 128k tokens de sortie, Context Compaction automatique. Le raisonnement s'intercale entre les appels d'outils (interleaved thinking) pour les workflows agentiques.
 

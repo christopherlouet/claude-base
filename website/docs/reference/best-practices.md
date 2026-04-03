@@ -54,10 +54,9 @@ Voir `docs/guides/PROMPTING-GUIDE.md` pour le guide complet.
 |-------|--------|----------|
 | Explorer du code, lire des fichiers | `low` | Pas besoin de raisonnement profond |
 | Implementer une feature standard | `medium` | Equilibre vitesse/qualite |
-| Concevoir une architecture, refactoring | `high` | Raisonnement approfondi necessaire |
-| Audit critique, debug complexe | `max` | Raisonnement maximum (Opus 4.6 uniquement) |
+| Concevoir une architecture, audit, debug complexe | `high` | Raisonnement approfondi necessaire |
 
-Commande: `/effort low`, `/effort medium`, `/effort high`, `/effort max`.
+Commande: `/effort low`, `/effort medium`, `/effort high`.
 
 ## Memoire Automatique (CLI 2.1.76+)
 

@@ -23,7 +23,7 @@ graph TB
         CMDS[commands/<br/>126 commandes]
         AGENTS[agents/<br/>62 sub-agents]
         SKILLS[skills/<br/>44 skills]
-        RULES[rules/<br/>24 rules]
+        RULES[rules/<br/>25 rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
     end
@@ -60,7 +60,7 @@ claude-socle/
 │   │   └── legal/      # Legal
 │   ├── agents/         # 62 sub-agents autonomes
 │   ├── skills/         # 44 skills auto-declenches
-│   ├── rules/          # 24 regles par technologie
+│   ├── rules/          # 25 regles par technologie
 │   ├── templates/      # Templates de specs/plans
 │   ├── output-styles/  # Styles de sortie
 │   └── settings.json   # Configuration et hooks
@@ -119,7 +119,7 @@ Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 "Fais un commit" → Skill generating-commit-messages active
 ```
 
-### Rules (24)
+### Rules (25)
 
 Les **rules** sont des regles appliquees par chemin de fichier.
 
