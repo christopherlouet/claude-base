@@ -263,6 +263,14 @@ const sidebars: SidebarsConfig = {
         'tutorials/refactoring-legacy',
         'tutorials/proxmox-infra',
         'tutorials/opnsense-firewall',
+        {
+          type: 'category',
+          label: 'Projet fil rouge',
+          collapsed: false,
+          items: [
+            'tutorials/projet-complet',
+          ],
+        },
       ],
     },
   ],
