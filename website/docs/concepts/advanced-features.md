@@ -32,7 +32,7 @@ const response = await anthropic.messages.create({
   thinking: {
     type: 'enabled',
     budget_tokens: 10000,  // budget pour le raisonnement
-    effort: 'high',        // low | medium | high | max
+    effort: 'high',        // low | medium | high
   },
   messages: [{ role: 'user', content: prompt }],
 });
