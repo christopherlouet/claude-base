@@ -12,6 +12,7 @@ description: Guides thematiques par type de projet et niveau
 
 | Guide | Audience | Duree |
 |-------|----------|-------|
+| [Formation Claude Code](/docs/guides/claude-code-training) | Debutant total (prerequis) | 3h45 (9 modules) |
 | [Parcours complet](/docs/guides/learning-path) | Debutant a Expert | 9h30 (5 niveaux) |
 | [Guide Prompting](/docs/guides/prompting-guide) | Intermediaire a Avance | 1h |
 
@@ -45,7 +46,10 @@ description: Guides thematiques par type de projet et niveau
 ## Choisir son guide
 
 ```
-Debutant total ?
+Jamais utilise Claude Code ?
+  → Formation Claude Code (3h45, prerequis)
+
+Debutant total sur le socle ?
   → Parcours d'apprentissage (9h30)
 
 Presse (5 min) ?
