@@ -76,6 +76,7 @@ FORCE_TYPE=""
 # Nouvelles options (mode simple / installation directe)
 SIMPLE_MODE=false
 SKIP_PROMPTS=false
+DESIGN_STYLE=""
 
 # Variables de détection (used by lib/detection.sh functions)
 DETECTED_TYPE=""
@@ -129,6 +130,7 @@ ${BOLD}OPTIONS${NC}
     --mcp               Inclut configuration MCP
     --docker            Inclut Dockerfile
     --all               Inclut toutes les options (ci, hooks, mcp, docker)
+    --style STYLE       Direction design (terminal, cockpit, vitality, editorial, glass, signal)
     --skip-prompts      Saute les questions optionnelles (utilise les flags fournis)
     --simple            Mode installation simple (équivalent à l'ancien install.sh)
     --install-only      Alias pour --simple
@@ -148,6 +150,9 @@ ${BOLD}EXEMPLES${NC}
 
     # Nouveau projet React avec CI/CD dans un dossier spécifique
     $(basename "$0") -y -t react --ci --path /var/www mon-app
+
+    # Projet React avec direction design
+    $(basename "$0") -y -t react --style vitality ./mon-app
 
     # Tout inclure
     $(basename "$0") -y --all ./mon-projet
@@ -256,6 +261,10 @@ parse_args() {
                 INCLUDE_MCP=true
                 INCLUDE_DOCKER=true
                 shift
+                ;;
+            --style)
+                DESIGN_STYLE="$2"
+                shift 2
                 ;;
             --skip-prompts)
                 SKIP_PROMPTS=true
@@ -458,10 +467,10 @@ get_rules_for_type() {
     # Rules spécifiques au type de projet
     case "$project_type" in
         react|vue|node-api|fullstack|generic)
-            rules+=("typescript.md" "react.md" "nextjs.md" "accessibility.md" "performance.md" "api.md")
+            rules+=("typescript.md" "react.md" "nextjs.md" "accessibility.md" "performance.md" "api.md" "design-style.md")
             ;;
         flutter)
-            rules+=("flutter.md")
+            rules+=("flutter.md" "design-style.md")
             ;;
         python)
             rules+=("python.md")
@@ -479,7 +488,7 @@ get_rules_for_type() {
 
     # Si type non reconnu ou generic, ajouter TS/web par défaut (cas le plus courant)
     if [[ "$project_type" == "generic" || -z "$project_type" ]]; then
-        rules+=("typescript.md" "react.md" "accessibility.md" "performance.md" "api.md")
+        rules+=("typescript.md" "react.md" "accessibility.md" "performance.md" "api.md" "design-style.md")
     fi
 
     # Dédupliquer et retourner
@@ -708,6 +717,16 @@ install_claude_md_file() {
     else
         copy_file "$SOCLE_DIR/CLAUDE.md" "$target_dir/"
         success "CLAUDE.md copié"
+    fi
+
+    # Injecter la direction design si spécifiée
+    if [[ -n "$DESIGN_STYLE" ]] && [[ -f "$target_dir/CLAUDE.md" ]]; then
+        if ! $DRY_RUN; then
+            printf '\n## Design Direction\nStyle: %s\n' "$DESIGN_STYLE" >> "$target_dir/CLAUDE.md"
+            success "Design direction ajoutée: $DESIGN_STYLE"
+        else
+            echo -e "${DIM}[DRY-RUN]${NC} Ajout Design Direction: $DESIGN_STYLE dans CLAUDE.md"
+        fi
     fi
 
     # Copier CLAUDE.local.md.example
@@ -1093,6 +1112,35 @@ get_options() {
         echo
         [[ $choice =~ ^[Yy]$ ]] && INCLUDE_DOCKER=true
     fi
+
+    # Design direction (uniquement pour projets avec UI)
+    case "$PROJECT_TYPE" in
+        react|vue|fullstack|flutter|generic)
+            if [[ -z "$DESIGN_STYLE" ]]; then
+                echo ""
+                info "Direction design (personnalité visuelle de l'app):"
+                echo ""
+                echo "  1) terminal   — Monospace, fond noir, accents néon"
+                echo "  2) cockpit    — Dense, dark, indicateurs temps réel"
+                echo "  3) vitality   — Couleurs vives, arrondi, énergie positive"
+                echo "  4) editorial  — Typo soignée, espaces blancs, magazine"
+                echo "  5) glass      — Transparences, blur, profondeur"
+                echo "  6) signal     — Efficacité brute, zéro décoration"
+                echo ""
+                prompt "Choix [1-6] (défaut: aucun, skip avec Entrée): "
+                read -r style_choice
+                case $style_choice in
+                    1) DESIGN_STYLE="terminal" ;;
+                    2) DESIGN_STYLE="cockpit" ;;
+                    3) DESIGN_STYLE="vitality" ;;
+                    4) DESIGN_STYLE="editorial" ;;
+                    5) DESIGN_STYLE="glass" ;;
+                    6) DESIGN_STYLE="signal" ;;
+                    *) DESIGN_STYLE="" ;;
+                esac
+            fi
+            ;;
+    esac
 }
 
 confirm_choices() {
@@ -1113,6 +1161,9 @@ confirm_choices() {
     $INCLUDE_HOOKS && echo -e "    ${GREEN}✓${NC} Pre-commit hooks" || echo -e "    ${DIM}○ Pre-commit hooks (skip)${NC}"
     $INCLUDE_MCP && echo -e "    ${GREEN}✓${NC} Configuration MCP" || echo -e "    ${DIM}○ Configuration MCP (skip)${NC}"
     $INCLUDE_DOCKER && echo -e "    ${GREEN}✓${NC} Dockerfile" || echo -e "    ${DIM}○ Dockerfile (skip)${NC}"
+    if [[ -n "$DESIGN_STYLE" ]]; then
+        echo -e "    ${GREEN}✓${NC} Design: ${YELLOW}${DESIGN_STYLE}${NC}"
+    fi
     echo ""
 
     if $EXISTING_PROJECT; then

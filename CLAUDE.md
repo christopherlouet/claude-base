@@ -20,6 +20,7 @@
 - **Nommage** : camelCase (vars/fonctions), PascalCase (classes/composants), SCREAMING_SNAKE (constantes), kebab-case (fichiers)
 - **Tests** : couverture 80%+, pas de mocks sauf deps externes, edge cases obligatoires. Details dans `.claude/rules/testing.md`
 - **Securite** : valider entrees, echapper outputs, requetes parametrees. Details dans `.claude/rules/security.md`
+- **Design** : direction artistique via `Style:` dans CLAUDE.md du projet (terminal, cockpit, vitality, editorial, glass, signal). Details dans `.claude/rules/design-style.md`
 
 ### Gestion des secrets
 - IMPORTANT: Ne jamais commiter de secrets (.env, credentials, API keys)

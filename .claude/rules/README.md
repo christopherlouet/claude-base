@@ -2,7 +2,7 @@
 
 Regles modulaires appliquees automatiquement selon les fichiers modifies (path-specific rules).
 
-## Regles disponibles (25)
+## Regles disponibles (26)
 
 | Regle | Paths cibles | Description |
 |-------|-------------|-------------|
@@ -10,6 +10,7 @@ Regles modulaires appliquees automatiquement selon les fichiers modifies (path-s
 | `api` | `**/api/**`, `**/routes/**`, `**/controllers/**` | REST conventions, validation, status codes |
 | `csharp` | `**/*.cs`, `**/*.csproj` | Nullable, async/await, .NET patterns |
 | `deploy-safety` | `**/docker-compose*`, `**/Dockerfile*`, `**/deploy*`, `**/.env*`, `**/middleware.*`, `**/sw.js`, `**/layout.tsx` | Checklist pre-deploy, REVERT FIRST, high-risk files |
+| `design-style` | `**/*.tsx`, `**/*.jsx`, `**/components/**`, `**/pages/**`, `**/app/**` | Direction artistique UI (terminal, cockpit, vitality, editorial, glass, signal) |
 | `flutter` | `**/*.dart`, `**/lib/**`, `**/test/**` | Clean Architecture, BLoC, widgets |
 | `git` | _(global)_ | Conventional commits, branches, safety rules |
 | `go` | `**/*.go`, `**/go.mod` | Error handling, interfaces, concurrency |
@@ -44,15 +45,15 @@ Quand un fichier correspond à plusieurs rules (ex: `.tsx` active typescript + r
 | 4 | Rules de langage (`typescript`, `python`, `go`...) | Conventions spécifiques au langage |
 | 5 | Rules de framework (`react`, `nextjs`, `flutter`...) | Conventions spécifiques au framework |
 | 6 | `testing` | Normes de tests |
-| 7 | `performance`, `accessibility` | Optimisations et bonnes pratiques |
+| 7 | `performance`, `accessibility`, `design-style` | Optimisations et bonnes pratiques |
 | 8 | `api`, `lsp` | Conventions d'interface |
 | 9 | `research`, `deploy-safety` | Garde-fous process |
 
 ### Exemple: modification de `src/components/Button.tsx`
 
-Rules activées: `typescript` + `react` + `accessibility` + `performance` + `verification` + `tdd-enforcement`
+Rules activées: `typescript` + `react` + `accessibility` + `performance` + `design-style` + `verification` + `tdd-enforcement`
 
-Résolution: sécurité d'abord, puis vérification, puis TDD, puis conventions TypeScript, puis React, puis accessibilité et performance.
+Résolution: sécurité d'abord, puis vérification, puis TDD, puis conventions TypeScript, puis React, puis accessibilité, performance et direction design.
 
 ## Fonctionnement
 
