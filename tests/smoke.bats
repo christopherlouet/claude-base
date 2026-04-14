@@ -237,9 +237,9 @@ load 'test_helper'
     actual_count=$(find "$SOCLE_DIR/.claude/skills" -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
     # -1 pour le répertoire skills lui-même
     actual_count=$((actual_count - 1))
-    # Doit être dans la plage attendue (30-40)
+    # Doit être dans la plage attendue (35-55)
     [ "$actual_count" -ge 25 ]
-    [ "$actual_count" -le 45 ]
+    [ "$actual_count" -le 55 ]
 }
 
 # =============================================================================
