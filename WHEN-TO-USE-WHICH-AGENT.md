@@ -9,6 +9,7 @@
 | Je veux... | Agent Recommande | Commande |
 |------------|------------------|----------|
 | Comprendre du code existant | `work-explore` | `/work:work-explore` |
+| Explorer des idees / brainstorm | - | `/work:work-brainstorm` |
 | Creer une specification | - | `/work:work-specify` |
 | Clarifier les ambiguites | - | `/work:work-clarify` |
 | Planifier une feature | - | `/work:work-plan` |
@@ -21,6 +22,8 @@
 | Refactorer du code | - | `/dev:dev-refactor` |
 | Creer un commit | - | `/work:work-commit` |
 | Creer une PR | - | `/work:work-pr` |
+| Briefing matinal / standup | - | `/ops:ops-standup` |
+| Reparer la CI cassee | - | `/ops:ops-ci-fix` |
 
 ### Par Type de Projet
 
@@ -92,7 +95,7 @@
 /qa:qa-loop "score 90"  # Score cible personnalise
 ```
 
-### OPS- : Operations (13 agents)
+### OPS- : Operations (15 agents)
 
 | Agent | Quand l'utiliser | Modele |
 |-------|------------------|--------|
@@ -109,6 +112,8 @@
 | `ops-proxmox` | Infrastructure Proxmox VE | sonnet |
 | `ops-opnsense` | Configuration OPNsense (firewall, NAT, DHCP) | sonnet |
 | `ops-migration` | Migration de frameworks et versions | sonnet |
+| `ops-standup` | Briefing matinal cross-repo (commits, PRs, CI) | haiku |
+| `ops-ci-fix` | Diagnostic et reparation pipelines CI/CD | sonnet |
 
 **Health check rapide :**
 ```bash
@@ -173,6 +178,12 @@
 | `/doc:doc-onboard` | Decouvrir un nouveau codebase |
 | `/doc:doc-explain` | Expliquer du code complexe |
 
+### Phase BRAINSTORM (optionnel)
+
+| Commande | Usage |
+|----------|-------|
+| `/work:work-brainstorm` | Ideation structuree avant specification (alternatives, questionnement) |
+
 ### Phase SPECIFY
 
 | Commande | Usage |
@@ -209,7 +220,7 @@
 ### Nouvelle Feature
 
 ```
-/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-tdd → /qa:qa-review → /work:work-pr
+/work:work-explore → (/work:work-brainstorm) → /work:work-specify → /work:work-plan → /dev:dev-tdd → /qa:qa-review → /work:work-pr
 ```
 
 | Etape | Agent/Commande | Action |
@@ -336,6 +347,8 @@ Debug complexe, securite, performance, architecture, data modeling, infrastructu
 | Creer une release | `/ops:ops-release` |
 | Hotfix urgent | `/ops:ops-hotfix` |
 | Health check | `/ops:ops-health` |
+| Standup matinal | `/ops:ops-standup` |
+| Reparer la CI | `/ops:ops-ci-fix` |
 
 ### Business
 

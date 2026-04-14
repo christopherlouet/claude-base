@@ -39,9 +39,9 @@ Chaque etape a ses commandes dediees, ses agents specialises et ses bonnes prati
 
 | Composant | Nombre | Description |
 |-----------|--------|-------------|
-| **Commands** | 126 | Commandes declenchees manuellement (`/nom`) |
+| **Commands** | 129 | Commandes declenchees manuellement (`/nom`) |
 | **Agents** | 62 | Sub-agents autonomes avec contexte isole |
-| **Skills** | 44 | Auto-declenchement sur mots-cles |
+| **Skills** | 47 | Auto-declenchement sur mots-cles |
 | **Rules** | 25 | Regles par technologie/fichier |
 
 ## Domaines couverts
