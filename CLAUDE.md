@@ -1,13 +1,14 @@
 # Projet claude-socle
 
-> Template de configuration Claude Code pour un workflow optimal : Explore → Specify → Plan → TDD → Audit → Commit
+> Template de configuration Claude Code pour un workflow optimal : Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
 
 @docs/reference/best-practices.md
 @docs/reference/project-structures.md
 
-## Workflow Obligatoire : Explore → Specify → Plan → TDD → Audit → Commit
+## Workflow Obligatoire : Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
 
 1. **EXPLORE** (`/work:work-explore`) - Lire et comprendre le code AVANT de modifier
+1b. **BRAINSTORM** (`/work:work-brainstorm`) - _(optionnel)_ Ideation structuree, explorer les alternatives avant de specifier
 2. **SPECIFY** (`/work:work-specify`) - User Stories prioritisees (P1=MVP), criteres d'acceptation (Given/When/Then)
 3. **PLAN** (`/work:work-plan`) - Architecture, fichiers, taches par User Story, risques
 4. **TDD** (`/dev:dev-tdd`) - Tests AVANT le code, cycle Red-Green-Refactor, couverture 80%+
@@ -65,6 +66,7 @@ Setup: `./scripts/new-project.sh --simple .`
 
 | Situation | Commande |
 |-----------|----------|
+| Ideation / brainstorm | `/work:work-brainstorm "idee"` |
 | Nouvelle feature | `/work:work-flow-feature "description"` |
 | Correction de bug | `/work:work-flow-bugfix "description"` |
 | Nouvelle release | `/work:work-flow-release "v2.0.0"` |
@@ -77,7 +79,7 @@ Setup: `./scripts/new-project.sh --simple .`
 | Batch de stories | `/work:work-batch "prd.json"` |
 | Suivi des couts | `/ops:ops-cost` |
 
-Workflow manuel : `/work:work-explore` → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/qa:qa-loop "score 90"` → `/work:work-pr`
+Workflow manuel : `/work:work-explore` → (`/work:work-brainstorm`) → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/qa:qa-loop "score 90"` → `/work:work-pr`
 
 ## Anti-patterns a Eviter
 

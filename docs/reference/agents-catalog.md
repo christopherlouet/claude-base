@@ -1,4 +1,4 @@
-# Agents Disponibles (123 commands, 59 sub-agents, 42 skills)
+# Agents Disponibles (124 commands, 59 sub-agents, 42 skills)
 
 ## Orchestrateur (Point d'entree unique)
 | Commande | Mode | Usage |
@@ -6,10 +6,11 @@
 | `/assistant` | Guide | Analyse → Recommande → Attend confirmation |
 | `/assistant-auto` | Automatique | Analyse → Execute directement le workflow |
 
-## WORK- : Workflow Principal (12)
+## WORK- : Workflow Principal (13)
 | Commande | Usage |
 |----------|-------|
 | `/work:work-explore` | Explorer et comprendre le code |
+| `/work:work-brainstorm` | Ideation structuree avant specification (alternatives, questionnement) |
 | `/work:work-specify` | Creer une specification fonctionnelle (User Stories, criteres) |
 | `/work:work-clarify` | Clarifier les ambiguites de la spec (questions ciblees) |
 | `/work:work-plan` | Planifier une implementation (genere plan.md + tasks.md) |

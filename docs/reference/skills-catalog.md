@@ -12,6 +12,7 @@ En plus des commandes, le projet inclut **42 Skills** dans `.claude/skills/`:
 | `qa-security` | "audit sécurité", "OWASP" | fork |
 | `work-plan` | "planifier", "architecture" | fork |
 | `work-explore` | "explorer", "comprendre le code" | fork |
+| `work-brainstorm` | "brainstorm", "ideation", "alternatives" | fork |
 | `work-pr` | "PR", "pull request" | fork |
 | `dev-api` | "API", "endpoint", "REST" | fork |
 

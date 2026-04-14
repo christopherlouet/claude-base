@@ -9,6 +9,7 @@
 | Je veux... | Agent Recommande | Commande |
 |------------|------------------|----------|
 | Comprendre du code existant | `work-explore` | `/work:work-explore` |
+| Explorer des idees / brainstorm | - | `/work:work-brainstorm` |
 | Creer une specification | - | `/work:work-specify` |
 | Clarifier les ambiguites | - | `/work:work-clarify` |
 | Planifier une feature | - | `/work:work-plan` |
@@ -173,6 +174,12 @@
 | `/doc:doc-onboard` | Decouvrir un nouveau codebase |
 | `/doc:doc-explain` | Expliquer du code complexe |
 
+### Phase BRAINSTORM (optionnel)
+
+| Commande | Usage |
+|----------|-------|
+| `/work:work-brainstorm` | Ideation structuree avant specification (alternatives, questionnement) |
+
 ### Phase SPECIFY
 
 | Commande | Usage |
@@ -209,7 +216,7 @@
 ### Nouvelle Feature
 
 ```
-/work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-tdd → /qa:qa-review → /work:work-pr
+/work:work-explore → (/work:work-brainstorm) → /work:work-specify → /work:work-plan → /dev:dev-tdd → /qa:qa-review → /work:work-pr
 ```
 
 | Etape | Agent/Commande | Action |
