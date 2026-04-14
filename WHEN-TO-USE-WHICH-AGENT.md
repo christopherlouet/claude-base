@@ -22,6 +22,8 @@
 | Refactorer du code | - | `/dev:dev-refactor` |
 | Creer un commit | - | `/work:work-commit` |
 | Creer une PR | - | `/work:work-pr` |
+| Briefing matinal / standup | - | `/ops:ops-standup` |
+| Reparer la CI cassee | - | `/ops:ops-ci-fix` |
 
 ### Par Type de Projet
 
@@ -93,7 +95,7 @@
 /qa:qa-loop "score 90"  # Score cible personnalise
 ```
 
-### OPS- : Operations (13 agents)
+### OPS- : Operations (15 agents)
 
 | Agent | Quand l'utiliser | Modele |
 |-------|------------------|--------|
@@ -110,6 +112,8 @@
 | `ops-proxmox` | Infrastructure Proxmox VE | sonnet |
 | `ops-opnsense` | Configuration OPNsense (firewall, NAT, DHCP) | sonnet |
 | `ops-migration` | Migration de frameworks et versions | sonnet |
+| `ops-standup` | Briefing matinal cross-repo (commits, PRs, CI) | haiku |
+| `ops-ci-fix` | Diagnostic et reparation pipelines CI/CD | sonnet |
 
 **Health check rapide :**
 ```bash
@@ -343,6 +347,8 @@ Debug complexe, securite, performance, architecture, data modeling, infrastructu
 | Creer une release | `/ops:ops-release` |
 | Hotfix urgent | `/ops:ops-hotfix` |
 | Health check | `/ops:ops-health` |
+| Standup matinal | `/ops:ops-standup` |
+| Reparer la CI | `/ops:ops-ci-fix` |
 
 ### Business
 

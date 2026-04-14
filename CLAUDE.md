@@ -78,6 +78,8 @@ Setup: `./scripts/new-project.sh --simple .`
 | Changement trivial | `/work:work-quick "description"` |
 | Batch de stories | `/work:work-batch "prd.json"` |
 | Suivi des couts | `/ops:ops-cost` |
+| Standup matinal | `/ops:ops-standup` |
+| CI cassee | `/ops:ops-ci-fix` |
 
 Workflow manuel : `/work:work-explore` → (`/work:work-brainstorm`) → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/qa:qa-loop "score 90"` → `/work:work-pr`
 

@@ -41,6 +41,8 @@ En plus des commandes, le projet inclut **42 Skills** dans `.claude/skills/`:
 | `ops-proxmox` | "Proxmox", "PVE", "VM Proxmox", "LXC", "PBS" | fork |
 | `ops-opnsense` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | fork |
 | `qa-tech-debt` | "dette technique", "tech debt", "refactoring priorité" | fork |
+| `ops-standup` | "standup", "briefing", "what happened" | fork |
+| `ops-ci-fix` | "ci broken", "fix ci", "workflows failing" | fork |
 | `qa-design` | "audit design", "UI/UX", "interface utilisateur" | fork |
 | `api-mocking` | "mock API", "MSW", "test sans backend" | fork |
 | `state-management` | "state", "Redux", "Zustand", "store" | fork |

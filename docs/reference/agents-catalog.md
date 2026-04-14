@@ -1,4 +1,4 @@
-# Agents Disponibles (124 commands, 59 sub-agents, 42 skills)
+# Agents Disponibles (126 commands, 59 sub-agents, 42 skills)
 
 ## Orchestrateur (Point d'entree unique)
 | Commande | Mode | Usage |
@@ -70,7 +70,7 @@
 | `/qa:qa-e2e` | Tests End-to-End (Playwright, Cypress) |
 | `/qa:qa-tech-debt` | Identifier et prioriser la dette technique |
 
-## OPS- : Operations (31)
+## OPS- : Operations (33)
 | Commande | Usage |
 |----------|-------|
 | `/ops:ops-hotfix` | Correction urgente production |
@@ -104,6 +104,8 @@
 | `/ops:ops-opnsense` | Configuration OPNsense via Terraform (firewall, NAT, DHCP/DNS) |
 | `/ops:ops-deploy` | Deploiement securise avec checklist pre-deploy |
 | `/ops:ops-rollback` | Procedure de rollback securisee |
+| `/ops:ops-standup` | Briefing matinal cross-repo (commits, PRs, CI, blockers, priorites) |
+| `/ops:ops-ci-fix` | Diagnostic et reparation autonome des pipelines CI/CD en echec |
 
 ## DOC- : Documentation (9)
 | Commande | Usage |
