@@ -1,5 +1,5 @@
 ---
-sidebar_position: 51
+sidebar_position: 53
 title: "work-quick"
 description: "Workflow rapide pour changements triviaux (single-file fix, rename, typo). Skip le cycle complet Explore-Plan-TDD-Audit. Declencher quand l'utilisateur veut un fix rapide, un changement simple, ou mentionne \"quick\", \"vite\", \"rapide\"."
 tags:

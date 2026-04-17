@@ -1,5 +1,5 @@
 ---
-sidebar_position: 38
+sidebar_position: 40
 title: "qa-e2e"
 description: "Tests End-to-End avec Playwright ou Cypress. Declencher quand l'utilisateur veut creer des tests de parcours utilisateur, tests d'integration UI, ou automatisation navigateur."
 tags:

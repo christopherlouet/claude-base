@@ -54,7 +54,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '51 Skills',
+    title: '53 Skills',
     emoji: '⚡',
     description: (
       <>

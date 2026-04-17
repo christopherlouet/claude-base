@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 25
 title: "git-worktrees"
 description: "Utilisation de git worktrees pour le developpement parallele. Declencher quand l'utilisateur veut travailler sur plusieurs branches simultanement, faire du dev parallele, ou gerer des worktrees."
 tags:
