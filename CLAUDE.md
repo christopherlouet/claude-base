@@ -62,6 +62,17 @@
 
 Setup: `./scripts/new-project.sh --simple .`
 
+## Happy Path par Defaut (Routing Semantique)
+
+Toute demande **sans slash command explicite** beneficie automatiquement du contexte repo (branche, fichiers modifies, LOC diff, memoire perso) injecte par le hook `UserPromptSubmit` (`scripts/hooks/prompt-context.sh`). Ce contexte inclut un hint de routing vers `/assistant-auto` qui choisit semantiquement le bon workflow selon l'intention + la taille detectee.
+
+- Intention triviale + diff < 50 LOC + 1-3 fichiers -> `/work:work-quick`
+- Feature / bugfix standard -> `/work:work-flow-feature` ou `/work:work-flow-bugfix`
+- Audit avant prod -> `/qa:qa-loop "score 90"` ou `/qa:qa-security`
+- Backlog multi-stories -> `/work:work-batch`
+
+Desactiver : `SKIP_PROMPT_CONTEXT=1`. Une slash command explicite court-circuite toujours le routing.
+
 ## Workflows Recommandes
 
 | Situation | Commande |

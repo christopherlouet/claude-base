@@ -93,6 +93,7 @@ Les hooks PreToolUse peuvent retourner `"defer"` comme decision de permission. L
 | **ElicitationResult** | ElicitationResult | Log les reponses MCP Elicitation (async) |
 | **PermissionDenied** | PermissionDenied | Log les permissions refusees par l'auto mode (async, CLI 2.1.111+) |
 | **UserPromptSubmit** | UserPromptSubmit | Log les submissions de prompt utilisateur (async) |
+| **Prompt context injection** | UserPromptSubmit | Injecte branche, fichiers modifies, LOC diff et hint `/assistant-auto` si pas de slash command (desactiver: `SKIP_PROMPT_CONTEXT=1`) |
 | **PostToolUseFailure** | PostToolUseFailure | Log les echecs d'outils pour debugging (async) |
 | **Check .env** | SessionStart | Verifie que .env est dans .gitignore |
 | **Warning hooks tiers** | SessionStart | Avertit si des hooks personnalises sont detectes |
@@ -106,6 +107,7 @@ Les hooks PreToolUse peuvent retourner `"defer"` comme decision de permission. L
 | `SKIP_COMMAND_VALIDATOR=1` | Désactiver la validation de sécurité des commandes |
 | `SKIP_PRE_PUSH_CI=1` | Désactiver la vérification CI locale avant push |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Désactiver la protection contre les opérations destructives |
+| `SKIP_PROMPT_CONTEXT=1` | Désactiver l'injection de contexte repo sur les prompts libres |
 | `ENABLE_RTK=1` | Activer l'optimisation de tokens RTK |
 
 ## Fichiers de logs
