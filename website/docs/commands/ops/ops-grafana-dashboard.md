@@ -1,5 +1,5 @@
 ---
-sidebar_position: 16
+sidebar_position: 17
 title: "/ops:ops-grafana-dashboard"
 description: "Creation de dashboards Grafana avec provisioning automatique."
 tags:

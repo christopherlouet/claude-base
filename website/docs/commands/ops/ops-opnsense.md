@@ -1,5 +1,5 @@
 ---
-sidebar_position: 26
+sidebar_position: 27
 title: "/ops:ops-opnsense"
 description: "Infrastructure as Code pour OPNsense. Configurer et gerer un pare-feu OPNsense via Terraform."
 tags:

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 26
+sidebar_position: 27
 title: "workflow"
 description: "Avant de commencer a travailler sur un projet existant :"
 tags:
@@ -112,11 +112,12 @@ Signaux d'alerte :
 | Entre Explore et Plan | Compacter si exploration longue | `/compact` |
 | Entre Plan et TDD | Compacter si plan detaille | `/compact` |
 | Entre TDD et Audit | Compacter si TDD long | `/compact` |
+| Retour apres une pause | Retrouver le contexte | `/recap` |
 | Changement de sujet complet | Effacer le contexte | `/clear` |
 | Session normale | Laisser l'auto-compaction gerer | _(rien)_ |
-| Refactoring casse tout | Revenir au dernier etat stable | `/rewind` |
+| Refactoring casse tout | Revenir au dernier etat stable | `/rewind` (ou `/undo`) |
 
-Preferer `/compact` a `/clear` : la compaction conserve l'essentiel du contexte (decisions, conventions apprises) alors que `/clear` efface tout.
+Preferer `/compact` a `/clear` : la compaction conserve l'essentiel du contexte (decisions, conventions apprises) alors que `/clear` efface tout. Utiliser `/recap` apres `/compact` pour verifier ce qui a ete conserve.
 
 ## Anti-patterns a Eviter
 

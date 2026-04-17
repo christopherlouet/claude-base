@@ -1,5 +1,5 @@
 ---
-sidebar_position: 35
+sidebar_position: 37
 title: "qa-security"
 description: "Effectuer un audit de sécurité basé sur OWASP. Utiliser quand l'utilisateur veut vérifier la sécurité, chercher des vulnérabilités, ou avant un déploiement en production."
 tags:

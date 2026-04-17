@@ -32,7 +32,8 @@ tags:
 | Hook silencieux qui ne se declenche pas | Script non executable, chemin errone, timeout depasse | Verifier les logs dans `/tmp/claude-sessions.log`, tester le script manuellement |
 | MCP server absent ou deconnecte | Server desactive dans `.mcp.json`, dependance manquante | Verifier `"disabled": true` dans `.mcp.json`, relancer avec `/mcp` |
 | Agent ou skill qui ne se declenche pas | Mauvais namespace, description trop vague, fichier manquant | Verifier le nom exact avec `/help`, lire la description du fichier `.md` |
-| Boucle de permission refusee | Commande dans la liste `deny` de `settings.json`, mode auto strict | Utiliser `SKIP_COMMAND_VALIDATOR=1` ou revoir la commande |
+| Boucle de permission refusee | Commande dans la liste `deny` de `settings.json`, mode auto strict | `/less-permission-prompts` pour optimiser les allowlists, ou `SKIP_COMMAND_VALIDATOR=1` |
+| Trop de prompts de permission | Permissions trop restrictives pour le workflow | `/less-permission-prompts` scanne les transcripts et propose des allowlists optimisees |
 | Conflit git pendant le cycle TDD | Branche desynchronisee, commit intermediaire manquant | `git stash`, `git pull --rebase`, puis `git stash pop` |
 
 ### Context window full

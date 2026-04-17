@@ -1,5 +1,5 @@
 ---
-sidebar_position: 39
+sidebar_position: 41
 title: "work-batch"
 description: "Execution sequentielle de user stories depuis un fichier PRD. Mode autonome qui implemente et commit chaque story une par une. Declencher quand l'utilisateur veut traiter un backlog, executer plusieurs stories, ou lancer un mode autonome."
 tags:

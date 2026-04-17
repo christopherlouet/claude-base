@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **44 skills** auto-declenches par mots-cles
+> **47 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 44, label: 'Skills Fork' },
+  { number: 47, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 44, label: 'Total' },
+  { number: 47, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?
@@ -29,7 +29,7 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (44 skills)
+### Fork (47 skills)
 
 Skills avec contexte isole.
 
@@ -48,13 +48,14 @@ Skills avec contexte isole.
 | [`dev-react-perf`](/docs/skills/dev-react-perf) | Optimisation des performances React/Next.js. Decle... | dev, react, perf |
 | [`dev-refactor`](/docs/skills/dev-refactor) | Refactoring de code pour ameliorer la qualite. Dec... | dev, refactor |
 | [`dev-supabase`](/docs/skills/dev-supabase) | Developpement backend avec Supabase. Declencher qu... | dev, supabase, users read own profile |
-| [`dev-tdd`](/docs/skills/dev-tdd) | Développement TDD avec cycle Red-Green-Refactor. U... | dev, tdd, nom du test |
+| [`dev-tdd`](/docs/skills/dev-tdd) | Développement TDD avec cycle Red-Green-Refactor. U... | dev, tdd, comme reference |
 | [`doc-changelog`](/docs/skills/doc-changelog) | Maintenance du CHANGELOG selon Keep a Changelog. D... | doc, changelog |
 | [`doc-generate`](/docs/skills/doc-generate) | Generation de documentation technique. Declencher ... | doc, generate, uuid |
 | [`feature-flags`](/docs/skills/feature-flags) | Gestion de feature flags et toggles. Declencher qu... | feature, flags, feature flag |
 | [`git-worktrees`](/docs/skills/git-worktrees) | Utilisation de git worktrees pour le developpement... | git, worktrees, cd ~/projects/myapp |
 | [`growth-cro`](/docs/skills/growth-cro) | Optimisation du taux de conversion (CRO). Declench... | growth, cro, comment |
 | [`ops-ci`](/docs/skills/ops-ci) | Configuration de pipelines CI/CD. Declencher quand... | ops |
+| [`ops-ci-fix`](/docs/skills/ops-ci-fix) | Diagnostic et reparation autonome des pipelines CI... | ops, fix |
 | [`ops-database`](/docs/skills/ops-database) | Conception de schemas de base de donnees. Declench... | ops, database |
 | [`ops-docker`](/docs/skills/ops-docker) | Containerisation Docker et Docker Compose. Declenc... | ops, docker, node |
 | [`ops-infra-code`](/docs/skills/ops-infra-code) | Infrastructure as Code avec Terraform/OpenTofu. De... | ops, infra, code |
@@ -62,6 +63,7 @@ Skills avec contexte isole.
 | [`ops-monitoring`](/docs/skills/ops-monitoring) | Instrumentation d'applications pour monitoring. De... | ops, monitoring |
 | [`ops-opnsense`](/docs/skills/ops-opnsense) | Configuration OPNsense via Terraform. Declencher p... | ops, opnsense, browningluke/opnsense |
 | [`ops-proxmox`](/docs/skills/ops-proxmox) | Infrastructure Proxmox VE avec Terraform (VMs, LXC... | ops, proxmox, pve |
+| [`ops-standup`](/docs/skills/ops-standup) | Briefing matinal cross-repo. Agregation des commit... | ops, standup, 24 hours ago |
 | [`parallel-agents`](/docs/skills/parallel-agents) | Orchestration d'agents paralleles pour maximiser l... | parallel, agents, qa-security |
 | [`qa-chrome`](/docs/skills/qa-chrome) | Tests visuels et debugging navigateur via Chrome. ... | chrome, claude in chrome |
 | [`qa-design`](/docs/skills/qa-design) | Audit de design UI/UX et verification des bonnes p... | design, '][^, `, ` |
@@ -73,6 +75,7 @@ Skills avec contexte isole.
 | [`session-handoff`](/docs/skills/session-handoff) | Transfert de contexte entre sessions IA. Declenche... | session, handoff |
 | [`state-management`](/docs/skills/state-management) | Patterns et implementation de state management. De... | state, management, state management |
 | [`work-batch`](/docs/skills/work-batch) | Execution sequentielle de user stories depuis un f... | work, batch, project |
+| [`work-brainstorm`](/docs/skills/work-brainstorm) | Ideation structuree avant specification. Transform... | work, brainstorm, j'ai une idee vague |
 | [`work-commit`](/docs/skills/work-commit) | Génère des messages de commit clairs suivant Conve... | work, commit, quoi |
 | [`work-explore`](/docs/skills/work-explore) | Explorer et comprendre un codebase existant. Utili... | work, explore |
 | [`work-plan`](/docs/skills/work-plan) | Planifier l'implémentation d'une fonctionnalité. U... | work, plan, pattern_similaire |

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 14
+sidebar_position: 15
 title: "/ops:ops-gitflow-init"
 description: "Initialiser GitFlow sur le repository avec les branches et conventions appropriees."
 tags:

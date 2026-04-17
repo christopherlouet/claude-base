@@ -1,5 +1,5 @@
 ---
-sidebar_position: 30
+sidebar_position: 31
 title: "/ops:ops-secrets-management"
 description: "Implemente une gestion securisee des secrets et credentials."
 tags:

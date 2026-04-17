@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 title: "/ops:ops-deps"
 description: "Audit, analyse et mise a jour des dependances du projet."
 tags:
