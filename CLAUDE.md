@@ -80,6 +80,10 @@ Setup: `./scripts/new-project.sh --simple .`
 | Suivi des couts | `/ops:ops-cost` |
 | Standup matinal | `/ops:ops-standup` |
 | CI cassee | `/ops:ops-ci-fix` |
+| Plan cloud (grosse feature) | `/ultraplan` |
+| Review cloud (grosse PR) | `/ultrareview` |
+| Resume de session | `/recap` |
+| Reduire les prompts permission | `/less-permission-prompts` |
 
 Workflow manuel : `/work:work-explore` → (`/work:work-brainstorm`) → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/qa:qa-loop "score 90"` → `/work:work-pr`
 

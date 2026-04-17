@@ -7,6 +7,26 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ## [Unreleased]
 
+### Ajoute
+- **Opus 4.7 + effort `xhigh`** : documentation du nouveau modele et du niveau de raisonnement maximum dans best-practices.md et advanced-features.md
+- **Prompt Caching 1h** : documentation de `ENABLE_PROMPT_CACHING_1H` et `FORCE_PROMPT_CACHING_5M` dans best-practices.md et advanced-features.md
+- **`/recap`** : commande de resume de session documentee dans advanced-features.md et workflow.md (gestion du contexte)
+- **`/undo`** : alias de `/rewind` documente dans advanced-features.md et workflow.md
+- **Routines** : workflows automatises cloud documentes dans advanced-features.md (prompts + repos + connecteurs sur schedule)
+- **`/ultraplan` et `/ultrareview`** : commandes cloud documentees dans advanced-features.md et ajoutees au tableau des workflows CLAUDE.md
+- **TUI Fullscreen** : mode plein ecran `/tui fullscreen` et `/focus` documentes dans advanced-features.md
+- **Push Notifications** : notifications mobile via Remote Control documentees dans advanced-features.md
+- **`/less-permission-prompts`** : scan de transcripts pour optimiser les allowlists, documente dans TROUBLESHOOTING-GUIDE.md et CLAUDE.md
+- **`/team-onboarding`** : generation automatique de guide d'onboarding, reference dans TEAM-GUIDE.md
+- **`/proactive`** : alias de `/loop` avec auto-pacing documente dans advanced-features.md
+- **`additionalContext`** : propriete de hook PreToolUse documentee dans hooks-reference.md
+
+### Modifie
+- **Modeles** : references Opus 4.6 mises a jour vers Opus 4.7 dans best-practices.md, advanced-features.md, TEAM-GUIDE.md
+- **Effort levels** : ajout de `xhigh` dans tous les tableaux de niveaux d'effort
+- **Gestion du contexte** : `/recap` et `/undo` ajoutes dans le tableau de workflow.md
+- **Variables d'env** : `ENABLE_PROMPT_CACHING_1H` et `FORCE_PROMPT_CACHING_5M` ajoutees au tableau des variables avancees
+
 ---
 
 ## [1.27.0] - 2026-03-19

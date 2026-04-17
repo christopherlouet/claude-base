@@ -1976,7 +1976,7 @@ Preferer `/compact` a `/clear` : la compaction conserve l'essentiel (decisions p
 |--------|---------------|-------------|
 | Haiku | Taches simples, generation standard, documentation | Tres faible |
 | Sonnet | Analyse, debug, decisions | Moyen |
-| Opus 4.6 | Audit critique, architecture complexe, `/effort high` | Eleve |
+| Opus 4.7 | Audit critique, architecture complexe, `/effort high` | Eleve |
 
 Bonne pratique : utilisez Haiku pour les 70% de taches routinieres (generation de tests, documentation, composants standard), Sonnet pour les 25% qui demandent du raisonnement, et reservez Opus pour les 5% critiques.
 
