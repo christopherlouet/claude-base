@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "java"
 description: "// 2. Champs statiques private static final Logger logger = LoggerFactory.getLogger(UserService.class);"
 tags:
