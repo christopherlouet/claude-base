@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 14
 title: "performance"
 description: "IMPORTANT: LCP  2.5s - Optimiser les images above-the-fold. IMPORTANT: INP  200ms - Eviter les operations bloquantes. IMPORTANT: CLS  0.1 - Toujours s"
 tags:
@@ -59,6 +59,25 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 ## Preloading
 - `rel="prefetch"` pour routes probables
 - `rel="dns-prefetch"` pour domaines externes
+- `rel="preload"` pour ressources critiques du rendu initial
+- Pattern PRPL : Push (critique) / Render (initial route) / Pre-cache (autres) / Lazy-load (reste)
+
+## Lazy loading avance
+- Par visibilite : `IntersectionObserver` ou `loading="lazy"` pour composants/media hors ecran
+- Par interaction : charger au hover/focus avant le click (preconnect + import())
+- Virtual lists pour listes &gt; 100 items (`react-window`, `@tanstack/react-virtual`)
+
+## Bundle (suite)
+- Tree-shaking : ESM only, `sideEffects: false` dans `package.json`, imports nommes
+- Vite : `build.rollupOptions.output.manualChunks` pour separer vendors, analyze via `rollup-plugin-visualizer`
+- Scripts tiers : `&lt;Script strategy="lazyOnload"&gt;` (Next.js) ou defer/async + Partytown pour offload worker
+
+## Rendering patterns modernes
+- Islands Architecture : hydrater uniquement les zones interactives (Astro, Fresh)
+- View Transitions API : `document.startViewTransition()` pour transitions SPA-like sans framework
+- Streaming SSR + Suspense : envoyer le shell tot, streamer le contenu pret
+- Progressive/Selective Hydration : React 18+ hydrate par priorite d'interaction
+- ISR (Incremental Static Regeneration) : `revalidate` pour pages semi-statiques
 
 ## Regles IMPORTANTES
 

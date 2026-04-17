@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 title: "/work:work-clarify"
 description: "Pose des questions ciblees pour reduire l'ambiguite dans une specification."
 tags:

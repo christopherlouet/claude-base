@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **32 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
+Ce domaine contient **34 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
 
 ## Liste des commandes
 
@@ -21,6 +21,7 @@ Ce domaine contient **32 commandes** pour operations (ci/cd, docker, monitoring,
 |----------|-------------|
 | [`/ops:ops-backup`](/docs/commands/ops/ops-backup) | Strategie de backup et restore pour les donnees critiques du projet. |
 | [`/ops:ops-ci`](/docs/commands/ops/ops-ci) | Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.). |
+| [`/ops:ops-ci-fix`](/docs/commands/ops/ops-ci-fix) | Diagnostiquer et reparer les pipelines CI/CD en echec. |
 | [`/ops:ops-cost`](/docs/commands/ops/ops-cost) | Suivi de la consommation de tokens et des couts Claude Code. |
 | [`/ops:ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization) | Analyser et optimiser les couts d'infrastructure cloud. |
 | [`/ops:ops-database`](/docs/commands/ops/ops-database) | Design de schema, migrations et optimisation de base de donnees. |
@@ -49,6 +50,7 @@ Ce domaine contient **32 commandes** pour operations (ci/cd, docker, monitoring,
 | [`/ops:ops-rollback`](/docs/commands/ops/ops-rollback) | Procedure de rollback securisee pour revenir a une version stable. |
 | [`/ops:ops-secrets-management`](/docs/commands/ops/ops-secrets-management) | Implemente une gestion securisee des secrets et credentials. |
 | [`/ops:ops-serverless`](/docs/commands/ops/ops-serverless) | Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers). |
+| [`/ops:ops-standup`](/docs/commands/ops/ops-standup) | Briefing matinal : commits, PRs, CI, blockers et priorites du jour. |
 | [`/ops:ops-vercel`](/docs/commands/ops/ops-vercel) | Deploiement et configuration sur Vercel. |
 | [`/ops:ops-vps`](/docs/commands/ops/ops-vps) | Deploiement sur serveur VPS (OVH, Hetzner, DigitalOcean, Scaleway, etc.). |
 
@@ -66,6 +68,12 @@ Ce domaine contient **32 commandes** pour operations (ci/cd, docker, monitoring,
     description="Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.)."
     domain="ops"
     href="/docs/commands/ops/ops-ci"
+  />
+  <CommandCard
+    name="ops-ci-fix"
+    description="Diagnostiquer et reparer les pipelines CI/CD en echec."
+    domain="ops"
+    href="/docs/commands/ops/ops-ci-fix"
   />
   <CommandCard
     name="ops-cost"
@@ -234,6 +242,12 @@ Ce domaine contient **32 commandes** pour operations (ci/cd, docker, monitoring,
     description="Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers)."
     domain="ops"
     href="/docs/commands/ops/ops-serverless"
+  />
+  <CommandCard
+    name="ops-standup"
+    description="Briefing matinal : commits, PRs, CI, blockers et priorites du jour."
+    domain="ops"
+    href="/docs/commands/ops/ops-standup"
   />
   <CommandCard
     name="ops-vercel"

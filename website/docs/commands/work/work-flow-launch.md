@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 title: "/work:work-flow-launch"
 description: "Workflow technique pour developper et lancer un produit, du setup au go-live."
 tags:

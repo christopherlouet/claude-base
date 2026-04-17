@@ -1,5 +1,5 @@
 ---
-sidebar_position: 32
+sidebar_position: 34
 title: "/ops:ops-vercel"
 description: "Deploiement et configuration sur Vercel."
 tags:

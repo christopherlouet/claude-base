@@ -1,5 +1,5 @@
 ---
-sidebar_position: 12
+sidebar_position: 13
 title: "/ops:ops-gitflow-feature"
 description: "Gerer les branches feature avec GitFlow (start, finish, list, publish, pull)."
 tags:
