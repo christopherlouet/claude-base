@@ -76,7 +76,7 @@ Au demarrage, vous devriez voir un message similaire a :
 
 ```
 === Claude Code Session ===
-Version socle: 1.27.0
+Version socle: 1.28.0
 Commandes: 123
 Agents: 59
 ===========================
