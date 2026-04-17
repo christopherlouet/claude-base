@@ -1,5 +1,5 @@
 ---
-sidebar_position: 35
+sidebar_position: 37
 title: "parallel-agents"
 description: "Orchestration d'agents paralleles pour maximiser l'efficacite. Declencher quand une tache peut etre decomposee en sous-taches independantes executables en parallele."
 tags:

@@ -1,6 +1,6 @@
 # Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **51 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **53 Skills** dans `.claude/skills/`:
 
 ## Skills de base
 | Skill | Déclenchement automatique | Context |
@@ -57,6 +57,8 @@ En plus des commandes, le projet inclut **51 Skills** dans `.claude/skills/`:
 | `dev-shadcn` | "shadcn", "shadcn/ui", "Radix", "composants React" | fork |
 | `dev-nextjs` | "Next.js", "App Router", "Server Components", "RSC", "Server Actions" | fork |
 | `dev-auth` | "auth", "login", "signup", "OAuth", "better-auth", "NextAuth", "Lucia", "2FA" | fork |
+| `dev-prisma` | "Prisma", "schema.prisma", "migrate", "ORM", "Accelerate" | fork |
+| `dev-i18n` | "i18n", "l10n", "traduction", "locale", "next-intl", "react-i18next", "vue-i18n", "flutter_localizations" | fork |
 | `writing-skills` | "créer skill", "nouveau skill", "écrire un skill" | fork |
 
 ## Configuration des Skills

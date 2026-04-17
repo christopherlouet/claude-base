@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 14
 title: "dev-nextjs"
 description: "Developpement Next.js (App Router, Server Components, caching, streaming). Declencher quand l'utilisateur travaille avec Next.js, modifie app/, pages/, next.config, ou parle de RSC, Server Actions, Route Handlers, middleware."
 tags:

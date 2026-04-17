@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **51 skills** auto-declenches par mots-cles
+> **53 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 51, label: 'Skills Fork' },
+  { number: 53, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 51, label: 'Total' },
+  { number: 53, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?
@@ -29,7 +29,7 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (51 skills)
+### Fork (53 skills)
 
 Skills avec contexte isole.
 
@@ -46,7 +46,9 @@ Skills avec contexte isole.
 | [`dev-flutter`](/docs/skills/dev-flutter) | Developpement Flutter avec Clean Architecture et B... | dev, flutter |
 | [`dev-frontend-design`](/docs/skills/dev-frontend-design) | Design UI distinctif avec direction artistique for... | dev, frontend, design |
 | [`dev-graphql`](/docs/skills/dev-graphql) | Developpement d'APIs GraphQL. Declencher quand l'u... | dev, graphql |
+| [`dev-i18n`](/docs/skills/dev-i18n) | Internationalisation (i18n) et localisation (l10n)... | dev, i18n, d'accord |
 | [`dev-nextjs`](/docs/skills/dev-nextjs) | Developpement Next.js (App Router, Server Componen... | dev, nextjs, use client |
+| [`dev-prisma`](/docs/skills/dev-prisma) | Developpement avec Prisma ORM (schema, migrations,... | dev, prisma |
 | [`dev-prompt-engineering`](/docs/skills/dev-prompt-engineering) | Optimisation de prompts pour LLMs. Declencher quan... | dev, prompt, engineering |
 | [`dev-react-perf`](/docs/skills/dev-react-perf) | Optimisation des performances React/Next.js. Decle... | dev, react, perf |
 | [`dev-refactor`](/docs/skills/dev-refactor) | Refactoring de code pour ameliorer la qualite. Dec... | dev, refactor |
@@ -170,11 +172,11 @@ Skills avec contexte isole.
     href="/docs/skills/dev-graphql"
   />
   <SkillCard
-    name="dev-nextjs"
-    description="Developpement Next.js (App Router, Server Components, caching, streaming). Decle"
-    keywords={["dev","nextjs","use client"]}
+    name="dev-i18n"
+    description="Internationalisation (i18n) et localisation (l10n) d'applications web et mobile."
+    keywords={["dev","i18n","d'accord"]}
     context="fork"
-    href="/docs/skills/dev-nextjs"
+    href="/docs/skills/dev-i18n"
   />
 </SkillGrid>
 
