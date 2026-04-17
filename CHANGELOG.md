@@ -7,25 +7,75 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ## [Unreleased]
 
+---
+
+## [1.28.0] - 2026-04-17
+
 ### Ajoute
-- **Opus 4.7 + effort `xhigh`** : documentation du nouveau modele et du niveau de raisonnement maximum dans best-practices.md et advanced-features.md
-- **Prompt Caching 1h** : documentation de `ENABLE_PROMPT_CACHING_1H` et `FORCE_PROMPT_CACHING_5M` dans best-practices.md et advanced-features.md
-- **`/recap`** : commande de resume de session documentee dans advanced-features.md et workflow.md (gestion du contexte)
-- **`/undo`** : alias de `/rewind` documente dans advanced-features.md et workflow.md
-- **Routines** : workflows automatises cloud documentes dans advanced-features.md (prompts + repos + connecteurs sur schedule)
-- **`/ultraplan` et `/ultrareview`** : commandes cloud documentees dans advanced-features.md et ajoutees au tableau des workflows CLAUDE.md
-- **TUI Fullscreen** : mode plein ecran `/tui fullscreen` et `/focus` documentes dans advanced-features.md
-- **Push Notifications** : notifications mobile via Remote Control documentees dans advanced-features.md
-- **`/less-permission-prompts`** : scan de transcripts pour optimiser les allowlists, documente dans TROUBLESHOOTING-GUIDE.md et CLAUDE.md
-- **`/team-onboarding`** : generation automatique de guide d'onboarding, reference dans TEAM-GUIDE.md
-- **`/proactive`** : alias de `/loop` avec auto-pacing documente dans advanced-features.md
-- **`additionalContext`** : propriete de hook PreToolUse documentee dans hooks-reference.md
+
+#### Synchronisation Claude Code (Q1 + Apr 2026)
+- **Opus 4.7 + effort `xhigh`** : nouveau modele et niveau de raisonnement maximum (best-practices.md, advanced-features.md, TEAM-GUIDE.md) (#70, #71)
+- **Routines** : workflows automatises cloud (prompts + repos + connecteurs sur schedule, API ou GitHub events) (#70)
+- **`/ultraplan` et `/ultrareview`** : commandes cloud multi-agents pour plan et review (#70)
+- **`/recap`** : resume de session (decisions, fichiers modifies, etat du travail) (#70)
+- **`/undo`** : alias de `/rewind` (CLI 2.1.108+) (#70)
+- **`/less-permission-prompts`** : scan de transcripts pour optimiser les allowlists (#70)
+- **`/team-onboarding`** : generation automatique de guide d'onboarding teammate (#70)
+- **`/proactive`** : alias de `/loop` avec auto-pacing (#70)
+- **TUI Fullscreen enrichi** : 3 benefices cles (flicker-free, memoire constante, support souris), raccourcis clavier, `CLAUDE_CODE_DISABLE_MOUSE`, `CLAUDE_CODE_SCROLL_SPEED`, compatibilite tmux (#70, #71)
+- **Prompt Caching 1h** : `ENABLE_PROMPT_CACHING_1H` et `FORCE_PROMPT_CACHING_5M` (CLI 2.1.108+) (#70)
+- **Push Notifications** : notifications mobile via Remote Control (#70)
+- **Hook `additionalContext`** : propriete PreToolUse pour enrichir le contexte (CLI 2.1.110+) (#70)
+- **Sync Q1 2026** : adaptive thinking, Fast Mode, MCP Channels, `/rewind`, context compaction (#58)
+
+#### Nouvelles rules
+- **Rule `design-style`** : 6 directions artistiques (terminal, cockpit, vitality, editorial, glass, signal) (#66)
+- **Rule `service-worker`** : NEVER cache HTML navigations, bump cache version (8fbfb4e)
+- **Rule `performance`** enrichie avec patterns.dev 2026 (#69)
+- **Rule `react`** enrichie avec patterns.dev 2026 (#69)
+- **Rule `nextjs`** : RSC, data fetching, caching, App Router (#05f05ee)
+
+#### Nouveaux skills et enrichissements
+- **Skill `work-brainstorm`** : ideation structuree avant specification (#68)
+- **Skill `ops-standup`** : briefing matinal cross-repo (#68)
+- **Skill `ops-ci-fix`** : diagnostic et reparation autonome pipelines CI/CD (#68)
+- **Skill `dev-tdd` enrichi** : cycle Red-Green-Refactor detaille avec exemples (#68)
+- **Audit step adaptatif** : phase Audit apres TDD avec `/qa:qa-loop "score 90"` (#4bcdc07)
+- **Command validator** : 8 categories de risque bloquees (#05f05ee)
+- **Workflows quick/batch** : `/work:work-quick`, `/work:work-batch "prd.json"` (#05f05ee)
+- **Cost tracking** : `/ops:ops-cost` pour suivi tokens et couts (#05f05ee)
+
+#### Documentation et site Docusaurus
+- **6 nouveaux guides** : Python, Go, Auth, Testing, Database, Observability (#64)
+- **Guide Claude Code Training** : prerequis au socle pour debutants (#62)
+- **Learning path novice → pro** : 2259 lignes (#17791bb)
+- **Capstone project TaskFlow** : SaaS end-to-end (#63)
+- **Docusaurus UX debutant → avance** : navigation enrichie (#61)
+- **Training guide** comme prerequis (#62)
+- **Website auto-sync** : `docs/` → `website/docs/` via `sync-docs.ts` (#59, #6a08f35, #72)
+- **Examples dans navbar** + anchor fixes (#3a3dcf2)
+- **7 pages manquantes regenerees** : ops-ci-fix, ops-standup, work-brainstorm, design-style, etc. (#72)
+
+#### Scripts
+- **`check-updates.sh`** : verification des mises a jour CLI et skills (#8856834)
+- **`new-project.sh` modularise** : lib/ modules pour faciliter la maintenance (#dea4169)
+- **`bump-version.sh`** : mise a jour centralisee de la version dans tous les fichiers
 
 ### Modifie
-- **Modeles** : references Opus 4.6 mises a jour vers Opus 4.7 dans best-practices.md, advanced-features.md, TEAM-GUIDE.md
-- **Effort levels** : ajout de `xhigh` dans tous les tableaux de niveaux d'effort
-- **Gestion du contexte** : `/recap` et `/undo` ajoutes dans le tableau de workflow.md
-- **Variables d'env** : `ENABLE_PROMPT_CACHING_1H` et `FORCE_PROMPT_CACHING_5M` ajoutees au tableau des variables avancees
+- **Modeles** : references Opus 4.6 → Opus 4.7 dans toute la documentation (22 occurrences)
+- **Effort levels** : ajout de `xhigh` dans tous les tableaux
+- **Gestion du contexte** : `/recap` et `/undo` dans workflow.md
+- **Variables d'env** : `ENABLE_PROMPT_CACHING_1H`, `FORCE_PROMPT_CACHING_5M`, `CLAUDE_CODE_DISABLE_MOUSE`, `CLAUDE_CODE_SCROLL_SPEED`
+- **Fast Mode** : documente comme "meme modele Opus 4.7, sortie 2.5x plus rapide"
+
+### Corrige
+- **Compteurs stales** : documentation mise a jour (126 commands, 62 agents, 44 skills) (#b2f6195, #9b1846f, #a09ab36)
+- **Broken anchor** website (#3a3dcf2)
+- **Shellcheck** cross-file global variables (#4fe2f4c)
+
+### Chore
+- **Archive des specs implementees** : a11y, check-updates, sync-q1-v2, docs-update-v1.25 (#d7fc33d, #32cedf9)
+- **Bump GitHub Actions** (#67)
 
 ---
 
