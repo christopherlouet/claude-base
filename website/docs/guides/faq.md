@@ -17,7 +17,7 @@ Retrouvez ici les réponses aux questions les plus courantes sur claude-socle.
 - **59 agents** spécialisés avec contexte isolé
 - **42 skills** à déclenchement automatique
 - **24 rules** contextuelles par langage
-- Un workflow structuré : **Explore → Specify → Plan → TDD → Commit**
+- Un workflow structuré : **Explore → Specify → Plan → TDD → Audit → Commit**
 
 ### Quelle différence avec Claude Code standard ?
 
@@ -257,7 +257,7 @@ flowchart LR
 | Situation | Étapes à garder |
 |-----------|-----------------|
 | Petit fix | Explore → TDD → Commit |
-| Feature simple | Explore → Specify → Plan → TDD → Commit |
+| Feature simple | Explore → Specify → Plan → TDD → Audit → Commit |
 | Feature complexe | Toutes les étapes |
 | Nouveau sur le projet | Toujours Explore d'abord |
 

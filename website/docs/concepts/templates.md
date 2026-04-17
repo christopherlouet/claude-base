@@ -6,7 +6,7 @@ description: Comprendre les templates de specification Claude Code
 
 # Templates
 
-> Structures predefinies pour le workflow Explore → Specify → Plan → Code
+> Structures predefinies pour le workflow Explore → Specify → Plan → TDD → Audit → Commit
 
 ## Qu'est-ce qu'un Template ?
 
@@ -281,7 +281,7 @@ specs/[feature]/
 
 ## Voir aussi
 
-- [Workflow Explore → Plan → Code](/docs/workflow/explore-plan-code-commit) - Workflow complet
+- [Workflow Explore → Specify → Plan → TDD → Audit → Commit](/docs/workflow/explore-plan-code-commit) - Workflow complet
 - [/work:work-specify](/docs/commands/work/work-specify) - Commande de specification
 - [/work:work-plan](/docs/commands/work/work-plan) - Commande de planification
 - [/work:work-clarify](/docs/commands/work/work-clarify) - Clarification des ambiguites

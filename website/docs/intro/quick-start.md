@@ -61,7 +61,7 @@ Agents: 59
 
 ## Premier workflow
 
-<WorkflowDiagram steps={MAIN_WORKFLOW} title="Workflow principal : Explore → Specify → Plan → TDD → Commit" />
+<WorkflowDiagram steps={MAIN_WORKFLOW} title="Workflow principal : Explore → Specify → Plan → TDD → Audit → Commit" />
 
 ### Etape 1 : Explorer
 
