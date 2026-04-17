@@ -561,6 +561,16 @@
             "async": true
           }
         ]
+      },
+      {
+        "description": "Injecter le contexte repo et un hint de routing semantique vers /assistant-auto quand le prompt n'est pas une slash command (desactiver avec SKIP_PROMPT_CONTEXT=1)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/prompt-context.sh\"",
+            "timeout": 3000
+          }
+        ]
       }
     ],
     "PostToolUseFailure": [
