@@ -1,5 +1,5 @@
 ---
-sidebar_position: 31
+sidebar_position: 33
 title: "ops-monitoring"
 description: "Instrumentation d'applications pour monitoring. Declencher quand l'utilisateur veut ajouter des logs, metriques, ou traces."
 tags:
