@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 title: "/work:work-flow-feature"
 description: "Workflow complet pour developper une nouvelle fonctionnalite, de l'exploration au merge."
 tags:

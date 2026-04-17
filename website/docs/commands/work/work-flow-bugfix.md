@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 title: "/work:work-flow-bugfix"
 description: "Workflow complet pour corriger un bug, du diagnostic au deploiement."
 tags:

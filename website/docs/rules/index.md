@@ -8,11 +8,11 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Regles
 
-> **25 regles** appliquees automatiquement par chemin de fichier
+> **26 regles** appliquees automatiquement par chemin de fichier
 
 <Stats items={[
-  { number: 25, label: 'Regles' },
-  { number: 133, label: 'Patterns' },
+  { number: 26, label: 'Regles' },
+  { number: 138, label: 'Patterns' },
 ]} />
 
 ## Qu'est-ce qu'une Rule ?
@@ -32,6 +32,7 @@ Les **rules** sont des conventions appliquees automatiquement :
 | [`api`](/docs/rules/api) | // Error \{ "success": false, "error": \{ "code": "V... | `**/api/**`, `**/routes/**`... |
 | [`csharp`](/docs/rules/csharp) | // 2. Champs prives readonly private readonly IUse... | `**/*.cs`, `**/*.csproj`... |
 | [`deploy-safety`](/docs/rules/deploy-safety) | Chaque deploiement doit etre valide avant executio... | `**/docker-compose*.yml`, `**/docker-compose*.yaml`... |
+| [`design-style`](/docs/rules/design-style) | La direction design du projet est definie dans CLA... | `**/*.tsx`, `**/*.jsx`... |
 | [`flutter`](/docs/rules/flutter) | // State abstract class AuthState \{\} class AuthIni... | `**/*.dart`, `**/lib/**`... |
 | [`git`](/docs/rules/git) | [corps optionnel - details sur le "quoi" et "pourq... | - |
 | [`go`](/docs/rules/go) | // Custom errors var ErrUserNotFound = errors.New(... | `**/*.go`, `**/go.mod`... |

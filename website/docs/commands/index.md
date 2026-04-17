@@ -8,10 +8,10 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Commandes
 
-> **126 commandes** organisees en **10 domaines**
+> **129 commandes** organisees en **10 domaines**
 
 <Stats items={[
-  { number: 126, label: 'Commandes' },
+  { number: 129, label: 'Commandes' },
   { number: 10, label: 'Domaines' },
 ]} />
 
@@ -107,16 +107,16 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 
 
 
-### [OPS](/docs/commands/ops) (32)
+### [OPS](/docs/commands/ops) (34)
 
 > Operations (CI/CD, Docker, monitoring, GitFlow)
 
 - [`/ops:ops-backup`](/docs/commands/ops/ops-backup)
 - [`/ops:ops-ci`](/docs/commands/ops/ops-ci)
+- [`/ops:ops-ci-fix`](/docs/commands/ops/ops-ci-fix)
 - [`/ops:ops-cost`](/docs/commands/ops/ops-cost)
 - [`/ops:ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization)
-- [`/ops:ops-database`](/docs/commands/ops/ops-database)
-- [... et 27 autres](/docs/commands/ops)
+- [... et 29 autres](/docs/commands/ops)
 
 
 ### [QA](/docs/commands/qa) (16)
@@ -131,16 +131,16 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [... et 11 autres](/docs/commands/qa)
 
 
-### [WORK](/docs/commands/work) (14)
+### [WORK](/docs/commands/work) (15)
 
 > Workflow principal (explore, plan, commit, PR)
 
 - [`/work:work-batch`](/docs/commands/work/work-batch)
+- [`/work:work-brainstorm`](/docs/commands/work/work-brainstorm)
 - [`/work:work-clarify`](/docs/commands/work/work-clarify)
 - [`/work:work-commit`](/docs/commands/work/work-commit)
 - [`/work:work-commit-push-pr`](/docs/commands/work/work-commit-push-pr)
-- [`/work:work-explore`](/docs/commands/work/work-explore)
-- [... et 9 autres](/docs/commands/work)
+- [... et 10 autres](/docs/commands/work)
 
 
 ## Guide de choix rapide

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 14
 title: "/work:work-quick"
 description: "Workflow rapide pour changements triviaux (1-3 fichiers,  50 lignes, zero risque)."
 tags:
