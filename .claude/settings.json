@@ -536,6 +536,45 @@
           }
         ]
       }
+    ],
+    "PermissionDenied": [
+      {
+        "description": "Logger les permissions refusees par l'auto mode classifier (CLI 2.1.111+)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[PERM-DENIED] $(date +%Y-%m-%dT%H:%M:%S) $(echo \"$HOOK_INPUT\" | head -c 200)\" >> /tmp/claude-permissions.log 2>/dev/null || true'",
+            "timeout": 5000,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "description": "Logger les prompts utilisateur pour debugging et analytics",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[PROMPT] $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-prompts.log 2>/dev/null || true'",
+            "timeout": 5000,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "description": "Logger les echecs d'outils pour debugging",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"[TOOL-FAIL] $(date +%Y-%m-%dT%H:%M:%S) tool=$TOOL_NAME\" >> /tmp/claude-failures.log 2>/dev/null || true'",
+            "timeout": 5000,
+            "async": true
+          }
+        ]
+      }
     ]
   }
 }
