@@ -26,11 +26,11 @@ Integration: hooks PostToolUse (auto-format, type-check, lint), PreToolUse sur c
 
 ## Modele Recommande
 
-&gt; "I use Opus 4.6 with adaptive thinking for everything." -- Boris Cherny
+&gt; "I use Opus 4.7 with adaptive thinking for everything." -- Boris Cherny
 
 | Contexte | Modele | Justification |
 |----------|--------|---------------|
-| Taches complexes | **Opus 4.6** | Meilleur raisonnement, adaptive thinking, 1M contexte |
+| Taches complexes | **Opus 4.7** | Meilleur raisonnement, adaptive thinking, 1M contexte |
 | Audits et analyses | **Sonnet** | Bon equilibre vitesse/qualite |
 | Taches simples | **Haiku** | Rapide pour les operations triviales |
 

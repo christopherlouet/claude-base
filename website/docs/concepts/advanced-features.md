@@ -1,16 +1,16 @@
 ---
 sidebar_position: 10
 title: Fonctionnalites Avancees
-description: Opus 4.6, Agent Teams, Plugins, LSP, MCP et fonctionnalites avancees de Claude Code
+description: Opus 4.7, Agent Teams, Plugins, LSP, MCP et fonctionnalites avancees de Claude Code
 ---
 
 # Fonctionnalites Avancees
 
-> Capacites avancees de Claude Code : Opus 4.6, Agent Teams, Plugins, LSP et plus
+> Capacites avancees de Claude Code : Opus 4.7, Agent Teams, Plugins, LSP et plus
 
-## Opus 4.6 : Nouvelles Capacites
+## Opus 4.7 : Nouvelles Capacites
 
-Claude Opus 4.6 (`claude-opus-4-6`) apporte des ameliorations majeures pour Claude Code.
+Claude Opus 4.7 (`claude-opus-4-6`) apporte des ameliorations majeures pour Claude Code.
 
 ### Adaptive Thinking
 
@@ -40,7 +40,7 @@ const response = await anthropic.messages.create({
 
 ### Fenetre de contexte 1M tokens (beta)
 
-Opus 4.6 supporte jusqu'a **1 million de tokens** en entree (beta). La tarification standard s'applique jusqu'a 200k tokens, avec une tarification premium au-dela.
+Opus 4.7 supporte jusqu'a **1 million de tokens** en entree (beta). La tarification standard s'applique jusqu'a 200k tokens, avec une tarification premium au-dela.
 
 | Tranche | Tarification |
 |---------|-------------|

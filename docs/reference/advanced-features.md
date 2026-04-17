@@ -38,13 +38,14 @@ Bonnes pratiques:
 
 ## Effort Levels (CLI 2.1.76+)
 
-Commande `/effort` pour controler le niveau de raisonnement:
+Commande `/effort` pour controler le niveau de raisonnement (slider interactif depuis v2.1.111):
 
 | Niveau | Commande | Cas d'usage |
 |--------|----------|-------------|
 | `low` | `/effort low` | Exploration, formatage, taches simples |
 | `medium` | `/effort medium` | Developpement standard, corrections |
 | `high` | `/effort high` | Architecture, audit, refactoring complexe, debug |
+| `xhigh` | `/effort xhigh` | Raisonnement maximum — architecture systeme critique, audit securite avance (Opus 4.7 requis) |
 
 Recommandations par workflow du socle:
 
@@ -53,7 +54,7 @@ Recommandations par workflow du socle:
 | `/work:work-explore` | low |
 | `/work:work-specify`, `/work:work-plan` | high |
 | `/dev:dev-tdd` | medium |
-| `/qa:qa-audit`, `/qa:qa-security` | high |
+| `/qa:qa-audit`, `/qa:qa-security` | high ou xhigh |
 | `/work:work-commit` | low |
 
 ## Sessions Nommees (CLI 2.1.76+)
@@ -82,11 +83,13 @@ vscode://anthropic.claude-code/open
 
 Utile pour: integration CI/CD, scripts de setup, hooks de notification.
 
-## Opus 4.6
+## Opus 4.7
 
-Adaptive Thinking : Claude ajuste automatiquement la profondeur de son raisonnement selon la complexite de la tache. Remplace `budget_tokens` (deprecie). 3 niveaux d'effort (`low`, `medium`, `high`) pour guider le raisonnement.
+Adaptive Thinking : Claude ajuste automatiquement la profondeur de son raisonnement selon la complexite de la tache. Remplace `budget_tokens` (deprecie). 4 niveaux d'effort (`low`, `medium`, `high`, `xhigh`) pour guider le raisonnement.
 
 Fenetre 1M tokens, 128k tokens de sortie, Context Compaction automatique. Le raisonnement s'intercale entre les appels d'outils (interleaved thinking) pour les workflows agentiques.
+
+Nouveaute v2.1.111 : `xhigh` debloque le raisonnement maximum d'Opus 4.7. Auto mode disponible pour les abonnes Max (permissions automatiques intelligentes).
 
 ## Checkpoint / Rewind
 
@@ -96,12 +99,23 @@ Claude Code sauvegarde automatiquement l'etat du code avant chaque modification 
 |---------|--------|
 | `Esc` × 2 | Annuler la derniere modification et revenir au checkpoint |
 | `/rewind` | Choisir un checkpoint specifique dans l'historique |
+| `/undo` | Alias de `/rewind` (CLI 2.1.108+) |
 
-Recommande en phase Refactor du TDD : si le refactoring casse les tests, `/rewind` est plus rapide qu'un revert git manuel.
+Recommande en phase Refactor du TDD : si le refactoring casse les tests, `/rewind` (ou `/undo`) est plus rapide qu'un revert git manuel.
+
+## Session Recap (CLI 2.1.108+)
+
+`/recap` genere un resume structure de la session : decisions prises, fichiers modifies, etat du travail. Configurable dans `/config`.
+
+| Situation | Action |
+|-----------|--------|
+| Retour apres une pause | `/recap` pour retrouver le contexte |
+| Apres `/compact` | `/recap` pour verifier ce qui a ete conserve |
+| Session resumee | Recap automatique au resume (si active dans `/config`) |
 
 ## Fast Mode (Research Preview)
 
-Meme modele Opus 4.6, sortie 2.5x plus rapide. Toggle avec `/fast`. Cout premium (voir pricing Anthropic).
+Meme modele Opus 4.7, sortie 2.5x plus rapide. Toggle avec `/fast`. Cout premium (voir pricing Anthropic).
 
 | Cas d'usage | Recommandation |
 |-------------|----------------|
@@ -209,7 +223,7 @@ Recommandations: toujours `async: true` et `onFailure: "ignore"` pour eviter de 
 
 ## Claude Code Security (Enterprise/Team)
 
-Outil de scan de vulnerabilites utilisant Opus 4.6 pour analyser le code au-dela de l'analyse statique traditionnelle. Raisonne sur les flux de donnees, interactions entre composants et patterns architecturaux.
+Outil de scan de vulnerabilites utilisant Opus 4.7 pour analyser le code au-dela de l'analyse statique traditionnelle. Raisonne sur les flux de donnees, interactions entre composants et patterns architecturaux.
 
 Prerequis: plan Enterprise ou Team. Complement de `/qa:qa-security` pour un audit approfondi. Voir [annonce Anthropic](https://www.anthropic.com/news/claude-code-security).
 
@@ -257,7 +271,9 @@ Jobs recurrents executes sur l'infrastructure cloud Anthropic. Utile pour les ta
 | Dependency audits | Audit periodique des dependances |
 | Doc syncing | Synchronisation de documentation |
 
-Configuration via `/tasks` ou l'API. Necessite un plan Pro/Max/Team/Enterprise.
+Configuration via `/tasks`, `/schedule` ou l'API. Necessite un plan Pro/Max/Team/Enterprise.
+
+Voir aussi **Routines** (section ci-dessus) pour les workflows automatises plus complexes combinant prompts, repos et connecteurs.
 
 ## Computer Use
 
@@ -265,18 +281,95 @@ Integration directe dans Claude Code (Pro/Max). Permet d'ouvrir des fichiers, la
 
 Utile pour: tests visuels, interactions UI, workflows necessitant un navigateur ou un emulateur.
 
+## Routines (CLI 2.1.108+)
+
+Les Routines sont des workflows automatises qui tournent sur l'infrastructure cloud Anthropic. Une routine combine un prompt, un ou plusieurs repos, et des connecteurs en une configuration unique executable sur schedule, via API, ou sur evenement GitHub.
+
+| Propriete | Description |
+|-----------|-------------|
+| Prompt | Les instructions a executer |
+| Repos | Un ou plusieurs repositories cibles |
+| Connecteurs | MCP servers, GitHub events, API triggers |
+| Execution | Cloud Anthropic — tourne meme laptop eteint |
+
+Cas d'usage avec le socle :
+
+| Routine | Description | Equivalent socle |
+|---------|-------------|------------------|
+| Review automatique de PRs | Review chaque nouvelle PR | `/qa:qa-review` en version cloud |
+| Audit periodique | Audit securite/qualite hebdomadaire | `/qa:qa-audit` en version planifiee |
+| Standup automatique | Resume d'activite quotidien | `/ops:ops-standup` en version cloud |
+| Dependency check | Audit deps chaque lundi | `/ops:ops-deps` en version planifiee |
+
+Configuration via la console Anthropic ou `/schedule`. Necessite un plan Pro/Max/Team/Enterprise.
+
+## Ultraplan et Ultrareview (CLI 2.1.101+)
+
+Commandes cloud qui delegent le travail a des agents paralleles sur l'infrastructure Anthropic.
+
+| Commande | Description | Quand utiliser |
+|----------|-------------|----------------|
+| `/ultraplan` | Plan en cloud : draft, revue dans un editeur web, execution remote ou locale | Architecture complexe, plans multi-fichiers |
+| `/ultrareview` | Review multi-agent parallele en cloud | Grosses PRs, revues approfondies |
+
+`/ultraplan` cree automatiquement un environnement cloud au premier lancement. Le plan peut etre revise via un editeur web avant execution.
+
+`/ultrareview` lance plusieurs agents en parallele pour une review plus exhaustive que `/qa:qa-review` local. Ideal pour les PRs de plus de 500 lignes.
+
+## TUI Fullscreen (CLI 2.1.110+)
+
+Mode plein ecran sans scintillement. Active avec `/tui fullscreen` ou le setting `tui`.
+
+| Mode | Commande | Description |
+|------|----------|-------------|
+| Fullscreen | `/tui fullscreen` | Rendu plein ecran, flicker-free |
+| Focus | `/focus` | Vue condensee : prompt, resume 1 ligne des outils, reponse finale |
+
+Combine bien avec les sessions longues (TDD, audit). `Ctrl+L` force le rafraichissement ecran.
+
+## Push Notifications (CLI 2.1.110+)
+
+Claude peut envoyer des notifications push sur mobile quand Remote Control est active. Utile pour les taches longues en arriere-plan.
+
+Activation : activer Remote Control + "Push when Claude decides" dans `/config`. Claude notifie en fin de tache ou quand une decision humaine est necessaire.
+
 ## `/loop` Command
 
 Executer un prompt ou une commande a intervalles reguliers:
 
 ```bash
 /loop 5m "run tests and report failures"   # toutes les 5 minutes
-/loop "check CI status"                     # defaut: toutes les 10 minutes
+/loop "check CI status"                     # auto-pace par Claude (CLI 2.1.101+)
 ```
+
+Alias : `/proactive` (CLI 2.1.105+). Sans intervalle, Claude auto-determine la frequence optimale.
 
 ## `/powerup` Command
 
 Lessons interactives et demos animees pour decouvrir les fonctionnalites de Claude Code. Utile pour l'onboarding de nouveaux utilisateurs.
+
+## `/less-permission-prompts` (CLI 2.1.111+)
+
+Scanne les transcripts de la session et propose des allowlists de permissions optimisees. Reduit le nombre de prompts de permission sans compromettre la securite.
+
+Utile pour : onboarding (generer les permissions initiales), sessions avec trop de prompts, optimisation de la configuration equipe.
+
+## Prompt Caching Avance (CLI 2.1.108+)
+
+| Variable | TTL | Description |
+|----------|-----|-------------|
+| `ENABLE_PROMPT_CACHING_1H` | 1 heure | Cache prompt etendu pour sessions longues (API key, Bedrock, Vertex, Foundry) |
+| `FORCE_PROMPT_CACHING_5M` | 5 minutes | Force le TTL 5 min (utile si telemetrie desactivee) |
+
+Activer dans `.claude/settings.local.json` (non commite) :
+
+```json
+{
+  "env": {
+    "ENABLE_PROMPT_CACHING_1H": "1"
+  }
+}
+```
 
 ## Variables d'Environnement Avancees
 
@@ -285,6 +378,8 @@ Lessons interactives et demos animees pour decouvrir les fonctionnalites de Clau
 | `CLAUDE_CODE_NO_FLICKER=1` | Rendu alt-screen sans scintillement (virtualized scrollback) |
 | `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` | Supprime les credentials des variables d'env des subprocesses |
 | `MCP_CONNECTION_NONBLOCKING=true` | Skip l'attente de connexion MCP en mode `-p` (headless/CI) |
+| `ENABLE_PROMPT_CACHING_1H=1` | Cache prompt 1 heure (economies significatives) |
+| `FORCE_PROMPT_CACHING_5M=1` | Force cache prompt 5 minutes |
 
 ## Settings Avances
 

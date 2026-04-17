@@ -345,7 +345,7 @@ Claude Code utilise une "fenetre de contexte" — la quantite totale d'informati
 |--------|----------|--------------------------|
 | Haiku 4.5 | 200k tokens | ~150 000 mots |
 | Sonnet 4.6 | 200k tokens | ~150 000 mots |
-| Opus 4.6 | 1M tokens | ~750 000 mots (~5 romans) |
+| Opus 4.7 | 1M tokens | ~750 000 mots (~5 romans) |
 
 Quand le contexte est plein, les reponses deviennent moins precises (Claude "oublie" les debuts de session). `/compact` resout ce probleme.
 
@@ -528,19 +528,19 @@ L'effort level controle la profondeur du raisonnement de Claude. Plus l'effort e
 | low | `/effort low` | Explorer du code, lire des fichiers, questions simples | "Qu'est-ce que ce fichier fait ?" |
 | medium | `/effort medium` | Implementer une feature standard, corriger un bug | "Ajoute la validation d'email" |
 | high | `/effort high` | Concevoir une architecture, refactoring majeur, audit | "Refactorise le module auth" |
-| max | `/effort max` | Debug complexe, securite critique (Opus 4.6 seulement) | "Trouve la fuite memoire" |
+| max | `/effort max` | Debug complexe, securite critique (Opus 4.7 seulement) | "Trouve la fuite memoire" |
 
 ### Modeles disponibles
 
 | Modele | Force | Use case | Vitesse |
 |--------|-------|----------|---------|
-| Opus 4.6 | Meilleur raisonnement, 1M contexte | Architecture, audit, debug complexe | Lent |
+| Opus 4.7 | Meilleur raisonnement, 1M contexte | Architecture, audit, debug complexe | Lent |
 | Sonnet 4.6 | Equilibre qualite/vitesse | Developpement quotidien | Moyen |
 | Haiku 4.5 | Tres rapide | Taches simples, reformulation, questions | Rapide |
 
 Changer de modele :
 ```bash
-/model opus     # Opus 4.6
+/model opus     # Opus 4.7
 /model sonnet   # Sonnet 4.6 (defaut)
 /model haiku    # Haiku 4.5
 ```
