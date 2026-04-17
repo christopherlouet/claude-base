@@ -2,12 +2,13 @@
 
 Regles modulaires appliquees automatiquement selon les fichiers modifies (path-specific rules).
 
-## Regles disponibles (26)
+## Regles disponibles (29)
 
 | Regle | Paths cibles | Description |
 |-------|-------------|-------------|
 | `accessibility` | `**/*.tsx`, `**/*.jsx`, `**/components/**`, `**/pages/**` | WCAG 2.1 AA, aria, semantic HTML |
 | `api` | `**/api/**`, `**/routes/**`, `**/controllers/**` | REST conventions, validation, status codes |
+| `astro` | `**/*.astro`, `**/astro.config.*`, `**/content/**` | Islands architecture, client directives, Content Collections |
 | `csharp` | `**/*.cs`, `**/*.csproj` | Nullable, async/await, .NET patterns |
 | `deploy-safety` | `**/docker-compose*`, `**/Dockerfile*`, `**/deploy*`, `**/.env*`, `**/middleware.*`, `**/sw.js`, `**/layout.tsx` | Checklist pre-deploy, REVERT FIRST, high-risk files |
 | `design-style` | `**/*.tsx`, `**/*.jsx`, `**/components/**`, `**/pages/**`, `**/app/**` | Direction artistique UI (terminal, cockpit, vitality, editorial, glass, signal) |
@@ -27,10 +28,12 @@ Regles modulaires appliquees automatiquement selon les fichiers modifies (path-s
 | `rust` | `**/*.rs`, `**/Cargo.toml` | Ownership, error handling, traits |
 | `security` | `**/auth/**`, `**/api/**`, `**/middleware/**` | XSS, SQL injection, CSRF, auth |
 | `service-worker` | `**/sw.js`, `**/service-worker*` | NEVER cache HTML navigations, bump cache version |
+| `svelte` | `**/*.svelte`, `**/*.svelte.ts`, `**/svelte.config.*` | Runes (Svelte 5), SvelteKit, form actions |
 | `tdd-enforcement` | `**/*.ts`, `**/*.tsx`, `**/*.dart`, `**/*.py`, `**/*.go`, ... | TDD proactif obligatoire pour tout code |
 | `testing` | `**/*.test.ts`, `**/*.spec.ts`, `**/tests/**` | Couverture 80%, mocks, edge cases |
 | `typescript` | `**/*.ts`, `**/*.tsx`, `**/*.mts` | Strict mode, no any, interfaces |
 | `verification` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, ... | Verification 4 phases avant completion |
+| `vue` | `**/*.vue`, `**/composables/**`, `**/stores/**`, `**/nuxt.config.*` | Composition API, Pinia, Nuxt 3+ |
 | `workflow` | _(global)_ | Explore → Plan → TDD → Commit |
 
 ## Ordre de priorité des rules

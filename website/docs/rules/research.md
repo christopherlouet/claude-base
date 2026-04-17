@@ -1,5 +1,5 @@
 ---
-sidebar_position: 18
+sidebar_position: 19
 title: "research"
 description: "Avant d'implementer une solution custom, verifier si le framework ou l'outil en place fournit deja la fonctionnalite nativement."
 tags:
