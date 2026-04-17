@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: "deploy-safety"
 description: "Chaque deploiement doit etre valide avant execution. Ne jamais deployer de config dev en production."
 tags:

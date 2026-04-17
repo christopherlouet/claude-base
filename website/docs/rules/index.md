@@ -8,11 +8,11 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Regles
 
-> **26 regles** appliquees automatiquement par chemin de fichier
+> **29 regles** appliquees automatiquement par chemin de fichier
 
 <Stats items={[
-  { number: 26, label: 'Regles' },
-  { number: 138, label: 'Patterns' },
+  { number: 29, label: 'Regles' },
+  { number: 150, label: 'Patterns' },
 ]} />
 
 ## Qu'est-ce qu'une Rule ?
@@ -30,6 +30,7 @@ Les **rules** sont des conventions appliquees automatiquement :
 |-------|-------------|-------|
 | [`accessibility`](/docs/rules/accessibility) | IMPORTANT: Chaque image doit avoir un attribut alt... | `**/*.tsx`, `**/*.jsx`... |
 | [`api`](/docs/rules/api) | // Error \{ "success": false, "error": \{ "code": "V... | `**/api/**`, `**/routes/**`... |
+| [`astro`](/docs/rules/astro) | Astro rend **zero JS par défaut**. Les composants ... | `**/*.astro`, `**/astro.config.*`... |
 | [`csharp`](/docs/rules/csharp) | // 2. Champs prives readonly private readonly IUse... | `**/*.cs`, `**/*.csproj`... |
 | [`deploy-safety`](/docs/rules/deploy-safety) | Chaque deploiement doit etre valide avant executio... | `**/docker-compose*.yml`, `**/docker-compose*.yaml`... |
 | [`design-style`](/docs/rules/design-style) | La direction design du projet est definie dans CLA... | `**/*.tsx`, `**/*.jsx`... |
@@ -49,10 +50,12 @@ Les **rules** sont des conventions appliquees automatiquement :
 | [`rust`](/docs/rules/rust) | // 2. Constants const MAX_CONNECTIONS: usize = 100... | `**/*.rs`, `**/Cargo.toml` |
 | [`security`](/docs/rules/security) | 3 vecteurs d'attaque identifies (fev. 2026) lors d... | `**/auth/**`, `**/api/**`... |
 | [`service-worker`](/docs/rules/service-worker) | The SW must NEVER cache `request.mode === "navigat... | `**/sw.js`, `**/service-worker*`... |
+| [`svelte`](/docs/rules/svelte) | Svelte 5+ utilise les **runes** : `$state`, `$deri... | `**/*.svelte`, `**/*.svelte.ts`... |
 | [`tdd-enforcement`](/docs/rules/tdd-enforcement) | IMPORTANT: Quand l'utilisateur demande d'implement... | `**/*.ts`, `**/*.tsx`... |
 | [`testing`](/docs/rules/testing) | // Act - Executer l'action const result = function... | `**/*.test.ts`, `**/*.test.tsx`... |
 | [`typescript`](/docs/rules/typescript) | TypeScript Rules | `**/*.ts`, `**/*.tsx`... |
 | [`verification`](/docs/rules/verification) | Toute implementation doit etre verifiee AVANT d'et... | `**/*.ts`, `**/*.tsx`... |
+| [`vue`](/docs/rules/vue) | const count = ref(0) const double = computed(() =&gt;... | `**/*.vue`, `**/composables/**`... |
 | [`workflow`](/docs/rules/workflow) | Avant de commencer a travailler sur un projet exis... | - |
 
 ## Categories

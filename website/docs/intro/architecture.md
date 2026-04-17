@@ -23,7 +23,7 @@ graph TB
         CMDS[commands/<br/>129 commandes]
         AGENTS[agents/<br/>62 sub-agents]
         SKILLS[skills/<br/>53 skills]
-        RULES[rules/<br/>26 rules]
+        RULES[rules/<br/>29 rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
     end
@@ -119,7 +119,7 @@ Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 "Fais un commit" → Skill generating-commit-messages active
 ```
 
-### Rules (26)
+### Rules (29)
 
 Les **rules** sont des regles appliquees par chemin de fichier.
 
