@@ -33,7 +33,7 @@ Integration de LLMs et APIs IA dans les applications.
 
 | Provider | SDK | Modeles Principaux |
 |----------|-----|-------------------|
-| Anthropic | @anthropic-ai/sdk | Claude Opus 4.6, Sonnet 4.5, Haiku 4.5 |
+| Anthropic | @anthropic-ai/sdk | Claude Opus 4.7, Sonnet 4.5, Haiku 4.5 |
 | OpenAI | openai | GPT-4o, GPT-4 Turbo |
 | Google | @google/generative-ai | Gemini Pro, Gemini Ultra |
 
@@ -43,7 +43,7 @@ Integration de LLMs et APIs IA dans les applications.
 2. **Streaming** : `.stream()` pour reponses incrementales
 3. **Tool Use** : Function calling avec input_schema
 4. **RAG** : Embed query → similarity search → generate with context
-5. **Adaptive Thinking** : Opus 4.6 avec `thinking.effort` (low/medium/high/max)
+5. **Adaptive Thinking** : Opus 4.7 avec `thinking.effort` (low/medium/high/max)
 
 ## Bonnes Pratiques
 

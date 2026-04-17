@@ -92,7 +92,7 @@ vscode://anthropic.claude-code/open
 
 Utile pour: integration CI/CD, scripts de setup, hooks de notification.
 
-## Opus 4.6
+## Opus 4.7
 
 Adaptive Thinking : Claude ajuste automatiquement la profondeur de son raisonnement selon la complexite de la tache. Remplace `budget_tokens` (deprecie). 3 niveaux d'effort (`low`, `medium`, `high`) pour guider le raisonnement.
 
@@ -111,7 +111,7 @@ Recommande en phase Refactor du TDD : si le refactoring casse les tests, `/rewin
 
 ## Fast Mode (Research Preview)
 
-Meme modele Opus 4.6, sortie 2.5x plus rapide. Toggle avec `/fast`. Cout premium (voir pricing Anthropic).
+Meme modele Opus 4.7, sortie 2.5x plus rapide. Toggle avec `/fast`. Cout premium (voir pricing Anthropic).
 
 | Cas d'usage | Recommandation |
 |-------------|----------------|
@@ -219,7 +219,7 @@ Recommandations: toujours `async: true` et `onFailure: "ignore"` pour eviter de 
 
 ## Claude Code Security (Enterprise/Team)
 
-Outil de scan de vulnerabilites utilisant Opus 4.6 pour analyser le code au-dela de l'analyse statique traditionnelle. Raisonne sur les flux de donnees, interactions entre composants et patterns architecturaux.
+Outil de scan de vulnerabilites utilisant Opus 4.7 pour analyser le code au-dela de l'analyse statique traditionnelle. Raisonne sur les flux de donnees, interactions entre composants et patterns architecturaux.
 
 Prerequis: plan Enterprise ou Team. Complement de `/qa:qa-security` pour un audit approfondi. Voir [annonce Anthropic](https://www.anthropic.com/news/claude-code-security).
 
