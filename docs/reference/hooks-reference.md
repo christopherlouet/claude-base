@@ -91,6 +91,9 @@ Les hooks PreToolUse peuvent retourner `"defer"` comme decision de permission. L
 | **InstructionsLoaded** | InstructionsLoaded | Log le chargement des instructions (async) |
 | **Elicitation** | Elicitation | Log les demandes MCP Elicitation (async) |
 | **ElicitationResult** | ElicitationResult | Log les reponses MCP Elicitation (async) |
+| **PermissionDenied** | PermissionDenied | Log les permissions refusees par l'auto mode (async, CLI 2.1.111+) |
+| **UserPromptSubmit** | UserPromptSubmit | Log les submissions de prompt utilisateur (async) |
+| **PostToolUseFailure** | PostToolUseFailure | Log les echecs d'outils pour debugging (async) |
 | **Check .env** | SessionStart | Verifie que .env est dans .gitignore |
 | **Warning hooks tiers** | SessionStart | Avertit si des hooks personnalises sont detectes |
 
@@ -115,3 +118,6 @@ Les hooks de logging ecrivent dans `/tmp/` (mode append, nettoyes au redemarrage
 | `/tmp/claude-agents.log` | Activite des sub-agents et teammates |
 | `/tmp/claude-notifications.log` | Permissions et attentes utilisateur |
 | `/tmp/claude-mcp.log` | Evenements MCP Elicitation |
+| `/tmp/claude-permissions.log` | Permissions refusees par l'auto mode classifier |
+| `/tmp/claude-prompts.log` | Submissions de prompt utilisateur (timestamps) |
+| `/tmp/claude-failures.log` | Echecs d'outils avec nom de l'outil |
