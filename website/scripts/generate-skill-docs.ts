@@ -155,6 +155,19 @@ function parseSkillFile(dirPath: string): SkillInfo | null {
 }
 
 /**
+ * Rewrite relative references/ links to GitHub absolute URLs.
+ * Reference files live under .claude/skills/<name>/references/ which
+ * isn't synced to the Docusaurus site — link to the source on GitHub.
+ */
+function rewriteReferenceLinks(content: string, skillName: string): string {
+  const baseUrl = `https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/${skillName}/references`;
+  return content.replace(
+    /\]\(references\/([^)]+)\)/g,
+    (_, file) => `](${baseUrl}/${file})`,
+  );
+}
+
+/**
  * Generate the Docusaurus page content for a skill
  */
 function generateSkillPage(skill: SkillInfo, position: number): string {
@@ -193,7 +206,7 @@ ${contextBadge}
 
 ## Description detaillee
 
-${skill.content}
+${rewriteReferenceLinks(skill.content, skill.name)}
 
 ## Declenchement automatique
 
