@@ -1,5 +1,5 @@
 ---
-sidebar_position: 19
+sidebar_position: 23
 title: "git-worktrees"
 description: "Utilisation de git worktrees pour le developpement parallele. Declencher quand l'utilisateur veut travailler sur plusieurs branches simultanement, faire du dev parallele, ou gerer des worktrees."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `git`, `worktrees`, `cd ~/projects/myapp`, `cd ~/projects/myapp-feature`, `cd ~/projects/myapp-fix`, `cd ~/projects/myapp-review`, `cd ~/projects/myapp-analysis` |
+| **Mots-cles** | `git`, `worktrees`, `sessions paralleles` |
 
 ## Description detaillee
 
@@ -304,7 +304,7 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux git..."_
 - _"Je veux worktrees..."_
-- _"Je veux cd ~/projects/myapp..."_
+- _"Je veux sessions paralleles..."_
 
 ## Contexte fork
 

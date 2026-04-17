@@ -1,5 +1,5 @@
 ---
-sidebar_position: 17
+sidebar_position: 21
 title: "doc-generate"
 description: "Generation de documentation technique. Declencher quand l'utilisateur veut creer README, docs API, ou guides."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Mots-cles** | `doc`, `generate`, `uuid`, `email`, `user@example.com`, `name`, `john` |
+| **Mots-cles** | `doc`, `generate` |
 
 ## Description detaillee
 
@@ -110,7 +110,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux doc..."_
 - _"Je veux generate..."_
-- _"Je veux uuid..."_
 
 ## Contexte fork
 

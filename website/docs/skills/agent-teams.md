@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Glob`, `Grep`, `Bash` |
-| **Mots-cles** | `agent`, `teams`, `env`, `teammatemode`, `auto`, `audit complet du projet`, `audit-team` |
+| **Mots-cles** | `agent`, `teams`, `audit-team` |
 
 ## Description detaillee
 
@@ -268,7 +268,7 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux agent..."_
 - _"Je veux teams..."_
-- _"Je veux env..."_
+- _"Je veux audit-team..."_
 
 ## Contexte fork
 

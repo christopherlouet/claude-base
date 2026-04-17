@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 16
 title: "dev-refactor"
 description: "Refactoring de code pour ameliorer la qualite. Declencher quand l'utilisateur veut nettoyer, restructurer, ou ameliorer du code existant."
 tags:

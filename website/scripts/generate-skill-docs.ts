@@ -61,13 +61,22 @@ function extractKeywords(content: string, name: string): string[] {
     keywords.push(...triggers.map((t) => t.trim().toLowerCase()).filter((t) => t.length > 2));
   }
 
-  // Look for quoted keywords
-  const quotedMatches = content.match(/"([^"]+)"/g);
+  // Look for quoted keywords — strip code blocks first to avoid extracting code
+  const contentWithoutCode = content
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`[^`]*`/g, '');
+  const quotedMatches = contentWithoutCode.match(/"([^"]+)"/g);
   if (quotedMatches) {
     keywords.push(
       ...quotedMatches
         .map((m) => m.replace(/"/g, '').toLowerCase())
-        .filter((k) => k.length > 2 && k.length < 30)
+        .filter(
+          (k) =>
+            k.length > 2 &&
+            k.length < 30 &&
+            // Reject MDX-breaking characters in keywords
+            !/[<>{}`/\\]/.test(k)
+        )
         .slice(0, 5)
     );
   }
