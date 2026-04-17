@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "lsp"
 description: "LSP disponible via `ENABLE_LSP_TOOL=1` ou plugins LSP configures dans `.lsp.json`. Les language servers doivent etre installes localement (npm, pip, g"
 tags:

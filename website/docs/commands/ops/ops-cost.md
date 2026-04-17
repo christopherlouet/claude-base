@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: "/ops:ops-cost"
 description: "Suivi de la consommation de tokens et des couts Claude Code."
 tags:

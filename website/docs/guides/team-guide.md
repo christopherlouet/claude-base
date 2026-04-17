@@ -248,11 +248,12 @@ paths:
 
 | Usage | Modele | Pourquoi |
 |-------|--------|---------|
-| Architecture, conception | Opus 4.7 | Raisonnement profond, 1M contexte |
+| Architecture, conception | Opus 4.7 | Raisonnement le plus avance, 1M contexte, effort `xhigh` |
 | Implementation features | Sonnet | Equilibre vitesse/qualite |
 | Exploration, lecture | Haiku | Rapide pour operations simples |
 | Audits securite | Sonnet ou Opus 4.7 | Detection de failles subtiles |
 | Reviews PR en CI | Haiku | Cout faible, volume eleve |
+| Review cloud (grosses PRs) | `/ultrareview` | Agents paralleles en cloud |
 
 ---
 
@@ -303,6 +304,8 @@ claude
 ```
 
 L'agent `work-explore` lit le codebase, identifie les patterns en place, et produit un resume structuree. Laisser tourner 10 a 15 minutes pour un projet de taille moyenne.
+
+Complement : `/team-onboarding` (built-in CLI 2.1.101+) genere automatiquement un guide d'onboarding a partir de l'usage local de Claude Code. Utile pour le lead qui prepare le terrain avant l'arrivee du nouveau membre.
 
 ### Etape 6 : Premiere tache - "good first issue"
 

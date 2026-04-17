@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Agents Disponibles (123 commands, 59 sub-agents, 42 skills)"
+title: "Agents Disponibles (126 commands, 59 sub-agents, 42 skills)"
 description: "Claude delegue automatiquement aux agents specialises (contexte isole, outils restreints)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Agents Disponibles (123 commands, 59 sub-agents, 42 skills)
+# Agents Disponibles (126 commands, 59 sub-agents, 42 skills)
 
 ## Orchestrateur (Point d'entree unique)
 | Commande | Mode | Usage |
@@ -16,10 +16,11 @@ tags:
 | `/assistant` | Guide | Analyse → Recommande → Attend confirmation |
 | `/assistant-auto` | Automatique | Analyse → Execute directement le workflow |
 
-## WORK- : Workflow Principal (12)
+## WORK- : Workflow Principal (13)
 | Commande | Usage |
 |----------|-------|
 | `/work:work-explore` | Explorer et comprendre le code |
+| `/work:work-brainstorm` | Ideation structuree avant specification (alternatives, questionnement) |
 | `/work:work-specify` | Creer une specification fonctionnelle (User Stories, criteres) |
 | `/work:work-clarify` | Clarifier les ambiguites de la spec (questions ciblees) |
 | `/work:work-plan` | Planifier une implementation (genere plan.md + tasks.md) |
@@ -79,7 +80,7 @@ tags:
 | `/qa:qa-e2e` | Tests End-to-End (Playwright, Cypress) |
 | `/qa:qa-tech-debt` | Identifier et prioriser la dette technique |
 
-## OPS- : Operations (31)
+## OPS- : Operations (33)
 | Commande | Usage |
 |----------|-------|
 | `/ops:ops-hotfix` | Correction urgente production |
@@ -113,6 +114,8 @@ tags:
 | `/ops:ops-opnsense` | Configuration OPNsense via Terraform (firewall, NAT, DHCP/DNS) |
 | `/ops:ops-deploy` | Deploiement securise avec checklist pre-deploy |
 | `/ops:ops-rollback` | Procedure de rollback securisee |
+| `/ops:ops-standup` | Briefing matinal cross-repo (commits, PRs, CI, blockers, priorites) |
+| `/ops:ops-ci-fix` | Diagnostic et reparation autonome des pipelines CI/CD en echec |
 
 ## DOC- : Documentation (9)
 | Commande | Usage |

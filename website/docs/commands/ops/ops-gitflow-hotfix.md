@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 14
 title: "/ops:ops-gitflow-hotfix"
 description: "Gerer les hotfixes urgents avec GitFlow (start, finish, list)."
 tags:

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 title: "/ops:ops-disaster-recovery"
 description: "Mettre en place une strategie de reprise apres sinistre (Disaster Recovery)."
 tags:

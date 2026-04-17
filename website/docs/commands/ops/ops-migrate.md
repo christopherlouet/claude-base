@@ -1,5 +1,5 @@
 ---
-sidebar_position: 22
+sidebar_position: 23
 title: "/ops:ops-migrate"
 description: "Migration de code, dependances ou donnees."
 tags:

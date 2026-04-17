@@ -1,5 +1,5 @@
 ---
-sidebar_position: 28
+sidebar_position: 29
 title: "/ops:ops-release"
 description: "Workflow de release avec changelog et versioning."
 tags:

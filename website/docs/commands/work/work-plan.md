@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
 title: "/work:work-plan"
 description: "Concois un plan d'implementation detaille. Mode PLANIFICATION uniquement."
 tags:

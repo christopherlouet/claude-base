@@ -13,13 +13,14 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Vue d'ensemble
 
-Ce domaine contient **14 commandes** pour workflow principal (explore, plan, commit, pr).
+Ce domaine contient **15 commandes** pour workflow principal (explore, plan, commit, pr).
 
 ## Liste des commandes
 
 | Commande | Description |
 |----------|-------------|
 | [`/work:work-batch`](/docs/commands/work/work-batch) | Execution autonome et sequentielle de user stories depuis un fichier PRD (JSON ou Markdown). |
+| [`/work:work-brainstorm`](/docs/commands/work/work-brainstorm) | Ideation structuree : transformer une idee vague en design valide avant de specifier. |
 | [`/work:work-clarify`](/docs/commands/work/work-clarify) | Pose des questions ciblees pour reduire l'ambiguite dans une specification. |
 | [`/work:work-commit`](/docs/commands/work/work-commit) | Prepare et effectue un commit propre suivant les conventions. |
 | [`/work:work-commit-push-pr`](/docs/commands/work/work-commit-push-pr) | Workflow complet: commit + push + PR en une seule commande. |
@@ -42,6 +43,12 @@ Ce domaine contient **14 commandes** pour workflow principal (explore, plan, com
     description="Execution autonome et sequentielle de user stories depuis un fichier PRD (JSON ou Markdown)."
     domain="work"
     href="/docs/commands/work/work-batch"
+  />
+  <CommandCard
+    name="work-brainstorm"
+    description="Ideation structuree : transformer une idee vague en design valide avant de specifier."
+    domain="work"
+    href="/docs/commands/work/work-brainstorm"
   />
   <CommandCard
     name="work-clarify"

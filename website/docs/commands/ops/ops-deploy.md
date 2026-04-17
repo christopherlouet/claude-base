@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 title: "/ops:ops-deploy"
 description: "Deploiement securise avec checklist pre-deploy obligatoire."
 tags:
