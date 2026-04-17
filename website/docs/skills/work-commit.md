@@ -1,5 +1,5 @@
 ---
-sidebar_position: 43
+sidebar_position: 47
 title: "work-commit"
 description: "Génère des messages de commit clairs suivant Conventional Commits. Utiliser quand l'utilisateur veut commiter, demande un message de commit, ou après avoir terminé une modification."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Bash`, `Read`, `Grep` |
-| **Mots-cles** | `work`, `commit`, `quoi`, `pourquoi`, `add`, `added`, `adds` |
+| **Mots-cles** | `work`, `commit`, `add`, `added`, `adds` |
 
 ## Description detaillee
 
@@ -130,7 +130,7 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux work..."_
 - _"Je veux commit..."_
-- _"Je veux quoi..."_
+- _"Je veux add..."_
 
 ## Contexte fork
 

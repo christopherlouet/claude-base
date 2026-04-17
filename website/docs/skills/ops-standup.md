@@ -1,5 +1,5 @@
 ---
-sidebar_position: 30
+sidebar_position: 34
 title: "ops-standup"
 description: "Briefing matinal cross-repo. Agregation des commits recents, PRs, CI, blockers et priorites du jour. Declencher quand l'utilisateur veut un standup, un resume d'activite, ou savoir ce qui s'est passe."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Glob`, `Grep`, `Bash` |
-| **Mots-cles** | `ops`, `standup`, `24 hours ago`, `%h %an: %s`, `(weeks|months) ago`, `aucun`, `aucune activite` |
+| **Mots-cles** | `ops`, `standup`, `aucune activite` |
 
 ## Description detaillee
 
@@ -214,7 +214,7 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux ops..."_
 - _"Je veux standup..."_
-- _"Je veux 24 hours ago..."_
+- _"Je veux aucune activite..."_
 
 ## Contexte fork
 

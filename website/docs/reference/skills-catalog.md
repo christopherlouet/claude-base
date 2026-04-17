@@ -1,7 +1,7 @@
 ---
 sidebar_position: 16
 title: "Skills (Claude Code 2.1+)"
-description: "En plus des commandes, le projet inclut **42 Skills** dans `.claude/skills/`:"
+description: "En plus des commandes, le projet inclut **51 Skills** dans `.claude/skills/`:"
 tags:
   - "reference"
 ---
@@ -10,7 +10,7 @@ tags:
 
 # Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **42 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **51 Skills** dans `.claude/skills/`:
 
 ## Skills de base
 | Skill | Déclenchement automatique | Context |
@@ -63,6 +63,10 @@ En plus des commandes, le projet inclut **42 Skills** dans `.claude/skills/`:
 | `session-handoff` | "handoff", "reprise", "transfert session", "contexte" | fork |
 | `git-worktrees` | "worktree", "dev parallele", "branches simultanées" | fork |
 | `qa-chrome` | "Chrome", "test visuel", "debugging DOM", "capture" | fork |
+| `dev-frontend-design` | "design UI", "landing page", "direction artistique", "fonts" | fork |
+| `dev-shadcn` | "shadcn", "shadcn/ui", "Radix", "composants React" | fork |
+| `dev-nextjs` | "Next.js", "App Router", "Server Components", "RSC", "Server Actions" | fork |
+| `dev-auth` | "auth", "login", "signup", "OAuth", "better-auth", "NextAuth", "Lucia", "2FA" | fork |
 | `writing-skills` | "créer skill", "nouveau skill", "écrire un skill" | fork |
 
 ## Configuration des Skills

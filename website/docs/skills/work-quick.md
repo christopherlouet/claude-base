@@ -1,5 +1,5 @@
 ---
-sidebar_position: 47
+sidebar_position: 51
 title: "work-quick"
 description: "Workflow rapide pour changements triviaux (single-file fix, rename, typo). Skip le cycle complet Explore-Plan-TDD-Audit. Declencher quand l'utilisateur veut un fix rapide, un changement simple, ou mentionne \"quick\", \"vite\", \"rapide\"."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `work`, `quick`, `fix(scope): description` |
+| **Mots-cles** | `work`, `quick` |
 
 ## Description detaillee
 
@@ -98,7 +98,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux work..."_
 - _"Je veux quick..."_
-- _"Je veux fix(scope): description..."_
 
 ## Contexte fork
 

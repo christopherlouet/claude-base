@@ -1,5 +1,5 @@
 ---
-sidebar_position: 48
+sidebar_position: 52
 title: "writing-skills"
 description: "Guide pour creer de nouveaux skills pour le socle Claude Code. Declencher quand l'utilisateur veut creer un skill, ajouter une commande, ou etendre le socle."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Mots-cles** | `writing`, `skills`, `output attendu`, `regles` |
+| **Mots-cles** | `writing`, `skills` |
 
 ## Description detaillee
 
@@ -246,7 +246,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux writing..."_
 - _"Je veux skills..."_
-- _"Je veux output attendu..."_
 
 ## Contexte fork
 

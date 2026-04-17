@@ -1,5 +1,5 @@
 ---
-sidebar_position: 25
+sidebar_position: 29
 title: "ops-infra-code"
 description: "Infrastructure as Code avec Terraform/OpenTofu. Declencher pour creer modules, configurer backends, ecrire HCL idiomatique, ou auditer infrastructure."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `infra`, `code`, `aws_instance`, `web_server`, `aws_s3_bucket`, `application_logs`, `this` |
+| **Mots-cles** | `ops`, `infra`, `code` |
 
 ## Description detaillee
 

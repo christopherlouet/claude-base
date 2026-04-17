@@ -1,5 +1,5 @@
 ---
-sidebar_position: 14
+sidebar_position: 18
 title: "dev-supabase"
 description: "Developpement backend avec Supabase. Declencher quand l'utilisateur veut configurer l'auth, la base de donnees, ou le storage Supabase."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `supabase`, `users read own profile`, `users update own profile`, `own_data`, `team_data` |
+| **Mots-cles** | `dev`, `supabase` |
 
 ## Description detaillee
 
@@ -233,7 +233,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux dev..."_
 - _"Je veux supabase..."_
-- _"Je veux users read own profile..."_
 
 ## Contexte fork
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 41
+sidebar_position: 45
 title: "work-batch"
 description: "Execution sequentielle de user stories depuis un fichier PRD. Mode autonome qui implemente et commit chaque story une par une. Declencher quand l'utilisateur veut traiter un backlog, executer plusieurs stories, ou lancer un mode autonome."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `work`, `batch`, `project`, `nom-du-projet`, `stories`, `us-001`, `title` |
+| **Mots-cles** | `work`, `batch` |
 
 ## Description detaillee
 
@@ -133,7 +133,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux work..."_
 - _"Je veux batch..."_
-- _"Je veux project..."_
 
 ## Contexte fork
 

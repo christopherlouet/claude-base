@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 title: "dev-document"
 description: "Generation de documents (PDF, DOCX, XLSX, PPTX). Declencher quand l'utilisateur veut creer un document, generer un rapport, exporter en PDF/Word/Excel/PowerPoint, ou produire un fichier bureautique."
 tags:

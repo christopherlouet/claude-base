@@ -1,5 +1,5 @@
 ---
-sidebar_position: 33
+sidebar_position: 37
 title: "qa-design"
 description: "Audit de design UI/UX et verification des bonnes pratiques web. Declencher quand l'utilisateur veut auditer le design, verifier l'UI/UX, ou ameliorer l'interface utilisateur."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Glob`, `Grep` |
-| **Mots-cles** | `design`, `'][^`, ``, `` |
+| **Mots-cles** | `design`, `champ invalide`, `image`, `1 item(s)` |
 
 ## Description detaillee
 
@@ -236,8 +236,8 @@ Ce skill est automatiquement active lorsque :
 ### Exemples de declenchement
 
 - _"Je veux design..."_
-- _"Je veux '][^..."_
-- _"Je veux `, `..."_
+- _"Je veux champ invalide..."_
+- _"Je veux image..."_
 
 ## Contexte fork
 
