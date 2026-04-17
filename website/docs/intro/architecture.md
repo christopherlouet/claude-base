@@ -22,7 +22,7 @@ graph TB
     subgraph ".claude/"
         CMDS[commands/<br/>129 commandes]
         AGENTS[agents/<br/>62 sub-agents]
-        SKILLS[skills/<br/>47 skills]
+        SKILLS[skills/<br/>51 skills]
         RULES[rules/<br/>26 rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
@@ -59,7 +59,7 @@ claude-socle/
 │   │   ├── data/       # Donnees
 │   │   └── legal/      # Legal
 │   ├── agents/         # 62 sub-agents autonomes
-│   ├── skills/         # 47 skills auto-declenches
+│   ├── skills/         # 51 skills auto-declenches
 │   ├── rules/          # 26 regles par technologie
 │   ├── templates/      # Templates de specs/plans
 │   ├── output-styles/  # Styles de sortie
@@ -103,7 +103,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole.
 "Explore le code d'auth" → Claude delegue a l'agent work-explore (haiku)
 ```
 
-### Skills (47)
+### Skills (51)
 
 Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 

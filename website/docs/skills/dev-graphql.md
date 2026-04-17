@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 12
 title: "dev-graphql"
 description: "Developpement d'APIs GraphQL. Declencher quand l'utilisateur veut creer des schemas, resolvers, ou queries GraphQL."
 tags:

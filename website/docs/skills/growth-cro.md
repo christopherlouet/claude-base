@@ -1,5 +1,5 @@
 ---
-sidebar_position: 20
+sidebar_position: 24
 title: "growth-cro"
 description: "Optimisation du taux de conversion (CRO). Declencher quand l'utilisateur veut optimiser les conversions, ameliorer un formulaire d'inscription, un checkout, une landing page, ou un onboarding."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Glob`, `Grep`, `Edit`, `Write` |
-| **Mots-cles** | `growth`, `cro`, `comment`, `complete your profile: 3/5`, `connect your github repo`, `create your first project`, `start from a template` |
+| **Mots-cles** | `growth`, `cro`, `comment`, `connect your github repo`, `create your first project`, `start from a template`, `create account` |
 
 ## Description detaillee
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 28
+sidebar_position: 32
 title: "ops-opnsense"
 description: "Configuration OPNsense via Terraform. Declencher pour interfaces, firewall, NAT, DHCP/DNS, aliases."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `opnsense`, `browningluke/opnsense`, `~> 0.11`, `opnsense_interface`, `wan` |
+| **Mots-cles** | `ops`, `opnsense` |
 
 ## Description detaillee
 
@@ -426,7 +426,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux ops..."_
 - _"Je veux opnsense..."_
-- _"Je veux browningluke/opnsense..."_
 
 ## Contexte fork
 

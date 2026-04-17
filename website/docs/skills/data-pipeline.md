@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `data`, `pipeline`, `duplicate ids`, `negative amounts`, `null customers` |
+| **Mots-cles** | `data`, `pipeline` |
 
 ## Description detaillee
 
@@ -105,7 +105,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux data..."_
 - _"Je veux pipeline..."_
-- _"Je veux duplicate ids..."_
 
 ## Contexte fork
 
