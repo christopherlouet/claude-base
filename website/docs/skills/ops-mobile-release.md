@@ -1,5 +1,5 @@
 ---
-sidebar_position: 26
+sidebar_position: 30
 title: "ops-mobile-release"
 description: "Publication d'apps sur App Store et Google Play. Declencher quand l'utilisateur veut deployer une app mobile ou configurer Fastlane."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `mobile`, `release`, `deploy to testflight`, `myapp`, `deploy to app store`, `deploy to play store internal` |
+| **Mots-cles** | `ops`, `mobile`, `release` |
 
 ## Description detaillee
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 37
+sidebar_position: 41
 title: "qa-security"
 description: "Effectuer un audit de sécurité basé sur OWASP. Utiliser quand l'utilisateur veut vérifier la sécurité, chercher des vulnérabilités, ou avant un déploiement en production."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Mots-cles** | `security`, `**/*`, `password\s*=`, `*.ts`, `api_key\s*=` |
+| **Mots-cles** | `security` |
 
 ## Description detaillee
 
@@ -180,8 +180,6 @@ Ce skill est automatiquement active lorsque :
 ### Exemples de declenchement
 
 - _"Je veux security..."_
-- _"Je veux **/*..."_
-- _"Je veux password\s*=..."_
 
 ## Contexte fork
 

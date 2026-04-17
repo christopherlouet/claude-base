@@ -1,5 +1,5 @@
 ---
-sidebar_position: 46
+sidebar_position: 50
 title: "work-pr"
 description: "Créer une Pull Request complète et bien documentée. Utiliser quand l'utilisateur veut créer une PR, soumettre ses changements, ou préparer une demande de merge."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Bash`, `Grep`, `Glob` |
-| **Mots-cles** | `work`, `type(scope): description`, `$(cat pr_body.md)`, `fix bug` |
+| **Mots-cles** | `work`, `fix bug` |
 
 ## Description detaillee
 
@@ -147,8 +147,7 @@ Ce skill est automatiquement active lorsque :
 ### Exemples de declenchement
 
 - _"Je veux work..."_
-- _"Je veux type(scope): description..."_
-- _"Je veux $(cat pr_body.md)..."_
+- _"Je veux fix bug..."_
 
 ## Contexte fork
 

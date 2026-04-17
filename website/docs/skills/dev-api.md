@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Edit`, `Write`, `Bash`, `Grep`, `Glob` |
-| **Mots-cles** | `dev`, `api`, `success`, `data`, `meta`, `page`, `limit` |
+| **Mots-cles** | `dev`, `api`, `field1`, `string`, `field2`, `success`, `data` |
 
 ## Description detaillee
 
@@ -201,7 +201,7 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux dev..."_
 - _"Je veux api..."_
-- _"Je veux success..."_
+- _"Je veux field1..."_
 
 ## Contexte fork
 

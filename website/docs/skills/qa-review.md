@@ -1,5 +1,5 @@
 ---
-sidebar_position: 36
+sidebar_position: 40
 title: "qa-review"
 description: "Effectuer une revue de code approfondie. Utiliser quand l'utilisateur demande une review, veut vérifier la qualité du code, ou avant de merger une PR."
 tags:

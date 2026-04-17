@@ -1,5 +1,5 @@
 ---
-sidebar_position: 35
+sidebar_position: 39
 title: "qa-perf"
 description: "Optimisation des performances d'applications. Declencher quand l'utilisateur veut ameliorer la vitesse, reduire la latence, ou optimiser les ressources."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `perf`, `/photo.jpg` |
+| **Mots-cles** | `perf` |
 
 ## Description detaillee
 
@@ -111,7 +111,6 @@ Ce skill est automatiquement active lorsque :
 ### Exemples de declenchement
 
 - _"Je veux perf..."_
-- _"Je veux /photo.jpg..."_
 
 ## Contexte fork
 

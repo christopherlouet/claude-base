@@ -1,5 +1,5 @@
 ---
-sidebar_position: 22
+sidebar_position: 26
 title: "ops-ci-fix"
 description: "Diagnostic et reparation autonome des pipelines CI/CD en echec. Scanner les workflows GitHub Actions, identifier les causes de failure, et appliquer des fixes. Declencher quand la CI est cassee, les tests echouent en CI, ou les workflows sont bloques."
 tags:

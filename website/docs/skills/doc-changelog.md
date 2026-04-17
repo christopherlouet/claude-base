@@ -1,5 +1,5 @@
 ---
-sidebar_position: 16
+sidebar_position: 20
 title: "doc-changelog"
 description: "Maintenance du CHANGELOG selon Keep a Changelog. Declencher quand l'utilisateur veut documenter les changements ou preparer une release."
 tags:

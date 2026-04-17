@@ -1,5 +1,5 @@
 ---
-sidebar_position: 31
+sidebar_position: 35
 title: "parallel-agents"
 description: "Orchestration d'agents paralleles pour maximiser l'efficacite. Declencher quand une tache peut etre decomposee en sous-taches independantes executables en parallele."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Glob`, `Grep`, `Bash` |
-| **Mots-cles** | `parallel`, `agents`, `qa-security`, `auditer...`, `qa-perf`, `analyser...`, `wcag-audit` |
+| **Mots-cles** | `parallel`, `agents` |
 
 ## Description detaillee
 
@@ -229,7 +229,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux parallel..."_
 - _"Je veux agents..."_
-- _"Je veux qa-security..."_
 
 ## Contexte fork
 

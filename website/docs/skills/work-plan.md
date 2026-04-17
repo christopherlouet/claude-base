@@ -1,5 +1,5 @@
 ---
-sidebar_position: 45
+sidebar_position: 49
 title: "work-plan"
 description: "Planifier l'implémentation d'une fonctionnalité. Utiliser quand l'utilisateur veut planifier, architecturer, définir une approche, ou avant de coder une feature complexe."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Glob`, `Grep`, `Bash` |
-| **Mots-cles** | `work`, `plan`, `pattern_similaire`, `*.ts`, `dependencies` |
+| **Mots-cles** | `work`, `plan` |
 
 ## Description detaillee
 
@@ -115,7 +115,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux work..."_
 - _"Je veux plan..."_
-- _"Je veux pattern_similaire..."_
 
 ## Contexte fork
 

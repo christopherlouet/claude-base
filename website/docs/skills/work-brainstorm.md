@@ -1,5 +1,5 @@
 ---
-sidebar_position: 42
+sidebar_position: 46
 title: "work-brainstorm"
 description: "Ideation structuree avant specification. Transformer une idee vague en design valide via questionnement et exploration d'alternatives. Declencher quand l'utilisateur a une idee floue, veut explorer des approches, ou hesite entre plusieurs directions."
 tags:

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 18
+sidebar_position: 22
 title: "feature-flags"
 description: "Gestion de feature flags et toggles. Declencher quand l'utilisateur veut implementer du feature flagging, A/B testing, ou deploiement progressif."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Mots-cles** | `feature`, `flags`, `feature flag`, `feature toggle`, `a/b test`, `experimentation`, `deploiement progressif` |
+| **Mots-cles** | `feature`, `flags`, `feature flag`, `feature toggle`, `experimentation`, `deploiement progressif`, `canary` |
 
 ## Description detaillee
 

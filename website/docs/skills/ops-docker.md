@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 28
 title: "ops-docker"
 description: "Containerisation Docker et Docker Compose. Declencher quand l'utilisateur veut dockeriser une application ou creer des containers."
 tags:
@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `docker`, `node`, `dist/index.js`, `3000:3000`, `cmd-shell`, `pg_isready -u user -d app` |
+| **Mots-cles** | `ops`, `docker` |
 
 ## Description detaillee
 
@@ -104,7 +104,6 @@ Ce skill est automatiquement active lorsque :
 
 - _"Je veux ops..."_
 - _"Je veux docker..."_
-- _"Je veux node..."_
 
 ## Contexte fork
 
