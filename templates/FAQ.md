@@ -171,15 +171,15 @@ Non, c'est une recommandation. Adaptez selon vos besoins :
 
 ### Quelle est la taille maximale de contexte ?
 
-Claude a une fenetre de contexte de 200k tokens (1M en beta avec Opus 4.6). Pour les projets volumineux :
+Claude a une fenetre de contexte de 200k tokens (1M en beta avec Opus 4.7). Pour les projets volumineux :
 - Utilisez des agents cibles
 - Analysez par module/dossier
 - Excluez les fichiers non pertinents
-- Avec Opus 4.6, le Context Compaction resume automatiquement le contexte ancien
+- Avec Opus 4.7, le Context Compaction resume automatiquement le contexte ancien
 
 ---
 
-### Qu'est-ce que l'Adaptive Thinking d'Opus 4.6 ?
+### Qu'est-ce que l'Adaptive Thinking d'Opus 4.7 ?
 
 L'Adaptive Thinking remplace le toggle "extended thinking" par 3 niveaux d'effort (`low`, `medium`, `high`). Le modele ajuste automatiquement son raisonnement selon la complexite de la tache. Cela permet d'optimiser le rapport cout/qualite sans configuration manuelle.
 

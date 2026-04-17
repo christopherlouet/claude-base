@@ -45,6 +45,7 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | `onFailure` | `"block"` pour bloquer, `"ignore"` pour continuer |
 | `timeout` | Timeout en millisecondes |
 | `if` | Condition d'activation utilisant la syntaxe permission rules (CLI 2.1.90+) |
+| `additionalContext` | Chaine de contexte supplementaire injectee dans le hook PreToolUse (CLI 2.1.110+) |
 
 ### Permission `defer` (PreToolUse)
 

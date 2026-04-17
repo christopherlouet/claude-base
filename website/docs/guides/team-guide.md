@@ -248,10 +248,10 @@ paths:
 
 | Usage | Modele | Pourquoi |
 |-------|--------|---------|
-| Architecture, conception | Opus 4.6 | Raisonnement profond, 1M contexte |
+| Architecture, conception | Opus 4.7 | Raisonnement profond, 1M contexte |
 | Implementation features | Sonnet | Equilibre vitesse/qualite |
 | Exploration, lecture | Haiku | Rapide pour operations simples |
-| Audits securite | Sonnet ou Opus 4.6 | Detection de failles subtiles |
+| Audits securite | Sonnet ou Opus 4.7 | Detection de failles subtiles |
 | Reviews PR en CI | Haiku | Cout faible, volume eleve |
 
 ---
@@ -506,7 +506,7 @@ Utiliser le bon niveau d'effort evite de consommer des tokens inutilement :
 /effort low      # Lecture, exploration
 /effort medium   # Implementation standard
 /effort high     # Architecture, refactoring
-/effort max      # Debug critique (Opus 4.6 uniquement)
+/effort max      # Debug critique (Opus 4.7 uniquement)
 ```
 
 ### RTK : reduction de tokens 60-90%
@@ -529,7 +529,7 @@ Puis installer : `brew install rtk`. Voir les economies avec `rtk gain`.
 |-------|------------------------------|-------------------|
 | Explore (codebase moyen) | 50k - 150k input | Haiku |
 | Specify (user stories) | 5k - 20k | Sonnet |
-| Plan (feature complexe) | 10k - 40k | Opus 4.6 |
+| Plan (feature complexe) | 10k - 40k | Opus 4.7 |
 | TDD (implementation) | 30k - 100k | Sonnet |
 | Audit qualite | 20k - 60k | Sonnet |
 | Review PR | 5k - 15k | Haiku |
