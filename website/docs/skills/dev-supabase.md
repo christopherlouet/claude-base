@@ -1,5 +1,5 @@
 ---
-sidebar_position: 18
+sidebar_position: 20
 title: "dev-supabase"
 description: "Developpement backend avec Supabase. Declencher quand l'utilisateur veut configurer l'auth, la base de donnees, ou le storage Supabase."
 tags:

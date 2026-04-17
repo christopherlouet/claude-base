@@ -1,5 +1,5 @@
 ---
-sidebar_position: 37
+sidebar_position: 39
 title: "qa-design"
 description: "Audit de design UI/UX et verification des bonnes pratiques web. Declencher quand l'utilisateur veut auditer le design, verifier l'UI/UX, ou ameliorer l'interface utilisateur."
 tags:

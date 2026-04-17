@@ -8,13 +8,20 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 ## [Unreleased]
 
 ### Ajoute
+- **Skill `dev-prisma`** : Prisma ORM (schema, migrations dev/prod, queries type-safe, transactions, N+1 detection, cursor pagination, Accelerate cache, singleton HMR-safe). Complete l'agent `dev-prisma` existant par un skill proactif auto-declenche sur `schema.prisma`.
+- **Skill `dev-i18n`** : internationalisation web et mobile (next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations ARB). Pluriels ICU, format date/nombre, extraction strings, RTL, SEO multi-langue. Gap majeur : aucune couverture i18n auparavant.
+- **Workflow `dependabot-auto-merge`** : auto-merge des patches de securite et minor GitHub Actions, comment sur les major updates.
 - **Skill `dev-frontend-design`** : design UI distinctif avec direction artistique forte. Bannit les fonts overused (Inter, Roboto, Arial, Space Grotesk) et force un choix de direction (terminal, cockpit, vitality, editorial, glass, signal) avant de coder. Inspire du skill Anthropic #1 (305K installs sur skills.sh).
 - **Skill `dev-shadcn`** : integration et customisation de shadcn/ui (composants Radix + Tailwind copy-paste). Install, theming via CSS variables, dark mode, patterns de customisation, pieges courants (cn, FormField, DialogTitle).
 - **Skill `dev-nextjs`** : developpement Next.js App Router (Server Components, Server Actions, Route Handlers, caching, streaming, middleware, Metadata API). Complete la rule passive `nextjs` par un skill proactif.
 - **Skill `dev-auth`** : implementation auth web moderne (better-auth, Lucia v3, NextAuth/Auth.js, Clerk, Supabase Auth). Sessions cookie vs JWT, password hashing argon2id, OAuth, 2FA, RBAC/ABAC, pieges de securite OWASP.
 
 ### Modifie
-- **Compteur skills** : 47 → 51 dans `docs/reference/skills-catalog.md`
+- **Compteur skills** : 47 → 53 dans `docs/reference/skills-catalog.md`
+- **Docusaurus** : upgrade 3.9.2 → 3.10.0 avec override `serialize-javascript@^7.0.5` (patche 29 vulns dependabot : RCE GHSA-5c6j-r48x-rmvq + DoS GHSA-qj8w-gfj5-8c6v)
+
+### Securite
+- **29 vulnerabilites resolues** (12 high, 16 medium, 1 low) — toutes dans les transitives webpack de Docusaurus
 
 ---
 
