@@ -10,7 +10,7 @@ Developpement guide par les tests avec le cycle Red-Green-Refactor.
 
 :::tip TDD est obligatoire et proactif
 Depuis la version 1.11, **TDD est obligatoire** dans le workflow principal.
-Le cycle Explore → Specify → Plan → **TDD** → Commit impose d'ecrire les tests AVANT le code.
+Le cycle Explore → Specify → Plan → **TDD** → Audit → Commit impose d'ecrire les tests AVANT le code.
 
 **Nouveau (v1.12+)** : La [rule `tdd-enforcement`](/docs/rules/tdd-enforcement) declenche automatiquement TDD quand vous demandez d'implementer, ajouter, creer ou corriger du code.
 :::

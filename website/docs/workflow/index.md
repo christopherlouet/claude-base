@@ -12,7 +12,7 @@ import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDia
 
 ## Workflow principal
 
-<WorkflowDiagram steps={MAIN_WORKFLOW} title="Explore → Specify → Plan → TDD → Commit" />
+<WorkflowDiagram steps={MAIN_WORKFLOW} title="Explore → Specify → Plan → TDD → Audit → Commit" />
 
 Le workflow principal de claude-socle suit 5 etapes obligatoires :
 
@@ -26,7 +26,7 @@ Le workflow principal de claude-socle suit 5 etapes obligatoires :
 
 | Workflow | Description | Commandes |
 |----------|-------------|-----------|
-| [Explore → Specify → Plan → TDD → Commit](/docs/workflow/explore-plan-code-commit) | Workflow principal (TDD obligatoire) | `/work:work-explore`, `/work:work-specify`, `/work:work-plan`, `/dev:dev-tdd`, `/work:work-commit` |
+| [Explore → Specify → Plan → TDD → Audit → Commit](/docs/workflow/explore-plan-code-commit) | Workflow principal (TDD obligatoire) | `/work:work-explore`, `/work:work-specify`, `/work:work-plan`, `/dev:dev-tdd`, `/work:work-commit` |
 | [Nouvelle Feature](/docs/workflow/feature) | Ajouter une fonctionnalite | `/work:work-flow-feature` |
 | [Correction de Bug](/docs/workflow/bugfix) | Corriger un probleme | `/work:work-flow-bugfix` |
 | [Release](/docs/workflow/release) | Preparer une version | `/work:work-flow-release` |

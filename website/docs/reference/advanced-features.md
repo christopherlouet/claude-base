@@ -16,7 +16,7 @@ tags:
 
 ## Templates de Specification
 
-Templates dans `.claude/templates/` pour le workflow Explore → Specify → Plan → Code:
+Templates dans `.claude/templates/` pour le workflow Explore → Specify → Plan → TDD → Audit → Commit:
 
 | Template | Utilise par |
 |----------|-------------|

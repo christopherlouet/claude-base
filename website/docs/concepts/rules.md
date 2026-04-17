@@ -158,7 +158,7 @@ paths:
 | `security.md` | `**/auth/**`, `**/api/**` | Validation, XSS, injection |
 | `api.md` | `**/api/**`, `**/routes/**` | REST, status codes |
 | `git.md` | - | Conventional commits |
-| `workflow.md` | - | Explore → Plan → Code |
+| `workflow.md` | - | Explore → Specify → Plan → TDD → Audit → Commit |
 
 ## Exemples de rules
 

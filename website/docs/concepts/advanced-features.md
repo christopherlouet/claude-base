@@ -174,7 +174,7 @@ Voir la page [Output Styles](/docs/concepts/output-styles) pour la documentation
 
 ## Templates de Specification
 
-Templates structures pour le workflow Explore → Specify → Plan → Code dans `.claude/templates/`:
+Templates structures pour le workflow Explore → Specify → Plan → TDD → Audit → Commit dans `.claude/templates/`:
 
 | Template | Description | Utilise par |
 |----------|-------------|-------------|

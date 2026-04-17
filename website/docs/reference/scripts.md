@@ -408,7 +408,7 @@ Tutoriel interactif pour apprendre a utiliser claude-socle.
 
 **Agents disponibles pour l'apprentissage :**
 
-- `workflow` - Le workflow Explore → Specify → Plan → TDD → Commit
+- `workflow` - Le workflow Explore → Specify → Plan → TDD → Audit → Commit
 - `tdd` - Test-Driven Development
 - `commit` - Conventional Commits
 - `review` - Code Review
