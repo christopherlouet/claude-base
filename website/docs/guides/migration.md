@@ -210,7 +210,7 @@ Si vous utilisez déjà Claude Code sans claude-socle :
 
 | Aspect | Avant | Après |
 |--------|-------|-------|
-| Workflow | Ad-hoc | Explore → Plan → Code |
+| Workflow | Ad-hoc | Explore → Specify → Plan → TDD → Audit → Commit |
 | Commandes | Manuel | `/work:work-*`, `/dev:dev-*`, etc. |
 | Conventions | Répétées | Dans CLAUDE.md et rules |
 | Agents | Non | 59 agents spécialisés |

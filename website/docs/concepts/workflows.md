@@ -12,39 +12,36 @@ tags:
 
 &gt; Diagrammes des flux de travail recommandes
 
-## Workflow Principal: Explore → Plan → Code → Commit
+## Workflow Principal: Explore → Specify → Plan → TDD → Audit → Commit
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                                                                     │
-│   ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐     │
-│   │          │    │          │    │          │    │          │     │
-│   │ EXPLORE  │───▶│   PLAN   │───▶│   CODE   │───▶│  COMMIT  │     │
-│   │          │    │          │    │          │    │          │     │
-│   └──────────┘    └──────────┘    └──────────┘    └──────────┘     │
-│        │               │               │               │            │
-│        ▼               ▼               ▼               ▼            │
-│   /work:work-explore   /work:work-plan      /dev:dev-tdd       /work:work-commit      │
-│                                   /dev:dev-api       /work:work-pr          │
-│                                   /dev:dev-component                   │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                     │
+│   ┌─────────┐   ┌─────────┐   ┌───────┐   ┌───────┐   ┌───────┐   ┌─────────┐      │
+│   │ EXPLORE │──▶│ SPECIFY │──▶│ PLAN  │──▶│  TDD  │──▶│ AUDIT │──▶│ COMMIT  │      │
+│   └─────────┘   └─────────┘   └───────┘   └───────┘   └───────┘   └─────────┘      │
+│        │             │             │           │           │           │            │
+│        ▼             ▼             ▼           ▼           ▼           ▼            │
+│   /work:work-explore  /work:work-specify  /work:work-plan  /dev:dev-tdd  /qa:qa-loop  /work:work-commit │
+│                                                                                     │
+└─────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Mermaid
 ```mermaid
 flowchart LR
-    A[EXPLORE] --> B[PLAN]
-    B --> C[CODE]
-    C --> D[COMMIT]
+    A[EXPLORE] --> B[SPECIFY]
+    B --> C[PLAN]
+    C --> D[TDD]
+    D --> E[AUDIT]
+    E --> F[COMMIT]
 
     A --> A1[/work:work-explore]
-    B --> B1[/work:work-plan]
-    C --> C1[/dev:dev-tdd]
-    C --> C2[/dev:dev-api]
-    C --> C3[/dev:dev-component]
-    D --> D1[/work:work-commit]
-    D --> D2[/work:work-pr]
+    B --> B1[/work:work-specify]
+    C --> C1[/work:work-plan]
+    D --> D1[/dev:dev-tdd]
+    E --> E1[/qa:qa-loop]
+    F --> F1[/work:work-commit]
 ```
 
 ## Workflow Feature Complete

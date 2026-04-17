@@ -37,7 +37,7 @@ header-includes:
 | Sans claude-socle | Avec claude-socle |
 |-------------------|-------------------|
 | Prompts répétitifs | Commandes prêtes à l'emploi |
-| Workflow inconsistant | Workflow structuré Explore → Plan → Code → Commit |
+| Workflow inconsistant | Workflow structuré Explore → Specify → Plan → TDD → Audit → Commit |
 | Risques de sécurité | Hooks de protection intégrés |
 | Configuration manuelle | Installation automatisée |
 
@@ -118,7 +118,7 @@ Ce script interactif vous guide pour :
 
 \newpage
 
-# Le Workflow Explore → Plan → Code → Commit
+# Le Workflow Explore → Specify → Plan → TDD → Audit → Commit
 
 ## Vue d'ensemble
 

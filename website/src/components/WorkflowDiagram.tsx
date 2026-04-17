@@ -100,6 +100,7 @@ export const MAIN_WORKFLOW: WorkflowStep[] = [
   { id: 'specify', label: 'Specify', command: '/work:work-specify', description: 'Specifier le besoin' },
   { id: 'plan', label: 'Plan', command: '/work:work-plan', description: 'Planifier les changements' },
   { id: 'tdd', label: 'TDD', command: '/dev:dev-tdd', description: 'Tests first (obligatoire)' },
+  { id: 'audit', label: 'Audit', command: '/qa:qa-loop', description: 'Audit qualite score 90' },
   { id: 'commit', label: 'Commit', command: '/work:work-commit', description: 'Valider' },
 ];
 
@@ -108,7 +109,7 @@ export const FEATURE_WORKFLOW: WorkflowStep[] = [
   { id: 'specify', label: 'Specify', command: '/work:work-specify' },
   { id: 'plan', label: 'Plan', command: '/work:work-plan' },
   { id: 'tdd', label: 'TDD', command: '/dev:dev-tdd' },
-  { id: 'review', label: 'Review', command: '/qa:qa-review' },
+  { id: 'audit', label: 'Audit', command: '/qa:qa-loop' },
   { id: 'pr', label: 'PR', command: '/work:work-pr' },
 ];
 
