@@ -181,7 +181,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash scripts/hooks/command-validator.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/command-validator.sh\"",
             "timeout": 5000,
             "onFailure": "block"
           }
