@@ -316,16 +316,54 @@ Commandes cloud qui delegent le travail a des agents paralleles sur l'infrastruc
 
 `/ultrareview` lance plusieurs agents en parallele pour une review plus exhaustive que `/qa:qa-review` local. Ideal pour les PRs de plus de 500 lignes.
 
-## TUI Fullscreen (CLI 2.1.110+)
+## TUI Fullscreen (Research Preview, CLI 2.1.89+)
 
-Mode plein ecran sans scintillement. Active avec `/tui fullscreen` ou le setting `tui`.
+Mode de rendu alternatif qui prend le controle de la surface du terminal comme `vim` ou `htop`. "Fullscreen" refere a la prise en main du drawing surface, **pas** a la maximisation de la fenetre.
+
+Activation : `/tui fullscreen` (CLI 2.1.110+) ou `CLAUDE_CODE_NO_FLICKER=1` avant le lancement. Desactivation : `/tui default`.
+
+### Trois benefices cles
+
+| Benefice | Impact |
+|----------|--------|
+| Flicker-free | Plus de scintillement dans VS Code terminal, tmux, iTerm2 sur les sessions longues |
+| Memoire constante | Seuls les messages visibles dans le render tree → RAM plate meme sur des conversations de plusieurs heures |
+| Support souris | Click-to-expand tool results, click URLs/file paths, selection click-and-drag avec copie auto |
+
+Signal visuel : en fullscreen, le prompt input reste **fixe en bas** au lieu de remonter avec l'output.
+
+### Commandes associees
 
 | Mode | Commande | Description |
 |------|----------|-------------|
-| Fullscreen | `/tui fullscreen` | Rendu plein ecran, flicker-free |
-| Focus | `/focus` | Vue condensee : prompt, resume 1 ligne des outils, reponse finale |
+| Fullscreen | `/tui fullscreen` | Active le mode (persiste via le setting `tui`) |
+| Default | `/tui default` | Desactive le mode |
+| Status | `/tui` | Affiche le renderer actif |
+| Focus | `/focus` | Vue condensee : prompt + 1 ligne par outil + reponse finale (separable de `/tui`) |
+| Transcript | `Ctrl+O` | Toggle le mode transcript avec navigation `less`-style |
 
-Combine bien avec les sessions longues (TDD, audit). `Ctrl+L` force le rafraichissement ecran.
+### Navigation en fullscreen
+
+| Raccourci | Action |
+|-----------|--------|
+| `PgUp` / `PgDn` | Scroll demi-ecran (ou `Fn+↑`/`Fn+↓` sur Mac) |
+| `Ctrl+Home` / `Ctrl+End` | Debut / fin de conversation |
+| `Ctrl+O` puis `/` | Recherche dans le transcript |
+| `Ctrl+O` puis `[` | Dump la conversation dans le scrollback natif du terminal |
+| `Ctrl+O` puis `v` | Ouvre le transcript dans `$EDITOR` |
+
+### Variables d'environnement
+
+| Variable | Usage |
+|----------|-------|
+| `CLAUDE_CODE_NO_FLICKER=1` | Active le fullscreen au demarrage (equivalent au setting `tui`) |
+| `CLAUDE_CODE_DISABLE_MOUSE=1` | Garde flicker-free + memoire plate, mais desactive la capture souris (utile en SSH/tmux) |
+| `CLAUDE_CODE_SCROLL_SPEED` | Multiplicateur de vitesse molette (1-20, defaut terminal-dependant) |
+
+### Compatibilite tmux
+
+- Requiert `set -g mouse on` dans `~/.tmux.conf` pour la molette
+- **Incompatible avec `tmux -CC`** (iTerm2 integration mode)
 
 ## Push Notifications (CLI 2.1.110+)
 
