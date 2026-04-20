@@ -103,7 +103,7 @@ Les **agents** sont des sub-agents autonomes avec un contexte isole.
 "Explore le code d'auth" → Claude delegue a l'agent work-explore (haiku)
 ```
 
-### Skills (53)
+### Skills (54)
 
 Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 
