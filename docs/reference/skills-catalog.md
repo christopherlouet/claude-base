@@ -1,6 +1,6 @@
 # Skills (Claude Code 2.1+)
 
-En plus des commandes, le projet inclut **53 Skills** dans `.claude/skills/`:
+En plus des commandes, le projet inclut **54 Skills** dans `.claude/skills/`:
 
 ## Skills de base
 | Skill | Déclenchement automatique | Context |
@@ -60,6 +60,7 @@ En plus des commandes, le projet inclut **53 Skills** dans `.claude/skills/`:
 | `dev-prisma` | "Prisma", "schema.prisma", "migrate", "ORM", "Accelerate" | fork |
 | `dev-i18n` | "i18n", "l10n", "traduction", "locale", "next-intl", "react-i18next", "vue-i18n", "flutter_localizations" | fork |
 | `writing-skills` | "créer skill", "nouveau skill", "écrire un skill" | fork |
+| `web-scraping` | "scraper", "crawler", "extraire web", "Firecrawl", "données structurées" | fork |
 
 ## Configuration des Skills
 
