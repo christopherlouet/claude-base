@@ -15,13 +15,16 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | `SubagentStart` | command | Démarrage d'un sub-agent |
 | `SubagentStop` | command/prompt | Fin d'exécution d'un sub-agent |
 | `Stop` | command/prompt | Quand Claude finit de répondre |
+| `StopFailure` | command | Quand un turn finit sur erreur API (rate limit, auth failure) — CLI 2.1.78+ |
 | `Setup` | command | Initialisation (`init`) et maintenance (`maintenance`) du projet |
 | `Notification` | command | Notifications (`permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`) |
 | `PreCompact` | command | Avant compaction du contexte (matchers: `manual`, `auto`) |
 | `PostCompact` | command | Apres compaction du contexte |
 | `SessionEnd` | command | Fin de session |
 | `TeammateIdle` | command | Quand un agent teammate devient inactif (Agent Teams) |
+| `TaskCreated` | command | Quand une tache est creee via `TaskCreate` (CLI 2.1.84+) |
 | `TaskCompleted` | command | Quand une tache est marquee terminee |
+| `WorktreeCreate` | http | Hook `type: "http"` invoque a la creation d'un worktree, doit retourner `hookSpecificOutput.worktreePath` (CLI 2.1.84+) |
 | `InstructionsLoaded` | command | Quand CLAUDE.md et rules sont charges |
 | `Elicitation` | command | Quand un serveur MCP demande un input structure |
 | `ElicitationResult` | command | Quand l'utilisateur repond a une Elicitation MCP |

@@ -91,6 +91,8 @@ Pour forcer le rechargement : relancer une session ou utiliser `/clear`.
 
 Un skill est un fichier `SKILL.md` dans un sous-dossier de `.claude/skills/`. Il encapsule un workflow complet avec ses instructions, ses exemples et ses contraintes.
 
+> Depuis CLI 2.1.x, **slash commands et skills sont unifies** : chaque skill obtient automatiquement une interface `/slash-command`. Les fichiers dans `.claude/commands/` continuent de fonctionner pour la compatibilite, mais l'approche recommandee pour tout nouveau workflow est `.claude/skills/`. Le socle conserve `.claude/commands/` uniquement pour les raccourcis namespaces (ex: `/work:work-pr`).
+
 ### Structure du dossier
 
 ```

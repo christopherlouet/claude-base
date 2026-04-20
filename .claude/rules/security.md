@@ -71,3 +71,30 @@ Bonnes pratiques:
 - Garder les serveurs MCP desactives par defaut
 - S'assurer que `.env` est dans `.gitignore`
 - Le socle inclut des hooks SessionStart de verification automatique
+
+## Bash Hardening (CLI 2.1.113+)
+
+Renforcements appliques directement par le CLI. A connaitre pour ecrire des rules `permissions` coherentes et eviter les contournements involontaires :
+
+- **Paths dangereux etendus** : `/private/{etc,var,tmp,home}` (macOS) sont traites comme dangerous removal targets au meme titre que `/etc`, `/var`, etc.
+- **Deny rules resistantes aux wrappers d'execution** : une regle `deny: Bash(rm -rf *)` matche aussi quand la commande est encapsulee dans `env`, `sudo`, `watch`, `ionice` ou `setsid`. Ne plus s'appuyer sur ces wrappers pour bypasser une deny rule.
+- **`Bash(find:*)` n'auto-approuve plus `-exec`/`-delete`** : ces sous-commandes peuvent modifier ou supprimer des fichiers, elles declenchent desormais un prompt de permission separe meme si `find:*` est allowlisted.
+- **Sandbox deniedDomains** : privilegier `sandbox.network.deniedDomains` pour exclure explicitement des domaines sensibles meme sous un wildcard `allowedDomains`.
+- **UI-spoofing fix** : les commentaires multilignes dans les commandes Bash affichent desormais la commande complete pour eviter qu'un commentaire masque l'intention reelle.
+
+A appliquer dans `.claude/settings.json` :
+
+```json
+{
+  "permissions": {
+    "deny": ["Bash(find:* -delete)", "Bash(find:* -exec *)"],
+    "sandbox": {
+      "network": {
+        "allowedDomains": ["*.npmjs.org", "*.github.com"],
+        "deniedDomains": ["pastebin.com", "transfer.sh"]
+      },
+      "failIfUnavailable": true
+    }
+  }
+}
+```
