@@ -8,20 +8,33 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 ## [Unreleased]
 
 ### Ajoute
+
+#### Nouveaux skills (53 → 59)
 - **Skill `dev-prisma`** : Prisma ORM (schema, migrations dev/prod, queries type-safe, transactions, N+1 detection, cursor pagination, Accelerate cache, singleton HMR-safe). Complete l'agent `dev-prisma` existant par un skill proactif auto-declenche sur `schema.prisma`.
 - **Skill `dev-i18n`** : internationalisation web et mobile (next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations ARB). Pluriels ICU, format date/nombre, extraction strings, RTL, SEO multi-langue. Gap majeur : aucune couverture i18n auparavant.
-- **Workflow `dependabot-auto-merge`** : auto-merge des patches de securite et minor GitHub Actions, comment sur les major updates.
 - **Skill `dev-frontend-design`** : design UI distinctif avec direction artistique forte. Bannit les fonts overused (Inter, Roboto, Arial, Space Grotesk) et force un choix de direction (terminal, cockpit, vitality, editorial, glass, signal) avant de coder. Inspire du skill Anthropic #1 (305K installs sur skills.sh).
 - **Skill `dev-shadcn`** : integration et customisation de shadcn/ui (composants Radix + Tailwind copy-paste). Install, theming via CSS variables, dark mode, patterns de customisation, pieges courants (cn, FormField, DialogTitle).
 - **Skill `dev-nextjs`** : developpement Next.js App Router (Server Components, Server Actions, Route Handlers, caching, streaming, middleware, Metadata API). Complete la rule passive `nextjs` par un skill proactif.
 - **Skill `dev-auth`** : implementation auth web moderne (better-auth, Lucia v3, NextAuth/Auth.js, Clerk, Supabase Auth). Sessions cookie vs JWT, password hashing argon2id, OAuth, 2FA, RBAC/ABAC, pieges de securite OWASP.
 
+#### Sync Claude Code 2.1.109 → 2.1.114
+- **3 nouveaux hook events** documentes dans `docs/reference/hooks-reference.md` : `StopFailure` (CLI 2.1.78+, turn termine sur erreur API rate limit/auth), `TaskCreated` (CLI 2.1.84+, declenche a la creation d'une task), `WorktreeCreate` (CLI 2.1.84+, hook `http` retournant `worktreePath`)
+- **Settings avances** dans `docs/reference/advanced-features.md` : `sandbox.network.deniedDomains` (2.1.113), `sandbox.failIfUnavailable` (2.1.83), `modelOverrides` (2.1.84, ARNs Bedrock custom), `autoScrollEnabled` (2.1.110), `showThinkingSummaries` (defaut `false` desormais), `disableDeepLinkRegistration` (2.1.83), `feedbackSurveyRate` (2.1.76), `forceRemoteSettingsRefresh` (policy), theme `"Auto (match terminal)"` (2.1.111)
+- **Variables d'environnement** : `CLAUDE_CODE_USE_POWERSHELL_TOOL` (2.1.111), `CLAUDE_CODE_ENABLE_AWAY_SUMMARY` (2.1.108), `CLAUDE_CODE_PERFORCE_MODE` (2.1.98), `CLAUDE_STREAM_IDLE_TIMEOUT_MS` (2.1.84), `OTEL_LOG_RAW_API_BODIES` (2.1.113)
+- **MCP evolutions** : OAuth RFC 9728 Protected Resource Metadata (2.1.85), step-up authorization via `403 insufficient_scope` (2.1.84), override `_meta["anthropic/maxResultSizeChars"]` jusqu'a 500K (2.1.84)
+- **Fiabilite subagents** (2.1.113+) : hang > 10 min echoue avec erreur claire, worktrees isoles avec Read/Edit sur leur propre worktree, fix crash dialog permission teammate (2.1.114)
+- **`/loop` Esc** annule les wakeups en attente avec message "Claude resuming /loop wakeup" (2.1.113)
+- **Guide d'extension** : note sur l'unification `.claude/skills/` ↔ `.claude/commands/` (skills recommandes pour nouveaux workflows)
+- **Workflow `dependabot-auto-merge`** : auto-merge des patches de securite et minor GitHub Actions, comment sur les major updates.
+
 ### Modifie
 - **Compteur skills** : 47 → 53 dans `docs/reference/skills-catalog.md`
 - **Docusaurus** : upgrade 3.9.2 → 3.10.0 avec override `serialize-javascript@^7.0.5` (patche 29 vulns dependabot : RCE GHSA-5c6j-r48x-rmvq + DoS GHSA-qj8w-gfj5-8c6v)
+- **`docs/guides/TROUBLESHOOTING-GUIDE.md`** : 3 entrees ajoutees (migration CLI binaire natif 2.1.113, subagent hang > 10 min, crash dialog permission teammate)
 
 ### Securite
 - **29 vulnerabilites resolues** (12 high, 16 medium, 1 low) — toutes dans les transitives webpack de Docusaurus
+- **Bash hardening documente** (CLI 2.1.113) dans `.claude/rules/security.md` : paths `/private/{etc,var,tmp,home}` traites dangereux, deny rules resistent aux wrappers `env`/`sudo`/`watch`/`ionice`/`setsid`, `Bash(find:*)` n'auto-approuve plus `-exec`/`-delete`, UI-spoofing fix sur commentaires multilignes. Exemple de `permissions.sandbox` documente.
 
 ---
 
