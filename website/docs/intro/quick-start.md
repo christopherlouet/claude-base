@@ -53,7 +53,7 @@ claude
 Vous devriez voir au demarrage :
 ```
 === Claude Code Session ===
-Version socle: 1.28.0
+Version socle: 1.29.0
 Commandes: 123
 Agents: 59
 ===========================

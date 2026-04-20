@@ -7,34 +7,65 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ## [Unreleased]
 
+---
+
+## [1.29.0] - 2026-04-20
+
 ### Ajoute
 
-#### Nouveaux skills (53 → 59)
-- **Skill `dev-prisma`** : Prisma ORM (schema, migrations dev/prod, queries type-safe, transactions, N+1 detection, cursor pagination, Accelerate cache, singleton HMR-safe). Complete l'agent `dev-prisma` existant par un skill proactif auto-declenche sur `schema.prisma`.
-- **Skill `dev-i18n`** : internationalisation web et mobile (next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations ARB). Pluriels ICU, format date/nombre, extraction strings, RTL, SEO multi-langue. Gap majeur : aucune couverture i18n auparavant.
-- **Skill `dev-frontend-design`** : design UI distinctif avec direction artistique forte. Bannit les fonts overused (Inter, Roboto, Arial, Space Grotesk) et force un choix de direction (terminal, cockpit, vitality, editorial, glass, signal) avant de coder. Inspire du skill Anthropic #1 (305K installs sur skills.sh).
-- **Skill `dev-shadcn`** : integration et customisation de shadcn/ui (composants Radix + Tailwind copy-paste). Install, theming via CSS variables, dark mode, patterns de customisation, pieges courants (cn, FormField, DialogTitle).
-- **Skill `dev-nextjs`** : developpement Next.js App Router (Server Components, Server Actions, Route Handlers, caching, streaming, middleware, Metadata API). Complete la rule passive `nextjs` par un skill proactif.
-- **Skill `dev-auth`** : implementation auth web moderne (better-auth, Lucia v3, NextAuth/Auth.js, Clerk, Supabase Auth). Sessions cookie vs JWT, password hashing argon2id, OAuth, 2FA, RBAC/ABAC, pieges de securite OWASP.
+#### Nouveaux skills (47 → 53)
+- **Skill `dev-prisma`** : Prisma ORM (schema, migrations dev/prod, queries type-safe, transactions, N+1 detection, cursor pagination, Accelerate cache, singleton HMR-safe). Complete l'agent `dev-prisma` existant par un skill proactif auto-declenche sur `schema.prisma` (#77)
+- **Skill `dev-i18n`** : internationalisation web et mobile (next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations ARB). Pluriels ICU, format date/nombre, extraction strings, RTL, SEO multi-langue. Gap majeur : aucune couverture i18n auparavant (#77)
+- **Skill `dev-frontend-design`** : design UI distinctif avec direction artistique forte. Bannit les fonts overused (Inter, Roboto, Arial, Space Grotesk) et force un choix de direction (terminal, cockpit, vitality, editorial, glass, signal) avant de coder. Inspire du skill Anthropic #1 (305K installs sur skills.sh)
+- **Skill `dev-shadcn`** : integration et customisation de shadcn/ui (composants Radix + Tailwind copy-paste). Install, theming via CSS variables, dark mode, patterns de customisation, pieges courants (cn, FormField, DialogTitle)
+- **Skill `dev-nextjs`** : developpement Next.js App Router (Server Components, Server Actions, Route Handlers, caching, streaming, middleware, Metadata API). Complete la rule passive `nextjs` par un skill proactif
+- **Skill `dev-auth`** : implementation auth web moderne (better-auth, Lucia v3, NextAuth/Auth.js, Clerk, Supabase Auth). Sessions cookie vs JWT, password hashing argon2id, OAuth, 2FA, RBAC/ABAC, pieges de securite OWASP
 
-#### Sync Claude Code 2.1.109 → 2.1.114
-- **3 nouveaux hook events** documentes dans `docs/reference/hooks-reference.md` : `StopFailure` (CLI 2.1.78+, turn termine sur erreur API rate limit/auth), `TaskCreated` (CLI 2.1.84+, declenche a la creation d'une task), `WorktreeCreate` (CLI 2.1.84+, hook `http` retournant `worktreePath`)
-- **Settings avances** dans `docs/reference/advanced-features.md` : `sandbox.network.deniedDomains` (2.1.113), `sandbox.failIfUnavailable` (2.1.83), `modelOverrides` (2.1.84, ARNs Bedrock custom), `autoScrollEnabled` (2.1.110), `showThinkingSummaries` (defaut `false` desormais), `disableDeepLinkRegistration` (2.1.83), `feedbackSurveyRate` (2.1.76), `forceRemoteSettingsRefresh` (policy), theme `"Auto (match terminal)"` (2.1.111)
+#### Nouvelles rules (26 → 29)
+- **Rule `vue.md`** : Composition API (`<script setup>`), composables avec prefixe `use`, Pinia pour state management (Vuex deprecated), Nuxt 3+ (`useFetch`, `useState`, `navigateTo`, `server/api/`), anti-patterns (Options API, `watch` pour derivations, Vuex) (#80)
+- **Rule `svelte.md`** : Svelte 5 runes (`$state`, `$derived`, `$effect`, `$props`), table de migration Svelte 4 → 5, SvelteKit (`+page.server.ts`, form actions, load functions), callback props > `createEventDispatcher`, `{@render children?.()}` > `<slot />` (#80)
+- **Rule `astro.md`** : Islands Architecture (zero JS par defaut), client directives (`client:visible` par defaut), Content Collections avec validation Zod type-safe, modes rendering (static / hybrid / server), View Transitions (Astro 3+) (#80)
+
+#### Nouveaux hooks (14 → 17 events configures)
+- **Hook `PermissionDenied`** (CLI 2.1.111+) : log les permissions refusees par l'auto mode classifier dans `/tmp/claude-permissions.log`. Utile pour tuner les allowlists avec `/less-permission-prompts` (#79)
+- **Hook `UserPromptSubmit`** : log les timestamps de submission de prompt dans `/tmp/claude-prompts.log`. Fondation pour un futur `/socle:stats` (#79)
+- **Hook `PostToolUseFailure`** : log les echecs d'outils avec leur nom dans `/tmp/claude-failures.log`. Complete `PostToolUse` pour une observabilite complete des tool calls (#79)
+
+#### Happy Path par defaut (routing semantique) (#83)
+- **Hook `prompt-context.sh`** (`scripts/hooks/`) : injecte automatiquement branche, fichiers modifies, LOC diff, memoire perso et hint `/assistant-auto` pour chaque prompt libre sans slash command. Desactivable avec `SKIP_PROMPT_CONTEXT=1`
+- **Rewrite `assistant-auto`** : passe d'un mapping lexical de 112 lignes (table de 80 lignes a maintenir) a 78 lignes en routing semantique a partir de l'intention + du contexte injecte. Regles de priorite explicites (securite > memoire > taille > specifique)
+- **Section "Happy Path par Defaut"** dans `CLAUDE.md` + mise a jour `docs/reference/hooks-reference.md`
+- **12 bats tests** pour `prompt-context.sh` (contrat de sortie, contenu, robustesse hors repo git)
+
+#### Tooling
+- **`scripts/audit-socle.sh`** : audit de la sante du socle (frontmatter skills/agents, rules registration dans README, liens doc relatifs, counts via `validate-counts.sh`) (#81)
+- **Template `CLAUDE.nextjs.md`** : dedie Next.js App Router (Server Components, Server Actions, data fetching Next 15+, Route Handlers, stack 2026 Prisma/better-auth/shadcn/next-intl/Zod). Distinct du generique `CLAUDE.react.md` (#81)
+- **Workflow `dependabot-auto-merge`** : auto-merge des patches de securite et minor GitHub Actions, comment sur les major updates
+
+#### Sync Claude Code 2.1.109 → 2.1.114 (#85)
+- **3 hook events documentes** dans `docs/reference/hooks-reference.md` : `StopFailure` (CLI 2.1.78+, turn termine sur erreur API), `TaskCreated` (CLI 2.1.84+), `WorktreeCreate` (CLI 2.1.84+, hook `http` retournant `worktreePath`)
+- **Settings avances** : `sandbox.network.deniedDomains` (2.1.113), `sandbox.failIfUnavailable` (2.1.83), `modelOverrides` (2.1.84, ARNs Bedrock custom), `autoScrollEnabled` (2.1.110), `showThinkingSummaries` (defaut `false` desormais), `disableDeepLinkRegistration` (2.1.83), `feedbackSurveyRate` (2.1.76), `forceRemoteSettingsRefresh` (policy), theme `"Auto (match terminal)"` (2.1.111)
 - **Variables d'environnement** : `CLAUDE_CODE_USE_POWERSHELL_TOOL` (2.1.111), `CLAUDE_CODE_ENABLE_AWAY_SUMMARY` (2.1.108), `CLAUDE_CODE_PERFORCE_MODE` (2.1.98), `CLAUDE_STREAM_IDLE_TIMEOUT_MS` (2.1.84), `OTEL_LOG_RAW_API_BODIES` (2.1.113)
 - **MCP evolutions** : OAuth RFC 9728 Protected Resource Metadata (2.1.85), step-up authorization via `403 insufficient_scope` (2.1.84), override `_meta["anthropic/maxResultSizeChars"]` jusqu'a 500K (2.1.84)
 - **Fiabilite subagents** (2.1.113+) : hang > 10 min echoue avec erreur claire, worktrees isoles avec Read/Edit sur leur propre worktree, fix crash dialog permission teammate (2.1.114)
-- **`/loop` Esc** annule les wakeups en attente avec message "Claude resuming /loop wakeup" (2.1.113)
+- **`/loop` Esc** annule les wakeups en attente (2.1.113)
 - **Guide d'extension** : note sur l'unification `.claude/skills/` ↔ `.claude/commands/` (skills recommandes pour nouveaux workflows)
-- **Workflow `dependabot-auto-merge`** : auto-merge des patches de securite et minor GitHub Actions, comment sur les major updates.
 
 ### Modifie
 - **Compteur skills** : 47 → 53 dans `docs/reference/skills-catalog.md`
-- **Docusaurus** : upgrade 3.9.2 → 3.10.0 avec override `serialize-javascript@^7.0.5` (patche 29 vulns dependabot : RCE GHSA-5c6j-r48x-rmvq + DoS GHSA-qj8w-gfj5-8c6v)
+- **Compteur rules** : 26 → 29 dans `.claude/rules/README.md`
+- **Compteur hooks events** : 14 → 17 events configures dans `.claude/settings.json`
+- **Docusaurus** : upgrade 3.9.2 → 3.10.0 avec override `serialize-javascript@^7.0.5` (#76)
+- **Refactor `ops-proxmox/SKILL.md`** : 650 → 215 lignes + 4 references (`terraform-modules.md` 303L, `cloud-init.md` 65L, `backup-ha.md` 85L, `troubleshooting.md` 151L). Pattern identique a `ops-infra-code` (#82)
+- **`generate-skill-docs.ts`** : reecriture des liens `references/*.md` en URLs GitHub absolues pour le build Docusaurus (#82)
 - **`docs/guides/TROUBLESHOOTING-GUIDE.md`** : 3 entrees ajoutees (migration CLI binaire natif 2.1.113, subagent hang > 10 min, crash dialog permission teammate)
 
+### Corrige
+- **`command-validator.sh`** : utilise `CLAUDE_PROJECT_DIR` au lieu d'un chemin relatif fragile (#78)
+
 ### Securite
-- **29 vulnerabilites resolues** (12 high, 16 medium, 1 low) — toutes dans les transitives webpack de Docusaurus
-- **Bash hardening documente** (CLI 2.1.113) dans `.claude/rules/security.md` : paths `/private/{etc,var,tmp,home}` traites dangereux, deny rules resistent aux wrappers `env`/`sudo`/`watch`/`ionice`/`setsid`, `Bash(find:*)` n'auto-approuve plus `-exec`/`-delete`, UI-spoofing fix sur commentaires multilignes. Exemple de `permissions.sandbox` documente.
+- **29 vulnerabilites resolues** (12 high, 16 medium, 1 low) — toutes dans les transitives webpack de Docusaurus : RCE GHSA-5c6j-r48x-rmvq (`serialize-javascript`) + DoS GHSA-qj8w-gfj5-8c6v (#76)
+- **Bash hardening documente** (CLI 2.1.113) dans `.claude/rules/security.md` : paths `/private/{etc,var,tmp,home}` traites dangereux, deny rules resistent aux wrappers `env`/`sudo`/`watch`/`ionice`/`setsid`, `Bash(find:*)` n'auto-approuve plus `-exec`/`-delete`, UI-spoofing fix sur commentaires multilignes. Exemple de `permissions.sandbox` documente (#85)
 
 ---
 
