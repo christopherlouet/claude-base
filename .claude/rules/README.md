@@ -2,7 +2,7 @@
 
 Regles modulaires appliquees automatiquement selon les fichiers modifies (path-specific rules).
 
-## Regles disponibles (29)
+## Regles disponibles (30)
 
 | Regle | Paths cibles | Description |
 |-------|-------------|-------------|
@@ -28,6 +28,7 @@ Regles modulaires appliquees automatiquement selon les fichiers modifies (path-s
 | `rust` | `**/*.rs`, `**/Cargo.toml` | Ownership, error handling, traits |
 | `security` | `**/auth/**`, `**/api/**`, `**/middleware/**` | XSS, SQL injection, CSRF, auth |
 | `service-worker` | `**/sw.js`, `**/service-worker*` | NEVER cache HTML navigations, bump cache version |
+| `socle-maintenance` | `.claude/skills/**`, `.claude/agents/**`, `.claude/commands/**`, `.claude/rules/**`, `.claude/settings.json`, `scripts/hooks/**` | Sync compteurs, catalog, hook message quand on modifie le socle |
 | `svelte` | `**/*.svelte`, `**/*.svelte.ts`, `**/svelte.config.*` | Runes (Svelte 5), SvelteKit, form actions |
 | `tdd-enforcement` | `**/*.ts`, `**/*.tsx`, `**/*.dart`, `**/*.py`, `**/*.go`, ... | TDD proactif obligatoire pour tout code |
 | `testing` | `**/*.test.ts`, `**/*.spec.ts`, `**/tests/**` | Couverture 80%, mocks, edge cases |
@@ -50,7 +51,7 @@ Quand un fichier correspond à plusieurs rules (ex: `.tsx` active typescript + r
 | 6 | `testing` | Normes de tests |
 | 7 | `performance`, `accessibility`, `design-style` | Optimisations et bonnes pratiques |
 | 8 | `api`, `lsp` | Conventions d'interface |
-| 9 | `research`, `deploy-safety` | Garde-fous process |
+| 9 | `research`, `deploy-safety`, `socle-maintenance` | Garde-fous process |
 
 ### Exemple: modification de `src/components/Button.tsx`
 
