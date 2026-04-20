@@ -63,7 +63,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '29 Rules',
+    title: '30 Rules',
     emoji: '📏',
     description: (
       <>

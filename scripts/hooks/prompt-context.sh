@@ -41,6 +41,9 @@ STATUS_SHORT=""
 DIFF_STAT=""
 LOC_CHANGED=0
 IN_GIT=0
+DRIFT_COUNT=0
+DRIFT_WARN=""
+PRS_AWAITING=""
 
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     IN_GIT=1
@@ -48,6 +51,33 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     STATUS_SHORT=$(git status --short 2>/dev/null | head -20)
     DIFF_STAT=$(git diff --stat HEAD 2>/dev/null | tail -1)
     LOC_CHANGED=$(git diff --shortstat HEAD 2>/dev/null | grep -oE '[0-9]+ insertion|[0-9]+ deletion' | awk '{s+=$1} END {print s+0}')
+
+    # Drift vs origin/main (silencieux si pas de remote / pas de main)
+    # Desactivable avec SKIP_DRIFT_CHECK=1 pour eviter les appels reseau
+    if [ "${SKIP_DRIFT_CHECK:-0}" != "1" ]; then
+        DEFAULT_REMOTE_BRANCH=""
+        for candidate in origin/main origin/master; do
+            if git rev-parse --verify --quiet "$candidate" >/dev/null 2>&1; then
+                DEFAULT_REMOTE_BRANCH="$candidate"
+                break
+            fi
+        done
+        if [ -n "$DEFAULT_REMOTE_BRANCH" ] && [ "$BRANCH" != "main" ] && [ "$BRANCH" != "master" ]; then
+            DRIFT_COUNT=$(git rev-list --count "HEAD..$DEFAULT_REMOTE_BRANCH" 2>/dev/null || echo 0)
+            if [ "${DRIFT_COUNT:-0}" -gt 10 ]; then
+                DRIFT_WARN="WARN : $DEFAULT_REMOTE_BRANCH a $DRIFT_COUNT commits d'avance. Envisage un rebase avant de push pour eviter les conflits."
+            elif [ "${DRIFT_COUNT:-0}" -gt 0 ]; then
+                DRIFT_WARN="$DEFAULT_REMOTE_BRANCH a $DRIFT_COUNT commits d'avance."
+            fi
+        fi
+    fi
+
+    # PRs awaiting review (silencieux si gh absent / non authentifie)
+    # Desactivable avec SKIP_PR_CHECK=1
+    if [ "${SKIP_PR_CHECK:-0}" != "1" ] && command -v gh >/dev/null 2>&1; then
+        PRS_AWAITING=$(timeout 2 gh pr list --search "review-requested:@me is:open" --json number,title,repository --limit 3 2>/dev/null \
+            | jq -r '.[] | "- #\(.number) \(.title) (\(.repository.nameWithOwner // "?"))"' 2>/dev/null || true)
+    fi
 fi
 
 # Memoire perso (top 5 lignes de MEMORY.md si presente)
@@ -74,8 +104,17 @@ fi
         if [ -n "$DIFF_STAT" ]; then
             echo "- Diff : $DIFF_STAT (LOC changees : $LOC_CHANGED)"
         fi
+        if [ -n "$DRIFT_WARN" ]; then
+            echo "- $DRIFT_WARN"
+        fi
     else
         echo "- Hors repo git"
+    fi
+
+    if [ -n "$PRS_AWAITING" ]; then
+        echo ""
+        echo "## PRs en attente de ta review"
+        printf '%s\n' "$PRS_AWAITING"
     fi
 
     if [ -n "$MEMORY_SNIPPET" ]; then

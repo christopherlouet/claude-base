@@ -119,7 +119,7 @@ Les **skills** sont auto-declenches par des mots-cles dans la conversation.
 "Fais un commit" → Skill generating-commit-messages active
 ```
 
-### Rules (29)
+### Rules (30)
 
 Les **rules** sont des regles appliquees par chemin de fichier.
 
