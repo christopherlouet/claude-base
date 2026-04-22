@@ -87,6 +87,24 @@ if [ -f "$MEMORY_FILE" ]; then
     MEMORY_SNIPPET=$(head -5 "$MEMORY_FILE" 2>/dev/null | grep -E '^- ' || true)
 fi
 
+# Self-improvement loop : detection de patterns feedback
+# Desactivable avec SKIP_FEEDBACK_DETECT=1
+FEEDBACK_HINT=""
+if [ "${SKIP_FEEDBACK_DETECT:-0}" != "1" ]; then
+    PROMPT_LOWER=$(printf '%s' "$PROMPT" | tr '[:upper:]' '[:lower:]')
+    case "$PROMPT_LOWER" in
+        *"non, "*|*"non pas"*|*"pas comme"*|*"arrete"*|*"arrête"*|\
+        *"stop "*|*"don't "*|*"do not "*|*"not like"*|\
+        *"plutot"*|*"plutôt"*|*"prefere"*|*"préfère"*|*"prefer "*|\
+        *"au lieu de"*|*"instead of"*|*"rather than"*|\
+        *"a l'avenir"*|*"à l'avenir"*|*"from now on"*|*"next time"*|\
+        *"souviens-toi"*|*"remember that"*|*"remember to"*|\
+        *"toujours "*|*"jamais "*|*"always "*|*"never ")
+            FEEDBACK_HINT="Signal feedback detecte dans le prompt utilisateur. Si la correction est applicable a de futures sessions (preference, regle, contre-exemple), envisage de la sauvegarder via le systeme auto-memory en tant que memoire \`feedback\` (avec **Why:** et **How to apply:**). Voir les types de memoire dans le system prompt."
+            ;;
+    esac
+fi
+
 # Construction du contexte
 {
     echo "## Contexte repo (injecte automatiquement)"
@@ -126,6 +144,13 @@ fi
         echo ""
         echo "## Memoire perso (extraits)"
         printf '%s\n' "$MEMORY_SNIPPET"
+    fi
+
+    if [ -n "$FEEDBACK_HINT" ]; then
+        echo ""
+        echo "## Self-improvement"
+        echo ""
+        echo "$FEEDBACK_HINT"
     fi
 
     echo ""
