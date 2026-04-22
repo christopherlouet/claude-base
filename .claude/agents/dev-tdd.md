@@ -2,7 +2,7 @@
 name: dev-tdd
 description: Developpement TDD avec cycle Red-Green-Refactor. Utiliser pour implementer une fonctionnalite en ecrivant les tests AVANT le code. Declencher automatiquement quand l'utilisateur demande du TDD, veut ecrire des tests d'abord, mentionne "test first", ou demande d'implementer, ajouter, creer, fixer, corriger du code, une nouvelle feature, un bugfix, ou une fonctionnalite.
 tools: Read, Grep, Glob, Edit, Write, Bash
-model: sonnet
+model: opus
 permissionMode: default
 skills:
   - dev-tdd

@@ -2,7 +2,7 @@
 name: dev-debug
 description: Diagnostic et investigation de bugs. Utiliser pour identifier la cause racine d'un probleme, analyser des stack traces, ou comprendre un comportement inattendu.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 permissionMode: default
 skills:
   - dev-debug

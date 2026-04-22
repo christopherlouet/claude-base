@@ -2,7 +2,7 @@
 name: dev-rag
 description: Conception de systemes RAG (Retrieval-Augmented Generation). Utiliser pour architecturer des pipelines de recherche semantique et generation.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # Agent RAG

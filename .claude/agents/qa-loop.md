@@ -2,7 +2,7 @@
 name: qa-loop
 description: Boucle audit-fix autonome avec criteres d'arret. Audite, corrige les P0/P1, re-audite jusqu'au score cible. Utiliser pour amelioration continue automatisee.
 tools: Read, Grep, Glob, Edit, Write, Bash
-model: sonnet
+model: opus
 permissionMode: default
 ---
 
