@@ -93,6 +93,11 @@ fi
     echo ""
     if [ "$IN_GIT" = "1" ]; then
         echo "- Branche : \`$BRANCH\`"
+        case "$BRANCH" in
+            feature/auto-*)
+                echo "- ASTUCE : branche auto-generee, renomme avec \`/git-rename <nom-descriptif>\`"
+                ;;
+        esac
         if [ -n "$STATUS_SHORT" ]; then
             echo "- Fichiers modifies :"
             echo "\`\`\`"
