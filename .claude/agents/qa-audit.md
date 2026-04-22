@@ -2,7 +2,7 @@
 name: qa-audit
 description: Audit qualite complet d'un projet. Combine securite OWASP, RGPD, accessibilite WCAG et performance. Utiliser pour un audit global avant mise en production.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 permissionMode: plan
 disallowedTools: Edit, Write, NotebookEdit
 skills:
