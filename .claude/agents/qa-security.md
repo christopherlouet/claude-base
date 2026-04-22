@@ -2,7 +2,7 @@
 name: qa-security
 description: Audit de securite base sur OWASP Top 10. Utiliser pour identifier les vulnerabilites, verifier les bonnes pratiques de securite, ou avant un deploiement en production.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 permissionMode: plan
 disallowedTools: Edit, Write, NotebookEdit
 skills:
