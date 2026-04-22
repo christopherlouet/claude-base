@@ -192,7 +192,7 @@ const config: Config = {
           title: 'Composants',
           items: [
             {
-              label: 'Commands (129)',
+              label: 'Commands (130)',
               to: '/docs/commands',
             },
             {

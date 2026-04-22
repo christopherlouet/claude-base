@@ -20,7 +20,7 @@ graph TB
     end
 
     subgraph ".claude/"
-        CMDS[commands/<br/>129 commandes]
+        CMDS[commands/<br/>130 commandes]
         AGENTS[agents/<br/>62 sub-agents]
         SKILLS[skills/<br/>53 skills]
         RULES[rules/<br/>29 rules]
@@ -48,7 +48,7 @@ graph TB
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 129 commandes manuelles (/nom)
+│   ├── commands/       # 130 commandes manuelles (/nom)
 │   │   ├── work/       # Workflow principal
 │   │   ├── dev/        # Developpement
 │   │   ├── qa/         # Qualite
@@ -70,7 +70,7 @@ claude-socle/
 
 ## Composants principaux
 
-### Commands (129)
+### Commands (130)
 
 Les **commands** sont des instructions declenchees manuellement avec `/nom`.
 
@@ -237,4 +237,4 @@ Activez les serveurs selon vos besoins pour etendre les capacites de Claude.
 
 - [Installation](/docs/intro/installation) - Guide d'installation complet
 - [Workflows](/docs/workflow) - Voir les workflows en action
-- [Commands](/docs/commands) - Explorer les 129 commandes
+- [Commands](/docs/commands) - Explorer les 130 commandes
