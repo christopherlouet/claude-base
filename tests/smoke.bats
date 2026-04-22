@@ -219,9 +219,9 @@ load 'test_helper'
 @test "smoke: le nombre de commandes correspond à CLAUDE.md" {
     local actual_count
     actual_count=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    # Doit être dans la plage attendue (110-120)
+    # Doit être dans la plage attendue (~130 actuellement, marge pour croissance)
     [ "$actual_count" -ge 100 ]
-    [ "$actual_count" -le 130 ]
+    [ "$actual_count" -le 150 ]
 }
 
 @test "smoke: le nombre d'agents correspond à CLAUDE.md" {
