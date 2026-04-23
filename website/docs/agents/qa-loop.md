@@ -4,12 +4,12 @@ title: "qa-loop"
 description: "Boucle autonome audit → fix → test → re-audit avec criteres d'arret."
 tags:
   - "agent"
-  - "sonnet"
+  - "opus"
 ---
 
 # Agent: qa-loop
 
-<span className="badge badge--sonnet">Sonnet</span>
+<span className="badge badge--opus">Opus</span>
 
 > Boucle autonome audit → fix → test → re-audit avec criteres d'arret.
 
@@ -17,7 +17,7 @@ tags:
 
 | Propriete | Valeur |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Modele** | opus |
 | **Permission Mode** | default |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
 | **Outils interdits** | _Aucun_ |
@@ -166,13 +166,13 @@ Cet agent est automatiquement delegue par Claude lorsque :
 - Le contexte isole est preferable
 - Les outils requis correspondent a sa configuration
 
-## Caracteristiques du modele sonnet
+## Caracteristiques du modele opus
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Opus** est optimise pour :
+- Taches necessitant le maximum de capacites
+- Analyses tres complexes
+- Cas critiques
 
 
 ---

@@ -168,6 +168,10 @@ Modes: `auto` (defaut), `in-process`, `tmux`. Commande: `/work:work-team "descri
 
 Voir `.claude/skills/agent-teams/SKILL.md` pour la documentation complete.
 
+### Fiabilite des subagents (CLI 2.1.113+)
+
+Un subagent bloque plus de 10 minutes sans progression echoue avec un message d'erreur explicite au lieu de rester en hang silencieux. Les worktrees isoles donnent Read/Edit sur les fichiers de leur propre worktree. Les permissions dialog crashes lors des demandes de tool par un teammate sont corriges (CLI 2.1.114+).
+
 ## MCP Configuration
 
 Serveurs MCP dans `.mcp.json` (tous desactives par defaut):
@@ -203,6 +207,18 @@ Permission relay : les channels declarant la capability `permission` peuvent rel
 ### MCP Elicitation (CLI 2.1.76+)
 
 Les serveurs MCP peuvent demander un input structure a l'utilisateur en cours de tache via des dialogues interactifs. Hooks associes: `Elicitation` (demande) et `ElicitationResult` (reponse).
+
+### MCP OAuth RFC 9728 (CLI 2.1.85+)
+
+Decouverte automatique des metadonnees de ressource protegee (Protected Resource Metadata) pour les serveurs MCP OAuth. Simplifie l'authentification OAuth 2.1 en exposant l'URL du serveur d'autorisation via un endpoint standard. Les servers peuvent fournir un `headersHelper` et utiliser les variables d'environnement `CLAUDE_CODE_MCP_SERVER_NAME` et `CLAUDE_CODE_MCP_SERVER_URL`.
+
+### MCP Step-up Authorization (CLI 2.1.84+)
+
+Support RFC de l'autorisation step-up : les serveurs MCP peuvent renvoyer un `403 insufficient_scope` pour declencher un refresh token avec un scope etendu. Utile pour les operations sensibles qui necessitent une reauthentification sans couper la session.
+
+### MCP Result Size Override (CLI 2.1.84+)
+
+Les outils MCP peuvent declarer `_meta["anthropic/maxResultSizeChars"]` (jusqu'a 500K) pour surcharger la limite de persistence des resultats. Utile pour les outils qui retournent de gros payloads (exports, rapports, diffs).
 
 ## Async Hooks (CLI 2.1.70+)
 
@@ -392,6 +408,8 @@ Executer un prompt ou une commande a intervalles reguliers:
 
 Alias : `/proactive` (CLI 2.1.105+). Sans intervalle, Claude auto-determine la frequence optimale.
 
+Controle des wakeups : `Esc` annule les wakeups en attente (CLI 2.1.113+), un message "Claude resuming /loop wakeup" confirme le re-demarrage a chaque tick.
+
 ## `/powerup` Command
 
 Lessons interactives et demos animees pour decouvrir les fonctionnalites de Claude Code. Utile pour l'onboarding de nouveaux utilisateurs.
@@ -428,6 +446,11 @@ Activer dans `.claude/settings.local.json` (non commite) :
 | `MCP_CONNECTION_NONBLOCKING=true` | Skip l'attente de connexion MCP en mode `-p` (headless/CI) |
 | `ENABLE_PROMPT_CACHING_1H=1` | Cache prompt 1 heure (economies significatives) |
 | `FORCE_PROMPT_CACHING_5M=1` | Force cache prompt 5 minutes |
+| `CLAUDE_CODE_USE_POWERSHELL_TOOL` | Opt-in/out du PowerShell tool sur Windows (CLI 2.1.111+) |
+| `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1` | Force le recap de session meme si telemetrie desactivee (CLI 2.1.108+) |
+| `CLAUDE_CODE_PERFORCE_MODE=1` | Edit/Write echouent sur fichiers read-only avec hint `p4 edit` (CLI 2.1.98+) |
+| `CLAUDE_STREAM_IDLE_TIMEOUT_MS` | Configure le watchdog d'inactivite streaming (CLI 2.1.84+) |
+| `OTEL_LOG_RAW_API_BODIES=1` | Emet les corps complets des requetes/reponses API via OpenTelemetry (CLI 2.1.113+) |
 
 ## Settings Avances
 
@@ -435,6 +458,16 @@ Activer dans `.claude/settings.local.json` (non commite) :
 |---------|-------------|
 | `disableSkillShellExecution` | Desactive l'execution shell inline dans les skills, commandes et plugins |
 | `managed-settings.d/` | Repertoire drop-in pour policy fragments (Team/Enterprise) |
+| `sandbox.network.deniedDomains` | Bloque des domaines specifiques meme sous un wildcard `allowedDomains` (CLI 2.1.113+) |
+| `sandbox.failIfUnavailable` | Exit en erreur si sandbox activee mais indisponible (CLI 2.1.83+) |
+| `modelOverrides` | Map les entrees du picker vers des model IDs custom (ARNs Bedrock Application Inference Profile, etc.) (CLI 2.1.84+) |
+| `worktree.sparsePaths` | Sparse-checkout pour gros monorepos avec `claude --worktree` (CLI 2.1.76+) |
+| `autoScrollEnabled` | Desactive l'auto-scroll en mode fullscreen (CLI 2.1.110+) |
+| `showThinkingSummaries` | Genere des resumes d'extended thinking (defaut desormais `false` — CLI 2.1.108+) |
+| `disableDeepLinkRegistration` | Empeche l'enregistrement du protocol handler `claude-cli://` (CLI 2.1.83+) |
+| `feedbackSurveyRate` | Sample rate admin du sondage qualite de session (CLI 2.1.76+) |
+| `forceRemoteSettingsRefresh` | Bloque le demarrage tant que les managed settings distants ne sont pas rafraichis (policy) |
+| Theme `"Auto (match terminal)"` | Suit automatiquement le mode dark/light du terminal (CLI 2.1.111+) |
 
 ## LSP (Language Server Protocol)
 

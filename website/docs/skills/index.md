@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Catalogue des Skills
 
-> **53 skills** auto-declenches par mots-cles
+> **54 skills** auto-declenches par mots-cles
 
 <Stats items={[
-  { number: 53, label: 'Skills Fork' },
+  { number: 54, label: 'Skills Fork' },
   { number: 0, label: 'Skills Shared' },
-  { number: 53, label: 'Total' },
+  { number: 54, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Skill ?
@@ -29,7 +29,7 @@ Les **skills** sont des comportements auto-declenches :
 
 ## Skills par contexte
 
-### Fork (53 skills)
+### Fork (54 skills)
 
 Skills avec contexte isole.
 
@@ -80,6 +80,7 @@ Skills avec contexte isole.
 | [`qa-tech-debt`](/docs/skills/qa-tech-debt) | Gestion et priorisation de la dette technique. Dec... | tech, debt, dette technique |
 | [`session-handoff`](/docs/skills/session-handoff) | Transfert de contexte entre sessions IA. Declenche... | session, handoff |
 | [`state-management`](/docs/skills/state-management) | Patterns et implementation de state management. De... | state, management, state management |
+| [`web-scraping`](/docs/skills/web-scraping) | Scraping web propre pour LLM via Firecrawl (scrape... | web, scraping, extrait les donnees de ... |
 | [`work-batch`](/docs/skills/work-batch) | Execution sequentielle de user stories depuis un f... | work, batch |
 | [`work-brainstorm`](/docs/skills/work-brainstorm) | Ideation structuree avant specification. Transform... | work, brainstorm, j'ai une idee vague |
 | [`work-commit`](/docs/skills/work-commit) | Génère des messages de commit clairs suivant Conve... | work, commit, add |

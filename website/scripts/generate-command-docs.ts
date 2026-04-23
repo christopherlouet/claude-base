@@ -182,7 +182,7 @@ ${commandsList}
 <CommandGrid>
 ${commands.map((cmd) => `  <CommandCard
     name="${cmd.name}"
-    description="${cmd.description.replace(/"/g, '\\"')}"
+    description="${cmd.description.replace(/"/g, '&quot;')}"
     domain="${domain}"
     href="/docs/commands/${domain}/${cmd.name}"
   />`).join('\n')}
