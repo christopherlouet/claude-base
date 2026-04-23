@@ -75,6 +75,7 @@ FORCE_TYPE=""
 
 # Nouvelles options (mode simple / installation directe)
 SIMPLE_MODE=false
+MINIMAL_MODE=false
 SKIP_PROMPTS=false
 DESIGN_STYLE=""
 
@@ -134,6 +135,7 @@ ${BOLD}OPTIONS${NC}
     --skip-prompts      Saute les questions optionnelles (utilise les flags fournis)
     --simple            Mode installation simple (équivalent à l'ancien install.sh)
     --install-only      Alias pour --simple
+    --minimal           Installation minimale (Niveau 1+2 learning-path) via manifest
 
 ${BOLD}EXEMPLES${NC}
     # Nouveau projet interactif
@@ -272,6 +274,12 @@ parse_args() {
                 ;;
             --simple|--install-only)
                 SIMPLE_MODE=true
+                NON_INTERACTIVE=true
+                SKIP_PROMPTS=true
+                shift
+                ;;
+            --minimal)
+                MINIMAL_MODE=true
                 NON_INTERACTIVE=true
                 SKIP_PROMPTS=true
                 shift
@@ -774,6 +782,39 @@ print_simple_summary() {
 }
 
 # Exécution du mode simple (installation directe sans détection)
+run_minimal_mode() {
+    local target_dir
+
+    if [[ -n "$PROJECT_PATH" ]]; then
+        target_dir="$PROJECT_PATH"
+    else
+        target_dir="."
+    fi
+
+    if [[ ! -d "$target_dir" ]]; then
+        if ! $DRY_RUN; then
+            mkdir -p "$target_dir" || error "Impossible de créer le dossier: $target_dir"
+        fi
+    fi
+    target_dir="$(get_absolute_path "$target_dir")"
+
+    info "Installation minimale dans: $target_dir"
+    $DRY_RUN && { warning "Mode dry-run - aucune modification"; return 0; }
+    echo ""
+
+    local export_script="$SOCLE_DIR/scripts/export-minimal.sh"
+    [[ -x "$export_script" ]] || error "export-minimal.sh introuvable ou non exécutable: $export_script"
+
+    "$export_script" --dest-dir "$target_dir" || error "échec de export-minimal.sh"
+
+    success "Installation minimale terminée dans $target_dir"
+    echo ""
+    info "Prochaines étapes :"
+    echo "  cd \"$target_dir\""
+    echo "  # Lis docs/guides/learning-path.md"
+    echo "  claude"
+}
+
 run_simple_mode() {
     local target_dir
 
@@ -1389,6 +1430,17 @@ main() {
 
     # Validate that the socle installation is intact
     validate_socle_dirs
+
+    # Mode minimal: delegue a export-minimal.sh avec --dest-dir
+    if $MINIMAL_MODE; then
+        if ! $QUIET; then
+            echo ""
+            echo -e "${BOLD}${CYAN}Claude-Socle - Installation Minimale${NC}"
+            echo ""
+        fi
+        run_minimal_mode
+        exit 0
+    fi
 
     # Mode simple: installation directe sans détection de stack
     if $SIMPLE_MODE; then

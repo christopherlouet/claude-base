@@ -1,0 +1,55 @@
+# Manifest "minimal" — fichiers inclus dans l'archive et le mode --minimal.
+# Un chemin par ligne, relatif a la racine du repo.
+# Lignes vides et lignes commencant par # ignorees.
+# Un chemin se terminant par / est un dossier copie recursivement.
+# Syntaxe SRC:DST pour remapper (ex: "website/docs/guides/foo.md:docs/guides/foo.md").
+
+# === Commands (14) ===
+.claude/commands/assistant.md
+.claude/commands/assistant-auto.md
+.claude/commands/work/work-explore.md
+.claude/commands/work/work-plan.md
+.claude/commands/work/work-commit.md
+.claude/commands/work/work-pr.md
+.claude/commands/work/work-quick.md
+.claude/commands/work/work-flow-feature.md
+.claude/commands/work/work-flow-bugfix.md
+.claude/commands/qa/qa-review.md
+.claude/commands/qa/qa-audit.md
+.claude/commands/dev/dev-tdd.md
+.claude/commands/doc/doc-onboard.md
+.claude/commands/doc/doc-explain.md
+
+# === Agents (5) ===
+.claude/agents/work-explore.md
+.claude/agents/work-quick.md
+.claude/agents/dev-tdd.md
+.claude/agents/qa-audit.md
+.claude/agents/doc-onboard.md
+
+# === Skills (4 dossiers, avec examples/) ===
+.claude/skills/work-quick/
+.claude/skills/work-explore/
+.claude/skills/dev-tdd/
+.claude/skills/qa-review/
+
+# === Rules (8) ===
+.claude/rules/README.md
+.claude/rules/workflow.md
+.claude/rules/git.md
+.claude/rules/tdd-enforcement.md
+.claude/rules/verification.md
+.claude/rules/testing.md
+.claude/rules/typescript.md
+.claude/rules/security.md
+
+# === Config ===
+.claude/settings.json
+
+# === Hook routing semantique ===
+scripts/hooks/prompt-context.sh
+
+# === Documentation minimale ===
+docs/reference/best-practices.md
+docs/reference/project-structures.md
+website/docs/guides/learning-path.md:docs/guides/learning-path.md
