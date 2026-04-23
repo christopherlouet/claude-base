@@ -1,0 +1,78 @@
+# Projet (socle minimal)
+
+> Configuration Claude Code minimale pour le parcours Niveau 1 + Niveau 2 du learning-path.
+> Workflow : Explore → Plan → TDD → Audit → Commit.
+
+@docs/reference/best-practices.md
+@docs/reference/project-structures.md
+
+## Parcours recommande
+
+Lis d'abord **`docs/guides/learning-path.md`** pour comprendre Claude Code et claude-socle,
+puis enchaine avec les sections ci-dessous.
+
+## Workflow Obligatoire : Explore → Plan → TDD → Audit → Commit
+
+1. **EXPLORE** (`/work:work-explore`) — Lire et comprendre le code AVANT de modifier
+2. **PLAN** (`/work:work-plan`) — Architecture, fichiers, taches, risques
+3. **TDD** (`/dev:dev-tdd`) — Tests AVANT le code, cycle Red-Green-Refactor, couverture 80%+
+4. **AUDIT** (`/qa:qa-audit`) — Audit qualite adaptatif
+5. **COMMIT** (`/work:work-commit` ou `/work:work-pr`) — Conventional Commits
+
+## Commandes disponibles (minimal)
+
+| Domaine | Commande | Usage |
+|---------|----------|-------|
+| Orchestration | `/assistant` | Point d'entree, guide vers la bonne commande |
+| Orchestration | `/assistant-auto` | Routing semantique automatique |
+| Work | `/work:work-explore` | Comprendre le code existant |
+| Work | `/work:work-plan` | Planifier l'implementation |
+| Work | `/work:work-quick` | Changement trivial (< 50 LOC) |
+| Work | `/work:work-flow-feature` | Cycle complet nouvelle feature |
+| Work | `/work:work-flow-bugfix` | Cycle complet correction de bug |
+| Work | `/work:work-commit` | Creer un commit |
+| Work | `/work:work-pr` | Creer une PR |
+| Dev | `/dev:dev-tdd` | TDD Red-Green-Refactor |
+| QA | `/qa:qa-review` | Revue de code |
+| QA | `/qa:qa-audit` | Audit complet |
+| Doc | `/doc:doc-onboard` | Onboarding sur le codebase |
+| Doc | `/doc:doc-explain` | Expliquer du code |
+
+## Conventions de Code
+
+- **TypeScript** : strict mode, pas de `any`, interfaces. Details dans `.claude/rules/typescript.md`
+- **Tests** : couverture 80%+, pas de mocks sauf deps externes, edge cases. Details dans `.claude/rules/testing.md`
+- **Securite** : valider entrees, echapper outputs, requetes parametrees. Details dans `.claude/rules/security.md`
+- **Nommage** : camelCase (vars/fonctions), PascalCase (classes/composants), SCREAMING_SNAKE (constantes), kebab-case (fichiers)
+
+### Gestion des secrets
+
+- IMPORTANT: Ne jamais commiter de secrets (.env, credentials, API keys)
+- Utiliser des variables d'environnement
+
+## Happy Path par Defaut (Routing Semantique)
+
+Toute demande sans slash command explicite beneficie automatiquement du contexte repo injecte par le hook `UserPromptSubmit` (`scripts/hooks/prompt-context.sh`). Ce contexte hinte un routing vers `/assistant-auto`.
+
+- Intention triviale (< 50 LOC, 1-3 fichiers) → `/work:work-quick`
+- Feature / bugfix standard → `/work:work-flow-feature` ou `/work:work-flow-bugfix`
+
+Desactiver : `SKIP_PROMPT_CONTEXT=1`.
+
+## Documentation
+
+| Reference | Chemin |
+|-----------|--------|
+| Parcours Novice a Pro | `docs/guides/learning-path.md` |
+| Bonnes pratiques | `docs/reference/best-practices.md` |
+| Structures de projet | `docs/reference/project-structures.md` |
+
+## Anti-patterns a Eviter
+
+- Coder sans comprendre l'existant
+- Implementer sans plan valide
+- Coder AVANT d'ecrire les tests (violer TDD)
+- Commiter sans audit
+- Commits geants multi-fonctionnalites
+- `any` partout en TypeScript
+- Prompts vagues sans contexte ni exemples
