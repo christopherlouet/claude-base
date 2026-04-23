@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 25
 title: "svelte"
 description: "Svelte 5+ utilise les **runes** : `$state`, `$derived`, `$effect`, `$props`. Ne plus utiliser la syntaxe reactive `$:` ni `let` reactif implicite."
 tags:

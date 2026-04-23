@@ -8,10 +8,10 @@ import Stats from '@site/src/components/Stats';
 
 # Catalogue des Commandes
 
-> **129 commandes** organisees en **10 domaines**
+> **131 commandes** organisees en **10 domaines**
 
 <Stats items={[
-  { number: 129, label: 'Commandes' },
+  { number: 131, label: 'Commandes' },
   { number: 10, label: 'Domaines' },
 ]} />
 
@@ -28,12 +28,14 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 ## Domaines
 
 
-### [Autres](/docs/commands/other) (2)
+### [Autres](/docs/commands/other) (4)
 
 > Commandes diverses et orchestrateurs
 
 - [`/assistant`](/docs/commands/other/assistant)
 - [`/assistant-auto`](/docs/commands/other/assistant-auto)
+- [`/git-rename`](/docs/commands/other/git-rename)
+- [`/lessons`](/docs/commands/other/lessons)
 
 
 

@@ -25,13 +25,16 @@ Le projet inclut des hooks automatiques dans `.claude/settings.json`:
 | `SubagentStart` | command | Démarrage d'un sub-agent |
 | `SubagentStop` | command/prompt | Fin d'exécution d'un sub-agent |
 | `Stop` | command/prompt | Quand Claude finit de répondre |
+| `StopFailure` | command | Quand un turn finit sur erreur API (rate limit, auth failure) — CLI 2.1.78+ |
 | `Setup` | command | Initialisation (`init`) et maintenance (`maintenance`) du projet |
 | `Notification` | command | Notifications (`permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`) |
 | `PreCompact` | command | Avant compaction du contexte (matchers: `manual`, `auto`) |
 | `PostCompact` | command | Apres compaction du contexte |
 | `SessionEnd` | command | Fin de session |
 | `TeammateIdle` | command | Quand un agent teammate devient inactif (Agent Teams) |
+| `TaskCreated` | command | Quand une tache est creee via `TaskCreate` (CLI 2.1.84+) |
 | `TaskCompleted` | command | Quand une tache est marquee terminee |
+| `WorktreeCreate` | http | Hook `type: "http"` invoque a la creation d'un worktree, doit retourner `hookSpecificOutput.worktreePath` (CLI 2.1.84+) |
 | `InstructionsLoaded` | command | Quand CLAUDE.md et rules sont charges |
 | `Elicitation` | command | Quand un serveur MCP demande un input structure |
 | `ElicitationResult` | command | Quand l'utilisateur repond a une Elicitation MCP |
@@ -103,6 +106,7 @@ Les hooks PreToolUse peuvent retourner `"defer"` comme decision de permission. L
 | **ElicitationResult** | ElicitationResult | Log les reponses MCP Elicitation (async) |
 | **PermissionDenied** | PermissionDenied | Log les permissions refusees par l'auto mode (async, CLI 2.1.111+) |
 | **UserPromptSubmit** | UserPromptSubmit | Log les submissions de prompt utilisateur (async) |
+| **Prompt context injection** | UserPromptSubmit | Injecte branche, fichiers modifies, LOC diff et hint `/assistant-auto` si pas de slash command (desactiver: `SKIP_PROMPT_CONTEXT=1`) |
 | **PostToolUseFailure** | PostToolUseFailure | Log les echecs d'outils pour debugging (async) |
 | **Check .env** | SessionStart | Verifie que .env est dans .gitignore |
 | **Warning hooks tiers** | SessionStart | Avertit si des hooks personnalises sont detectes |
@@ -116,6 +120,7 @@ Les hooks PreToolUse peuvent retourner `"defer"` comme decision de permission. L
 | `SKIP_COMMAND_VALIDATOR=1` | Désactiver la validation de sécurité des commandes |
 | `SKIP_PRE_PUSH_CI=1` | Désactiver la vérification CI locale avant push |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Désactiver la protection contre les opérations destructives |
+| `SKIP_PROMPT_CONTEXT=1` | Désactiver l'injection de contexte repo sur les prompts libres |
 | `ENABLE_RTK=1` | Activer l'optimisation de tokens RTK |
 
 ## Fichiers de logs

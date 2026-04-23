@@ -322,7 +322,7 @@ ${generateTable(sharedSkills)}
 <SkillGrid>
 ${skills.slice(0, 12).map((s) => `  <SkillCard
     name="${s.name}"
-    description="${s.description.replace(/"/g, '\\"').slice(0, 80)}"
+    description="${s.description.replace(/"/g, '&quot;').slice(0, 80)}"
     keywords={${JSON.stringify(s.keywords.slice(0, 4))}}
     context="${s.context}"
     href="/docs/skills/${s.name}"
