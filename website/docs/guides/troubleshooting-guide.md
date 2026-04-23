@@ -35,6 +35,9 @@ tags:
 | Boucle de permission refusee | Commande dans la liste `deny` de `settings.json`, mode auto strict | `/less-permission-prompts` pour optimiser les allowlists, ou `SKIP_COMMAND_VALIDATOR=1` |
 | Trop de prompts de permission | Permissions trop restrictives pour le workflow | `/less-permission-prompts` scanne les transcripts et propose des allowlists optimisees |
 | Conflit git pendant le cycle TDD | Branche desynchronisee, commit intermediaire manquant | `git stash`, `git pull --rebase`, puis `git stash pop` |
+| `claude` introuvable ou erreurs Node apres `claude update` | Migration vers le binaire natif (CLI 2.1.113+) : le CLI n'est plus un bundle JavaScript | Reinstaller via le canal officiel, verifier `which claude` et `claude --version`. Les anciens alias pointant vers `node /path/to/cli.js` ne fonctionnent plus |
+| Subagent qui "hang" sans retour | Avant CLI 2.1.113 : hang silencieux possible | Mettre a jour : les subagents inactifs &gt; 10 min echouent desormais avec un message clair |
+| Dialog permission qui crash quand un teammate demande un tool | Bug CLI anterieur a 2.1.114 | Mettre a jour vers CLI &gt;= 2.1.114 |
 
 ### Context window full
 

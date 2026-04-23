@@ -14,7 +14,7 @@ import AgentCard from '@site/src/components/AgentCard';
 
 <Stats items={[
   { number: 22, label: 'Agents Haiku' },
-  { number: 40, label: 'Agents Sonnet' },
+  { number: 34, label: 'Agents Sonnet' },
   { number: 62, label: 'Total' },
 ]} />
 
@@ -58,7 +58,7 @@ Agents rapides et economiques pour les taches simples.
 | [`wcag-audit`](/docs/agents/wcag-audit) | Audit d'accessibilite selon WCAG 2.1/2.2 niveau AA, inspire ... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | Mode EXPLORATION : analyse du codebase sans modifier de fich... | Read, Grep, Glob |
 
-### Sonnet (40 agents)
+### Sonnet (34 agents)
 
 Agents pour les taches complexes necessitant une analyse approfondie.
 
@@ -72,13 +72,10 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`data-pipeline`](/docs/agents/data-pipeline) | Conception et implementation de pipelines de donnees ETL/ELT... | Read, Grep, Glob... |
 | [`dev-ai-integration`](/docs/agents/dev-ai-integration) | Integration de LLMs et APIs IA dans les applications. | Read, Grep, Glob... |
 | [`dev-component`](/docs/agents/dev-component) | Creation de composants UI modulaires et reutilisables. | Read, Grep, Glob... |
-| [`dev-debug`](/docs/agents/dev-debug) | Diagnostic et resolution de bugs. Le skill `dev-debug` fourn... | Read, Grep, Glob... |
 | [`dev-document`](/docs/agents/dev-document) | Generation de documents bureautiques et rapports. | Read, Grep, Glob... |
 | [`dev-flutter`](/docs/agents/dev-flutter) | Developpement Flutter avec Clean Architecture et BLoC. | Read, Grep, Glob... |
 | [`dev-prompt-engineering`](/docs/agents/dev-prompt-engineering) | Optimisation systematique de prompts pour applications LLM. | Read, Grep, Glob... |
-| [`dev-rag`](/docs/agents/dev-rag) | Architecture et implementation de systemes RAG. | Read, Grep, Glob... |
 | [`dev-supabase`](/docs/agents/dev-supabase) | Integration complete de Supabase comme backend. | Read, Grep, Glob... |
-| [`dev-tdd`](/docs/agents/dev-tdd) | Developpement guide par les tests. Le skill `dev-tdd` fourni... | Read, Grep, Glob... |
 | [`dev-test`](/docs/agents/dev-test) | Generation de tests complets et maintenables. | Read, Grep, Glob... |
 | [`doc-generate`](/docs/agents/doc-generate) | Generation de documentation complete et maintenable. | Read, Grep, Glob... |
 | [`growth-analytics`](/docs/agents/growth-analytics) | Implementation de l'analytics et du tracking. | Read, Grep, Glob... |
@@ -96,15 +93,25 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`ops-monitoring`](/docs/agents/ops-monitoring) | Instrumentation complete pour observabilite (3 piliers). | Read, Grep, Glob... |
 | [`ops-opnsense`](/docs/agents/ops-opnsense) | Configuration OPNsense en IaC avec Terraform. Le skill `ops-... | Read, Grep, Glob... |
 | [`ops-proxmox`](/docs/agents/ops-proxmox) | Gestion d'infrastructure Proxmox VE avec Terraform. Le skill... | Read, Grep, Glob... |
-| [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet couvrant 5 domaines. | Read, Grep, Glob... |
 | [`qa-chrome`](/docs/agents/qa-chrome) | Audit visuel et tests navigateur. Prerequis : `claude --chro... | Read, Grep, Glob... |
 | [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
-| [`qa-loop`](/docs/agents/qa-loop) | Boucle autonome audit → fix → test → re-audit avec criteres ... | Read, Grep, Glob... |
 | [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
-| [`qa-security`](/docs/agents/qa-security) | Audit de securite OWASP Top 10. Le skill `qa-security` fourn... | Read, Grep, Glob... |
 | [`work-batch`](/docs/agents/work-batch) | Execution autonome de stories depuis un PRD. Le skill `work-... | Read, Grep, Glob... |
 | [`work-quick`](/docs/agents/work-quick) | Workflow rapide pour changements triviaux. Le skill `work-qu... | Read, Grep, Glob... |
 
+
+### Opus (6 agents)
+
+Agents pour les taches critiques.
+
+| Agent | Description | Outils |
+|-------|-------------|--------|
+| [`dev-debug`](/docs/agents/dev-debug) | Diagnostic et resolution de bugs. Le skill `dev-debug` fourn... | Read, Grep, Glob... |
+| [`dev-rag`](/docs/agents/dev-rag) | Architecture et implementation de systemes RAG. | Read, Grep, Glob... |
+| [`dev-tdd`](/docs/agents/dev-tdd) | Developpement guide par les tests. Le skill `dev-tdd` fourni... | Read, Grep, Glob... |
+| [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet couvrant 5 domaines. | Read, Grep, Glob... |
+| [`qa-loop`](/docs/agents/qa-loop) | Boucle autonome audit → fix → test → re-audit avec criteres ... | Read, Grep, Glob... |
+| [`qa-security`](/docs/agents/qa-security) | Audit de securite OWASP Top 10. Le skill `qa-security` fourn... | Read, Grep, Glob... |
 
 
 ## Vue en cartes
@@ -176,7 +183,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
   <AgentCard
     name="dev-debug"
     description="Diagnostic et resolution de bugs. Le skill `dev-debug` fournit la methodologie d"
-    model="sonnet"
+    model="opus"
     tools={["Read","Grep","Glob","Bash"]}
     href="/docs/agents/dev-debug"
   />

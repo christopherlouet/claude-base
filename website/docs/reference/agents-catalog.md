@@ -193,13 +193,15 @@ Claude delegue automatiquement aux agents specialises (contexte isole, outils re
 | Domaine | Agents | Modeles |
 |---------|--------|---------|
 | Exploration & Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
-| Qualite & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-coverage`, `qa-responsive`, `qa-e2e`, `qa-tech-debt`, `qa-design`, `qa-chrome` | haiku/sonnet |
+| Qualite & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-coverage`, `qa-responsive`, `qa-e2e`, `qa-tech-debt`, `qa-design`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
 | Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-serverless`, `ops-vercel`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
-| Developpement | `dev-debug`, `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`, `dev-prompt-engineering`, `dev-rag`, `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-ai-integration`, `dev-document`, `dev-tdd` | haiku/sonnet |
+| Developpement | `dev-debug`, `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`, `dev-prompt-engineering`, `dev-rag`, `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-ai-integration`, `dev-document`, `dev-tdd` | haiku/sonnet/**opus** (tdd, debug, rag) |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |
 | Data | `data-pipeline`, `data-analytics`, `data-modeling` | haiku/sonnet |
 | Legal | `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service` | haiku/sonnet |
 
 ### Configuration des Agents
 
-Chaque agent definit: `model` (haiku/sonnet), `permissionMode` (plan/default), `disallowedTools`, `hooks`, `skills`.
+Chaque agent definit: `model` (haiku/sonnet/opus), `permissionMode` (plan/default), `disallowedTools`, `hooks`, `skills`.
+
+**Repartition modeles** : 22 haiku (operations triviales) / 34 sonnet (defaut) / 6 opus (raisonnement critique : `qa-security`, `qa-audit`, `qa-loop`, `dev-tdd`, `dev-debug`, `dev-rag`).

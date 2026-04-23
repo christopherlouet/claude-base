@@ -1,5 +1,5 @@
 ---
-sidebar_position: 51
+sidebar_position: 52
 title: "work-plan"
 description: "Planifier l'implémentation d'une fonctionnalité. Utiliser quand l'utilisateur veut planifier, architecturer, définir une approche, ou avant de coder une feature complexe."
 tags:
