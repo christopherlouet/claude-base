@@ -17,7 +17,10 @@
     "generate:agents": "tsx scripts/generate-agent-docs.ts",
     "generate:skills": "tsx scripts/generate-skill-docs.ts",
     "generate:rules": "tsx scripts/generate-rule-docs.ts",
-    "generate:sync-docs": "tsx scripts/sync-docs.ts"
+    "generate:sync-docs": "tsx scripts/sync-docs.ts",
+    "pdf": "npm run build && tsx scripts/generate-pdfs.ts",
+    "pdf:only": "tsx scripts/generate-pdfs.ts",
+    "test:scripts": "node --import tsx --test scripts/*.test.ts"
   },
   "dependencies": {
     "@docusaurus/core": "^3.10.0",

@@ -1,0 +1,199 @@
+/* Prince CSS — masque la chrome Docusaurus et prépare le rendu PDF. */
+
+@page {
+  size: A4;
+  margin: 2cm 2cm 2.5cm 2cm;
+  @bottom-right {
+    content: counter(page) " / " counter(pages);
+    font-size: 9pt;
+    color: #666;
+  }
+  @bottom-left {
+    content: string(doc-title);
+    font-size: 9pt;
+    color: #666;
+  }
+}
+
+@page :first {
+  @bottom-left { content: ""; }
+  @bottom-right { content: ""; }
+}
+
+/* Masque navigation, sidebar, TOC, footer, breadcrumbs, edit links */
+.navbar,
+nav.navbar,
+.theme-doc-sidebar-container,
+aside.theme-doc-sidebar-container,
+.theme-doc-toc-desktop,
+.theme-doc-toc-mobile,
+.table-of-contents,
+.theme-doc-footer,
+.theme-edit-this-page,
+.pagination-nav,
+.breadcrumbs,
+.breadcrumbs__link,
+footer,
+footer.footer,
+.footer,
+.announcementBar_mb4j,
+[class*="announcementBar"],
+.skipToContent_fXgn,
+[class*="skipToContent"],
+button[class*="collapseSidebar"],
+.docs-wrapper > aside,
+.theme-layout-navbar-sidebar-toggle,
+.DocSearch,
+.tocCollapsible_ETCw,
+[class*="tocCollapsible"] {
+  display: none !important;
+}
+
+/* Layout : pleine largeur */
+html,
+body {
+  background: white !important;
+  color: #222 !important;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 11pt;
+  line-height: 1.5;
+}
+
+main,
+main[class*="docMainContainer"],
+[class*="docItemContainer"],
+[class*="docItemCol"],
+[class*="docRoot"],
+.docs-wrapper,
+.docs-wrapper > div,
+.main-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  display: block !important;
+}
+
+/* Titres */
+h1 {
+  font-size: 22pt;
+  string-set: doc-title content();
+  page-break-before: avoid;
+  page-break-after: avoid;
+  color: #111;
+}
+
+h2 {
+  font-size: 16pt;
+  page-break-before: auto;
+  page-break-after: avoid;
+  color: #111;
+  margin-top: 1.5em;
+}
+
+h3 {
+  font-size: 13pt;
+  page-break-after: avoid;
+  color: #222;
+}
+
+h4, h5, h6 {
+  page-break-after: avoid;
+}
+
+p, li, blockquote, table {
+  orphans: 2;
+  widows: 2;
+}
+
+/* Code */
+code,
+pre,
+pre code {
+  font-family: "Courier New", monospace;
+  font-size: 9pt;
+}
+
+pre {
+  background: #f6f8fa !important;
+  border: 1px solid #ddd;
+  padding: 8pt;
+  page-break-inside: avoid;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+code {
+  background: #f0f0f0;
+  padding: 1pt 3pt;
+  border-radius: 2pt;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Tableaux */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  page-break-inside: auto;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 4pt 6pt;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+/* Liens : afficher l'URL après le texte (sauf intra-doc) */
+a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+a[href^="http"]:after {
+  content: " (" attr(href) ")";
+  font-size: 8pt;
+  color: #888;
+  word-break: break-all;
+}
+
+/* Admonitions Docusaurus */
+[class*="admonition"] {
+  border-left: 3pt solid #999;
+  padding: 6pt 10pt;
+  margin: 1em 0;
+  background: #fafafa;
+  page-break-inside: avoid;
+}
+
+[class*="admonition_info"] { border-left-color: #2188ff; }
+[class*="admonition_tip"] { border-left-color: #28a745; }
+[class*="admonition_warning"] { border-left-color: #f9a825; }
+[class*="admonition_danger"] { border-left-color: #d73a49; }
+
+/* Images */
+img {
+  max-width: 100% !important;
+  height: auto !important;
+  page-break-inside: avoid;
+}
+
+/* Masque les boutons / UI interactive */
+button,
+[role="button"],
+.copy-button,
+[class*="copyButton"],
+[class*="buttonGroup"] {
+  display: none !important;
+}
