@@ -1,5 +1,5 @@
 ---
-sidebar_position: 29
+sidebar_position: 30
 title: "vue"
 description: "const count = ref(0) const double = computed(() = count.value * 2) /script ```"
 tags:

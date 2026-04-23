@@ -1,5 +1,5 @@
 ---
-sidebar_position: 50
+sidebar_position: 51
 title: "work-explore"
 description: "Explorer et comprendre un codebase existant. Utiliser quand l'utilisateur veut comprendre le code, explorer un projet, découvrir une architecture, ou avant de modifier du code existant."
 tags:

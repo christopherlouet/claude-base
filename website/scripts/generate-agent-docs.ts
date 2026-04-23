@@ -249,7 +249,7 @@ ${generateTable(opusAgents)}
 <AgentGrid>
 ${agents.slice(0, 12).map((a) => `  <AgentCard
     name="${a.name}"
-    description="${a.description.replace(/"/g, '\\"').slice(0, 80)}"
+    description="${a.description.replace(/"/g, '&quot;').slice(0, 80)}"
     model="${a.model}"
     tools={${JSON.stringify(a.tools.slice(0, 4))}}
     href="/docs/agents/${a.name}"

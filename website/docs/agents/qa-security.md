@@ -4,12 +4,12 @@ title: "qa-security"
 description: "Audit de securite OWASP Top 10. Le skill `qa-security` fournit la checklist detaillee."
 tags:
   - "agent"
-  - "sonnet"
+  - "opus"
 ---
 
 # Agent: qa-security
 
-<span className="badge badge--sonnet">Sonnet</span>
+<span className="badge badge--opus">Opus</span>
 
 > Audit de securite OWASP Top 10. Le skill `qa-security` fournit la checklist detaillee.
 
@@ -17,7 +17,7 @@ tags:
 
 | Propriete | Valeur |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Modele** | opus |
 | **Permission Mode** | plan |
 | **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
 | **Outils interdits** | `Edit`, `Write`, `NotebookEdit` |
@@ -57,13 +57,13 @@ Cet agent est automatiquement delegue par Claude lorsque :
 - Le contexte isole est preferable
 - Les outils requis correspondent a sa configuration
 
-## Caracteristiques du modele sonnet
+## Caracteristiques du modele opus
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Opus** est optimise pour :
+- Taches necessitant le maximum de capacites
+- Analyses tres complexes
+- Cas critiques
 
 
 ---
