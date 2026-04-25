@@ -400,6 +400,38 @@ Alias : `/proactive` (CLI 2.1.105+). Sans intervalle, Claude auto-determine la f
 
 Controle des wakeups : `Esc` annule les wakeups en attente (CLI 2.1.113+), un message "Claude resuming /loop wakeup" confirme le re-demarrage a chaque tick.
 
+## Monitor Tool (CLI 2.1.98+)
+
+Outil natif qui spawn un watcher en arriere-plan et stream ses evenements dans la conversation : chaque event arrive comme un nouveau message de transcript auquel Claude reagit immediatement. Remplace les `Bash sleep` loops qui bloquent un turn entier.
+
+| Cas d'usage | Exemple de prompt |
+|-------------|-------------------|
+| Tail de log applicatif | `Tail server.log et previens-moi des qu'un 5xx apparait` |
+| Babysit CI sur une PR | `Surveille la CI de cette PR et auto-fix les lints` |
+| Watch d'un dev server | `Watch npm run dev et redemarre si crash` |
+| Suivi d'un training run | `Monitor le log de training et alerte sur loss spike` |
+
+Pairing recommande avec `/loop` (auto-pace) : Claude choisit Monitor plutot que polling quand la source emet des evenements directement.
+
+Integration socle : Monitor est utile dans les workflows `/qa:qa-loop`, `/ops:ops-ci-fix`, et `/loop` long-running ou un sleep loop bash serait l'alternative.
+
+## `/autofix-pr` (CLI 2.1.92+)
+
+Active **PR auto-fix sur Claude Code Web** depuis le terminal pour la PR de la branche courante. Apres push, Claude surveille la CI et les commentaires de review et pousse des fixes jusqu'au green sans necessiter de session locale active.
+
+```bash
+git push -u origin feature/auth
+/autofix-pr
+```
+
+| Quand utiliser | Description |
+|----------------|-------------|
+| Long cycle CI | Lints, tests, type-check qui boucle sur petites corrections |
+| PR avec nombreux nits review | Renommages, formats, docstrings demandes en review |
+| Travail asynchrone | Vous voulez quitter le terminal et laisser Claude finir |
+
+Complement de `/work:work-pr` : `/work:work-pr` cree la PR, `/autofix-pr` la fait converger en autonomie. Necessite Claude Code on the web (Pro/Max/Team/Enterprise).
+
 ## `/powerup` Command
 
 Lessons interactives et demos animees pour decouvrir les fonctionnalites de Claude Code. Utile pour l'onboarding de nouveaux utilisateurs.
