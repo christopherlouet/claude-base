@@ -93,6 +93,7 @@ Desactiver : `SKIP_PROMPT_CONTEXT=1`. Une slash command explicite court-circuite
 | CI cassee | `/ops:ops-ci-fix` |
 | Plan cloud (grosse feature) | `/ultraplan` |
 | Review cloud (grosse PR) | `/ultrareview` |
+| PR converger en autonomie (auto-fix CI + nits) | `/autofix-pr` |
 | Resume de session | `/recap` |
 | Reduire les prompts permission | `/less-permission-prompts` |
 
