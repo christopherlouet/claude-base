@@ -7,6 +7,10 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ## [Unreleased]
 
+### Corrige
+
+- **`scripts/update.sh` synchronise enfin `scripts/hooks/`** : les scripts referencees par `settings.json` (`command-validator.sh`, `prompt-context.sh`, `setup-deps.sh`, `socle-integrity-check.sh`) etaient auparavant absents apres un `update.sh --all` car la fonction de synchronisation ignorait ce repertoire. Resultat : `settings.json` pointait vers des scripts inexistants et les hooks SessionStart/PreToolUse echouaient silencieusement. Nouvelle option `--hook-scripts` (incluse dans `--all`), avec idempotence, preservation des customisations et `chmod +x` automatique.
+
 ### Ajoute
 
 #### Sync Claude Code mars-avril 2026

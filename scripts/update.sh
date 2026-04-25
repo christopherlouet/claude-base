@@ -31,6 +31,7 @@ AGENTS_SUBDIR=".claude/agents"
 RULES_SUBDIR=".claude/rules"
 STYLES_SUBDIR=".claude/output-styles"
 TEMPLATES_SUBDIR=".claude/templates"
+HOOK_SCRIPTS_SUBDIR="scripts/hooks"
 
 # =============================================================================
 # Variables
@@ -46,6 +47,7 @@ UPDATE_AGENTS=false
 UPDATE_RULES=false
 UPDATE_STYLES=false
 UPDATE_TEMPLATES=false
+UPDATE_HOOK_SCRIPTS=false
 CLEAN_BEFORE_UPDATE=false
 DETECT_ORPHANS=false
 REMOVE_ORPHANS=false
@@ -117,7 +119,8 @@ ${BOLD}OPTIONS${NC}
     --rules             Met aussi à jour le répertoire rules/
     --styles            Met aussi à jour le répertoire output-styles/
     --templates         Met aussi à jour le répertoire templates/
-    --all               Met à jour tout (commandes, settings, skills, agents, rules, styles, templates)
+    --hook-scripts      Met aussi à jour les scripts dans scripts/hooks/ (referencees par settings.json)
+    --all               Met à jour tout (commandes, settings, skills, agents, rules, styles, templates, hook-scripts)
     --upgrade-claude-md Migrer CLAUDE.md vers @imports (copie docs/reference/)
     --changelog         Affiche les nouveautés du socle
     --restore BACKUP    Restaure depuis un backup précédent
@@ -233,6 +236,7 @@ parse_args() {
             --rules)          UPDATE_RULES=true;       shift ;;
             --styles)         UPDATE_STYLES=true;      shift ;;
             --templates)      UPDATE_TEMPLATES=true;   shift ;;
+            --hook-scripts)   UPDATE_HOOK_SCRIPTS=true; shift ;;
             --upgrade-claude-md) UPGRADE_CLAUDE_MD=true; shift ;;
             --all)
                 UPDATE_SETTINGS=true
@@ -241,6 +245,7 @@ parse_args() {
                 UPDATE_RULES=true
                 UPDATE_STYLES=true
                 UPDATE_TEMPLATES=true
+                UPDATE_HOOK_SCRIPTS=true
                 UPGRADE_CLAUDE_MD=true
                 CLEAN_BEFORE_UPDATE=true
                 shift
@@ -559,6 +564,9 @@ _count_dir_files() {
         skills)
             count_dirs "$src_dir"
             ;;
+        hook_scripts)
+            find "$src_dir" -type f -name "*.sh" 2>/dev/null | wc -l | tr -d ' '
+            ;;
         *)
             find "$src_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
             ;;
@@ -598,6 +606,9 @@ update_directory() {
     case "$name" in
         templates)
             find_pattern='-type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \)'
+            ;;
+        hook_scripts)
+            find_pattern='-type f -name "*.sh"'
             ;;
         *)
             find_pattern='-type f -name "*.md"'
@@ -686,6 +697,11 @@ update_directory() {
             ((dir_added++)) || true
         fi
     done < <(eval "find \"$src_dir\" $find_pattern 2>/dev/null" || true)
+
+    # Ensure hook scripts are executable after copy
+    if [[ "$name" == "hook_scripts" ]] && ! $DRY_RUN; then
+        find "$dest_dir" -type f -name "*.sh" -exec chmod +x {} + 2>/dev/null || true
+    fi
 
     # Copy non-md files for skills (SKILL.md subdirs may have examples/, etc.)
     if [[ "$name" == "skills" ]]; then
@@ -1147,6 +1163,7 @@ main() {
         "UPDATE_RULES|dir|Mettre à jour .claude/rules/?|rules|$RULES_SUBDIR|Rules"
         "UPDATE_STYLES|dir|Mettre à jour .claude/output-styles/?|styles|$STYLES_SUBDIR|Output-styles"
         "UPDATE_TEMPLATES|dir|Mettre à jour .claude/templates/?|templates|$TEMPLATES_SUBDIR|Templates"
+        "UPDATE_HOOK_SCRIPTS|dir|Mettre à jour scripts/hooks/?|hook_scripts|$HOOK_SCRIPTS_SUBDIR|Hook Scripts"
         "UPGRADE_CLAUDE_MD|claude_md|Migrer CLAUDE.md vers @imports (docs/reference/)?"
     )
 
