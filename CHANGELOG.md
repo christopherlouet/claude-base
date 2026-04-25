@@ -7,6 +7,13 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ## [Unreleased]
 
+### Ajoute
+
+#### Sync Claude Code mars-avril 2026
+- **Doc Monitor Tool** (CLI 2.1.98+) : nouvelle section dans `docs/reference/advanced-features.md` decrivant l'outil natif qui stream des evenements background dans la conversation. Cas d'usage tail logs, babysit CI, watch dev server. Pairing recommande avec `/loop` auto-pace.
+- **Doc `/autofix-pr`** (CLI 2.1.92+) : section dediee dans `advanced-features.md` + entree dans le tableau Workflows Recommandes de `CLAUDE.md`. Active PR auto-fix sur Claude Code Web depuis le terminal pour la branche courante.
+- **Note regression mars-avril 2026** dans `TROUBLESHOOTING-GUIDE.md` : effort `medium` par defaut + thinking caching casse + system prompt 25-mots, resolu en v2.1.101 le 10 avril.
+
 ---
 
 ## [1.29.0] - 2026-04-20
