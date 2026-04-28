@@ -16,7 +16,7 @@ Template de configuration Claude Code pour un workflow de développement optimal
 **claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://code.claude.com/docs/en/overview) qui permet de :
 
 - Structurer ton workflow de développement : **Explore → Specify → Plan → TDD → Audit → Commit**
-- Disposer de **131 commandes**, **62 sub-agents** et **47 skills** pour différentes tâches
+- Disposer de **131 commandes**, **63 sub-agents** et **54 skills** pour différentes tâches
 - Avoir des conventions et bonnes pratiques intégrées
 - Accélérer ton développement avec des commandes personnalisées
 - Intégrer CI/CD et hooks pre-commit prêts à l'emploi
@@ -329,7 +329,7 @@ Le socle inclut un tutoriel interactif pour apprendre à l'utiliser efficacement
 
 Le tutoriel couvre :
 - Le workflow Explore → Specify → Plan → TDD → Audit → Commit
-- Les 131 commandes et 62 agents spécialisés
+- Les 131 commandes et 63 agents spécialisés
 - Le développement TDD
 - Les Conventional Commits
 - Quiz interactifs avec score
@@ -395,7 +395,7 @@ La documentation complète est disponible sur **[https://christopherlouet.github
 Elle contient :
 - Guide de démarrage rapide
 - Catalogue des 131 commandes
-- Documentation des 62 agents et 47 skills
+- Documentation des 63 agents et 54 skills
 - Workflows recommandés
 - Guides par type de projet
 
