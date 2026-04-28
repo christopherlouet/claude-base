@@ -702,24 +702,6 @@ update_gitignore_file() {
     fi
 }
 
-# Reecrit les chemins docs/ vers .claude/docs/ dans un CLAUDE.md installe
-# et retire les lignes pointant vers ARCHITECTURE.md / WORKFLOWS.md (non copies).
-# Arguments:
-#   $1 - Chemin du CLAUDE.md a reecrire
-rewrite_claude_md_paths() {
-    local claude_md="$1"
-
-    [[ -f "$claude_md" ]] || return 0
-
-    sed -i \
-        -e 's|^@docs/reference/|@.claude/docs/reference/|g' \
-        -e 's|`docs/reference/|`.claude/docs/reference/|g' \
-        -e 's|`docs/guides/|`.claude/docs/guides/|g' \
-        -e '/| Architecture |.*`docs\/ARCHITECTURE\.md`/d' \
-        -e '/| Workflows visuels |.*`docs\/WORKFLOWS\.md`/d' \
-        "$claude_md"
-}
-
 # Installe CLAUDE.md (copie le template générique + reécriture chemins)
 # Arguments:
 #   $1 - Répertoire cible (chemin absolu)
