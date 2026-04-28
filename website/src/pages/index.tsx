@@ -45,7 +45,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '62 Sub-Agents',
+    title: '63 Sub-Agents',
     emoji: '🤖',
     description: (
       <>

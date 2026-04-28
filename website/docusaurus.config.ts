@@ -124,7 +124,7 @@ const config: Config = {
             {
               type: 'docSidebar',
               sidebarId: 'agentsSidebar',
-              label: 'Agents (62)',
+              label: 'Agents (63)',
             },
             {
               type: 'docSidebar',
@@ -196,7 +196,7 @@ const config: Config = {
               to: '/docs/commands',
             },
             {
-              label: 'Agents (62)',
+              label: 'Agents (63)',
               to: '/docs/agents',
             },
             {
