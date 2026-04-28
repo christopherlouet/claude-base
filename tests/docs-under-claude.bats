@@ -116,7 +116,7 @@ teardown() {
 }
 
 # -----------------------------------------------------------------------------
-# T007 — Pre-existing user docs/ARCHITECTURE.md preserved (user-project scenario)
+# T007 — Pre-existing user docs/ARCHITECTURE.md preserved (user-owned docs scenario)
 # -----------------------------------------------------------------------------
 
 @test "[US1] --simple preserves pre-existing user docs/ARCHITECTURE.md byte-identical" {

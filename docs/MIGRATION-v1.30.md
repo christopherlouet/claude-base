@@ -117,7 +117,7 @@ Si Claude le lit sans erreur, la migration est réussie.
 
 `update.sh --upgrade-claude-md` préserve votre version : votre fichier modifié est déplacé tel quel sous `.claude/docs/guides/WEB-GUIDE.md`. Les autres guides (non modifiés) sont mis à jour avec la version socle courante.
 
-### `.claude/` est dans mon `.gitignore` (cas user-project)
+### `.claude/` est dans mon `.gitignore`
 
 Aucun problème côté fonctionnel — Claude Code lit toujours `.claude/docs/` correctement. La doc socle n'est juste pas versionnée. Si vous voulez la versionner, retirez `.claude/` de `.gitignore` ou ajoutez une exception : `!.claude/docs/`.
 

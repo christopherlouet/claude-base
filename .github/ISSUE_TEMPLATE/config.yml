@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question / Discussion
+    url: https://github.com/christopherlouet/claude-socle/discussions
+    about: Ask a question or discuss usage of claude-socle
+  - name: Security vulnerability
+    url: https://github.com/christopherlouet/claude-socle/security/advisories/new
+    about: Report a security issue privately (do NOT open a public issue)
+  - name: Documentation
+    url: https://christopherlouet.github.io/claude-socle/
+    about: Read the full documentation site

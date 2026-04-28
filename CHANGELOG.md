@@ -620,7 +620,7 @@ A partir de v1.30.0, la doc socle est installee sous `.claude/docs/` (territoire
 ## [1.15.0] - 2026-01-25
 
 ### Ajouté
-- **Nouveaux hooks de qualité** (synchronisés depuis user-project)
+- **Nouveaux hooks de qualité** (issus du retour d'expérience sur des projets utilisateurs réels)
   - `SessionStart` : Vérification de node_modules manquant
   - `PreToolUse` : Exécution des tests avant commit (désactivable via `SKIP_PRE_COMMIT_TESTS=1`)
   - `PostToolUse` : Type-check TypeScript (`tsc --noEmit`) après modification
@@ -629,7 +629,7 @@ A partir de v1.30.0, la doc socle est installee sous `.claude/docs/` (territoire
 
 ### Technique
 - 5 nouveaux hooks dans `.claude/settings.json`
-- Synchronisation des fonctionnalités depuis le projet user-project
+- Synchronisation des fonctionnalités depuis un projet utilisateur réel
 - Variables d'environnement pour désactiver les hooks (SKIP_PRE_COMMIT_TESTS, ALLOW_MAIN_EDIT)
 - Détection secrets gitleaks en PreToolUse (avant écriture) - pas de scan post-commit redondant
 

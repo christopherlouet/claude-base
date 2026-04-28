@@ -4,10 +4,9 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.10.x  | :white_check_mark: |
-| 1.9.x   | :white_check_mark: |
-| 1.8.x   | :white_check_mark: |
-| < 1.8   | :x:                |
+| 1.30.x  | :white_check_mark: |
+| 1.29.x  | :white_check_mark: |
+| < 1.29  | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -20,7 +19,7 @@ We take the security of claude-socle seriously. If you believe you have found a 
 Instead, please report them via one of the following methods:
 
 1. **GitHub Security Advisories** (Preferred)
-   - Go to the [Security tab](https://github.com/anthropics/claude-socle/security/advisories)
+   - Go to the [Security tab](https://github.com/christopherlouet/claude-socle/security/advisories)
    - Click "Report a vulnerability"
    - Fill out the form with details
 
@@ -139,7 +138,7 @@ Subscribe to GitHub notifications to receive security alerts.
 
 For security-related questions that are not vulnerabilities:
 
-- Open a [GitHub Discussion](https://github.com/anthropics/claude-socle/discussions)
+- Open a [GitHub Discussion](https://github.com/christopherlouet/claude-socle/discussions)
 - Tag your question with "security"
 
 ---
