@@ -593,37 +593,25 @@ install_claude_files() {
     debug "Copie des rules filtrées pour type: ${DETECTED_TYPE:-generic}..."
     copy_filtered_rules "$SOCLE_DIR/$RULES_DIR" "$target_dir/$RULES_DIR" "${DETECTED_TYPE:-generic}"
 
-    # Copier docs/reference/ (requis pour les @imports de CLAUDE.md)
+    # Copier docs/reference/ vers .claude/docs/reference/ (requis pour les @imports de CLAUDE.md)
     if [[ -d "$SOCLE_DIR/docs/reference" ]]; then
-        debug "Copie de docs/reference/ (requis pour @imports CLAUDE.md)..."
-        make_dir "$target_dir/docs/reference"
+        debug "Copie de docs/reference/ vers .claude/docs/reference/ (requis pour @imports CLAUDE.md)..."
+        make_dir "$target_dir/.claude/docs/reference"
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/reference/* → $target_dir/docs/reference/"
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/reference/* → $target_dir/.claude/docs/reference/"
         else
-            cp -r "$SOCLE_DIR/docs/reference/"* "$target_dir/docs/reference/"
+            cp -r "$SOCLE_DIR/docs/reference/"* "$target_dir/.claude/docs/reference/"
         fi
     fi
 
-    # Copier les docs supplementaires referencees par CLAUDE.md
-    for doc_file in "docs/ARCHITECTURE.md" "docs/WORKFLOWS.md"; do
-        if [[ -f "$SOCLE_DIR/$doc_file" ]]; then
-            debug "Copie de $doc_file..."
-            if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} cp $SOCLE_DIR/$doc_file → $target_dir/$doc_file"
-            else
-                cp "$SOCLE_DIR/$doc_file" "$target_dir/$doc_file"
-            fi
-        fi
-    done
-
-    # Copier docs/guides/ (reference dans CLAUDE.md)
+    # Copier docs/guides/ vers .claude/docs/guides/
     if [[ -d "$SOCLE_DIR/docs/guides" ]]; then
-        debug "Copie de docs/guides/..."
-        make_dir "$target_dir/docs/guides"
+        debug "Copie de docs/guides/ vers .claude/docs/guides/..."
+        make_dir "$target_dir/.claude/docs/guides"
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/guides/* → $target_dir/docs/guides/"
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/guides/* → $target_dir/.claude/docs/guides/"
         else
-            cp -r "$SOCLE_DIR/docs/guides/"* "$target_dir/docs/guides/"
+            cp -r "$SOCLE_DIR/docs/guides/"* "$target_dir/.claude/docs/guides/"
         fi
     fi
 
@@ -714,7 +702,7 @@ update_gitignore_file() {
     fi
 }
 
-# Installe CLAUDE.md (copie le template générique)
+# Installe CLAUDE.md (copie le template générique + reécriture chemins)
 # Arguments:
 #   $1 - Répertoire cible (chemin absolu)
 install_claude_md_file() {
@@ -724,6 +712,9 @@ install_claude_md_file() {
         warning "CLAUDE.md existe déjà, ignoré"
     else
         copy_file "$SOCLE_DIR/CLAUDE.md" "$target_dir/"
+        if ! $DRY_RUN; then
+            rewrite_claude_md_paths "$target_dir/CLAUDE.md"
+        fi
         success "CLAUDE.md copié"
     fi
 
@@ -764,8 +755,8 @@ print_simple_summary() {
     echo "  - .claude/output-styles/ (styles de sortie)"
     echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
     echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
-    echo "  - docs/reference/        (fichiers @import CLAUDE.md)"
-    echo "  - docs/guides/           (guides par domaine)"
+    echo "  - .claude/docs/reference/ (fichiers @import CLAUDE.md)"
+    echo "  - .claude/docs/guides/    (guides par domaine)"
     echo "  - CLAUDE.md"
     echo "  - CLAUDE.local.md.example"
     echo ""
@@ -811,7 +802,7 @@ run_minimal_mode() {
     echo ""
     info "Prochaines étapes :"
     echo "  cd \"$target_dir\""
-    echo "  # Lis docs/guides/learning-path.md"
+    echo "  # Lis .claude/docs/guides/learning-path.md"
     echo "  claude"
 }
 

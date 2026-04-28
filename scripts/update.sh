@@ -121,7 +121,7 @@ ${BOLD}OPTIONS${NC}
     --templates         Met aussi à jour le répertoire templates/
     --hook-scripts      Met aussi à jour les scripts dans scripts/hooks/ (referencees par settings.json)
     --all               Met à jour tout (commandes, settings, skills, agents, rules, styles, templates, hook-scripts)
-    --upgrade-claude-md Migrer CLAUDE.md vers @imports (copie docs/reference/)
+    --upgrade-claude-md Migrer CLAUDE.md vers @imports (copie .claude/docs/reference/)
     --changelog         Affiche les nouveautés du socle
     --restore BACKUP    Restaure depuis un backup précédent
     --add-hook HOOK     Ajoute un hook au settings.json existant sans ecraser (ex: rtk)
@@ -766,6 +766,67 @@ _remove_section_from_file() {
     echo "$tmp_cleaned"
 }
 
+# Migre une install legacy (docs/reference/, @docs/reference/) vers le layout
+# .claude/docs/ introduit en v1.30. Idempotent : no-op si rien à migrer.
+# Conserve les guides personnalisés par l'utilisateur.
+# Arguments: aucun (utilise $TARGET_DIR)
+migrate_legacy_docs() {
+    local claude_md="$TARGET_DIR/CLAUDE.md"
+
+    local has_legacy_dir=false
+    local has_legacy_imports=false
+
+    [[ -d "$TARGET_DIR/docs/reference" ]] && has_legacy_dir=true
+    if [[ -f "$claude_md" ]] && grep -qE '^@docs/reference/' "$claude_md" 2>/dev/null; then
+        has_legacy_imports=true
+    fi
+
+    if ! $has_legacy_dir && ! $has_legacy_imports; then
+        return 0
+    fi
+
+    info "Migration legacy détectée : docs/ → .claude/docs/"
+
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} Migration docs/reference/ → .claude/docs/reference/"
+        echo -e "${DIM}[DRY-RUN]${NC} Migration docs/guides/ → .claude/docs/guides/ (si présent)"
+        echo -e "${DIM}[DRY-RUN]${NC} Réécriture @docs/reference/ → @.claude/docs/reference/ dans CLAUDE.md"
+        return 0
+    fi
+
+    if [[ -d "$TARGET_DIR/docs/reference" ]]; then
+        make_dir "$TARGET_DIR/.claude/docs/reference"
+        cp -r "$TARGET_DIR/docs/reference/"* "$TARGET_DIR/.claude/docs/reference/" 2>/dev/null || true
+        rm -rf "$TARGET_DIR/docs/reference"
+        success "Migré: docs/reference/ → .claude/docs/reference/"
+    fi
+
+    if [[ -d "$TARGET_DIR/docs/guides" ]]; then
+        make_dir "$TARGET_DIR/.claude/docs/guides"
+        cp -r "$TARGET_DIR/docs/guides/"* "$TARGET_DIR/.claude/docs/guides/" 2>/dev/null || true
+        rm -rf "$TARGET_DIR/docs/guides"
+        success "Migré: docs/guides/ → .claude/docs/guides/"
+    fi
+
+    if [[ -f "$claude_md" ]] && $has_legacy_imports; then
+        local backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$claude_md" "$backup_file"
+        rewrite_claude_md_paths "$claude_md"
+        success "Réécrit @docs/reference/ → @.claude/docs/reference/ dans CLAUDE.md"
+    fi
+
+    for f in "docs/ARCHITECTURE.md" "docs/WORKFLOWS.md"; do
+        if [[ -f "$TARGET_DIR/$f" ]]; then
+            warning "$f existe (issu d'une install antérieure du socle ou de votre projet) — non géré par le socle, à conserver ou supprimer manuellement."
+        fi
+    done
+
+    # Nettoyer le dossier docs/ s'il est désormais vide
+    if [[ -d "$TARGET_DIR/docs" ]] && [[ -z "$(ls -A "$TARGET_DIR/docs" 2>/dev/null)" ]]; then
+        rmdir "$TARGET_DIR/docs"
+    fi
+}
+
 upgrade_claude_md() {
     section "Migration CLAUDE.md vers @imports"
 
@@ -777,9 +838,12 @@ upgrade_claude_md() {
         return
     fi
 
-    # Copier docs/reference/ du socle vers le projet (toujours, pour mettre à jour)
+    # Migration legacy si nécessaire (déplace docs/* → .claude/docs/*)
+    migrate_legacy_docs
+
+    # Copier docs/reference/ du socle vers .claude/docs/reference/ (toujours, pour mettre à jour)
     local src_ref="$SOCLE_DIR/docs/reference"
-    local dest_ref="$TARGET_DIR/docs/reference"
+    local dest_ref="$TARGET_DIR/.claude/docs/reference"
 
     if [[ ! -d "$src_ref" ]]; then
         warning "docs/reference/ non trouvé dans le socle"
@@ -787,74 +851,59 @@ upgrade_claude_md() {
     fi
 
     if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/reference/"
-        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/ARCHITECTURE.md, docs/WORKFLOWS.md"
-        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/guides/"
+        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/reference/ → .claude/docs/reference/"
+        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/guides/ → .claude/docs/guides/"
         echo -e "${DIM}[DRY-RUN]${NC} Vérification @imports manquants"
         echo -e "${DIM}[DRY-RUN]${NC} Backup CLAUDE.md si modifications"
         return
     fi
 
-    make_dir "$TARGET_DIR/docs"
     make_dir "$dest_ref"
     cp -r "$src_ref/"* "$dest_ref/"
     local ref_count
     ref_count=$(find "$dest_ref" -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
-    success "docs/reference/ copié ($ref_count fichiers)"
+    success ".claude/docs/reference/ copié ($ref_count fichiers)"
 
-    # Copier les docs supplementaires UNIQUEMENT si elles n'existent pas
-    # Ces fichiers deviennent specifiques au projet une fois crees
-    for doc_file in "docs/ARCHITECTURE.md" "docs/WORKFLOWS.md"; do
-        if [[ -f "$SOCLE_DIR/$doc_file" ]]; then
-            if [[ -f "$TARGET_DIR/$doc_file" ]]; then
-                debug "Conservé (spécifique au projet): $doc_file"
-            else
-                cp "$SOCLE_DIR/$doc_file" "$TARGET_DIR/$doc_file"
-                success "Créé (nouveau): $doc_file"
-            fi
-        fi
-    done
-
-    # Copier docs/guides/ — uniquement les nouveaux fichiers
-    # Les guides existants sont conserves (potentiellement personnalises)
+    # Copier docs/guides/ vers .claude/docs/guides/ — uniquement les nouveaux fichiers
+    # Les guides existants sont conservés (potentiellement personnalisés)
     if [[ -d "$SOCLE_DIR/docs/guides" ]]; then
-        make_dir "$TARGET_DIR/docs/guides"
+        make_dir "$TARGET_DIR/.claude/docs/guides"
         local guides_added=0
         local guides_skipped=0
         while IFS= read -r guide_file; do
             local guide_rel="${guide_file#"$SOCLE_DIR"/docs/guides/}"
-            local guide_dest="$TARGET_DIR/docs/guides/$guide_rel"
+            local guide_dest="$TARGET_DIR/.claude/docs/guides/$guide_rel"
             if [[ -f "$guide_dest" ]]; then
-                debug "Conservé (existant): docs/guides/$guide_rel"
+                debug "Conservé (existant): .claude/docs/guides/$guide_rel"
                 ((guides_skipped++)) || true
             else
                 local guide_dest_dir
                 guide_dest_dir=$(dirname "$guide_dest")
                 [[ -d "$guide_dest_dir" ]] || mkdir -p "$guide_dest_dir"
                 cp "$guide_file" "$guide_dest"
-                debug "Ajouté: docs/guides/$guide_rel"
+                debug "Ajouté: .claude/docs/guides/$guide_rel"
                 ((guides_added++)) || true
             fi
         done < <(find "$SOCLE_DIR/docs/guides" -name "*.md" -type f 2>/dev/null || true)
         if [[ $guides_added -gt 0 ]]; then
-            success "docs/guides/: $guides_added ajouté(s), $guides_skipped conservé(s)"
+            success ".claude/docs/guides/: $guides_added ajouté(s), $guides_skipped conservé(s)"
         else
-            info "docs/guides/: $guides_skipped fichier(s) existant(s) conservé(s)"
+            info ".claude/docs/guides/: $guides_skipped fichier(s) existant(s) conservé(s)"
         fi
     fi
 
     # Vérifier si @imports déjà présents
-    if grep -q "@docs/reference/" "$claude_md" 2>/dev/null; then
+    if grep -q "@\.claude/docs/reference/" "$claude_md" 2>/dev/null; then
         # Vérifier les @imports manquants et les ajouter
         local missing_imports=()
         local all_imports=(
-            "@docs/reference/commands.md"
-            "@docs/reference/project-structures.md"
-            "@docs/reference/agents-catalog.md"
-            "@docs/reference/hooks-reference.md"
-            "@docs/reference/skills-catalog.md"
-            "@docs/reference/advanced-features.md"
-            "@docs/reference/best-practices.md"
+            "@.claude/docs/reference/commands.md"
+            "@.claude/docs/reference/project-structures.md"
+            "@.claude/docs/reference/agents-catalog.md"
+            "@.claude/docs/reference/hooks-reference.md"
+            "@.claude/docs/reference/skills-catalog.md"
+            "@.claude/docs/reference/advanced-features.md"
+            "@.claude/docs/reference/best-practices.md"
         )
 
         for import in "${all_imports[@]}"; do
@@ -878,7 +927,7 @@ upgrade_claude_md() {
 
         # Trouver le dernier @import existant et ajouter après
         local last_import_line
-        last_import_line=$(grep -n "@docs/reference/" "$claude_md" | tail -1 | cut -d: -f1)
+        last_import_line=$(grep -n "@\.claude/docs/reference/" "$claude_md" | tail -1 | cut -d: -f1)
 
         if [[ -n "$last_import_line" ]]; then
             local tmp_file
@@ -902,13 +951,13 @@ upgrade_claude_md() {
 
     # Insérer les @imports après la première ligne vide (après le titre)
     local imports_block
-    imports_block="@docs/reference/commands.md
-@docs/reference/project-structures.md
-@docs/reference/agents-catalog.md
-@docs/reference/hooks-reference.md
-@docs/reference/skills-catalog.md
-@docs/reference/advanced-features.md
-@docs/reference/best-practices.md"
+    imports_block="@.claude/docs/reference/commands.md
+@.claude/docs/reference/project-structures.md
+@.claude/docs/reference/agents-catalog.md
+@.claude/docs/reference/hooks-reference.md
+@.claude/docs/reference/skills-catalog.md
+@.claude/docs/reference/advanced-features.md
+@.claude/docs/reference/best-practices.md"
 
     # Trouver la première ligne vide et insérer après
     local tmp_file
@@ -1147,6 +1196,7 @@ main() {
             echo -e "${DIM}[DRY-RUN]${NC} Ajout: CLAUDE.md"
         else
             cp "$SOCLE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
+            rewrite_claude_md_paths "$TARGET_DIR/CLAUDE.md"
         fi
         success "CLAUDE.md ajouté (absent du projet)"
     fi
