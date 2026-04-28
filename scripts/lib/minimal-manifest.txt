@@ -50,6 +50,6 @@
 scripts/hooks/prompt-context.sh
 
 # === Documentation minimale ===
-docs/reference/best-practices.md
-docs/reference/project-structures.md
-website/docs/guides/learning-path.md:docs/guides/learning-path.md
+docs/reference/best-practices.md:.claude/docs/reference/best-practices.md
+docs/reference/project-structures.md:.claude/docs/reference/project-structures.md
+website/docs/guides/learning-path.md:.claude/docs/guides/learning-path.md

@@ -20,6 +20,40 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
+## [1.30.0] - 2026-04-28
+
+### **BREAKING CHANGE — relocalisation de la doc socle vers `.claude/docs/`**
+
+Avant cette version, `new-project.sh --simple` et `update.sh --upgrade-claude-md` copiaient la documentation du socle (`docs/reference/`, `docs/guides/`, `docs/ARCHITECTURE.md`, `docs/WORKFLOWS.md`) directement dans le dossier `docs/` du projet utilisateur. Cela posait deux problemes :
+
+1. **Collisions** : tout projet ayant son propre `docs/ARCHITECTURE.md` (ex : un projet d'infra avec un schema Mermaid) le voyait ecrase pendant l'install/update.
+2. **Pollution** : la doc du socle se melangeait a la doc du projet, sans marqueur clair de propriete.
+
+A partir de v1.30.0, la doc socle est installee sous `.claude/docs/` (territoire du socle), et le `docs/` du projet utilisateur n'est plus jamais touche.
+
+#### Modifie
+
+- `new-project.sh --simple` et `--minimal` placent desormais la doc socle sous `.claude/docs/reference/` et `.claude/docs/guides/`. Le dossier `docs/` du projet n'est plus cree ni modifie.
+- `new-project.sh` ne copie plus `docs/ARCHITECTURE.md` ni `docs/WORKFLOWS.md` (meta-docs sur le socle, accessibles via le repo GitHub et le website Docusaurus).
+- `update.sh` detecte automatiquement les installs legacy (`docs/reference/` + `@docs/reference/...` dans `CLAUDE.md`) et les migre vers `.claude/docs/`. Les guides modifies localement par l'utilisateur sont preserves. Backup `CLAUDE.md.backup.*` cree avant migration.
+- `update.sh --upgrade-claude-md` reecrit les `@imports` de `@docs/reference/...` vers `@.claude/docs/reference/...` et ecrit toujours sous `.claude/docs/`.
+- `CLAUDE.md` genere pour les utilisateurs : `@imports` et tables de reference pointent desormais vers `.claude/docs/...`.
+- `scripts/lib/minimal-claude-md.template` et `scripts/lib/minimal-manifest.txt` alignes sur le nouveau layout.
+- Helper `rewrite_claude_md_paths()` ajoute a `scripts/lib/common.sh` (DRY entre `new-project.sh` et `update.sh`).
+
+#### Migration
+
+**Automatique** : `./scripts/update.sh --upgrade-claude-md /chemin/vers/projet` migre l'install legacy vers le nouveau layout. Idempotent : executable plusieurs fois sans casser.
+
+**Manuelle** : voir [`docs/MIGRATION-v1.30.md`](./docs/MIGRATION-v1.30.md) pour la procedure pas-a-pas si vous preferez tout verifier vous-meme.
+
+#### Precisions techniques
+
+- Le **repo socle** (ce repo) conserve `docs/` comme source de verite — coherent avec le website Docusaurus et la doc historique (`CHEATSHEET.md`, `GUIDE.md`, etc.). La migration ne concerne que les **projets utilisateurs**.
+- La rule `socle-maintenance.md` n'est pas modifiee : ses chemins `docs/reference/...` parlent du repo socle, pas des projets utilisateurs.
+
+---
+
 ## [1.29.0] - 2026-04-20
 
 ### Ajoute
