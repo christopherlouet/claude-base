@@ -3,12 +3,12 @@
 > Configuration Claude Code minimale pour le parcours Niveau 1 + Niveau 2 du learning-path.
 > Workflow : Explore → Plan → TDD → Audit → Commit.
 
-@docs/reference/best-practices.md
-@docs/reference/project-structures.md
+@.claude/docs/reference/best-practices.md
+@.claude/docs/reference/project-structures.md
 
 ## Parcours recommande
 
-Lis d'abord **`docs/guides/learning-path.md`** pour comprendre Claude Code et claude-socle,
+Lis d'abord **`.claude/docs/guides/learning-path.md`** pour comprendre Claude Code et claude-socle,
 puis enchaine avec les sections ci-dessous.
 
 ## Workflow Obligatoire : Explore → Plan → TDD → Audit → Commit
@@ -63,9 +63,9 @@ Desactiver : `SKIP_PROMPT_CONTEXT=1`.
 
 | Reference | Chemin |
 |-----------|--------|
-| Parcours Novice a Pro | `docs/guides/learning-path.md` |
-| Bonnes pratiques | `docs/reference/best-practices.md` |
-| Structures de projet | `docs/reference/project-structures.md` |
+| Parcours Novice a Pro | `.claude/docs/guides/learning-path.md` |
+| Bonnes pratiques | `.claude/docs/reference/best-practices.md` |
+| Structures de projet | `.claude/docs/reference/project-structures.md` |
 
 ## Anti-patterns a Eviter
 

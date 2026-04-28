@@ -335,3 +335,36 @@ EOF
     legacy_count=$(grep -cE '^@docs/reference/' "$TEST_DIR/CLAUDE.md" || true)
     [ "$legacy_count" -eq 0 ]
 }
+
+# =============================================================================
+# US3 — Mode --minimal aligned with new layout
+# Spec: specs/docs-under-claude/spec.md (US3, P3)
+# =============================================================================
+
+@test "[US3] --minimal installs docs under .claude/docs/" {
+    run "$NEW_PROJECT_SCRIPT" -y --minimal "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    [ -f "$TEST_DIR/.claude/docs/reference/best-practices.md" ]
+    [ -f "$TEST_DIR/.claude/docs/reference/project-structures.md" ]
+    [ -f "$TEST_DIR/.claude/docs/guides/learning-path.md" ]
+}
+
+@test "[US3] --minimal does NOT pollute target docs/" {
+    run "$NEW_PROJECT_SCRIPT" -y --minimal "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    [ ! -d "$TEST_DIR/docs/reference" ]
+    [ ! -d "$TEST_DIR/docs/guides" ]
+}
+
+@test "[US3] --minimal CLAUDE.md @imports point to .claude/docs/" {
+    run "$NEW_PROJECT_SCRIPT" -y --minimal "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    grep -q '@\.claude/docs/reference/best-practices\.md' "$TEST_DIR/CLAUDE.md"
+    grep -q '@\.claude/docs/reference/project-structures\.md' "$TEST_DIR/CLAUDE.md"
+
+    run grep -E '^@docs/reference/' "$TEST_DIR/CLAUDE.md"
+    [ "$status" -ne 0 ]
+}
