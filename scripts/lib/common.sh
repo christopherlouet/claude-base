@@ -644,6 +644,26 @@ clean_claude_dirs() {
     success "Anciens fichiers nettoyés"
 }
 
+# Réécrit les chemins docs/ vers .claude/docs/ dans un CLAUDE.md de projet user.
+# Idempotent : appliquer plusieurs fois ne casse pas le résultat.
+# Retire aussi les lignes table pointant vers docs/ARCHITECTURE.md ou docs/WORKFLOWS.md
+# (ces fichiers ne sont plus copiés dans les projets utilisateurs depuis v1.30).
+# Arguments:
+#   $1 - Chemin du CLAUDE.md à réécrire
+rewrite_claude_md_paths() {
+    local claude_md="$1"
+
+    [[ -f "$claude_md" ]] || return 0
+
+    sed -i \
+        -e 's|^@docs/reference/|@.claude/docs/reference/|g' \
+        -e 's|`docs/reference/|`.claude/docs/reference/|g' \
+        -e 's|`docs/guides/|`.claude/docs/guides/|g' \
+        -e '/| Architecture |.*`docs\/ARCHITECTURE\.md`/d' \
+        -e '/| Workflows visuels |.*`docs\/WORKFLOWS\.md`/d' \
+        "$claude_md"
+}
+
 # =============================================================================
 # Gestion des erreurs
 # =============================================================================
@@ -678,4 +698,4 @@ export -f separator title section
 export -f count_agents count_skills count_hooks count_templates show_socle_stats
 export -f on_error enable_error_handler
 export -f cache_init cache_valid cache_read cache_write
-export -f clean_claude_dirs
+export -f clean_claude_dirs rewrite_claude_md_paths
