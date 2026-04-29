@@ -51,33 +51,35 @@ flowchart LR
 │  │          │                                         │                  │  │
 │  │          ▼                                         ▼                  │  │
 │  │   ┌─────────────┐                          ┌─────────────┐            │  │
-│  │   │  work-plan  │                          │   RULES     │            │  │
-│  │   └──────┬──────┘                          │ (typescript,│            │  │
-│  │          │                                 │  react,     │            │  │
-│  │          │ Plan approuve?                  │  security)  │            │  │
+│  │   │work-specify │                          │   RULES     │            │  │
+│  │   │ User Stories│                          │ (typescript,│            │  │
+│  │   │ + critères  │                          │  react,     │            │  │
+│  │   └──────┬──────┘                          │  security)  │            │  │
 │  │          │                                 └─────────────┘            │  │
+│  │          ▼                                                            │  │
+│  │   ┌─────────────┐                                                     │  │
+│  │   │  work-plan  │ Plan approuvé?                                      │  │
+│  │   └──────┬──────┘                                                     │  │
 │  │     ┌────┴────┐                                                       │  │
-│  │     │         │                                                       │  │
 │  │    Non       Oui                                                      │  │
 │  │     │         │                                                       │  │
 │  │     ▼         ▼                                                       │  │
 │  │   Reviser  ┌──────────────┐                                           │  │
-│  │   le plan  │   dev-tdd    │                                           │  │
+│  │   le plan  │   dev-tdd    │ Tests AVANT le code (Red-Green-Refactor)  │  │
 │  │            └──────┬───────┘                                           │  │
 │  │                   │                                                   │  │
 │  │                   ▼                                                   │  │
 │  │            ┌──────────────┐                                           │  │
-│  │            │  qa-review   │                                           │  │
+│  │            │   qa-loop    │ Audit + fix en boucle (score ≥ 90)        │  │
 │  │            └──────┬───────┘                                           │  │
 │  │                   │                                                   │  │
-│  │                   │ Review OK?                                        │  │
+│  │                   │ Score atteint?                                    │  │
 │  │              ┌────┴────┐                                              │  │
-│  │              │         │                                              │  │
 │  │             Non       Oui                                             │  │
 │  │              │         │                                              │  │
 │  │              ▼         ▼                                              │  │
-│  │           Corriger  ┌──────────────┐                                  │  │
-│  │                     │   work-pr    │                                  │  │
+│  │           Itérer    ┌──────────────┐                                  │  │
+│  │           qa-loop   │   work-pr    │                                  │  │
 │  │                     └──────┬───────┘                                  │  │
 │  │                            │                                          │  │
 │  │                            ▼                                          │  │
@@ -92,16 +94,16 @@ flowchart LR
 ```mermaid
 flowchart TD
     START([Start]) --> EXPLORE[work-explore]
-    EXPLORE --> PLAN[work-plan]
+    EXPLORE --> SPECIFY[work-specify]
+    SPECIFY --> PLAN[work-plan]
     PLAN --> APPROVED{Plan approuvé?}
     APPROVED -->|Non| REVISE[Réviser le plan]
     REVISE --> PLAN
     APPROVED -->|Oui| CODE[dev-tdd]
-    CODE --> REVIEW[qa-review]
-    REVIEW --> REVIEWOK{Review OK?}
-    REVIEWOK -->|Non| FIX[Corriger]
-    FIX --> REVIEW
-    REVIEWOK -->|Oui| PR[work-pr]
+    CODE --> AUDIT[qa-loop]
+    AUDIT --> SCORE{Score ≥ 90?}
+    SCORE -->|Non| AUDIT
+    SCORE -->|Oui| PR[work-pr]
     PR --> DONE([Done])
 ```
 
@@ -352,7 +354,12 @@ flowchart TD
 │  │           │                                                           │  │
 │  │           ▼                                                           │  │
 │  │    ┌─────────────┐                                                    │  │
-│  │    │  qa-mobile  │  Audit complet mobile                              │  │
+│  │    │  qa-mobile  │  Audit qualité mobile                              │  │
+│  │    └──────┬──────┘                                                    │  │
+│  │           │                                                           │  │
+│  │           ▼                                                           │  │
+│  │    ┌─────────────┐                                                    │  │
+│  │    │   qa-loop   │  Audit + fix score ≥ 90                            │  │
 │  │    └──────┬──────┘                                                    │  │
 │  │           │                                                           │  │
 │  │           ▼                                                           │  │
@@ -435,24 +442,27 @@ flowchart TD
 │  │          │                                                            │  │
 │  │          ▼                                                            │  │
 │  │   ┌─────────────┐                                                     │  │
+│  │   │work-specify │ User Stories + critères Given/When/Then             │  │
+│  │   └──────┬──────┘                                                     │  │
+│  │          │                                                            │  │
+│  │          ▼                                                            │  │
+│  │   ┌─────────────┐                                                     │  │
 │  │   │   dev-api   │ Routes, Controllers, Services                       │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │          │                                                            │  │
 │  │          ▼                                                            │  │
 │  │   ┌─────────────┐                                                     │  │
-│  │   │   dev-tdd   │ Tests d'intégration API                             │  │
+│  │   │   dev-tdd   │ Tests d'intégration API (avant le code)             │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │          │                                                            │  │
 │  │    ┌─────┴─────┐                                                      │  │
-│  │    │           │                                                      │  │
 │  │    ▼           ▼                                                      │  │
-│  │  ┌───────┐  ┌────────────┐                                            │  │
-│  │  │qa-    │  │doc-api-spec│                                            │  │
-│  │  │security│  │ (OpenAPI)  │                                            │  │
-│  │  └───┬───┘  └─────┬──────┘                                            │  │
-│  │      │            │                                                   │  │
-│  │      └─────┬──────┘                                                   │  │
-│  │            │                                                          │  │
+│  │  ┌────────┐  ┌────────────┐                                           │  │
+│  │  │qa-loop │  │doc-api-spec│                                           │  │
+│  │  │ ≥ 90   │  │ (OpenAPI)  │                                           │  │
+│  │  └───┬────┘  └─────┬──────┘                                           │  │
+│  │      │             │                                                  │  │
+│  │      └─────┬───────┘                                                  │  │
 │  │            ▼                                                          │  │
 │  │     ┌─────────────┐                                                   │  │
 │  │     │   work-pr   │                                                   │  │
@@ -467,9 +477,10 @@ flowchart TD
 ```mermaid
 flowchart TD
     A([Nouvel Endpoint]) --> B[work-explore]
-    B --> C[dev-api]
+    B --> S[work-specify]
+    S --> C[dev-api]
     C --> D[dev-tdd]
-    D --> E[qa-security]
+    D --> E[qa-loop]
     D --> F[doc-api-spec]
     E --> G[work-pr]
     F --> G

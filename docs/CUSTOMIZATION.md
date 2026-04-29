@@ -241,8 +241,13 @@ Les hooks sont configurés directement dans le fichier `settings.json` :
 
 | Hook | Déclencheur |
 |------|-------------|
-| `PreToolUse` | Avant l'utilisation d'un outil (Edit, Write, Bash...) |
+| `SessionStart` | Démarrage de session (matchers : `startup`, `resume`, `clear`, `compact`) |
+| `SessionEnd` | Fin de session |
+| `UserPromptSubmit` | Quand l'utilisateur soumet un prompt (peut injecter du contexte) |
+| `PreToolUse` | Avant l'utilisation d'un outil (Edit, Write, Bash, Read…) |
 | `PostToolUse` | Après l'utilisation d'un outil |
+| `Stop` | Quand Claude termine une réponse |
+| `Notification` | Notifications système (permissions, idle…) |
 
 ### Matchers disponibles
 
@@ -251,14 +256,21 @@ Les hooks sont configurés directement dans le fichier `settings.json` :
 | `Edit` | Modifications de fichiers |
 | `Write` | Création de fichiers |
 | `Bash` | Commandes shell |
+| `Read` | Lecture de fichiers |
+| `Glob`, `Grep` | Recherche |
 | `Edit\|Write` | Plusieurs outils (regex) |
+| `*` | Tous les outils |
 
 ### Variables d'environnement
 
 | Variable | Description |
 |----------|-------------|
-| `$CLAUDE_FILE_PATH` | Chemin du fichier concerné |
+| `$CLAUDE_PROJECT_DIR` | Racine du projet (équivalent `pwd` au démarrage) |
+| `$CLAUDE_SESSION_ID` | Identifiant unique de la session |
+| `$CLAUDE_FILE_PATH` | Chemin du fichier concerné (PreToolUse/PostToolUse Edit/Write) |
 | `$CLAUDE_TOOL_NAME` | Nom de l'outil utilisé |
+
+Les hooks reçoivent aussi le payload JSON sur `stdin` (utiliser `jq` pour parser).
 
 ### Comportement en cas d'échec
 
@@ -270,43 +282,124 @@ Les hooks sont configurés directement dans le fichier `settings.json` :
 
 ---
 
-## 5. Intégrer des serveurs MCP
+## 5. Créer des skills personnalisés
+
+Les skills sont déclenchés automatiquement par Claude selon le contexte (mots-clés dans la conversation). Idéaux pour les patterns récurrents qu'on ne veut pas invoquer manuellement.
+
+### Emplacement
+
+```
+.claude/skills/
+└── mon-skill/
+    ├── SKILL.md          # Frontmatter + instructions principales
+    ├── examples/         # (optionnel) Exemples détaillés
+    └── references/       # (optionnel) Références volumineuses
+```
+
+### Format `SKILL.md`
+
+```yaml
+---
+name: mon-skill
+description: Quand déclencher ce skill (mots-clés ou contexte)
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Edit
+  - Write
+context: fork    # `fork` (recommandé) ou `inherit`
+---
+
+# Mon Skill
+
+## Trigger
+
+Activé quand l'utilisateur mentionne :
+- "pattern X"
+- "approche Y"
+
+## Instructions
+
+[Le prompt complet du skill — peut faire jusqu'à 500 lignes]
+
+## Examples
+
+Pour les exemples volumineux, déporter dans `examples/` et inclure via lien.
+```
+
+### Bonnes pratiques
+
+- **`context: fork`** : isole le skill de la conversation principale (recommandé pour les workflows complexes).
+- **Limiter `allowed-tools`** : principe du moindre privilège.
+- **Description précise** : Claude utilise la description pour décider du déclenchement, soyez spécifique.
+- **Skills ≠ Agents** : un skill complète Claude ; un agent est un sous-processus isolé.
+
+### Exemple : skill de revue de code TypeScript
+
+```yaml
+---
+name: review-typescript-strict
+description: Activer quand l'utilisateur veut une review TypeScript stricte (any, types implicites, null safety)
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+context: fork
+---
+
+# Review TypeScript Strict
+
+Quand l'utilisateur demande une review TypeScript :
+
+1. Détecter les `any` explicites (autres que les justifiés en commentaire).
+2. Détecter les types implicites (paramètres sans type).
+3. Vérifier la null safety (optional chaining, nullish coalescing).
+4. Produire un rapport avec ligne:colonne pour chaque problème.
+```
+
+---
+
+## 6. Intégrer des serveurs MCP
 
 ### Fichier `.mcp.json`
+
+> **Important sécurité** : par défaut, les MCP sont désactivés dans le socle (`.mcp.json` minimal). N'activez que les serveurs nécessaires et examinez leurs permissions.
 
 ```json
 {
   "mcpServers": {
-    "database": {
+    "filesystem": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-postgres"],
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
       "env": {
         "DATABASE_URL": "${DATABASE_URL}"
-      },
-      "enabled": true
-    },
-    "puppeteer": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-puppeteer"],
-      "enabled": true
+      }
     }
   }
 }
 ```
 
-### Serveurs MCP disponibles
+### Serveurs MCP populaires
 
-| Serveur | Usage |
-|---------|-------|
-| `mcp-postgres` | Requêtes PostgreSQL |
-| `mcp-puppeteer` | Automatisation navigateur |
-| `mcp-filesystem` | Accès fichiers avancé |
-| `mcp-github` | Intégration GitHub |
-| `mcp-fetch` | Requêtes HTTP |
+| Serveur | Package | Usage |
+|---------|---------|-------|
+| Filesystem | `@modelcontextprotocol/server-filesystem` | Accès fichiers contrôlé |
+| Postgres | `@modelcontextprotocol/server-postgres` | Requêtes PostgreSQL |
+| GitHub | `@modelcontextprotocol/server-github` | API GitHub (issues, PRs) |
+| Puppeteer | `@modelcontextprotocol/server-puppeteer` | Automatisation navigateur |
+| Fetch | `@modelcontextprotocol/server-fetch` | Requêtes HTTP |
+| Memory | `@modelcontextprotocol/server-memory` | Mémoire knowledge graph |
+
+Liste complète : <https://github.com/modelcontextprotocol/servers>.
 
 ---
 
-## 6. Adapter pour votre équipe
+## 7. Adapter pour votre équipe
 
 ### Conventions d'équipe
 

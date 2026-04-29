@@ -90,7 +90,7 @@ Cette architecture permet :
 | **Modele** | Default | Default | Configurable | N/A |
 | **Cas d'usage** | Actions explicites | Patterns detectes | Taches isolees | Contraintes |
 
-## Commands (123 disponibles)
+## Commands (131 disponibles)
 
 ### Definition
 Prompts invoques manuellement avec la syntaxe `/nom-commande`.
@@ -137,7 +137,7 @@ $ARGUMENTS - Arguments passes par l'utilisateur
 - Actions specifiques
 - Taches complexes necessitant un prompt detaille
 
-## Skills (41 disponibles)
+## Skills (54 disponibles)
 
 ### Definition
 Patterns declenches automatiquement par Claude selon le contexte de la conversation.
@@ -197,7 +197,7 @@ Quand l'utilisateur mentionne "TDD", "test first", ou "ecrire les tests d'abord"
 - Declenchement contextuel desire
 - Standardisation de comportements
 
-## Agents (59 disponibles)
+## Agents (63 disponibles)
 
 ### Definition
 Sub-agents specialises avec contexte isole, delegation automatique.
@@ -246,7 +246,7 @@ Instructions pour l'agent...
 |--------|-------|------|---------|----------|------------|
 | haiku | Taches simples, lecture | $ | Rapide | 200k | 8k |
 | sonnet | Taches complexes, analyse | $$ | Medium | 200k | 64k |
-| opus (4.6) | Taches critiques, adaptive thinking | $$$ | Plus lent | 1M (beta) | 128k |
+| opus (4.7) | Taches critiques, adaptive thinking | $$$ | Plus lent | 1M | 128k |
 
 ### Exemple d'agent
 ```yaml
@@ -274,7 +274,7 @@ Effectue un audit de securite complet base sur OWASP Top 10...
 - Parallelisation
 - Economie de tokens (haiku)
 
-## Rules (21 disponibles)
+## Rules (30 disponibles)
 
 ### Definition
 Contraintes et conventions injectees automatiquement selon le chemin des fichiers.
@@ -285,22 +285,45 @@ Contraintes et conventions injectees automatiquement selon le chemin des fichier
 - Contraintes globales ou specifiques
 - Affecte Commands, Skills, Agents
 
-### Structure fichier
+### Structure fichier (30 rules)
+
+Rules transversales (16) :
 ```
 .claude/rules/
-├── typescript.md    # **/*.ts, **/*.tsx
-├── react.md         # **/*.tsx, **/components/**
-├── flutter.md       # **/*.dart, **/lib/**
-├── testing.md       # **/*.test.ts, **/__tests__/**
-├── security.md      # **/auth/**, **/api/**
-├── api.md           # **/api/**, **/routes/**
-├── git.md           # Global
-├── workflow.md      # Global
-├── java.md          # **/*.java
-├── csharp.md        # **/*.cs
-├── ruby.md          # **/*.rb
-├── php.md           # **/*.php
-└── rust.md          # **/*.rs
+├── workflow.md            # Global — Explore → Plan → TDD → Audit → Commit
+├── git.md                 # Global — Conventional Commits, branches
+├── tdd-enforcement.md     # Code TS/Py/Go/Dart — TDD obligatoire
+├── verification.md        # Code TS/Py/Go/Dart — vérification 4 phases
+├── security.md            # auth/, api/, middleware/
+├── accessibility.md       # tsx/jsx — WCAG 2.1 AA
+├── performance.md         # tsx/ts/pages — Core Web Vitals
+├── testing.md             # *.test, *.spec, tests/
+├── api.md                 # api/, routes/, controllers/
+├── design-style.md        # tsx/jsx, components/, app/
+├── deploy-safety.md       # Dockerfile, docker-compose, .env
+├── migration-safety.md    # package.json, tsconfig, next.config
+├── service-worker.md      # sw.js, service-worker*
+├── lsp.md                 # Multi-langages — LSP vs Grep
+├── research.md            # Multi-langages — vérifier natif avant build
+└── socle-maintenance.md   # .claude/** — sync compteurs catalog
+```
+
+Rules par langage/framework (14) :
+```
+├── typescript.md  # **/*.ts, **/*.tsx, **/*.mts
+├── python.md      # **/*.py, **/pyproject.toml
+├── go.md          # **/*.go, **/go.mod
+├── rust.md        # **/*.rs, **/Cargo.toml
+├── java.md        # **/*.java, **/pom.xml
+├── csharp.md      # **/*.cs
+├── ruby.md        # **/*.rb, **/Gemfile
+├── php.md         # **/*.php
+├── react.md       # **/*.tsx, **/components/**
+├── nextjs.md      # **/next.config.*, **/app/**
+├── vue.md         # **/*.vue, **/composables/**
+├── svelte.md      # **/*.svelte, **/svelte.config.*
+├── astro.md       # **/*.astro, **/content/**
+└── flutter.md     # **/*.dart, **/lib/**
 ```
 
 ### Format

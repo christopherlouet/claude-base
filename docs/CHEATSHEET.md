@@ -12,86 +12,77 @@
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              ASSISTANT                                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│   ┌────────────┐                                                            │
-│   │ ASSISTANT  │  Orchestrateur : guide le choix des agents et workflows    │
-│   └────────────┘                                                            │
+│   ┌────────────────┐  ┌────────────────────┐                                │
+│   │   /assistant   │  │  /assistant-auto   │                                │
+│   │  Mode guide    │  │  Mode automatique  │                                │
+│   └────────────────┘  └────────────────────┘                                │
+│   Orchestrateurs : analysent l'intention et routent vers le bon workflow.   │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           WORK- : WORKFLOW PRINCIPAL                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐            │
-│   │ EXPLORE  │ →  │   PLAN   │ →  │  COMMIT  │ →  │    PR    │            │
-│   │          │    │          │    │          │    │          │            │
-│   │ Comprend │    │ Conçoit  │    │ Enregistre    │ Partage  │            │
-│   └──────────┘    └──────────┘    └──────────┘    └──────────┘            │
+│   EXPLORE → (BRAINSTORM) → SPECIFY → PLAN → TDD → AUDIT → COMMIT            │
 │                                                                             │
-│   Workflows chaînés:                                                        │
-│   ┌────────────────┐ ┌────────────────┐ ┌────────────────┐ ┌─────────────┐ │
-│   │ flow-feature   │ │ flow-bugfix    │ │ flow-release   │ │ flow-launch │ │
-│   │ Feature A→Z    │ │ Bug A→Z        │ │ Release A→Z    │ │ Produit A→Z │ │
-│   └────────────────┘ └────────────────┘ └────────────────┘ └─────────────┘ │
+│   ┌─────────┐  ┌──────────┐  ┌─────────┐  ┌──────┐  ┌─────┐  ┌───────┐  ┌────────┐ │
+│   │ EXPLORE │→│BRAINSTORM│→│ SPECIFY │→│ PLAN │→│ TDD │→│ AUDIT │→│ COMMIT │ │
+│   │ Lit     │  │ (option) │  │ Stories │  │ Plan │  │ R-G-R│  │ Score │  │ +PR    │ │
+│   │ existant│  │ Idéation │  │ Critères│  │ Files│  │ Tests│  │ ≥ 90  │  │        │ │
+│   └─────────┘  └──────────┘  └─────────┘  └──────┘  └─────┘  └───────┘  └────────┘ │
+│                                                                             │
+│   Commandes : /work:work-explore, /work:work-brainstorm,                    │
+│   /work:work-specify, /work:work-plan, /dev:dev-tdd,                        │
+│   /qa:qa-loop "score 90", /work:work-commit, /work:work-pr                  │
+│                                                                             │
+│   Workflows chaînés (tout-en-un):                                           │
+│   ┌────────────────┐ ┌────────────────┐ ┌────────────────┐ ┌─────────────┐  │
+│   │ flow-feature   │ │ flow-bugfix    │ │ flow-release   │ │ flow-launch │  │
+│   │ Feature A→Z    │ │ Bug A→Z        │ │ Release A→Z    │ │ Produit A→Z │  │
+│   └────────────────┘ └────────────────┘ └────────────────┘ └─────────────┘  │
+│                                                                             │
+│   Variantes :                                                               │
+│   ┌──────────┐  ┌──────────┐  ┌──────────┐                                  │
+│   │  quick   │  │  batch   │  │   team   │                                  │
+│   │ <50 LOC  │  │ Multi-US │  │ Agents   │                                  │
+│   └──────────┘  └──────────┘  └──────────┘                                  │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           DEV- : DÉVELOPPEMENT                              │
+│                       DEV- : DÉVELOPPEMENT (23 commandes)                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌──────────┐  ┌─────────┐        │
-│   │   TDD   │  │  TEST   │  │  DEBUG  │  │ REFACTOR │  │   API   │        │
-│   │ 🔴→🟢→♻️ │  │ Génère  │  │ Diagnos │  │ Améliore │  │ REST    │        │
-│   └─────────┘  └─────────┘  └─────────┘  └──────────┘  └─────────┘        │
-│                                                                             │
-│   ┌───────────┐  ┌─────────┐  ┌──────────────┐  ┌───────────────┐         │
-│   │ COMPONENT │  │  HOOK   │  │ERROR-HANDLING│  │ API-VERSIONING│         │
-│   │ UI+Tests  │  │ Custom  │  │ Gestion err  │  │ Versions API  │         │
-│   └───────────┘  └─────────┘  └──────────────┘  └───────────────┘         │
-│                                                                             │
-│   ┌──────────────┐  ┌─────────┐  ┌──────────┐  ┌─────────┐                │
-│   │ TESTING-SETUP│  │ FLUTTER │  │ SUPABASE │  │ GRAPHQL │                │
-│   │ Config tests │  │ Mobile  │  │ Backend  │  │ API GQL │                │
-│   └──────────────┘  └─────────┘  └──────────┘  └─────────┘                │
+│  Cycle TDD     : tdd, test, testing-setup, debug, refactor                  │
+│  API & types   : api, api-versioning, graphql, trpc, prisma                 │
+│  UI & front    : component, hook, design-system, react-perf, error-handling │
+│  Mobile/Edit   : flutter, neovim                                            │
+│  IA / Document : ai-integration, prompt-engineering, rag, mcp, document     │
+│  Backend BaaS  : supabase                                                   │
+│  → Détail complet : tableau "DEV- : Développement (23)" plus bas            │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              QA- : QUALITÉ                                  │
+│                          QA- : QUALITÉ (16 commandes)                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   ┌──────────┐  ┌──────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐       │
-│   │  REVIEW  │  │ SECURITY │  │  PERF   │  │  A11Y   │  │  AUDIT  │       │
-│   │ Code Rev │  │ OWASP    │  │ Optim   │  │ WCAG    │  │ Complet │       │
-│   └──────────┘  └──────────┘  └─────────┘  └─────────┘  └─────────┘       │
-│                                                                             │
-│   ┌────────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐              │
-│   │ RESPONSIVE │  │ AUTOMATION │  │ COVERAGE │  │  MOBILE  │              │
-│   │ Mobile web │  │ Tests auto │  │ Couvert. │  │ Flutter  │              │
-│   └────────────┘  └────────────┘  └──────────┘  └──────────┘              │
+│  Audit principal : qa-loop (audit + fix en boucle, score ≥ 90)              │
+│  Audits ciblés   : security, perf, design, responsive, coverage, tech-debt  │
+│                    review, audit, automation, e2e, kaizen                   │
+│  Spécifiques     : wcag-audit (a11y), mobile, neovim, chrome (visuels)      │
+│  → Détail complet : tableau "QA- : Qualité (16)" plus bas                   │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                            OPS- : OPÉRATIONS                                │
+│                       OPS- : OPÉRATIONS (34 commandes)                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐        │
-│   │ HOTFIX  │  │ RELEASE │  │  DEPS   │  │ DOCKER  │  │ MIGRATE │        │
-│   │ Urgent  │  │ Version │  │ MAJ     │  │ Contain │  │ Code    │        │
-│   └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘        │
-│                                                                             │
-│   ┌─────────┐  ┌────────────┐  ┌──────────┐  ┌─────────┐  ┌─────────┐    │
-│   │   CI    │  │ MONITORING │  │ DATABASE │  │ HEALTH  │  │   ENV   │    │
-│   │ CI/CD   │  │ Observ     │  │ Schema   │  │ Check   │  │ Config  │    │
-│   └─────────┘  └────────────┘  └──────────┘  └─────────┘  └─────────┘    │
-│                                                                             │
-│   ┌─────────┐  ┌──────────────┐  ┌─────────────────┐  ┌───────────────┐   │
-│   │ BACKUP  │  │ LOAD-TESTING │  │ COST-OPTIMIZ.   │  │DISASTER-RECOV │   │
-│   │ Restore │  │ Stress test  │  │ Réduire coûts   │  │ Plan reprise  │   │
-│   └─────────┘  └──────────────┘  └─────────────────┘  └───────────────┘   │
-│                                                                             │
-│   ┌────────────┐  ┌───────────────────┐                                    │
-│   │ INFRA-CODE │  │ SECRETS-MANAGEMENT│                                    │
-│   │ Terraform  │  │ Gestion secrets   │                                    │
-│   └────────────┘  └───────────────────┘                                    │
+│  Release & deploy : release, deploy, rollback, hotfix, mobile-release       │
+│  GitFlow          : gitflow-{init, feature, release, hotfix}                │
+│  CI/CD            : ci, ci-fix, deps                                        │
+│  Infra            : docker, k8s, vps, vercel, serverless,                   │
+│                     proxmox, opnsense, infra-code                           │
+│  Observabilité    : monitoring, observability-stack, grafana-dashboard,     │
+│                     load-testing, health                                    │
+│  Data/Sec         : database, backup, disaster-recovery, secrets-management │
+│  Méta-ops         : env, migrate, cost, cost-optimization, standup          │
+│  → Détail complet : tableau "OPS- : Opérations (34)" plus bas               │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -130,18 +121,13 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          GROWTH- : CROISSANCE                               │
+│                       GROWTH- : CROISSANCE (11 commandes)                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   ┌─────────┐  ┌─────────┐  ┌───────────┐  ┌────────────┐  ┌─────────┐   │
-│   │ LANDING │  │   SEO   │  │ ANALYTICS │  │ ONBOARDING │  │  EMAIL  │   │
-│   │ Page    │  │ Ranking │  │ Tracking  │  │ UX Flow    │  │ Templat │   │
-│   └─────────┘  └─────────┘  └───────────┘  └────────────┘  └─────────┘   │
-│                                                                             │
-│   ┌─────────┐  ┌───────────┐  ┌─────────┐                                 │
-│   │ AB-TEST │  │ RETENTION │  │ FUNNEL  │                                 │
-│   │ Expérim │  │ Fidélis.  │  │ Tunnel  │                                 │
-│   └─────────┘  └───────────┘  └─────────┘                                 │
+│  Acquisition     : landing, seo, ab-test, cro                               │
+│  Mesure          : analytics, app-store-analytics, funnel                   │
+│  Engagement      : email, onboarding, retention                             │
+│  International   : localization                                             │
+│  → Détail complet : tableau "GROWTH- : Croissance (11)" plus bas            │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -173,9 +159,10 @@
 ║                              QUICK REFERENCE                                  ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
-║  WORKFLOW QUOTIDIEN:                                                          ║
+║  WORKFLOW OBLIGATOIRE:                                                        ║
 ║  ┌────────────────────────────────────────────────────────────────────────┐  ║
-║  │  /work:work-explore → /work:work-plan → CODE → /work:work-pr │  ║
+║  │ EXPLORE → (BRAINSTORM) → SPECIFY → PLAN → TDD → AUDIT → COMMIT        │  ║
+║  │ explore   brainstorm     specify   plan   dev-tdd   qa-loop   commit  │  ║
 ║  └────────────────────────────────────────────────────────────────────────┘  ║
 ║                                                                               ║
 ║  NOUVELLE FEATURE:        /work:work-flow-feature "description"            ║
@@ -382,13 +369,20 @@
 /work:work-plan       → Planifier le travail
 ```
 
-### Nouvelle feature (rapide)
+### Nouvelle feature (workflow standard)
 ```
-/work:work-explore    → Comprendre l'existant
-/work:work-plan       → Designer la solution
-/dev:dev-tdd         → Implémenter avec tests
-/work:work-commit     → Commiter proprement
-/work:work-pr         → Créer la PR
+/work:work-explore         → Comprendre l'existant
+/work:work-specify         → Spec User Stories + critères Given/When/Then
+/work:work-plan            → Designer la solution + tasks par US
+/dev:dev-tdd               → Implémenter avec tests (Red-Green-Refactor)
+/qa:qa-loop "score 90"     → Audit + fix en boucle (obligatoire avant commit)
+/work:work-commit          → Commiter proprement
+/work:work-pr              → Créer la PR
+```
+
+### Changement trivial (skip cycle complet)
+```
+/work:work-quick "renommer X en Y"   # < 50 LOC, 1-3 fichiers
 ```
 
 ### Nouvelle feature (workflow complet)
@@ -513,10 +507,11 @@ refactor(user): extract validation logic
 
 1. **Explore avant de coder** - Toujours comprendre le contexte
 2. **Plan avant d'implémenter** - Évite les retours en arrière
-3. **Commits atomiques** - Un commit = une préoccupation
-4. **Tests first (TDD)** - Code plus robuste
-5. **Review régulière** - Qualité constante
-6. **Pas de secrets dans le code** - Utiliser `.env`
+3. **Tests AVANT le code (TDD)** - Cycle Red-Green-Refactor obligatoire
+4. **Audit avant commit** - Score qa-loop ≥ 90 obligatoire avant push
+5. **Commits atomiques** - Un commit = une préoccupation
+6. **Conventional Commits** - `feat(scope): description`
+7. **Pas de secrets dans le code** - Utiliser `.env` + gitleaks
 
 ---
 
