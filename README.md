@@ -280,36 +280,26 @@ cp templates/CLAUDE.react.md CLAUDE.md
 
 # IDE integration (VSCode, IntelliJ, Vim/Neovim)
 ./scripts/ide.sh setup vscode
-
-# Interactive workflow tutorial
-./scripts/learn.sh
 ```
 
-## Interactive Learning
+## Getting started in Claude Code
 
-The socle ships with an interactive tutorial to learn how to use it efficiently.
+Once installed, the fastest way to learn the workflow is the built-in orchestrator:
 
-```bash
-# Full tutorial (15-20 min)
-./scripts/learn.sh
+```
+/assistant              # guided mode: explains and suggests commands
+/assistant-auto "..."   # automatic mode: routes to the right workflow
 
-# Quick version (5 min)
-./scripts/learn.sh --quick
-
-# Learn a specific agent
-./scripts/learn.sh --agent tdd
-./scripts/learn.sh --agent commit
-
-# List available agents
-./scripts/learn.sh --list
+# Or follow the canonical 7-step workflow
+/work:work-explore
+/work:work-specify
+/work:work-plan
+/dev:dev-tdd
+/qa:qa-loop "score 90"
+/work:work-commit
 ```
 
-The tutorial covers:
-- The Explore → Specify → Plan → TDD → Audit → Commit workflow
-- The 131 commands and 63 specialized agents
-- TDD development
-- Conventional Commits
-- Interactive quizzes with scoring
+See [docs/QUICKSTART.md](docs/QUICKSTART.md), [docs/CHEATSHEET.md](docs/CHEATSHEET.md) and [docs/STACK-RECIPES.md](docs/STACK-RECIPES.md) for more.
 
 ## IDE Integration
 

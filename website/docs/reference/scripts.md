@@ -24,7 +24,7 @@ Les scripts sont organises en 4 categories :
 | **Installation** | `new-project.sh` | Installer le socle |
 | **Maintenance** | `update.sh`, `diff.sh`, `uninstall.sh`, `check-updates.sh` | Maintenir le socle |
 | **Diagnostic** | `doctor.sh`, `validate.sh`, `validate-counts.sh` | Verifier l'installation |
-| **Outils** | `ide.sh`, `learn.sh` | Configuration avancee |
+| **Outils** | `ide.sh` | Configuration IDE |
 | **Internes** | `lint.sh`, `test.sh`, `bump-version.sh`, `generate-commands-doc.sh` | CI et maintenance du socle |
 
 ---
@@ -389,53 +389,6 @@ Configure les IDE pour une integration optimale avec claude-socle.
 
 ---
 
-### learn.sh
-
-Tutoriel interactif pour apprendre a utiliser claude-socle.
-
-```bash
-./scripts/learn.sh [OPTIONS]
-```
-
-**Options :**
-
-| Option | Description |
-|--------|-------------|
-| `-q, --quick` | Mode rapide (5 minutes) |
-| `-a, --agent AGENT` | Apprendre un agent specifique |
-| `-l, --list` | Lister les agents disponibles |
-| `--reset` | Reinitialiser la progression |
-
-**Agents disponibles pour l'apprentissage :**
-
-- `workflow` - Le workflow Explore → Specify → Plan → TDD → Audit → Commit
-- `tdd` - Test-Driven Development
-- `commit` - Conventional Commits
-- `review` - Code Review
-- `security` - Audit de securite
-
-**Exemple :**
-
-```bash
-# Tutoriel complet (15-20 min)
-./scripts/learn.sh
-
-# Version courte (5 min)
-./scripts/learn.sh --quick
-
-# Apprendre le TDD
-./scripts/learn.sh --agent tdd
-```
-
-**Contenu du tutoriel :**
-
-1. **Lecon 1** : Introduction au workflow
-2. **Lecon 2** : Les agents et leurs roles
-3. **Lecon 3** : TDD avec claude-socle
-4. **Lecon 4** : Conventional Commits
-5. **Lecon 5** : Code Review
-6. **Lecon 6** : Quiz final
-
 ---
 
 ## Scripts Internes
@@ -489,4 +442,3 @@ chmod +x /tmp/new-project.sh
 | `doctor.sh` | Diagnostiquer | `./scripts/doctor.sh --fix` |
 | `validate.sh` | Valider la config | `./scripts/validate.sh` |
 | `ide.sh` | Configurer les IDE | `./scripts/ide.sh setup vscode` |
-| `learn.sh` | Tutoriel interactif | `./scripts/learn.sh --quick` |

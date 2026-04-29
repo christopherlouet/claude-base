@@ -3,7 +3,7 @@
 # =============================================================================
 # Claude-Socle Detection Library
 # Fonctions de detection de stack technique
-# Extrait de new-project.sh pour reutilisation (doctor.sh, validate.sh, learn.sh)
+# Extrait de new-project.sh pour reutilisation (doctor.sh, validate.sh)
 # =============================================================================
 
 # Guard: common.sh must be sourced first
