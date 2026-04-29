@@ -119,7 +119,7 @@ claude-socle/
 │
 ├── scripts/                     # Scripts utilitaires
 │   ├── new-project.sh           # Création/installation (modes --simple, --all)
-│   ├── update.sh                # Mise à jour (avec --upgrade-claude-md pour pre-v1.30)
+│   ├── update.sh                # Mise à jour
 │   ├── validate.sh              # Validation
 │   ├── uninstall.sh             # Désinstallation
 │   ├── doctor.sh                # Diagnostic
@@ -287,9 +287,6 @@ cp templates/CLAUDE.react.md CLAUDE.md
 
 # Mettre à jour les commandes
 ./scripts/update.sh /chemin/projet
-
-# Mettre à jour depuis une version pré-v1.30 (relocalisation docs vers .claude/docs/)
-./scripts/update.sh --upgrade-claude-md /chemin/projet
 
 # Valider la configuration
 ./scripts/validate.sh /chemin/projet
@@ -504,19 +501,6 @@ brew install bats-core
 | `lint.bats` | Tests du script de linting |
 
 ## Migration et Breaking Changes
-
-### Mise à jour vers v1.30.0
-
-**Breaking change** : la documentation du socle (`reference/`, `guides/`) est désormais installée sous `.claude/docs/` au lieu de `docs/`. Cela évite les collisions avec le `docs/` du projet utilisateur.
-
-```bash
-# Migration automatique (idempotent, backup inclus)
-/chemin/vers/claude-socle/scripts/update.sh --upgrade-claude-md /chemin/vers/votre/projet
-```
-
-Le script crée un backup `CLAUDE.md.backup.AAAAMMJJ_HHMMSS`, déplace `docs/reference/` et `docs/guides/` sous `.claude/docs/`, et réécrit les `@imports` dans `CLAUDE.md`.
-
-Guide complet (cas particuliers, migration manuelle, rollback) : [docs/MIGRATION-v1.30.md](docs/MIGRATION-v1.30.md).
 
 ### Mise à jour vers v1.10.x
 

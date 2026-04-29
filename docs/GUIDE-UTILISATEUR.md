@@ -739,7 +739,7 @@ Les hooks sont configurés dans `.claude/settings.json` :
 | Script | Commande | Description |
 |--------|----------|-------------|
 | `new-project.sh` | `./scripts/new-project.sh --simple [projet]` | Installation / nouveau projet |
-| `update.sh` | `./scripts/update.sh [projet]` | Mise à jour (`--upgrade-claude-md` pour pre-v1.30) |
+| `update.sh` | `./scripts/update.sh [projet]` | Mise à jour |
 | `validate.sh` | `./scripts/validate.sh [projet]` | Validation |
 | `uninstall.sh` | `./scripts/uninstall.sh [projet]` | Désinstallation |
 | `doctor.sh` | `./scripts/doctor.sh [projet]` | Diagnostic |

@@ -137,8 +137,6 @@ Vous devriez voir le guide d'orientation. Essayez ensuite un workflow simple :
 
 ## Mise a jour
 
-### Cas standard : meme version majeure
-
 ```bash
 # Mettre a jour le socle local
 cd ~/.claude-socle
@@ -149,23 +147,6 @@ git pull origin main
 ```
 
 Le script `update.sh` est idempotent : il met a jour les fichiers du socle (commands, agents, skills, rules, scripts/hooks) sans toucher a vos personnalisations (`CLAUDE.md`, `.claude/settings.local.json`).
-
-### Migration depuis une version pre-v1.30
-
-**Breaking change v1.30** : la documentation du socle (`reference/`, `guides/`) est desormais installee sous `.claude/docs/` au lieu de `docs/`. Cela evite les collisions avec le `docs/` de votre projet.
-
-```bash
-# Migration automatique (idempotent, backup inclus)
-~/.claude-socle/scripts/update.sh --upgrade-claude-md /chemin/vers/votre-projet
-```
-
-Le script :
-1. Cree un backup `CLAUDE.md.backup.AAAAMMJJ_HHMMSS`
-2. Deplace `docs/reference/` → `.claude/docs/reference/`
-3. Deplace `docs/guides/` → `.claude/docs/guides/` (preserve les fichiers personnalises)
-4. Reecrit les `@imports` dans `CLAUDE.md`
-
-Guide complet (cas particuliers, migration manuelle, rollback) : voir [`docs/MIGRATION-v1.30.md`](https://github.com/christopherlouet/claude-socle/blob/main/docs/MIGRATION-v1.30.md) dans le repo.
 
 ## Personnalisation
 
