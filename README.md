@@ -5,7 +5,7 @@
 [![Coverage](https://codecov.io/gh/christopherlouet/claude-socle/branch/main/graph/badge.svg)](https://codecov.io/gh/christopherlouet/claude-socle)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
 [![Tests](https://img.shields.io/badge/tests-319%20passing-brightgreen)](./tests)
-[![License](https://img.shields.io/badge/License-EULA-orange.svg)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-socle?label=release&color=blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
 

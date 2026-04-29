@@ -2,6 +2,7 @@
   "name": "claude-socle-docs",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "npm run generate && docusaurus start",
