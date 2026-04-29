@@ -25,7 +25,7 @@ Les scripts sont organises en 4 categories :
 | **Maintenance** | `update.sh`, `diff.sh`, `uninstall.sh`, `check-updates.sh` | Maintenir le socle |
 | **Diagnostic** | `doctor.sh`, `validate.sh`, `validate-counts.sh` | Verifier l'installation |
 | **Outils** | `ide.sh` | Configuration IDE |
-| **Internes** | `lint.sh`, `test.sh`, `bump-version.sh`, `generate-commands-doc.sh` | CI et maintenance du socle |
+| **Internes** | `lint.sh`, `test.sh`, `bump-version.sh`, `validate-counts.sh`, `audit-socle.sh` | CI et maintenance du socle |
 
 ---
 
