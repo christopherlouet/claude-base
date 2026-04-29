@@ -6,10 +6,10 @@
 
 ```bash
 # Depuis le socle
-./scripts/install.sh /chemin/vers/votre-projet
+./scripts/new-project.sh --simple /chemin/vers/votre-projet
 
 # Ou depuis votre projet
-/chemin/vers/claude-socle/scripts/install.sh .
+/chemin/vers/claude-socle/scripts/new-project.sh --simple .
 ```
 
 ## Premier usage (2 minutes)

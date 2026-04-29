@@ -68,7 +68,7 @@ claude-socle/
 │
 ├── .claude/
 │   ├── settings.json            # Permissions et hooks
-│   ├── skills/                  # 47 skills spécialisés
+│   ├── skills/                  # 54 skills spécialisés
 │   └── commands/                # 131 commandes disponibles
 │       ├── assistant.md         # Orchestrateur principal
 │       ├── work/                # Workflow (11 commandes)
@@ -118,9 +118,8 @@ claude-socle/
 ├── VERSION                      # Version centralisée du socle
 │
 ├── scripts/                     # Scripts utilitaires
-│   ├── new-project.sh           # Création projet interactif
-│   ├── install.sh               # Installation
-│   ├── update.sh                # Mise à jour
+│   ├── new-project.sh           # Création/installation (modes --simple, --all)
+│   ├── update.sh                # Mise à jour (avec --upgrade-claude-md pour pre-v1.30)
 │   ├── validate.sh              # Validation
 │   ├── uninstall.sh             # Désinstallation
 │   ├── doctor.sh                # Diagnostic
@@ -256,11 +255,12 @@ claude-socle/
 /work:work-pr ecran profil utilisateur
 ```
 
-## Templates Disponibles (10)
+## Templates Disponibles (11)
 
 | Template | Langage/Framework |
 |----------|-------------------|
-| `CLAUDE.react.md` | React / Next.js |
+| `CLAUDE.react.md` | React |
+| `CLAUDE.nextjs.md` | Next.js (App Router) |
 | `CLAUDE.vue.md` | Vue.js 3 |
 | `CLAUDE.node-api.md` | Node.js API |
 | `CLAUDE.python.md` | Python |
@@ -283,10 +283,13 @@ cp templates/CLAUDE.react.md CLAUDE.md
 ./scripts/new-project.sh
 
 # Installer dans un projet existant
-./scripts/install.sh /chemin/projet
+./scripts/new-project.sh --simple /chemin/projet
 
 # Mettre à jour les commandes
 ./scripts/update.sh /chemin/projet
+
+# Mettre à jour depuis une version pré-v1.30 (relocalisation docs vers .claude/docs/)
+./scripts/update.sh --upgrade-claude-md /chemin/projet
 
 # Valider la configuration
 ./scripts/validate.sh /chemin/projet
@@ -502,6 +505,19 @@ brew install bats-core
 
 ## Migration et Breaking Changes
 
+### Mise à jour vers v1.30.0
+
+**Breaking change** : la documentation du socle (`reference/`, `guides/`) est désormais installée sous `.claude/docs/` au lieu de `docs/`. Cela évite les collisions avec le `docs/` du projet utilisateur.
+
+```bash
+# Migration automatique (idempotent, backup inclus)
+/chemin/vers/claude-socle/scripts/update.sh --upgrade-claude-md /chemin/vers/votre/projet
+```
+
+Le script crée un backup `CLAUDE.md.backup.AAAAMMJJ_HHMMSS`, déplace `docs/reference/` et `docs/guides/` sous `.claude/docs/`, et réécrit les `@imports` dans `CLAUDE.md`.
+
+Guide complet (cas particuliers, migration manuelle, rollback) : [docs/MIGRATION-v1.30.md](docs/MIGRATION-v1.30.md).
+
 ### Mise à jour vers v1.10.x
 
 #### Breaking Changes
@@ -539,10 +555,10 @@ git pull origin main
 
 | Version | Support | Notes |
 |---------|---------|-------|
-| 1.25.x | Actuel | Version stable |
-| 1.21.x | Supporte | Corrections de securite |
-| 1.20.x | Supporte | Corrections de securite |
-| < 1.20 | Non supporte | Mise a jour recommandee |
+| 1.30.x | Actuel | Version stable (relocalisation docs vers `.claude/docs/`) |
+| 1.29.x | Supporté | Corrections de sécurité |
+| 1.28.x | Supporté | Corrections de sécurité |
+| < 1.28 | Non supporté | Mise à jour recommandée |
 
 ### Changelog
 

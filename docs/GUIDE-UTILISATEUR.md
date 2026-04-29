@@ -58,10 +58,10 @@ Avant d'utiliser claude-socle, assurez-vous d'avoir :
 
 ```bash
 # Cloner le repository
-git clone https://github.com/votre-repo/claude-socle.git
+git clone https://github.com/christopherlouet/claude-socle.git
 
 # Installer dans un projet existant
-./claude-socle/scripts/install.sh /chemin/vers/votre-projet
+./claude-socle/scripts/new-project.sh --simple /chemin/vers/votre-projet
 ```
 
 Le script vous guidera à travers les options :
@@ -738,10 +738,9 @@ Les hooks sont configurés dans `.claude/settings.json` :
 
 | Script | Commande | Description |
 |--------|----------|-------------|
-| `install.sh` | `./scripts/install.sh [projet]` | Installation |
-| `update.sh` | `./scripts/update.sh [projet]` | Mise à jour |
+| `new-project.sh` | `./scripts/new-project.sh --simple [projet]` | Installation / nouveau projet |
+| `update.sh` | `./scripts/update.sh [projet]` | Mise à jour (`--upgrade-claude-md` pour pre-v1.30) |
 | `validate.sh` | `./scripts/validate.sh [projet]` | Validation |
-| `new-project.sh` | `./scripts/new-project.sh` | Nouveau projet |
 | `uninstall.sh` | `./scripts/uninstall.sh [projet]` | Désinstallation |
 | `doctor.sh` | `./scripts/doctor.sh [projet]` | Diagnostic |
 | `diff.sh` | `./scripts/diff.sh [projet]` | Comparaison |
@@ -751,17 +750,17 @@ Les hooks sont configurés dans `.claude/settings.json` :
 ### Installation avec options
 
 ```bash
-# Installation interactive (défaut)
-./scripts/install.sh ./mon-projet
+# Installation simple (défaut)
+./scripts/new-project.sh --simple ./mon-projet
 
 # Installation silencieuse pour CI/CD
-./scripts/install.sh -y ./mon-projet
+./scripts/new-project.sh --simple -y ./mon-projet
 
 # Simulation sans modification
-./scripts/install.sh --dry-run ./mon-projet
+./scripts/new-project.sh --simple --dry-run ./mon-projet
 
-# Installation complète avec hooks et MCP
-./scripts/install.sh --all ./mon-projet
+# Installation complète avec hooks, MCP et CI/CD
+./scripts/new-project.sh --all ./mon-projet
 ```
 
 ### Validation pour CI/CD
@@ -994,14 +993,14 @@ jq '.hooks' .claude/settings.json
 ```bash
 # Sauvegarder puis réinstaller
 ./scripts/uninstall.sh --keep-claude-md .
-./scripts/install.sh .
+./scripts/new-project.sh --simple .
 ```
 
 ## Obtenir de l'aide
 
 ```bash
 # Aide sur un script
-./scripts/install.sh --help
+./scripts/new-project.sh --help
 
 # Diagnostic complet
 ./scripts/doctor.sh .
@@ -1030,12 +1029,12 @@ jq '.hooks' .claude/settings.json
 ## Scripts utilitaires
 
 ```bash
-./scripts/install.sh [projet]     # Installer
-./scripts/update.sh [projet]      # Mettre à jour
-./scripts/validate.sh [projet]    # Valider
-./scripts/doctor.sh [projet]      # Diagnostiquer
-./scripts/diff.sh [projet]        # Comparer
-./scripts/uninstall.sh [projet]   # Désinstaller
+./scripts/new-project.sh --simple [projet]  # Installer
+./scripts/update.sh [projet]                # Mettre à jour
+./scripts/validate.sh [projet]              # Valider
+./scripts/doctor.sh [projet]                # Diagnostiquer
+./scripts/diff.sh [projet]                  # Comparer
+./scripts/uninstall.sh [projet]             # Désinstaller
 ```
 
 ## Structure type d'un projet
