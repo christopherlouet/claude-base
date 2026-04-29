@@ -701,13 +701,13 @@ update_gitignore_file() {
         if ! grep -q "CLAUDE.local.md" "$target_dir/.gitignore" 2>/dev/null; then
             if ! $DRY_RUN; then
                 echo "" >> "$target_dir/.gitignore"
-                echo "# Claude Code (l'utilisateur peut retirer ces lignes si besoin)" >> "$target_dir/.gitignore"
-                echo ".claude/" >> "$target_dir/.gitignore"
-                echo "CLAUDE.md" >> "$target_dir/.gitignore"
+                echo "# Claude Code — config locale uniquement" >> "$target_dir/.gitignore"
+                echo "# .claude/ et CLAUDE.md sont volontairement versionnes (config equipe)" >> "$target_dir/.gitignore"
                 echo "CLAUDE.local.md" >> "$target_dir/.gitignore"
                 echo ".claude/settings.local.json" >> "$target_dir/.gitignore"
+                echo ".mcp.env" >> "$target_dir/.gitignore"
             else
-                echo -e "${DIM}[DRY-RUN]${NC} Ajout entrées Claude à .gitignore"
+                echo -e "${DIM}[DRY-RUN]${NC} Ajout entrées Claude (config locale) à .gitignore"
             fi
             success ".gitignore mis à jour"
         fi

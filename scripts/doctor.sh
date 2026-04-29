@@ -346,20 +346,29 @@ check_project_config() {
 
     # .gitignore
     if [[ -f "$target/.gitignore" ]]; then
+        # CLAUDE.local.md DOIT etre gitignore (config locale)
         if grep -q "CLAUDE.local.md" "$target/.gitignore" 2>/dev/null; then
             check_pass ".gitignore: CLAUDE.local.md inclus"
         else
-            check_warn ".gitignore: CLAUDE.local.md non inclus" "Ajoutez CLAUDE.local.md à .gitignore"
+            check_warn ".gitignore: CLAUDE.local.md non inclus" "Ajoutez CLAUDE.local.md à .gitignore (config locale)"
         fi
-        if grep -q "\.claude/" "$target/.gitignore" 2>/dev/null; then
-            check_pass ".gitignore: .claude/ inclus"
+        # settings.local.json DOIT etre gitignore
+        if grep -q "settings\.local\.json" "$target/.gitignore" 2>/dev/null; then
+            check_pass ".gitignore: .claude/settings.local.json inclus"
         else
-            check_warn ".gitignore: .claude/ non inclus" "Ajoutez .claude/ à .gitignore"
+            check_warn ".gitignore: .claude/settings.local.json non inclus" "Ajoutez .claude/settings.local.json à .gitignore"
         fi
+        # .claude/ NE DOIT PAS etre gitignore (config equipe partagee)
+        if grep -qE "^\.claude/?$" "$target/.gitignore" 2>/dev/null; then
+            check_warn ".gitignore: .claude/ EST inclus (devrait etre versionne)" "Retirez .claude/ du .gitignore — config equipe a partager en git"
+        else
+            check_pass ".gitignore: .claude/ versionnable (config equipe partagee)"
+        fi
+        # CLAUDE.md NE DOIT PAS etre gitignore
         if grep -q "^CLAUDE\.md$" "$target/.gitignore" 2>/dev/null; then
-            check_pass ".gitignore: CLAUDE.md inclus"
+            check_warn ".gitignore: CLAUDE.md EST inclus (devrait etre versionne)" "Retirez CLAUDE.md du .gitignore — config projet a partager en git"
         else
-            check_warn ".gitignore: CLAUDE.md non inclus" "Ajoutez CLAUDE.md à .gitignore"
+            check_pass ".gitignore: CLAUDE.md versionnable (config projet partagee)"
         fi
     fi
 }

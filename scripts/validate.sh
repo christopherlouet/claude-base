@@ -456,21 +456,42 @@ validate_security() {
         add_warning ".gitignore manquant" "security"
     fi
 
+    # CLAUDE.local.md DOIT etre gitignore (config locale, peut contenir des secrets)
     add_check 1
     if [[ -f "$TARGET_DIR/.gitignore" ]]; then
-        if grep -q "\.claude/" "$TARGET_DIR/.gitignore" 2>/dev/null; then
-            add_success ".claude/ dans .gitignore" "security" 1
+        if grep -q "CLAUDE\.local\.md" "$TARGET_DIR/.gitignore" 2>/dev/null; then
+            add_success "CLAUDE.local.md dans .gitignore" "security" 1
         else
-            add_warning ".claude/ devrait être dans .gitignore" "security"
+            add_warning "CLAUDE.local.md devrait être dans .gitignore (config locale)" "security"
+        fi
+    fi
+
+    # settings.local.json DOIT etre gitignore (permissions/env locales)
+    add_check 1
+    if [[ -f "$TARGET_DIR/.gitignore" ]]; then
+        if grep -q "settings\.local\.json" "$TARGET_DIR/.gitignore" 2>/dev/null; then
+            add_success ".claude/settings.local.json dans .gitignore" "security" 1
+        else
+            add_warning ".claude/settings.local.json devrait être dans .gitignore" "security"
+        fi
+    fi
+
+    # .claude/ et CLAUDE.md NE DOIVENT PAS etre gitignore (config equipe partagee)
+    add_check 1
+    if [[ -f "$TARGET_DIR/.gitignore" ]]; then
+        if grep -qE "^\.claude/?$" "$TARGET_DIR/.gitignore" 2>/dev/null; then
+            add_warning ".claude/ ne devrait PAS être dans .gitignore (config equipe a versionner)" "security"
+        else
+            add_success ".claude/ versionnable (pas dans .gitignore)" "security" 1
         fi
     fi
 
     add_check 1
     if [[ -f "$TARGET_DIR/.gitignore" ]]; then
         if grep -q "^CLAUDE\.md$" "$TARGET_DIR/.gitignore" 2>/dev/null; then
-            add_success "CLAUDE.md dans .gitignore" "security" 1
+            add_warning "CLAUDE.md ne devrait PAS être dans .gitignore (config projet a versionner)" "security"
         else
-            add_warning "CLAUDE.md devrait être dans .gitignore" "security"
+            add_success "CLAUDE.md versionnable (pas dans .gitignore)" "security" 1
         fi
     fi
 

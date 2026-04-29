@@ -219,8 +219,24 @@ EOF
     [ -f "$TEST_DIR/.gitignore" ]
 
     run cat "$TEST_DIR/.gitignore"
+    # Config locale qui DOIT etre gitignore
     [[ "$output" == *"CLAUDE.local.md"* ]]
+    [[ "$output" == *"settings.local.json"* ]]
     [[ "$output" == *".env"* ]]
+}
+
+@test "new-project.sh ne met PAS .claude/ ni CLAUDE.md dans .gitignore" {
+    # Regression : avant le fix, new-project.sh ajoutait .claude/ et
+    # CLAUDE.md au .gitignore du user, l'empechant de versionner ses
+    # custom commands/rules en equipe (cf. CONTRIBUTING.md).
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/.gitignore" ]
+
+    # .claude/ et CLAUDE.md (lignes pures, pas substring) ne doivent PAS
+    # apparaitre comme entrees gitignore.
+    ! grep -qE "^\.claude/?$" "$TEST_DIR/.gitignore"
+    ! grep -qE "^CLAUDE\.md$" "$TEST_DIR/.gitignore"
 }
 
 # =============================================================================

@@ -28,11 +28,12 @@ npm-debug.log*
 # Test coverage
 coverage/
 
-# Claude Code (l'utilisateur peut retirer ces lignes si besoin)
-.claude/
-CLAUDE.md
+# Claude Code — config locale uniquement
+# .claude/ et CLAUDE.md sont VOLONTAIREMENT versionnes (partages en equipe).
+# Voir CONTRIBUTING.md : "Versionner .claude/ et CLAUDE.md dans git".
 CLAUDE.local.md
 .claude/settings.local.json
+.mcp.env
 
 # Terraform artifacts in templates
 .claude/templates/**/.terraform/
