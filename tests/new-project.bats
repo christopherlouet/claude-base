@@ -260,6 +260,33 @@ EOF
     [ "$count" -gt 0 ]
 }
 
+@test "new-project.sh installe les 7 @imports canoniques dans CLAUDE.md" {
+    # Régression: avant le fix, new-project.sh installait CLAUDE.md avec
+    # seulement 2 @imports (best-practices, project-structures), créant une
+    # asymétrie avec update.sh --all qui en imposait 7. Fix dans
+    # ensure_claude_md_imports() (lib/common.sh).
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/CLAUDE.md" ]
+
+    # Les 7 @imports canoniques doivent être présents
+    local expected_imports=(
+        "@.claude/docs/reference/best-practices.md"
+        "@.claude/docs/reference/project-structures.md"
+        "@.claude/docs/reference/commands.md"
+        "@.claude/docs/reference/agents-catalog.md"
+        "@.claude/docs/reference/hooks-reference.md"
+        "@.claude/docs/reference/skills-catalog.md"
+        "@.claude/docs/reference/advanced-features.md"
+    )
+    for import in "${expected_imports[@]}"; do
+        grep -qF "$import" "$TEST_DIR/CLAUDE.md" || {
+            echo "Missing @import: $import"
+            return 1
+        }
+    done
+}
+
 @test "new-project.sh copie scripts/hooks/ référencés par settings.json" {
     # Régression: settings.json référence scripts/hooks/*.sh, ils doivent
     # être copiés sinon les hooks SessionStart/PreToolUse échouent

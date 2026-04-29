@@ -664,6 +664,61 @@ rewrite_claude_md_paths() {
         "$claude_md"
 }
 
+# Garantit la presence des 7 @imports canoniques dans CLAUDE.md.
+# Idempotent : ajoute uniquement les @imports manquants apres le dernier
+# @import existant. Utilise par new-project.sh et update.sh pour eviter
+# l'asymetrie : les deux scripts produisent le meme CLAUDE.md complet.
+# Arguments:
+#   $1 - Chemin du CLAUDE.md a verifier/completer
+ensure_claude_md_imports() {
+    local claude_md="$1"
+
+    [[ -f "$claude_md" ]] || return 0
+
+    local all_imports=(
+        "@.claude/docs/reference/best-practices.md"
+        "@.claude/docs/reference/project-structures.md"
+        "@.claude/docs/reference/commands.md"
+        "@.claude/docs/reference/agents-catalog.md"
+        "@.claude/docs/reference/hooks-reference.md"
+        "@.claude/docs/reference/skills-catalog.md"
+        "@.claude/docs/reference/advanced-features.md"
+    )
+
+    local missing_imports=()
+    local import
+    for import in "${all_imports[@]}"; do
+        if ! grep -qF "$import" "$claude_md" 2>/dev/null; then
+            missing_imports+=("$import")
+        fi
+    done
+
+    if [[ ${#missing_imports[@]} -eq 0 ]]; then
+        return 0
+    fi
+
+    # Trouver le dernier @import existant et inserer apres.
+    # `|| true` requis pour la compatibilite avec `set -euo pipefail` :
+    # grep retourne 1 si 0 match, ce qui ferait planter le script appelant.
+    local last_import_line
+    last_import_line=$(grep -n "^@\.claude/docs/reference/" "$claude_md" 2>/dev/null | tail -1 | cut -d: -f1 || true)
+
+    if [[ -z "$last_import_line" ]]; then
+        # Aucun @import existant : inserer apres la premiere ligne vide (apres titre)
+        last_import_line=$(grep -n "^$" "$claude_md" 2>/dev/null | head -1 | cut -d: -f1 || true)
+        [[ -z "$last_import_line" ]] && last_import_line=1
+    fi
+
+    local tmp_file
+    tmp_file=$(mktemp)
+    head -n "$last_import_line" "$claude_md" > "$tmp_file"
+    for import in "${missing_imports[@]}"; do
+        echo "$import" >> "$tmp_file"
+    done
+    tail -n +"$((last_import_line + 1))" "$claude_md" >> "$tmp_file" 2>/dev/null || true
+    mv "$tmp_file" "$claude_md"
+}
+
 # =============================================================================
 # Gestion des erreurs
 # =============================================================================
@@ -698,4 +753,4 @@ export -f separator title section
 export -f count_agents count_skills count_hooks count_templates show_socle_stats
 export -f on_error enable_error_handler
 export -f cache_init cache_valid cache_read cache_write
-export -f clean_claude_dirs rewrite_claude_md_paths
+export -f clean_claude_dirs rewrite_claude_md_paths ensure_claude_md_imports

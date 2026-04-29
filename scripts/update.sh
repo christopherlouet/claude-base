@@ -838,6 +838,14 @@ upgrade_claude_md() {
         return
     fi
 
+    # Backup AVANT toute modification (migrate_legacy_docs peut reecrire CLAUDE.md)
+    # On ne le supprime en fin de fonction que si CLAUDE.md final == backup.
+    local backup_file=""
+    if ! $DRY_RUN; then
+        backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
+        cp "$claude_md" "$backup_file"
+    fi
+
     # Migration legacy si nécessaire (déplace docs/* → .claude/docs/*)
     migrate_legacy_docs
 
@@ -892,94 +900,34 @@ upgrade_claude_md() {
         fi
     fi
 
-    # Vérifier si @imports déjà présents
-    if grep -q "@\.claude/docs/reference/" "$claude_md" 2>/dev/null; then
-        # Vérifier les @imports manquants et les ajouter
-        local missing_imports=()
-        local all_imports=(
-            "@.claude/docs/reference/commands.md"
-            "@.claude/docs/reference/project-structures.md"
-            "@.claude/docs/reference/agents-catalog.md"
-            "@.claude/docs/reference/hooks-reference.md"
-            "@.claude/docs/reference/skills-catalog.md"
-            "@.claude/docs/reference/advanced-features.md"
-            "@.claude/docs/reference/best-practices.md"
-        )
+    # Compter @imports avant pour reporter ce qui a ete ajoute
+    # (grep -c retourne 1 si 0 matches, d'ou le `|| true` pour set -e)
+    local imports_before
+    imports_before=$(grep -cE "^@\.claude/docs/reference/" "$claude_md" 2>/dev/null || true)
+    imports_before=${imports_before:-0}
 
-        for import in "${all_imports[@]}"; do
-            if ! grep -qF "$import" "$claude_md" 2>/dev/null; then
-                missing_imports+=("$import")
-            fi
-        done
+    # Garantir les 7 @imports canoniques (factorise dans lib/common.sh)
+    ensure_claude_md_imports "$claude_md"
 
-        if [[ ${#missing_imports[@]} -eq 0 ]]; then
-            success "CLAUDE.md contient tous les @imports"
-            return
-        fi
+    local imports_after
+    imports_after=$(grep -cE "^@\.claude/docs/reference/" "$claude_md" 2>/dev/null || true)
+    imports_after=${imports_after:-0}
+    local added=$((imports_after - imports_before))
 
-        # Ajouter les imports manquants
-        info "Ajout de ${#missing_imports[@]} @import(s) manquant(s)..."
-
-        # Backup
-        local backup_file
-        backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
-        cp "$claude_md" "$backup_file"
-
-        # Trouver le dernier @import existant et ajouter après
-        local last_import_line
-        last_import_line=$(grep -n "@\.claude/docs/reference/" "$claude_md" | tail -1 | cut -d: -f1)
-
-        if [[ -n "$last_import_line" ]]; then
-            local tmp_file
-            tmp_file=$(safe_mktemp)
-            head -n "$last_import_line" "$claude_md" > "$tmp_file"
-            for import in "${missing_imports[@]}"; do
-                echo "$import" >> "$tmp_file"
-            done
-            tail -n +"$((last_import_line + 1))" "$claude_md" >> "$tmp_file"
-            mv "$tmp_file" "$claude_md"
-            success "Ajouté: ${missing_imports[*]}"
-        fi
-        return
+    if [[ $added -gt 0 ]]; then
+        success "Ajoute $added @import(s) manquant(s) dans CLAUDE.md"
     fi
 
-    # Créer un backup
-    local backup_file
-    backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
-    cp "$claude_md" "$backup_file"
-    success "Backup créé: $backup_file"
-
-    # Insérer les @imports après la première ligne vide (après le titre)
-    local imports_block
-    imports_block="@.claude/docs/reference/commands.md
-@.claude/docs/reference/project-structures.md
-@.claude/docs/reference/agents-catalog.md
-@.claude/docs/reference/hooks-reference.md
-@.claude/docs/reference/skills-catalog.md
-@.claude/docs/reference/advanced-features.md
-@.claude/docs/reference/best-practices.md"
-
-    # Trouver la première ligne vide et insérer après
-    local tmp_file
-    tmp_file=$(safe_mktemp)
-    local inserted=false
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        echo "$line" >> "$tmp_file"
-        if [[ "$inserted" == false ]] && [[ -z "$line" ]]; then
-            echo "$imports_block" >> "$tmp_file"
-            echo "" >> "$tmp_file"
-            inserted=true
+    # Verifier si CLAUDE.md a ete modifie (par migrate_legacy_docs ou ensure_imports).
+    # Si identique au backup, retirer le backup (rien a sauvegarder).
+    if [[ -n "$backup_file" ]] && [[ -f "$backup_file" ]]; then
+        if cmp -s "$claude_md" "$backup_file"; then
+            rm -f "$backup_file"
+            success "CLAUDE.md contient déjà les 7 @imports canoniques"
+        else
+            success "Backup créé: $(basename "$backup_file")"
         fi
-    done < "$claude_md"
-
-    # Si pas de ligne vide trouvée, ajouter à la fin
-    if [[ "$inserted" == false ]]; then
-        echo "" >> "$tmp_file"
-        echo "$imports_block" >> "$tmp_file"
     fi
-
-    cp "$tmp_file" "$claude_md"
-    success "@imports insérés dans CLAUDE.md"
 
     # Détecter et proposer de supprimer les sections dupliquées
     local -a duplicate_sections=(
@@ -1128,7 +1076,11 @@ print_summary() {
     echo ""
 
     info "Résumé:"
-    echo "  Ajoutés:    $ADDED"
+    if $CLEAN_BEFORE_UPDATE; then
+        echo "  Synchronisés: $ADDED  (recopiés depuis le socle après --clean)"
+    else
+        echo "  Ajoutés:    $ADDED"
+    fi
     echo "  Mis à jour: $UPDATED"
     echo "  Ignorés:    $SKIPPED"
     if $DETECT_ORPHANS; then

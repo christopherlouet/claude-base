@@ -729,6 +729,8 @@ install_claude_md_file() {
         copy_file "$SOCLE_DIR/CLAUDE.md" "$target_dir/"
         if ! $DRY_RUN; then
             rewrite_claude_md_paths "$target_dir/CLAUDE.md"
+            # Aligner sur update.sh : garantir les 7 @imports canoniques
+            ensure_claude_md_imports "$target_dir/CLAUDE.md"
         fi
         success "CLAUDE.md copié"
     fi
@@ -1317,6 +1319,13 @@ create_project() {
             fi
 
             success "Template CLAUDE.md configuré (${PROJECT_TYPE})"
+        fi
+
+        # Aligner CLAUDE.md sur le layout v1.30+ et garantir les 7 @imports
+        # canoniques (cohérence avec run_simple_mode et update.sh).
+        if ! $DRY_RUN && [[ -f "$TARGET_DIR/CLAUDE.md" ]]; then
+            rewrite_claude_md_paths "$TARGET_DIR/CLAUDE.md"
+            ensure_claude_md_imports "$TARGET_DIR/CLAUDE.md"
         fi
     else
         warning "CLAUDE.md existe déjà, ignoré"
