@@ -9,125 +9,127 @@
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-socle?label=release&color=blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
 
-Template de configuration Claude Code pour un workflow de développement optimal.
+A Claude Code configuration kit for a solid, reproducible development workflow.
 
-## Qu'est-ce que c'est ?
+> **Note on language**: this README is in English. The deeper documentation under `docs/` (Quick Start, Architecture, Stack Recipes, Workflows, guides, reference) is currently in French. The full English documentation lives on the [Docusaurus site](https://christopherlouet.github.io/claude-socle/).
 
-**claude-socle** est un ensemble de fichiers de configuration pour [Claude Code](https://code.claude.com/docs/en/overview) qui permet de :
+## What is it?
 
-- Structurer ton workflow de développement : **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
-- Disposer de **131 commandes**, **63 sub-agents** et **54 skills** pour différentes tâches
-- Avoir des conventions et bonnes pratiques intégrées
-- Accélérer ton développement avec des commandes personnalisées
-- Intégrer CI/CD et hooks pre-commit prêts à l'emploi
-- Support multi-stack : Node.js, Python, Go, Rust, Flutter, Docker, K8s, Terraform, Proxmox
+**claude-socle** is a configuration bundle for [Claude Code](https://code.claude.com/docs/en/overview) that gives you:
+
+- A structured development workflow: **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
+- **131 commands**, **63 sub-agents**, and **54 skills** for a wide range of tasks
+- Built-in conventions and best practices (TDD enforcement, security, accessibility, performance)
+- A speed-up for your development through reusable, opinionated commands
+- Ready-to-use CI/CD and pre-commit hooks
+- Multi-stack support: Node.js, Python, Go, Rust, Flutter, Docker, K8s, Terraform, Proxmox
 
 ## Installation
 
-### Option 1 : Script d'installation (recommandé)
+### Option 1: Installation script (recommended)
 
 ```bash
-# Installer dans un projet existant
-./scripts/new-project.sh --simple /chemin/vers/votre-projet
+# Install in an existing project
+./scripts/new-project.sh --simple /path/to/your/project
 
-# Ou depuis le projet cible
-/chemin/vers/claude-socle/scripts/new-project.sh --simple .
+# Or run from inside the target project
+/path/to/claude-socle/scripts/new-project.sh --simple .
 
-# Installation complète avec CI/CD, hooks, Docker
-./scripts/new-project.sh --all /chemin/vers/votre-projet
+# Full install with CI/CD, hooks, Docker
+./scripts/new-project.sh --all /path/to/your/project
 ```
 
-### Option 2 : Copie manuelle
+### Option 2: Manual copy
 
 ```bash
-# Copier la configuration Claude
-cp -r claude-socle/.claude votre-projet/
-cp claude-socle/CLAUDE.md votre-projet/
+# Copy the Claude configuration
+cp -r claude-socle/.claude your-project/
+cp claude-socle/CLAUDE.md your-project/
 
-# Optionnel
-cp claude-socle/.mcp.json votre-projet/
-cp claude-socle/.github votre-projet/ -r
+# Optional
+cp claude-socle/.mcp.json your-project/
+cp claude-socle/.github your-project/ -r
 ```
 
-### Option 3 : Utiliser comme template
+### Option 3: Use as a template
 
 ```bash
-cp -r claude-socle mon-nouveau-projet
-cd mon-nouveau-projet
-# Personnaliser CLAUDE.md selon ton projet
+cp -r claude-socle my-new-project
+cd my-new-project
+# Customize CLAUDE.md for your project
 ```
 
 ## Structure
 
 ```
 claude-socle/
-├── CLAUDE.md                    # Instructions principales
-├── CLAUDE.local.md.example      # Template config locale
-├── README.md                    # Ce fichier
+├── CLAUDE.md                    # Main project instructions
+├── CLAUDE.local.md.example      # Local config template
+├── README.md                    # This file
 ├── .gitignore
 │
 ├── .claude/
-│   ├── settings.json            # Permissions et hooks
-│   ├── skills/                  # 54 skills spécialisés
-│   └── commands/                # 131 commandes disponibles
-│       ├── assistant.md         # Orchestrateur principal
-│       ├── work/                # Workflow (15 commandes)
+│   ├── settings.json            # Permissions and hooks
+│   ├── skills/                  # 54 specialized skills
+│   └── commands/                # 131 available commands
+│       ├── assistant.md         # Main orchestrator
+│       ├── work/                # Workflow (15 commands)
 │       │   ├── work-explore.md
 │       │   ├── work-plan.md
 │       │   ├── work-commit.md
 │       │   ├── work-pr.md
 │       │   └── ...
-│       ├── dev/                 # Développement (23 commandes)
+│       ├── dev/                 # Development (23 commands)
 │       │   ├── dev-tdd.md
 │       │   ├── dev-api.md
 │       │   └── ...
-│       ├── qa/                  # Qualité (16 commandes)
+│       ├── qa/                  # Quality (16 commands)
 │       │   ├── qa-review.md
 │       │   ├── qa-security.md
 │       │   └── ...
-│       ├── ops/                 # Opérations (34 commandes)
-│       ├── doc/                 # Documentation (9 commandes)
-│       ├── biz/                 # Business (11 commandes)
-│       ├── growth/              # Croissance (11 commandes)
-│       ├── data/                # Données (3 commandes)
-│       └── legal/               # Légal (5 commandes)
+│       ├── ops/                 # Operations (34 commands)
+│       ├── doc/                 # Documentation (9 commands)
+│       ├── biz/                 # Business (11 commands)
+│       ├── growth/              # Growth (11 commands)
+│       ├── data/                # Data (3 commands)
+│       └── legal/               # Legal (5 commands)
 │
-├── .mcp.json                    # Configuration MCP
+├── .mcp.json                    # MCP configuration
 │
-├── .github/workflows/           # CI/CD GitHub Actions
+├── .github/workflows/           # GitHub Actions CI/CD
 │   ├── ci.yml                   # Tests, lint, build
-│   ├── pr-check.yml             # Validation de PR
-│   └── release.yml              # Releases automatiques
+│   ├── pr-check.yml             # PR validation
+│   └── release.yml              # Automated releases
 │
 ├── .husky/                      # Git hooks
 │   ├── pre-commit
 │   └── commit-msg
-├── .pre-commit-config.yaml      # Config pre-commit
-├── .lintstagedrc.json           # Config lint-staged
-├── .commitlintrc.json           # Config commitlint
+├── .pre-commit-config.yaml      # Pre-commit config
+├── .lintstagedrc.json           # lint-staged config
+├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # 319 tests automatisés (bats)
-│   ├── test_helper.bash         # Helpers communs
-│   ├── new-project.bats         # Tests installation
-│   ├── update.bats              # Tests mise à jour
-│   ├── validate.bats            # Tests validation
-│   ├── docs-under-claude.bats   # Tests layout v1.30
-│   └── ...                      # 12 fichiers de tests au total
+├── tests/                       # 319 automated tests (bats)
+│   ├── test_helper.bash         # Shared helpers
+│   ├── new-project.bats         # Install script tests
+│   ├── update.bats              # Update script tests
+│   ├── validate.bats            # Validation tests
+│   ├── docs-under-claude.bats   # v1.30 layout tests
+│   └── ...                      # 12 test files in total
 │
-├── .gitleaks.toml               # Configuration gitleaks (secrets)
-├── VERSION                      # Version centralisée du socle (1.30.0)
+├── .gitleaks.toml               # gitleaks config (secret detection)
+├── VERSION                      # Centralized socle version (1.30.0)
 │
-├── scripts/                     # Scripts utilitaires
-│   ├── new-project.sh           # Création/installation (modes --simple, --all)
-│   ├── update.sh                # Mise à jour
+├── scripts/                     # Utility scripts
+│   ├── new-project.sh           # Create / install (modes --simple, --all)
+│   ├── update.sh                # Update
 │   ├── validate.sh              # Validation
-│   ├── uninstall.sh             # Désinstallation
+│   ├── uninstall.sh             # Uninstall
 │   ├── doctor.sh                # Diagnostic
-│   ├── diff.sh                  # Comparaison avec socle
-│   ├── hooks/                   # Hooks scripts (référencés par settings.json)
-│   └── lib/common.sh            # Librairie commune
+│   ├── diff.sh                  # Diff against the socle
+│   ├── hooks/                   # Hook scripts referenced by settings.json
+│   └── lib/common.sh            # Shared library
 │
-├── templates/                   # 11 templates CLAUDE.*.md par stack
+├── templates/                   # 11 CLAUDE.*.md templates by stack
 │   ├── CLAUDE.react.md          # React
 │   ├── CLAUDE.nextjs.md         # Next.js (App Router)
 │   ├── CLAUDE.vue.md            # Vue.js 3
@@ -136,31 +138,31 @@ claude-socle/
 │   ├── CLAUDE.go.md             # Go
 │   ├── CLAUDE.rust.md           # Rust
 │   ├── CLAUDE.java.md           # Java / Spring Boot
-│   ├── CLAUDE.fullstack.md      # Monorepo fullstack
+│   ├── CLAUDE.fullstack.md      # Fullstack monorepo
 │   ├── CLAUDE.flutter.md        # Flutter / Dart (Mobile)
 │   └── CLAUDE.neovim.md         # Neovim / Lua config
 │
-└── docs/                        # Documentation
-    ├── QUICKSTART.md            # Démarrage en 5 minutes
-    ├── CHEATSHEET.md            # Référence rapide commandes
+└── docs/                        # Documentation (mostly in French — see note above)
+    ├── QUICKSTART.md            # 5-minute getting started
+    ├── CHEATSHEET.md            # Command quick reference
     ├── ARCHITECTURE.md          # Commands vs Agents vs Skills vs Rules
-    ├── WORKFLOWS.md             # Diagrammes des workflows
-    ├── STACK-RECIPES.md         # Commandes/agents/skills par stack
-    ├── CUSTOMIZATION.md         # Guide personnalisation
-    ├── reference/               # Doc de référence (best-practices, hooks, etc.)
-    └── guides/                  # 4 guides spécifiques
-        ├── EXTENDING-GUIDE.md   # Étendre le socle
-        ├── TEAM-GUIDE.md        # Adoption en équipe
-        ├── PROMPTING-GUIDE.md   # Techniques de prompting
+    ├── WORKFLOWS.md             # Workflow diagrams
+    ├── STACK-RECIPES.md         # Commands/agents/skills per stack
+    ├── CUSTOMIZATION.md         # Customization guide
+    ├── reference/               # Reference docs (best-practices, hooks…)
+    └── guides/                  # 4 specific guides
+        ├── EXTENDING-GUIDE.md   # Extend the socle
+        ├── TEAM-GUIDE.md        # Team adoption
+        ├── PROMPTING-GUIDE.md   # Prompting techniques
         └── TROUBLESHOOTING-GUIDE.md
 ```
 
-## Commandes Disponibles (131)
+## Available Commands (131)
 
-Les commandes sont organisées en 9 domaines :
+Commands are grouped into 9 domains:
 
-| Domaine | Nombre | Exemples |
-|---------|-------:|----------|
+| Domain | Count | Examples |
+|---------|------:|----------|
 | `work-` | 15 | `/work:work-explore`, `/work:work-plan`, `/work:work-commit`, `/work:work-pr`, `/work:work-flow-feature` |
 | `dev-` | 23 | `/dev:dev-tdd`, `/dev:dev-debug`, `/dev:dev-api`, `/dev:dev-flutter`, `/dev:dev-prisma` |
 | `qa-` | 16 | `/qa:qa-loop`, `/qa:qa-security`, `/qa:qa-perf`, `/qa:wcag-audit`, `/qa:qa-e2e` |
@@ -171,11 +173,11 @@ Les commandes sont organisées en 9 domaines :
 | `data-` | 3 | `/data:data-pipeline`, `/data:data-modeling`, `/data:data-analytics` |
 | `legal-` | 5 | `/legal:legal-rgpd`, `/legal:legal-terms-of-service`, `/legal:legal-privacy-policy` |
 
-→ **Liste complète** : [docs/CHEATSHEET.md](docs/CHEATSHEET.md) ou [Catalogue Docusaurus](https://christopherlouet.github.io/claude-socle/docs/commands).
+→ **Full list**: [docs/CHEATSHEET.md](docs/CHEATSHEET.md) or the [Docusaurus catalog](https://christopherlouet.github.io/claude-socle/docs/commands).
 
-→ **Par stack** : [docs/STACK-RECIPES.md](docs/STACK-RECIPES.md) liste les commandes pertinentes pour chaque stack (Web, Mobile, API, Auth, etc.).
+→ **By stack**: [docs/STACK-RECIPES.md](docs/STACK-RECIPES.md) lists the relevant commands for each stack (Web, Mobile, API, Auth, etc.).
 
-## Workflow Recommandé
+## Recommended Workflow
 
 ```
 ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
@@ -183,57 +185,57 @@ Les commandes sont organisées en 9 domaines :
 └─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
 ```
 
-### Exemple pratique (Web)
+### Practical example (Web)
 
 ```bash
-# 1. Explorer le systeme existant
-/work:work-explore le systeme d'authentification
+# 1. Explore the existing system
+/work:work-explore the authentication system
 
-# 2. Specifier la feature (User Stories + criteres)
-/work:work-specify ajouter OAuth2 Google
+# 2. Specify the feature (User Stories + acceptance criteria)
+/work:work-specify add OAuth2 Google sign-in
 
-# 3. Planifier l'implementation
+# 3. Plan the implementation
 /work:work-plan OAuth2 Google
 
-# 4. Implementer en TDD (tests AVANT le code)
+# 4. Implement in TDD (tests BEFORE the code)
 /dev:dev-tdd OAuth2 authentication flow
 
-# 5. Audit + fix en boucle (score 90 obligatoire)
+# 5. Audit + fix loop (score 90 required)
 /qa:qa-loop "score 90"
 
-# 6. Creer la PR
+# 6. Open the PR
 /work:work-pr OAuth2 Google authentication
 ```
 
-### Exemple pratique (Mobile Flutter)
+### Practical example (Mobile Flutter)
 
 ```bash
-# 1. Explorer l'architecture existante
-/work:work-explore la structure des features
+# 1. Explore the existing architecture
+/work:work-explore the feature directory layout
 
-# 2. Specifier l'ecran (User Stories + criteres)
-/work:work-specify ecran de profil utilisateur
+# 2. Specify the screen (User Stories + criteria)
+/work:work-specify user profile screen
 
-# 3. Planifier l'implementation
-/work:work-plan ecran de profil utilisateur
+# 3. Plan the implementation
+/work:work-plan user profile screen
 
-# 4. Creer le widget/screen Flutter en TDD
-/dev:dev-tdd UserProfileScreen avec BLoC + tests widget
+# 4. Build the widget/screen in TDD
+/dev:dev-tdd UserProfileScreen with BLoC + widget tests
 
-# 5. Configurer le backend Supabase
-/dev:dev-supabase endpoint profil utilisateur
+# 5. Wire up the Supabase backend
+/dev:dev-supabase user profile endpoint
 
-# 6. Audit qualite mobile + fix en boucle
+# 6. Mobile quality audit + fix loop
 /qa:qa-loop "score 90"
 
-# 7. Creer la PR
-/work:work-pr ecran profil utilisateur
+# 7. Open the PR
+/work:work-pr user profile screen
 ```
 
-## Templates Disponibles (11)
+## Available Templates (11)
 
-| Template | Langage/Framework |
-|----------|-------------------|
+| Template | Language / Framework |
+|----------|---------------------|
 | `CLAUDE.react.md` | React |
 | `CLAUDE.nextjs.md` | Next.js (App Router) |
 | `CLAUDE.vue.md` | Vue.js 3 |
@@ -242,169 +244,169 @@ Les commandes sont organisées en 9 domaines :
 | `CLAUDE.go.md` | Go |
 | `CLAUDE.rust.md` | Rust |
 | `CLAUDE.java.md` | Java / Spring Boot |
-| `CLAUDE.fullstack.md` | Monorepo fullstack |
+| `CLAUDE.fullstack.md` | Fullstack monorepo |
 | `CLAUDE.flutter.md` | Flutter / Dart (Mobile) |
 | `CLAUDE.neovim.md` | Neovim / Lua config |
 
 ```bash
-# Utiliser un template
+# Use a template
 cp templates/CLAUDE.react.md CLAUDE.md
 ```
 
-## Scripts Utilitaires
+## Utility Scripts
 
 ```bash
-# Créer un nouveau projet (interactif)
+# Create a new project (interactive)
 ./scripts/new-project.sh
 
-# Installer dans un projet existant
-./scripts/new-project.sh --simple /chemin/projet
+# Install in an existing project
+./scripts/new-project.sh --simple /path/to/project
 
-# Mettre à jour les commandes
-./scripts/update.sh /chemin/projet
+# Update commands
+./scripts/update.sh /path/to/project
 
-# Valider la configuration
-./scripts/validate.sh /chemin/projet
-./scripts/validate.sh --json /chemin/projet  # Pour CI/CD
+# Validate the configuration
+./scripts/validate.sh /path/to/project
+./scripts/validate.sh --json /path/to/project   # for CI/CD
 
-# Diagnostic complet
-./scripts/doctor.sh /chemin/projet
+# Full diagnostic
+./scripts/doctor.sh /path/to/project
 
-# Comparer avec le socle
-./scripts/diff.sh /chemin/projet
+# Diff against the socle
+./scripts/diff.sh /path/to/project
 
-# Désinstaller
-./scripts/uninstall.sh /chemin/projet
+# Uninstall
+./scripts/uninstall.sh /path/to/project
 
-# Intégration IDE (VSCode, IntelliJ, Vim/Neovim)
+# IDE integration (VSCode, IntelliJ, Vim/Neovim)
 ./scripts/ide.sh setup vscode
 
-# Tutoriel interactif sur le workflow
+# Interactive workflow tutorial
 ./scripts/learn.sh
 ```
 
-## Apprentissage Interactif
+## Interactive Learning
 
-Le socle inclut un tutoriel interactif pour apprendre à l'utiliser efficacement.
+The socle ships with an interactive tutorial to learn how to use it efficiently.
 
 ```bash
-# Tutoriel complet (15-20 min)
+# Full tutorial (15-20 min)
 ./scripts/learn.sh
 
-# Version rapide (5 min)
+# Quick version (5 min)
 ./scripts/learn.sh --quick
 
-# Apprendre un agent spécifique
+# Learn a specific agent
 ./scripts/learn.sh --agent tdd
 ./scripts/learn.sh --agent commit
 
-# Voir les agents disponibles
+# List available agents
 ./scripts/learn.sh --list
 ```
 
-Le tutoriel couvre :
-- Le workflow Explore → Specify → Plan → TDD → Audit → Commit
-- Les 131 commandes et 63 agents spécialisés
-- Le développement TDD
-- Les Conventional Commits
-- Quiz interactifs avec score
+The tutorial covers:
+- The Explore → Specify → Plan → TDD → Audit → Commit workflow
+- The 131 commands and 63 specialized agents
+- TDD development
+- Conventional Commits
+- Interactive quizzes with scoring
 
-## Intégration IDE
+## IDE Integration
 
-Configurez votre IDE pour une intégration optimale avec claude-socle.
+Configure your IDE for the best experience with claude-socle.
 
 ```bash
-# Configurer VSCode/Cursor
+# Configure VSCode/Cursor
 ./scripts/ide.sh setup vscode
 
-# Configurer IntelliJ IDEA
+# Configure IntelliJ IDEA
 ./scripts/ide.sh setup idea
 
-# Configurer Vim/Neovim
+# Configure Vim/Neovim
 ./scripts/ide.sh setup vim
 
-# Configurer tous les IDE
+# Configure all IDEs at once
 ./scripts/ide.sh setup all
 
-# Vérifier la configuration
+# Verify the configuration
 ./scripts/ide.sh check vscode
 
-# Supprimer la configuration
+# Remove the configuration
 ./scripts/ide.sh remove vscode
 ```
 
-### Fonctionnalités IDE
+### IDE Features
 
-| IDE | Fonctionnalités |
-|-----|-----------------|
+| IDE | Features |
+|-----|----------|
 | **VSCode/Cursor** | Settings, Tasks, Extensions, Snippets |
 | **IntelliJ IDEA** | Run Configurations, Code Style, Templates |
-| **Vim/Neovim** | Abréviations, Mappings, Autocmds |
+| **Vim/Neovim** | Abbreviations, Mappings, Autocmds |
 
-## CI/CD Inclus
+## CI/CD Included
 
 ### GitHub Actions
 
-- **ci.yml** : Tests, lint, build, audit sécurité
-- **pr-check.yml** : Validation format PR, taille, labels
-- **release.yml** : Releases automatiques avec changelog
+- **ci.yml**: Tests, lint, build, security audit
+- **pr-check.yml**: PR format / size / labels validation
+- **release.yml**: Automated releases with changelog
 
 ### Pre-commit Hooks
 
-- Lint et format automatique
-- Validation des commits (conventional commits)
-- Détection de secrets
+- Auto lint and format
+- Conventional Commits validation
+- Secret detection
 
 ```bash
-# Activer husky
+# Enable husky
 npm install husky lint-staged @commitlint/cli @commitlint/config-conventional -D
 npx husky install
 ```
 
 ## Documentation
 
-### Documentation en ligne
+### Online documentation
 
-La documentation complète est disponible sur **[https://christopherlouet.github.io/claude-socle/](https://christopherlouet.github.io/claude-socle/)**.
+The full documentation lives at **[https://christopherlouet.github.io/claude-socle/](https://christopherlouet.github.io/claude-socle/)**.
 
-Elle contient :
-- Guide de démarrage rapide
-- Catalogue des 131 commandes, 63 agents, 54 skills, 30 rules
-- Workflows recommandés (Explore → Specify → Plan → TDD → Audit → Commit)
-- Stack Recipes : commandes pertinentes par stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, IA/LLM, Business, Growth)
-- Guides spécifiques : Extending, Team, Prompting, Troubleshooting
+It covers:
+- Quick start guide
+- Catalog of 131 commands, 63 agents, 54 skills, 30 rules
+- Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
+- Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
+- Specific guides: Extending, Team, Prompting, Troubleshooting
 
-### Documentation locale
+### Local documentation
 
-- **[QUICKSTART.md](docs/QUICKSTART.md)** : Démarrage en 5 minutes
-- **[CHEATSHEET.md](docs/CHEATSHEET.md)** : Référence rapide des commandes
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** : Commands vs Agents vs Skills vs Rules
-- **[WORKFLOWS.md](docs/WORKFLOWS.md)** : Diagrammes des workflows
-- **[STACK-RECIPES.md](docs/STACK-RECIPES.md)** : Commandes/agents/skills par stack (Web, Mobile, API…)
-- **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)** : Guide de personnalisation
-- **[guides/EXTENDING-GUIDE.md](docs/guides/EXTENDING-GUIDE.md)** : Étendre le socle (commands/skills/rules custom)
-- **[guides/TEAM-GUIDE.md](docs/guides/TEAM-GUIDE.md)** : Adoption en équipe
+- **[QUICKSTART.md](docs/QUICKSTART.md)**: 5-minute getting started
+- **[CHEATSHEET.md](docs/CHEATSHEET.md)**: Command quick reference
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Commands vs Agents vs Skills vs Rules
+- **[WORKFLOWS.md](docs/WORKFLOWS.md)**: Workflow diagrams
+- **[STACK-RECIPES.md](docs/STACK-RECIPES.md)**: Commands/agents/skills per stack (Web, Mobile, API…)
+- **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)**: Customization guide
+- **[guides/EXTENDING-GUIDE.md](docs/guides/EXTENDING-GUIDE.md)**: Extend the socle (custom commands/skills/rules)
+- **[guides/TEAM-GUIDE.md](docs/guides/TEAM-GUIDE.md)**: Team adoption
 
-## Permissions par Défaut
+## Default Permissions
 
-| Autorisé | Bloqué |
-|----------|--------|
-| ✅ Édition de fichiers | ❌ `git push --force` |
+| Allowed | Blocked |
+|---------|---------|
+| ✅ File editing | ❌ `git push --force` |
 | ✅ npm test/lint/build | ❌ `rm -rf` |
 | ✅ git status/diff/add/commit | |
 | ✅ gh issue/pr | |
 
-## Ressources
+## Resources
 
 - [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
 - [Claude Code Documentation](https://code.claude.com/docs/en/overview)
 - [How Anthropic Teams Use Claude Code](https://www.anthropic.com/news/how-anthropic-teams-use-claude-code)
 
-## Détection de Secrets (gitleaks)
+## Secret Detection (gitleaks)
 
-Le socle utilise [gitleaks](https://github.com/gitleaks/gitleaks) pour détecter automatiquement les secrets dans le code.
+The socle uses [gitleaks](https://github.com/gitleaks/gitleaks) to automatically catch secrets in code.
 
-### Installation de gitleaks
+### Install gitleaks
 
 ```bash
 # macOS
@@ -417,32 +419,32 @@ go install github.com/gitleaks/gitleaks/v8@latest
 docker pull ghcr.io/gitleaks/gitleaks:latest
 ```
 
-### Utilisation
+### Usage
 
 ```bash
-# Scanner le projet
+# Scan the project
 gitleaks detect --source . --config .gitleaks.toml
 
-# Scanner avant commit (automatique via hooks)
+# Scan before commit (automatic via hooks)
 gitleaks detect --staged --config .gitleaks.toml
 ```
 
-### Secrets détectés
+### Detected secrets
 
-- AWS Access Keys
+- AWS access keys
 - GitHub/GitLab tokens
 - Stripe API keys
-- Slack tokens/webhooks
+- Slack tokens / webhooks
 - JWT tokens
-- Clés privées (RSA, EC, etc.)
-- URLs de base de données
-- Et bien d'autres...
+- Private keys (RSA, EC, etc.)
+- Database URLs
+- And many more…
 
-## Tests Automatisés
+## Automated Tests
 
-Le socle inclut des tests [bats-core](https://github.com/bats-core/bats-core) pour valider son bon fonctionnement.
+The socle ships with [bats-core](https://github.com/bats-core/bats-core) tests that validate every script.
 
-### Installation de bats
+### Install bats
 
 ```bash
 # Via npm
@@ -451,107 +453,107 @@ npm install -g bats
 # Via brew (macOS)
 brew install bats-core
 
-# Via le script
+# Via the script
 ./scripts/test.sh --install-bats
 ```
 
-### Lancer les tests
+### Run the tests
 
 ```bash
-# Tous les tests
+# All tests
 ./scripts/test.sh
 
-# Tests spécifiques
+# Specific tests
 ./scripts/test.sh validate
 ./scripts/test.sh gitleaks
 
-# Mode verbeux
+# Verbose mode
 ./scripts/test.sh -v
 ```
 
-### Structure des tests (17 fichiers, 319 tests)
+### Test layout (17 files, 319 tests)
 
-| Fichier | Description |
-|---------|-------------|
-| `smoke.bats` | Tests de smoke (validation rapide de l'intégrité) |
-| `common.bats` | Tests des fonctions utilitaires |
-| `new-project.bats` | Tests du script d'installation |
-| `update.bats` | Tests du script de mise à jour |
-| `docs-under-claude.bats` | Tests du layout v1.30 (docs sous `.claude/docs/`) |
-| `validate.bats` | Tests du script de validation |
-| `doctor.bats` | Tests du script de diagnostic |
-| `gitleaks.bats` | Tests de la configuration gitleaks |
-| `qa-loop.bats` | Tests du workflow audit-fix en boucle |
-| `lint.bats` | Tests du script de linting |
-| `e2e.bats` | Tests end-to-end |
-| `prompt-context.bats` | Tests du hook UserPromptSubmit |
-| `diff.bats`, `ide.bats`, `learn.bats`, `uninstall.bats`, `test-runner.bats` | Tests des scripts associés |
+| File | Description |
+|------|-------------|
+| `smoke.bats` | Smoke tests (fast integrity check) |
+| `common.bats` | Utility function tests |
+| `new-project.bats` | Install script tests |
+| `update.bats` | Update script tests |
+| `docs-under-claude.bats` | v1.30 layout tests (`.claude/docs/`) |
+| `validate.bats` | Validation script tests |
+| `doctor.bats` | Diagnostic script tests |
+| `gitleaks.bats` | gitleaks config tests |
+| `qa-loop.bats` | Audit-fix loop workflow tests |
+| `lint.bats` | Linting script tests |
+| `e2e.bats` | End-to-end tests |
+| `prompt-context.bats` | UserPromptSubmit hook tests |
+| `diff.bats`, `ide.bats`, `learn.bats`, `uninstall.bats`, `test-runner.bats` | Tests for the related scripts |
 
-## Migration et Breaking Changes
+## Migration & Breaking Changes
 
-### Mise à jour vers v1.10.x
+### Upgrading to v1.10.x
 
-#### Breaking Changes
+#### Breaking changes
 
-| Changement | Impact | Migration |
-|------------|--------|-----------|
-| `install.sh` supprimé | Scripts d'installation | Utiliser `new-project.sh --simple` |
-| Structure agents YAML | Fichiers agents | Re-copier depuis le socle |
+| Change | Impact | Migration |
+|--------|--------|-----------|
+| `install.sh` removed | Installation scripts | Use `new-project.sh --simple` |
+| Agents YAML structure | Agent files | Re-copy from the socle |
 
-#### Nouvelles fonctionnalités
+#### New features
 
-- **Agent `dev-tdd`** : Développement TDD avec cycle Red-Green-Refactor
-- **Commandes** : `/dev:dev-ai-integration`, `/growth:growth-localization`, `/qa:qa-tech-debt`
-- **Permissions génériques** : Wildcards pour npm, git, docker, terraform, etc.
+- **Agent `dev-tdd`**: TDD development with the Red-Green-Refactor cycle
+- **Commands**: `/dev:dev-ai-integration`, `/growth:growth-localization`, `/qa:qa-tech-debt`
+- **Generic permissions**: wildcards for npm, git, docker, terraform, etc.
 
-#### Guide de migration
+#### Migration guide
 
 ```bash
-# 1. Sauvegarder vos personnalisations
+# 1. Back up your customizations
 cp CLAUDE.md CLAUDE.md.backup
 cp .claude/settings.local.json .claude/settings.local.json.backup
 
-# 2. Mettre à jour le socle
-cd /chemin/vers/claude-socle
+# 2. Update the socle
+cd /path/to/claude-socle
 git pull origin main
 
-# 3. Réinstaller (écrase les anciens fichiers)
-./scripts/new-project.sh --simple /chemin/vers/votre-projet
+# 3. Reinstall (overwrites existing files)
+./scripts/new-project.sh --simple /path/to/your/project
 
-# 4. Restaurer vos personnalisations
-# Fusionner manuellement CLAUDE.md.backup avec le nouveau CLAUDE.md
+# 4. Restore your customizations
+# Manually merge CLAUDE.md.backup into the new CLAUDE.md
 ```
 
-### Politique de versioning
+### Versioning policy
 
 | Version | Support | Notes |
 |---------|---------|-------|
-| 1.30.x | Actuel | Version stable (relocalisation docs vers `.claude/docs/`) |
-| 1.29.x | Supporté | Corrections de sécurité |
-| 1.28.x | Supporté | Corrections de sécurité |
-| < 1.28 | Non supporté | Mise à jour recommandée |
+| 1.30.x | Current | Stable release (docs relocated to `.claude/docs/`) |
+| 1.29.x | Supported | Security fixes |
+| 1.28.x | Supported | Security fixes |
+| < 1.28 | Unsupported | Update recommended |
 
 ### Changelog
 
-Voir [CHANGELOG.md](CHANGELOG.md) pour l'historique complet des changements.
+See [CHANGELOG.md](CHANGELOG.md) for the full history of changes.
 
 ## Production Readiness
 
-Le projet claude-socle est **prêt pour la production** avec :
+claude-socle is **production-ready** with:
 
-| Critère | Status | Score |
-|---------|--------|-------|
-| Fonctionnalités | ✅ Mature | 9/10 |
-| Tests | ✅ Complet | 8/10 |
+| Criterion | Status | Score |
+|-----------|--------|-------|
+| Features | ✅ Mature | 9/10 |
+| Tests | ✅ Complete | 8/10 |
 | CI/CD | ✅ Mature | 8/10 |
-| Sécurité | ✅ Mature | 9/10 |
+| Security | ✅ Mature | 9/10 |
 | Documentation | ✅ Mature | 9/10 |
 
-### Mesures de sécurité
+### Security measures
 
-- **Gitleaks** : 24+ règles de détection de secrets
-- **Deny list** : Commandes dangereuses bloquées (`rm -rf /`, `sudo`, `git push --force`)
-- **Hooks de protection** : Blocage des modifications sur main/master
-- **CodeQL** : Analyse de sécurité dans CI
+- **Gitleaks**: 24+ secret detection rules
+- **Deny list**: dangerous commands blocked (`rm -rf /`, `sudo`, `git push --force`)
+- **Protection hooks**: blocks edits on main/master
+- **CodeQL**: security analysis in CI
 
-Voir [SECURITY.md](SECURITY.md) pour la politique de sécurité complète.
+See [SECURITY.md](SECURITY.md) for the full security policy.
