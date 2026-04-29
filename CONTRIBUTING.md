@@ -1,88 +1,90 @@
-# Contribuer a claude-socle
+# Contributing to claude-socle
 
-Merci de contribuer au projet. Ce guide explique comment participer efficacement.
+Thanks for considering a contribution. This guide explains how to participate effectively.
 
-## Pre-requis
+> **Note**: most of the in-repo documentation under `docs/` is currently in French. Pull requests, issues, and commit messages are welcome in **English or French**. Translation contributions for the docs are very appreciated.
+
+## Prerequisites
 
 - Node.js >= 20
 - npm >= 10
 - Git
-- [Bats](https://github.com/bats-core/bats-core) (pour les tests)
-- [ShellCheck](https://www.shellcheck.net/) (pour le linting des scripts)
+- [Bats](https://github.com/bats-core/bats-core) (for tests)
+- [ShellCheck](https://www.shellcheck.net/) (for shell script linting)
 
-## Installation de l'environnement
+## Setting up your environment
 
 ```bash
-# Cloner le repo
+# Clone the repo
 git clone https://github.com/christopherlouet/claude-socle.git
 cd claude-socle
 
-# Installer les dependances du site de documentation
+# Install the documentation site dependencies
 cd website && npm install && cd ..
 
-# Verifier que tout fonctionne
+# Smoke-check that everything works
 ./scripts/doctor.sh
 ```
 
-## Structure du projet
+## Project structure
 
 ```
 .claude/
-  commands/    # 131 commandes (source de verite)
+  commands/    # 131 commands (source of truth)
   agents/      # 63 sub-agents
   skills/      # 54 skills
-  rules/       # 30 regles contextuelles
-  templates/   # Templates de specification
-  settings.json # Hooks et permissions
-website/       # Site Docusaurus (docs generees)
-scripts/       # Scripts utilitaires et CI
-tests/         # Tests Bats
+  rules/       # 30 contextual rules
+  templates/   # Specification templates
+  settings.json # Hooks and permissions
+website/       # Docusaurus site (generated docs)
+scripts/       # Utility scripts and CI
+tests/         # Bats tests
 ```
 
-Les fichiers dans `.claude/` sont la **source de verite**. Les docs dans `website/docs/` sont **generees** a partir de ces fichiers.
+The files under `.claude/` are the **source of truth**. The docs under `website/docs/` are **generated** from those files.
 
-## Workflow de contribution
+## Contribution workflow
 
-### 1. Creer une branche
+### 1. Create a branch
 
 ```bash
-git checkout -b feature/ma-feature
-# ou
-git checkout -b fix/mon-fix
+git checkout -b feature/my-feature
+# or
+git checkout -b fix/my-fix
 ```
 
-Les branches suivent la convention : `feature/xxx`, `fix/xxx`, `refactor/xxx`.
+Branches follow the convention: `feature/xxx`, `fix/xxx`, `refactor/xxx`.
 
-### 2. Faire les modifications
+### 2. Make your changes
 
-- **Nouvelle commande** : creer dans `.claude/commands/[categorie]/`
-- **Nouvel agent** : creer dans `.claude/agents/`
-- **Nouveau skill** : creer dans `.claude/skills/[nom]/SKILL.md`
-- **Nouvelle regle** : creer dans `.claude/rules/`
+- **New command**: create under `.claude/commands/[category]/`
+- **New agent**: create under `.claude/agents/`
+- **New skill**: create under `.claude/skills/[name]/SKILL.md`
+- **New rule**: create under `.claude/rules/`
 
-### 3. Regenerer la documentation
+### 3. Regenerate the documentation
 
 ```bash
 cd website
 npm run generate
 ```
 
-### 4. Lancer les tests
+### 4. Run the tests
 
 ```bash
-# Tests complets
+# Full test suite
 ./scripts/test.sh
 
-# Validation des compteurs
+# Counter validation
 ./scripts/validate-counts.sh
 
-# Linting des scripts
+# Shell script linting
 ./scripts/lint.sh
 ```
 
-### 5. Commiter
+### 5. Commit
 
-Les commits suivent [Conventional Commits](https://www.conventionalcommits.org/) :
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 feat(commands): add dev-xxx command
@@ -92,47 +94,47 @@ chore(deps): bump docusaurus to 3.8
 test(scripts): add validate-counts tests
 ```
 
-Types autorises : `feat`, `fix`, `refactor`, `test`, `docs`, `style`, `chore`, `perf`.
+Allowed types: `feat`, `fix`, `refactor`, `test`, `docs`, `style`, `chore`, `perf`.
 
-### 6. Creer une Pull Request
+### 6. Open a Pull Request
 
 ```bash
-# Pousser la branche
-git push -u origin feature/ma-feature
+# Push the branch
+git push -u origin feature/my-feature
 ```
 
-La PR doit inclure :
-- Un titre court (< 70 caracteres)
-- Une description avec le contexte et les changements
-- Les tests passent (CI verte)
+A PR should include:
+- A short title (< 70 characters)
+- A description that covers context and changes
+- Passing tests (green CI)
 
 ## Conventions
 
-### Nommage des fichiers
+### File naming
 
-| Type | Convention | Exemple |
+| Type | Convention | Example |
 |------|------------|---------|
 | Commands | `kebab-case.md` | `dev-tdd.md` |
 | Agents | `kebab-case.md` | `qa-security.md` |
 | Skills | `kebab-case/SKILL.md` | `dev-tdd/SKILL.md` |
 | Rules | `kebab-case.md` | `typescript.md` |
 
-### Frontmatter des agents
+### Agent frontmatter
 
 ```yaml
 ---
-name: nom-agent
-description: Description en francais
+name: agent-name
+description: Description (French or English)
 tools: Read, Grep, Glob
-model: haiku  # ou sonnet pour les taches complexes
+model: haiku  # or sonnet for complex tasks
 permissionMode: plan
 disallowedTools: Edit, Write, NotebookEdit
 skills:
-  - skill-associe
+  - associated-skill
 ---
 ```
 
-### Frontmatter des skills
+### Skill frontmatter
 
 ```yaml
 ---
@@ -147,25 +149,25 @@ context: fork
 ---
 ```
 
-### Choix du modele pour les agents
+### Choosing the model for an agent
 
-- **haiku** : exploration, audit lecture seule, documentation
-- **sonnet** : debug, ecriture de code, analyses complexes
+- **haiku**: exploration, read-only audits, documentation
+- **sonnet**: debugging, code writing, complex analysis
 
-## Verification avant soumission
+## Pre-submission checklist
 
-- [ ] Les tests passent (`./scripts/test.sh`)
-- [ ] Les compteurs sont corrects (`./scripts/validate-counts.sh`)
-- [ ] La doc est regeneree (`cd website && npm run generate`)
-- [ ] Le commit suit Conventional Commits
-- [ ] Pas de secrets dans le code (gitleaks)
-- [ ] ShellCheck passe pour les scripts bash (`./scripts/lint.sh`)
+- [ ] Tests pass (`./scripts/test.sh`)
+- [ ] Counters are consistent (`./scripts/validate-counts.sh`)
+- [ ] Docs are regenerated (`cd website && npm run generate`)
+- [ ] Commit message follows Conventional Commits
+- [ ] No secrets in code (gitleaks)
+- [ ] ShellCheck passes on bash scripts (`./scripts/lint.sh`)
 
-## Hooks automatiques
+## Automated hooks
 
-Le projet utilise des hooks Claude Code qui s'executent automatiquement :
+The project uses Claude Code hooks that run automatically:
 
-- **Protection main** : impossible d'editer directement sur main/master
-- **Gitleaks** : detection de secrets avant ecriture
-- **Tests pre-commit** : les tests sont lances avant chaque commit
-- **Auto-format** : formatage automatique apres modification (TS, Python, Go, Rust, Dart, Lua)
+- **Main branch protection**: direct edits on `main`/`master` are blocked
+- **Gitleaks**: secret detection before any write
+- **Pre-commit tests**: tests run before each commit
+- **Auto-format**: automatic formatting after edits (TS, Python, Go, Rust, Dart, Lua)
