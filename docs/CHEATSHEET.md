@@ -191,7 +191,7 @@
 
 ---
 
-## Commandes par Catégorie (119)
+## Commandes par Catégorie (131)
 
 ### Orchestrateur (1)
 
@@ -199,16 +199,21 @@
 |----------|-------|
 | `/assistant` | Guide de choix des agents et workflows |
 
-### WORK- : Workflow Principal (10)
+### WORK- : Workflow Principal (15)
 
 | Commande | Usage |
 |----------|-------|
 | `/work:work-explore` | Explorer et comprendre le code |
+| `/work:work-brainstorm` | Idéation structurée avant spec |
 | `/work:work-specify` | Créer une spécification fonctionnelle |
 | `/work:work-clarify` | Clarifier les ambiguïtés |
 | `/work:work-plan` | Planifier une implémentation |
 | `/work:work-commit` | Créer un commit propre |
 | `/work:work-pr` | Créer une Pull Request |
+| `/work:work-commit-push-pr` | Commit + push + PR en une commande |
+| `/work:work-quick` | Workflow rapide (changements triviaux, skip cycle complet) |
+| `/work:work-batch` | Exécution séquentielle de user stories depuis un PRD |
+| `/work:work-team` | Lancer une équipe d'agents coordonnés (Agent Teams) |
 | `/work:work-flow-feature` | Workflow feature complet |
 | `/work:work-flow-bugfix` | Workflow bugfix complet |
 | `/work:work-flow-release` | Workflow release complet |
@@ -242,7 +247,7 @@
 | `/dev:dev-trpc` | APIs type-safe tRPC |
 | `/dev:dev-ai-integration` | Intégration LLMs (OpenAI, Claude) |
 
-### QA- : Qualité (15)
+### QA- : Qualité (16)
 
 | Commande | Usage |
 |----------|-------|
@@ -261,8 +266,9 @@
 | `/qa:qa-neovim` | Audit config Neovim |
 | `/qa:qa-tech-debt` | Dette technique |
 | `/qa:qa-chrome` | Tests visuels Chrome |
+| `/qa:qa-loop` | Audit + fix en boucle jusqu'au score cible (90 par défaut) |
 
-### OPS- : Opérations (30)
+### OPS- : Opérations (34)
 
 | Commande | Usage |
 |----------|-------|
@@ -296,6 +302,10 @@
 | `/ops:ops-serverless` | Déploiement serverless |
 | `/ops:ops-vercel` | Configuration Vercel |
 | `/ops:ops-mobile-release` | Publication App/Play Store |
+| `/ops:ops-deploy` | Déploiement sécurisé avec checklist pre-deploy |
+| `/ops:ops-cost` | Suivi des tokens Claude Code et coûts |
+| `/ops:ops-standup` | Briefing matinal cross-repo |
+| `/ops:ops-ci-fix` | Diagnostic et réparation autonome de la CI |
 
 ### DOC- : Documentation (9)
 

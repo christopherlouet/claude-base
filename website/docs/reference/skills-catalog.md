@@ -1,5 +1,5 @@
 ---
-sidebar_position: 17
+sidebar_position: 16
 title: "Skills (Claude Code 2.1+)"
 description: "En plus des commandes, le projet inclut **54 Skills** dans `.claude/skills/`:"
 tags:

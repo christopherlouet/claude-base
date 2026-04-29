@@ -16,7 +16,7 @@ tags:
 | `/assistant` | Guide | Analyse → Recommande → Attend confirmation |
 | `/assistant-auto` | Automatique | Analyse → Execute directement le workflow |
 
-## WORK- : Workflow Principal (13)
+## WORK- : Workflow Principal (15)
 | Commande | Usage |
 |----------|-------|
 | `/work:work-explore` | Explorer et comprendre le code |
@@ -28,6 +28,8 @@ tags:
 | `/work:work-pr` | Creer une Pull Request |
 | `/work:work-commit-push-pr` | **Workflow complet: commit + push + PR** |
 | `/work:work-team` | Lancer une equipe d'agents coordonnes (Agent Teams) |
+| `/work:work-quick` | Workflow rapide pour changements triviaux (skip cycle complet) |
+| `/work:work-batch` | Execution sequentielle de user stories depuis un PRD |
 | `/work:work-flow-feature` | Workflow complet feature |
 | `/work:work-flow-bugfix` | Workflow complet bugfix |
 | `/work:work-flow-release` | Workflow complet release |
@@ -80,7 +82,7 @@ tags:
 | `/qa:qa-e2e` | Tests End-to-End (Playwright, Cypress) |
 | `/qa:qa-tech-debt` | Identifier et prioriser la dette technique |
 
-## OPS- : Operations (33)
+## OPS- : Operations (34)
 | Commande | Usage |
 |----------|-------|
 | `/ops:ops-hotfix` | Correction urgente production |
@@ -104,6 +106,7 @@ tags:
 | `/ops:ops-backup` | Strategie backup/restore |
 | `/ops:ops-load-testing` | Tests de charge et stress |
 | `/ops:ops-cost-optimization` | Optimisation couts cloud |
+| `/ops:ops-cost` | Suivi de la consommation de tokens et couts Claude Code |
 | `/ops:ops-disaster-recovery` | Plan de reprise apres sinistre |
 | `/ops:ops-infra-code` | Infrastructure as Code (Terraform) |
 | `/ops:ops-secrets-management` | Gestion securisee des secrets |
