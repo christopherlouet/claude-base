@@ -488,11 +488,7 @@ staticcheck ./...
 
 ## Phase 7: gRPC et Protobuf
 
-### Generer du code protobuf
-
-```bash
-/dev:dev-grpc "service de gestion des utilisateurs"
-```
+> Le socle n'a pas de commande dédiée gRPC. Utiliser `/work:work-plan` pour cadrer le service puis `/dev:dev-api` (adapté gRPC) ou la génération manuelle ci-dessous.
 
 ### Structure type
 
@@ -674,7 +670,7 @@ func main() {
 | "Ecris les tests" | dev-tdd | Table-driven tests + fakes |
 | "Audit qualite" | qa-loop | golangci-lint, vet, race, couverture |
 | "Dockerise le service" | ops-docker | Multi-stage, distroless, graceful shutdown |
-| "Cree un service gRPC" | dev-grpc | Proto + generation + implementation |
+| "Cree un service gRPC" | work-plan + dev-api | Pas de commande dédiée — cadrer avec `work-plan`, implémenter avec `dev-api` |
 
 ## Anti-patterns a Eviter
 

@@ -71,6 +71,8 @@ En plus des commandes, le projet inclut **54 Skills** dans `.claude/skills/`:
 | `dev-i18n` | "i18n", "l10n", "traduction", "locale", "next-intl", "react-i18next", "vue-i18n", "flutter_localizations" | fork |
 | `writing-skills` | "créer skill", "nouveau skill", "écrire un skill" | fork |
 | `web-scraping` | "scraper", "crawler", "extraire web", "Firecrawl", "données structurées" | fork |
+| `work-quick` | "quick", "vite", "rapide" — changement trivial (&lt; 50 LOC, 1-3 fichiers) | fork |
+| `work-batch` | "batch", "backlog", "PRD", "user stories en série" — exécution séquentielle | fork |
 
 ## Configuration des Skills
 
