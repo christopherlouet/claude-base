@@ -141,7 +141,7 @@ claude-socle/
     ├── CHEATSHEET.md            # Référence rapide
     ├── CUSTOMIZATION.md         # Guide personnalisation
     ├── ARCHITECTURE.md          # Architecture Commands/Agents/Skills
-    └── ALIASES.md               # Alias de commandes
+    └── WORKFLOWS.md             # Diagrammes de workflows
 ```
 
 ## Commandes Disponibles (131)

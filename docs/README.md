@@ -9,7 +9,6 @@
 | Debutant | [QUICKSTART.md](./QUICKSTART.md) | Demarrage rapide en 5 minutes |
 | Debutant | [Documentation Docusaurus](https://christopherlouet.github.io/claude-socle/) | Guide utilisateur complet (site web) |
 | Intermediaire | [CHEATSHEET.md](./CHEATSHEET.md) | Reference rapide des commandes |
-| Intermediaire | [ALIASES.md](./ALIASES.md) | Alias et raccourcis |
 | Avance | [ARCHITECTURE.md](./ARCHITECTURE.md) | Architecture Commands/Agents/Skills |
 | Avance | [CUSTOMIZATION.md](./CUSTOMIZATION.md) | Guide de personnalisation |
 | Avance | [WORKFLOWS.md](./WORKFLOWS.md) | Diagrammes visuels des workflows |
@@ -50,7 +49,7 @@
 ### Je cherche une commande specifique
 
 1. [CHEATSHEET.md](./CHEATSHEET.md) - Reference rapide
-2. [ALIASES.md](./ALIASES.md) - Raccourcis disponibles
+2. [Catalogue des commandes](https://christopherlouet.github.io/claude-socle/docs/commands) - Liste exhaustive (Docusaurus)
 
 ## Structure de la Documentation
 
@@ -59,7 +58,6 @@ docs/
 ├── README.md              # Cet index de navigation
 ├── QUICKSTART.md          # Demarrage rapide
 ├── CHEATSHEET.md          # Reference rapide
-├── ALIASES.md             # Alias de commandes
 ├── ARCHITECTURE.md        # Architecture technique
 ├── CUSTOMIZATION.md       # Personnalisation
 ├── WORKFLOWS.md           # Diagrammes de workflows
