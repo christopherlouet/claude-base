@@ -11,7 +11,7 @@
 
 A Claude Code configuration kit for a solid, reproducible development workflow.
 
-> **Note on language**: this README is in English. The deeper documentation under `docs/` (Quick Start, Architecture, Stack Recipes, Workflows, guides, reference) is currently in French. The full English documentation lives on the [Docusaurus site](https://christopherlouet.github.io/claude-socle/).
+> **Note on language**: this README is in English. **The deeper documentation under `docs/` and on the [Docusaurus site](https://christopherlouet.github.io/claude-socle/) is currently in French** — translation contributions are very welcome (see `CONTRIBUTING.md`). For now, the README and the file/command names give you the full overview; deeper material may need a translation tool until the i18n work is done.
 
 ## What is it?
 
@@ -367,7 +367,7 @@ npx husky install
 
 ### Online documentation
 
-The full documentation lives at **[https://christopherlouet.github.io/claude-socle/](https://christopherlouet.github.io/claude-socle/)**.
+The full documentation site (currently in French) lives at **[https://christopherlouet.github.io/claude-socle/](https://christopherlouet.github.io/claude-socle/)**.
 
 It covers:
 - Quick start guide
@@ -375,6 +375,8 @@ It covers:
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Extending, Team, Prompting, Troubleshooting
+
+> An English translation of the docs is on the roadmap. Until then, the file names, command names (`/work:work-explore`, `/dev:dev-tdd`, etc.) and code blocks are universally readable; the prose is in French.
 
 ### Local documentation
 
