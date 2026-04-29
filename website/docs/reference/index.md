@@ -12,9 +12,9 @@ description: Reference rapide et matrices
 
 | Reference | Description |
 |-----------|-------------|
-| [Matrice des Commands](/docs/reference/commands-matrix) | 123 commandes avec domaine et description |
-| [Matrice des Agents](/docs/reference/agents-matrix) | 59 agents avec modele et outils |
-| [Scripts utilitaires](/docs/reference/scripts) | 12 scripts d'installation et maintenance |
+| [Matrice des Commands](/docs/reference/commands-matrix) | 131 commandes avec domaine et description |
+| [Matrice des Agents](/docs/reference/agents-matrix) | 63 agents avec modele et outils |
+| [Scripts utilitaires](/docs/reference/scripts) | Scripts d'installation et maintenance |
 | [Cheatsheet](/docs/reference/commands) | Aide-memoire rapide |
 
 ## Navigation rapide
@@ -23,10 +23,10 @@ description: Reference rapide et matrices
 
 | Domaine | Commandes | Description |
 |---------|-----------|-------------|
-| [WORK](/docs/commands/work) | 11 | Workflow principal |
+| [WORK](/docs/commands/work) | 15 | Workflow principal |
 | [DEV](/docs/commands/dev) | 23 | Developpement |
-| [QA](/docs/commands/qa) | 15 | Qualite |
-| [OPS](/docs/commands/ops) | 30 | Operations |
+| [QA](/docs/commands/qa) | 16 | Qualite |
+| [OPS](/docs/commands/ops) | 34 | Operations |
 | [DOC](/docs/commands/doc) | 9 | Documentation |
 | [BIZ](/docs/commands/biz) | 11 | Business |
 | [GROWTH](/docs/commands/growth) | 11 | Croissance |
@@ -37,11 +37,10 @@ description: Reference rapide et matrices
 
 | Composant | Nombre | Lien |
 |-----------|--------|------|
-| Commands | 123 | [Voir](/docs/commands) |
-| Agents | 59 | [Voir](/docs/agents) |
-| Skills | 42 | [Voir](/docs/skills) |
-| Rules | 24 | [Voir](/docs/rules) |
-| Scripts | 12 | [Voir](/docs/reference/scripts) |
+| Commands | 131 | [Voir](/docs/commands) |
+| Agents | 63 | [Voir](/docs/agents) |
+| Skills | 54 | [Voir](/docs/skills) |
+| Rules | 30 | [Voir](/docs/rules) |
 
 ## Raccourcis
 

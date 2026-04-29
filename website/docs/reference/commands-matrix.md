@@ -1,12 +1,14 @@
 ---
 sidebar_position: 2
 title: Matrice des Commands
-description: Liste complete des 123 commandes
+description: Repartition des 131 commandes par domaine
 ---
 
 # Matrice des Commands
 
-> **123 commandes** organisees par domaine
+> **131 commandes** organisees par domaine
+>
+> Pour la liste exhaustive et toujours a jour, voir le [Catalogue des commandes](/docs/reference/commands) (auto-genere depuis `.claude/commands/`).
 
 ## WORK - Workflow (11)
 

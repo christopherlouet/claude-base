@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalogue des 59 sub-agents claude-socle"
+description: "Catalogue des 63 sub-agents claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Catalogue des Agents
 
-> **62 sub-agents** avec contexte isole pour des taches autonomes
+> **63 sub-agents** avec contexte isole pour des taches autonomes
 
 <Stats items={[
   { number: 22, label: 'Agents Haiku' },
-  { number: 34, label: 'Agents Sonnet' },
-  { number: 62, label: 'Total' },
+  { number: 35, label: 'Agents Sonnet' },
+  { number: 63, label: 'Total' },
 ]} />
 
 ## Qu'est-ce qu'un Agent ?
@@ -58,7 +58,7 @@ Agents rapides et economiques pour les taches simples.
 | [`wcag-audit`](/docs/agents/wcag-audit) | Audit d'accessibilite selon WCAG 2.1/2.2 niveau AA, inspire ... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | Mode EXPLORATION : analyse du codebase sans modifier de fich... | Read, Grep, Glob |
 
-### Sonnet (34 agents)
+### Sonnet (35 agents)
 
 Agents pour les taches complexes necessitant une analyse approfondie.
 
@@ -94,6 +94,7 @@ Agents pour les taches complexes necessitant une analyse approfondie.
 | [`ops-opnsense`](/docs/agents/ops-opnsense) | Configuration OPNsense en IaC avec Terraform. Le skill `ops-... | Read, Grep, Glob... |
 | [`ops-proxmox`](/docs/agents/ops-proxmox) | Gestion d'infrastructure Proxmox VE avec Terraform. Le skill... | Read, Grep, Glob... |
 | [`qa-chrome`](/docs/agents/qa-chrome) | Audit visuel et tests navigateur. Prerequis : `claude --chro... | Read, Grep, Glob... |
+| [`qa-claudemd`](/docs/agents/qa-claudemd) | Audit de conformite au CLAUDE.md du projet et aux convention... | Read, Grep, Glob... |
 | [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
 | [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
 | [`work-batch`](/docs/agents/work-batch) | Execution autonome de stories depuis un PRD. Le skill `work-... | Read, Grep, Glob... |
@@ -110,7 +111,7 @@ Agents pour les taches critiques.
 | [`dev-rag`](/docs/agents/dev-rag) | Architecture et implementation de systemes RAG. | Read, Grep, Glob... |
 | [`dev-tdd`](/docs/agents/dev-tdd) | Developpement guide par les tests. Le skill `dev-tdd` fourni... | Read, Grep, Glob... |
 | [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet couvrant 5 domaines. | Read, Grep, Glob... |
-| [`qa-loop`](/docs/agents/qa-loop) | Boucle autonome audit → fix → test → re-audit avec criteres ... | Read, Grep, Glob... |
+| [`qa-loop`](/docs/agents/qa-loop) | Boucle autonome **AUDIT (parallele) → VALIDATE → FIX → VERIF... | Read, Grep, Glob... |
 | [`qa-security`](/docs/agents/qa-security) | Audit de securite OWASP Top 10. Le skill `qa-security` fourn... | Read, Grep, Glob... |
 
 

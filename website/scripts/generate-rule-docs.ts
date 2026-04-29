@@ -151,7 +151,7 @@ function generateRulesIndex(rules: RuleInfo[]): string {
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: 'Rules',
-    description: 'Catalogue des 24 regles par technologie',
+    description: `Catalogue des ${rules.length} regles par technologie`,
   });
 
   const rulesTable = rules

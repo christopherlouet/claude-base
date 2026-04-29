@@ -1,5 +1,5 @@
 ---
-sidebar_position: 63
+sidebar_position: 64
 title: "work-quick"
 description: "Workflow rapide pour changements triviaux. Le skill `work-quick` fournit les criteres d'eligibilite et la methodologie."
 tags:

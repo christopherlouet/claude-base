@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Commands"
-description: "Catalogue des 123 commandes claude-socle"
+description: "Catalogue des 131 commandes claude-socle"
 ---
 
 import Stats from '@site/src/components/Stats';

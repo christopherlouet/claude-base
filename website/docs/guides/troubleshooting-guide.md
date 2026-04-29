@@ -38,6 +38,7 @@ tags:
 | `claude` introuvable ou erreurs Node apres `claude update` | Migration vers le binaire natif (CLI 2.1.113+) : le CLI n'est plus un bundle JavaScript | Reinstaller via le canal officiel, verifier `which claude` et `claude --version`. Les anciens alias pointant vers `node /path/to/cli.js` ne fonctionnent plus |
 | Subagent qui "hang" sans retour | Avant CLI 2.1.113 : hang silencieux possible | Mettre a jour : les subagents inactifs &gt; 10 min echouent desormais avec un message clair |
 | Dialog permission qui crash quand un teammate demande un tool | Bug CLI anterieur a 2.1.114 | Mettre a jour vers CLI &gt;= 2.1.114 |
+| Reponses tronquees, raisonnement incoherent, qualite degradee entre 4 mars et 10 avril 2026 | Regression cumulee : effort `medium` par defaut, caching thinking history casse, system prompt limitant a 25 mots entre tool calls | Resolu en v2.1.101 (10 avril 2026). Mettre a jour `claude update` ; l'effort par defaut redevient `high` et le caching est repare |
 
 ### Context window full
 

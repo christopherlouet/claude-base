@@ -155,7 +155,7 @@ L'orchestrateur detecte automatiquement votre environnement :
 
 ## Sub-Agents actives automatiquement
 
-L'orchestrateur connait les 59 agents specialises et les active selon le contexte :
+L'orchestrateur connait les 63 agents specialises et les active selon le contexte :
 
 | Contexte detecte | Agent active | Modele |
 |------------------|--------------|--------|
@@ -184,7 +184,7 @@ Resultat renvoye a la conversation principale
 
 ## Skills declenches automatiquement
 
-Les 42 skills s'activent selon les mots-cles dans la conversation :
+Les 54 skills s'activent selon les mots-cles dans la conversation :
 
 | Mots-cles | Skill active | Action |
 |-----------|--------------|--------|

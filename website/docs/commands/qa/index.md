@@ -26,7 +26,7 @@ Ce domaine contient **16 commandes** pour qualite (review, securite, performance
 | [`/qa:qa-design`](/docs/commands/qa/qa-design) | Audit de design UI/UX et verification des bonnes pratiques web. |
 | [`/qa:qa-e2e`](/docs/commands/qa/qa-e2e) | Tests End-to-End avec Playwright ou Cypress. |
 | [`/qa:qa-kaizen`](/docs/commands/qa/qa-kaizen) | Amelioration continue du code et des processus avec la methodologie Kaizen. |
-| [`/qa:qa-loop`](/docs/commands/qa/qa-loop) | Boucle autonome audit → fix → test → re-audit avec criteres d'arret. |
+| [`/qa:qa-loop`](/docs/commands/qa/qa-loop) | Boucle autonome AUDIT (parallele) → VALIDATE → FIX → VERIFY → CHECK avec criteres d'arret. |
 | [`/qa:qa-mobile`](/docs/commands/qa/qa-mobile) | Audit de qualite specifique aux applications mobiles (Flutter, React Native). |
 | [`/qa:qa-neovim`](/docs/commands/qa/qa-neovim) | Audit qualite et performance d'une configuration Neovim. |
 | [`/qa:qa-perf`](/docs/commands/qa/qa-perf) | Analyse et optimisation des performances. |
@@ -83,7 +83,7 @@ Ce domaine contient **16 commandes** pour qualite (review, securite, performance
   />
   <CommandCard
     name="qa-loop"
-    description="Boucle autonome audit → fix → test → re-audit avec criteres d'arret."
+    description="Boucle autonome AUDIT (parallele) → VALIDATE → FIX → VERIFY → CHECK avec criteres d'arret."
     domain="qa"
     href="/docs/commands/qa/qa-loop"
   />

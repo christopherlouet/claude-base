@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 123 commands | 59 agents | 42 skills | 9 catégories                  ║
+║  Total: 131 commands | 63 agents | 54 skills | 9 catégories                  ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -517,4 +517,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Socle v1.19.0 - 123 commands - 59 agents - 42 skills - 24 rules*
+*Claude-Socle v1.30.0 - 131 commands - 63 agents - 54 skills - 30 rules*

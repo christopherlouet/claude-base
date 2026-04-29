@@ -53,9 +53,9 @@ claude
 Vous devriez voir au demarrage :
 ```
 === Claude Code Session ===
-Version socle: 1.29.0
-Commandes: 123
-Agents: 59
+Version socle: 1.30.0
+Commandes: 131
+Agents: 63
 ===========================
 ```
 
@@ -164,4 +164,4 @@ Pour les taches courantes, utilisez les workflows complets :
 
 - [Comprendre l'architecture](/docs/intro/architecture) - Difference entre Commands, Agents et Skills
 - [Voir les workflows](/docs/workflow) - Workflows detailles par type de tache
-- [Explorer les commandes](/docs/commands) - Catalogue complet des 123 commandes
+- [Explorer les commandes](/docs/commands) - Catalogue complet des 131 commandes

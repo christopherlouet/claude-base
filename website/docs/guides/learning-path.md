@@ -47,10 +47,10 @@ Claude Code seul est puissant, mais il necessite que vous sachiez exactement quo
 
 Concretement, claude-socle ajoute dans le dossier `.claude/` de votre projet :
 
-- **126 commandes** : des instructions pre-ecrites pour les taches courantes (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
-- **62 agents** : des sous-processus specialises qui s'activent automatiquement pour des taches d'analyse ou d'audit
-- **44 skills** : des comportements qui se declenchent automatiquement selon vos mots-cles
-- **24 rules** : des conventions de code appliquees automatiquement selon les fichiers que vous modifiez
+- **131 commandes** : des instructions pre-ecrites pour les taches courantes (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
+- **63 agents** : des sous-processus specialises qui s'activent automatiquement pour des taches d'analyse ou d'audit
+- **54 skills** : des comportements qui se declenchent automatiquement selon vos mots-cles
+- **30 rules** : des conventions de code appliquees automatiquement selon les fichiers que vous modifiez
 
 Sans claude-socle, vous devez tout specifier a chaque session. Avec claude-socle, les bonnes pratiques sont intergrees et activees automatiquement.
 
@@ -76,9 +76,9 @@ Au demarrage, vous devriez voir un message similaire a :
 
 ```
 === Claude Code Session ===
-Version socle: 1.28.0
-Commandes: 123
-Agents: 59
+Version socle: 1.30.0
+Commandes: 131
+Agents: 63
 ===========================
 ```
 
@@ -412,7 +412,7 @@ Vous pouvez aussi invoquer les agents via des commands :
 /work:work-explore  # Lance l'agent work-explore
 ```
 
-Les 62 agents sont regroupes dans les memes domaines que les commands. Les agents haiku (26) sont utilises pour les taches rapides et economiques (exploration, documentation, audits simples). Les agents sonnet (30) pour les analyses complexes (securite, performance, debug, architecture).
+Les 63 agents sont regroupes dans les memes domaines que les commands. Les agents haiku (22) sont utilises pour les taches rapides et economiques (exploration, documentation, audits simples). Les agents sonnet (35) pour les analyses complexes (securite, performance, debug, architecture).
 
 ---
 
@@ -477,7 +477,7 @@ Claude modifie src/api/auth.ts
   - Validation des entrees, protection XSS
 ```
 
-Les 24 rules du socle couvrent :
+Les 30 rules du socle couvrent :
 - Les langages : TypeScript, Python, Go, Java, C#, Ruby, PHP, Rust, Flutter/Dart
 - Les frameworks : React, Next.js
 - Les domaines transversaux : Testing, Security, API, Git, Workflow, Performance, Accessibility
@@ -498,7 +498,7 @@ Les 24 rules du socle couvrent :
 
 ### 2.6 Les 9 domaines : vue d'ensemble
 
-Claude-socle organise ses 126 commandes en 9 domaines. Chaque domaine couvre un aspect du developpement logiciel.
+Claude-socle organise ses 131 commandes en 9 domaines. Chaque domaine couvre un aspect du developpement logiciel.
 
 ```
 .claude/commands/
@@ -1543,8 +1543,8 @@ Le corps du fichier agent doit etre minimal (30-55 lignes) : il orchestre, le sk
 
 | Modele | Cas d'usage agent | Nombre dans le socle |
 |--------|-------------------|---------------------|
-| `haiku` | Exploration, documentation, generation standard, audits simples | 26 agents |
-| `sonnet` | Debug complexe, securite, architecture, integration | 30 agents |
+| `haiku` | Exploration, documentation, generation standard, audits simples | 22 agents |
+| `sonnet` | Debug complexe, securite, architecture, integration | 35 agents |
 | `opus` | Reserve aux taches critiques avec `/effort high` | Sur demande |
 
 Regle pratique : si l'agent lit sans modifier, utilisez `haiku`. S'il analyse pour proposer des corrections ou des decisions architecturales, utilisez `sonnet`.
@@ -1891,7 +1891,7 @@ Un agent doit avoir un corps minimal (30-55 lignes) et deleguer au skill. Un ski
 
 #### Le ratio et son importance
 
-Le socle contient actuellement : 126 commandes, 62 skills, 44 agents, 24 rules (chiffres indicatifs, verifier avec `docs/reference/`). Ce ratio reflecte une philosophie : les commandes sont le point d'entree principal, les agents sont specialises et contraints, les skills fournissent la substance.
+Le socle contient actuellement : 131 commandes, 54 skills, 63 agents, 30 rules (chiffres indicatifs, verifier avec `.claude/`). Ce ratio reflecte une philosophie : les commandes sont le point d'entree principal, les agents sont specialises et contraints, les skills fournissent la substance.
 
 #### CLAUDE.md et les @imports
 

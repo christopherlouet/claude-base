@@ -193,7 +193,7 @@ API_SECRET_KEY=votre_cle_secrete_32_caracteres
 
 Les fichiers dans `.claude/rules/` sont commites dans git et s'activent automatiquement selon les fichiers modifies. C'est le mecanisme le plus efficace pour partager des conventions de code sans les mettre dans CLAUDE.md.
 
-Le socle inclut 25 rules pre-configurees. Pour une equipe, les plus importantes a commiter sont :
+Le socle inclut 30 rules pre-configurees. Pour une equipe, les plus importantes a commiter sont :
 
 | Rule | Activation automatique | Utilite equipe |
 |------|----------------------|----------------|

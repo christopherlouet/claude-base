@@ -198,10 +198,15 @@ ${commands.map((cmd) => `  <CommandCard
  * Generate main commands index page
  */
 function generateMainIndex(commandsByDomain: Map<Domain, CommandInfo[]>): string {
+  const totalForDescription = Array.from(commandsByDomain.values()).reduce(
+    (sum, cmds) => sum + cmds.length,
+    0
+  );
+
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: 'Commands',
-    description: 'Catalogue des 123 commandes claude-socle',
+    description: `Catalogue des ${totalForDescription} commandes claude-socle`,
   });
 
   let totalCommands = 0;

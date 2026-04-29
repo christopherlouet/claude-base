@@ -14,7 +14,6 @@ Guide complet pour installer et configurer claude-socle dans votre projet.
 
 - **Claude Code** installe et configure
   ```bash
-  # Verifier l'installation
   claude --version
   ```
 
@@ -27,51 +26,148 @@ Guide complet pour installer et configurer claude-socle dans votre projet.
 
 - **Node.js 18+** pour les projets web
 - **npm** ou **yarn** pour la gestion des dependances
+- **Bats** et **ShellCheck** uniquement si vous comptez contribuer au socle
 
 ## Methodes d'installation
 
-### Methode 1 : Script automatique (recommande)
+Trois methodes sont disponibles selon votre cas d'usage. La premiere est recommandee.
+
+### Methode 1 : Script `new-project.sh` (recommande)
+
+Le socle expose un script unique qui copie la configuration `.claude/`, le `CLAUDE.md` et les fichiers necessaires dans votre projet existant ou dans un nouveau projet.
 
 ```bash
-# Dans le repertoire de votre projet
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh | bash
+# 1. Cloner le socle (une seule fois, n'importe ou)
+git clone https://github.com/christopherlouet/claude-socle.git ~/.claude-socle
+
+# 2. Installation simple (juste .claude/ + CLAUDE.md)
+~/.claude-socle/scripts/new-project.sh --simple /chemin/vers/votre-projet
+
+# 3. Ou installation complete (ajoute hooks, MCP, .github/, scripts CI)
+~/.claude-socle/scripts/new-project.sh --all /chemin/vers/votre-projet
 ```
 
-Le script effectue :
-1. Verification des prerequis
-2. Clone du repository
-3. Copie du dossier `.claude/`
-4. Configuration des permissions
-5. Verification de l'installation
-
-### Methode 2 : Clone direct
+Vous pouvez aussi lancer le script depuis votre projet :
 
 ```bash
-# Cloner dans un dossier temporaire
-git clone https://github.com/christopherlouet/claude-socle.git temp-socle
+cd /chemin/vers/votre-projet
+~/.claude-socle/scripts/new-project.sh --simple .
+```
 
-# Copier le dossier .claude
-cp -r temp-socle/.claude .
+#### Options utiles
 
-# Copier les fichiers de configuration
-cp temp-socle/CLAUDE.md .
-cp temp-socle/.mcp.json .
+| Flag | Effet |
+|------|-------|
+| `--simple` | Copie minimale : `.claude/` + `CLAUDE.md` + `.mcp.json` |
+| `--all` | Installation complete : ajoute hooks, GitHub Actions, scripts |
+| `-y` | Mode silencieux (CI/CD) |
+| `--dry-run` | Simulation sans modifications |
+| `--help` | Affiche l'aide complete |
+
+### Methode 2 : Copie manuelle
+
+Pour un controle fin de ce qui est copie :
+
+```bash
+# Cloner le socle dans un dossier temporaire
+git clone --depth 1 https://github.com/christopherlouet/claude-socle.git temp-socle
+
+# Copier le minimum vital
+cp -r temp-socle/.claude /chemin/vers/votre-projet/
+cp temp-socle/CLAUDE.md /chemin/vers/votre-projet/
+
+# Optionnel
+cp temp-socle/.mcp.json /chemin/vers/votre-projet/
+cp -r temp-socle/.github /chemin/vers/votre-projet/
 
 # Nettoyer
 rm -rf temp-socle
 ```
 
-### Methode 3 : Submodule Git
+### Methode 3 : Utiliser comme template
+
+Pour un nouveau projet, le socle peut servir directement de squelette :
 
 ```bash
-# Ajouter comme submodule
-git submodule add https://github.com/christopherlouet/claude-socle.git .claude-socle
+git clone https://github.com/christopherlouet/claude-socle.git mon-nouveau-projet
+cd mon-nouveau-projet
 
-# Creer un lien symbolique
-ln -s .claude-socle/.claude .claude
+# Reinitialiser l'historique git (optionnel)
+rm -rf .git && git init
+
+# Personnaliser CLAUDE.md selon votre stack
+# (templates disponibles dans templates/CLAUDE.*.md)
+cp templates/CLAUDE.react.md CLAUDE.md
 ```
 
-## Configuration
+## Verification
+
+Une fois installe, lancez Claude Code dans votre projet :
+
+```bash
+cd /chemin/vers/votre-projet
+claude
+```
+
+Vous devriez voir le message d'accueil du hook `SessionStart` :
+
+```
+=== Claude Code Session ===
+Version socle: 1.30.0
+Commandes: 131
+Agents: 63
+===========================
+```
+
+Si les chiffres different, votre socle est probablement installe mais sur une version differente — c'est normal si vous avez installe une version anterieure.
+
+### Test des commandes
+
+Dans Claude Code, testez :
+
+```
+/assistant
+```
+
+Vous devriez voir le guide d'orientation. Essayez ensuite un workflow simple :
+
+```
+/work:work-explore .
+```
+
+## Mise a jour
+
+### Cas standard : meme version majeure
+
+```bash
+# Mettre a jour le socle local
+cd ~/.claude-socle
+git pull origin main
+
+# Re-synchroniser les fichiers dans votre projet
+~/.claude-socle/scripts/update.sh /chemin/vers/votre-projet
+```
+
+Le script `update.sh` est idempotent : il met a jour les fichiers du socle (commands, agents, skills, rules, scripts/hooks) sans toucher a vos personnalisations (`CLAUDE.md`, `.claude/settings.local.json`).
+
+### Migration depuis une version pre-v1.30
+
+**Breaking change v1.30** : la documentation du socle (`reference/`, `guides/`) est desormais installee sous `.claude/docs/` au lieu de `docs/`. Cela evite les collisions avec le `docs/` de votre projet.
+
+```bash
+# Migration automatique (idempotent, backup inclus)
+~/.claude-socle/scripts/update.sh --upgrade-claude-md /chemin/vers/votre-projet
+```
+
+Le script :
+1. Cree un backup `CLAUDE.md.backup.AAAAMMJJ_HHMMSS`
+2. Deplace `docs/reference/` → `.claude/docs/reference/`
+3. Deplace `docs/guides/` → `.claude/docs/guides/` (preserve les fichiers personnalises)
+4. Reecrit les `@imports` dans `CLAUDE.md`
+
+Guide complet (cas particuliers, migration manuelle, rollback) : voir [`docs/MIGRATION-v1.30.md`](https://github.com/christopherlouet/claude-socle/blob/main/docs/MIGRATION-v1.30.md) dans le repo.
+
+## Personnalisation
 
 ### Fichier CLAUDE.md
 
@@ -93,114 +189,31 @@ Le fichier `CLAUDE.md` a la racine contient les instructions principales. Adapte
 - /work:work-flow-bugfix pour les bugs
 ```
 
+Des templates pre-remplis sont disponibles dans `templates/CLAUDE.*.md` du socle (React, Next.js, Vue, Node API, Python, Go, Rust, Java, Flutter, fullstack, neovim).
+
 ### Fichier .mcp.json
 
-Activez les serveurs MCP selon vos besoins :
+Activez les serveurs MCP selon vos besoins. **Par defaut, les MCP sont desactives** pour des raisons de securite.
 
 ```json
 {
   "mcpServers": {
     "filesystem": {
-      "enabled": true,
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-filesystem"]
-    },
-    "github": {
-      "enabled": true,
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-github"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
     }
   }
 }
 ```
-
-### Fichier .claude/settings.json
-
-Personnalisez les hooks et parametres :
-
-```json
-{
-  "permissions": {
-    "allow": ["Read", "Glob", "Grep", "Bash"],
-    "deny": []
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "command": "scripts/validate.sh protect-main"
-      }
-    ]
-  }
-}
-```
-
-## Verification
-
-### Test de base
-
-```bash
-# Lancer Claude Code
-claude
-
-# Verifier le message d'accueil
-# Vous devriez voir :
-# === Claude Code Session ===
-# Version socle: 1.2.0
-# Commandes: 100
-# ===========================
-```
-
-### Test des commandes
-
-```bash
-# Dans Claude Code, testez :
-/assistant
-
-# Vous devriez voir le guide complet des commandes
-```
-
-### Test d'un workflow
-
-```bash
-# Testez le workflow d'exploration
-/work:work-explore
-
-# Claude devrait analyser votre projet
-```
-
-## Mise a jour
-
-### Methode automatique
-
-```bash
-# Utiliser le script de mise a jour
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/update.sh | bash
-```
-
-### Methode manuelle
-
-```bash
-# Sauvegarder les modifications locales
-cp .claude/settings.json .claude/settings.json.bak
-
-# Mettre a jour
-cd .claude
-git pull origin main
-cd ..
-
-# Restaurer les modifications
-cp .claude/settings.json.bak .claude/settings.json
-```
-
-## Personnalisation
 
 ### Ajouter une commande personnalisee
 
 Creez un fichier dans `.claude/commands/` :
 
 ```markdown
-# .claude/commands/my-command.md
+---
+description: Ma commande
+---
 
 # Ma Commande Personnalisee
 
@@ -213,17 +226,13 @@ Description de ce que fait la commande.
 ## Processus
 1. Etape 1
 2. Etape 2
-
-## Output
-Format de sortie attendu.
 ```
 
-### Ajouter une regle personnalisee
+### Ajouter une regle contextuelle
 
 Creez un fichier dans `.claude/rules/` :
 
 ```markdown
-# .claude/rules/my-rules.md
 ---
 paths:
   - "**/my-folder/**"
@@ -237,38 +246,50 @@ paths:
 
 ## Troubleshooting
 
-### Les commandes ne fonctionnent pas
-
-1. Verifiez que le dossier `.claude/` existe
-2. Verifiez les permissions des fichiers
-3. Relancez Claude Code
-
 ### Le message d'accueil n'apparait pas
 
 Verifiez le hook `SessionStart` dans `.claude/settings.json` :
 
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "command": "scripts/validate.sh session-start"
-      }
-    ]
-  }
-}
+```bash
+grep -A 3 SessionStart .claude/settings.json
 ```
 
-### Erreurs de permission
+Si le hook est present mais ne s'execute pas, verifiez que les scripts du dossier `scripts/hooks/` sont presents et executables.
+
+### Les commandes slash ne sont pas reconnues
 
 ```bash
-# Rendre les scripts executables
-chmod +x .claude/scripts/*.sh
+# Verifier la presence du dossier
+ls .claude/commands/
+
+# Re-synchroniser depuis le socle
+~/.claude-socle/scripts/update.sh .
+```
+
+### Erreurs de permission sur les hooks
+
+```bash
+chmod +x .claude/scripts/*.sh scripts/hooks/*.sh
+```
+
+### Conflit avec une configuration existante
+
+```bash
+# Sauvegarder + reinstaller proprement
+./scripts/uninstall.sh --keep-claude-md .
+~/.claude-socle/scripts/new-project.sh --simple .
+```
+
+### Diagnostic complet
+
+```bash
+~/.claude-socle/scripts/doctor.sh /chemin/vers/votre-projet
+~/.claude-socle/scripts/diff.sh   /chemin/vers/votre-projet
 ```
 
 ## Prochaines etapes
 
 - [Quick Start](/docs/intro/quick-start) - Premier workflow en 5 minutes
-- [Architecture](/docs/intro/architecture) - Comprendre les composants
-- [Workflows](/docs/workflow) - Voir les workflows detailles
+- [Architecture](/docs/intro/architecture) - Comprendre Commands vs Agents vs Skills vs Rules
+- [Workflows](/docs/concepts/workflows) - Voir les workflows detailles
 - [Scripts utilitaires](/docs/reference/scripts) - Tous les scripts disponibles

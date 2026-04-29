@@ -793,10 +793,10 @@ Vous maitrisez maintenant Claude Code. Voici ce que claude-socle ajoute par-dess
 
 | Ce que le socle ajoute | Description |
 |------------------------|-------------|
-| 126 commandes (`/work:*`, `/dev:*`, `/qa:*`, `/ops:*`) | Workflows pre-ecrits pour les taches courantes |
-| 62 agents specialises | Sous-processus pour l'audit, la securite, les tests, etc. |
-| 44 skills | Comportements declenchables par mots-cles |
-| 25 rules | Conventions de code activees automatiquement selon les fichiers modifies |
+| 131 commandes (`/work:*`, `/dev:*`, `/qa:*`, `/ops:*`) | Workflows pre-ecrits pour les taches courantes |
+| 63 agents specialises | Sous-processus pour l'audit, la securite, les tests, etc. |
+| 54 skills | Comportements declenchables par mots-cles |
+| 30 rules | Conventions de code activees automatiquement selon les fichiers modifies |
 | Workflow structure | Explore → Specify → Plan → TDD → Audit → Commit |
 
 La difference concrète : au lieu de taper "run the tests, check coverage, fix issues, audit security, then commit", vous tapez `/work:work-flow-feature "ma feature"` et le socle orchestre tout.

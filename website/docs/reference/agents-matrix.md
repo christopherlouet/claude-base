@@ -1,16 +1,20 @@
 ---
 sidebar_position: 3
 title: Matrice des Agents
-description: Liste complete des 59 agents
+description: Repartition des 63 agents par modele
 ---
 
 # Matrice des Agents
 
-> **59 sub-agents** avec modele et outils
+> **63 sub-agents** avec modele et outils
+>
+> Pour la liste exhaustive et toujours a jour, voir le [Catalogue des agents](/docs/reference/agents-catalog) (auto-genere depuis `.claude/agents/`).
 
 ## Par modele
 
-### Haiku (26 agents - Rapide/Economique)
+Repartition actuelle : **22 Haiku** (rapide/economique), **35 Sonnet** (analyse), **6 sans modele explicite**.
+
+### Haiku (Rapide/Economique)
 
 | Agent | Description | Outils |
 |-------|-------------|--------|
@@ -41,7 +45,7 @@ description: Liste complete des 59 agents
 | `qa-tech-debt` | Dette technique | Read, Grep, Glob |
 | `work-explore` | Explorer un codebase | Read, Grep, Glob |
 
-### Sonnet (31 agents - Complexe/Analyse)
+### Sonnet (Complexe/Analyse)
 
 | Agent | Description | Outils |
 |-------|-------------|--------|
