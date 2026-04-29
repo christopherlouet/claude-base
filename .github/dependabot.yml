@@ -4,7 +4,7 @@
 version: 2
 
 updates:
-  # npm dependencies
+  # npm dependencies (root — package.json a la racine)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -13,8 +13,6 @@ updates:
       time: "09:00"
       timezone: "Europe/Paris"
     open-pull-requests-limit: 10
-    reviewers:
-      - "anthropics/claude-socle-maintainers"
     labels:
       - "dependencies"
       - "npm"
@@ -28,9 +26,43 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # Security updates are always created separately
     ignore:
       # Ignore major version updates for stability
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # npm dependencies (website Docusaurus)
+  - package-ecosystem: "npm"
+    directory: "/website"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "website"
+    commit-message:
+      prefix: "chore(website-deps)"
+    groups:
+      # Grouper les MAJ Docusaurus en une seule PR (sinon 20+ PRs separees)
+      docusaurus:
+        patterns:
+          - "@docusaurus/*"
+          - "docusaurus*"
+      # Grouper les autres minor/patch
+      minor-and-patch:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@docusaurus/*"
+          - "docusaurus*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
@@ -43,8 +75,6 @@ updates:
       time: "09:00"
       timezone: "Europe/Paris"
     open-pull-requests-limit: 5
-    reviewers:
-      - "anthropics/claude-socle-maintainers"
     labels:
       - "dependencies"
       - "github-actions"
@@ -69,18 +99,6 @@ updates:
       - "docker"
     commit-message:
       prefix: "chore(docker)"
-
-  # pip dependencies (for Python templates)
-  - package-ecosystem: "pip"
-    directory: "/templates"
-    schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "python"
-    commit-message:
-      prefix: "chore(deps-py)"
 
 # Registries configuration (if using private registries)
 # registries:

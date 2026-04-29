@@ -134,6 +134,35 @@ Security updates are released as:
 
 Subscribe to GitHub notifications to receive security alerts.
 
+## Known Dependency Notes
+
+### Docusaurus transitive vulnerabilities (`website/`)
+
+Dependabot may show alerts on transitive dependencies of Docusaurus 3.10
+(currently the latest stable) inside `website/package-lock.json`:
+
+- `uuid`, `dompurify`, `lodash`, `undici`, `picomatch`, `path-to-regexp`,
+  `follow-redirects`, `brace-expansion`, `serialize-javascript`, etc.
+
+**Risk assessment** :
+
+| Aspect | Status |
+|---|---|
+| Runtime exposure | None — used at build time to generate a static documentation site |
+| User input attack surface | None — the website serves pre-rendered static content |
+| Fix path | Upstream (Docusaurus): these alerts close automatically when Docusaurus
+              bumps its internal dependencies in 3.11+ |
+| Mitigation in this repo | Dependabot grouped updates for `@docusaurus/*`
+              (one PR instead of 20) — see `.github/dependabot.yml` |
+
+These alerts are common to **all Docusaurus 3.10 sites** (LangChain, NestJS,
+Tauri, Metabase, etc. exhibit the same alerts). They do not affect the
+runtime security of the socle itself (commands, agents, skills, rules, scripts).
+
+If a vulnerability with **runtime impact** on the socle is reported, it will
+be triaged according to the severity table above and not waved off as a
+Docusaurus transitive.
+
 ## Contact
 
 For security-related questions that are not vulnerabilities:
