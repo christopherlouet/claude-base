@@ -39,15 +39,14 @@ const LINK_MAP: Record<string, string> = {
   '../CUSTOMIZATION.md': '/docs/concepts/customization',
   'CHEATSHEET.md': '/docs/reference/cheatsheet',
   '../CHEATSHEET.md': '/docs/reference/cheatsheet',
-  // Guides cross-references
-  'WEB-GUIDE.md': '/docs/guides/web-guide',
-  'MOBILE-GUIDE.md': '/docs/guides/mobile-guide',
-  'API-GUIDE.md': '/docs/guides/api-guide',
-  'DATA-GUIDE.md': '/docs/guides/data-guide',
-  'BIZ-GUIDE.md': '/docs/guides/biz-guide',
-  'GROWTH-GUIDE.md': '/docs/guides/growth-guide',
-  'INFRA-GUIDE.md': '/docs/guides/infra-guide',
+  // Guides cross-references (4 guides remaining after stack guides consolidation)
+  'EXTENDING-GUIDE.md': '/docs/guides/extending-guide',
+  'TEAM-GUIDE.md': '/docs/guides/team-guide',
   'PROMPTING-GUIDE.md': '/docs/guides/prompting-guide',
+  'TROUBLESHOOTING-GUIDE.md': '/docs/guides/troubleshooting-guide',
+  // Stack recipes (replaces 13 stack-specific guides)
+  'STACK-RECIPES.md': '/docs/stack-recipes',
+  '../STACK-RECIPES.md': '/docs/stack-recipes',
   // Reference cross-references
   'best-practices.md': '/docs/reference/best-practices',
   'advanced-features.md': '/docs/reference/advanced-features',
@@ -65,11 +64,11 @@ const LINK_MAP: Record<string, string> = {
   '../reference/skills-catalog.md': '/docs/reference/skills-catalog',
   '../reference/project-structures.md': '/docs/reference/project-structures',
   // Relative paths from reference/
-  '../guides/WEB-GUIDE.md': '/docs/guides/web-guide',
-  '../guides/MOBILE-GUIDE.md': '/docs/guides/mobile-guide',
-  '../guides/API-GUIDE.md': '/docs/guides/api-guide',
-  '../guides/DATA-GUIDE.md': '/docs/guides/data-guide',
+  '../guides/EXTENDING-GUIDE.md': '/docs/guides/extending-guide',
+  '../guides/TEAM-GUIDE.md': '/docs/guides/team-guide',
   '../guides/PROMPTING-GUIDE.md': '/docs/guides/prompting-guide',
+  '../guides/TROUBLESHOOTING-GUIDE.md': '/docs/guides/troubleshooting-guide',
+  '../STACK-RECIPES.md': '/docs/stack-recipes',
 };
 
 /**
@@ -314,6 +313,7 @@ async function syncDocs(): Promise<void> {
     { source: 'ARCHITECTURE.md', dest: 'architecture.md', position: 20 },
     { source: 'WORKFLOWS.md', dest: 'workflows.md', position: 21 },
     { source: 'CUSTOMIZATION.md', dest: 'customization.md', position: 22 },
+    { source: 'STACK-RECIPES.md', dest: 'stack-recipes.md', position: 23 },
   ];
 
   for (const doc of rootDocs) {

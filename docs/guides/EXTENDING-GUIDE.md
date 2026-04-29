@@ -5,7 +5,7 @@
 > **Audience double** : ce guide couvre deux cas distincts.
 >
 > - **Vous etendez votre projet utilisateur** (ajouter des commands/rules/skills custom) : vos `@imports` dans `CLAUDE.md` doivent pointer vers `@.claude/docs/...` (puisque la doc du socle est installee sous `.claude/docs/` chez vous).
-> - **Vous contribuez au repo claude-socle** : les `@imports` du socle pointent vers `@docs/...` (le socle garde sa doc dans `docs/` directement). Voir aussi [CONTRIBUTING.md](../../CONTRIBUTING.md).
+> - **Vous contribuez au repo claude-socle** : les `@imports` du socle pointent vers `@docs/...` (le socle garde sa doc dans `docs/` directement). Voir aussi [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
 
 ## Vue d'ensemble
 

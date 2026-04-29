@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Contexte** | fork |
 | **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `auth`, `user peut edit si owner`, `email inconnu`, `password incorrect`, `email envoye`, `rolling your own` |
+| **Mots-cles** | `dev`, `auth`, `user peut edit si owner`, `email inconnu`, `password incorrect`, `email envoye` |
 
 ## Description detaillee
 
@@ -290,7 +290,7 @@ IMPORTANT: Ne jamais migrer sans backup DB prealable et plan de rollback.
 
 ## Complement avec le socle
 
-- Guide `docs/guides/AUTH-GUIDE.md` : vue d'ensemble
+- Section "Auth" dans `docs/STACK-RECIPES.md`
 - Rule `.claude/rules/security.md` : OWASP Top 10
 - Skill `qa-security` : audit securite complet
 - Skill `dev-supabase` : si stack Supabase

@@ -63,13 +63,9 @@ Vous tapez une commande
 | **Jamais utilise Claude Code** | [Formation Claude Code](/docs/guides/claude-code-training) (3h45, 9 modules) |
 | **Connait Claude Code, decouvre le socle** | [Parcours socle](/docs/guides/learning-path) (9h30, 5 niveaux) |
 | **Presse** (5 min) | [Quick Start](/docs/intro/quick-start) |
-| **Developpeur web** | [Guide Web](/docs/guides/web-guide) |
-| **Developpeur mobile** | [Guide Mobile](/docs/guides/mobile-guide) |
-| **Backend Node.js** | [Guide API](/docs/guides/api-guide) |
-| **Backend Python** | [Guide Python](/docs/guides/python-guide) |
-| **Backend Go** | [Guide Go](/docs/guides/go-guide) |
-| **DevOps/Infra** | [Guide Infra](/docs/guides/infra-guide) |
+| **Developpeur (web, mobile, API, backend, infra…)** | [Stack Recipes](/docs/concepts/stack-recipes) — commandes/agents/skills par stack |
 | **Tech lead / equipe** | [Guide Equipe](/docs/guides/team-guide) |
+| **Etendre le socle** | [Extending Guide](/docs/guides/extending-guide) |
 
 ## Prochaine etape
 

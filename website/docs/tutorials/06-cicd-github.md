@@ -449,7 +449,7 @@ flowchart TD
 ## Prochaines étapes
 
 - [Tutoriel 07 : Refactoring Legacy](/docs/tutorials/refactoring-legacy)
-- [Guide Web](/docs/guides/web-guide)
+- [Guide Web](/docs/concepts/stack-recipes)
 - [Commande /ops:ops-monitoring](/docs/commands/ops/ops-monitoring)
 
 ---

@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
 title: Guides
-description: Guides thematiques par type de projet et niveau
+description: Guides thematiques pour utiliser efficacement le socle
 ---
 
 # Guides
 
-> Du debutant a l'expert, par technologie ou par role
+> Du debutant a l'expert, par parcours d'apprentissage et par sujet specifique.
 
 ## Parcours d'apprentissage
 
@@ -16,42 +16,25 @@ description: Guides thematiques par type de projet et niveau
 | [Parcours complet](/docs/guides/learning-path) | Debutant a Expert | 9h30 (5 niveaux) |
 | [Guide Prompting](/docs/guides/prompting-guide) | Intermediaire a Avance | 1h |
 
-## Par technologie
+## Par stack
 
-| Guide | Pour qui | Commandes cles |
-|-------|----------|----------------|
-| [Developpement Web](/docs/guides/web-guide) | Developpeurs React/Next.js/Vue | `dev-component`, `dev-hook`, `dev-react-perf` |
-| [Developpement Mobile](/docs/guides/mobile-guide) | Developpeurs Flutter | `dev-flutter`, `dev-supabase`, `qa-mobile` |
-| [Developpement API](/docs/guides/api-guide) | Backend Node.js | `dev-api`, `dev-graphql`, `doc-api-spec` |
-| [Backend Python](/docs/guides/python-guide) | Backend Python | `dev-api`, `dev-tdd`, FastAPI/Django |
-| [Backend Go](/docs/guides/go-guide) | Backend Go | `dev-api`, `dev-tdd`, Chi/gRPC |
-| [Data Engineering](/docs/guides/data-guide) | Data engineers | `data-pipeline`, `data-modeling`, `data-analytics` |
-| [Infrastructure & Ops](/docs/guides/infra-guide) | DevOps / SRE | `ops-docker`, `ops-ci`, `ops-k8s`, `ops-monitoring` |
+Pour chaque stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, IA/LLM, Business, Growth) : commandes / agents / skills / rules du socle qui s'activent + liens externes pour les best practices.
 
-## Transversal (tous profils)
-
-| Guide | Description | Commandes cles |
-|-------|-------------|----------------|
-| [Authentification](/docs/guides/auth-guide) | JWT, OAuth2, RBAC, solutions managees | `qa-security`, `dev-api` |
-| [Strategie de tests](/docs/guides/testing-guide) | Pyramide des tests, patterns, CI | `dev-tdd`, `dev-test`, `qa-e2e`, `qa-coverage` |
-| [Base de donnees](/docs/guides/database-guide) | Schema design, migrations, optimisation | `ops-database`, `dev-prisma`, `data-modeling` |
-| [Observabilite](/docs/guides/observability-guide) | Logs, metriques, traces, alerting | `ops-monitoring`, `ops-observability-stack` |
+→ **[Stack Recipes](/docs/concepts/stack-recipes)**
 
 ## Par role
 
 | Guide | Pour qui | Commandes cles |
 |-------|----------|----------------|
 | [Startup](/docs/guides/startup) | Entrepreneurs | `biz-*`, `growth-*`, `legal-*` |
-| [Business & Strategie](/docs/guides/biz-guide) | Product managers | `biz-model`, `biz-mvp`, `biz-pricing` |
-| [Growth & Marketing](/docs/guides/growth-guide) | Growth hackers | `growth-seo`, `growth-cro`, `growth-analytics` |
 | [Setup Equipe](/docs/guides/team-guide) | Tech leads | CLAUDE.md partage, onboarding, conventions |
 
-## Guides avances
+## Guides specifiques
 
 | Guide | Description |
 |-------|-------------|
 | [Etendre le socle](/docs/guides/extending-guide) | Creer vos propres rules, skills, agents et hooks |
-| [Troubleshooting](/docs/guides/troubleshooting) | Diagnostic et resolution des problemes courants |
+| [Troubleshooting](/docs/guides/troubleshooting-guide) | Diagnostic et resolution des problemes courants |
 | [Migration](/docs/guides/migration) | Migrer un projet existant vers le socle |
 | [FAQ](/docs/guides/faq) | Questions frequentes |
 
@@ -67,8 +50,11 @@ Debutant total sur le socle ?
 Presse (5 min) ?
   → Quick Start (/docs/intro/quick-start)
 
-Vous savez ce que vous faites ?
-  → Choisir un guide par technologie ou par role ci-dessus
+Vous voulez voir comment le socle aide pour votre stack ?
+  → Stack Recipes (Web, Mobile, API, Database, etc.)
+
+Vous voulez l'etendre ou l'adopter en equipe ?
+  → Extending Guide ou Team Guide
 ```
 
 ---
@@ -76,5 +62,5 @@ Vous savez ce que vous faites ?
 ## Voir aussi
 
 - [Qu'est-ce que Claude Code ?](/docs/intro/what-is-claude-code)
-- [Workflows](/docs/workflow)
+- [Workflows](/docs/concepts/workflows)
 - [Reference](/docs/reference)

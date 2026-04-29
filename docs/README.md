@@ -15,14 +15,18 @@
 
 ## Par Domaine
 
-### Guides Specifiques
+### Stack Recipes
 
-| Guide | Stack | Description |
-|-------|-------|-------------|
-| [WEB-GUIDE.md](./guides/WEB-GUIDE.md) | React, Next.js, Vue | Applications web frontend |
-| [MOBILE-GUIDE.md](./guides/MOBILE-GUIDE.md) | Flutter, BLoC | Applications mobiles |
-| [API-GUIDE.md](./guides/API-GUIDE.md) | REST, GraphQL, tRPC | Developpement d'APIs |
-| [DATA-GUIDE.md](./guides/DATA-GUIDE.md) | Airflow, dbt, ETL | Data engineering |
+[STACK-RECIPES.md](./STACK-RECIPES.md) — pour chaque stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, IA/LLM, Business, etc.), liste les commandes / agents / skills / rules du socle qui s'activent + des liens externes pour les best practices.
+
+### Guides spécifiques (4)
+
+| Guide | Description |
+|-------|-------------|
+| [EXTENDING-GUIDE.md](./guides/EXTENDING-GUIDE.md) | Ajouter ses propres commands, skills, agents, rules au socle |
+| [TEAM-GUIDE.md](./guides/TEAM-GUIDE.md) | Adoption en équipe, conventions partagées |
+| [PROMPTING-GUIDE.md](./guides/PROMPTING-GUIDE.md) | Techniques de prompting Claude Code (Boris Cherny) |
+| [TROUBLESHOOTING-GUIDE.md](./guides/TROUBLESHOOTING-GUIDE.md) | Problèmes courants et solutions |
 
 ## Par Type de Tache
 
@@ -35,15 +39,12 @@
 ### Je veux personnaliser le socle
 
 1. [CUSTOMIZATION.md](./CUSTOMIZATION.md) - Options de personnalisation
-2. [ARCHITECTURE.md](./ARCHITECTURE.md) - Comprendre Commands vs Agents vs Skills
+2. [guides/EXTENDING-GUIDE.md](./guides/EXTENDING-GUIDE.md) - Ajouter commands/skills/rules custom
+3. [ARCHITECTURE.md](./ARCHITECTURE.md) - Comprendre Commands vs Agents vs Skills
 
 ### Je veux developper avec le socle
 
-1. Choisir le guide adapte :
-   - Web → [WEB-GUIDE.md](./guides/WEB-GUIDE.md)
-   - Mobile → [MOBILE-GUIDE.md](./guides/MOBILE-GUIDE.md)
-   - API → [API-GUIDE.md](./guides/API-GUIDE.md)
-   - Data → [DATA-GUIDE.md](./guides/DATA-GUIDE.md)
+1. [STACK-RECIPES.md](./STACK-RECIPES.md) - Voir ce que le socle apporte pour ma stack
 2. [WORKFLOWS.md](./WORKFLOWS.md) - Suivre les workflows recommandes
 
 ### Je cherche une commande specifique
@@ -58,16 +59,16 @@ docs/
 ├── README.md              # Cet index de navigation
 ├── QUICKSTART.md          # Demarrage rapide
 ├── CHEATSHEET.md          # Reference rapide
+├── STACK-RECIPES.md       # Recettes par stack (Web, Mobile, API, etc.)
 ├── ARCHITECTURE.md        # Architecture technique
 ├── CUSTOMIZATION.md       # Personnalisation
 ├── WORKFLOWS.md           # Diagrammes de workflows
-├── reference/             # Documentation de reference (best-practices, etc.)
-└── guides/
-    ├── WEB-GUIDE.md       # Developpement web
-    ├── MOBILE-GUIDE.md    # Developpement mobile
-    ├── API-GUIDE.md       # Developpement API
-    ├── DATA-GUIDE.md      # Data engineering
-    └── ...                # 13 autres guides specialises
+├── reference/             # Documentation de reference
+└── guides/                # 4 guides specifiques
+    ├── EXTENDING-GUIDE.md
+    ├── TEAM-GUIDE.md
+    ├── PROMPTING-GUIDE.md
+    └── TROUBLESHOOTING-GUIDE.md
 ```
 
 > Pour la documentation complete (commands, agents, skills, rules), voir le [site Docusaurus](https://christopherlouet.github.io/claude-socle/).

@@ -310,7 +310,7 @@ Utilisez cette checklist pour vos projets :
 ## Prochaines étapes
 
 - [Tutoriel 06 : Pipeline CI/CD](/docs/tutorials/cicd-github) - Automatiser les audits
-- [Guide API](/docs/guides/api-guide) - Sécurité des APIs
+- [Guide API](/docs/concepts/stack-recipes) - Sécurité des APIs
 - [Commande /qa:qa-audit](/docs/commands/qa/qa-audit) - Audit complet
 
 ---

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 12
 title: "Guide Equipe Claude Code"
 description: " Mettre en place Claude Code et le socle pour une equipe de developpement"
 tags:

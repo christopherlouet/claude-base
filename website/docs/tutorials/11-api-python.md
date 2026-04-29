@@ -641,10 +641,10 @@ api-todos/
 
 ## Pour aller plus loin
 
-- [Guide Python](/docs/guides/python-guide) - Conventions, async, packaging
-- [Guide API](/docs/guides/api-guide) - Bonnes pratiques REST, versioning, pagination
-- [Guide Auth](/docs/guides/auth-guide) - OAuth2, JWT, API keys avec FastAPI
-- [Guide Base de donnees](/docs/guides/database-guide) - SQLAlchemy, Alembic, migrations
+- [Guide Python](/docs/concepts/stack-recipes) - Conventions, async, packaging
+- [Guide API](/docs/concepts/stack-recipes) - Bonnes pratiques REST, versioning, pagination
+- [Guide Auth](/docs/concepts/stack-recipes) - OAuth2, JWT, API keys avec FastAPI
+- [Guide Base de donnees](/docs/concepts/stack-recipes) - SQLAlchemy, Alembic, migrations
 - [Tutoriel 10 : Projet complet](/docs/tutorials/projet-complet) - Capstone integrant tous les guides
 
 ---

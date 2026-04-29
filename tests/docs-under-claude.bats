@@ -37,9 +37,11 @@ teardown() {
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.claude/docs/guides" ]
 
+    # Apres consolidation des stack guides en STACK-RECIPES.md, il reste
+    # 4 guides specifiques (EXTENDING, TEAM, PROMPTING, TROUBLESHOOTING).
     local count
     count=$(find "$TEST_DIR/.claude/docs/guides" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    [ "$count" -ge 5 ]
+    [ "$count" -ge 4 ]
 }
 
 # -----------------------------------------------------------------------------

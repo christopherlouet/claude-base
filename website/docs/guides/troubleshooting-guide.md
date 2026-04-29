@@ -1,5 +1,5 @@
 ---
-sidebar_position: 25
+sidebar_position: 13
 title: "Guide de Depannage"
 description: " Resoudre les problemes courants avec Claude Code et le socle claude-socle"
 tags:

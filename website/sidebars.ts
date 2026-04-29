@@ -356,27 +356,10 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'Par technologie',
-          collapsed: true,
+          label: 'Par stack',
+          collapsed: false,
           items: [
-            'guides/web-guide',
-            'guides/mobile-guide',
-            'guides/api-guide',
-            'guides/python-guide',
-            'guides/go-guide',
-            'guides/data-guide',
-            'guides/infra-guide',
-          ],
-        },
-        {
-          type: 'category',
-          label: 'Transversal',
-          collapsed: true,
-          items: [
-            'guides/auth-guide',
-            'guides/testing-guide',
-            'guides/database-guide',
-            'guides/observability-guide',
+            'concepts/stack-recipes',
           ],
         },
         {
@@ -385,8 +368,6 @@ const sidebars: SidebarsConfig = {
           collapsed: true,
           items: [
             'guides/startup',
-            'guides/biz-guide',
-            'guides/growth-guide',
             'guides/team-guide',
           ],
         },

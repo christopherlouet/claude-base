@@ -552,9 +552,9 @@ todo-api/
 
 ## Pour aller plus loin
 
-- [Guide Go](/docs/guides/go-guide) - Patterns avances, gestion des erreurs, concurrence
-- [Guide Auth](/docs/guides/auth-guide) - Ajouter JWT a votre API Go
-- [Guide Database](/docs/guides/database-guide) - Remplacer le repository memoire par PostgreSQL avec pgx
+- [Guide Go](/docs/concepts/stack-recipes) - Patterns avances, gestion des erreurs, concurrence
+- [Guide Auth](/docs/concepts/stack-recipes) - Ajouter JWT a votre API Go
+- [Guide Database](/docs/concepts/stack-recipes) - Remplacer le repository memoire par PostgreSQL avec pgx
 - [Tutoriel 10 : Projet complet TaskFlow](/docs/tutorials/projet-complet) - Integrer ce backend dans un projet full-stack
 
 ---

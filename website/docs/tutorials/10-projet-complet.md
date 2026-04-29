@@ -1264,12 +1264,12 @@ TaskFlow v1.0.0 est en production. Voici les prochaines etapes possibles :
 
 ---
 
-- [Guide API](/docs/guides/api-guide) - Bonnes pratiques API REST
-- [Guide Web](/docs/guides/web-guide) - Architecture frontend avancee
-- [Guide Auth](/docs/guides/auth-guide) - OAuth2, RBAC, securite avancee
-- [Guide Testing](/docs/guides/testing-guide) - Strategie de tests au-dela du TDD
-- [Guide Database](/docs/guides/database-guide) - Indexation, migrations, optimisation
-- [Guide Observabilite](/docs/guides/observability-guide) - Logs, metriques, traces en production
+- [Guide API](/docs/concepts/stack-recipes) - Bonnes pratiques API REST
+- [Guide Web](/docs/concepts/stack-recipes) - Architecture frontend avancee
+- [Guide Auth](/docs/concepts/stack-recipes) - OAuth2, RBAC, securite avancee
+- [Guide Testing](/docs/concepts/stack-recipes) - Strategie de tests au-dela du TDD
+- [Guide Database](/docs/concepts/stack-recipes) - Indexation, migrations, optimisation
+- [Guide Observabilite](/docs/concepts/stack-recipes) - Logs, metriques, traces en production
 - [Etendre le socle](/docs/guides/extending-guide) - Creer vos propres rules, skills et agents
 - [Guide Equipe](/docs/guides/team-guide) - Configurer le socle pour une equipe
 
