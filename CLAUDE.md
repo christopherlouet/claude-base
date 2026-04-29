@@ -40,7 +40,7 @@
 | Features avancees | `docs/reference/advanced-features.md` |
 | Architecture | `docs/ARCHITECTURE.md` |
 | Workflows visuels | `docs/WORKFLOWS.md` |
-| Guide choix agents | `WHEN-TO-USE-WHICH-AGENT.md` |
+| Décision rapide par intention | `docs/CHEATSHEET.md` (section dédiée) |
 | Guide Web | `docs/guides/WEB-GUIDE.md` |
 | Guide Mobile | `docs/guides/MOBILE-GUIDE.md` |
 | Guide API | `docs/guides/API-GUIDE.md` |

@@ -82,5 +82,4 @@ docs/
 ## Voir Aussi
 
 - [../CLAUDE.md](../CLAUDE.md) - Instructions principales du projet
-- [../WHEN-TO-USE-WHICH-AGENT.md](../WHEN-TO-USE-WHICH-AGENT.md) - Guide de choix des agents
 - [../README.md](../README.md) - README principal du projet

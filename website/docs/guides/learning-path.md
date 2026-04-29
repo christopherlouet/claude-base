@@ -2134,8 +2134,8 @@ Le script `scripts/validate.sh` verifie l'integrite de la configuration. Il vali
 1. Creer `.claude/agents/mon-agent.md` avec frontmatter complet
 2. Garder le corps minimal (30-55 lignes), creer un skill si besoin
 3. Choisir `haiku` ou `sonnet` selon la complexite
-4. Mettre a jour `docs/reference/agents-catalog.md` et `WHEN-TO-USE-WHICH-AGENT.md`
-5. Mettre a jour le compte dans `docs/reference/agents-catalog.md`
+4. Mettre a jour `docs/reference/agents-catalog.md` (entree + compte)
+5. Verifier les compteurs synchronises via `./scripts/validate-counts.sh`
 
 #### Ajouter un skill
 

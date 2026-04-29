@@ -360,6 +360,37 @@
 
 ---
 
+## Décision rapide par intention
+
+> "Je veux faire X" → quelle commande utiliser ?
+
+| Intention | Commande |
+|-----------|----------|
+| Comprendre du code existant | `/work:work-explore` |
+| Brainstormer / explorer des idées | `/work:work-brainstorm` |
+| Créer une spécification (User Stories) | `/work:work-specify` |
+| Clarifier les ambiguïtés d'une spec | `/work:work-clarify` |
+| Planifier une feature (architecture, tasks) | `/work:work-plan` |
+| Implémenter en TDD | `/dev:dev-tdd` |
+| Déboguer un problème | `/dev:dev-debug` |
+| Refactorer du code | `/dev:dev-refactor` |
+| Faire une code review | `/qa:qa-review` |
+| Audit complet + fix en boucle | `/qa:qa-loop` |
+| Vérifier la sécurité (OWASP) | `/qa:qa-security` |
+| Auditer la performance | `/qa:qa-perf` |
+| Vérifier l'accessibilité (WCAG) | `/qa:wcag-audit` |
+| Audit complet (lecture seule) | `/qa:qa-audit` |
+| Créer un commit propre | `/work:work-commit` |
+| Créer une PR | `/work:work-pr` |
+| Briefing matinal / standup | `/ops:ops-standup` |
+| Réparer la CI cassée | `/ops:ops-ci-fix` |
+| Déployer en production | `/ops:ops-deploy` |
+| Health check rapide | `/ops:ops-health` |
+
+> Si vous hésitez : `/assistant` (mode guide) ou `/assistant-auto "votre demande"` (exécution directe).
+
+---
+
 ## Scénarios Courants
 
 ### Nouveau projet
