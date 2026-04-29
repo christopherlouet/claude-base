@@ -7,7 +7,7 @@
 | Niveau | Document | Description |
 |--------|----------|-------------|
 | Debutant | [QUICKSTART.md](./QUICKSTART.md) | Demarrage rapide en 5 minutes |
-| Debutant | [GUIDE-UTILISATEUR.md](./GUIDE-UTILISATEUR.md) | Guide utilisateur complet |
+| Debutant | [Documentation Docusaurus](https://christopherlouet.github.io/claude-socle/) | Guide utilisateur complet (site web) |
 | Intermediaire | [CHEATSHEET.md](./CHEATSHEET.md) | Reference rapide des commandes |
 | Intermediaire | [ALIASES.md](./ALIASES.md) | Alias et raccourcis |
 | Avance | [ARCHITECTURE.md](./ARCHITECTURE.md) | Architecture Commands/Agents/Skills |
@@ -24,12 +24,6 @@
 | [MOBILE-GUIDE.md](./guides/MOBILE-GUIDE.md) | Flutter, BLoC | Applications mobiles |
 | [API-GUIDE.md](./guides/API-GUIDE.md) | REST, GraphQL, tRPC | Developpement d'APIs |
 | [DATA-GUIDE.md](./guides/DATA-GUIDE.md) | Airflow, dbt, ETL | Data engineering |
-
-### Guides Generaux
-
-| Guide | Description |
-|-------|-------------|
-| [GUIDE.md](./GUIDE.md) | Guide complet du socle |
 
 ## Par Type de Tache
 
@@ -64,19 +58,21 @@
 docs/
 ├── README.md              # Cet index de navigation
 ├── QUICKSTART.md          # Demarrage rapide
-├── GUIDE.md               # Guide complet
-├── GUIDE-UTILISATEUR.md   # Guide utilisateur
 ├── CHEATSHEET.md          # Reference rapide
 ├── ALIASES.md             # Alias de commandes
 ├── ARCHITECTURE.md        # Architecture technique
 ├── CUSTOMIZATION.md       # Personnalisation
 ├── WORKFLOWS.md           # Diagrammes de workflows
+├── reference/             # Documentation de reference (best-practices, etc.)
 └── guides/
     ├── WEB-GUIDE.md       # Developpement web
     ├── MOBILE-GUIDE.md    # Developpement mobile
     ├── API-GUIDE.md       # Developpement API
-    └── DATA-GUIDE.md      # Data engineering
+    ├── DATA-GUIDE.md      # Data engineering
+    └── ...                # 13 autres guides specialises
 ```
+
+> Pour la documentation complete (commands, agents, skills, rules), voir le [site Docusaurus](https://christopherlouet.github.io/claude-socle/).
 
 ## Documentation Externe
 

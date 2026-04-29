@@ -2,6 +2,11 @@
 
 > Comment personnaliser et etendre le socle claude-socle pour vos propres projets.
 
+> **Audience double** : ce guide couvre deux cas distincts.
+>
+> - **Vous etendez votre projet utilisateur** (ajouter des commands/rules/skills custom) : vos `@imports` dans `CLAUDE.md` doivent pointer vers `@.claude/docs/...` (puisque la doc du socle est installee sous `.claude/docs/` chez vous).
+> - **Vous contribuez au repo claude-socle** : les `@imports` du socle pointent vers `@docs/...` (le socle garde sa doc dans `docs/` directement). Voir aussi [CONTRIBUTING.md](../../CONTRIBUTING.md).
+
 ## Vue d'ensemble
 
 Le socle est concu pour etre etendu. Quatre points d'extension principaux existent :

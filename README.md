@@ -140,7 +140,7 @@ claude-socle/
 └── docs/                        # Documentation
     ├── CHEATSHEET.md            # Référence rapide
     ├── CUSTOMIZATION.md         # Guide personnalisation
-    ├── GUIDE.md                 # Guide complet
+    ├── ARCHITECTURE.md          # Architecture Commands/Agents/Skills
     └── ALIASES.md               # Alias de commandes
 ```
 

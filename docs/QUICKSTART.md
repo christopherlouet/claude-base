@@ -84,4 +84,4 @@
 
 - [Cheatsheet](./CHEATSHEET.md) - Reference rapide
 - [Customization](./CUSTOMIZATION.md) - Personnalisation
-- [Guide complet](./GUIDE.md) - Documentation detaillee
+- [Documentation Docusaurus](https://christopherlouet.github.io/claude-socle/) - Documentation complete
