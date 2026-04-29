@@ -260,6 +260,25 @@ EOF
     [ "$count" -gt 0 ]
 }
 
+@test "new-project.sh copie scripts/hooks/ référencés par settings.json" {
+    # Régression: settings.json référence scripts/hooks/*.sh, ils doivent
+    # être copiés sinon les hooks SessionStart/PreToolUse échouent
+    # silencieusement (pendant du fix update.sh dans dcaa059).
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -d "$TEST_DIR/scripts/hooks" ]
+
+    # Au moins un .sh copié
+    local count
+    count=$(find "$TEST_DIR/scripts/hooks" -name "*.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
+    [ "$count" -gt 0 ]
+
+    # Tous les .sh sont exécutables
+    local non_exec
+    non_exec=$(find "$TEST_DIR/scripts/hooks" -name "*.sh" -type f ! -executable 2>/dev/null | wc -l | tr -d ' ')
+    [ "$non_exec" -eq 0 ]
+}
+
 # =============================================================================
 # Tests du nettoyage avant copie
 # =============================================================================

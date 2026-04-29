@@ -620,7 +620,22 @@ install_claude_files() {
         copy_file "$SOCLE_DIR/.mcp.env.example" "$target_dir/"
     fi
 
-    success "Commandes, skills, agents, rules, styles, templates et docs copiés"
+    # Copier scripts/hooks/ (referencees par settings.json)
+    # Sans ces scripts, les hooks SessionStart/PreToolUse/UserPromptSubmit
+    # echouent silencieusement. Pendant du fix update.sh (commit dcaa059).
+    if [[ -d "$SOCLE_DIR/scripts/hooks" ]]; then
+        debug "Copie de scripts/hooks/ (requis pour settings.json)..."
+        make_dir "$target_dir/scripts/hooks"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp $SOCLE_DIR/scripts/hooks/*.sh → $target_dir/scripts/hooks/"
+            echo -e "${DIM}[DRY-RUN]${NC} chmod +x $target_dir/scripts/hooks/*.sh"
+        else
+            cp "$SOCLE_DIR/scripts/hooks/"*.sh "$target_dir/scripts/hooks/" 2>/dev/null || true
+            find "$target_dir/scripts/hooks" -type f -name "*.sh" -exec chmod +x {} + 2>/dev/null || true
+        fi
+    fi
+
+    success "Commandes, skills, agents, rules, styles, templates, docs et hook scripts copiés"
 }
 
 # Installe GitHub Actions
@@ -757,6 +772,9 @@ print_simple_summary() {
     echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
     echo "  - .claude/docs/reference/ (fichiers @import CLAUDE.md)"
     echo "  - .claude/docs/guides/    (guides par domaine)"
+    local hook_scripts_count
+    hook_scripts_count=$(find "$target_dir/scripts/hooks" -name "*.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
+    echo "  - scripts/hooks/         ($hook_scripts_count scripts referencees par settings.json)"
     echo "  - CLAUDE.md"
     echo "  - CLAUDE.local.md.example"
     echo ""
