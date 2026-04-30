@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
-[![Tests](https://img.shields.io/badge/tests-302%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-317%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-socle?label=release&color=blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
@@ -462,7 +462,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (16 files, 302 tests)
+### Test layout (17 files, 317 tests)
 
 | File | Description |
 |------|-------------|
