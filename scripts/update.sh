@@ -809,7 +809,8 @@ migrate_legacy_docs() {
     fi
 
     if [[ -f "$claude_md" ]] && $has_legacy_imports; then
-        local backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
+        local backup_file
+        backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
         cp "$claude_md" "$backup_file"
         rewrite_claude_md_paths "$claude_md"
         success "Réécrit @docs/reference/ → @.claude/docs/reference/ dans CLAUDE.md"
