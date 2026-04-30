@@ -8,56 +8,56 @@ paths:
 
 # Java Rules
 
-## Conventions de code
+## Code conventions
 
-### Nommage
+### Naming
 
-| Element | Convention | Exemple |
+| Element | Convention | Example |
 |---------|------------|---------|
 | Classes | PascalCase | `UserService` |
-| Interfaces | PascalCase (pas de prefix I) | `UserRepository` |
-| Methodes | camelCase | `getUserById` |
+| Interfaces | PascalCase (no I prefix) | `UserRepository` |
+| Methods | camelCase | `getUserById` |
 | Variables | camelCase | `userName` |
-| Constantes | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
 | Packages | lowercase | `com.example.users` |
 
-### Structure de classe
+### Class structure
 
 ```java
 public class UserService {
-    // 1. Constantes
+    // 1. Constants
     private static final int MAX_RETRIES = 3;
 
-    // 2. Champs statiques
+    // 2. Static fields
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    // 3. Champs d'instance
+    // 3. Instance fields
     private final UserRepository userRepository;
     private final EmailService emailService;
 
-    // 4. Constructeurs
+    // 4. Constructors
     public UserService(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.emailService = emailService;
     }
 
-    // 5. Methodes publiques
+    // 5. Public methods
     public User findById(Long id) { ... }
 
-    // 6. Methodes privees
+    // 6. Private methods
     private void validateUser(User user) { ... }
 }
 ```
 
-## Bonnes pratiques
+## Best practices
 
-### Immutabilite
+### Immutability
 
 ```java
-// Preferer les classes immutables
+// Prefer immutable classes
 public record User(Long id, String name, String email) {}
 
-// Ou avec Lombok
+// Or with Lombok
 @Value
 public class User {
     Long id;
@@ -69,27 +69,27 @@ public class User {
 ### Optional
 
 ```java
-// Utiliser Optional pour les retours potentiellement null
+// Use Optional for potentially null return values
 public Optional<User> findById(Long id) {
     return Optional.ofNullable(userRepository.findById(id));
 }
 
-// Ne jamais passer Optional en parametre
-// Mauvais: void process(Optional<User> user)
-// Bon: void process(User user) avec @Nullable si necessaire
+// Never pass Optional as a parameter
+// Bad: void process(Optional<User> user)
+// Good: void process(User user) with @Nullable if necessary
 ```
 
 ### Streams
 
 ```java
-// Preferer les streams pour les collections
+// Prefer streams for collections
 List<String> names = users.stream()
     .filter(u -> u.isActive())
     .map(User::getName)
     .sorted()
     .collect(Collectors.toList());
 
-// Avec Java 16+
+// With Java 16+
 List<String> names = users.stream()
     .filter(User::isActive)
     .map(User::getName)
@@ -100,14 +100,14 @@ List<String> names = users.stream()
 ### Exceptions
 
 ```java
-// Exceptions specifiques au domaine
+// Domain-specific exceptions
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(Long id) {
         super("User not found: " + id);
     }
 }
 
-// Gestion avec try-with-resources
+// Handling with try-with-resources
 try (var connection = dataSource.getConnection()) {
     // ...
 } catch (SQLException e) {
@@ -117,10 +117,10 @@ try (var connection = dataSource.getConnection()) {
 
 ## Spring Boot
 
-### Injection de dependances
+### Dependency injection
 
 ```java
-// Preferer l'injection par constructeur
+// Prefer constructor injection
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -129,7 +129,7 @@ public class UserService {
 }
 ```
 
-### Controllers REST
+### REST Controllers
 
 ```java
 @RestController
@@ -198,10 +198,10 @@ class UserServiceTest {
 }
 ```
 
-## A eviter
+## To avoid
 
-- `null` sans justification (utiliser Optional)
-- Exceptions generiques (Exception, RuntimeException)
-- Champs mutables publics
+- `null` without justification (use Optional)
+- Generic exceptions (Exception, RuntimeException)
+- Public mutable fields
 - Static mutable state
 - Wildcard imports (`import java.util.*`)
