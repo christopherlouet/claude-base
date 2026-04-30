@@ -1,100 +1,100 @@
-# Projet claude-socle
+# claude-socle Project
 
-> Template de configuration Claude Code pour un workflow optimal : Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
+> Claude Code configuration template for an optimal workflow: Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
 
 @docs/reference/best-practices.md
 @docs/reference/project-structures.md
 
-## Workflow Obligatoire : Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
+## Mandatory Workflow: Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
 
-1. **EXPLORE** (`/work:work-explore`) - Lire et comprendre le code AVANT de modifier
-1b. **BRAINSTORM** (`/work:work-brainstorm`) - _(optionnel)_ Ideation structuree, explorer les alternatives avant de specifier
-2. **SPECIFY** (`/work:work-specify`) - User Stories prioritisees (P1=MVP), criteres d'acceptation (Given/When/Then)
-3. **PLAN** (`/work:work-plan`) - Architecture, fichiers, taches par User Story, risques
-4. **TDD** (`/dev:dev-tdd`) - Tests AVANT le code, cycle Red-Green-Refactor, couverture 80%+
-5. **AUDIT** (`/qa:qa-loop "score 90"`) - Audit adaptatif + correction en boucle jusqu'au score 90
-6. **COMMIT** (`/work:work-commit` ou `/work:work-pr`) - Conventional Commits, reference issues
+1. **EXPLORE** (`/work:work-explore`) - Read and understand the code BEFORE modifying
+1b. **BRAINSTORM** (`/work:work-brainstorm`) - _(optional)_ Structured ideation, explore alternatives before specifying
+2. **SPECIFY** (`/work:work-specify`) - Prioritized User Stories (P1=MVP), acceptance criteria (Given/When/Then)
+3. **PLAN** (`/work:work-plan`) - Architecture, files, tasks per User Story, risks
+4. **TDD** (`/dev:dev-tdd`) - Tests BEFORE code, Red-Green-Refactor cycle, 80%+ coverage
+5. **AUDIT** (`/qa:qa-loop "score 90"`) - Adaptive audit + fix loop until score 90
+6. **COMMIT** (`/work:work-commit` or `/work:work-pr`) - Conventional Commits, reference issues
 
-## Conventions de Code
+## Code Conventions
 
-- **TypeScript** : strict mode, pas de `any`, interfaces pour objets complexes. Details dans `.claude/rules/typescript.md`
-- **Nommage** : camelCase (vars/fonctions), PascalCase (classes/composants), SCREAMING_SNAKE (constantes), kebab-case (fichiers)
-- **Tests** : couverture 80%+, pas de mocks sauf deps externes, edge cases obligatoires. Details dans `.claude/rules/testing.md`
-- **Securite** : valider entrees, echapper outputs, requetes parametrees. Details dans `.claude/rules/security.md`
-- **Design** : direction artistique via `Style:` dans CLAUDE.md du projet (terminal, cockpit, vitality, editorial, glass, signal). Details dans `.claude/rules/design-style.md`
+- **TypeScript**: strict mode, no `any`, interfaces for complex objects. Details in `.claude/rules/typescript.md`
+- **Naming**: camelCase (vars/functions), PascalCase (classes/components), SCREAMING_SNAKE (constants), kebab-case (files)
+- **Tests**: 80%+ coverage, no mocks except external deps, edge cases mandatory. Details in `.claude/rules/testing.md`
+- **Security**: validate inputs, escape outputs, parameterized queries. Details in `.claude/rules/security.md`
+- **Design**: art direction via `Style:` in the project's CLAUDE.md (terminal, cockpit, vitality, editorial, glass, signal). Details in `.claude/rules/design-style.md`
 
-### Gestion des secrets
-- IMPORTANT: Ne jamais commiter de secrets (.env, credentials, API keys)
-- Utiliser des variables d'environnement, placeholders dans exemples
-- MCP servers desactives par defaut dans `.mcp.json`
-- Eviter `curl URL | sh`, preferer telecharger + verifier + executer
+### Secrets management
+- IMPORTANT: Never commit secrets (.env, credentials, API keys)
+- Use environment variables, placeholders in examples
+- MCP servers disabled by default in `.mcp.json`
+- Avoid `curl URL | sh`, prefer download + verify + execute
 
-## Documentation et References
+## Documentation and References
 
-| Reference | Chemin |
-|-----------|--------|
-| Commandes disponibles | `docs/reference/commands.md` |
-| Catalogue agents/commands | `docs/reference/agents-catalog.md` |
-| Hooks configures | `docs/reference/hooks-reference.md` |
-| Skills disponibles | `docs/reference/skills-catalog.md` |
-| Features avancees | `docs/reference/advanced-features.md` |
+| Reference | Path |
+|-----------|------|
+| Available commands | `docs/reference/commands.md` |
+| Agents/commands catalog | `docs/reference/agents-catalog.md` |
+| Configured hooks | `docs/reference/hooks-reference.md` |
+| Available skills | `docs/reference/skills-catalog.md` |
+| Advanced features | `docs/reference/advanced-features.md` |
 | Architecture | `docs/ARCHITECTURE.md` |
-| Workflows visuels | `docs/WORKFLOWS.md` |
-| Décision rapide par intention | `docs/CHEATSHEET.md` (section dédiée) |
-| Recettes par stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business) | `docs/STACK-RECIPES.md` |
-| Guide Equipe | `docs/guides/TEAM-GUIDE.md` |
-| Guide Prompting | `docs/guides/PROMPTING-GUIDE.md` |
-| Guide Troubleshooting | `docs/guides/TROUBLESHOOTING-GUIDE.md` |
-| Guide Extension du socle | `docs/guides/EXTENDING-GUIDE.md` |
-| Parcours Novice a Pro | `website/docs/guides/learning-path.md` |
+| Visual workflows | `docs/WORKFLOWS.md` |
+| Quick decision by intent | `docs/CHEATSHEET.md` (dedicated section) |
+| Recipes by stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business) | `docs/STACK-RECIPES.md` |
+| Team Guide | `docs/guides/TEAM-GUIDE.md` |
+| Prompting Guide | `docs/guides/PROMPTING-GUIDE.md` |
+| Troubleshooting Guide | `docs/guides/TROUBLESHOOTING-GUIDE.md` |
+| Foundation Extension Guide | `docs/guides/EXTENDING-GUIDE.md` |
+| Novice to Pro Path | `website/docs/guides/learning-path.md` |
 
 Setup: `./scripts/new-project.sh --simple .`
 
-## Happy Path par Defaut (Routing Semantique)
+## Default Happy Path (Semantic Routing)
 
-Toute demande **sans slash command explicite** beneficie automatiquement du contexte repo (branche, fichiers modifies, LOC diff, memoire perso) injecte par le hook `UserPromptSubmit` (`scripts/hooks/prompt-context.sh`). Ce contexte inclut un hint de routing vers `/assistant-auto` qui choisit semantiquement le bon workflow selon l'intention + la taille detectee.
+Any request **without an explicit slash command** automatically benefits from the repo context (branch, modified files, LOC diff, personal memory) injected by the `UserPromptSubmit` hook (`scripts/hooks/prompt-context.sh`). This context includes a routing hint to `/assistant-auto` which semantically picks the right workflow based on the detected intent + size.
 
-- Intention triviale + diff < 50 LOC + 1-3 fichiers -> `/work:work-quick`
-- Feature / bugfix standard -> `/work:work-flow-feature` ou `/work:work-flow-bugfix`
-- Audit avant prod -> `/qa:qa-loop "score 90"` ou `/qa:qa-security`
-- Backlog multi-stories -> `/work:work-batch`
+- Trivial intent + diff < 50 LOC + 1-3 files -> `/work:work-quick`
+- Standard feature / bugfix -> `/work:work-flow-feature` or `/work:work-flow-bugfix`
+- Pre-prod audit -> `/qa:qa-loop "score 90"` or `/qa:qa-security`
+- Multi-stories backlog -> `/work:work-batch`
 
-Desactiver : `SKIP_PROMPT_CONTEXT=1`. Une slash command explicite court-circuite toujours le routing.
+Disable: `SKIP_PROMPT_CONTEXT=1`. An explicit slash command always short-circuits routing.
 
-## Workflows Recommandes
+## Recommended Workflows
 
-| Situation | Commande |
-|-----------|----------|
-| Ideation / brainstorm | `/work:work-brainstorm "idee"` |
-| Nouvelle feature | `/work:work-flow-feature "description"` |
-| Correction de bug | `/work:work-flow-bugfix "description"` |
-| Nouvelle release | `/work:work-flow-release "v2.0.0"` |
-| Lancement produit | `/work:work-flow-launch "mon SaaS"` |
-| Audit complet | `/qa:qa-audit` |
-| Audit + fix en boucle | `/qa:qa-loop` (score 90 par defaut) |
-| Deploiement securise | `/ops:ops-deploy` |
-| Equipe d'agents | `/work:work-team "description"` |
-| Changement trivial | `/work:work-quick "description"` |
-| Batch de stories | `/work:work-batch "prd.json"` |
-| Suivi des couts | `/ops:ops-cost` |
-| Standup matinal | `/ops:ops-standup` |
-| CI cassee | `/ops:ops-ci-fix` |
-| Plan cloud (grosse feature) | `/ultraplan` |
-| Review cloud (grosse PR) | `/ultrareview` |
-| PR converger en autonomie (auto-fix CI + nits) | `/autofix-pr` |
-| Resume de session | `/recap` |
-| Reduire les prompts permission | `/less-permission-prompts` |
+| Situation | Command |
+|-----------|---------|
+| Ideation / brainstorm | `/work:work-brainstorm "idea"` |
+| New feature | `/work:work-flow-feature "description"` |
+| Bug fix | `/work:work-flow-bugfix "description"` |
+| New release | `/work:work-flow-release "v2.0.0"` |
+| Product launch | `/work:work-flow-launch "my SaaS"` |
+| Full audit | `/qa:qa-audit` |
+| Audit + fix loop | `/qa:qa-loop` (score 90 by default) |
+| Safe deployment | `/ops:ops-deploy` |
+| Agent team | `/work:work-team "description"` |
+| Trivial change | `/work:work-quick "description"` |
+| Batch of stories | `/work:work-batch "prd.json"` |
+| Cost tracking | `/ops:ops-cost` |
+| Morning standup | `/ops:ops-standup` |
+| Broken CI | `/ops:ops-ci-fix` |
+| Cloud plan (large feature) | `/ultraplan` |
+| Cloud review (large PR) | `/ultrareview` |
+| Autonomously converge a PR (auto-fix CI + nits) | `/autofix-pr` |
+| Session recap | `/recap` |
+| Reduce permission prompts | `/less-permission-prompts` |
 
-Workflow manuel : `/work:work-explore` → (`/work:work-brainstorm`) → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/qa:qa-loop "score 90"` → `/work:work-pr`
+Manual workflow: `/work:work-explore` → (`/work:work-brainstorm`) → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/qa:qa-loop "score 90"` → `/work:work-pr`
 
-## Anti-patterns a Eviter
+## Anti-patterns to Avoid
 
-- Coder sans comprendre l'existant
-- Implementer sans plan valide
-- Coder AVANT d'ecrire les tests (violer TDD)
-- Commiter sans audit (sauter la phase Audit)
-- Commits geants multi-fonctionnalites
-- Tests avec trop de mocks
-- any partout en TypeScript
-- **Ne pas donner de moyen de verification a Claude**
-- **Prompts vagues sans contexte ni exemples**
+- Coding without understanding the existing code
+- Implementing without a validated plan
+- Coding BEFORE writing the tests (violating TDD)
+- Committing without an audit (skipping the Audit phase)
+- Giant multi-feature commits
+- Tests with too many mocks
+- any everywhere in TypeScript
+- **Not giving Claude a way to verify**
+- **Vague prompts without context or examples**
