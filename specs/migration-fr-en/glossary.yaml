@@ -26,8 +26,8 @@ terms:
   # ---------------------------------------------------------------------------
   - fr: socle
     en: foundation
-    forbidden: [scaffold, base, framework, kit]
-    context: "claude-socle is 'the foundation' — central concept of the project"
+    forbidden: [scaffold]
+    context: "claude-socle is 'the foundation' — central concept. 'framework', 'kit', 'base' are legitimate EN words elsewhere; we only enforce 'foundation' via the prompt, not by blacklisting"
 
   - fr: agent
     en: agent
@@ -35,11 +35,12 @@ terms:
 
   - fr: regle
     en: rule
-    forbidden: [policy, guideline]
+    forbidden: [guideline]
+    context: "'policy' dropped — 'Language Policy' is a legitimate phrase in CONTRIBUTING"
 
   - fr: regles
     en: rules
-    forbidden: [policies, guidelines]
+    forbidden: [guidelines]
 
   - fr: etape
     en: step
@@ -52,17 +53,17 @@ terms:
 
   - fr: boucle
     en: loop
-    forbidden: [cycle, iteration]
-    context: "cycle is reserved for Red-Green-Refactor; iteration for sprint"
+    forbidden: [iteration]
+    context: "'cycle' dropped from forbidden — it is canonical for FR 'cycle' (Red-Green-Refactor cycle), cross-conflict"
 
   - fr: cycle
     en: cycle
-    context: "canonical for FR 'cycle' (e.g., Red-Green-Refactor cycle) — but flagged as forbidden translation of 'boucle' so check-glossary will warn if it appears unexpectedly. Manual review needed when both terms are present in the same project."
+    context: "canonical for FR 'cycle' (e.g., Red-Green-Refactor cycle)"
 
   - fr: audit
     en: audit
-    forbidden: [inspection, check]
-    context: "review is fine when translating 'revue' but not 'audit'; the validator cannot disambiguate so we don't blacklist it"
+    forbidden: [inspection]
+    context: "'check' dropped — too common as generic verb in EN ('checks', 'sanity check'). 'review' kept off forbidden because it's canonical for FR 'revue'"
 
   - fr: revue
     en: review
@@ -71,8 +72,8 @@ terms:
 
   - fr: chantier
     en: project
-    forbidden: [worksite, jobsite, work]
-    context: "as in 'big project / migration'"
+    forbidden: [worksite, jobsite]
+    context: "as in 'big project / migration'. 'work' dropped from forbidden — far too common in EN"
 
   # ---------------------------------------------------------------------------
   # Workflow vocabulary
@@ -116,8 +117,8 @@ terms:
 
   - fr: lancement
     en: launch
-    forbidden: [release, kickoff]
-    context: "release is for shipping a version; launch is for product/project start"
+    forbidden: [kickoff]
+    context: "'release' dropped — canonical for FR 'release' (cross-conflict). Prompt enforces launch vs release distinction, validator cannot disambiguate"
 
   - fr: release
     en: release
@@ -156,12 +157,12 @@ terms:
   # ---------------------------------------------------------------------------
   - fr: etat
     en: state
-    forbidden: [status, condition]
+    forbidden: [condition]
+    context: "'status' dropped — canonical for FR 'statut' (cross-conflict). 'state' vs 'status' distinction enforced via prompt only"
 
   - fr: statut
     en: status
-    forbidden: [state]
-    context: "state = persistent data; status = momentary indicator (todo/done)"
+    context: "state = persistent data; status = momentary indicator (todo/done). Cross-conflict prevented us from blacklisting 'state'"
 
   - fr: vitrine
     en: showcase
@@ -228,7 +229,7 @@ terms:
   # ---------------------------------------------------------------------------
   - fr: mainteneur
     en: maintainer
-    forbidden: [maintainer, owner, admin]
+    forbidden: [owner, admin]
 
   - fr: contributeur
     en: contributor

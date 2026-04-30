@@ -214,15 +214,14 @@ teardown() {
 }
 EOF
     # Replace a.md with content that uses a FORBIDDEN translation per the
-    # real glossary: "boucle" -> "loop" canonical, "cycle" forbidden in
-    # this context.
+    # real glossary: "audit" -> "audit" canonical, "inspection" forbidden.
     cat > "$TEST_DIR/a.md" <<'EOF'
 # Title
 
-The audit cycle ensures quality.
+The quality inspection ensures correctness.
 EOF
     run "$BATCH_REAL" --tier 1 --state "$STATE_FILE" --root "$TEST_DIR" --verify
-    # The forbidden term "cycle" (forbidden alternative for "boucle"->"loop")
+    # The forbidden term "inspection" (forbidden alternative for "audit"->"audit")
     # should be flagged by check-glossary, causing --verify to exit non-zero.
     [ "$status" -ne 0 ]
 }
