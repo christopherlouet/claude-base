@@ -29,10 +29,13 @@ jobs:
         uses: bats-core/bats-action@4.0.0
 
       - name: Run Bats tests
-        run: bats tests/*.bats
+        run: bats tests/*.bats tests/migration/*.bats
 
       - name: Validate documentation counts
-        run: bash scripts/validate-counts.sh
+        # NOTE: --mixed during the FR->EN migration window (2026-04-30 to ~2026-05-04).
+        # After all 4 tier PRs merge, revert to plain `bash scripts/validate-counts.sh`
+        # (see T047 in specs/migration-fr-en/tasks.md).
+        run: bash scripts/validate-counts.sh --mixed
 
       - name: Generate summary
         if: always()

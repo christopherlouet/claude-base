@@ -2,7 +2,13 @@
 
 Thanks for considering a contribution. This guide explains how to participate effectively.
 
-> **Note**: most of the in-repo documentation under `docs/` is currently in French. Pull requests, issues, and commit messages are welcome in **English or French**. Translation contributions for the docs are very appreciated.
+## Language Policy
+
+**All contributions must be in English** — pull requests, issues, commit messages, code comments, and documentation.
+
+> **Migration notice (active 2026-04-30 → ~2026-05-04)**: the repository is currently transitioning from French to English. During this window, you may temporarily see a mix of FR and EN content. This is being addressed in a planned 4-tier migration (see `specs/migration-fr-en/`). New contributions must be in English from day one — please do not add new French content.
+
+If you've started drafting a PR or issue in French, we'll politely ask you to re-submit in English. We know this adds friction; the goal is a coherent, internationally accessible repository. If translation is a barrier, use a translator and we'll polish on review.
 
 ## Prerequisites
 

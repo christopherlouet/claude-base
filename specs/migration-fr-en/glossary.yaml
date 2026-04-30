@@ -1,0 +1,322 @@
+# =============================================================================
+# Glossary FR -> EN — claude-socle migration
+# =============================================================================
+# Structure:
+#   terms:
+#     - fr: <french term>      # source term (lowercase, canonical form)
+#       en: <english term>     # canonical translation
+#       forbidden: [...]       # alternative translations explicitly rejected
+#       context: <note>        # optional clarification
+#       locked: false          # set to true after T025 (Friday morning checkpoint)
+#
+# Locking:
+#   - Set globally: locked_at: "YYYY-MM-DD"
+#   - Per-term: locked: true
+#   - Once locked, only --force to lock-glossary.sh allows modification.
+#
+# Validator:
+#   scripts/migration/check-glossary.sh enforces these on EN files.
+# =============================================================================
+
+locked_at: null  # set by lock-glossary.sh on Friday morning
+
+terms:
+  # ---------------------------------------------------------------------------
+  # Core domain (most frequent)
+  # ---------------------------------------------------------------------------
+  - fr: socle
+    en: foundation
+    forbidden: [scaffold, base, framework, kit]
+    context: "claude-socle is 'the foundation' — central concept of the project"
+
+  - fr: agent
+    en: agent
+    context: "verbatim — same word in EN"
+
+  - fr: regle
+    en: rule
+    forbidden: [policy, guideline]
+
+  - fr: regles
+    en: rules
+    forbidden: [policies, guidelines]
+
+  - fr: etape
+    en: step
+    forbidden: [stage, phase]
+    context: "phase = bigger grouping in plans"
+
+  - fr: phase
+    en: phase
+    forbidden: [stage]
+
+  - fr: boucle
+    en: loop
+    forbidden: [cycle, iteration]
+    context: "cycle is reserved for Red-Green-Refactor; iteration for sprint"
+
+  - fr: cycle
+    en: cycle
+    context: "canonical for FR 'cycle' (e.g., Red-Green-Refactor cycle) — but flagged as forbidden translation of 'boucle' so check-glossary will warn if it appears unexpectedly. Manual review needed when both terms are present in the same project."
+
+  - fr: audit
+    en: audit
+    forbidden: [inspection, check]
+    context: "review is fine when translating 'revue' but not 'audit'; the validator cannot disambiguate so we don't blacklist it"
+
+  - fr: revue
+    en: review
+    forbidden: [inspection]
+    context: "audit dropped from forbidden — it's a valid translation of FR 'audit'"
+
+  - fr: chantier
+    en: project
+    forbidden: [worksite, jobsite, work]
+    context: "as in 'big project / migration'"
+
+  # ---------------------------------------------------------------------------
+  # Workflow vocabulary
+  # ---------------------------------------------------------------------------
+  - fr: workflow
+    en: workflow
+    context: "verbatim"
+
+  - fr: tache
+    en: task
+    forbidden: [job, work-item]
+
+  - fr: taches
+    en: tasks
+
+  - fr: feature
+    en: feature
+    context: "verbatim"
+
+  - fr: bugfix
+    en: bugfix
+    context: "verbatim"
+
+  - fr: dette
+    en: debt
+    forbidden: [liability, debit]
+
+  - fr: dette technique
+    en: technical debt
+
+  - fr: hook
+    en: hook
+    context: "verbatim — software lifecycle hook"
+
+  - fr: hooks
+    en: hooks
+
+  - fr: equipe
+    en: team
+    forbidden: [crew, squad]
+
+  - fr: lancement
+    en: launch
+    forbidden: [release, kickoff]
+    context: "release is for shipping a version; launch is for product/project start"
+
+  - fr: release
+    en: release
+    context: "verbatim — shipping a new version"
+
+  - fr: deploiement
+    en: deployment
+    forbidden: [deploy]
+
+  - fr: rollback
+    en: rollback
+    context: "verbatim"
+
+  - fr: revert
+    en: revert
+    context: "verbatim — git revert"
+
+  - fr: branche
+    en: branch
+    forbidden: [fork, ramification]
+
+  - fr: commit
+    en: commit
+    context: "verbatim"
+
+  - fr: merger
+    en: merge
+    forbidden: [combine, fuse]
+
+  - fr: tag
+    en: tag
+    context: "verbatim — git tag"
+
+  # ---------------------------------------------------------------------------
+  # State and quality
+  # ---------------------------------------------------------------------------
+  - fr: etat
+    en: state
+    forbidden: [status, condition]
+
+  - fr: statut
+    en: status
+    forbidden: [state]
+    context: "state = persistent data; status = momentary indicator (todo/done)"
+
+  - fr: vitrine
+    en: showcase
+    forbidden: [storefront, window, display]
+    context: "as in 'project showcase' — README and main docs"
+
+  - fr: qualite
+    en: quality
+
+  - fr: couverture
+    en: coverage
+    context: "test coverage"
+
+  - fr: drift
+    en: drift
+    context: "verbatim — terminology drift"
+
+  - fr: derive
+    en: drift
+
+  # ---------------------------------------------------------------------------
+  # Specification vocabulary
+  # ---------------------------------------------------------------------------
+  - fr: exigence
+    en: requirement
+
+  - fr: exigences
+    en: requirements
+
+  - fr: critere
+    en: criterion
+
+  - fr: criteres
+    en: criteria
+
+  - fr: cas limite
+    en: edge case
+
+  - fr: cas limites
+    en: edge cases
+
+  - fr: hors scope
+    en: out of scope
+    forbidden: [non-scope, off-scope]
+
+  - fr: scope
+    en: scope
+
+  - fr: definition de fait
+    en: definition of done
+
+  - fr: point de clarification
+    en: clarification point
+
+  - fr: points de clarification
+    en: clarification points
+
+  - fr: fenetre cible
+    en: target window
+    forbidden: [target time]
+
+  # ---------------------------------------------------------------------------
+  # Roles and people
+  # ---------------------------------------------------------------------------
+  - fr: mainteneur
+    en: maintainer
+    forbidden: [maintainer, owner, admin]
+
+  - fr: contributeur
+    en: contributor
+    forbidden: [collaborator]
+
+  - fr: utilisateur
+    en: user
+
+  - fr: developpeur
+    en: developer
+
+  # ---------------------------------------------------------------------------
+  # Technical infra
+  # ---------------------------------------------------------------------------
+  - fr: cap
+    en: cap
+    context: "rate-limit cap, in 'Claude Max cap'"
+
+  - fr: quota
+    en: quota
+    forbidden: [limit, allocation]
+
+  - fr: ancre
+    en: anchor
+    context: "markdown anchor"
+
+  - fr: reference
+    en: reference
+
+  - fr: references
+    en: references
+
+  - fr: frontmatter
+    en: frontmatter
+    context: "verbatim — YAML frontmatter"
+
+  - fr: glossaire
+    en: glossary
+
+  - fr: tier
+    en: tier
+    context: "verbatim — migration tier"
+
+  - fr: tiers
+    en: tiers
+
+  # ---------------------------------------------------------------------------
+  # Migration-specific vocabulary
+  # ---------------------------------------------------------------------------
+  - fr: nuit
+    en: night
+    context: "as in 'overnight headless run'"
+
+  - fr: traduction
+    en: translation
+
+  - fr: traduit
+    en: translated
+
+  - fr: traduire
+    en: translate
+
+  - fr: validateur
+    en: validator
+    forbidden: [checker, linter]
+
+  - fr: validateurs
+    en: validators
+
+  - fr: recovery
+    en: recovery
+    context: "verbatim — fault recovery"
+
+  - fr: checkpoint
+    en: checkpoint
+    context: "verbatim"
+
+  # ---------------------------------------------------------------------------
+  # Headless / runtime
+  # ---------------------------------------------------------------------------
+  - fr: headless
+    en: headless
+    context: "verbatim"
+
+  - fr: pair-programming
+    en: pair-programming
+    context: "verbatim"
+
+  - fr: harness
+    en: harness
+    context: "verbatim — test/translation harness"

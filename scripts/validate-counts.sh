@@ -36,11 +36,15 @@ ${BOLD}OPTIONS${NC}
     -h, --help     Afficher cette aide
     -v, --verbose  Mode verbeux
     --fix          Afficher les commandes de correction
+    --mixed        Mode bilingue temporaire (FR/EN coexistent pendant la
+                   migration FR->EN). Layer 2 (scan_drift global) reste
+                   strict, Layer 1 patterns FR-specifiques tolerent un miss.
 
 ${BOLD}EXEMPLES${NC}
     $(basename "$0")
     $(basename "$0") --verbose
     $(basename "$0") --fix
+    $(basename "$0") --mixed   # pendant la migration FR->EN
 EOF
 }
 
@@ -50,6 +54,7 @@ EOF
 
 ERRORS=0
 SHOW_FIX=false
+MIXED=false
 
 # =============================================================================
 # Parsing arguments
@@ -69,6 +74,10 @@ while [[ $# -gt 0 ]]; do
             SHOW_FIX=true
             shift
             ;;
+        --mixed)
+            MIXED=true
+            shift
+            ;;
         *)
             error "Option inconnue: $1"
             ;;
@@ -78,6 +87,11 @@ done
 # =============================================================================
 # Count actual files
 # =============================================================================
+
+if $MIXED; then
+    info "Mode --mixed actif (migration FR->EN en cours)"
+    echo ""
+fi
 
 info "Comptage des fichiers reels..."
 echo ""

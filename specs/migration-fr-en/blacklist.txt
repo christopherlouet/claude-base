@@ -1,0 +1,268 @@
+# Blacklist — items that MUST stay character-for-character identical
+# Loaded by translate-prompt.md and check-refs.sh
+# One pattern per line. Lines starting with # are comments.
+# Patterns are literal substrings (no regex).
+
+# =============================================================================
+# Slash commands (never translate)
+# =============================================================================
+
+# work domain
+/work:work-explore
+/work:work-brainstorm
+/work:work-specify
+/work:work-clarify
+/work:work-plan
+/work:work-quick
+/work:work-batch
+/work:work-team
+/work:work-commit
+/work:work-pr
+/work:work-commit-push-pr
+/work:work-flow-feature
+/work:work-flow-bugfix
+/work:work-flow-release
+/work:work-flow-launch
+
+# dev domain
+/dev:dev-tdd
+/dev:dev-component
+/dev:dev-api
+/dev:dev-graphql
+/dev:dev-trpc
+/dev:dev-prisma
+/dev:dev-supabase
+/dev:dev-flutter
+/dev:dev-debug
+/dev:dev-refactor
+/dev:dev-test
+/dev:dev-rag
+/dev:dev-ai-integration
+/dev:dev-mcp
+/dev:dev-hook
+/dev:dev-prompt-engineering
+/dev:dev-react-perf
+/dev:dev-design-system
+/dev:dev-document
+/dev:dev-error-handling
+/dev:dev-api-versioning
+/dev:dev-testing-setup
+/dev:dev-neovim
+
+# qa domain
+/qa:qa-loop
+/qa:qa-audit
+/qa:qa-review
+/qa:qa-security
+/qa:qa-perf
+/qa:qa-coverage
+/qa:qa-design
+/qa:qa-responsive
+/qa:qa-e2e
+/qa:qa-mobile
+/qa:qa-chrome
+/qa:qa-automation
+/qa:qa-tech-debt
+/qa:qa-kaizen
+/qa:qa-claudemd
+/qa:wcag-audit
+/qa:qa-neovim
+
+# ops domain
+/ops:ops-ci
+/ops:ops-ci-fix
+/ops:ops-deploy
+/ops:ops-rollback
+/ops:ops-hotfix
+/ops:ops-release
+/ops:ops-docker
+/ops:ops-k8s
+/ops:ops-vps
+/ops:ops-vercel
+/ops:ops-serverless
+/ops:ops-database
+/ops:ops-deps
+/ops:ops-env
+/ops:ops-secrets-management
+/ops:ops-infra-code
+/ops:ops-monitoring
+/ops:ops-observability-stack
+/ops:ops-grafana-dashboard
+/ops:ops-load-testing
+/ops:ops-disaster-recovery
+/ops:ops-backup
+/ops:ops-cost
+/ops:ops-cost-optimization
+/ops:ops-standup
+/ops:ops-health
+/ops:ops-migrate
+/ops:ops-mobile-release
+/ops:ops-proxmox
+/ops:ops-opnsense
+/ops:ops-gitflow-init
+/ops:ops-gitflow-feature
+/ops:ops-gitflow-release
+/ops:ops-gitflow-hotfix
+
+# doc domain
+/doc:doc-readme
+/doc:doc-i18n
+/doc:doc-onboard
+/doc:doc-explain
+/doc:doc-architecture
+/doc:doc-changelog
+/doc:doc-generate
+/doc:doc-fix-issue
+/doc:doc-api-spec
+
+# legal domain
+/legal:legal-payment
+/legal:legal-rgpd
+/legal:legal-privacy-policy
+/legal:legal-terms-of-service
+/legal:legal-docs
+
+# growth domain
+/growth:growth-seo
+/growth:growth-cro
+/growth:growth-funnel
+/growth:growth-landing
+/growth:growth-analytics
+/growth:growth-onboarding
+/growth:growth-retention
+/growth:growth-email
+/growth:growth-localization
+/growth:growth-ab-test
+/growth:growth-app-store-analytics
+
+# biz domain
+/biz:biz-research
+/biz:biz-market
+/biz:biz-roadmap
+/biz:biz-launch
+/biz:biz-pricing
+/biz:biz-personas
+/biz:biz-okr
+/biz:biz-model
+/biz:biz-competitor
+/biz:biz-pitch
+/biz:biz-mvp
+
+# data domain
+/data:data-pipeline
+/data:data-modeling
+/data:data-analytics
+
+# top-level commands
+/assistant
+/assistant-auto
+/lessons
+/git-rename
+/init
+/review
+/security-review
+/recap
+/rewind
+/undo
+/clear
+/compact
+/effort
+/usage
+/help
+/config
+/schedule
+/loop
+/fast
+/ultraplan
+/ultrareview
+/autofix-pr
+/less-permission-prompts
+
+# =============================================================================
+# Frontmatter keys (never translate)
+# =============================================================================
+
+name:
+type:
+description:
+paths:
+model:
+tools:
+permissionMode:
+disallowedTools:
+skills:
+originSessionId:
+
+# =============================================================================
+# Environment variables and technical identifiers
+# =============================================================================
+
+SKIP_PROMPT_CONTEXT
+ENABLE_RTK
+ENABLE_PROMPT_CACHING_1H
+FORCE_PROMPT_CACHING_5M
+CLAUDE_DIR
+SOCLE_DIR
+TEST_DIR
+
+# =============================================================================
+# Project-specific terms that stay in English
+# =============================================================================
+
+claude-socle
+Claude Code
+Anthropic
+Conventional Commits
+Keep a Changelog
+Red-Green-Refactor
+TDD
+WCAG
+RGPD
+GDPR
+OWASP
+Core Web Vitals
+Lean Canvas
+INVEST
+P1
+P2
+P3
+MVP
+
+# =============================================================================
+# Tool/framework names (stay verbatim)
+# =============================================================================
+
+Docusaurus
+Next.js
+React
+Vue
+Svelte
+Astro
+Flutter
+Prisma
+tRPC
+GraphQL
+Supabase
+shadcn/ui
+Tailwind
+Playwright
+Cypress
+Jest
+Vitest
+pytest
+bats
+kcov
+Terraform
+OpenTofu
+Proxmox
+OPNsense
+Kubernetes
+Docker
+GitHub Actions
+GitLab CI
+Vercel
+AWS Lambda
+Cloudflare Workers
+Firecrawl
+Stripe
+PayPal
