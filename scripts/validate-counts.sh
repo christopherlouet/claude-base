@@ -94,10 +94,15 @@ ACTUAL_SKILLS=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev
 # Count rules (exclude README.md index files)
 ACTUAL_RULES=$(find "$SOCLE_DIR/.claude/rules" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l)
 
+# Count tests (count `@test` lines across .bats files — fast, static, no execution)
+ACTUAL_TESTS=$(awk '/^@test/{n++} END{print n+0}' "$SOCLE_DIR"/tests/*.bats 2>/dev/null || echo 0)
+ACTUAL_TEST_FILES=$(find "$SOCLE_DIR/tests" -name "*.bats" -type f 2>/dev/null | wc -l)
+
 echo "  Commands : $ACTUAL_COMMANDS"
 echo "  Agents   : $ACTUAL_AGENTS"
 echo "  Skills   : $ACTUAL_SKILLS"
 echo "  Rules    : $ACTUAL_RULES"
+echo "  Tests    : $ACTUAL_TESTS (in $ACTUAL_TEST_FILES files)"
 echo ""
 
 # =============================================================================
@@ -285,6 +290,72 @@ scan_drift "command" "commands" "$ACTUAL_COMMANDS"
 scan_drift "agent" "agents" "$ACTUAL_AGENTS"
 scan_drift "skill" "skills" "$ACTUAL_SKILLS"
 scan_drift "rule" "rules" "$ACTUAL_RULES"
+
+# -----------------------------------------------------------------------------
+# Scan drift dedie aux compteurs de tests (patterns specifiques README badge
+# shields.io + section "Test layout")
+# -----------------------------------------------------------------------------
+scan_tests_drift() {
+    local actual_tests="$1"
+    local actual_files="$2"
+
+    # Pattern 1 : badge shields.io `tests-N+passing` ou `tests-N%20passing`
+    while IFS= read -r match; do
+        [[ -z "$match" ]] && continue
+        local file_part="${match%%:*}"
+        local rest="${match#*:}"
+        local line_num="${rest%%:*}"
+        local content="${rest#*:}"
+        [[ "$file_part" == *"validate-counts.sh"* ]] && continue
+        local n
+        n=$(echo "$content" | grep -oiE 'tests-[0-9]+' | grep -oE '[0-9]+' | head -1)
+        if [[ -n "$n" ]] && [[ "$n" != "$actual_tests" ]]; then
+            local rel="${file_part#"$SOCLE_DIR"/}"
+            error_no_exit "${rel}:${line_num} drift → tests-$n badge (canonique: $actual_tests)"
+            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+        fi
+    done < <(
+        grep -rniE 'tests-[0-9]+(%20|\+| )passing' \
+            --include="*.md" --include="*.ts" --include="*.tsx" \
+            --exclude-dir=node_modules --exclude-dir=.git \
+            --exclude-dir=build --exclude-dir=.docusaurus \
+            --exclude-dir=memory \
+            --exclude="CHANGELOG.md" \
+            "$SOCLE_DIR" 2>/dev/null
+    )
+
+    # Pattern 2 : `(N files, M tests)` capture les deux compteurs
+    while IFS= read -r match; do
+        [[ -z "$match" ]] && continue
+        local file_part="${match%%:*}"
+        local rest="${match#*:}"
+        local line_num="${rest%%:*}"
+        local content="${rest#*:}"
+        [[ "$file_part" == *"validate-counts.sh"* ]] && continue
+        local nf nt rel
+        nf=$(echo "$content" | grep -oE '\([0-9]+ files?' | grep -oE '[0-9]+' | head -1)
+        nt=$(echo "$content" | grep -oE '[0-9]+ tests\)' | grep -oE '[0-9]+' | head -1)
+        rel="${file_part#"$SOCLE_DIR"/}"
+        if [[ -n "$nf" ]] && [[ "$nf" != "$actual_files" ]]; then
+            error_no_exit "${rel}:${line_num} drift → $nf test files (canonique: $actual_files)"
+            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+        fi
+        if [[ -n "$nt" ]] && [[ "$nt" != "$actual_tests" ]]; then
+            error_no_exit "${rel}:${line_num} drift → $nt tests (canonique: $actual_tests)"
+            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+        fi
+    done < <(
+        grep -rnE '\([0-9]+ files?,\s*[0-9]+ tests\)' \
+            --include="*.md" --include="*.ts" --include="*.tsx" \
+            --exclude-dir=node_modules --exclude-dir=.git \
+            --exclude-dir=build --exclude-dir=.docusaurus \
+            --exclude-dir=memory \
+            --exclude="CHANGELOG.md" \
+            "$SOCLE_DIR" 2>/dev/null
+    )
+}
+
+scan_tests_drift "$ACTUAL_TESTS" "$ACTUAL_TEST_FILES"
 
 if [[ "$DRIFT_ERRORS" -eq 0 ]]; then
     success "Aucun drift detecte (scan global)"
