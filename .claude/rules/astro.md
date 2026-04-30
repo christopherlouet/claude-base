@@ -8,15 +8,15 @@ paths:
 
 # Astro Rules
 
-## Philosophie : Islands Architecture
+## Philosophy: Islands Architecture
 
-Astro rend **zero JS par défaut**. Les composants sont HTML statique sauf si explicitement "hydratés" via les `client:*` directives. Utiliser Astro pour sites à fort contenu (blogs, docs, marketing) et pas pour dashboards interactifs full-SPA.
+Astro renders **zero JS by default**. Components are static HTML unless explicitly "hydrated" via `client:*` directives. Use Astro for content-heavy sites (blogs, docs, marketing) and not for interactive full-SPA dashboards.
 
-## Composants `.astro`
+## `.astro` components
 
 ```astro
 ---
-// Frontmatter : TypeScript, s'execute au build
+// Frontmatter: TypeScript, runs at build time
 import Layout from '../layouts/Layout.astro'
 import Card from '../components/Card.astro'
 
@@ -24,7 +24,7 @@ interface Props {
   title: string
 }
 const { title } = Astro.props
-const posts = await getPosts()  // Fetch au build, pas au runtime
+const posts = await getPosts()  // Fetched at build, not at runtime
 ---
 
 <Layout>
@@ -33,7 +33,7 @@ const posts = await getPosts()  // Fetch au build, pas au runtime
 </Layout>
 
 <style>
-  h1 { color: var(--accent); }  /* Scoped automatiquement */
+  h1 { color: var(--accent); }  /* Automatically scoped */
 </style>
 ```
 
@@ -41,26 +41,26 @@ const posts = await getPosts()  // Fetch au build, pas au runtime
 
 | Directive | Usage |
 |-----------|-------|
-| `client:load` | Hydratation immédiate (éviter sauf cas critique) |
-| `client:idle` | Hydratation quand le browser est idle |
-| `client:visible` | Hydratation quand le composant entre dans le viewport (défaut recommandé) |
-| `client:media="(max-width: 768px)"` | Hydratation selon media query |
-| `client:only="react"` | Rendu 100% client (pas de SSR, fallback loading) |
+| `client:load` | Immediate hydration (avoid except for critical cases) |
+| `client:idle` | Hydration when the browser is idle |
+| `client:visible` | Hydration when the component enters the viewport (recommended default) |
+| `client:media="(max-width: 768px)"` | Hydration based on media query |
+| `client:only="react"` | 100% client rendering (no SSR, loading fallback) |
 
 ```astro
 ---
 import Counter from '../components/Counter.tsx'
 ---
 
-<!-- HTML statique -->
+<!-- Static HTML -->
 <Counter client:visible />
 ```
 
-**Règle** : `client:visible` par défaut. `client:load` uniquement si above-the-fold et interactif immédiatement nécessaire.
+**Rule**: `client:visible` by default. `client:load` only if above-the-fold and immediate interactivity is required.
 
-## Intégrations framework
+## Framework integrations
 
-Astro supporte React, Vue, Svelte, Solid, Preact en même temps :
+Astro supports React, Vue, Svelte, Solid, Preact at the same time:
 
 ```js
 // astro.config.mjs
@@ -73,7 +73,7 @@ export default defineConfig({
 })
 ```
 
-Utiliser les composants framework pour les **islands** interactifs uniquement. Pour le contenu statique, **préférer les composants `.astro`** (plus légers).
+Use framework components for interactive **islands** only. For static content, **prefer `.astro` components** (lighter).
 
 ## Content Collections
 
@@ -102,17 +102,17 @@ const posts = await getCollection('blog', ({ data }) => !data.draft)
 ---
 ```
 
-Type-safe, validation Zod au build, fichiers dans `src/content/blog/*.md`.
+Type-safe, Zod validation at build time, files in `src/content/blog/*.md`.
 
 ## Rendering modes
 
 | Mode | Config | Usage |
 |------|--------|-------|
-| **Static** | défaut | Blogs, docs, marketing (prerendered) |
-| **Hybrid** | `output: 'hybrid'` | Static par défaut, `export const prerender = false` par page pour opt-out |
-| **Server** | `output: 'server'` | SSR par défaut, `export const prerender = true` par page pour opt-in |
+| **Static** | default | Blogs, docs, marketing (prerendered) |
+| **Hybrid** | `output: 'hybrid'` | Static by default, `export const prerender = false` per page to opt out |
+| **Server** | `output: 'server'` | SSR by default, `export const prerender = true` per page to opt in |
 
-Choisir **hybrid** pour la plupart des cas : le mieux des deux mondes.
+Choose **hybrid** for most cases: the best of both worlds.
 
 ## View Transitions (Astro 3+)
 
@@ -128,29 +128,29 @@ import { ViewTransitions } from 'astro:transitions'
 </html>
 ```
 
-Active les animations de transition entre pages, effet SPA sans framework.
+Enables transition animations between pages, SPA feel without a framework.
 
 ## Anti-patterns
 
-| A eviter | Preferer |
-|----------|----------|
-| Composant React partout | `.astro` pour static, framework pour islands |
-| `client:load` par défaut | `client:visible` |
-| Fetch dans le composant `.astro` au runtime | `getStaticPaths()` ou Content Collections au build |
-| `document.querySelector` dans `<script>` sans event listener | Scripts bien délimités avec `is:inline` si besoin |
-| Astro pour dashboard full-SPA | Next.js / SvelteKit plus adaptés |
+| Avoid | Prefer |
+|-------|--------|
+| React component everywhere | `.astro` for static, framework for islands |
+| `client:load` by default | `client:visible` |
+| Fetch inside the `.astro` component at runtime | `getStaticPaths()` or Content Collections at build time |
+| `document.querySelector` inside `<script>` without event listener | Properly scoped scripts with `is:inline` if needed |
+| Astro for full-SPA dashboard | Next.js / SvelteKit are better suited |
 
 ## Performance
 
-- Zero JS par défaut → Lighthouse 100 typique
-- Image optimization native : `<Image src={img} alt="" />` depuis `astro:assets`
-- CSS scoped au composant (pas de collision)
-- Prefetch automatique des liens internes (opt-in config)
+- Zero JS by default → typical Lighthouse 100
+- Native image optimization: `<Image src={img} alt="" />` from `astro:assets`
+- CSS scoped to the component (no collisions)
+- Automatic prefetching of internal links (opt-in config)
 
-## Regles
+## Rules
 
-IMPORTANT: Astro = sites à contenu (blog, docs, marketing), PAS dashboards SPA.
-IMPORTANT: `client:visible` par défaut pour les islands (pas `client:load`).
-YOU MUST utiliser Content Collections pour le contenu structuré (validation Zod type-safe).
-YOU MUST préférer les composants `.astro` aux composants framework quand pas d'interactivité.
-NEVER mettre `client:load` partout — annule le bénéfice zero-JS d'Astro.
+IMPORTANT: Astro = content sites (blog, docs, marketing), NOT SPA dashboards.
+IMPORTANT: `client:visible` by default for islands (not `client:load`).
+YOU MUST use Content Collections for structured content (type-safe Zod validation).
+YOU MUST prefer `.astro` components over framework components when there is no interactivity.
+NEVER use `client:load` everywhere — it cancels Astro's zero-JS benefit.
