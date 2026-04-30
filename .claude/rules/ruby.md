@@ -8,42 +8,42 @@ paths:
 
 # Ruby Rules
 
-## Conventions de code
+## Code conventions
 
-### Nommage
+### Naming
 
-| Element | Convention | Exemple |
+| Element | Convention | Example |
 |---------|------------|---------|
 | Classes/Modules | PascalCase | `UserService` |
-| Methodes | snake_case | `find_by_id` |
+| Methods | snake_case | `find_by_id` |
 | Variables | snake_case | `user_name` |
-| Constantes | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
-| Fichiers | snake_case | `user_service.rb` |
-| Predicats | avec `?` | `active?`, `valid?` |
-| Mutateurs | avec `!` | `save!`, `update!` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
+| Files | snake_case | `user_service.rb` |
+| Predicates | with `?` | `active?`, `valid?` |
+| Mutators | with `!` | `save!`, `update!` |
 
 ### Style
 
 ```ruby
-# Indentation: 2 espaces
+# Indentation: 2 spaces
 class UserService
   def find_by_id(id)
     User.find(id)
   end
 end
 
-# Pas de parentheses si pas d'arguments
+# No parentheses if no arguments
 def full_name
   "#{first_name} #{last_name}"
 end
 
-# Parentheses pour les appels avec arguments
+# Parentheses for calls with arguments
 user.update!(name: 'John', email: 'john@example.com')
 
-# Symboles pour les cles de hash
+# Symbols for hash keys
 { name: 'John', email: 'john@example.com' }
 
-# Blocs: do/end pour multi-ligne, {} pour une ligne
+# Blocks: do/end for multi-line, {} for one line
 users.each { |user| puts user.name }
 
 users.each do |user|
@@ -52,9 +52,9 @@ users.each do |user|
 end
 ```
 
-## Bonnes pratiques
+## Best practices
 
-### Classes et modules
+### Classes and modules
 
 ```ruby
 module Users
@@ -79,10 +79,10 @@ module Users
 end
 ```
 
-### Methodes
+### Methods
 
 ```ruby
-# Arguments avec valeurs par defaut
+# Arguments with default values
 def paginate(page: 1, per_page: 20)
   offset = (page - 1) * per_page
   limit(per_page).offset(offset)
@@ -93,7 +93,7 @@ def process(user)
   return unless user
   return if user.blocked?
 
-  # Logic principale
+  # Main logic
 end
 
 # Safe navigation operator
@@ -126,7 +126,7 @@ users
 ### Error handling
 
 ```ruby
-# Exceptions personnalisees
+# Custom exceptions
 module Users
   class NotFoundError < StandardError
     def initialize(id)
@@ -135,14 +135,14 @@ module Users
   end
 end
 
-# Rescue specifique
+# Specific rescue
 def find!(id)
   User.find(id)
 rescue ActiveRecord::RecordNotFound
   raise Users::NotFoundError, id
 end
 
-# Ensure pour cleanup
+# Ensure for cleanup
 def process_file(path)
   file = File.open(path)
   # process
@@ -166,7 +166,7 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :name, presence: true, length: { minimum: 2, maximum: 100 }
 
-  # 3. Callbacks (avec parcimonie)
+  # 3. Callbacks (use sparingly)
   before_validation :normalize_email
 
   # 4. Scopes
@@ -294,10 +294,10 @@ RSpec.describe Users::CreateService do
 end
 ```
 
-## A eviter
+## To avoid
 
-- `eval`, `instance_eval` sauf vraiment necessaire
-- Monkey patching en production
-- Callbacks complexes (preferer services)
+- `eval`, `instance_eval` unless really necessary
+- Monkey patching in production
+- Complex callbacks (prefer services)
 - N+1 queries
-- Fat controllers (extraire en services)
+- Fat controllers (extract into services)
