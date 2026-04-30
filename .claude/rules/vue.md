@@ -8,12 +8,12 @@ paths:
 
 # Vue 3 / Nuxt Rules
 
-## Composition API (obligatoire)
+## Composition API (mandatory)
 
-- `<script setup>` par defaut (plus concis, meilleure inference TS)
-- `ref()` pour primitives, `reactive()` pour objets complexes (un seul par composable)
-- `computed()` pour valeurs derivees (pas de `watch` + `ref`)
-- `watch()` / `watchEffect()` pour side effects
+- `<script setup>` by default (more concise, better TS inference)
+- `ref()` for primitives, `reactive()` for complex objects (only one per composable)
+- `computed()` for derived values (no `watch` + `ref`)
+- `watch()` / `watchEffect()` for side effects
 
 ```vue
 <script setup lang="ts">
@@ -26,9 +26,9 @@ const double = computed(() => count.value * 2)
 
 ## Composables
 
-- Prefixe `use` obligatoire : `useAuth`, `useCart`
-- Un composable par fichier, dans `composables/`
-- Retourner des objets pour destructuring nommé
+- `use` prefix mandatory: `useAuth`, `useCart`
+- One composable per file, in `composables/`
+- Return objects for named destructuring
 
 ```ts
 // composables/useCounter.ts
@@ -39,34 +39,34 @@ export function useCounter(initial = 0) {
 }
 ```
 
-## Props et emits
+## Props and emits
 
-- Toujours typer les props : `defineProps<{ title: string; count?: number }>()`
-- Emits avec validation : `defineEmits<{ (e: 'update', value: number): void }>()`
-- `withDefaults()` pour defaults sur props typees
-- NE PAS muter les props (utiliser v-model ou emit)
+- Always type props: `defineProps<{ title: string; count?: number }>()`
+- Emits with validation: `defineEmits<{ (e: 'update', value: number): void }>()`
+- `withDefaults()` for defaults on typed props
+- DO NOT mutate props (use v-model or emit)
 
 ## Nuxt 3+
 
 | Feature | Usage |
 |---------|-------|
-| `useFetch()` | Data fetching SSR-friendly, dedup auto |
-| `useAsyncData()` | Fetch custom avec key |
-| `useState()` | Global reactive state (remplace Vuex pour cas simples) |
-| `navigateTo()` | Redirection programmatique (jamais `router.push` direct en SSR) |
-| `defineNuxtRouteMiddleware()` | Middleware route-level |
+| `useFetch()` | SSR-friendly data fetching, auto dedup |
+| `useAsyncData()` | Custom fetch with key |
+| `useState()` | Global reactive state (replaces Vuex for simple cases) |
+| `navigateTo()` | Programmatic redirect (never `router.push` directly in SSR) |
+| `defineNuxtRouteMiddleware()` | Route-level middleware |
 | `server/api/*.ts` | API routes (Nitro) |
 
 ## Anti-patterns
 
-| A eviter | Preferer |
+| Avoid | Prefer |
 |----------|----------|
 | Options API (`data()`, `methods`) | Composition API (`<script setup>`) |
-| `ref()` pour tout | `ref` pour primitives, `reactive` pour objets stables |
-| Vuex | Pinia (officiel pour Vue 3) |
-| `watch()` pour derivations | `computed()` |
-| Props mutees | v-model + emit |
-| Globals mutables | `useState()` (Nuxt) ou stores Pinia |
+| `ref()` for everything | `ref` for primitives, `reactive` for stable objects |
+| Vuex | Pinia (official for Vue 3) |
+| `watch()` for derivations | `computed()` |
+| Mutated props | v-model + emit |
+| Mutable globals | `useState()` (Nuxt) or Pinia stores |
 
 ## Pinia (state management)
 
@@ -84,15 +84,15 @@ export const useCounterStore = defineStore('counter', () => {
 
 ## Performance
 
-- `v-memo` pour memoiser des sous-arbres
-- `defineAsyncComponent()` pour code splitting de composants
-- `shallowRef()` / `shallowReactive()` pour grandes structures immutables
-- `<Suspense>` pour async components avec fallback
+- `v-memo` to memoize subtrees
+- `defineAsyncComponent()` for component code splitting
+- `shallowRef()` / `shallowReactive()` for large immutable structures
+- `<Suspense>` for async components with fallback
 
-## Regles
+## Rules
 
-IMPORTANT: Utiliser `<script setup>` systematiquement (pas Options API).
-IMPORTANT: Nommage PascalCase pour composants, kebab-case dans templates.
-YOU MUST typer toutes les props via `defineProps<>()`.
-NEVER muter une prop directement (v-model + emit).
-NEVER utiliser Vuex sur un nouveau projet (Pinia).
+IMPORTANT: Use `<script setup>` systematically (not Options API).
+IMPORTANT: PascalCase naming for components, kebab-case in templates.
+YOU MUST type all props via `defineProps<>()`.
+NEVER mutate a prop directly (v-model + emit).
+NEVER use Vuex on a new project (Pinia).
