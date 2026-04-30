@@ -12,47 +12,47 @@ paths:
 
 # Research Before Build
 
-## Principe
+## Principle
 
-Avant d'implementer une solution custom, verifier si le framework ou l'outil en place fournit deja la fonctionnalite nativement.
+Before implementing a custom solution, check whether the framework or tool in place already provides the functionality natively.
 
-## Checklist obligatoire avant implementation
+## Mandatory checklist before implementation
 
-| Etape | Action | Exemple |
-|-------|--------|---------|
-| 1 | Lire la doc du framework utilise | Next.js, Payload CMS, Prisma, Flutter |
-| 2 | Chercher dans le codebase existant | `grep -r "feature"`, explorer les modules |
-| 3 | Verifier les plugins/extensions disponibles | npm packages, pub.dev, crates.io |
-| 4 | Evaluer build vs buy | Effort custom vs solution existante |
+| Step | Action | Example |
+|------|--------|---------|
+| 1 | Read the docs of the framework in use | Next.js, Payload CMS, Prisma, Flutter |
+| 2 | Search in the existing codebase | `grep -r "feature"`, explore the modules |
+| 3 | Check available plugins/extensions | npm packages, pub.dev, crates.io |
+| 4 | Evaluate build vs buy | Custom effort vs existing solution |
 
-## Red Flags — STOP et rechercher
+## Red Flags — STOP and research
 
 | Signal | Reaction |
 |--------|----------|
-| Sur le point de creer 5+ fichiers pour une feature courante | STOP — le framework le gere probablement |
-| Implementation d'un pattern standard (auth, i18n, upload, focal point) | STOP — verifier la doc du framework |
-| Ecriture d'un wrapper autour d'une lib existante | STOP — la lib expose peut-etre deja cette API |
-| Reimplementation d'une fonctionnalite supprimee | STOP — verifier pourquoi elle a ete supprimee |
+| About to create 5+ files for a common feature | STOP — the framework probably handles it |
+| Implementing a standard pattern (auth, i18n, upload, focal point) | STOP — check the framework's docs |
+| Writing a wrapper around an existing lib | STOP — the lib may already expose this API |
+| Reimplementing a removed feature | STOP — check why it was removed |
 
 ## Workflow
 
 ```
-1. IDENTIFIER le besoin precis
-2. RECHERCHER dans le framework/CMS/lib utilise
-   - Documentation officielle
-   - grep/glob dans node_modules ou packages
-   - Issues/discussions GitHub du framework
-3. EVALUER: natif vs custom
-   - Natif existe → l'utiliser
-   - Natif partiel → etendre plutot que remplacer
-   - Rien n'existe → implementer en custom (documenter pourquoi)
-4. INFORMER l'utilisateur du choix et du raisonnement
+1. IDENTIFY the precise need
+2. SEARCH in the framework/CMS/lib in use
+   - Official documentation
+   - grep/glob in node_modules or packages
+   - GitHub issues/discussions of the framework
+3. EVALUATE: native vs custom
+   - Native exists → use it
+   - Native partial → extend rather than replace
+   - Nothing exists → implement custom (document why)
+4. INFORM the user of the choice and the reasoning
 ```
 
-## Regles
+## Rules
 
-IMPORTANT: Ne JAMAIS implementer une solution custom sans avoir d'abord verifie les capacites natives du framework utilise.
+IMPORTANT: NEVER implement a custom solution without first checking the native capabilities of the framework in use.
 
-IMPORTANT: Si une solution native existe, la preferer meme si elle est moins flexible qu'une solution custom.
+IMPORTANT: If a native solution exists, prefer it even if it is less flexible than a custom solution.
 
-NEVER creer plus de 5 fichiers pour une fonctionnalite standard sans avoir confirme qu'aucune solution native n'existe.
+NEVER create more than 5 files for a standard feature without having confirmed that no native solution exists.
