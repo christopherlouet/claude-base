@@ -15,30 +15,30 @@ paths:
 
 # LSP Usage Rules
 
-## Quand utiliser LSP vs Grep/Glob
+## When to use LSP vs Grep/Glob
 
-### Preferer LSP (precision semantique)
+### Prefer LSP (semantic precision)
 
-- `goToDefinition` : trouver la definition exacte d'un symbole (fonction, classe, variable)
-- `findReferences` : toutes les references typees d'un symbole dans le projet
-- `hover` : obtenir le type et la documentation d'un symbole
-- `documentSymbol` : lister les symboles d'un fichier (fonctions, classes, exports)
-- `getDiagnostics` : erreurs de compilation, types manquants, imports invalides
+- `goToDefinition`: find the exact definition of a symbol (function, class, variable)
+- `findReferences`: all typed references of a symbol in the project
+- `hover`: get the type and documentation of a symbol
+- `documentSymbol`: list the symbols of a file (functions, classes, exports)
+- `getDiagnostics`: compilation errors, missing types, invalid imports
 
-### Preferer Grep/Glob (couverture textuelle)
+### Prefer Grep/Glob (textual coverage)
 
-- Recherche de texte dans les commentaires, strings, fichiers de config
-- Recherche multi-langages ou dans des fichiers non-code (JSON, YAML, MD)
-- Recherche de patterns regex complexes
-- Recherche dans les fichiers non indexes par le LSP
+- Text search in comments, strings, config files
+- Multi-language search or in non-code files (JSON, YAML, MD)
+- Search for complex regex patterns
+- Search in files not indexed by the LSP
 
-## Bonnes pratiques
+## Best practices
 
-- Combiner les deux : LSP pour naviguer le code, Grep pour chercher large
-- Utiliser `getDiagnostics` apres modification pour verifier les erreurs de type
-- Utiliser `findReferences` avant un refactoring pour mesurer l'impact
+- Combine both: LSP to navigate the code, Grep to search broadly
+- Use `getDiagnostics` after modification to check type errors
+- Use `findReferences` before a refactoring to measure the impact
 
 ## Activation
 
-LSP disponible via `ENABLE_LSP_TOOL=1` ou plugins LSP configures dans `.lsp.json`.
-Les language servers doivent etre installes localement (npm, pip, go install, etc.).
+LSP available via `ENABLE_LSP_TOOL=1` or LSP plugins configured in `.lsp.json`.
+Language servers must be installed locally (npm, pip, go install, etc.).
