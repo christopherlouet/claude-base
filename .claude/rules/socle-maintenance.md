@@ -8,73 +8,73 @@ paths:
   - "scripts/hooks/**"
 ---
 
-# Socle Maintenance
+# Foundation Maintenance
 
-## Principe
+## Principle
 
-Toute addition, suppression ou renommage dans `.claude/` casse silencieusement la doc et les tests si les compteurs ne sont pas synchronises. Le hook PostToolUse `socle-integrity-check` warn, mais ne bloque pas — la discipline reste a la charge de celui qui modifie.
+Any addition, removal or rename in `.claude/` silently breaks the docs and tests if counters are not kept in sync. The PostToolUse hook `socle-integrity-check` warns but does not block — discipline is on whoever makes the change.
 
-## Checklist obligatoire avant commit
+## Mandatory checklist before commit
 
-| Verification | Commande | Bloquant |
-|--------------|----------|----------|
-| Compteurs doc coherents | `./scripts/validate-counts.sh` | Oui |
-| Message SessionStart a jour | Inspecter `.claude/settings.json` (commandes / agents hardcodes) | Oui si ajout/suppression |
-| Catalog a jour | Verifier `docs/reference/agents-catalog.md` et `docs/reference/skills-catalog.md` | Oui |
-| Rules README a jour | `.claude/rules/README.md` : ligne + compteur en-tete | Oui si nouvelle rule |
-| Audit structurel | `./scripts/audit-socle.sh` | Recommande |
-| Shellcheck sur nouveaux hooks | `shellcheck scripts/hooks/*.sh` | Oui |
+| Check | Command | Blocking |
+|-------|---------|----------|
+| Doc counters consistent | `./scripts/validate-counts.sh` | Yes |
+| SessionStart message up to date | Inspect `.claude/settings.json` (hardcoded commands / agents) | Yes if addition/removal |
+| Catalog up to date | Check `docs/reference/agents-catalog.md` and `docs/reference/skills-catalog.md` | Yes |
+| Rules README up to date | `.claude/rules/README.md`: row + header counter | Yes if new rule |
+| Structural audit | `./scripts/audit-socle.sh` | Recommended |
+| Shellcheck on new hooks | `shellcheck scripts/hooks/*.sh` | Yes |
 
-## Fichiers a mettre a jour quand on ajoute / supprime
+## Files to update when adding / removing
 
-### Nouvelle commande (`.claude/commands/<ns>/<cmd>.md`)
+### New command (`.claude/commands/<ns>/<cmd>.md`)
 
-- `README.md` : ligne "Commandes Disponibles (N)" + mention inline
-- `CLAUDE.md` : compteur "N commandes"
-- `website/src/pages/index.tsx` : `'N Commands'`
-- `website/docs/intro/architecture.md` : `Commands (N)`
-- `website/docs/intro/index.md` : `Commands N`
-- `website/docs/reference/cheatsheet.md` : `N Commands | M Agents`
-- `website/src/components/FeatureComparison.tsx` : `commands: 'N'`
-- `website/docusaurus.config.ts` : `Commands (N)`
-- `docs/reference/commands.md` : entree catalog
+- `README.md`: "Available Commands (N)" line + inline mention
+- `CLAUDE.md`: "N commands" counter
+- `website/src/pages/index.tsx`: `'N Commands'`
+- `website/docs/intro/architecture.md`: `Commands (N)`
+- `website/docs/intro/index.md`: `Commands N`
+- `website/docs/reference/cheatsheet.md`: `N Commands | M Agents`
+- `website/src/components/FeatureComparison.tsx`: `commands: 'N'`
+- `website/docusaurus.config.ts`: `Commands (N)`
+- `docs/reference/commands.md`: catalog entry
 
-### Nouvel agent (`.claude/agents/<ns>/<agent>.md`)
+### New agent (`.claude/agents/<ns>/<agent>.md`)
 
-- Tous les fichiers `agents: 'N'` / `Agents (N)` / `N sub-agents`
-- `docs/reference/agents-catalog.md` : entree avec description + use case
-- `.claude/settings.json` SessionStart hook (compteur agents)
+- All `agents: 'N'` / `Agents (N)` / `N sub-agents` files
+- `docs/reference/agents-catalog.md`: entry with description + use case
+- `.claude/settings.json` SessionStart hook (agents counter)
 
-### Nouveau skill (`.claude/skills/<skill>/SKILL.md`)
+### New skill (`.claude/skills/<skill>/SKILL.md`)
 
-- Tous les `skills: 'N'` / `N Skills`
-- `docs/reference/skills-catalog.md` : entree avec trigger conditions
-- `CLAUDE.md` : compteur "N skills"
+- All `skills: 'N'` / `N Skills`
+- `docs/reference/skills-catalog.md`: entry with trigger conditions
+- `CLAUDE.md`: "N skills" counter
 
-### Nouvelle rule (`.claude/rules/<rule>.md`)
+### New rule (`.claude/rules/<rule>.md`)
 
-- `.claude/rules/README.md` : ligne dans le tableau + compteur "Regles disponibles (N)"
-- `website/docs/reference/rules.md` si present
-- Section "Ordre de priorite" si la rule a un niveau de priorite specifique
+- `.claude/rules/README.md`: row in the table + "Available rules (N)" counter
+- `website/docs/reference/rules.md` if present
+- "Priority order" section if the rule has a specific priority level
 
-## Red Flags — STOP immediat
+## Red Flags — STOP immediately
 
 | Signal | Reaction |
 |--------|----------|
-| Ajout d'un fichier `.claude/*.md` sans MAJ des compteurs | STOP — lancer `./scripts/validate-counts.sh` |
-| Rename d'une rule / agent / skill | STOP — chercher toutes les references avec Grep avant commit |
-| Modification de `.claude/settings.json` sans test local | STOP — demarrer une session Claude et verifier le SessionStart hook |
-| Hook qui depasse son timeout | STOP — profiler avant push, un hook lent bloque chaque prompt |
-| Nouveau hook sans `|| true` ou bail-out | STOP — un hook qui fail casse la session pour tout le monde |
+| Adding a `.claude/*.md` file without updating counters | STOP — run `./scripts/validate-counts.sh` |
+| Renaming a rule / agent / skill | STOP — search for all references with Grep before commit |
+| Modifying `.claude/settings.json` without local test | STOP — start a Claude session and check the SessionStart hook |
+| Hook exceeding its timeout | STOP — profile before push, a slow hook blocks every prompt |
+| New hook without `|| true` or bail-out | STOP — a hook that fails breaks the session for everyone |
 
-## Regles absolues
+## Absolute rules
 
-IMPORTANT: Ne JAMAIS pousser un commit qui ajoute/supprime dans `.claude/` sans avoir lance `./scripts/validate-counts.sh`.
+IMPORTANT: NEVER push a commit that adds/removes in `.claude/` without having run `./scripts/validate-counts.sh`.
 
-IMPORTANT: Un hook `UserPromptSubmit` ou `PostToolUse` doit toujours bail-out rapidement (exit 0) si sa dependance est absente (`jq`, `gh`, `git`). Un hook qui error casse l'UX.
+IMPORTANT: A `UserPromptSubmit` or `PostToolUse` hook must always bail out quickly (exit 0) if its dependency is missing (`jq`, `gh`, `git`). A hook that errors breaks the UX.
 
-IMPORTANT: Les compteurs hardcodes dans le SessionStart hook sont la premiere chose que l'utilisateur voit a l'ouverture de Claude Code — un mauvais chiffre donne l'impression d'un socle mal maintenu.
+IMPORTANT: The counters hardcoded in the SessionStart hook are the first thing the user sees when opening Claude Code — a wrong number gives the impression of a poorly maintained foundation.
 
-NEVER committer un script dans `scripts/hooks/` sans shellcheck + test en conditions reelles.
+NEVER commit a script in `scripts/hooks/` without shellcheck + real-world testing.
 
-NEVER dupliquer l'information de compteur ailleurs que dans les fichiers listes ci-dessus — centraliser dans `validate-counts.sh` comme source de verite.
+NEVER duplicate counter information anywhere other than the files listed above — centralize in `validate-counts.sh` as the source of truth.
