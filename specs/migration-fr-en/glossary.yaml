@@ -44,12 +44,11 @@ terms:
 
   - fr: etape
     en: step
-    forbidden: [stage, phase]
-    context: "phase = bigger grouping in plans"
+    context: "phase = bigger grouping in plans. 'stage' and 'phase' dropped from forbidden — 'phase' is canonical for FR phase (cross-conflict), 'stage' has legitimate uses (build stage, deployment stage). Prompt enforces step vs phase distinction"
 
   - fr: phase
     en: phase
-    forbidden: [stage]
+    context: "'stage' dropped from forbidden — too common (build stage, deployment stage)"
 
   - fr: boucle
     en: loop
@@ -84,7 +83,8 @@ terms:
 
   - fr: tache
     en: task
-    forbidden: [job, work-item]
+    forbidden: [work-item]
+    context: "'job' dropped — common in EN (cron job, background job, CI job)"
 
   - fr: taches
     en: tasks
@@ -126,7 +126,7 @@ terms:
 
   - fr: deploiement
     en: deployment
-    forbidden: [deploy]
+    context: "'deploy' dropped from forbidden — used legitimately as verb everywhere"
 
   - fr: rollback
     en: rollback
@@ -138,7 +138,8 @@ terms:
 
   - fr: branche
     en: branch
-    forbidden: [fork, ramification]
+    forbidden: [ramification]
+    context: "'fork' dropped — legitimate git term"
 
   - fr: commit
     en: commit
@@ -157,8 +158,7 @@ terms:
   # ---------------------------------------------------------------------------
   - fr: etat
     en: state
-    forbidden: [condition]
-    context: "'status' dropped — canonical for FR 'statut' (cross-conflict). 'state' vs 'status' distinction enforced via prompt only"
+    context: "'status' dropped — canonical for FR 'statut' (cross-conflict). 'condition' dropped — common in code (if condition, race condition). 'state' vs 'status' distinction enforced via prompt only"
 
   - fr: statut
     en: status
@@ -166,8 +166,8 @@ terms:
 
   - fr: vitrine
     en: showcase
-    forbidden: [storefront, window, display]
-    context: "as in 'project showcase' — README and main docs"
+    forbidden: [storefront]
+    context: "as in 'project showcase'. 'window' and 'display' dropped — both extremely common in tech (UI windows, display logic)"
 
   - fr: qualite
     en: quality
@@ -229,11 +229,11 @@ terms:
   # ---------------------------------------------------------------------------
   - fr: mainteneur
     en: maintainer
-    forbidden: [owner, admin]
+    context: "'owner' and 'admin' dropped — both common in tech (file owner, admin panel, repo owner)"
 
   - fr: contributeur
     en: contributor
-    forbidden: [collaborator]
+    context: "'collaborator' dropped — GitHub uses 'Collaborators' for repo access role"
 
   - fr: utilisateur
     en: user
@@ -250,7 +250,7 @@ terms:
 
   - fr: quota
     en: quota
-    forbidden: [limit, allocation]
+    context: "'limit' and 'allocation' dropped — 'limit' is ubiquitous (rate limit, max limit, etc.)"
 
   - fr: ancre
     en: anchor
@@ -294,7 +294,7 @@ terms:
 
   - fr: validateur
     en: validator
-    forbidden: [checker, linter]
+    context: "'checker' and 'linter' dropped — both legitimate technical terms (eslint linter, type checker)"
 
   - fr: validateurs
     en: validators
