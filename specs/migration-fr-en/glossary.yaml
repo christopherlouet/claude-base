@@ -146,7 +146,8 @@ terms:
 
   - fr: merger
     en: merge
-    forbidden: [combine, fuse]
+    forbidden: [fuse]
+    context: "'combine' dropped — common verb in EN (combine sources, combine results)"
 
   - fr: tag
     en: tag

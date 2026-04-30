@@ -76,7 +76,9 @@ strip_code() {
 
 # ---------------------------------------------------------------------------
 # Parse glossary with python (yaml is reliable). Output format:
-#   <fr_term>\t<en_term>\t<forbidden_terms_csv>\t<locked>
+#   <fr_term>|<en_term>|<forbidden_terms_csv>|<locked>
+# Pipe separator chosen because tab is whitespace in IFS — consecutive
+# tabs collapse to one, breaking empty-field detection.
 # ---------------------------------------------------------------------------
 parse_glossary() {
     python3 <<EOF
@@ -90,7 +92,7 @@ for t in d.get('terms', []):
     forbidden = ','.join(t.get('forbidden', []))
     locked = 'true' if (t.get('locked') or locked_at) else 'false'
     if fr and en:
-        print(f"{fr}\t{en}\t{forbidden}\t{locked}")
+        print(f"{fr}|{en}|{forbidden}|{locked}")
 EOF
 }
 
@@ -108,7 +110,7 @@ count_term_stripped() {
 # ---------------------------------------------------------------------------
 # 1. Forbidden translation detection (per file, per term)
 # ---------------------------------------------------------------------------
-while IFS=$'\t' read -r fr en forbidden locked; do
+while IFS='|' read -r fr en forbidden locked; do
     [[ -z "$forbidden" ]] && continue
     IFS=',' read -ra forbidden_arr <<< "$forbidden"
     for forb in "${forbidden_arr[@]}"; do
@@ -133,7 +135,7 @@ done < <(parse_glossary)
 #    signal of drift.
 # ---------------------------------------------------------------------------
 if $DETECT_DRIFT; then
-    while IFS=$'\t' read -r fr en forbidden locked; do
+    while IFS='|' read -r fr en forbidden locked; do
         [[ -z "$forbidden" ]] && continue
         IFS=',' read -ra forbidden_arr <<< "$forbidden"
 
