@@ -2,9 +2,8 @@
 
 [![CI](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml)
-[![Coverage](https://codecov.io/gh/christopherlouet/claude-socle/branch/main/graph/badge.svg)](https://codecov.io/gh/christopherlouet/claude-socle)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
-[![Tests](https://img.shields.io/badge/tests-319%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-302%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-socle?label=release&color=blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
