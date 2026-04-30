@@ -52,8 +52,7 @@ terms:
 
   - fr: boucle
     en: loop
-    forbidden: [iteration]
-    context: "'cycle' dropped from forbidden — it is canonical for FR 'cycle' (Red-Green-Refactor cycle), cross-conflict"
+    context: "'cycle' and 'iteration' dropped from forbidden — 'cycle' is canonical for FR cycle (cross-conflict), 'iteration' is super common (loop iteration, agile iteration)"
 
   - fr: cycle
     en: cycle

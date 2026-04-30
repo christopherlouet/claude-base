@@ -89,12 +89,21 @@ while IFS= read -r cmd; do
 done <<< "$src_slash"
 
 # ---------------------------------------------------------------------------
-# 3. File path pattern preservation
+# 3. File path pattern preservation — only enforce paths that EXIST on disk.
+#    FR docs use placeholder paths like 'mon-framework.md' or
+#    'chemin/vers/fichier.md' as examples; these legitimately get translated.
+#    We only require preservation when the path resolves to a real file at
+#    the repo root.
 # ---------------------------------------------------------------------------
+REPO_ROOT="$(cd "$(dirname "$SRC")" && git rev-parse --show-toplevel 2>/dev/null || pwd)"
 src_paths=$(grep -oE '[a-zA-Z0-9._/-]+\.(md|sh|ts|tsx|js|jsx|json|yaml|yml|py|go|rs|dart|astro|svelte|vue|toml)' "$SRC" 2>/dev/null | sort -u || true)
 while IFS= read -r path; do
     [[ -z "$path" ]] && continue
     [[ ${#path} -lt 3 ]] && continue
+    # Skip placeholder paths that don't exist in the repo.
+    if [[ ! -e "$REPO_ROOT/$path" && ! -e "$path" ]]; then
+        continue
+    fi
     src_n=$(count_term "$SRC" "$path")
     dst_n=$(count_term "$DST" "$path")
     if [[ "$src_n" -gt 0 && "$dst_n" -lt "$src_n" ]]; then
