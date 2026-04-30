@@ -18,83 +18,83 @@ paths:
 
 # Deploy Safety
 
-## Principe
+## Principle
 
-Chaque deploiement doit etre valide avant execution. Ne jamais deployer de config dev en production.
+Every deployment must be validated before execution. Never deploy dev config to production.
 
 ## CRITICAL: High-risk files
 
-Ces fichiers peuvent casser la production de maniere silencieuse (pas d'erreur en dev) :
+These files can break production silently (no error in dev):
 
-| Fichier | Risque | Test obligatoire |
+| File | Risk | Mandatory test |
 |---------|--------|-----------------|
-| `middleware.ts/proxy.ts` | CSP peut bloquer les scripts → page blanche | `npm run build && npm start`, verifier CSP headers avec curl |
-| `layout.tsx` | `headers()` casse SSG → 500 sur pages statiques | `npm run build` doit passer sans erreur |
-| `sw.js` | Cache HTML → hydration cassee apres deploy | Tester dans vrai navigateur avec DevTools > Application > SW |
-| `docker-compose.production.yml` | `read_only` casse le cache framework | `docker compose up` en local avant deploy |
-| `Dockerfile` | Image corrompue | Build + run local avant transfert |
+| `middleware.ts/proxy.ts` | CSP can block scripts → blank page | `npm run build && npm start`, check CSP headers with curl |
+| `layout.tsx` | `headers()` breaks SSG → 500 on static pages | `npm run build` must pass without error |
+| `sw.js` | HTML cache → broken hydration after deploy | Test in real browser with DevTools > Application > SW |
+| `docker-compose.production.yml` | `read_only` breaks framework cache | `docker compose up` locally before deploy |
+| `Dockerfile` | Corrupted image | Build + run locally before transfer |
 
-IMPORTANT: Les tests en mode dev (`npm run dev`, `next dev`, `vite dev`) ne detectent PAS les bugs de production (CSP, SSG, SW, Docker).
+IMPORTANT: Tests in dev mode (`npm run dev`, `next dev`, `vite dev`) do NOT detect production bugs (CSP, SSG, SW, Docker).
 
-## Regle absolue: REVERT FIRST
+## Absolute rule: REVERT FIRST
 
-Si la prod est cassee, **REVERT au dernier etat stable AVANT de chercher a comprendre**. Ne jamais enchainer les hotfixes en cascade.
+If prod is broken, **REVERT to the last stable state BEFORE trying to understand**. Never chain cascading hotfixes.
 
 ```bash
-# Revert rapide
+# Quick revert
 git checkout <last-known-good-tag> -- <broken-file>
 ./scripts/deploy.sh deploy
-# PUIS investiguer dans une branche separee
+# THEN investigate in a separate branch
 ```
 
-NEVER enchainer plus de 2 hotfixes en prod. Au 2eme echec → REVERT.
+NEVER chain more than 2 hotfixes in prod. On the 2nd failure → REVERT.
 
-## Checklist pre-deploiement obligatoire
+## Mandatory pre-deployment checklist
 
-| Verification | Commande | Bloquant |
+| Check | Command | Blocking |
 |--------------|----------|----------|
-| Build prod reussit | `npm run build` / `go build` / `docker build .` | Oui |
-| Tests passent | `npm test` / `pytest` / `go test` | Oui |
-| Types OK (si applicable) | `npx tsc --noEmit` / `mypy .` | Oui |
-| Lint OK | `npm run lint` / `ruff check .` / `golangci-lint run` | Oui |
-| Pas de secrets en dur | `grep -rn "password\|secret\|api_key" docker-compose*.yml` | Oui |
-| Migrations DB a jour | `prisma migrate status` / equivalent | Oui |
-| CSP headers verifies | `curl -sI localhost:3000 \| grep csp` | Si middleware modifie |
-| SW ne cache pas HTML | Verifier navigate handler dans sw.js | Si SW modifie |
-| Docker fonctionne | `docker compose -f docker-compose.production.yml up` local | Si Docker modifie |
-| Backup DB fait | Script de backup | Oui |
+| Prod build succeeds | `npm run build` / `go build` / `docker build .` | Yes |
+| Tests pass | `npm test` / `pytest` / `go test` | Yes |
+| Types OK (if applicable) | `npx tsc --noEmit` / `mypy .` | Yes |
+| Lint OK | `npm run lint` / `ruff check .` / `golangci-lint run` | Yes |
+| No hardcoded secrets | `grep -rn "password\|secret\|api_key" docker-compose*.yml` | Yes |
+| DB migrations up to date | `prisma migrate status` / equivalent | Yes |
+| CSP headers verified | `curl -sI localhost:3000 \| grep csp` | If middleware modified |
+| SW does not cache HTML | Check navigate handler in sw.js | If SW modified |
+| Docker works | `docker compose -f docker-compose.production.yml up` locally | If Docker modified |
+| DB backup done | Backup script | Yes |
 
-## Red Flags — STOP immediat
+## Red Flags — STOP immediately
 
 | Signal | Reaction |
 |--------|----------|
-| `headers()` ou `cookies()` dans root layout | STOP — casse SSG, utiliser middleware |
-| `read_only: true` dans Docker sans tmpfs complets | STOP — les frameworks ont besoin de cache writable |
-| `strict-dynamic` CSP sans nonce sur scripts inline | STOP — bloque les scripts, page blanche |
-| SW qui cache `request.mode === "navigate"` | STOP — casse l'hydration apres deploy |
-| Deployer sans build prod local | STOP — les bugs dev ≠ bugs prod |
-| 2eme hotfix en cascade qui echoue | STOP — REVERT et investiguer |
-| Copier docker-compose.yml (dev) vers le serveur | STOP — utiliser docker-compose.production.yml |
-| Variables d'env avec valeurs par defaut de dev | STOP — verifier les valeurs production |
-| Migration DB avec `--force` sans backup | STOP — backup d'abord |
+| `headers()` or `cookies()` in root layout | STOP — breaks SSG, use middleware |
+| `read_only: true` in Docker without complete tmpfs | STOP — frameworks need writable cache |
+| `strict-dynamic` CSP without nonce on inline scripts | STOP — blocks scripts, blank page |
+| SW that caches `request.mode === "navigate"` | STOP — breaks hydration after deploy |
+| Deploying without local prod build | STOP — dev bugs ≠ prod bugs |
+| 2nd cascading hotfix that fails | STOP — REVERT and investigate |
+| Copying docker-compose.yml (dev) to the server | STOP — use docker-compose.production.yml |
+| Env variables with dev default values | STOP — check production values |
+| DB migration with `--force` without backup | STOP — backup first |
 
-## Environnements
+## Environments
 
 | Env | CSP | SW | Docker | Debug | Test method |
 |-----|-----|-----|--------|-------|-------------|
-| Dev | Permissif | Pas actif | Non | Oui | `npm run dev` |
-| Build local | Prod | Actif si registered | Non | Non | `npm run build && npm start` |
-| Staging | Prod | Actif | Oui | Non | Via deploy script |
-| Prod | Strict | Actif | Oui | Non | Via deploy script |
+| Dev | Permissive | Not active | No | Yes | `npm run dev` |
+| Local build | Prod | Active if registered | No | No | `npm run build && npm start` |
+| Staging | Prod | Active | Yes | No | Via deploy script |
+| Prod | Strict | Active | Yes | No | Via deploy script |
 
-## Regles
+## Rules
 
-IMPORTANT: Toujours verifier que le docker-compose utilise est celui de PRODUCTION avant de deployer.
+IMPORTANT: Always check that the docker-compose used is the PRODUCTION one before deploying.
 
-IMPORTANT: Ne JAMAIS deployer sans avoir verifie que toutes les variables d'environnement sont configurees pour la production.
+IMPORTANT: NEVER deploy without having checked that all environment variables are configured for production.
 
-NEVER copier un fichier de configuration de dev vers la production sans verification explicite.
+NEVER copy a dev configuration file to production without explicit verification.
 
-NEVER deployer avec des migrations DB en attente sans les avoir executees ou verifiees.
+NEVER deploy with pending DB migrations without having run or checked them.
 
-NEVER deployer un changement de middleware, layout, sw.js, ou Docker sans test en build prod local.
+NEVER deploy a change to middleware, layout, sw.js, or Docker without testing in a local prod build.
