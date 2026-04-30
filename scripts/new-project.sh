@@ -469,8 +469,11 @@ merge_cicd_workflows() {
 get_rules_for_type() {
     local project_type="$1"
 
-    # Rules universelles (toujours copiées)
-    local rules=("git.md" "workflow.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "README.md")
+    # Rules universelles (toujours copiées) — applicables a tous les projets
+    # quel que soit le langage/framework. Inclut deploy-safety (Docker/env files)
+    # et research (verifier natif avant build custom) car ce sont des concerns
+    # transversaux, pas stack-specifiques.
+    local rules=("git.md" "workflow.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "research.md" "README.md")
 
     # Rules spécifiques au type de projet
     case "$project_type" in
@@ -612,6 +615,16 @@ install_claude_files() {
             echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/guides/* → $target_dir/.claude/docs/guides/"
         else
             cp -r "$SOCLE_DIR/docs/guides/"* "$target_dir/.claude/docs/guides/"
+        fi
+    fi
+
+    # Copier docs/STACK-RECIPES.md vers .claude/docs/ (consolidation des 13 stack guides legacy)
+    if [[ -f "$SOCLE_DIR/docs/STACK-RECIPES.md" ]]; then
+        debug "Copie de docs/STACK-RECIPES.md vers .claude/docs/..."
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp $SOCLE_DIR/docs/STACK-RECIPES.md → $target_dir/.claude/docs/"
+        else
+            cp "$SOCLE_DIR/docs/STACK-RECIPES.md" "$target_dir/.claude/docs/STACK-RECIPES.md"
         fi
     fi
 
@@ -766,9 +779,11 @@ print_simple_summary() {
     echo "  - .claude/commands/      ($(count_commands_cached) commandes)"
     echo "  - .claude/skills/        ($(count_skills_cached) skills)"
     echo "  - .claude/agents/        ($(count_agents_cached) agents)"
-    local rules_count
+    local rules_count rules_total project_type_label
     rules_count=$(find "$target_dir/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    echo "  - .claude/rules/         ($rules_count règles contextuelles)"
+    rules_total=$(find "$SOCLE_DIR/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    project_type_label="${PROJECT_TYPE:-generic}"
+    echo "  - .claude/rules/         ($rules_count règles pour stack '$project_type_label', $rules_total disponibles dans le socle)"
     echo "  - .claude/output-styles/ (styles de sortie)"
     echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
     echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
@@ -1462,6 +1477,12 @@ main() {
 
     # Mode simple: installation directe sans détection de stack
     if $SIMPLE_MODE; then
+        # Honorer -t/--type meme en mode simple (sinon le filtrage rules
+        # tombe sur "generic" et copie React/TS au lieu du stack demande).
+        if [[ -n "$FORCE_TYPE" ]]; then
+            PROJECT_TYPE="$FORCE_TYPE"
+            DETECTED_TYPE="$FORCE_TYPE"
+        fi
         # Afficher le banner (sauf en mode silencieux)
         if ! $QUIET; then
             echo ""

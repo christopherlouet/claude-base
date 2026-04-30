@@ -102,7 +102,14 @@ teardown() {
     [ -f "$TEST_DIR/CLAUDE.md" ]
 
     grep -q '\.claude/docs/reference/commands\.md' "$TEST_DIR/CLAUDE.md"
-    grep -q '\.claude/docs/guides/WEB-GUIDE\.md' "$TEST_DIR/CLAUDE.md"
+    grep -q '\.claude/docs/STACK-RECIPES\.md' "$TEST_DIR/CLAUDE.md"
+    grep -q '\.claude/docs/guides/EXTENDING-GUIDE\.md' "$TEST_DIR/CLAUDE.md"
+}
+
+@test "[US1] --simple copies STACK-RECIPES.md to .claude/docs/" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/.claude/docs/STACK-RECIPES.md" ]
 }
 
 @test "[US1] --simple CLAUDE.md does NOT mention removed ARCHITECTURE/WORKFLOWS rows" {

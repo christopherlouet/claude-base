@@ -111,7 +111,7 @@ run_tests() {
     $VERBOSE && bats_opts+=("--verbose-run")
 
     # Parallelisation : --jobs auto si GNU parallel ou rush dispo, sinon sequentiel.
-    # Gain ~4x sur les machines multi-coeurs (3min20 sequentiel → ~50s avec 8 jobs).
+    # Gain ~4.3x sur les machines multi-coeurs (3min17 sequentiel → 46s avec 8 jobs).
     if command -v parallel >/dev/null 2>&1 || command -v rush >/dev/null 2>&1; then
         local cores
         cores=$(nproc 2>/dev/null || echo "4")

@@ -41,17 +41,17 @@ Chaque etape a ses commandes dediees, ses agents specialises et ses bonnes prati
 |-----------|--------|-------------|
 | **Commands** | 131 | Commandes declenchees manuellement (`/nom`) |
 | **Agents** | 63 | Sub-agents autonomes avec contexte isole |
-| **Skills** | 47 | Auto-declenchement sur mots-cles |
-| **Rules** | 25 | Regles par technologie/fichier |
+| **Skills** | 54 | Auto-declenchement sur mots-cles |
+| **Rules** | 30 | Regles par technologie/fichier |
 
 ## Domaines couverts
 
 | Domaine | Commandes | Description |
 |---------|-----------|-------------|
-| **WORK** | 11 | Workflow principal (explore, plan, commit, PR) |
+| **WORK** | 15 | Workflow principal (explore, plan, commit, PR) |
 | **DEV** | 23 | Developpement (TDD, API, composants, debug) |
-| **QA** | 14 | Qualite (review, securite, performance, a11y) |
-| **OPS** | 30 | Operations (CI/CD, Docker, monitoring, GitFlow) |
+| **QA** | 16 | Qualite (review, securite, performance, a11y) |
+| **OPS** | 34 | Operations (CI/CD, Docker, monitoring, GitFlow) |
 | **DOC** | 9 | Documentation (changelog, README, architecture) |
 | **BIZ** | 11 | Business (model, MVP, pricing, pitch) |
 | **GROWTH** | 11 | Croissance (SEO, analytics, landing, funnel) |

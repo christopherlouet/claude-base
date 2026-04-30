@@ -22,8 +22,8 @@ graph TB
     subgraph ".claude/"
         CMDS[commands/<br/>131 commandes]
         AGENTS[agents/<br/>63 sub-agents]
-        SKILLS[skills/<br/>53 skills]
-        RULES[rules/<br/>29 rules]
+        SKILLS[skills/<br/>54 skills]
+        RULES[rules/<br/>30 rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
     end
@@ -59,8 +59,8 @@ claude-socle/
 │   │   ├── data/       # Donnees
 │   │   └── legal/      # Legal
 │   ├── agents/         # 63 sub-agents autonomes
-│   ├── skills/         # 53 skills auto-declenches
-│   ├── rules/          # 26 regles par technologie
+│   ├── skills/         # 54 skills auto-declenches
+│   ├── rules/          # 30 regles par technologie
 │   ├── templates/      # Templates de specs/plans
 │   ├── output-styles/  # Styles de sortie
 │   └── settings.json   # Configuration et hooks

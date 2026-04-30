@@ -208,6 +208,94 @@ check_count "$SOCLE_DIR/website/docusaurus.config.ts" \
 echo ""
 
 # =============================================================================
+# Layer 2 : Scan anti-drift global (catch any stale total-counter)
+# =============================================================================
+# Detecte tout chiffre qui apparait dans un contexte "compteur total" mais qui
+# ne correspond pas au canonique. Patterns ciblés (faible faux-positif) :
+#   - `Label (N)`     : ex. `Skills (47)`, `Agents (63)`, `WORK (12)`
+#   - `(N) Label`     : ex. `(54) skills disponibles`
+#   - `**N Label**`   : ex. `**54 skills**`
+#   - `'N Label'`     : ex. `'131 Commands'` dans composants TS/TSX
+# Exclusions : CHANGELOG (historique), node_modules, build, .docusaurus, memory.
+
+info "Scan anti-drift global..."
+echo ""
+
+DRIFT_ERRORS=0
+
+scan_drift() {
+    local label_singular="$1"   # "skill"
+    local label_plural="$2"     # "skills"
+    local actual="$3"           # 54
+
+    # Patterns CIBLES = uniquement des contextes qui parlent du TOTAL.
+    # On evite "15 work commands" (subset par domaine), "22 Haiku agents" (par modele), etc.
+    # Cas catalogues comme "TOTAL" :
+    #   1. `Label disponibles (N)`             -- ex. `Skills disponibles (54)` (French canonical header)
+    #   2. `## Label (N)` / `### Label (N)`    -- heading markdown, ex. `## Skills (54)`
+    #   3. `'N Label'` / `'N Sub-Agents'`      -- string literal in TS/TSX components
+    #   4. `\*\*Label\*\* \| N \|`             -- table row with bold label cell
+    #   5. `# Label (N)`                        -- top heading
+    # Le label peut etre singulier (Skill) ou pluriel (Skills), Capitalize ou ALLCAPS.
+    # La forme `Sub-Agents` est acceptee pour agent.
+    local label_cap_singular label_cap_plural alt_form
+    label_cap_singular="$(echo "${label_singular:0:1}" | tr '[:lower:]' '[:upper:]')${label_singular:1}"
+    label_cap_plural="$(echo "${label_plural:0:1}" | tr '[:lower:]' '[:upper:]')${label_plural:1}"
+    alt_form=""
+    [[ "$label_singular" == "agent" ]] && alt_form="|Sub-Agents?|sub-agents?"
+
+    # Construire la regex unifiee
+    local lab="(${label_cap_singular}|${label_cap_plural}${alt_form})"
+    local pattern_re="(${lab}\s+disponibles?\s+\(([0-9]+)\)|^#{1,4}\s+${lab}\s+\(([0-9]+)\)|'([0-9]+)\s+${lab}'|\|\s*\*\*${lab}\*\*\s*\|\s*([0-9]+)\s*\||^#{1,4}\s+([0-9]+)\s+${lab}\b)"
+
+    while IFS= read -r match; do
+        [[ -z "$match" ]] && continue
+        local file_part="${match%%:*}"
+        local rest="${match#*:}"
+        local line_num="${rest%%:*}"
+        local content="${rest#*:}"
+
+        # Skip le scanner lui-meme
+        [[ "$file_part" == *"validate-counts.sh"* ]] && continue
+
+        # Extraire le ou les chiffres dans le contexte total
+        local nums
+        nums=$(echo "$content" | grep -oiE "${pattern_re}" | grep -oE '[0-9]+' | sort -u)
+
+        for n in $nums; do
+            [[ "$n" -le 5 ]] && continue
+            if [[ "$n" != "$actual" ]]; then
+                local rel="${file_part#"$SOCLE_DIR"/}"
+                error_no_exit "${rel}:${line_num} drift → $n ${label_plural} (canonique: $actual)"
+                DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+            fi
+        done
+    done < <(
+        grep -rniE "$pattern_re" \
+            --include="*.md" --include="*.ts" --include="*.tsx" --include="*.json" \
+            --exclude-dir=node_modules --exclude-dir=.git \
+            --exclude-dir=build --exclude-dir=.docusaurus \
+            --exclude-dir=memory \
+            --exclude="CHANGELOG.md" \
+            "$SOCLE_DIR" 2>/dev/null
+    )
+}
+
+scan_drift "command" "commands" "$ACTUAL_COMMANDS"
+scan_drift "agent" "agents" "$ACTUAL_AGENTS"
+scan_drift "skill" "skills" "$ACTUAL_SKILLS"
+scan_drift "rule" "rules" "$ACTUAL_RULES"
+
+if [[ "$DRIFT_ERRORS" -eq 0 ]]; then
+    success "Aucun drift detecte (scan global)"
+else
+    error_no_exit "$DRIFT_ERRORS drift(s) detecte(s) (scan global)"
+    ERRORS=$((ERRORS + DRIFT_ERRORS))
+fi
+
+echo ""
+
+# =============================================================================
 # Summary
 # =============================================================================
 

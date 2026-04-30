@@ -17,7 +17,7 @@ import Stats from '@site/src/components/Stats';
 
 ## Vue d'ensemble
 
-Les scripts sont organises en 4 categories :
+Les scripts sont organises en 5 categories :
 
 | Categorie | Scripts | Description |
 |-----------|---------|-------------|
@@ -25,7 +25,7 @@ Les scripts sont organises en 4 categories :
 | **Maintenance** | `update.sh`, `diff.sh`, `uninstall.sh`, `check-updates.sh` | Maintenir le socle |
 | **Diagnostic** | `doctor.sh`, `validate.sh`, `validate-counts.sh` | Verifier l'installation |
 | **Outils** | `ide.sh` | Configuration IDE |
-| **Internes** | `lint.sh`, `test.sh`, `bump-version.sh`, `validate-counts.sh`, `audit-socle.sh` | CI et maintenance du socle |
+| **Internes** | `lint.sh`, `test.sh`, `bump-version.sh`, `audit-socle.sh`, `export-minimal.sh` | CI et maintenance du socle |
 
 ---
 
@@ -408,6 +408,39 @@ Execute les tests du socle (tests bats).
 ```bash
 ./scripts/test.sh
 ```
+
+### bump-version.sh
+
+Met a jour la version du socle (`VERSION`, badges, references).
+
+```bash
+./scripts/bump-version.sh <new-version>
+```
+
+### audit-socle.sh
+
+Audit structurel complet : detecte fichiers orphelins, references cassees, incoherences entre socle et documentation.
+
+```bash
+./scripts/audit-socle.sh
+```
+
+### export-minimal.sh
+
+Exporte une configuration minimale du socle dans une archive `.tar.gz` (ou copie directement vers un dossier cible). Utilise par `new-project.sh --minimal` pour les projets qui ne veulent qu'un sous-ensemble du socle.
+
+```bash
+# Archive par defaut (dist/claude-socle-minimal.tar.gz)
+./scripts/export-minimal.sh
+
+# Archive avec chemin personnalise
+./scripts/export-minimal.sh --output /tmp/socle.tar.gz
+
+# Copie directe vers un dossier (sans archive)
+./scripts/export-minimal.sh --dest-dir /chemin/projet
+```
+
+Le manifest des fichiers inclus est defini dans `scripts/lib/minimal-manifest.txt`.
 
 ---
 

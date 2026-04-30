@@ -76,7 +76,7 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'category',
-          label: 'WORK (12)',
+          label: 'WORK (15)',
           collapsed: true,
           link: {
             type: 'doc',
@@ -112,7 +112,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'OPS (31)',
+          label: 'OPS (34)',
           collapsed: true,
           link: {
             type: 'doc',
@@ -184,11 +184,13 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'Orchestrateur (2)',
+          label: 'Orchestrateur & Outils (4)',
           collapsed: false,
           items: [
             'commands/other/assistant',
             'commands/other/assistant-auto',
+            'commands/other/git-rename',
+            'commands/other/lessons',
           ],
         },
       ],

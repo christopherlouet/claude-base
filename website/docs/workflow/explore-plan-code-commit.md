@@ -234,7 +234,7 @@ Pour une nouvelle feature, utilisez directement :
 /work:work-flow-feature "Ajouter l'authentification 2FA"
 ```
 
-Cette commande enchaine automatiquement les 4 etapes.
+Cette commande enchaine automatiquement le workflow complet.
 
 ---
 

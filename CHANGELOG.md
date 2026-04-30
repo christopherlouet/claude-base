@@ -45,7 +45,7 @@ A partir de v1.30.0, la doc socle est installee sous `.claude/docs/` (territoire
 
 **Automatique** : `./scripts/update.sh --upgrade-claude-md /chemin/vers/projet` migre l'install legacy vers le nouveau layout. Idempotent : executable plusieurs fois sans casser.
 
-**Manuelle** : voir [`docs/MIGRATION-v1.30.md`](./docs/MIGRATION-v1.30.md) pour la procedure pas-a-pas si vous preferez tout verifier vous-meme.
+**Manuelle** : la procedure pas-a-pas detaillee n'est plus distribuee dans le repo (le guide `MIGRATION-v1.30.md` a ete retire avant la release publique). Si vous avez besoin du diff exact, consultez les notes de la release v1.30.0 sur GitHub ou l'historique de ce CHANGELOG.
 
 #### Precisions techniques
 

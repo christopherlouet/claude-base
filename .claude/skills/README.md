@@ -22,21 +22,28 @@ skill-name/
 └── scripts/           # Scripts helper (optionnel)
 ```
 
-## Skills disponibles (41)
+## Skills disponibles (54)
 
 | Skill | Mots-cles declencheurs | Description |
 |-------|----------------------|-------------|
+| `agent-teams` | equipe d'agents, swarm, multi-agents coordonnes | Orchestration d'equipes d'agents (Agent Teams natif) |
 | `api-mocking` | mock API, MSW, test sans backend | Configuration de mocks API pour les tests |
 | `data-pipeline` | ETL, Airflow, dbt | Conception de pipelines ETL/ELT |
 | `dev-api` | API, endpoint, REST, route | Developper et documenter une API REST ou GraphQL |
+| `dev-auth` | login, signup, OAuth, sessions, 2FA | Auth web moderne (better-auth, Lucia, NextAuth, Clerk, Supabase Auth) |
 | `dev-debug` | bug, erreur, debug, ne fonctionne pas | Deboguer et resoudre des problemes |
 | `dev-document` | PDF, DOCX, XLSX, PPTX, rapport | Generation de documents bureautiques |
 | `dev-error-handling` | gestion erreurs, exceptions, error boundary | Strategie de gestion des erreurs |
 | `dev-flutter` | Flutter, widget, BLoC | Developpement Flutter avec Clean Architecture |
+| `dev-frontend-design` | UI, landing page, composant visuel, direction artistique | Design UI distinctif avec direction artistique forte |
 | `dev-graphql` | GraphQL, resolver, schema | Developpement d'APIs GraphQL |
+| `dev-i18n` | i18n, traduction, locale, plusieurs langues | Internationalisation (next-intl, react-i18next, vue-i18n, ARB) |
+| `dev-nextjs` | Next.js, App Router, RSC, Server Actions | Developpement Next.js (caching, streaming, middleware) |
+| `dev-prisma` | Prisma, schema.prisma, migration, queries type-safe | Developpement avec Prisma ORM |
 | `dev-prompt-engineering` | prompt, instruction, few-shot, LLM | Optimisation de prompts pour LLMs |
 | `dev-react-perf` | React perf, re-render, memo | Optimisation performances React/Next.js |
 | `dev-refactor` | refactorer, clean code, restructurer | Refactoring de code |
+| `dev-shadcn` | shadcn, shadcn/ui, Radix, composants copy-paste | Integration et customisation de shadcn/ui |
 | `dev-supabase` | Supabase, auth, RLS, storage | Developpement backend Supabase |
 | `dev-tdd` | TDD, test first, ecrire les tests | Cycle TDD Red-Green-Refactor |
 | `doc-changelog` | changelog, release notes | Maintenance du CHANGELOG |
@@ -45,6 +52,7 @@ skill-name/
 | `git-worktrees` | worktree, dev parallele, branches simultanees | Git worktrees pour dev parallele |
 | `growth-cro` | conversion, CRO, signup flow, onboarding | Optimisation du taux de conversion |
 | `ops-ci` | CI/CD, GitHub Actions, pipeline | Configuration de pipelines CI/CD |
+| `ops-ci-fix` | CI cassee, workflow rouge, tests CI en echec | Diagnostic et reparation autonome des pipelines CI/CD |
 | `ops-database` | schema, migration, index | Conception de schemas de base de donnees |
 | `ops-docker` | Docker, container, Dockerfile | Containerisation Docker et Docker Compose |
 | `ops-infra-code` | Terraform, IaC, OpenTofu | Infrastructure as Code |
@@ -52,7 +60,9 @@ skill-name/
 | `ops-monitoring` | logs, metriques, traces | Instrumentation d'applications |
 | `ops-opnsense` | OPNsense, firewall, NAT, DHCP | Configuration OPNsense via Terraform |
 | `ops-proxmox` | Proxmox, PVE, VM, LXC, PBS | Infrastructure Proxmox VE avec Terraform |
+| `ops-standup` | standup, briefing matinal, resume activite | Briefing cross-repo (commits, PRs, CI, blockers) |
 | `parallel-agents` | parallele, concurrent, fan-out, multi-agents | Orchestration d'agents paralleles |
+| `qa-chrome` | navigateur, Chrome DevTools, console, tests UI | Audit visuel et tests navigateur via Chrome |
 | `qa-design` | audit design, UI/UX, interface | Audit de design UI/UX |
 | `qa-e2e` | E2E, Playwright, Cypress | Tests End-to-End |
 | `qa-perf` | optimiser, latence, TTFB | Optimisation des performances |
@@ -61,10 +71,14 @@ skill-name/
 | `qa-tech-debt` | dette technique, tech debt, refactoring priorite | Gestion de la dette technique |
 | `session-handoff` | handoff, reprise, transfert session | Transfert de contexte entre sessions |
 | `state-management` | state, Redux, Zustand, store | Patterns de state management |
+| `web-scraping` | scraping, Firecrawl, crawler, extract | Scraping web propre pour LLM (Firecrawl + fallback Playwright) |
+| `work-batch` | backlog, batch stories, mode autonome, PRD | Execution sequentielle de user stories depuis un PRD |
+| `work-brainstorm` | brainstorm, ideation, alternatives, idee floue | Ideation structuree avant specification |
 | `work-commit` | commit, message de commit | Messages Conventional Commits |
 | `work-explore` | explorer, comprendre le code, decouvrir | Explorer et comprendre un codebase |
 | `work-plan` | planifier, architecture, plan | Planifier une implementation |
 | `work-pr` | PR, pull request, merger | Creer une Pull Request complete |
+| `work-quick` | quick, vite, rapide, fix simple, typo | Workflow rapide pour changements triviaux |
 | `writing-skills` | creer skill, nouveau skill, ecrire un skill | Guide pour creer de nouveaux skills |
 
 ## Convention de nommage

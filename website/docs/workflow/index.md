@@ -14,13 +14,15 @@ import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDia
 
 <WorkflowDiagram steps={MAIN_WORKFLOW} title="Explore → Specify → Plan → TDD → Audit → Commit" />
 
-Le workflow principal de claude-socle suit 5 etapes obligatoires :
+Le workflow principal de claude-socle suit 6 etapes obligatoires (+ 1 optionnelle) :
 
 1. **Explore** - Comprendre le code existant avant de modifier
+1b. **Brainstorm** _(optionnel)_ - Ideation structuree avant la specification (alternatives, idees floues)
 2. **Specify** - Creer une specification fonctionnelle (User Stories, criteres)
 3. **Plan** - Planifier les changements avant d'implementer
 4. **TDD** - Developper en ecrivant les tests AVANT le code (obligatoire)
-5. **Commit** - Creer des commits propres et descriptifs
+5. **Audit** - `/qa:qa-loop "score 90"` adaptatif jusqu'a atteindre le score cible
+6. **Commit** - Creer des commits propres et descriptifs (Conventional Commits)
 
 ## Workflows disponibles
 

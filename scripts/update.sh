@@ -900,6 +900,12 @@ upgrade_claude_md() {
         fi
     fi
 
+    # Copier docs/STACK-RECIPES.md (consolidation des stack guides legacy)
+    if [[ -f "$SOCLE_DIR/docs/STACK-RECIPES.md" ]]; then
+        cp "$SOCLE_DIR/docs/STACK-RECIPES.md" "$TARGET_DIR/.claude/docs/STACK-RECIPES.md"
+        debug "STACK-RECIPES.md sync vers .claude/docs/"
+    fi
+
     # Compter @imports avant pour reporter ce qui a ete ajoute
     # (grep -c retourne 1 si 0 matches, d'ou le `|| true` pour set -e)
     local imports_before

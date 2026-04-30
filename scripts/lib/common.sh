@@ -659,6 +659,7 @@ rewrite_claude_md_paths() {
         -e 's|^@docs/reference/|@.claude/docs/reference/|g' \
         -e 's|`docs/reference/|`.claude/docs/reference/|g' \
         -e 's|`docs/guides/|`.claude/docs/guides/|g' \
+        -e 's|`docs/STACK-RECIPES\.md`|`.claude/docs/STACK-RECIPES.md`|g' \
         -e '/| Architecture |.*`docs\/ARCHITECTURE\.md`/d' \
         -e '/| Workflows visuels |.*`docs\/WORKFLOWS\.md`/d' \
         "$claude_md"
