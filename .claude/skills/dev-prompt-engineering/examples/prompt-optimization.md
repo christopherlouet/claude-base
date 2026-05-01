@@ -1,71 +1,71 @@
-# Exemple Prompt Engineering : Optimisation d'un prompt de code review
+# Prompt Engineering Example: Optimizing a code review prompt
 
-## Demande utilisateur
-> "Ameliorer ce prompt de code review pour avoir des resultats plus coherents"
+## User request
+> "Improve this code review prompt to get more consistent results"
 
 ---
 
-## Prompt original (a optimiser)
+## Original prompt (to optimize)
 
 ```
-Fais une code review.
+Do a code review.
 ```
 
 ---
 
-## Analyse du prompt
+## Prompt analysis
 
-### Score initial : 6/30
+### Initial score: 6/30
 
-| Critere | Score | Commentaire |
-|---------|-------|-------------|
-| Clarte | 1/5 | Aucune instruction precise |
-| Structure | 1/5 | Pas de structure |
-| Contexte | 1/5 | Aucun contexte fourni |
-| Exemples | 1/5 | Pas d'exemples |
-| Contraintes | 1/5 | Pas de limites definies |
-| Format | 1/5 | Output non specifie |
+| Criterion | Score | Comment |
+|-----------|-------|---------|
+| Clarity | 1/5 | No precise instruction |
+| Structure | 1/5 | No structure |
+| Context | 1/5 | No context provided |
+| Examples | 1/5 | No examples |
+| Constraints | 1/5 | No defined limits |
+| Format | 1/5 | Output not specified |
 
-### Points faibles identifies
+### Identified weaknesses
 
-1. **Trop vague** : "Fais une code review" ne precise pas quoi chercher
-2. **Pas de contexte** : Type de projet, langage, standards inconnus
-3. **Sans exemples** : Le modele ne sait pas quel format utiliser
-4. **Output imprevisible** : Resultats differents a chaque run
+1. **Too vague**: "Do a code review" doesn't specify what to look for
+2. **No context**: Project type, language, standards unknown
+3. **No examples**: The model doesn't know what format to use
+4. **Unpredictable output**: Different results on every run
 
 ---
 
-## Prompt optimise
+## Optimized prompt
 
 ```markdown
 # Role
-Tu es un expert en code review avec 10 ans d'experience en developpement logiciel.
-Tu maitrises les patterns de clean code, SOLID, et les bonnes pratiques de securite.
+You are a code review expert with 10 years of experience in software development.
+You master clean code patterns, SOLID, and security best practices.
 
-# Contexte
-- Projet: Application web TypeScript/React
-- Standards: ESLint strict, tests obligatoires, couverture > 80%
-- Equipe: 5 developpeurs seniors
+# Context
+- Project: TypeScript/React web application
+- Standards: ESLint strict, mandatory tests, coverage > 80%
+- Team: 5 senior developers
 
-# Tache
-Analyse le code fourni et produis une code review structuree et actionnable.
+# Task
+Analyze the provided code and produce a structured and actionable code review.
 
 # Instructions
-1. Identifier les problemes critiques (bugs, securite)
-2. Verifier le respect des conventions du projet
-3. Evaluer la lisibilite et maintenabilite
-4. Suggerer des ameliorations concretes
-5. Reconnaitre les points positifs
+1. Identify critical issues (bugs, security)
+2. Verify compliance with project conventions
+3. Evaluate readability and maintainability
+4. Suggest concrete improvements
+5. Acknowledge positive points
 
-# Contraintes
-- Prioritise les problemes par severite (Critical > High > Medium > Low)
-- NE PAS suggerer de refactoring majeur sans justification
-- NE PAS critiquer le style si ca respecte les conventions
-- Limite a 10 commentaires maximum pour rester actionnable
+# Constraints
+- Prioritize issues by severity (Critical > High > Medium > Low)
+- DO NOT suggest major refactoring without justification
+- DO NOT criticize style if it follows conventions
+- Limit to 10 comments maximum to remain actionable
 
-# Exemples
+# Examples
 
-## Exemple 1 - Probleme de securite
+## Example 1 - Security issue
 Input:
 ```typescript
 const query = `SELECT * FROM users WHERE id = ${userId}`;
@@ -73,17 +73,17 @@ const query = `SELECT * FROM users WHERE id = ${userId}`;
 
 Output:
 ```
-[CRITICAL] Injection SQL potentielle (ligne X)
-- Probleme: Concatenation directe de variable dans une requete SQL
-- Risque: Injection SQL permettant acces/modification de donnees
-- Solution: Utiliser des requetes parametrees
+[CRITICAL] Potential SQL injection (line X)
+- Issue: Direct variable concatenation in a SQL query
+- Risk: SQL injection allowing data access/modification
+- Solution: Use parameterized queries
 ```typescript
 const query = 'SELECT * FROM users WHERE id = ?';
 db.query(query, [userId]);
 ```
 ```
 
-## Exemple 2 - Amelioration de lisibilite
+## Example 2 - Readability improvement
 Input:
 ```typescript
 const x = users.filter(u => u.a && u.b > 18 && !u.c);
@@ -91,10 +91,10 @@ const x = users.filter(u => u.a && u.b > 18 && !u.c);
 
 Output:
 ```
-[MEDIUM] Nommage peu explicite (ligne X)
-- Probleme: Variables a, b, c non descriptives
-- Impact: Difficulte de comprehension et maintenance
-- Solution: Utiliser des noms explicites
+[MEDIUM] Unclear naming (line X)
+- Issue: Variables a, b, c are not descriptive
+- Impact: Difficulty in understanding and maintenance
+- Solution: Use explicit names
 ```typescript
 const adultActiveUsers = users.filter(user =>
   user.isActive &&
@@ -104,80 +104,80 @@ const adultActiveUsers = users.filter(user =>
 ```
 ```
 
-# Format de sortie
+# Output format
 
 ```markdown
-## Resume
-- Total: X commentaires (Y critical, Z high, W medium)
-- Note globale: [A-F]
+## Summary
+- Total: X comments (Y critical, Z high, W medium)
+- Overall grade: [A-F]
 
-## Commentaires
+## Comments
 
-### [SEVERITE] Titre court (ligne X)
-- **Probleme**: Description
+### [SEVERITY] Short title (line X)
+- **Issue**: Description
 - **Impact**: Consequence
-- **Solution**: Code corrige
+- **Solution**: Corrected code
 
-## Points positifs
-- [Liste des bonnes pratiques observees]
+## Positive points
+- [List of observed best practices]
 
 ## Conclusion
-[Recommendation finale: approuver, demander changements, ou bloquer]
+[Final recommendation: approve, request changes, or block]
 ```
 
 ---
 
-# Code a analyser
+# Code to analyze
 
-[CODE_A_ANALYSER]
+[CODE_TO_ANALYZE]
 ```
 
 ---
 
-## Score apres optimisation : 28/30
+## Score after optimization: 28/30
 
-| Critere | Score | Commentaire |
-|---------|-------|-------------|
-| Clarte | 5/5 | Instructions precises et detaillees |
-| Structure | 5/5 | Sections logiques bien definies |
-| Contexte | 4/5 | Contexte projet fourni |
-| Exemples | 5/5 | 2 exemples concrets avec format |
-| Contraintes | 5/5 | Limites claires, priorites definies |
-| Format | 4/5 | Template de sortie detaille |
-
----
-
-## Changements effectues
-
-1. **Ajout d'un role** : Expert en code review avec experience specifique
-2. **Contexte du projet** : TypeScript/React, standards d'equipe
-3. **Instructions structurees** : 5 etapes claires et ordonnees
-4. **Contraintes explicites** : Priorites, limites, exclusions
-5. **Exemples few-shot** : 2 exemples montrant le format attendu
-6. **Template de sortie** : Structure exacte du resultat
+| Criterion | Score | Comment |
+|-----------|-------|---------|
+| Clarity | 5/5 | Precise and detailed instructions |
+| Structure | 5/5 | Well-defined logical sections |
+| Context | 4/5 | Project context provided |
+| Examples | 5/5 | 2 concrete examples with format |
+| Constraints | 5/5 | Clear limits, defined priorities |
+| Format | 4/5 | Detailed output template |
 
 ---
 
-## Techniques utilisees
+## Changes made
+
+1. **Added a role**: Code review expert with specific experience
+2. **Project context**: TypeScript/React, team standards
+3. **Structured instructions**: 5 clear and ordered steps
+4. **Explicit constraints**: Priorities, limits, exclusions
+5. **Few-shot examples**: 2 examples showing the expected format
+6. **Output template**: Exact structure of the result
+
+---
+
+## Techniques used
 
 | Technique | Application |
 |-----------|-------------|
-| **Role prompting** | "Expert en code review avec 10 ans d'experience" |
-| **Few-shot learning** | 2 exemples avec input/output |
-| **Structured output** | Template markdown detaille |
-| **Negative prompting** | "NE PAS suggerer...", "NE PAS critiquer..." |
-| **Delimiters** | Sections separees par headers |
+| **Role prompting** | "Code review expert with 10 years of experience" |
+| **Few-shot learning** | 2 examples with input/output |
+| **Structured output** | Detailed markdown template |
+| **Negative prompting** | "DO NOT suggest...", "DO NOT criticize..." |
+| **Delimiters** | Sections separated by headers |
 
 ---
 
-## Variations possibles
+## Possible variations
 
-### Version courte (pour reviews rapides)
+### Short version (for quick reviews)
 
 ```markdown
-Role: Expert code review TypeScript.
+Role: TypeScript code review expert.
 
-Analyse ce code et retourne en JSON:
+Analyze this code and return as JSON:
 {
   "severity": "critical|high|medium|low",
   "issues": [{"line": N, "type": "...", "fix": "..."}],
@@ -188,26 +188,26 @@ Code:
 [CODE]
 ```
 
-### Version securite-focus
+### Security-focus version
 
 ```markdown
-Role: Expert securite OWASP.
+Role: OWASP security expert.
 
-Cherche UNIQUEMENT les vulnerabilites:
+Look ONLY for vulnerabilities:
 - Injection (SQL, XSS, Command)
 - Authentication/Authorization
 - Sensitive data exposure
 - Security misconfiguration
 
-Format: CVSS score + remediation pour chaque issue.
+Format: CVSS score + remediation for each issue.
 ```
 
 ---
 
-## Bonnes pratiques
+## Best practices
 
-1. **Adapter au contexte** : Ajuster le prompt selon le langage/framework
-2. **Iterer** : Tester et affiner sur plusieurs exemples
-3. **Versionner** : Garder un historique des prompts
-4. **Mesurer** : Evaluer la coherence des resultats
-5. **Documenter** : Expliquer les choix pour l'equipe
+1. **Adapt to context**: Adjust the prompt based on the language/framework
+2. **Iterate**: Test and refine on multiple examples
+3. **Version**: Keep a history of prompts
+4. **Measure**: Evaluate the consistency of results
+5. **Document**: Explain choices for the team
