@@ -1,6 +1,6 @@
 ---
 name: api-mocking
-description: Configuration de mocks API pour les tests. Declencher quand l'utilisateur veut mocker des APIs, utiliser MSW, ou tester sans backend.
+description: API mock configuration for tests. Trigger when the user wants to mock APIs, use MSW, or test without a backend.
 allowed-tools:
   - Read
   - Write
@@ -14,24 +14,24 @@ user-invocable: false
 
 # API Mocking
 
-## Declencheurs
+## Triggers
 
 - "mock API"
 - "MSW"
-- "test sans backend"
+- "test without backend"
 - "fake API"
 - "stub endpoint"
 
-## Outils
+## Tools
 
-| Outil | Usage | Install |
-|-------|-------|---------|
+| Tool | Usage | Install |
+|------|-------|---------|
 | MSW | Browser/Node | `npm i -D msw` |
 | nock | Node only | `npm i -D nock` |
 | json-server | REST fake | `npm i -D json-server` |
 | Mirage JS | Browser | `npm i -D miragejs` |
 
-## MSW Setup (Recommande)
+## MSW Setup (Recommended)
 
 ### Installation
 
@@ -194,9 +194,9 @@ afterEach(() => {
 
 ## Best Practices
 
-| Pratique | Description |
+| Practice | Description |
 |----------|-------------|
-| Type-safe | Utiliser les memes types que l'API reelle |
-| Realiste | Simuler delais et erreurs |
-| Isolé | Reset entre chaque test |
-| Maintenu | Mettre a jour avec l'API |
+| Type-safe | Use the same types as the real API |
+| Realistic | Simulate delays and errors |
+| Isolated | Reset between each test |
+| Maintained | Keep up to date with the API |
