@@ -1,6 +1,6 @@
 ---
 name: data-pipeline
-description: Conception de pipelines ETL/ELT. Declencher quand l'utilisateur veut creer des flux de donnees, transformations, ou orchestration.
+description: ETL/ELT pipeline design. Trigger when the user wants to create data flows, transformations, or orchestration.
 allowed-tools:
   - Read
   - Write
@@ -15,9 +15,9 @@ context: fork
 
 ## ETL vs ELT
 
-| Pattern | Quand utiliser |
+| Pattern | When to use |
 |---------|----------------|
-| ETL | Transformation complexe, donnees sensibles |
+| ETL | Complex transformation, sensitive data |
 | ELT | Big data, cloud DW (BigQuery, Snowflake) |
 
 ## Airflow DAG
