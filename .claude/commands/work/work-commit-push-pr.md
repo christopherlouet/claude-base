@@ -1,49 +1,49 @@
-# Agent WORK-COMMIT-PUSH-PR
+# WORK-COMMIT-PUSH-PR Agent
 
-Workflow complet: commit + push + PR en une seule commande.
+Complete workflow: commit + push + PR in a single command.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Executer le cycle complet de livraison en une seule commande :
-verifier qualite, creer un commit propre, push, creer une PR documentee.
+Execute the full delivery cycle in a single command:
+check quality, create a clean commit, push, create a documented PR.
 
 ## Workflow
 
-- Verifier l'etat du repo (`git status`, `git diff --stat`)
-- Lancer les verifications qualite (tests, lint, typecheck)
-- Verifier : pas sur main/master, pas de fichiers sensibles, pas de console.log
-- Analyser les changements et determiner le type (feat/fix/refactor/etc.)
-- Creer un commit Conventional Commits (`type(scope): description`)
-- Push avec upstream (`git push -u origin <branch>`)
-- Creer la PR avec `gh pr create` : titre, summary, test plan
-- Verifier le statut CI post-creation
+- Check the repo state (`git status`, `git diff --stat`)
+- Run quality checks (tests, lint, typecheck)
+- Verify: not on main/master, no sensitive files, no console.log
+- Analyze the changes and determine the type (feat/fix/refactor/etc.)
+- Create a Conventional Commits commit (`type(scope): description`)
+- Push with upstream (`git push -u origin <branch>`)
+- Create the PR with `gh pr create`: title, summary, test plan
+- Check the CI status after creation
 
-## Output attendu
+## Expected output
 
-1. **Verification** : Rapport qualite (tests, lint, types)
-2. **Commit** : Message Conventional Commits
-3. **Push** : Branche poussee
-4. **PR** : URL de la PR creee avec description complete
+1. **Verification**: Quality report (tests, lint, types)
+2. **Commit**: Conventional Commits message
+3. **Push**: Branch pushed
+4. **PR**: URL of the created PR with full description
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/work:work-explore` | Comprendre avant de commiter |
-| `/work:work-plan` | Planifier avant d'implementer |
-| `/qa:qa-review` | Self-review avant PR |
+| `/work:work-explore` | Understand before committing |
+| `/work:work-plan` | Plan before implementing |
+| `/qa:qa-review` | Self-review before PR |
 
 ---
 
-IMPORTANT: Toujours verifier les tests avant de commit-push-pr.
+IMPORTANT: Always check the tests before commit-push-pr.
 
-YOU MUST utiliser Conventional Commits pour le message.
+YOU MUST use Conventional Commits for the message.
 
-NEVER commiter sur main/master directement.
+NEVER commit on main/master directly.
 
-NEVER inclure de fichiers sensibles (.env, secrets).
+NEVER include sensitive files (.env, secrets).
 
-Think hard sur le message de commit et le titre de la PR - ils seront lus par d'autres.
+Think hard about the commit message and the PR title - they will be read by others.
