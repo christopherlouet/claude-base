@@ -1,48 +1,48 @@
-# Agent GITFLOW-RELEASE
+# GITFLOW-RELEASE Agent
 
-Gerer les branches release avec GitFlow (start, finish, list).
+Manage release branches with GitFlow (start, finish, list).
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Creer, preparer et finaliser des releases selon le workflow GitFlow
-avec merge bidirectionnel (main + develop) et tag de version.
+Create, prepare, and finalize releases following the GitFlow workflow
+with bidirectional merge (main + develop) and version tag.
 
 ## Workflow
 
-- Detecter l'action dans les arguments (start/finish/list)
-- **start** : creer release/vX.X.X depuis develop, pousser la branche
-- **finish** : merger dans main, creer le tag, merger dans develop, supprimer la branche
-- **list** : lister les branches release et les tags existants
-- Verifier les prerequis avant chaque action (repo propre, branches a jour)
-- Respecter le versioning semantique (MAJOR.MINOR.PATCH)
+- Detect the action in the arguments (start/finish/list)
+- **start**: create release/vX.X.X from develop, push the branch
+- **finish**: merge into main, create the tag, merge into develop, delete the branch
+- **list**: list release branches and existing tags
+- Check the prerequisites before each action (clean repo, up-to-date branches)
+- Follow semantic versioning (MAJOR.MINOR.PATCH)
 
-## Output attendu
+## Expected output
 
-1. **Branche release** creee ou terminee
-2. **Checklist** de preparation (bump version, changelog, tests)
-3. **Resume des actions** effectuees
-4. **Prochaines etapes** (deploiement, release notes GitHub)
+1. **Release branch** created or finished
+2. **Checklist** for preparation (bump version, changelog, tests)
+3. **Summary of actions** performed
+4. **Next steps** (deployment, GitHub release notes)
 
-## Agents lies
+## Related agents
 
-| Avant | Usage |
+| Before | Usage |
+|--------|-------|
+| `/ops:ops-gitflow-feature` | Finished features |
+| `/doc:doc-changelog` | Generate the changelog |
+
+| After | Usage |
 |-------|-------|
-| `/ops:ops-gitflow-feature` | Features terminees |
-| `/doc:doc-changelog` | Generer le changelog |
-
-| Apres | Usage |
-|-------|-------|
-| `/qa:qa-audit` | Audit qualite avant release |
+| `/qa:qa-audit` | Quality audit before release |
 
 ---
 
-IMPORTANT: Une release DOIT etre mergee dans main ET develop.
+IMPORTANT: A release MUST be merged into main AND develop.
 
-YOU MUST creer un tag sur main apres le merge.
+YOU MUST create a tag on main after the merge.
 
-YOU MUST backporter les changements dans develop.
+YOU MUST backport the changes into develop.
 
-NEVER ajouter de nouvelles features sur une branche release.
+NEVER add new features on a release branch.
