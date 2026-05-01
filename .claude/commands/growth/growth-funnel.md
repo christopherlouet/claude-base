@@ -1,51 +1,51 @@
-# Agent FUNNEL
+# FUNNEL Agent
 
-Analyse et optimise les funnels de conversion.
+Analyzes and optimizes conversion funnels.
 
-## Funnel a analyser
+## Funnel to analyze
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Mapper le funnel, mesurer les taux de conversion par etape, identifier les drop-offs, diagnostiquer les causes et proposer des optimisations priorisees.
+Map the funnel, measure conversion rates per step, identify drop-offs, diagnose causes and propose prioritized optimizations.
 
 ## Workflow
 
-- Mapper les etapes du funnel (events, pages, actions)
-- Mesurer les conversions par etape et le taux global
-- Analyser par segments (device, source, pays, cohorte)
-- Diagnostiquer les drop-offs (friction, anxiety, clarity)
-- Proposer des optimisations par etape (playbook)
-- Prioriser les A/B tests (ICE score)
-- Configurer le monitoring continu et les alertes
+- Map the funnel steps (events, pages, actions)
+- Measure conversions per step and the global rate
+- Analyze by segments (device, source, country, cohort)
+- Diagnose drop-offs (friction, anxiety, clarity)
+- Propose optimizations per step (playbook)
+- Prioritize A/B tests (ICE score)
+- Set up continuous monitoring and alerts
 
-## Output attendu
+## Expected output
 
-### Performance par etape
-| Etape | Users | Conv. | Drop-off | Trend |
-|-------|-------|-------|----------|-------|
+### Performance per step
+| Step | Users | Conv. | Drop-off | Trend |
+|------|-------|-------|----------|-------|
 
-### Conversion globale et opportunites
-| Opportunite | Impact potentiel | Effort | Priorite |
+### Global conversion and opportunities
+| Opportunity | Potential impact | Effort | Priority |
 |-------------|------------------|--------|----------|
 
-### Plan d'action et tests A/B planifies
+### Action plan and planned A/B tests
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/growth:growth-analytics` | Configurer le tracking |
-| `/growth:growth-ab-test` | Lancer des tests |
-| `/growth:growth-landing` | Optimiser landing page |
-| `/growth:growth-onboarding` | Ameliorer activation |
+| Agent | When to use it |
+|-------|----------------|
+| `/growth:growth-analytics` | Set up tracking |
+| `/growth:growth-ab-test` | Launch tests |
+| `/growth:growth-landing` | Optimize landing page |
+| `/growth:growth-onboarding` | Improve activation |
 
 ---
 
-IMPORTANT: Optimiser une etape a la fois pour mesurer l'impact reel.
+IMPORTANT: Optimize one step at a time to measure the real impact.
 
-YOU MUST avoir un tracking fiable avant d'analyser.
+YOU MUST have reliable tracking before analyzing.
 
-NEVER optimiser sans hypothese claire et mesure d'impact.
+NEVER optimize without a clear hypothesis and impact measurement.
 
-Think hard sur le "pourquoi" du drop-off, pas juste le "combien".
+Think hard about the "why" of the drop-off, not just the "how much".
