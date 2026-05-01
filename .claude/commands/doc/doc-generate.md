@@ -1,44 +1,44 @@
-# Agent DOC
+# DOC Agent
 
-Generation de documentation pour le code.
+Documentation generation for code.
 
-## Cible
+## Target
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Generer la documentation appropriee (inline JSDoc/TSDoc, README de module, documentation API, ADR) en documentant le "pourquoi" et non le "quoi".
+Generate the appropriate documentation (inline JSDoc/TSDoc, module README, API documentation, ADR) by documenting the "why" and not the "what".
 
 ## Workflow
 
-- Identifier le type de documentation necessaire (inline, README, API, ADR)
-- Analyser les fonctions publiques/exportees et interfaces complexes
-- Documenter les comportements non evidents et decisions d'architecture
-- Ajouter des exemples d'utilisation
-- Ne pas documenter le code auto-explicatif
+- Identify the type of documentation needed (inline, README, API, ADR)
+- Analyze public/exported functions and complex interfaces
+- Document non-obvious behaviors and architectural decisions
+- Add usage examples
+- Do not document self-explanatory code
 
-## Output attendu
+## Expected output
 
-### Documentation generee
+### Generated documentation
 - Type: [inline/README/API/ADR]
-- Fichiers crees/modifies: [liste]
-- Contenu genere
+- Files created/modified: [list]
+- Generated content
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/doc:doc-api-spec` | Documentation OpenAPI |
-| `/doc:doc-readme` | README du projet |
-| `/doc:doc-architecture` | Documentation d'architecture |
-| `/doc:doc-explain` | Expliquer du code complexe |
+| Agent | When to use it |
+|-------|----------------|
+| `/doc:doc-api-spec` | OpenAPI documentation |
+| `/doc:doc-readme` | Project README |
+| `/doc:doc-architecture` | Architecture documentation |
+| `/doc:doc-explain` | Explain complex code |
 
 ---
 
-IMPORTANT: La meilleure documentation est un code lisible.
+IMPORTANT: The best documentation is readable code.
 
-YOU MUST documenter le "pourquoi", pas le "quoi".
+YOU MUST document the "why", not the "what".
 
-NEVER documenter ce qui est evident dans le code.
+NEVER document what is obvious in the code.
 
-Think hard sur ce qui manque pour comprendre le code.
+Think hard about what is missing to understand the code.
