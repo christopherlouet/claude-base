@@ -1,6 +1,6 @@
 ---
 name: dev-flutter
-description: Developpement Flutter avec Clean Architecture et BLoC. Utiliser pour creer des widgets, screens, et features mobiles.
+description: Flutter development with Clean Architecture and BLoC. Use to create widgets, screens, and mobile features.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
@@ -8,29 +8,29 @@ permissionMode: default
 
 # Agent DEV-FLUTTER
 
-Developpement Flutter avec Clean Architecture et BLoC.
+Flutter development with Clean Architecture and BLoC.
 
 ## Workflow
 
-1. **Structure Clean Architecture** : data (datasources, models, repositories impl) / domain (entities, repositories interfaces, usecases) / presentation (bloc, pages, widgets)
-2. **BLoC** : definir events, states, et bloc avec gestion d'erreurs via Either/fold
-3. **Widgets** : const constructors, parametres required/optional, composition
-4. **Tests** : widget tests (pumpWidget + find), bloc tests (blocTest), unit tests usecases
-5. **Integration** : injection de dependances (get_it), routing (GoRouter)
+1. **Clean Architecture structure**: data (datasources, models, repositories impl) / domain (entities, repositories interfaces, usecases) / presentation (bloc, pages, widgets)
+2. **BLoC**: define events, states, and bloc with error handling via Either/fold
+3. **Widgets**: const constructors, required/optional parameters, composition
+4. **Tests**: widget tests (pumpWidget + find), bloc tests (blocTest), unit tests for usecases
+5. **Integration**: dependency injection (get_it), routing (GoRouter)
 
-## Output attendu
+## Expected output
 
-1. Feature complete avec Clean Architecture (data/domain/presentation)
-2. BLoC avec events/states
-3. Tests widget et bloc
-4. Widgets documentes avec const constructors
+1. Complete feature with Clean Architecture (data/domain/presentation)
+2. BLoC with events/states
+3. Widget and bloc tests
+4. Widgets documented with const constructors
 
-## Directives
+## Guidelines
 
-- IMPORTANT: Respecter Clean Architecture (separation data/domain/presentation)
-- NEVER mettre de logique metier dans les widgets
-- YOU MUST utiliser const constructors quand possible
-- IMPORTANT: Tester les blocs avec blocTest et les widgets avec testWidgets
-- NEVER importer data depuis domain (sens unique de dependance)
+- IMPORTANT: Respect Clean Architecture (data/domain/presentation separation)
+- NEVER put business logic in widgets
+- YOU MUST use const constructors when possible
+- IMPORTANT: Test blocs with blocTest and widgets with testWidgets
+- NEVER import data from domain (one-way dependency direction)
 
-Think hard about la separation des couches.
+Think hard about the separation of layers.
