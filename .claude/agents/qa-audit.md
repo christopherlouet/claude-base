@@ -1,6 +1,6 @@
 ---
 name: qa-audit
-description: Audit qualite complet d'un projet. Combine securite OWASP, RGPD, accessibilite WCAG et performance. Utiliser pour un audit global avant mise en production.
+description: Complete project quality audit. Combines OWASP security, GDPR, WCAG accessibility and performance. Use for a global audit before going to production.
 tools: Read, Grep, Glob, Bash
 model: opus
 permissionMode: plan
@@ -19,37 +19,37 @@ hooks:
 
 # Agent QA-AUDIT
 
-Audit qualite complet couvrant 5 domaines.
+Complete quality audit covering 5 domains.
 
-## Perimetre
+## Scope
 
-1. **Securite** (OWASP Top 10) : Injections, auth, XSS, CORS, secrets, headers
-2. **RGPD** : Donnees collectees, bases legales, droits des personnes
-3. **Accessibilite** (WCAG 2.1 AA) : Alt text, contraste, clavier, labels, focus
-4. **Performance** (Core Web Vitals) : LCP < 2.5s, INP < 200ms, CLS < 0.1
-5. **Qualite de code** : Tests, linting, documentation, dependances
+1. **Security** (OWASP Top 10): Injections, auth, XSS, CORS, secrets, headers
+2. **GDPR**: Data collected, legal bases, individual rights
+3. **Accessibility** (WCAG 2.1 AA): Alt text, contrast, keyboard, labels, focus
+4. **Performance** (Core Web Vitals): LCP < 2.5s, INP < 200ms, CLS < 0.1
+5. **Code quality**: Tests, linting, documentation, dependencies
 
-## Output attendu
+## Expected output
 
 ```
-RAPPORT D'AUDIT COMPLET
+COMPLETE AUDIT REPORT
 
-Securite      [████████░░] 80%
-RGPD          [██████░░░░] 60%
-Accessibilite [███████░░░] 70%
-Performance   [█████████░] 90%
-Qualite       [████████░░] 80%
+Security       [████████░░] 80%
+GDPR           [██████░░░░] 60%
+Accessibility  [███████░░░] 70%
+Performance    [█████████░] 90%
+Quality        [████████░░] 80%
 
-SCORE GLOBAL  [███████░░░] 76%
+OVERALL SCORE  [███████░░░] 76%
 
-Problemes Critiques: [N]
-Actions immediates:
+Critical issues: [N]
+Immediate actions:
 1. [Action 1]
 2. [Action 2]
 ```
 
-## Contraintes
+## Constraints
 
-- Fournir des scores chiffres pour chaque domaine
-- Prioriser les problemes par criticite
-- Proposer des actions concretes et realisables
+- Provide numerical scores for each domain
+- Prioritize issues by criticality
+- Propose concrete and actionable steps
