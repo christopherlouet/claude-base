@@ -18,306 +18,320 @@
 #   scripts/migration/check-glossary.sh enforces these on EN files.
 # =============================================================================
 
-locked_at: null  # set by lock-glossary.sh on Friday morning
 
+locked_at: '2026-05-01'
 terms:
-  # ---------------------------------------------------------------------------
-  # Core domain (most frequent)
-  # ---------------------------------------------------------------------------
-  - fr: socle
-    en: foundation
-    forbidden: [scaffold]
-    context: "claude-socle is 'the foundation' — central concept. 'framework', 'kit', 'base' are legitimate EN words elsewhere; we only enforce 'foundation' via the prompt, not by blacklisting"
-
-  - fr: agent
-    en: agent
-    context: "verbatim — same word in EN"
-
-  - fr: regle
-    en: rule
-    forbidden: [guideline]
-    context: "'policy' dropped — 'Language Policy' is a legitimate phrase in CONTRIBUTING"
-
-  - fr: regles
-    en: rules
-    forbidden: [guidelines]
-
-  - fr: etape
-    en: step
-    context: "phase = bigger grouping in plans. 'stage' and 'phase' dropped from forbidden — 'phase' is canonical for FR phase (cross-conflict), 'stage' has legitimate uses (build stage, deployment stage). Prompt enforces step vs phase distinction"
-
-  - fr: phase
-    en: phase
-    context: "'stage' dropped from forbidden — too common (build stage, deployment stage)"
-
-  - fr: boucle
-    en: loop
-    context: "'cycle' and 'iteration' dropped from forbidden — 'cycle' is canonical for FR cycle (cross-conflict), 'iteration' is super common (loop iteration, agile iteration)"
-
-  - fr: cycle
-    en: cycle
-    context: "canonical for FR 'cycle' (e.g., Red-Green-Refactor cycle)"
-
-  - fr: audit
-    en: audit
-    forbidden: [inspection]
-    context: "'check' dropped — too common as generic verb in EN ('checks', 'sanity check'). 'review' kept off forbidden because it's canonical for FR 'revue'"
-
-  - fr: revue
-    en: review
-    forbidden: [inspection]
-    context: "audit dropped from forbidden — it's a valid translation of FR 'audit'"
-
-  - fr: chantier
-    en: project
-    forbidden: [worksite, jobsite]
-    context: "as in 'big project / migration'. 'work' dropped from forbidden — far too common in EN"
-
-  # ---------------------------------------------------------------------------
-  # Workflow vocabulary
-  # ---------------------------------------------------------------------------
-  - fr: workflow
-    en: workflow
-    context: "verbatim"
-
-  - fr: tache
-    en: task
-    forbidden: [work-item]
-    context: "'job' dropped — common in EN (cron job, background job, CI job)"
-
-  - fr: taches
-    en: tasks
-
-  - fr: feature
-    en: feature
-    context: "verbatim"
-
-  - fr: bugfix
-    en: bugfix
-    context: "verbatim"
-
-  - fr: dette
-    en: debt
-    forbidden: [liability, debit]
-
-  - fr: dette technique
-    en: technical debt
-
-  - fr: hook
-    en: hook
-    context: "verbatim — software lifecycle hook"
-
-  - fr: hooks
-    en: hooks
-
-  - fr: equipe
-    en: team
-    forbidden: [crew, squad]
-
-  - fr: lancement
-    en: launch
-    forbidden: [kickoff]
-    context: "'release' dropped — canonical for FR 'release' (cross-conflict). Prompt enforces launch vs release distinction, validator cannot disambiguate"
-
-  - fr: release
-    en: release
-    context: "verbatim — shipping a new version"
-
-  - fr: deploiement
-    en: deployment
-    context: "'deploy' dropped from forbidden — used legitimately as verb everywhere"
-
-  - fr: rollback
-    en: rollback
-    context: "verbatim"
-
-  - fr: revert
-    en: revert
-    context: "verbatim — git revert"
-
-  - fr: branche
-    en: branch
-    forbidden: [ramification]
-    context: "'fork' dropped — legitimate git term"
-
-  - fr: commit
-    en: commit
-    context: "verbatim"
-
-  - fr: merger
-    en: merge
-    forbidden: [fuse]
-    context: "'combine' dropped — common verb in EN (combine sources, combine results)"
-
-  - fr: tag
-    en: tag
-    context: "verbatim — git tag"
-
-  # ---------------------------------------------------------------------------
-  # State and quality
-  # ---------------------------------------------------------------------------
-  - fr: etat
-    en: state
-    context: "'status' dropped — canonical for FR 'statut' (cross-conflict). 'condition' dropped — common in code (if condition, race condition). 'state' vs 'status' distinction enforced via prompt only"
-
-  - fr: statut
-    en: status
-    context: "state = persistent data; status = momentary indicator (todo/done). Cross-conflict prevented us from blacklisting 'state'"
-
-  - fr: vitrine
-    en: showcase
-    forbidden: [storefront]
-    context: "as in 'project showcase'. 'window' and 'display' dropped — both extremely common in tech (UI windows, display logic)"
-
-  - fr: qualite
-    en: quality
-
-  - fr: couverture
-    en: coverage
-    context: "test coverage"
-
-  - fr: drift
-    en: drift
-    context: "verbatim — terminology drift"
-
-  - fr: derive
-    en: drift
-
-  # ---------------------------------------------------------------------------
-  # Specification vocabulary
-  # ---------------------------------------------------------------------------
-  - fr: exigence
-    en: requirement
-
-  - fr: exigences
-    en: requirements
-
-  - fr: critere
-    en: criterion
-
-  - fr: criteres
-    en: criteria
-
-  - fr: cas limite
-    en: edge case
-
-  - fr: cas limites
-    en: edge cases
-
-  - fr: hors scope
-    en: out of scope
-    forbidden: [non-scope, off-scope]
-
-  - fr: scope
-    en: scope
-
-  - fr: definition de fait
-    en: definition of done
-
-  - fr: point de clarification
-    en: clarification point
-
-  - fr: points de clarification
-    en: clarification points
-
-  - fr: fenetre cible
-    en: target window
-    forbidden: [target time]
-
-  # ---------------------------------------------------------------------------
-  # Roles and people
-  # ---------------------------------------------------------------------------
-  - fr: mainteneur
-    en: maintainer
-    context: "'owner' and 'admin' dropped — both common in tech (file owner, admin panel, repo owner)"
-
-  - fr: contributeur
-    en: contributor
-    context: "'collaborator' dropped — GitHub uses 'Collaborators' for repo access role"
-
-  - fr: utilisateur
-    en: user
-
-  - fr: developpeur
-    en: developer
-
-  # ---------------------------------------------------------------------------
-  # Technical infra
-  # ---------------------------------------------------------------------------
-  - fr: cap
-    en: cap
-    context: "rate-limit cap, in 'Claude Max cap'"
-
-  - fr: quota
-    en: quota
-    context: "'limit' and 'allocation' dropped — 'limit' is ubiquitous (rate limit, max limit, etc.)"
-
-  - fr: ancre
-    en: anchor
-    context: "markdown anchor"
-
-  - fr: reference
-    en: reference
-
-  - fr: references
-    en: references
-
-  - fr: frontmatter
-    en: frontmatter
-    context: "verbatim — YAML frontmatter"
-
-  - fr: glossaire
-    en: glossary
-
-  - fr: tier
-    en: tier
-    context: "verbatim — migration tier"
-
-  - fr: tiers
-    en: tiers
-
-  # ---------------------------------------------------------------------------
-  # Migration-specific vocabulary
-  # ---------------------------------------------------------------------------
-  - fr: nuit
-    en: night
-    context: "as in 'overnight headless run'"
-
-  - fr: traduction
-    en: translation
-
-  - fr: traduit
-    en: translated
-
-  - fr: traduire
-    en: translate
-
-  - fr: validateur
-    en: validator
-    context: "'checker' and 'linter' dropped — both legitimate technical terms (eslint linter, type checker)"
-
-  - fr: validateurs
-    en: validators
-
-  - fr: recovery
-    en: recovery
-    context: "verbatim — fault recovery"
-
-  - fr: checkpoint
-    en: checkpoint
-    context: "verbatim"
-
-  # ---------------------------------------------------------------------------
-  # Headless / runtime
-  # ---------------------------------------------------------------------------
-  - fr: headless
-    en: headless
-    context: "verbatim"
-
-  - fr: pair-programming
-    en: pair-programming
-    context: "verbatim"
-
-  - fr: harness
-    en: harness
-    context: "verbatim — test/translation harness"
+- fr: socle
+  en: foundation
+  forbidden:
+  - scaffold
+  context: claude-socle is 'the foundation' — central concept. 'framework', 'kit',
+    'base' are legitimate EN words elsewhere; we only enforce 'foundation' via the
+    prompt, not by blacklisting
+  locked: true
+- fr: agent
+  en: agent
+  context: verbatim — same word in EN
+  locked: true
+- fr: regle
+  en: rule
+  forbidden:
+  - guideline
+  context: '''policy'' dropped — ''Language Policy'' is a legitimate phrase in CONTRIBUTING'
+  locked: true
+- fr: regles
+  en: rules
+  forbidden:
+  - guidelines
+  locked: true
+- fr: etape
+  en: step
+  context: phase = bigger grouping in plans. 'stage' and 'phase' dropped from forbidden
+    — 'phase' is canonical for FR phase (cross-conflict), 'stage' has legitimate uses
+    (build stage, deployment stage). Prompt enforces step vs phase distinction
+  locked: true
+- fr: phase
+  en: phase
+  context: '''stage'' dropped from forbidden — too common (build stage, deployment
+    stage)'
+  locked: true
+- fr: boucle
+  en: loop
+  context: '''cycle'' and ''iteration'' dropped from forbidden — ''cycle'' is canonical
+    for FR cycle (cross-conflict), ''iteration'' is super common (loop iteration,
+    agile iteration)'
+  locked: true
+- fr: cycle
+  en: cycle
+  context: canonical for FR 'cycle' (e.g., Red-Green-Refactor cycle)
+  locked: true
+- fr: audit
+  en: audit
+  forbidden:
+  - inspection
+  context: '''check'' dropped — too common as generic verb in EN (''checks'', ''sanity
+    check''). ''review'' kept off forbidden because it''s canonical for FR ''revue'''
+  locked: true
+- fr: revue
+  en: review
+  forbidden:
+  - inspection
+  context: audit dropped from forbidden — it's a valid translation of FR 'audit'
+  locked: true
+- fr: chantier
+  en: project
+  forbidden:
+  - worksite
+  - jobsite
+  context: as in 'big project / migration'. 'work' dropped from forbidden — far too
+    common in EN
+  locked: true
+- fr: workflow
+  en: workflow
+  context: verbatim
+  locked: true
+- fr: tache
+  en: task
+  forbidden:
+  - work-item
+  context: '''job'' dropped — common in EN (cron job, background job, CI job)'
+  locked: true
+- fr: taches
+  en: tasks
+  locked: true
+- fr: feature
+  en: feature
+  context: verbatim
+  locked: true
+- fr: bugfix
+  en: bugfix
+  context: verbatim
+  locked: true
+- fr: dette
+  en: debt
+  forbidden:
+  - liability
+  - debit
+  locked: true
+- fr: dette technique
+  en: technical debt
+  locked: true
+- fr: hook
+  en: hook
+  context: verbatim — software lifecycle hook
+  locked: true
+- fr: hooks
+  en: hooks
+  locked: true
+- fr: equipe
+  en: team
+  forbidden:
+  - crew
+  - squad
+  locked: true
+- fr: lancement
+  en: launch
+  forbidden:
+  - kickoff
+  context: '''release'' dropped — canonical for FR ''release'' (cross-conflict). Prompt
+    enforces launch vs release distinction, validator cannot disambiguate'
+  locked: true
+- fr: release
+  en: release
+  context: verbatim — shipping a new version
+  locked: true
+- fr: deploiement
+  en: deployment
+  context: '''deploy'' dropped from forbidden — used legitimately as verb everywhere'
+  locked: true
+- fr: rollback
+  en: rollback
+  context: verbatim
+  locked: true
+- fr: revert
+  en: revert
+  context: verbatim — git revert
+  locked: true
+- fr: branche
+  en: branch
+  forbidden:
+  - ramification
+  context: '''fork'' dropped — legitimate git term'
+  locked: true
+- fr: commit
+  en: commit
+  context: verbatim
+  locked: true
+- fr: merger
+  en: merge
+  forbidden:
+  - fuse
+  context: '''combine'' dropped — common verb in EN (combine sources, combine results)'
+  locked: true
+- fr: tag
+  en: tag
+  context: verbatim — git tag
+  locked: true
+- fr: etat
+  en: state
+  context: '''status'' dropped — canonical for FR ''statut'' (cross-conflict). ''condition''
+    dropped — common in code (if condition, race condition). ''state'' vs ''status''
+    distinction enforced via prompt only'
+  locked: true
+- fr: statut
+  en: status
+  context: state = persistent data; status = momentary indicator (todo/done). Cross-conflict
+    prevented us from blacklisting 'state'
+  locked: true
+- fr: vitrine
+  en: showcase
+  forbidden:
+  - storefront
+  context: as in 'project showcase'. 'window' and 'display' dropped — both extremely
+    common in tech (UI windows, display logic)
+  locked: true
+- fr: qualite
+  en: quality
+  locked: true
+- fr: couverture
+  en: coverage
+  context: test coverage
+  locked: true
+- fr: drift
+  en: drift
+  context: verbatim — terminology drift
+  locked: true
+- fr: derive
+  en: drift
+  locked: true
+- fr: exigence
+  en: requirement
+  locked: true
+- fr: exigences
+  en: requirements
+  locked: true
+- fr: critere
+  en: criterion
+  locked: true
+- fr: criteres
+  en: criteria
+  locked: true
+- fr: cas limite
+  en: edge case
+  locked: true
+- fr: cas limites
+  en: edge cases
+  locked: true
+- fr: hors scope
+  en: out of scope
+  forbidden:
+  - non-scope
+  - off-scope
+  locked: true
+- fr: scope
+  en: scope
+  locked: true
+- fr: definition de fait
+  en: definition of done
+  locked: true
+- fr: point de clarification
+  en: clarification point
+  locked: true
+- fr: points de clarification
+  en: clarification points
+  locked: true
+- fr: fenetre cible
+  en: target window
+  forbidden:
+  - target time
+  locked: true
+- fr: mainteneur
+  en: maintainer
+  context: '''owner'' and ''admin'' dropped — both common in tech (file owner, admin
+    panel, repo owner)'
+  locked: true
+- fr: contributeur
+  en: contributor
+  context: '''collaborator'' dropped — GitHub uses ''Collaborators'' for repo access
+    role'
+  locked: true
+- fr: utilisateur
+  en: user
+  locked: true
+- fr: developpeur
+  en: developer
+  locked: true
+- fr: cap
+  en: cap
+  context: rate-limit cap, in 'Claude Max cap'
+  locked: true
+- fr: quota
+  en: quota
+  context: '''limit'' and ''allocation'' dropped — ''limit'' is ubiquitous (rate limit,
+    max limit, etc.)'
+  locked: true
+- fr: ancre
+  en: anchor
+  context: markdown anchor
+  locked: true
+- fr: reference
+  en: reference
+  locked: true
+- fr: references
+  en: references
+  locked: true
+- fr: frontmatter
+  en: frontmatter
+  context: verbatim — YAML frontmatter
+  locked: true
+- fr: glossaire
+  en: glossary
+  locked: true
+- fr: tier
+  en: tier
+  context: verbatim — migration tier
+  locked: true
+- fr: tiers
+  en: tiers
+  locked: true
+- fr: nuit
+  en: night
+  context: as in 'overnight headless run'
+  locked: true
+- fr: traduction
+  en: translation
+  locked: true
+- fr: traduit
+  en: translated
+  locked: true
+- fr: traduire
+  en: translate
+  locked: true
+- fr: validateur
+  en: validator
+  context: '''checker'' and ''linter'' dropped — both legitimate technical terms (eslint
+    linter, type checker)'
+  locked: true
+- fr: validateurs
+  en: validators
+  locked: true
+- fr: recovery
+  en: recovery
+  context: verbatim — fault recovery
+  locked: true
+- fr: checkpoint
+  en: checkpoint
+  context: verbatim
+  locked: true
+- fr: headless
+  en: headless
+  context: verbatim
+  locked: true
+- fr: pair-programming
+  en: pair-programming
+  context: verbatim
+  locked: true
+- fr: harness
+  en: harness
+  context: verbatim — test/translation harness
+  locked: true
