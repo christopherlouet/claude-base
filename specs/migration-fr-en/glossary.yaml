@@ -107,8 +107,8 @@ terms:
 - fr: dette
   en: debt
   forbidden:
-  - liability
   - debit
+  context: "'liability' dropped — legitimate legal/finance EN term (Terms of Service)"
   locked: true
 - fr: dette technique
   en: technical debt
