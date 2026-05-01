@@ -1,49 +1,49 @@
-# Agent WORK-FLOW-RELEASE
+# WORK-FLOW-RELEASE Agent
 
-Workflow complet pour preparer et publier une release.
+Complete workflow to prepare and publish a release.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Executer le cycle complet de release : branche, audit qualite, changelog,
-versioning semantique, tests complets, build production, tag, deploiement.
+Execute the complete release cycle: branch, quality audit, changelog,
+semantic versioning, complete tests, production build, tag, deployment.
 
 ## Workflow
 
-- **BRANCH** : Creer branche `release/vX.Y.Z` depuis main a jour
-- **AUDIT** : Tests, lint, typecheck, `npm audit`, build (tous doivent passer)
-- **CHANGELOG** : Lister les changements depuis le dernier tag (Added, Changed, Fixed, Deprecated, Removed, Security)
-- **VERSION** : Semantic Versioning (breaking = MAJOR, features = MINOR, fixes = PATCH)
-- **TESTS** : Validation complete (unitaires, integration, E2E, manuels)
-- **BUILD** : Build production, verifier taille bundle et assets
-- **TAG** : Tag annote `git tag -a vX.Y.Z`, push, release GitHub avec notes
-- **DEPLOY** : Deploiement production avec rollback plan pret
+- **BRANCH**: Create `release/vX.Y.Z` branch from up-to-date main
+- **AUDIT**: Tests, lint, typecheck, `npm audit`, build (all must pass)
+- **CHANGELOG**: List changes since the last tag (Added, Changed, Fixed, Deprecated, Removed, Security)
+- **VERSION**: Semantic Versioning (breaking = MAJOR, features = MINOR, fixes = PATCH)
+- **TESTS**: Complete validation (unit, integration, E2E, manual)
+- **BUILD**: Production build, verify bundle size and assets
+- **TAG**: Annotated tag `git tag -a vX.Y.Z`, push, GitHub release with notes
+- **DEPLOY**: Production deployment with rollback plan ready
 
-## Output attendu
+## Expected output
 
-1. **Audit** : Rapport qualite go/no-go
-2. **Changelog** : CHANGELOG.md mis a jour
-3. **Release** : Tag + release notes sur GitHub
-4. **Deploy** : Application deployee, monitoring OK
+1. **Audit**: Quality go/no-go report
+2. **Changelog**: CHANGELOG.md updated
+3. **Release**: Tag + release notes on GitHub
+4. **Deploy**: Application deployed, monitoring OK
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/qa:qa-audit` | Audit qualite |
+| `/qa:qa-audit` | Quality audit |
 | `/doc:doc-changelog` | Changelog |
-| `/dev:dev-test` | Tests complets |
-| `/ops:ops-release` | Alternative simplifiee |
-| `/ops:ops-monitoring` | Post-deploiement |
+| `/dev:dev-test` | Complete tests |
+| `/ops:ops-release` | Simplified alternative |
+| `/ops:ops-monitoring` | Post-deployment |
 
 ---
 
-IMPORTANT: Ne jamais skip les tests avant une release.
+IMPORTANT: Never skip tests before a release.
 
-YOU MUST avoir un plan de rollback pret avant de deployer.
+YOU MUST have a rollback plan ready before deploying.
 
-NEVER deployer un vendredi soir (sauf hotfix critique).
+NEVER deploy on a Friday evening (except critical hotfix).
 
-Think hard sur l'impact de chaque changement pour les utilisateurs.
+Think hard about the impact of each change on users.
