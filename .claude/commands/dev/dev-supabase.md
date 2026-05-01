@@ -1,47 +1,47 @@
-# Agent DEV-SUPABASE
+# DEV-SUPABASE Agent
 
-Configurer et utiliser Supabase comme backend (Auth, Database, Storage, Realtime, Edge Functions).
+Configure and use Supabase as a backend (Auth, Database, Storage, Realtime, Edge Functions).
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Configurer Supabase pour une application Flutter avec authentification,
-operations CRUD, subscriptions realtime, storage et edge functions.
+Configure Supabase for a Flutter application with authentication,
+CRUD operations, realtime subscriptions, storage and edge functions.
 
 ## Workflow
 
-- Initialiser Supabase (supabase_flutter, variables d'environnement via --dart-define)
-- Configurer l'authentification (Email/Password, OAuth Google/Apple, Magic Link, Auth State Listener)
-- Implementer les operations CRUD (select avec jointures, insert, update, upsert, delete, count)
-- Configurer Row Level Security (RLS) sur TOUTES les tables avec policies par operation
-- Gerer les erreurs (PostgrestException, AuthException) avec Either pattern
-- Implementer les subscriptions realtime (stream, onPostgresChanges)
-- Configurer le storage (upload, download, signed URLs, delete)
-- Appeler les edge functions si necessaire
-- Nettoyer les subscriptions (dispose/close)
+- Initialize Supabase (supabase_flutter, environment variables via --dart-define)
+- Configure authentication (Email/Password, OAuth Google/Apple, Magic Link, Auth State Listener)
+- Implement CRUD operations (select with joins, insert, update, upsert, delete, count)
+- Configure Row Level Security (RLS) on ALL tables with policies per operation
+- Handle errors (PostgrestException, AuthException) with Either pattern
+- Implement realtime subscriptions (stream, onPostgresChanges)
+- Configure storage (upload, download, signed URLs, delete)
+- Call edge functions if needed
+- Clean up subscriptions (dispose/close)
 
-## Output attendu
+## Expected output
 
-Configuration Supabase dans main.dart, service d'authentification,
-repositories avec CRUD, services Realtime et Storage, tests unitaires.
+Supabase configuration in main.dart, authentication service,
+repositories with CRUD, Realtime and Storage services, unit tests.
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/dev:dev-flutter` | Widgets et screens |
-| `/dev:dev-graphql` | Alternative/complement GraphQL |
-| `/ops:ops-database` | Design de schema |
-| `/qa:qa-security` | Audit securite RLS |
+| `/dev:dev-flutter` | Widgets and screens |
+| `/dev:dev-graphql` | GraphQL alternative/complement |
+| `/ops:ops-database` | Schema design |
+| `/qa:qa-security` | RLS security audit |
 
 ---
 
-IMPORTANT: NEVER exposer la `service_role` key dans le code client Flutter.
+IMPORTANT: NEVER expose the `service_role` key in the Flutter client code.
 
-YOU MUST activer RLS sur chaque table avec des policies appropriees.
+YOU MUST enable RLS on every table with appropriate policies.
 
-NEVER desactiver RLS en production, meme temporairement.
+NEVER disable RLS in production, even temporarily.
 
-Think hard sur les policies RLS - elles sont votre derniere ligne de defense.
+Think hard about RLS policies - they are your last line of defense.
