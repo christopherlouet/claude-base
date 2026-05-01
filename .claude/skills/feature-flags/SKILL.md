@@ -1,6 +1,6 @@
 ---
 name: feature-flags
-description: Gestion de feature flags et toggles. Declencher quand l'utilisateur veut implementer du feature flagging, A/B testing, ou deploiement progressif.
+description: Feature flags and toggles management. Trigger when the user wants to implement feature flagging, A/B testing, or progressive deployment.
 allowed-tools:
   - Read
   - Write
@@ -13,33 +13,33 @@ user-invocable: false
 
 # Feature Flags Skill
 
-## Declencheurs
+## Triggers
 
-Ce skill s'active quand l'utilisateur mentionne:
+This skill activates when the user mentions:
 - "feature flag", "feature toggle"
 - "A/B test", "experimentation"
-- "deploiement progressif", "canary"
-- "activer/desactiver une feature"
+- "progressive deployment", "canary"
+- "enable/disable a feature"
 
-## Cas d'usage
+## Use cases
 
 | Use case | Description |
 |----------|-------------|
-| **Release toggles** | Deployer du code inactif |
+| **Release toggles** | Deploy inactive code |
 | **Experiment toggles** | A/B testing |
 | **Ops toggles** | Circuit breakers |
-| **Permission toggles** | Features par role/plan |
+| **Permission toggles** | Features by role/plan |
 
 ## Solutions
 
-| Solution | Type | Avantages |
+| Solution | Type | Advantages |
 |----------|------|-----------|
-| **LaunchDarkly** | SaaS | Complet, targeting avance |
-| **Unleash** | Self-hosted | Open source, gratuit |
-| **ConfigCat** | SaaS | Simple, genereux free tier |
-| **Custom** | DIY | Controle total |
+| **LaunchDarkly** | SaaS | Complete, advanced targeting |
+| **Unleash** | Self-hosted | Open source, free |
+| **ConfigCat** | SaaS | Simple, generous free tier |
+| **Custom** | DIY | Full control |
 
-## Implementation simple
+## Simple implementation
 
 ### Configuration
 
@@ -58,7 +58,7 @@ const defaultFlags: FeatureFlags = {
 };
 
 export function getFeatureFlags(userId?: string): FeatureFlags {
-  // En production: fetch depuis service
+  // In production: fetch from service
   if (process.env.NODE_ENV === 'development') {
     return {
       ...defaultFlags,
@@ -79,7 +79,7 @@ export function isFeatureEnabled(
 }
 ```
 
-### Hook React
+### React hook
 
 ```typescript
 // hooks/useFeatureFlag.ts
@@ -99,7 +99,7 @@ export function useFeatureFlag(flag: string): boolean {
 }
 ```
 
-### Utilisation
+### Usage
 
 ```tsx
 // components/Dashboard.tsx
@@ -116,7 +116,7 @@ export function Dashboard() {
 }
 ```
 
-## Avec LaunchDarkly
+## With LaunchDarkly
 
 ```typescript
 // lib/launchdarkly.ts
@@ -135,7 +135,7 @@ export async function getFlag(
 ```
 
 ```tsx
-// Client React
+// React client
 import { useFlags } from 'launchdarkly-react-client-sdk';
 
 function Component() {
@@ -144,9 +144,9 @@ function Component() {
 }
 ```
 
-## Bonnes pratiques
+## Best practices
 
-### Nommage
+### Naming
 
 ```
 # Format: <scope>_<feature>_<variant>
@@ -168,7 +168,7 @@ user_profile_v2
 ### Targeting
 
 ```typescript
-// Regles de targeting
+// Targeting rules
 const rules = [
   { attribute: 'email', operator: 'endsWith', value: '@company.com', enabled: true },
   { attribute: 'plan', operator: 'equals', value: 'enterprise', enabled: true },
@@ -177,14 +177,14 @@ const rules = [
 ];
 ```
 
-## Regles
+## Rules
 
-IMPORTANT: Toujours avoir une valeur par defaut (flag off).
+IMPORTANT: Always have a default value (flag off).
 
-IMPORTANT: Supprimer les flags obsoletes (dette technique).
+IMPORTANT: Remove obsolete flags (technical debt).
 
-YOU MUST logger les evaluations de flags pour le debugging.
+YOU MUST log flag evaluations for debugging.
 
-NEVER stocker de logique metier complexe dans les flags.
+NEVER store complex business logic in flags.
 
-NEVER laisser des flags en production plus de 2 sprints apres rollout complet.
+NEVER leave flags in production more than 2 sprints after full rollout.
