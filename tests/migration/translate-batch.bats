@@ -214,14 +214,14 @@ teardown() {
 }
 EOF
     # Replace a.md with content that uses a FORBIDDEN translation per the
-    # real glossary: "audit" -> "audit" canonical, "inspection" forbidden.
+    # real glossary: "chantier" -> "project" canonical, "worksite" forbidden.
     cat > "$TEST_DIR/a.md" <<'EOF'
 # Title
 
-The quality inspection ensures correctness.
+We need to plan the entire worksite carefully.
 EOF
     run "$BATCH_REAL" --tier 1 --state "$STATE_FILE" --root "$TEST_DIR" --verify
-    # The forbidden term "inspection" (forbidden alternative for "audit"->"audit")
+    # The forbidden term "worksite" (forbidden alternative for "chantier"->"project")
     # should be flagged by check-glossary, causing --verify to exit non-zero.
     [ "$status" -ne 0 ]
 }

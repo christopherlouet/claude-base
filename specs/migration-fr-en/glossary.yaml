@@ -19,6 +19,7 @@
 # =============================================================================
 
 
+
 locked_at: '2026-05-01'
 terms:
 - fr: socle
@@ -35,14 +36,13 @@ terms:
   locked: true
 - fr: regle
   en: rule
-  forbidden:
-  - guideline
-  context: '''policy'' dropped — ''Language Policy'' is a legitimate phrase in CONTRIBUTING'
+  context: '''policy'' and ''guideline'' dropped — both legitimate EN words (''Language
+    Policy'' in CONTRIBUTING, ''guidelines'' is super common)'
   locked: true
 - fr: regles
   en: rules
-  forbidden:
-  - guidelines
+  context: '''guidelines'' dropped — caught 7 false positives on biz/data agents during
+    Tier 2 smoke-test'
   locked: true
 - fr: etape
   en: step
@@ -67,16 +67,13 @@ terms:
   locked: true
 - fr: audit
   en: audit
-  forbidden:
-  - inspection
-  context: '''check'' dropped — too common as generic verb in EN (''checks'', ''sanity
-    check''). ''review'' kept off forbidden because it''s canonical for FR ''revue'''
+  context: '''check'' and ''inspection'' dropped — both common EN (''sanity check'',
+    ''Chrome DevTools inspection''). ''review'' kept off forbidden because it''s canonical
+    for FR ''revue'''
   locked: true
 - fr: revue
   en: review
-  forbidden:
-  - inspection
-  context: audit dropped from forbidden — it's a valid translation of FR 'audit'
+  context: '''inspection'' dropped — false positive on qa-chrome (Chrome DevTools)'
   locked: true
 - fr: chantier
   en: project
