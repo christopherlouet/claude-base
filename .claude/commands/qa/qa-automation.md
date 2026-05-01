@@ -22,9 +22,9 @@ Automate tests at all levels (unit, integration, E2E) to ensure quality and acce
 ## Expected output
 
 ### Test pyramid
-- Unit (70-80%) : framework, coverage config
-- Integration (15-25%) : API, DB, services
-- E2E (5-10%) : critical user journeys
+- Unit (70-80%): framework, coverage config
+- Integration (15-25%): API, DB, services
+- E2E (5-10%): critical user journeys
 
 ### CI/CD configuration
 - Pipeline with parallelized tests

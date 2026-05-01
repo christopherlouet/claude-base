@@ -23,7 +23,7 @@ with tested and documented restore procedures.
 
 ## Expected output
 
-1. **Scripts** : backup-db.sh, backup-files.sh, restore-db.sh, test-restore.sh
+1. **Scripts**: backup-db.sh, backup-files.sh, restore-db.sh, test-restore.sh
 2. **Recommended cron configuration**
 3. **Restore matrix** (scenario, RPO, RTO, procedure)
 4. **Complete backup checklist**
