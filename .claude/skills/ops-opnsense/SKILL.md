@@ -1,6 +1,6 @@
 ---
 name: ops-opnsense
-description: Configuration OPNsense via Terraform. Declencher pour interfaces, firewall, NAT, DHCP/DNS, aliases.
+description: OPNsense configuration via Terraform. Trigger for interfaces, firewall, NAT, DHCP/DNS, aliases.
 allowed-tools:
   - Read
   - Write
@@ -12,34 +12,34 @@ context: fork
 argument-hint: "[component]"
 ---
 
-# Configuration OPNsense (Terraform)
+# OPNsense Configuration (Terraform)
 
-Guide complet pour configurer OPNsense de manière déclarative avec Terraform et le provider `browningluke/opnsense`.
+Complete guide to configure OPNsense declaratively with Terraform and the `browningluke/opnsense` provider.
 
-## Quand utiliser ce Skill
+## When to use this Skill
 
-**Activer ce skill pour :**
-- Configurer les interfaces réseau OPNsense (WAN, LAN, VLANs)
-- Gérer les règles de pare-feu
-- Configurer NAT et port forwarding
-- Gérer les services DHCP et DNS
-- Créer des aliases pour simplifier les règles
+**Activate this skill to:**
+- Configure OPNsense network interfaces (WAN, LAN, VLANs)
+- Manage firewall rules
+- Configure NAT and port forwarding
+- Manage DHCP and DNS services
+- Create aliases to simplify rules
 
-**Ne pas utiliser pour :**
-- Installation initiale OPNsense (voir documentation manuelle)
-- Provisioning VM (utiliser `/ops:ops-proxmox`)
-- Plugins OPNsense avancés (HAProxy, Suricata)
+**Do not use for:**
+- Initial OPNsense installation (see manual documentation)
+- VM provisioning (use `/ops:ops-proxmox`)
+- Advanced OPNsense plugins (HAProxy, Suricata)
 
-## Provider Terraform
+## Terraform Provider
 
-| Attribut | Valeur |
-|----------|--------|
+| Attribute | Value |
+|-----------|-------|
 | **Provider** | `browningluke/opnsense` |
 | **Version** | >= 0.11 |
 | **Documentation** | https://registry.terraform.io/providers/browningluke/opnsense/latest/docs |
 | **GitHub** | https://github.com/browningluke/terraform-provider-opnsense |
 
-### Configuration du Provider
+### Provider Configuration
 
 ```hcl
 terraform {
@@ -53,40 +53,40 @@ terraform {
 
 provider "opnsense" {
   uri                 = var.opnsense_uri        # https://192.168.10.1
-  api_key             = var.opnsense_api_key    # Sensible
-  api_secret          = var.opnsense_api_secret # Sensible
-  allow_insecure = true                    # false en production
+  api_key             = var.opnsense_api_key    # Sensitive
+  api_secret          = var.opnsense_api_secret # Sensitive
+  allow_insecure = true                    # false in production
 }
 ```
 
-## Patterns de Configuration
+## Configuration Patterns
 
-### 1. Interfaces Réseau
+### 1. Network Interfaces
 
 ```hcl
-# Interface WAN (DHCP depuis box opérateur)
+# WAN interface (DHCP from ISP box)
 resource "opnsense_interface" "wan" {
   device        = "vtnet0"
-  description   = "WAN - Box Orange"
+  description   = "WAN - Orange Box"
   ipv4_type     = "dhcp"
   block_private = true
   block_bogons  = true
 }
 
-# Interface LAN (IP statique)
+# LAN interface (static IP)
 resource "opnsense_interface" "lan" {
   device      = "vtnet1"
-  description = "LAN - Réseau local"
+  description = "LAN - Local network"
   ipv4_type   = "static"
   ipv4_addr   = "192.168.10.1"
   ipv4_mask   = 24
 }
 ```
 
-### 2. Règles Firewall (CRITIQUE: Anti-lockout)
+### 2. Firewall Rules (CRITICAL: Anti-lockout)
 
 ```hcl
-# OBLIGATOIRE: Règle anti-lockout (TOUJOURS en premier)
+# MANDATORY: Anti-lockout rule (ALWAYS first)
 resource "opnsense_firewall_filter" "anti_lockout" {
   interface        = "lan"
   direction        = "in"
@@ -95,11 +95,11 @@ resource "opnsense_firewall_filter" "anti_lockout" {
   source_net       = "lannet"
   destination_net  = "(self)"
   destination_port = "443"
-  description      = "ANTI-LOCKOUT: Accès admin"
+  description      = "ANTI-LOCKOUT: Admin access"
   sequence         = 1
 }
 
-# Autoriser HTTP/HTTPS sortant
+# Allow outbound HTTP/HTTPS
 resource "opnsense_firewall_filter" "lan_to_web" {
   interface        = "lan"
   direction        = "in"
@@ -108,11 +108,11 @@ resource "opnsense_firewall_filter" "lan_to_web" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = "80,443"
-  description      = "Autoriser HTTP/HTTPS sortant"
+  description      = "Allow outbound HTTP/HTTPS"
   sequence         = 10
 }
 
-# Bloquer tout le reste (deny by default)
+# Block everything else (deny by default)
 resource "opnsense_firewall_filter" "lan_block_all" {
   interface   = "lan"
   direction   = "in"
@@ -121,7 +121,7 @@ resource "opnsense_firewall_filter" "lan_block_all" {
   source_net  = "any"
   destination_net = "any"
   log         = true
-  description = "Bloquer et logger tout le reste"
+  description = "Block and log everything else"
   sequence    = 65535
 }
 ```
@@ -129,7 +129,7 @@ resource "opnsense_firewall_filter" "lan_block_all" {
 ### 3. NAT / Port Forwarding
 
 ```hcl
-# Port forward HTTPS vers serveur web interne
+# Port forward HTTPS to internal web server
 resource "opnsense_nat_port_forward" "https_to_web" {
   interface        = "wan"
   protocol         = "tcp"
@@ -139,12 +139,12 @@ resource "opnsense_nat_port_forward" "https_to_web" {
   destination_port = "443"
   target           = "192.168.10.20"
   local_port       = "443"
-  description      = "HTTPS vers serveur web"
+  description      = "HTTPS to web server"
   nat_reflection   = "enable"
   filter_rule_association = "add-associated"
 }
 
-# SSH sur port non-standard
+# SSH on non-standard port
 resource "opnsense_nat_port_forward" "ssh_to_server" {
   interface        = "wan"
   protocol         = "tcp"
@@ -154,14 +154,14 @@ resource "opnsense_nat_port_forward" "ssh_to_server" {
   destination_port = "2222"
   target           = "192.168.10.10"
   local_port       = "22"
-  description      = "SSH vers serveur (port 2222)"
+  description      = "SSH to server (port 2222)"
 }
 ```
 
-### 4. Services DHCP/DNS
+### 4. DHCP/DNS Services
 
 ```hcl
-# Serveur DHCP sur LAN
+# DHCP server on LAN
 resource "opnsense_dhcp_v4_server" "lan" {
   interface   = "lan"
   enabled     = true
@@ -173,13 +173,13 @@ resource "opnsense_dhcp_v4_server" "lan" {
   lease_time  = 86400
 }
 
-# Réservation DHCP
+# DHCP reservation
 resource "opnsense_dhcp_v4_static_map" "server_web" {
   interface   = "lan"
   mac         = "00:11:22:33:44:55"
   ipaddr      = "192.168.10.20"
   hostname    = "server-web"
-  description = "Serveur web principal"
+  description = "Main web server"
 }
 
 # DNS forwarder
@@ -190,7 +190,7 @@ resource "opnsense_unbound_forward" "cloudflare" {
   priority = 10
 }
 
-# Entrée DNS locale
+# Local DNS entry
 resource "opnsense_unbound_host_override" "server_web" {
   enabled  = true
   hostname = "server"
@@ -202,23 +202,23 @@ resource "opnsense_unbound_host_override" "server_web" {
 ### 5. Aliases
 
 ```hcl
-# Alias de serveurs
+# Server alias
 resource "opnsense_firewall_alias" "servers_web" {
   name        = "SERVERS_WEB"
   type        = "host"
   content     = ["192.168.10.20", "192.168.10.21"]
-  description = "Serveurs web internes"
+  description = "Internal web servers"
 }
 
-# Alias de ports
+# Port alias
 resource "opnsense_firewall_alias" "ports_web" {
   name        = "PORTS_WEB"
   type        = "port"
   content     = ["80", "443", "8080"]
-  description = "Ports services web"
+  description = "Web service ports"
 }
 
-# Utilisation dans une règle
+# Use in a rule
 resource "opnsense_firewall_filter" "to_web_servers" {
   interface        = "lan"
   action           = "pass"
@@ -226,86 +226,86 @@ resource "opnsense_firewall_filter" "to_web_servers" {
   source_net       = "lannet"
   destination_net  = opnsense_firewall_alias.servers_web.name
   destination_port = opnsense_firewall_alias.ports_web.name
-  description      = "Accès aux serveurs web"
+  description      = "Access to web servers"
 }
 ```
 
-## Sécurité
+## Security
 
-### Règles Obligatoires
+### Mandatory Rules
 
 1. **Anti-lockout** (sequence = 1)
-   - TOUJOURS présente
-   - Permet accès admin depuis LAN
-   - Ne jamais supprimer
+   - ALWAYS present
+   - Allows admin access from LAN
+   - Never delete
 
 2. **Deny by default** (sequence = 65535)
-   - Bloquer tout ce qui n'est pas explicitement autorisé
-   - Logger pour détecter les tentatives
+   - Block anything not explicitly allowed
+   - Log to detect attempts
 
-3. **Credentials sécurisés**
-   - Variables d'environnement ou terraform.tfvars
-   - JAMAIS dans le code
-   - JAMAIS commité
+3. **Secure credentials**
+   - Environment variables or terraform.tfvars
+   - NEVER in code
+   - NEVER committed
 
-### Bonnes Pratiques
+### Best Practices
 
-| Pratique | Pourquoi |
-|----------|----------|
-| Utiliser des aliases | Lisibilité et maintenabilité |
-| Documenter chaque règle | Audit facilité |
-| Logger les règles block | Détection d'intrusion |
-| Tester en lab | Éviter les lockouts |
-| Backup avant apply | Rollback possible |
+| Practice | Why |
+|----------|-----|
+| Use aliases | Readability and maintainability |
+| Document each rule | Easier audit |
+| Log block rules | Intrusion detection |
+| Test in lab | Avoid lockouts |
+| Backup before apply | Rollback possible |
 
-## Architecture Box Opérateur + OPNsense
+## ISP Box + OPNsense Architecture
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Internet      │     │   Box Orange    │     │    OPNsense     │
+│   Internet      │     │   Orange Box    │     │    OPNsense     │
 │                 │────▶│   (192.168.1.1) │────▶│   WAN: DHCP     │
-│                 │     │   Mode DMZ      │     │   LAN: .10.1    │
+│                 │     │   DMZ Mode      │     │   LAN: .10.1    │
 └─────────────────┘     └─────────────────┘     └────────┬────────┘
                                                          │
                                            ┌─────────────┴─────────────┐
                                            │                           │
                                     ┌──────┴──────┐             ┌──────┴──────┐
-                                    │  Serveur    │             │   Client    │
+                                    │  Server     │             │   Client    │
                                     │  .10.20     │             │   DHCP      │
                                     └─────────────┘             └─────────────┘
 ```
 
-### Configuration Box Orange en DMZ
+### Orange Box DMZ Configuration
 
-1. Accéder à la Livebox: `http://192.168.1.1`
-2. Réseau > NAT/PAT > DMZ
-3. Activer DMZ vers l'IP WAN d'OPNsense
-4. Tous les ports sont redirigés vers OPNsense
+1. Access the Livebox: `http://192.168.1.1`
+2. Network > NAT/PAT > DMZ
+3. Enable DMZ to OPNsense WAN IP
+4. All ports are redirected to OPNsense
 
 ## WireGuard VPN (P3)
 
-Configuration d'un serveur VPN WireGuard:
+WireGuard VPN server configuration:
 
 ```hcl
-# Interface WireGuard
+# WireGuard interface
 resource "opnsense_wireguard_server" "vpn" {
   name         = "wg0"
   enabled      = true
   listen_port  = 51820
   tunnel_addr  = "10.10.10.1/24"
   dns          = "192.168.10.1"
-  private_key  = var.wireguard_private_key  # Sensible
+  private_key  = var.wireguard_private_key  # Sensitive
 }
 
-# Peer (client VPN)
+# Peer (VPN client)
 resource "opnsense_wireguard_peer" "laptop" {
   server_id   = opnsense_wireguard_server.vpn.id
   name        = "laptop-chris"
-  public_key  = "PUBLIC_KEY_DU_CLIENT"
+  public_key  = "CLIENT_PUBLIC_KEY"
   allowed_ips = "10.10.10.2/32"
 }
 
-# Règle firewall pour WireGuard
+# Firewall rule for WireGuard
 resource "opnsense_firewall_filter" "wireguard_in" {
   interface        = "wan"
   direction        = "in"
@@ -316,15 +316,15 @@ resource "opnsense_firewall_filter" "wireguard_in" {
 }
 ```
 
-## Monitoring Prometheus (P3)
+## Prometheus Monitoring (P3)
 
-### Installation node_exporter
+### node_exporter Installation
 
-1. Installer le package `node_exporter` via OPNsense
+1. Install the `node_exporter` package via OPNsense
 2. System > Services > node_exporter
-3. Activer et configurer le port (9100)
+3. Enable and configure the port (9100)
 
-### Configuration Prometheus
+### Prometheus Configuration
 
 ```yaml
 # prometheus.yml
@@ -335,72 +335,72 @@ scrape_configs:
     metrics_path: /metrics
 ```
 
-### Métriques utiles
+### Useful Metrics
 
-| Métrique | Description |
-|----------|-------------|
-| `node_network_receive_bytes_total` | Trafic entrant |
-| `node_network_transmit_bytes_total` | Trafic sortant |
-| `node_cpu_seconds_total` | Utilisation CPU |
-| `node_memory_MemAvailable_bytes` | Mémoire disponible |
-| `node_filesystem_avail_bytes` | Espace disque |
+| Metric | Description |
+|--------|-------------|
+| `node_network_receive_bytes_total` | Inbound traffic |
+| `node_network_transmit_bytes_total` | Outbound traffic |
+| `node_cpu_seconds_total` | CPU usage |
+| `node_memory_MemAvailable_bytes` | Available memory |
+| `node_filesystem_avail_bytes` | Disk space |
 
 ## Troubleshooting
 
-### Erreur connexion API
+### API connection error
 
 ```bash
-# Tester la connexion
+# Test the connection
 curl -k -u "api-key:api-secret" \
   "https://192.168.10.1/api/core/firmware/status"
 
-# Vérifier:
-# 1. API activée (System > Settings > Administration)
-# 2. User API avec permissions
-# 3. Firewall n'est pas bloquant
-# 4. Certificat HTTPS
+# Check:
+# 1. API enabled (System > Settings > Administration)
+# 2. API user with permissions
+# 3. Firewall is not blocking
+# 4. HTTPS certificate
 ```
 
-### Lockout (accès perdu)
+### Lockout (lost access)
 
 ```bash
-# Via console Proxmox/local
-pfctl -d                    # Désactiver firewall
-# Corriger via interface web
-pfctl -e                    # Réactiver firewall
+# Via Proxmox/local console
+pfctl -d                    # Disable firewall
+# Fix via web interface
+pfctl -e                    # Re-enable firewall
 ```
 
-### State Terraform désynchronisé
+### Terraform state out of sync
 
 ```bash
-# Importer ressource existante
+# Import existing resource
 terraform import opnsense_firewall_filter.rule "uuid"
 
-# Rafraîchir
+# Refresh
 terraform refresh
 
-# Forcer recréation
+# Force recreation
 terraform taint opnsense_firewall_filter.rule
 terraform apply
 ```
 
-## Templates disponibles
+## Available Templates
 
-Les templates sont dans `.claude/templates/opnsense/`:
+Templates are in `.claude/templates/opnsense/`:
 
 | Template | Description |
 |----------|-------------|
-| `provider-template.tf` | Configuration provider |
-| `interfaces-module.tf` | Interfaces WAN/LAN |
-| `firewall-module.tf` | Règles firewall |
+| `provider-template.tf` | Provider configuration |
+| `interfaces-module.tf` | WAN/LAN interfaces |
+| `firewall-module.tf` | Firewall rules |
 | `nat-module.tf` | NAT/port forward |
 | `services-module.tf` | DHCP/DNS |
-| `aliases-module.tf` | Groupes d'adresses |
-| `examples/orange-box-dmz/` | Exemple complet |
+| `aliases-module.tf` | Address groups |
+| `examples/orange-box-dmz/` | Complete example |
 
-## Ressources
+## Resources
 
-- [Documentation OPNsense](https://docs.opnsense.org/)
-- [Provider Terraform](https://registry.terraform.io/providers/browningluke/opnsense/latest/docs)
-- [API OPNsense](https://docs.opnsense.org/development/api.html)
+- [OPNsense Documentation](https://docs.opnsense.org/)
+- [Terraform Provider](https://registry.terraform.io/providers/browningluke/opnsense/latest/docs)
+- [OPNsense API](https://docs.opnsense.org/development/api.html)
 - [WireGuard OPNsense](https://docs.opnsense.org/manual/how-tos/wireguard-client.html)
