@@ -1,6 +1,6 @@
 ---
 name: qa-review
-description: Effectuer une revue de code approfondie. Utiliser quand l'utilisateur demande une review, veut vérifier la qualité du code, ou avant de merger une PR.
+description: Perform a thorough code review. Use when the user requests a review, wants to verify code quality, or before merging a PR.
 allowed-tools:
   - Read
   - Glob
@@ -8,137 +8,137 @@ allowed-tools:
 context: fork
 ---
 
-# Revue de Code
+# Code Review
 
-## Objectif
+## Objective
 
-Identifier les problèmes de qualité, sécurité et maintenabilité AVANT le merge.
+Identify quality, security, and maintainability issues BEFORE merge.
 
 ## Instructions
 
-### 1. Vue d'ensemble
+### 1. Overview
 
 ```bash
-# Voir les changements
+# View the changes
 git diff main...HEAD --stat
 git log main...HEAD --oneline
 ```
 
-### 2. Checklist de review
+### 2. Review checklist
 
-#### Qualité du code
-- [ ] Lisibilité (noms clairs, fonctions courtes)
-- [ ] DRY (pas de duplication)
+#### Code quality
+- [ ] Readability (clear names, short functions)
+- [ ] DRY (no duplication)
 - [ ] SOLID (single responsibility)
-- [ ] Complexité raisonnable
+- [ ] Reasonable complexity
 
-#### Typage (TypeScript)
-- [ ] Pas de `any`
-- [ ] Types explicites sur les APIs publiques
-- [ ] Interfaces bien définies
+#### Typing (TypeScript)
+- [ ] No `any`
+- [ ] Explicit types on public APIs
+- [ ] Well-defined interfaces
 
 #### Tests
-- [ ] Tests présents et pertinents
-- [ ] Edge cases couverts
-- [ ] Mocks limités aux I/O
+- [ ] Tests present and relevant
+- [ ] Edge cases covered
+- [ ] Mocks limited to I/O
 
-#### Sécurité
-- [ ] Inputs validés
-- [ ] Pas de secrets hardcodés
-- [ ] Pas d'injection possible
+#### Security
+- [ ] Inputs validated
+- [ ] No hardcoded secrets
+- [ ] No injection possible
 
 #### Performance
-- [ ] Pas de N+1 queries
-- [ ] Pas de boucles infinies possibles
-- [ ] Mémoire gérée correctement
+- [ ] No N+1 queries
+- [ ] No possible infinite loops
+- [ ] Memory managed correctly
 
-### 3. Format des commentaires
+### 3. Comment format
 
 ```
-[TYPE] fichier:ligne - commentaire
+[TYPE] file:line - comment
 
 Types:
-- [CRITICAL] - Bloquant, doit être corrigé
-- [IMPORTANT] - Devrait être corrigé
-- [SUGGESTION] - Amélioration optionnelle
-- [QUESTION] - Clarification nécessaire
-- [NITPICK] - Détail mineur
+- [CRITICAL] - Blocking, must be fixed
+- [IMPORTANT] - Should be fixed
+- [SUGGESTION] - Optional improvement
+- [QUESTION] - Clarification needed
+- [NITPICK] - Minor detail
 ```
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Review : [Titre PR]
+## Review: [PR Title]
 
-### Résumé
-- **Fichiers modifiés**: X
-- **Lignes ajoutées**: +Y
-- **Lignes supprimées**: -Z
+### Summary
+- **Files modified**: X
+- **Lines added**: +Y
+- **Lines removed**: -Z
 - **Verdict**: Approve / Request Changes / Comment
 
-### Points positifs
+### Positive points
 - [Point 1]
 - [Point 2]
 
-### Problèmes identifiés
+### Issues identified
 
-#### Critiques
-- [CRITICAL] `fichier.ts:42` - Description
+#### Critical
+- [CRITICAL] `file.ts:42` - Description
 
-#### Importants
-- [IMPORTANT] `fichier.ts:87` - Description
+#### Important
+- [IMPORTANT] `file.ts:87` - Description
 
 ### Suggestions
-- [SUGGESTION] `fichier.ts:123` - Description
+- [SUGGESTION] `file.ts:123` - Description
 
-### Checklist finale
-- [ ] Code lisible et maintenable
-- [ ] Tests suffisants
-- [ ] Pas de problème de sécurité
-- [ ] Performance acceptable
+### Final checklist
+- [ ] Code readable and maintainable
+- [ ] Sufficient tests
+- [ ] No security issue
+- [ ] Acceptable performance
 ```
 
-## Analyse de nommage
+## Naming analysis
 
-### Regles de nommage a verifier
+### Naming rules to verify
 
-| Element | Convention | Exemples bons | Exemples mauvais |
+| Element | Convention | Good examples | Bad examples |
 |---------|-----------|---------------|------------------|
-| Variables | Descriptif, camelCase | `userCount`, `isActive` | `x`, `tmp`, `data` |
-| Fonctions | Verbe + nom, camelCase | `getUserById`, `validateEmail` | `process`, `handle`, `do` |
-| Booleens | Prefixe is/has/can/should | `isValid`, `hasPermission` | `valid`, `permission` |
-| Constantes | SCREAMING_SNAKE | `MAX_RETRY_COUNT` | `maxRetry` |
-| Classes | PascalCase, nom | `UserService`, `OrderRepository` | `Manager`, `Helper` |
-| Interfaces | PascalCase, descriptif | `UserProfile`, `PaymentMethod` | `IUser`, `DataType` |
+| Variables | Descriptive, camelCase | `userCount`, `isActive` | `x`, `tmp`, `data` |
+| Functions | Verb + noun, camelCase | `getUserById`, `validateEmail` | `process`, `handle`, `do` |
+| Booleans | Prefix is/has/can/should | `isValid`, `hasPermission` | `valid`, `permission` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` | `maxRetry` |
+| Classes | PascalCase, noun | `UserService`, `OrderRepository` | `Manager`, `Helper` |
+| Interfaces | PascalCase, descriptive | `UserProfile`, `PaymentMethod` | `IUser`, `DataType` |
 
-### Smells de nommage a detecter
+### Naming smells to detect
 
-| Smell | Probleme | Correction |
+| Smell | Problem | Fix |
 |-------|----------|------------|
-| **Nom generique** | `data`, `result`, `temp`, `info` | Nommer selon le contenu |
-| **Abbreviation** | `usr`, `btn`, `msg`, `idx` | Ecrire en entier |
-| **Negation double** | `!isNotValid`, `!disableButton` | `isValid`, `enableButton` |
-| **Type dans le nom** | `userArray`, `nameString` | `users`, `name` |
-| **Longueur inappropriee** | Variable globale courte, locale longue | Inverse : global long, local court |
-| **Nom trompeur** | `getUser` qui modifie | `fetchAndUpdateUser` |
+| **Generic name** | `data`, `result`, `temp`, `info` | Name based on content |
+| **Abbreviation** | `usr`, `btn`, `msg`, `idx` | Write in full |
+| **Double negation** | `!isNotValid`, `!disableButton` | `isValid`, `enableButton` |
+| **Type in the name** | `userArray`, `nameString` | `users`, `name` |
+| **Inappropriate length** | Short global variable, long local | Reverse: long global, short local |
+| **Misleading name** | `getUser` that modifies | `fetchAndUpdateUser` |
 
-### Patterns a rechercher
+### Patterns to look for
 
 ```
-# Variables a un caractere (sauf i, j dans les boucles)
+# Single-character variables (except i, j in loops)
 \b[a-z]\b\s*[=:]
 
-# Noms generiques
+# Generic names
 \b(data|result|temp|tmp|info|item|obj|val|res)\b\s*[=:]
 
-# Booleens sans prefixe
+# Booleans without prefix
 \b(active|valid|visible|enabled|disabled|open|closed)\b\s*[=:]
 ```
 
-## Regles
+## Rules
 
-- Etre constructif, pas destructif
-- Expliquer le POURQUOI
-- Proposer des alternatives
-- Distinguer bloquant vs nice-to-have
-- Verifier la coherence du nommage dans le code review
+- Be constructive, not destructive
+- Explain the WHY
+- Propose alternatives
+- Distinguish blocking vs nice-to-have
+- Verify naming consistency in the code review
