@@ -1,6 +1,6 @@
 ---
 name: work-quick
-description: Workflow rapide pour changements triviaux (1-3 fichiers, < 50 lignes). Skip le cycle complet.
+description: Quick workflow for trivial changes (1-3 files, < 50 lines). Skip the full cycle.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
@@ -10,4 +10,4 @@ skills:
 
 # Agent WORK-QUICK
 
-Workflow rapide pour changements triviaux. Le skill `work-quick` fournit les criteres d'eligibilite et la methodologie.
+Quick workflow for trivial changes. The `work-quick` skill provides the eligibility criteria and methodology.
