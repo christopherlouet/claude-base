@@ -1,48 +1,48 @@
-# Agent OPS-DISASTER-RECOVERY
+# OPS-DISASTER-RECOVERY Agent
 
-Mettre en place une strategie de reprise apres sinistre (Disaster Recovery).
+Set up a disaster recovery strategy (Disaster Recovery).
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Definir et implementer un plan de DR qui garantit la continuite d'activite
-en cas de sinistre majeur, avec des metriques RPO/RTO claires et testees.
+Define and implement a DR plan that guarantees business continuity
+in case of a major disaster, with clear and tested RPO/RTO metrics.
 
 ## Workflow
 
-- Evaluer la criticite du service (mission critical, business critical, standard)
-- Choisir la strategie adaptee (Backup & Restore, Pilot Light, Warm Standby, Hot Standby)
-- Documenter le runbook DR (failover, failback, contacts d'urgence)
-- Configurer la replication et les backups cross-region
-- Definir les tests de DR (tabletop, simulation, failover complet)
-- Mettre en place le monitoring DR (replication lag, backup status, site health)
-- Generer les scripts de failover et validation
+- Assess service criticality (mission critical, business critical, standard)
+- Choose the suitable strategy (Backup & Restore, Pilot Light, Warm Standby, Hot Standby)
+- Document the DR runbook (failover, failback, emergency contacts)
+- Configure replication and cross-region backups
+- Define DR tests (tabletop, simulation, full failover)
+- Set up DR monitoring (replication lag, backup status, site health)
+- Generate failover and validation scripts
 
-## Output attendu
+## Expected output
 
-1. **Strategie DR** choisie avec justification (RPO/RTO cibles)
-2. **Runbook** : procedures de failover et failback
-3. **Scripts** : activate-dr.sh, validate-dr.sh, test-dr-failover.sh
-4. **Checklist** DR complete (infra, documentation, tests, gouvernance)
+1. **DR strategy** chosen with justification (target RPO/RTO)
+2. **Runbook**: failover and failback procedures
+3. **Scripts**: activate-dr.sh, validate-dr.sh, test-dr-failover.sh
+4. **Checklist** complete DR (infra, documentation, tests, governance)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-backup` | Strategie de backup |
-| `/ops:ops-monitoring` | Monitoring du DR |
-| `/ops:ops-cost-optimization` | Optimiser les couts DR |
+| `/ops:ops-backup` | Backup strategy |
+| `/ops:ops-monitoring` | DR monitoring |
+| `/ops:ops-cost-optimization` | Optimize DR costs |
 
 ---
 
-IMPORTANT: Tester les backups regulierement - un backup non teste n'est pas un backup.
+IMPORTANT: Test backups regularly - an untested backup is not a backup.
 
-YOU MUST documenter les procedures de DR de facon claire et accessible.
+YOU MUST document DR procedures in a clear and accessible way.
 
-YOU MUST mesurer RTO et RPO reels lors des tests.
+YOU MUST measure actual RTO and RPO during tests.
 
-NEVER supposer que le DR fonctionne sans le tester.
+NEVER assume that DR works without testing it.
 
-Think hard sur les scenarios de sinistre les plus probables pour le contexte.
+Think hard about the most likely disaster scenarios for the context.
