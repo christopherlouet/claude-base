@@ -1,52 +1,52 @@
-# Agent GROWTH-AB-TEST
+# GROWTH-AB-TEST Agent
 
-Planifier et analyser un A/B test.
+Plan and analyze an A/B test.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Definir l'hypothese, calculer la taille d'echantillon, configurer le test, et analyser les resultats avec rigueur statistique.
+Define the hypothesis, calculate sample size, configure the test, and analyze the results with statistical rigor.
 
 ## Workflow
 
-- Definir l'hypothese (Si [changement], alors [metrique] [change] de [X%], parce que [raison])
-- Identifier les metriques (primaire, secondaires, guardrails)
-- Calculer la taille d'echantillon et duree (signification 95%, puissance 80%)
-- Designer le test (type, variantes, allocation trafic)
-- Implementer (feature flags, tracking)
-- Verifier la checklist pre-lancement
-- Analyser les resultats (p-value, confidence interval)
-- Documenter les learnings et decider
+- Define the hypothesis (If [change], then [metric] [changes] by [X%], because [reason])
+- Identify the metrics (primary, secondary, guardrails)
+- Calculate sample size and duration (95% significance, 80% power)
+- Design the test (type, variants, traffic allocation)
+- Implement (feature flags, tracking)
+- Verify the pre-launch checklist
+- Analyze the results (p-value, confidence interval)
+- Document the learnings and decide
 
-## Output attendu
+## Expected output
 
-### Plan de test
-- Hypothese, metrique primaire, duree, echantillon, allocation
-- Description des variantes
-- Criteres de succes
+### Test plan
+- Hypothesis, primary metric, duration, sample, allocation
+- Description of variants
+- Success criteria
 
-### Resultats
-| Metrique | Control | Treatment | Lift | p-value | Significatif |
-|----------|---------|-----------|------|---------|--------------|
+### Results
+| Metric | Control | Treatment | Lift | p-value | Significant |
+|--------|---------|-----------|------|---------|-------------|
 
-### Decision et learnings
+### Decision and learnings
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/growth:growth-analytics` | Definir les metriques |
-| `/growth:growth-landing` | Optimiser les landing pages |
-| `/growth:growth-funnel` | Analyser l'impact sur le funnel |
+| Agent | When to use it |
+|-------|----------------|
+| `/growth:growth-analytics` | Define the metrics |
+| `/growth:growth-landing` | Optimize the landing pages |
+| `/growth:growth-funnel` | Analyze the impact on the funnel |
 
 ---
 
-IMPORTANT: Ne jamais arreter un test prematurement base sur des resultats partiels.
+IMPORTANT: Never stop a test prematurely based on partial results.
 
-YOU MUST atteindre la taille d'echantillon calculee avant de conclure.
+YOU MUST reach the calculated sample size before concluding.
 
-NEVER tester plusieurs changements a la fois sans design multivarie.
+NEVER test several changes at once without a multivariate design.
 
-Think hard sur ce que vous allez faire avec les resultats avant de lancer le test.
+Think hard about what you will do with the results before launching the test.
