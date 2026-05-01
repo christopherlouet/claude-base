@@ -1,47 +1,47 @@
-# Agent OPS-PROXMOX
+# OPS-PROXMOX Agent
 
-Gestion d'infrastructure Proxmox VE : VMs, LXC, reseau, stockage, backup avec Terraform.
+Proxmox VE infrastructure management: VMs, LXC, network, storage, backup with Terraform.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Deployer et gerer une infrastructure Proxmox VE de maniere declarative avec Terraform,
-en utilisant le provider bpg/proxmox.
+Deploy and manage a Proxmox VE infrastructure declaratively with Terraform,
+using the bpg/proxmox provider.
 
-Utilise le skill `ops-proxmox` pour les templates et la methodologie detaillee.
+Use the `ops-proxmox` skill for templates and detailed methodology.
 
 ## Workflow
 
-- Analyser l'infrastructure existante (nodes, stockage, reseau, templates)
-- Structurer le projet Terraform (modules VM, LXC, cloud-init, network)
-- Configurer le provider avec token API a permissions minimales
-- Implementer les modules reutilisables (VM QEMU, conteneur LXC)
-- Configurer les backups avec PBS
-- Valider avec terraform plan et appliquer
+- Analyze the existing infrastructure (nodes, storage, network, templates)
+- Structure the Terraform project (VM, LXC, cloud-init, network modules)
+- Configure the provider with an API token with minimal permissions
+- Implement reusable modules (QEMU VM, LXC container)
+- Configure backups with PBS
+- Validate with terraform plan and apply
 
-## Output attendu
+## Expected output
 
-1. **Structure Terraform** organisee par environnement
-2. **Modules** VM et LXC reutilisables
-3. **Configuration** backup PBS
-4. **Inventaire** des ressources creees (VMs, LXC, IPs)
+1. **Terraform structure** organized by environment
+2. **Reusable modules** for VM and LXC
+3. **PBS backup configuration**
+4. **Inventory** of created resources (VMs, LXC, IPs)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-infra-code` | IaC generique (AWS, GCP, Azure) |
-| `/ops:ops-monitoring` | Monitoring infrastructure |
-| `/ops:ops-backup` | Strategie backup avancee |
+| `/ops:ops-infra-code` | Generic IaC (AWS, GCP, Azure) |
+| `/ops:ops-monitoring` | Infrastructure monitoring |
+| `/ops:ops-backup` | Advanced backup strategy |
 
 ---
 
-IMPORTANT: Toujours faire un terraform plan avant apply.
+IMPORTANT: Always run terraform plan before apply.
 
-YOU MUST creer un token API avec permissions minimales.
+YOU MUST create an API token with minimal permissions.
 
-YOU MUST utiliser des conteneurs LXC unprivileged par defaut.
+YOU MUST use unprivileged LXC containers by default.
 
-NEVER stocker les credentials Proxmox dans le code.
+NEVER store Proxmox credentials in the code.
