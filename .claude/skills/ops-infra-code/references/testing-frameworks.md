@@ -1,27 +1,27 @@
-# Testing Frameworks - Guide Detaille
+# Testing Frameworks - Detailed Guide
 
-> **Partie de :** [infrastructure-as-code](../SKILL.md)
-> **Objectif :** Guide approfondi des frameworks de test pour Terraform/OpenTofu
+> **Part of:** [infrastructure-as-code](../SKILL.md)
+> **Goal:** In-depth guide to testing frameworks for Terraform/OpenTofu
 
 ---
 
-## Table des Matieres
+## Table of Contents
 
-1. [Analyse Statique](#analyse-statique)
-2. [Test de Plan](#test-de-plan)
-3. [Tests Natifs Terraform](#tests-natifs-terraform)
+1. [Static Analysis](#static-analysis)
+2. [Plan Testing](#plan-testing)
+3. [Native Terraform Tests](#native-terraform-tests)
 4. [Terratest (Go)](#terratest-go)
 
 ---
 
-## Analyse Statique
+## Static Analysis
 
-**Toujours faire cela en premier.** Zero cout, detecte 40%+ des problemes avant deploiement.
+**Always do this first.** Zero cost, catches 40%+ of issues before deployment.
 
 ### Pre-commit Hooks
 
 ```yaml
-# Dans .pre-commit-config.yaml
+# In .pre-commit-config.yaml
 - repo: https://github.com/antonbabenko/pre-commit-terraform
   hooks:
     - id: terraform_fmt
@@ -29,57 +29,57 @@
     - id: terraform_tflint
 ```
 
-### Ce que Chaque Outil Verifie
+### What Each Tool Checks
 
-- **`terraform fmt`** - Coherence du formatage
-- **`terraform validate`** - Syntaxe et coherence interne
-- **`TFLint`** - Bonnes pratiques, regles specifiques aux providers
-- **`trivy` / `checkov`** - Vulnerabilites securite
+- **`terraform fmt`** - Formatting consistency
+- **`terraform validate`** - Syntax and internal consistency
+- **`TFLint`** - Best practices, provider-specific rules
+- **`trivy` / `checkov`** - Security vulnerabilities
 
-### Quand Utiliser
+### When to Use
 
-A chaque commit, toujours. Zero cout, detecte 40%+ des problemes.
+On every commit, always. Zero cost, catches 40%+ of issues.
 
 ---
 
-## Test de Plan
+## Plan Testing
 
-### Ce que terraform plan Valide
+### What terraform plan Validates
 
-- Verifier que les ressources attendues seront creees/modifiees/detruites
-- Detecter les problemes d'authentification provider
-- Valider les combinaisons de variables
-- Revue avant application
+- Verify that expected resources will be created/modified/destroyed
+- Detect provider authentication issues
+- Validate variable combinations
+- Review before apply
 
-### Dans CI/CD
+### In CI/CD
 
 ```bash
 terraform init
 terraform plan -out=tfplan
 
-# Optionnel : Convertir plan en JSON et valider avec outils
+# Optional: Convert plan to JSON and validate with tools
 terraform show -json tfplan | jq '.'
 ```
 
 ### Limitations
 
-- Ne deploie pas de vraie infrastructure
-- Ne peut pas detecter problemes runtime (permissions IAM, connectivite reseau)
-- Ne trouve pas les bugs specifiques aux ressources
+- Doesn't deploy real infrastructure
+- Cannot detect runtime issues (IAM permissions, network connectivity)
+- Doesn't find resource-specific bugs
 
 ---
 
-## Tests Natifs Terraform
+## Native Terraform Tests
 
-**Disponible :** Terraform 1.6+, OpenTofu 1.6+
+**Available:** Terraform 1.6+, OpenTofu 1.6+
 
-### Quand Utiliser
+### When to Use
 
-- Equipe travaille principalement en HCL (pas d'experience Go/Ruby necessaire)
-- Test des operations logiques et comportement de module
-- Eviter les dependances de test externes
+- Team works primarily in HCL (no Go/Ruby experience needed)
+- Testing logical operations and module behavior
+- Avoiding external test dependencies
 
-### Structure de Base
+### Basic Structure
 
 ```hcl
 # tests/s3_bucket.tftest.hcl
@@ -88,7 +88,7 @@ run "create_bucket" {
 
   assert {
     condition     = aws_s3_bucket.main.bucket != ""
-    error_message = "Le nom du bucket S3 doit etre defini"
+    error_message = "S3 bucket name must be set"
   }
 }
 
@@ -97,78 +97,78 @@ run "verify_encryption" {
 
   assert {
     condition     = aws_s3_bucket_server_side_encryption_configuration.main.rule[0].apply_server_side_encryption_by_default[0].sse_algorithm == "AES256"
-    error_message = "Le bucket doit utiliser le chiffrement AES256"
+    error_message = "Bucket must use AES256 encryption"
   }
 }
 ```
 
-### Important : Valider les Schemas de Ressources
+### Important: Validate Resource Schemas
 
-**Toujours verifier les schemas avant d'ecrire des tests :**
+**Always check schemas before writing tests:**
 
-- Certains blocs sont des **sets** (non ordonnes, pas d'indexation avec `[0]`)
-- Certains blocs sont des **lists** (ordonnes, indexables)
-- Certains attributs sont **computed** (connus seulement apres apply)
+- Some blocks are **sets** (unordered, no indexing with `[0]`)
+- Some blocks are **lists** (ordered, indexable)
+- Some attributes are **computed** (known only after apply)
 
-**Patterns de Schema Courants :**
+**Common Schema Patterns:**
 
-| Ressource AWS | Type de Bloc | Indexation |
+| AWS Resource | Block Type | Indexing |
 |---------------|--------------|------------|
-| `rule` dans `aws_s3_bucket_server_side_encryption_configuration` | **set** | Impossible avec `[0]` |
-| `transition` dans `aws_s3_bucket_lifecycle_configuration` | **set** | Impossible avec `[0]` |
-| `noncurrent_version_expiration` dans lifecycle | **list** | Possible avec `[0]` |
+| `rule` in `aws_s3_bucket_server_side_encryption_configuration` | **set** | Not possible with `[0]` |
+| `transition` in `aws_s3_bucket_lifecycle_configuration` | **set** | Not possible with `[0]` |
+| `noncurrent_version_expiration` in lifecycle | **list** | Possible with `[0]` |
 
-### Travailler avec Blocs de Type Set
+### Working with Set-Type Blocks
 
-**Probleme :** Impossible d'indexer les sets avec `[0]`
+**Issue:** Cannot index sets with `[0]`
 ```hcl
-# MAUVAIS : Va echouer
+# WRONG: Will fail
 condition = aws_s3_bucket_server_side_encryption_configuration.this.rule[0].bucket_key_enabled == true
 # Error: Cannot index a set value
 ```
 
-**Solution 1 :** Utiliser `command = apply` pour materialiser le set
+**Solution 1:** Use `command = apply` to materialize the set
 ```hcl
 run "test_encryption" {
-  command = apply  # Cree ressources reelles/mockees
+  command = apply  # Creates real/mocked resources
 
   assert {
     condition = alltrue([
       for rule in aws_s3_bucket_server_side_encryption_configuration.this.rule :
       rule.bucket_key_enabled == true
     ])
-    error_message = "Bucket key devrait etre active"
+    error_message = "Bucket key should be enabled"
   }
 }
 ```
 
-**Solution 2 :** Verifier au niveau ressource (eviter acces blocs imbriques)
+**Solution 2:** Check at the resource level (avoid accessing nested blocks)
 ```hcl
 run "test_encryption_exists" {
   command = plan
 
   assert {
     condition     = aws_s3_bucket_server_side_encryption_configuration.this != null
-    error_message = "Configuration chiffrement devrait etre creee"
+    error_message = "Encryption configuration should be created"
   }
 }
 ```
 
 ### command = plan vs command = apply
 
-**Decision critique :** Quand utiliser chaque mode
+**Critical decision:** When to use each mode
 
-#### Utiliser `command = plan`
+#### Use `command = plan`
 
-**Quand :**
-- Verifier la validation des entrees
-- Verifier qu'une ressource sera creee
-- Tester les defaults de variables
-- Verifier attributs derives des entrees (pas computes)
+**When:**
+- Verifying input validation
+- Verifying that a resource will be created
+- Testing variable defaults
+- Verifying attributes derived from inputs (not computed)
 
 ```hcl
 run "test_input_validation" {
-  command = plan  # Rapide, pas de creation de ressource
+  command = plan  # Fast, no resource creation
 
   variables {
     bucket = "test-bucket"
@@ -176,44 +176,44 @@ run "test_input_validation" {
 
   assert {
     condition     = aws_s3_bucket.this.bucket == "test-bucket"
-    error_message = "Le nom du bucket devrait correspondre a l'entree"
+    error_message = "Bucket name should match input"
   }
 }
 ```
 
-#### Utiliser `command = apply`
+#### Use `command = apply`
 
-**Quand :**
-- Verifier attributs computed (IDs, ARNs, noms generes)
-- Acceder aux blocs de type set
-- Verifier le comportement reel des ressources
-- Tester avec reponses provider reelles/mockees
+**When:**
+- Verifying computed attributes (IDs, ARNs, generated names)
+- Accessing set-type blocks
+- Verifying actual resource behavior
+- Testing with real/mocked provider responses
 
 ```hcl
 run "test_computed_values" {
-  command = apply  # Execute et obtient valeurs computed
+  command = apply  # Executes and gets computed values
 
   variables {
-    bucket_prefix = "test-"  # AWS genere le nom complet
+    bucket_prefix = "test-"  # AWS generates the full name
   }
 
   assert {
     condition     = length(aws_s3_bucket.this.bucket) > 0
-    error_message = "Le bucket devrait avoir un nom genere"
+    error_message = "Bucket should have a generated name"
   }
 }
 ```
 
-**Guide de Decision Rapide :**
+**Quick Decision Guide:**
 ```
-Verifier valeurs d'entree ? -> command = plan
-Verifier valeurs computed ? -> command = apply
-Acceder blocs type set ? -> command = apply
-Besoin feedback rapide ? -> command = plan (avec mocks)
-Tester comportement reel ? -> command = apply (sans mocks)
+Verify input values? -> command = plan
+Verify computed values? -> command = apply
+Access set-type blocks? -> command = apply
+Need fast feedback? -> command = plan (with mocks)
+Test real behavior? -> command = apply (without mocks)
 ```
 
-### Avec Mocking (1.7+)
+### With Mocking (1.7+)
 
 ```hcl
 mock_provider "aws" {
@@ -226,33 +226,33 @@ mock_provider "aws" {
 }
 ```
 
-### Avantages
+### Advantages
 
-- Syntaxe HCL native (familiere aux utilisateurs Terraform)
-- Pas de dependances externes
-- Execution rapide avec mocks
-- Bon pour tests unitaires de logique module
+- Native HCL syntax (familiar to Terraform users)
+- No external dependencies
+- Fast execution with mocks
+- Good for unit tests of module logic
 
-### Inconvenients
+### Disadvantages
 
-- Feature plus recente (moins mature que Terratest)
-- Ecosysteme/exemples limites
-- Le mocking ne capture pas le comportement AWS reel
+- Newer feature (less mature than Terratest)
+- Limited ecosystem/examples
+- Mocking does not capture real AWS behavior
 
 ---
 
 ## Terratest (Go)
 
-**Recommande pour :** Equipes avec experience Go, tests d'integration robustes
+**Recommended for:** Teams with Go experience, robust integration tests
 
-### Quand Utiliser
+### When to Use
 
-- Equipe a de l'experience Go
-- Besoin de tests d'integration robustes
-- Test de plusieurs providers/infrastructure complexe
-- Framework battle-tested avec grande communaute
+- Team has Go experience
+- Need robust integration tests
+- Testing multiple providers/complex infrastructure
+- Battle-tested framework with large community
 
-### Structure de Base
+### Basic Structure
 
 ```go
 package test
@@ -264,7 +264,7 @@ import (
 )
 
 func TestS3Module(t *testing.T) {
-    t.Parallel() // TOUJOURS inclure pour execution parallele
+    t.Parallel() // ALWAYS include for parallel execution
 
     terraformOptions := &terraform.Options{
         TerraformDir: "../examples/complete",
@@ -273,48 +273,48 @@ func TestS3Module(t *testing.T) {
         },
     }
 
-    // Nettoyer ressources apres test
+    // Clean up resources after test
     defer terraform.Destroy(t, terraformOptions)
 
-    // Executer terraform init et apply
+    // Run terraform init and apply
     terraform.InitAndApply(t, terraformOptions)
 
-    // Obtenir outputs et verifier
+    // Get outputs and verify
     bucketName := terraform.Output(t, terraformOptions, "bucket_name")
     assert.NotEmpty(t, bucketName)
 }
 ```
 
-### Gestion des Couts
+### Cost Management
 
 ```go
-// Utiliser tags pour cleanup automatise
+// Use tags for automated cleanup
 Vars: map[string]interface{}{
     "tags": map[string]string{
         "Environment": "test",
-        "TTL":         "2h", // Auto-delete apres 2 heures
+        "TTL":         "2h", // Auto-delete after 2 hours
     },
 }
 ```
 
-### Patterns Critiques
+### Critical Patterns
 
-1. **Toujours utiliser `t.Parallel()`** - Active execution parallele
-2. **Toujours utiliser `defer terraform.Destroy()`** - Assure cleanup
-3. **Utiliser identifiants uniques** - Eviter conflits de ressources
-4. **Taguer les ressources** - Tracking couts et cleanup automatise
-5. **Utiliser comptes AWS separes** - Isoler infrastructure de test
+1. **Always use `t.Parallel()`** - Enables parallel execution
+2. **Always use `defer terraform.Destroy()`** - Ensures cleanup
+3. **Use unique identifiers** - Avoid resource conflicts
+4. **Tag resources** - Cost tracking and automated cleanup
+5. **Use separate AWS accounts** - Isolate test infrastructure
 
-### Couts Reels
+### Real Costs
 
-- Module petit (S3, IAM): $0-5 par execution
-- Module moyen (VPC, EC2): $5-20 par execution
-- Module large (RDS, cluster ECS): $20-100 par execution
+- Small module (S3, IAM): $0-5 per run
+- Medium module (VPC, EC2): $5-20 per run
+- Large module (RDS, ECS cluster): $20-100 per run
 
-### Optimisation avec Test Stages
+### Optimization with Test Stages
 
 ```go
-// Stages de test pour iteration plus rapide
+// Test stages for faster iteration
 stage := test_structure.RunTestStage
 
 stage(t, "setup", func() {
@@ -322,47 +322,47 @@ stage(t, "setup", func() {
 })
 
 stage(t, "validate", func() {
-    // Assertions ici
+    // Assertions here
 })
 
 stage(t, "teardown", func() {
     terraform.Destroy(t, opts)
 })
 
-// Sauter stages pendant developpement :
+// Skip stages during development:
 // export SKIP_setup=true
 // export SKIP_teardown=true
 ```
 
 ---
 
-## Resume Bonnes Pratiques
+## Best Practices Summary
 
-### Pour Tous les Frameworks
+### For All Frameworks
 
-1. **Commencer avec analyse statique** - Toujours gratuit, toujours rapide
-2. **Utiliser identifiants uniques** - Prevenir conflits de ressources
-3. **Taguer ressources de test** - Tracking et cleanup
-4. **Separer comptes de test** - Isoler infrastructure de test
-5. **Implementer TTL** - Cleanup automatique des ressources
+1. **Start with static analysis** - Always free, always fast
+2. **Use unique identifiers** - Prevent resource conflicts
+3. **Tag test resources** - Tracking and cleanup
+4. **Separate test accounts** - Isolate test infrastructure
+5. **Implement TTL** - Automatic resource cleanup
 
-### Selection Framework
+### Framework Selection
 
 ```
-Verification syntaxe rapide ? -> terraform validate + fmt
-Scan securite ? -> trivy + checkov
-Terraform 1.6+, logique simple ? -> Tests natifs
-Pre-1.6, ou integration complexe ? -> Terratest
+Quick syntax check? -> terraform validate + fmt
+Security scan? -> trivy + checkov
+Terraform 1.6+, simple logic? -> Native tests
+Pre-1.6, or complex integration? -> Terratest
 ```
 
-### Optimisation Couts
+### Cost Optimization
 
-1. Utiliser mocking pour tests unitaires
-2. Implementer tags TTL sur ressources
-3. Executer tests d'integration seulement sur branche main
-4. Utiliser types d'instance plus petits dans tests
-5. Partager ressources de test quand sur
+1. Use mocking for unit tests
+2. Implement TTL tags on resources
+3. Run integration tests only on main branch
+4. Use smaller instance types in tests
+5. Share test resources when safe
 
 ---
 
-**Retour vers :** [Fichier Skill Principal](../SKILL.md)
+**Back to:** [Main Skill File](../SKILL.md)
