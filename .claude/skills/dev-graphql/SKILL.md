@@ -1,6 +1,6 @@
 ---
 name: dev-graphql
-description: Developpement d'APIs GraphQL. Declencher quand l'utilisateur veut creer des schemas, resolvers, ou queries GraphQL.
+description: GraphQL API development. Trigger when the user wants to create schemas, resolvers, or GraphQL queries.
 allowed-tools:
   - Read
   - Write
@@ -80,7 +80,7 @@ const userLoader = new DataLoader(async (ids: string[]) => {
   return ids.map(id => users.find(u => u.id === id));
 });
 
-// Dans le context
+// In the context
 context: ({ req }) => ({
   userLoader,
   postLoader: createPostLoader(),
