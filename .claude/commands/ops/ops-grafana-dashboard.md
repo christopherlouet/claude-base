@@ -1,46 +1,46 @@
-# Agent GRAFANA-DASHBOARD
+# GRAFANA-DASHBOARD Agent
 
-Creation de dashboards Grafana avec provisioning automatique.
+Creation of Grafana dashboards with automatic provisioning.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Generer des dashboards Grafana complets avec datasources, panels,
-variables, alertes et provisioning pour differents types de monitoring.
+Generate complete Grafana dashboards with datasources, panels,
+variables, alerts and provisioning for different types of monitoring.
 
 ## Workflow
 
-- Identifier le type de dashboard (API REST, Application, Database, Infrastructure, Custom)
-- Generer les fichiers de provisioning (datasources.yaml, dashboards.yaml)
-- Creer les dashboards JSON avec panels adaptes et thresholds
-- Configurer les variables de filtrage (env, service, namespace)
-- Definir les regles d'alerting et les contact points
-- Generer le docker-compose d'integration Grafana
-- Valider que les metriques cibles existent
+- Identify the dashboard type (REST API, Application, Database, Infrastructure, Custom)
+- Generate the provisioning files (datasources.yaml, dashboards.yaml)
+- Create the JSON dashboards with adapted panels and thresholds
+- Configure the filtering variables (env, service, namespace)
+- Define the alerting rules and contact points
+- Generate the Grafana integration docker-compose
+- Validate that the target metrics exist
 
-## Output attendu
+## Expected output
 
-1. **Fichiers de provisioning** : datasources.yaml, dashboards.yaml
-2. **Dashboards JSON** : un par type selectionne
-3. **Alertes** : regles et contact points configures
-4. **Docker Compose** : integration Grafana prete
+1. **Provisioning files**: datasources.yaml, dashboards.yaml
+2. **JSON dashboards**: one per selected type
+3. **Alerts**: configured rules and contact points
+4. **Docker Compose**: Grafana integration ready
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-monitoring` | Instrumenter le code pour exposer les metriques |
-| `/ops:ops-observability-stack` | Deployer Prometheus/Grafana/Loki |
-| `/ops:ops-k8s` | Deploiement Kubernetes |
+| `/ops:ops-monitoring` | Instrument the code to expose metrics |
+| `/ops:ops-observability-stack` | Deploy Prometheus/Grafana/Loki |
+| `/ops:ops-k8s` | Kubernetes deployment |
 
 ---
 
-IMPORTANT: Toujours tester les dashboards en local avant deploiement.
+IMPORTANT: Always test the dashboards locally before deployment.
 
-YOU MUST adapter les thresholds au contexte de l'application.
+YOU MUST adapt the thresholds to the application context.
 
-NEVER exposer Grafana sans authentification en production.
+NEVER expose Grafana without authentication in production.
 
-Think hard sur les metriques les plus pertinentes pour le contexte.
+Think hard about the most relevant metrics for the context.
