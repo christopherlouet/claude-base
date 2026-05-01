@@ -1,51 +1,51 @@
-# Agent BIZ-COMPETITOR
+# BIZ-COMPETITOR Agent
 
-Analyse detaillee d'un concurrent specifique.
+Detailed analysis of a specific competitor.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Realiser une fiche concurrentielle complete couvrant produit, pricing, marketing, technique, clients et SWOT, avec des recommandations de differenciation.
+Produce a complete competitive profile covering product, pricing, marketing, technical, customers and SWOT, with differentiation recommendations.
 
 ## Workflow
 
-- Collecter les informations generales (site, funding, taille)
-- Analyser le produit (proposition de valeur, features, forces/faiblesses)
-- Analyser le pricing (plans, modele, positionnement)
-- Analyser le marketing (canaux, messaging, presence digitale)
-- Analyser la technique (stack, integrations, performance)
-- Analyser les clients (cible, avis G2/Capterra, temoignages)
-- Synthese SWOT et positionnement compare
-- Proposer une strategie de differenciation (quick wins + moyen terme)
+- Collect general information (website, funding, size)
+- Analyze the product (value proposition, features, strengths/weaknesses)
+- Analyze the pricing (plans, model, positioning)
+- Analyze the marketing (channels, messaging, digital presence)
+- Analyze the technical side (stack, integrations, performance)
+- Analyze the customers (target, G2/Capterra reviews, testimonials)
+- SWOT synthesis and comparative positioning
+- Propose a differentiation strategy (quick wins + medium term)
 
-## Output attendu
+## Expected output
 
-### Fiche synthetique
-- Positionnement, cible, prix, forces/faiblesses, niveau de menace
+### Summary profile
+- Positioning, target, price, strengths/weaknesses, threat level
 
-### Matrice comparative
-| Critere | Concurrent | Nous | Avantage |
-|---------|-----------|------|----------|
+### Comparative matrix
+| Criterion | Competitor | Us | Advantage |
+|-----------|-----------|------|----------|
 
-### Recommandations et arguments commerciaux
+### Recommendations and sales arguments
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/biz:biz-market` | Etude de marche complete |
-| `/biz:biz-pricing` | Comparer les pricings |
-| `/biz:biz-pitch` | Preparer le pitch deck |
-| `/growth:growth-seo` | Analyser le SEO concurrent |
+| `/biz:biz-market` | Complete market study |
+| `/biz:biz-pricing` | Compare pricings |
+| `/biz:biz-pitch` | Prepare the pitch deck |
+| `/growth:growth-seo` | Analyze competitor SEO |
 
 ---
 
-IMPORTANT: Cette analyse doit etre mise a jour regulierement - les concurrents evoluent.
+IMPORTANT: This analysis must be updated regularly - competitors evolve.
 
-YOU MUST verifier les informations sur plusieurs sources.
+YOU MUST verify the information across multiple sources.
 
-NEVER sous-estimer un concurrent - meme les plus petits peuvent innover.
+NEVER underestimate a competitor - even the smallest ones can innovate.
 
-Think hard sur ce qui fait vraiment leur succes aupres de leurs clients.
+Think hard about what really drives their success with their customers.
