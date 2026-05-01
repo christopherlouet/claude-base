@@ -1,6 +1,6 @@
 ---
 name: dev-debug
-description: Deboguer et resoudre des problemes. Utiliser quand l'utilisateur a un bug, une erreur, un comportement inattendu, ou veut comprendre pourquoi quelque chose ne fonctionne pas.
+description: Debug and resolve problems. Use when the user has a bug, an error, an unexpected behavior, or wants to understand why something is not working.
 allowed-tools:
   - Read
   - Glob
@@ -11,240 +11,240 @@ model: sonnet
 argument-hint: "[error-description]"
 ---
 
-# Deboguer un Probleme
+# Debug a Problem
 
-## Objectif
+## Goal
 
-Identifier la cause racine d'un bug de maniere methodique via une approche systematique en 4 phases.
+Identify the root cause of a bug methodically via a systematic 4-phase approach.
 
-## Methodologie Systematique (4 Phases)
+## Systematic Methodology (4 Phases)
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                   SYSTEMATIC DEBUGGING                            │
 ├──────────────────────────────────────────────────────────────────┤
 │                                                                   │
-│  PHASE 1: OBSERVATION          Collecter sans interpreter         │
+│  PHASE 1: OBSERVATION          Collect without interpreting       │
 │  ═══════════════════                                              │
-│  - Reproduire le symptome exact                                   │
-│  - Documenter l'environnement                                     │
-│  - Capturer logs, stack traces, etats                             │
-│  - NE PAS sauter aux conclusions                                  │
+│  - Reproduce the exact symptom                                    │
+│  - Document the environment                                       │
+│  - Capture logs, stack traces, states                             │
+│  - DO NOT jump to conclusions                                     │
 │                                                                   │
-│  PHASE 2: HYPOTHESES           Raisonner systematiquement         │
+│  PHASE 2: HYPOTHESES           Reason systematically              │
 │  ════════════════════                                             │
-│  - Lister TOUTES les causes possibles                             │
-│  - Classer par probabilite (haute/moyenne/basse)                  │
-│  - Definir un test de validation pour chaque hypothese            │
-│  - Utiliser la technique des 5 Whys                               │
+│  - List ALL possible causes                                       │
+│  - Rank by probability (high/medium/low)                          │
+│  - Define a validation test for each hypothesis                   │
+│  - Use the 5 Whys technique                                       │
 │                                                                   │
-│  PHASE 3: INVESTIGATION        Prouver, ne pas supposer           │
+│  PHASE 3: INVESTIGATION        Prove, do not assume               │
 │  ══════════════════════                                           │
-│  - Tester UNE hypothese a la fois                                 │
-│  - Utiliser tracing et logging strategique                        │
-│  - Isoler avec binary search (code ou git bisect)                 │
-│  - Documenter chaque hypothese testee (confirmee/infirmee)        │
+│  - Test ONE hypothesis at a time                                  │
+│  - Use strategic tracing and logging                              │
+│  - Isolate with binary search (code or git bisect)                │
+│  - Document each tested hypothesis (confirmed/refuted)            │
 │                                                                   │
-│  PHASE 4: VERIFICATION         Confirmer que le fix est reel      │
+│  PHASE 4: VERIFICATION         Confirm the fix is real            │
 │  ════════════════════                                             │
-│  - Reproduire le bug original (doit echouer sans le fix)          │
-│  - Appliquer le fix minimal                                       │
-│  - Prouver que le bug est corrige                                 │
-│  - Verifier l'absence d'effets de bord                            │
-│  - Ajouter un test de non-regression                              │
-│  - Defense en profondeur : assertions sur invariants              │
+│  - Reproduce the original bug (must fail without the fix)         │
+│  - Apply the minimal fix                                          │
+│  - Prove the bug is fixed                                         │
+│  - Verify the absence of side effects                             │
+│  - Add a non-regression test                                      │
+│  - Defense in depth: assertions on invariants                     │
 │                                                                   │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-## Phase 1 : Observation
+## Phase 1: Observation
 
-**Questions cles:**
-- Que se passe-t-il exactement ?
-- Que devrait-il se passer ?
-- Quand ca a commence ?
-- Est-ce reproductible a 100% ?
-- Quels sont les facteurs aggravants/attenuants ?
+**Key questions:**
+- What is happening exactly?
+- What should happen?
+- When did it start?
+- Is it 100% reproducible?
+- What are the aggravating/mitigating factors?
 
 ```bash
-# Logs recents
+# Recent logs
 tail -100 logs/app.log 2>/dev/null
 
-# Derniers commits
+# Latest commits
 git log --oneline -10
 
-# Changements recents dans la zone suspecte
-git log --oneline -5 -- src/chemin/suspect/
+# Recent changes in the suspect area
+git log --oneline -5 -- src/path/suspect/
 ```
 
-## Phase 2 : Hypotheses
+## Phase 2: Hypotheses
 
-### Matrice d'hypotheses
+### Hypothesis matrix
 
-| # | Hypothese | Probabilite | Test de validation |
-|---|-----------|-------------|-------------------|
-| 1 | [Plus probable] | Haute | [Comment verifier] |
-| 2 | [Secondaire] | Moyenne | [Comment verifier] |
-| 3 | [Moins probable] | Basse | [Comment verifier] |
+| # | Hypothesis | Probability | Validation test |
+|---|------------|-------------|-----------------|
+| 1 | [Most likely] | High | [How to verify] |
+| 2 | [Secondary] | Medium | [How to verify] |
+| 3 | [Less likely] | Low | [How to verify] |
 
-### Technique des 5 Whys
+### 5 Whys technique
 
 ```
-Probleme: L'application crash au login
+Problem: The application crashes at login
 
-1. Pourquoi ? -> Le token JWT est invalide
-2. Pourquoi ? -> Le token a expire
-3. Pourquoi ? -> Le refresh token n'a pas ete appele
-4. Pourquoi ? -> L'interceptor n'a pas detecte l'expiration
-5. Pourquoi ? -> Bug de timezone dans la comparaison
+1. Why? -> The JWT token is invalid
+2. Why? -> The token has expired
+3. Why? -> The refresh token was not called
+4. Why? -> The interceptor did not detect the expiration
+5. Why? -> Timezone bug in the comparison
 
-Root cause: Bug de timezone dans la logique de refresh
+Root cause: Timezone bug in the refresh logic
 ```
 
-### Causes courantes par type
+### Common causes by type
 
-| Type de bug | Causes frequentes |
-|-------------|-------------------|
-| **Null/Undefined** | Donnees manquantes, race condition, API changed |
-| **Type error** | Mauvais type, parsing JSON, conversion implicite |
-| **Off-by-one** | Index array, boucle, comparaison `<` vs `<=` |
-| **Race condition** | Async non await, state partage, timing |
-| **Memory leak** | Event listeners, closures, references circulaires |
-| **Regression** | Changement recent, effet de bord, dependance MAJ |
+| Bug type | Frequent causes |
+|----------|-----------------|
+| **Null/Undefined** | Missing data, race condition, API changed |
+| **Type error** | Wrong type, JSON parsing, implicit conversion |
+| **Off-by-one** | Array index, loop, `<` vs `<=` comparison |
+| **Race condition** | Async without await, shared state, timing |
+| **Memory leak** | Event listeners, closures, circular references |
+| **Regression** | Recent change, side effect, dependency update |
 
-## Phase 3 : Investigation
+## Phase 3: Investigation
 
-### Techniques de tracing
+### Tracing techniques
 
 ```typescript
-// Tracing strategique (pas du console.log partout)
+// Strategic tracing (not console.log everywhere)
 function trace(label: string, data: unknown) {
   console.log(`[TRACE:${label}]`, JSON.stringify(data, null, 2));
 }
 
-// Points de trace aux frontieres
-trace('INPUT', { args });       // Entree de fonction
-trace('STATE', { variables });  // Etat intermediaire
-trace('OUTPUT', { result });    // Sortie de fonction
-trace('BRANCH', { condition }); // Decision prise
+// Trace points at boundaries
+trace('INPUT', { args });       // Function entry
+trace('STATE', { variables });  // Intermediate state
+trace('OUTPUT', { result });    // Function exit
+trace('BRANCH', { condition }); // Decision taken
 ```
 
-### Binary search dans le code
+### Binary search in the code
 
 ```
-1. Commenter la moitie du code suspect
-2. Le bug persiste ?
-   - Oui -> Le bug est dans la moitie restante
-   - Non -> Le bug est dans la moitie commentee
-3. Repeter jusqu'a isoler la ligne exacte
+1. Comment out half of the suspect code
+2. Does the bug persist?
+   - Yes -> The bug is in the remaining half
+   - No  -> The bug is in the commented half
+3. Repeat until isolating the exact line
 ```
 
-### Git bisect (trouver le commit fautif)
+### Git bisect (find the faulty commit)
 
 ```bash
 git bisect start
-git bisect bad                 # Version actuelle cassee
-git bisect good <commit>       # Derniere version OK
-# Tester et marquer good/bad jusqu'a trouver le commit
+git bisect bad                 # Current version broken
+git bisect good <commit>       # Last known good version
+# Test and mark good/bad until finding the commit
 git bisect reset
 ```
 
-## Phase 4 : Verification (OBLIGATOIRE)
+## Phase 4: Verification (MANDATORY)
 
-### Prouver que le fix fonctionne
+### Prove the fix works
 
 ```
-1. SANS le fix : reproduire le bug -> echec confirme
-2. AVEC le fix : meme scenario     -> succes confirme
-3. Tests existants                  -> tous passent
-4. Test de non-regression           -> ecrit et passe
-5. Effets de bord                   -> verifies absents
+1. WITHOUT the fix: reproduce the bug -> failure confirmed
+2. WITH the fix: same scenario        -> success confirmed
+3. Existing tests                     -> all pass
+4. Non-regression test                -> written and passes
+5. Side effects                       -> verified absent
 ```
 
-### Defense en profondeur
+### Defense in depth
 
 ```typescript
-// Ajouter des assertions sur les invariants critiques
+// Add assertions on critical invariants
 function processPayment(amount: number, userId: string) {
   assert(amount > 0, 'Payment amount must be positive');
   assert(userId, 'User ID is required');
-  // ...code metier...
+  // ...business code...
 }
 ```
 
-### Checklist de completion
+### Completion checklist
 
 ```
-[ ] Bug reproduit de maniere fiable
-[ ] Root cause identifiee (pas juste le symptome)
-[ ] Fix minimal applique (pas de refactoring opportuniste)
-[ ] Test de non-regression ajoute
-[ ] Tests existants passent
-[ ] Pas d'effets de bord
-[ ] Documentation du fix (commit message descriptif)
+[ ] Bug reproduced reliably
+[ ] Root cause identified (not just the symptom)
+[ ] Minimal fix applied (no opportunistic refactoring)
+[ ] Non-regression test added
+[ ] Existing tests pass
+[ ] No side effects
+[ ] Fix documentation (descriptive commit message)
 ```
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Diagnostic : [Description du bug]
+## Diagnosis: [Bug description]
 
 ### Phase 1 - Observation
-**Symptome:** [Ce qui se passe]
-**Comportement attendu:** [Ce qui devrait se passer]
-**Reproduction:** [Etapes 1, 2, 3...]
+**Symptom:** [What happens]
+**Expected behavior:** [What should happen]
+**Reproduction:** [Steps 1, 2, 3...]
 
 ### Phase 2 - Hypotheses
-| # | Hypothese | Probabilite | Resultat |
-|---|-----------|-------------|----------|
-| 1 | [...] | Haute | Confirmee/Infirmee |
+| # | Hypothesis | Probability | Result |
+|---|------------|-------------|--------|
+| 1 | [...] | High | Confirmed/Refuted |
 
 ### Phase 3 - Investigation
-**Root cause:** `src/xxx.ts:42` - [Explication technique]
-**5 Whys:** [Chaine causale]
+**Root cause:** `src/xxx.ts:42` - [Technical explanation]
+**5 Whys:** [Causal chain]
 
 ### Phase 4 - Verification
-- [x] Bug reproduit
-- [x] Fix applique
-- [x] Test de non-regression ajoute
-- [x] Tous les tests passent
-- [x] Pas d'effets de bord
+- [x] Bug reproduced
+- [x] Fix applied
+- [x] Non-regression test added
+- [x] All tests pass
+- [x] No side effects
 ```
 
-## Regles
+## Rules
 
-- Ne pas supposer - verifier (Phase 4 obligatoire)
-- Un bug a la fois
-- Comprendre AVANT de corriger
-- Toujours ajouter un test de non-regression
-- Documenter chaque hypothese testee, meme celles infirmees
-- Le fix doit etre MINIMAL - pas de refactoring opportuniste
+- Do not assume - verify (Phase 4 mandatory)
+- One bug at a time
+- Understand BEFORE fixing
+- Always add a non-regression test
+- Document every tested hypothesis, even refuted ones
+- The fix must be MINIMAL - no opportunistic refactoring
 
-## Iron Law : Pas de fix sans root cause
+## Iron Law: No fix without root cause
 
-IMPORTANT: Ne JAMAIS proposer un fix avant d'avoir identifie la root cause. Les fix de symptomes masquent le vrai probleme et creent de nouveaux bugs.
+IMPORTANT: NEVER propose a fix before identifying the root cause. Symptom fixes mask the real problem and create new bugs.
 
-### Red flags (rationalisations a eviter)
+### Red flags (rationalizations to avoid)
 
-| Phrase | Probleme |
-|--------|----------|
-| "Quick fix pour l'instant" | Evite la root cause |
-| "Essayons juste de changer X" | Guess-and-check, pas systematique |
-| "Je ne comprends pas bien mais ca devrait marcher" | Fix aveugle |
-| "C'est urgent, pas le temps d'investiguer" | L'investigation systematique est PLUS rapide |
+| Phrase | Problem |
+|--------|---------|
+| "Quick fix for now" | Avoids the root cause |
+| "Let's just try changing X" | Guess-and-check, not systematic |
+| "I don't really understand but it should work" | Blind fix |
+| "It's urgent, no time to investigate" | Systematic investigation is FASTER |
 
-### Regle des 3 echecs
+### Rule of 3 failures
 
-Apres 3 tentatives de fix echouees : STOP. Ne pas tenter un 4eme fix.
+After 3 failed fix attempts: STOP. Do not attempt a 4th fix.
 
-1. Remettre en question les hypotheses de base
-2. Elargir le perimetre de recherche
-3. Verifier si le probleme est architectural (pas juste un bug local)
-4. Envisager `git bisect` pour trouver le commit fautif
+1. Question the basic assumptions
+2. Broaden the search perimeter
+3. Check whether the problem is architectural (not just a local bug)
+4. Consider `git bisect` to find the faulty commit
 
-### Metriques
+### Metrics
 
-| Approche | Temps moyen | Taux de fix 1ere tentative |
-|----------|-------------|---------------------------|
-| Systematique (4 phases) | 15-30 min | ~95% |
+| Approach | Average time | 1st-attempt fix rate |
+|----------|--------------|----------------------|
+| Systematic (4 phases) | 15-30 min | ~95% |
 | Random fixing (guess-and-check) | 2-3h | ~40% |
