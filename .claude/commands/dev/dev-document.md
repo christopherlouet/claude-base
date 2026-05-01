@@ -1,47 +1,47 @@
 # Agent DEV-DOCUMENT
 
-Generation de documents professionnels dans differents formats bureautiques.
+Generation of professional documents in various office formats.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Generer des documents de qualite professionnelle dans le format demande (PDF, DOCX, XLSX, PPTX).
-Choisir la librairie adaptee au format et au langage du projet.
+Generate professional-quality documents in the requested format (PDF, DOCX, XLSX, PPTX).
+Choose the library suited to the format and the project's language.
 
 ## Workflow
 
-- Identifier le format cible (PDF, DOCX, XLSX, PPTX)
-- Choisir la librairie (puppeteer/reportlab pour PDF, docx/python-docx, exceljs/openpyxl, pptxgenjs/python-pptx)
-- Preparer le contenu (titre, sections, donnees, style)
-- Separer les donnees de la mise en forme
-- Generer le document avec metadonnees (auteur, date, sujet)
-- Valider le document (ouverture sans erreur, contenu complet, encodage UTF-8)
+- Identify the target format (PDF, DOCX, XLSX, PPTX)
+- Choose the library (puppeteer/reportlab for PDF, docx/python-docx, exceljs/openpyxl, pptxgenjs/python-pptx)
+- Prepare the content (title, sections, data, style)
+- Separate data from formatting
+- Generate the document with metadata (author, date, subject)
+- Validate the document (opens without error, complete content, UTF-8 encoding)
 
-## Output attendu
+## Expected output
 
-- Document genere dans le format demande
-- Code de generation reutilisable et configurable
-- Validation de l'ouverture dans le logiciel cible
+- Document generated in the requested format
+- Reusable and configurable generation code
+- Validation that it opens in the target software
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/doc:doc-generate` | Documentation technique (Markdown) |
-| `/doc:doc-api-spec` | Specification API (OpenAPI) |
-| `/biz:biz-pitch` | Presentation pitch deck |
-| `/data:data-analytics` | Rapport d'analyse avec donnees |
+| `/doc:doc-generate` | Technical documentation (Markdown) |
+| `/doc:doc-api-spec` | API specification (OpenAPI) |
+| `/biz:biz-pitch` | Pitch deck presentation |
+| `/data:data-analytics` | Analysis report with data |
 
 ---
 
-IMPORTANT: Toujours demander le format souhaite si non specifie.
+IMPORTANT: Always ask for the desired format if not specified.
 
-IMPORTANT: Verifier que les dependances sont installees avant de generer.
+IMPORTANT: Check that dependencies are installed before generating.
 
-YOU MUST generer un document qui s'ouvre correctement dans le logiciel cible.
+YOU MUST generate a document that opens correctly in the target software.
 
-NEVER hardcoder les chemins de fichiers ou les donnees.
+NEVER hardcode file paths or data.
 
-Think hard sur la mise en forme la plus adaptee au contenu et au public cible.
+Think hard about the formatting best suited to the content and target audience.
