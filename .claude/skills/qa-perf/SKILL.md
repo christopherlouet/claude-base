@@ -1,6 +1,6 @@
 ---
 name: qa-perf
-description: Optimisation des performances d'applications. Declencher quand l'utilisateur veut ameliorer la vitesse, reduire la latence, ou optimiser les ressources.
+description: Application performance optimization. Trigger when the user wants to improve speed, reduce latency, or optimize resources.
 allowed-tools:
   - Read
   - Write
@@ -15,10 +15,10 @@ argument-hint: "[page-or-endpoint]"
 
 # Performance Optimization
 
-## Metriques cles
+## Key metrics
 
-| Metrique | Cible | Outil |
-|----------|-------|-------|
+| Metric | Target | Tool |
+|--------|--------|------|
 | TTFB | < 200ms | DevTools |
 | LCP | < 2.5s | Lighthouse |
 | FID | < 100ms | Web Vitals |
@@ -28,13 +28,13 @@ argument-hint: "[page-or-endpoint]"
 
 ### Database
 ```sql
--- Index sur colonnes frequemment filtrees
+-- Index on frequently filtered columns
 CREATE INDEX idx_users_email ON users(email);
 
--- EXPLAIN pour analyser
+-- EXPLAIN to analyze
 EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
 
--- Eviter N+1 avec JOIN
+-- Avoid N+1 with JOIN
 SELECT u.*, p.* FROM users u
 LEFT JOIN posts p ON p.user_id = u.id;
 ```
@@ -79,7 +79,7 @@ const value = useMemo(() => expensive(data), [data]);
 const handler = useCallback(() => action(id), [id]);
 ```
 
-## Outils
+## Tools
 
 ```bash
 # Lighthouse
@@ -88,6 +88,6 @@ npx lighthouse https://example.com --view
 # Bundle analyzer
 npm run build -- --analyze
 
-# Profiling Node.js
+# Node.js profiling
 node --prof app.js
 ```
