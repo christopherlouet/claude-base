@@ -1,7 +1,7 @@
-# Exemple TDD : Fonction de calcul de prix avec remise
+# TDD Example: Price calculation function with discount
 
-## Demande utilisateur
-> "Créer une fonction calculatePrice qui applique une remise en pourcentage"
+## User request
+> "Create a calculatePrice function that applies a percentage discount"
 
 ---
 
@@ -11,7 +11,7 @@
 // src/__tests__/calculatePrice.test.ts
 
 describe('calculatePrice', () => {
-  // Cas nominal
+  // Nominal case
   it('should return original price when no discount', () => {
     expect(calculatePrice(100, 0)).toBe(100);
   });
@@ -29,7 +29,7 @@ describe('calculatePrice', () => {
     expect(calculatePrice(0, 50)).toBe(0);
   });
 
-  // Cas d'erreur
+  // Error cases
   it('should throw when discount > 100', () => {
     expect(() => calculatePrice(100, 150)).toThrow('Discount must be between 0 and 100');
   });
@@ -40,11 +40,11 @@ describe('calculatePrice', () => {
 });
 ```
 
-**Résultat attendu**: 6 tests échouent
+**Expected result**: 6 tests fail
 
 ---
 
-## Phase 2: GREEN - Implémentation minimale
+## Phase 2: GREEN - Minimal implementation
 
 ```typescript
 // src/utils/calculatePrice.ts
@@ -57,11 +57,11 @@ export function calculatePrice(price: number, discountPercent: number): number {
 }
 ```
 
-**Résultat attendu**: 6 tests passent
+**Expected result**: 6 tests pass
 
 ---
 
-## Phase 3: REFACTOR - Amélioration
+## Phase 3: REFACTOR - Improvement
 
 ```typescript
 // src/utils/calculatePrice.ts
@@ -82,21 +82,21 @@ export function calculatePrice(price: number, discountPercent: number): number {
 }
 ```
 
-**Résultat attendu**: 6 tests passent toujours
+**Expected result**: 6 tests still pass
 
 ---
 
 ## Commits
 
 ```bash
-# Après Phase RED
+# After RED phase
 git commit -m "test(pricing): add tests for calculatePrice function
 
 - Test nominal cases (no discount, with discount)
 - Test edge cases (decimal prices, zero price)
 - Test error handling (invalid discount range)"
 
-# Après Phase GREEN + REFACTOR
+# After GREEN + REFACTOR phase
 git commit -m "feat(pricing): implement calculatePrice with discount
 
 - Add price calculation with percentage discount
