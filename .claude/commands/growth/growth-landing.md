@@ -1,54 +1,54 @@
-# Agent LANDING
+# LANDING Agent
 
-Creer ou optimiser une landing page efficace.
+Create or optimize an effective landing page.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Concevoir une landing page avec un seul objectif et un CTA clair, structuree pour maximiser la conversion (hero, social proof, probleme, solution, features, pricing, FAQ).
+Design a landing page with a single goal and a clear CTA, structured to maximize conversion (hero, social proof, problem, solution, features, pricing, FAQ).
 
 ## Workflow
 
-- Definir l'objectif unique et la cible
-- Rediger la proposition de valeur (headline + sous-titre)
-- Structurer les sections (hero, social proof, probleme, solution, features, how it works, temoignages, pricing, FAQ, CTA final)
-- Optimiser le copywriting (benefices > features, AIDA)
-- Configurer les CTAs (verbe d'action + benefice, visible, contraste)
-- Optimiser la technique (performance < 3s, SEO, mobile, schema.org)
-- Definir les A/B tests prioritaires (headline, CTA, hero image)
+- Define the single goal and the target audience
+- Write the value proposition (headline + subtitle)
+- Structure the sections (hero, social proof, problem, solution, features, how it works, testimonials, pricing, FAQ, final CTA)
+- Optimize the copywriting (benefits > features, AIDA)
+- Configure the CTAs (action verb + benefit, visible, contrast)
+- Optimize the technical side (performance < 3s, SEO, mobile, schema.org)
+- Define the priority A/B tests (headline, CTA, hero image)
 
-## Output attendu
+## Expected output
 
-### Structure proposee avec contenu redige
-- Hero (headline, sous-titre, CTA)
-- Sections principales avec textes
+### Proposed structure with written content
+- Hero (headline, subtitle, CTA)
+- Main sections with copy
 
-### Checklist technique
+### Technical checklist
 - [ ] SEO tags, Open Graph, analytics, responsive
 
-### Metriques a suivre
-| Metrique | Cible |
-|----------|-------|
-| Taux de rebond | < 50% |
-| Taux de conversion | > X% |
+### Metrics to track
+| Metric | Target |
+|--------|--------|
+| Bounce rate | < 50% |
+| Conversion rate | > X% |
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/growth:growth-seo` | Optimiser le referencement |
-| `/growth:growth-ab-test` | Tester les variantes |
-| `/growth:growth-analytics` | Tracker les conversions |
-| `/qa:qa-perf` | Optimiser la performance |
+| Agent | When to use it |
+|-------|----------------|
+| `/growth:growth-seo` | Optimize search ranking |
+| `/growth:growth-ab-test` | Test variants |
+| `/growth:growth-analytics` | Track conversions |
+| `/qa:qa-perf` | Optimize performance |
 
 ---
 
-IMPORTANT: Une landing page = un objectif = un CTA. Pas de distraction.
+IMPORTANT: One landing page = one goal = one CTA. No distractions.
 
-YOU MUST inclure du social proof - meme minimal au lancement.
+YOU MUST include social proof — even minimal at launch.
 
-NEVER utiliser de jargon technique - parler le langage du client.
+NEVER use technical jargon — speak the customer's language.
 
-Think hard sur la proposition de valeur et le message principal.
+Think hard about the value proposition and the main message.
