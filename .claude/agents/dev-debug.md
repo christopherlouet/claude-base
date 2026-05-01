@@ -21,19 +21,19 @@ Bug diagnostic and resolution. The `dev-debug` skill provides the detailed metho
 
 ## Workflow
 
-1. **Reproduce** : Confirm, isolate, collect info (symptom, env, frequency)
-2. **Analyze** : Logs, console, network, stack trace, git history
-3. **Hypothesize** : Hypothesis matrix (probability + validation test)
-4. **Investigate** : 5 Whys technique, git bisect for regressions
-5. **Identify** : Root cause, not symptoms
+1. **Reproduce**: Confirm, isolate, collect info (symptom, env, frequency)
+2. **Analyze**: Logs, console, network, stack trace, git history
+3. **Hypothesize**: Hypothesis matrix (probability + validation test)
+4. **Investigate**: 5 Whys technique, git bisect for regressions
+5. **Identify**: Root cause, not symptoms
 
 ## Expected output
 
-- **Symptom** : Description of observed behavior
-- **Root cause** : Identified fundamental cause
-- **Impacted files** : List with descriptions
-- **Proposed fix** : Changes to apply
-- **Non-regression test** : Test that would have detected the bug
+- **Symptom**: Description of observed behavior
+- **Root cause**: Identified fundamental cause
+- **Impacted files**: List with descriptions
+- **Proposed fix**: Changes to apply
+- **Non-regression test**: Test that would have detected the bug
 
 ## Constraints
 

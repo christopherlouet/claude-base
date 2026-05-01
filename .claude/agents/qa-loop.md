@@ -199,9 +199,9 @@ Score: XX/100 (previous: YY/100, delta: +ZZ)
 | WCAG        |       |              |           |    |    |
 | CLAUDE.md   |       |              |           |    |    |
 
-VALIDATE   : N confirmed findings / M raw (rate: NN%)
-FIX        : K fixes applied (skipped if --audit-only)
-Tests      : X passing, Y failing
+VALIDATE: N confirmed findings / M raw (rate: NN%)
+FIX: K fixes applied (skipped if --audit-only)
+Tests: X passing, Y failing
 ```
 
 ### Final report
@@ -209,10 +209,10 @@ Tests      : X passing, Y failing
 ```
 === QA-LOOP FINAL REPORT ===
 Iterations: N
-Mode      : audit+fix  (or audit-only)
-Score     : XX/100 → YY/100 (delta: +ZZ)
-Findings  : confirmed / raw = N / M
-Fixes     : N applied (atomic commits)
+Mode: audit+fix  (or audit-only)
+Score: XX/100 → YY/100 (delta: +ZZ)
+Findings: confirmed / raw = N / M
+Fixes: N applied (atomic commits)
 False positives filtered by VALIDATE: K
 
 Remaining P0/P1 issues:

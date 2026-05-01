@@ -10,7 +10,7 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "echo '[QA-CLAUDEMD] Lecture seule autorisee : git, find, grep'"
+          command: "echo '[QA-CLAUDEMD] Lecture seule autorisee: git, find, grep'"
           timeout: 5000
 ---
 

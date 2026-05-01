@@ -12,17 +12,17 @@ Docker containerization optimized for production.
 
 ## Workflow
 
-1. **Multi-stage Dockerfile** : deps -> build -> runner (Alpine base, non-root user, HEALTHCHECK)
-2. **Docker Compose** : app + db + redis, healthchecks, depends_on, persistent volumes
-3. **.dockerignore** : node_modules, .git, .env*, tests, coverage
-4. **Size optimization** : Alpine (-70%), multi-stage (-50%), --no-cache-dir
-5. **Security** : official images, non-root user, no secrets in the image, docker scan
+1. **Multi-stage Dockerfile**: deps -> build -> runner (Alpine base, non-root user, HEALTHCHECK)
+2. **Docker Compose**: app + db + redis, healthchecks, depends_on, persistent volumes
+3. **.dockerignore**: node_modules, .git, .env*, tests, coverage
+4. **Size optimization**: Alpine (-70%), multi-stage (-50%), --no-cache-dir
+5. **Security**: official images, non-root user, no secrets in the image, docker scan
 
 ## Supported stacks
 
-- **Node.js** : node:20-alpine, npm ci, dist
-- **Python** : python:3.12-slim, poetry/pip, gunicorn
-- **Go** : golang:1.22-alpine -> scratch, CGO_ENABLED=0
+- **Node.js**: node:20-alpine, npm ci, dist
+- **Python**: python:3.12-slim, poetry/pip, gunicorn
+- **Go**: golang:1.22-alpine -> scratch, CGO_ENABLED=0
 
 ## Expected output
 

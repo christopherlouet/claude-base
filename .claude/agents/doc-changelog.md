@@ -14,10 +14,10 @@ Changelog management following the Keep a Changelog convention.
 ## Workflow
 
 1. **Analyze** recent changes (commits, PRs)
-2. **Categorize** : Added, Changed, Deprecated, Removed, Fixed, Security
+2. **Categorize**: Added, Changed, Deprecated, Removed, Fixed, Security
 3. **Write** clear entries for users (not dev jargon)
 4. **Update** the [Unreleased] section or create a new version
-5. **Links** : reference issues/PRs, add comparison links in the footer
+5. **Links**: reference issues/PRs, add comparison links in the footer
 
 ## Rules
 

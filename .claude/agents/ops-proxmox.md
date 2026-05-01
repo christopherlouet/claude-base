@@ -15,11 +15,11 @@ Proxmox VE infrastructure management with Terraform. The `ops-proxmox` skill pro
 
 ## Process
 
-1. **Analysis** : Explore the existing infra (API, nodes, VMs/LXC, storage)
-2. **Design** : Choose provider (bpg/proxmox recommended), structure the modules
-3. **Implementation** : Create the Terraform files (VM, LXC, network, backup)
-4. **Validation** : `terraform validate` + `terraform plan`
-5. **Deployment** : `terraform apply` (on explicit request only)
+1. **Analysis**: Explore the existing infra (API, nodes, VMs/LXC, storage)
+2. **Design**: Choose provider (bpg/proxmox recommended), structure the modules
+3. **Implementation**: Create the Terraform files (VM, LXC, network, backup)
+4. **Validation**: `terraform validate` + `terraform plan`
+5. **Deployment**: `terraform apply` (on explicit request only)
 
 ## Checklist
 

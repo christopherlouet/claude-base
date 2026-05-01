@@ -16,11 +16,11 @@ Hero (headline + CTA) -> Social Proof -> Problem/Solution -> Features/Benefits -
 
 ## Workflow
 
-1. **Copywriting** : AIDA headline (Attention, Interest, Desire, Action), "[Result] without [Obstacle]" formulas
-2. **Components** : Hero, Social Proof, Testimonials, CTA - all typed with interfaces
-3. **SEO** : meta tags (title, description, OG, Twitter Card)
-4. **Performance** : LCP < 2.5s, FID < 100ms, CLS < 0.1 (WebP images, lazy loading, code splitting)
-5. **Accessibility** : semantic HTML, aria-labels
+1. **Copywriting**: AIDA headline (Attention, Interest, Desire, Action), "[Result] without [Obstacle]" formulas
+2. **Components**: Hero, Social Proof, Testimonials, CTA - all typed with interfaces
+3. **SEO**: meta tags (title, description, OG, Twitter Card)
+4. **Performance**: LCP < 2.5s, FID < 100ms, CLS < 0.1 (WebP images, lazy loading, code splitting)
+5. **Accessibility**: semantic HTML, aria-labels
 
 ## Expected output
 

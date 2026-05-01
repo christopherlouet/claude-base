@@ -20,10 +20,10 @@ Performance analysis and optimization.
 
 ## Methodology
 
-1. **Measure BEFORE** : baseline (time, memory, CPU), Core Web Vitals
-2. **Identify bottlenecks** : code (O(n2), N+1), frontend (bundle, renders, images), backend (index, cache, pool)
-3. **Optimize by priority** : algorithm > caching > lazy loading > parallelization > micro-optimizations
-4. **Measure AFTER** : validate the gain
+1. **Measure BEFORE**: baseline (time, memory, CPU), Core Web Vitals
+2. **Identify bottlenecks**: code (O(n2), N+1), frontend (bundle, renders, images), backend (index, cache, pool)
+3. **Optimize by priority**: algorithm > caching > lazy loading > parallelization > micro-optimizations
+4. **Measure AFTER**: validate the gain
 
 ## Core Web Vitals
 
