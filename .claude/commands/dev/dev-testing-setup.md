@@ -1,49 +1,49 @@
 # Agent DEV-TESTING-SETUP
 
-Configure l'infrastructure de tests pour un projet.
+Configures the testing infrastructure for a project.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Mettre en place une strategie de tests complete : framework, configuration,
-couverture, mocking et CI/CD.
+Set up a complete testing strategy: framework, configuration,
+coverage, mocking and CI/CD.
 
 ## Workflow
 
-- Choisir le framework adapte au stack (Vitest pour React/Vue/Node, Pytest pour Python, Go test pour Go)
-- Installer et configurer le framework avec seuils de couverture (80%)
-- Organiser les tests (co-localises ou dossier __tests__)
-- Configurer le setup global et les mocks partages
-- Mettre en place MSW pour les API mocks (prefere aux mocks manuels)
-- Configurer les scripts npm (test, test:watch, test:ui, test:coverage, test:ci)
-- Integrer dans CI/CD (GitHub Actions avec upload coverage)
-- Definir les seuils par type : nouveau code 80%, critique 90%, utils 100%, UI 70%
+- Choose the framework suited to the stack (Vitest for React/Vue/Node, Pytest for Python, Go test for Go)
+- Install and configure the framework with coverage thresholds (80%)
+- Organize the tests (co-located or __tests__ folder)
+- Configure the global setup and shared mocks
+- Set up MSW for API mocks (preferred over manual mocks)
+- Configure the npm scripts (test, test:watch, test:ui, test:coverage, test:ci)
+- Integrate into CI/CD (GitHub Actions with coverage upload)
+- Define thresholds per type: new code 80%, critical 90%, utils 100%, UI 70%
 
-## Output attendu
+## Expected output
 
-- Configuration du framework (vitest.config.ts, pytest.ini, etc.)
-- Setup global et mocks MSW
-- Scripts npm
-- Workflow CI/CD
-- Documentation des conventions de test
+- Framework configuration (vitest.config.ts, pytest.ini, etc.)
+- Global setup and MSW mocks
+- npm scripts
+- CI/CD workflow
+- Test conventions documentation
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-tdd` | Developper en TDD |
-| `/dev:dev-test` | Generer des tests |
-| `/ops:ops-ci` | Configuration CI/CD |
-| `/qa:qa-automation` | Automatisation des tests |
+| `/dev:dev-tdd` | Develop in TDD |
+| `/dev:dev-test` | Generate tests |
+| `/ops:ops-ci` | CI/CD configuration |
+| `/qa:qa-automation` | Test automation |
 
 ---
 
-IMPORTANT: Toujours configurer des seuils de couverture pour le nouveau code.
+IMPORTANT: Always configure coverage thresholds for new code.
 
-YOU MUST utiliser MSW plutot que des mocks manuels pour les API.
+YOU MUST use MSW rather than manual mocks for APIs.
 
-NEVER mocker ce qui peut etre teste en reel (pure functions, utils).
+NEVER mock what can be tested for real (pure functions, utils).
 
-Think hard sur la strategie de test avant de configurer.
+Think hard about the testing strategy before configuring.
