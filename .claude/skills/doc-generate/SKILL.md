@@ -1,6 +1,6 @@
 ---
 name: doc-generate
-description: Generation de documentation technique. Declencher quand l'utilisateur veut creer README, docs API, ou guides.
+description: Technical documentation generation. Trigger when the user wants to create a README, API docs, or guides.
 allowed-tools:
   - Read
   - Write
@@ -80,10 +80,10 @@ Create a new user.
 | 409 | Email already exists |
 ```
 
-## Principes
+## Principles
 
-- Exemples de code fonctionnels
-- Tableaux pour les parametres
-- Schemas de requete/reponse
-- Liste des erreurs possibles
-- Liens internes pour navigation
+- Working code examples
+- Tables for parameters
+- Request/response schemas
+- List of possible errors
+- Internal links for navigation
