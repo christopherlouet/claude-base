@@ -1,6 +1,6 @@
 ---
 name: dev-prisma
-description: Developpement avec Prisma ORM (schema, migrations, queries type-safe, Accelerate, transactions). Declencher quand l'utilisateur veut ajouter un modele, creer une migration, optimiser des queries Prisma, ou quand on detecte schema.prisma dans le projet.
+description: Development with Prisma ORM (schema, migrations, type-safe queries, Accelerate, transactions). Trigger when the user wants to add a model, create a migration, optimize Prisma queries, or when schema.prisma is detected in the project.
 allowed-tools:
   - Read
   - Write
@@ -22,17 +22,17 @@ npm install @prisma/client
 npx prisma init
 ```
 
-Produit :
-- `prisma/schema.prisma` : schema declaratif
-- `.env` : `DATABASE_URL` (ne PAS commiter)
+Produces:
+- `prisma/schema.prisma`: declarative schema
+- `.env`: `DATABASE_URL` (do NOT commit)
 
-## Schema : conventions
+## Schema: conventions
 
 ```prisma
 // prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
-  // Ou prisma-client (nouveau, tree-shakable, v6+)
+  // Or prisma-client (new, tree-shakable, v6+)
   // provider = "prisma-client"
   // output   = "../generated/prisma"
 }
@@ -51,7 +51,7 @@ model User {
   posts     Post[]
 
   @@index([email])
-  @@map("users")  // Table en snake_case en DB
+  @@map("users")  // Table in snake_case in DB
 }
 
 model Post {
@@ -69,66 +69,66 @@ model Post {
 }
 ```
 
-### Regles naming
+### Naming rules
 
-- **Models** : PascalCase singulier (`User`, `Post`)
-- **Fields** : camelCase (`createdAt`, `authorId`)
-- **Table en DB** : snake_case plural via `@@map("users")`
-- **IDs** : cuid() par defaut (URL-safe, ordered), uuid() pour inter-systemes, autoincrement() pour ID numeriques
+- **Models**: singular PascalCase (`User`, `Post`)
+- **Fields**: camelCase (`createdAt`, `authorId`)
+- **DB table**: plural snake_case via `@@map("users")`
+- **IDs**: cuid() by default (URL-safe, ordered), uuid() for inter-systems, autoincrement() for numeric IDs
 
 ## Migrations
 
-### Workflow dev
+### Dev workflow
 
 ```bash
-# Creer une migration (questionne le nom)
+# Create a migration (prompts for the name)
 npx prisma migrate dev --name add_user_email_index
 
-# Regenerer le client apres modif schema
+# Regenerate the client after schema change
 npx prisma generate
 
-# Reset complet (WIPE toutes les donnees)
+# Full reset (WIPES all data)
 npx prisma migrate reset
 ```
 
-IMPORTANT: `prisma migrate dev` modifie la DB locale. **NE JAMAIS** l'utiliser en production.
+IMPORTANT: `prisma migrate dev` modifies the local DB. **NEVER** use it in production.
 
-### Workflow production
+### Production workflow
 
 ```bash
-# Applique les migrations PENDING sur la DB cible (production)
+# Apply PENDING migrations to the target DB (production)
 npx prisma migrate deploy
 
-# Verifier l'etat
+# Check the state
 npx prisma migrate status
 ```
 
-### Migrations dangereuses
+### Dangerous migrations
 
-| Operation | Risque | Solution |
-|-----------|--------|----------|
-| Renommer un champ | Perte de donnees (Prisma dropera le champ et creera le nouveau) | 2 etapes : ajouter nouveau, backfill, retirer ancien |
-| Changer type d'un champ | Conversion impossible selon le cas | ALTER TYPE manuel ou migration custom |
-| Supprimer un modele avec FK | Cascade delete | Verifier toutes les relations, plan de backup |
-| Ajouter NOT NULL | Casse si existing rows sont null | Default value OU migration en 2 temps (nullable → backfill → NOT NULL) |
+| Operation | Risk | Solution |
+|-----------|------|----------|
+| Rename a field | Data loss (Prisma will drop the field and create the new one) | 2 steps: add new, backfill, remove old |
+| Change a field's type | Conversion impossible depending on the case | Manual ALTER TYPE or custom migration |
+| Remove a model with FK | Cascade delete | Check all relations, backup plan |
+| Add NOT NULL | Breaks if existing rows are null | Default value OR 2-step migration (nullable → backfill → NOT NULL) |
 
-## Queries type-safe
+## Type-safe queries
 
 ### Read
 
 ```ts
-// findUnique : 1 ligne par PK ou unique
+// findUnique: 1 row by PK or unique
 const user = await prisma.user.findUnique({
   where: { email: "alice@example.com" },
 });
 
-// findFirst : premiere ligne match
+// findFirst: first matching row
 const post = await prisma.post.findFirst({
   where: { published: true },
   orderBy: { createdAt: "desc" },
 });
 
-// findMany : liste
+// findMany: list
 const posts = await prisma.post.findMany({
   where: { published: true, authorId: userId },
   orderBy: { createdAt: "desc" },
@@ -140,7 +140,7 @@ const posts = await prisma.post.findMany({
 ### Include / select
 
 ```ts
-// include : relations jointes
+// include: joined relations
 const user = await prisma.user.findUnique({
   where: { id },
   include: {
@@ -148,14 +148,14 @@ const user = await prisma.user.findUnique({
   },
 });
 
-// select : champs specifiques (plus efficace si besoin partiel)
+// select: specific fields (more efficient if you only need part of them)
 const user = await prisma.user.findUnique({
   where: { id },
   select: { id: true, email: true, posts: { select: { id: true, title: true } } },
 });
 ```
 
-IMPORTANT: `include` recupere TOUS les champs. Preferer `select` si tu sais ce que tu veux (evite d'exposer des champs sensibles comme `passwordHash`).
+IMPORTANT: `include` fetches ALL fields. Prefer `select` if you know what you want (avoids exposing sensitive fields like `passwordHash`).
 
 ### Write
 
@@ -165,12 +165,12 @@ const user = await prisma.user.create({
   data: { email: "alice@example.com", name: "Alice" },
 });
 
-// Create avec relations
+// Create with relations
 const post = await prisma.post.create({
   data: {
     title: "Hello",
     author: { connect: { id: userId } },
-    // Ou connectOrCreate si tu veux creer si inexistant
+    // Or connectOrCreate if you want to create if non-existent
   },
 });
 
@@ -193,13 +193,13 @@ await prisma.post.delete({ where: { id } });
 
 ## Transactions
 
-### Interactive transaction (recommandee)
+### Interactive transaction (recommended)
 
 ```ts
 await prisma.$transaction(async (tx) => {
   const user = await tx.user.create({ data: { email } });
   await tx.post.create({ data: { authorId: user.id, title: "..." } });
-  // Si throw → rollback automatique
+  // If throw → automatic rollback
 });
 ```
 
@@ -212,35 +212,35 @@ const [user, post] = await prisma.$transaction([
 ]);
 ```
 
-IMPORTANT: Les transactions Prisma ont un timeout (5s par defaut). Pour long-running, passer `{ timeout: 30000 }`.
+IMPORTANT: Prisma transactions have a timeout (5s by default). For long-running, pass `{ timeout: 30000 }`.
 
-## N+1 — le piege classique
+## N+1 — the classic trap
 
 ```ts
-// N+1 : 1 query pour users, puis 1 query par user pour posts
+// N+1: 1 query for users, then 1 query per user for posts
 const users = await prisma.user.findMany();
 for (const user of users) {
   user.posts = await prisma.post.findMany({ where: { authorId: user.id } });  // N queries
 }
 
-// SOLUTION : include
+// SOLUTION: include
 const users = await prisma.user.findMany({ include: { posts: true } });  // 2 queries
 ```
 
-### Detecter N+1
+### Detect N+1
 
 ```ts
-// Activer les logs SQL en dev
+// Enable SQL logs in dev
 const prisma = new PrismaClient({
-  log: ["query"],  // Loggue chaque query SQL
+  log: ["query"],  // Logs each SQL query
 });
 ```
 
-Pattern : voir le meme SELECT repete N fois → N+1.
+Pattern: seeing the same SELECT repeated N times → N+1.
 
 ## Pagination
 
-### Offset pagination (simple, lent sur grands volumes)
+### Offset pagination (simple, slow on large volumes)
 
 ```ts
 const posts = await prisma.post.findMany({
@@ -250,7 +250,7 @@ const posts = await prisma.post.findMany({
 });
 ```
 
-### Cursor pagination (rapide, recommande > 10K rows)
+### Cursor pagination (fast, recommended > 10K rows)
 
 ```ts
 const posts = await prisma.post.findMany({
@@ -261,21 +261,21 @@ const posts = await prisma.post.findMany({
 });
 ```
 
-## Indexes et performance
+## Indexes and performance
 
-Ajouter des indexes sur :
-- **Foreign keys** : toujours (Prisma ne les cree pas auto dans certains providers)
-- **Colonnes dans WHERE** frequents
-- **Colonnes dans ORDER BY** + WHERE
+Add indexes on:
+- **Foreign keys**: always (Prisma does not create them automatically in certain providers)
+- **Columns in frequent WHERE** clauses
+- **Columns in ORDER BY** + WHERE
 
 ```prisma
 model Post {
-  // Composite index pour WHERE published + ORDER BY createdAt
+  // Composite index for WHERE published + ORDER BY createdAt
   @@index([published, createdAt])
 }
 ```
 
-Verifier les queries lentes :
+Check slow queries:
 
 ```sql
 EXPLAIN ANALYZE SELECT * FROM posts WHERE published = true ORDER BY created_at DESC LIMIT 20;
@@ -283,7 +283,7 @@ EXPLAIN ANALYZE SELECT * FROM posts WHERE published = true ORDER BY created_at D
 
 ## Prisma Accelerate (cache + pooling)
 
-Pour les apps serverless/edge avec connection pool :
+For serverless/edge apps with connection pool:
 
 ```bash
 npm install @prisma/extension-accelerate
@@ -295,13 +295,13 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 
 const prisma = new PrismaClient().$extends(withAccelerate());
 
-// Activer le cache sur une query
+// Enable cache on a query
 const users = await prisma.user.findMany({
   cacheStrategy: { swr: 60, ttl: 300 },  // serve stale 60s, TTL 5min
 });
 ```
 
-Sans Accelerate, utiliser un pgBouncer ou pool manuel.
+Without Accelerate, use pgBouncer or a manual pool.
 
 ## Seed
 
@@ -329,11 +329,11 @@ main().finally(() => prisma.$disconnect());
 }
 ```
 
-Lancer : `npx prisma db seed`
+Run: `npx prisma db seed`
 
-## Tests avec Prisma
+## Tests with Prisma
 
-### Option 1 : test DB reelle (recommande)
+### Option 1: real test DB (recommended)
 
 ```bash
 # .env.test
@@ -343,7 +343,7 @@ DATABASE_URL=postgresql://user:pass@localhost:5432/test_db
 npx prisma migrate deploy --schema=./prisma/schema.prisma
 ```
 
-Reset entre tests :
+Reset between tests:
 
 ```ts
 beforeEach(async () => {
@@ -351,21 +351,21 @@ beforeEach(async () => {
 });
 ```
 
-### Option 2 : mock (attention aux divergences)
+### Option 2: mock (beware of divergences)
 
-Utiliser `prisma-mock` ou `vitest-mock-extended`. Garde cela pour les tests unitaires purs, les tests d'integration doivent utiliser une vraie DB.
+Use `prisma-mock` or `vitest-mock-extended`. Keep this for pure unit tests, integration tests must use a real DB.
 
-## Pieges courants
+## Common traps
 
-| Piege | Prevention |
-|-------|-----------|
-| `prisma migrate dev` en prod | Utiliser UNIQUEMENT `prisma migrate deploy` |
-| Schema modifie sans `prisma generate` | CI step : `prisma generate` avant build |
-| Connection leak | `await prisma.$disconnect()` en fin de script, ou singleton en app |
-| Query $queryRaw non type-safe | Utiliser `$queryRawUnsafe` seulement si vraiment necessaire, preferer les builders |
-| Multiple PrismaClient instances | Singleton via globalThis en dev (HMR-safe) |
+| Trap | Prevention |
+|------|------------|
+| `prisma migrate dev` in prod | Use ONLY `prisma migrate deploy` |
+| Schema modified without `prisma generate` | CI step: `prisma generate` before build |
+| Connection leak | `await prisma.$disconnect()` at the end of script, or singleton in app |
+| Non-type-safe $queryRaw query | Use `$queryRawUnsafe` only if truly necessary, prefer the builders |
+| Multiple PrismaClient instances | Singleton via globalThis in dev (HMR-safe) |
 
-### Singleton HMR-safe
+### HMR-safe singleton
 
 ```ts
 // lib/prisma.ts
@@ -378,33 +378,33 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 ```
 
-## Complement avec le socle
+## Complement with the foundation
 
-- Agent `dev-prisma` : creation de schema, migrations complexes
-- Rule `.claude/rules/security.md` : ne pas exposer `select: { passwordHash: true }`
-- Skill `dev-supabase` : si stack Supabase (Supabase utilise aussi Postgres, interop possible)
-- Skill `dev-tdd` : tests avec vraie DB
+- Agent `dev-prisma`: schema creation, complex migrations
+- Rule `.claude/rules/security.md`: do not expose `select: { passwordHash: true }`
+- Skill `dev-supabase`: if Supabase stack (Supabase also uses Postgres, interop possible)
+- Skill `dev-tdd`: tests with a real DB
 
-## Output attendu
+## Expected output
 
-1. **Schema** structure correctement (PascalCase models, camelCase fields, indexes explicites)
-2. **Queries type-safe** avec `select` plutot qu'`include` quand possible
-3. **Transactions** pour mutations multi-tables
-4. **Singleton Prisma client** (jamais d'instance ad-hoc)
-5. **Migrations nommees** explicitement (pas de nom auto-genere)
+1. **Schema** correctly structured (PascalCase models, camelCase fields, explicit indexes)
+2. **Type-safe queries** with `select` rather than `include` when possible
+3. **Transactions** for multi-table mutations
+4. **Singleton Prisma client** (never an ad-hoc instance)
+5. **Explicitly named migrations** (no auto-generated name)
 
-## Regles
+## Rules
 
-IMPORTANT: NEVER utiliser `prisma migrate dev` en production. Toujours `prisma migrate deploy`.
+IMPORTANT: NEVER use `prisma migrate dev` in production. Always `prisma migrate deploy`.
 
-IMPORTANT: `prisma generate` apres chaque modif schema. Ajouter au build CI.
+IMPORTANT: `prisma generate` after every schema change. Add it to the CI build.
 
-IMPORTANT: Singleton PrismaClient (eviter les leaks de connexion).
+IMPORTANT: Singleton PrismaClient (avoid connection leaks).
 
-YOU MUST ajouter un index sur chaque foreign key et chaque colonne dans WHERE frequent.
+YOU MUST add an index on every foreign key and every column in frequent WHERE clauses.
 
-YOU MUST utiliser `select` au lieu d'`include` quand tu connais les champs (securite + perf).
+YOU MUST use `select` instead of `include` when you know the fields (security + perf).
 
-NEVER commiter `.env` avec DATABASE_URL. Toujours `.env.example` avec placeholders.
+NEVER commit `.env` with DATABASE_URL. Always `.env.example` with placeholders.
 
-NEVER renommer un champ directement : 2-etapes (ajouter nouveau → backfill → retirer ancien).
+NEVER rename a field directly: 2 steps (add new → backfill → remove old).
