@@ -1,6 +1,6 @@
 ---
 name: ops-monitoring
-description: Instrumentation d'applications pour monitoring. Declencher quand l'utilisateur veut ajouter des logs, metriques, ou traces.
+description: Application instrumentation for monitoring. Trigger when the user wants to add logs, metrics, or traces.
 allowed-tools:
   - Read
   - Write
@@ -14,13 +14,13 @@ disable-model-invocation: true
 
 # Monitoring Instrumentation
 
-## 3 Piliers de l'Observabilite
+## 3 Pillars of Observability
 
-1. **Logs** - Events discretes
-2. **Metriques** - Mesures numeriques
-3. **Traces** - Chemins de requetes
+1. **Logs** - Discrete events
+2. **Metrics** - Numerical measurements
+3. **Traces** - Request paths
 
-## Logs Structures (Node.js)
+## Structured Logs (Node.js)
 
 ```typescript
 import pino from 'pino';
@@ -34,7 +34,7 @@ logger.info({ userId: '123', action: 'login' }, 'User logged in');
 logger.error({ err, requestId }, 'Request failed');
 ```
 
-## Metriques Prometheus
+## Prometheus Metrics
 
 ```typescript
 import { Counter, Histogram, Registry } from 'prom-client';
@@ -53,7 +53,7 @@ const httpDuration = new Histogram({
 });
 ```
 
-## Traces OpenTelemetry
+## OpenTelemetry Traces
 
 ```typescript
 import { trace } from '@opentelemetry/api';
