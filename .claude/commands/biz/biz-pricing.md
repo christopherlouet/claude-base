@@ -1,52 +1,52 @@
-# Agent PRICING
+# PRICING Agent
 
-Definir la strategie de pricing pour un produit ou service.
+Define the pricing strategy for a product or service.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Analyser les couts, la concurrence et la valeur percue pour recommander un modele de pricing, une grille tarifaire et des projections financieres.
+Analyze costs, competition and perceived value to recommend a pricing model, a pricing grid and financial projections.
 
 ## Workflow
 
-- Comprendre le produit et la valeur apportee (gain temps, argent, productivite)
-- Analyser les couts (fixes + variables, seuil de rentabilite)
-- Analyser la concurrence (modeles, prix, positionnement)
-- Evaluer les modeles de pricing (flat, paliers, par user, usage, freemium)
-- Proposer une structure de pricing avec psychologie (ancrage, decoy, annuel vs mensuel)
-- Definir les metriques a suivre (ARPU, LTV, CAC, Churn, Conversion)
-- Proposer une roadmap pricing (lancement, ajustements, evolutions)
+- Understand the product and the value delivered (time, money, productivity gains)
+- Analyze costs (fixed + variable, break-even point)
+- Analyze the competition (models, prices, positioning)
+- Evaluate pricing models (flat, tiers, per user, usage, freemium)
+- Propose a pricing structure with psychology (anchoring, decoy, annual vs monthly)
+- Define metrics to track (ARPU, LTV, CAC, Churn, Conversion)
+- Propose a pricing roadmap (launch, adjustments, evolutions)
 
-## Output attendu
+## Expected output
 
-### Recommandation
-- Modele, cible, positionnement
+### Recommendation
+- Model, target, positioning
 
-### Grille tarifaire
-| Plan | Prix/mois | Cible | Fonctionnalites cles |
-|------|-----------|-------|---------------------|
+### Pricing grid
+| Plan | Price/month | Target | Key features |
+|------|-------------|--------|--------------|
 
-### Analyse financiere (pessimiste, realiste, optimiste)
-### Risques et mitigations
-### Roadmap pricing
+### Financial analysis (pessimistic, realistic, optimistic)
+### Risks and mitigations
+### Pricing roadmap
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/biz:biz-model` | Business model global |
-| `/biz:biz-market` | Etude de marche et concurrence |
-| `/growth:growth-ab-test` | Tester differents prix |
-| `/growth:growth-analytics` | Mesurer l'impact du pricing |
+| Agent | When to use it |
+|-------|----------------|
+| `/biz:biz-model` | Overall business model |
+| `/biz:biz-market` | Market and competition study |
+| `/growth:growth-ab-test` | Test different prices |
+| `/growth:growth-analytics` | Measure pricing impact |
 
 ---
 
-IMPORTANT: Le pricing est une hypothese - il devra etre teste et ajuste.
+IMPORTANT: Pricing is a hypothesis - it will need to be tested and adjusted.
 
-YOU MUST calculer le seuil de rentabilite avant de proposer un prix.
+YOU MUST calculate the break-even point before proposing a price.
 
-NEVER sous-estimer la valeur - les clients B2B paient pour le ROI, pas le cout.
+NEVER underestimate value - B2B customers pay for ROI, not cost.
 
-Think hard sur la valeur percue par le client vs le cout de production.
+Think hard about the value perceived by the customer vs the cost of production.
