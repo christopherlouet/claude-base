@@ -513,7 +513,7 @@
     },
     {
       "path": ".claude/commands/doc/doc-api-spec.md",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c4d2f571d3f72301570b13095ba4c9578855d180514028b6ad8af628258ea9f6"
     },
     {
