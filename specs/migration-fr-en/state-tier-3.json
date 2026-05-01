@@ -1,101 +1,485 @@
 {
   "tier": 3,
   "files": [
-    {"path": ".claude/skills/agent-teams/patterns.md", "status": "todo", "checksum_source": "9a97dcc864353540df3a81b931c6ba8acac0a825e9e451f3849e1483fcf05a3b"},
-    {"path": ".claude/skills/agent-teams/SKILL.md", "status": "todo", "checksum_source": "08b3544a17fd962ed61bdc4b30d6d6f7df63ee535304c582e489f56be686ad15"},
-    {"path": ".claude/skills/api-mocking/SKILL.md", "status": "todo", "checksum_source": "6b5df11bebb14d396062571fa6300eeec30eec9b07d398d9175d2c878541d056"},
-    {"path": ".claude/skills/data-pipeline/examples/etl-pipeline.md", "status": "todo", "checksum_source": "33135c64250c0456e0cda81c9f55e946d4d5501422a685ec2470d721961c8892"},
-    {"path": ".claude/skills/data-pipeline/SKILL.md", "status": "todo", "checksum_source": "e5dec389bc8ea6fe3cfe79160c7cd7d2e36e5014d7c4c03d973fdb0711123a58"},
-    {"path": ".claude/skills/dev-api/examples/api-example.md", "status": "todo", "checksum_source": "64e4253fbdfb0740a5eeee01350a13ae27140bfd4cd227ce9f2c3072efc69316"},
-    {"path": ".claude/skills/dev-api/SKILL.md", "status": "todo", "checksum_source": "7425d889f403829bdd4edd3c3d877b76d61ddc83f7e2337f1407b084d14ec9da"},
-    {"path": ".claude/skills/dev-auth/SKILL.md", "status": "todo", "checksum_source": "471030f003d195bee21008941890f3e6ec666b3d98c3d7aebfb3cfd9b7cc6327"},
-    {"path": ".claude/skills/dev-debug/examples/debug-example.md", "status": "todo", "checksum_source": "a4f82be79ce26ac2aa3e2ad102dd3e8dc9207994c63cd47a18995386e1077462"},
-    {"path": ".claude/skills/dev-debug/SKILL.md", "status": "todo", "checksum_source": "8971a42182036758ffd603b2ced5b8b8cd26e9e938b24cb844e7054342776339"},
-    {"path": ".claude/skills/dev-document/SKILL.md", "status": "todo", "checksum_source": "92e453bfa6fc99384048101b2fed59452ca2cdf2bee0c8959d4eed0c82d4ea2d"},
-    {"path": ".claude/skills/dev-error-handling/examples/error-boundary.md", "status": "todo", "checksum_source": "ff7416a9c58976043f7525394e2c9f4aa80cec3d82fa6eeb9575e58587069e6e"},
-    {"path": ".claude/skills/dev-error-handling/SKILL.md", "status": "todo", "checksum_source": "5a04aa09fdc47ea04d23f6f33312de57c65593fc692ec673e6e3a626eecf7119"},
-    {"path": ".claude/skills/dev-flutter/examples/feature-bloc.md", "status": "todo", "checksum_source": "5632be23e69034e43545408415353a1444945e3a5a22b79f5ce06d24d50fe12c"},
-    {"path": ".claude/skills/dev-flutter/SKILL.md", "status": "todo", "checksum_source": "9bea3d7089784329752647340b2d516d919f432b48f2a5e5703edc7a714690d5"},
-    {"path": ".claude/skills/dev-frontend-design/SKILL.md", "status": "todo", "checksum_source": "e54ec3ab525f816f0815bcc0c02b24f36bfd2df4cfe1c11354e766f0adb0bf11"},
-    {"path": ".claude/skills/dev-graphql/examples/schema-resolvers.md", "status": "todo", "checksum_source": "cf02a282aa3308ce8b6afd2a9cb58f42610948739b71cf9b773d269719f5882f"},
-    {"path": ".claude/skills/dev-graphql/SKILL.md", "status": "todo", "checksum_source": "7dd5498b75350771474395e11a9273587b5df875d5d08d70f7727d70922b8d5a"},
-    {"path": ".claude/skills/dev-i18n/SKILL.md", "status": "todo", "checksum_source": "ca0e3a1cea0b663aa6236ca5f99aee3f132a5f3a51adbef79bf77c8ca838c117"},
-    {"path": ".claude/skills/dev-nextjs/SKILL.md", "status": "todo", "checksum_source": "d3eeb762329a23834e247d0522ec90d7a6d783329786875efcaa933dbd08dd81"},
-    {"path": ".claude/skills/dev-prisma/SKILL.md", "status": "todo", "checksum_source": "87280a88a6659c8580ab4d13bc6126fa9b93944f45fa7696b622c1053484f1b4"},
-    {"path": ".claude/skills/dev-prompt-engineering/examples/prompt-optimization.md", "status": "todo", "checksum_source": "7448b8688b28c6c1edec2ae6845eeed9acdee450b0683bbf03a7c5dc6111e3e7"},
-    {"path": ".claude/skills/dev-prompt-engineering/SKILL.md", "status": "todo", "checksum_source": "d4b03d0aa635a46cc6ed7f9bc2666ab296408d31f68e239f9b24b36714b35dbd"},
-    {"path": ".claude/skills/dev-react-perf/SKILL.md", "status": "todo", "checksum_source": "1e1d5d30a24710c960ff2fa133c5fa4f1660e539505c7aa6b23e7b3e5cdf7500"},
-    {"path": ".claude/skills/dev-refactor/examples/extract-service.md", "status": "todo", "checksum_source": "a7af542f9dca91d7f317c9448ab6ee29875793718b867d2b170ef2b365b40f0a"},
-    {"path": ".claude/skills/dev-refactor/SKILL.md", "status": "todo", "checksum_source": "52bf08a030d3866104520f0bc7a8ca4888ac09d4bbff2a52270f111a72fff2e9"},
-    {"path": ".claude/skills/dev-shadcn/SKILL.md", "status": "todo", "checksum_source": "38a6ad24718f1f689ea2f58203a8845cb91b190560586172c4ca3be9862ec0b2"},
-    {"path": ".claude/skills/dev-supabase/examples/auth-rls.md", "status": "todo", "checksum_source": "f63b034ad648f876e5b7a5a04898a75fe271bc15319e64767f82caafd66ea53b"},
-    {"path": ".claude/skills/dev-supabase/SKILL.md", "status": "todo", "checksum_source": "7ff7a36da38d7ddfde0b757668c6ec606d90fb8318a0abb311fd479c414e8fa3"},
-    {"path": ".claude/skills/dev-tdd/examples/calculate-price.md", "status": "todo", "checksum_source": "44563eeab8a3a9436240ac184103f60c42b36d89bd360ebe324d438b03dfc5d1"},
-    {"path": ".claude/skills/dev-tdd/SKILL.md", "status": "todo", "checksum_source": "41a88f84ba2333c6d2e4994916f919264756dab370e98310e829f5d7d3380cc4"},
-    {"path": ".claude/skills/doc-changelog/SKILL.md", "status": "todo", "checksum_source": "f9c9b8ef444acb2633b4b01dc6d62d8f11919f192795cee658891c0afae3a29f"},
-    {"path": ".claude/skills/doc-generate/examples/api-docs.md", "status": "todo", "checksum_source": "62904aa8f4f0235bd8c2da7c4630cde9520f137df836a05ca33b4eb2e1eababa"},
-    {"path": ".claude/skills/doc-generate/SKILL.md", "status": "todo", "checksum_source": "e23bdffdb0186abadd3015c2f4a81aadf391353b7ad9ee71322ff6b0c4043598"},
-    {"path": ".claude/skills/feature-flags/examples/feature-toggle.md", "status": "todo", "checksum_source": "70db5ef7daefe0179ba49db4b6bf2bd2c83ce92050ef56de94b0cf794886d800"},
-    {"path": ".claude/skills/feature-flags/SKILL.md", "status": "todo", "checksum_source": "abb823a2bd481a73b102d4bf98de7212196a197f0c141fb600d81f464c53ac1c"},
-    {"path": ".claude/skills/git-worktrees/SKILL.md", "status": "todo", "checksum_source": "37df95f0fd4d0ef83a12fbe08f9a20e2812ecef1db92911885703cb1ffdfe763"},
-    {"path": ".claude/skills/growth-cro/examples/landing-optimization.md", "status": "todo", "checksum_source": "329f560937b4e3312607d884263290624258fe30e82a7d889cd5ecad4cd122ca"},
-    {"path": ".claude/skills/growth-cro/SKILL.md", "status": "todo", "checksum_source": "429b61592c54002d9a051ea8c31bcd49d4f628457b88c2516e97b71f063daea2"},
-    {"path": ".claude/skills/ops-ci/examples/github-actions.md", "status": "todo", "checksum_source": "68e78cbdc773beae820b1102165c3ea14758ab1e9ef022585d4e8170585fc40b"},
-    {"path": ".claude/skills/ops-ci-fix/SKILL.md", "status": "todo", "checksum_source": "1fe251c60e0cf2c800410173f31709a54668e81981516d13084e8bcdc2593ec6"},
-    {"path": ".claude/skills/ops-ci/SKILL.md", "status": "todo", "checksum_source": "e877270edacbc593c0a245d5cabd873781e88c239bd7383e043954a9941394ee"},
-    {"path": ".claude/skills/ops-database/examples/migration.md", "status": "todo", "checksum_source": "2982619714d3784dbf83b5389d4df482b3c0956ce091f84d81cf3439dc65354f"},
-    {"path": ".claude/skills/ops-database/SKILL.md", "status": "todo", "checksum_source": "ca2a1409387ff8e7b88940fa3c7f35266d81dea01d633351a56059a162367ccd"},
-    {"path": ".claude/skills/ops-docker/examples/multi-stage.md", "status": "todo", "checksum_source": "7491df41709725978ad2daf675dd4fde339e6bb9e1fbcac26528473deee4885c"},
-    {"path": ".claude/skills/ops-docker/SKILL.md", "status": "todo", "checksum_source": "3a4653a78ffe253ee37e3cd67c9b27ac4e69c6674c2bf1c12d04327fb47a2edc"},
-    {"path": ".claude/skills/ops-infra-code/examples/aws-vpc-module.md", "status": "todo", "checksum_source": "fafb360b298e25aa7fc7a7baf332105211414d35e309bcdc96ea2e9fe4753b22"},
-    {"path": ".claude/skills/ops-infra-code/references/code-patterns.md", "status": "todo", "checksum_source": "7c7023cfaccde2994e4e47ed71f3b216215d00f3c51e7a720aca6dc1102ca3fd"},
-    {"path": ".claude/skills/ops-infra-code/references/module-patterns.md", "status": "todo", "checksum_source": "b12d4a1069f9e5b56ea141a56f51bdaeb3006ab683c67938e3a50f7516e5a043"},
-    {"path": ".claude/skills/ops-infra-code/references/security-compliance.md", "status": "todo", "checksum_source": "8c7eaa766518473eadb23a6911bb965a6be52a4ebec5b42f27152bc85766a112"},
-    {"path": ".claude/skills/ops-infra-code/references/testing-frameworks.md", "status": "todo", "checksum_source": "348411be0495f7ef74539c29c2ea19357de23f12622f6151269437f971fe1f78"},
-    {"path": ".claude/skills/ops-infra-code/SKILL.md", "status": "todo", "checksum_source": "ff2a598ad2403688bf583c553103df45ddb6d7add09a9f4b360bd9a34727a907"},
-    {"path": ".claude/skills/ops-mobile-release/SKILL.md", "status": "todo", "checksum_source": "9cc7b7437619a1d7032bb1449d44d497b2e944dcc14497e4e252608c74ec29a4"},
-    {"path": ".claude/skills/ops-monitoring/examples/pino-prometheus.md", "status": "todo", "checksum_source": "4c1d01af0cd7f5569da609d5f46e7e01e07f3bd9cc204c55953cf95a0e91fb23"},
-    {"path": ".claude/skills/ops-monitoring/SKILL.md", "status": "todo", "checksum_source": "52663455f89a58b8edc794f43c426eeb3d9766de8edb8d4ca444187e6a5065e6"},
-    {"path": ".claude/skills/ops-opnsense/SKILL.md", "status": "todo", "checksum_source": "7fa4b93f2242d40794fc63e6cf2a90d576c1e39b255ea60a08668d64604ec9ec"},
-    {"path": ".claude/skills/ops-proxmox/references/backup-ha.md", "status": "todo", "checksum_source": "90883484952f185069a6b59d655b99487d680d80f82a9c457ad3a9b1f65680f9"},
-    {"path": ".claude/skills/ops-proxmox/references/cloud-init.md", "status": "todo", "checksum_source": "9845f3c71fed7567ead93d740d5964f776d2dbf583bf4757763136456289f881"},
-    {"path": ".claude/skills/ops-proxmox/references/terraform-modules.md", "status": "todo", "checksum_source": "7ad80dfc13c516890f599c5b4a4c9ca889b11d4727383997bf4f9954d1c07374"},
-    {"path": ".claude/skills/ops-proxmox/references/troubleshooting.md", "status": "todo", "checksum_source": "4e5f97738b064041ff1c8bd60efb72eeb59905ea2efc4f6672aafd6ee7127e00"},
-    {"path": ".claude/skills/ops-proxmox/SKILL.md", "status": "todo", "checksum_source": "14959da1d3c479e8a3304e10e22d0346f924eabd54e550b2cfb0a3061cbba565"},
-    {"path": ".claude/skills/ops-standup/SKILL.md", "status": "todo", "checksum_source": "eb61a53381bdbb6d7d2a0f36953cb01cf3ee063b8b818834fcbabc9ec95deaf1"},
-    {"path": ".claude/skills/parallel-agents/SKILL.md", "status": "todo", "checksum_source": "0e54844476cb3a02e3fe2260fcb205c09920e57c79b970047122a243de0dc6b1"},
-    {"path": ".claude/skills/qa-chrome/SKILL.md", "status": "todo", "checksum_source": "c2b1ce2699b58ba38770e1e9e54a0abf7dfc7a2b97260bbfdfa6a649742b1b54"},
-    {"path": ".claude/skills/qa-design/examples/ui-audit.md", "status": "todo", "checksum_source": "de9962fa075d7f04d23dea0c0caec74f09acb0e60bde41b6900fb13041722d07"},
-    {"path": ".claude/skills/qa-design/SKILL.md", "status": "todo", "checksum_source": "b83bdade5147621e26745f83bf898cfeb8f7334f0af10eafed31bd08ee3404f2"},
-    {"path": ".claude/skills/qa-e2e/examples/login-flow.md", "status": "todo", "checksum_source": "d41df1e8728732a538ee0a3251b4c769a419bf287437b26c879c2dc541796717"},
-    {"path": ".claude/skills/qa-e2e/SKILL.md", "status": "todo", "checksum_source": "4a9a1c5be588746cb43841f66941f879a4a978f38171d3b59ed706d03d2dfafe"},
-    {"path": ".claude/skills/qa-perf/examples/lighthouse-audit.md", "status": "todo", "checksum_source": "79b06f8eac1b9b06f446c2ec02c43aac15481054823ecc9a9755aca982bef71d"},
-    {"path": ".claude/skills/qa-perf/SKILL.md", "status": "todo", "checksum_source": "a931f1653832f54fb364ba209dc9616981154d58ed3df3b9fcda8b9ea650e57a"},
-    {"path": ".claude/skills/qa-review/examples/review-example.md", "status": "todo", "checksum_source": "a00bd291e1db860caa24f39f658290d3c47e6b6f719a902b2e005110a70ec918"},
-    {"path": ".claude/skills/qa-review/SKILL.md", "status": "todo", "checksum_source": "aa2c585a150d6b553a7b1d9a8bbc257c4537d672d07475ceffea26df7f0045c9"},
-    {"path": ".claude/skills/qa-security/examples/security-example.md", "status": "todo", "checksum_source": "a37fb0b5a213ac39168cc49498172d1b8a23f4b137dc50c31ca3633f281dfd94"},
-    {"path": ".claude/skills/qa-security/SKILL.md", "status": "todo", "checksum_source": "2115e6454a5908f18dad972a80e4186f96ffc2c95a0c2f60cf727bed6abd5c45"},
-    {"path": ".claude/skills/qa-tech-debt/examples/debt-inventory.md", "status": "todo", "checksum_source": "a8f75cf25f8c20623df0d9d0214cdaed9376b277823189c0ad4c83e10d8a3188"},
-    {"path": ".claude/skills/qa-tech-debt/SKILL.md", "status": "todo", "checksum_source": "762b1725cc248c67b5b5bdf6e85a4eb403d6a5faccd9f3aa0b295909f077e89b"},
-    {"path": ".claude/skills/README.md", "status": "todo", "checksum_source": "d07126b5fe805a137e76d8a2c108500f384a890f9a02b718decfd86914d950f8"},
-    {"path": ".claude/skills/session-handoff/SKILL.md", "status": "todo", "checksum_source": "b88c722ad853eb58bb9cd8ba720d4f38e948b016c1d0c482b815fb5f24c9bad2"},
-    {"path": ".claude/skills/state-management/SKILL.md", "status": "todo", "checksum_source": "c2cba2aa1398fa43182f6d3e42a7289915da1d4689bacbd76a9422babdc32a5a"},
-    {"path": ".claude/skills/web-scraping/SKILL.md", "status": "todo", "checksum_source": "92dfa0f12fb962b58b17c00ce7496d6724d2ddf9f7458f5022788deba545e448"},
-    {"path": ".claude/skills/work-batch/SKILL.md", "status": "todo", "checksum_source": "5dce0c4d3226c48d078337a66921c1db132bc6ab117622a7a326ad683e83a5f6"},
-    {"path": ".claude/skills/work-brainstorm/SKILL.md", "status": "todo", "checksum_source": "427d3fbf531e13bc38860247606371d91a0243604ca0d217ad9fbf18c73466a5"},
-    {"path": ".claude/skills/work-commit/examples/commit-examples.md", "status": "todo", "checksum_source": "83a4165d67c170319064acbb4b8b426c04d076817c040e9e95211f596bbbc2ff"},
-    {"path": ".claude/skills/work-commit/SKILL.md", "status": "todo", "checksum_source": "70e31d216060f9a7b11f5b9cf9669cea762c72ed9bbfca79db2e50fe6125a4ba"},
-    {"path": ".claude/skills/work-explore/examples/exploration-example.md", "status": "todo", "checksum_source": "308880127e07abc04488395e49870f570c1c06767d045d93e514fad0bf1be878"},
-    {"path": ".claude/skills/work-explore/SKILL.md", "status": "todo", "checksum_source": "0bfcd57a4d5e2a1d6868bd3a74ebd89ca4b2a4aa89221330e1ec64380a0d3a25"},
-    {"path": ".claude/skills/work-plan/examples/planning-example.md", "status": "todo", "checksum_source": "92347a44905af928917d9bbfd05041c5044b0afd7d7b1e6fa6925c698303a175"},
-    {"path": ".claude/skills/work-plan/SKILL.md", "status": "todo", "checksum_source": "0c92c79462388e2c23ed0b5e27604ce0f6910914c77377792371190996538b36"},
-    {"path": ".claude/skills/work-pr/examples/pr-example.md", "status": "todo", "checksum_source": "2e0939fe9dc705fcbbe447121f4478b283528abd76e5cb28706b3f8f253381c5"},
-    {"path": ".claude/skills/work-pr/SKILL.md", "status": "todo", "checksum_source": "aea94f046505ea9332257fabd7d3bc5cdc34d9dd1375b182acd48f77ba7571cf"},
-    {"path": ".claude/skills/work-quick/SKILL.md", "status": "todo", "checksum_source": "bf0480aab7925e188ab919f5bd1a9d12ee41d723e0a3b1ee152cdd1d41ba6ca5"},
-    {"path": ".claude/skills/writing-skills/SKILL.md", "status": "todo", "checksum_source": "692dc3687f56dc762ab56bdab9269837302bf2e360bd47864f2acb4a1da2ded5"},
-    {"path": "scripts/hooks/command-validator.sh", "status": "todo", "checksum_source": "c5ef69534d1750dae0f9488ee129d612fe9c644a90b41dbda3448be988fba2db"},
-    {"path": "scripts/hooks/prompt-context.sh", "status": "todo", "checksum_source": "61be60a23377578f55f6fb27b3a482d974983a5e517fe61bf0b6d5a1aa4dec26"},
-    {"path": "scripts/hooks/setup-deps.sh", "status": "todo", "checksum_source": "c5b27dc223b6a28ec09eb7ee2fdf0f37902e626dce89691f07612a3824f8a14c"},
-    {"path": "scripts/hooks/socle-integrity-check.sh", "status": "todo", "checksum_source": "5e5f06e796e9bff82a5a8f2008c1780ccaff1c7fec46932af1a428cf92de242e"}
+    {
+      "path": ".claude/skills/agent-teams/patterns.md",
+      "status": "draft",
+      "checksum_source": "9a97dcc864353540df3a81b931c6ba8acac0a825e9e451f3849e1483fcf05a3b"
+    },
+    {
+      "path": ".claude/skills/agent-teams/SKILL.md",
+      "status": "todo",
+      "checksum_source": "08b3544a17fd962ed61bdc4b30d6d6f7df63ee535304c582e489f56be686ad15"
+    },
+    {
+      "path": ".claude/skills/api-mocking/SKILL.md",
+      "status": "todo",
+      "checksum_source": "6b5df11bebb14d396062571fa6300eeec30eec9b07d398d9175d2c878541d056"
+    },
+    {
+      "path": ".claude/skills/data-pipeline/examples/etl-pipeline.md",
+      "status": "todo",
+      "checksum_source": "33135c64250c0456e0cda81c9f55e946d4d5501422a685ec2470d721961c8892"
+    },
+    {
+      "path": ".claude/skills/data-pipeline/SKILL.md",
+      "status": "todo",
+      "checksum_source": "e5dec389bc8ea6fe3cfe79160c7cd7d2e36e5014d7c4c03d973fdb0711123a58"
+    },
+    {
+      "path": ".claude/skills/dev-api/examples/api-example.md",
+      "status": "todo",
+      "checksum_source": "64e4253fbdfb0740a5eeee01350a13ae27140bfd4cd227ce9f2c3072efc69316"
+    },
+    {
+      "path": ".claude/skills/dev-api/SKILL.md",
+      "status": "todo",
+      "checksum_source": "7425d889f403829bdd4edd3c3d877b76d61ddc83f7e2337f1407b084d14ec9da"
+    },
+    {
+      "path": ".claude/skills/dev-auth/SKILL.md",
+      "status": "todo",
+      "checksum_source": "471030f003d195bee21008941890f3e6ec666b3d98c3d7aebfb3cfd9b7cc6327"
+    },
+    {
+      "path": ".claude/skills/dev-debug/examples/debug-example.md",
+      "status": "todo",
+      "checksum_source": "a4f82be79ce26ac2aa3e2ad102dd3e8dc9207994c63cd47a18995386e1077462"
+    },
+    {
+      "path": ".claude/skills/dev-debug/SKILL.md",
+      "status": "todo",
+      "checksum_source": "8971a42182036758ffd603b2ced5b8b8cd26e9e938b24cb844e7054342776339"
+    },
+    {
+      "path": ".claude/skills/dev-document/SKILL.md",
+      "status": "todo",
+      "checksum_source": "92e453bfa6fc99384048101b2fed59452ca2cdf2bee0c8959d4eed0c82d4ea2d"
+    },
+    {
+      "path": ".claude/skills/dev-error-handling/examples/error-boundary.md",
+      "status": "todo",
+      "checksum_source": "ff7416a9c58976043f7525394e2c9f4aa80cec3d82fa6eeb9575e58587069e6e"
+    },
+    {
+      "path": ".claude/skills/dev-error-handling/SKILL.md",
+      "status": "todo",
+      "checksum_source": "5a04aa09fdc47ea04d23f6f33312de57c65593fc692ec673e6e3a626eecf7119"
+    },
+    {
+      "path": ".claude/skills/dev-flutter/examples/feature-bloc.md",
+      "status": "todo",
+      "checksum_source": "5632be23e69034e43545408415353a1444945e3a5a22b79f5ce06d24d50fe12c"
+    },
+    {
+      "path": ".claude/skills/dev-flutter/SKILL.md",
+      "status": "todo",
+      "checksum_source": "9bea3d7089784329752647340b2d516d919f432b48f2a5e5703edc7a714690d5"
+    },
+    {
+      "path": ".claude/skills/dev-frontend-design/SKILL.md",
+      "status": "todo",
+      "checksum_source": "e54ec3ab525f816f0815bcc0c02b24f36bfd2df4cfe1c11354e766f0adb0bf11"
+    },
+    {
+      "path": ".claude/skills/dev-graphql/examples/schema-resolvers.md",
+      "status": "todo",
+      "checksum_source": "cf02a282aa3308ce8b6afd2a9cb58f42610948739b71cf9b773d269719f5882f"
+    },
+    {
+      "path": ".claude/skills/dev-graphql/SKILL.md",
+      "status": "todo",
+      "checksum_source": "7dd5498b75350771474395e11a9273587b5df875d5d08d70f7727d70922b8d5a"
+    },
+    {
+      "path": ".claude/skills/dev-i18n/SKILL.md",
+      "status": "todo",
+      "checksum_source": "ca0e3a1cea0b663aa6236ca5f99aee3f132a5f3a51adbef79bf77c8ca838c117"
+    },
+    {
+      "path": ".claude/skills/dev-nextjs/SKILL.md",
+      "status": "todo",
+      "checksum_source": "d3eeb762329a23834e247d0522ec90d7a6d783329786875efcaa933dbd08dd81"
+    },
+    {
+      "path": ".claude/skills/dev-prisma/SKILL.md",
+      "status": "todo",
+      "checksum_source": "87280a88a6659c8580ab4d13bc6126fa9b93944f45fa7696b622c1053484f1b4"
+    },
+    {
+      "path": ".claude/skills/dev-prompt-engineering/examples/prompt-optimization.md",
+      "status": "todo",
+      "checksum_source": "7448b8688b28c6c1edec2ae6845eeed9acdee450b0683bbf03a7c5dc6111e3e7"
+    },
+    {
+      "path": ".claude/skills/dev-prompt-engineering/SKILL.md",
+      "status": "todo",
+      "checksum_source": "d4b03d0aa635a46cc6ed7f9bc2666ab296408d31f68e239f9b24b36714b35dbd"
+    },
+    {
+      "path": ".claude/skills/dev-react-perf/SKILL.md",
+      "status": "todo",
+      "checksum_source": "1e1d5d30a24710c960ff2fa133c5fa4f1660e539505c7aa6b23e7b3e5cdf7500"
+    },
+    {
+      "path": ".claude/skills/dev-refactor/examples/extract-service.md",
+      "status": "todo",
+      "checksum_source": "a7af542f9dca91d7f317c9448ab6ee29875793718b867d2b170ef2b365b40f0a"
+    },
+    {
+      "path": ".claude/skills/dev-refactor/SKILL.md",
+      "status": "todo",
+      "checksum_source": "52bf08a030d3866104520f0bc7a8ca4888ac09d4bbff2a52270f111a72fff2e9"
+    },
+    {
+      "path": ".claude/skills/dev-shadcn/SKILL.md",
+      "status": "todo",
+      "checksum_source": "38a6ad24718f1f689ea2f58203a8845cb91b190560586172c4ca3be9862ec0b2"
+    },
+    {
+      "path": ".claude/skills/dev-supabase/examples/auth-rls.md",
+      "status": "todo",
+      "checksum_source": "f63b034ad648f876e5b7a5a04898a75fe271bc15319e64767f82caafd66ea53b"
+    },
+    {
+      "path": ".claude/skills/dev-supabase/SKILL.md",
+      "status": "todo",
+      "checksum_source": "7ff7a36da38d7ddfde0b757668c6ec606d90fb8318a0abb311fd479c414e8fa3"
+    },
+    {
+      "path": ".claude/skills/dev-tdd/examples/calculate-price.md",
+      "status": "todo",
+      "checksum_source": "44563eeab8a3a9436240ac184103f60c42b36d89bd360ebe324d438b03dfc5d1"
+    },
+    {
+      "path": ".claude/skills/dev-tdd/SKILL.md",
+      "status": "todo",
+      "checksum_source": "41a88f84ba2333c6d2e4994916f919264756dab370e98310e829f5d7d3380cc4"
+    },
+    {
+      "path": ".claude/skills/doc-changelog/SKILL.md",
+      "status": "todo",
+      "checksum_source": "f9c9b8ef444acb2633b4b01dc6d62d8f11919f192795cee658891c0afae3a29f"
+    },
+    {
+      "path": ".claude/skills/doc-generate/examples/api-docs.md",
+      "status": "todo",
+      "checksum_source": "62904aa8f4f0235bd8c2da7c4630cde9520f137df836a05ca33b4eb2e1eababa"
+    },
+    {
+      "path": ".claude/skills/doc-generate/SKILL.md",
+      "status": "todo",
+      "checksum_source": "e23bdffdb0186abadd3015c2f4a81aadf391353b7ad9ee71322ff6b0c4043598"
+    },
+    {
+      "path": ".claude/skills/feature-flags/examples/feature-toggle.md",
+      "status": "todo",
+      "checksum_source": "70db5ef7daefe0179ba49db4b6bf2bd2c83ce92050ef56de94b0cf794886d800"
+    },
+    {
+      "path": ".claude/skills/feature-flags/SKILL.md",
+      "status": "todo",
+      "checksum_source": "abb823a2bd481a73b102d4bf98de7212196a197f0c141fb600d81f464c53ac1c"
+    },
+    {
+      "path": ".claude/skills/git-worktrees/SKILL.md",
+      "status": "todo",
+      "checksum_source": "37df95f0fd4d0ef83a12fbe08f9a20e2812ecef1db92911885703cb1ffdfe763"
+    },
+    {
+      "path": ".claude/skills/growth-cro/examples/landing-optimization.md",
+      "status": "todo",
+      "checksum_source": "329f560937b4e3312607d884263290624258fe30e82a7d889cd5ecad4cd122ca"
+    },
+    {
+      "path": ".claude/skills/growth-cro/SKILL.md",
+      "status": "todo",
+      "checksum_source": "429b61592c54002d9a051ea8c31bcd49d4f628457b88c2516e97b71f063daea2"
+    },
+    {
+      "path": ".claude/skills/ops-ci/examples/github-actions.md",
+      "status": "todo",
+      "checksum_source": "68e78cbdc773beae820b1102165c3ea14758ab1e9ef022585d4e8170585fc40b"
+    },
+    {
+      "path": ".claude/skills/ops-ci-fix/SKILL.md",
+      "status": "todo",
+      "checksum_source": "1fe251c60e0cf2c800410173f31709a54668e81981516d13084e8bcdc2593ec6"
+    },
+    {
+      "path": ".claude/skills/ops-ci/SKILL.md",
+      "status": "todo",
+      "checksum_source": "e877270edacbc593c0a245d5cabd873781e88c239bd7383e043954a9941394ee"
+    },
+    {
+      "path": ".claude/skills/ops-database/examples/migration.md",
+      "status": "todo",
+      "checksum_source": "2982619714d3784dbf83b5389d4df482b3c0956ce091f84d81cf3439dc65354f"
+    },
+    {
+      "path": ".claude/skills/ops-database/SKILL.md",
+      "status": "todo",
+      "checksum_source": "ca2a1409387ff8e7b88940fa3c7f35266d81dea01d633351a56059a162367ccd"
+    },
+    {
+      "path": ".claude/skills/ops-docker/examples/multi-stage.md",
+      "status": "todo",
+      "checksum_source": "7491df41709725978ad2daf675dd4fde339e6bb9e1fbcac26528473deee4885c"
+    },
+    {
+      "path": ".claude/skills/ops-docker/SKILL.md",
+      "status": "todo",
+      "checksum_source": "3a4653a78ffe253ee37e3cd67c9b27ac4e69c6674c2bf1c12d04327fb47a2edc"
+    },
+    {
+      "path": ".claude/skills/ops-infra-code/examples/aws-vpc-module.md",
+      "status": "todo",
+      "checksum_source": "fafb360b298e25aa7fc7a7baf332105211414d35e309bcdc96ea2e9fe4753b22"
+    },
+    {
+      "path": ".claude/skills/ops-infra-code/references/code-patterns.md",
+      "status": "todo",
+      "checksum_source": "7c7023cfaccde2994e4e47ed71f3b216215d00f3c51e7a720aca6dc1102ca3fd"
+    },
+    {
+      "path": ".claude/skills/ops-infra-code/references/module-patterns.md",
+      "status": "todo",
+      "checksum_source": "b12d4a1069f9e5b56ea141a56f51bdaeb3006ab683c67938e3a50f7516e5a043"
+    },
+    {
+      "path": ".claude/skills/ops-infra-code/references/security-compliance.md",
+      "status": "todo",
+      "checksum_source": "8c7eaa766518473eadb23a6911bb965a6be52a4ebec5b42f27152bc85766a112"
+    },
+    {
+      "path": ".claude/skills/ops-infra-code/references/testing-frameworks.md",
+      "status": "todo",
+      "checksum_source": "348411be0495f7ef74539c29c2ea19357de23f12622f6151269437f971fe1f78"
+    },
+    {
+      "path": ".claude/skills/ops-infra-code/SKILL.md",
+      "status": "todo",
+      "checksum_source": "ff2a598ad2403688bf583c553103df45ddb6d7add09a9f4b360bd9a34727a907"
+    },
+    {
+      "path": ".claude/skills/ops-mobile-release/SKILL.md",
+      "status": "todo",
+      "checksum_source": "9cc7b7437619a1d7032bb1449d44d497b2e944dcc14497e4e252608c74ec29a4"
+    },
+    {
+      "path": ".claude/skills/ops-monitoring/examples/pino-prometheus.md",
+      "status": "todo",
+      "checksum_source": "4c1d01af0cd7f5569da609d5f46e7e01e07f3bd9cc204c55953cf95a0e91fb23"
+    },
+    {
+      "path": ".claude/skills/ops-monitoring/SKILL.md",
+      "status": "todo",
+      "checksum_source": "52663455f89a58b8edc794f43c426eeb3d9766de8edb8d4ca444187e6a5065e6"
+    },
+    {
+      "path": ".claude/skills/ops-opnsense/SKILL.md",
+      "status": "todo",
+      "checksum_source": "7fa4b93f2242d40794fc63e6cf2a90d576c1e39b255ea60a08668d64604ec9ec"
+    },
+    {
+      "path": ".claude/skills/ops-proxmox/references/backup-ha.md",
+      "status": "todo",
+      "checksum_source": "90883484952f185069a6b59d655b99487d680d80f82a9c457ad3a9b1f65680f9"
+    },
+    {
+      "path": ".claude/skills/ops-proxmox/references/cloud-init.md",
+      "status": "todo",
+      "checksum_source": "9845f3c71fed7567ead93d740d5964f776d2dbf583bf4757763136456289f881"
+    },
+    {
+      "path": ".claude/skills/ops-proxmox/references/terraform-modules.md",
+      "status": "todo",
+      "checksum_source": "7ad80dfc13c516890f599c5b4a4c9ca889b11d4727383997bf4f9954d1c07374"
+    },
+    {
+      "path": ".claude/skills/ops-proxmox/references/troubleshooting.md",
+      "status": "todo",
+      "checksum_source": "4e5f97738b064041ff1c8bd60efb72eeb59905ea2efc4f6672aafd6ee7127e00"
+    },
+    {
+      "path": ".claude/skills/ops-proxmox/SKILL.md",
+      "status": "todo",
+      "checksum_source": "14959da1d3c479e8a3304e10e22d0346f924eabd54e550b2cfb0a3061cbba565"
+    },
+    {
+      "path": ".claude/skills/ops-standup/SKILL.md",
+      "status": "todo",
+      "checksum_source": "eb61a53381bdbb6d7d2a0f36953cb01cf3ee063b8b818834fcbabc9ec95deaf1"
+    },
+    {
+      "path": ".claude/skills/parallel-agents/SKILL.md",
+      "status": "todo",
+      "checksum_source": "0e54844476cb3a02e3fe2260fcb205c09920e57c79b970047122a243de0dc6b1"
+    },
+    {
+      "path": ".claude/skills/qa-chrome/SKILL.md",
+      "status": "todo",
+      "checksum_source": "c2b1ce2699b58ba38770e1e9e54a0abf7dfc7a2b97260bbfdfa6a649742b1b54"
+    },
+    {
+      "path": ".claude/skills/qa-design/examples/ui-audit.md",
+      "status": "todo",
+      "checksum_source": "de9962fa075d7f04d23dea0c0caec74f09acb0e60bde41b6900fb13041722d07"
+    },
+    {
+      "path": ".claude/skills/qa-design/SKILL.md",
+      "status": "todo",
+      "checksum_source": "b83bdade5147621e26745f83bf898cfeb8f7334f0af10eafed31bd08ee3404f2"
+    },
+    {
+      "path": ".claude/skills/qa-e2e/examples/login-flow.md",
+      "status": "todo",
+      "checksum_source": "d41df1e8728732a538ee0a3251b4c769a419bf287437b26c879c2dc541796717"
+    },
+    {
+      "path": ".claude/skills/qa-e2e/SKILL.md",
+      "status": "todo",
+      "checksum_source": "4a9a1c5be588746cb43841f66941f879a4a978f38171d3b59ed706d03d2dfafe"
+    },
+    {
+      "path": ".claude/skills/qa-perf/examples/lighthouse-audit.md",
+      "status": "todo",
+      "checksum_source": "79b06f8eac1b9b06f446c2ec02c43aac15481054823ecc9a9755aca982bef71d"
+    },
+    {
+      "path": ".claude/skills/qa-perf/SKILL.md",
+      "status": "todo",
+      "checksum_source": "a931f1653832f54fb364ba209dc9616981154d58ed3df3b9fcda8b9ea650e57a"
+    },
+    {
+      "path": ".claude/skills/qa-review/examples/review-example.md",
+      "status": "todo",
+      "checksum_source": "a00bd291e1db860caa24f39f658290d3c47e6b6f719a902b2e005110a70ec918"
+    },
+    {
+      "path": ".claude/skills/qa-review/SKILL.md",
+      "status": "todo",
+      "checksum_source": "aa2c585a150d6b553a7b1d9a8bbc257c4537d672d07475ceffea26df7f0045c9"
+    },
+    {
+      "path": ".claude/skills/qa-security/examples/security-example.md",
+      "status": "todo",
+      "checksum_source": "a37fb0b5a213ac39168cc49498172d1b8a23f4b137dc50c31ca3633f281dfd94"
+    },
+    {
+      "path": ".claude/skills/qa-security/SKILL.md",
+      "status": "todo",
+      "checksum_source": "2115e6454a5908f18dad972a80e4186f96ffc2c95a0c2f60cf727bed6abd5c45"
+    },
+    {
+      "path": ".claude/skills/qa-tech-debt/examples/debt-inventory.md",
+      "status": "todo",
+      "checksum_source": "a8f75cf25f8c20623df0d9d0214cdaed9376b277823189c0ad4c83e10d8a3188"
+    },
+    {
+      "path": ".claude/skills/qa-tech-debt/SKILL.md",
+      "status": "todo",
+      "checksum_source": "762b1725cc248c67b5b5bdf6e85a4eb403d6a5faccd9f3aa0b295909f077e89b"
+    },
+    {
+      "path": ".claude/skills/README.md",
+      "status": "todo",
+      "checksum_source": "d07126b5fe805a137e76d8a2c108500f384a890f9a02b718decfd86914d950f8"
+    },
+    {
+      "path": ".claude/skills/session-handoff/SKILL.md",
+      "status": "todo",
+      "checksum_source": "b88c722ad853eb58bb9cd8ba720d4f38e948b016c1d0c482b815fb5f24c9bad2"
+    },
+    {
+      "path": ".claude/skills/state-management/SKILL.md",
+      "status": "todo",
+      "checksum_source": "c2cba2aa1398fa43182f6d3e42a7289915da1d4689bacbd76a9422babdc32a5a"
+    },
+    {
+      "path": ".claude/skills/web-scraping/SKILL.md",
+      "status": "todo",
+      "checksum_source": "92dfa0f12fb962b58b17c00ce7496d6724d2ddf9f7458f5022788deba545e448"
+    },
+    {
+      "path": ".claude/skills/work-batch/SKILL.md",
+      "status": "todo",
+      "checksum_source": "5dce0c4d3226c48d078337a66921c1db132bc6ab117622a7a326ad683e83a5f6"
+    },
+    {
+      "path": ".claude/skills/work-brainstorm/SKILL.md",
+      "status": "todo",
+      "checksum_source": "427d3fbf531e13bc38860247606371d91a0243604ca0d217ad9fbf18c73466a5"
+    },
+    {
+      "path": ".claude/skills/work-commit/examples/commit-examples.md",
+      "status": "todo",
+      "checksum_source": "83a4165d67c170319064acbb4b8b426c04d076817c040e9e95211f596bbbc2ff"
+    },
+    {
+      "path": ".claude/skills/work-commit/SKILL.md",
+      "status": "todo",
+      "checksum_source": "70e31d216060f9a7b11f5b9cf9669cea762c72ed9bbfca79db2e50fe6125a4ba"
+    },
+    {
+      "path": ".claude/skills/work-explore/examples/exploration-example.md",
+      "status": "todo",
+      "checksum_source": "308880127e07abc04488395e49870f570c1c06767d045d93e514fad0bf1be878"
+    },
+    {
+      "path": ".claude/skills/work-explore/SKILL.md",
+      "status": "todo",
+      "checksum_source": "0bfcd57a4d5e2a1d6868bd3a74ebd89ca4b2a4aa89221330e1ec64380a0d3a25"
+    },
+    {
+      "path": ".claude/skills/work-plan/examples/planning-example.md",
+      "status": "todo",
+      "checksum_source": "92347a44905af928917d9bbfd05041c5044b0afd7d7b1e6fa6925c698303a175"
+    },
+    {
+      "path": ".claude/skills/work-plan/SKILL.md",
+      "status": "todo",
+      "checksum_source": "0c92c79462388e2c23ed0b5e27604ce0f6910914c77377792371190996538b36"
+    },
+    {
+      "path": ".claude/skills/work-pr/examples/pr-example.md",
+      "status": "todo",
+      "checksum_source": "2e0939fe9dc705fcbbe447121f4478b283528abd76e5cb28706b3f8f253381c5"
+    },
+    {
+      "path": ".claude/skills/work-pr/SKILL.md",
+      "status": "todo",
+      "checksum_source": "aea94f046505ea9332257fabd7d3bc5cdc34d9dd1375b182acd48f77ba7571cf"
+    },
+    {
+      "path": ".claude/skills/work-quick/SKILL.md",
+      "status": "todo",
+      "checksum_source": "bf0480aab7925e188ab919f5bd1a9d12ee41d723e0a3b1ee152cdd1d41ba6ca5"
+    },
+    {
+      "path": ".claude/skills/writing-skills/SKILL.md",
+      "status": "todo",
+      "checksum_source": "692dc3687f56dc762ab56bdab9269837302bf2e360bd47864f2acb4a1da2ded5"
+    },
+    {
+      "path": "scripts/hooks/command-validator.sh",
+      "status": "todo",
+      "checksum_source": "c5ef69534d1750dae0f9488ee129d612fe9c644a90b41dbda3448be988fba2db"
+    },
+    {
+      "path": "scripts/hooks/prompt-context.sh",
+      "status": "todo",
+      "checksum_source": "61be60a23377578f55f6fb27b3a482d974983a5e517fe61bf0b6d5a1aa4dec26"
+    },
+    {
+      "path": "scripts/hooks/setup-deps.sh",
+      "status": "todo",
+      "checksum_source": "c5b27dc223b6a28ec09eb7ee2fdf0f37902e626dce89691f07612a3824f8a14c"
+    },
+    {
+      "path": "scripts/hooks/socle-integrity-check.sh",
+      "status": "todo",
+      "checksum_source": "5e5f06e796e9bff82a5a8f2008c1780ccaff1c7fec46932af1a428cf92de242e"
+    }
   ]
 }
