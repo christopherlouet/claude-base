@@ -1,6 +1,6 @@
 ---
 name: dev-flutter
-description: Developpement Flutter avec Clean Architecture et BLoC. Declencher quand l'utilisateur veut creer des widgets, screens, ou features Flutter.
+description: Flutter development with Clean Architecture and BLoC. Trigger when the user wants to create widgets, screens, or Flutter features.
 allowed-tools:
   - Read
   - Write
@@ -59,9 +59,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
 ## Widgets
 
-- Stateless pour UI pure
-- Stateful uniquement si etat local necessaire
-- const constructors quand possible
+- Stateless for pure UI
+- Stateful only if local state is needed
+- const constructors when possible
 - Composition over inheritance
 
 ## Tests
