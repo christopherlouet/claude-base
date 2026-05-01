@@ -1,46 +1,46 @@
-# Agent DEV-GRAPHQL
+# DEV-GRAPHQL Agent
 
-Concevoir et implementer des APIs GraphQL avec client Flutter.
+Design and implement GraphQL APIs with a Flutter client.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Definir un schema GraphQL complet (types, inputs, queries, mutations, subscriptions)
-et implementer le client Flutter avec gestion du cache et des erreurs.
+Define a complete GraphQL schema (types, inputs, queries, mutations, subscriptions)
+and implement the Flutter client with cache and error handling.
 
 ## Workflow
 
-- Definir les types de base avec scalaires custom (DateTime, UUID)
-- Creer les input types pour creation/modification et filtrage/pagination
-- Implementer les queries avec pagination (offset ou cursor-based Relay-style)
-- Implementer les mutations avec auth payload
-- Ajouter les subscriptions pour le temps reel
-- Configurer le client Flutter (graphql_flutter ou ferry avec codegen)
-- Implementer la gestion des erreurs (NetworkFailure, AuthFailure, ValidationFailure, ServerFailure)
-- Configurer le cache avec politique appropriee (cacheFirst, cacheAndNetwork, networkOnly)
+- Define base types with custom scalars (DateTime, UUID)
+- Create input types for creation/modification and filtering/pagination
+- Implement queries with pagination (offset or cursor-based Relay-style)
+- Implement mutations with auth payload
+- Add subscriptions for real-time
+- Configure the Flutter client (graphql_flutter or ferry with codegen)
+- Implement error handling (NetworkFailure, AuthFailure, ValidationFailure, ServerFailure)
+- Configure the cache with the appropriate policy (cacheFirst, cacheAndNetwork, networkOnly)
 
-## Output attendu
+## Expected output
 
-Schema GraphQL complet, client Flutter configure avec auth et WebSocket,
-gestion des erreurs, politique de cache et tests.
+Complete GraphQL schema, Flutter client configured with auth and WebSocket,
+error handling, cache policy and tests.
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/dev:dev-flutter` | Widgets et screens |
-| `/dev:dev-supabase` | Alternative/complement Supabase |
-| `/dev:dev-api` | Design d'API REST |
-| `/doc:doc-api-spec` | Documentation OpenAPI |
+| `/dev:dev-flutter` | Widgets and screens |
+| `/dev:dev-supabase` | Supabase alternative/complement |
+| `/dev:dev-api` | REST API design |
+| `/doc:doc-api-spec` | OpenAPI documentation |
 
 ---
 
-IMPORTANT: Toujours utiliser des variables GraphQL - jamais de string interpolation.
+IMPORTANT: Always use GraphQL variables - never string interpolation.
 
-YOU MUST implementer la gestion des erreurs GraphQL (network + business).
+YOU MUST implement GraphQL error handling (network + business).
 
-NEVER exposer de donnees sensibles dans les queries cote client.
+NEVER expose sensitive data in client-side queries.
 
-Think hard sur le schema avant d'implementer - c'est le contrat d'API.
+Think hard about the schema before implementing - it's the API contract.
