@@ -1,6 +1,6 @@
 ---
 name: dev-api
-description: Développer et documenter une API REST ou GraphQL. Utiliser quand l'utilisateur veut créer un endpoint, une route, ou structurer une API.
+description: Develop and document a REST or GraphQL API. Use when the user wants to create an endpoint, a route, or structure an API.
 allowed-tools:
   - Read
   - Edit
@@ -12,37 +12,37 @@ context: fork
 argument-hint: "[endpoint-name]"
 ---
 
-# Développer une API
+# Develop an API
 
-## Objectif
+## Objective
 
-Créer des APIs bien structurées, documentées et testables.
+Create well-structured, documented and testable APIs.
 
 ## Instructions
 
-### 1. Définir le contrat
+### 1. Define the contract
 
-Avant de coder, définir:
-- Endpoint (URL, méthode HTTP)
+Before coding, define:
+- Endpoint (URL, HTTP method)
 - Request (body, query params, headers)
 - Response (status codes, body)
-- Erreurs possibles
+- Possible errors
 
-### 2. Structure RESTful
+### 2. RESTful structure
 
 ```
-GET    /resources          → Liste (avec pagination)
-GET    /resources/:id      → Détail
-POST   /resources          → Création
-PUT    /resources/:id      → Mise à jour complète
-PATCH  /resources/:id      → Mise à jour partielle
-DELETE /resources/:id      → Suppression
+GET    /resources          → List (with pagination)
+GET    /resources/:id      → Detail
+POST   /resources          → Create
+PUT    /resources/:id      → Full update
+PATCH  /resources/:id      → Partial update
+DELETE /resources/:id      → Delete
 ```
 
-### 3. Format de réponse standard
+### 3. Standard response format
 
 ```typescript
-// Succès
+// Success
 {
   "success": true,
   "data": { ... },
@@ -53,7 +53,7 @@ DELETE /resources/:id      → Suppression
   }
 }
 
-// Erreur
+// Error
 {
   "success": false,
   "error": {
@@ -66,27 +66,27 @@ DELETE /resources/:id      → Suppression
 }
 ```
 
-### 4. Validation des entrées
+### 4. Input validation
 
 ```typescript
-// Avec Zod
+// With Zod
 const createUserSchema = z.object({
   email: z.string().email(),
   name: z.string().min(2).max(100),
   role: z.enum(['user', 'admin']).default('user')
 });
 
-// Dans le handler
+// In the handler
 const data = createUserSchema.parse(req.body);
 ```
 
-### 5. Documentation OpenAPI
+### 5. OpenAPI documentation
 
 ```yaml
 paths:
   /users:
     post:
-      summary: Créer un utilisateur
+      summary: Create a user
       tags: [Users]
       requestBody:
         required: true
@@ -96,7 +96,7 @@ paths:
               $ref: '#/components/schemas/CreateUser'
       responses:
         '201':
-          description: Utilisateur créé
+          description: User created
           content:
             application/json:
               schema:
@@ -105,7 +105,7 @@ paths:
           $ref: '#/components/responses/ValidationError'
 ```
 
-### 6. Tests d'API
+### 6. API tests
 
 ```typescript
 describe('POST /api/users', () => {
@@ -130,21 +130,21 @@ describe('POST /api/users', () => {
 });
 ```
 
-## Checklist API
+## API Checklist
 
-- [ ] Endpoint RESTful
-- [ ] Validation des entrées (Zod/Joi)
-- [ ] Gestion des erreurs centralisée
-- [ ] Status codes appropriés
-- [ ] Documentation OpenAPI
-- [ ] Tests d'intégration
-- [ ] Rate limiting (si public)
-- [ ] Authentification (si privé)
+- [ ] RESTful endpoint
+- [ ] Input validation (Zod/Joi)
+- [ ] Centralized error handling
+- [ ] Appropriate status codes
+- [ ] OpenAPI documentation
+- [ ] Integration tests
+- [ ] Rate limiting (if public)
+- [ ] Authentication (if private)
 
-## Output attendu
+## Expected output
 
 ```markdown
-## API: [Nom de l'endpoint]
+## API: [Endpoint name]
 
 ### Endpoint
 `POST /api/v1/resources`
@@ -165,17 +165,17 @@ describe('POST /api/users', () => {
 }
 ```
 
-### Erreurs
+### Errors
 | Code | Status | Description |
 |------|--------|-------------|
-| VALIDATION_ERROR | 400 | Données invalides |
-| NOT_FOUND | 404 | Ressource introuvable |
-| UNAUTHORIZED | 401 | Non authentifié |
+| VALIDATION_ERROR | 400 | Invalid data |
+| NOT_FOUND | 404 | Resource not found |
+| UNAUTHORIZED | 401 | Not authenticated |
 ```
 
-## Règles
+## Rules
 
-- IMPORTANT: Toujours valider les entrées
-- IMPORTANT: Documenter avec OpenAPI
-- YOU MUST retourner des codes HTTP appropriés
-- NEVER exposer les erreurs internes en production
+- IMPORTANT: Always validate inputs
+- IMPORTANT: Document with OpenAPI
+- YOU MUST return appropriate HTTP status codes
+- NEVER expose internal errors in production
