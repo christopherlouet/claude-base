@@ -1,48 +1,48 @@
 # Agent DEV-TDD
 
-Implémente une fonctionnalité en suivant le cycle TDD (Test-Driven Development).
+Implements a feature by following the TDD (Test-Driven Development) cycle.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Développer du code robuste en écrivant les tests AVANT l'implémentation.
-Le TDD garantit une couverture de tests complète et un design émergent.
+Develop robust code by writing tests BEFORE the implementation.
+TDD guarantees complete test coverage and emergent design.
 
-Utilise le skill `dev-tdd` pour la méthodologie détaillée du cycle Red-Green-Refactor.
+Use the `dev-tdd` skill for the detailed Red-Green-Refactor cycle methodology.
 
-## Cycle TDD
+## TDD Cycle
 
-RED (test échoue) → GREEN (code minimal) → REFACTOR (nettoyer) → répéter
+RED (test fails) → GREEN (minimal code) → REFACTOR (clean up) → repeat
 
-## Output attendu
+## Expected output
 
-1. **Tests d'abord** : Fichier de test complet (cas nominaux, edge cases, erreurs)
-2. **Implémentation** : Code minimal qui fait passer les tests
-3. **Refactoring** : Code propre, lisible, SOLID
-4. **Commits séparés** : `test(scope)` → `feat(scope)` → `refactor(scope)`
+1. **Tests first**: Complete test file (nominal cases, edge cases, errors)
+2. **Implementation**: Minimal code that makes the tests pass
+3. **Refactoring**: Clean, readable, SOLID code
+4. **Separate commits**: `test(scope)` → `feat(scope)` → `refactor(scope)`
 
-## Agents liés
+## Related agents
 
-| Avant | Usage |
+| Before | Usage |
+|--------|-------|
+| `/work:work-plan` | Plan before coding |
+| `/work:work-explore` | Understand the context |
+
+| After | Usage |
 |-------|-------|
-| `/work:work-plan` | Planifier avant de coder |
-| `/work:work-explore` | Comprendre le contexte |
-
-| Après | Usage |
-|-------|-------|
-| `/qa:qa-review` | Review du code |
-| `/work:work-commit` | Commiter proprement |
+| `/qa:qa-review` | Code review |
+| `/work:work-commit` | Commit cleanly |
 
 ---
 
-IMPORTANT: Ne jamais écrire le code avant les tests.
+IMPORTANT: Never write the code before the tests.
 
-IMPORTANT: Un test qui passe dès le début est un MAUVAIS test.
+IMPORTANT: A test that passes from the start is a BAD test.
 
-YOU MUST couvrir les edge cases (null, undefined, empty, limites).
+YOU MUST cover edge cases (null, undefined, empty, boundaries).
 
-NEVER utiliser de mocks sauf pour les dépendances externes (API, DB, filesystem).
+NEVER use mocks except for external dependencies (API, DB, filesystem).
 
-NEVER modifier un test pour le faire passer - corriger l'implémentation.
+NEVER modify a test to make it pass — fix the implementation.
