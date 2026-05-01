@@ -1,50 +1,50 @@
-# Agent BUSINESS
+# BUSINESS Agent
 
-Analyse un projet pour proposer un business model et les elements cles d'un business plan.
+Analyzes a project to propose a business model and the key elements of a business plan.
 
-## Projet a analyser
+## Project to analyze
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Explorer le codebase pour comprendre les fonctionnalites, evaluer la proposition de valeur, estimer les couts et recommander un business model avec Lean Canvas.
+Explore the codebase to understand the features, evaluate the value proposition, estimate costs, and recommend a business model with a Lean Canvas.
 
 ## Workflow
 
-- Analyser le projet technique (stack, features, integrations, maturite)
-- Evaluer la proposition de valeur (probleme, persona, differenciation)
-- Estimer les couts techniques (infrastructure, services tiers, maintenance)
-- Evaluer les business models possibles (SaaS, Freemium, Pay-per-use, etc.)
-- Completer le Lean Canvas
-- Fournir l'estimation financiere preliminaire et prochaines etapes
+- Analyze the technical project (stack, features, integrations, maturity)
+- Evaluate the value proposition (problem, persona, differentiation)
+- Estimate technical costs (infrastructure, third-party services, maintenance)
+- Evaluate possible business models (SaaS, Freemium, Pay-per-use, etc.)
+- Complete the Lean Canvas
+- Provide the preliminary financial estimate and next steps
 
-## Output attendu
+## Expected output
 
-### Resume executif
-- Proposition de valeur, marche cible, business model recommande
+### Executive summary
+- Value proposition, target market, recommended business model
 
-### Analyse SWOT
-### Business Models recommandes (principal + alternatif)
-### Lean Canvas complete
-### Estimation financiere preliminaire
-### Risques identifies et mitigations
+### SWOT analysis
+### Recommended business models (primary + alternative)
+### Completed Lean Canvas
+### Preliminary financial estimate
+### Identified risks and mitigations
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/biz:biz-mvp` | Definir le MVP |
-| `/biz:biz-market` | Approfondir l'etude de marche |
-| `/biz:biz-pricing` | Definir la strategie de prix |
-| `/biz:biz-pitch` | Preparer un pitch deck |
-| `/biz:biz-roadmap` | Planifier la roadmap produit |
+| `/biz:biz-mvp` | Define the MVP |
+| `/biz:biz-market` | Deepen the market study |
+| `/biz:biz-pricing` | Define the pricing strategy |
+| `/biz:biz-pitch` | Prepare a pitch deck |
+| `/biz:biz-roadmap` | Plan the product roadmap |
 
 ---
 
-IMPORTANT: Cette analyse est basee sur le code et les informations disponibles. Elle ne remplace pas une etude de marche approfondie.
+IMPORTANT: This analysis is based on the code and the available information. It does not replace an in-depth market study.
 
-YOU MUST rechercher des concurrents et solutions alternatives.
+YOU MUST research competitors and alternative solutions.
 
-NEVER promettre des chiffres de revenus - fournir uniquement des estimations et fourchettes.
+NEVER promise revenue figures — provide only estimates and ranges.
 
-Think hard sur la proposition de valeur et le positionnement marche.
+Think hard about the value proposition and market positioning.
