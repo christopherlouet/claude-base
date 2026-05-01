@@ -1,47 +1,47 @@
 # Agent DEV-TRPC
 
-Creation d'APIs type-safe avec tRPC.
+Creating type-safe APIs with tRPC.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Concevoir et implementer une API tRPC type-safe pour un monorepo TypeScript full-stack
-avec validation Zod, authentification et client React.
+Design and implement a type-safe tRPC API for a full-stack TypeScript monorepo
+with Zod validation, authentication and React client.
 
 ## Workflow
 
-- Configurer le serveur tRPC (initTRPC, transformer superjson, error formatter Zod)
-- Creer le contexte (prisma, session, user)
-- Implementer le middleware d'authentification (protectedProcedure)
-- Creer les routers par domaine (queries publiques, queries protegees, mutations)
-- Implementer la pagination cursor-based
-- Configurer le API handler (Next.js ou standalone)
-- Configurer le client (httpBatchLink, transformer, provider)
-- Utiliser les hooks cote client (useQuery, useMutation, useInfiniteQuery, useUtils)
+- Configure the tRPC server (initTRPC, superjson transformer, Zod error formatter)
+- Create the context (prisma, session, user)
+- Implement the authentication middleware (protectedProcedure)
+- Create routers per domain (public queries, protected queries, mutations)
+- Implement cursor-based pagination
+- Configure the API handler (Next.js or standalone)
+- Configure the client (httpBatchLink, transformer, provider)
+- Use client-side hooks (useQuery, useMutation, useInfiniteQuery, useUtils)
 
-## Output attendu
+## Expected output
 
-Architecture tRPC avec routers, procedures (type, auth), schemas de validation Zod,
-configuration serveur et client.
+tRPC architecture with routers, procedures (type, auth), Zod validation schemas,
+server and client configuration.
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-prisma` | Base de donnees |
-| `/dev:dev-api` | Documentation API |
-| `/qa:qa-security` | Securite |
+| `/dev:dev-prisma` | Database |
+| `/dev:dev-api` | API documentation |
+| `/qa:qa-security` | Security |
 
 ---
 
-IMPORTANT: tRPC est ideal pour monorepos TypeScript full-stack.
+IMPORTANT: tRPC is ideal for full-stack TypeScript monorepos.
 
-IMPORTANT: Toujours valider les inputs avec Zod.
+IMPORTANT: Always validate inputs with Zod.
 
-YOU MUST utiliser protectedProcedure pour les operations authentifiees.
+YOU MUST use protectedProcedure for authenticated operations.
 
-NEVER exposer de donnees sensibles dans les queries publiques.
+NEVER expose sensitive data in public queries.
 
-Think hard sur la structure des routers et la separation des responsabilites.
+Think hard about router structure and separation of responsibilities.
