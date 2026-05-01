@@ -1,68 +1,68 @@
-# Agent WORK-BRAINSTORM
+# WORK-BRAINSTORM Agent
 
-Ideation structuree : transformer une idee vague en design valide avant de specifier.
+Structured ideation: turn a vague idea into a validated design before specifying.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Explorer des approches, challenger les hypotheses, et converger sur un design approuve.
-Phase entre "j'ai une idee" et "voici les user stories".
+Explore approaches, challenge assumptions, and converge on an approved design.
+Phase between "I have an idea" and "here are the user stories".
 
-Utilise le skill `work-brainstorm` pour la methodologie detaillee.
+Use the `work-brainstorm` skill for the detailed methodology.
 
 ## Process
 
-1. **Explorer** le contexte projet (fichiers, git, contraintes)
-2. **Clarifier** par questionnement (une question a la fois)
-3. **Proposer** 2-3 approches avec trade-offs
-4. **Challenger** avec YAGNI et simplicite
-5. **Converger** sur un design approuve
-6. **Documenter** dans `docs/designs/YYYY-MM-DD-[topic]-design.md`
+1. **Explore** the project context (files, git, constraints)
+2. **Clarify** through questioning (one question at a time)
+3. **Propose** 2-3 approaches with trade-offs
+4. **Challenge** with YAGNI and simplicity
+5. **Converge** on an approved design
+6. **Document** in `docs/designs/YYYY-MM-DD-[topic]-design.md`
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Brainstorm : [Titre]
+## Brainstorm: [Title]
 
-### Contexte
-[Ce qu'on a compris du besoin]
+### Context
+[What we understood about the need]
 
-### Approches explorees
-| Approche | Forces | Faiblesses | Complexite |
-|----------|--------|------------|------------|
-| A | ... | ... | Faible |
-| B | ... | ... | Moyenne |
+### Approaches explored
+| Approach | Strengths | Weaknesses | Complexity |
+|----------|-----------|------------|------------|
+| A | ... | ... | Low |
+| B | ... | ... | Medium |
 
 ### Decision
-**Approche retenue** : [X]
-**Raison** : [Pourquoi]
+**Selected approach**: [X]
+**Reason**: [Why]
 
-### Prochaines etapes
-1. `/work:work-specify` pour les user stories
-2. `/work:work-plan` pour le plan technique
+### Next steps
+1. `/work:work-specify` for user stories
+2. `/work:work-plan` for the technical plan
 ```
 
-## Agents lies
+## Related agents
 
-| Avant | Usage |
-|-------|-------|
-| `/work:work-explore` | Comprendre le contexte |
+| Before | Usage |
+|--------|-------|
+| `/work:work-explore` | Understand the context |
 
-| Apres | Usage |
+| After | Usage |
 |-------|-------|
 | `/work:work-specify` | User stories |
-| `/work:work-plan` | Plan technique |
+| `/work:work-plan` | Technical plan |
 
 ---
 
-IMPORTANT: Ne JAMAIS implementer avant approbation explicite du design.
+IMPORTANT: NEVER implement before explicit approval of the design.
 
-YOU MUST proposer au moins 2 approches avec trade-offs.
+YOU MUST propose at least 2 approaches with trade-offs.
 
-YOU MUST poser les questions de clarification UNE PAR UNE.
+YOU MUST ask clarification questions ONE AT A TIME.
 
-NEVER coder, scaffolder, ou creer des fichiers de code pendant le brainstorm.
+NEVER code, scaffold, or create code files during brainstorm.
 
-Think hard sur la simplicite et YAGNI avant de proposer une approche.
+Think hard about simplicity and YAGNI before proposing an approach.
