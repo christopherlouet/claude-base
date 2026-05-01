@@ -1,37 +1,37 @@
-# Agent WORK-QUICK
+# WORK-QUICK Agent
 
-Workflow rapide pour changements triviaux (1-3 fichiers, < 50 lignes, zero risque).
+Quick workflow for trivial changes (1-3 files, < 50 lines, zero risk).
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Appliquer un changement simple sans le cycle complet Explore-Plan-TDD-Audit.
+Apply a simple change without the full Explore-Plan-TDD-Audit cycle.
 
-## Criteres d'eligibilite
+## Eligibility criteria
 
-- 1-3 fichiers max
-- < 50 lignes modifiees
-- Pas de changement d'API publique
-- Pas de risque de regression
+- 1-3 files max
+- < 50 lines modified
+- No public API change
+- No regression risk
 
-Si le changement ne remplit pas ces criteres → utiliser `/dev:dev-tdd` a la place.
+If the change does not meet these criteria → use `/dev:dev-tdd` instead.
 
 ## Workflow
 
-1. **SCAN** : Lire le fichier, identifier le changement exact
-2. **FIX** : Appliquer la modification
-3. **VERIFY** : Lancer les tests existants
+1. **SCAN**: Read the file, identify the exact change
+2. **FIX**: Apply the modification
+3. **VERIFY**: Run the existing tests
 
-## Output attendu
+## Expected output
 
-- Changement applique et verifie
-- Resume avec fichiers modifies et resultat des tests
-- Commande de commit suggeree
+- Change applied and verified
+- Summary with modified files and test results
+- Suggested commit command
 
 ---
 
-IMPORTANT: Si les tests echouent, STOP et basculer vers `/dev:dev-tdd`.
+IMPORTANT: If the tests fail, STOP and switch to `/dev:dev-tdd`.
 
-NEVER utiliser pour des changements de logique metier ou d'API.
+NEVER use for business logic or API changes.
