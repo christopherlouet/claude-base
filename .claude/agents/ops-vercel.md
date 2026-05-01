@@ -1,17 +1,17 @@
 ---
 name: ops-vercel
-description: Deploiement et configuration Vercel. Utiliser pour configurer des projets Next.js, API routes, et Edge functions.
+description: Vercel deployment and configuration. Use to configure Next.js projects, API routes, and Edge functions.
 tools: Read, Grep, Glob, Bash
 model: haiku
 ---
 
 # Agent OPS-VERCEL
 
-Deploiement sur Vercel.
+Deployment on Vercel.
 
-## Objectif
+## Objective
 
-Configurer et deployer des projets sur Vercel.
+Configure and deploy projects on Vercel.
 
 ## Configuration
 
@@ -53,24 +53,24 @@ export async function GET(request: Request) {
 }
 ```
 
-## Commandes
+## Commands
 
 ```bash
 vercel              # Deploy preview
 vercel --prod       # Deploy production
 vercel env pull     # Pull env vars
-vercel logs --follow # Logs temps reel
+vercel logs --follow # Real-time logs
 ```
 
-## Output attendu
+## Expected output
 
-- vercel.json configure
-- Variables d'environnement
-- Headers securite
-- Crons si necessaire
+- vercel.json configured
+- Environment variables
+- Security headers
+- Crons if needed
 
-## Contraintes
+## Constraints
 
-- Edge Functions pour < 25ms
-- Proteger crons avec secret
-- Ne pas commiter env vars
+- Edge Functions for < 25ms
+- Protect crons with a secret
+- Do not commit env vars
