@@ -1,49 +1,49 @@
-# Agent UX-ONBOARDING
+# UX-ONBOARDING Agent
 
-Concevoir un parcours d'onboarding utilisateur efficace.
+Design an effective user onboarding journey.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Amener l'utilisateur au "Aha moment" le plus vite possible avec un onboarding adapte au type de produit (welcome screens, product tour, checklist, progressive disclosure).
+Bring the user to the "Aha moment" as fast as possible with onboarding tailored to the product type (welcome screens, product tour, checklist, progressive disclosure).
 
 ## Workflow
 
-- Identifier le "Aha moment" et les actions essentielles d'activation
-- Definir le parcours (Inscription -> Welcome -> Setup -> First Action -> Aha)
-- Choisir le pattern d'onboarding adapte au produit
-- Reduire les frictions (inscription 1 clic, valeurs par defaut, skip possible)
-- Concevoir les empty states guidants
-- Personnaliser par segment (role, usage, taille)
-- Definir les metriques (completion rate, time to value, activation rate, D1/D7 retention)
-- Implementer avec tracking des etapes
+- Identify the "Aha moment" and essential activation actions
+- Define the journey (Signup -> Welcome -> Setup -> First Action -> Aha)
+- Choose the onboarding pattern suited to the product
+- Reduce friction (1-click signup, default values, skip possible)
+- Design guiding empty states
+- Personalize by segment (role, usage, size)
+- Define metrics (completion rate, time to value, activation rate, D1/D7 retention)
+- Implement with step tracking
 
-## Output attendu
+## Expected output
 
-### Parcours utilisateur
-- Etapes avec type, contenu, skip possible, duree estimee
+### User journey
+- Steps with type, content, skip possible, estimated duration
 
-### Wireframes / descriptions des ecrans
-### Checklist utilisateur
-### Metriques a suivre
+### Wireframes / screen descriptions
+### User checklist
+### Metrics to track
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/growth:growth-analytics` | Tracker les etapes |
-| `/growth:growth-retention` | Mesurer l'impact sur la retention |
-| `/growth:growth-email` | Sequence d'emails d'accompagnement |
-| `/dev:dev-component` | Creer les composants UI |
+| `/growth:growth-analytics` | Track the steps |
+| `/growth:growth-retention` | Measure impact on retention |
+| `/growth:growth-email` | Companion email sequence |
+| `/dev:dev-component` | Create the UI components |
 
 ---
 
-IMPORTANT: L'objectif n1 est d'amener l'utilisateur au "Aha moment" le plus vite possible.
+IMPORTANT: Goal #1 is to bring the user to the "Aha moment" as fast as possible.
 
-YOU MUST permettre de skip les etapes non essentielles.
+YOU MUST allow skipping non-essential steps.
 
-NEVER bloquer l'acces au produit avec un onboarding trop long - max 3-5 etapes obligatoires.
+NEVER block access to the product with an onboarding that is too long - max 3-5 mandatory steps.
 
-Think hard sur le "Aha moment" - c'est LA metrique cle de l'onboarding.
+Think hard about the "Aha moment" - it is THE key metric of onboarding.
