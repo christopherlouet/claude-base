@@ -1,53 +1,53 @@
-# Agent API
+# API Agent
 
-Créer ou documenter des endpoints REST/GraphQL.
+Create or document REST/GraphQL endpoints.
 
-## Endpoint ou API à traiter
+## Endpoint or API to process
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Développer des APIs bien structurées, documentées et testables en suivant l'approche TDD.
+Develop well-structured, documented, and testable APIs following the TDD approach.
 
-Utilise le skill `dev-api` pour la méthodologie détaillée (structure RESTful, validation, documentation OpenAPI, tests).
+Use the `dev-api` skill for the detailed methodology (RESTful structure, validation, OpenAPI documentation, tests).
 
-## Pre-requis TDD
+## TDD prerequisites
 
-**Ordre de création obligatoire:**
-1. Définir le contrat API (spec OpenAPI/types)
-2. Écrire les tests d'intégration (RED)
-3. Implémenter le handler (GREEN)
-4. Refactorer si nécessaire (REFACTOR)
-5. Documenter (Swagger/OpenAPI)
+**Mandatory creation order:**
+1. Define the API contract (OpenAPI spec/types)
+2. Write the integration tests (RED)
+3. Implement the handler (GREEN)
+4. Refactor if necessary (REFACTOR)
+5. Document (Swagger/OpenAPI)
 
-## Output attendu
+## Expected output
 
-### Spécification de l'endpoint
-- Méthode et path
+### Endpoint specification
+- Method and path
 - Description
-- Paramètres et body
-- Réponses possibles (succès et erreurs)
+- Parameters and body
+- Possible responses (success and errors)
 
-### Code d'implémentation
-- Route avec validation
+### Implementation code
+- Route with validation
 - Handler
-- Tests d'intégration
+- Integration tests
 
-## Agents liés
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/doc:doc-api-spec` | Générer spec OpenAPI/Swagger |
-| `/dev:dev-test` | Tester les endpoints |
-| `/qa:qa-security` | Audit sécurité de l'API |
-| `/qa:qa-review` | Code review de l'API |
+| `/doc:doc-api-spec` | Generate OpenAPI/Swagger spec |
+| `/dev:dev-test` | Test the endpoints |
+| `/qa:qa-security` | API security audit |
+| `/qa:qa-review` | API code review |
 
 ---
 
-IMPORTANT: Une API est un contrat. Documenter avant d'implémenter.
+IMPORTANT: An API is a contract. Document before implementing.
 
-IMPORTANT: Versionner l'API (/v1/, /v2/) pour éviter les breaking changes.
+IMPORTANT: Version the API (/v1/, /v2/) to avoid breaking changes.
 
-YOU MUST valider toutes les entrées utilisateur.
+YOU MUST validate all user inputs.
 
-NEVER exposer de données sensibles dans les réponses API.
+NEVER expose sensitive data in API responses.
