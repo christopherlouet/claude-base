@@ -743,7 +743,7 @@
     },
     {
       "path": ".claude/commands/ops/ops-k8s.md",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "da5496d0f91e68ce2dbd01c4b97f72540ec2e5ce03b5c290dc4f47bf770bf303"
     },
     {
