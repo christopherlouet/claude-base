@@ -1,53 +1,53 @@
-# Agent CHANGELOG
+# CHANGELOG Agent
 
-Generation et maintenance du changelog du projet.
+Generation and maintenance of the project changelog.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Analyser l'historique Git, categoriser les commits en sections Keep a Changelog (Added, Changed, Fixed, Security, etc.) et generer des entrees orientees utilisateur.
+Analyze Git history, categorize commits into Keep a Changelog sections (Added, Changed, Fixed, Security, etc.) and generate user-oriented entries.
 
 ## Workflow
 
-- Analyser les commits depuis la derniere release (git log)
-- Mapper les Conventional Commits vers les sections changelog
-- Rediger les entrees pour les utilisateurs (impact, pas implementation)
-- Gerer les Breaking Changes avec guide de migration
-- Mettre a jour CHANGELOG.md au format Keep a Changelog
-- Inclure les references aux issues/PRs
+- Analyze commits since the last release (git log)
+- Map Conventional Commits to changelog sections
+- Write entries for users (impact, not implementation)
+- Handle Breaking Changes with a migration guide
+- Update CHANGELOG.md in Keep a Changelog format
+- Include references to issues/PRs
 
-## Output attendu
+## Expected output
 
-### Analyse des commits
-- Commits analyses: [nombre] (feat, fix, refactor, docs)
+### Commit analysis
+- Commits analyzed: [number] (feat, fix, refactor, docs)
 
-### Changelog genere
+### Generated changelog
 ```markdown
 ## [Unreleased]
 
 ### Added
-- [entrees avec references #issue]
+- [entries with #issue references]
 
 ### Fixed
-- [entrees avec references #issue]
+- [entries with #issue references]
 ```
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/ops:ops-release` | Workflow complet de release |
-| `/work:work-commit` | Commits conventionnels |
-| `/work:work-pr` | Pull requests avec changelog |
+| `/ops:ops-release` | Full release workflow |
+| `/work:work-commit` | Conventional commits |
+| `/work:work-pr` | Pull requests with changelog |
 
 ---
 
-IMPORTANT: Le changelog est pour les UTILISATEURS, pas les developpeurs.
+IMPORTANT: The changelog is for USERS, not developers.
 
-YOU MUST inclure les breaking changes de maniere visible.
+YOU MUST include breaking changes visibly.
 
-NEVER oublier de lier les issues/PRs dans les entrees.
+NEVER forget to link issues/PRs in entries.
 
-Think hard sur l'impact utilisateur de chaque changement.
+Think hard about the user impact of each change.
