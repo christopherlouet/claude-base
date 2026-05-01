@@ -1,6 +1,6 @@
 ---
 name: dev-auth
-description: Implementation auth web moderne (better-auth, Lucia, NextAuth/Auth.js, Clerk, Supabase Auth). Declencher quand l'utilisateur veut ajouter login, signup, sessions, OAuth, magic links, 2FA, ou quand on detecte du code d'auth existant a auditer ou migrer.
+description: Modern web auth implementation (better-auth, Lucia, NextAuth/Auth.js, Clerk, Supabase Auth). Trigger when the user wants to add login, signup, sessions, OAuth, magic links, 2FA, or when existing auth code is detected to audit or migrate.
 allowed-tools:
   - Read
   - Write
@@ -11,22 +11,22 @@ allowed-tools:
 context: fork
 ---
 
-# Auth Web Moderne
+# Modern Web Auth
 
-## Choisir sa stack auth
+## Choosing your auth stack
 
-| Solution | Quand choisir | A eviter quand |
+| Solution | When to choose | Avoid when |
 |----------|--------------|----------------|
-| **better-auth** | Control total, TS-first, extensible (plugins), 2FA/passkeys natifs | Projet < 1 semaine MVP |
-| **Lucia v3+** | Approche minimaliste, code source-available, tu controles tout | Pas de temps pour plomberie |
-| **NextAuth/Auth.js** | Ecosysteme Next.js, OAuth easy, beaucoup d'adapters | Besoin de control fin sur sessions |
-| **Clerk** | MVP rapide, UI pre-faite, SaaS paid | Budget limite, control data souverain |
-| **Supabase Auth** | Deja sur Supabase, RLS pour autorisation | Stack non-Postgres, auth complexe custom |
-| **Auth0 / Okta** | Entreprise, compliance SAML/SCIM | Apps indie, cout eleve |
+| **better-auth** | Total control, TS-first, extensible (plugins), native 2FA/passkeys | Project < 1 week MVP |
+| **Lucia v3+** | Minimalist approach, source-available code, you control everything | No time for plumbing |
+| **NextAuth/Auth.js** | Next.js ecosystem, easy OAuth, lots of adapters | Need fine control over sessions |
+| **Clerk** | Fast MVP, pre-built UI, paid SaaS | Limited budget, sovereign data control |
+| **Supabase Auth** | Already on Supabase, RLS for authorization | Non-Postgres stack, complex custom auth |
+| **Auth0 / Okta** | Enterprise, SAML/SCIM compliance | Indie apps, high cost |
 
-IMPORTANT: **Ne jamais rouler sa propre auth** (JWT maison, password hashing custom). Utiliser une lib maintenue.
+IMPORTANT: **Never roll your own auth** (homemade JWT, custom password hashing). Use a maintained lib.
 
-## better-auth (recommande 2026)
+## better-auth (recommended 2026)
 
 Framework-agnostic (Next, Remix, SvelteKit, Nuxt, vanilla). TypeScript-first.
 
@@ -36,7 +36,7 @@ Framework-agnostic (Next, Remix, SvelteKit, Nuxt, vanilla). TypeScript-first.
 npm install better-auth
 ```
 
-### Setup minimal (Next.js)
+### Minimal setup (Next.js)
 
 ```ts
 // lib/auth.ts
@@ -78,7 +78,7 @@ await authClient.signUp.email({ email, password, name });
 await authClient.signOut();
 ```
 
-### Plugins utiles
+### Useful plugins
 
 ```ts
 import { twoFactor, magicLink, passkey } from "better-auth/plugins";
@@ -92,15 +92,15 @@ betterAuth({
 });
 ```
 
-## Lucia v3+ (si besoin de minimalisme)
+## Lucia v3+ (if you need minimalism)
 
-Depuis v3, Lucia est livree **source-available** (tu copies le code, pas un paquet). Approche similaire a shadcn/ui pour l'auth.
+Since v3, Lucia ships **source-available** (you copy the code, not a package). Approach similar to shadcn/ui for auth.
 
 ```bash
 npx create-lucia@latest
 ```
 
-Tu obtiens `auth.ts`, `session.ts` copies dans ton codebase. Tu modifies selon tes besoins.
+You get `auth.ts`, `session.ts` copied into your codebase. You modify them as needed.
 
 ## NextAuth / Auth.js
 
@@ -128,36 +128,36 @@ export { GET, POST } from "@/auth";
 export { auth as middleware } from "@/auth";
 ```
 
-## Sessions : cookie vs JWT
+## Sessions: cookie vs JWT
 
-| Approche | Pour | Contre |
+| Approach | Pro | Con |
 |----------|------|--------|
-| **Cookie de session** (id → DB) | Revocation immediate, taille cookie small | Requete DB a chaque check |
-| **JWT stateless** | Pas de DB check, scale horizontal | Revocation complexe, taille cookie grande |
-| **Cookie session + JWT refresh** | Meilleur des deux | Complexite |
+| **Session cookie** (id → DB) | Immediate revocation, small cookie size | DB query on every check |
+| **Stateless JWT** | No DB check, horizontal scale | Complex revocation, large cookie size |
+| **Session cookie + JWT refresh** | Best of both | Complexity |
 
-**Defaut recommande** : cookie de session opaque stocke en DB. Plus simple, plus sur.
+**Recommended default**: opaque session cookie stored in DB. Simpler, safer.
 
-### Attributs cookie obligatoires
+### Mandatory cookie attributes
 
 ```ts
 {
-  httpOnly: true,       // JS ne peut pas lire le cookie (anti-XSS)
-  secure: true,         // HTTPS uniquement en prod
-  sameSite: "lax",      // CSRF protection (strict si pas de OAuth)
+  httpOnly: true,       // JS cannot read the cookie (anti-XSS)
+  secure: true,         // HTTPS only in prod
+  sameSite: "lax",      // CSRF protection (strict if no OAuth)
   path: "/",
-  maxAge: 60 * 60 * 24 * 7,  // 7 jours
+  maxAge: 60 * 60 * 24 * 7,  // 7 days
 }
 ```
 
 ## Password hashing
 
-**Jamais MD5, SHA-1, bcrypt < cost 12**.
+**Never MD5, SHA-1, bcrypt < cost 12**.
 
-Recommandations 2026 :
-- **argon2id** (defaut moderne) — OWASP recommande. `argon2` package sur npm.
+2026 recommendations:
+- **argon2id** (modern default) — OWASP recommends. `argon2` package on npm.
 - **bcrypt cost 12+** (acceptable, legacy)
-- **scrypt** (acceptable, Node natif)
+- **scrypt** (acceptable, native Node)
 
 ```ts
 import argon2 from "argon2";
@@ -172,42 +172,42 @@ const hash = await argon2.hash(password, {
 const valid = await argon2.verify(hash, password);
 ```
 
-IMPORTANT: les libs comme better-auth / Lucia / NextAuth hashent deja correctement. Ne reimplementer que si tu fais de l'auth custom (et tu ne devrais pas).
+IMPORTANT: libs like better-auth / Lucia / NextAuth already hash correctly. Only reimplement if you're doing custom auth (and you shouldn't).
 
-## OAuth : config correcte
+## OAuth: correct config
 
 ### Redirect URL
 
-Toujours en HTTPS en prod. Ajouter `http://localhost:3000/...` pour dev.
+Always HTTPS in prod. Add `http://localhost:3000/...` for dev.
 
 ```
 https://app.example.com/api/auth/callback/github
 ```
 
-### Scopes minimum
+### Minimum scopes
 
-Demander uniquement ce dont tu as besoin :
-- GitHub : `read:user user:email` (pas `repo` si tu ne lis pas les repos)
-- Google : `openid email profile`
+Request only what you need:
+- GitHub: `read:user user:email` (not `repo` if you don't read repos)
+- Google: `openid email profile`
 
-### State parameter obligatoire
+### Mandatory state parameter
 
-Protege contre CSRF OAuth. Les libs modernes le font automatiquement.
+Protects against OAuth CSRF. Modern libs do this automatically.
 
-## Authorization (apres authentication)
+## Authorization (after authentication)
 
-L'auth ne fait que verifier **qui** est l'utilisateur. Pour **quoi** il peut faire, il faut des roles/permissions.
+Auth only verifies **who** the user is. For **what** they can do, you need roles/permissions.
 
 ### Patterns
 
 | Pattern | Usage |
 |---------|-------|
-| **RBAC** (Role-Based) | Roles fixes : admin, user, viewer |
-| **ABAC** (Attribute-Based) | Regles dynamiques : "user peut edit si owner" |
-| **RLS** (Row-Level Security) | Postgres/Supabase : SQL policies par utilisateur |
-| **CASL** / **access-js** | Lib JS pour exprimer les permissions |
+| **RBAC** (Role-Based) | Fixed roles: admin, user, viewer |
+| **ABAC** (Attribute-Based) | Dynamic rules: "user can edit if owner" |
+| **RLS** (Row-Level Security) | Postgres/Supabase: SQL policies per user |
+| **CASL** / **access-js** | JS lib to express permissions |
 
-### Middleware Next.js
+### Next.js middleware
 
 ```ts
 // middleware.ts
@@ -229,80 +229,80 @@ export async function middleware(request: NextRequest) {
 
 ## 2FA / MFA
 
-**TOTP** (Google Authenticator) est le defaut.
+**TOTP** (Google Authenticator) is the default.
 
 ```ts
 // better-auth example
 await authClient.twoFactor.enable({ password });
-// Retourne un QR code a scanner
+// Returns a QR code to scan
 await authClient.twoFactor.verify({ code: "123456" });
 ```
 
-**Passkeys** (WebAuthn) est le futur. Passwordless natif.
+**Passkeys** (WebAuthn) is the future. Native passwordless.
 
-## Pieges de securite
+## Security pitfalls
 
-| Piege | Prevention |
+| Pitfall | Prevention |
 |-------|-----------|
-| Timing attack sur comparaison password | Utiliser `argon2.verify` / constant-time compare |
-| User enumeration via login | Meme message erreur pour "email inconnu" et "password incorrect" |
-| Session fixation | Regenerer session ID apres login |
-| CSRF | SameSite cookie + state OAuth + Origin check sur mutations |
-| XSS sur token | httpOnly cookie (JS ne peut pas lire) |
-| Brute force | Rate limit par IP + par compte, captcha apres N echecs |
-| Password reset leaks info | Meme reponse "email envoye" meme si email inexistant |
-| OAuth open redirect | Valider le redirect_uri contre une whitelist |
+| Timing attack on password comparison | Use `argon2.verify` / constant-time compare |
+| User enumeration via login | Same error message for "unknown email" and "incorrect password" |
+| Session fixation | Regenerate session ID after login |
+| CSRF | SameSite cookie + OAuth state + Origin check on mutations |
+| XSS on token | httpOnly cookie (JS cannot read) |
+| Brute force | Rate limit per IP + per account, captcha after N failures |
+| Password reset leaks info | Same response "email sent" even if email doesn't exist |
+| OAuth open redirect | Validate the redirect_uri against a whitelist |
 
-## Checklist audit auth
+## Auth audit checklist
 
-- [ ] Cookie : `httpOnly`, `secure`, `sameSite` correct
-- [ ] Password hashe avec argon2id ou bcrypt 12+
-- [ ] Rate limiting sur `/login`, `/register`, `/reset-password`
-- [ ] Session regeneree apres login et password change
-- [ ] Messages d'erreur neutres (pas de user enumeration)
-- [ ] 2FA optionnel (obligatoire pour admins)
-- [ ] Logout cote client + server (invalider session DB)
-- [ ] Tokens de reset password : courte duree (15-30 min), usage unique
-- [ ] Email verification obligatoire avant features sensibles
-- [ ] Audit log des actions auth (login, logout, password change)
+- [ ] Cookie: `httpOnly`, `secure`, `sameSite` correct
+- [ ] Password hashed with argon2id or bcrypt 12+
+- [ ] Rate limiting on `/login`, `/register`, `/reset-password`
+- [ ] Session regenerated after login and password change
+- [ ] Neutral error messages (no user enumeration)
+- [ ] Optional 2FA (mandatory for admins)
+- [ ] Logout client-side + server-side (invalidate DB session)
+- [ ] Password reset tokens: short duration (15-30 min), single use
+- [ ] Mandatory email verification before sensitive features
+- [ ] Audit log of auth actions (login, logout, password change)
 
-## Migration entre solutions
+## Migration between solutions
 
-| De → Vers | Strategie |
+| From → To | Strategy |
 |-----------|-----------|
-| NextAuth → better-auth | Dual-write sessions pendant la transition, migration users en batch |
-| Supabase Auth → better-auth | Export users + password hashes si compatible, sinon forcer reset |
-| Custom JWT → Lucia | Invalider tous les JWT, forcer re-login |
+| NextAuth → better-auth | Dual-write sessions during the transition, batch user migration |
+| Supabase Auth → better-auth | Export users + password hashes if compatible, otherwise force reset |
+| Custom JWT → Lucia | Invalidate all JWTs, force re-login |
 
-IMPORTANT: Ne jamais migrer sans backup DB prealable et plan de rollback.
+IMPORTANT: Never migrate without a prior DB backup and rollback plan.
 
-## Complement avec le socle
+## Complement with the foundation
 
-- Section "Auth" dans `docs/STACK-RECIPES.md`
-- Rule `.claude/rules/security.md` : OWASP Top 10
-- Skill `qa-security` : audit securite complet
-- Skill `dev-supabase` : si stack Supabase
+- "Auth" section in `docs/STACK-RECIPES.md`
+- Rule `.claude/rules/security.md`: OWASP Top 10
+- Skill `qa-security`: full security audit
+- Skill `dev-supabase`: if Supabase stack
 
-## Output attendu
+## Expected output
 
-1. **Solution choisie** justifiee (pas de "rolling your own")
-2. **Config serveur et client** avec cookies securises
-3. **Middleware d'autorisation** si routes protegees
-4. **2FA optionnel** pour features sensibles
-5. **Rate limiting** sur endpoints d'auth
+1. **Chosen solution** justified (no "rolling your own")
+2. **Server and client config** with secure cookies
+3. **Authorization middleware** if protected routes
+4. **Optional 2FA** for sensitive features
+5. **Rate limiting** on auth endpoints
 
-## Regles
+## Rules
 
-IMPORTANT: NEVER roll your own auth (JWT maison, password hashing custom).
+IMPORTANT: NEVER roll your own auth (homemade JWT, custom password hashing).
 
-IMPORTANT: Cookie de session OBLIGATOIREMENT `httpOnly + secure + sameSite`.
+IMPORTANT: Session cookie MUST BE `httpOnly + secure + sameSite`.
 
-IMPORTANT: Hashing password = argon2id (defaut) ou bcrypt cost 12+ (legacy).
+IMPORTANT: Password hashing = argon2id (default) or bcrypt cost 12+ (legacy).
 
-YOU MUST rate-limiter `/login`, `/register`, `/reset-password` (5-10 tentatives/15min).
+YOU MUST rate-limit `/login`, `/register`, `/reset-password` (5-10 attempts/15min).
 
-YOU MUST retourner les memes messages d'erreur pour "user inconnu" et "password incorrect" (anti-enumeration).
+YOU MUST return the same error messages for "unknown user" and "incorrect password" (anti-enumeration).
 
-NEVER exposer les tokens de reset/verification dans les logs ou URL partagee.
+NEVER expose reset/verification tokens in logs or shared URLs.
 
-NEVER stocker de password en clair, meme temporairement.
+NEVER store passwords in clear text, even temporarily.
