@@ -1,6 +1,6 @@
 ---
 name: agent-teams
-description: Orchestration d'equipes d'agents avec Agent Teams natif. Declencher quand l'utilisateur veut lancer une equipe d'agents, coordonner du travail parallele avec communication inter-agents, ou utiliser le mode swarm.
+description: Multi-agent team orchestration with native Agent Teams. Trigger when the user wants to launch a team of agents, coordinate parallel work with inter-agent communication, or use swarm mode.
 allowed-tools:
   - Read
   - Glob
@@ -9,19 +9,19 @@ allowed-tools:
 context: fork
 ---
 
-# Agent Teams (Orchestration Multi-Agents)
+# Agent Teams (Multi-Agent Orchestration)
 
-> Coordonner plusieurs instances Claude Code travaillant ensemble en equipe, avec taches partagees, messagerie inter-agents et gestion centralisee.
+> Coordinate multiple Claude Code instances working together as a team, with shared tasks, inter-agent messaging, and centralized management.
 
-## Prerequis
+## Prerequisites
 
 - **Claude Code >= 2.1.19**
-- **Feature flag active** : `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
-- **tmux** (optionnel) : pour le mode split-panes
+- **Feature flag enabled**: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`
+- **tmux** (optional): for split-panes mode
 
 ### Activation
 
-Ajouter dans `.claude/settings.local.json` ou `.claude/settings.json` :
+Add to `.claude/settings.local.json` or `.claude/settings.json`:
 
 ```json
 {
@@ -31,48 +31,48 @@ Ajouter dans `.claude/settings.local.json` ou `.claude/settings.json` :
 }
 ```
 
-Ou via variable d'environnement :
+Or via environment variable:
 
 ```bash
 export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 ```
 
-## Quand utiliser Agent Teams vs Sub-Agents
+## When to use Agent Teams vs Sub-Agents
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│           AGENT TEAMS vs SUB-AGENTS : GUIDE DE CHOIX               │
+│           AGENT TEAMS vs SUB-AGENTS: DECISION GUIDE                │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
-│  AGENT TEAMS si:                                                   │
-│  - Les agents doivent COMMUNIQUER entre eux                       │
-│  - Travail COMPLEXE necessitant discussion et collaboration       │
-│  - Taches avec coordination (review croisee, debat, consensus)    │
-│  - 3+ agents travaillant en parallele sur une longue duree        │
+│  AGENT TEAMS if:                                                   │
+│  - Agents need to COMMUNICATE with each other                     │
+│  - COMPLEX work requiring discussion and collaboration            │
+│  - Tasks with coordination (cross-review, debate, consensus)      │
+│  - 3+ agents working in parallel over a long duration             │
 │                                                                    │
-│  SUB-AGENTS (Task tool) si:                                        │
-│  - Tache FOCALISEE ou seul le resultat compte                     │
-│  - Pas besoin de communication inter-agents                       │
-│  - 1-2 agents pour des taches courtes                             │
-│  - Economie de tokens prioritaire                                 │
+│  SUB-AGENTS (Task tool) if:                                        │
+│  - FOCUSED task where only the result matters                     │
+│  - No need for inter-agent communication                          │
+│  - 1-2 agents for short tasks                                     │
+│  - Token economy is the priority                                  │
 │                                                                    │
-│  SESSIONS PARALLELES MANUELLES (git worktrees) si:                 │
-│  - Controle total sur chaque session                              │
-│  - Pas besoin de coordination automatique                         │
-│  - Travail sur des branches completement independantes            │
+│  MANUAL PARALLEL SESSIONS (git worktrees) if:                      │
+│  - Full control over each session                                 │
+│  - No need for automatic coordination                             │
+│  - Work on completely independent branches                        │
 │                                                                    │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
-### Tableau comparatif
+### Comparison table
 
-| | Sub-Agents (Task) | Agent Teams | Sessions manuelles |
+| | Sub-Agents (Task) | Agent Teams | Manual sessions |
 |---|---|---|---|
-| **Contexte** | Propre, resultat retourne | Propre, independant | Propre, independant |
-| **Communication** | Retour au parent uniquement | Messagerie directe entre agents | Aucune (manuelle) |
-| **Coordination** | Agent principal gere tout | Liste de taches partagee | Manuelle |
-| **Cout tokens** | Faible | Eleve (1 contexte par agent) | Eleve |
-| **Ideal pour** | Taches focalisees | Travail collaboratif complexe | Branches independantes |
+| **Context** | Clean, result returned | Clean, independent | Clean, independent |
+| **Communication** | Return to parent only | Direct messaging between agents | None (manual) |
+| **Coordination** | Main agent handles everything | Shared task list | Manual |
+| **Token cost** | Low | High (1 context per agent) | High |
+| **Ideal for** | Focused tasks | Complex collaborative work | Independent branches |
 
 ## Architecture
 
@@ -82,38 +82,38 @@ export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │   ┌──────────────┐                                               │
-│   │  TEAM LEAD   │ ←── Vous interagissez avec le lead            │
-│   │  (coordonne) │                                               │
+│   │  TEAM LEAD   │ ←── You interact with the lead                │
+│   │ (coordinates)│                                               │
 │   └──────┬───────┘                                               │
 │          │                                                       │
 │          ├──── Shared Task List ────┐                             │
 │          │                          │                             │
 │    ┌─────┴─────┐  ┌──────────┐  ┌──┴───────┐                    │
 │    │ Teammate 1 │  │ Teammate 2│  │ Teammate 3│                   │
-│    │ (securite) │  │ (perf)   │  │ (a11y)   │                   │
+│    │ (security) │  │ (perf)   │  │ (a11y)   │                   │
 │    └────────────┘  └──────────┘  └──────────┘                    │
 │          ↕              ↕              ↕                          │
-│       Messagerie directe entre agents                            │
+│       Direct messaging between agents                            │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-| Composant | Role |
+| Component | Role |
 |-----------|------|
-| **Team Lead** | Session principale, cree l'equipe, coordonne le travail |
-| **Teammates** | Instances Claude Code independantes, executent les taches |
-| **Task List** | Liste partagee de taches avec statuts et dependances |
-| **Mailbox** | Systeme de messagerie pour la communication inter-agents |
+| **Team Lead** | Main session, creates the team, coordinates the work |
+| **Teammates** | Independent Claude Code instances, execute the tasks |
+| **Task List** | Shared list of tasks with statuses and dependencies |
+| **Mailbox** | Messaging system for inter-agent communication |
 
-## Modes d'affichage
+## Display modes
 
-| Mode | Description | Prerequis |
-|------|-------------|-----------|
-| `in-process` | Tous les teammates dans le terminal principal. Navigation: `Shift+Up/Down` | Aucun |
-| `tmux` | Chaque teammate dans son propre pane tmux | tmux installe |
-| `auto` (defaut) | Split-panes si deja dans tmux, sinon in-process | - |
+| Mode | Description | Prerequisites |
+|------|-------------|---------------|
+| `in-process` | All teammates in the main terminal. Navigation: `Shift+Up/Down` | None |
+| `tmux` | Each teammate in its own tmux pane | tmux installed |
+| `auto` (default) | Split-panes if already in tmux, otherwise in-process | - |
 
-Configuration dans `settings.json` :
+Configuration in `settings.json`:
 
 ```json
 {
@@ -121,125 +121,125 @@ Configuration dans `settings.json` :
 }
 ```
 
-Ou en ligne de commande :
+Or via command line:
 
 ```bash
 claude --teammate-mode tmux
 ```
 
-## Raccourcis clavier
+## Keyboard shortcuts
 
-| Raccourci | Action |
-|-----------|--------|
-| `Shift+Up/Down` | Naviguer entre teammates (mode in-process) |
-| `Shift+Tab` | Basculer en mode delegate (lead = coordination uniquement) |
-| `Ctrl+T` | Afficher/masquer la liste de taches |
-| `Enter` | Entrer dans la session d'un teammate |
-| `Escape` | Interrompre le turn d'un teammate |
+| Shortcut | Action |
+|----------|--------|
+| `Shift+Up/Down` | Navigate between teammates (in-process mode) |
+| `Shift+Tab` | Switch to delegate mode (lead = coordination only) |
+| `Ctrl+T` | Show/hide the task list |
+| `Enter` | Enter a teammate's session |
+| `Escape` | Interrupt a teammate's turn |
 
-## Cycle de vie d'une equipe
+## Team lifecycle
 
 ```
-1. CREER l'equipe    → Decrire la tache et la structure souhaitee
+1. CREATE the team   → Describe the task and desired structure
        │
        ▼
-2. SPAWN teammates   → Le lead cree les agents specialises
+2. SPAWN teammates   → The lead creates the specialized agents
        │
        ▼
-3. COORDONNER        → Taches partagees, messagerie, delegation
+3. COORDINATE        → Shared tasks, messaging, delegation
        │
        ▼
-4. SYNTHETISER       → Le lead combine les resultats
+4. SYNTHESIZE        → The lead combines the results
        │
        ▼
-5. SHUTDOWN          → Arreter chaque teammate proprement
+5. SHUTDOWN          → Stop each teammate cleanly
        │
        ▼
-6. CLEANUP           → Nettoyer les ressources de l'equipe
+6. CLEANUP           → Clean up the team's resources
 ```
 
-### Exemple de lancement
+### Launch example
 
 ```
-Cree une equipe de 3 agents pour auditer ce projet en parallele :
-- Un agent securite (focus OWASP Top 10)
-- Un agent performance (focus Core Web Vitals)
-- Un agent accessibilite (focus WCAG 2.1 AA)
-Chacun produit un rapport, puis synthetise les resultats.
+Create a team of 3 agents to audit this project in parallel:
+- A security agent (focus on OWASP Top 10)
+- A performance agent (focus on Core Web Vitals)
+- An accessibility agent (focus on WCAG 2.1 AA)
+Each produces a report, then synthesize the results.
 ```
 
-### Mode Delegate (recommande pour les equipes > 3 agents)
+### Delegate mode (recommended for teams > 3 agents)
 
-Le mode delegate empeche le lead d'implementer lui-meme, le forcant a rester en coordination :
-- Activer avec `Shift+Tab` apres avoir cree l'equipe
-- Le lead ne peut que : spawner, envoyer des messages, gerer les taches, shutdown
-- Recommande quand vous voulez que le lead se concentre sur l'orchestration
+Delegate mode prevents the lead from implementing itself, forcing it to stay in coordination:
+- Activate with `Shift+Tab` after creating the team
+- The lead can only: spawn, send messages, manage tasks, shutdown
+- Recommended when you want the lead to focus on orchestration
 
-## Bonnes pratiques
+## Best practices
 
-- **2-5 teammates** : au-dela, la coordination devient couteuse en tokens
-- **5-6 taches par agent** : suffisant pour garder les agents productifs
-- **Isolation des fichiers** : chaque agent travaille sur des fichiers differents
-- **Contexte explicite** : donner un prompt detaille a chaque teammate au spawn
-- **Plan approval** : pour les taches risquees, demander au lead d'approuver le plan avant execution
-- **Monitoring regulier** : verifier l'avancement, rediriger si necessaire
+- **2-5 teammates**: beyond that, coordination becomes expensive in tokens
+- **5-6 tasks per agent**: enough to keep agents productive
+- **File isolation**: each agent works on different files
+- **Explicit context**: give a detailed prompt to each teammate at spawn
+- **Plan approval**: for risky tasks, ask the lead to approve the plan before execution
+- **Regular monitoring**: check progress, redirect if needed
 
-## Limitations connues
+## Known limitations
 
-| Limitation | Contournement |
-|------------|--------------|
-| Pas de resume des teammates in-process | Le lead re-cree l'equipe apres `/resume` |
-| Un seul team par session | Cleanup avant de creer un nouveau team |
-| Pas d'equipes imbriquees | Seul le lead peut gerer l'equipe |
-| Lead fixe (pas de transfert) | Le createur reste lead pour toute la duree |
-| Deux agents sur le meme fichier = ecrasement | Decouper le travail par fichier |
-| Split-panes non supporte dans VS Code / Windows Terminal | Utiliser le mode in-process |
+| Limitation | Workaround |
+|------------|------------|
+| No resume for in-process teammates | The lead re-creates the team after `/resume` |
+| Only one team per session | Cleanup before creating a new team |
+| No nested teams | Only the lead can manage the team |
+| Fixed lead (no transfer) | The creator stays lead for the whole duration |
+| Two agents on the same file = overwrite | Split the work by file |
+| Split-panes not supported in VS Code / Windows Terminal | Use in-process mode |
 
-## Patterns pre-configures
+## Pre-configured patterns
 
-Voir @patterns.md pour les 4 patterns prets a l'emploi :
+See @patterns.md for the 4 ready-to-use patterns:
 
-| Pattern | Teammates | Cas d'usage |
-|---------|-----------|-------------|
-| **Audit** | 3-4 agents (securite, perf, a11y, design) | Audit qualite complet |
-| **Feature** | 2-3 agents (frontend, backend, tests) | Developpement multi-couches |
-| **Debug** | 3-5 agents (hypotheses concurrentes) | Investigation de bugs complexes |
-| **Review** | 3 agents (securite, perf, coverage) | Code review parallele |
+| Pattern | Teammates | Use case |
+|---------|-----------|----------|
+| **Audit** | 3-4 agents (security, perf, a11y, design) | Full quality audit |
+| **Feature** | 2-3 agents (frontend, backend, tests) | Multi-layer development |
+| **Debug** | 3-5 agents (concurrent hypotheses) | Complex bug investigation |
+| **Review** | 3 agents (security, perf, coverage) | Parallel code review |
 
-## Exemple complet : Audit parallele
-
-```
-/work:work-team "Audit complet du projet"
-```
-
-Le lead va :
-1. Creer une equipe "audit-team"
-2. Spawner 3 teammates :
-   - **security-reviewer** : "Audite le code pour les vulnerabilites OWASP Top 10. Focus sur l'authentification, les injections, et les donnees sensibles."
-   - **perf-analyst** : "Analyse les performances. Focus sur les requetes lentes, le bundle size, et les Core Web Vitals."
-   - **a11y-checker** : "Verifie l'accessibilite WCAG 2.1 AA. Focus sur le contraste, la navigation clavier, et les lecteurs d'ecran."
-3. Chaque agent travaille independamment
-4. Le lead synthetise en un rapport consolide
-5. Shutdown et cleanup
-
-## Exemple complet : Feature en equipe
+## Full example: Parallel audit
 
 ```
-/work:work-team "Implementer le systeme de notifications"
+/work:work-team "Full project audit"
 ```
 
-Le lead va :
-1. Creer l'equipe et decomposer le travail :
-   - **backend-dev** : "Implemente le service de notifications dans `src/services/notification.ts` et les endpoints API."
-   - **frontend-dev** : "Cree le composant NotificationCenter dans `src/components/` et les hooks associes."
-   - **test-writer** : "Ecris les tests unitaires et d'integration pour le systeme de notifications."
-2. Gerer les dependances via la task list (backend avant frontend)
-3. Le test-writer peut commencer par les tests (TDD) pendant que les devs planifient
-4. Merge une fois tous les agents termines
+The lead will:
+1. Create an "audit-team"
+2. Spawn 3 teammates:
+   - **security-reviewer**: "Audit the code for OWASP Top 10 vulnerabilities. Focus on authentication, injections, and sensitive data."
+   - **perf-analyst**: "Analyze performance. Focus on slow queries, bundle size, and Core Web Vitals."
+   - **a11y-checker**: "Check WCAG 2.1 AA accessibility. Focus on contrast, keyboard navigation, and screen readers."
+3. Each agent works independently
+4. The lead synthesizes into a consolidated report
+5. Shutdown and cleanup
 
-## Voir aussi
+## Full example: Feature as a team
 
-- Skill `parallel-agents` pour l'orchestration via sub-agents Task
-- Skill `git-worktrees` pour les sessions paralleles manuelles
-- Skill `session-handoff` pour le transfert de contexte entre sessions
-- `/work:work-team` pour la commande de lancement direct
+```
+/work:work-team "Implement the notifications system"
+```
+
+The lead will:
+1. Create the team and decompose the work:
+   - **backend-dev**: "Implement the notifications service in `src/services/notification.ts` and the API endpoints."
+   - **frontend-dev**: "Create the NotificationCenter component in `src/components/` and the associated hooks."
+   - **test-writer**: "Write the unit and integration tests for the notifications system."
+2. Manage dependencies via the task list (backend before frontend)
+3. The test-writer can start with the tests (TDD) while the devs are planning
+4. Merge once all agents are done
+
+## See also
+
+- Skill `parallel-agents` for orchestration via Task sub-agents
+- Skill `git-worktrees` for manual parallel sessions
+- Skill `session-handoff` for context handoff between sessions
+- `/work:work-team` for the direct launch command
