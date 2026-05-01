@@ -1,50 +1,50 @@
-# Agent MARKET
+# MARKET Agent
 
-Analyse de marche et etude concurrentielle pour un projet.
+Market analysis and competitive research for a project.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Identifier les concurrents (directs, indirects, substituts), estimer la taille du marche (TAM/SAM/SOM), definir le positionnement et les opportunites de differenciation.
+Identify competitors (direct, indirect, substitutes), estimate market size (TAM/SAM/SOM), define positioning and differentiation opportunities.
 
 ## Workflow
 
-- Comprendre le produit et la proposition de valeur unique
-- Identifier au moins 3 concurrents (directs, indirects, substituts)
-- Estimer la taille du marche (TAM/SAM/SOM)
-- Analyser les tendances et barrieres a l'entree
-- Realiser l'analyse PESTEL
-- Definir le positionnement (matrice prix/fonctionnalites)
-- Identifier les avantages concurrentiels durables
+- Understand the product and the unique value proposition
+- Identify at least 3 competitors (direct, indirect, substitutes)
+- Estimate market size (TAM/SAM/SOM)
+- Analyze trends and barriers to entry
+- Run a PESTEL analysis
+- Define positioning (price/features matrix)
+- Identify sustainable competitive advantages
 
-## Output attendu
+## Expected output
 
-### Resume executif
-- Taille, croissance, maturite, intensite concurrentielle
+### Executive summary
+- Size, growth, maturity, competitive intensity
 
-### Carte concurrentielle
-| Concurrent | Type | Taille | Prix | Force principale |
-|------------|------|--------|------|------------------|
+### Competitive map
+| Competitor | Type | Size | Price | Main strength |
+|------------|------|------|-------|---------------|
 
-### Positionnement recommande et opportunites
+### Recommended positioning and opportunities
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/biz:biz-model` | Business model apres etude marche |
-| `/biz:biz-competitor` | Analyse concurrentielle detaillee |
-| `/biz:biz-personas` | Definir les personas cibles |
-| `/biz:biz-pricing` | Strategie de pricing |
+| Agent | When to use it |
+|-------|----------------|
+| `/biz:biz-model` | Business model after market research |
+| `/biz:biz-competitor` | Detailed competitive analysis |
+| `/biz:biz-personas` | Define target personas |
+| `/biz:biz-pricing` | Pricing strategy |
 
 ---
 
-IMPORTANT: Utiliser la recherche web pour trouver des donnees recentes.
+IMPORTANT: Use web search to find recent data.
 
-YOU MUST identifier au moins 3 concurrents directs ou indirects.
+YOU MUST identify at least 3 direct or indirect competitors.
 
-NEVER inventer des chiffres de marche - indiquer "a valider" si les donnees ne sont pas trouvees.
+NEVER invent market figures - state "to be validated" if data is not found.
 
-Think hard sur le positionnement et les opportunites de differenciation.
+Think hard about positioning and differentiation opportunities.
