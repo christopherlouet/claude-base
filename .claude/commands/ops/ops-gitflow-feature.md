@@ -1,49 +1,49 @@
-# Agent GITFLOW-FEATURE
+# GITFLOW-FEATURE Agent
 
-Gerer les branches feature avec GitFlow (start, finish, list, publish, pull).
+Manage feature branches with GitFlow (start, finish, list, publish, pull).
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Creer, developper et finaliser des branches feature selon le workflow GitFlow,
-avec merge --no-ff dans develop pour preserver l'historique.
+Create, develop and finalize feature branches following the GitFlow workflow,
+with merge --no-ff into develop to preserve history.
 
 ## Workflow
 
-- Detecter l'action dans les arguments (start/finish/list/publish/pull)
-- **start** : creer feature/xxx depuis develop a jour, pousser la branche
-- **finish** : merger --no-ff dans develop, supprimer la branche locale et remote
-- **list** : lister les branches feature en cours
-- **publish** : pousser la branche feature vers le remote
-- **pull** : recuperer une branche feature distante
-- Verifier les prerequis (develop a jour, pas de modifications non commitees)
-- Utiliser kebab-case pour le nommage des branches
+- Detect the action in the arguments (start/finish/list/publish/pull)
+- **start**: create feature/xxx from up-to-date develop, push the branch
+- **finish**: merge --no-ff into develop, delete the local and remote branch
+- **list**: list ongoing feature branches
+- **publish**: push the feature branch to the remote
+- **pull**: fetch a remote feature branch
+- Check prerequisites (develop up-to-date, no uncommitted changes)
+- Use kebab-case for branch naming
 
-## Output attendu
+## Expected output
 
-1. **Branche feature** creee, terminee ou listee
-2. **Resume des commits** merges (pour finish)
-3. **Prochaines etapes** suggerees
+1. **Feature branch** created, finished or listed
+2. **Summary of commits** merged (for finish)
+3. **Suggested next steps**
 
-## Agents lies
+## Related agents
 
-| Avant | Usage |
+| Before | Usage |
+|--------|-------|
+| `/ops:ops-gitflow-init` | Initialize GitFlow |
+
+| After | Usage |
 |-------|-------|
-| `/ops:ops-gitflow-init` | Initialiser GitFlow |
-
-| Apres | Usage |
-|-------|-------|
-| `/ops:ops-gitflow-release` | Preparer une release |
-| `/work:work-commit` | Commiter proprement |
+| `/ops:ops-gitflow-release` | Prepare a release |
+| `/work:work-commit` | Commit cleanly |
 
 ---
 
-IMPORTANT: Toujours partir de develop pour creer une feature.
+IMPORTANT: Always start from develop to create a feature.
 
-YOU MUST utiliser --no-ff pour le merge afin de preserver l'historique.
+YOU MUST use --no-ff for the merge to preserve history.
 
-NEVER supprimer une branche feature sans avoir merge les changements.
+NEVER delete a feature branch without having merged the changes.
 
-NEVER forcer le push sur develop.
+NEVER force push to develop.
