@@ -162,7 +162,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<UserDto>> GetById(int id)
     {
         var user = await _userService.GetByIdAsync(id);
-        return user is null ? NotFound() : Ok(user);
+        return user is null ? NotFound(): Ok(user);
     }
 
     [HttpPost]

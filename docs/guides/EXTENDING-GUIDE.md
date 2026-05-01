@@ -2,14 +2,14 @@
 
 > How to customize and extend the claude-socle foundation for your own projects.
 
-> **Dual audience** : this guide covers two distinct cases.
+> **Dual audience**: this guide covers two distinct cases.
 >
-> - **You are extending your user project** (adding custom commands/rules/skills) : your `@imports` in `CLAUDE.md` should point to `@.claude/docs/...` (since the foundation's documentation is installed under `.claude/docs/` on your side).
-> - **You are contributing to the claude-socle repo** : the foundation's `@imports` point to `@docs/...` (the foundation keeps its documentation directly under `docs/`). See also [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
+> - **You are extending your user project** (adding custom commands/rules/skills): your `@imports` in `CLAUDE.md` should point to `@.claude/docs/...` (since the foundation's documentation is installed under `.claude/docs/` on your side).
+> - **You are contributing to the claude-socle repo**: the foundation's `@imports` point to `@docs/...` (the foundation keeps its documentation directly under `docs/`). See also [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
 
 ## Overview
 
-The foundation is designed to be extended. Four main extension points exist :
+The foundation is designed to be extended. Four main extension points exist:
 
 | Element | Location | Purpose |
 |---------|----------|---------|
@@ -44,14 +44,14 @@ The frontmatter is optional. Without `paths`, the rule applies globally to all i
 
 ### Location
 
-Create the file in `.claude/rules/` :
+Create the file in `.claude/rules/`:
 
 ```
 .claude/rules/vue.md
 .claude/rules/my-framework.md
 ```
 
-### Complete example : rule for Svelte
+### Complete example: rule for Svelte
 
 ```markdown
 ---
@@ -88,7 +88,7 @@ paths:
 
 Modify a `.svelte` file and verify in the Claude Code session that the rule appears loaded. Rules are displayed in session information at startup (`InstructionsLoaded` hook).
 
-To force reload : restart a session or use `/clear`.
+To force reload: restart a session or use `/clear`.
 
 ---
 
@@ -96,7 +96,7 @@ To force reload : restart a session or use `/clear`.
 
 A skill is a `SKILL.md` file in a subfolder of `.claude/skills/`. It encapsulates a complete workflow with its instructions, examples and constraints.
 
-> Since CLI 2.1.x, **slash commands and skills are unified** : each skill automatically gets a `/slash-command` interface. Files in `.claude/commands/` continue to work for compatibility, but the recommended approach for any new workflow is `.claude/skills/`. The foundation keeps `.claude/commands/` only for namespaced shortcuts (e.g., `/work:work-pr`).
+> Since CLI 2.1.x, **slash commands and skills are unified**: each skill automatically gets a `/slash-command` interface. Files in `.claude/commands/` continue to work for compatibility, but the recommended approach for any new workflow is `.claude/skills/`. The foundation keeps `.claude/commands/` only for namespaced shortcuts (e.g., `/work:work-pr`).
 
 ### Folder structure
 
@@ -162,7 +162,7 @@ Output format.
 - Limit SKILL.md to 500 lines maximum. Move detail to `examples/` or `references/`
 - Declare only the necessary tools (least privilege principle)
 - Always use `context: fork` for isolation
-- Write the `description` with the trigger context : Claude uses this field to automatically decide when to load the skill
+- Write the `description` with the trigger context: Claude uses this field to automatically decide when to load the skill
 - Prefer tables over prose for quick references
 
 ### Tools by skill type
@@ -175,7 +175,7 @@ Output format.
 | Analysis | `Read`, `Glob`, `Grep` |
 | Infrastructure | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
 
-### Complete example : changelog generation skill
+### Complete example: changelog generation skill
 
 ```yaml
 ---
@@ -201,7 +201,7 @@ formatted according to Keep a Changelog.
 ## Instructions
 
 1. Read the existing CHANGELOG.md to understand the format used
-2. Retrieve commits : `git log <since-tag>..HEAD --oneline`
+2. Retrieve commits: `git log <since-tag>..HEAD --oneline`
 3. Group commits by type (feat, fix, refactor, docs, etc.)
 4. Generate the entry in Keep a Changelog format
 5. Insert at the beginning of CHANGELOG.md, after the title
@@ -270,7 +270,7 @@ Body of the agent's instructions.
 | Sequence of bash commands | Command `.md` | Prompt without additional LLM |
 | Automation without interaction | Hook | Executes a script at the right moment |
 
-### Complete example : dependency audit agent
+### Complete example: dependency audit agent
 
 ```yaml
 ---
@@ -290,12 +290,12 @@ Analyzes project dependencies and produces a report classified by criticality.
 1. Detect the package manager (npm, pnpm, yarn, pip, go mod)
 2. Run the vulnerability audit (`npm audit`, `pip-audit`, etc.)
 3. Identify outdated dependencies
-4. Classify by criticality : CRITICAL > HIGH > MEDIUM > LOW
+4. Classify by criticality: CRITICAL > HIGH > MEDIUM > LOW
 5. Propose an update plan
 
 ## Output
 
-Structured report with :
+Structured report with:
 - Vulnerability table by level
 - Update commands to execute
 - Dependencies to watch (potential breaking changes)
@@ -308,7 +308,7 @@ Structured report with :
 
 ### Agent naming
 
-Follow the existing `domain-action` convention :
+Follow the existing `domain-action` convention:
 
 | Domain | Prefix | Examples |
 |--------|--------|----------|
@@ -364,9 +364,9 @@ Hooks allow automating actions at specific moments in the lifecycle of a Claude 
 | Auto formatting | `false` | Must finish before the next tool |
 | External webhook | `true` | Non-blocking network latency |
 
-### Example : PostToolUse hook to format SQL
+### Example: PostToolUse hook to format SQL
 
-In `.claude/settings.json`, `hooks` section :
+In `.claude/settings.json`, `hooks` section:
 
 ```json
 {
@@ -387,7 +387,7 @@ In `.claude/settings.json`, `hooks` section :
 }
 ```
 
-### Example : PreToolUse hook for business validation
+### Example: PreToolUse hook for business validation
 
 ```json
 {
@@ -410,7 +410,7 @@ In `.claude/settings.json`, `hooks` section :
 
 ### Hooks in settings.local.json
 
-For hooks specific to your machine (not committed) :
+For hooks specific to your machine (not committed):
 
 ```json
 // .claude/settings.local.json
@@ -449,7 +449,7 @@ For hooks specific to your machine (not committed) :
 
 Imported files are injected directly into the context. Use for bulky references that are not necessary for every session.
 
-Files always loaded (imports in this project) :
+Files always loaded (imports in this project):
 - `@docs/reference/best-practices.md`
 - `@docs/reference/project-structures.md`
 
@@ -549,7 +549,7 @@ gh pr create --title "feat(skills): add python-typing skill" --body "..."
 
 ### validate-counts.sh compliance
 
-When you add a skill, an agent, a rule or a command, several documentation files must be updated to reflect the new counters :
+When you add a skill, an agent, a rule or a command, several documentation files must be updated to reflect the new counters:
 
 | File | Counter to update |
 |------|-------------------|
@@ -572,9 +572,9 @@ The foundation did not cover Svelte. This skill activates Composition API conven
 prop typing, and store management automatically on `.svelte` files.
 
 ## Changes
-- `.claude/skills/dev-svelte/SKILL.md` : new skill
-- `.claude/rules/svelte.md` : associated rule
-- `docs/reference/skills-catalog.md` : entry added
+- `.claude/skills/dev-svelte/SKILL.md`: new skill
+- `.claude/rules/svelte.md`: associated rule
+- `docs/reference/skills-catalog.md`: entry added
 - Counters updated in README.md, CLAUDE.md, website
 
 ## Tests

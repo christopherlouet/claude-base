@@ -6,7 +6,7 @@
 | `/assistant` | Guide | Analyze → Recommend → Wait for confirmation |
 | `/assistant-auto` | Automatic | Analyze → Execute the workflow directly |
 
-## WORK- : Main Workflow (15)
+## WORK-: Main Workflow (15)
 | Command | Usage |
 |---------|-------|
 | `/work:work-explore` | Explore and understand the code |
@@ -25,7 +25,7 @@
 | `/work:work-flow-release` | Full release workflow |
 | `/work:work-flow-launch` | Full product launch workflow |
 
-## DEV- : Development (23)
+## DEV-: Development (23)
 | Command | Usage |
 |---------|-------|
 | `/dev:dev-tdd` | TDD development |
@@ -52,7 +52,7 @@
 | `/dev:dev-trpc` | Type-safe APIs with tRPC |
 | `/dev:dev-ai-integration` | LLM integration (OpenAI, Claude API) |
 
-## QA- : Quality (16)
+## QA-: Quality (16)
 | Command | Usage |
 |---------|-------|
 | `/qa:qa-review` | Thorough code review + naming analysis |
@@ -72,7 +72,7 @@
 | `/qa:qa-e2e` | End-to-End tests (Playwright, Cypress) |
 | `/qa:qa-tech-debt` | Identify and prioritize technical debt |
 
-## OPS- : Operations (34)
+## OPS-: Operations (34)
 | Command | Usage |
 |---------|-------|
 | `/ops:ops-hotfix` | Urgent production fix |
@@ -110,7 +110,7 @@
 | `/ops:ops-standup` | Cross-repo morning briefing (commits, PRs, CI, blockers, priorities) |
 | `/ops:ops-ci-fix` | Autonomous diagnosis and repair of failing CI/CD pipelines |
 
-## DOC- : Documentation (9)
+## DOC-: Documentation (9)
 | Command | Usage |
 |---------|-------|
 | `/doc:doc-generate` | Generate documentation |
@@ -123,7 +123,7 @@
 | `/doc:doc-readme` | Create/improve README |
 | `/doc:doc-architecture` | Document the architecture |
 
-## BIZ- : Business (11)
+## BIZ-: Business (11)
 | Command | Usage |
 |---------|-------|
 | `/biz:biz-model` | Business model, Lean Canvas |
@@ -138,7 +138,7 @@
 | `/biz:biz-personas` | Create user personas |
 | `/biz:biz-research` | User research |
 
-## GROWTH- : Growth (11)
+## GROWTH-: Growth (11)
 | Command | Usage |
 |---------|-------|
 | `/growth:growth-landing` | Create/optimize a landing page |
@@ -153,14 +153,14 @@
 | `/growth:growth-localization` | Multi-market localization strategy |
 | `/growth:growth-cro` | Conversion rate optimization (CRO) |
 
-## DATA- : Data (3)
+## DATA-: Data (3)
 | Command | Usage |
 |---------|-------|
 | `/data:data-pipeline` | Design ETL/ELT pipelines |
 | `/data:data-analytics` | Data analysis and reports |
 | `/data:data-modeling` | Data warehouse modeling |
 
-## LEGAL- : Legal (5)
+## LEGAL-: Legal (5)
 | Command | Usage |
 |---------|-------|
 | `/legal:legal-docs` | ToS, T&Cs, legal notices |

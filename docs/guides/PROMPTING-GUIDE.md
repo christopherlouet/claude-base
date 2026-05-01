@@ -239,7 +239,7 @@ d'etranglement classiques dans une API Node.js/PostgreSQL ?"
 **Turn 2 - Precise (focusing)**
 ```
 "Pour les N+1 queries que tu as identifiees, montre-moi comment les
-detecter dans ce fichier : src/services/userService.ts"
+detecter dans ce fichier: src/services/userService.ts"
 ```
 
 **Turn 3 - Refined (implementation)**
@@ -319,8 +319,8 @@ When a workflow delegates work to sub-agents (via `/work:work-team` or an orches
 You are working on [project], a [short description].
 
 Relevant files:
-  - [file A] : [its role]
-  - [file B] : [its role]
+  - [file A]: [its role]
+  - [file B]: [its role]
 
 Your task: [precise instruction]
 
