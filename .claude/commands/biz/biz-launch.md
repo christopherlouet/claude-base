@@ -1,48 +1,48 @@
 # Agent BIZ-LAUNCH
 
-Analyse business et strategique pour le lancement d'un nouveau produit/service.
+Business and strategic analysis for the launch of a new product/service.
 
-## Contexte du projet
+## Project context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Valider la viabilite business AVANT le developpement : proposition de valeur, marche, MVP, pricing, conformite et recommandations Go-to-Market. Pour le workflow technique, utiliser `/work:work-flow-launch`.
+Validate business viability BEFORE development: value proposition, market, MVP, pricing, compliance and Go-to-Market recommendations. For the technical workflow, use `/work:work-flow-launch`.
 
 ## Workflow
 
-- Phase 1 : Analyse Business (proposition de valeur, business model, couts)
-- Phase 2 : Etude de Marche (concurrents, TAM/SAM/SOM, positionnement)
-- Phase 3 : Definition MVP (MoSCoW, scope, criteres de succes)
-- Phase 4 : Strategie Pricing (analyse couts, grille tarifaire, projections)
-- Phase 5 : Conformite (RGPD, documents legaux, securite)
-- Phase 6 : Recommandations GTM (landing page, SEO, analytics, onboarding)
+- Phase 1: Business Analysis (value proposition, business model, costs)
+- Phase 2: Market Research (competitors, TAM/SAM/SOM, positioning)
+- Phase 3: MVP Definition (MoSCoW, scope, success criteria)
+- Phase 4: Pricing Strategy (cost analysis, pricing grid, projections)
+- Phase 5: Compliance (GDPR, legal documents, security)
+- Phase 6: GTM Recommendations (landing page, SEO, analytics, onboarding)
 
-## Output attendu
+## Expected output
 
 ### Executive Summary
-- Proposition de valeur, marche cible, business model, prix, MVP scope
+- Value proposition, target market, business model, price, MVP scope
 
-### Lean Canvas complete
-### Roadmap de lancement (semaines 1-8)
-### Checklist de lancement (produit, business, legal, marketing, support)
+### Complete Lean Canvas
+### Launch roadmap (weeks 1-8)
+### Launch checklist (product, business, legal, marketing, support)
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/work:work-flow-launch` | Workflow technique apres validation business |
-| `/biz:biz-market` | Approfondir l'analyse de marche |
-| `/biz:biz-mvp` | Detailler la definition du MVP |
-| `/biz:biz-pricing` | Affiner la strategie de pricing |
-| `/legal:legal-rgpd` | Detail conformite RGPD |
+| `/work:work-flow-launch` | Technical workflow after business validation |
+| `/biz:biz-market` | Deepen the market analysis |
+| `/biz:biz-mvp` | Detail the MVP definition |
+| `/biz:biz-pricing` | Refine the pricing strategy |
+| `/legal:legal-rgpd` | GDPR compliance detail |
 
 ---
 
-IMPORTANT: Cet agent fournit l'analyse business. Pour le workflow technique, utiliser `/work:work-flow-launch`.
+IMPORTANT: This agent provides the business analysis. For the technical workflow, use `/work:work-flow-launch`.
 
-YOU MUST fournir des recommandations actionnables et priorisees.
+YOU MUST provide actionable and prioritized recommendations.
 
-NEVER donner des estimations financieres sans les qualifier de "preliminaires".
+NEVER give financial estimates without qualifying them as "preliminary".
 
-Think hard sur la coherence globale entre proposition de valeur, pricing et positionnement marche.
+Think hard about the overall coherence between value proposition, pricing and market positioning.
