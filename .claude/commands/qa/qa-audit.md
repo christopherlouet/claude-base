@@ -1,59 +1,59 @@
-# Agent AUDIT-FULL
+# AUDIT-FULL Agent
 
-Audit qualite complet d'un projet. Combine securite, RGPD, accessibilite, performance et qualite de code.
+Complete project quality audit. Combines security, GDPR, accessibility, performance and code quality.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Executer un audit multi-domaines et fournir un rapport consolide avec scores, problemes priorises et plan d'action.
+Execute a multi-domain audit and provide a consolidated report with scores, prioritized issues and action plan.
 
 ## Workflow
 
-- Phase 1 : Audit Securite (OWASP Top 10, headers, CORS, secrets)
-- Phase 2 : Audit RGPD (donnees personnelles, consentement, droits, DPA)
-- Phase 3 : Audit Accessibilite (WCAG 2.1 AA, clavier, contraste)
-- Phase 4 : Audit Performance (Core Web Vitals, images, cache, DB)
-- Phase 5 : Qualite de Code (linting, tests, couverture, dette technique)
-- Consolider les scores et generer le rapport final
+- Phase 1: Security Audit (OWASP Top 10, headers, CORS, secrets)
+- Phase 2: GDPR Audit (personal data, consent, rights, DPA)
+- Phase 3: Accessibility Audit (WCAG 2.1 AA, keyboard, contrast)
+- Phase 4: Performance Audit (Core Web Vitals, images, cache, DB)
+- Phase 5: Code Quality (linting, tests, coverage, technical debt)
+- Consolidate scores and generate the final report
 
-## Output attendu
+## Expected output
 
-### Scores globaux
-| Domaine | Score /100 | Critiques | Hautes |
+### Global scores
+| Domain | Score /100 | Critical | High |
 |---------|-----------|-----------|--------|
-| Securite | | | |
-| RGPD | | | |
-| Accessibilite | | | |
+| Security | | | |
+| GDPR | | | |
+| Accessibility | | | |
 | Performance | | | |
-| Qualite | | | |
+| Quality | | | |
 
-### Problemes critiques (action immediate)
-| # | Domaine | Probleme | Impact | Recommandation |
+### Critical issues (immediate action)
+| # | Domain | Issue | Impact | Recommendation |
 |---|---------|----------|--------|----------------|
 
-### Plan d'action priorise
-1. Priorite 1 - Critique (cette semaine)
-2. Priorite 2 - Haute (ce mois)
-3. Priorite 3 - Moyenne (ce trimestre)
+### Prioritized action plan
+1. Priority 1 - Critical (this week)
+2. Priority 2 - High (this month)
+3. Priority 3 - Medium (this quarter)
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/qa:qa-security` | Audit securite approfondi |
-| `/legal:legal-rgpd` | Audit RGPD approfondi |
-| `/qa:wcag-audit` | Audit accessibilite approfondi |
-| `/qa:qa-perf` | Audit performance approfondi |
-| `/ops:ops-health` | Check rapide avant audit |
+| `/qa:qa-security` | Deep security audit |
+| `/legal:legal-rgpd` | Deep GDPR audit |
+| `/qa:wcag-audit` | Deep accessibility audit |
+| `/qa:qa-perf` | Deep performance audit |
+| `/ops:ops-health` | Quick check before audit |
 
 ---
 
-IMPORTANT: Cet audit fournit une vue d'ensemble. Pour un audit approfondi d'un domaine specifique, utiliser l'agent dedie.
+IMPORTANT: This audit provides an overview. For a deep audit of a specific domain, use the dedicated agent.
 
-YOU MUST prioriser les problemes par criticite et fournir des actions concretes.
+YOU MUST prioritize issues by criticality and provide concrete actions.
 
-NEVER ignorer les problemes critiques de securite - ils doivent etre corriges immediatement.
+NEVER ignore critical security issues - they must be fixed immediately.
 
-Think hard sur les interdependances entre les domaines (ex: securite impacte RGPD).
+Think hard about interdependencies between domains (e.g., security impacts GDPR).
