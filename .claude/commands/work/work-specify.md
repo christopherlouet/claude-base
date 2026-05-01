@@ -1,60 +1,60 @@
-# Agent WORK-SPECIFY
+# WORK-SPECIFY Agent
 
-Cree une specification fonctionnelle structuree. Mode SPECIFICATION uniquement.
+Creates a structured functional specification. SPECIFICATION mode only.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Creer une specification fonctionnelle complete et testable AVANT de planifier.
-Etape entre exploration et planification : **EXPLORE -> SPECIFY -> PLAN -> CODE -> COMMIT**
-Focus sur le QUOI (fonctionnalite, valeur), pas le COMMENT (implementation technique).
+Create a complete and testable functional specification BEFORE planning.
+Step between exploration and planning: **EXPLORE -> SPECIFY -> PLAN -> CODE -> COMMIT**
+Focus on the WHAT (functionality, value), not the HOW (technical implementation).
 
 ## Workflow
 
-- Analyser la demande : identifier QUOI, POURQUOI, acteurs, actions, donnees, contraintes
-- Rediger les User Stories prioritisees (P1=MVP, P2=Important, P3=Nice-to-have)
-- Chaque US : format "En tant que / Je veux / Afin de" + criteres Given/When/Then
-- Chaque US doit etre INVEST (Independante, Negociable, Valorisable, Estimable, Small, Testable)
-- Lister les exigences fonctionnelles (EF-XXX) mesurables
-- Identifier les cas limites (edge cases, erreurs, donnees vides/invalides)
-- Definir les entites cles si donnees impliquees
-- Definir les criteres de succes mesurables (CS-XXX)
-- Delimiter le hors-scope explicitement
-- Lister max 3 points de clarification si zones d'ombre
+- Analyze the request: identify WHAT, WHY, actors, actions, data, constraints
+- Write prioritized User Stories (P1=MVP, P2=Important, P3=Nice-to-have)
+- Each US: "As a / I want / So that" format + Given/When/Then criteria
+- Each US must be INVEST (Independent, Negotiable, Valuable, Estimable, Small, Testable)
+- List measurable functional requirements (EF-XXX)
+- Identify edge cases (errors, empty/invalid data)
+- Define key entities if data is involved
+- Define measurable success criteria (CS-XXX)
+- Explicitly delimit out of scope
+- List max 3 clarification points if grey areas exist
 
-## Output attendu
+## Expected output
 
-Generer `specs/[nom-feature]/spec.md` avec :
-1. **Resume** (1-3 phrases, valeur utilisateur)
-2. **User Stories** (P1 > P2 > P3, avec criteres d'acceptation)
-3. **Exigences Fonctionnelles** (EF-XXX)
-4. **Cas Limites**
-5. **Entites** (si donnees impliquees)
-6. **Criteres de Succes** (metriques mesurables)
-7. **Hors Scope**
-8. **Points de Clarification** (max 3)
+Generate `specs/[feature-name]/spec.md` with:
+1. **Summary** (1-3 sentences, user value)
+2. **User Stories** (P1 > P2 > P3, with acceptance criteria)
+3. **Functional Requirements** (EF-XXX)
+4. **Edge Cases**
+5. **Entities** (if data is involved)
+6. **Success Criteria** (measurable metrics)
+7. **Out of Scope**
+8. **Clarification Points** (max 3)
 
-## Agents lies
+## Related agents
 
-| Avant | Usage |
-|-------|-------|
+| Before | Usage |
+|--------|-------|
 | `/work:work-explore` | Exploration |
 
-| Apres | Usage |
+| After | Usage |
 |-------|-------|
-| `/work:work-clarify` | Si ambiguites |
-| `/work:work-plan` | Planification |
+| `/work:work-clarify` | If ambiguities |
+| `/work:work-plan` | Planning |
 
 ---
 
-IMPORTANT: Ne JAMAIS inclure de details d'implementation technique.
+IMPORTANT: NEVER include technical implementation details.
 
-YOU MUST prioriser les User Stories (P1 = MVP, P2 = Important, P3 = Nice-to-have).
+YOU MUST prioritize User Stories (P1 = MVP, P2 = Important, P3 = Nice-to-have).
 
-YOU MUST rendre chaque exigence testable et mesurable.
+YOU MUST make every requirement testable and measurable.
 
-NEVER utiliser de jargon technique (API, database, framework...) dans la spec.
+NEVER use technical jargon (API, database, framework...) in the spec.
 
-Think hard sur la VALEUR UTILISATEUR avant de rediger.
+Think hard about USER VALUE before writing.
