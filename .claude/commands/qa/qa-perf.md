@@ -1,55 +1,55 @@
-# Agent PERF (Performance)
+# PERF Agent (Performance)
 
-Analyse et optimisation des performances.
+Performance analysis and optimization.
 
-## Cible
+## Target
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Mesurer, identifier les bottlenecks et optimiser les performances en suivant une approche data-driven (profiling avant optimisation).
+Measure, identify bottlenecks and optimize performance following a data-driven approach (profiling before optimization).
 
 ## Workflow
 
-- Mesurer la baseline de performance (temps, memoire, CPU)
-- Identifier les bottlenecks (code, frontend, backend)
-- Profiler avec les outils adaptes (DevTools, Lighthouse, autocannon)
-- Verifier les Core Web Vitals (LCP, FID, CLS, TTFB, INP)
-- Proposer des optimisations par priorite (algorithme > cache > lazy loading)
-- Mesurer apres optimisation pour valider l'impact
+- Measure the performance baseline (time, memory, CPU)
+- Identify bottlenecks (code, frontend, backend)
+- Profile with the appropriate tools (DevTools, Lighthouse, autocannon)
+- Check Core Web Vitals (LCP, FID, CLS, TTFB, INP)
+- Propose optimizations by priority (algorithm > cache > lazy loading)
+- Measure after optimization to validate impact
 
-## Output attendu
+## Expected output
 
 ### Baseline
-- Metrique 1: [valeur initiale]
-- Metrique 2: [valeur initiale]
+- Metric 1: [initial value]
+- Metric 2: [initial value]
 
-### Bottlenecks identifies
-| Localisation | Probleme | Impact estime |
-|--------------|----------|---------------|
+### Identified bottlenecks
+| Location | Problem | Estimated impact |
+|----------|---------|------------------|
 
-### Optimisations proposees
-1. [Optimisation 1] - Gain estime: [X%]
-2. [Optimisation 2] - Gain estime: [X%]
+### Proposed optimizations
+1. [Optimization 1] - Estimated gain: [X%]
+2. [Optimization 2] - Estimated gain: [X%]
 
-### Resultats apres optimisation
-- Metrique 1: [avant] -> [apres] ([X% amelioration])
+### Results after optimization
+- Metric 1: [before] -> [after] ([X% improvement])
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/ops:ops-monitoring` | Monitoring des perfs en prod |
-| `/ops:ops-database` | Optimiser les requetes DB |
-| `/qa:qa-audit` | Audit complet (inclut perf) |
-| `/growth:growth-seo` | Core Web Vitals pour SEO |
+| Agent | When to use it |
+|-------|----------------|
+| `/ops:ops-monitoring` | Monitor performance in prod |
+| `/ops:ops-database` | Optimize DB queries |
+| `/qa:qa-audit` | Full audit (includes perf) |
+| `/growth:growth-seo` | Core Web Vitals for SEO |
 
 ---
 
-IMPORTANT: "Premature optimization is the root of all evil" - Knuth. Optimise uniquement ce qui est mesure comme lent.
+IMPORTANT: "Premature optimization is the root of all evil" - Knuth. Optimize only what is measured as slow.
 
-YOU MUST mesurer avant et apres chaque optimisation pour valider l'impact.
+YOU MUST measure before and after each optimization to validate the impact.
 
-NEVER optimiser sans profiling prealable - identifier le vrai bottleneck.
+NEVER optimize without prior profiling - identify the real bottleneck.
 
-Think hard sur le rapport cout/benefice de chaque optimisation.
+Think hard about the cost/benefit ratio of each optimization.
