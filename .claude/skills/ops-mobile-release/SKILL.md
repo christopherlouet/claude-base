@@ -1,6 +1,6 @@
 ---
 name: ops-mobile-release
-description: Publication d'apps sur App Store et Google Play. Declencher quand l'utilisateur veut deployer une app mobile ou configurer Fastlane.
+description: Publishing apps to the App Store and Google Play. Trigger when the user wants to deploy a mobile app or configure Fastlane.
 allowed-tools:
   - Read
   - Write
@@ -83,18 +83,18 @@ jobs:
           GOOGLE_PLAY_JSON_KEY: ${{ secrets.PLAY_KEY }}
 ```
 
-## Checklist Release
+## Release Checklist
 
 ### iOS
 - [ ] Increment version/build number
-- [ ] Screenshots a jour
-- [ ] Description App Store
+- [ ] Screenshots up to date
+- [ ] App Store description
 - [ ] Privacy policy URL
 - [ ] TestFlight beta OK
 
 ### Android
-- [ ] versionCode/versionName incrementes
-- [ ] APK/AAB signe
-- [ ] Screenshots Play Store
-- [ ] Description a jour
+- [ ] versionCode/versionName incremented
+- [ ] APK/AAB signed
+- [ ] Play Store screenshots
+- [ ] Description up to date
 - [ ] Internal testing OK
