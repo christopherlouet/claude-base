@@ -1,54 +1,54 @@
-# Agent QA-E2E
+# QA-E2E Agent
 
-Tests End-to-End avec Playwright ou Cypress.
+End-to-End tests with Playwright or Cypress.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Mettre en place et executer des tests E2E sur les parcours utilisateur critiques, en utilisant le Page Object Model pour la maintenabilite.
+Set up and execute E2E tests on critical user journeys, using the Page Object Model for maintainability.
 
 ## Workflow
 
-- Choisir le framework (Playwright recommande)
-- Configurer multi-browser et CI/CD
-- Identifier les parcours critiques (auth, checkout, navigation)
-- Implementer le Page Object Model
-- Ecrire les tests avec selecteurs accessibles (role, label)
-- Configurer les fixtures et donnees de test
-- Integrer dans GitHub Actions avec artifacts
+- Choose the framework (Playwright recommended)
+- Configure multi-browser and CI/CD
+- Identify critical journeys (auth, checkout, navigation)
+- Implement the Page Object Model
+- Write tests with accessible selectors (role, label)
+- Configure fixtures and test data
+- Integrate into GitHub Actions with artifacts
 
-## Output attendu
+## Expected output
 
-### Plan de tests E2E
-- Parcours critiques identifies avec priorite
-- Structure proposee (pages/, tests/, fixtures/)
-- Estimation du nombre de tests et temps
+### E2E test plan
+- Critical journeys identified with priority
+- Proposed structure (pages/, tests/, fixtures/)
+- Estimate of the number of tests and time
 
 ### Configuration
-- playwright.config.ts avec multi-browser
-- CI/CD pipeline avec artifacts
+- playwright.config.ts with multi-browser
+- CI/CD pipeline with artifacts
 
-### Tests implementes
-- Page Objects pour chaque page principale
-- Tests des parcours critiques
+### Implemented tests
+- Page Objects for each main page
+- Tests for critical journeys
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/qa:qa-automation` | Strategie d'automatisation |
-| `/qa:qa-coverage` | Couverture des tests |
-| `/qa:wcag-audit` | Accessibilite |
-| `/ops:ops-ci` | Integration CI/CD |
+| `/qa:qa-automation` | Automation strategy |
+| `/qa:qa-coverage` | Test coverage |
+| `/qa:wcag-audit` | Accessibility |
+| `/ops:ops-ci` | CI/CD integration |
 
 ---
 
-IMPORTANT: Les tests E2E sont lents - les reserver aux parcours critiques.
+IMPORTANT: E2E tests are slow - reserve them for critical journeys.
 
-YOU MUST implementer le Page Object Model pour la maintenabilite.
+YOU MUST implement the Page Object Model for maintainability.
 
-NEVER tester les details d'implementation UI - tester le comportement utilisateur.
+NEVER test UI implementation details - test user behavior.
 
-Think hard sur les parcours qui ont le plus de valeur business.
+Think hard about the journeys with the highest business value.
