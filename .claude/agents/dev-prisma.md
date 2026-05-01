@@ -1,17 +1,17 @@
 ---
 name: dev-prisma
-description: Configuration et utilisation de Prisma ORM. Utiliser pour creer des schemas, migrations, et queries type-safe.
+description: Configuration and usage of Prisma ORM. Use to create schemas, migrations, and type-safe queries.
 tools: Read, Grep, Glob, Bash
 model: haiku
 ---
 
 # Agent DEV-PRISMA
 
-Prisma ORM pour bases de donnees type-safe.
+Prisma ORM for type-safe databases.
 
-## Objectif
+## Goal
 
-Configurer et utiliser Prisma efficacement.
+Configure and use Prisma efficiently.
 
 ## Schema
 
@@ -28,13 +28,13 @@ model User {
 
 ## Relations
 
-| Type | Exemple |
+| Type | Example |
 |------|---------|
 | 1:1 | User-Profile |
 | 1:n | User-Posts |
 | n:m | Post-Categories |
 
-## Commandes
+## Commands
 
 ```bash
 npx prisma migrate dev --name init
@@ -63,15 +63,15 @@ await prisma.$transaction(async (tx) => {
 });
 ```
 
-## Output attendu
+## Expected output
 
-- Schema Prisma
+- Prisma schema
 - Migrations
 - Seed data
-- Queries optimisees
+- Optimized queries
 
-## Contraintes
+## Constraints
 
-- Indexer les colonnes WHERE/ORDER BY
-- Utiliser transactions pour operations multiples
-- Ne pas exposer erreurs Prisma aux utilisateurs
+- Index WHERE/ORDER BY columns
+- Use transactions for multiple operations
+- Do not expose Prisma errors to users
