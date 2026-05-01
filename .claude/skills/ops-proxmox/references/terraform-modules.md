@@ -1,75 +1,75 @@
 # Terraform Modules — Proxmox
 
-Modules Terraform reutilisables pour Proxmox (VM QEMU, LXC, utilisation).
+Reusable Terraform modules for Proxmox (QEMU VM, LXC, usage).
 
-## Module VM
+## VM Module
 
 ### Variables
 
 ```hcl
 # modules/vm/variables.tf
 variable "name" {
-  description = "Nom de la VM"
+  description = "VM name"
   type        = string
 }
 
 variable "target_node" {
-  description = "Node Proxmox cible"
+  description = "Target Proxmox node"
   type        = string
 }
 
 variable "template_id" {
-  description = "ID du template à cloner"
+  description = "Template ID to clone"
   type        = number
 }
 
 variable "cpu_cores" {
-  description = "Nombre de cores CPU"
+  description = "Number of CPU cores"
   type        = number
   default     = 2
 }
 
 variable "memory_mb" {
-  description = "RAM en MB"
+  description = "RAM in MB"
   type        = number
   default     = 2048
 }
 
 variable "disk_size_gb" {
-  description = "Taille du disque en GB"
+  description = "Disk size in GB"
   type        = number
   default     = 20
 }
 
 variable "network_bridge" {
-  description = "Bridge réseau"
+  description = "Network bridge"
   type        = string
   default     = "vmbr0"
 }
 
 variable "ip_address" {
-  description = "Adresse IP (CIDR notation)"
+  description = "IP address (CIDR notation)"
   type        = string
 }
 
 variable "gateway" {
-  description = "Passerelle par défaut"
+  description = "Default gateway"
   type        = string
 }
 
 variable "ssh_keys" {
-  description = "Clés SSH publiques"
+  description = "SSH public keys"
   type        = list(string)
 }
 
 variable "tags" {
-  description = "Tags de la VM"
+  description = "VM tags"
   type        = list(string)
   default     = []
 }
 ```
 
-### Resource principale
+### Main resource
 
 ```hcl
 # modules/vm/main.tf
@@ -138,22 +138,22 @@ resource "proxmox_virtual_environment_vm" "this" {
 ```hcl
 # modules/vm/outputs.tf
 output "vm_id" {
-  description = "ID de la VM"
+  description = "VM ID"
   value       = proxmox_virtual_environment_vm.this.vm_id
 }
 
 output "ipv4_address" {
-  description = "Adresse IPv4"
+  description = "IPv4 address"
   value       = proxmox_virtual_environment_vm.this.ipv4_addresses[1][0]
 }
 
 output "mac_address" {
-  description = "Adresse MAC"
+  description = "MAC address"
   value       = proxmox_virtual_environment_vm.this.mac_addresses[0]
 }
 ```
 
-## Module LXC
+## LXC Module
 
 ```hcl
 # modules/lxc/main.tf
@@ -212,7 +212,7 @@ resource "proxmox_virtual_environment_container" "this" {
 }
 ```
 
-## Utilisation des modules
+## Module usage
 
 ```hcl
 # environments/prod/main.tf
@@ -252,9 +252,9 @@ module "redis_cache" {
 }
 ```
 
-## Reseau
+## Network
 
-### Configuration bridge
+### Bridge configuration
 
 ```hcl
 resource "proxmox_virtual_environment_network_linux_bridge" "vlan_backend" {
@@ -268,7 +268,7 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vlan_backend" {
 }
 ```
 
-### VLAN tagging sur une VM
+### VLAN tagging on a VM
 
 ```hcl
 network_device {
@@ -277,20 +277,20 @@ network_device {
 }
 ```
 
-## Stockage
+## Storage
 
-### Types de stockage Proxmox
+### Proxmox storage types
 
 | Type | Description | Performance | HA |
 |------|-------------|-------------|-----|
-| `local` | Repertoire local | Moyenne | Non |
-| `local-lvm` | LVM local | Bonne | Non |
-| `nfs` | NFS partage | Variable | Oui |
-| `ceph` | Ceph RBD | Excellente | Oui |
-| `zfs` | ZFS local | Excellente | Non |
-| `zfs-over-iscsi` | ZFS sur iSCSI | Bonne | Oui |
+| `local` | Local directory | Medium | No |
+| `local-lvm` | Local LVM | Good | No |
+| `nfs` | Shared NFS | Variable | Yes |
+| `ceph` | Ceph RBD | Excellent | Yes |
+| `zfs` | Local ZFS | Excellent | No |
+| `zfs-over-iscsi` | ZFS over iSCSI | Good | Yes |
 
-### Configuration stockage partage
+### Shared storage configuration
 
 ```hcl
 resource "proxmox_virtual_environment_storage_nfs" "backup" {

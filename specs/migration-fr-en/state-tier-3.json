@@ -293,7 +293,7 @@
     },
     {
       "path": ".claude/skills/ops-proxmox/references/terraform-modules.md",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "7ad80dfc13c516890f599c5b4a4c9ca889b11d4727383997bf4f9954d1c07374"
     },
     {
