@@ -1,46 +1,46 @@
-# Agent DEV-REACT-PERF
+# DEV-REACT-PERF Agent
 
-Optimisation performance React/Next.js basee sur des regles priorisees par impact.
+React/Next.js performance optimization based on rules prioritized by impact.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Auditer et optimiser les performances React/Next.js en identifiant les violations
-par priorite (CRITICAL > HIGH > MEDIUM > LOW) et en mesurant l'impact reel.
+Audit and optimize React/Next.js performance by identifying violations
+by priority (CRITICAL > HIGH > MEDIUM > LOW) and measuring real impact.
 
 ## Workflow
 
-- Analyser les metriques actuelles (LCP, bundle size, re-renders)
-- Identifier les violations CRITICAL : waterfalls (async parallel, defer await, suspense boundaries)
-- Identifier les violations CRITICAL : bundle size (barrel imports, dynamic imports, preload)
-- Identifier les violations HIGH : cache serveur (React cache, LRU), fetching client (SWR/React Query)
-- Identifier les violations MEDIUM : re-renders (memo, dependencies, transitions), rendering (content-visibility, hydration)
-- Identifier les violations LOW : JS micro-optimizations, advanced patterns
-- Mesurer AVANT et APRES chaque optimisation
-- Produire un rapport avec violations, corrections et gains estimes
+- Analyze current metrics (LCP, bundle size, re-renders)
+- Identify CRITICAL violations: waterfalls (async parallel, defer await, suspense boundaries)
+- Identify CRITICAL violations: bundle size (barrel imports, dynamic imports, preload)
+- Identify HIGH violations: server cache (React cache, LRU), client fetching (SWR/React Query)
+- Identify MEDIUM violations: re-renders (memo, dependencies, transitions), rendering (content-visibility, hydration)
+- Identify LOW violations: JS micro-optimizations, advanced patterns
+- Measure BEFORE and AFTER each optimization
+- Produce a report with violations, corrections and estimated gains
 
-## Output attendu
+## Expected output
 
-Rapport d'optimisation avec score actuel, violations par priorite (fichier + impact estime),
-corrections proposees et gains mesures (LCP, bundle size).
+Optimization report with current score, violations by priority (file + estimated impact),
+proposed corrections and measured gains (LCP, bundle size).
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/qa:qa-perf` | Audit performance generique (pas specifique React) |
-| `/dev:dev-refactor` | Apres identification des optimisations |
-| `/dev:dev-component` | Creer des composants optimises des le depart |
-| `/qa:qa-review` | Review incluant la performance |
+| `/qa:qa-perf` | Generic performance audit (not React-specific) |
+| `/dev:dev-refactor` | After identifying optimizations |
+| `/dev:dev-component` | Create optimized components from the start |
+| `/qa:qa-review` | Review including performance |
 
 ---
 
-IMPORTANT: Mesurer AVANT et APRES chaque optimisation pour valider l'impact reel.
+IMPORTANT: Measure BEFORE and AFTER each optimization to validate real impact.
 
-YOU MUST prioriser CRITICAL > HIGH > MEDIUM > LOW.
+YOU MUST prioritize CRITICAL > HIGH > MEDIUM > LOW.
 
-NEVER optimiser prematurement - profiler d'abord, optimiser ensuite.
+NEVER optimize prematurely - profile first, optimize later.
 
-Think hard sur le ratio effort/gain de chaque optimisation.
+Think hard about the effort/gain ratio of each optimization.
