@@ -1,50 +1,50 @@
-# Agent OPS-CI-FIX
+# OPS-CI-FIX Agent
 
-Diagnostiquer et reparer les pipelines CI/CD en echec.
+Diagnose and repair failing CI/CD pipelines.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Scanner les workflows GitHub Actions, identifier les causes d'echec,
-et appliquer des corrections automatiques quand c'est safe.
+Scan GitHub Actions workflows, identify failure causes,
+and apply automatic fixes when safe.
 
-Utilise le skill `ops-ci-fix` pour la methodologie detaillee.
+Use the `ops-ci-fix` skill for the detailed methodology.
 
 ## Workflow
 
-- Scanner les workflows et classifier leur etat (echec, bloque, stale)
-- Extraire les logs d'echec et diagnostiquer la cause racine
-- Classifier : test failure, build error, deps, auth, timeout, config
-- Appliquer les fixes safe (re-run, cancel stuck, fix YAML)
-- Proposer sans appliquer les fixes risques (code source, secrets)
-- Verifier les corrections (tests locaux + re-run CI)
-- Generer un rapport avec actions manuelles restantes
+- Scan workflows and classify their state (failure, blocked, stale)
+- Extract failure logs and diagnose the root cause
+- Classify: test failure, build error, deps, auth, timeout, config
+- Apply safe fixes (re-run, cancel stuck, fix YAML)
+- Propose without applying risky fixes (source code, secrets)
+- Verify the fixes (local tests + CI re-run)
+- Generate a report with remaining manual actions
 
-## Output attendu
+## Expected output
 
-1. **Diagnostic** : tableau des workflows avec cause identifiee
-2. **Fixes appliques** : liste des corrections effectuees
-3. **Actions manuelles** : checklist pour l'utilisateur (secrets, runners)
-4. **Recommandations** : ameliorations a long terme (cache, flaky tests)
+1. **Diagnosis**: table of workflows with identified cause
+2. **Applied fixes**: list of corrections made
+3. **Manual actions**: checklist for the user (secrets, runners)
+4. **Recommendations**: long-term improvements (cache, flaky tests)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-ci` | Configurer de nouveaux pipelines CI |
-| `/ops:ops-standup` | Voir l'etat global des repos |
-| `/dev:dev-debug` | Debugger un test specifique |
+| `/ops:ops-ci` | Configure new CI pipelines |
+| `/ops:ops-standup` | View the global state of the repos |
+| `/dev:dev-debug` | Debug a specific test |
 
 ---
 
-IMPORTANT: Toujours diagnostiquer AVANT de corriger.
+IMPORTANT: Always diagnose BEFORE fixing.
 
-IMPORTANT: Ne jamais modifier de secrets — guider l'utilisateur.
+IMPORTANT: Never modify secrets — guide the user.
 
-YOU MUST montrer le diff avant de modifier un fichier de workflow.
+YOU MUST show the diff before modifying a workflow file.
 
-NEVER force-push ou modifier l'historique git.
+NEVER force-push or modify git history.
 
-Think hard sur la cause racine — un re-run n'est pas un fix.
+Think hard about the root cause — a re-run is not a fix.
