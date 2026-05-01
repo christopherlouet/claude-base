@@ -1,6 +1,6 @@
 ---
 name: ops-database
-description: Conception de schemas de base de donnees. Declencher quand l'utilisateur veut creer des tables, migrations, ou optimiser des requetes.
+description: Database schema design. Trigger when the user wants to create tables, migrations, or optimize queries.
 allowed-tools:
   - Read
   - Write
@@ -16,15 +16,15 @@ disable-model-invocation: true
 
 ## Conventions
 
-| Element | Convention | Exemple |
+| Element | Convention | Example |
 |---------|------------|---------|
-| Tables | snake_case pluriel | users, order_items |
-| Colonnes | snake_case | created_at, user_id |
+| Tables | snake_case plural | users, order_items |
+| Columns | snake_case | created_at, user_id |
 | Primary key | id | id UUID |
 | Foreign key | table_id | user_id |
 | Index | idx_table_columns | idx_users_email |
 
-## Schema PostgreSQL
+## PostgreSQL Schema
 
 ```sql
 CREATE TABLE users (
@@ -74,16 +74,16 @@ CREATE TABLE user_roles (
 
 | Type | Usage |
 |------|-------|
-| B-tree | Egalite, range (defaut) |
+| B-tree | Equality, range (default) |
 | GIN | JSONB, arrays, full-text |
 | GiST | Geospatial |
 
-## Optimisation
+## Optimization
 
 ```sql
--- Analyser une requete
+-- Analyze a query
 EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
 
--- Index manquants
+-- Missing indexes
 SELECT * FROM pg_stat_user_indexes WHERE idx_scan = 0;
 ```
