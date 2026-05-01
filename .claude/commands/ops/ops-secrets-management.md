@@ -1,47 +1,47 @@
-# Agent SECRETS-MANAGEMENT
+# SECRETS-MANAGEMENT Agent
 
-Implemente une gestion securisee des secrets et credentials.
+Implements secure management of secrets and credentials.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Mettre en place une strategie complete de gestion des secrets : inventaire,
-centralisation, injection securisee, rotation automatique et audit.
+Set up a complete secrets management strategy: inventory,
+centralization, secure injection, automatic rotation and audit.
 
 ## Workflow
 
-- Inventorier tous les secrets du projet (API keys, DB, auth, cloud, certs)
-- Classifier par sensibilite (critique, haute, moyenne)
-- Choisir la solution de stockage (AWS Secrets Manager, Vault, K8s Secrets)
-- Implementer l'injection securisee avec cache et fallback
-- Configurer la rotation automatique (30 jours recommande)
-- Mettre en place l'audit des acces (logging, alertes)
-- Configurer les pre-commit hooks pour detecter les secrets
+- Inventory all the project's secrets (API keys, DB, auth, cloud, certs)
+- Classify by sensitivity (critical, high, medium)
+- Choose the storage solution (AWS Secrets Manager, Vault, K8s Secrets)
+- Implement secure injection with cache and fallback
+- Configure automatic rotation (30 days recommended)
+- Set up access audit (logging, alerts)
+- Configure pre-commit hooks to detect secrets
 
-## Output attendu
+## Expected output
 
-1. **Inventaire** des secrets avec ancienne/nouvelle methode
-2. **Configuration** du provider choisi avec rotation
-3. **Code** d'injection securisee avec cache
-4. **Checklist** securite (stockage, acces, rotation, developpement)
+1. **Inventory** of secrets with old/new method
+2. **Configuration** of the chosen provider with rotation
+3. **Code** for secure injection with cache
+4. **Checklist** security (storage, access, rotation, development)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/qa:qa-security` | Audit securite complet |
-| `/ops:ops-infra-code` | Provisionner Secrets Manager |
-| `/ops:ops-env` | Configuration environnements |
-| `/ops:ops-ci` | Injection secrets en CI |
+| `/qa:qa-security` | Full security audit |
+| `/ops:ops-infra-code` | Provision Secrets Manager |
+| `/ops:ops-env` | Environment configuration |
+| `/ops:ops-ci` | Inject secrets in CI |
 
 ---
 
-IMPORTANT: JAMAIS de secrets dans le code ou les logs.
+IMPORTANT: NEVER put secrets in code or logs.
 
-YOU MUST utiliser un gestionnaire de secrets centralise.
+YOU MUST use a centralized secrets manager.
 
-YOU MUST activer la rotation automatique.
+YOU MUST enable automatic rotation.
 
-NEVER partager des secrets entre environnements.
+NEVER share secrets across environments.
