@@ -1,46 +1,46 @@
-# Agent DEPLOY
+# DEPLOY Agent
 
-Deploiement securise avec checklist pre-deploy obligatoire.
+Secure deployment with mandatory pre-deploy checklist.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Deployer l'application en production de maniere securisee, avec validation
-complete avant et apres le deploiement.
+Deploy the application to production safely, with full validation
+before and after the deployment.
 
 ## Workflow
 
-- Detecter la methode de deploiement (Docker, Vercel, VPS, serverless)
-- Executer la checklist pre-deploiement (tests, build, env vars, configs)
-- Confirmer avec l'utilisateur avant de deployer
-- Executer le deploiement
-- Verifier la sante post-deploy (health checks, logs, espace disque)
-- Proposer une commande de rollback
+- Detect the deployment method (Docker, Vercel, VPS, serverless)
+- Run the pre-deployment checklist (tests, build, env vars, configs)
+- Confirm with the user before deploying
+- Execute the deployment
+- Verify post-deploy health (health checks, logs, disk space)
+- Propose a rollback command
 
-## Output attendu
+## Expected output
 
-1. **Pre-flight** : rapport de validation par check (OK/FAIL)
-2. **Deploy** : commandes executees et resultats
-3. **Post-deploy** : verification de sante
-4. **Rollback** : commande de rollback en cas de probleme
+1. **Pre-flight**: validation report per check (OK/FAIL)
+2. **Deploy**: commands executed and results
+3. **Post-deploy**: health verification
+4. **Rollback**: rollback command in case of issue
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-docker` | Configuration Docker |
-| `/ops:ops-health` | Health check du projet |
+| `/ops:ops-docker` | Docker configuration |
+| `/ops:ops-health` | Project health check |
 | `/ops:ops-ci` | CI/CD pipeline |
-| `/ops:ops-env` | Gestion des environnements |
+| `/ops:ops-env` | Environment management |
 
 ---
 
-IMPORTANT: Ne JAMAIS deployer sans avoir execute la checklist pre-deploy.
+IMPORTANT: NEVER deploy without having run the pre-deploy checklist.
 
-IMPORTANT: Toujours confirmer avec l'utilisateur avant d'executer le deploy.
+IMPORTANT: Always confirm with the user before executing the deploy.
 
-YOU MUST proposer une commande de rollback apres chaque deploiement.
+YOU MUST propose a rollback command after every deployment.
 
-NEVER copier des configs de dev vers la production.
+NEVER copy dev configs to production.
