@@ -217,7 +217,7 @@ Keep a Changelog
 Red-Green-Refactor
 TDD
 WCAG
-RGPD
+# RGPD removed — FR acronym, must be translated to GDPR
 GDPR
 OWASP
 Core Web Vitals
@@ -235,7 +235,7 @@ MVP
 Docusaurus
 Next.js
 React
-Vue
+# Vue removed — FR noun "Vue d'ensemble" → "Overview" creates false positives. Framework usually written "Vue.js" or in code blocks
 Svelte
 Astro
 Flutter
