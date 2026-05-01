@@ -1,8 +1,8 @@
-# Exemple : Module VPC AWS Complet
+# Example: Complete AWS VPC Module
 
-> Cet exemple illustre les patterns du skill infrastructure-as-code
+> This example illustrates the patterns from the infrastructure-as-code skill
 
-## Structure du Module
+## Module Structure
 
 ```
 modules/vpc/
@@ -19,7 +19,7 @@ modules/vpc/
 
 ```hcl
 locals {
-  # Tags communs pour toutes les ressources
+  # Common tags for all resources
   common_tags = merge(
     var.tags,
     {
@@ -28,7 +28,7 @@ locals {
     }
   )
 
-  # Force l'ordre de suppression correct
+  # Force correct deletion order
   vpc_id = try(
     aws_vpc_ipv4_cidr_block_association.secondary[0].vpc_id,
     aws_vpc.this.id,
@@ -36,7 +36,7 @@ locals {
   )
 }
 
-# VPC principal
+# Main VPC
 resource "aws_vpc" "this" {
   cidr_block           = var.cidr_block
   enable_dns_hostnames = var.enable_dns_hostnames
@@ -50,7 +50,7 @@ resource "aws_vpc" "this" {
   )
 }
 
-# CIDR bloc secondaire (optionnel)
+# Secondary CIDR block (optional)
 resource "aws_vpc_ipv4_cidr_block_association" "secondary" {
   count = var.secondary_cidr_block != "" ? 1 : 0
 
@@ -72,7 +72,7 @@ resource "aws_internet_gateway" "this" {
   )
 }
 
-# Subnets publics
+# Public subnets
 resource "aws_subnet" "public" {
   for_each = toset(var.availability_zones)
 
@@ -90,7 +90,7 @@ resource "aws_subnet" "public" {
   )
 }
 
-# Subnets prives
+# Private subnets
 resource "aws_subnet" "private" {
   for_each = toset(var.availability_zones)
 
@@ -107,7 +107,7 @@ resource "aws_subnet" "private" {
   )
 }
 
-# NAT Gateway (optionnel)
+# NAT Gateway (optional)
 resource "aws_eip" "nat" {
   count = var.create_nat_gateway ? 1 : 0
 
@@ -148,70 +148,70 @@ resource "aws_nat_gateway" "this" {
 
 ```hcl
 variable "name" {
-  description = "Nom du VPC, utilise pour le tagging"
+  description = "VPC name, used for tagging"
   type        = string
   nullable    = false
 }
 
 variable "cidr_block" {
-  description = "Bloc CIDR principal pour le VPC"
+  description = "Main CIDR block for the VPC"
   type        = string
   default     = "10.0.0.0/16"
 
   validation {
     condition     = can(cidrhost(var.cidr_block, 0))
-    error_message = "Le cidr_block doit etre un bloc CIDR valide."
+    error_message = "cidr_block must be a valid CIDR block."
   }
 }
 
 variable "secondary_cidr_block" {
-  description = "Bloc CIDR secondaire optionnel"
+  description = "Optional secondary CIDR block"
   type        = string
   default     = ""
 
   validation {
     condition     = var.secondary_cidr_block == "" || can(cidrhost(var.secondary_cidr_block, 0))
-    error_message = "Le secondary_cidr_block doit etre vide ou un bloc CIDR valide."
+    error_message = "secondary_cidr_block must be empty or a valid CIDR block."
   }
 }
 
 variable "availability_zones" {
-  description = "Liste des zones de disponibilite pour les subnets"
+  description = "List of availability zones for subnets"
   type        = list(string)
   default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
 
   validation {
     condition     = length(var.availability_zones) >= 2
-    error_message = "Au moins 2 zones de disponibilite sont requises pour la HA."
+    error_message = "At least 2 availability zones are required for HA."
   }
 }
 
 variable "enable_dns_hostnames" {
-  description = "Activer les DNS hostnames dans le VPC"
+  description = "Enable DNS hostnames in the VPC"
   type        = bool
   default     = true
 }
 
 variable "enable_dns_support" {
-  description = "Activer le support DNS dans le VPC"
+  description = "Enable DNS support in the VPC"
   type        = bool
   default     = true
 }
 
 variable "create_igw" {
-  description = "Creer une Internet Gateway"
+  description = "Create an Internet Gateway"
   type        = bool
   default     = true
 }
 
 variable "create_nat_gateway" {
-  description = "Creer une NAT Gateway pour les subnets prives"
+  description = "Create a NAT Gateway for private subnets"
   type        = bool
   default     = false
 }
 
 variable "tags" {
-  description = "Tags additionnels a appliquer a toutes les ressources"
+  description = "Additional tags to apply to all resources"
   type        = map(string)
   default     = {}
 }
@@ -221,42 +221,42 @@ variable "tags" {
 
 ```hcl
 output "vpc_id" {
-  description = "ID du VPC cree"
+  description = "ID of the created VPC"
   value       = aws_vpc.this.id
 }
 
 output "vpc_arn" {
-  description = "ARN du VPC cree"
+  description = "ARN of the created VPC"
   value       = aws_vpc.this.arn
 }
 
 output "vpc_cidr_block" {
-  description = "Bloc CIDR du VPC"
+  description = "CIDR block of the VPC"
   value       = aws_vpc.this.cidr_block
 }
 
 output "public_subnet_ids" {
-  description = "Liste des IDs des subnets publics"
+  description = "List of public subnet IDs"
   value       = [for subnet in aws_subnet.public : subnet.id]
 }
 
 output "private_subnet_ids" {
-  description = "Liste des IDs des subnets prives"
+  description = "List of private subnet IDs"
   value       = [for subnet in aws_subnet.private : subnet.id]
 }
 
 output "internet_gateway_id" {
-  description = "ID de l'Internet Gateway"
+  description = "Internet Gateway ID"
   value       = try(aws_internet_gateway.this[0].id, "")
 }
 
 output "nat_gateway_id" {
-  description = "ID de la NAT Gateway"
+  description = "NAT Gateway ID"
   value       = try(aws_nat_gateway.this[0].id, "")
 }
 
 output "availability_zones" {
-  description = "Zones de disponibilite utilisees"
+  description = "Availability zones used"
   value       = var.availability_zones
 }
 ```
@@ -279,10 +279,10 @@ terraform {
 ## tests/vpc.tftest.hcl
 
 ```hcl
-# Test avec mock provider pour execution rapide
+# Test with mock provider for fast execution
 mock_provider "aws" {}
 
-# Test 1: Valider configuration minimale
+# Test 1: Validate minimal configuration
 run "minimal_vpc" {
   command = apply
 
@@ -293,16 +293,16 @@ run "minimal_vpc" {
 
   assert {
     condition     = aws_vpc.this.cidr_block == "10.0.0.0/16"
-    error_message = "Le CIDR par defaut devrait etre 10.0.0.0/16"
+    error_message = "Default CIDR should be 10.0.0.0/16"
   }
 
   assert {
     condition     = aws_vpc.this.enable_dns_hostnames == true
-    error_message = "DNS hostnames devrait etre active par defaut"
+    error_message = "DNS hostnames should be enabled by default"
   }
 }
 
-# Test 2: Verifier creation subnets
+# Test 2: Verify subnet creation
 run "subnets_created" {
   command = apply
 
@@ -313,16 +313,16 @@ run "subnets_created" {
 
   assert {
     condition     = length(aws_subnet.public) == 3
-    error_message = "Devrait creer 3 subnets publics"
+    error_message = "Should create 3 public subnets"
   }
 
   assert {
     condition     = length(aws_subnet.private) == 3
-    error_message = "Devrait creer 3 subnets prives"
+    error_message = "Should create 3 private subnets"
   }
 }
 
-# Test 3: Validation du CIDR
+# Test 3: CIDR validation
 run "invalid_cidr_rejected" {
   command = plan
 
@@ -334,19 +334,19 @@ run "invalid_cidr_rejected" {
   expect_failures = [var.cidr_block]
 }
 
-# Test 4: Minimum 2 AZs requis
+# Test 4: Minimum 2 AZs required
 run "minimum_azs_required" {
   command = plan
 
   variables {
     name               = "test-vpc"
-    availability_zones = ["us-east-1a"]  # Seulement 1 AZ
+    availability_zones = ["us-east-1a"]  # Only 1 AZ
   }
 
   expect_failures = [var.availability_zones]
 }
 
-# Test 5: NAT Gateway optionnel
+# Test 5: Optional NAT Gateway
 run "nat_gateway_created_when_enabled" {
   command = apply
 
@@ -358,7 +358,7 @@ run "nat_gateway_created_when_enabled" {
 
   assert {
     condition     = length(aws_nat_gateway.this) == 1
-    error_message = "NAT Gateway devrait etre creee quand activee"
+    error_message = "NAT Gateway should be created when enabled"
   }
 }
 ```
@@ -366,7 +366,7 @@ run "nat_gateway_created_when_enabled" {
 ## Usage
 
 ```hcl
-# Exemple minimal
+# Minimal example
 module "vpc" {
   source = "./modules/vpc"
 
@@ -374,7 +374,7 @@ module "vpc" {
   availability_zones = ["eu-west-1a", "eu-west-1b"]
 }
 
-# Exemple complet
+# Complete example
 module "vpc" {
   source = "./modules/vpc"
 
@@ -395,4 +395,4 @@ module "vpc" {
 
 ## Attribution
 
-Ce module suit les bonnes pratiques de [terraform-skill](https://github.com/antonbabenko/terraform-skill) par Anton Babenko.
+This module follows the best practices from [terraform-skill](https://github.com/antonbabenko/terraform-skill) by Anton Babenko.

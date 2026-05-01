@@ -233,7 +233,7 @@
     },
     {
       "path": ".claude/skills/ops-infra-code/examples/aws-vpc-module.md",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "fafb360b298e25aa7fc7a7baf332105211414d35e309bcdc96ea2e9fe4753b22"
     },
     {
