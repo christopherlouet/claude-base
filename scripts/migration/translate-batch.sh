@@ -103,7 +103,7 @@ fi
 # Pre-flight
 # -----------------------------------------------------------------------------
 [[ -z "$TIER" ]] && { echo "--tier is required" >&2; exit 2; }
-case "$TIER" in 1|2|3|4) ;; *) echo "--tier must be 1, 2, 3, or 4 (got: $TIER)" >&2; exit 2 ;; esac
+case "$TIER" in 1|2|3|4|5|6) ;; *) echo "--tier must be 1-6 (got: $TIER)" >&2; exit 2 ;; esac
 
 ROOT="${ROOT:-$REPO_ROOT_DEFAULT}"
 INVENTORY="${INVENTORY:-$SPEC_DIR_DEFAULT/inventory.json}"
