@@ -233,7 +233,7 @@
     },
     {
       "path": ".claude/templates/opnsense/services-module.tf",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "416a52703b82b8af158dcdf2ca37a1fad9d90568e9f0ba3daaf756512e6daac9"
     },
     {
