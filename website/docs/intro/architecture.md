@@ -1,26 +1,26 @@
 ---
 sidebar_position: 3
 title: Architecture
-description: Comprendre l'architecture de claude-socle
+description: Understand the architecture of claude-socle
 ---
 
 import FeatureComparison from '@site/src/components/FeatureComparison';
 
 # Architecture
 
-claude-socle est compose de plusieurs types de composants qui travaillent ensemble pour vous aider a etre plus productif.
+claude-socle is composed of several types of components that work together to help you be more productive.
 
-## Vue d'ensemble
+## Overview
 
 ```mermaid
 graph TB
-    subgraph "Votre Projet"
-        CLAUDE[CLAUDE.md<br/>Instructions principales]
-        MCP[.mcp.json<br/>Config MCP]
+    subgraph "Your Project"
+        CLAUDE[CLAUDE.md<br/>Main instructions]
+        MCP[.mcp.json<br/>MCP config]
     end
 
     subgraph ".claude/"
-        CMDS[commands/<br/>131 commandes]
+        CMDS[commands/<br/>131 commands]
         AGENTS[agents/<br/>63 sub-agents]
         SKILLS[skills/<br/>54 skills]
         RULES[rules/<br/>30 rules]
@@ -32,10 +32,10 @@ graph TB
     CLAUDE --> AGENTS
     CLAUDE --> SKILLS
 
-    CMDS --> |"Manuel /nom"| USER((Utilisateur))
-    AGENTS --> |"Auto délégation"| USER
-    SKILLS --> |"Auto mots-clés"| USER
-    RULES --> |"Auto par fichier"| CODE[Code source]
+    CMDS --> |"Manual /name"| USER((User))
+    AGENTS --> |"Auto delegation"| USER
+    SKILLS --> |"Auto keywords"| USER
+    RULES --> |"Auto by file"| CODE[Source code]
 
     style CLAUDE fill:#e1f5fe
     style CMDS fill:#c8e6c9
@@ -43,154 +43,154 @@ graph TB
     style SKILLS fill:#f3e5f5
 ```
 
-### Structure des fichiers
+### File structure
 
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 131 commandes manuelles (/nom)
-│   │   ├── work/       # Workflow principal
-│   │   ├── dev/        # Developpement
-│   │   ├── qa/         # Qualite
+│   ├── commands/       # 131 manual commands (/name)
+│   │   ├── work/       # Main workflow
+│   │   ├── dev/        # Development
+│   │   ├── qa/         # Quality
 │   │   ├── ops/        # Operations
 │   │   ├── doc/        # Documentation
 │   │   ├── biz/        # Business
-│   │   ├── growth/     # Croissance
-│   │   ├── data/       # Donnees
+│   │   ├── growth/     # Growth
+│   │   ├── data/       # Data
 │   │   └── legal/      # Legal
-│   ├── agents/         # 63 sub-agents autonomes
-│   ├── skills/         # 54 skills auto-declenches
-│   ├── rules/          # 30 regles par technologie
-│   ├── templates/      # Templates de specs/plans
-│   ├── output-styles/  # Styles de sortie
-│   └── settings.json   # Configuration et hooks
-├── CLAUDE.md           # Instructions principales
-└── .mcp.json           # Configuration MCP servers
+│   ├── agents/         # 63 autonomous sub-agents
+│   ├── skills/         # 54 auto-triggered skills
+│   ├── rules/          # 30 rules per technology
+│   ├── templates/      # Spec/plan templates
+│   ├── output-styles/  # Output styles
+│   └── settings.json   # Configuration and hooks
+├── CLAUDE.md           # Main instructions
+└── .mcp.json           # MCP servers configuration
 ```
 
-## Composants principaux
+## Main components
 
 ### Commands (131)
 
-Les **commands** sont des instructions declenchees manuellement avec `/nom`.
+**Commands** are instructions triggered manually with `/name`.
 
-**Caracteristiques :**
-- Declenchement manuel et explicite
-- Contexte partage avec la conversation
-- Tous les outils disponibles
-- Fichiers `.md` dans `.claude/commands/`
+**Characteristics:**
+- Manual and explicit triggering
+- Context shared with the conversation
+- All tools available
+- `.md` files in `.claude/commands/`
 
-**Exemple :**
+**Example:**
 ```bash
 /work:work-explore
-/dev:dev-tdd "Implementer le service utilisateur"
+/dev:dev-tdd "Implement the user service"
 /qa:qa-security
 ```
 
 ### Agents (63)
 
-Les **agents** sont des sub-agents autonomes avec un contexte isole.
+**Agents** are autonomous sub-agents with an isolated context.
 
-**Caracteristiques :**
-- Declenchement automatique par delegation
-- Contexte isole (ne pollue pas la conversation)
-- Outils restreints (lecture seule pour certains)
-- Modele specifique (haiku ou sonnet)
+**Characteristics:**
+- Automatic triggering by delegation
+- Isolated context (does not pollute the conversation)
+- Restricted tools (read-only for some)
+- Specific model (haiku or sonnet)
 
-**Exemple de delegation :**
+**Delegation example:**
 ```
-"Fais un audit de securite" → Claude delegue a l'agent qa-security (sonnet)
-"Explore le code d'auth" → Claude delegue a l'agent work-explore (haiku)
+"Run a security audit" → Claude delegates to the qa-security agent (sonnet)
+"Explore the auth code" → Claude delegates to the work-explore agent (haiku)
 ```
 
 ### Skills (54)
 
-Les **skills** sont auto-declenches par des mots-cles dans la conversation.
+**Skills** are auto-triggered by keywords in the conversation.
 
-**Caracteristiques :**
-- Declenchement automatique sur mots-cles
-- Contexte fork (isole) ou partage
-- Outils restreints via `allowed-tools`
-- Fichiers `SKILL.md` dans `.claude/skills/`
+**Characteristics:**
+- Automatic triggering on keywords
+- Forked (isolated) or shared context
+- Restricted tools via `allowed-tools`
+- `SKILL.md` files in `.claude/skills/`
 
-**Exemple de declenchement :**
+**Triggering example:**
 ```
-"Je veux faire du TDD" → Skill test-driven-development active
-"Fais un commit" → Skill generating-commit-messages active
+"I want to do TDD" → test-driven-development skill activated
+"Make a commit" → generating-commit-messages skill activated
 ```
 
 ### Rules (30)
 
-Les **rules** sont des regles appliquees par chemin de fichier.
+**Rules** are rules applied by file path.
 
-**Caracteristiques :**
-- Application automatique selon le fichier
-- Paths specifiques (ex: `**/*.tsx`, `**/api/**`)
-- Conventions de code par technologie
+**Characteristics:**
+- Automatic application based on the file
+- Specific paths (e.g., `**/*.tsx`, `**/api/**`)
+- Code conventions per technology
 
-**Exemple :**
+**Example:**
 ```yaml
 ---
 paths:
   - "**/*.ts"
   - "**/*.tsx"
 ---
-# Regles TypeScript appliquees a ces fichiers
+# TypeScript rules applied to these files
 ```
 
-## Comparaison
+## Comparison
 
 <FeatureComparison />
 
-## Quand utiliser quoi ?
+## When to use what?
 
 ```mermaid
 flowchart TD
-    START((Besoin)) --> Q1{Action<br/>explicite ?}
+    START((Need)) --> Q1{Explicit<br/>action?}
 
-    Q1 -->|Oui| CMD[/"Utilisez une<br/>COMMAND<br/>/nom"/]
-    Q1 -->|Non| Q2{Tâche<br/>autonome ?}
+    Q1 -->|Yes| CMD[/"Use a<br/>COMMAND<br/>/name"/]
+    Q1 -->|No| Q2{Autonomous<br/>task?}
 
-    Q2 -->|Oui| Q3{Contexte<br/>isolé ?}
-    Q2 -->|Non| Q4{Mots-clés<br/>récurrents ?}
+    Q2 -->|Yes| Q3{Isolated<br/>context?}
+    Q2 -->|No| Q4{Recurring<br/>keywords?}
 
-    Q3 -->|Oui| AGENT[/"AGENT<br/>délégation auto"/]
-    Q3 -->|Non| CMD
+    Q3 -->|Yes| AGENT[/"AGENT<br/>auto delegation"/]
+    Q3 -->|No| CMD
 
-    Q4 -->|Oui| SKILL[/"SKILL<br/>auto-déclenché"/]
-    Q4 -->|Non| CMD
+    Q4 -->|Yes| SKILL[/"SKILL<br/>auto-triggered"/]
+    Q4 -->|No| CMD
 
     style CMD fill:#c8e6c9,stroke:#2e7d32
     style AGENT fill:#fff3e0,stroke:#ef6c00
     style SKILL fill:#f3e5f5,stroke:#7b1fa2
 ```
 
-### Utilisez une Command quand :
-- Vous voulez une action explicite et controlee
-- Vous avez besoin de tous les outils
-- Le contexte de conversation est important
+### Use a Command when:
+- You want an explicit and controlled action
+- You need all the tools
+- The conversation context is important
 
-### Utilisez un Agent quand :
-- La tache peut etre autonome
-- Vous voulez isoler le contexte
-- La tache est standardisee (audit, exploration)
+### Use an Agent when:
+- The task can be autonomous
+- You want to isolate the context
+- The task is standardized (audit, exploration)
 
-### Utilisez un Skill quand :
-- L'action est recurrente et contextuelle
-- Les mots-cles sont specifiques
-- Vous voulez un declenchement automatique
+### Use a Skill when:
+- The action is recurring and contextual
+- The keywords are specific
+- You want automatic triggering
 
-## Modeles utilises
+## Models used
 
-| Modele | Usage | Agents |
-|--------|-------|--------|
-| **Haiku** | Taches rapides, economiques | work-explore, doc-onboard, wcag-audit |
-| **Sonnet** | Taches complexes, analyses | qa-security, qa-audit, dev-debug |
-| **Opus** | Maximum de capacites | (Non utilise par defaut) |
+| Model | Usage | Agents |
+|-------|-------|--------|
+| **Haiku** | Fast, economical tasks | work-explore, doc-onboard, wcag-audit |
+| **Sonnet** | Complex tasks, analyses | qa-security, qa-audit, dev-debug |
+| **Opus** | Maximum capabilities | (Not used by default) |
 
-## Hooks et automatisations
+## Hooks and automations
 
-Le fichier `.claude/settings.json` configure des hooks automatiques :
+The `.claude/settings.json` file configures automatic hooks:
 
 ```json
 {
@@ -211,15 +211,15 @@ Le fichier `.claude/settings.json` configure des hooks automatiques :
 }
 ```
 
-**Hooks disponibles :**
-- **Protection main** : Bloque les modifications sur main/master
-- **Auto-format** : Prettier sur fichiers TS/JS
-- **Type-check** : Verification TypeScript
-- **Auto-install** : npm install apres modification de package.json
+**Available hooks:**
+- **Main protection**: Blocks modifications on main/master
+- **Auto-format**: Prettier on TS/JS files
+- **Type-check**: TypeScript verification
+- **Auto-install**: npm install after modification of package.json
 
-## Configuration MCP
+## MCP configuration
 
-Le fichier `.mcp.json` configure les serveurs MCP (Model Context Protocol) :
+The `.mcp.json` file configures MCP (Model Context Protocol) servers:
 
 ```json
 {
@@ -231,10 +231,10 @@ Le fichier `.mcp.json` configure les serveurs MCP (Model Context Protocol) :
 }
 ```
 
-Activez les serveurs selon vos besoins pour etendre les capacites de Claude.
+Enable the servers as needed to extend Claude's capabilities.
 
-## Prochaines etapes
+## Next steps
 
-- [Installation](/docs/intro/installation) - Guide d'installation complet
-- [Workflows](/docs/workflow) - Voir les workflows en action
-- [Commands](/docs/commands) - Explorer les 131 commandes
+- [Installation](/docs/intro/installation) - Complete installation guide
+- [Workflows](/docs/workflow) - See the workflows in action
+- [Commands](/docs/commands) - Explore the 131 commands
