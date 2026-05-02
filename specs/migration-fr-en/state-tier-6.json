@@ -63,7 +63,7 @@
     },
     {
       "path": "scripts/validate-counts.sh",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "b56905417c433ff77a791084b434afea8a854cbf549f5ea9411d3381f8b25166"
     },
     {
