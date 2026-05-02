@@ -1,53 +1,53 @@
 ---
 sidebar_position: 7
 title: TDD
-description: Developpement guide par les tests (obligatoire)
+description: Test-driven development (mandatory)
 ---
 
-# Workflow : TDD (Test-Driven Development)
+# Workflow: TDD (Test-Driven Development)
 
-Developpement guide par les tests avec le cycle Red-Green-Refactor.
+Test-driven development with the Red-Green-Refactor cycle.
 
-:::tip TDD est obligatoire et proactif
-Depuis la version 1.11, **TDD est obligatoire** dans le workflow principal.
-Le cycle Explore → Specify → Plan → **TDD** → Audit → Commit impose d'ecrire les tests AVANT le code.
+:::tip TDD is mandatory and proactive
+Since version 1.11, **TDD is mandatory** in the main workflow.
+The cycle Explore → Specify → Plan → **TDD** → Audit → Commit requires writing tests BEFORE the code.
 
-**Nouveau (v1.12+)** : La [rule `tdd-enforcement`](/docs/rules/tdd-enforcement) declenche automatiquement TDD quand vous demandez d'implementer, ajouter, creer ou corriger du code.
+**New (v1.12+)**: The [`tdd-enforcement` rule](/docs/rules/tdd-enforcement) automatically triggers TDD when you ask to implement, add, create, or fix code.
 :::
 
-## Commande
+## Command
 
 ```bash
-/dev:dev-tdd "Description de la fonctionnalite"
+/dev:dev-tdd "Feature description"
 ```
 
-## Le cycle Red-Green-Refactor
+## The Red-Green-Refactor cycle
 
 ```
 ┌─────────────────────────────────────┐
 │                                     │
 │    ┌─────┐                          │
-│    │ RED │ Ecrire un test qui       │
-│    └──┬──┘ echoue                   │
+│    │ RED │ Write a test that        │
+│    └──┬──┘ fails                    │
 │       │                             │
 │       ▼                             │
 │   ┌───────┐                         │
-│   │ GREEN │ Ecrire le code          │
-│   └───┬───┘ minimal pour passer     │
+│   │ GREEN │ Write the minimal       │
+│   └───┬───┘ code to pass            │
 │       │                             │
 │       ▼                             │
 │  ┌──────────┐                       │
-│  │ REFACTOR │ Ameliorer le code     │
-│  └────┬─────┘ sans casser les tests │
+│  │ REFACTOR │ Improve the code      │
+│  └────┬─────┘ without breaking tests│
 │       │                             │
 │       └─────────────────────────────┘
 │                                     │
 └─────────────────────────────────────┘
 ```
 
-## Etapes detaillees
+## Detailed steps
 
-### 1. RED - Ecrire le test
+### 1. RED - Write the test
 
 ```typescript
 // test/user.service.spec.ts
@@ -66,9 +66,9 @@ describe('UserService', () => {
 });
 ```
 
-Le test doit echouer car `createUser` n'existe pas encore.
+The test must fail because `createUser` does not exist yet.
 
-### 2. GREEN - Implementer le minimum
+### 2. GREEN - Implement the minimum
 
 ```typescript
 // src/user.service.ts
@@ -83,12 +83,12 @@ export class UserService {
 }
 ```
 
-Ecrire le code minimal pour faire passer le test.
+Write the minimal code to pass the test.
 
-### 3. REFACTOR - Ameliorer
+### 3. REFACTOR - Improve
 
 ```typescript
-// Ajouter la validation, le repository, etc.
+// Add validation, repository, etc.
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
@@ -105,76 +105,76 @@ export class UserService {
 }
 ```
 
-Ameliorer le code sans casser les tests.
+Improve the code without breaking the tests.
 
-## Exemple avec Claude
+## Example with Claude
 
 ```bash
-> /dev:dev-tdd "Creer un service de validation d'email"
+> /dev:dev-tdd "Create an email validation service"
 
-# Claude :
-# 1. Propose les cas de test
-#    - Email valide
-#    - Email invalide (sans @)
-#    - Email vide
-#    - Email null
+# Claude:
+# 1. Proposes the test cases
+#    - Valid email
+#    - Invalid email (no @)
+#    - Empty email
+#    - Null email
 #
-# 2. Ecrit les tests
+# 2. Writes the tests
 #
-# 3. Implemente le service
+# 3. Implements the service
 #
-# 4. Refactore si necessaire
+# 4. Refactors if necessary
 ```
 
-## Bonnes pratiques
+## Best practices
 
 ### DO
-- ✅ Un test a la fois
-- ✅ Tests independants
-- ✅ Noms de tests descriptifs
-- ✅ Tester les edge cases
+- ✅ One test at a time
+- ✅ Independent tests
+- ✅ Descriptive test names
+- ✅ Test edge cases
 
 ### DON'T
-- ❌ Ecrire le code avant les tests
-- ❌ Tests dependants les uns des autres
-- ❌ Ignorer les cas limites
-- ❌ Mocks excessifs
+- ❌ Write code before tests
+- ❌ Tests dependent on each other
+- ❌ Ignore edge cases
+- ❌ Excessive mocks
 
-## Structure de test recommandee
+## Recommended test structure
 
 ```typescript
-describe('NomDuModule', () => {
-  describe('nomDeLaFonction', () => {
-    it('should [comportement attendu] when [condition]', () => {
-      // Arrange - Preparer les donnees
+describe('ModuleName', () => {
+  describe('functionName', () => {
+    it('should [expected behavior] when [condition]', () => {
+      // Arrange - Prepare the data
       const input = { ... };
 
-      // Act - Executer l'action
+      // Act - Execute the action
       const result = fonction(input);
 
-      // Assert - Verifier le resultat
+      // Assert - Verify the result
       expect(result).toEqual(expected);
     });
   });
 });
 ```
 
-## Edge cases a tester
+## Edge cases to test
 
-| Type | Exemples |
+| Type | Examples |
 |------|----------|
-| Valeurs limites | 0, -1, MAX_INT |
+| Boundary values | 0, -1, MAX_INT |
 | Null/Undefined | null, undefined |
-| Chaines vides | '', ' ' |
-| Collections vides | [], {} |
-| Erreurs | Exceptions, timeouts |
+| Empty strings | '', ' ' |
+| Empty collections | [], {} |
+| Errors | Exceptions, timeouts |
 
 ---
 
-## Voir aussi
+## See also
 
-- [Rule tdd-enforcement](/docs/rules/tdd-enforcement) - Declenchement proactif du TDD
-- [Skill dev-tdd](/docs/skills/dev-tdd) - Skill auto-declenche
+- [Rule tdd-enforcement](/docs/rules/tdd-enforcement) - Proactive TDD triggering
+- [Skill dev-tdd](/docs/skills/dev-tdd) - Auto-triggered skill
 - [Tests](/docs/commands/dev/dev-test)
 - [Testing Setup](/docs/commands/dev/dev-testing-setup)
 - [Coverage](/docs/commands/qa/qa-coverage)
