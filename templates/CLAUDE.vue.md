@@ -1,36 +1,36 @@
-# Projet Vue.js 3
+# Vue.js 3 Project
 
-## Commandes Essentielles
-- `npm install` - Installer les dépendances
-- `npm run dev` - Serveur de développement
-- `npm run build` - Build de production
-- `npm run preview` - Prévisualiser le build
-- `npm test` - Lancer les tests (Vitest)
-- `npm run test:e2e` - Tests end-to-end (Cypress/Playwright)
-- `npm run lint` - Vérifier ESLint
-- `npm run type-check` - Vérifier TypeScript
+## Essential Commands
+- `npm install` - Install dependencies
+- `npm run dev` - Development server
+- `npm run build` - Production build
+- `npm run preview` - Preview the build
+- `npm test` - Run tests (Vitest)
+- `npm run test:e2e` - End-to-end tests (Cypress/Playwright)
+- `npm run lint` - Check ESLint
+- `npm run type-check` - Check TypeScript
 
-## Structure du Projet (Vue 3 + Vite)
+## Project Structure (Vue 3 + Vite)
 ```
 /src
-├── App.vue                    # Composant racine
-├── main.ts                    # Point d'entrée
-├── assets/                    # Assets statiques
-├── components/                # Composants réutilisables
-│   ├── common/               # Composants génériques (Button, Input)
-│   └── features/             # Composants par feature
+├── App.vue                    # Root component
+├── main.ts                    # Entry point
+├── assets/                    # Static assets
+├── components/                # Reusable components
+│   ├── common/               # Generic components (Button, Input)
+│   └── features/             # Components by feature
 ├── composables/               # Composition functions (hooks)
-├── views/                     # Pages/Vues (routées)
-├── router/                    # Configuration Vue Router
+├── views/                     # Pages/Views (routed)
+├── router/                    # Vue Router configuration
 ├── stores/                    # Pinia stores
-├── services/                  # Services API
-├── types/                     # Types TypeScript
-└── utils/                     # Fonctions utilitaires
+├── services/                  # API services
+├── types/                     # TypeScript types
+└── utils/                     # Utility functions
 ```
 
-## Conventions Vue 3
+## Vue 3 Conventions
 
-### Composition API (recommandé)
+### Composition API (recommended)
 ```vue
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
@@ -123,7 +123,7 @@ export function useApi<T>(fetcher: () => Promise<T>) {
   return { data, error, isLoading, execute }
 }
 
-// Usage dans un composant
+// Usage in a component
 const { data: users, isLoading, execute } = useApi(() => api.getUsers())
 onMounted(execute)
 ```
@@ -170,31 +170,31 @@ export const useUserStore = defineStore('user', () => {
 })
 ```
 
-## Règles importantes
+## Important Rules
 
 ### IMPORTANT
-- IMPORTANT: Toujours utiliser `<script setup>` avec TypeScript
-- IMPORTANT: Props et emits typés avec generics
-- IMPORTANT: Composables pour logique réutilisable
-- YOU MUST utiliser Pinia pour state management (pas Vuex)
-- Préférer `v-show` pour toggles fréquents, `v-if` sinon
+- IMPORTANT: Always use `<script setup>` with TypeScript
+- IMPORTANT: Typed props and emits with generics
+- IMPORTANT: Composables for reusable logic
+- YOU MUST use Pinia for state management (not Vuex)
+- Prefer `v-show` for frequent toggles, `v-if` otherwise
 
-### Nommage des composants
-| Type | Convention | Exemple |
+### Component naming
+| Type | Convention | Example |
 |------|------------|---------|
-| Composants | PascalCase | `UserCard.vue` |
-| Composables | camelCase avec use | `useAuth.ts` |
-| Stores | camelCase avec use | `useUserStore.ts` |
+| Components | PascalCase | `UserCard.vue` |
+| Composables | camelCase with use | `useAuth.ts` |
+| Stores | camelCase with use | `useUserStore.ts` |
 | Views | PascalCase | `UserProfile.vue` |
 
 ### Performance
-- Lazy loading des routes avec `defineAsyncComponent`
-- `v-once` pour contenu statique
-- `shallowRef` pour grandes listes
-- Éviter les watchers profonds
+- Lazy loading routes with `defineAsyncComponent`
+- `v-once` for static content
+- `shallowRef` for large lists
+- Avoid deep watchers
 
 ```typescript
-// Lazy loading de route
+// Lazy loading a route
 const UserProfile = () => import('@/views/UserProfile.vue')
 
 // Routes
@@ -208,7 +208,7 @@ const routes = [
 
 ## Tests
 
-### Tests unitaires (Vitest)
+### Unit tests (Vitest)
 ```typescript
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
@@ -243,25 +243,25 @@ describe('UserCard', () => {
 - Types: feat, fix, style, refactor, test, docs, chore
 - Scopes: component name, store name, view name
 
-## Hooks Claude Code 2.1+
+## Claude Code 2.1+ Hooks
 
 | Hook | Type | Action |
 |------|------|--------|
-| Branch protection | PreToolUse | Bloque les modifications sur main/master |
-| Auto-format | PostToolUse | Prettier sur fichiers Vue/TS/JS modifiés |
-| ESLint check | PostToolUse | Validation ESLint après édition |
-| Type check | PostToolUse | Vue-tsc après édition |
-| Test avant commit | PreToolUse | Exécute `npm test` avant chaque commit |
-| Détection secrets | PreToolUse | Bloque les secrets hardcodés |
+| Branch protection | PreToolUse | Blocks modifications on main/master |
+| Auto-format | PostToolUse | Prettier on modified Vue/TS/JS files |
+| ESLint check | PostToolUse | ESLint validation after edit |
+| Type check | PostToolUse | Vue-tsc after edit |
+| Test before commit | PreToolUse | Runs `npm test` before each commit |
+| Secret detection | PreToolUse | Blocks hardcoded secrets |
 
-## Skills disponibles
+## Available Skills
 
 | Skill | Usage |
 |-------|-------|
-| `exploring-codebase` | Analyser un codebase existant |
-| `planning-implementation` | Définir un plan avant de coder |
-| `test-driven-development` | Cycle TDD Red-Green-Refactor |
-| `reviewing-code` | Revue de code approfondie |
-| `debugging-issues` | Diagnostic méthodique |
+| `exploring-codebase` | Analyze an existing codebase |
+| `planning-implementation` | Define a plan before coding |
+| `test-driven-development` | TDD Red-Green-Refactor cycle |
+| `reviewing-code` | In-depth code review |
+| `debugging-issues` | Methodical diagnosis |
 | `generating-commit-messages` | Conventional Commits |
-| `creating-pull-requests` | PR complète et documentée |
+| `creating-pull-requests` | Complete and documented PR |
