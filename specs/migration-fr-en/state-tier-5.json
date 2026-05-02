@@ -243,7 +243,7 @@
     },
     {
       "path": ".claude/templates/proxmox/lxc-module-template.tf",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c8affc56d67c771ab74f25286dd9158f160b6b69368dce3747180646de2801ce"
     },
     {

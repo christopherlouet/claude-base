@@ -1,6 +1,6 @@
 # =============================================================================
-# Template: Module Terraform LXC Proxmox
-# Usage: Copier dans modules/lxc/ et adapter selon vos besoins
+# Template: Terraform LXC Proxmox Module
+# Usage: Copy into modules/lxc/ and adapt to your needs
 # Provider: bpg/proxmox >= 0.50
 # =============================================================================
 
@@ -9,148 +9,148 @@
 # -----------------------------------------------------------------------------
 
 variable "hostname" {
-  description = "Hostname du conteneur"
+  description = "Container hostname"
   type        = string
 }
 
 variable "description" {
-  description = "Description du conteneur"
+  description = "Container description"
   type        = string
   default     = "Managed by Terraform"
 }
 
 variable "target_node" {
-  description = "Node Proxmox cible"
+  description = "Target Proxmox node"
   type        = string
 }
 
 variable "template_file_id" {
-  description = "ID du template LXC (ex: local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst)"
+  description = "LXC template ID (e.g.: local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst)"
   type        = string
 }
 
 variable "os_type" {
-  description = "Type d'OS (ubuntu, debian, alpine, etc.)"
+  description = "OS type (ubuntu, debian, alpine, etc.)"
   type        = string
   default     = "ubuntu"
 }
 
 variable "cpu_cores" {
-  description = "Nombre de cores CPU"
+  description = "Number of CPU cores"
   type        = number
   default     = 1
 }
 
 variable "memory_mb" {
-  description = "RAM en MB"
+  description = "RAM in MB"
   type        = number
   default     = 512
 }
 
 variable "swap_mb" {
-  description = "Swap en MB"
+  description = "Swap in MB"
   type        = number
   default     = 512
 }
 
 variable "disk_size_gb" {
-  description = "Taille du rootfs en GB"
+  description = "Rootfs size in GB"
   type        = number
   default     = 8
 }
 
 variable "datastore" {
-  description = "Datastore pour le rootfs"
+  description = "Datastore for the rootfs"
   type        = string
   default     = "local-lvm"
 }
 
 variable "network_bridge" {
-  description = "Bridge réseau"
+  description = "Network bridge"
   type        = string
   default     = "vmbr0"
 }
 
 variable "vlan_id" {
-  description = "VLAN ID (null si pas de VLAN)"
+  description = "VLAN ID (null if no VLAN)"
   type        = number
   default     = null
 }
 
 variable "ip_address" {
-  description = "Adresse IP en notation CIDR (ex: 10.0.1.10/24)"
+  description = "IP address in CIDR notation (e.g.: 10.0.1.10/24)"
   type        = string
 }
 
 variable "gateway" {
-  description = "Passerelle par défaut"
+  description = "Default gateway"
   type        = string
 }
 
 variable "dns_servers" {
-  description = "Serveurs DNS"
+  description = "DNS servers"
   type        = list(string)
   default     = ["1.1.1.1", "8.8.8.8"]
 }
 
 variable "ssh_keys" {
-  description = "Clés SSH publiques"
+  description = "Public SSH keys"
   type        = list(string)
 }
 
 variable "root_password" {
-  description = "Mot de passe root (optionnel, privilégier SSH)"
+  description = "Root password (optional, prefer SSH)"
   type        = string
   default     = null
   sensitive   = true
 }
 
 variable "tags" {
-  description = "Tags du conteneur"
+  description = "Container tags"
   type        = list(string)
   default     = ["terraform"]
 }
 
 variable "unprivileged" {
-  description = "Conteneur non privilégié (recommandé)"
+  description = "Unprivileged container (recommended)"
   type        = bool
   default     = true
 }
 
 variable "start_on_boot" {
-  description = "Démarrer automatiquement au boot du node"
+  description = "Automatically start on node boot"
   type        = bool
   default     = true
 }
 
-# Features LXC
+# LXC features
 variable "nesting" {
-  description = "Activer le nesting (Docker dans LXC)"
+  description = "Enable nesting (Docker in LXC)"
   type        = bool
   default     = false
 }
 
 variable "fuse" {
-  description = "Activer FUSE"
+  description = "Enable FUSE"
   type        = bool
   default     = false
 }
 
 variable "keyctl" {
-  description = "Activer keyctl"
+  description = "Enable keyctl"
   type        = bool
   default     = false
 }
 
 variable "mount_types" {
-  description = "Types de mount autorisés"
+  description = "Allowed mount types"
   type        = list(string)
   default     = []
 }
 
-# Mountpoints additionnels
+# Additional mountpoints
 variable "mountpoints" {
-  description = "Mountpoints additionnels"
+  description = "Additional mountpoints"
   type = list(object({
     volume    = string
     path      = string
@@ -161,7 +161,7 @@ variable "mountpoints" {
 }
 
 # -----------------------------------------------------------------------------
-# Resource LXC
+# LXC Resource
 # -----------------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_container" "this" {
@@ -172,7 +172,7 @@ resource "proxmox_virtual_environment_container" "this" {
   start_on_boot = var.start_on_boot
   started       = true
 
-  # Template OS
+  # OS template
   operating_system {
     template_file_id = var.template_file_id
     type             = var.os_type
@@ -183,7 +183,7 @@ resource "proxmox_virtual_environment_container" "this" {
     cores = var.cpu_cores
   }
 
-  # Mémoire
+  # Memory
   memory {
     dedicated = var.memory_mb
     swap      = var.swap_mb
@@ -195,7 +195,7 @@ resource "proxmox_virtual_environment_container" "this" {
     size         = var.disk_size_gb
   }
 
-  # Mountpoints additionnels
+  # Additional mountpoints
   dynamic "mount_point" {
     for_each = var.mountpoints
     content {
@@ -206,14 +206,14 @@ resource "proxmox_virtual_environment_container" "this" {
     }
   }
 
-  # Réseau
+  # Network
   network_interface {
     name    = "eth0"
     bridge  = var.network_bridge
     vlan_id = var.vlan_id
   }
 
-  # Initialisation
+  # Initialization
   initialization {
     hostname = var.hostname
 
@@ -256,21 +256,21 @@ resource "proxmox_virtual_environment_container" "this" {
 # -----------------------------------------------------------------------------
 
 output "container_id" {
-  description = "ID du conteneur"
+  description = "Container ID"
   value       = proxmox_virtual_environment_container.this.vm_id
 }
 
 output "hostname" {
-  description = "Hostname du conteneur"
+  description = "Container hostname"
   value       = var.hostname
 }
 
 output "ipv4_address" {
-  description = "Adresse IPv4"
+  description = "IPv4 address"
   value       = var.ip_address
 }
 
 output "node_name" {
-  description = "Node Proxmox"
+  description = "Proxmox node"
   value       = proxmox_virtual_environment_container.this.node_name
 }
