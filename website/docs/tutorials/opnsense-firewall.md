@@ -1,93 +1,93 @@
 ---
 sidebar_position: 10
-title: "09 - Firewall OPNsense"
-description: Configurez OPNsense comme firewall derrière une box opérateur avec Terraform
+title: "09 - OPNsense Firewall"
+description: Configure OPNsense as a firewall behind an ISP router with Terraform
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# Firewall OPNsense avec Terraform
+# OPNsense Firewall with Terraform
 
-<DifficultyBadge level="intermediate" /> **Durée estimée : 45 minutes**
+<DifficultyBadge level="intermediate" /> **Estimated duration: 45 minutes**
 
-Ce tutoriel vous montre comment configurer un firewall OPNsense en Infrastructure as Code avec Terraform, dans une architecture derrière une box opérateur (Orange, Free, SFR...) en mode DMZ.
+This tutorial shows you how to configure an OPNsense firewall as Infrastructure as Code with Terraform, in an architecture behind an ISP router (Orange, Free, SFR, etc.) in DMZ mode.
 
-## Objectifs
+## Objectives
 
-À la fin de ce tutoriel, vous saurez :
-- Utiliser `/ops:ops-opnsense` pour gérer OPNsense via Terraform
-- Configurer les interfaces WAN/LAN
-- Créer des règles firewall sécurisées
-- Configurer DHCP et DNS
-- Gérer les aliases et le NAT
+By the end of this tutorial, you will know how to:
+- Use `/ops:ops-opnsense` to manage OPNsense via Terraform
+- Configure WAN/LAN interfaces
+- Create secure firewall rules
+- Configure DHCP and DNS
+- Manage aliases and NAT
 
-## Prérequis
+## Prerequisites
 
-- OPNsense installé (VM Proxmox ou machine physique)
-- 2 interfaces réseau (WAN + LAN)
-- API OPNsense activée avec clés API
-- Terraform installé localement
-- Box opérateur configurée en mode DMZ
+- OPNsense installed (Proxmox VM or physical machine)
+- 2 network interfaces (WAN + LAN)
+- OPNsense API enabled with API keys
+- Terraform installed locally
+- ISP router configured in DMZ mode
 
-## Architecture cible
+## Target architecture
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│    Internet     │     │  Box Opérateur  │     │    OPNsense     │
+│    Internet     │     │   ISP Router    │     │    OPNsense     │
 │                 │────▶│  192.168.1.1    │────▶│   WAN: DHCP     │
-│                 │     │   Mode DMZ      │     │   LAN: .10.1    │
+│                 │     │   DMZ Mode      │     │   LAN: .10.1    │
 └─────────────────┘     └─────────────────┘     └────────┬────────┘
                                                          │
                                            ┌─────────────┴─────────────┐
                                            │       LAN 192.168.10.0/24 │
                                            │                           │
                                     ┌──────┴──────┐             ┌──────┴──────┐
-                                    │  Serveurs   │             │  Clients    │
-                                    │  .10.20+    │             │  DHCP       │
+                                    │   Servers   │             │   Clients   │
+                                    │  .10.20+    │             │   DHCP      │
                                     └─────────────┘             └─────────────┘
 ```
 
-## Étape 1 : Préparer OPNsense
+## Step 1: Prepare OPNsense
 
-### Activer l'API
+### Enable the API
 
-1. Se connecter à OPNsense : `https://192.168.10.1`
+1. Log in to OPNsense: `https://192.168.10.1`
 2. **System > Settings > Administration**
-3. Activer **Enable API**
-4. Sauvegarder
+3. Enable **Enable API**
+4. Save
 
-### Créer un utilisateur API
+### Create an API user
 
 1. **System > Access > Users**
-2. Créer un nouvel utilisateur (ex: `terraform-api`)
-3. Dans l'onglet **API Keys**, générer une clé
-4. **NOTER** la clé et le secret (affichés une seule fois)
+2. Create a new user (e.g., `terraform-api`)
+3. In the **API Keys** tab, generate a key
+4. **NOTE** the key and the secret (displayed only once)
 
-### Configurer la box en DMZ
+### Configure the router in DMZ
 
-1. Accéder à la box : `http://192.168.1.1`
-2. **Réseau > NAT/PAT > DMZ** (ou équivalent selon opérateur)
-3. Activer la DMZ vers l'IP WAN d'OPNsense (ex: 192.168.1.50)
-4. Tous les ports seront redirigés vers OPNsense
+1. Access the router: `http://192.168.1.1`
+2. **Network > NAT/PAT > DMZ** (or equivalent depending on the ISP)
+3. Enable the DMZ towards the OPNsense WAN IP (e.g., 192.168.1.50)
+4. All ports will be redirected to OPNsense
 
-## Étape 2 : Initialiser le projet Terraform
+## Step 2: Initialize the Terraform project
 
 ```bash
-/ops:ops-opnsense "Créer la structure de projet pour configurer OPNsense"
+/ops:ops-opnsense "Create the project structure to configure OPNsense"
 ```
 
-### Structure de fichiers
+### File structure
 
 ```
 opnsense-infra/
-├── main.tf              # Configuration principale
-├── variables.tf         # Variables d'entrée
+├── main.tf              # Main configuration
+├── variables.tf         # Input variables
 ├── outputs.tf           # Outputs
-├── terraform.tfvars     # Valeurs (NE PAS COMMITER)
+├── terraform.tfvars     # Values (DO NOT COMMIT)
 └── .gitignore
 ```
 
-### Configuration du provider
+### Provider configuration
 
 **`providers.tf`**
 ```hcl
@@ -106,7 +106,7 @@ provider "opnsense" {
   uri                 = var.opnsense_uri
   api_key             = var.opnsense_api_key
   api_secret          = var.opnsense_api_secret
-  allow_insecure = true  # false en production avec certificat valide
+  allow_insecure = true  # false in production with a valid certificate
 }
 ```
 
@@ -116,49 +116,49 @@ provider "opnsense" {
 ```hcl
 # Provider
 variable "opnsense_uri" {
-  description = "URL de l'interface OPNsense"
+  description = "OPNsense interface URL"
   type        = string
 }
 
 variable "opnsense_api_key" {
-  description = "Clé API OPNsense"
+  description = "OPNsense API key"
   type        = string
   sensitive   = true
 }
 
 variable "opnsense_api_secret" {
-  description = "Secret API OPNsense"
+  description = "OPNsense API secret"
   type        = string
   sensitive   = true
 }
 
-# Réseau
+# Network
 variable "lan_ip" {
-  description = "Adresse IP du LAN OPNsense"
+  description = "OPNsense LAN IP address"
   type        = string
   default     = "192.168.10.1"
 }
 
 variable "lan_subnet" {
-  description = "Masque de sous-réseau LAN"
+  description = "LAN subnet mask"
   type        = number
   default     = 24
 }
 
 variable "dhcp_range_start" {
-  description = "Première IP de la plage DHCP"
+  description = "First IP of the DHCP range"
   type        = string
   default     = "192.168.10.100"
 }
 
 variable "dhcp_range_end" {
-  description = "Dernière IP de la plage DHCP"
+  description = "Last IP of the DHCP range"
   type        = string
   default     = "192.168.10.200"
 }
 
 variable "local_domain" {
-  description = "Domaine local"
+  description = "Local domain"
   type        = string
   default     = "home.local"
 }
@@ -167,45 +167,45 @@ variable "local_domain" {
 ### Credentials
 
 ```bash
-# Option 1 : Variables d'environnement (recommandé)
+# Option 1: Environment variables (recommended)
 export TF_VAR_opnsense_uri="https://192.168.10.1"
-export TF_VAR_opnsense_api_key="votre-api-key"
-export TF_VAR_opnsense_api_secret="votre-api-secret"
+export TF_VAR_opnsense_api_key="your-api-key"
+export TF_VAR_opnsense_api_secret="your-api-secret"
 
-# Option 2 : Fichier terraform.tfvars (NE PAS COMMITER)
+# Option 2: terraform.tfvars file (DO NOT COMMIT)
 cat > terraform.tfvars << 'EOF'
 opnsense_uri        = "https://192.168.10.1"
-opnsense_api_key    = "votre-api-key"
-opnsense_api_secret = "votre-api-secret"
+opnsense_api_key    = "your-api-key"
+opnsense_api_secret = "your-api-secret"
 EOF
 ```
 
-## Étape 3 : Configurer les interfaces
+## Step 3: Configure the interfaces
 
 ```bash
-/ops:ops-opnsense "Configurer les interfaces WAN (DHCP) et LAN (statique)"
+/ops:ops-opnsense "Configure WAN (DHCP) and LAN (static) interfaces"
 ```
 
-**`main.tf`** - Section Interfaces
+**`main.tf`** - Interfaces section
 ```hcl
 # =============================================================================
 # Interfaces
 # =============================================================================
 
-# Interface WAN - Connectée à la Box (reçoit IP via DMZ)
+# WAN interface - Connected to the ISP router (receives IP via DMZ)
 resource "opnsense_interface" "wan" {
-  device        = "vtnet0"    # Adapter selon votre matériel
-  description   = "WAN - Box Opérateur"
+  device        = "vtnet0"    # Adapt to your hardware
+  description   = "WAN - ISP Router"
   ipv4_type     = "dhcp"
   enabled       = true
-  block_private = true        # Bloquer RFC1918 sur WAN
-  block_bogons  = true        # Bloquer adresses invalides
+  block_private = true        # Block RFC1918 on WAN
+  block_bogons  = true        # Block invalid addresses
 }
 
-# Interface LAN - Réseau local
+# LAN interface - Local network
 resource "opnsense_interface" "lan" {
-  device      = "vtnet1"      # Adapter selon votre matériel
-  description = "LAN - Réseau local"
+  device      = "vtnet1"      # Adapt to your hardware
+  description = "LAN - Local network"
   ipv4_type   = "static"
   ipv4_addr   = var.lan_ip
   ipv4_mask   = var.lan_subnet
@@ -213,69 +213,69 @@ resource "opnsense_interface" "lan" {
 }
 ```
 
-:::tip Identifier les interfaces
-Pour connaître les noms de vos interfaces :
-- Via OPNsense : **Interfaces > Assignments**
-- Via console : `ifconfig -a`
-- Noms courants : `vtnet0/vtnet1` (virtIO), `em0/em1` (Intel), `igb0/igb1` (Intel Gigabit)
+:::tip Identify the interfaces
+To find out the names of your interfaces:
+- Via OPNsense: **Interfaces > Assignments**
+- Via console: `ifconfig -a`
+- Common names: `vtnet0/vtnet1` (virtIO), `em0/em1` (Intel), `igb0/igb1` (Intel Gigabit)
 :::
 
-## Étape 4 : Créer les aliases
+## Step 4: Create the aliases
 
-Les aliases permettent de grouper des adresses IP ou des ports pour simplifier les règles.
+Aliases let you group IP addresses or ports to simplify rules.
 
 ```bash
-/ops:ops-opnsense "Créer des aliases pour les ports web et DNS publics"
+/ops:ops-opnsense "Create aliases for web ports and public DNS"
 ```
 
-**`main.tf`** - Section Aliases
+**`main.tf`** - Aliases section
 ```hcl
 # =============================================================================
 # Aliases
 # =============================================================================
 
-# Ports services web
+# Web service ports
 resource "opnsense_firewall_alias" "ports_web" {
   name        = "PORTS_WEB"
   type        = "port"
   content     = ["80", "443"]
-  description = "Ports HTTP/HTTPS"
+  description = "HTTP/HTTPS ports"
 }
 
-# Ports pour administration
+# Admin ports
 resource "opnsense_firewall_alias" "ports_admin" {
   name        = "PORTS_ADMIN"
   type        = "port"
   content     = ["22", "443"]
-  description = "Ports SSH et HTTPS admin"
+  description = "SSH and admin HTTPS ports"
 }
 
-# DNS publics
+# Public DNS
 resource "opnsense_firewall_alias" "dns_public" {
   name        = "DNS_PUBLIC"
   type        = "host"
   content     = ["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"]
-  description = "Serveurs DNS publics (Cloudflare + Google)"
+  description = "Public DNS servers (Cloudflare + Google)"
 }
 ```
 
-## Étape 5 : Configurer le firewall
+## Step 5: Configure the firewall
 
-:::danger Règle Anti-lockout OBLIGATOIRE
-La règle anti-lockout doit **TOUJOURS** être en sequence 1. Sans elle, vous perdrez l'accès à OPNsense après application des règles.
+:::danger MANDATORY Anti-lockout rule
+The anti-lockout rule must **ALWAYS** be at sequence 1. Without it, you will lose access to OPNsense after applying the rules.
 :::
 
 ```bash
-/ops:ops-opnsense "Créer les règles firewall avec anti-lockout"
+/ops:ops-opnsense "Create firewall rules with anti-lockout"
 ```
 
-**`main.tf`** - Section Firewall
+**`main.tf`** - Firewall section
 ```hcl
 # =============================================================================
-# Règles Firewall
+# Firewall Rules
 # =============================================================================
 
-# OBLIGATOIRE: Anti-lockout - Accès admin depuis LAN
+# MANDATORY: Anti-lockout - Admin access from LAN
 resource "opnsense_firewall_filter" "anti_lockout" {
   interface        = "lan"
   direction        = "in"
@@ -285,13 +285,13 @@ resource "opnsense_firewall_filter" "anti_lockout" {
   source_net       = "lannet"
   destination_net  = "(self)"
   destination_port = "443"
-  description      = "ANTI-LOCKOUT: Accès admin OPNsense"
-  sequence         = 1           # TOUJOURS en premier
+  description      = "ANTI-LOCKOUT: OPNsense admin access"
+  sequence         = 1           # ALWAYS first
   enabled          = true
   quick            = true
 }
 
-# Autoriser HTTP/HTTPS sortant depuis le LAN
+# Allow outgoing HTTP/HTTPS from the LAN
 resource "opnsense_firewall_filter" "lan_to_web" {
   interface        = "lan"
   direction        = "in"
@@ -301,12 +301,12 @@ resource "opnsense_firewall_filter" "lan_to_web" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = opnsense_firewall_alias.ports_web.name
-  description      = "Autoriser HTTP/HTTPS sortant"
+  description      = "Allow outgoing HTTP/HTTPS"
   sequence         = 10
   enabled          = true
 }
 
-# Autoriser DNS sortant (UDP)
+# Allow outgoing DNS (UDP)
 resource "opnsense_firewall_filter" "lan_to_dns_udp" {
   interface        = "lan"
   direction        = "in"
@@ -316,12 +316,12 @@ resource "opnsense_firewall_filter" "lan_to_dns_udp" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = "53"
-  description      = "Autoriser DNS sortant (UDP)"
+  description      = "Allow outgoing DNS (UDP)"
   sequence         = 11
   enabled          = true
 }
 
-# Autoriser DNS sortant (TCP - pour DNSSEC)
+# Allow outgoing DNS (TCP - for DNSSEC)
 resource "opnsense_firewall_filter" "lan_to_dns_tcp" {
   interface        = "lan"
   direction        = "in"
@@ -331,12 +331,12 @@ resource "opnsense_firewall_filter" "lan_to_dns_tcp" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = "53"
-  description      = "Autoriser DNS sortant (TCP)"
+  description      = "Allow outgoing DNS (TCP)"
   sequence         = 12
   enabled          = true
 }
 
-# Autoriser NTP sortant
+# Allow outgoing NTP
 resource "opnsense_firewall_filter" "lan_to_ntp" {
   interface        = "lan"
   direction        = "in"
@@ -346,12 +346,12 @@ resource "opnsense_firewall_filter" "lan_to_ntp" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = "123"
-  description      = "Autoriser NTP sortant"
+  description      = "Allow outgoing NTP"
   sequence         = 13
   enabled          = true
 }
 
-# Autoriser ICMP (ping) sortant
+# Allow outgoing ICMP (ping)
 resource "opnsense_firewall_filter" "lan_to_icmp" {
   interface       = "lan"
   direction       = "in"
@@ -360,12 +360,12 @@ resource "opnsense_firewall_filter" "lan_to_icmp" {
   protocol        = "icmp"
   source_net      = "lannet"
   destination_net = "any"
-  description     = "Autoriser ICMP (ping) sortant"
+  description     = "Allow outgoing ICMP (ping)"
   sequence        = 14
   enabled         = true
 }
 
-# Bloquer et logger tout le reste
+# Block and log everything else
 resource "opnsense_firewall_filter" "lan_block_all" {
   interface       = "lan"
   direction       = "in"
@@ -375,19 +375,19 @@ resource "opnsense_firewall_filter" "lan_block_all" {
   source_net      = "any"
   destination_net = "any"
   log             = true
-  description     = "Bloquer et logger tout le reste"
-  sequence        = 65535        # Toujours en dernier
+  description     = "Block and log everything else"
+  sequence        = 65535        # Always last
   enabled         = true
 }
 ```
 
-## Étape 6 : Configurer DHCP et DNS
+## Step 6: Configure DHCP and DNS
 
 ```bash
-/ops:ops-opnsense "Configurer le serveur DHCP et les forwarders DNS"
+/ops:ops-opnsense "Configure the DHCP server and DNS forwarders"
 ```
 
-**`main.tf`** - Section Services
+**`main.tf`** - Services section
 ```hcl
 # =============================================================================
 # DHCP Server
@@ -399,16 +399,16 @@ resource "opnsense_dhcp_v4_server" "lan" {
   range_from  = var.dhcp_range_start
   range_to    = var.dhcp_range_end
   gateway     = var.lan_ip
-  dns_servers = [var.lan_ip]          # OPNsense comme DNS
+  dns_servers = [var.lan_ip]          # OPNsense as DNS
   domain      = var.local_domain
-  lease_time  = 86400                  # 24 heures
+  lease_time  = 86400                  # 24 hours
 }
 
 # =============================================================================
 # DNS (Unbound Forwarders)
 # =============================================================================
 
-# Forwarder vers Cloudflare (primaire)
+# Forwarder to Cloudflare (primary)
 resource "opnsense_unbound_forward" "cloudflare_1" {
   enabled  = true
   host     = "1.1.1.1"
@@ -416,7 +416,7 @@ resource "opnsense_unbound_forward" "cloudflare_1" {
   priority = 10
 }
 
-# Forwarder vers Cloudflare (secondaire)
+# Forwarder to Cloudflare (secondary)
 resource "opnsense_unbound_forward" "cloudflare_2" {
   enabled  = true
   host     = "1.0.0.1"
@@ -425,35 +425,35 @@ resource "opnsense_unbound_forward" "cloudflare_2" {
 }
 ```
 
-## Étape 7 : Déployer
+## Step 7: Deploy
 
-### Initialiser Terraform
+### Initialize Terraform
 
 ```bash
 terraform init
 ```
 
-### Prévisualiser les changements
+### Preview the changes
 
 ```bash
 terraform plan
 ```
 
-### Appliquer la configuration
+### Apply the configuration
 
 ```bash
 terraform apply
 ```
 
-### Vérifier
+### Verify
 
 ```bash
 terraform output summary
 ```
 
-## Étape 8 : Personnalisation (optionnel)
+## Step 8: Customization (optional)
 
-### Ajouter une réservation DHCP
+### Add a DHCP reservation
 
 ```hcl
 resource "opnsense_dhcp_v4_static_map" "server_web" {
@@ -461,11 +461,11 @@ resource "opnsense_dhcp_v4_static_map" "server_web" {
   mac         = "00:11:22:33:44:55"
   ipaddr      = "192.168.10.20"
   hostname    = "server-web"
-  description = "Serveur web principal"
+  description = "Main web server"
 }
 ```
 
-### Ajouter un port forwarding
+### Add a port forwarding
 
 ```hcl
 resource "opnsense_nat_port_forward" "https_to_web" {
@@ -477,13 +477,13 @@ resource "opnsense_nat_port_forward" "https_to_web" {
   destination_port = "443"
   target           = "192.168.10.20"
   local_port       = "443"
-  description      = "HTTPS vers serveur web"
+  description      = "HTTPS to web server"
   nat_reflection   = "enable"
   filter_rule_association = "add-associated"
 }
 ```
 
-### Ajouter une entrée DNS locale
+### Add a local DNS entry
 
 ```hcl
 resource "opnsense_unbound_host_override" "server_web" {
@@ -496,80 +496,80 @@ resource "opnsense_unbound_host_override" "server_web" {
 
 ## Troubleshooting
 
-### Erreur de connexion API
+### API connection error
 
 ```bash
-# Tester la connexion
+# Test the connection
 curl -k -u "$TF_VAR_opnsense_api_key:$TF_VAR_opnsense_api_secret" \
   "$TF_VAR_opnsense_uri/api/core/firmware/status"
 ```
 
-**Vérifier** :
-1. API activée dans OPNsense
-2. Utilisateur API avec permissions
-3. Firewall n'est pas bloquant
-4. Certificat HTTPS valide ou `allow_insecure = true`
+**Check**:
+1. API enabled in OPNsense
+2. API user with permissions
+3. Firewall is not blocking
+4. Valid HTTPS certificate or `allow_insecure = true`
 
-### Lockout (accès perdu)
+### Lockout (access lost)
 
-Via console Proxmox ou accès physique :
+Via Proxmox console or physical access:
 ```bash
-# Désactiver le firewall temporairement
+# Temporarily disable the firewall
 pfctl -d
 
-# Corriger via interface web
+# Fix via web interface
 # ...
 
-# Réactiver le firewall
+# Re-enable the firewall
 pfctl -e
 ```
 
-### State désynchronisé
+### State out of sync
 
 ```bash
-# Rafraîchir le state
+# Refresh the state
 terraform refresh
 
-# Importer une ressource existante
-terraform import opnsense_firewall_filter.rule "uuid-de-la-regle"
+# Import an existing resource
+terraform import opnsense_firewall_filter.rule "uuid-of-the-rule"
 
-# Forcer recréation
+# Force recreation
 terraform taint opnsense_firewall_filter.rule
 terraform apply
 ```
 
-## Bonnes pratiques
+## Best practices
 
-| Pratique | Pourquoi |
+| Practice | Why |
 |----------|----------|
-| **Anti-lockout en sequence 1** | Éviter de perdre l'accès |
-| **Utiliser des aliases** | Lisibilité et maintenabilité |
-| **Documenter chaque règle** | Audit facilité |
-| **Logger les règles block** | Détection d'intrusion |
-| **Tester en lab** | Éviter les lockouts |
-| **Backup avant apply** | Rollback possible |
-| **Ne jamais commiter les credentials** | Sécurité |
+| **Anti-lockout at sequence 1** | Avoid losing access |
+| **Use aliases** | Readability and maintainability |
+| **Document each rule** | Easier auditing |
+| **Log block rules** | Intrusion detection |
+| **Test in a lab** | Avoid lockouts |
+| **Backup before apply** | Rollback possible |
+| **Never commit credentials** | Security |
 
-## Résumé
+## Summary
 
-Vous avez appris à :
-- ✅ Configurer OPNsense avec Terraform
-- ✅ Créer des interfaces WAN/LAN
-- ✅ Gérer les aliases
-- ✅ Créer des règles firewall sécurisées
-- ✅ Configurer DHCP et DNS
-- ✅ Personnaliser avec réservations et port forwarding
+You have learned how to:
+- ✅ Configure OPNsense with Terraform
+- ✅ Create WAN/LAN interfaces
+- ✅ Manage aliases
+- ✅ Create secure firewall rules
+- ✅ Configure DHCP and DNS
+- ✅ Customize with reservations and port forwarding
 
-## Commandes utilisées
+## Commands used
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/ops:ops-opnsense` | Configuration OPNsense complète |
-| `/ops:ops-infra-code` | Infrastructure as Code générique |
+| `/ops:ops-opnsense` | Full OPNsense configuration |
+| `/ops:ops-infra-code` | Generic Infrastructure as Code |
 
-## Voir aussi
+## See also
 
-- [Commande `/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense)
+- [Command `/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense)
 - [Skill `ops-opnsense`](/docs/skills/ops-opnsense)
-- [Exemple OPNsense](/docs/examples/ops/opnsense-config)
-- [Tutorial Proxmox](/docs/tutorials/proxmox-infra)
+- [OPNsense example](/docs/examples/ops/opnsense-config)
+- [Proxmox tutorial](/docs/tutorials/proxmox-infra)
