@@ -1,38 +1,38 @@
 ---
 sidebar_position: 3
-title: Procedure tRPC
-description: Exemple de procedure tRPC type-safe avec validation
+title: tRPC Procedure
+description: Example of a type-safe tRPC procedure with validation
 ---
 
-# Procedure tRPC Type-Safe
+# Type-Safe tRPC Procedure
 
-Cet exemple montre comment créer des procedures tRPC professionnelles avec validation Zod et inférence de types end-to-end.
+This example shows how to create professional tRPC procedures with Zod validation and end-to-end type inference.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/dev:dev-trpc "Créer un router pour les tâches avec CRUD et filtres"
+/dev:dev-trpc "Create a router for tasks with CRUD and filters"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 src/
 ├── server/
-│   ├── trpc.ts           # Configuration tRPC
-│   ├── context.ts        # Contexte de requête
+│   ├── trpc.ts           # tRPC configuration
+│   ├── context.ts        # Request context
 │   └── routers/
-│       ├── index.ts      # Router principal
-│       ├── task.ts       # Router tâches
-│       └── user.ts       # Router utilisateurs
+│       ├── index.ts      # Main router
+│       ├── task.ts       # Tasks router
+│       └── user.ts       # Users router
 ├── utils/
-│   └── trpc.ts           # Client tRPC (React)
+│   └── trpc.ts           # tRPC client (React)
 └── pages/api/
     └── trpc/
-        └── [trpc].ts     # Handler Next.js
+        └── [trpc].ts     # Next.js handler
 ```
 
-## Code du Router
+## Router Code
 
 ### `server/trpc.ts`
 
@@ -56,7 +56,7 @@ const t = initTRPC.context<Context>().create({
   },
 });
 
-// Middleware de logging
+// Logging middleware
 const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
   const start = Date.now();
   const result = await next();
@@ -67,12 +67,12 @@ const loggerMiddleware = t.middleware(async ({ path, type, next }) => {
   return result;
 });
 
-// Middleware d'authentification
+// Authentication middleware
 const isAuthed = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session?.user) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
-      message: 'Vous devez être connecté',
+      message: 'You must be logged in',
     });
   }
 
@@ -85,12 +85,12 @@ const isAuthed = t.middleware(async ({ ctx, next }) => {
   });
 });
 
-// Middleware admin
+// Admin middleware
 const isAdmin = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session?.user || ctx.session.user.role !== 'admin') {
     throw new TRPCError({
       code: 'FORBIDDEN',
-      message: 'Accès réservé aux administrateurs',
+      message: 'Access restricted to administrators',
     });
   }
 
@@ -138,7 +138,7 @@ import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { router, publicProcedure, protectedProcedure } from '../trpc';
 
-// Schémas de validation
+// Validation schemas
 const taskSchema = z.object({
   id: z.string().cuid(),
   title: z.string().min(1).max(200),
@@ -172,7 +172,7 @@ const listTasksSchema = z.object({
 
 export const taskRouter = router({
   /**
-   * Liste les tâches avec pagination cursor-based
+   * List tasks with cursor-based pagination
    */
   list: protectedProcedure
     .input(listTasksSchema)
@@ -180,7 +180,7 @@ export const taskRouter = router({
       const { cursor, limit, status, priority, assigneeId, search, sortBy, sortOrder } = input;
 
       const where = {
-        // Filtre par projet/équipe de l'utilisateur
+        // Filter by the user's project/team
         project: {
           members: {
             some: { userId: ctx.user.id },
@@ -222,7 +222,7 @@ export const taskRouter = router({
     }),
 
   /**
-   * Récupère une tâche par ID
+   * Get a task by ID
    */
   byId: protectedProcedure
     .input(z.object({ id: z.string().cuid() }))
@@ -247,7 +247,7 @@ export const taskRouter = router({
       if (!task) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Tâche non trouvée',
+          message: 'Task not found',
         });
       }
 
@@ -255,7 +255,7 @@ export const taskRouter = router({
     }),
 
   /**
-   * Crée une nouvelle tâche
+   * Create a new task
    */
   create: protectedProcedure
     .input(createTaskSchema.extend({
@@ -264,7 +264,7 @@ export const taskRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { projectId, ...data } = input;
 
-      // Vérifier que l'utilisateur a accès au projet
+      // Check that the user has access to the project
       const project = await ctx.prisma.project.findFirst({
         where: {
           id: projectId,
@@ -277,7 +277,7 @@ export const taskRouter = router({
       if (!project) {
         throw new TRPCError({
           code: 'FORBIDDEN',
-          message: 'Accès au projet refusé',
+          message: 'Access to project denied',
         });
       }
 
@@ -296,7 +296,7 @@ export const taskRouter = router({
     }),
 
   /**
-   * Met à jour une tâche
+   * Update a task
    */
   update: protectedProcedure
     .input(z.object({
@@ -306,7 +306,7 @@ export const taskRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { id, data } = input;
 
-      // Vérifier que la tâche existe et que l'utilisateur y a accès
+      // Check that the task exists and that the user has access to it
       const existing = await ctx.prisma.task.findFirst({
         where: {
           id,
@@ -321,7 +321,7 @@ export const taskRouter = router({
       if (!existing) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Tâche non trouvée ou accès refusé',
+          message: 'Task not found or access denied',
         });
       }
 
@@ -337,7 +337,7 @@ export const taskRouter = router({
     }),
 
   /**
-   * Change le statut d'une tâche (raccourci)
+   * Change a task's status (shortcut)
    */
   updateStatus: protectedProcedure
     .input(z.object({
@@ -354,14 +354,14 @@ export const taskRouter = router({
     }),
 
   /**
-   * Supprime une tâche
+   * Delete a task
    */
   delete: protectedProcedure
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
 
-      // Vérifier les permissions (créateur ou admin du projet)
+      // Check permissions (creator or project admin)
       const task = await ctx.prisma.task.findFirst({
         where: {
           id,
@@ -384,7 +384,7 @@ export const taskRouter = router({
       if (!task) {
         throw new TRPCError({
           code: 'FORBIDDEN',
-          message: 'Non autorisé à supprimer cette tâche',
+          message: 'Not authorized to delete this task',
         });
       }
 
@@ -394,7 +394,7 @@ export const taskRouter = router({
     }),
 
   /**
-   * Statistiques des tâches
+   * Task statistics
    */
   stats: protectedProcedure
     .input(z.object({ projectId: z.string().cuid().optional() }))
@@ -458,7 +458,7 @@ export const appRouter = router({
 export type AppRouter = typeof appRouter;
 ```
 
-### `utils/trpc.ts` (Client React)
+### `utils/trpc.ts` (React Client)
 
 ```typescript
 import { httpBatchLink, loggerLink } from '@trpc/client';
@@ -492,13 +492,13 @@ export const trpc = createTRPCNext<AppRouter>({
 });
 ```
 
-## Utilisation côté Client
+## Client-side usage
 
 ```tsx
 import { trpc } from '../utils/trpc';
 
 function TaskList() {
-  // Query avec filtres
+  // Query with filters
   const { data, fetchNextPage, hasNextPage, isLoading } = trpc.task.list.useInfiniteQuery(
     { limit: 20, status: 'todo' },
     {
@@ -506,7 +506,7 @@ function TaskList() {
     }
   );
 
-  // Mutation avec optimistic update
+  // Mutation with optimistic update
   const utils = trpc.useUtils();
   const updateStatus = trpc.task.updateStatus.useMutation({
     onMutate: async ({ id, status }) => {
@@ -545,39 +545,39 @@ function TaskList() {
                 updateStatus.mutate({ id: task.id, status: 'done' })
               }
             >
-              Terminer
+              Complete
             </button>
           </li>
         ))
       )}
       {hasNextPage && (
-        <button onClick={() => fetchNextPage()}>Charger plus</button>
+        <button onClick={() => fetchNextPage()}>Load more</button>
       )}
     </ul>
   );
 }
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
-| **Type-safety** | Types inférés end-to-end |
-| **Validation** | Zod avec erreurs formatées |
-| **Auth** | Middlewares réutilisables |
-| **Pagination** | Cursor-based avec `useInfiniteQuery` |
-| **Optimistic UI** | Mutation avec rollback |
+| **Type-safety** | End-to-end inferred types |
+| **Validation** | Zod with formatted errors |
+| **Auth** | Reusable middlewares |
+| **Pagination** | Cursor-based with `useInfiniteQuery` |
+| **Optimistic UI** | Mutation with rollback |
 
-## Commandes associées
+## Related commands
 
-- `/dev:dev-test` - Générer tests de procedures
-- `/dev:dev-prisma` - Schéma Prisma associé
-- `/qa:qa-security` - Audit sécurité
+- `/dev:dev-test` - Generate procedure tests
+- `/dev:dev-prisma` - Associated Prisma schema
+- `/qa:qa-security` - Security audit
 
 ---
 
 :::tip React Query DevTools
-Activez les DevTools pour débugger les queries :
+Enable the DevTools to debug queries:
 ```tsx
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
