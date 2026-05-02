@@ -1,45 +1,45 @@
 ---
 sidebar_position: 8
-title: Choisir le bon workflow
-description: Guide de decision pour choisir le workflow adapte
+title: Choosing the right workflow
+description: Decision guide to choose the right workflow
 ---
 
-# Choisir le bon workflow
+# Choosing the right workflow
 
-Guide pour selectionner le workflow adapte a votre situation.
+Guide to select the workflow suited to your situation.
 
-## Arbre de decision
+## Decision tree
 
 ```mermaid
 flowchart TD
-    START((Besoin ?)) --> DEV{Développement ?}
-    START --> OPS{Opérations ?}
-    START --> QUALITY{Qualité ?}
+    START((Need ?)) --> DEV{Development ?}
+    START --> OPS{Operations ?}
+    START --> QUALITY{Quality ?}
     START --> BIZ{Business ?}
 
-    %% Développement
-    DEV -->|Nouvelle feature| FEAT["/work:work-flow-feature"]
-    DEV -->|Corriger bug| BUG{Critique ?}
-    BUG -->|Oui| HOTFIX["/ops:ops-hotfix"]
-    BUG -->|Non| BUGFIX["/work:work-flow-bugfix"]
-    DEV -->|Comprendre| EXPLORE["/work:work-explore"]
+    %% Development
+    DEV -->|New feature| FEAT["/work:work-flow-feature"]
+    DEV -->|Fix bug| BUG{Critical ?}
+    BUG -->|Yes| HOTFIX["/ops:ops-hotfix"]
+    BUG -->|No| BUGFIX["/work:work-flow-bugfix"]
+    DEV -->|Understand| EXPLORE["/work:work-explore"]
     DEV -->|TDD| TDD["/dev:dev-tdd"]
 
-    %% Opérations
+    %% Operations
     OPS -->|Release| RELEASE["/work:work-flow-release"]
-    OPS -->|Déploiement| DEPLOY{Type ?}
+    OPS -->|Deployment| DEPLOY{Type ?}
     DEPLOY -->|Docker| DOCKER["/ops:ops-docker"]
     DEPLOY -->|Kubernetes| K8S["/ops:ops-k8s"]
     DEPLOY -->|Vercel| VERCEL["/ops:ops-vercel"]
 
-    %% Qualité
-    QUALITY -->|Audit complet| AUDIT["/qa:qa-audit"]
-    QUALITY -->|Sécurité| SEC["/qa:qa-security"]
+    %% Quality
+    QUALITY -->|Full audit| AUDIT["/qa:qa-audit"]
+    QUALITY -->|Security| SEC["/qa:qa-security"]
     QUALITY -->|Performance| PERF["/qa:qa-perf"]
     QUALITY -->|Review| REVIEW["/qa:qa-review"]
 
     %% Business
-    BIZ -->|Lancement| LAUNCH["/work:work-flow-launch"]
+    BIZ -->|Launch| LAUNCH["/work:work-flow-launch"]
     BIZ -->|MVP| MVP["/biz:biz-mvp"]
     BIZ -->|Business model| MODEL["/biz:biz-model"]
 
@@ -51,102 +51,102 @@ flowchart TD
     style LAUNCH fill:#f3e5f5
 ```
 
-## Guide rapide
+## Quick guide
 
-| Situation | Workflow | Commande |
+| Situation | Workflow | Command |
 |-----------|----------|----------|
-| Ajouter une fonctionnalite | Feature | `/work:work-flow-feature` |
-| Corriger un bug | Bugfix | `/work:work-flow-bugfix` |
-| Bug critique en prod | Hotfix | `/ops:ops-gitflow-hotfix` |
-| Preparer une version | Release | `/work:work-flow-release` |
-| Lancer un produit | Launch | `/work:work-flow-launch` |
-| Comprendre le code | Explore | `/work:work-explore` |
-| Planifier un changement | Plan | `/work:work-plan` |
-| Developper avec tests | TDD | `/dev:dev-tdd` |
-| Audit qualite | Audit | `/qa:qa-audit` |
-| Review de code | Review | `/qa:qa-review` |
+| Add a feature | Feature | `/work:work-flow-feature` |
+| Fix a bug | Bugfix | `/work:work-flow-bugfix` |
+| Critical bug in prod | Hotfix | `/ops:ops-gitflow-hotfix` |
+| Prepare a version | Release | `/work:work-flow-release` |
+| Launch a product | Launch | `/work:work-flow-launch` |
+| Understand the code | Explore | `/work:work-explore` |
+| Plan a change | Plan | `/work:work-plan` |
+| Develop with tests | TDD | `/dev:dev-tdd` |
+| Quality audit | Audit | `/qa:qa-audit` |
+| Code review | Review | `/qa:qa-review` |
 
-## Par type de projet
+## By project type
 
-### Projet Web (React/Node)
+### Web project (React/Node)
 
 ```bash
-# Nouvelle feature
+# New feature
 /work:work-explore → /work:work-plan → /dev:dev-tdd → /work:work-pr
 
-# Commandes recommandees
-/dev:dev-component    # Creer des composants
-/dev:dev-hook        # Creer des hooks
-/dev:dev-react-perf  # Optimiser les performances
+# Recommended commands
+/dev:dev-component    # Create components
+/dev:dev-hook        # Create hooks
+/dev:dev-react-perf  # Optimize performance
 ```
 
-### Projet Mobile (Flutter)
+### Mobile project (Flutter)
 
 ```bash
-# Nouvelle feature
+# New feature
 /work:work-explore → /work:work-plan → /dev:dev-flutter → /work:work-pr
 
-# Commandes recommandees
-/dev:dev-flutter     # Widgets et screens
-/dev:dev-supabase    # Backend Supabase
-/qa:qa-mobile       # Audit mobile
+# Recommended commands
+/dev:dev-flutter     # Widgets and screens
+/dev:dev-supabase    # Supabase backend
+/qa:qa-mobile       # Mobile audit
 ```
 
-### API Backend
+### Backend API
 
 ```bash
-# Nouvelle feature
+# New feature
 /work:work-explore → /work:work-plan → /dev:dev-api → /work:work-pr
 
-# Commandes recommandees
-/dev:dev-api         # Endpoints REST
-/dev:dev-graphql     # API GraphQL
-/doc:doc-api-spec    # Documentation OpenAPI
+# Recommended commands
+/dev:dev-api         # REST endpoints
+/dev:dev-graphql     # GraphQL API
+/doc:doc-api-spec    # OpenAPI documentation
 ```
 
 ### Startup / SaaS
 
 ```bash
-# Lancement
+# Launch
 /biz:biz-model → /biz:biz-mvp → /work:work-flow-launch
 
-# Commandes recommandees
+# Recommended commands
 /biz:biz-*           # Business
-/growth:growth-*        # Croissance
+/growth:growth-*        # Growth
 /legal:legal-*         # Legal
 ```
 
 ## FAQ
 
-### Quelle est la difference entre /work:work-flow-feature et le workflow principal ?
+### What's the difference between /work:work-flow-feature and the main workflow?
 
-`/work:work-flow-feature` est un **raccourci** qui enchaine automatiquement toutes les etapes du workflow principal (explore, plan, code, commit, PR).
+`/work:work-flow-feature` is a **shortcut** that automatically chains all the steps of the main workflow (explore, plan, code, commit, PR).
 
-### Quand utiliser /ops:ops-hotfix vs /work:work-flow-bugfix ?
+### When to use /ops:ops-hotfix vs /work:work-flow-bugfix?
 
-- **hotfix** : Bug critique en production, besoin immediat
-- **bugfix** : Bug normal, peut attendre la prochaine release
+- **hotfix**: Critical bug in production, immediate need
+- **bugfix**: Normal bug, can wait for the next release
 
-### Comment savoir si j'ai besoin d'un audit ?
+### How do I know if I need an audit?
 
-Utilisez `/qa:qa-audit` :
-- Avant une release majeure
-- Avant un audit externe
-- Apres des changements importants
-- Regulierement (mensuel)
+Use `/qa:qa-audit`:
+- Before a major release
+- Before an external audit
+- After significant changes
+- Regularly (monthly)
 
-### Puis-je combiner plusieurs workflows ?
+### Can I combine multiple workflows?
 
-Oui ! Par exemple :
+Yes! For example:
 ```bash
-# Feature avec audit de securite
+# Feature with security audit
 /work:work-flow-feature "Auth" → /qa:qa-security → /work:work-pr
 ```
 
 ---
 
-## Voir aussi
+## See also
 
-- [Tous les workflows](/docs/workflow)
+- [All workflows](/docs/workflow)
 - [Commands](/docs/commands)
 - [Assistant](/docs/commands/other/assistant)
