@@ -1,12 +1,12 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests pour validate-counts.sh (Layer 1 + Layer 2 anti-drift scan)
+# Tests for validate-counts.sh (Layer 1 + Layer 2 anti-drift scan)
 #
-# Strategie d'isolation : on construit un faux socle dans TEST_DIR, on copie
-# le script + sa librairie commune dedans, et on l'execute. Le script utilise
-# `dirname(BASH_SOURCE)` donc il scanne TEST_DIR au lieu du vrai repo.
-# Aucun risque de polluer le repo reel.
+# Isolation strategy: we build a fake foundation in TEST_DIR, copy the script
+# + its common library into it, and execute it. The script uses
+# `dirname(BASH_SOURCE)` so it scans TEST_DIR instead of the real repo.
+# No risk of polluting the real repo.
 # =============================================================================
 
 load 'test_helper'
@@ -16,7 +16,7 @@ VALIDATE_COUNTS_SCRIPT_REAL="$BATS_TEST_DIRNAME/../scripts/validate-counts.sh"
 setup() {
     setup_test_dir
 
-    # Construire un faux socle minimal dans TEST_DIR avec des compteurs connus :
+    # Build a minimal fake foundation in TEST_DIR with known counts:
     # 3 commands, 2 agents, 1 skill, 4 rules, 5 tests, 1 test file
     mkdir -p "$TEST_DIR/.claude/commands/work"
     mkdir -p "$TEST_DIR/.claude/agents"
@@ -40,21 +40,21 @@ setup() {
           "$TEST_DIR/.claude/rules/rule3.md" \
           "$TEST_DIR/.claude/rules/rule4.md"
 
-    # 1 fichier de test avec 5 @test → ACTUAL_TESTS=5, ACTUAL_TEST_FILES=1
-    # NB: on n'utilise PAS un heredoc avec @test litteral, car bats preprocess
-    # les @test lignes des fichiers .bats meme dans les heredocs et les casse.
-    # printf evite la collision avec le preprocessor bats.
+    # 1 test file with 5 @test → ACTUAL_TESTS=5, ACTUAL_TEST_FILES=1
+    # NB: do NOT use a heredoc with literal @test, because bats preprocesses
+    # @test lines in .bats files even inside heredocs and breaks them.
+    # printf avoids the collision with the bats preprocessor.
     {
         echo "#!/usr/bin/env bats"
         printf '@test "test%s" { :; }\n' 1 2 3 4 5
     } > "$TEST_DIR/tests/sample.bats"
 
-    # Copier le script et sa librairie (le script resoudera SOCLE_DIR=TEST_DIR)
+    # Copy the script and its library (the script will resolve SOCLE_DIR=TEST_DIR)
     cp "$VALIDATE_COUNTS_SCRIPT_REAL" "$TEST_DIR/scripts/validate-counts.sh"
     cp -r "$BATS_TEST_DIRNAME/../scripts/lib/"* "$TEST_DIR/scripts/lib/"
     chmod +x "$TEST_DIR/scripts/validate-counts.sh"
 
-    # Path du script copie pour les tests
+    # Path of the copied script for the tests
     VALIDATE_SCRIPT="$TEST_DIR/scripts/validate-counts.sh"
     export VALIDATE_SCRIPT
 }
@@ -64,32 +64,32 @@ teardown() {
 }
 
 # =============================================================================
-# Tests de base (smoke)
+# Basic tests (smoke)
 # =============================================================================
 
-@test "validate-counts.sh existe et est executable" {
+@test "validate-counts.sh exists and is executable" {
     [ -f "$VALIDATE_COUNTS_SCRIPT_REAL" ]
     [ -x "$VALIDATE_COUNTS_SCRIPT_REAL" ]
 }
 
-@test "validate-counts.sh affiche l'aide avec --help" {
+@test "validate-counts.sh shows help with --help" {
     run "$VALIDATE_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"USAGE"* ]]
     [[ "$output" == *"compteurs"* ]] || [[ "$output" == *"Validate"* ]]
 }
 
-@test "validate-counts.sh sur un faux socle coherent : exit 0" {
+@test "validate-counts.sh on a coherent fake foundation: exit 0" {
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 0 ]
     [[ "$output" == *"coherents"* ]] || [[ "$output" == *"Aucun drift"* ]]
 }
 
-@test "validate-counts.sh affiche les compteurs reels dans sa sortie" {
+@test "validate-counts.sh shows the actual counts in its output" {
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 0 ]
-    # Le faux socle a 3 commands / 2 agents / 1 skill / 4 rules / 5 tests
-    # Assertions souples (regex) car bats peut normaliser les espaces.
+    # The fake foundation has 3 commands / 2 agents / 1 skill / 4 rules / 5 tests
+    # Loose assertions (regex) because bats may normalize whitespace.
     [[ "$output" =~ Commands[[:space:]]*:[[:space:]]*3 ]]
     [[ "$output" =~ Agents[[:space:]]*:[[:space:]]*2 ]]
     [[ "$output" =~ Skills[[:space:]]*:[[:space:]]*1 ]]
@@ -98,11 +98,11 @@ teardown() {
 }
 
 # =============================================================================
-# Tests Layer 1 — Source-of-truth files
+# Layer 1 tests — Source-of-truth files
 # =============================================================================
 
-@test "validate-counts.sh detecte un drift dans CLAUDE.md (commands)" {
-    # Creer un CLAUDE.md avec un compteur faux : "999 commandes" au lieu de 3
+@test "validate-counts.sh detects a drift in CLAUDE.md (commands)" {
+    # Create a CLAUDE.md with a wrong counter: "999 commandes" instead of 3
     cat > "$TEST_DIR/CLAUDE.md" <<'EOF'
 # Test
 Le socle a 999 commandes.
@@ -113,11 +113,11 @@ EOF
 }
 
 # =============================================================================
-# Tests Layer 2 — Scan global anti-drift (scan_drift)
+# Layer 2 tests — Global anti-drift scan (scan_drift)
 # =============================================================================
 
-@test "scan_drift Layer 2 : detecte le pattern 'Skills (N)' header markdown" {
-    # On a 1 skill reel mais on declare 99 dans une heading markdown
+@test "scan_drift Layer 2: detects the 'Skills (N)' markdown header pattern" {
+    # We have 1 actual skill but declare 99 in a markdown heading
     cat > "$TEST_DIR/website/docs/intro/architecture.md" <<'EOF'
 # Architecture
 
@@ -130,8 +130,8 @@ EOF
     [[ "$output" == *"canonique: 1"* ]]
 }
 
-@test "scan_drift Layer 2 : detecte le pattern 'N Sub-Agents' string literal TS" {
-    # On a 2 agents reels mais on declare 88 dans un literal TSX
+@test "scan_drift Layer 2: detects the 'N Sub-Agents' TS string literal pattern" {
+    # We have 2 actual agents but declare 88 in a TSX literal
     cat > "$TEST_DIR/website/src/pages/index.tsx" <<'EOF'
 const stats = ['88 Sub-Agents', '3 Commands'];
 EOF
@@ -140,8 +140,8 @@ EOF
     [[ "$output" == *"88 agents"* ]] || [[ "$output" == *"88 sub-agents"* ]]
 }
 
-@test "scan_drift Layer 2 : detecte le pattern '| **Rules** | N |' table cell bold" {
-    # On a 4 rules reelles mais on declare 77 dans un tableau markdown
+@test "scan_drift Layer 2: detects the '| **Rules** | N |' bold table cell pattern" {
+    # We have 4 actual rules but declare 77 in a markdown table
     cat > "$TEST_DIR/website/docs/intro/index.md" <<'EOF'
 # Stats
 
@@ -154,7 +154,7 @@ EOF
     [[ "$output" == *"77 rules"* ]]
 }
 
-@test "scan_drift Layer 2 : detecte le pattern 'Skills disponibles (N)'" {
+@test "scan_drift Layer 2: detects the 'Skills disponibles (N)' pattern" {
     cat > "$TEST_DIR/.claude/skills/README.md" <<'EOF'
 # Skills
 
@@ -166,11 +166,11 @@ EOF
 }
 
 # =============================================================================
-# Tests Layer 2 — scan_tests_drift (badges + Test layout)
+# Layer 2 tests — scan_tests_drift (badges + Test layout)
 # =============================================================================
 
-@test "scan_tests_drift : detecte le pattern badge 'tests-N passing'" {
-    # On a 5 tests reels mais le badge declare 200
+@test "scan_tests_drift: detects the 'tests-N passing' badge pattern" {
+    # We have 5 actual tests but the badge declares 200
     cat > "$TEST_DIR/README.md" <<'EOF'
 # Test
 [![Tests](https://img.shields.io/badge/tests-200%20passing-brightgreen)](./tests)
@@ -178,12 +178,12 @@ EOF
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 1 ]
     [[ "$output" == *"tests-200"* ]]
-    # canonique = ACTUAL_TESTS du faux socle (5)
+    # canonical = ACTUAL_TESTS of the fake foundation (5)
     [[ "$output" =~ canonique:[[:space:]]*5 ]]
 }
 
-@test "scan_tests_drift : detecte le pattern '(N files, M tests)' Test layout" {
-    # On a 1 test file et 5 tests reels mais on declare 17 et 999
+@test "scan_tests_drift: detects the '(N files, M tests)' Test layout pattern" {
+    # We have 1 test file and 5 actual tests but declare 17 and 999
     cat > "$TEST_DIR/README.md" <<'EOF'
 # Test
 ### Test layout (17 files, 999 tests)
@@ -195,12 +195,12 @@ EOF
 }
 
 # =============================================================================
-# Tests anti-faux-positifs
+# Anti-false-positive tests
 # =============================================================================
 
-@test "scan_drift : ne flag PAS les nombres <= 5 (subset/exemple)" {
-    # 1 skill reel, mais on mentionne "3 skills" dans une heading
-    # Le scan doit ignorer les nombres <= 5 pour eviter de flag les exemples
+@test "scan_drift: does NOT flag numbers <= 5 (subset/example)" {
+    # 1 actual skill, but we mention "3 skills" in a heading
+    # The scan must ignore numbers <= 5 to avoid flagging examples
     cat > "$TEST_DIR/website/docs/intro/index.md" <<'EOF'
 # Test
 
@@ -210,9 +210,9 @@ EOF
     [ "$status" -eq 0 ]
 }
 
-@test "scan_drift : ne flag PAS les sous-totaux par domaine (WORK 15)" {
-    # On declare "WORK (15)" qui est un sous-total domain, pas un total canonique
-    # Le scan ne doit PAS flag car le pattern label est WORK, pas Skills/Agents/Rules/Commands
+@test "scan_drift: does NOT flag per-domain subtotals (WORK 15)" {
+    # We declare "WORK (15)" which is a domain subtotal, not a canonical total
+    # The scan must NOT flag because the label pattern is WORK, not Skills/Agents/Rules/Commands
     cat > "$TEST_DIR/website/sidebars.ts" <<'EOF'
 const sidebars = {
   commands: [
@@ -225,9 +225,9 @@ EOF
     [ "$status" -eq 0 ]
 }
 
-@test "scan_drift : ne flag PAS le CHANGELOG (historique)" {
-    # Le CHANGELOG contient des refs historiques aux anciens compteurs
-    # Le scan doit l'exclure explicitement
+@test "scan_drift: does NOT flag the CHANGELOG (history)" {
+    # The CHANGELOG contains historical references to old counters
+    # The scan must explicitly exclude it
     cat > "$TEST_DIR/CHANGELOG.md" <<'EOF'
 # Changelog
 
@@ -240,10 +240,10 @@ EOF
 }
 
 # =============================================================================
-# Tests d'integration : le vrai repo doit toujours passer
+# Integration tests: the real repo must always pass
 # =============================================================================
 
-@test "validate-counts.sh sur le VRAI repo : exit 0 (regression test)" {
+@test "validate-counts.sh on the REAL repo: exit 0 (regression test)" {
     run "$VALIDATE_COUNTS_SCRIPT_REAL"
     [ "$status" -eq 0 ]
     [[ "$output" == *"coherents"* ]] || [[ "$output" == *"Aucun drift"* ]]
