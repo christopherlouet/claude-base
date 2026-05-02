@@ -1,6 +1,6 @@
 ---
 sidebar_position: 13
-title: "Commandes Essentielles"
+title: "Essential Commands"
 description: ""
 tags:
   - "reference"
@@ -8,74 +8,74 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Commandes Essentielles
+# Essential Commands
 
 ## Web (Node/React)
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `npm install` | Installer les dépendances |
-| `npm run dev` | Serveur de développement |
-| `npm test` | Lancer les tests |
-| `npm run test:watch` | Tests en mode watch |
-| `npm run lint` | Vérifier le code (ESLint) |
-| `npm run lint:fix` | Corriger automatiquement |
-| `npm run build` | Build de production |
-| `npm run typecheck` | Vérifier les types TypeScript |
+| `npm install` | Install dependencies |
+| `npm run dev` | Development server |
+| `npm test` | Run tests |
+| `npm run test:watch` | Tests in watch mode |
+| `npm run lint` | Check code (ESLint) |
+| `npm run lint:fix` | Auto-fix |
+| `npm run build` | Production build |
+| `npm run typecheck` | Check TypeScript types |
 
 ## Mobile (Flutter)
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `flutter pub get` | Installer les dépendances |
-| `flutter run` | Lancer sur device/émulateur |
-| `flutter test` | Lancer les tests |
-| `flutter analyze` | Analyser le code (lint) |
-| `dart fix --apply` | Corriger automatiquement |
-| `flutter build apk` | Build Android |
-| `flutter build ios` | Build iOS |
-| `flutter build web` | Build Web |
+| `flutter pub get` | Install dependencies |
+| `flutter run` | Run on device/emulator |
+| `flutter test` | Run tests |
+| `flutter analyze` | Analyze code (lint) |
+| `dart fix --apply` | Auto-fix |
+| `flutter build apk` | Android build |
+| `flutter build ios` | iOS build |
+| `flutter build web` | Web build |
 
 ## Backend (Python)
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `pip install -r requirements.txt` | Installer les dépendances |
-| `python -m venv .venv` | Créer un environnement virtuel |
-| `source .venv/bin/activate` | Activer l'environnement (Linux/Mac) |
-| `pytest` | Lancer les tests |
-| `pytest --cov` | Tests avec couverture |
-| `ruff check .` | Linter rapide |
-| `ruff format .` | Formater le code |
-| `mypy .` | Vérifier les types |
+| `pip install -r requirements.txt` | Install dependencies |
+| `python -m venv .venv` | Create a virtual environment |
+| `source .venv/bin/activate` | Activate the environment (Linux/Mac) |
+| `pytest` | Run tests |
+| `pytest --cov` | Tests with coverage |
+| `ruff check .` | Fast linter |
+| `ruff format .` | Format code |
+| `mypy .` | Check types |
 
 ## Backend (Go)
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `go mod download` | Installer les dépendances |
-| `go run .` | Lancer l'application |
-| `go test ./...` | Lancer les tests |
-| `go test -cover ./...` | Tests avec couverture |
-| `go build` | Compiler le binaire |
-| `go fmt ./...` | Formater le code |
-| `go vet ./...` | Analyser le code |
-| `golangci-lint run` | Linter complet |
+| `go mod download` | Install dependencies |
+| `go run .` | Run the application |
+| `go test ./...` | Run tests |
+| `go test -cover ./...` | Tests with coverage |
+| `go build` | Compile the binary |
+| `go fmt ./...` | Format code |
+| `go vet ./...` | Analyze code |
+| `golangci-lint run` | Full linter |
 
-## CLI Flags Avancés
+## Advanced CLI Flags
 
-| Flag | Description | Exemple |
+| Flag | Description | Example |
 |------|-------------|---------|
-| `--agent &lt;name&gt;` | Lancer un agent spécifique directement | `claude --agent qa-security` |
-| `--agents` | Lister tous les agents disponibles | `claude --agents` |
-| `--chrome` | Activer l'intégration Chrome (tests visuels) | `claude --chrome` |
-| `--teleport` | Activer la connexion Teleport (remote) | `claude --teleport` |
-| `--remote` | Se connecter à une session distante | `claude --remote &lt;session-id&gt;` |
-| `--fallback-model` | Modèle de secours si le principal est indisponible | `claude --fallback-model haiku` |
-| `--plugin-dir` | Répertoire de plugins à charger | `claude --plugin-dir ./plugins` |
-| `--bare` | Mode scripté minimal (skip hooks, LSP, plugins, skills) | `claude -p --bare "query"` |
-| `--channels` | Activer les channels (Telegram, Discord, iMessage) | `claude --channels` |
-| `--tools` | Restreindre les outils disponibles | `claude --tools "Read,Grep,Glob"` |
-| `--init` | Initialiser le projet (hook Setup init) | `claude --init` |
-| `--init-only` | Initialiser sans démarrer de session | `claude --init-only` |
-| `--maintenance` | Lancer la maintenance (hook Setup maintenance) | `claude --maintenance` |
-| `--max-budget-usd` | Budget maximum en USD pour la session | `claude --max-budget-usd 5.00` |
-| `--fork-session` | Forker une session existante | `claude --fork-session &lt;id&gt;` |
-| `--strict-mcp-config` | Mode strict pour la config MCP | `claude --strict-mcp-config` |
-| `--teammate-mode` | Mode d'affichage Agent Teams (auto, in-process, tmux) | `claude --teammate-mode tmux` |
+| `--agent &lt;name&gt;` | Run a specific agent directly | `claude --agent qa-security` |
+| `--agents` | List all available agents | `claude --agents` |
+| `--chrome` | Enable Chrome integration (visual tests) | `claude --chrome` |
+| `--teleport` | Enable Teleport connection (remote) | `claude --teleport` |
+| `--remote` | Connect to a remote session | `claude --remote &lt;session-id&gt;` |
+| `--fallback-model` | Fallback model if the main one is unavailable | `claude --fallback-model haiku` |
+| `--plugin-dir` | Plugin directory to load | `claude --plugin-dir ./plugins` |
+| `--bare` | Minimal scripted mode (skip hooks, LSP, plugins, skills) | `claude -p --bare "query"` |
+| `--channels` | Enable channels (Telegram, Discord, iMessage) | `claude --channels` |
+| `--tools` | Restrict available tools | `claude --tools "Read,Grep,Glob"` |
+| `--init` | Initialize the project (Setup init hook) | `claude --init` |
+| `--init-only` | Initialize without starting a session | `claude --init-only` |
+| `--maintenance` | Run maintenance (Setup maintenance hook) | `claude --maintenance` |
+| `--max-budget-usd` | Maximum budget in USD for the session | `claude --max-budget-usd 5.00` |
+| `--fork-session` | Fork an existing session | `claude --fork-session &lt;id&gt;` |
+| `--strict-mcp-config` | Strict mode for MCP config | `claude --strict-mcp-config` |
+| `--teammate-mode` | Agent Teams display mode (auto, in-process, tmux) | `claude --teammate-mode tmux` |
