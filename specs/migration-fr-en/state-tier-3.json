@@ -463,7 +463,7 @@
     },
     {
       "path": "scripts/hooks/command-validator.sh",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c5ef69534d1750dae0f9488ee129d612fe9c644a90b41dbda3448be988fba2db"
     },
     {
