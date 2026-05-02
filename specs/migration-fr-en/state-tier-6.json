@@ -168,7 +168,7 @@
     },
     {
       "path": "tests/update.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "7a3559ec29143533c125cdf0efb35cf03583bb57c4db82065566ad03a9ddaed2"
     },
     {
