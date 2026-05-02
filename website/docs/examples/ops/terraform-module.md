@@ -1,35 +1,35 @@
 ---
 sidebar_position: 3
-title: Module Terraform
-description: Exemple de module Terraform réutilisable
+title: Terraform Module
+description: Reusable Terraform module example
 ---
 
-# Module Terraform Réutilisable
+# Reusable Terraform Module
 
-Cet exemple montre comment créer un module Terraform professionnel et réutilisable.
+This example shows how to create a professional, reusable Terraform module.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/ops:ops-infra-code "Créer un module Terraform pour une infrastructure AWS avec VPC, ECS et RDS"
+/ops:ops-infra-code "Create a Terraform module for AWS infrastructure with VPC, ECS and RDS"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 modules/
 └── ecs-service/
-    ├── main.tf           # Ressources principales
-    ├── variables.tf      # Variables d'entrée
+    ├── main.tf           # Main resources
+    ├── variables.tf      # Input variables
     ├── outputs.tf        # Outputs
-    ├── versions.tf       # Contraintes de version
-    ├── locals.tf         # Valeurs locales
+    ├── versions.tf       # Version constraints
+    ├── locals.tf         # Local values
     ├── data.tf           # Data sources
-    ├── iam.tf            # Rôles IAM
+    ├── iam.tf            # IAM roles
     └── README.md         # Documentation
 ```
 
-## Code du Module
+## Module Code
 
 ### `versions.tf`
 
@@ -54,37 +54,37 @@ terraform {
 # ====================
 
 variable "name" {
-  description = "Nom du service ECS"
+  description = "ECS service name"
   type        = string
 
   validation {
     condition     = can(regex("^[a-z0-9-]+$", var.name))
-    error_message = "Le nom doit contenir uniquement des lettres minuscules, chiffres et tirets."
+    error_message = "Name must contain only lowercase letters, digits and dashes."
   }
 }
 
 variable "environment" {
-  description = "Environnement (dev, staging, production)"
+  description = "Environment (dev, staging, production)"
   type        = string
 
   validation {
     condition     = contains(["dev", "staging", "production"], var.environment)
-    error_message = "L'environnement doit être dev, staging ou production."
+    error_message = "Environment must be dev, staging or production."
   }
 }
 
 variable "vpc_id" {
-  description = "ID du VPC"
+  description = "VPC ID"
   type        = string
 }
 
 variable "subnet_ids" {
-  description = "IDs des subnets pour le service"
+  description = "Subnet IDs for the service"
   type        = list(string)
 }
 
 variable "container_image" {
-  description = "Image Docker du conteneur"
+  description = "Container Docker image"
   type        = string
 }
 
@@ -93,48 +93,48 @@ variable "container_image" {
 # ====================
 
 variable "cpu" {
-  description = "CPU units pour la tâche (256, 512, 1024, 2048, 4096)"
+  description = "CPU units for the task (256, 512, 1024, 2048, 4096)"
   type        = number
   default     = 256
 
   validation {
     condition     = contains([256, 512, 1024, 2048, 4096], var.cpu)
-    error_message = "CPU doit être 256, 512, 1024, 2048 ou 4096."
+    error_message = "CPU must be 256, 512, 1024, 2048 or 4096."
   }
 }
 
 variable "memory" {
-  description = "Mémoire en MB pour la tâche"
+  description = "Memory in MB for the task"
   type        = number
   default     = 512
 }
 
 variable "desired_count" {
-  description = "Nombre d'instances du service"
+  description = "Number of service instances"
   type        = number
   default     = 2
 }
 
 variable "container_port" {
-  description = "Port exposé par le conteneur"
+  description = "Port exposed by the container"
   type        = number
   default     = 3000
 }
 
 variable "health_check_path" {
-  description = "Path pour le health check"
+  description = "Path for the health check"
   type        = string
   default     = "/api/health"
 }
 
 variable "environment_variables" {
-  description = "Variables d'environnement pour le conteneur"
+  description = "Environment variables for the container"
   type        = map(string)
   default     = {}
 }
 
 variable "secrets" {
-  description = "Secrets à injecter (ARN SSM ou Secrets Manager)"
+  description = "Secrets to inject (SSM or Secrets Manager ARN)"
   type = list(object({
     name      = string
     valueFrom = string
@@ -143,31 +143,31 @@ variable "secrets" {
 }
 
 variable "enable_autoscaling" {
-  description = "Activer l'autoscaling"
+  description = "Enable autoscaling"
   type        = bool
   default     = true
 }
 
 variable "min_capacity" {
-  description = "Capacité minimale pour l'autoscaling"
+  description = "Minimum capacity for autoscaling"
   type        = number
   default     = 1
 }
 
 variable "max_capacity" {
-  description = "Capacité maximale pour l'autoscaling"
+  description = "Maximum capacity for autoscaling"
   type        = number
   default     = 10
 }
 
 variable "enable_execute_command" {
-  description = "Activer ECS Exec pour le debugging"
+  description = "Enable ECS Exec for debugging"
   type        = bool
   default     = false
 }
 
 variable "tags" {
-  description = "Tags additionnels pour les ressources"
+  description = "Additional tags for resources"
   type        = map(string)
   default     = {}
 }
@@ -177,7 +177,7 @@ variable "tags" {
 
 ```hcl
 locals {
-  # Tags communs
+  # Common tags
   common_tags = merge(
     {
       Name        = var.name
@@ -188,10 +188,10 @@ locals {
     var.tags
   )
 
-  # Nom complet avec environnement
+  # Full name with environment
   full_name = "${var.name}-${var.environment}"
 
-  # Configuration du container
+  # Container configuration
   container_definition = {
     name      = var.name
     image     = var.container_image
@@ -306,7 +306,7 @@ resource "aws_ecs_service" "main" {
   # Fargate
   launch_type = "FARGATE"
 
-  # Réseau
+  # Network
   network_configuration {
     subnets          = var.subnet_ids
     security_groups  = [aws_security_group.ecs_tasks.id]
@@ -320,7 +320,7 @@ resource "aws_ecs_service" "main" {
     container_port   = var.container_port
   }
 
-  # Déploiement
+  # Deployment
   deployment_circuit_breaker {
     enable   = true
     rollback = true
@@ -333,7 +333,7 @@ resource "aws_ecs_service" "main" {
   # ECS Exec
   enable_execute_command = var.enable_execute_command
 
-  # Éviter les conflits avec l'autoscaling
+  # Avoid conflicts with autoscaling
   lifecycle {
     ignore_changes = [desired_count]
   }
@@ -537,7 +537,7 @@ resource "aws_appautoscaling_policy" "memory" {
 
 ```hcl
 # ====================
-# Execution Role (pour ECS agent)
+# Execution Role (for ECS agent)
 # ====================
 resource "aws_iam_role" "execution" {
   name = "${local.full_name}-execution"
@@ -584,7 +584,7 @@ resource "aws_iam_role_policy" "execution_secrets" {
 }
 
 # ====================
-# Task Role (pour l'application)
+# Task Role (for the application)
 # ====================
 resource "aws_iam_role" "task" {
   name = "${local.full_name}-task"
@@ -605,7 +605,7 @@ resource "aws_iam_role" "task" {
   tags = local.common_tags
 }
 
-# Policy pour ECS Exec
+# Policy for ECS Exec
 resource "aws_iam_role_policy" "ecs_exec" {
   count = var.enable_execute_command ? 1 : 0
   name  = "${local.full_name}-ecs-exec"
@@ -633,52 +633,52 @@ resource "aws_iam_role_policy" "ecs_exec" {
 
 ```hcl
 output "cluster_id" {
-  description = "ID du cluster ECS"
+  description = "ECS cluster ID"
   value       = aws_ecs_cluster.main.id
 }
 
 output "cluster_name" {
-  description = "Nom du cluster ECS"
+  description = "ECS cluster name"
   value       = aws_ecs_cluster.main.name
 }
 
 output "service_name" {
-  description = "Nom du service ECS"
+  description = "ECS service name"
   value       = aws_ecs_service.main.name
 }
 
 output "task_definition_arn" {
-  description = "ARN de la task definition"
+  description = "Task definition ARN"
   value       = aws_ecs_task_definition.main.arn
 }
 
 output "alb_dns_name" {
-  description = "DNS name de l'ALB"
+  description = "ALB DNS name"
   value       = aws_lb.main.dns_name
 }
 
 output "alb_zone_id" {
-  description = "Zone ID de l'ALB (pour Route53)"
+  description = "ALB Zone ID (for Route53)"
   value       = aws_lb.main.zone_id
 }
 
 output "security_group_id" {
-  description = "ID du security group des tâches ECS"
+  description = "ECS tasks security group ID"
   value       = aws_security_group.ecs_tasks.id
 }
 
 output "log_group_name" {
-  description = "Nom du log group CloudWatch"
+  description = "CloudWatch log group name"
   value       = aws_cloudwatch_log_group.main.name
 }
 
 output "task_role_arn" {
-  description = "ARN du rôle de tâche"
+  description = "Task role ARN"
   value       = aws_iam_role.task.arn
 }
 ```
 
-## Utilisation du module
+## Module usage
 
 ```hcl
 module "api_service" {
@@ -716,24 +716,24 @@ module "api_service" {
 }
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
-| **Validation** | Variables avec contraintes |
-| **Locals** | Logique centralisée |
-| **Sécurité** | IAM least privilege |
-| **Flexibilité** | Variables optionnelles |
-| **Documentation** | Descriptions sur chaque variable |
+| **Validation** | Variables with constraints |
+| **Locals** | Centralized logic |
+| **Security** | IAM least privilege |
+| **Flexibility** | Optional variables |
+| **Documentation** | Descriptions on each variable |
 
-## Commandes associées
+## Related commands
 
-- `/ops:ops-ci` - Pipeline avec terraform plan/apply
-- `/ops:ops-proxmox` - Module pour infrastructure Proxmox
-- `/qa:qa-security` - Audit sécurité Terraform
+- `/ops:ops-ci` - Pipeline with terraform plan/apply
+- `/ops:ops-proxmox` - Module for Proxmox infrastructure
+- `/qa:qa-security` - Terraform security audit
 
 ---
 
 :::tip Terraform Registry
-Publiez vos modules sur le [Terraform Registry](https://registry.terraform.io) pour les réutiliser facilement.
+Publish your modules on the [Terraform Registry](https://registry.terraform.io) to reuse them easily.
 :::
