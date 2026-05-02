@@ -213,7 +213,7 @@
     },
     {
       "path": ".github/workflows/dependabot-auto-merge.yml",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "e7871270be3515d087cc8c5e5df99db015dcd11e6aeb162871ebb068728523b5"
     },
     {
