@@ -1,27 +1,27 @@
 # =============================================================================
-# Exemple de configuration - COPIER vers terraform.tfvars
+# Example configuration - COPY to terraform.tfvars
 # =============================================================================
-# NE PAS COMMITER terraform.tfvars (contient des secrets)
+# DO NOT COMMIT terraform.tfvars (contains secrets)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Connexion API OPNsense
+# OPNsense API connection
 # -----------------------------------------------------------------------------
 
 opnsense_uri           = "https://192.168.10.1"
-opnsense_api_key       = "votre-api-key"
-opnsense_api_secret    = "votre-api-secret"
-opnsense_allow_insecure = true  # Certificat auto-signé
+opnsense_api_key       = "your-api-key"
+opnsense_api_secret    = "your-api-secret"
+opnsense_allow_insecure = true  # Self-signed certificate
 
 # -----------------------------------------------------------------------------
-# Interfaces (adapter selon votre configuration VM)
+# Interfaces (adapt to your VM configuration)
 # -----------------------------------------------------------------------------
 
-wan_interface = "vtnet0"  # Interface connectée à la box Orange
-lan_interface = "vtnet1"  # Interface connectée au réseau local
+wan_interface = "vtnet0"  # Interface connected to the Orange box
+lan_interface = "vtnet1"  # Interface connected to the local network
 
 # -----------------------------------------------------------------------------
-# Réseau LAN
+# LAN network
 # -----------------------------------------------------------------------------
 
 lan_ip           = "192.168.10.1"
@@ -35,13 +35,13 @@ lan_network_base = "192.168.10.0"
 log_blocked_traffic = true
 
 # -----------------------------------------------------------------------------
-# Port Forwarding (optionnel)
+# Port Forwarding (optional)
 # -----------------------------------------------------------------------------
-# Laisser vide ("") pour désactiver
+# Leave empty ("") to disable
 
-# Serveur web interne
-web_server_ip = ""  # ex: "192.168.10.20"
+# Internal web server
+web_server_ip = ""  # e.g.: "192.168.10.20"
 
-# Serveur SSH interne
-ssh_server_ip     = ""    # ex: "192.168.10.10"
-ssh_external_port = "2222"  # Port non-standard recommandé
+# Internal SSH server
+ssh_server_ip     = ""    # e.g.: "192.168.10.10"
+ssh_external_port = "2222"  # Non-standard port recommended

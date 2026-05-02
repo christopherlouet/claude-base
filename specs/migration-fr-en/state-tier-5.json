@@ -203,7 +203,7 @@
     },
     {
       "path": ".claude/templates/opnsense/examples/orange-box-dmz/terraform.tfvars.example",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "f9d574fe98d22108810fc4056288731c84c1f55e084805ff81a52086d09bf0d0"
     },
     {
