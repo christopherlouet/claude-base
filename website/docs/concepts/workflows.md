@@ -1,18 +1,18 @@
 ---
 sidebar_position: 21
-title: "Workflows Visuels"
-description: " Diagrammes des flux de travail recommandes"
+title: "Visual Workflows"
+description: " Diagrams of recommended workflows"
 tags:
   - "concept"
 ---
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Workflows Visuels
+# Visual Workflows
 
-&gt; Diagrammes des flux de travail recommandes
+&gt; Diagrams of recommended workflows
 
-## Workflow Principal: Explore → Specify → Plan → TDD → Audit → Commit
+## Main Workflow: Explore → Specify → Plan → TDD → Audit → Commit
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
@@ -44,7 +44,7 @@ flowchart LR
     F --> F1[/work:work-commit]
 ```
 
-## Workflow Feature Complete
+## Full Feature Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -63,32 +63,32 @@ flowchart LR
 │  │   ┌─────────────┐                          ┌─────────────┐            │  │
 │  │   │work-specify │                          │   RULES     │            │  │
 │  │   │ User Stories│                          │ (typescript,│            │  │
-│  │   │ + critères  │                          │  react,     │            │  │
+│  │   │ + criteria  │                          │  react,     │            │  │
 │  │   └──────┬──────┘                          │  security)  │            │  │
 │  │          │                                 └─────────────┘            │  │
 │  │          ▼                                                            │  │
 │  │   ┌─────────────┐                                                     │  │
-│  │   │  work-plan  │ Plan approuvé?                                      │  │
+│  │   │  work-plan  │ Plan approved?                                      │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │     ┌────┴────┐                                                       │  │
-│  │    Non       Oui                                                      │  │
+│  │    No        Yes                                                      │  │
 │  │     │         │                                                       │  │
 │  │     ▼         ▼                                                       │  │
-│  │   Reviser  ┌──────────────┐                                           │  │
-│  │   le plan  │   dev-tdd    │ Tests AVANT le code (Red-Green-Refactor)  │  │
+│  │   Revise   ┌──────────────┐                                           │  │
+│  │   the plan │   dev-tdd    │ Tests BEFORE code (Red-Green-Refactor)    │  │
 │  │            └──────┬───────┘                                           │  │
 │  │                   │                                                   │  │
 │  │                   ▼                                                   │  │
 │  │            ┌──────────────┐                                           │  │
-│  │            │   qa-loop    │ Audit + fix en boucle (score ≥ 90)        │  │
+│  │            │   qa-loop    │ Audit + fix loop (score ≥ 90)             │  │
 │  │            └──────┬───────┘                                           │  │
 │  │                   │                                                   │  │
-│  │                   │ Score atteint?                                    │  │
+│  │                   │ Score reached?                                    │  │
 │  │              ┌────┴────┐                                              │  │
-│  │             Non       Oui                                             │  │
+│  │             No        Yes                                             │  │
 │  │              │         │                                              │  │
 │  │              ▼         ▼                                              │  │
-│  │           Itérer    ┌──────────────┐                                  │  │
+│  │           Iterate   ┌──────────────┐                                  │  │
 │  │           qa-loop   │   work-pr    │                                  │  │
 │  │                     └──────┬───────┘                                  │  │
 │  │                            │                                          │  │
@@ -106,18 +106,18 @@ flowchart TD
     START([Start]) --> EXPLORE[work-explore]
     EXPLORE --> SPECIFY[work-specify]
     SPECIFY --> PLAN[work-plan]
-    PLAN --> APPROVED{Plan approuvé?}
-    APPROVED -->|Non| REVISE[Réviser le plan]
+    PLAN --> APPROVED{Plan approved?}
+    APPROVED -->|No| REVISE[Revise the plan]
     REVISE --> PLAN
-    APPROVED -->|Oui| CODE[dev-tdd]
+    APPROVED -->|Yes| CODE[dev-tdd]
     CODE --> AUDIT[qa-loop]
     AUDIT --> SCORE{Score ≥ 90?}
-    SCORE -->|Non| AUDIT
-    SCORE -->|Oui| PR[work-pr]
+    SCORE -->|No| AUDIT
+    SCORE -->|Yes| PR[work-pr]
     PR --> DONE([Done])
 ```
 
-## Workflow Bugfix
+## Bugfix Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -125,7 +125,7 @@ flowchart TD
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                                                                       │  │
-│  │   BUG REPORTE                                                         │  │
+│  │   BUG REPORTED                                                        │  │
 │  │        │                                                              │  │
 │  │        ▼                                                              │  │
 │  │   ┌─────────────┐                                                     │  │
@@ -135,37 +135,37 @@ flowchart TD
 │  │          │        ┌─────────────┐                                     │  │
 │  │          │        │   AGENT     │                                     │  │
 │  │          │        │  dev-debug  │                                     │  │
-│  │          │        │  (isolé)    │                                     │  │
+│  │          │        │  (isolated) │                                     │  │
 │  │          │        └──────┬──────┘                                     │  │
 │  │          │               │                                            │  │
 │  │          │◀──────────────┘                                            │  │
 │  │          │                                                            │  │
-│  │          │ Cause identifiée?                                          │  │
+│  │          │ Cause identified?                                          │  │
 │  │     ┌────┴────┐                                                       │  │
 │  │     │         │                                                       │  │
-│  │    Non       Oui                                                      │  │
+│  │    No        Yes                                                      │  │
 │  │     │         │                                                       │  │
 │  │     ▼         ▼                                                       │  │
-│  │  Plus de   ┌──────────────┐                                           │  │
-│  │  contexte  │ dev-tdd      │ (test qui échoue)                         │  │
-│  │            └──────┬───────┘                                           │  │
-│  │                   │                                                   │  │
-│  │                   ▼                                                   │  │
-│  │            ┌──────────────┐                                           │  │
-│  │            │    FIX       │                                           │  │
-│  │            └──────┬───────┘                                           │  │
-│  │                   │                                                   │  │
-│  │                   ▼                                                   │  │
-│  │            ┌──────────────┐                                           │  │
-│  │            │  Tests pass? │                                           │  │
-│  │            └──────┬───────┘                                           │  │
-│  │              ┌────┴────┐                                              │  │
-│  │             Non       Oui                                             │  │
-│  │              │         │                                              │  │
-│  │              ▼         ▼                                              │  │
-│  │           Itérer   ┌──────────────┐                                   │  │
-│  │                    │ work-commit  │                                   │  │
-│  │                    └──────────────┘                                   │  │
+│  │  More       ┌──────────────┐                                          │  │
+│  │  context    │ dev-tdd      │ (failing test)                           │  │
+│  │             └──────┬───────┘                                          │  │
+│  │                    │                                                  │  │
+│  │                    ▼                                                  │  │
+│  │             ┌──────────────┐                                          │  │
+│  │             │    FIX       │                                          │  │
+│  │             └──────┬───────┘                                          │  │
+│  │                    │                                                  │  │
+│  │                    ▼                                                  │  │
+│  │             ┌──────────────┐                                          │  │
+│  │             │ Tests pass?  │                                          │  │
+│  │             └──────┬───────┘                                          │  │
+│  │               ┌────┴────┐                                             │  │
+│  │              No        Yes                                            │  │
+│  │               │         │                                             │  │
+│  │               ▼         ▼                                             │  │
+│  │            Iterate  ┌──────────────┐                                  │  │
+│  │                     │ work-commit  │                                  │  │
+│  │                     └──────────────┘                                  │  │
 │  │                                                                       │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 │                                                                             │
@@ -175,21 +175,21 @@ flowchart TD
 ### Mermaid
 ```mermaid
 flowchart TD
-    BUG([Bug reporté]) --> DEBUG[dev-debug]
+    BUG([Bug reported]) --> DEBUG[dev-debug]
     DEBUG --> AGENT{{Agent dev-debug}}
-    AGENT --> FOUND{Cause trouvée?}
-    FOUND -->|Non| CONTEXT[Plus de contexte]
+    AGENT --> FOUND{Cause found?}
+    FOUND -->|No| CONTEXT[More context]
     CONTEXT --> DEBUG
-    FOUND -->|Oui| TEST[dev-tdd - Test qui échoue]
-    TEST --> FIX[Appliquer le fix]
-    FIX --> PASS{Tests passent?}
-    PASS -->|Non| ITERATE[Itérer]
+    FOUND -->|Yes| TEST[dev-tdd - Failing test]
+    TEST --> FIX[Apply the fix]
+    FIX --> PASS{Tests pass?}
+    PASS -->|No| ITERATE[Iterate]
     ITERATE --> FIX
-    PASS -->|Oui| COMMIT[work-commit]
+    PASS -->|Yes| COMMIT[work-commit]
     COMMIT --> DONE([Done])
 ```
 
-## Workflow Release
+## Release Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -201,7 +201,7 @@ flowchart TD
 │  │        │                                                              │  │
 │  │        ▼                                                              │  │
 │  │   ┌──────────────────────────────────────────────┐                    │  │
-│  │   │              AUDITS PARALLELES                │                   │  │
+│  │   │              PARALLEL AUDITS                  │                   │  │
 │  │   │                                               │                   │  │
 │  │   │  ┌─────────┐  ┌─────────┐  ┌─────────┐       │                   │  │
 │  │   │  │qa-security│  qa-perf │  wcag-audit │        │                   │  │
@@ -214,26 +214,26 @@ flowchart TD
 │  │                        │                                              │  │
 │  │                        ▼                                              │  │
 │  │                 ┌─────────────┐                                       │  │
-│  │                 │ Problèmes?  │                                       │  │
+│  │                 │   Issues?   │                                       │  │
 │  │                 └──────┬──────┘                                       │  │
 │  │                   ┌────┴────┐                                         │  │
-│  │                  Oui       Non                                        │  │
+│  │                  Yes       No                                         │  │
 │  │                   │         │                                         │  │
 │  │                   ▼         ▼                                         │  │
-│  │               Corriger  ┌─────────────┐                               │  │
-│  │               d'abord   │doc-changelog│                               │  │
-│  │                         └──────┬──────┘                               │  │
-│  │                                │                                      │  │
-│  │                                ▼                                      │  │
-│  │                         ┌─────────────┐                               │  │
-│  │                         │ ops-release │                               │  │
-│  │                         └──────┬──────┘                               │  │
-│  │                                │                                      │  │
-│  │                                ▼                                      │  │
-│  │                         ┌─────────────┐                               │  │
-│  │                         │    TAG      │                               │  │
-│  │                         │  vX.Y.Z     │                               │  │
-│  │                         └─────────────┘                               │  │
+│  │               Fix first  ┌─────────────┐                              │  │
+│  │                          │doc-changelog│                              │  │
+│  │                          └──────┬──────┘                              │  │
+│  │                                 │                                     │  │
+│  │                                 ▼                                     │  │
+│  │                          ┌─────────────┐                              │  │
+│  │                          │ ops-release │                              │  │
+│  │                          └──────┬──────┘                              │  │
+│  │                                 │                                     │  │
+│  │                                 ▼                                     │  │
+│  │                          ┌─────────────┐                              │  │
+│  │                          │    TAG      │                              │  │
+│  │                          │  vX.Y.Z     │                              │  │
+│  │                          └─────────────┘                              │  │
 │  │                                                                       │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 │                                                                             │
@@ -245,22 +245,22 @@ flowchart TD
 flowchart TD
     START([Prepare Release]) --> AUDITS
 
-    subgraph AUDITS[Audits Parallèles]
+    subgraph AUDITS[Parallel Audits]
         SEC[qa-security]
         PERF[qa-perf]
         A11Y[wcag-audit]
     end
 
-    AUDITS --> ISSUES{Problèmes?}
-    ISSUES -->|Oui| FIX[Corriger d'abord]
+    AUDITS --> ISSUES{Issues?}
+    ISSUES -->|Yes| FIX[Fix first]
     FIX --> AUDITS
-    ISSUES -->|Non| CHANGELOG[doc-changelog]
+    ISSUES -->|No| CHANGELOG[doc-changelog]
     CHANGELOG --> RELEASE[ops-release]
     RELEASE --> TAG[Tag vX.Y.Z]
     TAG --> DONE([Done])
 ```
 
-## Workflow Audit Complet
+## Full Audit Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -268,7 +268,7 @@ flowchart TD
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                                                                       │  │
-│  │                    ORCHESTRATEUR PRINCIPAL                            │  │
+│  │                    MAIN ORCHESTRATOR                                  │  │
 │  │                           │                                           │  │
 │  │       ┌───────────────────┼───────────────────┐                       │  │
 │  │       │                   │                   │                       │  │
@@ -282,20 +282,20 @@ flowchart TD
 │  │       │                  │                   │                        │  │
 │  │       ▼                  ▼                   ▼                        │  │
 │  │  ┌─────────┐        ┌─────────┐         ┌─────────┐                   │  │
-│  │  │ Rapport │        │ Rapport │         │ Rapport │                   │  │
-│  │  │Sécurité │        │  Perf   │         │  A11y   │                   │  │
+│  │  │ Report  │        │ Report  │         │ Report  │                   │  │
+│  │  │Security │        │  Perf   │         │  A11y   │                   │  │
 │  │  └────┬────┘        └────┬────┘         └────┬────┘                   │  │
 │  │       │                  │                   │                        │  │
 │  │       └──────────────────┼───────────────────┘                        │  │
 │  │                          │                                            │  │
 │  │                          ▼                                            │  │
 │  │                   ┌─────────────┐                                     │  │
-│  │                   │   RAPPORT   │                                     │  │
 │  │                   │   GLOBAL    │                                     │  │
+│  │                   │   REPORT    │                                     │  │
 │  │                   │             │                                     │  │
-│  │                   │ - Critiques │                                     │  │
-│  │                   │ - Importants│                                     │  │
-│  │                   │ - Mineurs   │                                     │  │
+│  │                   │ - Critical  │                                     │  │
+│  │                   │ - Important │                                     │  │
+│  │                   │ - Minor     │                                     │  │
 │  │                   │ - Score     │                                     │  │
 │  │                   └─────────────┘                                     │  │
 │  │                                                                       │  │
@@ -307,32 +307,32 @@ flowchart TD
 ### Mermaid
 ```mermaid
 flowchart TD
-    AUDIT([/qa:qa-audit]) --> ORCHESTRATOR[Orchestrateur]
+    AUDIT([/qa:qa-audit]) --> ORCHESTRATOR[Orchestrator]
 
     ORCHESTRATOR --> SEC{{Agent qa-security<br/>sonnet}}
     ORCHESTRATOR --> PERF{{Agent qa-perf<br/>sonnet}}
     ORCHESTRATOR --> A11Y{{Agent wcag-audit<br/>haiku}}
 
-    SEC --> RSEC[Rapport Sécurité]
-    PERF --> RPERF[Rapport Perf]
-    A11Y --> RA11Y[Rapport A11y]
+    SEC --> RSEC[Security Report]
+    PERF --> RPERF[Perf Report]
+    A11Y --> RA11Y[A11y Report]
 
-    RSEC --> MERGE[Rapport Global]
+    RSEC --> MERGE[Global Report]
     RPERF --> MERGE
     RA11Y --> MERGE
 
-    MERGE --> REPORT[/Critiques\nImportants\nMineurs\nScore/]
+    MERGE --> REPORT[/Critical\nImportant\nMinor\nScore/]
 ```
 
-## Workflow Mobile Flutter
+## Flutter Mobile Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                     Workflow App Mobile Flutter                              │
+│                     Flutter Mobile App Workflow                              │
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                                                                       │  │
-│  │   NOUVELLE FEATURE                                                    │  │
+│  │   NEW FEATURE                                                         │  │
 │  │        │                                                              │  │
 │  │        ▼                                                              │  │
 │  │   ┌─────────────┐                                                     │  │
@@ -352,19 +352,19 @@ flowchart TD
 │  │    ▼           ▼                                                      │  │
 │  │  ┌───────┐  ┌───────┐                                                 │  │
 │  │  │dev-   │  │dev-   │                                                 │  │
-│  │  │flutter│  │supabase│ (si backend)                                   │  │
+│  │  │flutter│  │supabase│ (if backend)                                   │  │
 │  │  └───┬───┘  └───┬───┘                                                 │  │
 │  │      │          │                                                     │  │
 │  │      └────┬─────┘                                                     │  │
 │  │           │                                                           │  │
 │  │           ▼                                                           │  │
 │  │    ┌─────────────┐                                                    │  │
-│  │    │   dev-tdd   │  Tests unitaires & widget                          │  │
+│  │    │   dev-tdd   │  Unit & widget tests                               │  │
 │  │    └──────┬──────┘                                                    │  │
 │  │           │                                                           │  │
 │  │           ▼                                                           │  │
 │  │    ┌─────────────┐                                                    │  │
-│  │    │  qa-mobile  │  Audit qualité mobile                              │  │
+│  │    │  qa-mobile  │  Mobile quality audit                              │  │
 │  │    └──────┬──────┘                                                    │  │
 │  │           │                                                           │  │
 │  │           ▼                                                           │  │
@@ -415,7 +415,7 @@ flowchart TD
 ### Mermaid
 ```mermaid
 flowchart TD
-    subgraph FEATURE[Nouvelle Feature]
+    subgraph FEATURE[New Feature]
         F1([Start]) --> F2[work-explore]
         F2 --> F3[work-plan]
         F3 --> F4[dev-flutter]
@@ -435,24 +435,24 @@ flowchart TD
     end
 ```
 
-## Workflow API Backend
+## Backend API Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        Workflow API Backend                                  │
+│                        Backend API Workflow                                  │
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                                                                       │  │
-│  │   NOUVEL ENDPOINT                                                     │  │
+│  │   NEW ENDPOINT                                                        │  │
 │  │        │                                                              │  │
 │  │        ▼                                                              │  │
 │  │   ┌─────────────┐                                                     │  │
-│  │   │work-explore │ Comprendre l'API existante                          │  │
+│  │   │work-explore │ Understand the existing API                         │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │          │                                                            │  │
 │  │          ▼                                                            │  │
 │  │   ┌─────────────┐                                                     │  │
-│  │   │work-specify │ User Stories + critères Given/When/Then             │  │
+│  │   │work-specify │ User Stories + Given/When/Then criteria             │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │          │                                                            │  │
 │  │          ▼                                                            │  │
@@ -462,7 +462,7 @@ flowchart TD
 │  │          │                                                            │  │
 │  │          ▼                                                            │  │
 │  │   ┌─────────────┐                                                     │  │
-│  │   │   dev-tdd   │ Tests d'intégration API (avant le code)             │  │
+│  │   │   dev-tdd   │ API integration tests (before the code)             │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │          │                                                            │  │
 │  │    ┌─────┴─────┐                                                      │  │
@@ -486,7 +486,7 @@ flowchart TD
 ### Mermaid
 ```mermaid
 flowchart TD
-    A([Nouvel Endpoint]) --> B[work-explore]
+    A([New Endpoint]) --> B[work-explore]
     B --> S[work-specify]
     S --> C[dev-api]
     C --> D[dev-tdd]
@@ -496,24 +496,24 @@ flowchart TD
     F --> G
 ```
 
-## Workflow Data Pipeline
+## Data Pipeline Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       Workflow Data Pipeline                                 │
+│                       Data Pipeline Workflow                                 │
 │                                                                             │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
 │  │                                                                       │  │
-│  │   NOUVEAU PIPELINE                                                    │  │
+│  │   NEW PIPELINE                                                        │  │
 │  │        │                                                              │  │
 │  │        ▼                                                              │  │
 │  │   ┌─────────────┐                                                     │  │
-│  │   │work-explore │ Sources, schémas existants                          │  │
+│  │   │work-explore │ Sources, existing schemas                           │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │          │                                                            │  │
 │  │          ▼                                                            │  │
 │  │   ┌─────────────┐                                                     │  │
-│  │   │ work-plan   │ Architecture ETL/ELT                                │  │
+│  │   │ work-plan   │ ETL/ELT architecture                                │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │          │                                                            │  │
 │  │    ┌─────┴─────┐                                                      │  │
@@ -541,7 +541,7 @@ flowchart TD
 │  │             │                                                         │  │
 │  │             ▼                                                         │  │
 │  │      ┌─────────────┐                                                  │  │
-│  │      │    ops-     │ Monitoring pipelines                             │  │
+│  │      │    ops-     │ Pipeline monitoring                              │  │
 │  │      │ monitoring  │                                                  │  │
 │  │      └─────────────┘                                                  │  │
 │  │                                                                       │  │
@@ -553,29 +553,29 @@ flowchart TD
 ### Mermaid
 ```mermaid
 flowchart TD
-    A([Nouveau Pipeline]) --> B[work-explore]
+    A([New Pipeline]) --> B[work-explore]
     B --> C[work-plan]
     C --> D[data-pipeline]
     C --> E[data-modeling]
-    D --> F[Tests Data Quality]
+    D --> F[Data Quality Tests]
     E --> F
     F --> G[data-analytics]
     G --> H[ops-monitoring]
 ```
 
-## Légende des Diagrammes
+## Diagram Legend
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         LÉGENDE                                 │
+│                         LEGEND                                  │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │   ┌──────────┐                                                  │
-│   │          │    Commande (manuel)                             │
+│   │          │    Command (manual)                              │
 │   └──────────┘                                                  │
 │                                                                 │
 │   ┌──────────┐                                                  │
-│   │  AGENT   │    Agent (contexte isolé)                        │
+│   │  AGENT   │    Agent (isolated context)                      │
 │   │ (model)  │                                                  │
 │   └──────────┘                                                  │
 │                                                                 │
@@ -584,15 +584,15 @@ flowchart TD
 │   └──────────┘                                                  │
 │                                                                 │
 │       │                                                         │
-│       ▼           Flux séquentiel                               │
+│       ▼           Sequential flow                               │
 │                                                                 │
 │       │                                                         │
-│   ────┼────       Flux parallèle                                │
+│   ────┼────       Parallel flow                                 │
 │       │                                                         │
 │                                                                 │
-│   ─ ─ ─ ─ ─       Optionnel                                     │
+│   ─ ─ ─ ─ ─       Optional                                      │
 │                                                                 │
-│   ═════════       Séparateur de section                         │
+│   ═════════       Section separator                             │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
