@@ -1,188 +1,188 @@
 ---
 sidebar_position: 2
-title: Matrice des Commands
-description: Repartition des 131 commandes par domaine
+title: Commands Matrix
+description: Breakdown of the 131 commands by domain
 ---
 
-# Matrice des Commands
+# Commands Matrix
 
-> **131 commandes** organisees par domaine
+> **131 commands** organized by domain
 >
-> Pour la liste exhaustive et toujours a jour, voir le [Catalogue des commandes](/docs/reference/commands) (auto-genere depuis `.claude/commands/`).
+> For the exhaustive and always up-to-date list, see the [Commands Catalog](/docs/reference/commands) (auto-generated from `.claude/commands/`).
 
 ## WORK - Workflow (11)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `/work:work-explore` | Explorer et comprendre le code |
-| `/work:work-specify` | Creer une specification |
-| `/work:work-clarify` | Clarifier les exigences |
-| `/work:work-plan` | Planifier une implementation |
-| `/work:work-commit` | Creer un commit propre |
-| `/work:work-commit-push-pr` | Workflow complet: commit + push + PR |
-| `/work:work-pr` | Creer une Pull Request |
-| `/work:work-flow-feature` | Workflow feature complet |
-| `/work:work-flow-bugfix` | Workflow bugfix complet |
-| `/work:work-flow-release` | Workflow release complet |
-| `/work:work-flow-launch` | Workflow lancement complet |
+| `/work:work-explore` | Explore and understand the code |
+| `/work:work-specify` | Create a specification |
+| `/work:work-clarify` | Clarify the requirements |
+| `/work:work-plan` | Plan an implementation |
+| `/work:work-commit` | Create a clean commit |
+| `/work:work-commit-push-pr` | Full workflow: commit + push + PR |
+| `/work:work-pr` | Create a Pull Request |
+| `/work:work-flow-feature` | Full feature workflow |
+| `/work:work-flow-bugfix` | Full bugfix workflow |
+| `/work:work-flow-release` | Full release workflow |
+| `/work:work-flow-launch` | Full launch workflow |
 
-## DEV - Developpement (23)
+## DEV - Development (23)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `/dev:dev-tdd` | Developpement TDD |
-| `/dev:dev-test` | Generer des tests |
-| `/dev:dev-testing-setup` | Configurer l'infrastructure de tests |
-| `/dev:dev-debug` | Deboguer un probleme |
-| `/dev:dev-refactor` | Refactoring guide |
-| `/dev:dev-document` | Generation de documents (PDF, DOCX, XLSX, PPTX) |
-| `/dev:dev-api` | Creer/documenter API REST |
-| `/dev:dev-api-versioning` | Versioning d'API |
-| `/dev:dev-component` | Creer un composant UI |
-| `/dev:dev-hook` | Creer un hook React/Vue |
-| `/dev:dev-error-handling` | Strategie de gestion d'erreurs |
-| `/dev:dev-react-perf` | Optimisation React/Next.js |
-| `/dev:dev-mcp` | Creer des serveurs MCP |
-| `/dev:dev-flutter` | Widgets et screens Flutter |
-| `/dev:dev-supabase` | Backend Supabase |
-| `/dev:dev-graphql` | API GraphQL |
-| `/dev:dev-neovim` | Plugins Neovim |
-| `/dev:dev-prompt-engineering` | Optimisation de prompts LLM |
-| `/dev:dev-rag` | Systemes RAG (Retrieval-Augmented Generation) |
-| `/dev:dev-design-system` | Design tokens et bibliotheque de composants |
-| `/dev:dev-prisma` | ORM Prisma (schema, migrations, queries) |
-| `/dev:dev-trpc` | APIs type-safe avec tRPC |
-| `/dev:dev-ai-integration` | Integration LLMs (OpenAI, Claude API) |
+| `/dev:dev-tdd` | TDD development |
+| `/dev:dev-test` | Generate tests |
+| `/dev:dev-testing-setup` | Configure the test infrastructure |
+| `/dev:dev-debug` | Debug a problem |
+| `/dev:dev-refactor` | Guided refactoring |
+| `/dev:dev-document` | Document generation (PDF, DOCX, XLSX, PPTX) |
+| `/dev:dev-api` | Create/document REST API |
+| `/dev:dev-api-versioning` | API versioning |
+| `/dev:dev-component` | Create a UI component |
+| `/dev:dev-hook` | Create a React/Vue hook |
+| `/dev:dev-error-handling` | Error handling strategy |
+| `/dev:dev-react-perf` | React/Next.js optimization |
+| `/dev:dev-mcp` | Create MCP servers |
+| `/dev:dev-flutter` | Flutter widgets and screens |
+| `/dev:dev-supabase` | Supabase backend |
+| `/dev:dev-graphql` | GraphQL API |
+| `/dev:dev-neovim` | Neovim plugins |
+| `/dev:dev-prompt-engineering` | LLM prompt optimization |
+| `/dev:dev-rag` | RAG (Retrieval-Augmented Generation) systems |
+| `/dev:dev-design-system` | Design tokens and component library |
+| `/dev:dev-prisma` | Prisma ORM (schema, migrations, queries) |
+| `/dev:dev-trpc` | Type-safe APIs with tRPC |
+| `/dev:dev-ai-integration` | LLM integration (OpenAI, Claude API) |
 
-## QA - Qualite (15)
+## QA - Quality (15)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `/qa:qa-review` | Code review approfondie |
-| `/qa:qa-security` | Audit securite OWASP |
-| `/qa:qa-perf` | Analyse de performance |
-| `/qa:wcag-audit` | Audit accessibilite WCAG |
-| `/qa:qa-audit` | Audit qualite complet |
-| `/qa:qa-chrome` | Tests visuels Chrome (debugging DOM, responsive, captures) |
-| `/qa:qa-design` | Audit UI/UX (100+ regles design web) |
-| `/qa:qa-responsive` | Audit responsive/mobile |
-| `/qa:qa-automation` | Automatisation des tests |
-| `/qa:qa-coverage` | Analyse couverture tests |
-| `/qa:qa-e2e` | Tests End-to-End (Playwright, Cypress) |
-| `/qa:qa-kaizen` | Amelioration continue |
-| `/qa:qa-mobile` | Audit qualite mobile |
-| `/qa:qa-neovim` | Audit config Neovim |
-| `/qa:qa-tech-debt` | Identifier et prioriser la dette technique |
+| `/qa:qa-review` | In-depth code review |
+| `/qa:qa-security` | OWASP security audit |
+| `/qa:qa-perf` | Performance analysis |
+| `/qa:wcag-audit` | WCAG accessibility audit |
+| `/qa:qa-audit` | Full quality audit |
+| `/qa:qa-chrome` | Chrome visual tests (DOM debugging, responsive, captures) |
+| `/qa:qa-design` | UI/UX audit (100+ web design rules) |
+| `/qa:qa-responsive` | Responsive/mobile audit |
+| `/qa:qa-automation` | Test automation |
+| `/qa:qa-coverage` | Test coverage analysis |
+| `/qa:qa-e2e` | End-to-End tests (Playwright, Cypress) |
+| `/qa:qa-kaizen` | Continuous improvement |
+| `/qa:qa-mobile` | Mobile quality audit |
+| `/qa:qa-neovim` | Neovim config audit |
+| `/qa:qa-tech-debt` | Identify and prioritize technical debt |
 
 ## OPS - Operations (30)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `/ops:ops-hotfix` | Correction urgente production |
-| `/ops:ops-release` | Creer une release |
-| `/ops:ops-deps` | Audit dependances |
-| `/ops:ops-docker` | Dockeriser un projet |
-| `/ops:ops-migrate` | Migration de code |
-| `/ops:ops-ci` | Configuration CI/CD |
-| `/ops:ops-monitoring` | Logs, metriques, alertes |
-| `/ops:ops-observability-stack` | Deployer Prometheus, Grafana, Loki, Alertmanager |
-| `/ops:ops-grafana-dashboard` | Dashboard Grafana |
-| `/ops:ops-database` | Schema, migrations DB |
-| `/ops:ops-health` | Health check rapide |
-| `/ops:ops-env` | Gestion des environnements |
-| `/ops:ops-backup` | Strategie backup/restore |
-| `/ops:ops-load-testing` | Tests de charge |
-| `/ops:ops-cost-optimization` | Optimisation couts cloud |
-| `/ops:ops-disaster-recovery` | Plan de reprise |
+| `/ops:ops-hotfix` | Urgent production fix |
+| `/ops:ops-release` | Create a release |
+| `/ops:ops-deps` | Dependencies audit |
+| `/ops:ops-docker` | Dockerize a project |
+| `/ops:ops-migrate` | Code migration |
+| `/ops:ops-ci` | CI/CD configuration |
+| `/ops:ops-monitoring` | Logs, metrics, alerts |
+| `/ops:ops-observability-stack` | Deploy Prometheus, Grafana, Loki, Alertmanager |
+| `/ops:ops-grafana-dashboard` | Grafana dashboard |
+| `/ops:ops-database` | Schema, DB migrations |
+| `/ops:ops-health` | Quick health check |
+| `/ops:ops-env` | Environment management |
+| `/ops:ops-backup` | Backup/restore strategy |
+| `/ops:ops-load-testing` | Load testing |
+| `/ops:ops-cost-optimization` | Cloud cost optimization |
+| `/ops:ops-disaster-recovery` | Recovery plan |
 | `/ops:ops-infra-code` | Infrastructure as Code |
-| `/ops:ops-secrets-management` | Gestion des secrets |
+| `/ops:ops-secrets-management` | Secrets management |
 | `/ops:ops-k8s` | Kubernetes |
-| `/ops:ops-vps` | Configuration VPS |
-| `/ops:ops-mobile-release` | Release mobile |
-| `/ops:ops-serverless` | Deploiement serverless (Lambda, Vercel, CF Workers) |
-| `/ops:ops-vercel` | Configuration et deploiement Vercel |
-| `/ops:ops-proxmox` | Infrastructure Proxmox VE (VMs, LXC, reseau, backup) |
-| `/ops:ops-opnsense` | Configuration OPNsense via Terraform |
-| `/ops:ops-rollback` | Procedure de rollback securisee |
-| `/ops:ops-gitflow-init` | Initialiser GitFlow |
-| `/ops:ops-gitflow-feature` | Feature GitFlow |
-| `/ops:ops-gitflow-release` | Release GitFlow |
-| `/ops:ops-gitflow-hotfix` | Hotfix GitFlow |
+| `/ops:ops-vps` | VPS configuration |
+| `/ops:ops-mobile-release` | Mobile release |
+| `/ops:ops-serverless` | Serverless deployment (Lambda, Vercel, CF Workers) |
+| `/ops:ops-vercel` | Vercel configuration and deployment |
+| `/ops:ops-proxmox` | Proxmox VE infrastructure (VMs, LXC, network, backup) |
+| `/ops:ops-opnsense` | OPNsense configuration via Terraform |
+| `/ops:ops-rollback` | Safe rollback procedure |
+| `/ops:ops-gitflow-init` | Initialize GitFlow |
+| `/ops:ops-gitflow-feature` | GitFlow feature |
+| `/ops:ops-gitflow-release` | GitFlow release |
+| `/ops:ops-gitflow-hotfix` | GitFlow hotfix |
 
 ## DOC - Documentation (9)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `/doc:doc-generate` | Generer documentation |
-| `/doc:doc-changelog` | Generer changelog |
-| `/doc:doc-explain` | Expliquer du code |
-| `/doc:doc-onboard` | Decouvrir un codebase |
-| `/doc:doc-i18n` | Internationalisation |
-| `/doc:doc-fix-issue` | Corriger une issue GitHub |
-| `/doc:doc-api-spec` | Spec OpenAPI/Swagger |
-| `/doc:doc-readme` | Creer/ameliorer README |
-| `/doc:doc-architecture` | Documenter l'architecture |
+| `/doc:doc-generate` | Generate documentation |
+| `/doc:doc-changelog` | Generate changelog |
+| `/doc:doc-explain` | Explain code |
+| `/doc:doc-onboard` | Discover a codebase |
+| `/doc:doc-i18n` | Internationalization |
+| `/doc:doc-fix-issue` | Fix a GitHub issue |
+| `/doc:doc-api-spec` | OpenAPI/Swagger spec |
+| `/doc:doc-readme` | Create/improve README |
+| `/doc:doc-architecture` | Document the architecture |
 
 ## BIZ - Business (11)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
 | `/biz:biz-model` | Business model, Lean Canvas |
-| `/biz:biz-market` | Etude de marche |
-| `/biz:biz-mvp` | Definir le MVP |
-| `/biz:biz-pricing` | Strategie de pricing |
-| `/biz:biz-pitch` | Creer un pitch deck |
-| `/biz:biz-roadmap` | Planifier la roadmap |
-| `/biz:biz-launch` | Workflow lancement |
-| `/biz:biz-competitor` | Analyse concurrentielle |
-| `/biz:biz-okr` | Definir les OKRs |
-| `/biz:biz-personas` | Creer des personas |
-| `/biz:biz-research` | Recherche utilisateur |
+| `/biz:biz-market` | Market study |
+| `/biz:biz-mvp` | Define the MVP |
+| `/biz:biz-pricing` | Pricing strategy |
+| `/biz:biz-pitch` | Create a pitch deck |
+| `/biz:biz-roadmap` | Plan the roadmap |
+| `/biz:biz-launch` | Launch workflow |
+| `/biz:biz-competitor` | Competitive analysis |
+| `/biz:biz-okr` | Define OKRs |
+| `/biz:biz-personas` | Create personas |
+| `/biz:biz-research` | User research |
 
-## GROWTH - Croissance (11)
+## GROWTH - Growth (11)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
 | `/growth:growth-landing` | Landing page |
-| `/growth:growth-seo` | Audit SEO |
-| `/growth:growth-analytics` | Setup tracking |
-| `/growth:growth-cro` | Optimisation du taux de conversion (CRO) |
-| `/growth:growth-onboarding` | Parcours onboarding |
+| `/growth:growth-seo` | SEO audit |
+| `/growth:growth-analytics` | Tracking setup |
+| `/growth:growth-cro` | Conversion rate optimization (CRO) |
+| `/growth:growth-onboarding` | Onboarding journey |
 | `/growth:growth-email` | Email marketing |
-| `/growth:growth-ab-test` | Planifier A/B tests |
-| `/growth:growth-retention` | Strategies retention |
-| `/growth:growth-funnel` | Optimisation funnels |
-| `/growth:growth-localization` | Strategie de localisation multi-marches |
-| `/growth:growth-app-store-analytics` | Analytics App Store |
+| `/growth:growth-ab-test` | Plan A/B tests |
+| `/growth:growth-retention` | Retention strategies |
+| `/growth:growth-funnel` | Funnel optimization |
+| `/growth:growth-localization` | Multi-market localization strategy |
+| `/growth:growth-app-store-analytics` | App Store analytics |
 
-## DATA - Donnees (3)
+## DATA - Data (3)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `/data:data-pipeline` | Pipelines ETL/ELT |
-| `/data:data-analytics` | Analyse et rapports |
-| `/data:data-modeling` | Modelisation data |
+| `/data:data-pipeline` | ETL/ELT pipelines |
+| `/data:data-analytics` | Analysis and reports |
+| `/data:data-modeling` | Data modeling |
 
 ## LEGAL - Legal (5)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `/legal:legal-docs` | CGU, CGV, mentions |
-| `/legal:legal-rgpd` | Conformite RGPD |
-| `/legal:legal-payment` | Integration paiement |
-| `/legal:legal-terms-of-service` | CGU |
-| `/legal:legal-privacy-policy` | Politique de confidentialite |
+| `/legal:legal-docs` | ToS, T&Cs, legal notices |
+| `/legal:legal-rgpd` | GDPR compliance |
+| `/legal:legal-payment` | Payment integration |
+| `/legal:legal-terms-of-service` | ToS |
+| `/legal:legal-privacy-policy` | Privacy policy |
 
 ## ASSISTANT (2)
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `/assistant` | Point d'entree unique, guide complet |
-| `/assistant-auto` | Mode automatique, analyse et execute directement |
+| `/assistant` | Single entry point, full guide |
+| `/assistant-auto` | Automatic mode, analyzes and executes directly |
 
 ---
 
-## Voir aussi
+## See also
 
-- [Matrice des Agents](/docs/reference/agents-matrix)
+- [Agents Matrix](/docs/reference/agents-matrix)
 - [Cheatsheet](/docs/reference/commands)
