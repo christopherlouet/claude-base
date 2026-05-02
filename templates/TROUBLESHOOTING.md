@@ -1,64 +1,64 @@
 # Troubleshooting Guide
 
-Guide de résolution des problèmes courants avec Claude Code et les agents claude-socle.
+Guide for resolving common issues with Claude Code and claude-socle agents.
 
-## Table des matières
+## Table of Contents
 
-- [Problèmes avec les agents](#problèmes-avec-les-agents)
-- [Problèmes Claude Code](#problèmes-claude-code)
-- [Problèmes de performance](#problèmes-de-performance)
-- [Erreurs courantes](#erreurs-courantes)
+- [Agent issues](#agent-issues)
+- [Claude Code issues](#claude-code-issues)
+- [Performance issues](#performance-issues)
+- [Common errors](#common-errors)
 
 ---
 
-## Problèmes avec les agents
+## Agent issues
 
-### L'agent ne se lance pas
+### The agent does not start
 
-**Symptôme**: `/agent-name` ne fait rien ou retourne une erreur.
+**Symptom**: `/agent-name` does nothing or returns an error.
 
-**Causes possibles**:
+**Possible causes**:
 
-1. **Fichier non trouvé**
+1. **File not found**
    ```bash
-   # Vérifier que le fichier existe
+   # Check that the file exists
    ls .claude/commands/agent-name.md
    ```
 
-2. **Syntaxe incorrecte du fichier**
+2. **Incorrect file syntax**
    ```bash
-   # Vérifier que le fichier est un Markdown valide
-   # Le fichier doit commencer par "# Agent NAME"
+   # Check that the file is valid Markdown
+   # The file must start with "# Agent NAME"
    head -5 .claude/commands/agent-name.md
    ```
 
-3. **Dossier .claude mal placé**
+3. **.claude folder misplaced**
    ```bash
-   # Le dossier .claude doit être à la racine du projet
+   # The .claude folder must be at the root of the project
    ls -la .claude/
    ```
 
 **Solution**:
-- Vérifier la structure du dossier `.claude/commands/`
-- S'assurer que le fichier a l'extension `.md`
-- Vérifier que le contenu commence par un titre `# Agent`
+- Check the structure of the `.claude/commands/` folder
+- Make sure the file has the `.md` extension
+- Verify that the content starts with a `# Agent` heading
 
 ---
 
-### L'agent ne reçoit pas les arguments
+### The agent does not receive arguments
 
-**Symptôme**: Les arguments passés à l'agent ne sont pas pris en compte.
+**Symptom**: Arguments passed to the agent are not taken into account.
 
-**Cause**: Le placeholder `$ARGUMENTS` manque ou mal placé.
+**Cause**: The `$ARGUMENTS` placeholder is missing or misplaced.
 
 **Solution**:
 ```markdown
-# Agent MON-AGENT
+# Agent MY-AGENT
 
-Description de l'agent.
+Agent description.
 
-## Contexte
-$ARGUMENTS    <!-- Ce placeholder est OBLIGATOIRE -->
+## Context
+$ARGUMENTS    <!-- This placeholder is MANDATORY -->
 
 ## Instructions
 ...
@@ -66,283 +66,283 @@ $ARGUMENTS    <!-- Ce placeholder est OBLIGATOIRE -->
 
 ---
 
-### L'agent produit des résultats incohérents
+### The agent produces inconsistent results
 
-**Symptôme**: Les réponses varient trop ou ne suivent pas les instructions.
+**Symptom**: Responses vary too much or do not follow the instructions.
 
-**Causes possibles**:
+**Possible causes**:
 
-1. **Instructions trop vagues**
-   - Ajouter des exemples concrets
-   - Utiliser des checklists
+1. **Instructions too vague**
+   - Add concrete examples
+   - Use checklists
 
-2. **Conflits d'instructions**
-   - Vérifier qu'il n'y a pas de contradictions
-   - Prioriser clairement les règles
+2. **Conflicting instructions**
+   - Check that there are no contradictions
+   - Clearly prioritize the rules
 
-3. **Contexte insuffisant**
-   - Ajouter plus de contexte dans `$ARGUMENTS`
-   - Référencer des fichiers spécifiques
+3. **Insufficient context**
+   - Add more context in `$ARGUMENTS`
+   - Reference specific files
 
 **Solution**:
 ```markdown
 ## Instructions
 
-IMPORTANT: [Instruction critique]
+IMPORTANT: [Critical instruction]
 
-YOU MUST [Action obligatoire]
+YOU MUST [Mandatory action]
 
-NEVER [Action interdite]
+NEVER [Forbidden action]
 
-Think hard sur [aspect à considérer]
+Think hard about [aspect to consider]
 ```
 
 ---
 
-## Problèmes Claude Code
+## Claude Code issues
 
-### Claude Code ne démarre pas
+### Claude Code does not start
 
-**Symptôme**: La commande `claude` ne fonctionne pas.
+**Symptom**: The `claude` command does not work.
 
 **Solutions**:
 
-1. **Vérifier l'installation**
+1. **Check the installation**
    ```bash
    which claude
    claude --version
    ```
 
-2. **Réinstaller si nécessaire**
+2. **Reinstall if necessary**
    ```bash
    npm uninstall -g @anthropic-ai/claude-code
    npm install -g @anthropic-ai/claude-code
    ```
 
-3. **Vérifier les permissions**
+3. **Check permissions**
    ```bash
-   # Sur macOS/Linux
+   # On macOS/Linux
    sudo npm install -g @anthropic-ai/claude-code
    ```
 
 ---
 
-### Erreur d'authentification
+### Authentication error
 
-**Symptôme**: "Invalid API key" ou erreur d'authentification.
+**Symptom**: "Invalid API key" or authentication error.
 
 **Solutions**:
 
-1. **Vérifier la clé API**
+1. **Check the API key**
    ```bash
    echo $ANTHROPIC_API_KEY
    ```
 
-2. **Configurer la clé**
+2. **Configure the key**
    ```bash
    export ANTHROPIC_API_KEY="sk-ant-..."
    ```
 
-3. **Ajouter au profil shell**
+3. **Add to shell profile**
    ```bash
-   # .bashrc ou .zshrc
+   # .bashrc or .zshrc
    export ANTHROPIC_API_KEY="sk-ant-..."
    ```
 
 ---
 
-### Timeout ou connexion interrompue
+### Timeout or interrupted connection
 
-**Symptôme**: Les requêtes échouent après un certain temps.
+**Symptom**: Requests fail after a certain time.
 
 **Causes**:
-- Connexion réseau instable
-- Requête trop longue
+- Unstable network connection
+- Request too long
 - Rate limiting
 
 **Solutions**:
 
-1. **Vérifier la connexion**
+1. **Check the connection**
    ```bash
    ping api.anthropic.com
    ```
 
-2. **Réduire la taille des requêtes**
-   - Diviser les tâches complexes
-   - Utiliser des agents spécialisés
+2. **Reduce request size**
+   - Split complex tasks
+   - Use specialized agents
 
-3. **Attendre et réessayer**
-   - Les rate limits se réinitialisent après quelques minutes
+3. **Wait and retry**
+   - Rate limits reset after a few minutes
 
 ---
 
-## Problèmes de performance
+## Performance issues
 
-### Réponses lentes
+### Slow responses
 
-**Symptôme**: Claude met longtemps à répondre.
+**Symptom**: Claude takes a long time to respond.
 
 **Solutions**:
 
-1. **Réduire le contexte**
-   - Limiter les fichiers lus simultanément
-   - Utiliser des agents ciblés
+1. **Reduce the context**
+   - Limit files read simultaneously
+   - Use targeted agents
 
-2. **Optimiser les prompts**
+2. **Optimize prompts**
    ```markdown
-   <!-- Éviter -->
-   Analyse tout le projet et donne-moi un rapport complet...
+   <!-- Avoid -->
+   Analyze the entire project and give me a complete report...
 
-   <!-- Préférer -->
-   Analyse le fichier src/auth.ts et identifie les problèmes de sécurité.
+   <!-- Prefer -->
+   Analyze the file src/auth.ts and identify security issues.
    ```
 
-3. **Utiliser le bon agent**
-   - `/explore` pour la découverte rapide
-   - Agents spécialisés pour les tâches ciblées
+3. **Use the right agent**
+   - `/explore` for quick discovery
+   - Specialized agents for targeted tasks
 
 ---
 
-### Consommation de tokens élevée
+### High token consumption
 
-**Symptôme**: Les crédits API sont consommés rapidement.
+**Symptom**: API credits are consumed quickly.
 
 **Solutions**:
 
-1. **Éviter les fichiers volumineux**
+1. **Avoid large files**
    ```markdown
-   <!-- Éviter -->
-   Lis tous les fichiers du projet
+   <!-- Avoid -->
+   Read all files in the project
 
-   <!-- Préférer -->
-   Lis src/services/auth.ts
+   <!-- Prefer -->
+   Read src/services/auth.ts
    ```
 
-2. **Utiliser des agents ciblés**
-   - Un agent spécialisé consomme moins qu'un agent générique
+2. **Use targeted agents**
+   - A specialized agent consumes less than a generic one
 
-3. **Pré-filtrer le contexte**
-   - Spécifier les fichiers pertinents
-   - Exclure node_modules, dist, etc.
+3. **Pre-filter the context**
+   - Specify relevant files
+   - Exclude node_modules, dist, etc.
 
 ---
 
-## Erreurs courantes
+## Common errors
 
 ### "File not found"
 
-**Cause**: Chemin de fichier incorrect.
+**Cause**: Incorrect file path.
 
 **Solution**:
 ```bash
-# Vérifier le chemin
-ls -la chemin/vers/fichier
+# Check the path
+ls -la path/to/file
 
-# Utiliser des chemins relatifs à la racine
-./src/fichier.ts  # ✅
-src/fichier.ts    # ✅
-/chemin/absolu    # ⚠️ Éviter si possible
+# Use paths relative to the root
+./src/file.ts  # ✅
+src/file.ts    # ✅
+/absolute/path # ⚠️ Avoid if possible
 ```
 
 ---
 
 ### "Permission denied"
 
-**Cause**: Droits insuffisants sur le fichier ou dossier.
+**Cause**: Insufficient permissions on the file or folder.
 
 **Solution**:
 ```bash
-# Vérifier les permissions
-ls -la fichier
+# Check permissions
+ls -la file
 
-# Corriger si nécessaire
-chmod 644 fichier.md
-chmod 755 dossier/
+# Fix if necessary
+chmod 644 file.md
+chmod 755 folder/
 ```
 
 ---
 
 ### "Invalid markdown"
 
-**Cause**: Syntaxe Markdown incorrecte dans l'agent.
+**Cause**: Incorrect Markdown syntax in the agent.
 
-**Vérifications**:
+**Checks**:
 ```markdown
 # ✅ Correct
-## Titre de niveau 2
+## Level 2 heading
 
 # ❌ Incorrect
-##Titre sans espace
+##Heading without space
 ```
 
-**Points à vérifier**:
-- Espaces après les `#` des titres
-- Fermeture des blocs de code (```)
-- Syntaxe des tableaux
+**Things to check**:
+- Spaces after `#` in headings
+- Closing of code blocks (```)
+- Table syntax
 
 ---
 
 ### "Agent not recognized"
 
-**Cause**: Le nom de l'agent ne correspond pas au fichier.
+**Cause**: The agent name does not match the file.
 
 **Solution**:
 ```bash
-# Le nom de commande est basé sur le nom du fichier
-.claude/commands/mon-agent.md  →  /mon-agent
-.claude/commands/MonAgent.md   →  /MonAgent
+# The command name is based on the file name
+.claude/commands/my-agent.md  →  /my-agent
+.claude/commands/MyAgent.md   →  /MyAgent
 ```
 
 ---
 
-## Diagnostic général
+## General diagnostics
 
-### Checklist de diagnostic
+### Diagnostic checklist
 
 ```bash
-# 1. Vérifier Claude Code
+# 1. Check Claude Code
 claude --version
 
-# 2. Vérifier la structure
+# 2. Check the structure
 ls -la .claude/
 ls -la .claude/commands/
 
-# 3. Vérifier un agent spécifique
+# 3. Check a specific agent
 cat .claude/commands/agent-name.md | head -20
 
-# 4. Vérifier les logs (si disponibles)
+# 4. Check the logs (if available)
 cat ~/.claude/logs/latest.log
 ```
 
-### Réinitialisation complète
+### Full reset
 
-Si rien ne fonctionne:
+If nothing works:
 
 ```bash
-# 1. Sauvegarder la configuration
+# 1. Back up the configuration
 cp -r .claude .claude.backup
 
-# 2. Réinstaller Claude Code
+# 2. Reinstall Claude Code
 npm uninstall -g @anthropic-ai/claude-code
 npm cache clean --force
 npm install -g @anthropic-ai/claude-code
 
-# 3. Restaurer la configuration
+# 3. Restore the configuration
 mv .claude.backup .claude
 ```
 
 ---
 
-## Obtenir de l'aide
+## Getting help
 
-Si le problème persiste:
+If the problem persists:
 
-1. **Documentation officielle**: https://code.claude.com/docs/en/overview
+1. **Official documentation**: https://code.claude.com/docs/en/overview
 2. **GitHub Issues**: https://github.com/anthropics/claude-code/issues
-3. **Community Discord**: [lien vers discord si applicable]
+3. **Community Discord**: [discord link if applicable]
 
-Avant de reporter un bug, préparez:
-- Version de Claude Code (`claude --version`)
-- OS et version
-- Message d'erreur complet
-- Étapes pour reproduire
+Before reporting a bug, prepare:
+- Claude Code version (`claude --version`)
+- OS and version
+- Full error message
+- Steps to reproduce
