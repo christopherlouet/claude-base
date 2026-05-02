@@ -133,7 +133,7 @@
     },
     {
       "path": "tests/new-project.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "55aeffca696650019e43d09101ae3eaaa374da9f4e086868aeaa974740fe6cc4"
     },
     {
