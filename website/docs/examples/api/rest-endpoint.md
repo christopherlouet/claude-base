@@ -1,38 +1,38 @@
 ---
 sidebar_position: 1
-title: Endpoint REST
-description: Exemple d'endpoint REST complet avec Express et validation
+title: REST Endpoint
+description: Complete REST endpoint example with Express and validation
 ---
 
-# Endpoint REST avec Express
+# REST Endpoint with Express
 
-Cet exemple montre comment créer un endpoint REST professionnel avec Express, validation Zod et tests.
+This example shows how to create a professional REST endpoint with Express, Zod validation and tests.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/dev:dev-api "Créer un endpoint CRUD pour les articles avec pagination"
+/dev:dev-api "Create a CRUD endpoint for articles with pagination"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 src/
 ├── routes/
-│   └── articles.ts        # Routes Express
+│   └── articles.ts        # Express routes
 ├── controllers/
 │   └── articleController.ts
 ├── services/
 │   └── articleService.ts
 ├── schemas/
-│   └── articleSchema.ts   # Validation Zod
+│   └── articleSchema.ts   # Zod validation
 ├── middleware/
-│   └── validate.ts        # Middleware validation
+│   └── validate.ts        # Validation middleware
 └── tests/
     └── articles.test.ts
 ```
 
-## Code de l'endpoint
+## Endpoint code
 
 ### `schemas/articleSchema.ts`
 
@@ -90,7 +90,7 @@ export const validate = (schema: AnyZodObject, source: 'body' | 'query' | 'param
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await schema.parseAsync(req[source]);
-      req[source] = data; // Remplace par les données validées/transformées
+      req[source] = data; // Replace with validated/transformed data
       next();
     } catch (error) {
       if (error instanceof ZodError) {
@@ -126,7 +126,7 @@ const router = Router();
 
 /**
  * @route   GET /api/articles
- * @desc    Liste les articles avec pagination et filtres
+ * @desc    List articles with pagination and filters
  * @access  Public
  */
 router.get(
@@ -137,15 +137,15 @@ router.get(
 
 /**
  * @route   GET /api/articles/:id
- * @desc    Récupère un article par ID ou slug
+ * @desc    Retrieve an article by ID or slug
  * @access  Public
  */
 router.get('/:id', articleController.getById);
 
 /**
  * @route   POST /api/articles
- * @desc    Crée un nouvel article
- * @access  Private (auteur)
+ * @desc    Create a new article
+ * @access  Private (author)
  */
 router.post(
   '/',
@@ -157,8 +157,8 @@ router.post(
 
 /**
  * @route   PUT /api/articles/:id
- * @desc    Met à jour un article
- * @access  Private (propriétaire ou admin)
+ * @desc    Update an article
+ * @access  Private (owner or admin)
  */
 router.put(
   '/:id',
@@ -169,8 +169,8 @@ router.put(
 
 /**
  * @route   DELETE /api/articles/:id
- * @desc    Supprime un article
- * @access  Private (propriétaire ou admin)
+ * @desc    Delete an article
+ * @access  Private (owner or admin)
  */
 router.delete(
   '/:id',
@@ -181,8 +181,8 @@ router.delete(
 
 /**
  * @route   POST /api/articles/:id/publish
- * @desc    Publie un article
- * @access  Private (propriétaire ou admin)
+ * @desc    Publish an article
+ * @access  Private (owner or admin)
  */
 router.post(
   '/:id/publish',
@@ -203,7 +203,7 @@ import type { ListArticlesQuery, CreateArticleInput, UpdateArticleInput } from '
 
 export const articleController = {
   /**
-   * Liste les articles
+   * List articles
    */
   async list(req: Request, res: Response, next: NextFunction) {
     try {
@@ -226,7 +226,7 @@ export const articleController = {
   },
 
   /**
-   * Récupère un article par ID ou slug
+   * Retrieve an article by ID or slug
    */
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
@@ -234,10 +234,10 @@ export const articleController = {
       const article = await articleService.findByIdOrSlug(id);
 
       if (!article) {
-        throw new ApiError(404, 'Article non trouvé');
+        throw new ApiError(404, 'Article not found');
       }
 
-      // Incrémenter les vues si article publié
+      // Increment views if article is published
       if (article.status === 'published') {
         await articleService.incrementViews(article.id);
       }
@@ -249,7 +249,7 @@ export const articleController = {
   },
 
   /**
-   * Crée un nouvel article
+   * Create a new article
    */
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -268,7 +268,7 @@ export const articleController = {
   },
 
   /**
-   * Met à jour un article
+   * Update an article
    */
   async update(req: Request, res: Response, next: NextFunction) {
     try {
@@ -280,12 +280,12 @@ export const articleController = {
       const existing = await articleService.findById(id);
 
       if (!existing) {
-        throw new ApiError(404, 'Article non trouvé');
+        throw new ApiError(404, 'Article not found');
       }
 
-      // Vérifier les permissions
+      // Check permissions
       if (existing.authorId !== userId && userRole !== 'admin') {
-        throw new ApiError(403, 'Non autorisé à modifier cet article');
+        throw new ApiError(403, 'Not authorized to modify this article');
       }
 
       const article = await articleService.update(id, data);
@@ -296,7 +296,7 @@ export const articleController = {
   },
 
   /**
-   * Supprime un article
+   * Delete an article
    */
   async remove(req: Request, res: Response, next: NextFunction) {
     try {
@@ -305,7 +305,7 @@ export const articleController = {
       const existing = await articleService.findById(id);
 
       if (!existing) {
-        throw new ApiError(404, 'Article non trouvé');
+        throw new ApiError(404, 'Article not found');
       }
 
       await articleService.delete(id);
@@ -316,7 +316,7 @@ export const articleController = {
   },
 
   /**
-   * Publie un article
+   * Publish an article
    */
   async publish(req: Request, res: Response, next: NextFunction) {
     try {
@@ -327,15 +327,15 @@ export const articleController = {
       const existing = await articleService.findById(id);
 
       if (!existing) {
-        throw new ApiError(404, 'Article non trouvé');
+        throw new ApiError(404, 'Article not found');
       }
 
       if (existing.authorId !== userId && userRole !== 'admin') {
-        throw new ApiError(403, 'Non autorisé à publier cet article');
+        throw new ApiError(403, 'Not authorized to publish this article');
       }
 
       if (existing.status === 'published') {
-        throw new ApiError(400, 'Article déjà publié');
+        throw new ApiError(400, 'Article already published');
       }
 
       const article = await articleService.publish(id);
@@ -416,7 +416,7 @@ export const articleService = {
   async create(data: CreateArticleInput & { authorId: string }) {
     const slug = slugify(data.title);
 
-    // Vérifier unicité du slug
+    // Check slug uniqueness
     const existingSlug = await prisma.article.findUnique({
       where: { slug },
     });
@@ -442,7 +442,7 @@ export const articleService = {
   async update(id: string, data: UpdateArticleInput) {
     const updateData: any = { ...data };
 
-    // Regénérer le slug si le titre change
+    // Regenerate the slug if the title changes
     if (data.title) {
       updateData.slug = slugify(data.title);
     }
@@ -496,7 +496,7 @@ describe('Articles API', () => {
   let testUserId: string;
 
   beforeAll(async () => {
-    // Créer un utilisateur de test
+    // Create a test user
     const user = await prisma.user.create({
       data: {
         email: 'test@example.com',
@@ -573,8 +573,8 @@ describe('Articles API', () => {
         .post('/api/articles')
         .set('Authorization', `Bearer ${authToken}`)
         .send({
-          title: 'AB', // Trop court
-          content: 'Short', // Trop court
+          title: 'AB', // Too short
+          content: 'Short', // Too short
         })
         .expect(400);
 
@@ -641,32 +641,32 @@ describe('Articles API', () => {
 });
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
-| **Validation** | Zod avec middleware réutilisable |
+| **Validation** | Zod with reusable middleware |
 | **Architecture** | Routes → Controllers → Services |
-| **Permissions** | Middleware `authenticate` + `authorize` |
-| **Pagination** | Curseur avec metadata complètes |
-| **Tests** | Supertest + setup/teardown propre |
+| **Permissions** | `authenticate` + `authorize` middleware |
+| **Pagination** | Cursor with complete metadata |
+| **Tests** | Supertest + clean setup/teardown |
 
-## Commandes associées
+## Related commands
 
-- `/qa:qa-security` - Audit sécurité de l'API
-- `/doc:doc-api-spec` - Générer OpenAPI spec
-- `/dev:dev-test` - Ajouter plus de tests
+- `/qa:qa-security` - Security audit of the API
+- `/doc:doc-api-spec` - Generate OpenAPI spec
+- `/dev:dev-test` - Add more tests
 
 ---
 
 :::tip Rate Limiting
-Ajoutez du rate limiting pour protéger votre API :
+Add rate limiting to protect your API:
 ```typescript
 import rateLimit from 'express-rate-limit';
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // 100 requêtes par fenêtre
+  max: 100, // 100 requests per window
 });
 
 app.use('/api/', limiter);
