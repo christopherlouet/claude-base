@@ -1,16 +1,16 @@
 ---
 sidebar_position: 9
 title: Templates
-description: Comprendre les templates de specification Claude Code
+description: Understanding Claude Code specification templates
 ---
 
 # Templates
 
-> Structures predefinies pour le workflow Explore → Specify → Plan → TDD → Audit → Commit
+> Predefined structures for the Explore → Specify → Plan → TDD → Audit → Commit workflow
 
-## Qu'est-ce qu'un Template ?
+## What is a Template?
 
-Un **template** est un modele de document structure qui guide la creation de specifications, plans d'implementation et listes de taches. Les templates garantissent une approche coherente et complete pour chaque feature.
+A **template** is a structured document model that guides the creation of specifications, implementation plans, and task lists. Templates ensure a consistent and complete approach for each feature.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
@@ -35,162 +35,162 @@ Un **template** est un modele de document structure qui guide la creation de spe
 └────────────────────────────────────────────────────────────────┘
 ```
 
-## Structure des fichiers
+## File Structure
 
-Les templates sont dans `.claude/templates/`:
+Templates are in `.claude/templates/`:
 
 ```
 .claude/templates/
-├── spec-template.md     # Template de specification fonctionnelle
-├── plan-template.md     # Template de plan d'implementation
-└── tasks-template.md    # Template de decoupage en taches
+├── spec-template.md     # Functional specification template
+├── plan-template.md     # Implementation plan template
+└── tasks-template.md    # Task breakdown template
 ```
 
-## Les 3 Templates
+## The 3 Templates
 
-### 1. spec-template.md - Specification Fonctionnelle
+### 1. spec-template.md - Functional Specification
 
-Utilise par `/work:work-specify` pour creer une specification centree sur la **valeur utilisateur**.
+Used by `/work:work-specify` to create a specification centered on **user value**.
 
-**Contenu principal:**
+**Main content:**
 
 | Section | Description |
 |---------|-------------|
-| **Resume** | 1-3 phrases sur la valeur apportee |
-| **User Stories** | Stories prioritisees (P1=MVP, P2, P3) |
-| **Cas Limites** | Edge cases et scenarios d'erreur |
-| **Exigences Fonctionnelles** | EF-001, EF-002... testables |
-| **Entites Cles** | Modele de donnees simplifie |
-| **Criteres de Succes** | Metriques mesurables |
-| **Hors Scope** | Ce qui est explicitement exclu |
+| **Summary** | 1-3 sentences on the value delivered |
+| **User Stories** | Prioritized stories (P1=MVP, P2, P3) |
+| **Edge Cases** | Edge cases and error scenarios |
+| **Functional Requirements** | FR-001, FR-002... testable |
+| **Key Entities** | Simplified data model |
+| **Success Criteria** | Measurable metrics |
+| **Out of Scope** | What is explicitly excluded |
 
-**Format User Story:**
+**User Story format:**
 
 ```markdown
-### US1 - [Titre] (Priorite: P1) MVP
+### US1 - [Title] (Priority: P1) MVP
 
-**En tant que** [utilisateur]
-**Je veux** [action]
-**Afin de** [benefice]
+**As a** [user]
+**I want** [action]
+**So that** [benefit]
 
-**Criteres d'acceptation**:
-1. **Etant donne** [etat], **Quand** [action], **Alors** [resultat]
+**Acceptance criteria**:
+1. **Given** [state], **When** [action], **Then** [result]
 ```
 
-### 2. plan-template.md - Plan d'Implementation
+### 2. plan-template.md - Implementation Plan
 
-Utilise par `/work:work-plan` pour definir l'**architecture technique** et les phases.
+Used by `/work:work-plan` to define the **technical architecture** and phases.
 
-**Contenu principal:**
+**Main content:**
 
 | Section | Description |
 |---------|-------------|
-| **Contexte Technique** | Stack, contraintes, performance |
-| **Structure du Projet** | Arborescence des fichiers |
-| **Fichiers Impactes** | A creer, a modifier, tests |
-| **Approche Choisie** | Architecture + justification |
-| **Phases** | Decoupage en phases sequentielles |
-| **Risques** | Impact, probabilite, mitigation |
+| **Technical Context** | Stack, constraints, performance |
+| **Project Structure** | File tree |
+| **Impacted Files** | To create, to modify, tests |
+| **Chosen Approach** | Architecture + justification |
+| **Phases** | Breakdown into sequential phases |
+| **Risks** | Impact, probability, mitigation |
 
-**Format Phase:**
+**Phase format:**
 
 ```markdown
-### Phase 2 : User Story 1 (P1 - MVP)
+### Phase 2: User Story 1 (P1 - MVP)
 
-**Objectif**: [Reprendre de la spec]
+**Goal**: [Take from the spec]
 
-#### Tests (si TDD)
-- [ ] T004 - [P] Test unitaire [composant]
+#### Tests (if TDD)
+- [ ] T004 - [P] Unit test [component]
 
 #### Implementation
-- [ ] T006 - [P] Implementer [modele]
-- [ ] T007 - Implementer [service] (depend de T006)
+- [ ] T006 - [P] Implement [model]
+- [ ] T007 - Implement [service] (depends on T006)
 
-**Checkpoint**: US1 fonctionnelle et testable.
+**Checkpoint**: US1 functional and testable.
 ```
 
-### 3. tasks-template.md - Decoupage en Taches
+### 3. tasks-template.md - Task Breakdown
 
-Genere par `/work:work-plan` pour lister les **taches atomiques** avec dependances.
+Generated by `/work:work-plan` to list **atomic tasks** with dependencies.
 
-**Contenu principal:**
+**Main content:**
 
 | Section | Description |
 |---------|-------------|
-| **Phase 1: Setup** | Structure et dependances |
-| **Phase 2: Fondation** | Infrastructure bloquante |
-| **Phase 3+: User Stories** | Taches par story |
+| **Phase 1: Setup** | Structure and dependencies |
+| **Phase 2: Foundation** | Blocking infrastructure |
+| **Phase 3+: User Stories** | Tasks per story |
 | **Phase N: Polish** | Documentation, refactoring |
-| **Dependances** | Graphe d'execution |
+| **Dependencies** | Execution graph |
 
-**Marqueurs:**
+**Markers:**
 
-| Marqueur | Signification |
-|----------|---------------|
-| `[P]` | Tache parallelisable |
-| `[US1]` | Appartient a User Story 1 |
-| `[US2]` | Appartient a User Story 2 |
+| Marker | Meaning |
+|--------|---------|
+| `[P]` | Parallelizable task |
+| `[US1]` | Belongs to User Story 1 |
+| `[US2]` | Belongs to User Story 2 |
 
-## Workflow avec Templates
+## Workflow with Templates
 
-### Commandes associees
+### Associated commands
 
 ```
-/work:work-specify "Ma feature"
+/work:work-specify "My feature"
       │
       ▼
-  Genere: specs/ma-feature/spec.md
+  Generates: specs/my-feature/spec.md
       │
       ▼
-/work:work-clarify (optionnel)
+/work:work-clarify (optional)
       │
       ▼
-/work:work-plan "Ma feature"
+/work:work-plan "My feature"
       │
       ▼
-  Genere: specs/ma-feature/plan.md
-          specs/ma-feature/tasks.md
+  Generates: specs/my-feature/plan.md
+             specs/my-feature/tasks.md
 ```
 
-### Structure generee
+### Generated structure
 
 ```
 specs/[feature]/
-├── spec.md           # Specification fonctionnelle
-├── plan.md           # Plan d'implementation
-├── tasks.md          # Decoupage en taches
-└── clarifications.md # Historique des clarifications (optionnel)
+├── spec.md           # Functional specification
+├── plan.md           # Implementation plan
+├── tasks.md          # Task breakdown
+└── clarifications.md # Clarifications history (optional)
 ```
 
 ## Conventions
 
-### Priorites
+### Priorities
 
-| Priorite | Signification | Quand utiliser |
-|----------|---------------|----------------|
-| **P1** | MVP essentiel | Feature minimale viable |
-| **P2** | Important | Ameliore significativement l'UX |
-| **P3** | Nice-to-have | Peut etre reporte |
+| Priority | Meaning | When to use |
+|----------|---------|-------------|
+| **P1** | Essential MVP | Minimum viable feature |
+| **P2** | Important | Significantly improves UX |
+| **P3** | Nice-to-have | Can be deferred |
 
-### Identifiants
+### Identifiers
 
-| Prefixe | Type | Exemple |
-|---------|------|---------|
+| Prefix | Type | Example |
+|--------|------|---------|
 | `US` | User Story | US1, US2, US3 |
-| `EF` | Exigence Fonctionnelle | EF-001, EF-002 |
-| `CS` | Critere de Succes | CS-001, CS-002 |
-| `T` | Tache | T001, T002 |
+| `FR` | Functional Requirement | FR-001, FR-002 |
+| `SC` | Success Criterion | SC-001, SC-002 |
+| `T` | Task | T001, T002 |
 
-### Parallelisation
+### Parallelization
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│  Taches marquees [P]           Taches sans [P]                 │
+│  Tasks marked [P]              Tasks without [P]               │
 │  ──────────────────            ──────────────                  │
 │                                                                │
-│  Peuvent s'executer            Ont des dependances             │
-│  en parallele                  sequentielles                   │
+│  Can run                       Have sequential                 │
+│  in parallel                   dependencies                    │
 │                                                                │
 │  ┌─────┐  ┌─────┐             ┌─────┐                          │
 │  │T001 │  │T002 │             │T003 │                          │
@@ -199,89 +199,89 @@ specs/[feature]/
 │     │        │                   │                             │
 │     └────┬───┘                   ▼                             │
 │          │                  ┌─────┐                            │
-│          ▼                  │T004 │ (depend de T003)           │
+│          ▼                  │T004 │ (depends on T003)          │
 │     [Merge]                 └─────┘                            │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
 
-## Exemple Complet
+## Complete Example
 
-### 1. Specification (extrait)
+### 1. Specification (excerpt)
 
 ```markdown
-# Specification : Authentification Utilisateur
+# Specification: User Authentication
 
 ## User Stories
 
-### US1 - Connexion basique (P1) MVP
+### US1 - Basic login (P1) MVP
 
-**En tant que** visiteur
-**Je veux** me connecter avec email/mot de passe
-**Afin de** acceder a mon compte
+**As a** visitor
+**I want** to log in with email/password
+**So that** I can access my account
 
-**Criteres d'acceptation**:
-1. **Etant donne** un utilisateur existant,
-   **Quand** il entre ses identifiants valides,
-   **Alors** il est redirige vers le dashboard
+**Acceptance criteria**:
+1. **Given** an existing user,
+   **When** they enter valid credentials,
+   **Then** they are redirected to the dashboard
 ```
 
-### 2. Plan (extrait)
+### 2. Plan (excerpt)
 
 ```markdown
-## Fichiers Impactes
+## Impacted Files
 
-### A creer
-| Fichier | Responsabilite |
-|---------|----------------|
-| `src/services/auth.ts` | Service d'authentification |
-| `src/components/LoginForm.tsx` | Formulaire de connexion |
+### To create
+| File | Responsibility |
+|------|----------------|
+| `src/services/auth.ts` | Authentication service |
+| `src/components/LoginForm.tsx` | Login form |
 
-### Phase 2 : User Story 1 (P1 - MVP)
+### Phase 2: User Story 1 (P1 - MVP)
 
-- [ ] T004 - [P] [US1] Creer AuthService dans `src/services/auth.ts`
-- [ ] T005 - [US1] Implementer LoginForm (depend de T004)
+- [ ] T004 - [P] [US1] Create AuthService in `src/services/auth.ts`
+- [ ] T005 - [US1] Implement LoginForm (depends on T004)
 ```
 
-### 3. Taches (extrait)
+### 3. Tasks (excerpt)
 
 ```markdown
-## Phase 3 : User Story 1 - Connexion (P1) MVP
+## Phase 3: User Story 1 - Login (P1) MVP
 
-### Implementation US1
+### US1 Implementation
 
-- [ ] T004 - [P] [US1] Creer AuthService dans `src/services/auth.ts`
-- [ ] T005 - [P] [US1] Creer types dans `src/types/auth.ts`
-- [ ] T006 - [US1] Implementer LoginForm dans `src/components/LoginForm.tsx`
-- [ ] T007 - [US1] Ajouter route `/login` dans `src/routes/index.ts`
+- [ ] T004 - [P] [US1] Create AuthService in `src/services/auth.ts`
+- [ ] T005 - [P] [US1] Create types in `src/types/auth.ts`
+- [ ] T006 - [US1] Implement LoginForm in `src/components/LoginForm.tsx`
+- [ ] T007 - [US1] Add route `/login` in `src/routes/index.ts`
 
-**Checkpoint**: US1 fonctionnelle - utilisateur peut se connecter.
+**Checkpoint**: US1 functional - user can log in.
 ```
 
-## Bonnes Pratiques
+## Best Practices
 
 ### Specification (spec.md)
 
-- **Focus valeur utilisateur** : pas de details techniques
-- **User stories independantes** : chaque story testable seule
-- **Criteres mesurables** : eviter le vague ("rapide", "simple")
-- **Maximum 3 clarifications** : faire des choix eclaires sinon
+- **Focus on user value**: no technical details
+- **Independent user stories**: each story testable on its own
+- **Measurable criteria**: avoid the vague ("fast", "simple")
+- **Maximum 3 clarifications**: make informed choices otherwise
 
 ### Plan (plan.md)
 
-- **Justifier les choix** : expliquer pourquoi cette architecture
-- **Identifier les risques** : anticiper les problemes
-- **Phases claires** : checkpoints a chaque etape
+- **Justify choices**: explain why this architecture
+- **Identify risks**: anticipate problems
+- **Clear phases**: checkpoints at each step
 
-### Taches (tasks.md)
+### Tasks (tasks.md)
 
-- **Chemins exacts** : inclure le path des fichiers
-- **Granularite fine** : 1 tache = 1 commit potentiel
-- **Dependances explicites** : utiliser [P] pour parallelisation
+- **Exact paths**: include file paths
+- **Fine granularity**: 1 task = 1 potential commit
+- **Explicit dependencies**: use [P] for parallelization
 
-## Voir aussi
+## See also
 
-- [Workflow Explore → Specify → Plan → TDD → Audit → Commit](/docs/workflow/explore-plan-code-commit) - Workflow complet
-- [/work:work-specify](/docs/commands/work/work-specify) - Commande de specification
-- [/work:work-plan](/docs/commands/work/work-plan) - Commande de planification
-- [/work:work-clarify](/docs/commands/work/work-clarify) - Clarification des ambiguites
+- [Explore → Specify → Plan → TDD → Audit → Commit Workflow](/docs/workflow/explore-plan-code-commit) - Complete workflow
+- [/work:work-specify](/docs/commands/work/work-specify) - Specification command
+- [/work:work-plan](/docs/commands/work/work-plan) - Planning command
+- [/work:work-clarify](/docs/commands/work/work-clarify) - Clarification of ambiguities
