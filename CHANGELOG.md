@@ -1,22 +1,30 @@
 # Changelog
 
-Toutes les modifications notables de ce projet sont documentées dans ce fichier.
+All notable changes to this project are documented in this file.
 
-Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
-et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/).
+
+> **Language note**: from v1.31.0 onwards, all entries are in English.
+> Earlier entries (v1.30.x and before) remain in their original French
+> as a historical record of the project's pre-i18n era.
 
 ## [Unreleased]
 
-### Corrige
+### Fixed
 
-- **`scripts/update.sh` synchronise enfin `scripts/hooks/`** : les scripts referencees par `settings.json` (`command-validator.sh`, `prompt-context.sh`, `setup-deps.sh`, `socle-integrity-check.sh`) etaient auparavant absents apres un `update.sh --all` car la fonction de synchronisation ignorait ce repertoire. Resultat : `settings.json` pointait vers des scripts inexistants et les hooks SessionStart/PreToolUse echouaient silencieusement. Nouvelle option `--hook-scripts` (incluse dans `--all`), avec idempotence, preservation des customisations et `chmod +x` automatique.
+- **`scripts/update.sh` finally syncs `scripts/hooks/`**: the scripts referenced by `settings.json` (`command-validator.sh`, `prompt-context.sh`, `setup-deps.sh`, `socle-integrity-check.sh`) were previously missing after `update.sh --all` because the sync function ignored this directory. Result: `settings.json` pointed to non-existent scripts and the SessionStart/PreToolUse hooks failed silently. New `--hook-scripts` flag (included in `--all`), with idempotency, preservation of customizations and automatic `chmod +x`.
 
-### Ajoute
+### Added
 
-#### Sync Claude Code mars-avril 2026
-- **Doc Monitor Tool** (CLI 2.1.98+) : nouvelle section dans `docs/reference/advanced-features.md` decrivant l'outil natif qui stream des evenements background dans la conversation. Cas d'usage tail logs, babysit CI, watch dev server. Pairing recommande avec `/loop` auto-pace.
-- **Doc `/autofix-pr`** (CLI 2.1.92+) : section dediee dans `advanced-features.md` + entree dans le tableau Workflows Recommandes de `CLAUDE.md`. Active PR auto-fix sur Claude Code Web depuis le terminal pour la branche courante.
-- **Note regression mars-avril 2026** dans `TROUBLESHOOTING-GUIDE.md` : effort `medium` par defaut + thinking caching casse + system prompt 25-mots, resolu en v2.1.101 le 10 avril.
+#### Sync Claude Code March-April 2026
+- **Monitor Tool docs** (CLI 2.1.98+): new section in `docs/reference/advanced-features.md` describing the native tool that streams background events into the conversation. Use cases: tail logs, babysit CI, watch dev server. Recommended pairing with `/loop` auto-pace.
+- **`/autofix-pr` docs** (CLI 2.1.92+): dedicated section in `advanced-features.md` + entry in the Recommended Workflows table of `CLAUDE.md`. Enables PR auto-fix on Claude Code Web from the terminal for the current branch.
+- **March-April 2026 regression note** in `TROUBLESHOOTING-GUIDE.md`: default `medium` effort + broken thinking caching + 25-word system prompt, resolved in v2.1.101 on April 10.
+
+#### Migration FR→EN (2026-04-30 → 2026-05-02)
+- Full repository localization: 511 files translated, including README, CLAUDE.md, all `.claude/{rules,agents,commands,skills,templates}`, all `docs/`, all `templates/`, all `website/docs/` (hand-maintained), all `scripts/`, tests, and CI workflows.
+- Translation harness with TDD validators (`scripts/migration/`): glossary lock, blacklist preservation, structural checks, recovery state machine, multi-pass support.
 
 ---
 

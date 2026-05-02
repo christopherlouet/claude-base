@@ -3,12 +3,18 @@
 # inventory.sh — generates inventory.json with files-per-tier list
 # =============================================================================
 # Tier 1: README.md, CLAUDE.md, docs/guides/*.md, docs/reference/*.md,
-#         .claude/rules/*.md
+#         .claude/rules/*.md  (NOTE: docs/*.md root files moved to Tier 5)
 # Tier 2: .claude/agents/*.md, .claude/commands/**/*.md
-# Tier 3: .claude/skills/**/* (excluding auto-generated), scripts/hooks/*.sh
+# Tier 3: .claude/skills/**/* (excluding auto-generated), scripts/hooks/*.sh,
+#         .claude/output-styles/*.md, .claude/templates/**/*.md
 # Tier 4: website/docs/{intro,guides,reference,concepts,workflow,tutorials,examples}/**/*.md
 #         NOTE: website/docs/{commands,agents,skills,rules}/ are auto-generated
 #               from .claude/* and will be regenerated after T2+T3 merge.
+# Tier 5: templates/*.md (root, copied by users on new project),
+#         .claude/templates/{opnsense,proxmox}/**/*.tf (Terraform comments only)
+# Tier 6: scripts/*.sh (root + lib), tests/*.bats, .github/workflows/*.yml,
+#         .github/CODEOWNERS, ROOT misc (CHANGELOG.md, CLAUDE.local.md.example,
+#         .editorconfig, .gitleaks.toml)
 # =============================================================================
 
 set -euo pipefail
@@ -54,6 +60,39 @@ for dir in intro guides reference concepts workflow tutorials examples; do
 done
 
 # -----------------------------------------------------------------------------
+# Tier 5: User-facing templates + missed markdown
+# -----------------------------------------------------------------------------
+tier5_files=()
+# templates/*.md (root) — copied by users on new project
+while IFS= read -r f; do tier5_files+=("$f"); done < <(find templates -maxdepth 1 -type f \( -name "*.md" -o -name "*.json" \) 2>/dev/null | sort)
+# docs/*.md (root, NOT under guides/reference which are in Tier 1)
+while IFS= read -r f; do tier5_files+=("$f"); done < <(find docs -maxdepth 1 -type f -name "*.md" 2>/dev/null | sort)
+# .claude/templates/{plan,spec,tasks}-template.md
+while IFS= read -r f; do tier5_files+=("$f"); done < <(find .claude/templates -maxdepth 1 -type f -name "*.md" 2>/dev/null | sort)
+# .claude/output-styles/*.md
+while IFS= read -r f; do tier5_files+=("$f"); done < <(find .claude/output-styles -type f -name "*.md" 2>/dev/null | sort)
+# Terraform modules with comments to translate
+while IFS= read -r f; do tier5_files+=("$f"); done < <(find .claude/templates/opnsense .claude/templates/proxmox -type f \( -name "*.tf" -o -name "*.tfvars*" \) 2>/dev/null | sort)
+
+# -----------------------------------------------------------------------------
+# Tier 6: Scripts, tests, CI, ROOT misc
+# -----------------------------------------------------------------------------
+tier6_files=()
+# scripts/*.sh (root, NOT hooks which is in Tier 3)
+while IFS= read -r f; do tier6_files+=("$f"); done < <(find scripts -maxdepth 1 -type f -name "*.sh" 2>/dev/null | sort)
+# scripts/lib/*.sh
+while IFS= read -r f; do tier6_files+=("$f"); done < <(find scripts/lib -type f -name "*.sh" 2>/dev/null | sort)
+# tests/*.bats (NOT tests/migration/ which is the harness)
+while IFS= read -r f; do tier6_files+=("$f"); done < <(find tests -maxdepth 1 -type f \( -name "*.bats" -o -name "*.bash" \) 2>/dev/null | sort)
+# .github
+while IFS= read -r f; do tier6_files+=("$f"); done < <(find .github -type f \( -name "*.yml" -o -name "CODEOWNERS" \) 2>/dev/null | sort)
+# ROOT misc
+[[ -f CLAUDE.local.md.example ]] && tier6_files+=("CLAUDE.local.md.example")
+[[ -f .gitleaks.toml ]] && tier6_files+=(".gitleaks.toml")
+[[ -f .editorconfig ]] && tier6_files+=(".editorconfig")
+# CHANGELOG.md handled separately (option C: header + transition note only, no full retranslation)
+
+# -----------------------------------------------------------------------------
 # Word counts per tier
 # -----------------------------------------------------------------------------
 count_words() {
@@ -66,8 +105,10 @@ t1_words=$(count_words "${tier1_files[@]}")
 t2_words=$(count_words "${tier2_files[@]}")
 t3_words=$(count_words "${tier3_files[@]}")
 t4_words=$(count_words "${tier4_files[@]}")
-total_words=$((t1_words + t2_words + t3_words + t4_words))
-total_files=$((${#tier1_files[@]} + ${#tier2_files[@]} + ${#tier3_files[@]} + ${#tier4_files[@]}))
+t5_words=$(count_words "${tier5_files[@]}")
+t6_words=$(count_words "${tier6_files[@]}")
+total_words=$((t1_words + t2_words + t3_words + t4_words + t5_words + t6_words))
+total_files=$((${#tier1_files[@]} + ${#tier2_files[@]} + ${#tier3_files[@]} + ${#tier4_files[@]} + ${#tier5_files[@]} + ${#tier6_files[@]}))
 
 # -----------------------------------------------------------------------------
 # Generate JSON
@@ -117,11 +158,24 @@ json_array() {
     echo "      \"files_count\": ${#tier4_files[@]},"
     echo "      \"words\": $t4_words,"
     echo "      \"files\": $(json_array "${tier4_files[@]}")"
+    echo "    },"
+    echo "    \"5\": {"
+    echo "      \"label\": \"User templates + missed markdown + Terraform modules\","
+    echo "      \"files_count\": ${#tier5_files[@]},"
+    echo "      \"words\": $t5_words,"
+    echo "      \"files\": $(json_array "${tier5_files[@]}")"
+    echo "    },"
+    echo "    \"6\": {"
+    echo "      \"label\": \"Scripts, tests, CI workflows, ROOT misc (excl. CHANGELOG)\","
+    echo "      \"files_count\": ${#tier6_files[@]},"
+    echo "      \"words\": $t6_words,"
+    echo "      \"files\": $(json_array "${tier6_files[@]}")"
     echo "    }"
     echo "  },"
     echo "  \"notes\": ["
     echo "    \"website/docs/{commands,agents,skills,rules}/ are auto-generated from .claude/* via website/scripts/generate-*.ts and excluded from Tier 4.\","
-    echo "    \"After merging Tier 2 and Tier 3, run 'cd website && npm run generate' to regenerate the auto-generated docs in EN.\""
+    echo "    \"After merging Tier 2 and Tier 3, run 'cd website && npm run generate' to regenerate the auto-generated docs in EN.\","
+    echo "    \"CHANGELOG.md is intentionally NOT included: header + transition note are translated manually, history kept in original FR/EN as-is.\""
     echo "  ]"
     echo "}"
 } > "$OUTPUT_FILE"
@@ -131,4 +185,6 @@ echo "[inventory] Tier 1: ${#tier1_files[@]} files, $t1_words words"
 echo "[inventory] Tier 2: ${#tier2_files[@]} files, $t2_words words"
 echo "[inventory] Tier 3: ${#tier3_files[@]} files, $t3_words words"
 echo "[inventory] Tier 4: ${#tier4_files[@]} files, $t4_words words"
+echo "[inventory] Tier 5: ${#tier5_files[@]} files, $t5_words words"
+echo "[inventory] Tier 6: ${#tier6_files[@]} files, $t6_words words"
 echo "[inventory] TOTAL : $total_files files, $total_words words"
