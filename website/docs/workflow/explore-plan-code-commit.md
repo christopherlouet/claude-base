@@ -1,193 +1,193 @@
 ---
 sidebar_position: 2
 title: Explore → Specify → Plan → TDD → Audit → Commit
-description: Le workflow principal de claude-socle avec TDD obligatoire
+description: The main claude-socle workflow with mandatory TDD
 ---
 
 import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDiagram';
 
-# Workflow principal : Explore → Specify → Plan → TDD → Audit → Commit
+# Main workflow: Explore → Specify → Plan → TDD → Audit → Commit
 
-Le workflow fondamental qui garantit un code de qualite avec TDD obligatoire.
+The fundamental workflow that guarantees quality code with mandatory TDD.
 
 <WorkflowDiagram steps={MAIN_WORKFLOW} />
 
-## Diagramme de séquence
+## Sequence diagram
 
 ```mermaid
 sequenceDiagram
-    participant U as Utilisateur
+    participant U as User
     participant C as Claude
     participant R as Repository
 
     Note over U,R: Phase 1 - EXPLORE
     U->>C: /work:work-explore "auth system"
-    C->>R: Lecture fichiers
-    R-->>C: Code source
-    C-->>U: Analyse structure et patterns
+    C->>R: Read files
+    R-->>C: Source code
+    C-->>U: Analyze structure and patterns
 
-    Note over U,R: Phase 2 - SPECIFY (optionnel)
+    Note over U,R: Phase 2 - SPECIFY (optional)
     U->>C: /work:work-specify "Add 2FA"
-    C-->>U: Spécification fonctionnelle
+    C-->>U: Functional specification
     U->>C: Validation ✓
 
     Note over U,R: Phase 3 - PLAN
     U->>C: /work:work-plan
-    C-->>U: Plan d'implémentation
+    C-->>U: Implementation plan
     U->>C: Validation ✓
 
-    Note over U,R: Phase 4 - TDD (obligatoire)
+    Note over U,R: Phase 4 - TDD (mandatory)
     U->>C: /dev:dev-tdd
-    loop Cycle Red-Green-Refactor
-        C->>R: RED: Écriture test qui échoue
-        C->>R: GREEN: Code minimal pour passer
-        C->>R: REFACTOR: Amélioration
+    loop Red-Green-Refactor cycle
+        C->>R: RED: Write failing test
+        C->>R: GREEN: Minimal code to pass
+        C->>R: REFACTOR: Improvement
     end
 
     Note over U,R: Phase 5 - COMMIT
     U->>C: /work:work-commit
     C->>R: git add + commit
-    R-->>U: Commit créé ✓
+    R-->>U: Commit created ✓
 ```
 
-## Pourquoi ce workflow ?
+## Why this workflow?
 
-### Sans workflow structure
-
-```
-❌ Coder sans comprendre → Bugs et regressions
-❌ Implementer sans plan → Refactoring constant
-❌ Coder avant les tests → Code non teste
-❌ Commits geants → Historique illisible
-```
-
-### Avec le workflow
+### Without a structured workflow
 
 ```
-✅ Explorer d'abord → Comprendre le contexte
-✅ Planifier avant → Architecture solide
-✅ TDD obligatoire → Code teste et fiable
-✅ Commits atomiques → Historique clair
+❌ Coding without understanding → Bugs and regressions
+❌ Implementing without a plan → Constant refactoring
+❌ Coding before tests → Untested code
+❌ Giant commits → Unreadable history
 ```
 
-## Etape 1 : Explore
+### With the workflow
 
-**Commande** : `/work:work-explore`
+```
+✅ Explore first → Understand the context
+✅ Plan ahead → Solid architecture
+✅ Mandatory TDD → Tested and reliable code
+✅ Atomic commits → Clear history
+```
 
-**Objectif** : Comprendre le code existant avant de modifier.
+## Step 1: Explore
+
+**Command**: `/work:work-explore`
+
+**Goal**: Understand the existing code before modifying.
 
 ```bash
 /work:work-explore
 
-# Ou avec un focus specifique
-/work:work-explore "le systeme d'authentification"
+# Or with a specific focus
+/work:work-explore "the authentication system"
 ```
 
-**Claude analysera** :
-- Structure du projet
-- Patterns et conventions
-- Dependances
-- Points d'attention
+**Claude will analyze**:
+- Project structure
+- Patterns and conventions
+- Dependencies
+- Points of attention
 
-**Output attendu** :
+**Expected output**:
 ```markdown
-## Analyse du projet
+## Project analysis
 
 ### Structure
-- /src/auth/ - Module d'authentification
-- /src/api/ - Endpoints REST
+- /src/auth/ - Authentication module
+- /src/api/ - REST endpoints
 
-### Patterns identifies
+### Identified patterns
 - Repository pattern
 - Dependency injection
 
-### Points d'attention
-- Tests manquants sur AuthService
+### Points of attention
+- Missing tests on AuthService
 ```
 
-## Etape 2 : Plan
+## Step 2: Plan
 
-**Commande** : `/work:work-plan`
+**Command**: `/work:work-plan`
 
-**Objectif** : Planifier les modifications avant d'implementer.
+**Goal**: Plan changes before implementing.
 
 ```bash
-/work:work-plan "Ajouter l'authentification 2FA"
+/work:work-plan "Add 2FA authentication"
 ```
 
-**Claude proposera** :
-- Architecture recommandee
-- Fichiers a creer/modifier
-- Risques identifies
-- Tests a ecrire
+**Claude will propose**:
+- Recommended architecture
+- Files to create/modify
+- Identified risks
+- Tests to write
 
-**Output attendu** :
+**Expected output**:
 ```markdown
-## Plan d'implementation
+## Implementation plan
 
-### Fichiers a creer
+### Files to create
 - src/auth/two-factor.service.ts
 - src/auth/two-factor.controller.ts
 
-### Fichiers a modifier
+### Files to modify
 - src/auth/auth.module.ts
 
-### Risques
-- Impact sur le login existant
+### Risks
+- Impact on existing login
 
-### Tests requis
+### Required tests
 - test/two-factor.spec.ts
 ```
 
 :::caution Important
-Attendez la validation du plan avant de coder !
+Wait for plan validation before coding!
 :::
 
-## Etape 3 : TDD (Obligatoire)
+## Step 3: TDD (Mandatory)
 
-**Commande** : `/dev:dev-tdd`
+**Command**: `/dev:dev-tdd`
 
-**Objectif** : Implementer en suivant le cycle Red-Green-Refactor.
+**Goal**: Implement following the Red-Green-Refactor cycle.
 
 ```bash
-/dev:dev-tdd "Implementer le service 2FA"
+/dev:dev-tdd "Implement the 2FA service"
 ```
 
-**Cycle TDD obligatoire** :
-1. **RED** : Ecrire un test qui echoue
-2. **GREEN** : Ecrire le code minimal pour passer le test
-3. **REFACTOR** : Ameliorer le code sans casser les tests
+**Mandatory TDD cycle**:
+1. **RED**: Write a failing test
+2. **GREEN**: Write the minimal code to pass the test
+3. **REFACTOR**: Improve the code without breaking the tests
 
-**Bonnes pratiques** :
-- Toujours ecrire les tests AVANT le code
-- Suivre le plan strictement
-- Un commit par changement logique
-- Couverture minimum 80% sur nouveau code
+**Best practices**:
+- Always write tests BEFORE the code
+- Follow the plan strictly
+- One commit per logical change
+- Minimum 80% coverage on new code
 
-## Etape 4 : Commit
+## Step 4: Commit
 
-**Commande** : `/work:work-commit` ou `/work:work-pr`
+**Command**: `/work:work-commit` or `/work:work-pr`
 
-**Objectif** : Creer des commits propres et descriptifs.
+**Goal**: Create clean and descriptive commits.
 
 ```bash
-# Commit simple
+# Simple commit
 /work:work-commit
 
-# Ou Pull Request complete
+# Or full Pull Request
 /work:work-pr
 ```
 
-**Format de commit** :
+**Commit format**:
 ```
 type(scope): description
 
-[corps optionnel]
+[optional body]
 
-[footer optionnel]
+[optional footer]
 ```
 
-**Exemple** :
+**Example**:
 ```
 feat(auth): add two-factor authentication
 
@@ -198,48 +198,48 @@ feat(auth): add two-factor authentication
 Closes #123
 ```
 
-## Exemple complet
+## Full example
 
 ```bash
-# 1. Explorer le code d'auth existant
-> /work:work-explore "systeme d'authentification"
+# 1. Explore the existing auth code
+> /work:work-explore "authentication system"
 
-# Claude analyse et explique la structure
+# Claude analyzes and explains the structure
 
-# 2. Planifier l'ajout de 2FA
-> /work:work-plan "Ajouter l'authentification 2FA"
+# 2. Plan the 2FA addition
+> /work:work-plan "Add 2FA authentication"
 
-# Claude propose un plan detaille
-# Vous validez ou demandez des modifications
+# Claude proposes a detailed plan
+# You validate or request changes
 
-# 3. Implementer en TDD (obligatoire)
-> /dev:dev-tdd "Implementer le service 2FA selon le plan"
+# 3. Implement in TDD (mandatory)
+> /dev:dev-tdd "Implement the 2FA service per the plan"
 
-# Claude suit le cycle Red-Green-Refactor :
-# - RED: Ecrit les tests qui echouent
-# - GREEN: Ecrit le code minimal pour passer
-# - REFACTOR: Ameliore le code
+# Claude follows the Red-Green-Refactor cycle:
+# - RED: Writes failing tests
+# - GREEN: Writes minimal code to pass
+# - REFACTOR: Improves the code
 
-# 4. Creer la PR
+# 4. Create the PR
 > /work:work-pr
 
-# Claude cree une PR complete avec description
+# Claude creates a complete PR with description
 ```
 
-## Raccourci : Workflow complet
+## Shortcut: Full workflow
 
-Pour une nouvelle feature, utilisez directement :
+For a new feature, use directly:
 
 ```bash
-/work:work-flow-feature "Ajouter l'authentification 2FA"
+/work:work-flow-feature "Add 2FA authentication"
 ```
 
-Cette commande enchaine automatiquement le workflow complet.
+This command automatically chains the full workflow.
 
 ---
 
-## Voir aussi
+## See also
 
-- [Nouvelle Feature](/docs/workflow/feature) - Workflow feature complet
-- [TDD](/docs/workflow/tdd) - Developpement guide par les tests
-- [Commands WORK](/docs/commands/work) - Toutes les commandes workflow
+- [New Feature](/docs/workflow/feature) - Full feature workflow
+- [TDD](/docs/workflow/tdd) - Test-driven development
+- [WORK Commands](/docs/commands/work) - All workflow commands
