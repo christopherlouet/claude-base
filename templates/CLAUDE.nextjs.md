@@ -1,139 +1,139 @@
-# Projet Next.js App Router
+# Next.js App Router Project
 
-## Commandes Essentielles
-- `npm install` - Installer les dépendances
-- `npm run dev` - Serveur dev avec Turbopack (http://localhost:3000)
-- `npm run build` - Build production
-- `npm start` - Démarrer la build production
-- `npm test` - Tests (Vitest/Jest selon config)
+## Essential Commands
+- `npm install` - Install dependencies
+- `npm run dev` - Dev server with Turbopack (http://localhost:3000)
+- `npm run build` - Production build
+- `npm start` - Start the production build
+- `npm test` - Tests (Vitest/Jest based on config)
 - `npm run lint` - ESLint + next lint
 - `npm run typecheck` - tsc --noEmit
-- `npx prisma studio` - Explorer la DB (si Prisma)
-- `npx prisma migrate dev` - Créer une migration (dev)
+- `npx prisma studio` - Explore the DB (if Prisma)
+- `npx prisma migrate dev` - Create a migration (dev)
 
-## Structure du Projet
+## Project Structure
 ```
 /app                    # App Router (Next.js 13+)
-  /api                  # Route Handlers (ex-API routes)
-  /(auth)               # Route groups (layouts partagés)
-  /[locale]             # Routes dynamiques (i18n)
+  /api                  # Route Handlers (formerly API routes)
+  /(auth)               # Route groups (shared layouts)
+  /[locale]             # Dynamic routes (i18n)
   layout.tsx            # Root layout
   page.tsx              # Home page
-  loading.tsx           # UI de chargement
-  error.tsx             # UI d'erreur
-/components             # Composants React réutilisables
+  loading.tsx           # Loading UI
+  error.tsx             # Error UI
+/components             # Reusable React components
   /ui                   # shadcn/ui (copy-paste)
-/lib                    # Utils partagés
-  prisma.ts             # Singleton Prisma client
-  auth.ts               # Config auth
+/lib                    # Shared utils
+  prisma.ts             # Prisma client singleton
+  auth.ts               # Auth config
   utils.ts              # cn() helper
 /hooks                  # Custom hooks (client components)
-/stores                 # Zustand stores si global state
-/types                  # Types TypeScript globaux
-/public                 # Assets statiques
+/stores                 # Zustand stores if global state
+/types                  # Global TypeScript types
+/public                 # Static assets
 middleware.ts           # Edge middleware (auth, i18n, redirects)
 ```
 
-## Conventions Next.js App Router
+## Next.js App Router Conventions
 
 ### Server vs Client Components
-- IMPORTANT: **Server Components par défaut** (zero JS client)
-- `"use client"` uniquement si : useState, useEffect, onClick, onChange, hooks browser
-- Server Components peuvent importer Client Components, l'inverse via `children` props uniquement
+- IMPORTANT: **Server Components by default** (zero client JS)
+- `"use client"` only if: useState, useEffect, onClick, onChange, browser hooks
+- Server Components can import Client Components, the reverse only via `children` props
 
 ### Data Fetching
-- IMPORTANT: Next 15+ : `fetch()` n'est **plus cache par défaut**
-- Toujours spécifier : `{ cache: "force-cache" }` / `{ next: { revalidate: 60 } }` / `{ next: { tags: [...] } }`
-- `Promise.all()` pour parallel fetching (éviter les waterfalls)
-- `loading.tsx` + `<Suspense>` pour streaming
+- IMPORTANT: Next 15+: `fetch()` is **no longer cached by default**
+- Always specify: `{ cache: "force-cache" }` / `{ next: { revalidate: 60 } }` / `{ next: { tags: [...] } }`
+- `Promise.all()` for parallel fetching (avoid waterfalls)
+- `loading.tsx` + `<Suspense>` for streaming
 
 ### Server Actions
-- Valider les inputs avec **Zod** (jamais de FormData non validée)
-- Vérifier l'auth dans l'action (pas seulement middleware)
-- `revalidatePath()` ou `revalidateTag()` après mutation
-- Errors : return un objet `{ success: false, error: "..." }` vs throw
+- Validate inputs with **Zod** (never unvalidated FormData)
+- Verify auth in the action (not only middleware)
+- `revalidatePath()` or `revalidateTag()` after mutation
+- Errors: return an object `{ success: false, error: "..." }` vs throw
 
 ### Route Handlers
 - `app/api/*/route.ts` (GET/POST/PUT/DELETE/PATCH exports)
 - Return `NextResponse.json(data, { status })`
-- Pas de logique métier sans vérification d'auth
+- No business logic without auth verification
 
-## Sécurité
-- IMPORTANT: NEVER exposer `DATABASE_URL` ou secrets côté client
-- IMPORTANT: Variables `NEXT_PUBLIC_*` = publiques (visibles dans le bundle)
-- YOU MUST vérifier la session dans chaque Server Action
-- YOU MUST valider tous les inputs (Server Actions, Route Handlers) avec Zod
-- Cookies de session : `httpOnly: true, secure: true, sameSite: "lax"`
-- Content-Security-Policy dans `next.config.ts` ou middleware
-- Middleware tourne sur Edge : pas de `fs`, `crypto.createHash`, `node:*` sans polyfill
+## Security
+- IMPORTANT: NEVER expose `DATABASE_URL` or secrets on the client side
+- IMPORTANT: `NEXT_PUBLIC_*` variables = public (visible in the bundle)
+- YOU MUST verify the session in every Server Action
+- YOU MUST validate all inputs (Server Actions, Route Handlers) with Zod
+- Session cookies: `httpOnly: true, secure: true, sameSite: "lax"`
+- Content-Security-Policy in `next.config.ts` or middleware
+- Middleware runs on Edge: no `fs`, `crypto.createHash`, `node:*` without polyfill
 
 ## Performance (Core Web Vitals)
 - IMPORTANT: LCP < 2.5s, INP < 200ms, CLS < 0.1
-- `next/image` avec `priority` pour above-the-fold
-- `next/font` (Google Fonts self-hosted) pour éviter FOIT/FOUT
-- Code splitting via `dynamic()` pour composants lourds
-- `export const dynamic = "force-static"` si la page est vraiment statique
-- Analyser le bundle : `ANALYZE=true npm run build` (avec `@next/bundle-analyzer`)
+- `next/image` with `priority` for above-the-fold
+- `next/font` (Google Fonts self-hosted) to avoid FOIT/FOUT
+- Code splitting via `dynamic()` for heavy components
+- `export const dynamic = "force-static"` if the page is truly static
+- Analyze the bundle: `ANALYZE=true npm run build` (with `@next/bundle-analyzer`)
 
-## Stack typique recommandée
+## Typical recommended stack
 - **TypeScript** strict
-- **Tailwind CSS** + **shadcn/ui** (composants)
-- **Prisma** ou **Drizzle** (ORM)
+- **Tailwind CSS** + **shadcn/ui** (components)
+- **Prisma** or **Drizzle** (ORM)
 - **better-auth** / **Lucia v3** / **NextAuth v5** (auth)
 - **next-intl** (i18n)
 - **Zod** (validation)
-- **React Hook Form** (formulaires complexes)
-- **SWR** ou **React Query** (si state serveur côté client)
-- **Zustand** (si state global client)
+- **React Hook Form** (complex forms)
+- **SWR** or **React Query** (if server state on the client)
+- **Zustand** (if global client state)
 
 ## Tests
-- **Vitest** (recommandé 2026, Jest compatible)
-- **React Testing Library** pour composants
-- **Playwright** pour E2E
-- Tester le comportement, pas l'implémentation
-- Mock uniquement les boundaries externes (API, DB)
+- **Vitest** (recommended 2026, Jest compatible)
+- **React Testing Library** for components
+- **Playwright** for E2E
+- Test behavior, not implementation
+- Mock only external boundaries (API, DB)
 
-## Pièges courants
-| Piège | Prévention |
-|-------|-----------|
-| `"use client"` partout | Server Component par défaut, client uniquement si hooks/events |
-| Data refetch intempestif | Spécifier cache explicite sur chaque `fetch` |
-| Build error `ERR_DYNAMIC` | `export const dynamic = "force-dynamic"` sur la page |
-| Middleware lent | Matcher restrictif, éviter les fetch |
-| Hydration mismatch | Pas de `Date.now()` / `Math.random()` dans le SSR |
-| PrismaClient multi-instanciation | Singleton via `globalThis` HMR-safe dans `lib/prisma.ts` |
+## Common pitfalls
+| Pitfall | Prevention |
+|---------|------------|
+| `"use client"` everywhere | Server Component by default, client only if hooks/events |
+| Untimely data refetch | Specify explicit cache on every `fetch` |
+| Build error `ERR_DYNAMIC` | `export const dynamic = "force-dynamic"` on the page |
+| Slow middleware | Restrictive matcher, avoid fetches |
+| Hydration mismatch | No `Date.now()` / `Math.random()` in SSR |
+| PrismaClient multi-instantiation | Singleton via HMR-safe `globalThis` in `lib/prisma.ts` |
 
-## Déploiement
-- **Vercel** : zero-config, preview deploys sur PR, analytics natifs
-- **Self-host** : `next build && next start`, Node 20+, process manager (PM2, systemd)
-- **Docker** : standalone output (`output: "standalone"` dans `next.config.ts`)
+## Deployment
+- **Vercel**: zero-config, preview deploys on PR, native analytics
+- **Self-host**: `next build && next start`, Node 20+, process manager (PM2, systemd)
+- **Docker**: standalone output (`output: "standalone"` in `next.config.ts`)
 
 ## Git & Commits
-- Format Conventional Commits : `feat(scope): description`
-- Scopes : `api`, `ui`, `db`, `auth`, `i18n`, etc.
-- Preview Vercel sur chaque PR pour review visuelle
+- Conventional Commits format: `feat(scope): description`
+- Scopes: `api`, `ui`, `db`, `auth`, `i18n`, etc.
+- Vercel preview on every PR for visual review
 
-## Skills auto-activés sur ce projet
+## Skills auto-activated on this project
 
-| Skill | Déclenchement |
-|-------|---------------|
-| `dev-nextjs` | Fichiers `app/**`, `next.config.*`, termes RSC/Server Actions |
-| `dev-react-perf` | Optimisation re-renders, Core Web Vitals |
-| `dev-shadcn` | Composants shadcn/ui |
-| `dev-frontend-design` | Design UI (avec direction artistique) |
-| `dev-tdd` | Tout code nouveau |
-| `dev-prisma` | Si `schema.prisma` présent |
-| `dev-auth` | Implémentation auth |
-| `dev-i18n` | Multi-langue |
-| `qa-security` | Audit OWASP |
-| `qa-perf` | Audit performance |
+| Skill | Trigger |
+|-------|---------|
+| `dev-nextjs` | Files `app/**`, `next.config.*`, RSC/Server Actions terms |
+| `dev-react-perf` | Re-render optimization, Core Web Vitals |
+| `dev-shadcn` | shadcn/ui components |
+| `dev-frontend-design` | UI design (with art direction) |
+| `dev-tdd` | All new code |
+| `dev-prisma` | If `schema.prisma` present |
+| `dev-auth` | Auth implementation |
+| `dev-i18n` | Multi-language |
+| `qa-security` | OWASP audit |
+| `qa-perf` | Performance audit |
 
-## Direction Design (optionnel)
-Ajouter dans ce CLAUDE.md une section `## Design Direction` avec `Style: <direction>` pour activer la rule `design-style`.
+## Design Direction (optional)
+Add a `## Design Direction` section in this CLAUDE.md with `Style: <direction>` to activate the `design-style` rule.
 
-Directions disponibles : `terminal`, `cockpit`, `vitality`, `editorial`, `glass`, `signal`.
+Available directions: `terminal`, `cockpit`, `vitality`, `editorial`, `glass`, `signal`.
 
-Exemple :
+Example:
 ```markdown
 ## Design Direction
 Style: glass
