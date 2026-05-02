@@ -8,7 +8,7 @@
     },
     {
       "path": "scripts/bump-version.sh",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "f006d1a806ee81dbefe84004e6f7562775f932e5408c8676a09f2df7687a924b"
     },
     {
