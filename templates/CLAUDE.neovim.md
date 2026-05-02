@@ -1,64 +1,64 @@
-# Projet Neovim Config
+# Neovim Config Project
 
-> Configuration Neovim moderne en Lua avec lazy.nvim et LSP.
+> Modern Neovim configuration in Lua with lazy.nvim and LSP.
 
-## Commandes Essentielles
+## Essential Commands
 
-| Commande | Description |
-|----------|-------------|
-| `nvim` | Lancer Neovim |
-| `nvim --headless "+Lazy! sync" +qa` | Synchroniser les plugins (CI) |
-| `nvim --headless "+checkhealth" +qa` | Vérifier la santé de la config |
-| `nvim --headless "+luafile %" +qa` | Exécuter un fichier Lua |
-| `luacheck lua/` | Linter Lua (si installé) |
-| `stylua lua/` | Formatter Lua (si installé) |
+| Command | Description |
+|---------|-------------|
+| `nvim` | Launch Neovim |
+| `nvim --headless "+Lazy! sync" +qa` | Sync plugins (CI) |
+| `nvim --headless "+checkhealth" +qa` | Check config health |
+| `nvim --headless "+luafile %" +qa` | Run a Lua file |
+| `luacheck lua/` | Lua linter (if installed) |
+| `stylua lua/` | Lua formatter (if installed) |
 
-## Structure du Projet
+## Project Structure
 
 ```
-~/.config/nvim/          # ou XDG_CONFIG_HOME/nvim
-├── init.lua             # Point d'entrée principal
+~/.config/nvim/          # or XDG_CONFIG_HOME/nvim
+├── init.lua             # Main entry point
 ├── lua/
-│   ├── config/          # Configuration de base
+│   ├── config/          # Base configuration
 │   │   ├── options.lua  # vim.opt settings
-│   │   ├── keymaps.lua  # Mappings globaux
+│   │   ├── keymaps.lua  # Global mappings
 │   │   ├── autocmds.lua # Autocommands
 │   │   └── lazy.lua     # Bootstrap lazy.nvim
-│   ├── plugins/         # Specs des plugins (lazy.nvim)
-│   │   ├── editor.lua   # Plugins d'édition (treesitter, etc.)
+│   ├── plugins/         # Plugin specs (lazy.nvim)
+│   │   ├── editor.lua   # Editing plugins (treesitter, etc.)
 │   │   ├── ui.lua       # UI (statusline, colorscheme, etc.)
-│   │   ├── lsp.lua      # LSP et completion
-│   │   ├── git.lua      # Intégration Git
-│   │   └── tools.lua    # Outils divers
-│   └── utils/           # Fonctions utilitaires
+│   │   ├── lsp.lua      # LSP and completion
+│   │   ├── git.lua      # Git integration
+│   │   └── tools.lua    # Miscellaneous tools
+│   └── utils/           # Utility functions
 ├── after/
-│   └── ftplugin/        # Config par type de fichier
+│   └── ftplugin/        # Per-filetype config
 │       ├── lua.lua
 │       ├── python.lua
 │       └── markdown.lua
-├── snippets/            # Snippets personnalisés (LuaSnip)
-└── spell/               # Dictionnaires orthographiques
+├── snippets/            # Custom snippets (LuaSnip)
+└── spell/               # Spell dictionaries
 ```
 
-## Conventions Lua/Neovim
+## Lua/Neovim Conventions
 
-### Nommage
-| Type | Convention | Exemple |
+### Naming
+| Type | Convention | Example |
 |------|------------|---------|
 | Variables | snake_case | `local buffer_name` |
-| Fonctions | snake_case | `function get_cursor_pos()` |
+| Functions | snake_case | `function get_cursor_pos()` |
 | Modules | snake_case | `require("config.keymaps")` |
-| Constantes | SCREAMING_SNAKE | `local MAX_LINES = 1000` |
-| Fichiers | snake_case ou kebab-case | `treesitter.lua`, `nvim-cmp.lua` |
+| Constants | SCREAMING_SNAKE | `local MAX_LINES = 1000` |
+| Files | snake_case or kebab-case | `treesitter.lua`, `nvim-cmp.lua` |
 
-### Règles Lua
-- IMPORTANT: Utiliser `local` pour toutes les variables
-- IMPORTANT: Préférer `vim.keymap.set()` à `vim.api.nvim_set_keymap()`
-- YOU MUST utiliser `vim.opt` plutôt que `vim.o/vim.bo/vim.wo` quand possible
-- Préférer les fonctions Lua aux commandes Vimscript
-- Utiliser `vim.schedule()` pour les opérations asynchrones dans les autocmds
+### Lua Rules
+- IMPORTANT: Use `local` for all variables
+- IMPORTANT: Prefer `vim.keymap.set()` over `vim.api.nvim_set_keymap()`
+- YOU MUST use `vim.opt` rather than `vim.o/vim.bo/vim.wo` when possible
+- Prefer Lua functions over Vimscript commands
+- Use `vim.schedule()` for async operations in autocmds
 
-### API Neovim
+### Neovim API
 ```lua
 -- Options
 vim.opt.number = true
@@ -67,7 +67,7 @@ vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 
--- Keymaps (moderne)
+-- Keymaps (modern)
 vim.keymap.set("n", "<leader>w", "<cmd>write<cr>", { desc = "Save file" })
 vim.keymap.set("n", "<leader>q", "<cmd>quit<cr>", { desc = "Quit" })
 vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Copy to clipboard" })
@@ -81,7 +81,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   desc = "Format Lua on save",
 })
 
--- Augroups (pour éviter les doublons)
+-- Augroups (to avoid duplicates)
 local augroup = vim.api.nvim_create_augroup("MyConfig", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup,
@@ -115,7 +115,7 @@ require("lazy").setup("plugins", {
 })
 ```
 
-### Spec de plugin
+### Plugin spec
 ```lua
 -- lua/plugins/editor.lua
 return {
@@ -145,7 +145,7 @@ return {
 
 ## LSP Configuration
 
-### Structure recommandée
+### Recommended structure
 ```lua
 -- lua/plugins/lsp.lua
 return {
@@ -161,7 +161,7 @@ return {
       local lspconfig = require("lspconfig")
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-      -- Keymaps LSP (buffer-local)
+      -- LSP keymaps (buffer-local)
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
           local opts = { buffer = args.buf }
@@ -173,13 +173,13 @@ return {
         end,
       })
 
-      -- Serveurs LSP
+      -- LSP servers
       local servers = { "lua_ls", "pyright", "tsserver" }
       for _, server in ipairs(servers) do
         lspconfig[server].setup({ capabilities = capabilities })
       end
 
-      -- Config spécifique lua_ls
+      -- lua_ls-specific config
       lspconfig.lua_ls.setup({
         capabilities = capabilities,
         settings = {
@@ -193,7 +193,7 @@ return {
     end,
   },
 
-  -- Mason (gestionnaire de LSP/linters)
+  -- Mason (LSP/linters manager)
   {
     "williamboman/mason.nvim",
     cmd = "Mason",
@@ -264,7 +264,7 @@ return {
 
 ## Tests
 
-### Avec plenary.nvim
+### With plenary.nvim
 ```lua
 -- tests/config_spec.lua
 describe("config", function()
@@ -282,16 +282,16 @@ describe("config", function()
 end)
 ```
 
-### Lancer les tests
+### Run the tests
 ```bash
-# Avec plenary (dans Neovim)
+# With plenary (inside Neovim)
 :PlenaryBustedDirectory tests/
 
-# En ligne de commande
+# From the command line
 nvim --headless -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/minimal_init.lua'}"
 ```
 
-### minimal_init.lua pour tests
+### minimal_init.lua for tests
 ```lua
 -- tests/minimal_init.lua
 vim.opt.rtp:append(".")
@@ -303,25 +303,25 @@ vim.cmd("runtime plugin/plenary.vim")
 
 ### Techniques
 ```lua
--- Inspecter une variable
+-- Inspect a variable
 vim.print(some_table)
 print(vim.inspect(some_table))
 
--- Logger dans un fichier
+-- Log to a file
 vim.fn.writefile({ vim.inspect(data) }, "/tmp/nvim-debug.log", "a")
 
--- Vérifier si un plugin est chargé
+-- Check whether a plugin is loaded
 :Lazy
 :checkhealth
 
 -- Profiling
 :Lazy profile
 
--- Messages d'erreur
+-- Error messages
 :messages
 ```
 
-### Checkhealth personnalisé
+### Custom checkhealth
 ```lua
 -- lua/utils/health.lua
 local M = {}
@@ -329,14 +329,14 @@ local M = {}
 M.check = function()
   vim.health.start("My Config")
 
-  -- Vérifier les dépendances
+  -- Check dependencies
   if vim.fn.executable("rg") == 1 then
     vim.health.ok("ripgrep installed")
   else
     vim.health.warn("ripgrep not found (telescope will be slower)")
   end
 
-  -- Vérifier la version de Neovim
+  -- Check Neovim version
   if vim.fn.has("nvim-0.9") == 1 then
     vim.health.ok("Neovim >= 0.9")
   else
@@ -351,13 +351,13 @@ return M
 
 ### Lazy loading
 ```lua
--- Charger uniquement pour certains filetypes
+-- Load only for certain filetypes
 { "rust-lang/rust.vim", ft = "rust" }
 
--- Charger sur commande
+-- Load on command
 { "folke/trouble.nvim", cmd = "Trouble" }
 
--- Charger sur keymap
+-- Load on keymap
 {
   "nvim-telescope/telescope.nvim",
   keys = {
@@ -366,38 +366,38 @@ return M
   },
 }
 
--- Charger sur événement
+-- Load on event
 { "nvim-treesitter/nvim-treesitter", event = { "BufReadPre", "BufNewFile" } }
 ```
 
-### Mesurer le temps de démarrage
+### Measure startup time
 ```bash
-# Temps de démarrage
+# Startup time
 nvim --startuptime /tmp/startup.log
 
-# Analyser avec un plugin
+# Analyze with a plugin
 :Lazy profile
 ```
 
 ## Git & Commits
 - Format: `type(scope): description`
 - Types: feat, fix, refactor, test, docs, chore
-- Scope: plugin name ou module (`lsp`, `keymaps`, `treesitter`)
-- Exemple: `feat(lsp): add rust-analyzer configuration`
+- Scope: plugin name or module (`lsp`, `keymaps`, `treesitter`)
+- Example: `feat(lsp): add rust-analyzer configuration`
 
-## Hooks Claude Code 2.1+
+## Claude Code 2.1+ Hooks
 
 | Hook | Type | Action |
 |------|------|--------|
-| Branch protection | PreToolUse | Bloque les modifications sur main/master |
-| Lua format | PostToolUse | `stylua` sur fichiers Lua modifiés |
-| Lua lint | PostToolUse | `luacheck` après édition |
+| Branch protection | PreToolUse | Blocks modifications on main/master |
+| Lua format | PostToolUse | `stylua` on modified Lua files |
+| Lua lint | PostToolUse | `luacheck` after editing |
 | Syntax check | PostToolUse | `nvim --headless "+luafile %" +qa` |
-| Détection secrets | PreToolUse | Bloque les secrets hardcodés |
+| Secret detection | PreToolUse | Blocks hardcoded secrets |
 
-### Configuration des hooks Lua
+### Lua hooks configuration
 
-Ajouter dans `.claude/settings.local.json` :
+Add to `.claude/settings.local.json`:
 
 ```json
 {
@@ -423,9 +423,9 @@ Ajouter dans `.claude/settings.local.json` :
 }
 ```
 
-### Outils de qualité Lua
+### Lua quality tools
 
-Installation :
+Installation:
 ```bash
 # macOS
 brew install stylua luacheck
@@ -434,12 +434,12 @@ brew install stylua luacheck
 luarocks install luacheck
 cargo install stylua
 
-# Avec mise (gestionnaire de versions)
+# With mise (version manager)
 mise use -g stylua
 mise use -g luacheck
 ```
 
-Configuration recommandée :
+Recommended configuration:
 
 ```toml
 # .stylua.toml
@@ -460,21 +460,21 @@ globals = { "vim" }
 ignore = { "212" }  -- Unused argument
 ```
 
-## Skills disponibles
+## Available Skills
 
-| Skill | Déclenchement | Usage |
-|-------|---------------|-------|
-| `exploring-codebase` | "explorer", "comprendre" | Analyser une config existante |
-| `planning-implementation` | "planifier", "architecture" | Définir un plan avant de modifier |
-| `test-driven-development` | "TDD", "test first" | Tests avec plenary.nvim |
-| `reviewing-code` | "review", "vérifier" | Revue de configuration |
-| `debugging-issues` | "debug", "bug", "erreur" | Diagnostic de plugins |
+| Skill | Trigger | Usage |
+|-------|---------|-------|
+| `exploring-codebase` | "explore", "understand" | Analyze an existing config |
+| `planning-implementation` | "plan", "architecture" | Define a plan before modifying |
+| `test-driven-development` | "TDD", "test first" | Tests with plenary.nvim |
+| `reviewing-code` | "review", "verify" | Configuration review |
+| `debugging-issues` | "debug", "bug", "error" | Plugin diagnostics |
 | `generating-commit-messages` | "commit", "message" | Conventional Commits |
-| `creating-pull-requests` | "PR", "pull request" | PR complète et documentée |
+| `creating-pull-requests` | "PR", "pull request" | Complete and documented PR |
 
-## Plugins Recommandés
+## Recommended Plugins
 
-### Essentiels
+### Essentials
 ```lua
 -- Plugin manager
 "folke/lazy.nvim"
@@ -504,12 +504,12 @@ ignore = { "212" }  -- Unused argument
 "folke/tokyonight.nvim"
 ```
 
-### Optionnels populaires
+### Popular optional
 ```lua
 -- File explorer
 "nvim-neo-tree/neo-tree.nvim"
 
--- Which-key (aide keymaps)
+-- Which-key (keymap helper)
 "folke/which-key.nvim"
 
 -- Diagnostics
@@ -525,17 +525,17 @@ ignore = { "212" }  -- Unused argument
 "nvim-neotest/neotest"
 ```
 
-## Anti-patterns à éviter
+## Anti-patterns to avoid
 
-- NEVER utiliser Vimscript quand Lua est possible
-- NEVER mettre toute la config dans init.lua (modulariser)
-- NEVER hardcoder les chemins (utiliser `vim.fn.stdpath()`)
-- NEVER ignorer les erreurs de chargement de plugins
-- Éviter les mappings sans description (utiliser `desc =`)
-- Éviter `vim.cmd` pour ce qui peut être fait en Lua
-- Éviter les plugins qui dupliquent des fonctionnalités builtin
+- NEVER use Vimscript when Lua is possible
+- NEVER put the entire config in init.lua (modularize)
+- NEVER hardcode paths (use `vim.fn.stdpath()`)
+- NEVER ignore plugin loading errors
+- Avoid mappings without a description (use `desc =`)
+- Avoid `vim.cmd` for what can be done in Lua
+- Avoid plugins that duplicate builtin features
 
-## Migration depuis Vimscript
+## Migrating from Vimscript
 
 ```lua
 -- Vimscript: set number
