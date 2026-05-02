@@ -1,15 +1,16 @@
+```bash
 #!/bin/bash
 
 # =============================================================================
 # Claude-Socle Diff Script
-# Compare la configuration d'un projet avec le socle
+# Compares a project's configuration with the foundation
 # =============================================================================
 
 set -euo pipefail
 
 VERSION="1.0.0"
 
-# Charger la librairie commune
+# Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 
@@ -25,14 +26,14 @@ SHOW_ONLY="all"  # all, new, modified, deleted
 USE_COLOR=true
 SHOW_CONTENT=false
 
-# Compteurs
+# Counters
 NEW_FILES=0
 MODIFIED_FILES=0
 DELETED_FILES=0
 IDENTICAL_FILES=0
 
 # =============================================================================
-# Aide
+# Help
 # =============================================================================
 
 show_help() {
@@ -40,40 +41,40 @@ show_help() {
 ${BOLD}Claude-Socle Diff${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
-    $(basename "$0") [OPTIONS] [CHEMIN]
+    $(basename "$0") [OPTIONS] [PATH]
 
 ${BOLD}DESCRIPTION${NC}
-    Compare la configuration Claude Code d'un projet avec le socle.
-    Affiche les différences entre les fichiers locaux et le socle.
+    Compares a project's Claude Code configuration with the foundation.
+    Displays the differences between local files and the foundation.
 
 ${BOLD}ARGUMENTS${NC}
-    CHEMIN              Répertoire à comparer (défaut: répertoire courant)
+    PATH                Directory to compare (default: current directory)
 
 ${BOLD}OPTIONS${NC}
-    -h, --help          Affiche cette aide
-    -v, --version       Affiche la version
-    -q, --quiet         Mode silencieux (résumé uniquement)
-    --new               Affiche uniquement les nouveaux fichiers (dans socle)
-    --modified          Affiche uniquement les fichiers modifiés
-    --deleted           Affiche uniquement les fichiers supprimés (pas dans socle)
-    --content           Affiche le contenu des différences
-    --no-color          Désactive les couleurs
+    -h, --help          Show this help
+    -v, --version       Show the version
+    -q, --quiet         Quiet mode (summary only)
+    --new               Show only new files (in foundation)
+    --modified          Show only modified files
+    --deleted           Show only deleted files (not in foundation)
+    --content           Show the content of the differences
+    --no-color          Disable colors
 
-${BOLD}LÉGENDE${NC}
-    ${GREEN}+${NC} Nouveau dans le socle (à ajouter)
-    ${YELLOW}~${NC} Modifié (différent du socle)
-    ${RED}-${NC} Supprimé du socle (local uniquement)
-    ${DIM}=${NC} Identique
+${BOLD}LEGEND${NC}
+    ${GREEN}+${NC} New in the foundation (to add)
+    ${YELLOW}~${NC} Modified (different from the foundation)
+    ${RED}-${NC} Deleted from the foundation (local only)
+    ${DIM}=${NC} Identical
 
-${BOLD}EXEMPLES${NC}
-    # Voir toutes les différences
-    $(basename "$0") ./mon-projet
+${BOLD}EXAMPLES${NC}
+    # See all differences
+    $(basename "$0") ./my-project
 
-    # Voir uniquement les fichiers modifiés
-    $(basename "$0") --modified ./mon-projet
+    # See only modified files
+    $(basename "$0") --modified ./my-project
 
-    # Voir le contenu des différences
-    $(basename "$0") --content ./mon-projet
+    # See the content of the differences
+    $(basename "$0") --content ./my-project
 
 EOF
 }
@@ -83,7 +84,7 @@ show_version() {
 }
 
 # =============================================================================
-# Parsing des arguments
+# Argument parsing
 # =============================================================================
 
 parse_args() {
@@ -122,13 +123,13 @@ parse_args() {
                 shift
                 ;;
             -*)
-                error "Option inconnue: $1\nUtilisez --help pour l'aide"
+                error "Unknown option: $1\nUse --help for help"
                 ;;
             *)
                 if [[ -z "$TARGET_DIR" ]]; then
                     TARGET_DIR="$1"
                 else
-                    error "Trop d'arguments: $1"
+                    error "Too many arguments: $1"
                 fi
                 shift
                 ;;
@@ -139,7 +140,7 @@ parse_args() {
 }
 
 # =============================================================================
-# Fonctions de comparaison
+# Comparison functions
 # =============================================================================
 
 show_diff_content() {
@@ -162,15 +163,15 @@ compare_file() {
 
     if [[ -f "$local_file" ]]; then
         if [[ -f "$socle_file" ]]; then
-            # Les deux fichiers existent
+            # Both files exist
             if diff -q "$socle_file" "$local_file" > /dev/null 2>&1; then
-                # Identiques
+                # Identical
                 ((IDENTICAL_FILES++)) || true
                 if [[ "$SHOW_ONLY" == "all" ]] && ! $QUIET; then
                     echo -e "  ${DIM}= $filename${NC}"
                 fi
             else
-                # Modifiés
+                # Modified
                 ((MODIFIED_FILES++)) || true
                 if [[ "$SHOW_ONLY" == "all" ]] || [[ "$SHOW_ONLY" == "modified" ]]; then
                     echo -e "  ${YELLOW}~ $filename${NC}"
@@ -182,53 +183,53 @@ compare_file() {
                 fi
             fi
         else
-            # Supprimé du socle (existe localement mais pas dans socle)
+            # Deleted from the foundation (exists locally but not in foundation)
             ((DELETED_FILES++)) || true
             if [[ "$SHOW_ONLY" == "all" ]] || [[ "$SHOW_ONLY" == "deleted" ]]; then
-                echo -e "  ${RED}- $filename${NC} ${DIM}(local uniquement)${NC}"
+                echo -e "  ${RED}- $filename${NC} ${DIM}(local only)${NC}"
             fi
         fi
     elif [[ -f "$socle_file" ]]; then
-        # Nouveau dans le socle
+        # New in the foundation
         ((NEW_FILES++)) || true
         if [[ "$SHOW_ONLY" == "all" ]] || [[ "$SHOW_ONLY" == "new" ]]; then
-            echo -e "  ${GREEN}+ $filename${NC} ${DIM}(nouveau)${NC}"
+            echo -e "  ${GREEN}+ $filename${NC} ${DIM}(new)${NC}"
         fi
     fi
 }
 
 compare_commands() {
-    section "Commandes (.claude/commands/)"
+    section "Commands (.claude/commands/)"
 
     local socle_dir="$SOCLE_DIR/.claude/commands"
     local local_dir="$TARGET_DIR/.claude/commands"
 
-    # Créer une liste unique de tous les fichiers avec chemins relatifs
+    # Build a unique list of all files with relative paths
     local all_files=()
 
-    # Fichiers du socle (récursif)
+    # Foundation files (recursive)
     if [[ -d "$socle_dir" ]]; then
         while IFS= read -r f; do
-            # Calculer le chemin relatif
+            # Compute the relative path
             local rel_path="${f#$socle_dir/}"
             all_files+=("$rel_path")
         done < <(find "$socle_dir" -name "*.md" -type f 2>/dev/null)
     fi
 
-    # Fichiers locaux (récursif)
+    # Local files (recursive)
     if [[ -d "$local_dir" ]]; then
         while IFS= read -r f; do
-            # Calculer le chemin relatif
+            # Compute the relative path
             local rel_path="${f#$local_dir/}"
             all_files+=("$rel_path")
         done < <(find "$local_dir" -name "*.md" -type f 2>/dev/null)
     fi
 
-    # Dédupliquer et trier
+    # Deduplicate and sort
     local unique_files
     unique_files=$(printf '%s\n' "${all_files[@]}" | sort -u)
 
-    # Comparer chaque fichier
+    # Compare each file
     for rel_path in $unique_files; do
         compare_file "$socle_dir/$rel_path" "$local_dir/$rel_path" "$rel_path" "commands"
     done
@@ -240,28 +241,28 @@ compare_skills() {
     local socle_dir="$SOCLE_DIR/.claude/skills"
     local local_dir="$TARGET_DIR/.claude/skills"
 
-    # Créer une liste unique de tous les skills
+    # Build a unique list of all skills
     local all_skills=()
 
-    # Skills du socle
+    # Foundation skills
     if [[ -d "$socle_dir" ]]; then
         for d in "$socle_dir/"*/; do
             [[ -d "$d" ]] && all_skills+=("$(basename "$d")")
         done
     fi
 
-    # Skills locaux
+    # Local skills
     if [[ -d "$local_dir" ]]; then
         for d in "$local_dir/"*/; do
             [[ -d "$d" ]] && all_skills+=("$(basename "$d")")
         done
     fi
 
-    # Dédupliquer et trier
+    # Deduplicate and sort
     local unique_skills
     unique_skills=$(printf '%s\n' "${all_skills[@]}" | sort -u)
 
-    # Comparer chaque skill
+    # Compare each skill
     for skillname in $unique_skills; do
         local socle_skill="$socle_dir/$skillname/SKILL.md"
         local local_skill="$local_dir/$skillname/SKILL.md"
@@ -290,23 +291,23 @@ compare_settings() {
 print_summary() {
     echo ""
     separator "="
-    echo "  Résumé des différences"
+    echo "  Summary of differences"
     separator "="
     echo ""
 
     # shellcheck disable=SC2034  # Used for summary display
     local total=$((NEW_FILES + MODIFIED_FILES + DELETED_FILES + IDENTICAL_FILES))
 
-    echo -e "  ${GREEN}+ Nouveaux:${NC}    $NEW_FILES fichier(s) à ajouter"
-    echo -e "  ${YELLOW}~ Modifiés:${NC}    $MODIFIED_FILES fichier(s) différent(s)"
-    echo -e "  ${RED}- Supprimés:${NC}   $DELETED_FILES fichier(s) locaux uniquement"
-    echo -e "  ${DIM}= Identiques:${NC}  $IDENTICAL_FILES fichier(s)"
+    echo -e "  ${GREEN}+ New:${NC}         $NEW_FILES file(s) to add"
+    echo -e "  ${YELLOW}~ Modified:${NC}    $MODIFIED_FILES different file(s)"
+    echo -e "  ${RED}- Deleted:${NC}     $DELETED_FILES local-only file(s)"
+    echo -e "  ${DIM}= Identical:${NC}   $IDENTICAL_FILES file(s)"
     echo ""
 
     if [[ $NEW_FILES -gt 0 ]] || [[ $MODIFIED_FILES -gt 0 ]]; then
-        info "Pour synchroniser: ./scripts/update.sh --force $TARGET_DIR"
+        info "To synchronize: ./scripts/update.sh --force $TARGET_DIR"
     else
-        success "Configuration à jour avec le socle!"
+        success "Configuration up to date with the foundation!"
     fi
 
     echo ""
@@ -319,43 +320,44 @@ print_summary() {
 main() {
     parse_args "$@"
 
-    # Vérifier le répertoire
+    # Check the directory
     if [[ ! -d "$TARGET_DIR" ]]; then
-        error "Le répertoire '$TARGET_DIR' n'existe pas"
+        error "Directory '$TARGET_DIR' does not exist"
     fi
 
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
 
-    # Vérifier qu'il y a une configuration
+    # Check that there is a configuration
     if [[ ! -d "$TARGET_DIR/.claude" ]]; then
-        error "Pas de configuration Claude trouvée dans '$TARGET_DIR'"
+        error "No Claude configuration found in '$TARGET_DIR'"
     fi
 
-    title "Comparaison avec le socle"
-    info "Projet: $TARGET_DIR"
-    info "Socle:  $SOCLE_DIR"
+    title "Comparison with the foundation"
+    info "Project:    $TARGET_DIR"
+    info "Foundation: $SOCLE_DIR"
     echo ""
 
-    # Légende
+    # Legend
     if [[ "$SHOW_ONLY" == "all" ]] && ! $QUIET; then
-        echo -e "  ${DIM}Légende: ${GREEN}+ nouveau${NC}  ${YELLOW}~ modifié${NC}  ${RED}- supprimé${NC}  ${DIM}= identique${NC}"
+        echo -e "  ${DIM}Legend: ${GREEN}+ new${NC}  ${YELLOW}~ modified${NC}  ${RED}- deleted${NC}  ${DIM}= identical${NC}"
         echo ""
     fi
 
-    # Comparer
+    # Compare
     compare_commands
     compare_skills
     compare_settings
 
-    # Résumé
+    # Summary
     print_summary
 
-    # Code de sortie
+    # Exit code
     if [[ $NEW_FILES -gt 0 ]] || [[ $MODIFIED_FILES -gt 0 ]]; then
-        exit 1  # Des différences existent
+        exit 1  # Differences exist
     else
-        exit 0  # Synchronisé
+        exit 0  # Synchronized
     fi
 }
 
 main "$@"
+```
