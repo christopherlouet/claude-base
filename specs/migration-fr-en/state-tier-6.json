@@ -128,7 +128,7 @@
     },
     {
       "path": "tests/lint.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "94d2b9174beb845209b11dd8a74c32815887128f1c4644fb6d072e7746fae252"
     },
     {
