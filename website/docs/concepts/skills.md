@@ -1,53 +1,53 @@
 ---
 sidebar_position: 4
 title: Skills
-description: Comprendre les skills Claude Code
+description: Understanding Claude Code skills
 ---
 
 # Skills
 
-> Comportements auto-declenches par detection de mots-cles
+> Behaviors auto-triggered by keyword detection
 
-## Qu'est-ce qu'un Skill ?
+## What is a Skill?
 
-Un **skill** est un ensemble d'instructions qui s'activent automatiquement quand certains mots-cles sont detectes dans la conversation.
+A **skill** is a set of instructions that automatically activate when certain keywords are detected in the conversation.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│  User: "Je veux faire du TDD pour cette feature"               │
+│  User: "I want to do TDD for this feature"                     │
 │              │                                                 │
 │              ▼                                                 │
 │  ┌────────────────────────────────────────┐                    │
-│  │ Detection de mots-cles                 │                    │
+│  │ Keyword detection                      │                    │
 │  │                                        │                    │
-│  │ "TDD" detecte → Skill TDD active       │                    │
+│  │ "TDD" detected → TDD Skill active      │                    │
 │  └────────────────────────────────────────┘                    │
 │              │                                                 │
 │              ▼                                                 │
 │  ┌────────────────────────────────────────┐                    │
-│  │ Instructions TDD injectees             │                    │
+│  │ TDD instructions injected              │                    │
 │  │                                        │                    │
-│  │ - Ecrire le test d'abord (RED)         │                    │
-│  │ - Implementer le minimum (GREEN)       │                    │
-│  │ - Refactorer (REFACTOR)                │                    │
+│  │ - Write the test first (RED)           │                    │
+│  │ - Implement the minimum (GREEN)        │                    │
+│  │ - Refactor (REFACTOR)                  │                    │
 │  └────────────────────────────────────────┘                    │
 │              │                                                 │
 │              ▼                                                 │
-│  Claude suit automatiquement le cycle TDD                      │
+│  Claude automatically follows the TDD cycle                    │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
 
-## Structure des fichiers
+## File structure
 
-Les skills sont dans `.claude/skills/`, chacun dans son propre dossier:
+Skills live in `.claude/skills/`, each in its own folder:
 
 ```
 .claude/skills/
 ├── test-driven-development/
-│   ├── SKILL.md              # Instructions du skill
-│   └── examples/             # Exemples pratiques (optionnel)
+│   ├── SKILL.md              # Skill instructions
+│   └── examples/             # Practical examples (optional)
 │       └── example.md
 ├── generating-commit-messages/
 │   └── SKILL.md
@@ -58,14 +58,14 @@ Les skills sont dans `.claude/skills/`, chacun dans son propre dossier:
 └── ...
 ```
 
-## Anatomie d'un skill
+## Anatomy of a skill
 
-### Fichier SKILL.md
+### SKILL.md file
 
 ```markdown
 ---
 name: test-driven-development
-description: Developpement TDD avec cycle Red-Green-Refactor
+description: TDD development with Red-Green-Refactor cycle
 allowed-tools:
   - Read
   - Write
@@ -78,122 +78,122 @@ context: fork
 
 # Test Driven Development Skill
 
-## Declencheurs
+## Triggers
 
-Ce skill s'active quand l'utilisateur mentionne:
+This skill activates when the user mentions:
 - "TDD", "test first", "test driven"
-- "ecrire les tests d'abord"
+- "write tests first"
 - "red green refactor"
 
 ## Instructions
 
-### Cycle TDD
+### TDD cycle
 
-1. **RED** - Ecrire un test qui echoue
-2. **GREEN** - Implementer le minimum pour passer
-3. **REFACTOR** - Ameliorer sans casser les tests
+1. **RED** - Write a failing test
+2. **GREEN** - Implement the minimum to pass
+3. **REFACTOR** - Improve without breaking the tests
 
-### Regles
+### Rules
 
-IMPORTANT: Toujours commencer par le test.
+IMPORTANT: Always start with the test.
 
-YOU MUST verifier que le test echoue avant d'implementer.
+YOU MUST verify that the test fails before implementing.
 
-NEVER ecrire plus de code que necessaire pour passer le test.
+NEVER write more code than necessary to pass the test.
 ```
 
 ## Frontmatter
 
-### Champs obligatoires
+### Required fields
 
-| Champ | Description | Exemple |
+| Field | Description | Example |
 |-------|-------------|---------|
-| `name` | Nom du skill | `test-driven-development` |
-| `description` | Description courte | `Developpement TDD...` |
+| `name` | Skill name | `test-driven-development` |
+| `description` | Short description | `TDD development...` |
 
-### Champs optionnels
+### Optional fields
 
-| Champ | Description | Valeurs |
-|-------|-------------|---------|
-| `allowed-tools` | Outils autorises | Liste d'outils |
-| `context` | Type de contexte | `fork` ou `shared` |
+| Field | Description | Values |
+|-------|-------------|--------|
+| `allowed-tools` | Authorized tools | List of tools |
+| `context` | Context type | `fork` or `shared` |
 
-### Contextes
+### Contexts
 
-| Contexte | Description | Usage |
-|----------|-------------|-------|
-| `fork` | Contexte isole | Taches autonomes (recommande) |
-| `shared` | Contexte partage | Taches interactives |
+| Context | Description | Usage |
+|---------|-------------|-------|
+| `fork` | Isolated context | Autonomous tasks (recommended) |
+| `shared` | Shared context | Interactive tasks |
 
-## Mots-cles declencheurs
+## Trigger keywords
 
-Les skills sont actives par detection de mots-cles. Definissez-les dans la section "Declencheurs":
+Skills are activated by keyword detection. Define them in the "Triggers" section:
 
 ```markdown
-## Declencheurs
+## Triggers
 
-Ce skill s'active quand l'utilisateur mentionne:
+This skill activates when the user mentions:
 - "TDD", "test first"
-- "ecrire les tests d'abord"
+- "write tests first"
 - "red green refactor"
 ```
 
-## Categories de skills
+## Skill categories
 
-### Developpement
+### Development
 
-| Skill | Mots-cles | Action |
-|-------|-----------|--------|
-| `test-driven-development` | TDD, test first | Cycle Red-Green-Refactor |
-| `debugging-issues` | bug, erreur, debug | Investigation systematique |
-| `refactoring` | refactorer, nettoyer | Refactoring guide |
-| `api-development` | API, endpoint, REST | Creation d'API |
+| Skill | Keywords | Action |
+|-------|----------|--------|
+| `test-driven-development` | TDD, test first | Red-Green-Refactor cycle |
+| `debugging-issues` | bug, error, debug | Systematic investigation |
+| `refactoring` | refactor, clean up | Guided refactoring |
+| `api-development` | API, endpoint, REST | API creation |
 
 ### Workflow
 
-| Skill | Mots-cles | Action |
-|-------|-----------|--------|
+| Skill | Keywords | Action |
+|-------|----------|--------|
 | `generating-commit-messages` | commit, message | Conventional Commits |
-| `creating-pull-requests` | PR, pull request | PR structuree |
-| `reviewing-code` | review, code review | Revue approfondie |
-| `exploring-codebase` | explorer, comprendre | Analyse de code |
+| `creating-pull-requests` | PR, pull request | Structured PR |
+| `reviewing-code` | review, code review | Thorough review |
+| `exploring-codebase` | explore, understand | Code analysis |
 
-### Qualite
+### Quality
 
-| Skill | Mots-cles | Action |
-|-------|-----------|--------|
-| `security-audit` | securite, OWASP | Audit securite |
+| Skill | Keywords | Action |
+|-------|----------|--------|
+| `security-audit` | security, OWASP | Security audit |
 
 ### Infrastructure
 
-| Skill | Mots-cles | Action |
-|-------|-----------|--------|
-| `docker-containerization` | Docker, container | Dockerisation |
-| `ci-cd-pipeline` | CI/CD, pipeline | Configuration CI |
-| `monitoring-instrumentation` | logs, metriques | Instrumentation |
-| `infrastructure-as-code` | Terraform, IaC, OpenTofu, module, Proxmox | Modules Terraform/OpenTofu, Infrastructure Proxmox |
+| Skill | Keywords | Action |
+|-------|----------|--------|
+| `docker-containerization` | Docker, container | Containerization |
+| `ci-cd-pipeline` | CI/CD, pipeline | CI configuration |
+| `monitoring-instrumentation` | logs, metrics | Instrumentation |
+| `infrastructure-as-code` | Terraform, IaC, OpenTofu, module, Proxmox | Terraform/OpenTofu modules, Proxmox infrastructure |
 
-## Exemples de skills
+## Skill examples
 
-### Skill simple
+### Simple skill
 
 ```markdown
 ---
 name: generating-commit-messages
-description: Generer des messages de commit Conventional Commits
+description: Generate Conventional Commits commit messages
 context: fork
 ---
 
 # Generating Commit Messages
 
-## Declencheurs
+## Triggers
 
-- "commit", "message de commit"
+- "commit", "commit message"
 - "git commit"
 
 ## Instructions
 
-Generer un message de commit suivant Conventional Commits:
+Generate a commit message following Conventional Commits:
 
 \`\`\`
 type(scope): description
@@ -204,20 +204,20 @@ type(scope): description
 \`\`\`
 
 ### Types
-- feat: nouvelle fonctionnalite
-- fix: correction de bug
+- feat: new feature
+- fix: bug fix
 - docs: documentation
 - refactor: refactoring
-- test: ajout de tests
+- test: adding tests
 - chore: maintenance
 ```
 
-### Skill avec outils restreints
+### Skill with restricted tools
 
 ```markdown
 ---
 name: exploring-codebase
-description: Explorer et comprendre un codebase
+description: Explore and understand a codebase
 allowed-tools:
   - Read
   - Grep
@@ -227,36 +227,36 @@ context: fork
 
 # Exploring Codebase
 
-## Declencheurs
+## Triggers
 
-- "explorer", "comprendre le code"
-- "decouvrir le projet"
+- "explore", "understand the code"
+- "discover the project"
 
 ## Instructions
 
-1. Lire les fichiers de configuration
-2. Identifier la structure
-3. Reperer les patterns
+1. Read the configuration files
+2. Identify the structure
+3. Spot the patterns
 
-## Contraintes
+## Constraints
 
-Ne JAMAIS modifier de fichiers.
+NEVER modify files.
 ```
 
-## Creer un nouveau skill
+## Create a new skill
 
-### 1. Creer le dossier
+### 1. Create the folder
 
 ```bash
-mkdir -p .claude/skills/mon-skill
+mkdir -p .claude/skills/my-skill
 ```
 
-### 2. Creer SKILL.md
+### 2. Create SKILL.md
 
 ```markdown
 ---
-name: mon-skill
-description: Description de mon skill
+name: my-skill
+description: Description of my skill
 allowed-tools:
   - Read
   - Write
@@ -264,57 +264,57 @@ allowed-tools:
 context: fork
 ---
 
-# Mon Skill
+# My Skill
 
-## Declencheurs
+## Triggers
 
-Ce skill s'active quand:
-- "mot-cle-1", "mot-cle-2"
-- "phrase declencheuse"
+This skill activates when:
+- "keyword-1", "keyword-2"
+- "trigger phrase"
 
 ## Instructions
 
-1. Etape 1
-2. Etape 2
-3. Etape 3
+1. Step 1
+2. Step 2
+3. Step 3
 
-## Regles
+## Rules
 
-IMPORTANT: Regle importante.
+IMPORTANT: Important rule.
 
-YOU MUST faire ceci.
+YOU MUST do this.
 
-NEVER faire cela.
+NEVER do that.
 ```
 
-### 3. Ajouter des exemples (optionnel)
+### 3. Add examples (optional)
 
 ```bash
-mkdir -p .claude/skills/mon-skill/examples
-touch .claude/skills/mon-skill/examples/exemple.md
+mkdir -p .claude/skills/my-skill/examples
+touch .claude/skills/my-skill/examples/example.md
 ```
 
-## Difference avec Commands et Agents
+## Difference with Commands and Agents
 
 | Aspect | Command | Skill | Agent |
 |--------|---------|-------|-------|
-| Declenchement | Manuel (`/xxx`) | **Auto (mots-cles)** | Auto (delegation) |
-| Contexte | Partage | **Fork** | Isole |
-| Controle | Total | **Partiel** | Delegue |
-| Visibilite | Explicite | **Transparente** | Transparente |
+| Trigger | Manual (`/xxx`) | **Auto (keywords)** | Auto (delegation) |
+| Context | Shared | **Fork** | Isolated |
+| Control | Total | **Partial** | Delegated |
+| Visibility | Explicit | **Transparent** | Transparent |
 
-## Bonnes pratiques
+## Best practices
 
-1. **Mots-cles precis**: Eviter les faux positifs
-2. **Contexte fork**: Recommande pour l'isolation
-3. **Outils minimaux**: Restreindre aux besoins
-4. **Instructions claires**: Le skill doit etre autonome
-5. **Exemples pratiques**: Aider a comprendre l'usage
+1. **Precise keywords**: Avoid false positives
+2. **Fork context**: Recommended for isolation
+3. **Minimal tools**: Restrict to what's needed
+4. **Clear instructions**: The skill must be self-contained
+5. **Practical examples**: Help understand usage
 
 ---
 
-## Voir aussi
+## See also
 
-- [Commands](./commands) - Instructions manuelles
-- [Agents](./agents) - Sub-agents autonomes
-- [Catalogue des skills](/docs/skills) - Tous les skills claude-socle
+- [Commands](./commands) - Manual instructions
+- [Agents](./agents) - Autonomous sub-agents
+- [Skills catalog](/docs/skills) - All claude-socle skills
