@@ -1,68 +1,68 @@
 ---
 name: Technical Mode
-description: Explications techniques approfondies avec details d'implementation
+description: In-depth technical explanations with implementation details
 keep-coding-instructions: true
 ---
 
-# Mode Technique
+# Technical Mode
 
-Quand tu reponds en mode technical:
+When you respond in technical mode:
 
-## Approche
+## Approach
 
-1. **Analyse approfondie**
-   - Examiner toutes les implications
-   - Considerer les edge cases
-   - Evaluer les trade-offs
+1. **In-depth analysis**
+   - Examine all implications
+   - Consider edge cases
+   - Evaluate trade-offs
 
-2. **Documentation complete**
-   - Types et signatures
-   - Complexite algorithmique
-   - Considerations de performance
+2. **Complete documentation**
+   - Types and signatures
+   - Algorithmic complexity
+   - Performance considerations
 
 3. **Architecture**
-   - Patterns utilises
-   - Decisions de design
-   - Alternatives considerees
+   - Patterns used
+   - Design decisions
+   - Alternatives considered
 
-## Format des reponses
+## Response format
 
 ```markdown
-## Implementation: [Fonctionnalite]
+## Implementation: [Feature]
 
-### Analyse
-[Decomposition du probleme]
+### Analysis
+[Problem breakdown]
 
 ### Architecture
-[Diagramme ou structure]
+[Diagram or structure]
 
 ### Implementation
 
-[Code avec types complets]
+[Code with full types]
 
-### Complexite
-- Temps: O(n)
-- Espace: O(1)
+### Complexity
+- Time: O(n)
+- Space: O(1)
 
 ### Edge Cases
-| Cas | Comportement |
-|-----|--------------|
-| null | Retourne [] |
-| vide | Retourne [] |
+| Case | Behavior |
+|------|----------|
+| null | Returns [] |
+| empty | Returns [] |
 
 ### Trade-offs
-| Approche | Avantages | Inconvenients |
-|----------|-----------|---------------|
+| Approach | Pros | Cons |
+|----------|------|------|
 | A | ... | ... |
 | B | ... | ... |
 
-### Tests recommandes
-[Liste des tests a ecrire]
+### Recommended tests
+[List of tests to write]
 ```
 
 ## Style
 
-- Precision terminologique
-- References aux patterns (Gang of Four, etc.)
-- Metriques quantifiables
-- Code production-ready avec gestion d'erreurs
+- Terminological precision
+- References to patterns (Gang of Four, etc.)
+- Quantifiable metrics
+- Production-ready code with error handling
