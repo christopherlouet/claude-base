@@ -98,7 +98,7 @@
     },
     {
       "path": "tests/diff.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "dcfdde125488d605f547cb8bfb04c313163211ff16823e2b6e0ccc36ce51a8bd"
     },
     {
