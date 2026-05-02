@@ -1,83 +1,83 @@
 ---
 sidebar_position: 3
 title: Agents
-description: Comprendre les sub-agents Claude Code
+description: Understanding Claude Code sub-agents
 ---
 
 # Agents (Sub-agents)
 
-> Sub-processus autonomes avec contexte isole pour des taches specialisees
+> Autonomous sub-processes with isolated context for specialized tasks
 
-## Qu'est-ce qu'un Agent ?
+## What is an Agent?
 
-Un **agent** est un sub-processus lance par Claude via le **Task tool** pour executer une tache de maniere autonome. L'agent a son propre contexte isole et des outils restreints.
+An **agent** is a sub-process launched by Claude via the **Task tool** to execute a task autonomously. The agent has its own isolated context and restricted tools.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│ Conversation principale                                        │
+│ Main conversation                                              │
 │                                                                │
-│  User: "Fais un audit de securite"                             │
+│  User: "Run a security audit"                                  │
 │                                                                │
-│  Claude: Je delegue a l'agent qa-security...                   │
+│  Claude: I'm delegating to the qa-security agent...            │
 │          ┌──────────────────────────────────┐                  │
 │          │ Agent qa-security                │                  │
 │          │ ┌──────────────────────────────┐ │                  │
-│          │ │ Contexte ISOLE               │ │                  │
-│          │ │ Outils: Read, Grep, Glob     │ │                  │
-│          │ │ Modele: sonnet               │ │                  │
+│          │ │ ISOLATED context             │ │                  │
+│          │ │ Tools: Read, Grep, Glob      │ │                  │
+│          │ │ Model: sonnet                │ │                  │
 │          │ └──────────────────────────────┘ │                  │
 │          │                                  │                  │
-│          │ [Execute l'audit...]             │                  │
+│          │ [Running the audit...]           │                  │
 │          │                                  │                  │
-│          │ Resultat: 3 vulnerabilites       │                  │
+│          │ Result: 3 vulnerabilities        │                  │
 │          └──────────────────────────────────┘                  │
 │                                                                │
-│  Claude: L'audit a trouve 3 vulnerabilites...                  │
+│  Claude: The audit found 3 vulnerabilities...                  │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
 
-## Avantages des agents
+## Benefits of agents
 
-| Avantage | Description |
-|----------|-------------|
-| **Contexte isole** | Ne pollue pas la conversation principale |
-| **Outils restreints** | Acces limite (lecture seule pour audits) |
-| **Modele optimise** | Haiku pour taches simples, Sonnet pour complexes |
-| **Parallelisation** | Plusieurs agents peuvent tourner simultanement |
-| **Specialisation** | Instructions specifiques au domaine |
+| Benefit | Description |
+|---------|-------------|
+| **Isolated context** | Does not pollute the main conversation |
+| **Restricted tools** | Limited access (read-only for audits) |
+| **Optimized model** | Haiku for simple tasks, Sonnet for complex ones |
+| **Parallelization** | Multiple agents can run simultaneously |
+| **Specialization** | Domain-specific instructions |
 
-## Structure des fichiers
+## File structure
 
-Les agents sont definis dans `.claude/agents/`:
+Agents are defined in `.claude/agents/`:
 
 ```
 .claude/agents/
-├── work-explore.md       # Exploration de code
-├── qa-security.md        # Audit securite
-├── qa-perf.md            # Audit performance
-├── ops-deps.md           # Audit dependances
-├── dev-debug.md          # Investigation bugs
-├── biz-competitor.md     # Analyse concurrentielle
+├── work-explore.md       # Code exploration
+├── qa-security.md        # Security audit
+├── qa-perf.md            # Performance audit
+├── ops-deps.md           # Dependency audit
+├── dev-debug.md          # Bug investigation
+├── biz-competitor.md     # Competitive analysis
 └── ...
 ```
 
-## Anatomie d'un agent
+## Anatomy of an agent
 
-### Frontmatter obligatoire
+### Mandatory frontmatter
 
 ```yaml
 ---
-model: haiku              # ou "sonnet" pour taches complexes
+model: haiku              # or "sonnet" for complex tasks
 ---
 ```
 
-### Frontmatter complet
+### Full frontmatter
 
 ```yaml
 ---
 model: sonnet
-permissionMode: plan      # "plan" = lecture seule
+permissionMode: plan      # "plan" = read-only
 disallowedTools:
   - Edit
   - Write
@@ -87,134 +87,134 @@ hooks:
     - matcher: ".*"
       command: "echo 'Tool used'"
 skills:
-  - security-audit        # Skills injectes dans l'agent
+  - security-audit        # Skills injected into the agent
 ---
 ```
 
-### Contenu de l'agent
+### Agent content
 
 ```markdown
 ---
 model: haiku
 ---
 
-# Agent Work-Explore
+# Work-Explore Agent
 
-Agent specialise dans l'exploration de codebase.
+Agent specialized in codebase exploration.
 
 ## Mission
 
-Explorer et comprendre un codebase existant sans le modifier.
+Explore and understand an existing codebase without modifying it.
 
 ## Instructions
 
-1. Identifier les fichiers de configuration (package.json, etc.)
-2. Analyser la structure des dossiers
-3. Reperer les patterns et conventions
-4. Documenter les dependances cles
+1. Identify configuration files (package.json, etc.)
+2. Analyze the folder structure
+3. Spot patterns and conventions
+4. Document key dependencies
 
-## Contraintes
+## Constraints
 
-- Ne JAMAIS modifier de fichiers
-- Se concentrer sur la comprehension
-- Fournir une synthese structuree
+- NEVER modify files
+- Focus on understanding
+- Provide a structured summary
 
 ## Output
 
-Rapport d'exploration avec:
-- Vue d'ensemble
-- Technologies utilisees
-- Points d'attention
+Exploration report with:
+- Overview
+- Technologies used
+- Points of attention
 ```
 
-## Configuration des agents
+## Agent configuration
 
-### Modeles disponibles
+### Available models
 
-| Modele | Usage | Cout | Vitesse |
-|--------|-------|------|---------|
-| `haiku` | Taches simples, rapides | Faible | Rapide |
-| `sonnet` | Taches complexes, analyses | Moyen | Moyen |
+| Model | Usage | Cost | Speed |
+|-------|-------|------|-------|
+| `haiku` | Simple, fast tasks | Low | Fast |
+| `sonnet` | Complex tasks, analyses | Medium | Medium |
 
 ### Permission modes
 
-| Mode | Description | Outils |
-|------|-------------|--------|
-| `default` | Acces complet | Tous |
-| `plan` | Lecture seule | Read, Grep, Glob uniquement |
+| Mode | Description | Tools |
+|------|-------------|-------|
+| `default` | Full access | All |
+| `plan` | Read-only | Read, Grep, Glob only |
 
-### Outils restreints
+### Restricted tools
 
 ```yaml
 disallowedTools:
-  - Edit           # Pas de modification
-  - Write          # Pas de creation
-  - NotebookEdit   # Pas d'edition notebook
-  - Bash           # Pas de commandes shell
+  - Edit           # No modification
+  - Write          # No creation
+  - NotebookEdit   # No notebook editing
+  - Bash           # No shell commands
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Claude delegue automatiquement aux agents selon le contexte:
+Claude automatically delegates to agents based on context:
 
-| Demande utilisateur | Agent delegue | Raison |
-|---------------------|---------------|--------|
-| "Explore le code" | `work-explore` | Mots-cles exploration |
-| "Audit de securite" | `qa-security` | Mots-cles securite |
-| "Verifie les dependances" | `ops-deps` | Mots-cles dependances |
-| "Analyse les concurrents" | `biz-competitor` | Mots-cles business |
+| User request | Delegated agent | Reason |
+|--------------|-----------------|--------|
+| "Explore the code" | `work-explore` | Exploration keywords |
+| "Security audit" | `qa-security` | Security keywords |
+| "Check dependencies" | `ops-deps` | Dependency keywords |
+| "Analyze competitors" | `biz-competitor` | Business keywords |
 
-## Categories d'agents
+## Agent categories
 
 ### Exploration & Documentation
 
-| Agent | Modele | Description |
-|-------|--------|-------------|
-| `work-explore` | haiku | Explorer un codebase |
-| `doc-onboard` | haiku | Onboarding developpeur |
-| `doc-explain` | haiku | Expliquer du code |
+| Agent | Model | Description |
+|-------|-------|-------------|
+| `work-explore` | haiku | Explore a codebase |
+| `doc-onboard` | haiku | Developer onboarding |
+| `doc-explain` | haiku | Explain code |
 
-### Qualite & Audits
+### Quality & Audits
 
-| Agent | Modele | Description |
-|-------|--------|-------------|
-| `qa-security` | sonnet | Audit OWASP Top 10 |
-| `qa-perf` | sonnet | Audit performance |
-| `wcag-audit` | haiku | Audit accessibilite |
-| `qa-audit` | sonnet | Audit complet |
+| Agent | Model | Description |
+|-------|-------|-------------|
+| `qa-security` | sonnet | OWASP Top 10 audit |
+| `qa-perf` | sonnet | Performance audit |
+| `wcag-audit` | haiku | Accessibility audit |
+| `qa-audit` | sonnet | Full audit |
 
 ### Operations
 
-| Agent | Modele | Description |
-|-------|--------|-------------|
-| `ops-deps` | haiku | Audit dependances |
+| Agent | Model | Description |
+|-------|-------|-------------|
+| `ops-deps` | haiku | Dependency audit |
 | `ops-health` | haiku | Health check |
-| `ops-docker` | haiku | Containerisation |
+| `ops-docker` | haiku | Containerization |
 
-### Developpement
+### Development
 
-| Agent | Modele | Description |
-|-------|--------|-------------|
-| `dev-debug` | sonnet | Investigation bugs |
-| `dev-test` | haiku | Generation tests |
+| Agent | Model | Description |
+|-------|-------|-------------|
+| `dev-debug` | sonnet | Bug investigation |
+| `dev-test` | haiku | Test generation |
 
 ### Business & Growth
 
-| Agent | Modele | Description |
-|-------|--------|-------------|
+| Agent | Model | Description |
+|-------|-------|-------------|
 | `biz-model` | haiku | Business model |
-| `biz-competitor` | haiku | Analyse concurrents |
-| `growth-seo` | haiku | Audit SEO |
+| `biz-competitor` | haiku | Competitor analysis |
+| `growth-seo` | haiku | SEO audit |
 
-## Creer un nouvel agent
+## Create a new agent
 
-### 1. Creer le fichier
+### 1. Create the file
 
 ```bash
-touch .claude/agents/mon-agent.md
+touch .claude/agents/my-agent.md
 ```
 
-### 2. Definir le frontmatter
+### 2. Define the frontmatter
 
 ```yaml
 ---
@@ -226,44 +226,44 @@ disallowedTools:
 ---
 ```
 
-### 3. Ecrire les instructions
+### 3. Write the instructions
 
 ```markdown
-# Agent Mon-Agent
+# My-Agent
 
 ## Mission
-Description de la mission.
+Description of the mission.
 
 ## Instructions
-1. Etape 1
-2. Etape 2
+1. Step 1
+2. Step 2
 
 ## Output
-Format attendu.
+Expected format.
 ```
 
-## Difference avec Commands et Skills
+## Difference with Commands and Skills
 
 | Aspect | Command | Skill | Agent |
 |--------|---------|-------|-------|
-| Declenchement | Manuel | Auto (mots-cles) | Auto (delegation) |
-| Contexte | Partage | Fork | **Isole** |
-| Outils | Tous | Restreints | **Tres restreints** |
-| Modele | Principal | Principal | **Configurable** |
-| Parallelisation | Non | Non | **Oui** |
+| Triggering | Manual | Auto (keywords) | Auto (delegation) |
+| Context | Shared | Fork | **Isolated** |
+| Tools | All | Restricted | **Highly restricted** |
+| Model | Main | Main | **Configurable** |
+| Parallelization | No | No | **Yes** |
 
-## Bonnes pratiques
+## Best practices
 
-1. **Choisir le bon modele**: Haiku pour taches simples, Sonnet pour analyses complexes
-2. **Restreindre les outils**: Minimum necessaire pour la tache
-3. **Mode plan pour audits**: Empeche les modifications accidentelles
-4. **Instructions claires**: L'agent doit etre autonome
-5. **Output structure**: Facilite l'integration du resultat
+1. **Choose the right model**: Haiku for simple tasks, Sonnet for complex analyses
+2. **Restrict tools**: Minimum necessary for the task
+3. **Plan mode for audits**: Prevents accidental modifications
+4. **Clear instructions**: The agent must be autonomous
+5. **Structured output**: Facilitates result integration
 
 ---
 
-## Voir aussi
+## See also
 
-- [Commands](./commands) - Instructions manuelles
-- [Skills](./skills) - Comportements automatiques
-- [Catalogue des agents](/docs/agents) - Tous les agents claude-socle
+- [Commands](./commands) - Manual instructions
+- [Skills](./skills) - Automatic behaviors
+- [Agents catalog](/docs/agents) - All claude-socle agents
