@@ -1,43 +1,43 @@
-# Exemple d'exploration de codebase
+# Codebase exploration example
 
-## Contexte
-Nouveau développeur sur un projet e-commerce Next.js.
+## Context
+New developer on a Next.js e-commerce project.
 
-## Exploration réalisée
+## Exploration performed
 
-### 1. Vue d'ensemble
+### 1. Overview
 ```bash
-# Structure du projet
+# Project structure
 tree -L 2 -d src/
 ```
 
-**Résultat:**
+**Result:**
 ```
 src/
-├── app/           # Routes Next.js 13+ (App Router)
-├── components/    # Composants React
+├── app/           # Next.js 13+ routes (App Router)
+├── components/    # React components
 ├── hooks/         # Custom hooks
-├── lib/           # Utilitaires et configurations
-├── services/      # Appels API
-└── types/         # Types TypeScript
+├── lib/           # Utilities and configuration
+├── services/      # API calls
+└── types/         # TypeScript types
 ```
 
-### 2. Points d'entrée identifiés
-- `src/app/layout.tsx` - Layout principal
-- `src/app/page.tsx` - Page d'accueil
-- `src/lib/db.ts` - Connexion base de données
-- `src/services/api.ts` - Client API
+### 2. Entry points identified
+- `src/app/layout.tsx` - Main layout
+- `src/app/page.tsx` - Home page
+- `src/lib/db.ts` - Database connection
+- `src/services/api.ts` - API client
 
-### 3. Patterns découverts
+### 3. Patterns discovered
 
-| Pattern | Localisation | Usage |
-|---------|--------------|-------|
-| Server Components | `app/**/*.tsx` | Rendu côté serveur |
-| Client Components | `components/**/*.tsx` | Interactivité |
-| Custom Hooks | `hooks/use*.ts` | Logique réutilisable |
-| Zod Validation | `lib/schemas/*.ts` | Validation des données |
+| Pattern | Location | Usage |
+|---------|----------|-------|
+| Server Components | `app/**/*.tsx` | Server-side rendering |
+| Client Components | `components/**/*.tsx` | Interactivity |
+| Custom Hooks | `hooks/use*.ts` | Reusable logic |
+| Zod Validation | `lib/schemas/*.ts` | Data validation |
 
-### 4. Dépendances clés
+### 4. Key dependencies
 ```json
 {
   "next": "14.x",
@@ -48,27 +48,27 @@ src/
 }
 ```
 
-### 5. Conventions détectées
-- Nommage: PascalCase pour composants, camelCase pour hooks
-- Tests: `__tests__/` à côté des fichiers
-- Styles: Tailwind CSS, pas de CSS modules
+### 5. Conventions detected
+- Naming: PascalCase for components, camelCase for hooks
+- Tests: `__tests__/` next to files
+- Styles: Tailwind CSS, no CSS modules
 
-## Output final
+## Final output
 
 ```markdown
-## Résumé de l'exploration
+## Exploration summary
 
-**Type de projet**: E-commerce Next.js 14
+**Project type**: Next.js 14 e-commerce
 **Architecture**: App Router + Server Components
-**Base de données**: PostgreSQL via Prisma
+**Database**: PostgreSQL via Prisma
 **Styling**: Tailwind CSS
 
-### Fichiers clés à connaître
-1. `src/app/layout.tsx` - Point d'entrée
-2. `src/lib/db.ts` - Configuration Prisma
-3. `src/services/api.ts` - Appels backend
+### Key files to know
+1. `src/app/layout.tsx` - Entry point
+2. `src/lib/db.ts` - Prisma configuration
+3. `src/services/api.ts` - Backend calls
 
-### Prochaines étapes recommandées
-- Lire `src/app/api/` pour comprendre les endpoints
-- Explorer `src/components/` pour les composants UI
+### Recommended next steps
+- Read `src/app/api/` to understand the endpoints
+- Explore `src/components/` for the UI components
 ```
