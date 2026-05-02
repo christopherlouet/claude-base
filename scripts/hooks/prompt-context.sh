@@ -1,4 +1,3 @@
-```bash
 #!/usr/bin/env bash
 # =============================================================================
 # prompt-context.sh — UserPromptSubmit Hook
@@ -159,4 +158,3 @@ fi
     echo ""
     echo "No explicit slash command. If the request is actionable (feature, bugfix, refactor, audit, deploy...), consider routing via \`/assistant-auto\` to choose the appropriate workflow. For a trivial change (< 50 LOC, 1-3 files), \`/work:work-quick\` is enough."
 } | jq -Rs '{hookSpecificOutput: {hookEventName: "UserPromptSubmit", additionalContext: .}}'
-```
