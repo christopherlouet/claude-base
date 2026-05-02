@@ -1,100 +1,100 @@
 ---
 sidebar_position: 6
 title: Startup
-description: Guide pour entrepreneurs et SaaS
+description: Guide for entrepreneurs and SaaS
 ---
 
-# Guide : Startup
+# Guide: Startup
 
-Guide complet pour lancer et developper un produit.
+Complete guide to launch and grow a product.
 
-## Phases de lancement
+## Launch phases
 
 ```
-Idee → Validation → MVP → Lancement → Croissance
+Idea → Validation → MVP → Launch → Growth
 ```
 
-## Commandes par phase
+## Commands by phase
 
-### Phase 1 : Validation
+### Phase 1: Validation
 
-| Commande | Usage |
-|----------|-------|
+| Command | Usage |
+|---------|-------|
 | `/biz:biz-model` | Business model, Lean Canvas |
-| `/biz:biz-market` | Etude de marche |
-| `/biz:biz-personas` | Personas utilisateurs |
-| `/biz:biz-competitor` | Analyse concurrentielle |
+| `/biz:biz-market` | Market study |
+| `/biz:biz-personas` | User personas |
+| `/biz:biz-competitor` | Competitive analysis |
 
-### Phase 2 : MVP
+### Phase 2: MVP
 
-| Commande | Usage |
-|----------|-------|
-| `/biz:biz-mvp` | Definition du MVP |
-| `/biz:biz-pricing` | Strategie de pricing |
-| `/work:work-plan` | Plan technique |
+| Command | Usage |
+|---------|-------|
+| `/biz:biz-mvp` | MVP definition |
+| `/biz:biz-pricing` | Pricing strategy |
+| `/work:work-plan` | Technical plan |
 
-### Phase 3 : Lancement
+### Phase 3: Launch
 
-| Commande | Usage |
-|----------|-------|
-| `/legal:legal-rgpd` | Conformite RGPD |
-| `/legal:legal-terms-of-service` | CGU |
-| `/legal:legal-privacy-policy` | Politique de confidentialite |
+| Command | Usage |
+|---------|-------|
+| `/legal:legal-rgpd` | GDPR compliance |
+| `/legal:legal-terms-of-service` | Terms of Service |
+| `/legal:legal-privacy-policy` | Privacy policy |
 | `/growth:growth-landing` | Landing page |
 | `/growth:growth-seo` | SEO |
 
-### Phase 4 : Croissance
+### Phase 4: Growth
 
-| Commande | Usage |
-|----------|-------|
+| Command | Usage |
+|---------|-------|
 | `/growth:growth-analytics` | Analytics |
-| `/growth:growth-funnel` | Optimisation funnel |
-| `/growth:growth-onboarding` | Parcours utilisateur |
+| `/growth:growth-funnel` | Funnel optimization |
+| `/growth:growth-onboarding` | User journey |
 | `/growth:growth-email` | Email marketing |
 | `/growth:growth-retention` | Retention |
 
-## Workflow complet
+## Full workflow
 
-### 1. Valider l'idee
+### 1. Validate the idea
 
 ```bash
-# Creer le Lean Canvas
-/biz:biz-model "Mon SaaS de gestion de projets"
+# Create the Lean Canvas
+/biz:biz-model "My project management SaaS"
 
-# Analyser le marche
+# Analyze the market
 /biz:biz-market
 
-# Definir les personas
+# Define personas
 /biz:biz-personas
 
-# Analyser la concurrence
+# Analyze competitors
 /biz:biz-competitor
 ```
 
-### 2. Definir le MVP
+### 2. Define the MVP
 
 ```bash
-# Scope du MVP
+# MVP scope
 /biz:biz-mvp
 
-# Strategie de prix
+# Pricing strategy
 /biz:biz-pricing
 ```
 
-### 3. Preparer le legal
+### 3. Prepare the legal side
 
 ```bash
-# RGPD
+# GDPR
 /legal:legal-rgpd
 
-# CGU
+# Terms of Service
 /legal:legal-terms-of-service
 
 # Privacy Policy
 /legal:legal-privacy-policy
 ```
 
-### 4. Preparer le lancement
+### 4. Prepare the launch
 
 ```bash
 # Landing page
@@ -107,11 +107,11 @@ Idee → Validation → MVP → Lancement → Croissance
 /growth:growth-analytics
 ```
 
-### 5. Lancer
+### 5. Launch
 
 ```bash
-# Workflow complet
-/work:work-flow-launch "Mon SaaS"
+# Full workflow
+/work:work-flow-launch "My SaaS"
 ```
 
 ## Lean Canvas
@@ -121,68 +121,68 @@ Idee → Validation → MVP → Lancement → Croissance
 │   PROBLEM   │  SOLUTION   │   UNIQUE    │  UNFAIR     │  CUSTOMER   │
 │             │             │   VALUE     │  ADVANTAGE  │  SEGMENTS   │
 │  - Prob 1   │  - Sol 1    │  PROPOSITION│             │             │
-│  - Prob 2   │  - Sol 2    │             │  Ce qu'on   │  - Segment 1│
-│  - Prob 3   │  - Sol 3    │  Pourquoi   │  ne peut    │  - Segment 2│
-│             │             │  nous ?     │  pas copier │             │
+│  - Prob 2   │  - Sol 2    │             │  What can't │  - Segment 1│
+│  - Prob 3   │  - Sol 3    │  Why us?    │  be copied  │  - Segment 2│
+│             │             │             │             │             │
 ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
 │  KEY        │             │             │             │  CHANNELS   │
 │  METRICS    │             │             │             │             │
-│             │             │             │             │  Comment    │
-│  KPIs       │             │             │             │  atteindre  │
-│  principaux │             │             │             │  les clients│
+│             │             │             │             │  How to     │
+│  Main KPIs  │             │             │             │  reach      │
+│             │             │             │             │  customers  │
 ├─────────────┴─────────────┴─────────────┴─────────────┴─────────────┤
 │                         COST STRUCTURE                              │
 │                                                                     │
-│  - Couts fixes      - Couts variables      - Burn rate             │
+│  - Fixed costs      - Variable costs      - Burn rate              │
 ├─────────────────────────────────────────────────────────────────────┤
 │                         REVENUE STREAMS                             │
 │                                                                     │
-│  - Abonnements      - One-time      - Freemium                     │
+│  - Subscriptions    - One-time      - Freemium                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-## Checklist de lancement
+## Launch checklist
 
 ### Business
-- [ ] Lean Canvas valide
-- [ ] Personas definis
-- [ ] MVP scope clair
-- [ ] Pricing etabli
+- [ ] Lean Canvas validated
+- [ ] Personas defined
+- [ ] MVP scope clear
+- [ ] Pricing set
 
 ### Legal
-- [ ] RGPD conforme
-- [ ] CGU/CGV
+- [ ] GDPR compliant
+- [ ] Terms of Service / Terms of Sale
 - [ ] Privacy Policy
-- [ ] Mentions legales
+- [ ] Legal notices
 
 ### Tech
-- [ ] MVP fonctionnel
-- [ ] Tests automatises
-- [ ] CI/CD en place
-- [ ] Monitoring actif
+- [ ] MVP working
+- [ ] Automated tests
+- [ ] CI/CD in place
+- [ ] Active monitoring
 
 ### Growth
-- [ ] Landing page optimisee
-- [ ] SEO technique
-- [ ] Analytics configure
-- [ ] Funnel defini
+- [ ] Optimized landing page
+- [ ] Technical SEO
+- [ ] Analytics configured
+- [ ] Funnel defined
 
 ### Launch
-- [ ] Domaine configure
-- [ ] Support pret
-- [ ] Communication planifiee
+- [ ] Domain configured
+- [ ] Support ready
+- [ ] Communication planned
 
-## KPIs a suivre
+## KPIs to track
 
 | Phase | KPIs |
 |-------|------|
-| Pre-launch | Inscrits waitlist, taux de conversion landing |
-| Launch | Signups, activations, premier paiement |
+| Pre-launch | Waitlist signups, landing page conversion rate |
+| Launch | Signups, activations, first payment |
 | Growth | MRR, churn, LTV, CAC, NPS |
 
 ---
 
-## Voir aussi
+## See also
 
 - [Business Model](/docs/commands/biz/biz-model)
 - [Launch](/docs/workflow/launch)
