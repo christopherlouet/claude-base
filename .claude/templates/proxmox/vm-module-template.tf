@@ -1,6 +1,6 @@
 # =============================================================================
-# Template: Module Terraform VM Proxmox
-# Usage: Copier dans modules/vm/ et adapter selon vos besoins
+# Template: Proxmox VM Terraform Module
+# Usage: Copy into modules/vm/ and adapt to your needs
 # Provider: bpg/proxmox >= 0.50
 # =============================================================================
 
@@ -9,115 +9,115 @@
 # -----------------------------------------------------------------------------
 
 variable "name" {
-  description = "Nom de la VM"
+  description = "VM name"
   type        = string
 }
 
 variable "description" {
-  description = "Description de la VM"
+  description = "VM description"
   type        = string
   default     = "Managed by Terraform"
 }
 
 variable "target_node" {
-  description = "Node Proxmox cible"
+  description = "Target Proxmox node"
   type        = string
 }
 
 variable "template_id" {
-  description = "ID du template à cloner"
+  description = "ID of the template to clone"
   type        = number
 }
 
 variable "cpu_cores" {
-  description = "Nombre de cores CPU"
+  description = "Number of CPU cores"
   type        = number
   default     = 2
 }
 
 variable "cpu_type" {
-  description = "Type de CPU (host, kvm64, etc.)"
+  description = "CPU type (host, kvm64, etc.)"
   type        = string
   default     = "host"
 }
 
 variable "memory_mb" {
-  description = "RAM en MB"
+  description = "RAM in MB"
   type        = number
   default     = 2048
 }
 
 variable "disk_size_gb" {
-  description = "Taille du disque système en GB"
+  description = "System disk size in GB"
   type        = number
   default     = 20
 }
 
 variable "datastore" {
-  description = "Datastore pour le disque"
+  description = "Datastore for the disk"
   type        = string
   default     = "local-lvm"
 }
 
 variable "network_bridge" {
-  description = "Bridge réseau"
+  description = "Network bridge"
   type        = string
   default     = "vmbr0"
 }
 
 variable "vlan_id" {
-  description = "VLAN ID (null si pas de VLAN)"
+  description = "VLAN ID (null if no VLAN)"
   type        = number
   default     = null
 }
 
 variable "ip_address" {
-  description = "Adresse IP en notation CIDR (ex: 10.0.1.10/24)"
+  description = "IP address in CIDR notation (e.g.: 10.0.1.10/24)"
   type        = string
 }
 
 variable "gateway" {
-  description = "Passerelle par défaut"
+  description = "Default gateway"
   type        = string
 }
 
 variable "dns_servers" {
-  description = "Serveurs DNS"
+  description = "DNS servers"
   type        = list(string)
   default     = ["1.1.1.1", "8.8.8.8"]
 }
 
 variable "username" {
-  description = "Utilisateur cloud-init"
+  description = "cloud-init user"
   type        = string
   default     = "ubuntu"
 }
 
 variable "ssh_keys" {
-  description = "Clés SSH publiques"
+  description = "Public SSH keys"
   type        = list(string)
 }
 
 variable "tags" {
-  description = "Tags de la VM"
+  description = "VM tags"
   type        = list(string)
   default     = ["terraform"]
 }
 
 variable "start_on_boot" {
-  description = "Démarrer automatiquement au boot du node"
+  description = "Start automatically on node boot"
   type        = bool
   default     = true
 }
 
 variable "agent_enabled" {
-  description = "Activer QEMU Guest Agent"
+  description = "Enable QEMU Guest Agent"
   type        = bool
   default     = true
 }
 
 variable "additional_disks" {
-  description = "Disques additionnels"
+  description = "Additional disks"
   type = list(object({
     size         = number
     datastore_id = optional(string, "local-lvm")
@@ -127,7 +127,7 @@ variable "additional_disks" {
 }
 
 # -----------------------------------------------------------------------------
-# Resource VM
+# VM Resource
 # -----------------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "this" {
@@ -138,7 +138,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   on_boot       = var.start_on_boot
   started       = true
 
-  # Clone depuis template
+  # Clone from template
   clone {
     vm_id = var.template_id
     full  = true
@@ -150,12 +150,12 @@ resource "proxmox_virtual_environment_vm" "this" {
     type  = var.cpu_type
   }
 
-  # Mémoire
+  # Memory
   memory {
     dedicated = var.memory_mb
   }
 
-  # Disque système
+  # System disk
   disk {
     datastore_id = var.datastore
     size         = var.disk_size_gb
@@ -165,7 +165,7 @@ resource "proxmox_virtual_environment_vm" "this" {
     ssd          = true
   }
 
-  # Disques additionnels
+  # Additional disks
   dynamic "disk" {
     for_each = var.additional_disks
     content {
@@ -177,7 +177,7 @@ resource "proxmox_virtual_environment_vm" "this" {
     }
   }
 
-  # Réseau
+  # Network
   network_device {
     bridge  = var.network_bridge
     model   = "virtio"
@@ -211,8 +211,8 @@ resource "proxmox_virtual_environment_vm" "this" {
   # Lifecycle
   lifecycle {
     ignore_changes = [
-      initialization,       # Ne pas recréer pour changement cloud-init
-      disk[0].size,        # Permet resize manuel
+      initialization,       # Do not recreate on cloud-init change
+      disk[0].size,        # Allow manual resize
     ]
   }
 }
@@ -222,26 +222,26 @@ resource "proxmox_virtual_environment_vm" "this" {
 # -----------------------------------------------------------------------------
 
 output "vm_id" {
-  description = "ID de la VM"
+  description = "VM ID"
   value       = proxmox_virtual_environment_vm.this.vm_id
 }
 
 output "name" {
-  description = "Nom de la VM"
+  description = "VM name"
   value       = proxmox_virtual_environment_vm.this.name
 }
 
 output "ipv4_address" {
-  description = "Adresse IPv4 (depuis QEMU Guest Agent)"
+  description = "IPv4 address (from QEMU Guest Agent)"
   value       = try(proxmox_virtual_environment_vm.this.ipv4_addresses[1][0], var.ip_address)
 }
 
 output "mac_address" {
-  description = "Adresse MAC"
+  description = "MAC address"
   value       = proxmox_virtual_environment_vm.this.mac_addresses[0]
 }
 
 output "node_name" {
-  description = "Node Proxmox"
+  description = "Proxmox node"
   value       = proxmox_virtual_environment_vm.this.node_name
 }

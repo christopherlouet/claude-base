@@ -253,7 +253,7 @@
     },
     {
       "path": ".claude/templates/proxmox/vm-module-template.tf",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c90859f3e07f2984184443c948f9478420839157661dfc04f74a3551615f855f"
     }
   ]
