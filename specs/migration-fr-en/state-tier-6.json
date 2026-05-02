@@ -103,7 +103,7 @@
     },
     {
       "path": "tests/docs-under-claude.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "dab5e58bf3d58e32f29b491a2efb3ab1953ca4e148743b159498744c11f266bd"
     },
     {
