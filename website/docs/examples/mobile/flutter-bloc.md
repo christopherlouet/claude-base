@@ -1,20 +1,20 @@
 ---
 sidebar_position: 2
-title: BLoC Pattern Flutter
-description: Exemple de state management avec BLoC et tests
+title: Flutter BLoC Pattern
+description: State management example with BLoC and tests
 ---
 
-# BLoC Pattern Flutter
+# Flutter BLoC Pattern
 
-Cet exemple montre comment implémenter le pattern BLoC pour la gestion d'état avec tests complets.
+This example shows how to implement the BLoC pattern for state management with full tests.
 
-## Commande utilisée
+## Command used
 
 ```bash
 /dev:dev-flutter "Créer un BLoC pour l'authentification avec login/logout"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 lib/features/auth/
@@ -35,7 +35,7 @@ test/features/auth/
         └── auth_bloc_test.dart
 ```
 
-## Code du BLoC
+## BLoC code
 
 ### `domain/entities/user.dart`
 
@@ -90,12 +90,12 @@ sealed class AuthEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Vérifie l'état d'authentification initial
+/// Checks the initial authentication state
 final class AuthCheckRequested extends AuthEvent {
   const AuthCheckRequested();
 }
 
-/// Connexion avec email/password
+/// Login with email/password
 final class AuthLoginRequested extends AuthEvent {
   final String email;
   final String password;
@@ -109,7 +109,7 @@ final class AuthLoginRequested extends AuthEvent {
   List<Object?> get props => [email, password];
 }
 
-/// Inscription avec email/password
+/// Sign up with email/password
 final class AuthSignUpRequested extends AuthEvent {
   final String email;
   final String password;
@@ -125,12 +125,12 @@ final class AuthSignUpRequested extends AuthEvent {
   List<Object?> get props => [email, password, displayName];
 }
 
-/// Déconnexion
+/// Logout
 final class AuthLogoutRequested extends AuthEvent {
   const AuthLogoutRequested();
 }
 
-/// Réinitialisation du mot de passe
+/// Password reset
 final class AuthPasswordResetRequested extends AuthEvent {
   final String email;
 
@@ -154,17 +154,17 @@ sealed class AuthState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// État initial, vérification en cours
+/// Initial state, check in progress
 final class AuthInitial extends AuthState {
   const AuthInitial();
 }
 
-/// Chargement en cours (login, signup, etc.)
+/// Loading in progress (login, signup, etc.)
 final class AuthLoading extends AuthState {
   const AuthLoading();
 }
 
-/// Utilisateur authentifié
+/// Authenticated user
 final class AuthAuthenticated extends AuthState {
   final User user;
 
@@ -174,12 +174,12 @@ final class AuthAuthenticated extends AuthState {
   List<Object?> get props => [user];
 }
 
-/// Utilisateur non authentifié
+/// Unauthenticated user
 final class AuthUnauthenticated extends AuthState {
   const AuthUnauthenticated();
 }
 
-/// Erreur d'authentification
+/// Authentication error
 final class AuthError extends AuthState {
   final String message;
   final AuthErrorType type;
@@ -201,7 +201,7 @@ enum AuthErrorType {
   unknown,
 }
 
-/// Mot de passe réinitialisé avec succès
+/// Password successfully reset
 final class AuthPasswordResetSent extends AuthState {
   final String email;
 
@@ -234,7 +234,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<AuthPasswordResetRequested>(_onPasswordResetRequested);
 
-    // Écouter les changements d'état d'auth
+    // Listen for auth state changes
     _authSubscription = _authRepository.authStateChanges.listen(
       (user) {
         if (user != null) {
@@ -347,7 +347,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 }
 ```
 
-## Tests du BLoC
+## BLoC tests
 
 ### `auth_bloc_test.dart`
 
@@ -560,7 +560,7 @@ void main() {
 
   group('Auth state stream', () {
     test('updates state when auth state changes', () async {
-      // Simuler une connexion via le stream
+      // Simulate a login via the stream
       authStateController.add(testUser);
 
       await expectLater(
@@ -570,7 +570,7 @@ void main() {
     });
 
     test('emits AuthUnauthenticated when user logs out externally', () async {
-      // Simuler une déconnexion externe (ex: token expiré)
+      // Simulate an external logout (e.g., expired token)
       authStateController.add(null);
 
       await expectLater(
@@ -582,7 +582,7 @@ void main() {
 }
 ```
 
-## Utilisation dans l'UI
+## Usage in the UI
 
 ### Login Page
 
@@ -619,7 +619,7 @@ class LoginPage extends StatelessWidget {
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Mot de passe'),
+                    decoration: const InputDecoration(labelText: 'Password'),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
@@ -633,7 +633,7 @@ class LoginPage extends StatelessWidget {
                           },
                     child: state is AuthLoading
                         ? const CircularProgressIndicator()
-                        : const Text('Se connecter'),
+                        : const Text('Sign in'),
                   ),
                 ],
               ),
@@ -646,26 +646,26 @@ class LoginPage extends StatelessWidget {
 }
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
-| **Sealed classes** | Events et States type-safe (Dart 3) |
-| **Stream** | Écoute des changements d'auth externes |
-| **Erreurs typées** | `AuthErrorType` pour UI contextuelle |
+| **Sealed classes** | Type-safe Events and States (Dart 3) |
+| **Stream** | Listen for external auth changes |
+| **Typed errors** | `AuthErrorType` for contextual UI |
 | **Tests** | `bloc_test` + `mocktail` |
-| **Cleanup** | `close()` pour annuler le stream |
+| **Cleanup** | `close()` to cancel the stream |
 
-## Commandes associées
+## Related commands
 
-- `/dev:dev-test` - Générer plus de tests
-- `/dev:dev-supabase` - Intégrer avec Supabase Auth
-- `/qa:qa-mobile` - Audit qualité
+- `/dev:dev-test` - Generate more tests
+- `/dev:dev-supabase` - Integrate with Supabase Auth
+- `/qa:qa-mobile` - Quality audit
 
 ---
 
 :::tip Hydrated BLoC
-Pour persister l'état d'authentification, utilisez `hydrated_bloc` :
+To persist the authentication state, use `hydrated_bloc`:
 ```dart
 class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
   @override
