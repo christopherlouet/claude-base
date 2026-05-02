@@ -188,7 +188,7 @@
     },
     {
       "path": ".claude/templates/opnsense/aliases-module.tf",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "9a4fac7367d9f66d3b5c6358ca1ffd881ca2cb9102783c015614bc18988d7375"
     },
     {
