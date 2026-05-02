@@ -1,30 +1,30 @@
 ---
 sidebar_position: 2
-title: Pipeline CI
-description: Exemple de pipeline GitHub Actions complet
+title: CI Pipeline
+description: Example of a complete GitHub Actions pipeline
 ---
 
-# Pipeline CI/CD avec GitHub Actions
+# CI/CD Pipeline with GitHub Actions
 
-Cet exemple montre comment créer un pipeline CI/CD complet avec GitHub Actions pour une application TypeScript.
+This example shows how to create a complete CI/CD pipeline with GitHub Actions for a TypeScript application.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/ops:ops-ci "Configurer GitHub Actions avec tests, lint, build et déploiement"
+/ops:ops-ci "Configure GitHub Actions with tests, lint, build and deployment"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 .github/
 └── workflows/
-    ├── ci.yml              # Tests et qualité
-    ├── cd.yml              # Déploiement
-    └── dependabot.yml      # Mise à jour dépendances
+    ├── ci.yml              # Tests and quality
+    ├── cd.yml              # Deployment
+    └── dependabot.yml      # Dependency updates
 ```
 
-## Pipeline CI
+## CI Pipeline
 
 ### `.github/workflows/ci.yml`
 
@@ -37,7 +37,7 @@ on:
   pull_request:
     branches: [main, develop]
 
-# Annuler les runs précédents sur la même PR
+# Cancel previous runs on the same PR
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -48,7 +48,7 @@ env:
 
 jobs:
   # ==========================================
-  # Job 1: Lint et formatage
+  # Job 1: Lint and formatting
   # ==========================================
   lint:
     name: Lint & Format
@@ -81,7 +81,7 @@ jobs:
         run: pnpm typecheck
 
   # ==========================================
-  # Job 2: Tests unitaires
+  # Job 2: Unit tests
   # ==========================================
   test:
     name: Tests
@@ -176,7 +176,7 @@ jobs:
           retention-days: 7
 
   # ==========================================
-  # Job 4: Tests E2E (sur PR uniquement)
+  # Job 4: E2E tests (on PR only)
   # ==========================================
   e2e:
     name: E2E Tests
@@ -261,7 +261,7 @@ jobs:
           args: --severity-threshold=high
 ```
 
-## Pipeline CD
+## CD Pipeline
 
 ### `.github/workflows/cd.yml`
 
@@ -290,7 +290,7 @@ env:
 
 jobs:
   # ==========================================
-  # Job 1: Build et push Docker image
+  # Job 1: Build and push Docker image
   # ==========================================
   build-image:
     name: Build Docker Image
@@ -492,7 +492,7 @@ updates:
       prefix: "chore(docker)"
 ```
 
-## Scripts package.json
+## package.json Scripts
 
 ```json
 {
@@ -512,27 +512,27 @@ updates:
 }
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
-| **Concurrency** | Annulation des runs précédents |
+| **Concurrency** | Cancellation of previous runs |
 | **Cache** | pnpm, Docker layer cache (GHA) |
-| **Environnements** | staging / production séparés |
-| **Secrets** | GitHub Secrets pour credentials |
+| **Environments** | separate staging / production |
+| **Secrets** | GitHub Secrets for credentials |
 | **Notifications** | Slack webhooks |
 | **Security** | npm audit + Snyk + SBOM |
 
-## Commandes associées
+## Related commands
 
-- `/ops:ops-docker` - Dockerfile optimisé
-- `/ops:ops-k8s` - Manifests Kubernetes
-- `/qa:qa-security` - Audit sécurité complet
+- `/ops:ops-docker` - Optimized Dockerfile
+- `/ops:ops-k8s` - Kubernetes manifests
+- `/qa:qa-security` - Full security audit
 
 ---
 
 :::tip Branch protection
-Activez la protection de branche pour `main` :
+Enable branch protection for `main`:
 - Require status checks (lint, test, build)
 - Require pull request reviews
 - Require signed commits
