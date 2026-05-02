@@ -1,82 +1,82 @@
 ---
 sidebar_position: 10
-title: "Fonctionnalites Avancees"
-description: "10 modes d'interaction dans `.claude/output-styles/`: `teaching`, `explanatory` (recommande), `concise`, `technical`, `review`, `emoji`, `minimal`, `s"
+title: "Advanced Features"
+description: "10 interaction modes in `.claude/output-styles/`: `teaching`, `explanatory` (recommended), `concise`, `technical`, `review`, `emoji`, `minimal`, `s"
 tags:
   - "reference"
 ---
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Fonctionnalites Avancees
+# Advanced Features
 
 ## Output Styles
 
-10 modes d'interaction dans `.claude/output-styles/`: `teaching`, `explanatory` (recommande), `concise`, `technical`, `review`, `emoji`, `minimal`, `structured`, `debug`, `metrics`.
+10 interaction modes in `.claude/output-styles/`: `teaching`, `explanatory` (recommended), `concise`, `technical`, `review`, `emoji`, `minimal`, `structured`, `debug`, `metrics`.
 
-## Templates de Specification
+## Specification Templates
 
-Templates dans `.claude/templates/` pour le workflow Explore → Specify → Plan → TDD → Audit → Commit:
+Templates in `.claude/templates/` for the Explore → Specify → Plan → TDD → Audit → Commit workflow:
 
-| Template | Utilise par |
+| Template | Used by |
 |----------|-------------|
 | `spec-template.md` | `/work:work-specify` |
 | `plan-template.md` | `/work:work-plan` |
 | `tasks-template.md` | `/work:work-plan` |
 
-Structure: `specs/[feature]/` contient `spec.md`, `plan.md`, `tasks.md`, `clarifications.md` (opt).
+Structure: `specs/[feature]/` contains `spec.md`, `plan.md`, `tasks.md`, `clarifications.md` (opt).
 
-Conventions: `P1`=MVP, `P2`=Important, `P3`=Nice-to-have, `[P]`=parallelisable, `[US1]`=User Story 1.
+Conventions: `P1`=MVP, `P2`=Important, `P3`=Nice-to-have, `[P]`=parallelizable, `[US1]`=User Story 1.
 
-Templates Proxmox (Terraform) disponibles dans `.claude/templates/proxmox/`.
+Proxmox templates (Terraform) available in `.claude/templates/proxmox/`.
 
-## Memoire Automatique (CLI 2.1.76+)
+## Automatic Memory (CLI 2.1.76+)
 
-Claude Code enregistre et rappelle automatiquement des souvenirs au fil du travail (preferences, decisions, contexte projet). Les souvenirs sont stockes dans `~/.claude/memory/`.
+Claude Code automatically saves and recalls memories as you work (preferences, decisions, project context). Memories are stored in `~/.claude/memory/`.
 
-| A memoriser | A mettre dans CLAUDE.md | A mettre dans rules/ |
+| To memorize | To put in CLAUDE.md | To put in rules/ |
 |-------------|------------------------|---------------------|
-| Preferences personnelles | Conventions du projet | Regles par langage/framework |
-| Decisions d'architecture | Workflow obligatoire | Patterns de code |
-| Contexte equipe | References documentation | Checklist de verification |
+| Personal preferences | Project conventions | Per-language/framework rules |
+| Architecture decisions | Mandatory workflow | Code patterns |
+| Team context | Documentation references | Verification checklist |
 
-Bonnes pratiques:
-- Laisser Claude memoriser les preferences et decisions (evite de repeter)
-- Garder dans CLAUDE.md ce qui est partage avec l'equipe (versionne dans git)
-- Ne pas dupliquer : si c'est dans CLAUDE.md, pas besoin de le memoriser
-- Utiliser "remember that..." pour forcer une memorisation explicite
+Best practices:
+- Let Claude memorize preferences and decisions (avoids repeating)
+- Keep in CLAUDE.md what is shared with the team (versioned in git)
+- Do not duplicate: if it is in CLAUDE.md, no need to memorize it
+- Use "remember that..." to force an explicit memorization
 
 ## Effort Levels (CLI 2.1.76+)
 
-Commande `/effort` pour controler le niveau de raisonnement (slider interactif depuis v2.1.111):
+`/effort` command to control the reasoning level (interactive slider since v2.1.111):
 
-| Niveau | Commande | Cas d'usage |
+| Level | Command | Use case |
 |--------|----------|-------------|
-| `low` | `/effort low` | Exploration, formatage, taches simples |
-| `medium` | `/effort medium` | Developpement standard, corrections |
-| `high` | `/effort high` | Architecture, audit, refactoring complexe, debug |
-| `xhigh` | `/effort xhigh` | Raisonnement maximum — architecture systeme critique, audit securite avance (Opus 4.7 requis) |
+| `low` | `/effort low` | Exploration, formatting, simple tasks |
+| `medium` | `/effort medium` | Standard development, fixes |
+| `high` | `/effort high` | Architecture, audit, complex refactoring, debug |
+| `xhigh` | `/effort xhigh` | Maximum reasoning — critical system architecture, advanced security audit (Opus 4.7 required) |
 
-Recommandations par workflow du socle:
+Recommendations per foundation workflow:
 
-| Phase | Effort recommande |
+| Phase | Recommended effort |
 |-------|-------------------|
 | `/work:work-explore` | low |
 | `/work:work-specify`, `/work:work-plan` | high |
 | `/dev:dev-tdd` | medium |
-| `/qa:qa-audit`, `/qa:qa-security` | high ou xhigh |
+| `/qa:qa-audit`, `/qa:qa-security` | high or xhigh |
 | `/work:work-commit` | low |
 
-## Sessions Nommees (CLI 2.1.76+)
+## Named Sessions (CLI 2.1.76+)
 
-Flag `--name` / `-n` pour nommer une session au demarrage:
+`--name` / `-n` flag to name a session at startup:
 
 ```bash
 claude --name "feature-auth"
 claude -n "fix-login-bug"
 ```
 
-Combine avec git worktrees pour des sessions isolees et identifiables:
+Combine with git worktrees for isolated, identifiable sessions:
 
 ```bash
 git worktree add ../myapp-auth -b feature/auth
@@ -85,155 +85,155 @@ cd ../myapp-auth && claude -n "auth-feature"
 
 ## VSCode URI Handler (CLI 2.1.76+)
 
-Ouvrir un tab Claude Code programmatiquement depuis VSCode:
+Open a Claude Code tab programmatically from VSCode:
 
 ```
 vscode://anthropic.claude-code/open
 ```
 
-Utile pour: integration CI/CD, scripts de setup, hooks de notification.
+Useful for: CI/CD integration, setup scripts, notification hooks.
 
 ## Opus 4.7
 
-Adaptive Thinking : Claude ajuste automatiquement la profondeur de son raisonnement selon la complexite de la tache. Remplace `budget_tokens` (deprecie). 4 niveaux d'effort (`low`, `medium`, `high`, `xhigh`) pour guider le raisonnement.
+Adaptive Thinking: Claude automatically adjusts the depth of its reasoning to the complexity of the task. Replaces `budget_tokens` (deprecated). 4 effort levels (`low`, `medium`, `high`, `xhigh`) to guide reasoning.
 
-Fenetre 1M tokens, 128k tokens de sortie, Context Compaction automatique. Le raisonnement s'intercale entre les appels d'outils (interleaved thinking) pour les workflows agentiques.
+1M token window, 128k output tokens, automatic Context Compaction. Reasoning interleaves between tool calls (interleaved thinking) for agentic workflows.
 
-Nouveaute v2.1.111 : `xhigh` debloque le raisonnement maximum d'Opus 4.7. Auto mode disponible pour les abonnes Max (permissions automatiques intelligentes).
+New in v2.1.111: `xhigh` unlocks Opus 4.7's maximum reasoning. Auto mode available for Max subscribers (intelligent automatic permissions).
 
 ## Checkpoint / Rewind
 
-Claude Code sauvegarde automatiquement l'etat du code avant chaque modification (checkpoint). Pour revenir a un etat precedent :
+Claude Code automatically saves the state of the code before each modification (checkpoint). To return to a previous state:
 
-| Methode | Action |
+| Method | Action |
 |---------|--------|
-| `Esc` × 2 | Annuler la derniere modification et revenir au checkpoint |
-| `/rewind` | Choisir un checkpoint specifique dans l'historique |
-| `/undo` | Alias de `/rewind` (CLI 2.1.108+) |
+| `Esc` × 2 | Cancel the last modification and return to the checkpoint |
+| `/rewind` | Choose a specific checkpoint in the history |
+| `/undo` | Alias of `/rewind` (CLI 2.1.108+) |
 
-Recommande en phase Refactor du TDD : si le refactoring casse les tests, `/rewind` (ou `/undo`) est plus rapide qu'un revert git manuel.
+Recommended in the Refactor phase of TDD: if refactoring breaks the tests, `/rewind` (or `/undo`) is faster than a manual git revert.
 
 ## Session Recap (CLI 2.1.108+)
 
-`/recap` genere un resume structure de la session : decisions prises, fichiers modifies, etat du travail. Configurable dans `/config`.
+`/recap` generates a structured summary of the session: decisions made, files modified, work state. Configurable in `/config`.
 
 | Situation | Action |
 |-----------|--------|
-| Retour apres une pause | `/recap` pour retrouver le contexte |
-| Apres `/compact` | `/recap` pour verifier ce qui a ete conserve |
-| Session resumee | Recap automatique au resume (si active dans `/config`) |
+| Return after a break | `/recap` to recover the context |
+| After `/compact` | `/recap` to verify what was kept |
+| Resumed session | Automatic recap on resume (if enabled in `/config`) |
 
 ## Fast Mode (Research Preview)
 
-Meme modele Opus 4.7, sortie 2.5x plus rapide. Toggle avec `/fast`. Cout premium (voir pricing Anthropic).
+Same Opus 4.7 model, 2.5x faster output. Toggle with `/fast`. Premium cost (see Anthropic pricing).
 
-| Cas d'usage | Recommandation |
+| Use case | Recommendation |
 |-------------|----------------|
-| Exploration, commits, taches simples | Fast mode adapte |
-| Architecture, audit, debug complexe | Mode standard recommande |
+| Exploration, commits, simple tasks | Fast mode suitable |
+| Architecture, audit, complex debug | Standard mode recommended |
 
 ## Context Compaction
 
-La compaction resume automatiquement le contexte quand la fenetre approche sa limite. Declenchement manuel avec `/compact`.
+Compaction automatically summarizes the context when the window approaches its limit. Manual trigger with `/compact`.
 
-| Commande | Effet | Quand utiliser |
+| Command | Effect | When to use |
 |----------|-------|----------------|
-| `/compact` | Resume le contexte, conserve l'essentiel | Entre phases longues du workflow |
-| `/clear` | Efface tout le contexte | Changement de sujet complet |
-| _(auto)_ | Compaction automatique si necessaire | Sessions longues sans action requise |
+| `/compact` | Summarizes the context, keeps the essentials | Between long workflow phases |
+| `/clear` | Erases the entire context | Total topic change |
+| _(auto)_ | Automatic compaction if needed | Long sessions without action required |
 
-Hooks associes : `PreCompact` (avant compaction, matcher `manual` ou `auto`) et `PostCompact` (apres). Voir `docs/reference/hooks-reference.md`.
+Associated hooks: `PreCompact` (before compaction, matcher `manual` or `auto`) and `PostCompact` (after). See `docs/reference/hooks-reference.md`.
 
 ## Claude Code Action (GitHub)
 
-Action officielle Anthropic pour integrer Claude dans les workflows GitHub. Review PRs, repond aux @claude mentions, implemente des changements.
+Official Anthropic Action to integrate Claude into GitHub workflows. Reviews PRs, responds to @claude mentions, implements changes.
 
-| Scenario | Declencheur | Template |
+| Scenario | Trigger | Template |
 |----------|------------|----------|
-| Review automatique des PRs | `pull_request: opened, synchronize` | `.claude/templates/github-actions/claude-review.yml` |
-| Review securite (fichiers critiques) | `pull_request: paths: src/auth/**, src/api/**` | `.claude/templates/github-actions/claude-security-review.yml` |
-| Mention @claude | `issue_comment: @claude` | Inclus dans `claude-review.yml` |
+| Automatic PR review | `pull_request: opened, synchronize` | `.claude/templates/github-actions/claude-review.yml` |
+| Security review (critical files) | `pull_request: paths: src/auth/**, src/api/**` | `.claude/templates/github-actions/claude-security-review.yml` |
+| @claude mention | `issue_comment: @claude` | Included in `claude-review.yml` |
 
-Prerequis : une **cle API Anthropic** (pay-per-use) ou un cloud provider (Bedrock, Vertex, Foundry). Le plan Max (OAuth interactif) ne fonctionne pas en CI/CD.
+Prerequisite: an **Anthropic API key** (pay-per-use) or a cloud provider (Bedrock, Vertex, Foundry). The Max plan (interactive OAuth) does not work in CI/CD.
 
-Setup rapide : `/install-github-app` dans Claude Code, ou ajouter `ANTHROPIC_API_KEY` dans les secrets GitHub puis copier le template dans `.github/workflows/`.
+Quick setup: `/install-github-app` in Claude Code, or add `ANTHROPIC_API_KEY` to GitHub secrets then copy the template into `.github/workflows/`.
 
-Source : [anthropics/claude-code-action](https://github.com/anthropics/claude-code-action)
+Source: [anthropics/claude-code-action](https://github.com/anthropics/claude-code-action)
 
 ## Agent Teams (Experimental)
 
-Coordination parallele d'equipes d'agents. Activation: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` dans `.claude/settings.json`.
+Parallel coordination of agent teams. Activation: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json`.
 
-Modes: `auto` (defaut), `in-process`, `tmux`. Commande: `/work:work-team "description"`.
+Modes: `auto` (default), `in-process`, `tmux`. Command: `/work:work-team "description"`.
 
-Voir `.claude/skills/agent-teams/SKILL.md` pour la documentation complete.
+See `.claude/skills/agent-teams/SKILL.md` for the full documentation.
 
-### Fiabilite des subagents (CLI 2.1.113+)
+### Subagent reliability (CLI 2.1.113+)
 
-Un subagent bloque plus de 10 minutes sans progression echoue avec un message d'erreur explicite au lieu de rester en hang silencieux. Les worktrees isoles donnent Read/Edit sur les fichiers de leur propre worktree. Les permissions dialog crashes lors des demandes de tool par un teammate sont corriges (CLI 2.1.114+).
+A subagent stuck for more than 10 minutes without progress fails with an explicit error message instead of hanging silently. Isolated worktrees grant Read/Edit on the files of their own worktree. Permission dialog crashes when a teammate requests a tool are fixed (CLI 2.1.114+).
 
 ## MCP Configuration
 
-Serveurs MCP dans `.mcp.json` (tous desactives par defaut):
+MCP servers in `.mcp.json` (all disabled by default):
 
 | Server | Usage |
 |--------|-------|
-| `filesystem` | Acces avance aux fichiers |
-| `memory` | Memoire persistante |
-| `github` | Integration GitHub |
-| `postgres` | Connexion PostgreSQL |
-| `puppeteer` | Automatisation navigateur |
-| `slack` | Communication equipe |
-| `sentry` | Monitoring erreurs |
-| `linear` | Gestion de projet |
+| `filesystem` | Advanced file access |
+| `memory` | Persistent memory |
+| `github` | GitHub integration |
+| `postgres` | PostgreSQL connection |
+| `puppeteer` | Browser automation |
+| `slack` | Team communication |
+| `sentry` | Error monitoring |
+| `linear` | Project management |
 
-Pour activer: `"enabled": true` dans `.mcp.json`. Variables d'environnement dans `.env`.
+To enable: `"enabled": true` in `.mcp.json`. Environment variables in `.env`.
 
 ### MCP Channels
 
-Les serveurs MCP peuvent pousser des messages dans une session via `--channels`. Disponible via des plugins channel (Telegram, Discord, iMessage) qui s'installent comme MCP servers.
+MCP servers can push messages into a session via `--channels`. Available through channel plugins (Telegram, Discord, iMessage) that install as MCP servers.
 
 | Channel | Plugin | Usage |
 |---------|--------|-------|
-| Telegram | `telegram-channel` | Messages et commandes depuis Telegram |
-| Discord | `discord-channel` | Messages depuis un serveur Discord |
-| iMessage | `imessage-channel` | Messages depuis iMessage (macOS) |
-| Slack | `slack` (MCP natif) | Notifications et messages Slack |
+| Telegram | `telegram-channel` | Messages and commands from Telegram |
+| Discord | `discord-channel` | Messages from a Discord server |
+| iMessage | `imessage-channel` | Messages from iMessage (macOS) |
+| Slack | `slack` (native MCP) | Slack notifications and messages |
 
-Activation : `claude --channels` au demarrage. Les channels ont acces au filesystem, MCP et git de la session locale.
+Activation: `claude --channels` at startup. Channels have access to the local session's filesystem, MCP and git.
 
-Permission relay : les channels declarant la capability `permission` peuvent relayer les demandes d'approbation vers votre telephone.
+Permission relay: channels declaring the `permission` capability can relay approval requests to your phone.
 
 ### MCP Elicitation (CLI 2.1.76+)
 
-Les serveurs MCP peuvent demander un input structure a l'utilisateur en cours de tache via des dialogues interactifs. Hooks associes: `Elicitation` (demande) et `ElicitationResult` (reponse).
+MCP servers can request structured input from the user during a task via interactive dialogs. Associated hooks: `Elicitation` (request) and `ElicitationResult` (response).
 
 ### MCP OAuth RFC 9728 (CLI 2.1.85+)
 
-Decouverte automatique des metadonnees de ressource protegee (Protected Resource Metadata) pour les serveurs MCP OAuth. Simplifie l'authentification OAuth 2.1 en exposant l'URL du serveur d'autorisation via un endpoint standard. Les servers peuvent fournir un `headersHelper` et utiliser les variables d'environnement `CLAUDE_CODE_MCP_SERVER_NAME` et `CLAUDE_CODE_MCP_SERVER_URL`.
+Automatic discovery of Protected Resource Metadata for OAuth MCP servers. Simplifies OAuth 2.1 authentication by exposing the authorization server URL via a standard endpoint. Servers can provide a `headersHelper` and use the environment variables `CLAUDE_CODE_MCP_SERVER_NAME` and `CLAUDE_CODE_MCP_SERVER_URL`.
 
 ### MCP Step-up Authorization (CLI 2.1.84+)
 
-Support RFC de l'autorisation step-up : les serveurs MCP peuvent renvoyer un `403 insufficient_scope` pour declencher un refresh token avec un scope etendu. Utile pour les operations sensibles qui necessitent une reauthentification sans couper la session.
+RFC step-up authorization support: MCP servers can return a `403 insufficient_scope` to trigger a token refresh with an extended scope. Useful for sensitive operations that require reauthentication without cutting the session.
 
 ### MCP Result Size Override (CLI 2.1.84+)
 
-Les outils MCP peuvent declarer `_meta["anthropic/maxResultSizeChars"]` (jusqu'a 500K) pour surcharger la limite de persistence des resultats. Utile pour les outils qui retournent de gros payloads (exports, rapports, diffs).
+MCP tools can declare `_meta["anthropic/maxResultSizeChars"]` (up to 500K) to override the result persistence limit. Useful for tools that return large payloads (exports, reports, diffs).
 
 ## Async Hooks (CLI 2.1.70+)
 
-Propriete `"async": true` pour executer un hook en arriere-plan sans bloquer la session. Recommande pour les hooks de logging et notification. Les hooks de securite (gitleaks, tests pre-commit) doivent rester synchrones.
+`"async": true` property to execute a hook in the background without blocking the session. Recommended for logging and notification hooks. Security hooks (gitleaks, pre-commit tests) must remain synchronous.
 
-| Hook | Mode | Raison |
+| Hook | Mode | Reason |
 |------|------|--------|
-| SessionStart, PreToolUse, PostToolUse, Setup | **sync** | Actions critiques (securite, formatage) |
-| SessionEnd, PreCompact, PostCompact, SubagentStop, Notification | **async** | Logging, pas d'impact sur le workflow |
-| TeammateIdle, TaskCompleted, InstructionsLoaded | **async** | Observabilite, non-bloquant |
-| Elicitation, ElicitationResult | **async** | Logging MCP |
+| SessionStart, PreToolUse, PostToolUse, Setup | **sync** | Critical actions (security, formatting) |
+| SessionEnd, PreCompact, PostCompact, SubagentStop, Notification | **async** | Logging, no impact on the workflow |
+| TeammateIdle, TaskCompleted, InstructionsLoaded | **async** | Observability, non-blocking |
+| Elicitation, ElicitationResult | **async** | MCP logging |
 
 ## HTTP Hooks (CLI 2.1.70+)
 
-Type `"http"` pour envoyer un POST JSON vers une URL externe (webhook). Exemple de configuration webhook generique:
+`"http"` type to send a JSON POST to an external URL (webhook). Generic webhook configuration example:
 
 ```json
 {
@@ -245,221 +245,221 @@ Type `"http"` pour envoyer un POST JSON vers une URL externe (webhook). Exemple 
 }
 ```
 
-Recommandations: toujours `async: true` et `onFailure: "ignore"` pour eviter de bloquer la session si le service distant est indisponible.
+Recommendations: always `async: true` and `onFailure: "ignore"` to avoid blocking the session if the remote service is unavailable.
 
 ## Claude Code Security (Enterprise/Team)
 
-Outil de scan de vulnerabilites utilisant Opus 4.7 pour analyser le code au-dela de l'analyse statique traditionnelle. Raisonne sur les flux de donnees, interactions entre composants et patterns architecturaux.
+Vulnerability scanning tool using Opus 4.7 to analyze code beyond traditional static analysis. Reasons about data flows, interactions between components, and architectural patterns.
 
-Prerequis: plan Enterprise ou Team. Complement de `/qa:qa-security` pour un audit approfondi. Voir [annonce Anthropic](https://www.anthropic.com/news/claude-code-security).
+Prerequisite: Enterprise or Team plan. Complement to `/qa:qa-security` for an in-depth audit. See [Anthropic announcement](https://www.anthropic.com/news/claude-code-security).
 
-## RTK - Optimisation Tokens (optionnel)
+## RTK - Token Optimization (optional)
 
-[RTK](https://github.com/rtk-ai/rtk) (Rust Token Killer) est un proxy CLI qui compresse les sorties de commandes avant qu'elles n'atteignent le contexte LLM. Reduction de 60-90% des tokens consommes.
+[RTK](https://github.com/rtk-ai/rtk) (Rust Token Killer) is a CLI proxy that compresses command outputs before they reach the LLM context. 60-90% reduction in tokens consumed.
 
-Installation: `brew install rtk` (ou `cargo install --git https://github.com/rtk-ai/rtk`)
+Installation: `brew install rtk` (or `cargo install --git https://github.com/rtk-ai/rtk`)
 
-Le socle inclut un hook PreToolUse qui reecrit automatiquement les commandes si RTK est installe:
-- `git status` → `rtk git status` (~10 tokens au lieu de ~200)
-- `cat file.rs` → `rtk read file.rs` (signatures only en mode agressif)
-- `cargo test` → `rtk cargo test` (-90% sur les sorties de test)
+The foundation includes a PreToolUse hook that automatically rewrites commands if RTK is installed:
+- `git status` → `rtk git status` (~10 tokens instead of ~200)
+- `cat file.rs` → `rtk read file.rs` (signatures only in aggressive mode)
+- `cargo test` → `rtk cargo test` (-90% on test outputs)
 
-Le hook est transparent: si RTK n'est pas installe, rien ne change. Desactiver avec `RTK_DISABLED=1`.
+The hook is transparent: if RTK is not installed, nothing changes. Disable with `RTK_DISABLED=1`.
 
-Commandes utiles:
-- `rtk gain` : voir les economies de tokens
-- `rtk discover` : identifier les commandes non optimisees dans l'historique
+Useful commands:
+- `rtk gain`: see token savings
+- `rtk discover`: identify unoptimized commands in the history
 
 ## CLAUDE.md @imports
 
-Syntaxe `@path/to/file` pour importer des fichiers. Chemins relatifs et absolus supportes, imports recursifs (max 5 niveaux). Voir imports charges avec `/memory`.
+`@path/to/file` syntax to import files. Relative and absolute paths supported, recursive imports (max 5 levels). View loaded imports with `/memory`.
 
 ## Plugins
 
-Ecosysteme d'extensions communautaires pour Claude Code. Un plugin peut contenir des skills, agents, hooks et MCP servers.
+Ecosystem of community extensions for Claude Code. A plugin can contain skills, agents, hooks and MCP servers.
 
-| Action | Commande |
+| Action | Command |
 |--------|----------|
-| Charger un plugin local | `claude --plugin-dir ./mon-plugin` |
-| Skills namespaces | `/mon-plugin:skill-name` |
-| Executables plugin | Fichiers dans `bin/` invocables comme commandes Bash |
+| Load a local plugin | `claude --plugin-dir ./my-plugin` |
+| Namespaced skills | `/my-plugin:skill-name` |
+| Plugin executables | Files in `bin/` invocable as Bash commands |
 
-Les plugins peuvent etre distribues via un repertoire Anthropic-managed. Setting `disableSkillShellExecution` pour desactiver l'execution shell dans les plugins non verifies.
+Plugins can be distributed via an Anthropic-managed directory. Setting `disableSkillShellExecution` to disable shell execution in unverified plugins.
 
 ## Scheduled Tasks (Cloud)
 
-Jobs recurrents executes sur l'infrastructure cloud Anthropic. Utile pour les taches operationnelles continues sans session locale active.
+Recurring jobs executed on Anthropic cloud infrastructure. Useful for ongoing operational tasks without an active local session.
 
-| Cas d'usage | Description |
+| Use case | Description |
 |-------------|-------------|
-| PR reviews | Revue automatique des pull requests |
-| CI monitoring | Surveillance continue du pipeline CI |
-| Dependency audits | Audit periodique des dependances |
-| Doc syncing | Synchronisation de documentation |
+| PR reviews | Automatic review of pull requests |
+| CI monitoring | Continuous monitoring of the CI pipeline |
+| Dependency audits | Periodic audit of dependencies |
+| Doc syncing | Documentation synchronization |
 
-Configuration via `/tasks`, `/schedule` ou l'API. Necessite un plan Pro/Max/Team/Enterprise.
+Configuration via `/tasks`, `/schedule` or the API. Requires a Pro/Max/Team/Enterprise plan.
 
-Voir aussi **Routines** (section ci-dessus) pour les workflows automatises plus complexes combinant prompts, repos et connecteurs.
+See also **Routines** (section above) for more complex automated workflows combining prompts, repos and connectors.
 
 ## Computer Use
 
-Integration directe dans Claude Code (Pro/Max). Permet d'ouvrir des fichiers, lancer des outils de dev, cliquer et naviguer dans l'interface sans setup additionnel.
+Direct integration in Claude Code (Pro/Max). Allows opening files, launching dev tools, clicking and navigating in the interface without additional setup.
 
-Utile pour: tests visuels, interactions UI, workflows necessitant un navigateur ou un emulateur.
+Useful for: visual tests, UI interactions, workflows requiring a browser or an emulator.
 
 ## Routines (CLI 2.1.108+)
 
-Les Routines sont des workflows automatises qui tournent sur l'infrastructure cloud Anthropic. Une routine combine un prompt, un ou plusieurs repos, et des connecteurs en une configuration unique executable sur schedule, via API, ou sur evenement GitHub.
+Routines are automated workflows that run on Anthropic cloud infrastructure. A routine combines a prompt, one or more repos, and connectors into a single configuration executable on schedule, via API, or on a GitHub event.
 
-| Propriete | Description |
+| Property | Description |
 |-----------|-------------|
-| Prompt | Les instructions a executer |
-| Repos | Un ou plusieurs repositories cibles |
-| Connecteurs | MCP servers, GitHub events, API triggers |
-| Execution | Cloud Anthropic — tourne meme laptop eteint |
+| Prompt | The instructions to execute |
+| Repos | One or more target repositories |
+| Connectors | MCP servers, GitHub events, API triggers |
+| Execution | Anthropic Cloud — runs even with the laptop off |
 
-Cas d'usage avec le socle :
+Use cases with the foundation:
 
-| Routine | Description | Equivalent socle |
+| Routine | Description | Foundation equivalent |
 |---------|-------------|------------------|
-| Review automatique de PRs | Review chaque nouvelle PR | `/qa:qa-review` en version cloud |
-| Audit periodique | Audit securite/qualite hebdomadaire | `/qa:qa-audit` en version planifiee |
-| Standup automatique | Resume d'activite quotidien | `/ops:ops-standup` en version cloud |
-| Dependency check | Audit deps chaque lundi | `/ops:ops-deps` en version planifiee |
+| Automatic PR review | Review every new PR | `/qa:qa-review` cloud version |
+| Periodic audit | Weekly security/quality audit | `/qa:qa-audit` scheduled version |
+| Automatic standup | Daily activity summary | `/ops:ops-standup` cloud version |
+| Dependency check | Audit deps every Monday | `/ops:ops-deps` scheduled version |
 
-Configuration via la console Anthropic ou `/schedule`. Necessite un plan Pro/Max/Team/Enterprise.
+Configuration via the Anthropic console or `/schedule`. Requires a Pro/Max/Team/Enterprise plan.
 
-## Ultraplan et Ultrareview (CLI 2.1.101+)
+## Ultraplan and Ultrareview (CLI 2.1.101+)
 
-Commandes cloud qui delegent le travail a des agents paralleles sur l'infrastructure Anthropic.
+Cloud commands that delegate work to parallel agents on Anthropic infrastructure.
 
-| Commande | Description | Quand utiliser |
+| Command | Description | When to use |
 |----------|-------------|----------------|
-| `/ultraplan` | Plan en cloud : draft, revue dans un editeur web, execution remote ou locale | Architecture complexe, plans multi-fichiers |
-| `/ultrareview` | Review multi-agent parallele en cloud | Grosses PRs, revues approfondies |
+| `/ultraplan` | Cloud plan: draft, review in a web editor, remote or local execution | Complex architecture, multi-file plans |
+| `/ultrareview` | Parallel multi-agent review in cloud | Large PRs, in-depth reviews |
 
-`/ultraplan` cree automatiquement un environnement cloud au premier lancement. Le plan peut etre revise via un editeur web avant execution.
+`/ultraplan` automatically creates a cloud environment on first launch. The plan can be revised via a web editor before execution.
 
-`/ultrareview` lance plusieurs agents en parallele pour une review plus exhaustive que `/qa:qa-review` local. Ideal pour les PRs de plus de 500 lignes.
+`/ultrareview` launches multiple agents in parallel for a more exhaustive review than local `/qa:qa-review`. Ideal for PRs over 500 lines.
 
 ## TUI Fullscreen (Research Preview, CLI 2.1.89+)
 
-Mode de rendu alternatif qui prend le controle de la surface du terminal comme `vim` ou `htop`. "Fullscreen" refere a la prise en main du drawing surface, **pas** a la maximisation de la fenetre.
+Alternative rendering mode that takes control of the terminal surface like `vim` or `htop`. "Fullscreen" refers to taking over the drawing surface, **not** to maximizing the window.
 
-Activation : `/tui fullscreen` (CLI 2.1.110+) ou `CLAUDE_CODE_NO_FLICKER=1` avant le lancement. Desactivation : `/tui default`.
+Activation: `/tui fullscreen` (CLI 2.1.110+) or `CLAUDE_CODE_NO_FLICKER=1` before launch. Deactivation: `/tui default`.
 
-### Trois benefices cles
+### Three key benefits
 
-| Benefice | Impact |
+| Benefit | Impact |
 |----------|--------|
-| Flicker-free | Plus de scintillement dans VS Code terminal, tmux, iTerm2 sur les sessions longues |
-| Memoire constante | Seuls les messages visibles dans le render tree → RAM plate meme sur des conversations de plusieurs heures |
-| Support souris | Click-to-expand tool results, click URLs/file paths, selection click-and-drag avec copie auto |
+| Flicker-free | No more flicker in VS Code terminal, tmux, iTerm2 on long sessions |
+| Constant memory | Only visible messages in the render tree → flat RAM even on multi-hour conversations |
+| Mouse support | Click-to-expand tool results, click URLs/file paths, click-and-drag selection with auto copy |
 
-Signal visuel : en fullscreen, le prompt input reste **fixe en bas** au lieu de remonter avec l'output.
+Visual signal: in fullscreen, the prompt input stays **fixed at the bottom** instead of scrolling up with the output.
 
-### Commandes associees
+### Associated commands
 
-| Mode | Commande | Description |
+| Mode | Command | Description |
 |------|----------|-------------|
-| Fullscreen | `/tui fullscreen` | Active le mode (persiste via le setting `tui`) |
-| Default | `/tui default` | Desactive le mode |
-| Status | `/tui` | Affiche le renderer actif |
-| Focus | `/focus` | Vue condensee : prompt + 1 ligne par outil + reponse finale (separable de `/tui`) |
-| Transcript | `Ctrl+O` | Toggle le mode transcript avec navigation `less`-style |
+| Fullscreen | `/tui fullscreen` | Enables the mode (persists via the `tui` setting) |
+| Default | `/tui default` | Disables the mode |
+| Status | `/tui` | Shows the active renderer |
+| Focus | `/focus` | Condensed view: prompt + 1 line per tool + final response (separable from `/tui`) |
+| Transcript | `Ctrl+O` | Toggle transcript mode with `less`-style navigation |
 
-### Navigation en fullscreen
+### Navigation in fullscreen
 
-| Raccourci | Action |
+| Shortcut | Action |
 |-----------|--------|
-| `PgUp` / `PgDn` | Scroll demi-ecran (ou `Fn+↑`/`Fn+↓` sur Mac) |
-| `Ctrl+Home` / `Ctrl+End` | Debut / fin de conversation |
-| `Ctrl+O` puis `/` | Recherche dans le transcript |
-| `Ctrl+O` puis `[` | Dump la conversation dans le scrollback natif du terminal |
-| `Ctrl+O` puis `v` | Ouvre le transcript dans `$EDITOR` |
+| `PgUp` / `PgDn` | Half-screen scroll (or `Fn+↑`/`Fn+↓` on Mac) |
+| `Ctrl+Home` / `Ctrl+End` | Beginning / end of conversation |
+| `Ctrl+O` then `/` | Search in the transcript |
+| `Ctrl+O` then `[` | Dump the conversation into the terminal's native scrollback |
+| `Ctrl+O` then `v` | Open the transcript in `$EDITOR` |
 
-### Variables d'environnement
+### Environment variables
 
 | Variable | Usage |
 |----------|-------|
-| `CLAUDE_CODE_NO_FLICKER=1` | Active le fullscreen au demarrage (equivalent au setting `tui`) |
-| `CLAUDE_CODE_DISABLE_MOUSE=1` | Garde flicker-free + memoire plate, mais desactive la capture souris (utile en SSH/tmux) |
-| `CLAUDE_CODE_SCROLL_SPEED` | Multiplicateur de vitesse molette (1-20, defaut terminal-dependant) |
+| `CLAUDE_CODE_NO_FLICKER=1` | Enables fullscreen at startup (equivalent to the `tui` setting) |
+| `CLAUDE_CODE_DISABLE_MOUSE=1` | Keeps flicker-free + flat memory, but disables mouse capture (useful in SSH/tmux) |
+| `CLAUDE_CODE_SCROLL_SPEED` | Wheel speed multiplier (1-20, default terminal-dependent) |
 
-### Compatibilite tmux
+### tmux compatibility
 
-- Requiert `set -g mouse on` dans `~/.tmux.conf` pour la molette
-- **Incompatible avec `tmux -CC`** (iTerm2 integration mode)
+- Requires `set -g mouse on` in `~/.tmux.conf` for the wheel
+- **Incompatible with `tmux -CC`** (iTerm2 integration mode)
 
 ## Push Notifications (CLI 2.1.110+)
 
-Claude peut envoyer des notifications push sur mobile quand Remote Control est active. Utile pour les taches longues en arriere-plan.
+Claude can send push notifications to mobile when Remote Control is enabled. Useful for long background tasks.
 
-Activation : activer Remote Control + "Push when Claude decides" dans `/config`. Claude notifie en fin de tache ou quand une decision humaine est necessaire.
+Activation: enable Remote Control + "Push when Claude decides" in `/config`. Claude notifies at the end of a task or when a human decision is needed.
 
 ## `/loop` Command
 
-Executer un prompt ou une commande a intervalles reguliers:
+Execute a prompt or a command at regular intervals:
 
 ```bash
-/loop 5m "run tests and report failures"   # toutes les 5 minutes
-/loop "check CI status"                     # auto-pace par Claude (CLI 2.1.101+)
+/loop 5m "run tests and report failures"   # every 5 minutes
+/loop "check CI status"                     # auto-paced by Claude (CLI 2.1.101+)
 ```
 
-Alias : `/proactive` (CLI 2.1.105+). Sans intervalle, Claude auto-determine la frequence optimale.
+Alias: `/proactive` (CLI 2.1.105+). Without an interval, Claude auto-determines the optimal frequency.
 
-Controle des wakeups : `Esc` annule les wakeups en attente (CLI 2.1.113+), un message "Claude resuming /loop wakeup" confirme le re-demarrage a chaque tick.
+Wakeup control: `Esc` cancels pending wakeups (CLI 2.1.113+), a "Claude resuming /loop wakeup" message confirms the restart on each tick.
 
 ## Monitor Tool (CLI 2.1.98+)
 
-Outil natif qui spawn un watcher en arriere-plan et stream ses evenements dans la conversation : chaque event arrive comme un nouveau message de transcript auquel Claude reagit immediatement. Remplace les `Bash sleep` loops qui bloquent un turn entier.
+Native tool that spawns a watcher in the background and streams its events into the conversation: each event arrives as a new transcript message that Claude reacts to immediately. Replaces `Bash sleep` loops that block an entire turn.
 
-| Cas d'usage | Exemple de prompt |
+| Use case | Example prompt |
 |-------------|-------------------|
-| Tail de log applicatif | `Tail server.log et previens-moi des qu'un 5xx apparait` |
-| Babysit CI sur une PR | `Surveille la CI de cette PR et auto-fix les lints` |
-| Watch d'un dev server | `Watch npm run dev et redemarre si crash` |
-| Suivi d'un training run | `Monitor le log de training et alerte sur loss spike` |
+| Tail of an application log | `Tail server.log and notify me as soon as a 5xx appears` |
+| Babysit CI on a PR | `Watch this PR's CI and auto-fix the lints` |
+| Watch a dev server | `Watch npm run dev and restart on crash` |
+| Tracking a training run | `Monitor the training log and alert on loss spike` |
 
-Pairing recommande avec `/loop` (auto-pace) : Claude choisit Monitor plutot que polling quand la source emet des evenements directement.
+Recommended pairing with `/loop` (auto-pace): Claude picks Monitor over polling when the source emits events directly.
 
-Integration socle : Monitor est utile dans les workflows `/qa:qa-loop`, `/ops:ops-ci-fix`, et `/loop` long-running ou un sleep loop bash serait l'alternative.
+Foundation integration: Monitor is useful in `/qa:qa-loop`, `/ops:ops-ci-fix`, and long-running `/loop` workflows where a bash sleep loop would be the alternative.
 
 ## `/autofix-pr` (CLI 2.1.92+)
 
-Active **PR auto-fix sur Claude Code Web** depuis le terminal pour la PR de la branche courante. Apres push, Claude surveille la CI et les commentaires de review et pousse des fixes jusqu'au green sans necessiter de session locale active.
+Enables **PR auto-fix on Claude Code Web** from the terminal for the current branch's PR. After push, Claude watches the CI and review comments and pushes fixes until green without requiring an active local session.
 
 ```bash
 git push -u origin feature/auth
 /autofix-pr
 ```
 
-| Quand utiliser | Description |
+| When to use | Description |
 |----------------|-------------|
-| Long cycle CI | Lints, tests, type-check qui boucle sur petites corrections |
-| PR avec nombreux nits review | Renommages, formats, docstrings demandes en review |
-| Travail asynchrone | Vous voulez quitter le terminal et laisser Claude finir |
+| Long CI cycle | Lints, tests, type-check looping on small fixes |
+| PR with many review nits | Renames, formats, docstrings requested in review |
+| Asynchronous work | You want to leave the terminal and let Claude finish |
 
-Complement de `/work:work-pr` : `/work:work-pr` cree la PR, `/autofix-pr` la fait converger en autonomie. Necessite Claude Code on the web (Pro/Max/Team/Enterprise).
+Complement to `/work:work-pr`: `/work:work-pr` creates the PR, `/autofix-pr` makes it converge autonomously. Requires Claude Code on the web (Pro/Max/Team/Enterprise).
 
 ## `/powerup` Command
 
-Lessons interactives et demos animees pour decouvrir les fonctionnalites de Claude Code. Utile pour l'onboarding de nouveaux utilisateurs.
+Interactive lessons and animated demos to discover Claude Code features. Useful for onboarding new users.
 
 ## `/less-permission-prompts` (CLI 2.1.111+)
 
-Scanne les transcripts de la session et propose des allowlists de permissions optimisees. Reduit le nombre de prompts de permission sans compromettre la securite.
+Scans the session's transcripts and proposes optimized permission allowlists. Reduces the number of permission prompts without compromising security.
 
-Utile pour : onboarding (generer les permissions initiales), sessions avec trop de prompts, optimisation de la configuration equipe.
+Useful for: onboarding (generating initial permissions), sessions with too many prompts, team configuration optimization.
 
-## Prompt Caching Avance (CLI 2.1.108+)
+## Advanced Prompt Caching (CLI 2.1.108+)
 
 | Variable | TTL | Description |
 |----------|-----|-------------|
-| `ENABLE_PROMPT_CACHING_1H` | 1 heure | Cache prompt etendu pour sessions longues (API key, Bedrock, Vertex, Foundry) |
-| `FORCE_PROMPT_CACHING_5M` | 5 minutes | Force le TTL 5 min (utile si telemetrie desactivee) |
+| `ENABLE_PROMPT_CACHING_1H` | 1 hour | Extended prompt cache for long sessions (API key, Bedrock, Vertex, Foundry) |
+| `FORCE_PROMPT_CACHING_5M` | 5 minutes | Forces the 5 min TTL (useful if telemetry is disabled) |
 
-Activer dans `.claude/settings.local.json` (non commite) :
+Enable in `.claude/settings.local.json` (not committed):
 
 ```json
 {
@@ -469,43 +469,43 @@ Activer dans `.claude/settings.local.json` (non commite) :
 }
 ```
 
-## Variables d'Environnement Avancees
+## Advanced Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `CLAUDE_CODE_NO_FLICKER=1` | Rendu alt-screen sans scintillement (virtualized scrollback) |
-| `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` | Supprime les credentials des variables d'env des subprocesses |
-| `MCP_CONNECTION_NONBLOCKING=true` | Skip l'attente de connexion MCP en mode `-p` (headless/CI) |
-| `ENABLE_PROMPT_CACHING_1H=1` | Cache prompt 1 heure (economies significatives) |
-| `FORCE_PROMPT_CACHING_5M=1` | Force cache prompt 5 minutes |
-| `CLAUDE_CODE_USE_POWERSHELL_TOOL` | Opt-in/out du PowerShell tool sur Windows (CLI 2.1.111+) |
-| `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1` | Force le recap de session meme si telemetrie desactivee (CLI 2.1.108+) |
-| `CLAUDE_CODE_PERFORCE_MODE=1` | Edit/Write echouent sur fichiers read-only avec hint `p4 edit` (CLI 2.1.98+) |
-| `CLAUDE_STREAM_IDLE_TIMEOUT_MS` | Configure le watchdog d'inactivite streaming (CLI 2.1.84+) |
-| `OTEL_LOG_RAW_API_BODIES=1` | Emet les corps complets des requetes/reponses API via OpenTelemetry (CLI 2.1.113+) |
+| `CLAUDE_CODE_NO_FLICKER=1` | Alt-screen rendering without flicker (virtualized scrollback) |
+| `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` | Strips credentials from subprocess env variables |
+| `MCP_CONNECTION_NONBLOCKING=true` | Skips MCP connection wait in `-p` mode (headless/CI) |
+| `ENABLE_PROMPT_CACHING_1H=1` | 1-hour prompt cache (significant savings) |
+| `FORCE_PROMPT_CACHING_5M=1` | Forces 5-minute prompt cache |
+| `CLAUDE_CODE_USE_POWERSHELL_TOOL` | Opt-in/out of the PowerShell tool on Windows (CLI 2.1.111+) |
+| `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1` | Forces session recap even if telemetry is disabled (CLI 2.1.108+) |
+| `CLAUDE_CODE_PERFORCE_MODE=1` | Edit/Write fail on read-only files with `p4 edit` hint (CLI 2.1.98+) |
+| `CLAUDE_STREAM_IDLE_TIMEOUT_MS` | Configures the streaming inactivity watchdog (CLI 2.1.84+) |
+| `OTEL_LOG_RAW_API_BODIES=1` | Emits the full bodies of API requests/responses via OpenTelemetry (CLI 2.1.113+) |
 
-## Settings Avances
+## Advanced Settings
 
 | Setting | Description |
 |---------|-------------|
-| `disableSkillShellExecution` | Desactive l'execution shell inline dans les skills, commandes et plugins |
-| `managed-settings.d/` | Repertoire drop-in pour policy fragments (Team/Enterprise) |
-| `sandbox.network.deniedDomains` | Bloque des domaines specifiques meme sous un wildcard `allowedDomains` (CLI 2.1.113+) |
-| `sandbox.failIfUnavailable` | Exit en erreur si sandbox activee mais indisponible (CLI 2.1.83+) |
-| `modelOverrides` | Map les entrees du picker vers des model IDs custom (ARNs Bedrock Application Inference Profile, etc.) (CLI 2.1.84+) |
-| `worktree.sparsePaths` | Sparse-checkout pour gros monorepos avec `claude --worktree` (CLI 2.1.76+) |
-| `autoScrollEnabled` | Desactive l'auto-scroll en mode fullscreen (CLI 2.1.110+) |
-| `showThinkingSummaries` | Genere des resumes d'extended thinking (defaut desormais `false` — CLI 2.1.108+) |
-| `disableDeepLinkRegistration` | Empeche l'enregistrement du protocol handler `claude-cli://` (CLI 2.1.83+) |
-| `feedbackSurveyRate` | Sample rate admin du sondage qualite de session (CLI 2.1.76+) |
-| `forceRemoteSettingsRefresh` | Bloque le demarrage tant que les managed settings distants ne sont pas rafraichis (policy) |
-| Theme `"Auto (match terminal)"` | Suit automatiquement le mode dark/light du terminal (CLI 2.1.111+) |
+| `disableSkillShellExecution` | Disables inline shell execution in skills, commands and plugins |
+| `managed-settings.d/` | Drop-in directory for policy fragments (Team/Enterprise) |
+| `sandbox.network.deniedDomains` | Blocks specific domains even under a wildcard `allowedDomains` (CLI 2.1.113+) |
+| `sandbox.failIfUnavailable` | Exits with an error if sandbox is enabled but unavailable (CLI 2.1.83+) |
+| `modelOverrides` | Maps picker entries to custom model IDs (Bedrock Application Inference Profile ARNs, etc.) (CLI 2.1.84+) |
+| `worktree.sparsePaths` | Sparse-checkout for large monorepos with `claude --worktree` (CLI 2.1.76+) |
+| `autoScrollEnabled` | Disables auto-scroll in fullscreen mode (CLI 2.1.110+) |
+| `showThinkingSummaries` | Generates extended thinking summaries (default now `false` — CLI 2.1.108+) |
+| `disableDeepLinkRegistration` | Prevents registration of the `claude-cli://` protocol handler (CLI 2.1.83+) |
+| `feedbackSurveyRate` | Admin sample rate for the session quality survey (CLI 2.1.76+) |
+| `forceRemoteSettingsRefresh` | Blocks startup until remote managed settings are refreshed (policy) |
+| Theme `"Auto (match terminal)"` | Automatically follows the terminal's dark/light mode (CLI 2.1.111+) |
 
 ## LSP (Language Server Protocol)
 
-Navigation semantique du code via `.lsp.json`. Activation: `export ENABLE_LSP_TOOL=1`.
+Semantic code navigation via `.lsp.json`. Activation: `export ENABLE_LSP_TOOL=1`.
 
-12 langages supportes (TypeScript, Python, Go, Rust, Java, C/C++, C#, PHP, Kotlin, Ruby, HTML, CSS).
+12 supported languages (TypeScript, Python, Go, Rust, Java, C/C++, C#, PHP, Kotlin, Ruby, HTML, CSS).
 
-LSP pour: definitions de symboles, references, diagnostics. Grep pour: recherches textuelles.
-Voir `.claude/rules/lsp.md` pour les regles detaillees.
+LSP for: symbol definitions, references, diagnostics. Grep for: text searches.
+See `.claude/rules/lsp.md` for detailed rules.
