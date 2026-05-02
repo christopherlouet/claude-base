@@ -173,7 +173,7 @@
     },
     {
       "path": "tests/validate.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "424cde4984da1831c193b448a208869852a7064335f1ebc9c000ae4ccb529c9d"
     },
     {
