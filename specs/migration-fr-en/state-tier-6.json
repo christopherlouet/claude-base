@@ -113,7 +113,7 @@
     },
     {
       "path": "tests/e2e.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "d01ace4b88d09e4d378275e23471688810ca820107a1986dfe4e88c5ad587b22"
     },
     {
