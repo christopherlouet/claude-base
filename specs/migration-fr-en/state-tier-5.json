@@ -223,7 +223,7 @@
     },
     {
       "path": ".claude/templates/opnsense/nat-module.tf",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "491664e98d865af0580a7bedcfdff17feb112b91eb0ec25aeb6e1a974c5e0d5e"
     },
     {
