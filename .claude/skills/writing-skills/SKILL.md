@@ -1,6 +1,6 @@
 ---
 name: writing-skills
-description: Guide pour creer de nouveaux skills pour le socle Claude Code. Declencher quand l'utilisateur veut creer un skill, ajouter une commande, ou etendre le socle.
+description: Guide for creating new skills for the Claude Code foundation. Trigger when the user wants to create a skill, add a command, or extend the foundation.
 allowed-tools:
   - Read
   - Write
@@ -10,215 +10,215 @@ allowed-tools:
 context: fork
 ---
 
-# Creer de Nouveaux Skills
+# Creating New Skills
 
-## Objectif
+## Objective
 
-Framework pour creer des skills de qualite pour le socle Claude Code, en respectant les conventions et la structure existante.
+Framework for creating quality skills for the Claude Code foundation, respecting the existing conventions and structure.
 
-## Structure d'un skill
+## Skill structure
 
 ```
-.claude/skills/<nom-du-skill>/
+.claude/skills/<skill-name>/
 └── SKILL.md
 ```
 
-### Format du SKILL.md
+### SKILL.md format
 
 ```yaml
 ---
-name: mon-skill
-description: Description claire du skill. Declencher quand [contexte d'activation].
+name: my-skill
+description: Clear description of the skill. Trigger when [activation context].
 allowed-tools:
   - Read
-  - Write      # Si le skill modifie des fichiers
-  - Edit       # Si le skill edite des fichiers existants
-  - Bash       # Si le skill execute des commandes
-  - Glob       # Recherche de fichiers
-  - Grep       # Recherche dans le contenu
-context: fork  # Toujours fork pour isolation
+  - Write      # If the skill modifies files
+  - Edit       # If the skill edits existing files
+  - Bash       # If the skill executes commands
+  - Glob       # File search
+  - Grep       # Content search
+context: fork  # Always fork for isolation
 ---
 
-# Titre du Skill
+# Skill Title
 
-## Objectif
-[Description claire de ce que fait le skill]
+## Objective
+[Clear description of what the skill does]
 
 ## Instructions
-[Instructions detaillees, structurees en etapes]
+[Detailed instructions, structured in steps]
 
-## Output attendu
-[Format de sortie attendu]
+## Expected output
+[Expected output format]
 
-## Regles
-[Regles obligatoires pour le skill]
+## Rules
+[Mandatory rules for the skill]
 ```
 
-## Champs Frontmatter Disponibles (Claude Code 2.1+)
+## Available Frontmatter Fields (Claude Code 2.1+)
 
-Tous les champs disponibles dans le frontmatter YAML d'un skill :
+All fields available in the YAML frontmatter of a skill:
 
-| Champ | Requis | Description |
-|-------|--------|-------------|
-| `name` | Non | Nom du skill (defaut: nom du dossier). Minuscules, chiffres, tirets (max 64 chars) |
-| `description` | Recommande | Ce que fait le skill et quand l'utiliser. Claude utilise ceci pour decider quand charger le skill |
-| `allowed-tools` | Non | Outils autorises sans demande de permission |
-| `context` | Non | `fork` pour execution dans un sub-agent isole |
-| `model` | Non | Modele a utiliser: `sonnet`, `opus`, `haiku`, `inherit` (defaut: herite du contexte) |
-| `agent` | Non | Type de sub-agent quand `context: fork` (`Explore`, `Plan`, `general-purpose`, ou agent custom) |
-| `disable-model-invocation` | Non | `true` = invocation manuelle uniquement (Claude ne peut pas auto-charger). Defaut: `false` |
-| `user-invocable` | Non | `false` = invisible dans le menu `/` (skills background). Defaut: `true` |
-| `argument-hint` | Non | Hint d'autocompletion affiche dans le menu `/`. Ex: `[issue-number]` ou `[filename] [format]` |
-| `hooks` | Non | Hooks scopes au lifecycle du skill (PreToolUse, PostToolUse, Stop) |
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | No | Skill name (default: folder name). Lowercase, digits, hyphens (max 64 chars) |
+| `description` | Recommended | What the skill does and when to use it. Claude uses this to decide when to load the skill |
+| `allowed-tools` | No | Tools authorized without permission prompt |
+| `context` | No | `fork` for execution in an isolated sub-agent |
+| `model` | No | Model to use: `sonnet`, `opus`, `haiku`, `inherit` (default: inherits from context) |
+| `agent` | No | Sub-agent type when `context: fork` (`Explore`, `Plan`, `general-purpose`, or custom agent) |
+| `disable-model-invocation` | No | `true` = manual invocation only (Claude cannot auto-load). Default: `false` |
+| `user-invocable` | No | `false` = invisible in the `/` menu (background skills). Default: `true` |
+| `argument-hint` | No | Autocompletion hint shown in the `/` menu. E.g.: `[issue-number]` or `[filename] [format]` |
+| `hooks` | No | Hooks scoped to the skill lifecycle (PreToolUse, PostToolUse, Stop) |
 
-### Substitutions de variables
+### Variable substitutions
 
 | Variable | Description |
 |----------|-------------|
-| `$ARGUMENTS` | Tous les arguments passes au skill |
-| `$ARGUMENTS[N]` | Argument par index (0-based) |
-| `$N` | Raccourci pour `$ARGUMENTS[N]` |
-| `${CLAUDE_SESSION_ID}` | ID de la session courante |
+| `$ARGUMENTS` | All arguments passed to the skill |
+| `$ARGUMENTS[N]` | Argument by index (0-based) |
+| `$N` | Shortcut for `$ARGUMENTS[N]` |
+| `${CLAUDE_SESSION_ID}` | Current session ID |
 
-### Injection de contexte dynamique
+### Dynamic context injection
 
-Utiliser la syntaxe backtick-bang pour injecter des donnees live:
-- Exemple: `!` suivi de backtick puis `gh pr diff` puis backtick
-- La commande s'execute AVANT que Claude ne voie le contenu
-- Le resultat remplace le placeholder
+Use the backtick-bang syntax to inject live data:
+- Example: `!` followed by backtick then `gh pr diff` then backtick
+- The command runs BEFORE Claude sees the content
+- The result replaces the placeholder
 
-Exemple:
+Example:
 ```markdown
-## Contexte PR
+## PR Context
 - Diff: !`gh pr diff`
-- Fichiers: !`gh pr diff --name-only`
+- Files: !`gh pr diff --name-only`
 ```
 
-### Bonnes pratiques frontmatter
+### Frontmatter best practices
 
-- SKILL.md < 500 lignes (deporter le detail dans des fichiers de reference via `supporting files`)
-- Budget descriptions: 15,000 chars max (variable `SLASH_COMMAND_TOOL_CHAR_BUDGET`)
-- Fichiers de support: `examples/`, `scripts/`, `reference.md` dans le dossier du skill
-- Utiliser `disable-model-invocation: true` pour les skills qui ne doivent etre lances que manuellement (ex: commit, PR, plan)
-- Utiliser `user-invocable: false` pour les skills de contexte/background que Claude charge automatiquement (state-management, api-mocking)
-- Utiliser `model: sonnet` pour les skills complexes necessitant un raisonnement approfondi (debug, securite, TDD, perf)
-- Utiliser `argument-hint` pour guider l'utilisateur sur les parametres attendus
+- SKILL.md < 500 lines (move detail to reference files via `supporting files`)
+- Description budget: 15,000 chars max (variable `SLASH_COMMAND_TOOL_CHAR_BUDGET`)
+- Supporting files: `examples/`, `scripts/`, `reference.md` in the skill folder
+- Use `disable-model-invocation: true` for skills that should only be launched manually (e.g.: commit, PR, plan)
+- Use `user-invocable: false` for context/background skills that Claude loads automatically (state-management, api-mocking)
+- Use `model: sonnet` for complex skills requiring deep reasoning (debug, security, TDD, perf)
+- Use `argument-hint` to guide the user on the expected parameters
 
-## Checklist de qualite d'un skill
+## Skill quality checklist
 
 ### Structure
 
 ```
-[ ] Frontmatter YAML valide (name, description, allowed-tools, context)
-[ ] Nom en kebab-case
-[ ] Description avec contexte de declenchement
-[ ] Tools minimaux necessaires (principe du moindre privilege)
+[ ] Valid YAML frontmatter (name, description, allowed-tools, context)
+[ ] kebab-case name
+[ ] Description with trigger context
+[ ] Minimal necessary tools (principle of least privilege)
 [ ] context: fork (isolation)
 ```
 
-### Contenu
+### Content
 
 ```
-[ ] Objectif clair en 1-2 phrases
-[ ] Instructions structurees en etapes numerotees
-[ ] Exemples de code pertinents
-[ ] Output attendu avec template
-[ ] Regles et contraintes explicites
-[ ] Diagramme ASCII si workflow complexe
+[ ] Clear objective in 1-2 sentences
+[ ] Instructions structured as numbered steps
+[ ] Relevant code examples
+[ ] Expected output with template
+[ ] Explicit rules and constraints
+[ ] ASCII diagram if complex workflow
 ```
 
-### Qualite
+### Quality
 
 ```
-[ ] Actionnable (pas juste informatif)
-[ ] Specifique (pas generique)
-[ ] Testable (resultats verifiables)
-[ ] Autonome (pas de dependance sur d'autres skills)
-[ ] Coherent avec les conventions du socle
+[ ] Actionable (not just informative)
+[ ] Specific (not generic)
+[ ] Testable (verifiable results)
+[ ] Standalone (no dependency on other skills)
+[ ] Consistent with the foundation's conventions
 ```
 
-## Conventions du socle
+## Foundation conventions
 
-### Nommage
+### Naming
 
-| Type | Convention | Exemples |
-|------|-----------|----------|
-| Skills dev | `dev-*` | `dev-tdd`, `dev-debug`, `dev-api` |
-| Skills QA | `qa-*` | `qa-review`, `qa-security` |
-| Skills ops | `ops-*` | `ops-docker`, `ops-ci` |
-| Skills doc | `doc-*` | `doc-generate`, `doc-changelog` |
-| Skills growth | `growth-*` | `growth-seo`, `growth-cro` |
-| Skills biz | `biz-*` | `biz-model`, `biz-mvp` |
-| Skills legal | `legal-*` | `legal-rgpd` |
-| Skills data | `data-*` | `data-pipeline` |
-| Skills workflow | `work-*` | `work-explore`, `work-plan` |
-| Skills meta | Nom descriptif | `parallel-agents`, `session-handoff` |
+| Type | Convention | Examples |
+|------|------------|----------|
+| Dev skills | `dev-*` | `dev-tdd`, `dev-debug`, `dev-api` |
+| QA skills | `qa-*` | `qa-review`, `qa-security` |
+| Ops skills | `ops-*` | `ops-docker`, `ops-ci` |
+| Doc skills | `doc-*` | `doc-generate`, `doc-changelog` |
+| Growth skills | `growth-*` | `growth-seo`, `growth-cro` |
+| Biz skills | `biz-*` | `biz-model`, `biz-mvp` |
+| Legal skills | `legal-*` | `legal-rgpd` |
+| Data skills | `data-*` | `data-pipeline` |
+| Workflow skills | `work-*` | `work-explore`, `work-plan` |
+| Meta skills | Descriptive name | `parallel-agents`, `session-handoff` |
 
-### Patterns de contenu
+### Content patterns
 
 ```
-1. Diagramme ASCII du workflow (si applicable)
-2. Etapes numerotees avec sous-sections
-3. Tableaux pour les references rapides
-4. Blocs de code avec langage specifie
-5. Section "Output attendu" avec template
-6. Section "Regles" avec IMPORTANT/NEVER/YOU MUST
+1. ASCII workflow diagram (if applicable)
+2. Numbered steps with subsections
+3. Tables for quick references
+4. Code blocks with specified language
+5. "Expected output" section with template
+6. "Rules" section with IMPORTANT/NEVER/YOU MUST
 ```
 
-### Outils par type de skill
+### Tools by skill type
 
-| Type de skill | Outils recommandes |
-|---------------|-------------------|
-| Lecture seule (audit, review) | Read, Glob, Grep |
-| Developpement | Read, Write, Edit, Bash, Glob, Grep |
+| Skill type | Recommended tools |
+|------------|-------------------|
+| Read-only (audit, review) | Read, Glob, Grep |
+| Development | Read, Write, Edit, Bash, Glob, Grep |
 | Infrastructure | Read, Write, Edit, Bash, Glob, Grep |
 | Documentation | Read, Write, Edit, Glob, Grep |
-| Analyse | Read, Glob, Grep |
+| Analysis | Read, Glob, Grep |
 
-## Creer aussi les fichiers associes
+## Also create the associated files
 
-### Commande (optionnel)
-
-```
-.claude/commands/<domaine>/<nom>.md
-```
-
-Format : prompt detaille avec `$ARGUMENTS`, workflow, output attendu, agents lies.
-
-### Agent (optionnel)
+### Command (optional)
 
 ```
-.claude/agents/<nom>.md
+.claude/commands/<domain>/<name>.md
 ```
 
-Format : frontmatter YAML avec model, permissionMode, disallowedTools, skills, hooks.
+Format: detailed prompt with `$ARGUMENTS`, workflow, expected output, related agents.
 
-### Rule (optionnel)
-
-```
-.claude/rules/<nom>.md
-```
-
-Format : frontmatter avec paths, regles contextuelles par type de fichier.
-
-## Workflow de creation
+### Agent (optional)
 
 ```
-1. IDENTIFIER le besoin (quel probleme ce skill resout ?)
-2. NOMMER selon les conventions (domaine-action)
-3. DEFINIR les outils necessaires (principe du moindre privilege)
-4. ECRIRE le SKILL.md avec le template
-5. CREER la commande associee si invocation manuelle necessaire
-6. CREER l'agent associe si execution isolee necessaire
-7. TESTER le skill (l'invoquer et verifier le resultat)
-8. DOCUMENTER dans CLAUDE.md (table des skills)
+.claude/agents/<name>.md
 ```
 
-## Regles
+Format: YAML frontmatter with model, permissionMode, disallowedTools, skills, hooks.
 
-- Un skill = une responsabilite unique
-- Description avec contexte de declenchement obligatoire
-- Outils minimaux (pas de Write si le skill ne modifie rien)
-- Toujours utiliser `context: fork` pour l'isolation
-- Exemples concrets, pas de theorie abstraite
-- Output attendu clairement defini
+### Rule (optional)
+
+```
+.claude/rules/<name>.md
+```
+
+Format: frontmatter with paths, contextual rules per file type.
+
+## Creation workflow
+
+```
+1. IDENTIFY the need (which problem does this skill solve?)
+2. NAME according to conventions (domain-action)
+3. DEFINE the necessary tools (principle of least privilege)
+4. WRITE the SKILL.md with the template
+5. CREATE the associated command if manual invocation is needed
+6. CREATE the associated agent if isolated execution is needed
+7. TEST the skill (invoke it and verify the result)
+8. DOCUMENT in CLAUDE.md (skills table)
+```
+
+## Rules
+
+- One skill = one single responsibility
+- Description with mandatory trigger context
+- Minimal tools (no Write if the skill doesn't modify anything)
+- Always use `context: fork` for isolation
+- Concrete examples, no abstract theory
+- Expected output clearly defined
