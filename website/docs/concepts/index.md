@@ -1,16 +1,16 @@
 ---
 sidebar_position: 1
-title: Concepts Claude Code
-description: Comprendre les concepts fondamentaux de Claude Code
+title: Claude Code Concepts
+description: Understand the fundamental concepts of Claude Code
 ---
 
-# Concepts Claude Code
+# Claude Code Concepts
 
-> Comprendre l'ecosysteme Claude Code pour mieux utiliser claude-socle
+> Understand the Claude Code ecosystem to better use claude-socle
 
-## Vue d'ensemble
+## Overview
 
-Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude directement dans le terminal. Il offre plusieurs mecanismes d'extension et de personnalisation.
+Claude Code is a CLI tool from Anthropic that lets you interact with Claude directly in the terminal. It offers several extension and customization mechanisms.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -20,37 +20,37 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 │  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐   │
 │  │ COMMANDS  │  │  AGENTS   │  │  SKILLS   │  │   RULES   │   │
 │  │           │  │           │  │           │  │           │   │
-│  │ Invocation│  │ Delegation│  │ Activation│  │Application│   │
-│  │ manuelle  │  │   auto    │  │   auto    │  │ par path  │   │
-│  │   /xxx    │  │ par Claude│  │ mots-cles │  │           │   │
+│  │  Manual   │  │   Auto    │  │   Auto    │  │  Path-    │   │
+│  │ invocation│  │delegation │  │activation │  │  based    │   │
+│  │   /xxx    │  │ by Claude │  │ keywords  │  │application│   │
 │  └───────────┘  └───────────┘  └───────────┘  └───────────┘   │
 │                                                                 │
 │  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐   │
 │  │   HOOKS   │  │    MCP    │  │  OUTPUT   │  │ TEMPLATES │   │
 │  │           │  │  SERVERS  │  │  STYLES   │  │           │   │
 │  │ Pre/Post  │  │           │  │           │  │ Specs &   │   │
-│  │ ToolUse   │  │ Extensions│  │ Formatage │  │ Plans     │   │
+│  │ ToolUse   │  │ Extensions│  │ Formatting│  │ Plans     │   │
 │  └───────────┘  └───────────┘  └───────────┘  └───────────┘   │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Les 10 concepts cles
+## The 10 key concepts
 
-| Concept | Description | Declenchement |
-|---------|-------------|---------------|
-| [**Orchestrateur**](/docs/concepts/orchestrator) | Point d'entree unique qui guide vers les bonnes ressources | `/assistant` |
-| [**Commands**](/docs/concepts/commands) | Instructions invoquees manuellement | `/nom-commande` |
-| [**Agents**](/docs/concepts/agents) | Sub-agents autonomes avec contexte isole | Delegation automatique |
-| [**Skills**](/docs/concepts/skills) | Comportements actives par mots-cles | Detection automatique |
-| [**Rules**](/docs/concepts/rules) | Conventions appliquees par chemin de fichier | Automatique selon path |
-| [**Hooks**](/docs/concepts/hooks) | Actions avant/apres utilisation d'outils | PreToolUse / PostToolUse |
-| [**MCP Servers**](/docs/concepts/mcp-servers) | Extensions via Model Context Protocol | Configuration .mcp.json |
-| [**Output Styles**](/docs/concepts/output-styles) | Styles de formatage des reponses | `/output-style nom` |
-| [**Templates**](/docs/concepts/templates) | Modeles pour specs, plans et taches | `/work:work-specify`, `/work:work-plan` |
-| [**Fonctionnalites Avancees**](/docs/concepts/advanced-features) | Opus 4.7, Agent Teams, Plugins, LSP | Configuration avancee |
+| Concept | Description | Trigger |
+|---------|-------------|---------|
+| [**Orchestrator**](/docs/concepts/orchestrator) | Single entry point that guides toward the right resources | `/assistant` |
+| [**Commands**](/docs/concepts/commands) | Manually invoked instructions | `/command-name` |
+| [**Agents**](/docs/concepts/agents) | Autonomous sub-agents with isolated context | Automatic delegation |
+| [**Skills**](/docs/concepts/skills) | Behaviors activated by keywords | Automatic detection |
+| [**Rules**](/docs/concepts/rules) | Conventions applied by file path | Automatic based on path |
+| [**Hooks**](/docs/concepts/hooks) | Actions before/after tool use | PreToolUse / PostToolUse |
+| [**MCP Servers**](/docs/concepts/mcp-servers) | Extensions via Model Context Protocol | .mcp.json configuration |
+| [**Output Styles**](/docs/concepts/output-styles) | Response formatting styles | `/output-style name` |
+| [**Templates**](/docs/concepts/templates) | Models for specs, plans and tasks | `/work:work-specify`, `/work:work-plan` |
+| [**Advanced Features**](/docs/concepts/advanced-features) | Opus 4.7, Agent Teams, Plugins, LSP | Advanced configuration |
 
-## Comparaison rapide
+## Quick comparison
 
 ### Commands vs Skills vs Agents
 
@@ -60,18 +60,18 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 │  COMMAND                    SKILL                   AGENT      │
 │  ────────                   ─────                   ─────      │
 │                                                                │
-│  /work:work-explore              "Je veux faire         Delegation  │
-│  /dev:dev-tdd                    du TDD"               automatique │
-│  /qa:qa-security                                      par Claude  │
+│  /work:work-explore              "I want to do        Automatic   │
+│  /dev:dev-tdd                    TDD"                delegation  │
+│  /qa:qa-security                                      by Claude  │
 │                                                                │
 │  ┌──────────┐              ┌──────────┐          ┌──────────┐ │
-│  │ Declench.│              │ Declench.│          │ Declench.│ │
-│  │ MANUEL   │              │ AUTO     │          │ AUTO     │ │
+│  │ Trigger: │              │ Trigger: │          │ Trigger: │ │
+│  │ MANUAL   │              │ AUTO     │          │ AUTO     │ │
 │  └──────────┘              └──────────┘          └──────────┘ │
 │                                                                │
 │  ┌──────────┐              ┌──────────┐          ┌──────────┐ │
-│  │ Contexte │              │ Contexte │          │ Contexte │ │
-│  │ PARTAGE  │              │ FORK     │          │ ISOLE    │ │
+│  │ Context: │              │ Context: │          │ Context: │ │
+│  │ SHARED   │              │ FORK     │          │ ISOLATED │ │
 │  └──────────┘              └──────────┘          └──────────┘ │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
@@ -79,80 +79,80 @@ Claude Code est un outil CLI d'Anthropic qui permet d'interagir avec Claude dire
 
 | Aspect | Command | Skill | Agent |
 |--------|---------|-------|-------|
-| **Declenchement** | Manuel (`/xxx`) | Auto (mots-cles) | Auto (delegation) |
-| **Contexte** | Partage | Fork (isole) | Isole |
-| **Outils** | Tous | Restreints | Restreints |
-| **Fichier** | `.claude/commands/*.md` | `.claude/skills/*/SKILL.md` | `.claude/agents/*.md` |
+| **Trigger** | Manual (`/xxx`) | Auto (keywords) | Auto (delegation) |
+| **Context** | Shared | Fork (isolated) | Isolated |
+| **Tools** | All | Restricted | Restricted |
+| **File** | `.claude/commands/*.md` | `.claude/skills/*/SKILL.md` | `.claude/agents/*.md` |
 
-## Structure des fichiers
+## File structure
 
 ```
 .claude/
-├── commands/           # Commands manuelles
+├── commands/           # Manual commands
 │   ├── work/
 │   ├── dev/
 │   ├── qa/
 │   └── ...
-├── agents/             # Sub-agents autonomes
-├── skills/             # Skills auto-declenches
+├── agents/             # Autonomous sub-agents
+├── skills/             # Auto-triggered skills
 │   └── */SKILL.md
-├── rules/              # Rules par technologie
-├── output-styles/      # Styles de sortie
-├── templates/          # Templates de specs/plans
-└── settings.json       # Hooks et configuration
+├── rules/              # Rules per technology
+├── output-styles/      # Output styles
+├── templates/          # Spec/plan templates
+└── settings.json       # Hooks and configuration
 ```
 
-## Flux de travail typique
+## Typical workflow
 
 ```
-Utilisateur tape: "Fais un audit de securite"
+User types: "Run a security audit"
          │
          ▼
     ┌─────────────────────────────────────┐
-    │ Claude analyse la demande           │
+    │ Claude analyzes the request         │
     │                                     │
-    │ 1. Skill "security-audit" detecte?  │──── Non ───┐
-    │    (mots-cles: securite, OWASP)     │            │
+    │ 1. Skill "security-audit" detected? │──── No ────┐
+    │    (keywords: security, OWASP)      │            │
     └─────────────────────────────────────┘            │
-         │ Oui                                         │
+         │ Yes                                         │
          ▼                                             │
     ┌─────────────────────────────────────┐            │
-    │ Skill injecte les instructions      │            │
-    │ d'audit securite                    │            │
+    │ Skill injects security audit        │            │
+    │ instructions                        │            │
     └─────────────────────────────────────┘            │
          │                                             │
          ▼                                             ▼
     ┌─────────────────────────────────────┐    ┌──────────────┐
-    │ Claude delegue a l'agent            │    │ Claude       │
-    │ qa-security (contexte isole)        │    │ repond       │
-    └─────────────────────────────────────┘    │ directement  │
+    │ Claude delegates to the             │    │ Claude       │
+    │ qa-security agent (isolated context)│    │ responds     │
+    └─────────────────────────────────────┘    │ directly     │
          │                                     └──────────────┘
          ▼
     ┌─────────────────────────────────────┐
-    │ Agent execute l'audit               │
-    │ (outils: Read, Grep, Glob)          │
+    │ Agent runs the audit                │
+    │ (tools: Read, Grep, Glob)           │
     └─────────────────────────────────────┘
          │
          ▼
     ┌─────────────────────────────────────┐
-    │ Resultat retourne a la              │
-    │ conversation principale             │
+    │ Result returned to the              │
+    │ main conversation                   │
     └─────────────────────────────────────┘
 ```
 
-## Prochaines etapes
+## Next steps
 
-1. **Nouveau sur Claude Code?** Commencez par l'[Orchestrateur](/docs/concepts/orchestrator) (`/assistant`)
-2. **Comprendre les commandes?** Lisez [Commands](./commands)
-3. **Comprendre l'automatisation?** Lisez [Skills](./skills) et [Agents](./agents)
-4. **Personnaliser le comportement?** Explorez [Hooks](/docs/concepts/hooks) et [Rules](/docs/concepts/rules)
-5. **Etendre les capacites?** Decouvrez [MCP Servers](/docs/concepts/mcp-servers)
-6. **Structurer vos features?** Utilisez les [Templates](/docs/concepts/templates)
+1. **New to Claude Code?** Start with the [Orchestrator](/docs/concepts/orchestrator) (`/assistant`)
+2. **Want to understand commands?** Read [Commands](./commands)
+3. **Want to understand automation?** Read [Skills](./skills) and [Agents](./agents)
+4. **Customize behavior?** Explore [Hooks](/docs/concepts/hooks) and [Rules](/docs/concepts/rules)
+5. **Extend capabilities?** Discover [MCP Servers](/docs/concepts/mcp-servers)
+6. **Structure your features?** Use the [Templates](/docs/concepts/templates)
 
 ---
 
-## Voir aussi
+## See also
 
-- [Installation](/docs/intro/installation) - Installer claude-socle
-- [Architecture](/docs/intro/architecture) - Architecture de claude-socle
-- [Quick Start](/docs/intro/quick-start) - Demarrer rapidement
+- [Installation](/docs/intro/installation) - Install claude-socle
+- [Architecture](/docs/intro/architecture) - claude-socle architecture
+- [Quick Start](/docs/intro/quick-start) - Get started quickly
