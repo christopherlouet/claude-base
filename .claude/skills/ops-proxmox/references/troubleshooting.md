@@ -1,85 +1,85 @@
 # Troubleshooting — Proxmox
 
-Problemes courants et commandes de diagnostic.
+Common issues and diagnostic commands.
 
-## Problemes courants
+## Common issues
 
-| Probleme | Cause | Solution |
-|----------|-------|----------|
-| `TASK ERROR: VM is locked` | Operation en cours | Attendre ou `qm unlock <vmid>` |
-| `storage not found` | Mauvais datastore | Verifier avec `pvesm status` |
-| `clone failed` | Pas assez d'espace | Liberer de l'espace ou changer de storage |
-| `cloud-init drive exists` | Reapplication cloud-init | Supprimer le drive cloud-init avant reapply |
-| `Permission denied (API)` | Token sans permissions | Verifier les ACLs avec `pveum acl list` |
-| `corosync quorum lost` | Perte reseau cluster | Verifier reseau corosync dedie |
-| `migrate failed` | Stockage incompatible | Stockage partage requis pour live migration |
-| `agent not running` | qemu-guest-agent absent | Installer via cloud-init + `agent: enabled=true` |
-| `VMID already in use` | Conflit d'ID | Utiliser `qm list` pour trouver un ID libre |
-| `boot: no bootable device` | Disque mal attache | Verifier ordre de boot dans config |
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| `TASK ERROR: VM is locked` | Operation in progress | Wait or `qm unlock <vmid>` |
+| `storage not found` | Wrong datastore | Check with `pvesm status` |
+| `clone failed` | Not enough space | Free up space or change storage |
+| `cloud-init drive exists` | cloud-init reapplied | Delete the cloud-init drive before reapply |
+| `Permission denied (API)` | Token without permissions | Check ACLs with `pveum acl list` |
+| `corosync quorum lost` | Cluster network loss | Check dedicated corosync network |
+| `migrate failed` | Incompatible storage | Shared storage required for live migration |
+| `agent not running` | qemu-guest-agent missing | Install via cloud-init + `agent: enabled=true` |
+| `VMID already in use` | ID conflict | Use `qm list` to find a free ID |
+| `boot: no bootable device` | Disk not properly attached | Check boot order in config |
 
-## Commandes de diagnostic
+## Diagnostic commands
 
-### Cluster et nodes
+### Cluster and nodes
 
 ```bash
-# Etat du cluster
+# Cluster state
 pvecm status
 
-# Noeuds du cluster
+# Cluster nodes
 pvecm nodes
 
 # Quorum
-pvecm expected 1   # Forcer quorum sur node isole (dev only)
+pvecm expected 1   # Force quorum on isolated node (dev only)
 
-# Etat corosync
+# Corosync state
 systemctl status corosync
 journalctl -u corosync -n 50
 ```
 
-### VMs et conteneurs
+### VMs and containers
 
 ```bash
-# Lister les VMs
+# List VMs
 qm list
 
-# Lister les LXC
+# List LXC
 pct list
 
-# Config d'une VM
+# VM config
 qm config <vmid>
 
-# Config d'un LXC
+# LXC config
 pct config <vmid>
 
-# Tasks en cours
+# Tasks in progress
 pvesh get /cluster/tasks
 
-# Unlock une VM
+# Unlock a VM
 qm unlock <vmid>
 
-# Force stop une VM
+# Force stop a VM
 qm stop <vmid> --skiplock --timeout 0
 ```
 
 ### Storage
 
 ```bash
-# Etat du stockage
+# Storage state
 pvesm status
 
-# Contenu d'un storage
+# Contents of a storage
 pvesm list <storage-id>
 
-# Espace disque
+# Disk space
 pvesm status
 df -h
 
-# Derivation ZFS
+# ZFS derivation
 zpool status
 zfs list
 ```
 
-### Reseau
+### Network
 
 ```bash
 # Bridges
@@ -97,15 +97,15 @@ pve-firewall compile
 ### Logs
 
 ```bash
-# Logs generaux
+# General logs
 journalctl -f
 
-# Logs Proxmox specifiques
+# Proxmox-specific logs
 journalctl -u pve-cluster -f
 journalctl -u pvedaemon -f
 journalctl -u pveproxy -f
 
-# Logs d'une VM specifique
+# Logs for a specific VM
 qm showcmd <vmid>
 journalctl -u qemu-server@<vmid>
 ```
@@ -113,39 +113,39 @@ journalctl -u qemu-server@<vmid>
 ### Terraform
 
 ```bash
-# Recuperer un VM ID existant dans le state
+# Retrieve an existing VM ID from the state
 terraform state list | grep vm
 
-# Importer une VM existante
+# Import an existing VM
 terraform import 'module.web.proxmox_virtual_environment_vm.this' 100
 
-# Rafraichir le state
+# Refresh the state
 terraform refresh
 
-# Plan detaille
+# Detailed plan
 terraform plan -out=tfplan
 terraform show tfplan
 ```
 
 ## Recovery scenarios
 
-### VM corrompue
+### Corrupted VM
 
-1. `qm stop <vmid>` (force si necessaire)
-2. `qm config <vmid>` pour noter la config
-3. Restaurer depuis backup PBS : `qmrestore pbs:backup/... <vmid>`
-4. Si pas de backup : boot depuis ISO rescue et reparer
+1. `qm stop <vmid>` (force if necessary)
+2. `qm config <vmid>` to note the config
+3. Restore from PBS backup: `qmrestore pbs:backup/... <vmid>`
+4. If no backup: boot from rescue ISO and repair
 
 ### Node down
 
-1. Verifier reseau : `ping <node>`
-2. Verifier IPMI/iDRAC
-3. Si HA configure : les VMs migrent automatiquement
-4. Verifier quorum cluster : `pvecm status` sur un autre node
+1. Check network: `ping <node>`
+2. Check IPMI/iDRAC
+3. If HA configured: VMs migrate automatically
+4. Check cluster quorum: `pvecm status` on another node
 
-### Corruption storage
+### Storage corruption
 
-1. `pvesm status` pour identifier le storage touche
-2. Stopper toutes les VMs qui l'utilisent
-3. Verifier integrite : `zpool scrub` (ZFS) ou `fsck` (ext4)
-4. Si irrecuperable : restore depuis PBS
+1. `pvesm status` to identify the affected storage
+2. Stop all VMs using it
+3. Check integrity: `zpool scrub` (ZFS) or `fsck` (ext4)
+4. If unrecoverable: restore from PBS
