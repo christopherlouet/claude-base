@@ -163,7 +163,7 @@
     },
     {
       "path": "tests/uninstall.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c3102aab87f8924375d9084411a3357ff8d059c66d50c512576dc8b372565d1f"
     },
     {

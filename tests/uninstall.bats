@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests pour uninstall.sh
+# Tests for uninstall.sh
 # =============================================================================
 
 load 'test_helper'
@@ -18,52 +18,52 @@ teardown() {
 }
 
 # =============================================================================
-# Tests de base
+# Basic tests
 # =============================================================================
 
-@test "uninstall.sh existe et est exécutable" {
+@test "uninstall.sh exists and is executable" {
     [ -f "$UNINSTALL_SCRIPT" ]
     [ -x "$UNINSTALL_SCRIPT" ]
 }
 
-@test "uninstall.sh affiche l'aide avec --help" {
+@test "uninstall.sh displays help with --help" {
     run "$UNINSTALL_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"USAGE"* ]]
     [[ "$output" == *"désinstall"* ]] || [[ "$output" == *"uninstall"* ]] || [[ "$output" == *"supprim"* ]]
 }
 
-@test "uninstall.sh affiche la version avec --version" {
+@test "uninstall.sh displays version with --version" {
     run "$UNINSTALL_SCRIPT" --version
     [ "$status" -eq 0 ]
     [[ "$output" == *"uninstall"* ]]
 }
 
 # =============================================================================
-# Tests de désinstallation
+# Uninstall tests
 # =============================================================================
 
-@test "uninstall.sh gère un projet non configuré" {
+@test "uninstall.sh handles an unconfigured project" {
     run "$UNINSTALL_SCRIPT" -y "$TEST_DIR"
-    # Peut réussir ou avertir, mais ne doit pas crasher
+    # May succeed or warn, but must not crash
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
 }
 
-@test "uninstall.sh supprime .claude" {
-    # Installer d'abord avec new-project.sh --simple
+@test "uninstall.sh removes .claude" {
+    # Install first with new-project.sh --simple
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.claude" ]
 
-    # Désinstaller
+    # Uninstall
     run "$UNINSTALL_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # .claude devrait être supprimé
+    # .claude should be removed
     [ ! -d "$TEST_DIR/.claude" ]
 }
 
-@test "uninstall.sh supprime CLAUDE.md" {
+@test "uninstall.sh removes CLAUDE.md" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/CLAUDE.md" ]
@@ -74,37 +74,37 @@ teardown() {
     [ ! -f "$TEST_DIR/CLAUDE.md" ]
 }
 
-@test "uninstall.sh préserve CLAUDE.local.md par défaut" {
+@test "uninstall.sh preserves CLAUDE.local.md by default" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Créer un fichier local
-    echo "# Mes configurations" > "$TEST_DIR/CLAUDE.local.md"
+    # Create a local file
+    echo "# My configurations" > "$TEST_DIR/CLAUDE.local.md"
 
     run "$UNINSTALL_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier local devrait être préservé
+    # The local file should be preserved
     [ -f "$TEST_DIR/CLAUDE.local.md" ]
 }
 
 # =============================================================================
-# Tests des options
+# Option tests
 # =============================================================================
 
-@test "uninstall.sh --dry-run ne supprime rien" {
+@test "uninstall.sh --dry-run does not remove anything" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     run "$UNINSTALL_SCRIPT" -y -n "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Les fichiers devraient toujours exister
+    # Files should still exist
     [ -d "$TEST_DIR/.claude" ]
     [ -f "$TEST_DIR/CLAUDE.md" ]
 }
 
-@test "uninstall.sh --all supprime tout y compris les fichiers locaux" {
+@test "uninstall.sh --all removes everything including local files" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
@@ -113,30 +113,30 @@ teardown() {
     run "$UNINSTALL_SCRIPT" -y --all "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Tout devrait être supprimé
+    # Everything should be removed
     [ ! -d "$TEST_DIR/.claude" ]
     [ ! -f "$TEST_DIR/CLAUDE.md" ]
 }
 
 # =============================================================================
-# Tests de sécurité
+# Security tests
 # =============================================================================
 
-@test "uninstall.sh ne supprime pas les fichiers hors .claude" {
+@test "uninstall.sh does not remove files outside .claude" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Créer un fichier utilisateur
-    echo "Mon code" > "$TEST_DIR/app.js"
+    # Create a user file
+    echo "My code" > "$TEST_DIR/app.js"
 
     run "$UNINSTALL_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier utilisateur doit être préservé
+    # The user file must be preserved
     [ -f "$TEST_DIR/app.js" ]
 }
 
-@test "uninstall.sh affiche ce qui sera supprimé" {
+@test "uninstall.sh displays what will be removed" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
