@@ -1,8 +1,8 @@
-# Architecture de claude-socle
+# claude-socle Architecture
 
-Ce document décrit l'architecture et l'organisation des agents claude-socle.
+This document describes the architecture and organization of claude-socle agents.
 
-## Vue d'ensemble
+## Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -11,13 +11,13 @@ Ce document décrit l'architecture et l'organisation des agents claude-socle.
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │                    CLAUDE CODE                       │   │
-│  │              (CLI Anthropic officiel)                │   │
+│  │              (Official Anthropic CLI)                │   │
 │  └──────────────────────┬──────────────────────────────┘   │
 │                         │                                   │
 │                         ▼                                   │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │                   CLAUDE.md                          │   │
-│  │            (Configuration projet)                    │   │
+│  │             (Project configuration)                  │   │
 │  └──────────────────────┬──────────────────────────────┘   │
 │                         │                                   │
 │                         ▼                                   │
@@ -32,51 +32,51 @@ Ce document décrit l'architecture et l'organisation des agents claude-socle.
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Structure des dossiers
+## Folder Structure
 
 ```
 claude-socle/
 ├── .claude/
 │   └── commands/              # Agents (slash commands)
-│       ├── work-*.md          # Workflow général
-│       ├── dev-*.md           # Développement
-│       ├── qa-*.md            # Qualité
-│       ├── ops-*.md           # Opérations
+│       ├── work-*.md          # General workflow
+│       ├── dev-*.md           # Development
+│       ├── qa-*.md            # Quality
+│       ├── ops-*.md           # Operations
 │       ├── doc-*.md           # Documentation
 │       ├── biz-*.md           # Business
-│       ├── growth-*.md        # Croissance
-│       └── legal-*.md         # Légal
+│       ├── growth-*.md        # Growth
+│       └── legal-*.md         # Legal
 │
-├── templates/                 # Templates réutilisables
-│   ├── CLAUDE.md              # Template configuration
-│   ├── CONTRIBUTING.md        # Guide contribution
-│   ├── ARCHITECTURE.md        # Ce fichier
-│   ├── TROUBLESHOOTING.md     # Dépannage
-│   ├── FAQ.md                 # Questions fréquentes
-│   └── PERFORMANCE-GUIDE.md   # Guide performance
+├── templates/                 # Reusable templates
+│   ├── CLAUDE.md              # Configuration template
+│   ├── CONTRIBUTING.md        # Contribution guide
+│   ├── ARCHITECTURE.md        # This file
+│   ├── TROUBLESHOOTING.md     # Troubleshooting
+│   ├── FAQ.md                 # Frequently asked questions
+│   └── PERFORMANCE-GUIDE.md   # Performance guide
 │
-├── CLAUDE.md                  # Configuration projet racine
-└── README.md                  # Documentation principale
+├── CLAUDE.md                  # Root project configuration
+└── README.md                  # Main documentation
 ```
 
-## Catégories d'agents
+## Agent Categories
 
-### Taxonomie
+### Taxonomy
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    CATÉGORIES D'AGENTS                       │
+│                    AGENT CATEGORIES                          │
 ├──────────────┬──────────────────────────────────────────────┤
-│ WORK-*       │ Workflow quotidien                           │
+│ WORK-*       │ Daily workflow                               │
 │              │ explore, plan, commit, pr                    │
 ├──────────────┼──────────────────────────────────────────────┤
-│ DEV-*        │ Développement                                │
+│ DEV-*        │ Development                                  │
 │              │ tdd, debug, refactor, api, testing-setup     │
 ├──────────────┼──────────────────────────────────────────────┤
-│ QA-*         │ Qualité                                      │
+│ QA-*         │ Quality                                      │
 │              │ review, automation                           │
 ├──────────────┼──────────────────────────────────────────────┤
-│ OPS-*        │ Opérations                                   │
+│ OPS-*        │ Operations                                   │
 │              │ ci, monitoring, load-testing, disaster-recovery│
 ├──────────────┼──────────────────────────────────────────────┤
 │ DOC-*        │ Documentation                                │
@@ -85,25 +85,25 @@ claude-socle/
 │ BIZ-*        │ Business                                     │
 │              │ launch, market, mvp, pricing                 │
 ├──────────────┼──────────────────────────────────────────────┤
-│ GROWTH-*     │ Croissance                                   │
+│ GROWTH-*     │ Growth                                       │
 │              │ seo, analytics, landing                      │
 ├──────────────┼──────────────────────────────────────────────┤
-│ LEGAL-*      │ Légal                                        │
-│              │ rgpd, cgu, mentions                          │
+│ LEGAL-*      │ Legal                                        │
+│              │ gdpr, tos, notices                           │
 └──────────────┴──────────────────────────────────────────────┘
 ```
 
-### Relations entre agents
+### Relations between agents
 
 ```
                     ┌─────────────┐
                     │  ONBOARD    │
-                    │  (Découverte)│
+                    │ (Discovery) │
                     └──────┬──────┘
                            │
                            ▼
 ┌──────────────────────────────────────────────────────────┐
-│                    WORKFLOW PRINCIPAL                     │
+│                     MAIN WORKFLOW                         │
 │                                                          │
 │  ┌──────────┐    ┌──────────┐    ┌──────────┐           │
 │  │ EXPLORE  │───►│   PLAN   │───►│   TDD    │           │
@@ -118,7 +118,7 @@ claude-socle/
          │                                    │
          ▼                                    ▼
 ┌─────────────────┐                ┌─────────────────┐
-│  AGENTS SUPPORT │                │ AGENTS QUALITÉ  │
+│  SUPPORT AGENTS │                │  QUALITY AGENTS │
 │                 │                │                 │
 │  - debug        │                │  - security     │
 │  - refactor     │                │  - perf         │
@@ -127,191 +127,191 @@ claude-socle/
 └─────────────────┘                └─────────────────┘
 ```
 
-## Structure d'un agent
+## Agent Structure
 
-### Format standard
+### Standard format
 
 ```markdown
-# Agent NOM-AGENT
+# Agent AGENT-NAME
 
-Description courte et claire de l'agent.
+Short, clear description of the agent.
 
-## Contexte
-$ARGUMENTS                    ← Placeholder OBLIGATOIRE
+## Context
+$ARGUMENTS                    ← MANDATORY placeholder
 
-## Objectif
-[Objectif principal de l'agent]
+## Objective
+[Main objective of the agent]
 
-## [Sections spécifiques]
-[Contenu adapté à l'agent]
+## [Specific sections]
+[Content adapted to the agent]
 
 ## Checklist
-- [ ] Étape 1
-- [ ] Étape 2
+- [ ] Step 1
+- [ ] Step 2
 
-## Agents liés
+## Related agents
 | Agent | Usage |
 |-------|-------|
 | /xxx | Description |
 
 ---
 
-IMPORTANT: [Instruction critique]
+IMPORTANT: [Critical instruction]
 YOU MUST [Obligation]
-NEVER [Interdiction]
-Think hard sur [Aspect à considérer]
+NEVER [Prohibition]
+Think hard about [Aspect to consider]
 ```
 
-### Éléments requis
+### Required elements
 
-| Élément | Obligatoire | Description |
-|---------|-------------|-------------|
-| `# Agent NAME` | Oui | Titre de l'agent |
-| `$ARGUMENTS` | Oui | Placeholder pour les arguments |
-| `## Objectif` | Recommandé | But de l'agent |
-| `## Checklist` | Recommandé | Étapes à suivre |
-| `## Agents liés` | Recommandé | Références croisées |
-| Instructions finales | Recommandé | IMPORTANT, YOU MUST, NEVER |
+| Element | Mandatory | Description |
+|---------|-----------|-------------|
+| `# Agent NAME` | Yes | Agent title |
+| `$ARGUMENTS` | Yes | Placeholder for arguments |
+| `## Objective` | Recommended | Agent purpose |
+| `## Checklist` | Recommended | Steps to follow |
+| `## Related agents` | Recommended | Cross-references |
+| Final instructions | Recommended | IMPORTANT, YOU MUST, NEVER |
 
-### Conventions de nommage
+### Naming conventions
 
 ```
-Fichier: .claude/commands/[categorie]-[nom].md
+File: .claude/commands/[category]-[name].md
 
-Exemples:
+Examples:
   dev-tdd.md         → /dev-tdd
   ops-ci.md          → /ops-ci
   work-explore.md    → /work-explore
 ```
 
-## Flux de données
+## Data Flow
 
-### Invocation d'un agent
+### Agent invocation
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    FLUX D'INVOCATION                         │
+│                     INVOCATION FLOW                          │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  Utilisateur                                                │
+│  User                                                       │
 │      │                                                      │
 │      │  /explore src/auth                           │
 │      ▼                                                      │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │                   Claude Code                        │   │
-│  │  1. Parse la commande                                │   │
-│  │  2. Lit .claude/commands/work-explore.md             │   │
-│  │  3. Remplace $ARGUMENTS par "src/auth"               │   │
-│  │  4. Envoie le prompt à l'API Claude                  │   │
+│  │  1. Parses the command                               │   │
+│  │  2. Reads .claude/commands/work-explore.md           │   │
+│  │  3. Replaces $ARGUMENTS with "src/auth"              │   │
+│  │  4. Sends the prompt to the Claude API               │   │
 │  └─────────────────────────────────────────────────────┘   │
 │      │                                                      │
 │      ▼                                                      │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │                   API Claude                         │   │
-│  │  - Interprète les instructions                       │   │
-│  │  - Exécute les actions (lecture fichiers, etc.)      │   │
-│  │  - Génère la réponse                                 │   │
+│  │                   Claude API                         │   │
+│  │  - Interprets the instructions                       │   │
+│  │  - Executes actions (file reading, etc.)             │   │
+│  │  - Generates the response                            │   │
 │  └─────────────────────────────────────────────────────┘   │
 │      │                                                      │
 │      ▼                                                      │
-│  Utilisateur (réponse affichée)                             │
+│  User (response displayed)                                  │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Contexte et héritage
+### Context and inheritance
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   HIÉRARCHIE DE CONTEXTE                     │
+│                    CONTEXT HIERARCHY                         │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  1. CLAUDE.md (racine du projet)                            │
-│     └── Conventions, règles globales                        │
+│  1. CLAUDE.md (project root)                                │
+│     └── Conventions, global rules                           │
 │         │                                                   │
 │         ▼                                                   │
 │  2. Agent (.claude/commands/*.md)                           │
-│     └── Instructions spécifiques à la tâche                 │
+│     └── Task-specific instructions                          │
 │         │                                                   │
 │         ▼                                                   │
 │  3. Arguments ($ARGUMENTS)                                  │
-│     └── Contexte spécifique à l'invocation                  │
+│     └── Invocation-specific context                         │
 │         │                                                   │
 │         ▼                                                   │
-│  4. Historique de conversation                              │
-│     └── Contexte des échanges précédents                    │
+│  4. Conversation history                                    │
+│     └── Context of previous exchanges                       │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Bonnes pratiques
+## Best Practices
 
-### Design d'agents
+### Agent design
 
-| Principe | Description |
-|----------|-------------|
-| **Single Responsibility** | Un agent = une tâche |
-| **Composable** | Les agents peuvent se référencer |
-| **Progressive** | Du simple au complexe |
-| **Self-documenting** | Instructions claires |
+| Principle | Description |
+|-----------|-------------|
+| **Single Responsibility** | One agent = one task |
+| **Composable** | Agents can reference each other |
+| **Progressive** | From simple to complex |
+| **Self-documenting** | Clear instructions |
 
 ### Anti-patterns
 
-| Anti-pattern | Problème | Solution |
-|--------------|----------|----------|
-| Agent fourre-tout | Trop de responsabilités | Découper en agents spécialisés |
-| Instructions vagues | Résultats incohérents | Être précis et donner des exemples |
-| Pas de checklist | Oublis fréquents | Toujours inclure une checklist |
-| Isolation | Pas de références | Ajouter "Agents liés" |
+| Anti-pattern | Problem | Solution |
+|--------------|---------|----------|
+| Catch-all agent | Too many responsibilities | Split into specialized agents |
+| Vague instructions | Inconsistent results | Be precise and give examples |
+| No checklist | Frequent omissions | Always include a checklist |
+| Isolation | No references | Add "Related agents" |
 
-## Extension du système
+## System Extension
 
-### Ajouter un nouvel agent
+### Adding a new agent
 
-1. **Identifier le besoin**
-   - Quel problème résout-il ?
-   - Existe-t-il déjà un agent similaire ?
+1. **Identify the need**
+   - What problem does it solve?
+   - Does a similar agent already exist?
 
-2. **Choisir la catégorie**
+2. **Choose the category**
    - work, dev, qa, ops, doc, biz, growth, legal
 
-3. **Créer le fichier**
+3. **Create the file**
    ```bash
-   touch .claude/commands/[categorie]-[nom].md
+   touch .claude/commands/[category]-[name].md
    ```
 
-4. **Suivre le template**
-   - Titre, Contexte, Objectif, Instructions, Checklist
+4. **Follow the template**
+   - Title, Context, Objective, Instructions, Checklist
 
-5. **Tester**
-   - Invoquer avec différents arguments
-   - Vérifier la cohérence des résultats
+5. **Test**
+   - Invoke with different arguments
+   - Verify the consistency of results
 
-6. **Documenter**
-   - Ajouter aux références croisées des agents liés
+6. **Document**
+   - Add to cross-references of related agents
 
-### Créer une nouvelle catégorie
+### Create a new category
 
-1. Définir le préfixe (ex: `perf-`)
-2. Documenter l'objectif de la catégorie
-3. Créer au moins 2-3 agents de la catégorie
-4. Mettre à jour CLAUDE.md
-5. Ajouter à cette documentation
+1. Define the prefix (e.g., `perf-`)
+2. Document the category's objective
+3. Create at least 2-3 agents in the category
+4. Update CLAUDE.md
+5. Add to this documentation
 
 ---
 
-## Versions et évolution
+## Versions and Evolution
 
-### Versionnement sémantique
+### Semantic versioning
 
 ```
 MAJOR.MINOR.PATCH
 
-MAJOR: Changements incompatibles (structure, conventions)
-MINOR: Nouveaux agents, nouvelles catégories
-PATCH: Corrections, améliorations mineures
+MAJOR: Incompatible changes (structure, conventions)
+MINOR: New agents, new categories
+PATCH: Fixes, minor improvements
 ```
 
 ### Changelog
 
-Voir `doc-changelog.md` pour le format et les bonnes pratiques de changelog.
+See `doc-changelog.md` for the format and best practices for changelogs.
