@@ -1,38 +1,38 @@
 ---
 sidebar_position: 7
-title: "06 - Pipeline CI/CD"
-description: Configurez un pipeline GitHub Actions complet avec tests, build et déploiement
+title: "06 - CI/CD Pipeline"
+description: Set up a complete GitHub Actions pipeline with tests, build and deployment
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# Pipeline CI/CD avec GitHub Actions
+# CI/CD Pipeline with GitHub Actions
 
-<DifficultyBadge level="intermediate" /> **Durée estimée : 45 minutes**
+<DifficultyBadge level="intermediate" /> **Estimated duration: 45 minutes**
 
-Ce tutoriel vous montre comment configurer un pipeline CI/CD complet avec GitHub Actions pour automatiser tests, build et déploiement.
+This tutorial shows you how to set up a complete CI/CD pipeline with GitHub Actions to automate tests, build and deployment.
 
-## Objectifs
+## Objectives
 
-À la fin de ce tutoriel, vous saurez :
-- Utiliser `/ops:ops-ci` pour créer un pipeline
-- Configurer les tests automatisés
-- Mettre en place le déploiement continu
-- Gérer les secrets et environnements
+By the end of this tutorial, you will know how to:
+- Use `/ops:ops-ci` to create a pipeline
+- Configure automated tests
+- Set up continuous deployment
+- Manage secrets and environments
 
-## Prérequis
+## Prerequisites
 
-- Un repository GitHub
-- Un projet Node.js/React (ou autre)
-- Connaissance de base de Git
+- A GitHub repository
+- A Node.js/React project (or other)
+- Basic Git knowledge
 
-## Étape 1 : Créer le pipeline de base
+## Step 1: Create the base pipeline
 
 ```bash
-/ops:ops-ci "Pipeline CI/CD pour une app Next.js avec tests, lint et déploiement Vercel"
+/ops:ops-ci "CI/CD pipeline for a Next.js app with tests, lint and Vercel deployment"
 ```
 
-Claude va créer :
+Claude will create:
 
 **`.github/workflows/ci.yml`**
 ```yaml
@@ -48,7 +48,7 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  # Job 1: Lint et vérification de types
+  # Job 1: Lint and type checking
   lint:
     name: Lint & Type Check
     runs-on: ubuntu-latest
@@ -71,7 +71,7 @@ jobs:
       - name: Run TypeScript check
         run: npm run typecheck
 
-  # Job 2: Tests unitaires
+  # Job 2: Unit tests
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -125,7 +125,7 @@ jobs:
           path: .next/
           retention-days: 7
 
-  # Job 4: Déploiement (uniquement sur main)
+  # Job 4: Deployment (only on main)
   deploy:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
@@ -148,18 +148,18 @@ jobs:
           vercel-args: '--prod'
 ```
 
-## Étape 2 : Ajouter les tests E2E
+## Step 2: Add E2E tests
 
-Ajoutons des tests Playwright au pipeline :
+Let's add Playwright tests to the pipeline:
 
 ```bash
-/qa:qa-e2e "Configurer Playwright pour les tests E2E dans le pipeline CI"
+/qa:qa-e2e "Configure Playwright for E2E tests in the CI pipeline"
 ```
 
-**Ajout au workflow :**
+**Addition to the workflow:**
 
 ```yaml
-  # Job 5: Tests E2E
+  # Job 5: E2E tests
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -198,7 +198,7 @@ Ajoutons des tests Playwright au pipeline :
           retention-days: 7
 ```
 
-## Étape 3 : Ajouter l'audit de sécurité
+## Step 3: Add the security audit
 
 ```yaml
   # Job 6: Security audit
@@ -225,30 +225,30 @@ Ajoutons des tests Playwright au pipeline :
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 ```
 
-## Étape 4 : Configurer les secrets
+## Step 4: Configure secrets
 
-Dans GitHub, allez dans **Settings > Secrets and variables > Actions** :
+In GitHub, go to **Settings > Secrets and variables > Actions**:
 
 | Secret | Description |
 |--------|-------------|
-| `VERCEL_TOKEN` | Token Vercel (Settings > Tokens) |
-| `VERCEL_ORG_ID` | ID de votre organisation Vercel |
-| `VERCEL_PROJECT_ID` | ID du projet Vercel |
-| `CODECOV_TOKEN` | Token Codecov pour la couverture |
-| `SNYK_TOKEN` | Token Snyk pour l'audit de sécurité |
+| `VERCEL_TOKEN` | Vercel token (Settings > Tokens) |
+| `VERCEL_ORG_ID` | Your Vercel organization ID |
+| `VERCEL_PROJECT_ID` | Vercel project ID |
+| `CODECOV_TOKEN` | Codecov token for coverage |
+| `SNYK_TOKEN` | Snyk token for security audit |
 
-## Étape 5 : Configurer les environnements
+## Step 5: Configure environments
 
-Créez des environnements pour les déploiements :
+Create environments for deployments:
 
-1. Allez dans **Settings > Environments**
-2. Créez `production` et `staging`
-3. Ajoutez les règles de protection :
+1. Go to **Settings > Environments**
+2. Create `production` and `staging`
+3. Add protection rules:
    - Require reviewers for production
    - Restrict to specific branches
 
 ```yaml
-  # Déploiement staging
+  # Staging deployment
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
@@ -266,21 +266,21 @@ Créez des environnements pour les déploiements :
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
 ```
 
-## Étape 6 : Ajouter les badges
+## Step 6: Add the badges
 
-Ajoutez les badges de statut à votre README :
+Add the status badges to your README:
 
 ```markdown
-# Mon Projet
+# My Project
 
 ![CI](https://github.com/username/repo/workflows/CI%2FCD%20Pipeline/badge.svg)
 [![codecov](https://codecov.io/gh/username/repo/branch/main/graph/badge.svg)](https://codecov.io/gh/username/repo)
 [![Vercel](https://img.shields.io/badge/deployed-vercel-black)](https://my-app.vercel.app)
 ```
 
-## Étape 7 : Pipeline complet final
+## Step 7: Final complete pipeline
 
-Voici le workflow complet :
+Here is the complete workflow:
 
 ```yaml
 name: CI/CD Pipeline
@@ -410,13 +410,13 @@ jobs:
           vercel-args: '--prod'
 ```
 
-## Étape 8 : Commiter
+## Step 8: Commit
 
 ```bash
 /work:work-commit
 ```
 
-**Message suggéré :**
+**Suggested message:**
 
 ```
 ci: add comprehensive CI/CD pipeline
@@ -430,7 +430,7 @@ ci: add comprehensive CI/CD pipeline
 - Configure concurrency and caching
 ```
 
-## Visualisation du pipeline
+## Pipeline visualization
 
 ```mermaid
 flowchart TD
@@ -446,14 +446,14 @@ flowchart TD
     G -->|main| I[Deploy Production]
 ```
 
-## Prochaines étapes
+## Next steps
 
-- [Tutoriel 07 : Refactoring Legacy](/docs/tutorials/refactoring-legacy)
-- [Guide Web](/docs/concepts/stack-recipes)
-- [Commande /ops:ops-monitoring](/docs/commands/ops/ops-monitoring)
+- [Tutorial 07: Legacy Refactoring](/docs/tutorials/refactoring-legacy)
+- [Web Guide](/docs/concepts/stack-recipes)
+- [Command /ops:ops-monitoring](/docs/commands/ops/ops-monitoring)
 
 ---
 
-:::tip Optimisation
-Utilisez `concurrency` pour annuler les jobs en cours quand un nouveau commit arrive sur la même branche.
+:::tip Optimization
+Use `concurrency` to cancel running jobs when a new commit arrives on the same branch.
 :::
