@@ -1,31 +1,31 @@
 ---
 sidebar_position: 1
-title: Composant React
-description: Exemple de composant React complet avec tests et stories
+title: React Component
+description: Complete React component example with tests and stories
 ---
 
-# Composant React Complet
+# Complete React Component
 
-Cet exemple montre comment créer un composant React professionnel avec TypeScript, tests et Storybook.
+This example shows how to create a professional React component with TypeScript, tests, and Storybook.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/dev:dev-component "Créer un composant UserCard avec avatar, nom et rôle"
+/dev:dev-component "Create a UserCard component with avatar, name and role"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 src/components/UserCard/
-├── UserCard.tsx        # Composant principal
-├── UserCard.test.tsx   # Tests unitaires
-├── UserCard.stories.tsx # Stories Storybook
-├── UserCard.module.css # Styles (ou Tailwind)
+├── UserCard.tsx        # Main component
+├── UserCard.test.tsx   # Unit tests
+├── UserCard.stories.tsx # Storybook stories
+├── UserCard.module.css # Styles (or Tailwind)
 └── index.ts            # Export
 ```
 
-## Code du composant
+## Component code
 
 ### `UserCard.tsx`
 
@@ -34,27 +34,27 @@ import { memo } from 'react';
 import styles from './UserCard.module.css';
 
 export interface UserCardProps {
-  /** URL de l'avatar */
+  /** Avatar URL */
   avatarUrl: string;
-  /** Nom complet de l'utilisateur */
+  /** User's full name */
   name: string;
-  /** Rôle ou titre */
+  /** Role or title */
   role: string;
-  /** Callback au clic */
+  /** Click callback */
   onClick?: () => void;
-  /** Variante de style */
+  /** Style variant */
   variant?: 'default' | 'compact' | 'detailed';
 }
 
 /**
- * Carte utilisateur affichant avatar, nom et rôle.
+ * User card displaying avatar, name and role.
  *
  * @example
  * ```tsx
  * <UserCard
  *   avatarUrl="/avatars/john.jpg"
  *   name="John Doe"
- *   role="Développeur Senior"
+ *   role="Senior Developer"
  *   onClick={() => navigate(`/users/${id}`)}
  * />
  * ```
@@ -151,7 +151,7 @@ export const UserCard = memo(function UserCard({
   color: var(--text-secondary, #666666);
 }
 
-/* Variante compact */
+/* Compact variant */
 .compact {
   padding: 0.5rem;
   gap: 0.75rem;
@@ -170,7 +170,7 @@ export const UserCard = memo(function UserCard({
   font-size: 0.75rem;
 }
 
-/* Variante detailed */
+/* Detailed variant */
 .detailed {
   flex-direction: column;
   text-align: center;
@@ -274,7 +274,7 @@ export const Default: Story = {
   args: {
     avatarUrl: 'https://i.pravatar.cc/150?u=john',
     name: 'John Doe',
-    role: 'Développeur Senior',
+    role: 'Senior Developer',
   },
 };
 
@@ -303,7 +303,7 @@ export const LongName: Story = {
   args: {
     avatarUrl: 'https://i.pravatar.cc/150?u=long',
     name: 'Jean-Pierre de la Montagne du Nord',
-    role: 'Architecte Logiciel Principal',
+    role: 'Principal Software Architect',
   },
 };
 ```
@@ -315,27 +315,27 @@ export { UserCard } from './UserCard';
 export type { UserCardProps } from './UserCard';
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
-| **TypeScript** | Props typées avec interface exportée |
-| **Accessibilité** | `role="button"`, navigation clavier, alt text |
-| **Performance** | `memo()` pour éviter re-renders inutiles |
-| **Tests** | Couverture des interactions et variantes |
-| **Storybook** | Documentation visuelle interactive |
+| **TypeScript** | Typed props with exported interface |
+| **Accessibility** | `role="button"`, keyboard navigation, alt text |
+| **Performance** | `memo()` to avoid unnecessary re-renders |
+| **Tests** | Coverage of interactions and variants |
+| **Storybook** | Interactive visual documentation |
 
-## Commandes associées
+## Related commands
 
-- `/dev:dev-test` - Générer plus de tests
-- `/qa:wcag-audit` - Vérifier l'accessibilité
-- `/doc:doc-generate` - Générer la documentation API
+- `/dev:dev-test` - Generate more tests
+- `/qa:wcag-audit` - Verify accessibility
+- `/doc:doc-generate` - Generate API documentation
 
 ---
 
-:::tip Variantes Tailwind
-Si vous utilisez Tailwind CSS, demandez à Claude de générer la version Tailwind :
+:::tip Tailwind variants
+If you use Tailwind CSS, ask Claude to generate the Tailwind version:
 ```bash
-/dev:dev-component "Créer UserCard avec Tailwind CSS"
+/dev:dev-component "Create UserCard with Tailwind CSS"
 ```
 :::
