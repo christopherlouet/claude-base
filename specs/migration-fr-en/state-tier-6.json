@@ -93,7 +93,7 @@
     },
     {
       "path": "tests/common.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "b803f887db62995daf6de28f7f681b6120763e31bdb95690468ee064b6611756"
     },
     {
