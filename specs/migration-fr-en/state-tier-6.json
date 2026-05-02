@@ -203,7 +203,7 @@
     },
     {
       "path": ".github/workflows/ci.yml",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c3564019f9467ce082aece5023e321845431b65bc49a3bffa0b87b97dfc00b6a"
     },
     {
