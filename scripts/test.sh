@@ -2,12 +2,12 @@
 
 # =============================================================================
 # Claude-Socle Test Runner
-# Lance les tests bats pour valider le socle
+# Run bats tests to validate the foundation
 # =============================================================================
 
 set -euo pipefail
 
-# Charger la librairie commune
+# Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 TESTS_DIR="$SOCLE_DIR/tests"
@@ -24,7 +24,7 @@ VERBOSE=false
 FILTER=""
 
 # =============================================================================
-# Aide
+# Help
 # =============================================================================
 
 show_help() {
@@ -35,83 +35,83 @@ ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS] [FILTER]
 
 ${BOLD}DESCRIPTION${NC}
-    Lance les tests bats pour valider le socle claude-socle.
-    Requiert bats-core installé.
+    Run bats tests to validate the claude-socle foundation.
+    Requires bats-core installed.
 
 ${BOLD}ARGUMENTS${NC}
-    FILTER              Pattern pour filtrer les tests (ex: "validate")
+    FILTER              Pattern to filter tests (e.g.: "validate")
 
 ${BOLD}OPTIONS${NC}
-    -h, --help          Affiche cette aide
-    -v, --verbose       Mode verbeux
-    --install-bats      Installe bats-core si manquant
+    -h, --help          Show this help
+    -v, --verbose       Verbose mode
+    --install-bats      Install bats-core if missing
 
-${BOLD}EXEMPLES${NC}
-    # Lancer tous les tests
+${BOLD}EXAMPLES${NC}
+    # Run all tests
     $(basename "$0")
 
-    # Lancer les tests de validation
+    # Run validation tests
     $(basename "$0") validate
 
-    # Mode verbeux
+    # Verbose mode
     $(basename "$0") -v
 
-${BOLD}PRÉREQUIS${NC}
+${BOLD}PREREQUISITES${NC}
     - bats-core: npm install -g bats
-    - gitleaks (optionnel): brew install gitleaks
+    - gitleaks (optional): brew install gitleaks
 
 EOF
 }
 
 # =============================================================================
-# Fonctions
+# Functions
 # =============================================================================
 
 install_bats() {
-    info "Installation de bats-core..."
+    info "Installing bats-core..."
     if command_exists npm; then
         npm install -g bats
-        success "bats installé via npm"
+        success "bats installed via npm"
     elif command_exists brew; then
         brew install bats-core
-        success "bats installé via brew"
+        success "bats installed via brew"
     else
-        error "Impossible d'installer bats. Installez npm ou brew d'abord."
+        error "Cannot install bats. Install npm or brew first."
     fi
 }
 
 run_tests() {
     if ! command_exists bats; then
-        error "bats n'est pas installé. Utilisez --install-bats ou installez-le manuellement."
+        error "bats is not installed. Use --install-bats or install it manually."
     fi
 
     local test_files=()
 
     if [[ -n "$FILTER" ]]; then
-        # Filtrer les fichiers de test
+        # Filter test files
         for f in "$TESTS_DIR"/*.bats; do
             if [[ "$(basename "$f")" == *"$FILTER"* ]]; then
                 test_files+=("$f")
             fi
         done
     else
-        # Tous les fichiers de test
+        # All test files
         test_files=("$TESTS_DIR"/*.bats)
     fi
 
     if [[ ${#test_files[@]} -eq 0 ]]; then
-        error "Aucun fichier de test trouvé"
+        error "No test file found"
     fi
 
-    title "Tests Claude-Socle"
-    info "Fichiers de test: ${#test_files[@]}"
+    title "Claude-Socle Tests"
+    info "Test files: ${#test_files[@]}"
     echo ""
 
     local bats_opts=()
     $VERBOSE && bats_opts+=("--verbose-run")
 
-    # Parallelisation : --jobs auto si GNU parallel ou rush dispo, sinon sequentiel.
-    # Gain ~4.3x sur les machines multi-coeurs (3min17 sequentiel → 46s avec 8 jobs).
+    # Parallelization: --jobs auto if GNU parallel or rush available, otherwise sequential.
+    # ~4.3x speedup on multi-core machines (3min17 sequential → 46s with 8 jobs).
     if command -v parallel >/dev/null 2>&1 || command -v rush >/dev/null 2>&1; then
         local cores
         cores=$(nproc 2>/dev/null || echo "4")
@@ -146,7 +146,7 @@ main() {
                 exit 0
                 ;;
             -*)
-                error "Option inconnue: $1"
+                error "Unknown option: $1"
                 ;;
             *)
                 FILTER="$1"
