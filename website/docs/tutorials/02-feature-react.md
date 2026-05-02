@@ -1,64 +1,64 @@
 ---
 sidebar_position: 3
-title: "02 - Feature React"
-description: Créez un composant et un hook React complets avec tests et documentation
+title: "02 - React Feature"
+description: Create a complete React component and hook with tests and documentation
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# Créer une feature React complète
+# Create a complete React feature
 
-<DifficultyBadge level="beginner" /> **Durée estimée : 30 minutes**
+<DifficultyBadge level="beginner" /> **Estimated duration: 30 minutes**
 
-Ce tutoriel vous montre comment créer un composant React complet avec son hook, ses tests et sa documentation.
+This tutorial shows you how to create a complete React component with its hook, tests, and documentation.
 
-## Objectifs
+## Goals
 
-À la fin de ce tutoriel, vous saurez :
-- Utiliser `/dev:dev-component` pour créer un composant
-- Utiliser `/dev:dev-hook` pour créer un hook personnalisé
-- Utiliser `/qa:qa-review` pour vérifier la qualité
-- Structurer une feature React de manière professionnelle
+By the end of this tutorial, you will know how to:
+- Use `/dev:dev-component` to create a component
+- Use `/dev:dev-hook` to create a custom hook
+- Use `/qa:qa-review` to check quality
+- Structure a React feature professionally
 
-## Prérequis
+## Prerequisites
 
-- [Tutoriel 01](/docs/tutorials/premier-projet) complété
-- Un projet React/Next.js existant
-- Connaissances de base en React
+- [Tutorial 01](/docs/tutorials/premier-projet) completed
+- An existing React/Next.js project
+- Basic React knowledge
 
-## Contexte
+## Context
 
-Nous allons créer une feature de **carte utilisateur** comprenant :
-- Un composant `UserCard` avec avatar, nom et statut
-- Un hook `useUser` pour récupérer les données utilisateur
-- Les tests associés
+We will create a **user card** feature including:
+- A `UserCard` component with avatar, name, and status
+- A `useUser` hook to fetch user data
+- The associated tests
 
-## Étape 1 : Explorer le projet
+## Step 1: Explore the project
 
-Commençons par comprendre la structure existante.
-
-```bash
-/work:work-explore "Comprendre la structure des composants React existants"
-```
-
-Claude va identifier :
-- Le dossier des composants (`src/components/`)
-- Les conventions de nommage
-- Les patterns utilisés (CSS Modules, Tailwind, styled-components...)
-
-## Étape 2 : Créer le hook useUser
-
-Commençons par le hook qui gère les données.
-
-### Lancez la création du hook
+Let's start by understanding the existing structure.
 
 ```bash
-/dev:dev-hook "useUser - Hook pour récupérer et gérer les données d'un utilisateur par son ID"
+/work:work-explore "Understand the structure of existing React components"
 ```
 
-### Résultat attendu
+Claude will identify:
+- The components folder (`src/components/`)
+- Naming conventions
+- Patterns used (CSS Modules, Tailwind, styled-components...)
 
-Claude va créer :
+## Step 2: Create the useUser hook
+
+Let's start with the hook that manages the data.
+
+### Launch hook creation
+
+```bash
+/dev:dev-hook "useUser - Hook to fetch and manage user data by ID"
+```
+
+### Expected result
+
+Claude will create:
 
 **`src/hooks/useUser.ts`**
 ```typescript
@@ -158,19 +158,19 @@ describe('useUser', () => {
 });
 ```
 
-## Étape 3 : Créer le composant UserCard
+## Step 3: Create the UserCard component
 
-Maintenant, créons le composant qui utilise ce hook.
+Now, let's create the component that uses this hook.
 
-### Lancez la création du composant
+### Launch component creation
 
 ```bash
-/dev:dev-component "UserCard - Carte affichant les informations d'un utilisateur avec avatar, nom, email et indicateur de statut"
+/dev:dev-component "UserCard - Card displaying user information with avatar, name, email, and status indicator"
 ```
 
-### Résultat attendu
+### Expected result
 
-Claude va créer :
+Claude will create:
 
 **`src/components/UserCard/UserCard.tsx`**
 ```tsx
@@ -306,64 +306,64 @@ export { UserCard } from './UserCard';
 export type { UserCardProps } from './UserCard';
 ```
 
-## Étape 4 : Vérifier la qualité
+## Step 4: Check quality
 
-Avant de commiter, vérifions la qualité du code.
+Before committing, let's check the code quality.
 
-### Lancez une review
+### Launch a review
 
 ```bash
 /qa:qa-review
 ```
 
-### Résultat attendu
+### Expected result
 
-Claude va analyser :
-- La qualité du code TypeScript
-- La couverture de tests
-- Les bonnes pratiques React
-- L'accessibilité
+Claude will analyze:
+- TypeScript code quality
+- Test coverage
+- React best practices
+- Accessibility
 
-**Exemple de feedback :**
+**Example feedback:**
 
 ```
 ## Code Review
 
-### ✅ Points positifs
-- Types TypeScript complets
-- Tests couvrant les états loading/error/success
-- Composant accessible (alt sur image)
-- Séparation hook/composant propre
+### ✅ Strengths
+- Complete TypeScript types
+- Tests covering loading/error/success states
+- Accessible component (alt on image)
+- Clean hook/component separation
 
 ### ⚠️ Suggestions
-- Ajouter aria-label sur l'indicateur de statut
-- Considérer React Query pour le data fetching
-- Ajouter Storybook stories pour la documentation visuelle
+- Add aria-label on the status indicator
+- Consider React Query for data fetching
+- Add Storybook stories for visual documentation
 
-### 📊 Couverture estimée
+### 📊 Estimated coverage
 - useUser: 85%
 - UserCard: 90%
 ```
 
-## Étape 5 : Lancer les tests
+## Step 5: Run the tests
 
-Vérifions que tout fonctionne.
+Let's check that everything works.
 
 ```bash
 npm test
 ```
 
-Tous les tests devraient passer.
+All tests should pass.
 
-## Étape 6 : Commiter
+## Step 6: Commit
 
-Créez un commit propre pour cette feature.
+Create a clean commit for this feature.
 
 ```bash
 /work:work-commit
 ```
 
-**Message de commit suggéré :**
+**Suggested commit message:**
 
 ```
 feat(user): add UserCard component with useUser hook
@@ -374,37 +374,37 @@ feat(user): add UserCard component with useUser hook
 - Support online/offline/away status indicators
 ```
 
-## Récapitulatif
+## Recap
 
-Vous avez créé une feature React complète :
+You have created a complete React feature:
 
 ```
 src/
 ├── hooks/
-│   ├── useUser.ts           # Hook de données
+│   ├── useUser.ts           # Data hook
 │   └── __tests__/
-│       └── useUser.test.ts  # Tests du hook
+│       └── useUser.test.ts  # Hook tests
 └── components/
     └── UserCard/
-        ├── UserCard.tsx     # Composant
-        ├── UserCard.test.tsx # Tests du composant
+        ├── UserCard.tsx     # Component
+        ├── UserCard.test.tsx # Component tests
         └── index.ts         # Export
 ```
 
-| Commande | Ce qu'elle fait |
-|----------|-----------------|
-| `/dev:dev-hook` | Crée un hook avec types et tests |
-| `/dev:dev-component` | Crée un composant avec tests |
-| `/qa:qa-review` | Vérifie la qualité du code |
+| Command | What it does |
+|---------|--------------|
+| `/dev:dev-hook` | Creates a hook with types and tests |
+| `/dev:dev-component` | Creates a component with tests |
+| `/qa:qa-review` | Checks code quality |
 
-## Prochaines étapes
+## Next steps
 
-- [Tutoriel 03 : API REST](/docs/tutorials/api-rest-node) - Créer un backend
-- [Guide Web](/docs/concepts/stack-recipes) - Bonnes pratiques React
-- [Commande /dev:dev-design-system](/docs/commands/dev/dev-design-system) - Créer un design system
+- [Tutorial 03: REST API](/docs/tutorials/api-rest-node) - Create a backend
+- [Web Guide](/docs/concepts/stack-recipes) - React best practices
+- [/dev:dev-design-system command](/docs/commands/dev/dev-design-system) - Create a design system
 
 ---
 
-:::tip Astuce
-Utilisez `/dev:dev-component` même pour des composants simples. Claude adapte la complexité du code généré au besoin décrit.
+:::tip Tip
+Use `/dev:dev-component` even for simple components. Claude adapts the complexity of the generated code to the described need.
 :::
