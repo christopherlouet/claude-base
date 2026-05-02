@@ -6,7 +6,7 @@
 title = "claude-socle gitleaks config"
 
 # =============================================================================
-# Rules - Patterns de secrets à détecter
+# Rules - Secret patterns to detect
 # =============================================================================
 
 [[rules]]
@@ -154,7 +154,7 @@ regex = '''(?i)authorization:\s*bearer\s+[A-Za-z0-9\-_.]+'''
 tags = ["auth", "token"]
 
 # =============================================================================
-# Allowlist - Patterns à ignorer (faux positifs)
+# Allowlist - Patterns to ignore (false positives)
 # =============================================================================
 
 [allowlist]

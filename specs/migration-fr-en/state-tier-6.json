@@ -238,7 +238,7 @@
     },
     {
       "path": ".gitleaks.toml",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "238400fcf9c73fd128167cb731bd549d29b8b68c6b60bb831662775dd8593cfa"
     },
     {
