@@ -70,8 +70,8 @@ export const UserCard = memo(function UserCard({
     <article
       className={`${styles.card} ${styles[variant]}`}
       onClick={onClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
+      role={onClick ? 'button': undefined}
+      tabIndex={onClick ? 0: undefined}
       onKeyDown={(e) => {
         if (onClick && (e.key === 'Enter' || e.key === ' ')) {
           e.preventDefault();

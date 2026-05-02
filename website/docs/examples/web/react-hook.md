@@ -74,7 +74,7 @@ export interface UseDebounceReturn<T> {
  *     <input
  *       value={query}
  *       onChange={(e) => setQuery(e.target.value)}
- *       placeholder={isPending ? 'Searching...' : 'Search'}
+ *       placeholder={isPending ? 'Searching...': 'Search'}
  *     />
  *   );
  * }
@@ -413,7 +413,7 @@ function EmailInput({ onValidate }) {
     // Asynchronous validation
     checkEmailAvailability(debouncedValue)
       .then((available) => {
-        setError(available ? '' : 'Email already in use');
+        setError(available ? '': 'Email already in use');
         onValidate(available);
       });
   }, [debouncedValue, onValidate]);

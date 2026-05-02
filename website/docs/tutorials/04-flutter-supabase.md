@@ -268,7 +268,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
   final NoteRepository _repository;
   StreamSubscription<List<Note>>? _subscription;
 
-  NotesBloc(this._repository) : super(NotesInitial()) {
+  NotesBloc(this._repository): super(NotesInitial()) {
     on<LoadNotes>(_onLoadNotes);
     on<WatchNotes>(_onWatchNotes);
     on<AddNote>(_onAddNote);

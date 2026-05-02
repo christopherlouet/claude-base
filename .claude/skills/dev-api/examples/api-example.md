@@ -12,7 +12,7 @@ Create an endpoint to manage products of an e-commerce.
 ```json
 {
   "name": "iPhone 15 Pro",
-  "description": "Smartphone Apple dernière génération",
+  "description": "Latest generation Apple smartphone",
   "price": 1209.99,
   "category": "electronics",
   "stock": 50
@@ -28,7 +28,7 @@ Create an endpoint to manage products of an e-commerce.
   "data": {
     "id": "prod_abc123",
     "name": "iPhone 15 Pro",
-    "description": "Smartphone Apple dernière génération",
+    "description": "Latest generation Apple smartphone",
     "price": 1209.99,
     "category": "electronics",
     "stock": 50,

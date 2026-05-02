@@ -340,10 +340,10 @@ For large examples, move them to `examples/` and include via link.
 
 ### Best practices
 
-- **`context: fork`** : isolates the skill from the main conversation (recommended for complex workflows).
-- **Limit `allowed-tools`** : principle of least privilege.
-- **Precise description** : Claude uses the description to decide on triggering, be specific.
-- **Skills ≠ Agents** : a skill complements Claude; an agent is an isolated subprocess.
+- **`context: fork`**: isolates the skill from the main conversation (recommended for complex workflows).
+- **Limit `allowed-tools`**: principle of least privilege.
+- **Precise description**: Claude uses the description to decide on triggering, be specific.
+- **Skills ≠ Agents**: a skill complements Claude; an agent is an isolated subprocess.
 
 ### Example: TypeScript code review skill
 
@@ -374,7 +374,7 @@ When the user requests a TypeScript review:
 
 ### `.mcp.json` file
 
-&gt; **Security important** : by default, MCPs are disabled in the foundation (minimal `.mcp.json`). Only enable the servers you need and review their permissions.
+&gt; **Security important**: by default, MCPs are disabled in the foundation (minimal `.mcp.json`). Only enable the servers you need and review their permissions.
 
 ```json
 {

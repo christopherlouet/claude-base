@@ -257,7 +257,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   static const int _pageSize = 20;
 
-  ProductBloc({required this.getProducts}) : super(const ProductState()) {
+  ProductBloc({required this.getProducts}): super(const ProductState()) {
     on<LoadProducts>(_onLoadProducts);
     on<LoadMoreProducts>(_onLoadMoreProducts);
     on<RefreshProducts>(_onRefreshProducts);
@@ -338,7 +338,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     SearchProducts event,
     Emitter<ProductState> emit,
   ) async {
-    add(LoadProducts(search: event.query.isEmpty ? null : event.query));
+    add(LoadProducts(search: event.query.isEmpty ? null: event.query));
   }
 }
 ```
@@ -612,15 +612,15 @@ class _StockBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: inStock ? Colors.green.shade50 : Colors.red.shade50,
+        color: inStock ? Colors.green.shade50: Colors.red.shade50,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
-        inStock ? 'In stock' : 'Out of stock',
+        inStock ? 'In stock': 'Out of stock',
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w500,
-          color: inStock ? Colors.green.shade700 : Colors.red.shade700,
+          color: inStock ? Colors.green.shade700: Colors.red.shade700,
         ),
       ),
     );

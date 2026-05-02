@@ -55,12 +55,12 @@ Example project CLAUDE.md:
 
 Explore → Specify → Plan → TDD → Audit → Commit
 
-1. EXPLORE    : /work:work-explore before any modification
-2. SPECIFY    : User Stories P1 (MVP) with Given/When/Then criteria
-3. PLAN       : Architecture and file list before coding
-4. TDD        : Tests BEFORE the code, Red-Green-Refactor cycle
-5. AUDIT      : /qa:qa-loop "score 90" before any commit
-6. COMMIT     : Conventional Commits, reference issues
+1. EXPLORE: /work:work-explore before any modification
+2. SPECIFY: User Stories P1 (MVP) with Given/When/Then criteria
+3. PLAN: Architecture and file list before coding
+4. TDD: Tests BEFORE the code, Red-Green-Refactor cycle
+5. AUDIT: /qa:qa-loop "score 90" before any commit
+6. COMMIT: Conventional Commits, reference issues
 
 ## Conventions
 
@@ -125,14 +125,14 @@ The `.claude/settings.local.json` file is in `.gitignore`. Each developer can ov
 The foundation provides pre-configured hooks in `settings.json` that apply to the whole team:
 
 ```
-PostToolUse  : Auto-format (prettier, ruff, gofmt, dart format)
+PostToolUse: Auto-format (prettier, ruff, gofmt, dart format)
               TypeScript type-check after modification
               ESLint verification after modification
-PreToolUse   : Tests before git commit (blocking)
+PreToolUse: Tests before git commit (blocking)
               Local CI before git push (blocking)
               Gitleaks on Write/Edit (blocking if secret detected)
               main branch protection (automatically creates a feature branch)
-SessionStart : Verifies .env in .gitignore
+SessionStart: Verifies .env in .gitignore
               Detects missing node_modules
 ```
 

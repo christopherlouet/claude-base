@@ -329,8 +329,8 @@ When a workflow delegates work to sub-agents (via `/work:work-team` or an orches
 You are working on [project], a [short description].
 
 Relevant files:
-  - [file A] : [its role]
-  - [file B] : [its role]
+  - [file A]: [its role]
+  - [file B]: [its role]
 
 Your task: [precise instruction]
 

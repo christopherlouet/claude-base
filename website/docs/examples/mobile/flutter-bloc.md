@@ -11,7 +11,7 @@ This example shows how to implement the BLoC pattern for state management with f
 ## Command used
 
 ```bash
-/dev:dev-flutter "Créer un BLoC pour l'authentification avec login/logout"
+/dev:dev-flutter "Create a BLoC for authentication with login/logout"
 ```
 
 ## Generated structure

@@ -208,7 +208,7 @@ locals {
     ]
 
     environment = [
-      for key, value in var.environment_variables : {
+      for key, value in var.environment_variables: {
         name  = key
         value = value
       }
@@ -259,7 +259,7 @@ resource "aws_ecs_cluster" "main" {
 
   setting {
     name  = "containerInsights"
-    value = var.environment == "production" ? "enabled" : "disabled"
+    value = var.environment == "production" ? "enabled": "disabled"
   }
 
   tags = local.common_tags
@@ -271,9 +271,9 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   capacity_providers = ["FARGATE", "FARGATE_SPOT"]
 
   default_capacity_provider_strategy {
-    capacity_provider = var.environment == "production" ? "FARGATE" : "FARGATE_SPOT"
+    capacity_provider = var.environment == "production" ? "FARGATE": "FARGATE_SPOT"
     weight            = 1
-    base              = var.environment == "production" ? 1 : 0
+    base              = var.environment == "production" ? 1: 0
   }
 }
 
@@ -375,7 +375,7 @@ resource "aws_security_group" "ecs_tasks" {
 # ====================
 resource "aws_cloudwatch_log_group" "main" {
   name              = "/ecs/${local.full_name}"
-  retention_in_days = var.environment == "production" ? 30 : 7
+  retention_in_days = var.environment == "production" ? 30: 7
 
   tags = local.common_tags
 }
@@ -485,7 +485,7 @@ resource "aws_lb_listener" "http_redirect" {
 # Auto Scaling
 # ====================
 resource "aws_appautoscaling_target" "main" {
-  count = var.enable_autoscaling ? 1 : 0
+  count = var.enable_autoscaling ? 1: 0
 
   max_capacity       = var.max_capacity
   min_capacity       = var.min_capacity
@@ -495,7 +495,7 @@ resource "aws_appautoscaling_target" "main" {
 }
 
 resource "aws_appautoscaling_policy" "cpu" {
-  count = var.enable_autoscaling ? 1 : 0
+  count = var.enable_autoscaling ? 1: 0
 
   name               = "${local.full_name}-cpu"
   policy_type        = "TargetTrackingScaling"
@@ -514,7 +514,7 @@ resource "aws_appautoscaling_policy" "cpu" {
 }
 
 resource "aws_appautoscaling_policy" "memory" {
-  count = var.enable_autoscaling ? 1 : 0
+  count = var.enable_autoscaling ? 1: 0
 
   name               = "${local.full_name}-memory"
   policy_type        = "TargetTrackingScaling"
@@ -564,7 +564,7 @@ resource "aws_iam_role_policy_attachment" "execution" {
 }
 
 resource "aws_iam_role_policy" "execution_secrets" {
-  count = length(var.secrets) > 0 ? 1 : 0
+  count = length(var.secrets) > 0 ? 1: 0
   name  = "${local.full_name}-secrets"
   role  = aws_iam_role.execution.id
 
@@ -577,7 +577,7 @@ resource "aws_iam_role_policy" "execution_secrets" {
           "ssm:GetParameters",
           "secretsmanager:GetSecretValue"
         ]
-        Resource = [for s in var.secrets : s.valueFrom]
+        Resource = [for s in var.secrets: s.valueFrom]
       }
     ]
   })
@@ -607,7 +607,7 @@ resource "aws_iam_role" "task" {
 
 # Policy for ECS Exec
 resource "aws_iam_role_policy" "ecs_exec" {
-  count = var.enable_execute_command ? 1 : 0
+  count = var.enable_execute_command ? 1: 0
   name  = "${local.full_name}-ecs-exec"
   role  = aws_iam_role.task.id
 

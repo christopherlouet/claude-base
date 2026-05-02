@@ -50,7 +50,7 @@ const t = initTRPC.context<Context>().create({
       data: {
         ...shape.data,
         zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+          error.cause instanceof ZodError ? error.cause.flatten(): null,
       },
     };
   },
@@ -200,7 +200,7 @@ export const taskRouter = router({
       const tasks = await ctx.prisma.task.findMany({
         where,
         take: limit + 1,
-        cursor: cursor ? { id: cursor } : undefined,
+        cursor: cursor ? { id: cursor }: undefined,
         orderBy: { [sortBy]: sortOrder },
         include: {
           assignee: {
@@ -516,7 +516,7 @@ function TaskList() {
       utils.task.list.setData({ limit: 20 }, (old) => ({
         ...old!,
         tasks: old!.tasks.map((t) =>
-          t.id === id ? { ...t, status } : t
+          t.id === id ? { ...t, status }: t
         ),
       }));
 

@@ -101,7 +101,7 @@ export function useUser(userId: string, options: UseUserOptions = {}): UseUserRe
       const data = await response.json();
       setUser(data);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Unknown error'));
+      setError(err instanceof Error ? err: new Error('Unknown error'));
     } finally {
       setIsLoading(false);
     }

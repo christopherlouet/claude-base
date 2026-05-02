@@ -203,7 +203,7 @@ export const userResolver = {
     ) => {
       const { first = 10, after, last, before, filter, sort } = args;
       const take = first || last || 10;
-      const cursor = after ? decodeCursor(after) : before ? decodeCursor(before) : undefined;
+      const cursor = after ? decodeCursor(after): before ? decodeCursor(before): undefined;
 
       // Build the filter
       const where = {
@@ -226,15 +226,15 @@ export const userResolver = {
         prisma.user.findMany({
           where,
           take: take + 1, // +1 to know if there is a next page
-          skip: cursor ? 1 : 0,
-          cursor: cursor ? { id: cursor } : undefined,
+          skip: cursor ? 1: 0,
+          cursor: cursor ? { id: cursor }: undefined,
           orderBy,
         }),
         prisma.user.count({ where }),
       ]);
 
       const hasMore = users.length > take;
-      const nodes = hasMore ? users.slice(0, -1) : users;
+      const nodes = hasMore ? users.slice(0, -1): users;
 
       return {
         edges: nodes.map((user) => ({
@@ -244,7 +244,7 @@ export const userResolver = {
         pageInfo: {
           hasNextPage: hasMore,
           hasPreviousPage: !!cursor,
-          startCursor: nodes[0] ? encodeCursor(nodes[0].id) : null,
+          startCursor: nodes[0] ? encodeCursor(nodes[0].id): null,
           endCursor: nodes[nodes.length - 1]
             ? encodeCursor(nodes[nodes.length - 1].id)
             : null,
