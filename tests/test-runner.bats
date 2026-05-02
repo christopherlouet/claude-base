@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests pour test.sh (le script qui lance les tests bats)
+# Tests for test.sh (the script that runs bats tests)
 # =============================================================================
 
 load 'test_helper'
@@ -17,69 +17,69 @@ teardown() {
 }
 
 # =============================================================================
-# Tests de base
+# Basic tests
 # =============================================================================
 
-@test "test.sh existe et est exécutable" {
+@test "test.sh exists and is executable" {
     [ -f "$TEST_SCRIPT" ]
     [ -x "$TEST_SCRIPT" ]
 }
 
-@test "test.sh affiche l'aide avec --help" {
+@test "test.sh displays help with --help" {
     run "$TEST_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"USAGE"* ]] || [[ "$output" == *"test"* ]] || [[ "$output" == *"bats"* ]]
 }
 
-@test "test.sh affiche la version avec --version" {
+@test "test.sh displays version with --version" {
     run "$TEST_SCRIPT" --version
     [ "$status" -eq 0 ]
     [[ "$output" == *"test"* ]]
 }
 
 # =============================================================================
-# Tests d'exécution
+# Execution tests
 # =============================================================================
 
-@test "test.sh vérifie si bats est disponible" {
+@test "test.sh checks if bats is available" {
     run "$TEST_SCRIPT" --check
-    # Devrait indiquer si bats est installé ou non
+    # Should indicate whether bats is installed or not
     [[ "$output" == *"bats"* ]] || [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
 }
 
-@test "test.sh peut lister les tests disponibles" {
+@test "test.sh can list available tests" {
     run "$TEST_SCRIPT" --list 2>/dev/null || run "$TEST_SCRIPT" -l 2>/dev/null || true
-    # Peut échouer si l'option n'existe pas, mais ne doit pas crasher
+    # May fail if the option does not exist, but must not crash
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
 }
 
 # =============================================================================
-# Tests des options
+# Option tests
 # =============================================================================
 
-@test "test.sh accepte un fichier de test spécifique" {
+@test "test.sh accepts a specific test file" {
     if command -v bats &>/dev/null; then
         run "$TEST_SCRIPT" "$BATS_TEST_DIRNAME/common.bats"
         [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
     else
-        skip "bats non installé"
+        skip "bats not installed"
     fi
 }
 
-@test "test.sh --verbose augmente la verbosité" {
+@test "test.sh --verbose increases verbosity" {
     run "$TEST_SCRIPT" --verbose --help 2>/dev/null || run "$TEST_SCRIPT" -v --help 2>/dev/null || true
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
 }
 
 # =============================================================================
-# Tests d'installation de bats
+# bats installation tests
 # =============================================================================
 
-@test "test.sh propose d'installer bats si manquant" {
+@test "test.sh offers to install bats if missing" {
     if ! command -v bats &>/dev/null; then
         run "$TEST_SCRIPT"
         [[ "$output" == *"install"* ]] || [[ "$output" == *"bats"* ]] || true
     else
-        skip "bats déjà installé"
+        skip "bats already installed"
     fi
 }

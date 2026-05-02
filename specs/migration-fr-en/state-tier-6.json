@@ -158,7 +158,7 @@
     },
     {
       "path": "tests/test-runner.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "2de4c44ceb5d47441a7c35dee4e93b245920d290413f1a450527a7b383e8a13c"
     },
     {
