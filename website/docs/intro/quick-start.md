@@ -1,56 +1,56 @@
 ---
 sidebar_position: 2
 title: Quick Start
-description: Demarrer avec claude-socle en 5 minutes
+description: Get started with claude-socle in 5 minutes
 ---
 
 import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDiagram';
 
 # Quick Start
 
-Soyez productif avec claude-socle en moins de 5 minutes.
+Be productive with claude-socle in less than 5 minutes.
 
-## Prerequis
+## Prerequisites
 
-- [Claude Code](https://code.claude.com/docs/en/overview) installe et configure
-- Un projet existant ou un nouveau repertoire
+- [Claude Code](https://code.claude.com/docs/en/overview) installed and configured
+- An existing project or a new directory
 
 ## Installation
 
-### Option 1 : Script automatique (recommande)
+### Option 1: Automatic script (recommended)
 
 ```bash
-# Dans le repertoire de votre projet
+# In your project directory
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh | bash
 ```
 
-Ce script :
-- Clone le socle dans `.claude/`
-- Configure les hooks et settings
-- Verifie l'installation
+This script:
+- Clones the foundation into `.claude/`
+- Configures the hooks and settings
+- Verifies the installation
 
-### Option 2 : Installation manuelle
+### Option 2: Manual installation
 
 ```bash
-# Cloner le repository
+# Clone the repository
 git clone https://github.com/christopherlouet/claude-socle.git temp-socle
 
-# Copier le dossier .claude
+# Copy the .claude folder
 cp -r temp-socle/.claude .
 
-# Nettoyer
+# Clean up
 rm -rf temp-socle
 ```
 
 ## Verification
 
-Lancez Claude Code dans votre projet :
+Launch Claude Code in your project:
 
 ```bash
 claude
 ```
 
-Vous devriez voir au demarrage :
+At startup you should see:
 ```
 === Claude Code Session ===
 Version socle: 1.30.0
@@ -59,109 +59,109 @@ Agents: 63
 ===========================
 ```
 
-## Premier workflow
+## First workflow
 
-<WorkflowDiagram steps={MAIN_WORKFLOW} title="Workflow principal : Explore → Specify → Plan → TDD → Audit → Commit" />
+<WorkflowDiagram steps={MAIN_WORKFLOW} title="Main workflow: Explore → Specify → Plan → TDD → Audit → Commit" />
 
-### Etape 1 : Explorer
+### Step 1: Explore
 
-Avant toute modification, comprenez le code existant :
+Before any modification, understand the existing code:
 
 ```bash
 /work:work-explore
 ```
 
-Claude analysera :
-- La structure du projet
-- Les patterns et conventions
-- Les dependances
-- Les points d'attention
+Claude will analyze:
+- The project structure
+- The patterns and conventions
+- The dependencies
+- The points of attention
 
-### Etape 2 : Planifier
+### Step 2: Plan
 
-Une fois le code compris, planifiez votre modification :
-
-```bash
-/work:work-plan "Ajouter une fonctionnalite d'authentification"
-```
-
-Claude proposera :
-- L'architecture recommandee
-- Les fichiers a creer/modifier
-- Les risques identifies
-- Les tests a ecrire
-
-### Etape 3 : Coder
-
-Implementez en suivant le plan :
+Once the code is understood, plan your modification:
 
 ```bash
-# En TDD (recommande)
-/dev:dev-tdd "Implementer le service d'authentification"
-
-# Ou implementation directe
-# Claude suivra le plan valide
+/work:work-plan "Add an authentication feature"
 ```
 
-### Etape 4 : Commiter
+Claude will propose:
+- The recommended architecture
+- The files to create/modify
+- The identified risks
+- The tests to write
 
-Creez un commit propre :
+### Step 3: Code
+
+Implement following the plan:
+
+```bash
+# In TDD (recommended)
+/dev:dev-tdd "Implement the authentication service"
+
+# Or direct implementation
+# Claude will follow the validated plan
+```
+
+### Step 4: Commit
+
+Create a clean commit:
 
 ```bash
 /work:work-commit
 ```
 
-Ou une Pull Request complete :
+Or a complete Pull Request:
 
 ```bash
 /work:work-pr
 ```
 
-## Commandes essentielles
+## Essential commands
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/assistant` | Point d'entree - guide vers les bonnes commandes (mode guide) |
-| `/assistant-auto` | Execution automatique du workflow adapte (mode auto) |
-| `/work:work-explore` | Explorer et comprendre le code |
-| `/work:work-plan` | Planifier une modification |
-| `/dev:dev-tdd` | Developper en TDD |
-| `/work:work-commit` | Creer un commit propre |
-| `/work:work-pr` | Creer une Pull Request |
+| `/assistant` | Entry point - guides you to the right commands (guide mode) |
+| `/assistant-auto` | Automatic execution of the suitable workflow (auto mode) |
+| `/work:work-explore` | Explore and understand the code |
+| `/work:work-plan` | Plan a modification |
+| `/dev:dev-tdd` | Develop in TDD |
+| `/work:work-commit` | Create a clean commit |
+| `/work:work-pr` | Create a Pull Request |
 
-## Workflows pre-definis
+## Predefined workflows
 
-Pour les taches courantes, utilisez les workflows complets :
+For common tasks, use the complete workflows:
 
 ```bash
-# Nouvelle feature
-/work:work-flow-feature "Description de la feature"
+# New feature
+/work:work-flow-feature "Feature description"
 
-# Correction de bug
-/work:work-flow-bugfix "Description du bug"
+# Bug fix
+/work:work-flow-bugfix "Bug description"
 
-# Nouvelle release
+# New release
 /work:work-flow-release "v2.0.0"
 
-# Lancement produit
-/work:work-flow-launch "Mon nouveau SaaS"
+# Product launch
+/work:work-flow-launch "My new SaaS"
 ```
 
-## Obtenir de l'aide
+## Getting help
 
 ```bash
-# Guide complet des commandes (mode guide avec confirmation)
+# Complete commands guide (guide mode with confirmation)
 /assistant
 
-# Aide sur une commande specifique
-/assistant "Comment utiliser /dev:dev-tdd ?"
+# Help on a specific command
+/assistant "How to use /dev:dev-tdd?"
 
-# Execution automatique sans confirmation (utilisateurs avances)
-/assistant-auto "Ajouter une feature d'authentification"
+# Automatic execution without confirmation (advanced users)
+/assistant-auto "Add an authentication feature"
 ```
 
-## Prochaines etapes
+## Next steps
 
-- [Comprendre l'architecture](/docs/intro/architecture) - Difference entre Commands, Agents et Skills
-- [Voir les workflows](/docs/workflow) - Workflows detailles par type de tache
-- [Explorer les commandes](/docs/commands) - Catalogue complet des 131 commandes
+- [Understand the architecture](/docs/intro/architecture) - Difference between Commands, Agents and Skills
+- [See the workflows](/docs/workflow) - Detailed workflows by task type
+- [Explore the commands](/docs/commands) - Complete catalog of the 131 commands
