@@ -1,12 +1,12 @@
 # Cheatsheet - Claude Code Agents
 
-> Référence visuelle de tous les agents disponibles.
+> Visual reference of all available agents.
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 131 commands | 63 agents | 54 skills | 9 catégories                  ║
+║  Total: 131 commands | 63 agents | 54 skills | 9 categories                  ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -14,34 +14,34 @@
 ├─────────────────────────────────────────────────────────────────────────────┤
 │   ┌────────────────┐  ┌────────────────────┐                                │
 │   │   /assistant   │  │  /assistant-auto   │                                │
-│   │  Mode guide    │  │  Mode automatique  │                                │
+│   │  Guide mode    │  │  Automatic mode    │                                │
 │   └────────────────┘  └────────────────────┘                                │
-│   Orchestrateurs : analysent l'intention et routent vers le bon workflow.   │
+│   Orchestrators: analyze intent and route to the right workflow.            │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           WORK- : WORKFLOW PRINCIPAL                        │
+│                           WORK- : MAIN WORKFLOW                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │   EXPLORE → (BRAINSTORM) → SPECIFY → PLAN → TDD → AUDIT → COMMIT            │
 │                                                                             │
 │   ┌─────────┐  ┌──────────┐  ┌─────────┐  ┌──────┐  ┌─────┐  ┌───────┐  ┌────────┐ │
 │   │ EXPLORE │→│BRAINSTORM│→│ SPECIFY │→│ PLAN │→│ TDD │→│ AUDIT │→│ COMMIT │ │
-│   │ Lit     │  │ (option) │  │ Stories │  │ Plan │  │ R-G-R│  │ Score │  │ +PR    │ │
-│   │ existant│  │ Idéation │  │ Critères│  │ Files│  │ Tests│  │ ≥ 90  │  │        │ │
+│   │ Read    │  │ (option) │  │ Stories │  │ Plan │  │ R-G-R│  │ Score │  │ +PR    │ │
+│   │ existing│  │ Ideation │  │ Criteria│  │ Files│  │ Tests│  │ ≥ 90  │  │        │ │
 │   └─────────┘  └──────────┘  └─────────┘  └──────┘  └─────┘  └───────┘  └────────┘ │
 │                                                                             │
-│   Commandes : /work:work-explore, /work:work-brainstorm,                    │
+│   Commands: /work:work-explore, /work:work-brainstorm,                      │
 │   /work:work-specify, /work:work-plan, /dev:dev-tdd,                        │
 │   /qa:qa-loop "score 90", /work:work-commit, /work:work-pr                  │
 │                                                                             │
-│   Workflows chaînés (tout-en-un):                                           │
+│   Chained workflows (all-in-one):                                           │
 │   ┌────────────────┐ ┌────────────────┐ ┌────────────────┐ ┌─────────────┐  │
 │   │ flow-feature   │ │ flow-bugfix    │ │ flow-release   │ │ flow-launch │  │
-│   │ Feature A→Z    │ │ Bug A→Z        │ │ Release A→Z    │ │ Produit A→Z │  │
+│   │ Feature A→Z    │ │ Bug A→Z        │ │ Release A→Z    │ │ Product A→Z │  │
 │   └────────────────┘ └────────────────┘ └────────────────┘ └─────────────┘  │
 │                                                                             │
-│   Variantes :                                                               │
+│   Variants:                                                                 │
 │   ┌──────────┐  ┌──────────┐  ┌──────────┐                                  │
 │   │  quick   │  │  batch   │  │   team   │                                  │
 │   │ <50 LOC  │  │ Multi-US │  │ Agents   │                                  │
@@ -49,40 +49,40 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       DEV- : DÉVELOPPEMENT (23 commandes)                   │
+│                       DEV- : DEVELOPMENT (23 commands)                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Cycle TDD     : tdd, test, testing-setup, debug, refactor                  │
+│  TDD cycle     : tdd, test, testing-setup, debug, refactor                  │
 │  API & types   : api, api-versioning, graphql, trpc, prisma                 │
 │  UI & front    : component, hook, design-system, react-perf, error-handling │
 │  Mobile/Edit   : flutter, neovim                                            │
-│  IA / Document : ai-integration, prompt-engineering, rag, mcp, document     │
+│  AI / Document : ai-integration, prompt-engineering, rag, mcp, document     │
 │  Backend BaaS  : supabase                                                   │
-│  → Détail complet : tableau "DEV- : Développement (23)" plus bas            │
+│  → Full details: "DEV- : Development (23)" table below                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          QA- : QUALITÉ (16 commandes)                       │
+│                          QA- : QUALITY (16 commands)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Audit principal : qa-loop (audit + fix en boucle, score ≥ 90)              │
-│  Audits ciblés   : security, perf, design, responsive, coverage, tech-debt  │
+│  Main audit      : qa-loop (audit + fix loop, score ≥ 90)                   │
+│  Targeted audits : security, perf, design, responsive, coverage, tech-debt  │
 │                    review, audit, automation, e2e, kaizen                   │
-│  Spécifiques     : wcag-audit (a11y), mobile, neovim, chrome (visuels)      │
-│  → Détail complet : tableau "QA- : Qualité (16)" plus bas                   │
+│  Specific        : wcag-audit (a11y), mobile, neovim, chrome (visual)       │
+│  → Full details: "QA- : Quality (16)" table below                           │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       OPS- : OPÉRATIONS (34 commandes)                      │
+│                       OPS- : OPERATIONS (34 commands)                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Release & deploy : release, deploy, rollback, hotfix, mobile-release       │
 │  GitFlow          : gitflow-{init, feature, release, hotfix}                │
 │  CI/CD            : ci, ci-fix, deps                                        │
 │  Infra            : docker, k8s, vps, vercel, serverless,                   │
 │                     proxmox, opnsense, infra-code                           │
-│  Observabilité    : monitoring, observability-stack, grafana-dashboard,     │
+│  Observability    : monitoring, observability-stack, grafana-dashboard,     │
 │                     load-testing, health                                    │
 │  Data/Sec         : database, backup, disaster-recovery, secrets-management │
-│  Méta-ops         : env, migrate, cost, cost-optimization, standup          │
-│  → Détail complet : tableau "OPS- : Opérations (34)" plus bas               │
+│  Meta-ops         : env, migrate, cost, cost-optimization, standup          │
+│  → Full details: "OPS- : Operations (34)" table below                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -91,12 +91,12 @@
 │                                                                             │
 │   ┌──────────┐  ┌───────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     │
 │   │ GENERATE │  │ CHANGELOG │  │ EXPLAIN │  │ ONBOARD │  │  I18N   │     │
-│   │ Auto doc │  │ History   │  │ Pédago  │  │ Découvre│  │ Traduc  │     │
+│   │ Auto doc │  │ History   │  │ Teach   │  │ Discover│  │ Translate│    │
 │   └──────────┘  └───────────┘  └─────────┘  └─────────┘  └─────────┘     │
 │                                                                             │
 │   ┌───────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐            │
 │   │ FIX-ISSUE │  │ API-SPEC │  │  README  │  │ ARCHITECTURE │            │
-│   │ GitHub    │  │ OpenAPI  │  │ Readme   │  │ Doc archi    │            │
+│   │ GitHub    │  │ OpenAPI  │  │ Readme   │  │ Archi doc    │            │
 │   └───────────┘  └──────────┘  └──────────┘  └──────────────┘            │
 └─────────────────────────────────────────────────────────────────────────────┘
 
@@ -106,52 +106,52 @@
 │                                                                             │
 │   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐        │
 │   │  MODEL  │  │ MARKET  │  │   MVP   │  │ PRICING │  │  PITCH  │        │
-│   │ Canvas  │  │ TAM/SAM │  │ Minimum │  │ Stratég │  │ Deck    │        │
+│   │ Canvas  │  │ TAM/SAM │  │ Minimum │  │ Strategy│  │ Deck    │        │
 │   └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘        │
 │                                                                             │
 │   ┌─────────┐  ┌─────────┐  ┌────────────┐  ┌─────────┐  ┌──────────┐    │
 │   │ ROADMAP │  │ LAUNCH  │  │ COMPETITOR │  │   OKR   │  │ RESEARCH │    │
-│   │ Planning│  │ Go-to   │  │ Analyse    │  │ Object  │  │ User res │    │
+│   │ Planning│  │ Go-to   │  │ Analysis   │  │ Object  │  │ User res │    │
 │   └─────────┘  └─────────┘  └────────────┘  └─────────┘  └──────────┘    │
 │                                                                             │
 │   ┌──────────┐                                                             │
 │   │ PERSONAS │                                                             │
-│   │ Profils  │                                                             │
+│   │ Profiles │                                                             │
 │   └──────────┘                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       GROWTH- : CROISSANCE (11 commandes)                   │
+│                       GROWTH- : GROWTH (11 commands)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Acquisition     : landing, seo, ab-test, cro                               │
-│  Mesure          : analytics, app-store-analytics, funnel                   │
+│  Measurement     : analytics, app-store-analytics, funnel                   │
 │  Engagement      : email, onboarding, retention                             │
 │  International   : localization                                             │
-│  → Détail complet : tableau "GROWTH- : Croissance (11)" plus bas            │
+│  → Full details: "GROWTH- : Growth (11)" table below                        │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                             DATA- : DONNÉES                                 │
+│                              DATA- : DATA                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │   ┌──────────┐  ┌───────────┐  ┌──────────┐                               │
 │   │ PIPELINE │  │ ANALYTICS │  │ MODELING │                               │
-│   │ ETL/ELT  │  │ Rapports  │  │ DWH      │                               │
+│   │ ETL/ELT  │  │ Reports   │  │ DWH      │                               │
 │   └──────────┘  └───────────┘  └──────────┘                               │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                             LEGAL- : LÉGAL                                  │
+│                             LEGAL- : LEGAL                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌──────────────────┐             │
-│   │  DOCS   │  │  RGPD   │  │ PAYMENT │  │ TERMS-OF-SERVICE │             │
-│   │ CGU/CGV │  │ GDPR    │  │ Stripe  │  │ CGU détaillées   │             │
+│   │  DOCS   │  │  GDPR   │  │ PAYMENT │  │ TERMS-OF-SERVICE │             │
+│   │ T&Cs    │  │ GDPR    │  │ Stripe  │  │ Detailed ToS     │             │
 │   └─────────┘  └─────────┘  └─────────┘  └──────────────────┘             │
 │                                                                             │
 │   ┌────────────────┐                                                       │
 │   │ PRIVACY-POLICY │                                                       │
-│   │ Confidentialité│                                                       │
+│   │ Privacy        │                                                       │
 │   └────────────────┘                                                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 
@@ -159,350 +159,350 @@
 ║                              QUICK REFERENCE                                  ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
-║  WORKFLOW OBLIGATOIRE:                                                        ║
+║  MANDATORY WORKFLOW:                                                          ║
 ║  ┌────────────────────────────────────────────────────────────────────────┐  ║
 ║  │ EXPLORE → (BRAINSTORM) → SPECIFY → PLAN → TDD → AUDIT → COMMIT        │  ║
 ║  │ explore   brainstorm     specify   plan   dev-tdd   qa-loop   commit  │  ║
 ║  └────────────────────────────────────────────────────────────────────────┘  ║
 ║                                                                               ║
-║  NOUVELLE FEATURE:        /work:work-flow-feature "description"            ║
-║  CORRECTION BUG:          /work:work-flow-bugfix "issue #123"              ║
-║  NOUVELLE RELEASE:        /work:work-flow-release "v2.0"                   ║
-║  LANCEMENT PRODUIT:       /work:work-flow-launch "mon SaaS"                ║
+║  NEW FEATURE:             /work:work-flow-feature "description"            ║
+║  BUG FIX:                 /work:work-flow-bugfix "issue #123"              ║
+║  NEW RELEASE:             /work:work-flow-release "v2.0"                   ║
+║  PRODUCT LAUNCH:          /work:work-flow-launch "my SaaS"                 ║
 ║                                                                               ║
-║  AUDIT COMPLET:           /qa:qa-audit                                   ║
-║  HEALTH CHECK RAPIDE:     /ops:ops-health                                 ║
+║  FULL AUDIT:              /qa:qa-audit                                   ║
+║  QUICK HEALTH CHECK:      /ops:ops-health                                 ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## Commandes par Catégorie (131)
+## Commands by Category (131)
 
-### Orchestrateur (1)
+### Orchestrator (1)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/assistant` | Guide de choix des agents et workflows |
+| `/assistant` | Guide for choosing agents and workflows |
 
-### WORK- : Workflow Principal (15)
+### WORK- : Main Workflow (15)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/work:work-explore` | Explorer et comprendre le code |
-| `/work:work-brainstorm` | Idéation structurée avant spec |
-| `/work:work-specify` | Créer une spécification fonctionnelle |
-| `/work:work-clarify` | Clarifier les ambiguïtés |
-| `/work:work-plan` | Planifier une implémentation |
-| `/work:work-commit` | Créer un commit propre |
-| `/work:work-pr` | Créer une Pull Request |
-| `/work:work-commit-push-pr` | Commit + push + PR en une commande |
-| `/work:work-quick` | Workflow rapide (changements triviaux, skip cycle complet) |
-| `/work:work-batch` | Exécution séquentielle de user stories depuis un PRD |
-| `/work:work-team` | Lancer une équipe d'agents coordonnés (Agent Teams) |
-| `/work:work-flow-feature` | Workflow feature complet |
-| `/work:work-flow-bugfix` | Workflow bugfix complet |
-| `/work:work-flow-release` | Workflow release complet |
-| `/work:work-flow-launch` | Workflow lancement complet |
+| `/work:work-explore` | Explore and understand the code |
+| `/work:work-brainstorm` | Structured ideation before spec |
+| `/work:work-specify` | Create a functional specification |
+| `/work:work-clarify` | Clarify ambiguities |
+| `/work:work-plan` | Plan an implementation |
+| `/work:work-commit` | Create a clean commit |
+| `/work:work-pr` | Create a Pull Request |
+| `/work:work-commit-push-pr` | Commit + push + PR in a single command |
+| `/work:work-quick` | Quick workflow (trivial changes, skip full cycle) |
+| `/work:work-batch` | Sequential execution of user stories from a PRD |
+| `/work:work-team` | Launch a team of coordinated agents (Agent Teams) |
+| `/work:work-flow-feature` | Full feature workflow |
+| `/work:work-flow-bugfix` | Full bugfix workflow |
+| `/work:work-flow-release` | Full release workflow |
+| `/work:work-flow-launch` | Full launch workflow |
 
-### DEV- : Développement (23)
+### DEV- : Development (23)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/dev:dev-tdd` | Développement TDD |
-| `/dev:dev-test` | Générer des tests |
-| `/dev:dev-testing-setup` | Configurer infrastructure tests |
-| `/dev:dev-debug` | Déboguer un problème |
-| `/dev:dev-refactor` | Refactoring guidé |
-| `/dev:dev-document` | Génération documents (PDF, DOCX, XLSX, PPTX) |
-| `/dev:dev-api` | Créer/documenter API REST |
-| `/dev:dev-api-versioning` | Versioning d'API |
-| `/dev:dev-component` | Créer un composant UI complet |
-| `/dev:dev-hook` | Créer un hook React/Vue |
-| `/dev:dev-error-handling` | Stratégie de gestion d'erreurs |
-| `/dev:dev-react-perf` | Optimisation React/Next.js |
-| `/dev:dev-mcp` | Créer des serveurs MCP |
-| `/dev:dev-flutter` | Widgets et screens Flutter |
-| `/dev:dev-supabase` | Backend Supabase (Auth, DB, Storage) |
-| `/dev:dev-graphql` | API GraphQL client/serveur |
-| `/dev:dev-neovim` | Plugins et config Neovim |
-| `/dev:dev-design-system` | Design tokens et composants |
-| `/dev:dev-prisma` | ORM Prisma |
-| `/dev:dev-prompt-engineering` | Optimisation prompts LLM |
-| `/dev:dev-rag` | Systèmes RAG |
-| `/dev:dev-trpc` | APIs type-safe tRPC |
-| `/dev:dev-ai-integration` | Intégration LLMs (OpenAI, Claude) |
+| `/dev:dev-tdd` | TDD development |
+| `/dev:dev-test` | Generate tests |
+| `/dev:dev-testing-setup` | Configure test infrastructure |
+| `/dev:dev-debug` | Debug a problem |
+| `/dev:dev-refactor` | Guided refactoring |
+| `/dev:dev-document` | Document generation (PDF, DOCX, XLSX, PPTX) |
+| `/dev:dev-api` | Create/document REST API |
+| `/dev:dev-api-versioning` | API versioning |
+| `/dev:dev-component` | Create a complete UI component |
+| `/dev:dev-hook` | Create a React/Vue hook |
+| `/dev:dev-error-handling` | Error handling strategy |
+| `/dev:dev-react-perf` | React/Next.js optimization |
+| `/dev:dev-mcp` | Create MCP servers |
+| `/dev:dev-flutter` | Flutter widgets and screens |
+| `/dev:dev-supabase` | Supabase backend (Auth, DB, Storage) |
+| `/dev:dev-graphql` | GraphQL client/server API |
+| `/dev:dev-neovim` | Neovim plugins and config |
+| `/dev:dev-design-system` | Design tokens and components |
+| `/dev:dev-prisma` | Prisma ORM |
+| `/dev:dev-prompt-engineering` | LLM prompt optimization |
+| `/dev:dev-rag` | RAG systems |
+| `/dev:dev-trpc` | Type-safe tRPC APIs |
+| `/dev:dev-ai-integration` | LLM integration (OpenAI, Claude) |
 
-### QA- : Qualité (16)
+### QA- : Quality (16)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/qa:qa-review` | Code review + analyse nommage |
-| `/qa:qa-security` | Audit sécurité OWASP |
-| `/qa:qa-perf` | Analyse performance |
-| `/qa:wcag-audit` | Audit accessibilité WCAG |
-| `/qa:qa-audit` | Audit complet (tout en un) |
-| `/qa:qa-design` | Audit UI/UX (100+ règles) |
-| `/qa:qa-responsive` | Audit responsive/mobile |
-| `/qa:qa-automation` | Automatisation des tests |
-| `/qa:qa-coverage` | Analyse couverture tests |
-| `/qa:qa-e2e` | Tests E2E (Playwright, Cypress) |
-| `/qa:qa-kaizen` | Amélioration continue |
-| `/qa:qa-mobile` | Audit qualité apps mobiles |
-| `/qa:qa-neovim` | Audit config Neovim |
-| `/qa:qa-tech-debt` | Dette technique |
-| `/qa:qa-chrome` | Tests visuels Chrome |
-| `/qa:qa-loop` | Audit + fix en boucle jusqu'au score cible (90 par défaut) |
+| `/qa:qa-review` | Code review + naming analysis |
+| `/qa:qa-security` | OWASP security audit |
+| `/qa:qa-perf` | Performance analysis |
+| `/qa:wcag-audit` | WCAG accessibility audit |
+| `/qa:qa-audit` | Full audit (all in one) |
+| `/qa:qa-design` | UI/UX audit (100+ rules) |
+| `/qa:qa-responsive` | Responsive/mobile audit |
+| `/qa:qa-automation` | Test automation |
+| `/qa:qa-coverage` | Test coverage analysis |
+| `/qa:qa-e2e` | E2E tests (Playwright, Cypress) |
+| `/qa:qa-kaizen` | Continuous improvement |
+| `/qa:qa-mobile` | Mobile app quality audit |
+| `/qa:qa-neovim` | Neovim config audit |
+| `/qa:qa-tech-debt` | Technical debt |
+| `/qa:qa-chrome` | Chrome visual tests |
+| `/qa:qa-loop` | Audit + fix loop until target score (90 by default) |
 
-### OPS- : Opérations (34)
+### OPS- : Operations (34)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/ops:ops-hotfix` | Correction urgente production |
-| `/ops:ops-release` | Créer une release |
-| `/ops:ops-rollback` | Rollback sécurisé |
-| `/ops:ops-gitflow-init` | Initialiser GitFlow |
-| `/ops:ops-gitflow-feature` | Branches feature |
-| `/ops:ops-gitflow-release` | Branches release |
-| `/ops:ops-gitflow-hotfix` | Hotfixes GitFlow |
-| `/ops:ops-deps` | Audit et MAJ dépendances |
-| `/ops:ops-docker` | Dockeriser |
-| `/ops:ops-k8s` | Déploiement Kubernetes |
-| `/ops:ops-vps` | Déploiement VPS |
-| `/ops:ops-migrate` | Migration code/deps |
-| `/ops:ops-ci` | Pipelines CI/CD |
-| `/ops:ops-monitoring` | Logs, métriques, alertes |
+| `/ops:ops-hotfix` | Urgent production fix |
+| `/ops:ops-release` | Create a release |
+| `/ops:ops-rollback` | Safe rollback |
+| `/ops:ops-gitflow-init` | Initialize GitFlow |
+| `/ops:ops-gitflow-feature` | Feature branches |
+| `/ops:ops-gitflow-release` | Release branches |
+| `/ops:ops-gitflow-hotfix` | GitFlow hotfixes |
+| `/ops:ops-deps` | Dependency audit and updates |
+| `/ops:ops-docker` | Dockerize |
+| `/ops:ops-k8s` | Kubernetes deployment |
+| `/ops:ops-vps` | VPS deployment |
+| `/ops:ops-migrate` | Code/deps migration |
+| `/ops:ops-ci` | CI/CD pipelines |
+| `/ops:ops-monitoring` | Logs, metrics, alerts |
 | `/ops:ops-observability-stack` | Prometheus, Grafana, Loki |
-| `/ops:ops-grafana-dashboard` | Dashboards Grafana |
-| `/ops:ops-database` | Schema, migrations DB |
-| `/ops:ops-health` | Health check rapide |
-| `/ops:ops-env` | Gestion environnements |
-| `/ops:ops-backup` | Stratégie backup/restore |
-| `/ops:ops-load-testing` | Tests de charge |
-| `/ops:ops-cost-optimization` | Optimisation coûts cloud |
-| `/ops:ops-disaster-recovery` | Plan reprise sinistre |
+| `/ops:ops-grafana-dashboard` | Grafana dashboards |
+| `/ops:ops-database` | DB schema, migrations |
+| `/ops:ops-health` | Quick health check |
+| `/ops:ops-env` | Environment management |
+| `/ops:ops-backup` | Backup/restore strategy |
+| `/ops:ops-load-testing` | Load testing |
+| `/ops:ops-cost-optimization` | Cloud cost optimization |
+| `/ops:ops-disaster-recovery` | Disaster recovery plan |
 | `/ops:ops-infra-code` | Infrastructure as Code |
-| `/ops:ops-proxmox` | Infrastructure Proxmox VE |
-| `/ops:ops-opnsense` | Configuration OPNsense |
-| `/ops:ops-secrets-management` | Gestion secrets |
-| `/ops:ops-serverless` | Déploiement serverless |
-| `/ops:ops-vercel` | Configuration Vercel |
-| `/ops:ops-mobile-release` | Publication App/Play Store |
-| `/ops:ops-deploy` | Déploiement sécurisé avec checklist pre-deploy |
-| `/ops:ops-cost` | Suivi des tokens Claude Code et coûts |
-| `/ops:ops-standup` | Briefing matinal cross-repo |
-| `/ops:ops-ci-fix` | Diagnostic et réparation autonome de la CI |
+| `/ops:ops-proxmox` | Proxmox VE infrastructure |
+| `/ops:ops-opnsense` | OPNsense configuration |
+| `/ops:ops-secrets-management` | Secrets management |
+| `/ops:ops-serverless` | Serverless deployment |
+| `/ops:ops-vercel` | Vercel configuration |
+| `/ops:ops-mobile-release` | App/Play Store publishing |
+| `/ops:ops-deploy` | Safe deployment with pre-deploy checklist |
+| `/ops:ops-cost` | Claude Code token tracking and costs |
+| `/ops:ops-standup` | Cross-repo morning briefing |
+| `/ops:ops-ci-fix` | Autonomous CI diagnostic and repair |
 
 ### DOC- : Documentation (9)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/doc:doc-generate` | Générer documentation |
+| `/doc:doc-generate` | Generate documentation |
 | `/doc:doc-changelog` | Changelog |
-| `/doc:doc-explain` | Expliquer code complexe |
-| `/doc:doc-onboard` | Découvrir un codebase |
-| `/doc:doc-i18n` | Internationalisation |
-| `/doc:doc-fix-issue` | Corriger issue GitHub |
-| `/doc:doc-api-spec` | Spec OpenAPI/Swagger |
-| `/doc:doc-readme` | Créer/améliorer README |
-| `/doc:doc-architecture` | Documenter l'architecture |
+| `/doc:doc-explain` | Explain complex code |
+| `/doc:doc-onboard` | Discover a codebase |
+| `/doc:doc-i18n` | Internationalization |
+| `/doc:doc-fix-issue` | Fix GitHub issue |
+| `/doc:doc-api-spec` | OpenAPI/Swagger spec |
+| `/doc:doc-readme` | Create/improve README |
+| `/doc:doc-architecture` | Document the architecture |
 
 ### BIZ- : Business (11)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
 | `/biz:biz-model` | Business model, Lean Canvas |
-| `/biz:biz-market` | Étude de marché |
-| `/biz:biz-mvp` | Définir le MVP |
-| `/biz:biz-pricing` | Stratégie tarifaire |
+| `/biz:biz-market` | Market study |
+| `/biz:biz-mvp` | Define the MVP |
+| `/biz:biz-pricing` | Pricing strategy |
 | `/biz:biz-pitch` | Pitch deck |
-| `/biz:biz-roadmap` | Roadmap produit |
-| `/biz:biz-launch` | Workflow lancement |
-| `/biz:biz-competitor` | Analyse concurrentielle |
+| `/biz:biz-roadmap` | Product roadmap |
+| `/biz:biz-launch` | Launch workflow |
+| `/biz:biz-competitor` | Competitive analysis |
 | `/biz:biz-okr` | OKRs |
-| `/biz:biz-personas` | Personas utilisateur |
-| `/biz:biz-research` | Recherche utilisateur |
+| `/biz:biz-personas` | User personas |
+| `/biz:biz-research` | User research |
 
-### GROWTH- : Croissance (11)
+### GROWTH- : Growth (11)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
 | `/growth:growth-landing` | Landing page |
-| `/growth:growth-seo` | Audit SEO |
-| `/growth:growth-analytics` | Tracking et KPIs |
-| `/growth:growth-app-store-analytics` | Métriques App/Play Store |
-| `/growth:growth-onboarding` | Parcours utilisateur |
-| `/growth:growth-email` | Templates email |
+| `/growth:growth-seo` | SEO audit |
+| `/growth:growth-analytics` | Tracking and KPIs |
+| `/growth:growth-app-store-analytics` | App/Play Store metrics |
+| `/growth:growth-onboarding` | User journey |
+| `/growth:growth-email` | Email templates |
 | `/growth:growth-ab-test` | A/B testing |
-| `/growth:growth-retention` | Stratégies rétention |
-| `/growth:growth-funnel` | Analyse funnels |
-| `/growth:growth-localization` | Localisation multi-marchés |
-| `/growth:growth-cro` | Optimisation conversion (CRO) |
+| `/growth:growth-retention` | Retention strategies |
+| `/growth:growth-funnel` | Funnel analysis |
+| `/growth:growth-localization` | Multi-market localization |
+| `/growth:growth-cro` | Conversion optimization (CRO) |
 
-### DATA- : Données (3)
+### DATA- : Data (3)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/data:data-pipeline` | Pipelines ETL/ELT |
-| `/data:data-analytics` | Analyse de données |
-| `/data:data-modeling` | Modélisation data warehouse |
+| `/data:data-pipeline` | ETL/ELT pipelines |
+| `/data:data-analytics` | Data analysis |
+| `/data:data-modeling` | Data warehouse modeling |
 
-### LEGAL- : Légal (5)
+### LEGAL- : Legal (5)
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/legal:legal-docs` | CGU, CGV, mentions légales |
-| `/legal:legal-rgpd` | Conformité RGPD/GDPR |
-| `/legal:legal-payment` | Intégration paiement |
-| `/legal:legal-terms-of-service` | Conditions Générales d'Utilisation |
-| `/legal:legal-privacy-policy` | Politique de Confidentialité |
+| `/legal:legal-docs` | T&Cs, Sales T&Cs, legal notices |
+| `/legal:legal-rgpd` | GDPR compliance |
+| `/legal:legal-payment` | Payment integration |
+| `/legal:legal-terms-of-service` | Terms of Service |
+| `/legal:legal-privacy-policy` | Privacy Policy |
 
 ---
 
-## Décision rapide par intention
+## Quick decision by intent
 
-> "Je veux faire X" → quelle commande utiliser ?
+> "I want to do X" → which command to use?
 
-| Intention | Commande |
+| Intent | Command |
 |-----------|----------|
-| Comprendre du code existant | `/work:work-explore` |
-| Brainstormer / explorer des idées | `/work:work-brainstorm` |
-| Créer une spécification (User Stories) | `/work:work-specify` |
-| Clarifier les ambiguïtés d'une spec | `/work:work-clarify` |
-| Planifier une feature (architecture, tasks) | `/work:work-plan` |
-| Implémenter en TDD | `/dev:dev-tdd` |
-| Déboguer un problème | `/dev:dev-debug` |
-| Refactorer du code | `/dev:dev-refactor` |
-| Faire une code review | `/qa:qa-review` |
-| Audit complet + fix en boucle | `/qa:qa-loop` |
-| Vérifier la sécurité (OWASP) | `/qa:qa-security` |
-| Auditer la performance | `/qa:qa-perf` |
-| Vérifier l'accessibilité (WCAG) | `/qa:wcag-audit` |
-| Audit complet (lecture seule) | `/qa:qa-audit` |
-| Créer un commit propre | `/work:work-commit` |
-| Créer une PR | `/work:work-pr` |
-| Briefing matinal / standup | `/ops:ops-standup` |
-| Réparer la CI cassée | `/ops:ops-ci-fix` |
-| Déployer en production | `/ops:ops-deploy` |
-| Health check rapide | `/ops:ops-health` |
+| Understand existing code | `/work:work-explore` |
+| Brainstorm / explore ideas | `/work:work-brainstorm` |
+| Create a specification (User Stories) | `/work:work-specify` |
+| Clarify ambiguities in a spec | `/work:work-clarify` |
+| Plan a feature (architecture, tasks) | `/work:work-plan` |
+| Implement with TDD | `/dev:dev-tdd` |
+| Debug a problem | `/dev:dev-debug` |
+| Refactor code | `/dev:dev-refactor` |
+| Do a code review | `/qa:qa-review` |
+| Full audit + fix loop | `/qa:qa-loop` |
+| Check security (OWASP) | `/qa:qa-security` |
+| Audit performance | `/qa:qa-perf` |
+| Check accessibility (WCAG) | `/qa:wcag-audit` |
+| Full audit (read-only) | `/qa:qa-audit` |
+| Create a clean commit | `/work:work-commit` |
+| Create a PR | `/work:work-pr` |
+| Morning briefing / standup | `/ops:ops-standup` |
+| Fix broken CI | `/ops:ops-ci-fix` |
+| Deploy to production | `/ops:ops-deploy` |
+| Quick health check | `/ops:ops-health` |
 
-> Si vous hésitez : `/assistant` (mode guide) ou `/assistant-auto "votre demande"` (exécution directe).
+> If you hesitate: `/assistant` (guide mode) or `/assistant-auto "your request"` (direct execution).
 
 ---
 
-## Scénarios Courants
+## Common Scenarios
 
-### Nouveau projet
+### New project
 ```
-/doc:doc-onboard     → Comprendre la structure
-/work:work-explore    → Explorer le code
-/work:work-plan       → Planifier le travail
-```
-
-### Nouvelle feature (workflow standard)
-```
-/work:work-explore         → Comprendre l'existant
-/work:work-specify         → Spec User Stories + critères Given/When/Then
-/work:work-plan            → Designer la solution + tasks par US
-/dev:dev-tdd               → Implémenter avec tests (Red-Green-Refactor)
-/qa:qa-loop "score 90"     → Audit + fix en boucle (obligatoire avant commit)
-/work:work-commit          → Commiter proprement
-/work:work-pr              → Créer la PR
+/doc:doc-onboard     → Understand the structure
+/work:work-explore    → Explore the code
+/work:work-plan       → Plan the work
 ```
 
-### Changement trivial (skip cycle complet)
+### New feature (standard workflow)
 ```
-/work:work-quick "renommer X en Y"   # < 50 LOC, 1-3 fichiers
-```
-
-### Nouvelle feature (workflow complet)
-```
-/work:work-flow-feature "ajouter dark mode"
-```
-
-### Correction de bug
-```
-/work:work-flow-bugfix "#123 - utilisateur ne peut pas se connecter"
+/work:work-explore         → Understand the existing code
+/work:work-specify         → Spec User Stories + Given/When/Then criteria
+/work:work-plan            → Design the solution + tasks per US
+/dev:dev-tdd               → Implement with tests (Red-Green-Refactor)
+/qa:qa-loop "score 90"     → Audit + fix loop (mandatory before commit)
+/work:work-commit          → Commit cleanly
+/work:work-pr              → Create the PR
 ```
 
-### Avant mise en prod
+### Trivial change (skip full cycle)
 ```
-/qa:qa-audit        → Audit complet
-/ops:ops-health      → Health check rapide
+/work:work-quick "rename X to Y"   # < 50 LOC, 1-3 files
 ```
 
-### Nouvelle release
+### New feature (full workflow)
+```
+/work:work-flow-feature "add dark mode"
+```
+
+### Bug fix
+```
+/work:work-flow-bugfix "#123 - user cannot log in"
+```
+
+### Before going to production
+```
+/qa:qa-audit        → Full audit
+/ops:ops-health      → Quick health check
+```
+
+### New release
 ```
 /work:work-flow-release "v2.0.0"
 ```
 
-### Lancer un nouveau business
+### Launch a new business
 ```
-/work:work-flow-launch "mon nouveau SaaS"
+/work:work-flow-launch "my new SaaS"
 ```
 
-### Application mobile Flutter
+### Flutter mobile app
 ```
 /work:work-explore → /work:work-plan → /dev:dev-flutter + /dev:dev-supabase → /qa:qa-mobile → /work:work-pr
 ```
 
 ---
 
-## Format des Commandes
+## Command Format
 
 ```
 /{category}-{action} "context"
 
 Categories:
-• assistant → Orchestrateur
-• work-   → Workflow de base
-• dev-    → Développement
-• qa-     → Qualité
-• ops-    → Opérations
+• assistant → Orchestrator
+• work-   → Base workflow
+• dev-    → Development
+• qa-     → Quality
+• ops-    → Operations
 • doc-    → Documentation
 • biz-    → Business
-• growth- → Croissance
-• data-   → Données
-• legal-  → Légal
+• growth- → Growth
+• data-   → Data
+• legal-  → Legal
 ```
 
 ---
 
-## Commandes Intégrées Claude Code
+## Built-in Claude Code Commands
 
-| Commande | Usage |
+| Command | Usage |
 |----------|-------|
-| `/clear` | Réinitialiser le contexte |
-| `/compact` | Compacter l'historique |
-| `/resume` | Reprendre une session |
-| `/help` | Aide |
+| `/clear` | Reset the context |
+| `/compact` | Compact the history |
+| `/resume` | Resume a session |
+| `/help` | Help |
 
 ---
 
-## Raccourcis Clavier
+## Keyboard Shortcuts
 
-| Raccourci | Action |
+| Shortcut | Action |
 |-----------|--------|
-| `Escape` | Interrompre Claude |
-| `Escape` x2 | Revenir en arrière |
-| `Tab` | Autocomplétion |
-| `Ctrl+C` | Annuler |
+| `Escape` | Interrupt Claude |
+| `Escape` x2 | Go back |
+| `Tab` | Autocompletion |
+| `Ctrl+C` | Cancel |
 
 ---
 
-## Mots-clés Raisonnement
+## Reasoning Keywords
 
-| Mot-clé | Niveau |
+| Keyword | Level |
 |---------|--------|
-| `think` | Basique |
-| `think hard` | Approfondi |
-| `think harder` | Très approfondi |
+| `think` | Basic |
+| `think hard` | Deep |
+| `think harder` | Deeper |
 | `ultrathink` | Maximum |
 
 ---
 
-## Format des Commits
+## Commit Format
 
 ```
 type(scope): description
@@ -510,7 +510,7 @@ type(scope): description
 Types: feat, fix, refactor, test, docs, style, chore, perf, hotfix
 ```
 
-**Exemples:**
+**Examples:**
 ```bash
 feat(auth): add OAuth2 login
 fix(api): handle null response
@@ -519,37 +519,37 @@ refactor(user): extract validation logic
 
 ---
 
-## Fichiers de Configuration
+## Configuration Files
 
-| Fichier | Rôle |
+| File | Role |
 |---------|------|
-| `CLAUDE.md` | Instructions projet |
-| `CLAUDE.local.md` | Config locale (gitignore) |
-| `.claude/settings.json` | Permissions et hooks |
-| `.claude/commands/**/*.md` | Commandes (organisées par catégorie) |
-| `.claude/skills/` | Skills automatiques |
-| `.claude/agents/` | Sub-agents isolés |
-| `.claude/rules/` | Règles contextuelles par path |
-| `.mcp.json` | Serveurs MCP |
+| `CLAUDE.md` | Project instructions |
+| `CLAUDE.local.md` | Local config (gitignore) |
+| `.claude/settings.json` | Permissions and hooks |
+| `.claude/commands/**/*.md` | Commands (organized by category) |
+| `.claude/skills/` | Automatic skills |
+| `.claude/agents/` | Isolated sub-agents |
+| `.claude/rules/` | Path-based contextual rules |
+| `.mcp.json` | MCP servers |
 
 ---
 
-## Règles d'Or
+## Golden Rules
 
-1. **Explore avant de coder** - Toujours comprendre le contexte
-2. **Plan avant d'implémenter** - Évite les retours en arrière
-3. **Tests AVANT le code (TDD)** - Cycle Red-Green-Refactor obligatoire
-4. **Audit avant commit** - Score qa-loop ≥ 90 obligatoire avant push
-5. **Commits atomiques** - Un commit = une préoccupation
+1. **Explore before coding** - Always understand the context
+2. **Plan before implementing** - Avoids backtracking
+3. **Tests BEFORE code (TDD)** - Mandatory Red-Green-Refactor cycle
+4. **Audit before commit** - qa-loop score ≥ 90 mandatory before push
+5. **Atomic commits** - One commit = one concern
 6. **Conventional Commits** - `feat(scope): description`
-7. **Pas de secrets dans le code** - Utiliser `.env` + gitleaks
+7. **No secrets in code** - Use `.env` + gitleaks
 
 ---
 
-## Ressources
+## Resources
 
 - [Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
-- [Documentation officielle](https://code.claude.com/docs/en/overview)
+- [Official documentation](https://code.claude.com/docs/en/overview)
 
 ---
 
