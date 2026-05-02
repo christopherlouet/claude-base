@@ -1,47 +1,47 @@
-# Projet React/Next.js
+# React/Next.js Project
 
-## Commandes Essentielles
-- `npm install` - Installer les dépendances
-- `npm run dev` - Serveur de développement (http://localhost:3000)
-- `npm test` - Lancer les tests Jest
-- `npm run lint` - Vérifier ESLint
-- `npm run build` - Build de production
-- `npm run storybook` - Lancer Storybook (si configuré)
+## Essential Commands
+- `npm install` - Install dependencies
+- `npm run dev` - Development server (http://localhost:3000)
+- `npm test` - Run Jest tests
+- `npm run lint` - Check ESLint
+- `npm run build` - Production build
+- `npm run storybook` - Run Storybook (if configured)
 
-## Structure du Projet
-- `/src/app` ou `/pages` - Routes et pages
-- `/src/components` - Composants React réutilisables
+## Project Structure
+- `/src/app` or `/pages` - Routes and pages
+- `/src/components` - Reusable React components
 - `/src/hooks` - Custom hooks
 - `/src/context` - Context providers
-- `/src/services` - Appels API et logique métier
-- `/src/utils` - Fonctions utilitaires
-- `/src/types` - Types TypeScript
-- `/public` - Assets statiques
+- `/src/services` - API calls and business logic
+- `/src/utils` - Utility functions
+- `/src/types` - TypeScript types
+- `/public` - Static assets
 
-## Conventions React
-- IMPORTANT: Composants fonctionnels uniquement (pas de classes)
-- IMPORTANT: Un composant par fichier
-- YOU MUST utiliser TypeScript strict
-- Nommage: PascalCase pour composants, camelCase pour hooks (useXxx)
+## React Conventions
+- IMPORTANT: Functional components only (no classes)
+- IMPORTANT: One component per file
+- YOU MUST use TypeScript strict
+- Naming: PascalCase for components, camelCase for hooks (useXxx)
 
-## Patterns à suivre
+## Patterns to follow
 - Composition over inheritance
-- Props drilling limité (max 2 niveaux, sinon Context)
-- Custom hooks pour logique réutilisable
-- Memoization (useMemo, useCallback) uniquement si nécessaire
+- Limited props drilling (max 2 levels, otherwise Context)
+- Custom hooks for reusable logic
+- Memoization (useMemo, useCallback) only when necessary
 
 ## Performance
-- IMPORTANT: Éviter les re-renders inutiles
-- Utiliser React.memo() pour composants purs coûteux
-- Lazy loading pour routes avec React.lazy()
-- Images optimisées avec next/image (Next.js)
+- IMPORTANT: Avoid unnecessary re-renders
+- Use React.memo() for expensive pure components
+- Lazy loading for routes with React.lazy()
+- Optimized images with next/image (Next.js)
 
 ## Tests
 - Jest + React Testing Library
-- Tester le comportement, pas l'implémentation
-- YOU MUST éviter les mocks de hooks React
+- Test behavior, not implementation
+- YOU MUST avoid mocking React hooks
 
-### Structure des tests
+### Test structure
 ```typescript
 import { render, screen, fireEvent } from '@testing-library/react';
 import { UserCard } from './UserCard';
@@ -65,7 +65,7 @@ describe('UserCard', () => {
 
 ## State Management
 
-### Context API (petite app)
+### Context API (small app)
 ```typescript
 // contexts/AuthContext.tsx
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -87,7 +87,7 @@ export const useAuth = () => {
 };
 ```
 
-### Zustand (app moyenne/grande)
+### Zustand (medium/large app)
 ```typescript
 // stores/useStore.ts
 import { create } from 'zustand';
@@ -103,7 +103,7 @@ export const useStore = create<Store>((set) => ({
 }));
 ```
 
-## Gestion des erreurs
+## Error handling
 
 ```typescript
 // components/ErrorBoundary.tsx
@@ -130,29 +130,29 @@ class ErrorBoundary extends Component<Props, State> {
 ## Git & Commits
 - Format: `type(scope): description`
 - Types: feat, fix, style, refactor, test, chore
-- Scope: component name ou feature name
+- Scope: component name or feature name
 
-## Hooks Claude Code 2.1+
+## Claude Code 2.1+ Hooks
 
-Les hooks suivants sont configurés dans `.claude/settings.json` :
+The following hooks are configured in `.claude/settings.json`:
 
 | Hook | Type | Action |
 |------|------|--------|
-| Branch protection | PreToolUse | Bloque les modifications sur main/master |
-| Auto-format | PostToolUse | Prettier sur les fichiers TS/JS modifiés |
-| Type check | PostToolUse | Vérification TypeScript après édition |
-| ESLint check | PostToolUse | Validation ESLint après édition |
-| Test avant commit | PreToolUse | Exécute `npm test` avant chaque commit |
-| Détection secrets | PreToolUse | Bloque les secrets hardcodés |
+| Branch protection | PreToolUse | Blocks modifications on main/master |
+| Auto-format | PostToolUse | Prettier on modified TS/JS files |
+| Type check | PostToolUse | TypeScript verification after edit |
+| ESLint check | PostToolUse | ESLint validation after edit |
+| Test before commit | PreToolUse | Runs `npm test` before each commit |
+| Secrets detection | PreToolUse | Blocks hardcoded secrets |
 
-## Skills disponibles
+## Available Skills
 
-| Skill | Déclenchement | Usage |
-|-------|---------------|-------|
-| `exploring-codebase` | "explorer", "comprendre" | Analyser un codebase existant |
-| `planning-implementation` | "planifier", "architecture" | Définir un plan avant de coder |
-| `test-driven-development` | "TDD", "test first" | Cycle Red-Green-Refactor |
-| `reviewing-code` | "review", "vérifier" | Revue de code approfondie |
-| `debugging-issues` | "debug", "bug", "erreur" | Diagnostic méthodique |
+| Skill | Trigger | Usage |
+|-------|---------|-------|
+| `exploring-codebase` | "explore", "understand" | Analyze an existing codebase |
+| `planning-implementation` | "plan", "architecture" | Define a plan before coding |
+| `test-driven-development` | "TDD", "test first" | Red-Green-Refactor cycle |
+| `reviewing-code` | "review", "verify" | In-depth code review |
+| `debugging-issues` | "debug", "bug", "error" | Methodical diagnosis |
 | `generating-commit-messages` | "commit", "message" | Conventional Commits |
-| `creating-pull-requests` | "PR", "pull request" | PR complète et documentée |
+| `creating-pull-requests` | "PR", "pull request" | Complete and documented PR |
