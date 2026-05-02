@@ -1,78 +1,78 @@
 ---
 sidebar_position: 10
-title: "Parcours d'apprentissage - De Novice a Pro"
-description: "Guide progressif pour maitriser Claude Code et claude-socle, du premier lancement a l'utilisation avancee"
+title: "Learning Path - From Novice to Pro"
+description: "Progressive guide to mastering Claude Code and claude-socle, from first launch to advanced usage"
 ---
 
-# Parcours d'apprentissage : De Novice a Pro
+# Learning Path: From Novice to Pro
 
-Ce guide vous accompagne pas a pas dans la maitrise de Claude Code et de claude-socle, du premier lancement a la creation d'applications complexes. Il est structure en 5 niveaux progressifs, chacun avec des exercices pratiques, les erreurs courantes a eviter, et un checkpoint pour savoir quand passer au suivant.
+This guide walks you step by step through mastering Claude Code and claude-socle, from first launch to building complex applications. It is structured into 5 progressive levels, each with practical exercises, common mistakes to avoid, and a checkpoint to know when to move on to the next.
 
-| Niveau | Titre | Duree | Ce que vous apprenez |
+| Level | Title | Duration | What you learn |
 |--------|-------|-------|----------------------|
-| 1 | Decouverte | 30 min | Installation, premiers pas, orchestrateur |
-| 2 | Fondamentaux | 2h | Workflow complet, commands, agents, skills, rules |
-| 3 | Productivite | 2h | TDD, audits, hooks, prompting avance, parallelisme |
-| 4 | Maitrise | 3h | Creation de skills/agents/rules, hooks, MCP |
-| 5 | Expert | 2h | Architecture, optimisation tokens, teams, contribution |
+| 1 | Discovery | 30 min | Installation, first steps, orchestrator |
+| 2 | Fundamentals | 2h | Full workflow, commands, agents, skills, rules |
+| 3 | Productivity | 2h | TDD, audits, hooks, advanced prompting, parallelism |
+| 4 | Mastery | 3h | Creating skills/agents/rules, hooks, MCP |
+| 5 | Expert | 2h | Architecture, token optimization, teams, contribution |
 
-**Duree totale estimee : 9h30** (a repartir sur plusieurs jours)
-
----
-
-## Niveau 1 - Decouverte (30 minutes)
-
-**Objectif :** Comprendre ce qu'est Claude Code, installer claude-socle et realiser vos premieres interactions.
-
-**Public :** Vous n'avez jamais ouvert Claude Code, ou vous l'avez utilise comme un simple chatbot de terminal sans configuration particuliere.
+**Total estimated duration: 9h30** (to spread across several days)
 
 ---
 
-### 1.1 Qu'est-ce que Claude Code ?
+## Level 1 - Discovery (30 minutes)
 
-Claude Code est un agent de developpement qui s'execute dans votre terminal. Contrairement a un assistant qui repond simplement a vos questions, Claude Code peut lire votre code source, ecrire des fichiers, executer des commandes shell, et enchainer des operations complexes de facon autonome.
+**Goal:** Understand what Claude Code is, install claude-socle and complete your first interactions.
 
-La difference fondamentale avec un chatbot classique :
+**Audience:** You have never opened Claude Code, or you have used it as a simple terminal chatbot without any particular configuration.
 
-| Chatbot classique | Claude Code |
+---
+
+### 1.1 What is Claude Code?
+
+Claude Code is a development agent that runs in your terminal. Unlike an assistant that simply answers your questions, Claude Code can read your source code, write files, execute shell commands, and chain complex operations autonomously.
+
+The fundamental difference from a classic chatbot:
+
+| Classic chatbot | Claude Code |
 |-------------------|-------------|
-| Repond a des questions | Agit dans votre projet |
-| Connait seulement ce que vous lui dites | Lit directement vos fichiers |
-| Une reponse par message | Peut enchainer des dizaines d'operations |
-| Pas de persistance | Memoire automatique entre sessions |
+| Answers questions | Acts in your project |
+| Knows only what you tell it | Reads your files directly |
+| One answer per message | Can chain dozens of operations |
+| No persistence | Automatic memory between sessions |
 
-### 1.2 Qu'est-ce que claude-socle ?
+### 1.2 What is claude-socle?
 
-Claude Code seul est puissant, mais il necessite que vous sachiez exactement quoi lui demander. claude-socle est un template de configuration qui transforme Claude Code en un systeme structure et reproductible.
+Claude Code on its own is powerful, but it requires that you know exactly what to ask it. claude-socle is a configuration template that turns Claude Code into a structured and reproducible system.
 
-Concretement, claude-socle ajoute dans le dossier `.claude/` de votre projet :
+Concretely, claude-socle adds the following to the `.claude/` folder of your project:
 
-- **131 commandes** : des instructions pre-ecrites pour les taches courantes (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
-- **63 agents** : des sous-processus specialises qui s'activent automatiquement pour des taches d'analyse ou d'audit
-- **54 skills** : des comportements qui se declenchent automatiquement selon vos mots-cles
-- **30 rules** : des conventions de code appliquees automatiquement selon les fichiers que vous modifiez
+- **131 commands**: pre-written instructions for common tasks (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
+- **63 agents**: specialized sub-processes that activate automatically for analysis or audit tasks
+- **54 skills**: behaviors that trigger automatically based on your keywords
+- **30 rules**: code conventions applied automatically based on the files you modify
 
-Sans claude-socle, vous devez tout specifier a chaque session. Avec claude-socle, les bonnes pratiques sont intergrees et activees automatiquement.
+Without claude-socle, you have to specify everything in every session. With claude-socle, best practices are integrated and activated automatically.
 
 ### 1.3 Installation
 
-Suivez le [guide d'installation complet](/docs/intro/installation) pour les details. En resume :
+Follow the [full installation guide](/docs/intro/installation) for details. In summary:
 
 ```bash
-# Dans le repertoire de votre projet
+# In your project's directory
 git clone https://github.com/christopherlouet/claude-socle.git temp-socle
 cp -r temp-socle/.claude .
 cp temp-socle/CLAUDE.md .
 rm -rf temp-socle
 ```
 
-Verifiez l'installation en lancant Claude Code :
+Verify the installation by launching Claude Code:
 
 ```bash
 claude
 ```
 
-Au demarrage, vous devriez voir un message similaire a :
+At startup, you should see a message similar to:
 
 ```
 === Claude Code Session ===
@@ -82,210 +82,210 @@ Agents: 63
 ===========================
 ```
 
-Si ce message n'apparait pas, consultez la section troubleshooting du [guide d'installation](/docs/intro/installation).
+If this message does not appear, see the troubleshooting section of the [installation guide](/docs/intro/installation).
 
-### 1.4 Comprendre l'interface terminal
+### 1.4 Understanding the terminal interface
 
-Claude Code s'utilise dans votre terminal. L'interface est minimaliste : vous tapez vos messages ou commandes, Claude repond et peut executer des actions.
+Claude Code is used in your terminal. The interface is minimalist: you type your messages or commands, Claude responds and can execute actions.
 
-Quelques points importants a comprendre des le debut :
+A few important points to understand right from the start:
 
-**Claude voit votre repertoire courant.** Quand vous lancez `claude` depuis `/home/user/mon-projet`, Claude peut lire et modifier tous les fichiers de ce repertoire. Lancez toujours Claude depuis la racine de votre projet.
+**Claude sees your current directory.** When you launch `claude` from `/home/user/my-project`, Claude can read and modify all files in that directory. Always launch Claude from the root of your project.
 
-**Les commandes commencent par `/`.** Taper `/work:work-explore` execute la commande `work-explore` du domaine `work`. Le reste du temps, vous ecrivez en langage naturel.
+**Commands start with `/`.** Typing `/work:work-explore` runs the `work-explore` command in the `work` domain. The rest of the time, you write in natural language.
 
-**Claude peut se tromper.** Relisez les modifications proposees avant de les accepter. Le workflow du socle est concu pour minimiser les erreurs, mais votre vigilance reste necessaire.
+**Claude can make mistakes.** Re-read the proposed modifications before accepting them. The foundation's workflow is designed to minimize errors, but your vigilance is still required.
 
-### 1.5 Les commandes de base
+### 1.5 Basic commands
 
-Ces quatre commandes sont les premieres a maitriser. Elles fonctionnent dans n'importe quelle session, independamment du projet.
+These four commands are the first to master. They work in any session, regardless of the project.
 
-**`/help`** - Affiche la liste des commandes disponibles dans votre session actuelle. Utile quand vous cherchez quelle commande utiliser.
+**`/help`** - Displays the list of commands available in your current session. Useful when you are looking for which command to use.
 
-**`/clear`** - Efface completement le contexte de la conversation. A utiliser quand vous changez de sujet ou demarrez une nouvelle tache sans rapport avec la precedente. Attention : Claude "oublie" tout ce qui a ete dit.
+**`/clear`** - Completely clears the conversation context. To use when you change topics or start a new task unrelated to the previous one. Beware: Claude "forgets" everything that was said.
 
-**`/compact`** - Resume intelligemment le contexte tout en conservant les decisions importantes. Preferer `/compact` a `/clear` entre les phases d'un workflow (par exemple, apres une longue exploration avant de passer a la planification).
+**`/compact`** - Intelligently summarizes the context while keeping the important decisions. Prefer `/compact` over `/clear` between the phases of a workflow (for example, after a long exploration before moving on to planning).
 
-**`/effort`** - Controle le niveau de raisonnement utilise. Quatre niveaux :
+**`/effort`** - Controls the level of reasoning used. Four levels:
 
-| Niveau | Commande | Quand l'utiliser |
+| Level | Command | When to use it |
 |--------|----------|-----------------|
-| Faible | `/effort low` | Exploration, lecture de fichiers, taches simples |
-| Moyen | `/effort medium` | Developpement standard, corrections |
-| Eleve | `/effort high` | Architecture, audit, refactoring complexe, debug |
+| Low | `/effort low` | Exploration, reading files, simple tasks |
+| Medium | `/effort medium` | Standard development, fixes |
+| High | `/effort high` | Architecture, audit, complex refactoring, debug |
 
-Par defaut, Claude Code ajuste son niveau automatiquement. Utilisez `/effort` pour forcer un niveau specifique.
+By default, Claude Code adjusts its level automatically. Use `/effort` to force a specific level.
 
-### 1.6 L'orchestrateur `/assistant`
+### 1.6 The `/assistant` orchestrator
 
-`/assistant` est le point d'entree recommande quand vous ne savez pas quelle commande utiliser. Decrivez votre besoin, et l'orchestrateur vous guide vers la bonne commande ou enchainement de commandes.
+`/assistant` is the recommended entry point when you do not know which command to use. Describe your need, and the orchestrator guides you to the right command or chain of commands.
 
 ```bash
-# Mode guide : attend votre confirmation avant d'agir
+# Guided mode: waits for your confirmation before acting
 /assistant
 
-# Exemple avec contexte
-/assistant "Je veux ajouter un systeme de notification par email a mon API Node.js"
+# Example with context
+/assistant "I want to add an email notification system to my Node.js API"
 ```
 
-L'orchestrateur analysera votre demande et proposera un plan d'action. C'est le point de depart ideal pour les debutants.
+The orchestrator will analyze your request and propose an action plan. It is the ideal starting point for beginners.
 
-Pour les utilisateurs qui veulent une execution directe sans confirmation :
+For users who want direct execution without confirmation:
 
 ```bash
-# Mode automatique : execute directement le workflow adapte
-/assistant-auto "Ajouter des tests de regression pour le module auth"
+# Automatic mode: directly runs the appropriate workflow
+/assistant-auto "Add regression tests for the auth module"
 ```
 
-La difference entre les deux : `/assistant` vous laisse valider chaque etape, `/assistant-auto` enchaine les actions automatiquement. Commencez par `/assistant` jusqu'a ce que vous soyez a l'aise avec le systeme.
+The difference between the two: `/assistant` lets you validate each step, `/assistant-auto` chains the actions automatically. Start with `/assistant` until you are comfortable with the system.
 
-### 1.7 Premiere interaction : explorer un projet
+### 1.7 First interaction: exploring a project
 
-La meilleure facon de decouvrir Claude Code est d'explorer un projet existant. La commande `/work:work-explore` est specifiquement congue pour cela : elle analyse votre code en lecture seule et produit une vue d'ensemble structuree.
+The best way to discover Claude Code is to explore an existing project. The `/work:work-explore` command is specifically designed for this: it analyzes your code in read-only mode and produces a structured overview.
 
 ```bash
 /work:work-explore
 ```
 
-Claude va examiner :
-- La structure des dossiers et fichiers principaux
-- Les dependances et technologies utilisees
-- Les patterns et conventions en place
-- Les points d'attention eventuels
+Claude will examine:
+- The structure of folders and main files
+- The dependencies and technologies used
+- The patterns and conventions in place
+- The potential points of attention
 
-Vous pouvez aussi explorer un aspect specifique :
+You can also explore a specific aspect:
 
 ```bash
-/work:work-explore "Comprendre le systeme d'authentification"
+/work:work-explore "Understand the authentication system"
 ```
 
 ---
 
-### Exercice Niveau 1
+### Level 1 Exercise
 
-Choisissez un projet existant sur votre machine (peu importe la taille ou le langage).
+Choose an existing project on your machine (regardless of size or language).
 
-1. Positionnez-vous dans le repertoire du projet : `cd /chemin/vers/mon-projet`
-2. Installez claude-socle si ce n'est pas fait
-3. Lancez Claude Code : `claude`
-4. Executez `/work:work-explore` et lisez le rapport produit
-5. Posez deux questions en langage naturel sur le code (par exemple : "Quelles sont les principales dependances de ce projet ?" ou "Ou se trouve la logique metier principale ?")
-6. Essayez `/assistant "Que faudrait-il faire pour ameliorer ce projet ?"` et observez les recommandations
+1. Position yourself in the project directory: `cd /path/to/my-project`
+2. Install claude-socle if it is not done
+3. Launch Claude Code: `claude`
+4. Run `/work:work-explore` and read the produced report
+5. Ask two questions in natural language about the code (for example: "What are the main dependencies of this project?" or "Where is the main business logic?")
+6. Try `/assistant "What should be done to improve this project?"` and observe the recommendations
 
-**Duree estimee :** 15 a 30 minutes.
-
----
-
-### Erreurs courantes au Niveau 1
-
-**Lancer Claude depuis le mauvais repertoire.** Si vous lancez `claude` depuis votre home (`~`), Claude voit votre repertoire personnel, pas votre projet. Verifiez toujours avec `pwd` que vous etes au bon endroit.
-
-**Utiliser Claude comme un chatbot.** La tentation est forte de poser des questions generales ("Comment faire du TDD en Python ?"). Claude Code est optimise pour travailler sur votre code specifique. Ancrez vos demandes dans le contexte de votre projet.
-
-**Accepter toutes les modifications sans relire.** Claude peut faire des erreurs. Lisez les diffs avant de valider, surtout au debut.
-
-**Ne pas utiliser `/compact` dans les sessions longues.** Apres 30 a 60 minutes de travail, le contexte s'accumule. Utilisez `/compact` pour garder les sessions fluides.
-
-**Confondre `/clear` et `/compact`.** `/clear` efface tout, `/compact` resumer intelligemment. Dans la majorite des cas, `/compact` est le bon choix.
+**Estimated duration:** 15 to 30 minutes.
 
 ---
 
-### Checkpoint Niveau 1
+### Common mistakes at Level 1
 
-Vous etes pret pour le Niveau 2 quand vous pouvez repondre "oui" a ces questions :
+**Launching Claude from the wrong directory.** If you launch `claude` from your home (`~`), Claude sees your personal directory, not your project. Always check with `pwd` that you are in the right place.
 
-- [ ] Claude Code demarre correctement et affiche le message d'accueil du socle
-- [ ] Vous savez lancer `/work:work-explore` et interpreter le rapport produit
-- [ ] Vous comprenez la difference entre `/clear` et `/compact`
-- [ ] Vous avez utilise `/assistant` pour obtenir une recommandation
-- [ ] Vous savez que Claude voit le repertoire depuis lequel vous l'avez lance
+**Using Claude as a chatbot.** It is tempting to ask general questions ("How to do TDD in Python?"). Claude Code is optimized to work on your specific code. Anchor your requests in the context of your project.
 
----
+**Accepting all modifications without reviewing.** Claude can make mistakes. Read the diffs before validating, especially at the beginning.
 
-## Niveau 2 - Fondamentaux (2 heures)
+**Not using `/compact` in long sessions.** After 30 to 60 minutes of work, the context accumulates. Use `/compact` to keep sessions smooth.
 
-**Objectif :** Maitriser le workflow obligatoire Explore -> Specify -> Plan -> TDD -> Audit -> Commit, comprendre les quatre concepts cles (Commands, Agents, Skills, Rules) et savoir choisir la bonne commande pour chaque situation.
-
-**Public :** Vous avez complete le Niveau 1. Vous savez demarrer Claude Code et executer des commandes simples.
+**Confusing `/clear` and `/compact`.** `/clear` erases everything, `/compact` summarizes intelligently. In most cases, `/compact` is the right choice.
 
 ---
 
-### 2.1 Le workflow obligatoire
+### Level 1 Checkpoint
 
-Claude-socle impose un workflow en six etapes pour tout developpement significatif. Ce n'est pas une suggestion : sauter des etapes produit systematiquement des resultats de moins bonne qualite et introduit des regressions.
+You are ready for Level 2 when you can answer "yes" to these questions:
+
+- [ ] Claude Code starts correctly and displays the foundation's welcome message
+- [ ] You know how to run `/work:work-explore` and interpret the produced report
+- [ ] You understand the difference between `/clear` and `/compact`
+- [ ] You have used `/assistant` to get a recommendation
+- [ ] You know that Claude sees the directory from which you launched it
+
+---
+
+## Level 2 - Fundamentals (2 hours)
+
+**Goal:** Master the mandatory workflow Explore -> Specify -> Plan -> TDD -> Audit -> Commit, understand the four key concepts (Commands, Agents, Skills, Rules) and know how to choose the right command for each situation.
+
+**Audience:** You have completed Level 1. You know how to start Claude Code and run simple commands.
+
+---
+
+### 2.1 The mandatory workflow
+
+Claude-socle imposes a six-step workflow for any significant development. This is not a suggestion: skipping steps consistently produces lower-quality results and introduces regressions.
 
 ```
 EXPLORE -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT
 ```
 
-Voici pourquoi chaque etape est necessaire :
+Here is why each step is necessary:
 
 **EXPLORE** (`/work:work-explore`)
 
-Lire et comprendre le code existant avant toute modification. Claude Code ne connait pas votre projet par defaut (sauf ce qui est dans le contexte courant). L'exploration etablit la base de connaissance necessaire pour que les etapes suivantes soient pertinentes.
+Read and understand the existing code before any modification. Claude Code does not know your project by default (except what is in the current context). Exploration establishes the knowledge base needed for the following steps to be relevant.
 
 ```bash
 /work:work-explore
-# ou avec un focus specifique
-/work:work-explore "Comprendre le module de gestion des utilisateurs"
+# or with a specific focus
+/work:work-explore "Understand the user management module"
 ```
 
 **SPECIFY** (`/work:work-specify`)
 
-Traduire votre besoin en User Stories structurees avec des criteres d'acceptation. Cette etape force la clarification des ambiguites avant d'investir du temps en planification et en code.
+Translate your need into structured User Stories with acceptance criteria. This step forces ambiguities to be clarified before investing time in planning and code.
 
 ```bash
-/work:work-specify "Ajouter la fonctionnalite de reinitialisation de mot de passe"
+/work:work-specify "Add the password reset feature"
 ```
 
-La commande produit un document dans `specs/[feature]/spec.md` avec :
-- Des User Stories priorisees (P1=MVP, P2=Important, P3=Nice-to-have)
-- Des criteres d'acceptation au format Given/When/Then
-- Les contraintes techniques identifiees
+The command produces a document in `specs/[feature]/spec.md` with:
+- Prioritized User Stories (P1=MVP, P2=Important, P3=Nice-to-have)
+- Acceptance criteria in Given/When/Then format
+- Identified technical constraints
 
 **PLAN** (`/work:work-plan`)
 
-Proposer une architecture technique avant d'implementer. Cette etape liste les fichiers a creer ou modifier, les dependances entre taches, et les risques potentiels. Vous validez le plan avant que le code soit ecrit.
+Propose a technical architecture before implementing. This step lists the files to create or modify, the dependencies between tasks, and the potential risks. You validate the plan before the code is written.
 
 ```bash
 /work:work-plan
 ```
 
-Le plan est stocke dans `specs/[feature]/plan.md`. Ne passez pas a l'etape TDD sans avoir valide ce plan.
+The plan is stored in `specs/[feature]/plan.md`. Do not move to the TDD step without having validated this plan.
 
 **TDD** (`/dev:dev-tdd`)
 
-Implementer en suivant le cycle Red-Green-Refactor : ecrire le test qui echoue en premier, puis ecrire le code minimal pour le faire passer, puis ameliorer le code sans casser les tests. La couverture minimale attendue est 80%.
+Implement following the Red-Green-Refactor cycle: write the failing test first, then write the minimal code to make it pass, then improve the code without breaking the tests. The expected minimum coverage is 80%.
 
 ```bash
-/dev:dev-tdd "Implementer le service de reinitialisation de mot de passe"
+/dev:dev-tdd "Implement the password reset service"
 ```
 
-L'ordre est strict : tests d'abord, code ensuite. Cette contrainte peut sembler contre-intuitive au debut, mais elle force a clarifier les specifications avant de coder et produit un code plus maintenable.
+The order is strict: tests first, code next. This constraint may seem counter-intuitive at first, but it forces you to clarify the specifications before coding and produces more maintainable code.
 
 **AUDIT** (`/qa:qa-loop "score 90"`)
 
-Verifier la qualite globale apres l'implementation : securite, performance, accessibilite, dette technique. La commande `qa-loop` execute un audit et corrige automatiquement les problemes jusqu'a atteindre un score de 90.
+Verify the overall quality after implementation: security, performance, accessibility, technical debt. The `qa-loop` command runs an audit and automatically fixes issues until reaching a score of 90.
 
 ```bash
 /qa:qa-loop "score 90"
 ```
 
-Ne commitez pas sans avoir atteint le score cible. L'audit valide ce que les tests ne couvrent pas : vulnerabilites de securite, problemes de performance, dette technique.
+Do not commit without having reached the target score. The audit validates what the tests do not cover: security vulnerabilities, performance issues, technical debt.
 
-**COMMIT** (`/work:work-commit` ou `/work:work-pr`)
+**COMMIT** (`/work:work-commit` or `/work:work-pr`)
 
-Creer un commit propre avec un message au format Conventional Commits, ou une Pull Request complete avec description.
+Create a clean commit with a Conventional Commits format message, or a complete Pull Request with a description.
 
 ```bash
-# Commit simple
+# Simple commit
 /work:work-commit
 
-# Pull Request complete
+# Full Pull Request
 /work:work-pr
 ```
 
-#### Vue d'ensemble du workflow
+#### Workflow overview
 
 ```
 /work:work-explore
@@ -294,350 +294,350 @@ Creer un commit propre avec un message au format Conventional Commits, ou une Pu
 /work:work-specify
         |
         v
-/work:work-plan -----> Validation du plan
+/work:work-plan -----> Plan validation
         |                      |
-        |               Reviser si besoin
+        |               Revise if needed
         |                      |
         v<---------------------+
 /dev:dev-tdd
         |
         v
-/qa:qa-loop "score 90" -----> Score < 90 : corriger et re-auditer
+/qa:qa-loop "score 90" -----> Score < 90: fix and re-audit
         |                               |
         |                               |
         v<-----------------------------+
 /work:work-pr
 ```
 
-#### Raccourcis pour les cas courants
+#### Shortcuts for common cases
 
-Pour les taches standard, des commandes de workflow complet enchainent toutes les etapes automatiquement :
+For standard tasks, full workflow commands chain all the steps automatically:
 
 ```bash
-# Nouvelle feature : enchaine tout le workflow
-/work:work-flow-feature "Ajouter la fonctionnalite de recherche"
+# New feature: chains the entire workflow
+/work:work-flow-feature "Add the search feature"
 
-# Correction de bug : workflow adapte
-/work:work-flow-bugfix "Corriger le crash au chargement du profil"
+# Bug fix: adapted workflow
+/work:work-flow-bugfix "Fix the crash when loading the profile"
 
-# Changement trivial (refactoring mineur, correction typo) :
-/work:work-quick "Renommer la variable userId en user_id dans auth.ts"
+# Trivial change (minor refactoring, typo fix):
+/work:work-quick "Rename the variable userId to user_id in auth.ts"
 ```
 
 ---
 
-### 2.2 Les Commands : le declenchement manuel
+### 2.2 Commands: manual triggering
 
-Une **command** est un fichier Markdown dans `.claude/commands/` qui contient des instructions pour Claude. Vous la declenchez explicitement avec le prefixe `/`.
+A **command** is a Markdown file in `.claude/commands/` that contains instructions for Claude. You trigger it explicitly with the `/` prefix.
 
-La convention de nommage est `domaine:domaine-action` :
+The naming convention is `domain:domain-action`:
 
 ```bash
-/work:work-explore      # domaine "work", action "explore"
-/dev:dev-tdd            # domaine "dev", action "tdd"
-/qa:qa-security         # domaine "qa", action "security"
-/ops:ops-deploy         # domaine "ops", action "deploy"
+/work:work-explore      # "work" domain, "explore" action
+/dev:dev-tdd            # "dev" domain, "tdd" action
+/qa:qa-security         # "qa" domain, "security" action
+/ops:ops-deploy         # "ops" domain, "deploy" action
 ```
 
-Les 9 domaines disponibles :
+The 9 available domains:
 
-| Domaine | Commandes | Usage |
+| Domain | Commands | Usage |
 |---------|-----------|-------|
-| `work` | Workflow principal (explore, specify, plan, commit, pr...) | Orchestration du developpement |
-| `dev` | Developpement (tdd, api, component, debug, refactor...) | Ecriture de code |
-| `qa` | Qualite (audit, security, perf, wcag...) | Verification et tests |
+| `work` | Main workflow (explore, specify, plan, commit, pr...) | Development orchestration |
+| `dev` | Development (tdd, api, component, debug, refactor...) | Writing code |
+| `qa` | Quality (audit, security, perf, wcag...) | Verification and tests |
 | `ops` | Operations (deploy, docker, ci, database...) | Infrastructure |
 | `doc` | Documentation (generate, changelog, explain...) | Documentation |
-| `biz` | Business (model, mvp, competitor, personas...) | Strategie produit |
-| `growth` | Croissance (seo, analytics, landing, funnel...) | Marketing technique |
-| `data` | Donnees (pipeline, analytics, modeling...) | Data engineering |
-| `legal` | Legal (rgpd, privacy, terms...) | Conformite |
+| `biz` | Business (model, mvp, competitor, personas...) | Product strategy |
+| `growth` | Growth (seo, analytics, landing, funnel...) | Technical marketing |
+| `data` | Data (pipeline, analytics, modeling...) | Data engineering |
+| `legal` | Legal (rgpd, privacy, terms...) | Compliance |
 
-La caracteristique cle d'une command : elle partage le contexte de votre conversation. Claude voit tout l'historique de la session quand il execute une command. Cela permet des enchainements logiques : explorer, puis planifier en connaissant l'exploration, puis coder en connaissant le plan.
+The key characteristic of a command: it shares the context of your conversation. Claude sees the entire history of the session when running a command. This allows logical chaining: explore, then plan knowing the exploration, then code knowing the plan.
 
-Les commands acceptent des arguments :
+Commands accept arguments:
 
 ```bash
-/dev:dev-tdd "Implementer la validation d'email dans UserService"
-/work:work-plan "Feature: systeme de notifications push"
+/dev:dev-tdd "Implement email validation in UserService"
+/work:work-plan "Feature: push notification system"
 /qa:qa-loop "score 95"
 ```
 
 ---
 
-### 2.3 Les Agents : le traitement autonome isole
+### 2.3 Agents: isolated autonomous processing
 
-Un **agent** est un sous-processus lance par Claude pour executer une tache de facon autonome, dans un contexte isole qui ne pollue pas votre conversation principale.
+An **agent** is a sub-process launched by Claude to run a task autonomously, in an isolated context that does not pollute your main conversation.
 
-La difference avec une command :
+The difference from a command:
 
 | Aspect | Command | Agent |
 |--------|---------|-------|
-| Declenchement | Manuel (`/cmd`) | Automatique (delegation) |
-| Contexte | Partage avec la session | Isole (ne voit pas la session) |
-| Outils | Tous disponibles | Restreints selon l'agent |
-| Modele | Celui de la session | Haiku ou Sonnet selon l'agent |
+| Triggering | Manual (`/cmd`) | Automatic (delegation) |
+| Context | Shared with the session | Isolated (does not see the session) |
+| Tools | All available | Restricted depending on the agent |
+| Model | Same as the session | Haiku or Sonnet depending on the agent |
 
-Exemple concret : quand vous tapez "Fais un audit de securite", Claude delegue automatiquement a l'agent `qa-security`. Cet agent :
-- S'execute avec le modele Sonnet (optimise pour ce type d'analyse)
-- N'a acces qu'aux outils Read, Grep et Glob (lecture seule, impossible de modifier accidentellement)
-- Produit un rapport qui est reintegre dans votre conversation principale
+Concrete example: when you type "Do a security audit", Claude automatically delegates to the `qa-security` agent. This agent:
+- Runs with the Sonnet model (optimized for this type of analysis)
+- Only has access to the Read, Grep and Glob tools (read-only, impossible to modify accidentally)
+- Produces a report that is reintegrated into your main conversation
 
 ```
-Votre conversation
+Your conversation
       |
-      | "Fais un audit de securite"
+      | "Do a security audit"
       v
- Claude delegue
+ Claude delegates
       |
       v
- [Agent qa-security - contexte isole]
+ [qa-security agent - isolated context]
  - Model: sonnet
- - Outils: Read, Grep, Glob seulement
- - Analyse le code...
+ - Tools: Read, Grep, Glob only
+ - Analyzes the code...
       |
       v
- Rapport d'audit
+ Audit report
       |
       v
-Votre conversation
-(resume des resultats)
+Your conversation
+(summary of results)
 ```
 
-Vous pouvez aussi invoquer les agents via des commands :
+You can also invoke agents via commands:
 
 ```bash
-/qa:qa-security     # Lance l'agent qa-security
-/qa:qa-perf         # Lance l'agent qa-perf
-/work:work-explore  # Lance l'agent work-explore
+/qa:qa-security     # Launches the qa-security agent
+/qa:qa-perf         # Launches the qa-perf agent
+/work:work-explore  # Launches the work-explore agent
 ```
 
-Les 63 agents sont regroupes dans les memes domaines que les commands. Les agents haiku (22) sont utilises pour les taches rapides et economiques (exploration, documentation, audits simples). Les agents sonnet (35) pour les analyses complexes (securite, performance, debug, architecture).
+The 63 agents are grouped into the same domains as the commands. Haiku agents (22) are used for fast and economical tasks (exploration, documentation, simple audits). Sonnet agents (35) for complex analyses (security, performance, debug, architecture).
 
 ---
 
-### 2.4 Les Skills : le comportement automatique
+### 2.4 Skills: automatic behavior
 
-Un **skill** est un ensemble d'instructions qui s'activent automatiquement quand certains mots-cles sont detectes dans vos messages.
+A **skill** is a set of instructions that activate automatically when certain keywords are detected in your messages.
 
-Vous n'avez pas besoin de faire quoi que ce soit : les skills se declenchent en arriere-plan. Par exemple :
+You do not have to do anything: skills trigger in the background. For example:
 
-- Mentionner "TDD" ou "test first" active le skill `test-driven-development` : Claude suivra automatiquement le cycle Red-Green-Refactor
-- Mentionner "commit" ou "git commit" active le skill `generating-commit-messages` : Claude utilisera le format Conventional Commits
-- Mentionner "docker" ou "containeriser" active le skill `docker-containerization` : Claude appliquera les bonnes pratiques Docker
+- Mentioning "TDD" or "test first" activates the `test-driven-development` skill: Claude will automatically follow the Red-Green-Refactor cycle
+- Mentioning "commit" or "git commit" activates the `generating-commit-messages` skill: Claude will use the Conventional Commits format
+- Mentioning "docker" or "containerize" activates the `docker-containerization` skill: Claude will apply Docker best practices
 
 ```
-Vous : "Je veux faire du TDD pour ce nouveau service"
+You: "I want to do TDD for this new service"
                     |
                     v
-         Detection : "TDD" detecte
+         Detection: "TDD" detected
                     |
                     v
-         Skill test-driven-development active
+         test-driven-development skill active
                     |
                     v
-         Claude applique automatiquement :
-         - RED : ecrire le test qui echoue d'abord
-         - GREEN : code minimal pour passer
-         - REFACTOR : ameliorer sans casser
+         Claude automatically applies:
+         - RED: write the failing test first
+         - GREEN: minimal code to pass
+         - REFACTOR: improve without breaking
 ```
 
-Les skills principaux a connaitre :
+The main skills to know:
 
-| Skill | Mots-cles declencheurs | Comportement induit |
+| Skill | Trigger keywords | Induced behavior |
 |-------|----------------------|---------------------|
-| `test-driven-development` | TDD, test first, red green | Cycle Red-Green-Refactor obligatoire |
-| `generating-commit-messages` | commit, git commit | Format Conventional Commits |
-| `creating-pull-requests` | PR, pull request, merge | Structure de PR complete |
-| `debugging-issues` | bug, erreur, crash, debug | Investigation systematique |
-| `security-audit` | securite, OWASP, vulnerability | Audit OWASP Top 10 |
-| `exploring-codebase` | explorer, comprendre, decouvrir | Analyse en lecture seule |
+| `test-driven-development` | TDD, test first, red green | Mandatory Red-Green-Refactor cycle |
+| `generating-commit-messages` | commit, git commit | Conventional Commits format |
+| `creating-pull-requests` | PR, pull request, merge | Complete PR structure |
+| `debugging-issues` | bug, error, crash, debug | Systematic investigation |
+| `security-audit` | security, OWASP, vulnerability | OWASP Top 10 audit |
+| `exploring-codebase` | explore, understand, discover | Read-only analysis |
 
 ---
 
-### 2.5 Les Rules : les conventions automatiques
+### 2.5 Rules: automatic conventions
 
-Une **rule** est un ensemble de conventions appliquees automatiquement quand vous travaillez sur certains types de fichiers.
+A **rule** is a set of conventions automatically applied when you work on certain types of files.
 
-Le systeme est base sur les chemins de fichiers. Quand Claude modifie `src/components/Button.tsx`, les rules correspondant aux patterns `**/*.tsx` et `**/components/**` s'activent automatiquement. Claude applique alors les conventions TypeScript et React sans que vous ayez besoin de les rappeler.
+The system is based on file paths. When Claude modifies `src/components/Button.tsx`, the rules corresponding to the patterns `**/*.tsx` and `**/components/**` activate automatically. Claude then applies the TypeScript and React conventions without you having to remind it.
 
 ```
-Claude modifie src/api/auth.ts
+Claude modifies src/api/auth.ts
           |
           v
-  Detection : le fichier correspond a
-  - "**/*.ts" -> rule typescript activee
-  - "**/api/**" -> rule api activee
-  - "**/auth/**" -> rule security activee
+  Detection: the file matches
+  - "**/*.ts" -> typescript rule activated
+  - "**/api/**" -> api rule activated
+  - "**/auth/**" -> security rule activated
           |
           v
-  Claude applique automatiquement :
-  - TypeScript strict mode, pas de `any`
-  - Conventions REST, codes HTTP corrects
-  - Validation des entrees, protection XSS
+  Claude automatically applies:
+  - TypeScript strict mode, no `any`
+  - REST conventions, correct HTTP codes
+  - Input validation, XSS protection
 ```
 
-Les 30 rules du socle couvrent :
-- Les langages : TypeScript, Python, Go, Java, C#, Ruby, PHP, Rust, Flutter/Dart
-- Les frameworks : React, Next.js
-- Les domaines transversaux : Testing, Security, API, Git, Workflow, Performance, Accessibility
+The 30 rules of the foundation cover:
+- Languages: TypeScript, Python, Go, Java, C#, Ruby, PHP, Rust, Flutter/Dart
+- Frameworks: React, Next.js
+- Cross-cutting domains: Testing, Security, API, Git, Workflow, Performance, Accessibility
 
-**Ordre de priorite quand plusieurs rules s'appliquent simultanement :**
+**Priority order when several rules apply simultaneously:**
 
-| Priorite | Rule | Raison |
+| Priority | Rule | Reason |
 |----------|------|--------|
-| 1 (max) | `security` | La securite prime sur tout |
-| 2 | `verification` | Verification obligatoire avant completion |
-| 3 | `tdd-enforcement` | TDD obligatoire pour tout code |
-| 4 | Rules de langage | Conventions specifiques |
-| 5 | Rules de framework | Conventions du framework |
-| 6 | `testing` | Normes de tests |
-| 7+ | `performance`, `accessibility`, `api`... | Optimisations et bonnes pratiques |
+| 1 (max) | `security` | Security takes precedence over everything |
+| 2 | `verification` | Mandatory verification before completion |
+| 3 | `tdd-enforcement` | TDD mandatory for all code |
+| 4 | Language rules | Specific conventions |
+| 5 | Framework rules | Framework conventions |
+| 6 | `testing` | Test standards |
+| 7+ | `performance`, `accessibility`, `api`... | Optimizations and best practices |
 
 ---
 
-### 2.6 Les 9 domaines : vue d'ensemble
+### 2.6 The 9 domains: overview
 
-Claude-socle organise ses 131 commandes en 9 domaines. Chaque domaine couvre un aspect du developpement logiciel.
+Claude-socle organizes its 131 commands into 9 domains. Each domain covers an aspect of software development.
 
 ```
 .claude/commands/
-├── work/      # Workflow : explore, specify, plan, commit, pr, flows...
-├── dev/       # Code : tdd, api, component, debug, refactor, test...
-├── qa/        # Qualite : audit, security, perf, wcag, review, loop...
-├── ops/       # Infra : deploy, docker, ci, database, monitoring...
-├── doc/       # Docs : generate, changelog, explain, onboard...
-├── biz/       # Business : model, mvp, competitor, personas, pricing...
-├── growth/    # Croissance : seo, analytics, landing, funnel, cro...
-├── data/      # Donnees : pipeline, analytics, modeling...
-└── legal/     # Legal : rgpd, privacy-policy, terms-of-service...
+├── work/      # Workflow: explore, specify, plan, commit, pr, flows...
+├── dev/       # Code: tdd, api, component, debug, refactor, test...
+├── qa/        # Quality: audit, security, perf, wcag, review, loop...
+├── ops/       # Infra: deploy, docker, ci, database, monitoring...
+├── doc/       # Docs: generate, changelog, explain, onboard...
+├── biz/       # Business: model, mvp, competitor, personas, pricing...
+├── growth/    # Growth: seo, analytics, landing, funnel, cro...
+├── data/      # Data: pipeline, analytics, modeling...
+└── legal/     # Legal: rgpd, privacy-policy, terms-of-service...
 ```
 
-Pour les developpeurs, les domaines les plus utilises au quotidien sont `work`, `dev`, `qa` et `ops`. Les domaines `biz`, `growth`, `data` et `legal` sont pertinents selon le contexte de votre projet.
+For developers, the domains most used on a daily basis are `work`, `dev`, `qa` and `ops`. The `biz`, `growth`, `data` and `legal` domains are relevant depending on the context of your project.
 
 ---
 
-### 2.7 Exercice pratique : implementer une feature complete
+### 2.7 Practical exercise: implement a complete feature
 
-Cet exercice vous fait parcourir l'integralite du workflow sur un exemple concret. Choisissez un projet sur lequel vous travaillez, ou creez un projet vide.
+This exercise takes you through the entire workflow on a concrete example. Choose a project you are working on, or create an empty project.
 
-**Scenario :** Ajouter une fonction de validation d'adresse email dans un module utilitaire.
+**Scenario:** Add an email address validation function in a utility module.
 
-**Etape 1 - Explorer**
+**Step 1 - Explore**
 ```bash
-/work:work-explore "Comprendre les utilitaires existants et les conventions de validation"
+/work:work-explore "Understand existing utilities and validation conventions"
 ```
-Lisez le rapport. Identifiez : existe-t-il deja une logique de validation ? Quel est le style de code utilise ?
+Read the report. Identify: is there already validation logic? What is the code style used?
 
-**Etape 2 - Specifier**
+**Step 2 - Specify**
 ```bash
-/work:work-specify "Ajouter une fonction validateEmail dans le module utils"
+/work:work-specify "Add a validateEmail function in the utils module"
 ```
-Lisez les User Stories generees. Verifiez que les criteres d'acceptation correspondent a votre intention. Ajustez si necessaire.
+Read the generated User Stories. Verify that the acceptance criteria match your intent. Adjust if needed.
 
-**Etape 3 - Planifier**
+**Step 3 - Plan**
 ```bash
 /work:work-plan
 ```
-Examinez le plan : quels fichiers seront crees ou modifies ? Y a-t-il des risques identifies ? Validez le plan explicitement (repondez "ok" ou "valide le plan").
+Examine the plan: which files will be created or modified? Are there identified risks? Validate the plan explicitly (reply "ok" or "validate the plan").
 
-**Etape 4 - Implmenter en TDD**
+**Step 4 - Implement in TDD**
 ```bash
-/dev:dev-tdd "Implementer validateEmail selon le plan valide"
+/dev:dev-tdd "Implement validateEmail according to the validated plan"
 ```
-Observez le cycle : Claude ecrit d'abord le test (qui echoue), puis le code minimal, puis refactorise si necessaire.
+Observe the cycle: Claude first writes the test (which fails), then the minimal code, then refactors if needed.
 
-**Etape 5 - Auditer**
+**Step 5 - Audit**
 ```bash
 /qa:qa-loop "score 90"
 ```
-Attendez la completion de l'audit. Si des problemes sont identifies, Claude les corrige automatiquement. Verifiez le score final.
+Wait for the audit completion. If issues are identified, Claude fixes them automatically. Verify the final score.
 
-**Etape 6 - Commiter**
+**Step 6 - Commit**
 ```bash
 /work:work-commit
 ```
-Lisez le message de commit propose. Verifiez qu'il respecte le format Conventional Commits (`feat:`, `fix:`, etc.).
+Read the proposed commit message. Verify that it respects the Conventional Commits format (`feat:`, `fix:`, etc.).
 
 ---
 
-### 2.8 Table de decision : quelle commande pour quelle situation ?
+### 2.8 Decision table: which command for which situation?
 
-| Je veux... | Commande | Domaine |
+| I want to... | Command | Domain |
 |------------|----------|---------|
-| Comprendre un projet ou module | `/work:work-explore` | work |
-| Creer des User Stories | `/work:work-specify` | work |
-| Clarifier des ambiguites de spec | `/work:work-clarify` | work |
-| Planifier une implementation | `/work:work-plan` | work |
-| Developper en TDD | `/dev:dev-tdd` | dev |
-| Generer des tests pour du code existant | `/dev:dev-test` | dev |
-| Debugger un bug | `/dev:dev-debug` | dev |
-| Refactorer du code | `/dev:dev-refactor` | dev |
-| Creer un composant UI | `/dev:dev-component` | dev |
-| Creer un endpoint API | `/dev:dev-api` | dev |
-| Audit complet (securite + perf + a11y) | `/qa:qa-audit` | qa |
-| Audit + correction automatique | `/qa:qa-loop "score 90"` | qa |
-| Audit securite uniquement | `/qa:qa-security` | qa |
-| Audit performance | `/qa:qa-perf` | qa |
-| Audit accessibilite WCAG | `/qa:wcag-audit` | qa |
+| Understand a project or module | `/work:work-explore` | work |
+| Create User Stories | `/work:work-specify` | work |
+| Clarify spec ambiguities | `/work:work-clarify` | work |
+| Plan an implementation | `/work:work-plan` | work |
+| Develop in TDD | `/dev:dev-tdd` | dev |
+| Generate tests for existing code | `/dev:dev-test` | dev |
+| Debug a bug | `/dev:dev-debug` | dev |
+| Refactor code | `/dev:dev-refactor` | dev |
+| Create a UI component | `/dev:dev-component` | dev |
+| Create an API endpoint | `/dev:dev-api` | dev |
+| Full audit (security + perf + a11y) | `/qa:qa-audit` | qa |
+| Audit + automatic fix | `/qa:qa-loop "score 90"` | qa |
+| Security audit only | `/qa:qa-security` | qa |
+| Performance audit | `/qa:qa-perf` | qa |
+| WCAG accessibility audit | `/qa:wcag-audit` | qa |
 | Code review | `/qa:qa-review` | qa |
-| Creer un commit propre | `/work:work-commit` | work |
-| Creer une Pull Request | `/work:work-pr` | work |
-| Deployer en production | `/ops:ops-deploy` | ops |
-| Dockeriser une application | `/ops:ops-docker` | ops |
-| Configurer une CI/CD | `/ops:ops-ci` | ops |
-| Health check du projet | `/ops:ops-health` | ops |
-| Generer de la documentation | `/doc:doc-generate` | doc |
-| Expliquer du code complexe | `/doc:doc-explain` | doc |
-| Workflow feature complet | `/work:work-flow-feature "..."` | work |
-| Workflow bugfix complet | `/work:work-flow-bugfix "..."` | work |
-| Je ne sais pas quelle commande utiliser | `/assistant` | - |
+| Create a clean commit | `/work:work-commit` | work |
+| Create a Pull Request | `/work:work-pr` | work |
+| Deploy to production | `/ops:ops-deploy` | ops |
+| Dockerize an application | `/ops:ops-docker` | ops |
+| Configure a CI/CD | `/ops:ops-ci` | ops |
+| Project health check | `/ops:ops-health` | ops |
+| Generate documentation | `/doc:doc-generate` | doc |
+| Explain complex code | `/doc:doc-explain` | doc |
+| Full feature workflow | `/work:work-flow-feature "..."` | work |
+| Full bugfix workflow | `/work:work-flow-bugfix "..."` | work |
+| I don't know which command to use | `/assistant` | - |
 
 ---
 
-### Erreurs courantes au Niveau 2
+### Common mistakes at Level 2
 
-**Sauter l'etape SPECIFY.** Beaucoup de developpeurs passent directement d'EXPLORE a PLAN. Les User Stories forcent a clarifier le "quoi" avant de definir le "comment". Sans cette etape, le plan repose sur des hypotheses non validees.
+**Skipping the SPECIFY step.** Many developers go directly from EXPLORE to PLAN. User Stories force you to clarify the "what" before defining the "how". Without this step, the plan rests on unvalidated assumptions.
 
-**Valider le plan trop vite.** Le plan produit par `/work:work-plan` est une proposition. Lisez-le attentivement. Posez des questions si quelque chose n'est pas clair. C'est votre derniere opportunite de recadrer avant l'implementation.
+**Validating the plan too quickly.** The plan produced by `/work:work-plan` is a proposal. Read it carefully. Ask questions if something is not clear. This is your last opportunity to reframe before implementation.
 
-**Ecrire le code avant les tests en TDD.** Quand vous utilisez `/dev:dev-tdd`, la tentation est de demander "ecris le code et les tests". Le TDD impose un ordre : test echouant en premier, code ensuite. Si vous constatez que Claude ecrit le code avant les tests, rappelez-lui explicitement : "Ecris d'abord le test qui echoue, puis le code minimal."
+**Writing the code before the tests in TDD.** When you use `/dev:dev-tdd`, the temptation is to ask "write the code and the tests". TDD imposes an order: failing test first, code next. If you notice that Claude writes the code before the tests, remind it explicitly: "Write the failing test first, then the minimal code."
 
-**Commiter sans auditer.** L'audit n'est pas optionnel. Il detecte des problemes que les tests unitaires ne couvrent pas : vulnerabilites de securite, problemes d'accessibilite, dette technique. Un code qui passe tous les tests peut quand meme avoir un score d'audit de 40/100.
+**Committing without auditing.** The audit is not optional. It detects issues that unit tests do not cover: security vulnerabilities, accessibility issues, technical debt. Code that passes all tests can still have an audit score of 40/100.
 
-**Confondre agent et command.** Les commands s'invoquent avec `/`. Les agents s'activent automatiquement par delegation. Vous n'invoquez pas un agent directement (meme si certaines commands lancent des agents). La distinction devient importante quand vous creez vos propres outils.
+**Confusing agent and command.** Commands are invoked with `/`. Agents activate automatically by delegation. You do not invoke an agent directly (even if some commands launch agents). The distinction becomes important when you create your own tools.
 
-**Ignorer les rules activees.** Quand Claude applique des conventions TypeScript ou de securite, ce n'est pas arbitraire : les rules du socle ont ete conigues pour un projet specifique. Ne demandez pas a Claude d'ignorer ces conventions sans bonne raison.
+**Ignoring activated rules.** When Claude applies TypeScript or security conventions, it is not arbitrary: the foundation's rules have been designed for a specific project. Do not ask Claude to ignore these conventions without good reason.
 
-**Sessions trop ambitieuses.** Si votre feature necessite 15 taches ou plus, decoupez-la en sous-features independantes. Les sessions trop longues accumulent du contexte et generent des regressions. La regle pratique : plus de 10 fichiers modifies sans commit intermediaire est un signal d'alarme.
-
----
-
-### Checkpoint Niveau 2
-
-Vous etes pret pour le Niveau 3 (Intermediaire) quand :
-
-- [ ] Vous avez execute le workflow complet Explore -> Specify -> Plan -> TDD -> Audit -> Commit sur une feature, meme petite
-- [ ] Vous savez expliquer la difference entre une command, un agent, un skill et une rule
-- [ ] Vous utilisez la convention de nommage `domaine:domaine-action` sans avoir a chercher
-- [ ] Vous connaissez les 9 domaines et savez dans quel domaine chercher pour une tache donnee
-- [ ] Vous utilisez `/assistant` quand vous ne savez pas quelle commande utiliser
-- [ ] Vous avez execute `/qa:qa-loop` au moins une fois et verifie le score d'audit
-- [ ] Vous comprenez pourquoi on ecrit les tests avant le code en TDD
+**Sessions that are too ambitious.** If your feature requires 15 tasks or more, split it into independent sub-features. Sessions that are too long accumulate context and generate regressions. The practical rule: more than 10 files modified without an intermediate commit is a warning signal.
 
 ---
 
-## Niveau 3 - Productivite (2h)
+### Level 2 Checkpoint
 
-Ce niveau transforme votre usage de Claude Code en un workflow professionnel. Vous apprendrez a travailler avec la discipline du TDD, a automatiser la qualite par les hooks, a formuler des prompts precis qui multiplient la qualite des resultats, et a paralleliser vos sessions pour traiter plusieurs features simultanement.
+You are ready for Level 3 (Intermediate) when:
+
+- [ ] You have run the full workflow Explore -> Specify -> Plan -> TDD -> Audit -> Commit on a feature, even a small one
+- [ ] You can explain the difference between a command, an agent, a skill and a rule
+- [ ] You use the `domain:domain-action` naming convention without having to look it up
+- [ ] You know the 9 domains and know which domain to look in for a given task
+- [ ] You use `/assistant` when you do not know which command to use
+- [ ] You have run `/qa:qa-loop` at least once and verified the audit score
+- [ ] You understand why tests are written before the code in TDD
 
 ---
 
-### 3.1 TDD avec Claude Code
+## Level 3 - Productivity (2h)
 
-Le Test-Driven Development n'est pas optionnel dans claude-socle : c'est une contrainte du workflow. La rule `tdd-enforcement` se declenche automatiquement quand vous demandez a Claude d'implementer, ajouter, creer ou corriger du code. Comprendre pourquoi le TDD fonctionne mieux avec un LLM qu'en solo est la cle de ce niveau.
+This level transforms your usage of Claude Code into a professional workflow. You will learn to work with the discipline of TDD, automate quality through hooks, formulate precise prompts that multiply the quality of results, and parallelize your sessions to handle several features simultaneously.
 
-#### Le cycle Red-Green-Refactor en pratique
+---
+
+### 3.1 TDD with Claude Code
+
+Test-Driven Development is not optional in claude-socle: it is a workflow constraint. The `tdd-enforcement` rule triggers automatically when you ask Claude to implement, add, create or fix code. Understanding why TDD works better with an LLM than solo is the key to this level.
+
+#### The Red-Green-Refactor cycle in practice
 
 ```
 ┌─────────┐     ┌─────────┐     ┌──────────┐
@@ -649,10 +649,10 @@ Le Test-Driven Development n'est pas optionnel dans claude-socle : c'est une con
       └──────────────────────────────┘
 ```
 
-**Phase RED** : Claude ecrit les tests AVANT d'avoir le code. C'est le signal de depart. Un test qui passe immediatement est un mauvais test -- il ne prouve rien.
+**RED phase**: Claude writes the tests BEFORE having the code. This is the starting signal. A test that passes immediately is a bad test -- it proves nothing.
 
 ```typescript
-// Phase RED : le test echoue car UserService n'existe pas encore
+// RED phase: the test fails because UserService does not exist yet
 describe('UserService', () => {
   describe('createUser', () => {
     it('should create a user with valid email', async () => {
@@ -666,7 +666,7 @@ describe('UserService', () => {
 
     it('should throw InvalidEmailError when email has no @', async () => {
       await expect(
-        userService.createUser({ email: 'invalide', name: 'Test' })
+        userService.createUser({ email: 'invalid', name: 'Test' })
       ).rejects.toThrow(InvalidEmailError);
     });
 
@@ -679,10 +679,10 @@ describe('UserService', () => {
 });
 ```
 
-**Phase GREEN** : Code minimal pour faire passer les tests. Pas d'optimisation, pas de generalisation. YAGNI (You Aren't Gonna Need It).
+**GREEN phase**: Minimal code to make the tests pass. No optimization, no generalization. YAGNI (You Aren't Gonna Need It).
 
 ```typescript
-// Phase GREEN : minimum viable pour les tests
+// GREEN phase: minimum viable for the tests
 export class UserService {
   async createUser(data: CreateUserDto): Promise<User> {
     if (!data.email || !data.email.includes('@')) {
@@ -693,10 +693,10 @@ export class UserService {
 }
 ```
 
-**Phase REFACTOR** : Ameliorer sans casser. Si le refactoring casse les tests, `/rewind` ramene a l'etat stable precedent. Claude Code sauvegarde automatiquement un checkpoint avant chaque modification.
+**REFACTOR phase**: Improve without breaking. If refactoring breaks the tests, `/rewind` brings back to the previous stable state. Claude Code automatically saves a checkpoint before each modification.
 
 ```typescript
-// Phase REFACTOR : injection de dependances, validation extraite
+// REFACTOR phase: dependency injection, extracted validation
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
@@ -713,247 +713,247 @@ export class UserService {
 }
 ```
 
-#### Utiliser `/dev:dev-tdd` efficacement
+#### Using `/dev:dev-tdd` effectively
 
-La commande `/dev:dev-tdd` orchestre le cycle complet. Elle fonctionne mieux quand vous lui donnez une description precise de la feature, pas juste un nom de fichier.
+The `/dev:dev-tdd` command orchestrates the full cycle. It works best when you give it a precise description of the feature, not just a file name.
 
 ```bash
-# Vague - Claude devra deviner l'intention
+# Vague - Claude will have to guess the intent
 /dev:dev-tdd "user service"
 
-# Precis - Claude comprend les contraintes et les cas limites
-/dev:dev-tdd "Service de creation d'utilisateur avec validation email,
-  gestion des doublons, et hash du mot de passe via bcrypt"
+# Precise - Claude understands the constraints and edge cases
+/dev:dev-tdd "User creation service with email validation,
+  duplicate handling, and password hashing via bcrypt"
 ```
 
-Claude va systematiquement :
-1. Identifier les cas de test (nominal, edge cases, erreurs)
-2. Ecrire les tests avec la structure Arrange-Act-Assert
-3. Commiter les tests : `git commit -m "test(scope): add tests for [feature]"`
-4. Implementer le code minimal
-5. Refactorer
-6. Commiter l'implementation : `git commit -m "feat(scope): implement [feature]"`
+Claude will systematically:
+1. Identify the test cases (nominal, edge cases, errors)
+2. Write the tests with the Arrange-Act-Assert structure
+3. Commit the tests: `git commit -m "test(scope): add tests for [feature]"`
+4. Implement the minimal code
+5. Refactor
+6. Commit the implementation: `git commit -m "feat(scope): implement [feature]"`
 
-#### Ecrire de bonnes descriptions de test pour Claude
+#### Writing good test descriptions for Claude
 
-La structure `it('should [comportement] when [condition]')` est obligatoire. Elle force a penser en termes de comportement observable plutot que d'implementation.
+The structure `it('should [behavior] when [condition]')` is mandatory. It forces you to think in terms of observable behavior rather than implementation.
 
 ```typescript
-// Mauvais - test l'implementation, pas le comportement
+// Bad - tests the implementation, not the behavior
 it('calls hashPassword method', ...)
 
-// Bon - teste le comportement observable
+// Good - tests the observable behavior
 it('should store hashed password when user is created', ...)
 it('should reject login when password does not match hash', ...)
 ```
 
-Les edge cases a toujours inclure dans vos descriptions :
+The edge cases to always include in your descriptions:
 
-| Type | Exemples a mentionner |
+| Type | Examples to mention |
 |------|-----------------------|
-| Valeurs limites | 0, -1, valeur maximale |
-| Null / Undefined | "y compris quand X est null" |
-| Chaines vides | "y compris email vide" |
-| Collections vides | "y compris panier vide" |
-| Erreurs reseau | "y compris timeout de la base de donnees" |
+| Boundary values | 0, -1, maximum value |
+| Null / Undefined | "including when X is null" |
+| Empty strings | "including empty email" |
+| Empty collections | "including empty cart" |
+| Network errors | "including database timeout" |
 
-#### Couverture et verification
+#### Coverage and verification
 
-Claude Code configure un hook PostToolUse qui verifie automatiquement la couverture apres modification des fichiers de test. La cible est 80% sur le nouveau code.
+Claude Code configures a PostToolUse hook that automatically checks coverage after modification of test files. The target is 80% on new code.
 
 ```bash
-# Lancer les tests avec couverture
+# Run the tests with coverage
 npm run test:coverage
 
-# Tests en watch mode pendant le developpement
+# Tests in watch mode during development
 npm run test:watch
 
-# Un seul test pour debug rapide
+# A single test for quick debug
 npm test -- --grep "should create a user"
 ```
 
-#### Exercice 3.1
+#### Exercise 3.1
 
-Implementez une fonction `calculateDiscount(cart: CartItem[], code: string): number` en TDD strict :
-1. Commencez par lister tous les cas de test (panier vide, code invalide, code expire, remise en pourcentage, remise fixe)
-2. Lancez `/dev:dev-tdd "calculateDiscount avec codes promo, gestion expiration, panier vide"`
-3. Verifiez que les tests echouent avant l'implementation
-4. Verifiez la couverture apres le cycle complet
+Implement a function `calculateDiscount(cart: CartItem[], code: string): number` in strict TDD:
+1. Start by listing all the test cases (empty cart, invalid code, expired code, percentage discount, fixed discount)
+2. Run `/dev:dev-tdd "calculateDiscount with promo codes, expiration handling, empty cart"`
+3. Verify that the tests fail before the implementation
+4. Verify the coverage after the full cycle
 
 ---
 
-### 3.2 Audits et qualite
+### 3.2 Audits and quality
 
-Le TDD valide que le code fait ce qu'il est suppose faire. L'audit valide que le code est pret pour la production : securite, performance, accessibilite, maintenabilite. Ce sont deux dimensions orthogonales -- un code avec 100% de couverture peut avoir des vulnerabilites SQL injection.
+TDD validates that the code does what it is supposed to do. The audit validates that the code is ready for production: security, performance, accessibility, maintainability. These are two orthogonal dimensions -- code with 100% coverage can have SQL injection vulnerabilities.
 
-#### Comprendre `/qa:qa-loop` et le systeme de score
+#### Understanding `/qa:qa-loop` and the scoring system
 
-`/qa:qa-loop` est la commande d'audit centrale. Elle fonctionne en boucle : audit, correction des problemes P0/P1, re-audit, jusqu'a atteindre le score cible.
+`/qa:qa-loop` is the central audit command. It works in a loop: audit, fix P0/P1 issues, re-audit, until reaching the target score.
 
 ```bash
-/qa:qa-loop              # Score cible 90 (defaut)
-/qa:qa-loop "score 85"   # Score cible personnalise
-/qa:qa-loop "score 95"   # Audit strict avant une release majeure
+/qa:qa-loop              # Target score 90 (default)
+/qa:qa-loop "score 85"   # Custom target score
+/qa:qa-loop "score 95"   # Strict audit before a major release
 ```
 
-Le score est calcule sur plusieurs dimensions :
-- Securite (vulnerabilites OWASP, secrets exposes, injections)
-- Performance (temps de reponse, N+1 queries, bundle size)
-- Accessibilite (WCAG 2.1, aria, contraste)
-- Maintenabilite (complexite cyclomatique, duplication, couplage)
+The score is calculated on several dimensions:
+- Security (OWASP vulnerabilities, exposed secrets, injections)
+- Performance (response time, N+1 queries, bundle size)
+- Accessibility (WCAG 2.1, aria, contrast)
+- Maintainability (cyclomatic complexity, duplication, coupling)
 
-#### Types d'audits disponibles
+#### Available audit types
 
-| Commande | Usage | Modele |
+| Command | Usage | Model |
 |----------|-------|--------|
-| `/qa:qa-audit` | Audit complet lecture seule (securite + perf + a11y) | sonnet |
-| `/qa:qa-loop` | Audit + corrections autonomes en boucle | sonnet |
-| `/qa:qa-review` | Code review rapide, feedback sans corrections | sonnet |
-| `/qa:qa-security` | Audit securite OWASP Top 10 uniquement | sonnet |
-| `/qa:qa-perf` | Audit performance et Core Web Vitals | sonnet |
-| `/qa:wcag-audit` | Audit accessibilite WCAG 2.1 | haiku |
-| `/qa:qa-design` | Audit UI/UX (100+ regles design web) | haiku |
-| `/qa:qa-tech-debt` | Identification et priorisation dette technique | haiku |
+| `/qa:qa-audit` | Full read-only audit (security + perf + a11y) | sonnet |
+| `/qa:qa-loop` | Audit + autonomous fixes in a loop | sonnet |
+| `/qa:qa-review` | Quick code review, feedback without fixes | sonnet |
+| `/qa:qa-security` | OWASP Top 10 security audit only | sonnet |
+| `/qa:qa-perf` | Performance and Core Web Vitals audit | sonnet |
+| `/qa:wcag-audit` | WCAG 2.1 accessibility audit | haiku |
+| `/qa:qa-design` | UI/UX audit (100+ web design rules) | haiku |
+| `/qa:qa-tech-debt` | Technical debt identification and prioritization | haiku |
 
-La distinction importante entre ces trois commandes :
-
-```
-qa-review     --> Feedback seulement, aucune modification
-qa-audit      --> Rapport complet avec priorites, aucune modification
-qa-loop       --> Audit + corrections automatiques en boucle jusqu'au score cible
-```
-
-#### La boucle audit-fix : comment ca fonctionne
-
-`/qa:qa-loop` orchestre plusieurs agents en parallele, consolide les rapports, puis corrige automatiquement les problemes par priorite :
+The important distinction between these three commands:
 
 ```
-Lancement qa-loop
+qa-review     --> Feedback only, no modification
+qa-audit      --> Full report with priorities, no modification
+qa-loop       --> Audit + automatic fixes in a loop until the target score
+```
+
+#### The audit-fix loop: how it works
+
+`/qa:qa-loop` orchestrates several agents in parallel, consolidates the reports, then automatically fixes issues by priority:
+
+```
+qa-loop launch
       |
       v
-[qa-security] [qa-perf] [wcag-audit]   <- Agents paralleles
+[qa-security] [qa-perf] [wcag-audit]   <- Parallel agents
       |              |          |
       v              v          v
-   Rapport       Rapport    Rapport
+   Report       Report    Report
       |
       v
-Consolidation + calcul score
+Consolidation + score calculation
       |
       v
 Score >= 90 ?
-   Non --> Corriger P0, P1 --> Re-auditer
-   Oui --> Rapport final
+   No --> Fix P0, P1 --> Re-audit
+   Yes --> Final report
 ```
 
-Les problemes sont classes par priorite :
-- **P0 - Critique** : vulnerabilites de securite, donnees exposees -- corriges en priorite absolue
-- **P1 - Important** : regressions de performance significatives, erreurs d'accessibilite majeures
-- **P2 - Mineur** : dette technique, optimisations mineures
+Issues are classified by priority:
+- **P0 - Critical**: security vulnerabilities, exposed data -- fixed in absolute priority
+- **P1 - Important**: significant performance regressions, major accessibility errors
+- **P2 - Minor**: technical debt, minor optimizations
 
-#### Quand utiliser quelle commande
+#### When to use which command
 
 ```bash
-# Avant de merger une PR standard
+# Before merging a standard PR
 /qa:qa-review
 
-# Avant une mise en production
-/qa:qa-audit   # Voir les problemes d'abord
-/qa:qa-loop    # Puis corriger automatiquement jusqu'a 90
+# Before a production deployment
+/qa:qa-audit   # See the issues first
+/qa:qa-loop    # Then fix automatically up to 90
 
-# Feature avec auth ou paiement (critique)
+# Feature with auth or payment (critical)
 /qa:qa-loop "score 95"
 
-# Suspicion de vulnerabilite specifique
+# Suspicion of a specific vulnerability
 /qa:qa-security
 
-# Apres refactoring d'interface utilisateur
+# After a UI refactoring
 /qa:qa-design
 /qa:wcag-audit
 ```
 
-#### Exercice 3.2
+#### Exercise 3.2
 
-Sur un projet existant ou le starter claude-socle :
-1. Lancez `/qa:qa-audit` et lisez le rapport sans rien corriger
-2. Identifiez les 3 problemes P0/P1 les plus importants
-3. Lancez `/qa:qa-loop "score 85"` et observez la boucle de correction
-4. Comparez le rapport avant et apres
+On an existing project or the claude-socle starter:
+1. Run `/qa:qa-audit` and read the report without fixing anything
+2. Identify the 3 most important P0/P1 issues
+3. Run `/qa:qa-loop "score 85"` and observe the fix loop
+4. Compare the report before and after
 
 ---
 
-### 3.3 Hooks - L'automatisation invisible
+### 3.3 Hooks - Invisible automation
 
-Chaque fois que Claude modifie un fichier, une chaine de hooks s'execute automatiquement. Ces hooks sont la raison pour laquelle claude-socle garantit une qualite constante sans effort conscient de votre part.
+Each time Claude modifies a file, a chain of hooks runs automatically. These hooks are the reason claude-socle guarantees consistent quality without conscious effort on your part.
 
-#### Qu'est-ce qu'un hook et pourquoi ca compte
+#### What is a hook and why it matters
 
-Un hook est un script shell execute automatiquement avant (PreToolUse) ou apres (PostToolUse) qu'un outil soit utilise par Claude. Ils sont configures dans `.claude/settings.json`.
+A hook is a shell script run automatically before (PreToolUse) or after (PostToolUse) a tool is used by Claude. They are configured in `.claude/settings.json`.
 
 ```
-Claude veut modifier un fichier
+Claude wants to modify a file
           |
           v
   [PreToolUse Hook]
-  Verifie qu'on n'est pas sur main
-  Detecte les secrets dans le contenu
+  Verifies we are not on main
+  Detects secrets in the content
           |
-          v (si le hook passe)
-  Fichier modifie
+          v (if the hook passes)
+  File modified
           |
           v
   [PostToolUse Hook]
-  Formate automatiquement le code
-  Verifie les types TypeScript
-  Lance ESLint
+  Automatically formats the code
+  Verifies TypeScript types
+  Runs ESLint
 ```
 
-Sans hooks, vous devriez penser a formatter, type-checker et linter apres chaque modification. Avec les hooks, c'est invisible et automatique.
+Without hooks, you would have to think about formatting, type-checking and linting after each modification. With hooks, it is invisible and automatic.
 
-#### Hooks PreToolUse : protection et validation
+#### PreToolUse hooks: protection and validation
 
-Ces hooks s'executent AVANT la modification. S'ils echouent (exit code != 0), la modification est bloquee.
+These hooks run BEFORE the modification. If they fail (exit code != 0), the modification is blocked.
 
-**Protection de la branche main** : bloque toute modification sur `main` ou `master`. Si vous essayez de modifier un fichier directement sur main, Claude recoit un message d'erreur explicite.
+**Main branch protection**: blocks any modification on `main` or `master`. If you try to modify a file directly on main, Claude receives an explicit error message.
 
 ```bash
-# Pour contourner exceptionnellement (hotfix urgent)
+# To bypass exceptionally (urgent hotfix)
 ALLOW_MAIN_EDIT=1 claude
 ```
 
-**Detection de secrets (Gitleaks)** : scanne le contenu ecrit avant de le sauvegarder. Si Claude genere un fichier contenant ce qui ressemble a une API key ou un mot de passe, le hook bloque l'ecriture et signale le probleme.
+**Secret detection (Gitleaks)**: scans the written content before saving it. If Claude generates a file containing what looks like an API key or password, the hook blocks the write and reports the issue.
 
-**Tests pre-commit** : quand Claude execute `git commit`, ce hook lance la suite de tests avant d'autoriser le commit. Si les tests echouent, le commit est bloque. Le hook detecte et repare aussi Husky si necessaire.
+**Pre-commit tests**: when Claude runs `git commit`, this hook runs the test suite before authorizing the commit. If the tests fail, the commit is blocked. The hook also detects and repairs Husky if necessary.
 
 ```bash
-# Pour passer les tests pre-commit en urgence (deconseille)
+# To bypass pre-commit tests in an emergency (not recommended)
 SKIP_PRE_COMMIT_TESTS=1
 ```
 
-**CI locale pre-push** : avant `git push`, execute lint + type-check + tests. Evite de pousser du code qui cassera la CI.
+**Local pre-push CI**: before `git push`, runs lint + type-check + tests. Avoids pushing code that will break CI.
 
 ```bash
-SKIP_PRE_PUSH_CI=1  # Pour contourner si CI deja en echec
+SKIP_PRE_PUSH_CI=1  # To bypass if CI is already failing
 ```
 
-**Command validator** : valide les commandes Bash contre 8 categories de risque : fork bombs, pipe-to-shell (`curl URL | sh`), destruction de disque, escalade de privileges, etc.
+**Command validator**: validates Bash commands against 8 risk categories: fork bombs, pipe-to-shell (`curl URL | sh`), disk destruction, privilege escalation, etc.
 
 ```bash
-SKIP_COMMAND_VALIDATOR=1  # Pour contourner (utiliser avec precaution)
+SKIP_COMMAND_VALIDATOR=1  # To bypass (use with caution)
 ```
 
-**Destructive ops guard** : bloque les commandes `DELETE`, `DROP`, `TRUNCATE`, `rm -rf` sans confirmation explicite.
+**Destructive ops guard**: blocks `DELETE`, `DROP`, `TRUNCATE`, `rm -rf` commands without explicit confirmation.
 
 ```bash
-SKIP_DESTRUCTIVE_CHECK=1  # Pour les scripts de migration approuves
+SKIP_DESTRUCTIVE_CHECK=1  # For approved migration scripts
 ```
 
-#### Hooks PostToolUse : qualite automatique
+#### PostToolUse hooks: automatic quality
 
-Ces hooks s'executent APRES chaque modification reussie. Ils ne bloquent pas -- ils ameliorent.
+These hooks run AFTER each successful modification. They do not block -- they improve.
 
-**Auto-format par langage** :
+**Auto-format by language**:
 
-| Fichier modifie | Action automatique |
+| Modified file | Automatic action |
 |-----------------|--------------------|
 | `*.ts`, `*.tsx`, `*.js`, `*.jsx` | Prettier |
 | `*.py` | Ruff / Black |
@@ -962,69 +962,69 @@ Ces hooks s'executent APRES chaque modification reussie. Ils ne bloquent pas -- 
 | `*.dart` | dart format |
 | `*.lua` | stylua |
 
-**Type-check TypeScript** : apres modification d'un fichier `.ts` ou `.tsx`, `tsc --noEmit` s'execute et affiche les erreurs de types.
+**TypeScript type-check**: after modification of a `.ts` or `.tsx` file, `tsc --noEmit` runs and displays type errors.
 
-**ESLint** : lint JS/TS apres modification.
+**ESLint**: JS/TS lint after modification.
 
-**Auto-install des dependances** : si `package.json` est modifie, `npm install` (ou yarn/pnpm/bun selon la config) s'execute automatiquement. Idem pour `pyproject.toml` (uv sync), `pubspec.yaml` (flutter pub get), `go.mod` (go mod tidy), `Cargo.toml` (cargo check).
+**Auto-install dependencies**: if `package.json` is modified, `npm install` (or yarn/pnpm/bun depending on the config) runs automatically. Same for `pyproject.toml` (uv sync), `pubspec.yaml` (flutter pub get), `go.mod` (go mod tidy), `Cargo.toml` (cargo check).
 
-**Coverage check** : apres modification de fichiers de test, verifie que la couverture reste au-dessus du seuil.
+**Coverage check**: after modification of test files, verifies that coverage stays above the threshold.
 
-#### Hooks SessionStart : contexte et securite
+#### SessionStart hooks: context and security
 
-Au demarrage de chaque session, plusieurs hooks s'executent :
+At the start of each session, several hooks run:
 
-- **Session info** : affiche les informations du projet (branch courante, derniers commits, status git)
-- **Check node_modules** : avertit si `package.json` existe mais `node_modules` est absent
-- **Check .env** : verifie que `.env` est bien dans `.gitignore`
-- **Warning hooks tiers** : avertit si des hooks personnalises non-standards sont detectes
+- **Session info**: displays the project information (current branch, last commits, git status)
+- **Check node_modules**: warns if `package.json` exists but `node_modules` is absent
+- **Check .env**: verifies that `.env` is properly in `.gitignore`
+- **Third-party hooks warning**: warns if non-standard custom hooks are detected
 
-#### Variables d'environnement de controle
+#### Control environment variables
 
-| Variable | Effet |
+| Variable | Effect |
 |----------|-------|
-| `ALLOW_MAIN_EDIT=1` | Autoriser les modifications sur main |
-| `SKIP_PRE_COMMIT_TESTS=1` | Passer les tests pre-commit |
-| `SKIP_PRE_PUSH_CI=1` | Passer la CI locale pre-push |
-| `SKIP_COMMAND_VALIDATOR=1` | Desactiver la validation des commandes |
-| `SKIP_DESTRUCTIVE_CHECK=1` | Desactiver la protection destructive |
-| `ENABLE_RTK=1` | Activer l'optimisation de tokens RTK (-60-90%) |
+| `ALLOW_MAIN_EDIT=1` | Authorize modifications on main |
+| `SKIP_PRE_COMMIT_TESTS=1` | Skip pre-commit tests |
+| `SKIP_PRE_PUSH_CI=1` | Skip local pre-push CI |
+| `SKIP_COMMAND_VALIDATOR=1` | Disable command validation |
+| `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive protection |
+| `ENABLE_RTK=1` | Enable RTK token optimization (-60-90%) |
 
-Ces variables peuvent etre definies dans `.claude/settings.local.json` pour une session persistante, ou exportees dans le shell pour un usage ponctuel.
+These variables can be defined in `.claude/settings.local.json` for a persistent session, or exported in the shell for one-off use.
 
-#### Le command validator en detail
+#### The command validator in detail
 
-Le command validator (PreToolUse sur Bash) est une nouveaute qui analyse chaque commande Bash avant execution. Il detecte :
+The command validator (PreToolUse on Bash) is a new feature that analyzes each Bash command before execution. It detects:
 
-- Fork bombs : `:(){ :|:& };:`
-- Pipe-to-shell : `curl URL | sh` ou `wget URL | bash`
-- Destruction de disque : `dd if=/dev/zero`, `mkfs` sur un disque monte
-- Escalade de privileges : `chmod 777 /etc/`, `sudo` dans des contextes risques
-- Exfiltration de donnees potentielle
+- Fork bombs: `:(){ :|:& };:`
+- Pipe-to-shell: `curl URL | sh` or `wget URL | bash`
+- Disk destruction: `dd if=/dev/zero`, `mkfs` on a mounted disk
+- Privilege escalation: `chmod 777 /etc/`, `sudo` in risky contexts
+- Potential data exfiltration
 
-Quand une commande est bloquee, Claude recoit une explication et peut proposer une alternative plus sure.
+When a command is blocked, Claude receives an explanation and can propose a safer alternative.
 
-#### Exercice 3.3
+#### Exercise 3.3
 
-Ouvrez une session Claude Code et modifiez un fichier TypeScript. Observez ce qui se passe :
-1. Le hook PreToolUse verifie la branche (vous devriez etre sur une feature branch)
-2. La modification s'applique
-3. Le hook PostToolUse formate automatiquement le fichier avec Prettier
-4. Le hook PostToolUse lance `tsc --noEmit`
+Open a Claude Code session and modify a TypeScript file. Observe what happens:
+1. The PreToolUse hook checks the branch (you should be on a feature branch)
+2. The modification is applied
+3. The PostToolUse hook automatically formats the file with Prettier
+4. The PostToolUse hook runs `tsc --noEmit`
 
-Essayez ensuite de commiter avec un test qui echoue intentionnellement. Observez le blocage du hook pre-commit.
+Then try to commit with an intentionally failing test. Observe the pre-commit hook blocking.
 
 ---
 
-### 3.4 Prompting avance
+### 3.4 Advanced prompting
 
-La qualite d'un prompt est directement proportionnelle a la qualite du resultat. Boris Cherny (createur de Claude Code) formule ca ainsi : "The more specific and detailed the specification, the better the output."
+The quality of a prompt is directly proportional to the quality of the result. Boris Cherny (creator of Claude Code) puts it this way: "The more specific and detailed the specification, the better the output."
 
-La difference entre un prompt mediocre et un prompt efficace peut representer un facteur 2 a 3 sur la qualite du code produit.
+The difference between a mediocre prompt and an effective prompt can represent a 2 to 3 factor on the quality of the produced code.
 
-#### Specifique vs vague : exemples concrets
+#### Specific vs vague: concrete examples
 
-| Vague (a eviter) | Specifique (preferer) |
+| Vague (to avoid) | Specific (prefer) |
 |------------------|-----------------------|
 | "Fix this bug" | "Fix the null pointer exception in `getUserById` when the user ID doesn't exist in the database" |
 | "Make it better" | "Reduce the time complexity from O(n^2) to O(n log n) by replacing the nested loop with a hash map lookup" |
@@ -1033,247 +1033,247 @@ La difference entre un prompt mediocre et un prompt efficace peut representer un
 | "Refactor this" | "Extract the email validation logic into a separate `EmailValidator` class with `isValid(email)` and `normalize(email)` methods" |
 | "It doesn't work" | "The function returns `undefined` instead of the expected `User` object when I call `getUserById(123)`. Error log: [log]" |
 
-#### Le contexte compte : donner suffisamment d'informations
+#### Context matters: provide enough information
 
-Claude Code n'a pas de memoire entre les sessions (sauf ce qui est dans `~/.claude/memory/`). Chaque session repart du contexte du fichier CLAUDE.md et des fichiers ouverts. Donnez le contexte explicitement :
+Claude Code has no memory between sessions (except what is in `~/.claude/memory/`). Each session starts from the context of the CLAUDE.md file and the open files. Provide context explicitly:
 
 ```
-"Avant de faire des changements :
-1. Lis src/services/auth.ts pour comprendre le flux d'authentification actuel
-2. Lis src/middleware/authenticate.ts pour voir comment les tokens sont valides
-3. Lis src/types/user.ts pour l'interface User
+"Before making changes:
+1. Read src/services/auth.ts to understand the current authentication flow
+2. Read src/middleware/authenticate.ts to see how tokens are validated
+3. Read src/types/user.ts for the User interface
 
-Ensuite, implemente la fonctionnalite de reset de mot de passe
-en suivant les patterns existants."
+Then, implement the password reset feature
+following the existing patterns."
 ```
 
-Ce pattern Context Loading force Claude a comprendre avant d'agir, ce qui correspond a la phase EXPLORE du workflow.
+This Context Loading pattern forces Claude to understand before acting, which corresponds to the EXPLORE phase of the workflow.
 
-#### La technique "Grill Me"
+#### The "Grill Me" technique
 
-Demandez a Claude de vous challenger AVANT de proceder. C'est particulierement utile avant de merger une PR importante ou de deployer en production.
+Ask Claude to challenge you BEFORE proceeding. This is particularly useful before merging an important PR or deploying to production.
 
 ```
 "Grill me on these changes and don't make a PR until I pass your test."
 ```
 
-Claude va alors poser des questions critiques sur votre comprehension, identifier les edge cases que vous n'avez pas anticipes, et s'assurer que vous avez pense aux consequences de vos changements. C'est une revue de code Socratique.
+Claude will then ask critical questions about your understanding, identify edge cases you have not anticipated, and ensure that you have thought about the consequences of your changes. It is a Socratic code review.
 
-#### La technique "Prove It"
+#### The "Prove It" technique
 
-Forcez Claude a justifier ses choix avec des preuves concretes :
+Force Claude to justify its choices with concrete evidence:
 
 ```
 "Prove to me this works. Show me the diff and explain why it solves
 the problem. List the edge cases you've handled and the ones you haven't."
 ```
 
-Utile pour les changements critiques (securite, performance) et pour comprendre en profondeur le raisonnement derriere une implementation.
+Useful for critical changes (security, performance) and to deeply understand the reasoning behind an implementation.
 
-#### La technique "Scrap and Redo"
+#### The "Scrap and Redo" technique
 
-Apres une premiere implementation fonctionnelle, demandez une version plus elegante :
+After a first functional implementation, ask for a more elegant version:
 
 ```
 "Knowing everything you know now, scrap this and implement the elegant solution."
 ```
 
-La premiere implementation explore le probleme. La deuxieme beneficie des apprentissages. Le resultat est generalement plus propre, mieux structure, et plus maintenable.
+The first implementation explores the problem. The second benefits from the learnings. The result is generally cleaner, better structured, and more maintainable.
 
-#### Niveaux d'effort : adapter la profondeur de raisonnement
+#### Effort levels: adapting reasoning depth
 
-Claude Code supporte 3 niveaux d'effort qui controlent la profondeur du raisonnement :
+Claude Code supports 3 effort levels that control reasoning depth:
 
 ```bash
-/effort low      # Exploration, lecture de fichiers, formatage
-/effort medium   # Implementation standard, corrections
-/effort high     # Architecture, audit, refactoring complexe, debug
+/effort low      # Exploration, reading files, formatting
+/effort medium   # Standard implementation, fixes
+/effort high     # Architecture, audit, complex refactoring, debug
 ```
 
-Guide par phase du workflow :
+Guide by workflow phase:
 
-| Phase | Effort recommande | Raison |
+| Phase | Recommended effort | Reason |
 |-------|-------------------|--------|
-| `/work:work-explore` | `low` | Lecture seule, pas de raisonnement profond necessaire |
-| `/work:work-specify`, `/work:work-plan` | `high` | Decisions d'architecture importantes |
-| `/dev:dev-tdd` | `medium` | Implementation standard |
-| `/qa:qa-audit`, `/qa:qa-security` | `high` | Audit critique |
-| `/work:work-commit` | `low` | Operation simple |
+| `/work:work-explore` | `low` | Read-only, no deep reasoning needed |
+| `/work:work-specify`, `/work:work-plan` | `high` | Important architecture decisions |
+| `/dev:dev-tdd` | `medium` | Standard implementation |
+| `/qa:qa-audit`, `/qa:qa-security` | `high` | Critical audit |
+| `/work:work-commit` | `low` | Simple operation |
 
-L'effort `high` active le raisonnement approfondi. Reservez-le aux taches complexes (architecture, audit, debug). Il est inutile de l'utiliser pour reformatter du code ou ecrire un message de commit.
+The `high` effort activates deep reasoning. Reserve it for complex tasks (architecture, audit, debug). It is useless to use it to reformat code or write a commit message.
 
-#### Verification explicite : le multiplicateur de qualite
+#### Explicit verification: the quality multiplier
 
 > "Give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result." -- Boris Cherny
 
-Ajoutez toujours une etape de verification explicite dans vos prompts :
+Always add an explicit verification step in your prompts:
 
 ```
-"Apres l'implementation :
-1. Lance npm test et montre-moi les resultats
-2. Lance npm run lint et corrige les warnings
-3. Explique ce qui pourrait mal se passer en production
-4. Liste les edge cases traites et ceux non traites"
+"After the implementation:
+1. Run npm test and show me the results
+2. Run npm run lint and fix the warnings
+3. Explain what could go wrong in production
+4. List the edge cases handled and those not handled"
 ```
 
-#### Exercice 3.4
+#### Exercise 3.4
 
-Prenez ces 3 prompts mediocres et reformulez-les en prompts efficaces :
+Take these 3 mediocre prompts and rephrase them as effective prompts:
 
-1. "Ajoute la pagination"
-2. "Le login ne marche pas"
-3. "Optimise les performances"
+1. "Add pagination"
+2. "Login does not work"
+3. "Optimize performance"
 
-Pour chaque prompt, precisez : le fichier concerne, le comportement actuel, le comportement attendu, les contraintes techniques, et les cas limites a couvrir.
+For each prompt, specify: the file concerned, the current behavior, the expected behavior, the technical constraints, and the edge cases to cover.
 
 ---
 
-### 3.5 Parallelisme et sessions
+### 3.5 Parallelism and sessions
 
 > "The single biggest productivity unlock." -- Boris Cherny
 
-Travailler sur une seule feature a la fois avec une seule session Claude Code est la facon la plus lente de developper. Les git worktrees permettent de faire tourner 5+ sessions en parallele sur des branches isolees.
+Working on a single feature at a time with a single Claude Code session is the slowest way to develop. Git worktrees allow you to run 5+ sessions in parallel on isolated branches.
 
-#### Git worktrees pour le travail parallele
+#### Git worktrees for parallel work
 
-Un worktree est une copie de travail du depot dans un repertoire different, sur une branche differente. Chaque worktree a son propre index git, mais partage l'historique.
-
-```bash
-# Creer un worktree pour une feature
-git worktree add ../monapp-auth -b feature/auth
-
-# Ouvrir une session Claude Code dans ce worktree
-cd ../monapp-auth && claude --name "auth-feature"
-
-# Pendant ce temps, dans le repertoire principal
-cd monapp && claude --name "main-session"
-```
-
-L'option `--name` (ou `-n`) nomme la session pour la retrouver facilement. Combine avec les worktrees, chaque session est isolee et identifiable.
-
-Structure typique avec 3 features en parallele :
-
-```
-monapp/           <- Session principale (revue, merge)
-monapp-auth/      <- Session "auth-feature" (feature/auth)
-monapp-payment/   <- Session "payment-feature" (feature/payment)
-monapp-perf/      <- Session "perf-fixes" (fix/performance)
-```
+A worktree is a working copy of the repository in a different directory, on a different branch. Each worktree has its own git index, but shares the history.
 
 ```bash
-# Lister les worktrees actifs
+# Create a worktree for a feature
+git worktree add ../myapp-auth -b feature/auth
+
+# Open a Claude Code session in this worktree
+cd ../myapp-auth && claude --name "auth-feature"
+
+# Meanwhile, in the main directory
+cd myapp && claude --name "main-session"
+```
+
+The `--name` (or `-n`) option names the session to find it easily. Combined with worktrees, each session is isolated and identifiable.
+
+Typical structure with 3 features in parallel:
+
+```
+myapp/           <- Main session (review, merge)
+myapp-auth/      <- "auth-feature" session (feature/auth)
+myapp-payment/   <- "payment-feature" session (feature/payment)
+myapp-perf/      <- "perf-fixes" session (fix/performance)
+```
+
+```bash
+# List active worktrees
 git worktree list
 
-# Supprimer un worktree apres merge
-git worktree remove ../monapp-auth
+# Remove a worktree after merge
+git worktree remove ../myapp-auth
 ```
 
-#### Gestion du contexte : /compact vs /clear
+#### Context management: /compact vs /clear
 
-Le contexte d'une session Claude Code grossit au fil des echanges. Deux commandes permettent de le gerer :
+The context of a Claude Code session grows over the course of exchanges. Two commands allow you to manage it:
 
-| Commande | Effet | Quand utiliser |
+| Command | Effect | When to use |
 |----------|-------|----------------|
-| `/compact` | Resume le contexte, conserve l'essentiel | Entre phases longues du workflow |
-| `/clear` | Efface tout le contexte | Changement de sujet complet, nouvelle tache sans rapport |
+| `/compact` | Summarizes the context, keeps the essential | Between long workflow phases |
+| `/clear` | Erases all the context | Complete topic change, new unrelated task |
 
-La regle : preferer `/compact` a `/clear`. La compaction conserve les decisions d'architecture, les conventions apprises, et les contextes importants. `/clear` efface tout et vous repartez de zero.
+The rule: prefer `/compact` over `/clear`. Compaction keeps architecture decisions, learned conventions, and important contexts. `/clear` erases everything and you start over from scratch.
 
-Moments recommandes pour `/compact` :
-- Apres une exploration longue (`/work:work-explore`), avant de passer au plan
-- Apres un plan detaille, avant de commencer le TDD
-- Apres un cycle TDD long, avant l'audit
+Recommended moments for `/compact`:
+- After a long exploration (`/work:work-explore`), before moving on to the plan
+- After a detailed plan, before starting TDD
+- After a long TDD cycle, before the audit
 
-#### Recuperation rapide avec /rewind
+#### Quick recovery with /rewind
 
-Claude Code sauvegarde automatiquement l'etat du code (checkpoint) avant chaque modification. Si un refactoring casse tout :
+Claude Code automatically saves the state of the code (checkpoint) before each modification. If a refactoring breaks everything:
 
 ```bash
-/rewind          # Choisir un checkpoint dans l'historique
-Esc x2           # Annuler la derniere modification uniquement
+/rewind          # Choose a checkpoint in the history
+Esc x2           # Cancel the last modification only
 ```
 
-C'est plus rapide que `git stash` ou `git checkout` pour les erreurs recentes. Recommande en phase REFACTOR du TDD : si les tests se cassent apres un refactoring, `/rewind` ramene a l'etat GREEN precedent en une commande.
+It is faster than `git stash` or `git checkout` for recent errors. Recommended in the REFACTOR phase of TDD: if the tests break after a refactoring, `/rewind` brings back to the previous GREEN state in one command.
 
-#### Handoff entre sessions
+#### Handoff between sessions
 
-Quand vous fermez une session et en ouvrez une nouvelle sur la meme feature, le contexte est perdu. Pour faciliter le handoff :
+When you close a session and open a new one on the same feature, the context is lost. To facilitate the handoff:
 
-1. Terminez toujours par un commit avec un message descriptif
-2. Laissez un commentaire `TODO` ou une note dans le fichier de spec si le travail est incomplet
-3. La memoire automatique (`~/.claude/memory/`) conserve les preferences et decisions d'architecture entre sessions -- elle est consultee automatiquement
+1. Always end with a commit with a descriptive message
+2. Leave a `TODO` comment or a note in the spec file if the work is incomplete
+3. The automatic memory (`~/.claude/memory/`) keeps preferences and architecture decisions between sessions -- it is consulted automatically
 
 ```bash
-# Bonne pratique : commiter avant de fermer
+# Best practice: commit before closing
 git commit -m "feat(auth): implement login flow - WIP: session refresh pending"
 ```
 
-#### Exercice 3.5
+#### Exercise 3.5
 
-1. Creez deux worktrees a partir de votre projet : `feature/widget-a` et `feature/widget-b`
-2. Ouvrez une session Claude nommee dans chaque worktree
-3. Dans chaque session, lancez une implementation differente
-4. Observez que les deux branches avancent independamment
-5. Fusionnez les deux features dans main
+1. Create two worktrees from your project: `feature/widget-a` and `feature/widget-b`
+2. Open a named Claude session in each worktree
+3. In each session, launch a different implementation
+4. Observe that the two branches advance independently
+5. Merge the two features into main
 
 ---
 
-### 3.6 Workflows raccourcis
+### 3.6 Shortcut workflows
 
-Le workflow complet Explore → Specify → Plan → TDD → Audit → Commit est la reference. Mais tous les changements ne justifient pas 6 etapes. claude-socle fournit des raccourcis adaptes a la complexite de chaque situation.
+The full workflow Explore → Specify → Plan → TDD → Audit → Commit is the reference. But not all changes justify 6 steps. claude-socle provides shortcuts adapted to the complexity of each situation.
 
-#### `/work:work-quick` pour les changements triviaux
+#### `/work:work-quick` for trivial changes
 
-`/work:work-quick` saute le cycle complet pour les changements mineurs. Il est strict sur les criteres d'eligibilite.
+`/work:work-quick` skips the full cycle for minor changes. It is strict on the eligibility criteria.
 
-Criteres d'eligibilite (TOUS doivent etre satisfaits) :
+Eligibility criteria (ALL must be satisfied):
 
-| Critere | Seuil |
+| Criterion | Threshold |
 |---------|-------|
-| Fichiers modifies | 1 a 3 maximum |
-| Lignes changees | Moins de 50 lignes |
-| Impact | Aucun changement d'API publique |
-| Risque | Aucun risque de regression |
-| Tests existants | Passent deja |
+| Modified files | 1 to 3 maximum |
+| Changed lines | Less than 50 lines |
+| Impact | No public API change |
+| Risk | No regression risk |
+| Existing tests | Already pass |
 
 ```bash
-/work:work-quick "Corriger la typo dans le message d'erreur de login"
-/work:work-quick "Renommer la variable userList en users dans ProfilePage"
-/work:work-quick "Mettre a jour la version de react-query dans package.json"
+/work:work-quick "Fix the typo in the login error message"
+/work:work-quick "Rename the userList variable to users in ProfilePage"
+/work:work-quick "Update react-query version in package.json"
 ```
 
-Si pendant l'execution les criteres ne sont plus respectes (le changement est plus impactant que prevu), `/work:work-quick` s'arrete et recommande de basculer sur `/dev:dev-tdd`.
+If during execution the criteria are no longer respected (the change is more impactful than expected), `/work:work-quick` stops and recommends switching to `/dev:dev-tdd`.
 
-NON eligibles a work-quick : nouvelle feature, refactoring, correction de bug logique, changement d'interface, nouveau fichier (sauf fichier de test).
+NOT eligible to work-quick: new feature, refactoring, logic bug fix, interface change, new file (except test file).
 
-#### `/work:work-batch` pour les backlogs de stories
+#### `/work:work-batch` for story backlogs
 
-`/work:work-batch` execute sequentiellement un backlog de user stories depuis un fichier PRD, avec TDD et commit atomique par story.
+`/work:work-batch` sequentially executes a backlog of user stories from a PRD file, with TDD and atomic commit per story.
 
-Format du fichier PRD :
+PRD file format:
 
 ```json
 {
-  "project": "mon-app",
+  "project": "my-app",
   "stories": [
     {
       "id": "US-001",
-      "title": "Validation email a la creation",
-      "description": "L'email doit etre valide et unique",
+      "title": "Email validation on creation",
+      "description": "The email must be valid and unique",
       "priority": "P1",
       "acceptance_criteria": [
-        "Given un email invalide, When je cree un utilisateur, Then une erreur est retournee",
-        "Given un email deja utilise, When je cree un utilisateur, Then une erreur de doublon est retournee"
+        "Given an invalid email, When I create a user, Then an error is returned",
+        "Given an already used email, When I create a user, Then a duplicate error is returned"
       ],
       "files": ["src/services/user.service.ts", "src/services/user.service.spec.ts"]
     },
     {
       "id": "US-002",
-      "title": "Hash du mot de passe",
+      "title": "Password hashing",
       "priority": "P1",
-      "description": "Les mots de passe doivent etre stockes en bcrypt",
+      "description": "Passwords must be stored in bcrypt",
       "acceptance_criteria": [
-        "Given un mot de passe en clair, When je cree un utilisateur, Then le mot de passe est stocke hache"
+        "Given a plain password, When I create a user, Then the password is stored hashed"
       ],
       "files": ["src/services/user.service.ts"]
     }
@@ -1285,22 +1285,22 @@ Format du fichier PRD :
 /work:work-batch "specs/user-features.json"
 ```
 
-Claude va traiter les stories dans l'ordre P1 → P2 → P3, appliquer TDD sur chacune, et commiter avec `feat(scope): US-XXX description`. La progression est sauvegardee dans `.claude/output/batch/progress.json` -- si la session est interrompue, la reprise repart de la derniere story incomplete.
+Claude will process the stories in P1 → P2 → P3 order, apply TDD on each, and commit with `feat(scope): US-XXX description`. Progress is saved in `.claude/output/batch/progress.json` -- if the session is interrupted, the resume starts from the last incomplete story.
 
-Garde-fous :
-- Maximum 10 stories par batch (au-dela, decouper)
-- Arret si 2 stories consecutives echouent
-- Jamais de commit sans tests qui passent
+Safeguards:
+- Maximum 10 stories per batch (beyond, split)
+- Stop if 2 consecutive stories fail
+- Never commit without passing tests
 
-#### `/work:work-flow-feature` vs workflow manuel
+#### `/work:work-flow-feature` vs manual workflow
 
-`/work:work-flow-feature` est le workflow complet en une seule commande. Il enchaine automatiquement : `work-explore` → `work-specify` → `work-plan` → `dev-tdd` → `qa-loop` → `work-pr`.
+`/work:work-flow-feature` is the full workflow in a single command. It automatically chains: `work-explore` → `work-specify` → `work-plan` → `dev-tdd` → `qa-loop` → `work-pr`.
 
 ```bash
-# Workflow automatise
-/work:work-flow-feature "Systeme de notifications push avec preferences utilisateur"
+# Automated workflow
+/work:work-flow-feature "Push notification system with user preferences"
 
-# Workflow manuel equivalent
+# Equivalent manual workflow
 /work:work-explore
 /work:work-specify
 /work:work-plan
@@ -1309,90 +1309,90 @@ Garde-fous :
 /work:work-pr
 ```
 
-Quand choisir le workflow manuel :
-- Quand vous voulez valider le plan avant de coder (le workflow automatise peut enchainer sans pause)
-- Quand une etape specifique necessite votre attention
-- Pour l'apprentissage (comprendre ce que chaque etape fait)
+When to choose the manual workflow:
+- When you want to validate the plan before coding (the automated workflow can chain without a pause)
+- When a specific step requires your attention
+- For learning (understand what each step does)
 
-Quand utiliser le workflow automatise :
-- Features bien definies dans les specs
-- Apres maitrise du workflow manuel
-- Pour le travail en lots avec `/work:work-batch`
+When to use the automated workflow:
+- Features well defined in the specs
+- After mastering the manual workflow
+- For batch work with `/work:work-batch`
 
-#### Quand sauter des etapes (et quand ne pas le faire)
+#### When to skip steps (and when not to)
 
-| Situation | Etapes a sauter | Etapes obligatoires |
+| Situation | Steps to skip | Mandatory steps |
 |-----------|----------------|---------------------|
-| Typo / rename | Tout sauf fix + verify | Verification que les tests passent |
-| Bugfix simple | Explore, Specify | TDD (test de non-regression), Audit rapide |
-| Feature simple (< 100 lignes) | Specify | Explore, Plan, TDD, Audit |
-| Feature complexe | Rien | Tout le workflow |
-| Hotfix production | Plan | Explore, TDD, Audit minimal, Commit |
+| Typo / rename | All except fix + verify | Verification that tests pass |
+| Simple bugfix | Explore, Specify | TDD (regression test), quick audit |
+| Simple feature (< 100 lines) | Specify | Explore, Plan, TDD, Audit |
+| Complex feature | Nothing | Full workflow |
+| Production hotfix | Plan | Explore, TDD, minimal audit, Commit |
 
-Regles absolues independantes du contexte :
-- Ne jamais commiter sans que les tests passent
-- Ne jamais modifier `main` directement (sauf hotfix approuve)
-- Ne jamais sauter l'audit pour du code critique (auth, paiement, donnees sensibles)
+Absolute rules independent of context:
+- Never commit without the tests passing
+- Never modify `main` directly (except for an approved hotfix)
+- Never skip the audit for critical code (auth, payment, sensitive data)
 
-#### Matrice de choix rapide
+#### Quick choice matrix
 
 ```
-Le changement touche combien de fichiers ?
+How many files does the change touch?
       |
       v
-   1-3 fichiers, < 50 lignes, pas d'API publique
+   1-3 files, < 50 lines, no public API
       |                    |
-     Oui                  Non
+     Yes                  No
       |                    |
       v                    v
-/work:work-quick    C'est une feature complete ?
+/work:work-quick    Is it a complete feature?
                           |               |
-                         Oui             Non (bug)
+                         Yes             No (bug)
                           |               |
                           v               v
-                   Backlog ?       /work:work-flow-bugfix
+                   Backlog?        /work:work-flow-bugfix
                     |       |
-                   Oui     Non
+                   Yes     No
                     |       |
                     v       v
              /work:work-batch  /work:work-flow-feature
-                               (ou workflow manuel)
+                               (or manual workflow)
 ```
 
 ---
 
-### Bilan du Niveau 3
+### Level 3 Wrap-up
 
-Vous avez maintenant les outils pour travailler avec Claude Code de maniere professionnelle :
+You now have the tools to work with Claude Code in a professional way:
 
-- **TDD** : ecrire les tests avant le code, cycle Red-Green-Refactor avec `/dev:dev-tdd`
-- **Audits** : `/qa:qa-loop` pour atteindre automatiquement le score cible avant chaque merge
-- **Hooks** : comprendre l'automatisation invisible qui garantit la qualite a chaque modification
-- **Prompting** : formuler des prompts precis qui multiplient la qualite des resultats
-- **Parallelisme** : git worktrees + sessions nommees pour travailler sur plusieurs features simultanement
-- **Raccourcis** : choisir le workflow adapte a la complexite du changement
+- **TDD**: write tests before code, Red-Green-Refactor cycle with `/dev:dev-tdd`
+- **Audits**: `/qa:qa-loop` to automatically reach the target score before each merge
+- **Hooks**: understand the invisible automation that guarantees quality at each modification
+- **Prompting**: formulate precise prompts that multiply the quality of results
+- **Parallelism**: git worktrees + named sessions to work on several features simultaneously
+- **Shortcuts**: choose the workflow adapted to the complexity of the change
 
-Le Niveau 4 (Maitrise) couvre les patterns avances : agents en equipe, configuration fine des hooks, workflows custom, et integration dans un environnement d'equipe.
+Level 4 (Mastery) covers advanced patterns: agent teams, fine hook configuration, custom workflows, and integration into a team environment.
 
-## Niveau 4 : Maitrise (3h)
+## Level 4: Mastery (3h)
 
-A ce stade, vous utilisez Claude Code avec aisance. Il est temps de sortir du mode consommateur pour passer au mode producteur : creer vos propres briques, adapter le socle a votre contexte, et automatiser votre environnement de travail.
+At this stage, you use Claude Code with ease. It is time to step out of consumer mode and move to producer mode: create your own building blocks, adapt the foundation to your context, and automate your work environment.
 
 ---
 
-### 4.1 Creer ses propres skills
+### 4.1 Creating your own skills
 
-Un **skill** est un bloc d'instructions specialise que Claude Code peut declencher automatiquement selon le contexte, ou que vous appelez manuellement. Contrairement aux commandes, un skill s'execute dans un contexte isole (`fork`) et peut etre lie a un agent ou appele depuis plusieurs commandes.
+A **skill** is a specialized block of instructions that Claude Code can trigger automatically based on context, or that you call manually. Unlike commands, a skill runs in an isolated context (`fork`) and can be linked to an agent or called from several commands.
 
-#### Structure d'un fichier SKILL.md
+#### Structure of a SKILL.md file
 
-Chaque skill est un fichier `SKILL.md` dans `.claude/skills/[nom-du-skill]/` avec un frontmatter YAML obligatoire :
+Each skill is a `SKILL.md` file in `.claude/skills/[skill-name]/` with a mandatory YAML frontmatter:
 
 ```yaml
 ---
-name: mon-skill
-description: Analyse et optimise les requetes SQL lentes. Declencher quand
-  l'utilisateur mentionne des requetes lentes, N+1, ou veut optimiser une DB.
+name: my-skill
+description: Analyzes and optimizes slow SQL queries. Trigger when
+  the user mentions slow queries, N+1, or wants to optimize a DB.
 allowed-tools:
   - Read
   - Grep
@@ -1400,94 +1400,94 @@ allowed-tools:
   - Bash
 context: fork
 model: sonnet
-argument-hint: "[fichier-ou-description]"
+argument-hint: "[file-or-description]"
 ---
 ```
 
-Les champs cles du frontmatter :
+The key fields of the frontmatter:
 
-| Champ | Description | Exemple |
+| Field | Description | Example |
 |-------|-------------|---------|
-| `name` | Identifiant unique du skill | `sql-optimizer` |
-| `description` | Description + mots-cles de declenchement automatique | Voir ci-dessus |
-| `allowed-tools` | Outils autorises (principe du moindre privilege) | `Read, Grep, Bash` |
-| `context` | `fork` (isole, recommande) ou `shared` (contexte principal) | `fork` |
-| `model` | Modele prefere pour ce skill | `haiku`, `sonnet`, `opus` |
-| `argument-hint` | Indication affichee a l'utilisateur sur les arguments attendus | `"[description]"` |
-| `disable-model-invocation` | Empeche le declenchement automatique | `true` |
-| `user-invocable` | Rend le skill invisible a l'utilisateur direct | `false` |
+| `name` | Unique identifier of the skill | `sql-optimizer` |
+| `description` | Description + automatic trigger keywords | See above |
+| `allowed-tools` | Authorized tools (least privilege principle) | `Read, Grep, Bash` |
+| `context` | `fork` (isolated, recommended) or `shared` (main context) | `fork` |
+| `model` | Preferred model for this skill | `haiku`, `sonnet`, `opus` |
+| `argument-hint` | Hint shown to the user about expected arguments | `"[description]"` |
+| `disable-model-invocation` | Prevents automatic triggering | `true` |
+| `user-invocable` | Makes the skill invisible to direct user | `false` |
 
-#### Le declenchement automatique
+#### Automatic triggering
 
-Le champ `description` joue un double role : documenter le skill ET servir de base pour le declenchement automatique. Claude Code analyse les mots-cles de la description pour savoir quand proposer le skill. Par exemple, le skill `dev-tdd` du socle se declenche automatiquement quand vous mentionnez "TDD", "test first", "ecrire les tests", ou demandez d'implementer une nouvelle fonctionnalite.
+The `description` field plays a dual role: documenting the skill AND serving as a basis for automatic triggering. Claude Code analyzes the keywords of the description to know when to propose the skill. For example, the foundation's `dev-tdd` skill triggers automatically when you mention "TDD", "test first", "write tests", or ask to implement a new feature.
 
-Exemples de mots-cles efficaces dans une description :
+Examples of effective keywords in a description:
 
 ```yaml
-description: Optimisation des performances React. Declencher automatiquement
-  quand l'utilisateur mentionne "re-render", "memo", "React perf", "useMemo",
-  "useCallback", ou veut optimiser un composant React.
+description: React performance optimization. Trigger automatically
+  when the user mentions "re-render", "memo", "React perf", "useMemo",
+  "useCallback", or wants to optimize a React component.
 ```
 
-#### Sous-repertoires examples/ et references/
+#### examples/ and references/ subdirectories
 
-Pour les skills complexes, deporter le contenu detaille dans des sous-fichiers :
+For complex skills, move detailed content to sub-files:
 
 ```
-.claude/skills/mon-skill/
-  SKILL.md          # Instructions principales (< 500 lignes)
+.claude/skills/my-skill/
+  SKILL.md          # Main instructions (< 500 lines)
   examples/
-    exemple-simple.md
-    exemple-avance.md
+    simple-example.md
+    advanced-example.md
   references/
     checklists.md
     patterns.md
 ```
 
-Le fichier `SKILL.md` reste concis et fait reference aux sous-fichiers. Cela evite de depasser le budget de 15 000 caracteres (`SLASH_COMMAND_TOOL_CHAR_BUDGET`).
+The `SKILL.md` file stays concise and references the sub-files. This avoids exceeding the 15,000 character budget (`SLASH_COMMAND_TOOL_CHAR_BUDGET`).
 
-#### Variables disponibles dans un skill
+#### Variables available in a skill
 
 | Variable | Description |
 |----------|-------------|
-| `$ARGUMENTS` | Tous les arguments passes au skill |
-| `$ARGUMENTS[0]` | Premier argument |
-| `$1`, `$2` | Raccourcis pour les arguments |
-| `${CLAUDE_SESSION_ID}` | ID de la session en cours |
+| `$ARGUMENTS` | All arguments passed to the skill |
+| `$ARGUMENTS[0]` | First argument |
+| `$1`, `$2` | Shortcuts for arguments |
+| `${CLAUDE_SESSION_ID}` | ID of the current session |
 
 #### Dynamic context injection
 
-Injecter du contenu dynamique au moment de l'execution avec la syntaxe `` !`commande` `` :
+Inject dynamic content at runtime with the `` !`command` `` syntax:
 
 ```markdown
-## Contexte du projet
+## Project context
 
-Scripts disponibles :
+Available scripts:
 !`cat package.json | jq .scripts`
 
-Version actuelle :
-!`cat VERSION 2>/dev/null || echo "inconnue"`
+Current version:
+!`cat VERSION 2>/dev/null || echo "unknown"`
 ```
 
-#### Exercice : creer un skill pour votre projet
+#### Exercise: create a skill for your project
 
-Creez `.claude/skills/mon-deploy-check/SKILL.md` qui verifie les preconditions avant un deploiement (tests passent, pas de `console.log`, variables d'environnement presentes). Declenchez-le avec les mots "deployer", "mise en production", "release".
+Create `.claude/skills/my-deploy-check/SKILL.md` that verifies preconditions before a deployment (tests pass, no `console.log`, environment variables present). Trigger it with the words "deploy", "production rollout", "release".
 
 ---
 
-### 4.2 Creer ses propres agents
+### 4.2 Creating your own agents
 
-Un **agent** est une instance Claude Code separee avec ses propres outils, son propre modele, et ses propres permissions. Il s'execute de facon isolee et ne peut acceder qu'aux outils que vous lui autorisez explicitement.
+An **agent** is a separate Claude Code instance with its own tools, its own model, and its own permissions. It runs in isolation and can only access the tools that you explicitly authorize.
 
-#### Structure d'un fichier agent
+#### Structure of an agent file
 
-Les agents sont des fichiers `.md` dans `.claude/agents/` avec un frontmatter YAML :
+Agents are `.md` files in `.claude/agents/` with a YAML frontmatter:
 
 ```yaml
 ---
-name: mon-agent-audit
-description: Audit specialise de conformite RGPD. Analyse le code pour
-  detecter les violations de confidentialite et proposer des corrections.
+name: my-audit-agent
+description: Specialized GDPR compliance audit. Analyzes the code to
+  detect privacy violations and propose corrections.
 tools: Read, Grep, Glob
 model: sonnet
 permissionMode: default
@@ -1499,29 +1499,29 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "echo '[AUDIT-RGPD] Analyse en cours...'"
+          command: "echo '[GDPR-AUDIT] Analysis in progress...'"
           timeout: 5000
 ---
 ```
 
-Champs du frontmatter agent :
+Agent frontmatter fields:
 
-| Champ | Description | Valeurs |
+| Field | Description | Values |
 |-------|-------------|---------|
-| `name` | Identifiant de l'agent | kebab-case |
-| `description` | Description + declenchement auto | Texte libre |
-| `tools` | Outils autorises (virgule separee) | `Read, Grep, Glob, Bash` |
-| `model` | Modele a utiliser | `haiku`, `sonnet`, `opus` |
-| `permissionMode` | Niveau de permissions | `default`, `acceptEdits` |
-| `disallowedTools` | Outils explicitement interdits | `Bash, Write` |
-| `skills` | Skills a charger pour cet agent | Liste de noms |
+| `name` | Agent identifier | kebab-case |
+| `description` | Description + auto-triggering | Free text |
+| `tools` | Authorized tools (comma separated) | `Read, Grep, Glob, Bash` |
+| `model` | Model to use | `haiku`, `sonnet`, `opus` |
+| `permissionMode` | Permission level | `default`, `acceptEdits` |
+| `disallowedTools` | Explicitly forbidden tools | `Bash, Write` |
+| `skills` | Skills to load for this agent | List of names |
 
-Voici la structure de l'agent `dev-debug` du socle a titre d'exemple reel :
+Here is the structure of the foundation's `dev-debug` agent as a real example:
 
 ```yaml
 ---
 name: dev-debug
-description: Diagnostic et investigation de bugs.
+description: Bug diagnosis and investigation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 permissionMode: default
@@ -1532,26 +1532,26 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "echo '[DEV-DEBUG] Investigation en cours...'"
+          command: "echo '[DEV-DEBUG] Investigation in progress...'"
           timeout: 5000
 ---
 ```
 
-Le corps du fichier agent doit etre minimal (30-55 lignes) : il orchestre, le skill fournit le detail. C'est le pattern agent/skill du socle.
+The body of the agent file must be minimal (30-55 lines): it orchestrates, the skill provides the detail. This is the foundation's agent/skill pattern.
 
-#### Choisir le bon modele pour un agent
+#### Choosing the right model for an agent
 
-| Modele | Cas d'usage agent | Nombre dans le socle |
+| Model | Agent use case | Number in the foundation |
 |--------|-------------------|---------------------|
-| `haiku` | Exploration, documentation, generation standard, audits simples | 22 agents |
-| `sonnet` | Debug complexe, securite, architecture, integration | 35 agents |
-| `opus` | Reserve aux taches critiques avec `/effort high` | Sur demande |
+| `haiku` | Exploration, documentation, standard generation, simple audits | 22 agents |
+| `sonnet` | Complex debug, security, architecture, integration | 35 agents |
+| `opus` | Reserved for critical tasks with `/effort high` | On request |
 
-Regle pratique : si l'agent lit sans modifier, utilisez `haiku`. S'il analyse pour proposer des corrections ou des decisions architecturales, utilisez `sonnet`.
+Practical rule: if the agent reads without modifying, use `haiku`. If it analyzes to propose corrections or architectural decisions, use `sonnet`.
 
-#### Lier un agent a des skills
+#### Linking an agent to skills
 
-La propriete `skills` dans le frontmatter d'un agent charge automatiquement les instructions du skill dans le contexte de l'agent. Un agent peut charger plusieurs skills :
+The `skills` property in an agent's frontmatter automatically loads the skill instructions into the agent's context. An agent can load several skills:
 
 ```yaml
 skills:
@@ -1560,23 +1560,23 @@ skills:
   - legal-rgpd
 ```
 
-#### Hooks dans le frontmatter agent
+#### Hooks in the agent frontmatter
 
-Les hooks declares dans le frontmatter d'un agent s'appliquent uniquement pendant l'execution de cet agent. C'est distinct des hooks globaux dans `settings.json`.
+The hooks declared in an agent's frontmatter apply only during the execution of this agent. This is distinct from the global hooks in `settings.json`.
 
-#### Exercice : creer un agent d'audit specialise
+#### Exercise: create a specialized audit agent
 
-Creez `.claude/agents/qa-rgpd.md` avec les outils `Read, Grep, Glob` (pas de `Bash`, pas de `Write`), le modele `haiku`, lie au skill `legal-rgpd` existant. Le description doit mentionner "RGPD", "GDPR", "confidentialite", "donnees personnelles" pour le declenchement automatique.
+Create `.claude/agents/qa-rgpd.md` with the tools `Read, Grep, Glob` (no `Bash`, no `Write`), the `haiku` model, linked to the existing `legal-rgpd` skill. The description must mention "GDPR", "RGPD", "privacy", "personal data" for automatic triggering.
 
 ---
 
-### 4.3 Creer ses propres rules
+### 4.3 Creating your own rules
 
-Les **rules** sont des instructions de code qui s'activent automatiquement quand un fichier correspondant aux chemins declares est modifie. Elles definissent les conventions specifiques a un langage, un framework, ou votre domaine metier.
+**Rules** are code instructions that activate automatically when a file matching the declared paths is modified. They define the conventions specific to a language, a framework, or your business domain.
 
-#### Structure d'une rule
+#### Structure of a rule
 
-Les rules sont des fichiers `.md` dans `.claude/rules/` avec un frontmatter `paths` :
+Rules are `.md` files in `.claude/rules/` with a `paths` frontmatter:
 
 ```yaml
 ---
@@ -1590,77 +1590,77 @@ paths:
 
 ## Strict Mode
 
-- IMPORTANT: Mode strict active (`"strict": true`)
-- IMPORTANT: Pas de `any` sauf cas exceptionnels documentes
-- YOU MUST definir des interfaces pour les objets complexes
+- IMPORTANT: Strict mode enabled (`"strict": true`)
+- IMPORTANT: No `any` except documented exceptional cases
+- YOU MUST define interfaces for complex objects
 ```
 
-Le frontmatter `paths` accepte des patterns glob. Une rule sans `paths` s'applique a tous les fichiers (rule globale). Voir `.claude/rules/git.md` et `.claude/rules/workflow.md` dans le socle : ce sont des rules globales sans paths.
+The `paths` frontmatter accepts glob patterns. A rule without `paths` applies to all files (global rule). See `.claude/rules/git.md` and `.claude/rules/workflow.md` in the foundation: these are global rules without paths.
 
-#### Patterns de paths efficaces
+#### Effective path patterns
 
-| Pattern | Cible |
+| Pattern | Target |
 |---------|-------|
-| `**/*.ts` | Tous les fichiers TypeScript |
-| `**/api/**` | Tout sous-dossier `api/` |
-| `**/components/**` | Composants React |
-| `**/auth/**` | Code d'authentification |
-| `**/migrations/**` | Fichiers de migration DB |
-| `**/docker-compose*` | Fichiers Docker Compose |
+| `**/*.ts` | All TypeScript files |
+| `**/api/**` | Any `api/` subfolder |
+| `**/components/**` | React components |
+| `**/auth/**` | Authentication code |
+| `**/migrations/**` | DB migration files |
+| `**/docker-compose*` | Docker Compose files |
 
-#### Systeme de priorite
+#### Priority system
 
-Quand plusieurs rules correspondent au meme fichier, elles s'appliquent toutes simultanement selon cet ordre de priorite :
+When several rules match the same file, they all apply simultaneously according to this priority order:
 
-| Priorite | Rule | Raison |
+| Priority | Rule | Reason |
 |----------|------|--------|
-| 1 (max) | `security` | La securite prime sur tout |
-| 2 | `verification` | Validation obligatoire avant completion |
-| 3 | `tdd-enforcement` | TDD obligatoire |
-| 4 | Langage (`typescript`, `python`...) | Conventions de langage |
-| 5 | Framework (`react`, `nextjs`...) | Conventions de framework |
-| 6 | `testing` | Normes de tests |
-| 7 | `performance`, `accessibility` | Optimisations |
+| 1 (max) | `security` | Security takes precedence over everything |
+| 2 | `verification` | Mandatory validation before completion |
+| 3 | `tdd-enforcement` | TDD mandatory |
+| 4 | Language (`typescript`, `python`...) | Language conventions |
+| 5 | Framework (`react`, `nextjs`...) | Framework conventions |
+| 6 | `testing` | Test standards |
+| 7 | `performance`, `accessibility` | Optimizations |
 
-Exemple : modifier `src/components/Button.tsx` active simultanement `typescript`, `react`, `accessibility`, `performance`, `verification`, et `tdd-enforcement`.
+Example: modifying `src/components/Button.tsx` simultaneously activates `typescript`, `react`, `accessibility`, `performance`, `verification`, and `tdd-enforcement`.
 
-#### Ecrire des directives efficaces
+#### Writing effective directives
 
-Claude Code accorde plus d'attention a certains mots-cles dans les rules :
+Claude Code pays more attention to certain keywords in rules:
 
-| Mot-cle | Poids | Usage |
+| Keyword | Weight | Usage |
 |---------|-------|-------|
-| `IMPORTANT:` | Eleve | Regles critiques a respecter |
-| `YOU MUST` | Tres eleve | Obligation absolue |
-| `NEVER` | Tres eleve | Interdiction |
-| `ALWAYS` | Eleve | A faire systematiquement |
-| `WARNING:` | Moyen | Point d'attention |
+| `IMPORTANT:` | High | Critical rules to respect |
+| `YOU MUST` | Very high | Absolute obligation |
+| `NEVER` | Very high | Prohibition |
+| `ALWAYS` | High | To do systematically |
+| `WARNING:` | Medium | Point of attention |
 
-Utilisez des tables pour les conventions : elles sont plus lisibles que des listes a puces et prennent moins de tokens.
+Use tables for conventions: they are more readable than bulleted lists and take fewer tokens.
 
-#### Exercice : creer une rule projet
+#### Exercise: create a project rule
 
-Creez `.claude/rules/api-conventions.md` avec les paths `**/api/**` et `**/routes/**`. Definissez vos conventions d'API : format des reponses d'erreur, validation des inputs, codes HTTP utilises, nommage des endpoints.
+Create `.claude/rules/api-conventions.md` with the paths `**/api/**` and `**/routes/**`. Define your API conventions: error response format, input validation, HTTP codes used, endpoint naming.
 
 ---
 
-### 4.4 Personnaliser les hooks
+### 4.4 Customizing hooks
 
-Les hooks permettent d'automatiser des actions avant ou apres chaque operation de Claude Code. Le socle inclut 25+ hooks preconfigures ; vous pouvez en ajouter ou modifier leur comportement.
+Hooks allow you to automate actions before or after each Claude Code operation. The foundation includes 25+ preconfigured hooks; you can add or modify their behavior.
 
-#### Anatomie d'un hook dans settings.json
+#### Anatomy of a hook in settings.json
 
 ```json
 {
   "hooks": {
     "PostToolUse": [
       {
-        "description": "Notification Slack apres chaque commit",
+        "description": "Slack notification after each commit",
         "matcher": "Bash(git commit:*)",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'curl -s -X POST $SLACK_WEBHOOK -d \"{\\\"text\\\":\\\"Commit effectue dans $(basename $PWD)\\\"}\"'",
+            "command": "bash -c 'curl -s -X POST $SLACK_WEBHOOK -d \"{\\\"text\\\":\\\"Commit done in $(basename $PWD)\\\"}\"'",
             "async": true,
             "onFailure": "ignore",
             "timeout": 5000
@@ -1672,90 +1672,90 @@ Les hooks permettent d'automatiser des actions avant ou apres chaque operation d
 }
 ```
 
-#### Types de hooks
+#### Hook types
 
-| Type | Description | Cas d'usage |
+| Type | Description | Use case |
 |------|-------------|-------------|
-| `command` | Execute un script bash | Formatage, validation, notification |
-| `prompt` | Evalue via un LLM Haiku | Decisions contextuelles intelligentes |
-| `http` | Envoie un POST JSON vers une URL | Webhooks, integrations externes |
+| `command` | Runs a bash script | Formatting, validation, notification |
+| `prompt` | Evaluates via a Haiku LLM | Smart contextual decisions |
+| `http` | Sends a JSON POST to a URL | Webhooks, external integrations |
 
-#### Events disponibles et quand les utiliser
+#### Available events and when to use them
 
-| Event | Declencheur | Usage typique |
+| Event | Trigger | Typical usage |
 |-------|-------------|---------------|
-| `PreToolUse` | Avant un outil | Validation, protection, securite |
-| `PostToolUse` | Apres un outil | Formatage, type-check, notification |
-| `SessionStart` | Demarrage session | Affichage info, verification env |
-| `SessionEnd` | Fin de session | Logging, nettoyage |
-| `PreCompact` | Avant compaction | Sauvegarde contexte |
-| `PostCompact` | Apres compaction | Resume disponible |
-| `TeammateIdle` | Agent inactif (teams) | Re-assignation de taches |
+| `PreToolUse` | Before a tool | Validation, protection, security |
+| `PostToolUse` | After a tool | Formatting, type-check, notification |
+| `SessionStart` | Session start | Display info, env verification |
+| `SessionEnd` | Session end | Logging, cleanup |
+| `PreCompact` | Before compaction | Save context |
+| `PostCompact` | After compaction | Summary available |
+| `TeammateIdle` | Idle agent (teams) | Re-assignment of tasks |
 
-#### Le systeme de matchers
+#### The matcher system
 
-Le `matcher` filtre les hooks par outil ou par pattern regex :
+The `matcher` filters hooks by tool or by regex pattern:
 
 ```json
-"matcher": "Edit|Write"           // Edition ou creation de fichier
-"matcher": "Bash"                  // Toute commande bash
-"matcher": "Bash(git commit:*)"    // Uniquement git commit
-"matcher": "Bash(npm run:*)"       // Toute commande npm run
+"matcher": "Edit|Write"           // File edit or creation
+"matcher": "Bash"                  // Any bash command
+"matcher": "Bash(git commit:*)"    // Only git commit
+"matcher": "Bash(npm run:*)"       // Any npm run command
 ```
 
-#### onFailure : bloquer ou ignorer
+#### onFailure: block or ignore
 
-| onFailure | Effet | Quand l'utiliser |
+| onFailure | Effect | When to use |
 |-----------|-------|------------------|
-| `"block"` | Bloque l'action si le hook echoue | Securite, validation critique |
-| `"ignore"` | Continue meme si le hook echoue | Logging, notification |
-| (absent) | Continue par defaut | Actions non-critiques |
+| `"block"` | Blocks the action if the hook fails | Security, critical validation |
+| `"ignore"` | Continues even if the hook fails | Logging, notification |
+| (absent) | Continues by default | Non-critical actions |
 
-IMPORTANT : les hooks de securite (gitleaks, protection main, tests pre-commit) doivent utiliser `"onFailure": "block"`. Les hooks de logging et notification doivent utiliser `"async": true` et `"onFailure": "ignore"`.
+IMPORTANT: security hooks (gitleaks, main protection, pre-commit tests) must use `"onFailure": "block"`. Logging and notification hooks must use `"async": true` and `"onFailure": "ignore"`.
 
-#### Hooks asynchrones
+#### Asynchronous hooks
 
-La propriete `"async": true` execute le hook en arriere-plan sans bloquer Claude Code :
+The `"async": true` property runs the hook in the background without blocking Claude Code:
 
 ```json
 {
   "type": "command",
-  "command": "bash -c 'echo \"$(date) - Session terminee\" >> /tmp/claude-sessions.log'",
+  "command": "bash -c 'echo \"$(date) - Session ended\" >> /tmp/claude-sessions.log'",
   "async": true,
   "onFailure": "ignore"
 }
 ```
 
-Regle : securite = synchrone, logging/notification = asynchrone.
+Rule: security = synchronous, logging/notification = asynchronous.
 
-#### Variables d'environnement de controle
+#### Control environment variables
 
-Le socle expose des variables pour desactiver les hooks si necessaire :
+The foundation exposes variables to disable hooks if necessary:
 
-| Variable | Hook desactive |
+| Variable | Disabled hook |
 |----------|----------------|
-| `ALLOW_MAIN_EDIT=1` | Protection branche main |
-| `SKIP_PRE_COMMIT_TESTS=1` | Tests avant commit |
-| `SKIP_COMMAND_VALIDATOR=1` | Validation securite des commandes |
-| `SKIP_PRE_PUSH_CI=1` | CI locale avant push |
-| `SKIP_DESTRUCTIVE_CHECK=1` | Protection operations destructives |
-| `ENABLE_RTK=1` | Activer l'optimisation tokens RTK |
+| `ALLOW_MAIN_EDIT=1` | Main branch protection |
+| `SKIP_PRE_COMMIT_TESTS=1` | Pre-commit tests |
+| `SKIP_COMMAND_VALIDATOR=1` | Command security validation |
+| `SKIP_PRE_PUSH_CI=1` | Local CI before push |
+| `SKIP_DESTRUCTIVE_CHECK=1` | Destructive operation protection |
+| `ENABLE_RTK=1` | Enable RTK token optimization |
 
-Configurez ces variables dans `settings.local.json` (gitignore) pour votre environnement personnel.
+Configure these variables in `settings.local.json` (gitignored) for your personal environment.
 
-#### Exercice : ajouter un hook personnalise
+#### Exercise: add a custom hook
 
-Ajoutez un hook `PostToolUse` qui verifie automatiquement la couverture de tests apres chaque modification d'un fichier source (non-test). Il doit afficher un warning si la couverture tombe sous 80% mais ne pas bloquer.
+Add a `PostToolUse` hook that automatically checks test coverage after each modification of a source file (non-test). It must display a warning if coverage falls below 80% but not block.
 
 ---
 
 ### 4.5 MCP Servers
 
-Le **Model Context Protocol (MCP)** permet a Claude Code d'interagir avec des services externes : bases de donnees, APIs, outils de gestion de projet. C'est une extension du contexte disponible pour Claude.
+The **Model Context Protocol (MCP)** allows Claude Code to interact with external services: databases, APIs, project management tools. It is an extension of the available context for Claude.
 
-#### Configuration dans .mcp.json
+#### Configuration in .mcp.json
 
-Tous les serveurs MCP sont definis dans `.mcp.json` a la racine du projet. Dans le socle, tous sont desactives par defaut (`"enabled": false`) par securite :
+All MCP servers are defined in `.mcp.json` at the root of the project. In the foundation, all are disabled by default (`"enabled": false`) for security:
 
 ```json
 {
@@ -1766,174 +1766,174 @@ Tous les serveurs MCP sont definis dans `.mcp.json` a la racine du projet. Dans 
       "env": {
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
       },
-      "description": "Integration GitHub (issues, PRs, repos)",
+      "description": "GitHub integration (issues, PRs, repos)",
       "enabled": false
     }
   }
 }
 ```
 
-Pour activer un serveur, passez `"enabled": true` et configurez les variables d'environnement dans votre `.env` (jamais dans `.mcp.json` directement).
+To activate a server, set `"enabled": true` and configure the environment variables in your `.env` (never directly in `.mcp.json`).
 
-#### Serveurs disponibles dans le socle
+#### Available servers in the foundation
 
-| Serveur | Usage | Token env |
+| Server | Usage | Env token |
 |---------|-------|-----------|
-| `filesystem` | Acces avance au systeme de fichiers | - |
-| `memory` | Memoire persistante entre sessions | - |
-| `fetch` | Requetes HTTP vers APIs externes | - |
-| `github` | Issues, PRs, repos GitHub | `GITHUB_TOKEN` |
-| `postgres` | Requetes et migrations PostgreSQL | `DATABASE_URL` |
-| `sqlite` | Base SQLite locale | - |
+| `filesystem` | Advanced filesystem access | - |
+| `memory` | Persistent memory between sessions | - |
+| `fetch` | HTTP requests to external APIs | - |
+| `github` | GitHub issues, PRs, repos | `GITHUB_TOKEN` |
+| `postgres` | PostgreSQL queries and migrations | `DATABASE_URL` |
+| `sqlite` | Local SQLite database | - |
 | `puppeteer` | Browser automation, screenshots | - |
-| `slack` | Recherche de bugs, threads equipe | `SLACK_BOT_TOKEN` |
-| `sentry` | Analyse d'erreurs et monitoring | `SENTRY_AUTH_TOKEN` |
-| `bigquery` | Requetes analytics directes | `GOOGLE_APPLICATION_CREDENTIALS` |
-| `linear` | Gestion de projet et issues | `LINEAR_API_KEY` |
-| `notion` | Documentation et bases de connaissances | `NOTION_API_KEY` |
+| `slack` | Bug search, team threads | `SLACK_BOT_TOKEN` |
+| `sentry` | Error analysis and monitoring | `SENTRY_AUTH_TOKEN` |
+| `bigquery` | Direct analytics queries | `GOOGLE_APPLICATION_CREDENTIALS` |
+| `linear` | Project management and issues | `LINEAR_API_KEY` |
+| `notion` | Documentation and knowledge bases | `NOTION_API_KEY` |
 
-Boris Cherny recommande particulierement Slack, Sentry et BigQuery pour eliminer les allers-retours manuels entre Claude Code et ces outils.
+Boris Cherny particularly recommends Slack, Sentry and BigQuery to eliminate manual back-and-forth between Claude Code and these tools.
 
 #### MCP Channels (Research Preview)
 
-Avec `claude --channels`, les serveurs compatibles (Slack, Sentry, Linear) peuvent pousser des messages dans votre session en temps reel : alerte Sentry pendant le dev, message Slack d'un collegue, mise a jour Linear.
+With `claude --channels`, compatible servers (Slack, Sentry, Linear) can push messages into your session in real time: Sentry alert during dev, Slack message from a colleague, Linear update.
 
-#### Considerations de securite
+#### Security considerations
 
-- NEVER mettre des credentials directement dans `.mcp.json`
-- Utiliser `${VARIABLE}` pour referencer les variables d'environnement
-- Ajouter `.env` a `.gitignore`
-- Activer uniquement les serveurs dont vous avez besoin
-- Le fichier `.mcp.json` est versionne dans git : verifier son contenu avant chaque commit
+- NEVER put credentials directly in `.mcp.json`
+- Use `${VARIABLE}` to reference environment variables
+- Add `.env` to `.gitignore`
+- Only activate the servers you need
+- The `.mcp.json` file is versioned in git: check its content before each commit
 
-#### Exercice : configurer et utiliser un serveur MCP
+#### Exercise: configure and use an MCP server
 
-Activez le serveur `github` dans `.mcp.json`. Configurez `GITHUB_TOKEN` dans votre `.env`. Testez en demandant a Claude Code de lister les issues ouvertes de votre repository.
+Activate the `github` server in `.mcp.json`. Configure `GITHUB_TOKEN` in your `.env`. Test by asking Claude Code to list the open issues of your repository.
 
 ---
 
 ### 4.6 Output Styles
 
-Les **Output Styles** permettent d'adapter le format des reponses de Claude Code a votre contexte : apprentissage, revue de code, production d'un rapport, debugging.
+**Output Styles** allow you to adapt the format of Claude Code's responses to your context: learning, code review, report production, debugging.
 
-#### Les 10 styles disponibles
+#### The 10 available styles
 
-| Style | Commande | Cas d'usage |
+| Style | Command | Use case |
 |-------|----------|-------------|
-| `teaching` | `/output-style teaching` | Apprentissage, formation, onboarding |
-| `explanatory` | `/output-style explanatory` | Comprendre le pourquoi, debug approfondi |
-| `concise` | `/output-style concise` | Dev experimente, fix rapide |
-| `technical` | `/output-style technical` | Architecture, decisions techniques |
+| `teaching` | `/output-style teaching` | Learning, training, onboarding |
+| `explanatory` | `/output-style explanatory` | Understand the why, deep debug |
+| `concise` | `/output-style concise` | Experienced dev, quick fix |
+| `technical` | `/output-style technical` | Architecture, technical decisions |
 | `review` | `/output-style review` | Code review, PR, audits |
-| `emoji` | `/output-style emoji` | Presentations, documentation client |
+| `emoji` | `/output-style emoji` | Presentations, client documentation |
 | `minimal` | `/output-style minimal` | Terminal, logs, CI/CD |
-| `structured` | `/output-style structured` | Rapports, analyses formelles |
-| `debug` | `/output-style debug` | Debugging methodique |
+| `structured` | `/output-style structured` | Reports, formal analyses |
+| `debug` | `/output-style debug` | Methodical debugging |
 | `metrics` | `/output-style metrics` | Performance, benchmarks |
 
-Le style `explanatory` est recommande par Boris Cherny pour les phases d'apprentissage : il force Claude a expliquer le raisonnement derriere chaque decision.
+The `explanatory` style is recommended by Boris Cherny for learning phases: it forces Claude to explain the reasoning behind each decision.
 
-#### Creer un style projet specifique
+#### Create a project-specific style
 
-Creez `.claude/output-styles/mon-style.md` :
+Create `.claude/output-styles/my-style.md`:
 
 ```markdown
 ---
-name: Mon Style Equipe
-description: Format standardise pour les rapports d'equipe
+name: My Team Style
+description: Standardized format for team reports
 keep-coding-instructions: true
 ---
 
-# Style Rapport Equipe
+# Team Report Style
 
-## Principes
-- Toujours commencer par un resume executif en 3 lignes
-- Utiliser des tableaux pour les comparaisons
-- Terminer par les actions concretes recommandees
+## Principles
+- Always start with a 3-line executive summary
+- Use tables for comparisons
+- End with the recommended concrete actions
 
 ## Format
-[Description du format avec exemples]
+[Description of the format with examples]
 ```
 
-Activez avec `/output-style mon-style`.
+Activate with `/output-style my-style`.
 
 ---
 
-## Niveau 5 : Expert (2h)
+## Level 5: Expert (2h)
 
-Ce niveau s'adresse aux utilisateurs qui veulent comprendre les decisions d'architecture du socle, optimiser leurs couts, maitriser les fonctionnalites experimentales, et contribuer au projet.
+This level is intended for users who want to understand the foundation's architecture decisions, optimize their costs, master experimental features, and contribute to the project.
 
 ---
 
-### 5.1 Decisions d'architecture
+### 5.1 Architecture decisions
 
-#### Pourquoi claude-socle est concu ainsi
+#### Why claude-socle is designed this way
 
-Le socle repond a un probleme concret : par defaut, Claude Code demarre sans contexte, sans conventions, et sans workflow. Chaque session repart de zero. Le socle resout cela en fournissant une configuration complete et maintenable.
+The foundation addresses a concrete problem: by default, Claude Code starts without context, without conventions, and without workflow. Each session starts from scratch. The foundation solves this by providing a complete and maintainable configuration.
 
-Les trois contraintes de conception :
+The three design constraints:
 
-1. **Minimalisme du contexte de base** : le fichier `CLAUDE.md` ne charge que 175 lignes par session (avant optimisation : 1 322 lignes). Tout le reste est charge a la demande via `@imports`.
+1. **Minimalism of the base context**: the `CLAUDE.md` file only loads 175 lines per session (before optimization: 1,322 lines). Everything else is loaded on demand via `@imports`.
 
-2. **Modularite** : chaque brique (commande, agent, skill, rule, hook) est independante et remplacable. Vous pouvez supprimer tous les agents `growth-*` si vous n'en avez pas besoin.
+2. **Modularity**: each building block (command, agent, skill, rule, hook) is independent and replaceable. You can remove all `growth-*` agents if you do not need them.
 
-3. **Securite par defaut** : `.mcp.json` desactive tout, les hooks bloquent le `git push --force`, la detection de secrets est activee sur chaque ecriture.
+3. **Security by default**: `.mcp.json` disables everything, hooks block `git push --force`, secret detection is enabled on each write.
 
-#### Commands vs Agents vs Skills : principes de conception
+#### Commands vs Agents vs Skills: design principles
 
-| Concept | Contexte | Outils | Declenchement | Quand l'utiliser |
+| Concept | Context | Tools | Triggering | When to use it |
 |---------|----------|--------|---------------|------------------|
-| **Command** | Partage | Tous | Manuel (`/cmd`) | Workflow interactif, modifications directes |
-| **Agent** | Isole | Restreints | Automatique ou manuel | Analyse, tache repetitive, isolation |
-| **Skill** | Fork ou partage | Definis | Automatique | Instructions specialisees, contenu detaille |
+| **Command** | Shared | All | Manual (`/cmd`) | Interactive workflow, direct modifications |
+| **Agent** | Isolated | Restricted | Automatic or manual | Analysis, repetitive task, isolation |
+| **Skill** | Fork or shared | Defined | Automatic | Specialized instructions, detailed content |
 
-Un agent doit avoir un corps minimal (30-55 lignes) et deleguer au skill. Un skill peut aller jusqu'a 500 lignes mais doit deporter le contenu volumineux dans `examples/` et `references/`.
+An agent must have a minimal body (30-55 lines) and delegate to the skill. A skill can go up to 500 lines but must move bulky content into `examples/` and `references/`.
 
-#### Le ratio et son importance
+#### The ratio and its importance
 
-Le socle contient actuellement : 131 commandes, 54 skills, 63 agents, 30 rules (chiffres indicatifs, verifier avec `.claude/`). Ce ratio reflecte une philosophie : les commandes sont le point d'entree principal, les agents sont specialises et contraints, les skills fournissent la substance.
+The foundation currently contains: 131 commands, 54 skills, 63 agents, 30 rules (indicative numbers, verify with `.claude/`). This ratio reflects a philosophy: commands are the main entry point, agents are specialized and constrained, skills provide the substance.
 
-#### CLAUDE.md et les @imports
+#### CLAUDE.md and @imports
 
-Le `CLAUDE.md` du socle n'inclut que deux imports toujours charges :
+The foundation's `CLAUDE.md` only includes two always-loaded imports:
 
 ```
 @docs/reference/best-practices.md
 @docs/reference/project-structures.md
 ```
 
-Les autres references (commands, agents-catalog, hooks, skills, advanced-features) sont documentees dans le tableau `## Documentation et References` mais ne sont PAS auto-importees. Claude les lit a la demande. Cette distinction est fondamentale pour maitriser les couts.
+The other references (commands, agents-catalog, hooks, skills, advanced-features) are documented in the `## Documentation and References` table but are NOT auto-imported. Claude reads them on demand. This distinction is fundamental to mastering costs.
 
-Pour voir les imports actifs dans une session : `/memory`.
+To see the active imports in a session: `/memory`.
 
 ---
 
-### 5.2 Optimisation des tokens
+### 5.2 Token optimization
 
-Les tokens sont la principale source de cout avec Claude Code. L'optimisation a deux dimensions : reduire la consommation par session, et choisir le bon modele pour chaque tache.
+Tokens are the main cost source with Claude Code. Optimization has two dimensions: reduce consumption per session, and choose the right model for each task.
 
-#### Comprendre la consommation
+#### Understanding consumption
 
-Chaque session Claude Code consomme des tokens pour :
-- Le contexte initial (CLAUDE.md + imports + rules actives)
-- Chaque echange (prompt + reponse)
-- Les lectures de fichiers (chaque `Read` ajoute des tokens au contexte)
-- Les resultats de commandes bash
+Each Claude Code session consumes tokens for:
+- The initial context (CLAUDE.md + imports + active rules)
+- Each exchange (prompt + response)
+- File reads (each `Read` adds tokens to the context)
+- Bash command outputs
 
-Le contexte grossit au fil de la session et ne diminue jamais (sauf avec `/compact` ou `/clear`).
+The context grows over the course of the session and never decreases (except with `/compact` or `/clear`).
 
-#### RTK : reduction de 60-90% sur les sorties de commandes
+#### RTK: 60-90% reduction on command outputs
 
-[RTK](https://github.com/rtk-ai/rtk) (Rust Token Killer) est un proxy CLI qui compresse les sorties de commandes avant qu'elles n'atteignent le contexte LLM.
+[RTK](https://github.com/rtk-ai/rtk) (Rust Token Killer) is a CLI proxy that compresses command outputs before they reach the LLM context.
 
-Installation :
+Installation:
 ```bash
 brew install rtk
-# ou
+# or
 cargo install --git https://github.com/rtk-ai/rtk
 ```
 
-Activation dans le socle (desactive par defaut) :
+Activation in the foundation (disabled by default):
 
 ```json
 {
@@ -1943,55 +1943,55 @@ Activation dans le socle (desactive par defaut) :
 }
 ```
 
-Le hook `PreToolUse` du socle reecrit automatiquement les commandes si RTK est installe :
-- `git status` devient `rtk git status` (~10 tokens au lieu de ~200)
-- `cargo test` devient `rtk cargo test` (-90% sur les sorties de test)
+The foundation's `PreToolUse` hook automatically rewrites commands if RTK is installed:
+- `git status` becomes `rtk git status` (~10 tokens instead of ~200)
+- `cargo test` becomes `rtk cargo test` (-90% on test outputs)
 
-Commandes de mesure :
+Measurement commands:
 ```bash
-rtk gain       # Voir les economies realisees
-rtk discover   # Identifier les commandes non optimisees
+rtk gain       # See the savings achieved
+rtk discover   # Identify unoptimized commands
 ```
 
-#### Strategies /compact et /clear
+#### /compact and /clear strategies
 
-| Commande | Effet | Quand utiliser |
+| Command | Effect | When to use |
 |----------|-------|----------------|
-| `/compact` | Resume le contexte, conserve les decisions et conventions | Entre phases longues (Explore → Plan → TDD) |
-| `/clear` | Efface tout le contexte | Changement de sujet complet, nouvelle tache sans rapport |
+| `/compact` | Summarizes the context, keeps decisions and conventions | Between long phases (Explore → Plan → TDD) |
+| `/clear` | Erases all the context | Complete topic change, new unrelated task |
 
-Preferer `/compact` a `/clear` : la compaction conserve l'essentiel (decisions prises, patterns detectes) tandis que `/clear` efface tout et fait recommencer de zero.
+Prefer `/compact` over `/clear`: compaction keeps the essential (decisions made, detected patterns) while `/clear` erases everything and makes you start over from scratch.
 
-#### Effort levels pour la gestion des couts
+#### Effort levels for cost management
 
-| Niveau | Commande | Tokens approximatifs | Quand |
+| Level | Command | Approximate tokens | When |
 |--------|----------|---------------------|-------|
-| `low` | `/effort low` | Minimum | Exploration, lecture, commits |
-| `medium` | `/effort medium` | Standard | Dev standard, corrections |
-| `high` | `/effort high` | Eleve | Architecture, audit, refactoring, debug |
+| `low` | `/effort low` | Minimum | Exploration, reading, commits |
+| `medium` | `/effort medium` | Standard | Standard dev, fixes |
+| `high` | `/effort high` | High | Architecture, audit, refactoring, debug |
 
-#### Choisir le bon modele
+#### Choosing the right model
 
-| Modele | Usage optimal | Impact cout |
+| Model | Optimal usage | Cost impact |
 |--------|---------------|-------------|
-| Haiku | Taches simples, generation standard, documentation | Tres faible |
-| Sonnet | Analyse, debug, decisions | Moyen |
-| Opus 4.7 | Audit critique, architecture complexe, `/effort high` | Eleve |
+| Haiku | Simple tasks, standard generation, documentation | Very low |
+| Sonnet | Analysis, debug, decisions | Medium |
+| Opus 4.7 | Critical audit, complex architecture, `/effort high` | High |
 
-Bonne pratique : utilisez Haiku pour les 70% de taches routinieres (generation de tests, documentation, composants standard), Sonnet pour les 25% qui demandent du raisonnement, et reservez Opus pour les 5% critiques.
+Best practice: use Haiku for the 70% of routine tasks (test generation, documentation, standard components), Sonnet for the 25% that require reasoning, and reserve Opus for the 5% critical.
 
-#### Mesurer ses couts
+#### Measuring your costs
 
 ```bash
-/ops:ops-cost    # Rapport de consommation tokens de la session
-ccusage          # Historique de consommation (outil CLI externe)
+/ops:ops-cost    # Token consumption report of the session
+ccusage          # Consumption history (external CLI tool)
 ```
 
 ---
 
-### 5.3 Equipes d'agents (Agent Teams)
+### 5.3 Agent Teams
 
-Agent Teams est une fonctionnalite experimentale qui permet de coordonner plusieurs instances Claude Code travaillant en parallele, avec communication inter-agents.
+Agent Teams is an experimental feature that allows you to coordinate several Claude Code instances working in parallel, with inter-agent communication.
 
 #### Activation
 
@@ -2003,70 +2003,70 @@ Agent Teams est une fonctionnalite experimentale qui permet de coordonner plusie
 }
 ```
 
-Prerequis : Claude Code >= 2.1.19, et optionnellement `tmux` pour le mode split-panes.
+Prerequisites: Claude Code >= 2.1.19, and optionally `tmux` for split-panes mode.
 
-#### Modes de fonctionnement
+#### Operating modes
 
-| Mode | Description | Quand |
+| Mode | Description | When |
 |------|-------------|-------|
-| `auto` (defaut) | Choix automatique selon la tache | Usage standard |
-| `in-process` | Agents dans le meme processus | Dev local, debugging |
-| `tmux` | Agents dans des panes tmux separes | Visualisation, travail long |
+| `auto` (default) | Automatic choice based on the task | Standard usage |
+| `in-process` | Agents in the same process | Local dev, debugging |
+| `tmux` | Agents in separate tmux panes | Visualization, long work |
 
-#### Utilisation
+#### Usage
 
 ```bash
-/work:work-team "Implementer l'authentification JWT :
-- Agent 1 : routes API (POST /auth/login, POST /auth/refresh)
-- Agent 2 : middleware de validation
-- Agent 3 : tests d'integration"
+/work:work-team "Implement JWT authentication:
+- Agent 1: API routes (POST /auth/login, POST /auth/refresh)
+- Agent 2: validation middleware
+- Agent 3: integration tests"
 ```
 
-#### Communication inter-agents
+#### Inter-agent communication
 
-Les agents d'une meme equipe peuvent s'envoyer des messages via le hook `TeammateIdle`. Quand un agent finit sa tache et devient inactif, l'orchestrateur peut lui assigner une nouvelle tache ou consolider les resultats.
+Agents in the same team can send each other messages via the `TeammateIdle` hook. When an agent finishes its task and becomes idle, the orchestrator can assign it a new task or consolidate the results.
 
-#### Quand les equipes aident vs quand elles nuisent
+#### When teams help vs when they hurt
 
-Agent Teams est benefique pour :
-- Taches parallelisables independantes (frontend + backend + tests en parallele)
-- Revues croisees (un agent code, un autre critique)
-- Traitements par lots (analyser 20 fichiers simultanement)
+Agent Teams is beneficial for:
+- Independent parallelizable tasks (frontend + backend + tests in parallel)
+- Cross-reviews (one agent codes, another critiques)
+- Batch processing (analyze 20 files simultaneously)
 
-Agent Teams nuit si :
-- Les taches sont sequentielles et dependantes
-- Le cout de coordination depasse le gain en parallelisme
-- La tache est simple et rapide (overhead non justifie)
+Agent Teams hurts if:
+- Tasks are sequential and dependent
+- The cost of coordination exceeds the gain in parallelism
+- The task is simple and quick (overhead not justified)
 
-Pour les taches parallelisables sans communication entre agents, preferer les sous-agents classiques via le skill `parallel-agents` ou `git-worktrees`.
+For parallelizable tasks without inter-agent communication, prefer classic sub-agents via the `parallel-agents` or `git-worktrees` skill.
 
 ---
 
-### 5.4 Workflows automatises complets
+### 5.4 Full automated workflows
 
-Le socle fournit des commandes de workflow qui enchainent automatiquement plusieurs phases du cycle Explore → Specify → Plan → TDD → Audit → Commit.
+The foundation provides workflow commands that automatically chain several phases of the cycle Explore → Specify → Plan → TDD → Audit → Commit.
 
-#### /work:work-flow-feature de bout en bout
+#### /work:work-flow-feature end-to-end
 
 ```bash
-/work:work-flow-feature "Ajouter un systeme de notifications push"
+/work:work-flow-feature "Add a push notification system"
 ```
 
-Ce workflow execute automatiquement :
-1. Exploration du code existant (work-explore)
-2. Creation de la specification (work-specify)
-3. Planification (work-plan, avec validation avant de coder)
-4. TDD (dev-tdd, cycle Red-Green-Refactor)
-5. Audit qualite (qa-loop "score 90")
-6. Commit et PR (work-pr)
+This workflow automatically runs:
+1. Exploration of existing code (work-explore)
+2. Specification creation (work-specify)
+3. Planning (work-plan, with validation before coding)
+4. TDD (dev-tdd, Red-Green-Refactor cycle)
+5. Quality audit (qa-loop "score 90")
+6. Commit and PR (work-pr)
 
 #### /work:work-flow-bugfix
 
 ```bash
-/work:work-flow-bugfix "Erreur 500 sur /api/users quand l'email contient des majuscules"
+/work:work-flow-bugfix "500 error on /api/users when the email contains uppercase letters"
 ```
 
-Pipeline : debug (dev-debug) → test de non-regression (dev-test) → fix → audit rapide (qa-review) → commit (work-commit avec reference issue).
+Pipeline: debug (dev-debug) → regression test (dev-test) → fix → quick audit (qa-review) → commit (work-commit with issue reference).
 
 #### /work:work-flow-release
 
@@ -2074,7 +2074,7 @@ Pipeline : debug (dev-debug) → test de non-regression (dev-test) → fix → a
 /work:work-flow-release "v2.1.0"
 ```
 
-Gere le versioning semantique, la mise a jour du CHANGELOG, les tags git, et la creation de la release GitHub. Inclut une verification que tous les tests passent avant de tagger.
+Handles semantic versioning, CHANGELOG update, git tags, and creation of the GitHub release. Includes a verification that all tests pass before tagging.
 
 #### /work:work-batch
 
@@ -2082,87 +2082,87 @@ Gere le versioning semantique, la mise a jour du CHANGELOG, les tags git, et la 
 /work:work-batch "backlog.json"
 ```
 
-Traite un backlog de User Stories en lot. Chaque story passe par le workflow complet. Utile pour les sprints avec de nombreuses petites taches.
+Processes a backlog of User Stories in batch. Each story goes through the full workflow. Useful for sprints with many small tasks.
 
-#### Construire un workflow personnalise
+#### Build a custom workflow
 
-Creez `.claude/commands/mon-workflow.md` en enchainant les instructions :
+Create `.claude/commands/my-workflow.md` by chaining the instructions:
 
 ```markdown
-# Workflow Mon Projet
+# My Project Workflow
 
-Workflow personnalise pour les features du projet X.
+Custom workflow for the X project's features.
 
-## Etapes
+## Steps
 
-1. Explorer le code avec focus sur $ARGUMENTS
-2. Verifier les conventions dans `docs/conventions.md`
-3. Implementer en TDD avec couverture minimum 85%
-4. Verifier la conformite RGPD si traitement de donnees personnelles
-5. Creer la PR avec le template de l'equipe
+1. Explore the code with focus on $ARGUMENTS
+2. Verify the conventions in `docs/conventions.md`
+3. Implement in TDD with minimum 85% coverage
+4. Verify GDPR compliance if processing personal data
+5. Create the PR with the team's template
 
-IMPORTANT: Ne jamais skipper l'etape RGPD pour les features de profil utilisateur.
+IMPORTANT: Never skip the GDPR step for user profile features.
 ```
 
 ---
 
-### 5.5 Contribuer au socle
+### 5.5 Contributing to the foundation
 
-#### Comprendre le systeme de validation
+#### Understanding the validation system
 
-Le script `scripts/validate.sh` verifie l'integrite de la configuration. Il valide :
-- La presence des fichiers obligatoires
-- Le format des frontmatter YAML
-- La coherence des comptes (commandes, agents, skills)
-- La securite de base (pas de secrets dans les fichiers commites)
+The `scripts/validate.sh` script verifies the integrity of the configuration. It validates:
+- The presence of mandatory files
+- The format of YAML frontmatters
+- The consistency of counts (commands, agents, skills)
+- Basic security (no secrets in committed files)
 
 ```bash
-./scripts/validate.sh .              # Valider le repertoire courant
-./scripts/validate.sh --format json  # Sortie JSON pour CI
-./scripts/validate.sh --format score # Sortie score uniquement
+./scripts/validate.sh .              # Validate the current directory
+./scripts/validate.sh --format json  # JSON output for CI
+./scripts/validate.sh --format score # Score output only
 ```
 
-#### Ajouter une commande
+#### Adding a command
 
-1. Creer `.claude/commands/[categorie]/ma-commande.md`
-2. Suivre la structure standard (titre, description, contexte `$ARGUMENTS`, instructions, output attendu)
-3. Mettre a jour le compte dans `docs/reference/commands.md`
-4. Tester avec `/[categorie]:ma-commande "test"`
+1. Create `.claude/commands/[category]/my-command.md`
+2. Follow the standard structure (title, description, `$ARGUMENTS` context, instructions, expected output)
+3. Update the count in `docs/reference/commands.md`
+4. Test with `/[category]:my-command "test"`
 
-#### Ajouter un agent
+#### Adding an agent
 
-1. Creer `.claude/agents/mon-agent.md` avec frontmatter complet
-2. Garder le corps minimal (30-55 lignes), creer un skill si besoin
-3. Choisir `haiku` ou `sonnet` selon la complexite
-4. Mettre a jour `docs/reference/agents-catalog.md` (entree + compte)
-5. Verifier les compteurs synchronises via `./scripts/validate-counts.sh`
+1. Create `.claude/agents/my-agent.md` with a complete frontmatter
+2. Keep the body minimal (30-55 lines), create a skill if needed
+3. Choose `haiku` or `sonnet` depending on complexity
+4. Update `docs/reference/agents-catalog.md` (entry + count)
+5. Verify the synchronized counters via `./scripts/validate-counts.sh`
 
-#### Ajouter un skill
+#### Adding a skill
 
-1. Creer `.claude/skills/mon-skill/SKILL.md`
-2. Rester sous 500 lignes ; deporter dans `examples/` si besoin
-3. Definir des mots-cles de declenchement precis dans `description`
-4. Mettre a jour `docs/reference/skills-catalog.md`
+1. Create `.claude/skills/my-skill/SKILL.md`
+2. Stay under 500 lines; move into `examples/` if needed
+3. Define precise trigger keywords in `description`
+4. Update `docs/reference/skills-catalog.md`
 
-#### Le pipeline CI
+#### The CI pipeline
 
-Le pipeline CI du socle execute dans l'ordre :
-1. **Lint** : shellcheck sur les scripts bash, yamllint sur les fichiers YAML
-2. **Security** : gitleaks pour detecter les secrets commites accidentellement
-3. **Validate-counts** : verifie que les comptes dans la documentation correspondent aux fichiers reels
+The foundation's CI pipeline runs in order:
+1. **Lint**: shellcheck on bash scripts, yamllint on YAML files
+2. **Security**: gitleaks to detect accidentally committed secrets
+3. **Validate-counts**: verifies that the counts in the documentation match the real files
 
-Si `validate-counts` echoue, mettez a jour les fichiers de reference avant de pusher.
+If `validate-counts` fails, update the reference files before pushing.
 
-#### Workflow de contribution
+#### Contribution workflow
 
 ```bash
-# 1. Creer une branche
-git checkout -b feature/mon-agent-specialise
+# 1. Create a branch
+git checkout -b feature/my-specialized-agent
 
-# 2. Developper en TDD
-/dev:dev-tdd "ajouter l'agent mon-agent-specialise"
+# 2. Develop in TDD
+/dev:dev-tdd "add the my-specialized-agent agent"
 
-# 3. Valider
+# 3. Validate
 ./scripts/validate.sh .
 
 # 4. Audit
@@ -2174,37 +2174,37 @@ git checkout -b feature/mon-agent-specialise
 
 ---
 
-### 5.6 Checklist du Pro
+### 5.6 Pro Checklist
 
-Vous avez parcouru les 5 niveaux. Voici le resume operationnel.
+You have completed the 5 levels. Here is the operational summary.
 
-#### Workflow quotidien recommande
+#### Recommended daily workflow
 
-**Debut de journee :**
+**Start of day:**
 ```bash
-claude -n "sprint-$(date +%Y%m%d)"  # Session nommee
-/ops:ops-health                       # Health check rapide
+claude -n "sprint-$(date +%Y%m%d)"  # Named session
+/ops:ops-health                       # Quick health check
 ```
 
-**Nouvelle tache :**
+**New task:**
 ```
-1. /work:work-explore    (comprendre avant de toucher)
-2. /work:work-specify    (clarifier avant de planner)
-3. /work:work-plan       (planner avant de coder)
-4. /dev:dev-tdd          (tests avant le code)
-5. /qa:qa-loop "score 90"  (auditer avant de commiter)
+1. /work:work-explore    (understand before touching)
+2. /work:work-specify    (clarify before planning)
+3. /work:work-plan       (plan before coding)
+4. /dev:dev-tdd          (tests before code)
+5. /qa:qa-loop "score 90"  (audit before committing)
 6. /work:work-pr         (commit + push + PR)
 ```
 
-**Fin de session :**
+**End of session:**
 ```bash
-/compact    # Entre phases longues
-/clear      # Nouvelle tache sans rapport
+/compact    # Between long phases
+/clear      # New unrelated task
 ```
 
-#### Reglages a configurer une fois
+#### Settings to configure once
 
-Dans `.claude/settings.local.json` (gitignore, personnel) :
+In `.claude/settings.local.json` (gitignored, personal):
 
 ```json
 {
@@ -2215,55 +2215,55 @@ Dans `.claude/settings.local.json` (gitignore, personnel) :
 }
 ```
 
-Dans `~/.claude/settings.json` (global, tous projets) :
-- Preferences de modele par defaut
-- Hooks personnels (notifications, logging)
+In `~/.claude/settings.json` (global, all projects):
+- Default model preferences
+- Personal hooks (notifications, logging)
 
-#### Quand devier du workflow
+#### When to deviate from the workflow
 
-Le workflow Explore → Specify → Plan → TDD → Audit → Commit est optimal pour les features de taille moyenne. Il existe des exceptions legitimes :
+The Explore → Specify → Plan → TDD → Audit → Commit workflow is optimal for medium-sized features. There are legitimate exceptions:
 
 | Situation | Adaptation |
 |-----------|------------|
-| Fix de typo, correction de commentaire | `/work:work-quick` directement |
-| Bug critique en production | `/work:work-flow-bugfix` sans Specify ni Plan |
-| Prototype jetable | TDD optionnel, mais audit toujours |
-| Refactoring pur (pas de logique) | Pas besoin de Specify, TDD alleges |
+| Typo fix, comment correction | `/work:work-quick` directly |
+| Critical production bug | `/work:work-flow-bugfix` without Specify or Plan |
+| Throwaway prototype | TDD optional, but audit always |
+| Pure refactoring (no logic) | No need for Specify, lighter TDD |
 
-La regle fondamentale : ne jamais sauter l'**Audit** avant un commit sur main, et ne jamais coder sans avoir **lu** le code existant d'abord.
+The fundamental rule: never skip the **Audit** before a commit on main, and never code without having **read** the existing code first.
 
-#### Amelioration continue
+#### Continuous improvement
 
 ```bash
-/qa:qa-kaizen    # Identifie les patterns d'amelioration dans votre workflow
-/qa:qa-audit     # Audit complet periodique (securite + RGPD + a11y + perf)
-/ops:ops-deps    # Vulnerabilites dans les dependances
+/qa:qa-kaizen    # Identifies improvement patterns in your workflow
+/qa:qa-audit     # Periodic full audit (security + GDPR + a11y + perf)
+/ops:ops-deps    # Vulnerabilities in dependencies
 ```
 
-Revisitez votre `CLAUDE.md` apres chaque sprint : ajoutez les conventions emergentes, les pieges decouverts, les patterns d'equipe. Un bon `CLAUDE.md` est un document vivant qui reflete l'intelligence collective de l'equipe.
+Revisit your `CLAUDE.md` after each sprint: add the emerging conventions, the discovered pitfalls, the team patterns. A good `CLAUDE.md` is a living document that reflects the team's collective intelligence.
 
-#### Les 10 principes du Pro
+#### The 10 principles of the Pro
 
-1. Lire avant d'ecrire (`/work:work-explore` en premier)
-2. Specifier avant de planner, planner avant de coder
-3. Tests avant le code, toujours (TDD)
-4. Donner a Claude un moyen de verifier son travail (hooks, suites de tests)
-5. Auditer avant de commiter (`/qa:qa-loop "score 90"`)
-6. Commits atomiques : 1 commit = 1 changement logique
-7. Ne jamais commiter de secrets (gitleaks est la pour ca)
-8. Etre specifique dans les prompts (anti-pattern : "fix this bug")
-9. Adapter le modele a la tache (Haiku pour le routinier, Sonnet pour le complexe)
-10. Iterer en boucle courte plutot qu'en session geante (max 10 fichiers par session)
+1. Read before writing (`/work:work-explore` first)
+2. Specify before planning, plan before coding
+3. Tests before code, always (TDD)
+4. Give Claude a way to verify its work (hooks, test suites)
+5. Audit before committing (`/qa:qa-loop "score 90"`)
+6. Atomic commits: 1 commit = 1 logical change
+7. Never commit secrets (gitleaks is there for that)
+8. Be specific in prompts (anti-pattern: "fix this bug")
+9. Adapt the model to the task (Haiku for routine, Sonnet for complex)
+10. Iterate in short loops rather than in giant sessions (max 10 files per session)
 
 ---
 
-## Prochaines etapes
+## Next steps
 
-Vous avez termine le parcours d'apprentissage. Passez a la pratique :
+You have completed the learning path. Move on to practice:
 
-| Etape suivante | Description |
+| Next step | Description |
 |----------------|-------------|
-| [Tutoriels hands-on](/docs/tutorials) | 10 tutoriels progressifs pour pratiquer (15 min a 4h) |
-| [Projet fil rouge TaskFlow](/docs/tutorials/projet-complet) | Construire un mini-SaaS de A a Z avec tout le workflow |
-| [Guides par technologie](/docs/guides) | Approfondir votre stack (Web, Mobile, API, Python, Go, Infra) |
-| [Etendre le socle](/docs/guides/extending-guide) | Creer vos propres rules, skills et agents |
+| [Hands-on tutorials](/docs/tutorials) | 10 progressive tutorials to practice (15 min to 4h) |
+| [TaskFlow capstone project](/docs/tutorials/projet-complet) | Build a mini-SaaS from A to Z with the full workflow |
+| [Guides by technology](/docs/guides) | Deepen your stack (Web, Mobile, API, Python, Go, Infra) |
+| [Extending the foundation](/docs/guides/extending-guide) | Create your own rules, skills and agents |
