@@ -69,7 +69,7 @@ async function migrate(direction: 'up' | 'down') {
 
   for (const file of files) {
     const sql = readFileSync(`./migrations/${file}`, 'utf-8');
-    const section = sql.split(`-- ${direction === 'up' ? 'Up' : 'Down'}`)[1]?.split('-- ')[0];
+    const section = sql.split(`-- ${direction === 'up' ? 'Up': 'Down'}`)[1]?.split('-- ')[0];
     if (section) {
       await pool.query(section);
       console.log(`Applied ${direction}: ${file}`);

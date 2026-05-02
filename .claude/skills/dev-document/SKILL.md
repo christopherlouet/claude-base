@@ -151,7 +151,7 @@ function generatePPTX(slides: SlideData[]) {
     slide.addText(slideData.content, {
       x: 0.5, y: 1.8, w: 9, h: 4,
       fontSize: 16, color: '666666',
-      bullet: slideData.bullets ? true : false,
+      bullet: slideData.bullets ? true: false,
     });
   });
 

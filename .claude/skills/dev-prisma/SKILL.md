@@ -255,8 +255,8 @@ const posts = await prisma.post.findMany({
 ```ts
 const posts = await prisma.post.findMany({
   take: 20,
-  cursor: lastId ? { id: lastId } : undefined,
-  skip: lastId ? 1 : 0,
+  cursor: lastId ? { id: lastId }: undefined,
+  skip: lastId ? 1: 0,
   orderBy: { id: "desc" },
 });
 ```

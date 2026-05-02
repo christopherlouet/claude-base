@@ -105,7 +105,7 @@ var.database_instance_class # Not just "instance_class"
 ```hcl
 # GOOD - Correct order
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 
   allocation_id = aws_eip.this[0].id
   subnet_id     = aws_subnet.public[0].id
@@ -151,7 +151,7 @@ variable "environment" {
 
 | Scenario | Use | Why |
 |----------|-----|-----|
-| Boolean condition (create or not) | `count = condition ? 1 : 0` | Simple on/off toggle |
+| Boolean condition (create or not) | `count = condition ? 1: 0` | Simple on/off toggle |
 | Simple numeric replication | `count = 3` | Fixed number of identical resources |
 | Items that may be reordered/deleted | `for_each = toset(list)` | Stable resource addresses |
 | Reference by key | `for_each = map` | Named access to resources |
@@ -162,7 +162,7 @@ variable "environment" {
 ```hcl
 # GOOD - Boolean condition
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
   # ...
 }
 ```

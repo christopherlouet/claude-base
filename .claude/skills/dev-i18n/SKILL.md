@@ -332,7 +332,7 @@ npx i18next-parser 'src/**/*.{ts,tsx}' --output 'public/locales/$LOCALE/$NAMESPA
 |---------|------------|
 | String concatenation | NEVER. Use placeholders: `t("hello", { name })` |
 | Hardcoded strings in code | Automatic extractor + lint rule (`i18next/no-literal-string`) |
-| Plurals with manual conditions | `{count === 1 ? "item" : "items"}` doesn't work in all languages (Arabic, Russian: 6 forms) → ICU plural |
+| Plurals with manual conditions | `{count === 1 ? "item": "items"}` doesn't work in all languages (Arabic, Russian: 6 forms) → ICU plural |
 | Fixed word order | Sentences change order between languages → interpolate, don't split |
 | Hardcoded formats | Use `Intl.DateTimeFormat`, `Intl.NumberFormat`, not `date.toLocaleString()` without options |
 | RTL forgotten | Test with Arabic/Hebrew: `dir="rtl"`, `text-align: start` instead of `left` |
@@ -412,7 +412,7 @@ Add `hreflang` in `<head>` and sitemap.xml.
 
 IMPORTANT: NEVER concatenate strings to build sentences. Use placeholders.
 
-IMPORTANT: NEVER `count === 1 ? "item" : "items"`. Use ICU plurals.
+IMPORTANT: NEVER `count === 1 ? "item": "items"`. Use ICU plurals.
 
 IMPORTANT: NEVER hardcode formatted dates/numbers. Use `Intl.DateTimeFormat` or wrapper lib.
 

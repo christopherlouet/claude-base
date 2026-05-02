@@ -79,6 +79,6 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 app.get('/ready', async (req, res) => {
   const dbOk = await db.query('SELECT 1');
-  res.status(dbOk ? 200 : 503).json({ db: dbOk });
+  res.status(dbOk ? 200: 503).json({ db: dbOk });
 });
 ```

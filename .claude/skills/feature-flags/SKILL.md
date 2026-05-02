@@ -140,7 +140,7 @@ import { useFlags } from 'launchdarkly-react-client-sdk';
 
 function Component() {
   const { newDashboard } = useFlags();
-  return newDashboard ? <New /> : <Old />;
+  return newDashboard ? <New />: <Old />;
 }
 ```
 

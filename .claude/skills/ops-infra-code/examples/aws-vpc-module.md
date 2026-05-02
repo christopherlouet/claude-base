@@ -52,7 +52,7 @@ resource "aws_vpc" "this" {
 
 # Secondary CIDR block (optional)
 resource "aws_vpc_ipv4_cidr_block_association" "secondary" {
-  count = var.secondary_cidr_block != "" ? 1 : 0
+  count = var.secondary_cidr_block != "" ? 1: 0
 
   vpc_id     = aws_vpc.this.id
   cidr_block = var.secondary_cidr_block
@@ -60,7 +60,7 @@ resource "aws_vpc_ipv4_cidr_block_association" "secondary" {
 
 # Internet Gateway
 resource "aws_internet_gateway" "this" {
-  count = var.create_igw ? 1 : 0
+  count = var.create_igw ? 1: 0
 
   vpc_id = local.vpc_id
 
@@ -109,7 +109,7 @@ resource "aws_subnet" "private" {
 
 # NAT Gateway (optional)
 resource "aws_eip" "nat" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 
   domain = "vpc"
 
@@ -124,7 +124,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 
   allocation_id = aws_eip.nat[0].id
   subnet_id     = aws_subnet.public[var.availability_zones[0]].id
@@ -237,12 +237,12 @@ output "vpc_cidr_block" {
 
 output "public_subnet_ids" {
   description = "List of public subnet IDs"
-  value       = [for subnet in aws_subnet.public : subnet.id]
+  value       = [for subnet in aws_subnet.public: subnet.id]
 }
 
 output "private_subnet_ids" {
   description = "List of private subnet IDs"
-  value       = [for subnet in aws_subnet.private : subnet.id]
+  value       = [for subnet in aws_subnet.private: subnet.id]
 }
 
 output "internet_gateway_id" {

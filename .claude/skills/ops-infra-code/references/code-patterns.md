@@ -31,7 +31,7 @@
 ```hcl
 # GOOD - Correct order
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 
   allocation_id = aws_eip.this[0].id
   subnet_id     = aws_subnet.public[0].id
@@ -52,7 +52,7 @@ resource "aws_nat_gateway" "this" {
 resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.this[0].id
   tags = { Name = "nat" }
-  count = var.create_nat_gateway ? 1 : 0  # Should be first
+  count = var.create_nat_gateway ? 1: 0  # Should be first
   subnet_id = aws_subnet.public[0].id
 }
 ```
@@ -149,7 +149,7 @@ resource "aws_subnet" "public" {
 ```hcl
 # GOOD - Boolean condition
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 }
 ```
 
@@ -325,7 +325,7 @@ variable "backup_retention" {
 
   validation {
     condition = (
-      var.environment == "prod" ? var.backup_retention >= 7 : true
+      var.environment == "prod" ? var.backup_retention >= 7: true
     )
     error_message = "Prod environment requires backup_retention >= 7 days"
   }
@@ -524,7 +524,7 @@ resource "aws_vpc" "this" {
 }
 
 resource "aws_vpc_ipv4_cidr_block_association" "this" {
-  count = var.add_secondary_cidr ? 1 : 0
+  count = var.add_secondary_cidr ? 1: 0
 
   vpc_id     = aws_vpc.this.id
   cidr_block = "10.1.0.0/16"

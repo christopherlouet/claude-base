@@ -44,7 +44,7 @@ resource "proxmox_virtual_environment_file" "cloud_config" {
       hostname = var.hostname
       domain   = var.domain
       username = var.username
-      ssh_keys = indent(6, join("\n", [for key in var.ssh_keys : "- ${key}"]))
+      ssh_keys = indent(6, join("\n", [for key in var.ssh_keys: "- ${key}"]))
     })
     file_name = "${var.hostname}-cloud-config.yaml"
   }

@@ -51,7 +51,7 @@ class AuthFailure extends AuthState { final String error; }
 
 // BLoC
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc() : super(AuthInitial()) {
+  AuthBloc(): super(AuthInitial()) {
     on<LoginRequested>(_onLogin);
   }
 }

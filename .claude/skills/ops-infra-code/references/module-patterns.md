@@ -413,7 +413,7 @@ module "everything" {
 resource "aws_instance" "app" {
   for_each = toset(["dev", "staging", "prod"])
 
-  instance_type = each.key == "prod" ? "m5.large" : "t3.micro"
+  instance_type = each.key == "prod" ? "m5.large": "t3.micro"
 }
 ```
 

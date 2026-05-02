@@ -194,13 +194,13 @@ function ScrollTracker({ children }: { children: React.ReactNode }) {
 // PREFER hooks over render props
 // BAD: render prop (verbose, nested)
 <WindowSize render={({ width }) => (
-  <div>{width > 768 ? <Desktop /> : <Mobile />}</div>
+  <div>{width > 768 ? <Desktop />: <Mobile />}</div>
 )} />
 
 // GOOD: custom hook (simple, composable)
 function ResponsiveLayout() {
   const { width } = useWindowSize();
-  return width > 768 ? <Desktop /> : <Mobile />;
+  return width > 768 ? <Desktop />: <Mobile />;
 }
 ```
 

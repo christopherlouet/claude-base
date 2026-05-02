@@ -134,7 +134,7 @@ run "test_encryption" {
 
   assert {
     condition = alltrue([
-      for rule in aws_s3_bucket_server_side_encryption_configuration.this.rule :
+      for rule in aws_s3_bucket_server_side_encryption_configuration.this.rule:
       rule.bucket_key_enabled == true
     ])
     error_message = "Bucket key should be enabled"

@@ -70,7 +70,7 @@ class TaskError extends TaskState {
 // presentation/bloc/task_bloc.dart
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final GetTasks getTasks;
-  TaskBloc({required this.getTasks}) : super(TaskInitial()) {
+  TaskBloc({required this.getTasks}): super(TaskInitial()) {
     on<LoadTasks>((event, emit) async {
       emit(TaskLoading());
       final result = await getTasks();
