@@ -208,7 +208,7 @@
     },
     {
       "path": ".github/workflows/codeql.yml",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "315bb9731f0999bf178cd2510934a594ade51ae3877bfd7b7ef006b0f37f73d2"
     },
     {
