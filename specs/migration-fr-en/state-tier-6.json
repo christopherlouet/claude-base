@@ -118,7 +118,7 @@
     },
     {
       "path": "tests/gitleaks.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c882e25becf2cdaa4d08eba2cc3863ab574de8059a024d2d9133127c6465410b"
     },
     {
