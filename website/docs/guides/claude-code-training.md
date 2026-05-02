@@ -1,127 +1,127 @@
 ---
 sidebar_position: 0
-title: "Formation Claude Code"
-description: "Formation complete sur Claude Code, prerequis avant d'utiliser le socle"
+title: "Claude Code Training"
+description: "Complete training on Claude Code, prerequisite before using the foundation"
 tags:
   - "guide"
-  - "formation"
+  - "training"
 ---
 
-# Formation Claude Code
+# Claude Code Training
 
-Ce guide est le prerequis obligatoire avant d'utiliser claude-socle. Il vous apprend a maitriser Claude Code lui-meme — l'outil CLI d'Anthropic — avant d'ajouter la couche de configuration du socle par-dessus.
+This guide is the mandatory prerequisite before using claude-socle. It teaches you how to master Claude Code itself — Anthropic's CLI tool — before adding the foundation's configuration layer on top.
 
-| Module | Sujet | Duree |
-|--------|-------|-------|
-| 1 | Decouverte | 30 min |
-| 2 | Interaction de base | 45 min |
-| 3 | Permissions et securite | 30 min |
-| 4 | Commandes natives | 30 min |
-| 5 | Contexte et memoire | 30 min |
-| 6 | Raccourcis clavier | 15 min |
-| 7 | Configuration avancee | 30 min |
-| 8 | Workflows pratiques | 30 min |
-| 9 | Depannage | 15 min |
+| Module | Topic | Duration |
+|--------|-------|----------|
+| 1 | Discovery | 30 min |
+| 2 | Basic interaction | 45 min |
+| 3 | Permissions and security | 30 min |
+| 4 | Native commands | 30 min |
+| 5 | Context and memory | 30 min |
+| 6 | Keyboard shortcuts | 15 min |
+| 7 | Advanced configuration | 30 min |
+| 8 | Practical workflows | 30 min |
+| 9 | Troubleshooting | 15 min |
 
-**Duree totale estimee : 3h45**
+**Total estimated duration: 3h45**
 
 ---
 
-## Module 1 : Decouverte (30 min)
+## Module 1: Discovery (30 min)
 
-### Qu'est-ce que Claude Code ?
+### What is Claude Code?
 
-Claude Code n'est pas un chatbot, ni un plugin d'IDE. C'est un agent — un programme qui peut raisonner, planifier, et agir de facon autonome dans votre environnement de developpement.
+Claude Code is not a chatbot, nor an IDE plugin. It's an agent — a program that can reason, plan, and act autonomously in your development environment.
 
-| Outil | Type | Ce qu'il fait | Ce qu'il ne fait pas |
-|-------|------|---------------|----------------------|
-| ChatGPT / Claude.ai | Chatbot | Repond a des questions, explique du code | Lire vos fichiers, executer des commandes |
-| GitHub Copilot | IDE Copilot | Autocomplete du code dans l'editeur | Agir en dehors de l'editeur, enchainer des taches |
-| Claude Code | Agent CLI | Lit vos fichiers, ecrit du code, execute des commandes, enchaine des dizaines d'operations | (rien — il peut tout faire dans votre projet) |
+| Tool | Type | What it does | What it does not do |
+|------|------|--------------|---------------------|
+| ChatGPT / Claude.ai | Chatbot | Answers questions, explains code | Read your files, run commands |
+| GitHub Copilot | IDE Copilot | Code autocomplete in the editor | Act outside the editor, chain tasks |
+| Claude Code | CLI agent | Reads your files, writes code, runs commands, chains dozens of operations | (nothing — it can do everything in your project) |
 
-La difference pratique : avec un chatbot, vous copiez-collez votre code dans le chat et vous recopiez la reponse dans votre fichier. Avec Claude Code, il lit directement `src/api/users.ts`, le modifie, lance les tests, et commite — sans que vous touchiez a quoi que ce soit.
+The practical difference: with a chatbot, you copy-paste your code into the chat and copy the answer back into your file. With Claude Code, it directly reads `src/api/users.ts`, modifies it, runs the tests, and commits — without you touching anything.
 
-### Ou utiliser Claude Code
+### Where to use Claude Code
 
-Claude Code fonctionne dans plusieurs environnements :
+Claude Code works in several environments:
 
-| Environnement | Comment | Use case |
-|---------------|---------|----------|
-| Terminal | `claude` dans n'importe quel shell | Usage principal, acces complet |
-| VS Code | Extension officielle ou terminal integre | Developper sans quitter l'editeur |
-| JetBrains | Plugin officiel (IntelliJ, WebStorm, etc.) | Meme chose pour l'ecosysteme JetBrains |
-| Desktop App | Application native Anthropic | Sessions longues avec interface enrichie |
-| Web | claude.ai/code | Acces rapide depuis n'importe ou |
+| Environment | How | Use case |
+|-------------|-----|----------|
+| Terminal | `claude` in any shell | Main usage, full access |
+| VS Code | Official extension or integrated terminal | Develop without leaving the editor |
+| JetBrains | Official plugin (IntelliJ, WebStorm, etc.) | Same thing for the JetBrains ecosystem |
+| Desktop App | Native Anthropic application | Long sessions with enriched interface |
+| Web | claude.ai/code | Quick access from anywhere |
 
-### Plans disponibles
+### Available plans
 
-| Plan | Prix | Modeles inclus | Particularites |
-|------|------|----------------|----------------|
-| Pro | ~20 $/mois | Sonnet, Haiku | Usage personnel |
-| Max | ~100 $/mois | Opus, Sonnet, Haiku | 5x plus de tokens, mode `auto` |
-| Team | ~25 $/user/mois | Opus, Sonnet, Haiku | Collaboration, mode `auto` |
-| Enterprise | Negotie | Tous | SSO, audit logs, data residency |
-| API | Pay-per-token | Tous | Integration CI/CD, scripts headless |
+| Plan | Price | Models included | Specifics |
+|------|-------|-----------------|-----------|
+| Pro | ~$20/month | Sonnet, Haiku | Personal use |
+| Max | ~$100/month | Opus, Sonnet, Haiku | 5x more tokens, `auto` mode |
+| Team | ~$25/user/month | Opus, Sonnet, Haiku | Collaboration, `auto` mode |
+| Enterprise | Negotiated | All | SSO, audit logs, data residency |
+| API | Pay-per-token | All | CI/CD integration, headless scripts |
 
-Le mode `auto` (qui approuve automatiquement les actions) est disponible a partir du plan Max, Team, et Enterprise. Sur le plan Pro, Claude Code demande une confirmation pour chaque action.
+The `auto` mode (which automatically approves actions) is available starting from the Max, Team, and Enterprise plans. On the Pro plan, Claude Code asks for confirmation for each action.
 
 ### Installation
 
-**macOS / Linux (curl) :**
+**macOS / Linux (curl):**
 ```bash
 curl -fsSL https://claude.ai/install.sh | sh
 ```
 
-**macOS (Homebrew) :**
+**macOS (Homebrew):**
 ```bash
 brew install claude
 ```
 
-**Windows (winget) :**
+**Windows (winget):**
 ```powershell
 winget install Anthropic.ClaudeCode
 ```
 
-**Verification :**
+**Verification:**
 ```bash
 claude --version
 ```
 
-### Premier lancement
+### First launch
 
 ```bash
-# Dans n'importe quel dossier de projet
-cd mon-projet
+# In any project folder
+cd my-project
 claude
 ```
 
-Au premier lancement, Claude Code ouvre votre navigateur pour vous authentifier avec votre compte Anthropic. Apres authentification, vous etes ramene au terminal avec le prompt `>` qui indique que Claude Code est pret.
+On first launch, Claude Code opens your browser to authenticate with your Anthropic account. After authentication, you are returned to the terminal with the `>` prompt indicating that Claude Code is ready.
 
-### Interface : comprendre ce que vous voyez
+### Interface: understanding what you see
 
 ```
-> Explain the main entry point of this project        ← votre prompt
+> Explain the main entry point of this project        ← your prompt
 
-  Reading src/index.ts...                              ← tool call (lecture de fichier)
+  Reading src/index.ts...                              ← tool call (file read)
   Reading package.json...                              ← tool call
 
-  Le point d'entree est `src/index.ts`. Il importe     ← reponse de Claude
-  Express, configure les middlewares, et lance le
-  serveur sur le port defini dans .env.
+  The entry point is `src/index.ts`. It imports       ← Claude's response
+  Express, configures the middlewares, and starts the
+  server on the port defined in .env.
 
-  [3 tool calls, 1.2k tokens]                          ← couts
->                                                       ← pret pour la prochaine interaction
+  [3 tool calls, 1.2k tokens]                          ← costs
+>                                                       ← ready for the next interaction
 ```
 
-Les "tool calls" (appels d'outils) sont les actions que Claude Code execute : lire un fichier, lancer une commande, ecrire du code. Vous les voyez en temps reel.
+The "tool calls" are the actions Claude Code performs: reading a file, running a command, writing code. You see them in real time.
 
 ---
 
-## Module 2 : Interaction de base (45 min)
+## Module 2: Basic interaction (45 min)
 
-### Taper un prompt naturel
+### Typing a natural prompt
 
-Pas besoin de syntaxe speciale. Parlez normalement :
+No special syntax needed. Speak normally:
 
 ```
 > Fix the null pointer error in getUserById
@@ -131,11 +131,11 @@ Pas besoin de syntaxe speciale. Parlez normalement :
 > Explain why the CI is failing
 ```
 
-Claude Code comprend le contexte de votre projet. Il lit les fichiers pertinents avant de repondre.
+Claude Code understands the context of your project. It reads the relevant files before answering.
 
-### Le prefixe `!` pour le bash direct
+### The `!` prefix for direct bash
 
-Pour executer une commande shell sans passer par Claude :
+To run a shell command without going through Claude:
 
 ```bash
 !ls -la
@@ -144,95 +144,95 @@ Pour executer une commande shell sans passer par Claude :
 !docker ps
 ```
 
-Utile quand vous voulez voir quelque chose rapidement sans que Claude l'interprete.
+Useful when you want to see something quickly without Claude interpreting it.
 
-### `@` pour mentionner des fichiers
+### `@` to mention files
 
 ```
-> @src/services/auth.ts pourquoi cette fonction peut retourner undefined ?
-> compare @src/v1/api.ts et @src/v2/api.ts
-> ajoute des tests pour @src/utils/validators.ts
+> @src/services/auth.ts why can this function return undefined?
+> compare @src/v1/api.ts and @src/v2/api.ts
+> add tests for @src/utils/validators.ts
 ```
 
-L'autocomplete fonctionne : tapez `@src/` et Tab pour naviguer dans l'arborescence.
+Autocomplete works: type `@src/` and Tab to navigate the tree.
 
-### Entree multiligne
+### Multiline input
 
-Quand votre prompt est long ou contient du code :
+When your prompt is long or contains code:
 
-| Methode | Comment |
-|---------|---------|
-| `\` + Entree | Continue sur la ligne suivante |
-| Option+Entree (macOS) | Nouvelle ligne sans envoyer |
-| Ctrl+J | Nouvelle ligne sans envoyer (universel) |
+| Method | How |
+|--------|-----|
+| `\` + Enter | Continue on the next line |
+| Option+Enter (macOS) | New line without sending |
+| Ctrl+J | New line without sending (universal) |
 
-Exemple :
+Example:
 ```
-> Refactorise cette fonction :\
+> Refactor this function:\
   function calculate(a, b) { return a + b; }\
-  Elle doit gerer les cas null et retourner 0 par defaut
+  It must handle null cases and return 0 by default
 ```
 
-### Copier-coller des images
+### Copy-paste images
 
-Sur macOS et Linux avec support clipboard : `Ctrl+V` colle une image directement dans le prompt. Utile pour partager des screenshots d'erreurs, des maquettes UI, ou des diagrammes.
+On macOS and Linux with clipboard support: `Ctrl+V` pastes an image directly into the prompt. Useful for sharing screenshots of errors, UI mockups, or diagrams.
 
 ```
-> [Ctrl+V — screenshot d'une erreur TypeScript]
-  Explique cette erreur et corrige-la
+> [Ctrl+V — screenshot of a TypeScript error]
+  Explain this error and fix it
 ```
 
-### Mode vim
+### Vim mode
 
-Si vous preferez la navigation vim pour editer vos prompts :
+If you prefer vim navigation to edit your prompts:
 
 ```
 /vim
 ```
 
-Tapez `/vim` pour basculer. Les modes `i` (insertion), `Esc` (normal), `dd` (supprimer ligne), `yy`/`p` (copier/coller) sont disponibles.
+Type `/vim` to toggle. The `i` (insert), `Esc` (normal), `dd` (delete line), `yy`/`p` (copy/paste) modes are available.
 
 ### Voice input
 
-Sur macOS avec acces au microphone : maintenez `Espace` pour dicter votre prompt. Relacher envoie la transcription.
+On macOS with microphone access: hold `Space` to dictate your prompt. Releasing sends the transcription.
 
-### Historique des prompts
+### Prompt history
 
-| Action | Raccourci |
-|--------|-----------|
-| Prompt precedent | Fleche Haut |
-| Prompt suivant | Fleche Bas |
-| Recherche dans l'historique | Ctrl+R puis taper |
-
----
-
-### Les outils de Claude Code (tools)
-
-Claude Code utilise des "tools" pour agir. Vous les voyez s'executer en temps reel pendant une reponse.
-
-| Tool | Role | Exemple d'utilisation |
-|------|------|-----------------------|
-| `Read` | Lire un fichier | Lire `src/index.ts` |
-| `Write` | Creer un fichier | Creer `src/utils/format.ts` |
-| `Edit` | Modifier un fichier existant | Corriger une fonction |
-| `Bash` | Executer une commande shell | `npm test`, `git status` |
-| `Glob` | Trouver des fichiers par pattern | Tous les `*.test.ts` |
-| `Grep` | Chercher du contenu dans les fichiers | Toutes les occurrences de `userId` |
-| `Agent` | Lancer un sous-agent | Deleguer une analyse complexe |
-| `WebFetch` | Telecharger une URL | Lire la doc d'une librairie |
-| `WebSearch` | Rechercher sur le web | Trouver la solution a une erreur |
-| `NotebookEdit` | Modifier un notebook Jupyter | Ajouter une cellule Python |
-| MCP tools | Capacites ajoutees par plugins | GitHub, base de donnees, Slack... |
-
-Les tools MCP (Model Context Protocol) sont des extensions. Le socle en configure plusieurs (GitHub, filesystem, memory). Voir Module 7.
+| Action | Shortcut |
+|--------|----------|
+| Previous prompt | Up Arrow |
+| Next prompt | Down Arrow |
+| Search in history | Ctrl+R then type |
 
 ---
 
-## Module 3 : Permissions et securite (30 min)
+### Claude Code tools
 
-### Le dialog de permission
+Claude Code uses "tools" to act. You see them execute in real time during a response.
 
-Quand Claude Code veut executer une action, il affiche un dialog :
+| Tool | Role | Example of use |
+|------|------|----------------|
+| `Read` | Read a file | Read `src/index.ts` |
+| `Write` | Create a file | Create `src/utils/format.ts` |
+| `Edit` | Modify an existing file | Fix a function |
+| `Bash` | Run a shell command | `npm test`, `git status` |
+| `Glob` | Find files by pattern | All `*.test.ts` |
+| `Grep` | Search for content in files | All occurrences of `userId` |
+| `Agent` | Launch a sub-agent | Delegate a complex analysis |
+| `WebFetch` | Download a URL | Read a library's docs |
+| `WebSearch` | Search on the web | Find the solution to an error |
+| `NotebookEdit` | Modify a Jupyter notebook | Add a Python cell |
+| MCP tools | Capabilities added by plugins | GitHub, database, Slack... |
+
+MCP (Model Context Protocol) tools are extensions. The foundation configures several (GitHub, filesystem, memory). See Module 7.
+
+---
+
+## Module 3: Permissions and security (30 min)
+
+### The permission dialog
+
+When Claude Code wants to execute an action, it displays a dialog:
 
 ```
 Claude wants to run:
@@ -241,31 +241,31 @@ Claude wants to run:
 [Allow] [Deny] [Always Allow]
 ```
 
-| Choix | Effet |
-|-------|-------|
-| Allow | Autorise cette action une seule fois |
-| Deny | Refuse cette action, Claude trouve une autre approche |
-| Always Allow | Autorise cette action pour toute la session |
+| Choice | Effect |
+|--------|--------|
+| Allow | Authorizes this action only once |
+| Deny | Denies this action, Claude finds another approach |
+| Always Allow | Authorizes this action for the entire session |
 
-### Les 5 modes de permission
+### The 5 permission modes
 
-| Mode | Description | Qui peut l'utiliser |
-|------|-------------|---------------------|
-| `default` | Demande confirmation pour chaque action | Tous |
-| `acceptEdits` | Auto-approuve les modifications de fichiers, demande pour le reste | Tous |
-| `plan` | Lecture seule, Claude peut lire mais pas modifier ni executer | Tous |
-| `auto` | Approuve tout sauf les actions explicitement dangereuses | Max, Team, Enterprise, API |
-| `bypassPermissions` | Approuve absolument tout (dangereux, a eviter) | API uniquement |
+| Mode | Description | Who can use it |
+|------|-------------|----------------|
+| `default` | Asks for confirmation for each action | Everyone |
+| `acceptEdits` | Auto-approves file modifications, asks for the rest | Everyone |
+| `plan` | Read-only, Claude can read but not modify or execute | Everyone |
+| `auto` | Approves everything except explicitly dangerous actions | Max, Team, Enterprise, API |
+| `bypassPermissions` | Approves absolutely everything (dangerous, to avoid) | API only |
 
-**`plan` mode** est particulierement utile : Claude lit votre code et vous propose un plan detaille sans rien toucher. Vous validez, puis vous changez de mode pour executer.
+**`plan` mode** is particularly useful: Claude reads your code and proposes a detailed plan without touching anything. You validate, then you change mode to execute.
 
-### Changer de mode pendant une session
+### Switching modes during a session
 
-`Shift+Tab` fait cycler entre les modes disponibles pour votre plan. L'indicateur de mode est affiche dans le prompt.
+`Shift+Tab` cycles between the modes available for your plan. The mode indicator is displayed in the prompt.
 
-### Configurer les permissions dans settings.json
+### Configuring permissions in settings.json
 
-Pour autoriser ou interdire des tools specifiques de facon permanente :
+To allow or deny specific tools permanently:
 
 ```json
 {
@@ -274,241 +274,241 @@ Pour autoriser ou interdire des tools specifiques de facon permanente :
 }
 ```
 
-Exemple pratique — autoriser tout sauf les commandes destructives :
+Practical example — allow everything except destructive commands:
 ```json
 {
   "disallowedTools": ["Bash(rm *)", "Bash(git push --force)"]
 }
 ```
 
-Vous pouvez restreindre `Bash` a des commandes specifiques avec la syntaxe `Bash(commande)`.
+You can restrict `Bash` to specific commands with the `Bash(command)` syntax.
 
 ---
 
-## Module 4 : Commandes natives (30 min)
+## Module 4: Native commands (30 min)
 
-### Les slash commands integrees
+### Built-in slash commands
 
-Ces commandes sont disponibles dans toute session Claude Code, sans configuration supplementaire.
+These commands are available in any Claude Code session, without additional configuration.
 
-| Commande | Description | Quand l'utiliser |
-|----------|-------------|------------------|
-| `/help` | Affiche l'aide et la liste des commandes | N'importe quand |
-| `/compact` | Compacte le contexte en conservant l'essentiel | Session longue, avant de changer de phase |
-| `/clear` | Efface toute la conversation | Nouveau sujet sans rapport |
-| `/config` | Ouvre les settings dans l'editeur | Modifier la configuration |
-| `/cost` | Affiche la consommation tokens et couts de la session | Surveiller les couts |
-| `/doctor` | Diagnostique les problemes d'installation et de configuration | Quand quelque chose ne marche pas |
-| `/effort` | Change le niveau de raisonnement (low / medium / high) | Adapter la profondeur d'analyse |
-| `/fast` | Active/desactive le mode rapide (meme modele, sortie acceleree) | Taches simples, gagner du temps |
-| `/model` | Change de modele (Opus, Sonnet, Haiku) | Adapter le modele a la tache |
-| `/memory` | Affiche toutes les instructions chargees (CLAUDE.md, rules, etc.) | Debugger le contexte |
-| `/resume` | Reprend une session nommee precedente | Continuer une session interrompue |
-| `/rewind` | Revient au checkpoint precedent (avant la derniere modification) | Annuler une modification qui a tout casse |
-| `/theme` | Change le theme visuel (dark, light, etc.) | Preference personnelle |
-| `/terminal-setup` | Configure Shift+Enter dans votre terminal | Installation initiale |
-| `/vim` | Active/desactive le mode vim pour editer les prompts | Preference vim |
-| `/btw` | Pose une question rapide sans polluer le contexte de la session | Questions secondaires |
-| `/desktop` | Ouvre la session dans l'application Desktop | Passer au mode desktop |
-| `/schedule` | Cree une tache planifiee recurrente | Automatisation |
-| `/loop` | Repete un prompt a intervalles reguliers | Monitoring, polling |
+| Command | Description | When to use it |
+|---------|-------------|----------------|
+| `/help` | Displays the help and the list of commands | Anytime |
+| `/compact` | Compacts the context while preserving the essentials | Long session, before changing phase |
+| `/clear` | Erases the entire conversation | New unrelated topic |
+| `/config` | Opens the settings in the editor | Modify the configuration |
+| `/cost` | Displays token consumption and session costs | Monitor costs |
+| `/doctor` | Diagnoses installation and configuration issues | When something doesn't work |
+| `/effort` | Changes the reasoning level (low / medium / high) | Adapt the depth of analysis |
+| `/fast` | Toggles fast mode (same model, accelerated output) | Simple tasks, save time |
+| `/model` | Changes model (Opus, Sonnet, Haiku) | Match the model to the task |
+| `/memory` | Displays all loaded instructions (CLAUDE.md, rules, etc.) | Debug the context |
+| `/resume` | Resumes a previously named session | Continue an interrupted session |
+| `/rewind` | Returns to the previous checkpoint (before the last modification) | Undo a modification that broke everything |
+| `/theme` | Changes the visual theme (dark, light, etc.) | Personal preference |
+| `/terminal-setup` | Configures Shift+Enter in your terminal | Initial installation |
+| `/vim` | Toggles vim mode for editing prompts | Vim preference |
+| `/btw` | Asks a quick question without polluting the session context | Side questions |
+| `/desktop` | Opens the session in the Desktop application | Switch to desktop mode |
+| `/schedule` | Creates a recurring scheduled task | Automation |
+| `/loop` | Repeats a prompt at regular intervals | Monitoring, polling |
 
-### Exemples d'utilisation
+### Examples of use
 
 ```bash
-# Voir combien cette session a coute
+# See how much this session has cost
 /cost
 
-# Passer en mode lecture seule avant de laisser Claude analyser
+# Switch to read-only mode before letting Claude analyze
 /effort high
-# puis demander l'analyse architecturale
+# then ask for the architectural analysis
 
-# Revenir en arriere apres une modification catastrophique
+# Go back after a catastrophic modification
 /rewind
 
-# Changer de modele pour une tache rapide
+# Switch model for a quick task
 /model haiku
 
-# Question rapide sur un point de detail sans impacter la session
-/btw quelle est la difference entre null et undefined en TypeScript ?
+# Quick question on a detail without impacting the session
+/btw what is the difference between null and undefined in TypeScript?
 ```
 
 ---
 
-## Module 5 : Contexte et memoire (30 min)
+## Module 5: Context and memory (30 min)
 
-### La fenetre de contexte
+### The context window
 
-Claude Code utilise une "fenetre de contexte" — la quantite totale d'informations qu'il peut traiter en meme temps (conversation, fichiers lus, resultats de commandes).
+Claude Code uses a "context window" — the total amount of information it can process at once (conversation, files read, command results).
 
-| Modele | Contexte | Equivalent approximatif |
-|--------|----------|--------------------------|
-| Haiku 4.5 | 200k tokens | ~150 000 mots |
-| Sonnet 4.6 | 200k tokens | ~150 000 mots |
-| Opus 4.7 | 1M tokens | ~750 000 mots (~5 romans) |
+| Model | Context | Approximate equivalent |
+|-------|---------|------------------------|
+| Haiku 4.5 | 200k tokens | ~150,000 words |
+| Sonnet 4.6 | 200k tokens | ~150,000 words |
+| Opus 4.7 | 1M tokens | ~750,000 words (~5 novels) |
 
-Quand le contexte est plein, les reponses deviennent moins precises (Claude "oublie" les debuts de session). `/compact` resout ce probleme.
+When the context is full, responses become less accurate (Claude "forgets" the beginnings of the session). `/compact` solves this problem.
 
-### CLAUDE.md : le fichier d'instructions projet
+### CLAUDE.md: the project instructions file
 
-`CLAUDE.md` est un fichier Markdown place a la racine de votre projet. Claude Code le lit automatiquement au debut de chaque session. C'est votre moyen de donner des instructions permanentes sans les retaper a chaque fois.
+`CLAUDE.md` is a Markdown file placed at the root of your project. Claude Code reads it automatically at the start of each session. It's your way to give permanent instructions without retyping them every time.
 
-**Trois niveaux de CLAUDE.md :**
+**Three levels of CLAUDE.md:**
 
-| Niveau | Emplacement | Versionne ? | Contenu typique |
-|--------|-------------|-------------|-----------------|
-| Projet | `/mon-projet/CLAUDE.md` | Oui (git) | Conventions, workflow, references de doc |
-| Utilisateur | `~/.claude/CLAUDE.md` | Non (personnel) | Preferences perso, style de code prefere |
-| Sous-dossier | `/mon-projet/src/CLAUDE.md` | Oui | Instructions specifiques a ce module |
+| Level | Location | Versioned? | Typical content |
+|-------|----------|------------|-----------------|
+| Project | `/my-project/CLAUDE.md` | Yes (git) | Conventions, workflow, doc references |
+| User | `~/.claude/CLAUDE.md` | No (personal) | Personal preferences, preferred code style |
+| Subfolder | `/my-project/src/CLAUDE.md` | Yes | Instructions specific to this module |
 
-**Exemple minimal de CLAUDE.md :**
+**Minimal example of CLAUDE.md:**
 ```markdown
-# Mon Projet
+# My Project
 
 ## Conventions
-- TypeScript strict mode, pas de `any`
-- Tests avec Vitest, couverture 80% minimum
-- Commits en Conventional Commits
+- TypeScript strict mode, no `any`
+- Tests with Vitest, 80% minimum coverage
+- Commits in Conventional Commits
 
 ## Stack
-- Frontend : React + TypeScript
-- Backend : Node.js + Express
-- Base de donnees : PostgreSQL
+- Frontend: React + TypeScript
+- Backend: Node.js + Express
+- Database: PostgreSQL
 ```
 
-**@imports pour inclure d'autres fichiers :**
+**@imports to include other files:**
 
-Plutot que de tout mettre dans CLAUDE.md, vous pouvez inclure d'autres fichiers :
+Rather than putting everything in CLAUDE.md, you can include other files:
 
 ```markdown
-# Mon Projet
+# My Project
 
 @docs/conventions.md
 @docs/architecture.md
 ```
 
-Ces fichiers sont charges automatiquement. Utile pour ne pas avoir un CLAUDE.md de 500 lignes.
+These files are loaded automatically. Useful to avoid having a 500-line CLAUDE.md.
 
 ### Auto-memory
 
-Claude Code memorise automatiquement vos preferences et decisions dans `~/.claude/memory/`. Ces informations persistent entre sessions.
+Claude Code automatically memorizes your preferences and decisions in `~/.claude/memory/`. This information persists between sessions.
 
 ```
-# Claude le fait automatiquement quand vous dites :
+# Claude does it automatically when you say:
 "Remember that I prefer functional components over classes"
 "Remember that this project uses yarn, not npm"
 ```
 
-Pour forcer une memorisation explicite : dites "remember that..." suivi de ce que vous voulez retenir.
+To force an explicit memorization: say "remember that..." followed by what you want to retain.
 
-### Quand utiliser `/compact` vs `/clear`
+### When to use `/compact` vs `/clear`
 
-| Situation | Action | Pourquoi |
-|-----------|--------|----------|
-| Session longue, meme sujet | `/compact` | Conserve le contexte essentiel, libere de la place |
-| Contexte presque plein | `/compact` | Evite de perdre en qualite |
-| Entre deux phases (Explore → Plan) | `/compact` | Repart avec une base propre |
-| Nouveau sujet sans rapport | `/clear` | Recommencer a zero |
-| Claude semble "perdre le fil" | `/compact` | Recondenser les informations cles |
+| Situation | Action | Why |
+|-----------|--------|-----|
+| Long session, same topic | `/compact` | Preserves the essential context, frees up space |
+| Context almost full | `/compact` | Avoids losing quality |
+| Between two phases (Explore → Plan) | `/compact` | Restart with a clean base |
+| New unrelated topic | `/clear` | Start over from scratch |
+| Claude seems to "lose track" | `/compact` | Recondense key information |
 
-`/compact` est presque toujours preferable a `/clear` : il conserve les decisions et conventions apprises pendant la session.
+`/compact` is almost always preferable to `/clear`: it preserves decisions and conventions learned during the session.
 
-### Context compaction automatique
+### Automatic context compaction
 
-Quand le contexte atteint ~90% de sa capacite, Claude Code compacte automatiquement. Vous verrez un message :
+When the context reaches ~90% of its capacity, Claude Code compacts automatically. You'll see a message:
 
 ```
 Context compacted. Summary preserved.
 ```
 
-Cela se fait sans intervention de votre part.
+This happens without your intervention.
 
-### Sessions nommees
+### Named sessions
 
 ```bash
-# Demarrer une session avec un nom
+# Start a session with a name
 claude -n "feature-auth"
 
-# Plus tard, reprendre exactement ou vous etiez
+# Later, resume exactly where you left off
 claude -r "feature-auth"
 
-# Ou depuis l'interieur d'une session
+# Or from inside a session
 /resume feature-auth
 ```
 
-Utile pour les features longues qui s'etalent sur plusieurs jours.
+Useful for long features that span several days.
 
-### Checkpoints et `/rewind`
+### Checkpoints and `/rewind`
 
-Claude Code sauvegarde automatiquement un checkpoint avant chaque modification. Si une operation casse tout :
+Claude Code automatically saves a checkpoint before each modification. If an operation breaks everything:
 
 ```bash
 /rewind
 ```
 
-Revient a l'etat exact avant la derniere modification. Plus rapide que `git stash` ou `git checkout`.
+Returns to the exact state before the last modification. Faster than `git stash` or `git checkout`.
 
 ---
 
-## Module 6 : Raccourcis clavier (15 min)
+## Module 6: Keyboard shortcuts (15 min)
 
-### Reference complete
+### Complete reference
 
-| Raccourci | Action |
-|-----------|--------|
-| `Ctrl+C` | Annuler la generation en cours |
-| `Ctrl+D` | Quitter Claude Code |
-| `Ctrl+G` | Ouvrir le prompt dans un editeur externe |
-| `Ctrl+L` | Redessiner l'affichage (utile si le terminal est corrompu) |
-| `Ctrl+O` | Mode verbose (afficher tous les details des tool calls) |
-| `Ctrl+R` | Recherche dans l'historique des prompts |
-| `Ctrl+T` | Afficher la liste des taches en cours |
-| `Ctrl+B` | Passer la tache en arriere-plan |
-| `Esc` + `Esc` | Rewind rapide / summarize |
-| `Shift+Tab` | Cycler entre les modes de permission |
-| `Alt+P` | Changer de modele |
-| `Alt+T` | Activer/desactiver le thinking (raisonnement visible) |
-| `Alt+O` | Activer/desactiver le fast mode |
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+C` | Cancel the current generation |
+| `Ctrl+D` | Quit Claude Code |
+| `Ctrl+G` | Open the prompt in an external editor |
+| `Ctrl+L` | Redraw the display (useful if the terminal is corrupted) |
+| `Ctrl+O` | Verbose mode (display all tool call details) |
+| `Ctrl+R` | Search in prompt history |
+| `Ctrl+T` | Display the list of current tasks |
+| `Ctrl+B` | Move the task to the background |
+| `Esc` + `Esc` | Quick rewind / summarize |
+| `Shift+Tab` | Cycle between permission modes |
+| `Alt+P` | Change model |
+| `Alt+T` | Toggle thinking (visible reasoning) |
+| `Alt+O` | Toggle fast mode |
 
-### Edition du texte dans le prompt
+### Editing text in the prompt
 
-| Raccourci | Action |
-|-----------|--------|
-| `Ctrl+K` | Supprimer du curseur a la fin de la ligne |
-| `Ctrl+U` | Supprimer du debut de la ligne au curseur |
-| `Ctrl+Y` | Coller ce qui a ete supprime avec Ctrl+K ou Ctrl+U |
-| `Ctrl+A` | Aller au debut de la ligne |
-| `Ctrl+E` | Aller a la fin de la ligne |
-| `Alt+F` | Avancer d'un mot |
-| `Alt+B` | Reculer d'un mot |
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+K` | Delete from cursor to end of line |
+| `Ctrl+U` | Delete from beginning of line to cursor |
+| `Ctrl+Y` | Paste what was deleted with Ctrl+K or Ctrl+U |
+| `Ctrl+A` | Go to the beginning of the line |
+| `Ctrl+E` | Go to the end of the line |
+| `Alt+F` | Move forward one word |
+| `Alt+B` | Move back one word |
 
-### Configurer Shift+Enter
+### Configuring Shift+Enter
 
-Par defaut, `Entree` envoie le prompt. Pour configurer `Shift+Entree` comme "nouvelle ligne" dans votre terminal :
+By default, `Enter` sends the prompt. To configure `Shift+Enter` as "new line" in your terminal:
 
 ```bash
 /terminal-setup
 ```
 
-Cette commande modifie la configuration de votre terminal (iTerm2, Ghostty, etc.) pour que `Shift+Entree` insere une nouvelle ligne.
+This command modifies your terminal's configuration (iTerm2, Ghostty, etc.) so that `Shift+Enter` inserts a new line.
 
 ---
 
-## Module 7 : Configuration avancee (30 min)
+## Module 7: Advanced configuration (30 min)
 
-### Fichiers de settings
+### Settings files
 
-Claude Code charge les settings dans cet ordre (du plus general au plus specifique) :
+Claude Code loads settings in this order (from most general to most specific):
 
-| Fichier | Portee | Versionne ? | Usage |
-|---------|--------|-------------|-------|
-| `~/.claude/settings.json` | Tous vos projets | Non | Preferences personnelles globales |
-| `.claude/settings.json` | Ce projet (toute l'equipe) | Oui | Configuration projet partagee |
-| `.claude/settings.local.json` | Ce projet (vous seulement) | Non (gitignore) | Overrides locaux, API keys |
+| File | Scope | Versioned? | Usage |
+|------|-------|------------|-------|
+| `~/.claude/settings.json` | All your projects | No | Global personal preferences |
+| `.claude/settings.json` | This project (entire team) | Yes | Shared project configuration |
+| `.claude/settings.local.json` | This project (you only) | No (gitignore) | Local overrides, API keys |
 
-Les settings plus specifiques ecrasent les settings plus generaux.
+More specific settings override more general settings.
 
-**Exemple de `.claude/settings.json` :**
+**Example of `.claude/settings.json`:**
 ```json
 {
   "model": "claude-sonnet-4-6",
@@ -521,53 +521,53 @@ Les settings plus specifiques ecrasent les settings plus generaux.
 
 ### Effort levels
 
-L'effort level controle la profondeur du raisonnement de Claude. Plus l'effort est eleve, plus Claude reflechit — et plus ca prend du temps et consomme des tokens.
+The effort level controls the depth of Claude's reasoning. The higher the effort, the more Claude thinks — and the more time and tokens it consumes.
 
-| Niveau | Commande | Quand l'utiliser | Exemple |
-|--------|----------|------------------|---------|
-| low | `/effort low` | Explorer du code, lire des fichiers, questions simples | "Qu'est-ce que ce fichier fait ?" |
-| medium | `/effort medium` | Implementer une feature standard, corriger un bug | "Ajoute la validation d'email" |
-| high | `/effort high` | Concevoir une architecture, refactoring majeur, audit | "Refactorise le module auth" |
-| max | `/effort max` | Debug complexe, securite critique (Opus 4.7 seulement) | "Trouve la fuite memoire" |
+| Level | Command | When to use it | Example |
+|-------|---------|----------------|---------|
+| low | `/effort low` | Explore code, read files, simple questions | "What does this file do?" |
+| medium | `/effort medium` | Implement a standard feature, fix a bug | "Add email validation" |
+| high | `/effort high` | Design an architecture, major refactoring, audit | "Refactor the auth module" |
+| max | `/effort max` | Complex debug, critical security (Opus 4.7 only) | "Find the memory leak" |
 
-### Modeles disponibles
+### Available models
 
-| Modele | Force | Use case | Vitesse |
-|--------|-------|----------|---------|
-| Opus 4.7 | Meilleur raisonnement, 1M contexte | Architecture, audit, debug complexe | Lent |
-| Sonnet 4.6 | Equilibre qualite/vitesse | Developpement quotidien | Moyen |
-| Haiku 4.5 | Tres rapide | Taches simples, reformulation, questions | Rapide |
+| Model | Strength | Use case | Speed |
+|-------|----------|----------|-------|
+| Opus 4.7 | Best reasoning, 1M context | Architecture, audit, complex debug | Slow |
+| Sonnet 4.6 | Quality/speed balance | Daily development | Medium |
+| Haiku 4.5 | Very fast | Simple tasks, rephrasing, questions | Fast |
 
-Changer de modele :
+Switch model:
 ```bash
 /model opus     # Opus 4.7
-/model sonnet   # Sonnet 4.6 (defaut)
+/model sonnet   # Sonnet 4.6 (default)
 /model haiku    # Haiku 4.5
 ```
 
-Ou en ligne de commande :
+Or on the command line:
 ```bash
 claude --model claude-opus-4-6
 ```
 
 ### Fast mode
 
-`/fast` ou `Alt+O` active un mode ou Claude produit des reponses plus rapidement avec le meme modele. Utile pour les reformulations, les questions de clarification, ou quand la qualite maximale n'est pas necessaire.
+`/fast` or `Alt+O` activates a mode where Claude produces responses faster with the same model. Useful for rephrasing, clarification questions, or when maximum quality is not necessary.
 
 ### Hooks
 
-Les hooks sont des commandes shell executees automatiquement a des moments precis du cycle de vie de Claude Code.
+Hooks are shell commands automatically executed at specific moments in the Claude Code lifecycle.
 
-| Hook | Quand il se declenche | Usage typique |
-|------|-----------------------|---------------|
-| `SessionStart` | Au debut de chaque session | Charger l'environnement, afficher un message |
-| `PreToolUse` | Avant qu'un tool soit execute | Valider, bloquer des commandes dangereuses |
-| `PostToolUse` | Apres qu'un tool soit execute | Auto-format, lint, type-check |
-| `Notification` | Quand Claude veut vous notifier | Envoyer une notification systeme |
+| Hook | When it triggers | Typical usage |
+|------|------------------|---------------|
+| `SessionStart` | At the beginning of each session | Load the environment, display a message |
+| `PreToolUse` | Before a tool is executed | Validate, block dangerous commands |
+| `PostToolUse` | After a tool is executed | Auto-format, lint, type-check |
+| `Notification` | When Claude wants to notify you | Send a system notification |
 
-**Exemple : auto-format apres chaque modification de fichier**
+**Example: auto-format after each file modification**
 
-Dans `.claude/settings.json` :
+In `.claude/settings.json`:
 ```json
 {
   "hooks": {
@@ -586,22 +586,22 @@ Dans `.claude/settings.json` :
 }
 ```
 
-Ce hook lance Prettier automatiquement chaque fois que Claude modifie ou cree un fichier.
+This hook runs Prettier automatically each time Claude modifies or creates a file.
 
 ### MCP (Model Context Protocol)
 
-MCP est un protocole standard qui permet de connecter Claude Code a des services externes. Un "MCP server" est un programme qui expose des tools supplementaires.
+MCP is a standard protocol that allows connecting Claude Code to external services. An "MCP server" is a program that exposes additional tools.
 
-**Qu'est-ce qu'un MCP server apporte ?**
+**What does an MCP server bring?**
 
-| MCP Server | Tools ajoutes | Exemple d'utilisation |
-|------------|---------------|-----------------------|
-| `@modelcontextprotocol/server-github` | Lire des PRs, creer des issues | "Cree une issue pour ce bug" |
-| `@modelcontextprotocol/server-filesystem` | Acces etendu au systeme de fichiers | Lire des fichiers hors du projet |
-| `@modelcontextprotocol/server-memory` | Memoire persistante structuree | Stocker des decisions d'architecture |
-| `@modelcontextprotocol/server-postgres` | Lire/ecrire en base de donnees | "Combien d'utilisateurs actifs ce mois ?" |
+| MCP Server | Tools added | Example of use |
+|------------|-------------|----------------|
+| `@modelcontextprotocol/server-github` | Read PRs, create issues | "Create an issue for this bug" |
+| `@modelcontextprotocol/server-filesystem` | Extended access to the filesystem | Read files outside the project |
+| `@modelcontextprotocol/server-memory` | Structured persistent memory | Store architecture decisions |
+| `@modelcontextprotocol/server-postgres` | Read/write to database | "How many active users this month?" |
 
-**Configurer dans `.mcp.json` :**
+**Configure in `.mcp.json`:**
 
 ```json
 {
@@ -617,36 +617,36 @@ MCP est un protocole standard qui permet de connecter Claude Code a des services
 }
 ```
 
-Les MCP servers sont desactives par defaut dans claude-socle pour des raisons de securite. Activez seulement ceux dont vous avez besoin.
+MCP servers are disabled by default in claude-socle for security reasons. Enable only those you need.
 
 ---
 
-## Module 8 : Workflows pratiques (30 min)
+## Module 8: Practical workflows (30 min)
 
-### Explorer un projet inconnu
+### Exploring an unknown project
 
 ```bash
-cd projet-inconnu
+cd unknown-project
 claude "explain this project: what does it do, what's the stack, and where should I start?"
 ```
 
-Claude lit automatiquement `package.json`, `README.md`, les fichiers principaux et vous donne une vue d'ensemble structuree.
+Claude automatically reads `package.json`, `README.md`, the main files and gives you a structured overview.
 
-### Corriger un bug
+### Fixing a bug
 
-La methode la plus efficace : coller le message d'erreur exact.
+The most effective method: paste the exact error message.
 
 ```bash
-# Option 1 : coller l'erreur directement
+# Option 1: paste the error directly
 claude "TypeError: Cannot read properties of undefined (reading 'userId')
   at getUserProfile (src/api/users.ts:42:18)
   Fix this."
 
-# Option 2 : laisser Claude trouver l'erreur
+# Option 2: let Claude find the error
 claude "The tests are failing. Investigate and fix."
 ```
 
-### Creer une feature
+### Creating a feature
 
 ```bash
 claude "Add email verification to the registration flow:
@@ -656,25 +656,25 @@ claude "Add email verification to the registration flow:
 Use the existing mailer service in src/services/mailer.ts"
 ```
 
-Plus vous etes precis, meilleur est le resultat. Indiquez les fichiers existants a reutiliser, les contraintes, les comportements attendus.
+The more precise you are, the better the result. Indicate the existing files to reuse, the constraints, the expected behaviors.
 
-### Creer un commit et une PR
+### Creating a commit and a PR
 
 ```bash
-# Commit uniquement
+# Commit only
 claude "commit my changes with a descriptive conventional commit message"
 
-# Commit + push + PR GitHub
+# Commit + push + GitHub PR
 claude "commit, push, and create a PR for these changes. Title: Add email verification"
 ```
 
 ### Code review
 
 ```bash
-# Review des changements locaux
+# Review of local changes
 claude "review the changes I've made. Check for bugs, security issues, and style."
 
-# Review d'une PR GitHub (avec MCP GitHub configure)
+# Review of a GitHub PR (with MCP GitHub configured)
 claude "review PR #42 and leave inline comments"
 ```
 
@@ -688,124 +688,124 @@ claude "refactor src/services/payment.ts for readability:
 Keep the same behavior — all tests must still pass"
 ```
 
-### Git worktrees : travailler en parallele
+### Git worktrees: working in parallel
 
-Les git worktrees permettent d'avoir plusieurs branches checkoutees en meme temps dans des dossiers differents. Avec Claude Code, vous pouvez lancer plusieurs sessions en parallele sur des features independantes.
+Git worktrees allow having several branches checked out at the same time in different folders. With Claude Code, you can launch several sessions in parallel on independent features.
 
 ```bash
-# Creer un worktree pour une feature
-git worktree add ../mon-projet-auth feature/auth
+# Create a worktree for a feature
+git worktree add ../my-project-auth feature/auth
 
-# Lancer Claude Code dans ce worktree
-cd ../mon-projet-auth
+# Launch Claude Code in this worktree
+cd ../my-project-auth
 claude -n "feature-auth"
 
-# Pendant ce temps, dans un autre terminal
-cd mon-projet
+# Meanwhile, in another terminal
+cd my-project
 claude -n "feature-dashboard"
 ```
 
-Les deux sessions Claude Code s'executent en parallele et n'interferent pas. C'est le pattern recommande pour la productivite maximale.
+The two Claude Code sessions run in parallel and don't interfere. This is the recommended pattern for maximum productivity.
 
-### Piping : envoyer du contenu depuis stdin
+### Piping: sending content from stdin
 
 ```bash
-# Analyser un fichier de log
+# Analyze a log file
 cat server.log | claude -p "summarize the errors in the last hour"
 
-# Analyser la sortie d'une commande
+# Analyze the output of a command
 npm test 2>&1 | claude -p "explain which tests failed and why"
 
-# Reformatter du JSON
+# Reformat JSON
 cat data.json | claude -p "convert this JSON to a markdown table"
 ```
 
-### Mode headless en CI
+### Headless mode in CI
 
 ```bash
-# Dans un pipeline CI, sans interaction
+# In a CI pipeline, without interaction
 claude -p "run the tests, fix any failures, and report what you changed"
 
-# Avec un modele specifique et une limite de tokens
+# With a specific model and a token limit
 claude -p "check for security vulnerabilities" --model claude-haiku-4-5
 ```
 
-Le flag `-p` (print) active le mode non-interactif : Claude execute la tache et se termine. Ideal pour les pipelines automatises.
+The `-p` (print) flag activates non-interactive mode: Claude executes the task and exits. Ideal for automated pipelines.
 
 ---
 
-## Module 9 : Depannage (15 min)
+## Module 9: Troubleshooting (15 min)
 
-### Table symptome / solution
+### Symptom / solution table
 
-| Symptome | Cause probable | Solution |
-|----------|----------------|----------|
-| Claude repond a cote de la question | Contexte trop long ou pollue | `/compact` puis reposer la question |
-| Claude "oublie" les instructions | CLAUDE.md mal configure | `/memory` pour verifier ce qui est charge |
-| Trop de dialogs de permission | Mode `default` actif | `Shift+Tab` pour passer en `acceptEdits` |
-| Session tres lente | Modele trop puissant pour la tache | `/model haiku` ou `/fast` |
-| Fichier pas trouve par Claude | Chemin relatif ambigu | Utiliser `@chemin/complet.ts` ou un chemin absolu |
-| MCP server ne demarre pas | Erreur de configuration | Verifier `.mcp.json`, consulter les logs avec `--debug` |
-| Erreur "context too long" | Fenetre de contexte depassee | `/compact` immediatement |
-| Claude fait quelque chose d'inattendu | Prompt trop vague | Etre plus specifique, decrire l'etat attendu |
-| Modification catastrophique | Bug dans le refactoring | `/rewind` pour revenir avant la modification |
-| Claude ne trouve pas de packages | Environnement node_modules absent | `!npm install` pour installer les dependances |
+| Symptom | Probable cause | Solution |
+|---------|----------------|----------|
+| Claude answers off-topic | Context too long or polluted | `/compact` then ask the question again |
+| Claude "forgets" instructions | CLAUDE.md misconfigured | `/memory` to check what is loaded |
+| Too many permission dialogs | `default` mode active | `Shift+Tab` to switch to `acceptEdits` |
+| Very slow session | Model too powerful for the task | `/model haiku` or `/fast` |
+| File not found by Claude | Ambiguous relative path | Use `@path/full.ts` or an absolute path |
+| MCP server doesn't start | Configuration error | Check `.mcp.json`, consult logs with `--debug` |
+| "context too long" error | Context window exceeded | `/compact` immediately |
+| Claude does something unexpected | Prompt too vague | Be more specific, describe the expected state |
+| Catastrophic modification | Bug in the refactoring | `/rewind` to go back before the modification |
+| Claude can't find packages | node_modules environment missing | `!npm install` to install the dependencies |
 
-### `/doctor` : diagnostic automatique
+### `/doctor`: automatic diagnosis
 
 ```bash
 /doctor
 ```
 
-Verifie : authentification, connectivite, version de Claude Code, configuration MCP, settings. Affiche un rapport avec les problemes detectes et les solutions suggerees.
+Checks: authentication, connectivity, Claude Code version, MCP configuration, settings. Displays a report with the detected issues and suggested solutions.
 
-### Mode debug
+### Debug mode
 
-Pour obtenir des logs detailles :
+To get detailed logs:
 
 ```bash
 claude --debug
 ```
 
-Affiche tous les appels API, les configurations chargees, les erreurs MCP. Utile pour diagnostiquer des problemes de configuration avances.
+Displays all API calls, loaded configurations, MCP errors. Useful to diagnose advanced configuration problems.
 
-### Mise a jour
+### Update
 
 ```bash
-# Verifier la version actuelle
+# Check the current version
 claude --version
 
-# Mettre a jour
+# Update
 npm update -g @anthropic-ai/claude-code
-# ou
+# or
 brew upgrade claude
 ```
 
 ---
 
-## Transition vers le socle
+## Transition to the foundation
 
-Vous maitrisez maintenant Claude Code. Voici ce que claude-socle ajoute par-dessus :
+You now master Claude Code. Here's what claude-socle adds on top:
 
-**Sans le socle**, Claude Code est un agent puissant mais "vierge". A chaque session, vous devez lui expliquer vos conventions, votre workflow, ce que vous attendez de lui.
+**Without the foundation**, Claude Code is a powerful but "blank" agent. At each session, you have to explain your conventions, your workflow, what you expect from it.
 
-**Avec le socle**, ces instructions sont pre-configurees et activees automatiquement :
+**With the foundation**, these instructions are pre-configured and activated automatically:
 
-| Ce que le socle ajoute | Description |
-|------------------------|-------------|
-| 131 commandes (`/work:*`, `/dev:*`, `/qa:*`, `/ops:*`) | Workflows pre-ecrits pour les taches courantes |
-| 63 agents specialises | Sous-processus pour l'audit, la securite, les tests, etc. |
-| 54 skills | Comportements declenchables par mots-cles |
-| 30 rules | Conventions de code activees automatiquement selon les fichiers modifies |
-| Workflow structure | Explore → Specify → Plan → TDD → Audit → Commit |
+| What the foundation adds | Description |
+|--------------------------|-------------|
+| 131 commands (`/work:*`, `/dev:*`, `/qa:*`, `/ops:*`) | Pre-written workflows for common tasks |
+| 63 specialized agents | Sub-processes for audit, security, tests, etc. |
+| 54 skills | Behaviors triggered by keywords |
+| 30 rules | Code conventions activated automatically based on the modified files |
+| Structured workflow | Explore → Specify → Plan → TDD → Audit → Commit |
 
-La difference concrète : au lieu de taper "run the tests, check coverage, fix issues, audit security, then commit", vous tapez `/work:work-flow-feature "ma feature"` et le socle orchestre tout.
+The concrete difference: instead of typing "run the tests, check coverage, fix issues, audit security, then commit", you type `/work:work-flow-feature "my feature"` and the foundation orchestrates everything.
 
-### Prochaines etapes
+### Next steps
 
-- [Quick Start du socle](/docs/intro/quick-start) — Installer et configurer le socle en 5 minutes
-- [Parcours d'apprentissage](/docs/guides/learning-path) — De novice a expert en 9h30
+- [Foundation Quick Start](/docs/intro/quick-start) — Install and configure the foundation in 5 minutes
+- [Learning Path](/docs/guides/learning-path) — From novice to expert in 9h30
 
 ---
 
-*Ce guide couvre Claude Code CLI version 2.x. Les commandes et raccourcis peuvent varier selon les mises a jour.*
+*This guide covers Claude Code CLI version 2.x. Commands and shortcuts may vary depending on updates.*
