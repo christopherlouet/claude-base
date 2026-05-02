@@ -1,85 +1,85 @@
-# Index de la Documentation
+# Documentation Index
 
-> Navigation rapide dans la documentation claude-socle.
+> Quick navigation in the claude-socle documentation.
 
-## Par Niveau d'Experience
+## By Experience Level
 
-| Niveau | Document | Description |
+| Level | Document | Description |
 |--------|----------|-------------|
-| Debutant | [QUICKSTART.md](./QUICKSTART.md) | Demarrage rapide en 5 minutes |
-| Debutant | [Documentation Docusaurus](https://christopherlouet.github.io/claude-socle/) | Guide utilisateur complet (site web) |
-| Intermediaire | [CHEATSHEET.md](./CHEATSHEET.md) | Reference rapide des commandes |
-| Avance | [ARCHITECTURE.md](./ARCHITECTURE.md) | Architecture Commands/Agents/Skills |
-| Avance | [CUSTOMIZATION.md](./CUSTOMIZATION.md) | Guide de personnalisation |
-| Avance | [WORKFLOWS.md](./WORKFLOWS.md) | Diagrammes visuels des workflows |
+| Beginner | [QUICKSTART.md](./QUICKSTART.md) | Quick start in 5 minutes |
+| Beginner | [Docusaurus Documentation](https://christopherlouet.github.io/claude-socle/) | Complete user guide (website) |
+| Intermediate | [CHEATSHEET.md](./CHEATSHEET.md) | Quick command reference |
+| Advanced | [ARCHITECTURE.md](./ARCHITECTURE.md) | Commands/Agents/Skills architecture |
+| Advanced | [CUSTOMIZATION.md](./CUSTOMIZATION.md) | Customization guide |
+| Advanced | [WORKFLOWS.md](./WORKFLOWS.md) | Visual workflow diagrams |
 
-## Par Domaine
+## By Domain
 
 ### Stack Recipes
 
-[STACK-RECIPES.md](./STACK-RECIPES.md) — pour chaque stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, IA/LLM, Business, etc.), liste les commandes / agents / skills / rules du socle qui s'activent + des liens externes pour les best practices.
+[STACK-RECIPES.md](./STACK-RECIPES.md) — for each stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, etc.), lists the commands / agents / skills / rules of the foundation that get activated + external links for best practices.
 
-### Guides spécifiques (4)
+### Specific guides (4)
 
 | Guide | Description |
 |-------|-------------|
-| [EXTENDING-GUIDE.md](./guides/EXTENDING-GUIDE.md) | Ajouter ses propres commands, skills, agents, rules au socle |
-| [TEAM-GUIDE.md](./guides/TEAM-GUIDE.md) | Adoption en équipe, conventions partagées |
-| [PROMPTING-GUIDE.md](./guides/PROMPTING-GUIDE.md) | Techniques de prompting Claude Code (Boris Cherny) |
-| [TROUBLESHOOTING-GUIDE.md](./guides/TROUBLESHOOTING-GUIDE.md) | Problèmes courants et solutions |
+| [EXTENDING-GUIDE.md](./guides/EXTENDING-GUIDE.md) | Add your own commands, skills, agents, rules to the foundation |
+| [TEAM-GUIDE.md](./guides/TEAM-GUIDE.md) | Team adoption, shared conventions |
+| [PROMPTING-GUIDE.md](./guides/PROMPTING-GUIDE.md) | Claude Code prompting techniques (Boris Cherny) |
+| [TROUBLESHOOTING-GUIDE.md](./guides/TROUBLESHOOTING-GUIDE.md) | Common problems and solutions |
 
-## Par Type de Tache
+## By Task Type
 
-### Je veux comprendre le projet
+### I want to understand the project
 
-1. [QUICKSTART.md](./QUICKSTART.md) - Installer et configurer
-2. [ARCHITECTURE.md](./ARCHITECTURE.md) - Comprendre la structure
-3. [CHEATSHEET.md](./CHEATSHEET.md) - Voir les commandes disponibles
+1. [QUICKSTART.md](./QUICKSTART.md) - Install and configure
+2. [ARCHITECTURE.md](./ARCHITECTURE.md) - Understand the structure
+3. [CHEATSHEET.md](./CHEATSHEET.md) - See available commands
 
-### Je veux personnaliser le socle
+### I want to customize the foundation
 
-1. [CUSTOMIZATION.md](./CUSTOMIZATION.md) - Options de personnalisation
-2. [guides/EXTENDING-GUIDE.md](./guides/EXTENDING-GUIDE.md) - Ajouter commands/skills/rules custom
-3. [ARCHITECTURE.md](./ARCHITECTURE.md) - Comprendre Commands vs Agents vs Skills
+1. [CUSTOMIZATION.md](./CUSTOMIZATION.md) - Customization options
+2. [guides/EXTENDING-GUIDE.md](./guides/EXTENDING-GUIDE.md) - Add custom commands/skills/rules
+3. [ARCHITECTURE.md](./ARCHITECTURE.md) - Understand Commands vs Agents vs Skills
 
-### Je veux developper avec le socle
+### I want to develop with the foundation
 
-1. [STACK-RECIPES.md](./STACK-RECIPES.md) - Voir ce que le socle apporte pour ma stack
-2. [WORKFLOWS.md](./WORKFLOWS.md) - Suivre les workflows recommandes
+1. [STACK-RECIPES.md](./STACK-RECIPES.md) - See what the foundation brings for my stack
+2. [WORKFLOWS.md](./WORKFLOWS.md) - Follow the recommended workflows
 
-### Je cherche une commande specifique
+### I'm looking for a specific command
 
-1. [CHEATSHEET.md](./CHEATSHEET.md) - Reference rapide
-2. [Catalogue des commandes](https://christopherlouet.github.io/claude-socle/docs/commands) - Liste exhaustive (Docusaurus)
+1. [CHEATSHEET.md](./CHEATSHEET.md) - Quick reference
+2. [Commands catalog](https://christopherlouet.github.io/claude-socle/docs/commands) - Exhaustive list (Docusaurus)
 
-## Structure de la Documentation
+## Documentation Structure
 
 ```
 docs/
-├── README.md              # Cet index de navigation
-├── QUICKSTART.md          # Demarrage rapide
-├── CHEATSHEET.md          # Reference rapide
-├── STACK-RECIPES.md       # Recettes par stack (Web, Mobile, API, etc.)
-├── ARCHITECTURE.md        # Architecture technique
-├── CUSTOMIZATION.md       # Personnalisation
-├── WORKFLOWS.md           # Diagrammes de workflows
-├── reference/             # Documentation de reference
-└── guides/                # 4 guides specifiques
+├── README.md              # This navigation index
+├── QUICKSTART.md          # Quick start
+├── CHEATSHEET.md          # Quick reference
+├── STACK-RECIPES.md       # Recipes per stack (Web, Mobile, API, etc.)
+├── ARCHITECTURE.md        # Technical architecture
+├── CUSTOMIZATION.md       # Customization
+├── WORKFLOWS.md           # Workflow diagrams
+├── reference/             # Reference documentation
+└── guides/                # 4 specific guides
     ├── EXTENDING-GUIDE.md
     ├── TEAM-GUIDE.md
     ├── PROMPTING-GUIDE.md
     └── TROUBLESHOOTING-GUIDE.md
 ```
 
-> Pour la documentation complete (commands, agents, skills, rules), voir le [site Docusaurus](https://christopherlouet.github.io/claude-socle/).
+> For the complete documentation (commands, agents, skills, rules), see the [Docusaurus site](https://christopherlouet.github.io/claude-socle/).
 
-## Documentation Externe
+## External Documentation
 
-- [Documentation Docusaurus](https://christopherlouet.github.io/claude-socle/) - Site de documentation complet
-- [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) - Bonnes pratiques Anthropic
-- [Claude Code Documentation](https://code.claude.com/docs/en/overview) - Documentation officielle
+- [Docusaurus Documentation](https://christopherlouet.github.io/claude-socle/) - Complete documentation site
+- [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) - Anthropic best practices
+- [Claude Code Documentation](https://code.claude.com/docs/en/overview) - Official documentation
 
-## Voir Aussi
+## See Also
 
-- [../CLAUDE.md](../CLAUDE.md) - Instructions principales du projet
-- [../README.md](../README.md) - README principal du projet
+- [../CLAUDE.md](../CLAUDE.md) - Main project instructions
+- [../README.md](../README.md) - Main project README
