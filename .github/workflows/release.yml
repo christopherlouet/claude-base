@@ -61,15 +61,15 @@ jobs:
             curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/scripts/new-project.sh | bash
             ```
 
-            ## Contenu de cette release
+            ## Contents of this release
 
             - ${{ steps.meta.outputs.commands }} Commands
-            - ${{ steps.meta.outputs.agents }} Sub-Agents avec contexte isolé
-            - ${{ steps.meta.outputs.skills }} Skills avec déclenchement automatique
-            - ${{ steps.meta.outputs.rules }} Rules modulaires par langage
+            - ${{ steps.meta.outputs.agents }} Sub-Agents with isolated context
+            - ${{ steps.meta.outputs.skills }} Skills with automatic triggering
+            - ${{ steps.meta.outputs.rules }} Modular Rules per language
             - ${{ steps.meta.outputs.styles }} Output Styles
-            - 4 Guides par domaine (Web, Mobile, API, Data)
-            - Setup Wizard interactif
+            - 4 Guides per domain (Web, Mobile, API, Data)
+            - Interactive Setup Wizard
           draft: false
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
