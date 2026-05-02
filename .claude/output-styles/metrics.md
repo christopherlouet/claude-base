@@ -1,71 +1,71 @@
 ---
 name: Metrics Mode
-description: Mode metriques pour rapports de performance et benchmarks
+description: Metrics mode for performance reports and benchmarks
 keep-coding-instructions: true
 ---
 
-# Mode Metriques
+# Metrics Mode
 
-Quand tu reponds en mode metrics:
+When you reply in metrics mode:
 
-## Principes
+## Principles
 
-- Commencer par les chiffres, pas par les explications
-- Toujours inclure les unites (ms, MB, req/s, %)
-- Montrer les tendances avec des fleches (↑ amelioration, ↓ degradation, → stable)
-- Mettre en **gras** les regressions critiques
-- Comparer avant/apres systematiquement
+- Start with the numbers, not the explanations
+- Always include units (ms, MB, req/s, %)
+- Show trends with arrows (↑ improvement, ↓ degradation, → stable)
+- **Bold** critical regressions
+- Always compare before/after
 
-## Format des reponses
+## Response format
 
 ```markdown
-## Resume
+## Summary
 
-| Metrique | Valeur | Tendance |
+| Metric | Value | Trend |
 |----------|--------|----------|
-| Temps de reponse (p50) | 45ms | ↓ -12ms |
-| Temps de reponse (p99) | 230ms | ↑ +85ms |
-| Debit | 1,200 req/s | ↑ +200 req/s |
-| Memoire | 256 MB | → stable |
+| Response time (p50) | 45ms | ↓ -12ms |
+| Response time (p99) | 230ms | ↑ +85ms |
+| Throughput | 1,200 req/s | ↑ +200 req/s |
+| Memory | 256 MB | → stable |
 
-## Metriques detaillees
+## Detailed metrics
 
 ### Performance
 
-| Metrique | Avant | Apres | Delta | Tendance |
+| Metric | Before | After | Delta | Trend |
 |----------|-------|-------|-------|----------|
 | Build time | 45s | 32s | -13s (-29%) | ↓ |
 | Bundle size | 1.2 MB | 980 KB | -220 KB (-18%) | ↓ |
 | **TTI** | **2.1s** | **3.4s** | **+1.3s (+62%)** | **↑ regression** |
 | LCP | 1.8s | 1.6s | -0.2s (-11%) | ↓ |
 
-### Couverture
+### Coverage
 
-| Module | Lignes | Branches | Fonctions |
+| Module | Lines | Branches | Functions |
 |--------|--------|----------|-----------|
 | auth | 92% | 85% | 95% |
 | api | 78% | 70% | 82% |
 | **utils** | **45%** | **30%** | **50%** |
 
-## Analyse
-[Interpretation des metriques, causes des variations]
+## Analysis
+[Interpretation of the metrics, causes of variations]
 
-## Recommandations
-1. [Action prioritaire avec impact estime]
-2. [Action secondaire]
-3. [Action a planifier]
+## Recommendations
+1. [Priority action with estimated impact]
+2. [Secondary action]
+3. [Action to plan]
 ```
 
 ## Conventions
 
-- Utiliser des pourcentages pour les deltas relatifs
-- Arrondir a 2 decimales maximum
-- Grouper les metriques par categorie (perf, qualite, infra)
-- Toujours fournir le contexte de mesure (environnement, conditions)
+- Use percentages for relative deltas
+- Round to 2 decimal places maximum
+- Group metrics by category (perf, quality, infra)
+- Always provide the measurement context (environment, conditions)
 
-## A eviter
+## To avoid
 
-- Metriques sans unites
-- Chiffres sans comparaison (avant/apres ou baseline)
-- Analyses sans donnees
-- Recommandations sans impact estime
+- Metrics without units
+- Numbers without comparison (before/after or baseline)
+- Analyses without data
+- Recommendations without estimated impact
