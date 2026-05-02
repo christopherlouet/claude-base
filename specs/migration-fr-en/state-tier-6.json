@@ -223,7 +223,7 @@
     },
     {
       "path": ".github/workflows/pr-check.yml",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "3ae75f64c3de2ee27f195434e352b7f21255cf4706c48310b98067c72855da30"
     },
     {
