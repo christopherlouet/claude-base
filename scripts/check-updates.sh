@@ -2,14 +2,14 @@
 
 # =============================================================================
 # Claude-Socle Check Updates
-# Verifie les mises a jour disponibles (Claude Code CLI, skills communautaires)
+# Checks available updates (Claude Code CLI, community skills)
 # =============================================================================
 
 set -euo pipefail
 
 VERSION="1.0.0"
 
-# Charger la librairie commune
+# Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC2034  # SOCLE_DIR used by common.sh
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
@@ -17,7 +17,7 @@ SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-# Activer le handler d'erreur et verifier les prerequis
+# Enable the error handler and check prerequisites
 enable_error_handler
 check_base_requirements
 
@@ -32,7 +32,7 @@ CHECK_SKILLS=true
 TIMEOUT=10
 CACHE_TTL="${CHECK_UPDATES_TTL:-$CACHE_DEFAULT_TTL}"
 
-# Resultats
+# Results
 CLI_LOCAL_VERSION=""
 CLI_REMOTE_VERSION=""
 CLI_STATUS=""  # up_to_date | update_available | error | not_installed
@@ -48,7 +48,7 @@ ERRORS_COUNT=0
 GITHUB_API="https://api.github.com/repos/anthropics/claude-code/releases/latest"
 
 # =============================================================================
-# Aide
+# Help
 # =============================================================================
 
 show_help() {
@@ -59,39 +59,39 @@ ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS]
 
 ${BOLD}DESCRIPTION${NC}
-    Verifie les mises a jour disponibles pour Claude Code CLI
-    et les nouveaux skills communautaires sur skills.sh.
+    Checks available updates for Claude Code CLI
+    and new community skills on skills.sh.
 
 ${BOLD}OPTIONS${NC}
-    -h, --help          Affiche cette aide
-    -v, --version       Affiche la version
-    -q, --quiet         Mode silencieux (affiche uniquement si mises a jour)
-    --json              Sortie au format JSON
-    --force             Ignorer le cache et forcer la verification
-    --no-cli            Ne pas verifier Claude Code CLI
-    --no-skills         Ne pas verifier skills.sh
-    --timeout N         Timeout reseau en secondes (defaut: 10)
+    -h, --help          Show this help
+    -v, --version       Show the version
+    -q, --quiet         Quiet mode (output only if updates)
+    --json              Output in JSON format
+    --force             Ignore the cache and force the check
+    --no-cli            Do not check Claude Code CLI
+    --no-skills         Do not check skills.sh
+    --timeout N         Network timeout in seconds (default: 10)
 
-${BOLD}VARIABLES D'ENVIRONNEMENT${NC}
-    GITHUB_TOKEN        Token GitHub pour augmenter le rate limit API
-    CHECK_UPDATES_TTL   Duree du cache en secondes (defaut: 86400 = 24h)
+${BOLD}ENVIRONMENT VARIABLES${NC}
+    GITHUB_TOKEN        GitHub token to increase API rate limit
+    CHECK_UPDATES_TTL   Cache duration in seconds (default: 86400 = 24h)
 
-${BOLD}CODES DE RETOUR${NC}
-    0   Tout est a jour
-    1   Mises a jour disponibles
-    2   Erreur lors de la verification
+${BOLD}EXIT CODES${NC}
+    0   Everything is up to date
+    1   Updates available
+    2   Error during the check
 
-${BOLD}EXEMPLES${NC}
-    # Verification complete
+${BOLD}EXAMPLES${NC}
+    # Full check
     $(basename "$0")
 
-    # Sortie JSON pour CI/CD
+    # JSON output for CI/CD
     $(basename "$0") --json
 
-    # CLI uniquement, sans cache
+    # CLI only, without cache
     $(basename "$0") --no-skills --force
 
-    # Mode silencieux (pour hooks)
+    # Quiet mode (for hooks)
     $(basename "$0") --quiet
 
 EOF
@@ -102,7 +102,7 @@ show_version() {
 }
 
 # =============================================================================
-# Parsing des arguments
+# Argument parsing
 # =============================================================================
 
 parse_args() {
@@ -138,92 +138,92 @@ parse_args() {
                 ;;
             --timeout)
                 if [[ -z "${2:-}" ]]; then
-                    error "L'option --timeout necessite un argument"
+                    error "The --timeout option requires an argument"
                 fi
                 TIMEOUT="$2"
                 shift 2
                 ;;
             -*)
-                error "Option inconnue: $1\nUtilisez --help pour l'aide."
+                error "Unknown option: $1\nUse --help for help."
                 ;;
             *)
-                error "Argument inattendu: $1\nUtilisez --help pour l'aide."
+                error "Unexpected argument: $1\nUse --help for help."
                 ;;
         esac
     done
 }
 
 # =============================================================================
-# Verification Claude Code CLI [US1]
+# Claude Code CLI check [US1]
 # =============================================================================
 
 check_cli_version() {
     section "Claude Code CLI"
 
-    # Version locale
+    # Local version
     if command_exists claude; then
         local raw_version
         raw_version=$(claude --version 2>/dev/null || echo "")
-        # Extraire le numero de version (format: "Claude Code vX.Y.Z" ou "X.Y.Z")
+        # Extract the version number (format: "Claude Code vX.Y.Z" or "X.Y.Z")
         CLI_LOCAL_VERSION=$(echo "$raw_version" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
         if [[ -z "$CLI_LOCAL_VERSION" ]]; then
-            CLI_LOCAL_VERSION="inconnu"
+            CLI_LOCAL_VERSION="unknown"
         fi
-        info "Version locale: $CLI_LOCAL_VERSION"
+        info "Local version: $CLI_LOCAL_VERSION"
     else
         CLI_STATUS="not_installed"
-        warning "Claude Code CLI non installe"
+        warning "Claude Code CLI not installed"
         echo -e "    ${DIM}Installation: npm install -g @anthropic-ai/claude-code${NC}"
         ((ERRORS_COUNT++)) || true
         return 0
     fi
 
-    # Version distante (cache ou reseau)
+    # Remote version (cache or network)
     local cache_key="cli-version"
 
     if [[ "$FORCE_REFRESH" == "false" ]] && cache_valid "$cache_key" "$CACHE_TTL"; then
         CLI_REMOTE_VERSION=$(cache_read "$cache_key")
-        debug "Version distante (cache): $CLI_REMOTE_VERSION"
+        debug "Remote version (cache): $CLI_REMOTE_VERSION"
     else
-        debug "Requete GitHub API..."
+        debug "GitHub API request..."
         local curl_opts=(-s --max-time "$TIMEOUT" -L)
 
-        # Utiliser le token GitHub si disponible
+        # Use the GitHub token if available
         if [[ -n "${GITHUB_TOKEN:-}" ]]; then
             curl_opts+=(-H "Authorization: Bearer $GITHUB_TOKEN")
         fi
 
         local response
         if response=$(curl "${curl_opts[@]}" "$GITHUB_API" 2>/dev/null); then
-            # Extraire tag_name du JSON
+            # Extract tag_name from JSON
             CLI_REMOTE_VERSION=$(echo "$response" | grep -oE '"tag_name"\s*:\s*"[^"]*"' | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 
             if [[ -n "$CLI_REMOTE_VERSION" ]]; then
                 cache_write "$cache_key" "$CLI_REMOTE_VERSION"
-                debug "Version distante (reseau): $CLI_REMOTE_VERSION"
+                debug "Remote version (network): $CLI_REMOTE_VERSION"
             else
                 CLI_STATUS="error"
-                warning "Impossible d'extraire la version depuis GitHub"
+                warning "Unable to extract the version from GitHub"
                 ((ERRORS_COUNT++)) || true
                 return 0
             fi
 
-            # Extraire l'URL de release
+            # Extract the release URL
             CLI_RELEASE_URL=$(echo "$response" | grep -oE '"html_url"\s*:\s*"[^"]*"' | head -1 | sed 's/"html_url"\s*:\s*"//;s/"//')
         else
             CLI_STATUS="error"
-            warning "Impossible de contacter GitHub (hors ligne ou rate limit)"
-            # Tenter le cache meme expire
+            warning "Unable to reach GitHub (offline or rate limit)"
+            # Try the cache even if expired
             if CLI_REMOTE_VERSION=$(cache_read "$cache_key" 2>/dev/null); then
-                info "Derniere version connue (cache expire): $CLI_REMOTE_VERSION"
+                info "Last known version (expired cache): $CLI_REMOTE_VERSION"
             fi
             ((ERRORS_COUNT++)) || true
             return 0
         fi
     fi
 
-    # Comparaison
-    if [[ -z "$CLI_REMOTE_VERSION" || "$CLI_LOCAL_VERSION" == "inconnu" ]]; then
+    # Comparison
+    if [[ -z "$CLI_REMOTE_VERSION" || "$CLI_LOCAL_VERSION" == "unknown" ]]; then
         CLI_STATUS="error"
         ((ERRORS_COUNT++)) || true
         return 0
@@ -231,92 +231,92 @@ check_cli_version() {
 
     if version_gte "$CLI_LOCAL_VERSION" "$CLI_REMOTE_VERSION"; then
         CLI_STATUS="up_to_date"
-        success "A jour ($CLI_LOCAL_VERSION)"
+        success "Up to date ($CLI_LOCAL_VERSION)"
     else
         CLI_STATUS="update_available"
-        warning "Mise a jour disponible: $CLI_LOCAL_VERSION -> $CLI_REMOTE_VERSION"
+        warning "Update available: $CLI_LOCAL_VERSION -> $CLI_REMOTE_VERSION"
         if [[ -n "$CLI_RELEASE_URL" ]]; then
             echo -e "    ${DIM}Release: $CLI_RELEASE_URL${NC}"
         fi
-        echo -e "    ${DIM}Commande: npm update -g @anthropic-ai/claude-code${NC}"
+        echo -e "    ${DIM}Command: npm update -g @anthropic-ai/claude-code${NC}"
         ((UPDATES_AVAILABLE++)) || true
     fi
 }
 
 # =============================================================================
-# Verification skills communautaires [US3]
+# Community skills check [US3]
 # =============================================================================
 
 check_skills() {
-    section "Skills communautaires (skills.sh)"
+    section "Community skills (skills.sh)"
 
     local cache_key="skills"
     local skills_url="https://skills.sh"
 
     if [[ "$FORCE_REFRESH" == "false" ]] && cache_valid "$cache_key" "$CACHE_TTL"; then
-        debug "Skills (cache): utilisation du cache"
+        debug "Skills (cache): using cache"
         SKILLS_STATUS="ok"
-        info "Derniere verification: cache valide (utilisez --force pour rafraichir)"
+        info "Last check: cache valid (use --force to refresh)"
         return 0
     fi
 
-    debug "Requete skills.sh..."
+    debug "skills.sh request..."
     local curl_opts=(-s --max-time "$TIMEOUT" -L)
 
     local response
     if response=$(curl "${curl_opts[@]}" "$skills_url" 2>/dev/null); then
-        # Extraire les skills de la page (parsing basique)
-        # Format attendu: liens vers des skills avec noms et descriptions
+        # Extract skills from the page (basic parsing)
+        # Expected format: links to skills with names and descriptions
         local skills_count
         skills_count=$(echo "$response" | grep -ciE 'skill|claude' || echo "0")
 
         if [[ "$skills_count" -gt 0 ]]; then
             SKILLS_STATUS="ok"
             cache_write "$cache_key" "checked"
-            success "skills.sh accessible ($skills_count references trouvees)"
-            echo -e "    ${DIM}Parcourir: $skills_url${NC}"
+            success "skills.sh reachable ($skills_count references found)"
+            echo -e "    ${DIM}Browse: $skills_url${NC}"
         else
             SKILLS_STATUS="ok"
             cache_write "$cache_key" "checked"
-            info "Aucun nouveau skill detecte"
+            info "No new skill detected"
         fi
     else
         SKILLS_STATUS="error"
-        warning "Impossible de contacter skills.sh"
-        echo -e "    ${DIM}Verifiez votre connexion ou reessayez plus tard${NC}"
+        warning "Unable to reach skills.sh"
+        echo -e "    ${DIM}Check your connection or try again later${NC}"
         ((ERRORS_COUNT++)) || true
     fi
 }
 
 # =============================================================================
-# Rapport texte [US2]
+# Text report [US2]
 # =============================================================================
 
 print_report() {
     echo ""
     separator "="
-    echo -e "  ${BOLD}Resume de la verification${NC}"
+    echo -e "  ${BOLD}Check summary${NC}"
     separator "="
     echo ""
 
     if [[ $UPDATES_AVAILABLE -eq 0 && $ERRORS_COUNT -eq 0 ]]; then
-        success "Tout est a jour!"
+        success "Everything is up to date!"
     elif [[ $UPDATES_AVAILABLE -gt 0 ]]; then
-        warning "$UPDATES_AVAILABLE mise(s) a jour disponible(s)"
+        warning "$UPDATES_AVAILABLE update(s) available"
     fi
 
     if [[ $ERRORS_COUNT -gt 0 ]]; then
-        error_no_exit "$ERRORS_COUNT verification(s) en erreur"
+        error_no_exit "$ERRORS_COUNT check(s) in error"
     fi
 
     echo ""
     echo -e "  ${DIM}Cache: ${CACHE_DIR}${NC}"
-    echo -e "  ${DIM}TTL: $((CACHE_TTL / 3600))h (--force pour ignorer)${NC}"
+    echo -e "  ${DIM}TTL: $((CACHE_TTL / 3600))h (--force to ignore)${NC}"
     echo ""
 }
 
 # =============================================================================
-# Sortie JSON [US5]
+# JSON output [US5]
 # =============================================================================
 
 print_json() {
@@ -361,7 +361,7 @@ main() {
         title "Claude-Socle Check Updates"
     fi
 
-    # Verifications
+    # Checks
     if [[ "$CHECK_CLI" == "true" ]]; then
         if [[ "$OUTPUT_FORMAT" == "json" ]]; then
             check_cli_version > /dev/null 2>&1 || true
@@ -378,14 +378,14 @@ main() {
         fi
     fi
 
-    # Sortie
+    # Output
     if [[ "$OUTPUT_FORMAT" == "json" ]]; then
         print_json
     else
         print_report
     fi
 
-    # Code de retour
+    # Exit code
     if [[ $ERRORS_COUNT -gt 0 && $UPDATES_AVAILABLE -eq 0 ]]; then
         exit 2
     elif [[ $UPDATES_AVAILABLE -gt 0 ]]; then
