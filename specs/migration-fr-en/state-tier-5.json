@@ -213,7 +213,7 @@
     },
     {
       "path": ".claude/templates/opnsense/firewall-module.tf",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c33e8e394518166b5a0b4501b604d01e000b99e741884358a72390cd07e13be7"
     },
     {
