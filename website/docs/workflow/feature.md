@@ -1,26 +1,26 @@
 ---
 sidebar_position: 3
-title: Nouvelle Feature
-description: Workflow pour ajouter une nouvelle fonctionnalite
+title: New Feature
+description: Workflow to add a new feature
 ---
 
 import WorkflowDiagram, { FEATURE_WORKFLOW } from '@site/src/components/WorkflowDiagram';
 
-# Workflow : Nouvelle Feature
+# Workflow: New Feature
 
-Guide complet pour ajouter une nouvelle fonctionnalite.
+Complete guide to add a new feature.
 
 <WorkflowDiagram steps={FEATURE_WORKFLOW} />
 
-## Commande rapide
+## Quick command
 
 ```bash
-/work:work-flow-feature "Description de la feature"
+/work:work-flow-feature "Feature description"
 ```
 
-Cette commande lance automatiquement le workflow complet.
+This command automatically launches the complete workflow.
 
-## Etapes detaillees
+## Detailed steps
 
 ### 1. Explore
 
@@ -28,21 +28,21 @@ Cette commande lance automatiquement le workflow complet.
 /work:work-explore
 ```
 
-Comprendre le code existant et identifier :
-- Ou ajouter la feature
-- Les patterns a suivre
-- Les impacts potentiels
+Understand the existing code and identify:
+- Where to add the feature
+- The patterns to follow
+- The potential impacts
 
-### 2. Specify (optionnel)
+### 2. Specify (optional)
 
 ```bash
-/work:work-specify "Description de la feature"
+/work:work-specify "Feature description"
 ```
 
-Creer une specification formelle si la feature est complexe :
+Create a formal specification if the feature is complex:
 - User stories
-- Criteres d'acceptation
-- Cas limites
+- Acceptance criteria
+- Edge cases
 
 ### 3. Plan
 
@@ -50,22 +50,22 @@ Creer une specification formelle si la feature est complexe :
 /work:work-plan
 ```
 
-Planifier l'implementation :
-- Fichiers a creer
-- Fichiers a modifier
-- Tests requis
-- Risques identifies
+Plan the implementation:
+- Files to create
+- Files to modify
+- Required tests
+- Identified risks
 
 ### 4. Code
 
 ```bash
-/dev:dev-tdd "Implementer la feature"
+/dev:dev-tdd "Implement the feature"
 ```
 
-Developper en TDD :
-1. Ecrire les tests
-2. Implementer le code
-3. Refactorer si necessaire
+Develop with TDD:
+1. Write the tests
+2. Implement the code
+3. Refactor if necessary
 
 ### 5. Review
 
@@ -73,10 +73,10 @@ Developper en TDD :
 /qa:qa-review
 ```
 
-Verifier la qualite :
-- Code propre
-- Tests complets
-- Documentation a jour
+Verify the quality:
+- Clean code
+- Complete tests
+- Up-to-date documentation
 
 ### 6. PR
 
@@ -84,59 +84,59 @@ Verifier la qualite :
 /work:work-pr
 ```
 
-Creer une Pull Request :
-- Titre descriptif
-- Description complete
-- Checklist de tests
+Create a Pull Request:
+- Descriptive title
+- Complete description
+- Test checklist
 
-## Exemple concret
+## Concrete example
 
 ```bash
-# Ajouter un systeme de notifications
+# Add a notification system
 
-> /work:work-flow-feature "Ajouter un systeme de notifications push"
+> /work:work-flow-feature "Add a push notification system"
 
-# Claude enchaine automatiquement :
-# 1. Explore le code existant
-# 2. Propose une specification
-# 3. Planifie l'implementation
-# 4. Implemente en TDD
-# 5. Review le code
-# 6. Cree la PR
+# Claude chains automatically:
+# 1. Explores the existing code
+# 2. Proposes a specification
+# 3. Plans the implementation
+# 4. Implements with TDD
+# 5. Reviews the code
+# 6. Creates the PR
 ```
 
-## Bonnes pratiques
+## Best practices
 
 ### DO
-- ✅ Toujours explorer avant de coder
-- ✅ Valider le plan avant implementation
-- ✅ Tests a chaque etape
-- ✅ Commits atomiques
+- ✅ Always explore before coding
+- ✅ Validate the plan before implementation
+- ✅ Tests at every step
+- ✅ Atomic commits
 
 ### DON'T
-- ❌ Coder sans plan valide
-- ❌ Commits geants multi-features
-- ❌ Ignorer les tests
-- ❌ Forcer la PR sans review
+- ❌ Code without a validated plan
+- ❌ Giant multi-feature commits
+- ❌ Ignore tests
+- ❌ Force the PR without review
 
 ## GitFlow Integration
 
-Avec GitFlow active :
+With GitFlow enabled:
 
 ```bash
-# Creer la branche feature
+# Create the feature branch
 /ops:ops-gitflow-feature start "notification-system"
 
-# Developper...
+# Develop...
 
-# Terminer la feature
+# Finish the feature
 /ops:ops-gitflow-feature finish "notification-system"
 ```
 
 ---
 
-## Voir aussi
+## See also
 
-- [Workflow principal](/docs/workflow/explore-plan-code-commit)
+- [Main workflow](/docs/workflow/explore-plan-code-commit)
 - [TDD](/docs/workflow/tdd)
 - [GitFlow Feature](/docs/commands/ops/ops-gitflow-feature)
