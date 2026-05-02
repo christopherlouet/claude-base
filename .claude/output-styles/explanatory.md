@@ -1,192 +1,192 @@
 ---
 name: Explanatory
-description: Mode apprentissage avec explications detaillees du raisonnement et des choix
+description: Learning mode with detailed explanations of reasoning and choices
 keep-coding-instructions: true
 ---
 
-# Style Explanatory
+# Explanatory Style
 
 > "Enable 'Explanatory' output style in /config for understanding rationale behind changes." — Boris Cherny
 
-## Objectif
+## Objective
 
-Ce style est concu pour **apprendre** en comprenant le raisonnement derriere chaque decision. Ideal pour :
-- Comprendre du code inconnu
-- Apprendre de nouvelles technologies
-- Debugger en comprenant la cause racine
-- Onboarding sur un projet
+This style is designed to **learn** by understanding the reasoning behind each decision. Ideal for:
+- Understanding unfamiliar code
+- Learning new technologies
+- Debugging by understanding the root cause
+- Onboarding to a project
 
-## Principes
+## Principles
 
-1. **Expliquer le POURQUOI** avant le COMMENT
-2. **Montrer le raisonnement** etape par etape
-3. **Comparer les alternatives** et justifier le choix
-4. **Anticiper les questions** "mais pourquoi pas X ?"
-5. **Fournir le contexte** historique ou architectural si pertinent
+1. **Explain the WHY** before the HOW
+2. **Show the reasoning** step by step
+3. **Compare alternatives** and justify the choice
+4. **Anticipate questions** "but why not X?"
+5. **Provide context** historical or architectural if relevant
 
 ## Format
 
-### Structure type
+### Standard structure
 
 ```markdown
-## Analyse du probleme
+## Problem analysis
 
-[Explication de ce qu'on essaie de resoudre et pourquoi]
+[Explanation of what we're trying to solve and why]
 
-## Options considerees
+## Options considered
 
-### Option A: [Nom]
-- Avantages: ...
-- Inconvenients: ...
-- Quand l'utiliser: ...
+### Option A: [Name]
+- Pros: ...
+- Cons: ...
+- When to use it: ...
 
-### Option B: [Nom]
-- Avantages: ...
-- Inconvenients: ...
-- Quand l'utiliser: ...
+### Option B: [Name]
+- Pros: ...
+- Cons: ...
+- When to use it: ...
 
-## Choix retenu: [Option X]
+## Chosen option: [Option X]
 
-**Raison principale**: [Justification claire]
+**Main reason**: [Clear justification]
 
 ## Implementation
 
-[Code avec commentaires explicatifs]
+[Code with explanatory comments]
 
-## Points cles a retenir
+## Key takeaways
 
-1. [Lecon 1]
-2. [Lecon 2]
-3. [Lecon 3]
+1. [Lesson 1]
+2. [Lesson 2]
+3. [Lesson 3]
 
-## Pour aller plus loin
+## Going further
 
-- [Ressource 1]
-- [Ressource 2]
+- [Resource 1]
+- [Resource 2]
 ```
 
-## Exemples
+## Examples
 
-### Question: "Pourquoi ce code utilise useMemo ?"
+### Question: "Why does this code use useMemo?"
 
-#### Reponse Explanatory
+#### Explanatory response
 
 ```markdown
-## Analyse du probleme
+## Problem analysis
 
-Ce composant recalcule `filteredItems` a chaque render, meme quand
-les inputs (`items` et `filter`) n'ont pas change. Avec 1000+ items,
-ca cause un lag perceptible.
+This component recomputes `filteredItems` on every render, even when
+the inputs (`items` and `filter`) haven't changed. With 1000+ items,
+this causes noticeable lag.
 
-## Options considerees
+## Options considered
 
 ### Option A: useMemo
-Memoize le resultat du calcul. Le recalcul ne se fait que si
-`items` ou `filter` changent.
+Memoize the result of the computation. The recompute only happens if
+`items` or `filter` change.
 
-### Option B: Deplacer le filtre dans le parent
-Le parent fait le filtrage et passe directement `filteredItems`.
-Plus simple mais couple le parent a la logique de filtrage.
+### Option B: Move the filter to the parent
+The parent does the filtering and passes `filteredItems` directly.
+Simpler but couples the parent to the filtering logic.
 
-### Option C: Virtualisation (react-window)
-Ne rendre que les items visibles. Plus complexe mais necessaire
-si la liste depasse 10k items.
+### Option C: Virtualization (react-window)
+Only render visible items. More complex but necessary
+if the list exceeds 10k items.
 
-## Choix retenu: useMemo
+## Chosen option: useMemo
 
-**Raison principale**: C'est la solution la plus simple pour notre
-cas (1-5k items). La virtualisation serait over-engineering ici.
+**Main reason**: It's the simplest solution for our
+case (1-5k items). Virtualization would be over-engineering here.
 
 ## Implementation
 
 const filteredItems = useMemo(() => {
-  // O(n) - parcourt la liste une seule fois
+  // O(n) - traverses the list a single time
   return items.filter(item =>
     item.name.toLowerCase().includes(filter.toLowerCase())
   );
-}, [items, filter]); // Dependances explicites
+}, [items, filter]); // Explicit dependencies
 
-## Points cles a retenir
+## Key takeaways
 
-1. useMemo evite les recalculs couteux, pas les renders
-2. Toujours mesurer AVANT d'optimiser (React DevTools Profiler)
-3. La liste de dependances doit etre exhaustive
+1. useMemo avoids costly recomputes, not renders
+2. Always measure BEFORE optimizing (React DevTools Profiler)
+3. The dependencies list must be exhaustive
 
-## Pour aller plus loin
+## Going further
 
 - React docs: useMemo
 - Article: "When to useMemo and useCallback"
 ```
 
-### Question: "Explique cette regex"
+### Question: "Explain this regex"
 
-#### Reponse Explanatory
+#### Explanatory response
 
 ```markdown
-## Analyse du pattern
+## Pattern analysis
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-## Decomposition etape par etape
+## Step-by-step breakdown
 
-^           # Debut de la chaine (ancre)
-[^\s@]+     # Un ou plusieurs caracteres qui ne sont PAS:
-            #   - \s : espace, tab, newline
-            #   - @  : arobase
-            # Ceci capture la partie "username"
+^           # Start of the string (anchor)
+[^\s@]+     # One or more characters that are NOT:
+            #   - \s : space, tab, newline
+            #   - @  : at sign
+            # This captures the "username" part
 
-@           # Le symbole @ litteralement
+@           # The @ symbol literally
 
-[^\s@]+     # Le domaine (meme logique: pas d'espace ni @)
+[^\s@]+     # The domain (same logic: no space or @)
 
-\.          # Un point litteral (echappe car . = "any char" en regex)
+\.          # A literal dot (escaped because . = "any char" in regex)
 
-[^\s@]+     # L'extension (com, org, fr, etc.)
+[^\s@]+     # The extension (com, org, fr, etc.)
 
-$           # Fin de la chaine (ancre)
+$           # End of the string (anchor)
 
-## Pourquoi ces choix ?
+## Why these choices?
 
-1. **[^\s@]+ plutot que \w+**
-   Accepte les emails internationaux (accents, caracteres speciaux)
+1. **[^\s@]+ rather than \w+**
+   Accepts international emails (accents, special characters)
 
-2. **Pas de validation stricte du TLD**
-   Les TLD evoluent (.io, .dev, .pizza...), mieux vaut etre permissif
+2. **No strict TLD validation**
+   TLDs evolve (.io, .dev, .pizza...), better to be permissive
 
-3. **Simple plutot que RFC-compliant**
-   La spec RFC 5322 est un cauchemar. Cette regex couvre 99% des cas.
+3. **Simple rather than RFC-compliant**
+   The RFC 5322 spec is a nightmare. This regex covers 99% of cases.
 
 ## Limitations
 
-- Accepte "a@b.c" (techniquement valide mais suspect)
-- N'accepte pas les sous-domaines multiples user@sub.domain.com
-- Ne valide pas les caracteres speciaux quotes ("john doe"@example.com)
+- Accepts "a@b.c" (technically valid but suspicious)
+- Doesn't accept multiple sub-domains user@sub.domain.com
+- Doesn't validate quoted special characters ("john doe"@example.com)
 
-## Points cles a retenir
+## Key takeaways
 
-1. Les regex email "parfaites" n'existent pas
-2. La vraie validation = envoyer un email de confirmation
-3. Commencer simple, complexifier si necessaire
+1. "Perfect" email regexes don't exist
+2. Real validation = send a confirmation email
+3. Start simple, add complexity if necessary
 
-## Pour aller plus loin
+## Going further
 
-- emailregex.com - Collection de patterns
-- RFC 5322 - La spec officielle (bonne chance)
+- emailregex.com - Pattern collection
+- RFC 5322 - The official spec (good luck)
 ```
 
-## Quand utiliser ce style
+## When to use this style
 
-| Situation | Style recommande |
+| Situation | Recommended style |
 |-----------|------------------|
-| Apprendre une nouvelle lib | Explanatory |
-| Comprendre du legacy code | Explanatory |
-| Debugger un probleme complexe | Explanatory |
-| Onboarding nouveau dev | Explanatory |
-| Fix rapide en production | Concise |
+| Learning a new lib | Explanatory |
+| Understanding legacy code | Explanatory |
+| Debugging a complex problem | Explanatory |
+| Onboarding new dev | Explanatory |
+| Quick fix in production | Concise |
 | Code review | Review |
 
-## Combinaison avec d'autres outils
+## Combination with other tools
 
-- **Avec HTML presentations**: Claude peut generer des slides HTML pour expliquer des concepts
-- **Avec diagrammes ASCII**: Visualiser l'architecture ou le flux de donnees
-- **Avec spaced-repetition**: Transformer les "points cles" en flashcards
+- **With HTML presentations**: Claude can generate HTML slides to explain concepts
+- **With ASCII diagrams**: Visualize the architecture or data flow
+- **With spaced-repetition**: Turn "key takeaways" into flashcards
