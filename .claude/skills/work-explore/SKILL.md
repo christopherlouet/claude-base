@@ -1,6 +1,6 @@
 ---
 name: work-explore
-description: Explorer et comprendre un codebase existant. Utiliser quand l'utilisateur veut comprendre le code, explorer un projet, découvrir une architecture, ou avant de modifier du code existant.
+description: Explore and understand an existing codebase. Use when the user wants to understand the code, explore a project, discover an architecture, or before modifying existing code.
 allowed-tools:
   - Read
   - Glob
@@ -9,18 +9,18 @@ context: fork
 disable-model-invocation: true
 ---
 
-# Explorer un Codebase
+# Explore a Codebase
 
-## Objectif
+## Goal
 
-Comprendre un codebase AVANT de le modifier. Ne jamais coder sans avoir exploré.
+Understand a codebase BEFORE modifying it. Never code without having explored.
 
 ## Instructions
 
-### 1. Vue d'ensemble (5 min)
+### 1. Overview (5 min)
 
 ```bash
-# Structure du projet
+# Project structure
 ls -la
 tree -L 2 -I 'node_modules|.git|dist|build' | head -40
 
@@ -29,66 +29,66 @@ cat package.json | head -30
 cat README.md | head -50
 ```
 
-**Questions à répondre:**
-- Type de projet (frontend, backend, fullstack, lib) ?
-- Stack technique (langages, frameworks) ?
-- Comment lancer le projet ?
+**Questions to answer:**
+- Project type (frontend, backend, fullstack, lib)?
+- Tech stack (languages, frameworks)?
+- How to run the project?
 
 ### 2. Architecture (10 min)
 
-**Identifier les couches:**
+**Identify the layers:**
 - Entry points (main, index, app)
 - Routes / Controllers
 - Services / Business logic
 - Data access / Models
-- Utilitaires
+- Utilities
 
-**Patterns à repérer:**
+**Patterns to spot:**
 - Architecture (MVC, Clean, Hexagonal)
 - State management
 - Error handling
 - Configuration
 
-### 3. Flux de données
+### 3. Data flow
 
-Tracer un flux complet:
+Trace a complete flow:
 ```
-Requête → Validation → Traitement → DB → Réponse
+Request → Validation → Processing → DB → Response
 ```
 
 ### 4. Conventions
 
-- Style de code (linter config)
-- Nommage (camelCase, snake_case)
-- Structure des tests
-- Format des commits
+- Code style (linter config)
+- Naming (camelCase, snake_case)
+- Test structure
+- Commit format
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Résumé du projet
+## Project summary
 
 **Type**: [frontend/backend/fullstack]
-**Stack**: [langages et frameworks]
-**Architecture**: [pattern principal]
+**Stack**: [languages and frameworks]
+**Architecture**: [main pattern]
 
-## Structure clé
+## Key structure
 - `/src/xxx` - [description]
 - `/src/yyy` - [description]
 
-## Points d'entrée
-- `fichier.ts:ligne` - [rôle]
+## Entry points
+- `file.ts:line` - [role]
 
-## Conventions identifiées
+## Identified conventions
 - [Convention 1]
 - [Convention 2]
 
-## Zones sensibles
-- [Zone 1] - [pourquoi]
+## Sensitive areas
+- [Area 1] - [why]
 ```
 
-## Règles
+## Rules
 
-- TOUJOURS explorer avant de modifier
-- Ne pas supposer - vérifier dans le code
-- Noter les patterns pour les réutiliser
+- ALWAYS explore before modifying
+- Do not assume — verify in the code
+- Note patterns to reuse them
