@@ -248,7 +248,7 @@
     },
     {
       "path": ".claude/templates/proxmox/provider-template.tf",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "0b427ad3c32e5a6a6d687bfe256e3209cacdacf0f1d019957e4639dd82e644df"
     },
     {

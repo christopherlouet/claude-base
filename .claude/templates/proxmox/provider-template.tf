@@ -1,11 +1,11 @@
 # =============================================================================
-# Template: Configuration Provider Proxmox
-# Usage: Copier à la racine de votre projet Terraform Proxmox
+# Template: Proxmox Provider Configuration
+# Usage: Copy to the root of your Terraform Proxmox project
 # Provider: bpg/proxmox >= 0.50
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Versions et providers requis
+# Required versions and providers
 # -----------------------------------------------------------------------------
 
 terraform {
@@ -18,8 +18,8 @@ terraform {
     }
   }
 
-  # Backend recommandé pour le state
-  # Décommenter et configurer selon votre environnement
+  # Recommended backend for state
+  # Uncomment and configure based on your environment
   #
   # backend "s3" {
   #   bucket         = "terraform-state"
@@ -29,7 +29,7 @@ terraform {
   #   dynamodb_table = "terraform-locks"
   # }
   #
-  # OU backend local (dev only)
+  # OR local backend (dev only)
   #
   # backend "local" {
   #   path = "terraform.tfstate"
@@ -37,70 +37,70 @@ terraform {
 }
 
 # -----------------------------------------------------------------------------
-# Variables du provider
+# Provider variables
 # -----------------------------------------------------------------------------
 
 variable "proxmox_endpoint" {
-  description = "URL de l'API Proxmox (ex: https://pve.example.com:8006)"
+  description = "Proxmox API URL (e.g., https://pve.example.com:8006)"
   type        = string
 }
 
 variable "proxmox_api_token" {
-  description = "Token API Proxmox (format: user@realm!tokenid=secret)"
+  description = "Proxmox API token (format: user@realm!tokenid=secret)"
   type        = string
   sensitive   = true
   default     = null
 }
 
 variable "proxmox_username" {
-  description = "Username Proxmox (alternative au token)"
+  description = "Proxmox username (alternative to token)"
   type        = string
   default     = null
 }
 
 variable "proxmox_password" {
-  description = "Password Proxmox (alternative au token)"
+  description = "Proxmox password (alternative to token)"
   type        = string
   sensitive   = true
   default     = null
 }
 
 variable "proxmox_insecure" {
-  description = "Ignorer la vérification SSL (dev only)"
+  description = "Skip SSL verification (dev only)"
   type        = bool
   default     = false
 }
 
 variable "ssh_agent" {
-  description = "Utiliser l'agent SSH local"
+  description = "Use the local SSH agent"
   type        = bool
   default     = true
 }
 
 variable "ssh_username" {
-  description = "Username SSH pour les nodes Proxmox"
+  description = "SSH username for Proxmox nodes"
   type        = string
   default     = "root"
 }
 
 # -----------------------------------------------------------------------------
-# Provider Proxmox
+# Proxmox provider
 # -----------------------------------------------------------------------------
 
 provider "proxmox" {
   endpoint = var.proxmox_endpoint
 
-  # Authentification par token API (recommandé)
+  # Authentication via API token (recommended)
   api_token = var.proxmox_api_token
 
-  # OU authentification par username/password
+  # OR authentication via username/password
   # username = var.proxmox_username
   # password = var.proxmox_password
 
   # SSL
   insecure = var.proxmox_insecure
 
-  # Configuration SSH (nécessaire pour certaines opérations)
+  # SSH configuration (required for some operations)
   ssh {
     agent    = var.ssh_agent
     username = var.ssh_username
@@ -108,52 +108,52 @@ provider "proxmox" {
 }
 
 # -----------------------------------------------------------------------------
-# Data sources utiles
+# Useful data sources
 # -----------------------------------------------------------------------------
 
-# Récupérer les informations du cluster
+# Retrieve cluster information
 data "proxmox_virtual_environment_nodes" "available" {}
 
-# Récupérer les datastores disponibles
+# Retrieve available datastores
 data "proxmox_virtual_environment_datastores" "available" {
   node_name = data.proxmox_virtual_environment_nodes.available.names[0]
 }
 
 # -----------------------------------------------------------------------------
-# Outputs informatifs
+# Informational outputs
 # -----------------------------------------------------------------------------
 
 output "proxmox_nodes" {
-  description = "Nodes Proxmox disponibles"
+  description = "Available Proxmox nodes"
   value       = data.proxmox_virtual_environment_nodes.available.names
 }
 
 output "proxmox_datastores" {
-  description = "Datastores disponibles"
+  description = "Available datastores"
   value       = [for ds in data.proxmox_virtual_environment_datastores.available.datastore_ids : ds]
 }
 
 # -----------------------------------------------------------------------------
-# Exemple de fichier terraform.tfvars
+# Example terraform.tfvars file
 # -----------------------------------------------------------------------------
 
-# Créer un fichier terraform.tfvars (NE PAS COMMITER) :
+# Create a terraform.tfvars file (DO NOT COMMIT):
 #
 # proxmox_endpoint  = "https://pve.example.com:8006"
 # proxmox_api_token = "terraform@pve!terraform-token=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-# proxmox_insecure  = true  # false en production avec certificat valide
+# proxmox_insecure  = true  # false in production with a valid certificate
 #
-# OU avec username/password :
+# OR with username/password:
 #
 # proxmox_endpoint = "https://pve.example.com:8006"
 # proxmox_username = "root@pam"
 # proxmox_password = "secret"
 
 # -----------------------------------------------------------------------------
-# Variables d'environnement alternatives
+# Alternative environment variables
 # -----------------------------------------------------------------------------
 
-# Vous pouvez aussi utiliser des variables d'environnement :
+# You can also use environment variables:
 #
 # export PROXMOX_VE_ENDPOINT="https://pve.example.com:8006"
 # export PROXMOX_VE_API_TOKEN="terraform@pve!terraform-token=xxx"
