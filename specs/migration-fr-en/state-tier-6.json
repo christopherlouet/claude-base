@@ -53,7 +53,7 @@
     },
     {
       "path": "scripts/uninstall.sh",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "7760f3f1bbf560e9e2441a3d6307725e57755970020fff092cf0a82d6bc3098b"
     },
     {

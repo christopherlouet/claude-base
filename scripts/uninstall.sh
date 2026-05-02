@@ -2,14 +2,14 @@
 
 # =============================================================================
 # Claude-Socle Uninstall Script
-# Supprime la configuration Claude Code d'un projet
+# Removes the Claude Code configuration from a project
 # =============================================================================
 
 set -euo pipefail
 
 VERSION="1.0.0"
 
-# Charger la librairie commune
+# Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC2034  # Used by sourced scripts
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
@@ -17,7 +17,7 @@ SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-# Activer le handler d'erreur et vérifier les prérequis
+# Enable the error handler and check prerequisites
 enable_error_handler
 check_base_requirements
 
@@ -32,7 +32,7 @@ FORCE=false
 REMOVE_LOCAL_FILES=false
 
 # =============================================================================
-# Aide
+# Help
 # =============================================================================
 
 show_help() {
@@ -40,40 +40,40 @@ show_help() {
 ${BOLD}Claude-Socle Uninstall${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
-    $(basename "$0") [OPTIONS] [CHEMIN]
+    $(basename "$0") [OPTIONS] [PATH]
 
 ${BOLD}DESCRIPTION${NC}
-    Supprime la configuration Claude Code d'un projet.
-    Crée une sauvegarde avant suppression par défaut.
+    Removes the Claude Code configuration from a project.
+    Creates a backup before removal by default.
 
 ${BOLD}ARGUMENTS${NC}
-    CHEMIN              Répertoire cible (défaut: répertoire courant)
+    PATH                Target directory (default: current directory)
 
 ${BOLD}OPTIONS${NC}
-    -h, --help          Affiche cette aide
-    -v, --version       Affiche la version
-    -y, --yes           Mode non-interactif (confirme automatiquement)
-    -f, --force         Supprime sans demander de confirmation
-    -n, --dry-run       Simule la suppression sans rien effacer
-    -q, --quiet         Mode silencieux
-    --keep-claude-md    Conserve le fichier CLAUDE.md personnalisé
-    --no-backup         Ne crée pas de sauvegarde avant suppression
+    -h, --help          Show this help
+    -v, --version       Show the version
+    -y, --yes           Non-interactive mode (auto-confirm)
+    -f, --force         Remove without asking for confirmation
+    -n, --dry-run       Simulate removal without deleting anything
+    -q, --quiet         Quiet mode
+    --keep-claude-md    Keep the customized CLAUDE.md file
+    --no-backup         Do not create a backup before removal
 
-${BOLD}FICHIERS SUPPRIMÉS${NC}
-    .claude/            Répertoire complet (commands, skills, settings)
-    CLAUDE.md           Fichier d'instructions (sauf avec --keep-claude-md)
-    CLAUDE.local.md     Configuration locale
+${BOLD}REMOVED FILES${NC}
+    .claude/            Full directory (commands, skills, settings)
+    CLAUDE.md           Instructions file (unless --keep-claude-md)
+    CLAUDE.local.md     Local configuration
     CLAUDE.local.md.example
 
-${BOLD}EXEMPLES${NC}
-    # Désinstallation interactive
-    $(basename "$0") ./mon-projet
+${BOLD}EXAMPLES${NC}
+    # Interactive uninstall
+    $(basename "$0") ./my-project
 
-    # Garder CLAUDE.md personnalisé
-    $(basename "$0") --keep-claude-md ./mon-projet
+    # Keep customized CLAUDE.md
+    $(basename "$0") --keep-claude-md ./my-project
 
-    # Voir ce qui serait supprimé
-    $(basename "$0") --dry-run ./mon-projet
+    # See what would be removed
+    $(basename "$0") --dry-run ./my-project
 
 EOF
 }
@@ -83,7 +83,7 @@ show_version() {
 }
 
 # =============================================================================
-# Parsing des arguments
+# Argument parsing
 # =============================================================================
 
 parse_args() {
@@ -127,13 +127,13 @@ parse_args() {
                 shift
                 ;;
             -*)
-                error "Option inconnue: $1\nUtilisez --help pour l'aide"
+                error "Unknown option: $1\nUse --help for help"
                 ;;
             *)
                 if [[ -z "$TARGET_DIR" ]]; then
                     TARGET_DIR="$1"
                 else
-                    error "Trop d'arguments: $1"
+                    error "Too many arguments: $1"
                 fi
                 shift
                 ;;
@@ -144,14 +144,14 @@ parse_args() {
 }
 
 # =============================================================================
-# Désinstallation
+# Uninstall
 # =============================================================================
 
 create_backup() {
     local backup_dir
     backup_dir="$TARGET_DIR/.claude-backup.$(date +%Y%m%d_%H%M%S)"
 
-    info "Création d'une sauvegarde..."
+    info "Creating a backup..."
 
     if $DRY_RUN; then
         echo -e "${DIM}[DRY-RUN]${NC} Backup → $backup_dir"
@@ -160,22 +160,22 @@ create_backup() {
 
     mkdir -p "$backup_dir"
 
-    # Sauvegarder .claude/
+    # Back up .claude/
     if [[ -d "$TARGET_DIR/.claude" ]]; then
         cp -r "$TARGET_DIR/.claude" "$backup_dir/"
     fi
 
-    # Sauvegarder CLAUDE.md
+    # Back up CLAUDE.md
     if [[ -f "$TARGET_DIR/CLAUDE.md" ]]; then
         cp "$TARGET_DIR/CLAUDE.md" "$backup_dir/"
     fi
 
-    # Sauvegarder CLAUDE.local.md
+    # Back up CLAUDE.local.md
     if [[ -f "$TARGET_DIR/CLAUDE.local.md" ]]; then
         cp "$TARGET_DIR/CLAUDE.local.md" "$backup_dir/"
     fi
 
-    success "Sauvegarde créée: $backup_dir"
+    success "Backup created: $backup_dir"
 }
 
 remove_file() {
@@ -184,10 +184,10 @@ remove_file() {
 
     if [[ -f "$file" ]]; then
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Suppression: $desc"
+            echo -e "${DIM}[DRY-RUN]${NC} Removing: $desc"
         else
             rm "$file"
-            success "Supprimé: $desc"
+            success "Removed: $desc"
         fi
     fi
 }
@@ -198,34 +198,34 @@ remove_dir() {
 
     if [[ -d "$dir" ]]; then
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Suppression: $desc"
+            echo -e "${DIM}[DRY-RUN]${NC} Removing: $desc"
         else
             rm -rf "$dir"
-            success "Supprimé: $desc"
+            success "Removed: $desc"
         fi
     fi
 }
 
 uninstall() {
-    # Vérifier le répertoire
+    # Check the directory
     if [[ ! -d "$TARGET_DIR" ]]; then
-        error "Le répertoire '$TARGET_DIR' n'existe pas"
+        error "Directory '$TARGET_DIR' does not exist"
     fi
 
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
 
-    # Vérifier qu'il y a quelque chose à supprimer
+    # Check that there is something to remove
     if [[ ! -d "$TARGET_DIR/.claude" ]] && [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then
-        error "Pas de configuration Claude trouvée dans '$TARGET_DIR'"
+        error "No Claude configuration found in '$TARGET_DIR'"
     fi
 
-    title "Désinstallation Claude Code"
-    info "Projet: $TARGET_DIR"
-    $DRY_RUN && warning "Mode dry-run activé"
+    title "Claude Code Uninstall"
+    info "Project: $TARGET_DIR"
+    $DRY_RUN && warning "Dry-run mode enabled"
     echo ""
 
-    # Afficher ce qui sera supprimé
-    section "Fichiers à supprimer"
+    # Show what will be removed
+    section "Files to remove"
 
     local files_to_remove=()
 
@@ -234,7 +234,7 @@ uninstall() {
         local skills_count
         cmd_count=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
         skills_count=$(count_dirs "$TARGET_DIR/.claude/skills")
-        echo "  - .claude/ ($cmd_count commandes, $skills_count skills)"
+        echo "  - .claude/ ($cmd_count commands, $skills_count skills)"
         files_to_remove+=(".claude/")
     fi
 
@@ -242,7 +242,7 @@ uninstall() {
         echo "  - CLAUDE.md"
         files_to_remove+=("CLAUDE.md")
     elif [[ -f "$TARGET_DIR/CLAUDE.md" ]] && $KEEP_CLAUDE_MD; then
-        echo -e "  - CLAUDE.md ${DIM}(conservé)${NC}"
+        echo -e "  - CLAUDE.md ${DIM}(kept)${NC}"
     fi
 
     if [[ -f "$TARGET_DIR/CLAUDE.local.md" ]]; then
@@ -250,7 +250,7 @@ uninstall() {
             echo "  - CLAUDE.local.md"
             files_to_remove+=("CLAUDE.local.md")
         else
-            echo -e "  - CLAUDE.local.md ${DIM}(conservé)${NC}"
+            echo -e "  - CLAUDE.local.md ${DIM}(kept)${NC}"
         fi
     fi
 
@@ -261,22 +261,22 @@ uninstall() {
 
     echo ""
 
-    # Demander confirmation
+    # Ask for confirmation
     if ! $FORCE && ! ${NON_INTERACTIVE:-false}; then
-        warning "Cette action est irréversible!"
-        if ! confirm "Supprimer la configuration Claude Code?" "n"; then
-            info "Désinstallation annulée"
+        warning "This action is irreversible!"
+        if ! confirm "Remove the Claude Code configuration?" "n"; then
+            info "Uninstall cancelled"
             exit 0
         fi
     fi
 
-    # Créer backup si demandé
+    # Create backup if requested
     if $KEEP_BACKUP; then
         create_backup
     fi
 
-    # Supprimer les fichiers
-    section "Suppression"
+    # Remove the files
+    section "Removal"
 
     remove_dir "$TARGET_DIR/.claude" ".claude/"
 
@@ -289,30 +289,30 @@ uninstall() {
     fi
     remove_file "$TARGET_DIR/CLAUDE.local.md.example" "CLAUDE.local.md.example"
 
-    # Nettoyer .gitignore si présent
+    # Clean .gitignore if present
     if [[ -f "$TARGET_DIR/.gitignore" ]] && ! $DRY_RUN; then
-        # Supprimer les lignes Claude Code du .gitignore
+        # Remove the Claude Code lines from .gitignore
         if grep -q "CLAUDE.local.md" "$TARGET_DIR/.gitignore" 2>/dev/null; then
-            # Créer un fichier temporaire sans les lignes Claude
+            # Create a temporary file without the Claude lines
             grep -v "CLAUDE.local.md\|CLAUDE.md\|\.claude/\|.claude/settings.local.json\|# Claude Code" "$TARGET_DIR/.gitignore" > "$TARGET_DIR/.gitignore.tmp" 2>/dev/null || true
             mv "$TARGET_DIR/.gitignore.tmp" "$TARGET_DIR/.gitignore"
-            success "Nettoyé: .gitignore"
+            success "Cleaned: .gitignore"
         fi
     fi
 
-    # Résumé
+    # Summary
     echo ""
     separator "="
-    success "Désinstallation terminée!"
+    success "Uninstall complete!"
     separator "="
     echo ""
 
     if $KEEP_CLAUDE_MD && [[ -f "$TARGET_DIR/CLAUDE.md" ]]; then
-        info "CLAUDE.md a été conservé"
+        info "CLAUDE.md was kept"
     fi
 
     if $KEEP_BACKUP && ! $DRY_RUN; then
-        info "Une sauvegarde a été créée dans le répertoire du projet"
+        info "A backup was created in the project directory"
     fi
 
     echo ""
