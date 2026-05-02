@@ -1,6 +1,6 @@
 ---
 sidebar_position: 15
-title: "Structure du Projet"
+title: "Project Structure"
 description: ""
 tags:
   - "reference"
@@ -8,60 +8,60 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Structure du Projet
+# Project Structure
 
 ## Web (React/Node)
 ```
 /src
-├── /components     # Composants UI réutilisables
-├── /services       # Logique métier et appels API
-├── /hooks          # Custom hooks React
-├── /utils          # Fonctions utilitaires pures
-├── /types          # Types et interfaces TypeScript
-├── /config         # Configuration de l'application
-└── /tests          # Tests unitaires et d'intégration
+├── /components     # Reusable UI components
+├── /services       # Business logic and API calls
+├── /hooks          # Custom React hooks
+├── /utils          # Pure utility functions
+├── /types          # TypeScript types and interfaces
+├── /config         # Application configuration
+└── /tests          # Unit and integration tests
 ```
 
 ## Mobile (Flutter)
 ```
 /lib
-├── /core           # Constantes, erreurs, réseau, utils
-├── /features       # Features par domaine (Clean Architecture)
+├── /core           # Constants, errors, network, utils
+├── /features       # Features by domain (Clean Architecture)
 │   └── /[feature]
 │       ├── /data          # Datasources, models, repositories impl
 │       ├── /domain        # Entities, repositories interfaces, usecases
 │       └── /presentation  # BLoC, pages, widgets
-├── /shared         # Widgets et thème partagés
-├── /l10n           # Traductions (ARB)
+├── /shared         # Shared widgets and theme
+├── /l10n           # Translations (ARB)
 └── /config         # Routes (GoRouter), injection (get_it)
-/test               # Tests unitaires, widget, integration
+/test               # Unit, widget, integration tests
 ```
 
 ## Backend (Python)
 ```
 /src
-├── /api            # Routes FastAPI/Flask
+├── /api            # FastAPI/Flask routes
 ├── /core           # Config, security, dependencies
 ├── /models         # SQLAlchemy/Pydantic models
 ├── /schemas        # Pydantic DTOs
-├── /services       # Logique métier
-├── /repositories   # Accès données
-└── /utils          # Fonctions utilitaires
-/tests              # Tests pytest
-pyproject.toml      # Config projet (deps, tools)
+├── /services       # Business logic
+├── /repositories   # Data access
+└── /utils          # Utility functions
+/tests              # pytest tests
+pyproject.toml      # Project config (deps, tools)
 ```
 
 ## Backend (Go)
 ```
 /cmd
-└── /app            # Point d'entrée (main.go)
+└── /app            # Entry point (main.go)
 /internal
-├── /api            # Handlers HTTP
+├── /api            # HTTP handlers
 ├── /domain         # Entities, interfaces
-├── /service        # Logique métier
-├── /repository     # Accès données
+├── /service        # Business logic
+├── /repository     # Data access
 └── /config         # Configuration
-/pkg                # Code réutilisable externe
-go.mod              # Dépendances
+/pkg                # External reusable code
+go.mod              # Dependencies
 go.sum              # Checksums
 ```
