@@ -148,7 +148,7 @@
     },
     {
       "path": "tests/smoke.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "0d2a12400bcae7e93ce68c45bf5716dc02e9e75dce893b21d90b9aba760b4884"
     },
     {

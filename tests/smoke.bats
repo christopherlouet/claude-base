@@ -1,26 +1,26 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests de smoke - Validation rapide de l'intégrité du socle
+# Smoke tests - Quick validation of foundation integrity
 # =============================================================================
-# Ces tests vérifient que tous les composants essentiels sont présents et
-# correctement formatés. Utilisés comme première ligne de validation avant
-# les tests plus détaillés.
+# These tests verify that all essential components are present and
+# correctly formatted. Used as the first line of validation before
+# more detailed tests.
 # =============================================================================
 
 load 'test_helper'
 
 # =============================================================================
-# Tests de structure des commandes
+# Command structure tests
 # =============================================================================
 
-@test "smoke: toutes les commandes ont un fichier .md" {
+@test "smoke: all commands have a .md file" {
     local count
     count=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 100 ]
 }
 
-@test "smoke: les catégories de commandes existent" {
+@test "smoke: command categories exist" {
     [ -d "$SOCLE_DIR/.claude/commands/work" ]
     [ -d "$SOCLE_DIR/.claude/commands/dev" ]
     [ -d "$SOCLE_DIR/.claude/commands/qa" ]
@@ -32,43 +32,43 @@ load 'test_helper'
     [ -d "$SOCLE_DIR/.claude/commands/data" ]
 }
 
-@test "smoke: les commandes work essentielles existent" {
+@test "smoke: essential work commands exist" {
     [ -f "$SOCLE_DIR/.claude/commands/work/work-explore.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/work/work-plan.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/work/work-commit.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/work/work-pr.md" ]
 }
 
-@test "smoke: les commandes dev essentielles existent" {
+@test "smoke: essential dev commands exist" {
     [ -f "$SOCLE_DIR/.claude/commands/dev/dev-tdd.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/dev/dev-test.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/dev/dev-debug.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/dev/dev-api.md" ]
 }
 
-@test "smoke: les commandes qa essentielles existent" {
+@test "smoke: essential qa commands exist" {
     [ -f "$SOCLE_DIR/.claude/commands/qa/qa-security.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/qa/qa-review.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/qa/qa-perf.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/qa/qa-audit.md" ]
 }
 
-@test "smoke: l'orchestrateur assistant existe" {
+@test "smoke: assistant orchestrator exists" {
     [ -f "$SOCLE_DIR/.claude/commands/assistant.md" ]
     [ -f "$SOCLE_DIR/.claude/commands/assistant-auto.md" ]
 }
 
 # =============================================================================
-# Tests de structure des agents
+# Agent structure tests
 # =============================================================================
 
-@test "smoke: tous les agents ont un fichier .md" {
+@test "smoke: all agents have a .md file" {
     local count
     count=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 40 ]
 }
 
-@test "smoke: les agents essentiels existent" {
+@test "smoke: essential agents exist" {
     [ -f "$SOCLE_DIR/.claude/agents/work-explore.md" ]
     [ -f "$SOCLE_DIR/.claude/agents/qa-security.md" ]
     [ -f "$SOCLE_DIR/.claude/agents/qa-audit.md" ]
@@ -77,16 +77,16 @@ load 'test_helper'
 }
 
 # =============================================================================
-# Tests de structure des skills
+# Skill structure tests
 # =============================================================================
 
-@test "smoke: tous les skills ont un dossier avec SKILL.md" {
+@test "smoke: all skills have a folder with SKILL.md" {
     local count
     count=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 25 ]
 }
 
-@test "smoke: les skills essentiels existent" {
+@test "smoke: essential skills exist" {
     [ -f "$SOCLE_DIR/.claude/skills/dev-tdd/SKILL.md" ]
     [ -f "$SOCLE_DIR/.claude/skills/work-commit/SKILL.md" ]
     [ -f "$SOCLE_DIR/.claude/skills/qa-review/SKILL.md" ]
@@ -94,17 +94,17 @@ load 'test_helper'
     [ -f "$SOCLE_DIR/.claude/skills/work-explore/SKILL.md" ]
 }
 
-@test "smoke: les skills ont un frontmatter YAML valide" {
+@test "smoke: skills have valid YAML frontmatter" {
     local skill_file="$SOCLE_DIR/.claude/skills/dev-tdd/SKILL.md"
-    # Vérifie que le fichier commence par ---
+    # Check that the file starts with ---
     head -1 "$skill_file" | grep -q "^---$"
 }
 
 # =============================================================================
-# Tests de structure des rules
+# Rule structure tests
 # =============================================================================
 
-@test "smoke: les règles essentielles existent" {
+@test "smoke: essential rules exist" {
     [ -f "$SOCLE_DIR/.claude/rules/git.md" ]
     [ -f "$SOCLE_DIR/.claude/rules/workflow.md" ]
     [ -f "$SOCLE_DIR/.claude/rules/typescript.md" ]
@@ -112,7 +112,7 @@ load 'test_helper'
     [ -f "$SOCLE_DIR/.claude/rules/testing.md" ]
 }
 
-@test "smoke: les règles par langage existent" {
+@test "smoke: per-language rules exist" {
     [ -f "$SOCLE_DIR/.claude/rules/typescript.md" ]
     [ -f "$SOCLE_DIR/.claude/rules/python.md" ]
     [ -f "$SOCLE_DIR/.claude/rules/go.md" ]
@@ -120,44 +120,44 @@ load 'test_helper'
 }
 
 # =============================================================================
-# Tests de configuration
+# Configuration tests
 # =============================================================================
 
-@test "smoke: settings.json est valide" {
+@test "smoke: settings.json is valid" {
     skip_if_no_jq
     jq . "$SOCLE_DIR/.claude/settings.json" > /dev/null
 }
 
-@test "smoke: settings.json contient les permissions" {
+@test "smoke: settings.json contains permissions" {
     skip_if_no_jq
     jq -e '.permissions' "$SOCLE_DIR/.claude/settings.json" > /dev/null
 }
 
-@test "smoke: settings.json contient les hooks" {
+@test "smoke: settings.json contains hooks" {
     skip_if_no_jq
     jq -e '.hooks' "$SOCLE_DIR/.claude/settings.json" > /dev/null
 }
 
-@test "smoke: settings.json bloque rm -rf /" {
+@test "smoke: settings.json blocks rm -rf /" {
     skip_if_no_jq
     jq -e '.permissions.deny[] | select(contains("rm -rf /"))' "$SOCLE_DIR/.claude/settings.json" > /dev/null
 }
 
-@test "smoke: settings.json bloque git push --force" {
+@test "smoke: settings.json blocks git push --force" {
     skip_if_no_jq
     jq -e '.permissions.deny[] | select(contains("git push --force"))' "$SOCLE_DIR/.claude/settings.json" > /dev/null
 }
 
-@test "smoke: settings.json bloque sudo" {
+@test "smoke: settings.json blocks sudo" {
     skip_if_no_jq
     jq -e '.permissions.deny[] | select(contains("sudo"))' "$SOCLE_DIR/.claude/settings.json" > /dev/null
 }
 
 # =============================================================================
-# Tests des fichiers principaux
+# Main file tests
 # =============================================================================
 
-@test "smoke: CLAUDE.md existe et n'est pas vide" {
+@test "smoke: CLAUDE.md exists and is not empty" {
     [ -f "$SOCLE_DIR/CLAUDE.md" ]
     [ -s "$SOCLE_DIR/CLAUDE.md" ]
     local lines
@@ -166,40 +166,40 @@ load 'test_helper'
     [ "$lines" -gt 30 ]
 }
 
-@test "smoke: VERSION existe et contient une version valide" {
+@test "smoke: VERSION exists and contains a valid version" {
     [ -f "$SOCLE_DIR/VERSION" ]
     grep -qE "^[0-9]+\.[0-9]+\.[0-9]+$" "$SOCLE_DIR/VERSION"
 }
 
-@test "smoke: CHANGELOG.md existe et est à jour" {
+@test "smoke: CHANGELOG.md exists and is up to date" {
     [ -f "$SOCLE_DIR/CHANGELOG.md" ]
-    # Vérifie que le changelog mentionne la version actuelle
+    # Check that the changelog mentions the current version
     local version
     version=$(cat "$SOCLE_DIR/VERSION")
-    # La version peut être dans [Unreleased] ou dans une section
+    # The version may be in [Unreleased] or in a section
     grep -qE "\[.*\]" "$SOCLE_DIR/CHANGELOG.md"
 }
 
-@test "smoke: SECURITY.md existe" {
+@test "smoke: SECURITY.md exists" {
     [ -f "$SOCLE_DIR/SECURITY.md" ]
     [ -s "$SOCLE_DIR/SECURITY.md" ]
 }
 
-@test "smoke: .gitleaks.toml existe" {
+@test "smoke: .gitleaks.toml exists" {
     [ -f "$SOCLE_DIR/.gitleaks.toml" ]
 }
 
 # =============================================================================
-# Tests des scripts
+# Script tests
 # =============================================================================
 
-@test "smoke: tous les scripts sont exécutables" {
+@test "smoke: all scripts are executable" {
     for script in "$SOCLE_DIR/scripts"/*.sh; do
         [ -x "$script" ]
     done
 }
 
-@test "smoke: les scripts essentiels existent" {
+@test "smoke: essential scripts exist" {
     [ -f "$SOCLE_DIR/scripts/validate.sh" ]
     [ -f "$SOCLE_DIR/scripts/doctor.sh" ]
     [ -f "$SOCLE_DIR/scripts/new-project.sh" ]
@@ -207,46 +207,46 @@ load 'test_helper'
     [ -f "$SOCLE_DIR/scripts/test.sh" ]
 }
 
-@test "smoke: lib/common.sh existe et est sourceable" {
+@test "smoke: lib/common.sh exists and is sourceable" {
     [ -f "$SOCLE_DIR/scripts/lib/common.sh" ]
     source "$SOCLE_DIR/scripts/lib/common.sh"
 }
 
 # =============================================================================
-# Tests de cohérence des compteurs
+# Counter consistency tests
 # =============================================================================
 
-@test "smoke: le nombre de commandes correspond à CLAUDE.md" {
+@test "smoke: command count matches CLAUDE.md" {
     local actual_count
     actual_count=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    # Doit être dans la plage attendue (~130 actuellement, marge pour croissance)
+    # Must be within the expected range (~130 currently, margin for growth)
     [ "$actual_count" -ge 100 ]
     [ "$actual_count" -le 150 ]
 }
 
-@test "smoke: le nombre d'agents correspond à CLAUDE.md" {
+@test "smoke: agent count matches CLAUDE.md" {
     local actual_count
     actual_count=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    # Doit être dans la plage attendue (50-60)
+    # Must be within the expected range (50-60)
     [ "$actual_count" -ge 45 ]
     [ "$actual_count" -le 70 ]
 }
 
-@test "smoke: le nombre de skills correspond à CLAUDE.md" {
+@test "smoke: skill count matches CLAUDE.md" {
     local actual_count
     actual_count=$(find "$SOCLE_DIR/.claude/skills" -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
-    # -1 pour le répertoire skills lui-même
+    # -1 for the skills directory itself
     actual_count=$((actual_count - 1))
-    # Doit être dans la plage attendue (35-55)
+    # Must be within the expected range (35-55)
     [ "$actual_count" -ge 25 ]
     [ "$actual_count" -le 55 ]
 }
 
 # =============================================================================
-# Tests de format des fichiers de commandes
+# Command file format tests
 # =============================================================================
 
-@test "smoke: les commandes ont un titre markdown" {
+@test "smoke: commands have a markdown title" {
     local errors=0
     while IFS= read -r file; do
         if ! head -5 "$file" | grep -q "^# "; then
@@ -256,10 +256,10 @@ load 'test_helper'
     [ "$errors" -eq 0 ]
 }
 
-@test "smoke: les agents ont un titre markdown" {
+@test "smoke: agents have a markdown title" {
     local errors=0
     while IFS= read -r file; do
-        # Les agents peuvent avoir un frontmatter YAML avant le titre
+        # Agents may have a YAML frontmatter before the title
         if ! head -20 "$file" | grep -q "^# "; then
             errors=$((errors + 1))
         fi
@@ -268,10 +268,10 @@ load 'test_helper'
 }
 
 # =============================================================================
-# Tests de templates
+# Template tests
 # =============================================================================
 
-@test "smoke: les templates existent" {
+@test "smoke: templates exist" {
     [ -d "$SOCLE_DIR/.claude/templates" ]
     local count
     count=$(find "$SOCLE_DIR/.claude/templates" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
@@ -279,10 +279,10 @@ load 'test_helper'
 }
 
 # =============================================================================
-# Tests d'output-styles
+# Output-styles tests
 # =============================================================================
 
-@test "smoke: les output-styles existent" {
+@test "smoke: output-styles exist" {
     [ -d "$SOCLE_DIR/.claude/output-styles" ]
     local count
     count=$(find "$SOCLE_DIR/.claude/output-styles" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
@@ -290,23 +290,23 @@ load 'test_helper'
 }
 
 # =============================================================================
-# Tests de documentation
+# Documentation tests
 # =============================================================================
 
-@test "smoke: la documentation existe" {
+@test "smoke: documentation exists" {
     [ -d "$SOCLE_DIR/docs" ]
     [ -f "$SOCLE_DIR/README.md" ]
 }
 
-@test "smoke: les guides existent" {
+@test "smoke: guides exist" {
     [ -d "$SOCLE_DIR/docs/guides" ] || [ -d "$SOCLE_DIR/website/docs/guides" ]
 }
 
 # =============================================================================
-# Tests CI/CD
+# CI/CD tests
 # =============================================================================
 
-@test "smoke: les workflows GitHub Actions existent" {
+@test "smoke: GitHub Actions workflows exist" {
     [ -d "$SOCLE_DIR/.github/workflows" ]
     [ -f "$SOCLE_DIR/.github/workflows/ci.yml" ]
 }
