@@ -468,7 +468,7 @@
     },
     {
       "path": "scripts/hooks/prompt-context.sh",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "61be60a23377578f55f6fb27b3a482d974983a5e517fe61bf0b6d5a1aa4dec26"
     },
     {
