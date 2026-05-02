@@ -478,7 +478,7 @@
     },
     {
       "path": "scripts/hooks/socle-integrity-check.sh",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "5e5f06e796e9bff82a5a8f2008c1780ccaff1c7fec46932af1a428cf92de242e"
     }
   ]
