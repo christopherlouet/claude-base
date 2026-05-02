@@ -108,7 +108,7 @@
     },
     {
       "path": "tests/doctor.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "43803f4cf5ffec9b722210938912f0c1075e238b12c1f043bc387cf8878e5a47"
     },
     {
