@@ -1,6 +1,6 @@
 ---
 name: work-plan
-description: Planifier l'implémentation d'une fonctionnalité. Utiliser quand l'utilisateur veut planifier, architecturer, définir une approche, ou avant de coder une feature complexe.
+description: Plan the implementation of a feature. Use when the user wants to plan, architect, define an approach, or before coding a complex feature.
 allowed-tools:
   - Read
   - Glob
@@ -10,84 +10,84 @@ context: fork
 disable-model-invocation: true
 ---
 
-# Planifier une Implémentation
+# Plan an Implementation
 
-## Objectif
+## Objective
 
-Définir un plan d'action AVANT de coder. Le plan doit être validé avant l'implémentation.
+Define an action plan BEFORE coding. The plan must be validated before implementation.
 
 ## Instructions
 
-### 1. Comprendre la demande
+### 1. Understand the request
 
-**Questions à clarifier:**
-- Quel est l'objectif métier ?
-- Quels sont les critères d'acceptance ?
-- Y a-t-il des contraintes techniques ?
-- Quelle est la priorité/deadline ?
+**Questions to clarify:**
+- What is the business objective?
+- What are the acceptance criteria?
+- Are there any technical constraints?
+- What is the priority/deadline?
 
-### 2. Analyser l'existant
+### 2. Analyze the existing code
 
 ```bash
-# Chercher du code similaire
-grep -rn "pattern_similaire" --include="*.ts" | head -20
+# Search for similar code
+grep -rn "similar_pattern" --include="*.ts" | head -20
 
-# Identifier les dépendances
+# Identify dependencies
 cat package.json | grep -A 20 '"dependencies"'
 ```
 
-### 3. Définir l'architecture
+### 3. Define the architecture
 
-**Décisions à prendre:**
-- Où placer le nouveau code ?
-- Quels patterns utiliser ?
-- Quelles interfaces créer ?
-- Comment gérer les erreurs ?
+**Decisions to make:**
+- Where to place the new code?
+- Which patterns to use?
+- Which interfaces to create?
+- How to handle errors?
 
-### 4. Lister les tâches
+### 4. List the tasks
 
-Décomposer en tâches atomiques de 1-2h max.
+Break down into atomic tasks of 1-2h max.
 
-## Template de plan
+## Plan template
 
 ```markdown
-## Plan : [Nom de la feature]
+## Plan: [Feature name]
 
-### Objectif
-[Description en 1-2 phrases]
+### Objective
+[Description in 1-2 sentences]
 
-### Fichiers à créer
-| Fichier | Description |
+### Files to create
+| File | Description |
 |---------|-------------|
-| `src/xxx.ts` | [Rôle] |
+| `src/xxx.ts` | [Role] |
 
-### Fichiers à modifier
-| Fichier | Modifications |
+### Files to modify
+| File | Modifications |
 |---------|---------------|
-| `src/yyy.ts` | [Changements] |
+| `src/yyy.ts` | [Changes] |
 
-### Tests à écrire
-- [ ] Test cas nominal
-- [ ] Test edge cases
-- [ ] Test erreurs
+### Tests to write
+- [ ] Nominal case test
+- [ ] Edge cases test
+- [ ] Error test
 
-### Étapes d'implémentation
-1. [ ] [Tâche 1]
-2. [ ] [Tâche 2]
-3. [ ] [Tâche 3]
+### Implementation steps
+1. [ ] [Task 1]
+2. [ ] [Task 2]
+3. [ ] [Task 3]
 
-### Risques identifiés
-| Risque | Mitigation |
+### Identified risks
+| Risk | Mitigation |
 |--------|------------|
-| [Risque 1] | [Solution] |
+| [Risk 1] | [Solution] |
 
-### Dépendances
-- [ ] [Prérequis 1]
+### Dependencies
+- [ ] [Prerequisite 1]
 ```
 
-## Règles
+## Rules
 
-- JAMAIS coder sans plan validé
-- Un plan = une feature
-- Estimer la complexité, pas le temps
-- Identifier les risques AVANT
+- NEVER code without a validated plan
+- One plan = one feature
+- Estimate complexity, not time
+- Identify risks BEFORE
