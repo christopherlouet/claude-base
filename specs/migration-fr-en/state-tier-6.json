@@ -123,7 +123,7 @@
     },
     {
       "path": "tests/ide.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "47bdbf51f14244c5f91f4a02c7fa49674a735b23f8626012ed1baa410afd5897"
     },
     {
