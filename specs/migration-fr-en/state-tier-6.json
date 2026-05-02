@@ -138,7 +138,7 @@
     },
     {
       "path": "tests/prompt-context.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "9b368e3be33ea48d105d0d5b0aceb3ba78a7e724814f0a3678d5ae89d940f3cb"
     },
     {
