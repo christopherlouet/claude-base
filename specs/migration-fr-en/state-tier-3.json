@@ -473,7 +473,7 @@
     },
     {
       "path": "scripts/hooks/setup-deps.sh",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c5b27dc223b6a28ec09eb7ee2fdf0f37902e626dce89691f07612a3824f8a14c"
     },
     {
