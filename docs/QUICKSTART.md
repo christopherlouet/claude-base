@@ -1,64 +1,64 @@
 # Quick Start - claude-socle
 
-> Demarrer en 5 minutes avec claude-socle
+> Get started with claude-socle in 5 minutes
 
-## Installation (30 secondes)
-
-```bash
-# Depuis le socle
-./scripts/new-project.sh --simple /chemin/vers/votre-projet
-
-# Ou depuis votre projet
-/chemin/vers/claude-socle/scripts/new-project.sh --simple .
-```
-
-## Premier usage
-
-Le workflow obligatoire du socle, étape par étape :
-
-### 1. Explorer le projet
+## Installation (30 seconds)
 
 ```bash
-/work:work-explore "Comprendre l'architecture"
+# From the foundation
+./scripts/new-project.sh --simple /path/to/your-project
+
+# Or from your project
+/path/to/claude-socle/scripts/new-project.sh --simple .
 ```
 
-### 2. (optionnel) Brainstormer les alternatives
+## First usage
+
+The foundation's mandatory workflow, step by step:
+
+### 1. Explore the project
 
 ```bash
-/work:work-brainstorm "Pour ajouter OAuth, quelles approches ?"
+/work:work-explore "Understand the architecture"
 ```
 
-### 3. Specifier la feature
+### 2. (optional) Brainstorm alternatives
 
 ```bash
-/work:work-specify "Ajouter authentification OAuth"
+/work:work-brainstorm "To add OAuth, which approaches?"
 ```
 
-### 4. Planifier l'implementation
+### 3. Specify the feature
 
 ```bash
-/work:work-plan "Implementer OAuth Google"
+/work:work-specify "Add OAuth authentication"
 ```
 
-### 5. Developper en TDD
+### 4. Plan the implementation
+
+```bash
+/work:work-plan "Implement Google OAuth"
+```
+
+### 5. Develop with TDD
 
 ```bash
 /dev:dev-tdd "OAuth authentication flow"
 ```
 
-### 6. Auditer (obligatoire avant commit)
+### 6. Audit (mandatory before commit)
 
 ```bash
-/qa:qa-loop "score 90"   # Audit + fix en boucle jusqu'au score cible
+/qa:qa-loop "score 90"   # Audit + fix loop until target score
 ```
 
-### 7. Commiter
+### 7. Commit
 
 ```bash
 /work:work-commit
 ```
 
-## Workflow complet
+## Full workflow
 
 ```
 ┌─────────┐  ┌──────────┐  ┌─────────┐  ┌──────┐  ┌─────┐  ┌───────┐  ┌────────┐
@@ -67,41 +67,41 @@ Le workflow obligatoire du socle, étape par étape :
 └─────────┘  └──────────┘  └─────────┘  └──────┘  └─────┘  └───────┘  └────────┘
 ```
 
-> **Skip pour les changements triviaux** : `/work:work-quick` (< 50 LOC, 1-3 fichiers).
+> **Skip for trivial changes**: `/work:work-quick` (< 50 LOC, 1-3 files).
 
-## Commandes les plus utilisees
+## Most used commands
 
-| Commande | Usage |
-|----------|-------|
-| `/work:work-explore` | Comprendre le code existant |
-| `/work:work-specify` | Creer une specification fonctionnelle |
-| `/work:work-plan` | Planifier une implementation |
-| `/dev:dev-tdd` | Developper avec tests |
-| `/work:work-commit` | Creer un commit propre |
-| `/work:work-pr` | Creer une Pull Request |
-| `/qa:qa-loop` | **Audit + fix en boucle (score 90 par défaut)** — recommandé avant commit |
-| `/qa:qa-security` | Audit de securite OWASP |
-| `/qa:qa-audit` | Audit complet (secu + RGPD + a11y + perf) en lecture seule |
+| Command | Usage |
+|---------|-------|
+| `/work:work-explore` | Understand existing code |
+| `/work:work-specify` | Create a functional specification |
+| `/work:work-plan` | Plan an implementation |
+| `/dev:dev-tdd` | Develop with tests |
+| `/work:work-commit` | Create a clean commit |
+| `/work:work-pr` | Create a Pull Request |
+| `/qa:qa-loop` | **Audit + fix loop (score 90 by default)** — recommended before commit |
+| `/qa:qa-security` | OWASP security audit |
+| `/qa:qa-audit` | Full audit (security + GDPR + a11y + perf) read-only |
 
-## Workflows raccourcis
+## Shortcut workflows
 
-| Commande | Description |
-|----------|-------------|
-| `/work:work-flow-feature` | Workflow complet pour nouvelle feature |
-| `/work:work-flow-bugfix` | Workflow complet pour correction de bug |
-| `/work:work-flow-release` | Workflow complet pour release |
-| `/work:work-flow-launch` | Workflow complet pour lancement produit |
-| `/work:work-quick` | Changement trivial (< 50 LOC, 1-3 fichiers) — skip cycle complet |
+| Command | Description |
+|---------|-------------|
+| `/work:work-flow-feature` | Full workflow for a new feature |
+| `/work:work-flow-bugfix` | Full workflow for a bug fix |
+| `/work:work-flow-release` | Full workflow for a release |
+| `/work:work-flow-launch` | Full workflow for a product launch |
+| `/work:work-quick` | Trivial change (< 50 LOC, 1-3 files) — skip full cycle |
 
-## Aide
+## Help
 
-- `/assistant` - Point d'entree intelligent qui guide vers les bonnes commandes (mode guide)
-- `/assistant-auto` - Execution automatique du workflow adapte (mode auto)
-- Voir [CLAUDE.md](../CLAUDE.md) pour la documentation complete
-- Voir [ARCHITECTURE.md](./ARCHITECTURE.md) pour comprendre Commands vs Agents vs Skills
+- `/assistant` - Smart entry point that guides you to the right commands (guide mode)
+- `/assistant-auto` - Automatic execution of the adapted workflow (auto mode)
+- See [CLAUDE.md](../CLAUDE.md) for full documentation
+- See [ARCHITECTURE.md](./ARCHITECTURE.md) to understand Commands vs Agents vs Skills
 
-## Ressources
+## Resources
 
-- [Cheatsheet](./CHEATSHEET.md) - Reference rapide
-- [Customization](./CUSTOMIZATION.md) - Personnalisation
-- [Documentation Docusaurus](https://christopherlouet.github.io/claude-socle/) - Documentation complete
+- [Cheatsheet](./CHEATSHEET.md) - Quick reference
+- [Customization](./CUSTOMIZATION.md) - Customization
+- [Docusaurus documentation](https://christopherlouet.github.io/claude-socle/) - Full documentation
