@@ -1,430 +1,430 @@
 ---
 sidebar_position: 8
 title: Output Styles
-description: Comprendre les styles de sortie Claude Code
+description: Understanding Claude Code output styles
 ---
 
 # Output Styles
 
-> Personnaliser le format et le ton des reponses de Claude
+> Customize the format and tone of Claude's responses
 
-## Qu'est-ce qu'un Output Style ?
+## What is an Output Style?
 
-Un **output style** definit comment Claude formate ses reponses. Il permet d'adapter le ton, la structure et le niveau de detail selon le contexte.
+An **output style** defines how Claude formats its responses. It allows you to adapt the tone, structure, and level of detail according to context.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│  Sans style (defaut)              Avec style "concise"         │
+│  Without style (default)          With "concise" style         │
 │  ─────────────────────            ─────────────────────        │
 │                                                                │
-│  "Voici une explication          "La fonction calcule         │
-│  detaillee de la fonction.       la somme. Retourne int."     │
-│  Cette fonction prend deux                                     │
-│  parametres et effectue                                        │
-│  une operation de calcul..."                                   │
+│  "Here is a detailed              "The function computes       │
+│  explanation of the               the sum. Returns int."       │
+│  function. This function                                       │
+│  takes two parameters and                                      │
+│  performs a computation..."                                    │
 │                                                                │
-│  Avec style "teaching"            Avec style "technical"       │
+│  With "teaching" style            With "technical" style       │
 │  ─────────────────────            ──────────────────────       │
 │                                                                │
-│  "Commencons par comprendre      "Implementation O(n).         │
-│  le concept. Une fonction        Complexite spatiale O(1).     │
-│  est comme une recette de        Pattern: fold/reduce."        │
-│  cuisine..."                                                   │
+│  "Let's start by understanding   "O(n) implementation.         │
+│  the concept. A function is      Space complexity O(1).        │
+│  like a cooking recipe..."       Pattern: fold/reduce."        │
+│                                                                │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
 
-## Structure des fichiers
+## File structure
 
-Les output styles sont dans `.claude/output-styles/`:
+Output styles live in `.claude/output-styles/`:
 
 ```
 .claude/output-styles/
 ├── README.md           # Documentation
-├── teaching.md         # Mode pedagogique
-├── explanatory.md      # Raisonnement detaille (recommande par Boris)
-├── concise.md          # Reponses breves
-├── technical.md        # Details techniques
-├── review.md           # Revue de code
-├── emoji.md            # Avec emojis
+├── teaching.md         # Teaching mode
+├── explanatory.md      # Detailed reasoning (recommended by Boris)
+├── concise.md          # Brief responses
+├── technical.md        # Technical details
+├── review.md           # Code review
+├── emoji.md            # With emojis
 ├── minimal.md          # Ultra minimal
-├── structured.md       # Structure ASCII
-├── debug.md            # Diagnostic et investigation
-└── metrics.md          # Metriques et tableaux de bord
+├── structured.md       # ASCII structure
+├── debug.md            # Diagnostic and investigation
+└── metrics.md          # Metrics and dashboards
 ```
 
-## Utilisation
+## Usage
 
-### Activer un style
+### Activate a style
 
 ```bash
-# Dans Claude Code
+# In Claude Code
 /output-style teaching
 ```
 
-### Revenir au style par defaut
+### Return to the default style
 
 ```bash
 /output-style default
 ```
 
-## Styles disponibles
+## Available styles
 
-### Teaching (Pedagogique)
+### Teaching
 
-**Quand l'utiliser:** Apprentissage, explications, onboarding
+**When to use:** Learning, explanations, onboarding
 
 ```markdown
-## Caracteristiques
+## Characteristics
 
-- Explications pas a pas
-- Analogies et metaphores
-- Questions pour verifier la comprehension
-- Exemples progressifs
+- Step-by-step explanations
+- Analogies and metaphors
+- Questions to verify understanding
+- Progressive examples
 
-## Exemple de reponse
+## Example response
 
-"Commencons par comprendre ce qu'est une Promise.
+"Let's start by understanding what a Promise is.
 
-Imagine que tu commandes un cafe. Le serveur te donne un
-ticket (la Promise) qui represente ton cafe futur.
+Imagine you order a coffee. The server gives you a
+ticket (the Promise) that represents your future coffee.
 
-Le ticket peut etre:
-- En attente (pending) - le cafe est en preparation
-- Resolu (fulfilled) - ton cafe est pret
-- Rejete (rejected) - plus de cafe disponible
+The ticket can be:
+- Pending — the coffee is being prepared
+- Fulfilled — your coffee is ready
+- Rejected — no more coffee available
 
-Maintenant, regardons le code..."
+Now, let's look at the code..."
 ```
 
-### Explanatory (Raisonnement detaille)
+### Explanatory (Detailed reasoning)
 
-**Quand l'utiliser:** Comprendre le raisonnement, apprendre, onboarding
+**When to use:** Understanding the reasoning, learning, onboarding
 
-> Recommande par Boris Cherny : "Enable 'Explanatory' output style in /config for understanding rationale behind changes."
+> Recommended by Boris Cherny: "Enable 'Explanatory' output style in /config for understanding rationale behind changes."
 
 ```markdown
-## Caracteristiques
+## Characteristics
 
-- Explique le POURQUOI avant le COMMENT
-- Montre le raisonnement etape par etape
-- Compare les alternatives et justifie le choix
-- Anticipe les questions "mais pourquoi pas X ?"
+- Explains the WHY before the HOW
+- Shows the reasoning step by step
+- Compares alternatives and justifies the choice
+- Anticipates "but why not X?" questions
 
-## Exemple de reponse
+## Example response
 
-"## Analyse du probleme
+"## Problem analysis
 
-Ce composant recalcule filteredItems a chaque render, meme quand
-les inputs n'ont pas change.
+This component recomputes filteredItems on every render, even when
+the inputs have not changed.
 
-## Options considerees
+## Options considered
 
 ### Option A: useMemo
-Memoize le resultat. Recalcul uniquement si deps changent.
+Memoize the result. Recomputes only if deps change.
 
-### Option B: Deplacer dans le parent
-Plus simple mais couple le parent a la logique.
+### Option B: Move into the parent
+Simpler but couples the parent to the logic.
 
-## Choix retenu: useMemo
+## Chosen option: useMemo
 
-**Raison principale**: Solution la plus simple pour notre cas (1-5k items).
+**Main reason**: Simplest solution for our case (1-5k items).
 
-## Points cles a retenir
+## Key takeaways
 
-1. useMemo evite les recalculs couteux, pas les renders
-2. Toujours mesurer AVANT d'optimiser
-3. La liste de dependances doit etre exhaustive"
+1. useMemo avoids expensive recomputations, not renders
+2. Always measure BEFORE optimizing
+3. The dependency list must be exhaustive"
 ```
 
-### Concise (Bref)
+### Concise (Brief)
 
-**Quand l'utiliser:** Reponses rapides, utilisateurs experimentes
+**When to use:** Quick responses, experienced users
 
 ```markdown
-## Caracteristiques
+## Characteristics
 
-- Reponses directes
-- Pas d'introduction
-- Minimum de mots
-- Code sans commentaires verbeux
+- Direct answers
+- No introduction
+- Minimum words
+- Code without verbose comments
 
-## Exemple de reponse
+## Example response
 
-"Utilise `useMemo`:
+"Use `useMemo`:
 
 \`\`\`tsx
 const value = useMemo(() => compute(data), [data]);
 \`\`\`
 
-Deps: array de dependances. Re-calcule si changement."
+Deps: dependency array. Recomputes on change."
 ```
 
-### Technical (Technique)
+### Technical
 
-**Quand l'utiliser:** Discussions architecture, performance, debug avance
+**When to use:** Architecture discussions, performance, advanced debug
 
 ```markdown
-## Caracteristiques
+## Characteristics
 
-- Jargon technique
-- Complexite algorithmique
-- References aux specs
-- Metriques et benchmarks
+- Technical jargon
+- Algorithmic complexity
+- References to specs
+- Metrics and benchmarks
 
-## Exemple de reponse
+## Example response
 
-"Implementation optimale: O(n log n) avec merge sort.
+"Optimal implementation: O(n log n) with merge sort.
 
-Complexite:
-- Temps: O(n log n) worst case
-- Espace: O(n) pour le buffer
+Complexity:
+- Time: O(n log n) worst case
+- Space: O(n) for the buffer
 
-Alternative: quicksort O(n^2) worst case mais O(n log n)
-average avec meilleure localite de cache.
+Alternative: quicksort O(n^2) worst case but O(n log n)
+average with better cache locality.
 
-Benchmark sur 10^6 elements:
+Benchmark on 10^6 elements:
 - Merge sort: 234ms
 - Quick sort: 189ms"
 ```
 
-### Review (Revue de code)
+### Review (Code review)
 
-**Quand l'utiliser:** Code reviews, audits, pull requests
+**When to use:** Code reviews, audits, pull requests
 
 ```markdown
-## Caracteristiques
+## Characteristics
 
-- Structure par severite
-- Suggestions concretes
-- Liens vers documentation
-- Points positifs inclus
+- Structured by severity
+- Concrete suggestions
+- Links to documentation
+- Positive points included
 
-## Exemple de reponse
+## Example response
 
 "## Code Review
 
 ### Critical
-- **L42**: SQL injection potentielle
+- **L42**: Potential SQL injection
 
 ### High
-- **L23**: Pas de validation d'entree
+- **L23**: No input validation
 
 ### Medium
-- **L56**: Magic number (utiliser constante)
+- **L56**: Magic number (use a constant)
 
-### Positif
-- Bonne separation des concerns
-- Tests unitaires presents
+### Positive
+- Good separation of concerns
+- Unit tests present
 
 ### Conclusion
-Bloquer jusqu'a fix L42."
+Block until L42 is fixed."
 ```
 
 ### Emoji
 
-**Quand l'utiliser:** Communication decontractee, feedback visuel
+**When to use:** Casual communication, visual feedback
 
 ```markdown
-## Caracteristiques
+## Characteristics
 
-- Emojis pour illustrer
-- Ton decontracte
-- Listes avec icones
-- Feedback visuel
+- Emojis to illustrate
+- Casual tone
+- Lists with icons
+- Visual feedback
 
-## Exemple de reponse
+## Example response
 
-"## Resume
+"## Summary
 
-✅ Tests passent
-⚠️ 2 warnings eslint
-❌ Type error ligne 42
+✅ Tests pass
+⚠️ 2 eslint warnings
+❌ Type error on line 42
 
-### A faire
-- 🔧 Fixer le type error
-- 📝 Ajouter JSDoc
-- 🧪 Couvrir edge case
+### To do
+- 🔧 Fix the type error
+- 📝 Add JSDoc
+- 🧪 Cover edge case
 
-🎉 Sinon c'est bon !"
+🎉 Otherwise it's good!"
 ```
 
 ### Minimal
 
-**Quand l'utiliser:** Scripts, logs, output machine-readable
+**When to use:** Scripts, logs, machine-readable output
 
 ```markdown
-## Caracteristiques
+## Characteristics
 
-- Aucune decoration
-- Pas d'intro/conclusion
+- No decoration
+- No intro/conclusion
 - Facts only
 - Parseable
 
-## Exemple de reponse
+## Example response
 
 "error: L42 type mismatch
 fix: cast to string
 file: src/utils.ts"
 ```
 
-### Structured (Structure ASCII)
+### Structured (ASCII structure)
 
-**Quand l'utiliser:** Documentation, rapports, presentations terminal
+**When to use:** Documentation, reports, terminal presentations
 
 ```markdown
-## Caracteristiques
+## Characteristics
 
-- Separateurs ASCII
-- Sections claires
-- Tableaux formates
-- Hierarchie visuelle
+- ASCII separators
+- Clear sections
+- Formatted tables
+- Visual hierarchy
 
-## Exemple de reponse
+## Example response
 
 "═══════════════════════════════════════
-           RAPPORT D'AUDIT
+           AUDIT REPORT
 ═══════════════════════════════════════
 
 ┌─────────────────────────────────────┐
-│ Fichiers analyses    │          42 │
-│ Problemes critiques  │           2 │
+│ Files analyzed       │          42 │
+│ Critical issues      │           2 │
 │ Warnings             │          15 │
 └─────────────────────────────────────┘
 
 ───────────────────────────────────────
-Section 1: Securite
+Section 1: Security
 ───────────────────────────────────────
 ..."
 ```
 
-## Anatomie d'un output style
+## Anatomy of an output style
 
-### Structure du fichier
+### File structure
 
 ```markdown
-# Nom du Style
+# Style Name
 
-Description du style et quand l'utiliser.
+Description of the style and when to use it.
 
 ## Instructions
 
-Instructions detaillees pour Claude sur comment
-formater ses reponses.
+Detailed instructions for Claude on how to
+format its responses.
 
-## Caracteristiques
+## Characteristics
 
 - Point 1
 - Point 2
 - Point 3
 
-## Exemple
+## Example
 
-Exemple de reponse dans ce style.
+Example response in this style.
 ```
 
-### Exemple complet
+### Full example
 
 ```markdown
 # Teaching Style
 
-Style pedagogique pour l'apprentissage et les explications.
+Teaching style for learning and explanations.
 
 ## Instructions
 
-Quand ce style est actif:
+When this style is active:
 
-1. Commence par situer le concept dans un contexte familier
-2. Utilise des analogies du quotidien
-3. Procede par etapes incrementales
-4. Pose des questions rhetoriques pour engager
-5. Fournis des exemples concrets
-6. Resume les points cles a la fin
+1. Start by placing the concept in a familiar context
+2. Use everyday analogies
+3. Proceed in incremental steps
+4. Ask rhetorical questions to engage
+5. Provide concrete examples
+6. Summarize the key takeaways at the end
 
-## Ton
+## Tone
 
-- Patient et encourageant
-- Evite le jargon sans l'expliquer
-- Celebre les progres
+- Patient and encouraging
+- Avoids unexplained jargon
+- Celebrates progress
 
-## Structure type
+## Typical structure
 
-1. Introduction accessible
-2. Analogie ou metaphore
-3. Explication progressive
-4. Exemple pratique
-5. Resume / Points cles
-6. Question de verification
+1. Accessible introduction
+2. Analogy or metaphor
+3. Progressive explanation
+4. Practical example
+5. Summary / Key takeaways
+6. Verification question
 
-## Exemple
+## Example
 
-"Excellente question ! Voyons ca ensemble.
+"Great question! Let's look at it together.
 
-Tu connais les boites de rangement ? Et bien, un array
-en programmation, c'est exactement ca..."
+You know storage boxes, right? Well, an array
+in programming is exactly that..."
 ```
 
-## Creer un nouveau style
+## Create a new style
 
-### 1. Creer le fichier
+### 1. Create the file
 
 ```bash
-touch .claude/output-styles/mon-style.md
+touch .claude/output-styles/my-style.md
 ```
 
-### 2. Definir le style
+### 2. Define the style
 
 ```markdown
-# Mon Style
+# My Style
 
-Description de mon style personnalise.
+Description of my custom style.
 
 ## Instructions
 
-1. Regle 1
-2. Regle 2
-3. Regle 3
+1. Rule 1
+2. Rule 2
+3. Rule 3
 
-## Caracteristiques
+## Characteristics
 
-- Caracteristique 1
-- Caracteristique 2
+- Characteristic 1
+- Characteristic 2
 
-## Exemple
+## Example
 
-Exemple de reponse avec ce style.
+Example response with this style.
 ```
 
-### 3. Utiliser
+### 3. Use it
 
 ```bash
-/output-style mon-style
+/output-style my-style
 ```
 
-## Bonnes pratiques
+## Best practices
 
-1. **Style adapte au contexte**: Teaching pour apprendre, Concise pour produire
-2. **Coherence**: Garder le meme style dans une session
-3. **Ne pas abuser**: Le style par defaut est souvent suffisant
-4. **Documenter**: Expliquer quand utiliser chaque style
+1. **Style suited to context**: Teaching to learn, Concise to produce
+2. **Consistency**: Keep the same style within a session
+3. **Don't overuse**: The default style is often enough
+4. **Document**: Explain when to use each style
 
-## Cas d'usage recommandes
+## Recommended use cases
 
 | Situation | Style |
 |-----------|-------|
-| Onboarding nouveau dev | `teaching` |
-| Comprendre un choix technique | `explanatory` |
-| Code review PR | `review` |
-| Debug rapide | `concise` |
-| Discussion architecture | `technical` |
-| Rapport d'audit | `structured` |
-| Communication equipe | `emoji` |
+| Onboarding new dev | `teaching` |
+| Understanding a technical choice | `explanatory` |
+| PR code review | `review` |
+| Quick debug | `concise` |
+| Architecture discussion | `technical` |
+| Audit report | `structured` |
+| Team communication | `emoji` |
 | Script/automation | `minimal` |
 
 ---
 
-## Voir aussi
+## See also
 
-- [Commands](./commands) - Instructions manuelles
-- [Architecture](/docs/intro/architecture) - Vue d'ensemble
+- [Commands](./commands) - Manual instructions
+- [Architecture](/docs/intro/architecture) - Overview
