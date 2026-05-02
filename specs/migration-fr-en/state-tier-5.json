@@ -208,7 +208,7 @@
     },
     {
       "path": ".claude/templates/opnsense/examples/orange-box-dmz/variables.tf",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "0b0c0a08b675cee52f6bd817648e1816129a0f6b9c9898c1e1471aa1dccc2a56"
     },
     {
