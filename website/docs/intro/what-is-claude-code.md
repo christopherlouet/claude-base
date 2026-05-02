@@ -1,81 +1,81 @@
 ---
 sidebar_position: 0
-title: "Qu'est-ce que Claude Code ?"
-description: "Comprendre Claude Code et le socle en 2 minutes"
+title: "What is Claude Code?"
+description: "Understand Claude Code and the foundation in 2 minutes"
 ---
 
-# Qu'est-ce que Claude Code ?
+# What is Claude Code?
 
-> Comprendre l'outil et le socle en 2 minutes, avant de commencer
+> Understand the tool and the foundation in 2 minutes, before getting started
 
-## Claude Code en bref
+## Claude Code in a nutshell
 
-Claude Code est un **outil IA agentique** d'Anthropic qui vit dans votre terminal. Contrairement a un chatbot classique, il peut :
+Claude Code is an **agentic AI tool** from Anthropic that lives in your terminal. Unlike a classic chatbot, it can:
 
-| Chatbot classique | Claude Code |
+| Classic chatbot | Claude Code |
 |-------------------|-------------|
-| Repond a des questions | **Execute** des taches dans votre code |
-| Copier-coller de snippets | **Lit, modifie et cree** des fichiers directement |
-| Pas de contexte projet | **Comprend** votre codebase entier |
-| Interaction manuelle | **Orchestre** des sous-agents autonomes |
+| Answers questions | **Executes** tasks in your code |
+| Copy-paste of snippets | **Reads, modifies and creates** files directly |
+| No project context | **Understands** your entire codebase |
+| Manual interaction | **Orchestrates** autonomous sub-agents |
 
-Claude Code lit votre code, execute des commandes, lance des tests, cree des commits et des PRs — le tout pilote par langage naturel.
+Claude Code reads your code, runs commands, runs tests, creates commits and PRs — all driven by natural language.
 
-## Pourquoi un socle ?
+## Why a foundation?
 
-Claude Code est puissant mais non structure. Sans cadre, on :
-- Code sans comprendre l'existant (bugs)
-- Implemente sans plan (refactoring constant)
-- Oublie les tests (regressions)
-- Fait des commits geants (historique illisible)
+Claude Code is powerful but unstructured. Without a framework, you:
+- Code without understanding the existing code (bugs)
+- Implement without a plan (constant refactoring)
+- Forget the tests (regressions)
+- Make giant commits (unreadable history)
 
-**claude-socle** impose un workflow structure avec des commandes, agents, skills et rules pre-configures :
+**claude-socle** enforces a structured workflow with pre-configured commands, agents, skills and rules:
 
 ```
 Explore → Specify → Plan → TDD → Audit → Commit
 ```
 
-## Les 4 composants du socle
+## The 4 components of the foundation
 
-| Composant | Declenchement | Exemple | Nombre |
+| Component | Trigger | Example | Count |
 |-----------|--------------|---------|--------|
-| **Commands** | Manuel (`/nom`) | `/work:work-explore` | 126 |
-| **Agents** | Via commandes | Sub-agents autonomes isolees | 62 |
-| **Skills** | Automatique (mots-cles) | Se declenche quand on parle de "bug" | 44 |
-| **Rules** | Automatique (fichiers) | S'active quand on modifie un `.tsx` | 25 |
+| **Commands** | Manual (`/name`) | `/work:work-explore` | 126 |
+| **Agents** | Via commands | Isolated autonomous sub-agents | 62 |
+| **Skills** | Automatic (keywords) | Triggers when "bug" is mentioned | 44 |
+| **Rules** | Automatic (files) | Activates when a `.tsx` is modified | 25 |
 
-### Comment ca s'articule
+### How it fits together
 
 ```
-Vous tapez une commande
+You type a command
         ↓
-   La commande lance un Agent
+   The command launches an Agent
         ↓
-   L'agent utilise des Skills (auto-detectees)
+   The agent uses Skills (auto-detected)
         ↓
-   Les Rules s'appliquent selon les fichiers modifies
+   The Rules apply based on the modified files
 ```
 
-## Par ou commencer ?
+## Where to start?
 
-| Votre profil | Chemin recommande |
+| Your profile | Recommended path |
 |-------------|-------------------|
-| **Jamais utilise Claude Code** | [Formation Claude Code](/docs/guides/claude-code-training) (3h45, 9 modules) |
-| **Connait Claude Code, decouvre le socle** | [Parcours socle](/docs/guides/learning-path) (9h30, 5 niveaux) |
-| **Presse** (5 min) | [Quick Start](/docs/intro/quick-start) |
-| **Developpeur (web, mobile, API, backend, infra…)** | [Stack Recipes](/docs/concepts/stack-recipes) — commandes/agents/skills par stack |
-| **Tech lead / equipe** | [Guide Equipe](/docs/guides/team-guide) |
-| **Etendre le socle** | [Extending Guide](/docs/guides/extending-guide) |
+| **Never used Claude Code** | [Claude Code Training](/docs/guides/claude-code-training) (3h45, 9 modules) |
+| **Knows Claude Code, discovering the foundation** | [Foundation path](/docs/guides/learning-path) (9h30, 5 levels) |
+| **In a hurry** (5 min) | [Quick Start](/docs/intro/quick-start) |
+| **Developer (web, mobile, API, backend, infra…)** | [Stack Recipes](/docs/concepts/stack-recipes) — commands/agents/skills by stack |
+| **Tech lead / team** | [Team Guide](/docs/guides/team-guide) |
+| **Extend the foundation** | [Extending Guide](/docs/guides/extending-guide) |
 
-## Prochaine etape
+## Next step
 
 import Link from '@docusaurus/Link';
 
 <div className="quick-actions">
   <Link className="button button--primary button--lg" to="/docs/guides/claude-code-training">
-    Formation Claude Code (prerequis)
+    Claude Code Training (prerequisite)
   </Link>
   <Link className="button button--secondary button--lg" to="/docs/guides/learning-path">
-    Parcours socle (apres la formation)
+    Foundation path (after the training)
   </Link>
 </div>
