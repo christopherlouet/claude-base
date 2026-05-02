@@ -1,61 +1,61 @@
-# Architecture Claude Code Socle
+# Claude Code Foundation Architecture
 
-> Comprendre la difference entre Commands, Agents, Skills et Rules
+> Understand the difference between Commands, Agents, Skills and Rules
 
-## Pourquoi certains fichiers existent dans commands/ ET agents/ ?
+## Why do some files exist in commands/ AND agents/?
 
-La duplication est **intentionnelle** et sert des objectifs differents :
+The duplication is **intentional** and serves different purposes:
 
-- **commands/xxx.md** = Prompt interactif invoque manuellement (`/xxx`)
-- **agents/xxx.md** = Version delegable avec frontmatter YAML (model, tools, skills)
+- **commands/xxx.md** = Interactive prompt invoked manually (`/xxx`)
+- **agents/xxx.md** = Delegable version with YAML frontmatter (model, tools, skills)
 
-Claude Code utilise :
-1. La **command** quand l'utilisateur tape `/xxx` explicitement
-2. L'**agent** quand Claude delegue automatiquement une sous-tache
+Claude Code uses:
+1. The **command** when the user explicitly types `/xxx`
+2. The **agent** when Claude automatically delegates a sub-task
 
-### Differences cles
+### Key differences
 
 | Aspect | Command | Agent |
 |--------|---------|-------|
-| Declenchement | Manuel (`/xxx`) | Automatique (delegation) |
-| Frontmatter | Non | Oui (model, tools, skills) |
-| Contexte | Partage | **Isole** |
-| Variable | `$ARGUMENTS` | Non |
-| Modele | Default | Configurable (haiku/sonnet) |
-| Outils | Tous | Restreints (configurable) |
+| Trigger | Manual (`/xxx`) | Automatic (delegation) |
+| Frontmatter | No | Yes (model, tools, skills) |
+| Context | Shared | **Isolated** |
+| Variable | `$ARGUMENTS` | No |
+| Model | Default | Configurable (haiku/sonnet) |
+| Tools | All | Restricted (configurable) |
 
-### Exemple concret
+### Concrete example
 
 ```bash
-# L'utilisateur tape explicitement la commande
+# The user explicitly types the command
 /qa:qa-security
 
-# → Claude charge commands/qa/qa-security.md (prompt)
-# → Claude delegue a agents/qa-security.md (contexte isole, model: sonnet)
-# → L'agent utilise le skill security-audit
-# → Resultat retourne au contexte principal
+# → Claude loads commands/qa/qa-security.md (prompt)
+# → Claude delegates to agents/qa-security.md (isolated context, model: sonnet)
+# → The agent uses the security-audit skill
+# → Result returned to the main context
 ```
 
-Cette architecture permet :
-- **Flexibilite** : L'utilisateur controle via commands
-- **Optimisation** : Claude delegue avec le bon modele
-- **Isolation** : Les agents ne polluent pas le contexte
-- **Securite** : Outils restreints pour les audits
+This architecture enables:
+- **Flexibility**: The user controls via commands
+- **Optimization**: Claude delegates with the right model
+- **Isolation**: Agents do not pollute the context
+- **Security**: Restricted tools for audits
 
 ---
 
-## Vue d'ensemble
+## Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         UTILISATEUR                              │
+│                            USER                                  │
 │                             │                                    │
 │    ┌───────────────────────┼───────────────────────┐            │
 │    │                       ▼                       │            │
 │    │  ┌─────────────────────────────────────────┐  │            │
-│    │  │           DECLENCHEMENT                  │  │            │
+│    │  │              TRIGGER                     │  │            │
 │    │  │                                          │  │            │
-│    │  │  Manuel (/cmd)    Automatique (context)  │  │            │
+│    │  │  Manual (/cmd)    Automatic (context)    │  │            │
 │    │  │       │                  │               │  │            │
 │    │  │       ▼                  ▼               │  │            │
 │    │  │  ┌─────────┐      ┌───────────┐         │  │            │
@@ -71,7 +71,7 @@ Cette architecture permet :
 │    │  │               │                         │  │            │
 │    │  │               ▼                         │  │            │
 │    │  │         ┌───────────┐                   │  │            │
-│    │  │         │  RULES    │ (contraintes)     │  │            │
+│    │  │         │  RULES    │ (constraints)     │  │            │
 │    │  │         └───────────┘                   │  │            │
 │    │  └─────────────────────────────────────────┘  │            │
 │    │                                               │            │
@@ -79,29 +79,29 @@ Cette architecture permet :
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Comparaison Detaillee
+## Detailed Comparison
 
 | Aspect | Commands | Skills | Agents | Rules |
 |--------|----------|--------|--------|-------|
-| **Dossier** | `.claude/commands/` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` |
-| **Declenchement** | Manuel (`/cmd`) | Automatique | Delegation auto | Path-based |
-| **Contexte** | Partage | Fork ou partage | **Isole** | Injecte |
-| **Outils** | Tous | Configurable | Restreints | N/A |
-| **Modele** | Default | Default | Configurable | N/A |
-| **Cas d'usage** | Actions explicites | Patterns detectes | Taches isolees | Contraintes |
+| **Folder** | `.claude/commands/` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` |
+| **Trigger** | Manual (`/cmd`) | Automatic | Auto delegation | Path-based |
+| **Context** | Shared | Fork or shared | **Isolated** | Injected |
+| **Tools** | All | Configurable | Restricted | N/A |
+| **Model** | Default | Default | Configurable | N/A |
+| **Use case** | Explicit actions | Detected patterns | Isolated tasks | Constraints |
 
-## Commands (131 disponibles)
+## Commands (131 available)
 
 ### Definition
-Prompts invoques manuellement avec la syntaxe `/nom-commande`.
+Prompts invoked manually with the `/command-name` syntax.
 
-### Caracteristiques
-- Declenchement explicite par l'utilisateur
-- Contexte partage avec la conversation
-- Acces a tous les outils
-- Structure: prompts markdown
+### Characteristics
+- Explicit trigger by the user
+- Context shared with the conversation
+- Access to all tools
+- Structure: markdown prompts
 
-### Structure fichier
+### File structure
 ```
 .claude/commands/
 ├── work/
@@ -116,39 +116,39 @@ Prompts invoques manuellement avec la syntaxe `/nom-commande`.
 
 ### Format
 ```markdown
-# Titre de la commande
+# Command title
 
 ## Instructions
-Instructions pour Claude...
+Instructions for Claude...
 
 ## Variables
-$ARGUMENTS - Arguments passes par l'utilisateur
+$ARGUMENTS - Arguments passed by the user
 ```
 
-### Exemple d'utilisation
+### Usage example
 ```bash
-/work:work-explore "comprendre le systeme d'authentification"
-/dev:dev-api "endpoint CRUD pour les utilisateurs"
+/work:work-explore "understand the authentication system"
+/dev:dev-api "CRUD endpoint for users"
 /qa:qa-security
 ```
 
-### Quand utiliser
-- Workflow explicite
-- Actions specifiques
-- Taches complexes necessitant un prompt detaille
+### When to use
+- Explicit workflow
+- Specific actions
+- Complex tasks requiring a detailed prompt
 
-## Skills (54 disponibles)
+## Skills (54 available)
 
 ### Definition
-Patterns declenches automatiquement par Claude selon le contexte de la conversation.
+Patterns automatically triggered by Claude based on the conversation context.
 
-### Caracteristiques
-- Declenchement automatique (mots-cles, contexte)
-- Contexte fork recommande
-- Outils configurables (whitelist)
+### Characteristics
+- Automatic trigger (keywords, context)
+- Forked context recommended
+- Configurable tools (whitelist)
 - Structure: YAML frontmatter + instructions
 
-### Structure fichier
+### File structure
 ```
 .claude/skills/
 └── skill-name/
@@ -158,8 +158,8 @@ Patterns declenches automatiquement par Claude selon le contexte de la conversat
 ### Format
 ```yaml
 ---
-name: nom-du-skill
-description: Quand declencher ce skill
+name: skill-name
+description: When to trigger this skill
 allowed-tools:
   - Read
   - Write
@@ -169,14 +169,14 @@ context: fork
 
 # Instructions
 
-Instructions pour le skill...
+Instructions for the skill...
 ```
 
-### Exemple de skill
+### Skill example
 ```yaml
 ---
 name: test-driven-development
-description: Developpement TDD avec cycle Red-Green-Refactor
+description: TDD development with Red-Green-Refactor cycle
 allowed-tools:
   - Read
   - Write
@@ -189,27 +189,27 @@ context: fork
 
 # TDD Skill
 
-Quand l'utilisateur mentionne "TDD", "test first", ou "ecrire les tests d'abord"...
+When the user mentions "TDD", "test first", or "write tests first"...
 ```
 
-### Quand utiliser
-- Patterns recurrents
-- Declenchement contextuel desire
-- Standardisation de comportements
+### When to use
+- Recurring patterns
+- Desired contextual triggering
+- Standardization of behaviors
 
-## Agents (63 disponibles)
+## Agents (63 available)
 
 ### Definition
-Sub-agents specialises avec contexte isole, delegation automatique.
+Specialized sub-agents with isolated context, automatic delegation.
 
-### Caracteristiques
-- **Contexte completement isole** (ne pollue pas la conversation)
-- Outils restreints (securite)
-- Modele configurable (haiku/sonnet/opus)
-- Hooks pre/post outil
-- Skills injectables
+### Characteristics
+- **Completely isolated context** (does not pollute the conversation)
+- Restricted tools (security)
+- Configurable model (haiku/sonnet/opus)
+- Pre/post tool hooks
+- Injectable skills
 
-### Structure fichier
+### File structure
 ```
 .claude/agents/
 ├── work-explore.md
@@ -221,8 +221,8 @@ Sub-agents specialises avec contexte isole, delegation automatique.
 ### Format
 ```yaml
 ---
-name: nom-agent
-description: Description de l'agent
+name: agent-name
+description: Description of the agent
 model: haiku | sonnet | opus
 permissionMode: plan | default
 disallowedTools:
@@ -237,22 +237,22 @@ skills:
 
 # Instructions
 
-Instructions pour l'agent...
+Instructions for the agent...
 ```
 
-### Modeles disponibles
+### Available models
 
-| Modele | Usage | Cout | Vitesse | Contexte | Sortie max |
+| Model | Usage | Cost | Speed | Context | Max output |
 |--------|-------|------|---------|----------|------------|
-| haiku | Taches simples, lecture | $ | Rapide | 200k | 8k |
-| sonnet | Taches complexes, analyse | $$ | Medium | 200k | 64k |
-| opus (4.7) | Taches critiques, adaptive thinking | $$$ | Plus lent | 1M | 128k |
+| haiku | Simple tasks, reading | $ | Fast | 200k | 8k |
+| sonnet | Complex tasks, analysis | $$ | Medium | 200k | 64k |
+| opus (4.7) | Critical tasks, adaptive thinking | $$$ | Slower | 1M | 128k |
 
-### Exemple d'agent
+### Agent example
 ```yaml
 ---
 name: qa-security
-description: Audit de securite OWASP Top 10
+description: OWASP Top 10 security audit
 model: sonnet
 permissionMode: plan
 disallowedTools:
@@ -263,37 +263,37 @@ skills:
   - security-audit
 ---
 
-# Agent QA Security
+# QA Security Agent
 
-Effectue un audit de securite complet base sur OWASP Top 10...
+Performs a complete security audit based on OWASP Top 10...
 ```
 
-### Quand utiliser
-- Taches necessitant isolation
-- Audits (lecture seule)
-- Parallelisation
-- Economie de tokens (haiku)
+### When to use
+- Tasks requiring isolation
+- Audits (read-only)
+- Parallelization
+- Token savings (haiku)
 
-## Rules (30 disponibles)
+## Rules (30 available)
 
 ### Definition
-Contraintes et conventions injectees automatiquement selon le chemin des fichiers.
+Constraints and conventions automatically injected based on file paths.
 
-### Caracteristiques
-- Injection automatique par path
-- Pas de declenchement utilisateur
-- Contraintes globales ou specifiques
-- Affecte Commands, Skills, Agents
+### Characteristics
+- Automatic injection by path
+- No user trigger
+- Global or specific constraints
+- Affects Commands, Skills, Agents
 
-### Structure fichier (30 rules)
+### File structure (30 rules)
 
-Rules transversales (16) :
+Cross-cutting rules (16):
 ```
 .claude/rules/
 ├── workflow.md            # Global — Explore → Plan → TDD → Audit → Commit
 ├── git.md                 # Global — Conventional Commits, branches
-├── tdd-enforcement.md     # Code TS/Py/Go/Dart — TDD obligatoire
-├── verification.md        # Code TS/Py/Go/Dart — vérification 4 phases
+├── tdd-enforcement.md     # TS/Py/Go/Dart code — TDD mandatory
+├── verification.md        # TS/Py/Go/Dart code — 4-phase verification
 ├── security.md            # auth/, api/, middleware/
 ├── accessibility.md       # tsx/jsx — WCAG 2.1 AA
 ├── performance.md         # tsx/ts/pages — Core Web Vitals
@@ -303,12 +303,12 @@ Rules transversales (16) :
 ├── deploy-safety.md       # Dockerfile, docker-compose, .env
 ├── migration-safety.md    # package.json, tsconfig, next.config
 ├── service-worker.md      # sw.js, service-worker*
-├── lsp.md                 # Multi-langages — LSP vs Grep
-├── research.md            # Multi-langages — vérifier natif avant build
-└── socle-maintenance.md   # .claude/** — sync compteurs catalog
+├── lsp.md                 # Multi-language — LSP vs Grep
+├── research.md            # Multi-language — check native before building
+└── socle-maintenance.md   # .claude/** — sync catalog counters
 ```
 
-Rules par langage/framework (14) :
+Rules per language/framework (14):
 ```
 ├── typescript.md  # **/*.ts, **/*.tsx, **/*.mts
 ├── python.md      # **/*.py, **/pyproject.toml
@@ -336,105 +336,105 @@ paths:
 
 # TypeScript Rules
 
-## Mode strict
-- Toujours `strict: true`
-- Pas de `any` sauf justifie
+## Strict mode
+- Always `strict: true`
+- No `any` unless justified
 ...
 ```
 
-### Quand utiliser
-- Conventions de code
-- Regles de securite
-- Standards de qualite
-- Contraintes par technologie
+### When to use
+- Code conventions
+- Security rules
+- Quality standards
+- Per-technology constraints
 
-## Matrice de Decision
+## Decision Matrix
 
-### Par type de tache
+### By task type
 
-| Tache | Meilleur choix | Raison |
+| Task | Best choice | Reason |
 |-------|----------------|--------|
-| Workflow explicite | **Command** | Controle utilisateur |
-| Pattern recurrent | **Skill** | Declenchement auto |
-| Audit lecture seule | **Agent** | Isolation, securite |
-| Convention code | **Rule** | Injection auto |
-| Tache parallele | **Agent** | Contexte isole |
-| Action complexe | **Command** | Prompt detaille |
+| Explicit workflow | **Command** | User control |
+| Recurring pattern | **Skill** | Auto trigger |
+| Read-only audit | **Agent** | Isolation, security |
+| Code convention | **Rule** | Auto injection |
+| Parallel task | **Agent** | Isolated context |
+| Complex action | **Command** | Detailed prompt |
 
-### Par frequence d'usage
+### By frequency of use
 
-| Frequence | Meilleur choix |
+| Frequency | Best choice |
 |-----------|----------------|
-| 1x par projet | Command |
-| Plusieurs fois/jour | Skill |
-| En parallele | Agent |
-| Toujours (constraint) | Rule |
+| 1x per project | Command |
+| Several times/day | Skill |
+| In parallel | Agent |
+| Always (constraint) | Rule |
 
-### Par besoin d'isolation
+### By isolation need
 
-| Besoin | Choix |
+| Need | Choice |
 |--------|-------|
-| Partager le contexte | Command ou Skill |
-| Isoler completement | Agent |
-| Contraindre globalement | Rule |
+| Share context | Command or Skill |
+| Isolate completely | Agent |
+| Constrain globally | Rule |
 
-## Exemples Concrets
+## Concrete Examples
 
-### Scenario 1: Nouvelle feature
-
-```
-1. /work:work-explore        → Command (explicite)
-2. Pattern TDD detecte  → Skill (auto)
-3. Audit securite       → Agent (isole)
-4. /work:work-pr             → Command (explicite)
-
-Rules appliquees: typescript.md, react.md, security.md
-```
-
-### Scenario 2: Bug fix urgent
+### Scenario 1: New feature
 
 ```
-1. /dev:dev-debug           → Command (explicite)
-2. Investigation        → Agent dev-debug (isole)
-3. Fix applique         → Rules typescript.md
-4. /work:work-commit         → Command (explicite)
+1. /work:work-explore        → Command (explicit)
+2. TDD pattern detected → Skill (auto)
+3. Security audit       → Agent (isolated)
+4. /work:work-pr             → Command (explicit)
+
+Applied rules: typescript.md, react.md, security.md
 ```
 
-### Scenario 3: Audit complet
+### Scenario 2: Urgent bug fix
 
 ```
-1. /qa:qa-audit            → Command (explicite)
-   ├── qa-security      → Agent (parallele)
-   ├── qa-perf          → Agent (parallele)
-   ├── wcag-audit          → Agent (parallele)
-   └── qa-coverage      → Agent (parallele)
-
-Tous en lecture seule, contextes isoles
+1. /dev:dev-debug           → Command (explicit)
+2. Investigation        → Agent dev-debug (isolated)
+3. Fix applied          → Rules typescript.md
+4. /work:work-commit         → Command (explicit)
 ```
 
-## Bonnes Pratiques
+### Scenario 3: Full audit
+
+```
+1. /qa:qa-audit            → Command (explicit)
+   ├── qa-security      → Agent (parallel)
+   ├── qa-perf          → Agent (parallel)
+   ├── wcag-audit          → Agent (parallel)
+   └── qa-coverage      → Agent (parallel)
+
+All read-only, isolated contexts
+```
+
+## Best Practices
 
 ### Commands
-- Noms explicites (`/work:work-explore` pas `/we`)
-- Grouper par domaine (`work-`, `dev-`, `qa-`)
-- Documenter les arguments attendus
+- Explicit names (`/work:work-explore` not `/we`)
+- Group by domain (`work-`, `dev-`, `qa-`)
+- Document expected arguments
 
 ### Skills
-- `context: fork` recommande
-- Limiter les `allowed-tools`
-- Mots-cles de declenchement clairs
+- `context: fork` recommended
+- Limit `allowed-tools`
+- Clear trigger keywords
 
 ### Agents
-- `model: haiku` pour taches simples
-- `disallowedTools` pour securite
-- Injecter les skills pertinents
+- `model: haiku` for simple tasks
+- `disallowedTools` for security
+- Inject relevant skills
 
 ### Rules
-- Paths specifiques pas trop larges
-- Regles claires et actionables
-- Pas de regles conflictuelles
+- Specific paths, not too broad
+- Clear and actionable rules
+- No conflicting rules
 
-## Flux de Donnees
+## Data Flow
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
@@ -444,44 +444,44 @@ Tous en lecture seule, contextes isoles
 │       ▼                                                        │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │ COMMAND: /qa:qa-security                                    │   │
-│  │ → Charge le prompt qa-security.md                        │   │
-│  │ → Detecte fichiers *.ts → Injecte rules/typescript.md   │   │
-│  │ → Detecte dossier api/ → Injecte rules/api.md           │   │
-│  │ → Detecte dossier auth/ → Injecte rules/security.md     │   │
+│  │ → Loads the qa-security.md prompt                        │   │
+│  │ → Detects *.ts files → Injects rules/typescript.md      │   │
+│  │ → Detects api/ folder → Injects rules/api.md            │   │
+│  │ → Detects auth/ folder → Injects rules/security.md      │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │       │                                                        │
 │       ▼                                                        │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │ DELEGATION → AGENT: qa-security                          │   │
 │  │ → model: sonnet                                          │   │
-│  │ → permissionMode: plan (lecture seule)                   │   │
+│  │ → permissionMode: plan (read-only)                       │   │
 │  │ → disallowedTools: [Edit, Write]                         │   │
 │  │ → skills: [security-audit]                               │   │
-│  │ → Contexte ISOLE                                         │   │
+│  │ → ISOLATED context                                       │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │       │                                                        │
 │       ▼                                                        │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │ SKILL: security-audit (injecte dans agent)               │   │
-│  │ → Checklist OWASP Top 10                                 │   │
-│  │ → Patterns de vulnerabilite                              │   │
+│  │ SKILL: security-audit (injected into agent)              │   │
+│  │ → OWASP Top 10 checklist                                 │   │
+│  │ → Vulnerability patterns                                 │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │       │                                                        │
 │       ▼                                                        │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │ RESULTAT → Retourne au contexte principal                │   │
-│  │ → Rapport de l'agent                                     │   │
-│  │ → Contexte principal preserve                            │   │
+│  │ RESULT → Returns to the main context                     │   │
+│  │ → Agent report                                           │   │
+│  │ → Main context preserved                                 │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
 
-## Resume
+## Summary
 
-| Concept | Declencheur | Contexte | Usage principal |
+| Concept | Trigger | Context | Main usage |
 |---------|-------------|----------|-----------------|
-| **Command** | `/nom` | Partage | Actions explicites |
-| **Skill** | Mots-cles | Fork | Patterns auto |
-| **Agent** | Delegation | **Isole** | Taches paralleles |
-| **Rule** | Path fichier | Injecte | Contraintes |
+| **Command** | `/name` | Shared | Explicit actions |
+| **Skill** | Keywords | Fork | Auto patterns |
+| **Agent** | Delegation | **Isolated** | Parallel tasks |
+| **Rule** | File path | Injected | Constraints |
