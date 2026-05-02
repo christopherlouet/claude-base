@@ -143,7 +143,7 @@
     },
     {
       "path": "tests/qa-loop.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "85cd35be920f6f179e0a64c468e1232ad8d036258011580e8db5c017d91a510e"
     },
     {
