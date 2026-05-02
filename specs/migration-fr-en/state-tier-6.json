@@ -218,7 +218,7 @@
     },
     {
       "path": ".github/workflows/docs.yml",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "c47ae081482ba9301da755ce0ac93a974b7491435c22cee7f85f1720e6399f4e"
     },
     {
