@@ -1,5 +1,5 @@
 # =============================================================================
-# Provider OPNsense - Template de configuration
+# OPNsense Provider - Configuration template
 # =============================================================================
 # Provider: browningluke/opnsense
 # Documentation: https://registry.terraform.io/providers/browningluke/opnsense/latest/docs
@@ -17,68 +17,68 @@ terraform {
 }
 
 # -----------------------------------------------------------------------------
-# Configuration du provider OPNsense
+# OPNsense provider configuration
 # -----------------------------------------------------------------------------
-# IMPORTANT: Ne jamais hardcoder les credentials
-# Utiliser des variables d'environnement ou terraform.tfvars (non commité)
+# IMPORTANT: Never hardcode credentials
+# Use environment variables or terraform.tfvars (not committed)
 # -----------------------------------------------------------------------------
 
 provider "opnsense" {
   uri = var.opnsense_uri
 
-  # Authentification API
+  # API authentication
   api_key    = var.opnsense_api_key
   api_secret = var.opnsense_api_secret
 
-  # Options de connexion
-  allow_insecure = var.opnsense_allow_insecure # false en production
+  # Connection options
+  allow_insecure = var.opnsense_allow_insecure # false in production
 }
 
 # -----------------------------------------------------------------------------
-# Variables pour le provider
+# Provider variables
 # -----------------------------------------------------------------------------
 
 variable "opnsense_uri" {
-  description = "URL de l'interface OPNsense (ex: https://192.168.10.1)"
+  description = "OPNsense interface URL (e.g.: https://192.168.10.1)"
   type        = string
 
   validation {
     condition     = can(regex("^https?://", var.opnsense_uri))
-    error_message = "L'URI doit commencer par http:// ou https://"
+    error_message = "The URI must start with http:// or https://"
   }
 }
 
 variable "opnsense_api_key" {
-  description = "Clé API OPNsense (générer dans System > Access > Users)"
+  description = "OPNsense API key (generate in System > Access > Users)"
   type        = string
   sensitive   = true
 }
 
 variable "opnsense_api_secret" {
-  description = "Secret API OPNsense"
+  description = "OPNsense API secret"
   type        = string
   sensitive   = true
 }
 
 variable "opnsense_allow_insecure" {
-  description = "Autoriser les certificats auto-signés (false en production)"
+  description = "Allow self-signed certificates (false in production)"
   type        = bool
   default     = true
 }
 
 # -----------------------------------------------------------------------------
-# Configuration des credentials via environnement (recommandé)
+# Configuring credentials via environment (recommended)
 # -----------------------------------------------------------------------------
 # export TF_VAR_opnsense_uri="https://192.168.10.1"
-# export TF_VAR_opnsense_api_key="votre-api-key"
-# export TF_VAR_opnsense_api_secret="votre-api-secret"
+# export TF_VAR_opnsense_api_key="your-api-key"
+# export TF_VAR_opnsense_api_secret="your-api-secret"
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# Exemple terraform.tfvars (NE PAS COMMITER - ajouter à .gitignore)
+# Example terraform.tfvars (DO NOT COMMIT - add to .gitignore)
 # -----------------------------------------------------------------------------
 # opnsense_uri            = "https://192.168.10.1"
-# opnsense_api_key        = "votre-api-key"
-# opnsense_api_secret     = "votre-api-secret"
-# opnsense_allow_insecure = true  # false en production
+# opnsense_api_key        = "your-api-key"
+# opnsense_api_secret     = "your-api-secret"
+# opnsense_allow_insecure = true  # false in production
 # -----------------------------------------------------------------------------
