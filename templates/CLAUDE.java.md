@@ -1,25 +1,25 @@
-# Projet Java / Spring Boot
+# Java / Spring Boot Project
 
-## Commandes Essentielles
-- `./mvnw clean install` - Compiler et installer
-- `./mvnw test` - Lancer les tests
-- `./mvnw spring-boot:run` - Lancer l'application
-- `./mvnw package -DskipTests` - Packager sans tests
-- `./mvnw dependency:tree` - Voir les dépendances
-- `./mvnw spotbugs:check` - Analyse statique
-- `./mvnw checkstyle:check` - Vérifier le style
+## Essential Commands
+- `./mvnw clean install` - Compile and install
+- `./mvnw test` - Run tests
+- `./mvnw spring-boot:run` - Run the application
+- `./mvnw package -DskipTests` - Package without tests
+- `./mvnw dependency:tree` - View dependencies
+- `./mvnw spotbugs:check` - Static analysis
+- `./mvnw checkstyle:check` - Check style
 
-Ou avec Gradle :
-- `./gradlew build` - Compiler
-- `./gradlew test` - Lancer les tests
-- `./gradlew bootRun` - Lancer l'application
+Or with Gradle:
+- `./gradlew build` - Compile
+- `./gradlew test` - Run tests
+- `./gradlew bootRun` - Run the application
 
-## Structure du Projet (Spring Boot)
+## Project Structure (Spring Boot)
 ```
 /src
 ├── main/
 │   ├── java/com/example/app/
-│   │   ├── Application.java           # Point d'entrée
+│   │   ├── Application.java           # Entry point
 │   │   ├── config/                     # Configuration
 │   │   ├── controller/                 # REST Controllers
 │   │   ├── service/                    # Business logic
@@ -28,7 +28,7 @@ Ou avec Gradle :
 │   │   │   ├── entity/                # JPA Entities
 │   │   │   └── dto/                   # Data Transfer Objects
 │   │   ├── exception/                  # Custom exceptions
-│   │   └── util/                       # Utilitaires
+│   │   └── util/                       # Utilities
 │   └── resources/
 │       ├── application.yml
 │       └── db/migration/               # Flyway migrations
@@ -36,10 +36,10 @@ Ou avec Gradle :
     └── java/com/example/app/
 ```
 
-## Conventions Java
+## Java Conventions
 
-### Nommage
-| Type | Convention | Exemple |
+### Naming
+| Type | Convention | Example |
 |------|------------|---------|
 | Packages | lowercase | `com.example.userservice` |
 | Classes | PascalCase | `UserService` |
@@ -48,7 +48,7 @@ Ou avec Gradle :
 | Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
 | Variables | camelCase | `userCount` |
 
-### Annotations Spring
+### Spring Annotations
 ```java
 @RestController
 @RequestMapping("/api/v1/users")
@@ -96,7 +96,7 @@ public class UserService {
 }
 ```
 
-### Gestion des erreurs
+### Error handling
 ```java
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -123,7 +123,7 @@ public class GlobalExceptionHandler {
 
 ## Tests
 
-### Tests unitaires (JUnit 5)
+### Unit tests (JUnit 5)
 ```java
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -150,7 +150,7 @@ class UserServiceTest {
 }
 ```
 
-### Tests d'intégration
+### Integration tests
 ```java
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -176,43 +176,43 @@ class UserControllerIT {
 }
 ```
 
-## Bonnes pratiques
+## Best practices
 
 ### IMPORTANT
-- IMPORTANT: Utiliser l'injection par constructeur (pas `@Autowired` sur fields)
-- IMPORTANT: DTOs pour les APIs, Entities pour la persistence
-- IMPORTANT: Validation avec `@Valid` et Bean Validation
-- YOU MUST logger les erreurs avec contexte suffisant
-- Utiliser Optional plutôt que null
+- IMPORTANT: Use constructor injection (not `@Autowired` on fields)
+- IMPORTANT: DTOs for APIs, Entities for persistence
+- IMPORTANT: Validation with `@Valid` and Bean Validation
+- YOU MUST log errors with sufficient context
+- Use Optional rather than null
 
 ### Performance
-- Lazy loading par défaut pour JPA
-- Pagination pour les listes
-- Cache avec `@Cacheable` si approprié
-- Connection pooling (HikariCP par défaut)
+- Lazy loading by default for JPA
+- Pagination for lists
+- Cache with `@Cacheable` if appropriate
+- Connection pooling (HikariCP by default)
 
 ## Git & Commits
 - Format: `type(scope): description`
 - Types: feat, fix, refactor, test, docs, chore
 
-## Hooks Claude Code 2.1+
+## Claude Code 2.1+ Hooks
 
 | Hook | Type | Action |
 |------|------|--------|
-| Branch protection | PreToolUse | Bloque les modifications sur main/master |
-| Auto-format | PostToolUse | Spotless/Google Java Format après édition |
-| Checkstyle | PostToolUse | Validation style après édition |
-| Test avant commit | PreToolUse | Exécute `mvn test` avant chaque commit |
-| Détection secrets | PreToolUse | Bloque les secrets hardcodés |
+| Branch protection | PreToolUse | Blocks modifications on main/master |
+| Auto-format | PostToolUse | Spotless/Google Java Format after edit |
+| Checkstyle | PostToolUse | Style validation after edit |
+| Test before commit | PreToolUse | Runs `mvn test` before each commit |
+| Secret detection | PreToolUse | Blocks hardcoded secrets |
 
-## Skills disponibles
+## Available skills
 
 | Skill | Usage |
 |-------|-------|
-| `exploring-codebase` | Analyser un codebase existant |
-| `planning-implementation` | Définir un plan avant de coder |
-| `test-driven-development` | Cycle TDD Red-Green-Refactor |
-| `reviewing-code` | Revue de code approfondie |
-| `debugging-issues` | Diagnostic méthodique |
+| `exploring-codebase` | Analyze an existing codebase |
+| `planning-implementation` | Define a plan before coding |
+| `test-driven-development` | Red-Green-Refactor TDD cycle |
+| `reviewing-code` | Thorough code review |
+| `debugging-issues` | Methodical diagnosis |
 | `generating-commit-messages` | Conventional Commits |
-| `creating-pull-requests` | PR complète et documentée |
+| `creating-pull-requests` | Complete and documented PR |
