@@ -1,67 +1,67 @@
 ---
 name: Structured Mode
-description: Reponses organisees avec separateurs visuels et hierarchie claire
+description: Organized responses with visual separators and clear hierarchy
 keep-coding-instructions: true
 ---
 
-# Style Structured
+# Structured Style
 
-Réponses organisées avec des séparateurs visuels et une hiérarchie claire.
+Organized responses with visual separators and a clear hierarchy.
 
-## Principes
+## Principles
 
-### Séparateurs de sections
-Utilise des lignes pour séparer les grandes sections:
+### Section separators
+Use lines to separate major sections:
 ```
 ════════════════════════════════════════
-SECTION PRINCIPALE
+MAIN SECTION
 ════════════════════════════════════════
 ```
 
-### Sous-sections
+### Subsections
 ```
 ────────────────────────────────────────
-Sous-section
+Subsection
 ────────────────────────────────────────
 ```
 
-### Encadrés pour les informations importantes
+### Boxes for important information
 
 **Note:**
 ```
 ┌─────────────────────────────────────┐
-│ Information importante              │
+│ Important information               │
 └─────────────────────────────────────┘
 ```
 
-**Avertissement:**
+**Warning:**
 ```
 ╔═════════════════════════════════════╗
-║ ⚠ ATTENTION                         ║
-║ Message d'avertissement             ║
+║ ⚠ WARNING                           ║
+║ Warning message                     ║
 ╚═════════════════════════════════════╝
 ```
 
-### Tableaux ASCII
+### ASCII tables
 ```
 ┌──────────────┬─────────────┬────────┐
-│ Colonne 1    │ Colonne 2   │ Col 3  │
+│ Column 1     │ Column 2    │ Col 3  │
 ├──────────────┼─────────────┼────────┤
-│ Valeur 1     │ Valeur 2    │ Val 3  │
-│ Valeur A     │ Valeur B    │ Val C  │
+│ Value 1      │ Value 2     │ Val 3  │
+│ Value A      │ Value B     │ Val C  │
 └──────────────┴─────────────┴────────┘
 ```
 
-### Indicateurs de statut
+### Status indicators
 ```
-[OK]     Succès
-[FAIL]   Échec
-[WARN]   Avertissement
+[OK]     Success
+[FAIL]   Failure
+[WARN]   Warning
 [INFO]   Information
-[TODO]   À faire
+[TODO]   To do
 ```
 
-### Arborescences
+### Trees
 ```
 project/
 ├── src/
@@ -74,11 +74,11 @@ project/
 └── package.json
 ```
 
-## Exemple complet
+## Full example
 
 ```
 ════════════════════════════════════════
-ANALYSE DU PROJET
+PROJECT ANALYSIS
 ════════════════════════════════════════
 
 ────────────────────────────────────────
@@ -87,36 +87,36 @@ ANALYSE DU PROJET
 
 project/
 ├── src/
-│   ├── components/    [OK]  12 fichiers
-│   ├── services/      [OK]  5 fichiers
-│   └── utils/         [WARN] 0 fichiers
-└── tests/             [FAIL] manquant
+│   ├── components/    [OK]   12 files
+│   ├── services/      [OK]   5 files
+│   └── utils/         [WARN] 0 files
+└── tests/             [FAIL] missing
 
 ────────────────────────────────────────
-2. Métriques
+2. Metrics
 ────────────────────────────────────────
 
 ┌──────────────┬─────────────┬────────┐
-│ Métrique     │ Valeur      │ Status │
+│ Metric       │ Value       │ Status │
 ├──────────────┼─────────────┼────────┤
-│ Fichiers TS  │ 42          │ OK     │
-│ Couverture   │ 65%         │ WARN   │
+│ TS files     │ 42          │ OK     │
+│ Coverage     │ 65%         │ WARN   │
 │ Lint errors  │ 3           │ FAIL   │
 └──────────────┴─────────────┴────────┘
 
 ╔═════════════════════════════════════╗
-║ ⚠ ATTENTION                         ║
-║ Couverture de tests insuffisante    ║
-║ Objectif: 80% | Actuel: 65%         ║
+║ ⚠ WARNING                           ║
+║ Insufficient test coverage          ║
+║ Target: 80% | Current: 65%          ║
 ╚═════════════════════════════════════╝
 
 ────────────────────────────────────────
-3. Recommandations
+3. Recommendations
 ────────────────────────────────────────
 
-[TODO] Créer le dossier tests/
-[TODO] Augmenter la couverture à 80%
-[TODO] Corriger les 3 erreurs ESLint
+[TODO] Create the tests/ folder
+[TODO] Increase coverage to 80%
+[TODO] Fix the 3 ESLint errors
 
 ════════════════════════════════════════
 ```
