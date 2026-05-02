@@ -1,38 +1,38 @@
 ---
 sidebar_position: 6
-title: Lancement Produit
-description: Workflow pour lancer un nouveau produit
+title: Product Launch
+description: Workflow to launch a new product
 ---
 
-# Workflow : Lancement Produit
+# Workflow: Product Launch
 
-Guide complet pour lancer un nouveau produit ou SaaS.
+Complete guide to launch a new product or SaaS.
 
-## Commande rapide
+## Quick command
 
 ```bash
-/work:work-flow-launch "Mon nouveau SaaS"
+/work:work-flow-launch "My new SaaS"
 ```
 
-## Vue d'ensemble
+## Overview
 
-Le workflow de lancement couvre :
+The launch workflow covers:
 
 1. **Business** - Model, pricing, MVP
-2. **Legal** - RGPD, CGU, mentions legales
-3. **Tech** - Infrastructure, securite, performance
+2. **Legal** - GDPR, ToS, legal notices
+3. **Tech** - Infrastructure, security, performance
 4. **Growth** - Landing, SEO, analytics
-5. **Launch** - Go-live et monitoring
+5. **Launch** - Go-live and monitoring
 
-## Etapes detaillees
+## Detailed steps
 
 ### 1. Business
 
 ```bash
-/biz:biz-model "Mon SaaS de gestion de projets"
+/biz:biz-model "My project management SaaS"
 ```
 
-Definir :
+Define:
 - Value proposition
 - Business model (Lean Canvas)
 - Pricing strategy
@@ -46,11 +46,11 @@ Definir :
 /legal:legal-privacy-policy
 ```
 
-Preparer :
-- Conformite RGPD
-- CGU/CGV
-- Politique de confidentialite
-- Mentions legales
+Prepare:
+- GDPR compliance
+- ToS/T&Cs
+- Privacy policy
+- Legal notices
 
 ### 3. Infrastructure
 
@@ -60,24 +60,24 @@ Preparer :
 /ops:ops-backup
 ```
 
-Configurer :
+Configure:
 - CI/CD pipeline
-- Monitoring et alertes
-- Backup et recovery
+- Monitoring and alerts
+- Backup and recovery
 - Secrets management
 
-### 4. Securite
+### 4. Security
 
 ```bash
 /qa:qa-security
 /qa:qa-audit
 ```
 
-Verifier :
+Verify:
 - OWASP Top 10
-- Authentification securisee
-- Protection des donnees
-- Tests de penetration
+- Secure authentication
+- Data protection
+- Penetration tests
 
 ### 5. Performance
 
@@ -86,11 +86,11 @@ Verifier :
 /ops:ops-load-testing
 ```
 
-Optimiser :
+Optimize:
 - Core Web Vitals
-- Temps de reponse API
-- Tests de charge
-- CDN et caching
+- API response times
+- Load tests
+- CDN and caching
 
 ### 6. Growth
 
@@ -100,11 +100,11 @@ Optimiser :
 /growth:growth-analytics
 ```
 
-Preparer :
-- Landing page optimisee
-- SEO technique
-- Analytics et tracking
-- Funnel de conversion
+Prepare:
+- Optimized landing page
+- Technical SEO
+- Analytics and tracking
+- Conversion funnel
 
 ### 7. Go-Live
 
@@ -112,64 +112,64 @@ Preparer :
 /ops:ops-release
 ```
 
-Deployer :
+Deploy:
 - Production deployment
-- DNS et certificats
-- Monitoring actif
-- Support pret
+- DNS and certificates
+- Active monitoring
+- Support ready
 
-## Checklist de lancement
+## Launch checklist
 
 ### Business
-- [ ] Business model valide
-- [ ] Pricing defini
-- [ ] MVP scope clair
-- [ ] Personas documentes
+- [ ] Business model validated
+- [ ] Pricing defined
+- [ ] MVP scope clear
+- [ ] Personas documented
 
 ### Legal
-- [ ] RGPD conforme
-- [ ] CGU/CGV redigees
+- [ ] GDPR compliant
+- [ ] ToS/T&Cs drafted
 - [ ] Privacy policy
-- [ ] Mentions legales
+- [ ] Legal notices
 
 ### Tech
-- [ ] CI/CD operationnel
-- [ ] Monitoring actif
-- [ ] Backups configures
-- [ ] Securite auditee
+- [ ] CI/CD operational
+- [ ] Monitoring active
+- [ ] Backups configured
+- [ ] Security audited
 
 ### Growth
-- [ ] Landing optimisee
-- [ ] SEO en place
-- [ ] Analytics configure
+- [ ] Landing optimized
+- [ ] SEO in place
+- [ ] Analytics configured
 - [ ] Email ready
 
 ### Launch
-- [ ] Domaine configure
-- [ ] SSL actif
-- [ ] Support pret
-- [ ] Communication planifiee
+- [ ] Domain configured
+- [ ] SSL active
+- [ ] Support ready
+- [ ] Communication planned
 
-## Exemple concret
+## Concrete example
 
 ```bash
-> /work:work-flow-launch "TaskFlow - Gestion de projets simplifiee"
+> /work:work-flow-launch "TaskFlow - Simplified project management"
 
-# Claude enchaine automatiquement :
-# 1. Analyse le projet
-# 2. Propose le business model
-# 3. Prepare les documents legaux
-# 4. Configure l'infrastructure
-# 5. Audite la securite
-# 6. Optimise la performance
-# 7. Prepare le growth
-# 8. Guide le go-live
+# Claude automatically chains:
+# 1. Analyzes the project
+# 2. Proposes the business model
+# 3. Prepares the legal documents
+# 4. Configures the infrastructure
+# 5. Audits security
+# 6. Optimizes performance
+# 7. Prepares growth
+# 8. Guides the go-live
 ```
 
 ---
 
-## Voir aussi
+## See also
 
 - [Business Model](/docs/commands/biz/biz-model)
 - [Landing Page](/docs/commands/growth/growth-landing)
-- [RGPD](/docs/commands/legal/legal-rgpd)
+- [GDPR](/docs/commands/legal/legal-rgpd)
