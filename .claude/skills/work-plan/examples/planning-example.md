@@ -1,23 +1,23 @@
-# Exemple de planification d'implémentation
+# Implementation planning example
 
-## Contexte
-Ajouter un système de notifications en temps réel à une application.
+## Context
+Add a real-time notification system to an application.
 
-## Plan produit
+## Product plan
 
-### Objectif
-Permettre aux utilisateurs de recevoir des notifications en temps réel (nouveaux messages, mentions, alertes système).
+### Objective
+Allow users to receive real-time notifications (new messages, mentions, system alerts).
 
-### Critères d'acceptance
-- [ ] Notifications push en temps réel
-- [ ] Badge de compteur non-lu
-- [ ] Historique des notifications
-- [ ] Marquer comme lu/non-lu
-- [ ] Préférences utilisateur
+### Acceptance criteria
+- [ ] Real-time push notifications
+- [ ] Unread counter badge
+- [ ] Notification history
+- [ ] Mark as read/unread
+- [ ] User preferences
 
-## Plan technique
+## Technical plan
 
-### Architecture choisie
+### Chosen architecture
 
 ```
 ┌─────────────┐     WebSocket      ┌─────────────┐
@@ -32,65 +32,65 @@ Permettre aux utilisateurs de recevoir des notifications en temps réel (nouveau
                                           │
                                    ┌──────▼──────┐
                                    │ PostgreSQL  │
-                                   │ (stockage)  │
+                                   │  (storage)  │
                                    └─────────────┘
 ```
 
-### Fichiers à créer
+### Files to create
 
-| Fichier | Description |
+| File | Description |
 |---------|-------------|
-| `src/services/websocket.ts` | Client WebSocket |
-| `src/hooks/useNotifications.ts` | Hook React |
-| `src/components/NotificationBell.tsx` | Composant UI |
-| `src/components/NotificationList.tsx` | Liste déroulante |
-| `server/ws/notification-handler.ts` | Handler serveur |
-| `prisma/migrations/xxx_notifications.sql` | Schema DB |
+| `src/services/websocket.ts` | WebSocket client |
+| `src/hooks/useNotifications.ts` | React hook |
+| `src/components/NotificationBell.tsx` | UI component |
+| `src/components/NotificationList.tsx` | Dropdown list |
+| `server/ws/notification-handler.ts` | Server handler |
+| `prisma/migrations/xxx_notifications.sql` | DB schema |
 
-### Fichiers à modifier
+### Files to modify
 
-| Fichier | Modifications |
+| File | Changes |
 |---------|---------------|
-| `src/app/layout.tsx` | Ajouter provider notifications |
-| `src/components/Header.tsx` | Ajouter NotificationBell |
-| `server/index.ts` | Initialiser WebSocket server |
+| `src/app/layout.tsx` | Add notifications provider |
+| `src/components/Header.tsx` | Add NotificationBell |
+| `server/index.ts` | Initialize WebSocket server |
 
-### Étapes d'implémentation
+### Implementation steps
 
-1. **Backend (jour 1-2)**
-   - [ ] Créer table `notifications` dans Prisma
-   - [ ] Implémenter WebSocket server avec Socket.io
-   - [ ] Configurer Redis Pub/Sub
-   - [ ] Créer endpoints REST pour historique
+1. **Backend (day 1-2)**
+   - [ ] Create `notifications` table in Prisma
+   - [ ] Implement WebSocket server with Socket.io
+   - [ ] Configure Redis Pub/Sub
+   - [ ] Create REST endpoints for history
 
-2. **Frontend (jour 3-4)**
-   - [ ] Créer hook `useNotifications`
-   - [ ] Implémenter `NotificationBell` avec badge
-   - [ ] Créer `NotificationList` avec infinite scroll
-   - [ ] Ajouter animations (Framer Motion)
+2. **Frontend (day 3-4)**
+   - [ ] Create `useNotifications` hook
+   - [ ] Implement `NotificationBell` with badge
+   - [ ] Create `NotificationList` with infinite scroll
+   - [ ] Add animations (Framer Motion)
 
-3. **Intégration (jour 5)**
-   - [ ] Connecter frontend/backend
-   - [ ] Tests E2E
+3. **Integration (day 5)**
+   - [ ] Connect frontend/backend
+   - [ ] E2E tests
    - [ ] Documentation
 
-### Risques identifiés
+### Identified risks
 
-| Risque | Probabilité | Impact | Mitigation |
+| Risk | Probability | Impact | Mitigation |
 |--------|-------------|--------|------------|
-| Déconnexions WebSocket | Moyenne | Élevé | Reconnexion auto + queue offline |
-| Surcharge Redis | Faible | Élevé | Rate limiting + TTL |
-| Performance liste | Moyenne | Moyen | Virtualisation + pagination |
+| WebSocket disconnections | Medium | High | Auto-reconnect + offline queue |
+| Redis overload | Low | High | Rate limiting + TTL |
+| List performance | Medium | Medium | Virtualization + pagination |
 
-### Dépendances à ajouter
+### Dependencies to add
 
 ```bash
 npm install socket.io socket.io-client ioredis
 ```
 
-## Validation du plan
+## Plan validation
 
-- [x] Architecture validée avec l'équipe
-- [x] Estimations revues
-- [x] Risques acceptés
-- [ ] **Prêt pour implémentation**
+- [x] Architecture validated with the team
+- [x] Estimates reviewed
+- [x] Risks accepted
+- [ ] **Ready for implementation**
