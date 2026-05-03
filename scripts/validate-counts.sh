@@ -219,6 +219,17 @@ check_count "$SOCLE_DIR/website/src/components/FeatureComparison.tsx" \
 check_count "$SOCLE_DIR/website/src/components/FeatureComparison.tsx" \
     "skills: '[0-9]+'" "$ACTUAL_SKILLS" "skills"
 
+# --- Stats.tsx (Welcome page hero) ---
+info "website/src/components/Stats.tsx"
+check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
+    "number: [0-9]+, label: 'Commands'" "$ACTUAL_COMMANDS" "commands"
+check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
+    "number: [0-9]+, label: 'Agents'" "$ACTUAL_AGENTS" "agents"
+check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
+    "number: [0-9]+, label: 'Skills'" "$ACTUAL_SKILLS" "skills"
+check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
+    "number: [0-9]+, label: 'Rules'" "$ACTUAL_RULES" "rules"
+
 # --- docusaurus.config.ts ---
 info "website/docusaurus.config.ts"
 check_count "$SOCLE_DIR/website/docusaurus.config.ts" \
