@@ -7,13 +7,13 @@ tags:
   - "api"
 ---
 
-# Regles: api
+# Rules: api
 
 > // Error \{ "success": false, "error": \{ "code": "VALIDATION_ERROR", "message": "Email is required", "details": [...] \} \} ```
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/api/**`
 - `**/routes/**`
@@ -21,19 +21,19 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 - `**/handlers/**`
 - `**/endpoints/**`
 
-## Regles detaillees
+## Detailed rules
 
 # API Rules
 
 ## RESTful Design
 
 ```
-GET    /resources          # Liste (avec pagination)
+GET    /resources          # List (with pagination)
 GET    /resources/:id      # Detail
-POST   /resources          # Creation
-PUT    /resources/:id      # Mise a jour complete
-PATCH  /resources/:id      # Mise a jour partielle
-DELETE /resources/:id      # Suppression
+POST   /resources          # Create
+PUT    /resources/:id      # Full update
+PATCH  /resources/:id      # Partial update
+DELETE /resources/:id      # Delete
 ```
 
 ## Response Format
@@ -65,22 +65,22 @@ DELETE /resources/:id      # Suppression
 
 | Code | Usage |
 |------|-------|
-| 200 | OK - GET, PUT, PATCH reussis |
-| 201 | Created - POST reussi |
-| 204 | No Content - DELETE reussi |
+| 200 | OK - GET, PUT, PATCH succeeded |
+| 201 | Created - POST succeeded |
+| 204 | No Content - DELETE succeeded |
 | 400 | Bad Request - Validation error |
-| 401 | Unauthorized - Non authentifie |
-| 403 | Forbidden - Non autorise |
-| 404 | Not Found - Ressource inexistante |
-| 409 | Conflict - Conflit (ex: email deja pris) |
+| 401 | Unauthorized - Not authenticated |
+| 403 | Forbidden - Not authorized |
+| 404 | Not Found - Resource does not exist |
+| 409 | Conflict - Conflict (e.g., email already taken) |
 | 500 | Internal Server Error |
 
 ## Validation
 
-- IMPORTANT: Valider toutes les entrees avec Zod/Joi
-- Valider cote serveur (jamais faire confiance au client)
-- Retourner des messages d'erreur clairs
-- Sanitizer les donnees avant traitement
+- IMPORTANT: Validate all inputs with Zod/Joi
+- Validate server-side (never trust the client)
+- Return clear error messages
+- Sanitize data before processing
 
 ## Pagination
 
@@ -103,26 +103,26 @@ DELETE /resources/:id      # Suppression
 
 ## Versioning
 
-- Prefixer les routes: `/api/v1/resources`
-- Documenter les breaking changes
-- Maintenir retro-compatibilite quand possible
+- Prefix routes: `/api/v1/resources`
+- Document breaking changes
+- Maintain backward compatibility when possible
 
 ## Documentation
 
-- OpenAPI/Swagger obligatoire
-- Exemples de requetes et reponses
-- Documentation des erreurs possibles
+- OpenAPI/Swagger mandatory
+- Request and response examples
+- Document possible errors
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

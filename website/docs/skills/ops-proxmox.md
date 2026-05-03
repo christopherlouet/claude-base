@@ -1,7 +1,7 @@
 ---
 sidebar_position: 35
 title: "ops-proxmox"
-description: "Infrastructure Proxmox VE avec Terraform (VMs, LXC, réseau, stockage, backup)"
+description: "Proxmox VE infrastructure with Terraform (VMs, LXC, network, storage, backup)"
 tags:
   - "skill"
   - "fork"
@@ -11,95 +11,95 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Infrastructure Proxmox VE avec Terraform (VMs, LXC, réseau, stockage, backup)
+> Proxmox VE infrastructure with Terraform (VMs, LXC, network, storage, backup)
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `proxmox`, `pve`, `proxmox ve`, `vm proxmox`, `lxc proxmox` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `ops`, `proxmox`, `pve`, `proxmox ve`, `proxmox vm`, `proxmox lxc` |
 
-## Description detaillee
+## Detailed description
 
-# Skill Proxmox Infrastructure
+# Proxmox Infrastructure Skill
 
-Gestion d'infrastructure Proxmox VE avec Terraform : provisioning de machines virtuelles, conteneurs LXC, configuration reseau, stockage et backup.
+Proxmox VE infrastructure management with Terraform: provisioning of virtual machines, LXC containers, network configuration, storage and backup.
 
-## Quand utiliser ce skill
+## When to use this skill
 
-Ce skill est active automatiquement quand la conversation mentionne :
+This skill is automatically activated when the conversation mentions:
 - "Proxmox", "PVE", "Proxmox VE"
-- "VM Proxmox", "LXC Proxmox", "conteneur Proxmox"
-- "cluster Proxmox", "node Proxmox"
+- "Proxmox VM", "Proxmox LXC", "Proxmox container"
+- "Proxmox cluster", "Proxmox node"
 - "PBS", "Proxmox Backup Server"
-- "cloud-init Proxmox"
-- "QEMU/KVM" dans un contexte Proxmox
+- "Proxmox cloud-init"
+- "QEMU/KVM" in a Proxmox context
 
-## Principes fondamentaux
+## Core principles
 
 ### 1. Infrastructure as Code
 
-Toute infrastructure Proxmox doit etre geree via Terraform :
-- **Reproductibilite** : meme config = meme resultat
-- **Versionnement** : historique dans Git
-- **Review** : PR pour valider les changements d'infra
-- **Documentation** : le code EST la documentation
+All Proxmox infrastructure must be managed via Terraform:
+- **Reproducibility**: same config = same result
+- **Versioning**: history in Git
+- **Review**: PR to validate infra changes
+- **Documentation**: the code IS the documentation
 
-### 2. Separation des environnements
+### 2. Environment separation
 
 ```
 environments/
-├── dev/           # Peut etre detruit
-├── staging/       # Miroir prod
-└── prod/          # Critique
+├── dev/           # Can be destroyed
+├── staging/       # Mirrors prod
+└── prod/          # Critical
 ```
 
-Chaque environnement a ses propres variables (`terraform.tfvars`), son state Terraform et ses credentials.
+Each environment has its own variables (`terraform.tfvars`), its own Terraform state and its own credentials.
 
-### 3. Modules reutilisables
+### 3. Reusable modules
 
 ```
 modules/
-├── vm/            # Machine virtuelle QEMU/KVM
-├── lxc/           # Conteneur LXC
-├── network/       # Configuration reseau
-├── storage/       # Configuration stockage
-└── backup/        # Configuration PBS
+├── vm/            # QEMU/KVM virtual machine
+├── lxc/           # LXC container
+├── network/       # Network configuration
+├── storage/       # Storage configuration
+└── backup/        # PBS configuration
 ```
 
-## Architecture Proxmox
+## Proxmox architecture
 
-### Hierarchie des ressources
+### Resource hierarchy
 
 ```
 Datacenter
-├── Cluster (optionnel)
+├── Cluster (optional)
 │   ├── Node 1 (pve1) → VMs, LXC, Storage, Network
 │   ├── Node 2 (pve2)
 │   └── Node 3 (pve3)
 ├── Storage (datacenter level)
-│   ├── local, local-lvm (par node)
-│   ├── nfs-shared (partage)
-│   └── ceph (distribue)
+│   ├── local, local-lvm (per node)
+│   ├── nfs-shared (shared)
+│   └── ceph (distributed)
 └── SDN (Zones, VNets, Subnets)
 ```
 
-### Types de ressources
+### Resource types
 
 | Type | Description | Use case |
 |------|-------------|----------|
-| **VM (QEMU)** | Machine virtuelle complete | Workloads lourds, isolation forte |
-| **LXC** | Conteneur systeme | Services legers, densite elevee |
-| **Template** | Image de base | Clonage rapide de VMs/LXC |
-| **Snippet** | Fichiers cloud-init | Configuration automatisee |
+| **VM (QEMU)** | Full virtual machine | Heavy workloads, strong isolation |
+| **LXC** | System container | Lightweight services, high density |
+| **Template** | Base image | Fast cloning of VMs/LXC |
+| **Snippet** | cloud-init files | Automated configuration |
 
-## Provider Terraform
+## Terraform provider
 
-### bpg/proxmox (recommande)
+### bpg/proxmox (recommended)
 
-Provider moderne, bien maintenu, couverture complete de l'API Proxmox.
+Modern, well-maintained provider, full coverage of the Proxmox API.
 
 ```hcl
 terraform {
@@ -114,7 +114,7 @@ terraform {
 
 provider "proxmox" {
   endpoint  = var.proxmox_endpoint
-  api_token = var.proxmox_api_token  # Token recommande
+  api_token = var.proxmox_api_token  # Recommended token
   insecure  = var.proxmox_insecure   # Dev only
 
   ssh {
@@ -124,24 +124,24 @@ provider "proxmox" {
 }
 ```
 
-### Authentification par token API
+### API token authentication
 
 ```bash
-# Sur le node Proxmox
+# On the Proxmox node
 pveum user token add terraform@pve terraform-token --privsep=0
 
-# Permissions minimales
+# Minimal permissions
 pveum aclmod / -user terraform@pve -role PVEVMAdmin
 pveum aclmod /storage -user terraform@pve -role PVEDatastoreUser
 ```
 
-Format : `terraform@pve!terraform-token=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
+Format: `terraform@pve!terraform-token=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
 
-## Conventions de nommage
+## Naming conventions
 
-### VMs et conteneurs
+### VMs and containers
 
-| Environnement | Pattern | Exemple |
+| Environment | Pattern | Example |
 |---------------|---------|---------|
 | Production | `prod-{role}-{index}` | `prod-web-01` |
 | Staging | `stg-{role}-{index}` | `stg-api-01` |
@@ -156,10 +156,10 @@ Format : `terraform@pve!terraform-token=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`
 | 200-299 | Production |
 | 300-399 | Staging |
 | 400-499 | Development |
-| 500-599 | Test/Temporaire |
+| 500-599 | Test/Temporary |
 | 9000-9099 | Templates |
 
-### Tags recommandes
+### Recommended tags
 
 ```
 environment:prod
@@ -170,85 +170,85 @@ managed-by:terraform
 criticality:high
 ```
 
-## Securite
+## Security
 
-### Bonnes pratiques
+### Best practices
 
-1. **API Token** : permissions minimales (role dedie, pas root)
-2. **Firewall** : activer le firewall Proxmox par defaut
-3. **Isolation** : VLANs separes par environnement
-4. **Unprivileged LXC** : toujours utiliser des conteneurs non privilegies
-5. **Audit** : logger les acces API et SSH
-6. **Secrets** : JAMAIS hardcoder dans le HCL (utiliser Vault, TF_VAR_*, ou tfvars gitignore)
+1. **API Token**: minimal permissions (dedicated role, not root)
+2. **Firewall**: enable the Proxmox firewall by default
+3. **Isolation**: separate VLANs per environment
+4. **Unprivileged LXC**: always use unprivileged containers
+5. **Audit**: log API and SSH access
+6. **Secrets**: NEVER hardcode in HCL (use Vault, TF_VAR_*, or gitignored tfvars)
 
-### Permissions minimales Terraform
+### Minimal Terraform permissions
 
 ```bash
-# Role dedie
+# Dedicated role
 pveum role add TerraformRole -privs "VM.Allocate VM.Clone VM.Config.CDROM VM.Config.CPU VM.Config.Cloudinit VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Monitor VM.Audit VM.PowerMgmt Datastore.AllocateSpace Datastore.AllocateTemplate Datastore.Audit SDN.Use"
 
-# User + assignation
+# User + assignment
 pveum user add terraform@pve
 pveum aclmod / -user terraform@pve -role TerraformRole
 ```
 
 ## References
 
-Cette section SKILL.md contient les principes fondamentaux. Pour les details techniques avec exemples HCL complets, consulter les fichiers references :
+This SKILL.md section contains the core principles. For technical details with full HCL examples, see the reference files:
 
-| Fichier | Contenu |
+| File | Content |
 |---------|---------|
-| [`references/terraform-modules.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/terraform-modules.md) | Modules VM, LXC, utilisation, reseau, stockage |
-| [`references/cloud-init.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/cloud-init.md) | Templates cloud-config, upload snippets |
-| [`references/backup-ha.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/backup-ha.md) | PBS schedule, commandes, configuration HA |
-| [`references/troubleshooting.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/troubleshooting.md) | Problemes courants, commandes diagnostic, recovery |
+| [`references/terraform-modules.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/terraform-modules.md) | VM modules, LXC, usage, network, storage |
+| [`references/cloud-init.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/cloud-init.md) | cloud-config templates, snippet uploads |
+| [`references/backup-ha.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/backup-ha.md) | PBS schedule, commands, HA configuration |
+| [`references/troubleshooting.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/troubleshooting.md) | Common issues, diagnostic commands, recovery |
 
-## Regles
+## Rules
 
-IMPORTANT: Ne JAMAIS gerer Proxmox manuellement via l'UI. Toujours via Terraform.
+IMPORTANT: NEVER manage Proxmox manually via the UI. Always via Terraform.
 
-IMPORTANT: Utiliser des unprivileged LXC par defaut (escalation de privilege limitee).
+IMPORTANT: Use unprivileged LXC by default (limited privilege escalation).
 
-IMPORTANT: Un seul state Terraform par environnement (dev/staging/prod isoles).
+IMPORTANT: One Terraform state per environment (dev/staging/prod isolated).
 
-YOU MUST utiliser le provider `bpg/proxmox` (moderne, maintenu) plutot que `telmate/proxmox` (deprecie).
+YOU MUST use the `bpg/proxmox` provider (modern, maintained) rather than `telmate/proxmox` (deprecated).
 
-YOU MUST utiliser des API tokens avec permissions minimales, jamais root.
+YOU MUST use API tokens with minimal permissions, never root.
 
-NEVER hardcoder des secrets dans le HCL commite. Utiliser tfvars gitignore ou Vault.
+NEVER hardcode secrets in committed HCL. Use gitignored tfvars or Vault.
 
-NEVER skipper les backups PBS sur les VMs critiques.
+NEVER skip PBS backups on critical VMs.
 
 ## Attribution
 
-Ce skill est base sur :
-- [Documentation officielle Proxmox VE](https://pve.proxmox.com/wiki/Main_Page)
-- [Provider Terraform bpg/proxmox](https://registry.terraform.io/providers/bpg/proxmox/latest/docs)
+This skill is based on:
+- [Official Proxmox VE documentation](https://pve.proxmox.com/wiki/Main_Page)
+- [bpg/proxmox Terraform provider](https://registry.terraform.io/providers/bpg/proxmox/latest/docs)
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux ops..."_
-- _"Je veux proxmox..."_
-- _"Je veux pve..."_
+- _"I want to ops..."_
+- _"I want to proxmox..."_
+- _"I want to pve..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

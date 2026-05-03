@@ -1,7 +1,7 @@
 ---
 sidebar_position: 7
 title: "/ops:ops-database"
-description: "Design de schema, migrations et optimisation de base de donnees."
+description: "Schema design, migrations, and database optimization."
 tags:
   - "ops"
   - "command"
@@ -13,57 +13,57 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent DATABASE
+# DATABASE Agent
 
-Design de schema, migrations et optimisation de base de donnees.
+Schema design, migrations, and database optimization.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Concevoir ou optimiser un schema de base de donnees avec les bonnes pratiques
-de normalisation, indexation, migrations et securite.
+Design or optimize a database schema with best practices for normalization,
+indexing, migrations, and security.
 
 ## Workflow
 
-- Identifier l'ORM/driver utilise et le schema existant
-- Concevoir le schema (normalisation 3NF, types adaptes, contraintes)
-- Definir les relations et les index de performance
-- Creer les migrations atomiques et reversibles
-- Optimiser les requetes (N+1, full table scan, joins lents)
-- Appliquer les bonnes pratiques securite (requetes parametrees, moindre privilege)
-- Documenter les patterns avances si necessaires (soft delete, audit trail, multi-tenancy)
+- Identify the ORM/driver used and the existing schema
+- Design the schema (3NF normalization, suitable types, constraints)
+- Define relationships and performance indexes
+- Create atomic and reversible migrations
+- Optimize queries (N+1, full table scan, slow joins)
+- Apply security best practices (parameterized queries, least privilege)
+- Document advanced patterns if needed (soft delete, audit trail, multi-tenancy)
 
-## Output attendu
+## Expected output
 
-1. **Schema** : diagramme des entites avec champs, types et relations
-2. **Migrations** a creer (ordonnees et decrites)
-3. **Index** recommandes avec justification
-4. **Checklist** (schema normalise, relations, index, migrations testees, backup)
+1. **Schema**: entity diagram with fields, types, and relationships
+2. **Migrations** to create (ordered and described)
+3. **Indexes** recommended with justification
+4. **Checklist** (normalized schema, relationships, indexes, tested migrations, backup)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-migrate` | Migrations de donnees |
-| `/ops:ops-backup` | Strategie de backup |
-| `/qa:qa-perf` | Performance des requetes |
+| `/ops:ops-migrate` | Data migrations |
+| `/ops:ops-backup` | Backup strategy |
+| `/qa:qa-perf` | Query performance |
 
 ---
 
-IMPORTANT: Toujours tester les migrations sur une copie de production.
+IMPORTANT: Always test migrations on a copy of production.
 
-YOU MUST utiliser des requetes parametrees - jamais de concatenation SQL.
+YOU MUST use parameterized queries - never SQL concatenation.
 
-NEVER stocker de mots de passe en clair - utiliser bcrypt/argon2.
+NEVER store passwords in plaintext - use bcrypt/argon2.
 
-Think hard sur les patterns d'acces aux donnees avant de definir les index.
+Think hard about data access patterns before defining indexes.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

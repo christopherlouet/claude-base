@@ -1,7 +1,7 @@
 ---
 sidebar_position: 35
 title: "/ops:ops-vps"
-description: "Deploiement sur serveur VPS (OVH, Hetzner, DigitalOcean, Scaleway, etc.)."
+description: "Deployment to a VPS server (OVH, Hetzner, DigitalOcean, Scaleway, etc.)."
 tags:
   - "ops"
   - "command"
@@ -13,59 +13,59 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent VPS
+# VPS Agent
 
-Deploiement sur serveur VPS (OVH, Hetzner, DigitalOcean, Scaleway, etc.).
+Deployment to a VPS server (OVH, Hetzner, DigitalOcean, Scaleway, etc.).
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Configurer un serveur VPS securise et deployer une application,
-avec ou sans Docker, reverse proxy SSL et automatisation CI/CD.
+Configure a secure VPS server and deploy an application,
+with or without Docker, SSL reverse proxy and CI/CD automation.
 
 ## Workflow
 
-- Securiser le serveur (utilisateur non-root, SSH par cle, firewall UFW, fail2ban)
-- Choisir le mode de deploiement (Docker, PM2/systemd, Gunicorn, binaire Go)
-- Configurer le reverse proxy (Caddy ou Nginx) avec SSL automatique
-- Deployer l'application avec health checks
-- Configurer le CI/CD (GitHub Actions via SSH ou Docker)
-- Mettre en place le monitoring basique (logs, uptime)
-- Optionnel : automatiser avec Ansible
+- Secure the server (non-root user, SSH key auth, UFW firewall, fail2ban)
+- Choose the deployment mode (Docker, PM2/systemd, Gunicorn, Go binary)
+- Configure the reverse proxy (Caddy or Nginx) with automatic SSL
+- Deploy the application with health checks
+- Configure CI/CD (GitHub Actions via SSH or Docker)
+- Set up basic monitoring (logs, uptime)
+- Optional: automate with Ansible
 
-## Output attendu
+## Expected output
 
-1. **Script** de securisation du serveur
-2. **Configuration** de deploiement (docker-compose ou PM2/systemd)
-3. **Reverse proxy** avec SSL (Caddyfile ou nginx.conf)
-4. **Pipeline CI/CD** de deploiement automatise
-5. **Checklist** securite et deploiement
+1. **Script** to secure the server
+2. **Configuration** for deployment (docker-compose or PM2/systemd)
+3. **Reverse proxy** with SSL (Caddyfile or nginx.conf)
+4. **CI/CD pipeline** for automated deployment
+5. **Checklist** for security and deployment
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-docker` | Containeriser l'application |
-| `/ops:ops-ci` | Pipeline CI/CD |
-| `/ops:ops-monitoring` | Monitoring et alertes |
-| `/ops:ops-backup` | Strategie de sauvegarde |
+| `/ops:ops-docker` | Containerize the application |
+| `/ops:ops-ci` | CI/CD pipeline |
+| `/ops:ops-monitoring` | Monitoring and alerts |
+| `/ops:ops-backup` | Backup strategy |
 
 ---
 
-IMPORTANT: Toujours sauvegarder avant une mise a jour majeure.
+IMPORTANT: Always back up before a major update.
 
-IMPORTANT: Tester les deploiements sur un environnement de staging d'abord.
+IMPORTANT: Test deployments on a staging environment first.
 
-YOU MUST configurer des backups automatiques pour les donnees.
+YOU MUST configure automatic backups for data.
 
-NEVER exposer des services sans authentification ou firewall.
+NEVER expose services without authentication or firewall.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

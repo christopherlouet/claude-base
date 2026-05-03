@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: "/legal:legal-privacy-policy"
-description: "Genere une Politique de Confidentialite conforme au RGPD et aux standards internationaux."
+description: "Generates a Privacy Policy compliant with GDPR and international standards."
 tags:
   - "legal"
   - "command"
@@ -13,59 +13,59 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--legal">LEGAL</span>
 
 
-# Agent PRIVACY-POLICY
+# PRIVACY-POLICY Agent
 
-Genere une Politique de Confidentialite conforme au RGPD et aux standards internationaux.
+Generates a Privacy Policy compliant with GDPR and international standards.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Creer une politique de confidentialite transparente, complete et conforme
-aux reglementations sur la protection des donnees (RGPD, CCPA).
+Create a transparent, complete privacy policy compliant
+with data protection regulations (GDPR, CCPA).
 
 ## Workflow
 
-- Identifier le responsable du traitement et le DPO
-- Lister les donnees collectees (directement, automatiquement, via tiers)
-- Documenter les finalites et bases legales de chaque traitement
-- Identifier les destinataires et sous-traitants avec garanties
-- Documenter les transferts hors UE et les mecanismes de protection
-- Definir les durees de conservation par type de donnee
-- Detailler les droits des personnes et les modalites d'exercice
-- Decrire la politique cookies et les mesures de securite
-- Generer la checklist RGPD (Articles 13-14)
+- Identify the data controller and the DPO
+- List collected data (directly, automatically, via third parties)
+- Document the purposes and legal bases of each processing operation
+- Identify recipients and sub-processors with guarantees
+- Document transfers outside the EU and protection mechanisms
+- Define retention periods by data type
+- Detail data subjects' rights and how to exercise them
+- Describe the cookie policy and security measures
+- Generate the GDPR checklist (Articles 13-14)
 
-## Output attendu
+## Expected output
 
-1. **Politique de confidentialite** complete et structuree
-2. **Tableau des traitements** (donnees, finalite, base legale, duree)
-3. **Liste des sous-traitants** avec pays et garanties
-4. **Checklist RGPD** de conformite
+1. **Complete and structured privacy policy**
+2. **Processing table** (data, purpose, legal basis, duration)
+3. **List of sub-processors** with countries and guarantees
+4. **GDPR compliance checklist**
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/legal:legal-rgpd` | Audit conformite RGPD complet |
-| `/legal:legal-terms-of-service` | CGU du service |
-| `/legal:legal-docs` | Autres documents legaux |
+| `/legal:legal-rgpd` | Full GDPR compliance audit |
+| `/legal:legal-terms-of-service` | Terms of Service |
+| `/legal:legal-docs` | Other legal documents |
 
 ---
 
-IMPORTANT: Cette politique est un modele. Faire valider par un juriste/DPO.
+IMPORTANT: This policy is a template. Have it validated by a legal expert/DPO.
 
-YOU MUST adapter la politique aux traitements reels effectues.
+YOU MUST adapt the policy to the actual processing operations performed.
 
-YOU MUST maintenir la politique a jour en cas de changement.
+YOU MUST keep the policy up to date when changes occur.
 
-NEVER collecter plus de donnees que necessaire (minimisation).
+NEVER collect more data than necessary (minimization).
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes LEGAL](/docs/commands/legal)
-- [Toutes les commandes](/docs/commands)
+- [Back to LEGAL commands](/docs/commands/legal)
+- [All commands](/docs/commands)

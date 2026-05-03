@@ -1,7 +1,7 @@
 ---
 sidebar_position: 38
 title: "qa-chrome"
-description: "Tests visuels et debugging navigateur via Chrome. Utiliser pour tester des pages web, vérifier le rendu visuel, débuguer avec la console, ou automatiser des actions navigateur. Déclencher quand l'utilisateur mentionne \"test visuel\", \"Chrome\", \"navigateur\", \"console browser\", \"DOM\", \"screenshot\", \"GIF\"."
+description: "Visual tests and browser debugging via Chrome. Use to test web pages, verify visual rendering, debug with the console, or automate browser actions. Trigger when the user mentions \"visual test\", \"Chrome\", \"browser\", \"browser console\", \"DOM\", \"screenshot\", \"GIF\"."
 tags:
   - "skill"
   - "fork"
@@ -11,116 +11,116 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Tests visuels et debugging navigateur via Chrome. Utiliser pour tester des pages web, vérifier le rendu visuel, débuguer avec la console, ou automatiser des actions navigateur. Déclencher quand l'utilisateur mentionne "test visuel", "Chrome", "navigateur", "console browser", "DOM", "screenshot", "GIF".
+> Visual tests and browser debugging via Chrome. Use to test web pages, verify visual rendering, debug with the console, or automate browser actions. Trigger when the user mentions "visual test", "Chrome", "browser", "browser console", "DOM", "screenshot", "GIF".
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Bash`, `Grep`, `Glob` |
-| **Mots-cles** | `chrome`, `claude in chrome` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Bash`, `Grep`, `Glob` |
+| **Keywords** | `chrome`, `claude in chrome` |
 
-## Description detaillee
+## Detailed description
 
-# Tests Visuels et Debugging Chrome
+# Visual Tests and Chrome Debugging
 
-## Prérequis
+## Prerequisites
 
-- Claude Code lancé avec `--chrome` flag
-- Extension "Claude in Chrome" installée (v1.0.36+)
-- Google Chrome ouvert
+- Claude Code launched with `--chrome` flag
+- "Claude in Chrome" extension installed (v1.0.36+)
+- Google Chrome open
 
 ## Instructions
 
-### 1. Vérifier la connexion Chrome
+### 1. Verify the Chrome connection
 
-Vérifier que l'intégration Chrome est active. Si non, demander à l'utilisateur de relancer avec `claude --chrome`.
+Verify that the Chrome integration is active. If not, ask the user to relaunch with `claude --chrome`.
 
-### 2. Capabilities disponibles
+### 2. Available capabilities
 
 | Action | Description |
 |--------|-------------|
-| Navigation | Ouvrir une URL, naviguer entre pages |
-| Interaction | Cliquer, taper du texte, remplir des formulaires |
-| Inspection | Lire le DOM, les logs console, les requêtes réseau |
-| Capture | Prendre des screenshots, enregistrer des GIFs |
-| Test | Vérifier le rendu, tester des parcours utilisateur |
+| Navigation | Open a URL, navigate between pages |
+| Interaction | Click, type text, fill out forms |
+| Inspection | Read the DOM, console logs, network requests |
+| Capture | Take screenshots, record GIFs |
+| Test | Verify rendering, test user journeys |
 
-### 3. Workflows de test
+### 3. Test workflows
 
-#### Test visuel d'une page
-1. Ouvrir la page dans Chrome
-2. Vérifier le rendu visuel (layout, couleurs, typographie)
-3. Tester le responsive (redimensionner la fenêtre)
-4. Capturer un screenshot pour référence
+#### Visual test of a page
+1. Open the page in Chrome
+2. Verify the visual rendering (layout, colors, typography)
+3. Test responsiveness (resize the window)
+4. Capture a screenshot for reference
 
-#### Debugging console
-1. Ouvrir la page
-2. Lire les erreurs console
-3. Identifier la source des erreurs dans le code
-4. Proposer des corrections
+#### Console debugging
+1. Open the page
+2. Read the console errors
+3. Identify the source of the errors in the code
+4. Propose fixes
 
-#### Test de parcours utilisateur
-1. Naviguer vers le point de départ
-2. Suivre le parcours pas à pas (clic, saisie, navigation)
-3. Vérifier chaque étape
-4. Reporter les anomalies
+#### User journey test
+1. Navigate to the starting point
+2. Follow the journey step by step (click, input, navigation)
+3. Verify each step
+4. Report anomalies
 
-#### Enregistrement GIF
-1. Démarrer l'enregistrement
-2. Exécuter le parcours
-3. Sauvegarder le GIF
+#### GIF recording
+1. Start the recording
+2. Execute the journey
+3. Save the GIF
 
-### 4. Checklist de vérification
+### 4. Verification checklist
 
-- [ ] Page charge sans erreur console
-- [ ] Layout correct (pas de overflow, pas de chevauchement)
-- [ ] Textes lisibles (contraste, taille)
-- [ ] Images chargées
-- [ ] Liens fonctionnels
-- [ ] Formulaires remplissables
+- [ ] Page loads without console error
+- [ ] Correct layout (no overflow, no overlap)
+- [ ] Readable texts (contrast, size)
+- [ ] Images loaded
+- [ ] Working links
+- [ ] Fillable forms
 - [ ] Responsive OK (mobile, tablet, desktop)
-- [ ] Pas d'erreur réseau (404, 500)
+- [ ] No network error (404, 500)
 
 ### 5. Limitations
 
-- Nécessite Chrome (pas Brave, Arc, ou Firefox)
-- Fenêtre Chrome visible requise (pas de headless)
-- Les dialogues JavaScript (alert, confirm) bloquent le flux
-- WSL non supporté
+- Requires Chrome (not Brave, Arc, or Firefox)
+- Visible Chrome window required (no headless)
+- JavaScript dialogs (alert, confirm) block the flow
+- WSL not supported
 
-## Output attendu
+## Expected output
 
-Rapport structuré avec :
-- Screenshots/GIFs si pertinent
-- Liste des erreurs trouvées
-- Recommandations de corrections
-- Score global (OK / Warnings / Erreurs)
+Structured report with:
+- Screenshots/GIFs if relevant
+- List of errors found
+- Recommendations for fixes
+- Overall score (OK / Warnings / Errors)
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux chrome..."_
-- _"Je veux claude in chrome..."_
+- _"I want to chrome..."_
+- _"I want to claude in chrome..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

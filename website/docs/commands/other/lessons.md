@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "/lessons"
-description: "Liste les `feedback` memories capturees pour le projet courant (et globalement) — les \"lecons\" apprises a partir des corrections utilisateur."
+description: "Lists the `feedback` memories captured for the current project (and globally) — the \"lessons\" learned from user corrections."
 tags:
   - "other"
   - "command"
@@ -13,44 +13,44 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--other">Autres</span>
 
 
-# Commande LESSONS
+# LESSONS Command
 
-Liste les `feedback` memories capturees pour le projet courant (et globalement) — les "lecons" apprises a partir des corrections utilisateur.
+Lists the `feedback` memories captured for the current project (and globally) — the "lessons" learned from user corrections.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Donner une vue d'ensemble du systeme self-improvement : quelles regles, contre-exemples ou preferences ont deja ete enregistres pour eviter de refaire les memes erreurs.
+Provide an overview of the self-improvement system: which rules, counter-examples, or preferences have already been recorded to avoid repeating the same mistakes.
 
-## Utilisation
+## Usage
 
 ```
-/lessons              # Liste toutes les feedback memories du projet
-/lessons <keyword>    # Filtre par mot-cle (ex: /lessons test, /lessons git)
+/lessons              # List all feedback memories for the project
+/lessons <keyword>    # Filter by keyword (e.g., /lessons test, /lessons git)
 ```
 
 ## Workflow
 
-1. **Localiser le repertoire memoire**
-    - Per-project : `~/.claude/projects/&lt;project-slug&gt;/memory/`
-    - Global : `~/.claude/memory/` (si existant)
-2. **Filtrer les feedback memories**
-    - Lire `MEMORY.md` et chaque fichier `feedback_*.md`
-    - Extraire le frontmatter `type: feedback` pour tri
-3. **Synthese**
-    - Pour chaque memoire, afficher :
-      - Titre + description courte
-      - **Why** (raison initiale)
-      - **How to apply** (quand appliquer la regle)
-4. **Filtrage optionnel**
-    - Si un keyword est passe, ne garder que les memoires dont le titre, description ou contenu matche
+1. **Locate the memory directory**
+    - Per-project: `~/.claude/projects/&lt;project-slug&gt;/memory/`
+    - Global: `~/.claude/memory/` (if it exists)
+2. **Filter feedback memories**
+    - Read `MEMORY.md` and each `feedback_*.md` file
+    - Extract the `type: feedback` frontmatter for sorting
+3. **Summary**
+    - For each memory, display:
+      - Title + short description
+      - **Why** (initial reason)
+      - **How to apply** (when to apply the rule)
+4. **Optional filtering**
+    - If a keyword is passed, keep only the memories whose title, description, or content matches
 
-## Output attendu
+## Expected output
 
 ```
-=== Feedback memories pour ce projet ===
+=== Feedback memories for this project ===
 
 1. Manual review of infra PRs
    user reviews and merges infra PRs himself, no auto-merge even when CI is green
@@ -62,29 +62,29 @@ Donner une vue d'ensemble du systeme self-improvement : quelles regles, contre-e
    Why: Max plan supports headless via setup-token
    How to apply: do not default to Routines for automation projects
 
-=== Feedback memories globales (cross-projet) ===
-(aucune si ~/.claude/memory/ vide)
+=== Global feedback memories (cross-project) ===
+(none if ~/.claude/memory/ is empty)
 ```
 
-## Cas particuliers
+## Special cases
 
 | Situation | Action |
 |-----------|--------|
-| Aucune memoire | Message informatif + lien vers la doc auto-memory |
-| Memoire sans `type: feedback` | Ignorer (ne lister que les feedback) |
-| Filtre keyword sans match | Message "Aucune memoire matche '&lt;keyword&gt;'" |
-| Memoire orpheline (fichier sans entree dans MEMORY.md) | WARN, suggerer de re-indexer |
+| No memory | Informative message + link to the auto-memory doc |
+| Memory without `type: feedback` | Ignore (only list feedback) |
+| Keyword filter with no match | Message "No memory matches '&lt;keyword&gt;'" |
+| Orphan memory (file without an entry in MEMORY.md) | WARN, suggest re-indexing |
 
 ---
 
-IMPORTANT: Cette commande est en lecture seule. Pour ajouter une lecon, le system prompt s'en charge automatiquement quand l'utilisateur fait une correction (signal detecte par `prompt-context.sh`).
+IMPORTANT: This command is read-only. To add a lesson, the system prompt handles it automatically when the user makes a correction (signal detected by `prompt-context.sh`).
 
-NEVER modifier ou supprimer une feedback memory sans confirmation explicite de l'utilisateur.
+NEVER modify or delete a feedback memory without explicit confirmation from the user.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes Autres](/docs/commands/other)
-- [Toutes les commandes](/docs/commands)
+- [Back to Autres commands](/docs/commands/other)
+- [All commands](/docs/commands)

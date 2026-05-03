@@ -1,7 +1,7 @@
 ---
 sidebar_position: 18
 title: "dev-refactor"
-description: "Refactoring de code pour ameliorer la qualite. Declencher quand l'utilisateur veut nettoyer, restructurer, ou ameliorer du code existant."
+description: "Code refactoring to improve quality. Trigger when the user wants to clean up, restructure, or improve existing code."
 tags:
   - "skill"
   - "fork"
@@ -11,40 +11,40 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Refactoring de code pour ameliorer la qualite. Declencher quand l'utilisateur veut nettoyer, restructurer, ou ameliorer du code existant.
+> Code refactoring to improve quality. Trigger when the user wants to clean up, restructure, or improve existing code.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `refactor` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `dev`, `refactor` |
 
-## Description detaillee
+## Detailed description
 
 # Code Refactoring
 
-## Principes
+## Principles
 
-1. **Les tests passent AVANT et APRES**
-2. **Petites modifications incrementales**
-3. **Un seul type de changement a la fois**
-4. **Commit apres chaque refactoring**
+1. **Tests pass BEFORE and AFTER**
+2. **Small incremental changes**
+3. **One type of change at a time**
+4. **Commit after each refactoring**
 
-## Techniques courantes
+## Common techniques
 
 ### Extract Function
 
 ```typescript
-// Avant
+// Before
 function processOrder(order) {
-  // 20 lignes de validation
-  // 30 lignes de calcul
-  // 10 lignes d'envoi
+  // 20 lines of validation
+  // 30 lines of calculation
+  // 10 lines of sending
 }
 
-// Apres
+// After
 function processOrder(order) {
   validateOrder(order);
   const total = calculateTotal(order);
@@ -55,10 +55,10 @@ function processOrder(order) {
 ### Extract Variable
 
 ```typescript
-// Avant
+// Before
 if (user.age >= 18 && user.country === 'FR' && !user.banned) { }
 
-// Apres
+// After
 const isAdult = user.age >= 18;
 const isFrench = user.country === 'FR';
 const isActive = !user.banned;
@@ -68,7 +68,7 @@ if (isAdult && isFrench && isActive) { }
 ### Replace Conditional with Polymorphism
 
 ```typescript
-// Avant
+// Before
 function getPrice(type) {
   switch(type) {
     case 'basic': return 10;
@@ -76,13 +76,13 @@ function getPrice(type) {
   }
 }
 
-// Apres
+// After
 interface Plan { getPrice(): number }
 class BasicPlan implements Plan { getPrice() { return 10; } }
 class PremiumPlan implements Plan { getPrice() { return 20; } }
 ```
 
-## Code Smells a detecter
+## Code Smells to detect
 
 | Smell | Refactoring |
 |-------|-------------|
@@ -93,25 +93,25 @@ class PremiumPlan implements Plan { getPrice() { return 20; } }
 | Feature envy | Move Method |
 | Primitive obsession | Value Object |
 
-## Reducing Entropy (Reduction de complexite)
+## Reducing Entropy (Complexity reduction)
 
-### Metriques de complexite
+### Complexity metrics
 
-| Metrique | Seuil d'alerte | Comment mesurer |
-|----------|---------------|-----------------|
-| **Complexite cyclomatique** | > 10 par fonction | Nombre de branches (if/else/switch) |
-| **Profondeur d'imbrication** | > 3 niveaux | Nesting de if/for/while |
-| **Longueur de fonction** | > 50 lignes | Nombre de lignes |
-| **Nombre de parametres** | > 4 | Parametres de fonction |
-| **Couplage afferent/efferent** | Ratio instable | Dependances entrantes/sortantes |
-| **Taille de fichier** | > 300 lignes | Lignes de code |
+| Metric | Alert threshold | How to measure |
+|--------|----------------|----------------|
+| **Cyclomatic complexity** | > 10 per function | Number of branches (if/else/switch) |
+| **Nesting depth** | > 3 levels | Nesting of if/for/while |
+| **Function length** | > 50 lines | Number of lines |
+| **Number of parameters** | > 4 | Function parameters |
+| **Afferent/efferent coupling** | Unstable ratio | Incoming/outgoing dependencies |
+| **File size** | > 300 lines | Lines of code |
 
-### Techniques de reduction
+### Reduction techniques
 
-#### Early Return (eliminer l'imbrication)
+#### Early Return (eliminate nesting)
 
 ```typescript
-// AVANT: imbrication profonde (entropie haute)
+// BEFORE: deep nesting (high entropy)
 function process(user) {
   if (user) {
     if (user.isActive) {
@@ -123,7 +123,7 @@ function process(user) {
   return null;
 }
 
-// APRES: early returns (entropie basse)
+// AFTER: early returns (low entropy)
 function process(user) {
   if (!user) return null;
   if (!user.isActive) return null;
@@ -132,13 +132,13 @@ function process(user) {
 }
 ```
 
-#### Decomposer les conditions complexes
+#### Break down complex conditions
 
 ```typescript
-// AVANT
+// BEFORE
 if (user.age >= 18 && user.country === 'FR' && !user.banned && user.email.includes('@')) { }
 
-// APRES
+// AFTER
 const isEligible = user.age >= 18
   && user.country === 'FR'
   && !user.banned
@@ -146,59 +146,59 @@ const isEligible = user.age >= 18
 if (isEligible) { }
 ```
 
-#### Eliminer le code mort
+#### Eliminate dead code
 
 ```bash
-# Trouver les exports non utilises
-# Trouver les fonctions jamais appelees
-# Supprimer les imports inutiles
-# Retirer les commentaires obsoletes
-# Enlever les fichiers orphelins
+# Find unused exports
+# Find functions never called
+# Remove unused imports
+# Remove obsolete comments
+# Remove orphan files
 ```
 
-#### Consolider les duplications
+#### Consolidate duplications
 
 ```
-Regle des 3 : refactorer a la 3eme duplication, pas avant.
-- 1ere occurrence : ecrire le code
-- 2eme occurrence : noter la duplication (commentaire)
-- 3eme occurrence : extraire dans une fonction/module
+Rule of 3: refactor on the 3rd duplication, not before.
+- 1st occurrence: write the code
+- 2nd occurrence: note the duplication (comment)
+- 3rd occurrence: extract into a function/module
 ```
 
 ## Workflow
 
-1. MESURER la complexite actuelle (metriques)
-2. Identifier le code smell
-3. Ecrire/verifier les tests
-4. Appliquer le refactoring
-5. MESURER la complexite apres (doit diminuer)
-6. Verifier les tests
+1. MEASURE current complexity (metrics)
+2. Identify the code smell
+3. Write/verify tests
+4. Apply the refactoring
+5. MEASURE complexity after (must decrease)
+6. Verify tests
 7. Commit
-8. Repeter
+8. Repeat
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux dev..."_
-- _"Je veux refactor..."_
+- _"I want to dev..."_
+- _"I want to refactor..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: Extract Service Refactoring
@@ -305,7 +305,7 @@ export async function createOrder(req: Request, res: Response, next: NextFunctio
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

@@ -1,19 +1,19 @@
 ---
 sidebar_position: 15
 title: "performance"
-description: "IMPORTANT: LCP  2.5s - Optimiser les images above-the-fold. IMPORTANT: INP  200ms - Eviter les operations bloquantes. IMPORTANT: CLS  0.1 - Toujours s"
+description: "IMPORTANT: LCP  2.5s - Optimize above-the-fold images. IMPORTANT: INP  200ms - Avoid blocking operations. IMPORTANT: CLS  0.1 - Always specify media d"
 tags:
   - "rule"
   - "performance"
 ---
 
-# Regles: performance
+# Rules: performance
 
-> IMPORTANT: LCP &lt; 2.5s - Optimiser les images above-the-fold. IMPORTANT: INP &lt; 200ms - Eviter les operations bloquantes. IMPORTANT: CLS &lt; 0.1 - Toujours specifier les dimensions des medias. YOU MUST ut
+> IMPORTANT: LCP &lt; 2.5s - Optimize above-the-fold images. IMPORTANT: INP &lt; 200ms - Avoid blocking operations. IMPORTANT: CLS &lt; 0.1 - Always specify media dimensions. YOU MUST use code splitting for larg
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.tsx`
 - `**/*.jsx`
@@ -22,83 +22,83 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 - `**/app/**`
 - `**/api/**`
 
-## Regles detaillees
+## Detailed rules
 
 # Performance Rules
 
 ## Core Web Vitals
 
-| Metrique | Cible | Description |
+| Metric | Target | Description |
 |----------|-------|-------------|
 | **LCP** | &lt; 2.5s | Largest Contentful Paint |
 | **INP** | &lt; 200ms | Interaction to Next Paint |
 | **CLS** | &lt; 0.1 | Cumulative Layout Shift |
 
 ## Images
-- Utiliser `next/image` avec `width`/`height` explicites
-- `priority` pour images above-the-fold, `loading="lazy"` pour le reste
-- Formats modernes : AVIF/WebP avec fallback
+- Use `next/image` with explicit `width`/`height`
+- `priority` for above-the-fold images, `loading="lazy"` for the rest
+- Modern formats: AVIF/WebP with fallback
 
 ## JavaScript
-- Code splitting avec `dynamic()` ou `React.lazy()` pour composants lourds
-- `React.memo` pour composants couteux, `useMemo`/`useCallback` pour calculs/fonctions
-- Debounce (recherche: 300ms) et throttle (scroll: 100ms)
+- Code splitting with `dynamic()` or `React.lazy()` for heavy components
+- `React.memo` for expensive components, `useMemo`/`useCallback` for computations/functions
+- Debounce (search: 300ms) and throttle (scroll: 100ms)
 
 ## CSS
-- Reserver l'espace avec `aspect-ratio` pour eviter CLS
-- Preload des fonts (`rel="preload"`, `as="font"`)
+- Reserve space with `aspect-ratio` to avoid CLS
+- Preload fonts (`rel="preload"`, `as="font"`)
 
 ## Data fetching
-- Cache avec SWR/React Query (`staleTime`, `dedupingInterval`)
-- Pagination ou infinite scroll (jamais charger toutes les donnees)
+- Cache with SWR/React Query (`staleTime`, `dedupingInterval`)
+- Pagination or infinite scroll (never load all the data)
 
 ## Bundle
-- Imports specifiques (`import \{ debounce \} from 'lodash-es'`, pas `import _ from 'lodash'`)
-- Analyser avec `ANALYZE=true npm run build`
+- Specific imports (`import \{ debounce \} from 'lodash-es'`, not `import _ from 'lodash'`)
+- Analyze with `ANALYZE=true npm run build`
 
 ## Preloading
-- `rel="prefetch"` pour routes probables
-- `rel="dns-prefetch"` pour domaines externes
-- `rel="preload"` pour ressources critiques du rendu initial
-- Pattern PRPL : Push (critique) / Render (initial route) / Pre-cache (autres) / Lazy-load (reste)
+- `rel="prefetch"` for likely routes
+- `rel="dns-prefetch"` for external domains
+- `rel="preload"` for critical resources of the initial render
+- PRPL pattern: Push (critical) / Render (initial route) / Pre-cache (others) / Lazy-load (rest)
 
-## Lazy loading avance
-- Par visibilite : `IntersectionObserver` ou `loading="lazy"` pour composants/media hors ecran
-- Par interaction : charger au hover/focus avant le click (preconnect + import())
-- Virtual lists pour listes &gt; 100 items (`react-window`, `@tanstack/react-virtual`)
+## Advanced lazy loading
+- By visibility: `IntersectionObserver` or `loading="lazy"` for off-screen components/media
+- By interaction: load on hover/focus before the click (preconnect + import())
+- Virtual lists for lists &gt; 100 items (`react-window`, `@tanstack/react-virtual`)
 
-## Bundle (suite)
-- Tree-shaking : ESM only, `sideEffects: false` dans `package.json`, imports nommes
-- Vite : `build.rollupOptions.output.manualChunks` pour separer vendors, analyze via `rollup-plugin-visualizer`
-- Scripts tiers : `&lt;Script strategy="lazyOnload"&gt;` (Next.js) ou defer/async + Partytown pour offload worker
+## Bundle (continued)
+- Tree-shaking: ESM only, `sideEffects: false` in `package.json`, named imports
+- Vite: `build.rollupOptions.output.manualChunks` to split vendors, analyze via `rollup-plugin-visualizer`
+- Third-party scripts: `&lt;Script strategy="lazyOnload"&gt;` (Next.js) or defer/async + Partytown to offload to a worker
 
-## Rendering patterns modernes
-- Islands Architecture : hydrater uniquement les zones interactives (Astro, Fresh)
-- View Transitions API : `document.startViewTransition()` pour transitions SPA-like sans framework
-- Streaming SSR + Suspense : envoyer le shell tot, streamer le contenu pret
-- Progressive/Selective Hydration : React 18+ hydrate par priorite d'interaction
-- ISR (Incremental Static Regeneration) : `revalidate` pour pages semi-statiques
+## Modern rendering patterns
+- Islands Architecture: hydrate only interactive zones (Astro, Fresh)
+- View Transitions API: `document.startViewTransition()` for SPA-like transitions without a framework
+- Streaming SSR + Suspense: send the shell early, stream content as it's ready
+- Progressive/Selective Hydration: React 18+ hydrates by interaction priority
+- ISR (Incremental Static Regeneration): `revalidate` for semi-static pages
 
-## Regles IMPORTANTES
+## IMPORTANT Rules
 
-IMPORTANT: LCP &lt; 2.5s - Optimiser les images above-the-fold.
-IMPORTANT: INP &lt; 200ms - Eviter les operations bloquantes.
-IMPORTANT: CLS &lt; 0.1 - Toujours specifier les dimensions des medias.
-YOU MUST utiliser le code splitting pour les gros composants.
-YOU MUST memoizer les composants couteux (React.memo, useMemo).
-NEVER charger de bibliotheques entieres (lodash, moment).
-NEVER bloquer le thread principal avec des calculs lourds.
+IMPORTANT: LCP &lt; 2.5s - Optimize above-the-fold images.
+IMPORTANT: INP &lt; 200ms - Avoid blocking operations.
+IMPORTANT: CLS &lt; 0.1 - Always specify media dimensions.
+YOU MUST use code splitting for large components.
+YOU MUST memoize expensive components (React.memo, useMemo).
+NEVER load entire libraries (lodash, moment).
+NEVER block the main thread with heavy computations.
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

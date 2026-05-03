@@ -1,32 +1,32 @@
 ---
 sidebar_position: 25
 title: "svelte"
-description: "Svelte 5+ utilise les **runes** : `$state`, `$derived`, `$effect`, `$props`. Ne plus utiliser la syntaxe reactive `$:` ni `let` reactif implicite."
+description: "Svelte 5+ uses **runes**: `$state`, `$derived`, `$effect`, `$props`. Do not use the `$:` reactive syntax or implicit reactive `let` anymore."
 tags:
   - "rule"
   - "svelte"
 ---
 
-# Regles: svelte
+# Rules: svelte
 
-> Svelte 5+ utilise les **runes** : `$state`, `$derived`, `$effect`, `$props`. Ne plus utiliser la syntaxe reactive `$:` ni `let` reactif implicite.
+> Svelte 5+ uses **runes**: `$state`, `$derived`, `$effect`, `$props`. Do not use the `$:` reactive syntax or implicit reactive `let` anymore.
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.svelte`
 - `**/*.svelte.ts`
 - `**/*.svelte.js`
 - `**/svelte.config.*`
 
-## Regles detaillees
+## Detailed rules
 
 # Svelte 5 / SvelteKit Rules
 
 ## Runes (Svelte 5)
 
-Svelte 5+ utilise les **runes** : `$state`, `$derived`, `$effect`, `$props`. Ne plus utiliser la syntaxe reactive `$:` ni `let` reactif implicite.
+Svelte 5+ uses **runes**: `$state`, `$derived`, `$effect`, `$props`. Do not use the `$:` reactive syntax or implicit reactive `let` anymore.
 
 ```svelte
 <script lang="ts">
@@ -51,10 +51,10 @@ Svelte 5+ utilise les **runes** : `$state`, `$derived`, `$effect`, `$props`. Ne 
 | `$: \{ console.log(count) \}` | `$effect(() =&gt; \{ console.log(count) \})` |
 | `&lt;slot /&gt;` | `\{@render children?.()\}` |
 
-## Props et events
+## Props and events
 
-- `$props()` avec destructuring typé
-- Events via **callbacks props** (pas `createEventDispatcher`)
+- `$props()` with typed destructuring
+- Events via **callback props** (not `createEventDispatcher`)
 
 ```svelte
 <script lang="ts">
@@ -66,7 +66,7 @@ Svelte 5+ utilise les **runes** : `$state`, `$derived`, `$effect`, `$props`. Ne 
 
 ## Stores (Svelte 5)
 
-Utiliser les **runes classes** plutôt que `writable()` quand possible :
+Use **rune classes** rather than `writable()` when possible:
 
 ```ts
 // lib/cart.svelte.ts
@@ -82,19 +82,19 @@ class Cart {
 export const cart = new Cart()
 ```
 
-Pour compatibilité : `writable()` / `readable()` restent valides mais préférer les runes.
+For compatibility: `writable()` / `readable()` remain valid but prefer runes.
 
 ## SvelteKit
 
 | Feature | Usage |
 |---------|-------|
-| `+page.svelte` | Composant de page |
-| `+page.server.ts` | Load function server-only (DB, secrets) |
-| `+page.ts` | Load function universelle (client + server) |
-| `+layout.svelte` | Layout parent |
+| `+page.svelte` | Page component |
+| `+page.server.ts` | Server-only load function (DB, secrets) |
+| `+page.ts` | Universal load function (client + server) |
+| `+layout.svelte` | Parent layout |
 | `+server.ts` | API route / endpoint |
-| `hooks.server.ts` | Middleware serveur (auth, CORS) |
-| `form actions` | Mutations progressive enhancement |
+| `hooks.server.ts` | Server middleware (auth, CORS) |
+| `form actions` | Progressive enhancement mutations |
 
 ### Load functions
 
@@ -130,40 +130,40 @@ export const actions = {
 
 ## Anti-patterns
 
-| A eviter | Preferer |
+| Avoid | Prefer |
 |----------|----------|
-| `let count = 0` reactif (Svelte 5) | `let count = $state(0)` |
+| `let count = 0` reactive (Svelte 5) | `let count = $state(0)` |
 | `$: double = count * 2` (Svelte 5) | `$derived()` |
 | `createEventDispatcher` | Callback props |
 | `&lt;slot /&gt;` (Svelte 5) | `\{@render children?.()\}` |
-| Données sensibles dans `+page.ts` | Utiliser `+page.server.ts` |
-| `fetch` direct dans le composant | `load` function avec SvelteKit's fetch |
+| Sensitive data in `+page.ts` | Use `+page.server.ts` |
+| `fetch` directly in the component | `load` function with SvelteKit's fetch |
 
 ## Performance
 
-- SSR par défaut dans SvelteKit
-- `export const prerender = true` pour pages statiques
-- `export const ssr = false` pour CSR-only (dashboards privés)
-- Compilation AOT → bundles minuscules, pas de virtual DOM
+- SSR by default in SvelteKit
+- `export const prerender = true` for static pages
+- `export const ssr = false` for CSR-only (private dashboards)
+- AOT compilation → tiny bundles, no virtual DOM
 
-## Regles
+## Rules
 
-IMPORTANT: Svelte 5 : utiliser les runes ($state, $derived, $effect, $props).
-IMPORTANT: Données sensibles (secrets, DB queries) : uniquement dans `+page.server.ts`.
-YOU MUST typer les props via `$props()` avec TypeScript.
-NEVER utiliser `createEventDispatcher` (legacy, utiliser callback props).
-NEVER exposer `DATABASE_URL` ou secrets dans `+page.ts` (universel = leak client).
+IMPORTANT: Svelte 5: use runes ($state, $derived, $effect, $props).
+IMPORTANT: Sensitive data (secrets, DB queries): only in `+page.server.ts`.
+YOU MUST type props via `$props()` with TypeScript.
+NEVER use `createEventDispatcher` (legacy, use callback props).
+NEVER expose `DATABASE_URL` or secrets in `+page.ts` (universal = client leak).
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

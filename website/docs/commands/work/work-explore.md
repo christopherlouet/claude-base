@@ -1,7 +1,7 @@
 ---
 sidebar_position: 7
 title: "/work:work-explore"
-description: "Analyse le codebase sans ecrire de code. Mode EXPLORATION uniquement."
+description: "Analyzes the codebase without writing code. EXPLORATION mode only."
 tags:
   - "work"
   - "command"
@@ -13,60 +13,60 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--work">WORK</span>
 
 
-# Agent WORK-EXPLORE
+# WORK-EXPLORE Agent
 
-Analyse le codebase sans ecrire de code. Mode EXPLORATION uniquement.
+Analyzes the codebase without writing code. EXPLORATION mode only.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Comprendre en profondeur une partie du codebase avant toute modification.
-L'exploration est la premiere etape obligatoire : **EXPLORE -&gt; PLAN -&gt; CODE -&gt; COMMIT**
+Deeply understand a part of the codebase before any modification.
+Exploration is the mandatory first step: **EXPLORE -&gt; PLAN -&gt; CODE -&gt; COMMIT**
 
 ## Workflow
 
-- Identifier le perimetre : recherche par nom (glob), par contenu (grep), navigation arborescence
-- Localiser les points d'entree (routes, App.tsx, index.ts, bin/, commands/)
-- Analyser l'architecture : structure dossiers, separation responsabilites, patterns (MVC, Clean Arch...)
-- Analyser le code : conventions de nommage, style (fonctionnel/OOP), gestion erreurs, typage
-- Lister les dependances principales et internes
-- Examiner les tests : framework, couverture, patterns (mocks, fixtures)
-- Lire la documentation existante (README, docs/, JSDoc, types)
-- Identifier les risques et la dette technique
+- Identify the scope: search by name (glob), by content (grep), tree navigation
+- Locate entry points (routes, App.tsx, index.ts, bin/, commands/)
+- Analyze the architecture: folder structure, separation of responsibilities, patterns (MVC, Clean Arch...)
+- Analyze the code: naming conventions, style (functional/OOP), error handling, typing
+- List the main and internal dependencies
+- Examine the tests: framework, coverage, patterns (mocks, fixtures)
+- Read the existing documentation (README, docs/, JSDoc, types)
+- Identify risks and technical debt
 
-## Output attendu
+## Expected output
 
-1. **Fichiers cles** : Tableau (fichier, role, lignes)
-2. **Architecture** : Structure et patterns identifies
-3. **Conventions** : Nommage, style, tests
-4. **Dependances** : Packages et leurs usages
-5. **Points d'attention** : Risques et dette technique
-6. **Recommandations** : Suggestions pour la suite
+1. **Key files**: Table (file, role, lines)
+2. **Architecture**: Structure and identified patterns
+3. **Conventions**: Naming, style, tests
+4. **Dependencies**: Packages and their usages
+5. **Points of attention**: Risks and technical debt
+6. **Recommendations**: Suggestions for the next steps
 
-## Agents lies
+## Related agents
 
-| Apres | Usage |
+| After | Usage |
 |-------|-------|
-| `/work:work-plan` | Planifier les modifications |
-| `/doc:doc-explain` | Expliquer du code complexe |
-| `/doc:doc-onboard` | Decouverte complete d'un projet |
+| `/work:work-plan` | Plan the modifications |
+| `/doc:doc-explain` | Explain complex code |
+| `/doc:doc-onboard` | Full discovery of a project |
 
 ---
 
-IMPORTANT: Ne jamais ecrire de code en mode exploration - analyse seulement.
+IMPORTANT: Never write code in exploration mode - analysis only.
 
-YOU MUST lire le code source, pas seulement les noms de fichiers.
+YOU MUST read the source code, not just the file names.
 
-NEVER supposer le fonctionnement - verifier dans le code.
+NEVER assume how it works - verify in the code.
 
-Think hard avant de repondre pour fournir une analyse complete et utile.
+Think hard before answering to provide a complete and useful analysis.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes WORK](/docs/commands/work)
-- [Toutes les commandes](/docs/commands)
+- [Back to WORK commands](/docs/commands/work)
+- [All commands](/docs/commands)

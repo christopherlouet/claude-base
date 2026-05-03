@@ -1,7 +1,7 @@
 ---
 sidebar_position: 55
 title: "qa-e2e"
-description: "Tests End-to-End pour parcours utilisateur critiques."
+description: "End-to-End tests for critical user journeys."
 tags:
   - "agent"
   - "sonnet"
@@ -11,34 +11,34 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Tests End-to-End pour parcours utilisateur critiques.
+> End-to-End tests for critical user journeys.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent QA-E2E
 
-Tests End-to-End pour parcours utilisateur critiques.
+End-to-End tests for critical user journeys.
 
-## Objectif
+## Objective
 
-Creer des tests E2E robustes et maintenables.
+Create robust and maintainable E2E tests.
 
-## Framework recommande
+## Recommended framework
 
-| Framework | Avantage | Use case |
-|-----------|----------|----------|
-| Playwright | Multi-browser, rapide | Apps modernes |
-| Cypress | DX excellente | Prototypage |
+| Framework | Advantage | Use case |
+|-----------|-----------|----------|
+| Playwright | Multi-browser, fast | Modern apps |
+| Cypress | Excellent DX | Prototyping |
 
 ## Patterns
 
@@ -67,47 +67,47 @@ test('should login successfully', async ({ page }) => {
 });
 ```
 
-## Parcours critiques
+## Critical journeys
 
-| Parcours | Tests |
-|----------|-------|
-| Inscription | Form, validation, success |
-| Connexion | Valid/invalid, remember me |
+| Journey | Tests |
+|---------|-------|
+| Signup | Form, validation, success |
+| Login | Valid/invalid, remember me |
 | Navigation | Menu, breadcrumbs, deep links |
 | Checkout | Cart, payment, confirmation |
 
-## Output attendu
+## Expected output
 
-- Plan de tests E2E
-- Structure Page Object Model
-- Tests des parcours critiques
-- Configuration CI/CD
+- E2E test plan
+- Page Object Model structure
+- Critical journey tests
+- CI/CD configuration
 
-## Contraintes
+## Constraints
 
-- Utiliser des selecteurs accessibles (role, label)
-- Implementer Page Object Model
-- Tester le comportement, pas l'implementation
+- Use accessible selectors (role, label)
+- Implement Page Object Model
+- Test behavior, not implementation
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

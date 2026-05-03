@@ -1,19 +1,19 @@
 ---
 sidebar_position: 7
 title: "design-style"
-description: "La direction design du projet est definie dans CLAUDE.md :"
+description: "The project's design direction is defined in CLAUDE.md:"
 tags:
   - "rule"
   - "design-style"
 ---
 
-# Regles: design-style
+# Rules: design-style
 
-> La direction design du projet est definie dans CLAUDE.md :
+> The project's design direction is defined in CLAUDE.md:
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.tsx`
 - `**/*.jsx`
@@ -21,119 +21,119 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 - `**/pages/**`
 - `**/app/**`
 
-## Regles detaillees
+## Detailed rules
 
 # Design Style Rules
 
-## Direction artistique
+## Art Direction
 
-La direction design du projet est definie dans CLAUDE.md :
+The project's design direction is defined in CLAUDE.md:
 
 ```markdown
 ## Design Direction
 Style: <direction>
 ```
 
-Si aucune direction n'est specifiee, appliquer `modern` (equivalent de l'ancien glass).
+If no direction is specified, apply `modern` (equivalent of the former glass).
 
-## Directions disponibles
+## Available directions
 
-### terminal — L'interface qui code
-
-| Aspect | Direction |
-|--------|-----------|
-| Palette | Fond noir/tres sombre, accent neon unique (vert, cyan ou ambre), texte clair haute lisibilite |
-| Typographie | Monospace (JetBrains Mono, Fira Code, IBM Plex Mono), hierarchie par poids et taille |
-| Radius | Sharp : 0-4px, bords nets |
-| Spacing | Compact, dense, padding serre (8-12px), grilles alignees |
-| Animations | Scan lines, glow pulse, caret blink, fade-in rapide (100-150ms). Pas de bounce ni de spring |
-| Composants | Cards bordees (1px solid), inputs avec prompt-style, boutons outlined, badges monochromes |
-| Anti-patterns | Coins arrondis &gt; 8px, gradients colores, illustrations cartoon, ombres diffuses, pastels |
-
-### cockpit — Le tableau de bord de pilote
+### terminal — The interface that codes
 
 | Aspect | Direction |
 |--------|-----------|
-| Palette | Dark-first, couleurs fonctionnelles (rouge alerte, vert OK, ambre warning, bleu info), fond sombre stratifie |
-| Typographie | Sans-serif condensee (Inter, DM Sans), monospace pour les donnees chiffrees, hierarchie par densite |
-| Radius | Faible : 4-6px, fonctionnel |
-| Spacing | Dense, grilles multi-colonnes, peu de whitespace, panels juxtaposes |
-| Animations | Transitions rapides (100-200ms), pulse sur indicateurs temps reel, fade pour mises a jour de donnees |
-| Composants | Widgets modulaires, mini-charts inline, badges de statut, KPI cards, tables denses, sparklines |
-| Anti-patterns | Grandes illustrations, whitespace excessif, coins tres arrondis, animations lentes, layouts single-column |
+| Palette | Black/very dark background, single neon accent (green, cyan, or amber), light high-readability text |
+| Typography | Monospace (JetBrains Mono, Fira Code, IBM Plex Mono), hierarchy by weight and size |
+| Radius | Sharp: 0-4px, crisp edges |
+| Spacing | Compact, dense, tight padding (8-12px), aligned grids |
+| Animations | Scan lines, glow pulse, caret blink, fast fade-in (100-150ms). No bounce or spring |
+| Components | Bordered cards (1px solid), prompt-style inputs, outlined buttons, monochrome badges |
+| Anti-patterns | Rounded corners &gt; 8px, colored gradients, cartoon illustrations, diffuse shadows, pastels |
 
-### vitality — L'energie positive
-
-| Aspect | Direction |
-|--------|-----------|
-| Palette | Vive et harmonieuse, 3-4 couleurs de categorie bien distinctes, fond clair ou creme, accents energiques |
-| Typographie | Sans-serif arrondie et amicale (Nunito, Plus Jakarta Sans, DM Sans), titres gras et engageants |
-| Radius | Genereux : 12-16px, formes douces |
-| Spacing | Aere, padding confortable (16-24px), espaces de respiration entre sections |
-| Animations | Micro-animations de progression (barres, compteurs), spring/bounce subtils (200-300ms), celebratory feedback |
-| Composants | Cards colorees avec icones, progress bars, streaks, badges de recompense, boutons pleins et ronds |
-| Anti-patterns | Dark mode par defaut, monospace, esthetique technique/austere, absence de couleur, layouts denses |
-
-### editorial — Le magazine numerique
+### cockpit — The pilot's dashboard
 
 | Aspect | Direction |
 |--------|-----------|
-| Palette | Neutre et sobre, noir/blanc dominant, 1 couleur d'accent editoriale, fond blanc ou creme papier |
-| Typographie | Serif pour titres (Playfair Display, Lora, Merriweather), sans-serif pour corps, hierarchie tres marquee |
-| Radius | Minimal : 0-4px, lignes droites |
-| Spacing | Tres aere, grands espaces blancs, marges genereuses, max-width 65-75ch pour le texte |
-| Animations | Subtiles, fade-in au scroll (200-400ms), transitions de page douces. Aucune animation decorative |
-| Composants | Cartes image plein-format, citations stylisees, separateurs fins, navigation discrete, listes epurees |
-| Anti-patterns | Surcharge visuelle, couleurs vives multiples, emojis, badges gamifies, grilles complexes, ombres prononcees |
+| Palette | Dark-first, functional colors (red alert, green OK, amber warning, blue info), layered dark background |
+| Typography | Condensed sans-serif (Inter, DM Sans), monospace for numerical data, hierarchy by density |
+| Radius | Low: 4-6px, functional |
+| Spacing | Dense, multi-column grids, little whitespace, juxtaposed panels |
+| Animations | Fast transitions (100-200ms), pulse on real-time indicators, fade for data updates |
+| Components | Modular widgets, inline mini-charts, status badges, KPI cards, dense tables, sparklines |
+| Anti-patterns | Large illustrations, excessive whitespace, very rounded corners, slow animations, single-column layouts |
 
-### glass — La transparence moderne
-
-| Aspect | Direction |
-|--------|-----------|
-| Palette | Fond avec profondeur (gradient subtil ou image), surfaces semi-transparentes, accent lumineux unique |
-| Typographie | Sans-serif geometrique (Geist, Inter, SF Pro), poids light a medium, hierarchie par opacite |
-| Radius | Moyen-genereux : 12-16px, formes fluides |
-| Spacing | Equilibre, padding moyen (16-20px), layering avec espacement entre surfaces |
-| Animations | Blur transitions, fade avec depth (200-300ms), hover avec elevation, parallax subtil |
-| Composants | Cards glassmorphism (backdrop-blur + bg opacity), overlays, floating panels, boutons translucides |
-| Anti-patterns | Bords durs, fonds opaques plats, ombres dures, high contrast brut, esthetique technique/terminal |
-
-### signal — L'efficacite brute
+### vitality — Positive energy
 
 | Aspect | Direction |
 |--------|-----------|
-| Palette | Neutre (gris/blanc), couleurs limitees au strict signal (action, erreur, succes), pas de decoration |
-| Typographie | Sans-serif system-ui ou geometrique (Inter, system-ui), tailles serrees, pas de fioritures |
-| Radius | Faible : 4-6px, utilitaire |
-| Spacing | Serre mais lisible, padding minimal (8-12px), densite maximale sans sacrifier la lisibilite |
-| Animations | Quasi-absentes, transitions instantanees (50-100ms), feedback immediat, pas d'animation decorative |
-| Composants | Inputs inline, actions contextuelles, commande palette, raccourcis clavier, tables compactes, menus plats |
-| Anti-patterns | Illustrations, gradients, ombres decoratives, animations longues, grandes marges, fioritures visuelles |
+| Palette | Vivid and harmonious, 3-4 well-distinct category colors, light or cream background, energetic accents |
+| Typography | Rounded and friendly sans-serif (Nunito, Plus Jakarta Sans, DM Sans), bold and engaging headings |
+| Radius | Generous: 12-16px, soft shapes |
+| Spacing | Airy, comfortable padding (16-24px), breathing space between sections |
+| Animations | Progression micro-animations (bars, counters), subtle spring/bounce (200-300ms), celebratory feedback |
+| Components | Colored cards with icons, progress bars, streaks, reward badges, full and rounded buttons |
+| Anti-patterns | Default dark mode, monospace, technical/austere aesthetic, lack of color, dense layouts |
 
-## Application des directions
+### editorial — The digital magazine
 
-IMPORTANT: La direction s'applique a TOUS les themes du projet. Un theme (light, dark, sepia) ne change que la palette de couleurs, pas la personnalite visuelle.
+| Aspect | Direction |
+|--------|-----------|
+| Palette | Neutral and sober, dominant black/white, 1 editorial accent color, white or paper-cream background |
+| Typography | Serif for headings (Playfair Display, Lora, Merriweather), sans-serif for body, very pronounced hierarchy |
+| Radius | Minimal: 0-4px, straight lines |
+| Spacing | Very airy, large whitespace, generous margins, max-width 65-75ch for text |
+| Animations | Subtle, fade-in on scroll (200-400ms), soft page transitions. No decorative animation |
+| Components | Full-format image cards, stylized quotes, thin separators, discreet navigation, clean lists |
+| Anti-patterns | Visual overload, multiple bright colors, emojis, gamified badges, complex grids, pronounced shadows |
 
-IMPORTANT: Ne pas mixer les directions. Si le projet est `terminal`, un theme light reste monospace, compact, avec bords nets.
+### glass — Modern transparency
 
-YOU MUST lire la directive `Style:` dans CLAUDE.md avant de generer du code UI.
+| Aspect | Direction |
+|--------|-----------|
+| Palette | Background with depth (subtle gradient or image), semi-transparent surfaces, single luminous accent |
+| Typography | Geometric sans-serif (Geist, Inter, SF Pro), light to medium weights, hierarchy by opacity |
+| Radius | Medium-generous: 12-16px, fluid shapes |
+| Spacing | Balanced, medium padding (16-20px), layering with spacing between surfaces |
+| Animations | Blur transitions, fade with depth (200-300ms), hover with elevation, subtle parallax |
+| Components | Glassmorphism cards (backdrop-blur + bg opacity), overlays, floating panels, translucent buttons |
+| Anti-patterns | Hard edges, flat opaque backgrounds, hard shadows, raw high contrast, technical/terminal aesthetic |
 
-YOU MUST adapter les composants, espacements, animations et typographie a la direction choisie.
+### signal — Raw efficiency
 
-NEVER generer du code UI generique/par defaut quand une direction est specifiee.
+| Aspect | Direction |
+|--------|-----------|
+| Palette | Neutral (gray/white), colors limited to strict signal (action, error, success), no decoration |
+| Typography | Sans-serif system-ui or geometric (Inter, system-ui), tight sizes, no frills |
+| Radius | Low: 4-6px, utilitarian |
+| Spacing | Tight but readable, minimal padding (8-12px), maximum density without sacrificing readability |
+| Animations | Near-absent, instant transitions (50-100ms), immediate feedback, no decorative animation |
+| Components | Inline inputs, contextual actions, command palette, keyboard shortcuts, compact tables, flat menus |
+| Anti-patterns | Illustrations, gradients, decorative shadows, long animations, large margins, visual frills |
 
-NEVER changer la direction en cours de projet sans instruction explicite.
+## Applying directions
 
-## Application automatique
+IMPORTANT: The direction applies to ALL of the project's themes. A theme (light, dark, sepia) only changes the color palette, not the visual personality.
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+IMPORTANT: Do not mix directions. If the project is `terminal`, a light theme stays monospace, compact, with crisp edges.
+
+YOU MUST read the `Style:` directive in CLAUDE.md before generating UI code.
+
+YOU MUST adapt components, spacing, animations, and typography to the chosen direction.
+
+NEVER generate generic/default UI code when a direction is specified.
+
+NEVER change direction mid-project without explicit instruction.
+
+## Automatic application
+
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

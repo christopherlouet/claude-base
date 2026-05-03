@@ -1,7 +1,7 @@
 ---
 sidebar_position: 21
 title: "dev-trpc"
-description: "APIs type-safe avec tRPC."
+description: "Type-safe APIs with tRPC."
 tags:
   - "agent"
   - "haiku"
@@ -11,27 +11,27 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> APIs type-safe avec tRPC.
+> Type-safe APIs with tRPC.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent DEV-TRPC
 
-APIs type-safe avec tRPC.
+Type-safe APIs with tRPC.
 
-## Objectif
+## Goal
 
-Creer des APIs avec inference de types automatique.
+Create APIs with automatic type inference.
 
 ## Architecture
 
@@ -46,7 +46,7 @@ server/
 
 ## Server
 
-### Procedure publique
+### Public procedure
 
 ```typescript
 export const userRouter = router({
@@ -58,7 +58,7 @@ export const userRouter = router({
 });
 ```
 
-### Procedure protegee
+### Protected procedure
 
 ```typescript
 me: protectedProcedure.query(async ({ ctx }) => {
@@ -76,38 +76,38 @@ const mutation = trpc.user.update.useMutation({
 });
 ```
 
-## Output attendu
+## Expected output
 
-- Structure routers
-- Procedures avec validation Zod
-- Configuration client
-- Integration React Query
+- Routers structure
+- Procedures with Zod validation
+- Client configuration
+- React Query integration
 
-## Contraintes
+## Constraints
 
-- Valider tous les inputs avec Zod
-- Utiliser protectedProcedure pour auth
-- Gerer les erreurs proprement
+- Validate all inputs with Zod
+- Use protectedProcedure for auth
+- Handle errors cleanly
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "biz-personas"
-description: "Creation de personas utilisateur bases sur des donnees."
+description: "Creation of user personas based on data."
 tags:
   - "agent"
   - "sonnet"
@@ -11,77 +11,77 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Creation de personas utilisateur bases sur des donnees.
+> Creation of user personas based on data.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent BIZ-PERSONAS
 
-Creation de personas utilisateur bases sur des donnees.
+Creation of user personas based on data.
 
 ## Workflow
 
-1. **Collecter les donnees** : interviews (10-15 min), analytics, surveys, support tickets, sales calls
-2. **Identifier les patterns** : clustering par comportement et objectifs
-3. **Creer 3-5 personas** : profil, citation cle, objectifs, frustrations, comportements, criteres de decision
-4. **Mapper features/personas** : frustration -> notre solution
-5. **Valider** : feedback sales/support, affinage
+1. **Collect data**: interviews (10-15 min), analytics, surveys, support tickets, sales calls
+2. **Identify patterns**: clustering by behavior and goals
+3. **Create 3-5 personas**: profile, key quote, goals, frustrations, behaviors, decision criteria
+4. **Map features/personas**: frustration -> our solution
+5. **Validate**: sales/support feedback, refinement
 
-## Pour chaque persona
+## For each persona
 
-- Profil (nom, age, profession, situation)
-- Citation cle resumant sa vision/frustration
-- Objectifs professionnels et personnels
-- Pain points avec impact et frequence
-- Parcours type et outils utilises
-- Criteres de decision (prix, UX, support, integration, securite)
-- Objections potentielles
+- Profile (name, age, profession, situation)
+- Key quote summarizing their vision/frustration
+- Professional and personal goals
+- Pain points with impact and frequency
+- Typical journey and tools used
+- Decision criteria (price, UX, support, integration, security)
+- Potential objections
 
-## Output attendu
+## Expected output
 
-1. 3-5 personas documentes
-2. Persona principal identifie
-3. Pain points priorises par persona
-4. Mapping features/personas
+1. 3-5 documented personas
+2. Primary persona identified
+3. Pain points prioritized per persona
+4. Features/personas mapping
 
-## Directives
+## Guidelines
 
-- NEVER inventer des personas sans donnees (les signaler comme hypotheses)
-- IMPORTANT: Limiter a 3-5 personas maximum
-- NEVER inclure de details irrelevants ("aime les chats" n'aide pas)
-- Les personas doivent evoluer avec le produit
+- NEVER invent personas without data (flag them as hypotheses)
+- IMPORTANT: Limit to 3-5 personas maximum
+- NEVER include irrelevant details ("likes cats" doesn't help)
+- Personas must evolve with the product
 
-Think hard about les vrais pain points des utilisateurs.
+Think hard about the real pain points of users.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

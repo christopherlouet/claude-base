@@ -1,7 +1,7 @@
 ---
 sidebar_position: 26
 title: "/ops:ops-observability-stack"
-description: "Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager)."
+description: "Deployment of a complete observability stack (Prometheus, Grafana, Loki, Alertmanager)."
 tags:
   - "ops"
   - "command"
@@ -13,59 +13,59 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent OBSERVABILITY STACK
+# OBSERVABILITY STACK Agent
 
-Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager).
+Deployment of a complete observability stack (Prometheus, Grafana, Loki, Alertmanager).
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Deployer une stack d'observabilite production-ready, en Docker Compose pour
-dev/staging ou en Kubernetes avec Helm pour la production.
+Deploy a production-ready observability stack, with Docker Compose for
+dev/staging or Kubernetes with Helm for production.
 
 ## Workflow
 
-- Identifier le mode de deploiement (Docker Compose, Kubernetes, Victoria Metrics, managee)
-- Generer la structure des fichiers de configuration
-- Configurer Prometheus (scrape configs, alert rules)
-- Configurer Grafana (provisioning datasources, dashboards)
-- Configurer Alertmanager (routes, receivers Slack/PagerDuty/email)
-- Configurer Loki + Promtail (agregation des logs)
-- Ajouter node-exporter et cAdvisor pour les metriques systeme
-- Documenter les commandes de deploiement et verification
+- Identify the deployment mode (Docker Compose, Kubernetes, Victoria Metrics, managed)
+- Generate the configuration files structure
+- Configure Prometheus (scrape configs, alert rules)
+- Configure Grafana (provisioning datasources, dashboards)
+- Configure Alertmanager (routes, Slack/PagerDuty/email receivers)
+- Configure Loki + Promtail (log aggregation)
+- Add node-exporter and cAdvisor for system metrics
+- Document the deployment and verification commands
 
-## Output attendu
+## Expected output
 
-1. **Configuration complete** : docker-compose.yml ou values Helm
-2. **Prometheus** : prometheus.yml, alert.rules.yml
-3. **Alertmanager** : alertmanager.yml avec receivers
-4. **Loki/Promtail** : configs pour l'agregation des logs
-5. **Grafana** : provisioning datasources et dashboards
+1. **Complete configuration**: docker-compose.yml or Helm values
+2. **Prometheus**: prometheus.yml, alert.rules.yml
+3. **Alertmanager**: alertmanager.yml with receivers
+4. **Loki/Promtail**: configs for log aggregation
+5. **Grafana**: datasources and dashboards provisioning
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-monitoring` | Instrumenter le code applicatif |
-| `/ops:ops-k8s` | Deployer sur Kubernetes |
-| `/ops:ops-docker` | Containeriser les services |
+| `/ops:ops-monitoring` | Instrument application code |
+| `/ops:ops-k8s` | Deploy on Kubernetes |
+| `/ops:ops-docker` | Containerize the services |
 
 ---
 
-IMPORTANT: Toujours tester la stack en staging avant production.
+IMPORTANT: Always test the stack in staging before production.
 
-IMPORTANT: Configurer des alertes AVANT de deployer en production.
+IMPORTANT: Configure alerts BEFORE deploying to production.
 
-YOU MUST avoir du stockage persistant pour les donnees de metriques.
+YOU MUST have persistent storage for the metrics data.
 
-NEVER exposer Prometheus/Alertmanager sans authentification en production.
+NEVER expose Prometheus/Alertmanager without authentication in production.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

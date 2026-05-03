@@ -1,7 +1,7 @@
 ---
 sidebar_position: 48
 title: "work-batch"
-description: "Execution sequentielle de user stories depuis un fichier PRD. Mode autonome qui implemente et commit chaque story une par une. Declencher quand l'utilisateur veut traiter un backlog, executer plusieurs stories, ou lancer un mode autonome."
+description: "Sequential execution of user stories from a PRD file. Autonomous mode that implements and commits each story one by one. Trigger when the user wants to process a backlog, execute multiple stories, or launch an autonomous mode."
 tags:
   - "skill"
   - "fork"
@@ -11,34 +11,34 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Execution sequentielle de user stories depuis un fichier PRD. Mode autonome qui implemente et commit chaque story une par une. Declencher quand l'utilisateur veut traiter un backlog, executer plusieurs stories, ou lancer un mode autonome.
+> Sequential execution of user stories from a PRD file. Autonomous mode that implements and commits each story one by one. Trigger when the user wants to process a backlog, execute multiple stories, or launch an autonomous mode.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `work`, `batch` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `work`, `batch` |
 
-## Description detaillee
+## Detailed description
 
 # Batch Execution Mode
 
-Execution autonome et sequentielle de user stories depuis un fichier PRD.
+Autonomous and sequential execution of user stories from a PRD file.
 
-## Format du fichier PRD
+## PRD file format
 
 ### JSON (`prd.json`)
 
 ```json
 {
-  "project": "nom-du-projet",
+  "project": "project-name",
   "stories": [
     {
       "id": "US-001",
-      "title": "Titre de la story",
-      "description": "Description detaillee",
+      "title": "Story title",
+      "description": "Detailed description",
       "priority": "P1",
       "acceptance_criteria": [
         "Given X, When Y, Then Z"
@@ -52,46 +52,46 @@ Execution autonome et sequentielle de user stories depuis un fichier PRD.
 ### Markdown (`prd.md`)
 
 ```markdown
-## US-001: Titre de la story
+## US-001: Story title
 **Priority**: P1
-**Description**: Description detaillee
+**Description**: Detailed description
 **Acceptance criteria**:
 - Given X, When Y, Then Z
 **Files**: src/module.ts, src/module.test.ts
 ```
 
-## Workflow par story
+## Workflow per story
 
-Pour chaque story dans l'ordre de priorite (P1 → P2 → P3) :
+For each story in priority order (P1 → P2 → P3):
 
-### 1. LOAD - Charger la story
+### 1. LOAD - Load the story
 
-- Lire la story depuis le fichier PRD
-- Afficher le titre et la description
-- Verifier les pre-requis (fichiers, dependances)
+- Read the story from the PRD file
+- Display the title and description
+- Check prerequisites (files, dependencies)
 
-### 2. IMPLEMENT - Cycle TDD
+### 2. IMPLEMENT - TDD cycle
 
-- Ecrire les tests d'abord (RED)
-- Implementer le code minimal (GREEN)
-- Refactorer si necessaire (REFACTOR)
-- Verifier les criteres d'acceptation
+- Write the tests first (RED)
+- Implement the minimal code (GREEN)
+- Refactor if necessary (REFACTOR)
+- Verify the acceptance criteria
 
-### 3. COMMIT - Sauvegarder
+### 3. COMMIT - Save
 
-- Lancer les tests : `npm test` / `pytest` / `go test`
-- Si tests OK : commit avec `feat(scope): US-XXX description`
-- Si tests KO : STOP et signaler le blocage
+- Run the tests: `npm test` / `pytest` / `go test`
+- If tests OK: commit with `feat(scope): US-XXX description`
+- If tests KO: STOP and report the blocker
 
-### 4. REPORT - Mettre a jour l'etat
+### 4. REPORT - Update the state
 
-- Marquer la story comme terminee dans `.claude/output/batch/progress.json`
-- Logger le temps et les fichiers modifies
-- Passer a la story suivante
+- Mark the story as done in `.claude/output/batch/progress.json`
+- Log the time and modified files
+- Move on to the next story
 
-## Fichier de progression
+## Progress file
 
-Sauvegarde automatique dans `.claude/output/batch/progress.json` :
+Automatic save in `.claude/output/batch/progress.json`:
 
 ```json
 {
@@ -104,48 +104,48 @@ Sauvegarde automatique dans `.claude/output/batch/progress.json` :
 }
 ```
 
-## Resume apres interruption
+## Resume after interruption
 
-Si `progress.json` existe, reprendre a la derniere story `in_progress` ou `pending`.
+If `progress.json` exists, resume at the last `in_progress` or `pending` story.
 
-## Garde-fous
+## Guardrails
 
-- Maximum 10 stories par batch (au-dela, decouper)
-- STOP si 2 stories consecutives echouent
-- Chaque story doit passer les tests avant de continuer
-- Commit apres chaque story (pas de commit geant)
-
----
-
-IMPORTANT: Chaque story est un commit atomique. Ne pas accumuler les changements.
-
-NEVER continuer si les tests echouent sur une story.
-
-YOU MUST sauvegarder la progression dans `.claude/output/batch/progress.json`.
-
-## Declenchement automatique
-
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
-
-### Exemples de declenchement
-
-- _"Je veux work..."_
-- _"Je veux batch..."_
-
-## Contexte fork
-
-
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
-
+- Maximum 10 stories per batch (beyond that, split)
+- STOP if 2 consecutive stories fail
+- Each story must pass the tests before continuing
+- Commit after each story (no giant commits)
 
 ---
 
-## Voir aussi
+IMPORTANT: Each story is an atomic commit. Do not accumulate changes.
 
-- [Retour aux skills](/docs/skills)
+NEVER continue if the tests fail on a story.
+
+YOU MUST save the progress in `.claude/output/batch/progress.json`.
+
+## Automatic triggering
+
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
+
+### Triggering examples
+
+- _"I want to work..."_
+- _"I want to batch..."_
+
+## Context fork
+
+
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
+
+
+---
+
+## See also
+
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

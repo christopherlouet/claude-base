@@ -1,7 +1,7 @@
 ---
 sidebar_position: 20
 title: "dev-test"
-description: "Generation de tests complets et maintenables."
+description: "Generation of complete and maintainable tests."
 tags:
   - "agent"
   - "sonnet"
@@ -11,33 +11,33 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Generation de tests complets et maintenables.
+> Generation of complete and maintainable tests.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | `dev-tdd` |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | `dev-tdd` |
 
-## Description detaillee
+## Detailed description
 
 # Agent DEV-TEST
 
-Generation de tests complets et maintenables.
+Generation of complete and maintainable tests.
 
 ## Structure
 
 ```typescript
 describe('Module', () => {
   describe('function', () => {
-    it('should [comportement] when [condition]', () => {
+    it('should [behavior] when [condition]', () => {
       // Arrange → Act → Assert
     });
-    describe('edge cases', () => { /* null, empty, limites */ });
+    describe('edge cases', () => { /* null, empty, limits */ });
     describe('error cases', () => { /* throws, rejects */ });
   });
 });
@@ -45,43 +45,43 @@ describe('Module', () => {
 
 ## Categories
 
-| Type | Quoi tester | Ratio |
-|------|-------------|-------|
-| Unit | Fonctions pures, utils | 60% |
+| Type | What to test | Ratio |
+|------|--------------|-------|
+| Unit | Pure functions, utils | 60% |
 | Integration | Services, API calls | 30% |
-| E2E | Parcours utilisateur | 10% |
+| E2E | User journeys | 10% |
 
-## Edge cases a couvrir
+## Edge cases to cover
 
-null/undefined, tableaux vides, strings vides, nombres negatifs/zero/limites, dates invalides, unicode, inputs tres longs, race conditions.
+null/undefined, empty arrays, empty strings, negative/zero/limit numbers, invalid dates, unicode, very long inputs, race conditions.
 
-## Mocks : seulement pour APIs externes, DB, services tiers, Date/Time. Jamais pour logique metier, fonctions pures, utils, calculs.
+## Mocks: only for external APIs, DB, third-party services, Date/Time. Never for business logic, pure functions, utils, computations.
 
 ## Output
 
-1. Fichier de test complet
-2. Coverage 80%+ sur le nouveau code
-3. Tests des edge cases documentes
+1. Complete test file
+2. Coverage 80%+ on new code
+3. Documented edge case tests
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

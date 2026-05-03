@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "/doc:doc-api-spec"
-description: "Generer une specification OpenAPI/Swagger pour une API."
+description: "Generate an OpenAPI/Swagger specification for an API."
 tags:
   - "doc"
   - "command"
@@ -15,64 +15,64 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DOC-API-SPEC
 
-Generer une specification OpenAPI/Swagger pour une API.
+Generate an OpenAPI/Swagger specification for an API.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Explorer le code de l'API, identifier les routes et modeles, et generer une specification OpenAPI 3.0 complete avec schemas, authentification et exemples.
+Explore the API code, identify routes and models, and generate a complete OpenAPI 3.0 specification with schemas, authentication and examples.
 
 ## Workflow
 
-- Explorer les routes et controllers existants
-- Identifier les modeles de donnees et DTOs
-- Generer la structure OpenAPI 3.0 (info, servers, paths, components)
-- Documenter chaque endpoint (parametres, body, responses, erreurs)
-- Definir les schemas d'authentification (JWT, API Key, OAuth2)
-- Standardiser les reponses d'erreur
-- Valider la spec avec redocly lint
+- Explore existing routes and controllers
+- Identify data models and DTOs
+- Generate the OpenAPI 3.0 structure (info, servers, paths, components)
+- Document each endpoint (parameters, body, responses, errors)
+- Define authentication schemas (JWT, API Key, OAuth2)
+- Standardize error responses
+- Validate the spec with redocly lint
 
-## Output attendu
+## Expected output
 
-### Fichier openapi.yaml
-- Specification complete avec paths, schemas, security
+### openapi.yaml file
+- Complete specification with paths, schemas, security
 
-### Endpoints documentes
-| Methode | Path | Description |
-|---------|------|-------------|
+### Documented endpoints
+| Method | Path | Description |
+|--------|------|-------------|
 
 ### Checklist
-- [ ] Tous les endpoints documentes
-- [ ] Schemas pour tous les modeles
-- [ ] Exemples pour chaque reponse
-- [ ] Authentification documentee
-- [ ] Codes d'erreur standardises
+- [ ] All endpoints documented
+- [ ] Schemas for all models
+- [ ] Examples for each response
+- [ ] Authentication documented
+- [ ] Standardized error codes
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/dev:dev-api` | Creer ou modifier l'API |
-| `/doc:doc-generate` | Documentation generale |
-| `/dev:dev-test` | Tester les endpoints |
-| `/qa:qa-security` | Verifier la securite de l'API |
-
----
-
-IMPORTANT: La documentation API doit etre synchronisee avec le code - utiliser des generateurs si possible.
-
-YOU MUST documenter tous les codes d'erreur possibles.
-
-NEVER oublier les exemples - ils facilitent l'integration pour les developpeurs.
-
-Think hard sur l'ergonomie de l'API avant de documenter.
-
+| Agent | When to use it |
+|-------|----------------|
+| `/dev:dev-api` | Create or modify the API |
+| `/doc:doc-generate` | General documentation |
+| `/dev:dev-test` | Test endpoints |
+| `/qa:qa-security` | Check API security |
 
 ---
 
-## Voir aussi
+IMPORTANT: API documentation must be synchronized with the code - use generators if possible.
 
-- [Retour aux commandes DOC](/docs/commands/doc)
-- [Toutes les commandes](/docs/commands)
+YOU MUST document all possible error codes.
+
+NEVER forget examples - they make integration easier for developers.
+
+Think hard about API ergonomics before documenting.
+
+
+---
+
+## See also
+
+- [Back to DOC commands](/docs/commands/doc)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "/ops:ops-deps"
-description: "Audit, analyse et mise a jour des dependances du projet."
+description: "Audit, analysis and update of project dependencies."
 tags:
   - "ops"
   - "command"
@@ -13,56 +13,56 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent DEPS (Dependances)
+# DEPS Agent (Dependencies)
 
-Audit, analyse et mise a jour des dependances du projet.
+Audit, analysis and update of project dependencies.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Auditer les dependances pour les vulnerabilites et mises a jour disponibles,
-puis proposer un plan de mise a jour priorise et securise.
+Audit dependencies for vulnerabilities and available updates,
+then propose a prioritized and secure update plan.
 
 ## Workflow
 
-- Detecter la stack (npm, pip, go, cargo) et lancer l'audit
-- Categoriser les mises a jour (patch, minor, major, security)
-- Analyser les risques pour chaque dependance majeure (changelog, breaking changes)
-- Proposer un plan de mise a jour par priorite
-- Configurer l'automatisation (Dependabot, Renovate)
-- Verifier les tests et le build apres chaque mise a jour
+- Detect the stack (npm, pip, go, cargo) and run the audit
+- Categorize updates (patch, minor, major, security)
+- Analyze risks for each major dependency (changelog, breaking changes)
+- Propose an update plan by priority
+- Configure automation (Dependabot, Renovate)
+- Verify tests and build after each update
 
-## Output attendu
+## Expected output
 
-1. **Resume** : total dependances, a jour, outdated, vulnerabilites
-2. **Vulnerabilites critiques** avec versions fixees
-3. **Mises a jour recommandees** par priorite (securite, minor, major)
-4. **Commandes** suggerees pour appliquer les mises a jour
+1. **Summary**: total dependencies, up to date, outdated, vulnerabilities
+2. **Critical vulnerabilities** with fixed versions
+3. **Recommended updates** by priority (security, minor, major)
+4. **Commands** suggested to apply the updates
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/qa:qa-security` | Audit vulnerabilites |
-| `/dev:dev-test` | Tester apres mise a jour |
-| `/ops:ops-ci` | Automatiser les updates |
+| `/qa:qa-security` | Vulnerability audit |
+| `/dev:dev-test` | Test after update |
+| `/ops:ops-ci` | Automate updates |
 
 ---
 
-IMPORTANT: Toujours lancer les tests apres une mise a jour.
+IMPORTANT: Always run the tests after an update.
 
-YOU MUST verifier le changelog avant une mise a jour majeure.
+YOU MUST verify the changelog before a major update.
 
-NEVER ignorer les vulnerabilites de securite - elles sont prioritaires.
+NEVER ignore security vulnerabilities - they are top priority.
 
-NEVER mettre a jour en production sans tests.
+NEVER update in production without tests.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 29
 title: "/ops:ops-release"
-description: "Workflow de release avec changelog et versioning."
+description: "Release workflow with changelog and versioning."
 tags:
   - "ops"
   - "command"
@@ -13,58 +13,58 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent RELEASE
+# RELEASE Agent
 
-Workflow de release avec changelog et versioning.
+Release workflow with changelog and versioning.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Guider le processus complet de release : version bump, changelog,
-branche release, tag, merge et GitHub Release.
+Guide the full release process: version bump, changelog,
+release branch, tag, merge and GitHub Release.
 
 ## Workflow
 
-- Verifier l'etat du projet (tests passent, build OK, dependances a jour)
-- Determiner la version selon SemVer (MAJOR, MINOR, PATCH)
-- Generer le changelog (Added, Changed, Fixed, Deprecated, Removed, Security)
-- Creer la branche release et bump la version
-- Merger dans main, creer le tag, pousser
-- Merger dans develop, creer la GitHub Release
-- Post-release : verifier le deploiement, annoncer, documenter
+- Check the project state (tests pass, build OK, dependencies up to date)
+- Determine the version according to SemVer (MAJOR, MINOR, PATCH)
+- Generate the changelog (Added, Changed, Fixed, Deprecated, Removed, Security)
+- Create the release branch and bump the version
+- Merge into main, create the tag, push
+- Merge into develop, create the GitHub Release
+- Post-release: check the deployment, announce, document
 
-## Output attendu
+## Expected output
 
-1. **Version** determinee avec justification
-2. **Changelog** au format Keep a Changelog
-3. **Commandes** executees (branch, tag, merge, push)
-4. **Checklist** pre et post-release
+1. **Version** determined with justification
+2. **Changelog** in Keep a Changelog format
+3. **Commands** executed (branch, tag, merge, push)
+4. **Checklist** pre and post-release
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/doc:doc-changelog` | Generer le changelog |
-| `/ops:ops-ci` | Automatiser la release |
-| `/qa:qa-security` | Audit avant release |
-| `/ops:ops-monitoring` | Verifier post-release |
+| `/doc:doc-changelog` | Generate the changelog |
+| `/ops:ops-ci` | Automate the release |
+| `/qa:qa-security` | Audit before release |
+| `/ops:ops-monitoring` | Check post-release |
 
 ---
 
-IMPORTANT: Tester la release en staging avant production.
+IMPORTANT: Test the release in staging before production.
 
-IMPORTANT: Toujours avoir un plan de rollback.
+IMPORTANT: Always have a rollback plan.
 
-YOU MUST mettre a jour le changelog.
+YOU MUST update the changelog.
 
-NEVER release un vendredi soir (sauf urgence).
+NEVER release on a Friday evening (except for emergencies).
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 25
 title: "doc-onboard"
-description: "Guide de decouverte et comprehension d'un codebase."
+description: "Guide for discovering and understanding a codebase."
 tags:
   - "agent"
   - "haiku"
@@ -11,82 +11,82 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Guide de decouverte et comprehension d'un codebase.
+> Guide for discovering and understanding a codebase.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob` |
-| **Outils interdits** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
-| **Skills injectes** | `work-explore` |
+| **Allowed tools** | `Read`, `Grep`, `Glob` |
+| **Disallowed tools** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
+| **Injected skills** | `work-explore` |
 
-## Description detaillee
+## Detailed description
 
-# Agent DOC-ONBOARD
+# DOC-ONBOARD Agent
 
-Guide de decouverte et comprehension d'un codebase.
+Guide for discovering and understanding a codebase.
 
-## Processus
+## Process
 
-1. **Vue d'ensemble** : Nom, description, stack, etat du projet
-2. **Architecture** : Structure dossiers, couches, patterns (MVC, Clean Arch, DDD)
-3. **Points d'entree** : README → package.json → index/main → config → routes
-4. **Conventions** : Nommage, style, gestion erreurs, typage
-5. **Workflow dev** : Commandes (install, dev, test, build), processus de contribution
-6. **Ressources** : ADRs, diagrammes, contacts mainteneurs
+1. **Overview**: Name, description, stack, project state
+2. **Architecture**: Folder structure, layers, patterns (MVC, Clean Arch, DDD)
+3. **Entry points**: README → package.json → index/main → config → routes
+4. **Conventions**: Naming, style, error handling, typing
+5. **Dev workflow**: Commands (install, dev, test, build), contribution process
+6. **Resources**: ADRs, diagrams, maintainer contacts
 
-## Output attendu
+## Expected output
 
 ```markdown
-# Onboarding : [Nom du projet]
+# Onboarding: [Project name]
 
-## En bref
-[Description en 2-3 phrases]
+## In brief
+[Description in 2-3 sentences]
 
-## Stack technique
+## Tech stack
 [Frontend / Backend / Database / Infra]
 
-## Pour commencer
+## Getting started
 [Prerequisites + Installation + Dev server]
 
-## Structure du projet
-[Arborescence commentee]
+## Project structure
+[Annotated tree]
 
 ## Conventions
-[Nommage, patterns, tests]
+[Naming, patterns, tests]
 
-## Ou commencer ?
-[Fichiers cles a lire en premier]
+## Where to start?
+[Key files to read first]
 ```
 
-## Contraintes
+## Constraints
 
-- Adapter le detail au public cible
-- Inclure des exemples concrets et commandes copy-paste
-- Eviter le jargon non explique
+- Adapt the level of detail to the target audience
+- Include concrete examples and copy-paste commands
+- Avoid unexplained jargon
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

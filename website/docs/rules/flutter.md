@@ -7,19 +7,19 @@ tags:
   - "flutter"
 ---
 
-# Regles: flutter
+# Rules: flutter
 
 > // State abstract class AuthState \{\} class AuthInitial extends AuthState \{\} class AuthLoading extends AuthState \{\} class AuthSuccess extends AuthState \{\} class AuthFailure extends AuthState \{ final St
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.dart`
 - `**/lib/**`
 - `**/test/**`
 
-## Regles detaillees
+## Detailed rules
 
 # Flutter Rules
 
@@ -38,17 +38,17 @@ lib/
 
 ## Widgets
 
-- Preferer les StatelessWidget quand possible
-- Extraire les widgets complexes
-- Utiliser const constructors
-- Nommage descriptif (UserCard, LoginButton)
+- Prefer StatelessWidget when possible
+- Extract complex widgets
+- Use const constructors
+- Descriptive naming (UserCard, LoginButton)
 
 ## State Management (BLoC)
 
-- Un BLoC par feature
-- Events pour les actions utilisateur
-- States pour les etats UI
-- Separer logique metier du UI
+- One BLoC per feature
+- Events for user actions
+- States for UI states
+- Separate business logic from UI
 
 ```dart
 // Event
@@ -72,47 +72,47 @@ class AuthFailure extends AuthState {
 
 ## Dependency Injection
 
-- Utiliser get_it pour l'injection
-- Enregistrer les dependances au demarrage
-- Lazy singletons pour les services
+- Use get_it for injection
+- Register dependencies at startup
+- Lazy singletons for services
 
 ## Navigation (GoRouter)
 
-- Routes declaratives
-- Nommage des routes en snake_case
+- Declarative routes
+- Route naming in snake_case
 - Deep linking support
 
 ## Tests
 
-- Widget tests pour les composants UI
-- Unit tests pour BLoCs et services
-- Integration tests pour flows critiques
-- Golden tests pour regressions visuelles
+- Widget tests for UI components
+- Unit tests for BLoCs and services
+- Integration tests for critical flows
+- Golden tests for visual regressions
 
 ## Performance
 
-- Utiliser const widgets
-- Eviter rebuilds inutiles
-- ListView.builder pour longues listes
+- Use const widgets
+- Avoid unnecessary rebuilds
+- ListView.builder for long lists
 - Cached images (cached_network_image)
 
 ## Anti-patterns
 
-- NEVER bloquer le main isolate
-- Eviter setState dans StatelessWidget
-- Ne pas ignorer les erreurs async
-- Eviter les widgets trop profonds (&gt; 10 niveaux)
+- NEVER block the main isolate
+- Avoid setState in StatelessWidget
+- Do not ignore async errors
+- Avoid widgets that are too deep (&gt; 10 levels)
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

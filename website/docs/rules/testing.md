@@ -1,19 +1,19 @@
 ---
 sidebar_position: 27
 title: "testing"
-description: "// Act - Executer l'action const result = functionToTest(input);"
+description: "// Act - Execute the action const result = functionToTest(input);"
 tags:
   - "rule"
   - "testing"
 ---
 
-# Regles: testing
+# Rules: testing
 
-> // Act - Executer l'action const result = functionToTest(input);
+> // Act - Execute the action const result = functionToTest(input);
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.test.ts`
 - `**/*.test.tsx`
@@ -23,31 +23,31 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 - `**/test/**`
 - `**/__tests__/**`
 
-## Regles detaillees
+## Detailed rules
 
 # Testing Rules
 
 ## Coverage
 
-- IMPORTANT: Couverture minimum 80% sur nouveau code
-- Couvrir les chemins critiques en priorite
-- Ne pas viser 100% au detriment de la qualite
+- IMPORTANT: Minimum 80% coverage on new code
+- Cover critical paths first
+- Do not aim for 100% at the expense of quality
 
 ## Mocking
 
-- IMPORTANT: Pas de mocks sauf dependances externes (API, DB)
-- Preferer les stubs aux mocks complets
-- Eviter de mocker les modules internes
-- Utiliser des factories pour les donnees de test
+- IMPORTANT: No mocks except for external dependencies (API, DB)
+- Prefer stubs over full mocks
+- Avoid mocking internal modules
+- Use factories for test data
 
 ## Edge Cases
 
-- YOU MUST tester les edge cases:
-  - `null` et `undefined`
-  - Chaines vides et espaces
-  - Tableaux vides
-  - Valeurs limites (0, -1, MAX_INT)
-  - Erreurs et exceptions
+- YOU MUST test edge cases:
+  - `null` and `undefined`
+  - Empty strings and whitespace
+  - Empty arrays
+  - Boundary values (0, -1, MAX_INT)
+  - Errors and exceptions
 
 ## Test Structure (AAA)
 
@@ -55,13 +55,13 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 describe('ModuleName', () => {
   describe('functionName', () => {
     it('should [expected behavior] when [condition]', () => {
-      // Arrange - Preparer les donnees
+      // Arrange - Prepare the data
       const input = createTestData();
 
-      // Act - Executer l'action
+      // Act - Execute the action
       const result = functionToTest(input);
 
-      // Assert - Verifier le resultat
+      // Assert - Verify the result
       expect(result).toEqual(expected);
     });
   });
@@ -70,28 +70,28 @@ describe('ModuleName', () => {
 
 ## Naming Conventions
 
-- Noms de tests descriptifs et lisibles
+- Descriptive and readable test names
 - Format: `should [behavior] when [condition]`
-- Grouper par fonctionnalite avec `describe`
+- Group by functionality with `describe`
 
 ## Best Practices
 
-- Tests independants (pas d'ordre d'execution)
-- Tests deterministes (pas de random sans seed)
-- Tests rapides (&lt; 100ms par test unitaire)
-- Un test = une assertion logique
-- Tests lisibles = documentation vivante
+- Independent tests (no execution order)
+- Deterministic tests (no random without seed)
+- Fast tests (&lt; 100ms per unit test)
+- One test = one logical assertion
+- Readable tests = living documentation
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

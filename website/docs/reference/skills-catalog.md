@@ -15,7 +15,7 @@ In addition to commands, the project includes **54 Skills** in `.claude/skills/`
 ## Core skills
 | Skill | Automatic trigger | Context |
 |-------|-------------------|---------|
-| `dev-tdd` | "TDD", "test first", "write tests" | fork |
+| `dev-tdd` | "TDD", "test first", "write the tests" | fork |
 | `work-commit` | "commit", "commit message" | fork |
 | `dev-debug` | "bug", "error", "debug" | fork |
 | `qa-review` | "review", "code review" | fork |
@@ -59,7 +59,7 @@ In addition to commands, the project includes **54 Skills** in `.claude/skills/`
 | `dev-document` | "PDF", "DOCX", "XLSX", "PPTX", "document", "report" | fork |
 | `growth-cro` | "conversion", "CRO", "signup flow", "onboarding", "paywall" | fork |
 | `parallel-agents` | "parallel", "concurrent", "fan-out", "multi-agents" | fork |
-| `agent-teams` | "agent team", "swarm", "team of agents", "parallel agents" | fork |
+| `agent-teams` | "agent team", "swarm", "agent team", "parallel agents" | fork |
 | `session-handoff` | "handoff", "resume", "session transfer", "context" | fork |
 | `git-worktrees` | "worktree", "parallel dev", "simultaneous branches" | fork |
 | `qa-chrome` | "Chrome", "visual test", "DOM debugging", "capture" | fork |
@@ -70,11 +70,11 @@ In addition to commands, the project includes **54 Skills** in `.claude/skills/`
 | `dev-prisma` | "Prisma", "schema.prisma", "migrate", "ORM", "Accelerate" | fork |
 | `dev-i18n` | "i18n", "l10n", "translation", "locale", "next-intl", "react-i18next", "vue-i18n", "flutter_localizations" | fork |
 | `writing-skills` | "create skill", "new skill", "write a skill" | fork |
-| `web-scraping` | "scrape", "crawler", "extract web", "Firecrawl", "structured data" | fork |
+| `web-scraping` | "scrape", "crawl", "extract web", "Firecrawl", "structured data" | fork |
 | `work-quick` | "quick", "fast", "rapid" — trivial change (&lt; 50 LOC, 1-3 files) | fork |
 | `work-batch` | "batch", "backlog", "PRD", "user stories in series" — sequential execution | fork |
 
-## Skills configuration
+## Skills Configuration
 
 Each skill defines:
 - **allowed-tools**: Tools authorized for the skill

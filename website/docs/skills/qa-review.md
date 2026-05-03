@@ -1,7 +1,7 @@
 ---
 sidebar_position: 42
 title: "qa-review"
-description: "Effectuer une revue de code approfondie. Utiliser quand l'utilisateur demande une review, veut vérifier la qualité du code, ou avant de merger une PR."
+description: "Perform a thorough code review. Use when the user requests a review, wants to verify code quality, or before merging a PR."
 tags:
   - "skill"
   - "fork"
@@ -11,236 +11,236 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Effectuer une revue de code approfondie. Utiliser quand l'utilisateur demande une review, veut vérifier la qualité du code, ou avant de merger une PR.
+> Perform a thorough code review. Use when the user requests a review, wants to verify code quality, or before merging a PR.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Glob`, `Grep` |
-| **Mots-cles** | `review` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Glob`, `Grep` |
+| **Keywords** | `review` |
 
-## Description detaillee
+## Detailed description
 
-# Revue de Code
+# Code Review
 
-## Objectif
+## Objective
 
-Identifier les problèmes de qualité, sécurité et maintenabilité AVANT le merge.
+Identify quality, security, and maintainability issues BEFORE merge.
 
 ## Instructions
 
-### 1. Vue d'ensemble
+### 1. Overview
 
 ```bash
-# Voir les changements
+# View the changes
 git diff main...HEAD --stat
 git log main...HEAD --oneline
 ```
 
-### 2. Checklist de review
+### 2. Review checklist
 
-#### Qualité du code
-- [ ] Lisibilité (noms clairs, fonctions courtes)
-- [ ] DRY (pas de duplication)
+#### Code quality
+- [ ] Readability (clear names, short functions)
+- [ ] DRY (no duplication)
 - [ ] SOLID (single responsibility)
-- [ ] Complexité raisonnable
+- [ ] Reasonable complexity
 
-#### Typage (TypeScript)
-- [ ] Pas de `any`
-- [ ] Types explicites sur les APIs publiques
-- [ ] Interfaces bien définies
+#### Typing (TypeScript)
+- [ ] No `any`
+- [ ] Explicit types on public APIs
+- [ ] Well-defined interfaces
 
 #### Tests
-- [ ] Tests présents et pertinents
-- [ ] Edge cases couverts
-- [ ] Mocks limités aux I/O
+- [ ] Tests present and relevant
+- [ ] Edge cases covered
+- [ ] Mocks limited to I/O
 
-#### Sécurité
-- [ ] Inputs validés
-- [ ] Pas de secrets hardcodés
-- [ ] Pas d'injection possible
+#### Security
+- [ ] Inputs validated
+- [ ] No hardcoded secrets
+- [ ] No injection possible
 
 #### Performance
-- [ ] Pas de N+1 queries
-- [ ] Pas de boucles infinies possibles
-- [ ] Mémoire gérée correctement
+- [ ] No N+1 queries
+- [ ] No possible infinite loops
+- [ ] Memory managed correctly
 
-### 3. Format des commentaires
+### 3. Comment format
 
 ```
-[TYPE] fichier:ligne - commentaire
+[TYPE] file:line - comment
 
 Types:
-- [CRITICAL] - Bloquant, doit être corrigé
-- [IMPORTANT] - Devrait être corrigé
-- [SUGGESTION] - Amélioration optionnelle
-- [QUESTION] - Clarification nécessaire
-- [NITPICK] - Détail mineur
+- [CRITICAL] - Blocking, must be fixed
+- [IMPORTANT] - Should be fixed
+- [SUGGESTION] - Optional improvement
+- [QUESTION] - Clarification needed
+- [NITPICK] - Minor detail
 ```
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Review : [Titre PR]
+## Review: [PR Title]
 
-### Résumé
-- **Fichiers modifiés**: X
-- **Lignes ajoutées**: +Y
-- **Lignes supprimées**: -Z
+### Summary
+- **Files modified**: X
+- **Lines added**: +Y
+- **Lines removed**: -Z
 - **Verdict**: Approve / Request Changes / Comment
 
-### Points positifs
+### Positive points
 - [Point 1]
 - [Point 2]
 
-### Problèmes identifiés
+### Issues identified
 
-#### Critiques
-- [CRITICAL] `fichier.ts:42` - Description
+#### Critical
+- [CRITICAL] `file.ts:42` - Description
 
-#### Importants
-- [IMPORTANT] `fichier.ts:87` - Description
+#### Important
+- [IMPORTANT] `file.ts:87` - Description
 
 ### Suggestions
-- [SUGGESTION] `fichier.ts:123` - Description
+- [SUGGESTION] `file.ts:123` - Description
 
-### Checklist finale
-- [ ] Code lisible et maintenable
-- [ ] Tests suffisants
-- [ ] Pas de problème de sécurité
-- [ ] Performance acceptable
+### Final checklist
+- [ ] Code readable and maintainable
+- [ ] Sufficient tests
+- [ ] No security issue
+- [ ] Acceptable performance
 ```
 
-## Analyse de nommage
+## Naming analysis
 
-### Regles de nommage a verifier
+### Naming rules to verify
 
-| Element | Convention | Exemples bons | Exemples mauvais |
+| Element | Convention | Good examples | Bad examples |
 |---------|-----------|---------------|------------------|
-| Variables | Descriptif, camelCase | `userCount`, `isActive` | `x`, `tmp`, `data` |
-| Fonctions | Verbe + nom, camelCase | `getUserById`, `validateEmail` | `process`, `handle`, `do` |
-| Booleens | Prefixe is/has/can/should | `isValid`, `hasPermission` | `valid`, `permission` |
-| Constantes | SCREAMING_SNAKE | `MAX_RETRY_COUNT` | `maxRetry` |
-| Classes | PascalCase, nom | `UserService`, `OrderRepository` | `Manager`, `Helper` |
-| Interfaces | PascalCase, descriptif | `UserProfile`, `PaymentMethod` | `IUser`, `DataType` |
+| Variables | Descriptive, camelCase | `userCount`, `isActive` | `x`, `tmp`, `data` |
+| Functions | Verb + noun, camelCase | `getUserById`, `validateEmail` | `process`, `handle`, `do` |
+| Booleans | Prefix is/has/can/should | `isValid`, `hasPermission` | `valid`, `permission` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` | `maxRetry` |
+| Classes | PascalCase, noun | `UserService`, `OrderRepository` | `Manager`, `Helper` |
+| Interfaces | PascalCase, descriptive | `UserProfile`, `PaymentMethod` | `IUser`, `DataType` |
 
-### Smells de nommage a detecter
+### Naming smells to detect
 
-| Smell | Probleme | Correction |
+| Smell | Problem | Fix |
 |-------|----------|------------|
-| **Nom generique** | `data`, `result`, `temp`, `info` | Nommer selon le contenu |
-| **Abbreviation** | `usr`, `btn`, `msg`, `idx` | Ecrire en entier |
-| **Negation double** | `!isNotValid`, `!disableButton` | `isValid`, `enableButton` |
-| **Type dans le nom** | `userArray`, `nameString` | `users`, `name` |
-| **Longueur inappropriee** | Variable globale courte, locale longue | Inverse : global long, local court |
-| **Nom trompeur** | `getUser` qui modifie | `fetchAndUpdateUser` |
+| **Generic name** | `data`, `result`, `temp`, `info` | Name based on content |
+| **Abbreviation** | `usr`, `btn`, `msg`, `idx` | Write in full |
+| **Double negation** | `!isNotValid`, `!disableButton` | `isValid`, `enableButton` |
+| **Type in the name** | `userArray`, `nameString` | `users`, `name` |
+| **Inappropriate length** | Short global variable, long local | Reverse: long global, short local |
+| **Misleading name** | `getUser` that modifies | `fetchAndUpdateUser` |
 
-### Patterns a rechercher
+### Patterns to look for
 
 ```
-# Variables a un caractere (sauf i, j dans les boucles)
+# Single-character variables (except i, j in loops)
 \b[a-z]\b\s*[=:]
 
-# Noms generiques
+# Generic names
 \b(data|result|temp|tmp|info|item|obj|val|res)\b\s*[=:]
 
-# Booleens sans prefixe
+# Booleans without prefix
 \b(active|valid|visible|enabled|disabled|open|closed)\b\s*[=:]
 ```
 
-## Regles
+## Rules
 
-- Etre constructif, pas destructif
-- Expliquer le POURQUOI
-- Proposer des alternatives
-- Distinguer bloquant vs nice-to-have
-- Verifier la coherence du nommage dans le code review
+- Be constructive, not destructive
+- Explain the WHY
+- Propose alternatives
+- Distinguish blocking vs nice-to-have
+- Verify naming consistency in the code review
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux review..."_
+- _"I want to review..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
-### 1. Exemple de revue de code
+### 1. Code review example
 
-# Exemple de revue de code
+# Code review example
 
-## PR analysée
-**Titre**: feat(auth): Ajouter authentification OAuth Google
-**Fichiers modifiés**: 8 fichiers, +245 lignes, -12 lignes
+## PR analyzed
+**Title**: feat(auth): Add Google OAuth authentication
+**Modified files**: 8 files, +245 lines, -12 lines
 
-## Résumé de la review
+## Review summary
 
-- **Fichiers modifiés**: 8
-- **Lignes ajoutées**: +245
-- **Lignes supprimées**: -12
+- **Modified files**: 8
+- **Added lines**: +245
+- **Removed lines**: -12
 - **Verdict**: Request Changes
 
-## Points positifs
+## Positive points
 
-- Bonne séparation des responsabilités (service/controller)
-- Types TypeScript bien définis
-- Tests unitaires présents pour le service
-- Gestion des erreurs cohérente
+- Good separation of concerns (service/controller)
+- Well-defined TypeScript types
+- Unit tests present for the service
+- Consistent error handling
 
-## Problèmes identifiés
+## Issues identified
 
-### Critiques (bloquants)
+### Critical (blocking)
 
 **[CRITICAL] `src/services/auth.ts:45`**
 ```typescript
-// ❌ Problème: Secret exposé dans le code
+// ❌ Issue: Secret exposed in the code
 const GOOGLE_CLIENT_SECRET = "GOCSPX-xxxxx";
 
-// ✅ Solution: Utiliser variable d'environnement
+// ✅ Solution: Use an environment variable
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 ```
-> Les secrets ne doivent jamais être hardcodés. Utiliser les variables d'environnement.
+> Secrets must never be hardcoded. Use environment variables.
 
 ---
 
 **[CRITICAL] `src/controllers/auth.ts:23`**
 ```typescript
-// ❌ Problème: Pas de validation de l'input
+// ❌ Issue: No input validation
 const { code } = req.body;
 const tokens = await googleAuth.getTokens(code);
 
-// ✅ Solution: Valider avec Zod
+// ✅ Solution: Validate with Zod
 const schema = z.object({ code: z.string().min(1) });
 const { code } = schema.parse(req.body);
 ```
-> Toujours valider les entrées utilisateur pour éviter les injections.
+> Always validate user input to prevent injections.
 
-### Importants (à corriger)
+### Important (to fix)
 
 **[IMPORTANT] `src/services/auth.ts:67`**
 ```typescript
-// ❌ Problème: Pas de gestion du cas d'erreur
+// ❌ Issue: No handling of the error case
 const user = await db.user.findUnique({ where: { email } });
-return user.id; // Crash si user est null
+return user.id; // Crashes if user is null
 
-// ✅ Solution: Gérer le cas null
+// ✅ Solution: Handle the null case
 const user = await db.user.findUnique({ where: { email } });
 if (!user) {
   throw new NotFoundError(`User not found: ${email}`);
@@ -252,10 +252,10 @@ return user.id;
 
 **[IMPORTANT] `src/middleware/auth.ts:15`**
 ```typescript
-// ❌ Problème: Token stocké en localStorage (XSS vulnérable)
+// ❌ Issue: Token stored in localStorage (XSS vulnerable)
 localStorage.setItem('token', accessToken);
 
-// ✅ Solution: Utiliser httpOnly cookie
+// ✅ Solution: Use an httpOnly cookie
 res.cookie('token', accessToken, {
   httpOnly: true,
   secure: true,
@@ -263,15 +263,15 @@ res.cookie('token', accessToken, {
 });
 ```
 
-### Suggestions (optionnelles)
+### Suggestions (optional)
 
 **[SUGGESTION] `src/services/auth.ts:89`**
 ```typescript
-// Actuel: Logs verbeux
+// Current: Verbose logs
 console.log('User authenticated:', user);
 console.log('Tokens:', tokens);
 
-// Suggestion: Logger structuré
+// Suggestion: Structured logger
 logger.info('User authenticated', { userId: user.id });
 ```
 
@@ -279,32 +279,32 @@ logger.info('User authenticated', { userId: user.id });
 
 **[NITPICK] `src/types/auth.ts:5`**
 ```typescript
-// Préférer interface pour les objets extensibles
+// Prefer interface for extensible objects
 type AuthUser = { ... }  // ❌
 interface AuthUser { ... }  // ✅
 ```
 
-## Checklist finale
+## Final checklist
 
-- [ ] Code lisible et maintenable
-- [x] Tests suffisants
-- [ ] **Pas de problème de sécurité** ← 2 critiques
-- [x] Performance acceptable
+- [ ] Code readable and maintainable
+- [x] Sufficient tests
+- [ ] **No security issues** ← 2 critical
+- [x] Acceptable performance
 
-## Résumé pour l'auteur
+## Summary for the author
 
-Bonne implémentation globale, mais **2 problèmes de sécurité critiques** à corriger avant merge:
+Good overall implementation, but **2 critical security issues** to fix before merge:
 
-1. Secret hardcodé → utiliser env var
-2. Pas de validation input → ajouter Zod
+1. Hardcoded secret → use env var
+2. No input validation → add Zod
 
-Une fois corrigés, approuvé pour merge.
+Once fixed, approved for merge.
 
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

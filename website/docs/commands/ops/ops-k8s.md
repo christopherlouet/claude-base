@@ -1,7 +1,7 @@
 ---
 sidebar_position: 21
 title: "/ops:ops-k8s"
-description: "Deploiement et orchestration Kubernetes."
+description: "Kubernetes deployment and orchestration."
 tags:
   - "ops"
   - "command"
@@ -13,58 +13,58 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent KUBERNETES
+# KUBERNETES Agent
 
-Deploiement et orchestration Kubernetes.
+Kubernetes deployment and orchestration.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Generer des manifests Kubernetes, Helm charts ou configurations Kustomize
-pour deployer et orchestrer des applications en production.
+Generate Kubernetes manifests, Helm charts or Kustomize configurations
+to deploy and orchestrate applications in production.
 
 ## Workflow
 
-- Identifier le mode (manifests YAML, Helm chart, Kustomize, configuration cluster)
-- Generer les ressources de base (Deployment, Service, Ingress, ConfigMap, Secret)
-- Configurer les resources requests/limits et HPA
-- Ajouter les probes liveness et readiness
-- Configurer la securite (RBAC, Network Policies, Pod Security Standards)
-- Mettre en place le deploiement CI/CD (GitHub Actions + Helm/kubectl)
-- Documenter les commandes utiles
+- Identify the mode (YAML manifests, Helm chart, Kustomize, cluster configuration)
+- Generate the base resources (Deployment, Service, Ingress, ConfigMap, Secret)
+- Configure resource requests/limits and HPA
+- Add liveness and readiness probes
+- Configure security (RBAC, Network Policies, Pod Security Standards)
+- Set up CI/CD deployment (GitHub Actions + Helm/kubectl)
+- Document useful commands
 
-## Output attendu
+## Expected output
 
-1. **Manifests** ou **Helm chart** complet
-2. **Configuration** par environnement (staging, production)
-3. **Pipeline** de deploiement CI/CD
-4. **Checklist** production-ready (securite, HA, observabilite)
+1. Complete **manifests** or **Helm chart**
+2. Per-environment **configuration** (staging, production)
+3. CI/CD deployment **pipeline**
+4. Production-ready **checklist** (security, HA, observability)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-docker` | Creer l'image Docker |
-| `/ops:ops-infra-code` | Provisionner le cluster |
-| `/ops:ops-monitoring` | Observabilite du cluster |
-| `/ops:ops-secrets-management` | Gestion des secrets |
+| `/ops:ops-docker` | Build the Docker image |
+| `/ops:ops-infra-code` | Provision the cluster |
+| `/ops:ops-monitoring` | Cluster observability |
+| `/ops:ops-secrets-management` | Secrets management |
 
 ---
 
-IMPORTANT: Toujours definir des resource requests et limits.
+IMPORTANT: Always define resource requests and limits.
 
-YOU MUST configurer liveness et readiness probes pour chaque application.
+YOU MUST configure liveness and readiness probes for every application.
 
-NEVER stocker de secrets en clair dans les manifests.
+NEVER store plaintext secrets in manifests.
 
-NEVER utiliser le namespace default en production.
+NEVER use the default namespace in production.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 60
 title: "qa-tech-debt"
-description: "Identification et priorisation de la dette technique."
+description: "Identification and prioritization of technical debt."
 tags:
   - "agent"
   - "haiku"
@@ -11,72 +11,72 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Identification et priorisation de la dette technique.
+> Identification and prioritization of technical debt.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob` |
-| **Outils interdits** | `Edit`, `Write`, `NotebookEdit` |
-| **Skills injectes** | `refactoring` |
+| **Allowed tools** | `Read`, `Grep`, `Glob` |
+| **Disallowed tools** | `Edit`, `Write`, `NotebookEdit` |
+| **Injected skills** | `refactoring` |
 
-## Description detaillee
+## Detailed description
 
 # Agent QA-TECH-DEBT
 
-Identification et priorisation de la dette technique.
+Identification and prioritization of technical debt.
 
 ## Categories
 
-| Type | Indicateurs cles | Priorite |
+| Type | Key indicators | Priority |
 |------|------------------|----------|
-| Code | Duplication > 10 lignes, fonctions > 50 lignes, classes > 500 lignes | Haute |
-| Architecture | Imports circulaires, business logic dans UI, patterns obsoletes | Haute |
-| Tests | Couverture < 60% sur code critique, tests fragiles, mocks excessifs | Haute |
-| Documentation | README obsolete, API non documentee, comments outdated | Moyenne |
+| Code | Duplication > 10 lines, functions > 50 lines, classes > 500 lines | High |
+| Architecture | Circular imports, business logic in UI, obsolete patterns | High |
+| Tests | Coverage < 60% on critical code, brittle tests, excessive mocks | High |
+| Documentation | Outdated README, undocumented API, outdated comments | Medium |
 
-## Patterns a rechercher
+## Patterns to look for
 
-`TODO|FIXME|HACK|XXX`, `any as any`, `eslint-disable`, `@ts-ignore`, `skip(|xit(`, nesting > 3 niveaux.
+`TODO|FIXME|HACK|XXX`, `any as any`, `eslint-disable`, `@ts-ignore`, `skip(|xit(`, nesting > 3 levels.
 
-## Matrice de priorisation
+## Prioritization matrix
 
-| Impact \ Effort | Faible | Moyen | Eleve |
+| Impact \ Effort | Low | Medium | High |
 |-----------------|--------|-------|-------|
-| **Eleve** | P0 - Immediat | P1 - Sprint | P2 - Quarter |
-| **Moyen** | P1 - Sprint | P2 - Quarter | P3 - Backlog |
-| **Faible** | P2 - Quarter | P3 - Backlog | P4 - Opportuniste |
+| **High** | P0 - Immediate | P1 - Sprint | P2 - Quarter |
+| **Medium** | P1 - Sprint | P2 - Quarter | P3 - Backlog |
+| **Low** | P2 - Quarter | P3 - Backlog | P4 - Opportunistic |
 
-## Output : Score de dette (1-10), items critiques, plan de remediation (Quick Wins / Refactoring / Architecture).
+## Output: Debt score (1-10), critical items, remediation plan (Quick Wins / Refactoring / Architecture).
 
-## Contraintes
+## Constraints
 
-- Ne jamais ignorer la dette de securite
-- Proposer des refactorings incrementaux
-- Estimer l'effort realiste
+- Never ignore security debt
+- Propose incremental refactorings
+- Estimate effort realistically
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

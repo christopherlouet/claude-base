@@ -1,7 +1,7 @@
 ---
 sidebar_position: 11
 title: "/qa:qa-neovim"
-description: "Audit qualite et performance d'une configuration Neovim."
+description: "Quality and performance audit of a Neovim configuration."
 tags:
   - "qa"
   - "command"
@@ -13,66 +13,66 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--qa">QA</span>
 
 
-# Agent QA-NEOVIM
+# QA-NEOVIM Agent
 
-Audit qualite et performance d'une configuration Neovim.
+Quality and performance audit of a Neovim configuration.
 
-## Cible
+## Target
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Evaluer la performance, les plugins, les keymaps, la sante et la qualite du code Lua d'une configuration Neovim.
+Assess the performance, plugins, keymaps, health and Lua code quality of a Neovim configuration.
 
 ## Workflow
 
-- Mesurer le temps de demarrage (objectif &lt; 50ms)
-- Auditer les plugins : lazy loading, doublons, maintenance
-- Verifier les keymaps : descriptions, conflits, conventions LSP
-- Executer les health checks (:checkhealth)
-- Linter le code Lua (luacheck, conventions vim.keymap.set, augroups)
-- Verifier la securite (secrets, exrc, sources plugins)
-- Evaluer la structure et organisation des fichiers
+- Measure startup time (target &lt; 50ms)
+- Audit plugins: lazy loading, duplicates, maintenance
+- Check keymaps: descriptions, conflicts, LSP conventions
+- Run health checks (:checkhealth)
+- Lint Lua code (luacheck, vim.keymap.set conventions, augroups)
+- Check security (secrets, exrc, plugin sources)
+- Assess file structure and organization
 
-## Output attendu
+## Expected output
 
-### Score global /100
-| Categorie | Score |
-|-----------|-------|
+### Overall score /100
+| Category | Score |
+|----------|-------|
 | Performance | /20 |
 | Plugins | /20 |
 | Keymaps | /15 |
 | Health | /15 |
 | Code quality | /15 |
-| Organisation | /15 |
+| Organization | /15 |
 
-### Recommandations prioritaires
-1. [Recommandation 1]
-2. [Recommandation 2]
-3. [Recommandation 3]
+### Priority recommendations
+1. [Recommendation 1]
+2. [Recommendation 2]
+3. [Recommendation 3]
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/dev:dev-neovim` | Implementer les corrections |
-| `/dev:dev-refactor` | Restructurer la config |
-| `/dev:dev-debug` | Investiguer un probleme specifique |
-
----
-
-IMPORTANT: Mesurer le temps de demarrage AVANT et APRES chaque optimisation.
-
-YOU MUST verifier les keymaps avec `desc` pour which-key.
-
-NEVER desactiver les health checks - ils revelent les vrais problemes.
-
-Think hard sur le ratio benefice/complexite des plugins.
-
+| Agent | When to use |
+|-------|-------------|
+| `/dev:dev-neovim` | Implement fixes |
+| `/dev:dev-refactor` | Restructure the config |
+| `/dev:dev-debug` | Investigate a specific issue |
 
 ---
 
-## Voir aussi
+IMPORTANT: Measure startup time BEFORE and AFTER each optimization.
 
-- [Retour aux commandes QA](/docs/commands/qa)
-- [Toutes les commandes](/docs/commands)
+YOU MUST check keymaps with `desc` for which-key.
+
+NEVER disable health checks - they reveal the real problems.
+
+Think hard about the benefit/complexity ratio of plugins.
+
+
+---
+
+## See also
+
+- [Back to QA commands](/docs/commands/qa)
+- [All commands](/docs/commands)

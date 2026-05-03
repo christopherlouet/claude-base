@@ -1,7 +1,7 @@
 ---
 sidebar_position: 20
 title: "dev-supabase"
-description: "Developpement backend avec Supabase. Declencher quand l'utilisateur veut configurer l'auth, la base de donnees, ou le storage Supabase."
+description: "Backend development with Supabase. Trigger when the user wants to configure auth, the database, or Supabase storage."
 tags:
   - "skill"
   - "fork"
@@ -11,17 +11,17 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Developpement backend avec Supabase. Declencher quand l'utilisateur veut configurer l'auth, la base de donnees, ou le storage Supabase.
+> Backend development with Supabase. Trigger when the user wants to configure auth, the database, or Supabase storage.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `supabase` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `dev`, `supabase` |
 
-## Description detaillee
+## Detailed description
 
 # Supabase Development
 
@@ -52,7 +52,7 @@ await supabase.auth.signInWithOAuth({ provider: 'google' });
 await supabase.auth.signOut();
 ```
 
-## Database avec RLS
+## Database with RLS
 
 ```sql
 -- Enable RLS
@@ -109,85 +109,85 @@ supabase
 
 ## Postgres Performance Best Practices
 
-### Priorite critique : Query Performance
+### Critical priority: Query Performance
 
 ```sql
--- TOUJOURS utiliser des index sur les colonnes filtrees
+-- ALWAYS use indexes on filtered columns
 CREATE INDEX idx_profiles_email ON profiles(email);
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 CREATE INDEX idx_orders_created_at ON orders(created_at);
 
--- Index partiel pour les requetes frequentes
+-- Partial index for frequent queries
 CREATE INDEX idx_active_users ON profiles(id) WHERE is_active = true;
 
--- Index composite pour les requetes multi-colonnes
+-- Composite index for multi-column queries
 CREATE INDEX idx_orders_user_status ON orders(user_id, status);
 
--- ANALYSER les requetes lentes
+-- ANALYZE slow queries
 EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 'xxx';
 ```
 
-### Priorite critique : Connection Management
+### Critical priority: Connection Management
 
 ```typescript
-// UTILISER le connection pooling de Supabase (Supavisor)
-// En mode Transaction pour les serverless
+// USE Supabase's connection pooling (Supavisor)
+// In Transaction mode for serverless
 const supabase = createClient(url, key, {
   db: { schema: 'public' },
   auth: { persistSession: true },
 });
 
-// EVITER les connexions directes en serverless
-// Utiliser toujours le pooler (port 6543 au lieu de 5432)
+// AVOID direct connections in serverless
+// Always use the pooler (port 6543 instead of 5432)
 ```
 
-### Priorite haute : Schema Design
+### High priority: Schema Design
 
 ```sql
--- Types de donnees corrects (pas de VARCHAR quand UUID suffit)
+-- Correct data types (no VARCHAR when UUID is enough)
 CREATE TABLE orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id),
-  total_cents INTEGER NOT NULL,  -- Pas FLOAT pour les montants
+  total_cents INTEGER NOT NULL,  -- Not FLOAT for amounts
   status TEXT NOT NULL DEFAULT 'pending',
-  metadata JSONB DEFAULT '{}',  -- JSONB pas JSON
+  metadata JSONB DEFAULT '{}',  -- JSONB not JSON
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Eviter SELECT * en production
--- Specifier les colonnes necessaires
+-- Avoid SELECT * in production
+-- Specify the necessary columns
 const { data } = await supabase
   .from('orders')
-  .select('id, status, total_cents')  -- PAS '*'
+  .select('id, status, total_cents')  -- NOT '*'
   .eq('user_id', userId);
 ```
 
-### Priorite moyenne : Security & RLS
+### Medium priority: Security & RLS
 
 ```sql
--- RLS performant : eviter les subqueries dans les policies
--- BON : comparaison directe
+-- Performant RLS: avoid subqueries in policies
+-- GOOD: direct comparison
 CREATE POLICY "own_data" ON orders
   FOR ALL USING (user_id = auth.uid());
 
--- MAUVAIS : subquery dans la policy (lent)
+-- BAD: subquery in the policy (slow)
 CREATE POLICY "team_data" ON orders
   FOR ALL USING (
     user_id IN (SELECT member_id FROM team_members WHERE team_id = current_setting('app.team_id'))
   );
 
--- MIEUX : utiliser un JWT claim
+-- BETTER: use a JWT claim
 CREATE POLICY "team_data" ON orders
   FOR ALL USING (
     team_id = (auth.jwt() -> 'app_metadata' ->> 'team_id')::uuid
   );
 ```
 
-### Priorite moyenne : Data Access Patterns
+### Medium priority: Data Access Patterns
 
 ```sql
--- Pagination avec curseur (pas OFFSET pour les grandes tables)
--- BON : cursor-based
+-- Cursor-based pagination (not OFFSET for large tables)
+-- GOOD: cursor-based
 const { data } = await supabase
   .from('orders')
   .select('*')
@@ -195,57 +195,57 @@ const { data } = await supabase
   .order('created_at', { ascending: true })
   .limit(20);
 
--- MAUVAIS : offset-based (lent sur grandes tables)
+-- BAD: offset-based (slow on large tables)
 const { data } = await supabase
   .from('orders')
   .select('*')
-  .range(1000, 1020);  // Scanne 1020 lignes
+  .range(1000, 1020);  // Scans 1020 rows
 ```
 
 ### Monitoring
 
 ```sql
--- Requetes les plus lentes
+-- Slowest queries
 SELECT query, calls, mean_exec_time, total_exec_time
 FROM pg_stat_statements
 ORDER BY mean_exec_time DESC
 LIMIT 10;
 
--- Tables sans index utilise
+-- Tables without index used
 SELECT relname, seq_scan, seq_tup_read
 FROM pg_stat_user_tables
 WHERE seq_scan > 100
 ORDER BY seq_tup_read DESC;
 
--- Index non utilises
+-- Unused indexes
 SELECT indexrelname, idx_scan
 FROM pg_stat_user_indexes
 WHERE idx_scan = 0;
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux dev..."_
-- _"Je veux supabase..."_
+- _"I want to dev..."_
+- _"I want to supabase..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: Supabase Auth + Row Level Security
@@ -353,7 +353,7 @@ const { error } = await supabase
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

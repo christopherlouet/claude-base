@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: "data-pipeline"
-description: "Conception de pipelines ETL/ELT. Declencher quand l'utilisateur veut creer des flux de donnees, transformations, ou orchestration."
+description: "ETL/ELT pipeline design. Trigger when the user wants to create data flows, transformations, or orchestration."
 tags:
   - "skill"
   - "fork"
@@ -11,25 +11,25 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Conception de pipelines ETL/ELT. Declencher quand l'utilisateur veut creer des flux de donnees, transformations, ou orchestration.
+> ETL/ELT pipeline design. Trigger when the user wants to create data flows, transformations, or orchestration.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `data`, `pipeline` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `data`, `pipeline` |
 
-## Description detaillee
+## Detailed description
 
 # Data Pipeline
 
 ## ETL vs ELT
 
-| Pattern | Quand utiliser |
+| Pattern | When to use |
 |---------|----------------|
-| ETL | Transformation complexe, donnees sensibles |
+| ETL | Complex transformation, sensitive data |
 | ELT | Big data, cloud DW (BigQuery, Snowflake) |
 
 ## Airflow DAG
@@ -95,29 +95,29 @@ def validate_data(df):
     assert df['customer_id'].notna().all(), "Null customers"
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux data..."_
-- _"Je veux pipeline..."_
+- _"I want to data..."_
+- _"I want to pipeline..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: ETL Pipeline
@@ -250,7 +250,7 @@ def run_daily_pipeline(execution_date: str):
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

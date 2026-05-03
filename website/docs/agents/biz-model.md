@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "biz-model"
-description: "Analyse business et proposition de business model pour un projet."
+description: "Business analysis and business model proposal for a project."
 tags:
   - "agent"
   - "haiku"
@@ -11,69 +11,69 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Analyse business et proposition de business model pour un projet.
+> Business analysis and business model proposal for a project.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `WebSearch` |
-| **Outils interdits** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `WebSearch` |
+| **Disallowed tools** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent BIZ-MODEL
 
-Analyse business et proposition de business model pour un projet.
+Business analysis and business model proposal for a project.
 
 ## Workflow
 
-1. **Analyse technique** : explorer le codebase, identifier features et maturite
-2. **Proposition de valeur** : probleme resolu, persona cible, avantage differenciant
-3. **Business models** : evaluer SaaS, Freemium, Pay-per-use, Open-core, Marketplace, API-as-a-Service
-4. **Lean Canvas** : remplir les 9 blocs (probleme, solution, metriques, canaux, couts, revenus...)
-5. **Estimation financiere** : couts mensuels, pricing tiers, break-even
+1. **Technical analysis**: explore the codebase, identify features and maturity
+2. **Value proposition**: problem solved, target persona, differentiating advantage
+3. **Business models**: evaluate SaaS, Freemium, Pay-per-use, Open-core, Marketplace, API-as-a-Service
+4. **Lean Canvas**: fill in the 9 blocks (problem, solution, metrics, channels, costs, revenue...)
+5. **Financial estimate**: monthly costs, pricing tiers, break-even
 
-## Output attendu
+## Expected output
 
-1. Resume executif (proposition de valeur, marche cible, modele recommande)
-2. Analyse SWOT
-3. Business models recommandes avec justification et pricing
-4. Lean Canvas complete
-5. Estimation financiere avec fourchettes
-6. Prochaines etapes
+1. Executive summary (value proposition, target market, recommended model)
+2. SWOT analysis
+3. Recommended business models with justification and pricing
+4. Completed Lean Canvas
+5. Financial estimate with ranges
+6. Next steps
 
 ## Directives
 
-- IMPORTANT: Baser l'analyse sur le code et les infos disponibles
-- NEVER promettre de chiffres de revenus exacts
-- IMPORTANT: Fournir des fourchettes, pas des valeurs exactes
-- Rechercher des concurrents si possible
+- IMPORTANT: Base the analysis on the code and available information
+- NEVER promise exact revenue figures
+- IMPORTANT: Provide ranges, not exact values
+- Research competitors if possible
 
-Think hard about la viabilite commerciale du projet.
+Think hard about the commercial viability of the project.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 30
 title: "ops-docker"
-description: "Containerisation Docker et Docker Compose. Declencher quand l'utilisateur veut dockeriser une application ou creer des containers."
+description: "Docker and Docker Compose containerization. Trigger when the user wants to dockerize an application or create containers."
 tags:
   - "skill"
   - "fork"
@@ -11,21 +11,21 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Containerisation Docker et Docker Compose. Declencher quand l'utilisateur veut dockeriser une application ou creer des containers.
+> Docker and Docker Compose containerization. Trigger when the user wants to dockerize an application or create containers.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `docker` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `ops`, `docker` |
 
-## Description detaillee
+## Detailed description
 
 # Docker Containerization
 
-## Dockerfile Multi-Stage
+## Multi-Stage Dockerfile
 
 ```dockerfile
 # Stage 1: Build
@@ -86,37 +86,37 @@ volumes:
   postgres_data:
 ```
 
-## Bonnes pratiques
+## Best practices
 
-- Multi-stage builds pour reduire la taille
-- Non-root user pour la securite
-- .dockerignore pour exclure les fichiers inutiles
-- Health checks pour la disponibilite
-- Labels pour les metadonnees
+- Multi-stage builds to reduce size
+- Non-root user for security
+- .dockerignore to exclude unnecessary files
+- Health checks for availability
+- Labels for metadata
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux ops..."_
-- _"Je veux docker..."_
+- _"I want to ops..."_
+- _"I want to docker..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: Multi-stage Dockerfile with Docker Compose
@@ -211,7 +211,7 @@ volumes:
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

@@ -14,12 +14,12 @@ tags:
 
 ## Why a shared configuration
 
-Working as a team without a shared configuration produces three concrete problems: every developer invents their own conventions, onboarding a new member takes weeks instead of a few hours, and quality audits give inconsistent results from one workstation to another.
+Working as a team without a common configuration produces three concrete problems: each developer invents their own conventions, onboarding a new member takes weeks instead of a few hours, and quality audits give inconsistent results from one workstation to another.
 
 A shared configuration via the foundation solves these three problems in a single move:
 
 | Benefit | Without foundation | With foundation |
-|----------|-----------|------------|
+|---------|-------------------|-----------------|
 | Code conventions | Each dev decides | `.claude/rules/` rules committed |
 | Onboarding | 1 to 2 weeks | Less than 2 hours |
 | Code quality | Variable | Uniform audit score |
@@ -32,21 +32,21 @@ A shared configuration via the foundation solves these three problems in a singl
 
 ### Project-level CLAUDE.md (committed in git)
 
-The `CLAUDE.md` file at the root of the project is the entry point for any Claude Code session. It is loaded automatically and applies to every team member.
+The `CLAUDE.md` file at the root of the project is the entry point for any Claude Code session. It is loaded automatically and applies to all team members.
 
 This file should contain:
 
 - The team's **mandatory workflow** (Explore → Specify → Plan → TDD → Audit → Commit)
-- The **code conventions** specific to the project (naming, structure, stack)
-- The **references** to internal documentation
-- The **`@imports`** to modular files to avoid overloading the context
+- Project-specific **code conventions** (naming, structure, stack)
+- **References** to internal documentation
+- **`@imports`** to modular files to avoid overloading the context
 
-Example project CLAUDE.md:
+Example of a project CLAUDE.md:
 
 ```markdown
 # Project my-api
 
-> REST API Node.js/TypeScript with PostgreSQL
+> Node.js/TypeScript REST API with PostgreSQL
 
 @docs/conventions.md
 @docs/architecture.md
@@ -56,7 +56,7 @@ Example project CLAUDE.md:
 Explore → Specify → Plan → TDD → Audit → Commit
 
 1. EXPLORE: /work:work-explore before any modification
-2. SPECIFY: User Stories P1 (MVP) with Given/When/Then criteria
+2. SPECIFY: P1 User Stories (MVP) with Given/When/Then criteria
 3. PLAN: Architecture and file list before coding
 4. TDD: Tests BEFORE the code, Red-Green-Refactor cycle
 5. AUDIT: /qa:qa-loop "score 90" before any commit
@@ -76,7 +76,7 @@ Node.js 20, TypeScript 5, Express, Prisma, PostgreSQL 16
 
 ### Personal CLAUDE.md (~/.claude/CLAUDE.md)
 
-Each developer can have their own CLAUDE.md in `~/.claude/` for their personal preferences. This file is not committed in git and applies only to their machine.
+Each developer can have their own CLAUDE.md in `~/.claude/` for personal preferences. This file is not committed to git and only applies to their machine.
 
 Examples of personal preferences:
 
@@ -92,7 +92,7 @@ Examples of personal preferences:
 ### What goes where
 
 | Element | Project CLAUDE.md | Personal CLAUDE.md | `.claude/rules/` | Memory |
-|---------|-----------------|---------------------|-----------------|--------|
+|---------|------------------|--------------------|-----------------|--------|
 | Team code conventions | Yes | No | Yes (per language) | No |
 | Mandatory workflow | Yes | No | `workflow.md` | No |
 | Documentation references | Yes | No | No | No |
@@ -105,16 +105,16 @@ Examples of personal preferences:
 
 ## 2. Team configuration
 
-### `.claude/settings.json` (committed) vs `.claude/settings.local.json` (gitignored)
+### `.claude/settings.json` (committed) vs `.claude/settings.local.json` (gitignore)
 
-The `.claude/settings.json` file is committed in git. It contains the team's shared configuration: permissions, hooks, common environment variables.
+The `.claude/settings.json` file is committed to git. It contains the team's shared configuration: permissions, hooks, common environment variables.
 
 The `.claude/settings.local.json` file is in `.gitignore`. Each developer can override personal settings there without impacting the rest of the team.
 
 | Setting | `settings.json` (shared) | `settings.local.json` (personal) |
-|-----------|--------------------------|-----------------------------------|
+|---------|-------------------------|----------------------------------|
 | Permissions (allow/deny) | Yes - team security rules | No |
-| Format/lint/test hooks | Yes | Override possible |
+| Format/lint/tests hooks | Yes | Override possible |
 | Common env variables | Yes (`INSIDE_CLAUDE_CODE`) | Yes (tokens, local paths) |
 | `includeCoAuthoredBy` | Yes (false recommended) | No |
 | `ENABLE_RTK` | No | Yes (individual choice) |
@@ -127,16 +127,16 @@ The foundation provides pre-configured hooks in `settings.json` that apply to th
 ```
 PostToolUse: Auto-format (prettier, ruff, gofmt, dart format)
               TypeScript type-check after modification
-              ESLint verification after modification
+              ESLint check after modification
 PreToolUse: Tests before git commit (blocking)
               Local CI before git push (blocking)
               Gitleaks on Write/Edit (blocking if secret detected)
-              main branch protection (automatically creates a feature branch)
-SessionStart: Verifies .env in .gitignore
-              Detects missing node_modules
+              Main branch protection (auto-creates a feature branch)
+SessionStart: Verify .env in .gitignore
+              Detect missing node_modules
 ```
 
-To disable a hook punctually without modifying the shared config:
+To disable a hook on the fly without modifying the shared config:
 
 ```bash
 # Skip pre-commit tests once
@@ -148,7 +148,7 @@ ALLOW_MAIN_EDIT=1 claude
 
 ### MCP servers: shared `.mcp.json`
 
-The `.mcp.json` file is committed in git with all servers **disabled by default** (`"enabled": false`). Each developer enables the servers they need in their `.claude/settings.local.json` or directly in `.mcp.json` on their branch.
+The `.mcp.json` file is committed to git with all servers **disabled by default** (`"enabled": false`). Each developer enables the servers they need in their `.claude/settings.local.json` or directly in `.mcp.json` on their branch.
 
 ```json
 // .mcp.json (committed, disabled by default)
@@ -181,7 +181,7 @@ GITHUB_TOKEN=ghp_your_token_here
 SENTRY_AUTH_TOKEN=your_sentry_token
 API_SECRET_KEY=your_secret_key_32_characters
 
-# .env (gitignored - contains the real values)
+# .env (gitignore - contains the real values)
 # NEVER committed
 ```
 
@@ -191,13 +191,13 @@ API_SECRET_KEY=your_secret_key_32_characters
 
 ### Shared rules (`.claude/rules/`)
 
-Files in `.claude/rules/` are committed in git and activate automatically based on the modified files. This is the most efficient mechanism to share code conventions without putting them in CLAUDE.md.
+Files in `.claude/rules/` are committed to git and activate automatically based on the modified files. This is the most efficient mechanism to share code conventions without putting them in CLAUDE.md.
 
 The foundation includes 30 pre-configured rules. For a team, the most important to commit are:
 
-| Rule | Automatic activation | Team utility |
-|------|----------------------|----------------|
-| `workflow.md` | Global | Mandatory cycle for all |
+| Rule | Automatic activation | Team usefulness |
+|------|---------------------|-----------------|
+| `workflow.md` | Global | Mandatory cycle for everyone |
 | `git.md` | Global | Conventional Commits, branches |
 | `typescript.md` | `**/*.ts`, `**/*.tsx` | Strict mode, no `any` |
 | `security.md` | `**/auth/**`, `**/api/**` | OWASP, XSS, injection |
@@ -207,7 +207,7 @@ The foundation includes 30 pre-configured rules. For a team, the most important 
 
 ### Create a team-specific rule
 
-For conventions not covered by standard rules, create `.claude/rules/team-conventions.md`:
+For conventions not covered by the standard rules, create `.claude/rules/team-conventions.md`:
 
 ```markdown
 ---
@@ -216,7 +216,7 @@ paths:
   - "**/*.tsx"
   - "**/services/**"
 ---
-# Team Conventions My-API
+# My-API Team Conventions
 
 ## Service Naming
 - One service per business domain: `UserService`, `OrderService`
@@ -237,17 +237,17 @@ paths:
 
 | Workflow phase | Effort | Justification |
 |---------------|--------|---------------|
-| Explore (code reading) | `low` | No deep reasoning needed |
-| Specify (user stories) | `medium` | Clarification of needs |
+| Explore (reading code) | `low` | No deep reasoning needed |
+| Specify (user stories) | `medium` | Clarifying needs |
 | Plan (architecture) | `high` | Structuring decisions |
 | TDD (implementation) | `medium` | Implementation guided by tests |
-| Audit (quality) | `high` | Detection of subtle issues |
+| Audit (quality) | `high` | Detection of subtle problems |
 | Complex debug | `max` | Maximum reasoning |
 
-### Recommended models per use
+### Recommended models per usage
 
-| Use | Model | Why |
-|-------|--------|---------|
+| Usage | Model | Why |
+|-------|-------|-----|
 | Architecture, design | Opus 4.7 | Most advanced reasoning, 1M context, `xhigh` effort |
 | Feature implementation | Sonnet | Speed/quality balance |
 | Exploration, reading | Haiku | Fast for simple operations |
@@ -305,24 +305,24 @@ claude
 
 The `work-explore` agent reads the codebase, identifies the patterns in place, and produces a structured summary. Let it run for 10 to 15 minutes for a medium-sized project.
 
-Complement: `/team-onboarding` (built-in CLI 2.1.101+) automatically generates an onboarding guide from local Claude Code usage. Useful for the lead preparing the ground before the new member arrives.
+Complement: `/team-onboarding` (built-in CLI 2.1.101+) automatically generates an onboarding guide based on local Claude Code usage. Useful for the lead preparing the ground before the new member arrives.
 
 ### Step 6: First task - "good first issue"
 
 The lead assigns an issue labeled `good first issue` on GitHub. Expected workflow:
 
 ```bash
-/work:work-explore          # Understand the context of the task
-/work:work-specify          # Clarify the acceptance criteria
+/work:work-explore          # Understand the task context
+/work:work-specify          # Clarify acceptance criteria
 /work:work-plan             # Propose a solution
 /dev:dev-tdd                # Implement in TDD
 /qa:qa-loop "score 90"      # Validate quality
 /work:work-pr               # Create the Pull Request
 ```
 
-### Step 7: Validate workflow understanding
+### Step 7: Validate the workflow understanding
 
-Before working autonomously, verify that the new member:
+Before working autonomously, check that the new member:
 
 - [ ] Understands the difference between `commands/` and `agents/`
 - [ ] Knows how to read a quality audit (`/qa:qa-audit`)
@@ -353,17 +353,17 @@ git branch -m feature/descriptive-name
 ### Shared hooks for code protection
 
 | Hook | Trigger | Action |
-|------|------------|--------|
-| main protection | Edit/Write on main | Automatically creates a feature branch |
-| Pre-commit tests | `git commit` | Runs the test suite, blocks if failure |
-| Pre-push local CI | `git push` | Lint + type-check + tests, blocks if failure |
+|------|---------|--------|
+| Main protection | Edit/Write on main | Auto-creates a feature branch |
+| Pre-commit tests | `git commit` | Runs the test suite, blocks on failure |
+| Pre-push local CI | `git push` | Lint + type-check + tests, blocks on failure |
 | Gitleaks | Write/Edit | Detects secrets, blocks if found |
-| Destructive check | DROP/DELETE SQL commands | Asks for confirmation |
+| Destructive check | SQL DROP/DELETE commands | Asks for confirmation |
 
 ### Code review: human vs Claude
 
 | Type of review | Reviewer | Command |
-|---------------|-----------|---------|
+|---------------|----------|---------|
 | Business logic, UX | Human mandatory | Standard GitHub PR |
 | Security, auth, payment | Human + Claude | `/qa:qa-security` before PR |
 | Code quality, conventions | Claude | `/qa:qa-loop "score 90"` |
@@ -393,10 +393,10 @@ git rebase --continue
 
 ### Git worktrees for parallel work
 
-The most efficient technique for several simultaneous tasks:
+The most efficient technique for multiple simultaneous tasks:
 
 ```bash
-# Create a worktree for a feature in parallel
+# Create a worktree for a parallel feature
 git worktree add ../my-project-feature-auth feature/auth
 
 # Launch Claude Code in the worktree
@@ -409,7 +409,7 @@ git worktree remove ../my-project-feature-auth
 
 ### Named sessions
 
-To manage several sessions without worktrees:
+To manage multiple sessions without worktrees:
 
 ```bash
 # Session dedicated to a feature
@@ -434,7 +434,7 @@ The `work-team` agent orchestrates several specialized sub-agents (dev, test, do
 | Context | Approach | Command |
 |---------|----------|---------|
 | Single simple task | Standard session | `claude` |
-| Two features in parallel | Git worktrees | `git worktree add` |
+| Two parallel features | Git worktrees | `git worktree add` |
 | Complex multi-domain feature | Agent team | `/work:work-team` |
 | 5+ independent tasks | Worktrees + named sessions | `claude --session "name"` |
 | Exploration + implementation | `/compact` between phases | `/compact` |
@@ -447,11 +447,11 @@ The `work-team` agent orchestrates several specialized sub-agents (dev, test, do
 
 Non-negotiable principles:
 
-- `.env` always in `.gitignore` - verify before each new project
+- `.env` always in `.gitignore` - check before each new project
 - `.env.example` committed with placeholders, never real values
 - Rotate secrets if a commit containing a secret slips through anyway
 
-The foundation's `SessionStart` hook automatically verifies that `.env` is in `.gitignore` and alerts if not.
+The foundation's `SessionStart` hook automatically verifies that `.env` is in `.gitignore` and alerts if it isn't.
 
 ### Gitleaks: automatic detection
 
@@ -470,8 +470,8 @@ gitleaks detect --no-git --source .
 ### Recommended permission modes for the team
 
 | Mode | Use case | Risk |
-|------|------------|--------|
-| `default` | Standard development | Asks for confirmation for risky actions |
+|------|---------|------|
+| `default` | Standard development | Asks confirmation for risky actions |
 | `acceptEdits` | CI pipeline, automated reviews | Accepts modifications without confirmation |
 | Explicit deny list | All team projects | Blocks defined destructive commands |
 
@@ -481,10 +481,10 @@ The foundation's deny list blocks by default: `git push --force`, `git reset --h
 
 - [ ] `.env` in `.gitignore` (verified by SessionStart hook)
 - [ ] `.env.example` with placeholders committed
-- [ ] Gitleaks installed on every developer workstation
+- [ ] Gitleaks installed on all developer workstations
 - [ ] `.gitleaks.toml` configured and committed
 - [ ] `main` branch protected on GitHub (branch protection rules)
-- [ ] Mandatory PRs to merge on main (1 reviewer minimum)
+- [ ] PRs mandatory to merge on main (1 reviewer minimum)
 - [ ] Secrets in a team vault (1Password, Vault, AWS Secrets Manager)
 - [ ] Secret rotation documented in the ops runbook
 - [ ] `/qa:qa-security` run before each release
@@ -529,7 +529,7 @@ Then install: `brew install rtk`. See savings with `rtk gain`.
 ### Typical consumption per workflow phase
 
 | Phase | Token volume (approximate) | Recommended model |
-|-------|------------------------------|-------------------|
+|-------|---------------------------|-------------------|
 | Explore (medium codebase) | 50k - 150k input | Haiku |
 | Specify (user stories) | 5k - 20k | Sonnet |
 | Plan (complex feature) | 10k - 40k | Opus 4.7 |
@@ -541,12 +541,12 @@ Then install: `brew install rtk`. See savings with `rtk gain`.
 
 ## Useful commands for the lead
 
-| Situation | Command | Use |
-|-----------|----------|-------|
-| New member onboarding | `/work:work-explore` | Produce a codebase discovery guide |
-| Parallel feature coordination | `/work:work-team "description"` | Orchestrate several agents on a large feature |
+| Situation | Command | Usage |
+|-----------|---------|-------|
+| Onboarding new member | `/work:work-explore` | Produce a codebase discovery guide |
+| Coordination of parallel features | `/work:work-team "description"` | Orchestrate multiple agents on a large feature |
 | Team cost tracking | `/ops:ops-cost` | Token report and optimizations |
-| Pre-release quality gate | `/qa:qa-audit` | Full audit security + GDPR + A11y + Perf |
+| Quality gate before release | `/qa:qa-audit` | Full audit security + RGPD + A11y + Perf |
 | Audit + fix loop | `/qa:qa-loop "score 90"` | Automatic correction until target score |
 | Full release | `/work:work-flow-release "v2.0.0"` | Release workflow with changelog and tag |
 | Batch of stories | `/work:work-batch "prd.json"` | Process a backlog in batch |
@@ -557,10 +557,10 @@ Then install: `brew install rtk`. See savings with `rtk gain`.
 
 - No shared `CLAUDE.md`: each developer invents their conventions, the codebase diverges
 - Each dev has a different configuration: impossible to reproduce audits
-- No committed rules: conventions stay in heads, not in the code
+- No committed rules: conventions stay in heads, not in code
 - No code review process: quality depends on individual goodwill
-- Secrets in git: a git history doesn't erase easily, mandatory rotation
-- No onboarding document: the knowledge is in Slack and emails
-- Sessions too long without `/compact`: degraded context, drop in generation quality
+- Secrets in git: a git history is not easily erased, mandatory rotation
+- No onboarding document: knowledge is in Slack and emails
+- Sessions too long without `/compact`: degraded context, lower generation quality
 - Skipping the Audit phase before commit: technical debt accumulates silently
 - Modifying shared `settings.json` for personal preferences: use `settings.local.json`

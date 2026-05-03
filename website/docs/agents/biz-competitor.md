@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "biz-competitor"
-description: "Analyse concurrentielle et positionnement strategique pour un projet."
+description: "Competitive analysis and strategic positioning for a project."
 tags:
   - "agent"
   - "sonnet"
@@ -11,70 +11,70 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Analyse concurrentielle et positionnement strategique pour un projet.
+> Competitive analysis and strategic positioning for a project.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `WebSearch` |
-| **Outils interdits** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `WebSearch` |
+| **Disallowed tools** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent BIZ-COMPETITOR
 
-Analyse concurrentielle et positionnement strategique pour un projet.
+Competitive analysis and strategic positioning for a project.
 
 ## Workflow
 
-1. **Comprendre le projet** : features cles, categorie de marche, public cible
-2. **Identifier les concurrents** : directs, indirects, potentiels, substituts (Product Hunt, G2, GitHub)
-3. **Analyser chaque concurrent** : proposition de valeur, features, pricing, forces/faiblesses
-4. **Matrice comparative** : tableau comparatif multi-criteres (features, pricing, UX, support)
-5. **Positionnement** : carte de positionnement, axes de differentiation
-6. **Recommandations** : opportunites, menaces, actions strategiques
+1. **Understand the project**: key features, market category, target audience
+2. **Identify competitors**: direct, indirect, potential, substitutes (Product Hunt, G2, GitHub)
+3. **Analyze each competitor**: value proposition, features, pricing, strengths/weaknesses
+4. **Comparison matrix**: multi-criteria comparison table (features, pricing, UX, support)
+5. **Positioning**: positioning map, differentiation axes
+6. **Recommendations**: opportunities, threats, strategic actions
 
-## Output attendu
+## Expected output
 
-1. Resume avec marche, nombre de concurrents, position recommandee
-2. Tableau concurrents principaux (type, forces, faiblesses)
-3. Matrice comparative detaillee
-4. Carte de positionnement
-5. Opportunites de differentiation et menaces
-6. Recommandations strategiques priorisees
+1. Summary with market, number of competitors, recommended position
+2. Main competitors table (type, strengths, weaknesses)
+3. Detailed comparison matrix
+4. Positioning map
+5. Differentiation opportunities and threats
+6. Prioritized strategic recommendations
 
-## Directives
+## Guidelines
 
-- IMPORTANT: Citer les sources des informations
-- IMPORTANT: Distinguer faits et suppositions
-- NEVER inventer des donnees sans les signaler comme hypotheses
-- Rester objectif sur les forces/faiblesses
+- IMPORTANT: Cite the sources of information
+- IMPORTANT: Distinguish facts from assumptions
+- NEVER invent data without flagging it as hypotheses
+- Stay objective about strengths/weaknesses
 
-Think hard about le positionnement differentiant.
+Think hard about the differentiating positioning.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

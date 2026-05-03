@@ -7,53 +7,53 @@ tags:
   - "python"
 ---
 
-# Regles: python
+# Rules: python
 
 > import requests from pydantic import BaseModel
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.py`
 - `**/requirements*.txt`
 - `**/pyproject.toml`
 - `**/setup.py`
 
-## Regles detaillees
+## Detailed rules
 
 # Python Rules
 
 ## Type Hints
 
-- IMPORTANT: Utiliser les type hints pour toutes les fonctions publiques
-- YOU MUST annoter les arguments et retours de fonction
-- Utiliser `typing` module pour types complexes
-- Preferer `list[str]` a `List[str]` (Python 3.9+)
+- IMPORTANT: Use type hints for all public functions
+- YOU MUST annotate function arguments and return values
+- Use the `typing` module for complex types
+- Prefer `list[str]` over `List[str]` (Python 3.9+)
 
 ## Naming Conventions
 
-| Type | Convention | Exemple |
+| Type | Convention | Example |
 |------|------------|---------|
-| Variables/Fonctions | snake_case | `get_user_by_id` |
+| Variables/Functions | snake_case | `get_user_by_id` |
 | Classes | PascalCase | `UserService` |
-| Constantes | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
 | Modules/Packages | snake_case | `user_service.py` |
-| Protected | _prefixe | `_internal_method` |
-| Private | __prefixe | `__private_attr` |
+| Protected | _prefix | `_internal_method` |
+| Private | __prefix | `__private_attr` |
 
 ## Code Style (PEP 8)
 
-- Indentation: 4 espaces (pas de tabs)
-- Ligne max: 88 caracteres (Black) ou 79 (PEP 8)
-- Imports groupes: stdlib, third-party, local
-- Deux lignes vides entre classes/fonctions top-level
-- Une ligne vide entre methodes de classe
+- Indentation: 4 spaces (no tabs)
+- Max line length: 88 characters (Black) or 79 (PEP 8)
+- Grouped imports: stdlib, third-party, local
+- Two blank lines between top-level classes/functions
+- One blank line between class methods
 
 ## Imports
 
 ```python
-# Ordre des imports
+# Import order
 import os
 import sys
 from pathlib import Path
@@ -70,7 +70,7 @@ from app.services import UserService
 ```python
 from typing import Optional, TypeVar, Generic
 
-# Fonction typee
+# Typed function
 def get_user(user_id: int) -> Optional[User]:
     ...
 
@@ -107,10 +107,10 @@ async def stream_data() -> AsyncIterator[str]:
 
 ## Error Handling
 
-- Utiliser des exceptions specifiques, pas `Exception` generique
-- Creer des exceptions custom pour le domaine
-- NEVER utiliser `except:` sans type (bare except)
-- Utiliser `finally` pour le cleanup
+- Use specific exceptions, not the generic `Exception`
+- Create custom exceptions for the domain
+- NEVER use `except:` without a type (bare except)
+- Use `finally` for cleanup
 
 ```python
 class UserNotFoundError(Exception):
@@ -129,30 +129,30 @@ except DatabaseError as e:
 
 ## Best Practices
 
-- Utiliser `pathlib.Path` au lieu de `os.path`
-- Preferer `dataclasses` ou `pydantic` pour les DTOs
-- Utiliser context managers (`with`) pour les ressources
-- Eviter les mutables comme valeurs par defaut
-- Documenter avec docstrings (Google ou NumPy style)
+- Use `pathlib.Path` instead of `os.path`
+- Prefer `dataclasses` or `pydantic` for DTOs
+- Use context managers (`with`) for resources
+- Avoid mutables as default values
+- Document with docstrings (Google or NumPy style)
 
 ## Anti-patterns
 
-- NEVER utiliser `eval()` ou `exec()` avec input utilisateur
-- NEVER ignorer les exceptions silencieusement
-- Eviter les imports `*` (wildcard)
-- Eviter les variables globales mutables
-- Ne pas melanger tabs et espaces
+- NEVER use `eval()` or `exec()` with user input
+- NEVER ignore exceptions silently
+- Avoid `*` (wildcard) imports
+- Avoid mutable global variables
+- Do not mix tabs and spaces
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

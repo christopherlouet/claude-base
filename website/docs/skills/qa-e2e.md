@@ -1,7 +1,7 @@
 ---
 sidebar_position: 40
 title: "qa-e2e"
-description: "Tests End-to-End avec Playwright ou Cypress. Declencher quand l'utilisateur veut creer des tests de parcours utilisateur, tests d'integration UI, ou automatisation navigateur."
+description: "End-to-end tests with Playwright or Cypress. Trigger when the user wants to create user journey tests, UI integration tests, or browser automation."
 tags:
   - "skill"
   - "fork"
@@ -11,42 +11,42 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Tests End-to-End avec Playwright ou Cypress. Declencher quand l'utilisateur veut creer des tests de parcours utilisateur, tests d'integration UI, ou automatisation navigateur.
+> End-to-end tests with Playwright or Cypress. Trigger when the user wants to create user journey tests, UI integration tests, or browser automation.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `e2e`, `end-to-end`, `test de bout en bout`, `playwright`, `cypress` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `e2e`, `end-to-end`, `end-to-end test`, `playwright`, `cypress` |
 
-## Description detaillee
+## Detailed description
 
 # E2E Testing Skill
 
-## Declencheurs
+## Triggers
 
-Ce skill s'active quand l'utilisateur mentionne:
-- "E2E", "end-to-end", "test de bout en bout"
+This skill activates when the user mentions:
+- "E2E", "end-to-end", "end-to-end test"
 - "Playwright", "Cypress", "Puppeteer"
-- "test d'integration", "parcours utilisateur"
-- "automatisation navigateur", "test UI"
+- "integration test", "user journey"
+- "browser automation", "UI test"
 
-## Framework recommande
+## Recommended framework
 
-| Framework | Avantages | Use case |
+| Framework | Advantages | Use case |
 |-----------|-----------|----------|
-| **Playwright** | Multi-browser, rapide, auto-wait | Apps modernes |
-| **Cypress** | DX excellente, debug facile | Prototypage |
+| **Playwright** | Multi-browser, fast, auto-wait | Modern apps |
+| **Cypress** | Excellent DX, easy debugging | Prototyping |
 
-**Recommandation par defaut**: Playwright
+**Default recommendation**: Playwright
 
-## Structure projet
+## Project structure
 
 ```
 e2e/
-├── fixtures/           # Fixtures personnalisees
+├── fixtures/           # Custom fixtures
 ├── pages/              # Page Objects
 │   ├── login.page.ts
 │   └── dashboard.page.ts
@@ -117,51 +117,51 @@ test.describe('Authentication', () => {
 });
 ```
 
-## Parcours critiques
+## Critical journeys
 
-| Parcours | Points de test |
+| Journey | Test points |
 |----------|----------------|
-| **Inscription** | Validation form, email, success |
-| **Connexion** | Valid/invalid, remember me, forgot |
+| **Signup** | Form validation, email, success |
+| **Login** | Valid/invalid, remember me, forgot |
 | **Navigation** | Menu, breadcrumbs, deep links |
-| **Recherche** | Query, filtres, pagination |
+| **Search** | Query, filters, pagination |
 | **Checkout** | Cart, payment, confirmation |
 
-## Selecteurs recommandes
+## Recommended selectors
 
-| Priorite | Selecteur | Exemple |
+| Priority | Selector | Example |
 |----------|-----------|---------|
 | 1 | Role | `getByRole('button', { name: 'Submit' })` |
 | 2 | Label | `getByLabel('Email')` |
 | 3 | Text | `getByText('Welcome')` |
 | 4 | Test ID | `getByTestId('submit-btn')` |
-| 5 | CSS | `.btn-primary` (eviter) |
+| 5 | CSS | `.btn-primary` (avoid) |
 
-## Commandes utiles
+## Useful commands
 
 ```bash
-# Lancer les tests
+# Run the tests
 npx playwright test
 
-# Mode UI interactif
+# Interactive UI mode
 npx playwright test --ui
 
-# Mode headed (voir le navigateur)
+# Headed mode (see the browser)
 npx playwright test --headed
 
 # Debug
 npx playwright test --debug
 
-# Generer du code
+# Generate code
 npx playwright codegen http://localhost:3000
 
-# Rapport
+# Report
 npx playwright show-report
 ```
 
-## Fixtures personnalisees
+## Custom fixtures
 
-Les fixtures Playwright centralisent le setup et injectent les Page Objects dans les tests :
+Playwright fixtures centralize the setup and inject the Page Objects into the tests:
 
 ```typescript
 // e2e/fixtures/index.ts
@@ -187,7 +187,7 @@ export { expect } from '@playwright/test';
 ```
 
 ```typescript
-// e2e/tests/auth/login.spec.ts (avec fixtures)
+// e2e/tests/auth/login.spec.ts (with fixtures)
 import { test, expect } from '../../fixtures';
 
 test('should login with valid credentials', async ({ loginPage, page }) => {
@@ -197,7 +197,7 @@ test('should login with valid credentials', async ({ loginPage, page }) => {
 });
 ```
 
-## Fixture d'authentification reutilisable
+## Reusable authentication fixture
 
 ```typescript
 // e2e/fixtures/auth.ts
@@ -215,15 +215,15 @@ export const test = base.extend({
 });
 ```
 
-## Bonnes pratiques Playwright
+## Playwright best practices
 
-| Pratique | Description |
+| Practice | Description |
 |----------|-------------|
-| **Contexte frais** | Chaque test demarre dans un browser context isole (pas de state partage) |
-| **Auto-waiting** | Ne pas ajouter de `waitForTimeout` - Playwright attend automatiquement |
-| **Web-first assertions** | Utiliser `expect(locator)` qui retry automatiquement, pas `expect(await locator.textContent())` |
-| **Parallelisme** | `fullyParallel: true` dans la config pour execution parallele |
-| **Traces** | `trace: 'on-first-retry'` pour debugger les tests flaky |
+| **Fresh context** | Each test starts in an isolated browser context (no shared state) |
+| **Auto-waiting** | Don't add `waitForTimeout` - Playwright waits automatically |
+| **Web-first assertions** | Use `expect(locator)` which retries automatically, not `expect(await locator.textContent())` |
+| **Parallelism** | `fullyParallel: true` in the config for parallel execution |
+| **Traces** | `trace: 'on-first-retry'` to debug flaky tests |
 
 ## Anti-patterns
 
@@ -231,80 +231,80 @@ export const test = base.extend({
 |-------------|-------------|
 | `page.waitForTimeout(3000)` | `await expect(locator).toBeVisible()` |
 | `page.$('.my-class')` | `page.getByRole('button', { name: '...' })` |
-| Selecteurs XPath | Selecteurs role/label/text |
-| Tests dependants entre eux | Chaque test est independant |
-| `page.evaluate()` pour assertions | Web-first assertions avec `expect` |
-| Page Objects avec logique metier | Page Objects = actions + locators uniquement |
+| XPath selectors | role/label/text selectors |
+| Tests dependent on each other | Each test is independent |
+| `page.evaluate()` for assertions | Web-first assertions with `expect` |
+| Page Objects with business logic | Page Objects = actions + locators only |
 
-## Regles
+## Rules
 
-IMPORTANT: Les tests E2E sont lents - les reserver aux parcours critiques (10% de la pyramide).
+IMPORTANT: E2E tests are slow - reserve them for critical journeys (10% of the pyramid).
 
-IMPORTANT: Toujours utiliser des selecteurs accessibles (role, label).
+IMPORTANT: Always use accessible selectors (role, label).
 
-IMPORTANT: Utiliser les fixtures Playwright pour injecter les Page Objects - pas de `new Page()` dans chaque test.
+IMPORTANT: Use Playwright fixtures to inject the Page Objects - no `new Page()` in each test.
 
-YOU MUST implementer le Page Object Model pour la maintenabilite.
+YOU MUST implement the Page Object Model for maintainability.
 
-NEVER tester les details d'implementation - tester le comportement utilisateur.
+NEVER test implementation details - test user behavior.
 
-NEVER utiliser de selecteurs CSS fragiles (classes, IDs dynamiques).
+NEVER use fragile CSS selectors (classes, dynamic IDs).
 
-NEVER utiliser `waitForTimeout` - utiliser les web-first assertions qui retry automatiquement.
+NEVER use `waitForTimeout` - use web-first assertions which retry automatically.
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux e2e..."_
-- _"Je veux end-to-end..."_
-- _"Je veux test de bout en bout..."_
+- _"I want to e2e..."_
+- _"I want to end-to-end..."_
+- _"I want to end-to-end test..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
-### 1. Exemple E2E : Test de parcours de connexion
+### 1. E2E Example: Login flow test
 
-# Exemple E2E : Test de parcours de connexion
+# E2E Example: Login flow test
 
-## Demande utilisateur
-> "Creer un test E2E pour le parcours de connexion avec Playwright"
-
----
-
-## Analyse du parcours
-
-### Etapes utilisateur
-1. Acceder a la page de login
-2. Remplir email et mot de passe
-3. Cliquer sur "Se connecter"
-4. Verifier la redirection vers le dashboard
-5. Verifier que l'utilisateur est connecte
-
-### Cas a tester
-- Connexion reussie
-- Email invalide
-- Mot de passe incorrect
-- Champs vides
+## User request
+> "Create an E2E test for the login flow with Playwright"
 
 ---
 
-## Implementation Playwright
+## Flow analysis
+
+### User steps
+1. Access the login page
+2. Fill in email and password
+3. Click "Sign in"
+4. Verify the redirect to the dashboard
+5. Verify that the user is logged in
+
+### Cases to test
+- Successful login
+- Invalid email
+- Wrong password
+- Empty fields
+
+---
+
+## Playwright implementation
 
 ```typescript
 // tests/e2e/login.spec.ts
@@ -384,7 +384,7 @@ test.describe('Login Flow', () => {
 
 ---
 
-## Configuration Playwright
+## Playwright configuration
 
 ```typescript
 // playwright.config.ts
@@ -395,8 +395,8 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 2: 0,
+  workers: process.env.CI ? 1: undefined,
   reporter: 'html',
   use: {
     baseURL: 'http://localhost:3000',
@@ -427,7 +427,7 @@ export default defineConfig({
 
 ---
 
-## Page Object Pattern (optionnel)
+## Page Object Pattern (optional)
 
 ```typescript
 // tests/e2e/pages/LoginPage.ts
@@ -472,37 +472,37 @@ export class LoginPage {
 ## Execution
 
 ```bash
-# Lancer tous les tests E2E
+# Run all E2E tests
 npx playwright test
 
-# Mode UI interactif
+# Interactive UI mode
 npx playwright test --ui
 
-# Generer le rapport
+# Generate the report
 npx playwright show-report
 
-# Tests specifiques
+# Specific tests
 npx playwright test login.spec.ts
 
-# Mode debug
+# Debug mode
 npx playwright test --debug
 ```
 
 ---
 
-## Bonnes pratiques
+## Best practices
 
-1. **data-testid** : Utiliser des attributs de test plutot que des selecteurs CSS
-2. **Page Objects** : Encapsuler la logique de page pour la reutilisabilite
-3. **Assertions explicites** : Toujours verifier l'etat attendu
-4. **Isolation** : Chaque test doit etre independant
-5. **CI/CD** : Configurer les retries et screenshots en CI
+1. **data-testid**: Use test attributes rather than CSS selectors
+2. **Page Objects**: Encapsulate page logic for reusability
+3. **Explicit assertions**: Always verify the expected state
+4. **Isolation**: Each test must be independent
+5. **CI/CD**: Configure retries and screenshots in CI
 
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

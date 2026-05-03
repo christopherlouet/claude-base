@@ -1,7 +1,7 @@
 ---
 sidebar_position: 7
 title: "data-modeling"
-description: "Conception de modeles de donnees dimensionnels pour analytics."
+description: "Design of dimensional data models for analytics."
 tags:
   - "agent"
   - "sonnet"
@@ -11,74 +11,74 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Conception de modeles de donnees dimensionnels pour analytics.
+> Design of dimensional data models for analytics.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent DATA-MODELING
 
-Conception de modeles de donnees dimensionnels pour analytics.
+Design of dimensional data models for analytics.
 
 ## Workflow
 
-1. **Schema dimensionnel** : identifier facts et dimensions, concevoir star/snowflake schema
-2. **Tables** : DDL avec surrogate keys, SCD Type 1/2 pour les dimensions qui changent
-3. **dbt Models** : staging (views), dimensions (tables), facts (incremental)
-4. **Data Vault** : hubs, links, satellites si architecture Data Vault requise
-5. **Documentation** : ERD, description des tables et colonnes
+1. **Dimensional schema**: identify facts and dimensions, design star/snowflake schema
+2. **Tables**: DDL with surrogate keys, SCD Type 1/2 for dimensions that change
+3. **dbt Models**: staging (views), dimensions (tables), facts (incremental)
+4. **Data Vault**: hubs, links, satellites if Data Vault architecture is required
+5. **Documentation**: ERD, description of tables and columns
 
-## Concepts cles
+## Key concepts
 
-- **Star Schema** : fact table centrale + dimension tables
-- **SCD Type 1** : overwrite (pas d'historique)
-- **SCD Type 2** : historique avec effective_date/expiration_date/is_current
-- **dbt layers** : staging (source cleanup) -> marts (dims + facts)
+- **Star Schema**: central fact table + dimension tables
+- **SCD Type 1**: overwrite (no history)
+- **SCD Type 2**: history with effective_date/expiration_date/is_current
+- **dbt layers**: staging (source cleanup) -> marts (dims + facts)
 
-## Output attendu
+## Expected output
 
-1. ERD du modele dimensionnel
-2. Scripts DDL des tables
-3. Modeles dbt (staging, dims, facts)
-4. Documentation du modele
+1. ERD of the dimensional model
+2. DDL scripts for the tables
+3. dbt models (staging, dims, facts)
+4. Model documentation
 
 ## Directives
 
-- IMPORTANT: Toujours inclure surrogate keys (ne pas utiliser les business keys comme PK)
-- IMPORTANT: Definir SCD type pour chaque dimension
-- YOU MUST optimiser pour les requetes analytiques (denormalisation acceptee)
-- NEVER oublier les champs d'audit (created_at, updated_at)
+- IMPORTANT: Always include surrogate keys (do not use business keys as PK)
+- IMPORTANT: Define SCD type for each dimension
+- YOU MUST optimize for analytical queries (denormalization accepted)
+- NEVER forget audit fields (created_at, updated_at)
 
-Think hard about la granularite des fact tables.
+Think hard about the granularity of fact tables.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

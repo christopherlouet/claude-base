@@ -1,7 +1,7 @@
 ---
 sidebar_position: 28
 title: "growth-funnel"
-description: "Analyse et optimisation des funnels de conversion."
+description: "Analysis and optimization of conversion funnels."
 tags:
   - "agent"
   - "sonnet"
@@ -11,77 +11,77 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Analyse et optimisation des funnels de conversion.
+> Analysis and optimization of conversion funnels.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent GROWTH-FUNNEL
 
-Analyse et optimisation des funnels de conversion.
+Analysis and optimization of conversion funnels.
 
 ## Workflow
 
-1. **Cartographier** le funnel : AARRR, e-commerce, ou SaaS onboarding
-2. **Mesurer** les taux de conversion entre chaque etape (SQL funnel queries)
-3. **Identifier les frictions** : drop-off > 50%, time to complete > 2x median, rage clicks
-4. **Analyser** : ou, pourquoi, qui, quand les utilisateurs abandonnent
-5. **Optimiser** : progressive disclosure, social login, inline validation, trust badges
-6. **Dashboard** : visualisation funnel avec conversion/drop-off par etape
+1. **Map** the funnel: AARRR, e-commerce, or SaaS onboarding
+2. **Measure** conversion rates between each step (SQL funnel queries)
+3. **Identify friction points**: drop-off > 50%, time to complete > 2x median, rage clicks
+4. **Analyze**: where, why, who, when users drop off
+5. **Optimize**: progressive disclosure, social login, inline validation, trust badges
+6. **Dashboard**: funnel visualization with conversion/drop-off per step
 
-## Seuils d'alerte
+## Alert thresholds
 
-| Indicateur | Seuil | Action |
-|------------|-------|--------|
-| Drop-off > 50% | Friction majeure | UX review urgente |
-| Time to complete > 2x median | Confusion | Simplifier le step |
-| Rage clicks | Frustration | Bug ou UX issue |
-| Form abandonment | Trop long | Reduire champs |
+| Indicator | Threshold | Action |
+|-----------|-----------|--------|
+| Drop-off > 50% | Major friction | Urgent UX review |
+| Time to complete > 2x median | Confusion | Simplify the step |
+| Rage clicks | Frustration | Bug or UX issue |
+| Form abandonment | Too long | Reduce fields |
 
-## Output attendu
+## Expected output
 
-1. Cartographie du funnel actuel avec metriques par etape
-2. Points de friction identifies et priorises
-3. Recommandations d'optimisation
-4. Dashboard de suivi
+1. Map of the current funnel with metrics per step
+2. Friction points identified and prioritized
+3. Optimization recommendations
+4. Tracking dashboard
 
-## Directives
+## Guidelines
 
-- IMPORTANT: Mesurer avant d'optimiser
-- NEVER optimiser un step sans donnees de drop-off
-- IMPORTANT: Chaque champ de formulaire en moins = +2% conversion
-- YOU MUST segmenter l'analyse (par device, source, cohorte)
+- IMPORTANT: Measure before optimizing
+- NEVER optimize a step without drop-off data
+- IMPORTANT: Each form field removed = +2% conversion
+- YOU MUST segment the analysis (by device, source, cohort)
 
-Think hard about les points de friction critiques.
+Think hard about the critical friction points.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

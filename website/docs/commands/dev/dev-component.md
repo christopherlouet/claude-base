@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "/dev:dev-component"
-description: "Generer un composant UI complet avec tests, types et documentation."
+description: "Generate a complete UI component with tests, types and documentation."
 tags:
   - "dev"
   - "command"
@@ -15,57 +15,57 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DEV-COMPONENT
 
-Generer un composant UI complet avec tests, types et documentation.
+Generate a complete UI component with tests, types and documentation.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Creer un composant React complet en suivant l'approche TDD :
-types d'abord, puis tests (RED), implementation (GREEN), refactoring et Storybook.
+Create a complete React component following the TDD approach:
+types first, then tests (RED), implementation (GREEN), refactoring and Storybook.
 
 ## Workflow
 
-- Definir le composant : nom, framework, props/API, etats internes, variants
-- Creer les types (`[ComponentName].types.ts`) avec JSDoc
-- Ecrire les tests (`[ComponentName].test.tsx`) : render, variants, click, disabled, className
-- Implementer le composant (`[ComponentName].tsx`) avec forwardRef, clsx, CSS modules
-- Creer les stories Storybook (`[ComponentName].stories.tsx`) avec argTypes
-- Verifier : props typees, gestion disabled, CSS modulaires, tests &gt;80%, accessibilite (aria-*, role, tabIndex)
+- Define the component: name, framework, props/API, internal state, variants
+- Create the types (`[ComponentName].types.ts`) with JSDoc
+- Write the tests (`[ComponentName].test.tsx`): render, variants, click, disabled, className
+- Implement the component (`[ComponentName].tsx`) with forwardRef, clsx, CSS modules
+- Create the Storybook stories (`[ComponentName].stories.tsx`) with argTypes
+- Verify: typed props, disabled handling, modular CSS, tests &gt;80%, accessibility (aria-*, role, tabIndex)
 
-## Output attendu
+## Expected output
 
-- `[ComponentName].tsx` - Composant principal
-- `[ComponentName].types.ts` - Types TypeScript
-- `[ComponentName].test.tsx` - Tests unitaires
-- `[ComponentName].stories.tsx` - Documentation Storybook
+- `[ComponentName].tsx` - Main component
+- `[ComponentName].types.ts` - TypeScript types
+- `[ComponentName].test.tsx` - Unit tests
+- `[ComponentName].stories.tsx` - Storybook documentation
 - `[ComponentName].module.css` - Styles
 - `index.ts` - Export
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/dev:dev-hook` | Creer un hook associe |
-| `/dev:dev-test` | Tests complementaires |
-| `/qa:wcag-audit` | Audit accessibilite du composant |
-| `/qa:qa-responsive` | Verifier le responsive |
+| `/dev:dev-hook` | Create an associated hook |
+| `/dev:dev-test` | Complementary tests |
+| `/qa:wcag-audit` | Component accessibility audit |
+| `/qa:qa-responsive` | Verify responsiveness |
 
 ---
 
-IMPORTANT: Toujours typer les props avec des interfaces explicites.
+IMPORTANT: Always type props with explicit interfaces.
 
-YOU MUST ajouter des tests pour chaque prop et comportement.
+YOU MUST add tests for each prop and behavior.
 
-NEVER oublier l'accessibilite (aria-label, role, keyboard navigation).
+NEVER forget accessibility (aria-label, role, keyboard navigation).
 
-Think hard sur l'API du composant avant de coder.
+Think hard about the component's API before coding.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DEV](/docs/commands/dev)
-- [Toutes les commandes](/docs/commands)
+- [Back to DEV commands](/docs/commands/dev)
+- [All commands](/docs/commands)

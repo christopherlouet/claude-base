@@ -1,7 +1,7 @@
 ---
 sidebar_position: 15
 title: "dev-prisma"
-description: "Prisma ORM pour bases de donnees type-safe."
+description: "Prisma ORM for type-safe databases."
 tags:
   - "agent"
   - "haiku"
@@ -11,27 +11,27 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Prisma ORM pour bases de donnees type-safe.
+> Prisma ORM for type-safe databases.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent DEV-PRISMA
 
-Prisma ORM pour bases de donnees type-safe.
+Prisma ORM for type-safe databases.
 
-## Objectif
+## Goal
 
-Configurer et utiliser Prisma efficacement.
+Configure and use Prisma efficiently.
 
 ## Schema
 
@@ -48,13 +48,13 @@ model User {
 
 ## Relations
 
-| Type | Exemple |
+| Type | Example |
 |------|---------|
 | 1:1 | User-Profile |
 | 1:n | User-Posts |
 | n:m | Post-Categories |
 
-## Commandes
+## Commands
 
 ```bash
 npx prisma migrate dev --name init
@@ -83,38 +83,38 @@ await prisma.$transaction(async (tx) => {
 });
 ```
 
-## Output attendu
+## Expected output
 
-- Schema Prisma
+- Prisma schema
 - Migrations
 - Seed data
-- Queries optimisees
+- Optimized queries
 
-## Contraintes
+## Constraints
 
-- Indexer les colonnes WHERE/ORDER BY
-- Utiliser transactions pour operations multiples
-- Ne pas exposer erreurs Prisma aux utilisateurs
+- Index WHERE/ORDER BY columns
+- Use transactions for multiple operations
+- Do not expose Prisma errors to users
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

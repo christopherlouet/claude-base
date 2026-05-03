@@ -1,7 +1,7 @@
 ---
 sidebar_position: 50
 title: "qa-audit"
-description: "Audit qualite complet couvrant 5 domaines."
+description: "Complete quality audit covering 5 domains."
 tags:
   - "agent"
   - "opus"
@@ -11,76 +11,76 @@ tags:
 
 <span className="badge badge--opus">Opus</span>
 
-> Audit qualite complet couvrant 5 domaines.
+> Complete quality audit covering 5 domains.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | opus |
+| **Model** | opus |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | `Edit`, `Write`, `NotebookEdit` |
-| **Skills injectes** | `qa-security`, `reviewing-code` |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | `Edit`, `Write`, `NotebookEdit` |
+| **Injected skills** | `qa-security`, `reviewing-code` |
 
-## Description detaillee
+## Detailed description
 
 # Agent QA-AUDIT
 
-Audit qualite complet couvrant 5 domaines.
+Complete quality audit covering 5 domains.
 
-## Perimetre
+## Scope
 
-1. **Securite** (OWASP Top 10) : Injections, auth, XSS, CORS, secrets, headers
-2. **RGPD** : Donnees collectees, bases legales, droits des personnes
-3. **Accessibilite** (WCAG 2.1 AA) : Alt text, contraste, clavier, labels, focus
-4. **Performance** (Core Web Vitals) : LCP < 2.5s, INP < 200ms, CLS < 0.1
-5. **Qualite de code** : Tests, linting, documentation, dependances
+1. **Security** (OWASP Top 10): Injections, auth, XSS, CORS, secrets, headers
+2. **GDPR**: Data collected, legal bases, individual rights
+3. **Accessibility** (WCAG 2.1 AA): Alt text, contrast, keyboard, labels, focus
+4. **Performance** (Core Web Vitals): LCP < 2.5s, INP < 200ms, CLS < 0.1
+5. **Code quality**: Tests, linting, documentation, dependencies
 
-## Output attendu
+## Expected output
 
 ```
-RAPPORT D'AUDIT COMPLET
+COMPLETE AUDIT REPORT
 
-Securite      [████████░░] 80%
-RGPD          [██████░░░░] 60%
-Accessibilite [███████░░░] 70%
-Performance   [█████████░] 90%
-Qualite       [████████░░] 80%
+Security       [████████░░] 80%
+GDPR           [██████░░░░] 60%
+Accessibility  [███████░░░] 70%
+Performance    [█████████░] 90%
+Quality        [████████░░] 80%
 
-SCORE GLOBAL  [███████░░░] 76%
+OVERALL SCORE  [███████░░░] 76%
 
-Problemes Critiques: [N]
-Actions immediates:
+Critical issues: [N]
+Immediate actions:
 1. [Action 1]
 2. [Action 2]
 ```
 
-## Contraintes
+## Constraints
 
-- Fournir des scores chiffres pour chaque domaine
-- Prioriser les problemes par criticite
-- Proposer des actions concretes et realisables
+- Provide numerical scores for each domain
+- Prioritize issues by criticality
+- Propose concrete and actionable steps
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele opus
+## Characteristics of the opus model
 
 
-**Opus** est optimise pour :
-- Taches necessitant le maximum de capacites
-- Analyses tres complexes
-- Cas critiques
+**Opus** is optimized for:
+- Tasks requiring maximum capabilities
+- Very complex analyses
+- Critical cases
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

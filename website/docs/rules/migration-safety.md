@@ -1,19 +1,19 @@
 ---
 sidebar_position: 13
 title: "migration-safety"
-description: "Les migrations majeures de framework ou dependances sont risquees. Toujours suivre un processus structure pour eviter les cascades de CI failures."
+description: "Major framework or dependency migrations are risky. Always follow a structured process to avoid cascades of CI failures."
 tags:
   - "rule"
   - "migration-safety"
 ---
 
-# Regles: migration-safety
+# Rules: migration-safety
 
-> Les migrations majeures de framework ou dependances sont risquees. Toujours suivre un processus structure pour eviter les cascades de CI failures.
+> Major framework or dependency migrations are risky. Always follow a structured process to avoid cascades of CI failures.
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/package.json`
 - `**/tsconfig.json`
@@ -26,41 +26,41 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 - `**/Cargo.toml`
 - `**/Gemfile`
 
-## Regles detaillees
+## Detailed rules
 
 # Migration Safety
 
-## Principe
+## Principle
 
-Les migrations majeures de framework ou dependances sont risquees. Toujours suivre un processus structure pour eviter les cascades de CI failures.
+Major framework or dependency migrations are risky. Always follow a structured process to avoid cascades of CI failures.
 
-## Checklist migration obligatoire
+## Mandatory migration checklist
 
-| Etape | Action | Bloquant |
+| Step | Action | Blocking |
 |-------|--------|----------|
-| 1 | Lire le guide de migration officiel du framework | Oui |
-| 2 | Lister les breaking changes qui impactent le projet | Oui |
-| 3 | Creer une branche dediee (`refactor/migrate-xxx`) | Oui |
-| 4 | Sauvegarder l'etat CI actuel (noter les erreurs pre-existantes) | Oui |
-| 5 | Migrer une dependance a la fois, pas tout d'un coup | Oui |
-| 6 | Lancer lint + type-check + tests apres chaque changement | Oui |
-| 7 | Vider les caches si necessaire | Oui |
-| 8 | Commit atomique par etape de migration | Oui |
+| 1 | Read the framework's official migration guide | Yes |
+| 2 | List the breaking changes that impact the project | Yes |
+| 3 | Create a dedicated branch (`refactor/migrate-xxx`) | Yes |
+| 4 | Save the current CI state (note pre-existing errors) | Yes |
+| 5 | Migrate one dependency at a time, not all at once | Yes |
+| 6 | Run lint + type-check + tests after each change | Yes |
+| 7 | Clear caches if necessary | Yes |
+| 8 | Atomic commit per migration step | Yes |
 
-## Migrations courantes et pieges
+## Common migrations and pitfalls
 
-| Migration | Piege connu | Solution |
+| Migration | Known pitfall | Solution |
 |-----------|------------|----------|
-| ESLint 8 → 9 | Flat config incompatible avec ancien format | Convertir `.eslintrc` → `eslint.config.js` |
-| Next.js 14 → 15/16 | Turbopack cache corruption | Supprimer `.next/` apres migration |
-| Prisma upgrade | Migrations en conflit | `prisma migrate status` avant `prisma migrate deploy` |
-| React 18 → 19 | APIs deprecated | Verifier `StrictMode` et hooks |
-| TypeScript 4 → 5 | Nouveaux checks strict | Activer les checks un par un |
-| Python 3.x → 3.y | Syntax/API changes | Verifier `pyproject.toml` python-requires |
+| ESLint 8 → 9 | Flat config incompatible with old format | Convert `.eslintrc` → `eslint.config.js` |
+| Next.js 14 → 15/16 | Turbopack cache corruption | Delete `.next/` after migration |
+| Prisma upgrade | Conflicting migrations | `prisma migrate status` before `prisma migrate deploy` |
+| React 18 → 19 | Deprecated APIs | Check `StrictMode` and hooks |
+| TypeScript 4 → 5 | New strict checks | Enable checks one by one |
+| Python 3.x → 3.y | Syntax/API changes | Check `pyproject.toml` python-requires |
 
-## Caches a vider apres migration
+## Caches to clear after migration
 
-| Stack | Commande |
+| Stack | Command |
 |-------|----------|
 | Next.js / Turbopack | `rm -rf .next/` |
 | Webpack | `rm -rf node_modules/.cache/` |
@@ -71,28 +71,28 @@ Les migrations majeures de framework ou dependances sont risquees. Toujours suiv
 | Rust | `cargo clean` |
 | Flutter | `flutter clean` |
 
-## Regles
+## Rules
 
-IMPORTANT: Ne JAMAIS migrer plusieurs dependances majeures en meme temps. Une migration a la fois.
+IMPORTANT: NEVER migrate multiple major dependencies at the same time. One migration at a time.
 
-IMPORTANT: Toujours lire le guide de migration officiel AVANT de commencer.
+IMPORTANT: Always read the official migration guide BEFORE starting.
 
-IMPORTANT: Vider les caches du bundler/compiler apres chaque migration majeure.
+IMPORTANT: Clear bundler/compiler caches after each major migration.
 
-NEVER ignorer les breaking changes listes dans le changelog de la nouvelle version.
+NEVER ignore the breaking changes listed in the new version's changelog.
 
-NEVER migrer sans branche dediee — toujours pouvoir revenir en arriere.
+NEVER migrate without a dedicated branch — always be able to roll back.
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

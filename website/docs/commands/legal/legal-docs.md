@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "/legal:legal-docs"
-description: "Generation des documents legaux (CGU, CGV, Mentions legales, Politique de confidentialite)."
+description: "Generation of legal documents (Terms of Service, Sales Terms, Legal Notice, Privacy Policy)."
 tags:
   - "legal"
   - "command"
@@ -13,58 +13,58 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--legal">LEGAL</span>
 
 
-# Agent LEGAL
+# LEGAL Agent
 
-Generation des documents legaux (CGU, CGV, Mentions legales, Politique de confidentialite).
+Generation of legal documents (Terms of Service, Sales Terms, Legal Notice, Privacy Policy).
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Generer les documents legaux obligatoires adaptes au type de service,
-avec les informations de l'entreprise et les specificites de l'activite.
+Generate the mandatory legal documents adapted to the type of service,
+with the company information and the specifics of the activity.
 
 ## Workflow
 
-- Collecter les informations sur l'entreprise (raison sociale, SIRET, RCS, adresse, hebergeur)
-- Identifier le type de service (SaaS, e-commerce, marketplace, contenu) et le modele economique
-- Determiner les documents necessaires (mentions legales, CGU, CGV, politique de confidentialite, cookies)
-- Generer chaque document avec la structure type adaptee
-- Verifier la checklist de conformite (documents accessibles, case a cocher, date visible)
-- Identifier les points specifiques a valider avec un avocat
+- Collect information about the company (legal name, SIRET, RCS, address, host)
+- Identify the type of service (SaaS, e-commerce, marketplace, content) and the business model
+- Determine the necessary documents (legal notice, Terms of Service, Sales Terms, privacy policy, cookies)
+- Generate each document with the appropriate standard structure
+- Verify the compliance checklist (accessible documents, checkbox, visible date)
+- Identify the specific points to validate with a lawyer
 
-## Output attendu
+## Expected output
 
-1. **Mentions legales** avec toutes les informations obligatoires
-2. **CGU** si compte utilisateur
-3. **CGV** si vente de produits/services
-4. **Politique de confidentialite** conforme RGPD
-5. **Checklist** de mise en ligne
+1. **Legal notice** with all mandatory information
+2. **Terms of Service** if user account
+3. **Sales Terms** if sale of products/services
+4. **Privacy policy** GDPR-compliant
+5. **Checklist** for going live
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/legal:legal-rgpd` | Audit et conformite RGPD |
-| `/legal:legal-privacy-policy` | Politique de confidentialite detaillee |
-| `/legal:legal-terms-of-service` | CGU detaillees |
-| `/legal:legal-payment` | Aspects legaux des paiements |
+| `/legal:legal-rgpd` | GDPR audit and compliance |
+| `/legal:legal-privacy-policy` | Detailed privacy policy |
+| `/legal:legal-terms-of-service` | Detailed Terms of Service |
+| `/legal:legal-payment` | Legal aspects of payments |
 
 ---
 
-IMPORTANT: Ces documents sont des modeles. Ils doivent etre valides par un professionnel du droit.
+IMPORTANT: These documents are templates. They must be validated by a legal professional.
 
-YOU MUST renseigner toutes les informations legales obligatoires (SIRET, RCS, etc.).
+YOU MUST fill in all mandatory legal information (SIRET, RCS, etc.).
 
-NEVER copier-coller des CGU/CGV d'un autre site - elles doivent refleter l'activite reelle.
+NEVER copy-paste Terms of Service / Sales Terms from another site — they must reflect the actual activity.
 
-Think hard sur les specificites de l'activite avant de generer les documents.
+Think hard about the specifics of the activity before generating the documents.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes LEGAL](/docs/commands/legal)
-- [Toutes les commandes](/docs/commands)
+- [Back to LEGAL commands](/docs/commands/legal)
+- [All commands](/docs/commands)

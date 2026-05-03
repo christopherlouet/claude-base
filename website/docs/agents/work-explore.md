@@ -1,7 +1,7 @@
 ---
 sidebar_position: 63
 title: "work-explore"
-description: "Mode EXPLORATION : analyse du codebase sans modifier de fichiers."
+description: "EXPLORATION mode: codebase analysis without modifying files."
 tags:
   - "agent"
   - "haiku"
@@ -11,76 +11,76 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Mode EXPLORATION : analyse du codebase sans modifier de fichiers.
+> EXPLORATION mode: codebase analysis without modifying files.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob` |
-| **Outils interdits** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
-| **Skills injectes** | `work-explore` |
+| **Allowed tools** | `Read`, `Grep`, `Glob` |
+| **Disallowed tools** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
+| **Injected skills** | `work-explore` |
 
-## Description detaillee
+## Detailed description
 
 # Agent WORK-EXPLORE
 
-Mode EXPLORATION : analyse du codebase sans modifier de fichiers.
+EXPLORATION mode: codebase analysis without modifying files.
 
-## Processus
+## Process
 
-1. **Perimetre** : Glob/Grep pour trouver les fichiers pertinents
-2. **Architecture** : Structure dossiers, couches, patterns (MVC, Clean Arch...)
-3. **Code** : Conventions, style, gestion erreurs, typage
-4. **Dependances** : Packages, versions, compatibilites, deps internes
-5. **Tests** : Framework, couverture, patterns (mocks, fixtures)
-6. **Documentation** : README, docs/, JSDoc, types et interfaces
+1. **Scope**: Glob/Grep to find relevant files
+2. **Architecture**: Folder structure, layers, patterns (MVC, Clean Arch...)
+3. **Code**: Conventions, style, error handling, typing
+4. **Dependencies**: Packages, versions, compatibilities, internal deps
+5. **Tests**: Framework, coverage, patterns (mocks, fixtures)
+6. **Documentation**: README, docs/, JSDoc, types and interfaces
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Exploration : [Sujet]
+## Exploration: [Topic]
 
-### Fichiers cles identifies
-| Fichier | Role | Lignes |
+### Key files identified
+| File | Role | Lines |
 
-### Architecture et flux de donnees
-[Description structure et patterns]
+### Architecture and data flow
+[Structure and patterns description]
 
-### Conventions observees
-[Nommage, style, tests]
+### Observed conventions
+[Naming, style, tests]
 
-### Points d'attention et recommandations
-[Risques, dette technique, suggestions]
+### Points of attention and recommendations
+[Risks, technical debt, suggestions]
 ```
 
-## Contraintes
+## Constraints
 
-- JAMAIS modifier de fichiers
-- TOUJOURS lire le code source, pas seulement les noms
-- JAMAIS supposer - verifier dans le code
+- NEVER modify files
+- ALWAYS read the source code, not just the names
+- NEVER assume - verify in the code
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

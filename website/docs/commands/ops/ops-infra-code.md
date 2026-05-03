@@ -1,7 +1,7 @@
 ---
 sidebar_position: 20
 title: "/ops:ops-infra-code"
-description: "Implemente l'Infrastructure as Code (IaC) avec Terraform, CloudFormation ou Pulumi."
+description: "Implements Infrastructure as Code (IaC) with Terraform, CloudFormation or Pulumi."
 tags:
   - "ops"
   - "command"
@@ -13,60 +13,60 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent INFRA-CODE
+# INFRA-CODE Agent
 
-Implemente l'Infrastructure as Code (IaC) avec Terraform, CloudFormation ou Pulumi.
+Implements Infrastructure as Code (IaC) with Terraform, CloudFormation or Pulumi.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Definir et gerer l'infrastructure de maniere declarative, reproductible et versionnee,
-avec des modules reutilisables et un pipeline CI/CD.
+Define and manage infrastructure declaratively, reproducibly and version-controlled,
+with reusable modules and a CI/CD pipeline.
 
-Utilise le skill `ops-infra-code` pour les patterns Terraform detailles.
+Use the `ops-infra-code` skill for detailed Terraform patterns.
 
 ## Workflow
 
-- Analyser les besoins infra (compute, stockage, reseau, DB, securite)
-- Choisir l'outil IaC adapte (Terraform, CloudFormation, Pulumi)
-- Structurer le projet (environments, modules, shared)
-- Creer les modules reutilisables (networking, compute, database, security)
-- Configurer le backend remote avec state locking
-- Ecrire les configurations par environnement (dev, staging, prod)
-- Valider (plan, tfsec, tflint, infracost) et deployer via CI/CD
+- Analyze infra needs (compute, storage, network, DB, security)
+- Choose the appropriate IaC tool (Terraform, CloudFormation, Pulumi)
+- Structure the project (environments, modules, shared)
+- Create reusable modules (networking, compute, database, security)
+- Configure the remote backend with state locking
+- Write configurations per environment (dev, staging, prod)
+- Validate (plan, tfsec, tflint, infracost) and deploy via CI/CD
 
-## Output attendu
+## Expected output
 
-1. **Structure** du projet Terraform organisee
-2. **Modules** reutilisables avec variables, outputs
-3. **Configuration** par environnement
-4. **Pipeline CI/CD** pour Terraform (validate, plan, apply)
+1. **Structure** of the organized Terraform project
+2. **Reusable modules** with variables, outputs
+3. **Configuration** per environment
+4. **CI/CD pipeline** for Terraform (validate, plan, apply)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-docker` | Containeriser l'application |
-| `/ops:ops-ci` | Pipeline CI/CD |
-| `/ops:ops-secrets-management` | Gestion des secrets |
-| `/ops:ops-cost-optimization` | Optimiser les couts |
+| `/ops:ops-docker` | Containerize the application |
+| `/ops:ops-ci` | CI/CD pipeline |
+| `/ops:ops-secrets-management` | Secrets management |
+| `/ops:ops-cost-optimization` | Optimize costs |
 
 ---
 
-IMPORTANT: Toujours faire un terraform plan avant apply.
+IMPORTANT: Always run a terraform plan before apply.
 
-YOU MUST utiliser un backend remote pour le state.
+YOU MUST use a remote backend for the state.
 
-YOU MUST versionner les providers.
+YOU MUST version the providers.
 
-NEVER stocker de secrets dans le code Terraform.
+NEVER store secrets in Terraform code.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

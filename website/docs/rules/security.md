@@ -1,19 +1,19 @@
 ---
 sidebar_position: 22
 title: "security"
-description: "3 vecteurs d'attaque identifies (fev. 2026) lors du clonage de depots non-fiables:"
+description: "3 attack vectors identified (Feb. 2026) when cloning untrusted repos:"
 tags:
   - "rule"
   - "security"
 ---
 
-# Regles: security
+# Rules: security
 
-> 3 vecteurs d'attaque identifies (fev. 2026) lors du clonage de depots non-fiables:
+> 3 attack vectors identified (Feb. 2026) when cloning untrusted repos:
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/auth/**`
 - `**/api/**`
@@ -22,83 +22,83 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 - `**/middleware/**`
 - `**/services/**`
 
-## Regles detaillees
+## Detailed rules
 
 # Security Rules
 
 ## Input Validation
 
-- IMPORTANT: Valider TOUTES les entrees utilisateur
-- Utiliser des schemas de validation (Zod, Joi, class-validator)
-- Rejeter les donnees invalides le plus tot possible
-- Sanitizer les entrees avant traitement
+- IMPORTANT: Validate ALL user inputs
+- Use validation schemas (Zod, Joi, class-validator)
+- Reject invalid data as early as possible
+- Sanitize inputs before processing
 
 ## Output Encoding
 
-- IMPORTANT: Echapper les outputs HTML (prevention XSS)
-- Utiliser les fonctions d'echappement natives du framework
-- Ne jamais inserer de HTML non-sanitise dans le DOM
-- Eviter `innerHTML` et `dangerouslySetInnerHTML`
+- IMPORTANT: Escape HTML outputs (XSS prevention)
+- Use the framework's native escaping functions
+- Never insert non-sanitized HTML into the DOM
+- Avoid `innerHTML` and `dangerouslySetInnerHTML`
 
 ## Database Security
 
-- IMPORTANT: Utiliser des requetes parametrees (prevention SQL injection)
-- Preferer les ORM avec requetes preparees
-- Ne jamais concatener des entrees utilisateur dans les requetes
-- Limiter les privileges des comptes de base de donnees
+- IMPORTANT: Use parameterized queries (SQL injection prevention)
+- Prefer ORMs with prepared statements
+- Never concatenate user inputs into queries
+- Limit the privileges of database accounts
 
 ## Secrets Management
 
-- NEVER commiter de secrets (.env, credentials, API keys)
-- Utiliser des variables d'environnement
-- Rotater regulierement les secrets
-- Utiliser un gestionnaire de secrets en production
+- NEVER commit secrets (.env, credentials, API keys)
+- Use environment variables
+- Rotate secrets regularly
+- Use a secrets manager in production
 
 ## Logging
 
-- Ne jamais logger de donnees sensibles (mots de passe, tokens, PII)
-- Masquer les informations sensibles dans les logs
-- Logger les evenements de securite (auth, acces)
+- Never log sensitive data (passwords, tokens, PII)
+- Mask sensitive information in logs
+- Log security events (auth, access)
 
 ## Dependencies
 
-- Executer `npm audit` regulierement
-- Mettre a jour les dependances avec vulnerabilites critiques
-- Verifier les dependances avant installation
-- Utiliser des lockfiles (package-lock.json)
+- Run `npm audit` regularly
+- Update dependencies with critical vulnerabilities
+- Verify dependencies before installation
+- Use lockfiles (package-lock.json)
 
 ## Authentication
 
-- Hasher les mots de passe avec bcrypt ou argon2
-- Implementer une protection contre brute force
-- Utiliser des sessions securisees (httpOnly, secure, sameSite)
-- Implementer une expiration des tokens
+- Hash passwords with bcrypt or argon2
+- Implement brute-force protection
+- Use secure sessions (httpOnly, secure, sameSite)
+- Implement token expiration
 
-## Claude Code Security (depots tiers)
+## Claude Code Security (third-party repos)
 
-3 vecteurs d'attaque identifies (fev. 2026) lors du clonage de depots non-fiables:
+3 attack vectors identified (Feb. 2026) when cloning untrusted repos:
 
-- **Hooks malveillants**: un `.claude/settings.json` du depot peut contenir des hooks executant des commandes arbitraires
-- **MCP non-fiables**: un `.mcp.json` peut configurer des serveurs MCP exfiltrant des donnees
-- **Variables d'environnement**: des hooks peuvent lire et transmettre le contenu de `.env` ou des secrets systeme
+- **Malicious hooks**: a `.claude/settings.json` from the repo can contain hooks executing arbitrary commands
+- **Untrusted MCP**: a `.mcp.json` can configure MCP servers exfiltrating data
+- **Environment variables**: hooks can read and transmit the contents of `.env` or system secrets
 
-Bonnes pratiques:
-- Verifier le contenu de `.claude/settings.json` et `.mcp.json` avant d'ouvrir un depot tiers avec Claude Code
-- Garder les serveurs MCP desactives par defaut
-- S'assurer que `.env` est dans `.gitignore`
-- Le socle inclut des hooks SessionStart de verification automatique
+Best practices:
+- Verify the contents of `.claude/settings.json` and `.mcp.json` before opening a third-party repo with Claude Code
+- Keep MCP servers disabled by default
+- Make sure `.env` is in `.gitignore`
+- The foundation includes SessionStart hooks for automatic verification
 
 ## Bash Hardening (CLI 2.1.113+)
 
-Renforcements appliques directement par le CLI. A connaitre pour ecrire des rules `permissions` coherentes et eviter les contournements involontaires :
+Hardening applied directly by the CLI. Worth knowing to write consistent `permissions` rules and avoid unintentional bypasses:
 
-- **Paths dangereux etendus** : `/private/\{etc,var,tmp,home\}` (macOS) sont traites comme dangerous removal targets au meme titre que `/etc`, `/var`, etc.
-- **Deny rules resistantes aux wrappers d'execution** : une regle `deny: Bash(rm -rf *)` matche aussi quand la commande est encapsulee dans `env`, `sudo`, `watch`, `ionice` ou `setsid`. Ne plus s'appuyer sur ces wrappers pour bypasser une deny rule.
-- **`Bash(find:*)` n'auto-approuve plus `-exec`/`-delete`** : ces sous-commandes peuvent modifier ou supprimer des fichiers, elles declenchent desormais un prompt de permission separe meme si `find:*` est allowlisted.
-- **Sandbox deniedDomains** : privilegier `sandbox.network.deniedDomains` pour exclure explicitement des domaines sensibles meme sous un wildcard `allowedDomains`.
-- **UI-spoofing fix** : les commentaires multilignes dans les commandes Bash affichent desormais la commande complete pour eviter qu'un commentaire masque l'intention reelle.
+- **Extended dangerous paths**: `/private/\{etc,var,tmp,home\}` (macOS) are treated as dangerous removal targets just like `/etc`, `/var`, etc.
+- **Deny rules resistant to execution wrappers**: a `deny: Bash(rm -rf *)` rule also matches when the command is wrapped in `env`, `sudo`, `watch`, `ionice` or `setsid`. No longer rely on these wrappers to bypass a deny rule.
+- **`Bash(find:*)` no longer auto-approves `-exec`/`-delete`**: these sub-commands can modify or delete files, so they now trigger a separate permission prompt even if `find:*` is allowlisted.
+- **Sandbox deniedDomains**: prefer `sandbox.network.deniedDomains` to explicitly exclude sensitive domains even under a wildcard `allowedDomains`.
+- **UI-spoofing fix**: multiline comments in Bash commands now display the full command to prevent a comment from masking the actual intent.
 
-A appliquer dans `.claude/settings.json` :
+To apply in `.claude/settings.json`:
 
 ```json
 {
@@ -115,16 +115,16 @@ A appliquer dans `.claude/settings.json` :
 }
 ```
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

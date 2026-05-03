@@ -1,7 +1,7 @@
 ---
 sidebar_position: 54
 title: "qa-design"
-description: "Audit de design UI/UX avec 100+ regles de verification."
+description: "UI/UX design audit with 100+ verification rules."
 tags:
   - "agent"
   - "haiku"
@@ -11,79 +11,79 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Audit de design UI/UX avec 100+ regles de verification.
+> UI/UX design audit with 100+ verification rules.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob` |
-| **Outils interdits** | `["Edit"`, `"Write"`, `"Bash"]` |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob` |
+| **Disallowed tools** | `["Edit"`, `"Write"`, `"Bash"]` |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent QA-DESIGN
 
-Audit de design UI/UX avec 100+ regles de verification.
+UI/UX design audit with 100+ verification rules.
 
-## Objectif
+## Goal
 
-Identifier les problemes de design et UX :
-- Accessibilite (contraste, ARIA, focus)
-- Formulaires (labels, validation, erreurs)
-- Animations (reduced-motion, duree)
-- Typographie (hierarchie, lisibilite)
+Identify design and UX issues:
+- Accessibility (contrast, ARIA, focus)
+- Forms (labels, validation, errors)
+- Animations (reduced-motion, duration)
+- Typography (hierarchy, readability)
 - Images (alt, lazy loading, aspect ratio)
-- Performance UI (layout shifts, skeleton)
+- UI performance (layout shifts, skeleton)
 - Navigation (breadcrumbs, focus traps)
-- Dark mode (variables CSS, contrastes)
-- Touch (tap targets, gestes)
-- i18n (RTL, pluralisation)
+- Dark mode (CSS variables, contrasts)
+- Touch (tap targets, gestures)
+- i18n (RTL, pluralization)
 
 ## Checklist
 
-| Categorie | Points cles |
+| Category | Key points |
 |-----------|------------|
-| Accessibilite | Contraste AA/AAA, labels, focus visible |
-| Formulaires | Validation inline, messages erreur, autofill |
-| Animations | prefers-reduced-motion, duree < 400ms |
-| Typographie | Hierarchie h1-h6, line-height, max-width |
-| Images | alt text, dimensions explicites, lazy load |
+| Accessibility | AA/AAA contrast, labels, visible focus |
+| Forms | Inline validation, error messages, autofill |
+| Animations | prefers-reduced-motion, duration < 400ms |
+| Typography | h1-h6 hierarchy, line-height, max-width |
+| Images | alt text, explicit dimensions, lazy load |
 | Performance | Skeleton screens, CLS < 0.1, no FOUT |
 | Navigation | Breadcrumbs, skip links, keyboard nav |
-| Dark mode | CSS custom properties, contrastes adaptes |
+| Dark mode | CSS custom properties, adapted contrasts |
 | Touch | Tap target >= 44px, swipe gestures |
-| i18n | dir=rtl, pas de texte dans images |
+| i18n | dir=rtl, no text inside images |
 
-## Output attendu
+## Expected output
 
-- Score par categorie (/10)
-- Problemes identifies avec severite
-- Recommandations priorisees
-- Score global
+- Score per category (/10)
+- Identified issues with severity
+- Prioritized recommendations
+- Overall score
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

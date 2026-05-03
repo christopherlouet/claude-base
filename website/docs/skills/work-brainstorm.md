@@ -1,7 +1,7 @@
 ---
 sidebar_position: 49
 title: "work-brainstorm"
-description: "Ideation structuree avant specification. Transformer une idee vague en design valide via questionnement et exploration d'alternatives. Declencher quand l'utilisateur a une idee floue, veut explorer des approches, ou hesite entre plusieurs directions."
+description: "Structured ideation before specification. Transform a vague idea into a validated design via questioning and exploration of alternatives. Trigger when the user has a fuzzy idea, wants to explore approaches, or hesitates between several directions."
 tags:
   - "skill"
   - "fork"
@@ -11,235 +11,235 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Ideation structuree avant specification. Transformer une idee vague en design valide via questionnement et exploration d'alternatives. Declencher quand l'utilisateur a une idee floue, veut explorer des approches, ou hesite entre plusieurs directions.
+> Structured ideation before specification. Transform a vague idea into a validated design via questioning and exploration of alternatives. Trigger when the user has a fuzzy idea, wants to explore approaches, or hesitates between several directions.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Glob`, `Grep` |
-| **Mots-cles** | `work`, `brainstorm`, `j'ai une idee vague`, `voici les user stories`, `pourquoi`, `tbd`, `a definir` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Glob`, `Grep` |
+| **Keywords** | `work`, `brainstorm`, `i have a vague idea`, `here are the user stories`, `why`, `do we really need x?`, `tbd` |
 
-## Description detaillee
+## Detailed description
 
-# Brainstorming Structure
+# Structured Brainstorming
 
-## Objectif
+## Goal
 
-Transformer une idee brute en design approuve AVANT de specifier ou d'implementer.
-Phase d'ideation entre "j'ai une idee vague" et "voici les user stories".
+Transform a raw idea into an approved design BEFORE specifying or implementing.
+Ideation phase between "I have a vague idea" and "here are the user stories".
 
 ```
-Idee vague → BRAINSTORM → Design valide → /work:work-specify → /work:work-plan → /dev:dev-tdd
+Vague idea → BRAINSTORM → Validated design → /work:work-specify → /work:work-plan → /dev:dev-tdd
 ```
 
 ## Iron Rule
 
-IMPORTANT: Ne PAS invoquer de skill d'implementation, ecrire du code, scaffolder un projet, ou prendre toute action d'implementation tant que le design n'a pas ete presente ET approuve par l'utilisateur.
+IMPORTANT: Do NOT invoke an implementation skill, write code, scaffold a project, or take any implementation action until the design has been presented AND approved by the user.
 
 ## Process
 
-### 1. Explorer le contexte
+### 1. Explore the context
 
-Avant de proposer quoi que ce soit :
+Before proposing anything:
 
-- Lire les fichiers du projet pertinents (architecture, code existant, CLAUDE.md)
-- Verifier les changements recents (`git log --oneline -10`)
-- Identifier les contraintes techniques existantes
-- Comprendre le "pourquoi" derriere l'idee
+- Read the relevant project files (architecture, existing code, CLAUDE.md)
+- Check recent changes (`git log --oneline -10`)
+- Identify existing technical constraints
+- Understand the "why" behind the idea
 
-### 2. Clarifier par questionnement
+### 2. Clarify through questioning
 
-Poser des questions de clarification **une par une** (pas un bloc de 10 questions).
+Ask clarification questions **one at a time** (not a block of 10 questions).
 
-| Type de question | Exemple |
+| Question type | Example |
 |------------------|---------|
-| **Objectif** | "Quel probleme ca resout pour l'utilisateur ?" |
-| **Scope** | "Ca doit fonctionner avec X ou c'est independant ?" |
-| **Contraintes** | "Y a-t-il des limites de temps, budget, ou tech ?" |
-| **Utilisateurs** | "Qui va utiliser ca ? Dans quel contexte ?" |
-| **Succes** | "Comment on saura que ca marche bien ?" |
+| **Goal** | "What problem does this solve for the user?" |
+| **Scope** | "Should this work with X or is it independent?" |
+| **Constraints** | "Are there time, budget, or tech limits?" |
+| **Users** | "Who will use this? In what context?" |
+| **Success** | "How will we know it works well?" |
 
-Arreter de questionner quand on a assez de contexte pour proposer des alternatives.
+Stop questioning when there is enough context to propose alternatives.
 
-### 3. Proposer 2-3 approches
+### 3. Propose 2-3 approaches
 
-Pour chaque approche, presenter :
+For each approach, present:
 
 ```markdown
-### Approche A : [Nom descriptif]
+### Approach A: [Descriptive name]
 
-**Principe** : [1-2 phrases]
+**Principle**: [1-2 sentences]
 
-**Avantages** :
-- [Avantage 1]
-- [Avantage 2]
+**Pros**:
+- [Pro 1]
+- [Pro 2]
 
-**Inconvenients** :
-- [Inconvenient 1]
-- [Inconvenient 2]
+**Cons**:
+- [Con 1]
+- [Con 2]
 
-**Complexite** : [Faible / Moyenne / Elevee]
+**Complexity**: [Low / Medium / High]
 
-**Risques** :
-- [Risque 1]
+**Risks**:
+- [Risk 1]
 ```
 
-### 4. Challenger les approches
+### 4. Challenge the approaches
 
-Apres avoir presente les alternatives :
+After presenting the alternatives:
 
-- Appliquer YAGNI : "Est-ce qu'on a vraiment besoin de X ?"
-- Chercher la solution la plus simple qui fonctionne
-- Identifier les pieces qui peuvent etre reportees (P2/P3)
-- Verifier qu'il n'existe pas deja une solution dans le codebase ou les dependances
+- Apply YAGNI: "Do we really need X?"
+- Look for the simplest solution that works
+- Identify pieces that can be deferred (P2/P3)
+- Check that a solution does not already exist in the codebase or dependencies
 
-### 5. Converger sur un design
+### 5. Converge on a design
 
-Une fois que l'utilisateur a choisi une direction :
+Once the user has chosen a direction:
 
-- Decomposer le systeme en unites avec un seul objectif clair
-- Definir les interfaces entre les unites
-- S'assurer que chaque unite peut etre testee independamment
-- Presenter section par section, en demandant validation a chaque etape
+- Decompose the system into units with a single clear goal
+- Define the interfaces between units
+- Make sure each unit can be tested independently
+- Present section by section, asking for validation at each step
 
-### 6. Documenter le design
+### 6. Document the design
 
-Ecrire le design dans un fichier :
+Write the design in a file:
 
 ```
 docs/designs/YYYY-MM-DD-[topic]-design.md
 ```
 
-Format :
+Format:
 
 ```markdown
-# Design : [Titre]
+# Design: [Title]
 
-**Date** : YYYY-MM-DD
-**Statut** : Approuve / En discussion
+**Date**: YYYY-MM-DD
+**Status**: Approved / Under discussion
 
-## Contexte
-[Pourquoi ce design est necessaire]
+## Context
+[Why this design is needed]
 
 ## Decision
-[Approche choisie et pourquoi]
+[Chosen approach and why]
 
-## Alternatives considerees
-[Approches rejetees et pourquoi]
+## Alternatives considered
+[Rejected approaches and why]
 
-## Design detaille
-[Decomposition en composants, interfaces, flux]
+## Detailed design
+[Breakdown into components, interfaces, flows]
 
-## Risques identifies
-[Risques et mitigations]
+## Identified risks
+[Risks and mitigations]
 
-## Hors scope
-[Ce qui n'est PAS inclus dans ce design]
+## Out of scope
+[What is NOT included in this design]
 ```
 
 ### 7. Self-review
 
-Avant de presenter le design final, verifier :
+Before presenting the final design, check:
 
-- [ ] Pas de placeholders ("TBD", "a definir", "TODO")
-- [ ] Pas de contradictions entre sections
-- [ ] Pas d'ambiguites (chaque terme a une seule interpretation)
-- [ ] YAGNI applique (pas de features speculatives)
-- [ ] Chaque composant est testable independamment
-- [ ] Les interfaces entre composants sont explicites
+- [ ] No placeholders ("TBD", "to be defined", "TODO")
+- [ ] No contradictions between sections
+- [ ] No ambiguities (each term has a single interpretation)
+- [ ] YAGNI applied (no speculative features)
+- [ ] Each component is testable independently
+- [ ] Interfaces between components are explicit
 
 ### 8. Handoff
 
-Une fois le design approuve, proposer :
+Once the design is approved, propose:
 
 ```
-Design approuve. Prochaines etapes :
-1. `/work:work-specify` — Transformer ce design en user stories testables
-2. `/work:work-plan` — Planifier l'implementation technique
+Design approved. Next steps:
+1. `/work:work-specify` — Transform this design into testable user stories
+2. `/work:work-plan` — Plan the technical implementation
 ```
 
-## Principes de design
+## Design principles
 
-- **Decomposer** en unites qui ont chacune un objectif clair
-- **Interfaces explicites** entre les unites
-- **Testable independamment** : chaque unite peut etre testee seule
-- **YAGNI** : pas de features speculatives, pas de generalisation prematuree
-- **Simplicite** : la solution la plus simple qui fonctionne est la meilleure
-- **Reversibilite** : preferer les decisions faciles a changer
+- **Decompose** into units that each have a clear goal
+- **Explicit interfaces** between units
+- **Independently testable**: each unit can be tested alone
+- **YAGNI**: no speculative features, no premature generalization
+- **Simplicity**: the simplest solution that works is the best
+- **Reversibility**: prefer decisions that are easy to change
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Brainstorm : [Titre]
+## Brainstorm: [Title]
 
-### Contexte
-[Ce qu'on a compris du besoin]
+### Context
+[What we have understood about the need]
 
-### Approches explorees
-| Approche | Forces | Faiblesses | Complexite |
+### Approaches explored
+| Approach | Strengths | Weaknesses | Complexity |
 |----------|--------|------------|------------|
-| A : [...] | [...] | [...] | Faible |
-| B : [...] | [...] | [...] | Moyenne |
-| C : [...] | [...] | [...] | Elevee |
+| A: [...] | [...] | [...] | Low |
+| B: [...] | [...] | [...] | Medium |
+| C: [...] | [...] | [...] | High |
 
 ### Decision
-**Approche retenue** : [X]
-**Raison** : [Pourquoi cette approche]
+**Chosen approach**: [X]
+**Reason**: [Why this approach]
 
 ### Design
-[Decomposition, interfaces, flux]
+[Breakdown, interfaces, flows]
 
-### Prochaines etapes
-1. `/work:work-specify` pour les user stories
-2. `/work:work-plan` pour le plan technique
+### Next steps
+1. `/work:work-specify` for the user stories
+2. `/work:work-plan` for the technical plan
 ```
 
-## Agents lies
+## Related agents
 
-| Avant | Usage |
+| Before | Usage |
 |-------|-------|
-| `/work:work-explore` | Comprendre le contexte technique |
+| `/work:work-explore` | Understand the technical context |
 
-| Apres | Usage |
+| After | Usage |
 |-------|-------|
-| `/work:work-specify` | User stories et criteres d'acceptation |
-| `/work:work-plan` | Plan d'implementation technique |
+| `/work:work-specify` | User stories and acceptance criteria |
+| `/work:work-plan` | Technical implementation plan |
 
-## Regles
+## Rules
 
-- TOUJOURS explorer le contexte avant de proposer
-- TOUJOURS proposer au moins 2 approches avec trade-offs
-- NE JAMAIS implementer avant approbation explicite du design
-- Poser les questions de clarification UNE PAR UNE
-- Appliquer YAGNI systematiquement
-- Documenter les alternatives rejetees (pas seulement la choisie)
+- ALWAYS explore the context before proposing
+- ALWAYS propose at least 2 approaches with trade-offs
+- NEVER implement before explicit approval of the design
+- Ask clarification questions ONE AT A TIME
+- Apply YAGNI systematically
+- Document rejected alternatives (not just the chosen one)
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux work..."_
-- _"Je veux brainstorm..."_
-- _"Je veux j'ai une idee vague..."_
+- _"I want to work..."_
+- _"I want to brainstorm..."_
+- _"I want to i have a vague idea..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

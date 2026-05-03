@@ -1,31 +1,31 @@
 ---
 sidebar_position: 1
 title: "Commands"
-description: "Catalogue des 131 commandes claude-socle"
+description: "Catalog of 131 claude-socle commands"
 ---
 
 import Stats from '@site/src/components/Stats';
 
-# Catalogue des Commandes
+# Commands Catalog
 
-> **131 commandes** organisees en **10 domaines**
+> **131 commands** organized in **10 domains**
 
 <Stats items={[
-  { number: 131, label: 'Commandes' },
-  { number: 10, label: 'Domaines' },
+  { number: 131, label: 'Commands' },
+  { number: 10, label: 'Domains' },
 ]} />
 
-## Comment utiliser les commandes
+## How to use commands
 
-Les commandes sont declenchees manuellement avec le prefixe `/` :
+Commands are triggered manually with the `/` prefix:
 
 ```bash
 /work:work-explore
-/dev:dev-tdd "Description de la feature"
+/dev:dev-tdd "Feature description"
 /qa:qa-security
 ```
 
-## Domaines
+## Domains
 
 
 ### [Autres](/docs/commands/other) (4)
@@ -48,7 +48,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/biz:biz-market`](/docs/commands/biz/biz-market)
 - [`/biz:biz-model`](/docs/commands/biz/biz-model)
 - [`/biz:biz-mvp`](/docs/commands/biz/biz-mvp)
-- [... et 6 autres](/docs/commands/biz)
+- [... and 6 more](/docs/commands/biz)
 
 
 ### [DATA](/docs/commands/data) (3)
@@ -70,7 +70,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/dev:dev-api-versioning`](/docs/commands/dev/dev-api-versioning)
 - [`/dev:dev-component`](/docs/commands/dev/dev-component)
 - [`/dev:dev-debug`](/docs/commands/dev/dev-debug)
-- [... et 18 autres](/docs/commands/dev)
+- [... and 18 more](/docs/commands/dev)
 
 
 ### [DOC](/docs/commands/doc) (9)
@@ -82,7 +82,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/doc:doc-changelog`](/docs/commands/doc/doc-changelog)
 - [`/doc:doc-explain`](/docs/commands/doc/doc-explain)
 - [`/doc:doc-fix-issue`](/docs/commands/doc/doc-fix-issue)
-- [... et 4 autres](/docs/commands/doc)
+- [... and 4 more](/docs/commands/doc)
 
 
 ### [GROWTH](/docs/commands/growth) (11)
@@ -94,7 +94,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/growth:growth-app-store-analytics`](/docs/commands/growth/growth-app-store-analytics)
 - [`/growth:growth-cro`](/docs/commands/growth/growth-cro)
 - [`/growth:growth-email`](/docs/commands/growth/growth-email)
-- [... et 6 autres](/docs/commands/growth)
+- [... and 6 more](/docs/commands/growth)
 
 
 ### [LEGAL](/docs/commands/legal) (5)
@@ -118,7 +118,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/ops:ops-ci-fix`](/docs/commands/ops/ops-ci-fix)
 - [`/ops:ops-cost`](/docs/commands/ops/ops-cost)
 - [`/ops:ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization)
-- [... et 29 autres](/docs/commands/ops)
+- [... and 29 more](/docs/commands/ops)
 
 
 ### [QA](/docs/commands/qa) (16)
@@ -130,7 +130,7 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/qa:qa-chrome`](/docs/commands/qa/qa-chrome)
 - [`/qa:qa-coverage`](/docs/commands/qa/qa-coverage)
 - [`/qa:qa-design`](/docs/commands/qa/qa-design)
-- [... et 11 autres](/docs/commands/qa)
+- [... and 11 more](/docs/commands/qa)
 
 
 ### [WORK](/docs/commands/work) (15)
@@ -142,23 +142,23 @@ Les commandes sont declenchees manuellement avec le prefixe `/` :
 - [`/work:work-clarify`](/docs/commands/work/work-clarify)
 - [`/work:work-commit`](/docs/commands/work/work-commit)
 - [`/work:work-commit-push-pr`](/docs/commands/work/work-commit-push-pr)
-- [... et 10 autres](/docs/commands/work)
+- [... and 10 more](/docs/commands/work)
 
 
-## Guide de choix rapide
+## Quick choice guide
 
-| Besoin | Commande recommandee |
+| Need | Recommended command |
 |--------|---------------------|
-| Explorer le code | `/work:work-explore` |
-| Specifier le besoin | `/work:work-specify` |
-| Planifier une modification | `/work:work-plan` |
-| Developper en TDD | `/dev:dev-tdd` |
-| Creer un commit | `/work:work-commit` |
-| Audit de securite | `/qa:qa-security` |
-| Audit complet | `/qa:qa-audit` |
-| Creer une PR | `/work:work-pr` |
+| Explore the code | `/work:work-explore` |
+| Specify the need | `/work:work-specify` |
+| Plan a change | `/work:work-plan` |
+| Develop with TDD | `/dev:dev-tdd` |
+| Create a commit | `/work:work-commit` |
+| Security audit | `/qa:qa-security` |
+| Full audit | `/qa:qa-audit` |
+| Create a PR | `/work:work-pr` |
 | Release | `/ops:ops-release` |
 
 ---
 
-Utilisez `/assistant` pour obtenir des recommandations personnalisees.
+Use `/assistant` to get personalized recommendations.

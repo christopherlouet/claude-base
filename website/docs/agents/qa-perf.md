@@ -1,7 +1,7 @@
 ---
 sidebar_position: 57
 title: "qa-perf"
-description: "Analyse et optimisation des performances."
+description: "Performance analysis and optimization."
 tags:
   - "agent"
   - "sonnet"
@@ -11,83 +11,83 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Analyse et optimisation des performances.
+> Performance analysis and optimization.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | `Edit`, `Write`, `NotebookEdit` |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | `Edit`, `Write`, `NotebookEdit` |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent QA-PERF
 
-Analyse et optimisation des performances.
+Performance analysis and optimization.
 
-## Methodologie
+## Methodology
 
-1. **Mesurer AVANT** : baseline (temps, memoire, CPU), Core Web Vitals
-2. **Identifier bottlenecks** : code (O(n2), N+1), frontend (bundle, renders, images), backend (index, cache, pool)
-3. **Optimiser par priorite** : algorithme > caching > lazy loading > parallelisation > micro-optimisations
-4. **Mesurer APRES** : valider le gain
+1. **Measure BEFORE**: baseline (time, memory, CPU), Core Web Vitals
+2. **Identify bottlenecks**: code (O(n2), N+1), frontend (bundle, renders, images), backend (index, cache, pool)
+3. **Optimize by priority**: algorithm > caching > lazy loading > parallelization > micro-optimizations
+4. **Measure AFTER**: validate the gain
 
 ## Core Web Vitals
 
-| Metrique | Objectif |
-|----------|----------|
+| Metric | Target |
+|--------|--------|
 | LCP | < 2.5s |
 | FID | < 100ms |
 | CLS | < 0.1 |
 | TTFB | < 800ms |
 | INP | < 200ms |
 
-## Patterns a rechercher
+## Patterns to look for
 
-- Boucles imbriquees (O(n2))
-- console.log en production
-- Imports `*` lourds
-- Requetes dans des boucles (N+1)
+- Nested loops (O(n2))
+- console.log in production
+- Heavy `*` imports
+- Queries inside loops (N+1)
 
-## Output attendu
+## Expected output
 
-1. Baseline de performance
-2. Bottlenecks identifies (fichier:ligne, probleme, impact)
-3. Optimisations proposees avec gain estime
-4. Mesures avant/apres
+1. Performance baseline
+2. Identified bottlenecks (file:line, problem, impact)
+3. Proposed optimizations with estimated gain
+4. Before/after measurements
 
-## Directives
+## Guidelines
 
-- NEVER optimiser sans profiling prealable
-- IMPORTANT: Mesurer avant et apres chaque optimisation
-- IMPORTANT: Prioriser par rapport cout/benefice
-- NEVER faire de micro-optimisations avant les gains algorithmiques
+- NEVER optimize without prior profiling
+- IMPORTANT: Measure before and after each optimization
+- IMPORTANT: Prioritize by cost/benefit ratio
+- NEVER do micro-optimizations before algorithmic gains
 
-Think hard about les vrais bottlenecks, pas les optimisations prematurees.
+Think hard about the real bottlenecks, not premature optimizations.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 8
 title: "dev-document"
-description: "Generation de documents (PDF, DOCX, XLSX, PPTX). Declencher quand l'utilisateur veut creer un document, generer un rapport, exporter en PDF/Word/Excel/PowerPoint, ou produire un fichier bureautique."
+description: "Document generation (PDF, DOCX, XLSX, PPTX). Trigger when the user wants to create a document, generate a report, export to PDF/Word/Excel/PowerPoint, or produce an office file."
 tags:
   - "skill"
   - "fork"
@@ -11,36 +11,36 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Generation de documents (PDF, DOCX, XLSX, PPTX). Declencher quand l'utilisateur veut creer un document, generer un rapport, exporter en PDF/Word/Excel/PowerPoint, ou produire un fichier bureautique.
+> Document generation (PDF, DOCX, XLSX, PPTX). Trigger when the user wants to create a document, generate a report, export to PDF/Word/Excel/PowerPoint, or produce an office file.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `document` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `dev`, `document` |
 
-## Description detaillee
+## Detailed description
 
-# Generation de Documents
+# Document Generation
 
-## Objectif
+## Goal
 
-Creer des documents professionnels dans differents formats : PDF, DOCX, XLSX, PPTX.
+Create professional documents in different formats: PDF, DOCX, XLSX, PPTX.
 
-## Formats supportes
+## Supported formats
 
-| Format | Extension | Outil recommande | Usage |
+| Format | Extension | Recommended tool | Usage |
 |--------|-----------|------------------|-------|
-| **PDF** | `.pdf` | puppeteer, wkhtmltopdf, markdown-pdf | Rapports, factures, docs formels |
-| **Word** | `.docx` | docx (npm), python-docx | Documents editables, specifications |
-| **Excel** | `.xlsx` | exceljs, openpyxl | Donnees tabulaires, rapports chiffres |
+| **PDF** | `.pdf` | puppeteer, wkhtmltopdf, markdown-pdf | Reports, invoices, formal docs |
+| **Word** | `.docx` | docx (npm), python-docx | Editable documents, specifications |
+| **Excel** | `.xlsx` | exceljs, openpyxl | Tabular data, numeric reports |
 | **PowerPoint** | `.pptx` | pptxgenjs, python-pptx | Presentations, pitch decks |
 
-## Instructions par format
+## Instructions per format
 
-### PDF - Generation depuis HTML/Markdown
+### PDF - Generation from HTML/Markdown
 
 ```bash
 # Option 1: Puppeteer (Node.js)
@@ -71,7 +71,7 @@ async function generatePDF(htmlContent: string, outputPath: string) {
 }
 ```
 
-### DOCX - Documents Word
+### DOCX - Word documents
 
 ```typescript
 // npm install docx
@@ -105,7 +105,7 @@ async function generateDOCX(title: string, sections: Section[]) {
 }
 ```
 
-### XLSX - Feuilles de calcul
+### XLSX - Spreadsheets
 
 ```typescript
 // npm install exceljs
@@ -113,13 +113,13 @@ import ExcelJS from 'exceljs';
 
 async function generateXLSX(data: Record<string, any>[]) {
   const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet('Donnees');
+  const sheet = workbook.addWorksheet('Data');
 
-  // En-tetes depuis les cles du premier objet
+  // Headers from the keys of the first object
   const headers = Object.keys(data[0]);
   sheet.addRow(headers);
 
-  // Style des en-tetes
+  // Header styling
   sheet.getRow(1).font = { bold: true };
   sheet.getRow(1).fill = {
     type: 'pattern',
@@ -127,7 +127,7 @@ async function generateXLSX(data: Record<string, any>[]) {
     fgColor: { argb: 'FF4472C4' },
   };
 
-  // Donnees
+  // Data
   data.forEach(row => {
     sheet.addRow(headers.map(h => row[h]));
   });
@@ -153,17 +153,17 @@ function generatePPTX(slides: SlideData[]) {
   slides.forEach(slideData => {
     const slide = pptx.addSlide();
 
-    // Titre
+    // Title
     slide.addText(slideData.title, {
       x: 0.5, y: 0.5, w: 9, h: 1,
       fontSize: 28, bold: true, color: '363636',
     });
 
-    // Contenu
+    // Content
     slide.addText(slideData.content, {
       x: 0.5, y: 1.8, w: 9, h: 4,
       fontSize: 16, color: '666666',
-      bullet: slideData.bullets ? true : false,
+      bullet: slideData.bullets ? true: false,
     });
   });
 
@@ -174,71 +174,71 @@ function generatePPTX(slides: SlideData[]) {
 ## Python alternatives
 
 ```python
-# PDF avec reportlab
+# PDF with reportlab
 pip install reportlab
 
-# DOCX avec python-docx
+# DOCX with python-docx
 pip install python-docx
 
-# XLSX avec openpyxl
+# XLSX with openpyxl
 pip install openpyxl
 
-# PPTX avec python-pptx
+# PPTX with python-pptx
 pip install python-pptx
 ```
 
-## Workflow de generation
+## Generation workflow
 
 ```
-1. IDENTIFIER le format requis (PDF, DOCX, XLSX, PPTX)
+1. IDENTIFY the required format (PDF, DOCX, XLSX, PPTX)
         |
-2. PREPARER les donnees et le contenu
+2. PREPARE the data and content
         |
-3. CHOISIR la librairie adaptee au runtime (Node.js ou Python)
+3. CHOOSE the library suited to the runtime (Node.js or Python)
         |
-4. GENERER le document avec mise en forme professionnelle
+4. GENERATE the document with professional formatting
         |
-5. VALIDER la sortie (ouverture, mise en page, donnees)
+5. VALIDATE the output (opening, layout, data)
 ```
 
-## Bonnes pratiques
+## Best practices
 
-- Toujours utiliser des templates pour la coherence visuelle
-- Separer les donnees de la mise en forme
-- Gerer les erreurs d'encodage (UTF-8)
-- Tester avec differentes tailles de donnees
-- Inclure les metadonnees (auteur, date, sujet)
+- Always use templates for visual consistency
+- Separate data from formatting
+- Handle encoding errors (UTF-8)
+- Test with different data sizes
+- Include metadata (author, date, subject)
 
-## Regles
+## Rules
 
-- TOUJOURS demander le format souhaite si non specifie
-- TOUJOURS verifier que les dependances sont installees avant de generer
-- NE JAMAIS hardcoder les chemins de fichiers
-- PREFERER les templates reutilisables aux documents one-shot
+- ALWAYS ask for the desired format if not specified
+- ALWAYS verify that dependencies are installed before generating
+- NEVER hardcode file paths
+- PREFER reusable templates over one-shot documents
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux dev..."_
-- _"Je veux document..."_
+- _"I want to dev..."_
+- _"I want to document..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

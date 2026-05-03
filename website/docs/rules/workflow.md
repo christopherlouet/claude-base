@@ -1,184 +1,184 @@
 ---
 sidebar_position: 31
 title: "workflow"
-description: "Avant de commencer a travailler sur un projet existant :"
+description: "Before starting work on an existing project:"
 tags:
   - "rule"
   - "workflow"
 ---
 
-# Regles: workflow
+# Rules: workflow
 
-> Avant de commencer a travailler sur un projet existant :
+> Before starting work on an existing project:
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
-_Toutes les fichiers_
+_All files_
 
-## Regles detaillees
+## Detailed rules
 
 # Workflow Rules
 
-## Choix du Workflow
+## Workflow Choice
 
-| Complexite | Workflow | Commande |
-|------------|----------|----------|
-| Trivial (typo, rename, 1-3 fichiers) | Quick | `/work:work-quick` |
-| Standard (feature, bugfix) | Complet | Explore → Plan → TDD → Audit → Commit |
-| Batch (backlog de stories) | Batch | `/work:work-batch "prd.json"` |
+| Complexity | Workflow | Command |
+|------------|----------|---------|
+| Trivial (typo, rename, 1-3 files) | Quick | `/work:work-quick` |
+| Standard (feature, bugfix) | Full | Explore → Plan → TDD → Audit → Commit |
+| Batch (backlog of stories) | Batch | `/work:work-batch "prd.json"` |
 
-## Cycle Obligatoire: Explore -&gt; Plan -&gt; TDD -&gt; Audit -&gt; Commit
+## Mandatory Cycle: Explore -&gt; Plan -&gt; TDD -&gt; Audit -&gt; Commit
 
-### 0. CI BASELINE (recommande)
+### 0. CI BASELINE (recommended)
 
-Avant de commencer a travailler sur un projet existant :
+Before starting work on an existing project:
 
-- Lancer lint, type-check et tests pour connaitre l'etat CI actuel
-- Noter les erreurs PRE-EXISTANTES pour ne pas les confondre avec les nouvelles
-- Si CI est deja en echec, le signaler a l'utilisateur avant de commencer
+- Run lint, type-check and tests to know the current CI state
+- Note PRE-EXISTING errors so as not to confuse them with new ones
+- If CI is already failing, flag it to the user before starting
 
-### 1. EXPLORE (obligatoire)
+### 1. EXPLORE (mandatory)
 
-- Lire et comprendre le code existant AVANT de modifier
-- Identifier les patterns et conventions en place
-- NE JAMAIS coder sans avoir explore
-- Utiliser `/work:work-explore` ou l'agent `work-explore`
+- Read and understand the existing code BEFORE modifying
+- Identify the patterns and conventions in place
+- NEVER code without having explored
+- Use `/work:work-explore` or the `work-explore` agent
 
-### 2. PLAN (obligatoire pour features complexes)
+### 2. PLAN (mandatory for complex features)
 
-- Proposer une architecture AVANT d'implementer
-- Lister les fichiers a creer/modifier
-- Identifier les risques potentiels
-- Attendre validation avant de coder
-- Utiliser `/work:work-plan`
+- Propose an architecture BEFORE implementing
+- List the files to create/modify
+- Identify potential risks
+- Wait for validation before coding
+- Use `/work:work-plan`
 
-### 3. TDD (obligatoire)
+### 3. TDD (mandatory)
 
-- IMPORTANT: Toujours ecrire les tests AVANT le code
-- Cycle Red-Green-Refactor obligatoire:
-  1. RED: Ecrire un test qui echoue
-  2. GREEN: Ecrire le code minimal pour passer le test
-  3. REFACTOR: Ameliorer le code sans casser les tests (si ca casse → `/rewind` pour revenir au dernier etat stable)
-- Utiliser `/dev:dev-tdd` pour le cycle complet
-- Commits atomiques et frequents
-- Respecter les conventions du projet
-- Couverture minimum 80% sur nouveau code
+- IMPORTANT: Always write tests BEFORE the code
+- Mandatory Red-Green-Refactor cycle:
+  1. RED: Write a test that fails
+  2. GREEN: Write the minimal code to pass the test
+  3. REFACTOR: Improve the code without breaking the tests (if it breaks → `/rewind` to return to the last stable state)
+- Use `/dev:dev-tdd` for the full cycle
+- Atomic and frequent commits
+- Respect the project's conventions
+- Minimum 80% coverage on new code
 
-### 4. AUDIT (adaptatif selon criticite)
+### 4. AUDIT (adaptive based on criticality)
 
-Audit qualite apres TDD, avec correction en boucle jusqu'au score cible de 90.
+Quality audit after TDD, with fix loop until the target score of 90.
 
-| Type de changement | Niveau d'audit | Commande |
-|-------------------|----------------|----------|
-| Critique (auth, paiement, donnees sensibles) | Audit complet + fix en boucle | `/qa:qa-loop "score 90"` |
-| Feature UI/UX | Design + accessibilite | `/qa:qa-design` + `/qa:wcag-audit` |
-| Feature standard | Review + fix en boucle | `/qa:qa-loop "score 90"` |
-| Bugfix simple | Review rapide | `/qa:qa-review` |
+| Type of change | Audit level | Command |
+|----------------|-------------|---------|
+| Critical (auth, payment, sensitive data) | Full audit + fix loop | `/qa:qa-loop "score 90"` |
+| UI/UX feature | Design + accessibility | `/qa:qa-design` + `/qa:wcag-audit` |
+| Standard feature | Review + fix loop | `/qa:qa-loop "score 90"` |
+| Simple bugfix | Quick review | `/qa:qa-review` |
 
-- IMPORTANT: Ne pas commiter sans avoir atteint le score cible (90)
-- Le TDD valide le comportement, l'audit valide la qualite globale (securite, perf, a11y)
-- Si le score est insuffisant, corriger et re-auditer en boucle
-- Utiliser `/qa:qa-loop "score 90"` par defaut
+- IMPORTANT: Do not commit without having reached the target score (90)
+- TDD validates behavior, the audit validates overall quality (security, perf, a11y)
+- If the score is insufficient, fix and re-audit in a loop
+- Use `/qa:qa-loop "score 90"` by default
 
 ### 5. COMMIT
 
-- Message de commit descriptif (Conventional Commits)
-- Referencer les issues si applicable
-- PR avec description complete
-- Utiliser `/work:work-commit` ou `/work:work-pr`
+- Descriptive commit message (Conventional Commits)
+- Reference issues if applicable
+- PR with full description
+- Use `/work:work-commit` or `/work:work-pr`
 
-## Gestion du scope
+## Scope Management
 
-Les sessions avec un scope trop large (15+ taches) generent systematiquement des regressions. Preferer des sessions focalisees :
+Sessions with too large a scope (15+ tasks) systematically generate regressions. Prefer focused sessions:
 
-| Scope | Approche recommandee |
+| Scope | Recommended approach |
 |-------|---------------------|
-| 1-5 taches | Session unique, workflow standard |
-| 6-10 taches | Decouper en 2-3 commits logiques |
-| 10-15 taches | Decouper en sessions separees par domaine |
-| 15+ taches | STOP — decouper en features independantes, une PR par feature |
+| 1-5 tasks | Single session, standard workflow |
+| 6-10 tasks | Split into 2-3 logical commits |
+| 10-15 tasks | Split into separate sessions by domain |
+| 15+ tasks | STOP — split into independent features, one PR per feature |
 
-Signaux d'alerte :
-- Plus de 10 fichiers modifies sans commit intermediaire → commiter maintenant
-- Un fix introduit une regression → revert, commiter ce qui marche, traiter le reste separement
-- Le scope grossit pendant le travail → s'arreter, commiter l'etat stable, replanifier
+Warning signals:
+- More than 10 files modified without an intermediate commit → commit now
+- A fix introduces a regression → revert, commit what works, handle the rest separately
+- The scope grows during work → stop, commit the stable state, replan
 
-## Gestion du contexte
+## Context Management
 
-| Situation | Action | Commande |
-|-----------|--------|----------|
-| Entre Explore et Plan | Compacter si exploration longue | `/compact` |
-| Entre Plan et TDD | Compacter si plan detaille | `/compact` |
-| Entre TDD et Audit | Compacter si TDD long | `/compact` |
-| Retour apres une pause | Retrouver le contexte | `/recap` |
-| Changement de sujet complet | Effacer le contexte | `/clear` |
-| Session normale | Laisser l'auto-compaction gerer | _(rien)_ |
-| Refactoring casse tout | Revenir au dernier etat stable | `/rewind` (ou `/undo`) |
+| Situation | Action | Command |
+|-----------|--------|---------|
+| Between Explore and Plan | Compact if exploration was long | `/compact` |
+| Between Plan and TDD | Compact if plan is detailed | `/compact` |
+| Between TDD and Audit | Compact if TDD was long | `/compact` |
+| Return after a break | Recover the context | `/recap` |
+| Total topic change | Clear the context | `/clear` |
+| Normal session | Let auto-compaction handle it | _(nothing)_ |
+| Refactoring breaks everything | Return to the last stable state | `/rewind` (or `/undo`) |
 
-Preferer `/compact` a `/clear` : la compaction conserve l'essentiel du contexte (decisions, conventions apprises) alors que `/clear` efface tout. Utiliser `/recap` apres `/compact` pour verifier ce qui a ete conserve.
+Prefer `/compact` over `/clear`: compaction keeps the essence of the context (decisions, learned conventions) whereas `/clear` erases everything. Use `/recap` after `/compact` to check what was kept.
 
-## Anti-patterns a Eviter
+## Anti-patterns to Avoid
 
-- Coder sans comprendre l'existant
-- Implementer sans plan valide
-- Coder AVANT d'ecrire les tests (violer TDD)
-- Commiter sans audit (sauter la phase Audit)
-- Commits geants multi-fonctionnalites
-- Tests avec trop de mocks
-- `any` partout en TypeScript
-- Copier-coller sans adapter
-- Optimiser prematurement
-- Ignorer les warnings de lint/types
-- Sessions trop ambitieuses (15+ taches dans une session)
-- Confondre erreurs CI pre-existantes et nouvelles erreurs
+- Coding without understanding the existing code
+- Implementing without a validated plan
+- Coding BEFORE writing the tests (violating TDD)
+- Committing without an audit (skipping the Audit phase)
+- Giant multi-feature commits
+- Tests with too many mocks
+- `any` everywhere in TypeScript
+- Copy-pasting without adapting
+- Optimizing prematurely
+- Ignoring lint/type warnings
+- Overly ambitious sessions (15+ tasks in one session)
+- Confusing pre-existing CI errors with new errors
 
-## Workflows Recommandes
+## Recommended Workflows
 
-### Nouvelle feature
+### New feature
 ```
 /work:work-flow-feature "description"
-# ou manuellement (TDD obligatoire):
+# or manually (TDD mandatory):
 /work:work-explore -> /work:work-plan -> /dev:dev-tdd -> /qa:qa-loop "score 90" -> /work:work-pr
 ```
 
-### Correction de bug
+### Bug fix
 ```
-/work:work-flow-bugfix "description du bug"
+/work:work-flow-bugfix "bug description"
 ```
 
-### Nouvelle release
+### New release
 ```
 /work:work-flow-release "v2.0.0"
 ```
 
-### Audit complet
+### Full audit
 ```
-/qa:qa-audit  # Securite + RGPD + A11y + Perf (lecture seule)
-```
-
-### Audit + fix en boucle
-```
-/qa:qa-loop                  # Audit + fix P0/P1 jusqu'a score 90 (defaut)
-/qa:qa-loop "score 95"       # Score cible personnalise
+/qa:qa-audit  # Security + RGPD + A11y + Perf (read-only)
 ```
 
-### Deploiement securise
+### Audit + fix loop
 ```
-/ops:ops-deploy              # Checklist pre-deploy + deploy + post-deploy
+/qa:qa-loop                  # Audit + fix P0/P1 until score 90 (default)
+/qa:qa-loop "score 95"       # Custom target score
 ```
 
-## Application automatique
+### Safe deployment
+```
+/ops:ops-deploy              # Pre-deploy checklist + deploy + post-deploy
+```
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+## Automatic application
+
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

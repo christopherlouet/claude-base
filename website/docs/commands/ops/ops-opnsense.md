@@ -1,7 +1,7 @@
 ---
 sidebar_position: 27
 title: "/ops:ops-opnsense"
-description: "Infrastructure as Code pour OPNsense. Configurer et gerer un pare-feu OPNsense via Terraform."
+description: "Infrastructure as Code for OPNsense. Configure and manage an OPNsense firewall via Terraform."
 tags:
   - "ops"
   - "command"
@@ -13,57 +13,57 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent OPS-OPNSENSE
+# OPS-OPNSENSE Agent
 
-Infrastructure as Code pour OPNsense. Configurer et gerer un pare-feu OPNsense via Terraform.
+Infrastructure as Code for OPNsense. Configure and manage an OPNsense firewall via Terraform.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Aider a configurer et gerer OPNsense de maniere declarative avec Terraform,
-en utilisant le provider browningluke/opnsense.
+Help configure and manage OPNsense declaratively with Terraform,
+using the browningluke/opnsense provider.
 
-Utilise le skill `ops-opnsense` pour les templates et la methodologie detaillee.
+Use the `ops-opnsense` skill for templates and detailed methodology.
 
 ## Workflow
 
-- Verifier les prerequis (OPNsense installe, API activee, cles API generees)
-- Configurer le provider Terraform avec les credentials
-- Implementer la configuration demandee (interfaces, firewall, NAT, services, aliases)
-- Valider avec terraform plan avant terraform apply
-- Toujours inclure une regle anti-lockout
-- Tester en lab avant production
+- Verify prerequisites (OPNsense installed, API enabled, API keys generated)
+- Configure the Terraform provider with credentials
+- Implement the requested configuration (interfaces, firewall, NAT, services, aliases)
+- Validate with terraform plan before terraform apply
+- Always include an anti-lockout rule
+- Test in lab before production
 
-## Output attendu
+## Expected output
 
-1. **Configuration Terraform** complete pour OPNsense
-2. **Modules** : interfaces, firewall, NAT, services, aliases
-3. **Documentation** des regles creees
+1. **Terraform configuration** complete for OPNsense
+2. **Modules**: interfaces, firewall, NAT, services, aliases
+3. **Documentation** of created rules
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-proxmox` | Provisioning VM OPNsense |
-| `/ops:ops-infra-code` | Patterns Terraform generaux |
-| `/qa:qa-security` | Audit securite configuration |
+| `/ops:ops-proxmox` | OPNsense VM provisioning |
+| `/ops:ops-infra-code` | General Terraform patterns |
+| `/qa:qa-security` | Configuration security audit |
 
 ---
 
-YOU MUST toujours inclure une regle anti-lockout dans les configurations firewall.
+YOU MUST always include an anti-lockout rule in firewall configurations.
 
-YOU MUST ne jamais exposer les credentials API dans le code.
+YOU MUST never expose API credentials in code.
 
-YOU MUST valider avec terraform plan avant terraform apply.
+YOU MUST validate with terraform plan before terraform apply.
 
-NEVER appliquer des changements firewall sans avoir teste en lab d'abord.
+NEVER apply firewall changes without testing in lab first.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 51
 title: "work-explore"
-description: "Explorer et comprendre un codebase existant. Utiliser quand l'utilisateur veut comprendre le code, explorer un projet, découvrir une architecture, ou avant de modifier du code existant."
+description: "Explore and understand an existing codebase. Use when the user wants to understand the code, explore a project, discover an architecture, or before modifying existing code."
 tags:
   - "skill"
   - "fork"
@@ -11,30 +11,30 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Explorer et comprendre un codebase existant. Utiliser quand l'utilisateur veut comprendre le code, explorer un projet, découvrir une architecture, ou avant de modifier du code existant.
+> Explore and understand an existing codebase. Use when the user wants to understand the code, explore a project, discover an architecture, or before modifying existing code.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Glob`, `Grep` |
-| **Mots-cles** | `work`, `explore` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Glob`, `Grep` |
+| **Keywords** | `work`, `explore` |
 
-## Description detaillee
+## Detailed description
 
-# Explorer un Codebase
+# Explore a Codebase
 
-## Objectif
+## Goal
 
-Comprendre un codebase AVANT de le modifier. Ne jamais coder sans avoir exploré.
+Understand a codebase BEFORE modifying it. Never code without having explored.
 
 ## Instructions
 
-### 1. Vue d'ensemble (5 min)
+### 1. Overview (5 min)
 
 ```bash
-# Structure du projet
+# Project structure
 ls -la
 tree -L 2 -I 'node_modules|.git|dist|build' | head -40
 
@@ -43,137 +43,137 @@ cat package.json | head -30
 cat README.md | head -50
 ```
 
-**Questions à répondre:**
-- Type de projet (frontend, backend, fullstack, lib) ?
-- Stack technique (langages, frameworks) ?
-- Comment lancer le projet ?
+**Questions to answer:**
+- Project type (frontend, backend, fullstack, lib)?
+- Tech stack (languages, frameworks)?
+- How to run the project?
 
 ### 2. Architecture (10 min)
 
-**Identifier les couches:**
+**Identify the layers:**
 - Entry points (main, index, app)
 - Routes / Controllers
 - Services / Business logic
 - Data access / Models
-- Utilitaires
+- Utilities
 
-**Patterns à repérer:**
+**Patterns to spot:**
 - Architecture (MVC, Clean, Hexagonal)
 - State management
 - Error handling
 - Configuration
 
-### 3. Flux de données
+### 3. Data flow
 
-Tracer un flux complet:
+Trace a complete flow:
 ```
-Requête → Validation → Traitement → DB → Réponse
+Request → Validation → Processing → DB → Response
 ```
 
 ### 4. Conventions
 
-- Style de code (linter config)
-- Nommage (camelCase, snake_case)
-- Structure des tests
-- Format des commits
+- Code style (linter config)
+- Naming (camelCase, snake_case)
+- Test structure
+- Commit format
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Résumé du projet
+## Project summary
 
 **Type**: [frontend/backend/fullstack]
-**Stack**: [langages et frameworks]
-**Architecture**: [pattern principal]
+**Stack**: [languages and frameworks]
+**Architecture**: [main pattern]
 
-## Structure clé
+## Key structure
 - `/src/xxx` - [description]
 - `/src/yyy` - [description]
 
-## Points d'entrée
-- `fichier.ts:ligne` - [rôle]
+## Entry points
+- `file.ts:line` - [role]
 
-## Conventions identifiées
+## Identified conventions
 - [Convention 1]
 - [Convention 2]
 
-## Zones sensibles
-- [Zone 1] - [pourquoi]
+## Sensitive areas
+- [Area 1] - [why]
 ```
 
-## Règles
+## Rules
 
-- TOUJOURS explorer avant de modifier
-- Ne pas supposer - vérifier dans le code
-- Noter les patterns pour les réutiliser
+- ALWAYS explore before modifying
+- Do not assume — verify in the code
+- Note patterns to reuse them
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux work..."_
-- _"Je veux explore..."_
+- _"I want to work..."_
+- _"I want to explore..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
-### 1. Exemple d'exploration de codebase
+### 1. Codebase exploration example
 
-# Exemple d'exploration de codebase
+# Codebase exploration example
 
-## Contexte
-Nouveau développeur sur un projet e-commerce Next.js.
+## Context
+New developer on a Next.js e-commerce project.
 
-## Exploration réalisée
+## Exploration performed
 
-### 1. Vue d'ensemble
+### 1. Overview
 ```bash
-# Structure du projet
+# Project structure
 tree -L 2 -d src/
 ```
 
-**Résultat:**
+**Result:**
 ```
 src/
-├── app/           # Routes Next.js 13+ (App Router)
-├── components/    # Composants React
+├── app/           # Next.js 13+ routes (App Router)
+├── components/    # React components
 ├── hooks/         # Custom hooks
-├── lib/           # Utilitaires et configurations
-├── services/      # Appels API
-└── types/         # Types TypeScript
+├── lib/           # Utilities and configuration
+├── services/      # API calls
+└── types/         # TypeScript types
 ```
 
-### 2. Points d'entrée identifiés
-- `src/app/layout.tsx` - Layout principal
-- `src/app/page.tsx` - Page d'accueil
-- `src/lib/db.ts` - Connexion base de données
-- `src/services/api.ts` - Client API
+### 2. Entry points identified
+- `src/app/layout.tsx` - Main layout
+- `src/app/page.tsx` - Home page
+- `src/lib/db.ts` - Database connection
+- `src/services/api.ts` - API client
 
-### 3. Patterns découverts
+### 3. Patterns discovered
 
-| Pattern | Localisation | Usage |
-|---------|--------------|-------|
-| Server Components | `app/**/*.tsx` | Rendu côté serveur |
-| Client Components | `components/**/*.tsx` | Interactivité |
-| Custom Hooks | `hooks/use*.ts` | Logique réutilisable |
-| Zod Validation | `lib/schemas/*.ts` | Validation des données |
+| Pattern | Location | Usage |
+|---------|----------|-------|
+| Server Components | `app/**/*.tsx` | Server-side rendering |
+| Client Components | `components/**/*.tsx` | Interactivity |
+| Custom Hooks | `hooks/use*.ts` | Reusable logic |
+| Zod Validation | `lib/schemas/*.ts` | Data validation |
 
-### 4. Dépendances clés
+### 4. Key dependencies
 ```json
 {
   "next": "14.x",
@@ -184,36 +184,36 @@ src/
 }
 ```
 
-### 5. Conventions détectées
-- Nommage: PascalCase pour composants, camelCase pour hooks
-- Tests: `__tests__/` à côté des fichiers
-- Styles: Tailwind CSS, pas de CSS modules
+### 5. Conventions detected
+- Naming: PascalCase for components, camelCase for hooks
+- Tests: `__tests__/` next to files
+- Styles: Tailwind CSS, no CSS modules
 
-## Output final
+## Final output
 
 ```markdown
-## Résumé de l'exploration
+## Exploration summary
 
-**Type de projet**: E-commerce Next.js 14
+**Project type**: Next.js 14 e-commerce
 **Architecture**: App Router + Server Components
-**Base de données**: PostgreSQL via Prisma
+**Database**: PostgreSQL via Prisma
 **Styling**: Tailwind CSS
 
-### Fichiers clés à connaître
-1. `src/app/layout.tsx` - Point d'entrée
-2. `src/lib/db.ts` - Configuration Prisma
-3. `src/services/api.ts` - Appels backend
+### Key files to know
+1. `src/app/layout.tsx` - Entry point
+2. `src/lib/db.ts` - Prisma configuration
+3. `src/services/api.ts` - Backend calls
 
-### Prochaines étapes recommandées
-- Lire `src/app/api/` pour comprendre les endpoints
-- Explorer `src/components/` pour les composants UI
+### Recommended next steps
+- Read `src/app/api/` to understand the endpoints
+- Explore `src/components/` for the UI components
 ```
 
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

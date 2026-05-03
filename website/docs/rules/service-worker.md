@@ -7,19 +7,19 @@ tags:
   - "service-worker"
 ---
 
-# Regles: service-worker
+# Rules: service-worker
 
 > The SW must NEVER cache `request.mode === "navigate"` responses. Caching HTML pages causes: - Stale JS references after deployments - Broken React/Vue/Svelte hydration (buttons stop working) - Users s
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/sw.js`
 - `**/service-worker*`
 - `**/sw-*.js`
 
-## Regles detaillees
+## Detailed rules
 
 # Service Worker Rules
 
@@ -68,16 +68,16 @@ if (request.mode === "navigate") {
 | No skipWaiting/clients.claim | SW update delayed | Add both in install/activate |
 | Caching RSC payloads | Client router breaks | Pass through _rsc requests |
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

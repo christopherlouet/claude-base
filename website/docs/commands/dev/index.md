@@ -1,186 +1,186 @@
 ---
 sidebar_position: 1
 title: "DEV"
-description: "Commandes DEV - Developpement (TDD, API, composants, debug)"
+description: "DEV commands - Developpement (TDD, API, composants, debug)"
 ---
 
 import { CommandGrid } from '@site/src/components/CommandCard';
 import CommandCard from '@site/src/components/CommandCard';
 
-# Commandes DEV
+# DEV Commands
 
 > Developpement (TDD, API, composants, debug)
 
-## Vue d'ensemble
+## Overview
 
-Ce domaine contient **23 commandes** pour developpement (tdd, api, composants, debug).
+This domain contains **23 commands** for developpement (tdd, api, composants, debug).
 
-## Liste des commandes
+## Commands list
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| [`/dev:dev-ai-integration`](/docs/commands/dev/dev-ai-integration) | Integration de modeles de langage (LLM) et APIs IA dans les applications. |
-| [`/dev:dev-api`](/docs/commands/dev/dev-api) | Créer ou documenter des endpoints REST/GraphQL. |
-| [`/dev:dev-api-versioning`](/docs/commands/dev/dev-api-versioning) | Mettre en place une strategie de versioning d'API robuste. |
-| [`/dev:dev-component`](/docs/commands/dev/dev-component) | Generer un composant UI complet avec tests, types et documentation. |
-| [`/dev:dev-debug`](/docs/commands/dev/dev-debug) | Diagnostic et résolution de bugs de manière méthodique et systématique. |
-| [`/dev:dev-design-system`](/docs/commands/dev/dev-design-system) | Creation et maintenance de design systems et bibliotheques de composants. |
-| [`/dev:dev-document`](/docs/commands/dev/dev-document) | Generation de documents professionnels dans differents formats bureautiques. |
-| [`/dev:dev-error-handling`](/docs/commands/dev/dev-error-handling) | Implemente une strategie de gestion d'erreurs robuste et coherente. |
-| [`/dev:dev-flutter`](/docs/commands/dev/dev-flutter) | Creer des widgets, screens et features Flutter avec Clean Architecture. |
-| [`/dev:dev-graphql`](/docs/commands/dev/dev-graphql) | Concevoir et implementer des APIs GraphQL avec client Flutter. |
-| [`/dev:dev-hook`](/docs/commands/dev/dev-hook) | Creer un custom hook React avec tests et documentation. |
-| [`/dev:dev-mcp`](/docs/commands/dev/dev-mcp) | Guide pour creer des serveurs MCP (Model Context Protocol) de qualite. |
-| [`/dev:dev-neovim`](/docs/commands/dev/dev-neovim) | Creer et configurer des plugins, LSP, keymaps et fonctionnalites Neovim en Lua. |
-| [`/dev:dev-prisma`](/docs/commands/dev/dev-prisma) | Configuration et utilisation de Prisma ORM. |
-| [`/dev:dev-prompt-engineering`](/docs/commands/dev/dev-prompt-engineering) | Optimisation systematique de prompts pour applications LLM. |
-| [`/dev:dev-rag`](/docs/commands/dev/dev-rag) | Conception et implementation de systemes RAG (Retrieval-Augmented Generation). |
-| [`/dev:dev-react-perf`](/docs/commands/dev/dev-react-perf) | Optimisation performance React/Next.js basee sur des regles priorisees par impact. |
-| [`/dev:dev-refactor`](/docs/commands/dev/dev-refactor) | Refactoring de code avec preservation du comportement et amelioration de la qualite. |
-| [`/dev:dev-supabase`](/docs/commands/dev/dev-supabase) | Configurer et utiliser Supabase comme backend (Auth, Database, Storage, Realtime, Edge Functions). |
-| [`/dev:dev-tdd`](/docs/commands/dev/dev-tdd) | Implémente une fonctionnalité en suivant le cycle TDD (Test-Driven Development). |
-| [`/dev:dev-test`](/docs/commands/dev/dev-test) | Genere des tests complets et de qualite pour du code existant. |
-| [`/dev:dev-testing-setup`](/docs/commands/dev/dev-testing-setup) | Configure l'infrastructure de tests pour un projet. |
-| [`/dev:dev-trpc`](/docs/commands/dev/dev-trpc) | Creation d'APIs type-safe avec tRPC. |
+| [`/dev:dev-ai-integration`](/docs/commands/dev/dev-ai-integration) | Integration of language models (LLM) and AI APIs into applications. |
+| [`/dev:dev-api`](/docs/commands/dev/dev-api) | Create or document REST/GraphQL endpoints. |
+| [`/dev:dev-api-versioning`](/docs/commands/dev/dev-api-versioning) | Set up a robust API versioning strategy. |
+| [`/dev:dev-component`](/docs/commands/dev/dev-component) | Generate a complete UI component with tests, types and documentation. |
+| [`/dev:dev-debug`](/docs/commands/dev/dev-debug) | Methodical and systematic bug diagnostic and resolution. |
+| [`/dev:dev-design-system`](/docs/commands/dev/dev-design-system) | Creation and maintenance of design systems and component libraries. |
+| [`/dev:dev-document`](/docs/commands/dev/dev-document) | Generation of professional documents in various office formats. |
+| [`/dev:dev-error-handling`](/docs/commands/dev/dev-error-handling) | Implements a robust and consistent error handling strategy. |
+| [`/dev:dev-flutter`](/docs/commands/dev/dev-flutter) | Create Flutter widgets, screens and features with Clean Architecture. |
+| [`/dev:dev-graphql`](/docs/commands/dev/dev-graphql) | Design and implement GraphQL APIs with a Flutter client. |
+| [`/dev:dev-hook`](/docs/commands/dev/dev-hook) | Create a React custom hook with tests and documentation. |
+| [`/dev:dev-mcp`](/docs/commands/dev/dev-mcp) | Guide for creating quality MCP (Model Context Protocol) servers. |
+| [`/dev:dev-neovim`](/docs/commands/dev/dev-neovim) | Create and configure Neovim plugins, LSP, keymaps and features in Lua. |
+| [`/dev:dev-prisma`](/docs/commands/dev/dev-prisma) | Configuration and usage of Prisma ORM. |
+| [`/dev:dev-prompt-engineering`](/docs/commands/dev/dev-prompt-engineering) | Systematic prompt optimization for LLM applications. |
+| [`/dev:dev-rag`](/docs/commands/dev/dev-rag) | Design and implementation of RAG (Retrieval-Augmented Generation) systems. |
+| [`/dev:dev-react-perf`](/docs/commands/dev/dev-react-perf) | React/Next.js performance optimization based on rules prioritized by impact. |
+| [`/dev:dev-refactor`](/docs/commands/dev/dev-refactor) | Code refactoring with behavior preservation and quality improvement. |
+| [`/dev:dev-supabase`](/docs/commands/dev/dev-supabase) | Configure and use Supabase as a backend (Auth, Database, Storage, Realtime, Edge Functions). |
+| [`/dev:dev-tdd`](/docs/commands/dev/dev-tdd) | Implements a feature by following the TDD (Test-Driven Development) cycle. |
+| [`/dev:dev-test`](/docs/commands/dev/dev-test) | Generates complete, high-quality tests for existing code. |
+| [`/dev:dev-testing-setup`](/docs/commands/dev/dev-testing-setup) | Configures the testing infrastructure for a project. |
+| [`/dev:dev-trpc`](/docs/commands/dev/dev-trpc) | Creating type-safe APIs with tRPC. |
 
-## Commandes en detail
+## Commands in detail
 
 <CommandGrid>
   <CommandCard
     name="dev-ai-integration"
-    description="Integration de modeles de langage (LLM) et APIs IA dans les applications."
+    description="Integration of language models (LLM) and AI APIs into applications."
     domain="dev"
     href="/docs/commands/dev/dev-ai-integration"
   />
   <CommandCard
     name="dev-api"
-    description="Créer ou documenter des endpoints REST/GraphQL."
+    description="Create or document REST/GraphQL endpoints."
     domain="dev"
     href="/docs/commands/dev/dev-api"
   />
   <CommandCard
     name="dev-api-versioning"
-    description="Mettre en place une strategie de versioning d'API robuste."
+    description="Set up a robust API versioning strategy."
     domain="dev"
     href="/docs/commands/dev/dev-api-versioning"
   />
   <CommandCard
     name="dev-component"
-    description="Generer un composant UI complet avec tests, types et documentation."
+    description="Generate a complete UI component with tests, types and documentation."
     domain="dev"
     href="/docs/commands/dev/dev-component"
   />
   <CommandCard
     name="dev-debug"
-    description="Diagnostic et résolution de bugs de manière méthodique et systématique."
+    description="Methodical and systematic bug diagnostic and resolution."
     domain="dev"
     href="/docs/commands/dev/dev-debug"
   />
   <CommandCard
     name="dev-design-system"
-    description="Creation et maintenance de design systems et bibliotheques de composants."
+    description="Creation and maintenance of design systems and component libraries."
     domain="dev"
     href="/docs/commands/dev/dev-design-system"
   />
   <CommandCard
     name="dev-document"
-    description="Generation de documents professionnels dans differents formats bureautiques."
+    description="Generation of professional documents in various office formats."
     domain="dev"
     href="/docs/commands/dev/dev-document"
   />
   <CommandCard
     name="dev-error-handling"
-    description="Implemente une strategie de gestion d'erreurs robuste et coherente."
+    description="Implements a robust and consistent error handling strategy."
     domain="dev"
     href="/docs/commands/dev/dev-error-handling"
   />
   <CommandCard
     name="dev-flutter"
-    description="Creer des widgets, screens et features Flutter avec Clean Architecture."
+    description="Create Flutter widgets, screens and features with Clean Architecture."
     domain="dev"
     href="/docs/commands/dev/dev-flutter"
   />
   <CommandCard
     name="dev-graphql"
-    description="Concevoir et implementer des APIs GraphQL avec client Flutter."
+    description="Design and implement GraphQL APIs with a Flutter client."
     domain="dev"
     href="/docs/commands/dev/dev-graphql"
   />
   <CommandCard
     name="dev-hook"
-    description="Creer un custom hook React avec tests et documentation."
+    description="Create a React custom hook with tests and documentation."
     domain="dev"
     href="/docs/commands/dev/dev-hook"
   />
   <CommandCard
     name="dev-mcp"
-    description="Guide pour creer des serveurs MCP (Model Context Protocol) de qualite."
+    description="Guide for creating quality MCP (Model Context Protocol) servers."
     domain="dev"
     href="/docs/commands/dev/dev-mcp"
   />
   <CommandCard
     name="dev-neovim"
-    description="Creer et configurer des plugins, LSP, keymaps et fonctionnalites Neovim en Lua."
+    description="Create and configure Neovim plugins, LSP, keymaps and features in Lua."
     domain="dev"
     href="/docs/commands/dev/dev-neovim"
   />
   <CommandCard
     name="dev-prisma"
-    description="Configuration et utilisation de Prisma ORM."
+    description="Configuration and usage of Prisma ORM."
     domain="dev"
     href="/docs/commands/dev/dev-prisma"
   />
   <CommandCard
     name="dev-prompt-engineering"
-    description="Optimisation systematique de prompts pour applications LLM."
+    description="Systematic prompt optimization for LLM applications."
     domain="dev"
     href="/docs/commands/dev/dev-prompt-engineering"
   />
   <CommandCard
     name="dev-rag"
-    description="Conception et implementation de systemes RAG (Retrieval-Augmented Generation)."
+    description="Design and implementation of RAG (Retrieval-Augmented Generation) systems."
     domain="dev"
     href="/docs/commands/dev/dev-rag"
   />
   <CommandCard
     name="dev-react-perf"
-    description="Optimisation performance React/Next.js basee sur des regles priorisees par impact."
+    description="React/Next.js performance optimization based on rules prioritized by impact."
     domain="dev"
     href="/docs/commands/dev/dev-react-perf"
   />
   <CommandCard
     name="dev-refactor"
-    description="Refactoring de code avec preservation du comportement et amelioration de la qualite."
+    description="Code refactoring with behavior preservation and quality improvement."
     domain="dev"
     href="/docs/commands/dev/dev-refactor"
   />
   <CommandCard
     name="dev-supabase"
-    description="Configurer et utiliser Supabase comme backend (Auth, Database, Storage, Realtime, Edge Functions)."
+    description="Configure and use Supabase as a backend (Auth, Database, Storage, Realtime, Edge Functions)."
     domain="dev"
     href="/docs/commands/dev/dev-supabase"
   />
   <CommandCard
     name="dev-tdd"
-    description="Implémente une fonctionnalité en suivant le cycle TDD (Test-Driven Development)."
+    description="Implements a feature by following the TDD (Test-Driven Development) cycle."
     domain="dev"
     href="/docs/commands/dev/dev-tdd"
   />
   <CommandCard
     name="dev-test"
-    description="Genere des tests complets et de qualite pour du code existant."
+    description="Generates complete, high-quality tests for existing code."
     domain="dev"
     href="/docs/commands/dev/dev-test"
   />
   <CommandCard
     name="dev-testing-setup"
-    description="Configure l'infrastructure de tests pour un projet."
+    description="Configures the testing infrastructure for a project."
     domain="dev"
     href="/docs/commands/dev/dev-testing-setup"
   />
   <CommandCard
     name="dev-trpc"
-    description="Creation d'APIs type-safe avec tRPC."
+    description="Creating type-safe APIs with tRPC."
     domain="dev"
     href="/docs/commands/dev/dev-trpc"
   />
@@ -188,4 +188,4 @@ Ce domaine contient **23 commandes** pour developpement (tdd, api, composants, d
 
 ---
 
-[Retour a toutes les commandes](/docs/commands)
+[Back to all commands](/docs/commands)

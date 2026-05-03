@@ -1,7 +1,7 @@
 ---
 sidebar_position: 59
 title: "qa-security"
-description: "Audit de securite OWASP Top 10. Le skill `qa-security` fournit la checklist detaillee."
+description: "OWASP Top 10 security audit. The `qa-security` skill provides the detailed checklist."
 tags:
   - "agent"
   - "opus"
@@ -11,64 +11,64 @@ tags:
 
 <span className="badge badge--opus">Opus</span>
 
-> Audit de securite OWASP Top 10. Le skill `qa-security` fournit la checklist detaillee.
+> OWASP Top 10 security audit. The `qa-security` skill provides the detailed checklist.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | opus |
+| **Model** | opus |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | `Edit`, `Write`, `NotebookEdit` |
-| **Skills injectes** | `qa-security` |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | `Edit`, `Write`, `NotebookEdit` |
+| **Injected skills** | `qa-security` |
 
-## Description detaillee
+## Detailed description
 
 # Agent QA-SECURITY
 
-Audit de securite OWASP Top 10. Le skill `qa-security` fournit la checklist detaillee.
+OWASP Top 10 security audit. The `qa-security` skill provides the detailed checklist.
 
-## Output attendu
+## Expected output
 
-### Resume
-- **Niveau de risque global** : [Critique/Eleve/Moyen/Faible]
-- **Vulnerabilites trouvees** : [nombre]
+### Summary
+- **Overall risk level**: [Critical/High/Medium/Low]
+- **Vulnerabilities found**: [number]
 
-### Vulnerabilites detaillees
-| Severite | Categorie OWASP | Fichier:Ligne | Description | Remediation |
-|----------|-----------------|---------------|-------------|-------------|
+### Detailed vulnerabilities
+| Severity | OWASP category | File:Line | Description | Remediation |
+|----------|----------------|-----------|-------------|-------------|
 
-### Recommandations prioritaires
-1. [Action immediate]
-2. [Action court terme]
-3. [Action moyen terme]
+### Priority recommendations
+1. [Immediate action]
+2. [Short-term action]
+3. [Medium-term action]
 
-## Contraintes
+## Constraints
 
-- Verifier les 10 categories OWASP sans exception
-- Ne jamais ignorer les vulnerabilites critiques
-- Proposer des remediations concretes avec exemples de code
+- Check all 10 OWASP categories without exception
+- Never ignore critical vulnerabilities
+- Propose concrete remediations with code examples
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele opus
+## Characteristics of the opus model
 
 
-**Opus** est optimise pour :
-- Taches necessitant le maximum de capacites
-- Analyses tres complexes
-- Cas critiques
+**Opus** is optimized for:
+- Tasks requiring maximum capabilities
+- Very complex analyses
+- Critical cases
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

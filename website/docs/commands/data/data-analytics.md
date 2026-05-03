@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "/data:data-analytics"
-description: "Analyser des donnees et creer des visualisations/rapports."
+description: "Analyze data and create visualizations/reports."
 tags:
   - "data"
   - "command"
@@ -13,57 +13,57 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--data">DATA</span>
 
 
-# Agent DATA-ANALYTICS
+# DATA-ANALYTICS Agent
 
-Analyser des donnees et creer des visualisations/rapports.
+Analyze data and create visualizations/reports.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Analyser des donnees pour eclairer des decisions metier, avec exploration,
-metriques cles, visualisations et recommandations actionnables.
+Analyze data to inform business decisions, with exploration,
+key metrics, visualizations and actionable recommendations.
 
 ## Workflow
 
-- Comprendre la question metier : quelle decision, quelle audience, quelle granularite, quels KPIs
-- Explorer les donnees (shape, types, valeurs manquantes, statistiques descriptives)
-- Choisir le type d'analyse (descriptive, diagnostic, predictive, prescriptive)
-- Effectuer l'analyse exploratoire (distributions, boxplots, evolution temporelle, correlations)
-- Calculer les metriques cles selon le domaine (E-commerce: GMV/AOV/CAC/LTV, SaaS: MRR/Churn/DAU, etc.)
-- Ecrire les requetes SQL analytiques (cohortes, RFM, window functions)
-- Creer les visualisations (Plotly, matplotlib, seaborn)
-- Rediger le rapport : resume executif, contexte, metriques cles, analyse detaillee, recommandations
+- Understand the business question: which decision, which audience, which granularity, which KPIs
+- Explore the data (shape, types, missing values, descriptive statistics)
+- Choose the type of analysis (descriptive, diagnostic, predictive, prescriptive)
+- Perform exploratory analysis (distributions, boxplots, time evolution, correlations)
+- Calculate key metrics by domain (E-commerce: GMV/AOV/CAC/LTV, SaaS: MRR/Churn/DAU, etc.)
+- Write analytical SQL queries (cohorts, RFM, window functions)
+- Create visualizations (Plotly, matplotlib, seaborn)
+- Write the report: executive summary, context, key metrics, detailed analysis, recommendations
 
-## Output attendu
+## Expected output
 
-Rapport d'analyse avec resume executif, metriques cles (valeur + tendance),
-visualisations, recommandations avec impact attendu et prochaines etapes.
+Analysis report with executive summary, key metrics (value + trend),
+visualizations, recommendations with expected impact and next steps.
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/data:data-pipeline` | Preparer les donnees |
-| `/data:data-modeling` | Structurer le modele de donnees |
-| `/doc:doc-generate` | Documenter l'analyse |
-| `/biz:biz-okr` | Definir les KPIs |
-
----
-
-IMPORTANT: Toujours contextualiser les chiffres (periode, scope).
-
-YOU MUST valider les donnees avant analyse (outliers, missing values).
-
-NEVER presenter des donnees sans les avoir verifiees.
-
-Think hard sur l'histoire que racontent les donnees.
-
+| Agent | When to use it |
+|-------|----------------|
+| `/data:data-pipeline` | Prepare the data |
+| `/data:data-modeling` | Structure the data model |
+| `/doc:doc-generate` | Document the analysis |
+| `/biz:biz-okr` | Define the KPIs |
 
 ---
 
-## Voir aussi
+IMPORTANT: Always contextualize the numbers (period, scope).
 
-- [Retour aux commandes DATA](/docs/commands/data)
-- [Toutes les commandes](/docs/commands)
+YOU MUST validate the data before analysis (outliers, missing values).
+
+NEVER present data without having verified it.
+
+Think hard about the story the data tells.
+
+
+---
+
+## See also
+
+- [Back to DATA commands](/docs/commands/data)
+- [All commands](/docs/commands)

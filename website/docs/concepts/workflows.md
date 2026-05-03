@@ -1,7 +1,7 @@
 ---
 sidebar_position: 21
 title: "Visual Workflows"
-description: " Diagrams of recommended workflows"
+description: " Diagrams of the recommended workflows"
 tags:
   - "concept"
 ---
@@ -10,7 +10,7 @@ tags:
 
 # Visual Workflows
 
-&gt; Diagrams of recommended workflows
+&gt; Diagrams of the recommended workflows
 
 ## Main Workflow: Explore → Specify → Plan → TDD → Audit → Commit
 
@@ -71,11 +71,11 @@ flowchart LR
 │  │   │  work-plan  │ Plan approved?                                      │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │     ┌────┴────┐                                                       │  │
-│  │    No        Yes                                                      │  │
+│  │     No       Yes                                                      │  │
 │  │     │         │                                                       │  │
 │  │     ▼         ▼                                                       │  │
 │  │   Revise   ┌──────────────┐                                           │  │
-│  │   the plan │   dev-tdd    │ Tests BEFORE code (Red-Green-Refactor)    │  │
+│  │   the plan │   dev-tdd    │ Tests BEFORE the code (Red-Green-Refactor)│  │
 │  │            └──────┬───────┘                                           │  │
 │  │                   │                                                   │  │
 │  │                   ▼                                                   │  │
@@ -146,26 +146,26 @@ flowchart TD
 │  │    No        Yes                                                      │  │
 │  │     │         │                                                       │  │
 │  │     ▼         ▼                                                       │  │
-│  │  More       ┌──────────────┐                                          │  │
-│  │  context    │ dev-tdd      │ (failing test)                           │  │
-│  │             └──────┬───────┘                                          │  │
-│  │                    │                                                  │  │
-│  │                    ▼                                                  │  │
-│  │             ┌──────────────┐                                          │  │
-│  │             │    FIX       │                                          │  │
-│  │             └──────┬───────┘                                          │  │
-│  │                    │                                                  │  │
-│  │                    ▼                                                  │  │
-│  │             ┌──────────────┐                                          │  │
-│  │             │ Tests pass?  │                                          │  │
-│  │             └──────┬───────┘                                          │  │
-│  │               ┌────┴────┐                                             │  │
-│  │              No        Yes                                            │  │
-│  │               │         │                                             │  │
-│  │               ▼         ▼                                             │  │
-│  │            Iterate  ┌──────────────┐                                  │  │
-│  │                     │ work-commit  │                                  │  │
-│  │                     └──────────────┘                                  │  │
+│  │   More     ┌──────────────┐                                           │  │
+│  │   context  │ dev-tdd      │ (failing test)                            │  │
+│  │            └──────┬───────┘                                           │  │
+│  │                   │                                                   │  │
+│  │                   ▼                                                   │  │
+│  │            ┌──────────────┐                                           │  │
+│  │            │    FIX       │                                           │  │
+│  │            └──────┬───────┘                                           │  │
+│  │                   │                                                   │  │
+│  │                   ▼                                                   │  │
+│  │            ┌──────────────┐                                           │  │
+│  │            │  Tests pass? │                                           │  │
+│  │            └──────┬───────┘                                           │  │
+│  │              ┌────┴────┐                                              │  │
+│  │             No        Yes                                             │  │
+│  │              │         │                                              │  │
+│  │              ▼         ▼                                              │  │
+│  │           Iterate  ┌──────────────┐                                   │  │
+│  │                    │ work-commit  │                                   │  │
+│  │                    └──────────────┘                                   │  │
 │  │                                                                       │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 │                                                                             │
@@ -220,20 +220,20 @@ flowchart TD
 │  │                  Yes       No                                         │  │
 │  │                   │         │                                         │  │
 │  │                   ▼         ▼                                         │  │
-│  │               Fix first  ┌─────────────┐                              │  │
-│  │                          │doc-changelog│                              │  │
-│  │                          └──────┬──────┘                              │  │
-│  │                                 │                                     │  │
-│  │                                 ▼                                     │  │
-│  │                          ┌─────────────┐                              │  │
-│  │                          │ ops-release │                              │  │
-│  │                          └──────┬──────┘                              │  │
-│  │                                 │                                     │  │
-│  │                                 ▼                                     │  │
-│  │                          ┌─────────────┐                              │  │
-│  │                          │    TAG      │                              │  │
-│  │                          │  vX.Y.Z     │                              │  │
-│  │                          └─────────────┘                              │  │
+│  │                Fix      ┌─────────────┐                               │  │
+│  │                first    │doc-changelog│                               │  │
+│  │                         └──────┬──────┘                               │  │
+│  │                                │                                      │  │
+│  │                                ▼                                      │  │
+│  │                         ┌─────────────┐                               │  │
+│  │                         │ ops-release │                               │  │
+│  │                         └──────┬──────┘                               │  │
+│  │                                │                                      │  │
+│  │                                ▼                                      │  │
+│  │                         ┌─────────────┐                               │  │
+│  │                         │    TAG      │                               │  │
+│  │                         │  vX.Y.Z     │                               │  │
+│  │                         └─────────────┘                               │  │
 │  │                                                                       │  │
 │  └───────────────────────────────────────────────────────────────────────┘  │
 │                                                                             │
@@ -508,7 +508,7 @@ flowchart TD
 │  │        │                                                              │  │
 │  │        ▼                                                              │  │
 │  │   ┌─────────────┐                                                     │  │
-│  │   │work-explore │ Sources, existing schemas                           │  │
+│  │   │work-explore │ Existing sources, schemas                           │  │
 │  │   └──────┬──────┘                                                     │  │
 │  │          │                                                            │  │
 │  │          ▼                                                            │  │
@@ -541,7 +541,7 @@ flowchart TD
 │  │             │                                                         │  │
 │  │             ▼                                                         │  │
 │  │      ┌─────────────┐                                                  │  │
-│  │      │    ops-     │ Pipeline monitoring                              │  │
+│  │      │    ops-     │ Monitoring pipelines                             │  │
 │  │      │ monitoring  │                                                  │  │
 │  │      └─────────────┘                                                  │  │
 │  │                                                                       │  │

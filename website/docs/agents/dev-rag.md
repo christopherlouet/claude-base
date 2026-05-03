@@ -1,7 +1,7 @@
 ---
 sidebar_position: 17
 title: "dev-rag"
-description: "Architecture et implementation de systemes RAG."
+description: "Architecture and implementation of RAG systems."
 tags:
   - "agent"
   - "opus"
@@ -11,40 +11,40 @@ tags:
 
 <span className="badge badge--opus">Opus</span>
 
-> Architecture et implementation de systemes RAG.
+> Architecture and implementation of RAG systems.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | opus |
+| **Model** | opus |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
-# Agent RAG
+# RAG Agent
 
-Architecture et implementation de systemes RAG.
+Architecture and implementation of RAG systems.
 
-## Objectif
+## Objective
 
-Concevoir des pipelines RAG performants pour applications LLM.
+Design high-performance RAG pipelines for LLM applications.
 
-## Pipeline RAG
+## RAG Pipeline
 
 ```
 INGEST → EMBED → INDEX → STORE
 QUERY → RETRIEVE → AUGMENT → GENERATE
 ```
 
-## Composants cles
+## Key Components
 
 ### Chunking
 - Fixed size (512-1024 tokens)
-- Semantic (par section)
+- Semantic (by section)
 - Sentence/Paragraph
 
 ### Embedding
@@ -56,57 +56,57 @@ QUERY → RETRIEVE → AUGMENT → GENERATE
 - Pinecone (managed)
 - Weaviate (flexible)
 - pgvector (PostgreSQL)
-- Chroma (prototypage)
+- Chroma (prototyping)
 
 ### Retrieval
 - Similarity search
-- MMR (diversite)
+- MMR (diversity)
 - Hybrid (vector + BM25)
 - Reranking
 
-## Metriques
+## Metrics
 
-| Metrique | Cible |
-|----------|-------|
+| Metric | Target |
+|--------|--------|
 | Retrieval Precision | > 80% |
 | Retrieval Recall | > 70% |
 | Answer Relevance | > 85% |
 | Faithfulness | > 90% |
 | Latency | < 3s |
 
-## Output attendu
+## Expected Output
 
-- Architecture technique
-- Choix de stack justifies
-- Configuration recommandee
-- Schemas de donnees
-- Plan d'evaluation
+- Technical architecture
+- Justified stack choices
+- Recommended configuration
+- Data schemas
+- Evaluation plan
 
-## Contraintes
+## Constraints
 
-- Evaluer le retrieval avant la generation
-- Tester plusieurs strategies de chunking
-- Implementer des gardes anti-hallucination
+- Evaluate retrieval before generation
+- Test multiple chunking strategies
+- Implement anti-hallucination guards
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele opus
+## Characteristics of the opus model
 
 
-**Opus** est optimise pour :
-- Taches necessitant le maximum de capacites
-- Analyses tres complexes
-- Cas critiques
+**Opus** is optimized for:
+- Tasks requiring maximum capabilities
+- Very complex analyses
+- Critical cases
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -7,42 +7,42 @@ tags:
   - "go"
 ---
 
-# Regles: go
+# Rules: go
 
 > // Custom errors var ErrUserNotFound = errors.New("user not found")
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.go`
 - `**/go.mod`
 - `**/go.sum`
 
-## Regles detaillees
+## Detailed rules
 
 # Go Rules
 
 ## Naming Conventions
 
-| Type | Convention | Exemple |
+| Type | Convention | Example |
 |------|------------|---------|
-| Packages | lowercase, court | `user`, `http` |
+| Packages | lowercase, short | `user`, `http` |
 | Exported | PascalCase | `GetUser`, `UserService` |
 | Unexported | camelCase | `getUserByID`, `internalHelper` |
-| Constantes | PascalCase ou camelCase | `MaxRetryCount`, `defaultTimeout` |
-| Interfaces | -er suffix si possible | `Reader`, `Writer`, `UserFetcher` |
-| Acronymes | Tout en majuscules | `HTTPClient`, `UserID`, `APIError` |
+| Constants | PascalCase or camelCase | `MaxRetryCount`, `defaultTimeout` |
+| Interfaces | -er suffix when possible | `Reader`, `Writer`, `UserFetcher` |
+| Acronyms | All uppercase | `HTTPClient`, `UserID`, `APIError` |
 
 ## Error Handling
 
-- IMPORTANT: Toujours verifier les erreurs retournees
-- YOU MUST retourner les erreurs, ne pas les ignorer
-- Utiliser `errors.Is()` et `errors.As()` pour comparaison
-- Wrapper les erreurs avec contexte: `fmt.Errorf("action: %w", err)`
+- IMPORTANT: Always check returned errors
+- YOU MUST return errors, do not ignore them
+- Use `errors.Is()` and `errors.As()` for comparison
+- Wrap errors with context: `fmt.Errorf("action: %w", err)`
 
 ```go
-// Pattern correct
+// Correct pattern
 result, err := doSomething()
 if err != nil {
     return fmt.Errorf("failed to do something: %w", err)
@@ -65,12 +65,12 @@ func GetUser(id int) (*User, error) {
 
 ## Interfaces
 
-- Definir les interfaces cote consommateur, pas implementeur
-- Garder les interfaces petites (1-3 methodes)
-- Preferer composition d'interfaces
+- Define interfaces on the consumer side, not the implementer side
+- Keep interfaces small (1-3 methods)
+- Prefer interface composition
 
 ```go
-// Petit et compose
+// Small and composed
 type Reader interface {
     Read(p []byte) (n int, err error)
 }
@@ -84,7 +84,7 @@ type ReadWriter interface {
     Writer
 }
 
-// Cote consommateur
+// Consumer side
 type UserRepository interface {
     GetByID(ctx context.Context, id int) (*User, error)
 }
@@ -96,10 +96,10 @@ func NewUserService(repo UserRepository) *UserService {
 
 ## Concurrency
 
-- IMPORTANT: Utiliser `context.Context` pour cancellation et timeouts
-- Preferer channels pour communication, mutex pour etat partage
-- Toujours fermer les channels cote producteur
-- Utiliser `sync.WaitGroup` pour attendre les goroutines
+- IMPORTANT: Use `context.Context` for cancellation and timeouts
+- Prefer channels for communication, mutexes for shared state
+- Always close channels on the producer side
+- Use `sync.WaitGroup` to wait for goroutines
 
 ```go
 func processItems(ctx context.Context, items []Item) error {
@@ -127,7 +127,7 @@ project/
 │   ├── domain/
 │   ├── service/
 │   └── repository/
-├── pkg/              # Code reutilisable externe
+├── pkg/              # External reusable code
 ├── api/              # OpenAPI specs, protos
 ├── go.mod
 └── go.sum
@@ -135,11 +135,11 @@ project/
 
 ## Best Practices
 
-- Utiliser `context.Context` comme premier argument
-- Preferer retourner des erreurs aux panics
-- Utiliser `defer` pour cleanup (fichiers, locks, etc.)
-- Eviter `init()` sauf si vraiment necessaire
-- Utiliser les zero values intelligemment
+- Use `context.Context` as the first argument
+- Prefer returning errors over panics
+- Use `defer` for cleanup (files, locks, etc.)
+- Avoid `init()` unless truly necessary
+- Use zero values intelligently
 
 ## Testing
 
@@ -179,22 +179,22 @@ func TestGetUser(t *testing.T) {
 
 ## Anti-patterns
 
-- NEVER ignorer les erreurs avec `_`
-- NEVER utiliser `panic` pour le flow control normal
-- Eviter les goroutines sans possibilite de cancellation
-- Eviter les variables globales mutables
-- Ne pas utiliser `interface\{\}` / `any` sans raison valable
+- NEVER ignore errors with `_`
+- NEVER use `panic` for normal flow control
+- Avoid goroutines with no way to be cancelled
+- Avoid mutable global variables
+- Do not use `interface\{\}` / `any` without a valid reason
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

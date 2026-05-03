@@ -1,7 +1,7 @@
 ---
 sidebar_position: 50
 title: "work-commit"
-description: "Génère des messages de commit clairs suivant Conventional Commits. Utiliser quand l'utilisateur veut commiter, demande un message de commit, ou après avoir terminé une modification."
+description: "Generates clear commit messages following Conventional Commits. Use when the user wants to commit, asks for a commit message, or after completing a modification."
 tags:
   - "skill"
   - "fork"
@@ -11,99 +11,99 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Génère des messages de commit clairs suivant Conventional Commits. Utiliser quand l'utilisateur veut commiter, demande un message de commit, ou après avoir terminé une modification.
+> Generates clear commit messages following Conventional Commits. Use when the user wants to commit, asks for a commit message, or after completing a modification.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Bash`, `Read`, `Grep` |
-| **Mots-cles** | `work`, `commit`, `add`, `added`, `adds` |
+| **Context** | fork |
+| **Allowed tools** | `Bash`, `Read`, `Grep` |
+| **Keywords** | `work`, `commit`, `add`, `added`, `adds` |
 
-## Description detaillee
+## Detailed description
 
-# Génération de Messages de Commit
+# Commit Message Generation
 
-## Format Conventional Commits
+## Conventional Commits Format
 
 ```
-type(scope): description courte (< 50 caractères)
+type(scope): short description (< 50 characters)
 
-[corps optionnel - détails sur le "quoi" et "pourquoi"]
+[optional body - details on the "what" and "why"]
 
-[footer optionnel - références issues, breaking changes]
+[optional footer - issue references, breaking changes]
 ```
 
 ## Instructions
 
-### 1. Analyser les changements
+### 1. Analyze the changes
 
 ```bash
-# Voir les fichiers modifiés
+# View modified files
 git status --short
 
-# Voir le diff détaillé
+# View detailed diff
 git diff --staged
 
-# Si rien n'est staged, voir les changements non-staged
+# If nothing is staged, view non-staged changes
 git diff
 ```
 
-### 2. Déterminer le type
+### 2. Determine the type
 
-| Type | Utilisation |
+| Type | Usage |
 |------|-------------|
-| `feat` | Nouvelle fonctionnalité |
-| `fix` | Correction de bug |
-| `refactor` | Refactoring sans changement fonctionnel |
-| `test` | Ajout ou modification de tests |
-| `docs` | Documentation uniquement |
-| `style` | Formatage, pas de changement de code |
-| `chore` | Maintenance, dépendances |
-| `perf` | Amélioration de performance |
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `refactor` | Refactoring without functional change |
+| `test` | Adding or modifying tests |
+| `docs` | Documentation only |
+| `style` | Formatting, no code change |
+| `chore` | Maintenance, dependencies |
+| `perf` | Performance improvement |
 
-### 3. Identifier le scope
+### 3. Identify the scope
 
-Le scope indique la partie du code affectée:
-- Nom du module: `auth`, `api`, `ui`
-- Nom du composant: `button`, `modal`
-- Fonctionnalité: `login`, `checkout`
+The scope indicates the part of the code affected:
+- Module name: `auth`, `api`, `ui`
+- Component name: `button`, `modal`
+- Feature: `login`, `checkout`
 
-### 4. Rédiger la description
+### 4. Write the description
 
-- **Impératif présent**: "add" pas "added" ou "adds"
-- **Minuscule**: pas de majuscule au début
-- **Pas de point final**
-- **< 50 caractères**
+- **Imperative present**: "add" not "added" or "adds"
+- **Lowercase**: no capital at the start
+- **No trailing period**
+- **< 50 characters**
 
-### 5. Commiter
+### 5. Commit
 
 ```bash
-git add [fichiers]
+git add [files]
 git commit -m "type(scope): description"
 ```
 
-Ou avec corps:
+Or with body:
 ```bash
 git commit -m "type(scope): description
 
-- Détail 1
-- Détail 2
+- Detail 1
+- Detail 2
 
 Refs: #123"
 ```
 
-## Règles
+## Rules
 
-- UN commit = UN changement logique
-- Message clair pour quelqu'un qui ne connaît pas le contexte
-- Expliquer le POURQUOI, pas le COMMENT (le code montre le comment)
-- Référencer les issues si applicable
+- ONE commit = ONE logical change
+- Clear message for someone unfamiliar with the context
+- Explain the WHY, not the HOW (the code shows the how)
+- Reference issues if applicable
 
-## Exemples
+## Examples
 
-### Bons messages
+### Good messages
 ```
 feat(auth): add OAuth2 login support
 fix(api): handle null response from external service
@@ -112,47 +112,47 @@ test(cart): add unit tests for price calculation
 docs(readme): update installation instructions
 ```
 
-### Mauvais messages
+### Bad messages
 ```
-❌ "fix bug"                    → Trop vague
-❌ "Update code"                → Non informatif
-❌ "WIP"                        → Ne pas commiter du WIP
-❌ "feat: Add new feature..."   → Redondant
+❌ "fix bug"                    → Too vague
+❌ "Update code"                → Not informative
+❌ "WIP"                        → Don't commit WIP
+❌ "feat: Add new feature..."   → Redundant
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux work..."_
-- _"Je veux commit..."_
-- _"Je veux add..."_
+- _"I want to work..."_
+- _"I want to commit..."_
+- _"I want to add..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
-### 1. Exemples de Messages de Commit
+### 1. Commit Message Examples
 
-# Exemples de Messages de Commit
+# Commit Message Examples
 
-## Nouvelle fonctionnalité
+## New feature
 
-**Changement**: Ajout d'un bouton de déconnexion dans le header
+**Change**: Add a logout button in the header
 
 ```bash
 git diff --staged
@@ -173,9 +173,9 @@ Refs: #234
 
 ---
 
-## Correction de bug
+## Bug fix
 
-**Changement**: Fix d'un crash quand l'email est null
+**Change**: Fix a crash when email is null
 
 ```bash
 git diff --staged
@@ -196,7 +196,7 @@ Fixes: #456
 
 ## Refactoring
 
-**Changement**: Extraction de la logique de prix dans un module séparé
+**Change**: Extract pricing logic into a separate module
 
 ```bash
 git diff --staged
@@ -218,7 +218,7 @@ refactor(pricing): extract price calculation to dedicated module
 
 ## Tests
 
-**Changement**: Ajout de tests pour le composant Button
+**Change**: Add tests for the Button component
 
 ```bash
 git diff --staged
@@ -238,7 +238,7 @@ test(ui): add unit tests for Button component
 
 ## Documentation
 
-**Changement**: Mise à jour du README avec nouvelles instructions
+**Change**: Update the README with new instructions
 
 ```bash
 git diff --staged
@@ -258,7 +258,7 @@ docs(readme): update installation and usage instructions
 
 ## Breaking Change
 
-**Changement**: Changement de l'API d'authentification
+**Change**: Change the authentication API
 
 ```bash
 git diff --staged
@@ -284,7 +284,7 @@ Refs: #789
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

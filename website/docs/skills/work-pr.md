@@ -1,7 +1,7 @@
 ---
 sidebar_position: 53
 title: "work-pr"
-description: "Créer une Pull Request complète et bien documentée. Utiliser quand l'utilisateur veut créer une PR, soumettre ses changements, ou préparer une demande de merge."
+description: "Create a complete and well-documented Pull Request. Use when the user wants to create a PR, submit their changes, or prepare a merge request."
 tags:
   - "skill"
   - "fork"
@@ -11,174 +11,174 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Créer une Pull Request complète et bien documentée. Utiliser quand l'utilisateur veut créer une PR, soumettre ses changements, ou préparer une demande de merge.
+> Create a complete and well-documented Pull Request. Use when the user wants to create a PR, submit their changes, or prepare a merge request.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Bash`, `Grep`, `Glob` |
-| **Mots-cles** | `work`, `fix bug` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Bash`, `Grep`, `Glob` |
+| **Keywords** | `work`, `fix bug` |
 
-## Description detaillee
+## Detailed description
 
-# Créer une Pull Request
+# Create a Pull Request
 
-## Objectif
+## Objective
 
-Créer une PR complète, bien documentée, prête pour review.
+Create a complete, well-documented PR, ready for review.
 
 ## Instructions
 
-### 1. Vérifier l'état
+### 1. Check the state
 
 ```bash
-# État des changements
+# State of changes
 git status --short
 
-# Différences avec la branche cible
+# Differences with the target branch
 git diff main...HEAD --stat
 
-# Historique des commits
+# Commit history
 git log main...HEAD --oneline
 ```
 
-### 2. Préparer la branche
+### 2. Prepare the branch
 
 ```bash
-# S'assurer d'être à jour
+# Make sure to be up to date
 git fetch origin
-git rebase origin/main  # ou merge selon convention
+git rebase origin/main  # or merge depending on convention
 
-# Vérifier les tests
+# Check the tests
 npm test
 
-# Vérifier le lint
+# Check the lint
 npm run lint
 ```
 
-### 3. Template de PR
+### 3. PR Template
 
 ```markdown
 ## Description
 
-[Résumé clair de ce que fait cette PR en 2-3 phrases]
+[Clear summary of what this PR does in 2-3 sentences]
 
-## Type de changement
+## Type of change
 
-- [ ] Nouvelle fonctionnalité (feat)
-- [ ] Correction de bug (fix)
+- [ ] New feature (feat)
+- [ ] Bug fix (fix)
 - [ ] Refactoring (refactor)
 - [ ] Documentation (docs)
-- [ ] Autre: [préciser]
+- [ ] Other: [specify]
 
-## Changements
+## Changes
 
-### Ajouts
-- [Fichier/fonction ajouté]
+### Additions
+- [Added file/function]
 
 ### Modifications
-- [Fichier/fonction modifié]
+- [Modified file/function]
 
-### Suppressions
-- [Fichier/fonction supprimé]
+### Removals
+- [Removed file/function]
 
-## Comment tester
+## How to test
 
-1. [Étape de test 1]
-2. [Étape de test 2]
-3. Vérifier que [résultat attendu]
+1. [Test step 1]
+2. [Test step 2]
+3. Check that [expected result]
 
 ## Checklist
 
-- [ ] Code auto-reviewé
-- [ ] Tests ajoutés/mis à jour
-- [ ] Documentation mise à jour
-- [ ] Pas de console.log oubliés
-- [ ] Lint passe
-- [ ] Build passe
+- [ ] Code self-reviewed
+- [ ] Tests added/updated
+- [ ] Documentation updated
+- [ ] No forgotten console.log
+- [ ] Lint passes
+- [ ] Build passes
 
-## Screenshots (si UI)
+## Screenshots (if UI)
 
-[Avant/Après si applicable]
+[Before/After if applicable]
 
-## Issues liées
+## Related issues
 
-Fixes #[numéro] (ou Refs #[numéro])
+Fixes #[number] (or Refs #[number])
 ```
 
-### 4. Créer la PR
+### 4. Create the PR
 
 ```bash
-# Pousser la branche
+# Push the branch
 git push -u origin $(git branch --show-current)
 
-# Créer la PR avec GitHub CLI
+# Create the PR with GitHub CLI
 gh pr create \
   --title "type(scope): description" \
   --body "$(cat PR_BODY.md)" \
   --base main
 ```
 
-## Bonnes pratiques
+## Best practices
 
-| Faire | Ne pas faire |
+| Do | Don't |
 |-------|--------------|
-| Titre descriptif | "Fix bug" |
-| Description complète | PR vide |
-| Petites PRs focalisées | PRs géantes |
-| Tests inclus | PR sans tests |
-| Screenshots UI | Changements UI non documentés |
+| Descriptive title | "Fix bug" |
+| Complete description | Empty PR |
+| Small focused PRs | Giant PRs |
+| Tests included | PR without tests |
+| UI screenshots | Undocumented UI changes |
 
-## Règles
+## Rules
 
-- UNE PR = UN sujet
-- Toujours inclure des tests
-- Répondre aux commentaires rapidement
-- Squash si historique bruyant
+- ONE PR = ONE topic
+- Always include tests
+- Respond to comments quickly
+- Squash if history is noisy
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux work..."_
-- _"Je veux fix bug..."_
+- _"I want to work..."_
+- _"I want to fix bug..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
-### 1. Exemple de Pull Request
+### 1. Pull Request Example
 
-# Exemple de Pull Request
+# Pull Request Example
 
-## Contexte
-Ajout d'un système de pagination pour la liste des produits.
+## Context
+Adding a pagination system for the product list.
 
-## Vérifications pré-PR
+## Pre-PR checks
 
 ```bash
-# État
+# State
 git status
 # On branch feature/pagination
 # nothing to commit, working tree clean
 
-# Différences
+# Differences
 git diff main...HEAD --stat
 # src/components/ProductList.tsx  | 45 ++++++++--
 # src/hooks/usePagination.ts      | 32 +++++++
@@ -200,97 +200,97 @@ npm run build
 # ✅ Build successful
 ```
 
-## PR créée
+## PR created
 
-### Titre
+### Title
 ```
-feat(products): ajouter pagination à la liste des produits
+feat(products): add pagination to the product list
 ```
 
-### Corps de la PR
+### PR body
 
 ```markdown
 ## Description
 
-Ajoute un système de pagination côté serveur pour la liste des produits,
-permettant de gérer efficacement les catalogues volumineux (+10k produits).
+Adds a server-side pagination system for the product list,
+enabling efficient handling of large catalogs (+10k products).
 
-## Type de changement
+## Type of change
 
-- [x] New feature (changement non-breaking qui ajoute une fonctionnalité)
+- [x] New feature (non-breaking change that adds functionality)
 - [ ] Bug fix
 - [ ] Breaking change
 - [ ] Refactoring
 
-## Changements
+## Changes
 
-### Ajouts
-- `src/hooks/usePagination.ts` - Hook réutilisable de pagination
-- `src/types/pagination.ts` - Types TypeScript pour la pagination
-- `tests/usePagination.test.ts` - Tests unitaires du hook
+### Additions
+- `src/hooks/usePagination.ts` - Reusable pagination hook
+- `src/types/pagination.ts` - TypeScript types for pagination
+- `tests/usePagination.test.ts` - Unit tests for the hook
 
 ### Modifications
-- `src/components/ProductList.tsx` - Intégration de la pagination
-- `src/services/products.ts` - Support des paramètres page/limit
+- `src/components/ProductList.tsx` - Pagination integration
+- `src/services/products.ts` - Support for page/limit parameters
 
-## Comment tester
+## How to test
 
-1. Lancer l'application: `npm run dev`
-2. Aller sur `/products`
-3. Vérifier que:
-   - La liste affiche 20 produits par page
-   - Les boutons "Précédent/Suivant" fonctionnent
-   - L'URL se met à jour avec `?page=X`
-   - Le compteur total est affiché
+1. Start the application: `npm run dev`
+2. Go to `/products`
+3. Verify that:
+   - The list shows 20 products per page
+   - The "Previous/Next" buttons work
+   - The URL updates with `?page=X`
+   - The total counter is displayed
 
 ## Tests
 
-- [x] Tests unitaires ajoutés (coverage: 94%)
-- [x] Tests manuels effectués
-- [ ] Tests E2E (à ajouter dans une PR suivante)
+- [x] Unit tests added (coverage: 94%)
+- [x] Manual tests performed
+- [ ] E2E tests (to be added in a follow-up PR)
 
 ## Checklist
 
-- [x] Mon code suit les conventions du projet
-- [x] J'ai fait une self-review de mon code
-- [x] Les noms de variables sont explicites
-- [x] Pas de `console.log` oubliés
-- [x] Les tests passent localement
-- [x] Build réussi
+- [x] My code follows the project conventions
+- [x] I did a self-review of my code
+- [x] Variable names are explicit
+- [x] No leftover `console.log`
+- [x] Tests pass locally
+- [x] Build successful
 
 ## Screenshots
 
-### Avant
-![Liste sans pagination](before.png)
-*Liste complète chargée d'un coup (lent)*
+### Before
+![List without pagination](before.png)
+*Full list loaded at once (slow)*
 
-### Après
-![Liste avec pagination](after.png)
-*20 produits par page avec navigation*
+### After
+![List with pagination](after.png)
+*20 products per page with navigation*
 
 ## Performance
 
-| Métrique | Avant | Après |
+| Metric | Before | After |
 |----------|-------|-------|
 | Time to First Byte | 2.3s | 0.4s |
 | Largest Contentful Paint | 3.1s | 0.8s |
-| Données transférées | 2.4MB | 45KB |
+| Data transferred | 2.4MB | 45KB |
 
-## Notes pour les reviewers
+## Notes for reviewers
 
-- Le hook `usePagination` est générique et pourra être réutilisé
-  pour d'autres listes (commandes, utilisateurs, etc.)
-- J'ai choisi 20 items par page basé sur les best practices UX
-- La pagination est côté serveur pour les performances
+- The `usePagination` hook is generic and can be reused
+  for other lists (orders, users, etc.)
+- I chose 20 items per page based on UX best practices
+- Pagination is server-side for performance
 
 Fixes #234
 ```
 
-### Commande de création
+### Creation command
 
 ```bash
 gh pr create \
-  --title "feat(products): ajouter pagination à la liste des produits" \
+  --title "feat(products): add pagination to the product list" \
   --body-file PR_BODY.md \
   --base main \
   --head feature/pagination \
@@ -299,7 +299,7 @@ gh pr create \
   --milestone "v2.1.0"
 ```
 
-## Résultat
+## Result
 
 ```
 Creating pull request for feature/pagination into main
@@ -307,13 +307,13 @@ Creating pull request for feature/pagination into main
 https://github.com/example/app/pull/456
 ```
 
-**PR #456 créée avec succès.**
+**PR #456 created successfully.**
 
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

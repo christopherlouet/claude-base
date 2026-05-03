@@ -62,12 +62,12 @@ tags:
 
 | Flag | Description | Example |
 |------|-------------|---------|
-| `--agent &lt;name&gt;` | Run a specific agent directly | `claude --agent qa-security` |
+| `--agent &lt;name&gt;` | Launch a specific agent directly | `claude --agent qa-security` |
 | `--agents` | List all available agents | `claude --agents` |
 | `--chrome` | Enable Chrome integration (visual tests) | `claude --chrome` |
 | `--teleport` | Enable Teleport connection (remote) | `claude --teleport` |
 | `--remote` | Connect to a remote session | `claude --remote &lt;session-id&gt;` |
-| `--fallback-model` | Fallback model if the main one is unavailable | `claude --fallback-model haiku` |
+| `--fallback-model` | Fallback model if the primary is unavailable | `claude --fallback-model haiku` |
 | `--plugin-dir` | Plugin directory to load | `claude --plugin-dir ./plugins` |
 | `--bare` | Minimal scripted mode (skip hooks, LSP, plugins, skills) | `claude -p --bare "query"` |
 | `--channels` | Enable channels (Telegram, Discord, iMessage) | `claude --channels` |

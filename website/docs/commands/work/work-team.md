@@ -1,7 +1,7 @@
 ---
 sidebar_position: 16
 title: "/work:work-team"
-description: "Lance une equipe d'agents coordonnes (Agent Teams) pour paralleliser le travail."
+description: "Launches a coordinated team of agents (Agent Teams) to parallelize work."
 tags:
   - "work"
   - "command"
@@ -13,71 +13,71 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--work">WORK</span>
 
 
-# Agent WORK-TEAM
+# WORK-TEAM Agent
 
-Lance une equipe d'agents coordonnes (Agent Teams) pour paralleliser le travail.
+Launches a coordinated team of agents (Agent Teams) to parallelize work.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Decomposer une tache complexe en sous-taches et les distribuer a des agents specialises.
-Chaque agent travaille en parallele sur son perimetre, le lead synthetise les resultats.
+Break down a complex task into subtasks and distribute them to specialized agents.
+Each agent works in parallel on its scope, the lead synthesizes the results.
 
 ## Workflow
 
-- Verifier que Agent Teams est active (`$CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` = 1)
-- Analyser la tache et choisir le pattern adapte (voir ci-dessous)
-- Spawner les agents avec des roles clairs et des perimetres distincts
-- Coordonner via task list, messagerie directe, mode delegate si &gt; 3 agents
-- Synthetiser les resultats en rapport consolide
-- Cleanup : shutdown chaque agent + nettoyage ressources
+- Check that Agent Teams is enabled (`$CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` = 1)
+- Analyze the task and choose the appropriate pattern (see below)
+- Spawn the agents with clear roles and distinct scopes
+- Coordinate via task list, direct messaging, delegate mode if &gt; 3 agents
+- Synthesize the results into a consolidated report
+- Cleanup: shutdown each agent + resource cleanup
 
-## Patterns disponibles
+## Available patterns
 
-| Mots-cles | Pattern | Agents |
-|-----------|---------|--------|
-| audit, qualite, securite | **Audit** | security-reviewer, perf-analyst, a11y-checker |
-| feature, implementer | **Feature** | backend-dev, frontend-dev, test-writer |
-| bug, investiguer, debug | **Debug** | 3-5 investigators avec hypotheses differentes |
+| Keywords | Pattern | Agents |
+|----------|---------|--------|
+| audit, quality, security | **Audit** | security-reviewer, perf-analyst, a11y-checker |
+| feature, implement | **Feature** | backend-dev, frontend-dev, test-writer |
+| bug, investigate, debug | **Debug** | 3-5 investigators with different hypotheses |
 | review, code review | **Review** | security-reviewer, perf-reviewer, quality-reviewer |
-| Autre | **Custom** | Decrire la structure |
+| Other | **Custom** | Describe the structure |
 
-Patterns detailles dans `.claude/skills/agent-teams/patterns.md`.
+Patterns detailed in `.claude/skills/agent-teams/patterns.md`.
 
-## Output attendu
+## Expected output
 
-1. **Equipe** : Agents crees avec roles et perimetres
-2. **Rapport consolide** : Resultats par agent + synthese + priorites
-3. **Cleanup** : Confirmation shutdown de tous les agents
+1. **Team**: Agents created with roles and scopes
+2. **Consolidated report**: Results per agent + synthesis + priorities
+3. **Cleanup**: Confirmation of shutdown of all agents
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/work:work-explore` | Explorer AVANT de lancer une equipe |
-| `/work:work-plan` | Planifier AVANT un pattern Feature |
-| `/qa:qa-audit` | Alternative single-agent a l'audit |
+| `/work:work-explore` | Explore BEFORE launching a team |
+| `/work:work-plan` | Plan BEFORE a Feature pattern |
+| `/qa:qa-audit` | Single-agent alternative to the audit |
 
 ---
 
-IMPORTANT: Toujours verifier que Agent Teams est active avant de creer une equipe.
+IMPORTANT: Always check that Agent Teams is enabled before creating a team.
 
-YOU MUST choisir le pattern adapte a la tache.
+YOU MUST choose the pattern appropriate to the task.
 
-YOU MUST nettoyer l'equipe apres utilisation (shutdown + cleanup).
+YOU MUST clean up the team after use (shutdown + cleanup).
 
-NEVER lancer plus de 5 agents sans avertir sur le cout tokens.
+NEVER launch more than 5 agents without warning about the token cost.
 
-NEVER faire travailler 2 agents sur le meme fichier.
+NEVER have 2 agents work on the same file.
 
-Think hard sur la decomposition de la tache avant de spawner les agents.
+Think hard about the task decomposition before spawning the agents.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes WORK](/docs/commands/work)
-- [Toutes les commandes](/docs/commands)
+- [Back to WORK commands](/docs/commands/work)
+- [All commands](/docs/commands)

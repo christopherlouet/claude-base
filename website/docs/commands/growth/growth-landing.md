@@ -1,7 +1,7 @@
 ---
 sidebar_position: 8
 title: "/growth:growth-landing"
-description: "Creer ou optimiser une landing page efficace."
+description: "Create or optimize an effective landing page."
 tags:
   - "growth"
   - "command"
@@ -13,65 +13,65 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--growth">GROWTH</span>
 
 
-# Agent LANDING
+# LANDING Agent
 
-Creer ou optimiser une landing page efficace.
+Create or optimize an effective landing page.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Concevoir une landing page avec un seul objectif et un CTA clair, structuree pour maximiser la conversion (hero, social proof, probleme, solution, features, pricing, FAQ).
+Design a landing page with a single goal and a clear CTA, structured to maximize conversion (hero, social proof, problem, solution, features, pricing, FAQ).
 
 ## Workflow
 
-- Definir l'objectif unique et la cible
-- Rediger la proposition de valeur (headline + sous-titre)
-- Structurer les sections (hero, social proof, probleme, solution, features, how it works, temoignages, pricing, FAQ, CTA final)
-- Optimiser le copywriting (benefices &gt; features, AIDA)
-- Configurer les CTAs (verbe d'action + benefice, visible, contraste)
-- Optimiser la technique (performance &lt; 3s, SEO, mobile, schema.org)
-- Definir les A/B tests prioritaires (headline, CTA, hero image)
+- Define the single goal and the target audience
+- Write the value proposition (headline + subtitle)
+- Structure the sections (hero, social proof, problem, solution, features, how it works, testimonials, pricing, FAQ, final CTA)
+- Optimize the copywriting (benefits &gt; features, AIDA)
+- Configure the CTAs (action verb + benefit, visible, contrast)
+- Optimize the technical side (performance &lt; 3s, SEO, mobile, schema.org)
+- Define the priority A/B tests (headline, CTA, hero image)
 
-## Output attendu
+## Expected output
 
-### Structure proposee avec contenu redige
-- Hero (headline, sous-titre, CTA)
-- Sections principales avec textes
+### Proposed structure with written content
+- Hero (headline, subtitle, CTA)
+- Main sections with copy
 
-### Checklist technique
+### Technical checklist
 - [ ] SEO tags, Open Graph, analytics, responsive
 
-### Metriques a suivre
-| Metrique | Cible |
-|----------|-------|
-| Taux de rebond | &lt; 50% |
-| Taux de conversion | &gt; X% |
+### Metrics to track
+| Metric | Target |
+|--------|--------|
+| Bounce rate | &lt; 50% |
+| Conversion rate | &gt; X% |
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/growth:growth-seo` | Optimiser le referencement |
-| `/growth:growth-ab-test` | Tester les variantes |
-| `/growth:growth-analytics` | Tracker les conversions |
-| `/qa:qa-perf` | Optimiser la performance |
-
----
-
-IMPORTANT: Une landing page = un objectif = un CTA. Pas de distraction.
-
-YOU MUST inclure du social proof - meme minimal au lancement.
-
-NEVER utiliser de jargon technique - parler le langage du client.
-
-Think hard sur la proposition de valeur et le message principal.
-
+| Agent | When to use it |
+|-------|----------------|
+| `/growth:growth-seo` | Optimize search ranking |
+| `/growth:growth-ab-test` | Test variants |
+| `/growth:growth-analytics` | Track conversions |
+| `/qa:qa-perf` | Optimize performance |
 
 ---
 
-## Voir aussi
+IMPORTANT: One landing page = one goal = one CTA. No distractions.
 
-- [Retour aux commandes GROWTH](/docs/commands/growth)
-- [Toutes les commandes](/docs/commands)
+YOU MUST include social proof — even minimal at launch.
+
+NEVER use technical jargon — speak the customer's language.
+
+Think hard about the value proposition and the main message.
+
+
+---
+
+## See also
+
+- [Back to GROWTH commands](/docs/commands/growth)
+- [All commands](/docs/commands)

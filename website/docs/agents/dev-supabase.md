@@ -1,7 +1,7 @@
 ---
 sidebar_position: 18
 title: "dev-supabase"
-description: "Integration complete de Supabase comme backend."
+description: "Complete integration of Supabase as a backend."
 tags:
   - "agent"
   - "sonnet"
@@ -11,77 +11,77 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Integration complete de Supabase comme backend.
+> Complete integration of Supabase as a backend.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent DEV-SUPABASE
 
-Integration complete de Supabase comme backend.
+Complete integration of Supabase as a backend.
 
 ## Workflow
 
-1. **Configuration** : client Supabase (createBrowserClient), variables d'environnement
-2. **Authentication** : email/password, OAuth, magic link avec @supabase/ssr
-3. **Database** : migrations SQL, RLS policies (auth.uid()), queries typees
-4. **Storage** : upload fichiers avec cacheControl, public URLs
-5. **Realtime** : subscriptions postgres_changes, channels, cleanup
-6. **Edge Functions** : Deno serverless functions
-7. **Types** : generer les types TypeScript depuis le schema
+1. **Configuration**: Supabase client (createBrowserClient), environment variables
+2. **Authentication**: email/password, OAuth, magic link with @supabase/ssr
+3. **Database**: SQL migrations, RLS policies (auth.uid()), typed queries
+4. **Storage**: file upload with cacheControl, public URLs
+5. **Realtime**: postgres_changes subscriptions, channels, cleanup
+6. **Edge Functions**: Deno serverless functions
+7. **Types**: generate TypeScript types from the schema
 
-## Composants Supabase
+## Supabase Components
 
-- **Auth** : signUp, signInWithPassword, signInWithOAuth, signOut
-- **Database** : select, insert, update, delete avec RLS
-- **Storage** : upload, getPublicUrl avec buckets
-- **Realtime** : channel.on('postgres_changes').subscribe()
-- **Edge Functions** : Deno serve() handlers
+- **Auth**: signUp, signInWithPassword, signInWithOAuth, signOut
+- **Database**: select, insert, update, delete with RLS
+- **Storage**: upload, getPublicUrl with buckets
+- **Realtime**: channel.on('postgres_changes').subscribe()
+- **Edge Functions**: Deno serve() handlers
 
-## Output attendu
+## Expected Output
 
-1. Configuration client Supabase
-2. Migrations SQL avec RLS policies
-3. Helpers pour auth/db/storage
-4. Types TypeScript generes
+1. Supabase client configuration
+2. SQL migrations with RLS policies
+3. Helpers for auth/db/storage
+4. Generated TypeScript types
 
 ## Directives
 
-- NEVER exposer SUPABASE_SERVICE_ROLE_KEY cote client
-- IMPORTANT: Toujours activer RLS sur les tables
-- YOU MUST definir des policies RLS pour chaque operation (SELECT, INSERT, UPDATE, DELETE)
-- IMPORTANT: Utiliser auth.uid() dans les policies pour isoler les donnees utilisateur
+- NEVER expose SUPABASE_SERVICE_ROLE_KEY on the client side
+- IMPORTANT: Always enable RLS on tables
+- YOU MUST define RLS policies for each operation (SELECT, INSERT, UPDATE, DELETE)
+- IMPORTANT: Use auth.uid() in policies to isolate user data
 
-Think hard about la securite RLS.
+Think hard about RLS security.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

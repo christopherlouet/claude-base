@@ -1,7 +1,7 @@
 ---
 sidebar_position: 23
 title: "doc-generate"
-description: "Generation de documentation technique. Declencher quand l'utilisateur veut creer README, docs API, ou guides."
+description: "Technical documentation generation. Trigger when the user wants to create a README, API docs, or guides."
 tags:
   - "skill"
   - "fork"
@@ -11,17 +11,17 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Generation de documentation technique. Declencher quand l'utilisateur veut creer README, docs API, ou guides.
+> Technical documentation generation. Trigger when the user wants to create a README, API docs, or guides.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Mots-cles** | `doc`, `generate` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
+| **Keywords** | `doc`, `generate` |
 
-## Description detaillee
+## Detailed description
 
 # Documentation Generation
 
@@ -92,37 +92,37 @@ Create a new user.
 | 409 | Email already exists |
 ```
 
-## Principes
+## Principles
 
-- Exemples de code fonctionnels
-- Tableaux pour les parametres
-- Schemas de requete/reponse
-- Liste des erreurs possibles
-- Liens internes pour navigation
+- Working code examples
+- Tables for parameters
+- Request/response schemas
+- List of possible errors
+- Internal links for navigation
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux doc..."_
-- _"Je veux generate..."_
+- _"I want to doc..."_
+- _"I want to generate..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: API Documentation
@@ -261,7 +261,7 @@ Headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

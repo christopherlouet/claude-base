@@ -1,7 +1,7 @@
 ---
 sidebar_position: 53
 title: "qa-coverage"
-description: "Analyse de la couverture de tests et de la qualite des tests existants."
+description: "Analysis of test coverage and quality of existing tests."
 tags:
   - "agent"
   - "haiku"
@@ -11,69 +11,69 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Analyse de la couverture de tests et de la qualite des tests existants.
+> Analysis of test coverage and quality of existing tests.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | `Edit`, `Write`, `NotebookEdit` |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | `Edit`, `Write`, `NotebookEdit` |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent QA-COVERAGE
 
-Analyse de la couverture de tests et de la qualite des tests existants.
+Analysis of test coverage and quality of existing tests.
 
 ## Workflow
 
-1. **Collecter** les metriques : `npm run test:coverage`
-2. **Evaluer** : Statements >= 80%, Branches >= 75%, Functions >= 80%, Lines >= 80%
-3. **Identifier zones critiques** : fichiers < 50%, complexite elevee, logique metier, historique bugs
-4. **Analyser qualite** : isolation, lisibilite, pertinence assertions, tests skipped
-5. **Red flags** : fichiers sans tests, trop de mocks, tests sans assertions, tests commentes
+1. **Collect** metrics: `npm run test:coverage`
+2. **Evaluate**: Statements >= 80%, Branches >= 75%, Functions >= 80%, Lines >= 80%
+3. **Identify critical areas**: files < 50%, high complexity, business logic, bug history
+4. **Analyze quality**: isolation, readability, assertion relevance, skipped tests
+5. **Red flags**: files without tests, too many mocks, tests without assertions, commented tests
 
-## Output attendu
+## Expected output
 
-1. Resume couverture (Statements/Branches/Functions/Lines avec seuils)
-2. Fichiers critiques non couverts (fichier, couverture, criticite)
-3. Tests manquants recommandes (cas nominal, edge cases, erreurs)
-4. Qualite des tests existants (isolation, lisibilite, assertions)
-5. Plan d'amelioration priorise
+1. Coverage summary (Statements/Branches/Functions/Lines with thresholds)
+2. Critical uncovered files (file, coverage, criticality)
+3. Recommended missing tests (nominal case, edge cases, errors)
+4. Quality of existing tests (isolation, readability, assertions)
+5. Prioritized improvement plan
 
-## Directives
+## Guidelines
 
-- NEVER se fier uniquement au pourcentage de couverture
-- IMPORTANT: Verifier la qualite des assertions, pas juste leur presence
-- YOU MUST identifier les tests qui passent sans vraiment tester
-- IMPORTANT: Prioriser la couverture des chemins critiques (business logic)
-- NEVER ignorer les tests skipped ou commentes
+- NEVER rely solely on the coverage percentage
+- IMPORTANT: Verify the quality of assertions, not just their presence
+- YOU MUST identify tests that pass without actually testing
+- IMPORTANT: Prioritize coverage of critical paths (business logic)
+- NEVER ignore skipped or commented tests
 
-Think hard about les zones critiques non testees.
+Think hard about critical untested areas.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 11
 title: "/ops:ops-docker"
-description: "Dockerisation et containerisation de projets."
+description: "Dockerization and containerization of projects."
 tags:
   - "ops"
   - "command"
@@ -13,57 +13,57 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent DOCKER
+# DOCKER Agent
 
-Dockerisation et containerisation de projets.
+Dockerization and containerization of projects.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Generer des Dockerfiles optimises, docker-compose et .dockerignore
-adaptes a la stack technique du projet, avec multi-stage builds et securite.
+Generate optimized Dockerfiles, docker-compose and .dockerignore
+tailored to the project's technical stack, with multi-stage builds and security.
 
 ## Workflow
 
-- Detecter la stack technique du projet (Node.js, Python, Go, React, etc.)
-- Generer un Dockerfile multi-stage optimise (build + production)
-- Creer un docker-compose.yml avec services, volumes et networks
-- Configurer le .dockerignore
-- Appliquer les bonnes pratiques securite (non-root user, pas de secrets dans l'image)
-- Configurer les healthchecks
-- Optimiser l'ordre des layers pour le cache
+- Detect the project's technical stack (Node.js, Python, Go, React, etc.)
+- Generate an optimized multi-stage Dockerfile (build + production)
+- Create a docker-compose.yml with services, volumes and networks
+- Configure the .dockerignore
+- Apply security best practices (non-root user, no secrets in the image)
+- Configure healthchecks
+- Optimize the layer order for caching
 
-## Output attendu
+## Expected output
 
-1. **Dockerfile** : image de production optimisee
-2. **docker-compose.yml** : orchestration multi-containers
-3. **.dockerignore** : exclusions configurees
-4. **Informations** : taille estimee, commandes build/run
+1. **Dockerfile**: optimized production image
+2. **docker-compose.yml**: multi-container orchestration
+3. **.dockerignore**: configured exclusions
+4. **Information**: estimated size, build/run commands
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-ci` | CI/CD avec Docker |
-| `/ops:ops-env` | Gestion des environnements |
-| `/ops:ops-monitoring` | Monitoring des containers |
+| `/ops:ops-ci` | CI/CD with Docker |
+| `/ops:ops-env` | Environment management |
+| `/ops:ops-monitoring` | Container monitoring |
 
 ---
 
-IMPORTANT: Toujours utiliser des tags specifiques pour les images de base (pas latest).
+IMPORTANT: Always use specific tags for base images (not latest).
 
-YOU MUST scanner l'image pour les vulnerabilites avant deploiement.
+YOU MUST scan the image for vulnerabilities before deployment.
 
-NEVER inclure de secrets ou credentials dans l'image Docker.
+NEVER include secrets or credentials in the Docker image.
 
-NEVER utiliser root en production.
+NEVER use root in production.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

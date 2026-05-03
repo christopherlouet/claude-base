@@ -1,7 +1,7 @@
 ---
 sidebar_position: 16
 title: "dev-prompt-engineering"
-description: "Optimisation systematique de prompts pour applications LLM."
+description: "Systematic prompt optimization for LLM applications."
 tags:
   - "agent"
   - "sonnet"
@@ -11,110 +11,110 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Optimisation systematique de prompts pour applications LLM.
+> Systematic prompt optimization for LLM applications.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `WebFetch` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `WebFetch` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent PROMPT-ENGINEERING
 
-Optimisation systematique de prompts pour applications LLM.
+Systematic prompt optimization for LLM applications.
 
-## Objectif
+## Goal
 
-Analyser et ameliorer les prompts pour obtenir des resultats plus precis et coherents.
+Analyze and improve prompts to get more accurate and consistent results.
 
-## Methodologie
+## Methodology
 
-### 1. Audit du prompt
+### 1. Prompt audit
 
-Evaluer sur 6 criteres (1-5):
-- Clarte des instructions
-- Structure logique
-- Contexte suffisant
-- Exemples (few-shot)
-- Contraintes definies
-- Format de sortie specifie
+Evaluate on 6 criteria (1-5):
+- Instruction clarity
+- Logical structure
+- Sufficient context
+- Examples (few-shot)
+- Defined constraints
+- Specified output format
 
-### 2. Techniques d'amelioration
+### 2. Improvement techniques
 
-| Technique | Quand utiliser |
+| Technique | When to use |
 |-----------|----------------|
-| Few-shot | Taches complexes |
-| Chain-of-thought | Raisonnement |
-| Role prompting | Expertise specifique |
-| Structured output | Integration API |
-| Negative prompting | Eviter erreurs |
+| Few-shot | Complex tasks |
+| Chain-of-thought | Reasoning |
+| Role prompting | Specific expertise |
+| Structured output | API integration |
+| Negative prompting | Avoid errors |
 
-### 3. Template optimise
+### 3. Optimized template
 
 ```markdown
 # Role
-[Expert en domaine]
+[Domain expert]
 
-# Contexte
+# Context
 [Situation]
 
-# Tache
-[Ce que le modele doit faire]
+# Task
+[What the model must do]
 
 # Instructions
-1. [Etape 1]
-2. [Etape 2]
+1. [Step 1]
+2. [Step 2]
 
-# Contraintes
-- [Contrainte]
-- NE PAS [action a eviter]
+# Constraints
+- [Constraint]
+- DO NOT [action to avoid]
 
-# Exemples
-Input: [exemple]
-Output: [resultat attendu]
+# Examples
+Input: [example]
+Output: [expected result]
 
-# Format de sortie
-[Format specifie]
+# Output format
+[Specified format]
 ```
 
-## Output attendu
+## Expected output
 
-- Score du prompt actuel (X/30)
-- Points forts et faiblesses
-- Prompt optimise
-- Changements effectues
+- Current prompt score (X/30)
+- Strengths and weaknesses
+- Optimized prompt
+- Changes made
 
-## Contraintes
+## Constraints
 
-- Toujours tester avec plusieurs inputs
-- Inclure des exemples pour taches complexes
-- Specifier le format de sortie
+- Always test with multiple inputs
+- Include examples for complex tasks
+- Specify the output format
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 32
 title: "/ops:ops-serverless"
-description: "Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers)."
+description: "Deployment of serverless applications (AWS Lambda, Vercel, Cloudflare Workers)."
 tags:
   - "ops"
   - "command"
@@ -13,57 +13,57 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent SERVERLESS
+# SERVERLESS Agent
 
-Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers).
+Deployment of serverless applications (AWS Lambda, Vercel, Cloudflare Workers).
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Concevoir et deployer une architecture serverless adaptee au projet,
-avec optimisation des cold starts et integration CI/CD.
+Design and deploy a serverless architecture suited to the project,
+with cold start optimization and CI/CD integration.
 
 ## Workflow
 
-- Analyser les besoins et choisir la plateforme (AWS Lambda, Vercel, Cloudflare Workers)
-- Structurer le projet (handlers, lib, types)
-- Configurer le framework (Serverless Framework, Vercel, Wrangler)
-- Implementer les handlers avec gestion d'erreurs
-- Optimiser pour les cold starts (connexions poolees, bundling, provisioned concurrency)
-- Configurer le deploiement (dev local, staging, production)
-- Estimer les couts
+- Analyze the needs and choose the platform (AWS Lambda, Vercel, Cloudflare Workers)
+- Structure the project (handlers, lib, types)
+- Configure the framework (Serverless Framework, Vercel, Wrangler)
+- Implement the handlers with error handling
+- Optimize for cold starts (pooled connections, bundling, provisioned concurrency)
+- Configure the deployment (local dev, staging, production)
+- Estimate costs
 
-## Output attendu
+## Expected output
 
-1. **Architecture** serverless avec justification de la plateforme
+1. **Architecture** serverless with platform justification
 2. **Configuration** (serverless.yml, vercel.json, wrangler.toml)
-3. **Handlers** implementes avec patterns adaptes
-4. **Estimation des couts** mensuels
+3. **Handlers** implemented with suitable patterns
+4. **Cost estimate** monthly
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-ci` | CI/CD serverless |
-| `/ops:ops-monitoring` | Observabilite |
-| `/ops:ops-cost-optimization` | Optimisation couts |
+| `/ops:ops-ci` | Serverless CI/CD |
+| `/ops:ops-monitoring` | Observability |
+| `/ops:ops-cost-optimization` | Cost optimization |
 
 ---
 
-IMPORTANT: Optimiser pour les cold starts - eviter les imports lourds.
+IMPORTANT: Optimize for cold starts - avoid heavy imports.
 
-IMPORTANT: Utiliser des connexions de base de donnees poolees.
+IMPORTANT: Use pooled database connections.
 
-YOU MUST configurer les timeouts et memory selon le use case.
+YOU MUST configure timeouts and memory according to the use case.
 
-NEVER stocker d'etat en memoire - les fonctions sont ephemeres.
+NEVER store state in memory - functions are ephemeral.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 46
 title: "ops-opnsense"
-description: "Configuration OPNsense en IaC avec Terraform. Le skill `ops-opnsense` fournit les patterns detailles."
+description: "OPNsense configuration as IaC with Terraform. The `ops-opnsense` skill provides detailed patterns."
 tags:
   - "agent"
   - "sonnet"
@@ -11,27 +11,27 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Configuration OPNsense en IaC avec Terraform. Le skill `ops-opnsense` fournit les patterns detailles.
+> OPNsense configuration as IaC with Terraform. The `ops-opnsense` skill provides detailed patterns.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | `ops-infra-code`, `ops-opnsense` |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | `ops-infra-code`, `ops-opnsense` |
 
-## Description detaillee
+## Detailed description
 
 # Agent OPS-OPNSENSE
 
-Configuration OPNsense en IaC avec Terraform. Le skill `ops-opnsense` fournit les patterns detailles.
+OPNsense configuration as IaC with Terraform. The `ops-opnsense` skill provides detailed patterns.
 
-## Composants supportes
+## Supported components
 
-| Composant | Provider Resource |
+| Component | Provider Resource |
 |-----------|-------------------|
 | Interfaces | `opnsense_interface` |
 | Firewall | `opnsense_firewall_filter` |
@@ -42,40 +42,40 @@ Configuration OPNsense en IaC avec Terraform. Le skill `ops-opnsense` fournit le
 
 ## Workflow
 
-1. **Analyse** : Comprendre l'infra existante
-2. **Conception** : Architecture Terraform adaptee
-3. **Implementation** : Fichiers .tf + variables + tfvars.example
-4. **Validation** : `terraform validate` + `terraform plan`
-5. **Deploiement** : `terraform apply` (sur demande explicite)
+1. **Analysis**: Understand the existing infra
+2. **Design**: Tailored Terraform architecture
+3. **Implementation**: .tf files + variables + tfvars.example
+4. **Validation**: `terraform validate` + `terraform plan`
+5. **Deployment**: `terraform apply` (on explicit request)
 
-## Regles de securite
+## Security rules
 
-- ALWAYS inclure une regle anti-lockout (acces admin)
-- NEVER hardcoder les cles API (utiliser env vars ou tfvars)
-- ALWAYS `terraform plan` avant `terraform apply`
-- Bloquer par defaut, autoriser explicitement
+- ALWAYS include an anti-lockout rule (admin access)
+- NEVER hardcode API keys (use env vars or tfvars)
+- ALWAYS `terraform plan` before `terraform apply`
+- Block by default, allow explicitly
 
-Templates disponibles dans `.claude/templates/opnsense/`.
+Templates available in `.claude/templates/opnsense/`.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

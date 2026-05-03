@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "/work:work-batch"
-description: "Execution autonome et sequentielle de user stories depuis un fichier PRD (JSON ou Markdown)."
+description: "Autonomous and sequential execution of user stories from a PRD file (JSON or Markdown)."
 tags:
   - "work"
   - "command"
@@ -13,53 +13,53 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--work">WORK</span>
 
 
-# Agent WORK-BATCH
+# WORK-BATCH Agent
 
-Execution autonome et sequentielle de user stories depuis un fichier PRD (JSON ou Markdown).
+Autonomous and sequential execution of user stories from a PRD file (JSON or Markdown).
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Traiter un backlog de stories en mode autonome : pour chaque story, cycle TDD + commit atomique.
+Process a backlog of stories in autonomous mode: for each story, TDD cycle + atomic commit.
 
 ## Workflow
 
-Pour chaque story (ordre de priorite P1 → P2 → P3) :
+For each story (priority order P1 → P2 → P3):
 
-1. **LOAD** : Lire la story et ses criteres d'acceptation
-2. **TDD** : Red-Green-Refactor
-3. **COMMIT** : `feat(scope): US-XXX description`
-4. **REPORT** : Sauvegarder dans `.claude/output/batch/progress.json`
+1. **LOAD**: Read the story and its acceptance criteria
+2. **TDD**: Red-Green-Refactor
+3. **COMMIT**: `feat(scope): US-XXX description`
+4. **REPORT**: Save to `.claude/output/batch/progress.json`
 
-## Format PRD
+## PRD Format
 
-Le fichier PRD peut etre en JSON (`prd.json`) ou Markdown (`prd.md`). Voir le skill `work-batch` pour les formats detailles.
+The PRD file can be in JSON (`prd.json`) or Markdown (`prd.md`). See the `work-batch` skill for detailed formats.
 
-## Garde-fous
+## Guardrails
 
-- Max 10 stories par batch
-- STOP si 2 stories consecutives echouent
-- Commit atomique apres chaque story
-- Resume automatique si `progress.json` existe
+- Max 10 stories per batch
+- STOP if 2 consecutive stories fail
+- Atomic commit after each story
+- Automatic resume if `progress.json` exists
 
-## Output attendu
+## Expected output
 
-- Chaque story implementee et commitee
-- Fichier de progression mis a jour
-- Resume final avec stories terminees/echouees
-
----
-
-IMPORTANT: Un commit = une story. Pas de commit geant multi-stories.
-
-NEVER continuer si les tests echouent sur une story.
-
+- Each story implemented and committed
+- Progress file updated
+- Final summary with completed/failed stories
 
 ---
 
-## Voir aussi
+IMPORTANT: One commit = one story. No giant multi-story commits.
 
-- [Retour aux commandes WORK](/docs/commands/work)
-- [Toutes les commandes](/docs/commands)
+NEVER continue if tests fail on a story.
+
+
+---
+
+## See also
+
+- [Back to WORK commands](/docs/commands/work)
+- [All commands](/docs/commands)

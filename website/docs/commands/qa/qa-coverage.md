@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "/qa:qa-coverage"
-description: "Analyse et ameliore la couverture de tests du code."
+description: "Analyze and improve the test coverage of the code."
 tags:
   - "qa"
   - "command"
@@ -13,67 +13,67 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--qa">QA</span>
 
 
-# Agent COVERAGE
+# COVERAGE Agent
 
-Analyse et ameliore la couverture de tests du code.
+Analyze and improve the test coverage of the code.
 
-## Cible
+## Target
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Evaluer la couverture de tests actuelle, identifier les zones non couvertes et proposer une strategie pour atteindre les seuils de qualite.
+Evaluate the current test coverage, identify uncovered areas and propose a strategy to reach the quality thresholds.
 
 ## Workflow
 
-- Mesurer la couverture actuelle (statements, branches, functions, lines)
-- Analyser les gaps et categoriser par criticite (code metier, edge cases)
-- Prioriser les ameliorations par impact business
-- Configurer les seuils dans Jest/Vitest
-- Ajouter les tests manquants (branches, boundary conditions, error paths)
-- Integrer le monitoring continu dans CI/CD
+- Measure the current coverage (statements, branches, functions, lines)
+- Analyze the gaps and categorize by criticality (business code, edge cases)
+- Prioritize improvements by business impact
+- Configure thresholds in Jest/Vitest
+- Add missing tests (branches, boundary conditions, error paths)
+- Integrate continuous monitoring into CI/CD
 
-## Output attendu
+## Expected output
 
-### Metriques actuelles
-| Metrique | Valeur | Seuil | Status |
+### Current metrics
+| Metric | Value | Threshold | Status |
 |----------|--------|-------|--------|
 | Statements | | 80% | |
 | Branches | | 75% | |
 | Functions | | 80% | |
 
-### Top fichiers a ameliorer
-| Fichier | Couverture | Gap | Priorite |
+### Top files to improve
+| File | Coverage | Gap | Priority |
 |---------|------------|-----|----------|
 
-### Plan d'action
-1. [Tests pour fichiers critiques P1]
-2. [Tests pour branches manquantes P2]
+### Action plan
+1. [Tests for critical P1 files]
+2. [Tests for missing P2 branches]
 3. [CI/CD coverage gate]
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/dev:dev-test` | Generer les tests manquants |
-| `/dev:dev-tdd` | Developper avec TDD |
-| `/qa:qa-review` | Review des tests |
-| `/ops:ops-ci` | Configurer CI avec coverage |
+| `/dev:dev-test` | Generate the missing tests |
+| `/dev:dev-tdd` | Develop with TDD |
+| `/qa:qa-review` | Review the tests |
+| `/ops:ops-ci` | Configure CI with coverage |
 
 ---
 
-IMPORTANT: La couverture n'est pas une fin en soi. 100% couverture != 100% qualite.
+IMPORTANT: Coverage is not an end in itself. 100% coverage != 100% quality.
 
-YOU MUST prioriser le code metier critique.
+YOU MUST prioritize critical business code.
 
-NEVER sacrifier la qualite des tests pour atteindre un pourcentage.
+NEVER sacrifice test quality to reach a percentage.
 
-Think hard sur ce qui merite vraiment d'etre teste en priorite.
+Think hard about what really deserves to be tested in priority.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes QA](/docs/commands/qa)
-- [Toutes les commandes](/docs/commands)
+- [Back to QA commands](/docs/commands/qa)
+- [All commands](/docs/commands)

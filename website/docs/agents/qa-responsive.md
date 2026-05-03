@@ -1,7 +1,7 @@
 ---
 sidebar_position: 58
 title: "qa-responsive"
-description: "Audit de la conception responsive et de l'experience mobile."
+description: "Audit of responsive design and mobile experience."
 tags:
   - "agent"
   - "haiku"
@@ -11,82 +11,82 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Audit de la conception responsive et de l'experience mobile.
+> Audit of responsive design and mobile experience.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob` |
-| **Outils interdits** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob` |
+| **Disallowed tools** | `Edit`, `Write`, `Bash`, `NotebookEdit` |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent QA-RESPONSIVE
 
-Audit de la conception responsive et de l'experience mobile.
+Audit of responsive design and mobile experience.
 
-## Checklist par breakpoint
+## Checklist per breakpoint
 
-- **Mobile (< 576px)** : navigation accessible, texte lisible, boutons cliquables, pas de scroll horizontal
-- **Tablette (768-992px)** : layout 2-3 colonnes max, navigation appropriee
-- **Desktop (> 992px)** : utilisation efficace de l'espace, max-width, hover states
+- **Mobile (< 576px)**: accessible navigation, readable text, clickable buttons, no horizontal scroll
+- **Tablet (768-992px)**: 2-3 column layout max, appropriate navigation
+- **Desktop (> 992px)**: efficient use of space, max-width, hover states
 
-## Points de verification
+## Verification points
 
-- Meta viewport correct (`width=device-width, initial-scale=1`)
-- Approche Mobile-First (CSS de base pour mobile, media queries pour plus grand)
-- Images responsives (srcset, sizes, WebP, lazy loading)
-- Typographie fluide (rem, clamp(), 45-75 chars par ligne)
-- Grilles CSS Grid/Flexbox, pas de largeurs fixes px
+- Correct meta viewport (`width=device-width, initial-scale=1`)
+- Mobile-First approach (base CSS for mobile, media queries for larger)
+- Responsive images (srcset, sizes, WebP, lazy loading)
+- Fluid typography (rem, clamp(), 45-75 chars per line)
+- CSS Grid/Flexbox grids, no fixed px widths
 - Touch targets minimum 44x44px
-- Formulaires : inputs grands, labels visibles, clavier adapte (type="email")
+- Forms: large inputs, visible labels, suitable keyboard (type="email")
 
-## Patterns a rechercher
+## Patterns to look for
 
-- Largeurs fixes en px sans max-width
-- Images sans srcset
-- `user-scalable=no` dans viewport
+- Fixed widths in px without max-width
+- Images without srcset
+- `user-scalable=no` in viewport
 - Touch targets < 44px
 
-## Output attendu
+## Expected output
 
-1. Score global /100 avec statut par breakpoint (Mobile, Tablette, Desktop)
-2. Problemes identifies (breakpoint, fichier, probleme, solution)
-3. Bonnes pratiques manquantes avec impact
-4. Recommandations priorisees
+1. Overall score /100 with status per breakpoint (Mobile, Tablet, Desktop)
+2. Identified issues (breakpoint, file, problem, solution)
+3. Missing best practices with impact
+4. Prioritized recommendations
 
 ## Directives
 
-- IMPORTANT: Verifier tous les breakpoints principaux
-- YOU MUST tester portrait ET paysage
-- IMPORTANT: Verifier l'absence de scroll horizontal sur mobile
-- NEVER ignorer les touch targets trop petits
+- IMPORTANT: Verify all main breakpoints
+- YOU MUST test portrait AND landscape
+- IMPORTANT: Verify the absence of horizontal scroll on mobile
+- NEVER ignore touch targets that are too small
 
-Think hard about l'experience mobile reelle.
+Think hard about the real mobile experience.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -35,7 +35,7 @@ Ask Claude to challenge you before proceeding:
 - To validate your understanding of a complex system
 - To identify risks you have not anticipated
 
-### 2. Ask for Proof ("Prove It")
+### 2. Demand Proof ("Prove It")
 
 Force Claude to justify its choices with concrete evidence:
 
@@ -58,7 +58,7 @@ After a first implementation, ask for a more elegant version:
 "Knowing everything you know now, scrap this and implement the elegant solution."
 ```
 
-**Result**: Claude uses the learnings from the first iteration to produce a cleaner and better-structured solution.
+**Result**: Claude uses the learnings from the first iteration to produce a cleaner, better-structured solution.
 
 **When to use it**:
 - When the first solution works but feels "hacky"
@@ -127,7 +127,7 @@ Then implement the password reset feature following existing patterns."
 
 ### 8. Explicit Verification
 
-Ask for verification after implementation:
+Request verification after implementation:
 
 ```
 "After implementing the feature:
@@ -204,7 +204,7 @@ Include:
 - When NOT to use it"
 ```
 
-## Combining with Foundation Skills
+## Combination with Foundation Skills
 
 | Skill | Recommended prompt |
 |-------|-------------------|
@@ -219,8 +219,8 @@ Boris recommends using voice dictation (fn x2 on macOS) for more detailed prompt
 
 &gt; "When I dictate prompts, I tend to be much more detailed than when I type. The extra context always improves results."
 
-### Advantages
-- More natural = more detail
+### Benefits
+- More natural = more details
 - Faster than typing
 - Less self-censorship on length
 
@@ -242,14 +242,14 @@ Effective prompting rarely follows a direct path. The recommended pattern is: br
 
 **Turn 1 - Broad (exploration)**
 ```
-"I want to improve the API performance. What are the classic bottlenecks
-in a Node.js/PostgreSQL API?"
+"I want to improve the API performance. What are the classic
+bottlenecks in a Node.js/PostgreSQL API?"
 ```
 
-**Turn 2 - Precise (focus)**
+**Turn 2 - Precise (focusing)**
 ```
-"For the N+1 queries you identified, show me how to detect them in
-this file: src/services/userService.ts"
+"For the N+1 queries you identified, show me how to detect
+them in this file: src/services/userService.ts"
 ```
 
 **Turn 3 - Refined (implementation)**
@@ -262,14 +262,14 @@ Constraints: do NOT change the public API, keep TypeScript strict mode."
 
 | Signal | Action |
 |--------|--------|
-| Claude drifts off the main subject | New reframing turn |
-| The proposed solution doesn't match the context | `/clear` and restart with more initial context |
+| Claude drifts from the main subject | New reframing turn |
+| The proposed solution does not match the context | `/clear` and restart with more initial context |
 | The conversation exceeds 30 turns | Compact (`/compact`) or restart |
-| A baseline assumption was wrong | Correct it explicitly: "Actually, contrary to what I said earlier..." |
+| A baseline assumption was wrong | Correct explicitly: "Actually, contrary to what I said earlier..." |
 
 **"Knowing everything you know now" technique**
 
-After several turns of exchanges, Claude accumulates implicit context. Exploit this context:
+After several turns of exchange, Claude accumulates implicit context. Leverage this context:
 
 ```
 "Knowing everything you know now about this codebase and the constraints
@@ -313,11 +313,11 @@ Verification: after implementing, run [command] and show me the output.
 
 ### Multi-Agent Prompting
 
-When a workflow delegates work to sub-agents (via `/work:work-team` or an orchestrator), the briefing for each sub-agent must be self-contained: the agent does not see the parent conversation.
+When a workflow delegates work to sub-agents (via `/work:work-team` or an orchestrator), the briefing of each sub-agent must be self-contained: the agent does not see the parent conversation.
 
-**Principles for briefing a sub-agent**
+**Sub-agent briefing principles**
 
-1. Include the minimal sufficient context (not the entire conversation)
+1. Include the minimum sufficient context (not the entire conversation)
 2. Specify the expected deliverable unambiguously
 3. Indicate the files to read before acting
 4. Define the verification command to execute
@@ -380,7 +380,7 @@ Claude cannot just claim that a solution works - it must demonstrate it.
 3. Why the root cause is eliminated, not just masked"
 ```
 
-**"Scrap and Redo" Pattern (start fresh cleanly)**
+**"Scrap and Redo" Pattern (start fresh)**
 
 When a first iteration works but is too complex to be maintained:
 
@@ -394,7 +394,7 @@ To use after a first Red-Green cycle, before committing, when the code "smells b
 
 **Chain-of-Verification Pattern**
 
-Forces Claude to verify its own work step by step before delivering:
+Force Claude to verify its own work step by step before delivering:
 
 ```
 "After implementing, verify your work in this order:
@@ -407,7 +407,7 @@ Only report completion after all four checks are green."
 
 **Negative Prompting ("DO NOT")**
 
-Negative constraints are often more effective than positive constraints to avoid repeated mistakes:
+Negative constraints are often more effective than positive constraints for avoiding repeated errors:
 
 ```
 "DO NOT:
@@ -418,7 +418,7 @@ Negative constraints are often more effective than positive constraints to avoid
 - Modify test files unless explicitly asked"
 ```
 
-To place at the start of the prompt for critical constraints, at the end of the prompt for preferences.
+To place at the beginning of the prompt for critical constraints, at the end of the prompt for preferences.
 
 ---
 
@@ -426,8 +426,8 @@ To place at the start of the prompt for critical constraints, at the end of the 
 
 | Anti-pattern | Why it fails | Alternative |
 |---|---|---|
-| Vague prompt without context ("fix it", "make it better") | Claude invents the missing context and solves the wrong problem | Describe the observed behavior, the expected behavior, and the affected file |
-| Over-constraining every detail ("use exactly 4 spaces, name the variable x, add a comment every 3 lines") | Claude spends time complying with arbitrary constraints instead of solving the problem | Constrain the interface and behavior, not the internal implementation |
-| Asking for confirmation at every step ("tell me before you do anything", "ask me before each file") | Multiplies conversation turns, fragments the context, slows down without adding value | Define constraints upfront in a single prompt, let Claude execute |
+| Vague prompt without context ("fix it", "make it better") | Claude invents the missing context and solves the wrong problem | Describe the observed behavior, the expected behavior, and the file concerned |
+| Over-constraining every detail ("use exactly 4 spaces, name the variable x, add a comment every 3 lines") | Claude spends time respecting arbitrary constraints instead of solving the problem | Constrain the interface and the behavior, not the internal implementation |
+| Asking for confirmation at every step ("tell me before you do anything", "ask me before each file") | Multiplies conversation turns, fragments the context, slows down without adding value | Define the constraints upfront in a single prompt, let Claude execute |
 | Not providing a means of verification | Claude cannot detect its own silent errors | Always include a verification command: `npm test`, `npm run typecheck`, `./scripts/validate.sh` |
-| Correcting Claude along the way without reformulating | Spot corrections accumulate and the context becomes incoherent | If more than 2 corrections are necessary, restart with a reformulated prompt incorporating the corrections |
+| Correcting Claude on the fly without reformulating | Ad-hoc corrections accumulate and the context becomes inconsistent | If more than 2 corrections are needed, restart with a reformulated prompt integrating the corrections |

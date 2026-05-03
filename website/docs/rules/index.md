@@ -1,67 +1,67 @@
 ---
 sidebar_position: 1
 title: "Rules"
-description: "Catalogue des 30 regles par technologie"
+description: "Catalog of 30 rules by technology"
 ---
 
 import Stats from '@site/src/components/Stats';
 
-# Catalogue des Regles
+# Rules Catalog
 
-> **30 regles** appliquees automatiquement par chemin de fichier
+> **30 rules** automatically applied by file path
 
 <Stats items={[
-  { number: 30, label: 'Regles' },
+  { number: 30, label: 'Rules' },
   { number: 156, label: 'Patterns' },
 ]} />
 
-## Qu'est-ce qu'une Rule ?
+## What is a Rule?
 
-Les **rules** sont des conventions appliquees automatiquement :
+**Rules** are conventions applied automatically:
 
-- **Application par path** : Actives selon le chemin du fichier
-- **Conventions de code** : TypeScript, React, Flutter, etc.
-- **Bonnes pratiques** : Securite, tests, API
-- **Transparence** : Toujours visibles dans les suggestions
+- **Apply by path**: Activated according to the file path
+- **Code conventions**: TypeScript, React, Flutter, etc.
+- **Best practices**: Security, tests, API
+- **Transparency**: Always visible in suggestions
 
-## Liste des regles
+## List of rules
 
-| Regle | Description | Paths |
-|-------|-------------|-------|
-| [`accessibility`](/docs/rules/accessibility) | IMPORTANT: Chaque image doit avoir un attribut alt... | `**/*.tsx`, `**/*.jsx`... |
+| Rule | Description | Paths |
+|------|-------------|-------|
+| [`accessibility`](/docs/rules/accessibility) | IMPORTANT: Every image must have an alt attribute.... | `**/*.tsx`, `**/*.jsx`... |
 | [`api`](/docs/rules/api) | // Error \{ "success": false, "error": \{ "code": "V... | `**/api/**`, `**/routes/**`... |
-| [`astro`](/docs/rules/astro) | Astro rend **zero JS par défaut**. Les composants ... | `**/*.astro`, `**/astro.config.*`... |
-| [`csharp`](/docs/rules/csharp) | // 2. Champs prives readonly private readonly IUse... | `**/*.cs`, `**/*.csproj`... |
-| [`deploy-safety`](/docs/rules/deploy-safety) | Chaque deploiement doit etre valide avant executio... | `**/docker-compose*.yml`, `**/docker-compose*.yaml`... |
-| [`design-style`](/docs/rules/design-style) | La direction design du projet est definie dans CLA... | `**/*.tsx`, `**/*.jsx`... |
+| [`astro`](/docs/rules/astro) | Astro renders **zero JS by default**. Components a... | `**/*.astro`, `**/astro.config.*`... |
+| [`csharp`](/docs/rules/csharp) | // 2. Private readonly fields private readonly IUs... | `**/*.cs`, `**/*.csproj`... |
+| [`deploy-safety`](/docs/rules/deploy-safety) | Every deployment must be validated before executio... | `**/docker-compose*.yml`, `**/docker-compose*.yaml`... |
+| [`design-style`](/docs/rules/design-style) | The project's design direction is defined in CLAUD... | `**/*.tsx`, `**/*.jsx`... |
 | [`flutter`](/docs/rules/flutter) | // State abstract class AuthState \{\} class AuthIni... | `**/*.dart`, `**/lib/**`... |
-| [`git`](/docs/rules/git) | [corps optionnel - details sur le "quoi" et "pourq... | - |
+| [`git`](/docs/rules/git) | [optional body - details on the "what" and "why"] | - |
 | [`go`](/docs/rules/go) | // Custom errors var ErrUserNotFound = errors.New(... | `**/*.go`, `**/go.mod`... |
-| [`java`](/docs/rules/java) | // 2. Champs statiques private static final Logger... | `**/*.java`, `**/pom.xml`... |
-| [`lsp`](/docs/rules/lsp) | LSP disponible via `ENABLE_LSP_TOOL=1` ou plugins ... | `**/*.ts`, `**/*.tsx`... |
-| [`migration-safety`](/docs/rules/migration-safety) | Les migrations majeures de framework ou dependance... | `**/package.json`, `**/tsconfig.json`... |
+| [`java`](/docs/rules/java) | // 2. Static fields private static final Logger lo... | `**/*.java`, `**/pom.xml`... |
+| [`lsp`](/docs/rules/lsp) | LSP available via `ENABLE_LSP_TOOL=1` or LSP plugi... | `**/*.ts`, `**/*.tsx`... |
+| [`migration-safety`](/docs/rules/migration-safety) | Major framework or dependency migrations are risky... | `**/package.json`, `**/tsconfig.json`... |
 | [`nextjs`](/docs/rules/nextjs) | Next.js Rules | `**/next.config.*`, `**/app/**`... |
-| [`performance`](/docs/rules/performance) | IMPORTANT: LCP &lt; 2.5s - Optimiser les images above... | `**/*.tsx`, `**/*.jsx`... |
+| [`performance`](/docs/rules/performance) | IMPORTANT: LCP &lt; 2.5s - Optimize above-the-fold im... | `**/*.tsx`, `**/*.jsx`... |
 | [`php`](/docs/rules/php) | declare(strict_types=1); | `**/*.php`, `**/composer.json` |
 | [`python`](/docs/rules/python) | import requests from pydantic import BaseModel | `**/*.py`, `**/requirements*.txt`... |
 | [`react`](/docs/rules/react) | export function MyComponent(\{ title, onAction \}: P... | `**/*.tsx`, `**/components/**`... |
-| [`research`](/docs/rules/research) | Avant d'implementer une solution custom, verifier ... | `**/*.ts`, `**/*.tsx`... |
+| [`research`](/docs/rules/research) | Before implementing a custom solution, check wheth... | `**/*.ts`, `**/*.tsx`... |
 | [`ruby`](/docs/rules/ruby) | users.each do |user| puts user.name puts user.emai... | `**/*.rb`, `**/Gemfile`... |
 | [`rust`](/docs/rules/rust) | // 2. Constants const MAX_CONNECTIONS: usize = 100... | `**/*.rs`, `**/Cargo.toml` |
-| [`security`](/docs/rules/security) | 3 vecteurs d'attaque identifies (fev. 2026) lors d... | `**/auth/**`, `**/api/**`... |
+| [`security`](/docs/rules/security) | 3 attack vectors identified (Feb. 2026) when cloni... | `**/auth/**`, `**/api/**`... |
 | [`service-worker`](/docs/rules/service-worker) | The SW must NEVER cache `request.mode === "navigat... | `**/sw.js`, `**/service-worker*`... |
-| [`socle-maintenance`](/docs/rules/socle-maintenance) | Toute addition, suppression ou renommage dans `.cl... | `.claude/skills/**`, `.claude/agents/**`... |
-| [`svelte`](/docs/rules/svelte) | Svelte 5+ utilise les **runes** : `$state`, `$deri... | `**/*.svelte`, `**/*.svelte.ts`... |
-| [`tdd-enforcement`](/docs/rules/tdd-enforcement) | IMPORTANT: Quand l'utilisateur demande d'implement... | `**/*.ts`, `**/*.tsx`... |
-| [`testing`](/docs/rules/testing) | // Act - Executer l'action const result = function... | `**/*.test.ts`, `**/*.test.tsx`... |
+| [`socle-maintenance`](/docs/rules/socle-maintenance) | Any addition, removal or rename in `.claude/` sile... | `.claude/skills/**`, `.claude/agents/**`... |
+| [`svelte`](/docs/rules/svelte) | Svelte 5+ uses **runes**: `$state`, `$derived`, `$... | `**/*.svelte`, `**/*.svelte.ts`... |
+| [`tdd-enforcement`](/docs/rules/tdd-enforcement) | IMPORTANT: When the user asks to implement, add, c... | `**/*.ts`, `**/*.tsx`... |
+| [`testing`](/docs/rules/testing) | // Act - Execute the action const result = functio... | `**/*.test.ts`, `**/*.test.tsx`... |
 | [`typescript`](/docs/rules/typescript) | TypeScript Rules | `**/*.ts`, `**/*.tsx`... |
-| [`verification`](/docs/rules/verification) | Toute implementation doit etre verifiee AVANT d'et... | `**/*.ts`, `**/*.tsx`... |
+| [`verification`](/docs/rules/verification) | Any implementation must be verified BEFORE being c... | `**/*.ts`, `**/*.tsx`... |
 | [`vue`](/docs/rules/vue) | const count = ref(0) const double = computed(() =&gt;... | `**/*.vue`, `**/composables/**`... |
-| [`workflow`](/docs/rules/workflow) | Avant de commencer a travailler sur un projet exis... | - |
+| [`workflow`](/docs/rules/workflow) | Before starting work on an existing project: | - |
 
 ## Categories
 
-### Langages
+### Languages
 
 - [csharp](/docs/rules/csharp)
 - [go](/docs/rules/go)
@@ -77,7 +77,7 @@ Les **rules** sont des conventions appliquees automatiquement :
 - [flutter](/docs/rules/flutter)
 - [react](/docs/rules/react)
 
-### Pratiques
+### Practices
 
 - [api](/docs/rules/api)
 - [git](/docs/rules/git)
@@ -85,9 +85,9 @@ Les **rules** sont des conventions appliquees automatiquement :
 - [testing](/docs/rules/testing)
 - [workflow](/docs/rules/workflow)
 
-## Comment ajouter une regle personnalisee
+## How to add a custom rule
 
-Creez un fichier `.claude/rules/my-rule.md` :
+Create a file `.claude/rules/my-rule.md`:
 
 ```markdown
 ---
@@ -96,16 +96,16 @@ paths:
   - "**/*.custom"
 ---
 
-# Mes regles personnalisees
+# My custom rules
 
-- Regle 1
-- Regle 2
+- Rule 1
+- Rule 2
 ```
 
 ---
 
-## Voir aussi
+## See also
 
-- [Architecture](/docs/intro/architecture) - Comprendre les composants
-- [Commands](/docs/commands) - Les commandes manuelles
-- [Skills](/docs/skills) - Les skills auto-declenches
+- [Architecture](/docs/intro/architecture) - Understand the components
+- [Commands](/docs/commands) - Manual commands
+- [Skills](/docs/skills) - Auto-triggered skills

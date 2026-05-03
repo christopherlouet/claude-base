@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 title: "/biz:biz-mvp"
-description: "Definir le Minimum Viable Product et prioriser les fonctionnalites."
+description: "Define the Minimum Viable Product and prioritize features."
 tags:
   - "biz"
   - "command"
@@ -13,63 +13,63 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--biz">BIZ</span>
 
 
-# Agent MVP
+# MVP Agent
 
-Definir le Minimum Viable Product et prioriser les fonctionnalites.
+Define the Minimum Viable Product and prioritize features.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Definir le plus petit produit qui delivre de la vraie valeur : prioriser les fonctionnalites (MoSCoW), rediger les User Stories et planifier la roadmap post-MVP.
+Define the smallest product that delivers real value: prioritize features (MoSCoW), write User Stories and plan the post-MVP roadmap.
 
 ## Workflow
 
-- Comprendre la vision (probleme, persona, job-to-be-done)
-- Lister toutes les fonctionnalites envisagees
-- Prioriser avec MoSCoW (Must/Should/Could/Won't)
-- Scorer par valeur/differenciation vs complexite/risque
-- Definir le scope MVP (utilisable de bout en bout, testable)
-- Rediger les User Stories avec criteres d'acceptation
-- Definir les hypotheses a valider et la roadmap post-MVP
+- Understand the vision (problem, persona, job-to-be-done)
+- List all considered features
+- Prioritize with MoSCoW (Must/Should/Could/Won't)
+- Score by value/differentiation vs complexity/risk
+- Define the MVP scope (usable end-to-end, testable)
+- Write User Stories with acceptance criteria
+- Define the hypotheses to validate and the post-MVP roadmap
 
-## Output attendu
+## Expected output
 
-### Vision MVP
-- Probleme, cible, proposition de valeur, metrique de succes
+### MVP Vision
+- Problem, target, value proposition, success metric
 
-### Scope MVP
-| Fonctionnalite | User Story | Complexite |
-|----------------|------------|------------|
+### MVP Scope
+| Feature | User Story | Complexity |
+|---------|------------|------------|
 
-### Explicitement exclus du MVP (avec phase cible)
-### Hypotheses a valider
-### Roadmap post-MVP (Phase 2, Phase 3, Backlog)
+### Explicitly excluded from MVP (with target phase)
+### Hypotheses to validate
+### Post-MVP roadmap (Phase 2, Phase 3, Backlog)
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/work:work-plan` | Planifier l'implementation du MVP |
-| `/dev:dev-tdd` | Developper avec tests |
-| `/biz:biz-roadmap` | Roadmap post-MVP |
-| `/biz:biz-launch` | Lancement du MVP |
-
----
-
-IMPORTANT: Le MVP doit etre VIABLE - il doit delivrer de la vraie valeur, pas juste etre minimal.
-
-YOU MUST challenger chaque "Must have" - est-ce vraiment indispensable pour le lancement ?
-
-NEVER inclure des fonctionnalites "au cas ou" - si le doute existe, c'est un "Could have".
-
-Think hard sur ce qui est vraiment essentiel vs ce qui semble essentiel.
-
+| Agent | When to use it |
+|-------|----------------|
+| `/work:work-plan` | Plan the MVP implementation |
+| `/dev:dev-tdd` | Develop with tests |
+| `/biz:biz-roadmap` | Post-MVP roadmap |
+| `/biz:biz-launch` | MVP launch |
 
 ---
 
-## Voir aussi
+IMPORTANT: The MVP must be VIABLE - it must deliver real value, not just be minimal.
 
-- [Retour aux commandes BIZ](/docs/commands/biz)
-- [Toutes les commandes](/docs/commands)
+YOU MUST challenge every "Must have" - is it really essential for launch?
+
+NEVER include "just in case" features - if there is doubt, it is a "Could have".
+
+Think hard about what is truly essential vs what seems essential.
+
+
+---
+
+## See also
+
+- [Back to BIZ commands](/docs/commands/biz)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "dev-ai-integration"
-description: "Integration de LLMs et APIs IA dans les applications."
+description: "Integration of LLMs and AI APIs into applications."
 tags:
   - "agent"
   - "sonnet"
@@ -11,76 +11,76 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Integration de LLMs et APIs IA dans les applications.
+> Integration of LLMs and AI APIs into applications.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | `NotebookEdit` |
-| **Skills injectes** | `prompt-engineering`, `error-handling` |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | `NotebookEdit` |
+| **Injected skills** | `prompt-engineering`, `error-handling` |
 
-## Description detaillee
+## Detailed description
 
 # Agent DEV-AI-INTEGRATION
 
-Integration de LLMs et APIs IA dans les applications.
+Integration of LLMs and AI APIs into applications.
 
-## APIs Supportees
+## Supported APIs
 
-| Provider | SDK | Modeles Principaux |
+| Provider | SDK | Main Models |
 |----------|-----|-------------------|
 | Anthropic | @anthropic-ai/sdk | Claude Opus 4.6, Sonnet 4.5, Haiku 4.5 |
 | OpenAI | openai | GPT-4o, GPT-4 Turbo |
 | Google | @google/generative-ai | Gemini Pro, Gemini Ultra |
 
-## Patterns d'Integration
+## Integration Patterns
 
-1. **Completion simple** : Messages API avec model + max_tokens
-2. **Streaming** : `.stream()` pour reponses incrementales
-3. **Tool Use** : Function calling avec input_schema
-4. **RAG** : Embed query → similarity search → generate with context
-5. **Adaptive Thinking** : Opus 4.6 avec `thinking.effort` (low/medium/high/max)
+1. **Simple completion**: Messages API with model + max_tokens
+2. **Streaming**: `.stream()` for incremental responses
+3. **Tool Use**: Function calling with input_schema
+4. **RAG**: Embed query → similarity search → generate with context
+5. **Adaptive Thinking**: Opus 4.6 with `thinking.effort` (low/medium/high/max)
 
-## Bonnes Pratiques
+## Best Practices
 
-| Aspect | Regle |
+| Aspect | Rule |
 |--------|-------|
-| Erreurs | Retry avec exponential backoff (3 tentatives) |
-| Caching | Redis avec TTL pour requetes identiques |
-| Rate limiting | Bottleneck ou equivalent |
-| Securite | Sanitize inputs, env vars pour API keys, ne pas logger les prompts |
-| Monitoring | Latence, tokens/requete, cout/jour, error rate |
+| Errors | Retry with exponential backoff (3 attempts) |
+| Caching | Redis with TTL for identical requests |
+| Rate limiting | Bottleneck or equivalent |
+| Security | Sanitize inputs, env vars for API keys, do not log prompts |
+| Monitoring | Latency, tokens/request, cost/day, error rate |
 
-## Contraintes
+## Constraints
 
-- ALWAYS utiliser des variables d'environnement pour les API keys
-- NEVER logger les prompts contenant des donnees utilisateur
-- Implementer rate limiting et retry logic
-- Avoir un fallback si l'API est indisponible
+- ALWAYS use environment variables for API keys
+- NEVER log prompts containing user data
+- Implement rate limiting and retry logic
+- Have a fallback if the API is unavailable
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

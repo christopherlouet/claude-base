@@ -1,7 +1,7 @@
 ---
 sidebar_position: 40
 title: "ops-deps"
-description: "Audit, analyse et recommandations pour les dependances du projet."
+description: "Audit, analysis and recommendations for project dependencies."
 tags:
   - "agent"
   - "haiku"
@@ -11,69 +11,69 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Audit, analyse et recommandations pour les dependances du projet.
+> Audit, analysis and recommendations for project dependencies.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | `Edit`, `Write`, `NotebookEdit` |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | `Edit`, `Write`, `NotebookEdit` |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent OPS-DEPS
 
-Audit, analyse et recommandations pour les dependances du projet.
+Audit, analysis and recommendations for project dependencies.
 
 ## Workflow
 
-1. **Etat actuel** : `npm outdated`, `npm audit`, `npm ls --depth=0` (ou equivalents pip/go)
-2. **Categoriser** : Patch (direct), Minor (verifier changelog), Major (planifier), Security (immediat)
-3. **Analyser les risques** : changelog, breaking changes, activite mainteneur, telechargements
-4. **Red flags** : package non maintenu (>1 an), vulnerabilites, trop de transitives, mainteneur unique
-5. **Recommander** : commandes de mise a jour priorisees
+1. **Current state**: `npm outdated`, `npm audit`, `npm ls --depth=0` (or pip/go equivalents)
+2. **Categorize**: Patch (direct), Minor (check changelog), Major (plan), Security (immediate)
+3. **Analyze risks**: changelog, breaking changes, maintainer activity, downloads
+4. **Red flags**: unmaintained package (>1 year), vulnerabilities, too many transitives, single maintainer
+5. **Recommend**: prioritized update commands
 
-## Output attendu
+## Expected output
 
-1. Resume (total, a jour, outdated, vulnerabilites)
-2. Vulnerabilites critiques avec CVE et version fixee
-3. Mises a jour priorisees (haute/securite, moyenne/minor, basse/major)
-4. Dependances a risque avec alternatives
-5. Commandes suggerees
+1. Summary (total, up to date, outdated, vulnerabilities)
+2. Critical vulnerabilities with CVE and fixed version
+3. Prioritized updates (high/security, medium/minor, low/major)
+4. At-risk dependencies with alternatives
+5. Suggested commands
 
-## Directives
+## Guidelines
 
-- NEVER ignorer les vulnerabilites de securite
-- IMPORTANT: Toujours verifier le changelog avant une mise a jour majeure
-- YOU MUST tester apres chaque mise a jour
-- IMPORTANT: Commiter le lockfile
-- NEVER utiliser de versions trop permissives (`*`, `>=1.0.0`)
+- NEVER ignore security vulnerabilities
+- IMPORTANT: Always check the changelog before a major update
+- YOU MUST test after every update
+- IMPORTANT: Commit the lockfile
+- NEVER use overly permissive versions (`*`, `>=1.0.0`)
 
-Think hard about les risques de chaque mise a jour.
+Think hard about the risks of each update.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: "/dev:dev-flutter"
-description: "Creer des widgets, screens et features Flutter avec Clean Architecture."
+description: "Create Flutter widgets, screens and features with Clean Architecture."
 tags:
   - "dev"
   - "command"
@@ -13,58 +13,58 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--dev">DEV</span>
 
 
-# Agent DEV-FLUTTER
+# DEV-FLUTTER Agent
 
-Creer des widgets, screens et features Flutter avec Clean Architecture.
+Create Flutter widgets, screens and features with Clean Architecture.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Developper des composants Flutter (widget simple, screen avec BLoC, feature complete)
-en suivant Clean Architecture (data/domain/presentation) avec tests.
+Develop Flutter components (simple widget, screen with BLoC, complete feature)
+following Clean Architecture (data/domain/presentation) with tests.
 
 ## Workflow
 
-- Definir le type de composant (Widget simple, Screen, Feature complete)
-- Identifier les besoins : props, state management (BLoC/Cubit), integration API, animations
-- Pour un widget : creer le widget avec `const` constructor, props typees et documentees
-- Pour un screen : implementer BLoC (events sealed, states sealed, bloc avec usecases)
-- Pour une feature complete : couche data (datasources, models, repository impl), domain (entities, repository interface, usecases), presentation (bloc, pages, widgets)
-- Gerer les 4 etats (loading, error, empty, data) avec `switch` expressions
-- Integrer l'API (Supabase, GraphQL ou REST) via datasources
-- Ecrire les tests (widget tests + BLoC tests)
-- Configurer la navigation (GoRouter) avec redirect auth
+- Define the component type (simple Widget, Screen, complete Feature)
+- Identify the needs: props, state management (BLoC/Cubit), API integration, animations
+- For a widget: create the widget with a `const` constructor, typed and documented props
+- For a screen: implement BLoC (sealed events, sealed states, bloc with usecases)
+- For a complete feature: data layer (datasources, models, repository impl), domain (entities, repository interface, usecases), presentation (bloc, pages, widgets)
+- Handle the 4 states (loading, error, empty, data) with `switch` expressions
+- Integrate the API (Supabase, GraphQL or REST) via datasources
+- Write the tests (widget tests + BLoC tests)
+- Configure navigation (GoRouter) with auth redirect
 
-## Output attendu
+## Expected output
 
-Fichiers generes selon le type (widget + test, ou feature complete avec toutes les couches),
-documentation avec usage et props.
+Generated files according to the type (widget + test, or complete feature with all layers),
+documentation with usage and props.
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/dev:dev-supabase` | Configuration backend Supabase |
-| `/dev:dev-graphql` | Integration GraphQL |
-| `/qa:qa-mobile` | Audit performance et accessibilite mobile |
-| `/dev:dev-test` | Tests complementaires |
+| `/dev:dev-supabase` | Supabase backend configuration |
+| `/dev:dev-graphql` | GraphQL integration |
+| `/qa:qa-mobile` | Mobile performance and accessibility audit |
+| `/dev:dev-test` | Complementary tests |
 
 ---
 
-IMPORTANT: Toujours utiliser `const` constructors pour optimiser les rebuilds.
+IMPORTANT: Always use `const` constructors to optimize rebuilds.
 
-YOU MUST separer la logique metier de la presentation (Clean Architecture).
+YOU MUST separate business logic from presentation (Clean Architecture).
 
-NEVER mettre de logique metier dans les widgets - utiliser BLoC/UseCases.
+NEVER put business logic in widgets - use BLoC/UseCases.
 
-Think hard sur la reutilisabilite du widget avant de coder.
+Think hard about widget reusability before coding.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DEV](/docs/commands/dev)
-- [Toutes les commandes](/docs/commands)
+- [Back to DEV commands](/docs/commands/dev)
+- [All commands](/docs/commands)

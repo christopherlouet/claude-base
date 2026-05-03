@@ -1,7 +1,7 @@
 ---
 sidebar_position: 13
 title: "/dev:dev-mcp"
-description: "Guide pour creer des serveurs MCP (Model Context Protocol) de qualite."
+description: "Guide for creating quality MCP (Model Context Protocol) servers."
 tags:
   - "dev"
   - "command"
@@ -15,61 +15,61 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DEV-MCP
 
-Guide pour creer des serveurs MCP (Model Context Protocol) de qualite.
+Guide for creating quality MCP (Model Context Protocol) servers.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Creer des serveurs MCP permettant aux LLMs d'interagir avec des services externes
-via des tools bien concus. Support Python (FastMCP) et TypeScript (MCP SDK).
+Create MCP servers that let LLMs interact with external services via well-designed
+tools. Supports Python (FastMCP) and TypeScript (MCP SDK).
 
 ## Workflow
 
-- **Research** : Etudier l'API cible (auth, rate limiting, pagination, schemas, erreurs)
-- **Planning** : Definir les tools par priorite, concevoir pour les workflows (pas les endpoints)
-- **Implementation** : Setup projet (FastMCP ou MCP SDK), validation inputs (Pydantic/Zod), erreurs actionnables
-- **Review** : Verifier structure (pas de code duplique), types et validation, documentation par tool
-- **Test** : Verifier syntaxe, build, tester avec timeout
-- **Evaluation** : Creer 10 questions de test (independantes, lecture seule, complexes, verifiables)
+- **Research**: Study the target API (auth, rate limiting, pagination, schemas, errors)
+- **Planning**: Define tools by priority, design for workflows (not endpoints)
+- **Implementation**: Project setup (FastMCP or MCP SDK), input validation (Pydantic/Zod), actionable errors
+- **Review**: Check structure (no duplicated code), types and validation, per-tool documentation
+- **Test**: Check syntax, build, test with timeout
+- **Evaluation**: Create 10 test questions (independent, read-only, complex, verifiable)
 
-## Principes de design
+## Design principles
 
-- Workflows, pas endpoints (consolider les operations)
-- Retourner des infos high-signal, pas des dumps exhaustifs
-- Noms naturels (tache humaine, pas nom d'API)
-- Erreurs actionnables qui guident vers la correction
+- Workflows, not endpoints (consolidate operations)
+- Return high-signal info, not exhaustive dumps
+- Natural names (human task, not API name)
+- Actionable errors that guide toward the fix
 
-## Output attendu
+## Expected output
 
-Serveur MCP avec configuration (transport, langage, API cible), tools implementes
-avec annotations, instructions d'installation et resultats d'evaluation.
+MCP server with configuration (transport, language, target API), tools implemented
+with annotations, installation instructions and evaluation results.
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-api` | Si creation d'API REST en parallele |
-| `/dev:dev-test` | Tests du serveur MCP |
-| `/doc:doc-api-spec` | Documentation OpenAPI de l'API cible |
+| `/dev:dev-api` | If creating a REST API in parallel |
+| `/dev:dev-test` | MCP server tests |
+| `/doc:doc-api-spec` | OpenAPI documentation of the target API |
 
 ---
 
-IMPORTANT: Concevoir pour les workflows, pas pour wrapper des endpoints.
+IMPORTANT: Design for workflows, not for wrapping endpoints.
 
-YOU MUST valider tous les inputs avec Pydantic (Python) ou Zod (TypeScript).
+YOU MUST validate all inputs with Pydantic (Python) or Zod (TypeScript).
 
-YOU MUST retourner des erreurs actionnables qui guident l'utilisateur.
+YOU MUST return actionable errors that guide the user.
 
-NEVER exposer de details techniques internes dans les messages d'erreur.
+NEVER expose internal technical details in error messages.
 
-Think hard sur les cas d'usage reels avant de definir les tools.
+Think hard about real use cases before defining the tools.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DEV](/docs/commands/dev)
-- [Toutes les commandes](/docs/commands)
+- [Back to DEV commands](/docs/commands/dev)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 41
 title: "ops-docker"
-description: "Containerisation Docker optimisee pour la production."
+description: "Docker containerization optimized for production."
 tags:
   - "agent"
   - "sonnet"
@@ -11,89 +11,89 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Containerisation Docker optimisee pour la production.
+> Docker containerization optimized for production.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent OPS-DOCKER
 
-Containerisation Docker optimisee pour la production.
+Docker containerization optimized for production.
 
 ## Workflow
 
-1. **Dockerfile multi-stage** : deps -> build -> runner (Alpine base, non-root user, HEALTHCHECK)
-2. **Docker Compose** : app + db + redis, healthchecks, depends_on, volumes persistants
-3. **.dockerignore** : node_modules, .git, .env*, tests, coverage
-4. **Optimisation taille** : Alpine (-70%), multi-stage (-50%), --no-cache-dir
-5. **Securite** : images officielles, non-root user, pas de secrets dans l'image, docker scan
+1. **Multi-stage Dockerfile**: deps -> build -> runner (Alpine base, non-root user, HEALTHCHECK)
+2. **Docker Compose**: app + db + redis, healthchecks, depends_on, persistent volumes
+3. **.dockerignore**: node_modules, .git, .env*, tests, coverage
+4. **Size optimization**: Alpine (-70%), multi-stage (-50%), --no-cache-dir
+5. **Security**: official images, non-root user, no secrets in the image, docker scan
 
-## Stacks supportees
+## Supported stacks
 
-- **Node.js** : node:20-alpine, npm ci, dist
-- **Python** : python:3.12-slim, poetry/pip, gunicorn
-- **Go** : golang:1.22-alpine -> scratch, CGO_ENABLED=0
+- **Node.js**: node:20-alpine, npm ci, dist
+- **Python**: python:3.12-slim, poetry/pip, gunicorn
+- **Go**: golang:1.22-alpine -> scratch, CGO_ENABLED=0
 
-## Output attendu
+## Expected output
 
-1. Dockerfile multi-stage optimise
+1. Optimized multi-stage Dockerfile
 2. docker-compose.yml dev/prod
 3. .dockerignore
-4. Documentation des variables d'environnement
+4. Documentation of environment variables
 
-## Checklist pre-deploiement (obligatoire)
+## Pre-deployment checklist (mandatory)
 
-Avant tout deploiement Docker en production:
+Before any Docker deployment to production:
 
-1. Verifier que le docker-compose utilise est celui de PRODUCTION (pas dev)
-2. Verifier que toutes les variables d'environnement sont definies pour prod
-3. Verifier les cookies secure/CSP headers selon l'environnement (HTTPS=secure:true)
-4. Lancer les tests avant le build (`npm test` / `pytest`)
-5. Verifier les migrations DB (`prisma migrate status` ou equivalent)
-6. Verifier les logs Docker: `logging.options.max-size` et `max-file` configures
-7. Confirmer les volumes persistants et les healthchecks
+1. Verify that the docker-compose used is the PRODUCTION one (not dev)
+2. Verify that all environment variables are defined for prod
+3. Verify secure cookies/CSP headers according to the environment (HTTPS=secure:true)
+4. Run the tests before the build (`npm test` / `pytest`)
+5. Verify the DB migrations (`prisma migrate status` or equivalent)
+6. Verify Docker logs: `logging.options.max-size` and `max-file` configured
+7. Confirm persistent volumes and healthchecks
 
 ## Directives
 
-- NEVER mettre de secrets dans l'image Docker
-- IMPORTANT: Toujours utiliser un non-root user
-- YOU MUST inclure un HEALTHCHECK dans le Dockerfile
-- IMPORTANT: Utiliser des images Alpine pour reduire la taille
-- NEVER oublier le .dockerignore
-- NEVER copier docker-compose.yml (dev) vers la production sans verification
-- IMPORTANT: Toujours configurer les limites de logs Docker (max-size, max-file)
-- YOU MUST verifier la checklist pre-deploiement avant tout deploy en production
+- NEVER put secrets in the Docker image
+- IMPORTANT: Always use a non-root user
+- YOU MUST include a HEALTHCHECK in the Dockerfile
+- IMPORTANT: Use Alpine images to reduce size
+- NEVER forget the .dockerignore
+- NEVER copy docker-compose.yml (dev) to production without verification
+- IMPORTANT: Always configure Docker log limits (max-size, max-file)
+- YOU MUST verify the pre-deployment checklist before any deploy to production
 
-Think hard about la taille et la securite de l'image.
+Think hard about image size and security.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

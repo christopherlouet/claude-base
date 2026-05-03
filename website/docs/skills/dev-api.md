@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "dev-api"
-description: "Développer et documenter une API REST ou GraphQL. Utiliser quand l'utilisateur veut créer un endpoint, une route, ou structurer une API."
+description: "Develop and document a REST or GraphQL API. Use when the user wants to create an endpoint, a route, or structure an API."
 tags:
   - "skill"
   - "fork"
@@ -11,49 +11,49 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Développer et documenter une API REST ou GraphQL. Utiliser quand l'utilisateur veut créer un endpoint, une route, ou structurer une API.
+> Develop and document a REST or GraphQL API. Use when the user wants to create an endpoint, a route, or structure an API.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Edit`, `Write`, `Bash`, `Grep`, `Glob` |
-| **Mots-cles** | `dev`, `api`, `field1`, `string`, `field2`, `success`, `data` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Edit`, `Write`, `Bash`, `Grep`, `Glob` |
+| **Keywords** | `dev`, `api`, `field1`, `string`, `field2`, `success`, `data` |
 
-## Description detaillee
+## Detailed description
 
-# Développer une API
+# Develop an API
 
-## Objectif
+## Objective
 
-Créer des APIs bien structurées, documentées et testables.
+Create well-structured, documented and testable APIs.
 
 ## Instructions
 
-### 1. Définir le contrat
+### 1. Define the contract
 
-Avant de coder, définir:
-- Endpoint (URL, méthode HTTP)
+Before coding, define:
+- Endpoint (URL, HTTP method)
 - Request (body, query params, headers)
 - Response (status codes, body)
-- Erreurs possibles
+- Possible errors
 
-### 2. Structure RESTful
+### 2. RESTful structure
 
 ```
-GET    /resources          → Liste (avec pagination)
-GET    /resources/:id      → Détail
-POST   /resources          → Création
-PUT    /resources/:id      → Mise à jour complète
-PATCH  /resources/:id      → Mise à jour partielle
-DELETE /resources/:id      → Suppression
+GET    /resources          → List (with pagination)
+GET    /resources/:id      → Detail
+POST   /resources          → Create
+PUT    /resources/:id      → Full update
+PATCH  /resources/:id      → Partial update
+DELETE /resources/:id      → Delete
 ```
 
-### 3. Format de réponse standard
+### 3. Standard response format
 
 ```typescript
-// Succès
+// Success
 {
   "success": true,
   "data": { ... },
@@ -64,7 +64,7 @@ DELETE /resources/:id      → Suppression
   }
 }
 
-// Erreur
+// Error
 {
   "success": false,
   "error": {
@@ -77,27 +77,27 @@ DELETE /resources/:id      → Suppression
 }
 ```
 
-### 4. Validation des entrées
+### 4. Input validation
 
 ```typescript
-// Avec Zod
+// With Zod
 const createUserSchema = z.object({
   email: z.string().email(),
   name: z.string().min(2).max(100),
   role: z.enum(['user', 'admin']).default('user')
 });
 
-// Dans le handler
+// In the handler
 const data = createUserSchema.parse(req.body);
 ```
 
-### 5. Documentation OpenAPI
+### 5. OpenAPI documentation
 
 ```yaml
 paths:
   /users:
     post:
-      summary: Créer un utilisateur
+      summary: Create a user
       tags: [Users]
       requestBody:
         required: true
@@ -107,7 +107,7 @@ paths:
               $ref: '#/components/schemas/CreateUser'
       responses:
         '201':
-          description: Utilisateur créé
+          description: User created
           content:
             application/json:
               schema:
@@ -116,7 +116,7 @@ paths:
           $ref: '#/components/responses/ValidationError'
 ```
 
-### 6. Tests d'API
+### 6. API tests
 
 ```typescript
 describe('POST /api/users', () => {
@@ -141,21 +141,21 @@ describe('POST /api/users', () => {
 });
 ```
 
-## Checklist API
+## API Checklist
 
-- [ ] Endpoint RESTful
-- [ ] Validation des entrées (Zod/Joi)
-- [ ] Gestion des erreurs centralisée
-- [ ] Status codes appropriés
-- [ ] Documentation OpenAPI
-- [ ] Tests d'intégration
-- [ ] Rate limiting (si public)
-- [ ] Authentification (si privé)
+- [ ] RESTful endpoint
+- [ ] Input validation (Zod/Joi)
+- [ ] Centralized error handling
+- [ ] Appropriate status codes
+- [ ] OpenAPI documentation
+- [ ] Integration tests
+- [ ] Rate limiting (if public)
+- [ ] Authentication (if private)
 
-## Output attendu
+## Expected output
 
 ```markdown
-## API: [Nom de l'endpoint]
+## API: [Endpoint name]
 
 ### Endpoint
 `POST /api/v1/resources`
@@ -176,55 +176,55 @@ describe('POST /api/users', () => {
 }
 ```
 
-### Erreurs
+### Errors
 | Code | Status | Description |
 |------|--------|-------------|
-| VALIDATION_ERROR | 400 | Données invalides |
-| NOT_FOUND | 404 | Ressource introuvable |
-| UNAUTHORIZED | 401 | Non authentifié |
+| VALIDATION_ERROR | 400 | Invalid data |
+| NOT_FOUND | 404 | Resource not found |
+| UNAUTHORIZED | 401 | Not authenticated |
 ```
 
-## Règles
+## Rules
 
-- IMPORTANT: Toujours valider les entrées
-- IMPORTANT: Documenter avec OpenAPI
-- YOU MUST retourner des codes HTTP appropriés
-- NEVER exposer les erreurs internes en production
+- IMPORTANT: Always validate inputs
+- IMPORTANT: Document with OpenAPI
+- YOU MUST return appropriate HTTP status codes
+- NEVER expose internal errors in production
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux dev..."_
-- _"Je veux api..."_
-- _"Je veux field1..."_
+- _"I want to dev..."_
+- _"I want to api..."_
+- _"I want to field1..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
-### 1. Exemple de développement d'API
+### 1. API development example
 
-# Exemple de développement d'API
+# API development example
 
-## Contexte
-Créer un endpoint pour gérer les produits d'un e-commerce.
+## Context
+Create an endpoint to manage products of an e-commerce.
 
-## Contrat défini
+## Defined contract
 
 ### Endpoint
 `POST /api/v1/products`
@@ -233,7 +233,7 @@ Créer un endpoint pour gérer les produits d'un e-commerce.
 ```json
 {
   "name": "iPhone 15 Pro",
-  "description": "Smartphone Apple dernière génération",
+  "description": "Latest generation Apple smartphone",
   "price": 1209.99,
   "category": "electronics",
   "stock": 50
@@ -249,7 +249,7 @@ Créer un endpoint pour gérer les produits d'un e-commerce.
   "data": {
     "id": "prod_abc123",
     "name": "iPhone 15 Pro",
-    "description": "Smartphone Apple dernière génération",
+    "description": "Latest generation Apple smartphone",
     "price": 1209.99,
     "category": "electronics",
     "stock": 50,
@@ -272,9 +272,9 @@ Créer un endpoint pour gérer les produits d'un e-commerce.
 }
 ```
 
-## Implémentation
+## Implementation
 
-### 1. Schema de validation (Zod)
+### 1. Validation schema (Zod)
 
 ```typescript
 // src/schemas/product.ts
@@ -355,14 +355,14 @@ router.post('/', authenticate, createProduct);
 export default router;
 ```
 
-### 5. Documentation OpenAPI
+### 5. OpenAPI documentation
 
 ```yaml
 # openapi/products.yaml
 paths:
   /api/v1/products:
     post:
-      summary: Créer un produit
+      summary: Create a product
       tags: [Products]
       security:
         - bearerAuth: []
@@ -393,7 +393,7 @@ paths:
                   default: 0
       responses:
         '201':
-          description: Produit créé
+          description: Product created
           content:
             application/json:
               schema:
@@ -450,20 +450,20 @@ describe('POST /api/v1/products', () => {
 });
 ```
 
-## Résultat
+## Result
 
-Endpoint créé avec:
-- Validation Zod
-- Gestion d'erreurs
-- Documentation OpenAPI
-- Tests d'intégration
-- Authentification requise
+Endpoint created with:
+- Zod validation
+- Error handling
+- OpenAPI documentation
+- Integration tests
+- Authentication required
 
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "dev-error-handling"
-description: "Strategie de gestion des erreurs. Declencher quand l'utilisateur veut implementer la gestion d'erreurs, exceptions, ou error boundaries."
+description: "Error handling strategy. Trigger when the user wants to implement error handling, exceptions, or error boundaries."
 tags:
   - "skill"
   - "fork"
@@ -11,28 +11,28 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Strategie de gestion des erreurs. Declencher quand l'utilisateur veut implementer la gestion d'erreurs, exceptions, ou error boundaries.
+> Error handling strategy. Trigger when the user wants to implement error handling, exceptions, or error boundaries.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `error`, `handling` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
+| **Keywords** | `dev`, `error`, `handling` |
 
-## Description detaillee
+## Detailed description
 
 # Error Handling
 
-## Principes
+## Principles
 
-1. **Fail fast** - Detecter les erreurs tot
-2. **Fail loud** - Logger clairement
-3. **Fail gracefully** - UX propre
+1. **Fail fast** - Detect errors early
+2. **Fail loud** - Log clearly
+3. **Fail gracefully** - Clean UX
 4. **Recover when possible** - Retry, fallback
 
-## Erreurs personnalisees
+## Custom errors
 
 ```typescript
 // Base error
@@ -128,30 +128,30 @@ async function withRetry<T>(
 }
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux dev..."_
-- _"Je veux error..."_
-- _"Je veux handling..."_
+- _"I want to dev..."_
+- _"I want to error..."_
+- _"I want to handling..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: Error Handling Patterns
@@ -271,7 +271,7 @@ class ErrorBoundary extends React.Component<Props, { error: Error | null }> {
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 54
 title: "work-quick"
-description: "Workflow rapide pour changements triviaux (single-file fix, rename, typo). Skip le cycle complet Explore-Plan-TDD-Audit. Declencher quand l'utilisateur veut un fix rapide, un changement simple, ou mentionne \"quick\", \"vite\", \"rapide\"."
+description: "Quick workflow for trivial changes (single-file fix, rename, typo). Skip the full Explore-Plan-TDD-Audit cycle. Trigger when the user wants a quick fix, a simple change, or mentions \"quick\", \"fast\", \"rapid\"."
 tags:
   - "skill"
   - "fork"
@@ -11,106 +11,106 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Workflow rapide pour changements triviaux (single-file fix, rename, typo). Skip le cycle complet Explore-Plan-TDD-Audit. Declencher quand l'utilisateur veut un fix rapide, un changement simple, ou mentionne "quick", "vite", "rapide".
+> Quick workflow for trivial changes (single-file fix, rename, typo). Skip the full Explore-Plan-TDD-Audit cycle. Trigger when the user wants a quick fix, a simple change, or mentions "quick", "fast", "rapid".
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `work`, `quick` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `work`, `quick` |
 
-## Description detaillee
+## Detailed description
 
 # Quick Fix Workflow
 
-Mode rapide pour changements triviaux qui ne necessitent pas le cycle complet.
+Quick mode for trivial changes that do not require the full cycle.
 
-## Criteres d'eligibilite
+## Eligibility criteria
 
-Ce workflow est reserve aux changements qui remplissent TOUS ces criteres :
+This workflow is reserved for changes that meet ALL these criteria:
 
-| Critere | Seuil |
-|---------|-------|
-| Fichiers modifies | 1-3 maximum |
-| Lignes changees | < 50 lignes |
-| Impact | Pas de changement d'API publique |
-| Risque | Aucun risque de regression |
-| Tests existants | Passent deja (ou pas de tests concernes) |
+| Criterion | Threshold |
+|-----------|-----------|
+| Files modified | 1-3 maximum |
+| Lines changed | < 50 lines |
+| Impact | No public API change |
+| Risk | No regression risk |
+| Existing tests | Already pass (or no tests concerned) |
 
-Exemples eligibles : typo, rename variable, fix import, ajout commentaire, correction CSS, mise a jour version.
+Eligible examples: typo, variable rename, import fix, comment addition, CSS correction, version update.
 
-Exemples NON eligibles : nouvelle feature, refactoring, correction de bug logique, changement d'interface.
+NON eligible examples: new feature, refactoring, logic bug fix, interface change.
 
-## Workflow (3 etapes)
+## Workflow (3 steps)
 
-### 1. SCAN - Verification rapide (30 secondes)
+### 1. SCAN - Quick check (30 seconds)
 
-- Lire le fichier cible
-- Identifier le changement exact
-- Verifier qu'aucun test existant n'est impacte
+- Read the target file
+- Identify the exact change
+- Verify that no existing test is impacted
 
-### 2. FIX - Appliquer le changement
+### 2. FIX - Apply the change
 
-- Modifier le(s) fichier(s)
-- Verifier la syntaxe (lint/typecheck si disponible)
+- Modify the file(s)
+- Verify the syntax (lint/typecheck if available)
 
-### 3. VERIFY - Validation minimale
+### 3. VERIFY - Minimal validation
 
-- Lancer les tests existants : `npm test` / `pytest` / `go test`
-- Si les tests passent : OK
-- Si les tests echouent : STOP, basculer vers `/dev:dev-tdd`
+- Run the existing tests: `npm test` / `pytest` / `go test`
+- If the tests pass: OK
+- If the tests fail: STOP, switch to `/dev:dev-tdd`
 
-## Output attendu
+## Expected output
 
 ```
 ## Quick Fix Applied
 
-**Changement**: [description]
-**Fichier(s)**: [liste]
-**Lignes**: [+X / -Y]
+**Change**: [description]
+**File(s)**: [list]
+**Lines**: [+X / -Y]
 **Tests**: PASS ✓
 
-Pret pour commit: `git add [fichiers] && git commit -m "fix(scope): description"`
+Ready for commit: `git add [files] && git commit -m "fix(scope): description"`
 ```
 
-## Garde-fous
+## Guardrails
 
-- Si le changement depasse les criteres → recommander `/dev:dev-tdd`
-- Si les tests echouent → STOP et basculer vers le workflow TDD complet
-- JAMAIS de changement d'API publique en mode quick
-- JAMAIS de nouveau fichier en mode quick (sauf test)
-
----
-
-IMPORTANT: Ce mode est un raccourci, pas un contournement. En cas de doute, utiliser le workflow complet.
-
-NEVER utiliser ce mode pour des changements qui impactent la logique metier.
-
-## Declenchement automatique
-
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
-
-### Exemples de declenchement
-
-- _"Je veux work..."_
-- _"Je veux quick..."_
-
-## Contexte fork
-
-
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
-
+- If the change exceeds the criteria → recommend `/dev:dev-tdd`
+- If the tests fail → STOP and switch to the full TDD workflow
+- NEVER make a public API change in quick mode
+- NEVER create a new file in quick mode (except a test)
 
 ---
 
-## Voir aussi
+IMPORTANT: This mode is a shortcut, not a workaround. When in doubt, use the full workflow.
 
-- [Retour aux skills](/docs/skills)
+NEVER use this mode for changes that impact business logic.
+
+## Automatic triggering
+
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
+
+### Triggering examples
+
+- _"I want to work..."_
+- _"I want to quick..."_
+
+## Context fork
+
+
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
+
+
+---
+
+## See also
+
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

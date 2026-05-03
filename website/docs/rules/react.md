@@ -7,13 +7,13 @@ tags:
   - "react"
 ---
 
-# Regles: react
+# Rules: react
 
 > export function MyComponent(\{ title, onAction \}: Props) \{ const [state, setState] = useState&lt;string&gt;('');
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.tsx`
 - `**/components/**`
@@ -21,75 +21,75 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 - `**/pages/**`
 - `**/app/**`
 
-## Regles detaillees
+## Detailed rules
 
 # React Rules
 
 ## Components
 
-- Utiliser des composants fonctionnels avec hooks
-- Un composant par fichier
-- Nommage PascalCase pour les composants
-- Props typees avec interface ou type
+- Use functional components with hooks
+- One component per file
+- PascalCase naming for components
+- Typed props with interface or type
 
 ## Hooks
 
-- Prefixe `use` pour tous les hooks custom
-- Respecter les regles des hooks (ordre, conditionnels)
-- Extraire la logique complexe dans des hooks custom
-- Documenter les hooks avec JSDoc
+- `use` prefix for all custom hooks
+- Follow the rules of hooks (order, conditionals)
+- Extract complex logic into custom hooks
+- Document hooks with JSDoc
 
 ## State Management
 
-- useState pour etat local simple
-- useReducer pour etat local complexe
-- Context pour etat partage limite
-- Zustand/Redux pour etat global complexe
+- useState for simple local state
+- useReducer for complex local state
+- Context for limited shared state
+- Zustand/Redux for complex global state
 
 ## Performance
 
-- Utiliser React.memo pour composants purs
-- useMemo pour calculs couteux
-- useCallback pour fonctions passees en props
-- Eviter les re-renders inutiles
+- Use React.memo for pure components
+- useMemo for expensive calculations
+- useCallback for functions passed as props
+- Avoid unnecessary re-renders
 
 ### Render optimization patterns
-- Colocation du state : descendre le state au composant le plus bas possible pour limiter l'arbre re-rendu
-- Composition (children as props) : passer du JSX en props pour eviter les re-renders lors de changements de state parent
-- Split context : separer les contextes par frequence de changement (ne pas melanger donnees stables et volatiles)
-- `useDeferredValue` / `useTransition` pour prioriser les mises a jour urgentes (React 18+)
+- State colocation: push state down to the lowest possible component to limit the re-rendered tree
+- Composition (children as props): pass JSX as props to avoid re-renders on parent state changes
+- Split context: separate contexts by change frequency (do not mix stable and volatile data)
+- `useDeferredValue` / `useTransition` to prioritize urgent updates (React 18+)
 
 ### Data fetching patterns
-- Server Components (Next.js App Router) : fetch cote serveur, zero JS client
-- Suspense + `use()` pour boundaries de chargement declaratives
-- SWR/React Query : cache, dedup, revalidation, optimistic updates
-- Prefetch sur hover/focus pour routes probables (`router.prefetch()`)
-- Parallel fetching (`Promise.all`) et waterfall avoidance : hoister les fetch au plus haut
+- Server Components (Next.js App Router): server-side fetch, zero client JS
+- Suspense + `use()` for declarative loading boundaries
+- SWR/React Query: cache, dedup, revalidation, optimistic updates
+- Prefetch on hover/focus for likely routes (`router.prefetch()`)
+- Parallel fetching (`Promise.all`) and waterfall avoidance: hoist fetches as high as possible
 
-## Design patterns React
+## React design patterns
 
 | Pattern | Usage |
 |---------|-------|
-| **Custom Hooks** | Encapsuler logique stateful reutilisable (defaut moderne) |
-| **Compound Components** | API declarative type `&lt;Tabs&gt;&lt;Tab/&gt;&lt;/Tabs&gt;` via Context interne |
-| **Render Props / children function** | Partager logique quand hooks insuffisants (rare aujourd'hui) |
-| **Container / Presentational** | Separer fetch/state (container) du rendu (presentational) |
-| **Provider** | Injecter dependances/theme via Context |
-| **HOC** | Legacy -- preferer hooks sauf besoin specifique (ErrorBoundary class) |
+| **Custom Hooks** | Encapsulate reusable stateful logic (modern default) |
+| **Compound Components** | Declarative API like `&lt;Tabs&gt;&lt;Tab/&gt;&lt;/Tabs&gt;` via internal Context |
+| **Render Props / children function** | Share logic when hooks are insufficient (rare today) |
+| **Container / Presentational** | Separate fetch/state (container) from rendering (presentational) |
+| **Provider** | Inject dependencies/theme via Context |
+| **HOC** | Legacy -- prefer hooks unless a specific need (ErrorBoundary class) |
 
 ## Rendering strategies (Next.js / frameworks)
 
-- **CSR** : dashboards authentifies, contenu dynamique utilisateur
-- **SSR** : SEO + donnees fraiches (e-commerce, feeds)
-- **SSG** : contenu statique (docs, blog, marketing)
-- **ISR** : hybride SSG avec revalidation (catalogues)
-- **RSC (Server Components)** : defaut Next.js App Router, zero JS par defaut
-- **Streaming SSR + Suspense** : TTFB rapide, contenu progressif
+- **CSR**: authenticated dashboards, dynamic user content
+- **SSR**: SEO + fresh data (e-commerce, feeds)
+- **SSG**: static content (docs, blog, marketing)
+- **ISR**: SSG hybrid with revalidation (catalogs)
+- **RSC (Server Components)**: Next.js App Router default, zero JS by default
+- **Streaming SSR + Suspense**: fast TTFB, progressive content
 
 ## Patterns
 
 ```tsx
-// Composant type
+// Sample component
 interface Props {
   title: string;
   onAction: () => void;
@@ -109,21 +109,21 @@ export function MyComponent({ title, onAction }: Props) {
 
 ## Anti-patterns
 
-- NEVER utiliser `any` pour les props
-- NEVER muter le state directement
-- Eviter les effets de bord dans le render
-- Eviter les index comme keys dans les listes
+- NEVER use `any` for props
+- NEVER mutate state directly
+- Avoid side effects in render
+- Avoid indexes as keys in lists
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 46
 title: "state-management"
-description: "Patterns et implementation de state management. Declencher quand l'utilisateur veut gerer l'etat global, utiliser Redux, Zustand, ou d'autres solutions."
+description: "State management patterns and implementation. Trigger when the user wants to manage global state, use Redux, Zustand, or other solutions."
 tags:
   - "skill"
   - "fork"
@@ -11,54 +11,54 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Patterns et implementation de state management. Declencher quand l'utilisateur veut gerer l'etat global, utiliser Redux, Zustand, ou d'autres solutions.
+> State management patterns and implementation. Trigger when the user wants to manage global state, use Redux, Zustand, or other solutions.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Mots-cles** | `state`, `management`, `state management`, `etat global`, `redux`, `zustand`, `store` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
+| **Keywords** | `state`, `management`, `state management`, `global state`, `redux`, `zustand`, `store` |
 
-## Description detaillee
+## Detailed description
 
 # State Management
 
-## Declencheurs
+## Triggers
 
 - "state management"
-- "etat global"
+- "global state"
 - "Redux"
 - "Zustand"
 - "store"
 - "context"
 
-## Choix de Solution
+## Solution Choice
 
-### Arbre de Decision
+### Decision Tree
 
 ```
-Besoin de state global?
-├── Non → useState/useReducer local
-└── Oui →
+Need global state?
+├── No → local useState/useReducer
+└── Yes →
     ├── Simple (< 5 stores) → Zustand
-    ├── Complexe (> 5 stores) → Redux Toolkit
+    ├── Complex (> 5 stores) → Redux Toolkit
     ├── Server state → React Query/SWR
-    └── Formulaires → React Hook Form
+    └── Forms → React Hook Form
 ```
 
-### Comparatif
+### Comparison
 
 | Solution | Bundle | Devtools | Learning | Use Case |
 |----------|--------|----------|----------|----------|
-| Zustand | 1.2kb | Oui | Facile | General |
-| Redux TK | 10kb | Excellent | Moyen | Enterprise |
-| Jotai | 2kb | Oui | Facile | Atoms |
-| React Query | 12kb | Excellent | Moyen | Server state |
-| Context | 0kb | Limited | Facile | Theme, Auth |
+| Zustand | 1.2kb | Yes | Easy | General |
+| Redux TK | 10kb | Excellent | Medium | Enterprise |
+| Jotai | 2kb | Yes | Easy | Atoms |
+| React Query | 12kb | Excellent | Medium | Server state |
+| Context | 0kb | Limited | Easy | Theme, Auth |
 
-## Zustand (Recommande)
+## Zustand (Recommended)
 
 ### Installation
 
@@ -66,7 +66,7 @@ Besoin de state global?
 npm install zustand
 ```
 
-### Store Simple
+### Simple Store
 
 ```typescript
 // stores/useCounterStore.ts
@@ -87,7 +87,7 @@ export const useCounterStore = create<CounterState>((set) => ({
 }));
 ```
 
-### Store avec Async
+### Async Store
 
 ```typescript
 // stores/useUserStore.ts
@@ -149,10 +149,10 @@ export const useSettingsStore = create(
 ### Selectors (Performance)
 
 ```typescript
-// Selecteur specifique (re-render minimal)
+// Specific selector (minimal re-render)
 const count = useCounterStore((state) => state.count);
 
-// Multiple valeurs avec shallow
+// Multiple values with shallow
 import { shallow } from 'zustand/shallow';
 
 const { user, isLoading } = useUserStore(
@@ -220,7 +220,7 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 ```
 
-### Hooks Types
+### Typed Hooks
 
 ```typescript
 // store/hooks.ts
@@ -255,7 +255,7 @@ const mutation = useMutation({
 
 ## Patterns
 
-### Separation Client/Server State
+### Client/Server State Separation
 
 ```typescript
 // Server state → React Query
@@ -268,7 +268,7 @@ const { filters, setFilters } = useFilterStore();
 ### Computed Values
 
 ```typescript
-// Zustand avec computed
+// Zustand with computed
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
   addItem: (item) => set((state) => ({ items: [...state.items, item] })),
@@ -284,35 +284,35 @@ export const useCartStore = create<CartState>((set, get) => ({
 
 | Anti-Pattern | Solution |
 |--------------|----------|
-| State dans props drilling | Context ou store global |
-| Tout dans un store | Separer par domaine |
-| Server state dans Redux | Utiliser React Query |
-| Re-renders excessifs | Selectors granulaires |
+| State in props drilling | Context or global store |
+| Everything in one store | Separate by domain |
+| Server state in Redux | Use React Query |
+| Excessive re-renders | Granular selectors |
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux state..."_
-- _"Je veux management..."_
-- _"Je veux state management..."_
+- _"I want to state..."_
+- _"I want to management..."_
+- _"I want to state management..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

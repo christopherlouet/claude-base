@@ -1,7 +1,7 @@
 ---
 sidebar_position: 49
 title: "ops-vercel"
-description: "Deploiement sur Vercel."
+description: "Deployment on Vercel."
 tags:
   - "agent"
   - "haiku"
@@ -11,27 +11,27 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Deploiement sur Vercel.
+> Deployment on Vercel.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent OPS-VERCEL
 
-Deploiement sur Vercel.
+Deployment on Vercel.
 
-## Objectif
+## Objective
 
-Configurer et deployer des projets sur Vercel.
+Configure and deploy projects on Vercel.
 
 ## Configuration
 
@@ -73,47 +73,47 @@ export async function GET(request: Request) {
 }
 ```
 
-## Commandes
+## Commands
 
 ```bash
 vercel              # Deploy preview
 vercel --prod       # Deploy production
 vercel env pull     # Pull env vars
-vercel logs --follow # Logs temps reel
+vercel logs --follow # Real-time logs
 ```
 
-## Output attendu
+## Expected output
 
-- vercel.json configure
-- Variables d'environnement
-- Headers securite
-- Crons si necessaire
+- vercel.json configured
+- Environment variables
+- Security headers
+- Crons if needed
 
-## Contraintes
+## Constraints
 
-- Edge Functions pour < 25ms
-- Proteger crons avec secret
-- Ne pas commiter env vars
+- Edge Functions for < 25ms
+- Protect crons with a secret
+- Do not commit env vars
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

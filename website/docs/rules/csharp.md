@@ -1,84 +1,84 @@
 ---
 sidebar_position: 5
 title: "csharp"
-description: "// 2. Champs prives readonly private readonly IUserRepository _userRepository; private readonly ILoggerUserService _logger;"
+description: "// 2. Private readonly fields private readonly IUserRepository _userRepository; private readonly ILoggerUserService _logger;"
 tags:
   - "rule"
   - "csharp"
 ---
 
-# Regles: csharp
+# Rules: csharp
 
-> // 2. Champs prives readonly private readonly IUserRepository _userRepository; private readonly ILogger&lt;UserService&gt; _logger;
+> // 2. Private readonly fields private readonly IUserRepository _userRepository; private readonly ILogger&lt;UserService&gt; _logger;
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.cs`
 - `**/*.csproj`
 - `**/*.sln`
 
-## Regles detaillees
+## Detailed rules
 
 # C# Rules
 
-## Conventions de code
+## Code Conventions
 
-### Nommage
+### Naming
 
-| Element | Convention | Exemple |
+| Element | Convention | Example |
 |---------|------------|---------|
 | Classes | PascalCase | `UserService` |
-| Interfaces | PascalCase avec prefix I | `IUserRepository` |
-| Methodes | PascalCase | `GetUserById` |
-| Proprietes | PascalCase | `FirstName` |
-| Variables locales | camelCase | `userName` |
-| Parametres | camelCase | `userId` |
-| Constantes | PascalCase | `MaxRetryCount` |
-| Champs prives | _camelCase | `_userRepository` |
+| Interfaces | PascalCase with I prefix | `IUserRepository` |
+| Methods | PascalCase | `GetUserById` |
+| Properties | PascalCase | `FirstName` |
+| Local variables | camelCase | `userName` |
+| Parameters | camelCase | `userId` |
+| Constants | PascalCase | `MaxRetryCount` |
+| Private fields | _camelCase | `_userRepository` |
 
-### Structure de classe
+### Class Structure
 
 ```csharp
 public class UserService : IUserService
 {
-    // 1. Constantes
+    // 1. Constants
     private const int MaxRetries = 3;
 
-    // 2. Champs prives readonly
+    // 2. Private readonly fields
     private readonly IUserRepository _userRepository;
     private readonly ILogger<UserService> _logger;
 
-    // 3. Constructeur
+    // 3. Constructor
     public UserService(IUserRepository userRepository, ILogger<UserService> logger)
     {
         _userRepository = userRepository;
         _logger = logger;
     }
 
-    // 4. Proprietes
+    // 4. Properties
     public int RetryCount { get; private set; }
 
-    // 5. Methodes publiques
+    // 5. Public methods
     public async Task<User?> GetByIdAsync(int id) { ... }
 
-    // 6. Methodes privees
+    // 6. Private methods
     private void ValidateUser(User user) { ... }
 }
 ```
 
-## Bonnes pratiques
+## Best Practices
 
 ### Nullable reference types
 
 ```csharp
-// Activer dans le projet
+// Enable in the project
 <Nullable>enable</Nullable>
 
-// Utiliser correctement
-public User? FindById(int id)  // Peut retourner null
-public User GetById(int id)     // Ne retourne jamais null
+// Use correctly
+public User? FindById(int id)  // May return null
+public User GetById(int id)     // Never returns null
 
 // Pattern matching
 if (user is { Name: var name, Email: var email })
@@ -90,10 +90,10 @@ if (user is { Name: var name, Email: var email })
 ### Records (C# 9+)
 
 ```csharp
-// Record immutable
+// Immutable record
 public record User(int Id, string Name, string Email);
 
-// Record avec proprietes mutables si necessaire
+// Record with mutable properties if needed
 public record User
 {
     public int Id { get; init; }
@@ -105,15 +105,15 @@ public record User
 ### Async/Await
 
 ```csharp
-// Toujours suffixer avec Async
+// Always suffix with Async
 public async Task<User> GetUserAsync(int id)
 {
     return await _repository.FindByIdAsync(id)
         ?? throw new UserNotFoundException(id);
 }
 
-// Eviter .Result et .Wait()
-// Utiliser ConfigureAwait(false) dans les libraries
+// Avoid .Result and .Wait()
+// Use ConfigureAwait(false) in libraries
 public async Task<User> GetUserAsync(int id)
 {
     return await _repository.FindByIdAsync(id).ConfigureAwait(false);
@@ -123,14 +123,14 @@ public async Task<User> GetUserAsync(int id)
 ### LINQ
 
 ```csharp
-// Syntaxe fluent preferee
+// Fluent syntax preferred
 var activeUsers = users
     .Where(u => u.IsActive)
     .OrderBy(u => u.Name)
     .Select(u => new UserDto(u.Id, u.Name))
     .ToList();
 
-// Utiliser Any() au lieu de Count() > 0
+// Use Any() instead of Count() > 0
 if (users.Any(u => u.IsAdmin))
 {
     // ...
@@ -149,7 +149,7 @@ var message = status switch
     _ => throw new ArgumentOutOfRangeException(nameof(status))
 };
 
-// Pattern matching avec types
+// Pattern matching with types
 if (result is Success<User> { Value: var user })
 {
     return user;
@@ -178,7 +178,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<UserDto>> GetById(int id)
     {
         var user = await _userService.GetByIdAsync(id);
-        return user is null ? NotFound() : Ok(user);
+        return user is null ? NotFound(): Ok(user);
     }
 
     [HttpPost]
@@ -268,24 +268,24 @@ public class UserServiceTests
 }
 ```
 
-## A eviter
+## To Avoid
 
-- `dynamic` sauf cas tres specifiques
+- `dynamic` except in very specific cases
 - `goto`
-- Exceptions pour le flow control
-- Champs publics (utiliser des proprietes)
-- `async void` sauf pour event handlers
+- Exceptions for flow control
+- Public fields (use properties)
+- `async void` except for event handlers
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

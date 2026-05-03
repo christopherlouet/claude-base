@@ -1,7 +1,7 @@
 ---
 sidebar_position: 14
 title: "dev-nextjs"
-description: "Developpement Next.js (App Router, Server Components, caching, streaming). Declencher quand l'utilisateur travaille avec Next.js, modifie app/, pages/, next.config, ou parle de RSC, Server Actions, Route Handlers, middleware."
+description: "Next.js development (App Router, Server Components, caching, streaming). Trigger when the user works with Next.js, modifies app/, pages/, next.config, or talks about RSC, Server Actions, Route Handlers, middleware."
 tags:
   - "skill"
   - "fork"
@@ -11,45 +11,45 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Developpement Next.js (App Router, Server Components, caching, streaming). Declencher quand l'utilisateur travaille avec Next.js, modifie app/, pages/, next.config, ou parle de RSC, Server Actions, Route Handlers, middleware.
+> Next.js development (App Router, Server Components, caching, streaming). Trigger when the user works with Next.js, modifies app/, pages/, next.config, or talks about RSC, Server Actions, Route Handlers, middleware.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `nextjs`, `use client` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `dev`, `nextjs`, `use client` |
 
-## Description detaillee
+## Detailed description
 
 # Next.js App Router
 
 ## App Router vs Pages Router
 
-**App Router** (defaut depuis Next 13, stable) : dossier `app/`, Server Components par defaut, Server Actions, streaming. **Preferer** pour tout nouveau projet.
+**App Router** (default since Next 13, stable): `app/` folder, Server Components by default, Server Actions, streaming. **Prefer** for any new project.
 
-**Pages Router** : dossier `pages/`, getServerSideProps/getStaticProps. **Legacy**, ne plus ajouter de routes dedans.
+**Pages Router**: `pages/` folder, getServerSideProps/getStaticProps. **Legacy**, do not add new routes there.
 
-Si le projet a les deux, coexister — les deux peuvent cohabiter, mais ne pas dupliquer une route.
+If the project has both, coexist — both can live together, but do not duplicate a route.
 
-## Server Components par defaut
+## Server Components by default
 
-Tout composant dans `app/` est **Server Component** par defaut. Il s'execute sur le serveur, zero JS client.
+Any component in `app/` is a **Server Component** by default. It runs on the server, zero client JS.
 
 ```tsx
-// app/posts/page.tsx — Server Component (defaut)
+// app/posts/page.tsx — Server Component (default)
 export default async function PostsPage() {
-  const posts = await db.posts.findMany();  // SQL direct OK
+  const posts = await db.posts.findMany();  // Direct SQL OK
   return <PostList posts={posts} />;
 }
 ```
 
-### Passer en Client Component avec `"use client"`
+### Switch to Client Component with `"use client"`
 
 ```tsx
 // app/components/SearchBox.tsx
-"use client";  // Directive en haut du fichier
+"use client";  // Directive at the top of the file
 
 import { useState } from "react";
 
@@ -59,61 +59,61 @@ export function SearchBox() {
 }
 ```
 
-**Regle** : "use client" uniquement si besoin d'hooks (useState, useEffect) ou d'evenements browser (onClick, onChange). Sinon, rester Server Component.
+**Rule**: "use client" only if you need hooks (useState, useEffect) or browser events (onClick, onChange). Otherwise, stay Server Component.
 
-### Composition Server/Client
+### Server/Client composition
 
-Les Server Components peuvent importer des Client Components, mais **l'inverse non** (sauf via props `children`).
+Server Components can import Client Components, but **the reverse is not allowed** (except via `children` props).
 
 ```tsx
-// OK : Server Component utilise un Client Component
+// OK: Server Component uses a Client Component
 export default async function Page() {
   const data = await fetch(...);
-  return <ClientChart data={data} />;  // ClientChart est "use client"
+  return <ClientChart data={data} />;  // ClientChart is "use client"
 }
 
-// OK : Client Component recoit un Server Component via children
+// OK: Client Component receives a Server Component via children
 "use client";
 export function Layout({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;  // children peut etre un RSC
+  return <div>{children}</div>;  // children can be a RSC
 }
 ```
 
 ## Data Fetching
 
-### fetch() natif avec cache Next.js
+### Native fetch() with Next.js cache
 
 ```tsx
-// Cache force (SSG-like, revalidation manuelle)
+// Forced cache (SSG-like, manual revalidation)
 const data = await fetch(url, { cache: "force-cache" });
 
-// No cache (SSR a chaque requete)
+// No cache (SSR on every request)
 const data = await fetch(url, { cache: "no-store" });
 
-// Revalidation basee sur le temps (ISR)
+// Time-based revalidation (ISR)
 const data = await fetch(url, { next: { revalidate: 60 } });
 
-// Revalidation basee sur tag
+// Tag-based revalidation
 const data = await fetch(url, { next: { tags: ["posts"] } });
-// Puis dans un Server Action : revalidateTag("posts")
+// Then in a Server Action: revalidateTag("posts")
 ```
 
-IMPORTANT (Next 15+) : `fetch` n'est plus cache par defaut. Il faut explicitement `force-cache` ou `next: { revalidate }`.
+IMPORTANT (Next 15+): `fetch` is no longer cached by default. You must explicitly set `force-cache` or `next: { revalidate }`.
 
 ### Parallel data fetching
 
 ```tsx
-// MAUVAIS — waterfall
+// BAD — waterfall
 const user = await getUser();
 const posts = await getPosts();
 
-// BON — parallele
+// GOOD — parallel
 const [user, posts] = await Promise.all([getUser(), getPosts()]);
 ```
 
 ## Server Actions
 
-Fonctions executees sur le serveur, invoquees depuis le client sans API route manuelle.
+Functions executed on the server, invoked from the client without a manual API route.
 
 ```tsx
 // app/actions.ts
@@ -138,14 +138,14 @@ export default function NewPost() {
 }
 ```
 
-**Pieges** :
-- Toujours valider les inputs avec Zod (les Server Actions recoivent des donnees non validees)
-- Toujours `revalidatePath` ou `revalidateTag` apres une mutation
-- Ne PAS exposer de logique metier sans auth (verifier la session dans l'action)
+**Pitfalls**:
+- Always validate inputs with Zod (Server Actions receive unvalidated data)
+- Always `revalidatePath` or `revalidateTag` after a mutation
+- Do NOT expose business logic without auth (check the session inside the action)
 
 ## Route Handlers (API)
 
-`app/api/*/route.ts` remplace `pages/api/`.
+`app/api/*/route.ts` replaces `pages/api/`.
 
 ```tsx
 // app/api/posts/route.ts
@@ -163,9 +163,9 @@ export async function POST(request: Request) {
 }
 ```
 
-## Streaming et Suspense
+## Streaming and Suspense
 
-Afficher le shell de la page immediatement, streamer le contenu lent :
+Show the page shell immediately, stream the slow content:
 
 ```tsx
 import { Suspense } from "react";
@@ -173,9 +173,9 @@ import { Suspense } from "react";
 export default function Page() {
   return (
     <div>
-      <Header />  {/* Render immediatement */}
+      <Header />  {/* Render immediately */}
       <Suspense fallback={<PostsSkeleton />}>
-        <SlowPosts />  {/* Stream quand pret */}
+        <SlowPosts />  {/* Stream when ready */}
       </Suspense>
     </div>
   );
@@ -185,7 +185,7 @@ export default function Page() {
 ### loading.tsx
 
 ```tsx
-// app/posts/loading.tsx — UI de chargement automatique
+// app/posts/loading.tsx — Automatic loading UI
 export default function Loading() {
   return <PostsSkeleton />;
 }
@@ -194,7 +194,7 @@ export default function Loading() {
 ## Middleware
 
 ```tsx
-// middleware.ts (a la racine)
+// middleware.ts (at the root)
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -210,27 +210,27 @@ export const config = {
 };
 ```
 
-**Piege** : le middleware tourne sur Edge Runtime. Pas de Node APIs (fs, crypto.createHash...) sans polyfill.
+**Pitfall**: middleware runs on the Edge Runtime. No Node APIs (fs, crypto.createHash...) without a polyfill.
 
 ## Metadata API
 
-Remplace `<head>` manuel.
+Replaces manual `<head>`.
 
 ```tsx
-// Metadata statique
+// Static metadata
 export const metadata: Metadata = {
   title: "My App",
   description: "...",
 };
 
-// Metadata dynamique (async)
+// Dynamic metadata (async)
 export async function generateMetadata({ params }): Promise<Metadata> {
   const post = await getPost(params.id);
   return { title: post.title };
 }
 ```
 
-## Images et Fonts
+## Images and Fonts
 
 ```tsx
 import Image from "next/image";
@@ -241,7 +241,7 @@ const geist = Geist({ subsets: ["latin"] });
 <Image src="/hero.jpg" alt="" width={1200} height={600} priority />
 ```
 
-Next charge et heberge les fonts localement (pas de requete Google), evite le FOIT/FOUT.
+Next loads and hosts fonts locally (no Google request), avoiding FOIT/FOUT.
 
 ## Configuration
 
@@ -251,9 +251,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
-    reactCompiler: true,       // Optimise auto-memoization
+    reactCompiler: true,       // Auto-memoization optimization
     ppr: "incremental",        // Partial Prerendering
-    dynamicIO: true,           // Next 15+ cache granulaire
+    dynamicIO: true,           // Next 15+ granular cache
   },
   images: {
     remotePatterns: [{ protocol: "https", hostname: "cdn.example.com" }],
@@ -263,86 +263,86 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 ```
 
-## Deploiement Vercel
+## Vercel deployment
 
-- `vercel` — deploy preview
-- `vercel --prod` — deploy production
-- Build settings auto-detectes (npm, pnpm, bun)
-- Variables d'env dans le dashboard
+- `vercel` — preview deploy
+- `vercel --prod` — production deploy
+- Build settings auto-detected (npm, pnpm, bun)
+- Env variables in the dashboard
 
-Alternative : self-host avec `next build && next start` (Node 18+).
+Alternative: self-host with `next build && next start` (Node 18+).
 
-## Pieges courants
+## Common pitfalls
 
-| Probleme | Solution |
-|----------|----------|
-| "use client" partout | Ne l'ajouter qu'aux composants qui utilisent hooks/events |
-| Data refetch intempestif | Verifier `cache` et `next.revalidate` sur les fetch |
-| Build errors ERR_DYNAMIC | Marquer la page `export const dynamic = "force-dynamic"` ou fixer les appels dynamiques |
-| Middleware lent | Reduire le matcher, eviter les fetch dans le middleware |
-| Hydration mismatch | Aucun random/Date.now() dans le SSR sans suppressHydrationWarning |
+| Problem | Solution |
+|---------|----------|
+| "use client" everywhere | Only add it to components that use hooks/events |
+| Unwanted data refetch | Check `cache` and `next.revalidate` on the fetch |
+| Build errors ERR_DYNAMIC | Mark the page `export const dynamic = "force-dynamic"` or fix dynamic calls |
+| Slow middleware | Reduce the matcher, avoid fetches inside middleware |
+| Hydration mismatch | No random/Date.now() in SSR without suppressHydrationWarning |
 
 ## Verification
 
 ```bash
-npm run build              # Verifier le build + taille bundle
-npm run build -- --debug   # Log detaille
-npx @next/bundle-analyzer  # Visualiser les chunks
+npm run build              # Verify the build + bundle size
+npm run build -- --debug   # Detailed log
+npx @next/bundle-analyzer  # Visualize the chunks
 ```
 
-## Complement avec le socle
+## Complements with the foundation
 
-- Rule `.claude/rules/nextjs.md` : rules path-specific (activation auto sur `app/**`)
-- Rule `.claude/rules/performance.md` : Core Web Vitals
-- Skill `dev-react-perf` : memoization, lazy loading React
-- Skill `qa-chrome` : audit visuel de pages Next
+- Rule `.claude/rules/nextjs.md`: path-specific rules (auto-activation on `app/**`)
+- Rule `.claude/rules/performance.md`: Core Web Vitals
+- Skill `dev-react-perf`: memoization, React lazy loading
+- Skill `qa-chrome`: visual audit of Next pages
 
-## Output attendu
+## Expected output
 
-1. **App Router** par defaut (pas Pages Router sauf migration partielle)
-2. **Server Components** par defaut, "use client" uniquement si necessaire
-3. **Caching explicite** sur chaque fetch (force-cache, no-store, ou revalidate)
-4. **Validation Zod** sur les Server Actions et Route Handlers
-5. **Metadata API** pour SEO (jamais `<head>` manuel dans App Router)
+1. **App Router** by default (not Pages Router unless partial migration)
+2. **Server Components** by default, "use client" only if necessary
+3. **Explicit caching** on every fetch (force-cache, no-store, or revalidate)
+4. **Zod validation** on Server Actions and Route Handlers
+5. **Metadata API** for SEO (never manual `<head>` in App Router)
 
-## Regles
+## Rules
 
-IMPORTANT: "use client" est l'exception, pas la regle. Par defaut, tout est Server Component.
+IMPORTANT: "use client" is the exception, not the rule. By default, everything is a Server Component.
 
-IMPORTANT: Next 15+ : fetch n'est plus cache par defaut. Toujours specifier le comportement de cache.
+IMPORTANT: Next 15+: fetch is no longer cached by default. Always specify the cache behavior.
 
-IMPORTANT: Valider les inputs Server Action avec Zod avant mutation.
+IMPORTANT: Validate Server Action inputs with Zod before mutation.
 
-YOU MUST utiliser `revalidatePath` ou `revalidateTag` apres chaque mutation pour invalider le cache.
+YOU MUST use `revalidatePath` or `revalidateTag` after every mutation to invalidate the cache.
 
-NEVER fetch dans le middleware (Edge, lent).
+NEVER fetch inside middleware (Edge, slow).
 
-NEVER exposer de logique metier dans un Route Handler sans verifier l'auth.
+NEVER expose business logic in a Route Handler without checking auth.
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux dev..."_
-- _"Je veux nextjs..."_
-- _"Je veux use client..."_
+- _"I want to dev..."_
+- _"I want to nextjs..."_
+- _"I want to use client..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

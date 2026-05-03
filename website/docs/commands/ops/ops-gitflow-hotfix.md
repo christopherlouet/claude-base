@@ -1,7 +1,7 @@
 ---
 sidebar_position: 14
 title: "/ops:ops-gitflow-hotfix"
-description: "Gerer les hotfixes urgents avec GitFlow (start, finish, list)."
+description: "Manage urgent hotfixes with GitFlow (start, finish, list)."
 tags:
   - "ops"
   - "command"
@@ -13,58 +13,58 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent GITFLOW-HOTFIX
+# GITFLOW-HOTFIX Agent
 
-Gerer les hotfixes urgents avec GitFlow (start, finish, list).
+Manage urgent hotfixes with GitFlow (start, finish, list).
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Corriger rapidement un bug critique en production avec merge bidirectionnel
-(main + develop + release si existante) et tag de version PATCH.
+Quickly fix a critical production bug with bidirectional merge
+(main + develop + release if it exists) and PATCH version tag.
 
 ## Workflow
 
-- Detecter l'action dans les arguments (start/finish/list)
-- **start** : creer hotfix/xxx depuis main, pousser la branche
-- **finish** : merger dans main, creer le tag PATCH, merger dans develop (et release si existe), supprimer la branche
-- **list** : lister les hotfixes en cours
-- Le fix doit etre minimal et cible (uniquement le bug, rien d'autre)
-- Bump de version PATCH automatique si non specifie
+- Detect the action in the arguments (start/finish/list)
+- **start**: create hotfix/xxx from main, push the branch
+- **finish**: merge into main, create the PATCH tag, merge into develop (and release if it exists), delete the branch
+- **list**: list ongoing hotfixes
+- The fix must be minimal and targeted (only the bug, nothing else)
+- Automatic PATCH version bump if not specified
 
-## Output attendu
+## Expected output
 
-1. **Branche hotfix** creee ou terminee
-2. **Tag** de version PATCH cree (pour finish)
-3. **Resume des actions** effectuees (merges, tags)
-4. **Recommandation** post-mortem
+1. **Hotfix branch** created or finished
+2. **Tag** PATCH version created (for finish)
+3. **Summary of actions** performed (merges, tags)
+4. **Recommendation** post-mortem
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-debug` | Investiguer le bug |
-| `/ops:ops-hotfix` | Correction urgente simplifiee |
-| `/work:work-flow-bugfix` | Bug non critique |
+| `/dev:dev-debug` | Investigate the bug |
+| `/ops:ops-hotfix` | Simplified urgent fix |
+| `/work:work-flow-bugfix` | Non-critical bug |
 
 ---
 
-IMPORTANT: Un hotfix part TOUJOURS de main, jamais de develop.
+IMPORTANT: A hotfix ALWAYS starts from main, never from develop.
 
-YOU MUST merger dans main ET develop (et release si existe).
+YOU MUST merge into main AND develop (and release if it exists).
 
-YOU MUST creer un tag avec version PATCH.
+YOU MUST create a tag with PATCH version.
 
-NEVER inclure autre chose que le fix du bug.
+NEVER include anything other than the bug fix.
 
-NEVER retarder un hotfix - la production est impactee.
+NEVER delay a hotfix - production is impacted.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

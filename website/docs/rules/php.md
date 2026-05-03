@@ -7,33 +7,33 @@ tags:
   - "php"
 ---
 
-# Regles: php
+# Rules: php
 
 > declare(strict_types=1);
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.php`
 - `**/composer.json`
 
-## Regles detaillees
+## Detailed rules
 
 # PHP Rules
 
-## Conventions de code (PSR-12)
+## Code conventions (PSR-12)
 
-### Nommage
+### Naming
 
-| Element | Convention | Exemple |
+| Element | Convention | Example |
 |---------|------------|---------|
 | Classes | PascalCase | `UserService` |
 | Interfaces | PascalCase + suffix | `UserRepositoryInterface` |
-| Methodes | camelCase | `findById` |
+| Methods | camelCase | `findById` |
 | Variables | camelCase | `userName` |
-| Constantes | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
-| Fichiers | PascalCase | `UserService.php` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
+| Files | PascalCase | `UserService.php` |
 
 ### Structure
 
@@ -63,16 +63,16 @@ final class UserService
 }
 ```
 
-## Bonnes pratiques
+## Best practices
 
-### Types stricts
+### Strict types
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-// Types de retour
+// Return types
 public function findById(int $id): ?User { }
 public function getAll(): array { }
 public function create(CreateUserDto $dto): User { }
@@ -362,25 +362,25 @@ final class UserServiceTest extends TestCase
 }
 ```
 
-## A eviter
+## To avoid
 
-- Variables globales et `global`
-- `@` pour supprimer les erreurs
-- `eval()` et `extract()`
-- Mixed sans typage
-- Fat controllers (utiliser services)
-- N+1 queries (utiliser eager loading)
+- Global variables and `global`
+- `@` to suppress errors
+- `eval()` and `extract()`
+- Mixed without typing
+- Fat controllers (use services)
+- N+1 queries (use eager loading)
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

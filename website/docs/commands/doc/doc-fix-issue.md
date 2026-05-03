@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 title: "/doc:doc-fix-issue"
-description: "Corrige une issue GitHub de maniere autonome et complete."
+description: "Fix a GitHub issue autonomously and completely."
 tags:
   - "doc"
   - "command"
@@ -13,63 +13,63 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--doc">DOC</span>
 
 
-# Agent DOC-FIX-ISSUE
+# DOC-FIX-ISSUE Agent
 
-Corrige une issue GitHub de maniere autonome et complete.
+Fix a GitHub issue autonomously and completely.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Analyser, comprendre et resoudre une issue GitHub en suivant un processus structure, de la lecture de l'issue jusqu'a la creation de la PR avec test de regression.
+Analyze, understand and resolve a GitHub issue following a structured process, from reading the issue to creating the PR with a regression test.
 
 ## Workflow
 
-- Recuperer l'issue (gh issue view, commentaires, labels)
-- Analyser le probleme (symptome, reproduction, impact, cause probable)
-- Explorer le code concerne (grep, fichiers impliques, dependances)
-- Planifier la solution (cause racine, fichiers a modifier, risques)
-- Ecrire le test de regression (TDD - test qui echouait avant)
-- Implementer le fix minimal
-- Verifier (tests, lint, typecheck, build)
-- Commiter avec "Fixes #numero" et creer la PR
+- Retrieve the issue (gh issue view, comments, labels)
+- Analyze the problem (symptom, reproduction, impact, probable cause)
+- Explore the relevant code (grep, files involved, dependencies)
+- Plan the solution (root cause, files to modify, risks)
+- Write the regression test (TDD - test that was failing before)
+- Implement the minimal fix
+- Verify (tests, lint, typecheck, build)
+- Commit with "Fixes #number" and create the PR
 
-## Output attendu
+## Expected output
 
-### Analyse de l'issue
-- Symptome, comportement attendu, cause racine
+### Issue analysis
+- Symptom, expected behavior, root cause
 
-### Correction
-- Fichiers modifies avec description
-- Test de regression ajoute
+### Fix
+- Modified files with description
+- Regression test added
 
-### PR creee
-- Titre, description, checklist de test
+### PR created
+- Title, description, test checklist
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/work:work-explore` | Explorer le code concerne |
-| `/dev:dev-debug` | Debug approfondi si necessaire |
-| `/dev:dev-tdd` | Approche TDD pour le fix |
-| `/work:work-pr` | Creation de la PR |
+| `/work:work-explore` | Explore the relevant code |
+| `/dev:dev-debug` | In-depth debug if needed |
+| `/dev:dev-tdd` | TDD approach for the fix |
+| `/work:work-pr` | PR creation |
 
 ---
 
-IMPORTANT: Toujours ajouter un test de regression qui echouait avant le fix.
+IMPORTANT: Always add a regression test that was failing before the fix.
 
-YOU MUST referencer l'issue dans le commit avec "Fixes #numero".
+YOU MUST reference the issue in the commit with "Fixes #number".
 
-NEVER faire de refactoring ou d'autres corrections dans le meme commit.
+NEVER do refactoring or other fixes in the same commit.
 
-Think hard sur la cause racine avant de coder - un fix superficiel reviendra.
+Think hard about the root cause before coding — a superficial fix will come back.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DOC](/docs/commands/doc)
-- [Toutes les commandes](/docs/commands)
+- [Back to DOC commands](/docs/commands/doc)
+- [All commands](/docs/commands)

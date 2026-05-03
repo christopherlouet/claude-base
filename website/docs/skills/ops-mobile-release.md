@@ -1,7 +1,7 @@
 ---
 sidebar_position: 32
 title: "ops-mobile-release"
-description: "Publication d'apps sur App Store et Google Play. Declencher quand l'utilisateur veut deployer une app mobile ou configurer Fastlane."
+description: "Publishing apps to the App Store and Google Play. Trigger when the user wants to deploy a mobile app or configure Fastlane."
 tags:
   - "skill"
   - "fork"
@@ -11,17 +11,17 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Publication d'apps sur App Store et Google Play. Declencher quand l'utilisateur veut deployer une app mobile ou configurer Fastlane.
+> Publishing apps to the App Store and Google Play. Trigger when the user wants to deploy a mobile app or configure Fastlane.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `mobile`, `release` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `ops`, `mobile`, `release` |
 
-## Description detaillee
+## Detailed description
 
 # Mobile Release
 
@@ -95,46 +95,46 @@ jobs:
           GOOGLE_PLAY_JSON_KEY: ${{ secrets.PLAY_KEY }}
 ```
 
-## Checklist Release
+## Release Checklist
 
 ### iOS
 - [ ] Increment version/build number
-- [ ] Screenshots a jour
-- [ ] Description App Store
+- [ ] Screenshots up to date
+- [ ] App Store description
 - [ ] Privacy policy URL
 - [ ] TestFlight beta OK
 
 ### Android
-- [ ] versionCode/versionName incrementes
-- [ ] APK/AAB signe
-- [ ] Screenshots Play Store
-- [ ] Description a jour
+- [ ] versionCode/versionName incremented
+- [ ] APK/AAB signed
+- [ ] Play Store screenshots
+- [ ] Description up to date
 - [ ] Internal testing OK
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux ops..."_
-- _"Je veux mobile..."_
-- _"Je veux release..."_
+- _"I want to ops..."_
+- _"I want to mobile..."_
+- _"I want to release..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

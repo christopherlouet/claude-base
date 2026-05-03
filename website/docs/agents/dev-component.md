@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: "dev-component"
-description: "Creation de composants UI modulaires et reutilisables."
+description: "Creation of modular and reusable UI components."
 tags:
   - "agent"
   - "sonnet"
@@ -11,77 +11,77 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Creation de composants UI modulaires et reutilisables.
+> Creation of modular and reusable UI components.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent DEV-COMPONENT
 
-Creation de composants UI modulaires et reutilisables.
+Creation of modular and reusable UI components.
 
 ## Workflow
 
-1. **Structure** : creer le dossier composant (Component.tsx, Component.test.tsx, Component.stories.tsx, index.ts)
-2. **Props** : definir l'interface TypeScript avec types stricts et valeurs par defaut
-3. **Implementation** : composition over inheritance, accessibilite (aria-*), responsive
-4. **Tests** : couvrir tous les etats (default, loading, disabled, error) a 80%+
-5. **Stories** : une story par variante Storybook si applicable
-6. **Export** : re-export propre dans index.ts
+1. **Structure**: create the component folder (Component.tsx, Component.test.tsx, Component.stories.tsx, index.ts)
+2. **Props**: define the TypeScript interface with strict types and default values
+3. **Implementation**: composition over inheritance, accessibility (aria-*), responsive
+4. **Tests**: cover all states (default, loading, disabled, error) at 80%+
+5. **Stories**: one story per Storybook variant if applicable
+6. **Export**: clean re-export in index.ts
 
 ## Checklist
 
-- Props typees avec interface/type
-- Valeurs par defaut definies
-- Accessibilite (aria-*, semantique HTML)
+- Props typed with interface/type
+- Default values defined
+- Accessibility (aria-*, HTML semantics)
 - Responsive design
-- Tests couvrant tous les etats
-- Documentation des props
+- Tests covering all states
+- Props documentation
 
-## Output attendu
+## Expected output
 
-1. Fichier composant avec types stricts
-2. Fichier de tests (80%+ coverage)
-3. Stories Storybook si applicable
-4. Export dans index.ts
+1. Component file with strict types
+2. Test file (80%+ coverage)
+3. Storybook stories if applicable
+4. Export in index.ts
 
 ## Directives
 
-- NEVER utiliser `any` dans les props
-- IMPORTANT: Preferer la composition a l'heritage
-- YOU MUST inclure les attributs d'accessibilite
-- IMPORTANT: Tester chaque variante du composant
+- NEVER use `any` in props
+- IMPORTANT: Prefer composition over inheritance
+- YOU MUST include accessibility attributes
+- IMPORTANT: Test each variant of the component
 
-Think hard about la reutilisabilite et l'accessibilite.
+Think hard about reusability and accessibility.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -33,8 +33,8 @@ The project includes automatic hooks in `.claude/settings.json`:
 | `SessionEnd` | command | End of session |
 | `TeammateIdle` | command | When a teammate agent becomes idle (Agent Teams) |
 | `TaskCreated` | command | When a task is created via `TaskCreate` (CLI 2.1.84+) |
-| `TaskCompleted` | command | When a task is marked as completed |
-| `WorktreeCreate` | http | Hook `type: "http"` invoked when creating a worktree, must return `hookSpecificOutput.worktreePath` (CLI 2.1.84+) |
+| `TaskCompleted` | command | When a task is marked completed |
+| `WorktreeCreate` | http | Hook `type: "http"` invoked on worktree creation, must return `hookSpecificOutput.worktreePath` (CLI 2.1.84+) |
 | `InstructionsLoaded` | command | When CLAUDE.md and rules are loaded |
 | `Elicitation` | command | When an MCP server requests structured input |
 | `ElicitationResult` | command | When the user responds to an MCP Elicitation |
@@ -42,7 +42,7 @@ The project includes automatic hooks in `.claude/settings.json`:
 | `CwdChanged` | command | When the working directory changes |
 | `FileChanged` | command | When a file is modified |
 
-## Hook types
+## Hook Types
 
 | Type | Description |
 |------|-------------|
@@ -50,11 +50,11 @@ The project includes automatic hooks in `.claude/settings.json`:
 | `prompt` | Evaluated via a Haiku LLM (contextual, intelligent) - for `Stop`, `SubagentStop`, `PreToolUse` |
 | `http` | Sends a JSON POST to a URL (external webhook) - CLI 2.1.70+ |
 
-## Hook properties
+## Hook Properties
 
 | Property | Description |
 |-----------|-------------|
-| `async` | `true` to run in background without blocking (CLI 2.1.70+) |
+| `async` | `true` to run in the background without blocking (CLI 2.1.70+) |
 | `onFailure` | `"block"` to block, `"ignore"` to continue |
 | `timeout` | Timeout in milliseconds |
 | `if` | Activation condition using permission rules syntax (CLI 2.1.90+) |
@@ -64,14 +64,14 @@ The project includes automatic hooks in `.claude/settings.json`:
 
 PreToolUse hooks can return `"defer"` as a permission decision. The headless session pauses at the tool call and can resume with `-p --resume` to re-evaluate the hook. Useful for CI/CD workflows requiring human approval.
 
-## Configured hooks
+## Configured Hooks
 
 | Hook | Trigger | Action |
 |------|-------------|--------|
 | **Session info** | SessionStart (startup) | Displays project information at startup |
-| **Check node_modules** | SessionStart (startup) | Verifies that node_modules exists if package.json is present |
+| **Check node_modules** | SessionStart (startup) | Checks that node_modules exists if package.json is present |
 | **Main protection** | PreToolUse (Edit/Write) | Blocks modifications on main/master |
-| **Secret detection** | PreToolUse (Write/Edit) | Gitleaks checks for secrets before writing |
+| **Secrets detection** | PreToolUse (Write/Edit) | Gitleaks checks for secrets before writing |
 | **Pre-commit tests** | PreToolUse (Bash git commit) | Runs tests before a commit. Detects and repairs Husky if needed |
 | **Local pre-push CI** | PreToolUse (Bash git push) | Lint + type-check + tests before push. Disable with `SKIP_PRE_PUSH_CI=1` |
 | **Destructive ops guard** | PreToolUse (Bash) | Blocks destructive DELETE/DROP/TRUNCATE/rm without confirmation |
@@ -84,48 +84,48 @@ PreToolUse hooks can return `"defer"` as a permission decision. The headless ses
 | **Auto-format Dart** | PostToolUse (Edit/Write) | dart format on .dart files |
 | **Auto-format Lua** | PostToolUse (Edit/Write) | stylua on .lua files |
 | **Type-check** | PostToolUse (Edit/Write) | Checks TypeScript types |
-| **ESLint** | PostToolUse (Edit/Write) | Lints JS/TS after modification |
+| **ESLint** | PostToolUse (Edit/Write) | Lint JS/TS after modification |
 | **Auto-install** | PostToolUse (Edit package.json) | npm/yarn/pnpm/bun install |
 | **Auto-sync Python** | PostToolUse (Edit pyproject.toml) | uv sync or pip install |
 | **Auto pub get** | PostToolUse (Edit pubspec.yaml) | flutter/dart pub get |
 | **Auto go mod tidy** | PostToolUse (Edit go.mod) | go mod tidy |
 | **Auto cargo check** | PostToolUse (Edit Cargo.toml) | cargo check |
 | **Coverage check** | PostToolUse (Edit test files) | Checks test coverage |
-| **Setup init** | Setup (init) | Installs dependencies on first launch |
-| **Setup maintenance** | Setup (maintenance) | Periodic audit and update |
+| **Setup init** | Setup (init) | Installs dependencies on first run |
+| **Setup maintenance** | Setup (maintenance) | Periodic audit and updates |
 | **Notification permission** | Notification (permission_prompt) | Logs permission requests |
 | **Notification idle** | Notification (idle_prompt) | Logs when Claude is waiting for the user |
 | **SubagentStop** | SubagentStop | Logs the end of sub-agents |
-| **SessionEnd** | SessionEnd | Logs the end of the session |
+| **SessionEnd** | SessionEnd | Logs end of session |
 | **PreCompact** | PreCompact | Logs before context compaction |
 | **PostCompact** | PostCompact | Logs after context compaction (async) |
 | **TeammateIdle** | TeammateIdle | Logs when a teammate becomes idle (async) |
 | **TaskCompleted** | TaskCompleted | Logs when a task is completed (async) |
-| **InstructionsLoaded** | InstructionsLoaded | Logs instructions loading (async) |
+| **InstructionsLoaded** | InstructionsLoaded | Logs instruction loading (async) |
 | **Elicitation** | Elicitation | Logs MCP Elicitation requests (async) |
 | **ElicitationResult** | ElicitationResult | Logs MCP Elicitation responses (async) |
 | **PermissionDenied** | PermissionDenied | Logs permissions denied by auto mode (async, CLI 2.1.111+) |
 | **UserPromptSubmit** | UserPromptSubmit | Logs user prompt submissions (async) |
 | **Prompt context injection** | UserPromptSubmit | Injects branch, modified files, LOC diff and `/assistant-auto` hint if no slash command (disable: `SKIP_PROMPT_CONTEXT=1`) |
 | **PostToolUseFailure** | PostToolUseFailure | Logs tool failures for debugging (async) |
-| **Check .env** | SessionStart | Verifies that .env is in .gitignore |
+| **Check .env** | SessionStart | Checks that .env is in .gitignore |
 | **Third-party hooks warning** | SessionStart | Warns if custom hooks are detected |
 
-## Hook environment variables
+## Hook Environment Variables
 
 | Variable | Usage |
 |----------|-------|
 | `ALLOW_MAIN_EDIT=1` | Disable main branch protection |
-| `SKIP_PRE_COMMIT_TESTS=1` | Disable tests before commit |
+| `SKIP_PRE_COMMIT_TESTS=1` | Disable pre-commit tests |
 | `SKIP_COMMAND_VALIDATOR=1` | Disable command security validation |
-| `SKIP_PRE_PUSH_CI=1` | Disable local CI verification before push |
-| `SKIP_DESTRUCTIVE_CHECK=1` | Disable protection against destructive operations |
+| `SKIP_PRE_PUSH_CI=1` | Disable local pre-push CI check |
+| `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
 | `SKIP_PROMPT_CONTEXT=1` | Disable repo context injection on free-form prompts |
 | `ENABLE_RTK=1` | Enable RTK token optimization |
 
-## Log files
+## Log Files
 
-Logging hooks write to `/tmp/` (append mode, cleaned at restart):
+Logging hooks write to `/tmp/` (append mode, cleared on restart):
 
 | File | Content |
 |---------|---------|

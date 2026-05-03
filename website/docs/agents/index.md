@@ -1,215 +1,215 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalogue des 63 sub-agents claude-socle"
+description: "Catalog of 63 claude-socle sub-agents"
 ---
 
 import Stats from '@site/src/components/Stats';
 import { AgentGrid } from '@site/src/components/AgentCard';
 import AgentCard from '@site/src/components/AgentCard';
 
-# Catalogue des Agents
+# Agent Catalog
 
-> **63 sub-agents** avec contexte isole pour des taches autonomes
+> **63 sub-agents** with isolated context for autonomous tasks
 
 <Stats items={[
-  { number: 22, label: 'Agents Haiku' },
-  { number: 35, label: 'Agents Sonnet' },
+  { number: 22, label: 'Haiku agents' },
+  { number: 35, label: 'Sonnet agents' },
   { number: 63, label: 'Total' },
 ]} />
 
-## Qu'est-ce qu'un Agent ?
+## What is an Agent?
 
-Les **agents** sont des sub-agents autonomes avec un contexte isole :
+**Agents** are autonomous sub-agents with an isolated context:
 
-- **Declenchement automatique** : Claude delegue selon le contexte
-- **Contexte isole** : Ne pollue pas la conversation principale
-- **Outils restreints** : Acces limite selon la tache
-- **Modele specifique** : Haiku (rapide) ou Sonnet (complexe)
+- **Automatic triggering**: Claude delegates based on context
+- **Isolated context**: Does not pollute the main conversation
+- **Restricted tools**: Limited access based on the task
+- **Specific model**: Haiku (fast) or Sonnet (complex)
 
-## Agents par modele
+## Agents by model
 
 ### Haiku (22 agents)
 
-Agents rapides et economiques pour les taches simples.
+Fast and economical agents for simple tasks.
 
-| Agent | Description | Outils |
+| Agent | Description | Tools |
 |-------|-------------|--------|
-| [`biz-model`](/docs/agents/biz-model) | Analyse business et proposition de business model pour un pr... | Read, Grep, Glob... |
-| [`dev-design-system`](/docs/agents/dev-design-system) | Design systems et bibliotheques de composants. | Read, Grep, Glob |
-| [`dev-prisma`](/docs/agents/dev-prisma) | Prisma ORM pour bases de donnees type-safe. | Read, Grep, Glob... |
-| [`dev-trpc`](/docs/agents/dev-trpc) | APIs type-safe avec tRPC. | Read, Grep, Glob |
-| [`doc-changelog`](/docs/agents/doc-changelog) | Gestion du changelog selon la convention Keep a Changelog. | Read, Grep, Glob... |
-| [`doc-explain`](/docs/agents/doc-explain) | Explication pedagogique de code complexe. | Read, Grep, Glob |
-| [`doc-onboard`](/docs/agents/doc-onboard) | Guide de decouverte et comprehension d'un codebase. | Read, Grep, Glob |
-| [`growth-cro`](/docs/agents/growth-cro) | Audit et optimisation du taux de conversion. | Read, Grep, Glob |
-| [`growth-localization`](/docs/agents/growth-localization) | Strategie de localisation et expansion internationale. | Read, Grep, Glob |
-| [`legal-privacy-policy`](/docs/agents/legal-privacy-policy) | Creation de politique de confidentialite conforme RGPD. | Read, Grep, Glob... |
-| [`legal-terms-of-service`](/docs/agents/legal-terms-of-service) | Creation de Conditions Generales d'Utilisation conformes. | Read, Grep, Glob... |
-| [`ops-cost`](/docs/agents/ops-cost) | Analyse de la consommation de tokens et recommandations d'op... | Read, Grep, Glob... |
-| [`ops-deps`](/docs/agents/ops-deps) | Audit, analyse et recommandations pour les dependances du pr... | Read, Grep, Glob... |
-| [`ops-health`](/docs/agents/ops-health) | Health check rapide pour evaluer l'etat general d'un projet. | Read, Grep, Glob... |
-| [`ops-serverless`](/docs/agents/ops-serverless) | Deploiement d'applications serverless. | Read, Grep, Glob... |
-| [`ops-vercel`](/docs/agents/ops-vercel) | Deploiement sur Vercel. | Read, Grep, Glob... |
-| [`qa-coverage`](/docs/agents/qa-coverage) | Analyse de la couverture de tests et de la qualite des tests... | Read, Grep, Glob... |
-| [`qa-design`](/docs/agents/qa-design) | Audit de design UI/UX avec 100+ regles de verification. | Read, Grep, Glob |
-| [`qa-responsive`](/docs/agents/qa-responsive) | Audit de la conception responsive et de l'experience mobile. | Read, Grep, Glob |
-| [`qa-tech-debt`](/docs/agents/qa-tech-debt) | Identification et priorisation de la dette technique. | Read, Grep, Glob |
-| [`wcag-audit`](/docs/agents/wcag-audit) | Audit d'accessibilite selon WCAG 2.1/2.2 niveau AA, inspire ... | Read, Grep, Glob |
-| [`work-explore`](/docs/agents/work-explore) | Mode EXPLORATION : analyse du codebase sans modifier de fich... | Read, Grep, Glob |
+| [`biz-model`](/docs/agents/biz-model) | Business analysis and business model proposal for a project. | Read, Grep, Glob... |
+| [`dev-design-system`](/docs/agents/dev-design-system) | Design systems and component libraries. | Read, Grep, Glob |
+| [`dev-prisma`](/docs/agents/dev-prisma) | Prisma ORM for type-safe databases. | Read, Grep, Glob... |
+| [`dev-trpc`](/docs/agents/dev-trpc) | Type-safe APIs with tRPC. | Read, Grep, Glob |
+| [`doc-changelog`](/docs/agents/doc-changelog) | Changelog management following the Keep a Changelog conventi... | Read, Grep, Glob... |
+| [`doc-explain`](/docs/agents/doc-explain) | Pedagogical explanation of complex code. | Read, Grep, Glob |
+| [`doc-onboard`](/docs/agents/doc-onboard) | Guide for discovering and understanding a codebase. | Read, Grep, Glob |
+| [`growth-cro`](/docs/agents/growth-cro) | Conversion rate audit and optimization. | Read, Grep, Glob |
+| [`growth-localization`](/docs/agents/growth-localization) | Localization strategy and international expansion. | Read, Grep, Glob |
+| [`legal-privacy-policy`](/docs/agents/legal-privacy-policy) | Creation of a GDPR-compliant privacy policy. | Read, Grep, Glob... |
+| [`legal-terms-of-service`](/docs/agents/legal-terms-of-service) | Creation of compliant Terms of Service. | Read, Grep, Glob... |
+| [`ops-cost`](/docs/agents/ops-cost) | Token consumption analysis and cost optimization recommendat... | Read, Grep, Glob... |
+| [`ops-deps`](/docs/agents/ops-deps) | Audit, analysis and recommendations for project dependencies... | Read, Grep, Glob... |
+| [`ops-health`](/docs/agents/ops-health) | Quick health check to evaluate the general state of a projec... | Read, Grep, Glob... |
+| [`ops-serverless`](/docs/agents/ops-serverless) | Deployment of serverless applications. | Read, Grep, Glob... |
+| [`ops-vercel`](/docs/agents/ops-vercel) | Deployment on Vercel. | Read, Grep, Glob... |
+| [`qa-coverage`](/docs/agents/qa-coverage) | Analysis of test coverage and quality of existing tests. | Read, Grep, Glob... |
+| [`qa-design`](/docs/agents/qa-design) | UI/UX design audit with 100+ verification rules. | Read, Grep, Glob |
+| [`qa-responsive`](/docs/agents/qa-responsive) | Audit of responsive design and mobile experience. | Read, Grep, Glob |
+| [`qa-tech-debt`](/docs/agents/qa-tech-debt) | Identification and prioritization of technical debt. | Read, Grep, Glob |
+| [`wcag-audit`](/docs/agents/wcag-audit) | Accessibility audit per WCAG 2.1/2.2 level AA, inspired by t... | Read, Grep, Glob |
+| [`work-explore`](/docs/agents/work-explore) | EXPLORATION mode: codebase analysis without modifying files. | Read, Grep, Glob |
 
 ### Sonnet (35 agents)
 
-Agents pour les taches complexes necessitant une analyse approfondie.
+Agents for complex tasks requiring in-depth analysis.
 
-| Agent | Description | Outils |
+| Agent | Description | Tools |
 |-------|-------------|--------|
-| [`biz-competitor`](/docs/agents/biz-competitor) | Analyse concurrentielle et positionnement strategique pour u... | Read, Grep, Glob... |
-| [`biz-mvp`](/docs/agents/biz-mvp) | Definition et planification du Minimum Viable Product. | Read, Grep, Glob... |
-| [`biz-personas`](/docs/agents/biz-personas) | Creation de personas utilisateur bases sur des donnees. | Read, Grep, Glob... |
-| [`data-analytics`](/docs/agents/data-analytics) | Analyse de donnees et generation d'insights actionnables. | Read, Grep, Glob... |
-| [`data-modeling`](/docs/agents/data-modeling) | Conception de modeles de donnees dimensionnels pour analytic... | Read, Grep, Glob... |
-| [`data-pipeline`](/docs/agents/data-pipeline) | Conception et implementation de pipelines de donnees ETL/ELT... | Read, Grep, Glob... |
-| [`dev-ai-integration`](/docs/agents/dev-ai-integration) | Integration de LLMs et APIs IA dans les applications. | Read, Grep, Glob... |
-| [`dev-component`](/docs/agents/dev-component) | Creation de composants UI modulaires et reutilisables. | Read, Grep, Glob... |
-| [`dev-document`](/docs/agents/dev-document) | Generation de documents bureautiques et rapports. | Read, Grep, Glob... |
-| [`dev-flutter`](/docs/agents/dev-flutter) | Developpement Flutter avec Clean Architecture et BLoC. | Read, Grep, Glob... |
-| [`dev-prompt-engineering`](/docs/agents/dev-prompt-engineering) | Optimisation systematique de prompts pour applications LLM. | Read, Grep, Glob... |
-| [`dev-supabase`](/docs/agents/dev-supabase) | Integration complete de Supabase comme backend. | Read, Grep, Glob... |
-| [`dev-test`](/docs/agents/dev-test) | Generation de tests complets et maintenables. | Read, Grep, Glob... |
-| [`doc-generate`](/docs/agents/doc-generate) | Generation de documentation complete et maintenable. | Read, Grep, Glob... |
-| [`growth-analytics`](/docs/agents/growth-analytics) | Implementation de l'analytics et du tracking. | Read, Grep, Glob... |
-| [`growth-funnel`](/docs/agents/growth-funnel) | Analyse et optimisation des funnels de conversion. | Read, Grep, Glob... |
-| [`growth-landing`](/docs/agents/growth-landing) | Creation de landing pages optimisees pour la conversion. | Read, Grep, Glob... |
-| [`growth-seo`](/docs/agents/growth-seo) | Audit SEO technique et recommandations d'optimisation. | Read, Grep, Glob... |
-| [`legal-payment`](/docs/agents/legal-payment) | Integration paiement securisee et conforme. | Read, Grep, Glob... |
-| [`legal-rgpd`](/docs/agents/legal-rgpd) | Conformite RGPD (Reglement General sur la Protection des Don... | Read, Grep, Glob... |
-| [`ops-ci`](/docs/agents/ops-ci) | Configuration de pipelines CI/CD complets. | Read, Grep, Glob... |
-| [`ops-database`](/docs/agents/ops-database) | Conception et gestion de bases de donnees. | Read, Grep, Glob... |
-| [`ops-deploy`](/docs/agents/ops-deploy) | Deploiement securise avec validation pre-deploy obligatoire. | Read, Grep, Glob... |
-| [`ops-docker`](/docs/agents/ops-docker) | Containerisation Docker optimisee pour la production. | Read, Grep, Glob... |
-| [`ops-infra-code`](/docs/agents/ops-infra-code) | Infrastructure as Code avec Terraform/OpenTofu. Le skill `op... | Read, Grep, Glob... |
-| [`ops-migration`](/docs/agents/ops-migration) | Planification et execution de migrations techniques. | Read, Grep, Glob... |
-| [`ops-monitoring`](/docs/agents/ops-monitoring) | Instrumentation complete pour observabilite (3 piliers). | Read, Grep, Glob... |
-| [`ops-opnsense`](/docs/agents/ops-opnsense) | Configuration OPNsense en IaC avec Terraform. Le skill `ops-... | Read, Grep, Glob... |
-| [`ops-proxmox`](/docs/agents/ops-proxmox) | Gestion d'infrastructure Proxmox VE avec Terraform. Le skill... | Read, Grep, Glob... |
-| [`qa-chrome`](/docs/agents/qa-chrome) | Audit visuel et tests navigateur. Prerequis : `claude --chro... | Read, Grep, Glob... |
-| [`qa-claudemd`](/docs/agents/qa-claudemd) | Audit de conformite au CLAUDE.md du projet et aux convention... | Read, Grep, Glob... |
-| [`qa-e2e`](/docs/agents/qa-e2e) | Tests End-to-End pour parcours utilisateur critiques. | Read, Grep, Glob... |
-| [`qa-perf`](/docs/agents/qa-perf) | Analyse et optimisation des performances. | Read, Grep, Glob... |
-| [`work-batch`](/docs/agents/work-batch) | Execution autonome de stories depuis un PRD. Le skill `work-... | Read, Grep, Glob... |
-| [`work-quick`](/docs/agents/work-quick) | Workflow rapide pour changements triviaux. Le skill `work-qu... | Read, Grep, Glob... |
+| [`biz-competitor`](/docs/agents/biz-competitor) | Competitive analysis and strategic positioning for a project... | Read, Grep, Glob... |
+| [`biz-mvp`](/docs/agents/biz-mvp) | Definition and planning of the Minimum Viable Product. | Read, Grep, Glob... |
+| [`biz-personas`](/docs/agents/biz-personas) | Creation of user personas based on data. | Read, Grep, Glob... |
+| [`data-analytics`](/docs/agents/data-analytics) | Data analysis and generation of actionable insights. | Read, Grep, Glob... |
+| [`data-modeling`](/docs/agents/data-modeling) | Design of dimensional data models for analytics. | Read, Grep, Glob... |
+| [`data-pipeline`](/docs/agents/data-pipeline) | Design and implementation of ETL/ELT data pipelines. | Read, Grep, Glob... |
+| [`dev-ai-integration`](/docs/agents/dev-ai-integration) | Integration of LLMs and AI APIs into applications. | Read, Grep, Glob... |
+| [`dev-component`](/docs/agents/dev-component) | Creation of modular and reusable UI components. | Read, Grep, Glob... |
+| [`dev-document`](/docs/agents/dev-document) | Generation of office documents and reports. | Read, Grep, Glob... |
+| [`dev-flutter`](/docs/agents/dev-flutter) | Flutter development with Clean Architecture and BLoC. | Read, Grep, Glob... |
+| [`dev-prompt-engineering`](/docs/agents/dev-prompt-engineering) | Systematic prompt optimization for LLM applications. | Read, Grep, Glob... |
+| [`dev-supabase`](/docs/agents/dev-supabase) | Complete integration of Supabase as a backend. | Read, Grep, Glob... |
+| [`dev-test`](/docs/agents/dev-test) | Generation of complete and maintainable tests. | Read, Grep, Glob... |
+| [`doc-generate`](/docs/agents/doc-generate) | Generation of complete and maintainable documentation. | Read, Grep, Glob... |
+| [`growth-analytics`](/docs/agents/growth-analytics) | Analytics and tracking implementation. | Read, Grep, Glob... |
+| [`growth-funnel`](/docs/agents/growth-funnel) | Analysis and optimization of conversion funnels. | Read, Grep, Glob... |
+| [`growth-landing`](/docs/agents/growth-landing) | Creation of landing pages optimized for conversion. | Read, Grep, Glob... |
+| [`growth-seo`](/docs/agents/growth-seo) | Technical SEO audit and optimization recommendations. | Read, Grep, Glob... |
+| [`legal-payment`](/docs/agents/legal-payment) | Secure and compliant payment integration. | Read, Grep, Glob... |
+| [`legal-rgpd`](/docs/agents/legal-rgpd) | GDPR compliance (General Data Protection Regulation). | Read, Grep, Glob... |
+| [`ops-ci`](/docs/agents/ops-ci) | Configuration of complete CI/CD pipelines. | Read, Grep, Glob... |
+| [`ops-database`](/docs/agents/ops-database) | Database design and management. | Read, Grep, Glob... |
+| [`ops-deploy`](/docs/agents/ops-deploy) | Secure deployment with mandatory pre-deploy validation. | Read, Grep, Glob... |
+| [`ops-docker`](/docs/agents/ops-docker) | Docker containerization optimized for production. | Read, Grep, Glob... |
+| [`ops-infra-code`](/docs/agents/ops-infra-code) | Infrastructure as Code with Terraform/OpenTofu. The `ops-inf... | Read, Grep, Glob... |
+| [`ops-migration`](/docs/agents/ops-migration) | Planning and execution of technical migrations. | Read, Grep, Glob... |
+| [`ops-monitoring`](/docs/agents/ops-monitoring) | Complete instrumentation for observability (3 pillars). | Read, Grep, Glob... |
+| [`ops-opnsense`](/docs/agents/ops-opnsense) | OPNsense configuration as IaC with Terraform. The `ops-opnse... | Read, Grep, Glob... |
+| [`ops-proxmox`](/docs/agents/ops-proxmox) | Proxmox VE infrastructure management with Terraform. The `op... | Read, Grep, Glob... |
+| [`qa-chrome`](/docs/agents/qa-chrome) | Visual audit and browser testing. Prerequisites: `claude --c... | Read, Grep, Glob... |
+| [`qa-claudemd`](/docs/agents/qa-claudemd) | Audit of compliance with the project's CLAUDE.md and the rep... | Read, Grep, Glob... |
+| [`qa-e2e`](/docs/agents/qa-e2e) | End-to-End tests for critical user journeys. | Read, Grep, Glob... |
+| [`qa-perf`](/docs/agents/qa-perf) | Performance analysis and optimization. | Read, Grep, Glob... |
+| [`work-batch`](/docs/agents/work-batch) | Autonomous execution of stories from a PRD. The `work-batch`... | Read, Grep, Glob... |
+| [`work-quick`](/docs/agents/work-quick) | Quick workflow for trivial changes. The `work-quick` skill p... | Read, Grep, Glob... |
 
 
 ### Opus (6 agents)
 
-Agents pour les taches critiques.
+Agents for critical tasks.
 
-| Agent | Description | Outils |
+| Agent | Description | Tools |
 |-------|-------------|--------|
-| [`dev-debug`](/docs/agents/dev-debug) | Diagnostic et resolution de bugs. Le skill `dev-debug` fourn... | Read, Grep, Glob... |
-| [`dev-rag`](/docs/agents/dev-rag) | Architecture et implementation de systemes RAG. | Read, Grep, Glob... |
-| [`dev-tdd`](/docs/agents/dev-tdd) | Developpement guide par les tests. Le skill `dev-tdd` fourni... | Read, Grep, Glob... |
-| [`qa-audit`](/docs/agents/qa-audit) | Audit qualite complet couvrant 5 domaines. | Read, Grep, Glob... |
-| [`qa-loop`](/docs/agents/qa-loop) | Boucle autonome **AUDIT (parallele) → VALIDATE → FIX → VERIF... | Read, Grep, Glob... |
-| [`qa-security`](/docs/agents/qa-security) | Audit de securite OWASP Top 10. Le skill `qa-security` fourn... | Read, Grep, Glob... |
+| [`dev-debug`](/docs/agents/dev-debug) | Bug diagnostic and resolution. The `dev-debug` skill provide... | Read, Grep, Glob... |
+| [`dev-rag`](/docs/agents/dev-rag) | Architecture and implementation of RAG systems. | Read, Grep, Glob... |
+| [`dev-tdd`](/docs/agents/dev-tdd) | Test-driven development. The `dev-tdd` skill provides the de... | Read, Grep, Glob... |
+| [`qa-audit`](/docs/agents/qa-audit) | Complete quality audit covering 5 domains. | Read, Grep, Glob... |
+| [`qa-loop`](/docs/agents/qa-loop) | Autonomous **AUDIT (parallel) → VALIDATE → FIX → VERIFY → CH... | Read, Grep, Glob... |
+| [`qa-security`](/docs/agents/qa-security) | OWASP Top 10 security audit. The `qa-security` skill provide... | Read, Grep, Glob... |
 
 
-## Vue en cartes
+## Card view
 
 <AgentGrid>
   <AgentCard
     name="biz-competitor"
-    description="Analyse concurrentielle et positionnement strategique pour un projet."
+    description="Competitive analysis and strategic positioning for a project."
     model="sonnet"
     tools={["Read","Grep","Glob","WebSearch"]}
     href="/docs/agents/biz-competitor"
   />
   <AgentCard
     name="biz-model"
-    description="Analyse business et proposition de business model pour un projet."
+    description="Business analysis and business model proposal for a project."
     model="haiku"
     tools={["Read","Grep","Glob","WebSearch"]}
     href="/docs/agents/biz-model"
   />
   <AgentCard
     name="biz-mvp"
-    description="Definition et planification du Minimum Viable Product."
+    description="Definition and planning of the Minimum Viable Product."
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/biz-mvp"
   />
   <AgentCard
     name="biz-personas"
-    description="Creation de personas utilisateur bases sur des donnees."
+    description="Creation of user personas based on data."
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/biz-personas"
   />
   <AgentCard
     name="data-analytics"
-    description="Analyse de donnees et generation d'insights actionnables."
+    description="Data analysis and generation of actionable insights."
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/data-analytics"
   />
   <AgentCard
     name="data-modeling"
-    description="Conception de modeles de donnees dimensionnels pour analytics."
+    description="Design of dimensional data models for analytics."
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/data-modeling"
   />
   <AgentCard
     name="data-pipeline"
-    description="Conception et implementation de pipelines de donnees ETL/ELT."
+    description="Design and implementation of ETL/ELT data pipelines."
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/data-pipeline"
   />
   <AgentCard
     name="dev-ai-integration"
-    description="Integration de LLMs et APIs IA dans les applications."
+    description="Integration of LLMs and AI APIs into applications."
     model="sonnet"
     tools={["Read","Grep","Glob","Bash"]}
     href="/docs/agents/dev-ai-integration"
   />
   <AgentCard
     name="dev-component"
-    description="Creation de composants UI modulaires et reutilisables."
+    description="Creation of modular and reusable UI components."
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/dev-component"
   />
   <AgentCard
     name="dev-debug"
-    description="Diagnostic et resolution de bugs. Le skill `dev-debug` fournit la methodologie d"
+    description="Bug diagnostic and resolution. The `dev-debug` skill provides the detailed metho"
     model="opus"
     tools={["Read","Grep","Glob","Bash"]}
     href="/docs/agents/dev-debug"
   />
   <AgentCard
     name="dev-design-system"
-    description="Design systems et bibliotheques de composants."
+    description="Design systems and component libraries."
     model="haiku"
     tools={["Read","Grep","Glob"]}
     href="/docs/agents/dev-design-system"
   />
   <AgentCard
     name="dev-document"
-    description="Generation de documents bureautiques et rapports."
+    description="Generation of office documents and reports."
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/dev-document"
   />
 </AgentGrid>
 
-[Voir tous les agents...](#agents-par-modele)
+[See all agents...](#agents-by-model)
 
 ---
 
-## Voir aussi
+## See also
 
-- [Architecture](/docs/intro/architecture) - Comprendre Commands vs Agents vs Skills
-- [Commands](/docs/commands) - Les commandes manuelles
-- [Skills](/docs/skills) - Les skills auto-declenches
+- [Architecture](/docs/intro/architecture) - Understand Commands vs Agents vs Skills
+- [Commands](/docs/commands) - Manual commands
+- [Skills](/docs/skills) - Auto-triggered skills

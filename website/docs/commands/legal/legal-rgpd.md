@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "/legal:legal-rgpd"
-description: "Audit de conformite RGPD d'un projet."
+description: "GDPR compliance audit of a project."
 tags:
   - "legal"
   - "command"
@@ -13,60 +13,60 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--legal">LEGAL</span>
 
 
-# Agent RGPD
+# GDPR Agent
 
-Audit de conformite RGPD d'un projet.
+GDPR compliance audit of a project.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Analyser le codebase pour identifier les donnees personnelles collectees,
-verifier la conformite RGPD et proposer un plan d'action priorise.
+Analyze the codebase to identify the personal data collected,
+verify GDPR compliance and propose a prioritized action plan.
 
 ## Workflow
 
-- Scanner le code pour identifier les donnees personnelles (email, phone, IP, etc.)
-- Cartographier les flux de donnees (collecte, stockage, transmission)
-- Verifier la base legale de chaque traitement (Art. 6)
-- Auditer le consentement et les cookies (banniere, blocage, dark patterns)
-- Verifier l'implementation des droits des personnes (acces, rectification, effacement, portabilite)
-- Analyser les durees de conservation et les mecanismes de purge
-- Identifier les transferts hors UE et les garanties
-- Verifier la securite des donnees (chiffrement, hachage, RBAC)
-- Generer l'ebauche du registre des traitements (Art. 30)
+- Scan the code to identify personal data (email, phone, IP, etc.)
+- Map data flows (collection, storage, transmission)
+- Verify the legal basis of each processing (Art. 6)
+- Audit consent and cookies (banner, blocking, dark patterns)
+- Verify the implementation of data subject rights (access, rectification, erasure, portability)
+- Analyze retention periods and purge mechanisms
+- Identify transfers outside the EU and the safeguards
+- Verify data security (encryption, hashing, RBAC)
+- Generate the draft of the processing register (Art. 30)
 
-## Output attendu
+## Expected output
 
-1. **Resume** de conformite avec niveau estime
-2. **Donnees personnelles** identifiees avec localisation et base legale
-3. **Conformite par domaine** (consentement, droits, conservation, transferts, securite)
-4. **Non-conformites critiques** avec recommandations
-5. **Plan d'action** priorise
+1. **Compliance summary** with estimated level
+2. **Personal data** identified with location and legal basis
+3. **Compliance by domain** (consent, rights, retention, transfers, security)
+4. **Critical non-compliance** with recommendations
+5. **Action plan** prioritized
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/legal:legal-docs` | Documents legaux complets |
-| `/legal:legal-privacy-policy` | Politique de confidentialite |
-| `/qa:qa-security` | Securite des donnees |
+| `/legal:legal-docs` | Complete legal documents |
+| `/legal:legal-privacy-policy` | Privacy policy |
+| `/qa:qa-security` | Data security |
 
 ---
 
-IMPORTANT: Cet audit est une analyse technique du code. Il ne remplace pas un avis juridique.
+IMPORTANT: This audit is a technical analysis of the code. It does not replace legal advice.
 
-YOU MUST identifier tous les flux de donnees personnelles, y compris vers les services tiers.
+YOU MUST identify all personal data flows, including to third-party services.
 
-NEVER considerer qu'un service populaire est automatiquement conforme RGPD.
+NEVER consider that a popular service is automatically GDPR-compliant.
 
-Think hard sur les flux de donnees et les risques avant de conclure.
+Think hard about the data flows and risks before concluding.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes LEGAL](/docs/commands/legal)
-- [Toutes les commandes](/docs/commands)
+- [Back to LEGAL commands](/docs/commands/legal)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 24
 title: "/ops:ops-mobile-release"
-description: "Publication d'applications mobiles sur les stores (App Store, Google Play)."
+description: "Publishing mobile applications to stores (App Store, Google Play)."
 tags:
   - "ops"
   - "command"
@@ -13,60 +13,60 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent MOBILE RELEASE
+# MOBILE RELEASE Agent
 
-Publication d'applications mobiles sur les stores (App Store, Google Play).
+Publishing mobile applications to stores (App Store, Google Play).
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Preparer et automatiser la publication d'applications mobiles, incluant
-la signature, le versioning, le build et la configuration CI/CD.
+Prepare and automate mobile application publishing, including
+signing, versioning, building and CI/CD configuration.
 
-Utilise le skill `ops-mobile-release` pour la methodologie detaillee.
+Use the `ops-mobile-release` skill for the detailed methodology.
 
 ## Workflow
 
-- Identifier la plateforme cible (Android, iOS, les deux)
-- Configurer la signature (keystore Android, certificats iOS)
-- Gerer le versioning (versionCode/versionName, build number)
-- Generer les builds (App Bundle, IPA)
-- Configurer Fastlane pour l'automatisation
-- Mettre en place le CI/CD (GitHub Actions, Codemagic)
-- Publier sur les stores (Google Play Console, App Store Connect)
+- Identify the target platform (Android, iOS, both)
+- Configure signing (Android keystore, iOS certificates)
+- Manage versioning (versionCode/versionName, build number)
+- Generate builds (App Bundle, IPA)
+- Configure Fastlane for automation
+- Set up CI/CD (GitHub Actions, Codemagic)
+- Publish to stores (Google Play Console, App Store Connect)
 
-## Output attendu
+## Expected output
 
-1. **Configuration** de signature pour chaque plateforme
-2. **Scripts Fastlane** (internal, beta, production)
-3. **Pipeline CI/CD** pour les releases
+1. **Signing configuration** for each platform
+2. **Fastlane scripts** (internal, beta, production)
+3. **CI/CD pipeline** for releases
 4. **Checklist** pre-release (Android + iOS)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-flutter` | Developper l'app Flutter |
-| `/ops:ops-ci` | Pipeline CI/CD complet |
-| `/ops:ops-release` | Gestion des versions |
-| `/ops:ops-secrets-management` | Stocker les credentials |
+| `/dev:dev-flutter` | Develop the Flutter app |
+| `/ops:ops-ci` | Full CI/CD pipeline |
+| `/ops:ops-release` | Version management |
+| `/ops:ops-secrets-management` | Store credentials |
 
 ---
 
-IMPORTANT: Ne jamais commiter les keystores ou certificats dans le repo.
+IMPORTANT: Never commit keystores or certificates to the repo.
 
-IMPORTANT: Toujours incrementer le versionCode/build number avant une release.
+IMPORTANT: Always increment the versionCode/build number before a release.
 
-YOU MUST tester sur de vrais appareils avant publication.
+YOU MUST test on real devices before publishing.
 
-NEVER publier directement en production - utiliser les tracks de test d'abord.
+NEVER publish directly to production - use test tracks first.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "/data:data-modeling"
-description: "Concevoir et implementer des modeles de donnees (schemas, ERD, data warehouse)."
+description: "Design and implement data models (schemas, ERD, data warehouse)."
 tags:
   - "data"
   - "command"
@@ -15,55 +15,55 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DATA-MODELING
 
-Concevoir et implementer des modeles de donnees (schemas, ERD, data warehouse).
+Design and implement data models (schemas, ERD, data warehouse).
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Concevoir un modele de donnees adapte aux cas d'usage analytiques ou transactionnels,
-avec conventions de nommage, documentation et tests de qualite.
+Design a data model suited to analytical or transactional use cases,
+with naming conventions, documentation and quality tests.
 
 ## Workflow
 
-- Comprendre les besoins : cas d'usage analytiques, entites metier, questions a repondre, volume
-- Choisir le type de modelisation (OLTP 3NF, Star Schema, Snowflake, Data Vault, Wide Table)
-- Definir les entites avec relations et cardinalite
-- Appliquer les conventions de nommage (fact_, dim_, _id, _at, is_, _amount)
-- Implementer avec dbt si applicable (models, tests, documentation YAML)
-- Gerer les Slowly Changing Dimensions (SCD Type 2) si necessaire
-- Documenter avec ERD (dbdiagram.io ou draw.io) et dictionnaire de donnees
-- Ajouter les tests de qualite (unique, not_null, accepted_values)
+- Understand the needs: analytical use cases, business entities, questions to answer, volume
+- Choose the type of modeling (OLTP 3NF, Star Schema, Snowflake, Data Vault, Wide Table)
+- Define the entities with relations and cardinality
+- Apply naming conventions (fact_, dim_, _id, _at, is_, _amount)
+- Implement with dbt if applicable (models, tests, YAML documentation)
+- Manage Slowly Changing Dimensions (SCD Type 2) if needed
+- Document with ERD (dbdiagram.io or draw.io) and data dictionary
+- Add quality tests (unique, not_null, accepted_values)
 
-## Output attendu
+## Expected output
 
-Modele de donnees avec entites (type, description, volume estime),
-ERD, dictionnaire de donnees et requetes d'exemple.
+Data model with entities (type, description, estimated volume),
+ERD, data dictionary and example queries.
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/data:data-pipeline` | Alimenter le modele |
-| `/data:data-analytics` | Analyser les donnees |
-| `/ops:ops-database` | Optimiser les performances |
-| `/doc:doc-architecture` | Documenter l'architecture |
+| `/data:data-pipeline` | Feed the model |
+| `/data:data-analytics` | Analyze the data |
+| `/ops:ops-database` | Optimize performance |
+| `/doc:doc-architecture` | Document the architecture |
 
 ---
 
-IMPORTANT: Le modele doit repondre aux questions metier, pas l'inverse.
+IMPORTANT: The model must answer business questions, not the other way around.
 
-YOU MUST documenter chaque table et colonne.
+YOU MUST document every table and column.
 
-NEVER creer de modele sans comprendre les cas d'usage.
+NEVER create a model without understanding the use cases.
 
-Think hard sur l'evolutivite et la maintenabilite du modele.
+Think hard about the model's scalability and maintainability.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DATA](/docs/commands/data)
-- [Toutes les commandes](/docs/commands)
+- [Back to DATA commands](/docs/commands/data)
+- [All commands](/docs/commands)

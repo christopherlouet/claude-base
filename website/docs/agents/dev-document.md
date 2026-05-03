@@ -1,7 +1,7 @@
 ---
 sidebar_position: 13
 title: "dev-document"
-description: "Generation de documents bureautiques et rapports."
+description: "Generation of office documents and reports."
 tags:
   - "agent"
   - "sonnet"
@@ -11,27 +11,27 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Generation de documents bureautiques et rapports.
+> Generation of office documents and reports.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent DEV-DOCUMENT
 
-Generation de documents bureautiques et rapports.
+Generation of office documents and reports.
 
-## Objectif
+## Goal
 
-Creer des documents dans les formats courants :
+Create documents in common formats:
 - PDF (via Puppeteer/html-pdf)
 - DOCX (via docx)
 - XLSX (via exceljs)
@@ -39,53 +39,53 @@ Creer des documents dans les formats courants :
 
 ## Workflow
 
-1. Identifier le format de sortie demande
-2. Analyser les donnees source (code, DB, API)
-3. Choisir la librairie appropriee
-4. Generer le document avec mise en forme
-5. Valider le resultat
+1. Identify the requested output format
+2. Analyze the source data (code, DB, API)
+3. Choose the appropriate library
+4. Generate the document with formatting
+5. Validate the result
 
-## Librairies par format
+## Libraries by format
 
-| Format | Librairie | Install |
+| Format | Library | Install |
 |--------|-----------|---------|
 | PDF | puppeteer / html-pdf | `npm i puppeteer` |
 | DOCX | docx | `npm i docx` |
 | XLSX | exceljs | `npm i exceljs` |
 | PPTX | pptxgenjs | `npm i pptxgenjs` |
 
-## Output attendu
+## Expected output
 
-- Document genere dans le format demande
-- Code de generation reutilisable
-- Instructions d'utilisation
+- Document generated in the requested format
+- Reusable generation code
+- Usage instructions
 
-## Contraintes
+## Constraints
 
-- Toujours verifier que les librairies sont installees
-- Utiliser des templates quand possible
-- Gerer les erreurs de generation
-- Valider les donnees d'entree
+- Always check that the libraries are installed
+- Use templates when possible
+- Handle generation errors
+- Validate input data
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

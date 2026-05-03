@@ -1,7 +1,7 @@
 ---
 sidebar_position: 22
 title: "doc-changelog"
-description: "Maintenance du CHANGELOG selon Keep a Changelog. Declencher quand l'utilisateur veut documenter les changements ou preparer une release."
+description: "CHANGELOG maintenance following Keep a Changelog. Trigger when the user wants to document changes or prepare a release."
 tags:
   - "skill"
   - "fork"
@@ -11,21 +11,21 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Maintenance du CHANGELOG selon Keep a Changelog. Declencher quand l'utilisateur veut documenter les changements ou preparer une release.
+> CHANGELOG maintenance following Keep a Changelog. Trigger when the user wants to document changes or prepare a release.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Mots-cles** | `doc`, `changelog` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
+| **Keywords** | `doc`, `changelog` |
 
-## Description detaillee
+## Detailed description
 
 # Changelog Maintenance
 
-## Format Keep a Changelog
+## Keep a Changelog Format
 
 ```markdown
 # Changelog
@@ -66,37 +66,37 @@ All notable changes will be documented here.
 | Fixed | Bug fixes |
 | Security | Security fixes |
 
-## Bonnes pratiques
+## Best practices
 
-- Une entree par changement significatif
-- Liens vers issues/PRs
-- Date format ISO (YYYY-MM-DD)
-- [Unreleased] toujours a jour
-- Ecrire pour les utilisateurs
+- One entry per significant change
+- Links to issues/PRs
+- ISO date format (YYYY-MM-DD)
+- [Unreleased] always up to date
+- Write for users
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux doc..."_
-- _"Je veux changelog..."_
+- _"I want to doc..."_
+- _"I want to changelog..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: "/work:work-clarify"
-description: "Pose des questions ciblees pour reduire l'ambiguite dans une specification."
+description: "Asks targeted questions to reduce ambiguity in a specification."
 tags:
   - "work"
   - "command"
@@ -13,63 +13,63 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--work">WORK</span>
 
 
-# Agent WORK-CLARIFY
+# WORK-CLARIFY Agent
 
-Pose des questions ciblees pour reduire l'ambiguite dans une specification.
+Asks targeted questions to reduce ambiguity in a specification.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Identifier et resoudre les zones d'ambiguite dans la specification actuelle.
-La clarification reduit le risque de retravail en aval.
-Charger la spec depuis `specs/[feature]/spec.md` ou le fichier specifie.
+Identify and resolve areas of ambiguity in the current specification.
+Clarification reduces the risk of downstream rework.
+Load the spec from `specs/[feature]/spec.md` or the specified file.
 
 ## Workflow
 
-- Charger et lire la specification
-- Scanner les ambiguites par categorie : scope fonctionnel, modele de donnees, flux UX, qualite non-fonctionnelle, integrations, cas limites
-- Marquer chaque categorie : **Clair** | **Partiel** | **Manquant**
-- Generer max 5 questions priorisees par impact (scope &gt; securite &gt; UX &gt; technique)
-- Poser UNE question a la fois, attendre la reponse
-- Chaque question : choix multiple (2-5 options) OU reponse courte (5 mots max)
-- Toujours proposer une recommandation basee sur les bonnes pratiques
-- Apres chaque reponse acceptee, mettre a jour la spec
-- Generer le rapport de fin de session avec couverture par categorie
+- Load and read the specification
+- Scan ambiguities by category: functional scope, data model, UX flow, non-functional quality, integrations, edge cases
+- Mark each category: **Clear** | **Partial** | **Missing**
+- Generate max 5 questions prioritized by impact (scope &gt; security &gt; UX &gt; technical)
+- Ask ONE question at a time, wait for the answer
+- Each question: multiple choice (2-5 options) OR short answer (5 words max)
+- Always offer a recommendation based on best practices
+- After each accepted answer, update the spec
+- Generate the end-of-session report with coverage by category
 
-## Output attendu
+## Expected output
 
-1. **Questions** : Max 5, une a la fois, avec contexte + recommandation
-2. **Spec mise a jour** : Sections modifiees apres chaque reponse
-3. **Rapport** : Questions posees, sections modifiees, couverture par categorie, recommandation suite
+1. **Questions**: Max 5, one at a time, with context + recommendation
+2. **Updated spec**: Sections modified after each answer
+3. **Report**: Questions asked, sections modified, coverage by category, follow-up recommendation
 
-## Agents lies
+## Related agents
 
-| Avant | Usage |
+| Before | Usage |
+|--------|-------|
+| `/work:work-specify` | Create the specification |
+
+| After | Usage |
 |-------|-------|
-| `/work:work-specify` | Creer la specification |
-
-| Apres | Usage |
-|-------|-------|
-| `/work:work-plan` | Planifier l'implementation |
+| `/work:work-plan` | Plan the implementation |
 
 ---
 
-IMPORTANT: Maximum 5 questions par session - prioriser par impact.
+IMPORTANT: Maximum 5 questions per session - prioritize by impact.
 
-YOU MUST poser UNE question a la fois et attendre la reponse.
+YOU MUST ask ONE question at a time and wait for the answer.
 
-YOU MUST mettre a jour la spec apres CHAQUE reponse acceptee.
+YOU MUST update the spec after EACH accepted answer.
 
-NEVER reveler les questions suivantes a l'avance.
+NEVER reveal the following questions in advance.
 
-Think hard sur l'impact de chaque clarification avant de poser la question.
+Think hard about the impact of each clarification before asking the question.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes WORK](/docs/commands/work)
-- [Toutes les commandes](/docs/commands)
+- [Back to WORK commands](/docs/commands/work)
+- [All commands](/docs/commands)

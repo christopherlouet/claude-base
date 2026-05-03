@@ -1,7 +1,7 @@
 ---
 sidebar_position: 20
 title: "Claude Code Foundation Architecture"
-description: " Understanding the difference between Commands, Agents, Skills and Rules"
+description: " Understand the difference between Commands, Agents, Skills and Rules"
 tags:
   - "concept"
 ---
@@ -10,9 +10,9 @@ tags:
 
 # Claude Code Foundation Architecture
 
-&gt; Understanding the difference between Commands, Agents, Skills and Rules
+&gt; Understand the difference between Commands, Agents, Skills and Rules
 
-## Why do some files exist in both commands/ AND agents/?
+## Why do some files exist in commands/ AND agents/?
 
 The duplication is **intentional** and serves different purposes:
 
@@ -46,7 +46,7 @@ Claude Code uses:
 # → Result returned to the main context
 ```
 
-This architecture provides:
+This architecture enables:
 - **Flexibility**: The user controls via commands
 - **Optimization**: Claude delegates with the right model
 - **Isolation**: Agents do not pollute the context
@@ -63,7 +63,7 @@ This architecture provides:
 │    ┌───────────────────────┼───────────────────────┐            │
 │    │                       ▼                       │            │
 │    │  ┌─────────────────────────────────────────┐  │            │
-│    │  │             TRIGGER                      │  │            │
+│    │  │              TRIGGER                     │  │            │
 │    │  │                                          │  │            │
 │    │  │  Manual (/cmd)    Automatic (context)    │  │            │
 │    │  │       │                  │               │  │            │
@@ -103,7 +103,7 @@ This architecture provides:
 ## Commands (131 available)
 
 ### Definition
-Prompts invoked manually with the syntax `/command-name`.
+Prompts invoked manually with the `/command-name` syntax.
 
 ### Characteristics
 - Explicit trigger by the user
@@ -199,13 +199,13 @@ context: fork
 
 # TDD Skill
 
-When the user mentions "TDD", "test first", or "write the tests first"...
+When the user mentions "TDD", "test first", or "write tests first"...
 ```
 
 ### When to use
 - Recurring patterns
 - Desired contextual triggering
-- Behavior standardization
+- Standardization of behaviors
 
 ## Agents (63 available)
 
@@ -232,7 +232,7 @@ Specialized sub-agents with isolated context, automatic delegation.
 ```yaml
 ---
 name: agent-name
-description: Agent description
+description: Description of the agent
 model: haiku | sonnet | opus
 permissionMode: plan | default
 disallowedTools:
@@ -253,7 +253,7 @@ Instructions for the agent...
 ### Available models
 
 | Model | Usage | Cost | Speed | Context | Max output |
-|-------|-------|------|-------|---------|------------|
+|--------|-------|------|---------|----------|------------|
 | haiku | Simple tasks, reading | $ | Fast | 200k | 8k |
 | sonnet | Complex tasks, analysis | $$ | Medium | 200k | 64k |
 | opus (4.7) | Critical tasks, adaptive thinking | $$$ | Slower | 1M | 128k |
@@ -314,11 +314,11 @@ Cross-cutting rules (16):
 ├── migration-safety.md    # package.json, tsconfig, next.config
 ├── service-worker.md      # sw.js, service-worker*
 ├── lsp.md                 # Multi-language — LSP vs Grep
-├── research.md            # Multi-language — check native before build
-└── socle-maintenance.md   # .claude/** — sync counters catalog
+├── research.md            # Multi-language — check native before building
+└── socle-maintenance.md   # .claude/** — sync catalog counters
 ```
 
-Per-language/framework rules (14):
+Rules per language/framework (14):
 ```
 ├── typescript.md  # **/*.ts, **/*.tsx, **/*.mts
 ├── python.md      # **/*.py, **/pyproject.toml
@@ -356,14 +356,14 @@ paths:
 - Code conventions
 - Security rules
 - Quality standards
-- Constraints by technology
+- Per-technology constraints
 
 ## Decision Matrix
 
 ### By task type
 
 | Task | Best choice | Reason |
-|------|-------------|--------|
+|-------|----------------|--------|
 | Explicit workflow | **Command** | User control |
 | Recurring pattern | **Skill** | Auto trigger |
 | Read-only audit | **Agent** | Isolation, security |
@@ -371,10 +371,10 @@ paths:
 | Parallel task | **Agent** | Isolated context |
 | Complex action | **Command** | Detailed prompt |
 
-### By usage frequency
+### By frequency of use
 
 | Frequency | Best choice |
-|-----------|-------------|
+|-----------|----------------|
 | 1x per project | Command |
 | Several times/day | Skill |
 | In parallel | Agent |
@@ -383,9 +383,9 @@ paths:
 ### By isolation need
 
 | Need | Choice |
-|------|--------|
-| Share the context | Command or Skill |
-| Fully isolate | Agent |
+|--------|-------|
+| Share context | Command or Skill |
+| Isolate completely | Agent |
 | Constrain globally | Rule |
 
 ## Concrete Examples
@@ -490,7 +490,7 @@ All read-only, isolated contexts
 ## Summary
 
 | Concept | Trigger | Context | Main usage |
-|---------|---------|---------|------------|
+|---------|-------------|----------|-----------------|
 | **Command** | `/name` | Shared | Explicit actions |
 | **Skill** | Keywords | Fork | Auto patterns |
 | **Agent** | Delegation | **Isolated** | Parallel tasks |

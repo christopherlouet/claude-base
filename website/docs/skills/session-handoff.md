@@ -1,7 +1,7 @@
 ---
 sidebar_position: 45
 title: "session-handoff"
-description: "Transfert de contexte entre sessions IA. Declencher quand l'utilisateur veut sauvegarder le contexte, reprendre une tache, ou transmettre le travail a une autre session."
+description: "Context transfer between AI sessions. Trigger when the user wants to save the context, resume a task, or hand off the work to another session."
 tags:
   - "skill"
   - "fork"
@@ -11,166 +11,166 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Transfert de contexte entre sessions IA. Declencher quand l'utilisateur veut sauvegarder le contexte, reprendre une tache, ou transmettre le travail a une autre session.
+> Context transfer between AI sessions. Trigger when the user wants to save the context, resume a task, or hand off the work to another session.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Mots-cles** | `session`, `handoff` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
+| **Keywords** | `session`, `handoff` |
 
-## Description detaillee
+## Detailed description
 
 # Session Handoff
 
-## Objectif
+## Objective
 
-Sauvegarder et transmettre le contexte d'une session de travail pour permettre la reprise efficace dans une session ulterieure ou par un autre agent.
+Save and transfer the context of a work session to enable efficient resumption in a later session or by another agent.
 
-## Quand utiliser
+## When to use
 
-- Fin de session de travail (sauvegarder l'etat)
-- Tache trop complexe pour une seule session
-- Passage de relais entre developpeurs/agents
-- Documentation du travail en cours
+- End of a work session (save the state)
+- Task too complex for a single session
+- Handoff between developers/agents
+- Documentation of work in progress
 
-## Format de handoff
+## Handoff format
 
-### Fichier de contexte : `.claude/handoff.md`
+### Context file: `.claude/handoff.md`
 
 ```markdown
 # Session Handoff
 
 **Date:** [YYYY-MM-DD HH:MM]
-**Session:** [ID ou description]
-**Auteur:** [Humain ou agent]
+**Session:** [ID or description]
+**Author:** [Human or agent]
 
-## Contexte du projet
+## Project context
 
-**Projet:** [Nom]
-**Branche:** [Nom de la branche]
-**Commit actuel:** [Hash]
+**Project:** [Name]
+**Branch:** [Branch name]
+**Current commit:** [Hash]
 
-## Etat du travail
+## Work state
 
-### Termine
-- [x] [Tache 1] - [Detail]
-- [x] [Tache 2] - [Detail]
+### Done
+- [x] [Task 1] - [Detail]
+- [x] [Task 2] - [Detail]
 
-### En cours
-- [ ] [Tache 3] - [Etat actuel, ou ca en est]
-  - Fichiers modifies: [liste]
-  - Prochaine etape: [description]
-  - Blocage eventuel: [description]
+### In progress
+- [ ] [Task 3] - [Current state, where it stands]
+  - Modified files: [list]
+  - Next step: [description]
+  - Possible blocker: [description]
 
-### A faire
-- [ ] [Tache 4] - [Description]
-- [ ] [Tache 5] - [Description]
+### To do
+- [ ] [Task 4] - [Description]
+- [ ] [Task 5] - [Description]
 
-## Decisions prises
+## Decisions made
 
-| Decision | Raison | Alternative rejetee |
+| Decision | Reason | Rejected alternative |
 |----------|--------|---------------------|
-| [Choix 1] | [Pourquoi] | [Autre option] |
-| [Choix 2] | [Pourquoi] | [Autre option] |
+| [Choice 1] | [Why] | [Other option] |
+| [Choice 2] | [Why] | [Other option] |
 
-## Fichiers cles
+## Key files
 
-| Fichier | Role | Etat |
+| File | Role | State |
 |---------|------|------|
-| `src/xxx.ts` | [Description] | Modifie / Cree / A modifier |
-| `tests/xxx.test.ts` | [Description] | Modifie / Cree / A creer |
+| `src/xxx.ts` | [Description] | Modified / Created / To modify |
+| `tests/xxx.test.ts` | [Description] | Modified / Created / To create |
 
-## Patterns et conventions decouverts
+## Patterns and conventions discovered
 
-- [Pattern 1 du codebase]
-- [Convention de nommage]
-- [Architecture specifique]
+- [Pattern 1 from the codebase]
+- [Naming convention]
+- [Specific architecture]
 
-## Problemes rencontres
+## Problems encountered
 
-| Probleme | Solution/Workaround | Resolu ? |
+| Problem | Solution/Workaround | Resolved? |
 |----------|---------------------|----------|
-| [Probleme 1] | [Solution] | Oui/Non |
-| [Probleme 2] | [Workaround] | Partiel |
+| [Problem 1] | [Solution] | Yes/No |
+| [Problem 2] | [Workaround] | Partial |
 
-## Notes pour la prochaine session
+## Notes for the next session
 
-[Instructions specifiques, pieges a eviter, points d'attention]
+[Specific instructions, pitfalls to avoid, points of attention]
 
-## Commandes utiles
+## Useful commands
 
 ```bash
-# Pour reprendre
-git checkout [branche]
-npm test  # Verifier que tout passe
-# Prochaine etape: [description]
+# To resume
+git checkout [branch]
+npm test  # Check that everything passes
+# Next step: [description]
 ```
 ```
 
-## Workflow de handoff
+## Handoff workflow
 
-### Sauvegarder le contexte (fin de session)
-
-```
-1. RESUMER le travail effectue
-2. LISTER les fichiers modifies (`git diff --stat`)
-3. DOCUMENTER les decisions prises et pourquoi
-4. IDENTIFIER les taches restantes et leur priorite
-5. NOTER les problemes non resolus
-6. ECRIRE le fichier .claude/handoff.md
-```
-
-### Reprendre le contexte (debut de session)
+### Save the context (end of session)
 
 ```
-1. LIRE le fichier .claude/handoff.md
-2. VERIFIER l'etat du repo (`git status`, `git log`)
-3. LANCER les tests pour confirmer l'etat
-4. IDENTIFIER la prochaine tache a effectuer
-5. CONTINUER le travail
+1. SUMMARIZE the work done
+2. LIST the modified files (`git diff --stat`)
+3. DOCUMENT the decisions made and why
+4. IDENTIFY the remaining tasks and their priority
+5. NOTE the unresolved problems
+6. WRITE the .claude/handoff.md file
 ```
 
-## Bonnes pratiques
+### Resume the context (start of session)
 
-- Ecrire le handoff PENDANT le travail, pas apres
-- Etre specifique sur les fichiers et lignes de code
-- Inclure les commandes pour verifier l'etat
-- Documenter les decisions ET les raisons
-- Mentionner les pieges et workarounds decouverts
+```
+1. READ the .claude/handoff.md file
+2. CHECK the repo state (`git status`, `git log`)
+3. RUN the tests to confirm the state
+4. IDENTIFY the next task to perform
+5. CONTINUE the work
+```
 
-## Regles
+## Best practices
 
-- TOUJOURS creer un handoff avant de terminer une session de travail complexe
-- TOUJOURS inclure les fichiers modifies et leur etat
-- TOUJOURS documenter les decisions architecturales
-- NEVER presumer que la prochaine session aura le meme contexte
+- Write the handoff DURING the work, not after
+- Be specific about files and lines of code
+- Include commands to check the state
+- Document the decisions AND the reasons
+- Mention the pitfalls and workarounds discovered
 
-## Declenchement automatique
+## Rules
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+- ALWAYS create a handoff before ending a complex work session
+- ALWAYS include the modified files and their state
+- ALWAYS document the architectural decisions
+- NEVER assume the next session will have the same context
 
-### Exemples de declenchement
+## Automatic triggering
 
-- _"Je veux session..."_
-- _"Je veux handoff..."_
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-## Contexte fork
+### Triggering examples
+
+- _"I want to session..."_
+- _"I want to handoff..."_
+
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

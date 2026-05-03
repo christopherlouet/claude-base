@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "api-mocking"
-description: "Configuration de mocks API pour les tests. Declencher quand l'utilisateur veut mocker des APIs, utiliser MSW, ou tester sans backend."
+description: "API mock configuration for tests. Trigger when the user wants to mock APIs, use MSW, or test without a backend."
 tags:
   - "skill"
   - "fork"
@@ -11,38 +11,38 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Configuration de mocks API pour les tests. Declencher quand l'utilisateur veut mocker des APIs, utiliser MSW, ou tester sans backend.
+> API mock configuration for tests. Trigger when the user wants to mock APIs, use MSW, or test without a backend.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Bash` |
-| **Mots-cles** | `api`, `mocking`, `mock api`, `msw`, `test sans backend`, `fake api`, `stub endpoint` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Bash` |
+| **Keywords** | `api`, `mocking`, `mock api`, `msw`, `test without backend`, `fake api`, `stub endpoint` |
 
-## Description detaillee
+## Detailed description
 
 # API Mocking
 
-## Declencheurs
+## Triggers
 
 - "mock API"
 - "MSW"
-- "test sans backend"
+- "test without backend"
 - "fake API"
 - "stub endpoint"
 
-## Outils
+## Tools
 
-| Outil | Usage | Install |
-|-------|-------|---------|
+| Tool | Usage | Install |
+|------|-------|---------|
 | MSW | Browser/Node | `npm i -D msw` |
 | nock | Node only | `npm i -D nock` |
 | json-server | REST fake | `npm i -D json-server` |
 | Mirage JS | Browser | `npm i -D miragejs` |
 
-## MSW Setup (Recommande)
+## MSW Setup (Recommended)
 
 ### Installation
 
@@ -205,37 +205,37 @@ afterEach(() => {
 
 ## Best Practices
 
-| Pratique | Description |
+| Practice | Description |
 |----------|-------------|
-| Type-safe | Utiliser les memes types que l'API reelle |
-| Realiste | Simuler delais et erreurs |
-| Isolé | Reset entre chaque test |
-| Maintenu | Mettre a jour avec l'API |
+| Type-safe | Use the same types as the real API |
+| Realistic | Simulate delays and errors |
+| Isolated | Reset between each test |
+| Maintained | Keep up to date with the API |
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux api..."_
-- _"Je veux mocking..."_
-- _"Je veux mock api..."_
+- _"I want to api..."_
+- _"I want to mocking..."_
+- _"I want to mock api..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

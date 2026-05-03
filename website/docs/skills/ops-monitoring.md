@@ -1,7 +1,7 @@
 ---
 sidebar_position: 33
 title: "ops-monitoring"
-description: "Instrumentation d'applications pour monitoring. Declencher quand l'utilisateur veut ajouter des logs, metriques, ou traces."
+description: "Application instrumentation for monitoring. Trigger when the user wants to add logs, metrics, or traces."
 tags:
   - "skill"
   - "fork"
@@ -11,27 +11,27 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Instrumentation d'applications pour monitoring. Declencher quand l'utilisateur veut ajouter des logs, metriques, ou traces.
+> Application instrumentation for monitoring. Trigger when the user wants to add logs, metrics, or traces.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `monitoring` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `ops`, `monitoring` |
 
-## Description detaillee
+## Detailed description
 
 # Monitoring Instrumentation
 
-## 3 Piliers de l'Observabilite
+## 3 Pillars of Observability
 
-1. **Logs** - Events discretes
-2. **Metriques** - Mesures numeriques
-3. **Traces** - Chemins de requetes
+1. **Logs** - Discrete events
+2. **Metrics** - Numerical measurements
+3. **Traces** - Request paths
 
-## Logs Structures (Node.js)
+## Structured Logs (Node.js)
 
 ```typescript
 import pino from 'pino';
@@ -45,7 +45,7 @@ logger.info({ userId: '123', action: 'login' }, 'User logged in');
 logger.error({ err, requestId }, 'Request failed');
 ```
 
-## Metriques Prometheus
+## Prometheus Metrics
 
 ```typescript
 import { Counter, Histogram, Registry } from 'prom-client';
@@ -64,7 +64,7 @@ const httpDuration = new Histogram({
 });
 ```
 
-## Traces OpenTelemetry
+## OpenTelemetry Traces
 
 ```typescript
 import { trace } from '@opentelemetry/api';
@@ -90,33 +90,33 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 app.get('/ready', async (req, res) => {
   const dbOk = await db.query('SELECT 1');
-  res.status(dbOk ? 200 : 503).json({ db: dbOk });
+  res.status(dbOk ? 200: 503).json({ db: dbOk });
 });
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux ops..."_
-- _"Je veux monitoring..."_
+- _"I want to ops..."_
+- _"I want to monitoring..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: Structured Logging + Prometheus Metrics
@@ -209,7 +209,7 @@ app.get('/metrics', async (req, res) => {
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

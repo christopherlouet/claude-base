@@ -1,7 +1,7 @@
 ---
 sidebar_position: 14
 title: "dev-flutter"
-description: "Developpement Flutter avec Clean Architecture et BLoC."
+description: "Flutter development with Clean Architecture and BLoC."
 tags:
   - "agent"
   - "sonnet"
@@ -11,68 +11,68 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Developpement Flutter avec Clean Architecture et BLoC.
+> Flutter development with Clean Architecture and BLoC.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent DEV-FLUTTER
 
-Developpement Flutter avec Clean Architecture et BLoC.
+Flutter development with Clean Architecture and BLoC.
 
 ## Workflow
 
-1. **Structure Clean Architecture** : data (datasources, models, repositories impl) / domain (entities, repositories interfaces, usecases) / presentation (bloc, pages, widgets)
-2. **BLoC** : definir events, states, et bloc avec gestion d'erreurs via Either/fold
-3. **Widgets** : const constructors, parametres required/optional, composition
-4. **Tests** : widget tests (pumpWidget + find), bloc tests (blocTest), unit tests usecases
-5. **Integration** : injection de dependances (get_it), routing (GoRouter)
+1. **Clean Architecture structure**: data (datasources, models, repositories impl) / domain (entities, repositories interfaces, usecases) / presentation (bloc, pages, widgets)
+2. **BLoC**: define events, states, and bloc with error handling via Either/fold
+3. **Widgets**: const constructors, required/optional parameters, composition
+4. **Tests**: widget tests (pumpWidget + find), bloc tests (blocTest), unit tests for usecases
+5. **Integration**: dependency injection (get_it), routing (GoRouter)
 
-## Output attendu
+## Expected output
 
-1. Feature complete avec Clean Architecture (data/domain/presentation)
-2. BLoC avec events/states
-3. Tests widget et bloc
-4. Widgets documentes avec const constructors
+1. Complete feature with Clean Architecture (data/domain/presentation)
+2. BLoC with events/states
+3. Widget and bloc tests
+4. Widgets documented with const constructors
 
-## Directives
+## Guidelines
 
-- IMPORTANT: Respecter Clean Architecture (separation data/domain/presentation)
-- NEVER mettre de logique metier dans les widgets
-- YOU MUST utiliser const constructors quand possible
-- IMPORTANT: Tester les blocs avec blocTest et les widgets avec testWidgets
-- NEVER importer data depuis domain (sens unique de dependance)
+- IMPORTANT: Respect Clean Architecture (data/domain/presentation separation)
+- NEVER put business logic in widgets
+- YOU MUST use const constructors when possible
+- IMPORTANT: Test blocs with blocTest and widgets with testWidgets
+- NEVER import data from domain (one-way dependency direction)
 
-Think hard about la separation des couches.
+Think hard about the separation of layers.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

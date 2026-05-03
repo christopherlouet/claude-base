@@ -1,7 +1,7 @@
 ---
 sidebar_position: 17
 title: "/qa:wcag-audit"
-description: "Audit d'accessibilite base sur WCAG 2.1/2.2 et referentiel axe-core."
+description: "Accessibility audit based on WCAG 2.1/2.2 and the axe-core reference."
 tags:
   - "qa"
   - "command"
@@ -13,106 +13,106 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--qa">QA</span>
 
 
-# Agent WCAG-AUDIT (Accessibilite)
+# WCAG-AUDIT Agent (Accessibility)
 
-Audit d'accessibilite base sur WCAG 2.1/2.2 et referentiel axe-core.
+Accessibility audit based on WCAG 2.1/2.2 and the axe-core reference.
 
-## Cible de l'audit
+## Audit target
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Identifier les violations d'accessibilite dans le code et proposer des corrections concretes pour atteindre le niveau AA WCAG 2.1/2.2.
+Identify accessibility violations in the code and propose concrete fixes to reach WCAG 2.1/2.2 level AA.
 
 ## Workflow
 
-- Scanner les fichiers UI (composants, pages, layouts, CSS)
-- Auditer les 11 categories : images, formulaires, clavier, boutons/liens, couleurs, ARIA, structure, tables, frames, deprecies, WCAG 2.2
-- Classifier chaque probleme par impact (Critical/Serious/Moderate/Minor)
-- Distinguer violations (auto-detectables) et needs-review (verification manuelle)
-- Identifier les corrections prioritaires avec fichier:ligne
+- Scan UI files (components, pages, layouts, CSS)
+- Audit the 11 categories: images, forms, keyboard, buttons/links, colors, ARIA, structure, tables, frames, deprecated, WCAG 2.2
+- Classify each issue by impact (Critical/Serious/Moderate/Minor)
+- Distinguish violations (auto-detectable) from needs-review (manual verification)
+- Identify priority fixes with file:line
 
-## Niveaux d'impact
+## Impact levels
 
-| Niveau | Definition | Action |
+| Level | Definition | Action |
 |--------|-----------|--------|
-| **Critical** | Bloque completement l'acces | Corriger immediatement |
-| **Serious** | Impact significatif sur l'utilisabilite | Corriger avant release |
-| **Moderate** | Gene l'experience utilisateur | Planifier correction |
-| **Minor** | Amelioration souhaitable | Backlog |
+| **Critical** | Completely blocks access | Fix immediately |
+| **Serious** | Significant impact on usability | Fix before release |
+| **Moderate** | Hinders user experience | Plan a fix |
+| **Minor** | Desirable improvement | Backlog |
 
-## Categories d'audit
+## Audit categories
 
-| # | Categorie | Regles cles | WCAG |
+| # | Category | Key rules | WCAG |
 |---|-----------|------------|------|
-| 1 | Images/medias | alt, SVG, object, video, autoplay | 1.1.1, 1.2.2, 1.4.2 |
-| 2 | Formulaires | labels, select, erreurs, autocomplete | 4.1.2, 3.3.1, 1.3.5 |
-| 3 | Clavier | focus, traps, skip-link, scrollable, nested | 2.1.1, 2.1.2, 2.4.1 |
-| 4 | Boutons/liens | noms accessibles, liens descriptifs | 4.1.2, 2.4.4 |
-| 5 | Couleurs | ratios AA, couleur seule, elements UI | 1.4.3, 1.4.1, 1.4.11 |
+| 1 | Images/media | alt, SVG, object, video, autoplay | 1.1.1, 1.2.2, 1.4.2 |
+| 2 | Forms | labels, select, errors, autocomplete | 4.1.2, 3.3.1, 1.3.5 |
+| 3 | Keyboard | focus, traps, skip-link, scrollable, nested | 2.1.1, 2.1.2, 2.4.1 |
+| 4 | Buttons/links | accessible names, descriptive links | 4.1.2, 2.4.4 |
+| 5 | Colors | AA ratios, color alone, UI elements | 1.4.3, 1.4.1, 1.4.11 |
 | 6 | ARIA | attrs, roles, relations, aria-hidden | 4.1.2, 1.3.1 |
 | 7 | Structure | lang, title, headings, landmarks, regions | 3.1.1, 2.4.2, 1.3.1 |
 | 8 | Tables | th, scope, headers, caption | 1.3.1 |
-| 9 | Frames | title, unicite, focus | 4.1.2, 2.1.1 |
-| 10 | Deprecies | blink, marquee, meta-refresh, autoplay | 2.2.1, 2.2.2 |
+| 9 | Frames | title, uniqueness, focus | 4.1.2, 2.1.1 |
+| 10 | Deprecated | blink, marquee, meta-refresh, autoplay | 2.2.1, 2.2.2 |
 | 11 | WCAG 2.2 | target-size 44x44px, focus-not-obscured | 2.5.8, 2.4.11 |
 
-## Output attendu
+## Expected output
 
-### Resume
-- **Score global**: [X/100]
-- **Niveau WCAG atteint**: [A/AA/AAA]
+### Summary
+- **Overall score**: [X/100]
+- **WCAG level reached**: [A/AA/AAA]
 - **Violations**: [N] (Critical: X, Serious: X, Moderate: X, Minor: X)
 - **Needs Review**: [N]
 
 ### Violations
-| Impact | Categorie | WCAG | Element | Fichier:ligne | Correction |
+| Impact | Category | WCAG | Element | File:line | Fix |
 |--------|-----------|------|---------|---------------|------------|
 
 ### Needs Review
-| Categorie | Element | Fichier:ligne | Verification requise |
+| Category | Element | File:line | Required verification |
 |-----------|---------|---------------|---------------------|
 
-### Recommandations prioritaires
+### Priority recommendations
 1. [Critical] ...
 2. [Serious] ...
 3. [Moderate] ...
 
-### Outils complementaires
-Pour un audit runtime complet, utiliser en complement :
-- **axe-core** : `npx @axe-core/cli http://localhost:3000` (audit automatise)
-- **Playwright + axe** : `@axe-core/playwright` (tests E2E accessibilite)
-- **Pa11y** : `npx pa11y http://localhost:3000` (audit CLI)
-- **Lighthouse** : onglet Accessibility dans Chrome DevTools
+### Complementary tools
+For a complete runtime audit, use as a complement:
+- **axe-core**: `npx @axe-core/cli http://localhost:3000` (automated audit)
+- **Playwright + axe**: `@axe-core/playwright` (E2E accessibility tests)
+- **Pa11y**: `npx pa11y http://localhost:3000` (CLI audit)
+- **Lighthouse**: Accessibility tab in Chrome DevTools
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/qa:qa-responsive` | Design responsive mobile |
-| `/qa:qa-audit` | Audit complet (inclut a11y) |
-| `/qa:qa-design` | Audit UI/UX complet |
-| `/qa:qa-chrome` | Tests visuels navigateur |
-| `/growth:growth-seo` | SEO (impact indirect de l'a11y) |
+| `/qa:qa-responsive` | Responsive mobile design |
+| `/qa:qa-audit` | Full audit (includes a11y) |
+| `/qa:qa-design` | Full UI/UX audit |
+| `/qa:qa-chrome` | Visual browser tests |
+| `/growth:growth-seo` | SEO (indirect impact of a11y) |
 
 ---
 
-IMPORTANT: L'accessibilite n'est pas optionnelle - auditer les 11 categories systematiquement.
+IMPORTANT: Accessibility is not optional - audit the 11 categories systematically.
 
-IMPORTANT: Classifier chaque probleme par niveau d'impact (Critical/Serious/Moderate/Minor).
+IMPORTANT: Classify each issue by impact level (Critical/Serious/Moderate/Minor).
 
-YOU MUST atteindre au minimum le niveau AA WCAG 2.1.
+YOU MUST reach at minimum WCAG 2.1 level AA.
 
-YOU MUST distinguer violations et needs-review.
+YOU MUST distinguish violations from needs-review.
 
-NEVER ignorer les erreurs Critical d'accessibilite.
+NEVER ignore Critical accessibility errors.
 
-Think hard sur l'experience des utilisateurs avec handicaps.
+Think hard about the experience of users with disabilities.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes QA](/docs/commands/qa)
-- [Toutes les commandes](/docs/commands)
+- [Back to QA commands](/docs/commands/qa)
+- [All commands](/docs/commands)

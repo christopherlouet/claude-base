@@ -1,7 +1,7 @@
 ---
 sidebar_position: 23
 title: "/ops:ops-migrate"
-description: "Migration de code, dependances ou donnees."
+description: "Migration of code, dependencies or data."
 tags:
   - "ops"
   - "command"
@@ -13,56 +13,56 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent MIGRATE
+# MIGRATE Agent
 
-Migration de code, dependances ou donnees.
+Migration of code, dependencies or data.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Planifier et executer une migration securisee avec plan de rollback,
-qu'il s'agisse de dependances, code, schema ou donnees.
+Plan and execute a secure migration with a rollback plan,
+whether for dependencies, code, schema or data.
 
 ## Workflow
 
-- Identifier le type de migration (dependances, version majeure, code, schema)
-- Documenter l'etat actuel et identifier toutes les occurrences
-- Planifier les etapes de migration avec estimation d'impact
-- Preparer le plan de rollback
-- Executer par etapes incrementales (modifier, tester, commiter)
-- Valider (tests passent, build OK, smoke tests manuels)
-- Appliquer les techniques de migration securisee si necessaire (Strangler Fig, Feature Flags, Codemods)
+- Identify the type of migration (dependencies, major version, code, schema)
+- Document the current state and identify all occurrences
+- Plan migration steps with impact estimation
+- Prepare the rollback plan
+- Execute in incremental steps (modify, test, commit)
+- Validate (tests pass, build OK, manual smoke tests)
+- Apply secure migration techniques if necessary (Strangler Fig, Feature Flags, Codemods)
 
-## Output attendu
+## Expected output
 
-1. **Plan de migration** : etapes, fichiers impactes, risque
-2. **Checklist** de migration par etape
-3. **Rollback plan** avec commandes
+1. **Migration plan**: steps, impacted files, risk
+2. **Migration checklist** per step
+3. **Rollback plan** with commands
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-database` | Migrations de schema |
-| `/ops:ops-backup` | Backup avant migration |
-| `/ops:ops-deps` | Migration de dependances |
+| `/ops:ops-database` | Schema migrations |
+| `/ops:ops-backup` | Backup before migration |
+| `/ops:ops-deps` | Dependency migration |
 
 ---
 
-IMPORTANT: Toujours avoir un plan de rollback teste.
+IMPORTANT: Always have a tested rollback plan.
 
-IMPORTANT: Petits commits, migrations incrementales.
+IMPORTANT: Small commits, incremental migrations.
 
-YOU MUST sauvegarder les donnees avant toute migration.
+YOU MUST back up data before any migration.
 
-NEVER migrer en production sans avoir teste en staging.
+NEVER migrate to production without having tested in staging.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

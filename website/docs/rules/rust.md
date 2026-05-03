@@ -7,35 +7,35 @@ tags:
   - "rust"
 ---
 
-# Regles: rust
+# Rules: rust
 
 > // 2. Constants const MAX_CONNECTIONS: usize = 100;
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.rs`
 - `**/Cargo.toml`
 
-## Regles detaillees
+## Detailed rules
 
 # Rust Rules
 
-## Conventions de code
+## Code conventions
 
-### Nommage
+### Naming
 
-| Element | Convention | Exemple |
+| Element | Convention | Example |
 |---------|------------|---------|
 | Types/Traits | PascalCase | `UserService` |
-| Fonctions/Methodes | snake_case | `find_by_id` |
+| Functions/Methods | snake_case | `find_by_id` |
 | Variables | snake_case | `user_name` |
-| Constantes | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
 | Modules | snake_case | `user_service` |
-| Lifetimes | courtes, lowercase | `'a`, `'static` |
+| Lifetimes | short, lowercase | `'a`, `'static` |
 
-### Structure de fichier
+### File structure
 
 ```rust
 // 1. Imports
@@ -74,7 +74,7 @@ impl Default for UserService {
 }
 ```
 
-## Bonnes pratiques
+## Best practices
 
 ### Error handling
 
@@ -93,13 +93,13 @@ pub enum UserError {
     Database(#[from] sqlx::Error),
 }
 
-// Utiliser Result avec type d'erreur specifique
+// Use Result with a specific error type
 pub fn find_by_id(id: i64) -> Result<User, UserError> {
     let user = repository.find(id)?;
     user.ok_or(UserError::NotFound(id))
 }
 
-// Ou avec anyhow pour les erreurs ad-hoc
+// Or with anyhow for ad-hoc errors
 use anyhow::{Context, Result};
 
 pub fn load_config() -> Result<Config> {
@@ -120,14 +120,14 @@ let name = user
     .map(|u| &u.name)
     .unwrap_or(&default_name);
 
-// Pattern matching pour logique complexe
+// Pattern matching for complex logic
 match user {
     Some(u) if u.is_active => process_active(u),
     Some(u) => process_inactive(u),
     None => create_default(),
 }
 
-// Early return avec ?
+// Early return with ?
 fn get_user_email(id: i64) -> Option<String> {
     let user = repository.find(id)?;
     let email = user.email.as_ref()?;
@@ -135,18 +135,18 @@ fn get_user_email(id: i64) -> Option<String> {
 }
 ```
 
-### Ownership et borrowing
+### Ownership and borrowing
 
 ```rust
-// Preferer les references quand possible
+// Prefer references when possible
 fn process_user(user: &User) -> String {
     format!("Processing {}", user.name)
 }
 
-// Clone explicitement quand necessaire
+// Clone explicitly when necessary
 let name = user.name.clone();
 
-// Utiliser Cow pour flexibilite
+// Use Cow for flexibility
 use std::borrow::Cow;
 
 fn normalize_name(name: &str) -> Cow<'_, str> {
@@ -161,19 +161,19 @@ fn normalize_name(name: &str) -> Cow<'_, str> {
 ### Iterators
 
 ```rust
-// Preferer les iterators aux boucles for
+// Prefer iterators over for loops
 let active_names: Vec<String> = users
     .iter()
     .filter(|u| u.is_active)
     .map(|u| u.name.clone())
     .collect();
 
-// Lazy evaluation avec iterators
+// Lazy evaluation with iterators
 let first_admin = users
     .iter()
     .find(|u| u.role == Role::Admin);
 
-// Collect avec turbofish quand necessaire
+// Collect with turbofish when necessary
 let user_map: HashMap<i64, User> = users
     .into_iter()
     .map(|u| (u.id, u))
@@ -214,7 +214,7 @@ async fn fetch_all_users(ids: Vec<i64>) -> Vec<Result<User>> {
 }
 ```
 
-## Structs et Enums
+## Structs and Enums
 
 ```rust
 // Derive common traits
@@ -225,7 +225,7 @@ pub struct User {
     pub email: String,
 }
 
-// Builder pattern pour construction complexe
+// Builder pattern for complex construction
 #[derive(Default)]
 pub struct UserBuilder {
     name: Option<String>,
@@ -252,7 +252,7 @@ impl UserBuilder {
     }
 }
 
-// Enums avec donnees
+// Enums with data
 #[derive(Debug)]
 pub enum ApiResponse<T> {
     Success(T),
@@ -302,25 +302,25 @@ mod tests {
 }
 ```
 
-## A eviter
+## To avoid
 
-- `unwrap()` en production (utiliser `?` ou `expect`)
-- `clone()` inutile
-- `Box&lt;dyn Trait&gt;` quand generics suffisent
-- Lifetimes explicites quand l'elision suffit
-- `unsafe` sans justification documentee
-- Allocations dans les boucles chaudes
+- `unwrap()` in production (use `?` or `expect`)
+- Useless `clone()`
+- `Box&lt;dyn Trait&gt;` when generics suffice
+- Explicit lifetimes when elision suffices
+- `unsafe` without documented justification
+- Allocations in hot loops
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

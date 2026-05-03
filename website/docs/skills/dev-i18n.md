@@ -1,7 +1,7 @@
 ---
 sidebar_position: 13
 title: "dev-i18n"
-description: "Internationalisation (i18n) et localisation (l10n) d'applications web et mobile. Librairies next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations, ARB. Declencher quand l'utilisateur veut ajouter plusieurs langues, extraire des strings, gerer les pluriels, les formats date/nombre, ou quand on detecte des fichiers de traduction."
+description: "Internationalization (i18n) and localization (l10n) for web and mobile applications. Libraries next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations, ARB. Trigger when the user wants to add multiple languages, extract strings, handle plurals, date/number formats, or when translation files are detected."
 tags:
   - "skill"
   - "fork"
@@ -11,38 +11,38 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Internationalisation (i18n) et localisation (l10n) d'applications web et mobile. Librairies next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations, ARB. Declencher quand l'utilisateur veut ajouter plusieurs langues, extraire des strings, gerer les pluriels, les formats date/nombre, ou quand on detecte des fichiers de traduction.
+> Internationalization (i18n) and localization (l10n) for web and mobile applications. Libraries next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations, ARB. Trigger when the user wants to add multiple languages, extract strings, handle plurals, date/number formats, or when translation files are detected.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `i18n`, `d'accord` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `dev`, `i18n`, `d'accord` |
 
-## Description detaillee
+## Detailed description
 
-# Internationalisation (i18n)
+# Internationalization (i18n)
 
-## Choisir sa lib
+## Choosing your lib
 
 ### Web
 
-| Lib | Stack | Force | A eviter |
-|-----|-------|-------|----------|
-| **next-intl** | Next.js 13+ App Router | Server Components first, type-safe, routes localisees | Projets Pages Router (utiliser next-i18next) |
-| **react-i18next** | React vanilla / SPA | Mature, large ecosysteme, plugins | Lourd pour SSR sans effort |
-| **formatjs (react-intl)** | React | ICU MessageFormat standard | Boilerplate plus verbose |
-| **vue-i18n** | Vue 3 / Nuxt | Native, Composition API, lazy load | Specifique Vue |
-| **svelte-i18n** / **paraglide** | Svelte/SvelteKit | Lean, compile-time (paraglide) | Ecosysteme plus restreint |
+| Lib | Stack | Strength | Avoid |
+|-----|-------|----------|-------|
+| **next-intl** | Next.js 13+ App Router | Server Components first, type-safe, localized routes | Pages Router projects (use next-i18next) |
+| **react-i18next** | React vanilla / SPA | Mature, large ecosystem, plugins | Heavy for SSR without effort |
+| **formatjs (react-intl)** | React | ICU MessageFormat standard | More verbose boilerplate |
+| **vue-i18n** | Vue 3 / Nuxt | Native, Composition API, lazy load | Vue-specific |
+| **svelte-i18n** / **paraglide** | Svelte/SvelteKit | Lean, compile-time (paraglide) | Smaller ecosystem |
 
 ### Mobile
 
 | Lib | Stack |
 |-----|-------|
-| **flutter_localizations + intl** | Flutter officiel, fichiers ARB |
-| **slang** | Flutter alternatif, type-safe, code-generation |
+| **flutter_localizations + intl** | Flutter official, ARB files |
+| **slang** | Flutter alternative, type-safe, code-generation |
 | **react-native-localize + i18next** | React Native |
 
 ## next-intl (Next.js App Router)
@@ -92,7 +92,7 @@ export const config = {
 };
 ```
 
-### Usage Server Component
+### Server Component usage
 
 ```tsx
 // app/[locale]/page.tsx
@@ -104,7 +104,7 @@ export default async function Page() {
 }
 ```
 
-### Usage Client Component
+### Client Component usage
 
 ```tsx
 "use client";
@@ -116,7 +116,7 @@ export function Greeting() {
 }
 ```
 
-### Pluriels (ICU)
+### Plurals (ICU)
 
 ```json
 {
@@ -128,15 +128,15 @@ export function Greeting() {
 t("notifications", { count: 3 });  // "3 notifications"
 ```
 
-### Format date/nombre
+### Date/number formatting
 
 ```tsx
 import { useFormatter } from "next-intl";
 
 const format = useFormatter();
-format.dateTime(new Date(), { dateStyle: "long" });  // "4 novembre 2026"
-format.number(1234.5, { style: "currency", currency: "EUR" });  // "1 234,50 €"
-format.relativeTime(date, now);  // "il y a 2 jours"
+format.dateTime(new Date(), { dateStyle: "long" });  // "November 4, 2026"
+format.number(1234.5, { style: "currency", currency: "EUR" });  // "€1,234.50"
+format.relativeTime(date, now);  // "2 days ago"
 ```
 
 ## react-i18next (SPA)
@@ -250,26 +250,26 @@ const { t } = useI18n();
 </script>
 ```
 
-## Bonnes pratiques
+## Best practices
 
-### Structure des fichiers
+### File structure
 
-Organiser par **namespace** (pas par ecran) :
+Organize by **namespace** (not by screen):
 
 ```
 messages/
   fr/
-    common.json       # Boutons, messages generiques
-    errors.json       # Messages d'erreur
-    auth.json         # Ecrans auth (shared)
-    dashboard.json    # Section dashboard
+    common.json       # Buttons, generic messages
+    errors.json       # Error messages
+    auth.json         # Auth screens (shared)
+    dashboard.json    # Dashboard section
   en/
     ...
 ```
 
-**Mauvais** : 1 fichier par ecran (duplication des messages partages).
+**Bad**: 1 file per screen (duplication of shared messages).
 
-### Keys de traduction
+### Translation keys
 
 ```json
 {
@@ -286,15 +286,15 @@ messages/
 }
 ```
 
-Conventions :
-- **kebab-case** ou **camelCase** selon la lib (camelCase pour JS)
-- **Hierarchique** : grouper par feature
-- **Descriptif** : `dashboard.metrics.users` pas `label1`
-- **Placeholders typés** : `{count, plural, ...}`, `{name}`
+Conventions:
+- **kebab-case** or **camelCase** depending on the lib (camelCase for JS)
+- **Hierarchical**: group by feature
+- **Descriptive**: `dashboard.metrics.users` not `label1`
+- **Typed placeholders**: `{count, plural, ...}`, `{name}`
 
 ### ICU MessageFormat
 
-Standard universel pour pluriels, genre, select :
+Universal standard for plurals, gender, select:
 
 ```
 {count, plural,
@@ -310,86 +310,86 @@ Standard universel pour pluriels, genre, select :
 }
 ```
 
-Supporte par : next-intl, formatjs, flutter intl.
+Supported by: next-intl, formatjs, flutter intl.
 
-### Locale negociation
+### Locale negotiation
 
 ```ts
-// Ordre de priorite
+// Priority order
 1. User preference (stored in DB or cookie)
 2. URL path (/fr/..., /en/...)
 3. Accept-Language header
 4. Fallback locale
 ```
 
-### Extraction de strings
+### String extraction
 
-Tools pour extraire les strings du code vers les fichiers de traduction :
+Tools to extract strings from code into translation files:
 
-| Stack | Outil |
-|-------|-------|
-| next-intl | `@formatjs/cli` avec extract |
+| Stack | Tool |
+|-------|------|
+| next-intl | `@formatjs/cli` with extract |
 | react-i18next | `i18next-parser` |
 | Flutter | `flutter gen-l10n` |
 | formatjs | `formatjs extract` |
 
 ```bash
-# Exemple i18next-parser
+# i18next-parser example
 npx i18next-parser 'src/**/*.{ts,tsx}' --output 'public/locales/$LOCALE/$NAMESPACE.json'
 ```
 
-## Pieges courants
+## Common pitfalls
 
-| Piege | Prevention |
-|-------|-----------|
-| Concatenation de strings | JAMAIS. Utiliser des placeholders : `t("hello", { name })` |
-| Strings dures dans le code | Extracteur automatique + lint rule (`i18next/no-literal-string`) |
-| Pluriels avec conditions manuelles | `{count === 1 ? "item" : "items"}` ne marche pas en toutes langues (arabe, russe : 6 formes) → ICU plural |
-| Ordre des mots fixe | Les phrases changent d'ordre entre langues → interpoler, ne pas decouper |
-| Formats hardcodes | Utiliser `Intl.DateTimeFormat`, `Intl.NumberFormat`, pas `date.toLocaleString()` sans options |
-| RTL oublie | Tester avec arabe/hebreu : `dir="rtl"`, `text-align: start` au lieu de `left` |
-| Longueur variable | "OK" en anglais → "D'accord" en francais (2x plus long). Layout flexible. |
+| Pitfall | Prevention |
+|---------|------------|
+| String concatenation | NEVER. Use placeholders: `t("hello", { name })` |
+| Hardcoded strings in code | Automatic extractor + lint rule (`i18next/no-literal-string`) |
+| Plurals with manual conditions | `{count === 1 ? "item": "items"}` doesn't work in all languages (Arabic, Russian: 6 forms) → ICU plural |
+| Fixed word order | Sentences change order between languages → interpolate, don't split |
+| Hardcoded formats | Use `Intl.DateTimeFormat`, `Intl.NumberFormat`, not `date.toLocaleString()` without options |
+| RTL forgotten | Test with Arabic/Hebrew: `dir="rtl"`, `text-align: start` instead of `left` |
+| Variable length | "OK" in English → "D'accord" in French (2x longer). Flexible layout. |
 
-### Exemples RTL
+### RTL examples
 
 ```css
-/* Au lieu de : */
+/* Instead of: */
 .card { padding-left: 16px; text-align: left; }
 
-/* Ecrire : */
+/* Write: */
 .card { padding-inline-start: 16px; text-align: start; }
 ```
 
-## Workflow typique
+## Typical workflow
 
-### 1. Extraire
+### 1. Extract
 
 ```bash
 npx i18next-parser 'src/**/*.tsx' -o 'messages/$LOCALE.json'
 ```
 
-### 2. Traduire
+### 2. Translate
 
-Confier aux traducteurs via :
+Hand off to translators via:
 - Lokalise, Crowdin, Phrase (SaaS, collaboration)
-- Fichiers JSON/ARB dans git (petits projets)
-- DeepL / LLM pour draft, revue humaine obligatoire
+- JSON/ARB files in git (small projects)
+- DeepL / LLM for draft, native human review mandatory
 
-### 3. Valider
+### 3. Validate
 
 ```bash
-# Verifier que toutes les locales ont les memes cles
+# Check that all locales have the same keys
 npx i18next-resources-for-ts --check
 
-# Ou script custom
+# Or custom script
 node scripts/check-i18n.js
 ```
 
-### 4. Integrer
+### 4. Integrate
 
-CI : fail si une cle est manquante dans une locale.
+CI: fail if a key is missing in a locale.
 
-## SEO multi-langue
+## Multi-language SEO
 
 ```tsx
 // next-intl
@@ -403,63 +403,63 @@ export async function generateMetadata({ params: { locale } }) {
 }
 ```
 
-Ajouter `hreflang` dans `<head>` et sitemap.xml.
+Add `hreflang` in `<head>` and sitemap.xml.
 
-## Complement avec le socle
+## Complement with the foundation
 
-- Agent `doc-i18n` : aide a la traduction de documentation
-- Rule `.claude/rules/accessibility.md` : `lang="fr"`, `dir="rtl"` pour a11y
-- Skill `growth-localization` : strategie de localisation (marches, pricing par pays)
+- Agent `doc-i18n`: helps with documentation translation
+- Rule `.claude/rules/accessibility.md`: `lang="fr"`, `dir="rtl"` for a11y
+- Skill `growth-localization`: localization strategy (markets, pricing per country)
 
-## Output attendu
+## Expected output
 
-1. **Structure** : namespaces (pas par ecran), cles hierarchiques descriptives
-2. **Pluriels** en ICU MessageFormat (jamais de condition manuelle)
-3. **Dates/nombres** via Intl ou lib wrapper (jamais hardcode)
-4. **Extracteur** configure (i18next-parser, formatjs, flutter gen-l10n)
-5. **CI check** : valider que toutes les locales ont les memes cles
-6. **RTL** teste si langue RTL cible (logical properties CSS)
+1. **Structure**: namespaces (not by screen), descriptive hierarchical keys
+2. **Plurals** in ICU MessageFormat (never manual conditions)
+3. **Dates/numbers** via Intl or wrapper lib (never hardcoded)
+4. **Extractor** configured (i18next-parser, formatjs, flutter gen-l10n)
+5. **CI check**: validate that all locales have the same keys
+6. **RTL** tested if RTL language targeted (CSS logical properties)
 
-## Regles
+## Rules
 
-IMPORTANT: NEVER concatener des strings pour construire des phrases. Utiliser des placeholders.
+IMPORTANT: NEVER concatenate strings to build sentences. Use placeholders.
 
-IMPORTANT: NEVER `count === 1 ? "item" : "items"`. Utiliser les pluriels ICU.
+IMPORTANT: NEVER `count === 1 ? "item": "items"`. Use ICU plurals.
 
-IMPORTANT: NEVER hardcoder des dates/nombres formattes. Utiliser `Intl.DateTimeFormat` ou wrapper lib.
+IMPORTANT: NEVER hardcode formatted dates/numbers. Use `Intl.DateTimeFormat` or wrapper lib.
 
-YOU MUST extraire toutes les strings visibles par l'utilisateur (pas `"Error"` dans le code).
+YOU MUST extract all user-visible strings (not `"Error"` in code).
 
-YOU MUST ajouter un CI check qui valide la completion des traductions entre locales.
+YOU MUST add a CI check that validates translation completeness between locales.
 
-NEVER commiter de traduction par LLM sans revue humaine native speaker (qualite variable sur les nuances).
+NEVER commit LLM translations without native speaker human review (variable quality on nuances).
 
-NEVER utiliser `padding-left` / `margin-right` / `text-align: left` dans une app RTL-supportee. Utiliser les logical properties.
+NEVER use `padding-left` / `margin-right` / `text-align: left` in an RTL-supported app. Use logical properties.
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux dev..."_
-- _"Je veux i18n..."_
-- _"Je veux d'accord..."_
+- _"I want to dev..."_
+- _"I want to i18n..."_
+- _"I want to d'accord..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

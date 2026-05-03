@@ -1,7 +1,7 @@
 ---
 sidebar_position: 7
 title: "/dev:dev-design-system"
-description: "Creation et maintenance de design systems et bibliotheques de composants."
+description: "Creation and maintenance of design systems and component libraries."
 tags:
   - "dev"
   - "command"
@@ -15,56 +15,56 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DEV-DESIGN-SYSTEM
 
-Creation et maintenance de design systems et bibliotheques de composants.
+Creation and maintenance of design systems and component libraries.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Creer ou auditer un design system complet avec tokens, composants primitifs,
-composants composites et patterns, le tout documente dans Storybook.
+Create or audit a complete design system with tokens, primitive components,
+composite components and patterns, all documented in Storybook.
 
 ## Workflow
 
-- Definir les design tokens (couleurs semantiques, typographie, espacement, ombres, animations)
-- Generer les tokens avec Style Dictionary (CSS variables, TypeScript, Tailwind)
-- Creer les composants primitifs (Button, Input, Text, Icon, Badge) avec variants (cva)
-- Creer les composants composites (Form, Modal, Dropdown, Table, Navigation)
-- Definir les patterns (Auth Flow, Settings, Dashboard, Empty States)
-- Implementer le theming (ThemeProvider, light/dark/system)
-- Documenter chaque composant dans Storybook avec stories et argTypes
-- Assurer l'accessibilite WCAG 2.1 AA sur chaque composant
+- Define design tokens (semantic colors, typography, spacing, shadows, animations)
+- Generate tokens with Style Dictionary (CSS variables, TypeScript, Tailwind)
+- Create primitive components (Button, Input, Text, Icon, Badge) with variants (cva)
+- Create composite components (Form, Modal, Dropdown, Table, Navigation)
+- Define patterns (Auth Flow, Settings, Dashboard, Empty States)
+- Implement theming (ThemeProvider, light/dark/system)
+- Document each component in Storybook with stories and argTypes
+- Ensure WCAG 2.1 AA accessibility on each component
 
-## Output attendu
+## Expected output
 
-Audit du design system existant ou plan de creation par phases
+Audit of the existing design system or creation plan by phases
 (tokens &gt; primitives &gt; composites &gt; documentation).
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-component` | Creer des composants |
-| `/qa:wcag-audit` | Accessibilite |
+| `/dev:dev-component` | Create components |
+| `/qa:wcag-audit` | Accessibility |
 | `/doc:doc-generate` | Documentation |
 
 ---
 
-IMPORTANT: Les tokens sont la source de verite - jamais de valeurs hardcodees.
+IMPORTANT: Tokens are the source of truth - never hardcoded values.
 
-IMPORTANT: Chaque composant doit etre accessible (WCAG 2.1 AA).
+IMPORTANT: Each component must be accessible (WCAG 2.1 AA).
 
-YOU MUST documenter chaque composant dans Storybook.
+YOU MUST document each component in Storybook.
 
-NEVER dupliquer des styles - utiliser les tokens.
+NEVER duplicate styles - use tokens.
 
-Think hard sur la coherence et la reutilisabilite du systeme.
+Think hard about the consistency and reusability of the system.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DEV](/docs/commands/dev)
-- [Toutes les commandes](/docs/commands)
+- [Back to DEV commands](/docs/commands/dev)
+- [All commands](/docs/commands)

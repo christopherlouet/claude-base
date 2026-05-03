@@ -1,46 +1,46 @@
 ---
 sidebar_position: 1
 title: "DATA"
-description: "Commandes DATA - Donnees (pipeline, analytics, modeling)"
+description: "DATA commands - Donnees (pipeline, analytics, modeling)"
 ---
 
 import { CommandGrid } from '@site/src/components/CommandCard';
 import CommandCard from '@site/src/components/CommandCard';
 
-# Commandes DATA
+# DATA Commands
 
 > Donnees (pipeline, analytics, modeling)
 
-## Vue d'ensemble
+## Overview
 
-Ce domaine contient **3 commandes** pour donnees (pipeline, analytics, modeling).
+This domain contains **3 commands** for donnees (pipeline, analytics, modeling).
 
-## Liste des commandes
+## Commands list
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| [`/data:data-analytics`](/docs/commands/data/data-analytics) | Analyser des donnees et creer des visualisations/rapports. |
-| [`/data:data-modeling`](/docs/commands/data/data-modeling) | Concevoir et implementer des modeles de donnees (schemas, ERD, data warehouse). |
-| [`/data:data-pipeline`](/docs/commands/data/data-pipeline) | Concevoir et implementer des pipelines de donnees ETL/ELT. |
+| [`/data:data-analytics`](/docs/commands/data/data-analytics) | Analyze data and create visualizations/reports. |
+| [`/data:data-modeling`](/docs/commands/data/data-modeling) | Design and implement data models (schemas, ERD, data warehouse). |
+| [`/data:data-pipeline`](/docs/commands/data/data-pipeline) | Design and implement ETL/ELT data pipelines. |
 
-## Commandes en detail
+## Commands in detail
 
 <CommandGrid>
   <CommandCard
     name="data-analytics"
-    description="Analyser des donnees et creer des visualisations/rapports."
+    description="Analyze data and create visualizations/reports."
     domain="data"
     href="/docs/commands/data/data-analytics"
   />
   <CommandCard
     name="data-modeling"
-    description="Concevoir et implementer des modeles de donnees (schemas, ERD, data warehouse)."
+    description="Design and implement data models (schemas, ERD, data warehouse)."
     domain="data"
     href="/docs/commands/data/data-modeling"
   />
   <CommandCard
     name="data-pipeline"
-    description="Concevoir et implementer des pipelines de donnees ETL/ELT."
+    description="Design and implement ETL/ELT data pipelines."
     domain="data"
     href="/docs/commands/data/data-pipeline"
   />
@@ -48,4 +48,4 @@ Ce domaine contient **3 commandes** pour donnees (pipeline, analytics, modeling)
 
 ---
 
-[Retour a toutes les commandes](/docs/commands)
+[Back to all commands](/docs/commands)

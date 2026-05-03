@@ -1,7 +1,7 @@
 ---
 sidebar_position: 17
 title: "/dev:dev-rag"
-description: "Conception et implementation de systemes RAG (Retrieval-Augmented Generation)."
+description: "Design and implementation of RAG (Retrieval-Augmented Generation) systems."
 tags:
   - "dev"
   - "command"
@@ -15,56 +15,56 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DEV-RAG
 
-Conception et implementation de systemes RAG (Retrieval-Augmented Generation).
+Design and implementation of RAG (Retrieval-Augmented Generation) systems.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Concevoir et implementer un pipeline RAG complet : ingestion, embedding, stockage vectoriel,
-retrieval et generation augmentee avec evaluation de la qualite.
+Design and implement a complete RAG pipeline: ingestion, embedding, vector storage,
+retrieval and augmented generation with quality evaluation.
 
 ## Workflow
 
-- Definir la strategie de chunking (fixed size, semantic, sentence, recursive) avec overlap
-- Choisir le modele d'embedding (text-embedding-3-small/large, voyage-2, e5)
-- Configurer la base vectorielle (Pinecone, Weaviate, Chroma, pgvector, Qdrant)
-- Implementer le retrieval (similarity, MMR, hybrid, reranking)
-- Construire le prompt template avec contexte et gardes anti-hallucination
-- Evaluer avec metriques : retrieval precision (&gt;80%), recall (&gt;70%), faithfulness (&gt;90%), latence (&lt;3s)
-- Optimiser avec query expansion ou HyDE si necessaire
+- Define the chunking strategy (fixed size, semantic, sentence, recursive) with overlap
+- Choose the embedding model (text-embedding-3-small/large, voyage-2, e5)
+- Configure the vector database (Pinecone, Weaviate, Chroma, pgvector, Qdrant)
+- Implement retrieval (similarity, MMR, hybrid, reranking)
+- Build the prompt template with context and anti-hallucination guards
+- Evaluate with metrics: retrieval precision (&gt;80%), recall (&gt;70%), faithfulness (&gt;90%), latency (&lt;3s)
+- Optimize with query expansion or HyDE if necessary
 
-## Output attendu
+## Expected output
 
-Architecture RAG avec stack technique justifie, configuration (chunk size, overlap, top-K, threshold),
-schema de la base vectorielle, pipeline documente et resultats d'evaluation.
+RAG architecture with justified technical stack, configuration (chunk size, overlap, top-K, threshold),
+vector database schema, documented pipeline and evaluation results.
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-prompt-engineering` | Optimiser les prompts |
-| `/dev:dev-api` | Endpoints RAG |
-| `/ops:ops-database` | Configuration DB |
-| `/qa:qa-perf` | Performance du systeme |
+| `/dev:dev-prompt-engineering` | Optimize prompts |
+| `/dev:dev-api` | RAG endpoints |
+| `/ops:ops-database` | DB configuration |
+| `/qa:qa-perf` | System performance |
 
 ---
 
-IMPORTANT: Toujours evaluer la qualite du retrieval avant de tuner la generation.
+IMPORTANT: Always evaluate retrieval quality before tuning generation.
 
-IMPORTANT: Le chunking est crucial - tester plusieurs strategies.
+IMPORTANT: Chunking is crucial - test multiple strategies.
 
-YOU MUST implementer des gardes pour les hallucinations.
+YOU MUST implement guards against hallucinations.
 
-NEVER ignorer les metriques de faithfulness.
+NEVER ignore faithfulness metrics.
 
-Think hard sur le choix du chunking et du modele d'embedding pour le cas d'usage.
+Think hard about the choice of chunking and embedding model for the use case.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DEV](/docs/commands/dev)
-- [Toutes les commandes](/docs/commands)
+- [Back to DEV commands](/docs/commands/dev)
+- [All commands](/docs/commands)

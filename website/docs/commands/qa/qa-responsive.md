@@ -1,7 +1,7 @@
 ---
 sidebar_position: 13
 title: "/qa:qa-responsive"
-description: "Audit responsive et mobile-first d'une application web."
+description: "Responsive and mobile-first audit of a web application."
 tags:
   - "qa"
   - "command"
@@ -13,68 +13,68 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--qa">QA</span>
 
 
-# Agent QA-RESPONSIVE
+# QA-RESPONSIVE Agent
 
-Audit responsive et mobile-first d'une application web.
+Responsive and mobile-first audit of a web application.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Verifier que l'application fonctionne correctement sur tous les breakpoints (320px a 2560px), en approche mobile-first, avec des touch targets adequats.
+Verify that the application works correctly on all breakpoints (320px to 2560px), with a mobile-first approach, and adequate touch targets.
 
 ## Workflow
 
-- Tester les 7 breakpoints (320, 375, 425, 768, 1024, 1440, 2560)
-- Verifier structure (viewport, mobile-first CSS, flexbox/grid)
-- Verifier navigation (hamburger, touch targets &gt;= 44px)
-- Verifier typographie (&gt;= 16px, line-height &gt;= 1.5)
-- Verifier images (srcset, lazy loading, aspect ratio)
-- Verifier formulaires (inputs &gt;= 44px, type correct, clavier mobile)
-- Tester orientation (portrait + paysage)
-- Verifier interactions tactiles (tap, swipe, espacement &gt;= 8px)
+- Test the 7 breakpoints (320, 375, 425, 768, 1024, 1440, 2560)
+- Verify structure (viewport, mobile-first CSS, flexbox/grid)
+- Verify navigation (hamburger, touch targets &gt;= 44px)
+- Verify typography (&gt;= 16px, line-height &gt;= 1.5)
+- Verify images (srcset, lazy loading, aspect ratio)
+- Verify forms (inputs &gt;= 44px, correct type, mobile keyboard)
+- Test orientation (portrait + landscape)
+- Verify touch interactions (tap, swipe, spacing &gt;= 8px)
 
-## Output attendu
+## Expected output
 
-### Score Responsive: [X/100]
+### Responsive Score: [X/100]
 | Breakpoint | Status |
 |------------|--------|
 | Mobile 320-425px | OK/KO |
 | Tablet 768px | OK/KO |
 | Desktop 1024-1440px | OK/KO |
 
-### Problemes par breakpoint
-| Breakpoint | Page | Probleme | Severite |
-|------------|------|----------|----------|
+### Issues by breakpoint
+| Breakpoint | Page | Issue | Severity |
+|------------|------|-------|----------|
 
-### Corrections prioritaires
-1. Critique: [Probleme] -&gt; [Solution]
-2. Important: [Probleme] -&gt; [Solution]
+### Priority fixes
+1. Critical: [Issue] -&gt; [Solution]
+2. Important: [Issue] -&gt; [Solution]
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/qa:wcag-audit` | Accessibilite mobile |
-| `/qa:qa-perf` | Performance mobile |
-| `/dev:dev-component` | Creer des composants responsives |
-| `/growth:growth-landing` | Landing pages responsives |
-
----
-
-IMPORTANT: Toujours tester sur de vrais devices, pas seulement les DevTools.
-
-YOU MUST utiliser l'approche mobile-first (min-width, pas max-width).
-
-NEVER utiliser de largeurs fixes en pixels pour les conteneurs.
-
-Think hard sur l'experience utilisateur sur petit ecran.
-
+| Agent | When to use it |
+|-------|----------------|
+| `/qa:wcag-audit` | Mobile accessibility |
+| `/qa:qa-perf` | Mobile performance |
+| `/dev:dev-component` | Create responsive components |
+| `/growth:growth-landing` | Responsive landing pages |
 
 ---
 
-## Voir aussi
+IMPORTANT: Always test on real devices, not just DevTools.
 
-- [Retour aux commandes QA](/docs/commands/qa)
-- [Toutes les commandes](/docs/commands)
+YOU MUST use the mobile-first approach (min-width, not max-width).
+
+NEVER use fixed pixel widths for containers.
+
+Think hard about the user experience on small screens.
+
+
+---
+
+## See also
+
+- [Back to QA commands](/docs/commands/qa)
+- [All commands](/docs/commands)

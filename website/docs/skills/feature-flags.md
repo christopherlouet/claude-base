@@ -1,7 +1,7 @@
 ---
 sidebar_position: 24
 title: "feature-flags"
-description: "Gestion de feature flags et toggles. Declencher quand l'utilisateur veut implementer du feature flagging, A/B testing, ou deploiement progressif."
+description: "Feature flags and toggles management. Trigger when the user wants to implement feature flagging, A/B testing, or progressive deployment."
 tags:
   - "skill"
   - "fork"
@@ -11,47 +11,47 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Gestion de feature flags et toggles. Declencher quand l'utilisateur veut implementer du feature flagging, A/B testing, ou deploiement progressif.
+> Feature flags and toggles management. Trigger when the user wants to implement feature flagging, A/B testing, or progressive deployment.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Mots-cles** | `feature`, `flags`, `feature flag`, `feature toggle`, `experimentation`, `deploiement progressif`, `canary` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
+| **Keywords** | `feature`, `flags`, `feature flag`, `feature toggle`, `experimentation`, `progressive deployment`, `canary` |
 
-## Description detaillee
+## Detailed description
 
 # Feature Flags Skill
 
-## Declencheurs
+## Triggers
 
-Ce skill s'active quand l'utilisateur mentionne:
+This skill activates when the user mentions:
 - "feature flag", "feature toggle"
 - "A/B test", "experimentation"
-- "deploiement progressif", "canary"
-- "activer/desactiver une feature"
+- "progressive deployment", "canary"
+- "enable/disable a feature"
 
-## Cas d'usage
+## Use cases
 
 | Use case | Description |
 |----------|-------------|
-| **Release toggles** | Deployer du code inactif |
+| **Release toggles** | Deploy inactive code |
 | **Experiment toggles** | A/B testing |
 | **Ops toggles** | Circuit breakers |
-| **Permission toggles** | Features par role/plan |
+| **Permission toggles** | Features by role/plan |
 
 ## Solutions
 
-| Solution | Type | Avantages |
+| Solution | Type | Advantages |
 |----------|------|-----------|
-| **LaunchDarkly** | SaaS | Complet, targeting avance |
-| **Unleash** | Self-hosted | Open source, gratuit |
-| **ConfigCat** | SaaS | Simple, genereux free tier |
-| **Custom** | DIY | Controle total |
+| **LaunchDarkly** | SaaS | Complete, advanced targeting |
+| **Unleash** | Self-hosted | Open source, free |
+| **ConfigCat** | SaaS | Simple, generous free tier |
+| **Custom** | DIY | Full control |
 
-## Implementation simple
+## Simple implementation
 
 ### Configuration
 
@@ -70,7 +70,7 @@ const defaultFlags: FeatureFlags = {
 };
 
 export function getFeatureFlags(userId?: string): FeatureFlags {
-  // En production: fetch depuis service
+  // In production: fetch from service
   if (process.env.NODE_ENV === 'development') {
     return {
       ...defaultFlags,
@@ -91,7 +91,7 @@ export function isFeatureEnabled(
 }
 ```
 
-### Hook React
+### React hook
 
 ```typescript
 // hooks/useFeatureFlag.ts
@@ -111,7 +111,7 @@ export function useFeatureFlag(flag: string): boolean {
 }
 ```
 
-### Utilisation
+### Usage
 
 ```tsx
 // components/Dashboard.tsx
@@ -128,7 +128,7 @@ export function Dashboard() {
 }
 ```
 
-## Avec LaunchDarkly
+## With LaunchDarkly
 
 ```typescript
 // lib/launchdarkly.ts
@@ -147,18 +147,18 @@ export async function getFlag(
 ```
 
 ```tsx
-// Client React
+// React client
 import { useFlags } from 'launchdarkly-react-client-sdk';
 
 function Component() {
   const { newDashboard } = useFlags();
-  return newDashboard ? <New /> : <Old />;
+  return newDashboard ? <New />: <Old />;
 }
 ```
 
-## Bonnes pratiques
+## Best practices
 
-### Nommage
+### Naming
 
 ```
 # Format: <scope>_<feature>_<variant>
@@ -180,7 +180,7 @@ user_profile_v2
 ### Targeting
 
 ```typescript
-// Regles de targeting
+// Targeting rules
 const rules = [
   { attribute: 'email', operator: 'endsWith', value: '@company.com', enabled: true },
   { attribute: 'plan', operator: 'equals', value: 'enterprise', enabled: true },
@@ -189,72 +189,72 @@ const rules = [
 ];
 ```
 
-## Regles
+## Rules
 
-IMPORTANT: Toujours avoir une valeur par defaut (flag off).
+IMPORTANT: Always have a default value (flag off).
 
-IMPORTANT: Supprimer les flags obsoletes (dette technique).
+IMPORTANT: Remove obsolete flags (technical debt).
 
-YOU MUST logger les evaluations de flags pour le debugging.
+YOU MUST log flag evaluations for debugging.
 
-NEVER stocker de logique metier complexe dans les flags.
+NEVER store complex business logic in flags.
 
-NEVER laisser des flags en production plus de 2 sprints apres rollout complet.
+NEVER leave flags in production more than 2 sprints after full rollout.
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux feature..."_
-- _"Je veux flags..."_
-- _"Je veux feature flag..."_
+- _"I want to feature..."_
+- _"I want to flags..."_
+- _"I want to feature flag..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
-### 1. Exemple Feature Flags : Nouveau systeme de paiement
+### 1. Feature Flags Example: New payment system
 
-# Exemple Feature Flags : Nouveau systeme de paiement
+# Feature Flags Example: New payment system
 
-## Demande utilisateur
-> "Implementer un feature flag pour deployer progressivement le nouveau systeme de paiement"
+## User request
+> "Implement a feature flag to progressively roll out the new payment system"
 
 ---
 
-## Analyse
+## Analysis
 
-### Contexte
-- Nouveau systeme de paiement Stripe v2
-- Deploiement progressif : 10% -> 50% -> 100%
-- Rollback instantane si probleme
-- Metriques de suivi
+### Context
+- New Stripe v2 payment system
+- Progressive rollout: 10% -> 50% -> 100%
+- Instant rollback if issue
+- Tracking metrics
 
-### Strategie
-1. Feature flag avec pourcentage
-2. Ciblage par utilisateur (beta testers)
-3. Fallback sur ancien systeme
-4. Logging des performances
+### Strategy
+1. Feature flag with percentage
+2. User targeting (beta testers)
+3. Fallback to old system
+4. Performance logging
 
 ---
 
 ## Implementation
 
-### 1. Configuration des flags
+### 1. Flag configuration
 
 ```typescript
 // src/config/feature-flags.ts
@@ -262,36 +262,36 @@ Ce skill est automatiquement active lorsque :
 export interface FeatureFlag {
   name: string;
   enabled: boolean;
-  percentage?: number;        // Rollout progressif (0-100)
+  percentage?: number;        // Progressive rollout (0-100)
   allowedUsers?: string[];    // Beta testers
-  startDate?: Date;           // Activation programmee
-  endDate?: Date;             // Desactivation programmee
+  startDate?: Date;           // Scheduled activation
+  endDate?: Date;             // Scheduled deactivation
 }
 
 export const featureFlags: Record<string, FeatureFlag> = {
   'payment-v2': {
-    name: 'Nouveau systeme de paiement',
+    name: 'New payment system',
     enabled: true,
-    percentage: 10,           // 10% des utilisateurs
+    percentage: 10,           // 10% of users
     allowedUsers: [
       'beta-tester-1@example.com',
       'beta-tester-2@example.com',
     ],
   },
   'dark-mode': {
-    name: 'Mode sombre',
+    name: 'Dark mode',
     enabled: true,
     percentage: 100,
   },
   'ai-recommendations': {
-    name: 'Recommandations IA',
+    name: 'AI recommendations',
     enabled: false,
     startDate: new Date('2024-03-01'),
   },
 };
 ```
 
-### 2. Service de Feature Flags
+### 2. Feature Flag service
 
 ```typescript
 // src/services/feature-flag.service.ts
@@ -301,7 +301,7 @@ import { createHash } from 'crypto';
 
 export class FeatureFlagService {
   /**
-   * Verifie si un feature flag est actif pour un utilisateur
+   * Checks whether a feature flag is active for a user
    */
   isEnabled(flagName: string, userId?: string): boolean {
     const flag = featureFlags[flagName];
@@ -310,7 +310,7 @@ export class FeatureFlagService {
       return false;
     }
 
-    // Verification des dates
+    // Date checks
     if (flag.startDate && new Date() < flag.startDate) {
       return false;
     }
@@ -318,12 +318,12 @@ export class FeatureFlagService {
       return false;
     }
 
-    // Beta testers ont toujours acces
+    // Beta testers always have access
     if (userId && flag.allowedUsers?.includes(userId)) {
       return true;
     }
 
-    // Rollout par pourcentage (deterministe par user)
+    // Percentage rollout (deterministic per user)
     if (flag.percentage !== undefined && flag.percentage < 100) {
       if (!userId) return false;
       return this.isInPercentage(flagName, userId, flag.percentage);
@@ -333,8 +333,8 @@ export class FeatureFlagService {
   }
 
   /**
-   * Determine si un utilisateur est dans le pourcentage de rollout
-   * Utilise un hash deterministe pour avoir des resultats coherents
+   * Determines whether a user is within the rollout percentage
+   * Uses a deterministic hash to get consistent results
    */
   private isInPercentage(
     flagName: string,
@@ -350,7 +350,7 @@ export class FeatureFlagService {
   }
 
   /**
-   * Retourne tous les flags actifs pour un utilisateur
+   * Returns all active flags for a user
    */
   getEnabledFlags(userId?: string): string[] {
     return Object.keys(featureFlags).filter((flagName) =>
@@ -362,7 +362,7 @@ export class FeatureFlagService {
 export const featureFlagService = new FeatureFlagService();
 ```
 
-### 3. Hook React pour les Feature Flags
+### 3. React hook for Feature Flags
 
 ```typescript
 // src/hooks/useFeatureFlag.ts
@@ -380,7 +380,7 @@ export function useFeatureFlag(flagName: string): boolean {
   );
 }
 
-// Usage dans un composant
+// Usage in a component
 export function PaymentPage() {
   const useNewPayment = useFeatureFlag('payment-v2');
 
@@ -392,7 +392,7 @@ export function PaymentPage() {
 }
 ```
 
-### 4. Composant conditionnel
+### 4. Conditional component
 
 ```typescript
 // src/components/FeatureGate.tsx
@@ -428,7 +428,7 @@ function App() {
 
 ---
 
-## Monitoring et Analytics
+## Monitoring and Analytics
 
 ```typescript
 // src/services/feature-flag-analytics.ts
@@ -449,11 +449,11 @@ export function trackFeatureFlagExposure(
   });
 }
 
-// Dans le service de paiement
+// In the payment service
 export async function processPayment(userId: string, amount: number) {
   const useV2 = featureFlagService.isEnabled('payment-v2', userId);
 
-  // Track l'exposition
+  // Track exposure
   trackFeatureFlagExposure('payment-v2', userId, useV2);
 
   if (useV2) {
@@ -466,7 +466,7 @@ export async function processPayment(userId: string, amount: number) {
 
 ---
 
-## Rollout progressif
+## Progressive rollout
 
 ```typescript
 // scripts/rollout-feature.ts
@@ -482,18 +482,18 @@ async function updateRolloutPercentage(flagName: string, percentage: number) {
 
   console.log(`Updating ${flagName}: ${flag.percentage}% -> ${percentage}%`);
 
-  // En production, cela mettrait a jour une DB ou un service distant
+  // In production, this would update a DB or remote service
   flag.percentage = percentage;
 
-  // Notifier l'equipe
+  // Notify the team
   await notifySlack(`Feature flag "${flagName}" rolled out to ${percentage}%`);
 }
 
-// Plan de rollout
-// Jour 1: 10%
-// Jour 3: 25%
-// Jour 5: 50%
-// Jour 7: 100%
+// Rollout plan
+// Day 1: 10%
+// Day 3: 25%
+// Day 5: 50%
+// Day 7: 100%
 ```
 
 ---
@@ -529,14 +529,14 @@ describe('FeatureFlagService', () => {
   });
 
   it('should respect percentage distribution', () => {
-    // Test avec 1000 utilisateurs fictifs
+    // Test with 1000 fictitious users
     let enabledCount = 0;
     for (let i = 0; i < 1000; i++) {
       if (service.isEnabled('payment-v2', `user-${i}@test.com`)) {
         enabledCount++;
       }
     }
-    // Avec 10%, on attend environ 100 +/- 30
+    // With 10%, we expect roughly 100 +/- 30
     expect(enabledCount).toBeGreaterThan(70);
     expect(enabledCount).toBeLessThan(130);
   });
@@ -545,20 +545,20 @@ describe('FeatureFlagService', () => {
 
 ---
 
-## Bonnes pratiques
+## Best practices
 
-1. **Nommage coherent** : `domain-feature` (ex: `payment-v2`, `search-filters`)
-2. **Rollout progressif** : 10% -> 25% -> 50% -> 100%
-3. **Monitoring** : Tracker les performances de chaque variante
-4. **Cleanup** : Supprimer les flags apres deploiement complet
-5. **Documentation** : Maintenir une liste des flags actifs
-6. **Fallback** : Toujours prevoir un comportement par defaut
+1. **Consistent naming**: `domain-feature` (e.g., `payment-v2`, `search-filters`)
+2. **Progressive rollout**: 10% -> 25% -> 50% -> 100%
+3. **Monitoring**: Track the performance of each variant
+4. **Cleanup**: Remove flags after full deployment
+5. **Documentation**: Maintain a list of active flags
+6. **Fallback**: Always plan a default behavior
 
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

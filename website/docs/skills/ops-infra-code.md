@@ -1,7 +1,7 @@
 ---
 sidebar_position: 31
 title: "ops-infra-code"
-description: "Infrastructure as Code avec Terraform/OpenTofu. Declencher pour creer modules, configurer backends, ecrire HCL idiomatique, ou auditer infrastructure."
+description: "Infrastructure as Code with Terraform/OpenTofu. Trigger to create modules, configure backends, write idiomatic HCL, or audit infrastructure."
 tags:
   - "skill"
   - "fork"
@@ -11,112 +11,112 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Infrastructure as Code avec Terraform/OpenTofu. Declencher pour creer modules, configurer backends, ecrire HCL idiomatique, ou auditer infrastructure.
+> Infrastructure as Code with Terraform/OpenTofu. Trigger to create modules, configure backends, write idiomatic HCL, or audit infrastructure.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `infra`, `code` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `ops`, `infra`, `code` |
 
-## Description detaillee
+## Detailed description
 
 # Infrastructure as Code (Terraform / OpenTofu)
 
-Guide complet pour Terraform et OpenTofu couvrant modules, tests, CI/CD et patterns de production.
-Base sur [terraform-best-practices.com](https://terraform-best-practices.com) et l'experience enterprise d'Anton Babenko.
+Complete guide for Terraform and OpenTofu covering modules, tests, CI/CD and production patterns.
+Based on [terraform-best-practices.com](https://terraform-best-practices.com) and Anton Babenko's enterprise experience.
 
-## Quand utiliser ce Skill
+## When to use this Skill
 
-**Activer ce skill pour :**
-- Creer des configurations ou modules Terraform/OpenTofu
-- Mettre en place l'infrastructure de tests pour IaC
-- Choisir entre les approches de test (validate, plan, frameworks)
-- Structurer des deploiements multi-environnements
-- Implementer CI/CD pour l'infrastructure-as-code
-- Revoir ou refactorer des projets Terraform/OpenTofu existants
+**Activate this skill to:**
+- Create Terraform/OpenTofu configurations or modules
+- Set up the test infrastructure for IaC
+- Choose between testing approaches (validate, plan, frameworks)
+- Structure multi-environment deployments
+- Implement CI/CD for infrastructure-as-code
+- Review or refactor existing Terraform/OpenTofu projects
 
-**Ne pas utiliser pour :**
-- Questions de syntaxe basiques (Claude connait deja)
-- Reference API specifique aux providers (utiliser la doc)
-- Questions cloud non liees a Terraform/OpenTofu
+**Do not use for:**
+- Basic syntax questions (Claude already knows)
+- Provider-specific API reference (use the documentation)
+- Cloud questions unrelated to Terraform/OpenTofu
 
-## Principes Fondamentaux
+## Core Principles
 
-### 1. Hierarchie des Modules
+### 1. Module Hierarchy
 
-| Type | Quand utiliser | Portee |
-|------|----------------|--------|
-| **Resource Module** | Groupe logique de ressources connectees | VPC + subnets, Security group + rules |
-| **Infrastructure Module** | Collection de resource modules | Plusieurs modules dans une region/compte |
-| **Composition** | Infrastructure complete | Couvre plusieurs regions/comptes |
+| Type | When to use | Scope |
+|------|-------------|-------|
+| **Resource Module** | Logical group of connected resources | VPC + subnets, Security group + rules |
+| **Infrastructure Module** | Collection of resource modules | Several modules in a region/account |
+| **Composition** | Complete infrastructure | Spans multiple regions/accounts |
 
-**Hierarchie :** Resource -> Resource Module -> Infrastructure Module -> Composition
+**Hierarchy:** Resource -> Resource Module -> Infrastructure Module -> Composition
 
-### 2. Structure de Repertoire
+### 2. Directory Structure
 
 ```
-environments/        # Configurations par environnement
+environments/        # Configurations per environment
 ├── prod/
 ├── staging/
 └── dev/
 
-modules/            # Modules reutilisables
+modules/            # Reusable modules
 ├── networking/
 ├── compute/
 └── data/
 
-examples/           # Exemples d'utilisation (servent aussi de tests)
+examples/           # Usage examples (also serve as tests)
 ├── complete/
 └── minimal/
 ```
 
-### 3. Conventions de Nommage
+### 3. Naming Conventions
 
-**Ressources :**
+**Resources:**
 ```hcl
-# Bon : Descriptif et contextuel
+# Good: Descriptive and contextual
 resource "aws_instance" "web_server" { }
 resource "aws_s3_bucket" "application_logs" { }
 
-# Bon : "this" pour ressources singleton (une seule de ce type)
+# Good: "this" for singleton resources (only one of this type)
 resource "aws_vpc" "this" { }
 resource "aws_security_group" "this" { }
 
-# Eviter : Noms generiques pour non-singletons
+# Avoid: Generic names for non-singletons
 resource "aws_instance" "main" { }
 ```
 
-**Variables :**
+**Variables:**
 ```hcl
-# Prefixer avec le contexte
-var.vpc_cidr_block          # Pas juste "cidr"
-var.database_instance_class # Pas juste "instance_class"
+# Prefix with context
+var.vpc_cidr_block          # Not just "cidr"
+var.database_instance_class # Not just "instance_class"
 ```
 
-**Fichiers :**
-- `main.tf` - Ressources principales
-- `variables.tf` - Variables d'entree
-- `outputs.tf` - Valeurs de sortie
-- `versions.tf` - Versions des providers
+**Files:**
+- `main.tf` - Main resources
+- `variables.tf` - Input variables
+- `outputs.tf` - Output values
+- `versions.tf` - Provider versions
 
-## Ordre des Blocs
+## Block Order
 
-### Bloc Resource
+### Resource Block
 
-**Ordre strict pour la coherence :**
-1. `count` ou `for_each` EN PREMIER (ligne vide apres)
-2. Autres arguments
-3. `tags` comme dernier argument reel
-4. `depends_on` apres tags (si necessaire)
-5. `lifecycle` a la toute fin (si necessaire)
+**Strict order for consistency:**
+1. `count` or `for_each` FIRST (blank line after)
+2. Other arguments
+3. `tags` as the last real argument
+4. `depends_on` after tags (if necessary)
+5. `lifecycle` at the very end (if necessary)
 
 ```hcl
-# BON - Ordre correct
+# GOOD - Correct order
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 
   allocation_id = aws_eip.this[0].id
   subnet_id     = aws_subnet.public[0].id
@@ -133,23 +133,23 @@ resource "aws_nat_gateway" "this" {
 }
 ```
 
-### Bloc Variable
+### Variable Block
 
-1. `description` (TOUJOURS requis)
+1. `description` (ALWAYS required)
 2. `type`
 3. `default`
 4. `validation`
-5. `nullable` (quand false)
+5. `nullable` (when false)
 
 ```hcl
 variable "environment" {
-  description = "Nom de l'environnement pour le tagging"
+  description = "Environment name for tagging"
   type        = string
   default     = "dev"
 
   validation {
     condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "L'environnement doit etre : dev, staging, ou prod."
+    error_message = "Environment must be: dev, staging, or prod."
   }
 
   nullable = false
@@ -158,29 +158,29 @@ variable "environment" {
 
 ## Count vs For_Each
 
-### Guide de Decision Rapide
+### Quick Decision Guide
 
-| Scenario | Utiliser | Pourquoi |
-|----------|----------|----------|
-| Condition booleenne (creer ou non) | `count = condition ? 1 : 0` | Simple toggle on/off |
-| Replication numerique simple | `count = 3` | Nombre fixe de ressources identiques |
-| Elements pouvant etre reordonnes/supprimes | `for_each = toset(list)` | Adresses de ressources stables |
-| Reference par cle | `for_each = map` | Acces nomme aux ressources |
+| Scenario | Use | Why |
+|----------|-----|-----|
+| Boolean condition (create or not) | `count = condition ? 1: 0` | Simple on/off toggle |
+| Simple numeric replication | `count = 3` | Fixed number of identical resources |
+| Items that may be reordered/deleted | `for_each = toset(list)` | Stable resource addresses |
+| Reference by key | `for_each = map` | Named access to resources |
 
-### Patterns Courants
+### Common Patterns
 
-**Conditions booleennes :**
+**Boolean conditions:**
 ```hcl
-# BON - Condition booleenne
+# GOOD - Boolean condition
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
   # ...
 }
 ```
 
-**Adressage stable avec for_each :**
+**Stable addressing with for_each:**
 ```hcl
-# BON - Supprimer "us-east-1b" n'affecte que ce subnet
+# GOOD - Removing "us-east-1b" only affects this subnet
 resource "aws_subnet" "private" {
   for_each = toset(var.availability_zones)
 
@@ -188,7 +188,7 @@ resource "aws_subnet" "private" {
   # ...
 }
 
-# MAUVAIS - Supprimer l'AZ du milieu recree tous les suivants
+# BAD - Removing the middle AZ recreates all the following ones
 resource "aws_subnet" "private" {
   count = length(var.availability_zones)
 
@@ -197,142 +197,142 @@ resource "aws_subnet" "private" {
 }
 ```
 
-## Strategie de Tests
+## Testing Strategy
 
-### Matrice de Decision
+### Decision Matrix
 
-| Situation | Approche Recommandee | Outils | Cout |
-|-----------|---------------------|--------|------|
-| **Verification syntaxe rapide** | Analyse statique | `terraform validate`, `fmt` | Gratuit |
-| **Validation pre-commit** | Statique + lint | `validate`, `tflint`, `trivy` | Gratuit |
-| **Terraform 1.6+, logique simple** | Framework de test natif | `terraform test` | Gratuit-Faible |
-| **Pre-1.6, ou expertise Go** | Tests d'integration | Terratest | Faible-Moyen |
-| **Focus securite/compliance** | Policy as code | OPA, Sentinel | Gratuit |
-| **Workflow sensible aux couts** | Mock providers (1.7+) | Tests natifs + mocking | Gratuit |
+| Situation | Recommended Approach | Tools | Cost |
+|-----------|---------------------|-------|------|
+| **Quick syntax check** | Static analysis | `terraform validate`, `fmt` | Free |
+| **Pre-commit validation** | Static + lint | `validate`, `tflint`, `trivy` | Free |
+| **Terraform 1.6+, simple logic** | Native test framework | `terraform test` | Free-Low |
+| **Pre-1.6, or Go expertise** | Integration tests | Terratest | Low-Medium |
+| **Security/compliance focus** | Policy as code | OPA, Sentinel | Free |
+| **Cost-sensitive workflow** | Mock providers (1.7+) | Native tests + mocking | Free |
 
-### Pyramide de Tests pour Infrastructure
+### Testing Pyramid for Infrastructure
 
 ```
         /\
-       /  \          Tests End-to-End (Couteux)
-      /____\         - Deploiement environnement complet
-     /      \        - Setup production-like
+       /  \          End-to-End Tests (Expensive)
+      /____\         - Full environment deployment
+     /      \        - Production-like setup
     /________\
-   /          \      Tests d'Integration (Modere)
-  /____________\     - Test de module en isolation
- /              \    - Vraies ressources en compte de test
-/________________\   Analyse Statique (Peu couteux)
+   /          \      Integration Tests (Moderate)
+  /____________\     - Module testing in isolation
+ /              \    - Real resources in test account
+/________________\   Static Analysis (Inexpensive)
                      - validate, fmt, lint
-                     - Scanning securite
+                     - Security scanning
 ```
 
-## Securite et Compliance
+## Security and Compliance
 
-### Checks de Securite Essentiels
+### Essential Security Checks
 
 ```bash
-# Scanning securite statique
+# Static security scanning
 trivy config .
 checkov -d .
 ```
 
-### Issues Courantes a Eviter
+### Common Issues to Avoid
 
-**NE PAS :**
-- Stocker des secrets dans les variables
-- Utiliser le VPC par defaut
-- Omettre le chiffrement
-- Ouvrir les security groups a 0.0.0.0/0
+**DO NOT:**
+- Store secrets in variables
+- Use the default VPC
+- Omit encryption
+- Open security groups to 0.0.0.0/0
 
-**FAIRE :**
-- Utiliser AWS Secrets Manager / Parameter Store
-- Creer des VPCs dedies
-- Activer le chiffrement au repos
-- Utiliser des security groups least-privilege
+**DO:**
+- Use AWS Secrets Manager / Parameter Store
+- Create dedicated VPCs
+- Enable encryption at rest
+- Use least-privilege security groups
 
-## Gestion des Versions
+## Version Management
 
-### Syntaxe des Contraintes
+### Constraint Syntax
 
 ```hcl
-version = "5.0.0"      # Exact (eviter - inflexible)
-version = "~> 5.0"     # Recommande : 5.0.x seulement
-version = ">= 5.0"     # Minimum (risque - breaking changes)
+version = "5.0.0"      # Exact (avoid - inflexible)
+version = "~> 5.0"     # Recommended: 5.0.x only
+version = ">= 5.0"     # Minimum (risky - breaking changes)
 ```
 
-### Strategie par Composant
+### Strategy per Component
 
-| Composant | Strategie | Exemple |
-|-----------|-----------|---------|
-| **Terraform** | Pin version mineure | `required_version = "~> 1.9"` |
-| **Providers** | Pin version majeure | `version = "~> 5.0"` |
-| **Modules (prod)** | Pin version exacte | `version = "5.1.2"` |
-| **Modules (dev)** | Autoriser patch updates | `version = "~> 5.1"` |
+| Component | Strategy | Example |
+|-----------|----------|---------|
+| **Terraform** | Pin minor version | `required_version = "~> 1.9"` |
+| **Providers** | Pin major version | `version = "~> 5.0"` |
+| **Modules (prod)** | Pin exact version | `version = "5.1.2"` |
+| **Modules (dev)** | Allow patch updates | `version = "~> 5.1"` |
 
-## Features Modernes (1.0+)
+## Modern Features (1.0+)
 
-| Feature | Version | Cas d'usage |
-|---------|---------|-------------|
-| `try()` function | 0.13+ | Fallbacks surs, remplace `element(concat())` |
-| `nullable = false` | 1.1+ | Prevenir valeurs null dans les variables |
-| `moved` blocks | 1.1+ | Refactorer sans destroy/recreate |
-| `optional()` avec defaults | 1.3+ | Attributs d'objet optionnels |
-| Tests natifs | 1.6+ | Framework de test integre |
-| Mock providers | 1.7+ | Tests unitaires sans cout |
-| Cross-variable validation | 1.9+ | Valider relations entre variables |
-| Write-only arguments | 1.11+ | Secrets jamais stockes dans le state |
+| Feature | Version | Use case |
+|---------|---------|----------|
+| `try()` function | 0.13+ | Safe fallbacks, replaces `element(concat())` |
+| `nullable = false` | 1.1+ | Prevent null values in variables |
+| `moved` blocks | 1.1+ | Refactor without destroy/recreate |
+| `optional()` with defaults | 1.3+ | Optional object attributes |
+| Native tests | 1.6+ | Built-in test framework |
+| Mock providers | 1.7+ | Unit tests at no cost |
+| Cross-variable validation | 1.9+ | Validate relationships between variables |
+| Write-only arguments | 1.11+ | Secrets never stored in state |
 
-## Guides Detailles
+## Detailed Guides
 
-Ce skill utilise le **progressive disclosure** - informations essentielles dans ce fichier, guides détaillés disponibles via les ressources externes :
+This skill uses **progressive disclosure** - essential information in this file, detailed guides available via external resources:
 
 - **Module Patterns** - Structure, variables/outputs, DO vs DON'T
-- **Code Patterns** - Features modernes, refactoring, locals
-- **Testing Frameworks** - Analyse statique, tests natifs, Terratest
-- **Security & Compliance** - Trivy/Checkov, gestion secrets, state file
+- **Code Patterns** - Modern features, refactoring, locals
+- **Testing Frameworks** - Static analysis, native tests, Terratest
+- **Security & Compliance** - Trivy/Checkov, secrets management, state file
 
-Consultez [terraform-best-practices.com](https://terraform-best-practices.com) pour les guides complets.
+See [terraform-best-practices.com](https://terraform-best-practices.com) for the full guides.
 
 ## Attribution
 
-Ce skill est adapte de [terraform-skill](https://github.com/antonbabenko/terraform-skill) par Anton Babenko.
-Ressources additionnelles :
+This skill is adapted from [terraform-skill](https://github.com/antonbabenko/terraform-skill) by Anton Babenko.
+Additional resources:
 - [terraform-best-practices.com](https://terraform-best-practices.com)
 - [Compliance.tf](https://compliance.tf)
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux ops..."_
-- _"Je veux infra..."_
-- _"Je veux code..."_
+- _"I want to ops..."_
+- _"I want to infra..."_
+- _"I want to code..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
-### 1. Exemple : Module VPC AWS Complet
+### 1. Example: Complete AWS VPC Module
 
-# Exemple : Module VPC AWS Complet
+# Example: Complete AWS VPC Module
 
-> Cet exemple illustre les patterns du skill infrastructure-as-code
+> This example illustrates the patterns from the infrastructure-as-code skill
 
-## Structure du Module
+## Module Structure
 
 ```
 modules/vpc/
@@ -349,7 +349,7 @@ modules/vpc/
 
 ```hcl
 locals {
-  # Tags communs pour toutes les ressources
+  # Common tags for all resources
   common_tags = merge(
     var.tags,
     {
@@ -358,7 +358,7 @@ locals {
     }
   )
 
-  # Force l'ordre de suppression correct
+  # Force correct deletion order
   vpc_id = try(
     aws_vpc_ipv4_cidr_block_association.secondary[0].vpc_id,
     aws_vpc.this.id,
@@ -366,7 +366,7 @@ locals {
   )
 }
 
-# VPC principal
+# Main VPC
 resource "aws_vpc" "this" {
   cidr_block           = var.cidr_block
   enable_dns_hostnames = var.enable_dns_hostnames
@@ -380,9 +380,9 @@ resource "aws_vpc" "this" {
   )
 }
 
-# CIDR bloc secondaire (optionnel)
+# Secondary CIDR block (optional)
 resource "aws_vpc_ipv4_cidr_block_association" "secondary" {
-  count = var.secondary_cidr_block != "" ? 1 : 0
+  count = var.secondary_cidr_block != "" ? 1: 0
 
   vpc_id     = aws_vpc.this.id
   cidr_block = var.secondary_cidr_block
@@ -390,7 +390,7 @@ resource "aws_vpc_ipv4_cidr_block_association" "secondary" {
 
 # Internet Gateway
 resource "aws_internet_gateway" "this" {
-  count = var.create_igw ? 1 : 0
+  count = var.create_igw ? 1: 0
 
   vpc_id = local.vpc_id
 
@@ -402,7 +402,7 @@ resource "aws_internet_gateway" "this" {
   )
 }
 
-# Subnets publics
+# Public subnets
 resource "aws_subnet" "public" {
   for_each = toset(var.availability_zones)
 
@@ -420,7 +420,7 @@ resource "aws_subnet" "public" {
   )
 }
 
-# Subnets prives
+# Private subnets
 resource "aws_subnet" "private" {
   for_each = toset(var.availability_zones)
 
@@ -437,9 +437,9 @@ resource "aws_subnet" "private" {
   )
 }
 
-# NAT Gateway (optionnel)
+# NAT Gateway (optional)
 resource "aws_eip" "nat" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 
   domain = "vpc"
 
@@ -454,7 +454,7 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 
   allocation_id = aws_eip.nat[0].id
   subnet_id     = aws_subnet.public[var.availability_zones[0]].id
@@ -478,70 +478,70 @@ resource "aws_nat_gateway" "this" {
 
 ```hcl
 variable "name" {
-  description = "Nom du VPC, utilise pour le tagging"
+  description = "VPC name, used for tagging"
   type        = string
   nullable    = false
 }
 
 variable "cidr_block" {
-  description = "Bloc CIDR principal pour le VPC"
+  description = "Main CIDR block for the VPC"
   type        = string
   default     = "10.0.0.0/16"
 
   validation {
     condition     = can(cidrhost(var.cidr_block, 0))
-    error_message = "Le cidr_block doit etre un bloc CIDR valide."
+    error_message = "cidr_block must be a valid CIDR block."
   }
 }
 
 variable "secondary_cidr_block" {
-  description = "Bloc CIDR secondaire optionnel"
+  description = "Optional secondary CIDR block"
   type        = string
   default     = ""
 
   validation {
     condition     = var.secondary_cidr_block == "" || can(cidrhost(var.secondary_cidr_block, 0))
-    error_message = "Le secondary_cidr_block doit etre vide ou un bloc CIDR valide."
+    error_message = "secondary_cidr_block must be empty or a valid CIDR block."
   }
 }
 
 variable "availability_zones" {
-  description = "Liste des zones de disponibilite pour les subnets"
+  description = "List of availability zones for subnets"
   type        = list(string)
   default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
 
   validation {
     condition     = length(var.availability_zones) >= 2
-    error_message = "Au moins 2 zones de disponibilite sont requises pour la HA."
+    error_message = "At least 2 availability zones are required for HA."
   }
 }
 
 variable "enable_dns_hostnames" {
-  description = "Activer les DNS hostnames dans le VPC"
+  description = "Enable DNS hostnames in the VPC"
   type        = bool
   default     = true
 }
 
 variable "enable_dns_support" {
-  description = "Activer le support DNS dans le VPC"
+  description = "Enable DNS support in the VPC"
   type        = bool
   default     = true
 }
 
 variable "create_igw" {
-  description = "Creer une Internet Gateway"
+  description = "Create an Internet Gateway"
   type        = bool
   default     = true
 }
 
 variable "create_nat_gateway" {
-  description = "Creer une NAT Gateway pour les subnets prives"
+  description = "Create a NAT Gateway for private subnets"
   type        = bool
   default     = false
 }
 
 variable "tags" {
-  description = "Tags additionnels a appliquer a toutes les ressources"
+  description = "Additional tags to apply to all resources"
   type        = map(string)
   default     = {}
 }
@@ -551,42 +551,42 @@ variable "tags" {
 
 ```hcl
 output "vpc_id" {
-  description = "ID du VPC cree"
+  description = "ID of the created VPC"
   value       = aws_vpc.this.id
 }
 
 output "vpc_arn" {
-  description = "ARN du VPC cree"
+  description = "ARN of the created VPC"
   value       = aws_vpc.this.arn
 }
 
 output "vpc_cidr_block" {
-  description = "Bloc CIDR du VPC"
+  description = "CIDR block of the VPC"
   value       = aws_vpc.this.cidr_block
 }
 
 output "public_subnet_ids" {
-  description = "Liste des IDs des subnets publics"
-  value       = [for subnet in aws_subnet.public : subnet.id]
+  description = "List of public subnet IDs"
+  value       = [for subnet in aws_subnet.public: subnet.id]
 }
 
 output "private_subnet_ids" {
-  description = "Liste des IDs des subnets prives"
-  value       = [for subnet in aws_subnet.private : subnet.id]
+  description = "List of private subnet IDs"
+  value       = [for subnet in aws_subnet.private: subnet.id]
 }
 
 output "internet_gateway_id" {
-  description = "ID de l'Internet Gateway"
+  description = "Internet Gateway ID"
   value       = try(aws_internet_gateway.this[0].id, "")
 }
 
 output "nat_gateway_id" {
-  description = "ID de la NAT Gateway"
+  description = "NAT Gateway ID"
   value       = try(aws_nat_gateway.this[0].id, "")
 }
 
 output "availability_zones" {
-  description = "Zones de disponibilite utilisees"
+  description = "Availability zones used"
   value       = var.availability_zones
 }
 ```
@@ -609,10 +609,10 @@ terraform {
 ## tests/vpc.tftest.hcl
 
 ```hcl
-# Test avec mock provider pour execution rapide
+# Test with mock provider for fast execution
 mock_provider "aws" {}
 
-# Test 1: Valider configuration minimale
+# Test 1: Validate minimal configuration
 run "minimal_vpc" {
   command = apply
 
@@ -623,16 +623,16 @@ run "minimal_vpc" {
 
   assert {
     condition     = aws_vpc.this.cidr_block == "10.0.0.0/16"
-    error_message = "Le CIDR par defaut devrait etre 10.0.0.0/16"
+    error_message = "Default CIDR should be 10.0.0.0/16"
   }
 
   assert {
     condition     = aws_vpc.this.enable_dns_hostnames == true
-    error_message = "DNS hostnames devrait etre active par defaut"
+    error_message = "DNS hostnames should be enabled by default"
   }
 }
 
-# Test 2: Verifier creation subnets
+# Test 2: Verify subnet creation
 run "subnets_created" {
   command = apply
 
@@ -643,16 +643,16 @@ run "subnets_created" {
 
   assert {
     condition     = length(aws_subnet.public) == 3
-    error_message = "Devrait creer 3 subnets publics"
+    error_message = "Should create 3 public subnets"
   }
 
   assert {
     condition     = length(aws_subnet.private) == 3
-    error_message = "Devrait creer 3 subnets prives"
+    error_message = "Should create 3 private subnets"
   }
 }
 
-# Test 3: Validation du CIDR
+# Test 3: CIDR validation
 run "invalid_cidr_rejected" {
   command = plan
 
@@ -664,19 +664,19 @@ run "invalid_cidr_rejected" {
   expect_failures = [var.cidr_block]
 }
 
-# Test 4: Minimum 2 AZs requis
+# Test 4: Minimum 2 AZs required
 run "minimum_azs_required" {
   command = plan
 
   variables {
     name               = "test-vpc"
-    availability_zones = ["us-east-1a"]  # Seulement 1 AZ
+    availability_zones = ["us-east-1a"]  # Only 1 AZ
   }
 
   expect_failures = [var.availability_zones]
 }
 
-# Test 5: NAT Gateway optionnel
+# Test 5: Optional NAT Gateway
 run "nat_gateway_created_when_enabled" {
   command = apply
 
@@ -688,7 +688,7 @@ run "nat_gateway_created_when_enabled" {
 
   assert {
     condition     = length(aws_nat_gateway.this) == 1
-    error_message = "NAT Gateway devrait etre creee quand activee"
+    error_message = "NAT Gateway should be created when enabled"
   }
 }
 ```
@@ -696,7 +696,7 @@ run "nat_gateway_created_when_enabled" {
 ## Usage
 
 ```hcl
-# Exemple minimal
+# Minimal example
 module "vpc" {
   source = "./modules/vpc"
 
@@ -704,7 +704,7 @@ module "vpc" {
   availability_zones = ["eu-west-1a", "eu-west-1b"]
 }
 
-# Exemple complet
+# Complete example
 module "vpc" {
   source = "./modules/vpc"
 
@@ -725,13 +725,13 @@ module "vpc" {
 
 ## Attribution
 
-Ce module suit les bonnes pratiques de [terraform-skill](https://github.com/antonbabenko/terraform-skill) par Anton Babenko.
+This module follows the best practices from [terraform-skill](https://github.com/antonbabenko/terraform-skill) by Anton Babenko.
 
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

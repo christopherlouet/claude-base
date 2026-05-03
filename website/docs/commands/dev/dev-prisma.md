@@ -1,7 +1,7 @@
 ---
 sidebar_position: 15
 title: "/dev:dev-prisma"
-description: "Configuration et utilisation de Prisma ORM."
+description: "Configuration and usage of Prisma ORM."
 tags:
   - "dev"
   - "command"
@@ -15,57 +15,57 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DEV-PRISMA
 
-Configuration et utilisation de Prisma ORM.
+Configuration and usage of Prisma ORM.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Configurer Prisma ORM et implementer le schema, les migrations, les queries CRUD,
-les transactions et les patterns avances (soft delete, extensions, raw queries).
+Configure Prisma ORM and implement the schema, migrations, CRUD queries,
+transactions and advanced patterns (soft delete, extensions, raw queries).
 
 ## Workflow
 
-- Initialiser Prisma (`npx prisma init`) et configurer le datasource
-- Definir les modeles avec relations (1:1, 1:n, n:m), index et conventions de nommage
-- Creer les migrations (`npx prisma migrate dev`)
-- Configurer le singleton PrismaClient (eviter connexions multiples en dev)
-- Implementer les queries CRUD (create, findMany, update, delete, upsert)
-- Ajouter les transactions pour operations multiples
-- Implementer les aggregations (count, groupBy, aggregate)
-- Ajouter les patterns avances si necessaire (soft delete, extensions, raw queries)
-- Creer le seed pour les donnees de test
+- Initialize Prisma (`npx prisma init`) and configure the datasource
+- Define models with relations (1:1, 1:n, n:m), indexes and naming conventions
+- Create migrations (`npx prisma migrate dev`)
+- Configure the PrismaClient singleton (avoid multiple connections in dev)
+- Implement CRUD queries (create, findMany, update, delete, upsert)
+- Add transactions for multiple operations
+- Implement aggregations (count, groupBy, aggregate)
+- Add advanced patterns if needed (soft delete, extensions, raw queries)
+- Create the seed for test data
 
-## Output attendu
+## Expected output
 
-Schema Prisma avec modeles et relations, migrations, singleton client,
-queries CRUD et seed.
+Prisma schema with models and relations, migrations, client singleton,
+CRUD queries and seed.
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-database` | Migrations, optimisations |
-| `/dev:dev-api` | Endpoints CRUD |
-| `/qa:qa-security` | Securite des queries |
+| `/ops:ops-database` | Migrations, optimizations |
+| `/dev:dev-api` | CRUD endpoints |
+| `/qa:qa-security` | Query security |
 
 ---
 
-IMPORTANT: Toujours utiliser le singleton en dev pour eviter les connexions multiples.
+IMPORTANT: Always use the singleton in dev to avoid multiple connections.
 
-IMPORTANT: Indexer les colonnes utilisees dans WHERE et ORDER BY.
+IMPORTANT: Index columns used in WHERE and ORDER BY.
 
-YOU MUST utiliser les transactions pour les operations multiples.
+YOU MUST use transactions for multiple operations.
 
-NEVER exposer les erreurs Prisma directement a l'utilisateur.
+NEVER expose Prisma errors directly to the user.
 
-Think hard sur le schema et les relations avant de creer les migrations.
+Think hard about the schema and relations before creating migrations.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DEV](/docs/commands/dev)
-- [Toutes les commandes](/docs/commands)
+- [Back to DEV commands](/docs/commands/dev)
+- [All commands](/docs/commands)

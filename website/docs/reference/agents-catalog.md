@@ -13,7 +13,7 @@ tags:
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
 |---------|------|-------|
-| `/assistant` | Guided | Analyze → Recommend → Wait for confirmation |
+| `/assistant` | Guide | Analyze → Recommend → Wait for confirmation |
 | `/assistant-auto` | Automatic | Analyze → Execute the workflow directly |
 
 ## WORK-: Main Workflow (15)
@@ -27,8 +27,8 @@ tags:
 | `/work:work-commit` | Create a clean commit |
 | `/work:work-pr` | Create a Pull Request |
 | `/work:work-commit-push-pr` | **Full workflow: commit + push + PR** |
-| `/work:work-team` | Launch a team of coordinated agents (Agent Teams) |
-| `/work:work-quick` | Quick workflow for trivial changes (skip the full cycle) |
+| `/work:work-team` | Launch a coordinated team of agents (Agent Teams) |
+| `/work:work-quick` | Quick workflow for trivial changes (skip full cycle) |
 | `/work:work-batch` | Sequential execution of user stories from a PRD |
 | `/work:work-flow-feature` | Full feature workflow |
 | `/work:work-flow-bugfix` | Full bugfix workflow |
@@ -40,11 +40,11 @@ tags:
 |---------|-------|
 | `/dev:dev-tdd` | TDD development |
 | `/dev:dev-test` | Generate tests |
-| `/dev:dev-testing-setup` | Configure test infrastructure |
-| `/dev:dev-debug` | Debug a problem (4-phase methodology) |
+| `/dev:dev-testing-setup` | Set up testing infrastructure |
+| `/dev:dev-debug` | Debug an issue (4-phase methodology) |
 | `/dev:dev-refactor` | Guided refactoring + entropy reduction |
 | `/dev:dev-document` | Document generation (PDF, DOCX, XLSX, PPTX) |
-| `/dev:dev-api` | Create/document API |
+| `/dev:dev-api` | Create/document an API |
 | `/dev:dev-api-versioning` | API versioning |
 | `/dev:dev-component` | Create a complete UI component |
 | `/dev:dev-hook` | Create a React/Vue hook |
@@ -53,7 +53,7 @@ tags:
 | `/dev:dev-mcp` | Create MCP servers (Model Context Protocol) |
 | `/dev:dev-flutter` | Flutter widgets and screens |
 | `/dev:dev-supabase` | Supabase backend (Auth, DB, Storage, Postgres perf) |
-| `/dev:dev-graphql` | GraphQL API client/server |
+| `/dev:dev-graphql` | GraphQL client/server API |
 | `/dev:dev-neovim` | Neovim/Lua plugins and config |
 | `/dev:dev-prompt-engineering` | LLM prompt optimization |
 | `/dev:dev-rag` | RAG systems (Retrieval-Augmented Generation) |
@@ -65,17 +65,17 @@ tags:
 ## QA-: Quality (16)
 | Command | Usage |
 |---------|-------|
-| `/qa:qa-review` | In-depth code review + naming analysis |
+| `/qa:qa-review` | Thorough code review + naming analysis |
 | `/qa:qa-security` | OWASP security audit |
 | `/qa:qa-perf` | Performance analysis |
 | `/qa:wcag-audit` | WCAG accessibility audit |
 | `/qa:qa-audit` | Full quality audit |
-| `/qa:qa-chrome` | Chrome visual tests (DOM debugging, responsive, screenshots) |
+| `/qa:qa-chrome` | Chrome visual tests (DOM debugging, responsive, captures) |
 | `/qa:qa-design` | UI/UX audit (100+ web design rules) |
 | `/qa:qa-responsive` | Responsive/mobile web audit |
 | `/qa:qa-automation` | Test automation |
 | `/qa:qa-coverage` | Test coverage analysis |
-| `/qa:qa-loop` | Autonomous audit-fix loop with stopping criteria |
+| `/qa:qa-loop` | Autonomous audit-fix loop with stop criteria |
 | `/qa:qa-kaizen` | Continuous improvement (PDCA, Muda) |
 | `/qa:qa-mobile` | Mobile app quality audit (Flutter) |
 | `/qa:qa-neovim` | Neovim config audit (perf, keymaps) |
@@ -144,14 +144,14 @@ tags:
 | `/biz:biz-roadmap` | Plan the roadmap |
 | `/biz:biz-launch` | Full launch workflow |
 | `/biz:biz-competitor` | Competitive analysis |
-| `/biz:biz-okr` | Define the OKRs |
+| `/biz:biz-okr` | Define OKRs |
 | `/biz:biz-personas` | Create user personas |
 | `/biz:biz-research` | User research |
 
 ## GROWTH-: Growth (11)
 | Command | Usage |
 |---------|-------|
-| `/growth:growth-landing` | Create/optimize landing page |
+| `/growth:growth-landing` | Create/optimize a landing page |
 | `/growth:growth-seo` | SEO audit |
 | `/growth:growth-analytics` | Tracking and KPI setup |
 | `/growth:growth-app-store-analytics` | App Store / Google Play metrics |
@@ -173,8 +173,8 @@ tags:
 ## LEGAL-: Legal (5)
 | Command | Usage |
 |---------|-------|
-| `/legal:legal-docs` | ToS, T&C, legal notices |
-| `/legal:legal-rgpd` | GDPR compliance |
+| `/legal:legal-docs` | ToS, T&Cs, legal notices |
+| `/legal:legal-rgpd` | RGPD/GDPR compliance |
 | `/legal:legal-payment` | Payment integration |
 | `/legal:legal-terms-of-service` | Terms of Service |
 | `/legal:legal-privacy-policy` | Privacy Policy |
@@ -189,7 +189,7 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 |---------|--------|---------|---------|
 | **Commands** | `.claude/commands/` | Manual (`/name`) | Shared |
 | **Skills** | `.claude/skills/` | Automatic | Shared |
-| **Agents** | `.claude/agents/` | Auto delegation | **Isolated** |
+| **Agents** | `.claude/agents/` | Auto-delegation | **Isolated** |
 
 ### Agents by domain
 

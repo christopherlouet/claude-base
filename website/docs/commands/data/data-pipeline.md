@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: "/data:data-pipeline"
-description: "Concevoir et implementer des pipelines de donnees ETL/ELT."
+description: "Design and implement ETL/ELT data pipelines."
 tags:
   - "data"
   - "command"
@@ -15,57 +15,57 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DATA-PIPELINE
 
-Concevoir et implementer des pipelines de donnees ETL/ELT.
+Design and implement ETL/ELT data pipelines.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Creer un pipeline de donnees robuste avec extraction, transformation, chargement,
-validation, gestion des erreurs et monitoring.
+Create a robust data pipeline with extraction, transformation, loading,
+validation, error handling and monitoring.
 
 ## Workflow
 
-- Analyser les besoins : sources, frequence, volume, transformations, destination
-- Choisir le pattern (Batch/Airflow, Streaming/Kafka, Micro-batch/Spark, ELT/dbt)
-- Structurer le projet (extractors, transformers, loaders, orchestration, schemas, tests)
-- Implementer l'extraction depuis les sources
-- Definir les schemas de validation (Pydantic ou equivalent)
-- Implementer les transformations avec validation a chaque etape
-- Charger vers la destination
-- Ajouter la gestion des erreurs (retry avec exponential backoff, dead letter queue)
-- Configurer l'orchestration (DAG Airflow ou equivalent)
-- Mettre en place le monitoring (records traites, duree, erreurs, alertes)
+- Analyze needs: sources, frequency, volume, transformations, destination
+- Choose the pattern (Batch/Airflow, Streaming/Kafka, Micro-batch/Spark, ELT/dbt)
+- Structure the project (extractors, transformers, loaders, orchestration, schemas, tests)
+- Implement extraction from sources
+- Define validation schemas (Pydantic or equivalent)
+- Implement transformations with validation at each step
+- Load to destination
+- Add error handling (retry with exponential backoff, dead letter queue)
+- Configure orchestration (Airflow DAG or equivalent)
+- Set up monitoring (records processed, duration, errors, alerts)
 
-## Output attendu
+## Expected output
 
-Pipeline avec sources, transformations documentees, destination (format, partitionnement),
-orchestration (cron, SLA) et monitoring (metriques, alertes).
+Pipeline with sources, documented transformations, destination (format, partitioning),
+orchestration (cron, SLA) and monitoring (metrics, alerts).
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/data:data-modeling` | Modeliser les donnees |
-| `/data:data-analytics` | Analyser les resultats |
-| `/ops:ops-monitoring` | Configurer le monitoring |
-| `/dev:dev-test` | Tester le pipeline |
+| `/data:data-modeling` | Model the data |
+| `/data:data-analytics` | Analyze the results |
+| `/ops:ops-monitoring` | Configure monitoring |
+| `/dev:dev-test` | Test the pipeline |
 
 ---
 
-IMPORTANT: Toujours valider les donnees a chaque etape.
+IMPORTANT: Always validate data at each step.
 
-YOU MUST implementer une gestion des erreurs robuste (retry, DLQ).
+YOU MUST implement robust error handling (retry, DLQ).
 
-NEVER perdre de donnees - utiliser des checkpoints et idempotence.
+NEVER lose data - use checkpoints and idempotence.
 
-Think hard sur la scalabilite et la maintenabilite du pipeline.
+Think hard about pipeline scalability and maintainability.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DATA](/docs/commands/data)
-- [Toutes les commandes](/docs/commands)
+- [Back to DATA commands](/docs/commands/data)
+- [All commands](/docs/commands)

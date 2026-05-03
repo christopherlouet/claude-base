@@ -1,7 +1,7 @@
 ---
 sidebar_position: 25
 title: "git-worktrees"
-description: "Utilisation de git worktrees pour le developpement parallele. Declencher quand l'utilisateur veut travailler sur plusieurs branches simultanement, faire du dev parallele, ou gerer des worktrees."
+description: "Using git worktrees for parallel development. Trigger when the user wants to work on multiple branches simultaneously, do parallel dev, or manage worktrees."
 tags:
   - "skill"
   - "fork"
@@ -11,53 +11,53 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Utilisation de git worktrees pour le developpement parallele. Declencher quand l'utilisateur veut travailler sur plusieurs branches simultanement, faire du dev parallele, ou gerer des worktrees.
+> Using git worktrees for parallel development. Trigger when the user wants to work on multiple branches simultaneously, do parallel dev, or manage worktrees.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `git`, `worktrees`, `sessions paralleles` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `git`, `worktrees`, `parallel sessions` |
 
-## Description detaillee
+## Detailed description
 
 # Git Worktrees
 
-> "The single biggest productivity unlock." — Boris Cherny, createur de Claude Code
+> "The single biggest productivity unlock." — Boris Cherny, creator of Claude Code
 
-## Objectif
+## Goal
 
-Utiliser les git worktrees pour travailler sur plusieurs branches simultanement sans avoir a switcher de branche. Boris utilise 5+ sessions Claude Code en parallele avec cette technique.
+Use git worktrees to work on multiple branches simultaneously without having to switch branches. Boris uses 5+ Claude Code sessions in parallel with this technique.
 
 ## Concept
 
 ```
-repo/                    # Worktree principal (main)
-repo-feature-auth/       # Worktree pour feature/auth
-repo-fix-login/          # Worktree pour fix/login
-repo-review-pr42/        # Worktree pour reviewer PR #42
-repo-analysis/           # Worktree dedie aux analyses (lecture seule)
+repo/                    # Main worktree (main)
+repo-feature-auth/       # Worktree for feature/auth
+repo-fix-login/          # Worktree for fix/login
+repo-review-pr42/        # Worktree to review PR #42
+repo-analysis/           # Worktree dedicated to analyses (read-only)
 ```
 
-Chaque worktree est un dossier separe avec son propre working directory, mais partage le meme repo git (.git).
+Each worktree is a separate folder with its own working directory, but shares the same git repo (.git).
 
-## Setup recommande par Boris
+## Setup recommended by Boris
 
-### Configuration des alias shell
+### Shell alias configuration
 
-Ajouter a `~/.bashrc` ou `~/.zshrc` :
+Add to `~/.bashrc` or `~/.zshrc`:
 
 ```bash
-# Navigation rapide entre worktrees
-alias wa="cd ~/projects/myapp"           # Worktree principal
-alias wb="cd ~/projects/myapp-feature"   # Worktree feature
-alias wc="cd ~/projects/myapp-fix"       # Worktree fix
-alias wd="cd ~/projects/myapp-review"    # Worktree review
-alias we="cd ~/projects/myapp-analysis"  # Worktree analyse
+# Quick navigation between worktrees
+alias wa="cd ~/projects/myapp"           # Main worktree
+alias wb="cd ~/projects/myapp-feature"   # Feature worktree
+alias wc="cd ~/projects/myapp-fix"       # Fix worktree
+alias wd="cd ~/projects/myapp-review"    # Review worktree
+alias we="cd ~/projects/myapp-analysis"  # Analysis worktree
 
-# Creation rapide de worktree
+# Quick worktree creation
 wtnew() {
   local name=$1
   local branch=${2:-$1}
@@ -66,54 +66,54 @@ wtnew() {
   cd "../$(basename $(pwd))-$name"
 }
 
-# Suppression de worktree
+# Worktree removal
 wtrm() {
   local name=$1
   git worktree remove "../$(basename $(pwd))-$name"
 }
 
-# Liste des worktrees
+# List worktrees
 alias wtls="git worktree list"
 ```
 
-### Organisation des onglets terminal
+### Terminal tab organization
 
-Numerotez vos onglets de terminal (1-5) pour identifier rapidement chaque session :
-- **Tab 1** : Worktree principal (main/develop)
-- **Tab 2** : Feature en cours
-- **Tab 3** : Fix/bugfix
-- **Tab 4** : Code review
-- **Tab 5** : Analyse/recherche (lecture seule)
+Number your terminal tabs (1-5) to quickly identify each session:
+- **Tab 1**: Main worktree (main/develop)
+- **Tab 2**: Current feature
+- **Tab 3**: Fix/bugfix
+- **Tab 4**: Code review
+- **Tab 5**: Analysis/research (read-only)
 
-### Worktree d'analyse
+### Analysis worktree
 
-Un worktree dedie aux analyses permet de poser des questions a Claude sans risquer de modifier le code :
+A worktree dedicated to analyses lets you ask Claude questions without risking modifying the code:
 
 ```bash
-# Creer un worktree d'analyse sur main
+# Create an analysis worktree on main
 git worktree add ../myapp-analysis main
 
-# Utiliser pour les requetes de lecture
+# Use for read-only queries
 cd ../myapp-analysis
-claude  # Session dediee aux questions/analyses
+claude  # Session dedicated to questions/analyses
 ```
 
-## Commandes essentielles
+## Essential commands
 
-### Creer un worktree
+### Create a worktree
 
 ```bash
-# Nouvelle branche + worktree
+# New branch + worktree
 git worktree add ../repo-feature-auth -b feature/auth
 
-# Branche existante
+# Existing branch
 git worktree add ../repo-fix-login fix/login
 
-# Depuis un commit specifique
+# From a specific commit
 git worktree add ../repo-review HEAD~5
 ```
 
-### Lister les worktrees
+### List worktrees
 
 ```bash
 git worktree list
@@ -122,101 +122,101 @@ git worktree list
 # /home/user/repo-fix-login        ghi9012 [fix/login]
 ```
 
-### Supprimer un worktree
+### Remove a worktree
 
 ```bash
-# Supprimer apres merge
+# Remove after merge
 git worktree remove ../repo-feature-auth
 
-# Force remove (modifications non commitees)
+# Force remove (uncommitted changes)
 git worktree remove --force ../repo-feature-auth
 
-# Nettoyer les references obsoletes
+# Clean up obsolete references
 git worktree prune
 ```
 
-## Workflows avec worktrees
+## Workflows with worktrees
 
-### Developper + Reviewer en parallele
+### Develop + Review in parallel
 
 ```bash
-# Travailler sur une feature
+# Work on a feature
 git worktree add ../myapp-feature -b feature/new-thing
 cd ../myapp-feature
-# ... developper ...
+# ... develop ...
 
-# En parallele, reviewer une PR dans un autre terminal
+# In parallel, review a PR in another terminal
 git worktree add ../myapp-review pr/42
 cd ../myapp-review
-# ... reviewer le code ...
+# ... review the code ...
 ```
 
-### Hotfix pendant une feature
+### Hotfix during a feature
 
 ```bash
-# Situation: en plein dev sur feature/auth
-# Bug urgent en production
+# Situation: in the middle of dev on feature/auth
+# Urgent bug in production
 
-# Creer un worktree pour le hotfix (pas besoin de stash)
+# Create a worktree for the hotfix (no need to stash)
 git worktree add ../myapp-hotfix -b hotfix/critical-bug main
 cd ../myapp-hotfix
-# ... corriger le bug, commiter, pusher ...
+# ... fix the bug, commit, push ...
 
-# Retourner a la feature (rien n'a change)
+# Return to the feature (nothing has changed)
 cd ../myapp
-# ... continuer le dev feature/auth ...
+# ... continue dev on feature/auth ...
 
-# Nettoyer
+# Clean up
 git worktree remove ../myapp-hotfix
 ```
 
-### Tests sur plusieurs versions
+### Tests on multiple versions
 
 ```bash
-# Tester sur la version actuelle ET la precedente
+# Test on the current AND previous version
 git worktree add ../myapp-v1 v1.0.0
 git worktree add ../myapp-v2 v2.0.0
 
-# Lancer les tests en parallele
+# Run tests in parallel
 cd ../myapp-v1 && npm test &
 cd ../myapp-v2 && npm test &
 wait
 ```
 
-## Convention de nommage des worktrees
+## Worktree naming convention
 
 ```
-<repo>-<type>-<nom>
+<repo>-<type>-<name>
 
-Exemples:
+Examples:
   myapp-feature-auth      # Feature branch
   myapp-fix-login         # Bug fix
   myapp-review-pr42       # Code review
   myapp-hotfix-critical   # Hotfix
-  myapp-test-v2           # Test sur une version
+  myapp-test-v2           # Test on a version
 ```
 
-## Bonnes pratiques
+## Best practices
 
-- Un worktree par tache/branche active
-- Supprimer les worktrees termines (`git worktree remove`)
-- Executer `git worktree prune` regulierement
-- Utiliser des noms de dossier descriptifs
-- Ne pas imbriquer les worktrees dans le repo principal
+- One worktree per active task/branch
+- Remove finished worktrees (`git worktree remove`)
+- Run `git worktree prune` regularly
+- Use descriptive folder names
+- Do not nest worktrees inside the main repo
 
-## Workflow Boris Cherny (5+ sessions paralleles)
+## Boris Cherny workflow (5+ parallel sessions)
 
-### Setup complet avec sessions nommees (CLI 2.1.76+)
+### Full setup with named sessions (CLI 2.1.76+)
 
 ```bash
-# 1. Creer les worktrees
+# 1. Create the worktrees
 git worktree add ../myapp-feature-1 -b feature/user-auth
 git worktree add ../myapp-feature-2 -b feature/payment
 git worktree add ../myapp-fix -b fix/login-bug
 git worktree add ../myapp-review main
 git worktree add ../myapp-analysis main
 
-# 2. Lancer Claude dans chaque worktree avec --name
+# 2. Launch Claude in each worktree with --name
 # Tab 1: cd ../myapp && claude -n "main"
 # Tab 2: cd ../myapp-feature-1 && claude -n "auth"
 # Tab 3: cd ../myapp-feature-2 && claude -n "payment"
@@ -224,28 +224,28 @@ git worktree add ../myapp-analysis main
 # Tab 5: cd ../myapp-analysis && claude -n "analysis"
 ```
 
-Le flag `--name` / `-n` nomme la session pour l'identifier dans les logs et le terminal. Pattern recommande: 1 worktree = 1 branche = 1 session nommee.
+The `--name` / `-n` flag names the session to identify it in logs and the terminal. Recommended pattern: 1 worktree = 1 branch = 1 named session.
 
-### Avantages cles
+### Key advantages
 
-| Avantage | Description |
-|----------|-------------|
-| Pas de stash | Chaque worktree a son propre etat |
-| Contexte preserve | Chaque session Claude garde son historique |
-| Parallelisme reel | Travailler sur 5 taches simultanement |
-| Isolation | Un bug dans une session n'affecte pas les autres |
-| Analyse separee | Poser des questions sans risquer de modifier |
+| Advantage | Description |
+|-----------|-------------|
+| No stash | Each worktree has its own state |
+| Preserved context | Each Claude session keeps its history |
+| Real parallelism | Work on 5 tasks simultaneously |
+| Isolation | A bug in one session does not affect the others |
+| Separate analysis | Ask questions without risking modifications |
 
-### Combinaison avec claude.ai/code
+### Combination with claude.ai/code
 
-Boris utilise aussi 5-10 sessions sur claude.ai/code en parallele :
-- Transfert de sessions locales vers web avec `&` (teleport)
-- Sessions web pour les taches longues
-- Sessions locales pour l'edition rapide
+Boris also uses 5-10 sessions on claude.ai/code in parallel:
+- Transfer local sessions to web with `&` (teleport)
+- Web sessions for long tasks
+- Local sessions for quick editing
 
 ### Notifications
 
-Activer les notifications systeme pour savoir quand Claude a besoin d'input :
+Enable system notifications to know when Claude needs input:
 ```bash
 # macOS
 osascript -e 'display notification "Claude needs input" with title "Claude Code"'
@@ -254,12 +254,12 @@ osascript -e 'display notification "Claude needs input" with title "Claude Code"
 notify-send "Claude Code" "Claude needs input"
 ```
 
-## Sparse Paths pour Monorepos (CLI 2.1.76+)
+## Sparse Paths for Monorepos (CLI 2.1.76+)
 
-Configuration `worktree.sparsePaths` pour limiter les fichiers inclus dans un worktree. Utile pour les monorepos volumineux:
+`worktree.sparsePaths` configuration to limit the files included in a worktree. Useful for large monorepos:
 
 ```json
-// Dans .claude/settings.json
+// In .claude/settings.json
 {
   "worktree": {
     "sparsePaths": [
@@ -272,52 +272,52 @@ Configuration `worktree.sparsePaths` pour limiter les fichiers inclus dans un wo
 }
 ```
 
-Exemples de configurations courantes:
+Examples of common configurations:
 
-| Contexte | sparsePaths |
-|----------|-------------|
+| Context | sparsePaths |
+|---------|-------------|
 | Frontend only | `packages/frontend/**`, `packages/shared/**`, `*.json` |
 | Backend only | `packages/api/**`, `packages/shared/**`, `*.json` |
 | Full-stack | `packages/frontend/**`, `packages/api/**`, `packages/shared/**` |
 
-Avantages: operations plus rapides, moins de bruit dans l'exploration, contexte Claude Code plus cible.
+Advantages: faster operations, less noise in exploration, more targeted Claude Code context.
 
 ## Limitations
 
-- Une branche ne peut etre utilisee que dans UN worktree a la fois
-- Les hooks sont partages entre tous les worktrees
-- Les submodules peuvent necessiter un `git submodule update` dans chaque worktree
+- A branch can only be used in ONE worktree at a time
+- Hooks are shared across all worktrees
+- Submodules may require a `git submodule update` in each worktree
 
-## Voir aussi
+## See also
 
-- Section "Sessions Paralleles" dans CLAUDE.md
-- `/work:work-explore` pour l'exploration de code
-- `/session-handoff` pour le transfert de contexte entre sessions
+- "Parallel Sessions" section in CLAUDE.md
+- `/work:work-explore` for code exploration
+- `/session-handoff` for context transfer between sessions
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux git..."_
-- _"Je veux worktrees..."_
-- _"Je veux sessions paralleles..."_
+- _"I want to git..."_
+- _"I want to worktrees..."_
+- _"I want to parallel sessions..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

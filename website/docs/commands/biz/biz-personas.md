@@ -1,7 +1,7 @@
 ---
 sidebar_position: 8
 title: "/biz:biz-personas"
-description: "Cree des personas utilisateur detailles et actionnables pour guider les decisions produit."
+description: "Create detailed and actionable user personas to guide product decisions."
 tags:
   - "biz"
   - "command"
@@ -13,61 +13,61 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--biz">BIZ</span>
 
 
-# Agent PERSONAS
+# PERSONAS Agent
 
-Cree des personas utilisateur detailles et actionnables pour guider les decisions produit.
+Create detailed and actionable user personas to guide product decisions.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Developper 3-5 personas bases sur des donnees reelles (analytics, interviews, support) qui servent de reference pour la conception, le developpement et le marketing.
+Develop 3-5 personas based on real data (analytics, interviews, support) that serve as a reference for design, development, and marketing.
 
 ## Workflow
 
-- Collecter les donnees (analytics, CRM, enquetes, interviews, support)
-- Identifier les patterns et segments d'utilisateurs
-- Creer les profils (identite, citation, objectifs, pain points, comportements)
-- Definir les Jobs-to-be-done pour chaque persona
-- Creer la matrice besoins vs personas
-- Definir les implications produit, UX et marketing par persona
-- Valider avec les donnees et l'equipe
+- Collect data (analytics, CRM, surveys, interviews, support)
+- Identify user patterns and segments
+- Create profiles (identity, quote, goals, pain points, behaviors)
+- Define Jobs-to-be-done for each persona
+- Create the needs vs personas matrix
+- Define product, UX, and marketing implications per persona
+- Validate with data and the team
 
-## Output attendu
+## Expected output
 
-### Personas crees (3-5 max)
-| Persona | Segment | Jobs-to-be-done principal | LTV | Priorite |
-|---------|---------|--------------------------|-----|----------|
+### Personas created (3-5 max)
+| Persona | Segment | Main Jobs-to-be-done | LTV | Priority |
+|---------|---------|----------------------|-----|----------|
 
-### Pour chaque persona
-- Identite, citation, profil, objectifs, pain points
-- Comportements, processus de decision, canaux preferes
-- Features prioritaires et messages marketing
+### For each persona
+- Identity, quote, profile, goals, pain points
+- Behaviors, decision process, preferred channels
+- Priority features and marketing messages
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/biz:biz-research` | Recherche utilisateur |
-| `/biz:biz-market` | Etude de marche |
-| `/biz:biz-mvp` | Definir le MVP pour un persona |
-| `/growth:growth-onboarding` | Parcours par persona |
-
----
-
-IMPORTANT: Les personas doivent etre bases sur des donnees reelles, pas des suppositions.
-
-YOU MUST limiter le nombre de personas (3-5 maximum).
-
-NEVER creer un persona sans l'utiliser dans les decisions.
-
-Think hard sur les jobs-to-be-done plutot que les caracteristiques demographiques.
-
+| Agent | When to use it |
+|-------|----------------|
+| `/biz:biz-research` | User research |
+| `/biz:biz-market` | Market study |
+| `/biz:biz-mvp` | Define the MVP for a persona |
+| `/growth:growth-onboarding` | Journey per persona |
 
 ---
 
-## Voir aussi
+IMPORTANT: Personas must be based on real data, not assumptions.
 
-- [Retour aux commandes BIZ](/docs/commands/biz)
-- [Toutes les commandes](/docs/commands)
+YOU MUST limit the number of personas (3-5 maximum).
+
+NEVER create a persona without using it in decisions.
+
+Think hard about jobs-to-be-done rather than demographic characteristics.
+
+
+---
+
+## See also
+
+- [Back to BIZ commands](/docs/commands/biz)
+- [All commands](/docs/commands)

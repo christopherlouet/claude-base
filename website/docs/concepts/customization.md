@@ -25,7 +25,7 @@ How to adapt claude-socle to your specific needs.
 [npm/yarn/make commands specific to your project]
 
 ## Project Structure
-[Tree structure with description of each folder]
+[Tree with description of each folder]
 
 ## Code Conventions
 [Rules specific to your team]
@@ -46,13 +46,13 @@ Claude pays more attention to certain keywords:
 | `IMPORTANT:` | Critical rule to follow |
 | `YOU MUST` | Absolute obligation |
 | `NEVER` | Prohibition |
-| `ALWAYS` | Always do this |
+| `ALWAYS` | Always do it this way |
 | `WARNING:` | Point of attention |
 
 **Example:**
 ```markdown
 ## Security
-- IMPORTANT: Always validate user input
+- IMPORTANT: Always validate user inputs
 - YOU MUST use parameterized queries
 - NEVER log passwords or tokens
 ```
@@ -78,7 +78,7 @@ This project is a B2B e-commerce application.
 - **Project**: `.claude/commands/` (shared via git)
 - **Personal**: `~/.claude/commands/` (global)
 
-&gt; **Note**: Foundation commands are organized into subdirectories by category
+&gt; **Note**: The foundation's commands are organized into subdirectories by category
 &gt; (work/, dev/, qa/, ops/, doc/, biz/, growth/, data/, legal/).
 &gt; Your custom commands can be at the root of `.claude/commands/`
 &gt; or in a subdirectory of your choice.
@@ -106,7 +106,7 @@ $ARGUMENTS
 [Additional instructions with IMPORTANT/YOU MUST]
 ```
 
-### Example: deployment command
+### Example: Deployment command
 
 `.claude/commands/deploy.md`:
 ```markdown
@@ -187,14 +187,14 @@ Usage: `/deploy staging` or `/deploy production`
 
 | Pattern | Description |
 |---------|-------------|
-| `Bash(cmd:*)` | Allows `cmd` with any arguments |
-| `Bash(cmd arg:*)` | Allows `cmd arg` with any continuation |
+| `Bash(cmd:*)` | Allows `cmd` with all arguments |
+| `Bash(cmd arg:*)` | Allows `cmd arg` with free continuation |
 | `Edit` | File modification |
 | `Write` | File creation |
 
-### Permissions by environment
+### Permissions per environment
 
-Create `.claude/settings.local.json` (gitignore) for more permissive local permissions:
+Create `.claude/settings.local.json` (gitignored) for more permissive local permissions:
 
 ```json
 {
@@ -220,7 +220,7 @@ Hooks are configured directly in the `settings.json` file:
   "hooks": {
     "PreToolUse": [
       {
-        "description": "Main branch protection",
+        "description": "Protect main branch",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -233,7 +233,7 @@ Hooks are configured directly in the `settings.json` file:
     ],
     "PostToolUse": [
       {
-        "description": "Auto-format after editing",
+        "description": "Auto-format after edit",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -277,7 +277,7 @@ Hooks are configured directly in the `settings.json` file:
 |----------|-------------|
 | `$CLAUDE_PROJECT_DIR` | Project root (equivalent to `pwd` at startup) |
 | `$CLAUDE_SESSION_ID` | Unique session identifier |
-| `$CLAUDE_FILE_PATH` | Path of the file concerned (PreToolUse/PostToolUse Edit/Write) |
+| `$CLAUDE_FILE_PATH` | Path of the relevant file (PreToolUse/PostToolUse Edit/Write) |
 | `$CLAUDE_TOOL_NAME` | Name of the tool used |
 
 Hooks also receive the JSON payload on `stdin` (use `jq` to parse).
@@ -335,14 +335,14 @@ Activated when the user mentions:
 
 ## Examples
 
-For large examples, move them to `examples/` and include via link.
+For large examples, move to `examples/` and include via link.
 ```
 
 ### Best practices
 
 - **`context: fork`**: isolates the skill from the main conversation (recommended for complex workflows).
 - **Limit `allowed-tools`**: principle of least privilege.
-- **Precise description**: Claude uses the description to decide on triggering, be specific.
+- **Precise description**: Claude uses the description to decide when to trigger, be specific.
 - **Skills ≠ Agents**: a skill complements Claude; an agent is an isolated subprocess.
 
 ### Example: TypeScript code review skill
@@ -424,7 +424,7 @@ Add to CLAUDE.md:
 - Squash merge preferred
 
 ### Communication
-- Jira ticket format: PROJ-123
+- Jira tickets format: PROJ-123
 - Commits reference the ticket: "feat(PROJ-123): ..."
 
 ### Deployments
@@ -468,7 +468,7 @@ Guides the new developer through the project.
 
 1. **Start simple** - Add commands as needs arise
 2. **Document commands** - Future you will thank you
-3. **Test permissions** - Check that nothing dangerous is allowed
+3. **Test permissions** - Verify nothing dangerous is allowed
 4. **Iterate** - Improve CLAUDE.md based on experience
 5. **Share** - Good configurations benefit the whole team
 
@@ -492,4 +492,4 @@ Guides the new developer through the project.
 
 - Check `"enabled": true`
 - Check that the command exists
-- Consult Claude logs
+- Consult the Claude logs

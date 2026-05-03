@@ -1,7 +1,7 @@
 ---
 sidebar_position: 33
 title: "/ops:ops-standup"
-description: "Briefing matinal : commits, PRs, CI, blockers et priorites du jour."
+description: "Morning briefing: commits, PRs, CI, blockers and priorities of the day."
 tags:
   - "ops"
   - "command"
@@ -13,56 +13,56 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent OPS-STANDUP
+# OPS-STANDUP Agent
 
-Briefing matinal : commits, PRs, CI, blockers et priorites du jour.
+Morning briefing: commits, PRs, CI, blockers and priorities of the day.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Generer un briefing structure cross-repo couvrant l'activite recente,
-l'etat des PRs et CI, les blockers, et les priorites suggerees.
+Generate a structured cross-repo briefing covering recent activity,
+PR and CI state, blockers, and suggested priorities.
 
-Utilise le skill `ops-standup` pour la methodologie detaillee.
+Use the `ops-standup` skill for the detailed methodology.
 
 ## Workflow
 
-- Detecter les repos a scanner (arguments, repertoire courant, ou scan parent)
-- Collecter commits recents, PRs ouvertes/mergees, etat CI, branches stales
-- Synthetiser en 4 categories : fait, en cours, bloque, priorites
-- Generer le rapport technique (ou resume avec `--summary-only`)
+- Detect repos to scan (arguments, current directory, or parent scan)
+- Collect recent commits, open/merged PRs, CI state, stale branches
+- Synthesize into 4 categories: done, in progress, blocked, priorities
+- Generate the technical report (or summary with `--summary-only`)
 
-## Output attendu
+## Expected output
 
-1. **Activite recente** : commits par auteur, PRs mergees
-2. **Etat des PRs** : a reviewer, approuvees, en echec CI
-3. **CI Health** : workflows en echec ou bloques
-4. **Priorites du jour** : actions a prendre en premier
+1. **Recent activity**: commits per author, merged PRs
+2. **PR state**: to review, approved, CI failing
+3. **CI Health**: failing or blocked workflows
+4. **Priorities of the day**: actions to take first
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-health` | Health check complet du projet |
-| `/ops:ops-ci-fix` | Corriger les pipelines CI en echec |
-| `/ops:ops-deps` | Verifier les dependances |
+| `/ops:ops-health` | Full project health check |
+| `/ops:ops-ci-fix` | Fix failing CI pipelines |
+| `/ops:ops-deps` | Check dependencies |
 
 ---
 
-IMPORTANT: Mode lecture seule — ne jamais modifier de fichiers ou de PRs.
+IMPORTANT: Read-only mode — never modify files or PRs.
 
-YOU MUST signaler clairement si `gh` CLI n'est pas disponible.
+YOU MUST clearly signal if `gh` CLI is not available.
 
-NEVER inventer des donnees — signaler les lacunes.
+NEVER invent data — flag the gaps.
 
-Think hard sur les priorites et fournir des actions concretes pour la journee.
+Think hard about priorities and provide concrete actions for the day.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 44
 title: "ops-migration"
-description: "Planification et execution de migrations techniques."
+description: "Planning and execution of technical migrations."
 tags:
   - "agent"
   - "sonnet"
@@ -11,74 +11,74 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Planification et execution de migrations techniques.
+> Planning and execution of technical migrations.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | `NotebookEdit` |
-| **Skills injectes** | `refactoring` |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | `NotebookEdit` |
+| **Injected skills** | `refactoring` |
 
-## Description detaillee
+## Detailed description
 
 # Agent OPS-MIGRATION
 
-Planification et execution de migrations techniques.
+Planning and execution of technical migrations.
 
-## Types de Migrations
+## Migration Types
 
-| Type | Exemples | Complexite |
+| Type | Examples | Complexity |
 |------|----------|------------|
-| Version (patch/minor) | 16.0.0 → 16.0.1/16.1.0 | Faible-Moyenne |
-| Version (major) | 16.x → 17.x | Elevee |
-| Framework | CRA → Next.js, Express → Fastify | Elevee |
-| Dependances | Sequelize → Prisma, Jest → Vitest | Moyen-Eleve |
+| Version (patch/minor) | 16.0.0 → 16.0.1/16.1.0 | Low-Medium |
+| Version (major) | 16.x → 17.x | High |
+| Framework | CRA → Next.js, Express → Fastify | High |
+| Dependencies | Sequelize → Prisma, Jest → Vitest | Medium-High |
 
 ## Workflow
 
-1. **Analyse** : `npm outdated`, `npm audit`, lire le changelog
-2. **Preparation** : Backup (tag git), branche migration, plan de rollback
-3. **Migration incrementale** : Types → Tests → Code par module → Validation
-4. **Validation** : Unit tests + E2E + Build + Lint + Types (tous doivent passer)
-5. **Deploiement** : Staging (24h) → Canary (10%) → Production (rollout progressif)
+1. **Analysis**: `npm outdated`, `npm audit`, read the changelog
+2. **Preparation**: Backup (git tag), migration branch, rollback plan
+3. **Incremental migration**: Types → Tests → Code per module → Validation
+4. **Validation**: Unit tests + E2E + Build + Lint + Types (all must pass)
+5. **Deployment**: Staging (24h) → Canary (10%) → Production (progressive rollout)
 
 ## Strategies
 
-| Strategie | Quand | Risque |
-|-----------|-------|--------|
-| Big Bang | Petits projets | Eleve |
-| Strangler Fig | Grands projets | Faible |
-| Branch by Abstraction | Migration deps | Moyen |
+| Strategy | When | Risk |
+|----------|------|------|
+| Big Bang | Small projects | High |
+| Strangler Fig | Large projects | Low |
+| Branch by Abstraction | Deps migration | Medium |
 
-## Contraintes
+## Constraints
 
-- NEVER migrer en production directement
-- ALWAYS avoir un plan de rollback
-- Tester chaque etape, communiquer avec l'equipe
+- NEVER migrate in production directly
+- ALWAYS have a rollback plan
+- Test each step, communicate with the team
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

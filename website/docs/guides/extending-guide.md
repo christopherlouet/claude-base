@@ -14,15 +14,15 @@ tags:
 
 &gt; **Dual audience**: this guide covers two distinct cases.
 &gt;
-&gt; - **You are extending your user project** (adding custom commands/rules/skills): your `@imports` in `CLAUDE.md` should point to `@.claude/docs/...` (since the foundation's docs are installed under `.claude/docs/` on your side).
-&gt; - **You are contributing to the claude-socle repo**: the foundation's `@imports` point to `@docs/...` (the foundation keeps its docs in `docs/` directly). See also [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
+&gt; - **You are extending your user project** (adding custom commands/rules/skills): your `@imports` in `CLAUDE.md` should point to `@.claude/docs/...` (since the foundation's documentation is installed under `.claude/docs/` on your side).
+&gt; - **You are contributing to the claude-socle repo**: the foundation's `@imports` point to `@docs/...` (the foundation keeps its documentation directly under `docs/`). See also [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
 
 ## Overview
 
 The foundation is designed to be extended. Four main extension points exist:
 
 | Element | Location | Purpose |
-|---------|-------------|---------|
+|---------|----------|---------|
 | Rules | `.claude/rules/` | Apply conventions based on file type |
 | Skills | `.claude/skills/` | Encapsulate a reusable workflow |
 | Agents | `.claude/agents/` | Orchestrate a workflow with a dedicated LLM |
@@ -32,7 +32,7 @@ The foundation is designed to be extended. Four main extension points exist:
 
 ## 1. Create a custom Rule
 
-Rules are Markdown files with a YAML frontmatter that define constraints and conventions. They activate automatically when Claude modifies a file matching the declared paths.
+Rules are Markdown files with YAML frontmatter that define constraints and conventions. They activate automatically when Claude modifies a file matching the declared paths.
 
 ### Frontmatter format
 
@@ -61,7 +61,7 @@ Create the file in `.claude/rules/`:
 .claude/rules/my-framework.md
 ```
 
-### Full example: rule for Svelte
+### Complete example: rule for Svelte
 
 ```markdown
 ---
@@ -91,20 +91,20 @@ paths:
 ## Lifecycle
 
 - Prefer `onMount` over `beforeUpdate` for side effects
-- Mandatory cleanup in `onDestroy` for subscriptions
+- Required cleanup in `onDestroy` for subscriptions
 ```
 
 ### Test the trigger
 
-Modify a `.svelte` file and verify in the Claude Code session that the rule appears loaded. Rules are displayed in the session info at startup (`InstructionsLoaded` hook).
+Modify a `.svelte` file and verify in the Claude Code session that the rule appears loaded. Rules are displayed in session information at startup (`InstructionsLoaded` hook).
 
-To force a reload: restart a session or use `/clear`.
+To force reload: restart a session or use `/clear`.
 
 ---
 
 ## 2. Create a Skill
 
-A skill is a `SKILL.md` file in a subfolder of `.claude/skills/`. It encapsulates a complete workflow with its instructions, examples, and constraints.
+A skill is a `SKILL.md` file in a subfolder of `.claude/skills/`. It encapsulates a complete workflow with its instructions, examples and constraints.
 
 &gt; Since CLI 2.1.x, **slash commands and skills are unified**: each skill automatically gets a `/slash-command` interface. Files in `.claude/commands/` continue to work for compatibility, but the recommended approach for any new workflow is `.claude/skills/`. The foundation keeps `.claude/commands/` only for namespaced shortcuts (e.g., `/work:work-pr`).
 
@@ -112,7 +112,7 @@ A skill is a `SKILL.md` file in a subfolder of `.claude/skills/`. It encapsulate
 
 ```
 .claude/skills/my-skill/
-├── SKILL.md          # Mandatory definition
+├── SKILL.md          # Required definition
 ├── examples/         # Concrete examples (optional)
 └── references/       # Reference files (optional)
 ```
@@ -137,7 +137,7 @@ argument-hint: "[project-name] [options]"
 
 # Skill Title
 
-## Goal
+## Purpose
 Description in 1-2 sentences.
 
 ## Instructions
@@ -157,10 +157,10 @@ Output format.
 ### Available frontmatter fields
 
 | Field | Required | Values | Description |
-|-------|--------|---------|-------------|
+|-------|----------|--------|-------------|
 | `name` | No | kebab-case | Skill name (default: folder name) |
 | `description` | Recommended | text | Trigger context |
-| `allowed-tools` | No | list | Tools allowed without confirmation |
+| `allowed-tools` | No | list | Tools authorized without confirmation |
 | `context` | No | `fork` | Execution in an isolated sub-agent |
 | `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | Model to use |
 | `argument-hint` | No | text | Autocompletion in the `/` menu |
@@ -169,7 +169,7 @@ Output format.
 
 ### Best practices
 
-- Limit SKILL.md to 500 lines maximum. Move details to `examples/` or `references/`
+- Limit SKILL.md to 500 lines maximum. Move detail to `examples/` or `references/`
 - Declare only the necessary tools (least privilege principle)
 - Always use `context: fork` for isolation
 - Write the `description` with the trigger context: Claude uses this field to automatically decide when to load the skill
@@ -178,19 +178,19 @@ Output format.
 ### Tools by skill type
 
 | Skill type | Recommended tools |
-|---------------|-------------------|
+|------------|-------------------|
 | Read-only (audit, review) | `Read`, `Glob`, `Grep` |
 | Development | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
 | Documentation | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
 | Analysis | `Read`, `Glob`, `Grep` |
 | Infrastructure | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
 
-### Full example: changelog generation skill
+### Complete example: changelog generation skill
 
 ```yaml
 ---
 name: changelog-entry
-description: Generate a CHANGELOG.md entry from recent commits. Trigger when the user wants to document a release or update the changelog.
+description: Generates a CHANGELOG.md entry from recent commits. Trigger when the user wants to document a release or update the changelog.
 allowed-tools:
   - Read
   - Edit
@@ -203,7 +203,7 @@ argument-hint: "[version] [since-tag]"
 
 # Generate a Changelog Entry
 
-## Goal
+## Purpose
 
 Analyze Git commits since the last tag and generate a CHANGELOG.md entry
 formatted according to Keep a Changelog.
@@ -211,7 +211,7 @@ formatted according to Keep a Changelog.
 ## Instructions
 
 1. Read the existing CHANGELOG.md to understand the format used
-2. Retrieve the commits: `git log <since-tag>..HEAD --oneline`
+2. Retrieve commits: `git log <since-tag>..HEAD --oneline`
 3. Group commits by type (feat, fix, refactor, docs, etc.)
 4. Generate the entry in Keep a Changelog format
 5. Insert at the beginning of CHANGELOG.md, after the title
@@ -225,7 +225,7 @@ formatted according to Keep a Changelog.
 - Clear description of the feature (ref: commit abc123)
 
 ### Fixes
-- Description of the fixed bug (ref: commit def456)
+- Description of the bug fixed (ref: commit def456)
 \`\`\`
 
 ## Rules
@@ -265,7 +265,7 @@ Body of the agent's instructions.
 |-------|-------------|
 | `name` | Agent identifier (kebab-case) |
 | `description` | Automatic activation context |
-| `tools` | Allowed tools (comma-separated) |
+| `tools` | Authorized tools (comma-separated) |
 | `model` | `sonnet`, `opus`, `haiku` |
 | `permissionMode` | `default`, `acceptEdits`, `bypassPermissions` |
 | `skills` | List of skills to load |
@@ -274,18 +274,18 @@ Body of the agent's instructions.
 ### When to use agent vs skill vs command
 
 | Need | Solution | Reason |
-|--------|----------|--------|
-| Reusable workflow with instructions | Skill | Invocable via `/name`, shared between agents |
+|------|----------|--------|
+| Reusable workflow with instructions | Skill | Invokable via `/name`, shared between agents |
 | Isolated execution with dedicated LLM | Agent | Sub-agent with its own context |
 | Sequence of bash commands | Command `.md` | Prompt without additional LLM |
-| Automation without interaction | Hook | Runs a script at the right moment |
+| Automation without interaction | Hook | Executes a script at the right moment |
 
-### Full example: dependency audit agent
+### Complete example: dependency audit agent
 
 ```yaml
 ---
 name: deps-audit
-description: Audit of obsolete or vulnerable dependencies. Trigger when the user wants to check or update the project's dependencies.
+description: Audit of obsolete or vulnerable dependencies. Trigger when the user wants to check or update project dependencies.
 tools: Read, Bash, Glob, Edit
 model: sonnet
 permissionMode: default
@@ -293,21 +293,21 @@ permissionMode: default
 
 # Agent DEPS-AUDIT
 
-Analyzes the project's dependencies and produces a report ranked by criticality.
+Analyzes project dependencies and produces a report classified by criticality.
 
 ## Workflow
 
 1. Detect the package manager (npm, pnpm, yarn, pip, go mod)
 2. Run the vulnerability audit (`npm audit`, `pip-audit`, etc.)
 3. Identify outdated dependencies
-4. Rank by criticality: CRITICAL > HIGH > MEDIUM > LOW
+4. Classify by criticality: CRITICAL > HIGH > MEDIUM > LOW
 5. Propose an update plan
 
 ## Output
 
 Structured report with:
-- Table of vulnerabilities by level
-- Update commands to run
+- Vulnerability table by level
+- Update commands to execute
 - Dependencies to watch (potential breaking changes)
 
 ## Rules
@@ -321,7 +321,7 @@ Structured report with:
 Follow the existing `domain-action` convention:
 
 | Domain | Prefix | Examples |
-|---------|---------|----------|
+|--------|--------|----------|
 | Development | `dev-` | `dev-api`, `dev-tdd`, `dev-debug` |
 | Quality | `qa-` | `qa-review`, `qa-security` |
 | Operations | `ops-` | `ops-deploy`, `ops-docker` |
@@ -333,20 +333,20 @@ Follow the existing `domain-action` convention:
 
 ## 4. Create a Hook
 
-Hooks let you automate actions at specific moments in the lifecycle of a Claude Code session. They are configured in `.claude/settings.json` (global hooks) or in the frontmatter of an agent/skill (scoped hooks).
+Hooks allow automating actions at specific moments in the lifecycle of a Claude Code session. They are configured in `.claude/settings.json` (global hooks) or in the frontmatter of an agent/skill (scoped hooks).
 
 ### Hook types
 
 | Type | Description | Use case |
-|------|-------------|-------------|
-| `command` | Runs a bash script | Validation, formatting, logging |
+|------|-------------|----------|
+| `command` | Executes a bash script | Validation, formatting, logging |
 | `prompt` | Evaluated via a Haiku LLM | Smart contextual verification |
 | `http` | POST JSON to a URL | External webhook, CI/CD |
 
 ### Available events
 
 | Event | Trigger | Typical usage |
-|-----------|--------------|---------------|
+|-------|---------|---------------|
 | `SessionStart` | Session start | Display project info, check prereqs |
 | `PreToolUse` | Before tool execution | Validate, block, transform |
 | `PostToolUse` | After successful execution | Format, lint, notify |
@@ -357,10 +357,10 @@ Hooks let you automate actions at specific moments in the lifecycle of a Claude 
 ### Hook properties
 
 | Property | Description |
-|-----------|-------------|
+|----------|-------------|
 | `type` | `command`, `prompt`, or `http` |
 | `command` | Bash script to execute (type `command`) |
-| `matcher` | Filter on the tool name (regex) |
+| `matcher` | Filter on tool name (regex) |
 | `timeout` | Timeout in milliseconds |
 | `onFailure` | `"block"` or `"ignore"` |
 | `async` | `true` for background execution |
@@ -370,7 +370,7 @@ Hooks let you automate actions at specific moments in the lifecycle of a Claude 
 | Situation | async | Reason |
 |-----------|-------|--------|
 | Logging, monitoring | `true` | Does not block the workflow |
-| Blocking validation | `false` | Must run before continuing |
+| Blocking validation | `false` | Must execute before continuing |
 | Auto formatting | `false` | Must finish before the next tool |
 | External webhook | `true` | Non-blocking network latency |
 
@@ -420,7 +420,7 @@ In `.claude/settings.json`, `hooks` section:
 
 ### Hooks in settings.local.json
 
-For hooks specific to your machine (uncommitted):
+For hooks specific to your machine (not committed):
 
 ```json
 // .claude/settings.local.json
@@ -457,20 +457,20 @@ For hooks specific to your machine (uncommitted):
 @path/to/file.md
 ```
 
-Imported files are injected directly into the context. Use for large references that aren't needed every session.
+Imported files are injected directly into the context. Use for bulky references that are not necessary for every session.
 
-Always-loaded files (imports in this project):
+Files always loaded (imports in this project):
 - `@docs/reference/best-practices.md`
 - `@docs/reference/project-structures.md`
 
-### What goes where
+### What belongs where
 
 | Element | Location | Reason |
-|---------|-------------|--------|
+|---------|----------|--------|
 | Mandatory workflow | `CLAUDE.md` | Applies to the whole team |
 | Code conventions | `CLAUDE.md` or rules | Depending on whether contextual or global |
 | Personal preferences | `~/.claude/memory/` | Not committed, personal |
-| Per-language conventions | `.claude/rules/&lt;lang&gt;.md` | Active only on the right files |
+| Conventions per language | `.claude/rules/&lt;lang&gt;.md` | Active only on the relevant files |
 | Architecture decisions | `~/.claude/memory/` | Memorized per session |
 | Long references | Separate file with `@import` | Avoids overloading the context |
 
@@ -483,7 +483,7 @@ Always-loaded files (imports in this project):
 
 ## Workflow
 
-[Adapt the mandatory workflow to the project context]
+[Adapt the mandatory workflow to the project's context]
 
 ## Conventions
 
@@ -492,16 +492,16 @@ Always-loaded files (imports in this project):
 ## References
 
 | Topic | File |
-|-------|---------|
+|-------|------|
 | Architecture | `docs/ARCHITECTURE.md` |
 | API | `docs/api/README.md` |
 ```
 
-### What not to put in CLAUDE.md
+### What must not be put in CLAUDE.md
 
 - Secrets, credentials, tokens (use `.env`)
 - Information that changes often (dependency versions, etc.)
-- Content duplicated from rules (useless, increases the context)
+- Content duplicated from rules (useless, increases context)
 - History of decisions (use CHANGELOG.md or git log)
 
 ---
@@ -511,7 +511,7 @@ Always-loaded files (imports in this project):
 ### Fork and PR workflow
 
 ```bash
-# 1. Fork the repo on GitHub
+# 1. Fork the repository on GitHub
 # 2. Clone your fork
 git clone https://github.com/<you>/claude-socle.git
 cd claude-socle
@@ -519,9 +519,9 @@ cd claude-socle
 # 3. Create a feature branch
 git checkout -b feature/my-python-typing-skill
 
-# 4. Create or modify the files
+# 4. Create or modify files
 # 5. Test manually in a Claude Code session
-# 6. Check counter consistency
+# 6. Verify counter consistency
 ./scripts/validate-counts.sh
 
 # 7. Commit using Conventional Commits
@@ -549,29 +549,29 @@ gh pr create --title "feat(skills): add python-typing skill" --body "..."
 [ ] The skill/agent has a kebab-case name following the domain-action convention
 [ ] The YAML frontmatter is valid (name, description, allowed-tools)
 [ ] The description contains the trigger context
-[ ] The declared tools are the minimum necessary
+[ ] Declared tools are the minimum necessary
 [ ] context: fork is present for skills
-[ ] The file is less than 500 lines
+[ ] The file is under 500 lines
 [ ] Code examples are relevant and functional
 [ ] validate-counts.sh passes without error
-[ ] The reference documentation is updated if necessary
+[ ] Reference documentation is updated if necessary
 ```
 
 ### validate-counts.sh compliance
 
-When you add a skill, an agent, a rule, or a command, several documentation files must be updated to reflect the new counters:
+When you add a skill, an agent, a rule or a command, several documentation files must be updated to reflect the new counters:
 
 | File | Counter to update |
-|---------|--------------------------|
+|------|-------------------|
 | `README.md` | Number of commands |
 | `CLAUDE.md` | Number of commands, agents, skills |
 | `docs/reference/agents-catalog.md` | File header |
 | `website/src/pages/index.tsx` | Homepage statistics |
 | `website/docs/intro/architecture.md` | Architecture counters |
 
-Run `./scripts/validate-counts.sh --fix` to identify inconsistencies. Manually correct numeric values in the flagged files.
+Run `./scripts/validate-counts.sh --fix` to identify inconsistencies. Manually correct numerical values in the flagged files.
 
-### Structure of a quality PR
+### Quality PR structure
 
 ```markdown
 ## Description
@@ -579,7 +579,7 @@ Add a `svelte` skill for Svelte 5 development conventions.
 
 ## Motivation
 The foundation did not cover Svelte. This skill activates Composition API conventions,
-props typing, and store handling automatically on `.svelte` files.
+prop typing, and store management automatically on `.svelte` files.
 
 ## Changes
 - `.claude/skills/dev-svelte/SKILL.md`: new skill
@@ -592,7 +592,7 @@ props typing, and store handling automatically on `.svelte` files.
 - validate-counts.sh passes
 
 ## Checklist
-- [x] Naming conventions followed
+- [x] Naming conventions respected
 - [x] validate-counts.sh OK
 - [x] Documentation updated
 ```
@@ -604,17 +604,17 @@ props typing, and store handling automatically on `.svelte` files.
 ```
 .claude/
 ├── rules/              # Rules per language/framework
-│   ├── python.md       # Active on **/*.py
+│   ├── python.md       # Activated on **/*.py
 │   └── my-framework.md
 ├── skills/             # Reusable skills
 │   └── my-skill/
-│       ├── SKILL.md    # Mandatory definition
+│       ├── SKILL.md    # Required definition
 │       └── examples/
 ├── agents/             # Sub-agents with dedicated LLM
 │   └── my-agent.md
-├── commands/           # Commands invokable via /domain:name
+├── commands/           # Commands invokable by /domain:name
 │   └── domain/
 │       └── my-command.md
-└── settings.json       # Global project hooks
-    settings.local.json # Local uncommitted hooks
+└── settings.json       # Project-wide hooks
+    settings.local.json # Local hooks not committed
 ```

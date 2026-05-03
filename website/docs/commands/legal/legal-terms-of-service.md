@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 title: "/legal:legal-terms-of-service"
-description: "Genere des Conditions Generales d'Utilisation completes et conformes."
+description: "Generates complete and compliant Terms of Service."
 tags:
   - "legal"
   - "command"
@@ -13,59 +13,59 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--legal">LEGAL</span>
 
 
-# Agent TERMS-OF-SERVICE (CGU)
+# TERMS-OF-SERVICE Agent (ToS)
 
-Genere des Conditions Generales d'Utilisation completes et conformes.
+Generates complete and compliant Terms of Service.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Creer des CGU professionnelles qui protegent juridiquement le service
-tout en etant claires et comprehensibles pour les utilisateurs.
+Create professional ToS that legally protect the service
+while remaining clear and understandable for users.
 
 ## Workflow
 
-- Collecter les informations legales de l'editeur
-- Definir les termes cles du contrat
-- Decrire le service et les conditions d'acces
-- Definir les obligations des parties (utilisateur et editeur)
-- Rediger les clauses de propriete intellectuelle
-- Definir les limitations de responsabilite et garanties
-- Preciser les conditions de resiliation et leurs effets
-- Ajouter les clauses specifiques selon le type (SaaS B2B, marketplace, mobile)
-- Generer la checklist avant publication
+- Collect the publisher's legal information
+- Define the key terms of the contract
+- Describe the service and access conditions
+- Define the obligations of the parties (user and publisher)
+- Draft the intellectual property clauses
+- Define liability limitations and warranties
+- Specify termination conditions and their effects
+- Add specific clauses depending on the type (SaaS B2B, marketplace, mobile)
+- Generate the pre-publication checklist
 
-## Output attendu
+## Expected output
 
-1. **CGU completes** avec toutes les sections obligatoires
-2. **Clauses specifiques** adaptees au type de service
-3. **Checklist** de conformite legale, contenu et forme
+1. **Complete ToS** with all mandatory sections
+2. **Specific clauses** tailored to the type of service
+3. **Checklist** for legal compliance, content and form
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/legal:legal-privacy-policy` | Politique de confidentialite |
-| `/legal:legal-rgpd` | Conformite RGPD |
-| `/legal:legal-docs` | Autres documents legaux |
-| `/legal:legal-payment` | CGV et paiements |
+| `/legal:legal-privacy-policy` | Privacy policy |
+| `/legal:legal-rgpd` | GDPR compliance |
+| `/legal:legal-docs` | Other legal documents |
+| `/legal:legal-payment` | Sales terms and payments |
 
 ---
 
-IMPORTANT: Ces CGU sont un modele. Faire valider par un juriste avant publication.
+IMPORTANT: These ToS are a template. Have them validated by a lawyer before publication.
 
-YOU MUST adapter le contenu au type de service (B2B, B2C, marketplace, etc.).
+YOU MUST adapt the content to the type of service (B2B, B2C, marketplace, etc.).
 
-YOU MUST inclure les mentions legales obligatoires (LCEN).
+YOU MUST include the mandatory legal notices (LCEN).
 
-NEVER copier des CGU sans les adapter au contexte specifique du service.
+NEVER copy ToS without adapting them to the specific context of the service.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes LEGAL](/docs/commands/legal)
-- [Toutes les commandes](/docs/commands)
+- [Back to LEGAL commands](/docs/commands/legal)
+- [All commands](/docs/commands)

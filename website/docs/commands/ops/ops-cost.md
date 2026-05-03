@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "/ops:ops-cost"
-description: "Suivi de la consommation de tokens et des couts Claude Code."
+description: "Track token consumption and Claude Code costs."
 tags:
   - "ops"
   - "command"
@@ -13,77 +13,77 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# Agent OPS-COST
+# OPS-COST Agent
 
-Suivi de la consommation de tokens et des couts Claude Code.
+Track token consumption and Claude Code costs.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Analyser et afficher les metriques de consommation de tokens pour optimiser les couts.
+Analyze and display token consumption metrics to optimize costs.
 
-## Outils de mesure
+## Measurement tools
 
-### ccusage (recommande)
+### ccusage (recommended)
 
 ```bash
 # Installation
 pip install ccusage
 
-# Consommation totale
+# Total consumption
 ccusage
 
-# Par projet
+# Per project
 ccusage --project
 
-# Par jour
+# Per day
 ccusage --daily
 
-# Periode specifique
+# Specific period
 ccusage --since 2026-03-01 --until 2026-03-23
 ```
 
-### RTK (optimisation)
+### RTK (optimization)
 
 ```bash
 # Installation
 brew install rtk
 
-# Voir les economies realisees
+# View the savings achieved
 rtk gain
 
-# Decouvrir les commandes non optimisees
+# Discover unoptimized commands
 rtk discover
 ```
 
-Activer RTK : ajouter `ENABLE_RTK=1` dans `env` de `.claude/settings.json`.
+Enable RTK: add `ENABLE_RTK=1` in `env` of `.claude/settings.json`.
 
-## Strategies de reduction
+## Reduction strategies
 
-| Strategie | Economie | Comment |
-|-----------|----------|---------|
-| RTK rewrite | 60-90% | Active automatiquement via hook PreToolUse |
-| `/compact` entre phases | 20-40% | Reduire le contexte accumule |
-| Agents Haiku pour taches simples | 50-70% | Exploration, lecture, recherche |
-| Scope sessions focalisees | 30-50% | 1-5 taches par session max |
-| Fichiers CLAUDE.md legers | 10-20% | Moins de contexte charge au demarrage |
+| Strategy | Savings | How |
+|----------|---------|-----|
+| RTK rewrite | 60-90% | Automatically active via PreToolUse hook |
+| `/compact` between phases | 20-40% | Reduce accumulated context |
+| Haiku agents for simple tasks | 50-70% | Exploration, reading, search |
+| Focused session scope | 30-50% | 1-5 tasks per session max |
+| Lightweight CLAUDE.md files | 10-20% | Less context loaded at startup |
 
-## Output attendu
+## Expected output
 
-1. **Metriques** : Tokens consommes (input/output), cout estime
-2. **Tendances** : Evolution par jour/semaine
-3. **Recommandations** : Strategies d'optimisation applicables
-
----
-
-IMPORTANT: ccusage lit les logs locaux de Claude Code, aucune donnee n'est envoyee a l'exterieur.
-
+1. **Metrics**: Tokens consumed (input/output), estimated cost
+2. **Trends**: Evolution per day/week
+3. **Recommendations**: Applicable optimization strategies
 
 ---
 
-## Voir aussi
+IMPORTANT: ccusage reads Claude Code local logs, no data is sent externally.
 
-- [Retour aux commandes OPS](/docs/commands/ops)
-- [Toutes les commandes](/docs/commands)
+
+---
+
+## See also
+
+- [Back to OPS commands](/docs/commands/ops)
+- [All commands](/docs/commands)

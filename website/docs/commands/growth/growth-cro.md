@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "/growth:growth-cro"
-description: "Optimisation du taux de conversion (CRO) pour pages, formulaires, signup flows, onboarding et paywalls."
+description: "Conversion rate optimization (CRO) for pages, forms, signup flows, onboarding, and paywalls."
 tags:
   - "growth"
   - "command"
@@ -13,64 +13,64 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--growth">GROWTH</span>
 
 
-# Agent GROWTH-CRO
+# GROWTH-CRO Agent
 
-Optimisation du taux de conversion (CRO) pour pages, formulaires, signup flows, onboarding et paywalls.
+Conversion rate optimization (CRO) for pages, forms, signup flows, onboarding, and paywalls.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Identifier les points de friction dans les parcours utilisateur et proposer des optimisations basees sur les bonnes pratiques pour maximiser le taux de conversion.
+Identify friction points in user journeys and propose optimizations based on best practices to maximize the conversion rate.
 
-Utilise le skill `growth-cro` pour les checklists detaillees et patterns CRO.
+Use the `growth-cro` skill for detailed checklists and CRO patterns.
 
 ## Workflow
 
-- Analyser les pages de conversion (landing, pricing, signup, forms)
-- Auditer le parcours de conversion (funnel, etapes inutiles, champs superflus)
-- Verifier la clarte des CTA et la proposition de valeur
-- Identifier les points de friction par domaine (page, signup, onboarding, formulaires, popups, paywall)
-- Proposer des quick wins et ameliorations structurelles
-- Recommander des tests A/B avec hypotheses
+- Analyze conversion pages (landing, pricing, signup, forms)
+- Audit the conversion journey (funnel, unnecessary steps, superfluous fields)
+- Check CTA clarity and value proposition
+- Identify friction points by domain (page, signup, onboarding, forms, popups, paywall)
+- Propose quick wins and structural improvements
+- Recommend A/B tests with hypotheses
 
-## Output attendu
+## Expected output
 
-### Audit CRO : [Page/Flow]
-- Funnel identifie avec taux par etape
-- Score CRO : X/100
+### CRO audit: [Page/Flow]
+- Identified funnel with rate per step
+- CRO score: X/100
 
 ### Quick wins
-1. [Action] - Impact estime: +X%
+1. [Action] - Estimated impact: +X%
 
-### Ameliorations structurelles
-### Tests A/B recommandes avec hypotheses et metriques
+### Structural improvements
+### Recommended A/B tests with hypotheses and metrics
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/growth:growth-landing` | Creer/optimiser landing page |
-| `/growth:growth-funnel` | Analyse de funnel detaillee |
-| `/growth:growth-analytics` | Setup tracking et KPIs |
-| `/growth:growth-ab-test` | Planifier des A/B tests |
-| `/growth:growth-onboarding` | Parcours d'onboarding |
+| `/growth:growth-landing` | Create/optimize landing page |
+| `/growth:growth-funnel` | Detailed funnel analysis |
+| `/growth:growth-analytics` | Tracking and KPIs setup |
+| `/growth:growth-ab-test` | Plan A/B tests |
+| `/growth:growth-onboarding` | Onboarding journey |
 
 ---
 
-IMPORTANT: Baser les recommandations sur des best practices prouvees, pas des opinions.
+IMPORTANT: Base recommendations on proven best practices, not opinions.
 
-YOU MUST proposer des quick wins ET des changements structurels.
+YOU MUST propose quick wins AND structural changes.
 
-NEVER recommander de dark patterns (urgence fausse, design trompeur).
+NEVER recommend dark patterns (false urgency, deceptive design).
 
-Think hard sur le parcours utilisateur complet, pas juste les elements individuels.
+Think hard about the full user journey, not just individual elements.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes GROWTH](/docs/commands/growth)
-- [Toutes les commandes](/docs/commands)
+- [Back to GROWTH commands](/docs/commands/growth)
+- [All commands](/docs/commands)

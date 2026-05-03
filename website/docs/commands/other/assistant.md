@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: "/assistant"
-description: "Point d'entree unique du socle Claude Code. Guide vers les bonnes commandes, agents, skills et workflows."
+description: "Single entry point of the Claude Code foundation. Guides toward the right commands, agents, skills and workflows."
 tags:
   - "other"
   - "command"
@@ -13,95 +13,95 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--other">Autres</span>
 
 
-# Agent ASSISTANT (Orchestrateur Intelligent)
+# ASSISTANT Agent (Intelligent Orchestrator)
 
-Point d'entree unique du socle Claude Code. Guide vers les bonnes commandes, agents, skills et workflows.
+Single entry point of the Claude Code foundation. Guides toward the right commands, agents, skills and workflows.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Comprendre la demande, detecter le type de projet, et orienter vers le bon workflow.
-Toujours attendre confirmation avant d'executer.
+Understand the request, detect the project type, and orient toward the right workflow.
+Always wait for confirmation before executing.
 
-## Detection du Type de Projet
+## Project Type Detection
 
-| Indicateur | Type | Workflow recommande |
+| Indicator | Type | Recommended workflow |
 |------------|------|---------------------|
 | `package.json` + React/Next/Vue | **Web Frontend** | `/dev:dev-component`, `/dev:dev-hook` |
 | `pubspec.yaml` + Flutter | **Mobile** | `/dev:dev-flutter`, `/dev:dev-supabase` |
-| `package.json` + Express/Fastify/NestJS | **API Node** | `/dev:dev-api`, `/dev:dev-graphql` |
+| `package.json` + Express/Fastify/NestJS | **Node API** | `/dev:dev-api`, `/dev:dev-graphql` |
 | `requirements.txt` / `pyproject.toml` | **Python** | `/dev:dev-api`, `/dev:dev-tdd` |
 | `go.mod` | **Go** | `/dev:dev-api`, `/dev:dev-tdd` |
 | `init.lua` / `.config/nvim` | **Neovim** | `/dev:dev-neovim`, `/qa:qa-neovim` |
 | Airflow/dbt/Spark | **Data** | `/data:data-pipeline` |
 | `Dockerfile` / `docker-compose.yml` | **DevOps** | `/ops:ops-docker`, `/ops:ops-k8s` |
-| Proxmox / `bpg/proxmox` provider | **Infra Proxmox** | `/ops:ops-proxmox`, `/ops:ops-infra-code` |
+| Proxmox / `bpg/proxmox` provider | **Proxmox Infra** | `/ops:ops-proxmox`, `/ops:ops-infra-code` |
 
-## Guide de Decision Rapide
+## Quick Decision Guide
 
-| JE VEUX... | UTILISE |
+| I WANT TO... | USE |
 |-------------|---------|
-| **COMPRENDRE** | |
-| Explorer un codebase | `/work:work-explore` |
-| Decouvrir un projet | `/doc:doc-onboard` |
-| Comprendre du code | `/doc:doc-explain` |
-| **PLANIFIER** | |
-| Specifier une feature | `/work:work-specify` |
-| Planifier l'implementation | `/work:work-plan` |
-| Definir un MVP | `/biz:biz-mvp` |
-| **DEVELOPPER** | |
-| Ecrire du code avec tests | `/dev:dev-tdd` |
-| Creer un composant UI | `/dev:dev-component` |
-| Creer une API | `/dev:dev-api` |
-| Corriger un bug | `/dev:dev-debug` |
-| Refactorer | `/dev:dev-refactor` |
-| **VERIFIER** | |
+| **UNDERSTAND** | |
+| Explore a codebase | `/work:work-explore` |
+| Discover a project | `/doc:doc-onboard` |
+| Understand code | `/doc:doc-explain` |
+| **PLAN** | |
+| Specify a feature | `/work:work-specify` |
+| Plan the implementation | `/work:work-plan` |
+| Define an MVP | `/biz:biz-mvp` |
+| **DEVELOP** | |
+| Write code with tests | `/dev:dev-tdd` |
+| Create a UI component | `/dev:dev-component` |
+| Create an API | `/dev:dev-api` |
+| Fix a bug | `/dev:dev-debug` |
+| Refactor | `/dev:dev-refactor` |
+| **VERIFY** | |
 | Code review | `/qa:qa-review` |
-| Audit securite | `/qa:qa-security` |
-| Audit complet | `/qa:qa-audit` |
-| **LIVRER** | |
+| Security audit | `/qa:qa-security` |
+| Full audit | `/qa:qa-audit` |
+| **DELIVER** | |
 | Commit + Push + PR | `/work:work-commit-push-pr` |
-| Creer un commit | `/work:work-commit` |
-| Creer une PR | `/work:work-pr` |
+| Create a commit | `/work:work-commit` |
+| Create a PR | `/work:work-pr` |
 | Release | `/ops:ops-release` |
 
-## Workflows Pre-definis
+## Pre-defined Workflows
 
-| Situation | Commande |
+| Situation | Command |
 |-----------|----------|
-| Nouvelle feature | `/work:work-flow-feature "desc"` |
-| Correction de bug | `/work:work-flow-bugfix "desc"` |
-| Nouvelle release | `/work:work-flow-release "v2.0.0"` |
-| Lancement produit | `/work:work-flow-launch "produit"` |
-| Audit complet | `/qa:qa-audit` |
-| Equipe d'agents | `/work:work-team "desc"` |
+| New feature | `/work:work-flow-feature "desc"` |
+| Bug fix | `/work:work-flow-bugfix "desc"` |
+| New release | `/work:work-flow-release "v2.0.0"` |
+| Product launch | `/work:work-flow-launch "product"` |
+| Full audit | `/qa:qa-audit` |
+| Agent team | `/work:work-team "desc"` |
 
-## Output attendu
+## Expected output
 
-1. **Detecter** le type de projet
-2. **Recommander** : question -&gt; reponse directe, tache simple -&gt; commande, tache complexe -&gt; workflow
-3. **Proposer** de lancer la premiere commande (attendre confirmation)
-
----
-
-IMPORTANT: Toujours recommander `/work:work-explore` avant de modifier du code existant.
-
-IMPORTANT: Toujours ATTENDRE la confirmation de l'utilisateur avant d'executer.
-
-YOU MUST detecter le type de projet et adapter les recommandations.
-
-YOU MUST utiliser les noms complets des commandes (`/work:work-explore`, pas `/explore`).
-
-NEVER executer un workflow sans confirmation explicite de l'utilisateur.
-
-Think hard sur le workflow le plus adapte a la demande, au type de projet, et a la complexite.
-
+1. **Detect** the project type
+2. **Recommend**: question -&gt; direct answer, simple task -&gt; command, complex task -&gt; workflow
+3. **Propose** to launch the first command (wait for confirmation)
 
 ---
 
-## Voir aussi
+IMPORTANT: Always recommend `/work:work-explore` before modifying existing code.
 
-- [Retour aux commandes Autres](/docs/commands/other)
-- [Toutes les commandes](/docs/commands)
+IMPORTANT: Always WAIT for user confirmation before executing.
+
+YOU MUST detect the project type and adapt the recommendations.
+
+YOU MUST use the full command names (`/work:work-explore`, not `/explore`).
+
+NEVER execute a workflow without explicit user confirmation.
+
+Think hard about the workflow most suited to the request, the project type, and the complexity.
+
+
+---
+
+## See also
+
+- [Back to Autres commands](/docs/commands/other)
+- [All commands](/docs/commands)

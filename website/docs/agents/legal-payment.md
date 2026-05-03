@@ -1,7 +1,7 @@
 ---
 sidebar_position: 32
 title: "legal-payment"
-description: "Integration paiement securisee et conforme."
+description: "Secure and compliant payment integration."
 tags:
   - "agent"
   - "sonnet"
@@ -11,75 +11,75 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Integration paiement securisee et conforme.
+> Secure and compliant payment integration.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Edit`, `Write` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent LEGAL-PAYMENT
 
-Integration paiement securisee et conforme.
+Secure and compliant payment integration.
 
 ## Workflow
 
-1. **Conformite PCI-DSS** : tokenisation cote client, Stripe Elements/PayPal JS SDK, HTTPS obligatoire
-2. **Integration Stripe** : client setup, checkout sessions, webhooks (checkout.session.completed, invoice.paid, subscription.deleted)
-3. **Abonnements** : creation, cancel_at_period_end, update payment method
-4. **Facturation** : mentions obligatoires (numero, date, SIRET, TVA, HT/TTC)
-5. **Remboursements** : full et partial refunds via Stripe API
+1. **PCI-DSS compliance**: client-side tokenization, Stripe Elements/PayPal JS SDK, HTTPS mandatory
+2. **Stripe integration**: client setup, checkout sessions, webhooks (checkout.session.completed, invoice.paid, subscription.deleted)
+3. **Subscriptions**: creation, cancel_at_period_end, update payment method
+4. **Billing**: mandatory fields (number, date, SIRET, VAT, pre-tax/incl. tax)
+5. **Refunds**: full and partial refunds via Stripe API
 
-## Regles PCI-DSS
+## PCI-DSS Rules
 
-- NEVER stocker les numeros de carte
-- Tokenisation cote client uniquement
-- HTTPS obligatoire partout
-- Webhook signature verification obligatoire
+- NEVER store card numbers
+- Client-side tokenization only
+- HTTPS mandatory everywhere
+- Webhook signature verification mandatory
 
-## Output attendu
+## Expected Output
 
-1. Integration Stripe/PayPal complete
-2. Webhooks handlers avec signature verification
-3. Gestion abonnements (create, cancel, update)
-4. Templates facturation conformes
+1. Complete Stripe/PayPal integration
+2. Webhook handlers with signature verification
+3. Subscription management (create, cancel, update)
+4. Compliant billing templates
 
 ## Directives
 
-- NEVER stocker de donnees de carte en base
-- IMPORTANT: Toujours verifier la signature des webhooks Stripe
-- YOU MUST inclure toutes les mentions legales obligatoires sur les factures
-- NEVER exposer STRIPE_SECRET_KEY cote client
-- IMPORTANT: Gerer les cas d'echec de paiement (retry, notification)
+- NEVER store card data in the database
+- IMPORTANT: Always verify Stripe webhook signatures
+- YOU MUST include all mandatory legal mentions on invoices
+- NEVER expose STRIPE_SECRET_KEY on the client side
+- IMPORTANT: Handle payment failure cases (retry, notification)
 
-Think hard about la securite des transactions.
+Think hard about transaction security.
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

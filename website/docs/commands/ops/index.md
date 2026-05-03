@@ -1,263 +1,263 @@
 ---
 sidebar_position: 1
 title: "OPS"
-description: "Commandes OPS - Operations (CI/CD, Docker, monitoring, GitFlow)"
+description: "OPS commands - Operations (CI/CD, Docker, monitoring, GitFlow)"
 ---
 
 import { CommandGrid } from '@site/src/components/CommandCard';
 import CommandCard from '@site/src/components/CommandCard';
 
-# Commandes OPS
+# OPS Commands
 
 > Operations (CI/CD, Docker, monitoring, GitFlow)
 
-## Vue d'ensemble
+## Overview
 
-Ce domaine contient **34 commandes** pour operations (ci/cd, docker, monitoring, gitflow).
+This domain contains **34 commands** for operations (ci/cd, docker, monitoring, gitflow).
 
-## Liste des commandes
+## Commands list
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| [`/ops:ops-backup`](/docs/commands/ops/ops-backup) | Strategie de backup et restore pour les donnees critiques du projet. |
-| [`/ops:ops-ci`](/docs/commands/ops/ops-ci) | Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.). |
-| [`/ops:ops-ci-fix`](/docs/commands/ops/ops-ci-fix) | Diagnostiquer et reparer les pipelines CI/CD en echec. |
-| [`/ops:ops-cost`](/docs/commands/ops/ops-cost) | Suivi de la consommation de tokens et des couts Claude Code. |
-| [`/ops:ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization) | Analyser et optimiser les couts d'infrastructure cloud. |
-| [`/ops:ops-database`](/docs/commands/ops/ops-database) | Design de schema, migrations et optimisation de base de donnees. |
-| [`/ops:ops-deploy`](/docs/commands/ops/ops-deploy) | Deploiement securise avec checklist pre-deploy obligatoire. |
-| [`/ops:ops-deps`](/docs/commands/ops/ops-deps) | Audit, analyse et mise a jour des dependances du projet. |
-| [`/ops:ops-disaster-recovery`](/docs/commands/ops/ops-disaster-recovery) | Mettre en place une strategie de reprise apres sinistre (Disaster Recovery). |
-| [`/ops:ops-docker`](/docs/commands/ops/ops-docker) | Dockerisation et containerisation de projets. |
-| [`/ops:ops-env`](/docs/commands/ops/ops-env) | Gestion des environnements (dev, staging, prod) et des variables d'environnement. |
-| [`/ops:ops-gitflow-feature`](/docs/commands/ops/ops-gitflow-feature) | Gerer les branches feature avec GitFlow (start, finish, list, publish, pull). |
-| [`/ops:ops-gitflow-hotfix`](/docs/commands/ops/ops-gitflow-hotfix) | Gerer les hotfixes urgents avec GitFlow (start, finish, list). |
-| [`/ops:ops-gitflow-init`](/docs/commands/ops/ops-gitflow-init) | Initialiser GitFlow sur le repository avec les branches et conventions appropriees. |
-| [`/ops:ops-gitflow-release`](/docs/commands/ops/ops-gitflow-release) | Gerer les branches release avec GitFlow (start, finish, list). |
-| [`/ops:ops-grafana-dashboard`](/docs/commands/ops/ops-grafana-dashboard) | Creation de dashboards Grafana avec provisioning automatique. |
-| [`/ops:ops-health`](/docs/commands/ops/ops-health) | Verification rapide de la sante d'un projet. Diagnostic express en 5 minutes. |
-| [`/ops:ops-hotfix`](/docs/commands/ops/ops-hotfix) | Workflow de correction urgente en production. |
-| [`/ops:ops-infra-code`](/docs/commands/ops/ops-infra-code) | Implemente l'Infrastructure as Code (IaC) avec Terraform, CloudFormation ou Pulumi. |
-| [`/ops:ops-k8s`](/docs/commands/ops/ops-k8s) | Deploiement et orchestration Kubernetes. |
-| [`/ops:ops-load-testing`](/docs/commands/ops/ops-load-testing) | Mettre en place et executer des tests de charge et de stress. |
-| [`/ops:ops-migrate`](/docs/commands/ops/ops-migrate) | Migration de code, dependances ou donnees. |
-| [`/ops:ops-mobile-release`](/docs/commands/ops/ops-mobile-release) | Publication d'applications mobiles sur les stores (App Store, Google Play). |
-| [`/ops:ops-monitoring`](/docs/commands/ops/ops-monitoring) | Instrumentation du code pour le monitoring, logging et alerting. |
-| [`/ops:ops-observability-stack`](/docs/commands/ops/ops-observability-stack) | Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager). |
-| [`/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense) | Infrastructure as Code pour OPNsense. Configurer et gerer un pare-feu OPNsense via Terraform. |
-| [`/ops:ops-proxmox`](/docs/commands/ops/ops-proxmox) | Gestion d'infrastructure Proxmox VE : VMs, LXC, reseau, stockage, backup avec Terraform. |
-| [`/ops:ops-release`](/docs/commands/ops/ops-release) | Workflow de release avec changelog et versioning. |
-| [`/ops:ops-rollback`](/docs/commands/ops/ops-rollback) | Procedure de rollback securisee pour revenir a une version stable. |
-| [`/ops:ops-secrets-management`](/docs/commands/ops/ops-secrets-management) | Implemente une gestion securisee des secrets et credentials. |
-| [`/ops:ops-serverless`](/docs/commands/ops/ops-serverless) | Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers). |
-| [`/ops:ops-standup`](/docs/commands/ops/ops-standup) | Briefing matinal : commits, PRs, CI, blockers et priorites du jour. |
-| [`/ops:ops-vercel`](/docs/commands/ops/ops-vercel) | Deploiement et configuration sur Vercel. |
-| [`/ops:ops-vps`](/docs/commands/ops/ops-vps) | Deploiement sur serveur VPS (OVH, Hetzner, DigitalOcean, Scaleway, etc.). |
+| [`/ops:ops-backup`](/docs/commands/ops/ops-backup) | Backup and restore strategy for the project's critical data. |
+| [`/ops:ops-ci`](/docs/commands/ops/ops-ci) | Configure CI/CD pipelines (GitHub Actions, GitLab CI, etc.). |
+| [`/ops:ops-ci-fix`](/docs/commands/ops/ops-ci-fix) | Diagnose and repair failing CI/CD pipelines. |
+| [`/ops:ops-cost`](/docs/commands/ops/ops-cost) | Track token consumption and Claude Code costs. |
+| [`/ops:ops-cost-optimization`](/docs/commands/ops/ops-cost-optimization) | Analyze and optimize cloud infrastructure costs. |
+| [`/ops:ops-database`](/docs/commands/ops/ops-database) | Schema design, migrations, and database optimization. |
+| [`/ops:ops-deploy`](/docs/commands/ops/ops-deploy) | Secure deployment with mandatory pre-deploy checklist. |
+| [`/ops:ops-deps`](/docs/commands/ops/ops-deps) | Audit, analysis and update of project dependencies. |
+| [`/ops:ops-disaster-recovery`](/docs/commands/ops/ops-disaster-recovery) | Set up a disaster recovery strategy (Disaster Recovery). |
+| [`/ops:ops-docker`](/docs/commands/ops/ops-docker) | Dockerization and containerization of projects. |
+| [`/ops:ops-env`](/docs/commands/ops/ops-env) | Environment management (dev, staging, prod) and environment variables. |
+| [`/ops:ops-gitflow-feature`](/docs/commands/ops/ops-gitflow-feature) | Manage feature branches with GitFlow (start, finish, list, publish, pull). |
+| [`/ops:ops-gitflow-hotfix`](/docs/commands/ops/ops-gitflow-hotfix) | Manage urgent hotfixes with GitFlow (start, finish, list). |
+| [`/ops:ops-gitflow-init`](/docs/commands/ops/ops-gitflow-init) | Initialize GitFlow on the repository with the appropriate branches and conventions. |
+| [`/ops:ops-gitflow-release`](/docs/commands/ops/ops-gitflow-release) | Manage release branches with GitFlow (start, finish, list). |
+| [`/ops:ops-grafana-dashboard`](/docs/commands/ops/ops-grafana-dashboard) | Creation of Grafana dashboards with automatic provisioning. |
+| [`/ops:ops-health`](/docs/commands/ops/ops-health) | Quick health check of a project. Express diagnostic in 5 minutes. |
+| [`/ops:ops-hotfix`](/docs/commands/ops/ops-hotfix) | Workflow for urgent production fixes. |
+| [`/ops:ops-infra-code`](/docs/commands/ops/ops-infra-code) | Implements Infrastructure as Code (IaC) with Terraform, CloudFormation or Pulumi. |
+| [`/ops:ops-k8s`](/docs/commands/ops/ops-k8s) | Kubernetes deployment and orchestration. |
+| [`/ops:ops-load-testing`](/docs/commands/ops/ops-load-testing) | Set up and run load and stress tests. |
+| [`/ops:ops-migrate`](/docs/commands/ops/ops-migrate) | Migration of code, dependencies or data. |
+| [`/ops:ops-mobile-release`](/docs/commands/ops/ops-mobile-release) | Publishing mobile applications to stores (App Store, Google Play). |
+| [`/ops:ops-monitoring`](/docs/commands/ops/ops-monitoring) | Code instrumentation for monitoring, logging and alerting. |
+| [`/ops:ops-observability-stack`](/docs/commands/ops/ops-observability-stack) | Deployment of a complete observability stack (Prometheus, Grafana, Loki, Alertmanager). |
+| [`/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense) | Infrastructure as Code for OPNsense. Configure and manage an OPNsense firewall via Terraform. |
+| [`/ops:ops-proxmox`](/docs/commands/ops/ops-proxmox) | Proxmox VE infrastructure management: VMs, LXC, network, storage, backup with Terraform. |
+| [`/ops:ops-release`](/docs/commands/ops/ops-release) | Release workflow with changelog and versioning. |
+| [`/ops:ops-rollback`](/docs/commands/ops/ops-rollback) | Secure rollback procedure to revert to a stable version. |
+| [`/ops:ops-secrets-management`](/docs/commands/ops/ops-secrets-management) | Implements secure management of secrets and credentials. |
+| [`/ops:ops-serverless`](/docs/commands/ops/ops-serverless) | Deployment of serverless applications (AWS Lambda, Vercel, Cloudflare Workers). |
+| [`/ops:ops-standup`](/docs/commands/ops/ops-standup) | Morning briefing: commits, PRs, CI, blockers and priorities of the day. |
+| [`/ops:ops-vercel`](/docs/commands/ops/ops-vercel) | Deployment and configuration on Vercel. |
+| [`/ops:ops-vps`](/docs/commands/ops/ops-vps) | Deployment to a VPS server (OVH, Hetzner, DigitalOcean, Scaleway, etc.). |
 
-## Commandes en detail
+## Commands in detail
 
 <CommandGrid>
   <CommandCard
     name="ops-backup"
-    description="Strategie de backup et restore pour les donnees critiques du projet."
+    description="Backup and restore strategy for the project's critical data."
     domain="ops"
     href="/docs/commands/ops/ops-backup"
   />
   <CommandCard
     name="ops-ci"
-    description="Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.)."
+    description="Configure CI/CD pipelines (GitHub Actions, GitLab CI, etc.)."
     domain="ops"
     href="/docs/commands/ops/ops-ci"
   />
   <CommandCard
     name="ops-ci-fix"
-    description="Diagnostiquer et reparer les pipelines CI/CD en echec."
+    description="Diagnose and repair failing CI/CD pipelines."
     domain="ops"
     href="/docs/commands/ops/ops-ci-fix"
   />
   <CommandCard
     name="ops-cost"
-    description="Suivi de la consommation de tokens et des couts Claude Code."
+    description="Track token consumption and Claude Code costs."
     domain="ops"
     href="/docs/commands/ops/ops-cost"
   />
   <CommandCard
     name="ops-cost-optimization"
-    description="Analyser et optimiser les couts d'infrastructure cloud."
+    description="Analyze and optimize cloud infrastructure costs."
     domain="ops"
     href="/docs/commands/ops/ops-cost-optimization"
   />
   <CommandCard
     name="ops-database"
-    description="Design de schema, migrations et optimisation de base de donnees."
+    description="Schema design, migrations, and database optimization."
     domain="ops"
     href="/docs/commands/ops/ops-database"
   />
   <CommandCard
     name="ops-deploy"
-    description="Deploiement securise avec checklist pre-deploy obligatoire."
+    description="Secure deployment with mandatory pre-deploy checklist."
     domain="ops"
     href="/docs/commands/ops/ops-deploy"
   />
   <CommandCard
     name="ops-deps"
-    description="Audit, analyse et mise a jour des dependances du projet."
+    description="Audit, analysis and update of project dependencies."
     domain="ops"
     href="/docs/commands/ops/ops-deps"
   />
   <CommandCard
     name="ops-disaster-recovery"
-    description="Mettre en place une strategie de reprise apres sinistre (Disaster Recovery)."
+    description="Set up a disaster recovery strategy (Disaster Recovery)."
     domain="ops"
     href="/docs/commands/ops/ops-disaster-recovery"
   />
   <CommandCard
     name="ops-docker"
-    description="Dockerisation et containerisation de projets."
+    description="Dockerization and containerization of projects."
     domain="ops"
     href="/docs/commands/ops/ops-docker"
   />
   <CommandCard
     name="ops-env"
-    description="Gestion des environnements (dev, staging, prod) et des variables d'environnement."
+    description="Environment management (dev, staging, prod) and environment variables."
     domain="ops"
     href="/docs/commands/ops/ops-env"
   />
   <CommandCard
     name="ops-gitflow-feature"
-    description="Gerer les branches feature avec GitFlow (start, finish, list, publish, pull)."
+    description="Manage feature branches with GitFlow (start, finish, list, publish, pull)."
     domain="ops"
     href="/docs/commands/ops/ops-gitflow-feature"
   />
   <CommandCard
     name="ops-gitflow-hotfix"
-    description="Gerer les hotfixes urgents avec GitFlow (start, finish, list)."
+    description="Manage urgent hotfixes with GitFlow (start, finish, list)."
     domain="ops"
     href="/docs/commands/ops/ops-gitflow-hotfix"
   />
   <CommandCard
     name="ops-gitflow-init"
-    description="Initialiser GitFlow sur le repository avec les branches et conventions appropriees."
+    description="Initialize GitFlow on the repository with the appropriate branches and conventions."
     domain="ops"
     href="/docs/commands/ops/ops-gitflow-init"
   />
   <CommandCard
     name="ops-gitflow-release"
-    description="Gerer les branches release avec GitFlow (start, finish, list)."
+    description="Manage release branches with GitFlow (start, finish, list)."
     domain="ops"
     href="/docs/commands/ops/ops-gitflow-release"
   />
   <CommandCard
     name="ops-grafana-dashboard"
-    description="Creation de dashboards Grafana avec provisioning automatique."
+    description="Creation of Grafana dashboards with automatic provisioning."
     domain="ops"
     href="/docs/commands/ops/ops-grafana-dashboard"
   />
   <CommandCard
     name="ops-health"
-    description="Verification rapide de la sante d'un projet. Diagnostic express en 5 minutes."
+    description="Quick health check of a project. Express diagnostic in 5 minutes."
     domain="ops"
     href="/docs/commands/ops/ops-health"
   />
   <CommandCard
     name="ops-hotfix"
-    description="Workflow de correction urgente en production."
+    description="Workflow for urgent production fixes."
     domain="ops"
     href="/docs/commands/ops/ops-hotfix"
   />
   <CommandCard
     name="ops-infra-code"
-    description="Implemente l'Infrastructure as Code (IaC) avec Terraform, CloudFormation ou Pulumi."
+    description="Implements Infrastructure as Code (IaC) with Terraform, CloudFormation or Pulumi."
     domain="ops"
     href="/docs/commands/ops/ops-infra-code"
   />
   <CommandCard
     name="ops-k8s"
-    description="Deploiement et orchestration Kubernetes."
+    description="Kubernetes deployment and orchestration."
     domain="ops"
     href="/docs/commands/ops/ops-k8s"
   />
   <CommandCard
     name="ops-load-testing"
-    description="Mettre en place et executer des tests de charge et de stress."
+    description="Set up and run load and stress tests."
     domain="ops"
     href="/docs/commands/ops/ops-load-testing"
   />
   <CommandCard
     name="ops-migrate"
-    description="Migration de code, dependances ou donnees."
+    description="Migration of code, dependencies or data."
     domain="ops"
     href="/docs/commands/ops/ops-migrate"
   />
   <CommandCard
     name="ops-mobile-release"
-    description="Publication d'applications mobiles sur les stores (App Store, Google Play)."
+    description="Publishing mobile applications to stores (App Store, Google Play)."
     domain="ops"
     href="/docs/commands/ops/ops-mobile-release"
   />
   <CommandCard
     name="ops-monitoring"
-    description="Instrumentation du code pour le monitoring, logging et alerting."
+    description="Code instrumentation for monitoring, logging and alerting."
     domain="ops"
     href="/docs/commands/ops/ops-monitoring"
   />
   <CommandCard
     name="ops-observability-stack"
-    description="Deploiement d'une stack d'observabilite complete (Prometheus, Grafana, Loki, Alertmanager)."
+    description="Deployment of a complete observability stack (Prometheus, Grafana, Loki, Alertmanager)."
     domain="ops"
     href="/docs/commands/ops/ops-observability-stack"
   />
   <CommandCard
     name="ops-opnsense"
-    description="Infrastructure as Code pour OPNsense. Configurer et gerer un pare-feu OPNsense via Terraform."
+    description="Infrastructure as Code for OPNsense. Configure and manage an OPNsense firewall via Terraform."
     domain="ops"
     href="/docs/commands/ops/ops-opnsense"
   />
   <CommandCard
     name="ops-proxmox"
-    description="Gestion d'infrastructure Proxmox VE : VMs, LXC, reseau, stockage, backup avec Terraform."
+    description="Proxmox VE infrastructure management: VMs, LXC, network, storage, backup with Terraform."
     domain="ops"
     href="/docs/commands/ops/ops-proxmox"
   />
   <CommandCard
     name="ops-release"
-    description="Workflow de release avec changelog et versioning."
+    description="Release workflow with changelog and versioning."
     domain="ops"
     href="/docs/commands/ops/ops-release"
   />
   <CommandCard
     name="ops-rollback"
-    description="Procedure de rollback securisee pour revenir a une version stable."
+    description="Secure rollback procedure to revert to a stable version."
     domain="ops"
     href="/docs/commands/ops/ops-rollback"
   />
   <CommandCard
     name="ops-secrets-management"
-    description="Implemente une gestion securisee des secrets et credentials."
+    description="Implements secure management of secrets and credentials."
     domain="ops"
     href="/docs/commands/ops/ops-secrets-management"
   />
   <CommandCard
     name="ops-serverless"
-    description="Deploiement d'applications serverless (AWS Lambda, Vercel, Cloudflare Workers)."
+    description="Deployment of serverless applications (AWS Lambda, Vercel, Cloudflare Workers)."
     domain="ops"
     href="/docs/commands/ops/ops-serverless"
   />
   <CommandCard
     name="ops-standup"
-    description="Briefing matinal : commits, PRs, CI, blockers et priorites du jour."
+    description="Morning briefing: commits, PRs, CI, blockers and priorities of the day."
     domain="ops"
     href="/docs/commands/ops/ops-standup"
   />
   <CommandCard
     name="ops-vercel"
-    description="Deploiement et configuration sur Vercel."
+    description="Deployment and configuration on Vercel."
     domain="ops"
     href="/docs/commands/ops/ops-vercel"
   />
   <CommandCard
     name="ops-vps"
-    description="Deploiement sur serveur VPS (OVH, Hetzner, DigitalOcean, Scaleway, etc.)."
+    description="Deployment to a VPS server (OVH, Hetzner, DigitalOcean, Scaleway, etc.)."
     domain="ops"
     href="/docs/commands/ops/ops-vps"
   />
@@ -265,4 +265,4 @@ Ce domaine contient **34 commandes** pour operations (ci/cd, docker, monitoring,
 
 ---
 
-[Retour a toutes les commandes](/docs/commands)
+[Back to all commands](/docs/commands)

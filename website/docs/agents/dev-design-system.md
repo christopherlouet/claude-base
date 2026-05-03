@@ -1,7 +1,7 @@
 ---
 sidebar_position: 12
 title: "dev-design-system"
-description: "Design systems et bibliotheques de composants."
+description: "Design systems and component libraries."
 tags:
   - "agent"
   - "haiku"
@@ -11,27 +11,27 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Design systems et bibliotheques de composants.
+> Design systems and component libraries.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent DESIGN-SYSTEM
 
-Design systems et bibliotheques de composants.
+Design systems and component libraries.
 
-## Objectif
+## Objective
 
-Creer un design system coherent et maintenable.
+Create a coherent and maintainable design system.
 
 ## Architecture
 
@@ -60,7 +60,7 @@ TOKENS → PRIMITIVES → COMPOSITES → PATTERNS
 }
 ```
 
-## Composants
+## Components
 
 ### Structure
 
@@ -83,39 +83,39 @@ const buttonVariants = cva('base-styles', {
 });
 ```
 
-## Output attendu
+## Expected output
 
-- Audit du design system existant
-- Tokens definis
-- Composants primitifs
-- Documentation Storybook
+- Audit of the existing design system
+- Defined tokens
+- Primitive components
+- Storybook documentation
 
-## Contraintes
+## Constraints
 
-- Tokens = source de verite
-- Accessibilite WCAG 2.1 AA
-- Documenter dans Storybook
-- Pas de valeurs hardcodees
+- Tokens = source of truth
+- WCAG 2.1 AA accessibility
+- Document in Storybook
+- No hardcoded values
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

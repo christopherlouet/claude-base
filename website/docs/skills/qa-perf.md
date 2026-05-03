@@ -1,7 +1,7 @@
 ---
 sidebar_position: 41
 title: "qa-perf"
-description: "Optimisation des performances d'applications. Declencher quand l'utilisateur veut ameliorer la vitesse, reduire la latence, ou optimiser les ressources."
+description: "Application performance optimization. Trigger when the user wants to improve speed, reduce latency, or optimize resources."
 tags:
   - "skill"
   - "fork"
@@ -11,24 +11,24 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Optimisation des performances d'applications. Declencher quand l'utilisateur veut ameliorer la vitesse, reduire la latence, ou optimiser les ressources.
+> Application performance optimization. Trigger when the user wants to improve speed, reduce latency, or optimize resources.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `perf` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `perf` |
 
-## Description detaillee
+## Detailed description
 
 # Performance Optimization
 
-## Metriques cles
+## Key metrics
 
-| Metrique | Cible | Outil |
-|----------|-------|-------|
+| Metric | Target | Tool |
+|--------|--------|------|
 | TTFB | < 200ms | DevTools |
 | LCP | < 2.5s | Lighthouse |
 | FID | < 100ms | Web Vitals |
@@ -38,13 +38,13 @@ tags:
 
 ### Database
 ```sql
--- Index sur colonnes frequemment filtrees
+-- Index on frequently filtered columns
 CREATE INDEX idx_users_email ON users(email);
 
--- EXPLAIN pour analyser
+-- EXPLAIN to analyze
 EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
 
--- Eviter N+1 avec JOIN
+-- Avoid N+1 with JOIN
 SELECT u.*, p.* FROM users u
 LEFT JOIN posts p ON p.user_id = u.id;
 ```
@@ -89,7 +89,7 @@ const value = useMemo(() => expensive(data), [data]);
 const handler = useCallback(() => action(id), [id]);
 ```
 
-## Outils
+## Tools
 
 ```bash
 # Lighthouse
@@ -98,32 +98,32 @@ npx lighthouse https://example.com --view
 # Bundle analyzer
 npm run build -- --analyze
 
-# Profiling Node.js
+# Node.js profiling
 node --prof app.js
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux perf..."_
+- _"I want to perf..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: Performance Audit Report
@@ -216,7 +216,7 @@ export async function getStaticProps() {
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

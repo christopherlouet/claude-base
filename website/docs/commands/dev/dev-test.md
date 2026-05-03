@@ -1,7 +1,7 @@
 ---
 sidebar_position: 22
 title: "/dev:dev-test"
-description: "Genere des tests complets et de qualite pour du code existant."
+description: "Generates complete, high-quality tests for existing code."
 tags:
   - "dev"
   - "command"
@@ -15,65 +15,65 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DEV-TEST
 
-Genere des tests complets et de qualite pour du code existant.
+Generates complete, high-quality tests for existing code.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Creer une suite de tests exhaustive qui couvre les cas nominaux,
-les edge cases et les cas d'erreur pour garantir la fiabilite du code.
+Create an exhaustive test suite that covers nominal cases,
+edge cases and error cases to guarantee code reliability.
 
 ## Workflow
 
-- **Analyser** le code : fonctions publiques, dependances, branches conditionnelles, effets de bord
-- **Identifier** les cas de test par categorie :
-  - Nominal (happy path) : comportement attendu avec entrees valides
-  - Edge cases : null, undefined, "", [], \{\}, 0, -1, MAX_INT, string vide/tres long
-  - Erreurs : entrees invalides, exceptions attendues, etats impossibles
-  - Boundary : off-by-one, seuils (juste avant/exactement/juste apres), transitions d'etat
-- **Generer** les tests en structure AAA (Arrange-Act-Assert) avec noms descriptifs
-- **Verifier** : lancer les tests, valider la couverture (&gt;80%)
+- **Analyze** the code: public functions, dependencies, conditional branches, side effects
+- **Identify** test cases by category:
+  - Nominal (happy path): expected behavior with valid inputs
+  - Edge cases: null, undefined, "", [], \{\}, 0, -1, MAX_INT, empty/very long string
+  - Errors: invalid inputs, expected exceptions, impossible states
+  - Boundary: off-by-one, thresholds (just before/exactly/just after), state transitions
+- **Generate** tests in AAA structure (Arrange-Act-Assert) with descriptive names
+- **Verify**: run the tests, validate coverage (&gt;80%)
 
-## Seuils de couverture
+## Coverage thresholds
 
-- Logique metier critique : 90%+
-- Services et utils : 80%+
-- Composants UI : 70%+
+- Critical business logic: 90%+
+- Services and utils: 80%+
+- UI components: 70%+
 
-## Output attendu
+## Expected output
 
-Fichiers de tests generes avec statistiques (nombre de tests, couverture estimee),
-cas couverts par fonction (nominal, edge cases, erreurs) et commande pour lancer.
+Generated test files with statistics (number of tests, estimated coverage),
+cases covered per function (nominal, edge cases, errors) and command to run them.
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/work:work-explore` | Comprendre le code a tester |
-| `/dev:dev-tdd` | Developper en TDD |
-| `/dev:dev-testing-setup` | Configurer l'infrastructure de tests |
-| `/qa:qa-review` | Review des tests |
+| `/work:work-explore` | Understand the code to test |
+| `/dev:dev-tdd` | Develop with TDD |
+| `/dev:dev-testing-setup` | Configure the test infrastructure |
+| `/qa:qa-review` | Review the tests |
 
 ---
 
-IMPORTANT: Pas de mocks sauf pour les dependances externes (API, DB, filesystem).
+IMPORTANT: No mocks except for external dependencies (API, DB, filesystem).
 
-IMPORTANT: Tests independants les uns des autres.
+IMPORTANT: Tests must be independent of each other.
 
-YOU MUST viser une couverture &gt; 80% sur le code cible.
+YOU MUST aim for coverage &gt; 80% on the target code.
 
-YOU MUST tester les edge cases (null, undefined, empty, limites).
+YOU MUST test edge cases (null, undefined, empty, limits).
 
-NEVER ecrire des tests qui dependent de l'ordre d'execution.
+NEVER write tests that depend on execution order.
 
-Think hard sur les cas limites avant de coder les tests.
+Think hard about edge cases before coding the tests.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DEV](/docs/commands/dev)
-- [Toutes les commandes](/docs/commands)
+- [Back to DEV commands](/docs/commands/dev)
+- [All commands](/docs/commands)

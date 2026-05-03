@@ -1,7 +1,7 @@
 ---
 sidebar_position: 7
 title: "/biz:biz-okr"
-description: "Definir les OKRs (Objectives and Key Results) pour une periode donnee."
+description: "Define OKRs (Objectives and Key Results) for a given period."
 tags:
   - "biz"
   - "command"
@@ -15,60 +15,60 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent BIZ-OKR
 
-Definir les OKRs (Objectives and Key Results) pour une periode donnee.
+Define OKRs (Objectives and Key Results) for a given period.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Definir 3-5 Objectives inspirants et ambitieux avec 2-5 Key Results mesurables chacun, alignes avec la vision d'entreprise et suivis par des rituels reguliers.
+Define 3-5 inspiring and ambitious Objectives with 2-5 measurable Key Results each, aligned with the company vision and tracked through regular rituals.
 
 ## Workflow
 
-- Comprendre la vision et les objectifs business
-- Definir les Objectives (qualitatifs, inspirants, ambitieux)
-- Definir les Key Results (quantitatifs, mesurables, atteignables a 70-80%)
-- Aligner les OKRs par niveau (entreprise, equipe, individuel)
-- Definir les initiatives cles pour chaque OKR
-- Planifier les rituels (planning, check-in hebdo, retrospective)
+- Understand the vision and business objectives
+- Define the Objectives (qualitative, inspiring, ambitious)
+- Define the Key Results (quantitative, measurable, achievable at 70-80%)
+- Align OKRs by level (company, team, individual)
+- Define the key initiatives for each OKR
+- Plan the rituals (planning, weekly check-in, retrospective)
 
-## Output attendu
+## Expected output
 
-### OKRs du trimestre
+### Quarterly OKRs
 | Objective | KR | Baseline | Target | Owner |
 |-----------|-----|----------|--------|-------|
 
-### Dashboard de suivi
+### Tracking dashboard
 ### Checklist
 - [ ] 3-5 Objectives max
-- [ ] 2-5 KRs par Objective, mesurables
-- [ ] Owners assignes
-- [ ] Rituel de check-in planifie
+- [ ] 2-5 KRs per Objective, measurable
+- [ ] Owners assigned
+- [ ] Check-in ritual planned
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/biz:biz-roadmap` | Roadmap alignee sur les OKRs |
-| `/growth:growth-analytics` | Mesurer les Key Results |
-| `/work:work-plan` | Planifier les initiatives |
-| `/growth:growth-funnel` | Metriques de conversion |
+| `/biz:biz-roadmap` | Roadmap aligned on OKRs |
+| `/growth:growth-analytics` | Measure the Key Results |
+| `/work:work-plan` | Plan the initiatives |
+| `/growth:growth-funnel` | Conversion metrics |
 
 ---
 
-IMPORTANT: Les OKRs ne sont pas des taches mais des resultats a atteindre.
+IMPORTANT: OKRs are not tasks but results to achieve.
 
-YOU MUST definir des KRs mesurables objectivement (pas "ameliorer" mais "+20%").
+YOU MUST define KRs that are objectively measurable (not "improve" but "+20%").
 
-NEVER lier les OKRs aux evaluations de performance - ca tue l'ambition.
+NEVER link OKRs to performance reviews - it kills ambition.
 
-Think hard sur ce qui compte vraiment pour le succes de l'entreprise.
+Think hard about what really matters for the company's success.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes BIZ](/docs/commands/biz)
-- [Toutes les commandes](/docs/commands)
+- [Back to BIZ commands](/docs/commands/biz)
+- [All commands](/docs/commands)

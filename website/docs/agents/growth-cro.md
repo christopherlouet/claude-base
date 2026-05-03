@@ -1,7 +1,7 @@
 ---
 sidebar_position: 27
 title: "growth-cro"
-description: "Audit et optimisation du taux de conversion."
+description: "Conversion rate audit and optimization."
 tags:
   - "agent"
   - "haiku"
@@ -11,38 +11,38 @@ tags:
 
 <span className="badge badge--haiku">Haiku</span>
 
-> Audit et optimisation du taux de conversion.
+> Conversion rate audit and optimization.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | haiku |
+| **Model** | haiku |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob` |
-| **Outils interdits** | `["Edit"`, `"Write"`, `"Bash"]` |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob` |
+| **Disallowed tools** | `["Edit"`, `"Write"`, `"Bash"]` |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent GROWTH-CRO
 
-Audit et optimisation du taux de conversion.
+Conversion rate audit and optimization.
 
-## Objectif
+## Objective
 
-Analyser et optimiser les conversions :
+Analyze and optimize conversions:
 - Landing pages
-- Formulaires d'inscription
-- Flows d'onboarding
-- Checkouts et paiements
-- Popups et modals
-- Paywalls et upgrades
+- Signup forms
+- Onboarding flows
+- Checkouts and payments
+- Popups and modals
+- Paywalls and upgrades
 
-## Domaines d'analyse
+## Analysis areas
 
-| Domaine | Metriques cles |
-|---------|---------------|
+| Area | Key metrics |
+|------|-------------|
 | Landing | Bounce rate, scroll depth, CTA clicks |
 | Signup | Form completion, drop-off fields |
 | Onboarding | Activation rate, time to value |
@@ -50,40 +50,40 @@ Analyser et optimiser les conversions :
 | Popups | Display-to-close ratio, conversion |
 | Paywall | Trial-to-paid, upgrade rate |
 
-## Methodologie
+## Methodology
 
-1. Identifier le funnel principal
-2. Localiser les points de friction
-3. Scorer chaque etape (heuristique)
-4. Prioriser les quick wins
-5. Proposer des A/B tests
+1. Identify the main funnel
+2. Locate friction points
+3. Score each step (heuristic)
+4. Prioritize quick wins
+5. Propose A/B tests
 
-## Output attendu
+## Expected output
 
-- Cartographie du funnel avec taux de conversion
-- Points de friction identifies et priorises
-- Quick wins implementables
-- Plan de tests A/B recommandes
+- Funnel mapping with conversion rates
+- Identified and prioritized friction points
+- Implementable quick wins
+- Recommended A/B test plan
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele haiku
+## Characteristics of the haiku model
 
 
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 29
 title: "ops-database"
-description: "Conception de schemas de base de donnees. Declencher quand l'utilisateur veut creer des tables, migrations, ou optimiser des requetes."
+description: "Database schema design. Trigger when the user wants to create tables, migrations, or optimize queries."
 tags:
   - "skill"
   - "fork"
@@ -11,31 +11,31 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Conception de schemas de base de donnees. Declencher quand l'utilisateur veut creer des tables, migrations, ou optimiser des requetes.
+> Database schema design. Trigger when the user wants to create tables, migrations, or optimize queries.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops`, `database` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `ops`, `database` |
 
-## Description detaillee
+## Detailed description
 
 # Database Design
 
 ## Conventions
 
-| Element | Convention | Exemple |
+| Element | Convention | Example |
 |---------|------------|---------|
-| Tables | snake_case pluriel | users, order_items |
-| Colonnes | snake_case | created_at, user_id |
+| Tables | snake_case plural | users, order_items |
+| Columns | snake_case | created_at, user_id |
 | Primary key | id | id UUID |
 | Foreign key | table_id | user_id |
 | Index | idx_table_columns | idx_users_email |
 
-## Schema PostgreSQL
+## PostgreSQL Schema
 
 ```sql
 CREATE TABLE users (
@@ -85,43 +85,43 @@ CREATE TABLE user_roles (
 
 | Type | Usage |
 |------|-------|
-| B-tree | Egalite, range (defaut) |
+| B-tree | Equality, range (default) |
 | GIN | JSONB, arrays, full-text |
 | GiST | Geospatial |
 
-## Optimisation
+## Optimization
 
 ```sql
--- Analyser une requete
+-- Analyze a query
 EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
 
--- Index manquants
+-- Missing indexes
 SELECT * FROM pg_stat_user_indexes WHERE idx_scan = 0;
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux ops..."_
-- _"Je veux database..."_
+- _"I want to ops..."_
+- _"I want to database..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: Database Migration (Schema + Data)
@@ -197,7 +197,7 @@ async function migrate(direction: 'up' | 'down') {
 
   for (const file of files) {
     const sql = readFileSync(`./migrations/${file}`, 'utf-8');
-    const section = sql.split(`-- ${direction === 'up' ? 'Up' : 'Down'}`)[1]?.split('-- ')[0];
+    const section = sql.split(`-- ${direction === 'up' ? 'Up': 'Down'}`)[1]?.split('-- ')[0];
     if (section) {
       await pool.query(section);
       console.log(`Applied ${direction}: ${file}`);
@@ -218,7 +218,7 @@ async function migrate(direction: 'up' | 'down') {
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

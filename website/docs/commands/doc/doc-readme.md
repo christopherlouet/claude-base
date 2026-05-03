@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: "/doc:doc-readme"
-description: "Genere ou ameliore le README d'un projet pour maximiser son adoption et sa comprehension."
+description: "Generates or improves a project's README to maximize its adoption and understanding."
 tags:
   - "doc"
   - "command"
@@ -13,70 +13,70 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--doc">DOC</span>
 
 
-# Agent README
+# README Agent
 
-Genere ou ameliore le README d'un projet pour maximiser son adoption et sa comprehension.
+Generates or improves a project's README to maximize its adoption and understanding.
 
-## Projet
+## Project
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Creer un README professionnel qui permet aux nouveaux utilisateurs de comprendre, installer et utiliser le projet en moins de 5 minutes.
+Create a professional README that allows new users to understand, install and use the project in under 5 minutes.
 
 ## Workflow
 
-- Analyser le projet (type, stack, fonctionnalites)
-- Rediger le header (nom, badges, description une ligne)
-- Rediger le Quick Start (installation copy-paste, exemple minimal)
-- Documenter les fonctionnalites principales
-- Ajouter la configuration et les options
-- Ecrire la section contribution
-- Adapter au type de projet (lib npm, CLI, API, app)
-- Ajouter les meta (licence, remerciements)
+- Analyze the project (type, stack, features)
+- Write the header (name, badges, one-line description)
+- Write the Quick Start (copy-paste installation, minimal example)
+- Document the main features
+- Add configuration and options
+- Write the contribution section
+- Adapt to the project type (npm lib, CLI, API, app)
+- Add meta (license, acknowledgements)
 
-## Output attendu
+## Expected output
 
-### README genere avec sections
-1. Header (nom, badges, description)
-2. Quick Start (installation + exemple qui fonctionne)
-3. Fonctionnalites
+### Generated README with sections
+1. Header (name, badges, description)
+2. Quick Start (installation + working example)
+3. Features
 4. Configuration
-5. API Reference (si applicable)
+5. API Reference (if applicable)
 6. FAQ
 7. Contribution
-8. Licence
+8. License
 
-### Checklist qualite
-- [ ] Installation copy-paste friendly
-- [ ] Au moins un exemple qui fonctionne
+### Quality checklist
+- [ ] Copy-paste friendly installation
+- [ ] At least one working example
 - [ ] Quick Start present
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/doc:doc-generate` | Documentation detaillee |
-| `/doc:doc-changelog` | Changelog du projet |
-| `/doc:doc-api-spec` | Documentation API |
-| `/doc:doc-onboard` | Onboarding developpeurs |
+| `/doc:doc-generate` | Detailed documentation |
+| `/doc:doc-changelog` | Project changelog |
+| `/doc:doc-api-spec` | API documentation |
+| `/doc:doc-onboard` | Developer onboarding |
 
 ---
 
-IMPORTANT: Le README est souvent le premier contact avec le projet. Il doit convaincre en 30 secondes.
+IMPORTANT: The README is often the first contact with the project. It must convince in 30 seconds.
 
-YOU MUST inclure une installation copy-paste friendly.
+YOU MUST include a copy-paste friendly installation.
 
-YOU MUST avoir au moins un exemple qui fonctionne.
+YOU MUST have at least one working example.
 
-NEVER avoir un README sans Quick Start.
+NEVER have a README without a Quick Start.
 
-Think hard sur ce que le lecteur veut savoir en premier.
+Think hard about what the reader wants to know first.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DOC](/docs/commands/doc)
-- [Toutes les commandes](/docs/commands)
+- [Back to DOC commands](/docs/commands/doc)
+- [All commands](/docs/commands)

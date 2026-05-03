@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "/doc:doc-onboard"
-description: "Onboarding rapide sur un codebase inconnu."
+description: "Quick onboarding on an unknown codebase."
 tags:
   - "doc"
   - "command"
@@ -13,62 +13,62 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--doc">DOC</span>
 
 
-# Agent ONBOARD
+# ONBOARD Agent
 
-Onboarding rapide sur un codebase inconnu.
+Quick onboarding on an unknown codebase.
 
-## Projet ou zone a explorer
+## Project or area to explore
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Comprendre rapidement un projet en 30 minutes : type, stack, architecture, flux de donnees, conventions et points d'attention.
+Quickly understand a project in 30 minutes: type, stack, architecture, data flows, conventions and points of attention.
 
 ## Workflow
 
-- Vue d'ensemble (5 min) : structure, package.json/README, comment lancer/tester
-- Architecture (10 min) : entry points, couches, patterns (MVC, Clean, Hexagonal)
-- Flux de donnees (10 min) : tracer un flux complet, identifier les dependances
-- Conventions (5 min) : style, nommage, tests, commits, review process
-- Points d'attention : dette technique, zones sensibles (auth, paiements)
+- Overview (5 min): structure, package.json/README, how to run/test
+- Architecture (10 min): entry points, layers, patterns (MVC, Clean, Hexagonal)
+- Data flows (10 min): trace a complete flow, identify dependencies
+- Conventions (5 min): style, naming, tests, commits, review process
+- Points of attention: technical debt, sensitive areas (auth, payments)
 
-## Output attendu
+## Expected output
 
-### Resume du projet
-- Type, stack, architecture, comment demarrer
+### Project summary
+- Type, stack, architecture, how to start
 
-### Structure cle
-- Dossiers principaux avec description
+### Key structure
+- Main folders with description
 
-### Points d'entree importants
-- Fichiers cles avec leur role
+### Important entry points
+- Key files with their role
 
-### Dependances critiques
-### Prochaines etapes recommandees
+### Critical dependencies
+### Recommended next steps
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/work:work-explore` | Explorer en profondeur |
-| `/doc:doc-explain` | Comprendre du code specifique |
-| `/ops:ops-health` | Evaluer la sante du projet |
-| `/doc:doc-readme` | Consulter/creer le README |
+| `/work:work-explore` | Explore in depth |
+| `/doc:doc-explain` | Understand specific code |
+| `/ops:ops-health` | Assess project health |
+| `/doc:doc-readme` | Consult/create the README |
 
 ---
 
-IMPORTANT: Commencer par le README et les fichiers de config avant de plonger dans le code.
+IMPORTANT: Start with the README and config files before diving into the code.
 
-YOU MUST comprendre l'architecture avant de modifier du code.
+YOU MUST understand the architecture before modifying code.
 
-NEVER modifier du code sans avoir compris le contexte.
+NEVER modify code without having understood the context.
 
-Think hard sur l'architecture globale avant de plonger dans les details.
+Think hard about the overall architecture before diving into the details.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DOC](/docs/commands/doc)
-- [Toutes les commandes](/docs/commands)
+- [Back to DOC commands](/docs/commands/doc)
+- [All commands](/docs/commands)

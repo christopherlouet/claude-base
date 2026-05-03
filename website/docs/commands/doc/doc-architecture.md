@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "/doc:doc-architecture"
-description: "Documente l'architecture technique d'un projet de maniere claire et maintenable."
+description: "Documents a project's technical architecture in a clear and maintainable way."
 tags:
   - "doc"
   - "command"
@@ -13,69 +13,69 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--doc">DOC</span>
 
 
-# Agent ARCHITECTURE
+# ARCHITECTURE Agent
 
-Documente l'architecture technique d'un projet de maniere claire et maintenable.
+Documents a project's technical architecture in a clear and maintainable way.
 
-## Projet
+## Project
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Creer une documentation d'architecture qui permet aux developpeurs de comprendre le systeme, ses composants et leurs interactions. Inclut diagrammes C4, ADRs et flux de donnees.
+Create architecture documentation that allows developers to understand the system, its components, and their interactions. Includes C4 diagrams, ADRs, and data flows.
 
 ## Workflow
 
-- Explorer le code pour comprendre la structure et les composants
-- Documenter la vue d'ensemble (stack, principes architecturaux)
-- Creer les diagrammes de composants (C4 ou ASCII)
-- Documenter les flux de donnees principaux (auth, commande, events)
-- Lister les integrations externes avec criticite et fallback
-- Rediger les ADRs (Architecture Decision Records) pour les choix majeurs
-- Documenter l'infrastructure de deploiement et les environnements
+- Explore the code to understand the structure and components
+- Document the overview (stack, architectural principles)
+- Create component diagrams (C4 or ASCII)
+- Document the main data flows (auth, order, events)
+- List external integrations with criticality and fallback
+- Write ADRs (Architecture Decision Records) for major choices
+- Document the deployment infrastructure and environments
 
-## Output attendu
+## Expected output
 
-### Documentation d'architecture
-- Vue d'ensemble avec stack technique justifiee
-- Diagrammes de composants (C4 Context, Container, Component)
-- Flux de donnees critiques (sequence diagrams)
-- Integrations externes documentees
-- ADRs pour les decisions importantes
-- Infrastructure et deploiement
+### Architecture documentation
+- Overview with justified technical stack
+- Component diagrams (C4 Context, Container, Component)
+- Critical data flows (sequence diagrams)
+- Documented external integrations
+- ADRs for important decisions
+- Infrastructure and deployment
 
 ### Checklist
-- [ ] Vue d'ensemble du systeme
-- [ ] Stack technique avec justifications
-- [ ] Diagrammes des composants
-- [ ] Flux de donnees principaux
-- [ ] ADRs pour decisions importantes
+- [ ] System overview
+- [ ] Technical stack with justifications
+- [ ] Component diagrams
+- [ ] Main data flows
+- [ ] ADRs for important decisions
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/doc:doc-readme` | Documentation README |
-| `/doc:doc-api-spec` | Documentation API |
-| `/doc:doc-onboard` | Onboarding developpeurs |
-| `/work:work-explore` | Explorer le code existant |
+| `/doc:doc-readme` | README documentation |
+| `/doc:doc-api-spec` | API documentation |
+| `/doc:doc-onboard` | Developer onboarding |
+| `/work:work-explore` | Explore existing code |
 
 ---
 
-IMPORTANT: La documentation d'architecture doit etre maintenue a jour.
+IMPORTANT: Architecture documentation must be kept up to date.
 
-YOU MUST inclure les justifications des choix techniques (ADRs).
+YOU MUST include justifications for technical choices (ADRs).
 
-YOU MUST documenter les flux de donnees critiques.
+YOU MUST document critical data flows.
 
-NEVER avoir une documentation qui diverge de la realite.
+NEVER have documentation that diverges from reality.
 
-Think hard sur ce qu'un nouveau developpeur a besoin de savoir.
+Think hard about what a new developer needs to know.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DOC](/docs/commands/doc)
-- [Toutes les commandes](/docs/commands)
+- [Back to DOC commands](/docs/commands/doc)
+- [All commands](/docs/commands)

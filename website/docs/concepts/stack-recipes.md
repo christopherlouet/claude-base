@@ -1,7 +1,7 @@
 ---
 sidebar_position: 23
 title: "Stack Recipes"
-description: " For each stack, the **commands / agents / skills / rules** of the foundation that activate, plus 1-2 external links for generic best practices.  "
+description: " For each stack, the **commands / agents / skills / rules** of the foundation that activate, plus 1-2 external links for generic best practices.   The"
 tags:
   - "concept"
 ---
@@ -12,7 +12,7 @@ tags:
 
 &gt; For each stack, the **commands / agents / skills / rules** of the foundation that activate, plus 1-2 external links for generic best practices.
 &gt;
-&gt; The foundation does not reinvent REST conventions or Flutter Clean Architecture — it **applies them automatically** via its path-specific rules and its specialized agents. This page is an orientation map, not a manual.
+&gt; The foundation does not reinvent REST conventions or Flutter Clean Architecture — it **applies them automatically** via its path-specific rules and specialized agents. This page is an orientation map, not a manual.
 
 ---
 
@@ -22,14 +22,14 @@ tags:
 
 | Type | Element | Activation |
 |---|---|---|
-| Command | `/dev:dev-component` | Creating a complete UI component (tests + stories) |
+| Command | `/dev:dev-component` | Complete UI component creation (tests + stories) |
 | Command | `/dev:dev-react-perf` | Rendering optimization (Core Web Vitals, memoization) |
-| Command | `/dev:dev-hook` | Creating custom React/Vue hooks |
+| Command | `/dev:dev-hook` | Custom React/Vue hooks creation |
 | Command | `/dev:dev-design-system` | Tokens, shared components |
 | Command | `/qa:qa-design`, `/qa:qa-responsive`, `/qa:qa-chrome` | UI/UX, mobile-first, Chrome visual audits |
 | Command | `/qa:wcag-audit` | WCAG 2.1 AA accessibility |
-| Auto skill | `dev-shadcn`, `dev-nextjs`, `dev-frontend-design` | Activated by keywords (`shadcn`, `App Router`, `landing page`) |
-| Auto rules | `react.md`, `nextjs.md`, `vue.md`, `svelte.md`, `astro.md`, `accessibility.md`, `performance.md`, `design-style.md` | Based on `**/*.tsx`, `**/components/**`, `**/app/**` |
+| Skill auto | `dev-shadcn`, `dev-nextjs`, `dev-frontend-design` | Activated on keywords (`shadcn`, `App Router`, `landing page`) |
+| Rules auto | `react.md`, `nextjs.md`, `vue.md`, `svelte.md`, `astro.md`, `accessibility.md`, `performance.md`, `design-style.md` | Based on `**/*.tsx`, `**/components/**`, `**/app/**` |
 
 ### External best practices
 
@@ -45,10 +45,10 @@ tags:
 | Type | Element | Activation |
 |---|---|---|
 | Command | `/dev:dev-flutter` | Widgets, screens, BLoC, Clean Architecture |
-| Command | `/qa:qa-mobile` | Quality audit for mobile apps |
-| Command | `/ops:ops-mobile-release` | Publishing to App Store + Play Store via Fastlane |
-| Auto skill | `dev-flutter` | Activated by `Flutter`, `widget`, `BLoC` |
-| Auto rule | `flutter.md` | `**/*.dart`, `**/lib/**`, `**/test/**` |
+| Command | `/qa:qa-mobile` | Mobile app quality audit |
+| Command | `/ops:ops-mobile-release` | App Store + Play Store publishing via Fastlane |
+| Skill auto | `dev-flutter` | Activated on `Flutter`, `widget`, `BLoC` |
+| Rule auto | `flutter.md` | `**/*.dart`, `**/lib/**`, `**/test/**` |
 
 ### External best practices
 
@@ -69,7 +69,7 @@ tags:
 | Command | `/dev:dev-trpc` | Type-safe TypeScript APIs |
 | Command | `/qa:qa-security` | OWASP Top 10 audit |
 | Command | `/doc:doc-api-spec` | OpenAPI/Swagger spec |
-| Auto rule | `api.md`, `security.md` | `**/api/**`, `**/routes/**`, `**/auth/**` |
+| Rule auto | `api.md`, `security.md` | `**/api/**`, `**/routes/**`, `**/auth/**` |
 
 ### External best practices
 
@@ -84,11 +84,11 @@ tags:
 
 | Type | Element | Activation |
 |---|---|---|
-| Auto skill | `dev-auth` | Activated by `auth`, `login`, `OAuth`, `2FA`, `better-auth`, `NextAuth`, `Lucia` |
+| Skill auto | `dev-auth` | Activated on `auth`, `login`, `OAuth`, `2FA`, `better-auth`, `NextAuth`, `Lucia` |
 | Command | `/dev:dev-supabase` | Supabase Auth + Row Level Security |
 | Command | `/qa:qa-security` | Sessions, tokens, OWASP audit |
 | Command | `/legal:legal-rgpd` | GDPR compliance |
-| Auto rule | `security.md` | `**/auth/**`, `**/api/**`, `**/middleware/**` |
+| Rule auto | `security.md` | `**/auth/**`, `**/api/**`, `**/middleware/**` |
 
 ### External best practices
 
@@ -104,7 +104,7 @@ tags:
 | Type | Element | Activation |
 |---|---|---|
 | Command | `/ops:ops-database` | Schema, migrations, indexes |
-| Auto skill | `dev-prisma` | Activated by `Prisma`, `schema.prisma`, `migrate`, `Accelerate` |
+| Skill auto | `dev-prisma` | Activated on `Prisma`, `schema.prisma`, `migrate`, `Accelerate` |
 
 ### External best practices
 
@@ -125,8 +125,8 @@ tags:
 | Command | `/ops:ops-infra-code` | Terraform / OpenTofu (modules, state, backends) |
 | Command | `/ops:ops-proxmox`, `/ops:ops-opnsense` | Homelab / personal infra |
 | Command | `/ops:ops-deploy`, `/ops:ops-rollback` | Safe deployment + rollback |
-| Auto skill | `ops-infra-code`, `ops-proxmox`, `ops-opnsense` | Activated by keywords |
-| Auto rule | `deploy-safety.md` | Dockerfile, docker-compose, .env, middleware |
+| Skill auto | `ops-infra-code`, `ops-proxmox`, `ops-opnsense` | Activated on keywords |
+| Rule auto | `deploy-safety.md` | Dockerfile, docker-compose, .env, middleware |
 
 ### External best practices
 
@@ -144,7 +144,7 @@ tags:
 | Command | `/ops:ops-monitoring` | Logs, metrics, alerts |
 | Command | `/ops:ops-observability-stack` | Prometheus + Grafana + Loki |
 | Command | `/ops:ops-grafana-dashboard` | Grafana dashboards |
-| Command | `/ops:ops-load-testing` | Load testing |
+| Command | `/ops:ops-load-testing` | Load tests |
 | Command | `/ops:ops-health` | Health checks |
 
 ### External best practices
@@ -165,8 +165,8 @@ tags:
 | Command | `/dev:dev-testing-setup` | Test infrastructure configuration |
 | Command | `/qa:qa-e2e` | E2E tests (Playwright, Cypress) |
 | Command | `/qa:qa-automation`, `/qa:qa-coverage` | Automation, coverage |
-| Auto skill | `qa-e2e`, `api-mocking` | Activated by keywords (`E2E`, `MSW`, `mock API`) |
-| Auto rule | `tdd-enforcement.md`, `testing.md` | Any TS/Py/Go/Dart code, tests/, *.test.* |
+| Skill auto | `qa-e2e`, `api-mocking` | Activated on keywords (`E2E`, `MSW`, `mock API`) |
+| Rule auto | `tdd-enforcement.md`, `testing.md` | All TS/Py/Go/Dart code, tests/, *.test.* |
 
 ### External best practices
 
@@ -182,8 +182,8 @@ tags:
 | Type | Element | Activation |
 |---|---|---|
 | Command | `/dev:dev-debug`, `/dev:dev-refactor` | Investigation and refactoring |
-| Auto skill | `dev-i18n` | Localization (next-intl, react-i18next, vue-i18n, flutter_localizations) |
-| Auto rules | `go.md`, `python.md`, `rust.md`, `ruby.md`, `java.md`, `csharp.md`, `php.md` | Activated by file extension |
+| Skill auto | `dev-i18n` | Localization (next-intl, react-i18next, vue-i18n, flutter_localizations) |
+| Rules auto | `go.md`, `python.md`, `rust.md`, `ruby.md`, `java.md`, `csharp.md`, `php.md` | Activated by file extension |
 
 ### External best practices
 
@@ -201,7 +201,7 @@ tags:
 | Command | `/data:data-pipeline` | ETL/ELT pipelines (Airflow, dbt) |
 | Command | `/data:data-modeling` | Data warehouse modeling (star/snowflake) |
 | Command | `/data:data-analytics` | Reports and KPIs |
-| Auto skill | `data-pipeline` | Activated by `ETL`, `Airflow`, `dbt` |
+| Skill auto | `data-pipeline` | Activated on `ETL`, `Airflow`, `dbt` |
 
 ### External best practices
 
@@ -219,8 +219,8 @@ tags:
 | Command | `/dev:dev-ai-integration` | LLM integration (OpenAI, Claude) |
 | Command | `/dev:dev-prompt-engineering` | Prompt optimization |
 | Command | `/dev:dev-rag` | RAG systems (retrieval-augmented generation) |
-| Command | `/dev:dev-mcp` | Building MCP servers |
-| Auto skill | `dev-prompt-engineering` | Activated by `prompt`, `instruction`, `few-shot`, `LLM` |
+| Command | `/dev:dev-mcp` | MCP server creation |
+| Skill auto | `dev-prompt-engineering` | Activated on `prompt`, `instruction`, `few-shot`, `LLM` |
 
 ### External best practices
 
@@ -236,10 +236,10 @@ tags:
 
 | Type | Element | Activation |
 |---|---|---|
-| BIZ commands | `/biz:biz-model`, `biz-market`, `biz-mvp`, `biz-pricing`, `biz-pitch`, `biz-roadmap`, `biz-launch`, `biz-competitor`, `biz-okr`, `biz-personas`, `biz-research` | Product strategy |
-| GROWTH commands | `/growth:growth-landing`, `growth-seo`, `growth-analytics`, `growth-ab-test`, `growth-cro`, `growth-funnel`, `growth-onboarding`, `growth-retention`, `growth-email`, `growth-localization`, `growth-app-store-analytics` | Acquisition / activation / retention |
-| LEGAL commands | `/legal:legal-rgpd`, `legal-payment`, `legal-terms-of-service`, `legal-privacy-policy` | Compliance |
-| Auto skill | `growth-cro` | Activated by `conversion`, `signup flow`, `paywall` |
+| Commands BIZ | `/biz:biz-model`, `biz-market`, `biz-mvp`, `biz-pricing`, `biz-pitch`, `biz-roadmap`, `biz-launch`, `biz-competitor`, `biz-okr`, `biz-personas`, `biz-research` | Product strategy |
+| Commands GROWTH | `/growth:growth-landing`, `growth-seo`, `growth-analytics`, `growth-ab-test`, `growth-cro`, `growth-funnel`, `growth-onboarding`, `growth-retention`, `growth-email`, `growth-localization`, `growth-app-store-analytics` | Acquisition / activation / retention |
+| Commands LEGAL | `/legal:legal-rgpd`, `legal-payment`, `legal-terms-of-service`, `legal-privacy-policy` | Compliance |
+| Skill auto | `growth-cro` | Activated on `conversion`, `signup flow`, `paywall` |
 
 ### External best practices
 
@@ -253,5 +253,5 @@ tags:
 - [EXTENDING-GUIDE](https://github.com/christopherlouet/claude-socle/blob/main/docs/guides/EXTENDING-GUIDE.md) — How to add your own commands, skills, agents, rules
 - [TEAM-GUIDE](https://github.com/christopherlouet/claude-socle/blob/main/docs/guides/TEAM-GUIDE.md) — Team adoption, shared conventions
 - [PROMPTING-GUIDE](https://github.com/christopherlouet/claude-socle/blob/main/docs/guides/PROMPTING-GUIDE.md) — Claude Code prompting techniques
-- [TROUBLESHOOTING-GUIDE](https://github.com/christopherlouet/claude-socle/blob/main/docs/guides/TROUBLESHOOTING-GUIDE.md) — Common issues
-- [Docusaurus site](https://christopherlouet.github.io/claude-socle/) — Full catalog (commands, agents, skills, rules)
+- [TROUBLESHOOTING-GUIDE](https://github.com/christopherlouet/claude-socle/blob/main/docs/guides/TROUBLESHOOTING-GUIDE.md) — Common problems
+- [Docusaurus site](https://christopherlouet.github.io/claude-socle/) — Complete catalog (commands, agents, skills, rules)

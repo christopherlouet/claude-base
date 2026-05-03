@@ -1,7 +1,7 @@
 ---
 sidebar_position: 27
 title: "ops-ci"
-description: "Configuration de pipelines CI/CD. Declencher quand l'utilisateur veut configurer GitHub Actions, GitLab CI, ou automatiser les deployments."
+description: "CI/CD pipeline configuration. Trigger when the user wants to configure GitHub Actions, GitLab CI, or automate deployments."
 tags:
   - "skill"
   - "fork"
@@ -11,17 +11,17 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Configuration de pipelines CI/CD. Declencher quand l'utilisateur veut configurer GitHub Actions, GitLab CI, ou automatiser les deployments.
+> CI/CD pipeline configuration. Trigger when the user wants to configure GitHub Actions, GitLab CI, or automate deployments.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `ops` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `ops` |
 
-## Description detaillee
+## Detailed description
 
 # CI/CD Pipeline
 
@@ -80,43 +80,43 @@ jobs:
         run: curl -X POST ${{ secrets.DEPLOY_WEBHOOK }}
 ```
 
-## Structure recommandee
+## Recommended structure
 
-1. **Lint** - Verification du code
-2. **Test** - Tests unitaires et integration
-3. **Build** - Construction de l'artefact
-4. **Deploy** - Deploiement par environnement
+1. **Lint** - Code verification
+2. **Test** - Unit and integration tests
+3. **Build** - Artifact construction
+4. **Deploy** - Deployment by environment
 
-## Bonnes pratiques
+## Best practices
 
-- Cache des dependances
-- Jobs paralleles quand possible
-- Environments pour la securite
-- Secrets pour les credentials
+- Dependency caching
+- Parallel jobs when possible
+- Environments for security
+- Secrets for credentials
 - Branch protection rules
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux ops..."_
+- _"I want to ops..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: GitHub Actions CI/CD Pipeline
@@ -212,7 +212,7 @@ jobs:
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

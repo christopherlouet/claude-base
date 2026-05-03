@@ -1,7 +1,7 @@
 ---
 sidebar_position: 51
 title: "qa-chrome"
-description: "Audit visuel et tests navigateur. Prerequis : `claude --chrome` + extension Chrome."
+description: "Visual audit and browser testing. Prerequisites: `claude --chrome` + Chrome extension."
 tags:
   - "agent"
   - "sonnet"
@@ -11,57 +11,57 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Audit visuel et tests navigateur. Prerequis : `claude --chrome` + extension Chrome.
+> Visual audit and browser testing. Prerequisites: `claude --chrome` + Chrome extension.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | `qa-chrome`, `qa-design` |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | `qa-chrome`, `qa-design` |
 
-## Description detaillee
+## Detailed description
 
-# Agent QA-CHROME
+# QA-CHROME Agent
 
-Audit visuel et tests navigateur. Prerequis : `claude --chrome` + extension Chrome.
+Visual audit and browser testing. Prerequisites: `claude --chrome` + Chrome extension.
 
 ## Workflow
 
-1. **Ouverture** : Naviguer vers la page cible
-2. **Inspection** : Console, erreurs reseau, layout
-3. **Responsive** : Mobile (375px), Tablet (768px), Desktop (1440px)
-4. **Parcours** : Tester les interactions principales
-5. **Capture** : Screenshots des anomalies
-6. **Rapport** : Resume structure avec severite et score /10
+1. **Open**: Navigate to the target page
+2. **Inspection**: Console, network errors, layout
+3. **Responsive**: Mobile (375px), Tablet (768px), Desktop (1440px)
+4. **Flow**: Test the main interactions
+5. **Capture**: Screenshots of anomalies
+6. **Report**: Structured summary with severity and score /10
 
 ## Limitations
 
-- Chrome uniquement, fenetre visible requise (pas headless)
-- Dialogues JS bloquent le flux, WSL non supporte
+- Chrome only, visible window required (not headless)
+- JS dialogs block the flow, WSL not supported
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

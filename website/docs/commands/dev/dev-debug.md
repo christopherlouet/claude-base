@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 title: "/dev:dev-debug"
-description: "Diagnostic et résolution de bugs de manière méthodique et systématique."
+description: "Methodical and systematic bug diagnostic and resolution."
 tags:
   - "dev"
   - "command"
@@ -15,62 +15,62 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DEBUG
 
-Diagnostic et résolution de bugs de manière méthodique et systématique.
+Methodical and systematic bug diagnostic and resolution.
 
-## Problème à analyser
+## Problem to analyze
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Identifier la cause racine d'un bug et le corriger de manière définitive,
-en ajoutant des protections pour éviter sa réapparition.
+Identify the root cause of a bug and fix it definitively,
+adding protections to prevent its recurrence.
 
-Utilise le skill `dev-debug` pour la méthodologie détaillée (4 phases : Observation, Hypothèses, Investigation, Vérification).
+Use the `dev-debug` skill for the detailed methodology (4 phases: Observation, Hypotheses, Investigation, Verification).
 
 ## Workflow
 
-1. **Reproduire** : Confirmer, isoler, collecter infos (symptôme, env, fréquence)
-2. **Analyser** : Logs, console, network, stack trace, git history
-3. **Hypothéser** : Matrice hypothèses (probabilité + test de validation)
-4. **Investiguer** : Technique des 5 Whys, git bisect pour régressions
-5. **Corriger** : Fix minimal de la cause racine
-6. **Prévenir** : Test de non-régression
+1. **Reproduce**: Confirm, isolate, collect info (symptom, env, frequency)
+2. **Analyze**: Logs, console, network, stack trace, git history
+3. **Hypothesize**: Hypothesis matrix (probability + validation test)
+4. **Investigate**: 5 Whys technique, git bisect for regressions
+5. **Fix**: Minimal fix at the root cause
+6. **Prevent**: Regression test
 
-## Output attendu
+## Expected output
 
 ### Diagnostic
-- **Symptôme** : Description du comportement observé
-- **Root cause** : Cause fondamentale identifiée
-- **Fichiers impactés** : Liste avec descriptions
-- **Commit coupable** : Hash (si trouvé via bisect)
+- **Symptom**: Description of the observed behavior
+- **Root cause**: Identified fundamental cause
+- **Impacted files**: List with descriptions
+- **Culprit commit**: Hash (if found via bisect)
 
 ### Solution
-- **Fix appliqué** : Description de la correction
-- **Test ajouté** : Test de non-régression
-- **Vérification** : Bug corrigé, tests passent, pas d'effets de bord
+- **Applied fix**: Description of the correction
+- **Added test**: Regression test
+- **Verification**: Bug fixed, tests pass, no side effects
 
-## Agents liés
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/work:work-explore` | Comprendre le contexte du code |
-| `/dev:dev-test` | Ajouter tests de régression |
-| `/work:work-commit` | Commiter le fix |
+| `/work:work-explore` | Understand the code context |
+| `/dev:dev-test` | Add regression tests |
+| `/work:work-commit` | Commit the fix |
 
 ---
 
-IMPORTANT: Ne jamais corriger les symptômes. Toujours trouver la cause racine.
+IMPORTANT: Never fix symptoms. Always find the root cause.
 
-YOU MUST ajouter un test qui aurait détecté ce bug.
+YOU MUST add a test that would have caught this bug.
 
-YOU MUST documenter la root cause pour éviter la récurrence.
+YOU MUST document the root cause to prevent recurrence.
 
-Think hard sur pourquoi ce bug n'a pas été détecté plus tôt.
+Think hard about why this bug was not detected earlier.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DEV](/docs/commands/dev)
-- [Toutes les commandes](/docs/commands)
+- [Back to DEV commands](/docs/commands/dev)
+- [All commands](/docs/commands)

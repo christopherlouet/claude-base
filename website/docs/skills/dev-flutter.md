@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: "dev-flutter"
-description: "Developpement Flutter avec Clean Architecture et BLoC. Declencher quand l'utilisateur veut creer des widgets, screens, ou features Flutter."
+description: "Flutter development with Clean Architecture and BLoC. Trigger when the user wants to create widgets, screens, or Flutter features."
 tags:
   - "skill"
   - "fork"
@@ -11,17 +11,17 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Developpement Flutter avec Clean Architecture et BLoC. Declencher quand l'utilisateur veut creer des widgets, screens, ou features Flutter.
+> Flutter development with Clean Architecture and BLoC. Trigger when the user wants to create widgets, screens, or Flutter features.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `flutter` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `dev`, `flutter` |
 
-## Description detaillee
+## Detailed description
 
 # Flutter Development
 
@@ -62,7 +62,7 @@ class AuthFailure extends AuthState { final String error; }
 
 // BLoC
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc() : super(AuthInitial()) {
+  AuthBloc(): super(AuthInitial()) {
     on<LoginRequested>(_onLogin);
   }
 }
@@ -70,9 +70,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
 ## Widgets
 
-- Stateless pour UI pure
-- Stateful uniquement si etat local necessaire
-- const constructors quand possible
+- Stateless for pure UI
+- Stateful only if local state is needed
+- const constructors when possible
 - Composition over inheritance
 
 ## Tests
@@ -93,29 +93,29 @@ blocTest<AuthBloc, AuthState>(
 );
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux dev..."_
-- _"Je veux flutter..."_
+- _"I want to dev..."_
+- _"I want to flutter..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: Clean Architecture Feature with BLoC
@@ -192,7 +192,7 @@ class TaskError extends TaskState {
 // presentation/bloc/task_bloc.dart
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final GetTasks getTasks;
-  TaskBloc({required this.getTasks}) : super(TaskInitial()) {
+  TaskBloc({required this.getTasks}): super(TaskInitial()) {
     on<LoadTasks>((event, emit) async {
       emit(TaskLoading());
       final result = await getTasks();
@@ -239,7 +239,7 @@ class TaskListPage extends StatelessWidget {
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 52
 title: "qa-claudemd"
-description: "Audit de conformite au CLAUDE.md du projet et aux conventions documentees du repo."
+description: "Audit of compliance with the project's CLAUDE.md and the repo's documented conventions."
 tags:
   - "agent"
   - "sonnet"
@@ -11,93 +11,93 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Audit de conformite au CLAUDE.md du projet et aux conventions documentees du repo.
+> Audit of compliance with the project's CLAUDE.md and the repo's documented conventions.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | sonnet |
+| **Model** | sonnet |
 | **Permission Mode** | plan |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | `Edit`, `Write`, `NotebookEdit` |
-| **Skills injectes** | _Aucun_ |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | `Edit`, `Write`, `NotebookEdit` |
+| **Injected skills** | _None_ |
 
-## Description detaillee
+## Detailed description
 
 # Agent QA-CLAUDEMD
 
-Audit de conformite au CLAUDE.md du projet et aux conventions documentees du repo.
+Audit of compliance with the project's CLAUDE.md and the repo's documented conventions.
 
-## Perimetre
+## Scope
 
-1. **CLAUDE.md** : workflow obligatoire respecte, anti-patterns evites, references doc a jour
-2. **Conventions de code** : nommage (camelCase, PascalCase, SCREAMING_SNAKE, kebab-case), structure de fichiers
-3. **Rules `.claude/rules/`** : application des regles activees par les paths modifies (typescript, react, security, testing...)
-4. **References cassees** : liens vers docs supprimees, agents/skills/commands retires
-5. **Compteurs incoherents** : si modification dans `.claude/`, verifier que `validate-counts.sh` passe
+1. **CLAUDE.md**: mandatory workflow respected, anti-patterns avoided, doc references up to date
+2. **Code conventions**: naming (camelCase, PascalCase, SCREAMING_SNAKE, kebab-case), file structure
+3. **Rules `.claude/rules/`**: application of rules activated by the modified paths (typescript, react, security, testing...)
+4. **Broken references**: links to deleted docs, removed agents/skills/commands
+5. **Inconsistent counters**: if a modification in `.claude/`, verify that `validate-counts.sh` passes
 
-## Quand intervenir
+## When to intervene
 
-Sub-agent dispatch par `qa-loop` durant la phase AUDIT, en parallele de `qa-security`, `qa-perf`, `wcag-audit`.
+Sub-agent dispatched by `qa-loop` during the AUDIT phase, in parallel with `qa-security`, `qa-perf`, `wcag-audit`.
 
-Peut aussi etre appele directement pour auditer la conformite avant un commit structurant.
+Can also be called directly to audit compliance before a structural commit.
 
-## Output attendu
+## Expected output
 
 ```
-RAPPORT QA-CLAUDEMD
+QA-CLAUDEMD REPORT
 
-CLAUDE.md         [OK / DEVIATION DETECTEE]
+CLAUDE.md         [OK / DEVIATION DETECTED]
 Conventions       [OK / N violations]
-Rules .claude/    [OK / N regles non respectees]
-References        [OK / N liens casses]
-Compteurs socle   [OK / N/A]
+Rules .claude/    [OK / N rules not respected]
+References        [OK / N broken links]
+Foundation counters   [OK / N/A]
 
-Findings P0/P1 (high-signal uniquement) :
-- [P0] fichier:ligne — Description courte de la violation, reference a la regle
-- [P1] fichier:ligne — Description, impact mesurable
+Findings P0/P1 (high-signal only):
+- [P0] file:line — Short description of the violation, reference to the rule
+- [P1] file:line — Description, measurable impact
 ```
 
-## Regles d'inclusion (high-signal)
+## Inclusion rules (high-signal)
 
-INCLURE :
-- Violation directe du workflow CLAUDE.md (commit sans audit, code sans test, etc.)
-- Anti-pattern explicitement liste dans CLAUDE.md (ex: `any` partout en TypeScript)
-- Reference cassee vers une commande/agent/skill inexistant
-- Compteur incoherent (apres modification dans `.claude/`)
+INCLUDE:
+- Direct violation of the CLAUDE.md workflow (commit without audit, code without test, etc.)
+- Anti-pattern explicitly listed in CLAUDE.md (e.g., `any` everywhere in TypeScript)
+- Broken reference to a nonexistent command/agent/skill
+- Inconsistent counter (after a modification in `.claude/`)
 
-EXCLURE :
-- Style/preference (espacement, ordre des imports, longueur de ligne)
-- Optimisations possibles non explicitement documentees
-- Suggestions hors du scope CLAUDE.md
+EXCLUDE:
+- Style/preference (spacing, import order, line length)
+- Possible optimizations not explicitly documented
+- Suggestions outside the CLAUDE.md scope
 
-## Contraintes
+## Constraints
 
-- Lecture seule. Ne jamais modifier de fichier, ne jamais lancer d'outil destructif.
-- Reference systematique au CLAUDE.md ou a la rule applicable dans chaque finding.
-- Si CLAUDE.md absent du projet, retourner `Conformite N/A — pas de CLAUDE.md a auditer`.
-- Severite stricte : pas de P2/P3 dans le rapport (le filtre high-signal s'applique).
+- Read-only. Never modify a file, never run a destructive tool.
+- Systematic reference to CLAUDE.md or to the applicable rule in each finding.
+- If CLAUDE.md is absent from the project, return `Compliance N/A — no CLAUDE.md to audit`.
+- Strict severity: no P2/P3 in the report (the high-signal filter applies).
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele sonnet
+## Characteristics of the sonnet model
 
 
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 44
 title: "qa-tech-debt"
-description: "Gestion et priorisation de la dette technique. Declencher quand l'utilisateur veut identifier, prioriser ou planifier le remboursement de la dette technique."
+description: "Technical debt management and prioritization. Trigger when the user wants to identify, prioritize, or plan the repayment of technical debt."
 tags:
   - "skill"
   - "fork"
@@ -11,78 +11,78 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Gestion et priorisation de la dette technique. Declencher quand l'utilisateur veut identifier, prioriser ou planifier le remboursement de la dette technique.
+> Technical debt management and prioritization. Trigger when the user wants to identify, prioritize, or plan the repayment of technical debt.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Mots-cles** | `tech`, `debt`, `dette technique`, `tech debt`, `refactoring priorite`, `code legacy`, `qualite du code` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Keywords** | `tech`, `debt`, `technical debt`, `tech debt`, `refactoring priority`, `legacy code`, `code quality` |
 
-## Description detaillee
+## Detailed description
 
 # Tech Debt Management
 
-## Declencheurs
+## Triggers
 
-- "dette technique"
+- "technical debt"
 - "tech debt"
-- "refactoring priorite"
-- "code legacy"
-- "qualite du code"
+- "refactoring priority"
+- "legacy code"
+- "code quality"
 
 ## Identification
 
-### Code Smells a Detecter
+### Code Smells to Detect
 
 ```bash
-# TODOs et FIXMEs
+# TODOs and FIXMEs
 grep -r "TODO\|FIXME\|HACK\|XXX" --include="*.ts" --include="*.tsx" src/
 
-# Fichiers volumineux
+# Large files
 find src -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -n | tail -20
 
-# Complexite (nesting)
+# Complexity (nesting)
 grep -r "if.*if.*if" --include="*.ts" src/
 
-# any en TypeScript
+# any in TypeScript
 grep -r ": any" --include="*.ts" --include="*.tsx" src/
 ```
 
-### Metriques
+### Metrics
 
-| Metrique | Seuil | Commande |
+| Metric | Threshold | Command |
 |----------|-------|----------|
-| LOC/fichier | < 500 | `wc -l` |
-| Fonctions/fichier | < 15 | grep |
-| Depth nesting | < 4 | analyse |
+| LOC/file | < 500 | `wc -l` |
+| Functions/file | < 15 | grep |
+| Nesting depth | < 4 | analysis |
 | Test coverage | > 70% | `npm test -- --coverage` |
 
-## Categorisation
+## Categorization
 
 ### Impact
 
-| Niveau | Description | Exemples |
+| Level | Description | Examples |
 |--------|-------------|----------|
-| Critique | Bloque le developpement | Couplage circulaire |
-| Eleve | Ralentit significativement | Duplication massive |
-| Moyen | Gene la maintenance | Nommage confus |
-| Faible | Cosmetique | Style inconsistant |
+| Critical | Blocks development | Circular coupling |
+| High | Significantly slows down | Massive duplication |
+| Medium | Hinders maintenance | Confusing naming |
+| Low | Cosmetic | Inconsistent style |
 
 ### Effort
 
-| Niveau | Temps | Exemples |
+| Level | Time | Examples |
 |--------|-------|----------|
-| Trivial | < 1h | Renommer variable |
-| Faible | < 1 jour | Extraire fonction |
-| Moyen | 1-5 jours | Restructurer module |
-| Eleve | > 1 semaine | Rewrite composant |
+| Trivial | < 1h | Rename variable |
+| Low | < 1 day | Extract function |
+| Medium | 1-5 days | Restructure module |
+| High | > 1 week | Rewrite component |
 
-## Priorisation
+## Prioritization
 
-### Matrice Impact/Effort
+### Impact/Effort Matrix
 
 ```
 Impact
@@ -95,65 +95,65 @@ Impact
   +-------------------------> Effort
 ```
 
-## Plan de Remediation
+## Remediation Plan
 
 ### Template
 
 ```markdown
-## Item: [Nom]
+## Item: [Name]
 
-**Priorite**: P[1-4]
-**Impact**: [Critique/Eleve/Moyen/Faible]
-**Effort**: [Trivial/Faible/Moyen/Eleve]
+**Priority**: P[1-4]
+**Impact**: [Critical/High/Medium/Low]
+**Effort**: [Trivial/Low/Medium/High]
 
 ### Description
-[Description du probleme]
+[Description of the problem]
 
-### Fichiers concernes
+### Files concerned
 - path/to/file.ts:L42
 
-### Solution proposee
-[Approche de refactoring]
+### Proposed solution
+[Refactoring approach]
 
-### Criteres de succes
-- [ ] Tests passent
-- [ ] Pas de regression
-- [ ] Metriques ameliorees
+### Success criteria
+- [ ] Tests pass
+- [ ] No regression
+- [ ] Improved metrics
 ```
 
 ## Workflow
 
-1. **Identifier** - Scanner le codebase
-2. **Categoriser** - Impact et effort
-3. **Prioriser** - Matrice de decision
-4. **Planifier** - Integrer au backlog
-5. **Executer** - Refactoring incremental
-6. **Valider** - Tests et metriques
+1. **Identify** - Scan the codebase
+2. **Categorize** - Impact and effort
+3. **Prioritize** - Decision matrix
+4. **Plan** - Integrate into the backlog
+5. **Execute** - Incremental refactoring
+6. **Validate** - Tests and metrics
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux tech..."_
-- _"Je veux debt..."_
-- _"Je veux dette technique..."_
+- _"I want to tech..."_
+- _"I want to debt..."_
+- _"I want to technical debt..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: Tech Debt Inventory
@@ -232,7 +232,7 @@ Outdated dependencies:   12 -> target 0
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

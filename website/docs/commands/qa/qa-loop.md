@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "/qa:qa-loop"
-description: "Boucle autonome AUDIT (parallele) → VALIDATE → FIX → VERIFY → CHECK avec criteres d'arret."
+description: "Autonomous loop AUDIT (parallel) → VALIDATE → FIX → VERIFY → CHECK with stopping criteria."
 tags:
   - "qa"
   - "command"
@@ -13,121 +13,121 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--qa">QA</span>
 
 
-# Agent QA-LOOP
+# QA-LOOP Agent
 
-Boucle autonome AUDIT (parallele) → VALIDATE → FIX → VERIFY → CHECK avec criteres d'arret.
+Autonomous loop AUDIT (parallel) → VALIDATE → FIX → VERIFY → CHECK with stopping criteria.
 
-Aligne sur le pattern Anthropic 2026 (plugin officiel `code-review`) :
-- Phase AUDIT en parallele (4 sub-agents : qa-security, qa-perf, wcag-audit, qa-claudemd)
-- Phase VALIDATE filtre les faux positifs (1 sub-agent par finding)
-- Filtre high-signal : exclut nitpicks/style
-- Auto-scope `git diff main...HEAD` par defaut
+Aligned with the Anthropic 2026 pattern (official `code-review` plugin):
+- AUDIT phase in parallel (4 sub-agents: qa-security, qa-perf, wcag-audit, qa-claudemd)
+- VALIDATE phase filters out false positives (1 sub-agent per finding)
+- High-signal filter: excludes nitpicks/style
+- Auto-scope `git diff main...HEAD` by default
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Goal
 
-Executer une boucle continue d'amelioration qualite : auditer le projet en parallele,
-valider les findings (filtre faux positifs), corriger les problemes P0/P1 high-signal,
-verifier les tests, et recommencer jusqu'a atteindre le score cible.
+Run a continuous quality improvement loop: audit the project in parallel,
+validate findings (false-positive filter), fix high-signal P0/P1 issues,
+verify tests, and repeat until the target score is reached.
 
-## Parametres (extraire de `&lt;arguments&gt;`)
+## Parameters (extract from `&lt;arguments&gt;`)
 
-- **Score cible** : score minimum pour arreter (defaut: 90/100)
-- **Max iterations** : nombre maximum de cycles (defaut: 5)
-- **Domaines** : securite, perf, a11y, claudemd (defaut: tous)
-- **Severite** : P0+P1 (defaut), ou P0 uniquement
-- **Scope** : `git diff main...HEAD` par defaut, ou chemin/glob/`--full` explicite
+- **Target score**: minimum score to stop (default: 90/100)
+- **Max iterations**: maximum number of cycles (default: 5)
+- **Domains**: security, perf, a11y, claudemd (default: all)
+- **Severity**: P0+P1 (default), or P0 only
+- **Scope**: `git diff main...HEAD` by default, or explicit path/glob/`--full`
 
 ## Flags
 
-| Flag | Effet |
-|------|-------|
-| `--audit-only` | Audit + rapport, **pas de FIX** (mode lecture seule, equivalent plugin Anthropic) |
-| `--comment` | Post inline sur la PR courante via `gh pr comment` (necessite gh + PR ouverte) |
+| Flag | Effect |
+|------|--------|
+| `--audit-only` | Audit + report, **no FIX** (read-only mode, equivalent to the Anthropic plugin) |
+| `--comment` | Post inline on the current PR via `gh pr comment` (requires gh + open PR) |
 
 ## Workflow
 
 ```
-AUDIT (4 sub-agents paralleles) → VALIDATE (filtre faux positifs)
-  → FILTER (high-signal P0/P1 uniquement) → FIX (sauf --audit-only)
-  → VERIFY (tests) → CHECK (criteres) → BOUCLE ou STOP
+AUDIT (4 parallel sub-agents) → VALIDATE (false-positive filter)
+  → FILTER (high-signal P0/P1 only) → FIX (unless --audit-only)
+  → VERIFY (tests) → CHECK (criteria) → LOOP or STOP
 ```
 
-1. **AUDIT** : 4 sub-agents Task en parallele (qa-security/qa-perf/wcag-audit/qa-claudemd)
-2. **VALIDATE** : 1 sub-agent par finding pour confirmer ou rejeter
-3. **FILTER** : exclut nitpicks/style, ne garde que P0/P1 high-signal
-4. **FIX** : corriger P0 puis P1 avec TDD, commits atomiques (skippe si `--audit-only`)
-5. **VERIFY** : tests complets, lint, type-check — revert si regression
-6. **CHECK** : score &gt;= cible ET 0 P0/P1 → STOP, sinon → AUDIT
+1. **AUDIT**: 4 Task sub-agents in parallel (qa-security/qa-perf/wcag-audit/qa-claudemd)
+2. **VALIDATE**: 1 sub-agent per finding to confirm or reject
+3. **FILTER**: excludes nitpicks/style, keeps only high-signal P0/P1
+4. **FIX**: fix P0 then P1 with TDD, atomic commits (skipped if `--audit-only`)
+5. **VERIFY**: full tests, lint, type-check — revert on regression
+6. **CHECK**: score &gt;= target AND 0 P0/P1 → STOP, otherwise → AUDIT
 
-## Output attendu
+## Expected output
 
-1. **Par iteration** : tableau scores par domaine, findings bruts vs confirmes, fixes appliques
-2. **Rapport final** : score initial → final, fixes total, faux positifs filtres, problemes restants
-3. **Commits** : un par fix, format `fix(domaine): description`
-4. **(`--comment`)** : commentaires inline postes sur la PR
+1. **Per iteration**: scores table per domain, raw vs confirmed findings, applied fixes
+2. **Final report**: initial → final score, total fixes, false positives filtered out, remaining issues
+3. **Commits**: one per fix, format `fix(domain): description`
+4. **(`--comment`)**: inline comments posted on the PR
 
-## Sub-agents lies (dispatchees par AUDIT)
+## Related sub-agents (dispatched by AUDIT)
 
-| Sub-agent | Modele | Focus |
-|-----------|--------|-------|
+| Sub-agent | Model | Focus |
+|-----------|-------|-------|
 | `qa-security` | Opus | OWASP Top 10, secrets, injections |
 | `qa-perf` | Sonnet | N+1, bundle, Core Web Vitals |
 | `wcag-audit` | Sonnet | WCAG 2.1 AA |
-| `qa-claudemd` | Sonnet | Conformite CLAUDE.md + conventions repo |
+| `qa-claudemd` | Sonnet | CLAUDE.md compliance + repo conventions |
 
-## Agents lies (orchestration)
+## Related agents (orchestration)
 
 | Agent | Usage |
 |-------|-------|
-| `/qa:qa-audit` | Audit complet initial (alternative single-agent) |
-| `/qa:qa-security` | Audit securite approfondi (hors loop) |
-| `/qa:qa-perf` | Audit performance approfondi (hors loop) |
-| `/qa:wcag-audit` | Audit accessibilite approfondi (hors loop) |
-| `/dev:dev-tdd` | Cycle TDD pour les fixes |
+| `/qa:qa-audit` | Initial full audit (single-agent alternative) |
+| `/qa:qa-security` | In-depth security audit (outside the loop) |
+| `/qa:qa-perf` | In-depth performance audit (outside the loop) |
+| `/qa:wcag-audit` | In-depth accessibility audit (outside the loop) |
+| `/dev:dev-tdd` | TDD cycle for fixes |
 
-## Exemples d'utilisation
+## Usage examples
 
 ```
-/qa:qa-loop                              # Defaut: score 90, max 5 iterations, scope diff
-/qa:qa-loop "score 95"                   # Score cible 95/100
-/qa:qa-loop "securite+perf, max 3"       # 2 domaines, 3 iterations max
-/qa:qa-loop "P0 uniquement"              # Ne corriger que les critiques
-/qa:qa-loop --audit-only                 # Audit + rapport, pas de fix
-/qa:qa-loop --audit-only --comment       # Replique fidele du plugin Anthropic code-review
-/qa:qa-loop --full                       # Audit du repo entier (ignore le diff)
+/qa:qa-loop                              # Default: score 90, max 5 iterations, diff scope
+/qa:qa-loop "score 95"                   # Target score 95/100
+/qa:qa-loop "security+perf, max 3"       # 2 domains, 3 iterations max
+/qa:qa-loop "P0 only"                    # Fix critical issues only
+/qa:qa-loop --audit-only                 # Audit + report, no fix
+/qa:qa-loop --audit-only --comment       # Faithful replica of the Anthropic code-review plugin
+/qa:qa-loop --full                       # Audit the entire repo (ignore the diff)
 ```
 
 ---
 
-IMPORTANT: Phase AUDIT lance les 4 sub-agents Task **en parallele dans un seul message**.
+IMPORTANT: AUDIT phase launches the 4 Task sub-agents **in parallel in a single message**.
 
-IMPORTANT: Phase VALIDATE est obligatoire — aucun fix sans validation prealable.
+IMPORTANT: VALIDATE phase is mandatory — no fix without prior validation.
 
-IMPORTANT: Filtre high-signal strict — un finding sans impact mesurable n'apparait pas dans le rapport.
+IMPORTANT: Strict high-signal filter — a finding without measurable impact does not appear in the report.
 
-IMPORTANT: Auto-scope `git diff main...HEAD` par defaut, jamais audit du repo entier sans demande explicite.
+IMPORTANT: Auto-scope `git diff main...HEAD` by default, never audit the entire repo without explicit request.
 
-IMPORTANT: Separer clairement la phase AUDIT (lecture) de la phase FIX (ecriture).
+IMPORTANT: Clearly separate the AUDIT phase (read) from the FIX phase (write).
 
-IMPORTANT: En mode `--audit-only`, ne JAMAIS modifier le code.
+IMPORTANT: In `--audit-only` mode, NEVER modify the code.
 
-IMPORTANT: Arreter immediatement si un fix introduit une regression.
+IMPORTANT: Stop immediately if a fix introduces a regression.
 
-YOU MUST produire un rapport avec scores a chaque iteration.
+YOU MUST produce a report with scores at every iteration.
 
-NEVER depasser le nombre maximum d'iterations.
+NEVER exceed the maximum number of iterations.
 
-NEVER corriger les P2/P3 — ils n'apparaissent meme plus dans le rapport (filtre high-signal).
+NEVER fix P2/P3 — they no longer even appear in the report (high-signal filter).
 
-Think hard about l'ordre optimal des fixes pour maximiser l'impact et minimiser les risques de regression.
+Think hard about the optimal order of fixes to maximize impact and minimize regression risk.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes QA](/docs/commands/qa)
-- [Toutes les commandes](/docs/commands)
+- [Back to QA commands](/docs/commands/qa)
+- [All commands](/docs/commands)

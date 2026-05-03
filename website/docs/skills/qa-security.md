@@ -1,7 +1,7 @@
 ---
 sidebar_position: 43
 title: "qa-security"
-description: "Effectuer un audit de sécurité basé sur OWASP. Utiliser quand l'utilisateur veut vérifier la sécurité, chercher des vulnérabilités, ou avant un déploiement en production."
+description: "Perform a security audit based on OWASP. Use when the user wants to verify security, look for vulnerabilities, or before a production deployment."
 tags:
   - "skill"
   - "fork"
@@ -11,115 +11,115 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Effectuer un audit de sécurité basé sur OWASP. Utiliser quand l'utilisateur veut vérifier la sécurité, chercher des vulnérabilités, ou avant un déploiement en production.
+> Perform a security audit based on OWASP. Use when the user wants to verify security, look for vulnerabilities, or before a production deployment.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Mots-cles** | `security` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Keywords** | `security` |
 
-## Description detaillee
+## Detailed description
 
-# Audit de Sécurité
+# Security Audit
 
-## Objectif
+## Objective
 
-Identifier les vulnérabilités de sécurité basées sur OWASP Top 10.
+Identify security vulnerabilities based on OWASP Top 10.
 
 ## Instructions
 
-### 1. Scan automatisé
+### 1. Automated scan
 
 ```bash
-# Audit des dépendances npm
+# npm dependency audit
 npm audit --audit-level=moderate
 
-# Recherche de secrets
+# Secret search
 npx secretlint "**/*"
 
-# Analyse statique sécurité
+# Static security analysis
 npx eslint --plugin security src/
 ```
 
-### 2. Checklist OWASP Top 10
+### 2. OWASP Top 10 Checklist
 
 #### A01 - Broken Access Control
-- [ ] Vérification des autorisations sur chaque endpoint
-- [ ] Pas d'IDOR (accès direct via ID prévisibles)
-- [ ] CORS correctement configuré
-- [ ] Principe du moindre privilège
+- [ ] Authorization checks on every endpoint
+- [ ] No IDOR (direct access via predictable IDs)
+- [ ] CORS correctly configured
+- [ ] Principle of least privilege
 
 #### A02 - Cryptographic Failures
-- [ ] Données sensibles chiffrées (repos + transit)
-- [ ] Pas de secrets dans le code
-- [ ] Algorithmes de hash sécurisés (bcrypt, argon2)
-- [ ] TLS/HTTPS forcé
+- [ ] Sensitive data encrypted (at rest + in transit)
+- [ ] No secrets in code
+- [ ] Secure hash algorithms (bcrypt, argon2)
+- [ ] TLS/HTTPS enforced
 
 #### A03 - Injection
-- [ ] SQL: Requêtes paramétrées / ORM
-- [ ] XSS: Échappement des outputs HTML
-- [ ] Command injection: Pas de shell avec input user
-- [ ] NoSQL: Validation des requêtes
+- [ ] SQL: Parameterized queries / ORM
+- [ ] XSS: HTML output escaping
+- [ ] Command injection: No shell with user input
+- [ ] NoSQL: Query validation
 
 #### A04 - Insecure Design
-- [ ] Validation côté serveur (pas seulement client)
-- [ ] Rate limiting sur endpoints sensibles
-- [ ] Séparation des environnements
+- [ ] Server-side validation (not just client)
+- [ ] Rate limiting on sensitive endpoints
+- [ ] Environment separation
 
 #### A05 - Security Misconfiguration
-- [ ] Headers de sécurité (CSP, X-Frame-Options)
-- [ ] Pas de stack traces en production
-- [ ] Permissions fichiers correctes
+- [ ] Security headers (CSP, X-Frame-Options)
+- [ ] No stack traces in production
+- [ ] Correct file permissions
 
 #### A06 - Vulnerable Components
-- [ ] `npm audit` sans vulnérabilités critiques
-- [ ] Dépendances maintenues et à jour
+- [ ] `npm audit` with no critical vulnerabilities
+- [ ] Dependencies maintained and up to date
 
 #### A07 - Authentication Failures
-- [ ] Mots de passe hashés correctement
-- [ ] Protection contre brute force
-- [ ] Sessions sécurisées (httpOnly, secure, sameSite)
+- [ ] Passwords hashed correctly
+- [ ] Protection against brute force
+- [ ] Secure sessions (httpOnly, secure, sameSite)
 
 #### A08 - Data Integrity Failures
-- [ ] Validation des données entrantes
-- [ ] Désérialisation sécurisée
+- [ ] Validation of incoming data
+- [ ] Secure deserialization
 
 #### A09 - Logging Failures
-- [ ] Logs des événements de sécurité
-- [ ] Pas de données sensibles dans les logs
+- [ ] Logs of security events
+- [ ] No sensitive data in logs
 
 #### A10 - SSRF
-- [ ] Validation des URLs utilisateur
-- [ ] Whitelist des domaines autorisés
+- [ ] Validation of user URLs
+- [ ] Whitelist of allowed domains
 
-### 3. Patterns de recherche
+### 3. Search patterns
 
 ```bash
-# Secrets potentiels
+# Potential secrets
 grep -rn "password\s*=" --include="*.ts"
 grep -rn "api_key\s*=" --include="*.ts"
 grep -rn "secret\s*=" --include="*.ts"
 
-# SQL Injection potentielle
+# Potential SQL Injection
 grep -rn "query.*\$\{" --include="*.ts"
 grep -rn "execute.*\+" --include="*.ts"
 
-# XSS potentiel
+# Potential XSS
 grep -rn "innerHTML" --include="*.tsx"
 grep -rn "dangerouslySetInnerHTML" --include="*.tsx"
 
-# Eval dangereux
+# Dangerous eval
 grep -rn "eval(" --include="*.ts"
 grep -rn "new Function(" --include="*.ts"
 ```
 
-### 4. Headers de sécurité recommandés
+### 4. Recommended security headers
 
 ```typescript
-// Express avec Helmet
+// Express with Helmet
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -133,76 +133,76 @@ app.use(helmet({
 }));
 ```
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Rapport de Sécurité
+## Security Report
 
-### Résumé
-- **Niveau de risque global**: [Critique/Élevé/Moyen/Faible]
-- **Vulnérabilités trouvées**: X
-- **Dépendances vulnérables**: Y
+### Summary
+- **Overall risk level**: [Critical/High/Medium/Low]
+- **Vulnerabilities found**: X
+- **Vulnerable dependencies**: Y
 
-### Vulnérabilités critiques
-| Sévérité | Catégorie | Fichier:Ligne | Description | Remediation |
-|----------|-----------|---------------|-------------|-------------|
-| CRITIQUE | A03 | auth.ts:45 | SQL injection | Requête paramétrée |
+### Critical vulnerabilities
+| Severity | Category | File:Line | Description | Remediation |
+|----------|----------|-----------|-------------|-------------|
+| CRITICAL | A03 | auth.ts:45 | SQL injection | Parameterized query |
 
-### Vulnérabilités importantes
+### Important vulnerabilities
 [...]
 
-### Recommandations prioritaires
-1. [Action immédiate]
-2. [Court terme]
-3. [Moyen terme]
+### Priority recommendations
+1. [Immediate action]
+2. [Short term]
+3. [Medium term]
 
-### Dépendances à mettre à jour
-| Package | Version | Vulnérabilité | Sévérité |
+### Dependencies to update
+| Package | Version | Vulnerability | Severity |
 |---------|---------|---------------|----------|
 | lodash | 4.17.19 | Prototype pollution | High |
 ```
 
-## Règles
+## Rules
 
-- IMPORTANT: Vérifier les 10 catégories OWASP
-- IMPORTANT: Prioriser par sévérité
-- YOU MUST proposer des remédiations concrètes
-- NEVER ignorer les vulnérabilités critiques
+- IMPORTANT: Check all 10 OWASP categories
+- IMPORTANT: Prioritize by severity
+- YOU MUST propose concrete remediations
+- NEVER ignore critical vulnerabilities
 
-Think hard sur chaque vecteur d'attaque potentiel.
+Think hard about every potential attack vector.
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux security..."_
+- _"I want to security..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
-### 1. Exemple d'audit de sécurité
+### 1. Security audit example
 
-# Exemple d'audit de sécurité
+# Security audit example
 
-## Contexte
-Audit de sécurité d'une application Node.js/Express avant mise en production.
+## Context
+Security audit of a Node.js/Express application before production release.
 
-## Scan automatisé
+## Automated scan
 
 ### npm audit
 ```bash
@@ -219,7 +219,7 @@ found 3 vulnerabilities (1 moderate, 2 high)
 └───────────────┴──────────────────────────────────────────────────────┘
 ```
 
-### Recherche de secrets
+### Secret scanning
 ```bash
 $ npx secretlint "**/*"
 
@@ -232,19 +232,19 @@ src/services/payment.ts:12
 ✖ 2 problems (2 errors, 0 warnings)
 ```
 
-## Analyse manuelle
+## Manual analysis
 
 ### A01 - Broken Access Control
 
 **[CRITICAL] `src/routes/users.ts:34`**
 ```typescript
-// ❌ IDOR - Accès direct sans vérification
+// ❌ IDOR - Direct access without verification
 router.get('/users/:id', async (req, res) => {
   const user = await User.findById(req.params.id);
-  res.json(user); // N'importe qui peut accéder à n'importe quel user
+  res.json(user); // Anyone can access any user
 });
 
-// ✅ Correction
+// ✅ Fix
 router.get('/users/:id', authenticate, async (req, res) => {
   if (req.user.id !== req.params.id && !req.user.isAdmin) {
     return res.status(403).json({ error: 'Forbidden' });
@@ -258,10 +258,10 @@ router.get('/users/:id', authenticate, async (req, res) => {
 
 **[CRITICAL] `src/config/database.ts:5`**
 ```typescript
-// ❌ Secret hardcodé
+// ❌ Hardcoded secret
 const DB_PASSWORD = "SuperSecret123!";
 
-// ✅ Correction
+// ✅ Fix
 const DB_PASSWORD = process.env.DB_PASSWORD;
 ```
 
@@ -272,7 +272,7 @@ const DB_PASSWORD = process.env.DB_PASSWORD;
 // ❌ SQL Injection
 const query = `SELECT * FROM products WHERE name LIKE '%${searchTerm}%'`;
 
-// ✅ Correction
+// ✅ Fix
 const query = 'SELECT * FROM products WHERE name LIKE ?';
 db.query(query, [`%${searchTerm}%`]);
 ```
@@ -282,19 +282,19 @@ db.query(query, [`%${searchTerm}%`]);
 // ❌ XSS via dangerouslySetInnerHTML
 <div dangerouslySetInnerHTML={{ __html: comment.content }} />
 
-// ✅ Correction
+// ✅ Fix
 import DOMPurify from 'dompurify';
 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.content) }} />
 ```
 
 ### A05 - Security Misconfiguration
 
-**[MEDIUM] Headers de sécurité manquants**
+**[MEDIUM] Missing security headers**
 ```typescript
-// ❌ Pas de headers de sécurité
+// ❌ No security headers
 app.use(express.json());
 
-// ✅ Correction
+// ✅ Fix
 import helmet from 'helmet';
 app.use(helmet());
 ```
@@ -303,74 +303,74 @@ app.use(helmet());
 
 **[HIGH] `src/services/auth.ts:45`**
 ```typescript
-// ❌ Hash MD5 (obsolète)
+// ❌ MD5 hash (obsolete)
 const hash = crypto.createHash('md5').update(password).digest('hex');
 
-// ✅ Correction
+// ✅ Fix
 import bcrypt from 'bcrypt';
 const hash = await bcrypt.hash(password, 12);
 ```
 
-## Rapport final
+## Final report
 
-### Résumé
-- **Niveau de risque global**: CRITIQUE
-- **Vulnérabilités trouvées**: 8
-- **Dépendances vulnérables**: 3
+### Summary
+- **Overall risk level**: CRITICAL
+- **Vulnerabilities found**: 8
+- **Vulnerable dependencies**: 3
 
-### Vulnérabilités par sévérité
+### Vulnerabilities by severity
 
-| Sévérité | Quantité | Catégories |
+| Severity | Count | Categories |
 |----------|----------|------------|
-| Critique | 3 | A01, A02, A03 |
-| Élevée | 3 | A03, A07 |
-| Moyenne | 2 | A05, A06 |
+| Critical | 3 | A01, A02, A03 |
+| High | 3 | A03, A07 |
+| Medium | 2 | A05, A06 |
 
-### Actions immédiates (P0)
+### Immediate actions (P0)
 
-1. **Supprimer les secrets du code**
+1. **Remove secrets from code**
    - `src/config/database.ts:5`
    - `src/services/payment.ts:12`
-   - Utiliser variables d'environnement
+   - Use environment variables
 
-2. **Corriger l'injection SQL**
+2. **Fix SQL injection**
    - `src/services/search.ts:23`
-   - Utiliser requêtes paramétrées
+   - Use parameterized queries
 
-3. **Corriger l'IDOR**
+3. **Fix the IDOR**
    - `src/routes/users.ts:34`
-   - Ajouter vérification d'autorisation
+   - Add authorization checks
 
-### Actions court terme (P1)
+### Short-term actions (P1)
 
-4. **Mettre à jour les dépendances**
+4. **Update dependencies**
    ```bash
    npm update lodash
    npm audit fix
    ```
 
-5. **Améliorer le hashing des mots de passe**
-   - Migrer de MD5 vers bcrypt
+5. **Improve password hashing**
+   - Migrate from MD5 to bcrypt
 
-6. **Ajouter Helmet pour les headers**
+6. **Add Helmet for headers**
 
-### Actions moyen terme (P2)
+### Medium-term actions (P2)
 
-7. **Implémenter rate limiting**
-8. **Ajouter CSP strict**
-9. **Audit des logs (pas de données sensibles)**
+7. **Implement rate limiting**
+8. **Add strict CSP**
+9. **Log audit (no sensitive data)**
 
-## Commandes de remediation
+## Remediation commands
 
 ```bash
-# Mettre à jour les dépendances vulnérables
+# Update vulnerable dependencies
 npm update lodash
 npm audit fix --force
 
-# Installer les dépendances de sécurité
+# Install security dependencies
 npm install helmet bcrypt dompurify
 
-# Scanner après corrections
+# Scan after fixes
 npm audit
 npx secretlint "**/*"
 ```
@@ -379,7 +379,7 @@ npx secretlint "**/*"
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

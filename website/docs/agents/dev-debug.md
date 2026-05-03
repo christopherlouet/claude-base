@@ -1,7 +1,7 @@
 ---
 sidebar_position: 11
 title: "dev-debug"
-description: "Diagnostic et resolution de bugs. Le skill `dev-debug` fournit la methodologie detaillee."
+description: "Bug diagnostic and resolution. The `dev-debug` skill provides the detailed methodology."
 tags:
   - "agent"
   - "opus"
@@ -11,65 +11,65 @@ tags:
 
 <span className="badge badge--opus">Opus</span>
 
-> Diagnostic et resolution de bugs. Le skill `dev-debug` fournit la methodologie detaillee.
+> Bug diagnostic and resolution. The `dev-debug` skill provides the detailed methodology.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | opus |
+| **Model** | opus |
 | **Permission Mode** | default |
-| **Outils autorises** | `Read`, `Grep`, `Glob`, `Bash` |
-| **Outils interdits** | _Aucun_ |
-| **Skills injectes** | `dev-debug` |
+| **Allowed tools** | `Read`, `Grep`, `Glob`, `Bash` |
+| **Disallowed tools** | _None_ |
+| **Injected skills** | `dev-debug` |
 
-## Description detaillee
+## Detailed description
 
 # Agent DEV-DEBUG
 
-Diagnostic et resolution de bugs. Le skill `dev-debug` fournit la methodologie detaillee.
+Bug diagnostic and resolution. The `dev-debug` skill provides the detailed methodology.
 
 ## Workflow
 
-1. **Reproduire** : Confirmer, isoler, collecter infos (symptome, env, frequence)
-2. **Analyser** : Logs, console, network, stack trace, git history
-3. **Hypotheser** : Matrice hypotheses (probabilite + test de validation)
-4. **Investiguer** : Technique des 5 Whys, git bisect pour regressions
-5. **Identifier** : Root cause, pas les symptomes
+1. **Reproduce**: Confirm, isolate, collect info (symptom, env, frequency)
+2. **Analyze**: Logs, console, network, stack trace, git history
+3. **Hypothesize**: Hypothesis matrix (probability + validation test)
+4. **Investigate**: 5 Whys technique, git bisect for regressions
+5. **Identify**: Root cause, not symptoms
 
-## Output attendu
+## Expected output
 
-- **Symptome** : Description du comportement observe
-- **Root cause** : Cause fondamentale identifiee
-- **Fichiers impactes** : Liste avec descriptions
-- **Correction proposee** : Changements a effectuer
-- **Test de non-regression** : Test qui aurait detecte le bug
+- **Symptom**: Description of observed behavior
+- **Root cause**: Identified fundamental cause
+- **Impacted files**: List with descriptions
+- **Proposed fix**: Changes to apply
+- **Non-regression test**: Test that would have detected the bug
 
-## Contraintes
+## Constraints
 
-- Ne jamais corriger les symptomes, trouver la cause racine
-- Documenter chaque hypothese testee
-- Proposer un test qui aurait detecte le bug
+- Never fix symptoms, find the root cause
+- Document each tested hypothesis
+- Propose a test that would have detected the bug
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele opus
+## Characteristics of the opus model
 
 
-**Opus** est optimise pour :
-- Taches necessitant le maximum de capacites
-- Analyses tres complexes
-- Cas critiques
+**Opus** is optimized for:
+- Tasks requiring maximum capabilities
+- Very complex analyses
+- Critical cases
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 12
 title: "/dev:dev-hook"
-description: "Creer un custom hook React avec tests et documentation."
+description: "Create a React custom hook with tests and documentation."
 tags:
   - "dev"
   - "command"
@@ -15,55 +15,55 @@ import CommandCard from '@site/src/components/CommandCard';
 
 # Agent DEV-HOOK
 
-Creer un custom hook React avec tests et documentation.
+Create a React custom hook with tests and documentation.
 
-## Contexte de la demande
+## Request context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Developper un custom hook React complet en suivant l'approche TDD :
-types d'abord, puis tests (RED), implementation (GREEN) et refactoring.
+Develop a complete React custom hook following the TDD approach:
+types first, then tests (RED), implementation (GREEN) and refactoring.
 
 ## Workflow
 
-- Definir le hook : quel probleme, quels parametres, que retourne-t-il, quels effets de bord
-- Definir les types (Options et Return) avec JSDoc
-- Ecrire les tests avec `renderHook` (initial state, success, errors, refetch, options change)
-- Implementer le hook (useState, useEffect, useCallback, useMemo)
-- Nettoyer les effets de bord (AbortController, clearTimeout, removeEventListener)
-- Verifier : types explicites, JSDoc avec @example, cleanup, gestion erreurs, memoisation, pas de memory leaks
+- Define the hook: what problem, what parameters, what does it return, what side effects
+- Define the types (Options and Return) with JSDoc
+- Write the tests with `renderHook` (initial state, success, errors, refetch, options change)
+- Implement the hook (useState, useEffect, useCallback, useMemo)
+- Clean up side effects (AbortController, clearTimeout, removeEventListener)
+- Verify: explicit types, JSDoc with @example, cleanup, error handling, memoization, no memory leaks
 
-## Output attendu
+## Expected output
 
-- `use[HookName].ts` - Hook principal avec types
-- `use[HookName].test.ts` - Tests complets
-- Export dans `index.ts`
-- Documentation avec usage, options et return
+- `use[HookName].ts` - Main hook with types
+- `use[HookName].test.ts` - Complete tests
+- Export in `index.ts`
+- Documentation with usage, options and return
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use |
 |-------|------------------|
-| `/dev:dev-component` | Composant utilisant le hook |
-| `/dev:dev-test` | Tests complementaires |
-| `/doc:doc-generate` | Documenter le hook |
-| `/qa:qa-perf` | Optimiser les performances |
+| `/dev:dev-component` | Component using the hook |
+| `/dev:dev-test` | Additional tests |
+| `/doc:doc-generate` | Document the hook |
+| `/qa:qa-perf` | Optimize performance |
 
 ---
 
-IMPORTANT: Toujours nettoyer les effets de bord (AbortController, clearTimeout, removeEventListener).
+IMPORTANT: Always clean up side effects (AbortController, clearTimeout, removeEventListener).
 
-YOU MUST typer les options et le retour explicitement.
+YOU MUST type the options and the return explicitly.
 
-NEVER oublier la gestion des erreurs et des etats de chargement.
+NEVER forget error handling and loading states.
 
-Think hard sur les dependances des useEffect et useCallback.
+Think hard about the dependencies of useEffect and useCallback.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes DEV](/docs/commands/dev)
-- [Toutes les commandes](/docs/commands)
+- [Back to DEV commands](/docs/commands/dev)
+- [All commands](/docs/commands)

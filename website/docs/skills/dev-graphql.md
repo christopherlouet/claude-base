@@ -1,7 +1,7 @@
 ---
 sidebar_position: 12
 title: "dev-graphql"
-description: "Developpement d'APIs GraphQL. Declencher quand l'utilisateur veut creer des schemas, resolvers, ou queries GraphQL."
+description: "GraphQL API development. Trigger when the user wants to create schemas, resolvers, or GraphQL queries."
 tags:
   - "skill"
   - "fork"
@@ -11,17 +11,17 @@ tags:
 
 <span className="badge" style={{backgroundColor: 'var(--model-haiku)', color: 'white'}}>Fork</span>
 
-> Developpement d'APIs GraphQL. Declencher quand l'utilisateur veut creer des schemas, resolvers, ou queries GraphQL.
+> GraphQL API development. Trigger when the user wants to create schemas, resolvers, or GraphQL queries.
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | fork |
-| **Outils autorises** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
-| **Mots-cles** | `dev`, `graphql` |
+| **Context** | fork |
+| **Allowed tools** | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| **Keywords** | `dev`, `graphql` |
 
-## Description detaillee
+## Detailed description
 
 # GraphQL Development
 
@@ -92,7 +92,7 @@ const userLoader = new DataLoader(async (ids: string[]) => {
   return ids.map(id => users.find(u => u.id === id));
 });
 
-// Dans le context
+// In the context
 context: ({ req }) => ({
   userLoader,
   postLoader: createPostLoader(),
@@ -128,29 +128,29 @@ function UserProfile({ userId }) {
 }
 ```
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-- _"Je veux dev..."_
-- _"Je veux graphql..."_
+- _"I want to dev..."_
+- _"I want to graphql..."_
 
-## Contexte fork
+## Context fork
 
 
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 
 
 ---
 
-## Exemples pratiques
+## Practical examples
 
 
 ### 1. Example: GraphQL Schema + Resolvers + Queries
@@ -282,7 +282,7 @@ query GetBooks($first: Int!, $after: String) {
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)

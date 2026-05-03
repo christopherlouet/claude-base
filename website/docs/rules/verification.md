@@ -1,19 +1,19 @@
 ---
 sidebar_position: 29
 title: "verification"
-description: "Toute implementation doit etre verifiee AVANT d'etre consideree comme terminee. Ne jamais presumer qu'un fix fonctionne sans le prouver."
+description: "Any implementation must be verified BEFORE being considered complete. Never assume a fix works without proving it."
 tags:
   - "rule"
   - "verification"
 ---
 
-# Regles: verification
+# Rules: verification
 
-> Toute implementation doit etre verifiee AVANT d'etre consideree comme terminee. Ne jamais presumer qu'un fix fonctionne sans le prouver.
+> Any implementation must be verified BEFORE being considered complete. Never assume a fix works without proving it.
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 - `**/*.ts`
 - `**/*.tsx`
@@ -24,157 +24,157 @@ Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
 - `**/*.dart`
 - `**/*.rs`
 
-## Regles detaillees
+## Detailed rules
 
 # Verification Before Completion
 
-## Principe
+## Principle
 
-Toute implementation doit etre verifiee AVANT d'etre consideree comme terminee.
-Ne jamais presumer qu'un fix fonctionne sans le prouver.
+Any implementation must be verified BEFORE being considered complete.
+Never assume a fix works without proving it.
 
-## Checklist de verification obligatoire
+## Mandatory verification checklist
 
-### Apres un fix de bug
-
-```
-[ ] Le bug original est reproduit
-[ ] Le fix corrige effectivement le probleme
-[ ] Les tests existants passent toujours
-[ ] Un test de non-regression est ajoute
-[ ] Pas d'effets de bord detectes
-```
-
-### Apres une nouvelle feature
+### After a bug fix
 
 ```
-[ ] La feature fonctionne comme specifie
-[ ] Les edge cases sont geres (null, vide, limites)
-[ ] Les tests couvrent le happy path ET les erreurs
-[ ] Le code compile/lint sans warning
-[ ] La feature n'a pas degrade les performances
+[ ] The original bug is reproduced
+[ ] The fix actually corrects the problem
+[ ] Existing tests still pass
+[ ] A non-regression test is added
+[ ] No side effects detected
 ```
 
-### Apres un refactoring
+### After a new feature
 
 ```
-[ ] Le comportement est identique avant/apres
-[ ] Les tests passent sans modification
-[ ] Pas de regression fonctionnelle
-[ ] Le code est effectivement plus simple/lisible
+[ ] The feature works as specified
+[ ] Edge cases are handled (null, empty, limits)
+[ ] Tests cover the happy path AND errors
+[ ] The code compiles/lints without warnings
+[ ] The feature has not degraded performance
 ```
 
-## Methode de verification
+### After a refactoring
 
-### 1. Verification automatisee
+```
+[ ] Behavior is identical before/after
+[ ] Tests pass without modification
+[ ] No functional regression
+[ ] The code is actually simpler/more readable
+```
+
+## Verification method
+
+### 1. Automated verification
 
 ```bash
-# Lancer les tests
-npm test           # ou pytest, go test, flutter test
+# Run the tests
+npm test           # or pytest, go test, flutter test
 
-# Verifier les types
-npm run typecheck  # ou mypy, go vet
+# Check types
+npm run typecheck  # or mypy, go vet
 
-# Lancer le linter
-npm run lint       # ou ruff, golangci-lint
+# Run the linter
+npm run lint       # or ruff, golangci-lint
 ```
 
-### 2. Verification manuelle
+### 2. Manual verification
 
-- Relire le diff complet (`git diff`)
-- Verifier que chaque changement est intentionnel
-- S'assurer qu'aucun debug/TODO n'est reste
-- Confirmer que les imports inutiles sont supprimes
+- Re-read the full diff (`git diff`)
+- Verify that each change is intentional
+- Make sure no debug/TODO is left behind
+- Confirm that unused imports are removed
 
-### 3. Defense en profondeur
+### 3. Defense in depth
 
-- Ajouter des assertions sur les invariants critiques
-- Valider les preconditions en entree de fonction
-- Logger les etats inattendus sans crasher
+- Add assertions on critical invariants
+- Validate preconditions at function entry
+- Log unexpected states without crashing
 
-## Gate Function (obligatoire avant toute affirmation de completion)
+## Gate Function (mandatory before any completion claim)
 
 ```
-AVANT de declarer un statut ou exprimer une satisfaction:
+BEFORE declaring a status or expressing satisfaction:
 
-1. IDENTIFIER: Quelle commande prouve cette affirmation ?
-2. EXECUTER: Lancer la commande COMPLETE (fresh, pas un run precedent)
-3. LIRE: Sortie complete, verifier le code retour, compter les erreurs
-4. CONFIRMER: La sortie confirme-t-elle l'affirmation ?
-   - Si NON: Donner le statut reel avec preuves
-   - Si OUI: Affirmer AVEC les preuves
-5. SEULEMENT ALORS: Faire l'affirmation
+1. IDENTIFY: Which command proves this claim?
+2. EXECUTE: Run the FULL command (fresh, not a previous run)
+3. READ: Full output, check the return code, count the errors
+4. CONFIRM: Does the output confirm the claim?
+   - If NO: Give the actual status with evidence
+   - If YES: Make the claim WITH the evidence
+5. ONLY THEN: Make the claim
 
-Sauter une etape = affirmation non verifiee
+Skipping a step = unverified claim
 ```
 
-## Red Flags — STOP immediat
+## Red Flags — STOP immediately
 
-| Signal d'alerte | Reaction |
+| Warning signal | Reaction |
 |-----------------|----------|
-| Utiliser "devrait", "probablement", "semble" | STOP — lancer la verification |
-| Exprimer une satisfaction avant verification ("Super!", "Parfait!", "Fait!") | STOP — evidence d'abord |
-| Sur le point de commit/push/PR sans verification | STOP — Gate Function |
-| Se fier au rapport de succes d'un sub-agent | STOP — verifier independamment |
-| Se contenter d'une verification partielle | STOP — partiel ne prouve rien |
-| "Juste cette fois" ou "Ca devrait marcher" | STOP — pas d'exception |
+| Using "should", "probably", "seems" | STOP — run the verification |
+| Expressing satisfaction before verification ("Great!", "Perfect!", "Done!") | STOP — evidence first |
+| About to commit/push/PR without verification | STOP — Gate Function |
+| Trusting the success report of a sub-agent | STOP — verify independently |
+| Settling for partial verification | STOP — partial proves nothing |
+| "Just this once" or "It should work" | STOP — no exception |
 
-## Table de preuve requise
+## Required evidence table
 
-| Affirmation | Preuve requise | Insuffisant |
+| Claim | Required evidence | Insufficient |
 |-------------|---------------|-------------|
-| "Les tests passent" | Sortie test: 0 echecs | Run precedent, "devrait passer" |
-| "Le linter est propre" | Sortie linter: 0 erreurs | Verification partielle |
-| "Le build reussit" | Commande build: exit 0 | "Le linter passe donc ca build" |
-| "Le bug est corrige" | Test du symptome original: passe | "J'ai change le code" |
-| "Les exigences sont remplies" | Checklist ligne par ligne | "Les tests passent" |
+| "Tests pass" | Test output: 0 failures | Previous run, "should pass" |
+| "Linter is clean" | Linter output: 0 errors | Partial verification |
+| "Build succeeds" | Build command: exit 0 | "Linter passes so it builds" |
+| "The bug is fixed" | Test of original symptom: passes | "I changed the code" |
+| "Requirements are met" | Line-by-line checklist | "Tests pass" |
 
-## Gate Operations Destructives
+## Destructive Operations Gate
 
-Avant toute operation qui supprime ou modifie en masse des donnees:
+Before any operation that deletes or mass-modifies data:
 
-| Operation | Verification obligatoire |
+| Operation | Mandatory verification |
 |-----------|-------------------------|
-| `DELETE FROM` / `TRUNCATE` | Compter les lignes affectees avec `SELECT COUNT(*)` d'abord |
-| `DROP TABLE` / `DROP DATABASE` | Confirmer avec l'utilisateur + backup |
-| `rm -rf` sur uploads/media/storage | Lister les fichiers d'abord, confirmer le nombre |
-| `prisma migrate reset` / `--force` | Backup de la DB avant execution |
-| Cleanup/purge de donnees | Dry-run d'abord (`SELECT` avant `DELETE`) |
+| `DELETE FROM` / `TRUNCATE` | Count affected rows with `SELECT COUNT(*)` first |
+| `DROP TABLE` / `DROP DATABASE` | Confirm with the user + backup |
+| `rm -rf` on uploads/media/storage | List the files first, confirm the count |
+| `prisma migrate reset` / `--force` | Backup the DB before execution |
+| Data cleanup/purge | Dry-run first (`SELECT` before `DELETE`) |
 
 ```
-AVANT une operation destructive:
-1. COMPTER: Combien d'elements seront affectes ?
-2. ECHANTILLONNER: Montrer 5 exemples a l'utilisateur
-3. CONFIRMER: Attendre validation explicite
-4. BACKUP: Creer une sauvegarde si possible
-5. EXECUTER: Lancer l'operation
-6. VERIFIER: Confirmer le resultat attendu
+BEFORE a destructive operation:
+1. COUNT: How many items will be affected?
+2. SAMPLE: Show 5 examples to the user
+3. CONFIRM: Wait for explicit validation
+4. BACKUP: Create a backup if possible
+5. EXECUTE: Run the operation
+6. VERIFY: Confirm the expected result
 ```
 
-IMPORTANT: Ne JAMAIS executer de DELETE/DROP/TRUNCATE/rm sur des donnees de production sans confirmation explicite de l'utilisateur.
+IMPORTANT: NEVER execute DELETE/DROP/TRUNCATE/rm on production data without explicit user confirmation.
 
-IMPORTANT: Toujours faire un dry-run (SELECT/ls) avant une suppression en masse.
+IMPORTANT: Always do a dry-run (SELECT/ls) before a mass deletion.
 
-## Regles
+## Rules
 
-IMPORTANT: Ne JAMAIS dire "c'est corrige" sans avoir lance les tests.
+IMPORTANT: NEVER say "it's fixed" without having run the tests.
 
-IMPORTANT: Toujours verifier le diff complet avant de commiter.
+IMPORTANT: Always verify the full diff before committing.
 
-NEVER presumer qu'un changement est safe. Le prouver.
+NEVER assume a change is safe. Prove it.
 
-NEVER exprimer de satisfaction ou de completion sans preuve fraiche.
+NEVER express satisfaction or completion without fresh evidence.
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)

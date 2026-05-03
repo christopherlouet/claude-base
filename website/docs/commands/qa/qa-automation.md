@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "/qa:qa-automation"
-description: "Mettre en place une strategie d'automatisation des tests complete."
+description: "Set up a comprehensive test automation strategy."
 tags:
   - "qa"
   - "command"
@@ -13,69 +13,69 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--qa">QA</span>
 
 
-# Agent QA-AUTOMATION
+# QA-AUTOMATION Agent
 
-Mettre en place une strategie d'automatisation des tests complete.
+Set up a comprehensive test automation strategy.
 
-## Contexte
+## Context
 `&lt;arguments&gt;`
 
-## Objectif
+## Objective
 
-Automatiser les tests a tous les niveaux (unitaires, integration, E2E) pour garantir la qualite et accelerer les cycles de release.
+Automate tests at all levels (unit, integration, E2E) to ensure quality and accelerate release cycles.
 
 ## Workflow
 
-- Evaluer la couverture et la pyramide de tests actuelle
-- Configurer le framework de tests unitaires (Vitest/Jest/Pytest)
-- Configurer les tests d'integration (Supertest, test containers)
-- Configurer les tests E2E (Playwright recommande)
-- Mettre en place le mocking (MSW)
-- Integrer dans le pipeline CI/CD (GitHub Actions)
-- Definir les metriques et seuils de qualite
+- Evaluate current coverage and test pyramid
+- Configure unit test framework (Vitest/Jest/Pytest)
+- Configure integration tests (Supertest, test containers)
+- Configure E2E tests (Playwright recommended)
+- Set up mocking (MSW)
+- Integrate into CI/CD pipeline (GitHub Actions)
+- Define quality metrics and thresholds
 
-## Output attendu
+## Expected output
 
-### Pyramide de tests
-- Unitaires (70-80%) : framework, config couverture
-- Integration (15-25%) : API, DB, services
-- E2E (5-10%) : parcours critiques
+### Test pyramid
+- Unit (70-80%): framework, coverage config
+- Integration (15-25%): API, DB, services
+- E2E (5-10%): critical user journeys
 
-### Configuration CI/CD
-- Pipeline avec tests parallelises
-- Rapports de couverture et artifacts
+### CI/CD configuration
+- Pipeline with parallelized tests
+- Coverage reports and artifacts
 
-### Metriques
-| Metrique | Cible |
-|----------|-------|
-| Couverture | &gt; 80% |
-| Tests passants | 100% |
-| Temps d'execution | &lt; 10 min |
+### Metrics
+| Metric | Target |
+|--------|--------|
+| Coverage | &gt; 80% |
+| Passing tests | 100% |
+| Execution time | &lt; 10 min |
 | Flaky tests | 0 |
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-testing-setup` | Configuration initiale |
-| `/dev:dev-tdd` | Developpement TDD |
-| `/ops:ops-ci` | Pipeline CI/CD |
-| `/qa:qa-perf` | Tests de performance |
+| `/dev:dev-testing-setup` | Initial configuration |
+| `/dev:dev-tdd` | TDD development |
+| `/ops:ops-ci` | CI/CD pipeline |
+| `/qa:qa-perf` | Performance tests |
 
 ---
 
-IMPORTANT: Maintenir la pyramide de tests - plus de tests unitaires que d'E2E.
+IMPORTANT: Maintain the test pyramid - more unit tests than E2E.
 
-YOU MUST utiliser des data-testid stables pour les tests E2E.
+YOU MUST use stable data-testid for E2E tests.
 
-NEVER avoir de tests interdependants - chaque test doit etre isole.
+NEVER have interdependent tests - each test must be isolated.
 
-Think hard sur le ratio effort/valeur avant d'automatiser un scenario.
+Think hard about the effort/value ratio before automating a scenario.
 
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes QA](/docs/commands/qa)
-- [Toutes les commandes](/docs/commands)
+- [Back to QA commands](/docs/commands/qa)
+- [All commands](/docs/commands)
