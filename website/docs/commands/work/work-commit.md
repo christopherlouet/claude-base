@@ -23,7 +23,7 @@ Prepare and perform a clean commit following conventions.
 ## Goal
 
 Create an atomic, well-documented commit compliant with Conventional Commits.
-The commit is the last step of the workflow: **EXPLORE -&gt; PLAN -&gt; CODE -&gt; COMMIT**
+The commit is the last step of the workflow: **EXPLORE -&gt; (BRAINSTORM) -&gt; SPECIFY -&gt; PLAN -&gt; TDD -&gt; AUDIT -&gt; COMMIT**
 
 ## Workflow
 

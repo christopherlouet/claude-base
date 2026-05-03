@@ -8,7 +8,7 @@ $ARGUMENTS
 ## Objective
 
 Create a complete and validatable implementation plan before writing code.
-Part of the workflow: **EXPLORE -> SPECIFY -> PLAN -> CODE -> COMMIT**
+Part of the workflow: **EXPLORE -> (BRAINSTORM) -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT**
 Use the templates in `.claude/templates/` (plan-template.md, tasks-template.md).
 
 ## Workflow

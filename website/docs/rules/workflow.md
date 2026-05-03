@@ -140,7 +140,7 @@ Prefer `/compact` over `/clear`: compaction keeps the essence of the context (de
 ```
 /work:work-flow-feature "description"
 # or manually (TDD mandatory):
-/work:work-explore -> /work:work-plan -> /dev:dev-tdd -> /qa:qa-loop "score 90" -> /work:work-pr
+/work:work-explore -> /work:work-specify -> /work:work-plan -> /dev:dev-tdd -> /qa:qa-loop "score 90" -> /work:work-pr
 ```
 
 ### Bug fix

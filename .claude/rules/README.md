@@ -35,7 +35,7 @@ Modular rules applied automatically based on the modified files (path-specific r
 | `typescript` | `**/*.ts`, `**/*.tsx`, `**/*.mts` | Strict mode, no any, interfaces |
 | `verification` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, ... | 4-phase verification before completion |
 | `vue` | `**/*.vue`, `**/composables/**`, `**/stores/**`, `**/nuxt.config.*` | Composition API, Pinia, Nuxt 3+ |
-| `workflow` | _(global)_ | Explore → Plan → TDD → Commit |
+| `workflow` | _(global)_ | Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit |
 
 ## Rule priority order
 
