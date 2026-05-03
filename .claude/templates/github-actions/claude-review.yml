@@ -1,19 +1,19 @@
-# Claude Code Action - Review automatique des PRs
+# Claude Code Action - Automatic PR review
 # Source: https://github.com/anthropics/claude-code-action
 #
-# Prerequis: une cle API Anthropic (pay-per-use). Le plan Max (OAuth) ne
-#   fonctionne pas en CI car il necessite une authentification interactive.
-#   Alternatives: Amazon Bedrock, Google Vertex AI, ou Microsoft Foundry.
+# Prerequisites: an Anthropic API key (pay-per-use). The Max plan (OAuth) does not
+#   work in CI because it requires interactive authentication.
+#   Alternatives: Amazon Bedrock, Google Vertex AI, or Microsoft Foundry.
 #
 # Setup:
-#   1. Ajouter ANTHROPIC_API_KEY dans Settings > Secrets > Actions
-#   2. Copier ce fichier dans .github/workflows/claude-review.yml
-#   3. (Optionnel) Lancer `/install-github-app` dans Claude Code pour setup complet
+#   1. Add ANTHROPIC_API_KEY in Settings > Secrets > Actions
+#   2. Copy this file to .github/workflows/claude-review.yml
+#   3. (Optional) Run `/install-github-app` in Claude Code for full setup
 #
 # Usage:
-#   - Review automatique a chaque PR ouverte/mise a jour
-#   - Mentionner @claude dans un commentaire PR pour poser des questions
-#   - Mentionner @claude dans une issue pour demander une implementation
+#   - Automatic review on every PR opened/updated
+#   - Mention @claude in a PR comment to ask questions
+#   - Mention @claude in an issue to request an implementation
 
 name: Claude Code Review
 
@@ -26,7 +26,7 @@ on:
     types: [opened, assigned]
 
 jobs:
-  # Review automatique des PRs
+  # Automatic PR review
   auto-review:
     if: >
       github.event_name == 'pull_request' &&
@@ -75,7 +75,7 @@ jobs:
           claude_args: |
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
 
-  # Repondre aux mentions @claude dans les PRs et issues
+  # Respond to @claude mentions in PRs and issues
   claude-mention:
     if: >
       github.event_name == 'issue_comment' &&

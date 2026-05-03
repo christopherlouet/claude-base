@@ -13,7 +13,7 @@
     },
     {
       "path": ".claude/templates/github-actions/claude-review.yml",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "51025478d22a04827400b344974eefbd12bd98b5d3a7f38029badc1fc3536095"
     },
     {
