@@ -49,3 +49,4 @@ website/pdf/
 
 # Installers locaux
 *.deb
+.claude/scheduled_tasks.lock
