@@ -9,6 +9,7 @@ import { generateSkillDocs } from './generate-skill-docs.js';
 import { generateRuleDocs } from './generate-rule-docs.js';
 import { syncDocs } from './sync-docs.js';
 import { generateCounts } from './generate-counts.js';
+import { injectCountsMd } from './inject-counts-md.js';
 
 interface GenerationStats {
   commands: number;
@@ -64,6 +65,12 @@ async function generateAll(): Promise<GenerationStats> {
     console.log('\n📄 Syncing docs/ to website/docs/...');
     console.log('─'.repeat(50));
     await syncDocs();
+
+    // Inject counts into instrumented Markdown files (after sync so the
+    // synced website/docs/* files get markers updated too if relevant)
+    console.log('\n📝 Injecting counts into Markdown markers...');
+    console.log('─'.repeat(50));
+    injectCountsMd();
 
     const endTime = Date.now();
     stats.totalTime = (endTime - startTime) / 1000;

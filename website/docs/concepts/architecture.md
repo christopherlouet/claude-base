@@ -295,7 +295,7 @@ Constraints and conventions automatically injected based on file paths.
 - Global or specific constraints
 - Affects Commands, Skills, Agents
 
-### File structure (30 rules)
+### File structure (&lt;!-- count:rules --&gt;30&lt;!-- /count --&gt; rules)
 
 Cross-cutting rules (16):
 ```

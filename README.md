@@ -17,7 +17,7 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 **claude-socle** is a configuration bundle for [Claude Code](https://code.claude.com/docs/en/overview) that gives you:
 
 - A structured development workflow: **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
-- **131 commands**, **63 sub-agents**, and **54 skills** for a wide range of tasks
+- **<!-- count:commands -->131<!-- /count --> commands**, **<!-- count:agents -->63<!-- /count --> sub-agents**, and **<!-- count:skills -->54<!-- /count --> skills** for a wide range of tasks
 - Built-in conventions and best practices (TDD enforcement, security, accessibility, performance)
 - A speed-up for your development through reusable, opinionated commands
 - Ready-to-use CI/CD and pre-commit hooks
@@ -360,7 +360,7 @@ The full documentation site (currently in French) lives at **[https://christophe
 
 It covers:
 - Quick start guide
-- Catalog of 131 commands, 63 agents, 54 skills, 30 rules
+- Catalog of <!-- count:commands -->131<!-- /count --> commands, <!-- count:agents -->63<!-- /count --> agents, <!-- count:skills -->54<!-- /count --> skills, <!-- count:rules -->30<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Extending, Team, Prompting, Troubleshooting
@@ -462,7 +462,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (17 files, 317 tests)
+### Test layout (<!-- count:testFiles -->17<!-- /count --> files, <!-- count:tests -->317<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|
