@@ -1,4 +1,3 @@
-```typescript
 #!/usr/bin/env ts-node
 /**
  * Generate command documentation pages from .claude/commands
@@ -357,4 +356,3 @@ async function generateCommandDocs(): Promise<void> {
 generateCommandDocs().catch(console.error);
 
 export { generateCommandDocs };
-```

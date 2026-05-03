@@ -1,4 +1,3 @@
-```ts
 #!/usr/bin/env ts-node
 /**
  * Generate skill documentation pages from .claude/skills
@@ -393,4 +392,3 @@ async function generateSkillDocs(): Promise<void> {
 generateSkillDocs().catch(console.error);
 
 export { generateSkillDocs };
-```

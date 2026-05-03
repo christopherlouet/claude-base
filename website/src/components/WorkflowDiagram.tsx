@@ -1,4 +1,3 @@
-```typescript
 import React from 'react';
 
 export interface WorkflowStep {
@@ -120,4 +119,3 @@ export const BUGFIX_WORKFLOW: WorkflowStep[] = [
   { id: 'review', label: 'Review', command: '/qa:qa-review' },
   { id: 'commit', label: 'Commit', command: '/work:work-commit' },
 ];
-```

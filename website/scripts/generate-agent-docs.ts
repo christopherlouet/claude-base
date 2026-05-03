@@ -1,4 +1,3 @@
-```typescript
 #!/usr/bin/env ts-node
 /**
  * Generate agent documentation pages from .claude/agents
@@ -324,4 +323,3 @@ async function generateAgentDocs(): Promise<void> {
 generateAgentDocs().catch(console.error);
 
 export { generateAgentDocs };
-```
