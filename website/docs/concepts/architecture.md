@@ -300,7 +300,7 @@ Constraints and conventions automatically injected based on file paths.
 Cross-cutting rules (16):
 ```
 .claude/rules/
-├── workflow.md            # Global — Explore → Plan → TDD → Audit → Commit
+├── workflow.md            # Global — Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
 ├── git.md                 # Global — Conventional Commits, branches
 ├── tdd-enforcement.md     # TS/Py/Go/Dart code — TDD mandatory
 ├── verification.md        # TS/Py/Go/Dart code — 4-phase verification

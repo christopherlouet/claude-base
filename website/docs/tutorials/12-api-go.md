@@ -10,7 +10,7 @@ import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
 <DifficultyBadge level="intermediate" /> **Estimated duration: 45 minutes**
 
-This tutorial shows you how to develop a REST API in Go by following the **Explore → Plan → TDD → Audit → Commit** workflow of the foundation.
+This tutorial shows you how to develop a REST API in Go by following the **Explore → Specify → Plan → TDD → Audit → Commit** workflow of the foundation.
 
 ## Objectives
 
