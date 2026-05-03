@@ -29,7 +29,7 @@ teardown() {
     run "$NEW_PROJECT_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"USAGE"* ]]
-    [[ "$output" == *"EXEMPLES"* ]]
+    [[ "$output" == *"EXEMPLES"* ]] || [[ "$output" == *"EXAMPLES"* ]]
 }
 
 @test "new-project.sh displays version with --version" {

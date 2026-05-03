@@ -82,7 +82,7 @@ teardown() {
 @test "validate-counts.sh on a coherent fake foundation: exit 0" {
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"coherents"* ]] || [[ "$output" == *"Aucun drift"* ]]
+    [[ "$output" == *"consistent"* ]] || [[ "$output" == *"No drift"* ]] || [[ "$output" == *"coherents"* ]] || [[ "$output" == *"Aucun drift"* ]]
 }
 
 @test "validate-counts.sh shows the actual counts in its output" {
@@ -127,7 +127,7 @@ EOF
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 1 ]
     [[ "$output" == *"99 skills"* ]]
-    [[ "$output" == *"canonique: 1"* ]]
+    [[ "$output" == *"canonical: 1"* ]]
 }
 
 @test "scan_drift Layer 2: detects the 'N Sub-Agents' TS string literal pattern" {
@@ -179,7 +179,7 @@ EOF
     [ "$status" -eq 1 ]
     [[ "$output" == *"tests-200"* ]]
     # canonical = ACTUAL_TESTS of the fake foundation (5)
-    [[ "$output" =~ canonique:[[:space:]]*5 ]]
+    [[ "$output" =~ canonical:[[:space:]]*5 ]]
 }
 
 @test "scan_tests_drift: detects the '(N files, M tests)' Test layout pattern" {
@@ -246,5 +246,5 @@ EOF
 @test "validate-counts.sh on the REAL repo: exit 0 (regression test)" {
     run "$VALIDATE_COUNTS_SCRIPT_REAL"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"coherents"* ]] || [[ "$output" == *"Aucun drift"* ]]
+    [[ "$output" == *"consistent"* ]] || [[ "$output" == *"No drift"* ]] || [[ "$output" == *"consistent"* ]] || [[ "$output" == *"No drift"* ]] || [[ "$output" == *"coherents"* ]] || [[ "$output" == *"Aucun drift"* ]]
 }

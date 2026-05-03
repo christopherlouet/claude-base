@@ -233,7 +233,7 @@ teardown() {
     [ "$status" -eq 0 ]
 
     # Should mention the orphans
-    [[ "$output" == *"orphelin"* ]] || [[ "$output" == *"Orphelins"* ]]
+    [[ "$output" == *"orphelin"* ]] || [[ "$output" == *"Orphelins"* ]] || [[ "$output" == *"orphan"* ]] || [[ "$output" == *"Orphans"* ]]
 
     # The file should still exist (detection only)
     [ -f "$TEST_DIR/.claude/commands/work/orphan-command.md" ]
@@ -328,7 +328,7 @@ teardown() {
     [ "$status" -eq 0 ]
 
     # No backup created (skip) - contains all @imports
-    [[ "$output" == *"skip"* ]] || [[ "$output" == *"déjà"* ]] || [[ "$output" == *"contient tous les @imports"* ]]
+    [[ "$output" == *"skip"* ]] || [[ "$output" == *"déjà"* ]] || [[ "$output" == *"contient tous les @imports"* ]] || [[ "$output" == *"already"* ]] || [[ "$output" == *"contains all @imports"* ]]
 }
 
 @test "update.sh --upgrade-claude-md detects duplicated sections" {

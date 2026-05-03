@@ -107,7 +107,7 @@ EOF
 
     run "$VALIDATE_SCRIPT" "$TEST_DIR"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"commandes documentées existent"* ]] || [[ "$output" == *"cohérentes"* ]]
+    [[ "$output" == *"commandes documentées existent"* ]] || [[ "$output" == *"cohérentes"* ]] || [[ "$output" == *"documented commands exist"* ]] || [[ "$output" == *"consistent"* ]]
 }
 
 @test "validate.sh does not capture false positives (directory paths)" {
@@ -211,7 +211,7 @@ EOF
 
     run "$VALIDATE_SCRIPT" "$TEST_DIR"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"rm -rf bloqué"* ]]
+    [[ "$output" == *"rm -rf bloqué"* ]] || [[ "$output" == *"rm -rf blocked"* ]]
 }
 
 # =============================================================================

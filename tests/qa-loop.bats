@@ -92,11 +92,11 @@ QA_CLAUDEMD_AGENT="$SOCLE_DIR/.claude/agents/qa-claudemd.md"
 }
 
 @test "qa-loop agent: P0 redefined (certain bug / vulnerability / breaking)" {
-    grep -qiE "(bug certain|faille|breaking change)" "$QA_LOOP_AGENT"
+    grep -qiE "(bug certain|faille|breaking change|certain bug|vulnerability)" "$QA_LOOP_AGENT"
 }
 
 @test "qa-loop agent: P1 redefined (measurable impact)" {
-    grep -qiE "(impact mesurable|impact concret)" "$QA_LOOP_AGENT"
+    grep -qiE "(impact mesurable|impact concret|measurable impact|concrete impact)" "$QA_LOOP_AGENT"
 }
 
 # =============================================================================

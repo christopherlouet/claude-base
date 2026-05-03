@@ -38,8 +38,6 @@
 | Configured hooks | `docs/reference/hooks-reference.md` |
 | Available skills | `docs/reference/skills-catalog.md` |
 | Advanced features | `docs/reference/advanced-features.md` |
-| Architecture | `docs/ARCHITECTURE.md` |
-| Visual workflows | `docs/WORKFLOWS.md` |
 | Quick decision by intent | `docs/CHEATSHEET.md` (dedicated section) |
 | Recipes by stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business) | `docs/STACK-RECIPES.md` |
 | Team Guide | `docs/guides/TEAM-GUIDE.md` |

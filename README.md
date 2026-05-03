@@ -462,7 +462,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (23 files, 317 tests)
+### Test layout (17 files, 317 tests)
 
 | File | Description |
 |------|-------------|
