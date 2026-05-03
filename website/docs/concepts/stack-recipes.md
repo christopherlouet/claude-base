@@ -230,7 +230,7 @@ tags:
 
 ---
 
-## Business & Growth
+## Business &amp; Growth
 
 ### From the foundation
 

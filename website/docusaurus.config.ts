@@ -10,6 +10,18 @@ const config: Config = {
       onBrokenMarkdownLinks: 'throw',
     },
   },
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          {from: '/docs/tutorials/premier-projet', to: '/docs/tutorials/first-project'},
+          {from: '/docs/tutorials/audit-securite', to: '/docs/tutorials/security-audit'},
+          {from: '/docs/tutorials/projet-complet', to: '/docs/tutorials/complete-project'},
+        ],
+      },
+    ],
+  ],
   themes: [
     '@docusaurus/theme-mermaid',
     [

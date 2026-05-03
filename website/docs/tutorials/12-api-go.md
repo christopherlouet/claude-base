@@ -555,7 +555,7 @@ todo-api/
 - [Go Guide](/docs/concepts/stack-recipes) - Advanced patterns, error handling, concurrency
 - [Auth Guide](/docs/concepts/stack-recipes) - Add JWT to your Go API
 - [Database Guide](/docs/concepts/stack-recipes) - Replace the in-memory repository with PostgreSQL via pgx
-- [Tutorial 10: Complete TaskFlow project](/docs/tutorials/projet-complet) - Integrate this backend into a full-stack project
+- [Tutorial 10: Complete TaskFlow project](/docs/tutorials/complete-project) - Integrate this backend into a full-stack project
 
 ---
 

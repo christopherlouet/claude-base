@@ -15,9 +15,11 @@ This tutorial shows you how to develop a professional REST API using TDD (Test-D
 ## Objectives
 
 By the end of this tutorial, you will know how to:
+- Use `/work:work-specify` to define endpoints and acceptance criteria
 - Use `/dev:dev-api` to create endpoints
 - Use `/dev:dev-tdd` for test-driven development
 - Use `/doc:doc-api-spec` to generate OpenAPI documentation
+- Use `/qa:qa-loop` to audit and reach the target quality score
 - Structure a Node.js API professionally
 
 ## Prerequisites
@@ -46,10 +48,36 @@ Claude will identify:
 - The middlewares in place
 - The validation patterns
 
-## Step 2: Plan the API
+## Step 2: Specify the API
+
+Before designing the routes, lock the user stories and acceptance criteria.
 
 ```bash
-/work:work-plan "CRUD API for tasks (todos) with validation and documentation"
+/work:work-specify "CRUD API for tasks (todos) with validation and documentation"
+```
+
+**Example output:**
+
+```
+## US-1 (P1) — Create a task
+As a client, I want to POST a task with title + description
+so that I can persist work to do.
+
+Given a valid payload, when I POST /api/todos,
+then a 201 is returned with the new id and the task is persisted.
+
+## US-2 (P1) — List tasks
+## US-3 (P2) — Update / delete tasks
+## Edge cases
+- Missing title → 400 with error details
+- Title > 200 chars → 400
+- DB unavailable → 503
+```
+
+## Step 3: Plan the API
+
+```bash
+/work:work-plan
 ```
 
 **Expected plan:**
@@ -71,7 +99,7 @@ Claude will identify:
 - tests/todos.test.ts    - Integration tests
 ```
 
-## Step 3: Develop with TDD
+## Step 4: Develop with TDD
 
 Let's use TDD to guarantee quality.
 
@@ -169,7 +197,7 @@ After the tests pass, Claude proposes improvements:
 - Add centralized error handling
 - Type the responses
 
-## Step 4: Create the other endpoints
+## Step 5: Create the other endpoints
 
 Continue with the other endpoints:
 
@@ -243,7 +271,7 @@ router.delete('/:id', async (req, res) => {
 export default router;
 ```
 
-## Step 5: Generate the OpenAPI documentation
+## Step 6: Generate the OpenAPI documentation
 
 ```bash
 /doc:doc-api-spec
@@ -318,19 +346,19 @@ components:
           format: date-time
 ```
 
-## Step 6: Check security
+## Step 7: Audit + fix loop
+
+Run the adaptive audit + fix loop until the target score.
 
 ```bash
-/qa:qa-security
+/qa:qa-loop "score 90"
 ```
 
-Claude will check:
-- Input validation (injection)
-- Error handling (no info leak)
-- Rate limiting
-- Authentication (if needed)
+Claude audits security (OWASP), input validation, error handling, rate limiting, authentication, performance and code quality, then fixes P0/P1 issues automatically and re-audits in a loop until the target score is reached.
 
-## Step 7: Run the tests
+For a security-only audit, use `/qa:qa-security`.
+
+## Step 8: Run the tests
 
 ```bash
 npm test
@@ -338,7 +366,7 @@ npm test
 
 Verify that all tests pass.
 
-## Step 8: Commit
+## Step 9: Commit
 
 ```bash
 /work:work-commit
@@ -380,10 +408,11 @@ tests/
 
 | Command | What it does |
 |---------|--------------|
+| `/work:work-specify` | Defines user stories and acceptance criteria |
 | `/dev:dev-tdd` | Test-Driven development |
 | `/dev:dev-api` | Creates an endpoint with validation |
 | `/doc:doc-api-spec` | Generates the OpenAPI doc |
-| `/qa:qa-security` | Security audit |
+| `/qa:qa-loop` | Adaptive audit + fix loop until target score |
 
 ## Next steps
 

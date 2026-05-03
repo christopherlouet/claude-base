@@ -518,7 +518,7 @@ lib/
 
 ## Next steps
 
-- [Tutorial 05: Security audit](/docs/tutorials/audit-securite)
+- [Tutorial 05: Security audit](/docs/tutorials/security-audit)
 - [Mobile Guide](/docs/concepts/stack-recipes)
 - [/dev:dev-flutter command](/docs/commands/dev/dev-flutter)
 

@@ -15,14 +15,15 @@ This tutorial shows you how to create a complete React component with its hook, 
 ## Goals
 
 By the end of this tutorial, you will know how to:
+- Use `/work:work-specify` to define the feature scope and acceptance criteria
 - Use `/dev:dev-component` to create a component
 - Use `/dev:dev-hook` to create a custom hook
-- Use `/qa:qa-review` to check quality
+- Use `/qa:qa-loop` to audit and reach the target quality score
 - Structure a React feature professionally
 
 ## Prerequisites
 
-- [Tutorial 01](/docs/tutorials/premier-projet) completed
+- [Tutorial 01](/docs/tutorials/first-project) completed
 - An existing React/Next.js project
 - Basic React knowledge
 
@@ -46,7 +47,31 @@ Claude will identify:
 - Naming conventions
 - Patterns used (CSS Modules, Tailwind, styled-components...)
 
-## Step 2: Create the useUser hook
+## Step 2: Specify the feature
+
+Before writing components, lock the scope and the acceptance criteria.
+
+```bash
+/work:work-specify "User card with avatar, name, status, fed by useUser hook"
+```
+
+**Example output:**
+
+```
+## US-1 (P1) — Display a user card
+As a viewer, I want to see a user's avatar, name and online status
+so that I can identify who I am interacting with.
+
+Given a valid userId, when the card mounts,
+then the avatar, name and status indicator are displayed within 1s.
+
+## Edge cases
+- userId not found → error state with retry
+- Slow network → skeleton loader
+- status unknown → fallback to "offline"
+```
+
+## Step 3: Create the useUser hook
 
 Let's start with the hook that manages the data.
 
@@ -158,7 +183,7 @@ describe('useUser', () => {
 });
 ```
 
-## Step 3: Create the UserCard component
+## Step 4: Create the UserCard component
 
 Now, let's create the component that uses this hook.
 
@@ -306,23 +331,26 @@ export { UserCard } from './UserCard';
 export type { UserCardProps } from './UserCard';
 ```
 
-## Step 4: Check quality
+## Step 5: Audit + fix loop
 
-Before committing, let's check the code quality.
+Before committing, run the adaptive audit + fix loop until the target score.
 
-### Launch a review
+### Launch the audit
 
 ```bash
-/qa:qa-review
+/qa:qa-loop "score 90"
 ```
 
 ### Expected result
 
-Claude will analyze:
+Claude audits security, performance, accessibility and code quality, then fixes P0/P1 issues automatically and re-audits in a loop until the target score is reached.
+
+Topics covered:
 - TypeScript code quality
 - Test coverage
 - React best practices
-- Accessibility
+- Accessibility (WCAG)
+- Performance (Core Web Vitals)
 
 **Example feedback:**
 
@@ -345,7 +373,7 @@ Claude will analyze:
 - UserCard: 90%
 ```
 
-## Step 5: Run the tests
+## Step 6: Run the tests
 
 Let's check that everything works.
 
@@ -355,7 +383,7 @@ npm test
 
 All tests should pass.
 
-## Step 6: Commit
+## Step 7: Commit
 
 Create a clean commit for this feature.
 
@@ -393,9 +421,10 @@ src/
 
 | Command | What it does |
 |---------|--------------|
+| `/work:work-specify` | Defines user stories and acceptance criteria |
 | `/dev:dev-hook` | Creates a hook with types and tests |
 | `/dev:dev-component` | Creates a component with tests |
-| `/qa:qa-review` | Checks code quality |
+| `/qa:qa-loop` | Adaptive audit + fix loop until target score |
 
 ## Next steps
 

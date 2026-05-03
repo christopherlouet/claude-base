@@ -16,8 +16,10 @@ This tutorial walks you through creating your first feature using the **Explore 
 
 By the end of this tutorial, you will know how to:
 - Use `/work:work-explore` to understand a codebase
+- Use `/work:work-specify` to define user stories and acceptance criteria
 - Use `/work:work-plan` to plan an implementation
 - Use `/work:work-flow-feature` to create a complete feature
+- Use `/qa:qa-loop` to audit and reach the target quality score
 - Understand the development cycle with claude-socle
 
 ## Prerequisites
@@ -69,14 +71,52 @@ Claude will analyze your project and present:
 Exploration lets you understand existing conventions and avoid introducing inconsistencies. Claude then adapts its suggestions to the project's style.
 :::
 
-## Step 2: Plan the feature
+## Step 2: Specify the feature
 
-Now that you understand the project, plan your feature.
+Before designing, define what the feature does and how you will know it's done.
+
+### Run the specification
+
+```bash
+/work:work-specify "Add a dark theme button"
+```
+
+### Expected result
+
+Claude will produce a structured specification with:
+- Prioritized user stories (P1 = MVP, P2, P3)
+- Acceptance criteria (Given/When/Then)
+- Functional requirements and edge cases
+- Out-of-scope explicitly listed
+
+**Example output:**
+
+```
+## US-1 (P1) — Toggle dark theme
+
+As a user, I want to toggle the theme between light and dark
+so that I can read comfortably day and night.
+
+Given the app is open, when I click the theme toggle,
+then the interface switches theme and the choice persists across reloads.
+
+## Edge cases
+- First visit: respect prefers-color-scheme
+- localStorage disabled: fallback to in-memory state
+```
+
+:::tip Why specify first?
+A short spec catches scope misalignment before you invest in design or code. It is the cheapest place to change your mind.
+:::
+
+## Step 3: Plan the feature
+
+Now that the scope is clear, plan the implementation.
 
 ### Run the planning
 
 ```bash
-/work:work-plan "Add a dark theme button"
+/work:work-plan
 ```
 
 ### Expected result
@@ -109,7 +149,7 @@ Claude will create a detailed plan with:
 - Theme flash on load (mitigated with inline script)
 ```
 
-## Step 3: Implement with the full workflow
+## Step 4: Implement with the full workflow
 
 For an end-to-end guided implementation, use the feature workflow.
 
@@ -135,7 +175,7 @@ Claude will guide you step by step. At each step, you can:
 - **Modify** if you want to adjust
 - **Cancel** if you change your mind
 
-## Step 4: Verify the result
+## Step 5: Verify the result
 
 Once the workflow is complete, verify your work.
 
@@ -155,7 +195,25 @@ git status
 
 You should see the new files and modifications.
 
-## Step 5: Commit
+## Step 6: Audit
+
+Run the adaptive audit + fix loop until the target quality score is reached.
+
+### Run the audit loop
+
+```bash
+/qa:qa-loop "score 90"
+```
+
+### What happens
+
+Claude audits security (OWASP), performance (Core Web Vitals), accessibility (WCAG) and code quality, then fixes P0/P1 issues automatically and re-audits in a loop until the target score is reached.
+
+:::caution Important
+Do not commit until the target score is reached. TDD validates behavior, the audit validates overall quality.
+:::
+
+## Step 7: Commit
 
 If everything is correct, create a clean commit.
 
@@ -188,16 +246,20 @@ You have learned the basic workflow:
 
 ```mermaid
 flowchart LR
-    A["/work:work-explore"] --> B["/work:work-plan"]
-    B --> C["/work:work-flow-feature"]
-    C --> D["/work:work-commit"]
+    A["/work:work-explore"] --> B["/work:work-specify"]
+    B --> C["/work:work-plan"]
+    C --> D["/work:work-flow-feature"]
+    D --> E["/qa:qa-loop"]
+    E --> F["/work:work-commit"]
 ```
 
 | Command | Usage |
 |---------|-------|
 | `/work:work-explore` | Understand the code before modifying |
+| `/work:work-specify` | Define user stories and acceptance criteria |
 | `/work:work-plan` | Plan before implementing |
 | `/work:work-flow-feature` | Complete workflow for a feature |
+| `/qa:qa-loop` | Adaptive audit + fix loop until target score |
 | `/work:work-commit` | Clean commit with formatted message |
 
 ## Next steps

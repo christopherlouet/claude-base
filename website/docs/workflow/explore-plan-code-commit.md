@@ -26,7 +26,7 @@ sequenceDiagram
     R-->>C: Source code
     C-->>U: Analyze structure and patterns
 
-    Note over U,R: Phase 2 - SPECIFY (optional)
+    Note over U,R: Phase 2 - SPECIFY
     U->>C: /work:work-specify "Add 2FA"
     C-->>U: Functional specification
     U->>C: Validation ✓
@@ -44,7 +44,15 @@ sequenceDiagram
         C->>R: REFACTOR: Improvement
     end
 
-    Note over U,R: Phase 5 - COMMIT
+    Note over U,R: Phase 5 - AUDIT
+    U->>C: /qa:qa-loop "score 90"
+    loop Audit + fix until target score
+        C->>R: Audit (security, perf, a11y)
+        C->>R: Auto-fix P0/P1
+    end
+    C-->>U: Score reached ✓
+
+    Note over U,R: Phase 6 - COMMIT
     U->>C: /work:work-commit
     C->>R: git add + commit
     R-->>U: Commit created ✓
@@ -56,8 +64,10 @@ sequenceDiagram
 
 ```
 ❌ Coding without understanding → Bugs and regressions
+❌ Implementing without a spec → Misaligned scope
 ❌ Implementing without a plan → Constant refactoring
 ❌ Coding before tests → Untested code
+❌ Skipping the audit → Silent regressions in security/perf/a11y
 ❌ Giant commits → Unreadable history
 ```
 
@@ -65,8 +75,10 @@ sequenceDiagram
 
 ```
 ✅ Explore first → Understand the context
+✅ Specify upfront → Clear acceptance criteria
 ✅ Plan ahead → Solid architecture
 ✅ Mandatory TDD → Tested and reliable code
+✅ Audit + fix loop → Quality target reached before commit
 ✅ Atomic commits → Clear history
 ```
 
@@ -105,14 +117,48 @@ sequenceDiagram
 - Missing tests on AuthService
 ```
 
-## Step 2: Plan
+## Step 2: Specify
+
+**Command**: `/work:work-specify`
+
+**Goal**: Define user stories and acceptance criteria before designing.
+
+```bash
+/work:work-specify "Add 2FA authentication"
+```
+
+**Claude will produce**:
+- Prioritized user stories (P1 = MVP, P2, P3)
+- Acceptance criteria (Given/When/Then)
+- Functional requirements and edge cases
+- Out-of-scope explicitly listed
+
+**Expected output**:
+```markdown
+## User stories
+
+### US-1 (P1) — Enable 2FA on the account
+As a user, I want to enable 2FA so that my account is protected.
+
+Given I am authenticated, when I scan the TOTP QR code and confirm
+the 6-digit code, then 2FA is enabled and a recovery code is shown.
+
+### US-2 (P2) — Sign in with 2FA
+As a user with 2FA, I want to sign in with my TOTP code...
+```
+
+:::caution Important
+Wait for spec validation before planning!
+:::
+
+## Step 3: Plan
 
 **Command**: `/work:work-plan`
 
 **Goal**: Plan changes before implementing.
 
 ```bash
-/work:work-plan "Add 2FA authentication"
+/work:work-plan
 ```
 
 **Claude will propose**:
@@ -143,7 +189,7 @@ sequenceDiagram
 Wait for plan validation before coding!
 :::
 
-## Step 3: TDD (Mandatory)
+## Step 4: TDD (Mandatory)
 
 **Command**: `/dev:dev-tdd`
 
@@ -164,7 +210,29 @@ Wait for plan validation before coding!
 - One commit per logical change
 - Minimum 80% coverage on new code
 
-## Step 4: Commit
+## Step 5: Audit
+
+**Command**: `/qa:qa-loop`
+
+**Goal**: Run an adaptive audit + fix loop until the target quality score is reached.
+
+```bash
+/qa:qa-loop "score 90"
+```
+
+**Coverage**:
+- Security (OWASP Top 10)
+- Performance (Core Web Vitals)
+- Accessibility (WCAG 2.1)
+- Code quality and conventions
+
+**Behavior**: P0/P1 issues are fixed automatically and the audit runs in a loop until the target score is reached. TDD validates behavior, the audit validates overall quality.
+
+:::caution Important
+Do not commit without having reached the target score (90 by default).
+:::
+
+## Step 6: Commit
 
 **Command**: `/work:work-commit` or `/work:work-pr`
 
@@ -206,13 +274,19 @@ Closes #123
 
 # Claude analyzes and explains the structure
 
-# 2. Plan the 2FA addition
-> /work:work-plan "Add 2FA authentication"
+# 2. Specify the 2FA feature
+> /work:work-specify "Add 2FA authentication"
+
+# Claude produces user stories and acceptance criteria
+# You validate or request changes
+
+# 3. Plan the 2FA addition
+> /work:work-plan
 
 # Claude proposes a detailed plan
 # You validate or request changes
 
-# 3. Implement in TDD (mandatory)
+# 4. Implement in TDD (mandatory)
 > /dev:dev-tdd "Implement the 2FA service per the plan"
 
 # Claude follows the Red-Green-Refactor cycle:
@@ -220,7 +294,13 @@ Closes #123
 # - GREEN: Writes minimal code to pass
 # - REFACTOR: Improves the code
 
-# 4. Create the PR
+# 5. Audit + fix loop until score 90
+> /qa:qa-loop "score 90"
+
+# Claude audits security, perf, a11y and auto-fixes P0/P1
+# until the target score is reached
+
+# 6. Create the PR
 > /work:work-pr
 
 # Claude creates a complete PR with description
