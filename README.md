@@ -1,7 +1,7 @@
 # claude-socle
 
 [![CI](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/codeql.yml)
+[![Security](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
 [![Tests](https://img.shields.io/badge/tests-317%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
@@ -542,9 +542,11 @@ claude-socle is **production-ready** with:
 
 ### Security measures
 
-- **Gitleaks**: 24+ secret detection rules
+- **Gitleaks**: 24+ secret detection rules (CI workflow + local scan)
+- **ShellCheck**: bash linting on all `scripts/` (CI workflow `security.yml`, severity warning)
 - **Deny list**: dangerous commands blocked (`rm -rf /`, `sudo`, `git push --force`)
 - **Protection hooks**: blocks edits on main/master
-- **CodeQL**: security analysis in CI
+- **GitHub Secret Scanning**: enabled on the public repo
+- **GitHub Code Scanning** (CodeQL): TypeScript security analysis (Default Setup, scans `website/scripts/`, `website/src/`)
 
 See [SECURITY.md](SECURITY.md) for the full security policy.
