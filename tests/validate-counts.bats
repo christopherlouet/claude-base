@@ -24,6 +24,7 @@ setup() {
     mkdir -p "$TEST_DIR/.claude/rules"
     mkdir -p "$TEST_DIR/scripts/lib"
     mkdir -p "$TEST_DIR/tests"
+    mkdir -p "$TEST_DIR/docs"
     mkdir -p "$TEST_DIR/website/src/pages"
     mkdir -p "$TEST_DIR/website/src/components"
     mkdir -p "$TEST_DIR/website/docs/intro"
