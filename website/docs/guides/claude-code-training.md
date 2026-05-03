@@ -793,10 +793,10 @@ You now master Claude Code. Here's what claude-socle adds on top:
 
 | What the foundation adds | Description |
 |--------------------------|-------------|
-| 131 commands (`/work:*`, `/dev:*`, `/qa:*`, `/ops:*`) | Pre-written workflows for common tasks |
-| 63 specialized agents | Sub-processes for audit, security, tests, etc. |
-| 54 skills | Behaviors triggered by keywords |
-| 30 rules | Code conventions activated automatically based on the modified files |
+| <!-- count:commands -->131<!-- /count --> commands (`/work:*`, `/dev:*`, `/qa:*`, `/ops:*`) | Pre-written workflows for common tasks |
+| <!-- count:agents -->63<!-- /count --> specialized agents | Sub-processes for audit, security, tests, etc. |
+| <!-- count:skills -->54<!-- /count --> skills | Behaviors triggered by keywords |
+| <!-- count:rules -->30<!-- /count --> rules | Code conventions activated automatically based on the modified files |
 | Structured workflow | Explore → Specify → Plan → TDD → Audit → Commit |
 
 The concrete difference: instead of typing "run the tests, check coverage, fix issues, audit security, then commit", you type `/work:work-flow-feature "my feature"` and the foundation orchestrates everything.

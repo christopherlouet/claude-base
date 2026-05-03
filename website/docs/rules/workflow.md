@@ -26,10 +26,10 @@ _All files_
 | Complexity | Workflow | Command |
 |------------|----------|---------|
 | Trivial (typo, rename, 1-3 files) | Quick | `/work:work-quick` |
-| Standard (feature, bugfix) | Full | Explore → Plan → TDD → Audit → Commit |
+| Standard (feature, bugfix) | Full | Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit |
 | Batch (backlog of stories) | Batch | `/work:work-batch "prd.json"` |
 
-## Mandatory Cycle: Explore -&gt; Plan -&gt; TDD -&gt; Audit -&gt; Commit
+## Mandatory Cycle: Explore -&gt; (Brainstorm) -&gt; Specify -&gt; Plan -&gt; TDD -&gt; Audit -&gt; Commit
 
 ### 0. CI BASELINE (recommended)
 
@@ -46,7 +46,15 @@ Before starting work on an existing project:
 - NEVER code without having explored
 - Use `/work:work-explore` or the `work-explore` agent
 
-### 2. PLAN (mandatory for complex features)
+### 2. SPECIFY (mandatory for new features)
+
+- Define user stories and acceptance criteria (Given/When/Then) BEFORE designing
+- Prioritize stories: P1 = MVP, P2, P3
+- List functional requirements and edge cases
+- State out-of-scope explicitly
+- Use `/work:work-specify`
+
+### 3. PLAN (mandatory for complex features)
 
 - Propose an architecture BEFORE implementing
 - List the files to create/modify
@@ -54,7 +62,7 @@ Before starting work on an existing project:
 - Wait for validation before coding
 - Use `/work:work-plan`
 
-### 3. TDD (mandatory)
+### 4. TDD (mandatory)
 
 - IMPORTANT: Always write tests BEFORE the code
 - Mandatory Red-Green-Refactor cycle:
@@ -66,7 +74,7 @@ Before starting work on an existing project:
 - Respect the project's conventions
 - Minimum 80% coverage on new code
 
-### 4. AUDIT (adaptive based on criticality)
+### 5. AUDIT (adaptive based on criticality)
 
 Quality audit after TDD, with fix loop until the target score of 90.
 
@@ -82,7 +90,7 @@ Quality audit after TDD, with fix loop until the target score of 90.
 - If the score is insufficient, fix and re-audit in a loop
 - Use `/qa:qa-loop "score 90"` by default
 
-### 5. COMMIT
+### 6. COMMIT
 
 - Descriptive commit message (Conventional Commits)
 - Reference issues if applicable
@@ -140,7 +148,7 @@ Prefer `/compact` over `/clear`: compaction keeps the essence of the context (de
 ```
 /work:work-flow-feature "description"
 # or manually (TDD mandatory):
-/work:work-explore -> /work:work-plan -> /dev:dev-tdd -> /qa:qa-loop "score 90" -> /work:work-pr
+/work:work-explore -> /work:work-specify -> /work:work-plan -> /dev:dev-tdd -> /qa:qa-loop "score 90" -> /work:work-pr
 ```
 
 ### Bug fix

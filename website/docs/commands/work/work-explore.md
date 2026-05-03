@@ -23,7 +23,7 @@ Analyzes the codebase without writing code. EXPLORATION mode only.
 ## Goal
 
 Deeply understand a part of the codebase before any modification.
-Exploration is the mandatory first step: **EXPLORE -&gt; PLAN -&gt; CODE -&gt; COMMIT**
+Exploration is the mandatory first step: **EXPLORE -&gt; (BRAINSTORM) -&gt; SPECIFY -&gt; PLAN -&gt; TDD -&gt; AUDIT -&gt; COMMIT**
 
 ## Workflow
 

@@ -20,10 +20,10 @@ graph TB
     end
 
     subgraph ".claude/"
-        CMDS[commands/<br/>131 commands]
-        AGENTS[agents/<br/>63 sub-agents]
-        SKILLS[skills/<br/>54 skills]
-        RULES[rules/<br/>30 rules]
+        CMDS[commands/<br/><!-- count:commands -->131<!-- /count --> commands]
+        AGENTS[agents/<br/><!-- count:agents -->63<!-- /count --> sub-agents]
+        SKILLS[skills/<br/><!-- count:skills -->54<!-- /count --> skills]
+        RULES[rules/<br/><!-- count:rules -->30<!-- /count --> rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
     end
@@ -48,7 +48,7 @@ graph TB
 ```
 claude-socle/
 ├── .claude/
-│   ├── commands/       # 131 manual commands (/name)
+│   ├── commands/       # <!-- count:commands -->131<!-- /count --> manual commands (/name)
 │   │   ├── work/       # Main workflow
 │   │   ├── dev/        # Development
 │   │   ├── qa/         # Quality
@@ -58,9 +58,9 @@ claude-socle/
 │   │   ├── growth/     # Growth
 │   │   ├── data/       # Data
 │   │   └── legal/      # Legal
-│   ├── agents/         # 63 autonomous sub-agents
-│   ├── skills/         # 54 auto-triggered skills
-│   ├── rules/          # 30 rules per technology
+│   ├── agents/         # <!-- count:agents -->63<!-- /count --> autonomous sub-agents
+│   ├── skills/         # <!-- count:skills -->54<!-- /count --> auto-triggered skills
+│   ├── rules/          # <!-- count:rules -->30<!-- /count --> rules per technology
 │   ├── templates/      # Spec/plan templates
 │   ├── output-styles/  # Output styles
 │   └── settings.json   # Configuration and hooks
@@ -70,7 +70,7 @@ claude-socle/
 
 ## Main components
 
-### Commands (131)
+### Commands (<!-- count:commands -->131<!-- /count -->)
 
 **Commands** are instructions triggered manually with `/name`.
 
@@ -87,7 +87,7 @@ claude-socle/
 /qa:qa-security
 ```
 
-### Agents (63)
+### Agents (<!-- count:agents -->63<!-- /count -->)
 
 **Agents** are autonomous sub-agents with an isolated context.
 
@@ -103,7 +103,7 @@ claude-socle/
 "Explore the auth code" → Claude delegates to the work-explore agent (haiku)
 ```
 
-### Skills (54)
+### Skills (<!-- count:skills -->54<!-- /count -->)
 
 **Skills** are auto-triggered by keywords in the conversation.
 
@@ -119,7 +119,7 @@ claude-socle/
 "Make a commit" → generating-commit-messages skill activated
 ```
 
-### Rules (30)
+### Rules (<!-- count:rules -->30<!-- /count -->)
 
 **Rules** are rules applied by file path.
 
@@ -237,4 +237,4 @@ Enable the servers as needed to extend Claude's capabilities.
 
 - [Installation](/docs/intro/installation) - Complete installation guide
 - [Workflows](/docs/workflow) - See the workflows in action
-- [Commands](/docs/commands) - Explore the 131 commands
+- [Commands](/docs/commands) - Explore the <!-- count:commands -->131<!-- /count --> commands

@@ -1,4 +1,4 @@
-# Available Agents (131 commands, 63 sub-agents, 54 skills)
+# Available Agents (<!-- count:commands -->131<!-- /count --> commands, <!-- count:agents -->63<!-- /count --> sub-agents, <!-- count:skills -->54<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -169,7 +169,7 @@
 | `/legal:legal-terms-of-service` | Terms of Service |
 | `/legal:legal-privacy-policy` | Privacy Policy |
 
-## Sub-Agents (63)
+## Sub-Agents (<!-- count:agents -->63<!-- /count -->)
 
 Claude automatically delegates to specialized agents (isolated context, restricted tools).
 

@@ -10,7 +10,7 @@ tags:
 
 # Skills (Claude Code 2.1+)
 
-In addition to commands, the project includes **54 Skills** in `.claude/skills/`:
+In addition to commands, the project includes **<!-- count:skills -->54<!-- /count --> Skills** in `.claude/skills/`:
 
 ## Core skills
 | Skill | Automatic trigger | Context |

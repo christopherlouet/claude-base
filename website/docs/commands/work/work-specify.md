@@ -23,7 +23,7 @@ Creates a structured functional specification. SPECIFICATION mode only.
 ## Objective
 
 Create a complete and testable functional specification BEFORE planning.
-Step between exploration and planning: **EXPLORE -&gt; SPECIFY -&gt; PLAN -&gt; CODE -&gt; COMMIT**
+Step between exploration and planning: **EXPLORE -&gt; (BRAINSTORM) -&gt; SPECIFY -&gt; PLAN -&gt; TDD -&gt; AUDIT -&gt; COMMIT**
 Focus on the WHAT (functionality, value), not the HOW (technical implementation).
 
 ## Workflow

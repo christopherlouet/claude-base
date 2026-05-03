@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 131 commands | 63 agents | 54 skills | 9 categories                  ║
+║  Total: <!-- count:commands -->131<!-- /count --> commands | <!-- count:agents -->63<!-- /count --> agents | <!-- count:skills -->54<!-- /count --> skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (131)
+## Commands by Category (<!-- count:commands -->131<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -553,4 +553,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Socle v1.30.0 - 131 commands - 63 agents - 54 skills - 30 rules*
+*Claude-Socle v1.31.1 - <!-- count:commands -->131<!-- /count --> commands - <!-- count:agents -->63<!-- /count --> agents - <!-- count:skills -->54<!-- /count --> skills - <!-- count:rules -->30<!-- /count --> rules*

@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
-[![Tests](https://img.shields.io/badge/tests-317%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-319%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-socle?label=release&color=blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
@@ -17,7 +17,7 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 **claude-socle** is a configuration bundle for [Claude Code](https://code.claude.com/docs/en/overview) that gives you:
 
 - A structured development workflow: **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
-- **131 commands**, **63 sub-agents**, and **54 skills** for a wide range of tasks
+- **<!-- count:commands -->131<!-- /count --> commands**, **<!-- count:agents -->63<!-- /count --> sub-agents**, and **<!-- count:skills -->54<!-- /count --> skills** for a wide range of tasks
 - Built-in conventions and best practices (TDD enforcement, security, accessibility, performance)
 - A speed-up for your development through reusable, opinionated commands
 - Ready-to-use CI/CD and pre-commit hooks
@@ -69,8 +69,8 @@ claude-socle/
 │
 ├── .claude/
 │   ├── settings.json            # Permissions and hooks
-│   ├── skills/                  # 54 specialized skills
-│   └── commands/                # 131 available commands
+│   ├── skills/                  # <!-- count:skills -->54<!-- /count --> specialized skills
+│   └── commands/                # <!-- count:commands -->131<!-- /count --> available commands
 │       ├── assistant.md         # Main orchestrator
 │       ├── work/                # Workflow (15 commands)
 │       │   ├── work-explore.md
@@ -107,13 +107,13 @@ claude-socle/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # 319 automated tests (bats)
+├── tests/                       # <!-- count:tests -->319<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
 │   ├── validate.bats            # Validation tests
 │   ├── docs-under-claude.bats   # v1.30 layout tests
-│   └── ...                      # 12 test files in total
+│   └── ...                      # <!-- count:testFiles -->17<!-- /count --> test files in total
 │
 ├── .gitleaks.toml               # gitleaks config (secret detection)
 ├── VERSION                      # Centralized socle version (1.30.0)
@@ -156,7 +156,7 @@ claude-socle/
         └── TROUBLESHOOTING-GUIDE.md
 ```
 
-## Available Commands (131)
+## Available Commands (<!-- count:commands -->131<!-- /count -->)
 
 Commands are grouped into 9 domains:
 
@@ -360,7 +360,7 @@ The full documentation site (currently in French) lives at **[https://christophe
 
 It covers:
 - Quick start guide
-- Catalog of 131 commands, 63 agents, 54 skills, 30 rules
+- Catalog of <!-- count:commands -->131<!-- /count --> commands, <!-- count:agents -->63<!-- /count --> agents, <!-- count:skills -->54<!-- /count --> skills, <!-- count:rules -->30<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Extending, Team, Prompting, Troubleshooting
@@ -462,7 +462,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (17 files, 317 tests)
+### Test layout (<!-- count:testFiles -->17<!-- /count --> files, <!-- count:tests -->319<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|

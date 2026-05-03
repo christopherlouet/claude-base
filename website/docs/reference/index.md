@@ -12,8 +12,8 @@ description: Quick reference and matrices
 
 | Reference | Description |
 |-----------|-------------|
-| [Commands matrix](/docs/reference/commands-matrix) | 131 commands with domain and description |
-| [Agents matrix](/docs/reference/agents-matrix) | 63 agents with model and tools |
+| [Commands matrix](/docs/reference/commands-matrix) | <!-- count:commands -->131<!-- /count --> commands with domain and description |
+| [Agents matrix](/docs/reference/agents-matrix) | <!-- count:agents -->63<!-- /count --> agents with model and tools |
 | [Utility scripts](/docs/reference/scripts) | Installation and maintenance scripts |
 | [Cheatsheet](/docs/reference/commands) | Quick reference card |
 
@@ -23,24 +23,24 @@ description: Quick reference and matrices
 
 | Domain | Commands | Description |
 |---------|-----------|-------------|
-| [WORK](/docs/commands/work) | 15 | Main workflow |
-| [DEV](/docs/commands/dev) | 23 | Development |
-| [QA](/docs/commands/qa) | 16 | Quality |
-| [OPS](/docs/commands/ops) | 34 | Operations |
-| [DOC](/docs/commands/doc) | 9 | Documentation |
-| [BIZ](/docs/commands/biz) | 11 | Business |
-| [GROWTH](/docs/commands/growth) | 11 | Growth |
-| [DATA](/docs/commands/data) | 3 | Data |
-| [LEGAL](/docs/commands/legal) | 5 | Legal |
+| [WORK](/docs/commands/work) | <!-- count:byDomain.work -->15<!-- /count --> | Main workflow |
+| [DEV](/docs/commands/dev) | <!-- count:byDomain.dev -->23<!-- /count --> | Development |
+| [QA](/docs/commands/qa) | <!-- count:byDomain.qa -->16<!-- /count --> | Quality |
+| [OPS](/docs/commands/ops) | <!-- count:byDomain.ops -->34<!-- /count --> | Operations |
+| [DOC](/docs/commands/doc) | <!-- count:byDomain.doc -->9<!-- /count --> | Documentation |
+| [BIZ](/docs/commands/biz) | <!-- count:byDomain.biz -->11<!-- /count --> | Business |
+| [GROWTH](/docs/commands/growth) | <!-- count:byDomain.growth -->11<!-- /count --> | Growth |
+| [DATA](/docs/commands/data) | <!-- count:byDomain.data -->3<!-- /count --> | Data |
+| [LEGAL](/docs/commands/legal) | <!-- count:byDomain.legal -->5<!-- /count --> | Legal |
 
 ### By component
 
 | Component | Count | Link |
 |-----------|--------|------|
-| Commands | 131 | [View](/docs/commands) |
-| Agents | 63 | [View](/docs/agents) |
-| Skills | 54 | [View](/docs/skills) |
-| Rules | 30 | [View](/docs/rules) |
+| Commands | <!-- count:commands -->131<!-- /count --> | [View](/docs/commands) |
+| Agents | <!-- count:agents -->63<!-- /count --> | [View](/docs/agents) |
+| Skills | <!-- count:skills -->54<!-- /count --> | [View](/docs/skills) |
+| Rules | <!-- count:rules -->30<!-- /count --> | [View](/docs/rules) |
 
 ## Shortcuts
 

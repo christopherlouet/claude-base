@@ -8,7 +8,7 @@ $ARGUMENTS
 ## Goal
 
 Deeply understand a part of the codebase before any modification.
-Exploration is the mandatory first step: **EXPLORE -> PLAN -> CODE -> COMMIT**
+Exploration is the mandatory first step: **EXPLORE -> (BRAINSTORM) -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT**
 
 ## Workflow
 

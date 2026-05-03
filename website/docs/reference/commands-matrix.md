@@ -1,12 +1,12 @@
 ---
 sidebar_position: 2
 title: Commands Matrix
-description: Breakdown of the 131 commands by domain
+description: Breakdown of all claude-socle commands by domain
 ---
 
 # Commands Matrix
 
-> **131 commands** organized by domain
+> **<!-- count:commands -->131<!-- /count --> commands** organized by domain
 >
 > For the exhaustive and always up-to-date list, see the [Commands Catalog](/docs/reference/commands) (auto-generated from `.claude/commands/`).
 

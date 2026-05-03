@@ -8,7 +8,7 @@ $ARGUMENTS
 ## Goal
 
 Create an atomic, well-documented commit compliant with Conventional Commits.
-The commit is the last step of the workflow: **EXPLORE -> PLAN -> CODE -> COMMIT**
+The commit is the last step of the workflow: **EXPLORE -> (BRAINSTORM) -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT**
 
 ## Workflow
 

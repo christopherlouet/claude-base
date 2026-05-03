@@ -54,8 +54,8 @@ At startup you should see:
 ```
 === Claude Code Session ===
 Version socle: 1.31.1
-Commandes: 131
-Agents: 63
+Commandes: <!-- count:commands -->131<!-- /count -->
+Agents: <!-- count:agents -->63<!-- /count -->
 ===========================
 ```
 
@@ -188,4 +188,4 @@ For common tasks, use the complete workflows:
 
 - [Understand the architecture](/docs/intro/architecture) - Difference between Commands, Agents and Skills
 - [See the workflows](/docs/workflow) - Detailed workflows by task type
-- [Explore the commands](/docs/commands) - Complete catalog of the 131 commands
+- [Explore the commands](/docs/commands) - Complete catalog of the <!-- count:commands -->131<!-- /count --> commands

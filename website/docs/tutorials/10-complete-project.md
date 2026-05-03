@@ -146,7 +146,7 @@ src/
   schemas/     # Zod validation
 
 ## Workflow
-Always: Explore -> Plan -> TDD -> Audit -> Commit
+Always: Explore -> Specify -> Plan -> TDD -> Audit -> Commit
 ```
 
 ---

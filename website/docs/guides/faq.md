@@ -13,21 +13,21 @@ Find here the answers to the most common questions about claude-socle.
 ### What is claude-socle?
 
 **claude-socle** is a configuration template for Claude Code that provides:
-- **131 commands** organized by domain (WORK, DEV, QA, OPS, etc.)
-- **63 agents** specialized with isolated context
-- **54 skills** with automatic triggering
-- **30 rules** contextual per language
+- **<!-- count:commands -->131<!-- /count --> commands** organized by domain (WORK, DEV, QA, OPS, etc.)
+- **<!-- count:agents -->63<!-- /count --> agents** specialized with isolated context
+- **<!-- count:skills -->54<!-- /count --> skills** with automatic triggering
+- **<!-- count:rules -->30<!-- /count --> rules** contextual per language
 - A structured workflow: **Explore → Specify → Plan → TDD → Audit → Commit**
 
 ### What's the difference with standard Claude Code?
 
 | Aspect | Standard Claude Code | claude-socle |
 |--------|---------------------|--------------|
-| Commands | Basic commands | 131 specialized commands |
+| Commands | Basic commands | <!-- count:commands -->131<!-- /count --> specialized commands |
 | Workflow | Free | Structured (Explore → Plan → TDD) |
-| Agents | No | 63 agents with isolated context |
-| Skills | No | 54 automatic skills |
-| Rules | Manual | 30 rules per language |
+| Agents | No | <!-- count:agents -->63<!-- /count --> agents with isolated context |
+| Skills | No | <!-- count:skills -->54<!-- /count --> automatic skills |
+| Rules | Manual | <!-- count:rules -->30<!-- /count --> rules per language |
 | Templates | No | Spec, Plan, Tasks |
 
 ### How to install claude-socle?

@@ -23,7 +23,7 @@ Design a detailed implementation plan. PLANNING mode only.
 ## Objective
 
 Create a complete and validatable implementation plan before writing code.
-Part of the workflow: **EXPLORE -&gt; SPECIFY -&gt; PLAN -&gt; CODE -&gt; COMMIT**
+Part of the workflow: **EXPLORE -&gt; (BRAINSTORM) -&gt; SPECIFY -&gt; PLAN -&gt; TDD -&gt; AUDIT -&gt; COMMIT**
 Use the templates in `.claude/templates/` (plan-template.md, tasks-template.md).
 
 ## Workflow

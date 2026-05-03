@@ -8,7 +8,7 @@ $ARGUMENTS
 ## Objective
 
 Create a complete and testable functional specification BEFORE planning.
-Step between exploration and planning: **EXPLORE -> SPECIFY -> PLAN -> CODE -> COMMIT**
+Step between exploration and planning: **EXPLORE -> (BRAINSTORM) -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT**
 Focus on the WHAT (functionality, value), not the HOW (technical implementation).
 
 ## Workflow

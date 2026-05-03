@@ -160,7 +160,18 @@ check_count() {
 info "Checking documentation..."
 echo ""
 
-# --- CLAUDE.md ---
+# Layer 1 redundant checks for files now covered by:
+#   - counts.json + CI gate (TS consumers: Stats.tsx, FeatureComparison.tsx,
+#     index.tsx, sidebars.ts, docusaurus.config.ts)
+#   - inject-counts-md.ts (instrumented MD: intro/index.md, intro/architecture.md,
+#     README.md, docs/CHEATSHEET.md, docs/ARCHITECTURE.md)
+# were removed as part of the counts-source-of-truth refactor.
+# See specs/counts-source-of-truth/ for design notes.
+#
+# Remaining Layer 1 check: CLAUDE.md FR-era patterns kept as defense-in-depth
+# in case narrative counters are ever re-added to CLAUDE.md.
+
+# --- CLAUDE.md (defense in depth) ---
 info "CLAUDE.md"
 check_count "$SOCLE_DIR/CLAUDE.md" \
     "[0-9]+ commandes" "$ACTUAL_COMMANDS" "commands"
@@ -168,72 +179,6 @@ check_count "$SOCLE_DIR/CLAUDE.md" \
     "[0-9]+ sub-agents" "$ACTUAL_AGENTS" "agents"
 check_count "$SOCLE_DIR/CLAUDE.md" \
     "[0-9]+ skills" "$ACTUAL_SKILLS" "skills"
-
-# --- README.md ---
-info "README.md"
-check_count "$SOCLE_DIR/README.md" \
-    "Commandes Disponibles \([0-9]+\)" "$ACTUAL_COMMANDS" "commands header"
-check_count "$SOCLE_DIR/README.md" \
-    "\*\*118 commandes\*\*" "$ACTUAL_COMMANDS" "commands inline"
-
-# --- Website index.tsx ---
-info "website/src/pages/index.tsx"
-check_count "$SOCLE_DIR/website/src/pages/index.tsx" \
-    "'[0-9]+ Commands'" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/src/pages/index.tsx" \
-    "'[0-9]+ Sub-Agents'" "$ACTUAL_AGENTS" "agents"
-check_count "$SOCLE_DIR/website/src/pages/index.tsx" \
-    "'[0-9]+ Skills'" "$ACTUAL_SKILLS" "skills"
-check_count "$SOCLE_DIR/website/src/pages/index.tsx" \
-    "'[0-9]+ Rules'" "$ACTUAL_RULES" "rules"
-
-# --- Website architecture ---
-info "website/docs/intro/architecture.md"
-check_count "$SOCLE_DIR/website/docs/intro/architecture.md" \
-    "Commands \([0-9]+\)" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/docs/intro/architecture.md" \
-    "Agents \([0-9]+\)" "$ACTUAL_AGENTS" "agents"
-check_count "$SOCLE_DIR/website/docs/intro/architecture.md" \
-    "Skills \([0-9]+\)" "$ACTUAL_SKILLS" "skills"
-check_count "$SOCLE_DIR/website/docs/intro/architecture.md" \
-    "Rules \([0-9]+\)" "$ACTUAL_RULES" "rules"
-
-# --- Website intro/index.md ---
-info "website/docs/intro/index.md"
-check_count "$SOCLE_DIR/website/docs/intro/index.md" \
-    "Commands.*[0-9]+" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/docs/intro/index.md" \
-    "Agents.*[0-9]+" "$ACTUAL_AGENTS" "agents"
-
-# --- Website cheatsheet ---
-info "website/docs/reference/cheatsheet.md"
-check_count "$SOCLE_DIR/website/docs/reference/cheatsheet.md" \
-    "[0-9]+ Commands \| [0-9]+ Agents" "$ACTUAL_COMMANDS" "commands footer"
-
-# --- FeatureComparison.tsx ---
-info "website/src/components/FeatureComparison.tsx"
-check_count "$SOCLE_DIR/website/src/components/FeatureComparison.tsx" \
-    "commands: '[0-9]+'" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/src/components/FeatureComparison.tsx" \
-    "agents: '[0-9]+'" "$ACTUAL_AGENTS" "agents"
-check_count "$SOCLE_DIR/website/src/components/FeatureComparison.tsx" \
-    "skills: '[0-9]+'" "$ACTUAL_SKILLS" "skills"
-
-# --- Stats.tsx (Welcome page hero) ---
-info "website/src/components/Stats.tsx"
-check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
-    "number: [0-9]+, label: 'Commands'" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
-    "number: [0-9]+, label: 'Agents'" "$ACTUAL_AGENTS" "agents"
-check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
-    "number: [0-9]+, label: 'Skills'" "$ACTUAL_SKILLS" "skills"
-check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
-    "number: [0-9]+, label: 'Rules'" "$ACTUAL_RULES" "rules"
-
-# --- docusaurus.config.ts ---
-info "website/docusaurus.config.ts"
-check_count "$SOCLE_DIR/website/docusaurus.config.ts" \
-    "Commands \([0-9]+\)" "$ACTUAL_COMMANDS" "commands"
 
 echo ""
 
@@ -262,10 +207,10 @@ scan_drift() {
     # We avoid "15 work commands" (subset by domain), "22 Haiku agents" (by model), etc.
     # Cataloged "TOTAL" cases :
     #   1. `Label disponibles (N)`             -- e.g. `Skills disponibles (54)` (French canonical header)
-    #   2. `## Label (N)` / `### Label (N)`    -- markdown heading, e.g. `## Skills (54)`
+    #   2. `## Label (N[ available|...])`      -- markdown heading, e.g. `## Skills (54)` or `## Skills (54 available)`
     #   3. `'N Label'` / `'N Sub-Agents'`      -- string literal in TS/TSX components
-    #   4. `\*\*Label\*\* \| N \|`             -- table row with bold label cell
-    #   5. `# Label (N)`                        -- top heading
+    #   4. `\*\*Label\*\* \| ... \| N \|`      -- table row with bold label cell, possibly multi-column
+    #   5. `# N Label`                          -- top heading prefix
     # The label can be singular (Skill) or plural (Skills), Capitalized or ALLCAPS.
     # The form `Sub-Agents` is accepted for agent.
     local label_cap_singular label_cap_plural alt_form
@@ -274,9 +219,12 @@ scan_drift() {
     alt_form=""
     [[ "$label_singular" == "agent" ]] && alt_form="|Sub-Agents?|sub-agents?"
 
-    # Build the unified regex
+    # Build the unified regex.
+    # Pattern 2 accepts trailing text inside the parentheses (e.g. "Commands (131 available)").
+    # Pattern 4 accepts up to 4 intermediate cells before the number cell (e.g.
+    # `| **Agents** | foo | bar | baz | 63 |`) — common in 3+ column tables.
     local lab="(${label_cap_singular}|${label_cap_plural}${alt_form})"
-    local pattern_re="(${lab}\s+disponibles?\s+\(([0-9]+)\)|^#{1,4}\s+${lab}\s+\(([0-9]+)\)|'([0-9]+)\s+${lab}'|\|\s*\*\*${lab}\*\*\s*\|\s*([0-9]+)\s*\||^#{1,4}\s+([0-9]+)\s+${lab}\b)"
+    local pattern_re="(${lab}\s+disponibles?\s+\(([0-9]+)\)|^#{1,4}\s+${lab}\s+\(([0-9]+)[^)]*\)|'([0-9]+)\s+${lab}'|\|\s*\*\*${lab}\*\*\s*\|(\s*[^|]*\|){0,4}\s*([0-9]+)\s*\||^#{1,4}\s+([0-9]+)\s+${lab}\b)"
 
     while IFS= read -r match; do
         [[ -z "$match" ]] && continue

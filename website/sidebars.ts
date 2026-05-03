@@ -1,4 +1,5 @@
 import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
+import counts from '../counts.json';
 
 const sidebars: SidebarsConfig = {
   // Introduction sidebar
@@ -76,7 +77,7 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'category',
-          label: 'WORK (15)',
+          label: `WORK (${counts.byDomain.work})`,
           collapsed: true,
           link: {
             type: 'doc',
@@ -88,7 +89,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'DEV (23)',
+          label: `DEV (${counts.byDomain.dev})`,
           collapsed: true,
           link: {
             type: 'doc',
@@ -100,7 +101,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'QA (16)',
+          label: `QA (${counts.byDomain.qa})`,
           collapsed: true,
           link: {
             type: 'doc',
@@ -112,7 +113,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'OPS (34)',
+          label: `OPS (${counts.byDomain.ops})`,
           collapsed: true,
           link: {
             type: 'doc',
@@ -124,7 +125,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'DOC (9)',
+          label: `DOC (${counts.byDomain.doc})`,
           collapsed: true,
           link: {
             type: 'doc',
@@ -136,7 +137,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'BIZ (11)',
+          label: `BIZ (${counts.byDomain.biz})`,
           collapsed: true,
           link: {
             type: 'doc',
@@ -148,7 +149,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'GROWTH (11)',
+          label: `GROWTH (${counts.byDomain.growth})`,
           collapsed: true,
           link: {
             type: 'doc',
@@ -160,7 +161,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'DATA (3)',
+          label: `DATA (${counts.byDomain.data})`,
           collapsed: true,
           link: {
             type: 'doc',
@@ -172,7 +173,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'LEGAL (5)',
+          label: `LEGAL (${counts.byDomain.legal})`,
           collapsed: true,
           link: {
             type: 'doc',
