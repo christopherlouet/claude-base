@@ -11,20 +11,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Fixed
+---
 
-- **`scripts/update.sh` finally syncs `scripts/hooks/`**: the scripts referenced by `settings.json` (`command-validator.sh`, `prompt-context.sh`, `setup-deps.sh`, `socle-integrity-check.sh`) were previously missing after `update.sh --all` because the sync function ignored this directory. Result: `settings.json` pointed to non-existent scripts and the SessionStart/PreToolUse hooks failed silently. New `--hook-scripts` flag (included in `--all`), with idempotency, preservation of customizations and automatic `chmod +x`.
+## [1.31.0] - 2026-05-03
 
 ### Added
+
+#### Migration FR→EN (2026-04-30 → 2026-05-03)
+- **Full repository localization to English**: 537 files translated across 8 sequential tiers (~285k words). The project's primary language is now English, opening the door to international contributors.
+- Tier breakdown: Tier 1 (44 showcase + rules), Tier 2 (194 agents + commands), Tier 3 (96 skills + hooks), Tier 4 (77 website Docusaurus), Tier 5 (51 user templates + Terraform + missed markdown), Tier 6 (49 scripts + tests + CI + ROOT misc), Tier 7 (13 final missed), Tier 8 (13 settings.json + Docusaurus generators).
+- 29 auto-generated docs in `website/docs/{commands,agents,skills,rules}/` regenerated in EN via `npm run generate`.
+- 7 files intentionally remain bilingual: `scripts/hooks/prompt-context.sh` (FR/EN feedback detection), `scripts/update.sh` (legacy FR section detection in user CLAUDE.md cleanup), 5 `.bats` tests with bilingual output assertions.
+- CHANGELOG: header in EN with transition note; entries before v1.31.0 preserved in original FR as project history.
 
 #### Sync Claude Code March-April 2026
 - **Monitor Tool docs** (CLI 2.1.98+): new section in `docs/reference/advanced-features.md` describing the native tool that streams background events into the conversation. Use cases: tail logs, babysit CI, watch dev server. Recommended pairing with `/loop` auto-pace.
 - **`/autofix-pr` docs** (CLI 2.1.92+): dedicated section in `advanced-features.md` + entry in the Recommended Workflows table of `CLAUDE.md`. Enables PR auto-fix on Claude Code Web from the terminal for the current branch.
 - **March-April 2026 regression note** in `TROUBLESHOOTING-GUIDE.md`: default `medium` effort + broken thinking caching + 25-word system prompt, resolved in v2.1.101 on April 10.
 
-#### Migration FR→EN (2026-04-30 → 2026-05-02)
-- Full repository localization: 511 files translated, including README, CLAUDE.md, all `.claude/{rules,agents,commands,skills,templates}`, all `docs/`, all `templates/`, all `website/docs/` (hand-maintained), all `scripts/`, tests, and CI workflows.
-- Translation harness with TDD validators (`scripts/migration/`): glossary lock, blacklist preservation, structural checks, recovery state machine, multi-pass support.
+### Fixed
+
+- **`scripts/update.sh` finally syncs `scripts/hooks/`**: the scripts referenced by `settings.json` (`command-validator.sh`, `prompt-context.sh`, `setup-deps.sh`, `socle-integrity-check.sh`) were previously missing after `update.sh --all` because the sync function ignored this directory. Result: `settings.json` pointed to non-existent scripts and the SessionStart/PreToolUse hooks failed silently. New `--hook-scripts` flag (included in `--all`), with idempotency, preservation of customizations and automatic `chmod +x`.
+- README test layout counter: 23 files → 17 files (post-extraction of `tests/migration/`).
+
+### Removed
+
+- **`scripts/themes/`**: 25 files of out-of-mission terminal aliases (eza/ls colored aliases, gnome-terminal/starship installers). Preserved in git history if needed: `git log --all -- scripts/themes/`.
+- **`scripts/migration/`, `tests/migration/`, `specs/migration-fr-en/`, `docs/guides/MIGRATION-GUIDE.md`**: the FR→EN translation harness extracted to a standalone repository: [christopherlouet/claude-i18n-migration](https://github.com/christopherlouet/claude-i18n-migration). Battle-tested on this very migration, with multi-language roadmap (v1.0 FR→EN → v3.0 multi-target parallel).
 
 ---
 
