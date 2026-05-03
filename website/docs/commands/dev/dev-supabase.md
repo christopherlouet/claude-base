@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Configure and use Supabase as a backend (Auth, Database, Storage, Realtime, Edge Functions).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

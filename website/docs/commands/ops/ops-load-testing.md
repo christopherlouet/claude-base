@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Set up and run load and stress tests.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

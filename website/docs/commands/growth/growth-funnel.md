@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Analyzes and optimizes conversion funnels.
 
 ## Funnel to analyze
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

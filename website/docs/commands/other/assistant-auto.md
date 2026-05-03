@@ -20,7 +20,7 @@ fits based on the request + the injected repo context, then execute
 immediately via Skill.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Principle
 
@@ -59,7 +59,7 @@ that matches (e.g., `dev:dev-prisma` if a Prisma schema is mentioned,
    routing to an automated workflow.
 3. **Size**: a "fix typo X" stays `work:work-quick` even if the file
    touches auth.
-4. **Specific &gt; generic**: `dev:dev-flutter` &gt; `dev:dev-component`
+4. **Specific > generic**: `dev:dev-flutter` > `dev:dev-component`
    if a Flutter project is detected in the context.
 
 ## Expected output

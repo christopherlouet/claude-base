@@ -9,7 +9,7 @@ tags:
 
 # Rules: react
 
-> export function MyComponent(\{ title, onAction \}: Props) \{ const [state, setState] = useState&lt;string&gt;('');
+> export function MyComponent(\{ title, onAction \}: Props) \{ const [state, setState] = useState&lt;string>('');
 
 ## Affected files
 
@@ -71,7 +71,7 @@ These rules apply to files matching the following patterns:
 | Pattern | Usage |
 |---------|-------|
 | **Custom Hooks** | Encapsulate reusable stateful logic (modern default) |
-| **Compound Components** | Declarative API like `&lt;Tabs&gt;&lt;Tab/&gt;&lt;/Tabs&gt;` via internal Context |
+| **Compound Components** | Declarative API like `<Tabs><Tab/></Tabs>` via internal Context |
 | **Render Props / children function** | Share logic when hooks are insufficient (rare today) |
 | **Container / Presentational** | Separate fetch/state (container) from rendering (presentational) |
 | **Provider** | Inject dependencies/theme via Context |

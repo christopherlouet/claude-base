@@ -15,8 +15,8 @@ import {
   extractFirstHeading,
   extractDescription,
   generateFrontmatter,
-  escapeMdx,
 } from './utils/parse-frontmatter.js';
+import { escapeMdxContent } from './utils/escape-mdx-content.js';
 import { Domain, DOMAIN_LABELS, DOMAIN_DESCRIPTIONS } from './utils/types.js';
 
 const CLAUDE_DIR = path.resolve(__dirname, '../../.claude');
@@ -61,35 +61,6 @@ function parseCommandFile(filePath: string): CommandInfo | null {
 }
 
 /**
- * Escape content outside of code blocks for MDX safety
- */
-function escapeNonCodeContent(content: string): string {
-  const parts: string[] = [];
-  let lastIndex = 0;
-
-  // Match fenced code blocks
-  const codeBlockRegex = /```[\s\S]*?```/g;
-  let match;
-
-  while ((match = codeBlockRegex.exec(content)) !== null) {
-    // Escape content before this code block
-    if (match.index > lastIndex) {
-      parts.push(escapeMdx(content.slice(lastIndex, match.index)));
-    }
-    // Keep code block as-is
-    parts.push(match[0]);
-    lastIndex = match.index + match[0].length;
-  }
-
-  // Escape remaining content after last code block
-  if (lastIndex < content.length) {
-    parts.push(escapeMdx(content.slice(lastIndex)));
-  }
-
-  return parts.join('');
-}
-
-/**
  * Generate the Docusaurus page content for a command
  */
 function generateCommandPage(command: CommandInfo, position: number): string {
@@ -111,8 +82,8 @@ function generateCommandPage(command: CommandInfo, position: number): string {
   // Remove the $ARGUMENTS placeholder
   content = content.replace(/\$ARGUMENTS/g, '`<arguments>`');
 
-  // Escape MDX-problematic characters outside code blocks
-  content = escapeNonCodeContent(content);
+  // Escape MDX-problematic characters outside code regions
+  content = escapeMdxContent(content);
 
   // Add badges and metadata
   const header = `

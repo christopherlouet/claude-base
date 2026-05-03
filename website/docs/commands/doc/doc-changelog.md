@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Generation and maintenance of the project changelog.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

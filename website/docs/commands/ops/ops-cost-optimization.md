@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Analyze and optimize cloud infrastructure costs.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

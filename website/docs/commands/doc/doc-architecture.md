@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Documents a project's technical architecture in a clear and maintainable way.
 
 ## Project
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

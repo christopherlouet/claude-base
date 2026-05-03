@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Proxmox VE infrastructure management: VMs, LXC, network, storage, backup with Terraform.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

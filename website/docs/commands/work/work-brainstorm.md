@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Structured ideation: turn a vague idea into a validated design before specifying.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

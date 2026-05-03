@@ -62,11 +62,11 @@ tags:
 
 | Flag | Description | Example |
 |------|-------------|---------|
-| `--agent &lt;name&gt;` | Launch a specific agent directly | `claude --agent qa-security` |
+| `--agent <name>` | Launch a specific agent directly | `claude --agent qa-security` |
 | `--agents` | List all available agents | `claude --agents` |
 | `--chrome` | Enable Chrome integration (visual tests) | `claude --chrome` |
 | `--teleport` | Enable Teleport connection (remote) | `claude --teleport` |
-| `--remote` | Connect to a remote session | `claude --remote &lt;session-id&gt;` |
+| `--remote` | Connect to a remote session | `claude --remote <session-id>` |
 | `--fallback-model` | Fallback model if the primary is unavailable | `claude --fallback-model haiku` |
 | `--plugin-dir` | Plugin directory to load | `claude --plugin-dir ./plugins` |
 | `--bare` | Minimal scripted mode (skip hooks, LSP, plugins, skills) | `claude -p --bare "query"` |
@@ -76,6 +76,6 @@ tags:
 | `--init-only` | Initialize without starting a session | `claude --init-only` |
 | `--maintenance` | Run maintenance (Setup maintenance hook) | `claude --maintenance` |
 | `--max-budget-usd` | Maximum budget in USD for the session | `claude --max-budget-usd 5.00` |
-| `--fork-session` | Fork an existing session | `claude --fork-session &lt;id&gt;` |
+| `--fork-session` | Fork an existing session | `claude --fork-session <id>` |
 | `--strict-mcp-config` | Strict mode for MCP config | `claude --strict-mcp-config` |
 | `--teammate-mode` | Agent Teams display mode (auto, in-process, tmux) | `claude --teammate-mode tmux` |

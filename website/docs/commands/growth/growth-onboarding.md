@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Design an effective user onboarding journey.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
@@ -27,7 +27,7 @@ Bring the user to the "Aha moment" as fast as possible with onboarding tailored 
 ## Workflow
 
 - Identify the "Aha moment" and essential activation actions
-- Define the journey (Signup -&gt; Welcome -&gt; Setup -&gt; First Action -&gt; Aha)
+- Define the journey (Signup -> Welcome -> Setup -> First Action -> Aha)
 - Choose the onboarding pattern suited to the product
 - Reduce friction (1-click signup, default values, skip possible)
 - Design guiding empty states

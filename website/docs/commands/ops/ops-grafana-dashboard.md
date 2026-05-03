@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Creation of Grafana dashboards with automatic provisioning.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

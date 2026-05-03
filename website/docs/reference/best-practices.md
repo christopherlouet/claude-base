@@ -12,7 +12,7 @@ tags:
 
 ## Verification: The Quality Multiplier
 
-&gt; "Give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result." -- Boris Cherny
+> "Give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result." -- Boris Cherny
 
 Always give Claude a way to validate its work:
 
@@ -26,7 +26,7 @@ Integration: PostToolUse hooks (auto-format, type-check, lint), PreToolUse on co
 
 ## Recommended Model
 
-&gt; "I use Opus with adaptive thinking for everything." -- Boris Cherny
+> "I use Opus with adaptive thinking for everything." -- Boris Cherny
 
 | Context | Model | Rationale |
 |----------|--------|---------------|
@@ -48,7 +48,7 @@ See `docs/guides/PROMPTING-GUIDE.md` for the complete guide.
 
 ## Effort Levels
 
-&gt; Match the level of reasoning to the task.
+> Match the level of reasoning to the task.
 
 | Task | Effort | Why |
 |-------|--------|----------|
@@ -73,7 +73,7 @@ Do not duplicate: if it is in CLAUDE.md, no need to memorize it. Use "remember t
 
 ## Parallel Sessions
 
-&gt; "The single biggest productivity unlock." -- Boris Cherny
+> "The single biggest productivity unlock." -- Boris Cherny
 
 Use git worktrees for 5+ Claude Code sessions in parallel. See the `git-worktrees` skill for details.
 
@@ -97,7 +97,7 @@ If a refactoring breaks everything: `/rewind` (or `/undo`, equivalent alias) ret
 |-----------|--------|
 | Return after a break | `/recap` to recover the context |
 | After `/compact` | `/recap` to verify what was kept |
-| Onboarding on an existing session | `claude --resume &lt;id&gt;` then `/recap` |
+| Onboarding on an existing session | `claude --resume <id>` then `/recap` |
 
 Configurable via `/config` (enable/disable automatic recap on resume).
 
@@ -121,7 +121,7 @@ Compatible with API key, Bedrock, Vertex, and Foundry. Alternative: `FORCE_PROMP
 
 ### RTK (optional)
 
-&gt; Reduce token consumption by 60-90% with [RTK](https://github.com/rtk-ai/rtk).
+> Reduce token consumption by 60-90% with [RTK](https://github.com/rtk-ai/rtk).
 
 Installation: `brew install rtk`. The foundation includes a PreToolUse hook that automatically rewrites commands. Disabled by default, enable with `ENABLE_RTK=1` in the `env` section of `.claude/settings.json` or `.claude/settings.local.json`.
 

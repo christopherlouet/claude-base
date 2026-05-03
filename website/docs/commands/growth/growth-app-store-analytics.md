@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Monitoring of App Store and Google Play metrics via official APIs.
 
 ## Target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
@@ -44,7 +44,7 @@ Set up a pipeline to collect store metrics (downloads, revenue, ratings, retenti
 - 30-day trends, geo, retention curve
 
 ### Alerts
-- Downloads drop &gt; 50%, bad review spike, rating &lt; 4.0, crash rate &gt; 1%
+- Downloads drop > 50%, bad review spike, rating &lt; 4.0, crash rate > 1%
 
 ## Related agents
 

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Set up a comprehensive test automation strategy.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -48,7 +48,7 @@ Automate tests at all levels (unit, integration, E2E) to ensure quality and acce
 ### Metrics
 | Metric | Target |
 |--------|--------|
-| Coverage | &gt; 80% |
+| Coverage | > 80% |
 | Passing tests | 100% |
 | Execution time | &lt; 10 min |
 | Flaky tests | 0 |

@@ -9,7 +9,7 @@ tags:
 
 # Rules: vue
 
-> const count = ref(0) const double = computed(() =&gt; count.value * 2) &lt;/script&gt; ```
+> const count = ref(0) const double = computed(() => count.value * 2) &lt;/script> ```
 
 ## Affected files
 
@@ -26,7 +26,7 @@ These rules apply to files matching the following patterns:
 
 ## Composition API (mandatory)
 
-- `&lt;script setup&gt;` by default (more concise, better TS inference)
+- `<script setup>` by default (more concise, better TS inference)
 - `ref()` for primitives, `reactive()` for complex objects (only one per composable)
 - `computed()` for derived values (no `watch` + `ref`)
 - `watch()` / `watchEffect()` for side effects
@@ -57,8 +57,8 @@ export function useCounter(initial = 0) {
 
 ## Props and emits
 
-- Always type props: `defineProps&lt;\{ title: string; count?: number \}&gt;()`
-- Emits with validation: `defineEmits&lt;\{ (e: 'update', value: number): void \}&gt;()`
+- Always type props: `defineProps<{ title: string; count?: number }>()`
+- Emits with validation: `defineEmits<{ (e: 'update', value: number): void }>()`
 - `withDefaults()` for defaults on typed props
 - DO NOT mutate props (use v-model or emit)
 
@@ -77,7 +77,7 @@ export function useCounter(initial = 0) {
 
 | Avoid | Prefer |
 |----------|----------|
-| Options API (`data()`, `methods`) | Composition API (`&lt;script setup&gt;`) |
+| Options API (`data()`, `methods`) | Composition API (`<script setup>`) |
 | `ref()` for everything | `ref` for primitives, `reactive` for stable objects |
 | Vuex | Pinia (official for Vue 3) |
 | `watch()` for derivations | `computed()` |
@@ -103,13 +103,13 @@ export const useCounterStore = defineStore('counter', () => {
 - `v-memo` to memoize subtrees
 - `defineAsyncComponent()` for component code splitting
 - `shallowRef()` / `shallowReactive()` for large immutable structures
-- `&lt;Suspense&gt;` for async components with fallback
+- `<Suspense>` for async components with fallback
 
 ## Rules
 
-IMPORTANT: Use `&lt;script setup&gt;` systematically (not Options API).
+IMPORTANT: Use `<script setup>` systematically (not Options API).
 IMPORTANT: PascalCase naming for components, kebab-case in templates.
-YOU MUST type all props via `defineProps&lt;&gt;()`.
+YOU MUST type all props via `defineProps<>()`.
 NEVER mutate a prop directly (v-model + emit).
 NEVER use Vuex on a new project (Pinia).
 

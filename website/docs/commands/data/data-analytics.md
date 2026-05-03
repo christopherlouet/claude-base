@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Analyze data and create visualizations/reports.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

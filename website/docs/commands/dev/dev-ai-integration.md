@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Integration of language models (LLM) and AI APIs into applications.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

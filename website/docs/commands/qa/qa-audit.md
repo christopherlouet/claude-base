@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Complete project quality audit. Combines security, GDPR, accessibility, performance and code quality.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

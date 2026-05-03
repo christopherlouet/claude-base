@@ -183,7 +183,7 @@ func TestGetUser(t *testing.T) {
 - NEVER use `panic` for normal flow control
 - Avoid goroutines with no way to be cancelled
 - Avoid mutable global variables
-- Do not use `interface\{\}` / `any` without a valid reason
+- Do not use `interface{}` / `any` without a valid reason
 
 ## Automatic application
 

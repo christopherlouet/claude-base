@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Deployment and configuration on Vercel.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

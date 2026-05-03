@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Payment integration and subscription management.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

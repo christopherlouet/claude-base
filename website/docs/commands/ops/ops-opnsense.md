@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Infrastructure as Code for OPNsense. Configure and manage an OPNsense firewall via Terraform.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

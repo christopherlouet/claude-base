@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Create detailed and actionable user personas to guide product decisions.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

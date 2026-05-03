@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Create or optimize an effective landing page.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -29,7 +29,7 @@ Design a landing page with a single goal and a clear CTA, structured to maximize
 - Define the single goal and the target audience
 - Write the value proposition (headline + subtitle)
 - Structure the sections (hero, social proof, problem, solution, features, how it works, testimonials, pricing, FAQ, final CTA)
-- Optimize the copywriting (benefits &gt; features, AIDA)
+- Optimize the copywriting (benefits > features, AIDA)
 - Configure the CTAs (action verb + benefit, visible, contrast)
 - Optimize the technical side (performance &lt; 3s, SEO, mobile, schema.org)
 - Define the priority A/B tests (headline, CTA, hero image)
@@ -47,7 +47,7 @@ Design a landing page with a single goal and a clear CTA, structured to maximize
 | Metric | Target |
 |--------|--------|
 | Bounce rate | &lt; 50% |
-| Conversion rate | &gt; X% |
+| Conversion rate | > X% |
 
 ## Related agents
 

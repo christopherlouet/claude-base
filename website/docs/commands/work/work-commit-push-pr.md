@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Complete workflow: commit + push + PR in a single command.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -32,7 +32,7 @@ check quality, create a clean commit, push, create a documented PR.
 - Verify: not on main/master, no sensitive files, no console.log
 - Analyze the changes and determine the type (feat/fix/refactor/etc.)
 - Create a Conventional Commits commit (`type(scope): description`)
-- Push with upstream (`git push -u origin &lt;branch&gt;`)
+- Push with upstream (`git push -u origin <branch>`)
 - Create the PR with `gh pr create`: title, summary, test plan
 - Check the CI status after creation
 

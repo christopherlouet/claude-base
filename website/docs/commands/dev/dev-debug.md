@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Methodical and systematic bug diagnostic and resolution.
 
 ## Problem to analyze
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

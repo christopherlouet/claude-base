@@ -18,12 +18,12 @@ import CommandCard from '@site/src/components/CommandCard';
 React/Next.js performance optimization based on rules prioritized by impact.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
 Audit and optimize React/Next.js performance by identifying violations
-by priority (CRITICAL &gt; HIGH &gt; MEDIUM &gt; LOW) and measuring real impact.
+by priority (CRITICAL > HIGH > MEDIUM > LOW) and measuring real impact.
 
 ## Workflow
 
@@ -54,7 +54,7 @@ proposed corrections and measured gains (LCP, bundle size).
 
 IMPORTANT: Measure BEFORE and AFTER each optimization to validate real impact.
 
-YOU MUST prioritize CRITICAL &gt; HIGH &gt; MEDIUM &gt; LOW.
+YOU MUST prioritize CRITICAL > HIGH > MEDIUM > LOW.
 
 NEVER optimize prematurely - profile first, optimize later.
 

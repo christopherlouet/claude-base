@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Implements secure management of secrets and credentials.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

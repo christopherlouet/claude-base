@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Analyzes and improves user retention with data-driven strategies.
 
 ## Target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

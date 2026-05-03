@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Plan and visualize the product roadmap.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Fix a GitHub issue autonomously and completely.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

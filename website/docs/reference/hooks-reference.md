@@ -18,7 +18,7 @@ The project includes automatic hooks in `.claude/settings.json`:
 |-------|------|-------------|
 | `SessionStart` | command | Triggered at session startup (matchers: `startup`, `resume`, `clear`, `compact`) |
 | `UserPromptSubmit` | command | When the user submits a prompt (validation, additional context) |
-| `PreToolUse` | command/prompt | Before tool execution (matcher: `Edit\\|Write`, `Bash`) |
+| `PreToolUse` | command/prompt | Before tool execution (matcher: `Edit\|Write`, `Bash`) |
 | `PermissionRequest` | command/prompt | When a permission dialog is shown |
 | `PostToolUse` | command | After successful tool execution |
 | `PostToolUseFailure` | command | After a tool failure |
@@ -38,7 +38,7 @@ The project includes automatic hooks in `.claude/settings.json`:
 | `InstructionsLoaded` | command | When CLAUDE.md and rules are loaded |
 | `Elicitation` | command | When an MCP server requests structured input |
 | `ElicitationResult` | command | When the user responds to an MCP Elicitation |
-| `PermissionDenied` | command | After a permission denial by the auto mode classifier. Return `\{retry: true\}` to retry |
+| `PermissionDenied` | command | After a permission denial by the auto mode classifier. Return `{retry: true}` to retry |
 | `CwdChanged` | command | When the working directory changes |
 | `FileChanged` | command | When a file is modified |
 

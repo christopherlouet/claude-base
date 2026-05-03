@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Analyzes a project to propose a business model and the key elements of a business plan.
 
 ## Project to analyze
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

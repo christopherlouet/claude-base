@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Plan and analyze an A/B test.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

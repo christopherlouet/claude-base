@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Backup and restore strategy for the project's critical data.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

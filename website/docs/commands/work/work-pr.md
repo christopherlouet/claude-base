@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Creates a complete and well-documented Pull Request.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
@@ -32,7 +32,7 @@ Title format: `type(scope): concise description`
 - Analyze commits since main and determine the type (feature/fix/refactor)
 - Self-review: re-read the diff line by line, explicit names, no debug code
 - Write the title (Conventional Commits) and the body (description, changes, tests, checklist)
-- Push the branch (`git push -u origin &lt;branch&gt;`)
+- Push the branch (`git push -u origin <branch>`)
 - Create the PR with `gh pr create` (title, body, labels, reviewers)
 
 ## Expected output

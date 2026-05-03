@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Design and implementation of RAG (Retrieval-Augmented Generation) systems.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -32,7 +32,7 @@ retrieval and augmented generation with quality evaluation.
 - Configure the vector database (Pinecone, Weaviate, Chroma, pgvector, Qdrant)
 - Implement retrieval (similarity, MMR, hybrid, reranking)
 - Build the prompt template with context and anti-hallucination guards
-- Evaluate with metrics: retrieval precision (&gt;80%), recall (&gt;70%), faithfulness (&gt;90%), latency (&lt;3s)
+- Evaluate with metrics: retrieval precision (>80%), recall (>70%), faithfulness (>90%), latency (&lt;3s)
 - Optimize with query expansion or HyDE if necessary
 
 ## Expected output

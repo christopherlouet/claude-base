@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Conversion rate optimization (CRO) for pages, forms, signup flows, onboarding, and paywalls.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

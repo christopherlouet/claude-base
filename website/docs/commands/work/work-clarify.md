@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Asks targeted questions to reduce ambiguity in a specification.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -31,7 +31,7 @@ Load the spec from `specs/[feature]/spec.md` or the specified file.
 - Load and read the specification
 - Scan ambiguities by category: functional scope, data model, UX flow, non-functional quality, integrations, edge cases
 - Mark each category: **Clear** | **Partial** | **Missing**
-- Generate max 5 questions prioritized by impact (scope &gt; security &gt; UX &gt; technical)
+- Generate max 5 questions prioritized by impact (scope > security > UX > technical)
 - Ask ONE question at a time, wait for the answer
 - Each question: multiple choice (2-5 options) OR short answer (5 words max)
 - Always offer a recommendation based on best practices

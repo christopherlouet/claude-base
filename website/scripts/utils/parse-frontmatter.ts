@@ -180,21 +180,28 @@ export function extractSection(content: string, heading: string): string | null 
 }
 
 /**
- * Escape special MDX characters in text
- * This prevents MDX from interpreting { } < > as JSX expressions
- * and HTML from interpreting & as an entity prefix.
+ * Escape special MDX characters in text.
  *
- * Order matters: escape & FIRST (so already-encoded entities stay literal),
- * then \ (so subsequent \{ insertions don't introduce ambiguity), then
- * the syntactic characters.
+ * MDX would interpret raw `{...}` as a JS expression and raw `<X>` as a
+ * JSX component. We escape ONLY what is actually dangerous:
+ *   - `{` `}` → `\{` `\}` (JS expression)
+ *   - `<`     → `&lt;`    (JSX tag opener)
+ *
+ * What we deliberately DO NOT escape:
+ *   - `>`  alone is harmless in MDX (no JSX risk) and escaping it
+ *          breaks Markdown blockquotes (`> quoted text`).
+ *   - `&`  alone is harmless in MDX and escaping it double-encodes
+ *          pre-existing HTML entities (`&lt;` → `&amp;lt;` rendered
+ *          literally).
+ *
+ * The function is intentionally minimal. For text inside code regions
+ * (fenced or inline), use escapeMdxContent which skips this step.
  */
 export function escapeMdx(text: string): string {
   if (!text) return '';
   return text
-    .replace(/&/g, '&amp;')
     .replace(/\\/g, '\\\\')
     .replace(/\{/g, '\\{')
     .replace(/\}/g, '\\}')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/</g, '&lt;');
 }

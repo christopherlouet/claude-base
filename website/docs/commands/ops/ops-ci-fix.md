@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Diagnose and repair failing CI/CD pipelines.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

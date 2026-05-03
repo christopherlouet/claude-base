@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Quality audit specific to mobile applications (Flutter, React Native).
 
 ## Audit target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

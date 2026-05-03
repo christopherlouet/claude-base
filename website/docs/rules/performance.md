@@ -53,7 +53,7 @@ These rules apply to files matching the following patterns:
 - Pagination or infinite scroll (never load all the data)
 
 ## Bundle
-- Specific imports (`import \{ debounce \} from 'lodash-es'`, not `import _ from 'lodash'`)
+- Specific imports (`import { debounce } from 'lodash-es'`, not `import _ from 'lodash'`)
 - Analyze with `ANALYZE=true npm run build`
 
 ## Preloading
@@ -65,12 +65,12 @@ These rules apply to files matching the following patterns:
 ## Advanced lazy loading
 - By visibility: `IntersectionObserver` or `loading="lazy"` for off-screen components/media
 - By interaction: load on hover/focus before the click (preconnect + import())
-- Virtual lists for lists &gt; 100 items (`react-window`, `@tanstack/react-virtual`)
+- Virtual lists for lists > 100 items (`react-window`, `@tanstack/react-virtual`)
 
 ## Bundle (continued)
 - Tree-shaking: ESM only, `sideEffects: false` in `package.json`, named imports
 - Vite: `build.rollupOptions.output.manualChunks` to split vendors, analyze via `rollup-plugin-visualizer`
-- Third-party scripts: `&lt;Script strategy="lazyOnload"&gt;` (Next.js) or defer/async + Partytown to offload to a worker
+- Third-party scripts: `<Script strategy="lazyOnload">` (Next.js) or defer/async + Partytown to offload to a worker
 
 ## Modern rendering patterns
 - Islands Architecture: hydrate only interactive zones (Astro, Fresh)

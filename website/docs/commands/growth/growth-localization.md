@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Localization strategy and international expansion.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Systematic prompt optimization for LLM applications.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -29,7 +29,7 @@ Audit the current prompt and apply optimization techniques.
 
 - Audit the prompt (clarity, structure, context, examples, constraints, output format - score 1-5 each)
 - Apply techniques: few-shot, chain-of-thought, role prompting, structured output, negative prompting, delimiter clarity
-- Structure the optimized prompt: Role &gt; Context &gt; Task &gt; Instructions &gt; Constraints &gt; Examples &gt; Output format
+- Structure the optimized prompt: Role > Context > Task > Instructions > Constraints > Examples > Output format
 - Use advanced patterns if necessary (self-consistency, ReAct)
 - Evaluate with metrics: precision, consistency, relevance, format, tokens
 - A/B test the original prompt vs optimized

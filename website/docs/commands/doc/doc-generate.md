@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Documentation generation for code.
 
 ## Target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

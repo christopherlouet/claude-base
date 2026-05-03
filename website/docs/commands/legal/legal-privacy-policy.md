@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Generates a Privacy Policy compliant with GDPR and international standards.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

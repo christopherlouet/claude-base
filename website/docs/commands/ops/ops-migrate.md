@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Migration of code, dependencies or data.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

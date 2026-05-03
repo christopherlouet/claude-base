@@ -18,12 +18,12 @@ import CommandCard from '@site/src/components/CommandCard';
 Prepare and perform a clean commit following conventions.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
 Create an atomic, well-documented commit compliant with Conventional Commits.
-The commit is the last step of the workflow: **EXPLORE -&gt; (BRAINSTORM) -&gt; SPECIFY -&gt; PLAN -&gt; TDD -&gt; AUDIT -&gt; COMMIT**
+The commit is the last step of the workflow: **EXPLORE -> (BRAINSTORM) -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT**
 
 ## Workflow
 
@@ -34,7 +34,7 @@ The commit is the last step of the workflow: **EXPLORE -&gt; (BRAINSTORM) -&gt; 
 - Check for the absence of debug console.log and useless commented-out code
 - Determine the type: feat, fix, refactor, test, docs, style, perf, chore
 - Write the message: `type(scope): description` (&lt; 50 chars, imperative, no period)
-- Add the relevant files (`git add &lt;files&gt;`, check before)
+- Add the relevant files (`git add <files>`, check before)
 - Commit with explanatory body if necessary
 
 ## Expected output

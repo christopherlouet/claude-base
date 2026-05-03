@@ -18,12 +18,12 @@ import CommandCard from '@site/src/components/CommandCard';
 Analyzes the codebase without writing code. EXPLORATION mode only.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
 Deeply understand a part of the codebase before any modification.
-Exploration is the mandatory first step: **EXPLORE -&gt; (BRAINSTORM) -&gt; SPECIFY -&gt; PLAN -&gt; TDD -&gt; AUDIT -&gt; COMMIT**
+Exploration is the mandatory first step: **EXPLORE -> (BRAINSTORM) -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT**
 
 ## Workflow
 

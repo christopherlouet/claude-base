@@ -10,7 +10,7 @@ tags:
 
 # Claude Code Team Guide
 
-&gt; Set up Claude Code and the foundation for a development team
+> Set up Claude Code and the foundation for a development team
 
 ## Why a shared configuration
 

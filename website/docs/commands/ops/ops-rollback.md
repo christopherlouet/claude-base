@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Secure rollback procedure to revert to a stable version.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

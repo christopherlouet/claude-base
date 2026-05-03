@@ -10,12 +10,12 @@ tags:
 
 # Foundation Extension Guide
 
-&gt; How to customize and extend the claude-socle foundation for your own projects.
+> How to customize and extend the claude-socle foundation for your own projects.
 
-&gt; **Dual audience**: this guide covers two distinct cases.
-&gt;
-&gt; - **You are extending your user project** (adding custom commands/rules/skills): your `@imports` in `CLAUDE.md` should point to `@.claude/docs/...` (since the foundation's documentation is installed under `.claude/docs/` on your side).
-&gt; - **You are contributing to the claude-socle repo**: the foundation's `@imports` point to `@docs/...` (the foundation keeps its documentation directly under `docs/`). See also [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
+> **Dual audience**: this guide covers two distinct cases.
+>
+> - **You are extending your user project** (adding custom commands/rules/skills): your `@imports` in `CLAUDE.md` should point to `@.claude/docs/...` (since the foundation's documentation is installed under `.claude/docs/` on your side).
+> - **You are contributing to the claude-socle repo**: the foundation's `@imports` point to `@docs/...` (the foundation keeps its documentation directly under `docs/`). See also [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
 
 ## Overview
 
@@ -106,7 +106,7 @@ To force reload: restart a session or use `/clear`.
 
 A skill is a `SKILL.md` file in a subfolder of `.claude/skills/`. It encapsulates a complete workflow with its instructions, examples and constraints.
 
-&gt; Since CLI 2.1.x, **slash commands and skills are unified**: each skill automatically gets a `/slash-command` interface. Files in `.claude/commands/` continue to work for compatibility, but the recommended approach for any new workflow is `.claude/skills/`. The foundation keeps `.claude/commands/` only for namespaced shortcuts (e.g., `/work:work-pr`).
+> Since CLI 2.1.x, **slash commands and skills are unified**: each skill automatically gets a `/slash-command` interface. Files in `.claude/commands/` continue to work for compatibility, but the recommended approach for any new workflow is `.claude/skills/`. The foundation keeps `.claude/commands/` only for namespaced shortcuts (e.g., `/work:work-pr`).
 
 ### Folder structure
 
@@ -470,7 +470,7 @@ Files always loaded (imports in this project):
 | Mandatory workflow | `CLAUDE.md` | Applies to the whole team |
 | Code conventions | `CLAUDE.md` or rules | Depending on whether contextual or global |
 | Personal preferences | `~/.claude/memory/` | Not committed, personal |
-| Conventions per language | `.claude/rules/&lt;lang&gt;.md` | Active only on the relevant files |
+| Conventions per language | `.claude/rules/<lang>.md` | Active only on the relevant files |
 | Architecture decisions | `~/.claude/memory/` | Memorized per session |
 | Long references | Separate file with `@import` | Avoids overloading the context |
 

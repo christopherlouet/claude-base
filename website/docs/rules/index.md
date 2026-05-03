@@ -56,7 +56,7 @@ import Stats from '@site/src/components/Stats';
 | [`testing`](/docs/rules/testing) | // Act - Execute the action const result = functio... | `**/*.test.ts`, `**/*.test.tsx`... |
 | [`typescript`](/docs/rules/typescript) | TypeScript Rules | `**/*.ts`, `**/*.tsx`... |
 | [`verification`](/docs/rules/verification) | Any implementation must be verified BEFORE being c... | `**/*.ts`, `**/*.tsx`... |
-| [`vue`](/docs/rules/vue) | const count = ref(0) const double = computed(() =&gt;... | `**/*.vue`, `**/composables/**`... |
+| [`vue`](/docs/rules/vue) | const count = ref(0) const double = computed(() =>... | `**/*.vue`, `**/composables/**`... |
 | [`workflow`](/docs/rules/workflow) | Before starting work on an existing project: | - |
 
 ## Categories

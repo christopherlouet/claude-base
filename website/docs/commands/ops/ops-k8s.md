@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Kubernetes deployment and orchestration.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Responsive and mobile-first audit of a web application.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -28,12 +28,12 @@ Verify that the application works correctly on all breakpoints (320px to 2560px)
 
 - Test the 7 breakpoints (320, 375, 425, 768, 1024, 1440, 2560)
 - Verify structure (viewport, mobile-first CSS, flexbox/grid)
-- Verify navigation (hamburger, touch targets &gt;= 44px)
-- Verify typography (&gt;= 16px, line-height &gt;= 1.5)
+- Verify navigation (hamburger, touch targets >= 44px)
+- Verify typography (>= 16px, line-height >= 1.5)
 - Verify images (srcset, lazy loading, aspect ratio)
-- Verify forms (inputs &gt;= 44px, correct type, mobile keyboard)
+- Verify forms (inputs >= 44px, correct type, mobile keyboard)
 - Test orientation (portrait + landscape)
-- Verify touch interactions (tap, swipe, spacing &gt;= 8px)
+- Verify touch interactions (tap, swipe, spacing >= 8px)
 
 ## Expected output
 
@@ -49,8 +49,8 @@ Verify that the application works correctly on all breakpoints (320px to 2560px)
 |------------|------|-------|----------|
 
 ### Priority fixes
-1. Critical: [Issue] -&gt; [Solution]
-2. Important: [Issue] -&gt; [Solution]
+1. Critical: [Issue] -> [Solution]
+2. Important: [Issue] -> [Solution]
 
 ## Related agents
 

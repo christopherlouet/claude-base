@@ -10,7 +10,7 @@ tags:
 
 # Troubleshooting Guide
 
-&gt; Solve common problems with Claude Code and the claude-socle foundation
+> Solve common problems with Claude Code and the claude-socle foundation
 
 ## Sections
 
@@ -36,8 +36,8 @@ tags:
 | Too many permission prompts | Permissions too restrictive for the workflow | `/less-permission-prompts` scans transcripts and proposes optimized allowlists |
 | Git conflict during the TDD cycle | Branch out of sync, missing intermediate commit | `git stash`, `git pull --rebase`, then `git stash pop` |
 | `claude` not found or Node errors after `claude update` | Migration to the native binary (CLI 2.1.113+): the CLI is no longer a JavaScript bundle | Reinstall via the official channel, check `which claude` and `claude --version`. Old aliases pointing to `node /path/to/cli.js` no longer work |
-| Subagent that "hangs" without returning | Before CLI 2.1.113: silent hang possible | Update: subagents idle &gt; 10 min now fail with a clear message |
-| Permission dialog that crashes when a teammate requests a tool | CLI bug prior to 2.1.114 | Update to CLI &gt;= 2.1.114 |
+| Subagent that "hangs" without returning | Before CLI 2.1.113: silent hang possible | Update: subagents idle > 10 min now fail with a clear message |
+| Permission dialog that crashes when a teammate requests a tool | CLI bug prior to 2.1.114 | Update to CLI >= 2.1.114 |
 | Truncated responses, incoherent reasoning, degraded quality between March 4 and April 10 2026 | Cumulative regression: default `medium` effort, broken thinking history caching, system prompt limiting to 25 words between tool calls | Resolved in v2.1.101 (April 10 2026). Run `claude update`; the default effort returns to `high` and caching is fixed |
 
 ### Context window full
@@ -412,7 +412,7 @@ git checkout -b feature/new-attempt
 | Long session, same topic | `/compact` | Preserves learned decisions and conventions |
 | Between two workflow phases | `/compact` | Keeps the context of the plan and exploration |
 | Switching to an unrelated feature | `/clear` | Prevents the old context from polluting the new one |
-| Context window &gt; 80% used | `/compact` | Preventive before saturation |
+| Context window > 80% used | `/compact` | Preventive before saturation |
 | Corrupted or inconsistent context | `/clear` | Start over on a clean basis |
 
 Rule: prefer `/compact` over `/clear`. Compaction preserves the essentials (decisions, conventions, project structure) whereas `/clear` erases everything and forces re-exploration.

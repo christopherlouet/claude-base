@@ -18,12 +18,12 @@ import CommandCard from '@site/src/components/CommandCard';
 Design a detailed implementation plan. PLANNING mode only.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
 Create a complete and validatable implementation plan before writing code.
-Part of the workflow: **EXPLORE -&gt; (BRAINSTORM) -&gt; SPECIFY -&gt; PLAN -&gt; TDD -&gt; AUDIT -&gt; COMMIT**
+Part of the workflow: **EXPLORE -> (BRAINSTORM) -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT**
 Use the templates in `.claude/templates/` (plan-template.md, tasks-template.md).
 
 ## Workflow

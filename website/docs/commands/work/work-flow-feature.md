@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Complete workflow for developing a new feature, from exploration to merge.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

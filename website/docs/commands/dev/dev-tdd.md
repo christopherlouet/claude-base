@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Implements a feature by following the TDD (Test-Driven Development) cycle.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

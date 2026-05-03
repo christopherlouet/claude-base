@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Autonomous and sequential execution of user stories from a PRD file (JSON or Markdown).
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

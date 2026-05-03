@@ -78,10 +78,10 @@ This project is a B2B e-commerce application.
 - **Project**: `.claude/commands/` (shared via git)
 - **Personal**: `~/.claude/commands/` (global)
 
-&gt; **Note**: The foundation's commands are organized into subdirectories by category
-&gt; (work/, dev/, qa/, ops/, doc/, biz/, growth/, data/, legal/).
-&gt; Your custom commands can be at the root of `.claude/commands/`
-&gt; or in a subdirectory of your choice.
+> **Note**: The foundation's commands are organized into subdirectories by category
+> (work/, dev/, qa/, ops/, doc/, biz/, growth/, data/, legal/).
+> Your custom commands can be at the root of `.claude/commands/`
+> or in a subdirectory of your choice.
 
 ### Structure of a command
 
@@ -268,7 +268,7 @@ Hooks are configured directly in the `settings.json` file:
 | `Bash` | Shell commands |
 | `Read` | File reading |
 | `Glob`, `Grep` | Search |
-| `Edit\\|Write` | Multiple tools (regex) |
+| `Edit\|Write` | Multiple tools (regex) |
 | `*` | All tools |
 
 ### Environment variables
@@ -374,7 +374,7 @@ When the user requests a TypeScript review:
 
 ### `.mcp.json` file
 
-&gt; **Security important**: by default, MCPs are disabled in the foundation (minimal `.mcp.json`). Only enable the servers you need and review their permissions.
+> **Security important**: by default, MCPs are disabled in the foundation (minimal `.mcp.json`). Only enable the servers you need and review their permissions.
 
 ```json
 {
@@ -405,7 +405,7 @@ When the user requests a TypeScript review:
 | Fetch | `@modelcontextprotocol/server-fetch` | HTTP requests |
 | Memory | `@modelcontextprotocol/server-memory` | Knowledge graph memory |
 
-Full list: &lt;https://github.com/modelcontextprotocol/servers&gt;.
+Full list: &lt;https://github.com/modelcontextprotocol/servers>.
 
 ---
 

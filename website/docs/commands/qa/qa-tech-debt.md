@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Identification and prioritization of technical debt in the codebase.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -51,7 +51,7 @@ Scan the code to identify technical debt (code, architecture, tests, documentati
 ### Remediation plan
 1. Phase 1 - Quick Wins (&lt; 1 sprint)
 2. Phase 2 - Refactoring (1-2 sprints)
-3. Phase 3 - Architecture (&gt; 2 sprints)
+3. Phase 3 - Architecture (> 2 sprints)
 
 ## Related agents
 

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Guide for creating quality MCP (Model Context Protocol) servers.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

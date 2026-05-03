@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Generates complete and compliant Terms of Service.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

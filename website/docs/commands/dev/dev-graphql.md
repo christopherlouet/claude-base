@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Design and implement GraphQL APIs with a Flutter client.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Generates complete, high-quality tests for existing code.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -34,7 +34,7 @@ edge cases and error cases to guarantee code reliability.
   - Errors: invalid inputs, expected exceptions, impossible states
   - Boundary: off-by-one, thresholds (just before/exactly/just after), state transitions
 - **Generate** tests in AAA structure (Arrange-Act-Assert) with descriptive names
-- **Verify**: run the tests, validate coverage (&gt;80%)
+- **Verify**: run the tests, validate coverage (>80%)
 
 ## Coverage thresholds
 
@@ -62,7 +62,7 @@ IMPORTANT: No mocks except for external dependencies (API, DB, filesystem).
 
 IMPORTANT: Tests must be independent of each other.
 
-YOU MUST aim for coverage &gt; 80% on the target code.
+YOU MUST aim for coverage > 80% on the target code.
 
 YOU MUST test edge cases (null, undefined, empty, limits).
 

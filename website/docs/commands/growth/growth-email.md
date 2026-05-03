@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Create transactional and marketing email templates.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

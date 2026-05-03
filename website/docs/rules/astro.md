@@ -153,13 +153,13 @@ Enables transition animations between pages, SPA feel without a framework.
 | React component everywhere | `.astro` for static, framework for islands |
 | `client:load` by default | `client:visible` |
 | Fetch inside the `.astro` component at runtime | `getStaticPaths()` or Content Collections at build time |
-| `document.querySelector` inside `&lt;script&gt;` without event listener | Properly scoped scripts with `is:inline` if needed |
+| `document.querySelector` inside `<script>` without event listener | Properly scoped scripts with `is:inline` if needed |
 | Astro for full-SPA dashboard | Next.js / SvelteKit are better suited |
 
 ## Performance
 
 - Zero JS by default → typical Lighthouse 100
-- Native image optimization: `&lt;Image src=\{img\} alt="" /&gt;` from `astro:assets`
+- Native image optimization: `<Image src={img} alt="" />` from `astro:assets`
 - CSS scoped to the component (no collisions)
 - Automatic prefetching of internal links (opt-in config)
 
