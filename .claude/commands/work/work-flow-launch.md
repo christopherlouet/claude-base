@@ -1,55 +1,55 @@
-# Agent WORK-FLOW-LAUNCH
+# WORK-FLOW-LAUNCH Agent
 
-Workflow technique pour developper et lancer un produit, du setup au go-live.
+Technical workflow to develop and launch a product, from setup to go-live.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Couvrir le workflow technique de developpement et deploiement d'un produit.
-Pour l'analyse business prealable, utiliser `/biz:biz-launch`.
-Prerequis : analyse business completee, MVP defini, budget et timeline approuves.
+Cover the technical workflow of product development and deployment.
+For the prior business analysis, use `/biz:biz-launch`.
+Prerequisites: business analysis completed, MVP defined, budget and timeline approved.
 
 ## Workflow
 
-### Phase 1 : Setup
-- Setup projet et stack technique (repo, structure, linter, CI/CD, env vars)
-- Configuration CI/CD et environnements
+### Phase 1: Setup
+- Project setup and technical stack (repo, structure, linter, CI/CD, env vars)
+- CI/CD configuration and environments
 
-### Phase 2 : Developpement
-- Core features par User Story (tests -> code -> review -> merge)
-- Tests et QA : unitaires > 80%, integration, E2E critiques, security review
-- Responsive et accessibilite
+### Phase 2: Development
+- Core features per User Story (tests -> code -> review -> merge)
+- Tests and QA: unit > 80%, integration, critical E2E, security review
+- Responsive and accessibility
 
-### Phase 3 : Lancement
-- Landing page optimisee (hero, CTA, social proof, pricing)
-- Analytics et SEO (events tracking, meta tags, sitemap, Core Web Vitals)
-- Go-live : domain, SSL, DNS, emails, paiements, legal (CGU, CGV, RGPD)
-- Monitoring post-launch : uptime, erreurs, performance, feedback
+### Phase 3: Launch
+- Optimized landing page (hero, CTA, social proof, pricing)
+- Analytics and SEO (events tracking, meta tags, sitemap, Core Web Vitals)
+- Go-live: domain, SSL, DNS, emails, payments, legal (ToS, Sales Terms, GDPR)
+- Post-launch monitoring: uptime, errors, performance, feedback
 
-## Output attendu
+## Expected output
 
-1. **Setup** : Projet initialise avec CI/CD
-2. **MVP** : Features core implementees et testees
-3. **Launch** : Produit en ligne avec analytics et monitoring
+1. **Setup**: Project initialized with CI/CD
+2. **MVP**: Core features implemented and tested
+3. **Launch**: Product online with analytics and monitoring
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/biz:biz-launch` | Analyse business prealable |
-| `/dev:dev-testing-setup` | Configurer les tests |
-| `/ops:ops-ci` | CI/CD avancee |
-| `/qa:qa-security` | Audit de securite |
-| `/growth:growth-seo` | SEO avance |
+| `/biz:biz-launch` | Prior business analysis |
+| `/dev:dev-testing-setup` | Configure tests |
+| `/ops:ops-ci` | Advanced CI/CD |
+| `/qa:qa-security` | Security audit |
+| `/growth:growth-seo` | Advanced SEO |
 
 ---
 
-IMPORTANT: Faire d'abord l'analyse business avec `/biz:biz-launch` avant ce workflow.
+IMPORTANT: First do the business analysis with `/biz:biz-launch` before this workflow.
 
-YOU MUST avoir le legal en place avant le go-live (CGU, CGV, RGPD).
+YOU MUST have legal in place before go-live (ToS, Sales Terms, GDPR).
 
-NEVER sacrifier la qualite pour aller plus vite - mieux vaut reporter.
+NEVER sacrifice quality to move faster - better to postpone.
 
-Think hard sur ce qui est vraiment MVP vs nice-to-have.
+Think hard about what is truly MVP vs nice-to-have.

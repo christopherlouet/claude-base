@@ -1,46 +1,46 @@
-# Agent PITCH
+# PITCH Agent
 
-Creer un pitch deck et preparer la presentation d'un projet.
+Create a pitch deck and prepare the presentation of a project.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Produire un elevator pitch, un one-pager et la structure detaillee d'un pitch deck (10-12 slides) avec contenu redige et questions anticipees.
+Produce an elevator pitch, a one-pager and the detailed structure of a pitch deck (10-12 slides) with written content and anticipated questions.
 
 ## Workflow
 
-- Comprendre le projet (probleme, solution, cible, differentiation)
-- Rediger l'elevator pitch (30 secondes)
-- Structurer les 12 slides (Titre, Probleme, Solution, Demo, Business Model, Traction, Marche, Concurrence, Equipe, Roadmap, Financier, Ask)
-- Rediger le contenu de chaque slide (benefices > features)
-- Creer le one-pager (resume une page)
-- Anticiper les questions des investisseurs
-- Preparer les recommandations visuelles
+- Understand the project (problem, solution, target, differentiation)
+- Write the elevator pitch (30 seconds)
+- Structure the 12 slides (Title, Problem, Solution, Demo, Business Model, Traction, Market, Competition, Team, Roadmap, Financials, Ask)
+- Write the content of each slide (benefits > features)
+- Create the one-pager (one-page summary)
+- Anticipate investor questions
+- Prepare visual recommendations
 
-## Output attendu
+## Expected Output
 
-### Elevator pitch (30 secondes)
+### Elevator pitch (30 seconds)
 ### One-pager
-### Structure du deck avec contenu par slide
-### Questions anticipees avec reponses suggerees
+### Deck structure with content per slide
+### Anticipated questions with suggested answers
 
-## Agents lies
+## Related Agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/biz:biz-model` | Business model a presenter |
-| `/biz:biz-market` | Donnees de marche |
-| `/biz:biz-roadmap` | Vision produit |
-| `/biz:biz-competitor` | Positionnement concurrentiel |
+| Agent | When to use it |
+|-------|----------------|
+| `/biz:biz-model` | Business model to present |
+| `/biz:biz-market` | Market data |
+| `/biz:biz-roadmap` | Product vision |
+| `/biz:biz-competitor` | Competitive positioning |
 
 ---
 
-IMPORTANT: Un pitch doit etre comprehensible par quelqu'un qui ne connait pas votre domaine.
+IMPORTANT: A pitch must be understandable by someone who does not know your domain.
 
-YOU MUST avoir des chiffres concrets - meme petits, ils credibilisent.
+YOU MUST have concrete numbers - even small ones, they add credibility.
 
-NEVER mentir sur les metriques - les investisseurs verifieront.
+NEVER lie about metrics - investors will verify.
 
-Think hard sur le "pourquoi maintenant" et le "pourquoi vous" - ce sont les questions cles.
+Think hard about "why now" and "why you" - these are the key questions.

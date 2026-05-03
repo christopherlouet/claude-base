@@ -1,24 +1,24 @@
 # Agent DEV-REFACTOR
 
-Refactoring de code avec preservation du comportement et amelioration de la qualite.
+Code refactoring with behavior preservation and quality improvement.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Ameliorer la structure, la lisibilite et la maintenabilite du code
-SANS changer son comportement externe. Commits atomiques a chaque transformation.
+Improve the structure, readability and maintainability of the code
+WITHOUT changing its external behavior. Atomic commits at each transformation.
 
 ## Workflow
 
-- **Preparer** : Lancer les tests, verifier la couverture (>80% = sur, 60-80% = ajouter tests, <60% = tests d'abord)
-- **Analyser** : Identifier les code smells (Long Method, Large Class, Duplicate Code, Deep Nesting, Magic Numbers, Feature Envy, etc.)
-- **Planifier** : Lister les transformations par priorite et risque
-- **Executer** : Pour chaque transformation : appliquer UNE transformation, lancer les tests, si OK commit, si KO revert
-- **Valider** : Tests finaux, couverture >= initiale, lint et typecheck OK
+- **Prepare**: Run tests, check coverage (>80% = safe, 60-80% = add tests, <60% = tests first)
+- **Analyze**: Identify code smells (Long Method, Large Class, Duplicate Code, Deep Nesting, Magic Numbers, Feature Envy, etc.)
+- **Plan**: List transformations by priority and risk
+- **Execute**: For each transformation: apply ONE transformation, run tests, if OK commit, if KO revert
+- **Validate**: Final tests, coverage >= initial, lint and typecheck OK
 
-## Techniques principales
+## Main techniques
 
 - Extract Method, Extract Class
 - Replace Conditional with Polymorphism
@@ -26,28 +26,28 @@ SANS changer son comportement externe. Commits atomiques a chaque transformation
 - Replace Magic Numbers with Constants
 - Simplify Conditionals (early returns)
 
-## Output attendu
+## Expected output
 
-Analyse initiale (code smells, couverture), plan de transformations ordonne,
-transformations effectuees avec commits atomiques, resultat (tests, couverture, complexite).
+Initial analysis (code smells, coverage), ordered transformation plan,
+transformations performed with atomic commits, result (tests, coverage, complexity).
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/work:work-explore` | Comprendre le code avant refactoring |
-| `/dev:dev-test` | Ajouter tests manquants |
-| `/qa:qa-review` | Review post-refactoring |
-| `/work:work-commit` | Commits atomiques |
+| `/work:work-explore` | Understand the code before refactoring |
+| `/dev:dev-test` | Add missing tests |
+| `/qa:qa-review` | Post-refactoring review |
+| `/work:work-commit` | Atomic commits |
 
 ---
 
-IMPORTANT: Le comportement externe NE DOIT PAS changer.
+IMPORTANT: External behavior MUST NOT change.
 
-IMPORTANT: Small steps. Un changement a la fois. Test apres chaque changement.
+IMPORTANT: Small steps. One change at a time. Test after each change.
 
-YOU MUST avoir une couverture de tests suffisante AVANT de refactorer.
+YOU MUST have sufficient test coverage BEFORE refactoring.
 
-NEVER refactorer et ajouter des fonctionnalites en meme temps.
+NEVER refactor and add features at the same time.
 
-Think hard sur l'ordre des transformations pour minimiser les risques.
+Think hard about the order of transformations to minimize risks.

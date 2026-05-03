@@ -1,91 +1,91 @@
 ---
 sidebar_position: 4
-title: "03 - API REST Node.js"
-description: Développez une API REST complète avec TDD, validation et documentation OpenAPI
+title: "03 - Node.js REST API"
+description: Develop a complete REST API with TDD, validation and OpenAPI documentation
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# Créer une API REST avec TDD
+# Create a REST API with TDD
 
-<DifficultyBadge level="intermediate" /> **Durée estimée : 45 minutes**
+<DifficultyBadge level="intermediate" /> **Estimated duration: 45 minutes**
 
-Ce tutoriel vous montre comment développer une API REST professionnelle en utilisant le TDD (Test-Driven Development).
+This tutorial shows you how to develop a professional REST API using TDD (Test-Driven Development).
 
-## Objectifs
+## Objectives
 
-À la fin de ce tutoriel, vous saurez :
-- Utiliser `/dev:dev-api` pour créer des endpoints
-- Utiliser `/dev:dev-tdd` pour le développement piloté par les tests
-- Utiliser `/doc:doc-api-spec` pour générer la documentation OpenAPI
-- Structurer une API Node.js de manière professionnelle
+By the end of this tutorial, you will know how to:
+- Use `/dev:dev-api` to create endpoints
+- Use `/dev:dev-tdd` for test-driven development
+- Use `/doc:doc-api-spec` to generate OpenAPI documentation
+- Structure a Node.js API professionally
 
-## Prérequis
+## Prerequisites
 
-- Node.js 18+ installé
-- Un projet Express ou Fastify
-- Connaissances de base en API REST
+- Node.js 18+ installed
+- An Express or Fastify project
+- Basic knowledge of REST APIs
 
-## Contexte
+## Context
 
-Nous allons créer une API de gestion de **tâches (todos)** avec :
-- CRUD complet (Create, Read, Update, Delete)
-- Validation des données
-- Documentation OpenAPI
-- Tests d'intégration
+We will create a **tasks (todos)** management API with:
+- Full CRUD (Create, Read, Update, Delete)
+- Data validation
+- OpenAPI documentation
+- Integration tests
 
-## Étape 1 : Explorer la structure existante
-
-```bash
-/work:work-explore "Analyser la structure de l'API existante et les patterns utilisés"
-```
-
-Claude va identifier :
-- Le framework utilisé (Express, Fastify, Nest...)
-- La structure des routes
-- Les middlewares en place
-- Les patterns de validation
-
-## Étape 2 : Planifier l'API
+## Step 1: Explore the existing structure
 
 ```bash
-/work:work-plan "API CRUD pour les tâches (todos) avec validation et documentation"
+/work:work-explore "Analyze the structure of the existing API and the patterns used"
 ```
 
-**Plan attendu :**
+Claude will identify:
+- The framework used (Express, Fastify, Nest...)
+- The route structure
+- The middlewares in place
+- The validation patterns
+
+## Step 2: Plan the API
+
+```bash
+/work:work-plan "CRUD API for tasks (todos) with validation and documentation"
+```
+
+**Expected plan:**
 
 ```
-## Plan : API Todos
+## Plan: Todos API
 
-### Endpoints à créer
-- GET    /api/todos      - Liste des tâches
-- GET    /api/todos/:id  - Détail d'une tâche
-- POST   /api/todos      - Créer une tâche
-- PUT    /api/todos/:id  - Modifier une tâche
-- DELETE /api/todos/:id  - Supprimer une tâche
+### Endpoints to create
+- GET    /api/todos      - List of tasks
+- GET    /api/todos/:id  - Task details
+- POST   /api/todos      - Create a task
+- PUT    /api/todos/:id  - Update a task
+- DELETE /api/todos/:id  - Delete a task
 
-### Fichiers
+### Files
 - src/routes/todos.ts    - Routes
-- src/services/todos.ts  - Logique métier
-- src/schemas/todos.ts   - Validation Zod
-- tests/todos.test.ts    - Tests d'intégration
+- src/services/todos.ts  - Business logic
+- src/schemas/todos.ts   - Zod validation
+- tests/todos.test.ts    - Integration tests
 ```
 
-## Étape 3 : Développer en TDD
+## Step 3: Develop with TDD
 
-Utilisons le TDD pour garantir la qualité.
+Let's use TDD to guarantee quality.
 
-### Lancez le développement TDD
+### Start TDD development
 
 ```bash
-/dev:dev-tdd "Créer l'endpoint POST /api/todos pour créer une nouvelle tâche"
+/dev:dev-tdd "Create the POST /api/todos endpoint to create a new task"
 ```
 
-### Cycle TDD
+### TDD cycle
 
-Claude va suivre le cycle **Red → Green → Refactor** :
+Claude will follow the **Red → Green → Refactor** cycle:
 
-**1. Red - Écrire le test qui échoue**
+**1. Red - Write the failing test**
 
 ```typescript
 // tests/todos.test.ts
@@ -95,8 +95,8 @@ import { app } from '../src/app';
 describe('POST /api/todos', () => {
   it('should create a new todo', async () => {
     const newTodo = {
-      title: 'Apprendre TDD',
-      description: 'Suivre le tutoriel claude-socle',
+      title: 'Learn TDD',
+      description: 'Follow the claude-socle tutorial',
     };
 
     const response = await request(app)
@@ -116,7 +116,7 @@ describe('POST /api/todos', () => {
   it('should return 400 if title is missing', async () => {
     const response = await request(app)
       .post('/api/todos')
-      .send({ description: 'Sans titre' })
+      .send({ description: 'No title' })
       .expect(400);
 
     expect(response.body.error).toContain('title');
@@ -124,7 +124,7 @@ describe('POST /api/todos', () => {
 });
 ```
 
-**2. Green - Implémenter le minimum**
+**2. Green - Implement the minimum**
 
 ```typescript
 // src/schemas/todos.ts
@@ -162,34 +162,34 @@ router.post('/', async (req, res) => {
 export default router;
 ```
 
-**3. Refactor - Améliorer le code**
+**3. Refactor - Improve the code**
 
-Après que les tests passent, Claude propose des améliorations :
-- Extraire la validation dans un middleware
-- Ajouter la gestion d'erreurs centralisée
-- Typer les réponses
+After the tests pass, Claude proposes improvements:
+- Extract the validation into a middleware
+- Add centralized error handling
+- Type the responses
 
-## Étape 4 : Créer les autres endpoints
+## Step 4: Create the other endpoints
 
-Continuez avec les autres endpoints :
+Continue with the other endpoints:
 
 ```bash
-/dev:dev-api "GET /api/todos - Liste paginée des tâches avec filtres"
+/dev:dev-api "GET /api/todos - Paginated list of tasks with filters"
 ```
 
 ```bash
-/dev:dev-api "GET /api/todos/:id - Récupérer une tâche par son ID"
+/dev:dev-api "GET /api/todos/:id - Get a task by its ID"
 ```
 
 ```bash
-/dev:dev-api "PUT /api/todos/:id - Mettre à jour une tâche"
+/dev:dev-api "PUT /api/todos/:id - Update a task"
 ```
 
 ```bash
-/dev:dev-api "DELETE /api/todos/:id - Supprimer une tâche"
+/dev:dev-api "DELETE /api/todos/:id - Delete a task"
 ```
 
-### Résultat final
+### Final result
 
 ```typescript
 // src/routes/todos.ts
@@ -200,14 +200,14 @@ import { todoService } from '../services/todos';
 
 const router = Router();
 
-// Liste des tâches
+// List of tasks
 router.get('/', validate(querySchema, 'query'), async (req, res) => {
   const { page = 1, limit = 10, completed } = req.query;
   const todos = await todoService.findAll({ page, limit, completed });
   res.json(todos);
 });
 
-// Détail d'une tâche
+// Task details
 router.get('/:id', async (req, res) => {
   const todo = await todoService.findById(req.params.id);
   if (!todo) {
@@ -216,13 +216,13 @@ router.get('/:id', async (req, res) => {
   res.json(todo);
 });
 
-// Créer une tâche
+// Create a task
 router.post('/', validate(createTodoSchema), async (req, res) => {
   const todo = await todoService.create(req.body);
   res.status(201).json(todo);
 });
 
-// Modifier une tâche
+// Update a task
 router.put('/:id', validate(updateTodoSchema), async (req, res) => {
   const todo = await todoService.update(req.params.id, req.body);
   if (!todo) {
@@ -231,7 +231,7 @@ router.put('/:id', validate(updateTodoSchema), async (req, res) => {
   res.json(todo);
 });
 
-// Supprimer une tâche
+// Delete a task
 router.delete('/:id', async (req, res) => {
   const deleted = await todoService.delete(req.params.id);
   if (!deleted) {
@@ -243,13 +243,13 @@ router.delete('/:id', async (req, res) => {
 export default router;
 ```
 
-## Étape 5 : Générer la documentation OpenAPI
+## Step 5: Generate the OpenAPI documentation
 
 ```bash
 /doc:doc-api-spec
 ```
 
-Claude va générer une spécification OpenAPI complète :
+Claude will generate a complete OpenAPI specification:
 
 ```yaml
 # openapi.yaml
@@ -257,12 +257,12 @@ openapi: 3.0.3
 info:
   title: Todos API
   version: 1.0.0
-  description: API de gestion de tâches
+  description: Tasks management API
 
 paths:
   /api/todos:
     get:
-      summary: Liste des tâches
+      summary: List of tasks
       parameters:
         - name: page
           in: query
@@ -280,14 +280,14 @@ paths:
             type: boolean
       responses:
         '200':
-          description: Liste paginée des tâches
+          description: Paginated list of tasks
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TodoList'
 
     post:
-      summary: Créer une tâche
+      summary: Create a task
       requestBody:
         required: true
         content:
@@ -296,9 +296,9 @@ paths:
               $ref: '#/components/schemas/CreateTodo'
       responses:
         '201':
-          description: Tâche créée
+          description: Task created
         '400':
-          description: Données invalides
+          description: Invalid data
 
 components:
   schemas:
@@ -318,33 +318,33 @@ components:
           format: date-time
 ```
 
-## Étape 6 : Vérifier la sécurité
+## Step 6: Check security
 
 ```bash
 /qa:qa-security
 ```
 
-Claude va vérifier :
-- Validation des entrées (injection)
-- Gestion des erreurs (pas de leak d'info)
+Claude will check:
+- Input validation (injection)
+- Error handling (no info leak)
 - Rate limiting
-- Authentification (si nécessaire)
+- Authentication (if needed)
 
-## Étape 7 : Lancer les tests
+## Step 7: Run the tests
 
 ```bash
 npm test
 ```
 
-Vérifiez que tous les tests passent.
+Verify that all tests pass.
 
-## Étape 8 : Commiter
+## Step 8: Commit
 
 ```bash
 /work:work-commit
 ```
 
-**Message suggéré :**
+**Suggested message:**
 
 ```
 feat(api): add todos CRUD endpoints with TDD
@@ -358,41 +358,41 @@ feat(api): add todos CRUD endpoints with TDD
 - Add comprehensive integration tests
 ```
 
-## Récapitulatif
+## Recap
 
-Vous avez créé une API REST complète :
+You have created a complete REST API:
 
 ```
 src/
 ├── routes/
-│   └── todos.ts           # Routes Express
+│   └── todos.ts           # Express routes
 ├── services/
-│   └── todos.ts           # Logique métier
+│   └── todos.ts           # Business logic
 ├── schemas/
-│   └── todos.ts           # Validation Zod
+│   └── todos.ts           # Zod validation
 ├── middleware/
-│   └── validate.ts        # Middleware validation
-└── openapi.yaml           # Documentation API
+│   └── validate.ts        # Validation middleware
+└── openapi.yaml           # API documentation
 
 tests/
-└── todos.test.ts          # Tests d'intégration
+└── todos.test.ts          # Integration tests
 ```
 
-| Commande | Ce qu'elle fait |
-|----------|-----------------|
-| `/dev:dev-tdd` | Développement Test-Driven |
-| `/dev:dev-api` | Crée un endpoint avec validation |
-| `/doc:doc-api-spec` | Génère la doc OpenAPI |
-| `/qa:qa-security` | Audit de sécurité |
+| Command | What it does |
+|---------|--------------|
+| `/dev:dev-tdd` | Test-Driven development |
+| `/dev:dev-api` | Creates an endpoint with validation |
+| `/doc:doc-api-spec` | Generates the OpenAPI doc |
+| `/qa:qa-security` | Security audit |
 
-## Prochaines étapes
+## Next steps
 
-- [Tutoriel 04 : Flutter + Supabase](/docs/tutorials/flutter-supabase) - Backend mobile
-- [Guide API](/docs/concepts/stack-recipes) - Bonnes pratiques API
-- [Commande /dev:dev-graphql](/docs/commands/dev/dev-graphql) - API GraphQL
+- [Tutorial 04: Flutter + Supabase](/docs/tutorials/flutter-supabase) - Mobile backend
+- [API Guide](/docs/concepts/stack-recipes) - API best practices
+- [Command /dev:dev-graphql](/docs/commands/dev/dev-graphql) - GraphQL API
 
 ---
 
-:::tip TDD en pratique
-Le TDD peut sembler plus lent au début, mais il garantit une meilleure couverture de tests et un code plus maintenable. Utilisez `/dev:dev-tdd` pour les fonctionnalités critiques.
+:::tip TDD in practice
+TDD may seem slower at first, but it guarantees better test coverage and more maintainable code. Use `/dev:dev-tdd` for critical features.
 :::

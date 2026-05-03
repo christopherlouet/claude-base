@@ -1,6 +1,6 @@
 ---
 name: ops-docker
-description: Containerisation Docker et Docker Compose. Declencher quand l'utilisateur veut dockeriser une application ou creer des containers.
+description: Docker and Docker Compose containerization. Trigger when the user wants to dockerize an application or create containers.
 allowed-tools:
   - Read
   - Write
@@ -14,7 +14,7 @@ disable-model-invocation: true
 
 # Docker Containerization
 
-## Dockerfile Multi-Stage
+## Multi-Stage Dockerfile
 
 ```dockerfile
 # Stage 1: Build
@@ -75,10 +75,10 @@ volumes:
   postgres_data:
 ```
 
-## Bonnes pratiques
+## Best practices
 
-- Multi-stage builds pour reduire la taille
-- Non-root user pour la securite
-- .dockerignore pour exclure les fichiers inutiles
-- Health checks pour la disponibilite
-- Labels pour les metadonnees
+- Multi-stage builds to reduce size
+- Non-root user for security
+- .dockerignore to exclude unnecessary files
+- Health checks for availability
+- Labels for metadata

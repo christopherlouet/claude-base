@@ -1,67 +1,67 @@
 # Claude Code Rules
 
-Regles modulaires appliquees automatiquement selon les fichiers modifies (path-specific rules).
+Modular rules applied automatically based on the modified files (path-specific rules).
 
-## Regles disponibles (30)
+## Available rules (30)
 
-| Regle | Paths cibles | Description |
-|-------|-------------|-------------|
+| Rule | Target paths | Description |
+|------|-------------|-------------|
 | `accessibility` | `**/*.tsx`, `**/*.jsx`, `**/components/**`, `**/pages/**` | WCAG 2.1 AA, aria, semantic HTML |
 | `api` | `**/api/**`, `**/routes/**`, `**/controllers/**` | REST conventions, validation, status codes |
 | `astro` | `**/*.astro`, `**/astro.config.*`, `**/content/**` | Islands architecture, client directives, Content Collections |
 | `csharp` | `**/*.cs`, `**/*.csproj` | Nullable, async/await, .NET patterns |
-| `deploy-safety` | `**/docker-compose*`, `**/Dockerfile*`, `**/deploy*`, `**/.env*`, `**/middleware.*`, `**/sw.js`, `**/layout.tsx` | Checklist pre-deploy, REVERT FIRST, high-risk files |
-| `design-style` | `**/*.tsx`, `**/*.jsx`, `**/components/**`, `**/pages/**`, `**/app/**` | Direction artistique UI (terminal, cockpit, vitality, editorial, glass, signal) |
+| `deploy-safety` | `**/docker-compose*`, `**/Dockerfile*`, `**/deploy*`, `**/.env*`, `**/middleware.*`, `**/sw.js`, `**/layout.tsx` | Pre-deploy checklist, REVERT FIRST, high-risk files |
+| `design-style` | `**/*.tsx`, `**/*.jsx`, `**/components/**`, `**/pages/**`, `**/app/**` | UI art direction (terminal, cockpit, vitality, editorial, glass, signal) |
 | `flutter` | `**/*.dart`, `**/lib/**`, `**/test/**` | Clean Architecture, BLoC, widgets |
 | `git` | _(global)_ | Conventional commits, branches, safety rules |
 | `go` | `**/*.go`, `**/go.mod` | Error handling, interfaces, concurrency |
 | `java` | `**/*.java`, `**/pom.xml`, `**/build.gradle` | Optional, Streams, Spring Boot |
-| `lsp` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.rs`, `**/*.java`, `**/*.cs`, `**/*.rb`, `**/*.php`, `**/*.kt`, `**/*.dart` | LSP vs Grep, navigation semantique, activation |
-| `migration-safety` | `**/package.json`, `**/tsconfig.json`, `**/next.config.*`, `**/.eslintrc*`, `**/eslint.config.*`, `**/pyproject.toml`, `**/go.mod` | Checklist migration framework, caches |
+| `lsp` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.rs`, `**/*.java`, `**/*.cs`, `**/*.rb`, `**/*.php`, `**/*.kt`, `**/*.dart` | LSP vs Grep, semantic navigation, activation |
+| `migration-safety` | `**/package.json`, `**/tsconfig.json`, `**/next.config.*`, `**/.eslintrc*`, `**/eslint.config.*`, `**/pyproject.toml`, `**/go.mod` | Framework migration checklist, caches |
 | `nextjs` | `**/next.config.*`, `**/app/**`, `**/pages/**` | RSC, data fetching, caching, App Router |
 | `performance` | `**/*.tsx`, `**/*.ts`, `**/pages/**` | Core Web Vitals, lazy loading, memoization |
 | `php` | `**/*.php`, `**/composer.json` | PSR-12, Laravel, type declarations |
 | `python` | `**/*.py`, `**/pyproject.toml` | Type hints, PEP 8, async patterns |
-| `react` | `**/*.tsx`, `**/components/**`, `**/hooks/**` | Composants, hooks, performance |
-| `research` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.dart`, `**/*.rs` | Verifier natif avant build custom |
+| `react` | `**/*.tsx`, `**/components/**`, `**/hooks/**` | Components, hooks, performance |
+| `research` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.dart`, `**/*.rs` | Check native before building custom |
 | `ruby` | `**/*.rb`, `**/Gemfile` | Rails conventions, RSpec |
 | `rust` | `**/*.rs`, `**/Cargo.toml` | Ownership, error handling, traits |
 | `security` | `**/auth/**`, `**/api/**`, `**/middleware/**` | XSS, SQL injection, CSRF, auth |
 | `service-worker` | `**/sw.js`, `**/service-worker*` | NEVER cache HTML navigations, bump cache version |
-| `socle-maintenance` | `.claude/skills/**`, `.claude/agents/**`, `.claude/commands/**`, `.claude/rules/**`, `.claude/settings.json`, `scripts/hooks/**` | Sync compteurs, catalog, hook message quand on modifie le socle |
+| `socle-maintenance` | `.claude/skills/**`, `.claude/agents/**`, `.claude/commands/**`, `.claude/rules/**`, `.claude/settings.json`, `scripts/hooks/**` | Sync counters, catalog, hook message when modifying the foundation |
 | `svelte` | `**/*.svelte`, `**/*.svelte.ts`, `**/svelte.config.*` | Runes (Svelte 5), SvelteKit, form actions |
-| `tdd-enforcement` | `**/*.ts`, `**/*.tsx`, `**/*.dart`, `**/*.py`, `**/*.go`, ... | TDD proactif obligatoire pour tout code |
-| `testing` | `**/*.test.ts`, `**/*.spec.ts`, `**/tests/**` | Couverture 80%, mocks, edge cases |
+| `tdd-enforcement` | `**/*.ts`, `**/*.tsx`, `**/*.dart`, `**/*.py`, `**/*.go`, ... | Proactive TDD mandatory for all code |
+| `testing` | `**/*.test.ts`, `**/*.spec.ts`, `**/tests/**` | 80% coverage, mocks, edge cases |
 | `typescript` | `**/*.ts`, `**/*.tsx`, `**/*.mts` | Strict mode, no any, interfaces |
-| `verification` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, ... | Verification 4 phases avant completion |
+| `verification` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, ... | 4-phase verification before completion |
 | `vue` | `**/*.vue`, `**/composables/**`, `**/stores/**`, `**/nuxt.config.*` | Composition API, Pinia, Nuxt 3+ |
 | `workflow` | _(global)_ | Explore → Plan → TDD → Commit |
 
-## Ordre de priorité des rules
+## Rule priority order
 
-Quand un fichier correspond à plusieurs rules (ex: `.tsx` active typescript + react + accessibility + performance + verification + tdd-enforcement), toutes s'appliquent simultanément. En cas de conflit:
+When a file matches several rules (e.g., `.tsx` activates typescript + react + accessibility + performance + verification + tdd-enforcement), all apply simultaneously. In case of conflict:
 
-| Priorité | Rule | Raison |
+| Priority | Rule | Reason |
 |----------|------|--------|
-| 1 (max) | `security` | La sécurité prime sur tout |
-| 2 | `verification` | Vérification obligatoire avant completion |
-| 3 | `tdd-enforcement` | TDD obligatoire pour tout code |
-| 4 | Rules de langage (`typescript`, `python`, `go`...) | Conventions spécifiques au langage |
-| 5 | Rules de framework (`react`, `nextjs`, `flutter`...) | Conventions spécifiques au framework |
-| 6 | `testing` | Normes de tests |
-| 7 | `performance`, `accessibility`, `design-style` | Optimisations et bonnes pratiques |
-| 8 | `api`, `lsp` | Conventions d'interface |
-| 9 | `research`, `deploy-safety`, `socle-maintenance` | Garde-fous process |
+| 1 (max) | `security` | Security trumps everything |
+| 2 | `verification` | Mandatory verification before completion |
+| 3 | `tdd-enforcement` | TDD mandatory for all code |
+| 4 | Language rules (`typescript`, `python`, `go`...) | Language-specific conventions |
+| 5 | Framework rules (`react`, `nextjs`, `flutter`...) | Framework-specific conventions |
+| 6 | `testing` | Test standards |
+| 7 | `performance`, `accessibility`, `design-style` | Optimizations and best practices |
+| 8 | `api`, `lsp` | Interface conventions |
+| 9 | `research`, `deploy-safety`, `socle-maintenance` | Process guardrails |
 
-### Exemple: modification de `src/components/Button.tsx`
+### Example: modifying `src/components/Button.tsx`
 
-Rules activées: `typescript` + `react` + `accessibility` + `performance` + `design-style` + `verification` + `tdd-enforcement`
+Activated rules: `typescript` + `react` + `accessibility` + `performance` + `design-style` + `verification` + `tdd-enforcement`
 
-Résolution: sécurité d'abord, puis vérification, puis TDD, puis conventions TypeScript, puis React, puis accessibilité, performance et direction design.
+Resolution: security first, then verification, then TDD, then TypeScript conventions, then React, then accessibility, performance and design direction.
 
-## Fonctionnement
+## How it works
 
-Les regles sont activees automatiquement quand un fichier correspondant aux `paths` est modifie. Les regles globales (sans paths) s'appliquent toujours.
+Rules are activated automatically when a file matching the `paths` is modified. Global rules (without paths) always apply.
 
 ```yaml
 ---
@@ -69,5 +69,5 @@ paths:
   - "**/*.tsx"
   - "**/components/**"
 ---
-# Contenu de la regle applique a ces fichiers
+# Rule content applied to these files
 ```

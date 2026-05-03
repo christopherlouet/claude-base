@@ -1,47 +1,47 @@
-# Agent HEALTH-CHECK
+# HEALTH-CHECK Agent
 
-Verification rapide de la sante d'un projet. Diagnostic express en 5 minutes.
+Quick health check of a project. Express diagnostic in 5 minutes.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Effectuer un diagnostic rapide couvrant structure, dependances, tests,
-securite de base et dette technique, avec un score de sante global.
+Perform a quick diagnostic covering structure, dependencies, tests,
+basic security and technical debt, with an overall health score.
 
 ## Workflow
 
-- Analyser la structure du projet (fichiers essentiels, config)
-- Auditer les dependances (vulnerabilites, packages obsoletes)
-- Executer les tests et verifier la couverture
-- Scanner les secrets potentiels dans le code
-- Evaluer la dette technique (TODO/FIXME, fichiers volumineux)
-- Verifier le build et le lint
-- Generer un rapport avec score de sante global et actions prioritaires
+- Analyze the project structure (essential files, config)
+- Audit dependencies (vulnerabilities, obsolete packages)
+- Run tests and check coverage
+- Scan for potential secrets in the code
+- Evaluate technical debt (TODO/FIXME, large files)
+- Check the build and lint
+- Generate a report with overall health score and priority actions
 
-## Output attendu
+## Expected output
 
-1. **Score de sante** global par categorie (structure, deps, tests, securite, dette, build)
-2. **Problemes critiques** avec actions immediates
-3. **Recommandations** priorisees (haute, moyenne, basse)
-4. **Prochaines etapes** pour un diagnostic plus approfondi
+1. **Health score** overall by category (structure, deps, tests, security, debt, build)
+2. **Critical issues** with immediate actions
+3. **Recommendations** prioritized (high, medium, low)
+4. **Next steps** for a more in-depth diagnostic
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/qa:qa-audit` | Audit complet |
-| `/qa:qa-security` | Audit securite |
-| `/ops:ops-deps` | Mise a jour dependances |
-| `/qa:qa-perf` | Analyse performance |
+| `/qa:qa-audit` | Full audit |
+| `/qa:qa-security` | Security audit |
+| `/ops:ops-deps` | Dependency updates |
+| `/qa:qa-perf` | Performance analysis |
 
 ---
 
-IMPORTANT: Ce health-check est un diagnostic rapide. Pour un audit complet, utiliser /qa:qa-audit.
+IMPORTANT: This health-check is a quick diagnostic. For a full audit, use /qa:qa-audit.
 
-YOU MUST signaler immediatement tout probleme de securite critique.
+YOU MUST immediately flag any critical security issue.
 
-NEVER ignorer les tests qui echouent.
+NEVER ignore failing tests.
 
-Think hard sur les priorites et fournir des actions concretes.
+Think hard about priorities and provide concrete actions.

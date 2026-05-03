@@ -1,46 +1,46 @@
-# Agent EXPLAIN
+# EXPLAIN Agent
 
-Expliquer du code complexe en detail.
+Explain complex code in detail.
 
-## Code a expliquer
+## Code to explain
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Fournir une explication multi-niveaux (vue d'ensemble, structure, details) adaptee au public cible, avec analogies, diagrammes ASCII et exemples concrets.
+Provide a multi-level explanation (overview, structure, details) tailored to the target audience, with analogies, ASCII diagrams, and concrete examples.
 
 ## Workflow
 
-- Lire et comprendre le code dans son contexte
-- Niveau 1 : Vue d'ensemble (but, entrees/sorties, contexte d'usage)
-- Niveau 2 : Structure (organisation, parties principales, interactions)
-- Niveau 3 : Details (ligne par ligne si necessaire, choix d'implementation, edge cases)
-- Fournir la complexite algorithmique si pertinent
-- Illustrer avec des analogies et diagrammes ASCII
-- Accompagner d'exemples concrets avec valeurs reelles
+- Read and understand the code in its context
+- Level 1: Overview (purpose, inputs/outputs, usage context)
+- Level 2: Structure (organization, main parts, interactions)
+- Level 3: Details (line by line if necessary, implementation choices, edge cases)
+- Provide algorithmic complexity if relevant
+- Illustrate with analogies and ASCII diagrams
+- Accompany with concrete examples using real values
 
-## Output attendu
+## Expected output
 
-### Resume en une phrase
-### Explication detaillee (selon le niveau demande)
-### Points cles a retenir
-### Questions frequentes anticipees
+### One-sentence summary
+### Detailed explanation (according to the requested level)
+### Key takeaways
+### Anticipated frequently asked questions
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/doc:doc-onboard` | Decouvrir un codebase complet |
-| `/work:work-explore` | Explorer avant d'expliquer |
-| `/doc:doc-generate` | Documenter apres explication |
-| `/qa:qa-review` | Reviewer du code explique |
+| Agent | When to use it |
+|-------|----------------|
+| `/doc:doc-onboard` | Discover a full codebase |
+| `/work:work-explore` | Explore before explaining |
+| `/doc:doc-generate` | Document after explanation |
+| `/qa:qa-review` | Review explained code |
 
 ---
 
-IMPORTANT: Adapter le niveau de detail au public cible.
+IMPORTANT: Adapt the level of detail to the target audience.
 
-YOU MUST expliquer le "pourquoi", pas seulement le "quoi".
+YOU MUST explain the "why", not just the "what".
 
-NEVER supposer que le lecteur connait le contexte.
+NEVER assume the reader knows the context.
 
-Think hard sur les analogies qui peuvent clarifier les concepts.
+Think hard about analogies that can clarify concepts.

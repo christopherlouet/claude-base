@@ -1,20 +1,20 @@
 ---
 sidebar_position: 1
-title: Screen Flutter
-description: Exemple de screen Flutter avec Clean Architecture
+title: Flutter Screen
+description: Flutter screen example with Clean Architecture
 ---
 
-# Screen Flutter avec Clean Architecture
+# Flutter Screen with Clean Architecture
 
-Cet exemple montre comment créer un screen Flutter professionnel avec Clean Architecture et BLoC.
+This example shows how to create a professional Flutter screen with Clean Architecture and BLoC.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/dev:dev-flutter "Créer un screen de liste de produits avec pagination"
+/dev:dev-flutter "Create a product list screen with pagination"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 lib/features/products/
@@ -44,7 +44,7 @@ lib/features/products/
         └── product_list.dart
 ```
 
-## Code du Screen
+## Screen code
 
 ### Domain Layer
 
@@ -53,7 +53,7 @@ lib/features/products/
 ```dart
 import 'package:equatable/equatable.dart';
 
-/// Entité Product - coeur du domaine métier
+/// Product entity - core of the business domain
 class Product extends Equatable {
   final String id;
   final String name;
@@ -85,7 +85,7 @@ import 'package:dartz/dartz.dart';
 import '../entities/product.dart';
 import '../../../../core/error/failures.dart';
 
-/// Interface du repository - définit le contrat
+/// Repository interface - defines the contract
 abstract class ProductRepository {
   Future<Either<Failure, List<Product>>> getProducts({
     required int page,
@@ -257,7 +257,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   static const int _pageSize = 20;
 
-  ProductBloc({required this.getProducts}) : super(const ProductState()) {
+  ProductBloc({required this.getProducts}): super(const ProductState()) {
     on<LoadProducts>(_onLoadProducts);
     on<LoadMoreProducts>(_onLoadMoreProducts);
     on<RefreshProducts>(_onRefreshProducts);
@@ -338,7 +338,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     SearchProducts event,
     Emitter<ProductState> emit,
   ) async {
-    add(LoadProducts(search: event.query.isEmpty ? null : event.query));
+    add(LoadProducts(search: event.query.isEmpty ? null: event.query));
   }
 }
 ```
@@ -409,7 +409,7 @@ class _ProductListViewState extends State<ProductListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Produits'),
+        title: const Text('Products'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -417,7 +417,7 @@ class _ProductListViewState extends State<ProductListView> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Rechercher...',
+                hintText: 'Search...',
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.surface,
@@ -446,7 +446,7 @@ class _ProductListViewState extends State<ProductListView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      state.errorMessage ?? 'Une erreur est survenue',
+                      state.errorMessage ?? 'An error occurred',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     const SizedBox(height: 16),
@@ -454,7 +454,7 @@ class _ProductListViewState extends State<ProductListView> {
                       onPressed: () {
                         context.read<ProductBloc>().add(const RefreshProducts());
                       },
-                      child: const Text('Réessayer'),
+                      child: const Text('Retry'),
                     ),
                   ],
                 ),
@@ -464,7 +464,7 @@ class _ProductListViewState extends State<ProductListView> {
             case ProductStatus.loadingMore:
               if (state.products.isEmpty) {
                 return const Center(
-                  child: Text('Aucun produit trouvé'),
+                  child: Text('No product found'),
                 );
               }
 
@@ -549,14 +549,14 @@ class ProductCard extends StatelessWidget {
               ),
             ),
 
-            // Contenu
+            // Content
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Catégorie
+                    // Category
                     Text(
                       product.category.toUpperCase(),
                       style: theme.textTheme.labelSmall?.copyWith(
@@ -566,7 +566,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
 
-                    // Nom
+                    // Name
                     Text(
                       product.name,
                       style: theme.textTheme.titleMedium?.copyWith(
@@ -577,7 +577,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
 
-                    // Prix et stock
+                    // Price and stock
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -612,15 +612,15 @@ class _StockBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: inStock ? Colors.green.shade50 : Colors.red.shade50,
+        color: inStock ? Colors.green.shade50: Colors.red.shade50,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
-        inStock ? 'En stock' : 'Rupture',
+        inStock ? 'In stock': 'Out of stock',
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w500,
-          color: inStock ? Colors.green.shade700 : Colors.red.shade700,
+          color: inStock ? Colors.green.shade700: Colors.red.shade700,
         ),
       ),
     );
@@ -628,27 +628,27 @@ class _StockBadge extends StatelessWidget {
 }
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
-| **Clean Architecture** | Séparation Domain/Data/Presentation |
-| **BLoC** | Gestion d'état réactive |
-| **Pagination** | Infinite scroll avec `LoadMoreProducts` |
-| **Recherche** | Debounce dans le TextField |
-| **Refresh** | Pull-to-refresh natif |
-| **Images** | Cache avec `cached_network_image` |
+| **Clean Architecture** | Domain/Data/Presentation separation |
+| **BLoC** | Reactive state management |
+| **Pagination** | Infinite scroll with `LoadMoreProducts` |
+| **Search** | Debounce in the TextField |
+| **Refresh** | Native pull-to-refresh |
+| **Images** | Cache with `cached_network_image` |
 
-## Commandes associées
+## Related commands
 
-- `/dev:dev-test` - Générer tests widget et BLoC
-- `/qa:qa-mobile` - Audit qualité mobile
-- `/dev:dev-supabase` - Backend Supabase
+- `/dev:dev-test` - Generate widget and BLoC tests
+- `/qa:qa-mobile` - Mobile quality audit
+- `/dev:dev-supabase` - Supabase backend
 
 ---
 
-:::tip Injection de dépendances
-Utilisez `get_it` pour l'injection de dépendances :
+:::tip Dependency injection
+Use `get_it` for dependency injection:
 ```dart
 // core/di/injection.dart
 final getIt = GetIt.instance;

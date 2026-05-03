@@ -1,6 +1,6 @@
 ---
 name: ops-ci-fix
-description: Diagnostic et reparation autonome des pipelines CI/CD en echec. Scanner les workflows GitHub Actions, identifier les causes de failure, et appliquer des fixes. Declencher quand la CI est cassee, les tests echouent en CI, ou les workflows sont bloques.
+description: Autonomous diagnosis and repair of failing CI/CD pipelines. Scan GitHub Actions workflows, identify failure causes, and apply fixes. Trigger when CI is broken, tests fail in CI, or workflows are stuck.
 allowed-tools:
   - Read
   - Write
@@ -13,159 +13,159 @@ model: sonnet
 argument-hint: "[workflow-name] [--dry-run]"
 ---
 
-# CI Fixer — Diagnostic et Reparation CI/CD
+# CI Fixer — CI/CD Diagnosis and Repair
 
-## Objectif
+## Goal
 
-Diagnostiquer les pipelines CI/CD en echec, identifier la cause racine,
-et appliquer des corrections automatiques quand c'est safe.
+Diagnose failing CI/CD pipelines, identify the root cause,
+and apply automatic fixes when safe.
 
-## Phase 1 : Decouverte et etat des workflows
+## Phase 1: Discovery and workflow state
 
-### Scanner les workflows
+### Scan the workflows
 
 ```bash
-# Lister les derniers runs
+# List recent runs
 gh run list --limit 20 --json databaseId,status,conclusion,name,createdAt,headBranch
 
-# Identifier les fichiers de workflow
+# Identify workflow files
 ls -la .github/workflows/
 ```
 
-### Classifier l'etat
+### Classify the state
 
-| Etat | Critere | Urgence |
+| State | Criterion | Urgency |
 |------|---------|---------|
-| **En echec** | conclusion = failure | Haute |
-| **Bloque** | status = in_progress depuis > 30 min | Haute |
-| **Annule** | conclusion = cancelled (recurrent) | Moyenne |
-| **Stale** | Pas de run reussi depuis 7+ jours | Basse |
+| **Failed** | conclusion = failure | High |
+| **Stuck** | status = in_progress for > 30 min | High |
+| **Cancelled** | conclusion = cancelled (recurring) | Medium |
+| **Stale** | No successful run for 7+ days | Low |
 
-### Verifier les runners (si self-hosted)
+### Check the runners (if self-hosted)
 
 ```bash
-# Statut des runners
+# Runner status
 gh api repos/{owner}/{repo}/actions/runners --jq '.runners[] | {name, status, busy}'
 ```
 
-## Phase 2 : Diagnostic des echecs
+## Phase 2: Failure diagnosis
 
-Pour chaque workflow en echec :
+For each failing workflow:
 
-### 2.1 Extraire les logs
+### 2.1 Extract the logs
 
 ```bash
-# Logs du run en echec
+# Logs of the failed run
 gh run view <run-id> --log-failed
 ```
 
-### 2.2 Classifier la cause
+### 2.2 Classify the cause
 
-| Categorie | Patterns dans les logs | Fix typique |
+| Category | Patterns in logs | Typical fix |
 |-----------|----------------------|-------------|
-| **Test failure** | `FAIL`, `AssertionError`, `expect(` | Fix le test ou le code |
-| **Build error** | `error TS`, `SyntaxError`, `cannot find` | Fix l'erreur de compilation |
+| **Test failure** | `FAIL`, `AssertionError`, `expect(` | Fix the test or the code |
+| **Build error** | `error TS`, `SyntaxError`, `cannot find` | Fix the compilation error |
 | **Dep install** | `npm ERR!`, `ERESOLVE`, `peer dep` | Fix package.json / lockfile |
-| **Auth/secrets** | `401`, `403`, `secret not found` | Verifier les secrets configurees |
-| **Timeout** | `timed out`, `exceeded deadline` | Augmenter timeout ou optimiser |
-| **Disk space** | `no space left`, `ENOSPC` | Nettoyer caches / reduire artefacts |
-| **Rate limit** | `rate limit`, `429` | Ajouter retry / espacer les requetes |
-| **Runner offline** | `no runner matching`, `offline` | Verifier runners self-hosted |
-| **Flaky test** | Passe parfois, echoue parfois | Identifier le test flaky, stabiliser |
-| **Config error** | `invalid workflow`, `syntax error` | Fix le YAML du workflow |
+| **Auth/secrets** | `401`, `403`, `secret not found` | Check the configured secrets |
+| **Timeout** | `timed out`, `exceeded deadline` | Increase timeout or optimize |
+| **Disk space** | `no space left`, `ENOSPC` | Clean caches / reduce artifacts |
+| **Rate limit** | `rate limit`, `429` | Add retry / space out the requests |
+| **Runner offline** | `no runner matching`, `offline` | Check self-hosted runners |
+| **Flaky test** | Sometimes passes, sometimes fails | Identify the flaky test, stabilize it |
+| **Config error** | `invalid workflow`, `syntax error` | Fix the workflow YAML |
 
-### 2.3 Distinguer erreur locale vs CI-only
+### 2.3 Distinguish local error vs CI-only
 
 ```bash
-# Reproduire localement
-npm test          # ou pytest, go test, etc.
+# Reproduce locally
+npm test          # or pytest, go test, etc.
 npm run build
 npm run lint
 ```
 
-Si ca passe localement mais echoue en CI : probleme d'environnement (versions, secrets, cache).
+If it passes locally but fails in CI: environment issue (versions, secrets, cache).
 
-## Phase 3 : Reparation
+## Phase 3: Repair
 
-### Ordre de priorite des fixes (du plus safe au plus risque)
+### Fix priority order (from safest to riskiest)
 
-1. **Re-run** : workflows flaky → `gh run rerun <run-id>`
-2. **Fix config** : YAML invalide → editer `.github/workflows/`
-3. **Fix deps** : lockfile corrompu → `rm -rf node_modules package-lock.json && npm install`
-4. **Fix tests** : test cassant → identifier et corriger
-5. **Fix build** : erreur de compilation → corriger le code source
-6. **Cancel stuck** : workflows bloques → `gh run cancel <run-id>`
+1. **Re-run**: flaky workflows → `gh run rerun <run-id>`
+2. **Fix config**: invalid YAML → edit `.github/workflows/`
+3. **Fix deps**: corrupted lockfile → `rm -rf node_modules package-lock.json && npm install`
+4. **Fix tests**: breaking test → identify and fix
+5. **Fix build**: compilation error → fix the source code
+6. **Cancel stuck**: stuck workflows → `gh run cancel <run-id>`
 
-### Garde-fous
+### Guardrails
 
-IMPORTANT: En mode `--dry-run`, montrer les actions proposees SANS les executer.
+IMPORTANT: In `--dry-run` mode, show the proposed actions WITHOUT executing them.
 
-| Action | Safe | Confirmation requise |
+| Action | Safe | Confirmation required |
 |--------|------|---------------------|
-| Re-run un workflow | Oui | Non |
-| Cancel un run bloque | Oui | Non |
-| Fix YAML workflow | Moyen | Montrer le diff avant |
-| Regenerer lockfile | Moyen | Montrer le diff avant |
-| Modifier du code source | Risque | Oui — proposer, ne pas appliquer sans accord |
-| Modifier des secrets | Risque | Jamais — guider l'utilisateur |
+| Re-run a workflow | Yes | No |
+| Cancel a stuck run | Yes | No |
+| Fix workflow YAML | Medium | Show the diff first |
+| Regenerate lockfile | Medium | Show the diff first |
+| Modify source code | Risky | Yes — propose, do not apply without approval |
+| Modify secrets | Risky | Never — guide the user |
 
-### Application des fixes
+### Applying fixes
 
-Pour chaque fix applicable :
+For each applicable fix:
 
-1. Identifier la cause racine precise (pas le symptome)
-2. Proposer le fix minimal
-3. Appliquer si safe, sinon montrer et attendre confirmation
-4. Verifier le fix : relancer le workflow ou les tests localement
+1. Identify the precise root cause (not the symptom)
+2. Propose the minimal fix
+3. Apply if safe, otherwise show and wait for confirmation
+4. Verify the fix: re-run the workflow or run the tests locally
 
-## Phase 4 : Verification
+## Phase 4: Verification
 
-Apres les fixes :
+After the fixes:
 
 ```bash
-# Verifier que les tests passent localement
+# Check that tests pass locally
 npm test && npm run build && npm run lint
 
-# Si un workflow a ete re-run, verifier son statut
+# If a workflow was re-run, check its status
 gh run view <run-id> --json status,conclusion
 ```
 
-### Boucle de validation (max 2 iterations)
+### Validation loop (max 2 iterations)
 
-1. Appliquer le fix
-2. Verifier (tests locaux + re-run CI si possible)
-3. Si encore en echec : re-diagnostiquer avec les nouveaux logs
-4. Si 2 iterations echouent : escalader avec un rapport detaille
+1. Apply the fix
+2. Verify (local tests + re-run CI if possible)
+3. If still failing: re-diagnose with the new logs
+4. If 2 iterations fail: escalate with a detailed report
 
-## Phase 5 : Rapport
+## Phase 5: Report
 
 ```markdown
 # CI Fix Report — YYYY-MM-DD
 
-## Workflows analyses
-| Workflow | Branche | Statut avant | Cause | Action | Statut apres |
+## Workflows analyzed
+| Workflow | Branch | Status before | Cause | Action | Status after |
 |----------|---------|-------------|-------|--------|-------------|
-| ci.yml | main | Echec | Test failure | Fix test | Passe |
-| deploy.yml | main | Bloque | Timeout | Cancel + re-run | En cours |
+| ci.yml | main | Failed | Test failure | Fix test | Passing |
+| deploy.yml | main | Stuck | Timeout | Cancel + re-run | In progress |
 
-## Fixes appliques
-1. [Fix 1] : description, fichier modifie, raison
-2. [Fix 2] : ...
+## Fixes applied
+1. [Fix 1]: description, modified file, reason
+2. [Fix 2]: ...
 
-## Actions manuelles requises
-- [ ] Configurer le secret `DEPLOY_TOKEN` (expire)
-- [ ] Mettre a jour le runner self-hosted v2.x → v3.x
+## Manual actions required
+- [ ] Configure the `DEPLOY_TOKEN` secret (expired)
+- [ ] Update the self-hosted runner v2.x → v3.x
 
-## Recommandations
-- Ajouter un cache pour npm ci (reduirait le temps de 3 min)
-- Le test `auth.spec.ts` est flaky (3 echecs sur 10 runs)
+## Recommendations
+- Add a cache for npm ci (would reduce time by 3 min)
+- The `auth.spec.ts` test is flaky (3 failures out of 10 runs)
 ```
 
-## Regles
+## Rules
 
-- TOUJOURS diagnostiquer avant de corriger (Phase 2 avant Phase 3)
-- NE JAMAIS modifier des secrets — guider l'utilisateur
-- NE JAMAIS force-push ou modifier l'historique git
-- TOUJOURS montrer le diff des modifications de workflow avant d'appliquer
-- En cas de doute, proposer le fix sans l'appliquer
-- Respecter la regle des 3 echecs : apres 2 iterations de fix echouees, escalader
+- ALWAYS diagnose before fixing (Phase 2 before Phase 3)
+- NEVER modify secrets — guide the user
+- NEVER force-push or modify git history
+- ALWAYS show the diff of workflow modifications before applying
+- When in doubt, propose the fix without applying it
+- Follow the 3-failures rule: after 2 failed fix iterations, escalate

@@ -1,6 +1,6 @@
 ---
 name: qa-tech-debt
-description: Gestion et priorisation de la dette technique. Declencher quand l'utilisateur veut identifier, prioriser ou planifier le remboursement de la dette technique.
+description: Technical debt management and prioritization. Trigger when the user wants to identify, prioritize, or plan the repayment of technical debt.
 allowed-tools:
   - Read
   - Grep
@@ -11,64 +11,64 @@ context: fork
 
 # Tech Debt Management
 
-## Declencheurs
+## Triggers
 
-- "dette technique"
+- "technical debt"
 - "tech debt"
-- "refactoring priorite"
-- "code legacy"
-- "qualite du code"
+- "refactoring priority"
+- "legacy code"
+- "code quality"
 
 ## Identification
 
-### Code Smells a Detecter
+### Code Smells to Detect
 
 ```bash
-# TODOs et FIXMEs
+# TODOs and FIXMEs
 grep -r "TODO\|FIXME\|HACK\|XXX" --include="*.ts" --include="*.tsx" src/
 
-# Fichiers volumineux
+# Large files
 find src -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -n | tail -20
 
-# Complexite (nesting)
+# Complexity (nesting)
 grep -r "if.*if.*if" --include="*.ts" src/
 
-# any en TypeScript
+# any in TypeScript
 grep -r ": any" --include="*.ts" --include="*.tsx" src/
 ```
 
-### Metriques
+### Metrics
 
-| Metrique | Seuil | Commande |
+| Metric | Threshold | Command |
 |----------|-------|----------|
-| LOC/fichier | < 500 | `wc -l` |
-| Fonctions/fichier | < 15 | grep |
-| Depth nesting | < 4 | analyse |
+| LOC/file | < 500 | `wc -l` |
+| Functions/file | < 15 | grep |
+| Nesting depth | < 4 | analysis |
 | Test coverage | > 70% | `npm test -- --coverage` |
 
-## Categorisation
+## Categorization
 
 ### Impact
 
-| Niveau | Description | Exemples |
+| Level | Description | Examples |
 |--------|-------------|----------|
-| Critique | Bloque le developpement | Couplage circulaire |
-| Eleve | Ralentit significativement | Duplication massive |
-| Moyen | Gene la maintenance | Nommage confus |
-| Faible | Cosmetique | Style inconsistant |
+| Critical | Blocks development | Circular coupling |
+| High | Significantly slows down | Massive duplication |
+| Medium | Hinders maintenance | Confusing naming |
+| Low | Cosmetic | Inconsistent style |
 
 ### Effort
 
-| Niveau | Temps | Exemples |
+| Level | Time | Examples |
 |--------|-------|----------|
-| Trivial | < 1h | Renommer variable |
-| Faible | < 1 jour | Extraire fonction |
-| Moyen | 1-5 jours | Restructurer module |
-| Eleve | > 1 semaine | Rewrite composant |
+| Trivial | < 1h | Rename variable |
+| Low | < 1 day | Extract function |
+| Medium | 1-5 days | Restructure module |
+| High | > 1 week | Rewrite component |
 
-## Priorisation
+## Prioritization
 
-### Matrice Impact/Effort
+### Impact/Effort Matrix
 
 ```
 Impact
@@ -81,37 +81,37 @@ Impact
   +-------------------------> Effort
 ```
 
-## Plan de Remediation
+## Remediation Plan
 
 ### Template
 
 ```markdown
-## Item: [Nom]
+## Item: [Name]
 
-**Priorite**: P[1-4]
-**Impact**: [Critique/Eleve/Moyen/Faible]
-**Effort**: [Trivial/Faible/Moyen/Eleve]
+**Priority**: P[1-4]
+**Impact**: [Critical/High/Medium/Low]
+**Effort**: [Trivial/Low/Medium/High]
 
 ### Description
-[Description du probleme]
+[Description of the problem]
 
-### Fichiers concernes
+### Files concerned
 - path/to/file.ts:L42
 
-### Solution proposee
-[Approche de refactoring]
+### Proposed solution
+[Refactoring approach]
 
-### Criteres de succes
-- [ ] Tests passent
-- [ ] Pas de regression
-- [ ] Metriques ameliorees
+### Success criteria
+- [ ] Tests pass
+- [ ] No regression
+- [ ] Improved metrics
 ```
 
 ## Workflow
 
-1. **Identifier** - Scanner le codebase
-2. **Categoriser** - Impact et effort
-3. **Prioriser** - Matrice de decision
-4. **Planifier** - Integrer au backlog
-5. **Executer** - Refactoring incremental
-6. **Valider** - Tests et metriques
+1. **Identify** - Scan the codebase
+2. **Categorize** - Impact and effort
+3. **Prioritize** - Decision matrix
+4. **Plan** - Integrate into the backlog
+5. **Execute** - Incremental refactoring
+6. **Validate** - Tests and metrics

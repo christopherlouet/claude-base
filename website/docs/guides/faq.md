@@ -1,240 +1,240 @@
 ---
 sidebar_position: 6
 title: FAQ
-description: Questions fréquemment posées sur claude-socle
+description: Frequently asked questions about claude-socle
 ---
 
-# Questions Fréquentes (FAQ)
+# Frequently Asked Questions (FAQ)
 
-Retrouvez ici les réponses aux questions les plus courantes sur claude-socle.
+Find here the answers to the most common questions about claude-socle.
 
-## Questions Générales
+## General Questions
 
-### Qu'est-ce que claude-socle ?
+### What is claude-socle?
 
-**claude-socle** est un template de configuration pour Claude Code qui fournit :
-- **131 commandes** organisées par domaine (WORK, DEV, QA, OPS, etc.)
-- **63 agents** spécialisés avec contexte isolé
-- **54 skills** à déclenchement automatique
-- **30 rules** contextuelles par langage
-- Un workflow structuré : **Explore → Specify → Plan → TDD → Audit → Commit**
+**claude-socle** is a configuration template for Claude Code that provides:
+- **131 commands** organized by domain (WORK, DEV, QA, OPS, etc.)
+- **63 agents** specialized with isolated context
+- **54 skills** with automatic triggering
+- **30 rules** contextual per language
+- A structured workflow: **Explore → Specify → Plan → TDD → Audit → Commit**
 
-### Quelle différence avec Claude Code standard ?
+### What's the difference with standard Claude Code?
 
-| Aspect | Claude Code standard | claude-socle |
+| Aspect | Standard Claude Code | claude-socle |
 |--------|---------------------|--------------|
-| Commandes | Commandes de base | 131 commandes spécialisées |
-| Workflow | Libre | Structuré (Explore → Plan → TDD) |
-| Agents | Non | 63 agents avec contexte isolé |
-| Skills | Non | 54 skills automatiques |
-| Rules | Manuelles | 30 rules par langage |
-| Templates | Non | Spec, Plan, Tasks |
+| Commands | Basic commands | 131 specialized commands |
+| Workflow | Free | Structured (Explore → Plan → TDD) |
+| Agents | No | 63 agents with isolated context |
+| Skills | No | 54 automatic skills |
+| Rules | Manual | 30 rules per language |
+| Templates | No | Spec, Plan, Tasks |
 
-### Comment installer claude-socle ?
+### How to install claude-socle?
 
 ```bash
-# Cloner le repository
+# Clone the repository
 git clone https://github.com/christopherlouet/claude-socle.git
 
-# Copier les fichiers de configuration
-cp -r claude-socle/.claude/ votre-projet/
-cp claude-socle/CLAUDE.md votre-projet/
-cp claude-socle/.mcp.json votre-projet/
+# Copy the configuration files
+cp -r claude-socle/.claude/ your-project/
+cp claude-socle/CLAUDE.md your-project/
+cp claude-socle/.mcp.json your-project/
 
-# Ou utiliser le script d'installation
+# Or use the installation script
 ./claude-socle/scripts/new-project.sh --simple .
 ```
 
-Voir le guide [Installation](/docs/intro/installation) pour plus de détails.
+See the [Installation](/docs/intro/installation) guide for more details.
 
-### Comment mettre à jour claude-socle ?
+### How to update claude-socle?
 
 ```bash
-# Dans le dossier claude-socle
+# In the claude-socle folder
 git pull origin main
 
-# Copier les fichiers mis à jour
-cp -r .claude/ votre-projet/
-cp CLAUDE.md votre-projet/
+# Copy the updated files
+cp -r .claude/ your-project/
+cp CLAUDE.md your-project/
 ```
 
-:::tip Personnalisations
-Si vous avez personnalisé des commandes, faites un diff avant de copier pour ne pas perdre vos modifications.
+:::tip Customizations
+If you have customized commands, run a diff before copying so you don't lose your modifications.
 :::
 
-### Où trouver de l'aide ?
+### Where to find help?
 
-1. **Documentation** : Ce site (vous y êtes !)
-2. **FAQ** : Cette page
-3. **Troubleshooting** : [Guide de dépannage](/docs/guides/troubleshooting)
-4. **GitHub Issues** : [Signaler un problème](https://github.com/christopherlouet/claude-socle/issues)
+1. **Documentation**: This site (you're here!)
+2. **FAQ**: This page
+3. **Troubleshooting**: [Troubleshooting guide](/docs/guides/troubleshooting)
+4. **GitHub Issues**: [Report an issue](https://github.com/christopherlouet/claude-socle/issues)
 
 ---
 
 ## Commands
 
-### Ma commande retourne "not found"
+### My command returns "not found"
 
-**Problème** : `/ma-commande` retourne une erreur "commande non trouvée".
+**Problem**: `/my-command` returns a "command not found" error.
 
-**Causes possibles** :
-1. Le dossier `.claude/commands/` n'existe pas dans votre projet
-2. Le fichier de commande n'existe pas
-3. Erreur de syntaxe dans le fichier de commande
+**Possible causes**:
+1. The `.claude/commands/` folder doesn't exist in your project
+2. The command file doesn't exist
+3. Syntax error in the command file
 
-**Solution** :
+**Solution**:
 ```bash
-# Vérifier que .claude/commands existe
+# Check that .claude/commands exists
 ls -la .claude/commands/
 
-# Vérifier que la commande existe
-ls -la .claude/commands/dev/  # Par exemple
+# Check that the command exists
+ls -la .claude/commands/dev/  # For example
 
-# Si manquant, recopier depuis claude-socle
-cp -r chemin/vers/claude-socle/.claude/commands/ .claude/
+# If missing, copy back from claude-socle
+cp -r path/to/claude-socle/.claude/commands/ .claude/
 ```
 
-### Comment créer une commande personnalisée ?
+### How to create a custom command?
 
-Créez un fichier markdown dans `.claude/commands/` :
+Create a markdown file in `.claude/commands/`:
 
 ```markdown
 # .claude/commands/custom/my-command.md
 
-# Ma Commande Personnalisée
+# My Custom Command
 
 ## Description
-Cette commande fait X et Y.
+This command does X and Y.
 
 ## Instructions
-1. Analyser le contexte
-2. Effectuer l'action X
-3. Retourner le résultat
+1. Analyze the context
+2. Perform action X
+3. Return the result
 
-## Output attendu
-- Format du résultat
-- Exemples
+## Expected output
+- Result format
+- Examples
 ```
 
-La commande sera disponible via `/my-command`.
+The command will be available via `/my-command`.
 
-### Quelle commande utiliser pour mon besoin ?
+### Which command to use for my need?
 
-Utilisez l'**orchestrateur** :
+Use the **orchestrator**:
 
 ```bash
-/assistant "Décris ton besoin ici"
+/assistant "Describe your need here"
 ```
 
-L'orchestrateur analysera votre demande et recommandera les commandes appropriées.
+The orchestrator will analyze your request and recommend the appropriate commands.
 
-Ou consultez le [guide de décision](/docs/reference/commands).
+Or consult the [decision guide](/docs/reference/commands).
 
-### Comment voir toutes les commandes disponibles ?
+### How to see all available commands?
 
 ```bash
-# Dans Claude Code
+# In Claude Code
 /help
 
-# Ou lister les fichiers
+# Or list the files
 ls -la .claude/commands/
 ls -la .claude/commands/*/
 ```
 
-Ou consultez la [référence des commandes](/docs/commands).
+Or consult the [commands reference](/docs/commands).
 
-### Les commandes sont-elles modifiables ?
+### Are the commands modifiable?
 
-**Oui !** Les commandes sont des fichiers markdown dans `.claude/commands/`. Vous pouvez :
-- Modifier le comportement existant
-- Ajouter des instructions spécifiques
-- Créer de nouvelles commandes
+**Yes!** Commands are markdown files in `.claude/commands/`. You can:
+- Modify the existing behavior
+- Add specific instructions
+- Create new commands
 
-:::warning Mises à jour
-Vos modifications seront écrasées lors des mises à jour de claude-socle. Gardez une copie de vos personnalisations.
+:::warning Updates
+Your modifications will be overwritten during claude-socle updates. Keep a copy of your customizations.
 :::
 
 ---
 
 ## Agents & Skills
 
-### Quelle est la différence entre Agent et Skill ?
+### What's the difference between Agent and Skill?
 
 | Aspect | Agent | Skill |
 |--------|-------|-------|
-| Déclenchement | Automatique par Claude | Automatique par mots-clés |
-| Contexte | **Isolé** (nouvelle conversation) | **Partagé** (même conversation) |
-| Outils | Restreints (ex: lecture seule) | Tous les outils |
-| Usage | Tâches complexes, audits | Instructions enrichies |
+| Triggering | Automatic by Claude | Automatic by keywords |
+| Context | **Isolated** (new conversation) | **Shared** (same conversation) |
+| Tools | Restricted (e.g.: read-only) | All tools |
+| Usage | Complex tasks, audits | Enriched instructions |
 
-**Agent** : Claude délègue à un sous-agent spécialisé.
-**Skill** : Claude enrichit ses instructions avec le skill.
+**Agent**: Claude delegates to a specialized sub-agent.
+**Skill**: Claude enriches its instructions with the skill.
 
-### Mon agent ne se déclenche pas
+### My agent doesn't trigger
 
-**Causes possibles** :
-1. Le dossier `.claude/agents/` n'existe pas
-2. Les mots-clés ne correspondent pas
-3. Claude a choisi une autre approche
+**Possible causes**:
+1. The `.claude/agents/` folder doesn't exist
+2. The keywords don't match
+3. Claude chose another approach
 
-**Solution** :
+**Solution**:
 ```bash
-# Vérifier que les agents existent
+# Check that the agents exist
 ls -la .claude/agents/
 
-# Forcer l'utilisation d'un agent spécifique
-# En mentionnant explicitement dans votre demande :
-"Utilise l'agent qa-security pour faire un audit de sécurité"
+# Force the use of a specific agent
+# By explicitly mentioning in your request:
+"Use the qa-security agent to do a security audit"
 ```
 
-### Comment forcer un agent spécifique ?
+### How to force a specific agent?
 
-Mentionnez explicitement l'agent dans votre demande :
+Explicitly mention the agent in your request:
 
 ```bash
-"Fais un audit de sécurité en utilisant l'agent qa-security"
+"Do a security audit using the qa-security agent"
 
-# Ou utilisez la commande correspondante
+# Or use the corresponding command
 /qa:qa-security
 ```
 
-### Haiku vs Sonnet pour les agents ?
+### Haiku vs Sonnet for agents?
 
-| Modèle | Caractéristiques | Agents typiques |
+| Model | Characteristics | Typical agents |
 |--------|-----------------|-----------------|
-| **Haiku** | Rapide, économique | Exploration, docs, lint |
-| **Sonnet** | Plus intelligent | Audits complexes, debugging |
+| **Haiku** | Fast, economical | Exploration, docs, lint |
+| **Sonnet** | Smarter | Complex audits, debugging |
 
-Les agents sont pré-configurés avec le modèle optimal. Vous n'avez pas à choisir.
+Agents are pre-configured with the optimal model. You don't have to choose.
 
-### Comment créer un skill personnalisé ?
+### How to create a custom skill?
 
-Créez un fichier dans `.claude/skills/` :
+Create a file in `.claude/skills/`:
 
 ```yaml
 # .claude/skills/my-skill.md
 ---
-description: Mon skill personnalisé
+description: My custom skill
 triggers:
-  - "mon mot-clé"
-  - "autre déclencheur"
+  - "my keyword"
+  - "other trigger"
 ---
 
-# Mon Skill
+# My Skill
 
 ## Instructions
-Quand ce skill est activé, tu dois :
-1. Faire X
-2. Faire Y
+When this skill is activated, you must:
+1. Do X
+2. Do Y
 ```
 
 ---
 
 ## Workflow
 
-### Quel est l'ordre des commandes dans un workflow ?
+### What is the order of commands in a workflow?
 
-Le workflow recommandé :
+The recommended workflow:
 
 ```mermaid
 flowchart LR
@@ -244,119 +244,119 @@ flowchart LR
     D --> E["/work:work-commit"]
 ```
 
-1. **Explore** - Comprendre le code existant
-2. **Specify** - Définir les user stories (optionnel)
-3. **Plan** - Planifier l'implémentation
-4. **Code** - Développer (`/dev:dev-*`)
-5. **Commit** - Créer un commit propre
+1. **Explore** - Understand the existing code
+2. **Specify** - Define user stories (optional)
+3. **Plan** - Plan the implementation
+4. **Code** - Develop (`/dev:dev-*`)
+5. **Commit** - Create a clean commit
 
-### Puis-je sauter des étapes ?
+### Can I skip steps?
 
-**Oui**, mais avec prudence :
+**Yes**, but with caution:
 
-| Situation | Étapes à garder |
+| Situation | Steps to keep |
 |-----------|-----------------|
-| Petit fix | Explore → TDD → Commit |
-| Feature simple | Explore → Specify → Plan → TDD → Audit → Commit |
-| Feature complexe | Toutes les étapes |
-| Nouveau sur le projet | Toujours Explore d'abord |
+| Small fix | Explore → TDD → Commit |
+| Simple feature | Explore → Specify → Plan → TDD → Audit → Commit |
+| Complex feature | All steps |
+| New on the project | Always Explore first |
 
-:::warning Explorer d'abord
-Sautez `/work:work-explore` à vos risques et périls. Comprendre le code existant évite les incohérences.
+:::warning Explore first
+Skip `/work:work-explore` at your own risk. Understanding the existing code prevents inconsistencies.
 :::
 
-### Comment reprendre un workflow interrompu ?
+### How to resume an interrupted workflow?
 
-Claude garde le contexte de la conversation. Vous pouvez :
+Claude keeps the conversation context. You can:
 
-1. **Continuer naturellement** : "Continue avec l'implémentation"
-2. **Reprendre une étape** : "Reprenons le plan"
-3. **Voir l'état** : "Où en sommes-nous ?"
+1. **Continue naturally**: "Continue with the implementation"
+2. **Resume a step**: "Let's resume the plan"
+3. **See the state**: "Where are we?"
 
-Si vous avez fermé Claude Code, recommencez par `/work:work-explore` pour récupérer le contexte.
+If you closed Claude Code, restart with `/work:work-explore` to recover the context.
 
-### Quelle commande utiliser en premier ?
+### Which command to use first?
 
-**Toujours `/work:work-explore`** pour un nouveau projet ou une nouvelle feature.
+**Always `/work:work-explore`** for a new project or a new feature.
 
-Pour des tâches simples sur un projet connu :
-- Bug simple → `/dev:dev-debug`
+For simple tasks on a known project:
+- Simple bug → `/dev:dev-debug`
 - Commit → `/work:work-commit`
 - Question → `/doc:doc-explain`
 
-### Comment documenter mon workflow ?
+### How to document my workflow?
 
-Le workflow génère automatiquement de la documentation dans `specs/` :
+The workflow automatically generates documentation in `specs/`:
 
 ```
-specs/ma-feature/
+specs/my-feature/
 ├── spec.md     # /work:work-specify
 ├── plan.md     # /work:work-plan
 └── tasks.md    # /work:work-plan
 ```
 
-Ces fichiers sont versionnables et servent de documentation.
+These files are versionable and serve as documentation.
 
 ---
 
-## Problèmes Courants
+## Common Problems
 
-### Claude ne suit pas mes instructions
+### Claude doesn't follow my instructions
 
-**Causes possibles** :
-1. Instructions trop vagues
-2. Conflit avec les rules existantes
-3. Contexte insuffisant
+**Possible causes**:
+1. Instructions too vague
+2. Conflict with existing rules
+3. Insufficient context
 
-**Solutions** :
-- Soyez plus spécifique dans votre demande
-- Utilisez `/work:work-explore` d'abord
-- Mentionnez explicitement les contraintes
+**Solutions**:
+- Be more specific in your request
+- Use `/work:work-explore` first
+- Explicitly mention the constraints
 
-### Les tests ne passent pas après une modification
+### Tests don't pass after a modification
 
-**Actions** :
-1. Vérifier que les tests étaient passants avant
-2. Lancer `/dev:dev-debug` pour investiguer
-3. Utiliser `/qa:qa-coverage` pour voir la couverture
+**Actions**:
+1. Check that the tests were passing before
+2. Run `/dev:dev-debug` to investigate
+3. Use `/qa:qa-coverage` to see the coverage
 
-### Le build est cassé
+### The build is broken
 
 ```bash
-# Vérifier le build
+# Check the build
 npm run build
 
-# Utiliser l'agent de debug
-/dev:dev-debug "Le build échoue avec l'erreur X"
+# Use the debug agent
+/dev:dev-debug "The build fails with error X"
 
-# Vérifier les dépendances
+# Check the dependencies
 /ops:ops-deps
 ```
 
-### Je ne comprends pas le code existant
+### I don't understand the existing code
 
 ```bash
-# Explorer le codebase
-/work:work-explore "Comprendre l'architecture générale"
+# Explore the codebase
+/work:work-explore "Understand the general architecture"
 
-# Expliquer un fichier spécifique
-/doc:doc-explain "Explique le fichier src/services/auth.ts"
+# Explain a specific file
+/doc:doc-explain "Explain the file src/services/auth.ts"
 
-# Onboarding complet
+# Full onboarding
 /doc:doc-onboard
 ```
 
 ---
 
-## Ressources Supplémentaires
+## Additional Resources
 
-- [Troubleshooting](/docs/guides/troubleshooting) - Erreurs et diagnostics
-- [Tutoriels](/docs/tutorials) - Guides pas-à-pas
-- [Reference](/docs/reference/commands) - Cheatsheet rapide
-- [GitHub Issues](https://github.com/christopherlouet/claude-socle/issues) - Signaler un problème
+- [Troubleshooting](/docs/guides/troubleshooting) - Errors and diagnostics
+- [Tutorials](/docs/tutorials) - Step-by-step guides
+- [Reference](/docs/reference/commands) - Quick cheatsheet
+- [GitHub Issues](https://github.com/christopherlouet/claude-socle/issues) - Report an issue
 
 ---
 
-:::info Question non listée ?
-Si votre question n'est pas ici, consultez le [troubleshooting](/docs/guides/troubleshooting) ou [ouvrez une issue](https://github.com/christopherlouet/claude-socle/issues).
+:::info Question not listed?
+If your question isn't here, consult the [troubleshooting](/docs/guides/troubleshooting) or [open an issue](https://github.com/christopherlouet/claude-socle/issues).
 :::

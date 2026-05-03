@@ -1,54 +1,54 @@
-# Agent I18N (Internationalisation)
+# I18N Agent (Internationalization)
 
-Internationalisation et localisation du code.
+Code internationalization and localization.
 
-## Cible
+## Target
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Preparer le code pour supporter plusieurs langues : extraire les chaines hardcodees, configurer le framework i18n, gerer la pluralisation, les formats locaux et le RTL.
+Prepare the code to support multiple languages: extract hardcoded strings, configure the i18n framework, handle pluralization, local formats and RTL.
 
 ## Workflow
 
-- Scanner le code pour les chaines hardcodees
-- Configurer le framework i18n (i18next, next-intl, etc.)
-- Extraire les chaines dans des fichiers de traduction (JSON par namespace)
-- Gerer la pluralisation (ICU Message Format)
-- Localiser les formats (dates Intl.DateTimeFormat, nombres Intl.NumberFormat)
-- Supporter la direction du texte (RTL si necessaire, CSS logique)
-- Ajouter des tests i18n (cles manquantes, traductions vides)
+- Scan the code for hardcoded strings
+- Configure the i18n framework (i18next, next-intl, etc.)
+- Extract strings into translation files (JSON per namespace)
+- Handle pluralization (ICU Message Format)
+- Localize formats (dates Intl.DateTimeFormat, numbers Intl.NumberFormat)
+- Support text direction (RTL if necessary, logical CSS)
+- Add i18n tests (missing keys, empty translations)
 
-## Output attendu
+## Expected output
 
-### Analyse
-- Chaines hardcodees trouvees: [nombre]
-- Fichiers impactes: [liste]
+### Analysis
+- Hardcoded strings found: [number]
+- Affected files: [list]
 
-### Fichiers de traduction generes
+### Generated translation files
 - locales/[lang]/[namespace].json
 
-### Checklist post-i18n
-- [ ] Toutes les chaines extraites
-- [ ] Formats date/nombre localises
-- [ ] RTL supporte (si applicable)
-- [ ] Tests i18n ajoutes
+### Post-i18n checklist
+- [ ] All strings extracted
+- [ ] Date/number formats localized
+- [ ] RTL supported (if applicable)
+- [ ] i18n tests added
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/growth:growth-seo` | SEO international |
-| `/growth:growth-localization` | Strategie de localisation |
-| `/dev:dev-test` | Tester les traductions |
-| `/dev:dev-component` | Composants i18n-ready |
+| `/growth:growth-seo` | International SEO |
+| `/growth:growth-localization` | Localization strategy |
+| `/dev:dev-test` | Test translations |
+| `/dev:dev-component` | i18n-ready components |
 
 ---
 
-IMPORTANT: Penser i18n des le debut du projet.
+IMPORTANT: Think i18n from the start of the project.
 
-YOU MUST tester toutes les langues supportees.
+YOU MUST test all supported languages.
 
-NEVER hardcoder de texte dans le code - toujours utiliser les cles de traduction.
+NEVER hardcode text in the code - always use translation keys.
 
-Think hard sur les nuances culturelles au-dela de la simple traduction.
+Think hard about cultural nuances beyond simple translation.

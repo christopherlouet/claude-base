@@ -1,80 +1,80 @@
 ---
 sidebar_position: 11
-title: "Guide de Prompting Avance"
-description: " Techniques de prompting recommandees par Boris Cherny (createur de Claude Code) pour maximiser la qualite des resultats."
+title: "Advanced Prompting Guide"
+description: " Prompting techniques recommended by Boris Cherny (creator of Claude Code) to maximize the quality of results."
 tags:
   - "guide"
 ---
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Guide de Prompting Avance
+# Advanced Prompting Guide
 
-&gt; Techniques de prompting recommandees par Boris Cherny (createur de Claude Code) pour maximiser la qualite des resultats.
+&gt; Prompting techniques recommended by Boris Cherny (creator of Claude Code) to maximize the quality of results.
 
-## Principe Fondamental
+## Fundamental Principle
 
 &gt; "The more specific and detailed the specification, the better the output."
 
-Plus vous etes precis dans votre demande, meilleur sera le resultat. Claude Code excelle quand il a un contexte clair et des attentes bien definies.
+The more precise your request, the better the result. Claude Code excels when it has clear context and well-defined expectations.
 
-## Techniques de Prompting
+## Prompting Techniques
 
 ### 1. Challenge Claude ("Grill Me")
 
-Demandez a Claude de vous challenger avant de proceder :
+Ask Claude to challenge you before proceeding:
 
 ```
 "Grill me on these changes and don't make a PR until I pass your test."
 ```
 
-**Resultat** : Claude pose des questions critiques sur votre comprehension, identifie les edge cases, et s'assure que vous avez pense a tout avant d'implementer.
+**Result**: Claude asks critical questions about your understanding, identifies edge cases, and ensures you have thought of everything before implementing.
 
-**Quand l'utiliser** :
-- Avant de merger une PR importante
-- Pour valider votre comprehension d'un systeme complexe
-- Pour identifier les risques que vous n'avez pas anticipes
+**When to use it**:
+- Before merging an important PR
+- To validate your understanding of a complex system
+- To identify risks you have not anticipated
 
-### 2. Demander des Preuves ("Prove It")
+### 2. Ask for Proof ("Prove It")
 
-Forcez Claude a justifier ses choix avec des preuves concretes :
+Force Claude to justify its choices with concrete evidence:
 
 ```
 "Prove to me this works. Show me the diff and explain why it solves the problem."
 ```
 
-**Resultat** : Claude fournit des justifications detaillees, montre les changements exacts, et explique le raisonnement.
+**Result**: Claude provides detailed justifications, shows the exact changes, and explains the reasoning.
 
-**Quand l'utiliser** :
-- Pour des changements critiques (securite, performance)
-- Quand vous voulez comprendre le "pourquoi" en profondeur
-- Pour documenter la decision pour les futurs developpeurs
+**When to use it**:
+- For critical changes (security, performance)
+- When you want to understand the "why" in depth
+- To document the decision for future developers
 
-### 3. Iterer vers l'Elegance ("Scrap and Redo")
+### 3. Iterate Toward Elegance ("Scrap and Redo")
 
-Apres une premiere implementation, demandez une version plus elegante :
+After a first implementation, ask for a more elegant version:
 
 ```
 "Knowing everything you know now, scrap this and implement the elegant solution."
 ```
 
-**Resultat** : Claude utilise les apprentissages de la premiere iteration pour produire une solution plus propre et mieux structuree.
+**Result**: Claude uses the learnings from the first iteration to produce a cleaner and better-structured solution.
 
-**Quand l'utiliser** :
-- Quand la premiere solution fonctionne mais semble "hacky"
-- Pour du code qui sera maintenu longtemps
-- Avant de finaliser une API publique
+**When to use it**:
+- When the first solution works but feels "hacky"
+- For code that will be maintained for a long time
+- Before finalizing a public API
 
-### 4. Specifications Detaillees
+### 4. Detailed Specifications
 
-Plus la specification est detaillee, meilleur est le resultat :
+The more detailed the specification, the better the result:
 
-#### Mauvais prompt
+#### Bad prompt
 ```
 "Add error handling"
 ```
 
-#### Bon prompt
+#### Good prompt
 ```
 "Add error handling for the getUserById function:
 - If user doesn't exist, throw UserNotFoundError with user ID
@@ -84,9 +84,9 @@ Plus la specification est detaillee, meilleur est le resultat :
 - Log final failure with error level including stack trace"
 ```
 
-### 5. Exemples Concrets (Few-Shot)
+### 5. Concrete Examples (Few-Shot)
 
-Donnez des exemples du resultat attendu :
+Provide examples of the expected result:
 
 ```
 "Generate error messages following this pattern:
@@ -100,9 +100,9 @@ Output: 'Password is too short. Please use at least 8 characters including a num
 Now generate messages for: { field: 'phone', value: 'abc' }"
 ```
 
-### 6. Contraintes Explicites
+### 6. Explicit Constraints
 
-Specifiez ce que vous ne voulez PAS :
+Specify what you do NOT want:
 
 ```
 "Implement user authentication:
@@ -113,9 +113,9 @@ Specifiez ce que vous ne voulez PAS :
 - DO use constant-time comparison for password verification"
 ```
 
-### 7. Context Loading (Lecture Prealable)
+### 7. Context Loading (Prior Reading)
 
-Demandez a Claude de lire avant d'agir :
+Ask Claude to read before acting:
 
 ```
 "Before making any changes:
@@ -125,9 +125,9 @@ Demandez a Claude de lire avant d'agir :
 Then implement the password reset feature following existing patterns."
 ```
 
-### 8. Verification Explicite
+### 8. Explicit Verification
 
-Demandez une verification apres l'implementation :
+Ask for verification after implementation:
 
 ```
 "After implementing the feature:
@@ -137,9 +137,9 @@ Demandez une verification apres l'implementation :
 4. List the edge cases you've handled"
 ```
 
-## Anti-Patterns de Prompting
+## Prompting Anti-Patterns
 
-| A Eviter | Preferer |
+| Avoid | Prefer |
 |----------|----------|
 | "Fix this bug" | "Fix the null pointer exception in getUserById when the user ID doesn't exist in the database" |
 | "Make it better" | "Reduce the time complexity from O(n²) to O(n log n) by using a hash map instead of nested loops" |
@@ -147,9 +147,9 @@ Demandez une verification apres l'implementation :
 | "Refactor this" | "Extract the validation logic into a separate UserValidator class with methods for email, password, and phone validation" |
 | "It doesn't work" | "The function returns undefined instead of the expected User object when I call getUserById(123). Here's the error log: [log]" |
 
-## Prompts par Contexte
+## Prompts by Context
 
-### Pour le Debug
+### For Debugging
 
 ```
 "I'm seeing this error: [paste error]
@@ -161,7 +161,7 @@ Context:
 Help me debug this step by step."
 ```
 
-### Pour le Code Review
+### For Code Review
 
 ```
 "Review this PR as if you were a senior engineer. Focus on:
@@ -174,7 +174,7 @@ Help me debug this step by step."
 Be critical - I want honest feedback, not validation."
 ```
 
-### Pour l'Architecture
+### For Architecture
 
 ```
 "I need to design a system for [requirement].
@@ -191,7 +191,7 @@ Quality attributes (in order of priority):
 Show me 2-3 options with trade-offs before recommending one."
 ```
 
-### Pour l'Apprentissage
+### For Learning
 
 ```
 "Explain [concept] as if I'm a developer who knows [related tech] but has never used [new tech].
@@ -204,27 +204,27 @@ Include:
 - When NOT to use it"
 ```
 
-## Combinaison avec les Skills du Socle
+## Combining with Foundation Skills
 
-| Skill | Prompt recommande |
+| Skill | Recommended prompt |
 |-------|-------------------|
 | `/dev:dev-tdd` | "Write failing tests first for [feature], then implement the minimal code to pass" |
 | `/qa:qa-security` | "Audit this code as if you're a penetration tester. Find vulnerabilities." |
 | `/work:work-plan` | "Create a detailed implementation plan. I want to review it before you code." |
 | `/dev:dev-debug` | "Debug this systematically. Show me your hypothesis at each step." |
 
-## Voice Dictation pour de Meilleurs Prompts
+## Voice Dictation for Better Prompts
 
-Boris recommande d'utiliser la dictee vocale (fn x2 sur macOS) pour des prompts plus detailles :
+Boris recommends using voice dictation (fn x2 on macOS) for more detailed prompts:
 
 &gt; "When I dictate prompts, I tend to be much more detailed than when I type. The extra context always improves results."
 
-### Avantages
-- Plus naturel = plus de details
-- Plus rapide que la frappe
-- Moins d'auto-censure sur la longueur
+### Advantages
+- More natural = more detail
+- Faster than typing
+- Less self-censorship on length
 
-## Ressources
+## Resources
 
 - [How Boris Uses Claude Code](https://howborisusesclaudecode.com/)
 - [10 Claude Code Tips from Boris](https://ykdojo.github.io/claude-code-tips/content/boris-claude-code-tips)
@@ -232,44 +232,44 @@ Boris recommande d'utiliser la dictee vocale (fn x2 sur macOS) pour des prompts 
 
 ---
 
-## Techniques Avancees
+## Advanced Techniques
 
-### Prompting Iteratif
+### Iterative Prompting
 
-Le prompting efficace suit rarement un chemin direct. Le pattern recommande est : large d'abord, puis resserrement progressif.
+Effective prompting rarely follows a direct path. The recommended pattern is: broad first, then progressive narrowing.
 
-**Pattern : Large -&gt; Precis -&gt; Raffine**
+**Pattern: Broad -&gt; Precise -&gt; Refined**
 
-**Tour 1 - Large (exploration)**
+**Turn 1 - Broad (exploration)**
 ```
-"Je veux ameliorer les performances de l'API. Quels sont les goulots
-d'etranglement classiques dans une API Node.js/PostgreSQL ?"
-```
-
-**Tour 2 - Precis (focalisation)**
-```
-"Pour les N+1 queries que tu as identifiees, montre-moi comment les
-detecter dans ce fichier : src/services/userService.ts"
+"I want to improve the API performance. What are the classic bottlenecks
+in a Node.js/PostgreSQL API?"
 ```
 
-**Tour 3 - Raffine (implementation)**
+**Turn 2 - Precise (focus)**
+```
+"For the N+1 queries you identified, show me how to detect them in
+this file: src/services/userService.ts"
+```
+
+**Turn 3 - Refined (implementation)**
 ```
 "Knowing everything you know now, implement the fix using DataLoader.
 Constraints: do NOT change the public API, keep TypeScript strict mode."
 ```
 
-**Quand recommencer vs continuer a raffiner**
+**When to restart vs continue refining**
 
 | Signal | Action |
 |--------|--------|
-| Claude derive du sujet principal | Nouveau tour de recadrage |
-| La solution proposee ne correspond pas au contexte | `/clear` et repartir avec plus de contexte initial |
-| La conversation depasse 30 tours | Compacter (`/compact`) ou redemarrer |
-| Une hypothese de base etait fausse | Corriger explicitement : "En fait, contrairement a ce que j'ai dit plus tot..." |
+| Claude drifts off the main subject | New reframing turn |
+| The proposed solution doesn't match the context | `/clear` and restart with more initial context |
+| The conversation exceeds 30 turns | Compact (`/compact`) or restart |
+| A baseline assumption was wrong | Correct it explicitly: "Actually, contrary to what I said earlier..." |
 
-**Technique "Knowing everything you know now"**
+**"Knowing everything you know now" technique**
 
-Apres plusieurs tours d'echanges, Claude accumule du contexte implicite. Exploiter ce contexte :
+After several turns of exchanges, Claude accumulates implicit context. Exploit this context:
 
 ```
 "Knowing everything you know now about this codebase and the constraints
@@ -277,21 +277,21 @@ we've discussed, implement the cleanest possible solution. Forget the
 intermediate versions."
 ```
 
-Cette formulation pousse Claude a synthetiser les apprentissages de la conversation plutot que de continuer sur la trajectoire incrementale.
+This phrasing pushes Claude to synthesize the learnings from the conversation rather than continuing on the incremental trajectory.
 
 ---
 
-### Prompting par Niveau de Complexite
+### Prompting by Complexity Level
 
-Adapter la structure du prompt a la complexite de la tache reduit les iterations inutiles.
+Adapting the prompt structure to the complexity of the task reduces unnecessary iterations.
 
-| Complexite | Lignes | Structure recommandee | Exemple |
+| Complexity | Lines | Recommended structure | Example |
 |------------|--------|-----------------------|---------|
-| Simple | 1 ligne | Instruction directe | `"Rename variable userId to accountId in auth.ts"` |
-| Moyenne | 2-3 lignes | Contexte + instruction + contrainte | `"In the payment module, add input validation for the amount field. Reject negative values and values above 10000."` |
-| Complexe | 5+ lignes | Contexte + exemples + contraintes + criteres de verification | Voir gabarit ci-dessous |
+| Simple | 1 line | Direct instruction | `"Rename variable userId to accountId in auth.ts"` |
+| Medium | 2-3 lines | Context + instruction + constraint | `"In the payment module, add input validation for the amount field. Reject negative values and values above 10000."` |
+| Complex | 5+ lines | Context + examples + constraints + verification criteria | See template below |
 
-**Gabarit pour taches complexes**
+**Template for complex tasks**
 
 ```
 Context: [what exists, what the system does, relevant constraints]
@@ -299,63 +299,63 @@ Context: [what exists, what the system does, relevant constraints]
 Task: [precise instruction, single verb, single outcome]
 
 Examples:
-  Input:  [exemple d'entree]
-  Output: [exemple de sortie attendue]
+  Input:  [input example]
+  Output: [expected output example]
 
 Constraints:
-  - DO: [ce qui est obligatoire]
-  - DO NOT: [ce qui est interdit]
+  - DO: [what is mandatory]
+  - DO NOT: [what is forbidden]
 
-Verification: after implementing, run [commande] and show me the output.
+Verification: after implementing, run [command] and show me the output.
 ```
 
 ---
 
-### Prompting Multi-Agents
+### Multi-Agent Prompting
 
-Quand un workflow delegue du travail a des sous-agents (via `/work:work-team` ou un orchestrateur), le briefing de chaque sous-agent doit etre autonome : l'agent ne voit pas la conversation parente.
+When a workflow delegates work to sub-agents (via `/work:work-team` or an orchestrator), the briefing for each sub-agent must be self-contained: the agent does not see the parent conversation.
 
-**Principes de briefing d'un sous-agent**
+**Principles for briefing a sub-agent**
 
-1. Inclure le contexte minimal suffisant (pas toute la conversation)
-2. Specifier le livrable attendu de facon non ambigue
-3. Indiquer les fichiers a lire avant d'agir
-4. Definir la commande de verification a executer
-5. Preciser le format de sortie si le resultat est consomme par un autre agent
+1. Include the minimal sufficient context (not the entire conversation)
+2. Specify the expected deliverable unambiguously
+3. Indicate the files to read before acting
+4. Define the verification command to execute
+5. Specify the output format if the result is consumed by another agent
 
-**Gabarit de handoff de contexte**
+**Context handoff template**
 
 ```
-You are working on [projet], a [description courte].
+You are working on [project], a [short description].
 
 Relevant files:
-  - [fichier A] : [son role]
-  - [fichier B] : [son role]
+  - [file A]: [its role]
+  - [file B]: [its role]
 
-Your task: [instruction precise]
+Your task: [precise instruction]
 
-Constraints: [contraintes techniques]
+Constraints: [technical constraints]
 
-When done: run [commande de verification] and report the result.
-Output format: [format si consomme par un autre agent]
+When done: run [verification command] and report the result.
+Output format: [format if consumed by another agent]
 ```
 
-**Quand utiliser Agent Teams vs sequentiel**
+**When to use Agent Teams vs sequential**
 
-| Situation | Approche |
+| Situation | Approach |
 |-----------|----------|
-| Taches independantes (pas de dependance entre elles) | Agent Teams (parallelisme) |
-| Tache B depend du livrable de tache A | Sequentiel |
-| Meme domaine de code, ordre importe | Sequentiel pour eviter les conflits |
-| Audit + implementation sur des modules distincts | Agent Teams |
+| Independent tasks (no dependency between them) | Agent Teams (parallelism) |
+| Task B depends on the deliverable of task A | Sequential |
+| Same code domain, order matters | Sequential to avoid conflicts |
+| Audit + implementation on distinct modules | Agent Teams |
 
 ---
 
-### Patterns Avances
+### Advanced Patterns
 
-**Pattern "Grill Me" (challenger)**
+**"Grill Me" Pattern (challenger)**
 
-Utilise avant une decision irreversible ou un merge important. Claude prend le role d'un reviewer hostile.
+Used before an irreversible decision or an important merge. Claude takes the role of a hostile reviewer.
 
 ```
 "Before we proceed, grill me on this architecture decision.
@@ -363,15 +363,15 @@ Ask me the hardest questions a skeptical senior engineer would ask.
 Do not let me move forward until I've answered convincingly."
 ```
 
-Variante pour du code :
+Variant for code:
 ```
 "Grill me on this implementation. Find every assumption I'm making
 that could be wrong in production."
 ```
 
-**Pattern "Prove It Works" (justification par la preuve)**
+**"Prove It Works" Pattern (justification by proof)**
 
-Claude ne peut pas se contenter d'affirmer qu'une solution fonctionne - il doit le demontrer.
+Claude cannot just claim that a solution works - it must demonstrate it.
 
 ```
 "Prove to me this fix works. Show me:
@@ -380,9 +380,9 @@ Claude ne peut pas se contenter d'affirmer qu'une solution fonctionne - il doit 
 3. Why the root cause is eliminated, not just masked"
 ```
 
-**Pattern "Scrap and Redo" (repartir proprement)**
+**"Scrap and Redo" Pattern (start fresh cleanly)**
 
-Quand une premiere iteration fonctionne mais est trop complexe pour etre maintenue :
+When a first iteration works but is too complex to be maintained:
 
 ```
 "This works but it's too complex. Scrap it. Knowing everything you
@@ -390,11 +390,11 @@ know now about the requirements and edge cases, implement the
 simplest possible version that still handles all cases correctly."
 ```
 
-A utiliser apres un premier cycle Red-Green, avant de commiter, quand le code "sent mauvais".
+To use after a first Red-Green cycle, before committing, when the code "smells bad".
 
-**Pattern Chain-of-Verification**
+**Chain-of-Verification Pattern**
 
-Force Claude a verifier son propre travail etape par etape avant de livrer :
+Forces Claude to verify its own work step by step before delivering:
 
 ```
 "After implementing, verify your work in this order:
@@ -407,7 +407,7 @@ Only report completion after all four checks are green."
 
 **Negative Prompting ("DO NOT")**
 
-Les contraintes negatives sont souvent plus efficaces que les contraintes positives pour eviter les erreurs repetees :
+Negative constraints are often more effective than positive constraints to avoid repeated mistakes:
 
 ```
 "DO NOT:
@@ -418,16 +418,16 @@ Les contraintes negatives sont souvent plus efficaces que les contraintes positi
 - Modify test files unless explicitly asked"
 ```
 
-A placer en debut de prompt pour les contraintes critiques, en fin de prompt pour les preferences.
+To place at the start of the prompt for critical constraints, at the end of the prompt for preferences.
 
 ---
 
-### Anti-Patterns Detailles
+### Detailed Anti-Patterns
 
-| Anti-pattern | Pourquoi ca echoue | Alternative |
+| Anti-pattern | Why it fails | Alternative |
 |---|---|---|
-| Prompt vague sans contexte ("fix it", "make it better") | Claude invente le contexte manquant et resout le mauvais probleme | Decrire le comportement observe, le comportement attendu, et le fichier concerne |
-| Sur-contraindre chaque detail ("use exactly 4 spaces, name the variable x, add a comment every 3 lines") | Claude passe du temps a respecter des contraintes arbitraires au lieu de resoudre le probleme | Contraindre l'interface et le comportement, pas l'implementation interne |
-| Demander une confirmation a chaque etape ("tell me before you do anything", "ask me before each file") | Multiplie les tours de conversation, fragmente le contexte, ralentit sans apporter de valeur | Definir les contraintes en amont dans un seul prompt, laisser Claude executer |
-| Ne pas fournir de moyen de verification | Claude ne peut pas detecter ses propres erreurs silencieuses | Toujours inclure une commande de verification : `npm test`, `npm run typecheck`, `./scripts/validate.sh` |
-| Corriger Claude en cours de route sans reformuler | Les corrections ponctuelles s'accumulent et le contexte devient incohérent | Si plus de 2 corrections sont necessaires, redemarrer avec un prompt reformule integrant les corrections |
+| Vague prompt without context ("fix it", "make it better") | Claude invents the missing context and solves the wrong problem | Describe the observed behavior, the expected behavior, and the affected file |
+| Over-constraining every detail ("use exactly 4 spaces, name the variable x, add a comment every 3 lines") | Claude spends time complying with arbitrary constraints instead of solving the problem | Constrain the interface and behavior, not the internal implementation |
+| Asking for confirmation at every step ("tell me before you do anything", "ask me before each file") | Multiplies conversation turns, fragments the context, slows down without adding value | Define constraints upfront in a single prompt, let Claude execute |
+| Not providing a means of verification | Claude cannot detect its own silent errors | Always include a verification command: `npm test`, `npm run typecheck`, `./scripts/validate.sh` |
+| Correcting Claude along the way without reformulating | Spot corrections accumulate and the context becomes incoherent | If more than 2 corrections are necessary, restart with a reformulated prompt incorporating the corrections |

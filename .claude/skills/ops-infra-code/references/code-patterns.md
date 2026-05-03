@@ -1,37 +1,37 @@
 # Code Patterns & Structure
 
-> **Partie de :** [infrastructure-as-code](../SKILL.md)
-> **Objectif :** Patterns de code et features modernes pour Terraform/OpenTofu
+> **Part of:** [infrastructure-as-code](../SKILL.md)
+> **Goal:** Code patterns and modern features for Terraform/OpenTofu
 
 ---
 
-## Table des Matieres
+## Table of Contents
 
-1. [Ordre et Structure des Blocs](#ordre-et-structure-des-blocs)
-2. [Count vs For_Each en Profondeur](#count-vs-for_each-en-profondeur)
-3. [Features Modernes Terraform (1.0+)](#features-modernes-terraform-10)
-4. [Gestion des Versions](#gestion-des-versions)
-5. [Patterns de Refactoring](#patterns-de-refactoring)
-6. [Locals pour Gestion des Dependances](#locals-pour-gestion-des-dependances)
+1. [Block Order and Structure](#block-order-and-structure)
+2. [Count vs For_Each in Depth](#count-vs-for_each-in-depth)
+3. [Modern Terraform Features (1.0+)](#modern-terraform-features-10)
+4. [Version Management](#version-management)
+5. [Refactoring Patterns](#refactoring-patterns)
+6. [Locals for Dependency Management](#locals-for-dependency-management)
 
 ---
 
-## Ordre et Structure des Blocs
+## Block Order and Structure
 
-### Structure Bloc Resource
+### Resource Block Structure
 
-**Ordre strict des arguments :**
+**Strict argument order:**
 
-1. `count` ou `for_each` EN PREMIER (ligne vide apres)
-2. Autres arguments (alphabetique ou groupement logique)
-3. `tags` comme dernier argument reel
-4. `depends_on` apres tags (si necessaire)
-5. `lifecycle` a la toute fin (si necessaire)
+1. `count` or `for_each` FIRST (blank line after)
+2. Other arguments (alphabetical or logical grouping)
+3. `tags` as last real argument
+4. `depends_on` after tags (if needed)
+5. `lifecycle` at the very end (if needed)
 
 ```hcl
-# BON - Ordre correct
+# GOOD - Correct order
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 
   allocation_id = aws_eip.this[0].id
   subnet_id     = aws_subnet.public[0].id
@@ -48,47 +48,47 @@ resource "aws_nat_gateway" "this" {
   }
 }
 
-# MAUVAIS - Ordre incorrect
+# BAD - Incorrect order
 resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.this[0].id
   tags = { Name = "nat" }
-  count = var.create_nat_gateway ? 1 : 0  # Devrait etre premier
+  count = var.create_nat_gateway ? 1: 0  # Should be first
   subnet_id = aws_subnet.public[0].id
 }
 ```
 
-### Structure Definition Variable
+### Variable Definition Structure
 
-**Ordre des blocs variable :**
+**Variable block order:**
 
-1. `description` (TOUJOURS requis)
+1. `description` (ALWAYS required)
 2. `type`
 3. `default`
-4. `sensitive` (quand true)
-5. `nullable` (quand false)
+4. `sensitive` (when true)
+5. `nullable` (when false)
 6. `validation`
 
 ```hcl
-# BON - Ordre et structure corrects
+# GOOD - Correct order and structure
 variable "environment" {
-  description = "Nom de l'environnement pour le tagging"
+  description = "Environment name for tagging"
   type        = string
   default     = "dev"
   nullable    = false
 
   validation {
     condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "L'environnement doit etre : dev, staging, prod."
+    error_message = "Environment must be: dev, staging, prod."
   }
 }
 ```
 
-### Patterns de Types de Variables Modernes (Terraform 1.3+)
+### Modern Variable Type Patterns (Terraform 1.3+)
 
 ```hcl
-# BON - Utilisation de optional() pour attributs d'objet
+# GOOD - Using optional() for object attributes
 variable "database_config" {
-  description = "Configuration base de donnees avec parametres optionnels"
+  description = "Database configuration with optional parameters"
   type = object({
     name               = string
     engine             = string
@@ -99,44 +99,44 @@ variable "database_config" {
   })
 }
 
-# Usage - seuls les champs requis necessaires
+# Usage - only required fields needed
 database_config = {
   name           = "mydb"
   engine         = "mysql"
   instance_class = "db.t3.micro"
-  # Les champs optionnels utilisent les defaults
+  # Optional fields use defaults
 }
 ```
 
-### Structure Output
+### Output Structure
 
-**Pattern :** `{name}_{type}_{attribute}`
+**Pattern:** `{name}_{type}_{attribute}`
 
 ```hcl
-# BON
+# GOOD
 output "security_group_id" {
-  description = "ID du security group"
+  description = "Security group ID"
   value       = try(aws_security_group.this[0].id, "")
 }
 
-output "private_subnet_ids" {  # Pluriel pour liste
-  description = "Liste des IDs de subnets prives"
+output "private_subnet_ids" {  # Plural for list
+  description = "List of private subnet IDs"
   value       = aws_subnet.private[*].id
 }
 
-# MAUVAIS
-output "this_security_group_id" {  # Ne pas prefixer avec "this_"
+# BAD
+output "this_security_group_id" {  # Do not prefix with "this_"
   value = aws_security_group.this[0].id
 }
 ```
 
 ---
 
-## Count vs For_Each en Profondeur
+## Count vs For_Each in Depth
 
-### Quand Utiliser count
+### When to Use count
 
-**Replication numerique simple :**
+**Simple numeric replication:**
 ```hcl
 resource "aws_subnet" "public" {
   count = 3
@@ -145,17 +145,17 @@ resource "aws_subnet" "public" {
 }
 ```
 
-**Conditions booleennes (creer ou non) :**
+**Boolean conditions (create or not):**
 ```hcl
-# BON - Condition booleenne
+# GOOD - Boolean condition
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 }
 ```
 
-### Quand Utiliser for_each
+### When to Use for_each
 
-**Reference par cle :**
+**Reference by key:**
 ```hcl
 resource "aws_subnet" "private" {
   for_each = toset(var.availability_zones)
@@ -165,34 +165,34 @@ resource "aws_subnet" "private" {
   cidr_block        = cidrsubnet(var.vpc_cidr, 4, index(var.availability_zones, each.key))
 }
 
-# Reference par cle : aws_subnet.private["us-east-1a"]
+# Reference by key: aws_subnet.private["us-east-1a"]
 ```
 
-**Elements pouvant etre ajoutes/supprimes du milieu :**
+**Elements that can be added/removed from the middle:**
 ```hcl
-# MAUVAIS avec count - supprimer element du milieu recree tous les suivants
+# BAD with count - removing a middle element recreates all subsequent ones
 resource "aws_subnet" "private" {
   count = length(var.availability_zones)
   availability_zone = var.availability_zones[count.index]
 }
 
-# BON avec for_each - suppression n'affecte que cette ressource
+# GOOD with for_each - removal only affects that resource
 resource "aws_subnet" "private" {
   for_each = toset(var.availability_zones)
   availability_zone = each.key
 }
 ```
 
-### Migration Count vers For_Each
+### Migrating Count to For_Each
 
-**Etapes de migration :**
+**Migration steps:**
 
-1. Ajouter `for_each` a la ressource
-2. Utiliser blocs `moved` pour preserver les ressources existantes
-3. Supprimer `count` apres verification avec `terraform plan`
+1. Add `for_each` to the resource
+2. Use `moved` blocks to preserve existing resources
+3. Remove `count` after verifying with `terraform plan`
 
 ```hcl
-# Blocs de migration (previent recreation)
+# Migration blocks (prevents recreation)
 moved {
   from = aws_subnet.private[0]
   to   = aws_subnet.private["us-east-1a"]
@@ -208,24 +208,24 @@ moved {
   to   = aws_subnet.private["us-east-1c"]
 }
 
-# Verifier : terraform plan devrait montrer "moved", pas destroy/create
+# Verify: terraform plan should show "moved", not destroy/create
 ```
 
 ---
 
-## Features Modernes Terraform (1.0+)
+## Modern Terraform Features (1.0+)
 
-### Fonction try() (Terraform 0.13+)
+### try() Function (Terraform 0.13+)
 
 ```hcl
-# BON - Fonction try() moderne
+# GOOD - Modern try() function
 output "security_group_id" {
-  description = "ID du security group"
+  description = "Security group ID"
   value       = try(aws_security_group.this[0].id, "")
 }
 
 output "first_subnet_id" {
-  description = "ID du premier subnet avec fallbacks multiples"
+  description = "ID of first subnet with multiple fallbacks"
   value       = try(
     aws_subnet.public[0].id,
     aws_subnet.private[0].id,
@@ -233,7 +233,7 @@ output "first_subnet_id" {
   )
 }
 
-# MAUVAIS - Pattern legacy
+# BAD - Legacy pattern
 output "security_group_id" {
   value = element(concat(aws_security_group.this.*.id, [""]), 0)
 }
@@ -242,21 +242,21 @@ output "security_group_id" {
 ### nullable = false (Terraform 1.1+)
 
 ```hcl
-# BON (Terraform 1.1+)
+# GOOD (Terraform 1.1+)
 variable "vpc_cidr" {
-  description = "Bloc CIDR pour le VPC"
+  description = "CIDR block for the VPC"
   type        = string
-  nullable    = false  # Passer null utilise default, pas null
+  nullable    = false  # Passing null uses default, not null
   default     = "10.0.0.0/16"
 }
 ```
 
-### optional() avec Defaults (Terraform 1.3+)
+### optional() with Defaults (Terraform 1.3+)
 
 ```hcl
-# BON - Utilisation de optional() pour attributs d'objet
+# GOOD - Using optional() for object attributes
 variable "database_config" {
-  description = "Configuration DB avec parametres optionnels"
+  description = "DB configuration with optional parameters"
   type = object({
     name               = string
     engine             = string
@@ -268,74 +268,74 @@ variable "database_config" {
 }
 ```
 
-### Blocs Moved (Terraform 1.1+)
+### Moved Blocks (Terraform 1.1+)
 
-**Renommer ressources sans destroy/recreate :**
+**Rename resources without destroy/recreate:**
 
 ```hcl
-# Renommer une ressource
+# Rename a resource
 moved {
   from = aws_instance.web_server
   to   = aws_instance.web
 }
 
-# Renommer un module
+# Rename a module
 moved {
   from = module.old_module_name
   to   = module.new_module_name
 }
 
-# Deplacer ressource dans for_each
+# Move resource into for_each
 moved {
   from = aws_subnet.private[0]
   to   = aws_subnet.private["us-east-1a"]
 }
 ```
 
-### Validation Cross-Variable (Terraform 1.9+)
+### Cross-Variable Validation (Terraform 1.9+)
 
 ```hcl
 variable "instance_type" {
-  description = "Type d'instance EC2"
+  description = "EC2 instance type"
   type        = string
 }
 
 variable "storage_size" {
-  description = "Taille du stockage en GB"
+  description = "Storage size in GB"
   type        = number
 
   validation {
-    # Peut referencer var.instance_type en Terraform 1.9+
+    # Can reference var.instance_type in Terraform 1.9+
     condition = !(
       var.instance_type == "db.t3.micro" &&
       var.storage_size > 1000
     )
-    error_message = "Instances micro ne peuvent pas avoir storage > 1000 GB"
+    error_message = "Micro instances cannot have storage > 1000 GB"
   }
 }
 
 variable "environment" {
-  description = "Nom de l'environnement"
+  description = "Environment name"
   type        = string
 }
 
 variable "backup_retention" {
-  description = "Periode de retention backup en jours"
+  description = "Backup retention period in days"
   type        = number
 
   validation {
     condition = (
-      var.environment == "prod" ? var.backup_retention >= 7 : true
+      var.environment == "prod" ? var.backup_retention >= 7: true
     )
-    error_message = "L'environnement prod necessite backup_retention >= 7 jours"
+    error_message = "Prod environment requires backup_retention >= 7 days"
   }
 }
 ```
 
-### Arguments Write-Only (Terraform 1.11+)
+### Write-Only Arguments (Terraform 1.11+)
 
 ```hcl
-# BON - Secret externe avec argument write-only
+# GOOD - External secret with write-only argument
 data "aws_secretsmanager_secret" "db_password" {
   name = "prod-database-password"
 }
@@ -349,52 +349,52 @@ resource "aws_db_instance" "this" {
   instance_class = "db.t3.micro"
   username       = "admin"
 
-  # write-only: Terraform envoie a AWS puis oublie (pas dans le state)
+  # write-only: Terraform sends to AWS then forgets (not in state)
   password_wo = data.aws_secretsmanager_secret_version.db_password.secret_string
 }
 
-# MAUVAIS - Secret finit dans le state file
+# BAD - Secret ends up in the state file
 resource "random_password" "db" {
   length = 16
 }
 
 resource "aws_db_instance" "this" {
-  password = random_password.db.result  # Stocke dans le state!
+  password = random_password.db.result  # Stored in state!
 }
 ```
 
 ---
 
-## Gestion des Versions
+## Version Management
 
-### Syntaxe des Contraintes
+### Constraint Syntax
 
 ```hcl
-# Version exacte (eviter sauf necessaire - inflexible)
+# Exact version (avoid unless necessary - inflexible)
 version = "5.0.0"
 
-# Contrainte pessimiste (recommande pour stabilite)
-version = "~> 5.0"      # Permet 5.0.x (tout x), mais pas 5.1.0
-version = "~> 5.0.1"    # Permet 5.0.x ou x >= 1, mais pas 5.1.0
+# Pessimistic constraint (recommended for stability)
+version = "~> 5.0"      # Allows 5.0.x (any x), but not 5.1.0
+version = "~> 5.0.1"    # Allows 5.0.x where x >= 1, but not 5.1.0
 
-# Contraintes de plage
-version = ">= 5.0, < 6.0"     # Toute version 5.x
-version = ">= 5.0.0, < 5.1.0" # Plage de version mineure specifique
+# Range constraints
+version = ">= 5.0, < 6.0"     # Any 5.x version
+version = ">= 5.0.0, < 5.1.0" # Specific minor version range
 
-# Version minimum
-version = ">= 5.0"  # Toute version 5.0 ou superieure (risque)
+# Minimum version
+version = ">= 5.0"  # Any version 5.0 or higher (risky)
 ```
 
-### Strategie par Composant
+### Per-Component Strategy
 
-**Terraform lui-meme :**
+**Terraform itself:**
 ```hcl
 terraform {
-  required_version = "~> 1.9"  # Permet 1.9.x
+  required_version = "~> 1.9"  # Allows 1.9.x
 }
 ```
 
-**Providers :**
+**Providers:**
 ```hcl
 terraform {
   required_providers {
@@ -406,22 +406,22 @@ terraform {
 }
 ```
 
-**Modules :**
+**Modules:**
 ```hcl
-# Production - pin version exacte
+# Production - pin exact version
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.1.2"
 }
 
-# Developpement - autoriser flexibilite
+# Development - allow flexibility
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.1"
 }
 ```
 
-### Template versions.tf
+### versions.tf Template
 
 ```hcl
 terraform {
@@ -448,25 +448,25 @@ terraform {
 
 ---
 
-## Patterns de Refactoring
+## Refactoring Patterns
 
-### Migration 0.12/0.13 vers 1.x
+### Migration from 0.12/0.13 to 1.x
 
-**Checklist de remplacement patterns legacy :**
+**Legacy patterns replacement checklist:**
 
-- [ ] Remplacer `element(concat(...))` par `try()`
-- [ ] Ajouter `nullable = false` aux variables qui ne devraient pas accepter null
-- [ ] Utiliser `optional()` dans types object pour attributs optionnels
-- [ ] Ajouter blocs `validation` aux variables avec contraintes
-- [ ] Migrer secrets vers arguments write-only (Terraform 1.11+)
-- [ ] Utiliser blocs `moved` pour refactoring ressources (Terraform 1.1+)
-- [ ] Considerer validation cross-variable (Terraform 1.9+)
+- [ ] Replace `element(concat(...))` with `try()`
+- [ ] Add `nullable = false` to variables that should not accept null
+- [ ] Use `optional()` in object types for optional attributes
+- [ ] Add `validation` blocks to variables with constraints
+- [ ] Migrate secrets to write-only arguments (Terraform 1.11+)
+- [ ] Use `moved` blocks for resource refactoring (Terraform 1.1+)
+- [ ] Consider cross-variable validation (Terraform 1.9+)
 
-### Remediation Secrets
+### Secrets Remediation
 
-**Avant - Secrets dans le State :**
+**Before - Secrets in State:**
 ```hcl
-# MAUVAIS - Secret genere et stocke dans le state
+# BAD - Secret generated and stored in state
 resource "random_password" "db" {
   length  = 16
   special = true
@@ -475,13 +475,13 @@ resource "random_password" "db" {
 resource "aws_db_instance" "this" {
   engine   = "mysql"
   username = "admin"
-  password = random_password.db.result  # Dans le state!
+  password = random_password.db.result  # In state!
 }
 ```
 
-**Apres - Gestion de Secrets Externe :**
+**After - External Secrets Management:**
 ```hcl
-# BON - Recuperer depuis AWS Secrets Manager
+# GOOD - Fetch from AWS Secrets Manager
 data "aws_secretsmanager_secret" "db_password" {
   name = "prod-database-password"
 }
@@ -494,24 +494,24 @@ resource "aws_db_instance" "this" {
   engine   = "mysql"
   username = "admin"
 
-  # write-only: Envoye a AWS, pas stocke dans le state
+  # write-only: Sent to AWS, not stored in state
   password_wo = data.aws_secretsmanager_secret_version.db_password.secret_string
 }
 ```
 
 ---
 
-## Locals pour Gestion des Dependances
+## Locals for Dependency Management
 
-**Utiliser locals pour indiquer l'ordre de suppression correct :**
+**Use locals to enforce correct deletion order:**
 
 ```hcl
-# BON - Force l'ordre de suppression correct
-# Assure que les subnets sont supprimes avant les blocs CIDR secondaires
+# GOOD - Forces correct deletion order
+# Ensures subnets are deleted before secondary CIDR blocks
 
 locals {
-  # Reference CIDR secondaire d'abord, fallback vers VPC
-  # Force Terraform a supprimer les subnets avant l'association CIDR
+  # Reference secondary CIDR first, fallback to VPC
+  # Forces Terraform to delete subnets before the CIDR association
   vpc_id = try(
     aws_vpc_ipv4_cidr_block_association.this[0].vpc_id,
     aws_vpc.this.id,
@@ -524,28 +524,28 @@ resource "aws_vpc" "this" {
 }
 
 resource "aws_vpc_ipv4_cidr_block_association" "this" {
-  count = var.add_secondary_cidr ? 1 : 0
+  count = var.add_secondary_cidr ? 1: 0
 
   vpc_id     = aws_vpc.this.id
   cidr_block = "10.1.0.0/16"
 }
 
 resource "aws_subnet" "public" {
-  # Utilise local au lieu de reference directe
-  # Cree dependance implicite sur l'association CIDR
+  # Uses local instead of direct reference
+  # Creates implicit dependency on the CIDR association
   vpc_id     = local.vpc_id
   cidr_block = "10.1.0.0/24"
 }
 
-# Sans local: Terraform pourrait essayer de supprimer CIDR avant subnets -> ERREUR
-# Avec local: Subnets supprimes en premier, puis association CIDR, puis VPC
+# Without local: Terraform might try to delete CIDR before subnets -> ERROR
+# With local: Subnets deleted first, then CIDR association, then VPC
 ```
 
-**Pourquoi c'est important :**
-- Previent les erreurs de suppression lors de la destruction d'infrastructure
-- Assure l'ordre de dependance correct sans `depends_on` explicite
-- Particulierement utile pour configurations VPC complexes avec blocs CIDR secondaires
+**Why this matters:**
+- Prevents deletion errors when destroying infrastructure
+- Ensures correct dependency order without explicit `depends_on`
+- Particularly useful for complex VPC configurations with secondary CIDR blocks
 
 ---
 
-**Retour vers :** [Fichier Skill Principal](../SKILL.md)
+**Back to:** [Main Skill File](../SKILL.md)

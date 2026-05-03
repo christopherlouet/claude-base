@@ -1,117 +1,117 @@
 ---
 sidebar_position: 4
 title: Scripts
-description: Catalogue des scripts utilitaires claude-socle
+description: Catalog of claude-socle utility scripts
 ---
 
 import Stats from '@site/src/components/Stats';
 
-# Scripts Utilitaires
+# Utility Scripts
 
-> **14 scripts** pour installer, configurer et maintenir claude-socle
+> **14 scripts** to install, configure and maintain claude-socle
 
 <Stats items={[
   { number: 14, label: 'Scripts' },
   { number: 5, label: 'Categories' },
 ]} />
 
-## Vue d'ensemble
+## Overview
 
-Les scripts sont organises en 5 categories :
+The scripts are organized into 5 categories:
 
-| Categorie | Scripts | Description |
+| Category | Scripts | Description |
 |-----------|---------|-------------|
-| **Installation** | `new-project.sh` | Installer le socle |
-| **Maintenance** | `update.sh`, `diff.sh`, `uninstall.sh`, `check-updates.sh` | Maintenir le socle |
-| **Diagnostic** | `doctor.sh`, `validate.sh`, `validate-counts.sh` | Verifier l'installation |
-| **Outils** | `ide.sh` | Configuration IDE |
-| **Internes** | `lint.sh`, `test.sh`, `bump-version.sh`, `audit-socle.sh`, `export-minimal.sh` | CI et maintenance du socle |
+| **Installation** | `new-project.sh` | Install the foundation |
+| **Maintenance** | `update.sh`, `diff.sh`, `uninstall.sh`, `check-updates.sh` | Maintain the foundation |
+| **Diagnostic** | `doctor.sh`, `validate.sh`, `validate-counts.sh` | Verify the installation |
+| **Tools** | `ide.sh` | IDE configuration |
+| **Internal** | `lint.sh`, `test.sh`, `bump-version.sh`, `audit-socle.sh`, `export-minimal.sh` | CI and foundation maintenance |
 
 ---
 
-## Scripts d'Installation
+## Installation Scripts
 
 ### new-project.sh
 
-Script principal pour creer un nouveau projet ou configurer un projet existant.
+Main script to create a new project or configure an existing project.
 
 ```bash
-# Installation rapide (recommande)
+# Quick install (recommended)
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh | bash
 
-# Ou depuis le socle clone
-./scripts/new-project.sh [OPTIONS] [CHEMIN]
+# Or from the cloned foundation
+./scripts/new-project.sh [OPTIONS] [PATH]
 ```
 
-**Options principales :**
+**Main options:**
 
 | Option | Description |
 |--------|-------------|
-| `-t, --type TYPE` | Type de projet (react, vue, node-api, python, go, flutter) |
-| `-n, --name NOM` | Nom du projet |
-| `--cicd` | Inclure les workflows CI/CD |
-| `--hooks` | Inclure les hooks Git |
-| `--mcp` | Inclure la configuration MCP |
-| `--docker` | Inclure la configuration Docker |
-| `-y, --yes` | Mode non-interactif |
+| `-t, --type TYPE` | Project type (react, vue, node-api, python, go, flutter) |
+| `-n, --name NAME` | Project name |
+| `--cicd` | Include CI/CD workflows |
+| `--hooks` | Include Git hooks |
+| `--mcp` | Include MCP configuration |
+| `--docker` | Include Docker configuration |
+| `-y, --yes` | Non-interactive mode |
 
-**Exemple :**
+**Example:**
 
 ```bash
-# Nouveau projet React avec CI/CD
-./scripts/new-project.sh -t react -n mon-app --cicd --hooks
+# New React project with CI/CD
+./scripts/new-project.sh -t react -n my-app --cicd --hooks
 
-# Configurer un projet existant
-cd mon-projet-existant
+# Configure an existing project
+cd my-existing-project
 ./scripts/new-project.sh --cicd --hooks
 ```
 
-**Fonctionnalites :**
-- Detection automatique du type de projet
-- Analyse de la CI/CD existante avec suggestions d'amelioration
-- Configuration des hooks Claude Code
-- Installation des dependances
+**Features:**
+- Automatic project type detection
+- Analysis of existing CI/CD with improvement suggestions
+- Claude Code hooks configuration
+- Dependency installation
 
 ---
 
-## Scripts de Maintenance
+## Maintenance Scripts
 
 ### update.sh
 
-Met a jour les commandes, agents, skills et rules depuis le socle.
+Updates commands, agents, skills and rules from the foundation.
 
 ```bash
-# Mise a jour rapide
+# Quick update
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/update.sh | bash
 
-# Ou depuis le socle clone
-./scripts/update.sh [OPTIONS] [CHEMIN]
+# Or from the cloned foundation
+./scripts/update.sh [OPTIONS] [PATH]
 ```
 
-**Options :**
+**Options:**
 
 | Option | Description |
 |--------|-------------|
-| `-f, --force` | Forcer la mise a jour (ecrase les modifications locales) |
-| `--backup` | Creer une sauvegarde uniquement |
-| `--settings` | Mettre a jour settings.json |
-| `--skills` | Mettre a jour les skills uniquement |
-| `--agents` | Mettre a jour les agents uniquement |
-| `--rules` | Mettre a jour les rules uniquement |
-| `--clean` | Nettoyer avant mise a jour |
-| `--orphans` | Detecter les fichiers orphelins |
-| `--remove-orphans` | Supprimer les fichiers orphelins |
+| `-f, --force` | Force update (overwrites local changes) |
+| `--backup` | Create a backup only |
+| `--settings` | Update settings.json |
+| `--skills` | Update skills only |
+| `--agents` | Update agents only |
+| `--rules` | Update rules only |
+| `--clean` | Clean before update |
+| `--orphans` | Detect orphan files |
+| `--remove-orphans` | Remove orphan files |
 
-**Exemple :**
+**Example:**
 
 ```bash
-# Mise a jour standard
+# Standard update
 ./scripts/update.sh
 
-# Mise a jour forcee avec nettoyage
+# Forced update with cleanup
 ./scripts/update.sh --force --clean
 
-# Mise a jour des skills uniquement
+# Update skills only
 ./scripts/update.sh --skills
 ```
 
@@ -119,41 +119,41 @@ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/
 
 ### check-updates.sh
 
-Verifie les mises a jour disponibles pour Claude Code CLI et les skills communautaires.
+Checks for available updates for Claude Code CLI and community skills.
 
 ```bash
 ./scripts/check-updates.sh [OPTIONS]
 ```
 
-**Options :**
+**Options:**
 
 | Option | Description |
 |--------|-------------|
-| `--json` | Sortie au format JSON |
-| `--quiet` | Mode silencieux (uniquement si mises a jour) |
-| `--force` | Ignorer le cache (TTL 24h par defaut) |
-| `--no-cli` | Ne pas verifier Claude Code CLI |
-| `--no-skills` | Ne pas verifier skills.sh |
-| `--timeout N` | Timeout reseau en secondes (defaut: 10) |
+| `--json` | JSON output format |
+| `--quiet` | Silent mode (only if updates available) |
+| `--force` | Ignore cache (24h TTL by default) |
+| `--no-cli` | Do not check Claude Code CLI |
+| `--no-skills` | Do not check skills.sh |
+| `--timeout N` | Network timeout in seconds (default: 10) |
 
-**Codes de retour :**
+**Return codes:**
 
-| Code | Signification |
+| Code | Meaning |
 |------|---------------|
-| 0 | Tout est a jour |
-| 1 | Mises a jour disponibles |
-| 2 | Erreur lors de la verification |
+| 0 | Everything is up to date |
+| 1 | Updates available |
+| 2 | Error during check |
 
-**Exemple :**
+**Example:**
 
 ```bash
-# Verification complete
+# Full check
 ./scripts/check-updates.sh
 
-# Sortie JSON pour CI/CD
+# JSON output for CI/CD
 ./scripts/check-updates.sh --json
 
-# CLI uniquement, sans cache
+# CLI only, no cache
 ./scripts/check-updates.sh --no-skills --force
 ```
 
@@ -161,229 +161,229 @@ Verifie les mises a jour disponibles pour Claude Code CLI et les skills communau
 
 ### diff.sh
 
-Compare la configuration locale avec le socle pour identifier les differences.
+Compares the local configuration with the foundation to identify differences.
 
 ```bash
-./scripts/diff.sh [OPTIONS] [CHEMIN]
+./scripts/diff.sh [OPTIONS] [PATH]
 ```
 
-**Options :**
+**Options:**
 
 | Option | Description |
 |--------|-------------|
-| `--show new` | Afficher uniquement les nouveaux fichiers |
-| `--show modified` | Afficher uniquement les fichiers modifies |
-| `--show deleted` | Afficher uniquement les fichiers supprimes |
-| `--content` | Afficher le contenu des differences |
-| `--no-color` | Desactiver les couleurs |
+| `--show new` | Show only new files |
+| `--show modified` | Show only modified files |
+| `--show deleted` | Show only deleted files |
+| `--content` | Show the content of differences |
+| `--no-color` | Disable colors |
 
-**Exemple :**
+**Example:**
 
 ```bash
-# Voir toutes les differences
+# See all differences
 ./scripts/diff.sh
 
-# Voir uniquement les modifications locales
+# See only local modifications
 ./scripts/diff.sh --show modified --content
 ```
 
-**Output :**
+**Output:**
 
 ```
-📊 Comparaison avec le socle claude-socle
+📊 Comparison with the claude-socle foundation
 
-Nouveaux fichiers (locaux):     2
-Fichiers modifies:              5
-Fichiers supprimes:             0
-Fichiers identiques:           98
+New files (local):              2
+Modified files:                 5
+Deleted files:                  0
+Identical files:               98
 ```
 
 ---
 
 ### uninstall.sh
 
-Supprime la configuration Claude Code d'un projet.
+Removes the Claude Code configuration from a project.
 
 ```bash
-./scripts/uninstall.sh [OPTIONS] [CHEMIN]
+./scripts/uninstall.sh [OPTIONS] [PATH]
 ```
 
-**Options :**
+**Options:**
 
 | Option | Description |
 |--------|-------------|
-| `--keep-claude-md` | Conserver le fichier CLAUDE.md |
-| `--no-backup` | Ne pas creer de sauvegarde |
-| `-f, --force` | Supprimer sans confirmation |
-| `--remove-local` | Supprimer aussi les fichiers locaux |
+| `--keep-claude-md` | Keep the CLAUDE.md file |
+| `--no-backup` | Do not create a backup |
+| `-f, --force` | Remove without confirmation |
+| `--remove-local` | Also remove local files |
 
-**Exemple :**
+**Example:**
 
 ```bash
-# Desinstallation avec sauvegarde (defaut)
+# Uninstall with backup (default)
 ./scripts/uninstall.sh
 
-# Desinstallation complete
+# Full uninstall
 ./scripts/uninstall.sh --force --no-backup
 ```
 
 :::caution
-Par defaut, une sauvegarde est creee dans `.claude-backup-YYYYMMDD-HHMMSS/`.
+By default, a backup is created in `.claude-backup-YYYYMMDD-HHMMSS/`.
 :::
 
 ---
 
-## Scripts de Diagnostic
+## Diagnostic Scripts
 
 ### doctor.sh
 
-Diagnostic complet de l'environnement Claude Code.
+Full diagnostic of the Claude Code environment.
 
 ```bash
-./scripts/doctor.sh [OPTIONS] [CHEMIN]
+./scripts/doctor.sh [OPTIONS] [PATH]
 ```
 
-**Options :**
+**Options:**
 
 | Option | Description |
 |--------|-------------|
-| `--fix` | Tenter de corriger les problemes detectes |
-| `--json` | Sortie au format JSON |
+| `--fix` | Attempt to fix detected issues |
+| `--json` | JSON output format |
 
-**Verifications effectuees :**
+**Checks performed:**
 
 | Check | Description |
 |-------|-------------|
-| Claude Code | Version et installation |
-| Git | Configuration et version |
-| Node.js | Version (si projet JS/TS) |
-| Dossier .claude | Presence et permissions |
-| settings.json | Validite du JSON |
-| Hooks | Configuration des hooks |
-| MCP | Serveurs MCP configures |
+| Claude Code | Version and installation |
+| Git | Configuration and version |
+| Node.js | Version (if JS/TS project) |
+| .claude folder | Presence and permissions |
+| settings.json | JSON validity |
+| Hooks | Hooks configuration |
+| MCP | Configured MCP servers |
 
-**Exemple :**
+**Example:**
 
 ```bash
-# Diagnostic complet
+# Full diagnostic
 ./scripts/doctor.sh
 
-# Diagnostic avec corrections automatiques
+# Diagnostic with automatic fixes
 ./scripts/doctor.sh --fix
 ```
 
-**Output :**
+**Output:**
 
 ```
-🏥 Diagnostic Claude Code
+🏥 Claude Code Diagnostic
 
-✓ Claude Code installe (v1.0.0)
-✓ Git configure
+✓ Claude Code installed (v1.0.0)
+✓ Git configured
 ✓ Node.js 20.x
-✓ Dossier .claude present
-⚠ settings.json: hook manquant
-✗ MCP: serveur github non configure
+✓ .claude folder present
+⚠ settings.json: missing hook
+✗ MCP: github server not configured
 
-Resultat: 4 OK, 1 warning, 1 erreur
+Result: 4 OK, 1 warning, 1 error
 ```
 
 ---
 
 ### validate.sh
 
-Valide la configuration Claude Code et calcule un score de qualite.
+Validates the Claude Code configuration and computes a quality score.
 
 ```bash
-./scripts/validate.sh [OPTIONS] [CHEMIN]
+./scripts/validate.sh [OPTIONS] [PATH]
 ```
 
-**Options :**
+**Options:**
 
 | Option | Description |
 |--------|-------------|
-| `--json` | Sortie au format JSON |
-| `--score` | Afficher uniquement le score |
+| `--json` | JSON output format |
+| `--score` | Show only the score |
 
-**Actions speciales (utilisees par les hooks) :**
+**Special actions (used by hooks):**
 
 ```bash
-# Protection de la branche main
+# Protect the main branch
 ./scripts/validate.sh protect-main
 
-# Auto-formatage
+# Auto-format
 ./scripts/validate.sh auto-format $FILE_PATH
 
-# Verification des types
+# Type check
 ./scripts/validate.sh typecheck $FILE_PATH
 
-# Auto-installation des dependances
+# Auto-install dependencies
 ./scripts/validate.sh auto-install $FILE_PATH
 
-# Message de session
+# Session message
 ./scripts/validate.sh session-start
 ```
 
-**Exemple :**
+**Example:**
 
 ```bash
-# Validation complete
+# Full validation
 ./scripts/validate.sh
 
-# Score uniquement
+# Score only
 ./scripts/validate.sh --score
 # Output: 85
 ```
 
 ---
 
-## Scripts Outils
+## Tool Scripts
 
 ### ide.sh
 
-Configure les IDE pour une integration optimale avec claude-socle.
+Configures IDEs for optimal integration with claude-socle.
 
 ```bash
-./scripts/ide.sh <setup|check|remove> <ide> [OPTIONS] [CHEMIN]
+./scripts/ide.sh <setup|check|remove> <ide> [OPTIONS] [PATH]
 ```
 
-**IDE supportes :**
+**Supported IDEs:**
 
-| IDE | Commande | Fichiers generes |
+| IDE | Command | Generated files |
 |-----|----------|------------------|
 | VSCode | `vscode` | settings.json, tasks.json, extensions.json, snippets |
-| Cursor | `cursor` | Meme que VSCode |
+| Cursor | `cursor` | Same as VSCode |
 | IntelliJ | `idea` | run configurations, code style, templates |
 | Vim/Neovim | `vim` | abbreviations, mappings, autocmds |
-| Tous | `all` | Configure tous les IDE detectes |
+| All | `all` | Configures all detected IDEs |
 
-**Commandes :**
+**Commands:**
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `setup` | Configure l'IDE |
-| `check` | Verifie la configuration |
-| `remove` | Supprime la configuration |
+| `setup` | Configure the IDE |
+| `check` | Verify the configuration |
+| `remove` | Remove the configuration |
 
-**Options :**
+**Options:**
 
 | Option | Description |
 |--------|-------------|
-| `-n, --dry-run` | Simule sans modifier |
-| `-f, --force` | Ecrase les fichiers existants |
+| `-n, --dry-run` | Simulate without modifying |
+| `-f, --force` | Overwrite existing files |
 
-**Exemple :**
+**Example:**
 
 ```bash
-# Configurer VSCode
+# Configure VSCode
 ./scripts/ide.sh setup vscode
 
-# Verifier la configuration IntelliJ
+# Verify IntelliJ configuration
 ./scripts/ide.sh check idea
 
-# Supprimer la configuration Vim
+# Remove Vim configuration
 ./scripts/ide.sh remove vim
 
-# Configurer tous les IDE detectes
+# Configure all detected IDEs
 ./scripts/ide.sh setup all
 ```
 
@@ -391,11 +391,11 @@ Configure les IDE pour une integration optimale avec claude-socle.
 
 ---
 
-## Scripts Internes
+## Internal Scripts
 
 ### lint.sh
 
-Valide la qualite du code du socle lui-meme (utilise par la CI).
+Validates the code quality of the foundation itself (used by CI).
 
 ```bash
 ./scripts/lint.sh
@@ -403,7 +403,7 @@ Valide la qualite du code du socle lui-meme (utilise par la CI).
 
 ### test.sh
 
-Execute les tests du socle (tests bats).
+Runs the foundation's tests (bats tests).
 
 ```bash
 ./scripts/test.sh
@@ -411,7 +411,7 @@ Execute les tests du socle (tests bats).
 
 ### bump-version.sh
 
-Met a jour la version du socle (`VERSION`, badges, references).
+Updates the foundation's version (`VERSION`, badges, references).
 
 ```bash
 ./scripts/bump-version.sh <new-version>
@@ -419,7 +419,7 @@ Met a jour la version du socle (`VERSION`, badges, references).
 
 ### audit-socle.sh
 
-Audit structurel complet : detecte fichiers orphelins, references cassees, incoherences entre socle et documentation.
+Full structural audit: detects orphan files, broken references, inconsistencies between the foundation and the documentation.
 
 ```bash
 ./scripts/audit-socle.sh
@@ -427,35 +427,35 @@ Audit structurel complet : detecte fichiers orphelins, references cassees, incoh
 
 ### export-minimal.sh
 
-Exporte une configuration minimale du socle dans une archive `.tar.gz` (ou copie directement vers un dossier cible). Utilise par `new-project.sh --minimal` pour les projets qui ne veulent qu'un sous-ensemble du socle.
+Exports a minimal configuration of the foundation as a `.tar.gz` archive (or copies directly to a target folder). Used by `new-project.sh --minimal` for projects that only want a subset of the foundation.
 
 ```bash
-# Archive par defaut (dist/claude-socle-minimal.tar.gz)
+# Default archive (dist/claude-socle-minimal.tar.gz)
 ./scripts/export-minimal.sh
 
-# Archive avec chemin personnalise
+# Archive with custom path
 ./scripts/export-minimal.sh --output /tmp/socle.tar.gz
 
-# Copie directe vers un dossier (sans archive)
-./scripts/export-minimal.sh --dest-dir /chemin/projet
+# Direct copy to a folder (no archive)
+./scripts/export-minimal.sh --dest-dir /path/project
 ```
 
-Le manifest des fichiers inclus est defini dans `scripts/lib/minimal-manifest.txt`.
+The manifest of included files is defined in `scripts/lib/minimal-manifest.txt`.
 
 ---
 
-## Utilisation avec curl
+## Usage with curl
 
-Plusieurs scripts peuvent etre executes directement depuis GitHub :
+Several scripts can be run directly from GitHub:
 
 ```bash
-# Installation
+# Install
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh | bash
 
-# Mise a jour
+# Update
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/update.sh | bash
 
-# Avec options (necessite de telecharger d'abord)
+# With options (requires downloading first)
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh -o /tmp/new-project.sh
 chmod +x /tmp/new-project.sh
 /tmp/new-project.sh --cicd --hooks
@@ -463,15 +463,15 @@ chmod +x /tmp/new-project.sh
 
 ---
 
-## Resume
+## Summary
 
-| Script | Usage principal | Commande rapide |
+| Script | Main usage | Quick command |
 |--------|-----------------|-----------------|
-| `new-project.sh` | Creer/configurer un projet | `curl ... \| bash` |
-| `update.sh` | Mettre a jour | `curl ... \| bash` |
-| `check-updates.sh` | Verifier les mises a jour | `./scripts/check-updates.sh` |
-| `diff.sh` | Comparer avec le socle | `./scripts/diff.sh` |
-| `uninstall.sh` | Desinstaller | `./scripts/uninstall.sh` |
-| `doctor.sh` | Diagnostiquer | `./scripts/doctor.sh --fix` |
-| `validate.sh` | Valider la config | `./scripts/validate.sh` |
-| `ide.sh` | Configurer les IDE | `./scripts/ide.sh setup vscode` |
+| `new-project.sh` | Create/configure a project | `curl ... \| bash` |
+| `update.sh` | Update | `curl ... \| bash` |
+| `check-updates.sh` | Check for updates | `./scripts/check-updates.sh` |
+| `diff.sh` | Compare with the foundation | `./scripts/diff.sh` |
+| `uninstall.sh` | Uninstall | `./scripts/uninstall.sh` |
+| `doctor.sh` | Diagnose | `./scripts/doctor.sh --fix` |
+| `validate.sh` | Validate config | `./scripts/validate.sh` |
+| `ide.sh` | Configure IDEs | `./scripts/ide.sh setup vscode` |

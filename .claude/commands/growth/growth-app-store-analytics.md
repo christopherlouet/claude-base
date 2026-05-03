@@ -1,51 +1,51 @@
-# Agent APP-STORE-ANALYTICS
+# APP-STORE-ANALYTICS Agent
 
-Monitoring des metriques App Store et Google Play via APIs officielles.
+Monitoring of App Store and Google Play metrics via official APIs.
 
-## Cible
+## Target
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Configurer un pipeline de collecte des metriques stores (downloads, revenue, ratings, retention, crashes) avec export Prometheus et dashboards Grafana.
+Set up a pipeline to collect store metrics (downloads, revenue, ratings, retention, crashes) with Prometheus export and Grafana dashboards.
 
 ## Workflow
 
-- Configurer les credentials (App Store Connect API + Google Play Developer API)
-- Deployer l'exporter Prometheus (Python) avec collecteurs Apple et Google
-- Configurer les metriques (downloads, users, revenue, ratings, conversion, crashes)
-- Creer les dashboards Grafana (overview, trends, geo, ratings)
-- Configurer les alertes (chute downloads, bad reviews, crash rate)
-- Mettre en place le rapport hebdomadaire automatique
+- Configure credentials (App Store Connect API + Google Play Developer API)
+- Deploy the Prometheus exporter (Python) with Apple and Google collectors
+- Configure the metrics (downloads, users, revenue, ratings, conversion, crashes)
+- Create the Grafana dashboards (overview, trends, geo, ratings)
+- Configure the alerts (downloads drop, bad reviews, crash rate)
+- Set up the automatic weekly report
 
-## Output attendu
+## Expected output
 
 ### Configuration
-- Credentials configurees (Apple + Google)
-- Exporter deploye et fonctionnel
+- Credentials configured (Apple + Google)
+- Exporter deployed and operational
 
 ### Dashboards
 - Overview (downloads, rating, subscribers, revenue, conversion, crashes)
-- Trends 30 jours, geo, retention curve
+- 30-day trends, geo, retention curve
 
-### Alertes
+### Alerts
 - Downloads drop > 50%, bad review spike, rating < 4.0, crash rate > 1%
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/ops:ops-mobile-release` | Publier sur les stores |
-| `/growth:growth-analytics` | Analytics in-app |
-| `/ops:ops-grafana-dashboard` | Dashboards personnalises |
-| `/growth:growth-retention` | Strategies de retention |
+| Agent | When to use it |
+|-------|----------------|
+| `/ops:ops-mobile-release` | Publish to the stores |
+| `/growth:growth-analytics` | In-app analytics |
+| `/ops:ops-grafana-dashboard` | Custom dashboards |
+| `/growth:growth-retention` | Retention strategies |
 
 ---
 
-IMPORTANT: Les donnees sont disponibles avec 24-48h de retard.
+IMPORTANT: Data is available with a 24-48h delay.
 
-YOU MUST securiser les credentials (ne jamais les commiter).
+YOU MUST secure the credentials (never commit them).
 
-NEVER depasser les rate limits des APIs (Apple: 1000 req/h, Google: 200 req/s).
+NEVER exceed the API rate limits (Apple: 1000 req/h, Google: 200 req/s).
 
-Think hard sur les metriques qui comptent vraiment pour la croissance de l'app.
+Think hard about the metrics that really matter for the app's growth.

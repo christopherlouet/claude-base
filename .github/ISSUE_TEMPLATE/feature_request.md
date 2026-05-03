@@ -6,6 +6,8 @@ labels: ["enhancement", "triage"]
 assignees: []
 ---
 
+> Please write this issue in **English**. See [CONTRIBUTING.md](../../CONTRIBUTING.md#language-policy).
+
 ## Problem
 
 What workflow gap or pain point does this feature address?

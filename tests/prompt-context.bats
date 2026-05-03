@@ -1,12 +1,12 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests du hook UserPromptSubmit : injection de contexte (routing semantique)
+# Tests for the UserPromptSubmit hook: context injection (semantic routing)
 # =============================================================================
-# Le script prompt-context.sh est invoque par le hook UserPromptSubmit.
-# Il lit sur stdin un JSON {"prompt": "..."} (format Claude Code) et ecrit
-# sur stdout un JSON conforme au contrat hookSpecificOutput avec
-# additionalContext — uniquement si le prompt n'est pas une slash command.
+# The prompt-context.sh script is invoked by the UserPromptSubmit hook.
+# It reads a JSON {"prompt": "..."} on stdin (Claude Code format) and writes
+# on stdout a JSON conforming to the hookSpecificOutput contract with
+# additionalContext — only if the prompt is not a slash command.
 # =============================================================================
 
 load 'test_helper'
@@ -31,59 +31,59 @@ teardown() {
 }
 
 # =============================================================================
-# Contrats de sortie
+# Output contracts
 # =============================================================================
 
-@test "prompt-context: sortie vide si le prompt commence par /" {
+@test "prompt-context: empty output if the prompt starts with /" {
     run bash -c 'echo "{\"prompt\": \"/work:work-plan feature X\"}" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     [ -z "$output" ]
 }
 
-@test "prompt-context: sortie vide si le prompt est vide" {
+@test "prompt-context: empty output if the prompt is empty" {
     run bash -c 'echo "{\"prompt\": \"\"}" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     [ -z "$output" ]
 }
 
-@test "prompt-context: sortie JSON valide pour un prompt libre" {
-    run bash -c 'echo "{\"prompt\": \"ajoute un endpoint users\"}" | "'"$HOOK_SCRIPT"'"'
+@test "prompt-context: valid JSON output for a free-form prompt" {
+    run bash -c 'echo "{\"prompt\": \"add a users endpoint\"}" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     [ -n "$output" ]
     echo "$output" | jq -e . >/dev/null
 }
 
-@test "prompt-context: sortie contient hookSpecificOutput.additionalContext" {
-    run bash -c 'echo "{\"prompt\": \"ajoute un endpoint users\"}" | "'"$HOOK_SCRIPT"'"'
+@test "prompt-context: output contains hookSpecificOutput.additionalContext" {
+    run bash -c 'echo "{\"prompt\": \"add a users endpoint\"}" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     echo "$output" | jq -e '.hookSpecificOutput.hookEventName == "UserPromptSubmit"' >/dev/null
     echo "$output" | jq -e '.hookSpecificOutput.additionalContext | type == "string"' >/dev/null
 }
 
 # =============================================================================
-# Contenu du contexte injecte
+# Injected context content
 # =============================================================================
 
-@test "prompt-context: additionalContext mentionne /assistant-auto comme hint" {
-    run bash -c 'echo "{\"prompt\": \"ajoute un endpoint users\"}" | "'"$HOOK_SCRIPT"'"'
+@test "prompt-context: additionalContext mentions /assistant-auto as a hint" {
+    run bash -c 'echo "{\"prompt\": \"add a users endpoint\"}" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     local ctx
     ctx=$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext')
     [[ "$ctx" == *"/assistant-auto"* ]]
 }
 
-@test "prompt-context: additionalContext contient la branche courante" {
-    run bash -c 'echo "{\"prompt\": \"ajoute un endpoint users\"}" | "'"$HOOK_SCRIPT"'"'
+@test "prompt-context: additionalContext contains the current branch" {
+    run bash -c 'echo "{\"prompt\": \"add a users endpoint\"}" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     local ctx
     ctx=$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext')
     [[ "$ctx" == *"main"* ]]
 }
 
-@test "prompt-context: additionalContext reporte les fichiers modifies" {
+@test "prompt-context: additionalContext reports modified files" {
     echo "modif" >> README.md
-    echo "nouveau" > NEW.md
-    run bash -c 'echo "{\"prompt\": \"ajoute un endpoint users\"}" | "'"$HOOK_SCRIPT"'"'
+    echo "new" > NEW.md
+    run bash -c 'echo "{\"prompt\": \"add a users endpoint\"}" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     local ctx
     ctx=$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext')
@@ -91,7 +91,7 @@ teardown() {
     [[ "$ctx" == *"NEW.md"* ]]
 }
 
-@test "prompt-context: additionalContext reporte les LOC du diff" {
+@test "prompt-context: additionalContext reports the diff LOC" {
     printf "a\nb\nc\nd\ne\n" >> README.md
     git add README.md
     run bash -c 'echo "{\"prompt\": \"refactor\"}" | "'"$HOOK_SCRIPT"'"'
@@ -102,29 +102,29 @@ teardown() {
 }
 
 # =============================================================================
-# Robustesse
+# Robustness
 # =============================================================================
 
-@test "prompt-context: ne casse pas hors d'un repo git" {
+@test "prompt-context: does not break outside a git repo" {
     rm -rf .git
-    run bash -c 'echo "{\"prompt\": \"ajoute un endpoint users\"}" | "'"$HOOK_SCRIPT"'"'
+    run bash -c 'echo "{\"prompt\": \"add a users endpoint\"}" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     [ -n "$output" ]
     echo "$output" | jq -e . >/dev/null
 }
 
-@test "prompt-context: ignore un stdin qui n'est pas du JSON" {
-    run bash -c 'echo "pas du json" | "'"$HOOK_SCRIPT"'"'
+@test "prompt-context: ignores stdin that is not JSON" {
+    run bash -c 'echo "not json" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     [ -z "$output" ]
 }
 
-@test "prompt-context: timeout-friendly (termine en moins de 3s)" {
+@test "prompt-context: timeout-friendly (finishes in less than 3s)" {
     run bash -c 'time (echo "{\"prompt\": \"test\"}" | "'"$HOOK_SCRIPT"'") 2>&1'
     [ "$status" -eq 0 ]
 }
 
-@test "prompt-context: ignore les slash commands avec espaces devant" {
+@test "prompt-context: ignores slash commands with leading spaces" {
     run bash -c 'echo "{\"prompt\": \"   /work:work-plan test\"}" | "'"$HOOK_SCRIPT"'"'
     [ "$status" -eq 0 ]
     [ -z "$output" ]

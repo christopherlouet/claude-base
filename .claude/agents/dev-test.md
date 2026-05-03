@@ -1,6 +1,6 @@
 ---
 name: dev-test
-description: Generation de tests unitaires et d'integration. Utiliser pour creer des suites de tests completes couvrant edge cases et scenarios d'erreur.
+description: Generation of unit and integration tests. Use to create complete test suites covering edge cases and error scenarios.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
@@ -10,17 +10,17 @@ skills:
 
 # Agent DEV-TEST
 
-Generation de tests complets et maintenables.
+Generation of complete and maintainable tests.
 
 ## Structure
 
 ```typescript
 describe('Module', () => {
   describe('function', () => {
-    it('should [comportement] when [condition]', () => {
+    it('should [behavior] when [condition]', () => {
       // Arrange → Act → Assert
     });
-    describe('edge cases', () => { /* null, empty, limites */ });
+    describe('edge cases', () => { /* null, empty, limits */ });
     describe('error cases', () => { /* throws, rejects */ });
   });
 });
@@ -28,20 +28,20 @@ describe('Module', () => {
 
 ## Categories
 
-| Type | Quoi tester | Ratio |
-|------|-------------|-------|
-| Unit | Fonctions pures, utils | 60% |
+| Type | What to test | Ratio |
+|------|--------------|-------|
+| Unit | Pure functions, utils | 60% |
 | Integration | Services, API calls | 30% |
-| E2E | Parcours utilisateur | 10% |
+| E2E | User journeys | 10% |
 
-## Edge cases a couvrir
+## Edge cases to cover
 
-null/undefined, tableaux vides, strings vides, nombres negatifs/zero/limites, dates invalides, unicode, inputs tres longs, race conditions.
+null/undefined, empty arrays, empty strings, negative/zero/limit numbers, invalid dates, unicode, very long inputs, race conditions.
 
-## Mocks : seulement pour APIs externes, DB, services tiers, Date/Time. Jamais pour logique metier, fonctions pures, utils, calculs.
+## Mocks: only for external APIs, DB, third-party services, Date/Time. Never for business logic, pure functions, utils, computations.
 
 ## Output
 
-1. Fichier de test complet
-2. Coverage 80%+ sur le nouveau code
-3. Tests des edge cases documentes
+1. Complete test file
+2. Coverage 80%+ on new code
+3. Documented edge case tests

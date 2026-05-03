@@ -1,66 +1,66 @@
 ---
 sidebar_position: 1
 title: Guides
-description: Guides thematiques pour utiliser efficacement le socle
+description: Thematic guides to use the foundation effectively
 ---
 
 # Guides
 
-> Du debutant a l'expert, par parcours d'apprentissage et par sujet specifique.
+> From beginner to expert, by learning path and by specific topic.
 
-## Parcours d'apprentissage
+## Learning paths
 
-| Guide | Audience | Duree |
-|-------|----------|-------|
-| [Formation Claude Code](/docs/guides/claude-code-training) | Debutant total (prerequis) | 3h45 (9 modules) |
-| [Parcours complet](/docs/guides/learning-path) | Debutant a Expert | 9h30 (5 niveaux) |
-| [Guide Prompting](/docs/guides/prompting-guide) | Intermediaire a Avance | 1h |
+| Guide | Audience | Duration |
+|-------|----------|----------|
+| [Claude Code Training](/docs/guides/claude-code-training) | Total beginner (prerequisite) | 3h45 (9 modules) |
+| [Full path](/docs/guides/learning-path) | Beginner to Expert | 9h30 (5 levels) |
+| [Prompting Guide](/docs/guides/prompting-guide) | Intermediate to Advanced | 1h |
 
-## Par stack
+## By stack
 
-Pour chaque stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, IA/LLM, Business, Growth) : commandes / agents / skills / rules du socle qui s'activent + liens externes pour les best practices.
+For each stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth): commands / agents / skills / rules of the foundation that activate + external links for best practices.
 
 → **[Stack Recipes](/docs/concepts/stack-recipes)**
 
-## Par role
+## By role
 
-| Guide | Pour qui | Commandes cles |
-|-------|----------|----------------|
+| Guide | For whom | Key commands |
+|-------|----------|--------------|
 | [Startup](/docs/guides/startup) | Entrepreneurs | `biz-*`, `growth-*`, `legal-*` |
-| [Setup Equipe](/docs/guides/team-guide) | Tech leads | CLAUDE.md partage, onboarding, conventions |
+| [Team Setup](/docs/guides/team-guide) | Tech leads | Shared CLAUDE.md, onboarding, conventions |
 
-## Guides specifiques
+## Specific guides
 
 | Guide | Description |
 |-------|-------------|
-| [Etendre le socle](/docs/guides/extending-guide) | Creer vos propres rules, skills, agents et hooks |
-| [Troubleshooting](/docs/guides/troubleshooting-guide) | Diagnostic et resolution des problemes courants |
-| [Migration](/docs/guides/migration) | Migrer un projet existant vers le socle |
-| [FAQ](/docs/guides/faq) | Questions frequentes |
+| [Extending the foundation](/docs/guides/extending-guide) | Create your own rules, skills, agents and hooks |
+| [Troubleshooting](/docs/guides/troubleshooting-guide) | Diagnosis and resolution of common problems |
+| [Migration](/docs/guides/migration) | Migrate an existing project to the foundation |
+| [FAQ](/docs/guides/faq) | Frequently asked questions |
 
-## Choisir son guide
+## Choosing your guide
 
 ```
-Jamais utilise Claude Code ?
-  → Formation Claude Code (3h45, prerequis)
+Never used Claude Code?
+  → Claude Code Training (3h45, prerequisite)
 
-Debutant total sur le socle ?
-  → Parcours d'apprentissage (9h30)
+Total beginner on the foundation?
+  → Learning path (9h30)
 
-Presse (5 min) ?
+In a hurry (5 min)?
   → Quick Start (/docs/intro/quick-start)
 
-Vous voulez voir comment le socle aide pour votre stack ?
+Want to see how the foundation helps for your stack?
   → Stack Recipes (Web, Mobile, API, Database, etc.)
 
-Vous voulez l'etendre ou l'adopter en equipe ?
-  → Extending Guide ou Team Guide
+Want to extend it or adopt it in a team?
+  → Extending Guide or Team Guide
 ```
 
 ---
 
-## Voir aussi
+## See also
 
-- [Qu'est-ce que Claude Code ?](/docs/intro/what-is-claude-code)
+- [What is Claude Code?](/docs/intro/what-is-claude-code)
 - [Workflows](/docs/concepts/workflows)
 - [Reference](/docs/reference)

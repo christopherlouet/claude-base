@@ -1,239 +1,239 @@
-# Tâches : [NOM DE LA FEATURE]
+# Tasks: [FEATURE NAME]
 
-**Input**: Documents de conception depuis `specs/[feature]/`
-**Prérequis**: plan.md (requis), spec.md (requis pour user stories)
-
----
-
-## Format des tâches : `[ID] [P?] [US?] Description`
-
-- **[P]** : Peut être exécutée en parallèle (fichiers différents, pas de dépendances)
-- **[US1/US2/US3]** : User story associée (pour traçabilité)
-- Inclure les chemins de fichiers exacts dans les descriptions
+**Input**: Design documents from `specs/[feature]/`
+**Prerequisites**: plan.md (required), spec.md (required for user stories)
 
 ---
 
-## Conventions de chemins
+## Task format: `[ID] [P?] [US?] Description`
 
-- **Projet simple** : `src/`, `tests/` à la racine
-- **Web app** : `backend/src/`, `frontend/src/`
-- **Mobile** : `api/src/`, `ios/src/` ou `android/src/`
-
-Adapter selon la structure définie dans plan.md.
+- **[P]**: Can be executed in parallel (different files, no dependencies)
+- **[US1/US2/US3]**: Associated user story (for traceability)
+- Include exact file paths in descriptions
 
 ---
 
-## Phase 1 : Setup (Infrastructure partagée)
+## Path conventions
 
-**Objectif** : Initialisation du projet et structure de base
+- **Simple project**: `src/`, `tests/` at the root
+- **Web app**: `backend/src/`, `frontend/src/`
+- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
 
-- [ ] T001 - Créer la structure de fichiers selon le plan
-- [ ] T002 - Initialiser les dépendances
-- [ ] T003 - [P] Configurer linting et formatting
-
----
-
-## Phase 2 : Fondation (Prérequis bloquants)
-
-**Objectif** : Infrastructure de base qui DOIT être complète AVANT toute user story
-
-**⚠️ CRITIQUE** : Aucune user story ne peut commencer avant la fin de cette phase
-
-- [ ] T004 - Setup base de données et migrations (si applicable)
-- [ ] T005 - [P] Configurer l'authentification (si applicable)
-- [ ] T006 - [P] Setup routing et middleware
-- [ ] T007 - Créer les modèles/entités de base partagés
-- [ ] T008 - Configurer gestion des erreurs et logging
-
-**Checkpoint** : Fondation prête - les user stories peuvent commencer.
+Adapt to the structure defined in plan.md.
 
 ---
 
-## Phase 3 : User Story 1 - [Titre] (P1) 🎯 MVP
+## Phase 1: Setup (Shared infrastructure)
 
-**Objectif** : [Description courte de ce que cette story livre]
+**Goal**: Project initialization and base structure
 
-**Test indépendant** : [Comment vérifier que cette story fonctionne seule]
-
-### Tests pour US1 (optionnel - si TDD demandé) ⚠️
-
-> **NOTE : Écrire ces tests EN PREMIER, s'assurer qu'ils ÉCHOUENT avant l'implémentation**
-
-- [ ] T009 - [P] [US1] Test unitaire pour [composant] dans `tests/unit/[name].test.ts`
-- [ ] T010 - [P] [US1] Test intégration pour [flux] dans `tests/integration/[name].test.ts`
-
-### Implémentation US1
-
-- [ ] T011 - [P] [US1] Créer [Entité1] dans `src/models/[entity1].ts`
-- [ ] T012 - [P] [US1] Créer [Entité2] dans `src/models/[entity2].ts`
-- [ ] T013 - [US1] Implémenter [Service] dans `src/services/[service].ts` (dépend T011, T012)
-- [ ] T014 - [US1] Implémenter [endpoint/feature] dans `src/[location]/[file].ts`
-- [ ] T015 - [US1] Ajouter validation et gestion d'erreurs
-- [ ] T016 - [US1] Ajouter logging pour les opérations US1
-
-**Checkpoint** : US1 est fonctionnelle et testable indépendamment.
+- [ ] T001 - Create the file structure according to the plan
+- [ ] T002 - Initialize dependencies
+- [ ] T003 - [P] Configure linting and formatting
 
 ---
 
-## Phase 4 : User Story 2 - [Titre] (P2)
+## Phase 2: Foundation (Blocking prerequisites)
 
-**Objectif** : [Description courte]
+**Goal**: Base infrastructure that MUST be complete BEFORE any user story
 
-**Test indépendant** : [Comment vérifier que cette story fonctionne seule]
+**⚠️ CRITICAL**: No user story can start before this phase is finished
 
-### Tests pour US2 (optionnel)
+- [ ] T004 - Setup database and migrations (if applicable)
+- [ ] T005 - [P] Configure authentication (if applicable)
+- [ ] T006 - [P] Setup routing and middleware
+- [ ] T007 - Create the shared base models/entities
+- [ ] T008 - Configure error handling and logging
 
-- [ ] T017 - [P] [US2] Test unitaire dans `tests/unit/[name].test.ts`
-- [ ] T018 - [P] [US2] Test intégration dans `tests/integration/[name].test.ts`
-
-### Implémentation US2
-
-- [ ] T019 - [P] [US2] Créer [Entité] dans `src/models/[entity].ts`
-- [ ] T020 - [US2] Implémenter [Service] dans `src/services/[service].ts`
-- [ ] T021 - [US2] Implémenter [endpoint/feature] dans `src/[location]/[file].ts`
-- [ ] T022 - [US2] Intégrer avec composants US1 (si nécessaire)
-
-**Checkpoint** : US1 ET US2 fonctionnent indépendamment.
+**Checkpoint**: Foundation ready - user stories can start.
 
 ---
 
-## Phase 5 : User Story 3 - [Titre] (P3)
+## Phase 3: User Story 1 - [Title] (P1) 🎯 MVP
 
-**Objectif** : [Description courte]
+**Goal**: [Short description of what this story delivers]
 
-**Test indépendant** : [Comment vérifier que cette story fonctionne seule]
+**Independent test**: [How to verify that this story works on its own]
 
-### Tests pour US3 (optionnel)
+### Tests for US1 (optional - if TDD requested) ⚠️
 
-- [ ] T023 - [P] [US3] Test unitaire dans `tests/unit/[name].test.ts`
-- [ ] T024 - [P] [US3] Test intégration dans `tests/integration/[name].test.ts`
+> **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-### Implémentation US3
+- [ ] T009 - [P] [US1] Unit test for [component] in `tests/unit/[name].test.ts`
+- [ ] T010 - [P] [US1] Integration test for [flow] in `tests/integration/[name].test.ts`
 
-- [ ] T025 - [P] [US3] Créer [Entité] dans `src/models/[entity].ts`
-- [ ] T026 - [US3] Implémenter [Service] dans `src/services/[service].ts`
-- [ ] T027 - [US3] Implémenter [endpoint/feature] dans `src/[location]/[file].ts`
+### US1 implementation
 
-**Checkpoint** : Toutes les user stories fonctionnent indépendamment.
+- [ ] T011 - [P] [US1] Create [Entity1] in `src/models/[entity1].ts`
+- [ ] T012 - [P] [US1] Create [Entity2] in `src/models/[entity2].ts`
+- [ ] T013 - [US1] Implement [Service] in `src/services/[service].ts` (depends on T011, T012)
+- [ ] T014 - [US1] Implement [endpoint/feature] in `src/[location]/[file].ts`
+- [ ] T015 - [US1] Add validation and error handling
+- [ ] T016 - [US1] Add logging for US1 operations
 
----
-
-## Phase N : Polish & Préoccupations transversales
-
-**Objectif** : Améliorations qui touchent plusieurs user stories
-
-- [ ] TXXX - [P] Mise à jour de la documentation dans `docs/`
-- [ ] TXXX - Nettoyage et refactoring du code
-- [ ] TXXX - Optimisation de performance
-- [ ] TXXX - [P] Tests unitaires additionnels
-- [ ] TXXX - Revue de sécurité
-- [ ] TXXX - Validation finale
+**Checkpoint**: US1 is functional and testable independently.
 
 ---
 
-## Dépendances et Ordre d'Exécution
+## Phase 4: User Story 2 - [Title] (P2)
 
-### Dépendances entre phases
+**Goal**: [Short description]
+
+**Independent test**: [How to verify that this story works on its own]
+
+### Tests for US2 (optional)
+
+- [ ] T017 - [P] [US2] Unit test in `tests/unit/[name].test.ts`
+- [ ] T018 - [P] [US2] Integration test in `tests/integration/[name].test.ts`
+
+### US2 implementation
+
+- [ ] T019 - [P] [US2] Create [Entity] in `src/models/[entity].ts`
+- [ ] T020 - [US2] Implement [Service] in `src/services/[service].ts`
+- [ ] T021 - [US2] Implement [endpoint/feature] in `src/[location]/[file].ts`
+- [ ] T022 - [US2] Integrate with US1 components (if needed)
+
+**Checkpoint**: US1 AND US2 work independently.
+
+---
+
+## Phase 5: User Story 3 - [Title] (P3)
+
+**Goal**: [Short description]
+
+**Independent test**: [How to verify that this story works on its own]
+
+### Tests for US3 (optional)
+
+- [ ] T023 - [P] [US3] Unit test in `tests/unit/[name].test.ts`
+- [ ] T024 - [P] [US3] Integration test in `tests/integration/[name].test.ts`
+
+### US3 implementation
+
+- [ ] T025 - [P] [US3] Create [Entity] in `src/models/[entity].ts`
+- [ ] T026 - [US3] Implement [Service] in `src/services/[service].ts`
+- [ ] T027 - [US3] Implement [endpoint/feature] in `src/[location]/[file].ts`
+
+**Checkpoint**: All user stories work independently.
+
+---
+
+## Phase N: Polish & Cross-cutting concerns
+
+**Goal**: Improvements that touch multiple user stories
+
+- [ ] TXXX - [P] Update documentation in `docs/`
+- [ ] TXXX - Code cleanup and refactoring
+- [ ] TXXX - Performance optimization
+- [ ] TXXX - [P] Additional unit tests
+- [ ] TXXX - Security review
+- [ ] TXXX - Final validation
+
+---
+
+## Dependencies and Execution Order
+
+### Dependencies between phases
 
 ```
 Phase 1 (Setup)
      │
      ▼
-Phase 2 (Fondation)  ◄──── BLOQUE toutes les user stories
+Phase 2 (Foundation)  ◄──── BLOCKS all user stories
      │
      ├──▶ Phase 3 (US1 - MVP)
      │
-     ├──▶ Phase 4 (US2) [peut démarrer après Phase 2]
+     ├──▶ Phase 4 (US2) [can start after Phase 2]
      │
-     └──▶ Phase 5 (US3) [peut démarrer après Phase 2]
+     └──▶ Phase 5 (US3) [can start after Phase 2]
 
-Toutes les phases ──▶ Phase N (Polish)
+All phases ──▶ Phase N (Polish)
 ```
 
-### Dépendances entre user stories
+### Dependencies between user stories
 
-| Story | Peut commencer après | Dépendances |
-|-------|---------------------|-------------|
-| US1 (P1) | Phase 2 (Fondation) | Aucune autre story |
-| US2 (P2) | Phase 2 (Fondation) | Peut intégrer avec US1 mais testable seule |
-| US3 (P3) | Phase 2 (Fondation) | Peut intégrer avec US1/US2 mais testable seule |
+| Story | Can start after | Dependencies |
+|-------|-----------------|--------------|
+| US1 (P1) | Phase 2 (Foundation) | No other story |
+| US2 (P2) | Phase 2 (Foundation) | Can integrate with US1 but testable on its own |
+| US3 (P3) | Phase 2 (Foundation) | Can integrate with US1/US2 but testable on its own |
 
-### Au sein de chaque User Story
+### Within each User Story
 
-1. Tests (si TDD) DOIVENT être écrits et ÉCHOUER avant l'implémentation
-2. Modèles avant services
-3. Services avant endpoints
-4. Implémentation core avant intégration
-5. Story complète avant de passer à la suivante
+1. Tests (if TDD) MUST be written and FAIL before implementation
+2. Models before services
+3. Services before endpoints
+4. Core implementation before integration
+5. Complete story before moving on to the next
 
-### Opportunités de parallélisation
+### Parallelization opportunities
 
-- Toutes les tâches marquées [P] peuvent être exécutées en parallèle
-- Une fois la Phase 2 terminée, toutes les user stories peuvent démarrer en parallèle
-- Les tests d'une story marqués [P] peuvent tourner en parallèle
-- Les modèles marqués [P] peuvent être créés en parallèle
+- All tasks marked [P] can be executed in parallel
+- Once Phase 2 is finished, all user stories can start in parallel
+- Tests of a story marked [P] can run in parallel
+- Models marked [P] can be created in parallel
 
 ---
 
-## Exemple de parallélisation : User Story 1
+## Parallelization example: User Story 1
 
 ```bash
-# Lancer tous les tests US1 ensemble (si TDD):
-Task: "Test unitaire pour [composant] dans tests/unit/[name].test.ts"
-Task: "Test intégration pour [flux] dans tests/integration/[name].test.ts"
+# Launch all US1 tests together (if TDD):
+Task: "Unit test for [component] in tests/unit/[name].test.ts"
+Task: "Integration test for [flow] in tests/integration/[name].test.ts"
 
-# Lancer tous les modèles US1 ensemble:
-Task: "Créer [Entité1] dans src/models/[entity1].ts"
-Task: "Créer [Entité2] dans src/models/[entity2].ts"
+# Launch all US1 models together:
+Task: "Create [Entity1] in src/models/[entity1].ts"
+Task: "Create [Entity2] in src/models/[entity2].ts"
 ```
 
 ---
 
-## Stratégie d'Implémentation
+## Implementation Strategy
 
-### MVP First (US1 uniquement)
+### MVP First (US1 only)
 
-1. Compléter Phase 1: Setup
-2. Compléter Phase 2: Fondation (CRITIQUE - bloque tout)
-3. Compléter Phase 3: US1
-4. **STOP et VALIDER**: Tester US1 indépendamment
-5. Déployer/démontrer si prêt
+1. Complete Phase 1: Setup
+2. Complete Phase 2: Foundation (CRITICAL - blocks everything)
+3. Complete Phase 3: US1
+4. **STOP and VALIDATE**: Test US1 independently
+5. Deploy/demo if ready
 
-### Livraison Incrémentale
+### Incremental Delivery
 
-1. Setup + Fondation → Base prête
-2. Ajouter US1 → Tester → Déployer (MVP!)
-3. Ajouter US2 → Tester → Déployer
-4. Ajouter US3 → Tester → Déployer
-5. Chaque story ajoute de la valeur sans casser les précédentes
+1. Setup + Foundation → Base ready
+2. Add US1 → Test → Deploy (MVP!)
+3. Add US2 → Test → Deploy
+4. Add US3 → Test → Deploy
+5. Each story adds value without breaking the previous ones
 
-### Stratégie Équipe (parallélisation)
+### Team Strategy (parallelization)
 
-Avec plusieurs développeurs:
+With several developers:
 
-1. L'équipe complète Setup + Fondation ensemble
-2. Une fois Fondation terminée:
+1. The full team completes Setup + Foundation together
+2. Once Foundation is finished:
    - Dev A: User Story 1
    - Dev B: User Story 2
    - Dev C: User Story 3
-3. Les stories se complètent et s'intègrent indépendamment
+3. Stories complete and integrate independently
 
 ---
 
 ## Notes
 
-- **[P]** tâches = fichiers différents, pas de dépendances
-- **[US?]** label = traçabilité vers la user story
-- Chaque user story doit être complétable et testable indépendamment
-- Vérifier que les tests échouent avant d'implémenter (TDD)
-- Commit après chaque tâche ou groupe logique
-- S'arrêter à chaque checkpoint pour valider la story indépendamment
+- **[P]** tasks = different files, no dependencies
+- **[US?]** label = traceability to the user story
+- Each user story must be completable and testable independently
+- Verify that tests fail before implementing (TDD)
+- Commit after each task or logical group
+- Stop at each checkpoint to validate the story independently
 
-**À éviter**:
-- Tâches vagues sans chemin de fichier
-- Conflits sur le même fichier
-- Dépendances cross-story qui cassent l'indépendance
+**To avoid**:
+- Vague tasks without a file path
+- Conflicts on the same file
+- Cross-story dependencies that break independence
 
 ---
 
-**Version**: 1.0 | **Créé**: [DATE]
+**Version**: 1.0 | **Created**: [DATE]

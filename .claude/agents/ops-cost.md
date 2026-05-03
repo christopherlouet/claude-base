@@ -1,6 +1,6 @@
 ---
 name: ops-cost
-description: Suivi de la consommation de tokens et des couts Claude Code. Metriques, tendances et optimisation.
+description: Token consumption tracking and Claude Code costs. Metrics, trends, and optimization.
 tools: Read, Grep, Glob, Bash
 model: haiku
 permissionMode: default
@@ -8,4 +8,4 @@ permissionMode: default
 
 # Agent OPS-COST
 
-Analyse de la consommation de tokens et recommandations d'optimisation des couts.
+Token consumption analysis and cost optimization recommendations.

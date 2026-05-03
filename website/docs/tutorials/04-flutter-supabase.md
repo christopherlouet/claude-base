@@ -1,55 +1,55 @@
 ---
 sidebar_position: 5
 title: "04 - Flutter + Supabase"
-description: Construisez une app mobile Flutter avec authentification et backend Supabase
+description: Build a Flutter mobile app with authentication and Supabase backend
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# App Flutter avec Supabase
+# Flutter App with Supabase
 
-<DifficultyBadge level="intermediate" /> **Durée estimée : 60 minutes**
+<DifficultyBadge level="intermediate" /> **Estimated duration: 60 minutes**
 
-Ce tutoriel vous montre comment créer une application mobile Flutter avec un backend Supabase pour l'authentification et la base de données.
+This tutorial shows you how to create a Flutter mobile application with a Supabase backend for authentication and database.
 
-## Objectifs
+## Objectives
 
-À la fin de ce tutoriel, vous saurez :
-- Utiliser `/dev:dev-supabase` pour configurer Supabase
-- Utiliser `/dev:dev-flutter` pour créer des screens et widgets
-- Implémenter l'authentification avec Supabase Auth
-- Structurer une app Flutter en Clean Architecture
+By the end of this tutorial, you will know how to:
+- Use `/dev:dev-supabase` to configure Supabase
+- Use `/dev:dev-flutter` to create screens and widgets
+- Implement authentication with Supabase Auth
+- Structure a Flutter app in Clean Architecture
 
-## Prérequis
+## Prerequisites
 
-- Flutter SDK installé
-- Un compte Supabase (gratuit)
-- Un projet Flutter existant ou nouveau
-- Connaissances de base en Flutter/Dart
+- Flutter SDK installed
+- A Supabase account (free)
+- An existing or new Flutter project
+- Basic knowledge of Flutter/Dart
 
-## Contexte
+## Context
 
-Nous allons créer une **app de notes** avec :
-- Authentification email/password
-- CRUD des notes
-- Synchronisation temps réel
-- Architecture BLoC
+We are going to create a **notes app** with:
+- Email/password authentication
+- Notes CRUD
+- Real-time synchronization
+- BLoC architecture
 
-## Étape 1 : Configurer Supabase
+## Step 1: Configure Supabase
 
-### Créer le projet Supabase
+### Create the Supabase project
 
-1. Allez sur [supabase.com](https://supabase.com)
-2. Créez un nouveau projet
-3. Notez l'URL et la clé anon
+1. Go to [supabase.com](https://supabase.com)
+2. Create a new project
+3. Note the URL and the anon key
 
-### Configurer avec claude-socle
+### Configure with claude-socle
 
 ```bash
-/dev:dev-supabase "Configurer Supabase pour une app de notes avec auth et CRUD"
+/dev:dev-supabase "Configure Supabase for a notes app with auth and CRUD"
 ```
 
-Claude va créer :
+Claude will create:
 
 **`lib/core/supabase/supabase_client.dart`**
 ```dart
@@ -70,9 +70,9 @@ class SupabaseService {
 }
 ```
 
-**Migration SQL (à exécuter dans Supabase)**
+**SQL Migration (to run in Supabase)**
 ```sql
--- Table des notes
+-- Notes table
 create table notes (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users(id) on delete cascade not null,
@@ -102,10 +102,10 @@ create policy "Users can delete their own notes"
   using (auth.uid() = user_id);
 ```
 
-## Étape 2 : Créer le modèle et repository
+## Step 2: Create the model and repository
 
 ```bash
-/dev:dev-flutter "Note entity et repository pour les opérations CRUD avec Supabase"
+/dev:dev-flutter "Note entity and repository for CRUD operations with Supabase"
 ```
 
 **`lib/features/notes/domain/entities/note.dart`**
@@ -198,10 +198,10 @@ class NoteRepositoryImpl implements NoteRepository {
 }
 ```
 
-## Étape 3 : Créer le BLoC
+## Step 3: Create the BLoC
 
 ```bash
-/dev:dev-flutter "NotesBloc pour gérer l'état des notes avec les événements CRUD"
+/dev:dev-flutter "NotesBloc to manage notes state with CRUD events"
 ```
 
 **`lib/features/notes/presentation/bloc/notes_bloc.dart`**
@@ -268,7 +268,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
   final NoteRepository _repository;
   StreamSubscription<List<Note>>? _subscription;
 
-  NotesBloc(this._repository) : super(NotesInitial()) {
+  NotesBloc(this._repository): super(NotesInitial()) {
     on<LoadNotes>(_onLoadNotes);
     on<WatchNotes>(_onWatchNotes);
     on<AddNote>(_onAddNote);
@@ -329,10 +329,10 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
 }
 ```
 
-## Étape 4 : Créer les screens
+## Step 4: Create the screens
 
 ```bash
-/dev:dev-flutter "NotesListScreen avec liste des notes, FAB pour ajouter et swipe to delete"
+/dev:dev-flutter "NotesListScreen with notes list, FAB to add and swipe to delete"
 ```
 
 **`lib/features/notes/presentation/pages/notes_list_screen.dart`**
@@ -350,7 +350,7 @@ class NotesListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mes Notes'),
+        title: const Text('My Notes'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -372,7 +372,7 @@ class NotesListScreen extends StatelessWidget {
                   Text(state.message),
                   ElevatedButton(
                     onPressed: () => context.read<NotesBloc>().add(LoadNotes()),
-                    child: const Text('Réessayer'),
+                    child: const Text('Retry'),
                   ),
                 ],
               ),
@@ -382,7 +382,7 @@ class NotesListScreen extends StatelessWidget {
           if (state is NotesLoaded) {
             if (state.notes.isEmpty) {
               return const Center(
-                child: Text('Aucune note. Créez-en une !'),
+                child: Text('No notes. Create one!'),
               );
             }
 
@@ -442,37 +442,37 @@ class NotesListScreen extends StatelessWidget {
 }
 ```
 
-## Étape 5 : Tester avec l'émulateur
+## Step 5: Test with the emulator
 
 ```bash
 flutter run
 ```
 
-Vérifiez que :
-1. L'inscription fonctionne
-2. La connexion fonctionne
-3. Les notes se créent et s'affichent
-4. Les modifications sont synchronisées
+Verify that:
+1. Sign-up works
+2. Sign-in works
+3. Notes are created and displayed
+4. Updates are synchronized
 
-## Étape 6 : Audit qualité mobile
+## Step 6: Mobile quality audit
 
 ```bash
 /qa:qa-mobile
 ```
 
-Claude va vérifier :
-- Performance de rendu
-- Gestion de la mémoire
-- Accessibilité
-- Tests unitaires et widget
+Claude will check:
+- Rendering performance
+- Memory management
+- Accessibility
+- Unit and widget tests
 
-## Étape 7 : Commiter
+## Step 7: Commit
 
 ```bash
 /work:work-commit
 ```
 
-**Message suggéré :**
+**Suggested message:**
 
 ```
 feat(notes): add notes feature with Supabase backend
@@ -485,7 +485,7 @@ feat(notes): add notes feature with Supabase backend
 - Add real-time synchronization
 ```
 
-## Structure finale
+## Final structure
 
 ```
 lib/
@@ -516,14 +516,14 @@ lib/
     └── injection.dart
 ```
 
-## Prochaines étapes
+## Next steps
 
-- [Tutoriel 05 : Audit sécurité](/docs/tutorials/audit-securite)
-- [Guide Mobile](/docs/concepts/stack-recipes)
-- [Commande /dev:dev-flutter](/docs/commands/dev/dev-flutter)
+- [Tutorial 05: Security audit](/docs/tutorials/audit-securite)
+- [Mobile Guide](/docs/concepts/stack-recipes)
+- [/dev:dev-flutter command](/docs/commands/dev/dev-flutter)
 
 ---
 
 :::tip Supabase RLS
-Activez **toujours** Row Level Security sur vos tables Supabase. Claude le configure automatiquement avec `/dev:dev-supabase`.
+**Always** enable Row Level Security on your Supabase tables. Claude configures it automatically with `/dev:dev-supabase`.
 :::

@@ -1,92 +1,92 @@
 # Claude Code Skills
 
-Ce dossier contient des **Skills** - des connaissances domaine reutilisables qui enseignent a Claude les patterns et conventions du projet.
+This folder contains **Skills** — reusable domain knowledge that teaches Claude the project's patterns and conventions.
 
-## Difference entre Commands et Skills
+## Difference between Commands and Skills
 
 | Aspect | Commands (`.claude/commands/`) | Skills (`.claude/skills/`) |
 |--------|-------------------------------|---------------------------|
-| **Invocation** | Explicite: `/nom` | Automatique ou `/nom` |
-| **Format** | Un fichier `.md` | Dossier avec `SKILL.md` + ressources |
-| **Declenchement** | Manuel uniquement | Base sur la description (semantique) |
-| **Ressources** | Non | Oui (examples/, scripts/, references/) |
+| **Invocation** | Explicit: `/name` | Automatic or `/name` |
+| **Format** | A single `.md` file | Folder with `SKILL.md` + resources |
+| **Trigger** | Manual only | Based on the description (semantic) |
+| **Resources** | No | Yes (examples/, scripts/, references/) |
 
-## Structure d'un Skill
+## Structure of a Skill
 
 ```
 skill-name/
-├── SKILL.md           # Instructions principales (requis)
-├── examples/          # Exemples concrets (optionnel)
+├── SKILL.md           # Main instructions (required)
+├── examples/          # Concrete examples (optional)
 │   └── example-1.md
-├── references/        # Documentation additionnelle (optionnel)
-└── scripts/           # Scripts helper (optionnel)
+├── references/        # Additional documentation (optional)
+└── scripts/           # Helper scripts (optional)
 ```
 
-## Skills disponibles (54)
+## Available skills (54)
 
-| Skill | Mots-cles declencheurs | Description |
+| Skill | Trigger keywords | Description |
 |-------|----------------------|-------------|
-| `agent-teams` | equipe d'agents, swarm, multi-agents coordonnes | Orchestration d'equipes d'agents (Agent Teams natif) |
-| `api-mocking` | mock API, MSW, test sans backend | Configuration de mocks API pour les tests |
-| `data-pipeline` | ETL, Airflow, dbt | Conception de pipelines ETL/ELT |
-| `dev-api` | API, endpoint, REST, route | Developper et documenter une API REST ou GraphQL |
-| `dev-auth` | login, signup, OAuth, sessions, 2FA | Auth web moderne (better-auth, Lucia, NextAuth, Clerk, Supabase Auth) |
-| `dev-debug` | bug, erreur, debug, ne fonctionne pas | Deboguer et resoudre des problemes |
-| `dev-document` | PDF, DOCX, XLSX, PPTX, rapport | Generation de documents bureautiques |
-| `dev-error-handling` | gestion erreurs, exceptions, error boundary | Strategie de gestion des erreurs |
-| `dev-flutter` | Flutter, widget, BLoC | Developpement Flutter avec Clean Architecture |
-| `dev-frontend-design` | UI, landing page, composant visuel, direction artistique | Design UI distinctif avec direction artistique forte |
-| `dev-graphql` | GraphQL, resolver, schema | Developpement d'APIs GraphQL |
-| `dev-i18n` | i18n, traduction, locale, plusieurs langues | Internationalisation (next-intl, react-i18next, vue-i18n, ARB) |
-| `dev-nextjs` | Next.js, App Router, RSC, Server Actions | Developpement Next.js (caching, streaming, middleware) |
-| `dev-prisma` | Prisma, schema.prisma, migration, queries type-safe | Developpement avec Prisma ORM |
-| `dev-prompt-engineering` | prompt, instruction, few-shot, LLM | Optimisation de prompts pour LLMs |
-| `dev-react-perf` | React perf, re-render, memo | Optimisation performances React/Next.js |
-| `dev-refactor` | refactorer, clean code, restructurer | Refactoring de code |
-| `dev-shadcn` | shadcn, shadcn/ui, Radix, composants copy-paste | Integration et customisation de shadcn/ui |
-| `dev-supabase` | Supabase, auth, RLS, storage | Developpement backend Supabase |
-| `dev-tdd` | TDD, test first, ecrire les tests | Cycle TDD Red-Green-Refactor |
-| `doc-changelog` | changelog, release notes | Maintenance du CHANGELOG |
-| `doc-generate` | documenter, README, JSDoc | Generation de documentation technique |
-| `feature-flags` | feature flag, A/B test, deploiement progressif | Gestion de feature flags et toggles |
-| `git-worktrees` | worktree, dev parallele, branches simultanees | Git worktrees pour dev parallele |
-| `growth-cro` | conversion, CRO, signup flow, onboarding | Optimisation du taux de conversion |
-| `ops-ci` | CI/CD, GitHub Actions, pipeline | Configuration de pipelines CI/CD |
-| `ops-ci-fix` | CI cassee, workflow rouge, tests CI en echec | Diagnostic et reparation autonome des pipelines CI/CD |
-| `ops-database` | schema, migration, index | Conception de schemas de base de donnees |
-| `ops-docker` | Docker, container, Dockerfile | Containerisation Docker et Docker Compose |
+| `agent-teams` | agent team, swarm, coordinated multi-agents | Orchestration of agent teams (native Agent Teams) |
+| `api-mocking` | API mock, MSW, test without backend | API mock configuration for tests |
+| `data-pipeline` | ETL, Airflow, dbt | Design of ETL/ELT pipelines |
+| `dev-api` | API, endpoint, REST, route | Develop and document a REST or GraphQL API |
+| `dev-auth` | login, signup, OAuth, sessions, 2FA | Modern web auth (better-auth, Lucia, NextAuth, Clerk, Supabase Auth) |
+| `dev-debug` | bug, error, debug, not working | Debug and resolve problems |
+| `dev-document` | PDF, DOCX, XLSX, PPTX, report | Office document generation |
+| `dev-error-handling` | error handling, exceptions, error boundary | Error handling strategy |
+| `dev-flutter` | Flutter, widget, BLoC | Flutter development with Clean Architecture |
+| `dev-frontend-design` | UI, landing page, visual component, art direction | Distinctive UI design with strong art direction |
+| `dev-graphql` | GraphQL, resolver, schema | GraphQL API development |
+| `dev-i18n` | i18n, translation, locale, multiple languages | Internationalization (next-intl, react-i18next, vue-i18n, ARB) |
+| `dev-nextjs` | Next.js, App Router, RSC, Server Actions | Next.js development (caching, streaming, middleware) |
+| `dev-prisma` | Prisma, schema.prisma, migration, type-safe queries | Development with Prisma ORM |
+| `dev-prompt-engineering` | prompt, instruction, few-shot, LLM | Prompt optimization for LLMs |
+| `dev-react-perf` | React perf, re-render, memo | React/Next.js performance optimization |
+| `dev-refactor` | refactor, clean code, restructure | Code refactoring |
+| `dev-shadcn` | shadcn, shadcn/ui, Radix, copy-paste components | Integration and customization of shadcn/ui |
+| `dev-supabase` | Supabase, auth, RLS, storage | Supabase backend development |
+| `dev-tdd` | TDD, test first, write the tests | Red-Green-Refactor TDD cycle |
+| `doc-changelog` | changelog, release notes | CHANGELOG maintenance |
+| `doc-generate` | document, README, JSDoc | Technical documentation generation |
+| `feature-flags` | feature flag, A/B test, progressive deployment | Feature flags and toggles management |
+| `git-worktrees` | worktree, parallel dev, simultaneous branches | Git worktrees for parallel dev |
+| `growth-cro` | conversion, CRO, signup flow, onboarding | Conversion rate optimization |
+| `ops-ci` | CI/CD, GitHub Actions, pipeline | CI/CD pipeline configuration |
+| `ops-ci-fix` | broken CI, red workflow, failing CI tests | Autonomous diagnosis and repair of CI/CD pipelines |
+| `ops-database` | schema, migration, index | Database schema design |
+| `ops-docker` | Docker, container, Dockerfile | Docker and Docker Compose containerization |
 | `ops-infra-code` | Terraform, IaC, OpenTofu | Infrastructure as Code |
-| `ops-mobile-release` | App Store, Play Store, Fastlane | Publication d'apps mobiles |
-| `ops-monitoring` | logs, metriques, traces | Instrumentation d'applications |
-| `ops-opnsense` | OPNsense, firewall, NAT, DHCP | Configuration OPNsense via Terraform |
-| `ops-proxmox` | Proxmox, PVE, VM, LXC, PBS | Infrastructure Proxmox VE avec Terraform |
-| `ops-standup` | standup, briefing matinal, resume activite | Briefing cross-repo (commits, PRs, CI, blockers) |
-| `parallel-agents` | parallele, concurrent, fan-out, multi-agents | Orchestration d'agents paralleles |
-| `qa-chrome` | navigateur, Chrome DevTools, console, tests UI | Audit visuel et tests navigateur via Chrome |
-| `qa-design` | audit design, UI/UX, interface | Audit de design UI/UX |
-| `qa-e2e` | E2E, Playwright, Cypress | Tests End-to-End |
-| `qa-perf` | optimiser, latence, TTFB | Optimisation des performances |
-| `qa-review` | review, relire, verifier le code | Revue de code approfondie |
-| `qa-security` | securite, audit, vulnerabilite, OWASP | Audit de securite OWASP |
-| `qa-tech-debt` | dette technique, tech debt, refactoring priorite | Gestion de la dette technique |
-| `session-handoff` | handoff, reprise, transfert session | Transfert de contexte entre sessions |
-| `state-management` | state, Redux, Zustand, store | Patterns de state management |
-| `web-scraping` | scraping, Firecrawl, crawler, extract | Scraping web propre pour LLM (Firecrawl + fallback Playwright) |
-| `work-batch` | backlog, batch stories, mode autonome, PRD | Execution sequentielle de user stories depuis un PRD |
-| `work-brainstorm` | brainstorm, ideation, alternatives, idee floue | Ideation structuree avant specification |
-| `work-commit` | commit, message de commit | Messages Conventional Commits |
-| `work-explore` | explorer, comprendre le code, decouvrir | Explorer et comprendre un codebase |
-| `work-plan` | planifier, architecture, plan | Planifier une implementation |
-| `work-pr` | PR, pull request, merger | Creer une Pull Request complete |
-| `work-quick` | quick, vite, rapide, fix simple, typo | Workflow rapide pour changements triviaux |
-| `writing-skills` | creer skill, nouveau skill, ecrire un skill | Guide pour creer de nouveaux skills |
+| `ops-mobile-release` | App Store, Play Store, Fastlane | Mobile app publishing |
+| `ops-monitoring` | logs, metrics, traces | Application instrumentation |
+| `ops-opnsense` | OPNsense, firewall, NAT, DHCP | OPNsense configuration via Terraform |
+| `ops-proxmox` | Proxmox, PVE, VM, LXC, PBS | Proxmox VE infrastructure with Terraform |
+| `ops-standup` | standup, morning briefing, activity summary | Cross-repo briefing (commits, PRs, CI, blockers) |
+| `parallel-agents` | parallel, concurrent, fan-out, multi-agents | Parallel agent orchestration |
+| `qa-chrome` | browser, Chrome DevTools, console, UI tests | Visual audit and browser tests via Chrome |
+| `qa-design` | design audit, UI/UX, interface | UI/UX design audit |
+| `qa-e2e` | E2E, Playwright, Cypress | End-to-End tests |
+| `qa-perf` | optimize, latency, TTFB | Performance optimization |
+| `qa-review` | review, re-read, verify the code | In-depth code review |
+| `qa-security` | security, audit, vulnerability, OWASP | OWASP security audit |
+| `qa-tech-debt` | technical debt, tech debt, refactoring priority | Technical debt management |
+| `session-handoff` | handoff, resume, session transfer | Context transfer between sessions |
+| `state-management` | state, Redux, Zustand, store | State management patterns |
+| `web-scraping` | scraping, Firecrawl, crawler, extract | Clean web scraping for LLMs (Firecrawl + Playwright fallback) |
+| `work-batch` | backlog, batch stories, autonomous mode, PRD | Sequential execution of user stories from a PRD |
+| `work-brainstorm` | brainstorm, ideation, alternatives, fuzzy idea | Structured ideation before specification |
+| `work-commit` | commit, commit message | Conventional Commits messages |
+| `work-explore` | explore, understand the code, discover | Explore and understand a codebase |
+| `work-plan` | plan, architecture, plan | Plan an implementation |
+| `work-pr` | PR, pull request, merge | Create a complete Pull Request |
+| `work-quick` | quick, fast, rapid, simple fix, typo | Quick workflow for trivial changes |
+| `writing-skills` | create skill, new skill, write a skill | Guide to create new skills |
 
-## Convention de nommage
+## Naming convention
 
-Les skills suivent la convention `domaine-action` :
+Skills follow the `domain-action` convention:
 
-| Domaine | Exemples |
-|---------|----------|
+| Domain | Examples |
+|--------|----------|
 | `work-` | `work-explore`, `work-plan`, `work-commit`, `work-pr` |
 | `dev-` | `dev-tdd`, `dev-debug`, `dev-api`, `dev-flutter` |
 | `qa-` | `qa-review`, `qa-security`, `qa-perf`, `qa-e2e` |
@@ -95,16 +95,16 @@ Les skills suivent la convention `domaine-action` :
 | `growth-` | `growth-cro` |
 | `data-` | `data-pipeline` |
 
-## Creer un nouveau Skill
+## Create a new Skill
 
-1. Creer le dossier: `mkdir .claude/skills/domaine-action`
-2. Creer `SKILL.md` avec frontmatter YAML
-3. Ajouter des exemples dans `examples/` (recommande)
-4. La description doit inclure les declencheurs (quand utiliser)
+1. Create the folder: `mkdir .claude/skills/domain-action`
+2. Create `SKILL.md` with YAML frontmatter
+3. Add examples in `examples/` (recommended)
+4. The description must include the triggers (when to use)
 
-## Bonnes pratiques
+## Best practices
 
-- **Nommage coherent**: Utiliser le format `domaine-action` (ex: `dev-tdd`, `qa-security`)
-- **Description riche**: Inclure tous les mots-cles declencheurs
-- **SKILL.md < 500 lignes**: Details dans `references/`
-- **Exemples concrets**: Montrer le bon ET le mauvais pattern
+- **Consistent naming**: Use the `domain-action` format (e.g., `dev-tdd`, `qa-security`)
+- **Rich description**: Include all trigger keywords
+- **SKILL.md < 500 lines**: Details in `references/`
+- **Concrete examples**: Show the good AND the bad pattern

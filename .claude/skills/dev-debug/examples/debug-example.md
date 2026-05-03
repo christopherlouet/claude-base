@@ -1,7 +1,7 @@
-# Exemple de débogage
+# Debugging example
 
-## Problème signalé
-"Les utilisateurs ne peuvent plus se connecter depuis ce matin. Erreur 500 sur /api/login"
+## Reported issue
+"Users can no longer log in since this morning. 500 error on /api/login"
 
 ## Diagnostic
 
@@ -12,7 +12,7 @@ curl -X POST https://api.example.com/api/login \
   -d '{"email":"test@example.com","password":"test123"}'
 ```
 
-**Résultat:**
+**Result:**
 ```json
 {
   "error": "Internal Server Error",
@@ -20,16 +20,16 @@ curl -X POST https://api.example.com/api/login \
 }
 ```
 
-Bug reproduit à 100%.
+Bug reproduced 100%.
 
-### 2. Collecte d'informations
+### 2. Information gathering
 
 ```bash
-# Logs récents
+# Recent logs
 tail -100 /var/log/app/error.log
 ```
 
-**Logs trouvés:**
+**Logs found:**
 ```
 2024-01-15 09:23:45 ERROR [AuthService] Connection refused: Redis
 2024-01-15 09:23:45 ERROR [AuthService] Failed to get session: ECONNREFUSED
@@ -37,29 +37,29 @@ tail -100 /var/log/app/error.log
 ```
 
 ```bash
-# Derniers commits
+# Latest commits
 git log --oneline -5
 ```
 
-**Résultat:**
+**Result:**
 ```
 a1b2c3d (HEAD) chore: update dependencies
 f4e5d6c feat: add rate limiting
 9g8h7i6 fix: typo in README
 ```
 
-### 3. Hypothèse
+### 3. Hypothesis
 
-Le commit `f4e5d6c feat: add rate limiting` a probablement ajouté une dépendance Redis qui n'est pas configurée en production.
+The commit `f4e5d6c feat: add rate limiting` likely added a Redis dependency that is not configured in production.
 
-### 4. Vérification
+### 4. Verification
 
 ```bash
-# Vérifier le commit suspect
+# Check the suspect commit
 git show f4e5d6c --stat
 ```
 
-**Fichiers modifiés:**
+**Modified files:**
 ```
 src/middleware/rate-limit.ts | 45 +++++
 src/config/redis.ts          | 12 ++
@@ -67,36 +67,36 @@ package.json                 |  1 +
 ```
 
 ```bash
-# Vérifier la config Redis en prod
+# Check Redis config in prod
 echo $REDIS_URL
-# (vide)
+# (empty)
 ```
 
-**Cause confirmée**: Variable `REDIS_URL` non définie en production.
+**Cause confirmed**: `REDIS_URL` variable not defined in production.
 
-### 5. Cause racine identifiée
+### 5. Root cause identified
 
-| Élément | Valeur |
+| Element | Value |
 |---------|--------|
-| **Fichier** | `src/config/redis.ts:8` |
-| **Problème** | Connexion Redis sans URL configurée |
-| **Pourquoi** | Déploiement sans la variable d'environnement |
-| **Commit fautif** | `f4e5d6c` |
+| **File** | `src/config/redis.ts:8` |
+| **Problem** | Redis connection without configured URL |
+| **Why** | Deployment without the environment variable |
+| **Faulty commit** | `f4e5d6c` |
 
 ```typescript
 // src/config/redis.ts:8
-const redis = new Redis(process.env.REDIS_URL); // REDIS_URL est undefined
+const redis = new Redis(process.env.REDIS_URL); // REDIS_URL is undefined
 ```
 
 ## Solution
 
-### Option 1: Configurer Redis (recommandé)
+### Option 1: Configure Redis (recommended)
 ```bash
-# Ajouter la variable en production
+# Add the variable in production
 heroku config:set REDIS_URL=redis://...
 ```
 
-### Option 2: Fallback gracieux (temporaire)
+### Option 2: Graceful fallback (temporary)
 ```typescript
 // src/config/redis.ts
 const redis = process.env.REDIS_URL
@@ -110,16 +110,16 @@ if (!redis) {
 }
 ```
 
-## Résolution appliquée
+## Applied resolution
 
 ```bash
-# 1. Configurer Redis en prod
+# 1. Configure Redis in prod
 heroku config:set REDIS_URL="redis://..."
 
-# 2. Redémarrer l'application
+# 2. Restart the application
 heroku restart
 
-# 3. Vérifier le fix
+# 3. Verify the fix
 curl -X POST https://api.example.com/api/login ...
 # ✅ 200 OK
 ```
@@ -127,21 +127,21 @@ curl -X POST https://api.example.com/api/login ...
 ## Post-mortem
 
 ### Impact
-- **Durée**: 2h15 (09:00 - 11:15)
-- **Utilisateurs affectés**: ~500
-- **Sévérité**: P1 (fonctionnalité majeure cassée)
+- **Duration**: 2h15 (09:00 - 11:15)
+- **Affected users**: ~500
+- **Severity**: P1 (major feature broken)
 
-### Actions préventives
-1. [ ] Ajouter check des variables d'environnement au démarrage
-2. [ ] Ajouter test d'intégration pour le rate limiting
-3. [ ] Documenter les variables requises dans le README
+### Preventive actions
+1. [ ] Add environment variable checks at startup
+2. [ ] Add integration test for rate limiting
+3. [ ] Document required variables in the README
 
-### Test de non-régression ajouté
+### Non-regression test added
 ```typescript
 describe('Rate Limiting', () => {
   it('should work without Redis configured', () => {
     delete process.env.REDIS_URL;
-    // Le middleware ne doit pas crasher
+    // The middleware must not crash
     expect(() => rateLimitMiddleware(req, res, next)).not.toThrow();
   });
 });

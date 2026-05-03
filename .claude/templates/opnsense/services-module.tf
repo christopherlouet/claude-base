@@ -1,7 +1,7 @@
 # =============================================================================
-# Module Services OPNsense
+# OPNsense Services Module
 # =============================================================================
-# Configure les services DHCP et DNS
+# Configures DHCP and DNS services
 # Provider: browningluke/opnsense
 # =============================================================================
 
@@ -10,25 +10,25 @@
 # -----------------------------------------------------------------------------
 
 variable "dhcp_servers" {
-  description = "Configuration des serveurs DHCP par interface"
+  description = "DHCP server configuration per interface"
   type = list(object({
     interface = string                       # Interface (lan, opt1...)
     enabled   = optional(bool, true)
 
-    # Plage d'adresses
-    range_start = string                     # Première IP de la plage
-    range_end   = string                     # Dernière IP de la plage
+    # Address range
+    range_start = string                     # First IP of the range
+    range_end   = string                     # Last IP of the range
 
-    # Options réseau
-    gateway     = optional(string)           # Gateway (défaut: IP de l'interface)
-    dns_servers = optional(list(string), []) # Serveurs DNS
-    domain      = optional(string)           # Domaine local
-    lease_time  = optional(number, 86400)    # Durée du bail en secondes (24h)
+    # Network options
+    gateway     = optional(string)           # Gateway (default: interface IP)
+    dns_servers = optional(list(string), []) # DNS servers
+    domain      = optional(string)           # Local domain
+    lease_time  = optional(number, 86400)    # Lease time in seconds (24h)
 
-    # Options WINS (legacy)
+    # WINS options (legacy)
     wins_servers = optional(list(string), [])
 
-    # Options NTP
+    # NTP options
     ntp_servers = optional(list(string), [])
   }))
 
@@ -36,12 +36,12 @@ variable "dhcp_servers" {
 }
 
 variable "dhcp_reservations" {
-  description = "Réservations DHCP (IP fixes par adresse MAC)"
+  description = "DHCP reservations (fixed IPs per MAC address)"
   type = list(object({
-    interface   = string                     # Interface DHCP
-    mac         = string                     # Adresse MAC (format: 00:11:22:33:44:55)
-    ip          = string                     # IP à attribuer
-    hostname    = optional(string)           # Nom d'hôte
+    interface   = string                     # DHCP interface
+    mac         = string                     # MAC address (format: 00:11:22:33:44:55)
+    ip          = string                     # IP to assign
+    hostname    = optional(string)           # Hostname
     description = optional(string)
   }))
 
@@ -51,7 +51,7 @@ variable "dhcp_reservations" {
     condition = alltrue([
       for res in var.dhcp_reservations : can(regex("^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$", res.mac))
     ])
-    error_message = "Format MAC invalide. Utilisez: 00:11:22:33:44:55"
+    error_message = "Invalid MAC format. Use: 00:11:22:33:44:55"
   }
 }
 
@@ -60,23 +60,23 @@ variable "dhcp_reservations" {
 # -----------------------------------------------------------------------------
 
 variable "dns_enabled" {
-  description = "Activer le résolveur DNS (Unbound)"
+  description = "Enable the DNS resolver (Unbound)"
   type        = bool
   default     = true
 }
 
 variable "dns_interfaces" {
-  description = "Interfaces sur lesquelles écouter (vide = toutes)"
+  description = "Interfaces to listen on (empty = all)"
   type        = list(string)
   default     = []
 }
 
 variable "dns_forwarders" {
-  description = "Serveurs DNS upstream (forwarders)"
+  description = "Upstream DNS servers (forwarders)"
   type = list(object({
-    host     = string                        # IP du serveur DNS
+    host     = string                        # DNS server IP
     port     = optional(number, 53)          # Port
-    domain   = optional(string)              # Domaine spécifique (optionnel)
+    domain   = optional(string)              # Specific domain (optional)
     priority = optional(number, 10)
   }))
 
@@ -84,11 +84,11 @@ variable "dns_forwarders" {
 }
 
 variable "dns_overrides" {
-  description = "Entrées DNS locales (host overrides)"
+  description = "Local DNS entries (host overrides)"
   type = list(object({
-    hostname    = string                     # Nom d'hôte
-    domain      = string                     # Domaine
-    ip          = string                     # IP associée
+    hostname    = string                     # Hostname
+    domain      = string                     # Domain
+    ip          = string                     # Associated IP
     description = optional(string)
   }))
 
@@ -96,10 +96,10 @@ variable "dns_overrides" {
 }
 
 variable "dns_domain_overrides" {
-  description = "Domaines à résoudre via des serveurs spécifiques"
+  description = "Domains to resolve via specific servers"
   type = list(object({
-    domain      = string                     # Domaine
-    server      = string                     # Serveur DNS pour ce domaine
+    domain      = string                     # Domain
+    server      = string                     # DNS server for this domain
     description = optional(string)
   }))
 
@@ -107,7 +107,7 @@ variable "dns_domain_overrides" {
 }
 
 # -----------------------------------------------------------------------------
-# Serveurs DHCP
+# DHCP servers
 # -----------------------------------------------------------------------------
 
 resource "opnsense_dhcp_v4_server" "this" {
@@ -116,23 +116,23 @@ resource "opnsense_dhcp_v4_server" "this" {
   interface = each.value.interface
   enabled   = each.value.enabled
 
-  # Plage
+  # Range
   range_from = each.value.range_start
   range_to   = each.value.range_end
 
-  # Options réseau
+  # Network options
   gateway     = each.value.gateway
   dns_servers = each.value.dns_servers
   domain      = each.value.domain
   lease_time  = each.value.lease_time
 
-  # Options additionnelles
+  # Additional options
   wins_servers = each.value.wins_servers
   ntp_servers  = each.value.ntp_servers
 }
 
 # -----------------------------------------------------------------------------
-# Réservations DHCP
+# DHCP reservations
 # -----------------------------------------------------------------------------
 
 resource "opnsense_dhcp_v4_static_map" "this" {
@@ -142,16 +142,16 @@ resource "opnsense_dhcp_v4_static_map" "this" {
   mac         = each.value.mac
   ipaddr      = each.value.ip
   hostname    = each.value.hostname
-  description = coalesce(each.value.description, "Réservation: ${each.value.hostname}")
+  description = coalesce(each.value.description, "Reservation: ${each.value.hostname}")
 
   depends_on = [opnsense_dhcp_v4_server.this]
 }
 
 # -----------------------------------------------------------------------------
-# Configuration DNS (Unbound)
+# DNS configuration (Unbound)
 # -----------------------------------------------------------------------------
 
-# Forwarders DNS
+# DNS forwarders
 resource "opnsense_unbound_forward" "this" {
   for_each = { for idx, fwd in var.dns_forwarders : "${fwd.host}-${coalesce(fwd.domain, "all")}" => fwd }
 
@@ -162,7 +162,7 @@ resource "opnsense_unbound_forward" "this" {
   priority = each.value.priority
 }
 
-# Host Overrides (entrées DNS locales)
+# Host overrides (local DNS entries)
 resource "opnsense_unbound_host_override" "this" {
   for_each = { for ho in var.dns_overrides : "${ho.hostname}.${ho.domain}" => ho }
 
@@ -173,7 +173,7 @@ resource "opnsense_unbound_host_override" "this" {
   description = each.value.description
 }
 
-# Domain Overrides
+# Domain overrides
 resource "opnsense_unbound_domain_override" "this" {
   for_each = { for do in var.dns_domain_overrides : do.domain => do }
 
@@ -188,7 +188,7 @@ resource "opnsense_unbound_domain_override" "this" {
 # -----------------------------------------------------------------------------
 
 output "dhcp_servers" {
-  description = "Serveurs DHCP configurés"
+  description = "Configured DHCP servers"
   value = {
     for iface, dhcp in opnsense_dhcp_v4_server.this : iface => {
       id          = dhcp.id
@@ -200,7 +200,7 @@ output "dhcp_servers" {
 }
 
 output "dhcp_reservations" {
-  description = "Réservations DHCP créées"
+  description = "Created DHCP reservations"
   value = {
     for key, res in opnsense_dhcp_v4_static_map.this : key => {
       id       = res.id
@@ -212,7 +212,7 @@ output "dhcp_reservations" {
 }
 
 output "dns_overrides" {
-  description = "Entrées DNS locales"
+  description = "Local DNS entries"
   value = {
     for fqdn, ho in opnsense_unbound_host_override.this : fqdn => {
       id       = ho.id
@@ -224,7 +224,7 @@ output "dns_overrides" {
 }
 
 # -----------------------------------------------------------------------------
-# Exemples d'utilisation
+# Usage examples
 # -----------------------------------------------------------------------------
 # dhcp_servers = [
 #   {
@@ -244,14 +244,14 @@ output "dns_overrides" {
 #     mac         = "00:11:22:33:44:55"
 #     ip          = "192.168.10.10"
 #     hostname    = "server-web"
-#     description = "Serveur web principal"
+#     description = "Main web server"
 #   },
 #   {
 #     interface   = "lan"
 #     mac         = "AA:BB:CC:DD:EE:FF"
 #     ip          = "192.168.10.11"
 #     hostname    = "nas"
-#     description = "NAS Synology"
+#     description = "Synology NAS"
 #   }
 # ]
 #

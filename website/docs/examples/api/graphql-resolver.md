@@ -1,37 +1,37 @@
 ---
 sidebar_position: 2
-title: Resolver GraphQL
-description: Exemple de resolver GraphQL avec Apollo Server et validation
+title: GraphQL Resolver
+description: Example of a GraphQL resolver with Apollo Server and validation
 ---
 
-# Resolver GraphQL avec Apollo Server
+# GraphQL Resolver with Apollo Server
 
-Cet exemple montre comment créer des resolvers GraphQL professionnels avec Apollo Server, TypeScript et validation.
+This example shows how to create professional GraphQL resolvers with Apollo Server, TypeScript and validation.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/dev:dev-graphql "Créer des queries et mutations pour les utilisateurs"
+/dev:dev-graphql "Create queries and mutations for users"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 src/graphql/
 ├── schema/
-│   ├── typeDefs.ts        # Schema GraphQL
+│   ├── typeDefs.ts        # GraphQL schema
 │   └── index.ts
 ├── resolvers/
-│   ├── userResolver.ts    # Resolvers utilisateur
+│   ├── userResolver.ts    # User resolvers
 │   ├── index.ts
-│   └── scalars.ts         # Scalars personnalisés
+│   └── scalars.ts         # Custom scalars
 ├── dataloaders/
-│   └── userLoader.ts      # DataLoader pour N+1
-├── context.ts             # Contexte GraphQL
-└── server.ts              # Configuration Apollo
+│   └── userLoader.ts      # DataLoader for N+1
+├── context.ts             # GraphQL context
+└── server.ts              # Apollo configuration
 ```
 
-## Code du Resolver
+## Resolver code
 
 ### `schema/typeDefs.ts`
 
@@ -120,13 +120,13 @@ export const typeDefs = gql`
   }
 
   type Query {
-    # Récupère un utilisateur par ID
+    # Get a user by ID
     user(id: ID!): User
 
-    # Récupère l'utilisateur connecté
+    # Get the currently logged-in user
     me: User
 
-    # Liste les utilisateurs avec pagination cursor-based
+    # List users with cursor-based pagination
     users(
       first: Int
       after: String
@@ -138,16 +138,16 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    # Crée un nouvel utilisateur
+    # Create a new user
     createUser(input: CreateUserInput!): User!
 
-    # Met à jour un utilisateur
+    # Update a user
     updateUser(id: ID!, input: UpdateUserInput!): User!
 
-    # Supprime un utilisateur
+    # Delete a user
     deleteUser(id: ID!): Boolean!
 
-    # Change le rôle d'un utilisateur (admin only)
+    # Change a user's role (admin only)
     changeUserRole(id: ID!, role: Role!): User!
   }
 `;
@@ -162,15 +162,15 @@ import type { Context } from '../context';
 import { prisma } from '../../lib/prisma';
 import { encodeCursor, decodeCursor } from '../../utils/cursor';
 
-// Schémas de validation
+// Validation schemas
 const createUserSchema = z.object({
-  email: z.string().email('Email invalide'),
+  email: z.string().email('Invalid email'),
   name: z.string().min(2).max(100).optional(),
   role: z.enum(['ADMIN', 'USER', 'GUEST']).default('USER'),
 });
 
 const updateUserSchema = z.object({
-  email: z.string().email('Email invalide').optional(),
+  email: z.string().email('Invalid email').optional(),
   name: z.string().min(2).max(100).optional(),
   role: z.enum(['ADMIN', 'USER', 'GUEST']).optional(),
 });
@@ -183,7 +183,7 @@ export const userResolver = {
 
     me: async (_: unknown, __: unknown, { user }: Context) => {
       if (!user) {
-        throw new GraphQLError('Non authentifié', {
+        throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       }
@@ -203,9 +203,9 @@ export const userResolver = {
     ) => {
       const { first = 10, after, last, before, filter, sort } = args;
       const take = first || last || 10;
-      const cursor = after ? decodeCursor(after) : before ? decodeCursor(before) : undefined;
+      const cursor = after ? decodeCursor(after): before ? decodeCursor(before): undefined;
 
-      // Construction du filtre
+      // Build the filter
       const where = {
         ...(filter?.search && {
           OR: [
@@ -216,25 +216,25 @@ export const userResolver = {
         ...(filter?.role && { role: filter.role }),
       };
 
-      // Ordre de tri
+      // Sort order
       const orderBy = sort
         ? { [sort.field.toLowerCase()]: sort.order.toLowerCase() }
         : { createdAt: 'desc' as const };
 
-      // Requêtes
+      // Queries
       const [users, totalCount] = await Promise.all([
         prisma.user.findMany({
           where,
-          take: take + 1, // +1 pour savoir s'il y a une page suivante
-          skip: cursor ? 1 : 0,
-          cursor: cursor ? { id: cursor } : undefined,
+          take: take + 1, // +1 to know if there is a next page
+          skip: cursor ? 1: 0,
+          cursor: cursor ? { id: cursor }: undefined,
           orderBy,
         }),
         prisma.user.count({ where }),
       ]);
 
       const hasMore = users.length > take;
-      const nodes = hasMore ? users.slice(0, -1) : users;
+      const nodes = hasMore ? users.slice(0, -1): users;
 
       return {
         edges: nodes.map((user) => ({
@@ -244,7 +244,7 @@ export const userResolver = {
         pageInfo: {
           hasNextPage: hasMore,
           hasPreviousPage: !!cursor,
-          startCursor: nodes[0] ? encodeCursor(nodes[0].id) : null,
+          startCursor: nodes[0] ? encodeCursor(nodes[0].id): null,
           endCursor: nodes[nodes.length - 1]
             ? encodeCursor(nodes[nodes.length - 1].id)
             : null,
@@ -263,13 +263,13 @@ export const userResolver = {
       // Validation
       const data = createUserSchema.parse(input);
 
-      // Vérifier que l'email n'existe pas
+      // Check that the email does not already exist
       const existing = await prisma.user.findUnique({
         where: { email: data.email },
       });
 
       if (existing) {
-        throw new GraphQLError('Un utilisateur avec cet email existe déjà', {
+        throw new GraphQLError('A user with this email already exists', {
           extensions: { code: 'BAD_USER_INPUT', field: 'email' },
         });
       }
@@ -283,7 +283,7 @@ export const userResolver = {
       { user }: Context
     ) => {
       if (!user) {
-        throw new GraphQLError('Non authentifié', {
+        throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       }
@@ -291,29 +291,29 @@ export const userResolver = {
       // Validation
       const data = updateUserSchema.parse(input);
 
-      // Vérifier que l'utilisateur existe
+      // Check that the user exists
       const existing = await prisma.user.findUnique({ where: { id } });
 
       if (!existing) {
-        throw new GraphQLError('Utilisateur non trouvé', {
+        throw new GraphQLError('User not found', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
 
-      // Vérifier les permissions (soi-même ou admin)
+      // Check permissions (self or admin)
       if (existing.id !== user.id && user.role !== 'ADMIN') {
-        throw new GraphQLError('Non autorisé', {
+        throw new GraphQLError('Not authorized', {
           extensions: { code: 'FORBIDDEN' },
         });
       }
 
-      // Vérifier unicité email si modifié
+      // Check email uniqueness if changed
       if (data.email && data.email !== existing.email) {
         const emailExists = await prisma.user.findUnique({
           where: { email: data.email },
         });
         if (emailExists) {
-          throw new GraphQLError('Cet email est déjà utilisé', {
+          throw new GraphQLError('This email is already in use', {
             extensions: { code: 'BAD_USER_INPUT', field: 'email' },
           });
         }
@@ -328,7 +328,7 @@ export const userResolver = {
       { user }: Context
     ) => {
       if (!user || user.role !== 'ADMIN') {
-        throw new GraphQLError('Non autorisé', {
+        throw new GraphQLError('Not authorized', {
           extensions: { code: 'FORBIDDEN' },
         });
       }
@@ -343,7 +343,7 @@ export const userResolver = {
       { user }: Context
     ) => {
       if (!user || user.role !== 'ADMIN') {
-        throw new GraphQLError('Seuls les admins peuvent changer les rôles', {
+        throw new GraphQLError('Only admins can change roles', {
           extensions: { code: 'FORBIDDEN' },
         });
       }
@@ -358,7 +358,7 @@ export const userResolver = {
   // Field resolvers
   User: {
     posts: async (parent: { id: string }, _: unknown, { loaders }: Context) => {
-      // Utiliser DataLoader pour éviter N+1
+      // Use DataLoader to avoid N+1
       return loaders.postsByAuthorId.load(parent.id);
     },
 
@@ -376,7 +376,7 @@ import DataLoader from 'dataloader';
 import { prisma } from '../../lib/prisma';
 
 export const createLoaders = () => ({
-  // Charge les utilisateurs par ID (pour éviter N+1 sur author)
+  // Load users by ID (to avoid N+1 on author)
   userById: new DataLoader<string, any>(async (ids) => {
     const users = await prisma.user.findMany({
       where: { id: { in: [...ids] } },
@@ -386,7 +386,7 @@ export const createLoaders = () => ({
     return ids.map((id) => userMap.get(id) || null);
   }),
 
-  // Charge les posts par authorId (pour le field resolver posts)
+  // Load posts by authorId (for the posts field resolver)
   postsByAuthorId: new DataLoader<string, any[]>(async (authorIds) => {
     const posts = await prisma.post.findMany({
       where: { authorId: { in: [...authorIds] } },
@@ -421,7 +421,7 @@ export interface Context {
 }
 
 export async function createContext({ req }: { req: Request }): Promise<Context> {
-  // Extraire le token du header Authorization
+  // Extract the token from the Authorization header
   const token = req.headers.authorization?.replace('Bearer ', '');
 
   let user = null;
@@ -429,7 +429,7 @@ export async function createContext({ req }: { req: Request }): Promise<Context>
     try {
       user = verifyToken(token);
     } catch {
-      // Token invalide, user reste null
+      // Invalid token, user stays null
     }
   }
 
@@ -462,14 +462,14 @@ async function startServer() {
     resolvers,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     formatError: (formattedError, error) => {
-      // Log l'erreur complète côté serveur
+      // Log the full error on the server side
       console.error('GraphQL Error:', error);
 
-      // Ne pas exposer les détails des erreurs internes en production
+      // Do not expose internal error details in production
       if (process.env.NODE_ENV === 'production') {
         if (formattedError.extensions?.code === 'INTERNAL_SERVER_ERROR') {
           return {
-            message: 'Une erreur interne est survenue',
+            message: 'An internal error occurred',
             extensions: { code: 'INTERNAL_SERVER_ERROR' },
           };
         }
@@ -501,12 +501,12 @@ async function startServer() {
 startServer().catch(console.error);
 ```
 
-## Exemple de requêtes
+## Example queries
 
 ### Query
 
 ```graphql
-# Récupérer l'utilisateur connecté
+# Get the currently logged-in user
 query Me {
   me {
     id
@@ -517,7 +517,7 @@ query Me {
   }
 }
 
-# Liste avec pagination et filtres
+# List with pagination and filters
 query Users($first: Int, $after: String, $filter: UsersFilterInput) {
   users(first: $first, after: $after, filter: $filter) {
     edges {
@@ -559,26 +559,26 @@ mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
 }
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
 | **Pagination** | Cursor-based (Relay style) |
-| **N+1** | DataLoader pour les relations |
-| **Validation** | Zod dans les resolvers |
-| **Erreurs** | `GraphQLError` avec codes |
-| **Auth** | Context avec user et loaders |
+| **N+1** | DataLoader for relations |
+| **Validation** | Zod inside the resolvers |
+| **Errors** | `GraphQLError` with codes |
+| **Auth** | Context with user and loaders |
 
-## Commandes associées
+## Related commands
 
-- `/dev:dev-test` - Générer tests de resolvers
-- `/qa:qa-security` - Audit sécurité GraphQL
-- `/doc:doc-api-spec` - Documentation schema
+- `/dev:dev-test` - Generate resolver tests
+- `/qa:qa-security` - GraphQL security audit
+- `/doc:doc-api-spec` - Schema documentation
 
 ---
 
 :::tip Codegen
-Utilisez `graphql-codegen` pour générer les types TypeScript depuis le schema :
+Use `graphql-codegen` to generate the TypeScript types from the schema:
 ```bash
 npx graphql-codegen
 ```

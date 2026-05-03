@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests pour lint.sh
+# Tests for lint.sh
 # =============================================================================
 
 load 'test_helper'
@@ -17,58 +17,58 @@ teardown() {
 }
 
 # =============================================================================
-# Tests de base
+# Basic tests
 # =============================================================================
 
-@test "lint.sh existe et est exécutable" {
+@test "lint.sh exists and is executable" {
     [ -f "$LINT_SCRIPT" ]
     [ -x "$LINT_SCRIPT" ]
 }
 
-@test "lint.sh affiche l'aide avec --help" {
+@test "lint.sh displays help with --help" {
     run "$LINT_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"USAGE"* ]]
     [[ "$output" == *"ShellCheck"* ]] || [[ "$output" == *"lint"* ]]
 }
 
-@test "lint.sh affiche la version avec --version" {
+@test "lint.sh displays version with --version" {
     run "$LINT_SCRIPT" --version
     [ "$status" -eq 0 ]
     [[ "$output" == *"lint"* ]]
 }
 
 # =============================================================================
-# Tests de linting
+# Linting tests
 # =============================================================================
 
-@test "lint.sh vérifie si shellcheck est disponible" {
+@test "lint.sh checks if shellcheck is available" {
     run "$LINT_SCRIPT"
-    # Si shellcheck n'est pas installé, le script doit le signaler
+    # If shellcheck is not installed, the script must report it
     if ! command -v shellcheck &>/dev/null; then
         [[ "$output" == *"shellcheck"* ]] || [[ "$output" == *"ShellCheck"* ]] || true
     fi
 }
 
-@test "lint.sh peut s'exécuter sur le socle" {
-    # Exécuter lint sur le répertoire du socle
+@test "lint.sh can run on the foundation" {
+    # Run lint on the foundation directory
     run "$LINT_SCRIPT" "$BATS_TEST_DIRNAME/.."
-    # Peut réussir ou échouer selon les warnings, mais ne doit pas crasher
+    # May succeed or fail depending on warnings, but must not crash
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
 }
 
 # =============================================================================
-# Tests des options
+# Options tests
 # =============================================================================
 
-@test "lint.sh --quiet réduit la sortie" {
+@test "lint.sh --quiet reduces output" {
     run "$LINT_SCRIPT" -q "$BATS_TEST_DIRNAME/.."
-    # En mode quiet, moins de sortie
+    # In quiet mode, less output
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
 }
 
-@test "lint.sh accepte un chemin spécifique" {
-    # Créer un script de test
+@test "lint.sh accepts a specific path" {
+    # Create a test script
     cat > "$TEST_DIR/test.sh" << 'EOF'
 #!/bin/bash
 echo "Hello"
@@ -80,11 +80,11 @@ EOF
 }
 
 # =============================================================================
-# Tests de détection d'erreurs
+# Error detection tests
 # =============================================================================
 
-@test "lint.sh détecte les erreurs de syntaxe" {
-    # Créer un script avec une erreur courante (variable non quotée)
+@test "lint.sh detects syntax errors" {
+    # Create a script with a common error (unquoted variable)
     cat > "$TEST_DIR/bad.sh" << 'EOF'
 #!/bin/bash
 files=$(ls)
@@ -96,9 +96,9 @@ EOF
 
     if command -v shellcheck &>/dev/null; then
         run "$LINT_SCRIPT" "$TEST_DIR"
-        # ShellCheck devrait trouver des warnings
+        # ShellCheck should find warnings
         [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$output" == *"SC"* ]] || true
     else
-        skip "shellcheck non installé"
+        skip "shellcheck not installed"
     fi
 }

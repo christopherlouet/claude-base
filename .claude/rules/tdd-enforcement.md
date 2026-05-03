@@ -16,13 +16,13 @@ paths:
 
 # TDD Enforcement Rules
 
-## Declenchement Proactif du TDD
+## Proactive TDD Triggering
 
-IMPORTANT: Quand l'utilisateur demande d'implementer, ajouter, creer, fixer ou corriger du code, Claude DOIT proposer l'approche TDD AVANT de commencer a coder.
+IMPORTANT: When the user asks to implement, add, create, fix or correct code, Claude MUST propose the TDD approach BEFORE starting to code.
 
-### Mots-cles declencheurs
+### Trigger keywords
 
-Proposer TDD automatiquement quand l'utilisateur mentionne:
+Propose TDD automatically when the user mentions:
 - "implementer", "implement"
 - "ajouter", "add"
 - "creer", "create"
@@ -34,52 +34,52 @@ Proposer TDD automatiquement quand l'utilisateur mentionne:
 - "developper", "develop"
 - "coder", "code"
 
-### Comportement attendu
+### Expected behavior
 
-1. **AVANT toute modification de code source**:
-   - Proposer: "Je recommande d'utiliser l'approche TDD. Voulez-vous que je commence par ecrire les tests ?"
-   - Ou directement utiliser `/dev:dev-tdd` si le contexte est clair
+1. **BEFORE any source code modification**:
+   - Propose: "I recommend using the TDD approach. Would you like me to start by writing the tests?"
+   - Or directly use `/dev:dev-tdd` if the context is clear
 
-2. **Si l'utilisateur refuse TDD**:
-   - Respecter son choix mais rappeler les risques
-   - Documenter dans le commit que TDD n'a pas ete utilise
+2. **If the user refuses TDD**:
+   - Respect their choice but remind them of the risks
+   - Document in the commit that TDD was not used
 
-3. **Exceptions au TDD** (pas de proposition):
-   - Fichiers de configuration (*.json, *.yaml, *.toml)
+3. **TDD exceptions** (no proposal):
+   - Configuration files (*.json, *.yaml, *.toml)
    - Documentation (*.md)
-   - Scripts de build/deploy
-   - Refactoring mineur (renommage, formatage)
-   - Corrections de typos
+   - Build/deploy scripts
+   - Minor refactoring (renaming, formatting)
+   - Typo fixes
 
-### Rappels systematiques
+### Systematic reminders
 
-YOU MUST rappeler le cycle TDD quand vous modifiez du code:
+YOU MUST remind the TDD cycle when you modify code:
 
 ```
-Cycle TDD:
-1. RED   - Ecrire un test qui echoue
-2. GREEN - Ecrire le code minimal pour passer
-3. REFACTOR - Ameliorer sans casser les tests
+TDD cycle:
+1. RED   - Write a failing test
+2. GREEN - Write the minimal code to pass
+3. REFACTOR - Improve without breaking the tests
 ```
 
-### Integration avec les commandes
+### Integration with commands
 
-Quand une commande de developpement est utilisee (`/dev:dev-component`, `/dev:dev-api`, `/dev:dev-hook`, etc.), Claude DOIT:
-1. Verifier si des tests existent pour le code concerne
-2. Si non, proposer de commencer par les tests
-3. Si oui, s'assurer que les tests passent avant modification
+When a development command is used (`/dev:dev-component`, `/dev:dev-api`, `/dev:dev-hook`, etc.), Claude MUST:
+1. Check whether tests exist for the code concerned
+2. If not, propose to start with the tests
+3. If yes, ensure the tests pass before modification
 
-### Validation pre-commit
+### Pre-commit validation
 
-AVANT de proposer un commit:
-- Verifier que les tests existent pour le nouveau code
-- Verifier que les tests passent
-- Couverture minimum 80% sur le nouveau code
+BEFORE proposing a commit:
+- Check that tests exist for the new code
+- Check that the tests pass
+- Minimum 80% coverage on the new code
 
-### Anti-patterns a bloquer
+### Anti-patterns to block
 
 NEVER:
-- Ecrire du code d'implementation avant les tests
-- Proposer de "tester plus tard"
-- Ignorer les tests pour "aller plus vite"
-- Modifier les tests pour les faire passer (au lieu de corriger le code)
+- Write implementation code before the tests
+- Propose to "test later"
+- Ignore tests to "go faster"
+- Modify the tests to make them pass (instead of fixing the code)

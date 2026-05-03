@@ -1,58 +1,58 @@
-# Configuration Locale (CLAUDE.local.md)
+# Local Configuration (CLAUDE.local.md)
 
-Ce fichier contient les instructions spécifiques à ton environnement local.
-Copie ce fichier en `CLAUDE.local.md` et personnalise-le.
+This file contains instructions specific to your local environment.
+Copy this file to `CLAUDE.local.md` and customize it.
 
-## Environnement de développement
+## Development Environment
 
-### Variables d'environnement
-- DATABASE_URL: [ta connexion DB locale]
-- API_KEY: [ta clé API de dev]
+### Environment Variables
+- DATABASE_URL: [your local DB connection]
+- API_KEY: [your dev API key]
 
-### Ports utilisés
+### Ports Used
 - Frontend: http://localhost:3000
 - Backend: http://localhost:8080
 - Database: localhost:5432
 
-## Préférences personnelles
+## Personal Preferences
 
-### Style de code
-- Je préfère les fonctions fléchées
-- J'utilise des tabs / espaces (2/4)
-- Je préfère async/await aux Promises
+### Code Style
+- I prefer arrow functions
+- I use tabs / spaces (2/4)
+- I prefer async/await over Promises
 
-### Outils locaux
-- Éditeur: VS Code / Vim / WebStorm
+### Local Tools
+- Editor: VS Code / Vim / WebStorm
 - Terminal: iTerm2 / Terminal / Windows Terminal
 - Node version: v20.x
 
-## Contexte supplémentaire
+## Additional Context
 
-### Tâches en cours
-- [ ] Feature X en développement sur branche feature/x
-- [ ] Bug Y à investiguer
+### Tasks in Progress
+- [ ] Feature X under development on branch feature/x
+- [ ] Bug Y to investigate
 
-### Notes importantes
-- Le service Z est parfois instable en local
-- Utiliser `npm run dev:mock` pour éviter les appels API réels
+### Important Notes
+- Service Z is sometimes unstable locally
+- Use `npm run dev:mock` to avoid real API calls
 
-## Commandes locales fréquentes
+## Frequent Local Commands
 
 ```bash
-# Démarrer tout l'environnement
+# Start the entire environment
 docker-compose up -d
 
-# Logs en temps réel
+# Real-time logs
 docker-compose logs -f
 
-# Reset la DB locale
+# Reset the local DB
 npm run db:reset
 
-# Seed avec données de test
+# Seed with test data
 npm run db:seed
 ```
 
-## À ne pas faire sur cette machine
+## Do Not Do on This Machine
 
-- IMPORTANT: Ne pas lancer de tests de charge
-- IMPORTANT: Ne pas modifier les fichiers dans /config/prod/
+- IMPORTANT: Do not run load tests
+- IMPORTANT: Do not modify files in /config/prod/

@@ -1,56 +1,56 @@
-# Agent WORK-PLAN
+# WORK-PLAN Agent
 
-Concois un plan d'implementation detaille. Mode PLANIFICATION uniquement.
+Design a detailed implementation plan. PLANNING mode only.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Creer un plan d'implementation complet et validable avant d'ecrire du code.
-Fait partie du workflow : **EXPLORE -> SPECIFY -> PLAN -> CODE -> COMMIT**
-Utiliser les templates dans `.claude/templates/` (plan-template.md, tasks-template.md).
+Create a complete and validatable implementation plan before writing code.
+Part of the workflow: **EXPLORE -> SPECIFY -> PLAN -> CODE -> COMMIT**
+Use the templates in `.claude/templates/` (plan-template.md, tasks-template.md).
 
 ## Workflow
 
-- Verifier les prerequis : spec existe ? exploration faite ? clarifications resolues ?
-- Analyser la spec : User Stories (P1/P2/P3), exigences (EF-XXX), entites, contraintes
-- Concevoir l'architecture : composants, patterns, interactions
-- Lister les fichiers a creer et a modifier avec chemins exacts
-- Decouper en phases et taches (T001, T002...) par User Story
-- Marquer les taches parallelisables avec `[P]` et la tracabilite `[US1]`, `[US2]`...
-- Evaluer la complexite (Simple/Moyenne/Complexe)
-- Identifier les risques et mitigations
-- Generer `specs/[feature]/plan.md` ET `specs/[feature]/tasks.md`
+- Check prerequisites: does the spec exist? has exploration been done? are clarifications resolved?
+- Analyze the spec: User Stories (P1/P2/P3), requirements (EF-XXX), entities, constraints
+- Design the architecture: components, patterns, interactions
+- List the files to create and modify with exact paths
+- Break down into phases and tasks (T001, T002...) per User Story
+- Mark parallelizable tasks with `[P]` and traceability `[US1]`, `[US2]`...
+- Evaluate complexity (Simple/Medium/Complex)
+- Identify risks and mitigations
+- Generate `specs/[feature]/plan.md` AND `specs/[feature]/tasks.md`
 
-## Output attendu
+## Expected output
 
-1. **`specs/[feature]/plan.md`** : Resume, contexte technique, fichiers impactes, phases, risques
-2. **`specs/[feature]/tasks.md`** : Taches avec IDs, marqueurs [P], [US?], chemins exacts
+1. **`specs/[feature]/plan.md`**: Summary, technical context, impacted files, phases, risks
+2. **`specs/[feature]/tasks.md`**: Tasks with IDs, [P] markers, [US?], exact paths
 
-## Agents lies
+## Related agents
 
-| Avant | Usage |
-|-------|-------|
+| Before | Usage |
+|--------|-------|
 | `/work:work-explore` | Exploration |
 | `/work:work-specify` | Specification |
 | `/work:work-clarify` | Clarification (opt) |
 
-| Apres | Usage |
+| After | Usage |
 |-------|-------|
-| `/dev:dev-tdd` | Developper en TDD |
-| `/dev:dev-api` | Developper une API |
+| `/dev:dev-tdd` | Develop in TDD |
+| `/dev:dev-api` | Develop an API |
 
 ---
 
-IMPORTANT: Ne jamais coder en mode planification - plan seulement.
+IMPORTANT: Never code in planning mode - plan only.
 
-YOU MUST verifier si une spec existe et suggerer `/work:work-specify` si absente.
+YOU MUST check whether a spec exists and suggest `/work:work-specify` if absent.
 
-YOU MUST identifier tous les fichiers a creer/modifier avec chemins exacts.
+YOU MUST identify all files to create/modify with exact paths.
 
-YOU MUST generer plan.md ET tasks.md dans specs/[feature]/.
+YOU MUST generate plan.md AND tasks.md in specs/[feature]/.
 
-NEVER sous-estimer la complexite - mieux vaut surestimer.
+NEVER underestimate complexity - better to overestimate.
 
-Think hard sur l'architecture et le decoupage avant de proposer le plan.
+Think hard about the architecture and the breakdown before proposing the plan.

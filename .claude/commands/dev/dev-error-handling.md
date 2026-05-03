@@ -1,50 +1,50 @@
-# Agent DEV-ERROR-HANDLING
+# DEV-ERROR-HANDLING Agent
 
-Implemente une strategie de gestion d'erreurs robuste et coherente.
+Implements a robust and consistent error handling strategy.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Mettre en place une gestion d'erreurs professionnelle qui ameliore la fiabilite,
-facilite le debogage et offre une meilleure experience utilisateur.
+Set up professional error handling that improves reliability,
+makes debugging easier and provides a better user experience.
 
 ## Workflow
 
-- **Classifier** les erreurs (Validation, Business, Auth, NotFound, External, Infrastructure)
-- **Structurer** une hierarchie d'erreurs custom avec code, statusCode, contexte et timestamp
-- **Implementer** les patterns de gestion (middleware global, async handler, Result pattern)
-- **Propager** selon les couches (Repository wrappe, Service throw/re-throw, Controller laisse passer, Middleware formate)
-- **Logger** de maniere structuree avec contexte (pas de console.log)
-- **Recuperer** avec retry (exponential backoff), circuit breaker et fallback gracieux
+- **Classify** errors (Validation, Business, Auth, NotFound, External, Infrastructure)
+- **Structure** a custom error hierarchy with code, statusCode, context and timestamp
+- **Implement** handling patterns (global middleware, async handler, Result pattern)
+- **Propagate** across layers (Repository wraps, Service throw/re-throw, Controller passes through, Middleware formats)
+- **Log** in a structured way with context (no console.log)
+- **Recover** with retry (exponential backoff), circuit breaker and graceful fallback
 
-## Output attendu
+## Expected output
 
-- Classes d'erreurs custom (AppError base + specialisees)
-- Middleware de gestion global
-- Utilitaires retry/circuit breaker
-- Configuration logging structure
-- Tests des cas d'erreur
+- Custom error classes (AppError base + specialized)
+- Global handling middleware
+- Retry/circuit breaker utilities
+- Structured logging configuration
+- Error case tests
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/dev:dev-debug` | Diagnostiquer des erreurs |
-| `/dev:dev-test` | Tester les cas d'erreur |
-| `/ops:ops-monitoring` | Alertes sur erreurs |
-| `/dev:dev-api` | Documenter les erreurs API |
-| `/qa:qa-review` | Review gestion d'erreurs |
+| Agent | When to use |
+|-------|-------------|
+| `/dev:dev-debug` | Diagnose errors |
+| `/dev:dev-test` | Test error cases |
+| `/ops:ops-monitoring` | Alerts on errors |
+| `/dev:dev-api` | Document API errors |
+| `/qa:qa-review` | Review error handling |
 
 ---
 
-IMPORTANT: Toute erreur doit etre soit geree, soit propagee. Jamais avalee.
+IMPORTANT: Every error must be either handled or propagated. Never swallowed.
 
-YOU MUST utiliser des erreurs typees avec contexte.
+YOU MUST use typed errors with context.
 
-YOU MUST logger les erreurs avec contexte structure.
+YOU MUST log errors with structured context.
 
-NEVER utiliser catch vide ou console.log pour les erreurs.
+NEVER use empty catch or console.log for errors.
 
-Think hard sur la strategie de recovery pour chaque type d'erreur.
+Think hard about the recovery strategy for each type of error.

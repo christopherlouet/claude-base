@@ -2,44 +2,44 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://claude-socle/agent-schema.json",
   "title": "Claude-Socle Agent Schema",
-  "description": "Schema de validation pour les agents claude-socle",
+  "description": "Validation schema for claude-socle agents",
   "type": "object",
   "required": ["title", "description", "context", "objective"],
   "properties": {
     "title": {
       "type": "string",
-      "description": "Titre de l'agent au format '# Agent NOM'",
+      "description": "Agent title in the format '# Agent NAME'",
       "pattern": "^# Agent [A-Z][A-Z0-9-]*$"
     },
     "description": {
       "type": "string",
-      "description": "Description courte de l'agent (1-2 lignes)",
+      "description": "Short description of the agent (1-2 lines)",
       "minLength": 10,
       "maxLength": 200
     },
     "context": {
       "type": "string",
-      "description": "Section contenant le placeholder $ARGUMENTS",
+      "description": "Section containing the $ARGUMENTS placeholder",
       "pattern": "\\$ARGUMENTS"
     },
     "objective": {
       "type": "string",
-      "description": "Objectif principal de l'agent",
+      "description": "Main objective of the agent",
       "minLength": 20
     },
     "sections": {
       "type": "array",
-      "description": "Sections de contenu de l'agent",
+      "description": "Content sections of the agent",
       "items": {
         "type": "object",
         "properties": {
           "heading": {
             "type": "string",
-            "description": "Titre de la section (## Heading)"
+            "description": "Section title (## Heading)"
           },
           "content": {
             "type": "string",
-            "description": "Contenu de la section"
+            "description": "Section content"
           }
         },
         "required": ["heading"]
@@ -47,7 +47,7 @@
     },
     "checklist": {
       "type": "array",
-      "description": "Liste des étapes à suivre",
+      "description": "List of steps to follow",
       "items": {
         "type": "string"
       },
@@ -55,7 +55,7 @@
     },
     "relatedAgents": {
       "type": "array",
-      "description": "Agents liés",
+      "description": "Related agents",
       "items": {
         "type": "object",
         "properties": {
@@ -72,7 +72,7 @@
     },
     "instructions": {
       "type": "object",
-      "description": "Instructions spéciales en fin de fichier",
+      "description": "Special instructions at the end of the file",
       "properties": {
         "important": {
           "type": "array",
@@ -93,22 +93,22 @@
     },
     "metadata": {
       "type": "object",
-      "description": "Métadonnées de l'agent",
+      "description": "Agent metadata",
       "properties": {
         "category": {
           "type": "string",
           "enum": ["work", "dev", "qa", "ops", "doc", "biz", "growth", "legal"],
-          "description": "Catégorie de l'agent"
+          "description": "Agent category"
         },
         "complexity": {
           "type": "string",
           "enum": ["simple", "medium", "complex"],
-          "description": "Complexité de l'agent"
+          "description": "Agent complexity"
         },
         "minLines": {
           "type": "integer",
           "minimum": 50,
-          "description": "Nombre minimum de lignes recommandé"
+          "description": "Recommended minimum number of lines"
         },
         "version": {
           "type": "string",

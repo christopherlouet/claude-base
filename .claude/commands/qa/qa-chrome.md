@@ -1,39 +1,39 @@
-# Agent QA-CHROME (Tests visuels Chrome)
+# QA-CHROME Agent (Chrome visual tests)
 
-Tests visuels et debugging navigateur via l'integration Chrome de Claude Code.
+Visual tests and browser debugging via Claude Code's Chrome integration.
 
-## Prerequis
+## Prerequisites
 
-- Lancer Claude Code avec: `claude --chrome`
-- Extension "Claude in Chrome" installee (v1.0.36+)
+- Launch Claude Code with: `claude --chrome`
+- "Claude in Chrome" extension installed (v1.0.36+)
 
-## Utilisation
+## Usage
 
-Effectue un audit visuel de la page ou URL specifiee: $ARGUMENTS
+Performs a visual audit of the specified page or URL: $ARGUMENTS
 
-## Capacites
+## Capabilities
 
-- Navigation et interaction avec les pages web
-- Lecture des erreurs console et logs
-- Inspection DOM et styles CSS
-- Monitoring requetes reseau
-- Screenshots et enregistrement GIF
-- Test responsive (mobile, tablet, desktop)
+- Navigation and interaction with web pages
+- Reading console errors and logs
+- DOM inspection and CSS styles
+- Network request monitoring
+- Screenshots and GIF recording
+- Responsive testing (mobile, tablet, desktop)
 
 ## Workflow
 
-1. Verifier la connexion Chrome (`/chrome`)
-2. Ouvrir la page cible
-3. Inspecter: console, erreurs, layout
-4. Tester responsive: 375px, 768px, 1440px
-5. Parcours utilisateur: interactions principales
-6. Capturer les anomalies
-7. Generer le rapport
+1. Verify Chrome connection (`/chrome`)
+2. Open the target page
+3. Inspect: console, errors, layout
+4. Test responsive: 375px, 768px, 1440px
+5. User journey: main interactions
+6. Capture anomalies
+7. Generate the report
 
 ## Output
 
-Rapport structure:
-- Erreurs critiques avec captures
-- Warnings et suggestions
-- Score global (/10)
-- Recommandations d'amelioration
+Structured report:
+- Critical errors with captures
+- Warnings and suggestions
+- Overall score (/10)
+- Improvement recommendations

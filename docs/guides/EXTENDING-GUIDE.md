@@ -1,30 +1,30 @@
-# Guide d'Extension du Socle
+# Foundation Extension Guide
 
-> Comment personnaliser et etendre le socle claude-socle pour vos propres projets.
+> How to customize and extend the claude-socle foundation for your own projects.
 
-> **Audience double** : ce guide couvre deux cas distincts.
+> **Dual audience**: this guide covers two distinct cases.
 >
-> - **Vous etendez votre projet utilisateur** (ajouter des commands/rules/skills custom) : vos `@imports` dans `CLAUDE.md` doivent pointer vers `@.claude/docs/...` (puisque la doc du socle est installee sous `.claude/docs/` chez vous).
-> - **Vous contribuez au repo claude-socle** : les `@imports` du socle pointent vers `@docs/...` (le socle garde sa doc dans `docs/` directement). Voir aussi [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
+> - **You are extending your user project** (adding custom commands/rules/skills): your `@imports` in `CLAUDE.md` should point to `@.claude/docs/...` (since the foundation's documentation is installed under `.claude/docs/` on your side).
+> - **You are contributing to the claude-socle repo**: the foundation's `@imports` point to `@docs/...` (the foundation keeps its documentation directly under `docs/`). See also [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
 
-## Vue d'ensemble
+## Overview
 
-Le socle est concu pour etre etendu. Quatre points d'extension principaux existent :
+The foundation is designed to be extended. Four main extension points exist:
 
-| Element | Emplacement | Utilite |
-|---------|-------------|---------|
-| Rules | `.claude/rules/` | Appliquer des conventions selon le type de fichier |
-| Skills | `.claude/skills/` | Encapsuler un workflow reutilisable |
-| Agents | `.claude/agents/` | Orchestrer un workflow avec un LLM dedie |
-| Hooks | `.claude/settings.json` | Automatiser des actions pre/post outils |
+| Element | Location | Purpose |
+|---------|----------|---------|
+| Rules | `.claude/rules/` | Apply conventions based on file type |
+| Skills | `.claude/skills/` | Encapsulate a reusable workflow |
+| Agents | `.claude/agents/` | Orchestrate a workflow with a dedicated LLM |
+| Hooks | `.claude/settings.json` | Automate pre/post tool actions |
 
 ---
 
-## 1. Creer une Rule custom
+## 1. Create a custom Rule
 
-Les rules sont des fichiers Markdown avec un frontmatter YAML qui definissent des contraintes et conventions. Elles s'activent automatiquement quand Claude modifie un fichier correspondant aux paths declares.
+Rules are Markdown files with YAML frontmatter that define constraints and conventions. They activate automatically when Claude modifies a file matching the declared paths.
 
-### Format du frontmatter
+### Frontmatter format
 
 ```yaml
 ---
@@ -36,22 +36,22 @@ paths:
 # Vue Rules
 
 ## Conventions
-- IMPORTANT: Utiliser la Composition API (pas Options API)
-- YOU MUST declarer les props avec defineProps<T>()
+- IMPORTANT: Use the Composition API (not Options API)
+- YOU MUST declare props with defineProps<T>()
 ```
 
-Le frontmatter est optionnel. Sans `paths`, la rule s'applique globalement a toutes les interactions.
+The frontmatter is optional. Without `paths`, the rule applies globally to all interactions.
 
-### Emplacement
+### Location
 
-Creer le fichier dans `.claude/rules/` :
+Create the file in `.claude/rules/`:
 
 ```
 .claude/rules/vue.md
-.claude/rules/mon-framework.md
+.claude/rules/my-framework.md
 ```
 
-### Exemple complet : rule pour Svelte
+### Complete example: rule for Svelte
 
 ```markdown
 ---
@@ -63,56 +63,56 @@ paths:
 
 # Svelte Rules
 
-## Structure des composants
+## Component structure
 
-| Element | Convention | Exemple |
+| Element | Convention | Example |
 |---------|-----------|---------|
-| Script | `<script lang="ts">` | Toujours TypeScript |
-| Stores | Svelte stores natifs | `writable<User \| null>(null)` |
-| Props | `export let prop: Type` | Typage explicite obligatoire |
+| Script | `<script lang="ts">` | Always TypeScript |
+| Stores | Native Svelte stores | `writable<User \| null>(null)` |
+| Props | `export let prop: Type` | Explicit typing required |
 
 ## Conventions
 
-- IMPORTANT: Preferer les stores Svelte a un state manager externe
-- YOU MUST typer toutes les props exportees
-- NEVER utiliser `any` dans les composants Svelte
-- Nommage fichiers: PascalCase pour composants, kebab-case pour routes
+- IMPORTANT: Prefer Svelte stores over an external state manager
+- YOU MUST type all exported props
+- NEVER use `any` in Svelte components
+- File naming: PascalCase for components, kebab-case for routes
 
 ## Lifecycle
 
-- Preferer `onMount` a `beforeUpdate` pour les effets de bord
-- Cleanup obligatoire dans `onDestroy` pour les subscriptions
+- Prefer `onMount` over `beforeUpdate` for side effects
+- Required cleanup in `onDestroy` for subscriptions
 ```
 
-### Tester le declenchement
+### Test the trigger
 
-Modifier un fichier `.svelte` et verifier dans la session Claude Code que la rule apparait chargee. Les rules s'affichent dans les informations de session au demarrage (`InstructionsLoaded` hook).
+Modify a `.svelte` file and verify in the Claude Code session that the rule appears loaded. Rules are displayed in session information at startup (`InstructionsLoaded` hook).
 
-Pour forcer le rechargement : relancer une session ou utiliser `/clear`.
+To force reload: restart a session or use `/clear`.
 
 ---
 
-## 2. Creer un Skill
+## 2. Create a Skill
 
-Un skill est un fichier `SKILL.md` dans un sous-dossier de `.claude/skills/`. Il encapsule un workflow complet avec ses instructions, ses exemples et ses contraintes.
+A skill is a `SKILL.md` file in a subfolder of `.claude/skills/`. It encapsulates a complete workflow with its instructions, examples and constraints.
 
-> Depuis CLI 2.1.x, **slash commands et skills sont unifies** : chaque skill obtient automatiquement une interface `/slash-command`. Les fichiers dans `.claude/commands/` continuent de fonctionner pour la compatibilite, mais l'approche recommandee pour tout nouveau workflow est `.claude/skills/`. Le socle conserve `.claude/commands/` uniquement pour les raccourcis namespaces (ex: `/work:work-pr`).
+> Since CLI 2.1.x, **slash commands and skills are unified**: each skill automatically gets a `/slash-command` interface. Files in `.claude/commands/` continue to work for compatibility, but the recommended approach for any new workflow is `.claude/skills/`. The foundation keeps `.claude/commands/` only for namespaced shortcuts (e.g., `/work:work-pr`).
 
-### Structure du dossier
+### Folder structure
 
 ```
-.claude/skills/mon-skill/
-├── SKILL.md          # Definition obligatoire
-├── examples/         # Exemples concrets (optionnel)
-└── references/       # Fichiers de reference (optionnel)
+.claude/skills/my-skill/
+├── SKILL.md          # Required definition
+├── examples/         # Concrete examples (optional)
+└── references/       # Reference files (optional)
 ```
 
-### Format du SKILL.md
+### SKILL.md format
 
 ```yaml
 ---
-name: mon-skill
-description: Ce que fait le skill. Declencher quand l'utilisateur [contexte].
+name: my-skill
+description: What the skill does. Trigger when the user [context].
 allowed-tools:
   - Read
   - Write
@@ -122,65 +122,65 @@ allowed-tools:
   - Grep
 context: fork
 model: sonnet
-argument-hint: "[nom-du-projet] [options]"
+argument-hint: "[project-name] [options]"
 ---
 
-# Titre du Skill
+# Skill Title
 
-## Objectif
-Description en 1-2 phrases.
+## Purpose
+Description in 1-2 sentences.
 
 ## Instructions
 
-1. Etape 1
-2. Etape 2
-3. Etape 3
+1. Step 1
+2. Step 2
+3. Step 3
 
-## Output attendu
-Format de sortie.
+## Expected output
+Output format.
 
-## Regles
-- IMPORTANT: Regle critique
-- NEVER: Ce qu'il ne faut jamais faire
+## Rules
+- IMPORTANT: Critical rule
+- NEVER: What must never be done
 ```
 
-### Champs frontmatter disponibles
+### Available frontmatter fields
 
-| Champ | Requis | Valeurs | Description |
-|-------|--------|---------|-------------|
-| `name` | Non | kebab-case | Nom du skill (defaut: nom du dossier) |
-| `description` | Recommande | texte | Contexte de declenchement |
-| `allowed-tools` | Non | liste | Outils autorises sans confirmation |
-| `context` | Non | `fork` | Execution dans un sub-agent isole |
-| `model` | Non | `sonnet`, `opus`, `haiku`, `inherit` | Modele a utiliser |
-| `argument-hint` | Non | texte | Autocompletion dans le menu `/` |
-| `disable-model-invocation` | Non | `true`/`false` | Invocation manuelle uniquement |
-| `user-invocable` | Non | `true`/`false` | Visible dans le menu `/` |
+| Field | Required | Values | Description |
+|-------|----------|--------|-------------|
+| `name` | No | kebab-case | Skill name (default: folder name) |
+| `description` | Recommended | text | Trigger context |
+| `allowed-tools` | No | list | Tools authorized without confirmation |
+| `context` | No | `fork` | Execution in an isolated sub-agent |
+| `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | Model to use |
+| `argument-hint` | No | text | Autocompletion in the `/` menu |
+| `disable-model-invocation` | No | `true`/`false` | Manual invocation only |
+| `user-invocable` | No | `true`/`false` | Visible in the `/` menu |
 
-### Bonnes pratiques
+### Best practices
 
-- Limiter le SKILL.md a 500 lignes maximum. Deporter le detail dans `examples/` ou `references/`
-- Declarer uniquement les outils necessaires (principe du moindre privilege)
-- Toujours utiliser `context: fork` pour l'isolation
-- Ecrire la `description` avec le contexte de declenchement : Claude utilise ce champ pour decider automatiquement quand charger le skill
-- Privilegier les tableaux a la prose pour les references rapides
+- Limit SKILL.md to 500 lines maximum. Move detail to `examples/` or `references/`
+- Declare only the necessary tools (least privilege principle)
+- Always use `context: fork` for isolation
+- Write the `description` with the trigger context: Claude uses this field to automatically decide when to load the skill
+- Prefer tables over prose for quick references
 
-### Outils par type de skill
+### Tools by skill type
 
-| Type de skill | Outils recommandes |
-|---------------|-------------------|
-| Lecture seule (audit, review) | `Read`, `Glob`, `Grep` |
-| Developpement | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
+| Skill type | Recommended tools |
+|------------|-------------------|
+| Read-only (audit, review) | `Read`, `Glob`, `Grep` |
+| Development | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
 | Documentation | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| Analyse | `Read`, `Glob`, `Grep` |
+| Analysis | `Read`, `Glob`, `Grep` |
 | Infrastructure | `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep` |
 
-### Exemple complet : skill de generation de changelog
+### Complete example: changelog generation skill
 
 ```yaml
 ---
 name: changelog-entry
-description: Genere une entree CHANGELOG.md a partir des commits recents. Declencher quand l'utilisateur veut documenter une release ou mettre a jour le changelog.
+description: Generates a CHANGELOG.md entry from recent commits. Trigger when the user wants to document a release or update the changelog.
 allowed-tools:
   - Read
   - Edit
@@ -188,94 +188,94 @@ allowed-tools:
   - Glob
 context: fork
 model: sonnet
-argument-hint: "[version] [depuis-tag]"
+argument-hint: "[version] [since-tag]"
 ---
 
-# Generer une Entree Changelog
+# Generate a Changelog Entry
 
-## Objectif
+## Purpose
 
-Analyser les commits Git depuis le dernier tag et generer une entree
-CHANGELOG.md formatee selon Keep a Changelog.
+Analyze Git commits since the last tag and generate a CHANGELOG.md entry
+formatted according to Keep a Changelog.
 
 ## Instructions
 
-1. Lire le CHANGELOG.md existant pour comprendre le format utilise
-2. Recuperer les commits : `git log <depuis-tag>..HEAD --oneline`
-3. Grouper les commits par type (feat, fix, refactor, docs, etc.)
-4. Generer l'entree au format Keep a Changelog
-5. Inserer au debut du CHANGELOG.md, apres le titre
+1. Read the existing CHANGELOG.md to understand the format used
+2. Retrieve commits: `git log <since-tag>..HEAD --oneline`
+3. Group commits by type (feat, fix, refactor, docs, etc.)
+4. Generate the entry in Keep a Changelog format
+5. Insert at the beginning of CHANGELOG.md, after the title
 
-## Format de sortie
+## Output format
 
 \`\`\`markdown
 ## [1.2.0] - 2026-04-03
 
-### Nouvelles fonctionnalites
-- Description claire de la feature (ref: commit abc123)
+### New features
+- Clear description of the feature (ref: commit abc123)
 
-### Corrections
-- Description du bug corrige (ref: commit def456)
+### Fixes
+- Description of the bug fixed (ref: commit def456)
 \`\`\`
 
-## Regles
+## Rules
 
-- NEVER modifier les entrees existantes du changelog
-- IMPORTANT: Utiliser le format de date ISO (YYYY-MM-DD)
-- Exclure les commits de style et de chore sauf si significatifs
+- NEVER modify existing changelog entries
+- IMPORTANT: Use the ISO date format (YYYY-MM-DD)
+- Exclude style and chore commits unless significant
 ```
 
 ---
 
-## 3. Creer un Agent
+## 3. Create an Agent
 
-Un agent est un fichier `.md` dans `.claude/agents/`. Il combine un frontmatter YAML (configuration du sub-agent) avec des instructions Markdown (comportement).
+An agent is a `.md` file in `.claude/agents/`. It combines a YAML frontmatter (sub-agent configuration) with Markdown instructions (behavior).
 
-### Format d'un agent
+### Agent format
 
 ```yaml
 ---
-name: mon-agent
-description: Description courte. Declencher quand [contexte d'utilisation].
+name: my-agent
+description: Short description. Trigger when [usage context].
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
 skills:
-  - mon-skill
+  - my-skill
 ---
 
-# Agent MON-AGENT
+# Agent MY-AGENT
 
-Corps des instructions de l'agent.
+Body of the agent's instructions.
 ```
 
-### Champs frontmatter d'un agent
+### Agent frontmatter fields
 
-| Champ | Description |
+| Field | Description |
 |-------|-------------|
-| `name` | Identifiant de l'agent (kebab-case) |
-| `description` | Contexte d'activation automatique |
-| `tools` | Outils autorises (virgule-separes) |
+| `name` | Agent identifier (kebab-case) |
+| `description` | Automatic activation context |
+| `tools` | Authorized tools (comma-separated) |
 | `model` | `sonnet`, `opus`, `haiku` |
 | `permissionMode` | `default`, `acceptEdits`, `bypassPermissions` |
-| `skills` | Liste de skills a charger |
-| `hooks` | Hooks scopes au lifecycle de l'agent |
+| `skills` | List of skills to load |
+| `hooks` | Hooks scoped to the agent's lifecycle |
 
-### Quand utiliser agent vs skill vs command
+### When to use agent vs skill vs command
 
-| Besoin | Solution | Raison |
-|--------|----------|--------|
-| Workflow reutilisable avec instructions | Skill | Invocable par `/nom`, partage entre agents |
-| Execution isolee avec LLM dedie | Agent | Sub-agent avec son propre contexte |
-| Sequence de commandes bash | Command `.md` | Prompt sans LLM supplementaire |
-| Automatisation sans interaction | Hook | Execute un script au bon moment |
+| Need | Solution | Reason |
+|------|----------|--------|
+| Reusable workflow with instructions | Skill | Invokable via `/name`, shared between agents |
+| Isolated execution with dedicated LLM | Agent | Sub-agent with its own context |
+| Sequence of bash commands | Command `.md` | Prompt without additional LLM |
+| Automation without interaction | Hook | Executes a script at the right moment |
 
-### Exemple complet : agent d'audit de dependances
+### Complete example: dependency audit agent
 
 ```yaml
 ---
 name: deps-audit
-description: Audit des dependances obsoletes ou vulnerables. Declencher quand l'utilisateur veut verifier ou mettre a jour les dependances du projet.
+description: Audit of obsolete or vulnerable dependencies. Trigger when the user wants to check or update project dependencies.
 tools: Read, Bash, Glob, Edit
 model: sonnet
 permissionMode: default
@@ -283,37 +283,37 @@ permissionMode: default
 
 # Agent DEPS-AUDIT
 
-Analyse les dependances du projet et produit un rapport classe par criticite.
+Analyzes project dependencies and produces a report classified by criticality.
 
 ## Workflow
 
-1. Detecter le gestionnaire de paquets (npm, pnpm, yarn, pip, go mod)
-2. Lancer l'audit de vulnerabilites (`npm audit`, `pip-audit`, etc.)
-3. Identifier les dependances outdated
-4. Classer par criticite : CRITIQUE > HAUTE > MOYENNE > FAIBLE
-5. Proposer un plan de mise a jour
+1. Detect the package manager (npm, pnpm, yarn, pip, go mod)
+2. Run the vulnerability audit (`npm audit`, `pip-audit`, etc.)
+3. Identify outdated dependencies
+4. Classify by criticality: CRITICAL > HIGH > MEDIUM > LOW
+5. Propose an update plan
 
 ## Output
 
-Rapport structure avec :
-- Tableau des vulnerabilites par niveau
-- Commandes de mise a jour a executer
-- Dependances a surveiller (breaking changes potentiels)
+Structured report with:
+- Vulnerability table by level
+- Update commands to execute
+- Dependencies to watch (potential breaking changes)
 
-## Regles
+## Rules
 
-- NEVER mettre a jour automatiquement les dependances majeures sans confirmation
-- IMPORTANT: Verifier les breaking changes avant de proposer une mise a jour majeure
+- NEVER automatically update major dependencies without confirmation
+- IMPORTANT: Check breaking changes before proposing a major update
 ```
 
-### Nommage des agents
+### Agent naming
 
-Respecter la convention `domaine-action` existante :
+Follow the existing `domain-action` convention:
 
-| Domaine | Prefixe | Exemples |
-|---------|---------|----------|
-| Developpement | `dev-` | `dev-api`, `dev-tdd`, `dev-debug` |
-| Qualite | `qa-` | `qa-review`, `qa-security` |
+| Domain | Prefix | Examples |
+|--------|--------|----------|
+| Development | `dev-` | `dev-api`, `dev-tdd`, `dev-debug` |
+| Quality | `qa-` | `qa-review`, `qa-security` |
 | Operations | `ops-` | `ops-deploy`, `ops-docker` |
 | Documentation | `doc-` | `doc-generate`, `doc-changelog` |
 | Business | `biz-` | `biz-model`, `biz-mvp` |
@@ -321,63 +321,63 @@ Respecter la convention `domaine-action` existante :
 
 ---
 
-## 4. Creer un Hook
+## 4. Create a Hook
 
-Les hooks permettent d'automatiser des actions a des moments precis du cycle de vie d'une session Claude Code. Ils se configurent dans `.claude/settings.json` (hooks globaux) ou dans le frontmatter d'un agent/skill (hooks scopes).
+Hooks allow automating actions at specific moments in the lifecycle of a Claude Code session. They are configured in `.claude/settings.json` (global hooks) or in the frontmatter of an agent/skill (scoped hooks).
 
-### Types de hooks
+### Hook types
 
-| Type | Description | Cas d'usage |
-|------|-------------|-------------|
-| `command` | Execute un script bash | Validation, formatage, logging |
-| `prompt` | Evalue via un LLM Haiku | Verification contextuelle intelligente |
-| `http` | POST JSON vers une URL | Webhook externe, CI/CD |
+| Type | Description | Use case |
+|------|-------------|----------|
+| `command` | Executes a bash script | Validation, formatting, logging |
+| `prompt` | Evaluated via a Haiku LLM | Smart contextual verification |
+| `http` | POST JSON to a URL | External webhook, CI/CD |
 
-### Evenements disponibles
+### Available events
 
-| Evenement | Declenchement | Usage typique |
-|-----------|--------------|---------------|
-| `SessionStart` | Demarrage de session | Afficher infos projet, verifier prereqs |
-| `PreToolUse` | Avant execution d'un outil | Valider, bloquer, transformer |
-| `PostToolUse` | Apres execution reussie | Formatter, linter, notifier |
-| `Stop` | Fin de reponse Claude | Validation finale, logging |
-| `PreCompact` | Avant compaction contexte | Sauvegarder l'etat |
-| `SessionEnd` | Fin de session | Cleanup, rapport |
+| Event | Trigger | Typical usage |
+|-------|---------|---------------|
+| `SessionStart` | Session start | Display project info, check prereqs |
+| `PreToolUse` | Before tool execution | Validate, block, transform |
+| `PostToolUse` | After successful execution | Format, lint, notify |
+| `Stop` | End of Claude response | Final validation, logging |
+| `PreCompact` | Before context compaction | Save state |
+| `SessionEnd` | End of session | Cleanup, report |
 
-### Proprietes des hooks
+### Hook properties
 
-| Propriete | Description |
-|-----------|-------------|
-| `type` | `command`, `prompt`, ou `http` |
-| `command` | Script bash a executer (type `command`) |
-| `matcher` | Filtre sur le nom de l'outil (regex) |
-| `timeout` | Timeout en millisecondes |
-| `onFailure` | `"block"` ou `"ignore"` |
-| `async` | `true` pour execution en arriere-plan |
+| Property | Description |
+|----------|-------------|
+| `type` | `command`, `prompt`, or `http` |
+| `command` | Bash script to execute (type `command`) |
+| `matcher` | Filter on tool name (regex) |
+| `timeout` | Timeout in milliseconds |
+| `onFailure` | `"block"` or `"ignore"` |
+| `async` | `true` for background execution |
 
-### Quand utiliser async
+### When to use async
 
-| Situation | async | Raison |
+| Situation | async | Reason |
 |-----------|-------|--------|
-| Logging, monitoring | `true` | Ne bloque pas le workflow |
-| Validation bloquante | `false` | Doit s'executer avant de continuer |
-| Formatage auto | `false` | Doit finir avant le prochain outil |
-| Webhook externe | `true` | Latence reseau non bloquante |
+| Logging, monitoring | `true` | Does not block the workflow |
+| Blocking validation | `false` | Must execute before continuing |
+| Auto formatting | `false` | Must finish before the next tool |
+| External webhook | `true` | Non-blocking network latency |
 
-### Exemple : hook PostToolUse pour formatter du SQL
+### Example: PostToolUse hook to format SQL
 
-Dans `.claude/settings.json`, section `hooks` :
+In `.claude/settings.json`, `hooks` section:
 
 ```json
 {
   "PostToolUse": [
     {
-      "description": "Formatter les fichiers SQL avec sqlfluff",
+      "description": "Format SQL files with sqlfluff",
       "matcher": "Edit|Write",
       "hooks": [
         {
           "type": "command",
-          "command": "bash -c 'if command -v sqlfluff >/dev/null 2>&1; then FILE=$(echo \"$TOOL_INPUT\" | jq -r \".path // empty\"); if [[ \"$FILE\" == *.sql ]]; then sqlfluff fix --dialect ansi \"$FILE\" 2>/dev/null && echo \"[SQL] Formatte: $FILE\"; fi; fi'",
+          "command": "bash -c 'if command -v sqlfluff >/dev/null 2>&1; then FILE=$(echo \"$TOOL_INPUT\" | jq -r \".path // empty\"); if [[ \"$FILE\" == *.sql ]]; then sqlfluff fix --dialect ansi \"$FILE\" 2>/dev/null && echo \"[SQL] Formatted: $FILE\"; fi; fi'",
           "timeout": 10000,
           "onFailure": "ignore"
         }
@@ -387,18 +387,18 @@ Dans `.claude/settings.json`, section `hooks` :
 }
 ```
 
-### Exemple : hook PreToolUse de validation metier
+### Example: PreToolUse hook for business validation
 
 ```json
 {
   "PreToolUse": [
     {
-      "description": "Empecher la modification de fichiers de configuration en production",
+      "description": "Prevent modification of production configuration files",
       "matcher": "Edit|Write",
       "hooks": [
         {
           "type": "command",
-          "command": "bash -c 'FILE=$(echo \"$TOOL_INPUT\" | jq -r \".path // empty\"); if [[ \"$FILE\" == *prod* ]] || [[ \"$FILE\" == *production* ]]; then echo \"BLOQUE: Modification d un fichier de production detectee. Utilisez ALLOW_PROD_EDIT=1 pour forcer.\"; if [ \"$ALLOW_PROD_EDIT\" != \"1\" ]; then exit 1; fi; fi'",
+          "command": "bash -c 'FILE=$(echo \"$TOOL_INPUT\" | jq -r \".path // empty\"); if [[ \"$FILE\" == *prod* ]] || [[ \"$FILE\" == *production* ]]; then echo \"BLOCKED: Modification of a production file detected. Use ALLOW_PROD_EDIT=1 to force.\"; if [ \"$ALLOW_PROD_EDIT\" != \"1\" ]; then exit 1; fi; fi'",
           "timeout": 5000,
           "onFailure": "block"
         }
@@ -408,9 +408,9 @@ Dans `.claude/settings.json`, section `hooks` :
 }
 ```
 
-### Hooks dans settings.local.json
+### Hooks in settings.local.json
 
-Pour des hooks specifiques a votre poste (non commites) :
+For hooks specific to your machine (not committed):
 
 ```json
 // .claude/settings.local.json
@@ -418,12 +418,12 @@ Pour des hooks specifiques a votre poste (non commites) :
   "hooks": {
     "PostToolUse": [
       {
-        "description": "Notification desktop apres chaque modification",
+        "description": "Desktop notification after each modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'notify-send \"Claude Code\" \"Fichier modifie\" 2>/dev/null || true'",
+            "command": "bash -c 'notify-send \"Claude Code\" \"File modified\" 2>/dev/null || true'",
             "timeout": 3000,
             "async": true,
             "onFailure": "ignore"
@@ -437,174 +437,174 @@ Pour des hooks specifiques a votre poste (non commites) :
 
 ---
 
-## 5. Personnaliser CLAUDE.md
+## 5. Customize CLAUDE.md
 
-`CLAUDE.md` est le fichier de configuration principal du projet. Il est charge a chaque session.
+`CLAUDE.md` is the project's main configuration file. It is loaded at every session.
 
-### Pattern @import
+### @import pattern
 
 ```markdown
-@chemin/vers/fichier.md
+@path/to/file.md
 ```
 
-Les fichiers importes sont injectes directement dans le contexte. Utiliser pour des references volumineuses qui ne sont pas necessaires a chaque session.
+Imported files are injected directly into the context. Use for bulky references that are not necessary for every session.
 
-Fichiers toujours charges (imports dans ce projet) :
+Files always loaded (imports in this project):
 - `@docs/reference/best-practices.md`
 - `@docs/reference/project-structures.md`
 
-### Ce qui appartient ou
+### What belongs where
 
-| Element | Emplacement | Raison |
-|---------|-------------|--------|
-| Workflow obligatoire | `CLAUDE.md` | S'applique a toute l'equipe |
-| Conventions de code | `CLAUDE.md` ou rules | Selon si contextuelles ou globales |
-| Preferences personnelles | `~/.claude/memory/` | Non commite, personnel |
-| Conventions par langage | `.claude/rules/<lang>.md` | Active seulement sur les bons fichiers |
-| Decisions d'architecture | `~/.claude/memory/` | Memorisees par session |
-| References longues | Fichier separe avec `@import` | Evite de surcharger le contexte |
+| Element | Location | Reason |
+|---------|----------|--------|
+| Mandatory workflow | `CLAUDE.md` | Applies to the whole team |
+| Code conventions | `CLAUDE.md` or rules | Depending on whether contextual or global |
+| Personal preferences | `~/.claude/memory/` | Not committed, personal |
+| Conventions per language | `.claude/rules/<lang>.md` | Active only on the relevant files |
+| Architecture decisions | `~/.claude/memory/` | Memorized per session |
+| Long references | Separate file with `@import` | Avoids overloading the context |
 
-### Contenu recommande pour CLAUDE.md
+### Recommended content for CLAUDE.md
 
 ```markdown
-# Mon Projet
+# My Project
 
-> Courte description du projet
+> Short project description
 
 ## Workflow
 
-[Adapter le workflow obligatoire au contexte du projet]
+[Adapt the mandatory workflow to the project's context]
 
 ## Conventions
 
-[Conventions specifiques au projet, non couvertes par les rules]
+[Project-specific conventions, not covered by rules]
 
 ## References
 
-| Sujet | Fichier |
-|-------|---------|
+| Topic | File |
+|-------|------|
 | Architecture | `docs/ARCHITECTURE.md` |
 | API | `docs/api/README.md` |
 ```
 
-### Ce qu'il ne faut pas mettre dans CLAUDE.md
+### What must not be put in CLAUDE.md
 
-- Secrets, credentials, tokens (utiliser `.env`)
-- Informations qui changent souvent (versions de dependances, etc.)
-- Contenu duplique depuis les rules (inutile, augmente le contexte)
-- Historique des decisions (utiliser CHANGELOG.md ou git log)
+- Secrets, credentials, tokens (use `.env`)
+- Information that changes often (dependency versions, etc.)
+- Content duplicated from rules (useless, increases context)
+- History of decisions (use CHANGELOG.md or git log)
 
 ---
 
-## 6. Contribuer au socle
+## 6. Contribute to the foundation
 
-### Fork et workflow PR
+### Fork and PR workflow
 
 ```bash
-# 1. Forker le depot sur GitHub
-# 2. Cloner votre fork
-git clone https://github.com/<vous>/claude-socle.git
+# 1. Fork the repository on GitHub
+# 2. Clone your fork
+git clone https://github.com/<you>/claude-socle.git
 cd claude-socle
 
-# 3. Creer une branche feature
-git checkout -b feature/mon-skill-python-typing
+# 3. Create a feature branch
+git checkout -b feature/my-python-typing-skill
 
-# 4. Creer ou modifier les fichiers
-# 5. Tester manuellement dans une session Claude Code
-# 6. Verifier la coherence des compteurs
+# 4. Create or modify files
+# 5. Test manually in a Claude Code session
+# 6. Verify counter consistency
 ./scripts/validate-counts.sh
 
-# 7. Commiter en Conventional Commits
+# 7. Commit using Conventional Commits
 git commit -m "feat(skills): add python-typing skill for strict type annotations"
 
-# 8. Pousser et creer la PR
-git push origin feature/mon-skill-python-typing
+# 8. Push and create the PR
+git push origin feature/my-python-typing-skill
 gh pr create --title "feat(skills): add python-typing skill" --body "..."
 ```
 
-### Conventions de nommage
+### Naming conventions
 
-| Type | Convention | Exemple |
+| Type | Convention | Example |
 |------|-----------|---------|
-| Skills | `domaine-action` | `dev-typing`, `qa-mutation` |
-| Agents | `domaine-action` | `dev-typing`, `qa-mutation` |
-| Rules | nom du langage/framework | `svelte.md`, `fastapi.md` |
-| Commands | `domaine/action.md` | `dev/dev-typing.md` |
+| Skills | `domain-action` | `dev-typing`, `qa-mutation` |
+| Agents | `domain-action` | `dev-typing`, `qa-mutation` |
+| Rules | language/framework name | `svelte.md`, `fastapi.md` |
+| Commands | `domain/action.md` | `dev/dev-typing.md` |
 | Branches | `feature/xxx`, `fix/xxx` | `feature/svelte-rule` |
 | Commits | Conventional Commits | `feat(rules): add svelte rule` |
 
-### Checklist avant PR
+### Pre-PR checklist
 
 ```
-[ ] Le skill/agent a un nom en kebab-case suivant la convention domaine-action
-[ ] Le frontmatter YAML est valide (name, description, allowed-tools)
-[ ] La description contient le contexte de declenchement
-[ ] Les outils declares sont le minimum necessaire
-[ ] context: fork est present pour les skills
-[ ] Le fichier fait moins de 500 lignes
-[ ] Les exemples de code sont pertinents et fonctionnels
-[ ] validate-counts.sh passe sans erreur
-[ ] La documentation de reference est mise a jour si necessaire
+[ ] The skill/agent has a kebab-case name following the domain-action convention
+[ ] The YAML frontmatter is valid (name, description, allowed-tools)
+[ ] The description contains the trigger context
+[ ] Declared tools are the minimum necessary
+[ ] context: fork is present for skills
+[ ] The file is under 500 lines
+[ ] Code examples are relevant and functional
+[ ] validate-counts.sh passes without error
+[ ] Reference documentation is updated if necessary
 ```
 
-### Compliance validate-counts.sh
+### validate-counts.sh compliance
 
-Quand vous ajoutez un skill, un agent, une rule ou une command, plusieurs fichiers de documentation doivent etre mis a jour pour reflechir les nouveaux compteurs :
+When you add a skill, an agent, a rule or a command, several documentation files must be updated to reflect the new counters:
 
-| Fichier | Compteur a mettre a jour |
-|---------|--------------------------|
-| `README.md` | Nombre de commandes |
-| `CLAUDE.md` | Nombre de commandes, agents, skills |
-| `docs/reference/agents-catalog.md` | En-tete du fichier |
-| `website/src/pages/index.tsx` | Statistiques de la page d'accueil |
-| `website/docs/intro/architecture.md` | Compteurs architecture |
+| File | Counter to update |
+|------|-------------------|
+| `README.md` | Number of commands |
+| `CLAUDE.md` | Number of commands, agents, skills |
+| `docs/reference/agents-catalog.md` | File header |
+| `website/src/pages/index.tsx` | Homepage statistics |
+| `website/docs/intro/architecture.md` | Architecture counters |
 
-Lancer `./scripts/validate-counts.sh --fix` pour identifier les incoherences. Corriger manuellement les valeurs numeriques dans les fichiers signales.
+Run `./scripts/validate-counts.sh --fix` to identify inconsistencies. Manually correct numerical values in the flagged files.
 
-### Structure d'une PR de qualite
+### Quality PR structure
 
 ```markdown
 ## Description
-Ajout d'un skill `svelte` pour les conventions de developpement Svelte 5.
+Add a `svelte` skill for Svelte 5 development conventions.
 
 ## Motivation
-Le socle ne couvrait pas Svelte. Ce skill active les conventions Composition API,
-typage des props, et gestion des stores automatiquement sur les fichiers `.svelte`.
+The foundation did not cover Svelte. This skill activates Composition API conventions,
+prop typing, and store management automatically on `.svelte` files.
 
-## Changements
-- `.claude/skills/dev-svelte/SKILL.md` : nouveau skill
-- `.claude/rules/svelte.md` : rule associee
-- `docs/reference/skills-catalog.md` : entree ajoutee
-- Compteurs mis a jour dans README.md, CLAUDE.md, website
+## Changes
+- `.claude/skills/dev-svelte/SKILL.md`: new skill
+- `.claude/rules/svelte.md`: associated rule
+- `docs/reference/skills-catalog.md`: entry added
+- Counters updated in README.md, CLAUDE.md, website
 
 ## Tests
-- Teste manuellement en modifiant un fichier .svelte dans une session Claude Code
-- validate-counts.sh passe
+- Tested manually by modifying a .svelte file in a Claude Code session
+- validate-counts.sh passes
 
 ## Checklist
-- [x] Conventions de nommage respectees
+- [x] Naming conventions respected
 - [x] validate-counts.sh OK
-- [x] Documentation mise a jour
+- [x] Documentation updated
 ```
 
 ---
 
-## Recapitulatif des emplacements
+## Recap of locations
 
 ```
 .claude/
-├── rules/              # Rules par langage/framework
-│   ├── python.md       # Activee sur **/*.py
-│   └── mon-framework.md
-├── skills/             # Skills reutilisables
-│   └── mon-skill/
-│       ├── SKILL.md    # Definition obligatoire
+├── rules/              # Rules per language/framework
+│   ├── python.md       # Activated on **/*.py
+│   └── my-framework.md
+├── skills/             # Reusable skills
+│   └── my-skill/
+│       ├── SKILL.md    # Required definition
 │       └── examples/
-├── agents/             # Sub-agents avec LLM dedie
-│   └── mon-agent.md
-├── commands/           # Commandes invocables par /domaine:nom
-│   └── domaine/
-│       └── ma-commande.md
-└── settings.json       # Hooks globaux du projet
-    settings.local.json # Hooks locaux non commites
+├── agents/             # Sub-agents with dedicated LLM
+│   └── my-agent.md
+├── commands/           # Commands invokable by /domain:name
+│   └── domain/
+│       └── my-command.md
+└── settings.json       # Project-wide hooks
+    settings.local.json # Local hooks not committed
 ```

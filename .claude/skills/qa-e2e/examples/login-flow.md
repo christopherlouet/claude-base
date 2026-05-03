@@ -1,28 +1,28 @@
-# Exemple E2E : Test de parcours de connexion
+# E2E Example: Login flow test
 
-## Demande utilisateur
-> "Creer un test E2E pour le parcours de connexion avec Playwright"
-
----
-
-## Analyse du parcours
-
-### Etapes utilisateur
-1. Acceder a la page de login
-2. Remplir email et mot de passe
-3. Cliquer sur "Se connecter"
-4. Verifier la redirection vers le dashboard
-5. Verifier que l'utilisateur est connecte
-
-### Cas a tester
-- Connexion reussie
-- Email invalide
-- Mot de passe incorrect
-- Champs vides
+## User request
+> "Create an E2E test for the login flow with Playwright"
 
 ---
 
-## Implementation Playwright
+## Flow analysis
+
+### User steps
+1. Access the login page
+2. Fill in email and password
+3. Click "Sign in"
+4. Verify the redirect to the dashboard
+5. Verify that the user is logged in
+
+### Cases to test
+- Successful login
+- Invalid email
+- Wrong password
+- Empty fields
+
+---
+
+## Playwright implementation
 
 ```typescript
 // tests/e2e/login.spec.ts
@@ -102,7 +102,7 @@ test.describe('Login Flow', () => {
 
 ---
 
-## Configuration Playwright
+## Playwright configuration
 
 ```typescript
 // playwright.config.ts
@@ -113,8 +113,8 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 2: 0,
+  workers: process.env.CI ? 1: undefined,
   reporter: 'html',
   use: {
     baseURL: 'http://localhost:3000',
@@ -145,7 +145,7 @@ export default defineConfig({
 
 ---
 
-## Page Object Pattern (optionnel)
+## Page Object Pattern (optional)
 
 ```typescript
 // tests/e2e/pages/LoginPage.ts
@@ -190,28 +190,28 @@ export class LoginPage {
 ## Execution
 
 ```bash
-# Lancer tous les tests E2E
+# Run all E2E tests
 npx playwright test
 
-# Mode UI interactif
+# Interactive UI mode
 npx playwright test --ui
 
-# Generer le rapport
+# Generate the report
 npx playwright show-report
 
-# Tests specifiques
+# Specific tests
 npx playwright test login.spec.ts
 
-# Mode debug
+# Debug mode
 npx playwright test --debug
 ```
 
 ---
 
-## Bonnes pratiques
+## Best practices
 
-1. **data-testid** : Utiliser des attributs de test plutot que des selecteurs CSS
-2. **Page Objects** : Encapsuler la logique de page pour la reutilisabilite
-3. **Assertions explicites** : Toujours verifier l'etat attendu
-4. **Isolation** : Chaque test doit etre independant
-5. **CI/CD** : Configurer les retries et screenshots en CI
+1. **data-testid**: Use test attributes rather than CSS selectors
+2. **Page Objects**: Encapsulate page logic for reusability
+3. **Explicit assertions**: Always verify the expected state
+4. **Isolation**: Each test must be independent
+5. **CI/CD**: Configure retries and screenshots in CI

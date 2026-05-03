@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests pour new-project.sh
+# Tests for new-project.sh
 # =============================================================================
 
 load 'test_helper'
@@ -17,32 +17,32 @@ teardown() {
 }
 
 # =============================================================================
-# Tests de base
+# Basic tests
 # =============================================================================
 
-@test "new-project.sh existe et est exécutable" {
+@test "new-project.sh exists and is executable" {
     [ -f "$NEW_PROJECT_SCRIPT" ]
     [ -x "$NEW_PROJECT_SCRIPT" ]
 }
 
-@test "new-project.sh affiche l'aide avec --help" {
+@test "new-project.sh displays help with --help" {
     run "$NEW_PROJECT_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"USAGE"* ]]
-    [[ "$output" == *"EXEMPLES"* ]]
+    [[ "$output" == *"EXEMPLES"* ]] || [[ "$output" == *"EXAMPLES"* ]]
 }
 
-@test "new-project.sh affiche la version avec --version" {
+@test "new-project.sh displays version with --version" {
     run "$NEW_PROJECT_SCRIPT" --version
     [ "$status" -eq 0 ]
     [[ "$output" == *"new-project"* ]]
 }
 
 # =============================================================================
-# Tests de détection de stack
+# Stack detection tests
 # =============================================================================
 
-@test "new-project.sh détecte un projet Node.js" {
+@test "new-project.sh detects a Node.js project" {
     mkdir -p "$TEST_DIR"
     cat > "$TEST_DIR/package.json" << 'EOF'
 {
@@ -58,7 +58,7 @@ EOF
     [[ "$output" == *"Node"* ]] || [[ "$output" == *"Express"* ]] || true
 }
 
-@test "new-project.sh détecte un projet React" {
+@test "new-project.sh detects a React project" {
     mkdir -p "$TEST_DIR"
     cat > "$TEST_DIR/package.json" << 'EOF'
 {
@@ -74,7 +74,7 @@ EOF
     [[ "$output" == *"React"* ]] || true
 }
 
-@test "new-project.sh détecte TypeScript" {
+@test "new-project.sh detects TypeScript" {
     mkdir -p "$TEST_DIR"
     cat > "$TEST_DIR/package.json" << 'EOF'
 {
@@ -91,7 +91,7 @@ EOF
     [[ "$output" == *"TypeScript"* ]] || true
 }
 
-@test "new-project.sh détecte Python" {
+@test "new-project.sh detects Python" {
     mkdir -p "$TEST_DIR"
     echo "flask==2.0.0" > "$TEST_DIR/requirements.txt"
 
@@ -100,7 +100,7 @@ EOF
     [[ "$output" == *"Python"* ]] || [[ "$output" == *"Flask"* ]] || true
 }
 
-@test "new-project.sh détecte Go" {
+@test "new-project.sh detects Go" {
     mkdir -p "$TEST_DIR"
     cat > "$TEST_DIR/go.mod" << 'EOF'
 module test-go
@@ -114,10 +114,10 @@ EOF
 }
 
 # =============================================================================
-# Tests de configuration
+# Configuration tests
 # =============================================================================
 
-@test "new-project.sh crée la structure .claude" {
+@test "new-project.sh creates the .claude structure" {
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.claude/commands" ]
@@ -125,41 +125,41 @@ EOF
     [ -f "$TEST_DIR/.claude/settings.json" ]
 }
 
-@test "new-project.sh crée CLAUDE.md" {
+@test "new-project.sh creates CLAUDE.md" {
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/CLAUDE.md" ]
 }
 
-@test "new-project.sh force le type avec --type" {
+@test "new-project.sh forces the type with --type" {
     run "$NEW_PROJECT_SCRIPT" -y -t python "$TEST_DIR"
     [ "$status" -eq 0 ]
 }
 
 # =============================================================================
-# Tests des options CI/CD
+# CI/CD options tests
 # =============================================================================
 
-@test "new-project.sh avec --ci installe GitHub Actions" {
+@test "new-project.sh with --ci installs GitHub Actions" {
     run "$NEW_PROJECT_SCRIPT" -y --ci "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.github/workflows" ]
     [ -f "$TEST_DIR/.github/workflows/ci.yml" ]
 }
 
-@test "new-project.sh avec --hooks installe husky" {
+@test "new-project.sh with --hooks installs husky" {
     run "$NEW_PROJECT_SCRIPT" -y --hooks "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.husky" ]
 }
 
-@test "new-project.sh avec --docker crée Dockerfile" {
+@test "new-project.sh with --docker creates Dockerfile" {
     run "$NEW_PROJECT_SCRIPT" -y --docker -t node-api "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/Dockerfile" ]
 }
 
-@test "new-project.sh avec --all installe tout" {
+@test "new-project.sh with --all installs everything" {
     run "$NEW_PROJECT_SCRIPT" -y --all "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.github/workflows" ]
@@ -169,10 +169,10 @@ EOF
 }
 
 # =============================================================================
-# Tests d'analyse CI/CD existante
+# Existing CI/CD analysis tests
 # =============================================================================
 
-@test "new-project.sh détecte GitHub Actions existant" {
+@test "new-project.sh detects existing GitHub Actions" {
     mkdir -p "$TEST_DIR/.github/workflows"
     cat > "$TEST_DIR/.github/workflows/test.yml" << 'EOF'
 name: Test
@@ -190,102 +190,102 @@ EOF
     [[ "$output" == *"CI/CD"* ]] || [[ "$output" == *"GitHub Actions"* ]] || [[ "$output" == *"Tests"* ]] || true
 }
 
-@test "new-project.sh ne remplace pas CI/CD existante par défaut" {
+@test "new-project.sh does not replace existing CI/CD by default" {
     mkdir -p "$TEST_DIR/.github/workflows"
     echo "name: Custom" > "$TEST_DIR/.github/workflows/custom.yml"
 
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier custom.yml doit toujours exister
+    # The custom.yml file must still exist
     [ -f "$TEST_DIR/.github/workflows/custom.yml" ]
     run cat "$TEST_DIR/.github/workflows/custom.yml"
     [[ "$output" == *"Custom"* ]]
 }
 
 # =============================================================================
-# Tests de sécurité
+# Security tests
 # =============================================================================
 
-@test "new-project.sh initialise git si nécessaire" {
+@test "new-project.sh initializes git if necessary" {
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.git" ]
 }
 
-@test "new-project.sh crée .gitignore avec exclusions sécurisées" {
+@test "new-project.sh creates .gitignore with secure exclusions" {
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/.gitignore" ]
 
     run cat "$TEST_DIR/.gitignore"
-    # Config locale qui DOIT etre gitignore
+    # Local config that MUST be gitignored
     [[ "$output" == *"CLAUDE.local.md"* ]]
     [[ "$output" == *"settings.local.json"* ]]
     [[ "$output" == *".env"* ]]
 }
 
-@test "new-project.sh ne met PAS .claude/ ni CLAUDE.md dans .gitignore" {
-    # Regression : avant le fix, new-project.sh ajoutait .claude/ et
-    # CLAUDE.md au .gitignore du user, l'empechant de versionner ses
-    # custom commands/rules en equipe (cf. CONTRIBUTING.md).
+@test "new-project.sh does NOT put .claude/ or CLAUDE.md in .gitignore" {
+    # Regression: before the fix, new-project.sh added .claude/ and
+    # CLAUDE.md to the user's .gitignore, preventing them from versioning
+    # their custom commands/rules with the team (cf. CONTRIBUTING.md).
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/.gitignore" ]
 
-    # .claude/ et CLAUDE.md (lignes pures, pas substring) ne doivent PAS
-    # apparaitre comme entrees gitignore.
+    # .claude/ and CLAUDE.md (pure lines, not substring) must NOT
+    # appear as gitignore entries.
     ! grep -qE "^\.claude/?$" "$TEST_DIR/.gitignore"
     ! grep -qE "^CLAUDE\.md$" "$TEST_DIR/.gitignore"
 }
 
 # =============================================================================
-# Tests des nouveaux répertoires (agents, rules, output-styles)
+# Tests for the new directories (agents, rules, output-styles)
 # =============================================================================
 
-@test "new-project.sh crée le répertoire agents" {
+@test "new-project.sh creates the agents directory" {
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.claude/agents" ]
 
-    # Vérifier qu'il y a des fichiers
+    # Check that there are files
     local count
     count=$(find "$TEST_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 0 ]
 }
 
-@test "new-project.sh crée le répertoire rules" {
+@test "new-project.sh creates the rules directory" {
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.claude/rules" ]
 
-    # Vérifier qu'il y a des fichiers
+    # Check that there are files
     local count
     count=$(find "$TEST_DIR/.claude/rules" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 0 ]
 }
 
-@test "new-project.sh crée le répertoire output-styles" {
+@test "new-project.sh creates the output-styles directory" {
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.claude/output-styles" ]
 
-    # Vérifier qu'il y a des fichiers
+    # Check that there are files
     local count
     count=$(find "$TEST_DIR/.claude/output-styles" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 0 ]
 }
 
-@test "new-project.sh installe les 7 @imports canoniques dans CLAUDE.md" {
-    # Régression: avant le fix, new-project.sh installait CLAUDE.md avec
-    # seulement 2 @imports (best-practices, project-structures), créant une
-    # asymétrie avec update.sh --all qui en imposait 7. Fix dans
+@test "new-project.sh installs the 7 canonical @imports in CLAUDE.md" {
+    # Regression: before the fix, new-project.sh installed CLAUDE.md with
+    # only 2 @imports (best-practices, project-structures), creating an
+    # asymmetry with update.sh --all which enforced 7. Fix in
     # ensure_claude_md_imports() (lib/common.sh).
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/CLAUDE.md" ]
 
-    # Les 7 @imports canoniques doivent être présents
+    # The 7 canonical @imports must be present
     local expected_imports=(
         "@.claude/docs/reference/best-practices.md"
         "@.claude/docs/reference/project-structures.md"
@@ -303,42 +303,42 @@ EOF
     done
 }
 
-@test "new-project.sh copie scripts/hooks/ référencés par settings.json" {
-    # Régression: settings.json référence scripts/hooks/*.sh, ils doivent
-    # être copiés sinon les hooks SessionStart/PreToolUse échouent
-    # silencieusement (pendant du fix update.sh dans dcaa059).
+@test "new-project.sh copies scripts/hooks/ referenced by settings.json" {
+    # Regression: settings.json references scripts/hooks/*.sh, they must
+    # be copied otherwise SessionStart/PreToolUse hooks fail
+    # silently (counterpart to the update.sh fix in dcaa059).
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/scripts/hooks" ]
 
-    # Au moins un .sh copié
+    # At least one .sh copied
     local count
     count=$(find "$TEST_DIR/scripts/hooks" -name "*.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 0 ]
 
-    # Tous les .sh sont exécutables
+    # All .sh are executable
     local non_exec
     non_exec=$(find "$TEST_DIR/scripts/hooks" -name "*.sh" -type f ! -executable 2>/dev/null | wc -l | tr -d ' ')
     [ "$non_exec" -eq 0 ]
 }
 
 # =============================================================================
-# Tests du nettoyage avant copie
+# Cleanup-before-copy tests
 # =============================================================================
 
-@test "new-project.sh nettoie les anciens fichiers avant installation" {
-    # Créer une première installation
+@test "new-project.sh cleans up old files before installation" {
+    # Create a first installation
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Ajouter un fichier obsolète dans commands
+    # Add an obsolete file in commands
     echo "# Old command" > "$TEST_DIR/.claude/commands/old-command.md"
     [ -f "$TEST_DIR/.claude/commands/old-command.md" ]
 
-    # Réinstaller
+    # Reinstall
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier obsolète ne devrait plus exister
+    # The obsolete file should no longer exist
     [ ! -f "$TEST_DIR/.claude/commands/old-command.md" ]
 }

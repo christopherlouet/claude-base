@@ -2,14 +2,14 @@
 
 # =============================================================================
 # Claude-Socle Validation Script
-# Valide la configuration Claude Code d'un projet
+# Validates the Claude Code configuration of a project
 # =============================================================================
 
 set -euo pipefail
 
 VERSION="1.1.0"
 
-# Charger la librairie commune
+# Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC2034  # Used by sourced scripts
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
@@ -17,7 +17,7 @@ SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-# Activer le handler d'erreur et vérifier les prérequis
+# Enable the error handler and check prerequisites
 enable_error_handler
 check_base_requirements
 
@@ -32,13 +32,13 @@ WARNINGS=0
 SCORE=0
 MAX_SCORE=0
 
-# Pour la sortie JSON
+# For JSON output
 declare -a JSON_ERRORS=()
 declare -a JSON_WARNINGS=()
 declare -a JSON_SUCCESS=()
 
 # =============================================================================
-# Aide
+# Help
 # =============================================================================
 
 show_help() {
@@ -46,37 +46,37 @@ show_help() {
 ${BOLD}Claude-Socle Validate${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
-    $(basename "$0") [OPTIONS] [CHEMIN]
+    $(basename "$0") [OPTIONS] [PATH]
 
 ${BOLD}DESCRIPTION${NC}
-    Valide la configuration Claude Code d'un projet.
-    Vérifie la structure, les fichiers et la cohérence.
+    Validates the Claude Code configuration of a project.
+    Checks the structure, files and consistency.
 
 ${BOLD}ARGUMENTS${NC}
-    CHEMIN              Répertoire à valider (défaut: répertoire courant)
+    PATH                Directory to validate (default: current directory)
 
 ${BOLD}OPTIONS${NC}
-    -h, --help          Affiche cette aide
-    -v, --version       Affiche la version
-    -q, --quiet         Mode silencieux (code de sortie uniquement)
-    --json              Sortie au format JSON
-    --score             Affiche uniquement le score de maturité
-    --verbose           Mode verbeux (debug)
+    -h, --help          Display this help
+    -v, --version       Display the version
+    -q, --quiet         Quiet mode (exit code only)
+    --json              JSON output format
+    --score             Display only the maturity score
+    --verbose           Verbose mode (debug)
 
-${BOLD}EXEMPLES${NC}
-    # Validation standard
-    $(basename "$0") ./mon-projet
+${BOLD}EXAMPLES${NC}
+    # Standard validation
+    $(basename "$0") ./my-project
 
-    # Sortie JSON pour CI/CD
-    $(basename "$0") --json ./mon-projet
+    # JSON output for CI/CD
+    $(basename "$0") --json ./my-project
 
-    # Score uniquement
-    $(basename "$0") --score ./mon-projet
+    # Score only
+    $(basename "$0") --score ./my-project
 
-${BOLD}CODES DE SORTIE${NC}
-    0   Configuration valide
-    1   Erreurs détectées
-    2   Avertissements uniquement
+${BOLD}EXIT CODES${NC}
+    0   Valid configuration
+    1   Errors detected
+    2   Warnings only
 
 EOF
 }
@@ -86,7 +86,7 @@ show_version() {
 }
 
 # =============================================================================
-# Parsing des arguments
+# Argument parsing
 # =============================================================================
 
 parse_args() {
@@ -117,13 +117,13 @@ parse_args() {
                 shift
                 ;;
             -*)
-                error "Option inconnue: $1\nUtilisez --help pour l'aide"
+                error "Unknown option: $1\nUse --help for help"
                 ;;
             *)
                 if [[ -z "$TARGET_DIR" ]]; then
                     TARGET_DIR="$1"
                 else
-                    error "Trop d'arguments: $1"
+                    error "Too many arguments: $1"
                 fi
                 shift
                 ;;
@@ -134,7 +134,7 @@ parse_args() {
 }
 
 # =============================================================================
-# Fonctions de validation avec tracking
+# Validation functions with tracking
 # =============================================================================
 
 add_error() {
@@ -175,67 +175,67 @@ add_check() {
 # =============================================================================
 
 validate_structure() {
-    [[ "$OUTPUT_FORMAT" == "text" ]] && section "1. Structure de base"
+    [[ "$OUTPUT_FORMAT" == "text" ]] && section "1. Base structure"
 
     # CLAUDE.md
     add_check 2
     if [[ -f "$TARGET_DIR/CLAUDE.md" ]]; then
-        add_success "CLAUDE.md présent" "structure" 1
+        add_success "CLAUDE.md present" "structure" 1
 
-        # Vérifier le contenu minimum
+        # Check minimum content
         add_check 1
         if grep -q "IMPORTANT" "$TARGET_DIR/CLAUDE.md" 2>/dev/null; then
-            add_success "CLAUDE.md contient des directives IMPORTANT" "structure" 1
+            add_success "CLAUDE.md contains IMPORTANT directives" "structure" 1
         else
-            add_warning "CLAUDE.md ne contient pas de directives IMPORTANT" "structure"
+            add_warning "CLAUDE.md does not contain IMPORTANT directives" "structure"
         fi
     else
-        add_error "CLAUDE.md manquant" "structure"
+        add_error "CLAUDE.md missing" "structure"
     fi
 
     # .claude/
     add_check 1
     if [[ -d "$TARGET_DIR/.claude" ]]; then
-        add_success ".claude/ présent" "structure" 1
+        add_success ".claude/ present" "structure" 1
     else
-        add_error ".claude/ manquant" "structure"
+        add_error ".claude/ missing" "structure"
     fi
 
     # .claude/commands/
     add_check 2
     if [[ -d "$TARGET_DIR/.claude/commands" ]]; then
-        # Utiliser find récursif pour compter les fichiers dans les sous-répertoires
+        # Use recursive find to count files in subdirectories
         local cmd_count
         cmd_count=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
         if [[ "$cmd_count" -gt 0 ]]; then
-            add_success ".claude/commands/ contient $cmd_count commande(s)" "structure" 2
+            add_success ".claude/commands/ contains $cmd_count command(s)" "structure" 2
         else
-            add_warning ".claude/commands/ est vide" "structure"
+            add_warning ".claude/commands/ is empty" "structure"
         fi
     else
-        add_warning ".claude/commands/ manquant" "structure"
+        add_warning ".claude/commands/ missing" "structure"
     fi
 
     # .claude/settings.json
     add_check 2
     if [[ -f "$TARGET_DIR/.claude/settings.json" ]]; then
-        add_success ".claude/settings.json présent" "structure" 1
+        add_success ".claude/settings.json present" "structure" 1
 
-        # Valider JSON
+        # Validate JSON
         if validate_json "$TARGET_DIR/.claude/settings.json"; then
-            add_success ".claude/settings.json est un JSON valide" "structure" 1
+            add_success ".claude/settings.json is valid JSON" "structure" 1
         else
-            add_error ".claude/settings.json JSON invalide" "structure"
+            add_error ".claude/settings.json invalid JSON" "structure"
         fi
     else
-        add_warning ".claude/settings.json manquant" "structure"
+        add_warning ".claude/settings.json missing" "structure"
     fi
 }
 
 validate_commands() {
-    [[ "$OUTPUT_FORMAT" == "text" ]] && section "2. Commandes standard"
+    [[ "$OUTPUT_FORMAT" == "text" ]] && section "2. Standard commands"
 
-    # Les commandes sont maintenant dans des sous-répertoires par catégorie
+    # Commands are now in subdirectories by category
     local standard_commands=("work/work-explore" "work/work-plan" "work/work-commit" "qa/qa-review")
 
     for cmd in "${standard_commands[@]}"; do
@@ -243,9 +243,9 @@ validate_commands() {
         local cmd_name
         cmd_name=$(basename "$cmd")
         if [[ -f "$TARGET_DIR/.claude/commands/$cmd.md" ]]; then
-            add_success "Commande $cmd_name présente" "commands" 1
+            add_success "Command $cmd_name present" "commands" 1
         else
-            add_warning "Commande $cmd_name manquante (recommandée)" "commands"
+            add_warning "Command $cmd_name missing (recommended)" "commands"
         fi
     done
 }
@@ -258,9 +258,9 @@ validate_skills() {
         local skills_count
         skills_count=$(find "$TARGET_DIR/.claude/skills" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
         if [[ "$skills_count" -gt 0 ]]; then
-            add_success ".claude/skills/ contient $skills_count skill(s)" "skills" 2
+            add_success ".claude/skills/ contains $skills_count skill(s)" "skills" 2
 
-            # Valider le format YAML des skills
+            # Validate the YAML format of skills
             add_check 1
             local valid_skills=0
             local total_skills=0
@@ -269,7 +269,7 @@ validate_skills() {
                     ((total_skills++)) || true
                     local skill_file="$skill_dir/SKILL.md"
                     if [[ -f "$skill_file" ]]; then
-                        # Vérifier la présence du frontmatter YAML
+                        # Check for YAML frontmatter presence
                         if head -1 "$skill_file" | grep -q "^---"; then
                             ((valid_skills++)) || true
                         fi
@@ -277,15 +277,15 @@ validate_skills() {
                 fi
             done
             if [[ "$total_skills" -gt 0 ]] && [[ "$valid_skills" -eq "$total_skills" ]]; then
-                add_success "Tous les skills ont un frontmatter YAML valide" "skills" 1
+                add_success "All skills have valid YAML frontmatter" "skills" 1
             elif [[ "$valid_skills" -gt 0 ]]; then
-                add_warning "$valid_skills/$total_skills skills avec frontmatter YAML valide" "skills"
+                add_warning "$valid_skills/$total_skills skills with valid YAML frontmatter" "skills"
             fi
         else
-            add_warning ".claude/skills/ est vide" "skills"
+            add_warning ".claude/skills/ is empty" "skills"
         fi
     else
-        add_warning ".claude/skills/ manquant" "skills"
+        add_warning ".claude/skills/ missing" "skills"
     fi
 }
 
@@ -301,17 +301,17 @@ validate_hooks() {
         local hooks_count=$((pre_hooks + post_hooks + session_hooks))
 
         if [[ "$hooks_count" -gt 0 ]]; then
-            add_success "$hooks_count hook(s) configuré(s): $pre_hooks Pre, $post_hooks Post, $session_hooks SessionStart" "hooks" 2
+            add_success "$hooks_count hook(s) configured: $pre_hooks Pre, $post_hooks Post, $session_hooks SessionStart" "hooks" 2
         else
-            add_warning "Aucun hook configuré dans settings.json" "hooks"
+            add_warning "No hooks configured in settings.json" "hooks"
         fi
 
-        # Vérifier si SessionStart est configuré
+        # Check if SessionStart is configured
         add_check 1
         if [[ "$session_hooks" -gt 0 ]]; then
-            add_success "Hook SessionStart configuré" "hooks" 1
+            add_success "SessionStart hook configured" "hooks" 1
         else
-            add_warning "Hook SessionStart non configuré (recommandé)" "hooks"
+            add_warning "SessionStart hook not configured (recommended)" "hooks"
         fi
     fi
 }
@@ -324,14 +324,14 @@ validate_agents() {
         local agents_count
         agents_count=$(find "$TARGET_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
         if [[ "$agents_count" -gt 0 ]]; then
-            add_success ".claude/agents/ contient $agents_count agent(s)" "agents" 1
+            add_success ".claude/agents/ contains $agents_count agent(s)" "agents" 1
 
-            # Vérifier le frontmatter des agents
+            # Check the agents' frontmatter
             add_check 1
             local valid_agents=0
             while IFS= read -r agent_file; do
                 if head -1 "$agent_file" | grep -q "^---"; then
-                    # Vérifier les champs requis
+                    # Check for required fields
                     if grep -q "^name:" "$agent_file" && grep -q "^tools:" "$agent_file"; then
                         ((valid_agents++)) || true
                     fi
@@ -339,15 +339,15 @@ validate_agents() {
             done < <(find "$TARGET_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null)
 
             if [[ "$valid_agents" -eq "$agents_count" ]]; then
-                add_success "Tous les agents ont un frontmatter valide" "agents" 1
+                add_success "All agents have valid frontmatter" "agents" 1
             else
-                add_warning "$valid_agents/$agents_count agents avec frontmatter valide" "agents"
+                add_warning "$valid_agents/$agents_count agents with valid frontmatter" "agents"
             fi
         else
-            add_warning ".claude/agents/ est vide" "agents"
+            add_warning ".claude/agents/ is empty" "agents"
         fi
     else
-        add_warning ".claude/agents/ manquant" "agents"
+        add_warning ".claude/agents/ missing" "agents"
     fi
 }
 
@@ -359,9 +359,9 @@ validate_rules() {
         local rules_count
         rules_count=$(find "$TARGET_DIR/.claude/rules" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
         if [[ "$rules_count" -gt 0 ]]; then
-            add_success ".claude/rules/ contient $rules_count règle(s)" "rules" 1
+            add_success ".claude/rules/ contains $rules_count rule(s)" "rules" 1
 
-            # Vérifier le frontmatter des rules (optionnel mais recommandé)
+            # Check the rules' frontmatter (optional but recommended)
             add_check 1
             local rules_with_paths=0
             while IFS= read -r rule_file; do
@@ -371,15 +371,15 @@ validate_rules() {
             done < <(find "$TARGET_DIR/.claude/rules" -name "*.md" -type f 2>/dev/null)
 
             if [[ "$rules_with_paths" -gt 0 ]]; then
-                add_success "$rules_with_paths règle(s) avec filtrage par path" "rules" 1
+                add_success "$rules_with_paths rule(s) with path filtering" "rules" 1
             else
-                add_warning "Aucune règle avec filtrage par path configuré" "rules"
+                add_warning "No rule with path filtering configured" "rules"
             fi
         else
-            add_warning ".claude/rules/ est vide" "rules"
+            add_warning ".claude/rules/ is empty" "rules"
         fi
     else
-        add_warning ".claude/rules/ manquant" "rules"
+        add_warning ".claude/rules/ missing" "rules"
     fi
 }
 
@@ -391,22 +391,22 @@ validate_output_styles() {
         local styles_count
         styles_count=$(find "$TARGET_DIR/.claude/output-styles" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
         if [[ "$styles_count" -gt 0 ]]; then
-            add_success ".claude/output-styles/ contient $styles_count style(s)" "output-styles" 1
+            add_success ".claude/output-styles/ contains $styles_count style(s)" "output-styles" 1
         else
-            add_warning ".claude/output-styles/ est vide" "output-styles"
+            add_warning ".claude/output-styles/ is empty" "output-styles"
         fi
     else
-        add_warning ".claude/output-styles/ manquant" "output-styles"
+        add_warning ".claude/output-styles/ missing" "output-styles"
     fi
 }
 
 validate_command_files() {
-    [[ "$OUTPUT_FORMAT" == "text" ]] && section "5. Validation des fichiers de commandes"
+    [[ "$OUTPUT_FORMAT" == "text" ]] && section "5. Command files validation"
 
     local checked=0
     local valid=0
 
-    # Recherche récursive dans tous les sous-répertoires
+    # Recursive search across all subdirectories
     while IFS= read -r cmd_file; do
         if [[ -f "$cmd_file" ]]; then
             ((checked++)) || true
@@ -414,16 +414,16 @@ validate_command_files() {
             filename=$(basename "$cmd_file")
             local is_valid=true
 
-            # Vérifier que le fichier n'est pas vide
+            # Check that the file is not empty
             if [[ ! -s "$cmd_file" ]]; then
-                add_error "$filename est vide" "command_files"
+                add_error "$filename is empty" "command_files"
                 is_valid=false
                 continue
             fi
 
-            # Vérifier la présence d'un titre
+            # Check for the presence of a title
             if ! head -1 "$cmd_file" | grep -q "^#"; then
-                add_warning "$filename n'a pas de titre (# ...)" "command_files"
+                add_warning "$filename has no title (# ...)" "command_files"
                 is_valid=false
             fi
 
@@ -434,88 +434,88 @@ validate_command_files() {
     add_check 2
     if [[ "$checked" -gt 0 ]]; then
         if [[ "$valid" -eq "$checked" ]]; then
-            add_success "$checked fichiers de commandes valides" "command_files" 2
+            add_success "$checked valid command files" "command_files" 2
         else
-            add_success "$valid/$checked fichiers de commandes valides" "command_files" 1
+            add_success "$valid/$checked valid command files" "command_files" 1
         fi
     fi
 }
 
 validate_security() {
-    [[ "$OUTPUT_FORMAT" == "text" ]] && section "6. Sécurité"
+    [[ "$OUTPUT_FORMAT" == "text" ]] && section "6. Security"
 
-    # Vérifier .gitignore pour les entrées Claude Code
+    # Check .gitignore for Claude Code entries
     add_check 1
     if [[ -f "$TARGET_DIR/.gitignore" ]]; then
         if grep -q "CLAUDE.local.md" "$TARGET_DIR/.gitignore" 2>/dev/null; then
-            add_success "CLAUDE.local.md dans .gitignore" "security" 1
+            add_success "CLAUDE.local.md in .gitignore" "security" 1
         else
-            add_warning "CLAUDE.local.md devrait être dans .gitignore" "security"
+            add_warning "CLAUDE.local.md should be in .gitignore" "security"
         fi
     else
-        add_warning ".gitignore manquant" "security"
+        add_warning ".gitignore missing" "security"
     fi
 
-    # CLAUDE.local.md DOIT etre gitignore (config locale, peut contenir des secrets)
+    # CLAUDE.local.md MUST be gitignored (local config, may contain secrets)
     add_check 1
     if [[ -f "$TARGET_DIR/.gitignore" ]]; then
         if grep -q "CLAUDE\.local\.md" "$TARGET_DIR/.gitignore" 2>/dev/null; then
-            add_success "CLAUDE.local.md dans .gitignore" "security" 1
+            add_success "CLAUDE.local.md in .gitignore" "security" 1
         else
-            add_warning "CLAUDE.local.md devrait être dans .gitignore (config locale)" "security"
+            add_warning "CLAUDE.local.md should be in .gitignore (local config)" "security"
         fi
     fi
 
-    # settings.local.json DOIT etre gitignore (permissions/env locales)
+    # settings.local.json MUST be gitignored (local permissions/env)
     add_check 1
     if [[ -f "$TARGET_DIR/.gitignore" ]]; then
         if grep -q "settings\.local\.json" "$TARGET_DIR/.gitignore" 2>/dev/null; then
-            add_success ".claude/settings.local.json dans .gitignore" "security" 1
+            add_success ".claude/settings.local.json in .gitignore" "security" 1
         else
-            add_warning ".claude/settings.local.json devrait être dans .gitignore" "security"
+            add_warning ".claude/settings.local.json should be in .gitignore" "security"
         fi
     fi
 
-    # .claude/ et CLAUDE.md NE DOIVENT PAS etre gitignore (config equipe partagee)
+    # .claude/ and CLAUDE.md MUST NOT be gitignored (shared team config)
     add_check 1
     if [[ -f "$TARGET_DIR/.gitignore" ]]; then
         if grep -qE "^\.claude/?$" "$TARGET_DIR/.gitignore" 2>/dev/null; then
-            add_warning ".claude/ ne devrait PAS être dans .gitignore (config equipe a versionner)" "security"
+            add_warning ".claude/ should NOT be in .gitignore (team config to version)" "security"
         else
-            add_success ".claude/ versionnable (pas dans .gitignore)" "security" 1
+            add_success ".claude/ versionable (not in .gitignore)" "security" 1
         fi
     fi
 
     add_check 1
     if [[ -f "$TARGET_DIR/.gitignore" ]]; then
         if grep -q "^CLAUDE\.md$" "$TARGET_DIR/.gitignore" 2>/dev/null; then
-            add_warning "CLAUDE.md ne devrait PAS être dans .gitignore (config projet a versionner)" "security"
+            add_warning "CLAUDE.md should NOT be in .gitignore (project config to version)" "security"
         else
-            add_success "CLAUDE.md versionnable (pas dans .gitignore)" "security" 1
+            add_success "CLAUDE.md versionable (not in .gitignore)" "security" 1
         fi
     fi
 
-    # Vérifier les permissions dangereuses
+    # Check dangerous permissions
     add_check 1
     if [[ -f "$TARGET_DIR/.claude/settings.json" ]]; then
         if grep -q '"deny"' "$TARGET_DIR/.claude/settings.json" 2>/dev/null; then
             if grep -A10 '"deny"' "$TARGET_DIR/.claude/settings.json" | grep -q "rm -rf"; then
-                add_success "rm -rf bloqué dans les permissions" "security" 1
+                add_success "rm -rf blocked in permissions" "security" 1
             else
-                add_warning "rm -rf n'est pas explicitement bloqué" "security"
+                add_warning "rm -rf is not explicitly blocked" "security"
             fi
         else
-            add_warning "Pas de liste 'deny' dans les permissions" "security"
+            add_warning "No 'deny' list in permissions" "security"
         fi
     fi
 }
 
 validate_coherence() {
-    [[ "$OUTPUT_FORMAT" == "text" ]] && section "7. Cohérence CLAUDE.md ↔ Commandes"
+    [[ "$OUTPUT_FORMAT" == "text" ]] && section "7. Consistency CLAUDE.md ↔ Commands"
 
     add_check 2
     if [[ -f "$TARGET_DIR/CLAUDE.md" ]] && [[ -d "$TARGET_DIR/.claude/commands" ]]; then
-        # Extraire uniquement les commandes du socle mentionnées dans CLAUDE.md
+        # Extract only foundation commands mentioned in CLAUDE.md
         # Patterns: /work-*, /dev-*, /qa-*, /ops-*, /doc-*, /biz-*, /growth-*, /data-*, /legal-*, /assistant
         local mentioned_commands
         mentioned_commands=$(grep -oE '/(work|dev|qa|ops|doc|biz|growth|data|legal)-[a-z0-9-]+|/assistant' "$TARGET_DIR/CLAUDE.md" 2>/dev/null | sort -u || true)
@@ -524,45 +524,45 @@ validate_coherence() {
         local found=0
         for cmd in $mentioned_commands; do
             local cmd_name="${cmd#/}"
-            # Chercher récursivement dans les sous-répertoires
+            # Search recursively in subdirectories
             if find "$TARGET_DIR/.claude/commands" -name "$cmd_name.md" -type f 2>/dev/null | grep -q .; then
                 ((found++)) || true
             else
                 ((missing++)) || true
-                debug "Commande mentionnée mais non trouvée: $cmd_name"
+                debug "Mentioned command but not found: $cmd_name"
             fi
         done
 
         if [[ "$missing" -eq 0 ]] && [[ "$found" -gt 0 ]]; then
-            add_success "Toutes les commandes documentées existent ($found)" "coherence" 2
+            add_success "All documented commands exist ($found)" "coherence" 2
         elif [[ "$found" -gt 0 ]]; then
-            add_warning "$missing commande(s) mentionnée(s) dans CLAUDE.md non trouvée(s)" "coherence"
-            add_success "$found commandes cohérentes" "coherence" 1
+            add_warning "$missing command(s) mentioned in CLAUDE.md not found" "coherence"
+            add_success "$found consistent commands" "coherence" 1
         fi
     fi
 }
 
 # =============================================================================
-# Sortie des résultats
+# Results output
 # =============================================================================
 
 output_text_summary() {
     echo ""
     separator "="
-    echo "  Résumé de la validation"
+    echo "  Validation summary"
     separator "="
     echo ""
 
-    # Score de maturité
+    # Maturity score
     local percentage=0
     if [[ "$MAX_SCORE" -gt 0 ]]; then
         percentage=$((SCORE * 100 / MAX_SCORE))
     fi
 
-    echo -e "  Score de maturité: ${BOLD}$SCORE/$MAX_SCORE${NC} ($percentage%)"
+    echo -e "  Maturity score: ${BOLD}$SCORE/$MAX_SCORE${NC} ($percentage%)"
     echo ""
 
-    # Barre de progression
+    # Progress bar
     local bar_width=40
     local filled=$((percentage * bar_width / 100))
     local empty=$((bar_width - filled))
@@ -573,11 +573,11 @@ output_text_summary() {
     echo ""
 
     if [[ $ERRORS -eq 0 ]] && [[ $WARNINGS -eq 0 ]]; then
-        success "Configuration valide! Aucun problème détecté."
+        success "Valid configuration! No issues detected."
     elif [[ $ERRORS -eq 0 ]]; then
-        warning "Configuration valide avec $WARNINGS avertissement(s)"
+        warning "Valid configuration with $WARNINGS warning(s)"
     else
-        error_no_exit "Configuration invalide: $ERRORS erreur(s), $WARNINGS avertissement(s)"
+        error_no_exit "Invalid configuration: $ERRORS error(s), $WARNINGS warning(s)"
     fi
 
     echo ""
@@ -588,7 +588,7 @@ output_json() {
     local warnings_json
     local success_json
 
-    # Construire les tableaux JSON
+    # Build the JSON arrays
     if [[ ${#JSON_ERRORS[@]} -gt 0 ]]; then
         errors_json=$(printf '%s,' "${JSON_ERRORS[@]}")
         errors_json="[${errors_json%,}]"
@@ -645,20 +645,20 @@ output_score() {
 main() {
     parse_args "$@"
 
-    # Vérifier le répertoire
+    # Check the directory
     if [[ ! -d "$TARGET_DIR" ]]; then
-        error "Le répertoire '$TARGET_DIR' n'existe pas"
+        error "Directory '$TARGET_DIR' does not exist"
     fi
 
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
 
-    # En-tête (sauf JSON et score)
+    # Header (except JSON and score)
     if [[ "$OUTPUT_FORMAT" == "text" ]]; then
         title "Validation Claude Code Configuration"
-        info "Projet: $TARGET_DIR"
+        info "Project: $TARGET_DIR"
     fi
 
-    # Exécuter les validations
+    # Run the validations
     validate_structure
     validate_commands
     validate_skills
@@ -670,7 +670,7 @@ main() {
     validate_security
     validate_coherence
 
-    # Sortie selon le format
+    # Output according to format
     case "$OUTPUT_FORMAT" in
         json)
             output_json
@@ -683,11 +683,11 @@ main() {
             ;;
     esac
 
-    # Code de sortie
+    # Exit code
     if [[ $ERRORS -gt 0 ]]; then
         exit 1
     elif [[ $WARNINGS -gt 0 ]]; then
-        exit 0  # Warnings ne sont pas bloquants
+        exit 0  # Warnings are not blocking
     else
         exit 0
     fi

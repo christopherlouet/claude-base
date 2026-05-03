@@ -1,131 +1,131 @@
-# Guide de Depannage
+# Troubleshooting Guide
 
-> Resoudre les problemes courants avec Claude Code et le socle claude-socle
+> Solve common problems with Claude Code and the claude-socle foundation
 
 ## Sections
 
-- [Problemes courants Claude Code](#1-problemes-courants-claude-code)
-- [Problemes du socle](#2-problemes-du-socle)
-- [Diagnostic rapide](#3-diagnostic-rapide)
-- [Commandes de diagnostic](#4-commandes-de-diagnostic)
-- [Recuperation d'urgence](#5-recuperation-durgence)
-- [Optimisation performance](#6-optimisation-performance)
+- [Common Claude Code problems](#1-common-claude-code-problems)
+- [Foundation problems](#2-foundation-problems)
+- [Quick diagnosis](#3-quick-diagnosis)
+- [Diagnostic commands](#4-diagnostic-commands)
+- [Emergency recovery](#5-emergency-recovery)
+- [Performance optimization](#6-performance-optimization)
 
 ---
 
-## 1. Problemes courants Claude Code
+## 1. Common Claude Code problems
 
-| Symptome | Cause probable | Solution |
-|----------|---------------|----------|
-| "Context window full" ou compaction automatique | Trop de fichiers lus, session longue, logs verbeux inclus | `/compact` pour resumer, eviter de lire `/tmp/` ou `node_modules/` |
-| Session tres lente, tokens elevees | Lecture repetee de gros fichiers, contexte non compacte | `/compact` entre phases, utiliser `effort low` pour l'exploration |
-| Hook silencieux qui ne se declenche pas | Script non executable, chemin errone, timeout depasse | Verifier les logs dans `/tmp/claude-sessions.log`, tester le script manuellement |
-| MCP server absent ou deconnecte | Server desactive dans `.mcp.json`, dependance manquante | Verifier `"disabled": true` dans `.mcp.json`, relancer avec `/mcp` |
-| Agent ou skill qui ne se declenche pas | Mauvais namespace, description trop vague, fichier manquant | Verifier le nom exact avec `/help`, lire la description du fichier `.md` |
-| Boucle de permission refusee | Commande dans la liste `deny` de `settings.json`, mode auto strict | `/less-permission-prompts` pour optimiser les allowlists, ou `SKIP_COMMAND_VALIDATOR=1` |
-| Trop de prompts de permission | Permissions trop restrictives pour le workflow | `/less-permission-prompts` scanne les transcripts et propose des allowlists optimisees |
-| Conflit git pendant le cycle TDD | Branche desynchronisee, commit intermediaire manquant | `git stash`, `git pull --rebase`, puis `git stash pop` |
-| `claude` introuvable ou erreurs Node apres `claude update` | Migration vers le binaire natif (CLI 2.1.113+) : le CLI n'est plus un bundle JavaScript | Reinstaller via le canal officiel, verifier `which claude` et `claude --version`. Les anciens alias pointant vers `node /path/to/cli.js` ne fonctionnent plus |
-| Subagent qui "hang" sans retour | Avant CLI 2.1.113 : hang silencieux possible | Mettre a jour : les subagents inactifs > 10 min echouent desormais avec un message clair |
-| Dialog permission qui crash quand un teammate demande un tool | Bug CLI anterieur a 2.1.114 | Mettre a jour vers CLI >= 2.1.114 |
-| Reponses tronquees, raisonnement incoherent, qualite degradee entre 4 mars et 10 avril 2026 | Regression cumulee : effort `medium` par defaut, caching thinking history casse, system prompt limitant a 25 mots entre tool calls | Resolu en v2.1.101 (10 avril 2026). Mettre a jour `claude update` ; l'effort par defaut redevient `high` et le caching est repare |
+| Symptom | Probable cause | Solution |
+|---------|---------------|----------|
+| "Context window full" or automatic compaction | Too many files read, long session, verbose logs included | `/compact` to summarize, avoid reading `/tmp/` or `node_modules/` |
+| Very slow session, high token count | Repeated reading of large files, uncompacted context | `/compact` between phases, use `effort low` for exploration |
+| Silent hook that does not trigger | Non-executable script, wrong path, timeout exceeded | Check the logs in `/tmp/claude-sessions.log`, test the script manually |
+| MCP server missing or disconnected | Server disabled in `.mcp.json`, missing dependency | Check `"disabled": true` in `.mcp.json`, restart with `/mcp` |
+| Agent or skill that does not trigger | Wrong namespace, description too vague, missing file | Check the exact name with `/help`, read the description in the `.md` file |
+| Permission refusal loop | Command in the `deny` list of `settings.json`, strict auto mode | `/less-permission-prompts` to optimize allowlists, or `SKIP_COMMAND_VALIDATOR=1` |
+| Too many permission prompts | Permissions too restrictive for the workflow | `/less-permission-prompts` scans transcripts and proposes optimized allowlists |
+| Git conflict during the TDD cycle | Branch out of sync, missing intermediate commit | `git stash`, `git pull --rebase`, then `git stash pop` |
+| `claude` not found or Node errors after `claude update` | Migration to the native binary (CLI 2.1.113+): the CLI is no longer a JavaScript bundle | Reinstall via the official channel, check `which claude` and `claude --version`. Old aliases pointing to `node /path/to/cli.js` no longer work |
+| Subagent that "hangs" without returning | Before CLI 2.1.113: silent hang possible | Update: subagents idle > 10 min now fail with a clear message |
+| Permission dialog that crashes when a teammate requests a tool | CLI bug prior to 2.1.114 | Update to CLI >= 2.1.114 |
+| Truncated responses, incoherent reasoning, degraded quality between March 4 and April 10 2026 | Cumulative regression: default `medium` effort, broken thinking history caching, system prompt limiting to 25 words between tool calls | Resolved in v2.1.101 (April 10 2026). Run `claude update`; the default effort returns to `high` and caching is fixed |
 
 ### Context window full
 
-La compaction automatique se declenche quand le contexte approche la limite. Si elle echoue ou est mal timee :
+Automatic compaction triggers when the context approaches the limit. If it fails or is mistimed:
 
 ```bash
-# Compacter manuellement entre deux phases
+# Compact manually between two phases
 /compact
 
-# Si le contexte est corrompu ou trop fragmenté
+# If the context is corrupted or too fragmented
 /clear
 ```
 
-A eviter pour reduire la pression sur le contexte : lire des repertoires entiers (`node_modules/`, `.git/`, `dist/`), inclure des fichiers de log volumineux, relire des fichiers deja connus.
+To avoid in order to reduce pressure on the context: reading entire directories (`node_modules/`, `.git/`, `dist/`), including large log files, re-reading already known files.
 
 ### MCP servers
 
-Les MCP servers sont desactives par defaut dans `.mcp.json`. Pour diagnostiquer :
+MCP servers are disabled by default in `.mcp.json`. To diagnose:
 
 ```bash
-# Verifier l'etat des servers MCP
+# Check the state of MCP servers
 cat .mcp.json | grep -A3 "disabled"
 
-# Lire les evenements MCP
+# Read MCP events
 cat /tmp/claude-mcp.log
 ```
 
-Pour activer un server, retirer `"disabled": true` ou passer a `"disabled": false` dans `.mcp.json`.
+To enable a server, remove `"disabled": true` or change it to `"disabled": false` in `.mcp.json`.
 
 ---
 
-## 2. Problemes du socle
+## 2. Foundation problems
 
-### Tests pre-commit qui bloquent un commit
+### Pre-commit tests blocking a commit
 
-Le hook `PreToolUse` intercepte `git commit` et lance les tests. Si les tests echouent, le commit est bloque.
+The `PreToolUse` hook intercepts `git commit` and runs the tests. If the tests fail, the commit is blocked.
 
-**Diagnostic :**
+**Diagnosis:**
 
 ```bash
-# Lancer les tests manuellement pour voir les erreurs
+# Run the tests manually to see the errors
 npm test
 
-# Ou selon le projet
+# Or depending on the project
 pytest
 go test ./...
 flutter test
 ```
 
-**Si les tests echouent legitimement** (dette technique connue, travail en cours) :
+**If the tests fail legitimately** (known technical debt, work in progress):
 
 ```bash
-# Desactiver les tests pre-commit pour ce commit uniquement
+# Disable pre-commit tests for this commit only
 SKIP_PRE_COMMIT_TESTS=1 git commit -m "wip: ..."
 ```
 
-**Si le hook est defaillant** (Husky manquant, script introuvable) :
+**If the hook is faulty** (missing Husky, script not found):
 
-Claude Code detecte et repare automatiquement Husky si necessaire. En cas d'echec persistant, verifier :
+Claude Code automatically detects and repairs Husky if necessary. In case of persistent failure, check:
 
 ```bash
 ls -la .husky/
 cat /tmp/claude-sessions.log | tail -20
 ```
 
-### Protection de la branche main
+### Main branch protection
 
-Le hook `PreToolUse` bloque toute modification directe sur `main` ou `master`. C'est un garde-fou intentionnel.
+The `PreToolUse` hook blocks any direct modification on `main` or `master`. This is an intentional safeguard.
 
-**Solution normale :** travailler sur une branche de feature.
+**Normal solution:** work on a feature branch.
 
 ```bash
-git checkout -b feature/ma-modification
+git checkout -b feature/my-modification
 ```
 
-**Si une modification directe sur main est absolument necessaire** (hotfix critique, repository personnel) :
+**If a direct modification on main is absolutely necessary** (critical hotfix, personal repository):
 
 ```bash
-ALLOW_MAIN_EDIT=1 git commit -m "fix: hotfix critique"
+ALLOW_MAIN_EDIT=1 git commit -m "fix: critical hotfix"
 ```
 
-### Gitleaks : faux positifs
+### Gitleaks: false positives
 
-Le hook de detection de secrets analyse le contenu avant chaque ecriture. Il peut signaler des faux positifs sur des tokens de test, des exemples de configuration ou des placeholders.
+The secret detection hook analyzes content before each write. It may flag false positives on test tokens, configuration examples, or placeholders.
 
-**Identifier le pattern detecte :**
+**Identify the detected pattern:**
 
 ```bash
-# Tester gitleaks directement sur le fichier concerne
+# Test gitleaks directly on the file in question
 gitleaks detect --source . --verbose 2>&1 | grep -A5 "leak"
 ```
 
-**Ajouter une exception dans `.gitleaks.toml`** (a la racine du projet, creer si absent) :
+**Add an exception in `.gitleaks.toml`** (at the project root, create if absent):
 
 ```toml
 [allowlist]
-  description = "Faux positifs connus"
+  description = "Known false positives"
   regexes = [
     '''EXAMPLE_TOKEN_FOR_TESTS''',
     '''placeholder_api_key'''
@@ -136,11 +136,11 @@ gitleaks detect --source . --verbose 2>&1 | grep -A5 "leak"
   ]
 ```
 
-### Hooks de formatage qui cassent le code
+### Formatting hooks that break the code
 
-Les hooks `PostToolUse` lancent Prettier, Ruff, gofmt etc. apres chaque ecriture. Si le formateur est absent ou mal configure, il peut produire une sortie vide ou une erreur silencieuse.
+The `PostToolUse` hooks run Prettier, Ruff, gofmt, etc. after each write. If the formatter is missing or misconfigured, it may produce empty output or a silent error.
 
-**Verifier que le formateur est installe :**
+**Check that the formatter is installed:**
 
 ```bash
 # TypeScript/JavaScript
@@ -156,30 +156,30 @@ gofmt --version
 dart format --help
 ```
 
-**Si le formateur modifie trop agressivement le code :**
+**If the formatter modifies the code too aggressively:**
 
-Verifier la configuration locale (`.prettierrc`, `pyproject.toml`, `.editorconfig`). Le formateur utilise la configuration du projet si elle existe.
+Check the local configuration (`.prettierrc`, `pyproject.toml`, `.editorconfig`). The formatter uses the project configuration if it exists.
 
-### Command validator qui bloque une commande legitime
+### Command validator blocking a legitimate command
 
-Le hook `Command validator` analyse 8 categories de risque. Certaines commandes valides peuvent correspondre a un pattern dangereux.
+The `Command validator` hook analyzes 8 risk categories. Some valid commands may match a dangerous pattern.
 
-**Identifier pourquoi la commande est bloquee :**
+**Identify why the command is blocked:**
 
 ```bash
-# Lire les logs de session pour voir le motif de blocage
+# Read the session logs to see the blocking reason
 cat /tmp/claude-sessions.log | grep -i "block\|validator" | tail -10
 ```
 
-**Contourner pour une commande specifique :**
+**Bypass for a specific command:**
 
 ```bash
-SKIP_COMMAND_VALIDATOR=1 <commande>
+SKIP_COMMAND_VALIDATOR=1 <command>
 ```
 
-**Contourner de facon permanente pour une session :**
+**Bypass permanently for a session:**
 
-Ajouter dans `.claude/settings.local.json` (non commite) :
+Add in `.claude/settings.local.json` (not committed):
 
 ```json
 {
@@ -191,153 +191,153 @@ Ajouter dans `.claude/settings.local.json` (non commite) :
 
 ---
 
-## 3. Diagnostic rapide
+## 3. Quick diagnosis
 
-Utiliser cet arbre de decision pour identifier rapidement la source d'un probleme.
+Use this decision tree to quickly identify the source of a problem.
 
 ```
-MON COMMIT EST BLOQUE
+MY COMMIT IS BLOCKED
 │
-├── Message "tests failed" ?
-│   ├── Oui → npm test (ou equivalent) pour voir les erreurs
-│   │         Corriger les tests OU SKIP_PRE_COMMIT_TESTS=1
-│   └── Non
-│       ├── Message "branch main protected" ?
-│       │   └── Oui → Creer une branche OU ALLOW_MAIN_EDIT=1
-│       ├── Message "secret detected" ?
-│       │   └── Oui → Supprimer le secret OU ajouter exception .gitleaks.toml
-│       └── Autre → cat /tmp/claude-sessions.log | tail -30
+├── "tests failed" message?
+│   ├── Yes → npm test (or equivalent) to see the errors
+│   │         Fix the tests OR SKIP_PRE_COMMIT_TESTS=1
+│   └── No
+│       ├── "branch main protected" message?
+│       │   └── Yes → Create a branch OR ALLOW_MAIN_EDIT=1
+│       ├── "secret detected" message?
+│       │   └── Yes → Remove the secret OR add exception .gitleaks.toml
+│       └── Other → cat /tmp/claude-sessions.log | tail -30
 
 
-CLAUDE NE REPOND PLUS / TRES LENT
+CLAUDE NO LONGER RESPONDS / VERY SLOW
 │
-├── Session longue (>1h, beaucoup de fichiers lus) ?
-│   └── Oui → /compact (preserve le contexte essentiel)
-├── Changement de sujet complet ?
-│   └── Oui → /clear (repart a zero)
-├── Meme apres /compact toujours lent ?
-│   └── Oui → /clear + redemarrer avec un prompt concis
-└── Claude semble bloque sur une tache ?
-    └── Ctrl+C pour interrompre, puis reformuler la demande
+├── Long session (>1h, many files read)?
+│   └── Yes → /compact (preserves the essential context)
+├── Complete topic change?
+│   └── Yes → /clear (start over)
+├── Still slow even after /compact?
+│   └── Yes → /clear + restart with a concise prompt
+└── Claude seems stuck on a task?
+    └── Ctrl+C to interrupt, then rephrase the request
 
 
-L'AGENT / LA COMMANDE NE FAIT RIEN
+THE AGENT / COMMAND DOES NOTHING
 │
-├── Le nom est-il correct ?
-│   └── Non → /help pour lister les commandes disponibles
-├── L'agent attend-il des parametres ?
-│   └── Possible → lire la description : /work:work-plan "description"
-├── Le fichier agent existe-t-il ?
-│   └── Verifier : ls .claude/commands/
-├── Modele insuffisant pour la tache ?
-│   └── Opus pour les taches complexes, Sonnet pour les audits
-└── Sub-agent qui ne demarre pas ?
+├── Is the name correct?
+│   └── No → /help to list available commands
+├── Is the agent waiting for parameters?
+│   └── Possible → read the description: /work:work-plan "description"
+├── Does the agent file exist?
+│   └── Check: ls .claude/commands/
+├── Model insufficient for the task?
+│   └── Opus for complex tasks, Sonnet for audits
+└── Sub-agent that does not start?
     └── cat /tmp/claude-agents.log | tail -20
 
 
-LE HOOK NE SE DECLENCHE PAS
+THE HOOK DOES NOT TRIGGER
 │
-├── Verifier que le script est executable
+├── Check that the script is executable
 │   └── ls -la .claude/hooks/
-├── Tester le script manuellement
-│   └── bash .claude/hooks/mon-script.sh
-├── Verifier les logs
+├── Test the script manually
+│   └── bash .claude/hooks/my-script.sh
+├── Check the logs
 │   └── cat /tmp/claude-sessions.log | tail -30
-└── Timeout trop court ?
-    └── Verifier la propriete "timeout" dans settings.json
+└── Timeout too short?
+    └── Check the "timeout" property in settings.json
 ```
 
 ---
 
-## 4. Commandes de diagnostic
+## 4. Diagnostic commands
 
-| Commande | Usage | Quand l'utiliser |
-|----------|-------|-----------------|
-| `/compact` | Resume le contexte en preservant l'essentiel | Session longue, entre deux phases du workflow |
-| `/clear` | Efface tout le contexte | Changement de sujet total, context corrompu |
-| `/rewind` | Revient au dernier etat stable avant une modification | Refactoring qui a tout casse |
-| `/help` | Liste toutes les commandes et agents disponibles | Agent introuvable, nom incertain |
-| `claude --version` | Affiche la version installee | Probleme de compatibilite, feature absente |
-| `cat /tmp/claude-sessions.log` | Logs de session (demarrage, compaction, hooks) | Hook silencieux, probleme de demarrage |
-| `cat /tmp/claude-agents.log` | Logs des sub-agents | Agent qui ne demarre pas ou se termine prematurement |
-| `cat /tmp/claude-notifications.log` | Logs des permissions et attentes | Permission refusee, Claude attend l'utilisateur |
-| `cat /tmp/claude-mcp.log` | Logs MCP Elicitation | MCP server deconnecte, elicitation echouee |
+| Command | Use | When to use it |
+|---------|-----|----------------|
+| `/compact` | Summarizes the context while preserving the essential | Long session, between two workflow phases |
+| `/clear` | Erases the entire context | Total topic change, corrupted context |
+| `/rewind` | Returns to the last stable state before a modification | Refactoring that broke everything |
+| `/help` | Lists all available commands and agents | Agent not found, uncertain name |
+| `claude --version` | Displays the installed version | Compatibility issue, missing feature |
+| `cat /tmp/claude-sessions.log` | Session logs (startup, compaction, hooks) | Silent hook, startup problem |
+| `cat /tmp/claude-agents.log` | Sub-agent logs | Agent that does not start or terminates prematurely |
+| `cat /tmp/claude-notifications.log` | Permission and waiting logs | Permission refused, Claude waiting for the user |
+| `cat /tmp/claude-mcp.log` | MCP Elicitation logs | MCP server disconnected, elicitation failed |
 
-### Verifier la version et l'installation
+### Check the version and installation
 
 ```bash
-# Version de Claude Code CLI
+# Claude Code CLI version
 claude --version
 
-# Verifier que les hooks sont bien charges au demarrage
+# Check that hooks are properly loaded at startup
 cat /tmp/claude-sessions.log | head -20
 
-# Verifier les permissions des scripts de hooks
+# Check the permissions of hook scripts
 ls -la .claude/hooks/
 
-# Tester un hook specifique independamment
+# Test a specific hook independently
 bash .claude/hooks/pre-commit-tests.sh
 ```
 
-### Inspecter les logs en temps reel
+### Inspect logs in real time
 
 ```bash
-# Suivre les logs de session en direct pendant une session Claude
+# Follow session logs live during a Claude session
 tail -f /tmp/claude-sessions.log
 
-# Suivre les logs d'agents en direct
+# Follow agent logs live
 tail -f /tmp/claude-agents.log
 ```
 
 ---
 
-## 5. Recuperation d'urgence
+## 5. Emergency recovery
 
-### /rewind : annuler les dernieres modifications
+### /rewind: undo the latest modifications
 
-Claude Code sauvegarde automatiquement un checkpoint avant chaque modification. En cas de refactoring qui casse tout :
+Claude Code automatically saves a checkpoint before each modification. In case of refactoring that breaks everything:
 
 ```bash
 /rewind
 ```
 
-Cela revient au dernier etat stable, plus rapidement que `git stash` ou `git checkout`. Utiliser avant que la situation ne se degrade davantage.
+This returns to the last stable state, faster than `git stash` or `git checkout`. Use it before the situation degrades further.
 
-### git stash + redemarrage propre
+### git stash + clean restart
 
-Quand les modifications en cours sont trop complexes a demeler :
+When current modifications are too complex to untangle:
 
 ```bash
-# Sauvegarder l'etat actuel
-git stash push -m "wip: avant redemarrage propre"
+# Save the current state
+git stash push -m "wip: before clean restart"
 
-# Revenir au dernier commit propre
-git status   # verifier qu'on est propre
+# Return to the last clean commit
+git status   # check that we are clean
 
-# Redemarrer Claude Code dans un nouvel etat
+# Restart Claude Code in a fresh state
 /clear
 ```
 
-Pour recuperer le travail sauvegarde plus tard :
+To recover the saved work later:
 
 ```bash
 git stash pop
 ```
 
-### Desactiver les hooks temporairement
+### Disable hooks temporarily
 
-Si un hook bloque le travail de facon persistante, le desactiver via les variables d'environnement. Plusieurs methodes :
+If a hook persistently blocks the work, disable it via environment variables. Several methods:
 
-**Pour une seule commande :**
+**For a single command:**
 
 ```bash
 SKIP_PRE_COMMIT_TESTS=1 git commit -m "..."
 SKIP_PRE_PUSH_CI=1 git push
-SKIP_COMMAND_VALIDATOR=1 <commande>
-SKIP_DESTRUCTIVE_CHECK=1 <commande>
+SKIP_COMMAND_VALIDATOR=1 <command>
+SKIP_DESTRUCTIVE_CHECK=1 <command>
 ```
 
-**Pour toute une session (dans `.claude/settings.local.json`, non commite) :**
+**For an entire session (in `.claude/settings.local.json`, not committed):**
 
 ```json
 {
@@ -348,91 +348,91 @@ SKIP_DESTRUCTIVE_CHECK=1 <commande>
 }
 ```
 
-Variables disponibles :
+Available variables:
 
-| Variable | Effet |
-|----------|-------|
-| `ALLOW_MAIN_EDIT=1` | Desactive la protection de branche main |
-| `SKIP_PRE_COMMIT_TESTS=1` | Desactive les tests avant commit |
-| `SKIP_PRE_PUSH_CI=1` | Desactive le CI local avant push |
-| `SKIP_COMMAND_VALIDATOR=1` | Desactive la validation de securite des commandes |
-| `SKIP_DESTRUCTIVE_CHECK=1` | Desactive la protection contre les operations destructives |
+| Variable | Effect |
+|----------|--------|
+| `ALLOW_MAIN_EDIT=1` | Disables main branch protection |
+| `SKIP_PRE_COMMIT_TESTS=1` | Disables tests before commit |
+| `SKIP_PRE_PUSH_CI=1` | Disables local CI before push |
+| `SKIP_COMMAND_VALIDATOR=1` | Disables security validation of commands |
+| `SKIP_DESTRUCTIVE_CHECK=1` | Disables protection against destructive operations |
 
-### Reinitialiser completement les hooks
+### Fully reset the hooks
 
-Si les hooks sont dans un etat incoherent (permissions, scripts modifies) :
+If the hooks are in an inconsistent state (permissions, modified scripts):
 
 ```bash
-# Reinitialiser les permissions des hooks
+# Reset hook permissions
 chmod +x .claude/hooks/*.sh
 
-# Verifier que le contenu des hooks n'a pas ete altere
+# Check that the content of the hooks has not been altered
 git diff .claude/hooks/
 
-# Restaurer depuis git si necessaire
+# Restore from git if necessary
 git checkout .claude/hooks/
 ```
 
-### Conflit git insoluble pendant TDD
+### Unsolvable git conflict during TDD
 
-Quand un conflit de merge bloque le cycle TDD :
+When a merge conflict blocks the TDD cycle:
 
 ```bash
-# Abandonner le merge en cours
+# Abort the ongoing merge
 git merge --abort
-# ou
+# or
 git rebase --abort
 
-# Revenir a un etat propre
+# Return to a clean state
 git checkout main
 git pull --rebase origin main
 
-# Recreer la branche de travail depuis un etat propre
-git checkout -b feature/nouvelle-tentative
+# Recreate the working branch from a clean state
+git checkout -b feature/new-attempt
 ```
 
 ---
 
-## 6. Optimisation performance
+## 6. Performance optimization
 
-### Quand utiliser /compact vs /clear
+### When to use /compact vs /clear
 
-| Situation | Commande | Raison |
-|-----------|----------|--------|
-| Session longue, meme sujet | `/compact` | Preserve les decisions et conventions apprises |
-| Entre deux phases du workflow | `/compact` | Garde le contexte du plan et de l'exploration |
-| Changement de feature sans rapport | `/clear` | Evite que l'ancien contexte pollue le nouveau |
-| Context window > 80% utilisee | `/compact` | Preventif avant saturation |
-| Context corrompu ou incohérent | `/clear` | Repartir sur une base saine |
+| Situation | Command | Reason |
+|-----------|---------|--------|
+| Long session, same topic | `/compact` | Preserves learned decisions and conventions |
+| Between two workflow phases | `/compact` | Keeps the context of the plan and exploration |
+| Switching to an unrelated feature | `/clear` | Prevents the old context from polluting the new one |
+| Context window > 80% used | `/compact` | Preventive before saturation |
+| Corrupted or inconsistent context | `/clear` | Start over on a clean basis |
 
-Regle : preferer `/compact` a `/clear`. La compaction preserve l'essentiel (decisions, conventions, structure du projet) alors que `/clear` efface tout et oblige a reexplorer.
+Rule: prefer `/compact` over `/clear`. Compaction preserves the essentials (decisions, conventions, project structure) whereas `/clear` erases everything and forces re-exploration.
 
-### Reduire la consommation de tokens
+### Reduce token consumption
 
-**Utiliser les niveaux d'effort adaptes :**
+**Use the appropriate effort levels:**
 
-| Tache | Effort recommande | Commande |
-|-------|------------------|----------|
-| Lire et explorer du code | Faible | `/effort low` |
-| Implementer une feature standard | Moyen | `/effort medium` |
-| Concevoir une architecture | Eleve | `/effort high` |
-| Audit critique, debug complexe | Maximum | `/effort max` |
+| Task | Recommended effort | Command |
+|------|-------------------|---------|
+| Read and explore code | Low | `/effort low` |
+| Implement a standard feature | Medium | `/effort medium` |
+| Design an architecture | High | `/effort high` |
+| Critical audit, complex debug | Maximum | `/effort max` |
 
-**Eviter les lectures couteux :**
+**Avoid expensive reads:**
 
 ```bash
-# Ne pas lire des repertoires entiers
-# Mauvais : lire src/ en entier
-# Bon : cibler les fichiers pertinents
+# Do not read entire directories
+# Bad: read all of src/
+# Good: target the relevant files
 
-# Utiliser grep avant de lire
-grep -r "nomDeFonction" src/ --include="*.ts" -l
-# puis lire uniquement les fichiers pertinents
+# Use grep before reading
+grep -r "functionName" src/ --include="*.ts" -l
+# then read only the relevant files
 ```
 
-**Activer RTK pour reduire les tokens de 60-90% :**
+**Enable RTK to reduce tokens by 60-90%:**
 
-Dans `.claude/settings.local.json` (non commite) :
+In `.claude/settings.local.json` (not committed):
 
 ```json
 {
@@ -442,36 +442,36 @@ Dans `.claude/settings.local.json` (non commite) :
 }
 ```
 
-Verifier les economies realisees :
+Check the savings achieved:
 
 ```bash
 rtk gain
 ```
 
-### Eviter les lectures de gros fichiers
+### Avoid reading large files
 
-Fichiers et repertoires a ne jamais lire entierement :
+Files and directories never to read in their entirety:
 
-| A eviter | Alternative |
+| To avoid | Alternative |
 |----------|-------------|
-| `node_modules/` | Lire uniquement `package.json` |
-| `dist/`, `build/`, `.next/` | Fichiers generes, inutiles a lire |
-| `/tmp/claude-*.log` (entier) | `tail -20 /tmp/claude-sessions.log` |
-| `yarn.lock`, `package-lock.json` | Lire uniquement `package.json` |
-| `.git/` | Utiliser les commandes git |
+| `node_modules/` | Read only `package.json` |
+| `dist/`, `build/`, `.next/` | Generated files, useless to read |
+| `/tmp/claude-*.log` (entire) | `tail -20 /tmp/claude-sessions.log` |
+| `yarn.lock`, `package-lock.json` | Read only `package.json` |
+| `.git/` | Use git commands |
 
-### Structurer les sessions pour minimiser le contexte
+### Structure sessions to minimize context
 
-- Une session = une feature ou un bug. Ne pas melanger les sujets.
-- Commiter frequemment : `/compact` est plus efficace sur un contexte recent.
-- Utiliser `/compact` entre les phases du workflow (apres Explore, apres Plan).
-- Limiter le nombre de fichiers ouverts simultanement a ce qui est strictement necessaire.
+- One session = one feature or one bug. Do not mix topics.
+- Commit frequently: `/compact` is more effective on recent context.
+- Use `/compact` between workflow phases (after Explore, after Plan).
+- Limit the number of simultaneously open files to what is strictly necessary.
 
 ---
 
-## Ressources
+## Resources
 
-- [Hooks configures](../reference/hooks-reference.md) - Liste complete des hooks et leurs variables
-- [Commandes disponibles](../reference/commands.md) - Catalogue des commandes `/work:`, `/dev:`, `/qa:`, `/ops:`
-- [Fonctionnalites avancees](../reference/advanced-features.md) - Workflow Explore → Specify → Plan → TDD → Audit → Commit
-- [Bonnes pratiques](../reference/best-practices.md) - Verification, modeles, effort levels
+- [Configured hooks](../reference/hooks-reference.md) - Complete list of hooks and their variables
+- [Available commands](../reference/commands.md) - Catalog of `/work:`, `/dev:`, `/qa:`, `/ops:` commands
+- [Advanced features](../reference/advanced-features.md) - Workflow Explore → Specify → Plan → TDD → Audit → Commit
+- [Best practices](../reference/best-practices.md) - Verification, models, effort levels

@@ -1,13 +1,13 @@
 # =============================================================================
-# Exemple complet: OPNsense derrière Box Orange en DMZ
+# Complete example: OPNsense behind Orange Box in DMZ
 # =============================================================================
 # Architecture:
-#   Internet → Box Orange (DMZ) → OPNsense → Réseau local
+#   Internet → Orange Box (DMZ) → OPNsense → Local network
 #
-# Prérequis:
-#   1. OPNsense installé avec API activée
-#   2. Box Orange configurée en DMZ vers OPNsense
-#   3. Credentials API dans variables d'environnement
+# Requirements:
+#   1. OPNsense installed with API enabled
+#   2. Orange Box configured in DMZ towards OPNsense
+#   3. API credentials in environment variables
 # =============================================================================
 
 terraform {
@@ -36,20 +36,20 @@ provider "opnsense" {
 # Interfaces
 # -----------------------------------------------------------------------------
 
-# Interface WAN - Connectée à la Box Orange (reçoit IP via DMZ)
+# WAN interface - Connected to the Orange Box (receives IP via DMZ)
 resource "opnsense_interface" "wan" {
   device        = var.wan_device
-  description   = "WAN - Box Orange"
+  description   = "WAN - Orange Box"
   ipv4_type     = "dhcp"
   enabled       = true
   block_private = true
   block_bogons  = true
 }
 
-# Interface LAN - Réseau local
+# LAN interface - Local network
 resource "opnsense_interface" "lan" {
   device      = var.lan_device
-  description = "LAN - Réseau local"
+  description = "LAN - Local network"
   ipv4_type   = "static"
   ipv4_addr   = var.lan_ip
   ipv4_mask   = var.lan_subnet
@@ -60,35 +60,35 @@ resource "opnsense_interface" "lan" {
 # Aliases
 # -----------------------------------------------------------------------------
 
-# Ports services web
+# Web service ports
 resource "opnsense_firewall_alias" "ports_web" {
   name        = "PORTS_WEB"
   type        = "port"
   content     = ["80", "443"]
-  description = "Ports HTTP/HTTPS"
+  description = "HTTP/HTTPS ports"
 }
 
-# Ports pour administration
+# Admin ports
 resource "opnsense_firewall_alias" "ports_admin" {
   name        = "PORTS_ADMIN"
   type        = "port"
   content     = ["22", "443"]
-  description = "Ports SSH et HTTPS admin"
+  description = "SSH and HTTPS admin ports"
 }
 
-# DNS publics
+# Public DNS
 resource "opnsense_firewall_alias" "dns_public" {
   name        = "DNS_PUBLIC"
   type        = "host"
   content     = ["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"]
-  description = "Serveurs DNS publics"
+  description = "Public DNS servers"
 }
 
 # -----------------------------------------------------------------------------
-# Règles Firewall
+# Firewall Rules
 # -----------------------------------------------------------------------------
 
-# OBLIGATOIRE: Anti-lockout - Accès admin depuis LAN
+# MANDATORY: Anti-lockout - Admin access from LAN
 resource "opnsense_firewall_filter" "anti_lockout" {
   interface        = "lan"
   direction        = "in"
@@ -98,13 +98,13 @@ resource "opnsense_firewall_filter" "anti_lockout" {
   source_net       = "lannet"
   destination_net  = "(self)"
   destination_port = "443"
-  description      = "ANTI-LOCKOUT: Accès admin OPNsense"
+  description      = "ANTI-LOCKOUT: OPNsense admin access"
   sequence         = 1
   enabled          = true
   quick            = true
 }
 
-# Autoriser HTTP/HTTPS sortant depuis le LAN
+# Allow outbound HTTP/HTTPS from LAN
 resource "opnsense_firewall_filter" "lan_to_web" {
   interface        = "lan"
   direction        = "in"
@@ -114,12 +114,12 @@ resource "opnsense_firewall_filter" "lan_to_web" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = opnsense_firewall_alias.ports_web.name
-  description      = "Autoriser HTTP/HTTPS sortant"
+  description      = "Allow outbound HTTP/HTTPS"
   sequence         = 10
   enabled          = true
 }
 
-# Autoriser DNS sortant (UDP)
+# Allow outbound DNS (UDP)
 resource "opnsense_firewall_filter" "lan_to_dns_udp" {
   interface        = "lan"
   direction        = "in"
@@ -129,12 +129,12 @@ resource "opnsense_firewall_filter" "lan_to_dns_udp" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = "53"
-  description      = "Autoriser DNS sortant (UDP)"
+  description      = "Allow outbound DNS (UDP)"
   sequence         = 11
   enabled          = true
 }
 
-# Autoriser DNS sortant (TCP)
+# Allow outbound DNS (TCP)
 resource "opnsense_firewall_filter" "lan_to_dns_tcp" {
   interface        = "lan"
   direction        = "in"
@@ -144,12 +144,12 @@ resource "opnsense_firewall_filter" "lan_to_dns_tcp" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = "53"
-  description      = "Autoriser DNS sortant (TCP)"
+  description      = "Allow outbound DNS (TCP)"
   sequence         = 12
   enabled          = true
 }
 
-# Autoriser NTP sortant
+# Allow outbound NTP
 resource "opnsense_firewall_filter" "lan_to_ntp" {
   interface        = "lan"
   direction        = "in"
@@ -159,12 +159,12 @@ resource "opnsense_firewall_filter" "lan_to_ntp" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = "123"
-  description      = "Autoriser NTP sortant"
+  description      = "Allow outbound NTP"
   sequence         = 13
   enabled          = true
 }
 
-# Autoriser ICMP (ping) sortant
+# Allow outbound ICMP (ping)
 resource "opnsense_firewall_filter" "lan_to_icmp" {
   interface   = "lan"
   direction   = "in"
@@ -173,12 +173,12 @@ resource "opnsense_firewall_filter" "lan_to_icmp" {
   protocol    = "icmp"
   source_net  = "lannet"
   destination_net = "any"
-  description = "Autoriser ICMP (ping) sortant"
+  description = "Allow outbound ICMP (ping)"
   sequence    = 14
   enabled     = true
 }
 
-# Bloquer et logger tout le reste
+# Block and log everything else
 resource "opnsense_firewall_filter" "lan_block_all" {
   interface       = "lan"
   direction       = "in"
@@ -188,7 +188,7 @@ resource "opnsense_firewall_filter" "lan_block_all" {
   source_net      = "any"
   destination_net = "any"
   log             = true
-  description     = "Bloquer et logger tout le reste"
+  description     = "Block and log everything else"
   sequence        = 65535
   enabled         = true
 }
@@ -209,23 +209,23 @@ resource "opnsense_dhcp_v4_server" "lan" {
 }
 
 # -----------------------------------------------------------------------------
-# Réservations DHCP (exemple)
+# DHCP Reservations (example)
 # -----------------------------------------------------------------------------
 
-# Décommenter et adapter selon vos besoins
+# Uncomment and adapt to your needs
 # resource "opnsense_dhcp_v4_static_map" "server_example" {
 #   interface   = "lan"
 #   mac         = "00:11:22:33:44:55"
 #   ipaddr      = "192.168.10.20"
 #   hostname    = "server"
-#   description = "Serveur principal"
+#   description = "Main server"
 # }
 
 # -----------------------------------------------------------------------------
 # DNS (Unbound)
 # -----------------------------------------------------------------------------
 
-# Forwarder vers Cloudflare
+# Forwarder to Cloudflare
 resource "opnsense_unbound_forward" "cloudflare_1" {
   enabled  = true
   host     = "1.1.1.1"
@@ -241,12 +241,12 @@ resource "opnsense_unbound_forward" "cloudflare_2" {
 }
 
 # -----------------------------------------------------------------------------
-# NAT - Port Forwarding (exemples commentés)
+# NAT - Port Forwarding (commented examples)
 # -----------------------------------------------------------------------------
 
-# Décommenter et adapter selon vos besoins
+# Uncomment and adapt to your needs
 
-# HTTPS vers serveur web
+# HTTPS to web server
 # resource "opnsense_nat_port_forward" "https_to_web" {
 #   interface        = "wan"
 #   protocol         = "tcp"
@@ -256,12 +256,12 @@ resource "opnsense_unbound_forward" "cloudflare_2" {
 #   destination_port = "443"
 #   target           = "192.168.10.20"
 #   local_port       = "443"
-#   description      = "HTTPS vers serveur web"
+#   description      = "HTTPS to web server"
 #   nat_reflection   = "enable"
 #   filter_rule_association = "add-associated"
 # }
 
-# SSH sur port non-standard
+# SSH on non-standard port
 # resource "opnsense_nat_port_forward" "ssh_to_server" {
 #   interface        = "wan"
 #   protocol         = "tcp"
@@ -271,5 +271,5 @@ resource "opnsense_unbound_forward" "cloudflare_2" {
 #   destination_port = "2222"
 #   target           = "192.168.10.10"
 #   local_port       = "22"
-#   description      = "SSH vers serveur (port 2222)"
+#   description      = "SSH to server (port 2222)"
 # }

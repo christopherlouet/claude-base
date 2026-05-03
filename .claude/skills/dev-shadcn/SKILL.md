@@ -1,6 +1,6 @@
 ---
 name: dev-shadcn
-description: Integration et customisation de shadcn/ui (composants React copy-paste, Radix + Tailwind). Declencher quand l'utilisateur veut installer shadcn, ajouter des composants, customiser le theme, ou quand on detecte l'utilisation de shadcn/ui dans le projet.
+description: Integration and customization of shadcn/ui (copy-paste React components, Radix + Tailwind). Trigger when the user wants to install shadcn, add components, customize the theme, or when shadcn/ui usage is detected in the project.
 allowed-tools:
   - Read
   - Write
@@ -13,15 +13,15 @@ context: fork
 
 # shadcn/ui
 
-## Qu'est-ce que shadcn/ui
+## What is shadcn/ui
 
-Librairie de composants React **copy-paste** (pas un paquet npm) basee sur **Radix UI** (accessibilite) + **Tailwind CSS** (styling). Les composants sont copies dans ton codebase : tu les possedes, tu les modifies.
+**Copy-paste** React component library (not an npm package) based on **Radix UI** (accessibility) + **Tailwind CSS** (styling). Components are copied into your codebase: you own them, you modify them.
 
-**Difference cle** vs MUI, Chakra, Mantine :
-- Pas de dependency sur une lib de composants
-- Style 100% personnalisable (Tailwind tokens)
-- Accessibilite garantie (Radix primitives)
-- Zero runtime overhead au-dela de Radix
+**Key difference** vs MUI, Chakra, Mantine:
+- No dependency on a component lib
+- 100% customizable styling (Tailwind tokens)
+- Guaranteed accessibility (Radix primitives)
+- Zero runtime overhead beyond Radix
 
 ## Installation
 
@@ -31,44 +31,44 @@ Librairie de composants React **copy-paste** (pas un paquet npm) basee sur **Rad
 npx shadcn@latest init
 ```
 
-Pendant l'init, choix critiques :
-- Style : `default` ou `new-york` (new-york = plus raffine, radius plus petit)
-- Base color : `slate`, `gray`, `zinc`, `neutral`, `stone` (zinc est le plus neutre)
-- CSS variables : `yes` (permet themes dark/light sans reconfig)
+During init, critical choices:
+- Style: `default` or `new-york` (new-york = more refined, smaller radius)
+- Base color: `slate`, `gray`, `zinc`, `neutral`, `stone` (zinc is the most neutral)
+- CSS variables: `yes` (allows dark/light themes without reconfig)
 
-Produit :
-- `components.json` : config du registry
-- `lib/utils.ts` : helper `cn()` (clsx + twMerge)
-- `app/globals.css` : CSS variables pour tokens
+Produces:
+- `components.json`: registry config
+- `lib/utils.ts`: `cn()` helper (clsx + twMerge)
+- `app/globals.css`: CSS variables for tokens
 
-### Installer des composants
+### Install components
 
 ```bash
-# Un seul
+# Just one
 npx shadcn@latest add button
 
-# Plusieurs
+# Several
 npx shadcn@latest add button card dialog form input select
 ```
 
-Les composants sont places dans `components/ui/`. Ne PAS les mettre dans `node_modules`.
+Components are placed in `components/ui/`. Do NOT put them in `node_modules`.
 
-## Composants essentiels
+## Essential components
 
-### Toujours installer au debut
+### Always install at the start
 
 ```bash
 npx shadcn@latest add button card input label form dialog
 ```
 
-### Formulaires (react-hook-form + zod)
+### Forms (react-hook-form + zod)
 
 ```bash
 npx shadcn@latest add form input label select checkbox radio-group
 npm install react-hook-form @hookform/resolvers zod
 ```
 
-Pattern :
+Pattern:
 
 ```tsx
 const formSchema = z.object({
@@ -88,7 +88,7 @@ const form = useForm<z.infer<typeof formSchema>>({
 npx shadcn@latest add table data-table badge avatar
 ```
 
-Pour les vraies tables : `@tanstack/react-table` + shadcn `data-table`.
+For real tables: `@tanstack/react-table` + shadcn `data-table`.
 
 ### Feedback
 
@@ -96,7 +96,7 @@ Pour les vraies tables : `@tanstack/react-table` + shadcn `data-table`.
 npx shadcn@latest add toast sonner alert dialog tooltip
 ```
 
-**Sonner** (toast moderne) est recommande sur le toast historique shadcn.
+**Sonner** (modern toast) is recommended over the legacy shadcn toast.
 
 ## Theming
 
@@ -119,7 +119,7 @@ npx shadcn@latest add toast sonner alert dialog tooltip
 }
 ```
 
-Format HSL sans `hsl()` pour permettre les opacites Tailwind : `bg-primary/50`.
+HSL format without `hsl()` to allow Tailwind opacities: `bg-primary/50`.
 
 ### Dark mode (Next.js)
 
@@ -141,39 +141,39 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 ```
 
-## Customisation des composants
+## Component customization
 
-IMPORTANT: tu possedes le code. Modifier directement `components/ui/button.tsx` (par exemple pour ajouter une variante).
+IMPORTANT: you own the code. Directly modify `components/ui/button.tsx` (for example to add a variant).
 
 ```tsx
-// components/ui/button.tsx — ajouter une variante
+// components/ui/button.tsx — add a variant
 const buttonVariants = cva("...", {
   variants: {
     variant: {
       default: "bg-primary text-primary-foreground",
       destructive: "bg-destructive text-destructive-foreground",
-      // Nouvelle variante custom
+      // New custom variant
       glow: "bg-primary shadow-[0_0_20px_hsl(var(--primary))]",
     },
   },
 });
 ```
 
-## Pieges courants
+## Common pitfalls
 
-### `cn()` oublie
+### `cn()` forgotten
 
 ```tsx
-// MAUVAIS — overrides silencieusement impossibles
+// BAD — silently impossible overrides
 <Button className="bg-red-500 bg-blue-500" />
 
-// BON — utilise cn() qui merge via tailwind-merge
+// GOOD — uses cn() which merges via tailwind-merge
 <Button className={cn("bg-red-500", isActive && "bg-blue-500")} />
 ```
 
-### Form sans FormField/FormControl
+### Form without FormField/FormControl
 
-Toujours utiliser le wrapping complet pour beneficier de l'accessibilite (aria-invalid, aria-describedby auto) :
+Always use the full wrapping to benefit from accessibility (aria-invalid, aria-describedby auto):
 
 ```tsx
 <Form {...form}>
@@ -195,9 +195,9 @@ Toujours utiliser le wrapping complet pour beneficier de l'accessibilite (aria-i
 </Form>
 ```
 
-### Dialog sans DialogTitle (a11y)
+### Dialog without DialogTitle (a11y)
 
-Un Dialog doit TOUJOURS avoir un `DialogTitle`, meme visuel-cache :
+A Dialog must ALWAYS have a `DialogTitle`, even visually hidden:
 
 ```tsx
 <DialogHeader>
@@ -205,46 +205,46 @@ Un Dialog doit TOUJOURS avoir un `DialogTitle`, meme visuel-cache :
 </DialogHeader>
 ```
 
-## Complement avec direction artistique
+## Complement with art direction
 
-Si le projet a une direction definie (`.claude/rules/design-style.md`), adapter les tokens shadcn :
+If the project has a defined direction (`.claude/rules/design-style.md`), adapt the shadcn tokens:
 
-| Direction | Adaptation shadcn |
+| Direction | shadcn adaptation |
 |-----------|-------------------|
-| terminal | `--radius: 0px`, palette sombre + accent neon, font mono partout |
-| cockpit | `--radius: 4px`, couleurs fonctionnelles (OK/warn/alert), dense |
-| vitality | `--radius: 14px`, palette vive, animations spring |
-| editorial | `--radius: 2px`, noir/blanc + 1 accent, serif pour titres |
-| glass | `--radius: 14px`, backdrop-blur sur cards/dialogs |
-| signal | `--radius: 4px`, gris uniquement, tailles compactes |
+| terminal | `--radius: 0px`, dark palette + neon accent, mono font everywhere |
+| cockpit | `--radius: 4px`, functional colors (OK/warn/alert), dense |
+| vitality | `--radius: 14px`, vivid palette, spring animations |
+| editorial | `--radius: 2px`, black/white + 1 accent, serif for titles |
+| glass | `--radius: 14px`, backdrop-blur on cards/dialogs |
+| signal | `--radius: 4px`, gray only, compact sizes |
 
-## Registry moderne (2026)
+## Modern registry (2026)
 
-`npx shadcn@latest add <url>` permet d'installer des composants depuis un registry custom (JSON) :
+`npx shadcn@latest add <url>` allows installing components from a custom registry (JSON):
 
 ```bash
-# Depuis un registry tiers
+# From a third-party registry
 npx shadcn@latest add https://example.com/registry/custom-card.json
 
-# Registry d'entreprise partage
+# Shared enterprise registry
 npx shadcn@latest add @myorg/pricing-table
 ```
 
-## Output attendu
+## Expected output
 
-1. **Init** avec choix explicites (style, base color, CSS variables)
-2. **Composants** installes depuis le registry officiel
-3. **Customisation** via les tokens CSS, pas en override Tailwind
-4. **Direction artistique** appliquee aux tokens si definie
+1. **Init** with explicit choices (style, base color, CSS variables)
+2. **Components** installed from the official registry
+3. **Customization** via CSS tokens, not as Tailwind override
+4. **Art direction** applied to tokens if defined
 
-## Regles
+## Rules
 
-IMPORTANT: shadcn/ui = copy-paste, PAS npm install. Les composants vivent dans `components/ui/`.
+IMPORTANT: shadcn/ui = copy-paste, NOT npm install. Components live in `components/ui/`.
 
-IMPORTANT: Utiliser `cn()` pour merger les classes Tailwind (sinon les overrides ne marchent pas).
+IMPORTANT: Use `cn()` to merge Tailwind classes (otherwise overrides won't work).
 
-YOU MUST respecter les primitives Radix (DialogTitle, Label associe aux Input, etc.) pour l'accessibilite.
+YOU MUST respect the Radix primitives (DialogTitle, Label associated with Input, etc.) for accessibility.
 
-NEVER override les styles via `!important` — modifier les CSS variables.
+NEVER override styles via `!important` — modify the CSS variables.
 
-NEVER copier les composants shadcn dans `node_modules/` ou un dossier interne aux libs.
+NEVER copy shadcn components into `node_modules/` or a folder internal to libs.

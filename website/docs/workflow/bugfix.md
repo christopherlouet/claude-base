@@ -1,46 +1,46 @@
 ---
 sidebar_position: 4
-title: Correction de Bug
-description: Workflow pour corriger un bug
+title: Bug Fix
+description: Workflow to fix a bug
 ---
 
 import WorkflowDiagram, { BUGFIX_WORKFLOW } from '@site/src/components/WorkflowDiagram';
 
-# Workflow : Correction de Bug
+# Workflow: Bug Fix
 
-Guide pour diagnostiquer et corriger un bug efficacement.
+Guide to diagnose and fix a bug efficiently.
 
 <WorkflowDiagram steps={BUGFIX_WORKFLOW} />
 
-## Commande rapide
+## Quick command
 
 ```bash
-/work:work-flow-bugfix "Description du bug"
+/work:work-flow-bugfix "Bug description"
 ```
 
-## Etapes detaillees
+## Detailed steps
 
 ### 1. Debug
 
 ```bash
-/dev:dev-debug "Description du probleme"
+/dev:dev-debug "Problem description"
 ```
 
-Diagnostiquer le bug :
-- Reproduire le probleme
-- Identifier la cause racine
-- Tracer l'execution
+Diagnose the bug:
+- Reproduce the problem
+- Identify the root cause
+- Trace the execution
 
 ### 2. Fix
 
 ```bash
-/dev:dev-tdd "Corriger le bug"
+/dev:dev-tdd "Fix the bug"
 ```
 
-Corriger en TDD :
-1. Ecrire un test qui echoue (reproduit le bug)
-2. Corriger le code
-3. Verifier que le test passe
+Fix using TDD:
+1. Write a failing test (reproduces the bug)
+2. Fix the code
+3. Verify that the test passes
 
 ### 3. Review
 
@@ -48,10 +48,10 @@ Corriger en TDD :
 /qa:qa-review
 ```
 
-Verifier la correction :
-- Le bug est corrige
-- Pas de regression
-- Tests de non-regression ajoutes
+Verify the fix:
+- The bug is fixed
+- No regression
+- Regression tests added
 
 ### 4. Commit
 
@@ -59,64 +59,64 @@ Verifier la correction :
 /work:work-commit
 ```
 
-Format recommande :
+Recommended format:
 ```
-fix(scope): description courte
+fix(scope): short description
 
-- Detail de la correction
-- Cause racine identifiee
+- Fix detail
+- Root cause identified
 
 Fixes #issue-number
 ```
 
-## Exemple concret
+## Concrete example
 
 ```bash
-# Bug : "Le login echoue avec des emails en majuscules"
+# Bug: "Login fails with uppercase emails"
 
-> /work:work-flow-bugfix "Le login echoue avec des emails en majuscules"
+> /work:work-flow-bugfix "Login fails with uppercase emails"
 
-# Claude :
-# 1. Analyse le flux de login
-# 2. Identifie la comparaison case-sensitive
-# 3. Ecrit un test reproduisant le bug
-# 4. Corrige en normalisant les emails
-# 5. Verifie la non-regression
-# 6. Cree le commit
+# Claude:
+# 1. Analyzes the login flow
+# 2. Identifies the case-sensitive comparison
+# 3. Writes a test reproducing the bug
+# 4. Fixes by normalizing emails
+# 5. Verifies non-regression
+# 6. Creates the commit
 ```
 
-## Bug urgent en production
+## Urgent production bug
 
-Pour les bugs critiques :
+For critical bugs:
 
 ```bash
-# Hotfix avec GitFlow
+# Hotfix with GitFlow
 /ops:ops-gitflow-hotfix start "critical-login-bug"
 
-# Corriger...
+# Fix...
 
 /ops:ops-gitflow-hotfix finish "critical-login-bug"
 ```
 
-Cela merge automatiquement dans `main` ET `develop`.
+This automatically merges into `main` AND `develop`.
 
-## Bonnes pratiques
+## Best practices
 
 ### DO
-- ✅ Reproduire le bug avant de corriger
-- ✅ Ecrire un test de regression
-- ✅ Identifier la cause racine
-- ✅ Documenter la correction
+- ✅ Reproduce the bug before fixing
+- ✅ Write a regression test
+- ✅ Identify the root cause
+- ✅ Document the fix
 
 ### DON'T
-- ❌ Corriger sans comprendre la cause
-- ❌ Oublier les tests de regression
-- ❌ Faire des modifications non liees
-- ❌ Corriger plusieurs bugs en un commit
+- ❌ Fix without understanding the cause
+- ❌ Forget regression tests
+- ❌ Make unrelated changes
+- ❌ Fix several bugs in one commit
 
-## Templates de commit
+## Commit templates
 
-### Bug simple
+### Simple bug
 ```
 fix(auth): normalize email before comparison
 
@@ -125,7 +125,7 @@ Fixes case-sensitive email login issue
 Fixes #456
 ```
 
-### Bug avec impact
+### Bug with impact
 ```
 fix(api): handle null response from external service
 
@@ -140,7 +140,7 @@ Fixes #789
 
 ---
 
-## Voir aussi
+## See also
 
 - [Debug](/docs/commands/dev/dev-debug)
 - [Hotfix](/docs/commands/ops/ops-hotfix)

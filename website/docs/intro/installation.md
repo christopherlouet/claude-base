@@ -1,115 +1,115 @@
 ---
 sidebar_position: 4
 title: Installation
-description: Guide d'installation complet de claude-socle
+description: Complete installation guide for claude-socle
 ---
 
 # Installation
 
-Guide complet pour installer et configurer claude-socle dans votre projet.
+Complete guide to install and configure claude-socle in your project.
 
-## Prerequis
+## Prerequisites
 
-### Obligatoires
+### Mandatory
 
-- **Claude Code** installe et configure
+- **Claude Code** installed and configured
   ```bash
   claude --version
   ```
 
-- **Git** pour le versioning
+- **Git** for versioning
   ```bash
   git --version
   ```
 
-### Recommandes
+### Recommended
 
-- **Node.js 18+** pour les projets web
-- **npm** ou **yarn** pour la gestion des dependances
-- **Bats** et **ShellCheck** uniquement si vous comptez contribuer au socle
+- **Node.js 18+** for web projects
+- **npm** or **yarn** for dependency management
+- **Bats** and **ShellCheck** only if you plan to contribute to the foundation
 
-## Methodes d'installation
+## Installation methods
 
-Trois methodes sont disponibles selon votre cas d'usage. La premiere est recommandee.
+Three methods are available depending on your use case. The first is recommended.
 
-### Methode 1 : Script `new-project.sh` (recommande)
+### Method 1: `new-project.sh` script (recommended)
 
-Le socle expose un script unique qui copie la configuration `.claude/`, le `CLAUDE.md` et les fichiers necessaires dans votre projet existant ou dans un nouveau projet.
+The foundation exposes a single script that copies the `.claude/` configuration, `CLAUDE.md` and the necessary files into your existing project or into a new project.
 
 ```bash
-# 1. Cloner le socle (une seule fois, n'importe ou)
+# 1. Clone the foundation (just once, anywhere)
 git clone https://github.com/christopherlouet/claude-socle.git ~/.claude-socle
 
-# 2. Installation simple (juste .claude/ + CLAUDE.md)
-~/.claude-socle/scripts/new-project.sh --simple /chemin/vers/votre-projet
+# 2. Simple installation (just .claude/ + CLAUDE.md)
+~/.claude-socle/scripts/new-project.sh --simple /path/to/your-project
 
-# 3. Ou installation complete (ajoute hooks, MCP, .github/, scripts CI)
-~/.claude-socle/scripts/new-project.sh --all /chemin/vers/votre-projet
+# 3. Or full installation (adds hooks, MCP, .github/, CI scripts)
+~/.claude-socle/scripts/new-project.sh --all /path/to/your-project
 ```
 
-Vous pouvez aussi lancer le script depuis votre projet :
+You can also run the script from your project:
 
 ```bash
-cd /chemin/vers/votre-projet
+cd /path/to/your-project
 ~/.claude-socle/scripts/new-project.sh --simple .
 ```
 
-#### Options utiles
+#### Useful options
 
-| Flag | Effet |
-|------|-------|
-| `--simple` | Copie minimale : `.claude/` + `CLAUDE.md` + `.mcp.json` |
-| `--all` | Installation complete : ajoute hooks, GitHub Actions, scripts |
-| `-y` | Mode silencieux (CI/CD) |
-| `--dry-run` | Simulation sans modifications |
-| `--help` | Affiche l'aide complete |
+| Flag | Effect |
+|------|--------|
+| `--simple` | Minimal copy: `.claude/` + `CLAUDE.md` + `.mcp.json` |
+| `--all` | Full installation: adds hooks, GitHub Actions, scripts |
+| `-y` | Silent mode (CI/CD) |
+| `--dry-run` | Simulation without modifications |
+| `--help` | Display the full help |
 
-### Methode 2 : Copie manuelle
+### Method 2: Manual copy
 
-Pour un controle fin de ce qui est copie :
+For fine-grained control over what is copied:
 
 ```bash
-# Cloner le socle dans un dossier temporaire
+# Clone the foundation into a temporary folder
 git clone --depth 1 https://github.com/christopherlouet/claude-socle.git temp-socle
 
-# Copier le minimum vital
-cp -r temp-socle/.claude /chemin/vers/votre-projet/
-cp temp-socle/CLAUDE.md /chemin/vers/votre-projet/
+# Copy the bare minimum
+cp -r temp-socle/.claude /path/to/your-project/
+cp temp-socle/CLAUDE.md /path/to/your-project/
 
-# Optionnel
-cp temp-socle/.mcp.json /chemin/vers/votre-projet/
-cp -r temp-socle/.github /chemin/vers/votre-projet/
+# Optional
+cp temp-socle/.mcp.json /path/to/your-project/
+cp -r temp-socle/.github /path/to/your-project/
 
-# Nettoyer
+# Clean up
 rm -rf temp-socle
 ```
 
-### Methode 3 : Utiliser comme template
+### Method 3: Use as a template
 
-Pour un nouveau projet, le socle peut servir directement de squelette :
+For a new project, the foundation can serve directly as a skeleton:
 
 ```bash
-git clone https://github.com/christopherlouet/claude-socle.git mon-nouveau-projet
-cd mon-nouveau-projet
+git clone https://github.com/christopherlouet/claude-socle.git my-new-project
+cd my-new-project
 
-# Reinitialiser l'historique git (optionnel)
+# Reinitialize the git history (optional)
 rm -rf .git && git init
 
-# Personnaliser CLAUDE.md selon votre stack
-# (templates disponibles dans templates/CLAUDE.*.md)
+# Customize CLAUDE.md based on your stack
+# (templates available in templates/CLAUDE.*.md)
 cp templates/CLAUDE.react.md CLAUDE.md
 ```
 
 ## Verification
 
-Une fois installe, lancez Claude Code dans votre projet :
+Once installed, launch Claude Code in your project:
 
 ```bash
-cd /chemin/vers/votre-projet
+cd /path/to/your-project
 claude
 ```
 
-Vous devriez voir le message d'accueil du hook `SessionStart` :
+You should see the welcome message from the `SessionStart` hook:
 
 ```
 === Claude Code Session ===
@@ -119,62 +119,62 @@ Agents: 63
 ===========================
 ```
 
-Si les chiffres different, votre socle est probablement installe mais sur une version differente — c'est normal si vous avez installe une version anterieure.
+If the numbers differ, your foundation is probably installed but on a different version — that's normal if you installed an earlier version.
 
-### Test des commandes
+### Testing commands
 
-Dans Claude Code, testez :
+In Claude Code, try:
 
 ```
 /assistant
 ```
 
-Vous devriez voir le guide d'orientation. Essayez ensuite un workflow simple :
+You should see the orientation guide. Then try a simple workflow:
 
 ```
 /work:work-explore .
 ```
 
-## Mise a jour
+## Update
 
 ```bash
-# Mettre a jour le socle local
+# Update the local foundation
 cd ~/.claude-socle
 git pull origin main
 
-# Re-synchroniser les fichiers dans votre projet
-~/.claude-socle/scripts/update.sh /chemin/vers/votre-projet
+# Re-synchronize the files in your project
+~/.claude-socle/scripts/update.sh /path/to/your-project
 ```
 
-Le script `update.sh` est idempotent : il met a jour les fichiers du socle (commands, agents, skills, rules, scripts/hooks) sans toucher a vos personnalisations (`CLAUDE.md`, `.claude/settings.local.json`).
+The `update.sh` script is idempotent: it updates the foundation files (commands, agents, skills, rules, scripts/hooks) without touching your customizations (`CLAUDE.md`, `.claude/settings.local.json`).
 
-## Personnalisation
+## Customization
 
-### Fichier CLAUDE.md
+### CLAUDE.md file
 
-Le fichier `CLAUDE.md` a la racine contient les instructions principales. Adaptez-le a votre projet :
+The `CLAUDE.md` file at the root contains the main instructions. Adapt it to your project:
 
 ```markdown
-# Mon Projet
+# My Project
 
 ## Structure
-- /src - Code source
+- /src - Source code
 - /tests - Tests
 
 ## Conventions
 - TypeScript strict
-- Tests obligatoires
+- Mandatory tests
 
 ## Workflows
-- /work:work-flow-feature pour les features
-- /work:work-flow-bugfix pour les bugs
+- /work:work-flow-feature for features
+- /work:work-flow-bugfix for bugs
 ```
 
-Des templates pre-remplis sont disponibles dans `templates/CLAUDE.*.md` du socle (React, Next.js, Vue, Node API, Python, Go, Rust, Java, Flutter, fullstack, neovim).
+Pre-filled templates are available in `templates/CLAUDE.*.md` of the foundation (React, Next.js, Vue, Node API, Python, Go, Rust, Java, Flutter, fullstack, neovim).
 
-### Fichier .mcp.json
+### .mcp.json file
 
-Activez les serveurs MCP selon vos besoins. **Par defaut, les MCP sont desactives** pour des raisons de securite.
+Enable MCP servers as needed. **By default, MCPs are disabled** for security reasons.
 
 ```json
 {
@@ -187,31 +187,31 @@ Activez les serveurs MCP selon vos besoins. **Par defaut, les MCP sont desactive
 }
 ```
 
-### Ajouter une commande personnalisee
+### Add a custom command
 
-Creez un fichier dans `.claude/commands/` :
+Create a file in `.claude/commands/`:
 
 ```markdown
 ---
-description: Ma commande
+description: My command
 ---
 
-# Ma Commande Personnalisee
+# My Custom Command
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
-Description de ce que fait la commande.
+## Goal
+Description of what the command does.
 
-## Processus
-1. Etape 1
-2. Etape 2
+## Process
+1. Step 1
+2. Step 2
 ```
 
-### Ajouter une regle contextuelle
+### Add a contextual rule
 
-Creez un fichier dans `.claude/rules/` :
+Create a file in `.claude/rules/`:
 
 ```markdown
 ---
@@ -219,58 +219,58 @@ paths:
   - "**/my-folder/**"
 ---
 
-# Regles pour my-folder
+# Rules for my-folder
 
-- Toujours utiliser des fonctions pures
-- Documentation obligatoire
+- Always use pure functions
+- Mandatory documentation
 ```
 
 ## Troubleshooting
 
-### Le message d'accueil n'apparait pas
+### The welcome message doesn't appear
 
-Verifiez le hook `SessionStart` dans `.claude/settings.json` :
+Check the `SessionStart` hook in `.claude/settings.json`:
 
 ```bash
 grep -A 3 SessionStart .claude/settings.json
 ```
 
-Si le hook est present mais ne s'execute pas, verifiez que les scripts du dossier `scripts/hooks/` sont presents et executables.
+If the hook is present but does not execute, check that the scripts in the `scripts/hooks/` folder are present and executable.
 
-### Les commandes slash ne sont pas reconnues
+### Slash commands are not recognized
 
 ```bash
-# Verifier la presence du dossier
+# Check that the folder exists
 ls .claude/commands/
 
-# Re-synchroniser depuis le socle
+# Re-synchronize from the foundation
 ~/.claude-socle/scripts/update.sh .
 ```
 
-### Erreurs de permission sur les hooks
+### Permission errors on hooks
 
 ```bash
 chmod +x .claude/scripts/*.sh scripts/hooks/*.sh
 ```
 
-### Conflit avec une configuration existante
+### Conflict with an existing configuration
 
 ```bash
-# Sauvegarder + reinstaller proprement
+# Backup + clean reinstall
 ./scripts/uninstall.sh --keep-claude-md .
 ~/.claude-socle/scripts/new-project.sh --simple .
 ```
 
-### Diagnostic complet
+### Full diagnosis
 
 ```bash
-~/.claude-socle/scripts/doctor.sh /chemin/vers/votre-projet
-~/.claude-socle/scripts/diff.sh   /chemin/vers/votre-projet
+~/.claude-socle/scripts/doctor.sh /path/to/your-project
+~/.claude-socle/scripts/diff.sh   /path/to/your-project
 ```
 
-## Prochaines etapes
+## Next steps
 
-- [Quick Start](/docs/intro/quick-start) - Premier workflow en 5 minutes
-- [Architecture](/docs/intro/architecture) - Comprendre Commands vs Agents vs Skills vs Rules
-- [Workflows](/docs/concepts/workflows) - Voir les workflows detailles
-- [Scripts utilitaires](/docs/reference/scripts) - Tous les scripts disponibles
+- [Quick Start](/docs/intro/quick-start) - First workflow in 5 minutes
+- [Architecture](/docs/intro/architecture) - Understand Commands vs Agents vs Skills vs Rules
+- [Workflows](/docs/concepts/workflows) - See the detailed workflows
+- [Utility scripts](/docs/reference/scripts) - All available scripts

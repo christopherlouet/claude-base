@@ -1,58 +1,58 @@
 ---
 sidebar_position: 1
-title: Exemples de Code
-description: Exemples pratiques pour chaque domaine avec claude-socle
+title: Code Examples
+description: Practical examples for every domain with claude-socle
 ---
 
-# Exemples de Code
+# Code Examples
 
-Exemples pratiques et prêts à l'emploi pour démarrer rapidement avec claude-socle.
+Practical, ready-to-use examples to get started quickly with claude-socle.
 
 ## Web (React/Next.js)
 
-| Exemple | Commande | Description |
-|---------|----------|-------------|
-| [Composant React](/docs/examples/web/react-component) | `/dev:dev-component` | Composant complet avec tests et stories |
-| [Hook personnalisé](/docs/examples/web/react-hook) | `/dev:dev-hook` | Custom hook avec gestion d'état |
-| [API Next.js](/docs/examples/web/nextjs-api) | `/dev:dev-api` | Route API avec validation |
+| Example | Command | Description |
+|---------|---------|-------------|
+| [React Component](/docs/examples/web/react-component) | `/dev:dev-component` | Complete component with tests and stories |
+| [Custom Hook](/docs/examples/web/react-hook) | `/dev:dev-hook` | Custom hook with state management |
+| [Next.js API](/docs/examples/web/nextjs-api) | `/dev:dev-api` | API route with validation |
 
 ## Mobile (Flutter)
 
-| Exemple | Commande | Description |
-|---------|----------|-------------|
-| [Screen Flutter](/docs/examples/mobile/flutter-screen) | `/dev:dev-flutter` | Screen avec Clean Architecture |
-| [BLoC Pattern](/docs/examples/mobile/flutter-bloc) | `/dev:dev-flutter` | State management avec BLoC |
+| Example | Command | Description |
+|---------|---------|-------------|
+| [Flutter Screen](/docs/examples/mobile/flutter-screen) | `/dev:dev-flutter` | Screen with Clean Architecture |
+| [BLoC Pattern](/docs/examples/mobile/flutter-bloc) | `/dev:dev-flutter` | State management with BLoC |
 
 ## API (REST/GraphQL/tRPC)
 
-| Exemple | Commande | Description |
-|---------|----------|-------------|
-| [Endpoint REST](/docs/examples/api/rest-endpoint) | `/dev:dev-api` | Endpoint CRUD complet |
-| [Resolver GraphQL](/docs/examples/api/graphql-resolver) | `/dev:dev-graphql` | Query et Mutation |
-| [Procedure tRPC](/docs/examples/api/trpc-procedure) | `/dev:dev-trpc` | Procedure type-safe |
+| Example | Command | Description |
+|---------|---------|-------------|
+| [REST Endpoint](/docs/examples/api/rest-endpoint) | `/dev:dev-api` | Complete CRUD endpoint |
+| [GraphQL Resolver](/docs/examples/api/graphql-resolver) | `/dev:dev-graphql` | Query and Mutation |
+| [tRPC Procedure](/docs/examples/api/trpc-procedure) | `/dev:dev-trpc` | Type-safe procedure |
 
 ## Ops (Docker/CI/Terraform/Proxmox/OPNsense)
 
-| Exemple | Commande | Description |
-|---------|----------|-------------|
-| [Setup Docker](/docs/examples/ops/docker-setup) | `/ops:ops-docker` | Dockerfile multi-stage |
-| [Pipeline CI](/docs/examples/ops/ci-pipeline) | `/ops:ops-ci` | GitHub Actions workflow |
-| [Module Terraform](/docs/examples/ops/terraform-module) | `/ops:ops-infra-code` | Module réutilisable |
-| [VM Proxmox](/docs/examples/ops/proxmox-vm) | `/ops:ops-proxmox` | VM avec cloud-init |
-| [Firewall OPNsense](/docs/examples/ops/opnsense-config) | `/ops:ops-opnsense` | OPNsense derrière box Orange |
+| Example | Command | Description |
+|---------|---------|-------------|
+| [Docker Setup](/docs/examples/ops/docker-setup) | `/ops:ops-docker` | Multi-stage Dockerfile |
+| [CI Pipeline](/docs/examples/ops/ci-pipeline) | `/ops:ops-ci` | GitHub Actions workflow |
+| [Terraform Module](/docs/examples/ops/terraform-module) | `/ops:ops-infra-code` | Reusable module |
+| [Proxmox VM](/docs/examples/ops/proxmox-vm) | `/ops:ops-proxmox` | VM with cloud-init |
+| [OPNsense Firewall](/docs/examples/ops/opnsense-config) | `/ops:ops-opnsense` | OPNsense behind Orange box |
 
 ---
 
-## Comment utiliser ces exemples
+## How to use these examples
 
-1. **Copier** le code dans votre projet
-2. **Adapter** les noms et la logique métier
-3. **Générer les tests** avec `/dev:dev-test`
-4. **Commiter** avec `/work:work-commit`
+1. **Copy** the code into your project
+2. **Adapt** the names and business logic
+3. **Generate the tests** with `/dev:dev-test`
+4. **Commit** with `/work:work-commit`
 
-:::tip Générer du code similaire
-Utilisez la commande associée à chaque exemple pour générer du code adapté à votre contexte :
+:::tip Generate similar code
+Use the command associated with each example to generate code tailored to your context:
 ```bash
-/dev:dev-component "Créer un composant UserProfile avec avatar et bio"
+/dev:dev-component "Create a UserProfile component with avatar and bio"
 ```
 :::

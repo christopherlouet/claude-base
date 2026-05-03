@@ -1,6 +1,6 @@
 ---
 name: ops-standup
-description: Briefing matinal cross-repo. Agregation des commits recents, PRs, CI, blockers et priorites du jour. Declencher quand l'utilisateur veut un standup, un resume d'activite, ou savoir ce qui s'est passe.
+description: Cross-repo morning briefing. Aggregation of recent commits, PRs, CI, blockers and priorities of the day. Trigger when the user wants a standup, an activity summary, or to know what happened.
 allowed-tools:
   - Read
   - Glob
@@ -11,183 +11,183 @@ model: sonnet
 argument-hint: "[repo-paths] [--since 24h] [--summary-only]"
 ---
 
-# Daily Standup — Briefing Matinal
+# Daily Standup — Morning Briefing
 
-## Objectif
+## Objective
 
-Scanner un ou plusieurs repos git pour generer un briefing structure :
-commits recents, PRs ouvertes, etat CI, blockers et priorites du jour.
+Scan one or several git repos to generate a structured briefing:
+recent commits, open PRs, CI state, blockers and priorities of the day.
 
-Mode lecture seule — aucune modification de code.
+Read-only mode — no code modification.
 
-## Phase 1 : Detection des repos
+## Phase 1: Repo detection
 
-### Determiner les repos a scanner
+### Determine the repos to scan
 
-1. Si des chemins sont fournis en arguments : les utiliser
-2. Si un repertoire parent est fourni : scanner 1 niveau pour les `.git/`
-3. Sinon : utiliser le repertoire courant
+1. If paths are provided as arguments: use them
+2. If a parent directory is provided: scan 1 level for `.git/`
+3. Otherwise: use the current directory
 
 ### Options
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--since <duree>` | `24h` | Fenetre temporelle (24h, 48h, 7d) |
-| `--summary-only` | non | Version courte sans details par repo |
+| `--since <duration>` | `24h` | Time window (24h, 48h, 7d) |
+| `--summary-only` | no | Short version without per-repo details |
 
-## Phase 2 : Collecte des donnees
+## Phase 2: Data collection
 
-Pour chaque repo, collecter :
+For each repo, collect:
 
-### 2.1 Commits recents
+### 2.1 Recent commits
 
 ```bash
-# Commits des dernieres 24h groupes par auteur
+# Commits from the last 24h grouped by author
 git log --since="24 hours ago" --format="%h %an: %s" --no-merges
 ```
 
-Grouper par auteur, compter les commits, identifier les types (feat/fix/refactor/docs).
+Group by author, count commits, identify types (feat/fix/refactor/docs).
 
-### 2.2 Pull Requests et CI
+### 2.2 Pull Requests and CI
 
-Si `gh` est disponible :
+If `gh` is available:
 
 ```bash
-# PRs ouvertes
+# Open PRs
 gh pr list --state open --json number,title,author,reviewDecision,statusCheckRollup
 
-# PRs mergees recemment
+# Recently merged PRs
 gh pr list --state merged --json number,title,mergedAt --limit 10
 ```
 
-Classifier les PRs :
-- **A reviewer** : reviewDecision = REVIEW_REQUIRED
-- **Approuvees** : reviewDecision = APPROVED (prete a merger)
-- **En echec CI** : statusCheckRollup contient FAILURE
-- **En attente** : statusCheckRollup contient PENDING
+Classify the PRs:
+- **To review**: reviewDecision = REVIEW_REQUIRED
+- **Approved**: reviewDecision = APPROVED (ready to merge)
+- **CI failing**: statusCheckRollup contains FAILURE
+- **Pending**: statusCheckRollup contains PENDING
 
-### 2.3 Etat CI
+### 2.3 CI state
 
-Si `gh` est disponible :
+If `gh` is available:
 
 ```bash
-# Derniers runs de workflows
+# Latest workflow runs
 gh run list --limit 10 --json status,conclusion,name,createdAt
 ```
 
-Identifier :
-- Workflows en echec (conclusion = failure)
-- Workflows bloques (status = in_progress depuis > 30 min)
-- Workflows annules recemment
+Identify:
+- Failing workflows (conclusion = failure)
+- Stuck workflows (status = in_progress for > 30 min)
+- Recently cancelled workflows
 
-### 2.4 Branches stales
+### 2.4 Stale branches
 
 ```bash
-# Branches sans commit depuis 7+ jours (hors main/develop/release)
+# Branches with no commit for 7+ days (excluding main/develop/release)
 git for-each-ref --sort=-committerdate --format='%(refname:short) %(committerdate:relative)' refs/heads/ | grep -E "(weeks|months) ago"
 ```
 
-### 2.5 Changements non commites
+### 2.5 Uncommitted changes
 
 ```bash
 git status --porcelain
 ```
 
-Categoriser : staged, unstaged, untracked.
+Categorize: staged, unstaged, untracked.
 
-## Phase 3 : Synthese
+## Phase 3: Synthesis
 
-Agreger les donnees en 4 categories :
+Aggregate the data into 4 categories:
 
-### Ce qui a ete fait
-- Features livrees (commits feat)
-- Bugs corriges (commits fix)
-- PRs mergees
+### What has been done
+- Features delivered (feat commits)
+- Bugs fixed (fix commits)
+- Merged PRs
 
-### Ce qui est en cours
-- PRs ouvertes et leur etat
-- Branches actives avec commits recents
+### What is in progress
+- Open PRs and their state
+- Active branches with recent commits
 
-### Ce qui est bloque
-- PRs en echec CI
-- Workflows bloques ou en echec
-- PRs en attente de review depuis > 48h
+### What is blocked
+- PRs with failing CI
+- Stuck or failing workflows
+- PRs awaiting review for > 48h
 
-### Priorites suggerees
-- PRs approuvees a merger
-- Echecs CI a corriger
-- Reviews en attente
-- Branches stales a nettoyer
+### Suggested priorities
+- Approved PRs to merge
+- CI failures to fix
+- Pending reviews
+- Stale branches to clean up
 
-## Phase 4 : Output
+## Phase 4: Output
 
-### Vue technique (par defaut)
+### Technical view (default)
 
 ```markdown
 # Standup — YYYY-MM-DD
 
 ## [repo-name]
 
-### Activite (dernieres 24h)
-- X commits par Y auteurs
-- Z PRs mergees, W ouvertes
+### Activity (last 24h)
+- X commits by Y authors
+- Z PRs merged, W open
 
-### Commits recents
-| Auteur | Commits | Resume |
+### Recent commits
+| Author | Commits | Summary |
 |--------|---------|--------|
-| [nom] | N | feat: ..., fix: ... |
+| [name] | N | feat: ..., fix: ... |
 
 ### Pull Requests
-| # | Titre | Statut | CI |
+| # | Title | Status | CI |
 |---|-------|--------|-----|
-| #123 | ... | A reviewer | Passe |
+| #123 | ... | To review | Passing |
 
 ### CI Health
-| Workflow | Dernier run | Statut |
+| Workflow | Last run | Status |
 |----------|------------|--------|
-| ci.yml | il y a 2h | Passe |
+| ci.yml | 2h ago | Passing |
 
-### Alertes
-- [!] PR #456 en echec CI depuis 12h
-- [!] Branch feature/old inactive depuis 3 semaines
+### Alerts
+- [!] PR #456 with failing CI for 12h
+- [!] Branch feature/old inactive for 3 weeks
 
 ---
 
-## Synthese Cross-Repo
+## Cross-Repo Synthesis
 
-### A faire aujourd'hui
-1. [Priorite haute] ...
-2. [Priorite moyenne] ...
+### To do today
+1. [High priority] ...
+2. [Medium priority] ...
 
-### Metriques
-- Features livrees : X
-- PRs a traiter : Y
-- Echecs CI : Z
-- Branches stales : W
+### Metrics
+- Features delivered: X
+- PRs to handle: Y
+- CI failures: Z
+- Stale branches: W
 ```
 
-### Vue resumee (`--summary-only`)
+### Summary view (`--summary-only`)
 
 ```markdown
-# Standup Resume — YYYY-MM-DD
+# Standup Summary — YYYY-MM-DD
 
-Hier : X features livrees, Y bugs corriges, Z PRs mergees.
-Aujourd'hui : W PRs a reviewer, V echecs CI a corriger.
-Blockers : [liste ou "aucun"].
+Yesterday: X features delivered, Y bugs fixed, Z PRs merged.
+Today: W PRs to review, V CI failures to fix.
+Blockers: [list or "none"].
 ```
 
-## Degradation gracieuse
+## Graceful degradation
 
-| Outil manquant | Impact | Fallback |
+| Missing tool | Impact | Fallback |
 |----------------|--------|----------|
-| `gh` non installe | Pas de PRs ni CI | Signaler, ne montrer que les commits |
-| Repo distant inaccessible | Pas de status remote | Utiliser les donnees locales |
-| Pas de commits recents | Section vide | Indiquer "Aucune activite" |
+| `gh` not installed | No PRs nor CI | Signal it, show only commits |
+| Remote repo unreachable | No remote status | Use local data |
+| No recent commits | Empty section | Indicate "No activity" |
 
-## Regles
+## Rules
 
-- TOUJOURS utiliser des commandes en lecture seule (git log, git status, gh pr list)
-- NE JAMAIS modifier de fichiers, branches, ou PRs
-- NE JAMAIS inventer de donnees — si une source est indisponible, le signaler
-- Indiquer clairement les lacunes de donnees
-- Si `gh` n'est pas disponible, le mentionner et montrer ce qui est disponible
+- ALWAYS use read-only commands (git log, git status, gh pr list)
+- NEVER modify files, branches, or PRs
+- NEVER invent data — if a source is unavailable, signal it
+- Clearly indicate data gaps
+- If `gh` is not available, mention it and show what is available

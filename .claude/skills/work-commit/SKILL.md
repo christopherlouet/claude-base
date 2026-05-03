@@ -1,6 +1,6 @@
 ---
 name: work-commit
-description: Génère des messages de commit clairs suivant Conventional Commits. Utiliser quand l'utilisateur veut commiter, demande un message de commit, ou après avoir terminé une modification.
+description: Generates clear commit messages following Conventional Commits. Use when the user wants to commit, asks for a commit message, or after completing a modification.
 allowed-tools:
   - Bash
   - Read
@@ -9,87 +9,87 @@ context: fork
 disable-model-invocation: true
 ---
 
-# Génération de Messages de Commit
+# Commit Message Generation
 
-## Format Conventional Commits
+## Conventional Commits Format
 
 ```
-type(scope): description courte (< 50 caractères)
+type(scope): short description (< 50 characters)
 
-[corps optionnel - détails sur le "quoi" et "pourquoi"]
+[optional body - details on the "what" and "why"]
 
-[footer optionnel - références issues, breaking changes]
+[optional footer - issue references, breaking changes]
 ```
 
 ## Instructions
 
-### 1. Analyser les changements
+### 1. Analyze the changes
 
 ```bash
-# Voir les fichiers modifiés
+# View modified files
 git status --short
 
-# Voir le diff détaillé
+# View detailed diff
 git diff --staged
 
-# Si rien n'est staged, voir les changements non-staged
+# If nothing is staged, view non-staged changes
 git diff
 ```
 
-### 2. Déterminer le type
+### 2. Determine the type
 
-| Type | Utilisation |
+| Type | Usage |
 |------|-------------|
-| `feat` | Nouvelle fonctionnalité |
-| `fix` | Correction de bug |
-| `refactor` | Refactoring sans changement fonctionnel |
-| `test` | Ajout ou modification de tests |
-| `docs` | Documentation uniquement |
-| `style` | Formatage, pas de changement de code |
-| `chore` | Maintenance, dépendances |
-| `perf` | Amélioration de performance |
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `refactor` | Refactoring without functional change |
+| `test` | Adding or modifying tests |
+| `docs` | Documentation only |
+| `style` | Formatting, no code change |
+| `chore` | Maintenance, dependencies |
+| `perf` | Performance improvement |
 
-### 3. Identifier le scope
+### 3. Identify the scope
 
-Le scope indique la partie du code affectée:
-- Nom du module: `auth`, `api`, `ui`
-- Nom du composant: `button`, `modal`
-- Fonctionnalité: `login`, `checkout`
+The scope indicates the part of the code affected:
+- Module name: `auth`, `api`, `ui`
+- Component name: `button`, `modal`
+- Feature: `login`, `checkout`
 
-### 4. Rédiger la description
+### 4. Write the description
 
-- **Impératif présent**: "add" pas "added" ou "adds"
-- **Minuscule**: pas de majuscule au début
-- **Pas de point final**
-- **< 50 caractères**
+- **Imperative present**: "add" not "added" or "adds"
+- **Lowercase**: no capital at the start
+- **No trailing period**
+- **< 50 characters**
 
-### 5. Commiter
+### 5. Commit
 
 ```bash
-git add [fichiers]
+git add [files]
 git commit -m "type(scope): description"
 ```
 
-Ou avec corps:
+Or with body:
 ```bash
 git commit -m "type(scope): description
 
-- Détail 1
-- Détail 2
+- Detail 1
+- Detail 2
 
 Refs: #123"
 ```
 
-## Règles
+## Rules
 
-- UN commit = UN changement logique
-- Message clair pour quelqu'un qui ne connaît pas le contexte
-- Expliquer le POURQUOI, pas le COMMENT (le code montre le comment)
-- Référencer les issues si applicable
+- ONE commit = ONE logical change
+- Clear message for someone unfamiliar with the context
+- Explain the WHY, not the HOW (the code shows the how)
+- Reference issues if applicable
 
-## Exemples
+## Examples
 
-### Bons messages
+### Good messages
 ```
 feat(auth): add OAuth2 login support
 fix(api): handle null response from external service
@@ -98,10 +98,10 @@ test(cart): add unit tests for price calculation
 docs(readme): update installation instructions
 ```
 
-### Mauvais messages
+### Bad messages
 ```
-❌ "fix bug"                    → Trop vague
-❌ "Update code"                → Non informatif
-❌ "WIP"                        → Ne pas commiter du WIP
-❌ "feat: Add new feature..."   → Redondant
+❌ "fix bug"                    → Too vague
+❌ "Update code"                → Not informative
+❌ "WIP"                        → Don't commit WIP
+❌ "feat: Add new feature..."   → Redundant
 ```

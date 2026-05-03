@@ -9,46 +9,46 @@ paths:
 
 ## Strict Mode
 
-- IMPORTANT: Mode strict active (`"strict": true`)
-- Ne pas desactiver les checks TypeScript
-- Corriger les erreurs de type, ne pas les ignorer
+- IMPORTANT: Strict mode enabled (`"strict": true`)
+- Do not disable TypeScript checks
+- Fix type errors, do not ignore them
 
 ## Type Safety
 
-- IMPORTANT: Pas de `any` sauf cas exceptionnels documentes
-- YOU MUST definir des interfaces pour les objets complexes
-- Preferer `unknown` a `any` quand le type est inconnu
-- Utiliser les type guards pour le narrowing
+- IMPORTANT: No `any` except documented exceptional cases
+- YOU MUST define interfaces for complex objects
+- Prefer `unknown` over `any` when the type is unknown
+- Use type guards for narrowing
 
 ## Types vs Interfaces
 
-- Preferer `type` pour unions et intersections
-- Preferer `interface` pour objets extensibles
-- Utiliser `interface` pour les APIs publiques
+- Prefer `type` for unions and intersections
+- Prefer `interface` for extensible objects
+- Use `interface` for public APIs
 
 ## Naming Conventions
 
-| Type | Convention | Exemple |
+| Type | Convention | Example |
 |------|------------|---------|
-| Variables/Fonctions | camelCase | `getUserById` |
+| Variables/Functions | camelCase | `getUserById` |
 | Classes/Interfaces | PascalCase | `UserService` |
-| Constantes | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
-| Types generiques | T, K, V ou descriptif | `TData`, `TError` |
-| Enums | PascalCase (nom et valeurs) | `UserRole.Admin` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
+| Generic types | T, K, V or descriptive | `TData`, `TError` |
+| Enums | PascalCase (name and values) | `UserRole.Admin` |
 
 ## File Naming
 
-| Type | Convention | Exemple |
+| Type | Convention | Example |
 |------|------------|---------|
-| Composants React | PascalCase | `UserCard.tsx` |
+| React components | PascalCase | `UserCard.tsx` |
 | Services/Utils | kebab-case | `user-service.ts` |
-| Types/Interfaces | kebab-case ou PascalCase | `user-types.ts` |
-| Tests | meme nom + .test | `user-service.test.ts` |
+| Types/Interfaces | kebab-case or PascalCase | `user-types.ts` |
+| Tests | same name + .test | `user-service.test.ts` |
 
 ## Best Practices
 
-- Fonctions pures quand possible
-- Immutabilite des donnees
+- Pure functions when possible
+- Data immutability
 - Single Responsibility Principle
-- DRY mais pas au detriment de la lisibilite
-- Eviter les effets de bord dans les fonctions
+- DRY but not at the expense of readability
+- Avoid side effects in functions

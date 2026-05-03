@@ -1,8 +1,8 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests d'intégration End-to-End
-# Simule un workflow complet d'utilisation du socle
+# End-to-End integration tests
+# Simulates a complete foundation usage workflow
 # =============================================================================
 
 load 'test_helper'
@@ -23,11 +23,11 @@ teardown() {
 }
 
 # =============================================================================
-# E2E: Workflow complet d'installation
+# E2E: Complete installation workflow
 # =============================================================================
 
 @test "E2E: Workflow new-project → validate → doctor → uninstall" {
-    # 1. Installation avec new-project.sh --simple
+    # 1. Installation with new-project.sh --simple
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -d "$TEST_DIR/.claude" ]
@@ -41,7 +41,7 @@ teardown() {
     run "$DOCTOR_SCRIPT" "$TEST_DIR"
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
 
-    # 4. Désinstallation
+    # 4. Uninstall
     run "$UNINSTALL_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ ! -d "$TEST_DIR/.claude" ]
@@ -52,25 +52,25 @@ teardown() {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # 2. Modification d'un fichier
+    # 2. Modify a file
     echo "# Custom modification" >> "$TEST_DIR/.claude/commands/work/work-explore.md"
 
-    # 3. Diff détecte la modification (retourne 1 car il y a des différences)
+    # 3. Diff detects the modification (returns 1 because there are differences)
     run "$DIFF_SCRIPT" "$TEST_DIR"
     [ "$status" -eq 1 ]
     [[ "$output" == *"work/work-explore.md"* ]] || [[ "$output" == *"work-explore.md"* ]]
 
-    # 4. Update restaure les fichiers
+    # 4. Update restores the files
     run "$UPDATE_SCRIPT" -y --force "$TEST_DIR"
     [ "$status" -eq 0 ]
 }
 
-@test "E2E: Workflow new-project --all avec toutes les options" {
-    # Installation complète
+@test "E2E: Workflow new-project --all with all options" {
+    # Full installation
     run "$NEW_PROJECT_SCRIPT" -y --simple --all "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Vérifier tous les composants
+    # Check all components
     [ -d "$TEST_DIR/.claude/commands" ]
     [ -d "$TEST_DIR/.claude/skills" ]
     [ -f "$TEST_DIR/.claude/settings.json" ]
@@ -85,30 +85,30 @@ teardown() {
 }
 
 # =============================================================================
-# E2E: Workflow new-project
+# E2E: new-project workflow
 # =============================================================================
 
-@test "E2E: new-project crée un projet complet et fonctionnel" {
-    # Créer un nouveau projet
+@test "E2E: new-project creates a complete and functional project" {
+    # Create a new project
     run "$NEW_PROJECT_SCRIPT" -y -t node-api "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Vérifier la structure
+    # Check the structure
     [ -d "$TEST_DIR/.claude" ]
     [ -f "$TEST_DIR/CLAUDE.md" ]
     [ -d "$TEST_DIR/.git" ]
 
-    # Le projet doit être valide
+    # The project must be valid
     run "$VALIDATE_SCRIPT" -q "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Doctor doit fonctionner
+    # Doctor must work
     run "$DOCTOR_SCRIPT" "$TEST_DIR"
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
 }
 
-@test "E2E: new-project avec CI/CD existante propose des améliorations" {
-    # Créer un projet avec CI partielle
+@test "E2E: new-project with existing CI/CD suggests improvements" {
+    # Create a project with partial CI
     mkdir -p "$TEST_DIR/.github/workflows"
     cat > "$TEST_DIR/.github/workflows/test.yml" << 'EOF'
 name: Test
@@ -121,45 +121,45 @@ jobs:
       - run: npm test
 EOF
 
-    # new-project doit détecter la CI existante
+    # new-project must detect the existing CI
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier original doit être préservé
+    # The original file must be preserved
     [ -f "$TEST_DIR/.github/workflows/test.yml" ]
 }
 
 # =============================================================================
-# E2E: Gestion des fichiers locaux
+# E2E: Local file management
 # =============================================================================
 
-@test "E2E: Les fichiers locaux sont préservés durant tout le cycle" {
+@test "E2E: Local files are preserved throughout the cycle" {
     # Installation
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Créer des fichiers locaux
-    echo "# Mes notes personnelles" > "$TEST_DIR/CLAUDE.local.md"
+    # Create local files
+    echo "# My personal notes" > "$TEST_DIR/CLAUDE.local.md"
     echo '{"custom": true}' > "$TEST_DIR/.claude/settings.local.json"
 
-    # Update préserve les fichiers locaux
+    # Update preserves local files
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/CLAUDE.local.md" ]
     [ -f "$TEST_DIR/.claude/settings.local.json" ]
 
-    # Uninstall préserve aussi les fichiers locaux
+    # Uninstall also preserves local files
     run "$UNINSTALL_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/CLAUDE.local.md" ]
 }
 
 # =============================================================================
-# E2E: Détection de stack
+# E2E: Stack detection
 # =============================================================================
 
-@test "E2E: Détection et configuration projet Node.js/React" {
-    # Créer un projet React
+@test "E2E: Detection and configuration of Node.js/React project" {
+    # Create a React project
     mkdir -p "$TEST_DIR"
     cat > "$TEST_DIR/package.json" << 'EOF'
 {
@@ -181,17 +181,17 @@ EOF
 EOF
     echo '{}' > "$TEST_DIR/tsconfig.json"
 
-    # new-project doit détecter React + TypeScript
+    # new-project must detect React + TypeScript
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # CLAUDE.md doit contenir les infos du projet
+    # CLAUDE.md must contain the project info
     [ -f "$TEST_DIR/CLAUDE.md" ]
     run cat "$TEST_DIR/CLAUDE.md"
     [[ "$output" == *"npm"* ]] || [[ "$output" == *"test"* ]] || [[ "$output" == *"build"* ]]
 }
 
-@test "E2E: Détection et configuration projet Python" {
+@test "E2E: Detection and configuration of Python project" {
     mkdir -p "$TEST_DIR"
     cat > "$TEST_DIR/requirements.txt" << 'EOF'
 fastapi==0.100.0
@@ -204,7 +204,7 @@ EOF
     [ -f "$TEST_DIR/CLAUDE.md" ]
 }
 
-@test "E2E: Détection et configuration monorepo" {
+@test "E2E: Detection and configuration of monorepo" {
     mkdir -p "$TEST_DIR/packages/web"
     mkdir -p "$TEST_DIR/packages/api"
     cat > "$TEST_DIR/package.json" << 'EOF'
@@ -220,74 +220,74 @@ EOF
 }
 
 # =============================================================================
-# E2E: Intégrité du socle
+# E2E: Foundation integrity
 # =============================================================================
 
-@test "E2E: Le socle lui-même est valide" {
+@test "E2E: The foundation itself is valid" {
     SOCLE_DIR="$BATS_TEST_DIRNAME/.."
 
-    # Validation du socle
+    # Validation of the foundation
     run "$VALIDATE_SCRIPT" "$SOCLE_DIR"
     [ "$status" -eq 0 ]
 }
 
-@test "E2E: Le socle passe doctor" {
+@test "E2E: The foundation passes doctor" {
     SOCLE_DIR="$BATS_TEST_DIRNAME/.."
 
     run "$DOCTOR_SCRIPT" "$SOCLE_DIR"
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
 }
 
-@test "E2E: Tous les agents sont présents et valides" {
+@test "E2E: All agents are present and valid" {
     SOCLE_DIR="$BATS_TEST_DIRNAME/.."
 
-    # Compter les agents (récursivement dans les sous-répertoires)
+    # Count agents (recursively in subdirectories)
     agent_count=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l)
     [ "$agent_count" -ge 70 ]
 
-    # Vérifier que chaque agent a un titre
+    # Check that each agent has a title
     while IFS= read -r agent; do
         run head -1 "$agent"
         [[ "$output" == "# "* ]]
     done < <(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null)
 }
 
-@test "E2E: Tous les skills sont présents et valides" {
+@test "E2E: All skills are present and valid" {
     SOCLE_DIR="$BATS_TEST_DIRNAME/.."
 
-    # Compter les skills
+    # Count skills
     skill_count=$(ls -d "$SOCLE_DIR/.claude/skills/"*/ 2>/dev/null | wc -l)
     [ "$skill_count" -ge 5 ]
 
-    # Vérifier que chaque skill a un README
+    # Check that each skill has a README
     for skill in "$SOCLE_DIR/.claude/skills/"*/; do
         [ -f "${skill}README.md" ] || [ -f "${skill}index.md" ] || [ -f "${skill}skill.md" ] || true
     done
 }
 
 # =============================================================================
-# E2E: Scénarios d'erreur
+# E2E: Error scenarios
 # =============================================================================
 
-@test "E2E: Gestion gracieuse des erreurs - répertoire inexistant" {
+@test "E2E: Graceful error handling - nonexistent directory" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "/nonexistent/path/that/does/not/exist"
-    # Doit échouer proprement
+    # Must fail cleanly
     [ "$status" -ne 0 ]
 }
 
-@test "E2E: Gestion gracieuse des erreurs - permissions" {
+@test "E2E: Graceful error handling - permissions" {
     if [ "$(id -u)" -eq 0 ]; then
-        skip "Test non applicable en root"
+        skip "Test not applicable as root"
     fi
 
-    # Créer un répertoire sans permissions d'écriture
+    # Create a directory without write permissions
     mkdir -p "$TEST_DIR/readonly"
     chmod 444 "$TEST_DIR/readonly"
 
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/readonly"
-    # Doit échouer ou avertir
+    # Must fail or warn
     [[ "$status" -ne 0 ]] || [[ "$output" == *"permission"* ]] || [[ "$output" == *"Permission"* ]] || true
 
-    # Nettoyer
+    # Cleanup
     chmod 755 "$TEST_DIR/readonly"
 }

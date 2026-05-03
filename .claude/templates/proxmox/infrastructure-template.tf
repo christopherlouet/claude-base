@@ -1,50 +1,50 @@
 # =============================================================================
-# Template: Infrastructure Proxmox complète
-# Usage: Exemple d'infrastructure type avec VMs, LXC, réseau
-# Adapter selon vos besoins
+# Template: Complete Proxmox infrastructure
+# Usage: Example of a typical infrastructure with VMs, LXC, network
+# Adapt to your needs
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Variables globales
+# Global variables
 # -----------------------------------------------------------------------------
 
 variable "environment" {
-  description = "Environnement (dev, staging, prod)"
+  description = "Environment (dev, staging, prod)"
   type        = string
   default     = "dev"
 }
 
 variable "default_node" {
-  description = "Node Proxmox par défaut"
+  description = "Default Proxmox node"
   type        = string
   default     = "pve1"
 }
 
 variable "vm_template_id" {
-  description = "ID du template VM cloud-init"
+  description = "Cloud-init VM template ID"
   type        = number
   default     = 9000
 }
 
 variable "lxc_template" {
-  description = "Template LXC"
+  description = "LXC template"
   type        = string
   default     = "local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
 }
 
 variable "ssh_public_keys" {
-  description = "Clés SSH publiques autorisées"
+  description = "Authorized SSH public keys"
   type        = list(string)
 }
 
 variable "network_gateway" {
-  description = "Passerelle réseau"
+  description = "Network gateway"
   type        = string
   default     = "10.0.1.1"
 }
 
 variable "network_cidr" {
-  description = "CIDR du réseau"
+  description = "Network CIDR"
   type        = string
   default     = "10.0.1.0/24"
 }
@@ -56,18 +56,18 @@ variable "network_cidr" {
 locals {
   common_tags = [var.environment, "terraform", "managed"]
 
-  # Configuration des VMs web
+  # Web VMs configuration
   web_servers = {
     "01" = { ip = "10.0.1.11", cores = 2, memory = 2048 }
     "02" = { ip = "10.0.1.12", cores = 2, memory = 2048 }
   }
 
-  # Configuration des VMs API
+  # API VMs configuration
   api_servers = {
     "01" = { ip = "10.0.1.21", cores = 4, memory = 4096 }
   }
 
-  # Configuration des conteneurs services
+  # Service containers configuration
   service_containers = {
     redis = { ip = "10.0.1.50", cores = 1, memory = 1024, nesting = false }
     nginx = { ip = "10.0.1.51", cores = 1, memory = 512, nesting = false }
@@ -75,7 +75,7 @@ locals {
 }
 
 # -----------------------------------------------------------------------------
-# VMs Web Servers
+# Web Servers VMs
 # -----------------------------------------------------------------------------
 
 module "web_servers" {
@@ -100,7 +100,7 @@ module "web_servers" {
 }
 
 # -----------------------------------------------------------------------------
-# VMs API Servers
+# API Servers VMs
 # -----------------------------------------------------------------------------
 
 module "api_servers" {
@@ -125,7 +125,7 @@ module "api_servers" {
 }
 
 # -----------------------------------------------------------------------------
-# Conteneurs LXC Services
+# LXC Service Containers
 # -----------------------------------------------------------------------------
 
 module "service_containers" {
@@ -154,7 +154,7 @@ module "service_containers" {
 }
 
 # -----------------------------------------------------------------------------
-# VM Database (exemple avec disque additionnel)
+# Database VM (example with additional disk)
 # -----------------------------------------------------------------------------
 
 module "database" {
@@ -169,7 +169,7 @@ module "database" {
   memory_mb      = 8192
   disk_size_gb   = 30
 
-  # Disque data séparé
+  # Separate data disk
   additional_disks = [
     {
       size         = 100
@@ -187,7 +187,7 @@ module "database" {
 }
 
 # -----------------------------------------------------------------------------
-# Conteneur Docker Host (avec nesting)
+# Docker Host Container (with nesting)
 # -----------------------------------------------------------------------------
 
 module "docker_host" {
@@ -210,7 +210,7 @@ module "docker_host" {
   ssh_keys         = var.ssh_public_keys
   unprivileged     = true
 
-  # Features pour Docker
+  # Features for Docker
   nesting          = true
   keyctl           = true
 
@@ -222,7 +222,7 @@ module "docker_host" {
 # -----------------------------------------------------------------------------
 
 output "web_servers" {
-  description = "Web servers créés"
+  description = "Web servers created"
   value = {
     for k, v in module.web_servers : k => {
       id   = v.vm_id
@@ -233,7 +233,7 @@ output "web_servers" {
 }
 
 output "api_servers" {
-  description = "API servers créés"
+  description = "API servers created"
   value = {
     for k, v in module.api_servers : k => {
       id   = v.vm_id
@@ -244,7 +244,7 @@ output "api_servers" {
 }
 
 output "service_containers" {
-  description = "Conteneurs de services créés"
+  description = "Service containers created"
   value = {
     for k, v in module.service_containers : k => {
       id       = v.container_id
@@ -255,7 +255,7 @@ output "service_containers" {
 }
 
 output "database" {
-  description = "Serveur de base de données"
+  description = "Database server"
   value = {
     id   = module.database.vm_id
     name = module.database.name
@@ -273,7 +273,7 @@ output "docker_host" {
 }
 
 # -----------------------------------------------------------------------------
-# Exemple de fichier terraform.tfvars pour cet environnement
+# Example terraform.tfvars file for this environment
 # -----------------------------------------------------------------------------
 
 # environment = "dev"

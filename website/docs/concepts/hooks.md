@@ -1,21 +1,21 @@
 ---
 sidebar_position: 6
 title: Hooks
-description: Comprendre les hooks Claude Code
+description: Understanding Claude Code hooks
 ---
 
 # Hooks
 
-> Actions automatiques avant ou apres l'utilisation d'outils
+> Automatic actions before or after tool usage
 
-## Qu'est-ce qu'un Hook ?
+## What is a Hook?
 
-Un **hook** est une commande shell executee automatiquement avant (PreToolUse) ou apres (PostToolUse) l'utilisation d'un outil par Claude.
+A **hook** is a shell command automatically executed before (PreToolUse) or after (PostToolUse) Claude uses a tool.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│  Claude veut utiliser l'outil "Edit"                           │
+│  Claude wants to use the "Edit" tool                           │
 │              │                                                 │
 │              ▼                                                 │
 │  ┌────────────────────────────────────────┐                    │
@@ -24,12 +24,12 @@ Un **hook** est une commande shell executee automatiquement avant (PreToolUse) o
 │  │ Matcher: "Edit|Write"                  │                    │
 │  │ Command: scripts/validate.sh protect   │                    │
 │  │                                        │                    │
-│  │ → Verifie qu'on n'est pas sur main     │                    │
+│  │ → Checks we are not on main            │                    │
 │  └────────────────────────────────────────┘                    │
 │              │                                                 │
-│              ▼ (si hook OK)                                    │
+│              ▼ (if hook OK)                                    │
 │  ┌────────────────────────────────────────┐                    │
-│  │ Outil "Edit" execute                   │                    │
+│  │ "Edit" tool executed                   │                    │
 │  └────────────────────────────────────────┘                    │
 │              │                                                 │
 │              ▼                                                 │
@@ -39,7 +39,7 @@ Un **hook** est une commande shell executee automatiquement avant (PreToolUse) o
 │  │ Matcher: "Edit|Write"                  │                    │
 │  │ Command: scripts/validate.sh format    │                    │
 │  │                                        │                    │
-│  │ → Formate automatiquement le fichier   │                    │
+│  │ → Automatically formats the file       │                    │
 │  └────────────────────────────────────────┘                    │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
@@ -47,7 +47,7 @@ Un **hook** est une commande shell executee automatiquement avant (PreToolUse) o
 
 ## Configuration
 
-Les hooks sont configures dans `.claude/settings.json`:
+Hooks are configured in `.claude/settings.json`:
 
 ```json
 {
@@ -68,35 +68,35 @@ Les hooks sont configures dans `.claude/settings.json`:
 }
 ```
 
-## Types de hooks
+## Types of hooks
 
 ### PreToolUse
 
-Execute **avant** l'utilisation de l'outil.
+Executed **before** the tool is used.
 
-**Usages:**
-- Bloquer certaines actions
-- Valider des preconditions
-- Verifier des permissions
+**Use cases:**
+- Block certain actions
+- Validate preconditions
+- Check permissions
 
-**Comportement:**
-- Si le hook echoue (exit code != 0), l'outil n'est pas execute
-- Le message d'erreur est affiche a l'utilisateur
+**Behavior:**
+- If the hook fails (exit code != 0), the tool is not executed
+- The error message is shown to the user
 
 ### PostToolUse
 
-Execute **apres** l'utilisation de l'outil.
+Executed **after** the tool is used.
 
-**Usages:**
-- Formater le code modifie
-- Verifier les types
-- Mettre a jour des caches
+**Use cases:**
+- Format modified code
+- Type-check
+- Update caches
 
-**Comportement:**
-- Execute meme si l'outil a echoue
-- N'affecte pas le resultat de l'outil
+**Behavior:**
+- Executed even if the tool failed
+- Does not affect the tool's result
 
-## Structure d'un hook
+## Structure of a hook
 
 ```json
 {
@@ -105,29 +105,29 @@ Execute **apres** l'utilisation de l'outil.
 }
 ```
 
-### Champ `matcher`
+### `matcher` field
 
-Expression reguliere pour filtrer les outils:
+Regular expression to filter tools:
 
 | Matcher | Description |
 |---------|-------------|
-| `"Edit"` | Uniquement Edit |
-| `"Edit\|Write"` | Edit ou Write |
-| `".*"` | Tous les outils |
-| `"Bash"` | Uniquement Bash |
+| `"Edit"` | Edit only |
+| `"Edit\|Write"` | Edit or Write |
+| `".*"` | All tools |
+| `"Bash"` | Bash only |
 
-### Champ `command`
+### `command` field
 
-Commande shell a executer. Variables disponibles:
+Shell command to execute. Available variables:
 
 | Variable | Description |
 |----------|-------------|
-| `$FILE_PATH` | Chemin du fichier concerne |
-| `$TOOL_NAME` | Nom de l'outil |
+| `$FILE_PATH` | Path of the file involved |
+| `$TOOL_NAME` | Name of the tool |
 
-## Exemples de hooks
+## Hook examples
 
-### Protection de la branche main
+### Protecting the main branch
 
 ```json
 {
@@ -142,7 +142,7 @@ Commande shell a executer. Variables disponibles:
 }
 ```
 
-Script `scripts/validate.sh`:
+`scripts/validate.sh` script:
 
 ```bash
 #!/bin/bash
@@ -159,7 +159,7 @@ case "$1" in
 esac
 ```
 
-### Auto-format avec Prettier
+### Auto-format with Prettier
 
 ```json
 {
@@ -189,7 +189,7 @@ case "$1" in
 esac
 ```
 
-### Type-check TypeScript
+### TypeScript type-check
 
 ```json
 {
@@ -219,7 +219,7 @@ case "$1" in
 esac
 ```
 
-### Auto-install des dependances
+### Auto-install dependencies
 
 ```json
 {
@@ -249,9 +249,9 @@ case "$1" in
 esac
 ```
 
-## Configuration complete
+## Complete configuration
 
-Exemple de `.claude/settings.json` complet:
+Example of a complete `.claude/settings.json`:
 
 ```json
 {
@@ -280,9 +280,9 @@ Exemple de `.claude/settings.json` complet:
 }
 ```
 
-## Script de validation unifie
+## Unified validation script
 
-Un seul script pour tous les hooks:
+A single script for all hooks:
 
 ```bash
 #!/bin/bash
@@ -327,77 +327,77 @@ case "$1" in
 esac
 ```
 
-## Bonnes pratiques
+## Best practices
 
-### 1. Hooks rapides
+### 1. Fast hooks
 
-Les hooks sont executes a chaque utilisation d'outil. Gardez-les rapides:
+Hooks run on every tool usage. Keep them fast:
 
 ```bash
-# Bon - rapide
+# Good - fast
 npx prettier --write "$FILE"
 
-# Mauvais - lent
+# Bad - slow
 npm run build
 ```
 
-### 2. Gestion des erreurs
+### 2. Error handling
 
-Les PreToolUse peuvent bloquer, mais les PostToolUse ne devraient pas echouer bruyamment:
+PreToolUse hooks can block, but PostToolUse hooks should not fail loudly:
 
 ```bash
-# PostToolUse - ne pas bloquer
+# PostToolUse - do not block
 npx prettier --write "$FILE" 2>/dev/null || true
 ```
 
-### 3. Messages clairs
+### 3. Clear messages
 
-Pour les PreToolUse qui bloquent:
+For blocking PreToolUse hooks:
 
 ```bash
-echo "BLOCKED: Raison claire"
-echo "Solution: Ce que l'utilisateur doit faire"
+echo "BLOCKED: Clear reason"
+echo "Solution: What the user needs to do"
 exit 1
 ```
 
-### 4. Filtrage precis
+### 4. Precise filtering
 
-Cibler uniquement les outils necessaires:
+Target only the necessary tools:
 
 ```json
 {
-  "matcher": "Edit|Write",  // Pas ".*"
+  "matcher": "Edit|Write",  // Not ".*"
   "command": "..."
 }
 ```
 
-## Debugger les hooks
+## Debugging hooks
 
-### Voir les hooks actifs
+### See active hooks
 
 ```bash
 cat .claude/settings.json | jq '.hooks'
 ```
 
-### Tester un hook manuellement
+### Test a hook manually
 
 ```bash
 scripts/validate.sh protect-main
-echo $?  # 0 = OK, 1 = bloque
+echo $?  # 0 = OK, 1 = blocked
 ```
 
-### Logs verbeux
+### Verbose logs
 
 ```bash
 #!/bin/bash
-# Ajouter au debut du script
+# Add at the beginning of the script
 echo "[HOOK] Action: $1, File: $2" >> /tmp/claude-hooks.log
 ```
 
 ---
 
-## Voir aussi
+## See also
 
-- [Rules](./rules) - Conventions par fichier
+- [Rules](./rules) - Per-file conventions
 - [MCP Servers](./mcp-servers) - Extensions via MCP
-- [Architecture](/docs/intro/architecture) - Vue d'ensemble
+- [Architecture](/docs/intro/architecture) - Overview

@@ -1,171 +1,171 @@
 ---
 sidebar_position: 6
-title: "05 - Audit de sécurité"
-description: Réalisez un audit de sécurité OWASP complet et corrigez les vulnérabilités
+title: "05 - Security Audit"
+description: Run a complete OWASP security audit and fix vulnerabilities
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# Audit de sécurité OWASP
+# OWASP Security Audit
 
-<DifficultyBadge level="intermediate" /> **Durée estimée : 30 minutes**
+<DifficultyBadge level="intermediate" /> **Estimated duration: 30 minutes**
 
-Ce tutoriel vous montre comment réaliser un audit de sécurité complet basé sur l'OWASP Top 10 et corriger les vulnérabilités détectées.
+This tutorial shows you how to run a complete security audit based on the OWASP Top 10 and fix the detected vulnerabilities.
 
-## Objectifs
+## Goals
 
-À la fin de ce tutoriel, vous saurez :
-- Utiliser `/qa:qa-security` pour un audit OWASP
-- Identifier les vulnérabilités courantes
-- Corriger les problèmes de sécurité
-- Mettre en place des bonnes pratiques
+By the end of this tutorial, you will know how to:
+- Use `/qa:qa-security` for an OWASP audit
+- Identify common vulnerabilities
+- Fix security issues
+- Apply best practices
 
-## Prérequis
+## Prerequisites
 
-- Un projet web existant (Node.js, Python, ou autre)
-- Connaissances de base en sécurité web
+- An existing web project (Node.js, Python, or other)
+- Basic web security knowledge
 
-## L'OWASP Top 10
+## The OWASP Top 10
 
-L'OWASP Top 10 liste les vulnérabilités web les plus critiques :
+The OWASP Top 10 lists the most critical web vulnerabilities:
 
-| # | Vulnérabilité | Description |
+| # | Vulnerability | Description |
 |---|---------------|-------------|
-| A01 | Broken Access Control | Contrôle d'accès défaillant |
-| A02 | Cryptographic Failures | Failles cryptographiques |
+| A01 | Broken Access Control | Failed access control |
+| A02 | Cryptographic Failures | Cryptographic flaws |
 | A03 | Injection | SQL, XSS, Command injection |
-| A04 | Insecure Design | Conception non sécurisée |
-| A05 | Security Misconfiguration | Mauvaise configuration |
-| A06 | Vulnerable Components | Dépendances vulnérables |
-| A07 | Auth Failures | Authentification défaillante |
-| A08 | Data Integrity Failures | Intégrité des données |
-| A09 | Logging Failures | Logging insuffisant |
+| A04 | Insecure Design | Insecure design |
+| A05 | Security Misconfiguration | Misconfiguration |
+| A06 | Vulnerable Components | Vulnerable dependencies |
+| A07 | Auth Failures | Failed authentication |
+| A08 | Data Integrity Failures | Data integrity |
+| A09 | Logging Failures | Insufficient logging |
 | A10 | SSRF | Server-Side Request Forgery |
 
-## Étape 1 : Lancer l'audit
+## Step 1: Run the audit
 
 ```bash
 /qa:qa-security
 ```
 
-Claude va analyser votre projet et produire un rapport détaillé.
+Claude will analyze your project and produce a detailed report.
 
-## Étape 2 : Analyser le rapport
+## Step 2: Analyze the report
 
-**Exemple de rapport :**
+**Sample report:**
 
 ```markdown
-## Audit de Sécurité OWASP
+## OWASP Security Audit
 
-### 🔴 Critiques (2)
+### 🔴 Critical (2)
 
 #### A03 - SQL Injection
-**Fichier**: `src/routes/users.ts:45`
-**Code vulnérable**:
+**File**: `src/routes/users.ts:45`
+**Vulnerable code**:
 ```typescript
 const user = await db.query(`SELECT * FROM users WHERE id = '${req.params.id}'`);
 ```
-**Risque**: Un attaquant peut injecter du SQL malveillant
-**Fix**: Utiliser des requêtes paramétrées
+**Risk**: An attacker can inject malicious SQL
+**Fix**: Use parameterized queries
 
 #### A03 - XSS (Cross-Site Scripting)
-**Fichier**: `src/views/profile.ejs:12`
-**Code vulnérable**:
+**File**: `src/views/profile.ejs:12`
+**Vulnerable code**:
 ```html
-<h1>Bienvenue <%- user.name %></h1>
+<h1>Welcome <%- user.name %></h1>
 ```
-**Risque**: Injection de scripts malveillants
-**Fix**: Utiliser `<%= %>` pour échapper le HTML
+**Risk**: Injection of malicious scripts
+**Fix**: Use `<%= %>` to escape HTML
 
-### 🟠 Élevés (3)
+### 🟠 High (3)
 
-#### A06 - Dépendances vulnérables
-**Détail**: 3 dépendances avec des CVE connues
+#### A06 - Vulnerable dependencies
+**Detail**: 3 dependencies with known CVEs
 - lodash@4.17.15 → CVE-2021-23337 (Prototype Pollution)
 - axios@0.21.0 → CVE-2021-3749 (ReDoS)
-- express@4.17.0 → Mise à jour recommandée
+- express@4.17.0 → Update recommended
 
-#### A02 - Secrets en clair
-**Fichier**: `.env.example`
-**Problème**: Clés API visibles dans le repo
-**Fix**: Utiliser `.env.example` sans valeurs réelles
+#### A02 - Plain-text secrets
+**File**: `.env.example`
+**Issue**: API keys visible in the repo
+**Fix**: Use `.env.example` without real values
 
-### 🟡 Moyens (2)
+### 🟡 Medium (2)
 
-#### A05 - Headers de sécurité manquants
-**Manquants**:
+#### A05 - Missing security headers
+**Missing**:
 - X-Content-Type-Options
 - X-Frame-Options
 - Content-Security-Policy
 
-#### A09 - Logging insuffisant
-**Problème**: Les tentatives de connexion échouées ne sont pas loguées
+#### A09 - Insufficient logging
+**Issue**: Failed login attempts are not logged
 ```
 
-## Étape 3 : Corriger les vulnérabilités critiques
+## Step 3: Fix critical vulnerabilities
 
-### Fix SQL Injection
+### SQL Injection fix
 
-**Avant (vulnérable):**
+**Before (vulnerable):**
 ```typescript
 const user = await db.query(`SELECT * FROM users WHERE id = '${req.params.id}'`);
 ```
 
-**Après (sécurisé):**
+**After (secure):**
 ```typescript
 const user = await db.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
 ```
 
-Ou avec un ORM (Prisma) :
+Or with an ORM (Prisma):
 ```typescript
 const user = await prisma.user.findUnique({
   where: { id: req.params.id }
 });
 ```
 
-### Fix XSS
+### XSS fix
 
-**Avant (vulnérable):**
+**Before (vulnerable):**
 ```html
-<h1>Bienvenue <%- user.name %></h1>
+<h1>Welcome <%- user.name %></h1>
 ```
 
-**Après (sécurisé):**
+**After (secure):**
 ```html
-<h1>Bienvenue <%= user.name %></h1>
+<h1>Welcome <%= user.name %></h1>
 ```
 
-En React (automatiquement sécurisé) :
+In React (automatically secure):
 ```tsx
-<h1>Bienvenue {user.name}</h1>
+<h1>Welcome {user.name}</h1>
 ```
 
 :::warning dangerouslySetInnerHTML
-En React, n'utilisez **jamais** `dangerouslySetInnerHTML` avec des données utilisateur sans les sanitizer avec DOMPurify.
+In React, **never** use `dangerouslySetInnerHTML` with user data without sanitizing it with DOMPurify.
 :::
 
-## Étape 4 : Mettre à jour les dépendances
+## Step 4: Update dependencies
 
 ```bash
 /ops:ops-deps
 ```
 
-Claude va :
-1. Identifier les dépendances vulnérables
-2. Proposer les mises à jour
-3. Vérifier la compatibilité
+Claude will:
+1. Identify vulnerable dependencies
+2. Propose updates
+3. Check compatibility
 
 ```bash
-# Mise à jour automatique des patches de sécurité
+# Automatic update of security patches
 npm audit fix
 
-# Voir les vulnérabilités restantes
+# View remaining vulnerabilities
 npm audit
 ```
 
-## Étape 5 : Ajouter les headers de sécurité
+## Step 5: Add security headers
 
-Utilisez **helmet** pour Express :
+Use **helmet** for Express:
 
 ```bash
 npm install helmet
@@ -176,7 +176,7 @@ import helmet from 'helmet';
 
 app.use(helmet());
 
-// Configuration personnalisée
+// Custom configuration
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -190,9 +190,9 @@ app.use(helmet({
 }));
 ```
 
-## Étape 6 : Améliorer le logging
+## Step 6: Improve logging
 
-Ajoutez le logging des événements de sécurité :
+Add logging for security events:
 
 ```typescript
 import winston from 'winston';
@@ -205,7 +205,7 @@ const securityLogger = winston.createLogger({
   ],
 });
 
-// Logger les tentatives de connexion
+// Log login attempts
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -232,38 +232,38 @@ app.post('/login', async (req, res) => {
 });
 ```
 
-## Étape 7 : Vérifier les corrections
+## Step 7: Verify the fixes
 
-Relancez l'audit :
+Re-run the audit:
 
 ```bash
 /qa:qa-security
 ```
 
-Le rapport devrait maintenant montrer :
+The report should now show:
 
 ```markdown
-## Audit de Sécurité OWASP
+## OWASP Security Audit
 
-### ✅ Résumé
-- Critiques: 0 (↓ de 2)
-- Élevés: 1 (↓ de 3)
-- Moyens: 0 (↓ de 2)
+### ✅ Summary
+- Critical: 0 (↓ from 2)
+- High: 1 (↓ from 3)
+- Medium: 0 (↓ from 2)
 
-### 🟠 Élevés (1)
+### 🟠 High (1)
 
-#### A06 - Dépendance vulnérable restante
-**Détail**: axios@0.21.0 nécessite une mise à jour manuelle
+#### A06 - Remaining vulnerable dependency
+**Detail**: axios@0.21.0 requires a manual update
 **Action**: `npm install axios@latest`
 ```
 
-## Étape 8 : Commiter
+## Step 8: Commit
 
 ```bash
 /work:work-commit
 ```
 
-**Message suggéré :**
+**Suggested message:**
 
 ```
 fix(security): address OWASP vulnerabilities
@@ -275,46 +275,46 @@ fix(security): address OWASP vulnerabilities
 - Add security event logging
 ```
 
-## Checklist de sécurité
+## Security checklist
 
-Utilisez cette checklist pour vos projets :
+Use this checklist for your projects:
 
-### Entrées utilisateur
-- [ ] Toutes les entrées sont validées
-- [ ] Requêtes SQL paramétrées
-- [ ] HTML échappé dans les vues
-- [ ] Fichiers uploadés validés (type, taille)
+### User input
+- [ ] All inputs are validated
+- [ ] Parameterized SQL queries
+- [ ] HTML escaped in views
+- [ ] Uploaded files validated (type, size)
 
-### Authentification
-- [ ] Mots de passe hashés (bcrypt, argon2)
-- [ ] Tokens JWT avec expiration courte
-- [ ] Rate limiting sur login
-- [ ] Logout invalide le token
+### Authentication
+- [ ] Passwords hashed (bcrypt, argon2)
+- [ ] JWT tokens with short expiration
+- [ ] Rate limiting on login
+- [ ] Logout invalidates the token
 
 ### Configuration
-- [ ] Variables d'environnement pour les secrets
-- [ ] HTTPS activé en production
-- [ ] Headers de sécurité configurés
-- [ ] CORS configuré strictement
+- [ ] Environment variables for secrets
+- [ ] HTTPS enabled in production
+- [ ] Security headers configured
+- [ ] CORS configured strictly
 
-### Dépendances
-- [ ] `npm audit` sans vulnérabilités critiques
-- [ ] Dépendances à jour
-- [ ] Lockfile committé
+### Dependencies
+- [ ] `npm audit` with no critical vulnerabilities
+- [ ] Dependencies up to date
+- [ ] Lockfile committed
 
 ### Logging
-- [ ] Événements de sécurité loggés
-- [ ] Pas de données sensibles dans les logs
-- [ ] Logs centralisés en production
+- [ ] Security events logged
+- [ ] No sensitive data in logs
+- [ ] Centralized logs in production
 
-## Prochaines étapes
+## Next steps
 
-- [Tutoriel 06 : Pipeline CI/CD](/docs/tutorials/cicd-github) - Automatiser les audits
-- [Guide API](/docs/concepts/stack-recipes) - Sécurité des APIs
-- [Commande /qa:qa-audit](/docs/commands/qa/qa-audit) - Audit complet
+- [Tutorial 06: CI/CD Pipeline](/docs/tutorials/cicd-github) - Automate audits
+- [API Guide](/docs/concepts/stack-recipes) - API security
+- [Command /qa:qa-audit](/docs/commands/qa/qa-audit) - Full audit
 
 ---
 
-:::tip Automatisation
-Ajoutez `/qa:qa-security` dans votre pipeline CI/CD pour détecter les vulnérabilités avant le déploiement.
+:::tip Automation
+Add `/qa:qa-security` to your CI/CD pipeline to detect vulnerabilities before deployment.
 :::

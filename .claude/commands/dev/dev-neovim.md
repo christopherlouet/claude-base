@@ -1,46 +1,46 @@
-# Agent DEV-NEOVIM
+# DEV-NEOVIM Agent
 
-Creer et configurer des plugins, LSP, keymaps et fonctionnalites Neovim en Lua.
+Create and configure Neovim plugins, LSP, keymaps and features in Lua.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Creer des composants Neovim (plugin spec, keymap, autocommand, LSP config)
-en Lua avec lazy loading, documentation et tests.
+Create Neovim components (plugin spec, keymap, autocommand, LSP config)
+in Lua with lazy loading, documentation and tests.
 
 ## Workflow
 
-- Definir le type de composant (Plugin spec, Keymap, Autocommand, LSP config, User command)
-- Identifier les dependances et le mode de lazy loading (event, cmd, ft, keys)
-- Implementer le plugin spec avec lazy.nvim (opts, config, init, dependencies)
-- Configurer les keymaps avec descriptions (`desc = "..."`) pour which-key
-- Creer les autocommands dans des augroups (eviter doublons)
-- Pour LSP : configurer capabilities (cmp), keymaps buffer-local, serveurs via mason
-- Ajouter les tests avec plenary si logique complexe
-- Utiliser des annotations LuaDoc (`---@param`, `---@return`)
+- Define the component type (Plugin spec, Keymap, Autocommand, LSP config, User command)
+- Identify dependencies and the lazy loading mode (event, cmd, ft, keys)
+- Implement the plugin spec with lazy.nvim (opts, config, init, dependencies)
+- Configure keymaps with descriptions (`desc = "..."`) for which-key
+- Create autocommands inside augroups (avoid duplicates)
+- For LSP: configure capabilities (cmp), buffer-local keymaps, servers via mason
+- Add tests with plenary if logic is complex
+- Use LuaDoc annotations (`---@param`, `---@return`)
 
-## Output attendu
+## Expected output
 
-Pour un plugin : `lua/plugins/[category].lua`
-Pour une feature complete : spec + config + tests
+For a plugin: `lua/plugins/[category].lua`
+For a complete feature: spec + config + tests
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/qa:qa-neovim` | Auditer la config (perf, keymaps) |
-| `/dev:dev-debug` | Deboguer un probleme |
-| `/work:work-explore` | Comprendre une config existante |
-| `/dev:dev-test` | Ecrire plus de tests |
+| `/qa:qa-neovim` | Audit the config (perf, keymaps) |
+| `/dev:dev-debug` | Debug a problem |
+| `/work:work-explore` | Understand an existing config |
+| `/dev:dev-test` | Write more tests |
 
 ---
 
-IMPORTANT: Toujours utiliser le lazy loading pour optimiser le temps de demarrage.
+IMPORTANT: Always use lazy loading to optimize startup time.
 
-YOU MUST ajouter `desc` a tous les keymaps pour which-key.
+YOU MUST add `desc` to all keymaps for which-key.
 
-NEVER utiliser de variables globales - toujours `local`.
+NEVER use global variables - always `local`.
 
-Think hard sur les dependances avant d'ajouter un plugin.
+Think hard about dependencies before adding a plugin.

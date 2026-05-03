@@ -1,6 +1,6 @@
 ---
 name: dev-react-perf
-description: Optimisation des performances React/Next.js. Declencher quand l'utilisateur veut optimiser le rendu, reduire les re-renders, ou ameliorer les Core Web Vitals.
+description: React/Next.js performance optimization. Trigger when the user wants to optimize rendering, reduce re-renders, or improve Core Web Vitals.
 allowed-tools:
   - Read
   - Write
@@ -13,9 +13,9 @@ context: fork
 
 # React Performance Optimization
 
-## Eviter les re-renders inutiles
+## Avoid unnecessary re-renders
 
-### useMemo - Memoiser les calculs couteux
+### useMemo - Memoize expensive computations
 
 ```tsx
 const expensiveValue = useMemo(() => {
@@ -23,7 +23,7 @@ const expensiveValue = useMemo(() => {
 }, [items]);
 ```
 
-### useCallback - Memoiser les fonctions
+### useCallback - Memoize functions
 
 ```tsx
 const handleClick = useCallback(() => {
@@ -31,7 +31,7 @@ const handleClick = useCallback(() => {
 }, [formData, onSubmit]);
 ```
 
-### React.memo - Memoiser les composants
+### React.memo - Memoize components
 
 ```tsx
 const UserCard = memo(({ user }: Props) => {
@@ -56,7 +56,7 @@ const DynamicComponent = dynamic(() => import('./Component'), {
 });
 ```
 
-## Virtualisation
+## Virtualization
 
 ```tsx
 import { FixedSizeList } from 'react-window';
@@ -89,24 +89,24 @@ import Image from 'next/image';
 
 ## Core Web Vitals
 
-| Metrique | Cible | Optimisation |
-|----------|-------|--------------|
+| Metric | Target | Optimization |
+|--------|--------|--------------|
 | LCP | < 2.5s | Preload hero image, SSR |
 | FID | < 100ms | Code splitting, defer JS |
 | CLS | < 0.1 | Explicit dimensions |
 
 ## Composition Patterns
 
-### Eviter les boolean props excessifs
+### Avoid excessive boolean props
 
 ```tsx
-// MAUVAIS : boolean props explosion
+// BAD: boolean props explosion
 <Button primary large rounded disabled loading />
 
-// BON : composition avec variants
+// GOOD: composition with variants
 <Button variant="primary" size="large" shape="rounded" state="loading" />
 
-// MIEUX : composants composes
+// BETTER: compound components
 <Button.Primary size="large">
   <Button.Spinner /> Loading...
 </Button.Primary>
@@ -115,7 +115,7 @@ import Image from 'next/image';
 ### Compound Components
 
 ```tsx
-// Pattern compound component
+// Compound component pattern
 function Tabs({ children }: { children: React.ReactNode }) {
   const [active, setActive] = useState(0);
   return (
@@ -140,37 +140,37 @@ Tabs.Panel = function TabPanel({ index, children }) { /* ... */ };
 </Tabs>
 ```
 
-### State Colocation (pousser l'etat vers le bas)
+### State Colocation (push state down)
 
 ```tsx
-// MAUVAIS : etat dans le parent (re-render tout)
+// BAD: state in the parent (re-renders everything)
 function Page() {
   const [search, setSearch] = useState('');
   return (
     <div>
       <SearchBar value={search} onChange={setSearch} />
-      <ExpensiveList /> {/* Re-render inutile ! */}
-      <Footer />       {/* Re-render inutile ! */}
+      <ExpensiveList /> {/* Unnecessary re-render! */}
+      <Footer />       {/* Unnecessary re-render! */}
     </div>
   );
 }
 
-// BON : etat dans le composant qui l'utilise
+// GOOD: state in the component that uses it
 function Page() {
   return (
     <div>
-      <SearchSection />     {/* Etat interne */}
-      <ExpensiveList />     {/* Pas affecte */}
-      <Footer />            {/* Pas affecte */}
+      <SearchSection />     {/* Internal state */}
+      <ExpensiveList />     {/* Not affected */}
+      <Footer />            {/* Not affected */}
     </div>
   );
 }
 ```
 
-### Children as Props (eviter les re-renders)
+### Children as Props (avoid re-renders)
 
 ```tsx
-// BON : children ne re-rendent pas quand le parent change
+// GOOD: children do not re-render when the parent changes
 function ScrollTracker({ children }: { children: React.ReactNode }) {
   const [scrollY, setScrollY] = useState(0);
   useEffect(() => {
@@ -182,7 +182,7 @@ function ScrollTracker({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <ScrollIndicator position={scrollY} />
-      {children} {/* Ne re-rend PAS quand scrollY change */}
+      {children} {/* Does NOT re-render when scrollY changes */}
     </div>
   );
 }
@@ -191,23 +191,23 @@ function ScrollTracker({ children }: { children: React.ReactNode }) {
 ### Render Props vs Hooks
 
 ```tsx
-// PREFERER les hooks aux render props
-// MAUVAIS : render prop (verbose, nested)
+// PREFER hooks over render props
+// BAD: render prop (verbose, nested)
 <WindowSize render={({ width }) => (
-  <div>{width > 768 ? <Desktop /> : <Mobile />}</div>
+  <div>{width > 768 ? <Desktop />: <Mobile />}</div>
 )} />
 
-// BON : custom hook (simple, composable)
+// GOOD: custom hook (simple, composable)
 function ResponsiveLayout() {
   const { width } = useWindowSize();
-  return width > 768 ? <Desktop /> : <Mobile />;
+  return width > 768 ? <Desktop />: <Mobile />;
 }
 ```
 
-## Outils
+## Tools
 
 ```bash
-# Analyser le bundle
+# Analyze the bundle
 npm run build -- --analyze
 
 # Lighthouse

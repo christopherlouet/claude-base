@@ -1,17 +1,17 @@
 ---
 sidebar_position: 5
 title: OPNsense Firewall
-description: Exemple de configuration OPNsense avec Terraform derrière une box Orange
+description: Example OPNsense configuration with Terraform behind an Orange box
 ---
 
-# OPNsense Firewall avec Terraform
+# OPNsense Firewall with Terraform
 
-Cet exemple montre comment configurer un firewall OPNsense en Infrastructure as Code avec Terraform, dans une architecture derrière une box Orange en mode DMZ.
+This example shows how to configure an OPNsense firewall as Infrastructure as Code with Terraform, in an architecture behind an Orange box in DMZ mode.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/ops:ops-opnsense "Configurer OPNsense derrière box Orange avec firewall, DHCP et DNS"
+/ops:ops-opnsense "Configure OPNsense behind Orange box with firewall, DHCP and DNS"
 ```
 
 ## Architecture
@@ -32,17 +32,17 @@ Cet exemple montre comment configurer un firewall OPNsense en Infrastructure as 
                                     └─────────────┘             └─────────────┘
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 opnsense-config/
-├── main.tf              # Configuration principale
-├── variables.tf         # Variables d'entrée
+├── main.tf              # Main configuration
+├── variables.tf         # Input variables
 ├── outputs.tf           # Outputs
-└── terraform.tfvars     # Valeurs (NE PAS COMMITER)
+└── terraform.tfvars     # Values (DO NOT COMMIT)
 ```
 
-## Code Terraform
+## Terraform code
 
 ### `providers.tf`
 
@@ -70,42 +70,42 @@ provider "opnsense" {
 
 ```hcl
 variable "opnsense_uri" {
-  description = "URL de l'interface OPNsense (ex: https://192.168.10.1)"
+  description = "OPNsense interface URL (e.g., https://192.168.10.1)"
   type        = string
 }
 
 variable "opnsense_api_key" {
-  description = "Clé API OPNsense"
+  description = "OPNsense API key"
   type        = string
   sensitive   = true
 }
 
 variable "opnsense_api_secret" {
-  description = "Secret API OPNsense"
+  description = "OPNsense API secret"
   type        = string
   sensitive   = true
 }
 
 variable "allow_insecure" {
-  description = "Autoriser les certificats auto-signés"
+  description = "Allow self-signed certificates"
   type        = bool
   default     = true
 }
 
 variable "lan_ip" {
-  description = "Adresse IP du LAN OPNsense"
+  description = "OPNsense LAN IP address"
   type        = string
   default     = "192.168.10.1"
 }
 
 variable "dhcp_range_start" {
-  description = "Première IP de la plage DHCP"
+  description = "First IP of the DHCP range"
   type        = string
   default     = "192.168.10.100"
 }
 
 variable "dhcp_range_end" {
-  description = "Dernière IP de la plage DHCP"
+  description = "Last IP of the DHCP range"
   type        = string
   default     = "192.168.10.200"
 }
@@ -118,7 +118,7 @@ variable "dhcp_range_end" {
 # Interfaces
 # =============================================================================
 
-# Interface WAN - Connectée à la Box Orange (reçoit IP via DMZ)
+# WAN interface - Connected to the Orange box (gets IP via DMZ)
 resource "opnsense_interface" "wan" {
   device        = "vtnet0"
   description   = "WAN - Box Orange"
@@ -128,10 +128,10 @@ resource "opnsense_interface" "wan" {
   block_bogons  = true
 }
 
-# Interface LAN - Réseau local
+# LAN interface - Local network
 resource "opnsense_interface" "lan" {
   device      = "vtnet1"
-  description = "LAN - Réseau local"
+  description = "LAN - Local network"
   ipv4_type   = "static"
   ipv4_addr   = var.lan_ip
   ipv4_mask   = 24
@@ -146,21 +146,21 @@ resource "opnsense_firewall_alias" "ports_web" {
   name        = "PORTS_WEB"
   type        = "port"
   content     = ["80", "443"]
-  description = "Ports HTTP/HTTPS"
+  description = "HTTP/HTTPS ports"
 }
 
 resource "opnsense_firewall_alias" "dns_public" {
   name        = "DNS_PUBLIC"
   type        = "host"
   content     = ["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"]
-  description = "Serveurs DNS publics"
+  description = "Public DNS servers"
 }
 
 # =============================================================================
-# Règles Firewall
+# Firewall rules
 # =============================================================================
 
-# OBLIGATOIRE: Anti-lockout - Accès admin depuis LAN
+# MANDATORY: Anti-lockout - Admin access from LAN
 resource "opnsense_firewall_filter" "anti_lockout" {
   interface        = "lan"
   direction        = "in"
@@ -170,13 +170,13 @@ resource "opnsense_firewall_filter" "anti_lockout" {
   source_net       = "lannet"
   destination_net  = "(self)"
   destination_port = "443"
-  description      = "ANTI-LOCKOUT: Accès admin OPNsense"
+  description      = "ANTI-LOCKOUT: OPNsense admin access"
   sequence         = 1
   enabled          = true
   quick            = true
 }
 
-# Autoriser HTTP/HTTPS sortant depuis le LAN
+# Allow outbound HTTP/HTTPS from LAN
 resource "opnsense_firewall_filter" "lan_to_web" {
   interface        = "lan"
   direction        = "in"
@@ -186,12 +186,12 @@ resource "opnsense_firewall_filter" "lan_to_web" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = opnsense_firewall_alias.ports_web.name
-  description      = "Autoriser HTTP/HTTPS sortant"
+  description      = "Allow outbound HTTP/HTTPS"
   sequence         = 10
   enabled          = true
 }
 
-# Autoriser DNS sortant (UDP)
+# Allow outbound DNS (UDP)
 resource "opnsense_firewall_filter" "lan_to_dns_udp" {
   interface        = "lan"
   direction        = "in"
@@ -201,12 +201,12 @@ resource "opnsense_firewall_filter" "lan_to_dns_udp" {
   source_net       = "lannet"
   destination_net  = "any"
   destination_port = "53"
-  description      = "Autoriser DNS sortant (UDP)"
+  description      = "Allow outbound DNS (UDP)"
   sequence         = 11
   enabled          = true
 }
 
-# Bloquer et logger tout le reste
+# Block and log everything else
 resource "opnsense_firewall_filter" "lan_block_all" {
   interface       = "lan"
   direction       = "in"
@@ -216,7 +216,7 @@ resource "opnsense_firewall_filter" "lan_block_all" {
   source_net      = "any"
   destination_net = "any"
   log             = true
-  description     = "Bloquer et logger tout le reste"
+  description     = "Block and log everything else"
   sequence        = 65535
   enabled         = true
 }
@@ -259,52 +259,52 @@ resource "opnsense_unbound_forward" "cloudflare_2" {
 
 ```hcl
 output "lan_network" {
-  description = "Réseau LAN configuré"
+  description = "Configured LAN network"
   value       = "${opnsense_interface.lan.ipv4_addr}/${opnsense_interface.lan.ipv4_mask}"
 }
 
 output "dhcp_range" {
-  description = "Plage DHCP"
+  description = "DHCP range"
   value       = "${opnsense_dhcp_v4_server.lan.range_from} - ${opnsense_dhcp_v4_server.lan.range_to}"
 }
 
 output "admin_url" {
-  description = "URL d'administration OPNsense"
+  description = "OPNsense admin URL"
   value       = "https://${opnsense_interface.lan.ipv4_addr}"
 }
 
 output "summary" {
-  description = "Résumé de la configuration"
+  description = "Configuration summary"
   value = <<-EOT
     ╔═══════════════════════════════════════════════════════════════╗
-    ║           OPNsense - Configuration Box Orange                  ║
+    ║           OPNsense - Orange Box Configuration                  ║
     ╠═══════════════════════════════════════════════════════════════╣
-    ║  WAN: ${opnsense_interface.wan.device} (DHCP depuis Box Orange)
+    ║  WAN: ${opnsense_interface.wan.device} (DHCP from Orange Box)
     ║  LAN: ${opnsense_interface.lan.device} (${opnsense_interface.lan.ipv4_addr}/${opnsense_interface.lan.ipv4_mask})
     ║
     ║  DHCP: ${opnsense_dhcp_v4_server.lan.range_from} - ${opnsense_dhcp_v4_server.lan.range_to}
     ║  DNS: Cloudflare (1.1.1.1, 1.0.0.1)
     ║
-    ║  Firewall: 4 règles (anti-lockout + web + dns + block)
+    ║  Firewall: 4 rules (anti-lockout + web + dns + block)
     ╚═══════════════════════════════════════════════════════════════╝
 
-    Accès admin: https://${opnsense_interface.lan.ipv4_addr}
+    Admin access: https://${opnsense_interface.lan.ipv4_addr}
   EOT
 }
 ```
 
-## Déploiement
+## Deployment
 
-### 1. Configurer les credentials
+### 1. Configure credentials
 
 ```bash
-# Variables d'environnement (recommandé)
+# Environment variables (recommended)
 export TF_VAR_opnsense_uri="https://192.168.10.1"
-export TF_VAR_opnsense_api_key="votre-api-key"
-export TF_VAR_opnsense_api_secret="votre-api-secret"
+export TF_VAR_opnsense_api_key="your-api-key"
+export TF_VAR_opnsense_api_secret="your-api-secret"
 ```
 
-### 2. Initialiser et appliquer
+### 2. Initialize and apply
 
 ```bash
 terraform init
@@ -312,15 +312,15 @@ terraform plan
 terraform apply
 ```
 
-### 3. Vérifier
+### 3. Verify
 
 ```bash
 terraform output summary
 ```
 
-## Personnalisation
+## Customization
 
-### Ajouter une réservation DHCP
+### Add a DHCP reservation
 
 ```hcl
 resource "opnsense_dhcp_v4_static_map" "server" {
@@ -328,11 +328,11 @@ resource "opnsense_dhcp_v4_static_map" "server" {
   mac         = "00:11:22:33:44:55"
   ipaddr      = "192.168.10.20"
   hostname    = "server"
-  description = "Serveur principal"
+  description = "Main server"
 }
 ```
 
-### Ajouter un port forwarding
+### Add a port forwarding
 
 ```hcl
 resource "opnsense_nat_port_forward" "https_to_web" {
@@ -344,45 +344,45 @@ resource "opnsense_nat_port_forward" "https_to_web" {
   destination_port = "443"
   target           = "192.168.10.20"
   local_port       = "443"
-  description      = "HTTPS vers serveur web"
+  description      = "HTTPS to web server"
   nat_reflection   = "enable"
   filter_rule_association = "add-associated"
 }
 ```
 
-## Points de sécurité
+## Security points
 
-:::danger Règle Anti-lockout
-La règle anti-lockout (sequence 1) est **CRITIQUE**. Ne jamais la supprimer ou vous perdrez l'accès admin.
+:::danger Anti-lockout rule
+The anti-lockout rule (sequence 1) is **CRITICAL**. Never delete it or you will lose admin access.
 :::
 
 :::warning Credentials
-- Ne jamais commiter `terraform.tfvars` avec les credentials
-- Utiliser des variables d'environnement en CI/CD
-- Ajouter `*.tfstate*` et `terraform.tfvars` au `.gitignore`
+- Never commit `terraform.tfvars` with credentials
+- Use environment variables in CI/CD
+- Add `*.tfstate*` and `terraform.tfvars` to `.gitignore`
 :::
 
 ## Troubleshooting
 
-### Erreur connexion API
+### API connection error
 
 ```bash
 curl -k -u "$TF_VAR_opnsense_api_key:$TF_VAR_opnsense_api_secret" \
   "$TF_VAR_opnsense_uri/api/core/firmware/status"
 ```
 
-### Lockout (accès perdu)
+### Lockout (access lost)
 
-Via console Proxmox/local :
+Via Proxmox/local console:
 ```bash
-pfctl -d          # Désactiver le firewall
-# Corriger via interface web
-pfctl -e          # Réactiver le firewall
+pfctl -d          # Disable the firewall
+# Fix via web interface
+pfctl -e          # Re-enable the firewall
 ```
 
-## Voir aussi
+## See also
 
-- [Commande `/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense)
+- [Command `/ops:ops-opnsense`](/docs/commands/ops/ops-opnsense)
 - [Skill `ops-opnsense`](/docs/skills/ops-opnsense)
 - [Agent `ops-opnsense`](/docs/agents/ops-opnsense)
-- [Exemple VM Proxmox](/docs/examples/ops/proxmox-vm)
+- [Proxmox VM example](/docs/examples/ops/proxmox-vm)

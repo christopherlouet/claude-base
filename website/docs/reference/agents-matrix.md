@@ -1,184 +1,184 @@
 ---
 sidebar_position: 3
-title: Matrice des Agents
-description: Repartition des 63 agents par modele
+title: Agents Matrix
+description: Breakdown of the 63 agents by model
 ---
 
-# Matrice des Agents
+# Agents Matrix
 
-> **63 sub-agents** avec modele et outils
+> **63 sub-agents** with model and tools
 >
-> Pour la liste exhaustive et toujours a jour, voir le [Catalogue des agents](/docs/reference/agents-catalog) (auto-genere depuis `.claude/agents/`).
+> For the exhaustive and always up-to-date list, see the [Agents catalog](/docs/reference/agents-catalog) (auto-generated from `.claude/agents/`).
 
-## Par modele
+## By model
 
-Repartition actuelle : **22 Haiku** (rapide/economique), **35 Sonnet** (analyse), **6 sans modele explicite**.
+Current breakdown: **22 Haiku** (fast/economical), **35 Sonnet** (analysis), **6 without explicit model**.
 
-### Haiku (Rapide/Economique)
+### Haiku (Fast/Economical)
 
-| Agent | Description | Outils |
-|-------|-------------|--------|
-| `biz-competitor` | Analyse concurrentielle | Read, Grep, Glob, WebSearch |
+| Agent | Description | Tools |
+|-------|-------------|-------|
+| `biz-competitor` | Competitive analysis | Read, Grep, Glob, WebSearch |
 | `biz-model` | Business model | Read, Grep, Glob, WebSearch |
-| `biz-mvp` | Definition MVP | Read, Grep, Glob, Edit, Write |
-| `biz-personas` | Personas utilisateur | Read, Grep, Glob, Edit, Write |
-| `dev-design-system` | Design tokens et composants | Read, Grep, Glob |
-| `dev-prisma` | ORM Prisma | Read, Grep, Glob, Bash |
-| `dev-trpc` | APIs type-safe tRPC | Read, Grep, Glob |
-| `doc-changelog` | Generer changelog | Read, Grep, Glob, Edit, Write |
-| `doc-explain` | Expliquer du code | Read, Grep, Glob |
-| `doc-generate` | Generer documentation | Read, Grep, Glob, Edit, Write |
-| `doc-onboard` | Onboarding developpeur | Read, Grep, Glob |
-| `growth-cro` | Optimisation taux de conversion | Read, Grep, Glob |
-| `growth-localization` | Localisation multi-marches | Read, Grep, Glob |
-| `growth-seo` | Audit SEO technique | Read, Grep, Glob, WebFetch |
-| `legal-privacy-policy` | Politique de confidentialite | Read, Grep, Glob, Edit, Write |
-| `legal-terms-of-service` | Conditions Generales | Read, Grep, Glob, Edit, Write |
-| `ops-deps` | Audit dependances | Read, Grep, Glob, Bash |
-| `ops-health` | Health check rapide | Read, Grep, Glob, Bash |
-| `ops-serverless` | Deploiement serverless | Read, Grep, Glob, Bash |
-| `ops-vercel` | Deploiement Vercel | Read, Grep, Glob, Bash |
-| `wcag-audit` | Audit accessibilite WCAG | Read, Grep, Glob |
-| `qa-coverage` | Couverture de tests | Read, Grep, Glob, Bash |
-| `qa-design` | Audit UI/UX | Read, Grep, Glob |
-| `qa-responsive` | Audit responsive | Read, Grep, Glob |
-| `qa-tech-debt` | Dette technique | Read, Grep, Glob |
-| `work-explore` | Explorer un codebase | Read, Grep, Glob |
+| `biz-mvp` | MVP definition | Read, Grep, Glob, Edit, Write |
+| `biz-personas` | User personas | Read, Grep, Glob, Edit, Write |
+| `dev-design-system` | Design tokens and components | Read, Grep, Glob |
+| `dev-prisma` | Prisma ORM | Read, Grep, Glob, Bash |
+| `dev-trpc` | Type-safe tRPC APIs | Read, Grep, Glob |
+| `doc-changelog` | Generate changelog | Read, Grep, Glob, Edit, Write |
+| `doc-explain` | Explain code | Read, Grep, Glob |
+| `doc-generate` | Generate documentation | Read, Grep, Glob, Edit, Write |
+| `doc-onboard` | Developer onboarding | Read, Grep, Glob |
+| `growth-cro` | Conversion rate optimization | Read, Grep, Glob |
+| `growth-localization` | Multi-market localization | Read, Grep, Glob |
+| `growth-seo` | Technical SEO audit | Read, Grep, Glob, WebFetch |
+| `legal-privacy-policy` | Privacy policy | Read, Grep, Glob, Edit, Write |
+| `legal-terms-of-service` | Terms of Service | Read, Grep, Glob, Edit, Write |
+| `ops-deps` | Dependency audit | Read, Grep, Glob, Bash |
+| `ops-health` | Quick health check | Read, Grep, Glob, Bash |
+| `ops-serverless` | Serverless deployment | Read, Grep, Glob, Bash |
+| `ops-vercel` | Vercel deployment | Read, Grep, Glob, Bash |
+| `wcag-audit` | WCAG accessibility audit | Read, Grep, Glob |
+| `qa-coverage` | Test coverage | Read, Grep, Glob, Bash |
+| `qa-design` | UI/UX audit | Read, Grep, Glob |
+| `qa-responsive` | Responsive audit | Read, Grep, Glob |
+| `qa-tech-debt` | Technical debt | Read, Grep, Glob |
+| `work-explore` | Explore a codebase | Read, Grep, Glob |
 
-### Sonnet (Complexe/Analyse)
+### Sonnet (Complex/Analysis)
 
-| Agent | Description | Outils |
-|-------|-------------|--------|
-| `data-analytics` | Analyse de donnees | Read, Grep, Glob, Edit, Write, Bash |
-| `data-modeling` | Modelisation data warehouse | Read, Grep, Glob, Edit, Write |
-| `data-pipeline` | Pipelines ETL/ELT | Read, Grep, Glob, Edit, Write, Bash |
-| `dev-ai-integration` | Integration LLMs (OpenAI, Claude) | Read, Grep, Glob, Bash |
-| `dev-component` | Composants UI | Read, Grep, Glob, Edit, Write |
-| `dev-debug` | Investigation bugs | Read, Grep, Glob, Bash |
-| `dev-document` | Generation documents (PDF, DOCX) | Read, Grep, Glob, Edit, Write, Bash |
-| `dev-flutter` | Flutter widgets et screens | Read, Grep, Glob, Edit, Write, Bash |
-| `dev-prompt-engineering` | Optimisation prompts LLM | Read, Grep, Glob, WebFetch |
-| `dev-rag` | Systemes RAG | Read, Grep, Glob, Bash |
-| `dev-supabase` | Backend Supabase | Read, Grep, Glob, Edit, Write, Bash |
-| `dev-tdd` | Developpement TDD | Read, Grep, Glob, Edit, Write, Bash |
-| `dev-test` | Generation de tests | Read, Grep, Glob, Edit, Write, Bash |
-| `growth-analytics` | Setup analytics et tracking | Read, Grep, Glob, Edit, Write, Bash |
-| `growth-funnel` | Optimisation funnels | Read, Grep, Glob, Edit, Write |
+| Agent | Description | Tools |
+|-------|-------------|-------|
+| `data-analytics` | Data analysis | Read, Grep, Glob, Edit, Write, Bash |
+| `data-modeling` | Data warehouse modeling | Read, Grep, Glob, Edit, Write |
+| `data-pipeline` | ETL/ELT pipelines | Read, Grep, Glob, Edit, Write, Bash |
+| `dev-ai-integration` | LLM integration (OpenAI, Claude) | Read, Grep, Glob, Bash |
+| `dev-component` | UI components | Read, Grep, Glob, Edit, Write |
+| `dev-debug` | Bug investigation | Read, Grep, Glob, Bash |
+| `dev-document` | Document generation (PDF, DOCX) | Read, Grep, Glob, Edit, Write, Bash |
+| `dev-flutter` | Flutter widgets and screens | Read, Grep, Glob, Edit, Write, Bash |
+| `dev-prompt-engineering` | LLM prompt optimization | Read, Grep, Glob, WebFetch |
+| `dev-rag` | RAG systems | Read, Grep, Glob, Bash |
+| `dev-supabase` | Supabase backend | Read, Grep, Glob, Edit, Write, Bash |
+| `dev-tdd` | TDD development | Read, Grep, Glob, Edit, Write, Bash |
+| `dev-test` | Test generation | Read, Grep, Glob, Edit, Write, Bash |
+| `growth-analytics` | Analytics and tracking setup | Read, Grep, Glob, Edit, Write, Bash |
+| `growth-funnel` | Funnel optimization | Read, Grep, Glob, Edit, Write |
 | `growth-landing` | Landing pages | Read, Grep, Glob, Edit, Write |
-| `legal-payment` | Integration paiement | Read, Grep, Glob, Edit, Write |
-| `legal-rgpd` | Conformite RGPD | Read, Grep, Glob, Edit, Write |
-| `ops-ci` | Configuration CI/CD | Read, Grep, Glob, Edit, Write, Bash |
-| `ops-database` | Schema et migrations DB | Read, Grep, Glob, Edit, Write, Bash |
-| `ops-docker` | Containerisation Docker | Read, Grep, Glob, Edit, Write, Bash |
+| `legal-payment` | Payment integration | Read, Grep, Glob, Edit, Write |
+| `legal-rgpd` | GDPR compliance | Read, Grep, Glob, Edit, Write |
+| `ops-ci` | CI/CD configuration | Read, Grep, Glob, Edit, Write, Bash |
+| `ops-database` | DB schema and migrations | Read, Grep, Glob, Edit, Write, Bash |
+| `ops-docker` | Docker containerization | Read, Grep, Glob, Edit, Write, Bash |
 | `ops-infra-code` | Infrastructure as Code (Terraform) | Read, Grep, Glob, Edit, Write, Bash |
-| `ops-migration` | Migration de frameworks | Read, Grep, Glob, Bash |
-| `ops-monitoring` | Instrumentation et monitoring | Read, Grep, Glob, Edit, Write, Bash |
-| `ops-opnsense` | Configuration OPNsense | Read, Grep, Glob, Edit, Write, Bash |
-| `ops-proxmox` | Infrastructure Proxmox VE | Read, Grep, Glob, Edit, Write, Bash |
-| `qa-audit` | Audit qualite complet | Read, Grep, Glob, Bash |
-| `qa-chrome` | Tests visuels Chrome | Read, Grep, Glob, Bash |
-| `qa-e2e` | Tests End-to-End | Read, Grep, Glob, Bash |
-| `qa-perf` | Audit performance | Read, Grep, Glob, Bash |
-| `qa-security` | Audit securite OWASP | Read, Grep, Glob, Bash |
+| `ops-migration` | Framework migration | Read, Grep, Glob, Bash |
+| `ops-monitoring` | Instrumentation and monitoring | Read, Grep, Glob, Edit, Write, Bash |
+| `ops-opnsense` | OPNsense configuration | Read, Grep, Glob, Edit, Write, Bash |
+| `ops-proxmox` | Proxmox VE infrastructure | Read, Grep, Glob, Edit, Write, Bash |
+| `qa-audit` | Full quality audit | Read, Grep, Glob, Bash |
+| `qa-chrome` | Chrome visual tests | Read, Grep, Glob, Bash |
+| `qa-e2e` | End-to-End tests | Read, Grep, Glob, Bash |
+| `qa-perf` | Performance audit | Read, Grep, Glob, Bash |
+| `qa-security` | OWASP security audit | Read, Grep, Glob, Bash |
 
-## Par domaine
+## By domain
 
 ### Exploration & Documentation (5)
 
-| Agent | Modele | Usage |
-|-------|--------|-------|
-| `work-explore` | haiku | Explorer et comprendre le code |
-| `doc-onboard` | haiku | Onboarding nouveau developpeur |
-| `doc-changelog` | haiku | Generer le changelog |
-| `doc-explain` | haiku | Expliquer du code complexe |
-| `doc-generate` | haiku | Generer de la documentation |
+| Agent | Model | Usage |
+|-------|-------|-------|
+| `work-explore` | haiku | Explore and understand code |
+| `doc-onboard` | haiku | New developer onboarding |
+| `doc-changelog` | haiku | Generate the changelog |
+| `doc-explain` | haiku | Explain complex code |
+| `doc-generate` | haiku | Generate documentation |
 
-### Qualite & Audits (10)
+### Quality & Audits (10)
 
-| Agent | Modele | Usage |
-|-------|--------|-------|
-| `qa-security` | sonnet | Audit securite OWASP Top 10 |
-| `qa-audit` | sonnet | Audit complet (secu + RGPD + a11y + perf) |
-| `qa-perf` | sonnet | Audit performance, Core Web Vitals |
-| `qa-chrome` | sonnet | Tests visuels et debugging Chrome |
-| `qa-e2e` | sonnet | Tests End-to-End (Playwright, Cypress) |
-| `wcag-audit` | haiku | Audit accessibilite WCAG 2.1 |
-| `qa-coverage` | haiku | Analyse couverture de tests |
-| `qa-design` | haiku | Audit UI/UX (100+ regles) |
-| `qa-responsive` | haiku | Audit responsive/mobile-first |
-| `qa-tech-debt` | haiku | Identifier la dette technique |
+| Agent | Model | Usage |
+|-------|-------|-------|
+| `qa-security` | sonnet | OWASP Top 10 security audit |
+| `qa-audit` | sonnet | Full audit (security + GDPR + a11y + perf) |
+| `qa-perf` | sonnet | Performance audit, Core Web Vitals |
+| `qa-chrome` | sonnet | Chrome visual tests and debugging |
+| `qa-e2e` | sonnet | End-to-End tests (Playwright, Cypress) |
+| `wcag-audit` | haiku | WCAG 2.1 accessibility audit |
+| `qa-coverage` | haiku | Test coverage analysis |
+| `qa-design` | haiku | UI/UX audit (100+ rules) |
+| `qa-responsive` | haiku | Responsive/mobile-first audit |
+| `qa-tech-debt` | haiku | Identify technical debt |
 
 ### Operations (12)
 
-| Agent | Modele | Usage |
-|-------|--------|-------|
-| `ops-ci` | sonnet | Configuration CI/CD |
-| `ops-database` | sonnet | Schema et migrations DB |
-| `ops-docker` | sonnet | Containerisation Docker |
+| Agent | Model | Usage |
+|-------|-------|-------|
+| `ops-ci` | sonnet | CI/CD configuration |
+| `ops-database` | sonnet | DB schema and migrations |
+| `ops-docker` | sonnet | Docker containerization |
 | `ops-infra-code` | sonnet | Infrastructure as Code (Terraform) |
-| `ops-migration` | sonnet | Migration de frameworks et versions |
-| `ops-monitoring` | sonnet | Instrumentation et monitoring |
-| `ops-opnsense` | sonnet | Configuration OPNsense via Terraform |
-| `ops-proxmox` | sonnet | Infrastructure Proxmox VE |
-| `ops-deps` | haiku | Audit dependances, vulnerabilites |
-| `ops-health` | haiku | Health check rapide du projet |
-| `ops-serverless` | haiku | Deploiement serverless |
-| `ops-vercel` | haiku | Deploiement Vercel |
+| `ops-migration` | sonnet | Framework and version migration |
+| `ops-monitoring` | sonnet | Instrumentation and monitoring |
+| `ops-opnsense` | sonnet | OPNsense configuration via Terraform |
+| `ops-proxmox` | sonnet | Proxmox VE infrastructure |
+| `ops-deps` | haiku | Dependency audit, vulnerabilities |
+| `ops-health` | haiku | Quick project health check |
+| `ops-serverless` | haiku | Serverless deployment |
+| `ops-vercel` | haiku | Vercel deployment |
 
-### Developpement (13)
+### Development (13)
 
-| Agent | Modele | Usage |
-|-------|--------|-------|
-| `dev-ai-integration` | sonnet | Integration LLMs (OpenAI, Claude API) |
-| `dev-component` | sonnet | Creation de composants UI |
-| `dev-debug` | sonnet | Investigation et diagnostic de bugs |
-| `dev-document` | sonnet | Generation documents bureautiques |
-| `dev-flutter` | sonnet | Widgets et screens Flutter |
-| `dev-prompt-engineering` | sonnet | Optimisation prompts LLM |
-| `dev-rag` | sonnet | Architecture RAG |
-| `dev-supabase` | sonnet | Backend Supabase |
-| `dev-tdd` | sonnet | Developpement TDD (Red-Green-Refactor) |
-| `dev-test` | sonnet | Generation de tests |
-| `dev-design-system` | haiku | Design tokens et composants |
-| `dev-prisma` | haiku | ORM Prisma |
-| `dev-trpc` | haiku | APIs type-safe tRPC |
+| Agent | Model | Usage |
+|-------|-------|-------|
+| `dev-ai-integration` | sonnet | LLM integration (OpenAI, Claude API) |
+| `dev-component` | sonnet | UI component creation |
+| `dev-debug` | sonnet | Bug investigation and diagnosis |
+| `dev-document` | sonnet | Office document generation |
+| `dev-flutter` | sonnet | Flutter widgets and screens |
+| `dev-prompt-engineering` | sonnet | LLM prompt optimization |
+| `dev-rag` | sonnet | RAG architecture |
+| `dev-supabase` | sonnet | Supabase backend |
+| `dev-tdd` | sonnet | TDD development (Red-Green-Refactor) |
+| `dev-test` | sonnet | Test generation |
+| `dev-design-system` | haiku | Design tokens and components |
+| `dev-prisma` | haiku | Prisma ORM |
+| `dev-trpc` | haiku | Type-safe tRPC APIs |
 
 ### Business & Growth (10)
 
-| Agent | Modele | Usage |
-|-------|--------|-------|
-| `growth-analytics` | sonnet | Setup analytics et tracking |
-| `growth-funnel` | sonnet | Optimisation funnels |
-| `growth-landing` | sonnet | Landing pages optimisees |
-| `biz-model` | haiku | Analyse business model |
-| `biz-competitor` | haiku | Analyse concurrentielle |
-| `biz-mvp` | haiku | Definition MVP |
-| `biz-personas` | haiku | Personas utilisateur |
-| `growth-cro` | haiku | Optimisation taux de conversion |
-| `growth-localization` | haiku | Localisation multi-marches |
-| `growth-seo` | haiku | Audit SEO technique |
+| Agent | Model | Usage |
+|-------|-------|-------|
+| `growth-analytics` | sonnet | Analytics and tracking setup |
+| `growth-funnel` | sonnet | Funnel optimization |
+| `growth-landing` | sonnet | Optimized landing pages |
+| `biz-model` | haiku | Business model analysis |
+| `biz-competitor` | haiku | Competitive analysis |
+| `biz-mvp` | haiku | MVP definition |
+| `biz-personas` | haiku | User personas |
+| `growth-cro` | haiku | Conversion rate optimization |
+| `growth-localization` | haiku | Multi-market localization |
+| `growth-seo` | haiku | Technical SEO audit |
 
 ### Data (3)
 
-| Agent | Modele | Usage |
-|-------|--------|-------|
-| `data-analytics` | sonnet | Analyse de donnees |
-| `data-modeling` | sonnet | Modelisation data warehouse |
-| `data-pipeline` | sonnet | Pipelines ETL/ELT |
+| Agent | Model | Usage |
+|-------|-------|-------|
+| `data-analytics` | sonnet | Data analysis |
+| `data-modeling` | sonnet | Data warehouse modeling |
+| `data-pipeline` | sonnet | ETL/ELT pipelines |
 
 ### Legal (4)
 
-| Agent | Modele | Usage |
-|-------|--------|-------|
-| `legal-payment` | sonnet | Integration paiement |
-| `legal-rgpd` | sonnet | Conformite RGPD |
-| `legal-privacy-policy` | haiku | Politique de confidentialite |
-| `legal-terms-of-service` | haiku | Conditions Generales |
+| Agent | Model | Usage |
+|-------|-------|-------|
+| `legal-payment` | sonnet | Payment integration |
+| `legal-rgpd` | sonnet | GDPR compliance |
+| `legal-privacy-policy` | haiku | Privacy policy |
+| `legal-terms-of-service` | haiku | Terms of Service |
 
 ---
 
-## Voir aussi
+## See also
 
-- [Matrice des Commands](/docs/reference/commands-matrix)
+- [Commands Matrix](/docs/reference/commands-matrix)
 - [Cheatsheet](/docs/reference/commands)
 - [Architecture](/docs/intro/architecture)

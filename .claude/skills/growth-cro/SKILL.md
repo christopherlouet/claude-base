@@ -1,6 +1,6 @@
 ---
 name: growth-cro
-description: Optimisation du taux de conversion (CRO). Declencher quand l'utilisateur veut optimiser les conversions, ameliorer un formulaire d'inscription, un checkout, une landing page, ou un onboarding.
+description: Conversion rate optimization (CRO). Trigger when the user wants to optimize conversions, improve a signup form, a checkout, a landing page, or an onboarding.
 allowed-tools:
   - Read
   - Glob
@@ -12,33 +12,33 @@ context: fork
 
 # Conversion Rate Optimization (CRO)
 
-## Objectif
+## Goal
 
-Identifier et corriger les points de friction dans les parcours utilisateur pour maximiser le taux de conversion.
+Identify and fix friction points in user journeys to maximize the conversion rate.
 
-## Domaines CRO
+## CRO Domains
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                    CRO FRAMEWORK                                  │
 ├──────────────────────────────────────────────────────────────────┤
 │                                                                   │
-│  PAGE CRO           Optimiser les pages marketing/landing        │
+│  PAGE CRO           Optimize marketing/landing pages             │
 │  ═════════                                                        │
 │                                                                   │
-│  SIGNUP FLOW CRO    Ameliorer inscription et creation compte     │
+│  SIGNUP FLOW CRO    Improve signup and account creation          │
 │  ══════════════                                                   │
 │                                                                   │
-│  ONBOARDING CRO     Reduire time-to-value post-inscription      │
+│  ONBOARDING CRO     Reduce time-to-value post-signup             │
 │  ═════════════                                                    │
 │                                                                   │
-│  FORM CRO           Optimiser les formulaires de capture         │
+│  FORM CRO           Optimize capture forms                        │
 │  ════════                                                         │
 │                                                                   │
-│  POPUP CRO          Ameliorer popups, modals, overlays           │
+│  POPUP CRO          Improve popups, modals, overlays             │
 │  ═════════                                                        │
 │                                                                   │
-│  PAYWALL CRO        Optimiser paywalls et upsells                │
+│  PAYWALL CRO        Optimize paywalls and upsells                │
 │  ═══════════                                                      │
 │                                                                   │
 └──────────────────────────────────────────────────────────────────┘
@@ -46,121 +46,121 @@ Identifier et corriger les points de friction dans les parcours utilisateur pour
 
 ## 1. Page CRO
 
-### Checklist landing page
+### Landing page checklist
 
-| # | Element | Bonnes pratiques |
+| # | Element | Best practices |
 |---|---------|-----------------|
-| 1 | **Headline** | Benefice clair en < 10 mots, pas de jargon |
-| 2 | **Sub-headline** | Expliquer le "comment" en 1 phrase |
-| 3 | **CTA primaire** | Action specifique, visible above-the-fold |
-| 4 | **Social proof** | Temoignages, logos clients, chiffres |
-| 5 | **Objections** | FAQ ou sections repondant aux doutes |
-| 6 | **Urgence/Rarete** | Timer, places limitees (si authentique) |
-| 7 | **Visuel hero** | Screenshot produit ou demo video |
-| 8 | **Navigation** | Minimale (pas de menu complet sur landing) |
+| 1 | **Headline** | Clear benefit in < 10 words, no jargon |
+| 2 | **Sub-headline** | Explain the "how" in 1 sentence |
+| 3 | **Primary CTA** | Specific action, visible above-the-fold |
+| 4 | **Social proof** | Testimonials, customer logos, numbers |
+| 5 | **Objections** | FAQ or sections answering doubts |
+| 6 | **Urgency/Scarcity** | Timer, limited spots (if authentic) |
+| 7 | **Hero visual** | Product screenshot or demo video |
+| 8 | **Navigation** | Minimal (no full menu on landing) |
 
-### Patterns de conversion
+### Conversion patterns
 
 ```
-Hero section (benefice + CTA)
+Hero section (benefit + CTA)
     ↓
-Social proof (logos, temoignages)
+Social proof (logos, testimonials)
     ↓
 Features/Benefits (3-5 max)
     ↓
-How it works (3 etapes)
+How it works (3 steps)
     ↓
-Pricing (si applicable)
+Pricing (if applicable)
     ↓
-FAQ (objections courantes)
+FAQ (common objections)
     ↓
-CTA final (meme action que le hero)
+Final CTA (same action as the hero)
 ```
 
 ## 2. Signup Flow CRO
 
-### Regles d'or
+### Golden rules
 
-| # | Regle | Impact |
+| # | Rule | Impact |
 |---|-------|--------|
-| 1 | Minimum de champs (email seul pour commencer) | +20-30% signups |
+| 1 | Minimum fields (email only to start) | +20-30% signups |
 | 2 | Social login (Google, GitHub) | +15-25% signups |
-| 3 | Pas de confirmation email bloquante | -40% drop-off |
-| 4 | Progress indicator si multi-step | +10% completion |
-| 5 | Proposition de valeur visible a cote du form | +15% signups |
+| 3 | No blocking email confirmation | -40% drop-off |
+| 4 | Progress indicator if multi-step | +10% completion |
+| 5 | Value proposition visible next to the form | +15% signups |
 | 6 | Password strength indicator | +5% completion |
-| 7 | Error inline, pas au submit | +20% completion |
+| 7 | Inline error, not at submit | +20% completion |
 
-### Anti-patterns a eviter
+### Anti-patterns to avoid
 
-- Demander trop d'info au signup (nom, tel, adresse)
-- CAPTCHA visible pour tous les utilisateurs
-- Email de confirmation avant acces au produit
-- Redirection vers page de login apres signup
-- Pas de feedback apres soumission du formulaire
+- Asking for too much info at signup (name, phone, address)
+- CAPTCHA visible for all users
+- Confirmation email before product access
+- Redirect to login page after signup
+- No feedback after form submission
 
 ## 3. Onboarding CRO
 
-### Framework Time-to-Value
+### Time-to-Value framework
 
 ```
 Signup → [Activation] → [Aha Moment] → [Habit Formation]
            |                |                |
            v                v                v
-    Premier setup     Premiere valeur    Usage regulier
-    (< 2 min)         (< 5 min)         (Jour 7+)
+    First setup        First value        Regular usage
+    (< 2 min)          (< 5 min)         (Day 7+)
 ```
 
-### Patterns efficaces
+### Effective patterns
 
-| Pattern | Quand | Exemple |
+| Pattern | When | Example |
 |---------|-------|---------|
-| **Checklist** | 3-5 etapes d'activation | "Complete your profile: 3/5" |
-| **Wizard** | Setup technique requis | "Connect your GitHub repo" |
-| **Empty state** | Premiere visite page vide | "Create your first project" |
-| **Template** | Produit complexe | "Start from a template" |
-| **Tour guide** | Interface complexe | Tooltips de decouverte |
+| **Checklist** | 3-5 activation steps | "Complete your profile: 3/5" |
+| **Wizard** | Technical setup required | "Connect your GitHub repo" |
+| **Empty state** | First visit, empty page | "Create your first project" |
+| **Template** | Complex product | "Start from a template" |
+| **Tour guide** | Complex interface | Discovery tooltips |
 
 ## 4. Form CRO
 
-### Optimisation des formulaires
+### Form optimization
 
 | # | Technique | Detail |
 |---|-----------|--------|
-| 1 | Un champ par ligne | Pas de layout multi-colonnes sur mobile |
-| 2 | Labels au-dessus des champs | Pas de labels flottants |
-| 3 | Input type correct | `email`, `tel`, `number` pour clavier adapte |
-| 4 | Autocomplete HTML | `autocomplete="email"`, `"given-name"` |
-| 5 | Taille de police >= 16px | Evite le zoom iOS |
-| 6 | Bouton submit descriptif | "Create account" pas "Submit" |
-| 7 | Feedback immediat | Validation au blur, pas au submit |
-| 8 | Error recovery facile | Message + focus sur le champ en erreur |
+| 1 | One field per line | No multi-column layout on mobile |
+| 2 | Labels above fields | No floating labels |
+| 3 | Correct input type | `email`, `tel`, `number` for adapted keyboard |
+| 4 | HTML autocomplete | `autocomplete="email"`, `"given-name"` |
+| 5 | Font size >= 16px | Avoids iOS zoom |
+| 6 | Descriptive submit button | "Create account" not "Submit" |
+| 7 | Immediate feedback | Validate on blur, not at submit |
+| 8 | Easy error recovery | Message + focus on the field in error |
 
 ## 5. Popup/Modal CRO
 
-### Regles
+### Rules
 
-| # | Regle | Detail |
+| # | Rule | Detail |
 |---|-------|--------|
-| 1 | Timing: pas avant 30s ou 50% scroll | Laisser decouvrir le contenu |
-| 2 | Exit-intent > time-based | Moins intrusif |
-| 3 | Fermeture facile | X visible, click outside, Escape |
-| 4 | Un seul popup a la fois | Pas de stack de modals |
-| 5 | Frequence limitee | Max 1x par session ou 1x par semaine |
-| 6 | Proposition de valeur claire | Pas juste "Subscribe" |
-| 7 | Mobile: bottom sheet > modal centre | Meilleur UX mobile |
+| 1 | Timing: not before 30s or 50% scroll | Let users discover the content |
+| 2 | Exit-intent > time-based | Less intrusive |
+| 3 | Easy to close | Visible X, click outside, Escape |
+| 4 | One popup at a time | No stack of modals |
+| 5 | Limited frequency | Max 1x per session or 1x per week |
+| 6 | Clear value proposition | Not just "Subscribe" |
+| 7 | Mobile: bottom sheet > centered modal | Better mobile UX |
 
 ## 6. Paywall/Upgrade CRO
 
 ### Strategies
 
-| Strategy | Detail | Quand |
+| Strategy | Detail | When |
 |----------|--------|-------|
-| **Feature gate** | Montrer la feature, bloquer l'acces | Feature premium demandee |
-| **Usage limit** | "3/5 projects used" | Approche limite gratuite |
-| **Trial expiration** | Countdown + valeur demontree | Fin de trial |
-| **Upgrade prompt** | Suggestion contextuelle | Action premium tentee |
-| **Social proof** | "Join 10,000+ teams" | Page pricing |
+| **Feature gate** | Show the feature, block access | Premium feature requested |
+| **Usage limit** | "3/5 projects used" | Free tier limit approached |
+| **Trial expiration** | Countdown + demonstrated value | End of trial |
+| **Upgrade prompt** | Contextual suggestion | Premium action attempted |
+| **Social proof** | "Join 10,000+ teams" | Pricing page |
 
 ### Pricing page patterns
 
@@ -173,44 +173,44 @@ Signup → [Activation] → [Aha Moment] → [Habit Formation]
                  [Start trial]
 ```
 
-- Mettre en avant le plan recommande (badge, couleur)
-- Toggle mensuel/annuel (montrer l'economie)
-- Feature comparison table en dessous
-- FAQ sur le billing
+- Highlight the recommended plan (badge, color)
+- Monthly/annual toggle (show the savings)
+- Feature comparison table below
+- FAQ on billing
 
-## Metriques a suivre
+## Metrics to track
 
-| Metrique | Formule | Cible |
+| Metric | Formula | Target |
 |----------|---------|-------|
-| **Conversion rate** | Conversions / Visiteurs | Depend du domaine |
-| **Drop-off rate** | Abandons par etape du funnel | < 20% par etape |
-| **Time to convert** | Duree visite → conversion | Reduire |
-| **Bounce rate** | Rebonds / Sessions | < 40% landing pages |
-| **Activation rate** | Users actives / Signups | > 40% |
-| **Trial-to-paid** | Paiements / Trials | > 15% |
+| **Conversion rate** | Conversions / Visitors | Depends on the domain |
+| **Drop-off rate** | Drop-offs per funnel step | < 20% per step |
+| **Time to convert** | Visit duration → conversion | Reduce |
+| **Bounce rate** | Bounces / Sessions | < 40% landing pages |
+| **Activation rate** | Activated users / Signups | > 40% |
+| **Trial-to-paid** | Payments / Trials | > 15% |
 
-## Output attendu
+## Expected output
 
 ```markdown
-## Audit CRO : [Page/Flow]
+## CRO Audit: [Page/Flow]
 
-### Taux de conversion estime actuel : X%
-### Potentiel d'amelioration : +Y%
+### Current estimated conversion rate: X%
+### Improvement potential: +Y%
 
-### Quick wins (impact immediat)
-1. [Action] - Impact estime: +X%
-2. [Action] - Impact estime: +X%
+### Quick wins (immediate impact)
+1. [Action] - Estimated impact: +X%
+2. [Action] - Estimated impact: +X%
 
-### Ameliorations structurelles
-1. [Action] - Detail et implementation
+### Structural improvements
+1. [Action] - Detail and implementation
 
-### Tests A/B recommandes
-1. [Hypothese] - Variante A vs B
+### Recommended A/B tests
+1. [Hypothesis] - Variant A vs B
 ```
 
-## Regles
+## Rules
 
-- Toujours baser les recommandations sur des donnees ou des best practices prouvees
-- Proposer des quick wins ET des changements structurels
-- Ne pas sacrifier l'UX pour la conversion (dark patterns interdits)
-- Suggerer des tests A/B pour valider les changements importants
+- Always base recommendations on data or proven best practices
+- Propose quick wins AND structural changes
+- Do not sacrifice UX for conversion (dark patterns forbidden)
+- Suggest A/B tests to validate important changes

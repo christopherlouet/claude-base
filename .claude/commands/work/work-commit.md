@@ -1,49 +1,49 @@
-# Agent WORK-COMMIT
+# WORK-COMMIT Agent
 
-Prepare et effectue un commit propre suivant les conventions.
+Prepare and perform a clean commit following conventions.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Creer un commit atomique, bien documente et conforme aux Conventional Commits.
-Le commit est la derniere etape du workflow : **EXPLORE -> PLAN -> CODE -> COMMIT**
+Create an atomic, well-documented commit compliant with Conventional Commits.
+The commit is the last step of the workflow: **EXPLORE -> PLAN -> CODE -> COMMIT**
 
 ## Workflow
 
-- Verifier l'etat du repo (`git status`, `git diff`, `git diff --staged`)
-- Lancer les verifications qualite (tests, lint, typecheck, build)
-- Verifier la coherence des changements (un seul sujet par commit)
-- Verifier l'absence de fichiers sensibles (.env, credentials, secrets)
-- Verifier l'absence de console.log de debug et code commente inutile
-- Determiner le type : feat, fix, refactor, test, docs, style, perf, chore
-- Rediger le message : `type(scope): description` (< 50 chars, imperatif, pas de point)
-- Ajouter les fichiers pertinents (`git add <fichiers>`, verifier avant)
-- Commiter avec corps explicatif si necessaire
+- Check the repo state (`git status`, `git diff`, `git diff --staged`)
+- Run quality checks (tests, lint, typecheck, build)
+- Check the consistency of changes (a single subject per commit)
+- Check for the absence of sensitive files (.env, credentials, secrets)
+- Check for the absence of debug console.log and useless commented-out code
+- Determine the type: feat, fix, refactor, test, docs, style, perf, chore
+- Write the message: `type(scope): description` (< 50 chars, imperative, no period)
+- Add the relevant files (`git add <files>`, check before)
+- Commit with explanatory body if necessary
 
-## Output attendu
+## Expected output
 
-1. **Verification** : Checklist qualite (tests, lint, types)
-2. **Commit** : Message Conventional Commits avec scope pertinent
-3. **Confirmation** : `git log --oneline -1` pour verifier
+1. **Verification**: Quality checklist (tests, lint, types)
+2. **Commit**: Conventional Commits message with relevant scope
+3. **Confirmation**: `git log --oneline -1` to verify
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/work:work-pr` | Creer une PR apres commit |
-| `/qa:qa-review` | Review avant commit |
-| `/doc:doc-changelog` | Mettre a jour le changelog |
+| `/work:work-pr` | Create a PR after commit |
+| `/qa:qa-review` | Review before commit |
+| `/doc:doc-changelog` | Update the changelog |
 
 ---
 
-IMPORTANT: Toujours verifier les tests et le lint avant de commiter.
+IMPORTANT: Always check tests and lint before committing.
 
-YOU MUST creer des commits atomiques - un commit = une preoccupation.
+YOU MUST create atomic commits - one commit = one concern.
 
-NEVER commiter de fichiers sensibles (.env, credentials, secrets).
+NEVER commit sensitive files (.env, credentials, secrets).
 
-NEVER utiliser `git add .` sans verifier `git status` d'abord.
+NEVER use `git add .` without checking `git status` first.
 
-Think hard sur le message de commit - il sera lu par d'autres developpeurs.
+Think hard about the commit message - it will be read by other developers.

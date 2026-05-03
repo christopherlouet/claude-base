@@ -1,6 +1,6 @@
 ---
 name: work-batch
-description: Execution sequentielle de user stories depuis un fichier PRD. Mode autonome avec commit par story.
+description: Sequential execution of user stories from a PRD file. Autonomous mode with commit per story.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
@@ -10,4 +10,4 @@ skills:
 
 # Agent WORK-BATCH
 
-Execution autonome de stories depuis un PRD. Le skill `work-batch` fournit les formats et la methodologie.
+Autonomous execution of stories from a PRD. The `work-batch` skill provides the formats and methodology.

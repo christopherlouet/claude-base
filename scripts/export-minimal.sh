@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Exporte une configuration minimale du socle Claude Code vers une archive .tar.gz.
+# Exports a minimal Claude Code foundation configuration to a .tar.gz archive.
 #
 # Usage:
 #   scripts/export-minimal.sh [--output PATH] [--dest-dir PATH] [--help]
 #
-# --output PATH   : chemin de l'archive a produire (defaut: dist/claude-socle-minimal.tar.gz)
-# --dest-dir PATH : copie directement les fichiers dans un dossier cible (pas d'archive)
-#                   (usage interne pour `new-project.sh --minimal`)
-# --help          : affiche cette aide
+# --output PATH   : path of the archive to produce (default: dist/claude-socle-minimal.tar.gz)
+# --dest-dir PATH : copy files directly into a target folder (no archive)
+#                   (internal usage for `new-project.sh --minimal`)
+# --help          : display this help
 
 set -euo pipefail
 
 # =============================================================================
-# Paths et constantes
+# Paths and constants
 # =============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -39,33 +39,33 @@ show_help() {
   sed -nE 's/^# ?//p' "$0" | sed -nE '/^Usage/,/^$/p'
 }
 
-# Valide un chemin : absolu OK, relatif OK, refuse les .. dans le chemin.
-# Ne doit pas pointer hors du repo si relatif.
+# Validates a path: absolute OK, relative OK, refuses .. in the path.
+# Must not point outside the repo if relative.
 validate_output_path() {
   local path="$1"
   if [[ "$path" =~ (^|/)\.\.($|/) ]]; then
-    die "chemin --output invalide (path traversal detecte) : $path"
+    die "invalid --output path (path traversal detected): $path"
   fi
 }
 
-# Valide une entree du manifest : pas de .., pas de chemin absolu.
+# Validates a manifest entry: no .., no absolute path.
 validate_manifest_entry() {
   local entry="$1"
   if [[ "$entry" = /* ]]; then
-    die "manifest : chemin absolu interdit : $entry"
+    die "manifest: absolute path forbidden: $entry"
   fi
   if [[ "$entry" =~ (^|/)\.\.($|/) ]]; then
-    die "manifest : path traversal interdit : $entry"
+    die "manifest: path traversal forbidden: $entry"
   fi
 }
 
-# Verifie que la source resolue reste sous REPO_ROOT (blocage symlinks sortants).
+# Verifies that the resolved source stays under REPO_ROOT (blocks outgoing symlinks).
 assert_within_repo() {
   local src_path="$1"
   local resolved
   resolved="$(cd "$REPO_ROOT" && readlink -f -- "$src_path" 2>/dev/null || true)"
   if [ -z "$resolved" ] || [[ "$resolved" != "$REPO_ROOT"/* && "$resolved" != "$REPO_ROOT" ]]; then
-    die "source hors du repo (symlink sortant ?) : $src_path -> ${resolved:-unresolved}"
+    die "source outside the repo (outgoing symlink?): $src_path -> ${resolved:-unresolved}"
   fi
 }
 
@@ -84,22 +84,22 @@ while [ $# -gt 0 ]; do
       exit 0
       ;;
     --output)
-      [ $# -ge 2 ] || die "--output attend un argument"
+      [ $# -ge 2 ] || die "--output expects an argument"
       OUTPUT="$2"
       shift 2
       ;;
     --dest-dir)
-      [ $# -ge 2 ] || die "--dest-dir attend un argument"
+      [ $# -ge 2 ] || die "--dest-dir expects an argument"
       DEST_DIR="$2"
       shift 2
       ;;
     --manifest)
-      [ $# -ge 2 ] || die "--manifest attend un argument"
+      [ $# -ge 2 ] || die "--manifest expects an argument"
       MANIFEST_OVERRIDE="$2"
       shift 2
       ;;
     *)
-      die "argument inconnu : $1 (voir --help)"
+      die "unknown argument: $1 (see --help)"
       ;;
   esac
 done
@@ -109,7 +109,7 @@ if [ -n "$MANIFEST_OVERRIDE" ]; then
 fi
 
 if [ -n "$OUTPUT" ] && [ -n "$DEST_DIR" ]; then
-  die "--output et --dest-dir sont mutuellement exclusifs"
+  die "--output and --dest-dir are mutually exclusive"
 fi
 
 if [ -z "$OUTPUT" ] && [ -z "$DEST_DIR" ]; then
@@ -124,12 +124,12 @@ fi
 # Sanity checks
 # =============================================================================
 
-[ -f "$MANIFEST_FILE" ] || die "manifest introuvable : $MANIFEST_FILE"
-[ -f "$CLAUDE_MD_TEMPLATE" ] || die "template CLAUDE.md introuvable : $CLAUDE_MD_TEMPLATE"
-command -v tar >/dev/null 2>&1 || die "tar absent du PATH"
+[ -f "$MANIFEST_FILE" ] || die "manifest not found: $MANIFEST_FILE"
+[ -f "$CLAUDE_MD_TEMPLATE" ] || die "CLAUDE.md template not found: $CLAUDE_MD_TEMPLATE"
+command -v tar >/dev/null 2>&1 || die "tar missing from PATH"
 
 # =============================================================================
-# Staging dir (temp ou dest-dir final)
+# Staging dir (temp or final dest-dir)
 # =============================================================================
 
 STAGING=""
@@ -146,16 +146,16 @@ cleanup_staging() {
 if [ -n "$DEST_DIR" ]; then
   mkdir -p "$DEST_DIR"
   STAGING="$(cd "$DEST_DIR" && pwd)"
-  info "staging : $STAGING"
+  info "staging: $STAGING"
 else
   STAGING="$(mktemp -d -t "${ARCHIVE_PREFIX}-XXXXXX")"
   USE_TEMP_STAGING=true
   trap cleanup_staging EXIT INT TERM HUP
-  info "staging : $STAGING"
+  info "staging: $STAGING"
 fi
 
 # =============================================================================
-# Parsing du manifest + copie
+# Manifest parsing + copy
 # =============================================================================
 
 count=0
@@ -168,16 +168,16 @@ while IFS= read -r raw_line || [ -n "$raw_line" ]; do
     \#*) continue ;;
   esac
 
-  # Rejet CRLF
+  # Reject CRLF
   line="${line%$'\r'}"
 
   src="$line"
   dst="$line"
   if [[ "$line" == *:* ]]; then
-    # Refuser plus d'un ":" pour eviter le smuggling d'un segment intermediaire.
+    # Reject more than one ":" to avoid smuggling an intermediate segment.
     colons_only="${line//[^:]/}"
     if [ "${#colons_only}" -gt 1 ]; then
-      die "manifest : plus d'un ':' dans la ligne (ambigue) : $line"
+      die "manifest: more than one ':' in the line (ambiguous): $line"
     fi
     src="${line%%:*}"
     dst="${line#*:}"
@@ -190,7 +190,7 @@ while IFS= read -r raw_line || [ -n "$raw_line" ]; do
   dst_path="$STAGING/${dst%/}"
 
   if [ ! -e "$src_path" ]; then
-    die "manifest : chemin introuvable dans le repo : $src"
+    die "manifest: path not found in the repo: $src"
   fi
 
   assert_within_repo "$src_path"
@@ -208,14 +208,14 @@ while IFS= read -r raw_line || [ -n "$raw_line" ]; do
   count=$((count + 1))
 done < "$MANIFEST_FILE"
 
-# CLAUDE.md simplifie (template fixe, pas l'original du repo)
+# Simplified CLAUDE.md (fixed template, not the repo's original)
 cp "$CLAUDE_MD_TEMPLATE" "$STAGING/CLAUDE.md"
 count=$((count + 1))
 
-info "$count entrees stagees"
+info "$count entries staged"
 
 # =============================================================================
-# Archive (si mode --output)
+# Archive (if --output mode)
 # =============================================================================
 
 if [ -z "$DEST_DIR" ]; then
@@ -224,8 +224,8 @@ if [ -z "$DEST_DIR" ]; then
   parent_of_staging="$(dirname "$STAGING")"
   name_of_staging="$(basename "$STAGING")"
 
-  # tar --transform renomme la racine a la volee (pas de mv, pas de fenetre TOCTOU).
-  # Options reproductibles : uid/gid 0, mtime fixe, tri par nom.
+  # tar --transform renames the root on the fly (no mv, no TOCTOU window).
+  # Reproducible options: uid/gid 0, fixed mtime, sort by name.
   tar \
     --owner=0 --group=0 --numeric-owner \
     --mtime='2024-01-01 00:00:00 UTC' \
@@ -237,9 +237,9 @@ if [ -z "$DEST_DIR" ]; then
   size_bytes=$(stat -c%s "$OUTPUT" 2>/dev/null || stat -f%z "$OUTPUT")
   size_kb=$((size_bytes / 1024))
 
-  info "archive : $OUTPUT"
-  info "taille  : ${size_kb} KB (${size_bytes} octets)"
-  info "contenu : $count entrees + CLAUDE.md simplifie"
+  info "archive: $OUTPUT"
+  info "size   : ${size_kb} KB (${size_bytes} bytes)"
+  info "content: $count entries + simplified CLAUDE.md"
 else
-  info "fichiers copies dans $STAGING"
+  info "files copied to $STAGING"
 fi

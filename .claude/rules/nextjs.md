@@ -11,97 +11,97 @@ paths:
 
 ## App Router (Next.js 13+)
 
-- Utiliser le App Router (`app/`) sauf migration depuis `pages/`
-- Fichiers speciaux : `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`
+- Use the App Router (`app/`) unless migrating from `pages/`
+- Special files: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`
 
 ## Server vs Client Components
 
-- Par defaut : Server Component (RSC)
-- `'use client'` : Client Component (interactivite) - pousser le plus bas possible
-- `'use server'` : Server Action (mutations)
-- RSC ne peuvent PAS utiliser hooks (useState, useEffect) ni acceder au DOM
-- Client Components ne peuvent PAS utiliser `async/await` directement
+- By default: Server Component (RSC)
+- `'use client'`: Client Component (interactivity) - push as low as possible
+- `'use server'`: Server Action (mutations)
+- RSCs CANNOT use hooks (useState, useEffect) or access the DOM
+- Client Components CANNOT use `async/await` directly
 
 ## Data Fetching
 
-| Pattern | Quand |
+| Pattern | When |
 |---------|-------|
-| Server Component fetch | Donnees statiques/SSR |
+| Server Component fetch | Static/SSR data |
 | Server Actions | Mutations (forms) |
 | Route Handlers | API endpoints (`app/api/route.ts`) |
-| Client fetch (SWR/Query) | Donnees temps reel |
+| Client fetch (SWR/Query) | Real-time data |
 
-- Paralleliser avec `Promise.all()` (eviter les cascades sequentielles)
+- Parallelize with `Promise.all()` (avoid sequential cascades)
 
-## Caching et revalidation
+## Caching and revalidation
 
-| Methode | Usage |
+| Method | Usage |
 |---------|-------|
-| `revalidatePath()` | Invalider une page apres mutation |
-| `revalidateTag()` | Invalider par tag de cache |
-| `export const revalidate = 60` | ISR (revalidation periodique) |
+| `revalidatePath()` | Invalidate a page after a mutation |
+| `revalidateTag()` | Invalidate by cache tag |
+| `export const revalidate = 60` | ISR (periodic revalidation) |
 
 ## Performance
 
-- `next/image` pour toutes les images, `next/font` pour les polices, `next/link` pour la navigation
-- `loading.tsx` pour les Suspense boundaries
-- `dynamic()` avec `ssr: false` pour composants lourds
-- Metadata statique (`export const metadata`) ou dynamique (`generateMetadata`)
+- `next/image` for all images, `next/font` for fonts, `next/link` for navigation
+- `loading.tsx` for Suspense boundaries
+- `dynamic()` with `ssr: false` for heavy components
+- Static metadata (`export const metadata`) or dynamic (`generateMetadata`)
 
-## Streaming et Suspense
+## Streaming and Suspense
 
-- Utiliser `loading.tsx` pour les Suspense boundaries automatiques par route
-- Wrapper les composants async dans `<Suspense fallback={...}>` pour du streaming granulaire
-- Pattern de rendering progressif :
+- Use `loading.tsx` for automatic per-route Suspense boundaries
+- Wrap async components in `<Suspense fallback={...}>` for granular streaming
+- Progressive rendering pattern:
 
 ```tsx
-// page.tsx - Le layout s'affiche immediatement, les donnees streament
+// page.tsx - The layout displays immediately, data streams in
 export default function Page() {
   return (
     <main>
-      <Header />               {/* Rendu immediat */}
+      <Header />               {/* Rendered immediately */}
       <Suspense fallback={<Skeleton />}>
-        <AsyncData />           {/* Streame quand pret */}
+        <AsyncData />           {/* Streams when ready */}
       </Suspense>
     </main>
   );
 }
 ```
 
-- `loading.tsx` + `<Suspense>` = streaming automatique (pas besoin de `export const dynamic`)
-- Eviter les cascades : paralleliser les fetches dans un meme Server Component
+- `loading.tsx` + `<Suspense>` = automatic streaming (no need for `export const dynamic`)
+- Avoid cascades: parallelize fetches within the same Server Component
 
-## Server Components - Contraintes strictes
+## Server Components - Strict constraints
 
-| Autorise dans RSC | INTERDIT dans RSC |
+| Allowed in RSC | FORBIDDEN in RSC |
 |-------------------|-------------------|
-| `async/await` | `useState`, `useEffect`, tout hook |
-| Acces DB direct | Event handlers (`onClick`, `onChange`) |
-| Acces filesystem | APIs navigateur (`window`, `document`) |
-| Import serveur only | `createContext` |
+| `async/await` | `useState`, `useEffect`, any hook |
+| Direct DB access | Event handlers (`onClick`, `onChange`) |
+| Filesystem access | Browser APIs (`window`, `document`) |
+| Server-only imports | `createContext` |
 
-- RSC toujours `async` quand ils fetchent des donnees
-- Passer les donnees en props aux Client Components (pas l'inverse)
-- Pattern : RSC fetch → Client Component interactif en enfant
+- RSCs are always `async` when they fetch data
+- Pass data as props to Client Components (not the other way around)
+- Pattern: RSC fetch → interactive Client Component as a child
 
 ## React 19 / Next.js 15+
 
-- `forwardRef` n'est plus necessaire : `ref` est une prop directe
-- `useActionState` remplace `useFormState`
-- `use()` pour lire les promises/context dans les composants
-- `<form action={serverAction}>` pour les mutations
+- `forwardRef` is no longer necessary: `ref` is a direct prop
+- `useActionState` replaces `useFormState`
+- `use()` to read promises/context in components
+- `<form action={serverAction}>` for mutations
 
 ## URL State Management
 
-- Preferer `nuqs` ou `useSearchParams` pour l'etat dans l'URL
-- Meilleur pour : filtres, pagination, onglets, tri
-- Eviter `useState` pour de l'etat qui devrait etre partageable par URL
+- Prefer `nuqs` or `useSearchParams` for state in the URL
+- Better for: filters, pagination, tabs, sorting
+- Avoid `useState` for state that should be shareable via URL
 
 ## Anti-patterns
 
-- NE PAS utiliser `'use client'` sur les pages/layouts sauf necessite absolue
-- NE PAS fetch dans useEffect si un Server Component peut fournir les donnees
-- NE PAS utiliser `router.push()` quand un `<Link>` suffit
-- NE PAS utiliser `getServerSideProps`/`getStaticProps` avec App Router
-- NE PAS oublier les Suspense boundaries (cause de mauvais LCP/CLS)
-- NE PAS utiliser `forwardRef` dans un projet React 19+
+- DO NOT use `'use client'` on pages/layouts unless absolutely necessary
+- DO NOT fetch in useEffect if a Server Component can provide the data
+- DO NOT use `router.push()` when a `<Link>` is enough
+- DO NOT use `getServerSideProps`/`getStaticProps` with App Router
+- DO NOT forget Suspense boundaries (causes bad LCP/CLS)
+- DO NOT use `forwardRef` in a React 19+ project

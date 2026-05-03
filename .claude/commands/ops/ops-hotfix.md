@@ -1,47 +1,47 @@
-# Agent HOTFIX
+# HOTFIX Agent
 
-Workflow de correction urgente en production.
+Workflow for urgent production fixes.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Guider la correction rapide et securisee d'un bug en production,
-avec classification d'incident, fix minimal et post-mortem.
+Guide the quick and secure fix of a production bug,
+with incident classification, minimal fix, and post-mortem.
 
 ## Workflow
 
-- Classifier l'incident (P0 critique, P1 eleve, P2 moyen, P3 faible)
-- Evaluer l'urgence (impact utilisateur, workaround, rollback possible)
-- Creer la branche hotfix depuis main/production
-- Diagnostiquer rapidement (logs, monitoring, code)
-- Appliquer le fix minimal (UNIQUEMENT le probleme immediat)
-- Valider avec tests critiques et smoke test
-- Creer la PR avec label hotfix et reference au probleme
-- Post-mortem : documenter, identifier ameliorations, merger dans develop
+- Classify the incident (P0 critical, P1 high, P2 medium, P3 low)
+- Assess urgency (user impact, workaround, rollback possible)
+- Create the hotfix branch from main/production
+- Diagnose quickly (logs, monitoring, code)
+- Apply the minimal fix (ONLY the immediate problem)
+- Validate with critical tests and smoke test
+- Create the PR with hotfix label and reference to the issue
+- Post-mortem: document, identify improvements, merge into develop
 
-## Output attendu
+## Expected output
 
-1. **Classification** de l'incident avec severite
-2. **Branche hotfix** creee avec fix minimal
-3. **Commit** avec reference au probleme et root cause
-4. **Checklist** post-mortem
+1. **Classification** of the incident with severity
+2. **Hotfix branch** created with minimal fix
+3. **Commit** with reference to the issue and root cause
+4. **Post-mortem** checklist
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-debug` | Diagnostiquer le probleme |
-| `/ops:ops-release` | Release apres hotfix |
-| `/ops:ops-monitoring` | Verifier post-deploiement |
+| `/dev:dev-debug` | Diagnose the problem |
+| `/ops:ops-release` | Release after hotfix |
+| `/ops:ops-monitoring` | Verify post-deployment |
 
 ---
 
-IMPORTANT: Vitesse ET securite. Ne pas sacrifier la securite pour la vitesse.
+IMPORTANT: Speed AND safety. Do not sacrifice safety for speed.
 
-IMPORTANT: Un hotfix = UN probleme. Pas de "tant qu'on y est".
+IMPORTANT: One hotfix = ONE problem. No "while we're at it".
 
-YOU MUST tester le hotfix avant deploiement prod.
+YOU MUST test the hotfix before prod deployment.
 
-NEVER deployer un hotfix sans possibilite de rollback.
+NEVER deploy a hotfix without rollback capability.

@@ -95,15 +95,15 @@ function generateAgentPage(agent: AgentInfo, position: number): string {
 
   const toolsList = agent.tools.length > 0
     ? agent.tools.map((t) => `\`${t}\``).join(', ')
-    : '_Aucun outil specifie_';
+    : '_No tool specified_';
 
   const disallowedList = agent.disallowedTools.length > 0
     ? agent.disallowedTools.map((t) => `\`${t}\``).join(', ')
-    : '_Aucun_';
+    : '_None_';
 
   const skillsList = agent.skills.length > 0
     ? agent.skills.map((s) => `\`${s}\``).join(', ')
-    : '_Aucun_';
+    : '_None_';
 
   return `${frontmatter}
 
@@ -115,49 +115,49 @@ ${modelBadge}
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Modele** | ${agent.model} |
+| **Model** | ${agent.model} |
 | **Permission Mode** | ${agent.permissionMode} |
-| **Outils autorises** | ${toolsList} |
-| **Outils interdits** | ${disallowedList} |
-| **Skills injectes** | ${skillsList} |
+| **Allowed tools** | ${toolsList} |
+| **Disallowed tools** | ${disallowedList} |
+| **Injected skills** | ${skillsList} |
 
-## Description detaillee
+## Detailed description
 
 ${agent.content}
 
-## Quand cet agent est-il utilise ?
+## When is this agent used?
 
-Cet agent est automatiquement delegue par Claude lorsque :
-- Une tache correspond a son domaine d'expertise
-- Le contexte isole est preferable
-- Les outils requis correspondent a sa configuration
+This agent is automatically delegated by Claude when:
+- A task matches its domain of expertise
+- An isolated context is preferable
+- The required tools match its configuration
 
-## Caracteristiques du modele ${agent.model}
+## Characteristics of the ${agent.model} model
 
 ${agent.model === 'haiku' ? `
-**Haiku** est optimise pour :
-- Taches rapides et simples
-- Economie de tokens
-- Exploration et lecture seule
+**Haiku** is optimized for:
+- Fast and simple tasks
+- Token economy
+- Exploration and read-only
 ` : agent.model === 'sonnet' ? `
-**Sonnet** est optimise pour :
-- Taches complexes necessitant analyse
-- Equilibre performance/cout
-- Audits et diagnostics
+**Sonnet** is optimized for:
+- Complex tasks requiring analysis
+- Performance/cost balance
+- Audits and diagnostics
 ` : `
-**Opus** est optimise pour :
-- Taches necessitant le maximum de capacites
-- Analyses tres complexes
-- Cas critiques
+**Opus** is optimized for:
+- Tasks requiring maximum capabilities
+- Very complex analyses
+- Critical cases
 `}
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux agents](/docs/agents)
+- [Back to agents](/docs/agents)
 - [Architecture](/docs/intro/architecture)
 `;
 }
@@ -169,7 +169,7 @@ function generateAgentsIndex(agents: AgentInfo[]): string {
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: 'Agents',
-    description: `Catalogue des ${agents.length} sub-agents claude-socle`,
+    description: `Catalog of ${agents.length} claude-socle sub-agents`,
   });
 
   const haikuAgents = agents.filter((a) => a.model === 'haiku');
@@ -197,54 +197,54 @@ import Stats from '@site/src/components/Stats';
 import { AgentGrid } from '@site/src/components/AgentCard';
 import AgentCard from '@site/src/components/AgentCard';
 
-# Catalogue des Agents
+# Agent Catalog
 
-> **${agents.length} sub-agents** avec contexte isole pour des taches autonomes
+> **${agents.length} sub-agents** with isolated context for autonomous tasks
 
 <Stats items={[
-  { number: ${haikuAgents.length}, label: 'Agents Haiku' },
-  { number: ${sonnetAgents.length}, label: 'Agents Sonnet' },
+  { number: ${haikuAgents.length}, label: 'Haiku agents' },
+  { number: ${sonnetAgents.length}, label: 'Sonnet agents' },
   { number: ${agents.length}, label: 'Total' },
 ]} />
 
-## Qu'est-ce qu'un Agent ?
+## What is an Agent?
 
-Les **agents** sont des sub-agents autonomes avec un contexte isole :
+**Agents** are autonomous sub-agents with an isolated context:
 
-- **Declenchement automatique** : Claude delegue selon le contexte
-- **Contexte isole** : Ne pollue pas la conversation principale
-- **Outils restreints** : Acces limite selon la tache
-- **Modele specifique** : Haiku (rapide) ou Sonnet (complexe)
+- **Automatic triggering**: Claude delegates based on context
+- **Isolated context**: Does not pollute the main conversation
+- **Restricted tools**: Limited access based on the task
+- **Specific model**: Haiku (fast) or Sonnet (complex)
 
-## Agents par modele
+## Agents by model
 
 ### Haiku (${haikuAgents.length} agents)
 
-Agents rapides et economiques pour les taches simples.
+Fast and economical agents for simple tasks.
 
-| Agent | Description | Outils |
+| Agent | Description | Tools |
 |-------|-------------|--------|
 ${generateTable(haikuAgents)}
 
 ### Sonnet (${sonnetAgents.length} agents)
 
-Agents pour les taches complexes necessitant une analyse approfondie.
+Agents for complex tasks requiring in-depth analysis.
 
-| Agent | Description | Outils |
+| Agent | Description | Tools |
 |-------|-------------|--------|
 ${generateTable(sonnetAgents)}
 
 ${opusAgents.length > 0 ? `
 ### Opus (${opusAgents.length} agents)
 
-Agents pour les taches critiques.
+Agents for critical tasks.
 
-| Agent | Description | Outils |
+| Agent | Description | Tools |
 |-------|-------------|--------|
 ${generateTable(opusAgents)}
 ` : ''}
 
-## Vue en cartes
+## Card view
 
 <AgentGrid>
 ${agents.slice(0, 12).map((a) => `  <AgentCard
@@ -256,15 +256,15 @@ ${agents.slice(0, 12).map((a) => `  <AgentCard
   />`).join('\n')}
 </AgentGrid>
 
-[Voir tous les agents...](#agents-par-modele)
+[See all agents...](#agents-by-model)
 
 ---
 
-## Voir aussi
+## See also
 
-- [Architecture](/docs/intro/architecture) - Comprendre Commands vs Agents vs Skills
-- [Commands](/docs/commands) - Les commandes manuelles
-- [Skills](/docs/skills) - Les skills auto-declenches
+- [Architecture](/docs/intro/architecture) - Understand Commands vs Agents vs Skills
+- [Commands](/docs/commands) - Manual commands
+- [Skills](/docs/skills) - Auto-triggered skills
 `;
 }
 

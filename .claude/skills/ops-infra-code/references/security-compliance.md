@@ -1,36 +1,36 @@
 # Security & Compliance
 
-> **Partie de :** [infrastructure-as-code](../SKILL.md)
-> **Objectif :** Bonnes pratiques securite et patterns de conformite pour Terraform/OpenTofu
+> **Part of:** [infrastructure-as-code](../SKILL.md)
+> **Goal:** Security best practices and compliance patterns for Terraform/OpenTofu
 
 ---
 
-## Table des Matieres
+## Table of Contents
 
-1. [Outils de Scanning Securite](#outils-de-scanning-securite)
-2. [Problemes de Securite Courants](#problemes-de-securite-courants)
-3. [Tests de Conformite](#tests-de-conformite)
-4. [Gestion des Secrets](#gestion-des-secrets)
-5. [Securite du State File](#securite-du-state-file)
+1. [Security Scanning Tools](#security-scanning-tools)
+2. [Common Security Issues](#common-security-issues)
+3. [Compliance Tests](#compliance-tests)
+4. [Secrets Management](#secrets-management)
+5. [State File Security](#state-file-security)
 
 ---
 
-## Outils de Scanning Securite
+## Security Scanning Tools
 
-### Checks de Securite Essentiels
+### Essential Security Checks
 
 ```bash
-# Scanning securite statique
+# Static security scanning
 trivy config .
 checkov -d .
 
-# Tests de conformite
+# Compliance tests
 terraform-compliance -f compliance/ -p tfplan.json
 ```
 
-### Integration Trivy
+### Trivy Integration
 
-**Installation :**
+**Installation:**
 
 ```bash
 # macOS
@@ -39,16 +39,16 @@ brew install trivy
 # Linux
 curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-# Dans CI
+# In CI
 - uses: aquasecurity/trivy-action@master
   with:
     scan-type: 'config'
     scan-ref: '.'
 ```
 
-**Note :** Trivy est le successeur de tfsec, maintenu par Aqua Security.
+**Note:** Trivy is the successor to tfsec, maintained by Aqua Security.
 
-**Exemple de Sortie :**
+**Example Output:**
 
 ```
 Result #1 HIGH Security group rule allows egress to multiple public internet addresses
@@ -65,37 +65,37 @@ Result #1 HIGH Security group rule allows egress to multiple public internet add
    19 | }
 ```
 
-### Integration Checkov
+### Checkov Integration
 
 ```bash
-# Executer Checkov
+# Run Checkov
 checkov -d . --framework terraform
 
-# Ignorer checks specifiques
+# Skip specific checks
 checkov -d . --skip-check CKV_AWS_23
 
-# Generer rapport JSON
+# Generate JSON report
 checkov -d . -o json > checkov-report.json
 ```
 
 ---
 
-## Problemes de Securite Courants
+## Common Security Issues
 
-### DON'T : Stocker des Secrets dans les Variables
+### DON'T: Store Secrets in Variables
 
 ```hcl
-# MAUVAIS : Secret en clair
+# BAD: Plaintext secret
 variable "database_password" {
   type    = string
-  default = "SuperSecret123!"  # Ne jamais faire ca
+  default = "SuperSecret123!"  # Never do this
 }
 ```
 
-### DO : Utiliser Secrets Manager
+### DO: Use Secrets Manager
 
 ```hcl
-# BON : Reference secrets depuis AWS Secrets Manager
+# GOOD: Reference secrets from AWS Secrets Manager
 data "aws_secretsmanager_secret_version" "db_password" {
   secret_id = "prod/database/password"
 }
@@ -105,20 +105,20 @@ resource "aws_db_instance" "this" {
 }
 ```
 
-### DON'T : Utiliser le VPC par Defaut
+### DON'T: Use the Default VPC
 
 ```hcl
-# MAUVAIS : VPC par defaut a des subnets publics
+# BAD: Default VPC has public subnets
 resource "aws_instance" "app" {
   ami       = "ami-12345"
-  subnet_id = "subnet-default"  # Eviter ressources par defaut
+  subnet_id = "subnet-default"  # Avoid default resources
 }
 ```
 
-### DO : Creer des VPCs Dedies
+### DO: Create Dedicated VPCs
 
 ```hcl
-# BON : VPC custom avec subnets prives
+# GOOD: Custom VPC with private subnets
 resource "aws_vpc" "this" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
@@ -131,20 +131,20 @@ resource "aws_subnet" "private" {
 }
 ```
 
-### DON'T : Ignorer le Chiffrement
+### DON'T: Skip Encryption
 
 ```hcl
-# MAUVAIS : Bucket S3 non chiffre
+# BAD: Unencrypted S3 bucket
 resource "aws_s3_bucket" "data" {
   bucket = "my-data-bucket"
-  # Pas de chiffrement configure
+  # No encryption configured
 }
 ```
 
-### DO : Activer le Chiffrement au Repos
+### DO: Enable Encryption at Rest
 
 ```hcl
-# BON : Activer le chiffrement
+# GOOD: Enable encryption
 resource "aws_s3_bucket" "data" {
   bucket = "my-data-bucket"
 }
@@ -160,72 +160,72 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "data" {
 }
 ```
 
-### DON'T : Ouvrir Security Groups a Internet
+### DON'T: Open Security Groups to the Internet
 
 ```hcl
-# MAUVAIS : Security group ouvert a internet
+# BAD: Security group open to the internet
 resource "aws_security_group_rule" "allow_all" {
   type              = "ingress"
   from_port         = 0
   to_port           = 65535
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]  # Ne jamais faire ca
+  cidr_blocks       = ["0.0.0.0/0"]  # Never do this
   security_group_id = aws_security_group.this.id
 }
 ```
 
-### DO : Utiliser Security Groups Least-Privilege
+### DO: Use Least-Privilege Security Groups
 
 ```hcl
-# BON : Restreindre a ports et sources specifiques
+# GOOD: Restrict to specific ports and sources
 resource "aws_security_group_rule" "app_https" {
   type              = "ingress"
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  cidr_blocks       = ["10.0.0.0/16"]  # Interne seulement
+  cidr_blocks       = ["10.0.0.0/16"]  # Internal only
   security_group_id = aws_security_group.this.id
 }
 ```
 
 ---
 
-## Tests de Conformite
+## Compliance Tests
 
 ### terraform-compliance
 
-**Installation :**
+**Installation:**
 
 ```bash
 pip install terraform-compliance
 ```
 
-**Exemple de Test de Conformite :**
+**Compliance Test Example:**
 
 ```gherkin
 # compliance/aws-encryption.feature
-Feature: Les ressources AWS doivent etre chiffrees
+Feature: AWS resources must be encrypted
 
-  Scenario: Les buckets S3 doivent avoir le chiffrement
+  Scenario: S3 buckets must have encryption
     Given I have aws_s3_bucket defined
     When it has aws_s3_bucket_server_side_encryption_configuration
     Then it must contain rule
     And it must contain apply_server_side_encryption_by_default
 
-  Scenario: Les instances RDS doivent etre chiffrees
+  Scenario: RDS instances must be encrypted
     Given I have aws_db_instance defined
     Then it must contain storage_encrypted
     And its value must be true
 ```
 
-**Executer les Tests :**
+**Run the Tests:**
 
 ```bash
-# Generer plan en JSON
+# Generate plan as JSON
 terraform plan -out=tfplan
 terraform show -json tfplan > tfplan.json
 
-# Executer tests de conformite
+# Run compliance tests
 terraform-compliance -f compliance/ -p tfplan.json
 ```
 
@@ -240,21 +240,21 @@ deny[msg] {
   resource.type == "aws_s3_bucket"
   not resource.change.after.server_side_encryption_configuration
 
-  msg := sprintf("Le bucket S3 '%s' doit avoir le chiffrement active", [resource.address])
+  msg := sprintf("S3 bucket '%s' must have encryption enabled", [resource.address])
 }
 ```
 
 ---
 
-## Gestion des Secrets
+## Secrets Management
 
-### Pattern AWS Secrets Manager
+### AWS Secrets Manager Pattern
 
 ```hcl
-# Creer secret
+# Create secret
 resource "aws_secretsmanager_secret" "db_password" {
   name        = "prod/database/password"
-  description = "Mot de passe master RDS"
+  description = "RDS master password"
 
   recovery_window_in_days = 30
 }
@@ -264,13 +264,13 @@ resource "aws_secretsmanager_secret_version" "db_password" {
   secret_string = random_password.db_password.result
 }
 
-# Generer mot de passe securise
+# Generate secure password
 resource "random_password" "db_password" {
   length  = 32
   special = true
 }
 
-# Utiliser secret dans RDS
+# Use secret in RDS
 data "aws_secretsmanager_secret_version" "db_password" {
   secret_id = aws_secretsmanager_secret.db_password.id
 }
@@ -281,16 +281,16 @@ resource "aws_db_instance" "this" {
 }
 ```
 
-### Variables d'Environnement
+### Environment Variables
 
 ```bash
-# Ne jamais commiter ces valeurs
+# Never commit these values
 export TF_VAR_database_password="secret123"
 export AWS_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
 export AWS_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 ```
 
-**Dans .gitignore :**
+**In .gitignore:**
 
 ```
 *.tfvars
@@ -300,9 +300,9 @@ secrets/
 
 ---
 
-## Securite du State File
+## State File Security
 
-### Chiffrer le State au Repos
+### Encrypt the State at Rest
 
 ```hcl
 # backend.tf
@@ -312,19 +312,19 @@ terraform {
     key            = "prod/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-locks"
-    encrypt        = true  # Toujours activer le chiffrement
+    encrypt        = true  # Always enable encryption
   }
 }
 ```
 
-### Securiser le Bucket State
+### Secure the State Bucket
 
 ```hcl
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "my-terraform-state"
 }
 
-# Activer versioning (protection contre suppression accidentelle)
+# Enable versioning (protection against accidental deletion)
 resource "aws_s3_bucket_versioning" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
 
@@ -333,7 +333,7 @@ resource "aws_s3_bucket_versioning" "terraform_state" {
   }
 }
 
-# Activer chiffrement
+# Enable encryption
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
 
@@ -344,7 +344,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" 
   }
 }
 
-# Bloquer acces public
+# Block public access
 resource "aws_s3_bucket_public_access_block" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
 
@@ -355,7 +355,7 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
 }
 ```
 
-### Restreindre Acces au State
+### Restrict State Access
 
 ```json
 {
@@ -382,12 +382,12 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
 
 ---
 
-## Bonnes Pratiques IAM
+## IAM Best Practices
 
-### DO : Utiliser Least Privilege
+### DO: Use Least Privilege
 
 ```hcl
-# BON : Permissions specifiques uniquement
+# GOOD: Specific permissions only
 resource "aws_iam_policy" "app_policy" {
   name = "app-policy"
 
@@ -407,16 +407,16 @@ resource "aws_iam_policy" "app_policy" {
 }
 ```
 
-### DON'T : Utiliser Permissions Wildcard
+### DON'T: Use Wildcard Permissions
 
 ```hcl
-# MAUVAIS : Permissions trop larges
+# BAD: Permissions too broad
 resource "aws_iam_policy" "bad_policy" {
   policy = jsonencode({
     Statement = [
       {
         Effect   = "Allow"
-        Action   = "*"  # Ne jamais utiliser wildcard
+        Action   = "*"  # Never use wildcard
         Resource = "*"
       }
     ]
@@ -426,43 +426,43 @@ resource "aws_iam_policy" "bad_policy" {
 
 ---
 
-## Checklists de Conformite
+## Compliance Checklists
 
-### Conformite SOC 2
+### SOC 2 Compliance
 
-- [ ] Chiffrement au repos pour tous les data stores
-- [ ] Chiffrement en transit (TLS/SSL)
-- [ ] Politiques IAM suivent least privilege
-- [ ] Logging active pour toutes les ressources
-- [ ] MFA requis pour acces privilegie
-- [ ] Scanning securite regulier dans CI/CD
+- [ ] Encryption at rest for all data stores
+- [ ] Encryption in transit (TLS/SSL)
+- [ ] IAM policies follow least privilege
+- [ ] Logging enabled for all resources
+- [ ] MFA required for privileged access
+- [ ] Regular security scanning in CI/CD
 
-### Conformite HIPAA
+### HIPAA Compliance
 
-- [ ] PHI chiffre au repos et en transit
-- [ ] Logs d'acces actives
-- [ ] VPC dedie avec subnets prives
-- [ ] Politiques backup et retention regulieres
-- [ ] Piste d'audit pour tous les changements infrastructure
+- [ ] PHI encrypted at rest and in transit
+- [ ] Access logs enabled
+- [ ] Dedicated VPC with private subnets
+- [ ] Regular backup and retention policies
+- [ ] Audit trail for all infrastructure changes
 
-### Conformite PCI-DSS
+### PCI-DSS Compliance
 
-- [ ] Segmentation reseau (VPCs separes)
-- [ ] Pas de mots de passe par defaut
-- [ ] Algorithmes de chiffrement forts
-- [ ] Scanning securite regulier
-- [ ] Controle d'acces et monitoring
+- [ ] Network segmentation (separate VPCs)
+- [ ] No default passwords
+- [ ] Strong encryption algorithms
+- [ ] Regular security scanning
+- [ ] Access control and monitoring
 
 ---
 
-## Ressources
+## Resources
 
-- [Documentation Trivy](https://aquasecurity.github.io/trivy/)
-- [Documentation Checkov](https://www.checkov.io/)
+- [Trivy Documentation](https://aquasecurity.github.io/trivy/)
+- [Checkov Documentation](https://www.checkov.io/)
 - [terraform-compliance](https://terraform-compliance.com/)
 - [Open Policy Agent](https://www.openpolicyagent.org/)
 - [AWS Security Best Practices](https://aws.amazon.com/security/best-practices/)
 
 ---
 
-**Retour vers :** [Fichier Skill Principal](../SKILL.md)
+**Back to:** [Main Skill File](../SKILL.md)

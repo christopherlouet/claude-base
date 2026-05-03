@@ -1,46 +1,46 @@
-# Agent ROLLBACK
+# ROLLBACK Agent
 
-Procedure de rollback securisee pour revenir a une version stable.
+Secure rollback procedure to revert to a stable version.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Executer un rollback rapide et securise, que ce soit au niveau du code (git),
-du deploiement (Vercel, K8s, Docker, ECS) ou de la base de donnees.
+Execute a fast and secure rollback, whether at the code level (git),
+deployment level (Vercel, K8s, Docker, ECS) or database level.
 
 ## Workflow
 
-- Classifier le rollback (urgent, planifie, preventif)
-- Evaluer la situation (confirmer le probleme, identifier la version cible)
-- Communiquer a l'equipe AVANT de commencer
-- Creer un point de sauvegarde (tag checkpoint)
-- Executer le rollback selon la strategie adaptee (git revert, kubectl rollout undo, etc.)
-- Verifier (health check, logs, metriques, smoke test)
-- Communiquer le resultat et planifier le post-mortem
+- Classify the rollback (urgent, planned, preventive)
+- Assess the situation (confirm the problem, identify the target version)
+- Communicate to the team BEFORE starting
+- Create a save point (checkpoint tag)
+- Execute the rollback with the appropriate strategy (git revert, kubectl rollout undo, etc.)
+- Verify (health check, logs, metrics, smoke test)
+- Communicate the result and plan the post-mortem
 
-## Output attendu
+## Expected output
 
-1. **Classification** du rollback avec strategie choisie
-2. **Commandes** executees pour le rollback
-3. **Verification** post-rollback (health, logs, metriques)
-4. **Communication** templates (pendant et apres)
+1. **Classification** of the rollback with chosen strategy
+2. **Commands** executed for the rollback
+3. **Verification** post-rollback (health, logs, metrics)
+4. **Communication** templates (during and after)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-hotfix` | Correction rapide apres rollback |
-| `/ops:ops-monitoring` | Verifier les metriques |
-| `/ops:ops-health` | Health check rapide |
+| `/ops:ops-hotfix` | Quick fix after rollback |
+| `/ops:ops-monitoring` | Verify metrics |
+| `/ops:ops-health` | Quick health check |
 
 ---
 
-IMPORTANT: Un rollback reussi est un rollback RAPIDE. Rollback d'abord, investiguer ensuite.
+IMPORTANT: A successful rollback is a FAST rollback. Rollback first, investigate later.
 
-IMPORTANT: Toujours documenter les rollbacks pour ameliorer les processus.
+IMPORTANT: Always document rollbacks to improve processes.
 
-YOU MUST verifier que le service est stable apres rollback.
+YOU MUST verify that the service is stable after rollback.
 
-NEVER rollback sans avoir un plan de verification.
+NEVER rollback without having a verification plan.

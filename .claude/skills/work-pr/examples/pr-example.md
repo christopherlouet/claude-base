@@ -1,17 +1,17 @@
-# Exemple de Pull Request
+# Pull Request Example
 
-## Contexte
-Ajout d'un système de pagination pour la liste des produits.
+## Context
+Adding a pagination system for the product list.
 
-## Vérifications pré-PR
+## Pre-PR checks
 
 ```bash
-# État
+# State
 git status
 # On branch feature/pagination
 # nothing to commit, working tree clean
 
-# Différences
+# Differences
 git diff main...HEAD --stat
 # src/components/ProductList.tsx  | 45 ++++++++--
 # src/hooks/usePagination.ts      | 32 +++++++
@@ -33,97 +33,97 @@ npm run build
 # ✅ Build successful
 ```
 
-## PR créée
+## PR created
 
-### Titre
+### Title
 ```
-feat(products): ajouter pagination à la liste des produits
+feat(products): add pagination to the product list
 ```
 
-### Corps de la PR
+### PR body
 
 ```markdown
 ## Description
 
-Ajoute un système de pagination côté serveur pour la liste des produits,
-permettant de gérer efficacement les catalogues volumineux (+10k produits).
+Adds a server-side pagination system for the product list,
+enabling efficient handling of large catalogs (+10k products).
 
-## Type de changement
+## Type of change
 
-- [x] New feature (changement non-breaking qui ajoute une fonctionnalité)
+- [x] New feature (non-breaking change that adds functionality)
 - [ ] Bug fix
 - [ ] Breaking change
 - [ ] Refactoring
 
-## Changements
+## Changes
 
-### Ajouts
-- `src/hooks/usePagination.ts` - Hook réutilisable de pagination
-- `src/types/pagination.ts` - Types TypeScript pour la pagination
-- `tests/usePagination.test.ts` - Tests unitaires du hook
+### Additions
+- `src/hooks/usePagination.ts` - Reusable pagination hook
+- `src/types/pagination.ts` - TypeScript types for pagination
+- `tests/usePagination.test.ts` - Unit tests for the hook
 
 ### Modifications
-- `src/components/ProductList.tsx` - Intégration de la pagination
-- `src/services/products.ts` - Support des paramètres page/limit
+- `src/components/ProductList.tsx` - Pagination integration
+- `src/services/products.ts` - Support for page/limit parameters
 
-## Comment tester
+## How to test
 
-1. Lancer l'application: `npm run dev`
-2. Aller sur `/products`
-3. Vérifier que:
-   - La liste affiche 20 produits par page
-   - Les boutons "Précédent/Suivant" fonctionnent
-   - L'URL se met à jour avec `?page=X`
-   - Le compteur total est affiché
+1. Start the application: `npm run dev`
+2. Go to `/products`
+3. Verify that:
+   - The list shows 20 products per page
+   - The "Previous/Next" buttons work
+   - The URL updates with `?page=X`
+   - The total counter is displayed
 
 ## Tests
 
-- [x] Tests unitaires ajoutés (coverage: 94%)
-- [x] Tests manuels effectués
-- [ ] Tests E2E (à ajouter dans une PR suivante)
+- [x] Unit tests added (coverage: 94%)
+- [x] Manual tests performed
+- [ ] E2E tests (to be added in a follow-up PR)
 
 ## Checklist
 
-- [x] Mon code suit les conventions du projet
-- [x] J'ai fait une self-review de mon code
-- [x] Les noms de variables sont explicites
-- [x] Pas de `console.log` oubliés
-- [x] Les tests passent localement
-- [x] Build réussi
+- [x] My code follows the project conventions
+- [x] I did a self-review of my code
+- [x] Variable names are explicit
+- [x] No leftover `console.log`
+- [x] Tests pass locally
+- [x] Build successful
 
 ## Screenshots
 
-### Avant
-![Liste sans pagination](before.png)
-*Liste complète chargée d'un coup (lent)*
+### Before
+![List without pagination](before.png)
+*Full list loaded at once (slow)*
 
-### Après
-![Liste avec pagination](after.png)
-*20 produits par page avec navigation*
+### After
+![List with pagination](after.png)
+*20 products per page with navigation*
 
 ## Performance
 
-| Métrique | Avant | Après |
+| Metric | Before | After |
 |----------|-------|-------|
 | Time to First Byte | 2.3s | 0.4s |
 | Largest Contentful Paint | 3.1s | 0.8s |
-| Données transférées | 2.4MB | 45KB |
+| Data transferred | 2.4MB | 45KB |
 
-## Notes pour les reviewers
+## Notes for reviewers
 
-- Le hook `usePagination` est générique et pourra être réutilisé
-  pour d'autres listes (commandes, utilisateurs, etc.)
-- J'ai choisi 20 items par page basé sur les best practices UX
-- La pagination est côté serveur pour les performances
+- The `usePagination` hook is generic and can be reused
+  for other lists (orders, users, etc.)
+- I chose 20 items per page based on UX best practices
+- Pagination is server-side for performance
 
 Fixes #234
 ```
 
-### Commande de création
+### Creation command
 
 ```bash
 gh pr create \
-  --title "feat(products): ajouter pagination à la liste des produits" \
+  --title "feat(products): add pagination to the product list" \
   --body-file PR_BODY.md \
   --base main \
   --head feature/pagination \
@@ -132,7 +132,7 @@ gh pr create \
   --milestone "v2.1.0"
 ```
 
-## Résultat
+## Result
 
 ```
 Creating pull request for feature/pagination into main
@@ -140,4 +140,4 @@ Creating pull request for feature/pagination into main
 https://github.com/example/app/pull/456
 ```
 
-**PR #456 créée avec succès.**
+**PR #456 created successfully.**

@@ -1,38 +1,38 @@
 ---
 sidebar_position: 1
-title: Tutoriels
-description: Apprenez à utiliser claude-socle avec des tutoriels progressifs pas-à-pas
+title: Tutorials
+description: Learn how to use claude-socle with progressive step-by-step tutorials
 ---
 
 import TutorialCard, { TutorialGrid } from '@site/src/components/TutorialCard';
 
-# Tutoriels
+# Tutorials
 
-Bienvenue dans les tutoriels claude-socle ! Ces guides pratiques vous accompagnent pas-à-pas pour maîtriser le workflow **Explore → Specify → Plan → TDD → Audit → Commit**.
+Welcome to the claude-socle tutorials! These hands-on guides walk you step-by-step through mastering the **Explore → Specify → Plan → TDD → Audit → Commit** workflow.
 
-## Parcours recommandé
+## Recommended path
 
-Suivez ces tutoriels dans l'ordre pour une progression optimale :
+Follow these tutorials in order for an optimal progression:
 
 <TutorialGrid>
   <TutorialCard
-    title="Premier projet"
-    description="Découvrez le workflow de base en créant votre première feature avec claude-socle."
+    title="First project"
+    description="Discover the basic workflow by creating your first feature with claude-socle."
     duration="15 min"
     difficulty="beginner"
     href="/docs/tutorials/premier-projet"
   />
   <TutorialCard
-    title="Feature React"
-    description="Créez un composant et un hook React complets avec tests et documentation."
+    title="React feature"
+    description="Create a complete React component and hook with tests and documentation."
     duration="30 min"
     difficulty="beginner"
     href="/docs/tutorials/feature-react"
-    prerequisites={['Tutoriel 01', 'React']}
+    prerequisites={['Tutorial 01', 'React']}
   />
   <TutorialCard
-    title="API REST Node.js"
-    description="Développez une API REST complète avec TDD, validation et documentation OpenAPI."
+    title="Node.js REST API"
+    description="Build a complete REST API with TDD, validation and OpenAPI documentation."
     duration="45 min"
     difficulty="intermediate"
     href="/docs/tutorials/api-rest-node"
@@ -40,63 +40,63 @@ Suivez ces tutoriels dans l'ordre pour une progression optimale :
   />
   <TutorialCard
     title="Flutter + Supabase"
-    description="Construisez une app mobile Flutter avec authentification et backend Supabase."
+    description="Build a Flutter mobile app with authentication and a Supabase backend."
     duration="60 min"
     difficulty="intermediate"
     href="/docs/tutorials/flutter-supabase"
-    prerequisites={['Flutter SDK', 'Compte Supabase']}
+    prerequisites={['Flutter SDK', 'Supabase account']}
   />
   <TutorialCard
-    title="Audit de sécurité"
-    description="Réalisez un audit de sécurité OWASP complet et corrigez les vulnérabilités."
+    title="Security audit"
+    description="Run a complete OWASP security audit and fix the vulnerabilities."
     duration="30 min"
     difficulty="intermediate"
     href="/docs/tutorials/audit-securite"
-    prerequisites={['Projet web existant']}
+    prerequisites={['Existing web project']}
   />
   <TutorialCard
-    title="Pipeline CI/CD"
-    description="Configurez un pipeline GitHub Actions complet avec tests, build et déploiement."
+    title="CI/CD pipeline"
+    description="Set up a complete GitHub Actions pipeline with tests, build and deployment."
     duration="45 min"
     difficulty="intermediate"
     href="/docs/tutorials/cicd-github"
-    prerequisites={['Repository GitHub']}
+    prerequisites={['GitHub repository']}
   />
   <TutorialCard
-    title="Refactoring Legacy"
-    description="Refactorez un projet legacy en utilisant TDD et une approche méthodique."
+    title="Legacy refactoring"
+    description="Refactor a legacy project using TDD and a methodical approach."
     duration="60 min"
     difficulty="advanced"
     href="/docs/tutorials/refactoring-legacy"
-    prerequisites={['Projet à refactorer']}
+    prerequisites={['Project to refactor']}
   />
   <TutorialCard
-    title="Infrastructure Proxmox"
-    description="Déployez une infrastructure Proxmox avec Terraform et monitoring."
+    title="Proxmox infrastructure"
+    description="Deploy a Proxmox infrastructure with Terraform and monitoring."
     duration="60 min"
     difficulty="advanced"
     href="/docs/tutorials/proxmox-infra"
     prerequisites={['Proxmox', 'Terraform']}
   />
   <TutorialCard
-    title="Firewall OPNsense"
-    description="Configurez OPNsense comme firewall derrière une box opérateur avec Terraform."
+    title="OPNsense firewall"
+    description="Configure OPNsense as a firewall behind an ISP box with Terraform."
     duration="45 min"
     difficulty="intermediate"
     href="/docs/tutorials/opnsense-firewall"
     prerequisites={['OPNsense', 'Terraform']}
   />
   <TutorialCard
-    title="API Python FastAPI"
-    description="Developpez une API REST FastAPI avec TDD pytest, validation Pydantic et documentation OpenAPI."
+    title="Python FastAPI"
+    description="Build a FastAPI REST API with pytest TDD, Pydantic validation and OpenAPI documentation."
     duration="45 min"
     difficulty="intermediate"
     href="/docs/tutorials/api-python"
-    prerequisites={['Python 3.11+', 'uv ou pip']}
+    prerequisites={['Python 3.11+', 'uv or pip']}
   />
   <TutorialCard
-    title="API Go"
-    description="Developpez une API REST Go avec Chi, TDD table-driven et documentation OpenAPI."
+    title="Go API"
+    description="Build a Go REST API with Chi, table-driven TDD and OpenAPI documentation."
     duration="45 min"
     difficulty="intermediate"
     href="/docs/tutorials/api-go"
@@ -104,36 +104,36 @@ Suivez ces tutoriels dans l'ordre pour une progression optimale :
   />
 </TutorialGrid>
 
-## Projet fil rouge
+## Capstone project
 
 <TutorialGrid>
   <TutorialCard
-    title="Projet complet : TaskFlow"
-    description="Construisez un mini-SaaS de A a Z en utilisant tout le workflow du socle : Specify, Plan, TDD, Audit, CI/CD, Deploy."
+    title="Complete project: TaskFlow"
+    description="Build a mini-SaaS from A to Z using the full foundation workflow: Specify, Plan, TDD, Audit, CI/CD, Deploy."
     duration="3-4h"
     difficulty="advanced"
     href="/docs/tutorials/projet-complet"
-    prerequisites={['Tutoriels 01-06', 'Node.js', 'React']}
+    prerequisites={['Tutorials 01-06', 'Node.js', 'React']}
   />
 </TutorialGrid>
 
-## Prérequis généraux
+## General prerequisites
 
-Avant de commencer, assurez-vous d'avoir :
+Before starting, make sure you have:
 
-- **Claude Code** installé et fonctionnel
-- **claude-socle** configuré dans votre projet (voir [Installation](/docs/intro/installation))
-- Des connaissances de base en ligne de commande
+- **Claude Code** installed and working
+- **claude-socle** configured in your project (see [Installation](/docs/intro/installation))
+- Basic command-line knowledge
 
-## Comment utiliser ces tutoriels
+## How to use these tutorials
 
-1. **Suivez l'ordre suggéré** - Les tutoriels sont conçus pour être progressifs
-2. **Pratiquez** - Exécutez chaque commande vous-même
-3. **Comparez vos résultats** - Chaque étape montre le résultat attendu
-4. **Expérimentez** - Une fois le tutoriel terminé, adaptez à vos projets
+1. **Follow the suggested order** - The tutorials are designed to be progressive
+2. **Practice** - Run each command yourself
+3. **Compare your results** - Each step shows the expected result
+4. **Experiment** - Once the tutorial is finished, adapt it to your own projects
 
-## Besoin d'aide ?
+## Need help?
 
-- Consultez la [FAQ](/docs/guides/faq) pour les questions courantes
-- Consultez le [Troubleshooting](/docs/guides/troubleshooting) en cas de problème
-- Ouvrez une [issue GitHub](https://github.com/christopherlouet/claude-socle/issues) si vous êtes bloqué
+- Check the [FAQ](/docs/guides/faq) for common questions
+- Check [Troubleshooting](/docs/guides/troubleshooting) if you run into issues
+- Open a [GitHub issue](https://github.com/christopherlouet/claude-socle/issues) if you're stuck

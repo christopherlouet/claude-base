@@ -22,17 +22,17 @@ lib/
 
 ## Widgets
 
-- Preferer les StatelessWidget quand possible
-- Extraire les widgets complexes
-- Utiliser const constructors
-- Nommage descriptif (UserCard, LoginButton)
+- Prefer StatelessWidget when possible
+- Extract complex widgets
+- Use const constructors
+- Descriptive naming (UserCard, LoginButton)
 
 ## State Management (BLoC)
 
-- Un BLoC par feature
-- Events pour les actions utilisateur
-- States pour les etats UI
-- Separer logique metier du UI
+- One BLoC per feature
+- Events for user actions
+- States for UI states
+- Separate business logic from UI
 
 ```dart
 // Event
@@ -56,33 +56,33 @@ class AuthFailure extends AuthState {
 
 ## Dependency Injection
 
-- Utiliser get_it pour l'injection
-- Enregistrer les dependances au demarrage
-- Lazy singletons pour les services
+- Use get_it for injection
+- Register dependencies at startup
+- Lazy singletons for services
 
 ## Navigation (GoRouter)
 
-- Routes declaratives
-- Nommage des routes en snake_case
+- Declarative routes
+- Route naming in snake_case
 - Deep linking support
 
 ## Tests
 
-- Widget tests pour les composants UI
-- Unit tests pour BLoCs et services
-- Integration tests pour flows critiques
-- Golden tests pour regressions visuelles
+- Widget tests for UI components
+- Unit tests for BLoCs and services
+- Integration tests for critical flows
+- Golden tests for visual regressions
 
 ## Performance
 
-- Utiliser const widgets
-- Eviter rebuilds inutiles
-- ListView.builder pour longues listes
+- Use const widgets
+- Avoid unnecessary rebuilds
+- ListView.builder for long lists
 - Cached images (cached_network_image)
 
 ## Anti-patterns
 
-- NEVER bloquer le main isolate
-- Eviter setState dans StatelessWidget
-- Ne pas ignorer les erreurs async
-- Eviter les widgets trop profonds (> 10 niveaux)
+- NEVER block the main isolate
+- Avoid setState in StatelessWidget
+- Do not ignore async errors
+- Avoid widgets that are too deep (> 10 levels)

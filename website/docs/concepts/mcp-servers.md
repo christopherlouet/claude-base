@@ -1,16 +1,16 @@
 ---
 sidebar_position: 7
 title: MCP Servers
-description: Comprendre les serveurs MCP (Model Context Protocol)
+description: Understand MCP (Model Context Protocol) servers
 ---
 
 # MCP Servers
 
-> Extensions via le Model Context Protocol pour etendre les capacites de Claude
+> Extensions via the Model Context Protocol to extend Claude's capabilities
 
-## Qu'est-ce que MCP ?
+## What is MCP?
 
-Le **Model Context Protocol (MCP)** est un protocole ouvert d'Anthropic qui permet d'etendre les capacites de Claude avec des serveurs externes.
+The **Model Context Protocol (MCP)** is an open protocol from Anthropic that allows extending Claude's capabilities with external servers.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
@@ -25,15 +25,15 @@ Le **Model Context Protocol (MCP)** est un protocole ouvert d'Anthropic qui perm
 │  │  ┌───────────┐  ┌───────────┐  ┌───────────┐          │  │
 │  │  │filesystem │  │  github   │  │  memory   │          │  │
 │  │  │           │  │           │  │           │          │  │
-│  │  │ Acces     │  │ API       │  │ Memoire   │          │  │
-│  │  │ fichiers  │  │ GitHub    │  │ persistante│          │  │
+│  │  │ File      │  │ GitHub    │  │ Persistent│          │  │
+│  │  │ access    │  │ API       │  │ memory    │          │  │
 │  │  └───────────┘  └───────────┘  └───────────┘          │  │
 │  │                                                         │  │
 │  │  ┌───────────┐  ┌───────────┐  ┌───────────┐          │  │
 │  │  │ postgres  │  │  fetch    │  │ puppeteer │          │  │
 │  │  │           │  │           │  │           │          │  │
-│  │  │ Base de   │  │ Requetes  │  │ Navigateur│          │  │
-│  │  │ donnees   │  │ HTTP      │  │ headless  │          │  │
+│  │  │ Database  │  │ HTTP      │  │ Headless  │          │  │
+│  │  │           │  │ requests  │  │ browser   │          │  │
 │  │  └───────────┘  └───────────┘  └───────────┘          │  │
 │  │                                                         │  │
 │  └─────────────────────────────────────────────────────────┘  │
@@ -43,7 +43,7 @@ Le **Model Context Protocol (MCP)** est un protocole ouvert d'Anthropic qui perm
 
 ## Configuration
 
-Les serveurs MCP sont configures dans `.mcp.json` a la racine du projet:
+MCP servers are configured in `.mcp.json` at the root of the project:
 
 ```json
 {
@@ -65,33 +65,33 @@ Les serveurs MCP sont configures dans `.mcp.json` a la racine du projet:
 }
 ```
 
-## Serveurs disponibles
+## Available servers
 
-### Serveurs officiels Anthropic
+### Official Anthropic servers
 
-| Serveur | Description | Package |
+| Server | Description | Package |
 |---------|-------------|---------|
-| `filesystem` | Acces avance aux fichiers | `@anthropic/mcp-server-filesystem` |
-| `github` | Integration GitHub | `@anthropic/mcp-server-github` |
-| `memory` | Memoire persistante | `@anthropic/mcp-server-memory` |
-| `fetch` | Requetes HTTP | `@anthropic/mcp-server-fetch` |
-| `postgres` | Base PostgreSQL | `@anthropic/mcp-server-postgres` |
-| `sqlite` | Base SQLite | `@anthropic/mcp-server-sqlite` |
-| `puppeteer` | Automatisation navigateur | `@anthropic/mcp-server-puppeteer` |
+| `filesystem` | Advanced file access | `@anthropic/mcp-server-filesystem` |
+| `github` | GitHub integration | `@anthropic/mcp-server-github` |
+| `memory` | Persistent memory | `@anthropic/mcp-server-memory` |
+| `fetch` | HTTP requests | `@anthropic/mcp-server-fetch` |
+| `postgres` | PostgreSQL database | `@anthropic/mcp-server-postgres` |
+| `sqlite` | SQLite database | `@anthropic/mcp-server-sqlite` |
+| `puppeteer` | Browser automation | `@anthropic/mcp-server-puppeteer` |
 
-### Serveurs communautaires
+### Community servers
 
-| Serveur | Description | Source |
+| Server | Description | Source |
 |---------|-------------|--------|
-| `notion` | Integration Notion | Community |
-| `slack` | Integration Slack | Community |
-| `linear` | Integration Linear | Community |
+| `notion` | Notion integration | Community |
+| `slack` | Slack integration | Community |
+| `linear` | Linear integration | Community |
 
-## Exemples de configuration
+## Configuration examples
 
 ### Filesystem
 
-Acces etendu au systeme de fichiers:
+Extended access to the filesystem:
 
 ```json
 {
@@ -110,14 +110,14 @@ Acces etendu au systeme de fichiers:
 }
 ```
 
-**Capacites:**
-- Lire/ecrire des fichiers en dehors du projet
-- Naviguer dans l'arborescence
-- Rechercher des fichiers
+**Capabilities:**
+- Read/write files outside the project
+- Navigate the directory tree
+- Search for files
 
 ### GitHub
 
-Integration complete avec GitHub:
+Full integration with GitHub:
 
 ```json
 {
@@ -134,15 +134,15 @@ Integration complete avec GitHub:
 }
 ```
 
-**Capacites:**
-- Creer des issues et PRs
-- Lire le contenu des repos
-- Gerer les branches
-- Voir les workflows
+**Capabilities:**
+- Create issues and PRs
+- Read repo content
+- Manage branches
+- View workflows
 
 ### Memory
 
-Memoire persistante entre sessions:
+Persistent memory across sessions:
 
 ```json
 {
@@ -156,14 +156,14 @@ Memoire persistante entre sessions:
 }
 ```
 
-**Capacites:**
-- Sauvegarder des informations
-- Retrouver des contextes precedents
-- Creer un graphe de connaissances
+**Capabilities:**
+- Save information
+- Retrieve previous contexts
+- Build a knowledge graph
 
 ### PostgreSQL
 
-Connexion a une base PostgreSQL:
+Connection to a PostgreSQL database:
 
 ```json
 {
@@ -180,14 +180,14 @@ Connexion a une base PostgreSQL:
 }
 ```
 
-**Capacites:**
-- Executer des requetes SQL
-- Explorer le schema
-- Analyser les donnees
+**Capabilities:**
+- Run SQL queries
+- Explore the schema
+- Analyze data
 
 ### Fetch
 
-Requetes HTTP externes:
+External HTTP requests:
 
 ```json
 {
@@ -201,14 +201,14 @@ Requetes HTTP externes:
 }
 ```
 
-**Capacites:**
+**Capabilities:**
 - GET/POST/PUT/DELETE
-- Headers personnalises
-- Gestion des cookies
+- Custom headers
+- Cookie handling
 
 ### Puppeteer
 
-Automatisation navigateur:
+Browser automation:
 
 ```json
 {
@@ -222,24 +222,24 @@ Automatisation navigateur:
 }
 ```
 
-**Capacites:**
-- Naviguer sur des pages web
-- Prendre des screenshots
-- Executer du JavaScript
-- Remplir des formulaires
+**Capabilities:**
+- Navigate web pages
+- Take screenshots
+- Execute JavaScript
+- Fill out forms
 
-## Structure de configuration
+## Configuration structure
 
-### Format complet
+### Full format
 
 ```json
 {
   "mcpServers": {
-    "nom-du-serveur": {
-      "command": "commande",
+    "server-name": {
+      "command": "command",
       "args": ["arg1", "arg2"],
       "env": {
-        "VAR": "valeur"
+        "VAR": "value"
       },
       "enabled": true
     }
@@ -247,30 +247,30 @@ Automatisation navigateur:
 }
 ```
 
-### Champs
+### Fields
 
-| Champ | Description | Obligatoire |
+| Field | Description | Required |
 |-------|-------------|-------------|
-| `command` | Commande a executer | Oui |
-| `args` | Arguments de la commande | Non |
-| `env` | Variables d'environnement | Non |
-| `enabled` | Activer/desactiver | Non (defaut: true) |
+| `command` | Command to execute | Yes |
+| `args` | Command arguments | No |
+| `env` | Environment variables | No |
+| `enabled` | Enable/disable | No (default: true) |
 
-## Activer/Desactiver
+## Enable/Disable
 
-### Via le fichier
+### Via the file
 
 ```json
 {
   "mcpServers": {
     "github": {
-      "enabled": false  // Desactive
+      "enabled": false  // Disabled
     }
   }
 }
 ```
 
-### Configuration recommandee pour claude-socle
+### Recommended configuration for claude-socle
 
 ```json
 {
@@ -297,21 +297,21 @@ Automatisation navigateur:
 }
 ```
 
-## Creer un serveur MCP
+## Create an MCP server
 
-### Structure de base
+### Basic structure
 
 ```typescript
 import { Server } from '@anthropic/mcp-server';
 
 const server = new Server({
-  name: 'mon-serveur',
+  name: 'my-server',
   version: '1.0.0',
 });
 
-// Definir des outils
-server.tool('mon_outil', {
-  description: 'Description de l\'outil',
+// Define tools
+server.tool('my_tool', {
+  description: 'Tool description',
   parameters: {
     type: 'object',
     properties: {
@@ -327,16 +327,16 @@ server.tool('mon_outil', {
 server.start();
 ```
 
-### Documentation officielle
+### Official documentation
 
 - [MCP Specification](https://github.com/anthropics/mcp)
-- [MCP Servers officiels](https://github.com/anthropics/mcp-servers)
+- [Official MCP Servers](https://github.com/anthropics/mcp-servers)
 
-## Securite
+## Security
 
-### Bonnes pratiques
+### Best practices
 
-1. **Tokens en variables d'environnement**
+1. **Tokens as environment variables**
    ```json
    {
      "env": {
@@ -345,38 +345,38 @@ server.start();
    }
    ```
 
-2. **Restreindre les chemins filesystem**
+2. **Restrict filesystem paths**
    ```json
    {
-     "args": ["-y", "@anthropic/mcp-server-filesystem", "/chemin/specifique"]
+     "args": ["-y", "@anthropic/mcp-server-filesystem", "/specific/path"]
    }
    ```
 
-3. **Desactiver les serveurs non utilises**
+3. **Disable unused servers**
    ```json
    {
      "enabled": false
    }
    ```
 
-4. **Ne pas commiter les secrets**
+4. **Do not commit secrets**
    ```gitignore
    # .gitignore
    .mcp.json.local
    ```
 
-### Risques
+### Risks
 
-| Serveur | Risque | Mitigation |
+| Server | Risk | Mitigation |
 |---------|--------|------------|
-| `filesystem` | Acces fichiers sensibles | Limiter les chemins |
-| `postgres` | Acces base de donnees | Utilisateur read-only |
-| `puppeteer` | Execution de code | Sandboxing |
+| `filesystem` | Access to sensitive files | Limit paths |
+| `postgres` | Database access | Read-only user |
+| `puppeteer` | Code execution | Sandboxing |
 
 ---
 
-## Voir aussi
+## See also
 
-- [Hooks](./hooks) - Actions pre/post tool
-- [Architecture](/docs/intro/architecture) - Vue d'ensemble
-- [MCP GitHub](https://github.com/anthropics/mcp) - Documentation officielle
+- [Hooks](./hooks) - Pre/post tool actions
+- [Architecture](/docs/intro/architecture) - Overview
+- [MCP GitHub](https://github.com/anthropics/mcp) - Official documentation

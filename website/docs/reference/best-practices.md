@@ -1,6 +1,6 @@
 ---
 sidebar_position: 12
-title: "Bonnes Pratiques Claude Code (Boris Cherny)"
+title: "Claude Code Best Practices (Boris Cherny)"
 description: " \"Give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result.\" -- Boris Cherny"
 tags:
   - "reference"
@@ -8,35 +8,35 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Bonnes Pratiques Claude Code (Boris Cherny)
+# Claude Code Best Practices (Boris Cherny)
 
-## Verification : Le Multiplicateur de Qualite
+## Verification: The Quality Multiplier
 
 &gt; "Give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result." -- Boris Cherny
 
-Donnez toujours a Claude un moyen de valider son travail:
+Always give Claude a way to validate its work:
 
-| Complexite | Methode | Exemple |
+| Complexity | Method | Example |
 |------------|---------|---------|
-| Simple | Commande bash | `npm run lint`, `npm run typecheck` |
-| Moderee | Suite de tests | `npm test`, `pytest`, `go test` |
-| Complexe | Browser/Simulateur | Playwright, Chrome DevTools, emulateur mobile |
+| Simple | Bash command | `npm run lint`, `npm run typecheck` |
+| Moderate | Test suite | `npm test`, `pytest`, `go test` |
+| Complex | Browser/Simulator | Playwright, Chrome DevTools, mobile emulator |
 
-Integration: hooks PostToolUse (auto-format, type-check, lint), PreToolUse sur commit (tests obligatoires), agents QA (`/qa:qa-audit`).
+Integration: PostToolUse hooks (auto-format, type-check, lint), PreToolUse on commit (mandatory tests), QA agents (`/qa:qa-audit`).
 
-## Modele Recommande
+## Recommended Model
 
 &gt; "I use Opus with adaptive thinking for everything." -- Boris Cherny
 
-| Contexte | Modele | Justification |
+| Context | Model | Rationale |
 |----------|--------|---------------|
-| Taches complexes | **Opus 4.7** | Raisonnement le plus avance, adaptive thinking, 1M contexte, effort `xhigh` |
-| Audits et analyses | **Sonnet** | Bon equilibre vitesse/qualite |
-| Taches simples | **Haiku** | Rapide pour les operations triviales |
+| Complex tasks | **Opus 4.7** | Most advanced reasoning, adaptive thinking, 1M context, `xhigh` effort |
+| Audits and analyses | **Sonnet** | Good speed/quality balance |
+| Simple tasks | **Haiku** | Fast for trivial operations |
 
-## Prompting Avance
+## Advanced Prompting
 
-| A eviter | Preferer |
+| Avoid | Prefer |
 |----------|----------|
 | "Fix this bug" | "Fix the null pointer in getUserById when user doesn't exist" |
 | "Make it better" | "Reduce the time complexity from O(n^2) to O(n log n)" |
@@ -44,70 +44,70 @@ Integration: hooks PostToolUse (auto-format, type-check, lint), PreToolUse sur c
 
 Techniques: "Grill me on these changes", "Prove to me this works", "Knowing everything you know now, implement the elegant solution".
 
-Voir `docs/guides/PROMPTING-GUIDE.md` pour le guide complet.
+See `docs/guides/PROMPTING-GUIDE.md` for the complete guide.
 
 ## Effort Levels
 
-&gt; Adapter le niveau de raisonnement a la tache.
+&gt; Match the level of reasoning to the task.
 
-| Tache | Effort | Pourquoi |
+| Task | Effort | Why |
 |-------|--------|----------|
-| Explorer du code, lire des fichiers | `low` | Pas besoin de raisonnement profond |
-| Implementer une feature standard | `medium` | Equilibre vitesse/qualite |
-| Concevoir une architecture, audit, debug complexe | `high` | Raisonnement approfondi necessaire |
-| Architecture systeme critique, audit securite avance | `xhigh` | Raisonnement maximum (Opus 4.7 requis) |
+| Exploring code, reading files | `low` | No need for deep reasoning |
+| Implementing a standard feature | `medium` | Speed/quality balance |
+| Designing an architecture, audit, complex debug | `high` | Deep reasoning required |
+| Critical system architecture, advanced security audit | `xhigh` | Maximum reasoning (Opus 4.7 required) |
 
-Commande: `/effort low`, `/effort medium`, `/effort high`, `/effort xhigh` (slider interactif).
+Command: `/effort low`, `/effort medium`, `/effort high`, `/effort xhigh` (interactive slider).
 
-## Memoire Automatique (CLI 2.1.76+)
+## Automatic Memory (CLI 2.1.76+)
 
-Claude Code memorise automatiquement preferences, decisions et contexte projet dans `~/.claude/memory/`.
+Claude Code automatically remembers preferences, decisions, and project context in `~/.claude/memory/`.
 
-| Memoriser (auto) | CLAUDE.md (git) | Rules (auto-activees) |
+| Memorize (auto) | CLAUDE.md (git) | Rules (auto-activated) |
 |-------------------|-----------------|----------------------|
-| Preferences personnelles | Conventions projet | Regles par langage |
-| Decisions d'architecture | Workflow obligatoire | Patterns de code |
-| Contexte equipe | References documentation | Checklist verification |
+| Personal preferences | Project conventions | Per-language rules |
+| Architecture decisions | Mandatory workflow | Code patterns |
+| Team context | Documentation references | Verification checklist |
 
-Ne pas dupliquer : si c'est dans CLAUDE.md, pas besoin de le memoriser. Utiliser "remember that..." pour forcer une memorisation explicite.
+Do not duplicate: if it is in CLAUDE.md, no need to memorize it. Use "remember that..." to force an explicit memorization.
 
-## Sessions Paralleles
+## Parallel Sessions
 
 &gt; "The single biggest productivity unlock." -- Boris Cherny
 
-Utiliser git worktrees pour 5+ sessions Claude Code en parallele. Voir le skill `git-worktrees` pour les details.
+Use git worktrees for 5+ Claude Code sessions in parallel. See the `git-worktrees` skill for details.
 
-## Gestion du Contexte
+## Context Management
 
-| Situation | Action | Quand |
+| Situation | Action | When |
 |-----------|--------|-------|
-| Session longue, contexte intact | `/compact` | Entre phases (Explore → Plan → TDD) |
-| Changement de sujet total | `/clear` | Nouvelle tache sans rapport |
-| Session normale | Laisser faire | Auto-compaction si necessaire |
+| Long session, intact context | `/compact` | Between phases (Explore → Plan → TDD) |
+| Total topic change | `/clear` | New unrelated task |
+| Normal session | Let it be | Auto-compaction if needed |
 
-## Recuperation Rapide
+## Quick Recovery
 
-Si un refactoring casse tout : `/rewind` (ou `/undo`, alias equivalent) revient au dernier etat stable. Plus rapide que `git stash` ou `git checkout`. Checkpoints sauvegardes automatiquement avant chaque modification.
+If a refactoring breaks everything: `/rewind` (or `/undo`, equivalent alias) returns to the last stable state. Faster than `git stash` or `git checkout`. Checkpoints saved automatically before each modification.
 
-## Reprise de Session
+## Session Resume
 
-`/recap` genere un resume de la session en cours — decisions prises, fichiers modifies, etat du travail. Utile pour reprendre une session apres une pause ou un `/compact`.
+`/recap` generates a summary of the current session — decisions made, files modified, work state. Useful to resume a session after a break or a `/compact`.
 
 | Situation | Action |
 |-----------|--------|
-| Retour apres une pause | `/recap` pour retrouver le contexte |
-| Apres `/compact` | `/recap` pour verifier ce qui a ete conserve |
-| Onboarding sur session existante | `claude --resume &lt;id&gt;` puis `/recap` |
+| Return after a break | `/recap` to recover the context |
+| After `/compact` | `/recap` to verify what was kept |
+| Onboarding on an existing session | `claude --resume &lt;id&gt;` then `/recap` |
 
-Configurable via `/config` (activer/desactiver le recap automatique au resume).
+Configurable via `/config` (enable/disable automatic recap on resume).
 
-## Optimisation Tokens
+## Token Optimization
 
 ### Prompt Caching 1h (CLI 2.1.108+)
 
-Variable `ENABLE_PROMPT_CACHING_1H` pour un cache de prompt d'1 heure au lieu de 5 minutes. Reduit significativement les couts pour les sessions longues.
+The `ENABLE_PROMPT_CACHING_1H` variable enables a 1-hour prompt cache instead of 5 minutes. Significantly reduces costs for long sessions.
 
-Activer dans `.claude/settings.local.json` :
+Enable in `.claude/settings.local.json`:
 
 ```json
 {
@@ -117,16 +117,16 @@ Activer dans `.claude/settings.local.json` :
 }
 ```
 
-Compatible avec API key, Bedrock, Vertex et Foundry. Alternative : `FORCE_PROMPT_CACHING_5M` pour forcer le TTL 5 minutes (utile si telemetrie desactivee).
+Compatible with API key, Bedrock, Vertex, and Foundry. Alternative: `FORCE_PROMPT_CACHING_5M` to force the 5-minute TTL (useful if telemetry is disabled).
 
-### RTK (optionnel)
+### RTK (optional)
 
-&gt; Reduire la consommation de tokens de 60-90% avec [RTK](https://github.com/rtk-ai/rtk).
+&gt; Reduce token consumption by 60-90% with [RTK](https://github.com/rtk-ai/rtk).
 
-Installation: `brew install rtk`. Le socle inclut un hook PreToolUse qui reecrit automatiquement les commandes. Desactive par defaut, activer avec `ENABLE_RTK=1` dans la section `env` de `.claude/settings.json` ou `.claude/settings.local.json`.
+Installation: `brew install rtk`. The foundation includes a PreToolUse hook that automatically rewrites commands. Disabled by default, enable with `ENABLE_RTK=1` in the `env` section of `.claude/settings.json` or `.claude/settings.local.json`.
 
-`rtk gain` pour voir les economies. `rtk discover` pour trouver les commandes non optimisees.
+`rtk gain` to see the savings. `rtk discover` to find unoptimized commands.
 
-## Commande Rapide
+## Quick Command
 
-`/work:work-commit-push-pr "description"` -- commit + push + PR en une seule commande.
+`/work:work-commit-push-pr "description"` -- commit + push + PR in a single command.

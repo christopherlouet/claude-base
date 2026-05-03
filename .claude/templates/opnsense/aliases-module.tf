@@ -1,7 +1,7 @@
 # =============================================================================
-# Module Aliases OPNsense
+# OPNsense Aliases Module
 # =============================================================================
-# Configure les aliases (groupes d'adresses, réseaux, ports)
+# Configures aliases (groups of addresses, networks, ports)
 # Provider: browningluke/opnsense
 # =============================================================================
 
@@ -10,21 +10,21 @@
 # -----------------------------------------------------------------------------
 
 variable "aliases" {
-  description = "Liste des aliases à créer"
+  description = "List of aliases to create"
   type = list(object({
-    name        = string                     # Nom unique de l'alias
+    name        = string                     # Unique alias name
     type        = string                     # Type: host, network, port, url, urltable
     description = optional(string)           # Description
     enabled     = optional(bool, true)
 
-    # Contenu selon le type
-    content = list(string)                   # Liste d'IPs, réseaux, ports, URLs
+    # Content depending on type
+    content = list(string)                   # List of IPs, networks, ports, URLs
 
-    # Options pour URL/URLTable
-    refresh_frequency = optional(number)     # Fréquence de rafraîchissement (jours)
+    # Options for URL/URLTable
+    refresh_frequency = optional(number)     # Refresh frequency (days)
 
-    # Statistiques
-    counters = optional(bool, false)         # Activer les compteurs pfTables
+    # Statistics
+    counters = optional(bool, false)         # Enable pfTables counters
   }))
 
   default = []
@@ -33,12 +33,12 @@ variable "aliases" {
     condition = alltrue([
       for alias in var.aliases : contains(["host", "network", "port", "url", "urltable"], alias.type)
     ])
-    error_message = "type doit être: host, network, port, url, ou urltable"
+    error_message = "type must be: host, network, port, url, or urltable"
   }
 }
 
 # -----------------------------------------------------------------------------
-# Alias Standards (Host, Network, Port)
+# Standard Aliases (Host, Network, Port)
 # -----------------------------------------------------------------------------
 
 resource "opnsense_firewall_alias" "this" {
@@ -49,13 +49,13 @@ resource "opnsense_firewall_alias" "this" {
   description = coalesce(each.value.description, "Alias: ${each.value.name}")
   enabled     = each.value.enabled
 
-  # Contenu
+  # Content
   content = each.value.content
 
-  # Options avancées
+  # Advanced options
   counters = each.value.counters
 
-  # Refresh pour URL/URLTable
+  # Refresh for URL/URLTable
   refresh = each.value.refresh_frequency
 }
 
@@ -64,7 +64,7 @@ resource "opnsense_firewall_alias" "this" {
 # -----------------------------------------------------------------------------
 
 output "aliases" {
-  description = "Aliases créés"
+  description = "Created aliases"
   value = {
     for name, alias in opnsense_firewall_alias.this : name => {
       id          = alias.id
@@ -77,60 +77,60 @@ output "aliases" {
 }
 
 # -----------------------------------------------------------------------------
-# Exemples d'utilisation
+# Usage examples
 # -----------------------------------------------------------------------------
 # aliases = [
-#   # Alias de type host (liste d'IPs)
+#   # Host-type alias (list of IPs)
 #   {
 #     name        = "SERVERS_WEB"
 #     type        = "host"
-#     description = "Serveurs web internes"
+#     description = "Internal web servers"
 #     content     = ["192.168.10.20", "192.168.10.21"]
 #   },
 #
-#   # Alias de type network (réseaux CIDR)
+#   # Network-type alias (CIDR networks)
 #   {
 #     name        = "RFC1918"
 #     type        = "network"
-#     description = "Réseaux privés RFC1918"
+#     description = "RFC1918 private networks"
 #     content     = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
 #   },
 #
-#   # Alias de type port
+#   # Port-type alias
 #   {
 #     name        = "PORTS_WEB"
 #     type        = "port"
-#     description = "Ports services web"
+#     description = "Web service ports"
 #     content     = ["80", "443", "8080", "8443"]
 #   },
 #
-#   # Alias de type port avec plages
+#   # Port-type alias with ranges
 #   {
 #     name        = "PORTS_EPHEMERAL"
 #     type        = "port"
-#     description = "Ports éphémères"
+#     description = "Ephemeral ports"
 #     content     = ["1024:65535"]
 #   },
 #
-#   # Alias de type URL (liste externe)
+#   # URL-type alias (external list)
 #   {
 #     name              = "BLOCKLIST_IPS"
 #     type              = "urltable"
-#     description       = "Liste d'IPs malveillantes"
+#     description       = "List of malicious IPs"
 #     content           = ["https://www.spamhaus.org/drop/drop.txt"]
-#     refresh_frequency = 1  # Rafraîchir tous les jours
+#     refresh_frequency = 1  # Refresh daily
 #   },
 #
-#   # Alias pour services courants
+#   # Alias for common services
 #   {
 #     name        = "DNS_PUBLIC"
 #     type        = "host"
-#     description = "Serveurs DNS publics"
+#     description = "Public DNS servers"
 #     content     = ["1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4"]
 #   }
 # ]
 #
-# # Utilisation dans une règle firewall:
+# # Usage in a firewall rule:
 # # firewall_rules = [
 # #   {
 # #     name             = "web_to_servers"
@@ -138,28 +138,28 @@ output "aliases" {
 # #     action           = "pass"
 # #     protocol         = "tcp"
 # #     source_net       = "lannet"
-# #     destination_net  = "SERVERS_WEB"   # Utilise l'alias
-# #     destination_port = "PORTS_WEB"     # Utilise l'alias
+# #     destination_net  = "SERVERS_WEB"   # Uses the alias
+# #     destination_port = "PORTS_WEB"     # Uses the alias
 # #   }
 # # ]
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
-# Aliases prédéfinis utiles
+# Useful predefined aliases
 # -----------------------------------------------------------------------------
-# Ces aliases peuvent être ajoutés à votre configuration pour simplifier
-# la gestion des règles firewall.
+# These aliases can be added to your configuration to simplify
+# firewall rule management.
 #
-# RECOMMANDATION: Créer au minimum ces aliases:
+# RECOMMENDATION: Create at minimum these aliases:
 #
-# 1. TRUSTED_NETWORKS - Réseaux de confiance internes
-# 2. ADMIN_HOSTS - Machines des administrateurs
-# 3. PORTS_ADMIN - Ports d'administration (22, 443, 3389)
-# 4. SERVERS_DMZ - Serveurs exposés
-# 5. BLOCKLIST_* - Listes de blocage externes
+# 1. TRUSTED_NETWORKS - Internal trusted networks
+# 2. ADMIN_HOSTS - Administrators' machines
+# 3. PORTS_ADMIN - Administration ports (22, 443, 3389)
+# 4. SERVERS_DMZ - Exposed servers
+# 5. BLOCKLIST_* - External blocklists
 #
-# Cela permet de:
-# - Modifier les IPs/ports sans toucher aux règles
-# - Rendre les règles plus lisibles
-# - Faciliter les audits de sécurité
+# This allows you to:
+# - Change IPs/ports without touching the rules
+# - Make the rules more readable
+# - Facilitate security audits
 # -----------------------------------------------------------------------------

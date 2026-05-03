@@ -1,67 +1,67 @@
 # Output Styles Guide
 
-## Vue d'ensemble
+## Overview
 
-Les **Output Styles** permettent de personnaliser le format des reponses de Claude Code selon le contexte et les preferences de l'utilisateur.
+**Output Styles** allow you to customize the format of Claude Code responses based on the context and user preferences.
 
-## Styles Disponibles
+## Available Styles
 
-| Style | Commande | Description | Cas d'usage |
-|-------|----------|-------------|-------------|
-| **teaching** | `/output-style teaching` | Mode pedagogique | Apprentissage, formation, explications |
-| **explanatory** | `/output-style explanatory` | Raisonnement detaille | Comprendre le pourquoi, onboarding, debug |
-| **concise** | `/output-style concise` | Bref et direct | Dev experimente, rapidite |
-| **technical** | `/output-style technical` | Technique approfondi | Architecture, decisions techniques |
-| **review** | `/output-style review` | Revue de code | Code review, PR, audits |
-| **emoji** | `/output-style emoji` | Enrichi d'emojis | Presentations, documentation |
-| **minimal** | `/output-style minimal` | Epure, sans decoration | Terminal, logs, CI/CD |
-| **structured** | `/output-style structured` | Structure ASCII | Rapports, analyses |
-| **debug** | `/output-style debug` | Diagnostic methodique | Debugging, troubleshooting |
-| **metrics** | `/output-style metrics` | Chiffres et benchmarks | Performance, rapports |
+| Style | Command | Description | Use case |
+|-------|---------|-------------|----------|
+| **teaching** | `/output-style teaching` | Pedagogical mode | Learning, training, explanations |
+| **explanatory** | `/output-style explanatory` | Detailed reasoning | Understanding the why, onboarding, debug |
+| **concise** | `/output-style concise` | Brief and direct | Experienced devs, speed |
+| **technical** | `/output-style technical` | In-depth technical | Architecture, technical decisions |
+| **review** | `/output-style review` | Code review | Code review, PR, audits |
+| **emoji** | `/output-style emoji` | Enriched with emojis | Presentations, documentation |
+| **minimal** | `/output-style minimal` | Stripped down, no decoration | Terminal, logs, CI/CD |
+| **structured** | `/output-style structured` | ASCII structure | Reports, analyses |
+| **debug** | `/output-style debug` | Methodical diagnosis | Debugging, troubleshooting |
+| **metrics** | `/output-style metrics` | Numbers and benchmarks | Performance, reports |
 
-## Matrice de Choix
+## Choice Matrix
 
-### Par niveau d'experience
+### By experience level
 
-| Niveau | Style recommande |
-|--------|------------------|
-| Debutant | teaching |
-| Intermediaire | technical |
-| Expert | concise ou minimal |
+| Level | Recommended style |
+|-------|-------------------|
+| Beginner | teaching |
+| Intermediate | technical |
+| Expert | concise or minimal |
 
-### Par type de tache
+### By task type
 
-| Tache | Style recommande |
-|-------|------------------|
-| Apprendre un concept | teaching |
-| Comprendre du code existant | explanatory |
-| Fix rapide | concise |
-| Decisions d'architecture | technical |
+| Task | Recommended style |
+|------|-------------------|
+| Learning a concept | teaching |
+| Understanding existing code | explanatory |
+| Quick fix | concise |
+| Architecture decisions | technical |
 | Code review | review |
-| Documentation README | emoji |
-| Rapport d'audit | structured |
-| Script CI/CD | minimal |
-| Debug complexe | debug |
-| Rapport de performance | metrics |
-| Onboarding nouveau dev | explanatory |
+| README documentation | emoji |
+| Audit report | structured |
+| CI/CD script | minimal |
+| Complex debug | debug |
+| Performance report | metrics |
+| Onboarding new dev | explanatory |
 
-### Par contexte
+### By context
 
-| Contexte | Style recommande |
-|----------|------------------|
+| Context | Recommended style |
+|---------|-------------------|
 | Pair programming | teaching |
-| Deadline serree | concise |
-| Planning technique | technical |
+| Tight deadline | concise |
+| Technical planning | technical |
 | Pull Request | review |
-| Demo client | emoji |
-| Logs serveur | minimal |
-| Rapport de sprint | structured |
+| Client demo | emoji |
+| Server logs | minimal |
+| Sprint report | structured |
 | Troubleshooting | debug |
 | Benchmarks | metrics |
 
-## Exemples Comparatifs
+## Comparative Examples
 
-### Question: "Comment implementer une pagination?"
+### Question: "How to implement pagination?"
 
 ---
 
@@ -69,27 +69,27 @@ Les **Output Styles** permettent de personnaliser le format des reponses de Clau
 ```markdown
 ## Concept: Pagination
 
-### Qu'est-ce que c'est?
-La pagination permet de diviser de grandes listes de donnees en pages
-plus petites pour ameliorer les performances et l'UX.
+### What is it?
+Pagination splits large lists of data into smaller pages
+to improve performance and UX.
 
-### Pourquoi c'est utile?
-- Reduit la charge serveur (moins de donnees par requete)
-- Ameliore le temps de chargement
-- Permet a l'utilisateur de naviguer facilement
+### Why is it useful?
+- Reduces server load (less data per request)
+- Improves loading time
+- Lets the user navigate easily
 
-### Comment ca marche?
-Nous utilisons deux parametres: `page` (numero de page) et `limit`
-(elements par page). Le serveur calcule le `offset` ainsi:
+### How does it work?
+We use two parameters: `page` (page number) and `limit`
+(items per page). The server computes the `offset` like this:
 offset = (page - 1) * limit
 
-### Exemple pratique
-[Code detaille avec commentaires...]
+### Practical example
+[Detailed code with comments...]
 
-### Points cles a retenir
-- Toujours definir une limite par defaut
-- Valider les parametres cote serveur
-- Retourner le total pour le calcul des pages
+### Key points to remember
+- Always define a default limit
+- Validate parameters server-side
+- Return the total for page calculation
 ```
 
 ---
@@ -106,22 +106,22 @@ const paginate = <T>(items: T[], page = 1, limit = 10) =>
 ```markdown
 ## Implementation: Pagination
 
-### Analyse
-Pagination offset-based vs cursor-based. Offset simple mais inefficace
-sur grandes tables. Cursor stable mais complexe.
+### Analysis
+Offset-based vs cursor-based pagination. Offset is simple but inefficient
+on large tables. Cursor is stable but complex.
 
 ### Implementation
-[Code TypeScript avec types complets]
+[TypeScript code with full types]
 
-### Complexite
-- Temps: O(n) offset / O(1) cursor
-- Espace: O(limit)
+### Complexity
+- Time: O(n) offset / O(1) cursor
+- Space: O(limit)
 
 ### Trade-offs
-| Approche | Avantages | Inconvenients |
-|----------|-----------|---------------|
-| Offset | Simple, page numero | Lent sur gros datasets |
-| Cursor | Performant, stable | Pas de jump de page |
+| Approach | Pros | Cons |
+|----------|------|------|
+| Offset | Simple, page number | Slow on large datasets |
+| Cursor | Performant, stable | No page jump |
 ```
 
 ---
@@ -133,7 +133,7 @@ PAGINATION
 ════════════════════════════════════════
 
 ────────────────────────────────────────
-Approches
+Approaches
 ────────────────────────────────────────
 
 ┌─────────────┬──────────────┬──────────┐
@@ -141,25 +141,25 @@ Approches
 ├─────────────┼──────────────┼──────────┤
 │ Offset      │ O(n)         │ Simple   │
 │ Cursor      │ O(1)         │ Scale    │
-│ Keyset      │ O(log n)     │ Mixte    │
+│ Keyset      │ O(log n)     │ Mixed    │
 └─────────────┴──────────────┴──────────┘
 
-[OK]   Offset pour < 10k items
-[WARN] Cursor recommande > 10k items
+[OK]   Offset for < 10k items
+[WARN] Cursor recommended > 10k items
 ```
 
 ---
 
 ## Configuration
 
-### Frontmatter requis
+### Required frontmatter
 
-Chaque fichier de style doit avoir:
+Each style file must have:
 
 ```yaml
 ---
-name: Nom du Style
-description: Description courte
+name: Style Name
+description: Short description
 keep-coding-instructions: true
 ---
 ```
@@ -168,39 +168,39 @@ keep-coding-instructions: true
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `name` | string | Nom affiche du style |
-| `description` | string | Description courte |
-| `keep-coding-instructions` | boolean | Conserver les instructions de code |
+| `name` | string | Displayed name of the style |
+| `description` | string | Short description |
+| `keep-coding-instructions` | boolean | Keep coding instructions |
 
-## Creer un Style Personnalise
+## Create a Custom Style
 
-1. Creer un fichier `.md` dans `.claude/output-styles/`
-2. Ajouter le frontmatter YAML
-3. Documenter le format et les exemples
+1. Create a `.md` file in `.claude/output-styles/`
+2. Add the YAML frontmatter
+3. Document the format and examples
 
 ### Template
 
 ```markdown
 ---
-name: Mon Style
-description: Description de mon style personnalise
+name: My Style
+description: Description of my custom style
 keep-coding-instructions: true
 ---
 
-# Mon Style
+# My Style
 
-## Principes
-- Principe 1
-- Principe 2
+## Principles
+- Principle 1
+- Principle 2
 
 ## Format
-[Description du format]
+[Format description]
 
-## Exemples
-[Exemples d'utilisation]
+## Examples
+[Usage examples]
 ```
 
-## Combinaisons Recommandees
+## Recommended Combinations
 
 | Workflow | Styles |
 |----------|--------|

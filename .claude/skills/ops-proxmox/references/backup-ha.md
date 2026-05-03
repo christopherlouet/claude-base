@@ -1,16 +1,16 @@
-# Backup & Haute Disponibilite — Proxmox
+# Backup & High Availability — Proxmox
 
-Configuration PBS (Proxmox Backup Server) et ressources HA.
+PBS (Proxmox Backup Server) configuration and HA resources.
 
-## Backup avec PBS
+## Backup with PBS
 
-### Configuration backup schedule
+### Backup schedule configuration
 
 ```hcl
 resource "proxmox_virtual_environment_cluster_options" "backup" {
   backup_schedule {
     enabled      = true
-    schedule     = "0 2 * * *"  # Tous les jours à 2h
+    schedule     = "0 2 * * *"  # Every day at 2am
     storage      = "pbs-backup"
     mode         = "snapshot"
     compress     = "zstd"
@@ -22,33 +22,33 @@ resource "proxmox_virtual_environment_cluster_options" "backup" {
 }
 ```
 
-### Commandes PBS utiles
+### Useful PBS commands
 
 ```bash
-# Verifier l'etat des backups
+# Check backup status
 proxmox-backup-client list --repository user@pbs:datastore
 
-# Restaurer un backup
+# Restore a backup
 qmrestore pbs:backup/vzdump-qemu-100-2024_01_15-02_00_00.vma 200
 
-# Verifier l'integrite
+# Verify integrity
 proxmox-backup-client verify --repository user@pbs:datastore
 ```
 
-### Bonnes pratiques backup
+### Backup best practices
 
-| Regle | Raison |
-|-------|--------|
-| Mode `snapshot` | Pas d'arret de VM pendant le backup |
-| Compression `zstd` | Meilleur ratio + vitesse que gzip |
-| `notification = failure` | Alertes uniquement en cas d'echec |
-| Retention policy | Configurer GC + prune dans PBS (pas cote Proxmox) |
-| Test de restore | Verifier mensuellement qu'un restore fonctionne |
-| Backup offsite | PBS replication vers un second PBS distant |
+| Rule | Reason |
+|------|--------|
+| `snapshot` mode | No VM downtime during backup |
+| `zstd` compression | Better ratio + speed than gzip |
+| `notification = failure` | Alerts only on failure |
+| Retention policy | Configure GC + prune in PBS (not on the Proxmox side) |
+| Restore test | Verify monthly that a restore works |
+| Offsite backup | PBS replication to a second remote PBS |
 
-## Haute disponibilite
+## High availability
 
-### Configuration HA
+### HA configuration
 
 ```hcl
 resource "proxmox_virtual_environment_haresource" "critical_vm" {
@@ -68,18 +68,18 @@ resource "proxmox_virtual_environment_hagroup" "production" {
 }
 ```
 
-### Prerequis HA
+### HA prerequisites
 
-- Cluster Proxmox >= 3 nodes (quorum)
-- Stockage partage (NFS, Ceph, ou ZFS replique)
-- Corosync sur reseau dedie recommande
-- Fencing configure (iDRAC, IPMI, ou watchdog software)
+- Proxmox cluster >= 3 nodes (quorum)
+- Shared storage (NFS, Ceph, or replicated ZFS)
+- Corosync on a dedicated network recommended
+- Fencing configured (iDRAC, IPMI, or software watchdog)
 
-### Cas d'usage
+### Use cases
 
-| Criticite | Configuration |
-|-----------|---------------|
-| **Mission critical** | HA + storage replique + fencing hardware |
-| **Important** | HA + storage partage NFS |
-| **Standard** | Pas de HA, backup quotidien + restore < 1h |
-| **Dev/Test** | Pas de HA, pas de backup (ephemere) |
+| Criticality | Configuration |
+|-------------|---------------|
+| **Mission critical** | HA + replicated storage + hardware fencing |
+| **Important** | HA + NFS shared storage |
+| **Standard** | No HA, daily backup + restore < 1h |
+| **Dev/Test** | No HA, no backup (ephemeral) |

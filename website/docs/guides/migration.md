@@ -1,155 +1,155 @@
 ---
 sidebar_position: 8
-title: Guide de Migration
-description: Migrer un projet existant vers claude-socle
+title: Migration Guide
+description: Migrate an existing project to claude-socle
 ---
 
-# Guide de Migration vers claude-socle
+# Migration Guide to claude-socle
 
-Ce guide vous accompagne pour intégrer claude-socle dans un projet existant.
+This guide walks you through integrating claude-socle into an existing project.
 
-## Vue d'ensemble
+## Overview
 
-La migration vers claude-socle consiste à :
-1. Copier les fichiers de configuration
-2. Adapter les rules à votre stack
-3. Valider l'installation
-4. Commencer à utiliser le workflow
+Migrating to claude-socle consists of:
+1. Copying the configuration files
+2. Adapting the rules to your stack
+3. Validating the installation
+4. Starting to use the workflow
 
-**Durée estimée** : 15-30 minutes
+**Estimated duration**: 15-30 minutes
 
-## Prérequis
+## Prerequisites
 
-- Claude Code installé et fonctionnel
-- Un projet existant (Web, Mobile, API, etc.)
-- Accès en écriture au projet
+- Claude Code installed and working
+- An existing project (Web, Mobile, API, etc.)
+- Write access to the project
 
-## Migration Standard
+## Standard Migration
 
-### Étape 1 : Télécharger claude-socle
+### Step 1: Download claude-socle
 
 ```bash
-# Cloner le repository
+# Clone the repository
 git clone https://github.com/christopherlouet/claude-socle.git /tmp/claude-socle
 ```
 
-### Étape 2 : Copier les fichiers
+### Step 2: Copy the files
 
 ```bash
-# Aller dans votre projet
-cd votre-projet
+# Go to your project
+cd your-project
 
-# Copier le dossier .claude
+# Copy the .claude folder
 cp -r /tmp/claude-socle/.claude/ .
 
-# Copier CLAUDE.md
+# Copy CLAUDE.md
 cp /tmp/claude-socle/CLAUDE.md .
 
-# Copier .mcp.json (optionnel)
+# Copy .mcp.json (optional)
 cp /tmp/claude-socle/.mcp.json .
 ```
 
-### Étape 3 : Vérifier la structure
+### Step 3: Verify the structure
 
 ```bash
 ls -la .claude/
 ```
 
-Vous devriez voir :
+You should see:
 ```
 .claude/
-├── commands/      # 131 commandes
+├── commands/      # 131 commands
 ├── agents/        # 63 agents
 ├── skills/        # 54 skills
 ├── rules/         # 30 rules
-├── templates/     # Templates de spec
-├── output-styles/ # Styles de sortie
+├── templates/     # Spec templates
+├── output-styles/ # Output styles
 └── settings.json  # Configuration
 ```
 
-### Étape 4 : Valider l'installation
+### Step 4: Validate the installation
 
-Ouvrez Claude Code dans votre projet et testez :
+Open Claude Code in your project and test:
 
 ```bash
-# Doit fonctionner
-/work:work-explore "Analyser ce projet"
+# Should work
+/work:work-explore "Analyze this project"
 ```
 
-Si l'exploration fonctionne, la migration est réussie.
+If exploration works, the migration succeeded.
 
 ---
 
-## Migration par Type de Projet
+## Migration by Project Type
 
-### Projet Web (React/Next.js/Vue)
+### Web Project (React/Next.js/Vue)
 
-**Fichiers importants** :
-- `.claude/rules/typescript.md` - Conventions TypeScript
-- `.claude/rules/react.md` - Conventions React
-- `.claude/rules/testing.md` - Conventions de tests
+**Important files**:
+- `.claude/rules/typescript.md` - TypeScript conventions
+- `.claude/rules/react.md` - React conventions
+- `.claude/rules/testing.md` - Testing conventions
 
-**Adapter CLAUDE.md** :
+**Adapt CLAUDE.md**:
 
 ```markdown
-# Mon Projet Web
+# My Web Project
 
-## Commandes Essentielles
-| Commande | Description |
+## Essential Commands
+| Command | Description |
 |----------|-------------|
-| `npm install` | Installer les dépendances |
-| `npm run dev` | Serveur de développement |
-| `npm test` | Lancer les tests |
-| `npm run build` | Build de production |
+| `npm install` | Install dependencies |
+| `npm run dev` | Development server |
+| `npm test` | Run tests |
+| `npm run build` | Production build |
 
 ## Structure
 ```
 /src
-├── /components   # Composants React
+├── /components   # React components
 ├── /hooks        # Custom hooks
-├── /services     # Logique métier
-└── /utils        # Fonctions utilitaires
+├── /services     # Business logic
+└── /utils        # Utility functions
 ```
 
 ## Conventions
-- TypeScript strict
-- Tailwind CSS pour le style
-- Jest + RTL pour les tests
+- Strict TypeScript
+- Tailwind CSS for styling
+- Jest + RTL for tests
 ```
 
-**Commandes recommandées** :
-- `/dev:dev-component` - Créer des composants
-- `/dev:dev-hook` - Créer des hooks
-- `/qa:qa-perf` - Audit de performance
+**Recommended commands**:
+- `/dev:dev-component` - Create components
+- `/dev:dev-hook` - Create hooks
+- `/qa:qa-perf` - Performance audit
 
-### Projet Mobile (Flutter)
+### Mobile Project (Flutter)
 
-**Fichiers importants** :
-- `.claude/rules/flutter.md` - Conventions Flutter/Dart
+**Important files**:
+- `.claude/rules/flutter.md` - Flutter/Dart conventions
 
-**Adapter CLAUDE.md** :
+**Adapt CLAUDE.md**:
 
 ```markdown
-# Mon App Flutter
+# My Flutter App
 
-## Commandes
-| Commande | Description |
+## Commands
+| Command | Description |
 |----------|-------------|
-| `flutter pub get` | Installer les dépendances |
-| `flutter run` | Lancer sur device |
-| `flutter test` | Lancer les tests |
-| `flutter build apk` | Build Android |
+| `flutter pub get` | Install dependencies |
+| `flutter run` | Run on device |
+| `flutter test` | Run tests |
+| `flutter build apk` | Android build |
 
 ## Architecture
 - Clean Architecture
-- BLoC pour le state management
-- get_it pour l'injection de dépendances
+- BLoC for state management
+- get_it for dependency injection
 
 ## Structure
 ```
 /lib
-├── /core         # Code partagé
-├── /features     # Features par domaine
+├── /core         # Shared code
+├── /features     # Features by domain
 │   └── /auth
 │       ├── /data
 │       ├── /domain
@@ -158,115 +158,115 @@ Si l'exploration fonctionne, la migration est réussie.
 ```
 ```
 
-**Commandes recommandées** :
-- `/dev:dev-flutter` - Créer des screens/widgets
-- `/dev:dev-supabase` - Backend Supabase
-- `/qa:qa-mobile` - Audit qualité mobile
+**Recommended commands**:
+- `/dev:dev-flutter` - Create screens/widgets
+- `/dev:dev-supabase` - Supabase backend
+- `/qa:qa-mobile` - Mobile quality audit
 
-### Projet API (Node/Python/Go)
+### API Project (Node/Python/Go)
 
-**Fichiers importants** :
-- `.claude/rules/api.md` - Conventions API
-- `.claude/rules/security.md` - Sécurité
+**Important files**:
+- `.claude/rules/api.md` - API conventions
+- `.claude/rules/security.md` - Security
 - `.claude/rules/testing.md` - Tests
 
-**Adapter CLAUDE.md** :
+**Adapt CLAUDE.md**:
 
 ```markdown
-# Mon API
+# My API
 
-## Commandes
-| Commande | Description |
+## Commands
+| Command | Description |
 |----------|-------------|
-| `npm start` | Démarrer le serveur |
-| `npm test` | Lancer les tests |
-| `npm run lint` | Vérifier le code |
+| `npm start` | Start the server |
+| `npm test` | Run tests |
+| `npm run lint` | Check the code |
 
 ## Stack
 - Express.js / Fastify
-- PostgreSQL avec Prisma
-- Jest pour les tests
-- Zod pour la validation
+- PostgreSQL with Prisma
+- Jest for tests
+- Zod for validation
 
-## Conventions API
-- REST avec versioning (v1, v2)
-- Validation stricte des entrées
-- Gestion d'erreurs centralisée
-- Logs structurés (JSON)
+## API Conventions
+- REST with versioning (v1, v2)
+- Strict input validation
+- Centralized error handling
+- Structured logs (JSON)
 ```
 
-**Commandes recommandées** :
-- `/dev:dev-api` - Créer des endpoints
-- `/dev:dev-tdd` - Développement TDD
-- `/qa:qa-security` - Audit sécurité
+**Recommended commands**:
+- `/dev:dev-api` - Create endpoints
+- `/dev:dev-tdd` - TDD development
+- `/qa:qa-security` - Security audit
 
 ---
 
-## Migration depuis Claude Code Standard
+## Migration from Standard Claude Code
 
-Si vous utilisez déjà Claude Code sans claude-socle :
+If you are already using Claude Code without claude-socle:
 
-### Différences clés
+### Key differences
 
-| Aspect | Avant | Après |
+| Aspect | Before | After |
 |--------|-------|-------|
 | Workflow | Ad-hoc | Explore → Specify → Plan → TDD → Audit → Commit |
-| Commandes | Manuel | `/work:work-*`, `/dev:dev-*`, etc. |
-| Conventions | Répétées | Dans CLAUDE.md et rules |
-| Agents | Non | 63 agents spécialisés |
+| Commands | Manual | `/work:work-*`, `/dev:dev-*`, etc. |
+| Conventions | Repeated | In CLAUDE.md and rules |
+| Agents | No | 63 specialized agents |
 
-### Étapes de migration
+### Migration steps
 
-1. **Sauvegarder vos prompts personnalisés**
+1. **Back up your custom prompts**
    ```bash
-   # Si vous aviez des fichiers .claude personnalisés
+   # If you had custom .claude files
    cp -r .claude/ .claude-backup/
    ```
 
-2. **Installer claude-socle**
+2. **Install claude-socle**
    ```bash
    cp -r /tmp/claude-socle/.claude/ .
    cp /tmp/claude-socle/CLAUDE.md .
    ```
 
-3. **Réintégrer vos personnalisations**
-   - Copier vos commandes custom dans `.claude/commands/custom/`
-   - Adapter CLAUDE.md avec vos conventions
+3. **Reintegrate your customizations**
+   - Copy your custom commands into `.claude/commands/custom/`
+   - Adapt CLAUDE.md with your conventions
 
-4. **Tester**
+4. **Test**
    ```bash
-   /work:work-explore "Analyser le projet"
+   /work:work-explore "Analyze the project"
    ```
 
 ---
 
-## Personnalisation Post-Migration
+## Post-Migration Customization
 
-### Adapter les rules
+### Adapt the rules
 
-Modifiez les rules selon vos conventions :
+Edit the rules according to your conventions:
 
 ```bash
-# Éditer une rule
+# Edit a rule
 nano .claude/rules/typescript.md
 ```
 
-Exemple de personnalisation :
+Customization example:
 
 ```markdown
-# TypeScript Rules (Personnalisé)
+# TypeScript Rules (Customized)
 
-## Conventions Spécifiques à Notre Projet
+## Conventions Specific to Our Project
 
-- Utiliser `type` plutôt que `interface` pour les props
-- Préfixer les interfaces avec `I` (IUser, IProduct)
-- Suffixer les types avec `Type` (UserType, ProductType)
+- Use `type` rather than `interface` for props
+- Prefix interfaces with `I` (IUser, IProduct)
+- Suffix types with `Type` (UserType, ProductType)
 ```
 
-### Ajouter des commandes custom
+### Add custom commands
 
 ```bash
-# Créer une commande personnalisée
+# Create a custom command
 mkdir -p .claude/commands/custom
 nano .claude/commands/custom/deploy-staging.md
 ```
@@ -275,13 +275,13 @@ nano .claude/commands/custom/deploy-staging.md
 # Deploy Staging
 
 ## Instructions
-Déployer l'application sur l'environnement staging :
-1. Vérifier que les tests passent
-2. Build l'application
-3. Déployer sur staging.example.com
-4. Vérifier le déploiement
+Deploy the application to the staging environment:
+1. Check that the tests pass
+2. Build the application
+3. Deploy to staging.example.com
+4. Verify the deployment
 
-## Commandes
+## Commands
 ```bash
 npm run test
 npm run build
@@ -289,9 +289,9 @@ npm run deploy:staging
 ```
 ```
 
-### Configurer les hooks
+### Configure the hooks
 
-Éditez `.claude/settings.json` :
+Edit `.claude/settings.json`:
 
 ```json
 {
@@ -299,7 +299,7 @@ npm run deploy:staging
     "preToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "echo 'Modification en cours...'"
+        "command": "echo 'Modification in progress...'"
       }
     ],
     "postToolUse": [
@@ -315,82 +315,82 @@ npm run deploy:staging
 
 ---
 
-## Checklist de Validation
+## Validation Checklist
 
-Après la migration, vérifiez :
+After the migration, check:
 
 ### Configuration
 
-- [ ] Le dossier `.claude/` existe avec toutes les sous-dossiers
-- [ ] Le fichier `CLAUDE.md` est présent
-- [ ] Le fichier `.mcp.json` est présent (optionnel)
+- [ ] The `.claude/` folder exists with all subfolders
+- [ ] The `CLAUDE.md` file is present
+- [ ] The `.mcp.json` file is present (optional)
 
-### Commandes
+### Commands
 
-- [ ] `/work:work-explore` fonctionne
-- [ ] `/work:work-plan` fonctionne
-- [ ] `/work:work-commit` fonctionne
+- [ ] `/work:work-explore` works
+- [ ] `/work:work-plan` works
+- [ ] `/work:work-commit` works
 
-### Personnalisation
+### Customization
 
-- [ ] CLAUDE.md reflète les conventions du projet
-- [ ] Les rules correspondent au stack utilisé
-- [ ] Les commandes custom sont créées si nécessaire
+- [ ] CLAUDE.md reflects the project's conventions
+- [ ] The rules match the stack used
+- [ ] Custom commands are created if needed
 
-### Test fonctionnel
+### Functional test
 
 ```bash
-# Test complet
-/work:work-explore "Analyser ce projet et ses conventions"
-/work:work-plan "Ajouter un exemple de feature"
-# (Annuler si nécessaire)
+# Full test
+/work:work-explore "Analyze this project and its conventions"
+/work:work-plan "Add an example feature"
+# (Cancel if needed)
 ```
 
 ---
 
-## Dépannage
+## Troubleshooting
 
-### La commande ne fonctionne pas
+### The command does not work
 
 ```bash
-# Vérifier la structure
+# Check the structure
 ls -la .claude/commands/work/
 
-# Le fichier doit exister
+# The file must exist
 cat .claude/commands/work/work-explore.md
 ```
 
-### L'agent ne se déclenche pas
+### The agent does not trigger
 
 ```bash
-# Vérifier les agents
+# Check the agents
 ls -la .claude/agents/
 
-# Forcer l'utilisation
-"Utilise l'agent qa-security pour auditer le projet"
+# Force usage
+"Use the qa-security agent to audit the project"
 ```
 
-### Les rules ne s'appliquent pas
+### The rules do not apply
 
 ```bash
-# Vérifier que les paths correspondent
+# Check that the paths match
 cat .claude/rules/typescript.md | head -10
 
-# Les paths doivent matcher vos fichiers
+# Paths must match your files
 # paths: ["**/*.ts", "**/*.tsx"]
 ```
 
 ---
 
-## Ressources
+## Resources
 
-- [Installation complète](/docs/intro/installation)
+- [Full installation](/docs/intro/installation)
 - [Architecture](/docs/intro/architecture)
 - [FAQ](/docs/guides/faq)
 - [Troubleshooting](/docs/guides/troubleshooting)
 
 ---
 
-:::tip Conseil
-Après la migration, passez quelques minutes à explorer avec `/work:work-explore`. Cela aide Claude à comprendre votre projet et à donner de meilleures recommandations.
+:::tip Tip
+After the migration, spend a few minutes exploring with `/work:work-explore`. This helps Claude understand your project and give better recommendations.
 :::

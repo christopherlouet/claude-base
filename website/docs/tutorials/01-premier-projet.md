@@ -1,178 +1,178 @@
 ---
 sidebar_position: 2
-title: "01 - Premier projet"
-description: Découvrez le workflow de base en créant votre première feature avec claude-socle
+title: "01 - First project"
+description: Discover the basic workflow by creating your first feature with claude-socle
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# Premier projet avec claude-socle
+# First project with claude-socle
 
-<DifficultyBadge level="beginner" /> **Durée estimée : 15 minutes**
+<DifficultyBadge level="beginner" /> **Estimated duration: 15 minutes**
 
-Ce tutoriel vous guide dans la création de votre première feature en utilisant le workflow **Explore → Specify → Plan → TDD → Audit → Commit**.
+This tutorial walks you through creating your first feature using the **Explore → Specify → Plan → TDD → Audit → Commit** workflow.
 
-## Objectifs
+## Goals
 
-À la fin de ce tutoriel, vous saurez :
-- Utiliser `/work:work-explore` pour comprendre un codebase
-- Utiliser `/work:work-plan` pour planifier une implémentation
-- Utiliser `/work:work-flow-feature` pour créer une feature complète
-- Comprendre le cycle de développement avec claude-socle
+By the end of this tutorial, you will know how to:
+- Use `/work:work-explore` to understand a codebase
+- Use `/work:work-plan` to plan an implementation
+- Use `/work:work-flow-feature` to create a complete feature
+- Understand the development cycle with claude-socle
 
-## Prérequis
+## Prerequisites
 
-- Claude Code installé et fonctionnel
-- Un projet existant ou un nouveau projet vide
+- Claude Code installed and working
+- An existing project or a new empty project
 
-## Étape 1 : Explorer le projet
+## Step 1: Explore the project
 
-Avant de modifier quoi que ce soit, commencez **toujours** par explorer le code existant.
+Before modifying anything, **always** start by exploring the existing code.
 
-### Lancez la commande d'exploration
+### Run the exploration command
 
 ```bash
-/work:work-explore "Comprendre l'architecture générale du projet"
+/work:work-explore "Understand the overall architecture of the project"
 ```
 
-### Résultat attendu
+### Expected result
 
-Claude va analyser votre projet et vous présenter :
-- La structure des dossiers
-- Les technologies utilisées
-- Les patterns et conventions en place
-- Les fichiers clés
+Claude will analyze your project and present:
+- The folder structure
+- The technologies used
+- The patterns and conventions in place
+- The key files
 
-**Exemple de sortie :**
+**Example output:**
 
 ```
-## Analyse du projet
+## Project analysis
 
 ### Structure
 - Framework: Next.js 14 (App Router)
-- Langage: TypeScript
+- Language: TypeScript
 - Tests: Jest + React Testing Library
 - Style: Tailwind CSS
 
-### Conventions identifiées
-- Composants dans /src/components
-- Hooks dans /src/hooks
-- Services dans /src/services
-- Naming: PascalCase pour composants, camelCase pour fonctions
+### Identified conventions
+- Components in /src/components
+- Hooks in /src/hooks
+- Services in /src/services
+- Naming: PascalCase for components, camelCase for functions
 
-### Points d'attention
-- Pas de tests sur les hooks existants
-- Documentation README à jour
+### Points of attention
+- No tests on existing hooks
+- README documentation up to date
 ```
 
-:::tip Pourquoi explorer d'abord ?
-L'exploration vous permet de comprendre les conventions existantes et d'éviter d'introduire des incohérences. Claude adapte ensuite ses suggestions au style du projet.
+:::tip Why explore first?
+Exploration lets you understand existing conventions and avoid introducing inconsistencies. Claude then adapts its suggestions to the project's style.
 :::
 
-## Étape 2 : Planifier la feature
+## Step 2: Plan the feature
 
-Maintenant que vous comprenez le projet, planifiez votre feature.
+Now that you understand the project, plan your feature.
 
-### Lancez la planification
-
-```bash
-/work:work-plan "Ajouter un bouton de thème sombre"
-```
-
-### Résultat attendu
-
-Claude va créer un plan détaillé avec :
-- Les fichiers à créer/modifier
-- Les étapes d'implémentation
-- Les risques potentiels
-
-**Exemple de sortie :**
-
-```
-## Plan d'implémentation : Thème sombre
-
-### Fichiers à créer
-- src/hooks/useTheme.ts - Hook de gestion du thème
-- src/components/ThemeToggle.tsx - Bouton de toggle
-
-### Fichiers à modifier
-- src/app/layout.tsx - Ajouter le provider de thème
-- tailwind.config.ts - Activer le mode dark
-
-### Étapes
-1. Créer le hook useTheme avec localStorage
-2. Créer le composant ThemeToggle
-3. Intégrer dans le layout
-4. Tester manuellement
-
-### Risques
-- Flash de thème au chargement (mitigé avec script inline)
-```
-
-## Étape 3 : Implémenter avec le workflow complet
-
-Pour une implémentation guidée de bout en bout, utilisez le workflow feature.
-
-### Lancez le workflow
+### Run the planning
 
 ```bash
-/work:work-flow-feature "Ajouter un bouton de thème sombre"
+/work:work-plan "Add a dark theme button"
 ```
 
-### Ce qui se passe
+### Expected result
 
-Le workflow va automatiquement :
-1. **Explorer** le contexte si pas déjà fait
-2. **Planifier** l'implémentation
-3. **Créer** les fichiers nécessaires
-4. **Tester** si des tests existent
-5. **Proposer** un commit
+Claude will create a detailed plan with:
+- The files to create/modify
+- The implementation steps
+- The potential risks
 
-### Suivez les étapes
+**Example output:**
 
-Claude vous guidera étape par étape. À chaque étape, vous pouvez :
-- **Valider** pour continuer
-- **Modifier** si vous voulez ajuster
-- **Annuler** si vous changez d'avis
+```
+## Implementation plan: Dark theme
 
-## Étape 4 : Vérifier le résultat
+### Files to create
+- src/hooks/useTheme.ts - Theme management hook
+- src/components/ThemeToggle.tsx - Toggle button
 
-Une fois le workflow terminé, vérifiez votre travail.
+### Files to modify
+- src/app/layout.tsx - Add the theme provider
+- tailwind.config.ts - Enable dark mode
 
-### Testez manuellement
+### Steps
+1. Create the useTheme hook with localStorage
+2. Create the ThemeToggle component
+3. Integrate into the layout
+4. Test manually
+
+### Risks
+- Theme flash on load (mitigated with inline script)
+```
+
+## Step 3: Implement with the full workflow
+
+For an end-to-end guided implementation, use the feature workflow.
+
+### Run the workflow
+
+```bash
+/work:work-flow-feature "Add a dark theme button"
+```
+
+### What happens
+
+The workflow will automatically:
+1. **Explore** the context if not already done
+2. **Plan** the implementation
+3. **Create** the necessary files
+4. **Test** if tests exist
+5. **Propose** a commit
+
+### Follow the steps
+
+Claude will guide you step by step. At each step, you can:
+- **Validate** to continue
+- **Modify** if you want to adjust
+- **Cancel** if you change your mind
+
+## Step 4: Verify the result
+
+Once the workflow is complete, verify your work.
+
+### Test manually
 
 ```bash
 npm run dev
 ```
 
-Ouvrez votre navigateur et vérifiez que le bouton de thème fonctionne.
+Open your browser and check that the theme button works.
 
-### Vérifiez les fichiers créés
+### Check the created files
 
 ```bash
 git status
 ```
 
-Vous devriez voir les nouveaux fichiers et modifications.
+You should see the new files and modifications.
 
-## Étape 5 : Commiter
+## Step 5: Commit
 
-Si tout est correct, créez un commit propre.
+If everything is correct, create a clean commit.
 
-### Utilisez la commande commit
+### Use the commit command
 
 ```bash
 /work:work-commit
 ```
 
-### Résultat attendu
+### Expected result
 
-Claude va :
-1. Analyser les changements
-2. Proposer un message de commit Conventional Commits
-3. Créer le commit après validation
+Claude will:
+1. Analyze the changes
+2. Propose a Conventional Commits message
+3. Create the commit after validation
 
-**Exemple de message :**
+**Example message:**
 
 ```
 feat(theme): add dark mode toggle
@@ -182,9 +182,9 @@ feat(theme): add dark mode toggle
 - Integrate theme provider in root layout
 ```
 
-## Récapitulatif
+## Recap
 
-Vous avez appris le workflow de base :
+You have learned the basic workflow:
 
 ```mermaid
 flowchart LR
@@ -193,23 +193,23 @@ flowchart LR
     C --> D["/work:work-commit"]
 ```
 
-| Commande | Usage |
-|----------|-------|
-| `/work:work-explore` | Comprendre le code avant de modifier |
-| `/work:work-plan` | Planifier avant d'implémenter |
-| `/work:work-flow-feature` | Workflow complet pour une feature |
-| `/work:work-commit` | Commit propre avec message formaté |
+| Command | Usage |
+|---------|-------|
+| `/work:work-explore` | Understand the code before modifying |
+| `/work:work-plan` | Plan before implementing |
+| `/work:work-flow-feature` | Complete workflow for a feature |
+| `/work:work-commit` | Clean commit with formatted message |
 
-## Prochaines étapes
+## Next steps
 
-Maintenant que vous maîtrisez le workflow de base, continuez avec :
+Now that you have mastered the basic workflow, continue with:
 
-- [Tutoriel 02 : Feature React](/docs/tutorials/feature-react) - Créer un composant complet
-- [Guide Commands](/docs/commands) - Explorer toutes les commandes disponibles
-- [FAQ](/docs/guides/faq) - Réponses aux questions courantes
+- [Tutorial 02: React Feature](/docs/tutorials/feature-react) - Create a complete component
+- [Commands Guide](/docs/commands) - Explore all available commands
+- [FAQ](/docs/guides/faq) - Answers to common questions
 
 ---
 
-:::info Conseil
-Prenez l'habitude de **toujours explorer avant de coder**. Cette discipline vous évitera de nombreuses erreurs et incohérences.
+:::info Tip
+Get into the habit of **always exploring before coding**. This discipline will save you from many errors and inconsistencies.
 :::

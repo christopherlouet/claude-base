@@ -1,50 +1,50 @@
-# Projet Node.js API
+# Node.js API Project
 
-## Commandes Essentielles
-- `npm install` - Installer les dépendances
-- `npm run dev` - Serveur de développement avec hot-reload
-- `npm test` - Lancer les tests
-- `npm run lint` - Vérifier ESLint
-- `npm run build` - Compiler TypeScript
-- `npm start` - Démarrer en production
-- `npm run db:migrate` - Lancer les migrations
+## Essential Commands
+- `npm install` - Install dependencies
+- `npm run dev` - Development server with hot-reload
+- `npm test` - Run tests
+- `npm run lint` - Check ESLint
+- `npm run build` - Compile TypeScript
+- `npm start` - Start in production
+- `npm run db:migrate` - Run migrations
 
-## Structure du Projet
-- `/src/routes` ou `/src/controllers` - Endpoints API
-- `/src/services` - Logique métier
-- `/src/models` - Modèles de données / ORM
-- `/src/middleware` - Middlewares Express/Fastify
-- `/src/utils` - Fonctions utilitaires
-- `/src/types` - Types TypeScript
+## Project Structure
+- `/src/routes` or `/src/controllers` - API endpoints
+- `/src/services` - Business logic
+- `/src/models` - Data models / ORM
+- `/src/middleware` - Express/Fastify middleware
+- `/src/utils` - Utility functions
+- `/src/types` - TypeScript types
 - `/src/config` - Configuration
-- `/tests` - Tests unitaires et d'intégration
+- `/tests` - Unit and integration tests
 
-## Conventions API
-- IMPORTANT: REST ou GraphQL cohérent
-- IMPORTANT: Validation des entrées sur TOUS les endpoints
-- YOU MUST gérer les erreurs proprement (try/catch, error middleware)
-- YOU MUST logger les requêtes et erreurs
+## API Conventions
+- IMPORTANT: Consistent REST or GraphQL
+- IMPORTANT: Input validation on ALL endpoints
+- YOU MUST handle errors cleanly (try/catch, error middleware)
+- YOU MUST log requests and errors
 
-## Sécurité
-- IMPORTANT: Requêtes SQL paramétrées (jamais de concaténation)
-- IMPORTANT: Authentification sur routes protégées
-- Rate limiting sur endpoints publics
-- Validation avec Joi/Zod/class-validator
-- Sanitization des inputs
+## Security
+- IMPORTANT: Parameterized SQL queries (never concatenation)
+- IMPORTANT: Authentication on protected routes
+- Rate limiting on public endpoints
+- Validation with Joi/Zod/class-validator
+- Input sanitization
 
-## Base de données
-- Utiliser un ORM (Prisma, TypeORM, Sequelize)
-- Migrations versionnées
-- Seeds pour données de test
-- Transactions pour opérations multiples
+## Database
+- Use an ORM (Prisma, TypeORM, Sequelize)
+- Versioned migrations
+- Seeds for test data
+- Transactions for multi-step operations
 
 ## Tests
-- Jest ou Vitest
-- Tests unitaires pour services
-- Tests d'intégration pour endpoints
-- Base de données de test séparée
+- Jest or Vitest
+- Unit tests for services
+- Integration tests for endpoints
+- Separate test database
 
-### Exemple de test d'intégration
+### Integration test example
 ```typescript
 import request from 'supertest';
 import { app } from '@/app';
@@ -69,9 +69,9 @@ describe('GET /api/users/:id', () => {
 });
 ```
 
-## Gestion des erreurs
+## Error handling
 
-### Middleware d'erreur centralisé
+### Centralized error middleware
 ```typescript
 // middleware/errorHandler.ts
 import { Request, Response, NextFunction } from 'express';
@@ -102,7 +102,7 @@ export function errorHandler(
     });
   }
 
-  // Erreur non gérée
+  // Unhandled error
   console.error('Unhandled error:', err);
   res.status(500).json({
     success: false,
@@ -114,7 +114,7 @@ export function errorHandler(
 }
 ```
 
-## Validation avec Zod
+## Validation with Zod
 
 ```typescript
 // schemas/user.schema.ts
@@ -150,7 +150,7 @@ export const validate = (schema: z.Schema) => {
 };
 ```
 
-## Format des réponses API
+## API response format
 ```json
 {
   "success": true,
@@ -173,27 +173,27 @@ export const validate = (schema: z.Schema) => {
 ## Git & Commits
 - Format: `type(scope): description`
 - Types: feat, fix, refactor, test, chore, docs
-- Scope: endpoint ou service name
+- Scope: endpoint or service name
 
-## Hooks Claude Code 2.1+
+## Claude Code 2.1+ Hooks
 
 | Hook | Type | Action |
 |------|------|--------|
-| Branch protection | PreToolUse | Bloque les modifications sur main/master |
-| Auto-format | PostToolUse | Prettier sur les fichiers TS/JS modifiés |
-| Type check | PostToolUse | Vérification TypeScript après édition |
-| ESLint check | PostToolUse | Validation ESLint après édition |
-| Test avant commit | PreToolUse | Exécute `npm test` avant chaque commit |
-| Détection secrets | PreToolUse | Bloque les secrets hardcodés |
+| Branch protection | PreToolUse | Blocks modifications on main/master |
+| Auto-format | PostToolUse | Prettier on modified TS/JS files |
+| Type check | PostToolUse | TypeScript check after edit |
+| ESLint check | PostToolUse | ESLint validation after edit |
+| Test before commit | PreToolUse | Runs `npm test` before each commit |
+| Secret detection | PreToolUse | Blocks hardcoded secrets |
 
-## Skills disponibles
+## Available skills
 
 | Skill | Usage |
 |-------|-------|
-| `exploring-codebase` | Analyser un codebase existant |
-| `planning-implementation` | Définir un plan avant de coder |
-| `test-driven-development` | Cycle TDD Red-Green-Refactor |
-| `reviewing-code` | Revue de code approfondie |
-| `debugging-issues` | Diagnostic méthodique |
+| `exploring-codebase` | Analyze an existing codebase |
+| `planning-implementation` | Define a plan before coding |
+| `test-driven-development` | Red-Green-Refactor TDD cycle |
+| `reviewing-code` | In-depth code review |
+| `debugging-issues` | Methodical diagnosis |
 | `generating-commit-messages` | Conventional Commits |
-| `creating-pull-requests` | PR complète et documentée |
+| `creating-pull-requests` | Complete and documented PR |

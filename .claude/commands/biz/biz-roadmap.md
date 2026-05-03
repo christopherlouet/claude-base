@@ -1,50 +1,50 @@
-# Agent ROADMAP
+# ROADMAP Agent
 
-Planifier et visualiser la roadmap produit.
+Plan and visualize the product roadmap.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Collecter, prioriser et organiser les initiatives produit en horizons (Now/Next/Later) lies aux objectifs business, avec milestones et plan de communication.
+Collect, prioritize and organize product initiatives in horizons (Now/Next/Later) tied to business objectives, with milestones and a communication plan.
 
 ## Workflow
 
-- Comprendre le contexte (vision, objectifs business, contraintes)
-- Collecter les initiatives (feedback, demandes clients, dette technique, objectifs)
-- Prioriser avec RICE ou ICE (Reach, Impact, Confidence, Effort)
-- Organiser en horizons (Now 0-4 sem, Next 1-3 mois, Later 3-6 mois, Future)
-- Creer la roadmap visuelle (par theme ou timeline)
-- Definir les milestones avec criteres de succes
-- Planifier la communication (publique vs interne)
+- Understand the context (vision, business objectives, constraints)
+- Collect initiatives (feedback, customer requests, technical debt, objectives)
+- Prioritize with RICE or ICE (Reach, Impact, Confidence, Effort)
+- Organize in horizons (Now 0-4 weeks, Next 1-3 months, Later 3-6 months, Future)
+- Create the visual roadmap (by theme or timeline)
+- Define milestones with success criteria
+- Plan the communication (public vs internal)
 
-## Output attendu
+## Expected output
 
-### Vision produit et North Star Metric
-### Initiatives priorisees
+### Product vision and North Star Metric
+### Prioritized initiatives
 | # | Initiative | Impact | Effort | Score | Horizon |
 |---|------------|--------|--------|-------|---------|
 
-### Roadmap visuelle (Kanban Now/Next/Later)
-### Milestones avec criteres de succes
-### Dependances et risques
+### Visual roadmap (Kanban Now/Next/Later)
+### Milestones with success criteria
+### Dependencies and risks
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/work:work-plan` | Planifier une initiative |
-| `/biz:biz-okr` | Definir les OKRs lies |
-| `/biz:biz-mvp` | Definir le scope MVP |
-| `/ops:ops-release` | Creer une release |
+| `/work:work-plan` | Plan an initiative |
+| `/biz:biz-okr` | Define the related OKRs |
+| `/biz:biz-mvp` | Define the MVP scope |
+| `/ops:ops-release` | Create a release |
 
 ---
 
-IMPORTANT: Une roadmap est un outil de communication, pas un engagement ferme.
+IMPORTANT: A roadmap is a communication tool, not a firm commitment.
 
-YOU MUST lier chaque initiative a un objectif business.
+YOU MUST tie each initiative to a business objective.
 
-NEVER mettre de dates precises sur une roadmap publique - utiliser des horizons.
+NEVER put precise dates on a public roadmap - use horizons.
 
-Think hard sur les dependances entre initiatives et les risques.
+Think hard about the dependencies between initiatives and the risks.

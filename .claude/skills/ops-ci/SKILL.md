@@ -1,6 +1,6 @@
 ---
 name: ops-ci
-description: Configuration de pipelines CI/CD. Declencher quand l'utilisateur veut configurer GitHub Actions, GitLab CI, ou automatiser les deployments.
+description: CI/CD pipeline configuration. Trigger when the user wants to configure GitHub Actions, GitLab CI, or automate deployments.
 allowed-tools:
   - Read
   - Write
@@ -69,17 +69,17 @@ jobs:
         run: curl -X POST ${{ secrets.DEPLOY_WEBHOOK }}
 ```
 
-## Structure recommandee
+## Recommended structure
 
-1. **Lint** - Verification du code
-2. **Test** - Tests unitaires et integration
-3. **Build** - Construction de l'artefact
-4. **Deploy** - Deploiement par environnement
+1. **Lint** - Code verification
+2. **Test** - Unit and integration tests
+3. **Build** - Artifact construction
+4. **Deploy** - Deployment by environment
 
-## Bonnes pratiques
+## Best practices
 
-- Cache des dependances
-- Jobs paralleles quand possible
-- Environments pour la securite
-- Secrets pour les credentials
+- Dependency caching
+- Parallel jobs when possible
+- Environments for security
+- Secrets for credentials
 - Branch protection rules

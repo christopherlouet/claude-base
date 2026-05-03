@@ -48,7 +48,7 @@ function parseRuleFile(filePath: string): RuleInfo | null {
 
     return {
       name: fileName,
-      description: description || heading || `Regles ${fileName}`,
+      description: description || heading || `Rules ${fileName}`,
       paths: data.paths || [],
       content: markdownContent,
     };
@@ -106,7 +106,7 @@ function generateRulePage(rule: RuleInfo, position: number): string {
 
   const pathsList = rule.paths.length > 0
     ? rule.paths.map((p) => `- \`${p}\``).join('\n')
-    : '_Toutes les fichiers_';
+    : '_All files_';
 
   // Escape content outside code blocks
   const safeContent = escapeNonCodeContent(rule.content);
@@ -114,32 +114,32 @@ function generateRulePage(rule: RuleInfo, position: number): string {
 
   return `${frontmatter}
 
-# Regles: ${rule.name}
+# Rules: ${rule.name}
 
 > ${safeDesc}
 
-## Fichiers concernes
+## Affected files
 
-Ces regles s'appliquent aux fichiers correspondant aux patterns suivants :
+These rules apply to files matching the following patterns:
 
 ${pathsList}
 
-## Regles detaillees
+## Detailed rules
 
 ${safeContent}
 
-## Application automatique
+## Automatic application
 
-Ces regles sont automatiquement appliquees par Claude lors de :
-- La lecture des fichiers correspondants
-- La modification du code
-- Les suggestions et corrections
+These rules are automatically applied by Claude during:
+- Reading the matching files
+- Modifying code
+- Suggestions and fixes
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux regles](/docs/rules)
+- [Back to rules](/docs/rules)
 - [Architecture](/docs/intro/architecture)
 `;
 }
@@ -151,7 +151,7 @@ function generateRulesIndex(rules: RuleInfo[]): string {
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: 'Rules',
-    description: `Catalogue des ${rules.length} regles par technologie`,
+    description: `Catalog of ${rules.length} rules by technology`,
   });
 
   const rulesTable = rules
@@ -170,33 +170,33 @@ function generateRulesIndex(rules: RuleInfo[]): string {
 
 import Stats from '@site/src/components/Stats';
 
-# Catalogue des Regles
+# Rules Catalog
 
-> **${rules.length} regles** appliquees automatiquement par chemin de fichier
+> **${rules.length} rules** automatically applied by file path
 
 <Stats items={[
-  { number: ${rules.length}, label: 'Regles' },
+  { number: ${rules.length}, label: 'Rules' },
   { number: ${rules.reduce((acc, r) => acc + r.paths.length, 0)}, label: 'Patterns' },
 ]} />
 
-## Qu'est-ce qu'une Rule ?
+## What is a Rule?
 
-Les **rules** sont des conventions appliquees automatiquement :
+**Rules** are conventions applied automatically:
 
-- **Application par path** : Actives selon le chemin du fichier
-- **Conventions de code** : TypeScript, React, Flutter, etc.
-- **Bonnes pratiques** : Securite, tests, API
-- **Transparence** : Toujours visibles dans les suggestions
+- **Apply by path**: Activated according to the file path
+- **Code conventions**: TypeScript, React, Flutter, etc.
+- **Best practices**: Security, tests, API
+- **Transparency**: Always visible in suggestions
 
-## Liste des regles
+## List of rules
 
-| Regle | Description | Paths |
-|-------|-------------|-------|
+| Rule | Description | Paths |
+|------|-------------|-------|
 ${rulesTable}
 
 ## Categories
 
-### Langages
+### Languages
 
 ${rules.filter((r) => ['typescript', 'python', 'go', 'rust', 'java', 'php', 'ruby', 'csharp'].includes(r.name)).map((r) => `- [${r.name}](/docs/rules/${r.name})`).join('\n')}
 
@@ -204,13 +204,13 @@ ${rules.filter((r) => ['typescript', 'python', 'go', 'rust', 'java', 'php', 'rub
 
 ${rules.filter((r) => ['react', 'flutter'].includes(r.name)).map((r) => `- [${r.name}](/docs/rules/${r.name})`).join('\n')}
 
-### Pratiques
+### Practices
 
 ${rules.filter((r) => ['testing', 'security', 'api', 'git', 'workflow'].includes(r.name)).map((r) => `- [${r.name}](/docs/rules/${r.name})`).join('\n')}
 
-## Comment ajouter une regle personnalisee
+## How to add a custom rule
 
-Creez un fichier \`.claude/rules/my-rule.md\` :
+Create a file \`.claude/rules/my-rule.md\`:
 
 \`\`\`markdown
 ---
@@ -219,19 +219,19 @@ paths:
   - "**/*.custom"
 ---
 
-# Mes regles personnalisees
+# My custom rules
 
-- Regle 1
-- Regle 2
+- Rule 1
+- Rule 2
 \`\`\`
 
 ---
 
-## Voir aussi
+## See also
 
-- [Architecture](/docs/intro/architecture) - Comprendre les composants
-- [Commands](/docs/commands) - Les commandes manuelles
-- [Skills](/docs/skills) - Les skills auto-declenches
+- [Architecture](/docs/intro/architecture) - Understand the components
+- [Commands](/docs/commands) - Manual commands
+- [Skills](/docs/skills) - Auto-triggered skills
 `;
 }
 

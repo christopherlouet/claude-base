@@ -1,43 +1,43 @@
 ---
 sidebar_position: 5
 title: Release
-description: Workflow pour preparer une release
+description: Workflow to prepare a release
 ---
 
-# Workflow : Release
+# Workflow: Release
 
-Guide pour preparer et publier une nouvelle version.
+Guide to prepare and publish a new version.
 
-## Commande rapide
+## Quick command
 
 ```bash
 /work:work-flow-release "v2.0.0"
 ```
 
-## Etapes detaillees
+## Detailed steps
 
 ### 1. Preparation
 
 ```bash
-# Verifier que develop est stable
+# Verify that develop is stable
 /qa:qa-audit
 ```
 
-Checklist pre-release :
-- [ ] Tous les tests passent
-- [ ] Audit de securite OK
-- [ ] Documentation a jour
-- [ ] CHANGELOG prepare
+Pre-release checklist:
+- [ ] All tests pass
+- [ ] Security audit OK
+- [ ] Documentation up to date
+- [ ] CHANGELOG prepared
 
-### 2. Creer la branche release
+### 2. Create the release branch
 
 ```bash
 /ops:ops-gitflow-release start "v2.0.0"
 ```
 
-### 3. Bump de version
+### 3. Version bump
 
-Mettre a jour les fichiers de version :
+Update the version files:
 - `package.json`
 - `pubspec.yaml`
 - `version.ts`
@@ -48,7 +48,7 @@ Mettre a jour les fichiers de version :
 /doc:doc-changelog
 ```
 
-Generer le changelog depuis les commits :
+Generate the changelog from commits:
 ```markdown
 ## [2.0.0] - 2025-01-17
 
@@ -64,64 +64,64 @@ Generer le changelog depuis les commits :
 - Breaking change Z
 ```
 
-### 5. Tests finaux
+### 5. Final tests
 
 ```bash
 /qa:qa-audit
 ```
 
-Verifier une derniere fois :
+Verify one last time:
 - Performance
-- Securite
-- Accessibilite
+- Security
+- Accessibility
 
-### 6. Finaliser la release
+### 6. Finalize the release
 
 ```bash
 /ops:ops-gitflow-release finish "v2.0.0"
 ```
 
-Cela :
-- Merge dans `main`
-- Cree le tag `v2.0.0`
-- Merge dans `develop`
-- Supprime la branche release
+This:
+- Merges into `main`
+- Creates the `v2.0.0` tag
+- Merges into `develop`
+- Deletes the release branch
 
-### 7. Deployer
+### 7. Deploy
 
 ```bash
-# Selon votre pipeline
+# Depending on your pipeline
 npm run deploy
 ```
 
-## Versioning Semantique
+## Semantic Versioning
 
-| Type | Version | Quand |
-|------|---------|-------|
+| Type | Version | When |
+|------|---------|------|
 | MAJOR | X.0.0 | Breaking changes |
-| MINOR | 0.X.0 | Nouvelles features |
+| MINOR | 0.X.0 | New features |
 | PATCH | 0.0.X | Bug fixes |
 
-## Exemple concret
+## Concrete example
 
 ```bash
-# Preparer la release 2.0.0
+# Prepare release 2.0.0
 
 > /work:work-flow-release "v2.0.0"
 
-# Claude :
-# 1. Verifie l'etat de develop
-# 2. Cree release/v2.0.0
-# 3. Bump la version
-# 4. Genere le changelog
-# 5. Lance les audits
-# 6. Finalise la release
-# 7. Cree le tag
+# Claude:
+# 1. Checks the state of develop
+# 2. Creates release/v2.0.0
+# 3. Bumps the version
+# 4. Generates the changelog
+# 5. Runs the audits
+# 6. Finalizes the release
+# 7. Creates the tag
 ```
 
-## Release GitHub
+## GitHub Release
 
-Apres le finish :
+After the finish:
 
 ```bash
 gh release create v2.0.0 \
@@ -130,20 +130,20 @@ gh release create v2.0.0 \
   --latest
 ```
 
-## Checklist finale
+## Final checklist
 
-- [ ] Version bump effectue
-- [ ] CHANGELOG.md a jour
-- [ ] Tests passent
-- [ ] Documentation a jour
-- [ ] Tag cree
-- [ ] Release GitHub publiee
-- [ ] Deploiement effectue
-- [ ] Annonce communiquee
+- [ ] Version bump done
+- [ ] CHANGELOG.md up to date
+- [ ] Tests pass
+- [ ] Documentation up to date
+- [ ] Tag created
+- [ ] GitHub Release published
+- [ ] Deployment done
+- [ ] Announcement communicated
 
 ---
 
-## Voir aussi
+## See also
 
 - [GitFlow Release](/docs/commands/ops/ops-gitflow-release)
 - [Changelog](/docs/commands/doc/doc-changelog)

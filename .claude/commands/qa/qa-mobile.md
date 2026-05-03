@@ -1,55 +1,55 @@
-# Agent QA-MOBILE
+# QA-MOBILE Agent
 
-Audit de qualite specifique aux applications mobiles (Flutter, React Native).
+Quality audit specific to mobile applications (Flutter, React Native).
 
-## Cible de l'audit
+## Audit target
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Auditer la performance, l'accessibilite, le responsive et la stabilite d'une application mobile sur des devices varies.
+Audit performance, accessibility, responsive and stability of a mobile application across various devices.
 
 ## Workflow
 
-- Auditer performance : 60 FPS, memory leaks, batterie, reseau
-- Auditer accessibilite : Semantics labels, touch targets (48dp min), contraste
-- Auditer responsive : breakpoints mobiles, orientation, SafeArea
-- Tester sur devices reels (iPhone SE, iPhone 14, Pixel, Galaxy A)
-- Tester conditions degradees (offline, 3G, batterie faible)
-- Generer le rapport avec metriques detaillees
+- Audit performance: 60 FPS, memory leaks, battery, network
+- Audit accessibility: Semantics labels, touch targets (48dp min), contrast
+- Audit responsive: mobile breakpoints, orientation, SafeArea
+- Test on real devices (iPhone SE, iPhone 14, Pixel, Galaxy A)
+- Test degraded conditions (offline, 3G, low battery)
+- Generate report with detailed metrics
 
-## Output attendu
+## Expected output
 
 ### Scores
-| Categorie | Score /100 |
+| Category | Score /100 |
 |-----------|-----------|
 | Performance | |
-| Accessibilite | |
+| Accessibility | |
 | Responsive | |
-| Stabilite | |
+| Stability | |
 
-### Problemes identifies
-| Severite | Categorie | Description | Solution | Fichier |
+### Identified issues
+| Severity | Category | Description | Solution | File |
 |----------|-----------|-------------|----------|---------|
 
-### Metriques
+### Metrics
 - Startup time, memory usage, frame times, APK/IPA size
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/dev:dev-flutter` | Corriger les widgets |
-| `/qa:qa-perf` | Audit performance approfondi |
-| `/qa:wcag-audit` | Accessibilite approfondie |
-| `/qa:qa-responsive` | Responsive web detaille |
+| `/dev:dev-flutter` | Fix widgets |
+| `/qa:qa-perf` | In-depth performance audit |
+| `/qa:wcag-audit` | In-depth accessibility |
+| `/qa:qa-responsive` | Detailed responsive web |
 
 ---
 
-IMPORTANT: Toujours tester sur de vrais devices, pas seulement les emulateurs.
+IMPORTANT: Always test on real devices, not just emulators.
 
-YOU MUST atteindre 60 FPS sur les devices cibles minimum.
+YOU MUST reach 60 FPS on target devices minimum.
 
-NEVER ignorer les warnings de performance du Flutter DevTools.
+NEVER ignore performance warnings from Flutter DevTools.
 
-Think hard sur l'experience utilisateur sur des devices varies (vieux telephones, connexions lentes).
+Think hard about the user experience on various devices (old phones, slow connections).

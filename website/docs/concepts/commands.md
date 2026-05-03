@@ -1,76 +1,76 @@
 ---
 sidebar_position: 2
 title: Commands
-description: Comprendre les commandes Claude Code
+description: Understanding Claude Code commands
 ---
 
 # Commands
 
-> Instructions declenchees manuellement avec le prefixe `/`
+> Manually triggered instructions with the `/` prefix
 
-## Qu'est-ce qu'une Command ?
+## What is a Command?
 
-Une **command** est un fichier Markdown qui contient des instructions pour Claude. Elle est declenchee explicitement par l'utilisateur avec le prefixe `/`.
+A **command** is a Markdown file that contains instructions for Claude. It is explicitly triggered by the user with the `/` prefix.
 
 ```bash
-# Exemples d'invocation
-/work:work-explore "Comprendre l'architecture"
-/dev:dev-tdd "Implementer le service utilisateur"
+# Invocation examples
+/work:work-explore "Understand the architecture"
+/dev:dev-tdd "Implement the user service"
 /qa:qa-security
 ```
 
-## Structure des fichiers
+## File structure
 
-Les commands sont organisees par domaine dans `.claude/commands/`:
+Commands are organized by domain in `.claude/commands/`:
 
 ```
 .claude/commands/
-├── work/                    # Workflow principal
+├── work/                    # Main workflow
 │   ├── work-explore.md
 │   ├── work-plan.md
 │   ├── work-commit.md
 │   └── work-pr.md
-├── dev/                     # Developpement
+├── dev/                     # Development
 │   ├── dev-tdd.md
 │   ├── dev-api.md
 │   └── dev-component.md
-├── qa/                      # Qualite
+├── qa/                      # Quality
 │   ├── qa-security.md
 │   ├── qa-perf.md
 │   └── wcag-audit.md
 ├── ops/                     # Operations
 ├── doc/                     # Documentation
 ├── biz/                     # Business
-├── growth/                  # Croissance
-├── data/                    # Donnees
+├── growth/                  # Growth
+├── data/                    # Data
 └── legal/                   # Legal
 ```
 
-## Anatomie d'une command
+## Anatomy of a command
 
-### Structure minimale
+### Minimal structure
 
 ```markdown
-# Titre de la commande
+# Command title
 
-Description de ce que fait la commande.
+Description of what the command does.
 
 ## Instructions
 
-1. Etape 1
-2. Etape 2
-3. Etape 3
+1. Step 1
+2. Step 2
+3. Step 3
 
-## Output attendu
+## Expected output
 
-Description du resultat attendu.
+Description of the expected result.
 ```
 
-### Structure avancee avec frontmatter
+### Advanced structure with frontmatter
 
 ```markdown
 ---
-description: Description courte pour l'aide
+description: Short description for the help
 allowed-tools:
   - Read
   - Grep
@@ -78,187 +78,187 @@ allowed-tools:
   - Edit
 ---
 
-# Ma Commande
+# My Command
 
-## Contexte
+## Context
 $ARGUMENTS
 
 ## Instructions
 ...
 ```
 
-### Variable speciale `$ARGUMENTS`
+### Special variable `$ARGUMENTS`
 
-La variable `$ARGUMENTS` est remplacee par les arguments passes a la commande:
+The `$ARGUMENTS` variable is replaced by the arguments passed to the command:
 
 ```bash
-/dev:dev-tdd "Implementer l'authentification JWT"
+/dev:dev-tdd "Implement JWT authentication"
 ```
 
-Dans le fichier `dev-tdd.md`:
+In the `dev-tdd.md` file:
 ```markdown
-## Contexte
+## Context
 $ARGUMENTS
-# Devient: "Implementer l'authentification JWT"
+# Becomes: "Implement JWT authentication"
 ```
 
-## Caracteristiques
+## Characteristics
 
-| Propriete | Valeur |
-|-----------|--------|
-| **Declenchement** | Manuel (`/nom`) |
-| **Contexte** | Partage avec la conversation |
-| **Outils** | Tous disponibles (sauf restriction) |
-| **Visibilite** | L'utilisateur voit l'invocation |
+| Property | Value |
+|----------|-------|
+| **Trigger** | Manual (`/name`) |
+| **Context** | Shared with the conversation |
+| **Tools** | All available (unless restricted) |
+| **Visibility** | The user sees the invocation |
 
-## Difference avec Skills et Agents
+## Difference with Skills and Agents
 
 | Aspect | Command | Skill | Agent |
 |--------|---------|-------|-------|
-| Declenchement | Manuel | Auto (mots-cles) | Auto (delegation) |
-| Contexte | Partage | Fork | Isole |
-| Controle | Total | Partiel | Delegue |
-| Cas d'usage | Actions explicites | Comportements recurrents | Taches autonomes |
+| Trigger | Manual | Auto (keywords) | Auto (delegation) |
+| Context | Shared | Fork | Isolated |
+| Control | Total | Partial | Delegated |
+| Use case | Explicit actions | Recurring behaviors | Autonomous tasks |
 
-## Bonnes pratiques
+## Best practices
 
-### 1. Nommage coherent
+### 1. Consistent naming
 
 ```
-domaine-action
+domain-action
 ```
 
-Exemples:
-- `work-explore` (workflow + explorer)
-- `dev-tdd` (developpement + TDD)
-- `qa-security` (qualite + securite)
+Examples:
+- `work-explore` (workflow + explore)
+- `dev-tdd` (development + TDD)
+- `qa-security` (quality + security)
 
-### 2. Instructions claires
+### 2. Clear instructions
 
 ```markdown
 ## Instructions
 
-IMPORTANT: Toujours explorer le code avant de modifier.
+IMPORTANT: Always explore the code before modifying.
 
-YOU MUST suivre le pattern existant.
+YOU MUST follow the existing pattern.
 
-NEVER modifier les fichiers de configuration sans validation.
+NEVER modify configuration files without validation.
 ```
 
 ### 3. Output structure
 
 ```markdown
-## Output attendu
+## Expected output
 
 ### Format
-- Section 1: Resume
+- Section 1: Summary
 - Section 2: Details
-- Section 3: Recommandations
+- Section 3: Recommendations
 
-### Exemple
+### Example
 \`\`\`markdown
-## Resume
+## Summary
 ...
 \`\`\`
 ```
 
-## Creer une nouvelle command
+## Create a new command
 
-### 1. Creer le fichier
+### 1. Create the file
 
 ```bash
-# Dans le bon domaine
-touch .claude/commands/dev/dev-ma-commande.md
+# In the right domain
+touch .claude/commands/dev/dev-my-command.md
 ```
 
-### 2. Ecrire le contenu
+### 2. Write the content
 
 ```markdown
-# Ma Nouvelle Commande
+# My New Command
 
-## Contexte
+## Context
 $ARGUMENTS
 
 ## Instructions
 
-1. Analyser la demande
-2. Executer l'action
-3. Verifier le resultat
+1. Analyze the request
+2. Execute the action
+3. Verify the result
 
 ## Output
 
-Fournir un rapport structure.
+Provide a structured report.
 ```
 
-### 3. Tester
+### 3. Test
 
 ```bash
-/dev:dev-ma-commande "Test de la commande"
+/dev:dev-my-command "Command test"
 ```
 
-## Exemples de commands
+## Command examples
 
-### Command simple (exploration)
+### Simple command (exploration)
 
 ```markdown
 # Work Explore
 
-Explorer et comprendre un codebase existant.
+Explore and understand an existing codebase.
 
-## Contexte
+## Context
 $ARGUMENTS
 
 ## Instructions
 
-1. Identifier les fichiers principaux (package.json, README, etc.)
-2. Analyser la structure des dossiers
-3. Reperer les patterns et conventions
-4. Documenter les dependances cles
+1. Identify the main files (package.json, README, etc.)
+2. Analyze the folder structure
+3. Spot the patterns and conventions
+4. Document the key dependencies
 
 ## Output
 
-Fournir une vue d'ensemble structuree du projet.
+Provide a structured overview of the project.
 ```
 
-### Command complexe (workflow)
+### Complex command (workflow)
 
 ```markdown
 # Work Flow Feature
 
-Workflow complet pour implementer une nouvelle feature.
+Complete workflow to implement a new feature.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Etapes
+## Steps
 
 ### 1. Exploration
-Utiliser /work:work-explore pour comprendre le contexte.
+Use /work:work-explore to understand the context.
 
 ### 2. Specification
-Utiliser /work:work-specify pour definir les User Stories.
+Use /work:work-specify to define the User Stories.
 
-### 3. Planification
-Utiliser /work:work-plan pour creer le plan d'implementation.
+### 3. Planning
+Use /work:work-plan to create the implementation plan.
 
-### 4. Developpement
-Utiliser /dev:dev-tdd pour implementer avec tests.
+### 4. Development
+Use /dev:dev-tdd to implement with tests.
 
-### 5. Revue
-Utiliser /qa:qa-review pour verifier la qualite.
+### 5. Review
+Use /qa:qa-review to check the quality.
 
-### 6. Livraison
-Utiliser /work:work-pr pour creer la Pull Request.
+### 6. Delivery
+Use /work:work-pr to create the Pull Request.
 ```
 
-## Lister les commands disponibles
+## List the available commands
 
-Dans Claude Code, utilisez `/help` pour voir les commandes disponibles, ou explorez directement le dossier `.claude/commands/`.
+In Claude Code, use `/help` to see the available commands, or explore the `.claude/commands/` folder directly.
 
 ---
 
-## Voir aussi
+## See also
 
-- [Skills](./skills) - Comportements automatiques
-- [Agents](./agents) - Sub-agents autonomes
-- [Catalogue des commands](/docs/commands) - Toutes les commands claude-socle
+- [Skills](./skills) - Automatic behaviors
+- [Agents](./agents) - Autonomous sub-agents
+- [Commands catalog](/docs/commands) - All claude-socle commands

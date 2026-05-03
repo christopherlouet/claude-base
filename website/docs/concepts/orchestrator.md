@@ -1,16 +1,16 @@
 ---
 sidebar_position: 2
-title: Orchestrateur (/assistant)
-description: Point d'entree unique qui orchestre commandes, agents et skills
+title: Orchestrator (/assistant)
+description: Single entry point that orchestrates commands, agents and skills
 ---
 
-# Orchestrateur (/assistant)
+# Orchestrator (/assistant)
 
-> Le point d'entree intelligent qui vous guide vers les bonnes ressources
+> The intelligent entry point that guides you to the right resources
 
-## Qu'est-ce que l'Orchestrateur ?
+## What is the Orchestrator?
 
-L'**orchestrateur** est le point d'entree unique de claude-socle. Il analyse votre demande, detecte le contexte de votre projet, et vous oriente vers les commandes, agents et skills les plus adaptes.
+The **orchestrator** is the single entry point of claude-socle. It analyzes your request, detects your project context, and points you to the most appropriate commands, agents and skills.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -22,62 +22,62 @@ L'**orchestrateur** est le point d'entree unique de claude-socle. Il analyse vot
 │  │    (123)    │  │    (59)     │  │    (42)     │             │
 │  │             │  │             │  │             │             │
 │  │ Invocation  │  │ Delegation  │  │ Activation  │             │
-│  │  manuelle   │  │ automatique │  │ automatique │             │
-│  │   /xxx      │  │  par Claude │  │ par contexte│             │
+│  │   manual    │  │  automatic  │  │  automatic  │             │
+│  │   /xxx      │  │  by Claude  │  │ by context  │             │
 │  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
 │  │  TEMPLATES  │  │    RULES    │  │   HOOKS     │             │
 │  │    (3)      │  │    (24)     │  │    (26)     │             │
 │  │             │  │             │  │             │             │
-│  │ Structures  │  │ Conventions │  │ Automation  │             │
-│  │ de fichiers │  │  par path   │  │ pre/post    │             │
+│  │   File      │  │ Conventions │  │ Automation  │             │
+│  │ structures  │  │   by path   │  │  pre/post   │             │
 │  └─────────────┘  └─────────────┘  └─────────────┘             │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Deux modes disponibles
+## Two available modes
 
-| Commande | Mode | Comportement |
-|----------|------|--------------|
-| `/assistant` | **Guide** | Analyse → Recommande → Attend confirmation |
-| `/assistant-auto` | **Automatique** | Analyse → Execute directement le workflow |
+| Command | Mode | Behavior |
+|---------|------|----------|
+| `/assistant` | **Guide** | Analyze → Recommend → Wait for confirmation |
+| `/assistant-auto` | **Automatic** | Analyze → Execute the workflow directly |
 
-### Mode Guide (`/assistant`)
+### Guide mode (`/assistant`)
 
-Pour les **nouveaux utilisateurs** ou quand vous voulez **valider** avant d'executer :
-
-```bash
-/assistant "Ajouter une feature d'authentification"
-
-# Claude analyse et propose :
-# → Workflow recommande: /work:work-flow-feature
-# → "Voulez-vous que je lance ce workflow ?"
-# → Attend votre confirmation
-```
-
-### Mode Automatique (`/assistant-auto`)
-
-Pour les **utilisateurs avances** qui veulent une **execution immediate** :
+For **new users** or when you want to **validate** before executing:
 
 ```bash
-/assistant-auto "Ajouter une feature d'authentification"
+/assistant "Add an authentication feature"
 
-# Claude analyse et execute directement :
-# → Detecte: nouvelle feature
-# → Lance: /work:work-flow-feature "Ajouter une feature d'authentification"
+# Claude analyzes and proposes:
+# → Recommended workflow: /work:work-flow-feature
+# → "Do you want me to launch this workflow?"
+# → Waits for your confirmation
 ```
 
-## Detection automatique du contexte
+### Automatic mode (`/assistant-auto`)
 
-L'orchestrateur detecte automatiquement votre environnement :
+For **advanced users** who want **immediate execution**:
 
-| Indicateur | Type de projet | Commandes recommandees |
-|------------|----------------|------------------------|
+```bash
+/assistant-auto "Add an authentication feature"
+
+# Claude analyzes and executes directly:
+# → Detects: new feature
+# → Launches: /work:work-flow-feature "Add an authentication feature"
+```
+
+## Automatic context detection
+
+The orchestrator automatically detects your environment:
+
+| Indicator | Project type | Recommended commands |
+|-----------|--------------|----------------------|
 | `package.json` + React/Next/Vue | **Web Frontend** | `/dev:dev-component`, `/dev:dev-hook`, `/dev:dev-react-perf` |
 | `pubspec.yaml` + Flutter | **Mobile** | `/dev:dev-flutter`, `/dev:dev-supabase`, `/qa:qa-mobile` |
-| `package.json` + Express/Fastify/NestJS | **API Node** | `/dev:dev-api`, `/dev:dev-graphql`, `/dev:dev-trpc` |
+| `package.json` + Express/Fastify/NestJS | **Node API** | `/dev:dev-api`, `/dev:dev-graphql`, `/dev:dev-trpc` |
 | `requirements.txt` / `pyproject.toml` | **Python** | `/dev:dev-api`, `/dev:dev-tdd` |
 | `go.mod` | **Go** | `/dev:dev-api`, `/dev:dev-tdd` |
 | `init.lua` / `.config/nvim` | **Neovim** | `/dev:dev-neovim`, `/qa:qa-neovim` |
@@ -85,49 +85,49 @@ L'orchestrateur detecte automatiquement votre environnement :
 | `Dockerfile` / `docker-compose.yml` | **DevOps** | `/ops:ops-docker`, `/ops:ops-k8s` |
 | Proxmox / `bpg/proxmox` provider | **Infrastructure** | `/ops:ops-proxmox`, `/ops:ops-infra-code` |
 
-## Guide de decision rapide
+## Quick decision guide
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│ JE VEUX...                              →  UTILISE                     │
+│ I WANT TO...                            →  USE                         │
 ├────────────────────────────────────────────────────────────────────────┤
 │                                                                        │
-│ COMPRENDRE                                                             │
-│ Explorer un codebase                    →  /work:work-explore               │
-│ Decouvrir un nouveau projet             →  /doc:doc-onboard                │
-│ Comprendre du code complexe             →  /doc:doc-explain                │
+│ UNDERSTAND                                                             │
+│ Explore a codebase                      →  /work:work-explore          │
+│ Discover a new project                  →  /doc:doc-onboard            │
+│ Understand complex code                 →  /doc:doc-explain            │
 │                                                                        │
-│ PLANIFIER                                                              │
-│ Creer une specification                 →  /work:work-specify               │
-│ Planifier une implementation            →  /work:work-plan                  │
-│ Definir un MVP                          →  /biz:biz-mvp                    │
+│ PLAN                                                                   │
+│ Create a specification                  →  /work:work-specify          │
+│ Plan an implementation                  →  /work:work-plan             │
+│ Define an MVP                           →  /biz:biz-mvp                │
 │                                                                        │
-│ DEVELOPPER                                                             │
-│ Ecrire du code avec tests               →  /dev:dev-tdd                    │
-│ Creer un composant React/Vue            →  /dev:dev-component              │
-│ Creer une API REST                      →  /dev:dev-api                    │
-│ Creer un screen Flutter                 →  /dev:dev-flutter                │
-│ Corriger un bug                         →  /dev:dev-debug                  │
+│ DEVELOP                                                                │
+│ Write code with tests                   →  /dev:dev-tdd                │
+│ Create a React/Vue component            →  /dev:dev-component          │
+│ Create a REST API                       →  /dev:dev-api                │
+│ Create a Flutter screen                 →  /dev:dev-flutter            │
+│ Fix a bug                               →  /dev:dev-debug              │
 │                                                                        │
-│ VERIFIER                                                               │
-│ Code review                             →  /qa:qa-review                  │
-│ Audit de securite                       →  /qa:qa-security                │
-│ Audit complet                           →  /qa:qa-audit                   │
+│ VERIFY                                                                 │
+│ Code review                             →  /qa:qa-review               │
+│ Security audit                          →  /qa:qa-security             │
+│ Full audit                              →  /qa:qa-audit                │
 │                                                                        │
-│ LIVRER                                                                 │
-│ Creer un commit                         →  /work:work-commit                │
-│ Creer une PR                            →  /work:work-pr                    │
-│ Publier une release                     →  /ops:ops-release                │
+│ DELIVER                                                                │
+│ Create a commit                         →  /work:work-commit           │
+│ Create a PR                             →  /work:work-pr               │
+│ Publish a release                       →  /ops:ops-release            │
 │                                                                        │
-│ DEPLOYER                                                               │
-│ Dockeriser                              →  /ops:ops-docker                 │
-│ Infrastructure as Code                  →  /ops:ops-infra-code             │
-│ CI/CD                                   →  /ops:ops-ci                     │
+│ DEPLOY                                                                 │
+│ Dockerize                               →  /ops:ops-docker             │
+│ Infrastructure as Code                  →  /ops:ops-infra-code         │
+│ CI/CD                                   →  /ops:ops-ci                 │
 │                                                                        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Workflows par type de projet
+## Workflows by project type
 
 ### Web (React/Next.js/Vue)
 
@@ -141,187 +141,187 @@ L'orchestrateur detecte automatiquement votre environnement :
 /work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-flutter + /dev:dev-supabase → /qa:qa-mobile → /work:work-pr
 ```
 
-### API Backend (Node/Python/Go)
+### Backend API (Node/Python/Go)
 
 ```
 /work:work-explore → /work:work-specify → /work:work-plan → /dev:dev-api → /dev:dev-tdd → /qa:qa-security → /doc:doc-api-spec → /work:work-pr
 ```
 
-### Infrastructure Proxmox
+### Proxmox infrastructure
 
 ```
 /work:work-explore → /ops:ops-proxmox → /ops:ops-monitoring → /ops:ops-backup
 ```
 
-## Sub-Agents actives automatiquement
+## Sub-Agents activated automatically
 
-L'orchestrateur connait les 63 agents specialises et les active selon le contexte :
+The orchestrator knows the 63 specialized agents and activates them based on context:
 
-| Contexte detecte | Agent active | Modele |
-|------------------|--------------|--------|
-| "Explorer le code" | `work-explore` | haiku |
-| "Audit securite", "OWASP" | `qa-security` | sonnet |
+| Detected context | Activated agent | Model |
+|------------------|-----------------|-------|
+| "Explore the code" | `work-explore` | haiku |
+| "Security audit", "OWASP" | `qa-security` | sonnet |
 | "Performance", "Core Web Vitals" | `qa-perf` | sonnet |
-| "Accessibilite", "WCAG" | `wcag-audit` | haiku |
-| "Bug", "Deboguer" | `dev-debug` | sonnet |
+| "Accessibility", "WCAG" | `wcag-audit` | haiku |
+| "Bug", "Debug" | `dev-debug` | sonnet |
 | "Flutter", "Widget" | `dev-flutter` | sonnet |
 | "Terraform", "IaC" | `ops-infra-code` | sonnet |
 | "Proxmox", "VM", "LXC" | `ops-proxmox` | sonnet |
 | "Docker", "Container" | `ops-docker` | haiku |
 
 ```
-Utilisateur: "Fais un audit de securite"
+User: "Run a security audit"
      │
      ▼
-Claude detecte: securite → delegue a qa-security agent
+Claude detects: security → delegates to qa-security agent
      │
      ▼
-Agent qa-security (contexte isole, lecture seule)
+qa-security agent (isolated context, read-only)
      │
      ▼
-Resultat renvoye a la conversation principale
+Result returned to the main conversation
 ```
 
-## Skills declenches automatiquement
+## Skills triggered automatically
 
-Les 54 skills s'activent selon les mots-cles dans la conversation :
+The 54 skills activate based on keywords in the conversation:
 
-| Mots-cles | Skill active | Action |
-|-----------|--------------|--------|
-| "TDD", "test first" | `dev-tdd` | Cycle Red-Green-Refactor |
+| Keywords | Activated skill | Action |
+|----------|-----------------|--------|
+| "TDD", "test first" | `dev-tdd` | Red-Green-Refactor cycle |
 | "commit", "message" | `work-commit` | Conventional Commits |
-| "review", "code review" | `qa-review` | Revue approfondie |
-| "PR", "pull request" | `work-pr` | PR structuree |
+| "review", "code review" | `qa-review` | In-depth review |
+| "PR", "pull request" | `work-pr` | Structured PR |
 | "Terraform", "IaC" | `ops-infra-code` | Infrastructure as Code |
-| "Proxmox", "PVE" | `ops-proxmox` | Gestion Proxmox |
-| "Docker", "Dockerfile" | `ops-docker` | Containerisation |
+| "Proxmox", "PVE" | `ops-proxmox` | Proxmox management |
+| "Docker", "Dockerfile" | `ops-docker` | Containerization |
 
-## Flux de decision
+## Decision flow
 
 ```
-Utilisateur: "/assistant Je veux corriger un bug de login"
+User: "/assistant I want to fix a login bug"
          │
          ▼
     ┌─────────────────────────────────────┐
-    │ 1. ANALYSE DE LA DEMANDE            │
-    │    - Mots-cles: "corriger", "bug"   │
-    │    - Domaine: authentification      │
+    │ 1. REQUEST ANALYSIS                 │
+    │    - Keywords: "fix", "bug"         │
+    │    - Domain: authentication         │
     └─────────────────────────────────────┘
          │
          ▼
     ┌─────────────────────────────────────┐
-    │ 2. DETECTION DU PROJET              │
-    │    - package.json detecte → Web     │
-    │    - React detecte → Frontend       │
+    │ 2. PROJECT DETECTION                │
+    │    - package.json detected → Web    │
+    │    - React detected → Frontend      │
     └─────────────────────────────────────┘
          │
          ▼
     ┌─────────────────────────────────────┐
-    │ 3. RECOMMANDATION                   │
-    │    - Workflow: /work:work-flow-bugfix    │
-    │    - Ou etapes manuelles:           │
-    │      /work:work-explore → /dev:dev-debug     │
-    │      → /dev:dev-test → /work:work-pr         │
+    │ 3. RECOMMENDATION                   │
+    │    - Workflow: /work:work-flow-bugfix │
+    │    - Or manual steps:               │
+    │      /work:work-explore → /dev:dev-debug │
+    │      → /dev:dev-test → /work:work-pr │
     └─────────────────────────────────────┘
          │
          ▼
     ┌─────────────────────────────────────┐
-    │ 4. PROPOSITION A L'UTILISATEUR      │
-    │    Avec explications et options     │
+    │ 4. PROPOSAL TO THE USER             │
+    │    With explanations and options    │
     └─────────────────────────────────────┘
 ```
 
-## Quand utiliser l'Orchestrateur ?
+## When to use the Orchestrator?
 
-### Utilisez `/assistant` (mode guide) quand :
+### Use `/assistant` (guide mode) when:
 
-- Vous etes **nouveau** sur claude-socle
-- Vous ne savez pas **quelle commande** utiliser
-- Vous voulez **valider** le workflow avant execution
-- Vous changez de **type de projet** (Web → Mobile par exemple)
-- Vous voulez une **vue d'ensemble** des options disponibles
+- You are **new** to claude-socle
+- You don't know **which command** to use
+- You want to **validate** the workflow before execution
+- You are switching **project type** (Web → Mobile for example)
+- You want an **overview** of the available options
 
-### Utilisez `/assistant-auto` (mode automatique) quand :
+### Use `/assistant-auto` (automatic mode) when:
 
-- Vous etes **familier** avec claude-socle
-- Vous voulez une **execution immediate** sans confirmation
-- Vous faites des taches **repetitives** (features, bugfixes)
-- Vous preferez la **rapidite** a la validation
+- You are **familiar** with claude-socle
+- You want **immediate execution** without confirmation
+- You are doing **repetitive** tasks (features, bugfixes)
+- You prefer **speed** over validation
 
-### Utilisez les commandes directes quand :
+### Use direct commands when:
 
-- Vous connaissez deja la commande exacte
-- Vous voulez une action rapide et precise
-- Vous etes en milieu de workflow
+- You already know the exact command
+- You want a fast, precise action
+- You are in the middle of a workflow
 
-## Mapping automatique (`/assistant-auto`)
+## Automatic mapping (`/assistant-auto`)
 
-| Votre demande contient... | Workflow execute |
-|---------------------------|------------------|
-| feature, ajouter, creer | `/work:work-flow-feature` |
-| bug, fix, corriger, erreur | `/work:work-flow-bugfix` |
+| Your request contains... | Executed workflow |
+|--------------------------|-------------------|
+| feature, add, create | `/work:work-flow-feature` |
+| bug, fix, error | `/work:work-flow-bugfix` |
 | release, version, tag | `/work:work-flow-release` |
-| lancement, MVP, produit | `/work:work-flow-launch` |
-| audit securite, OWASP | `/qa:qa-security` |
-| audit complet, qualite | `/qa:qa-audit` |
-| explorer, comprendre | `/work:work-explore` |
+| launch, MVP, product | `/work:work-flow-launch` |
+| security audit, OWASP | `/qa:qa-security` |
+| full audit, quality | `/qa:qa-audit` |
+| explore, understand | `/work:work-explore` |
 | commit | `/work:work-commit` |
 | PR, pull request | `/work:work-pr` |
 | tests, TDD | `/dev:dev-tdd` |
-| refactoring, nettoyer | `/dev:dev-refactor` |
-| debug, deboguer | `/dev:dev-debug` |
+| refactoring, clean up | `/dev:dev-refactor` |
+| debug | `/dev:dev-debug` |
 | Docker, container | `/ops:ops-docker` |
 | CI/CD, pipeline | `/ops:ops-ci` |
 
-## Exemples d'utilisation
+## Usage examples
 
-### Nouvelle feature
-
-```bash
-/assistant "Je veux ajouter un systeme de notifications push"
-
-# Reponse de l'orchestrateur :
-# Type de projet: Mobile (Flutter detecte)
-# Workflow recommande:
-# 1. /work:work-explore - Comprendre l'architecture actuelle
-# 2. /work:work-specify - Specifier les User Stories
-# 3. /work:work-plan - Planifier l'implementation
-# 4. /dev:dev-flutter - Creer les widgets
-# 5. /dev:dev-supabase - Configurer le backend
-# 6. /qa:qa-mobile - Tester sur devices
-# 7. /work:work-pr - Creer la PR
-```
-
-### Correction de bug
+### New feature
 
 ```bash
-/assistant "L'application crash au login"
+/assistant "I want to add a push notification system"
 
-# Reponse de l'orchestrateur :
-# Situation detectee: Bug critique
-# Commande recommandee: /work:work-flow-bugfix
-# Ou workflow manuel:
-# 1. /work:work-explore - Localiser le probleme
-# 2. /dev:dev-debug - Investiguer la cause
-# 3. /dev:dev-test - Ecrire un test de regression
-# 4. /work:work-commit - Commiter le fix
+# Orchestrator response:
+# Project type: Mobile (Flutter detected)
+# Recommended workflow:
+# 1. /work:work-explore - Understand the current architecture
+# 2. /work:work-specify - Specify the User Stories
+# 3. /work:work-plan - Plan the implementation
+# 4. /dev:dev-flutter - Create the widgets
+# 5. /dev:dev-supabase - Configure the backend
+# 6. /qa:qa-mobile - Test on devices
+# 7. /work:work-pr - Create the PR
 ```
 
-### Question generale
+### Bug fix
 
 ```bash
-/assistant "Comment fonctionne l'authentification dans ce projet ?"
+/assistant "The application crashes at login"
 
-# Reponse de l'orchestrateur :
-# Type de demande: Exploration/Comprehension
-# Commande recommandee: /work:work-explore ou /doc:doc-explain
-# Agent active automatiquement: work-explore (haiku)
+# Orchestrator response:
+# Detected situation: Critical bug
+# Recommended command: /work:work-flow-bugfix
+# Or manual workflow:
+# 1. /work:work-explore - Locate the problem
+# 2. /dev:dev-debug - Investigate the cause
+# 3. /dev:dev-test - Write a regression test
+# 4. /work:work-commit - Commit the fix
 ```
 
-## Relation avec les autres concepts
+### General question
+
+```bash
+/assistant "How does authentication work in this project?"
+
+# Orchestrator response:
+# Request type: Exploration/Understanding
+# Recommended command: /work:work-explore or /doc:doc-explain
+# Automatically activated agent: work-explore (haiku)
+```
+
+## Relationship with other concepts
 
 ```
-                    /assistant (Orchestrateur)
+                    /assistant (Orchestrator)
                            │
            ┌───────────────┼───────────────┐
            │               │               │
@@ -329,8 +329,8 @@ Utilisateur: "/assistant Je veux corriger un bug de login"
       ┌─────────┐    ┌─────────┐    ┌─────────┐
       │COMMANDS │    │ AGENTS  │    │ SKILLS  │
       │         │    │         │    │         │
-      │ Manuel  │    │ Auto    │    │ Auto    │
-      │ /xxx    │    │ delegue │    │ mots-cle│
+      │ Manual  │    │  Auto   │    │  Auto   │
+      │  /xxx   │    │ delegate│    │ keyword │
       └─────────┘    └─────────┘    └─────────┘
            │               │               │
            └───────────────┴───────────────┘
@@ -338,29 +338,29 @@ Utilisateur: "/assistant Je veux corriger un bug de login"
                     ┌──────┴──────┐
                     │   RULES     │
                     │   HOOKS     │
-                    │   TEMPLATES │
+                    │  TEMPLATES  │
                     └─────────────┘
 ```
 
-L'orchestrateur est le **chef d'orchestre** qui :
-- **Comprend** votre demande
-- **Choisit** les bons instruments (commands, agents, skills)
-- **Dirige** le workflow de maniere coherente
+The orchestrator is the **conductor** that:
+- **Understands** your request
+- **Picks** the right instruments (commands, agents, skills)
+- **Directs** the workflow consistently
 
-## Bonnes pratiques
+## Best practices
 
-1. **Commencez par `/assistant`** si vous etes nouveau (mode guide)
-2. **Passez a `/assistant-auto`** une fois familier avec les workflows
-3. **Soyez descriptif** dans vos demandes ("Je veux..." plutot que juste "auth")
-4. **Mentionnez le contexte** si pertinent ("pour l'app mobile", "en production")
-5. **Suivez les workflows proposes** pour des resultats optimaux
+1. **Start with `/assistant`** if you are new (guide mode)
+2. **Switch to `/assistant-auto`** once familiar with the workflows
+3. **Be descriptive** in your requests ("I want to..." rather than just "auth")
+4. **Mention the context** if relevant ("for the mobile app", "in production")
+5. **Follow the proposed workflows** for optimal results
 
 ---
 
-## Voir aussi
+## See also
 
-- [Commands](/docs/concepts/commands) - Commandes manuelles
-- [Agents](/docs/concepts/agents) - Sub-agents autonomes
-- [Skills](/docs/concepts/skills) - Skills auto-declenches
-- [Reference /assistant](/docs/commands/other/assistant) - Mode guide (avec confirmation)
-- [Reference /assistant-auto](/docs/commands/other/assistant-auto) - Mode automatique (execution directe)
+- [Commands](/docs/concepts/commands) - Manual commands
+- [Agents](/docs/concepts/agents) - Autonomous sub-agents
+- [Skills](/docs/concepts/skills) - Auto-triggered skills
+- [Reference /assistant](/docs/commands/other/assistant) - Guide mode (with confirmation)
+- [Reference /assistant-auto](/docs/commands/other/assistant-auto) - Automatic mode (direct execution)

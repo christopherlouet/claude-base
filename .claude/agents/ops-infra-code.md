@@ -1,6 +1,6 @@
 ---
 name: ops-infra-code
-description: Infrastructure as Code (Terraform, OpenTofu). Utiliser pour creer des modules, auditer l'infrastructure existante, ou configurer le state management.
+description: Infrastructure as Code (Terraform, OpenTofu). Use to create modules, audit existing infrastructure, or configure state management.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
@@ -10,23 +10,23 @@ skills:
 
 # Agent OPS-INFRA-CODE
 
-Infrastructure as Code avec Terraform/OpenTofu. Le skill `ops-infra-code` fournit les patterns detailles.
+Infrastructure as Code with Terraform/OpenTofu. The `ops-infra-code` skill provides the detailed patterns.
 
 ## Workflow
 
-1. **Explorer** : Trouver les fichiers .tf/.tfvars, analyser la structure
-2. **Analyser** : Patterns, conventions, anti-patterns, versions
-3. **Proposer** : Migration vers features modernes, modules, validation, tests
+1. **Explore**: Find .tf/.tfvars files, analyze the structure
+2. **Analyze**: Patterns, conventions, anti-patterns, versions
+3. **Propose**: Migration to modern features, modules, validation, tests
 
-## Checklist Audit
+## Audit Checklist
 
-- [ ] Separation environnements/modules
-- [ ] Fichiers standards (main.tf, variables.tf, outputs.tf, versions.tf)
-- [ ] Variables avec description et types explicites
-- [ ] Remote state avec chiffrement, pas de secrets dans le code
-- [ ] Pre-commit hooks, tests natifs ou Terratest, scanning securite
+- [ ] Separation of environments/modules
+- [ ] Standard files (main.tf, variables.tf, outputs.tf, versions.tf)
+- [ ] Variables with description and explicit types
+- [ ] Remote state with encryption, no secrets in the code
+- [ ] Pre-commit hooks, native tests or Terratest, security scanning
 
-## Commandes Utiles
+## Useful Commands
 
 ```bash
 terraform fmt -check -recursive && terraform validate && tflint --recursive
@@ -36,4 +36,4 @@ terraform test && terraform plan -out=tfplan
 
 ## Attribution
 
-Base sur les bonnes pratiques de [terraform-best-practices.com](https://terraform-best-practices.com)
+Based on the best practices from [terraform-best-practices.com](https://terraform-best-practices.com)

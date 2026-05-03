@@ -1,53 +1,53 @@
 ---
 sidebar_position: 9
-title: "08 - Infrastructure Proxmox"
-description: Déployez une infrastructure Proxmox avec Terraform et monitoring
+title: "08 - Proxmox Infrastructure"
+description: Deploy a Proxmox infrastructure with Terraform and monitoring
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# Infrastructure Proxmox avec Terraform
+# Proxmox Infrastructure with Terraform
 
-<DifficultyBadge level="advanced" /> **Durée estimée : 60 minutes**
+<DifficultyBadge level="advanced" /> **Estimated duration: 60 minutes**
 
-Ce tutoriel vous montre comment déployer et gérer une infrastructure Proxmox VE en utilisant Terraform et les outils claude-socle.
+This tutorial shows you how to deploy and manage a Proxmox VE infrastructure using Terraform and the claude-socle tools.
 
-## Objectifs
+## Objectives
 
-À la fin de ce tutoriel, vous saurez :
-- Utiliser `/ops:ops-proxmox` pour gérer Proxmox
-- Utiliser `/ops:ops-infra-code` pour l'Infrastructure as Code
-- Créer des VMs et conteneurs LXC avec Terraform
-- Mettre en place le monitoring et les backups
+By the end of this tutorial, you will know how to:
+- Use `/ops:ops-proxmox` to manage Proxmox
+- Use `/ops:ops-infra-code` for Infrastructure as Code
+- Create VMs and LXC containers with Terraform
+- Set up monitoring and backups
 
-## Prérequis
+## Prerequisites
 
-- Serveur Proxmox VE installé et accessible
-- Terraform installé localement
-- Token API Proxmox créé
-- Connaissances de base en virtualisation
+- Proxmox VE server installed and accessible
+- Terraform installed locally
+- Proxmox API token created
+- Basic knowledge of virtualization
 
-## Contexte
+## Context
 
-Nous allons créer une infrastructure complète comprenant :
-- 2 VMs Ubuntu pour une application web
-- 1 conteneur LXC pour la base de données
-- Configuration réseau avec VLAN
-- Monitoring et backups automatisés
+We will create a complete infrastructure including:
+- 2 Ubuntu VMs for a web application
+- 1 LXC container for the database
+- Network configuration with VLAN
+- Automated monitoring and backups
 
-## Étape 1 : Configurer l'accès Proxmox
+## Step 1: Configure Proxmox access
 
-### Créer un token API
+### Create an API token
 
-Dans Proxmox :
+In Proxmox:
 1. **Datacenter > Permissions > API Tokens**
-2. Créer un token pour votre utilisateur
-3. Noter l'ID et le secret
+2. Create a token for your user
+3. Note the ID and the secret
 
-### Configurer Terraform
+### Configure Terraform
 
 ```bash
-/ops:ops-infra-code "Configurer le provider Proxmox avec le provider bpg/proxmox"
+/ops:ops-infra-code "Configure the Proxmox provider with the bpg/proxmox provider"
 ```
 
 **`providers.tf`**
@@ -78,24 +78,24 @@ provider "proxmox" {
 **`variables.tf`**
 ```hcl
 variable "proxmox_endpoint" {
-  description = "URL de l'API Proxmox"
+  description = "Proxmox API URL"
   type        = string
 }
 
 variable "proxmox_api_token" {
-  description = "Token API Proxmox (user@realm!token=secret)"
+  description = "Proxmox API token (user@realm!token=secret)"
   type        = string
   sensitive   = true
 }
 
 variable "proxmox_insecure" {
-  description = "Ignorer la vérification SSL"
+  description = "Skip SSL verification"
   type        = bool
   default     = false
 }
 
 variable "target_node" {
-  description = "Node Proxmox cible"
+  description = "Target Proxmox node"
   type        = string
   default     = "pve"
 }
@@ -109,10 +109,10 @@ proxmox_insecure  = true
 target_node       = "pve"
 ```
 
-## Étape 2 : Créer les VMs avec cloud-init
+## Step 2: Create the VMs with cloud-init
 
 ```bash
-/ops:ops-proxmox "Créer 2 VMs Ubuntu 22.04 avec cloud-init pour une application web"
+/ops:ops-proxmox "Create 2 Ubuntu 22.04 VMs with cloud-init for a web application"
 ```
 
 **`modules/vm/main.tf`**
@@ -199,9 +199,9 @@ resource "proxmox_virtual_environment_file" "cloud_config" {
 }
 ```
 
-**`main.tf`** (racine)
+**`main.tf`** (root)
 ```hcl
-# Template cloud-init Ubuntu
+# Ubuntu cloud-init template
 resource "proxmox_virtual_environment_download_file" "ubuntu_cloud_image" {
   content_type = "iso"
   datastore_id = "local"
@@ -210,7 +210,7 @@ resource "proxmox_virtual_environment_download_file" "ubuntu_cloud_image" {
   file_name    = "ubuntu-22.04-cloudimg-amd64.img"
 }
 
-# VM Web 1
+# Web VM 1
 module "web_vm_1" {
   source = "./modules/vm"
 
@@ -231,7 +231,7 @@ module "web_vm_1" {
   tags           = ["web", "production"]
 }
 
-# VM Web 2
+# Web VM 2
 module "web_vm_2" {
   source = "./modules/vm"
 
@@ -253,10 +253,10 @@ module "web_vm_2" {
 }
 ```
 
-## Étape 3 : Créer le conteneur LXC pour la base de données
+## Step 3: Create the LXC container for the database
 
 ```bash
-/ops:ops-proxmox "Créer un conteneur LXC pour PostgreSQL"
+/ops:ops-proxmox "Create an LXC container for PostgreSQL"
 ```
 
 **`modules/lxc/main.tf`**
@@ -317,9 +317,9 @@ resource "proxmox_virtual_environment_container" "container" {
 }
 ```
 
-**Ajout au `main.tf`**
+**Add to `main.tf`**
 ```hcl
-# Template LXC Ubuntu
+# Ubuntu LXC template
 resource "proxmox_virtual_environment_download_file" "ubuntu_lxc_template" {
   content_type = "vztmpl"
   datastore_id = "local"
@@ -328,7 +328,7 @@ resource "proxmox_virtual_environment_download_file" "ubuntu_lxc_template" {
   file_name    = "ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
 }
 
-# Conteneur PostgreSQL
+# PostgreSQL container
 module "db_container" {
   source = "./modules/lxc"
 
@@ -351,17 +351,17 @@ module "db_container" {
 }
 ```
 
-## Étape 4 : Configurer les backups
+## Step 4: Configure backups
 
 ```bash
-/ops:ops-backup "Configurer les backups automatiques Proxmox"
+/ops:ops-backup "Configure automated Proxmox backups"
 ```
 
 **`backup.tf`**
 ```hcl
-# Job de backup quotidien
+# Daily backup job
 resource "proxmox_virtual_environment_cluster_backup" "daily_backup" {
-  schedule = "0 2 * * *"  # Tous les jours à 2h
+  schedule = "0 2 * * *"  # Every day at 2am
 
   backup_target_storage = "backup-storage"
   compression           = "zstd"
@@ -382,24 +382,24 @@ resource "proxmox_virtual_environment_cluster_backup" "daily_backup" {
 }
 ```
 
-## Étape 5 : Ajouter le monitoring
+## Step 5: Add monitoring
 
 ```bash
-/ops:ops-monitoring "Ajouter le monitoring pour l'infrastructure Proxmox"
+/ops:ops-monitoring "Add monitoring for the Proxmox infrastructure"
 ```
 
-**Script d'installation sur chaque VM :**
+**Installation script on each VM:**
 
 ```bash
 #!/bin/bash
 # install-monitoring.sh
 
-# Node Exporter pour Prometheus
+# Node Exporter for Prometheus
 wget https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
 tar xvfz node_exporter-1.7.0.linux-amd64.tar.gz
 sudo mv node_exporter-1.7.0.linux-amd64/node_exporter /usr/local/bin/
 
-# Service systemd
+# systemd service
 cat <<EOF | sudo tee /etc/systemd/system/node_exporter.service
 [Unit]
 Description=Node Exporter
@@ -419,38 +419,38 @@ sudo systemctl enable node_exporter
 sudo systemctl start node_exporter
 ```
 
-## Étape 6 : Déployer l'infrastructure
+## Step 6: Deploy the infrastructure
 
 ```bash
-# Initialiser Terraform
+# Initialize Terraform
 terraform init
 
-# Vérifier le plan
+# Check the plan
 terraform plan
 
-# Appliquer
+# Apply
 terraform apply
 ```
 
-### Vérifier le déploiement
+### Verify the deployment
 
 ```bash
-# Lister les ressources créées
+# List the created resources
 terraform state list
 
-# Voir les outputs
+# View the outputs
 terraform output
 
-# Se connecter à une VM
+# Connect to a VM
 ssh ubuntu@10.0.10.11
 ```
 
-## Étape 7 : Outputs utiles
+## Step 7: Useful outputs
 
 **`outputs.tf`**
 ```hcl
 output "web_vms" {
-  description = "Informations des VMs web"
+  description = "Web VMs information"
   value = {
     web_01 = {
       id   = module.web_vm_1.vm_id
@@ -466,7 +466,7 @@ output "web_vms" {
 }
 
 output "db_container" {
-  description = "Informations du conteneur DB"
+  description = "DB container information"
   value = {
     id   = module.db_container.vm_id
     ip   = "10.0.20.11"
@@ -475,7 +475,7 @@ output "db_container" {
 }
 
 output "ssh_commands" {
-  description = "Commandes SSH pour se connecter"
+  description = "SSH commands to connect"
   value = {
     web_01 = "ssh ubuntu@10.0.10.11"
     web_02 = "ssh ubuntu@10.0.10.12"
@@ -484,13 +484,13 @@ output "ssh_commands" {
 }
 ```
 
-## Étape 8 : Commiter
+## Step 8: Commit
 
 ```bash
 /work:work-commit
 ```
 
-**Message suggéré :**
+**Suggested message:**
 
 ```
 feat(infra): add Proxmox infrastructure with Terraform
@@ -503,16 +503,16 @@ feat(infra): add Proxmox infrastructure with Terraform
 - Add monitoring setup with node_exporter
 ```
 
-## Structure finale
+## Final structure
 
 ```
 infrastructure/
-├── main.tf              # Ressources principales
-├── providers.tf         # Configuration Terraform
+├── main.tf              # Main resources
+├── providers.tf         # Terraform configuration
 ├── variables.tf         # Variables
 ├── outputs.tf           # Outputs
-├── terraform.tfvars     # Valeurs (non committé)
-├── backup.tf            # Configuration backups
+├── terraform.tfvars     # Values (not committed)
+├── backup.tf            # Backup configuration
 ├── modules/
 │   ├── vm/
 │   │   ├── main.tf
@@ -526,24 +526,24 @@ infrastructure/
     └── install-monitoring.sh
 ```
 
-## Commandes utiles
+## Useful commands
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
-| `terraform plan` | Voir les changements |
-| `terraform apply` | Appliquer les changements |
-| `terraform destroy` | Détruire l'infrastructure |
-| `terraform state list` | Lister les ressources |
-| `terraform output` | Voir les outputs |
+| `terraform plan` | View the changes |
+| `terraform apply` | Apply the changes |
+| `terraform destroy` | Destroy the infrastructure |
+| `terraform state list` | List the resources |
+| `terraform output` | View the outputs |
 
-## Prochaines étapes
+## Next steps
 
-- [Exemples Ops](/docs/examples)
-- [Commande /ops:ops-infra-code](/docs/commands/ops/ops-infra-code)
-- [Commande /ops:ops-monitoring](/docs/commands/ops/ops-monitoring)
+- [Ops Examples](/docs/examples)
+- [Command /ops:ops-infra-code](/docs/commands/ops/ops-infra-code)
+- [Command /ops:ops-monitoring](/docs/commands/ops/ops-monitoring)
 
 ---
 
 :::tip Infrastructure as Code
-Versionnez toujours votre code Terraform et utilisez un backend distant (S3, Consul) pour le state en équipe.
+Always version your Terraform code and use a remote backend (S3, Consul) for the state when working as a team.
 :::

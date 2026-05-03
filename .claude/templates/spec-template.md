@@ -1,205 +1,205 @@
-# Spécification : [NOM DE LA FEATURE]
+# Specification: [FEATURE NAME]
 
-**Branche**: `feature/[nom-court]`
+**Branch**: `feature/[short-name]`
 **Date**: [DATE]
-**Statut**: Draft | En review | Validé
-**Input**: Description utilisateur: "$ARGUMENTS"
+**Status**: Draft | In review | Validated
+**Input**: User description: "$ARGUMENTS"
 
 ---
 
-## Résumé
+## Summary
 
-[1-3 phrases décrivant ce que la feature apporte à l'utilisateur, focalisé sur la VALEUR]
+[1-3 sentences describing what the feature brings to the user, focused on VALUE]
 
 ---
 
-## User Stories (prioritisées)
+## User Stories (prioritized)
 
 <!--
-  IMPORTANT: Les User Stories doivent être PRIORITISÉES comme des parcours utilisateur.
-  Chaque story doit être INDÉPENDAMMENT TESTABLE - si vous n'implémentez QU'UNE seule,
-  vous devez avoir un MVP fonctionnel qui apporte de la valeur.
+  IMPORTANT: User Stories must be PRIORITIZED as user journeys.
+  Each story must be INDEPENDENTLY TESTABLE - if you implement ONLY one,
+  you must have a working MVP that delivers value.
 
-  Priorités: P1 = MVP essentiel, P2 = Important, P3 = Nice-to-have
+  Priorities: P1 = essential MVP, P2 = Important, P3 = Nice-to-have
 
-  Chaque story doit être:
-  - Développable indépendamment
-  - Testable indépendamment
-  - Déployable indépendamment
-  - Démontrable aux utilisateurs
+  Each story must be:
+  - Independently developable
+  - Independently testable
+  - Independently deployable
+  - Demonstrable to users
 -->
 
-### US1 - [Titre court] (Priorité: P1) 🎯 MVP
+### US1 - [Short title] (Priority: P1) 🎯 MVP
 
-**En tant que** [type d'utilisateur]
-**Je veux** [action/fonctionnalité]
-**Afin de** [bénéfice/valeur]
+**As a** [type of user]
+**I want** [action/feature]
+**So that** [benefit/value]
 
-**Pourquoi P1**: [Explication de la valeur et pourquoi cette priorité]
+**Why P1**: [Explanation of the value and why this priority]
 
-**Test indépendant**: [Comment cette story peut être testée seule]
+**Independent test**: [How this story can be tested on its own]
 
-**Critères d'acceptation**:
+**Acceptance criteria**:
 
-1. **Étant donné** [état initial], **Quand** [action], **Alors** [résultat attendu]
-2. **Étant donné** [état initial], **Quand** [action], **Alors** [résultat attendu]
-
----
-
-### US2 - [Titre court] (Priorité: P2)
-
-**En tant que** [type d'utilisateur]
-**Je veux** [action/fonctionnalité]
-**Afin de** [bénéfice/valeur]
-
-**Pourquoi P2**: [Explication]
-
-**Test indépendant**: [Description]
-
-**Critères d'acceptation**:
-
-1. **Étant donné** [état initial], **Quand** [action], **Alors** [résultat attendu]
+1. **Given** [initial state], **When** [action], **Then** [expected result]
+2. **Given** [initial state], **When** [action], **Then** [expected result]
 
 ---
 
-### US3 - [Titre court] (Priorité: P3)
+### US2 - [Short title] (Priority: P2)
 
-**En tant que** [type d'utilisateur]
-**Je veux** [action/fonctionnalité]
-**Afin de** [bénéfice/valeur]
+**As a** [type of user]
+**I want** [action/feature]
+**So that** [benefit/value]
 
-**Pourquoi P3**: [Explication]
+**Why P2**: [Explanation]
 
-**Test indépendant**: [Description]
+**Independent test**: [Description]
 
-**Critères d'acceptation**:
+**Acceptance criteria**:
 
-1. **Étant donné** [état initial], **Quand** [action], **Alors** [résultat attendu]
+1. **Given** [initial state], **When** [action], **Then** [expected result]
 
 ---
 
-## Cas Limites (Edge Cases)
+### US3 - [Short title] (Priority: P3)
+
+**As a** [type of user]
+**I want** [action/feature]
+**So that** [benefit/value]
+
+**Why P3**: [Explanation]
+
+**Independent test**: [Description]
+
+**Acceptance criteria**:
+
+1. **Given** [initial state], **When** [action], **Then** [expected result]
+
+---
+
+## Edge Cases
 
 <!--
-  ACTION REQUISE: Remplacer ces placeholders par les vrais cas limites.
+  ACTION REQUIRED: Replace these placeholders with the real edge cases.
 -->
 
-- Que se passe-t-il quand [condition limite] ?
-- Comment le système gère-t-il [scénario d'erreur] ?
-- Comportement avec [données vides/invalides] ?
+- What happens when [boundary condition]?
+- How does the system handle [error scenario]?
+- Behavior with [empty/invalid data]?
 
 ---
 
-## Exigences Fonctionnelles
+## Functional Requirements
 
 <!--
-  ACTION REQUISE: Remplacer ces placeholders par les vraies exigences.
-  Chaque exigence doit être TESTABLE et VÉRIFIABLE.
+  ACTION REQUIRED: Replace these placeholders with the real requirements.
+  Each requirement must be TESTABLE and VERIFIABLE.
 -->
 
-- **EF-001**: Le système DOIT [capacité spécifique, ex: "permettre la création de comptes"]
-- **EF-002**: Le système DOIT [capacité spécifique, ex: "valider les adresses email"]
-- **EF-003**: L'utilisateur DOIT pouvoir [interaction clé, ex: "réinitialiser son mot de passe"]
-- **EF-004**: Le système DOIT [exigence données, ex: "persister les préférences utilisateur"]
-- **EF-005**: Le système DOIT [comportement, ex: "journaliser les événements de sécurité"]
+- **FR-001**: The system MUST [specific capability, e.g., "allow account creation"]
+- **FR-002**: The system MUST [specific capability, e.g., "validate email addresses"]
+- **FR-003**: The user MUST be able to [key interaction, e.g., "reset their password"]
+- **FR-004**: The system MUST [data requirement, e.g., "persist user preferences"]
+- **FR-005**: The system MUST [behavior, e.g., "log security events"]
 
-*Exemple de marquage des exigences peu claires:*
+*Example of marking unclear requirements:*
 
-- **EF-006**: Le système DOIT authentifier les utilisateurs via [CLARIFICATION NÉCESSAIRE: méthode non spécifiée - email/password, SSO, OAuth?]
+- **FR-006**: The system MUST authenticate users via [CLARIFICATION NEEDED: method not specified - email/password, SSO, OAuth?]
 
 ---
 
-## Entités Clés (si données impliquées)
+## Key Entities (if data involved)
 
 <!--
-  Inclure UNIQUEMENT si la feature implique des données persistées.
-  Décrire les entités sans détails d'implémentation (pas de types de colonnes, pas de SQL).
+  Include ONLY if the feature involves persisted data.
+  Describe entities without implementation details (no column types, no SQL).
 -->
 
-| Entité | Ce qu'elle représente | Attributs clés | Relations |
+| Entity | What it represents | Key attributes | Relations |
 |--------|----------------------|----------------|-----------|
-| [Entité 1] | [Description] | id, nom, ... | [Lien vers Entité 2] |
-| [Entité 2] | [Description] | ... | ... |
+| [Entity 1] | [Description] | id, name, ... | [Link to Entity 2] |
+| [Entity 2] | [Description] | ... | ... |
 
 ---
 
-## Critères de Succès (mesurables)
+## Success Criteria (measurable)
 
 <!--
-  ACTION REQUISE: Définir des critères MESURABLES.
-  Doivent être technology-agnostic et vérifiables.
+  ACTION REQUIRED: Define MEASURABLE criteria.
+  Must be technology-agnostic and verifiable.
 
-  ✅ Bon: "L'utilisateur peut compléter l'inscription en moins de 2 minutes"
-  ❌ Mauvais: "L'inscription est rapide" (vague)
-  ❌ Mauvais: "L'API répond en < 200ms" (trop technique, utiliser perspective utilisateur)
+  ✅ Good: "Users can complete signup in under 2 minutes"
+  ❌ Bad: "Signup is fast" (vague)
+  ❌ Bad: "API responds in < 200ms" (too technical, use user perspective)
 -->
 
-- **CS-001**: [Métrique mesurable, ex: "Utilisateurs peuvent compléter la tâche principale en < 2 minutes"]
-- **CS-002**: [Métrique système, ex: "Support de 1000 utilisateurs simultanés sans dégradation"]
-- **CS-003**: [Métrique satisfaction, ex: "90% des utilisateurs réussissent la tâche au premier essai"]
-- **CS-004**: [Métrique business, ex: "Réduction de 50% des tickets support liés à [X]"]
+- **SC-001**: [Measurable metric, e.g., "Users can complete the main task in < 2 minutes"]
+- **SC-002**: [System metric, e.g., "Support 1000 concurrent users without degradation"]
+- **SC-003**: [Satisfaction metric, e.g., "90% of users succeed at the task on the first try"]
+- **SC-004**: [Business metric, e.g., "50% reduction in support tickets related to [X]"]
 
 ---
 
-## Hors Scope (explicitement exclus)
+## Out of Scope (explicitly excluded)
 
 <!--
-  Lister ce qui N'EST PAS inclus dans cette feature.
-  Aide à éviter le scope creep.
+  List what is NOT included in this feature.
+  Helps avoid scope creep.
 -->
 
-- [Fonctionnalité X] - sera traitée dans une future itération
-- [Cas d'usage Y] - hors périmètre de cette version
-- [Intégration Z] - phase 2
+- [Feature X] - will be addressed in a future iteration
+- [Use case Y] - out of scope for this version
+- [Integration Z] - phase 2
 
 ---
 
-## Hypothèses et Dépendances
+## Assumptions and Dependencies
 
-### Hypothèses
+### Assumptions
 
-- [Hypothèse 1 sur le contexte ou les utilisateurs]
-- [Hypothèse 2 sur l'environnement]
+- [Assumption 1 about context or users]
+- [Assumption 2 about environment]
 
-### Dépendances
+### Dependencies
 
-- [Dépendance interne: autre feature/module]
-- [Dépendance externe: service tiers, API]
+- [Internal dependency: another feature/module]
+- [External dependency: third-party service, API]
 
 ---
 
-## Points de Clarification
+## Clarification Points
 
 <!--
-  Maximum 3 points de clarification.
-  Utiliser UNIQUEMENT pour des décisions qui impactent significativement le scope ou l'UX.
-  Pour le reste, faire des choix éclairés basés sur les bonnes pratiques.
+  Maximum 3 clarification points.
+  Use ONLY for decisions that significantly impact scope or UX.
+  For the rest, make informed choices based on best practices.
 -->
 
-- [CLARIFICATION NÉCESSAIRE: question spécifique qui impacte le scope]
-- [CLARIFICATION NÉCESSAIRE: choix significatif entre plusieurs options]
+- [CLARIFICATION NEEDED: specific question that impacts scope]
+- [CLARIFICATION NEEDED: significant choice between multiple options]
 
 ---
 
-## Checklist de validation
+## Validation checklist
 
-### Complétude
-- [ ] Toutes les user stories ont des critères d'acceptation
-- [ ] Aucun détail d'implémentation (langages, frameworks, APIs)
-- [ ] Focus sur la valeur utilisateur et les besoins métier
-- [ ] Compréhensible par un non-développeur
+### Completeness
+- [ ] All user stories have acceptance criteria
+- [ ] No implementation details (languages, frameworks, APIs)
+- [ ] Focus on user value and business needs
+- [ ] Understandable by a non-developer
 
-### Exigences
-- [ ] Pas de marqueur [CLARIFICATION NÉCESSAIRE] non résolu (max 3 autorisés)
-- [ ] Exigences testables et non ambiguës
-- [ ] Critères de succès mesurables
-- [ ] Critères technology-agnostic
+### Requirements
+- [ ] No unresolved [CLARIFICATION NEEDED] marker (max 3 allowed)
+- [ ] Testable and unambiguous requirements
+- [ ] Measurable success criteria
+- [ ] Technology-agnostic criteria
 
-### Prêt pour planification
-- [ ] Toutes les exigences fonctionnelles ont des critères clairs
-- [ ] User stories couvrent les flux principaux
-- [ ] La feature apporte une valeur mesurable
+### Ready for planning
+- [ ] All functional requirements have clear criteria
+- [ ] User stories cover the main flows
+- [ ] The feature delivers measurable value
 
 ---
 
-**Version**: 1.0 | **Créé**: [DATE] | **Dernière modification**: [DATE]
+**Version**: 1.0 | **Created**: [DATE] | **Last modified**: [DATE]

@@ -38,8 +38,8 @@ jobs:
           requireScope: false
           subjectPattern: ^(?![A-Z]).+$
           subjectPatternError: |
-            Le titre doit commencer par une minuscule.
-            Exemple: "feat: add user authentication"
+            The title must start with a lowercase letter.
+            Example: "feat: add user authentication"
 
       - name: Check commit messages
         uses: wagoid/commitlint-github-action@v6
@@ -48,7 +48,7 @@ jobs:
       - name: Check for WIP
         run: |
           if [[ "${{ github.event.pull_request.title }}" == *"WIP"* ]]; then
-            echo "::warning::Cette PR est marquée comme WIP"
+            echo "::warning::This PR is marked as WIP"
             exit 1
           fi
 
@@ -67,4 +67,4 @@ jobs:
           xl_label: 'size/XL'
           fail_if_xl: false
           message_if_xl: |
-            Cette PR est très grande. Considérez la diviser en PRs plus petites.
+            This PR is very large. Consider splitting it into smaller PRs.

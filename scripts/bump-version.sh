@@ -2,7 +2,7 @@
 
 # =============================================================================
 # Claude-Socle Bump Version Script
-# Met a jour la version dans tous les fichiers references
+# Updates the version in all referenced files
 # =============================================================================
 
 set -euo pipefail
@@ -17,7 +17,7 @@ enable_error_handler
 check_base_requirements
 
 # =============================================================================
-# Aide
+# Help
 # =============================================================================
 
 show_help() {
@@ -28,19 +28,19 @@ ${BOLD}USAGE${NC}
     $(basename "$0") <new-version>
 
 ${BOLD}DESCRIPTION${NC}
-    Met a jour la version dans tous les fichiers du socle :
-    - VERSION (fichier central)
+    Updates the version in all foundation files:
+    - VERSION (central file)
     - README.md (badge)
     - website/docs/intro/quick-start.md (verification message)
 
 ${BOLD}ARGUMENTS${NC}
-    new-version    Nouvelle version au format semver (ex: 1.16.0)
+    new-version    New version in semver format (e.g.: 1.16.0)
 
 ${BOLD}OPTIONS${NC}
-    -h, --help     Afficher cette aide
-    --dry-run      Afficher les changements sans les appliquer
+    -h, --help     Display this help
+    --dry-run      Show changes without applying them
 
-${BOLD}EXEMPLES${NC}
+${BOLD}EXAMPLES${NC}
     $(basename "$0") 1.16.0
     $(basename "$0") --dry-run 2.0.0
 EOF
@@ -54,7 +54,7 @@ NEW_VERSION=""
 DRY_RUN=false
 
 # =============================================================================
-# Parsing arguments
+# Argument parsing
 # =============================================================================
 
 while [[ $# -gt 0 ]]; do
@@ -71,7 +71,7 @@ while [[ $# -gt 0 ]]; do
             if [[ -z "$NEW_VERSION" ]]; then
                 NEW_VERSION="$1"
             else
-                error "Argument inattendu: $1"
+                error "Unexpected argument: $1"
             fi
             shift
             ;;
@@ -79,12 +79,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$NEW_VERSION" ]]; then
-    error "Version manquante. Usage: $(basename "$0") <new-version>"
+    error "Missing version. Usage: $(basename "$0") <new-version>"
 fi
 
 # Validate semver format
 if ! [[ "$NEW_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    error "Format de version invalide: $NEW_VERSION (attendu: X.Y.Z)"
+    error "Invalid version format: $NEW_VERSION (expected: X.Y.Z)"
 fi
 
 # =============================================================================
@@ -108,7 +108,7 @@ bump_file() {
     local rel_path="${file#"$SOCLE_DIR"/}"
 
     if [[ ! -f "$file" ]]; then
-        warning "Fichier non trouve: $rel_path"
+        warning "File not found: $rel_path"
         return
     fi
 
@@ -121,12 +121,12 @@ bump_file() {
         fi
         CHANGES=$((CHANGES + 1))
     else
-        debug "$rel_path: pattern non trouve ($old_pattern)"
+        debug "$rel_path: pattern not found ($old_pattern)"
     fi
 }
 
 # 1. VERSION file
-info "1/4 Fichier VERSION"
+info "1/4 VERSION file"
 if $DRY_RUN; then
     info "[DRY-RUN] VERSION: $CURRENT_VERSION -> $NEW_VERSION"
 else
@@ -140,7 +140,7 @@ info "2/4 README.md"
 bump_file "$SOCLE_DIR/README.md" \
     "release-v${CURRENT_VERSION}-blue" \
     "release-v${NEW_VERSION}-blue" \
-    "Badge version"
+    "Version badge"
 
 # 3. Website quick-start verification message
 info "3/4 Website quick-start"
@@ -162,13 +162,13 @@ fi
 
 echo ""
 if $DRY_RUN; then
-    info "[DRY-RUN] ${BOLD}$CHANGES${NC} fichiers seraient modifies"
+    info "[DRY-RUN] ${BOLD}$CHANGES${NC} files would be modified"
 else
-    success "${BOLD}$CHANGES${NC} fichiers mis a jour vers v$NEW_VERSION"
+    success "${BOLD}$CHANGES${NC} files updated to v$NEW_VERSION"
     echo ""
-    info "Prochaines etapes:"
-    echo "  1. Verifier les changements: git diff"
-    echo "  2. Mettre a jour CHANGELOG.md"
-    echo "  3. Commiter: git commit -am 'chore(release): v$NEW_VERSION'"
-    echo "  4. Tagger: git tag v$NEW_VERSION"
+    info "Next steps:"
+    echo "  1. Review the changes: git diff"
+    echo "  2. Update CHANGELOG.md"
+    echo "  3. Commit: git commit -am 'chore(release): v$NEW_VERSION'"
+    echo "  4. Tag: git tag v$NEW_VERSION"
 fi

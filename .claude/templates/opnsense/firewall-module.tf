@@ -1,7 +1,7 @@
 # =============================================================================
-# Module Firewall OPNsense
+# OPNsense Firewall Module
 # =============================================================================
-# Configure les règles de pare-feu
+# Configures firewall rules
 # Provider: browningluke/opnsense
 # =============================================================================
 
@@ -10,10 +10,10 @@
 # -----------------------------------------------------------------------------
 
 variable "firewall_rules" {
-  description = "Liste des règles de pare-feu"
+  description = "List of firewall rules"
   type = list(object({
-    # Identifiant
-    name        = string                     # Nom unique de la règle
+    # Identifier
+    name        = string                     # Unique rule name
     description = optional(string)           # Description
 
     # Matching
@@ -23,24 +23,24 @@ variable "firewall_rules" {
     protocol    = optional(string, "any")    # tcp, udp, icmp, any, etc.
 
     # Source
-    source_net    = optional(string, "any")  # IP, réseau, alias, ou "any"
-    source_port   = optional(string)         # Port source (rare)
-    source_invert = optional(bool, false)    # Inverser la source
+    source_net    = optional(string, "any")  # IP, network, alias, or "any"
+    source_port   = optional(string)         # Source port (rare)
+    source_invert = optional(bool, false)    # Invert source
 
     # Destination
-    destination_net    = optional(string, "any") # IP, réseau, alias, "(self)"
-    destination_port   = optional(string)        # Port ou plage (80, 80:443)
-    destination_invert = optional(bool, false)   # Inverser la destination
+    destination_net    = optional(string, "any") # IP, network, alias, "(self)"
+    destination_port   = optional(string)        # Port or range (80, 80:443)
+    destination_invert = optional(bool, false)   # Invert destination
 
     # Action
     action   = optional(string, "pass")      # pass, block, reject
-    log      = optional(bool, false)         # Logger les correspondances
-    sequence = optional(number)              # Ordre (1 = premier, défaut auto)
-    enabled  = optional(bool, true)          # Règle active
+    log      = optional(bool, false)         # Log matches
+    sequence = optional(number)              # Order (1 = first, default auto)
+    enabled  = optional(bool, true)          # Rule active
 
-    # Options avancées
-    quick        = optional(bool, true)      # Arrêter à la première correspondance
-    gateway      = optional(string)          # Forcer un gateway (policy routing)
+    # Advanced options
+    quick        = optional(bool, true)      # Stop at first match
+    gateway      = optional(string)          # Force a gateway (policy routing)
     state_type   = optional(string)          # keep state, sloppy state, etc.
   }))
 
@@ -50,37 +50,37 @@ variable "firewall_rules" {
     condition = alltrue([
       for rule in var.firewall_rules : contains(["pass", "block", "reject"], rule.action)
     ])
-    error_message = "action doit être: pass, block, ou reject"
+    error_message = "action must be: pass, block, or reject"
   }
 
   validation {
     condition = alltrue([
       for rule in var.firewall_rules : contains(["in", "out"], rule.direction)
     ])
-    error_message = "direction doit être: in ou out"
+    error_message = "direction must be: in or out"
   }
 }
 
 variable "enable_anti_lockout" {
-  description = "Créer automatiquement une règle anti-lockout"
+  description = "Automatically create an anti-lockout rule"
   type        = bool
   default     = true
 }
 
 variable "anti_lockout_interface" {
-  description = "Interface pour la règle anti-lockout"
+  description = "Interface for the anti-lockout rule"
   type        = string
   default     = "lan"
 }
 
 variable "anti_lockout_port" {
-  description = "Port pour la règle anti-lockout (accès admin)"
+  description = "Port for the anti-lockout rule (admin access)"
   type        = string
   default     = "443"
 }
 
 # -----------------------------------------------------------------------------
-# Règle Anti-Lockout (OBLIGATOIRE)
+# Anti-Lockout Rule (MANDATORY)
 # -----------------------------------------------------------------------------
 
 resource "opnsense_firewall_filter" "anti_lockout" {
@@ -94,7 +94,7 @@ resource "opnsense_firewall_filter" "anti_lockout" {
   source_net       = "${var.anti_lockout_interface}net"
   destination_net  = "(self)"
   destination_port = var.anti_lockout_port
-  description      = "ANTI-LOCKOUT: Accès admin depuis LAN"
+  description      = "ANTI-LOCKOUT: Admin access from LAN"
   sequence         = 1
   enabled          = true
   quick            = true
@@ -102,7 +102,7 @@ resource "opnsense_firewall_filter" "anti_lockout" {
 }
 
 # -----------------------------------------------------------------------------
-# Règles de pare-feu
+# Firewall rules
 # -----------------------------------------------------------------------------
 
 resource "opnsense_firewall_filter" "rules" {
@@ -123,7 +123,7 @@ resource "opnsense_firewall_filter" "rules" {
   destination_port   = each.value.destination_port
   destination_invert = each.value.destination_invert
 
-  # Action et options
+  # Action and options
   action      = each.value.action
   log         = each.value.log
   sequence    = each.value.sequence
@@ -140,7 +140,7 @@ resource "opnsense_firewall_filter" "rules" {
 # -----------------------------------------------------------------------------
 
 output "firewall_rules" {
-  description = "Règles de pare-feu créées"
+  description = "Firewall rules created"
   value = {
     for name, rule in opnsense_firewall_filter.rules : name => {
       id          = rule.id
@@ -153,7 +153,7 @@ output "firewall_rules" {
 }
 
 output "anti_lockout_rule" {
-  description = "Règle anti-lockout"
+  description = "Anti-lockout rule"
   value = var.enable_anti_lockout ? {
     id          = opnsense_firewall_filter.anti_lockout[0].id
     interface   = opnsense_firewall_filter.anti_lockout[0].interface
@@ -162,10 +162,10 @@ output "anti_lockout_rule" {
 }
 
 # -----------------------------------------------------------------------------
-# Exemples d'utilisation
+# Usage examples
 # -----------------------------------------------------------------------------
 # firewall_rules = [
-#   # Autoriser HTTP/HTTPS sortant depuis le LAN
+#   # Allow outbound HTTP/HTTPS from LAN
 #   {
 #     name             = "lan_to_internet_web"
 #     interface        = "lan"
@@ -175,10 +175,10 @@ output "anti_lockout_rule" {
 #     source_net       = "lannet"
 #     destination_net  = "any"
 #     destination_port = "80,443"
-#     description      = "Autoriser HTTP/HTTPS sortant"
+#     description      = "Allow outbound HTTP/HTTPS"
 #   },
 #
-#   # Autoriser DNS sortant
+#   # Allow outbound DNS
 #   {
 #     name             = "lan_to_internet_dns"
 #     interface        = "lan"
@@ -188,10 +188,10 @@ output "anti_lockout_rule" {
 #     source_net       = "lannet"
 #     destination_net  = "any"
 #     destination_port = "53"
-#     description      = "Autoriser DNS sortant"
+#     description      = "Allow outbound DNS"
 #   },
 #
-#   # Bloquer tout le reste (deny by default)
+#   # Block everything else (deny by default)
 #   {
 #     name        = "lan_block_all"
 #     interface   = "lan"
@@ -202,7 +202,7 @@ output "anti_lockout_rule" {
 #     destination_net = "any"
 #     log         = true
 #     sequence    = 65535
-#     description = "Bloquer tout le reste"
+#     description = "Block everything else"
 #   }
 # ]
 # -----------------------------------------------------------------------------

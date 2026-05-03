@@ -2,10 +2,10 @@
 
 # =============================================================================
 # Claude-Socle Common Library
-# Fonctions partagées entre tous les scripts
+# Functions shared between all scripts
 # =============================================================================
 
-# Version lue depuis le fichier VERSION centralisé
+# Version read from the centralized VERSION file
 _COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _SOCLE_ROOT="$(dirname "$(dirname "$_COMMON_SCRIPT_DIR")")"
 # shellcheck disable=SC2034  # Exported for use by other scripts
@@ -13,10 +13,10 @@ COMMON_LIB_VERSION=$(cat "$_SOCLE_ROOT/VERSION" 2>/dev/null || echo "1.0.0")
 unset _COMMON_SCRIPT_DIR _SOCLE_ROOT
 
 # =============================================================================
-# Couleurs et styles (notation ANSI-C quoting pour compatibilité)
+# Colors and styles (ANSI-C quoting notation for compatibility)
 # =============================================================================
 
-# Désactiver les couleurs si pas de terminal ou si NO_COLOR est défini
+# Disable colors if no terminal or if NO_COLOR is set
 if [[ -t 1 ]] && [[ -z "${NO_COLOR:-}" ]]; then
     RED=$'\033[0;31m'
     GREEN=$'\033[0;32m'
@@ -42,63 +42,63 @@ else
 fi
 
 # =============================================================================
-# Variables globales
+# Global variables
 # =============================================================================
 
-VERBOSE=${VERBOSE:-false}   # Mode verbeux
-QUIET=${QUIET:-false}       # Mode silencieux
-DRY_RUN=${DRY_RUN:-false}   # Mode simulation
+VERBOSE=${VERBOSE:-false}   # Verbose mode
+QUIET=${QUIET:-false}       # Silent mode
+DRY_RUN=${DRY_RUN:-false}   # Simulation mode
 
 # =============================================================================
-# Fonctions de logging
+# Logging functions
 # =============================================================================
 
-# Affiche un message d'information
+# Displays an information message
 # Arguments:
-#   $1 - Message à afficher
-# Sortie: Rien si QUIET=true
+#   $1 - Message to display
+# Output: Nothing if QUIET=true
 info() {
     if ! $QUIET; then
         echo -e "${BLUE}[INFO]${NC} $1"
     fi
 }
 
-# Affiche un message de succès
+# Displays a success message
 # Arguments:
-#   $1 - Message à afficher
-# Sortie: Rien si QUIET=true
+#   $1 - Message to display
+# Output: Nothing if QUIET=true
 success() {
     if ! $QUIET; then
         echo -e "${GREEN}[OK]${NC} $1"
     fi
 }
 
-# Affiche un avertissement (toujours sur stderr)
+# Displays a warning (always to stderr)
 # Arguments:
-#   $1 - Message à afficher
+#   $1 - Message to display
 warning() {
     echo -e "${YELLOW}[!]${NC} $1" >&2
 }
 
-# Affiche une erreur et termine le script
+# Displays an error and terminates the script
 # Arguments:
-#   $1 - Message d'erreur
-# Code de sortie: 1
+#   $1 - Error message
+# Exit code: 1
 error() {
     echo -e "${RED}[X]${NC} $1" >&2
     exit 1
 }
 
-# Affiche une erreur sans terminer le script
+# Displays an error without terminating the script
 # Arguments:
-#   $1 - Message d'erreur
+#   $1 - Error message
 error_no_exit() {
     echo -e "${RED}[X]${NC} $1" >&2
 }
 
-# Affiche un message de debug (seulement si VERBOSE=true)
+# Displays a debug message (only if VERBOSE=true)
 # Arguments:
-#   $1 - Message à afficher
+#   $1 - Message to display
 debug() {
     if $VERBOSE; then
         echo -e "${DIM}[DEBUG]${NC} $1"
@@ -106,16 +106,16 @@ debug() {
     return 0
 }
 
-# Affiche une invite de commande
+# Displays a command prompt
 # Arguments:
-#   $1 - Message à afficher
+#   $1 - Message to display
 prompt() {
     echo -e "${CYAN}[?]${NC} $1"
 }
 
-# Affiche un message de détection automatique
+# Displays an automatic detection message
 # Arguments:
-#   $1 - Message à afficher
+#   $1 - Message to display
 detected() {
     if ! $QUIET; then
         echo -e "${GREEN}[AUTO]${NC} $1"
@@ -123,21 +123,21 @@ detected() {
 }
 
 # =============================================================================
-# Fonctions utilitaires
+# Utility functions
 # =============================================================================
 
-# Vérifie si une commande existe dans le PATH
+# Checks if a command exists in PATH
 # Arguments:
-#   $1 - Nom de la commande
-# Retour: 0 si existe, 1 sinon
+#   $1 - Command name
+# Return: 0 if exists, 1 otherwise
 command_exists() {
     command -v "$1" &> /dev/null
 }
 
-# Vérifie les dépendances requises et échoue si manquantes
+# Checks required dependencies and fails if missing
 # Arguments:
-#   $@ - Liste des commandes requises
-# Code de sortie: 1 si dépendances manquantes
+#   $@ - List of required commands
+# Exit code: 1 if dependencies missing
 check_dependencies() {
     local missing=()
     for cmd in "$@"; do
@@ -147,14 +147,14 @@ check_dependencies() {
     done
 
     if [[ ${#missing[@]} -gt 0 ]]; then
-        error "Dependances manquantes: ${missing[*]}"
+        error "Missing dependencies: ${missing[*]}"
     fi
 }
 
-# Vérifie les dépendances optionnelles (avertissement seulement)
+# Checks optional dependencies (warning only)
 # Arguments:
-#   $@ - Liste des commandes optionnelles
-# Retour: 0 si toutes présentes, 1 sinon
+#   $@ - List of optional commands
+# Return: 0 if all present, 1 otherwise
 check_optional_dependencies() {
     local missing=()
     for cmd in "$@"; do
@@ -164,42 +164,42 @@ check_optional_dependencies() {
     done
 
     if [[ ${#missing[@]} -gt 0 ]]; then
-        warning "Dependances optionnelles manquantes: ${missing[*]}"
+        warning "Missing optional dependencies: ${missing[*]}"
         return 1
     fi
     return 0
 }
 
-# Vérifie les prérequis de base du socle (bash 4+, git)
-# Appelée automatiquement ou manuellement au démarrage
-# Code de sortie: 1 si prérequis non satisfaits
+# Checks the foundation's base requirements (bash 4+, git)
+# Called automatically or manually at startup
+# Exit code: 1 if requirements not met
 check_base_requirements() {
-    # Vérifier la version de Bash (4.0 minimum pour les tableaux associatifs)
+    # Check Bash version (4.0 minimum for associative arrays)
     local bash_version="${BASH_VERSION%%.*}"
     if [[ "$bash_version" -lt 4 ]]; then
-        error "Bash 4.0+ requis (version actuelle: $BASH_VERSION)"
+        error "Bash 4.0+ required (current version: $BASH_VERSION)"
     fi
 
-    # Vérifier que git est installé
+    # Check that git is installed
     if ! command_exists git; then
-        error "git est requis mais n'est pas installe"
+        error "git is required but is not installed"
     fi
 
-    debug "Prerequis de base OK (bash $BASH_VERSION, git $(git --version | cut -d' ' -f3))"
+    debug "Base requirements OK (bash $BASH_VERSION, git $(git --version | cut -d' ' -f3))"
 }
 
-# Retourne le chemin du socle depuis le script appelant
-# Retour: Chemin absolu du répertoire socle
+# Returns the foundation path from the calling script
+# Return: Absolute path of the foundation directory
 get_socle_dir() {
     local script_dir
     script_dir="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
     echo "$(dirname "$script_dir")"
 }
 
-# Convertit un chemin relatif en chemin absolu
+# Converts a relative path to an absolute path
 # Arguments:
-#   $1 - Chemin à convertir
-# Retour: Chemin absolu
+#   $1 - Path to convert
+# Return: Absolute path
 get_absolute_path() {
     local path="$1"
     if [[ -d "$path" ]]; then
@@ -211,33 +211,33 @@ get_absolute_path() {
     fi
 }
 
-# Compte les fichiers correspondant à un pattern
+# Counts files matching a pattern
 # Arguments:
-#   $1 - Répertoire à scanner
-#   $2 - Pattern glob (défaut: *)
-# Retour: Nombre de fichiers
+#   $1 - Directory to scan
+#   $2 - Glob pattern (default: *)
+# Return: Number of files
 count_files() {
     local dir="$1"
     local pattern="${2:-*}"
     find "$dir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | wc -l | tr -d ' '
 }
 
-# Compte les sous-répertoires
+# Counts subdirectories
 # Arguments:
-#   $1 - Répertoire à scanner
-# Retour: Nombre de répertoires
+#   $1 - Directory to scan
+# Return: Number of directories
 count_dirs() {
     local dir="$1"
     find "$dir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' '
 }
 
-# Demande une confirmation à l'utilisateur
+# Asks the user for confirmation
 # Arguments:
-#   $1 - Message de confirmation (défaut: "Continuer?")
-#   $2 - Réponse par défaut: "y" ou "n" (défaut: "n")
-# Retour: 0 si oui, 1 si non
+#   $1 - Confirmation message (default: "Continue?")
+#   $2 - Default answer: "y" or "n" (default: "n")
+# Return: 0 if yes, 1 if no
 confirm() {
-    local message="${1:-Continuer?}"
+    local message="${1:-Continue?}"
     local default="${2:-n}"
 
     if [[ "$default" == "y" ]]; then
@@ -257,13 +257,13 @@ confirm() {
 }
 
 # =============================================================================
-# Fonctions d'exécution (respectent DRY_RUN)
+# Execution functions (respect DRY_RUN)
 # =============================================================================
 
-# Exécute une commande (simulation si DRY_RUN=true)
+# Executes a command (simulation if DRY_RUN=true)
 # Arguments:
-#   $@ - Commande et arguments
-# Retour: Code de sortie de la commande
+#   $@ - Command and arguments
+# Return: Exit code of the command
 run_cmd() {
     if $DRY_RUN; then
         echo -e "${DIM}[DRY-RUN]${NC} $*"
@@ -274,9 +274,9 @@ run_cmd() {
     "$@"
 }
 
-# Copie un fichier (simulation si DRY_RUN=true)
+# Copies a file (simulation if DRY_RUN=true)
 # Arguments:
-#   $1 - Fichier source
+#   $1 - Source file
 #   $2 - Destination
 copy_file() {
     local src="$1"
@@ -290,9 +290,9 @@ copy_file() {
     cp "$src" "$dest"
 }
 
-# Copie un répertoire (simulation si DRY_RUN=true)
+# Copies a directory (simulation if DRY_RUN=true)
 # Arguments:
-#   $1 - Répertoire source
+#   $1 - Source directory
 #   $2 - Destination
 copy_dir() {
     local src="$1"
@@ -306,9 +306,9 @@ copy_dir() {
     cp -r "$src" "$dest"
 }
 
-# Crée un répertoire (simulation si DRY_RUN=true)
+# Creates a directory (simulation if DRY_RUN=true)
 # Arguments:
-#   $1 - Chemin du répertoire
+#   $1 - Directory path
 make_dir() {
     local dir="$1"
 
@@ -321,13 +321,13 @@ make_dir() {
 }
 
 # =============================================================================
-# Fonctions de validation JSON
+# JSON validation functions
 # =============================================================================
 
-# Valide la syntaxe d'un fichier JSON
+# Validates the syntax of a JSON file
 # Arguments:
-#   $1 - Chemin du fichier JSON
-# Retour: 0 si valide, 1 sinon
+#   $1 - JSON file path
+# Return: 0 if valid, 1 otherwise
 validate_json() {
     local file="$1"
 
@@ -356,16 +356,16 @@ validate_json() {
             return 1
         fi
     else
-        # Pas de validateur disponible, on considère valide
+        # No validator available, considered valid
         return 0
     fi
 }
 
-# Extrait une valeur d'un fichier JSON
+# Extracts a value from a JSON file
 # Arguments:
-#   $1 - Chemin du fichier JSON
-#   $2 - Clé jq (ex: ".version" ou ".hooks.PreToolUse")
-# Retour: Valeur extraite ou chaîne vide
+#   $1 - JSON file path
+#   $2 - jq key (e.g., ".version" or ".hooks.PreToolUse")
+# Return: Extracted value or empty string
 json_get() {
     local file="$1"
     local key="$2"
@@ -384,25 +384,25 @@ json_get() {
 }
 
 # =============================================================================
-# Fonctions de validation d'input
+# Input validation functions
 # =============================================================================
 
-# Supprime les caracteres de controle et trim les espaces
+# Removes control characters and trims whitespace
 # Arguments:
-#   $1 - Chaine a nettoyer
-# Retour: Chaine nettoyee (stdout)
+#   $1 - String to clean
+# Return: Cleaned string (stdout)
 sanitize_input() {
     local input="${1:-}"
     # Remove control characters (except newline/tab) and trim whitespace
     printf '%s' "$input" | tr -d '\000-\010\013\014\016-\037' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
-# Valide un input contre un pattern regex ERE
+# Validates an input against an ERE regex pattern
 # Arguments:
-#   $1 - Chaine a valider
-#   $2 - Pattern regex ERE (ex: '^[a-zA-Z0-9_-]+$')
-#   $3 - Nom du champ (pour le message d'erreur, optionnel)
-# Retour: 0 si valide, 1 sinon (message d'erreur sur stderr)
+#   $1 - String to validate
+#   $2 - ERE regex pattern (e.g., '^[a-zA-Z0-9_-]+$')
+#   $3 - Field name (for error message, optional)
+# Return: 0 if valid, 1 otherwise (error message on stderr)
 validate_input() {
     local input="${1:-}"
     local pattern="${2:-}"
@@ -427,13 +427,13 @@ validate_input() {
 }
 
 # =============================================================================
-# Fonctions de versioning
+# Versioning functions
 # =============================================================================
 
-# Retourne la version du socle
+# Returns the foundation version
 # Arguments:
-#   $1 - Chemin du socle (optionnel)
-# Retour: Version ou "unknown"
+#   $1 - Foundation path (optional)
+# Return: Version or "unknown"
 get_socle_version() {
     local socle_dir="${1:-$(get_socle_dir)}"
     local version_file="$socle_dir/VERSION"
@@ -445,11 +445,11 @@ get_socle_version() {
     fi
 }
 
-# Compare deux versions sémantiques
+# Compares two semantic versions
 # Arguments:
 #   $1 - Version 1
 #   $2 - Version 2
-# Retour: 0 si v1 >= v2, 1 sinon
+# Return: 0 if v1 >= v2, 1 otherwise
 version_gte() {
     local v1="$1"
     local v2="$2"
@@ -458,22 +458,22 @@ version_gte() {
 }
 
 # =============================================================================
-# Fonctions d'affichage
+# Display functions
 # =============================================================================
 
-# Affiche une ligne de séparation
+# Displays a separator line
 # Arguments:
-#   $1 - Caractère (défaut: =)
-#   $2 - Largeur (défaut: 60)
+#   $1 - Character (default: =)
+#   $2 - Width (default: 60)
 separator() {
     local char="${1:-=}"
     local width="${2:-60}"
     printf '%*s\n' "$width" '' | tr ' ' "$char"
 }
 
-# Affiche un titre encadré
+# Displays a framed title
 # Arguments:
-#   $1 - Texte du titre
+#   $1 - Title text
 title() {
     local text="$1"
     echo ""
@@ -483,9 +483,9 @@ title() {
     echo ""
 }
 
-# Affiche un en-tête de section
+# Displays a section header
 # Arguments:
-#   $1 - Texte de la section
+#   $1 - Section text
 section() {
     local text="$1"
     echo ""
@@ -494,31 +494,31 @@ section() {
 }
 
 # =============================================================================
-# Statistiques du socle
+# Foundation statistics
 # =============================================================================
 
-# Compte le nombre d'agents (fichiers .md dans commands/ et sous-répertoires)
+# Counts the number of agents (.md files in commands/ and subdirectories)
 # Arguments:
-#   $1 - Chemin du socle (optionnel)
-# Retour: Nombre d'agents
+#   $1 - Foundation path (optional)
+# Return: Number of agents
 count_agents() {
     local socle_dir="${1:-$(get_socle_dir)}"
     find "$socle_dir/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
 }
 
-# Compte le nombre de skills (répertoires dans skills/)
+# Counts the number of skills (directories in skills/)
 # Arguments:
-#   $1 - Chemin du socle (optionnel)
-# Retour: Nombre de skills
+#   $1 - Foundation path (optional)
+# Return: Number of skills
 count_skills() {
     local socle_dir="${1:-$(get_socle_dir)}"
     count_dirs "$socle_dir/.claude/skills"
 }
 
-# Compte le nombre de hooks configurés
+# Counts the number of configured hooks
 # Arguments:
-#   $1 - Chemin du socle (optionnel)
-# Retour: Nombre de hooks (Pre + Post)
+#   $1 - Foundation path (optional)
+# Return: Number of hooks (Pre + Post)
 count_hooks() {
     local socle_dir="${1:-$(get_socle_dir)}"
     local settings_file="$socle_dir/.claude/settings.json"
@@ -533,18 +533,18 @@ count_hooks() {
     fi
 }
 
-# Compte le nombre de templates CLAUDE.*.md
+# Counts the number of CLAUDE.*.md templates
 # Arguments:
-#   $1 - Chemin du socle (optionnel)
-# Retour: Nombre de templates
+#   $1 - Foundation path (optional)
+# Return: Number of templates
 count_templates() {
     local socle_dir="${1:-$(get_socle_dir)}"
     count_files "$socle_dir/templates" "CLAUDE.*.md"
 }
 
-# Affiche les statistiques du socle
+# Displays foundation statistics
 # Arguments:
-#   $1 - Chemin du socle (optionnel)
+#   $1 - Foundation path (optional)
 show_socle_stats() {
     local socle_dir="${1:-$(get_socle_dir)}"
 
@@ -561,20 +561,20 @@ show_socle_stats() {
 }
 
 # =============================================================================
-# Cache persistant (~/.cache/claude-socle/)
+# Persistent cache (~/.cache/claude-socle/)
 # =============================================================================
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/claude-socle"
 CACHE_DEFAULT_TTL=86400  # 24h
 
-# Initialise le répertoire de cache
+# Initializes the cache directory
 cache_init() {
     mkdir -p "$CACHE_DIR" 2>/dev/null || true
 }
 
-# Vérifie si une entrée cache est encore valide
-# Arguments: $1=clé, $2=ttl en secondes (défaut: 86400)
-# Retourne: 0 si valide, 1 sinon
+# Checks if a cache entry is still valid
+# Arguments: $1=key, $2=ttl in seconds (default: 86400)
+# Returns: 0 if valid, 1 otherwise
 cache_valid() {
     local key="$1"
     local ttl="${2:-$CACHE_DEFAULT_TTL}"
@@ -591,9 +591,9 @@ cache_valid() {
     (( now - timestamp < ttl ))
 }
 
-# Lit une valeur du cache
-# Arguments: $1=clé
-# Retourne: contenu du champ .data (stdout), 1 si absent
+# Reads a value from the cache
+# Arguments: $1=key
+# Returns: content of the .data field (stdout), 1 if absent
 cache_read() {
     local key="$1"
     local file="$CACHE_DIR/${key}.json"
@@ -602,8 +602,8 @@ cache_read() {
     json_get "$file" ".data" 2>/dev/null
 }
 
-# Écrit une valeur dans le cache
-# Arguments: $1=clé, $2=données (string)
+# Writes a value to the cache
+# Arguments: $1=key, $2=data (string)
 cache_write() {
     local key="$1"
     local data="$2"
@@ -618,15 +618,15 @@ CACHEEOF
 }
 
 # =============================================================================
-# Nettoyage des dossiers Claude
+# Cleanup of Claude directories
 # =============================================================================
 
-# Supprime les sous-dossiers Claude pour reinstallation propre
-# Arguments: $1=repertoire projet
+# Removes Claude subdirectories for clean reinstallation
+# Arguments: $1=project directory
 clean_claude_dirs() {
     local dir="$1"
 
-    info "Nettoyage des anciens fichiers Claude..."
+    info "Cleaning up old Claude files..."
 
     local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles" "templates")
 
@@ -637,19 +637,19 @@ clean_claude_dirs() {
             else
                 rm -rf "$dir/.claude/$subdir"
             fi
-            debug "Supprimé: .claude/$subdir"
+            debug "Removed: .claude/$subdir"
         fi
     done
 
-    success "Anciens fichiers nettoyés"
+    success "Old files cleaned up"
 }
 
-# Réécrit les chemins docs/ vers .claude/docs/ dans un CLAUDE.md de projet user.
-# Idempotent : appliquer plusieurs fois ne casse pas le résultat.
-# Retire aussi les lignes table pointant vers docs/ARCHITECTURE.md ou docs/WORKFLOWS.md
-# (ces fichiers ne sont plus copiés dans les projets utilisateurs depuis v1.30).
+# Rewrites docs/ paths to .claude/docs/ in a user project's CLAUDE.md.
+# Idempotent: applying multiple times does not break the result.
+# Also removes table lines pointing to docs/ARCHITECTURE.md or docs/WORKFLOWS.md
+# (these files are no longer copied to user projects since v1.30).
 # Arguments:
-#   $1 - Chemin du CLAUDE.md à réécrire
+#   $1 - Path of the CLAUDE.md to rewrite
 rewrite_claude_md_paths() {
     local claude_md="$1"
 
@@ -665,12 +665,12 @@ rewrite_claude_md_paths() {
         "$claude_md"
 }
 
-# Garantit la presence des 7 @imports canoniques dans CLAUDE.md.
-# Idempotent : ajoute uniquement les @imports manquants apres le dernier
-# @import existant. Utilise par new-project.sh et update.sh pour eviter
-# l'asymetrie : les deux scripts produisent le meme CLAUDE.md complet.
+# Ensures the presence of the 7 canonical @imports in CLAUDE.md.
+# Idempotent: only adds missing @imports after the last existing
+# @import. Used by new-project.sh and update.sh to avoid
+# asymmetry: both scripts produce the same complete CLAUDE.md.
 # Arguments:
-#   $1 - Chemin du CLAUDE.md a verifier/completer
+#   $1 - Path of the CLAUDE.md to check/complete
 ensure_claude_md_imports() {
     local claude_md="$1"
 
@@ -698,14 +698,14 @@ ensure_claude_md_imports() {
         return 0
     fi
 
-    # Trouver le dernier @import existant et inserer apres.
-    # `|| true` requis pour la compatibilite avec `set -euo pipefail` :
-    # grep retourne 1 si 0 match, ce qui ferait planter le script appelant.
+    # Find the last existing @import and insert after.
+    # `|| true` required for compatibility with `set -euo pipefail`:
+    # grep returns 1 if 0 matches, which would crash the calling script.
     local last_import_line
     last_import_line=$(grep -n "^@\.claude/docs/reference/" "$claude_md" 2>/dev/null | tail -1 | cut -d: -f1 || true)
 
     if [[ -z "$last_import_line" ]]; then
-        # Aucun @import existant : inserer apres la premiere ligne vide (apres titre)
+        # No existing @import: insert after the first empty line (after title)
         last_import_line=$(grep -n "^$" "$claude_md" 2>/dev/null | head -1 | cut -d: -f1 || true)
         [[ -z "$last_import_line" ]] && last_import_line=1
     fi
@@ -721,27 +721,27 @@ ensure_claude_md_imports() {
 }
 
 # =============================================================================
-# Gestion des erreurs
+# Error handling
 # =============================================================================
 
-# Handler d'erreur global (appelé automatiquement si activé)
+# Global error handler (called automatically if enabled)
 # Arguments:
-#   $1 - Numéro de ligne
-#   $2 - Code d'erreur
+#   $1 - Line number
+#   $2 - Error code
 on_error() {
     local line="$1"
     local code="$2"
-    error_no_exit "Erreur a la ligne $line (code: $code)"
+    error_no_exit "Error at line $line (code: $code)"
 }
 
-# Active le handler d'erreur global
-# À appeler au début du script principal si désiré
+# Enables the global error handler
+# To call at the start of the main script if desired
 enable_error_handler() {
     trap 'on_error ${LINENO} $?' ERR
 }
 
 # =============================================================================
-# Export des fonctions pour les sous-shells
+# Function exports for subshells
 # =============================================================================
 
 export -f info success warning error error_no_exit debug prompt detected

@@ -1,48 +1,48 @@
 # Agent DEV-API-VERSIONING
 
-Mettre en place une strategie de versioning d'API robuste.
+Set up a robust API versioning strategy.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Definir et implementer une strategie de versioning d'API qui permet l'evolution
-tout en maintenant la compatibilite avec les clients existants.
-URL Path versioning recommande pour la plupart des cas.
+Define and implement an API versioning strategy that allows evolution
+while maintaining compatibility with existing clients.
+URL Path versioning recommended for most cases.
 
 ## Workflow
 
-- Choisir la strategie (URL Path, Query Param, Header, Content Negotiation)
-- Structurer le code : couche API versionnee, couche Service non versionnee
-- Identifier les types de changements (additive = safe, breaking = nouvelle version)
-- Implementer le routage par version
-- Definir la timeline de depreciation (Active > Deprecated > Sunset > Off)
-- Ajouter les headers de depreciation (Deprecation, Sunset, Link successor-version)
-- Documenter les breaking changes et le guide de migration
-- Configurer le monitoring par version (requests, clients, erreurs, latence)
+- Choose the strategy (URL Path, Query Param, Header, Content Negotiation)
+- Structure the code: versioned API layer, non-versioned Service layer
+- Identify the types of changes (additive = safe, breaking = new version)
+- Implement routing by version
+- Define the deprecation timeline (Active > Deprecated > Sunset > Off)
+- Add deprecation headers (Deprecation, Sunset, Link successor-version)
+- Document breaking changes and the migration guide
+- Configure monitoring by version (requests, clients, errors, latency)
 
-## Output attendu
+## Expected output
 
-Architecture de versioning, guide de migration, documentation OpenAPI par version,
-timeline de depreciation et monitoring configure.
+Versioning architecture, migration guide, OpenAPI documentation by version,
+deprecation timeline and configured monitoring.
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-api` | Creer des endpoints |
-| `/doc:doc-api-spec` | Documenter l'API |
-| `/doc:doc-changelog` | Changelog des versions |
+| `/dev:dev-api` | Create endpoints |
+| `/doc:doc-api-spec` | Document the API |
+| `/doc:doc-changelog` | Version changelog |
 
 ---
 
-IMPORTANT: Ne jamais supprimer une version sans periode de depreciation.
+IMPORTANT: Never remove a version without a deprecation period.
 
-YOU MUST documenter tous les breaking changes.
+YOU MUST document all breaking changes.
 
-YOU MUST fournir un guide de migration pour chaque nouvelle version majeure.
+YOU MUST provide a migration guide for each new major version.
 
-NEVER faire de breaking changes dans une version mineure.
+NEVER make breaking changes in a minor version.
 
-Think hard sur l'impact des changements avant de creer une nouvelle version.
+Think hard about the impact of changes before creating a new version.

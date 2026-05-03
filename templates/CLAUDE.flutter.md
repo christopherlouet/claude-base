@@ -1,84 +1,84 @@
-# Projet Flutter Mobile
+# Flutter Mobile Project
 
-> Application mobile cross-platform avec Flutter, Supabase backend et support GraphQL.
+> Cross-platform mobile application with Flutter, Supabase backend and GraphQL support.
 
-## Commandes Essentielles
-- `flutter pub get` - Installer les dépendances
-- `flutter run` - Lancer sur device/émulateur connecté
-- `flutter run -d chrome` - Lancer en mode web
-- `flutter test` - Tests unitaires et widget
-- `flutter test --coverage` - Tests avec couverture
-- `flutter analyze` - Analyser le code (lint)
-- `dart fix --apply` - Corriger automatiquement les issues
+## Essential Commands
+- `flutter pub get` - Install dependencies
+- `flutter run` - Launch on connected device/emulator
+- `flutter run -d chrome` - Launch in web mode
+- `flutter test` - Unit and widget tests
+- `flutter test --coverage` - Tests with coverage
+- `flutter analyze` - Analyze code (lint)
+- `dart fix --apply` - Automatically fix issues
 - `flutter build apk` - Build Android APK
-- `flutter build ios` - Build iOS (nécessite macOS)
+- `flutter build ios` - Build iOS (requires macOS)
 - `flutter build web` - Build web
-- `flutter gen-l10n` - Générer les traductions
-- `dart run build_runner build` - Générer le code (freezed, json_serializable)
+- `flutter gen-l10n` - Generate translations
+- `dart run build_runner build` - Generate code (freezed, json_serializable)
 
-## Structure du Projet
+## Project Structure
 
 ```
 lib/
-├── main.dart                 # Point d'entrée
+├── main.dart                 # Entry point
 ├── app.dart                  # MaterialApp configuration
 ├── /core
-│   ├── /constants           # Constantes globales
-│   ├── /errors              # Classes d'erreur personnalisées
-│   ├── /network             # Configuration réseau (Dio, interceptors)
-│   └── /utils               # Fonctions utilitaires
+│   ├── /constants           # Global constants
+│   ├── /errors              # Custom error classes
+│   ├── /network             # Network configuration (Dio, interceptors)
+│   └── /utils               # Utility functions
 ├── /features
 │   └── /[feature_name]
 │       ├── /data
-│       │   ├── /datasources  # Sources de données (API, local)
-│       │   ├── /models       # Modèles de données (JSON serialization)
-│       │   └── /repositories # Implémentation repositories
+│       │   ├── /datasources  # Data sources (API, local)
+│       │   ├── /models       # Data models (JSON serialization)
+│       │   └── /repositories # Repositories implementation
 │       ├── /domain
-│       │   ├── /entities     # Entités métier (immutables)
-│       │   ├── /repositories # Interfaces repositories (abstraites)
-│       │   └── /usecases     # Cas d'utilisation
+│       │   ├── /entities     # Business entities (immutable)
+│       │   ├── /repositories # Repositories interfaces (abstract)
+│       │   └── /usecases     # Use cases
 │       └── /presentation
 │           ├── /bloc         # BLoC/Cubit (state management)
-│           ├── /pages        # Écrans/Pages
-│           └── /widgets      # Widgets spécifiques à la feature
+│           ├── /pages        # Screens/Pages
+│           └── /widgets      # Feature-specific widgets
 ├── /shared
-│   ├── /widgets             # Widgets réutilisables globaux
-│   └── /theme               # Theme, couleurs, typography
-├── /l10n                    # Fichiers de traduction (ARB)
+│   ├── /widgets             # Globally reusable widgets
+│   └── /theme               # Theme, colors, typography
+├── /l10n                    # Translation files (ARB)
 └── /config
-    ├── routes.dart          # Configuration GoRouter
+    ├── routes.dart          # GoRouter configuration
     └── injection.dart       # Dependency injection (get_it)
 
 test/
-├── /unit                    # Tests unitaires
-├── /widget                  # Tests de widgets
-├── /integration             # Tests d'intégration
+├── /unit                    # Unit tests
+├── /widget                  # Widget tests
+├── /integration             # Integration tests
 └── /golden                  # Golden tests (screenshots)
 ```
 
-## Conventions Dart/Flutter
+## Dart/Flutter Conventions
 
-### Nommage
-| Type | Convention | Exemple |
+### Naming
+| Type | Convention | Example |
 |------|------------|---------|
 | Classes/Widgets | PascalCase | `UserProfileCard` |
-| Fichiers | snake_case | `user_profile_card.dart` |
-| Variables/Fonctions | camelCase | `getUserById()` |
-| Constantes | lowerCamelCase ou kPrefix | `maxRetryCount`, `kApiBaseUrl` |
-| Privé | underscore prefix | `_privateMethod()` |
+| Files | snake_case | `user_profile_card.dart` |
+| Variables/Functions | camelCase | `getUserById()` |
+| Constants | lowerCamelCase or kPrefix | `maxRetryCount`, `kApiBaseUrl` |
+| Private | underscore prefix | `_privateMethod()` |
 | Packages | snake_case | `my_awesome_package` |
 
-### Règles Dart
-- IMPORTANT: Null safety obligatoire - éviter `!` sauf cas justifié
-- IMPORTANT: Utiliser `const` constructors partout où possible
-- YOU MUST typer explicitement les génériques (`List<User>` pas `List`)
-- YOU MUST séparer UI, logique et données (Clean Architecture)
-- Préférer `final` à `var` quand la variable n'est pas réassignée
-- Utiliser les records et patterns Dart 3+ quand approprié
+### Dart Rules
+- IMPORTANT: Null safety mandatory - avoid `!` except in justified cases
+- IMPORTANT: Use `const` constructors wherever possible
+- YOU MUST explicitly type generics (`List<User>` not `List`)
+- YOU MUST separate UI, logic and data (Clean Architecture)
+- Prefer `final` over `var` when the variable is not reassigned
+- Use Dart 3+ records and patterns when appropriate
 
 ### Widget Best Practices
 ```dart
-// BIEN: Widget avec const constructor et props typées
+// GOOD: Widget with const constructor and typed props
 class UserCard extends StatelessWidget {
   const UserCard({
     super.key,
@@ -101,11 +101,11 @@ class UserCard extends StatelessWidget {
   }
 }
 
-// MAUVAIS: Pas de const, props mal typées
+// BAD: No const, poorly typed props
 class BadUserCard extends StatelessWidget {
-  BadUserCard(this.user, this.onTap); // Pas de const, pas de key
+  BadUserCard(this.user, this.onTap); // No const, no key
 
-  var user; // Pas typé
+  var user; // Not typed
   var onTap;
   // ...
 }
@@ -113,7 +113,7 @@ class BadUserCard extends StatelessWidget {
 
 ## State Management (BLoC)
 
-### Structure BLoC recommandée
+### Recommended BLoC Structure
 ```dart
 // events/user_event.dart
 sealed class UserEvent {}
@@ -161,7 +161,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 }
 ```
 
-### Usage dans les widgets
+### Usage in Widgets
 ```dart
 class UserProfilePage extends StatelessWidget {
   const UserProfilePage({super.key, required this.userId});
@@ -199,7 +199,7 @@ class UserProfileView extends StatelessWidget {
 }
 ```
 
-## Intégration Supabase
+## Supabase Integration
 
 ### Configuration
 ```dart
@@ -217,11 +217,11 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-// Accès global
+// Global access
 final supabase = Supabase.instance.client;
 ```
 
-### Exemple Repository avec Supabase
+### Repository Example with Supabase
 ```dart
 class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(this._client);
@@ -244,7 +244,7 @@ class UserRepositoryImpl implements UserRepository {
 }
 ```
 
-## Tests Flutter
+## Flutter Tests
 
 ### Widget Test
 ```dart
@@ -330,32 +330,32 @@ void main() {
 ## Git & Commits
 - Format: `type(scope): description`
 - Types: feat, fix, style, refactor, test, chore, perf
-- Scope: feature name ou widget name
-- Exemple: `feat(auth): add Google OAuth login`
+- Scope: feature name or widget name
+- Example: `feat(auth): add Google OAuth login`
 
-## Hooks Claude Code 2.1+
+## Claude Code 2.1+ Hooks
 
 | Hook | Type | Action |
 |------|------|--------|
-| Branch protection | PreToolUse | Bloque les modifications sur main/master |
-| Dart format | PostToolUse | `dart format` sur fichiers modifiés |
-| Flutter analyze | PostToolUse | `flutter analyze` après édition |
-| Test avant commit | PreToolUse | Exécute `flutter test` avant commit |
-| Détection secrets | PreToolUse | Bloque les secrets hardcodés |
+| Branch protection | PreToolUse | Blocks modifications on main/master |
+| Dart format | PostToolUse | `dart format` on modified files |
+| Flutter analyze | PostToolUse | `flutter analyze` after editing |
+| Test before commit | PreToolUse | Runs `flutter test` before commit |
+| Secret detection | PreToolUse | Blocks hardcoded secrets |
 
-## Skills disponibles
+## Available Skills
 
-| Skill | Déclenchement | Usage |
+| Skill | Trigger | Usage |
 |-------|---------------|-------|
-| `exploring-codebase` | "explorer", "comprendre" | Analyser un codebase existant |
-| `planning-implementation` | "planifier", "architecture" | Définir un plan avant de coder |
-| `test-driven-development` | "TDD", "test first" | Cycle Red-Green-Refactor |
-| `reviewing-code` | "review", "vérifier" | Revue de code approfondie |
-| `debugging-issues` | "debug", "bug", "erreur" | Diagnostic méthodique |
+| `exploring-codebase` | "explore", "understand" | Analyze an existing codebase |
+| `planning-implementation` | "plan", "architecture" | Define a plan before coding |
+| `test-driven-development` | "TDD", "test first" | Red-Green-Refactor cycle |
+| `reviewing-code` | "review", "verify" | In-depth code review |
+| `debugging-issues` | "debug", "bug", "error" | Methodical diagnosis |
 | `generating-commit-messages` | "commit", "message" | Conventional Commits |
-| `creating-pull-requests` | "PR", "pull request" | PR complète et documentée |
+| `creating-pull-requests` | "PR", "pull request" | Complete and documented PR |
 
-## Dépendances Recommandées
+## Recommended Dependencies
 
 ```yaml
 # pubspec.yaml
@@ -391,9 +391,9 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 ```
 
-## Gestion des Environnements
+## Environment Management
 
-### Configuration par environnement
+### Per-environment Configuration
 ```dart
 // lib/config/env.dart
 enum Environment { dev, staging, prod }
@@ -415,9 +415,9 @@ class EnvConfig {
 }
 ```
 
-### Lancement par environnement
+### Per-environment Launch
 ```bash
-# Développement
+# Development
 flutter run --dart-define=ENV=dev --dart-define=SUPABASE_ANON_KEY_DEV=xxx
 
 # Staging
@@ -427,7 +427,7 @@ flutter run --dart-define=ENV=staging --dart-define=SUPABASE_ANON_KEY_STAGING=yy
 flutter build apk --dart-define=ENV=prod --dart-define=SUPABASE_ANON_KEY_PROD=zzz
 ```
 
-### Fichiers .env (avec flutter_dotenv)
+### .env Files (with flutter_dotenv)
 ```yaml
 # .env.dev
 SUPABASE_URL=https://xxx.supabase.co
@@ -438,9 +438,9 @@ SUPABASE_URL=https://zzz.supabase.co
 SUPABASE_ANON_KEY=zzz
 ```
 
-## CI/CD Flutter (GitHub Actions)
+## Flutter CI/CD (GitHub Actions)
 
-### Workflow de base
+### Basic Workflow
 ```yaml
 # .github/workflows/flutter-ci.yml
 name: Flutter CI
@@ -515,7 +515,7 @@ jobs:
         run: flutter build ios --release --no-codesign
 ```
 
-### Cache des dépendances
+### Dependency Cache
 ```yaml
 - name: Cache Flutter dependencies
   uses: actions/cache@v3
@@ -530,13 +530,13 @@ jobs:
 
 ### Android - Google Play Store
 
-#### Préparation
+#### Preparation
 ```bash
-# 1. Générer une keystore
+# 1. Generate a keystore
 keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA \
   -keysize 2048 -validity 10000 -alias upload
 
-# 2. Créer key.properties (NE PAS COMMITER)
+# 2. Create key.properties (DO NOT COMMIT)
 # android/key.properties
 storePassword=<password>
 keyPassword=<password>
@@ -544,7 +544,7 @@ keyAlias=upload
 storeFile=/path/to/upload-keystore.jks
 ```
 
-#### Configuration Gradle
+#### Gradle Configuration
 ```groovy
 // android/app/build.gradle
 def keystoreProperties = new Properties()
@@ -570,40 +570,40 @@ android {
 }
 ```
 
-#### Build et upload
+#### Build and Upload
 ```bash
-# Build App Bundle (recommandé pour Play Store)
+# Build App Bundle (recommended for Play Store)
 flutter build appbundle --release
 
-# Upload via fastlane ou manuellement
-# Le fichier est dans build/app/outputs/bundle/release/app-release.aab
+# Upload via fastlane or manually
+# The file is in build/app/outputs/bundle/release/app-release.aab
 ```
 
 ### iOS - App Store
 
-#### Préparation
-1. Compte Apple Developer ($99/an)
-2. Certificat de distribution dans Keychain
-3. Provisioning profile dans Xcode
+#### Preparation
+1. Apple Developer account ($99/year)
+2. Distribution certificate in Keychain
+3. Provisioning profile in Xcode
 
-#### Configuration Xcode
+#### Xcode Configuration
 ```bash
-# Ouvrir dans Xcode
+# Open in Xcode
 open ios/Runner.xcworkspace
 ```
 - Product → Scheme → Edit Scheme → Archive → Build Configuration: Release
-- Signing & Capabilities → Team: Votre équipe
-- Bundle Identifier: com.votrecompany.votreapp
+- Signing & Capabilities → Team: Your team
+- Bundle Identifier: com.yourcompany.yourapp
 
-#### Build et upload
+#### Build and Upload
 ```bash
 # Build IPA
 flutter build ipa --release
 
-# Ou via Xcode: Product → Archive → Distribute App
+# Or via Xcode: Product → Archive → Distribute App
 ```
 
-### Fastlane (automatisation)
+### Fastlane (automation)
 ```ruby
 # ios/fastlane/Fastfile
 default_platform(:ios)
@@ -638,7 +638,7 @@ end
 
 ## Push Notifications
 
-### Configuration Firebase Cloud Messaging (FCM)
+### Firebase Cloud Messaging (FCM) Configuration
 
 #### Installation
 ```yaml
@@ -656,14 +656,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  // Traitement en background
+  // Background handling
 }
 
 class NotificationService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
   Future<void> initialize() async {
-    // Demander permission (iOS)
+    // Request permission (iOS)
     final settings = await _messaging.requestPermission(
       alert: true,
       badge: true,
@@ -671,47 +671,47 @@ class NotificationService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      // Récupérer le token FCM
+      // Retrieve the FCM token
       final token = await _messaging.getToken();
-      // Envoyer au backend pour associer à l'utilisateur
+      // Send to backend to associate with the user
       await _saveTokenToBackend(token);
 
-      // Écouter les changements de token
+      // Listen for token changes
       _messaging.onTokenRefresh.listen(_saveTokenToBackend);
     }
 
-    // Handler background
+    // Background handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    // Handler foreground
+    // Foreground handler
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
-    // Handler quand l'app est ouverte via notification
+    // Handler when the app is opened via notification
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
   }
 
   void _handleForegroundMessage(RemoteMessage message) {
-    // Afficher notification locale ou snackbar
+    // Display local notification or snackbar
   }
 
   void _handleNotificationTap(RemoteMessage message) {
-    // Navigation vers la page appropriée
+    // Navigate to the appropriate page
   }
 
   Future<void> _saveTokenToBackend(String? token) async {
     if (token != null) {
-      // Sauvegarder via Supabase ou API
+      // Save via Supabase or API
     }
   }
 }
 ```
 
-#### Configuration Android
+#### Android Configuration
 ```xml
 <!-- android/app/src/main/AndroidManifest.xml -->
 <manifest>
   <application>
-    <!-- Channel par défaut -->
+    <!-- Default channel -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_channel_id"
       android:value="high_importance_channel" />
@@ -719,7 +719,7 @@ class NotificationService {
 </manifest>
 ```
 
-#### Configuration iOS
+#### iOS Configuration
 ```xml
 <!-- ios/Runner/Info.plist -->
 <key>UIBackgroundModes</key>
@@ -729,7 +729,7 @@ class NotificationService {
 </array>
 ```
 
-### Notifications locales (flutter_local_notifications)
+### Local Notifications (flutter_local_notifications)
 ```dart
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -772,28 +772,28 @@ class LocalNotificationService {
   }
 
   void _onNotificationTap(NotificationResponse response) {
-    // Gérer le tap
+    // Handle the tap
   }
 }
 ```
 
-## Performance et Optimisation
+## Performance and Optimization
 
-### Taille de l'APK
+### APK Size
 ```bash
-# Analyser la taille
+# Analyze size
 flutter build apk --analyze-size
 
-# Build avec split par ABI (réduit ~60%)
+# Build with split per ABI (reduces ~60%)
 flutter build apk --split-per-abi
 
-# Build optimisé
+# Optimized build
 flutter build apk --release --shrink --obfuscate --split-debug-info=./debug-info
 ```
 
-### Optimisation des images
+### Image Optimization
 ```yaml
-# pubspec.yaml - utiliser des assets optimisés
+# pubspec.yaml - use optimized assets
 flutter:
   assets:
     - assets/images/1.5x/
@@ -801,28 +801,28 @@ flutter:
     - assets/images/3.0x/
 ```
 
-### Lazy loading
+### Lazy Loading
 ```dart
-// Charger les modules à la demande
+// Load modules on demand
 final widget = await loadLibrary(() => import('package:heavy_feature/heavy_feature.dart'));
 ```
 
-### Checklist performance
-- [ ] Utiliser `const` constructors partout
-- [ ] Éviter `setState` dans les boucles
-- [ ] Utiliser `ListView.builder` pour les longues listes
-- [ ] Implémenter pagination pour les données
-- [ ] Compresser les images avant upload
-- [ ] Utiliser le cache réseau (cached_network_image)
-- [ ] Profile avec DevTools (flutter pub global run devtools)
+### Performance Checklist
+- [ ] Use `const` constructors everywhere
+- [ ] Avoid `setState` in loops
+- [ ] Use `ListView.builder` for long lists
+- [ ] Implement pagination for data
+- [ ] Compress images before upload
+- [ ] Use network cache (cached_network_image)
+- [ ] Profile with DevTools (flutter pub global run devtools)
 
-## Anti-patterns à éviter
+## Anti-patterns to Avoid
 
-- NEVER mettre de logique métier dans les widgets
-- NEVER utiliser `dynamic` sauf pour JSON parsing
-- NEVER oublier de dispose les controllers/streams
-- NEVER hardcoder les strings (utiliser l10n)
-- NEVER stocker les secrets dans le code (utiliser --dart-define)
-- NEVER ignorer les permissions iOS (Info.plist)
-- Éviter les `!` (null assertion) - préférer le pattern matching
-- Éviter les widgets trop profondément imbriqués (extraire en sous-widgets)
+- NEVER put business logic in widgets
+- NEVER use `dynamic` except for JSON parsing
+- NEVER forget to dispose controllers/streams
+- NEVER hardcode strings (use l10n)
+- NEVER store secrets in code (use --dart-define)
+- NEVER ignore iOS permissions (Info.plist)
+- Avoid `!` (null assertion) - prefer pattern matching
+- Avoid widgets that are too deeply nested (extract into sub-widgets)

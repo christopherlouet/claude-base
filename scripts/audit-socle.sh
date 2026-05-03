@@ -2,9 +2,9 @@
 
 # =============================================================================
 # Claude-Socle Audit Script
-# Valide la sante du socle : frontmatter SKILL.md, liens doc, schemas,
-# coherence entre composants. Complement de validate-counts.sh qui ne
-# verifie que les compteurs.
+# Validates foundation health: SKILL.md frontmatter, doc links, schemas,
+# coherence between components. Complement to validate-counts.sh which
+# only checks counters.
 # =============================================================================
 
 set -euo pipefail
@@ -19,7 +19,7 @@ enable_error_handler
 check_base_requirements
 
 # =============================================================================
-# Aide
+# Help
 # =============================================================================
 
 show_help() {
@@ -30,25 +30,25 @@ ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS]
 
 ${BOLD}DESCRIPTION${NC}
-    Audit complet du socle. Verifie :
-    - Frontmatter des skills (champs requis, syntaxe YAML)
-    - Frontmatter des agents (name, description, tools)
-    - Frontmatter des rules (paths si specifique)
-    - Liens relatifs dans docs/ (fichiers cibles existent)
-    - Coherence nom de dossier vs frontmatter.name
+    Full foundation audit. Checks:
+    - Skills frontmatter (required fields, YAML syntax)
+    - Agents frontmatter (name, description, tools)
+    - Rules frontmatter (paths if specific)
+    - Relative links in docs/ (target files exist)
+    - Coherence between folder name and frontmatter.name
 
 ${BOLD}OPTIONS${NC}
-    -h, --help      Afficher cette aide
-    -v, --verbose   Afficher tous les checks (pas seulement les erreurs)
-    --fix           Tenter de corriger les problemes simples (description manquante, etc.)
+    -h, --help      Show this help
+    -v, --verbose   Show all checks (not just errors)
+    --fix           Try to fix simple issues (missing description, etc.)
 
 ${BOLD}EXIT CODES${NC}
-    0    Aucun probleme trouve
-    1    Problemes detectes (voir output)
+    0    No issue found
+    1    Issues detected (see output)
 
-${BOLD}EXEMPLES${NC}
-    $(basename "$0")              # Audit complet
-    $(basename "$0") --verbose    # Avec tous les checks
+${BOLD}EXAMPLES${NC}
+    $(basename "$0")              # Full audit
+    $(basename "$0") --verbose    # With all checks
 EOF
 }
 
@@ -61,15 +61,15 @@ ISSUES=0
 CHECKED=0
 
 # =============================================================================
-# Parsing arguments
+# Argument parsing
 # =============================================================================
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -h|--help) show_help; exit 0 ;;
         -v|--verbose) VERBOSE=true; shift ;;
-        --fix) echo "${YELLOW}Mode --fix pas encore implemente${NC}"; shift ;;
-        *) echo "${RED}Option inconnue: $1${NC}"; show_help; exit 1 ;;
+        --fix) echo "${YELLOW}--fix mode not yet implemented${NC}"; shift ;;
+        *) echo "${RED}Unknown option: $1${NC}"; show_help; exit 1 ;;
     esac
 done
 
@@ -111,7 +111,7 @@ get_frontmatter_field() {
 # =============================================================================
 
 audit_skills() {
-    echo "${BOLD}[INFO] Audit des skills...${NC}"
+    echo "${BOLD}[INFO] Auditing skills...${NC}"
     local skills_dir="$SOCLE_DIR/.claude/skills"
 
     [[ ! -d "$skills_dir" ]] && return 0
@@ -163,7 +163,7 @@ audit_skills() {
 # =============================================================================
 
 audit_agents() {
-    echo "${BOLD}[INFO] Audit des agents...${NC}"
+    echo "${BOLD}[INFO] Auditing agents...${NC}"
     local agents_dir="$SOCLE_DIR/.claude/agents"
 
     [[ ! -d "$agents_dir" ]] && return 0
@@ -197,7 +197,7 @@ audit_agents() {
 # =============================================================================
 
 audit_rules() {
-    echo "${BOLD}[INFO] Audit des rules...${NC}"
+    echo "${BOLD}[INFO] Auditing rules...${NC}"
     local rules_dir="$SOCLE_DIR/.claude/rules"
 
     [[ ! -d "$rules_dir" ]] && return 0
@@ -232,7 +232,7 @@ audit_rules() {
 # =============================================================================
 
 audit_doc_links() {
-    echo "${BOLD}[INFO] Audit des liens dans docs/...${NC}"
+    echo "${BOLD}[INFO] Auditing links in docs/...${NC}"
     local docs_dir="$SOCLE_DIR/docs"
 
     [[ ! -d "$docs_dir" ]] && return 0
@@ -263,11 +263,11 @@ audit_doc_links() {
 }
 
 # =============================================================================
-# Audit: Counts coherence (delegue a validate-counts.sh)
+# Audit: Counts coherence (delegated to validate-counts.sh)
 # =============================================================================
 
 audit_counts() {
-    echo "${BOLD}[INFO] Audit des compteurs (via validate-counts.sh)...${NC}"
+    echo "${BOLD}[INFO] Auditing counters (via validate-counts.sh)...${NC}"
     if ! bash "$SCRIPT_DIR/validate-counts.sh" > /dev/null 2>&1; then
         # Re-run and capture output for display
         local output
@@ -297,13 +297,13 @@ audit_doc_links
 audit_counts
 
 echo ""
-echo "${BOLD}=== Resultat ===${NC}"
-echo "Checks effectues : $CHECKED"
+echo "${BOLD}=== Result ===${NC}"
+echo "Checks performed: $CHECKED"
 
 if [[ $ISSUES -eq 0 ]]; then
-    echo "${GREEN}[OK]${NC} Aucun probleme detecte"
+    echo "${GREEN}[OK]${NC} No issue detected"
     exit 0
 else
-    echo "${RED}[X]${NC} $ISSUES probleme(s) detecte(s)"
+    echo "${RED}[X]${NC} $ISSUES issue(s) detected"
     exit 1
 fi

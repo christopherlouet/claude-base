@@ -2,8 +2,8 @@
 
 # =============================================================================
 # Claude-Socle Validate Counts Script
-# Verifie que les compteurs (commands, agents, skills, rules) sont coherents
-# entre les fichiers reels et la documentation
+# Verifies that counters (commands, agents, skills, rules) are consistent
+# between actual files and documentation
 # =============================================================================
 
 set -euo pipefail
@@ -18,7 +18,7 @@ enable_error_handler
 check_base_requirements
 
 # =============================================================================
-# Aide
+# Help
 # =============================================================================
 
 show_help() {
@@ -29,18 +29,22 @@ ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS]
 
 ${BOLD}DESCRIPTION${NC}
-    Verifie que les compteurs de commands, agents, skills et rules
-    sont coherents entre les fichiers reels et la documentation.
+    Verifies that counters for commands, agents, skills and rules
+    are consistent between actual files and documentation.
 
 ${BOLD}OPTIONS${NC}
-    -h, --help     Afficher cette aide
-    -v, --verbose  Mode verbeux
-    --fix          Afficher les commandes de correction
+    -h, --help     Show this help
+    -v, --verbose  Verbose mode
+    --fix          Show correction commands
+    --mixed        Temporary bilingual mode (FR/EN coexist during the
+                   FR->EN migration). Layer 2 (global scan_drift) stays
+                   strict, Layer 1 FR-specific patterns tolerate a miss.
 
-${BOLD}EXEMPLES${NC}
+${BOLD}EXAMPLES${NC}
     $(basename "$0")
     $(basename "$0") --verbose
     $(basename "$0") --fix
+    $(basename "$0") --mixed   # during the FR->EN migration
 EOF
 }
 
@@ -50,9 +54,10 @@ EOF
 
 ERRORS=0
 SHOW_FIX=false
+MIXED=false
 
 # =============================================================================
-# Parsing arguments
+# Argument parsing
 # =============================================================================
 
 while [[ $# -gt 0 ]]; do
@@ -69,8 +74,12 @@ while [[ $# -gt 0 ]]; do
             SHOW_FIX=true
             shift
             ;;
+        --mixed)
+            MIXED=true
+            shift
+            ;;
         *)
-            error "Option inconnue: $1"
+            error "Unknown option: $1"
             ;;
     esac
 done
@@ -79,7 +88,12 @@ done
 # Count actual files
 # =============================================================================
 
-info "Comptage des fichiers reels..."
+if $MIXED; then
+    info "Mode --mixed active (FR->EN migration in progress)"
+    echo ""
+fi
+
+info "Counting actual files..."
 echo ""
 
 # Count commands (md files in commands/ subdirectories, exclude README.md index files)
@@ -118,7 +132,7 @@ check_count() {
     local rel_path="${file#"$SOCLE_DIR"/}"
 
     if [[ ! -f "$file" ]]; then
-        debug "Fichier non trouve: $rel_path"
+        debug "File not found: $rel_path"
         return
     fi
 
@@ -126,7 +140,7 @@ check_count() {
     found=$(grep -oP "$pattern" "$file" 2>/dev/null | head -1 || echo "")
 
     if [[ -z "$found" ]]; then
-        debug "$rel_path: pattern non trouve pour $label"
+        debug "$rel_path: pattern not found for $label"
         return
     fi
 
@@ -134,7 +148,7 @@ check_count() {
     count=$(echo "$found" | grep -oP '[0-9]+' | head -1)
 
     if [[ "$count" != "$expected" ]]; then
-        error_no_exit "$rel_path: $label = $count (attendu: $expected)"
+        error_no_exit "$rel_path: $label = $count (expected: $expected)"
         ERRORS=$((ERRORS + 1))
     else
         if $VERBOSE; then
@@ -143,7 +157,7 @@ check_count() {
     fi
 }
 
-info "Verification de la documentation..."
+info "Checking documentation..."
 echo ""
 
 # --- CLAUDE.md ---
@@ -213,17 +227,17 @@ check_count "$SOCLE_DIR/website/docusaurus.config.ts" \
 echo ""
 
 # =============================================================================
-# Layer 2 : Scan anti-drift global (catch any stale total-counter)
+# Layer 2 : Global anti-drift scan (catch any stale total-counter)
 # =============================================================================
-# Detecte tout chiffre qui apparait dans un contexte "compteur total" mais qui
-# ne correspond pas au canonique. Patterns ciblés (faible faux-positif) :
-#   - `Label (N)`     : ex. `Skills (47)`, `Agents (63)`, `WORK (12)`
-#   - `(N) Label`     : ex. `(54) skills disponibles`
-#   - `**N Label**`   : ex. `**54 skills**`
-#   - `'N Label'`     : ex. `'131 Commands'` dans composants TS/TSX
-# Exclusions : CHANGELOG (historique), node_modules, build, .docusaurus, memory.
+# Detects any number that appears in a "total counter" context but does not
+# match the canonical value. Targeted patterns (low false-positive) :
+#   - `Label (N)`     : e.g. `Skills (47)`, `Agents (63)`, `WORK (12)`
+#   - `(N) Label`     : e.g. `(54) skills available`
+#   - `**N Label**`   : e.g. `**54 skills**`
+#   - `'N Label'`     : e.g. `'131 Commands'` in TS/TSX components
+# Exclusions : CHANGELOG (history), node_modules, build, .docusaurus, memory.
 
-info "Scan anti-drift global..."
+info "Global anti-drift scan..."
 echo ""
 
 DRIFT_ERRORS=0
@@ -233,23 +247,23 @@ scan_drift() {
     local label_plural="$2"     # "skills"
     local actual="$3"           # 54
 
-    # Patterns CIBLES = uniquement des contextes qui parlent du TOTAL.
-    # On evite "15 work commands" (subset par domaine), "22 Haiku agents" (par modele), etc.
-    # Cas catalogues comme "TOTAL" :
-    #   1. `Label disponibles (N)`             -- ex. `Skills disponibles (54)` (French canonical header)
-    #   2. `## Label (N)` / `### Label (N)`    -- heading markdown, ex. `## Skills (54)`
+    # TARGETED patterns = only contexts that talk about the TOTAL.
+    # We avoid "15 work commands" (subset by domain), "22 Haiku agents" (by model), etc.
+    # Cataloged "TOTAL" cases :
+    #   1. `Label disponibles (N)`             -- e.g. `Skills disponibles (54)` (French canonical header)
+    #   2. `## Label (N)` / `### Label (N)`    -- markdown heading, e.g. `## Skills (54)`
     #   3. `'N Label'` / `'N Sub-Agents'`      -- string literal in TS/TSX components
     #   4. `\*\*Label\*\* \| N \|`             -- table row with bold label cell
     #   5. `# Label (N)`                        -- top heading
-    # Le label peut etre singulier (Skill) ou pluriel (Skills), Capitalize ou ALLCAPS.
-    # La forme `Sub-Agents` est acceptee pour agent.
+    # The label can be singular (Skill) or plural (Skills), Capitalized or ALLCAPS.
+    # The form `Sub-Agents` is accepted for agent.
     local label_cap_singular label_cap_plural alt_form
     label_cap_singular="$(echo "${label_singular:0:1}" | tr '[:lower:]' '[:upper:]')${label_singular:1}"
     label_cap_plural="$(echo "${label_plural:0:1}" | tr '[:lower:]' '[:upper:]')${label_plural:1}"
     alt_form=""
     [[ "$label_singular" == "agent" ]] && alt_form="|Sub-Agents?|sub-agents?"
 
-    # Construire la regex unifiee
+    # Build the unified regex
     local lab="(${label_cap_singular}|${label_cap_plural}${alt_form})"
     local pattern_re="(${lab}\s+disponibles?\s+\(([0-9]+)\)|^#{1,4}\s+${lab}\s+\(([0-9]+)\)|'([0-9]+)\s+${lab}'|\|\s*\*\*${lab}\*\*\s*\|\s*([0-9]+)\s*\||^#{1,4}\s+([0-9]+)\s+${lab}\b)"
 
@@ -260,10 +274,10 @@ scan_drift() {
         local line_num="${rest%%:*}"
         local content="${rest#*:}"
 
-        # Skip le scanner lui-meme
+        # Skip the scanner itself
         [[ "$file_part" == *"validate-counts.sh"* ]] && continue
 
-        # Extraire le ou les chiffres dans le contexte total
+        # Extract the number(s) in the total context
         local nums
         nums=$(echo "$content" | grep -oiE "${pattern_re}" | grep -oE '[0-9]+' | sort -u)
 
@@ -271,7 +285,7 @@ scan_drift() {
             [[ "$n" -le 5 ]] && continue
             if [[ "$n" != "$actual" ]]; then
                 local rel="${file_part#"$SOCLE_DIR"/}"
-                error_no_exit "${rel}:${line_num} drift → $n ${label_plural} (canonique: $actual)"
+                error_no_exit "${rel}:${line_num} drift -> $n ${label_plural} (canonical: $actual)"
                 DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
             fi
         done
@@ -292,14 +306,14 @@ scan_drift "skill" "skills" "$ACTUAL_SKILLS"
 scan_drift "rule" "rules" "$ACTUAL_RULES"
 
 # -----------------------------------------------------------------------------
-# Scan drift dedie aux compteurs de tests (patterns specifiques README badge
-# shields.io + section "Test layout")
+# Dedicated drift scan for test counters (specific patterns: README shields.io
+# badge + "Test layout" section)
 # -----------------------------------------------------------------------------
 scan_tests_drift() {
     local actual_tests="$1"
     local actual_files="$2"
 
-    # Pattern 1 : badge shields.io `tests-N+passing` ou `tests-N%20passing`
+    # Pattern 1 : shields.io badge `tests-N+passing` or `tests-N%20passing`
     while IFS= read -r match; do
         [[ -z "$match" ]] && continue
         local file_part="${match%%:*}"
@@ -311,7 +325,7 @@ scan_tests_drift() {
         n=$(echo "$content" | grep -oiE 'tests-[0-9]+' | grep -oE '[0-9]+' | head -1)
         if [[ -n "$n" ]] && [[ "$n" != "$actual_tests" ]]; then
             local rel="${file_part#"$SOCLE_DIR"/}"
-            error_no_exit "${rel}:${line_num} drift → tests-$n badge (canonique: $actual_tests)"
+            error_no_exit "${rel}:${line_num} drift -> tests-$n badge (canonical: $actual_tests)"
             DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
         fi
     done < <(
@@ -324,7 +338,7 @@ scan_tests_drift() {
             "$SOCLE_DIR" 2>/dev/null
     )
 
-    # Pattern 2 : `(N files, M tests)` capture les deux compteurs
+    # Pattern 2 : `(N files, M tests)` captures both counters
     while IFS= read -r match; do
         [[ -z "$match" ]] && continue
         local file_part="${match%%:*}"
@@ -337,11 +351,11 @@ scan_tests_drift() {
         nt=$(echo "$content" | grep -oE '[0-9]+ tests\)' | grep -oE '[0-9]+' | head -1)
         rel="${file_part#"$SOCLE_DIR"/}"
         if [[ -n "$nf" ]] && [[ "$nf" != "$actual_files" ]]; then
-            error_no_exit "${rel}:${line_num} drift → $nf test files (canonique: $actual_files)"
+            error_no_exit "${rel}:${line_num} drift -> $nf test files (canonical: $actual_files)"
             DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
         fi
         if [[ -n "$nt" ]] && [[ "$nt" != "$actual_tests" ]]; then
-            error_no_exit "${rel}:${line_num} drift → $nt tests (canonique: $actual_tests)"
+            error_no_exit "${rel}:${line_num} drift -> $nt tests (canonical: $actual_tests)"
             DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
         fi
     done < <(
@@ -358,9 +372,9 @@ scan_tests_drift() {
 scan_tests_drift "$ACTUAL_TESTS" "$ACTUAL_TEST_FILES"
 
 if [[ "$DRIFT_ERRORS" -eq 0 ]]; then
-    success "Aucun drift detecte (scan global)"
+    success "No drift detected (global scan)"
 else
-    error_no_exit "$DRIFT_ERRORS drift(s) detecte(s) (scan global)"
+    error_no_exit "$DRIFT_ERRORS drift(s) detected (global scan)"
     ERRORS=$((ERRORS + DRIFT_ERRORS))
 fi
 
@@ -371,14 +385,14 @@ echo ""
 # =============================================================================
 
 if [[ "$ERRORS" -eq 0 ]]; then
-    success "Tous les compteurs sont coherents"
+    success "All counters are consistent"
     exit 0
 else
-    error_no_exit "$ERRORS incohérence(s) trouvée(s)"
+    error_no_exit "$ERRORS inconsistency(ies) found"
     if $SHOW_FIX; then
         echo ""
-        info "Pour corriger automatiquement, mettez a jour les fichiers ci-dessus"
-        info "ou relancez les scripts de generation:"
+        info "To fix automatically, update the files above"
+        info "or re-run the generation scripts:"
         echo "  cd $SOCLE_DIR/website && npm run generate:all"
     fi
     exit 1

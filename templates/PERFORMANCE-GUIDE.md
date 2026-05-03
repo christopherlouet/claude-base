@@ -1,231 +1,231 @@
-# Guide de Performance Claude Code
+# Claude Code Performance Guide
 
-Optimisez l'utilisation de Claude Code pour des réponses plus rapides et une consommation de tokens réduite.
+Optimize Claude Code usage for faster responses and reduced token consumption.
 
-## Principes fondamentaux
+## Core principles
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│              OPTIMISATION PERFORMANCE                        │
+│              PERFORMANCE OPTIMIZATION                        │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  1. CONTEXTE MINIMAL    → Moins de tokens = plus rapide    │
+│  1. MINIMAL CONTEXT     → Fewer tokens = faster            │
 │  ═══════════════════                                        │
 │                                                             │
-│  2. AGENTS CIBLÉS       → Prompts optimisés = meilleurs    │
-│  ════════════════           résultats                       │
+│  2. TARGETED AGENTS     → Optimized prompts = better       │
+│  ════════════════           results                         │
 │                                                             │
-│  3. REQUÊTES PRÉCISES   → Moins d'allers-retours           │
+│  3. PRECISE REQUESTS    → Fewer back-and-forths            │
 │  ═════════════════                                          │
 │                                                             │
-│  4. FICHIERS SPÉCIFIQUES→ Éviter les lectures globales     │
+│  4. SPECIFIC FILES      → Avoid global reads               │
 │  ════════════════════                                       │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Optimisation du contexte
+## Context optimization
 
-### Ce qui consomme des tokens
+### What consumes tokens
 
-| Élément | Impact | Optimisation |
+| Element | Impact | Optimization |
 |---------|--------|--------------|
-| Fichiers lus | Très élevé | Limiter aux fichiers nécessaires |
-| Historique conversation | Élevé | Nouvelles sessions pour nouvelles tâches |
-| Instructions agent | Moyen | Agents bien structurés |
-| Arguments | Faible | Être concis mais précis |
+| Files read | Very high | Limit to necessary files |
+| Conversation history | High | New sessions for new tasks |
+| Agent instructions | Medium | Well-structured agents |
+| Arguments | Low | Be concise but precise |
 
-### Bonnes pratiques
+### Best practices
 
-#### Spécifier les fichiers
+#### Specify files
 
 ```bash
-# ❌ Éviter - lit potentiellement tout
+# ❌ Avoid - potentially reads everything
 /explore
 
-# ✅ Préférer - cible les fichiers pertinents
+# ✅ Prefer - targets relevant files
 /explore src/services/auth.ts
 ```
 
-#### Utiliser des chemins précis
+#### Use precise paths
 
 ```bash
-# ❌ Trop large
+# ❌ Too broad
 /review src/
 
-# ✅ Plus ciblé
+# ✅ More targeted
 /review src/services/user-service.ts
 ```
 
-#### Décomposer les tâches complexes
+#### Break down complex tasks
 
 ```bash
-# ❌ Une seule requête massive
-"Analyse tout le projet, trouve les bugs, refactorise et optimise"
+# ❌ A single massive request
+"Analyze the whole project, find the bugs, refactor and optimize"
 
-# ✅ Plusieurs requêtes ciblées
+# ✅ Several targeted requests
 /explore src/services/
 /review src/services/user-service.ts
 /refactor UserService
 ```
 
-## Choix de l'agent optimal
+## Choosing the optimal agent
 
-### Matrice de sélection
+### Selection matrix
 
-| Tâche | Agent optimal | Pourquoi |
-|-------|---------------|----------|
-| Comprendre du code | `/explore` | Optimisé pour l'analyse |
-| Bug à corriger | `/debug` | Workflow de débogage |
-| Nouveau code | `/tdd` | Structure TDD |
-| Review de PR | `/review` | Checklist qualité |
-| Commit | `/commit` | Format conventionnel |
+| Task | Optimal agent | Why |
+|------|---------------|-----|
+| Understand code | `/explore` | Optimized for analysis |
+| Bug to fix | `/debug` | Debugging workflow |
+| New code | `/tdd` | TDD structure |
+| PR review | `/review` | Quality checklist |
+| Commit | `/commit` | Conventional format |
 
-### Éviter les agents génériques
+### Avoid generic agents
 
 ```bash
-# ❌ Agent non spécialisé
-"Peux-tu regarder ce code et me dire s'il y a des problèmes de sécurité ?"
+# ❌ Non-specialized agent
+"Can you look at this code and tell me if there are any security issues?"
 
-# ✅ Agent spécialisé
+# ✅ Specialized agent
 /security src/api/
 ```
 
-## Réduire les allers-retours
+## Reduce back-and-forths
 
-### Fournir le contexte en une fois
+### Provide context all at once
 
 ```bash
-# ❌ Conversation fragmentée
-User: "Regarde AuthService"
-Claude: [analyse]
-User: "Et aussi UserService"
-Claude: [analyse]
-User: "Compare les deux"
+# ❌ Fragmented conversation
+User: "Look at AuthService"
+Claude: [analysis]
+User: "And also UserService"
+Claude: [analysis]
+User: "Compare the two"
 
-# ✅ Contexte complet
-/review "Compare AuthService et UserService, identifie les duplications"
+# ✅ Complete context
+/review "Compare AuthService and UserService, identify duplications"
 ```
 
-### Utiliser des arguments structurés
+### Use structured arguments
 
 ```bash
-# ✅ Arguments clairs et complets
+# ✅ Clear and complete arguments
 /api POST /api/users {name: string, email: string} -> {id: string, created: Date}
 ```
 
-## Optimisation des agents
+## Agent optimization
 
-### Structure d'agent performante
+### High-performance agent structure
 
 ```markdown
-# Agent PERFORMANT
+# HIGH-PERFORMANCE Agent
 
-Description concise.
+Concise description.
 
-## Contexte
+## Context
 $ARGUMENTS
 
 ## Instructions
 
-1. [Étape 1]
-2. [Étape 2]
-3. [Étape 3]
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
 
 ## Output
 
-[Format précis et concis]
+[Precise and concise format]
 ```
 
-### Éviter dans les agents
+### Avoid in agents
 
 | Anti-pattern | Impact | Alternative |
 |--------------|--------|-------------|
-| Longs exemples | Tokens gaspillés | Exemples courts et pertinents |
-| Instructions répétitives | Confusion | Instructions uniques et claires |
-| Options multiples | Décisions lentes | Recommandation par défaut |
+| Long examples | Wasted tokens | Short, relevant examples |
+| Repetitive instructions | Confusion | Unique, clear instructions |
+| Multiple options | Slow decisions | Default recommendation |
 
-## Métriques et monitoring
+## Metrics and monitoring
 
-### Indicateurs de performance
+### Performance indicators
 
-| Métrique | Optimal | Action si dépassé |
-|----------|---------|-------------------|
-| Temps de réponse | < 30s | Réduire le contexte |
-| Tokens par requête | < 10k | Cibler les fichiers |
-| Allers-retours | < 3 | Compléter le contexte initial |
+| Metric | Optimal | Action if exceeded |
+|--------|---------|--------------------|
+| Response time | < 30s | Reduce context |
+| Tokens per request | < 10k | Target files |
+| Back-and-forths | < 3 | Complete the initial context |
 
-### Estimation de consommation
+### Consumption estimation
 
 ```
-Tokens ≈ (Fichiers lus × ~100-500 lignes × 4 tokens/ligne)
-        + (Instructions agent × 4 tokens/mot)
-        + (Arguments × 4 tokens/mot)
+Tokens ≈ (Files read × ~100-500 lines × 4 tokens/line)
+        + (Agent instructions × 4 tokens/word)
+        + (Arguments × 4 tokens/word)
 ```
 
-## Patterns performants
+## High-performance patterns
 
-### Pattern "Scout then Act"
+### "Scout then Act" pattern
 
 ```bash
-# 1. Scout (rapide, peu de tokens)
+# 1. Scout (fast, few tokens)
 /explore src/auth/ --quick
 
-# 2. Identifier les fichiers clés
+# 2. Identify the key files
 # -> src/auth/service.ts, src/auth/middleware.ts
 
-# 3. Act (ciblé)
+# 3. Act (targeted)
 /review src/auth/service.ts src/auth/middleware.ts
 ```
 
-### Pattern "Divide and Conquer"
+### "Divide and Conquer" pattern
 
 ```bash
-# Diviser une grosse tâche
-/plan "Refactoring module auth"
-# -> Liste des sous-tâches
+# Divide a big task
+/plan "Refactoring auth module"
+# -> List of subtasks
 
-# Exécuter chaque sous-tâche séparément
+# Run each subtask separately
 /refactor src/auth/login.ts
 /refactor src/auth/session.ts
 /refactor src/auth/token.ts
 ```
 
-### Pattern "Progressive Detail"
+### "Progressive Detail" pattern
 
 ```bash
-# 1. Vue d'ensemble
+# 1. Overview
 /onboard --quick
 
-# 2. Zoom sur un module
+# 2. Zoom in on a module
 /explore src/services/
 
-# 3. Détail d'un fichier
+# 3. Detail of a file
 /explain src/services/complex-algorithm.ts
 ```
 
-## Configuration recommandée
+## Recommended configuration
 
-### CLAUDE.md optimisé
+### Optimized CLAUDE.md
 
 ```markdown
-## Conventions essentielles
+## Essential conventions
 
 - TypeScript strict
 - Tests > 80%
 - Conventional commits
 
 ## Structure
-/src - Code source
+/src - Source code
 /tests - Tests
 /docs - Documentation
 
-<!-- Éviter les instructions trop longues -->
+<!-- Avoid overly long instructions -->
 ```
 
-### Exclusions recommandées
+### Recommended exclusions
 
-Dans `.gitignore` ou instructions :
+In `.gitignore` or instructions:
 ```
 node_modules/
 dist/
@@ -235,61 +235,61 @@ coverage/
 .env*
 ```
 
-## Comparatif avant/après
+## Before/after comparison
 
-### Exemple : Review de code
+### Example: Code review
 
-**Avant (non optimisé)**
+**Before (unoptimized)**
 ```
-Temps: ~2 min
+Time: ~2 min
 Tokens: ~50k
-"Peux-tu faire une review complète de tout le code du projet ?"
+"Can you do a complete review of all the project's code?"
 ```
 
-**Après (optimisé)**
+**After (optimized)**
 ```
-Temps: ~20s
+Time: ~20s
 Tokens: ~8k
 /review src/services/auth-service.ts
 ```
 
-### Exemple : Debug
+### Example: Debug
 
-**Avant (non optimisé)**
+**Before (unoptimized)**
 ```
-Temps: ~3 min
+Time: ~3 min
 Tokens: ~80k
-"Il y a un bug quelque part dans l'application, peux-tu le trouver ?"
+"There's a bug somewhere in the application, can you find it?"
 ```
 
-**Après (optimisé)**
+**After (optimized)**
 ```
-Temps: ~30s
+Time: ~30s
 Tokens: ~10k
 /debug "Error: Token invalid" src/auth/
 ```
 
-## Checklist d'optimisation
+## Optimization checklist
 
-### Avant chaque requête
-- [ ] Ai-je identifié les fichiers pertinents ?
-- [ ] L'agent choisi est-il le plus adapté ?
-- [ ] Le contexte fourni est-il suffisant et pas excessif ?
+### Before each request
+- [ ] Have I identified the relevant files?
+- [ ] Is the chosen agent the most suitable?
+- [ ] Is the provided context sufficient and not excessive?
 
-### Design d'agent
-- [ ] Les instructions sont-elles concises ?
-- [ ] Y a-t-il des répétitions à éliminer ?
-- [ ] Les exemples sont-ils minimaux mais clairs ?
+### Agent design
+- [ ] Are the instructions concise?
+- [ ] Are there any repetitions to eliminate?
+- [ ] Are the examples minimal but clear?
 
 ### Workflow
-- [ ] Les tâches complexes sont-elles découpées ?
-- [ ] Chaque sous-tâche est-elle autonome ?
-- [ ] Le pattern scout-then-act est-il applicable ?
+- [ ] Are complex tasks broken down?
+- [ ] Is each subtask autonomous?
+- [ ] Is the scout-then-act pattern applicable?
 
 ---
 
-## Ressources
+## Resources
 
-- [FAQ](./FAQ.md) - Questions fréquentes
-- [Troubleshooting](./TROUBLESHOOTING.md) - Résolution de problèmes
-- [Architecture](./ARCHITECTURE.md) - Structure du projet
+- [FAQ](./FAQ.md) - Frequently asked questions
+- [Troubleshooting](./TROUBLESHOOTING.md) - Problem resolution
+- [Architecture](./ARCHITECTURE.md) - Project structure

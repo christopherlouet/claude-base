@@ -6,6 +6,8 @@ labels: ["bug", "triage"]
 assignees: []
 ---
 
+> Please write this issue in **English**. See [CONTRIBUTING.md](../../CONTRIBUTING.md#language-policy).
+
 ## Description
 
 A clear and concise description of the bug.

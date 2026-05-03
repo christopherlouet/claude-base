@@ -1,6 +1,6 @@
 ---
 name: ops-infra-code
-description: Infrastructure as Code avec Terraform/OpenTofu. Declencher pour creer modules, configurer backends, ecrire HCL idiomatique, ou auditer infrastructure.
+description: Infrastructure as Code with Terraform/OpenTofu. Trigger to create modules, configure backends, write idiomatic HCL, or audit infrastructure.
 allowed-tools:
   - Read
   - Write
@@ -14,98 +14,98 @@ argument-hint: "[module-name]"
 
 # Infrastructure as Code (Terraform / OpenTofu)
 
-Guide complet pour Terraform et OpenTofu couvrant modules, tests, CI/CD et patterns de production.
-Base sur [terraform-best-practices.com](https://terraform-best-practices.com) et l'experience enterprise d'Anton Babenko.
+Complete guide for Terraform and OpenTofu covering modules, tests, CI/CD and production patterns.
+Based on [terraform-best-practices.com](https://terraform-best-practices.com) and Anton Babenko's enterprise experience.
 
-## Quand utiliser ce Skill
+## When to use this Skill
 
-**Activer ce skill pour :**
-- Creer des configurations ou modules Terraform/OpenTofu
-- Mettre en place l'infrastructure de tests pour IaC
-- Choisir entre les approches de test (validate, plan, frameworks)
-- Structurer des deploiements multi-environnements
-- Implementer CI/CD pour l'infrastructure-as-code
-- Revoir ou refactorer des projets Terraform/OpenTofu existants
+**Activate this skill to:**
+- Create Terraform/OpenTofu configurations or modules
+- Set up the test infrastructure for IaC
+- Choose between testing approaches (validate, plan, frameworks)
+- Structure multi-environment deployments
+- Implement CI/CD for infrastructure-as-code
+- Review or refactor existing Terraform/OpenTofu projects
 
-**Ne pas utiliser pour :**
-- Questions de syntaxe basiques (Claude connait deja)
-- Reference API specifique aux providers (utiliser la doc)
-- Questions cloud non liees a Terraform/OpenTofu
+**Do not use for:**
+- Basic syntax questions (Claude already knows)
+- Provider-specific API reference (use the documentation)
+- Cloud questions unrelated to Terraform/OpenTofu
 
-## Principes Fondamentaux
+## Core Principles
 
-### 1. Hierarchie des Modules
+### 1. Module Hierarchy
 
-| Type | Quand utiliser | Portee |
-|------|----------------|--------|
-| **Resource Module** | Groupe logique de ressources connectees | VPC + subnets, Security group + rules |
-| **Infrastructure Module** | Collection de resource modules | Plusieurs modules dans une region/compte |
-| **Composition** | Infrastructure complete | Couvre plusieurs regions/comptes |
+| Type | When to use | Scope |
+|------|-------------|-------|
+| **Resource Module** | Logical group of connected resources | VPC + subnets, Security group + rules |
+| **Infrastructure Module** | Collection of resource modules | Several modules in a region/account |
+| **Composition** | Complete infrastructure | Spans multiple regions/accounts |
 
-**Hierarchie :** Resource -> Resource Module -> Infrastructure Module -> Composition
+**Hierarchy:** Resource -> Resource Module -> Infrastructure Module -> Composition
 
-### 2. Structure de Repertoire
+### 2. Directory Structure
 
 ```
-environments/        # Configurations par environnement
+environments/        # Configurations per environment
 ├── prod/
 ├── staging/
 └── dev/
 
-modules/            # Modules reutilisables
+modules/            # Reusable modules
 ├── networking/
 ├── compute/
 └── data/
 
-examples/           # Exemples d'utilisation (servent aussi de tests)
+examples/           # Usage examples (also serve as tests)
 ├── complete/
 └── minimal/
 ```
 
-### 3. Conventions de Nommage
+### 3. Naming Conventions
 
-**Ressources :**
+**Resources:**
 ```hcl
-# Bon : Descriptif et contextuel
+# Good: Descriptive and contextual
 resource "aws_instance" "web_server" { }
 resource "aws_s3_bucket" "application_logs" { }
 
-# Bon : "this" pour ressources singleton (une seule de ce type)
+# Good: "this" for singleton resources (only one of this type)
 resource "aws_vpc" "this" { }
 resource "aws_security_group" "this" { }
 
-# Eviter : Noms generiques pour non-singletons
+# Avoid: Generic names for non-singletons
 resource "aws_instance" "main" { }
 ```
 
-**Variables :**
+**Variables:**
 ```hcl
-# Prefixer avec le contexte
-var.vpc_cidr_block          # Pas juste "cidr"
-var.database_instance_class # Pas juste "instance_class"
+# Prefix with context
+var.vpc_cidr_block          # Not just "cidr"
+var.database_instance_class # Not just "instance_class"
 ```
 
-**Fichiers :**
-- `main.tf` - Ressources principales
-- `variables.tf` - Variables d'entree
-- `outputs.tf` - Valeurs de sortie
-- `versions.tf` - Versions des providers
+**Files:**
+- `main.tf` - Main resources
+- `variables.tf` - Input variables
+- `outputs.tf` - Output values
+- `versions.tf` - Provider versions
 
-## Ordre des Blocs
+## Block Order
 
-### Bloc Resource
+### Resource Block
 
-**Ordre strict pour la coherence :**
-1. `count` ou `for_each` EN PREMIER (ligne vide apres)
-2. Autres arguments
-3. `tags` comme dernier argument reel
-4. `depends_on` apres tags (si necessaire)
-5. `lifecycle` a la toute fin (si necessaire)
+**Strict order for consistency:**
+1. `count` or `for_each` FIRST (blank line after)
+2. Other arguments
+3. `tags` as the last real argument
+4. `depends_on` after tags (if necessary)
+5. `lifecycle` at the very end (if necessary)
 
 ```hcl
-# BON - Ordre correct
+# GOOD - Correct order
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
 
   allocation_id = aws_eip.this[0].id
   subnet_id     = aws_subnet.public[0].id
@@ -122,23 +122,23 @@ resource "aws_nat_gateway" "this" {
 }
 ```
 
-### Bloc Variable
+### Variable Block
 
-1. `description` (TOUJOURS requis)
+1. `description` (ALWAYS required)
 2. `type`
 3. `default`
 4. `validation`
-5. `nullable` (quand false)
+5. `nullable` (when false)
 
 ```hcl
 variable "environment" {
-  description = "Nom de l'environnement pour le tagging"
+  description = "Environment name for tagging"
   type        = string
   default     = "dev"
 
   validation {
     condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "L'environnement doit etre : dev, staging, ou prod."
+    error_message = "Environment must be: dev, staging, or prod."
   }
 
   nullable = false
@@ -147,29 +147,29 @@ variable "environment" {
 
 ## Count vs For_Each
 
-### Guide de Decision Rapide
+### Quick Decision Guide
 
-| Scenario | Utiliser | Pourquoi |
-|----------|----------|----------|
-| Condition booleenne (creer ou non) | `count = condition ? 1 : 0` | Simple toggle on/off |
-| Replication numerique simple | `count = 3` | Nombre fixe de ressources identiques |
-| Elements pouvant etre reordonnes/supprimes | `for_each = toset(list)` | Adresses de ressources stables |
-| Reference par cle | `for_each = map` | Acces nomme aux ressources |
+| Scenario | Use | Why |
+|----------|-----|-----|
+| Boolean condition (create or not) | `count = condition ? 1: 0` | Simple on/off toggle |
+| Simple numeric replication | `count = 3` | Fixed number of identical resources |
+| Items that may be reordered/deleted | `for_each = toset(list)` | Stable resource addresses |
+| Reference by key | `for_each = map` | Named access to resources |
 
-### Patterns Courants
+### Common Patterns
 
-**Conditions booleennes :**
+**Boolean conditions:**
 ```hcl
-# BON - Condition booleenne
+# GOOD - Boolean condition
 resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1 : 0
+  count = var.create_nat_gateway ? 1: 0
   # ...
 }
 ```
 
-**Adressage stable avec for_each :**
+**Stable addressing with for_each:**
 ```hcl
-# BON - Supprimer "us-east-1b" n'affecte que ce subnet
+# GOOD - Removing "us-east-1b" only affects this subnet
 resource "aws_subnet" "private" {
   for_each = toset(var.availability_zones)
 
@@ -177,7 +177,7 @@ resource "aws_subnet" "private" {
   # ...
 }
 
-# MAUVAIS - Supprimer l'AZ du milieu recree tous les suivants
+# BAD - Removing the middle AZ recreates all the following ones
 resource "aws_subnet" "private" {
   count = length(var.availability_zones)
 
@@ -186,105 +186,105 @@ resource "aws_subnet" "private" {
 }
 ```
 
-## Strategie de Tests
+## Testing Strategy
 
-### Matrice de Decision
+### Decision Matrix
 
-| Situation | Approche Recommandee | Outils | Cout |
-|-----------|---------------------|--------|------|
-| **Verification syntaxe rapide** | Analyse statique | `terraform validate`, `fmt` | Gratuit |
-| **Validation pre-commit** | Statique + lint | `validate`, `tflint`, `trivy` | Gratuit |
-| **Terraform 1.6+, logique simple** | Framework de test natif | `terraform test` | Gratuit-Faible |
-| **Pre-1.6, ou expertise Go** | Tests d'integration | Terratest | Faible-Moyen |
-| **Focus securite/compliance** | Policy as code | OPA, Sentinel | Gratuit |
-| **Workflow sensible aux couts** | Mock providers (1.7+) | Tests natifs + mocking | Gratuit |
+| Situation | Recommended Approach | Tools | Cost |
+|-----------|---------------------|-------|------|
+| **Quick syntax check** | Static analysis | `terraform validate`, `fmt` | Free |
+| **Pre-commit validation** | Static + lint | `validate`, `tflint`, `trivy` | Free |
+| **Terraform 1.6+, simple logic** | Native test framework | `terraform test` | Free-Low |
+| **Pre-1.6, or Go expertise** | Integration tests | Terratest | Low-Medium |
+| **Security/compliance focus** | Policy as code | OPA, Sentinel | Free |
+| **Cost-sensitive workflow** | Mock providers (1.7+) | Native tests + mocking | Free |
 
-### Pyramide de Tests pour Infrastructure
+### Testing Pyramid for Infrastructure
 
 ```
         /\
-       /  \          Tests End-to-End (Couteux)
-      /____\         - Deploiement environnement complet
-     /      \        - Setup production-like
+       /  \          End-to-End Tests (Expensive)
+      /____\         - Full environment deployment
+     /      \        - Production-like setup
     /________\
-   /          \      Tests d'Integration (Modere)
-  /____________\     - Test de module en isolation
- /              \    - Vraies ressources en compte de test
-/________________\   Analyse Statique (Peu couteux)
+   /          \      Integration Tests (Moderate)
+  /____________\     - Module testing in isolation
+ /              \    - Real resources in test account
+/________________\   Static Analysis (Inexpensive)
                      - validate, fmt, lint
-                     - Scanning securite
+                     - Security scanning
 ```
 
-## Securite et Compliance
+## Security and Compliance
 
-### Checks de Securite Essentiels
+### Essential Security Checks
 
 ```bash
-# Scanning securite statique
+# Static security scanning
 trivy config .
 checkov -d .
 ```
 
-### Issues Courantes a Eviter
+### Common Issues to Avoid
 
-**NE PAS :**
-- Stocker des secrets dans les variables
-- Utiliser le VPC par defaut
-- Omettre le chiffrement
-- Ouvrir les security groups a 0.0.0.0/0
+**DO NOT:**
+- Store secrets in variables
+- Use the default VPC
+- Omit encryption
+- Open security groups to 0.0.0.0/0
 
-**FAIRE :**
-- Utiliser AWS Secrets Manager / Parameter Store
-- Creer des VPCs dedies
-- Activer le chiffrement au repos
-- Utiliser des security groups least-privilege
+**DO:**
+- Use AWS Secrets Manager / Parameter Store
+- Create dedicated VPCs
+- Enable encryption at rest
+- Use least-privilege security groups
 
-## Gestion des Versions
+## Version Management
 
-### Syntaxe des Contraintes
+### Constraint Syntax
 
 ```hcl
-version = "5.0.0"      # Exact (eviter - inflexible)
-version = "~> 5.0"     # Recommande : 5.0.x seulement
-version = ">= 5.0"     # Minimum (risque - breaking changes)
+version = "5.0.0"      # Exact (avoid - inflexible)
+version = "~> 5.0"     # Recommended: 5.0.x only
+version = ">= 5.0"     # Minimum (risky - breaking changes)
 ```
 
-### Strategie par Composant
+### Strategy per Component
 
-| Composant | Strategie | Exemple |
-|-----------|-----------|---------|
-| **Terraform** | Pin version mineure | `required_version = "~> 1.9"` |
-| **Providers** | Pin version majeure | `version = "~> 5.0"` |
-| **Modules (prod)** | Pin version exacte | `version = "5.1.2"` |
-| **Modules (dev)** | Autoriser patch updates | `version = "~> 5.1"` |
+| Component | Strategy | Example |
+|-----------|----------|---------|
+| **Terraform** | Pin minor version | `required_version = "~> 1.9"` |
+| **Providers** | Pin major version | `version = "~> 5.0"` |
+| **Modules (prod)** | Pin exact version | `version = "5.1.2"` |
+| **Modules (dev)** | Allow patch updates | `version = "~> 5.1"` |
 
-## Features Modernes (1.0+)
+## Modern Features (1.0+)
 
-| Feature | Version | Cas d'usage |
-|---------|---------|-------------|
-| `try()` function | 0.13+ | Fallbacks surs, remplace `element(concat())` |
-| `nullable = false` | 1.1+ | Prevenir valeurs null dans les variables |
-| `moved` blocks | 1.1+ | Refactorer sans destroy/recreate |
-| `optional()` avec defaults | 1.3+ | Attributs d'objet optionnels |
-| Tests natifs | 1.6+ | Framework de test integre |
-| Mock providers | 1.7+ | Tests unitaires sans cout |
-| Cross-variable validation | 1.9+ | Valider relations entre variables |
-| Write-only arguments | 1.11+ | Secrets jamais stockes dans le state |
+| Feature | Version | Use case |
+|---------|---------|----------|
+| `try()` function | 0.13+ | Safe fallbacks, replaces `element(concat())` |
+| `nullable = false` | 1.1+ | Prevent null values in variables |
+| `moved` blocks | 1.1+ | Refactor without destroy/recreate |
+| `optional()` with defaults | 1.3+ | Optional object attributes |
+| Native tests | 1.6+ | Built-in test framework |
+| Mock providers | 1.7+ | Unit tests at no cost |
+| Cross-variable validation | 1.9+ | Validate relationships between variables |
+| Write-only arguments | 1.11+ | Secrets never stored in state |
 
-## Guides Detailles
+## Detailed Guides
 
-Ce skill utilise le **progressive disclosure** - informations essentielles dans ce fichier, guides détaillés disponibles via les ressources externes :
+This skill uses **progressive disclosure** - essential information in this file, detailed guides available via external resources:
 
 - **Module Patterns** - Structure, variables/outputs, DO vs DON'T
-- **Code Patterns** - Features modernes, refactoring, locals
-- **Testing Frameworks** - Analyse statique, tests natifs, Terratest
-- **Security & Compliance** - Trivy/Checkov, gestion secrets, state file
+- **Code Patterns** - Modern features, refactoring, locals
+- **Testing Frameworks** - Static analysis, native tests, Terratest
+- **Security & Compliance** - Trivy/Checkov, secrets management, state file
 
-Consultez [terraform-best-practices.com](https://terraform-best-practices.com) pour les guides complets.
+See [terraform-best-practices.com](https://terraform-best-practices.com) for the full guides.
 
 ## Attribution
 
-Ce skill est adapte de [terraform-skill](https://github.com/antonbabenko/terraform-skill) par Anton Babenko.
-Ressources additionnelles :
+This skill is adapted from [terraform-skill](https://github.com/antonbabenko/terraform-skill) by Anton Babenko.
+Additional resources:
 - [terraform-best-practices.com](https://terraform-best-practices.com)
 - [Compliance.tf](https://compliance.tf)

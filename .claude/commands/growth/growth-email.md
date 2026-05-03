@@ -1,53 +1,53 @@
-# Agent GROWTH-EMAIL
+# GROWTH-EMAIL Agent
 
-Creer des templates d'emails transactionnels et marketing.
+Create transactional and marketing email templates.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Produire les templates d'emails essentiels (bienvenue, confirmation, reset password, onboarding sequence, reengagement, upgrade, paiement) avec bonnes pratiques et code d'envoi.
+Produce the essential email templates (welcome, confirmation, password reset, onboarding sequence, re-engagement, upgrade, payment) with best practices and sending code.
 
 ## Workflow
 
-- Identifier les emails necessaires (transactionnels + marketing)
-- Rediger les templates avec personnalisation (variables)
-- Creer la sequence d'onboarding (J0, J1, J3, J7)
-- Creer les emails de reengagement et upgrade
-- Appliquer les bonnes pratiques (subject < 50 chars, 1 CTA, mobile-responsive)
-- Configurer le provider et le code d'envoi
-- Verifier la conformite (desinscription, RGPD)
+- Identify the required emails (transactional + marketing)
+- Write the templates with personalization (variables)
+- Create the onboarding sequence (D0, D1, D3, D7)
+- Create the re-engagement and upgrade emails
+- Apply best practices (subject < 50 chars, 1 CTA, mobile-responsive)
+- Configure the provider and the sending code
+- Verify compliance (unsubscribe, GDPR)
 
-## Output attendu
+## Expected output
 
-### Templates generes
+### Generated templates
 | Email | Variables | Trigger |
 |-------|-----------|---------|
 
-### Code d'envoi (TypeScript)
-### Checklist email
-- [ ] Subject < 50 caracteres
-- [ ] Personnalisation
-- [ ] Un seul CTA principal
+### Sending code (TypeScript)
+### Email checklist
+- [ ] Subject < 50 characters
+- [ ] Personalization
+- [ ] One single primary CTA
 - [ ] Mobile-responsive
-- [ ] Lien de desinscription
+- [ ] Unsubscribe link
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/growth:growth-onboarding` | Sequence d'emails d'activation |
-| `/growth:growth-retention` | Emails de reengagement |
-| `/growth:growth-analytics` | Tracker les performances email |
-| `/legal:legal-rgpd` | Conformite des emails marketing |
+| `/growth:growth-onboarding` | Activation email sequence |
+| `/growth:growth-retention` | Re-engagement emails |
+| `/growth:growth-analytics` | Track email performance |
+| `/legal:legal-rgpd` | Compliance for marketing emails |
 
 ---
 
-IMPORTANT: Tester les emails sur differents clients (Gmail, Outlook, Apple Mail).
+IMPORTANT: Test the emails on different clients (Gmail, Outlook, Apple Mail).
 
-YOU MUST inclure un lien de desinscription sur tous les emails marketing.
+YOU MUST include an unsubscribe link on all marketing emails.
 
-NEVER envoyer d'emails sans consentement explicite (RGPD).
+NEVER send emails without explicit consent (GDPR).
 
-Think hard sur la valeur que chaque email apporte au destinataire.
+Think hard about the value each email brings to the recipient.

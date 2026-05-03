@@ -1,45 +1,45 @@
-# Agent CI-CD
+# CI-CD Agent
 
-Configurer les pipelines CI/CD (GitHub Actions, GitLab CI, etc.).
+Configure CI/CD pipelines (GitHub Actions, GitLab CI, etc.).
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Generer des pipelines CI/CD complets adaptes a la stack technique du projet,
-avec les etapes de lint, test, build, securite et deploiement.
+Generate complete CI/CD pipelines adapted to the project's technical stack,
+with lint, test, build, security, and deployment steps.
 
 ## Workflow
 
-- Analyser la stack technique et la configuration existante
-- Identifier les besoins (lint, typecheck, test, build, security, e2e, deploy)
-- Generer les workflows GitHub Actions ou GitLab CI adaptes
-- Configurer le cache et la parallelisation pour la performance
-- Ajouter les workflows PR checks et release
-- Documenter les secrets a configurer
-- Verifier que les permissions sont minimales
+- Analyze the technical stack and existing configuration
+- Identify the needs (lint, typecheck, test, build, security, e2e, deploy)
+- Generate the appropriate GitHub Actions or GitLab CI workflows
+- Configure caching and parallelization for performance
+- Add PR checks and release workflows
+- Document the secrets to configure
+- Verify that permissions are minimal
 
-## Output attendu
+## Expected output
 
-1. **Workflows** : ci.yml, pr.yml, deploy.yml, release.yml
-2. **Secrets** a configurer avec instructions
-3. **Checklist** de mise en place (workflows, secrets, branch protection, dependabot)
+1. **Workflows**: ci.yml, pr.yml, deploy.yml, release.yml
+2. **Secrets** to configure with instructions
+3. **Checklist** for setup (workflows, secrets, branch protection, dependabot)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-docker` | Build images Docker |
-| `/ops:ops-release` | Automatiser les releases |
-| `/ops:ops-secrets-management` | Gestion des secrets CI |
+| `/ops:ops-docker` | Build Docker images |
+| `/ops:ops-release` | Automate releases |
+| `/ops:ops-secrets-management` | CI secrets management |
 
 ---
 
-IMPORTANT: Tester le pipeline sur une branche de test avant de merger sur main.
+IMPORTANT: Test the pipeline on a test branch before merging to main.
 
-YOU MUST utiliser des secrets pour tous les credentials - jamais en clair.
+YOU MUST use secrets for all credentials - never in clear text.
 
-NEVER donner des permissions excessives au GITHUB_TOKEN.
+NEVER grant excessive permissions to the GITHUB_TOKEN.
 
-Think hard sur les etapes vraiment necessaires - un pipeline rapide est un pipeline utilise.
+Think hard about the steps that are truly necessary - a fast pipeline is a used pipeline.

@@ -1,73 +1,73 @@
 ---
 sidebar_position: 1
 title: Reference
-description: Reference rapide et matrices
+description: Quick reference and matrices
 ---
 
 # Reference
 
-> Acces rapide a toutes les ressources claude-socle
+> Quick access to all claude-socle resources
 
-## Matrices de reference
+## Reference matrices
 
 | Reference | Description |
 |-----------|-------------|
-| [Matrice des Commands](/docs/reference/commands-matrix) | 131 commandes avec domaine et description |
-| [Matrice des Agents](/docs/reference/agents-matrix) | 63 agents avec modele et outils |
-| [Scripts utilitaires](/docs/reference/scripts) | Scripts d'installation et maintenance |
-| [Cheatsheet](/docs/reference/commands) | Aide-memoire rapide |
+| [Commands matrix](/docs/reference/commands-matrix) | 131 commands with domain and description |
+| [Agents matrix](/docs/reference/agents-matrix) | 63 agents with model and tools |
+| [Utility scripts](/docs/reference/scripts) | Installation and maintenance scripts |
+| [Cheatsheet](/docs/reference/commands) | Quick reference card |
 
-## Navigation rapide
+## Quick navigation
 
-### Par domaine
+### By domain
 
-| Domaine | Commandes | Description |
+| Domain | Commands | Description |
 |---------|-----------|-------------|
-| [WORK](/docs/commands/work) | 15 | Workflow principal |
-| [DEV](/docs/commands/dev) | 23 | Developpement |
-| [QA](/docs/commands/qa) | 16 | Qualite |
+| [WORK](/docs/commands/work) | 15 | Main workflow |
+| [DEV](/docs/commands/dev) | 23 | Development |
+| [QA](/docs/commands/qa) | 16 | Quality |
 | [OPS](/docs/commands/ops) | 34 | Operations |
 | [DOC](/docs/commands/doc) | 9 | Documentation |
 | [BIZ](/docs/commands/biz) | 11 | Business |
-| [GROWTH](/docs/commands/growth) | 11 | Croissance |
-| [DATA](/docs/commands/data) | 3 | Donnees |
+| [GROWTH](/docs/commands/growth) | 11 | Growth |
+| [DATA](/docs/commands/data) | 3 | Data |
 | [LEGAL](/docs/commands/legal) | 5 | Legal |
 
-### Par composant
+### By component
 
-| Composant | Nombre | Lien |
+| Component | Count | Link |
 |-----------|--------|------|
-| Commands | 131 | [Voir](/docs/commands) |
-| Agents | 63 | [Voir](/docs/agents) |
-| Skills | 54 | [Voir](/docs/skills) |
-| Rules | 30 | [Voir](/docs/rules) |
+| Commands | 131 | [View](/docs/commands) |
+| Agents | 63 | [View](/docs/agents) |
+| Skills | 54 | [View](/docs/skills) |
+| Rules | 30 | [View](/docs/rules) |
 
-## Raccourcis
+## Shortcuts
 
-### Commandes essentielles
+### Essential commands
 
 ```bash
-/assistant       # Guide complet
-/work:work-explore    # Explorer le code
-/work:work-plan       # Planifier
-/dev:dev-tdd         # Developper en TDD
-/work:work-commit     # Commit propre
+/assistant       # Full guide
+/work:work-explore    # Explore the code
+/work:work-plan       # Plan
+/dev:dev-tdd         # Develop with TDD
+/work:work-commit     # Clean commit
 /work:work-pr         # Pull Request
-/qa:qa-audit        # Audit complet
+/qa:qa-audit        # Full audit
 ```
 
-### Workflows pre-definis
+### Predefined workflows
 
 ```bash
-/work:work-flow-feature "..."   # Nouvelle feature
-/work:work-flow-bugfix "..."    # Correction bug
+/work:work-flow-feature "..."   # New feature
+/work:work-flow-bugfix "..."    # Bug fix
 /work:work-flow-release "..."   # Release
-/work:work-flow-launch "..."    # Lancement produit
+/work:work-flow-launch "..."    # Product launch
 ```
 
 ---
 
-## Voir aussi
+## See also
 
 - [Workflows](/docs/workflow)
 - [Guides](/docs/guides)

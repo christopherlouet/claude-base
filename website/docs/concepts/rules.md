@@ -1,69 +1,69 @@
 ---
 sidebar_position: 5
 title: Rules
-description: Comprendre les rules Claude Code
+description: Understanding Claude Code rules
 ---
 
 # Rules
 
-> Conventions appliquees automatiquement selon le chemin des fichiers
+> Conventions applied automatically based on file paths
 
-## Qu'est-ce qu'une Rule ?
+## What is a Rule?
 
-Une **rule** est un ensemble de conventions et bonnes pratiques appliquees automatiquement quand vous travaillez sur certains types de fichiers.
+A **rule** is a set of conventions and best practices applied automatically when you work on certain types of files.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│  User: "Modifie src/components/Button.tsx"                     │
+│  User: "Modify src/components/Button.tsx"                      │
 │              │                                                 │
 │              ▼                                                 │
 │  ┌────────────────────────────────────────┐                    │
-│  │ Detection du path                      │                    │
+│  │ Path detection                         │                    │
 │  │                                        │                    │
-│  │ "**/*.tsx" → Rule TypeScript active    │                    │
-│  │ "**/components/**" → Rule React active │                    │
+│  │ "**/*.tsx" → TypeScript Rule active    │                    │
+│  │ "**/components/**" → React Rule active │                    │
 │  └────────────────────────────────────────┘                    │
 │              │                                                 │
 │              ▼                                                 │
 │  ┌────────────────────────────────────────┐                    │
-│  │ Conventions injectees                  │                    │
+│  │ Conventions injected                   │                    │
 │  │                                        │                    │
-│  │ - Strict mode TypeScript               │                    │
-│  │ - Pas de `any`                         │                    │
-│  │ - Composants fonctionnels              │                    │
-│  │ - Hooks pour la logique                │                    │
+│  │ - TypeScript strict mode               │                    │
+│  │ - No `any`                             │                    │
+│  │ - Functional components                │                    │
+│  │ - Hooks for logic                      │                    │
 │  └────────────────────────────────────────┘                    │
 │              │                                                 │
 │              ▼                                                 │
-│  Claude applique les conventions automatiquement               │
+│  Claude applies the conventions automatically                  │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
 
-## Structure des fichiers
+## File structure
 
-Les rules sont dans `.claude/rules/`:
+Rules live in `.claude/rules/`:
 
 ```
 .claude/rules/
-├── typescript.md      # Conventions TypeScript
-├── react.md           # Conventions React
-├── flutter.md         # Conventions Flutter/Dart
-├── python.md          # Conventions Python
-├── go.md              # Conventions Go
-├── testing.md         # Conventions de tests
-├── security.md        # Regles de securite
-├── api.md             # Conventions API
-├── git.md             # Conventions Git
-├── workflow.md        # Workflow obligatoire
-├── accessibility.md   # Regles accessibilite
-└── performance.md     # Regles performance
+├── typescript.md      # TypeScript conventions
+├── react.md           # React conventions
+├── flutter.md         # Flutter/Dart conventions
+├── python.md          # Python conventions
+├── go.md              # Go conventions
+├── testing.md         # Testing conventions
+├── security.md        # Security rules
+├── api.md             # API conventions
+├── git.md             # Git conventions
+├── workflow.md        # Mandatory workflow
+├── accessibility.md   # Accessibility rules
+└── performance.md     # Performance rules
 ```
 
-## Anatomie d'une rule
+## Anatomy of a rule
 
-### Avec frontmatter (path-specific)
+### With frontmatter (path-specific)
 
 ```markdown
 ---
@@ -74,26 +74,26 @@ paths:
 
 # TypeScript Rules
 
-## Mode strict
+## Strict mode
 
-IMPORTANT: Mode strict active (`"strict": true`)
+IMPORTANT: Strict mode enabled (`"strict": true`)
 
 ## Types
 
-IMPORTANT: Pas de `any` sauf cas exceptionnels documentes
+IMPORTANT: No `any` except documented exceptional cases
 
-YOU MUST definir des interfaces pour les objets complexes
+YOU MUST define interfaces for complex objects
 
-## Nommage
+## Naming
 
-| Type | Convention | Exemple |
+| Type | Convention | Example |
 |------|------------|---------|
 | Variables | camelCase | `getUserById` |
 | Interfaces | PascalCase | `UserService` |
-| Constantes | SCREAMING_SNAKE | `MAX_RETRY` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY` |
 ```
 
-### Sans frontmatter (globale)
+### Without frontmatter (global)
 
 ```markdown
 # Git Rules
@@ -101,68 +101,68 @@ YOU MUST definir des interfaces pour les objets complexes
 ## Conventional Commits
 
 \`\`\`
-type(scope): description courte
+type(scope): short description
 \`\`\`
 
-### Types autorises
+### Allowed types
 
 | Type | Usage |
 |------|-------|
-| feat | Nouvelle fonctionnalite |
-| fix | Correction de bug |
+| feat | New feature |
+| fix | Bug fix |
 | docs | Documentation |
 | refactor | Refactoring |
 ```
 
 ## Frontmatter
 
-### Champ `paths`
+### `paths` field
 
-Definit quand la rule s'applique:
+Defines when the rule applies:
 
 ```yaml
 ---
 paths:
-  - "**/*.ts"           # Tous les fichiers .ts
-  - "**/*.tsx"          # Tous les fichiers .tsx
-  - "**/components/**"  # Dossier components
-  - "**/api/**"         # Dossier api
+  - "**/*.ts"           # All .ts files
+  - "**/*.tsx"          # All .tsx files
+  - "**/components/**"  # components directory
+  - "**/api/**"         # api directory
 ---
 ```
 
-### Patterns supportes
+### Supported patterns
 
-| Pattern | Description | Exemple |
+| Pattern | Description | Example |
 |---------|-------------|---------|
-| `*` | Un segment | `*.ts` |
-| `**` | Zero ou plus segments | `**/*.ts` |
-| `?` | Un caractere | `file?.ts` |
+| `*` | One segment | `*.ts` |
+| `**` | Zero or more segments | `**/*.ts` |
+| `?` | One character | `file?.ts` |
 
-## Categories de rules
+## Rule categories
 
-### Par langage
+### By language
 
-| Rule | Paths | Contenu |
+| Rule | Paths | Content |
 |------|-------|---------|
 | `typescript.md` | `**/*.ts`, `**/*.tsx` | Strict mode, types, conventions |
-| `react.md` | `**/*.tsx`, `**/components/**` | Composants, hooks, performance |
+| `react.md` | `**/*.tsx`, `**/components/**` | Components, hooks, performance |
 | `flutter.md` | `**/*.dart`, `**/lib/**` | Clean Architecture, BLoC |
 | `python.md` | `**/*.py` | Type hints, PEP 8 |
 | `go.md` | `**/*.go` | Error handling, interfaces |
 
-### Transversales
+### Cross-cutting
 
-| Rule | Paths | Contenu |
+| Rule | Paths | Content |
 |------|-------|---------|
-| `testing.md` | `**/*.test.ts`, `**/__tests__/**` | Couverture, mocks |
+| `testing.md` | `**/*.test.ts`, `**/__tests__/**` | Coverage, mocks |
 | `security.md` | `**/auth/**`, `**/api/**` | Validation, XSS, injection |
 | `api.md` | `**/api/**`, `**/routes/**` | REST, status codes |
 | `git.md` | - | Conventional commits |
 | `workflow.md` | - | Explore → Specify → Plan → TDD → Audit → Commit |
 
-## Exemples de rules
+## Rule examples
 
-### Rule TypeScript
+### TypeScript Rule
 
 ```markdown
 ---
@@ -175,7 +175,7 @@ paths:
 
 ## Configuration
 
-IMPORTANT: Mode strict active
+IMPORTANT: Strict mode enabled
 
 \`\`\`json
 {
@@ -188,31 +188,31 @@ IMPORTANT: Mode strict active
 
 ## Types
 
-IMPORTANT: Pas de `any` sauf cas documentes
+IMPORTANT: No `any` except documented cases
 
-YOU MUST definir des interfaces:
+YOU MUST define interfaces:
 
 \`\`\`typescript
-// Bon
+// Good
 interface User {
   id: string;
   name: string;
 }
 
-// Mauvais
+// Bad
 const user: any = { ... };
 \`\`\`
 
-## Nommage
+## Naming
 
 | Type | Convention |
 |------|------------|
-| Variables/Fonctions | camelCase |
+| Variables/Functions | camelCase |
 | Interfaces/Classes | PascalCase |
-| Constantes | SCREAMING_SNAKE |
+| Constants | SCREAMING_SNAKE |
 ```
 
-### Rule React
+### React Rule
 
 ```markdown
 ---
@@ -223,33 +223,33 @@ paths:
 
 # React Rules
 
-## Composants
+## Components
 
-YOU MUST utiliser des composants fonctionnels:
+YOU MUST use functional components:
 
 \`\`\`tsx
-// Bon
+// Good
 function Button({ label }: ButtonProps) {
   return <button>{label}</button>;
 }
 
-// Eviter
+// Avoid
 class Button extends Component { ... }
 \`\`\`
 
 ## Hooks
 
-IMPORTANT: Extraire la logique dans des hooks custom:
+IMPORTANT: Extract logic into custom hooks:
 
 \`\`\`tsx
-// Bon
+// Good
 function useUser(id: string) {
   const [user, setUser] = useState<User | null>(null);
   // ...
   return { user, loading, error };
 }
 
-// Utilisation
+// Usage
 function UserProfile({ id }: Props) {
   const { user, loading } = useUser(id);
   // ...
@@ -258,12 +258,12 @@ function UserProfile({ id }: Props) {
 
 ## Performance
 
-- Utiliser `memo()` pour les composants purs
-- Utiliser `useMemo()` pour les calculs couteux
-- Utiliser `useCallback()` pour les callbacks passes en props
+- Use `memo()` for pure components
+- Use `useMemo()` for expensive computations
+- Use `useCallback()` for callbacks passed as props
 ```
 
-### Rule Securite
+### Security Rule
 
 ```markdown
 ---
@@ -275,108 +275,108 @@ paths:
 
 # Security Rules
 
-## Validation des entrees
+## Input validation
 
-IMPORTANT: Valider TOUTES les entrees utilisateur
+IMPORTANT: Validate ALL user inputs
 
 \`\`\`typescript
-// Avec Zod
+// With Zod
 const userSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
 \`\`\`
 
-## Prevention XSS
+## XSS prevention
 
-NEVER inserer du HTML non echappe:
+NEVER insert unescaped HTML:
 
 \`\`\`tsx
-// Dangereux
+// Dangerous
 <div dangerouslySetInnerHTML={{ __html: userInput }} />
 
-// Securise
+// Safe
 <div>{sanitize(userInput)}</div>
 \`\`\`
 
-## Requetes SQL
+## SQL queries
 
-IMPORTANT: Utiliser des requetes parametrees:
+IMPORTANT: Use parameterized queries:
 
 \`\`\`typescript
-// Dangereux
+// Dangerous
 const query = \`SELECT * FROM users WHERE id = \${userId}\`;
 
-// Securise
+// Safe
 const query = 'SELECT * FROM users WHERE id = ?';
 db.query(query, [userId]);
 \`\`\`
 ```
 
-## Creer une nouvelle rule
+## Create a new rule
 
-### 1. Creer le fichier
+### 1. Create the file
 
 ```bash
-touch .claude/rules/ma-rule.md
+touch .claude/rules/my-rule.md
 ```
 
-### 2. Definir le frontmatter (optionnel)
+### 2. Define the frontmatter (optional)
 
 ```yaml
 ---
 paths:
   - "**/*.extension"
-  - "**/dossier/**"
+  - "**/folder/**"
 ---
 ```
 
-### 3. Ecrire les conventions
+### 3. Write the conventions
 
 ```markdown
-# Ma Rule
+# My Rule
 
 ## Convention 1
 
-IMPORTANT: Description de la regle.
+IMPORTANT: Description of the rule.
 
 ## Convention 2
 
-YOU MUST suivre cette pratique.
+YOU MUST follow this practice.
 
-NEVER faire ceci.
+NEVER do this.
 
-## Exemples
+## Examples
 
 \`\`\`typescript
-// Bon
+// Good
 ...
 
-// Mauvais
+// Bad
 ...
 \`\`\`
 ```
 
-## Priorite des rules
+## Rule priority
 
-Quand plusieurs rules s'appliquent au meme fichier:
+When multiple rules apply to the same file:
 
-1. Rules specifiques (path plus precis) > Rules generales
-2. Rules definies plus bas dans le fichier > Rules definies plus haut
-3. Les rules ne se remplacent pas, elles s'accumulent
+1. Specific rules (more precise path) > General rules
+2. Rules defined later in the file > Rules defined earlier
+3. Rules don't replace each other, they accumulate
 
-## Bonnes pratiques
+## Best practices
 
-1. **Paths precis**: Cibler exactement les fichiers concernes
-2. **Conventions claires**: Utiliser IMPORTANT, YOU MUST, NEVER
-3. **Exemples concrets**: Montrer le bon et le mauvais
-4. **Pas de duplication**: Une convention a un seul endroit
-5. **Maintenabilite**: Mettre a jour quand les standards evoluent
+1. **Precise paths**: Target exactly the relevant files
+2. **Clear conventions**: Use IMPORTANT, YOU MUST, NEVER
+3. **Concrete examples**: Show the good and the bad
+4. **No duplication**: One convention in a single place
+5. **Maintainability**: Update as standards evolve
 
 ---
 
-## Voir aussi
+## See also
 
-- [Commands](./commands) - Instructions manuelles
-- [Skills](./skills) - Comportements automatiques
-- [Hooks](./hooks) - Actions pre/post tool
+- [Commands](./commands) - Manual instructions
+- [Skills](./skills) - Automatic behaviors
+- [Hooks](./hooks) - Pre/post tool actions

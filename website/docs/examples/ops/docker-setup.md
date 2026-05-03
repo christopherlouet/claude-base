@@ -1,32 +1,32 @@
 ---
 sidebar_position: 1
 title: Setup Docker
-description: Exemple de Dockerfile multi-stage et docker-compose
+description: Multi-stage Dockerfile and docker-compose example
 ---
 
-# Setup Docker Complet
+# Complete Docker Setup
 
-Cet exemple montre comment containeriser une application avec un Dockerfile multi-stage optimisé et docker-compose.
+This example shows how to containerize an application with an optimized multi-stage Dockerfile and docker-compose.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/ops:ops-docker "Dockeriser une application Next.js avec PostgreSQL"
+/ops:ops-docker "Dockerize a Next.js application with PostgreSQL"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 .
-├── Dockerfile              # Build multi-stage
+├── Dockerfile              # Multi-stage build
 ├── docker-compose.yml      # Dev environment
 ├── docker-compose.prod.yml # Production
-├── .dockerignore           # Fichiers exclus
+├── .dockerignore           # Excluded files
 └── scripts/
     └── docker-entrypoint.sh
 ```
 
-## Dockerfile Multi-Stage
+## Multi-Stage Dockerfile
 
 ### `Dockerfile`
 
@@ -36,15 +36,15 @@ Cet exemple montre comment containeriser une application avec un Dockerfile mult
 # ============================================
 FROM node:20-alpine AS deps
 
-# Dépendances système pour node-gyp
+# System dependencies for node-gyp
 RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-# Copier les fichiers de dépendances
+# Copy dependency files
 COPY package.json package-lock.json* ./
 
-# Installer les dépendances
+# Install dependencies
 RUN npm ci --only=production
 
 # ============================================
@@ -54,18 +54,18 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copier les dépendances du stage précédent
+# Copy dependencies from previous stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Variables d'environnement de build
+# Build environment variables
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
-# Désactiver la télémétrie Next.js
+# Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Build l'application
+# Build the application
 RUN npm run build
 
 # ============================================
@@ -75,35 +75,35 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Créer un utilisateur non-root
+# Create a non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copier les fichiers nécessaires
+# Copy required files
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
-# Copier le build Next.js avec les bonnes permissions
+# Copy the Next.js build with the right permissions
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Variables d'environnement runtime
+# Runtime environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Changer d'utilisateur
+# Switch user
 USER nextjs
 
-# Exposer le port
+# Expose the port
 EXPOSE 3000
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-# Commande de démarrage
+# Start command
 CMD ["node", "server.js"]
 ```
 
@@ -165,18 +165,18 @@ jest.config.*
 
 ## Docker Compose
 
-### `docker-compose.yml` (Développement)
+### `docker-compose.yml` (Development)
 
 ```yaml
 version: '3.8'
 
 services:
-  # Application Next.js
+  # Next.js application
   app:
     build:
       context: .
       dockerfile: Dockerfile
-      target: deps  # Utiliser le stage deps pour le dev
+      target: deps  # Use the deps stage for dev
     image: myapp:dev
     container_name: myapp-dev
     ports:
@@ -219,7 +219,7 @@ services:
     networks:
       - myapp-network
 
-  # Redis (cache et sessions)
+  # Redis (cache and sessions)
   redis:
     image: redis:7-alpine
     container_name: myapp-redis
@@ -231,7 +231,7 @@ services:
     networks:
       - myapp-network
 
-  # Adminer (interface DB)
+  # Adminer (DB interface)
   adminer:
     image: adminer:latest
     container_name: myapp-adminer
@@ -300,7 +300,7 @@ services:
     networks:
       - myapp-network
 
-  # Nginx reverse proxy (optionnel)
+  # Nginx reverse proxy (optional)
   nginx:
     image: nginx:alpine
     container_name: myapp-nginx
@@ -321,7 +321,7 @@ networks:
     driver: bridge
 ```
 
-## Scripts utiles
+## Useful scripts
 
 ### `scripts/docker-entrypoint.sh`
 
@@ -344,66 +344,66 @@ exec "$@"
 ```makefile
 .PHONY: build dev prod down logs clean
 
-# Build l'image de production
+# Build the production image
 build:
 	docker build -t myapp:latest .
 
-# Démarrer l'environnement de développement
+# Start the development environment
 dev:
 	docker-compose up -d
 	docker-compose logs -f app
 
-# Démarrer avec debug tools (Adminer)
+# Start with debug tools (Adminer)
 dev-debug:
 	docker-compose --profile debug up -d
 	docker-compose logs -f app
 
-# Démarrer la production
+# Start production
 prod:
 	docker-compose -f docker-compose.prod.yml up -d
 
-# Arrêter tous les conteneurs
+# Stop all containers
 down:
 	docker-compose down
 	docker-compose -f docker-compose.prod.yml down 2>/dev/null || true
 
-# Voir les logs
+# View logs
 logs:
 	docker-compose logs -f
 
-# Nettoyer (volumes inclus)
+# Clean up (volumes included)
 clean:
 	docker-compose down -v
 	docker system prune -f
 
-# Rebuild sans cache
+# Rebuild without cache
 rebuild:
 	docker-compose build --no-cache
 	docker-compose up -d
 
-# Exécuter les migrations
+# Run migrations
 migrate:
 	docker-compose exec app npx prisma migrate dev
 
-# Shell dans le conteneur
+# Shell into the container
 shell:
 	docker-compose exec app sh
 
-# Tests dans le conteneur
+# Tests in the container
 test:
 	docker-compose exec app npm test
 ```
 
-## Configuration Next.js
+## Next.js Configuration
 
-### `next.config.js` (pour standalone output)
+### `next.config.js` (for standalone output)
 
 ```javascript
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone', // Requis pour le Dockerfile optimisé
+  output: 'standalone', // Required for the optimized Dockerfile
 
-  // Optimisations de production
+  // Production optimizations
   poweredByHeader: false,
   compress: true,
 
@@ -417,7 +417,7 @@ const nextConfig = {
     ],
   },
 
-  // Environnement
+  // Environment
   env: {
     NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version,
   },
@@ -426,7 +426,7 @@ const nextConfig = {
 module.exports = nextConfig;
 ```
 
-### Endpoint Health Check
+### Health Check Endpoint
 
 ```typescript
 // pages/api/health.ts
@@ -438,7 +438,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    // Vérifier la connexion DB
+    // Check the DB connection
     await prisma.$queryRaw`SELECT 1`;
 
     res.status(200).json({
@@ -455,26 +455,26 @@ export default async function handler(
 }
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
 | **Multi-stage** | 3 stages: deps → builder → runner |
-| **Taille image** | ~150MB (vs 1GB+ sans optimisation) |
-| **Sécurité** | User non-root, fichiers minimaux |
-| **Healthcheck** | Endpoint `/api/health` |
-| **Dev/Prod** | docker-compose séparés |
+| **Image size** | ~150MB (vs 1GB+ without optimization) |
+| **Security** | Non-root user, minimal files |
+| **Healthcheck** | `/api/health` endpoint |
+| **Dev/Prod** | Separate docker-compose files |
 
-## Commandes associées
+## Related commands
 
-- `/ops:ops-ci` - Pipeline CI avec build Docker
-- `/ops:ops-k8s` - Déploiement Kubernetes
-- `/qa:qa-security` - Scan de vulnérabilités image
+- `/ops:ops-ci` - CI pipeline with Docker build
+- `/ops:ops-k8s` - Kubernetes deployment
+- `/qa:qa-security` - Image vulnerability scan
 
 ---
 
-:::tip Scan de sécurité
-Scannez votre image avec Trivy :
+:::tip Security scan
+Scan your image with Trivy:
 ```bash
 trivy image myapp:latest
 ```

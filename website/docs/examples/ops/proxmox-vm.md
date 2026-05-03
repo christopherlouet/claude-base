@@ -1,34 +1,34 @@
 ---
 sidebar_position: 4
-title: VM Proxmox
-description: Exemple de VM Proxmox avec Terraform et cloud-init
+title: Proxmox VM
+description: Example Proxmox VM with Terraform and cloud-init
 ---
 
-# VM Proxmox avec Terraform
+# Proxmox VM with Terraform
 
-Cet exemple montre comment créer une VM Proxmox avec Terraform, cloud-init et configuration automatisée.
+This example shows how to create a Proxmox VM with Terraform, cloud-init, and automated configuration.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/ops:ops-proxmox "Créer une VM Ubuntu avec cloud-init et configuration réseau"
+/ops:ops-proxmox "Create an Ubuntu VM with cloud-init and network configuration"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 infrastructure/
-├── main.tf              # VM et ressources
-├── providers.tf         # Configuration Proxmox
+├── main.tf              # VM and resources
+├── providers.tf         # Proxmox configuration
 ├── variables.tf         # Variables
 ├── outputs.tf           # Outputs
-├── terraform.tfvars     # Valeurs (non committé)
+├── terraform.tfvars     # Values (not committed)
 └── cloud-init/
-    ├── user-data.yaml   # Configuration cloud-init
+    ├── user-data.yaml   # Cloud-init configuration
     └── network-config.yaml
 ```
 
-## Code Terraform
+## Terraform code
 
 ### `providers.tf`
 
@@ -64,24 +64,24 @@ provider "proxmox" {
 # ====================
 
 variable "proxmox_endpoint" {
-  description = "URL de l'API Proxmox (ex: https://pve.example.com:8006)"
+  description = "Proxmox API URL (e.g., https://pve.example.com:8006)"
   type        = string
 }
 
 variable "proxmox_api_token" {
-  description = "Token API Proxmox (format: user@realm!token=secret)"
+  description = "Proxmox API token (format: user@realm!token=secret)"
   type        = string
   sensitive   = true
 }
 
 variable "proxmox_insecure" {
-  description = "Ignorer la vérification SSL (dev only)"
+  description = "Skip SSL verification (dev only)"
   type        = bool
   default     = false
 }
 
 variable "target_node" {
-  description = "Node Proxmox cible"
+  description = "Target Proxmox node"
   type        = string
   default     = "pve"
 }
@@ -91,61 +91,61 @@ variable "target_node" {
 # ====================
 
 variable "vm_name" {
-  description = "Nom de la VM"
+  description = "VM name"
   type        = string
 
   validation {
     condition     = can(regex("^[a-z0-9-]+$", var.vm_name))
-    error_message = "Le nom doit contenir uniquement des lettres minuscules, chiffres et tirets."
+    error_message = "Name must contain only lowercase letters, digits, and hyphens."
   }
 }
 
 variable "vm_id" {
-  description = "ID de la VM (100-999999)"
+  description = "VM ID (100-999999)"
   type        = number
 
   validation {
     condition     = var.vm_id >= 100 && var.vm_id <= 999999
-    error_message = "L'ID doit être entre 100 et 999999."
+    error_message = "ID must be between 100 and 999999."
   }
 }
 
 variable "vm_description" {
-  description = "Description de la VM"
+  description = "VM description"
   type        = string
   default     = "Managed by Terraform"
 }
 
 variable "cores" {
-  description = "Nombre de coeurs CPU"
+  description = "Number of CPU cores"
   type        = number
   default     = 2
 
   validation {
     condition     = var.cores >= 1 && var.cores <= 128
-    error_message = "Le nombre de coeurs doit être entre 1 et 128."
+    error_message = "Number of cores must be between 1 and 128."
   }
 }
 
 variable "memory" {
-  description = "Mémoire en MB"
+  description = "Memory in MB"
   type        = number
   default     = 2048
 
   validation {
     condition     = var.memory >= 512 && var.memory <= 524288
-    error_message = "La mémoire doit être entre 512 MB et 512 GB."
+    error_message = "Memory must be between 512 MB and 512 GB."
   }
 }
 
 variable "disk_size" {
-  description = "Taille du disque en GB"
+  description = "Disk size in GB"
   type        = number
   default     = 20
 }
 
 variable "datastore" {
-  description = "Datastore pour le disque"
+  description = "Datastore for the disk"
   type        = string
   default     = "local-lvm"
 }
@@ -155,29 +155,29 @@ variable "datastore" {
 # ====================
 
 variable "bridge" {
-  description = "Bridge réseau"
+  description = "Network bridge"
   type        = string
   default     = "vmbr0"
 }
 
 variable "vlan_id" {
-  description = "VLAN ID (null pour aucun VLAN)"
+  description = "VLAN ID (null for no VLAN)"
   type        = number
   default     = null
 }
 
 variable "ip_address" {
-  description = "Adresse IP avec CIDR (ex: 10.0.10.11/24)"
+  description = "IP address with CIDR (e.g., 10.0.10.11/24)"
   type        = string
 }
 
 variable "gateway" {
-  description = "Passerelle par défaut"
+  description = "Default gateway"
   type        = string
 }
 
 variable "dns_servers" {
-  description = "Serveurs DNS"
+  description = "DNS servers"
   type        = list(string)
   default     = ["1.1.1.1", "8.8.8.8"]
 }
@@ -187,30 +187,30 @@ variable "dns_servers" {
 # ====================
 
 variable "cloud_image_url" {
-  description = "URL de l'image cloud"
+  description = "Cloud image URL"
   type        = string
   default     = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
 }
 
 variable "username" {
-  description = "Nom d'utilisateur à créer"
+  description = "Username to create"
   type        = string
   default     = "ubuntu"
 }
 
 variable "ssh_public_key" {
-  description = "Clé SSH publique"
+  description = "SSH public key"
   type        = string
 }
 
 variable "packages" {
-  description = "Packages à installer"
+  description = "Packages to install"
   type        = list(string)
   default     = ["qemu-guest-agent", "curl", "wget", "htop", "vim"]
 }
 
 variable "runcmd" {
-  description = "Commandes à exécuter au premier boot"
+  description = "Commands to run on first boot"
   type        = list(string)
   default     = []
 }
@@ -220,7 +220,7 @@ variable "runcmd" {
 # ====================
 
 variable "tags" {
-  description = "Tags pour la VM"
+  description = "VM tags"
   type        = list(string)
   default     = []
 }
@@ -241,7 +241,7 @@ resource "proxmox_virtual_environment_download_file" "cloud_image" {
   url       = var.cloud_image_url
   file_name = "ubuntu-22.04-cloudimg-amd64.img"
 
-  # Vérifier le checksum (optionnel mais recommandé)
+  # Verify the checksum (optional but recommended)
   # checksum = "sha256:..."
 }
 
@@ -258,7 +258,7 @@ resource "proxmox_virtual_environment_file" "cloud_config" {
     data = yamlencode({
       "#cloud-config" = null
 
-      # Utilisateur
+      # User
       users = [
         {
           name                = var.username
@@ -274,22 +274,22 @@ resource "proxmox_virtual_environment_file" "cloud_config" {
       package_upgrade = true
       packages        = var.packages
 
-      # Configuration système
+      # System configuration
       timezone = "Europe/Paris"
       locale   = "en_US.UTF-8"
 
-      # Commandes au premier boot
+      # Commands on first boot
       runcmd = concat([
-        # Activer qemu-guest-agent
+        # Enable qemu-guest-agent
         "systemctl enable qemu-guest-agent",
         "systemctl start qemu-guest-agent",
 
-        # Désactiver les mises à jour automatiques en prod
+        # Disable automatic updates in prod
         "systemctl disable apt-daily.timer",
         "systemctl disable apt-daily-upgrade.timer",
       ], var.runcmd)
 
-      # Message de fin
+      # Final message
       final_message = "VM ${var.vm_name} ready after $UPTIME seconds"
     })
 
@@ -309,14 +309,14 @@ resource "proxmox_virtual_environment_vm" "main" {
 
   tags = var.tags
 
-  # Agent QEMU
+  # QEMU agent
   agent {
     enabled = true
     timeout = "15m"
     trim    = true
   }
 
-  # Démarrage
+  # Startup
   on_boot  = true
   started  = true
   boot_order = ["scsi0"]
@@ -328,13 +328,13 @@ resource "proxmox_virtual_environment_vm" "main" {
     type    = "x86-64-v2-AES"
   }
 
-  # Mémoire
+  # Memory
   memory {
     dedicated = var.memory
-    floating  = 0  # Pas de ballooning
+    floating  = 0  # No ballooning
   }
 
-  # Disque système
+  # System disk
   disk {
     datastore_id = var.datastore
     file_id      = proxmox_virtual_environment_download_file.cloud_image.id
@@ -345,10 +345,10 @@ resource "proxmox_virtual_environment_vm" "main" {
     iothread     = true
   }
 
-  # Contrôleur SCSI
+  # SCSI controller
   scsi_hardware = "virtio-scsi-single"
 
-  # Réseau
+  # Network
   network_device {
     bridge  = var.bridge
     model   = "virtio"
@@ -376,14 +376,14 @@ resource "proxmox_virtual_environment_vm" "main" {
     user_data_file_id = proxmox_virtual_environment_file.cloud_config.id
   }
 
-  # Éviter de recréer pour les changements cloud-init
+  # Avoid recreation for cloud-init changes
   lifecycle {
     ignore_changes = [
       initialization[0].user_data_file_id,
     ]
   }
 
-  # Serial console (requis pour cloud-init)
+  # Serial console (required for cloud-init)
   serial_device {}
 
   # VGA
@@ -393,10 +393,10 @@ resource "proxmox_virtual_environment_vm" "main" {
 }
 
 # ====================
-# DNS Record (optionnel)
+# DNS Record (optional)
 # ====================
 
-# Si vous utilisez un provider DNS
+# If you use a DNS provider
 # resource "cloudflare_record" "vm" {
 #   zone_id = var.cloudflare_zone_id
 #   name    = var.vm_name
@@ -410,27 +410,27 @@ resource "proxmox_virtual_environment_vm" "main" {
 
 ```hcl
 output "vm_id" {
-  description = "ID de la VM"
+  description = "VM ID"
   value       = proxmox_virtual_environment_vm.main.vm_id
 }
 
 output "vm_name" {
-  description = "Nom de la VM"
+  description = "VM name"
   value       = proxmox_virtual_environment_vm.main.name
 }
 
 output "ip_address" {
-  description = "Adresse IP de la VM"
+  description = "VM IP address"
   value       = split("/", var.ip_address)[0]
 }
 
 output "ssh_command" {
-  description = "Commande SSH pour se connecter"
+  description = "SSH command to connect"
   value       = "ssh ${var.username}@${split("/", var.ip_address)[0]}"
 }
 
 output "mac_address" {
-  description = "Adresse MAC de la VM"
+  description = "VM MAC address"
   value       = proxmox_virtual_environment_vm.main.network_device[0].mac_address
 }
 ```
@@ -441,7 +441,7 @@ output "mac_address" {
 # Proxmox
 proxmox_endpoint  = "https://pve.example.com:8006"
 proxmox_api_token = "root@pam!terraform=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-proxmox_insecure  = true  # false en production avec cert valide
+proxmox_insecure  = true  # false in production with valid cert
 target_node       = "pve"
 
 # VM
@@ -453,7 +453,7 @@ cores     = 2
 memory    = 4096
 disk_size = 40
 
-# Réseau
+# Network
 bridge     = "vmbr0"
 vlan_id    = 10
 ip_address = "10.0.10.11/24"
@@ -477,28 +477,28 @@ runcmd = [
 tags = ["web", "production"]
 ```
 
-## Déploiement
+## Deployment
 
 ```bash
-# Initialiser
+# Initialize
 terraform init
 
-# Planifier
+# Plan
 terraform plan -var-file="terraform.tfvars"
 
-# Appliquer
+# Apply
 terraform apply -var-file="terraform.tfvars"
 
-# Se connecter
+# Connect
 eval $(terraform output -raw ssh_command)
 ```
 
-## Créer plusieurs VMs
+## Create multiple VMs
 
 ```hcl
 # variables.tf
 variable "vms" {
-  description = "Map des VMs à créer"
+  description = "Map of VMs to create"
   type = map(object({
     vm_id      = number
     cores      = number
@@ -525,7 +525,7 @@ resource "proxmox_virtual_environment_vm" "cluster" {
     dedicated = each.value.memory
   }
 
-  # ... reste de la config
+  # ... rest of the config
 }
 
 # terraform.tfvars
@@ -557,26 +557,26 @@ vms = {
 }
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
-| **Provider** | bpg/proxmox (recommandé) |
-| **Cloud-Init** | Configuration YAML complète |
-| **Réseau** | VLAN, IP statique, DNS |
-| **Sécurité** | SSH key, pas de password |
-| **Scalabilité** | `for_each` pour clusters |
+| **Provider** | bpg/proxmox (recommended) |
+| **Cloud-Init** | Full YAML configuration |
+| **Network** | VLAN, static IP, DNS |
+| **Security** | SSH key, no password |
+| **Scalability** | `for_each` for clusters |
 
-## Commandes associées
+## Related commands
 
-- `/ops:ops-proxmox` - Commande dédiée Proxmox
-- `/ops:ops-infra-code` - Modules Terraform génériques
-- `/ops:ops-backup` - Configuration backup Proxmox
+- `/ops:ops-proxmox` - Dedicated Proxmox command
+- `/ops:ops-infra-code` - Generic Terraform modules
+- `/ops:ops-backup` - Proxmox backup configuration
 
 ---
 
-:::tip Templates Proxmox
-Créez un template cloud-init une fois, puis clonez-le pour accélérer les déploiements :
+:::tip Proxmox templates
+Create a cloud-init template once, then clone it to speed up deployments:
 ```bash
 qm template 9000
 ```

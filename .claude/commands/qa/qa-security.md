@@ -1,49 +1,49 @@
-# Agent SECURITY
+# SECURITY Agent
 
-Audit de sécurité basé sur OWASP Top 10.
+Security audit based on OWASP Top 10.
 
-## Cible de l'audit
+## Audit target
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Identifier les vulnérabilités de sécurité dans le code et proposer des remédiations concrètes.
+Identify security vulnerabilities in the code and propose concrete remediations.
 
-Utilise le skill `qa-security` pour la checklist OWASP Top 10 détaillée et les patterns de recherche.
+Use the `qa-security` skill for the detailed OWASP Top 10 checklist and search patterns.
 
-## Catégories OWASP à vérifier
+## OWASP categories to check
 
 A01 Broken Access Control | A02 Cryptographic Failures | A03 Injection | A04 Insecure Design | A05 Security Misconfiguration | A06 Vulnerable Components | A07 Authentication Failures | A08 Data Integrity Failures | A09 Logging Failures | A10 SSRF
 
-## Output attendu
+## Expected output
 
-### Résumé
-- **Niveau de risque global**: [Critique/Élevé/Moyen/Faible]
-- **Vulnérabilités trouvées**: [nombre]
+### Summary
+- **Overall risk level**: [Critical/High/Medium/Low]
+- **Vulnerabilities found**: [count]
 
-### Vulnérabilités détaillées
-| Sévérité | Catégorie | Fichier:Ligne | Description | Remediation |
-|----------|-----------|---------------|-------------|-------------|
+### Detailed vulnerabilities
+| Severity | Category | File:Line | Description | Remediation |
+|----------|----------|-----------|-------------|-------------|
 
-### Recommandations prioritaires
-1. [Action immédiate]
-2. [Action court terme]
-3. [Action moyen terme]
+### Priority recommendations
+1. [Immediate action]
+2. [Short-term action]
+3. [Mid-term action]
 
-## Agents liés
+## Related agents
 
-| Agent | Quand l'utiliser |
-|-------|------------------|
-| `/qa:qa-audit` | Audit complet (inclut sécu) |
-| `/legal:legal-rgpd` | Conformité données personnelles |
-| `/ops:ops-deps` | Vérifier les vulnérabilités deps |
+| Agent | When to use |
+|-------|-------------|
+| `/qa:qa-audit` | Full audit (includes security) |
+| `/legal:legal-rgpd` | Personal data compliance |
+| `/ops:ops-deps` | Check dependency vulnerabilities |
 
 ---
 
-IMPORTANT: La sécurité n'est pas optionnelle - traiter les vulnérabilités critiques immédiatement.
+IMPORTANT: Security is not optional - address critical vulnerabilities immediately.
 
-YOU MUST vérifier les 10 catégories OWASP sans exception.
+YOU MUST check the 10 OWASP categories without exception.
 
-NEVER exposer de secrets, tokens ou credentials dans le code.
+NEVER expose secrets, tokens or credentials in the code.
 
-Think hard sur chaque vecteur d'attaque. Sois exhaustif.
+Think hard about every attack vector. Be exhaustive.

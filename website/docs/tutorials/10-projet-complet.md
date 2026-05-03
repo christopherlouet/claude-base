@@ -1,96 +1,96 @@
 ---
 sidebar_position: 11
-title: "10 - Projet complet : TaskFlow"
-description: "Projet fil rouge : construisez un mini-SaaS de A a Z en utilisant tout le workflow du socle"
+title: "10 - Complete project: TaskFlow"
+description: "Capstone project: build a mini-SaaS from A to Z using the full foundation workflow"
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# Projet complet : TaskFlow
+# Complete project: TaskFlow
 
-<DifficultyBadge level="advanced" /> **Duree estimee : 3-4 heures**
+<DifficultyBadge level="advanced" /> **Estimated duration: 3-4 hours**
 
-Ce tutoriel est le point de convergence de tous les tutoriels precedents. Vous allez construire **TaskFlow**, un mini-SaaS de gestion de taches, de la definition du MVP jusqu'au deploiement en production, en utilisant chaque composant du socle dans son contexte reel.
+This tutorial is the convergence point of all the previous tutorials. You will build **TaskFlow**, a mini-SaaS for task management, from MVP definition through to production deployment, using each component of the foundation in its real context.
 
-Ce tutoriel ne vous montre pas "comment coder" une API. Il vous montre **comment utiliser le socle** pour construire un produit complet avec qualite et methode.
+This tutorial does not show you "how to code" an API. It shows you **how to use the foundation** to build a complete product with quality and method.
 
-## Objectifs
+## Objectives
 
-A la fin de ce tutoriel, vous saurez :
-- Enchainer les phases **Explore -> Specify -> Plan -> TDD -> Audit -> Commit -> PR -> Deploy** sur un vrai projet
-- Choisir la bonne commande au bon moment
-- Gerer les decisions d'architecture avec Claude
-- Traiter les echecs d'audit et les corriger en boucle
-- Produire une release versionnee avec documentation
+By the end of this tutorial, you will know how to:
+- Chain the **Explore -> Specify -> Plan -> TDD -> Audit -> Commit -> PR -> Deploy** phases on a real project
+- Choose the right command at the right time
+- Manage architecture decisions with Claude
+- Handle audit failures and fix them in a loop
+- Produce a versioned release with documentation
 
 ## Prerequisites
 
-- Tutoriels 01 a 06 completes (workflow de base, TDD, CI/CD)
-- Node.js 20+ et npm installe
-- Git configure avec un compte GitHub
-- Claude Code fonctionnel avec le socle
+- Tutorials 01 to 06 completed (basic workflow, TDD, CI/CD)
+- Node.js 20+ and npm installed
+- Git configured with a GitHub account
+- Claude Code working with the foundation
 
-## Ce que vous allez construire
+## What you will build
 
-**TaskFlow** est une application de gestion de taches minimaliste :
+**TaskFlow** is a minimalist task management application:
 
 ```
 Backend (Node.js + TypeScript + Express)
-  - Authentification JWT (inscription, connexion, logout)
-  - CRUD taches (creer, lire, modifier, supprimer)
-  - Filtres : statut (todo/in-progress/done), priorite (low/medium/high), date limite
+  - JWT authentication (signup, login, logout)
+  - Task CRUD (create, read, update, delete)
+  - Filters: status (todo/in-progress/done), priority (low/medium/high), due date
 
 Frontend (React + TypeScript)
-  - Page de connexion / inscription
-  - Liste des taches avec filtres
-  - Formulaire de creation / modification
+  - Login / signup page
+  - Task list with filters
+  - Create / edit form
 
-Qualite
-  - Tests unitaires et d'integration (Jest, Supertest)
-  - Audit securite OWASP
-  - Pipeline GitHub Actions
+Quality
+  - Unit and integration tests (Jest, Supertest)
+  - OWASP security audit
+  - GitHub Actions pipeline
   - Docker + docker-compose
 ```
 
-## Vue d'ensemble du workflow
+## Workflow overview
 
 ```
-Phase 1  Init          (30 min)  -> Projet, CLAUDE.md, .env
+Phase 1  Init          (30 min)  -> Project, CLAUDE.md, .env
 Phase 2  Specification (30 min)  -> MVP, User Stories, Personas
-Phase 3  Architecture  (30 min)  -> Plan, schema DB, decisions tech
+Phase 3  Architecture  (30 min)  -> Plan, DB schema, tech decisions
 Phase 4  Backend TDD   (60 min)  -> Auth, CRUD, OpenAPI
-Phase 5  Frontend TDD  (45 min)  -> Composants, integration
-Phase 6  Qualite       (30 min)  -> Audit securite, boucle qa-loop
+Phase 5  Frontend TDD  (45 min)  -> Components, integration
+Phase 6  Quality       (30 min)  -> Security audit, qa-loop loop
 Phase 7  CI/CD         (30 min)  -> GitHub Actions, Docker, PR
 Phase 8  Release       (15 min)  -> README, CHANGELOG, tag v1.0.0
 ```
 
 ---
 
-## Phase 1 : Initialisation (30 min)
+## Phase 1: Initialization (30 min)
 
-### 1.1 Creer le projet et le depot Git
+### 1.1 Create the project and the Git repository
 
 ```bash
 mkdir taskflow && cd taskflow
 git init
-git remote add origin https://github.com/votre-username/taskflow.git
+git remote add origin https://github.com/your-username/taskflow.git
 ```
 
-Initialisez la structure de base du projet :
+Initialize the project's basic structure:
 
 ```bash
 mkdir -p backend/src frontend/src
 touch backend/package.json frontend/package.json
 ```
 
-### 1.2 Configurer les variables d'environnement
+### 1.2 Configure environment variables
 
 ```bash
-/ops:ops-env "Application Node.js avec JWT, base de donnees SQLite pour dev, PostgreSQL pour prod"
+/ops:ops-env "Node.js application with JWT, SQLite database for dev, PostgreSQL for prod"
 ```
 
-Claude va generer deux fichiers. D'abord `.env.example` (commite dans Git) :
+Claude will generate two files. First `.env.example` (committed in Git):
 
 ```bash
 # Application
@@ -104,210 +104,210 @@ JWT_EXPIRES_IN=7d
 
 # Database
 DATABASE_URL=./taskflow.db
-# En production : postgresql://user:password@host:5432/taskflow
+# In production: postgresql://user:password@host:5432/taskflow
 
 # Frontend
 VITE_API_URL=http://localhost:3000/api
 ```
 
-Puis `.env` (dans `.gitignore`, avec vos vraies valeurs de dev).
+Then `.env` (in `.gitignore`, with your real dev values).
 
-:::warning Securite
-Ne committez jamais `.env`. Verifiez que `.gitignore` contient bien `.env` avant de continuer.
+:::warning Security
+Never commit `.env`. Verify that `.gitignore` does contain `.env` before continuing.
 :::
 
-### 1.3 Configurer CLAUDE.md
+### 1.3 Configure CLAUDE.md
 
-Creez `CLAUDE.md` a la racine du projet avec les conventions specifiques a TaskFlow :
+Create `CLAUDE.md` at the root of the project with the conventions specific to TaskFlow:
 
 ```markdown
 # TaskFlow
 
-API de gestion de taches avec authentification JWT.
+Task management API with JWT authentication.
 
 ## Stack
-- Backend : Node.js 20, Express, TypeScript strict, Zod, Prisma, SQLite (dev) / PostgreSQL (prod)
-- Frontend : React 18, TypeScript strict, Vite, React Query
-- Tests : Jest, Supertest (backend), Vitest, React Testing Library (frontend)
+- Backend: Node.js 20, Express, TypeScript strict, Zod, Prisma, SQLite (dev) / PostgreSQL (prod)
+- Frontend: React 18, TypeScript strict, Vite, React Query
+- Tests: Jest, Supertest (backend), Vitest, React Testing Library (frontend)
 
 ## Conventions
-- camelCase pour variables et fonctions
-- PascalCase pour classes et composants React
-- kebab-case pour noms de fichiers
-- Prefixe `I` interdit pour interfaces TypeScript
-- Couverture minimum : 80%
+- camelCase for variables and functions
+- PascalCase for classes and React components
+- kebab-case for file names
+- `I` prefix forbidden for TypeScript interfaces
+- Minimum coverage: 80%
 
-## Structure backend
+## Backend structure
 src/
   routes/      # Express routes
-  services/    # Logique metier
-  models/      # Types et interfaces
-  middleware/  # Auth, validation, erreurs
-  schemas/     # Validation Zod
+  services/    # Business logic
+  models/      # Types and interfaces
+  middleware/  # Auth, validation, errors
+  schemas/     # Zod validation
 
 ## Workflow
-Toujours : Explore -> Plan -> TDD -> Audit -> Commit
+Always: Explore -> Plan -> TDD -> Audit -> Commit
 ```
 
 ---
 
-## Phase 2 : Specification (30 min)
+## Phase 2: Specification (30 min)
 
-### 2.1 Definir le MVP
+### 2.1 Define the MVP
 
 ```bash
-/biz:biz-mvp "Application SaaS de gestion de taches pour developpeurs individuels et petites equipes"
+/biz:biz-mvp "SaaS task management application for individual developers and small teams"
 ```
 
-Claude analyse le domaine et propose une priorisation MoSCoW :
+Claude analyzes the domain and proposes a MoSCoW prioritization:
 
 ```
-## MVP TaskFlow
+## TaskFlow MVP
 
 ### P1 - Must Have (v1.0)
-- Inscription et connexion securisee
-- CRUD taches complet
-- Statuts : todo / in-progress / done
-- Priorites : low / medium / high
-- Date limite par tache
+- Secure signup and login
+- Complete task CRUD
+- Statuses: todo / in-progress / done
+- Priorities: low / medium / high
+- Due date per task
 
 ### P2 - Should Have (v1.1)
-- Filtrage et recherche
-- Tags personnalises
+- Filtering and search
+- Custom tags
 - Pagination
 
 ### P3 - Could Have (v1.2)
-- Notifications email (echeance)
-- Partage de taches entre utilisateurs
-- Vue kanban
+- Email notifications (deadline)
+- Task sharing between users
+- Kanban view
 
 ### P4 - Won't Have (v1.0)
-- Application mobile native
-- Integrations tierces (Jira, Linear)
+- Native mobile app
+- Third-party integrations (Jira, Linear)
 ```
 
-Validez ce perimetre. Le P1 est votre cible pour ce tutoriel.
+Validate this scope. The P1 is your target for this tutorial.
 
-### 2.2 Generer les User Stories
+### 2.2 Generate the User Stories
 
 ```bash
-/work:work-specify "API de gestion de taches TaskFlow avec authentification JWT et CRUD taches"
+/work:work-specify "TaskFlow task management API with JWT authentication and task CRUD"
 ```
 
-Claude produit `spec.md` avec les User Stories en format Given/When/Then. Extrait :
+Claude produces `spec.md` with the User Stories in Given/When/Then format. Excerpt:
 
 ```markdown
-## User Stories - Authentification
+## User Stories - Authentication
 
-### US-01 : Inscription
-**P1** | En tant que nouvel utilisateur, je veux creer un compte
-pour acceder a TaskFlow.
+### US-01: Signup
+**P1** | As a new user, I want to create an account
+to access TaskFlow.
 
-**Criteres d'acceptation :**
-- Given un email valide et un mot de passe >= 8 caracteres
-- When je soumets le formulaire d'inscription
-- Then mon compte est cree et je recois un token JWT
+**Acceptance criteria:**
+- Given a valid email and a password >= 8 characters
+- When I submit the signup form
+- Then my account is created and I receive a JWT token
 
-- Given un email deja utilise
-- When je tente de m'inscrire
-- Then je recois une erreur 409 Conflict
+- Given an email already in use
+- When I try to sign up
+- Then I receive a 409 Conflict error
 
-### US-02 : Connexion
-**P1** | En tant qu'utilisateur inscrit, je veux me connecter
-pour acceder a mes taches.
+### US-02: Login
+**P1** | As a registered user, I want to log in
+to access my tasks.
 
 ...
 
-## User Stories - Taches
+## User Stories - Tasks
 
-### US-03 : Creer une tache
-**P1** | En tant qu'utilisateur connecte, je veux creer une tache
-avec titre, description, priorite et date limite.
+### US-03: Create a task
+**P1** | As a logged-in user, I want to create a task
+with title, description, priority and due date.
 
-**Criteres d'acceptation :**
-- Given un utilisateur authentifie avec les champs obligatoires (titre)
-- When je soumets la creation
-- Then la tache est creee avec statut "todo" par defaut
+**Acceptance criteria:**
+- Given an authenticated user with the required fields (title)
+- When I submit the creation
+- Then the task is created with status "todo" by default
 
-- Given un titre vide
-- When je soumets la creation
-- Then je recois une erreur 400 avec message explicite
+- Given an empty title
+- When I submit the creation
+- Then I receive a 400 error with an explicit message
 
 ...
 ```
 
-### 2.3 Creer les personas
+### 2.3 Create the personas
 
 ```bash
-/biz:biz-personas "Utilisateurs de TaskFlow"
+/biz:biz-personas "TaskFlow users"
 ```
 
-Claude genere deux personas principaux :
+Claude generates two main personas:
 
 ```
-## Persona 1 : Alex - Developpeur Solo
+## Persona 1: Alex - Solo Developer
 
-Age : 28 ans
-Role : Freelance full-stack
-Usage : Gere ses projets clients et ses side-projects
-Frustration : Les outils existants sont trop complexes pour un usage solo
-Besoin : Interface simple, API propre pour integration dans son workflow CLI
-Quote : "Je veux juste savoir ce que j'ai a faire aujourd'hui"
+Age: 28
+Role: Full-stack freelancer
+Usage: Manages client projects and side-projects
+Frustration: Existing tools are too complex for solo use
+Need: Simple interface, clean API for integration into CLI workflow
+Quote: "I just want to know what I have to do today"
 
-## Persona 2 : Sarah - Tech Lead
+## Persona 2: Sarah - Tech Lead
 
-Age : 35 ans
-Role : Lead dev dans une startup (equipe de 8)
-Usage : Coordonne les taches de son equipe
-Frustration : Trop de friction dans les outils actuels, onboarding difficile
-Besoin : Visibilite sur l'avancement, filtres par membre et par sprint
-Quote : "Je veux voir en un coup d'oeil ce qui bloque"
+Age: 35
+Role: Lead dev in a startup (team of 8)
+Usage: Coordinates her team's tasks
+Frustration: Too much friction in current tools, hard onboarding
+Need: Visibility on progress, filters by member and by sprint
+Quote: "I want to see at a glance what's blocked"
 ```
 
-Ces personas guideront vos decisions UX dans la phase frontend.
+These personas will guide your UX decisions in the frontend phase.
 
 ---
 
-## Phase 3 : Architecture et Plan (30 min)
+## Phase 3: Architecture and Plan (30 min)
 
-### 3.1 Generer le plan d'implementation
+### 3.1 Generate the implementation plan
 
 ```bash
-/work:work-plan "Backend Express + TypeScript pour TaskFlow selon spec.md : auth JWT, CRUD taches, validation Zod, tests Jest"
+/work:work-plan "Express + TypeScript backend for TaskFlow following spec.md: JWT auth, task CRUD, Zod validation, Jest tests"
 ```
 
-Claude produit `plan.md` avec la structure complete :
+Claude produces `plan.md` with the complete structure:
 
 ```
-## Plan d'implementation : TaskFlow Backend
+## Implementation plan: TaskFlow Backend
 
-### Structure des fichiers a creer
+### File structure to create
 backend/
   src/
-    app.ts              # Express app (sans listen)
-    server.ts           # Point d'entree (avec listen)
+    app.ts              # Express app (without listen)
+    server.ts           # Entry point (with listen)
     routes/
       auth.ts           # POST /auth/register, POST /auth/login
       tasks.ts          # CRUD /tasks
     services/
-      auth.service.ts   # Logique inscription/connexion
-      task.service.ts   # Logique CRUD taches
+      auth.service.ts   # Signup/login logic
+      task.service.ts   # Task CRUD logic
     middleware/
-      auth.middleware.ts # Verification JWT
-      error.middleware.ts # Gestion erreurs centralisee
+      auth.middleware.ts # JWT verification
+      error.middleware.ts # Centralized error handling
     schemas/
-      auth.schema.ts    # Zod : RegisterInput, LoginInput
-      task.schema.ts    # Zod : CreateTaskInput, UpdateTaskInput
+      auth.schema.ts    # Zod: RegisterInput, LoginInput
+      task.schema.ts    # Zod: CreateTaskInput, UpdateTaskInput
     models/
-      user.model.ts     # Interface User
-      task.model.ts     # Interface Task, TaskStatus, TaskPriority
+      user.model.ts     # User interface
+      task.model.ts     # Task, TaskStatus, TaskPriority interfaces
   prisma/
-    schema.prisma       # Schema DB
+    schema.prisma       # DB schema
   tests/
     auth.test.ts
     tasks.test.ts
 
-### Dependances
+### Dependencies
 - express, @types/express
 - zod (validation)
 - prisma, @prisma/client
@@ -315,44 +315,44 @@ backend/
 - jest, supertest (tests)
 - typescript, ts-node
 
-### Risques identifies
-1. Migration SQLite -> PostgreSQL : utiliser Prisma pour l'abstraction
-2. Tokens JWT en memoire en dev : prevoir refresh token pour v1.1
-3. Race conditions sur les taches partagees : hors scope v1.0
+### Identified risks
+1. SQLite -> PostgreSQL migration: use Prisma for the abstraction
+2. In-memory JWT tokens in dev: plan refresh token for v1.1
+3. Race conditions on shared tasks: out of scope v1.0
 ```
 
-### 3.2 Decision technique : framework HTTP
+### 3.2 Technical decision: HTTP framework
 
-Claude propose les options et leurs compromis :
+Claude proposes the options and their tradeoffs:
 
 ```
-Question : Express ou Fastify pour le backend ?
+Question: Express or Fastify for the backend?
 
 Express
-  Pour : Ecosysteme mature, middleware abondant, connu de tous
-  Contre : Moins performant, pas de validation native
+  Pro: Mature ecosystem, abundant middleware, known by everyone
+  Con: Less performant, no native validation
 
 Fastify
-  Pour : Plus rapide, validation JSON Schema native, TypeScript first
-  Contre : Ecosysteme plus petit, moins de ressources communautaires
+  Pro: Faster, native JSON Schema validation, TypeScript first
+  Con: Smaller ecosystem, fewer community resources
 
-Recommandation pour TaskFlow :
-  Express avec Zod - meilleur choix car :
-  - Equipe probablement familiere avec Express
-  - Zod offre une validation TypeScript superieure au JSON Schema
-  - La performance n'est pas critique pour un MVP
-  - Migration vers Fastify possible apres v1.0 si besoin
+Recommendation for TaskFlow:
+  Express with Zod - best choice because:
+  - Team likely familiar with Express
+  - Zod offers TypeScript validation superior to JSON Schema
+  - Performance is not critical for an MVP
+  - Migration to Fastify possible after v1.0 if needed
 ```
 
-On choisit Express + Zod. Cette decision est documentee dans `plan.md`.
+We choose Express + Zod. This decision is documented in `plan.md`.
 
-### 3.3 Schema de base de donnees
+### 3.3 Database schema
 
 ```bash
-/ops:ops-database "Schema Prisma pour TaskFlow : User (email, password hash, timestamps) et Task (title, description, status, priority, dueDate, userId foreign key)"
+/ops:ops-database "Prisma schema for TaskFlow: User (email, password hash, timestamps) and Task (title, description, status, priority, dueDate, userId foreign key)"
 ```
 
-Claude genere `prisma/schema.prisma` :
+Claude generates `prisma/schema.prisma`:
 
 ```prisma
 generator client {
@@ -360,7 +360,7 @@ generator client {
 }
 
 datasource db {
-  provider = env("DATABASE_PROVIDER") // "sqlite" ou "postgresql"
+  provider = env("DATABASE_PROVIDER") // "sqlite" or "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -399,18 +399,18 @@ enum TaskPriority {
 }
 ```
 
-### 3.4 Documenter l'architecture
+### 3.4 Document the architecture
 
 ```bash
-/doc:doc-architecture "Architecture TaskFlow : Express backend, React frontend, Prisma ORM, JWT auth"
+/doc:doc-architecture "TaskFlow architecture: Express backend, React frontend, Prisma ORM, JWT auth"
 ```
 
-Claude genere `docs/architecture.md` avec un diagramme ASCII :
+Claude generates `docs/architecture.md` with an ASCII diagram:
 
 ```
-## Architecture TaskFlow
+## TaskFlow Architecture
 
-### Vue d'ensemble
+### Overview
 
   [React Frontend]
         |
@@ -427,7 +427,7 @@ Claude genere `docs/architecture.md` avec un diagramme ASCII :
          |
     [SQLite / PostgreSQL]
 
-### Flux d'authentification
+### Authentication flow
 
   Client -> POST /auth/register -> Hash password (bcrypt) -> Prisma create -> JWT token
   Client -> POST /auth/login    -> Verify password         -> Prisma find  -> JWT token
@@ -436,19 +436,19 @@ Claude genere `docs/architecture.md` avec un diagramme ASCII :
 
 ---
 
-## Phase 4 : Developpement TDD - Backend (60 min)
+## Phase 4: TDD Development - Backend (60 min)
 
-### 4.1 Module d'authentification
+### 4.1 Authentication module
 
-Commencez par le module le plus critique : l'authentification.
+Start with the most critical module: authentication.
 
 ```bash
-/dev:dev-tdd "Module d'authentification JWT pour TaskFlow : inscription avec hash bcrypt, connexion avec verification, generation de token"
+/dev:dev-tdd "JWT authentication module for TaskFlow: signup with bcrypt hash, login with verification, token generation"
 ```
 
-Claude suit le cycle **Red -> Green -> Refactor**.
+Claude follows the **Red -> Green -> Refactor** cycle.
 
-**RED - Les tests qui echouent d'abord :**
+**RED - The tests that fail first:**
 
 ```typescript
 // tests/auth.test.ts
@@ -501,26 +501,26 @@ describe('POST /auth/register', () => {
 });
 ```
 
-Claude lance les tests : **tous echouent** (routes non implementees). C'est normal, c'est le cycle Red.
+Claude runs the tests: **all fail** (routes not implemented). That's normal, it's the Red part of the cycle.
 
-**GREEN - Implementation minimale :**
+**GREEN - Minimal implementation:**
 
-Claude cree `src/routes/auth.ts`, `src/services/auth.service.ts` et `src/schemas/auth.schema.ts`. Les tests passent un a un.
+Claude creates `src/routes/auth.ts`, `src/services/auth.service.ts` and `src/schemas/auth.schema.ts`. The tests pass one by one.
 
-**REFACTOR - Ameliorations :**
+**REFACTOR - Improvements:**
 
-Apres que tous les tests passent, Claude propose :
-- Extraire la generation de token dans un helper `src/lib/jwt.ts`
-- Centraliser la gestion des erreurs dans `src/middleware/error.middleware.ts`
-- Typer les reponses avec des interfaces dans `src/models/`
+After all the tests pass, Claude proposes:
+- Extract token generation into a helper `src/lib/jwt.ts`
+- Centralize error handling in `src/middleware/error.middleware.ts`
+- Type the responses with interfaces in `src/models/`
 
-Commitez apres le refactoring :
+Commit after the refactoring:
 
 ```bash
 /work:work-commit
 ```
 
-Message suggere par Claude :
+Message suggested by Claude:
 
 ```
 feat(auth): add JWT authentication module
@@ -533,24 +533,24 @@ feat(auth): add JWT authentication module
 - Add integration tests (coverage: 94%)
 ```
 
-### 4.2 CRUD des taches
+### 4.2 Task CRUD
 
 ```bash
-/dev:dev-tdd "CRUD complet des taches pour TaskFlow : creer, lire (liste + detail), modifier, supprimer, avec auth middleware"
+/dev:dev-tdd "Complete task CRUD for TaskFlow: create, read (list + detail), update, delete, with auth middleware"
 ```
 
-Claude suit le meme cycle. Les tests couvrent les cas d'acces non autorise (tache d'un autre utilisateur) :
+Claude follows the same cycle. The tests cover unauthorized access cases (task belonging to another user):
 
 ```typescript
-// tests/tasks.test.ts - extrait
+// tests/tasks.test.ts - excerpt
 describe('GET /tasks/:id', () => {
   it("should return 403 if task belongs to another user", async () => {
-    // Creer deux utilisateurs et une tache pour le premier
+    // Create two users and a task for the first one
     const { token: token1 } = await createUserAndLogin('user1@test.com');
     const { token: token2 } = await createUserAndLogin('user2@test.com');
-    const task = await createTask(token1, { title: 'Ma tache privee' });
+    const task = await createTask(token1, { title: 'My private task' });
 
-    // L'utilisateur 2 tente d'acceder a la tache de l'utilisateur 1
+    // User 2 tries to access user 1's task
     const response = await request(app)
       .get(`/tasks/${task.id}`)
       .set('Authorization', `Bearer ${token2}`)
@@ -561,9 +561,9 @@ describe('GET /tasks/:id', () => {
 });
 ```
 
-Ce test d'isolation est crucial pour la securite. Claude l'identifie et l'inclut automatiquement grace a la rule `security` du socle.
+This isolation test is crucial for security. Claude identifies it and includes it automatically thanks to the foundation's `security` rule.
 
-Commitez :
+Commit:
 
 ```bash
 /work:work-commit
@@ -580,20 +580,20 @@ feat(tasks): add CRUD endpoints with ownership validation
 - Add integration tests (coverage: 87%)
 ```
 
-### 4.3 Documentation OpenAPI
+### 4.3 OpenAPI documentation
 
 ```bash
 /doc:doc-api-spec
 ```
 
-Claude genere `docs/openapi.yaml`. Extrait :
+Claude generates `docs/openapi.yaml`. Excerpt:
 
 ```yaml
 openapi: 3.0.3
 info:
   title: TaskFlow API
   version: 1.0.0
-  description: API de gestion de taches avec authentification JWT
+  description: Task management API with JWT authentication
 
 security:
   - bearerAuth: []
@@ -602,7 +602,7 @@ paths:
   /auth/register:
     post:
       tags: [Authentication]
-      summary: Creer un compte
+      summary: Create an account
       security: []
       requestBody:
         required: true
@@ -615,7 +615,7 @@ paths:
               password: password123
       responses:
         '201':
-          description: Compte cree
+          description: Account created
           content:
             application/json:
               schema:
@@ -628,7 +628,7 @@ paths:
   /tasks:
     get:
       tags: [Tasks]
-      summary: Liste des taches de l'utilisateur connecte
+      summary: List tasks of the logged-in user
       parameters:
         - name: status
           in: query
@@ -640,12 +640,12 @@ paths:
             $ref: '#/components/schemas/TaskPriority'
       responses:
         '200':
-          description: Liste des taches
+          description: Task list
           ...
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-# ... (suite des endpoints)
+# ... (remaining endpoints)
 
 components:
   securitySchemes:
@@ -657,23 +657,23 @@ components:
 
 ---
 
-## Phase 5 : Developpement TDD - Frontend (45 min)
+## Phase 5: TDD Development - Frontend (45 min)
 
-### 5.1 Composant TaskList
+### 5.1 TaskList component
 
 ```bash
-/dev:dev-component "TaskList component pour TaskFlow : affiche la liste des taches avec statut, priorite, date limite. Props : tasks (Task[]), onStatusChange, onDelete"
+/dev:dev-component "TaskList component for TaskFlow: displays the task list with status, priority, due date. Props: tasks (Task[]), onStatusChange, onDelete"
 ```
 
-Claude genere le composant avec ses tests :
+Claude generates the component with its tests:
 
 ```typescript
-// frontend/src/components/TaskList.test.tsx - extrait
+// frontend/src/components/TaskList.test.tsx - excerpt
 describe('TaskList', () => {
   const mockTasks: Task[] = [
     {
       id: '1',
-      title: 'Corriger le bug auth',
+      title: 'Fix the auth bug',
       status: 'IN_PROGRESS',
       priority: 'HIGH',
       dueDate: '2026-04-10',
@@ -684,7 +684,7 @@ describe('TaskList', () => {
 
   it('should render all tasks', () => {
     render(<TaskList tasks={mockTasks} onStatusChange={vi.fn()} onDelete={vi.fn()} />);
-    expect(screen.getByText('Corriger le bug auth')).toBeInTheDocument();
+    expect(screen.getByText('Fix the auth bug')).toBeInTheDocument();
   });
 
   it('should call onStatusChange when status badge is clicked', async () => {
@@ -697,26 +697,26 @@ describe('TaskList', () => {
 });
 ```
 
-Comme dans le tutoriel 02, Claude genere composant, tests et stories Storybook si detecte.
+As in tutorial 02, Claude generates component, tests and Storybook stories if detected.
 
-### 5.2 Composant TaskForm
-
-```bash
-/dev:dev-component "TaskForm component : formulaire de creation/modification de tache avec validation client (titre obligatoire, date future)"
-```
-
-Claude genere un formulaire avec React Hook Form (ou state natif selon le contexte du projet) et validation cote client.
-
-### 5.3 Integration frontend-backend
+### 5.2 TaskForm component
 
 ```bash
-/dev:dev-tdd "Integration frontend TaskFlow : hook useTaskApi qui wrap les appels API avec React Query, gestion des erreurs 401 avec redirect vers login"
+/dev:dev-component "TaskForm component: task create/edit form with client-side validation (title required, future date)"
 ```
 
-Claude cree `src/hooks/useTaskApi.ts` en TDD :
+Claude generates a form with React Hook Form (or native state depending on the project context) and client-side validation.
+
+### 5.3 Frontend-backend integration
+
+```bash
+/dev:dev-tdd "TaskFlow frontend integration: useTaskApi hook that wraps the API calls with React Query, 401 error handling with redirect to login"
+```
+
+Claude creates `src/hooks/useTaskApi.ts` in TDD:
 
 ```typescript
-// Test : redirection vers /login sur 401
+// Test: redirect to /login on 401
 it('should redirect to login when API returns 401', async () => {
   server.use(
     http.get('/api/tasks', () => HttpResponse.json({ error: 'Unauthorized' }, { status: 401 }))
@@ -732,7 +732,7 @@ it('should redirect to login when API returns 401', async () => {
 });
 ```
 
-Commitez le frontend :
+Commit the frontend:
 
 ```bash
 /work:work-commit
@@ -750,101 +750,101 @@ feat(frontend): add task management UI
 
 ---
 
-## Phase 6 : Qualite et Securite (30 min)
+## Phase 6: Quality and Security (30 min)
 
-### 6.1 Audit de securite OWASP
+### 6.1 OWASP security audit
 
-Comme dans le tutoriel 05, lancez l'audit complet :
+As in tutorial 05, run the full audit:
 
 ```bash
 /qa:qa-security
 ```
 
-Resultat initial (exemple realiste) :
+Initial result (realistic example):
 
 ```markdown
-## Audit Securite OWASP - TaskFlow
+## OWASP Security Audit - TaskFlow
 
-### Critiques (2)
+### Critical (2)
 
-#### A07 - Token JWT sans expiration courte
-Fichier : src/lib/jwt.ts:8
-Probleme : expiresIn: '30d' - duree excessive
-Risque : Token vole utilisable 30 jours
-Fix : Reduire a 15m + implementer refresh token
+#### A07 - JWT token without short expiration
+File: src/lib/jwt.ts:8
+Issue: expiresIn: '30d' - excessive duration
+Risk: Stolen token usable for 30 days
+Fix: Reduce to 15m + implement refresh token
 
 #### A05 - Rate limiting absent
-Probleme : Aucun rate limiting sur /auth/login
-Risque : Attaque brute force sur les mots de passe
-Fix : Installer express-rate-limit, 5 tentatives/15min sur /auth
+Issue: No rate limiting on /auth/login
+Risk: Brute force attack on passwords
+Fix: Install express-rate-limit, 5 attempts/15min on /auth
 
-### Eleves (2)
+### High (2)
 
-#### A02 - Mot de passe en log potentiel
-Fichier : src/middleware/error.middleware.ts:22
-Probleme : console.log(err) peut exposer req.body
-Fix : Logger uniquement err.message, jamais req.body
+#### A02 - Password potentially logged
+File: src/middleware/error.middleware.ts:22
+Issue: console.log(err) may expose req.body
+Fix: Log only err.message, never req.body
 
-#### A01 - Absence de pagination forcee
-Probleme : GET /tasks sans limite retourne toutes les taches
-Risque : Enumeration de donnees, DDOS
-Fix : Ajouter limit/offset avec maximum de 100 items
+#### A01 - Missing forced pagination
+Issue: GET /tasks without limit returns all tasks
+Risk: Data enumeration, DDOS
+Fix: Add limit/offset with maximum of 100 items
 
-### Score initial : 67/100
+### Initial score: 67/100
 ```
 
-Claude identifie 4 problemes. Corrigez les 2 critiques manuellement ou en demandant a Claude :
+Claude identifies 4 issues. Fix the 2 critical ones manually or by asking Claude:
 
 ```bash
-/qa:qa-security "Corriger les problemes critiques identifies : JWT expiration et rate limiting"
+/qa:qa-security "Fix the critical issues identified: JWT expiration and rate limiting"
 ```
 
-### 6.2 Boucle d'audit iteratif
+### 6.2 Iterative audit loop
 
 ```bash
 /qa:qa-loop "score 90"
 ```
 
-La boucle audit-fix-reaudit s'execute automatiquement. Voici le deroulement reel :
+The audit-fix-reaudit loop runs automatically. Here is the actual flow:
 
-**Iteration 1 - Score : 72**
-
-```
-Problemes P0 restants :
-- Rate limiting non configure sur /auth/login
-- JWT expiration encore a 30d dans .env.example
-
-Actions :
-1. Ajout express-rate-limit (5 req/15min sur /auth)
-2. Mise a jour .env.example : JWT_EXPIRES_IN=15m
-3. Ajout commentaire sur la necessite d'un refresh token en v1.1
-```
-
-**Iteration 2 - Score : 85**
+**Iteration 1 - Score: 72**
 
 ```
-Problemes P1 restants :
-- Logging insuffisant (tentatives de connexion echouees non loguees)
-- Pagination absente sur GET /tasks
-- Headers de securite manquants (X-Content-Type-Options, X-Frame-Options)
+Remaining P0 issues:
+- Rate limiting not configured on /auth/login
+- JWT expiration still at 30d in .env.example
 
-Actions :
-1. Ajout helmet pour les headers de securite
-2. Ajout winston logger pour les evenements auth
-3. Ajout parametres limit/offset sur GET /tasks (max 100)
+Actions:
+1. Add express-rate-limit (5 req/15min on /auth)
+2. Update .env.example: JWT_EXPIRES_IN=15m
+3. Add comment about the need for a refresh token in v1.1
 ```
 
-**Iteration 3 - Score : 92**
+**Iteration 2 - Score: 85**
 
 ```
-Score 92 > 90. Critere atteint.
+Remaining P1 issues:
+- Insufficient logging (failed login attempts not logged)
+- Pagination missing on GET /tasks
+- Missing security headers (X-Content-Type-Options, X-Frame-Options)
 
-Problemes P2 restants (non bloquants) :
-- HTTPS non configure (normal en dev, a traiter en prod via proxy)
-- CSP header restrictif recommande (a fine-tuner selon les assets frontend)
+Actions:
+1. Add helmet for security headers
+2. Add winston logger for auth events
+3. Add limit/offset parameters on GET /tasks (max 100)
 ```
 
-La boucle s'arrete. Commitez les corrections :
+**Iteration 3 - Score: 92**
+
+```
+Score 92 > 90. Criterion met.
+
+Remaining P2 issues (non-blocking):
+- HTTPS not configured (normal in dev, to handle in prod via proxy)
+- Restrictive CSP header recommended (to fine-tune based on frontend assets)
+```
+
+The loop stops. Commit the fixes:
 
 ```bash
 /work:work-commit
@@ -861,22 +861,22 @@ fix(security): address OWASP audit findings
 - Security score: 67 -> 92
 ```
 
-### 6.3 Audit de performance
+### 6.3 Performance audit
 
 ```bash
 /qa:qa-perf
 ```
 
-Claude identifie deux points d'amelioration :
+Claude identifies two improvement points:
 
 ```
-1. Index manquant sur tasks.userId
-   Impact : Full scan a chaque GET /tasks
-   Fix : Ajouter @index dans le schema Prisma
+1. Missing index on tasks.userId
+   Impact: Full scan on every GET /tasks
+   Fix: Add @index in the Prisma schema
 
-2. Pas de compression HTTP
-   Impact : Reponses non compressees
-   Fix : Ajouter compression middleware
+2. No HTTP compression
+   Impact: Uncompressed responses
+   Fix: Add compression middleware
 ```
 
 ```bash
@@ -892,17 +892,17 @@ perf(api): add database index and HTTP compression
 
 ---
 
-## Phase 7 : CI/CD et Deploiement (30 min)
+## Phase 7: CI/CD and Deployment (30 min)
 
-### 7.1 Pipeline GitHub Actions
+### 7.1 GitHub Actions pipeline
 
-Comme dans le tutoriel 06 :
+As in tutorial 06:
 
 ```bash
-/ops:ops-ci "Pipeline CI pour TaskFlow : lint + typecheck, tests backend (Jest), tests frontend (Vitest), audit securite, build Docker"
+/ops:ops-ci "CI pipeline for TaskFlow: lint + typecheck, backend tests (Jest), frontend tests (Vitest), security audit, Docker build"
 ```
 
-Claude genere `.github/workflows/ci.yml` :
+Claude generates `.github/workflows/ci.yml`:
 
 ```yaml
 name: CI
@@ -982,16 +982,16 @@ jobs:
         run: docker build -t taskflow-web ./frontend
 ```
 
-### 7.2 Dockeriser l'application
+### 7.2 Dockerize the application
 
 ```bash
-/ops:ops-docker "Dockeriser TaskFlow : backend Express sur port 3000, frontend React/Vite en build statique servi par Nginx"
+/ops:ops-docker "Dockerize TaskFlow: Express backend on port 3000, React/Vite frontend as static build served by Nginx"
 ```
 
-Claude genere `backend/Dockerfile`, `frontend/Dockerfile` et `docker-compose.yml` :
+Claude generates `backend/Dockerfile`, `frontend/Dockerfile` and `docker-compose.yml`:
 
 ```yaml
-# docker-compose.yml - extrait
+# docker-compose.yml - excerpt
 version: '3.8'
 
 services:
@@ -1031,87 +1031,87 @@ volumes:
   postgres_data:
 ```
 
-Testez localement :
+Test locally:
 
 ```bash
 docker-compose up --build
 ```
 
-### 7.3 Creer la Pull Request
+### 7.3 Create the Pull Request
 
 ```bash
 /work:work-pr
 ```
 
-Claude analyse tous les commits depuis `main` et genere une PR complete. Extrait du corps genere :
+Claude analyzes all the commits since `main` and generates a complete PR. Excerpt of the generated body:
 
 ```markdown
 ## TaskFlow v1.0.0
 
-### Ce que cette PR apporte
+### What this PR brings
 
-Implementation complete du MVP TaskFlow :
-authentification JWT, CRUD taches avec validation et isolation par utilisateur,
-frontend React avec filtres, pipeline CI/CD et packaging Docker.
+Complete implementation of the TaskFlow MVP:
+JWT authentication, task CRUD with validation and per-user isolation,
+React frontend with filters, CI/CD pipeline and Docker packaging.
 
-### Changements
+### Changes
 
 **Backend**
-- Authentification JWT (inscription, connexion)
-- CRUD taches avec isolation par utilisateur
-- Validation Zod sur tous les inputs
-- Rate limiting sur les endpoints auth
-- Headers de securite (helmet)
-- Pagination sur GET /tasks
-- Documentation OpenAPI
+- JWT authentication (signup, login)
+- Task CRUD with per-user isolation
+- Zod validation on all inputs
+- Rate limiting on auth endpoints
+- Security headers (helmet)
+- Pagination on GET /tasks
+- OpenAPI documentation
 
 **Frontend**
-- Page connexion / inscription
-- Liste des taches avec filtres statut/priorite
-- Formulaire creation / modification
-- Gestion des erreurs API (401 redirect)
+- Login / signup page
+- Task list with status/priority filters
+- Create / edit form
+- API error handling (401 redirect)
 
-**Qualite**
-- Couverture tests backend : 87%
-- Couverture tests frontend : 82%
-- Score securite OWASP : 92/100
-- Pipeline CI/CD complet
+**Quality**
+- Backend test coverage: 87%
+- Frontend test coverage: 82%
+- OWASP security score: 92/100
+- Complete CI/CD pipeline
 
 ### Tests
-- [ ] Backend : `cd backend && npm test`
-- [ ] Frontend : `cd frontend && npm test`
-- [ ] Docker : `docker-compose up --build`
-- [ ] API doc : http://localhost:3000/api-docs
+- [ ] Backend: `cd backend && npm test`
+- [ ] Frontend: `cd frontend && npm test`
+- [ ] Docker: `docker-compose up --build`
+- [ ] API doc: http://localhost:3000/api-docs
 ```
 
 ---
 
-## Phase 8 : Documentation et Release (15 min)
+## Phase 8: Documentation and Release (15 min)
 
-### 8.1 Generer le README
+### 8.1 Generate the README
 
 ```bash
 /doc:doc-generate
 ```
 
-Claude produit `README.md` avec badges CI, description, quick start et liens vers la documentation :
+Claude produces `README.md` with CI badges, description, quick start and links to the documentation:
 
 ```markdown
 # TaskFlow
 
-![CI](https://github.com/votre-username/taskflow/workflows/CI/badge.svg)
-![Coverage](https://codecov.io/gh/votre-username/taskflow/branch/main/graph/badge.svg)
+![CI](https://github.com/your-username/taskflow/workflows/CI/badge.svg)
+![Coverage](https://codecov.io/gh/your-username/taskflow/branch/main/graph/badge.svg)
 
-Mini-SaaS de gestion de taches avec authentification JWT.
-Construit avec Express + TypeScript + React.
+Mini-SaaS for task management with JWT authentication.
+Built with Express + TypeScript + React.
 
 ## Quick Start
 
-# Avec Docker
+# With Docker
 cp .env.example .env
 docker-compose up
 
-# En local (dev)
+# Locally (dev)
 cd backend && npm install && npm run dev
 cd frontend && npm install && npm run dev
 
@@ -1122,13 +1122,13 @@ cd frontend && npm install && npm run dev
 - [Contributing](./CONTRIBUTING.md)
 ```
 
-### 8.2 Generer le CHANGELOG
+### 8.2 Generate the CHANGELOG
 
 ```bash
 /doc:doc-changelog
 ```
 
-Claude analyse l'historique git et genere `CHANGELOG.md` :
+Claude analyzes the git history and generates `CHANGELOG.md`:
 
 ```markdown
 # Changelog
@@ -1152,129 +1152,129 @@ Claude analyse l'historique git et genere `CHANGELOG.md` :
 - Input validation via Zod
 ```
 
-### 8.3 Taguer la release v1.0.0
+### 8.3 Tag the release v1.0.0
 
 ```bash
 /ops:ops-release "v1.0.0"
 ```
 
-Claude verifie la checklist pre-release et cree le tag :
+Claude verifies the pre-release checklist and creates the tag:
 
 ```
-Checklist pre-release :
-[x] Tests passent (CI vert)
-[x] CHANGELOG mis a jour
-[x] README a jour
-[x] Version dans package.json : 1.0.0
-[x] Aucun TODO critique ouvert
+Pre-release checklist:
+[x] Tests pass (CI green)
+[x] CHANGELOG updated
+[x] README up to date
+[x] Version in package.json: 1.0.0
+[x] No critical TODO open
 
-Creation du tag :
+Tag creation:
   git tag -a v1.0.0 -m "feat: TaskFlow v1.0.0 - MVP release"
   git push origin v1.0.0
 ```
 
 ---
 
-## Recapitulatif des commandes utilisees
+## Recap of commands used
 
-| Phase | Commande | Ce qu'elle a produit |
-|-------|----------|---------------------|
-| Init | `/ops:ops-env` | `.env.example`, `.gitignore` configure |
-| Spec | `/biz:biz-mvp` | Priorisation MoSCoW P1-P4 |
-| Spec | `/work:work-specify` | `spec.md` avec User Stories Given/When/Then |
+| Phase | Command | What it produced |
+|-------|---------|------------------|
+| Init | `/ops:ops-env` | `.env.example`, `.gitignore` configured |
+| Spec | `/biz:biz-mvp` | MoSCoW prioritization P1-P4 |
+| Spec | `/work:work-specify` | `spec.md` with Given/When/Then User Stories |
 | Spec | `/biz:biz-personas` | 2 personas (Alex, Sarah) |
-| Archi | `/work:work-plan` | `plan.md` : structure fichiers, dependances, risques |
+| Archi | `/work:work-plan` | `plan.md`: file structure, dependencies, risks |
 | Archi | `/ops:ops-database` | `prisma/schema.prisma` |
-| Archi | `/doc:doc-architecture` | `docs/architecture.md` avec diagramme ASCII |
-| Dev | `/dev:dev-tdd` | Tests + implementation auth et CRUD (cycle Red/Green/Refactor) |
-| Dev | `/dev:dev-api` | Endpoints REST documentes |
-| Dev | `/dev:dev-component` | Composants React avec tests |
+| Archi | `/doc:doc-architecture` | `docs/architecture.md` with ASCII diagram |
+| Dev | `/dev:dev-tdd` | Tests + auth and CRUD implementation (Red/Green/Refactor cycle) |
+| Dev | `/dev:dev-api` | Documented REST endpoints |
+| Dev | `/dev:dev-component` | React components with tests |
 | Dev | `/doc:doc-api-spec` | `docs/openapi.yaml` |
-| Qualite | `/qa:qa-security` | Rapport OWASP (67 -> 92) |
-| Qualite | `/qa:qa-loop "score 90"` | 3 iterations audit-fix automatiques |
-| Qualite | `/qa:qa-perf` | Index DB + compression HTTP |
+| Quality | `/qa:qa-security` | OWASP report (67 -> 92) |
+| Quality | `/qa:qa-loop "score 90"` | 3 automatic audit-fix iterations |
+| Quality | `/qa:qa-perf` | DB index + HTTP compression |
 | CI/CD | `/ops:ops-ci` | `.github/workflows/ci.yml` |
 | CI/CD | `/ops:ops-docker` | `Dockerfile` x2 + `docker-compose.yml` |
-| CI/CD | `/work:work-pr` | PR avec description generee |
-| Release | `/doc:doc-generate` | `README.md` avec badges |
+| CI/CD | `/work:work-pr` | PR with generated description |
+| Release | `/doc:doc-generate` | `README.md` with badges |
 | Release | `/doc:doc-changelog` | `CHANGELOG.md` |
 | Release | `/ops:ops-release` | Tag `v1.0.0` |
-| Commits | `/work:work-commit` | 7 commits atomiques Conventional Commits |
+| Commits | `/work:work-commit` | 7 atomic Conventional Commits |
 
-**Total : 20 commandes, 8 phases, 1 produit complet.**
-
----
-
-## Ce que vous avez appris
-
-1. **Le workflow complet en conditions reelles** : Explore -> Specify -> Plan -> TDD -> Audit -> Commit -> PR -> Deploy ne sont pas des etapes optionnelles, elles ont chacune produit quelque chose de concret.
-
-2. **La specification avant le code** : Les User Stories Given/When/Then ont guide les tests (`/work:work-specify`), les personas ont influence l'UX (`/biz:biz-personas`).
-
-3. **L'architecture comme decision documentee** : Le choix Express vs Fastify est trace, le schema Prisma est genere une fois et sert de source de verite.
-
-4. **Le TDD comme filet de securite** : Les tests d'isolation (acces interdit a la tache d'un autre utilisateur) ont ete ecrits avant le code. Sans TDD, ce cas aurait probablement ete oublie.
-
-5. **L'audit iteratif** : Passer de 67 a 92 en 3 iterations avec `/qa:qa-loop` est plus efficace que de tout corriger manuellement apres coup.
-
-6. **Les commits atomiques** : 7 commits lisibles valent mieux qu'un commit geant "feat: add everything". Chaque commit est referencable, revertable, comprehensible.
-
-7. **La documentation generee** : OpenAPI, README, CHANGELOG et architecture sont des sous-produits du workflow, pas une corvee separee.
+**Total: 20 commands, 8 phases, 1 complete product.**
 
 ---
 
-## Pour aller plus loin
+## What you have learned
 
-TaskFlow v1.0.0 est en production. Voici les prochaines etapes possibles :
+1. **The complete workflow in real conditions**: Explore -> Specify -> Plan -> TDD -> Audit -> Commit -> PR -> Deploy are not optional steps, each one produced something concrete.
 
-**v1.1 - Features manquantes**
-- Refresh tokens JWT
-- Filtres et recherche avancee
-- Tags personnalises
+2. **Specification before code**: The Given/When/Then User Stories guided the tests (`/work:work-specify`), the personas influenced the UX (`/biz:biz-personas`).
+
+3. **Architecture as a documented decision**: The Express vs Fastify choice is traced, the Prisma schema is generated once and serves as the source of truth.
+
+4. **TDD as a safety net**: The isolation tests (forbidden access to another user's task) were written before the code. Without TDD, this case would probably have been forgotten.
+
+5. **Iterative audit**: Going from 67 to 92 in 3 iterations with `/qa:qa-loop` is more efficient than fixing everything manually after the fact.
+
+6. **Atomic commits**: 7 readable commits are worth more than one giant "feat: add everything" commit. Each commit is referenceable, revertable, understandable.
+
+7. **Generated documentation**: OpenAPI, README, CHANGELOG and architecture are by-products of the workflow, not a separate chore.
+
+---
+
+## Going further
+
+TaskFlow v1.0.0 is in production. Here are the possible next steps:
+
+**v1.1 - Missing features**
+- JWT refresh tokens
+- Advanced filters and search
+- Custom tags
 
 ```bash
-/work:work-flow-feature "Refresh token JWT pour TaskFlow"
+/work:work-flow-feature "JWT refresh token for TaskFlow"
 ```
 
 **Operations**
-- Monitoring et alertes
+- Monitoring and alerts
 
 ```bash
-/ops:ops-monitoring "TaskFlow API : metriques request rate, error rate, latence p99"
+/ops:ops-monitoring "TaskFlow API: request rate, error rate, p99 latency metrics"
 ```
 
-- Tests de charge avant mise en production
+- Load testing before production rollout
 
 ```bash
-/ops:ops-load-testing "TaskFlow API : 100 utilisateurs concurrents sur GET /tasks"
+/ops:ops-load-testing "TaskFlow API: 100 concurrent users on GET /tasks"
 ```
 
-**Qualite continue**
-- Audit RGPD
+**Continuous quality**
+- GDPR audit
 
 ```bash
-/legal:legal-rgpd "TaskFlow stocke des emails et donnees utilisateur"
+/legal:legal-rgpd "TaskFlow stores emails and user data"
 ```
 
-- Amelioration continue
+- Continuous improvement
 
 ```bash
-/qa:qa-kaizen "TaskFlow v1.0.0 : identifier les axes d'amelioration PDCA prioritaires"
+/qa:qa-kaizen "TaskFlow v1.0.0: identify priority PDCA improvement axes"
 ```
 
 ---
 
-- [Guide API](/docs/concepts/stack-recipes) - Bonnes pratiques API REST
-- [Guide Web](/docs/concepts/stack-recipes) - Architecture frontend avancee
-- [Guide Auth](/docs/concepts/stack-recipes) - OAuth2, RBAC, securite avancee
-- [Guide Testing](/docs/concepts/stack-recipes) - Strategie de tests au-dela du TDD
-- [Guide Database](/docs/concepts/stack-recipes) - Indexation, migrations, optimisation
-- [Guide Observabilite](/docs/concepts/stack-recipes) - Logs, metriques, traces en production
-- [Etendre le socle](/docs/guides/extending-guide) - Creer vos propres rules, skills et agents
-- [Guide Equipe](/docs/guides/team-guide) - Configurer le socle pour une equipe
+- [API Guide](/docs/concepts/stack-recipes) - REST API best practices
+- [Web Guide](/docs/concepts/stack-recipes) - Advanced frontend architecture
+- [Auth Guide](/docs/concepts/stack-recipes) - OAuth2, RBAC, advanced security
+- [Testing Guide](/docs/concepts/stack-recipes) - Testing strategy beyond TDD
+- [Database Guide](/docs/concepts/stack-recipes) - Indexing, migrations, optimization
+- [Observability Guide](/docs/concepts/stack-recipes) - Logs, metrics, traces in production
+- [Extend the foundation](/docs/guides/extending-guide) - Create your own rules, skills and agents
+- [Team Guide](/docs/guides/team-guide) - Configure the foundation for a team
 
 ---
 
-:::tip Le secret du workflow
-La valeur du socle n'est pas dans les commandes individuelles - c'est dans leur enchainement. Chaque phase alimente la suivante : la spec guide les tests, les tests guident l'implementation, l'audit valide le tout. Reproduisez ce workflow sur vos prochains projets et ajustez-le a votre contexte.
+:::tip The secret of the workflow
+The value of the foundation is not in the individual commands - it is in their chaining. Each phase feeds the next: the spec guides the tests, the tests guide the implementation, the audit validates everything. Reproduce this workflow on your next projects and adjust it to your context.
 :::

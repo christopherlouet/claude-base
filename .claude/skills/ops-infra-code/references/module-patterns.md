@@ -1,41 +1,41 @@
 # Module Development Patterns
 
-> **Partie de :** [infrastructure-as-code](../SKILL.md)
-> **Objectif :** Bonnes pratiques pour le developpement de modules Terraform/OpenTofu
+> **Part of:** [infrastructure-as-code](../SKILL.md)
+> **Goal:** Best practices for Terraform/OpenTofu module development
 
 ---
 
-## Table des Matieres
+## Table of Contents
 
-1. [Hierarchie des Modules](#hierarchie-des-modules)
-2. [Principes d'Architecture](#principes-darchitecture)
-3. [Structure de Module](#structure-de-module)
-4. [Bonnes Pratiques Variables](#bonnes-pratiques-variables)
-5. [Bonnes Pratiques Outputs](#bonnes-pratiques-outputs)
-6. [Patterns Courants](#patterns-courants)
-7. [Anti-patterns a Eviter](#anti-patterns-a-eviter)
+1. [Module Hierarchy](#module-hierarchy)
+2. [Architecture Principles](#architecture-principles)
+3. [Module Structure](#module-structure)
+4. [Variables Best Practices](#variables-best-practices)
+5. [Outputs Best Practices](#outputs-best-practices)
+6. [Common Patterns](#common-patterns)
+7. [Anti-patterns to Avoid](#anti-patterns-to-avoid)
 
 ---
 
-## Hierarchie des Modules
+## Module Hierarchy
 
-### Classification des Types de Modules
+### Module Type Classification
 
-| Type | Quand utiliser | Portee | Exemple |
-|------|----------------|--------|---------|
-| **Resource Module** | Groupe logique de ressources connectees | Ressources etroitement couplees | VPC + subnets, Security group + rules |
-| **Infrastructure Module** | Collection de resource modules | Plusieurs modules dans une region/compte | Stack reseau complete |
-| **Composition** | Infrastructure complete | Couvre plusieurs regions/comptes | Deploiement multi-region |
+| Type | When to use | Scope | Example |
+|------|-------------|-------|---------|
+| **Resource Module** | Logical group of connected resources | Tightly coupled resources | VPC + subnets, Security group + rules |
+| **Infrastructure Module** | Collection of resource modules | Multiple modules in a region/account | Full network stack |
+| **Composition** | Complete infrastructure | Spans multiple regions/accounts | Multi-region deployment |
 
 ### Resource Module
 
-**Caracteristiques :**
-- Plus petit bloc de construction
-- Groupe logique unique de ressources
-- Hautement reutilisable
-- Dependances externes minimales
+**Characteristics:**
+- Smallest building block
+- Single logical group of resources
+- Highly reusable
+- Minimal external dependencies
 
-**Exemple :**
+**Example:**
 ```
 modules/
 ├── vpc/                    # Resource module
@@ -50,12 +50,12 @@ modules/
 
 ### Infrastructure Module
 
-**Caracteristiques :**
-- Combine plusieurs resource modules
-- Specifique a un objectif (ex: "infrastructure application web")
-- Reutilisabilite moderee
+**Characteristics:**
+- Combines multiple resource modules
+- Specific to a goal (e.g., "web application infrastructure")
+- Moderate reusability
 
-**Exemple :**
+**Example:**
 ```hcl
 # modules/web-application/main.tf
 module "vpc" {
@@ -76,13 +76,13 @@ module "ecs" {
 
 ### Composition
 
-**Caracteristiques :**
-- Plus haut niveau d'abstraction
-- Environnement ou application complete
-- Specifique a l'environnement (dev, staging, prod)
-- Non reutilisable (valeurs specifiques)
+**Characteristics:**
+- Highest level of abstraction
+- Complete environment or application
+- Environment-specific (dev, staging, prod)
+- Not reusable (specific values)
 
-**Structure :**
+**Structure:**
 ```
 environments/
 ├── prod/
@@ -98,20 +98,20 @@ environments/
 
 ---
 
-## Principes d'Architecture
+## Architecture Principles
 
-### 1. Portees Plus Petites = Meilleures Performances + Blast Radius Reduit
+### 1. Smaller Scopes = Better Performance + Reduced Blast Radius
 
-**Avantages :**
-- Operations `terraform plan` et `apply` plus rapides
-- Echecs isoles n'affectent pas l'infrastructure non concernee
-- Plus facile de raisonner sur les changements
-- Developpement parallele par plusieurs equipes
+**Benefits:**
+- Faster `terraform plan` and `apply` operations
+- Isolated failures don't affect unrelated infrastructure
+- Easier to reason about changes
+- Parallel development by multiple teams
 
-### 2. Toujours Utiliser Remote State
+### 2. Always Use Remote State
 
 ```hcl
-# BON - Remote state
+# GOOD - Remote state
 terraform {
   backend "s3" {
     bucket         = "my-terraform-state"
@@ -123,13 +123,13 @@ terraform {
 }
 ```
 
-**Pourquoi :**
-- Previent les race conditions
-- Fournit disaster recovery
-- Permet collaboration d'equipe
-- Supporte le state locking
+**Why:**
+- Prevents race conditions
+- Provides disaster recovery
+- Enables team collaboration
+- Supports state locking
 
-### 3. Utiliser terraform_remote_state comme Glue
+### 3. Use terraform_remote_state as Glue
 
 ```hcl
 # environments/prod/compute/main.tf
@@ -152,22 +152,22 @@ module "ec2" {
 
 ---
 
-## Structure de Module
+## Module Structure
 
-### Layout Standard
+### Standard Layout
 
 ```
 my-module/
-├── README.md               # Documentation d'usage
-├── LICENSE                 # MIT ou Apache 2.0 (modules publics)
-├── .pre-commit-config.yaml # Configuration pre-commit hooks
-├── main.tf                 # Ressources principales
-├── variables.tf            # Variables d'entree
-├── outputs.tf              # Valeurs de sortie
-├── versions.tf             # Contraintes de versions
+├── README.md               # Usage documentation
+├── LICENSE                 # MIT or Apache 2.0 (public modules)
+├── .pre-commit-config.yaml # Pre-commit hooks configuration
+├── main.tf                 # Main resources
+├── variables.tf            # Input variables
+├── outputs.tf              # Output values
+├── versions.tf             # Version constraints
 ├── examples/
-│   ├── simple/             # Exemple minimal
-│   └── complete/           # Exemple complet
+│   ├── simple/             # Minimal example
+│   └── complete/           # Complete example
 └── tests/
     └── module_test.tftest.hcl
 ```
@@ -222,52 +222,52 @@ secrets/
 
 ---
 
-## Bonnes Pratiques Variables
+## Variables Best Practices
 
-### Exemple Complet
+### Complete Example
 
 ```hcl
 variable "instance_type" {
-  description = "Type d'instance EC2 pour le serveur applicatif"
+  description = "EC2 instance type for the application server"
   type        = string
   default     = "t3.micro"
 
   validation {
     condition     = contains(["t3.micro", "t3.small", "t3.medium"], var.instance_type)
-    error_message = "Le type doit etre t3.micro, t3.small, ou t3.medium."
+    error_message = "Type must be t3.micro, t3.small, or t3.medium."
   }
 }
 
 variable "tags" {
-  description = "Tags a appliquer a toutes les ressources"
+  description = "Tags to apply to all resources"
   type        = map(string)
   default     = {}
 }
 
 variable "enable_monitoring" {
-  description = "Activer CloudWatch detailed monitoring"
+  description = "Enable CloudWatch detailed monitoring"
   type        = bool
   default     = true
 }
 ```
 
-### Principes Cles
+### Key Principles
 
-- **Toujours inclure `description`** - Aide a comprendre la variable
-- **Utiliser des contraintes `type` explicites** - Detecte les erreurs tot
-- **Fournir des valeurs `default` sensees** - Quand appropriee
-- **Ajouter des blocs `validation`** - Pour contraintes complexes
-- **Utiliser `sensitive = true`** - Pour les secrets
+- **Always include `description`** - Helps understand the variable
+- **Use explicit `type` constraints** - Catches errors early
+- **Provide sensible `default` values** - When appropriate
+- **Add `validation` blocks** - For complex constraints
+- **Use `sensitive = true`** - For secrets
 
-### Nommage des Variables
+### Variable Naming
 
 ```hcl
-# BON : Specifique au contexte
-var.vpc_cidr_block          # Pas juste "cidr"
-var.database_instance_class # Pas juste "instance_class"
-var.application_port        # Pas juste "port"
+# GOOD: Context-specific
+var.vpc_cidr_block          # Not just "cidr"
+var.database_instance_class # Not just "instance_class"
+var.application_port        # Not just "port"
 
-# MAUVAIS : Noms generiques
+# BAD: Generic names
 var.name
 var.type
 var.value
@@ -275,29 +275,29 @@ var.value
 
 ---
 
-## Bonnes Pratiques Outputs
+## Outputs Best Practices
 
-### Exemple Complet
+### Complete Example
 
 ```hcl
 output "instance_id" {
-  description = "ID de l'instance EC2 creee"
+  description = "ID of the created EC2 instance"
   value       = aws_instance.this.id
 }
 
 output "instance_arn" {
-  description = "ARN de l'instance EC2 creee"
+  description = "ARN of the created EC2 instance"
   value       = aws_instance.this.arn
 }
 
 output "private_ip" {
-  description = "Adresse IP privee de l'instance"
+  description = "Private IP address of the instance"
   value       = aws_instance.this.private_ip
   sensitive   = false
 }
 
 output "connection_info" {
-  description = "Informations de connexion pour l'instance"
+  description = "Connection information for the instance"
   value = {
     id         = aws_instance.this.id
     private_ip = aws_instance.this.private_ip
@@ -306,21 +306,21 @@ output "connection_info" {
 }
 ```
 
-### Principes Cles
+### Key Principles
 
-- **Toujours inclure `description`** - Expliquer l'utilite de l'output
-- **Marquer les outputs sensibles** - `sensitive = true`
-- **Retourner des objets pour valeurs liees** - Groupe les donnees logiquement
-- **Documenter l'usage prevu** - Que doivent faire les consommateurs ?
+- **Always include `description`** - Explain the output's purpose
+- **Mark sensitive outputs** - `sensitive = true`
+- **Return objects for related values** - Groups data logically
+- **Document intended usage** - What should consumers do?
 
 ---
 
-## Patterns Courants
+## Common Patterns
 
-### DO : Utiliser `for_each` pour les Ressources
+### DO: Use `for_each` for Resources
 
 ```hcl
-# BON : Maintient des adresses de ressources stables
+# GOOD: Keeps resource addresses stable
 resource "aws_instance" "server" {
   for_each = toset(["web", "api", "worker"])
 
@@ -331,10 +331,10 @@ resource "aws_instance" "server" {
 }
 ```
 
-### DON'T : Utiliser `count` Quand l'Ordre Importe
+### DON'T: Use `count` When Order Matters
 
 ```hcl
-# MAUVAIS : Supprimer l'element du milieu recree tous les suivants
+# BAD: Removing the middle element recreates all subsequent ones
 resource "aws_instance" "server" {
   count = length(var.server_names)
 
@@ -344,19 +344,19 @@ resource "aws_instance" "server" {
 }
 ```
 
-### DO : Separer Root Module des Modules Reutilisables
+### DO: Separate Root Module from Reusable Modules
 
 ```
-# Root module (specifique a l'environnement)
+# Root module (environment-specific)
 prod/
-  main.tf          # Appelle modules avec valeurs prod
+  main.tf          # Calls modules with prod values
 
-# Module reutilisable
+# Reusable module
 modules/webapp/
-  main.tf          # Ressources generiques parametrees
+  main.tf          # Generic parameterized resources
 ```
 
-### DO : Utiliser Locals pour Valeurs Calculees
+### DO: Use Locals for Computed Values
 
 ```hcl
 locals {
@@ -378,12 +378,12 @@ resource "aws_instance" "app" {
 
 ---
 
-## Anti-patterns a Eviter
+## Anti-patterns to Avoid
 
-### DON'T : Hardcoder des Valeurs Specifiques a l'Environnement
+### DON'T: Hardcode Environment-Specific Values
 
 ```hcl
-# MAUVAIS : Module verrouille a la production
+# BAD: Module locked to production
 resource "aws_instance" "app" {
   instance_type = "m5.large"
   tags = {
@@ -392,33 +392,33 @@ resource "aws_instance" "app" {
 }
 ```
 
-**Fix :** Tout rendre configurable.
+**Fix:** Make everything configurable.
 
-### DON'T : Creer des God Modules
+### DON'T: Create God Modules
 
 ```hcl
-# MAUVAIS : Un module fait tout
+# BAD: One module does everything
 module "everything" {
   source = "./modules/app-infrastructure"
-  # Cree VPC, EC2, RDS, S3, IAM, etc.
+  # Creates VPC, EC2, RDS, S3, IAM, etc.
 }
 ```
 
-**Fix :** Decouper en modules focalises.
+**Fix:** Split into focused modules.
 
-### DON'T : Utiliser count/for_each dans Root Modules pour Environnements
+### DON'T: Use count/for_each in Root Modules for Environments
 
 ```hcl
-# MAUVAIS : Tous les environnements dans un root module
+# BAD: All environments in one root module
 resource "aws_instance" "app" {
   for_each = toset(["dev", "staging", "prod"])
 
-  instance_type = each.key == "prod" ? "m5.large" : "t3.micro"
+  instance_type = each.key == "prod" ? "m5.large": "t3.micro"
 }
 ```
 
-**Fix :** Utiliser des root modules separes.
+**Fix:** Use separate root modules.
 
 ---
 
-**Retour vers :** [Fichier Skill Principal](../SKILL.md)
+**Back to:** [Main Skill File](../SKILL.md)

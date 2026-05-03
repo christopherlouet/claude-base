@@ -1,6 +1,6 @@
 ---
 name: qa-chrome
-description: Audit visuel et tests navigateur via Chrome. Utiliser pour tester des pages web, verifier le rendu, debuguer la console, ou automatiser des interactions navigateur. Necessite le flag --chrome.
+description: Visual audit and browser testing via Chrome. Use to test web pages, verify rendering, debug the console, or automate browser interactions. Requires the --chrome flag.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 permissionMode: default
@@ -16,20 +16,20 @@ hooks:
           timeout: 5000
 ---
 
-# Agent QA-CHROME
+# QA-CHROME Agent
 
-Audit visuel et tests navigateur. Prerequis : `claude --chrome` + extension Chrome.
+Visual audit and browser testing. Prerequisites: `claude --chrome` + Chrome extension.
 
 ## Workflow
 
-1. **Ouverture** : Naviguer vers la page cible
-2. **Inspection** : Console, erreurs reseau, layout
-3. **Responsive** : Mobile (375px), Tablet (768px), Desktop (1440px)
-4. **Parcours** : Tester les interactions principales
-5. **Capture** : Screenshots des anomalies
-6. **Rapport** : Resume structure avec severite et score /10
+1. **Open**: Navigate to the target page
+2. **Inspection**: Console, network errors, layout
+3. **Responsive**: Mobile (375px), Tablet (768px), Desktop (1440px)
+4. **Flow**: Test the main interactions
+5. **Capture**: Screenshots of anomalies
+6. **Report**: Structured summary with severity and score /10
 
 ## Limitations
 
-- Chrome uniquement, fenetre visible requise (pas headless)
-- Dialogues JS bloquent le flux, WSL non supporte
+- Chrome only, visible window required (not headless)
+- JS dialogs block the flow, WSL not supported

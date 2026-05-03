@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests pour diff.sh
+# Tests for diff.sh
 # =============================================================================
 
 load 'test_helper'
@@ -18,56 +18,56 @@ teardown() {
 }
 
 # =============================================================================
-# Tests de base
+# Basic tests
 # =============================================================================
 
-@test "diff.sh existe et est exécutable" {
+@test "diff.sh exists and is executable" {
     [ -f "$DIFF_SCRIPT" ]
     [ -x "$DIFF_SCRIPT" ]
 }
 
-@test "diff.sh affiche l'aide avec --help" {
+@test "diff.sh shows help with --help" {
     run "$DIFF_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"USAGE"* ]]
     [[ "$output" == *"OPTIONS"* ]]
 }
 
-@test "diff.sh affiche la version avec --version" {
+@test "diff.sh shows version with --version" {
     run "$DIFF_SCRIPT" --version
     [ "$status" -eq 0 ]
     [[ "$output" == *"diff"* ]]
 }
 
 # =============================================================================
-# Tests de comparaison
+# Comparison tests
 # =============================================================================
 
-@test "diff.sh fonctionne sur un répertoire vide" {
+@test "diff.sh works on an empty directory" {
     run "$DIFF_SCRIPT" "$TEST_DIR"
-    # Peut échouer car pas de .claude, mais ne doit pas crasher
+    # May fail because no .claude, but must not crash
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
 }
 
-@test "diff.sh détecte un projet non configuré" {
+@test "diff.sh detects an unconfigured project" {
     run "$DIFF_SCRIPT" "$TEST_DIR"
     [[ "$output" == *".claude"* ]] || [[ "$output" == *"pas"* ]] || [[ "$output" == *"non"* ]] || true
 }
 
-@test "diff.sh compare un projet installé" {
-    # Installer le socle avec new-project.sh --simple
+@test "diff.sh compares an installed project" {
+    # Install the foundation with new-project.sh --simple
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Puis comparer. diff.sh exit 0 si tout est synchro, exit 1 s'il y a des
-    # différences. Depuis v1.30, CLAUDE.md est volontairement réécrit par
-    # l'install (chemins @docs → @.claude/docs) donc 1 fichier est "modifié"
-    # par design : exit 1 attendu sur une install vierge.
+    # Then compare. diff.sh exits 0 if everything is in sync, exits 1 if there are
+    # differences. Since v1.30, CLAUDE.md is intentionally rewritten by
+    # the install (paths @docs → @.claude/docs) so 1 file is "modified"
+    # by design: exit 1 expected on a fresh install.
     run "$DIFF_SCRIPT" "$TEST_DIR"
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
 }
 
-@test "diff.sh détecte les fichiers identiques" {
+@test "diff.sh detects identical files" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
@@ -75,11 +75,11 @@ teardown() {
     [[ "$output" == *"identique"* ]] || [[ "$output" == *"identical"* ]] || [[ "$output" == *"="* ]] || true
 }
 
-@test "diff.sh détecte les fichiers modifiés" {
+@test "diff.sh detects modified files" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Modifier un fichier
+    # Modify a file
     echo "# Modification" >> "$TEST_DIR/.claude/commands/work/work-explore.md"
 
     run "$DIFF_SCRIPT" "$TEST_DIR"
@@ -87,36 +87,36 @@ teardown() {
 }
 
 # =============================================================================
-# Tests des options
+# Option tests
 # =============================================================================
 
-@test "diff.sh --modified montre seulement les modifiés" {
+@test "diff.sh --modified shows only modified files" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Voir test "diff.sh compare un projet installé" pour le détail :
-    # CLAUDE.md modifié par design depuis v1.30, exit 1 acceptable.
+    # See test "diff.sh compares an installed project" for details:
+    # CLAUDE.md modified by design since v1.30, exit 1 acceptable.
     run "$DIFF_SCRIPT" --modified "$TEST_DIR"
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
 }
 
-@test "diff.sh --content montre le contenu des différences" {
+@test "diff.sh --content shows the content of differences" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Modifier un fichier
+    # Modify a file
     echo "# Test" >> "$TEST_DIR/.claude/commands/work/work-explore.md"
 
     run "$DIFF_SCRIPT" --content "$TEST_DIR"
-    # Devrait montrer du contenu de diff
+    # Should show diff content
     [[ "$output" == *"+"* ]] || [[ "$output" == *"-"* ]] || [[ "$output" == *"Test"* ]] || true
 }
 
 # =============================================================================
-# Tests de résumé
+# Summary tests
 # =============================================================================
 
-@test "diff.sh affiche un résumé" {
+@test "diff.sh shows a summary" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 

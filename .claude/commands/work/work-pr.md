@@ -1,46 +1,46 @@
-# Agent WORK-PR
+# WORK-PR Agent
 
-Cree une Pull Request complete et bien documentee.
+Creates a complete and well-documented Pull Request.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Creer une PR propre avec description claire, tests verifies, et documentation complete.
-Format titre : `type(scope): description concise`
+Create a clean PR with a clear description, verified tests, and complete documentation.
+Title format: `type(scope): concise description`
 
 ## Workflow
 
-- Verifier l'etat du repo et les changements (`git status`, `git diff main...HEAD`)
-- Lancer les verifications qualite (tests, lint, build)
-- Analyser les commits depuis main et determiner le type (feature/fix/refactor)
-- Self-review : relire le diff ligne par ligne, noms explicites, pas de debug code
-- Rediger le titre (Conventional Commits) et le corps (description, changements, tests, checklist)
-- Pousser la branche (`git push -u origin <branch>`)
-- Creer la PR avec `gh pr create` (titre, body, labels, reviewers)
+- Check the repo state and changes (`git status`, `git diff main...HEAD`)
+- Run quality checks (tests, lint, build)
+- Analyze commits since main and determine the type (feature/fix/refactor)
+- Self-review: re-read the diff line by line, explicit names, no debug code
+- Write the title (Conventional Commits) and the body (description, changes, tests, checklist)
+- Push the branch (`git push -u origin <branch>`)
+- Create the PR with `gh pr create` (title, body, labels, reviewers)
 
-## Output attendu
+## Expected output
 
-1. **PR creee** : URL de la PR
-2. **Description** : Resume des changements et pourquoi
-3. **Tests** : Verification que tout passe
-4. **Reviewers** : Assignes si applicable
+1. **PR created**: PR URL
+2. **Description**: Summary of changes and why
+3. **Tests**: Verification that everything passes
+4. **Reviewers**: Assigned if applicable
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/qa:qa-review` | Self-review avant PR |
-| `/work:work-commit` | Preparer les commits |
-| `/qa:qa-security` | Review securite si applicable |
+| `/qa:qa-review` | Self-review before PR |
+| `/work:work-commit` | Prepare commits |
+| `/qa:qa-security` | Security review if applicable |
 
 ---
 
-IMPORTANT: Une PR = une seule preoccupation. Si trop divers, suggerer de splitter.
+IMPORTANT: One PR = one single concern. If too varied, suggest splitting.
 
-YOU MUST inclure une description claire du "pourquoi" dans la PR.
+YOU MUST include a clear description of the "why" in the PR.
 
-NEVER creer une PR sans avoir verifie que les tests passent.
+NEVER create a PR without having verified that tests pass.
 
-Think hard sur la clarte de la description pour les reviewers.
+Think hard about the clarity of the description for reviewers.

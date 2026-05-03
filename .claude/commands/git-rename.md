@@ -1,21 +1,21 @@
-# Commande GIT-RENAME
+# GIT-RENAME Command
 
-Renomme la branche courante (typiquement une branche `feature/auto-*` creee par le hook PreToolUse).
+Renames the current branch (typically a `feature/auto-*` branch created by the PreToolUse hook).
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Goal
 
-Donner un nom descriptif a une branche generee automatiquement (ou simplement renommer la branche courante), localement et sur le remote si elle a deja ete pushee.
+Give a descriptive name to an auto-generated branch (or simply rename the current branch), locally and on the remote if it has already been pushed.
 
-## Utilisation
+## Usage
 
 ```
-/git-rename <nouveau-nom>
+/git-rename <new-name>
 ```
 
-Exemples :
+Examples:
 
 ```
 /git-rename feature/git-rename-command
@@ -23,43 +23,43 @@ Exemples :
 /git-rename refactor/api-client
 ```
 
-Le prefixe (`feature/`, `fix/`, `refactor/`...) est optionnel : si absent, `feature/` est ajoute par defaut.
+The prefix (`feature/`, `fix/`, `refactor/`...) is optional: if absent, `feature/` is added by default.
 
 ## Workflow
 
-1. **Verifier l'etat**
-    - Lire la branche courante (`git rev-parse --abbrev-ref HEAD`)
-    - Refuser si la branche est `main` ou `master` (impossible a renommer en place sans confusion)
-    - Verifier que le nouveau nom est valide (pas d'espaces, pas de caracteres speciaux git)
-2. **Renommer en local**
-    - `git branch -m <nouveau-nom>`
-3. **Synchroniser le remote (si la branche a ete pushee)**
-    - Detecter l'upstream (`git rev-parse --abbrev-ref --symbolic-full-name @{u}`)
-    - Si upstream existe : `git push origin :<ancien-nom> <nouveau-nom>` puis `git push origin -u <nouveau-nom>`
-    - Sinon : pas de push, juste un message indiquant que la branche est locale
-4. **Confirmer**
-    - Afficher la nouvelle branche et son tracking remote
+1. **Check the state**
+    - Read the current branch (`git rev-parse --abbrev-ref HEAD`)
+    - Refuse if the branch is `main` or `master` (impossible to rename in place without confusion)
+    - Check that the new name is valid (no spaces, no git-special characters)
+2. **Rename locally**
+    - `git branch -m <new-name>`
+3. **Sync the remote (if the branch has been pushed)**
+    - Detect the upstream (`git rev-parse --abbrev-ref --symbolic-full-name @{u}`)
+    - If upstream exists: `git push origin :<old-name> <new-name>` then `git push origin -u <new-name>`
+    - Otherwise: no push, just a message indicating that the branch is local
+4. **Confirm**
+    - Display the new branch and its remote tracking
 
-## Output attendu
+## Expected output
 
-- Branche renommee localement (et sur le remote si applicable)
-- Confirmation `git status` + `git branch -vv` pour verifier le tracking
-- Si une PR existe deja sur l'ancienne branche, avertir l'utilisateur qu'il doit la mettre a jour manuellement (GitHub ne suit pas un rename de branche)
+- Branch renamed locally (and on the remote if applicable)
+- `git status` + `git branch -vv` confirmation to verify tracking
+- If a PR already exists on the old branch, warn the user that they must update it manually (GitHub does not follow a branch rename)
 
-## Cas particuliers
+## Special cases
 
 | Situation | Action |
 |-----------|--------|
-| Branche `main`/`master` | REFUSER, expliquer pourquoi |
-| Nouveau nom == nom actuel | Ne rien faire, message informatif |
-| Nouveau nom existe deja en local | REFUSER, suggerer un autre nom |
-| Pas d'upstream | Renommer en local seulement |
-| PR ouverte sur l'ancienne branche | Renommer + WARN : la PR pointe vers une branche qui n'existe plus, action manuelle requise |
+| `main`/`master` branch | REFUSE, explain why |
+| New name == current name | Do nothing, informative message |
+| New name already exists locally | REFUSE, suggest another name |
+| No upstream | Rename locally only |
+| PR open on the old branch | Rename + WARN: the PR points to a branch that no longer exists, manual action required |
 
 ---
 
-IMPORTANT: Ne JAMAIS supprimer l'ancienne branche distante avant d'avoir push la nouvelle (utiliser `git push origin :ancien nouveau` en une seule commande pour rester atomique cote remote).
+IMPORTANT: NEVER delete the old remote branch before having pushed the new one (use `git push origin :old new` in a single command to stay atomic on the remote side).
 
-NEVER renommer `main` ou `master`.
+NEVER rename `main` or `master`.
 
-YOU MUST verifier la presence d'un upstream avant de tenter un push.
+YOU MUST check the presence of an upstream before attempting a push.

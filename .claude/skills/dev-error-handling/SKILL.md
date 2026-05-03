@@ -1,6 +1,6 @@
 ---
 name: dev-error-handling
-description: Strategie de gestion des erreurs. Declencher quand l'utilisateur veut implementer la gestion d'erreurs, exceptions, ou error boundaries.
+description: Error handling strategy. Trigger when the user wants to implement error handling, exceptions, or error boundaries.
 allowed-tools:
   - Read
   - Write
@@ -12,14 +12,14 @@ context: fork
 
 # Error Handling
 
-## Principes
+## Principles
 
-1. **Fail fast** - Detecter les erreurs tot
-2. **Fail loud** - Logger clairement
-3. **Fail gracefully** - UX propre
+1. **Fail fast** - Detect errors early
+2. **Fail loud** - Log clearly
+3. **Fail gracefully** - Clean UX
 4. **Recover when possible** - Retry, fallback
 
-## Erreurs personnalisees
+## Custom errors
 
 ```typescript
 // Base error

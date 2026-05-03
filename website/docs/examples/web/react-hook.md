@@ -1,29 +1,29 @@
 ---
 sidebar_position: 2
-title: Hook React Personnalisé
-description: Exemple de custom hook avec gestion d'état et effets
+title: Custom React Hook
+description: Example of a custom hook with state management and effects
 ---
 
-# Hook React Personnalisé
+# Custom React Hook
 
-Cet exemple montre comment créer un custom hook professionnel avec TypeScript et tests.
+This example shows how to create a professional custom hook with TypeScript and tests.
 
-## Commande utilisée
+## Command used
 
 ```bash
-/dev:dev-hook "Créer un hook useDebounce pour retarder les mises à jour"
+/dev:dev-hook "Create a useDebounce hook to delay updates"
 ```
 
-## Structure générée
+## Generated structure
 
 ```
 src/hooks/
-├── useDebounce.ts       # Hook principal
-├── useDebounce.test.ts  # Tests unitaires
+├── useDebounce.ts       # Main hook
+├── useDebounce.test.ts  # Unit tests
 └── index.ts             # Exports
 ```
 
-## Code du hook
+## Hook code
 
 ### `useDebounce.ts`
 
@@ -31,32 +31,32 @@ src/hooks/
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 export interface UseDebounceOptions {
-  /** Délai en millisecondes (default: 500) */
+  /** Delay in milliseconds (default: 500) */
   delay?: number;
-  /** Exécuter immédiatement au premier appel */
+  /** Execute immediately on first call */
   leading?: boolean;
-  /** Exécuter à la fin du délai (default: true) */
+  /** Execute at the end of the delay (default: true) */
   trailing?: boolean;
-  /** Valeur maximale d'attente avant exécution forcée */
+  /** Maximum wait value before forced execution */
   maxWait?: number;
 }
 
 export interface UseDebounceReturn<T> {
-  /** Valeur debouncée */
+  /** Debounced value */
   debouncedValue: T;
-  /** Annuler le debounce en cours */
+  /** Cancel the in-progress debounce */
   cancel: () => void;
-  /** Forcer l'exécution immédiate */
+  /** Force immediate execution */
   flush: () => void;
-  /** Indique si un debounce est en attente */
+  /** Indicates whether a debounce is pending */
   isPending: boolean;
 }
 
 /**
- * Hook pour retarder la mise à jour d'une valeur.
+ * Hook to delay updating a value.
  *
- * Utile pour les recherches, validations, ou toute opération
- * qui ne doit pas s'exécuter à chaque frappe.
+ * Useful for searches, validations, or any operation
+ * that should not run on every keystroke.
  *
  * @example
  * ```tsx
@@ -74,7 +74,7 @@ export interface UseDebounceReturn<T> {
  *     <input
  *       value={query}
  *       onChange={(e) => setQuery(e.target.value)}
- *       placeholder={isPending ? 'Recherche...' : 'Rechercher'}
+ *       placeholder={isPending ? 'Searching...': 'Search'}
  *     />
  *   );
  * }
@@ -183,7 +183,7 @@ export function useDebounce<T>(
   };
 }
 
-// Alias simplifié pour les cas courants
+// Simplified alias for common cases
 export function useDebouncedValue<T>(value: T, delay = 500): T {
   const { debouncedValue } = useDebounce(value, { delay });
   return debouncedValue;
@@ -219,11 +219,11 @@ describe('useDebounce', () => {
 
     rerender({ value: 'updated' });
 
-    // Valeur pas encore mise à jour
+    // Value not updated yet
     expect(result.current.debouncedValue).toBe('initial');
     expect(result.current.isPending).toBe(true);
 
-    // Avancer le temps
+    // Advance time
     act(() => {
       jest.advanceTimersByTime(500);
     });
@@ -248,7 +248,7 @@ describe('useDebounce', () => {
       jest.advanceTimersByTime(500);
     });
 
-    // Valeur reste à l'ancienne
+    // Value remains the old one
     expect(result.current.debouncedValue).toBe('initial');
   });
 
@@ -276,7 +276,7 @@ describe('useDebounce', () => {
 
     rerender({ value: 'updated' });
 
-    // Mise à jour immédiate sur leading edge
+    // Immediate update on leading edge
     expect(result.current.debouncedValue).toBe('updated');
   });
 
@@ -286,7 +286,7 @@ describe('useDebounce', () => {
       { initialProps: { value: 'initial' } }
     );
 
-    // Simuler des mises à jour rapides
+    // Simulate rapid updates
     for (let i = 0; i < 5; i++) {
       rerender({ value: `update-${i}` });
       act(() => {
@@ -294,7 +294,7 @@ describe('useDebounce', () => {
       });
     }
 
-    // Après 1000ms (maxWait), la valeur doit être mise à jour
+    // After 1000ms (maxWait), the value must be updated
     expect(result.current.debouncedValue).not.toBe('initial');
   });
 });
@@ -334,9 +334,9 @@ export { useDebounce, useDebouncedValue } from './useDebounce';
 export type { UseDebounceOptions, UseDebounceReturn } from './useDebounce';
 ```
 
-## Exemple d'utilisation
+## Usage example
 
-### Recherche en temps réel
+### Real-time search
 
 ```tsx
 import { useState, useEffect } from 'react';
@@ -378,7 +378,7 @@ function SearchUsers() {
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Rechercher un utilisateur..."
+        placeholder="Search a user..."
       />
 
       {(isPending || isLoading) && <Spinner />}
@@ -393,7 +393,7 @@ function SearchUsers() {
 }
 ```
 
-### Validation de formulaire
+### Form validation
 
 ```tsx
 import { useDebounce } from '@/hooks';
@@ -410,10 +410,10 @@ function EmailInput({ onValidate }) {
       return;
     }
 
-    // Validation asynchrone
+    // Asynchronous validation
     checkEmailAvailability(debouncedValue)
       .then((available) => {
-        setError(available ? '' : 'Email déjà utilisé');
+        setError(available ? '': 'Email already in use');
         onValidate(available);
       });
   }, [debouncedValue, onValidate]);
@@ -431,27 +431,27 @@ function EmailInput({ onValidate }) {
 }
 ```
 
-## Points clés
+## Key points
 
-| Aspect | Implémentation |
+| Aspect | Implementation |
 |--------|----------------|
-| **Options flexibles** | `leading`, `trailing`, `maxWait` |
-| **Contrôle** | `cancel()` et `flush()` exposés |
-| **État** | `isPending` pour feedback UI |
-| **Cleanup** | Nettoyage des timeouts au démontage |
-| **TypeScript** | Types génériques pour la valeur |
+| **Flexible options** | `leading`, `trailing`, `maxWait` |
+| **Control** | `cancel()` and `flush()` exposed |
+| **State** | `isPending` for UI feedback |
+| **Cleanup** | Cleanup of timeouts on unmount |
+| **TypeScript** | Generic types for the value |
 
-## Commandes associées
+## Related commands
 
-- `/dev:dev-test` - Ajouter plus de tests
-- `/dev:dev-component` - Créer un composant utilisant ce hook
-- `/doc:doc-explain` - Comprendre le fonctionnement
+- `/dev:dev-test` - Add more tests
+- `/dev:dev-component` - Create a component using this hook
+- `/doc:doc-explain` - Understand how it works
 
 ---
 
-:::tip Bibliothèques alternatives
-Pour des cas plus avancés, considérez :
-- `use-debounce` - Bibliothèque populaire
-- `lodash.debounce` - Avec `useCallback`
-- `ahooks` - Collection complète de hooks
+:::tip Alternative libraries
+For more advanced cases, consider:
+- `use-debounce` - Popular library
+- `lodash.debounce` - With `useCallback`
+- `ahooks` - Complete collection of hooks
 :::

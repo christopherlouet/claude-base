@@ -1,29 +1,29 @@
 ---
 sidebar_position: 10
-title: Fonctionnalites Avancees
-description: Opus 4.7, Agent Teams, Plugins, LSP, MCP et fonctionnalites avancees de Claude Code
+title: Advanced Features
+description: Opus 4.7, Agent Teams, Plugins, LSP, MCP and advanced features of Claude Code
 ---
 
-# Fonctionnalites Avancees
+# Advanced Features
 
-> Capacites avancees de Claude Code : Opus 4.7, Agent Teams, Plugins, LSP et plus
+> Advanced capabilities of Claude Code: Opus 4.7, Agent Teams, Plugins, LSP and more
 
-## Opus 4.7 : Nouvelles Capacites
+## Opus 4.7: New Capabilities
 
-Claude Opus 4.7 (`claude-opus-4-6`) apporte des ameliorations majeures pour Claude Code.
+Claude Opus 4.7 (`claude-opus-4-6`) brings major improvements for Claude Code.
 
 ### Adaptive Thinking
 
-Remplace le toggle "extended thinking" par 4 niveaux d'effort :
+Replaces the "extended thinking" toggle with 4 effort levels:
 
-| Niveau | Usage | Cout relatif |
+| Level | Usage | Relative cost |
 |--------|-------|-------------|
-| `low` | Taches simples, reformulations | $ |
-| `medium` | Code standard, analyses moderees | $$ |
-| `high` | Problemes complexes, audits approfondis | $$$ |
-| `max` | Taches critiques, architecture, debugging avance | $$$$ |
+| `low` | Simple tasks, rephrasings | $ |
+| `medium` | Standard code, moderate analyses | $$ |
+| `high` | Complex problems, deep audits | $$$ |
+| `max` | Critical tasks, architecture, advanced debugging | $$$$ |
 
-Le modele ajuste automatiquement son effort selon la complexite detectee. Il est aussi possible de forcer un niveau via l'API :
+The model automatically adjusts its effort based on the detected complexity. It is also possible to force a level via the API:
 
 ```typescript
 const response = await anthropic.messages.create({
@@ -31,40 +31,40 @@ const response = await anthropic.messages.create({
   max_tokens: 16384,
   thinking: {
     type: 'enabled',
-    budget_tokens: 10000,  // budget pour le raisonnement
+    budget_tokens: 10000,  // budget for reasoning
     effort: 'high',        // low | medium | high
   },
   messages: [{ role: 'user', content: prompt }],
 });
 ```
 
-### Fenetre de contexte 1M tokens (beta)
+### 1M token context window (beta)
 
-Opus 4.7 supporte jusqu'a **1 million de tokens** en entree (beta). La tarification standard s'applique jusqu'a 200k tokens, avec une tarification premium au-dela.
+Opus 4.7 supports up to **1 million tokens** as input (beta). Standard pricing applies up to 200k tokens, with premium pricing beyond that.
 
-| Tranche | Tarification |
+| Tier | Pricing |
 |---------|-------------|
 | 0 - 200k tokens | Standard |
-| 200k - 1M tokens | Premium (tarif majore) |
+| 200k - 1M tokens | Premium (increased rate) |
 
-### 128k tokens de sortie
+### 128k tokens of output
 
-La limite de sortie passe a **128k tokens** (contre 8k-32k precedemment), permettant la generation de fichiers complets, de documentation extensive, ou de refactorings massifs en une seule reponse.
+The output limit is raised to **128k tokens** (compared to 8k-32k previously), allowing the generation of complete files, extensive documentation, or massive refactorings in a single response.
 
 ### Context Compaction
 
-Resume automatiquement le contexte ancien pour maintenir la coherence sur de longues sessions. Particulierement utile avec les sessions paralleles (git worktrees) et les taches complexes multi-fichiers.
+Automatically summarizes old context to maintain coherence over long sessions. Particularly useful with parallel sessions (git worktrees) and complex multi-file tasks.
 
 ## Agent Teams (Experimental)
 
-Coordination parallele d'equipes d'agents sur des taches complexes. Un agent lead orchestre des teammates qui travaillent en parallele avec communication directe entre eux.
+Parallel coordination of agent teams on complex tasks. A lead agent orchestrates teammates who work in parallel with direct communication between them.
 
-> **Activation requise** : Feature experimentale desactivee par defaut.
+> **Activation required**: Experimental feature disabled by default.
 
 ### Activation
 
 ```json
-// .claude/settings.json ou .claude/settings.local.json
+// .claude/settings.json or .claude/settings.local.json
 {
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
@@ -80,217 +80,217 @@ Coordination parallele d'equipes d'agents sur des taches complexes. Un agent lea
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │   ┌──────────────┐                                               │
-│   │  TEAM LEAD   │ <── Vous interagissez avec le lead            │
-│   │  (coordonne) │                                               │
+│   │  TEAM LEAD   │ <── You interact with the lead                │
+│   │ (coordinates)│                                               │
 │   └──────┬───────┘                                               │
 │          │                                                       │
 │          ├──── Shared Task List ────┐                             │
 │          │                          │                             │
 │    ┌─────┴─────┐  ┌──────────┐  ┌──┴───────┐                    │
 │    │ Teammate 1 │  │ Teammate 2│  │ Teammate 3│                   │
-│    │ (securite) │  │ (perf)   │  │ (a11y)   │                   │
+│    │ (security) │  │ (perf)   │  │ (a11y)   │                   │
 │    └────────────┘  └──────────┘  └──────────┘                    │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Modes d'affichage
+### Display modes
 
-| Mode | Description | Prerequis |
+| Mode | Description | Prerequisites |
 |------|-------------|-----------|
-| `auto` (defaut) | Split-panes si dans tmux, sinon in-process | - |
-| `in-process` | Tous les agents dans le terminal principal | Aucun |
-| `tmux` | Chaque agent dans son propre pane | tmux installe |
+| `auto` (default) | Split-panes if in tmux, otherwise in-process | - |
+| `in-process` | All agents in the main terminal | None |
+| `tmux` | Each agent in its own pane | tmux installed |
 
 ```bash
-# Forcer un mode
+# Force a mode
 claude --teammate-mode tmux
 ```
 
-### Comparaison des approches paralleles
+### Comparison of parallel approaches
 
-| | Sub-Agents (Task) | Agent Teams | Sessions manuelles (worktrees) |
+| | Sub-Agents (Task) | Agent Teams | Manual sessions (worktrees) |
 |---|---|---|---|
-| **Communication** | Retour au parent | Messagerie directe | Aucune |
-| **Coordination** | Parent gere | Taches partagees | Manuelle |
-| **Cout tokens** | Faible | Eleve | Eleve |
-| **Ideal pour** | Taches focalisees | Collaboration complexe | Branches independantes |
+| **Communication** | Return to parent | Direct messaging | None |
+| **Coordination** | Parent manages | Shared tasks | Manual |
+| **Token cost** | Low | High | High |
+| **Ideal for** | Focused tasks | Complex collaboration | Independent branches |
 
-### Raccourcis clavier
+### Keyboard shortcuts
 
-| Raccourci | Action |
+| Shortcut | Action |
 |-----------|--------|
-| `Shift+Up/Down` | Naviguer entre teammates |
-| `Shift+Tab` | Mode delegate (lead = coordination) |
-| `Ctrl+T` | Afficher la liste de taches |
+| `Shift+Up/Down` | Navigate between teammates |
+| `Shift+Tab` | Delegate mode (lead = coordination) |
+| `Ctrl+T` | Display the task list |
 
-### Variables d'environnement
+### Environment variables
 
 | Variable | Description |
 |----------|-------------|
-| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | Active la fonctionnalite (valeur: `1`) |
-| `CLAUDE_CODE_TASK_LIST_ID` | Partage une task list entre sessions |
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | Enables the feature (value: `1`) |
+| `CLAUDE_CODE_TASK_LIST_ID` | Shares a task list between sessions |
 
 ### Limitations
 
-- Pas de resume des teammates in-process apres `/resume`
-- Un seul team par session
-- Pas d'equipes imbriquees
-- Split-panes non supporte dans VS Code / Windows Terminal / Ghostty
+- No resume of in-process teammates after `/resume`
+- Only one team per session
+- No nested teams
+- Split-panes not supported in VS Code / Windows Terminal / Ghostty
 
-### Usage dans le socle
+### Usage in the foundation
 
-Le socle fournit un [skill agent-teams](/docs/skills/agent-teams) et une [commande /work:work-team](/docs/commands/work/work-team) avec des patterns pre-configures :
+The foundation provides an [agent-teams skill](/docs/skills/agent-teams) and a [/work:work-team command](/docs/commands/work/work-team) with pre-configured patterns:
 
 ```bash
-# Audit parallele (3 agents: securite, perf, a11y)
-/work:work-team "audit complet du projet"
+# Parallel audit (3 agents: security, perf, a11y)
+/work:work-team "full project audit"
 
-# Feature en equipe (frontend, backend, tests)
-/work:work-team "implementer les notifications"
+# Team feature (frontend, backend, tests)
+/work:work-team "implement notifications"
 
-# Debug collaboratif (hypotheses concurrentes)
-/work:work-team "investiguer le bug de connexion"
+# Collaborative debug (concurrent hypotheses)
+/work:work-team "investigate the login bug"
 ```
 
 ## Output Styles
 
-Modes d'interaction personnalises dans `.claude/output-styles/` (10 styles):
+Customized interaction modes in `.claude/output-styles/` (10 styles):
 
-| Style | Utilisation | Commande |
+| Style | Usage | Command |
 |-------|-------------|----------|
-| `teaching` | Mode pedagogique avec explications | `/output-style teaching` |
-| `explanatory` | Raisonnement detaille, comprendre le pourquoi | `/output-style explanatory` |
-| `concise` | Reponses breves et directes | `/output-style concise` |
-| `technical` | Details techniques approfondis | `/output-style technical` |
-| `review` | Revue de code structuree | `/output-style review` |
-| `emoji` | Reponses enrichies d'emojis | `/output-style emoji` |
-| `minimal` | Reponses epurees sans decoration | `/output-style minimal` |
-| `structured` | Structure ASCII avec separateurs | `/output-style structured` |
-| `debug` | Diagnostic et investigation de bugs | `/output-style debug` |
-| `metrics` | Metriques et tableaux de bord | `/output-style metrics` |
+| `teaching` | Pedagogical mode with explanations | `/output-style teaching` |
+| `explanatory` | Detailed reasoning, understand the why | `/output-style explanatory` |
+| `concise` | Brief and direct responses | `/output-style concise` |
+| `technical` | In-depth technical details | `/output-style technical` |
+| `review` | Structured code review | `/output-style review` |
+| `emoji` | Responses enriched with emojis | `/output-style emoji` |
+| `minimal` | Clean responses without decoration | `/output-style minimal` |
+| `structured` | ASCII structure with separators | `/output-style structured` |
+| `debug` | Diagnostic and bug investigation | `/output-style debug` |
+| `metrics` | Metrics and dashboards | `/output-style metrics` |
 
-Voir la page [Output Styles](/docs/concepts/output-styles) pour la documentation complete.
+See the [Output Styles](/docs/concepts/output-styles) page for the full documentation.
 
-## Templates de Specification
+## Specification Templates
 
-Templates structures pour le workflow Explore → Specify → Plan → TDD → Audit → Commit dans `.claude/templates/`:
+Structured templates for the Explore → Specify → Plan → TDD → Audit → Commit workflow in `.claude/templates/`:
 
-| Template | Description | Utilise par |
+| Template | Description | Used by |
 |----------|-------------|-------------|
-| `spec-template.md` | Specification fonctionnelle avec User Stories | `/work:work-specify` |
-| `plan-template.md` | Plan d'implementation technique | `/work:work-plan` |
-| `tasks-template.md` | Decoupage en taches par User Story | `/work:work-plan` |
+| `spec-template.md` | Functional specification with User Stories | `/work:work-specify` |
+| `plan-template.md` | Technical implementation plan | `/work:work-plan` |
+| `tasks-template.md` | Breakdown into tasks per User Story | `/work:work-plan` |
 
-### Structure d'une Specification
+### Structure of a Specification
 
 ```
 specs/[feature]/
-├── spec.md           # Specification fonctionnelle
-├── plan.md           # Plan d'implementation
-├── tasks.md          # Decoupage en taches
-└── clarifications.md # Historique des clarifications (opt)
+├── spec.md           # Functional specification
+├── plan.md           # Implementation plan
+├── tasks.md          # Breakdown into tasks
+└── clarifications.md # History of clarifications (opt)
 ```
 
 ### Conventions
 
-| Marqueur | Signification |
+| Marker | Meaning |
 |----------|---------------|
-| `P1` | Priorite MVP (essentiel) |
-| `P2` | Priorite Important |
-| `P3` | Priorite Nice-to-have |
-| `[P]` | Tache parallelisable |
-| `[US1]` | Appartient a User Story 1 |
-| `EF-XXX` | Exigence Fonctionnelle |
-| `CS-XXX` | Critere de Succes |
+| `P1` | MVP priority (essential) |
+| `P2` | Important priority |
+| `P3` | Nice-to-have priority |
+| `[P]` | Parallelizable task |
+| `[US1]` | Belongs to User Story 1 |
+| `EF-XXX` | Functional Requirement |
+| `CS-XXX` | Success Criterion |
 
 ## MCP Configuration
 
-Configuration centralisee des MCP servers dans `.mcp.json`:
+Centralized configuration of MCP servers in `.mcp.json`:
 
-### Serveurs de base
-
-| Server | Usage |
-|--------|-------|
-| `filesystem` | Acces avance aux fichiers |
-| `memory` | Memoire persistante |
-| `fetch` | Requetes HTTP externes |
-| `github` | Integration GitHub |
-| `postgres` | Connexion PostgreSQL |
-| `sqlite` | Base SQLite locale |
-| `puppeteer` | Automatisation navigateur |
-| `sequential-thinking` | Raisonnement structure etape par etape |
-
-### Serveurs recommandes par Boris Cherny
+### Base servers
 
 | Server | Usage |
 |--------|-------|
-| `slack` | Recherche de bugs dans les threads, communication equipe |
-| `sentry` | Analyse d'erreurs et monitoring en production |
-| `bigquery` | Requetes analytics directes |
-| `linear` | Gestion de projet et issues |
-| `notion` | Documentation et bases de connaissances |
+| `filesystem` | Advanced file access |
+| `memory` | Persistent memory |
+| `fetch` | External HTTP requests |
+| `github` | GitHub integration |
+| `postgres` | PostgreSQL connection |
+| `sqlite` | Local SQLite database |
+| `puppeteer` | Browser automation |
+| `sequential-thinking` | Structured step-by-step reasoning |
 
-Pour activer un server: `"enabled": true` dans `.mcp.json`
+### Servers recommended by Boris Cherny
+
+| Server | Usage |
+|--------|-------|
+| `slack` | Bug search in threads, team communication |
+| `sentry` | Error analysis and monitoring in production |
+| `bigquery` | Direct analytics queries |
+| `linear` | Project and issue management |
+| `notion` | Documentation and knowledge bases |
+
+To enable a server: `"enabled": true` in `.mcp.json`
 
 ## CLAUDE.md @imports
 
-Les fichiers CLAUDE.md supportent l'import de fichiers avec la syntaxe `@path/to/file` :
+CLAUDE.md files support importing files with the `@path/to/file` syntax:
 
 ```markdown
-# Importer des fichiers dans CLAUDE.md
+# Import files into CLAUDE.md
 See @README for project overview and @package.json for npm commands.
 
-# Instructions individuelles (non committees)
+# Individual instructions (not committed)
 @~/.claude/my-project-instructions.md
 ```
 
-### Regles d'import
-- Chemins relatifs et absolus supportes
-- Imports recursifs (max 5 niveaux)
-- Non evalues dans les blocs de code markdown
-- Alternative a CLAUDE.local.md pour les worktrees multiples
-- Voir les imports charges avec `/memory`
+### Import rules
+- Relative and absolute paths supported
+- Recursive imports (max 5 levels)
+- Not evaluated inside markdown code blocks
+- Alternative to CLAUDE.local.md for multiple worktrees
+- View loaded imports with `/memory`
 
 ## Plugins
 
-Systeme de plugins pour distribuer skills, agents, hooks et MCP servers :
+Plugin system to distribute skills, agents, hooks and MCP servers:
 
-### Structure d'un plugin
+### Structure of a plugin
 
 ```
-mon-plugin/
+my-plugin/
 ├── .claude-plugin/
-│   └── plugin.json       # Manifeste (nom, version, description)
-├── commands/              # Commandes / skills legacy
-├── skills/                # Skills avec SKILL.md
+│   └── plugin.json       # Manifest (name, version, description)
+├── commands/              # Legacy commands / skills
+├── skills/                # Skills with SKILL.md
 ├── agents/                # Sub-agents
 ├── hooks/
-│   └── hooks.json         # Hooks du plugin
-├── .mcp.json              # Serveurs MCP
-└── .lsp.json              # Serveurs LSP
+│   └── hooks.json         # Plugin hooks
+├── .mcp.json              # MCP servers
+└── .lsp.json              # LSP servers
 ```
 
-### Utilisation
+### Usage
 
 ```bash
-# Tester un plugin localement
-claude --plugin-dir ./mon-plugin
+# Test a plugin locally
+claude --plugin-dir ./my-plugin
 
-# Les skills sont namespaces
-/mon-plugin:skill-name
+# Skills are namespaced
+/my-plugin:skill-name
 ```
 
-### Quand utiliser plugins vs standalone
+### When to use plugins vs standalone
 
-| Approche | Nommage skills | Usage |
+| Approach | Skill naming | Usage |
 |----------|---------------|-------|
-| Standalone (`.claude/`) | `/hello` | Personnel, un seul projet |
-| Plugin | `/plugin:hello` | Partage equipe, distribution, multi-projets |
+| Standalone (`.claude/`) | `/hello` | Personal, single project |
+| Plugin | `/plugin:hello` | Team sharing, distribution, multi-project |
 
 ## LSP (Language Server Protocol)
 
-Configuration LSP dans `.lsp.json` pour la navigation semantique du code.
+LSP configuration in `.lsp.json` for semantic code navigation.
 
 ### Activation
 
@@ -298,9 +298,9 @@ Configuration LSP dans `.lsp.json` pour la navigation semantique du code.
 export ENABLE_LSP_TOOL=1
 ```
 
-### Langages supportes (12)
+### Supported languages (12)
 
-| Langage | Serveur |
+| Language | Server |
 |---------|---------|
 | TypeScript/JavaScript | `typescript-language-server` |
 | Python | `pylsp` |
@@ -317,20 +317,20 @@ export ENABLE_LSP_TOOL=1
 
 ### LSP vs Grep
 
-| Besoin | Outil | Pourquoi |
+| Need | Tool | Why |
 |--------|-------|----------|
-| Definition d'un symbole | LSP `goToDefinition` | Resolution semantique |
-| Toutes les references | LSP `findReferences` | Usages reels, pas de faux positifs |
-| Recherche de texte/pattern | Grep | Plus rapide pour les recherches textuelles |
-| Navigation de structure | LSP `documentSymbol` | Arbre des classes/fonctions |
-| Erreurs de type | LSP `getDiagnostics` | Diagnostics en temps reel |
+| Definition of a symbol | LSP `goToDefinition` | Semantic resolution |
+| All references | LSP `findReferences` | Real usages, no false positives |
+| Text/pattern search | Grep | Faster for textual searches |
+| Structure navigation | LSP `documentSymbol` | Tree of classes/functions |
+| Type errors | LSP `getDiagnostics` | Real-time diagnostics |
 
 ---
 
-## Voir aussi
+## See also
 
-- [Output Styles](/docs/concepts/output-styles) - Styles de formatage
-- [Bonnes Pratiques](/docs/reference/best-practices) - Recommandations Boris Cherny
-- [Skill agent-teams](/docs/skills/agent-teams) - Documentation Agent Teams
-- [Commande /work:work-team](/docs/commands/work/work-team) - Lancement Agent Teams
-- [Retour aux concepts](/docs/concepts)
+- [Output Styles](/docs/concepts/output-styles) - Formatting styles
+- [Best Practices](/docs/reference/best-practices) - Boris Cherny recommendations
+- [agent-teams skill](/docs/skills/agent-teams) - Agent Teams documentation
+- [/work:work-team command](/docs/commands/work/work-team) - Agent Teams launch
+- [Back to concepts](/docs/concepts)

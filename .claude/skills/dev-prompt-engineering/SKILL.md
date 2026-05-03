@@ -1,6 +1,6 @@
 ---
 name: dev-prompt-engineering
-description: Optimisation de prompts pour LLMs. Declencher quand l'utilisateur veut ameliorer un prompt, ajouter des exemples, ou structurer des instructions.
+description: Prompt optimization for LLMs. Trigger when the user wants to improve a prompt, add examples, or structure instructions.
 allowed-tools:
   - Read
   - Write
@@ -12,127 +12,127 @@ context: fork
 
 # Prompt Engineering Skill
 
-## Declencheurs
+## Triggers
 
-Ce skill s'active quand l'utilisateur mentionne:
+This skill activates when the user mentions:
 - "prompt", "instruction", "system message"
-- "few-shot", "exemples"
-- "ameliorer le prompt", "optimiser"
+- "few-shot", "examples"
+- "improve the prompt", "optimize"
 - "LLM", "GPT", "Claude"
 
-## Methodologie
+## Methodology
 
-### 1. Analyser le prompt existant
+### 1. Analyze the existing prompt
 
-Evaluer sur 6 criteres (score 1-5):
+Evaluate on 6 criteria (score 1-5):
 
-| Critere | Question |
-|---------|----------|
-| Clarte | Les instructions sont-elles precises ? |
-| Structure | Organisation logique ? |
-| Contexte | Informations suffisantes ? |
-| Exemples | Few-shot learning present ? |
-| Contraintes | Limites definies ? |
-| Format | Output specifie ? |
+| Criterion | Question |
+|-----------|----------|
+| Clarity | Are the instructions precise? |
+| Structure | Logical organization? |
+| Context | Sufficient information? |
+| Examples | Few-shot learning present? |
+| Constraints | Limits defined? |
+| Format | Output specified? |
 
-### 2. Appliquer les techniques
+### 2. Apply the techniques
 
-| Technique | Quand utiliser |
-|-----------|----------------|
-| **Few-shot** | Taches complexes, format specifique |
-| **Chain-of-thought** | Raisonnement, calculs, logique |
-| **Role prompting** | Expertise specifique requise |
-| **Structured output** | Integration API, parsing |
-| **Negative prompting** | Eviter erreurs courantes |
-| **Delimiters** | Separer sections clairement |
+| Technique | When to use |
+|-----------|-------------|
+| **Few-shot** | Complex tasks, specific format |
+| **Chain-of-thought** | Reasoning, calculations, logic |
+| **Role prompting** | Specific expertise required |
+| **Structured output** | API integration, parsing |
+| **Negative prompting** | Avoid common errors |
+| **Delimiters** | Separate sections clearly |
 
-### 3. Structure optimale
+### 3. Optimal structure
 
 ```markdown
 # Role
-Tu es un [ROLE] expert en [DOMAINE].
+You are a [ROLE] expert in [DOMAIN].
 
-# Contexte
-[Description de la situation]
+# Context
+[Description of the situation]
 
-# Tache
-[Ce que le modele doit accomplir]
+# Task
+[What the model must accomplish]
 
 # Instructions
-1. [Etape 1]
-2. [Etape 2]
-3. [Etape 3]
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
 
-# Contraintes
-- [Ce qu'il faut faire]
-- NE PAS [Ce qu'il ne faut pas faire]
+# Constraints
+- [What must be done]
+- DO NOT [What must not be done]
 
-# Exemples
+# Examples
 
-## Exemple 1
-Input: [exemple]
-Output: [resultat attendu]
+## Example 1
+Input: [example]
+Output: [expected result]
 
-# Format de sortie
-[Specifier exactement le format]
+# Output format
+[Specify the exact format]
 ```
 
-## Patterns avances
+## Advanced patterns
 
 ### Chain-of-thought
 
 ```
-Resous ce probleme etape par etape:
-1. Identifie les elements cles
-2. Analyse les relations
-3. Formule une hypothese
-4. Tire une conclusion
+Solve this problem step by step:
+1. Identify the key elements
+2. Analyze the relationships
+3. Formulate a hypothesis
+4. Draw a conclusion
 
-Montre ton raisonnement.
+Show your reasoning.
 ```
 
 ### Self-consistency
 
 ```
-Genere 3 approches differentes,
-puis synthetise la meilleure reponse.
+Generate 3 different approaches,
+then synthesize the best answer.
 ```
 
 ### ReAct
 
 ```
-Alterne entre:
-- THOUGHT: Reflechis
+Alternate between:
+- THOUGHT: Reflect
 - ACTION: Execute
-- OBSERVATION: Analyse
+- OBSERVATION: Analyze
 ```
 
 ## Anti-patterns
 
-| A eviter | Pourquoi | Solution |
-|----------|----------|----------|
-| Prompts vagues | Resultats inconsistants | Etre specifique |
-| Trop long | Perte de focus | Simplifier |
-| Sans exemples | Mauvaise comprehension | Few-shot |
-| Sans contraintes | Output imprevisible | Definir limites |
-| Contradictions | Confusion | Relire |
+| To avoid | Why | Solution |
+|----------|-----|----------|
+| Vague prompts | Inconsistent results | Be specific |
+| Too long | Loss of focus | Simplify |
+| No examples | Poor understanding | Few-shot |
+| No constraints | Unpredictable output | Define limits |
+| Contradictions | Confusion | Re-read |
 
 ## Output
 
-Pour chaque optimisation, fournir:
+For each optimization, provide:
 
-1. **Score avant**: X/30
-2. **Points faibles identifies**
-3. **Prompt optimise**
-4. **Score apres**: Y/30
-5. **Changements effectues**
+1. **Score before**: X/30
+2. **Identified weaknesses**
+3. **Optimized prompt**
+4. **Score after**: Y/30
+5. **Changes made**
 
-## Regles
+## Rules
 
-IMPORTANT: Un bon prompt donne des resultats coherents sur plusieurs runs.
+IMPORTANT: A good prompt produces consistent results across multiple runs.
 
-IMPORTANT: Toujours inclure des exemples pour les taches complexes.
+IMPORTANT: Always include examples for complex tasks.
 
-YOU MUST specifier le format de sortie attendu.
+YOU MUST specify the expected output format.
 
-NEVER ecrire de prompts ambigus ou trop generiques.
+NEVER write ambiguous or overly generic prompts.

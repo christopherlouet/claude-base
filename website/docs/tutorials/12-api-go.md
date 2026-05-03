@@ -1,52 +1,52 @@
 ---
 sidebar_position: 13
-title: "12 - API Go"
-description: "Developpez une API REST Go avec Chi, TDD table-driven et documentation OpenAPI"
+title: "12 - Go API"
+description: "Develop a Go REST API with Chi, table-driven TDD and OpenAPI documentation"
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# API Go avec Chi
+# Go API with Chi
 
-<DifficultyBadge level="intermediate" /> **Duree estimee : 45 minutes**
+<DifficultyBadge level="intermediate" /> **Estimated duration: 45 minutes**
 
-Ce tutoriel vous montre comment developper une API REST en Go en suivant le workflow **Explore → Plan → TDD → Audit → Commit** du socle.
+This tutorial shows you how to develop a REST API in Go by following the **Explore → Plan → TDD → Audit → Commit** workflow of the foundation.
 
-## Objectifs
+## Objectives
 
-A la fin de ce tutoriel, vous saurez :
-- Utiliser `/dev:dev-api` pour creer des handlers Go
-- Utiliser `/dev:dev-tdd` pour le cycle Red-Green-Refactor avec testify
-- Ecrire des tests table-driven idiomatiques en Go
-- Utiliser `/qa:qa-security` pour l'audit securite
+By the end of this tutorial, you will know how to:
+- Use `/dev:dev-api` to create Go handlers
+- Use `/dev:dev-tdd` for the Red-Green-Refactor cycle with testify
+- Write idiomatic table-driven tests in Go
+- Use `/qa:qa-security` for the security audit
 
-## Prerequis
+## Prerequisites
 
-- Claude Code installe et socle configure
-- Go 1.22+ installe (`go version` pour verifier)
-- Connaissances de base en Go (structs, interfaces, error handling)
+- Claude Code installed and foundation configured
+- Go 1.22+ installed (`go version` to check)
+- Basic knowledge of Go (structs, interfaces, error handling)
 
-## Contexte
+## Context
 
-Nous allons creer une API de gestion de **taches (todos)** avec :
-- CRUD complet (Create, Read, Update, Delete)
-- Router Chi
-- Tests table-driven avec testify
-- Validation des entrees
-- Architecture `cmd/internal/`
+We are going to create a **tasks (todos)** management API with:
+- Full CRUD (Create, Read, Update, Delete)
+- Chi router
+- Table-driven tests with testify
+- Input validation
+- `cmd/internal/` architecture
 
 ---
 
-## Phase 1 : Setup du projet
+## Phase 1: Project setup
 
-### Initialiser le module Go
+### Initialize the Go module
 
 ```bash
 mkdir todo-api && cd todo-api
-go mod init github.com/votre-org/todo-api
+go mod init github.com/your-org/todo-api
 ```
 
-### Installer les dependances
+### Install the dependencies
 
 ```bash
 go get github.com/go-chi/chi/v5
@@ -54,7 +54,7 @@ go get github.com/google/uuid
 go get github.com/stretchr/testify
 ```
 
-### Creer la structure
+### Create the structure
 
 ```
 todo-api/
@@ -72,7 +72,7 @@ todo-api/
 └── CLAUDE.md
 ```
 
-### Makefile minimal
+### Minimal Makefile
 
 ```makefile
 .PHONY: run test lint vet
@@ -90,7 +90,7 @@ vet:
 	go vet ./...
 ```
 
-### Fichier `.golangci.yml`
+### `.golangci.yml` file
 
 ```yaml
 linters:
@@ -106,86 +106,86 @@ linters:
 
 linters-settings:
   goimports:
-    local-prefixes: github.com/votre-org/todo-api
+    local-prefixes: github.com/your-org/todo-api
 ```
 
-### Configurer CLAUDE.md pour Go
+### Configure CLAUDE.md for Go
 
 ```bash
-/work:work-explore "Lire la structure du projet et configurer CLAUDE.md"
+/work:work-explore "Read the project structure and configure CLAUDE.md"
 ```
 
-Claude va detecter Go, Chi et testify, puis configurer les conventions dans `CLAUDE.md` :
-- Style de gestion des erreurs (`if err != nil`)
-- Pattern de tests table-driven
-- Conventions de nommage Go
+Claude will detect Go, Chi and testify, then configure the conventions in `CLAUDE.md`:
+- Error handling style (`if err != nil`)
+- Table-driven test pattern
+- Go naming conventions
 
 ---
 
-## Phase 2 : Exploration et planification
+## Phase 2: Exploration and planning
 
-### Explorer la structure
-
-```bash
-/work:work-explore "Analyser la structure du projet Go et les patterns en place"
-```
-
-Claude va identifier :
-- La version Go et les dependances dans `go.mod`
-- L'architecture `cmd/internal/` en place
-- Les interfaces de repository a definir
-- Les conventions de test existantes
-
-### Planifier l'API
+### Explore the structure
 
 ```bash
-/work:work-plan "API CRUD taches avec Go et Chi"
+/work:work-explore "Analyze the Go project structure and the patterns in place"
 ```
 
-**Plan attendu :**
+Claude will identify:
+- The Go version and the dependencies in `go.mod`
+- The `cmd/internal/` architecture in place
+- The repository interfaces to define
+- The existing test conventions
+
+### Plan the API
+
+```bash
+/work:work-plan "Tasks CRUD API with Go and Chi"
+```
+
+**Expected plan:**
 
 ```
-## Plan : API Todos en Go
+## Plan: Todos API in Go
 
 ### Endpoints
-- GET    /api/todos      - Liste des taches
-- GET    /api/todos/{id} - Detail d'une tache
-- POST   /api/todos      - Creer une tache
-- PUT    /api/todos/{id} - Modifier une tache
-- DELETE /api/todos/{id} - Supprimer une tache
+- GET    /api/todos      - List of tasks
+- GET    /api/todos/{id} - Detail of a task
+- POST   /api/todos      - Create a task
+- PUT    /api/todos/{id} - Update a task
+- DELETE /api/todos/{id} - Delete a task
 
-### Fichiers a creer
-1. internal/domain/todo.go          - Entite + interface repository
-2. internal/repository/memory.go    - Implementation en memoire
-3. internal/api/handler/todo.go     - Handlers HTTP
-4. internal/api/router.go           - Configuration Chi
-5. cmd/app/main.go                  - Point d'entree
+### Files to create
+1. internal/domain/todo.go          - Entity + repository interface
+2. internal/repository/memory.go    - In-memory implementation
+3. internal/api/handler/todo.go     - HTTP handlers
+4. internal/api/router.go           - Chi configuration
+5. cmd/app/main.go                  - Entry point
 
-### Fichiers de tests
+### Test files
 1. internal/domain/todo_test.go
 2. internal/repository/memory_test.go
 3. internal/api/handler/todo_test.go
 
-### Risques
-- Gestion des IDs : utiliser uuid pour eviter les collisions
-- Concurrence : proteger le repository en memoire avec sync.RWMutex
+### Risks
+- ID management: use uuid to avoid collisions
+- Concurrency: protect the in-memory repository with sync.RWMutex
 ```
 
-Validez ce plan avant de passer au TDD.
+Validate this plan before moving on to TDD.
 
 ---
 
-## Phase 3 : TDD - Domaine et repository
+## Phase 3: TDD - Domain and repository
 
-### Lancer le cycle TDD sur le domaine
+### Run the TDD cycle on the domain
 
 ```bash
-/dev:dev-tdd "domain entities et repository interface pour les taches"
+/dev:dev-tdd "domain entities and repository interface for tasks"
 ```
 
-Claude va suivre le cycle **Red → Green → Refactor**.
+Claude will follow the **Red → Green → Refactor** cycle.
 
-**1. Red - Tests table-driven qui echouent**
+**1. Red - Failing table-driven tests**
 
 ```go
 // internal/domain/todo_test.go
@@ -194,7 +194,7 @@ package domain_test
 import (
     "testing"
     "github.com/stretchr/testify/assert"
-    "github.com/votre-org/todo-api/internal/domain"
+    "github.com/your-org/todo-api/internal/domain"
 )
 
 func TestNewTodo(t *testing.T) {
@@ -203,9 +203,9 @@ func TestNewTodo(t *testing.T) {
         title   string
         wantErr bool
     }{
-        {"titre valide", "Apprendre TDD Go", false},
-        {"titre vide", "", true},
-        {"titre trop long", string(make([]byte, 201)), true},
+        {"valid title", "Learn Go TDD", false},
+        {"empty title", "", true},
+        {"title too long", string(make([]byte, 201)), true},
     }
 
     for _, tt := range tests {
@@ -225,31 +225,31 @@ func TestNewTodo(t *testing.T) {
 }
 ```
 
-**2. Green - Implementation minimale**
+**2. Green - Minimal implementation**
 
-Claude implemente `internal/domain/todo.go` avec la struct `Todo`, le constructeur `NewTodo` et l'interface `Repository` pour passer les tests.
+Claude implements `internal/domain/todo.go` with the `Todo` struct, the `NewTodo` constructor and the `Repository` interface to make the tests pass.
 
 **3. Refactor**
 
-Apres que les tests passent, Claude propose :
-- Ajouter la methode `Complete()` sur l'entite
-- Verifier que l'interface `Repository` couvre tous les cas d'usage
+After the tests pass, Claude proposes:
+- Add the `Complete()` method on the entity
+- Verify that the `Repository` interface covers all use cases
 
-### Continuer avec le repository
+### Continue with the repository
 
 ```bash
-/dev:dev-tdd "implementation repository en memoire avec sync.RWMutex"
+/dev:dev-tdd "in-memory repository implementation with sync.RWMutex"
 ```
 
-Claude ecrit d'abord les tests du repository (`FindAll`, `FindByID`, `Save`, `Delete`), puis implemente `internal/repository/memory.go` avec la protection en concurrence.
+Claude first writes the repository tests (`FindAll`, `FindByID`, `Save`, `Delete`), then implements `internal/repository/memory.go` with concurrency protection.
 
-### Commit atomique
+### Atomic commit
 
 ```bash
 /work:work-commit
 ```
 
-**Message suggere :**
+**Suggested message:**
 
 ```
 feat(domain): add Todo entity and in-memory repository
@@ -262,15 +262,15 @@ feat(domain): add Todo entity and in-memory repository
 
 ---
 
-## Phase 4 : TDD - Handlers HTTP
+## Phase 4: TDD - HTTP handlers
 
-### Lancer le TDD sur les handlers
+### Run TDD on the handlers
 
 ```bash
-/dev:dev-tdd "handlers HTTP CRUD avec chi et httptest"
+/dev:dev-tdd "CRUD HTTP handlers with chi and httptest"
 ```
 
-**1. Red - Tests avec `net/http/httptest`**
+**1. Red - Tests with `net/http/httptest`**
 
 ```go
 // internal/api/handler/todo_test.go
@@ -285,9 +285,9 @@ import (
 
     "github.com/stretchr/testify/assert"
     "github.com/stretchr/testify/require"
-    "github.com/votre-org/todo-api/internal/api/handler"
-    "github.com/votre-org/todo-api/internal/domain"
-    "github.com/votre-org/todo-api/internal/repository"
+    "github.com/your-org/todo-api/internal/api/handler"
+    "github.com/your-org/todo-api/internal/domain"
+    "github.com/your-org/todo-api/internal/repository"
 )
 
 func setupHandler(t *testing.T) *handler.TodoHandler {
@@ -303,17 +303,17 @@ func TestCreateTodo(t *testing.T) {
         wantStatus int
     }{
         {
-            name:       "creation valide",
-            body:       `{"title":"Apprendre Chi"}`,
+            name:       "valid creation",
+            body:       `{"title":"Learn Chi"}`,
             wantStatus: http.StatusCreated,
         },
         {
-            name:       "titre manquant",
+            name:       "missing title",
             body:       `{}`,
             wantStatus: http.StatusBadRequest,
         },
         {
-            name:       "json invalide",
+            name:       "invalid json",
             body:       `{invalid}`,
             wantStatus: http.StatusBadRequest,
         },
@@ -335,18 +335,18 @@ func TestCreateTodo(t *testing.T) {
 }
 ```
 
-**2. Green - Implementation du handler**
+**2. Green - Handler implementation**
 
-Claude implemente `internal/api/handler/todo.go` avec la methode `Create` qui decode le JSON, appelle le domaine et repond avec le statut correct.
+Claude implements `internal/api/handler/todo.go` with the `Create` method that decodes the JSON, calls the domain and responds with the correct status.
 
-**3. Red - Test d'erreur 404**
+**3. Red - 404 error test**
 
 ```go
 func TestGetTodoNotFound(t *testing.T) {
     h := setupHandler(t)
-    req := httptest.NewRequest(http.MethodGet, "/api/todos/inexistant", nil)
-    // Chi injecte les params d'URL via le contexte
-    req = withURLParam(req, "id", "inexistant")
+    req := httptest.NewRequest(http.MethodGet, "/api/todos/nonexistent", nil)
+    // Chi injects URL params via the context
+    req = withURLParam(req, "id", "nonexistent")
     w := httptest.NewRecorder()
 
     h.GetByID(w, req)
@@ -359,45 +359,45 @@ func TestGetTodoNotFound(t *testing.T) {
 }
 ```
 
-**4. Green - Gestion du 404**
+**4. Green - 404 handling**
 
-Claude ajoute la gestion du cas `domain.ErrNotFound` dans le handler `GetByID`.
+Claude adds handling for the `domain.ErrNotFound` case in the `GetByID` handler.
 
 **5. Refactor**
 
-Apres que tous les tests passent, Claude propose :
-- Extraire un helper `respondJSON` pour centraliser l'ecriture des reponses
-- Extraire un helper `respondError` pour les erreurs
+After all the tests pass, Claude proposes:
+- Extract a `respondJSON` helper to centralize response writing
+- Extract a `respondError` helper for errors
 
-### Creer les autres handlers
+### Create the other handlers
 
 ```bash
-/dev:dev-api "GET /api/todos - Liste de toutes les taches"
+/dev:dev-api "GET /api/todos - List all tasks"
 ```
 
 ```bash
-/dev:dev-api "PUT /api/todos/{id} - Mettre a jour une tache"
+/dev:dev-api "PUT /api/todos/{id} - Update a task"
 ```
 
 ```bash
-/dev:dev-api "DELETE /api/todos/{id} - Supprimer une tache"
+/dev:dev-api "DELETE /api/todos/{id} - Delete a task"
 ```
 
-### Configurer le router Chi
+### Configure the Chi router
 
 ```bash
-/dev:dev-api "router Chi avec middleware logging et recover"
+/dev:dev-api "Chi router with logging and recover middleware"
 ```
 
-Claude cree `internal/api/router.go` avec les routes montees sur Chi, le middleware `chi.Logger` et `chi.Recoverer`.
+Claude creates `internal/api/router.go` with the routes mounted on Chi, the `chi.Logger` and `chi.Recoverer` middleware.
 
-### Commit atomique
+### Atomic commit
 
 ```bash
 /work:work-commit
 ```
 
-**Message suggere :**
+**Suggested message:**
 
 ```
 feat(api): add CRUD handlers with Chi router
@@ -410,79 +410,79 @@ feat(api): add CRUD handlers with Chi router
 
 ---
 
-## Phase 5 : Qualite
+## Phase 5: Quality
 
-### Verification statique
+### Static checking
 
 ```bash
 make vet
 ```
 
-Resultat attendu :
+Expected result:
 
 ```
-# Aucune sortie = aucun probleme
+# No output = no problem
 ```
 
 ```bash
 make lint
 ```
 
-Claude corrige les avertissements signales par golangci-lint (imports non utilises, erreurs non verifiees, etc.).
+Claude fixes the warnings reported by golangci-lint (unused imports, unchecked errors, etc.).
 
-### Audit securite
+### Security audit
 
 ```bash
 /qa:qa-security
 ```
 
-**Sortie abregee typique :**
+**Typical abridged output:**
 
 ```
-## Audit Securite - API Go
+## Security Audit - Go API
 
-### P0 - Critique
-  (aucun)
+### P0 - Critical
+  (none)
 
 ### P1 - Important
-- [VALIDATION] Ajouter une limite de taille sur le body de la requete
-  → Ajouter http.MaxBytesReader dans le handler ou en middleware
+- [VALIDATION] Add a size limit on the request body
+  → Add http.MaxBytesReader in the handler or as middleware
 
-### P2 - Moyen
-- [HEADERS] Ajouter les headers de securite (X-Content-Type-Options, etc.)
-  → Ajouter un middleware de securite apres chi.Logger
+### P2 - Medium
+- [HEADERS] Add security headers (X-Content-Type-Options, etc.)
+  → Add a security middleware after chi.Logger
 
 ### Recommendations
-- Configurer un timeout sur le serveur HTTP (ReadTimeout, WriteTimeout)
-- Ajouter un rate limiter pour les endpoints publics
+- Configure a timeout on the HTTP server (ReadTimeout, WriteTimeout)
+- Add a rate limiter for public endpoints
 
-Score : 82/100
+Score: 82/100
 ```
 
-Claude applique les corrections P0 et P1 :
-- Ajout de `http.MaxBytesReader` pour limiter la taille du body
-- Ajout d'un middleware de headers de securite
-- Configuration des timeouts sur `http.Server`
+Claude applies the P0 and P1 fixes:
+- Add `http.MaxBytesReader` to limit the body size
+- Add a security headers middleware
+- Configure timeouts on `http.Server`
 
-### Relancer les tests
+### Re-run the tests
 
 ```bash
 make test
 ```
 
-Verifiez que tous les tests passent apres les corrections.
+Check that all tests pass after the fixes.
 
 ---
 
-## Phase 6 : Commit et PR
+## Phase 6: Commit and PR
 
-### Commit des corrections qualite
+### Commit the quality fixes
 
 ```bash
 /work:work-commit
 ```
 
-**Message suggere :**
+**Suggested message:**
 
 ```
 fix(security): add request body limit and security headers
@@ -492,77 +492,77 @@ fix(security): add request body limit and security headers
 - Configure ReadTimeout and WriteTimeout on http.Server
 ```
 
-### Creer la PR
+### Create the PR
 
 ```bash
 /work:work-pr
 ```
 
-Claude genere une PR avec :
-- Description des endpoints implementes
-- Resultats des tests (`make test`)
-- Points corriges par l'audit securite
+Claude generates a PR with:
+- Description of the implemented endpoints
+- Test results (`make test`)
+- Items fixed by the security audit
 
 ---
 
-## Recapitulatif
+## Recap
 
-Vous avez developpe une API REST Go complete en suivant le workflow du socle :
+You have developed a complete Go REST API by following the foundation's workflow:
 
 ```
 todo-api/
-├── cmd/app/main.go                      # Point d'entree et wiring
+├── cmd/app/main.go                      # Entry point and wiring
 ├── internal/
 │   ├── domain/
-│   │   ├── todo.go                      # Entite + interface Repository
-│   │   └── todo_test.go                 # Tests table-driven domaine
+│   │   ├── todo.go                      # Entity + Repository interface
+│   │   └── todo_test.go                 # Domain table-driven tests
 │   ├── repository/
-│   │   ├── memory.go                    # Implementation thread-safe
+│   │   ├── memory.go                    # Thread-safe implementation
 │   │   └── memory_test.go
 │   └── api/
 │       ├── router.go                    # Chi router + middleware
 │       └── handler/
-│           ├── todo.go                  # Handlers HTTP
-│           └── todo_test.go             # Tests httptest table-driven
+│           ├── todo.go                  # HTTP handlers
+│           └── todo_test.go             # httptest table-driven tests
 ├── Makefile
 └── .golangci.yml
 ```
 
-| Commande | Ce qu'elle fait |
+| Command | What it does |
 |----------|-----------------|
-| `/work:work-explore` | Analyse le projet et configure CLAUDE.md |
-| `/work:work-plan` | Planifie l'architecture avant de coder |
-| `/dev:dev-tdd` | Cycle Red-Green-Refactor avec testify |
-| `/dev:dev-api` | Cree un endpoint avec handler et tests |
-| `/qa:qa-security` | Audit securite et corrections |
-| `/work:work-commit` | Commit conventionnel atomique |
-| `/work:work-pr` | Cree la PR avec description complete |
+| `/work:work-explore` | Analyzes the project and configures CLAUDE.md |
+| `/work:work-plan` | Plans the architecture before coding |
+| `/dev:dev-tdd` | Red-Green-Refactor cycle with testify |
+| `/dev:dev-api` | Creates an endpoint with handler and tests |
+| `/qa:qa-security` | Security audit and fixes |
+| `/work:work-commit` | Atomic conventional commit |
+| `/work:work-pr` | Creates the PR with full description |
 
-### Points cles Go appris
+### Key Go points learned
 
-| Concept | Application dans ce tutoriel |
+| Concept | Application in this tutorial |
 |---------|------------------------------|
-| Tests table-driven | Couverture de tous les cas en une boucle `for _, tt := range tests` |
-| `net/http/httptest` | Tests de handlers sans demarrer de serveur reel |
-| `sync.RWMutex` | Protection du repository en memoire pour la concurrence |
-| Interfaces Go | `Repository` definie dans le domaine, implementee dans le package repository |
-| Gestion des erreurs | Erreurs typees (`domain.ErrNotFound`) pour distinguer les cas HTTP |
+| Table-driven tests | Coverage of all cases in a single `for _, tt := range tests` loop |
+| `net/http/httptest` | Handler tests without starting a real server |
+| `sync.RWMutex` | In-memory repository protection for concurrency |
+| Go interfaces | `Repository` defined in the domain, implemented in the repository package |
+| Error handling | Typed errors (`domain.ErrNotFound`) to distinguish HTTP cases |
 
 ---
 
-## Pour aller plus loin
+## Going further
 
-- [Guide Go](/docs/concepts/stack-recipes) - Patterns avances, gestion des erreurs, concurrence
-- [Guide Auth](/docs/concepts/stack-recipes) - Ajouter JWT a votre API Go
-- [Guide Database](/docs/concepts/stack-recipes) - Remplacer le repository memoire par PostgreSQL avec pgx
-- [Tutoriel 10 : Projet complet TaskFlow](/docs/tutorials/projet-complet) - Integrer ce backend dans un projet full-stack
+- [Go Guide](/docs/concepts/stack-recipes) - Advanced patterns, error handling, concurrency
+- [Auth Guide](/docs/concepts/stack-recipes) - Add JWT to your Go API
+- [Database Guide](/docs/concepts/stack-recipes) - Replace the in-memory repository with PostgreSQL via pgx
+- [Tutorial 10: Complete TaskFlow project](/docs/tutorials/projet-complet) - Integrate this backend into a full-stack project
 
 ---
 
-:::tip Tests table-driven en Go
-Les tests table-driven sont le pattern idiomatique Go pour couvrir de multiples cas sans dupliquer le code. Utilisez `/dev:dev-tdd` : Claude genere automatiquement ce pattern et l'etend a chaque nouveau cas d'usage.
+:::tip Table-driven tests in Go
+Table-driven tests are the idiomatic Go pattern to cover multiple cases without duplicating code. Use `/dev:dev-tdd`: Claude automatically generates this pattern and extends it to each new use case.
 :::
 
-:::info Architecture cmd/internal/
-Le dossier `internal/` garantit que votre code metier n'est pas importe par des projets externes. C'est une convention Go forte que le socle respecte dans tous les projets Go generes.
+:::info cmd/internal/ architecture
+The `internal/` folder ensures that your business code is not imported by external projects. It is a strong Go convention that the foundation respects in all generated Go projects.
 :::

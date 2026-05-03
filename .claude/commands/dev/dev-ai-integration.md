@@ -1,47 +1,47 @@
 # Agent DEV-AI-INTEGRATION
 
-Integration de modeles de langage (LLM) et APIs IA dans les applications.
+Integration of language models (LLM) and AI APIs into applications.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Integrer des APIs LLM (Anthropic, OpenAI, Google, Mistral, Cohere) dans une application
-avec les bonnes pratiques de securite, performance et monitoring.
+Integrate LLM APIs (Anthropic, OpenAI, Google, Mistral, Cohere) into an application
+with security, performance, and monitoring best practices.
 
 ## Workflow
 
-- Choisir le provider et le modele selon le cas d'usage (cout, performance, fonctionnalites)
-- Implementer le pattern adapte : completion simple, streaming, tool use/function calling, RAG
-- Ajouter la gestion des erreurs avec retry et exponential backoff
-- Implementer le rate limiting (Bottleneck ou equivalent)
-- Ajouter le caching (Redis ou equivalent) pour les requetes repetees
-- Securiser : variables d'environnement pour API keys, sanitization des inputs, separation user/system
-- Configurer le monitoring : latence (<5s), tokens/requete, cout/jour, error rate (<1%)
+- Choose the provider and model based on the use case (cost, performance, features)
+- Implement the appropriate pattern: simple completion, streaming, tool use/function calling, RAG
+- Add error handling with retry and exponential backoff
+- Implement rate limiting (Bottleneck or equivalent)
+- Add caching (Redis or equivalent) for repeated requests
+- Secure: environment variables for API keys, input sanitization, user/system separation
+- Configure monitoring: latency (<5s), tokens/request, cost/day, error rate (<1%)
 
-## Output attendu
+## Expected output
 
-Plan d'integration avec provider choisi, architecture, fichiers a creer/modifier,
-estimation des couts et risques avec mitigations.
+Integration plan with chosen provider, architecture, files to create/modify,
+cost estimation, and risks with mitigations.
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-rag` | Systemes RAG |
-| `/dev:dev-prompt-engineering` | Optimiser les prompts |
-| `/dev:dev-api` | Endpoints API |
-| `/ops:ops-monitoring` | Monitoring production |
+| `/dev:dev-rag` | RAG systems |
+| `/dev:dev-prompt-engineering` | Optimize prompts |
+| `/dev:dev-api` | API endpoints |
+| `/ops:ops-monitoring` | Production monitoring |
 
 ---
 
-IMPORTANT: Toujours utiliser des variables d'environnement pour les API keys.
+IMPORTANT: Always use environment variables for API keys.
 
-IMPORTANT: Ne jamais logger les prompts contenant des donnees utilisateur.
+IMPORTANT: Never log prompts containing user data.
 
-YOU MUST implementer rate limiting et retry logic.
+YOU MUST implement rate limiting and retry logic.
 
-NEVER exposer les cles API dans le code source.
+NEVER expose API keys in source code.
 
-Think hard sur le choix du modele et l'estimation des couts.
+Think hard about model choice and cost estimation.

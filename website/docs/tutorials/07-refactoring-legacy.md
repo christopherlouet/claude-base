@@ -1,138 +1,138 @@
 ---
 sidebar_position: 8
-title: "07 - Refactoring Legacy"
-description: Refactorez un projet legacy en utilisant TDD et une approche méthodique
+title: "07 - Legacy Refactoring"
+description: Refactor a legacy project using TDD and a methodical approach
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# Refactoring d'un projet Legacy
+# Legacy Project Refactoring
 
-<DifficultyBadge level="advanced" /> **Durée estimée : 60 minutes**
+<DifficultyBadge level="advanced" /> **Estimated duration: 60 minutes**
 
-Ce tutoriel vous montre comment refactorer méthodiquement un projet legacy en utilisant le TDD et les outils claude-socle.
+This tutorial shows you how to methodically refactor a legacy project using TDD and the claude-socle tools.
 
-## Objectifs
+## Objectives
 
-À la fin de ce tutoriel, vous saurez :
-- Utiliser `/work:work-explore` pour cartographier un legacy
-- Utiliser `/qa:qa-tech-debt` pour prioriser le refactoring
-- Utiliser `/dev:dev-tdd` pour refactorer en sécurité
-- Appliquer les patterns de refactoring progressif
+By the end of this tutorial, you will know how to:
+- Use `/work:work-explore` to map a legacy codebase
+- Use `/qa:qa-tech-debt` to prioritize refactoring
+- Use `/dev:dev-tdd` to refactor safely
+- Apply progressive refactoring patterns
 
-## Prérequis
+## Prerequisites
 
-- Un projet "legacy" à refactorer
-- Expérience en développement
-- Patience et méthode
+- A "legacy" project to refactor
+- Development experience
+- Patience and method
 
-## Contexte
+## Context
 
-Le refactoring d'un legacy est risqué. Sans tests, chaque modification peut introduire des bugs. La stratégie :
+Refactoring a legacy codebase is risky. Without tests, every change can introduce bugs. The strategy:
 
-1. **Comprendre** avant de toucher
-2. **Tester** le comportement existant
-3. **Refactorer** petit à petit
-4. **Valider** après chaque changement
+1. **Understand** before touching
+2. **Test** existing behavior
+3. **Refactor** little by little
+4. **Validate** after each change
 
-## Étape 1 : Cartographier le projet
+## Step 1: Map the project
 
 ```bash
-/work:work-explore "Analyser ce projet legacy : architecture, dépendances, points de douleur"
+/work:work-explore "Analyze this legacy project: architecture, dependencies, pain points"
 ```
 
-Claude va identifier :
-- La structure du projet
-- Les technologies utilisées
-- Les fichiers les plus modifiés (hotspots)
-- Les dépendances entre modules
-- Les patterns utilisés (ou leur absence)
+Claude will identify:
+- The project structure
+- The technologies used
+- The most modified files (hotspots)
+- Dependencies between modules
+- Patterns used (or their absence)
 
-**Exemple de sortie :**
+**Example output:**
 
 ```markdown
-## Analyse du projet legacy
+## Legacy project analysis
 
 ### Structure
 ```
 src/
-├── controllers/     # 15 fichiers, logique métier mélangée
-├── models/          # 8 fichiers, validation dans les contrôleurs
-├── routes/          # 3 fichiers, tout dans index.js
-├── utils/           # 12 fichiers, beaucoup de duplication
-└── index.js         # Point d'entrée, 500 lignes
+├── controllers/     # 15 files, mixed business logic
+├── models/          # 8 files, validation in controllers
+├── routes/          # 3 files, everything in index.js
+├── utils/           # 12 files, lots of duplication
+└── index.js         # Entry point, 500 lines
 ```
 
 ### Technologies
 - Node.js 12 (EOL)
-- Express 4.16 (ancien)
-- MySQL avec requêtes SQL brutes
-- Pas de TypeScript
-- Pas de tests
+- Express 4.16 (old)
+- MySQL with raw SQL queries
+- No TypeScript
+- No tests
 
-### Hotspots (fichiers problématiques)
-1. `src/controllers/orderController.js` (800 lignes)
-2. `src/utils/helpers.js` (400 lignes, fonctions variées)
-3. `src/routes/index.js` (toutes les routes en un fichier)
+### Hotspots (problematic files)
+1. `src/controllers/orderController.js` (800 lines)
+2. `src/utils/helpers.js` (400 lines, mixed functions)
+3. `src/routes/index.js` (all routes in one file)
 
-### Dépendances critiques
-- lodash utilisé partout (4.17.4, vulnérable)
+### Critical dependencies
+- lodash used everywhere (4.17.4, vulnerable)
 - moment.js (deprecated)
-- mysql (pas de pool de connexions)
+- mysql (no connection pool)
 
-### Dette technique estimée
-- 🔴 Critique : Injection SQL, Node EOL
-- 🟠 Élevée : Pas de tests, couplage fort
-- 🟡 Moyenne : Duplication, nommage incohérent
+### Estimated technical debt
+- 🔴 Critical: SQL injection, Node EOL
+- 🟠 High: No tests, tight coupling
+- 🟡 Medium: Duplication, inconsistent naming
 ```
 
-## Étape 2 : Prioriser la dette technique
+## Step 2: Prioritize technical debt
 
 ```bash
 /qa:qa-tech-debt
 ```
 
-Claude va prioriser les éléments à traiter :
+Claude will prioritize the items to address:
 
 ```markdown
-## Priorisation de la dette technique
+## Technical debt prioritization
 
-### 🔴 Priorité 1 - Sécurité (Sprint 1)
-| Item | Risque | Effort | Action |
-|------|--------|--------|--------|
-| SQL Injection | Critique | Moyen | Migrer vers requêtes préparées |
-| Node 12 EOL | Élevé | Faible | Upgrade vers Node 20 |
-| lodash vulnérable | Élevé | Faible | npm audit fix |
+### 🔴 Priority 1 - Security (Sprint 1)
+| Item | Risk | Effort | Action |
+|------|------|--------|--------|
+| SQL Injection | Critical | Medium | Migrate to prepared statements |
+| Node 12 EOL | High | Low | Upgrade to Node 20 |
+| Vulnerable lodash | High | Low | npm audit fix |
 
-### 🟠 Priorité 2 - Testabilité (Sprint 2)
-| Item | Risque | Effort | Action |
-|------|--------|--------|--------|
-| orderController.js | Élevé | Élevé | Extraire services, ajouter tests |
-| Pas de tests | Élevé | Moyen | Ajouter tests sur chemins critiques |
+### 🟠 Priority 2 - Testability (Sprint 2)
+| Item | Risk | Effort | Action |
+|------|------|--------|--------|
+| orderController.js | High | High | Extract services, add tests |
+| No tests | High | Medium | Add tests on critical paths |
 
-### 🟡 Priorité 3 - Maintenabilité (Sprint 3+)
-| Item | Risque | Effort | Action |
-|------|--------|--------|--------|
-| TypeScript | Moyen | Élevé | Migration progressive |
-| moment.js | Faible | Moyen | Migrer vers date-fns |
-| Duplication | Moyen | Moyen | Extraire fonctions communes |
+### 🟡 Priority 3 - Maintainability (Sprint 3+)
+| Item | Risk | Effort | Action |
+|------|------|--------|--------|
+| TypeScript | Medium | High | Progressive migration |
+| moment.js | Low | Medium | Migrate to date-fns |
+| Duplication | Medium | Medium | Extract common functions |
 ```
 
-## Étape 3 : Sécuriser d'abord
+## Step 3: Secure first
 
-Avant tout refactoring, corrigeons les problèmes de sécurité.
+Before any refactoring, let's fix the security issues.
 
-### Mettre à jour Node.js
+### Update Node.js
 
 ```bash
-# Vérifier la compatibilité
+# Check compatibility
 nvm install 20
 nvm use 20
-npm test  # S'il y a des tests
-npm start # Vérifier que ça fonctionne
+npm test  # If there are tests
+npm start # Verify it works
 ```
 
-### Corriger les dépendances
+### Fix dependencies
 
 ```bash
 /ops:ops-deps
@@ -143,9 +143,9 @@ npm audit fix
 npm update lodash
 ```
 
-### Corriger l'injection SQL
+### Fix SQL injection
 
-**Avant (vulnérable) :**
+**Before (vulnerable):**
 ```javascript
 // src/controllers/orderController.js
 const getOrder = async (req, res) => {
@@ -155,7 +155,7 @@ const getOrder = async (req, res) => {
 };
 ```
 
-**Après (sécurisé) :**
+**After (secure):**
 ```javascript
 const getOrder = async (req, res) => {
   const sql = 'SELECT * FROM orders WHERE id = ?';
@@ -164,24 +164,24 @@ const getOrder = async (req, res) => {
 };
 ```
 
-## Étape 4 : Ajouter des tests sur le comportement existant
+## Step 4: Add tests for existing behavior
 
-Avant de refactorer, on capture le comportement actuel avec des tests.
+Before refactoring, we capture the current behavior with tests.
 
 ```bash
-/dev:dev-tdd "Ajouter des tests de caractérisation pour orderController"
+/dev:dev-tdd "Add characterization tests for orderController"
 ```
 
-**Tests de caractérisation :**
+**Characterization tests:**
 
 ```javascript
 // tests/orderController.test.js
 const request = require('supertest');
 const app = require('../src/app');
 
-describe('OrderController - Comportement existant', () => {
-  // Ces tests documentent le comportement ACTUEL
-  // même s'il est incorrect
+describe('OrderController - Existing behavior', () => {
+  // These tests document the CURRENT behavior
+  // even if it is incorrect
 
   describe('GET /orders/:id', () => {
     it('should return order with products', async () => {
@@ -189,15 +189,15 @@ describe('OrderController - Comportement existant', () => {
         .get('/orders/1')
         .expect(200);
 
-      // Documenter la structure actuelle
+      // Document the current structure
       expect(response.body).toHaveProperty('id');
       expect(response.body).toHaveProperty('customer_id');
       expect(response.body).toHaveProperty('products');
     });
 
     it('should return 500 for invalid id (current bug)', async () => {
-      // Documenter le bug actuel
-      // Devrait être 404 mais renvoie 500
+      // Document the current bug
+      // Should be 404 but returns 500
       const response = await request(app)
         .get('/orders/invalid')
         .expect(500);
@@ -220,27 +220,27 @@ describe('OrderController - Comportement existant', () => {
 });
 ```
 
-:::tip Tests de caractérisation
-Les tests de caractérisation capturent le comportement actuel, **bugs inclus**. Ils servent de filet de sécurité pendant le refactoring.
+:::tip Characterization tests
+Characterization tests capture the current behavior, **bugs included**. They serve as a safety net during refactoring.
 :::
 
-## Étape 5 : Refactorer avec le pattern "Strangler Fig"
+## Step 5: Refactor with the "Strangler Fig" pattern
 
-Le pattern Strangler Fig permet de remplacer progressivement le legacy.
+The Strangler Fig pattern allows you to progressively replace the legacy code.
 
-### Créer la nouvelle structure
+### Create the new structure
 
 ```bash
 mkdir -p src/features/orders/{domain,application,infrastructure}
 ```
 
-### Extraire le domaine
+### Extract the domain
 
 ```bash
-/dev:dev-refactor "Extraire la logique métier de orderController vers un service dédié"
+/dev:dev-refactor "Extract the business logic from orderController to a dedicated service"
 ```
 
-**Nouveau service :**
+**New service:**
 
 ```typescript
 // src/features/orders/application/OrderService.ts
@@ -268,17 +268,17 @@ export class OrderService {
 }
 ```
 
-### Remplacer progressivement
+### Replace progressively
 
 ```javascript
-// src/controllers/orderController.js (migration progressive)
+// src/controllers/orderController.js (progressive migration)
 const { OrderService } = require('../features/orders/application/OrderService');
 const { MySQLOrderRepository } = require('../features/orders/infrastructure/MySQLOrderRepository');
 
-// Nouveau code
+// New code
 const orderService = new OrderService(new MySQLOrderRepository(db));
 
-// Anciennes routes pointent vers le nouveau service
+// Old routes point to the new service
 const getOrder = async (req, res) => {
   try {
     const order = await orderService.getOrder(req.params.id);
@@ -292,10 +292,10 @@ const getOrder = async (req, res) => {
 };
 ```
 
-## Étape 6 : Migrer vers TypeScript progressivement
+## Step 6: Migrate to TypeScript progressively
 
 ```bash
-/ops:ops-migrate "Migrer progressivement vers TypeScript"
+/ops:ops-migrate "Progressively migrate to TypeScript"
 ```
 
 ### Configuration
@@ -309,8 +309,8 @@ const getOrder = async (req, res) => {
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "allowJs": true,           // Permet le JS existant
-    "checkJs": false,          // Ne vérifie pas le JS
+    "allowJs": true,           // Allows existing JS
+    "checkJs": false,          // Does not check JS
     "outDir": "./dist",
     "rootDir": "./src"
   },
@@ -319,69 +319,69 @@ const getOrder = async (req, res) => {
 }
 ```
 
-### Migration fichier par fichier
+### File-by-file migration
 
-1. Renommer `.js` en `.ts`
-2. Ajouter les types
-3. Lancer les tests
-4. Passer au fichier suivant
+1. Rename `.js` to `.ts`
+2. Add types
+3. Run the tests
+4. Move to the next file
 
-## Étape 7 : Valider le refactoring
+## Step 7: Validate the refactoring
 
 ```bash
-# Lancer tous les tests
+# Run all tests
 npm test
 
-# Vérifier la couverture
+# Check coverage
 npm run test:coverage
 
-# Audit de sécurité final
+# Final security audit
 /qa:qa-security
 ```
 
-## Étape 8 : Commiter par étapes
+## Step 8: Commit by steps
 
-Chaque étape de refactoring doit être un commit séparé :
+Each refactoring step should be a separate commit:
 
 ```bash
-# Commit 1 - Sécurité
+# Commit 1 - Security
 git add -A && git commit -m "fix(security): parameterize SQL queries"
 
 # Commit 2 - Tests
 git add -A && git commit -m "test: add characterization tests for orders"
 
-# Commit 3 - Extraction service
+# Commit 3 - Service extraction
 git add -A && git commit -m "refactor(orders): extract OrderService"
 
 # Commit 4 - TypeScript
 git add -A && git commit -m "refactor: migrate orders to TypeScript"
 ```
 
-## Stratégies de refactoring
+## Refactoring strategies
 
-| Pattern | Quand l'utiliser |
-|---------|------------------|
-| **Strangler Fig** | Remplacement progressif d'un système |
-| **Branch by Abstraction** | Changer une implémentation sans casser l'API |
-| **Extract Method/Class** | Réduire la complexité d'une fonction/classe |
-| **Characterization Tests** | Capturer le comportement avant de modifier |
+| Pattern | When to use it |
+|---------|----------------|
+| **Strangler Fig** | Progressive replacement of a system |
+| **Branch by Abstraction** | Change an implementation without breaking the API |
+| **Extract Method/Class** | Reduce the complexity of a function/class |
+| **Characterization Tests** | Capture behavior before modifying |
 
-## Checklist refactoring
+## Refactoring checklist
 
-- [ ] Tests de caractérisation en place
-- [ ] Aucune régression après chaque changement
-- [ ] Commits atomiques et descriptifs
-- [ ] Code review pour chaque PR
-- [ ] Documentation mise à jour
+- [ ] Characterization tests in place
+- [ ] No regression after each change
+- [ ] Atomic and descriptive commits
+- [ ] Code review for each PR
+- [ ] Documentation updated
 
-## Prochaines étapes
+## Next steps
 
-- [Tutoriel 08 : Infrastructure Proxmox](/docs/tutorials/proxmox-infra)
-- [Agent qa-tech-debt](/docs/agents/qa-tech-debt)
-- [Commande /dev:dev-refactor](/docs/commands/dev/dev-refactor)
+- [Tutorial 08: Proxmox Infrastructure](/docs/tutorials/proxmox-infra)
+- [qa-tech-debt agent](/docs/agents/qa-tech-debt)
+- [/dev:dev-refactor command](/docs/commands/dev/dev-refactor)
 
 ---
 
-:::warning Règle d'or
-**Ne jamais refactorer sans tests.** Si le code n'a pas de tests, ajoutez-en d'abord.
+:::warning Golden rule
+**Never refactor without tests.** If the code has no tests, add some first.
 :::

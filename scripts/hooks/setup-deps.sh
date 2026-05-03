@@ -1,10 +1,10 @@
 #!/bin/bash
-# Hook Setup: Installation automatique des dépendances
-# Déclenché par: claude --init ou claude --init-only
+# Setup hook: Automatic dependency installation
+# Triggered by: claude --init or claude --init-only
 
 set -euo pipefail
 
-echo "=== Setup: Installation des dépendances ==="
+echo "=== Setup: Installing dependencies ==="
 
 # Node.js
 if [ -f package.json ] && [ ! -d node_modules ]; then

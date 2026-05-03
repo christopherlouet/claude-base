@@ -2,14 +2,14 @@
 
 # =============================================================================
 # Claude-Socle New Project Script
-# Crée un nouveau projet ou configure un projet existant avec Claude Code
+# Creates a new project or configures an existing project with Claude Code
 # =============================================================================
 
 set -euo pipefail
 
 VERSION=$(cat "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/VERSION" 2>/dev/null || echo "1.1.0")
 
-# Charger la librairie commune
+# Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 
@@ -22,7 +22,7 @@ source "$SCRIPT_DIR/lib/generators.sh"
 # shellcheck source=lib/docker.sh
 source "$SCRIPT_DIR/lib/docker.sh"
 
-# Activer le handler d'erreur et vérifier les prérequis
+# Enable the error handler and check prerequisites
 enable_error_handler
 check_base_requirements
 
@@ -60,7 +60,7 @@ count_skills_cached() {
     echo "$_CACHED_SKILL_COUNT"
 }
 
-# Variables du projet
+# Project variables
 PROJECT_NAME=""
 PROJECT_TYPE=""
 PROJECT_PATH=""
@@ -73,13 +73,13 @@ INCLUDE_DOCKER=false
 NON_INTERACTIVE=false
 FORCE_TYPE=""
 
-# Nouvelles options (mode simple / installation directe)
+# New options (simple mode / direct install)
 SIMPLE_MODE=false
 MINIMAL_MODE=false
 SKIP_PROMPTS=false
 DESIGN_STYLE=""
 
-# Variables de détection (used by lib/detection.sh functions)
+# Detection variables (used by lib/detection.sh functions)
 DETECTED_TYPE=""
 DETECTED_FRAMEWORK=""
 DETECTED_CICD=false
@@ -93,13 +93,13 @@ DETECTED_FOLDERS=()
 DETECTED_MAIN_DEPS=()
 DETECTED_PKG_MANAGER="npm"
 
-# Variables d'analyse CI/CD
+# CI/CD analysis variables
 CICD_MISSING=()
 CICD_PRESENT=()
 CICD_ACTION="skip"
 
 # =============================================================================
-# Aide et version
+# Help and version
 # =============================================================================
 
 show_help() {
@@ -107,70 +107,70 @@ show_help() {
 ${BOLD}Claude-Socle New Project${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
-    $(basename "$0") [OPTIONS] [CHEMIN]
+    $(basename "$0") [OPTIONS] [PATH]
 
 ${BOLD}DESCRIPTION${NC}
-    Crée un nouveau projet ou configure un projet existant avec Claude Code.
-    Installe commandes, agents et skills pour le workflow Explore → Plan → Code → Commit.
+    Creates a new project or configures an existing project with Claude Code.
+    Installs commands, agents and skills for the Explore → Plan → Code → Commit workflow.
 
 ${BOLD}ARGUMENTS${NC}
-    CHEMIN              Chemin vers un projet existant à configurer (optionnel)
-                        Si omis, crée un nouveau projet interactivement
+    PATH                Path to an existing project to configure (optional)
+                        If omitted, creates a new project interactively
 
 ${BOLD}OPTIONS${NC}
-    -h, --help          Affiche cette aide
-    -v, --version       Affiche la version
-    -y, --yes           Mode non-interactif (accepte les valeurs par défaut)
-    -n, --dry-run       Simule l'installation sans rien copier
-    -q, --quiet         Mode silencieux (erreurs uniquement)
-    --verbose           Mode verbeux (debug)
-    -t, --type TYPE     Force le type de projet (react, vue, node-api, python, go, rust, java, fullstack, generic)
-    -p, --path CHEMIN   Dossier parent où créer le projet (défaut: répertoire courant)
-    --ci                Inclut GitHub Actions (CI/CD)
-    --hooks             Inclut pre-commit hooks (husky)
-    --mcp               Inclut configuration MCP
-    --docker            Inclut Dockerfile
-    --all               Inclut toutes les options (ci, hooks, mcp, docker)
-    --style STYLE       Direction design (terminal, cockpit, vitality, editorial, glass, signal)
-    --skip-prompts      Saute les questions optionnelles (utilise les flags fournis)
-    --simple            Mode installation simple (équivalent à l'ancien install.sh)
-    --install-only      Alias pour --simple
-    --minimal           Installation minimale (Niveau 1+2 learning-path) via manifest
+    -h, --help          Show this help
+    -v, --version       Show the version
+    -y, --yes           Non-interactive mode (accepts default values)
+    -n, --dry-run       Simulate the install without copying anything
+    -q, --quiet         Quiet mode (errors only)
+    --verbose           Verbose mode (debug)
+    -t, --type TYPE     Force the project type (react, vue, node-api, python, go, rust, java, fullstack, generic)
+    -p, --path PATH     Parent folder where the project will be created (default: current directory)
+    --ci                Include GitHub Actions (CI/CD)
+    --hooks             Include pre-commit hooks (husky)
+    --mcp               Include MCP configuration
+    --docker            Include Dockerfile
+    --all               Include all options (ci, hooks, mcp, docker)
+    --style STYLE       Design direction (terminal, cockpit, vitality, editorial, glass, signal)
+    --skip-prompts      Skip optional questions (use the provided flags)
+    --simple            Simple install mode (equivalent to the old install.sh)
+    --install-only      Alias for --simple
+    --minimal           Minimal install (Level 1+2 learning-path) via manifest
 
-${BOLD}EXEMPLES${NC}
-    # Nouveau projet interactif
+${BOLD}EXAMPLES${NC}
+    # Interactive new project
     $(basename "$0")
 
-    # Nouveau projet dans un dossier spécifique
+    # New project in a specific folder
     $(basename "$0") --path ~/projects
 
-    # Configurer un projet existant
-    $(basename "$0") ./mon-projet
+    # Configure an existing project
+    $(basename "$0") ./my-project
 
-    # Mode non-interactif avec détection auto
-    $(basename "$0") -y ./mon-projet
+    # Non-interactive mode with auto detection
+    $(basename "$0") -y ./my-project
 
-    # Nouveau projet React avec CI/CD dans un dossier spécifique
-    $(basename "$0") -y -t react --ci --path /var/www mon-app
+    # New React project with CI/CD in a specific folder
+    $(basename "$0") -y -t react --ci --path /var/www my-app
 
-    # Projet React avec direction design
-    $(basename "$0") -y -t react --style vitality ./mon-app
+    # React project with design direction
+    $(basename "$0") -y -t react --style vitality ./my-app
 
-    # Tout inclure
-    $(basename "$0") -y --all ./mon-projet
+    # Include everything
+    $(basename "$0") -y --all ./my-project
 
-    # Mode simple (installation rapide sans détection)
+    # Simple mode (quick install without detection)
     $(basename "$0") --simple .
-    $(basename "$0") --simple --all ./mon-projet
+    $(basename "$0") --simple --all ./my-project
 
-    # Mode dry-run (simulation)
+    # Dry-run mode (simulation)
     $(basename "$0") --dry-run --simple .
-    $(basename "$0") -n -y ./mon-projet
+    $(basename "$0") -n -y ./my-project
 
-    # Mode verbeux pour debug
-    $(basename "$0") --verbose ./mon-projet
+    # Verbose mode for debug
+    $(basename "$0") --verbose ./my-project
 
-${BOLD}TYPES DE PROJET${NC}
+${BOLD}PROJECT TYPES${NC}
     react       React / Next.js
     vue         Vue.js / Nuxt.js
     node-api    Node.js API (Express, Fastify, NestJS)
@@ -181,19 +181,19 @@ ${BOLD}TYPES DE PROJET${NC}
     fullstack   Monorepo (Turborepo, Nx)
     flutter     Flutter / Dart (iOS, Android, Web)
     neovim      Neovim / Lua config
-    generic     Autre / Générique
+    generic     Other / Generic
 
-${BOLD}FICHIERS INSTALLÉS${NC}
-    .claude/commands/       Commandes Claude Code
-    .claude/skills/         Skills spécialisés
-    .claude/agents/         Agents avec contexte isolé
-    .claude/rules/          Règles contextuelles par path
-    .claude/output-styles/  Styles de sortie
+${BOLD}INSTALLED FILES${NC}
+    .claude/commands/       Claude Code commands
+    .claude/skills/         Specialized skills
+    .claude/agents/         Agents with isolated context
+    .claude/rules/          Path-contextual rules
+    .claude/output-styles/  Output styles
     .claude/templates/      Templates (spec, Proxmox, etc.)
-    .claude/settings.json   Hooks configurés
-    CLAUDE.md               Instructions du projet (généré intelligemment)
+    .claude/settings.json   Configured hooks
+    CLAUDE.md               Project instructions (smartly generated)
 
-${BOLD}PLUS D'INFOS${NC}
+${BOLD}MORE INFO${NC}
     https://github.com/anthropics/claude-code
 EOF
 }
@@ -203,7 +203,7 @@ show_version() {
 }
 
 # =============================================================================
-# Parsing des arguments
+# Argument parsing
 # =============================================================================
 
 parse_args() {
@@ -285,14 +285,14 @@ parse_args() {
                 shift
                 ;;
             -*)
-                error "Option inconnue: $1\nUtilisez --help pour l'aide"
+                error "Unknown option: $1\nUse --help for help"
                 ;;
             *)
-                # C'est un chemin de projet
+                # This is a project path
                 if [[ -z "$PROJECT_PATH" ]]; then
                     PROJECT_PATH="$1"
                 else
-                    error "Trop d'arguments: $1\nUtilisez --help pour l'aide"
+                    error "Too many arguments: $1\nUse --help for help"
                 fi
                 shift
                 ;;
@@ -301,7 +301,7 @@ parse_args() {
 }
 
 # =============================================================================
-# Analyse et amélioration CI/CD
+# CI/CD analysis and improvement
 # =============================================================================
 
 analyze_existing_cicd() {
@@ -309,107 +309,107 @@ analyze_existing_cicd() {
     local missing=()
     local present=()
 
-    # Reset des tableaux globaux
+    # Reset global arrays
     CICD_MISSING=()
     CICD_PRESENT=()
 
-    # Analyser GitHub Actions
+    # Analyze GitHub Actions
     if [[ -d "$dir/.github/workflows" ]]; then
         local workflow_files
         workflow_files=$(ls "$dir/.github/workflows"/*.yml "$dir/.github/workflows"/*.yaml 2>/dev/null || true)
 
         if [[ -n "$workflow_files" ]]; then
-            # Vérifier tests automatisés
+            # Check automated tests
             if echo "$workflow_files" | xargs grep -l "npm test\|yarn test\|pnpm test\|bun test\|pytest\|go test\|cargo test\|mvn test" &>/dev/null; then
-                present+=("Tests automatisés")
+                present+=("Automated tests")
             else
-                missing+=("Tests automatisés")
+                missing+=("Automated tests")
             fi
 
-            # Vérifier lint
+            # Check lint
             if echo "$workflow_files" | xargs grep -l "eslint\|npm run lint\|yarn lint\|flake8\|pylint\|golint\|clippy" &>/dev/null; then
                 present+=("Linting")
             else
                 missing+=("Linting")
             fi
 
-            # Vérifier security audit
+            # Check security audit
             if echo "$workflow_files" | xargs grep -l "npm audit\|snyk\|safety\|gosec\|cargo audit\|trivy" &>/dev/null; then
-                present+=("Audit sécurité")
+                present+=("Security audit")
             else
-                missing+=("Audit sécurité")
+                missing+=("Security audit")
             fi
 
-            # Vérifier cache
+            # Check cache
             if echo "$workflow_files" | xargs grep -l "actions/cache" &>/dev/null; then
-                present+=("Cache dépendances")
+                present+=("Dependency cache")
             else
-                missing+=("Cache dépendances")
+                missing+=("Dependency cache")
             fi
 
-            # Vérifier coverage
+            # Check coverage
             if echo "$workflow_files" | xargs grep -l "codecov\|coveralls\|coverage" &>/dev/null; then
-                present+=("Upload couverture")
+                present+=("Coverage upload")
             else
-                missing+=("Upload couverture")
+                missing+=("Coverage upload")
             fi
 
-            # Vérifier PR checks
+            # Check PR checks
             if [[ -f "$dir/.github/workflows/pr-check.yml" ]] || echo "$workflow_files" | xargs grep -l "pull_request.*opened\|commitlint\|semantic-pull-request" &>/dev/null; then
-                present+=("Validation PR")
+                present+=("PR validation")
             else
-                missing+=("Validation PR")
+                missing+=("PR validation")
             fi
 
-            # Vérifier release automation
+            # Check release automation
             if echo "$workflow_files" | xargs grep -l "release\|changelog\|gh-release\|action-gh-release" &>/dev/null; then
-                present+=("Release automatisée")
+                present+=("Automated release")
             else
-                missing+=("Release automatisée")
+                missing+=("Automated release")
             fi
         fi
     fi
 
-    # Stocker les résultats
+    # Store results
     CICD_MISSING=("${missing[@]}")
     CICD_PRESENT=("${present[@]}")
 }
 
 suggest_cicd_improvements() {
     echo ""
-    info "Analyse de la CI/CD existante:"
+    info "Analysis of existing CI/CD:"
     echo ""
 
-    # Afficher les éléments présents
+    # Show present items
     for item in "${CICD_PRESENT[@]}"; do
         echo -e "  ${GREEN}✓${NC} $item"
     done
 
-    # Afficher les éléments manquants
+    # Show missing items
     for item in "${CICD_MISSING[@]}"; do
-        echo -e "  ${YELLOW}⚠${NC} Manquant: $item"
+        echo -e "  ${YELLOW}⚠${NC} Missing: $item"
     done
 
     echo ""
 
-    # Calculer et afficher le score
+    # Compute and show the score
     local total=$((${#CICD_PRESENT[@]} + ${#CICD_MISSING[@]}))
     if [[ $total -gt 0 ]]; then
         local score=$((${#CICD_PRESENT[@]} * 100 / total))
-        echo -e "  Score CI/CD: ${BOLD}${score}%${NC} (${#CICD_PRESENT[@]}/${total})"
+        echo -e "  CI/CD score: ${BOLD}${score}%${NC} (${#CICD_PRESENT[@]}/${total})"
     fi
     echo ""
 }
 
 get_cicd_choice() {
     echo ""
-    prompt "GitHub Actions détecté. Que voulez-vous faire?"
+    prompt "GitHub Actions detected. What do you want to do?"
     echo ""
-    echo "  1) Garder l'existant (recommandé si score > 70%)"
-    echo "  2) Ajouter les workflows manquants"
-    echo "  3) Remplacer par les templates du socle"
+    echo "  1) Keep the existing one (recommended if score > 70%)"
+    echo "  2) Add the missing workflows"
+    echo "  3) Replace with the foundation templates"
     echo ""
-    prompt "Choix [1-3] (défaut: 1):"
+    prompt "Choice [1-3] (default: 1):"
     read -r -n 1 choice
     echo ""
 
@@ -424,32 +424,32 @@ merge_cicd_workflows() {
     local dir="$1"
     local added_ci=false
 
-    info "Ajout des workflows manquants..."
+    info "Adding missing workflows..."
 
-    # Créer le dossier workflows si nécessaire
+    # Create the workflows folder if necessary
     make_dir "$dir/.github/workflows"
 
-    # Mapping des fonctionnalités manquantes vers les fichiers
+    # Mapping of missing features to files
     for missing in "${CICD_MISSING[@]}"; do
         case "$missing" in
-            "Audit sécurité"|"Cache dépendances"|"Upload couverture"|"Tests automatisés"|"Linting")
-                # Ces fonctionnalités sont dans ci.yml
+            "Security audit"|"Dependency cache"|"Coverage upload"|"Automated tests"|"Linting")
+                # These features are in ci.yml
                 if [[ "$added_ci" == false ]] && [[ ! -f "$dir/.github/workflows/ci.yml" ]]; then
                     copy_file "$SOCLE_DIR/.github/workflows/ci.yml" "$dir/.github/workflows/"
-                    success "ci.yml ajouté (lint, test, build, security)"
+                    success "ci.yml added (lint, test, build, security)"
                     added_ci=true
                 fi
                 ;;
-            "Validation PR")
+            "PR validation")
                 if [[ ! -f "$dir/.github/workflows/pr-check.yml" ]]; then
                     copy_file "$SOCLE_DIR/.github/workflows/pr-check.yml" "$dir/.github/workflows/"
-                    success "pr-check.yml ajouté (validation PR, labels)"
+                    success "pr-check.yml added (PR validation, labels)"
                 fi
                 ;;
-            "Release automatisée")
+            "Automated release")
                 if [[ ! -f "$dir/.github/workflows/release.yml" ]]; then
                     copy_file "$SOCLE_DIR/.github/workflows/release.yml" "$dir/.github/workflows/"
-                    success "release.yml ajouté (changelog, GitHub Release)"
+                    success "release.yml added (changelog, GitHub Release)"
                 fi
                 ;;
         esac
@@ -457,25 +457,25 @@ merge_cicd_workflows() {
 }
 
 # =============================================================================
-# Fonctions d'installation (mode simple / réutilisables)
+# Install functions (simple mode / reusable)
 # =============================================================================
 
-# Retourne la liste des rules à copier selon le type de projet détecté.
-# Les rules universelles sont toujours incluses. Les rules spécifiques
-# ne sont copiées que si le langage correspondant est détecté.
+# Returns the list of rules to copy based on the detected project type.
+# Universal rules are always included. Specific rules are only copied
+# if the corresponding language is detected.
 # Arguments:
-#   $1 - Type de projet détecté (react, vue, node-api, python, go, flutter, etc.)
-# Output: Liste de noms de fichiers rules à copier (un par ligne)
+#   $1 - Detected project type (react, vue, node-api, python, go, flutter, etc.)
+# Output: List of rule file names to copy (one per line)
 get_rules_for_type() {
     local project_type="$1"
 
-    # Rules universelles (toujours copiées) — applicables a tous les projets
-    # quel que soit le langage/framework. Inclut deploy-safety (Docker/env files)
-    # et research (verifier natif avant build custom) car ce sont des concerns
-    # transversaux, pas stack-specifiques.
+    # Universal rules (always copied) — applicable to all projects
+    # regardless of language/framework. Includes deploy-safety (Docker/env files)
+    # and research (check native before building custom) since these are
+    # cross-cutting concerns, not stack-specific.
     local rules=("git.md" "workflow.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "research.md" "README.md")
 
-    # Rules spécifiques au type de projet
+    # Rules specific to the project type
     case "$project_type" in
         react|vue|node-api|fullstack|generic)
             rules+=("typescript.md" "react.md" "nextjs.md" "accessibility.md" "performance.md" "api.md" "design-style.md")
@@ -497,20 +497,20 @@ get_rules_for_type() {
             ;;
     esac
 
-    # Si type non reconnu ou generic, ajouter TS/web par défaut (cas le plus courant)
+    # If type is unknown or generic, add TS/web by default (most common case)
     if [[ "$project_type" == "generic" || -z "$project_type" ]]; then
         rules+=("typescript.md" "react.md" "accessibility.md" "performance.md" "api.md" "design-style.md")
     fi
 
-    # Dédupliquer et retourner
+    # Deduplicate and return
     printf '%s\n' "${rules[@]}" | sort -u
 }
 
-# Copie les rules filtrées par type de projet
+# Copy rules filtered by project type
 # Arguments:
-#   $1 - Répertoire source des rules
-#   $2 - Répertoire cible des rules
-#   $3 - Type de projet détecté
+#   $1 - Source rules directory
+#   $2 - Target rules directory
+#   $3 - Detected project type
 copy_filtered_rules() {
     local source_dir="$1"
     local target_dir="$2"
@@ -536,19 +536,19 @@ copy_filtered_rules() {
         fi
     done <<< "$rules_list"
 
-    # Compter les rules non copiées
+    # Count rules not copied
     local total_rules
     total_rules=$(find "$source_dir" -name "*.md" -maxdepth 1 | wc -l)
     skipped=$((total_rules - copied))
 
     if [[ $skipped -gt 0 ]]; then
-        debug "Rules: $copied copiées, $skipped ignorées (langages non détectés)"
+        debug "Rules: $copied copied, $skipped skipped (languages not detected)"
     fi
 }
 
-# Installe tous les fichiers .claude/ (commands, skills, agents, rules, etc.)
+# Install all .claude/ files (commands, skills, agents, rules, etc.)
 # Arguments:
-#   $1 - Répertoire cible (chemin absolu)
+#   $1 - Target directory (absolute path)
 # Copies a socle subdirectory to target, with dry-run support
 # Arguments:
 #   $1 - Relative subdirectory (e.g. ".claude/commands")
@@ -562,7 +562,7 @@ copy_socle_dir() {
     if [[ -d "$SOCLE_DIR/$subdir" ]]; then
         # Check directory is not empty before copying
         if find "$SOCLE_DIR/$subdir" -maxdepth 1 -mindepth 1 -print -quit | grep -q .; then
-            debug "Copie des $label..."
+            debug "Copying $label..."
             if $DRY_RUN; then
                 echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/$subdir/* → $target_dir/$subdir/"
             else
@@ -575,30 +575,30 @@ copy_socle_dir() {
 install_claude_files() {
     local target_dir="$1"
 
-    info "Installation des fichiers Claude..."
+    info "Installing Claude files..."
 
-    # Créer la structure de base
+    # Create the base structure
     for dir in "$COMMANDS_DIR" "$SKILLS_DIR" "$AGENTS_DIR" "$RULES_DIR" "$STYLES_DIR" "$TEMPLATES_DIR"; do
         make_dir "$target_dir/$dir"
     done
 
-    # Copier les sous-répertoires
-    copy_socle_dir "$COMMANDS_DIR" "$target_dir" "commandes"
+    # Copy subdirectories
+    copy_socle_dir "$COMMANDS_DIR" "$target_dir" "commands"
     copy_socle_dir "$SKILLS_DIR" "$target_dir" "skills"
     copy_socle_dir "$AGENTS_DIR" "$target_dir" "agents"
     copy_socle_dir "$STYLES_DIR" "$target_dir" "output-styles"
     copy_socle_dir "$TEMPLATES_DIR" "$target_dir" "templates"
 
-    # Copier settings.json
+    # Copy settings.json
     copy_file "$SOCLE_DIR/.claude/settings.json" "$target_dir/.claude/"
 
-    # Copier les rules (filtrées par type de projet)
-    debug "Copie des rules filtrées pour type: ${DETECTED_TYPE:-generic}..."
+    # Copy rules (filtered by project type)
+    debug "Copying filtered rules for type: ${DETECTED_TYPE:-generic}..."
     copy_filtered_rules "$SOCLE_DIR/$RULES_DIR" "$target_dir/$RULES_DIR" "${DETECTED_TYPE:-generic}"
 
-    # Copier docs/reference/ vers .claude/docs/reference/ (requis pour les @imports de CLAUDE.md)
+    # Copy docs/reference/ to .claude/docs/reference/ (required for CLAUDE.md @imports)
     if [[ -d "$SOCLE_DIR/docs/reference" ]]; then
-        debug "Copie de docs/reference/ vers .claude/docs/reference/ (requis pour @imports CLAUDE.md)..."
+        debug "Copying docs/reference/ to .claude/docs/reference/ (required for CLAUDE.md @imports)..."
         make_dir "$target_dir/.claude/docs/reference"
         if $DRY_RUN; then
             echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/reference/* → $target_dir/.claude/docs/reference/"
@@ -607,9 +607,9 @@ install_claude_files() {
         fi
     fi
 
-    # Copier docs/guides/ vers .claude/docs/guides/
+    # Copy docs/guides/ to .claude/docs/guides/
     if [[ -d "$SOCLE_DIR/docs/guides" ]]; then
-        debug "Copie de docs/guides/ vers .claude/docs/guides/..."
+        debug "Copying docs/guides/ to .claude/docs/guides/..."
         make_dir "$target_dir/.claude/docs/guides"
         if $DRY_RUN; then
             echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/guides/* → $target_dir/.claude/docs/guides/"
@@ -618,9 +618,9 @@ install_claude_files() {
         fi
     fi
 
-    # Copier docs/STACK-RECIPES.md vers .claude/docs/ (consolidation des 13 stack guides legacy)
+    # Copy docs/STACK-RECIPES.md to .claude/docs/ (consolidation of the 13 legacy stack guides)
     if [[ -f "$SOCLE_DIR/docs/STACK-RECIPES.md" ]]; then
-        debug "Copie de docs/STACK-RECIPES.md vers .claude/docs/..."
+        debug "Copying docs/STACK-RECIPES.md to .claude/docs/..."
         if $DRY_RUN; then
             echo -e "${DIM}[DRY-RUN]${NC} cp $SOCLE_DIR/docs/STACK-RECIPES.md → $target_dir/.claude/docs/"
         else
@@ -628,16 +628,16 @@ install_claude_files() {
         fi
     fi
 
-    # Copier .mcp.env.example si disponible
+    # Copy .mcp.env.example if available
     if [[ -f "$SOCLE_DIR/.mcp.env.example" ]] && [[ ! -f "$target_dir/.mcp.env.example" ]]; then
         copy_file "$SOCLE_DIR/.mcp.env.example" "$target_dir/"
     fi
 
-    # Copier scripts/hooks/ (referencees par settings.json)
-    # Sans ces scripts, les hooks SessionStart/PreToolUse/UserPromptSubmit
-    # echouent silencieusement. Pendant du fix update.sh (commit dcaa059).
+    # Copy scripts/hooks/ (referenced by settings.json)
+    # Without these scripts, the SessionStart/PreToolUse/UserPromptSubmit hooks
+    # fail silently. Counterpart of the update.sh fix (commit dcaa059).
     if [[ -d "$SOCLE_DIR/scripts/hooks" ]]; then
-        debug "Copie de scripts/hooks/ (requis pour settings.json)..."
+        debug "Copying scripts/hooks/ (required for settings.json)..."
         make_dir "$target_dir/scripts/hooks"
         if $DRY_RUN; then
             echo -e "${DIM}[DRY-RUN]${NC} cp $SOCLE_DIR/scripts/hooks/*.sh → $target_dir/scripts/hooks/"
@@ -648,16 +648,16 @@ install_claude_files() {
         fi
     fi
 
-    success "Commandes, skills, agents, rules, styles, templates, docs et hook scripts copiés"
+    success "Commands, skills, agents, rules, styles, templates, docs and hook scripts copied"
 }
 
-# Installe GitHub Actions
+# Install GitHub Actions
 # Arguments:
-#   $1 - Répertoire cible (chemin absolu)
+#   $1 - Target directory (absolute path)
 install_cicd_files() {
     local target_dir="$1"
 
-    info "Installation de GitHub Actions..."
+    info "Installing GitHub Actions..."
     make_dir "$target_dir/.github/workflows"
 
     if $DRY_RUN; then
@@ -666,16 +666,16 @@ install_cicd_files() {
         cp -r "$SOCLE_DIR/.github/workflows/"* "$target_dir/.github/workflows/"
     fi
 
-    success "GitHub Actions installés"
+    success "GitHub Actions installed"
 }
 
-# Installe pre-commit hooks (husky)
+# Install pre-commit hooks (husky)
 # Arguments:
-#   $1 - Répertoire cible (chemin absolu)
+#   $1 - Target directory (absolute path)
 install_hooks_files() {
     local target_dir="$1"
 
-    info "Installation des pre-commit hooks..."
+    info "Installing pre-commit hooks..."
     make_dir "$target_dir/.husky"
 
     if $DRY_RUN; then
@@ -686,27 +686,27 @@ install_hooks_files() {
         cp "$SOCLE_DIR/.lintstagedrc.json" "$target_dir/"
         cp "$SOCLE_DIR/.commitlintrc.json" "$target_dir/"
         if ! chmod +x "$target_dir/.husky/"* 2>/dev/null; then
-                warning "Impossible de rendre les hooks husky exécutables"
+                warning "Unable to make husky hooks executable"
             fi
     fi
 
-    success "Pre-commit hooks installés"
+    success "Pre-commit hooks installed"
 }
 
-# Installe la configuration MCP
+# Install MCP configuration
 # Arguments:
-#   $1 - Répertoire cible (chemin absolu)
+#   $1 - Target directory (absolute path)
 install_mcp_file() {
     local target_dir="$1"
 
-    info "Installation de la configuration MCP..."
+    info "Installing MCP configuration..."
     copy_file "$SOCLE_DIR/.mcp.json" "$target_dir/"
-    success "Configuration MCP installée"
+    success "MCP configuration installed"
 }
 
-# Met à jour ou crée .gitignore
+# Update or create .gitignore
 # Arguments:
-#   $1 - Répertoire cible (chemin absolu)
+#   $1 - Target directory (absolute path)
 update_gitignore_file() {
     local target_dir="$1"
 
@@ -714,100 +714,100 @@ update_gitignore_file() {
         if ! grep -q "CLAUDE.local.md" "$target_dir/.gitignore" 2>/dev/null; then
             if ! $DRY_RUN; then
                 echo "" >> "$target_dir/.gitignore"
-                echo "# Claude Code — config locale uniquement" >> "$target_dir/.gitignore"
-                echo "# .claude/ et CLAUDE.md sont volontairement versionnes (config equipe)" >> "$target_dir/.gitignore"
+                echo "# Claude Code — local config only" >> "$target_dir/.gitignore"
+                echo "# .claude/ and CLAUDE.md are intentionally versioned (team config)" >> "$target_dir/.gitignore"
                 echo "CLAUDE.local.md" >> "$target_dir/.gitignore"
                 echo ".claude/settings.local.json" >> "$target_dir/.gitignore"
                 echo ".mcp.env" >> "$target_dir/.gitignore"
             else
-                echo -e "${DIM}[DRY-RUN]${NC} Ajout entrées Claude (config locale) à .gitignore"
+                echo -e "${DIM}[DRY-RUN]${NC} Adding Claude entries (local config) to .gitignore"
             fi
-            success ".gitignore mis à jour"
+            success ".gitignore updated"
         fi
     else
         copy_file "$SOCLE_DIR/.gitignore" "$target_dir/"
-        success ".gitignore créé"
+        success ".gitignore created"
     fi
 }
 
-# Installe CLAUDE.md (copie le template générique + reécriture chemins)
+# Install CLAUDE.md (copy generic template + rewrite paths)
 # Arguments:
-#   $1 - Répertoire cible (chemin absolu)
+#   $1 - Target directory (absolute path)
 install_claude_md_file() {
     local target_dir="$1"
 
     if [[ -f "$target_dir/CLAUDE.md" ]]; then
-        warning "CLAUDE.md existe déjà, ignoré"
+        warning "CLAUDE.md already exists, skipped"
     else
         copy_file "$SOCLE_DIR/CLAUDE.md" "$target_dir/"
         if ! $DRY_RUN; then
             rewrite_claude_md_paths "$target_dir/CLAUDE.md"
-            # Aligner sur update.sh : garantir les 7 @imports canoniques
+            # Align with update.sh: ensure the 7 canonical @imports
             ensure_claude_md_imports "$target_dir/CLAUDE.md"
         fi
-        success "CLAUDE.md copié"
+        success "CLAUDE.md copied"
     fi
 
-    # Injecter la direction design si spécifiée
+    # Inject the design direction if specified
     if [[ -n "$DESIGN_STYLE" ]] && [[ -f "$target_dir/CLAUDE.md" ]]; then
         if ! $DRY_RUN; then
             printf '\n## Design Direction\nStyle: %s\n' "$DESIGN_STYLE" >> "$target_dir/CLAUDE.md"
-            success "Design direction ajoutée: $DESIGN_STYLE"
+            success "Design direction added: $DESIGN_STYLE"
         else
-            echo -e "${DIM}[DRY-RUN]${NC} Ajout Design Direction: $DESIGN_STYLE dans CLAUDE.md"
+            echo -e "${DIM}[DRY-RUN]${NC} Adding Design Direction: $DESIGN_STYLE in CLAUDE.md"
         fi
     fi
 
-    # Copier CLAUDE.local.md.example
+    # Copy CLAUDE.local.md.example
     if [[ ! -f "$target_dir/CLAUDE.local.md.example" ]]; then
         copy_file "$SOCLE_DIR/CLAUDE.local.md.example" "$target_dir/"
-        success "CLAUDE.local.md.example copié"
+        success "CLAUDE.local.md.example copied"
     fi
 }
 
-# Affiche le résumé d'installation (mode simple)
+# Print the install summary (simple mode)
 print_simple_summary() {
     local target_dir="$1"
 
     echo ""
     separator "="
-    success "Installation terminée!"
+    success "Installation complete!"
     separator "="
     echo ""
 
-    info "Fichiers installés:"
-    echo "  - .claude/commands/      ($(count_commands_cached) commandes)"
+    info "Installed files:"
+    echo "  - .claude/commands/      ($(count_commands_cached) commands)"
     echo "  - .claude/skills/        ($(count_skills_cached) skills)"
     echo "  - .claude/agents/        ($(count_agents_cached) agents)"
     local rules_count rules_total project_type_label
     rules_count=$(find "$target_dir/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     rules_total=$(find "$SOCLE_DIR/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     project_type_label="${PROJECT_TYPE:-generic}"
-    echo "  - .claude/rules/         ($rules_count règles pour stack '$project_type_label', $rules_total disponibles dans le socle)"
-    echo "  - .claude/output-styles/ (styles de sortie)"
-    echo "  - .claude/templates/     (templates spec, Proxmox, etc.)"
+    echo "  - .claude/rules/         ($rules_count rules for stack '$project_type_label', $rules_total available in the foundation)"
+    echo "  - .claude/output-styles/ (output styles)"
+    echo "  - .claude/templates/     (spec templates, Proxmox, etc.)"
     echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
-    echo "  - .claude/docs/reference/ (fichiers @import CLAUDE.md)"
-    echo "  - .claude/docs/guides/    (guides par domaine)"
+    echo "  - .claude/docs/reference/ (CLAUDE.md @import files)"
+    echo "  - .claude/docs/guides/    (guides per domain)"
     local hook_scripts_count
     hook_scripts_count=$(find "$target_dir/scripts/hooks" -name "*.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
-    echo "  - scripts/hooks/         ($hook_scripts_count scripts referencees par settings.json)"
+    echo "  - scripts/hooks/         ($hook_scripts_count scripts referenced by settings.json)"
     echo "  - CLAUDE.md"
     echo "  - CLAUDE.local.md.example"
     echo ""
 
-    info "Prochaines étapes:"
-    echo "  1. Personnalisez CLAUDE.md selon votre projet"
-    echo "  2. Copiez CLAUDE.local.md.example en CLAUDE.local.md"
-    echo "  3. Lancez Claude Code: cd $target_dir && claude"
+    info "Next steps:"
+    echo "  1. Customize CLAUDE.md for your project"
+    echo "  2. Copy CLAUDE.local.md.example to CLAUDE.local.md"
+    echo "  3. Launch Claude Code: cd $target_dir && claude"
     echo ""
 
-    info "Commandes disponibles:"
+    info "Available commands:"
     echo "  /work:work-explore, /work:work-plan, /work:work-commit, etc."
     echo ""
 }
 
-# Exécution du mode simple (installation directe sans détection)
+# Run simple mode (direct install without detection)
 run_minimal_mode() {
     local target_dir
 
@@ -819,90 +819,90 @@ run_minimal_mode() {
 
     if [[ ! -d "$target_dir" ]]; then
         if ! $DRY_RUN; then
-            mkdir -p "$target_dir" || error "Impossible de créer le dossier: $target_dir"
+            mkdir -p "$target_dir" || error "Unable to create folder: $target_dir"
         fi
     fi
     target_dir="$(get_absolute_path "$target_dir")"
 
-    info "Installation minimale dans: $target_dir"
-    $DRY_RUN && { warning "Mode dry-run - aucune modification"; return 0; }
+    info "Minimal install in: $target_dir"
+    $DRY_RUN && { warning "Dry-run mode - no changes"; return 0; }
     echo ""
 
     local export_script="$SOCLE_DIR/scripts/export-minimal.sh"
-    [[ -x "$export_script" ]] || error "export-minimal.sh introuvable ou non exécutable: $export_script"
+    [[ -x "$export_script" ]] || error "export-minimal.sh not found or not executable: $export_script"
 
-    "$export_script" --dest-dir "$target_dir" || error "échec de export-minimal.sh"
+    "$export_script" --dest-dir "$target_dir" || error "export-minimal.sh failed"
 
-    success "Installation minimale terminée dans $target_dir"
+    success "Minimal install complete in $target_dir"
     echo ""
-    info "Prochaines étapes :"
+    info "Next steps:"
     echo "  cd \"$target_dir\""
-    echo "  # Lis .claude/docs/guides/learning-path.md"
+    echo "  # Read .claude/docs/guides/learning-path.md"
     echo "  claude"
 }
 
 run_simple_mode() {
     local target_dir
 
-    # Déterminer le répertoire cible
+    # Determine the target directory
     if [[ -n "$PROJECT_PATH" ]]; then
         target_dir="$PROJECT_PATH"
     else
         target_dir="."
     fi
 
-    # Convertir en chemin absolu
+    # Convert to absolute path
     if [[ ! -d "$target_dir" ]]; then
         if ! $DRY_RUN; then
-            mkdir -p "$target_dir" || error "Impossible de créer le dossier: $target_dir"
+            mkdir -p "$target_dir" || error "Unable to create folder: $target_dir"
         fi
     fi
     target_dir="$(get_absolute_path "$target_dir")"
 
-    info "Installation de claude-socle dans: $target_dir"
-    $DRY_RUN && warning "Mode dry-run activé - aucune modification ne sera effectuée"
+    info "Installing claude-socle in: $target_dir"
+    $DRY_RUN && warning "Dry-run mode enabled - no changes will be made"
     echo ""
 
-    # Nettoyer les anciens fichiers Claude si le dossier existe
+    # Clean old Claude files if the folder exists
     if [[ -d "$target_dir/.claude" ]]; then
         clean_claude_dirs "$target_dir"
     fi
 
-    # Installation des fichiers Claude
+    # Install Claude files
     install_claude_files "$target_dir"
 
-    # Installation CLAUDE.md
+    # Install CLAUDE.md
     install_claude_md_file "$target_dir"
 
-    # Composants optionnels
+    # Optional components
     $INCLUDE_CICD && install_cicd_files "$target_dir"
     $INCLUDE_HOOKS && install_hooks_files "$target_dir"
     $INCLUDE_MCP && install_mcp_file "$target_dir"
     $INCLUDE_DOCKER && create_dockerfile "$target_dir"
 
-    # Mettre à jour .gitignore
+    # Update .gitignore
     update_gitignore_file "$target_dir"
 
-    # Initialiser git si pas déjà fait
+    # Initialize git if not already done
     if [[ ! -d "$target_dir/.git" ]] && ! $DRY_RUN; then
         if (cd "$target_dir" && git init -q); then
-            success "Repository git initialisé"
+            success "git repository initialized"
         else
-            warning "Échec de git init dans $target_dir"
+            warning "git init failed in $target_dir"
         fi
     fi
 
-    # Afficher le résumé
+    # Show the summary
     print_simple_summary "$target_dir"
 }
 
 # =============================================================================
-# Génération intelligente du CLAUDE.md
+# Smart CLAUDE.md generation
 # =============================================================================
 
 
 # =============================================================================
-# Fonctions principales
+# Main functions
 # =============================================================================
 
 print_banner() {
@@ -923,64 +923,64 @@ print_banner() {
 }
 
 get_project_path() {
-    # Si --path a été fourni, valider et utiliser
+    # If --path was provided, validate and use it
     if [[ -n "$PARENT_PATH" ]]; then
-        # Convertir en chemin absolu
+        # Convert to absolute path
         if [[ "$PARENT_PATH" = /* ]]; then
             PARENT_PATH="$PARENT_PATH"
         else
             PARENT_PATH="$(cd "$PWD" && cd "$PARENT_PATH" 2>/dev/null && pwd)" || PARENT_PATH="$PWD/$PARENT_PATH"
         fi
 
-        # Créer le dossier parent s'il n'existe pas
+        # Create the parent folder if it doesn't exist
         if [[ ! -d "$PARENT_PATH" ]]; then
             if $NON_INTERACTIVE; then
-                mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
+                mkdir -p "$PARENT_PATH" || error "Unable to create folder: $PARENT_PATH"
             else
-                warning "Le dossier '$PARENT_PATH' n'existe pas"
-                prompt "Voulez-vous le créer? (Y/n)"
+                warning "The folder '$PARENT_PATH' does not exist"
+                prompt "Do you want to create it? (Y/n)"
                 read -r -n 1 CREATE_PARENT
                 echo
                 if [[ ! $CREATE_PARENT =~ ^[Nn]$ ]]; then
-                    mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
-                    success "Dossier créé: $PARENT_PATH"
+                    mkdir -p "$PARENT_PATH" || error "Unable to create folder: $PARENT_PATH"
+                    success "Folder created: $PARENT_PATH"
                 else
-                    error "Dossier parent requis pour créer le projet"
+                    error "Parent folder required to create the project"
                 fi
             fi
         fi
         return
     fi
 
-    # Mode interactif : demander le chemin
+    # Interactive mode: ask for the path
     if ! $NON_INTERACTIVE; then
         echo ""
-        prompt "Dossier où créer le projet (défaut: répertoire courant):"
+        prompt "Folder where the project will be created (default: current directory):"
         read -r INPUT_PATH
 
         if [[ -n "$INPUT_PATH" ]]; then
-            # Expansion du tilde
+            # Tilde expansion
             INPUT_PATH="${INPUT_PATH/#\~/$HOME}"
 
-            # Convertir en chemin absolu
+            # Convert to absolute path
             if [[ "$INPUT_PATH" = /* ]]; then
                 PARENT_PATH="$INPUT_PATH"
             else
                 PARENT_PATH="$PWD/$INPUT_PATH"
             fi
 
-            # Créer si n'existe pas
+            # Create if it doesn't exist
             if [[ ! -d "$PARENT_PATH" ]]; then
-                warning "Le dossier '$PARENT_PATH' n'existe pas"
-                prompt "Voulez-vous le créer? (Y/n)"
+                warning "The folder '$PARENT_PATH' does not exist"
+                prompt "Do you want to create it? (Y/n)"
                 read -r -n 1 CREATE_PARENT
                 echo
                 if [[ ! $CREATE_PARENT =~ ^[Nn]$ ]]; then
-                    mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
-                    success "Dossier créé: $PARENT_PATH"
+                    mkdir -p "$PARENT_PATH" || error "Unable to create folder: $PARENT_PATH"
+                    success "Folder created: $PARENT_PATH"
                 else
                     PARENT_PATH="$PWD"
-                    info "Utilisation du répertoire courant"
+                    info "Using the current directory"
                 fi
             fi
         else
@@ -994,33 +994,33 @@ get_project_path() {
 get_project_name() {
     if $EXISTING_PROJECT; then
         PROJECT_NAME=$(basename "$PROJECT_PATH")
-        info "Projet existant: ${BOLD}$PROJECT_NAME${NC}"
+        info "Existing project: ${BOLD}$PROJECT_NAME${NC}"
         echo ""
         return
     fi
 
-    # D'abord, obtenir le chemin parent
+    # First, get the parent path
     get_project_path
 
     while true; do
-        prompt "Nom du projet (ex: my-awesome-app):"
+        prompt "Project name (e.g.: my-awesome-app):"
         read -r PROJECT_NAME
 
         if [[ -z "$PROJECT_NAME" ]]; then
-            warning "Le nom du projet ne peut pas être vide"
+            warning "The project name cannot be empty"
             continue
         fi
 
         if [[ ! "$PROJECT_NAME" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]]; then
-            warning "Le nom doit commencer par une lettre et contenir uniquement lettres, chiffres, - et _"
+            warning "The name must start with a letter and contain only letters, digits, - and _"
             continue
         fi
 
         PROJECT_PATH="${PARENT_PATH}/${PROJECT_NAME}"
 
         if [[ -d "$PROJECT_PATH" ]]; then
-            warning "Le dossier '$PROJECT_PATH' existe déjà"
-            prompt "Voulez-vous l'utiliser quand même? (y/N)"
+            warning "The folder '$PROJECT_PATH' already exists"
+            prompt "Do you want to use it anyway? (y/N)"
             read -r -n 1 USE_EXISTING
             echo
             if [[ $USE_EXISTING =~ ^[Yy]$ ]]; then
@@ -1034,10 +1034,10 @@ get_project_name() {
 
 get_project_type() {
     echo ""
-    prompt "Type de projet:"
+    prompt "Project type:"
     echo ""
 
-    # Définir le choix par défaut basé sur la détection
+    # Set the default choice based on detection
     local default_choice=""
     case $DETECTED_TYPE in
         react)     default_choice="1" ;;
@@ -1053,12 +1053,12 @@ get_project_type() {
         *)         default_choice="" ;;
     esac
 
-    # Afficher les options avec indication du défaut
+    # Show options with the default indicated
     print_option() {
         local num="$1"
         local label="$2"
         if [[ "$num" == "$default_choice" ]]; then
-            echo -e "  ${GREEN}${num})${NC} ${BOLD}${label}${NC} ${GREEN}← détecté${NC}"
+            echo -e "  ${GREEN}${num})${NC} ${BOLD}${label}${NC} ${GREEN}← detected${NC}"
         else
             echo "  $num) $label"
         fi
@@ -1074,17 +1074,17 @@ get_project_type() {
     print_option "8" "Fullstack (Monorepo)"
     print_option "9" "Flutter / Mobile"
     print_option "10" "Neovim / Lua"
-    print_option "11" "Autre / Générique"
+    print_option "11" "Other / Generic"
     echo ""
 
     if [[ -n "$default_choice" ]]; then
-        prompt "Choix [1-11] (défaut: $default_choice): "
+        prompt "Choice [1-11] (default: $default_choice): "
     else
-        prompt "Choix [1-11]: "
+        prompt "Choice [1-11]: "
     fi
     read -r choice
 
-    # Utiliser le défaut si entrée vide
+    # Use the default if input is empty
     if [[ -z "$choice" ]] && [[ -n "$default_choice" ]]; then
         choice="$default_choice"
     fi
@@ -1106,10 +1106,10 @@ get_project_type() {
 }
 
 get_options() {
-    # Si --skip-prompts est activé, utiliser les flags fournis sans poser de questions
+    # If --skip-prompts is enabled, use the provided flags without asking
     if $SKIP_PROMPTS; then
-        debug "Skip prompts activé - utilisation des flags CLI"
-        # Respecter la détection pour éviter les doublons
+        debug "Skip prompts enabled - using CLI flags"
+        # Honor detection to avoid duplicates
         $DETECTED_CICD && INCLUDE_CICD=false
         $DETECTED_HOOKS && INCLUDE_HOOKS=false
         $DETECTED_DOCKER && INCLUDE_DOCKER=false
@@ -1117,27 +1117,27 @@ get_options() {
     fi
 
     echo ""
-    info "Options supplémentaires:"
+    info "Additional options:"
     echo ""
 
     # CI/CD
     if $DETECTED_CICD; then
-        # Analyser la CI/CD existante et proposer des améliorations
+        # Analyze the existing CI/CD and propose improvements
         analyze_existing_cicd "$PROJECT_PATH"
         suggest_cicd_improvements
 
         if [[ ${#CICD_MISSING[@]} -gt 0 ]]; then
             get_cicd_choice
         else
-            echo -e "  ${GREEN}✓${NC} CI/CD complète, aucune amélioration suggérée"
+            echo -e "  ${GREEN}✓${NC} CI/CD complete, no improvements suggested"
             CICD_ACTION="skip"
         fi
         INCLUDE_CICD=false
     else
         if $EXISTING_PROJECT; then
-            prompt "Ajouter GitHub Actions (CI/CD)? (Y/n)"
+            prompt "Add GitHub Actions (CI/CD)? (Y/n)"
         else
-            prompt "Inclure GitHub Actions (CI/CD)? (Y/n)"
+            prompt "Include GitHub Actions (CI/CD)? (Y/n)"
         fi
         read -r -n 1 choice
         echo
@@ -1146,13 +1146,13 @@ get_options() {
 
     # Hooks
     if $DETECTED_HOOKS; then
-        echo -e "  ${DIM}Pre-commit hooks déjà présents${NC}"
+        echo -e "  ${DIM}Pre-commit hooks already present${NC}"
         INCLUDE_HOOKS=false
     else
         if $EXISTING_PROJECT; then
-            prompt "Ajouter pre-commit hooks (husky)? (Y/n)"
+            prompt "Add pre-commit hooks (husky)? (Y/n)"
         else
-            prompt "Inclure pre-commit hooks (husky)? (Y/n)"
+            prompt "Include pre-commit hooks (husky)? (Y/n)"
         fi
         read -r -n 1 choice
         echo
@@ -1160,41 +1160,41 @@ get_options() {
     fi
 
     # MCP
-    prompt "Inclure configuration MCP? (y/N)"
+    prompt "Include MCP configuration? (y/N)"
     read -r -n 1 choice
     echo
     [[ $choice =~ ^[Yy]$ ]] && INCLUDE_MCP=true
 
     # Docker
     if $DETECTED_DOCKER; then
-        echo -e "  ${DIM}Docker déjà présent${NC}"
+        echo -e "  ${DIM}Docker already present${NC}"
         INCLUDE_DOCKER=false
     else
         if $EXISTING_PROJECT; then
-            prompt "Ajouter Dockerfile? (y/N)"
+            prompt "Add Dockerfile? (y/N)"
         else
-            prompt "Inclure Dockerfile? (y/N)"
+            prompt "Include Dockerfile? (y/N)"
         fi
         read -r -n 1 choice
         echo
         [[ $choice =~ ^[Yy]$ ]] && INCLUDE_DOCKER=true
     fi
 
-    # Design direction (uniquement pour projets avec UI)
+    # Design direction (only for projects with UI)
     case "$PROJECT_TYPE" in
         react|vue|fullstack|flutter|generic)
             if [[ -z "$DESIGN_STYLE" ]]; then
                 echo ""
-                info "Direction design (personnalité visuelle de l'app):"
+                info "Design direction (visual personality of the app):"
                 echo ""
-                echo "  1) terminal   — Monospace, fond noir, accents néon"
-                echo "  2) cockpit    — Dense, dark, indicateurs temps réel"
-                echo "  3) vitality   — Couleurs vives, arrondi, énergie positive"
-                echo "  4) editorial  — Typo soignée, espaces blancs, magazine"
-                echo "  5) glass      — Transparences, blur, profondeur"
-                echo "  6) signal     — Efficacité brute, zéro décoration"
+                echo "  1) terminal   — Monospace, black background, neon accents"
+                echo "  2) cockpit    — Dense, dark, real-time indicators"
+                echo "  3) vitality   — Vivid colors, rounded, positive energy"
+                echo "  4) editorial  — Refined typography, white space, magazine"
+                echo "  5) glass      — Transparencies, blur, depth"
+                echo "  6) signal     — Raw efficiency, zero decoration"
                 echo ""
-                prompt "Choix [1-6] (défaut: aucun, skip avec Entrée): "
+                prompt "Choice [1-6] (default: none, skip with Enter): "
                 read -r style_choice
                 case $style_choice in
                     1) DESIGN_STYLE="terminal" ;;
@@ -1213,20 +1213,20 @@ get_options() {
 confirm_choices() {
     echo ""
     echo -e "${BOLD}═══════════════════════════════════════════════════════════════${NC}"
-    echo -e "${BOLD}  Résumé de la configuration${NC}"
+    echo -e "${BOLD}  Configuration summary${NC}"
     echo -e "${BOLD}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
-    echo -e "  Projet:       ${GREEN}${PROJECT_NAME}${NC}"
-    echo -e "  Chemin:       ${CYAN}${PROJECT_PATH}${NC}"
+    echo -e "  Project:      ${GREEN}${PROJECT_NAME}${NC}"
+    echo -e "  Path:         ${CYAN}${PROJECT_PATH}${NC}"
     echo -e "  Type:         ${YELLOW}${PROJECT_TYPE}${NC}"
     if [[ -n "$DETECTED_FRAMEWORK" ]]; then
         echo -e "  Framework:    ${YELLOW}${DETECTED_FRAMEWORK}${NC}"
     fi
     echo ""
-    echo "  Options à installer:"
+    echo "  Options to install:"
     $INCLUDE_CICD && echo -e "    ${GREEN}✓${NC} GitHub Actions" || echo -e "    ${DIM}○ GitHub Actions (skip)${NC}"
     $INCLUDE_HOOKS && echo -e "    ${GREEN}✓${NC} Pre-commit hooks" || echo -e "    ${DIM}○ Pre-commit hooks (skip)${NC}"
-    $INCLUDE_MCP && echo -e "    ${GREEN}✓${NC} Configuration MCP" || echo -e "    ${DIM}○ Configuration MCP (skip)${NC}"
+    $INCLUDE_MCP && echo -e "    ${GREEN}✓${NC} MCP configuration" || echo -e "    ${DIM}○ MCP configuration (skip)${NC}"
     $INCLUDE_DOCKER && echo -e "    ${GREEN}✓${NC} Dockerfile" || echo -e "    ${DIM}○ Dockerfile (skip)${NC}"
     if [[ -n "$DESIGN_STYLE" ]]; then
         echo -e "    ${GREEN}✓${NC} Design: ${YELLOW}${DESIGN_STYLE}${NC}"
@@ -1234,12 +1234,12 @@ confirm_choices() {
     echo ""
 
     if $EXISTING_PROJECT; then
-        echo -e "  ${GREEN}✓${NC} CLAUDE.md sera généré automatiquement avec:"
-        echo -e "    - Scripts npm détectés (${#DETECTED_SCRIPTS[@]} scripts)"
-        echo -e "    - Structure de dossiers (${#DETECTED_FOLDERS[@]} dossiers)"
-        echo -e "    - Technologies et dépendances"
+        echo -e "  ${GREEN}✓${NC} CLAUDE.md will be generated automatically with:"
+        echo -e "    - Detected npm scripts (${#DETECTED_SCRIPTS[@]} scripts)"
+        echo -e "    - Folder structure (${#DETECTED_FOLDERS[@]} folders)"
+        echo -e "    - Technologies and dependencies"
         echo ""
-        echo -e "  ${DIM}Note: Les fichiers existants ne seront pas écrasés${NC}"
+        echo -e "  ${DIM}Note: Existing files will not be overwritten${NC}"
         echo ""
     fi
 
@@ -1247,15 +1247,15 @@ confirm_choices() {
     echo ""
 
     if $EXISTING_PROJECT; then
-        prompt "Configurer Claude Code pour ce projet? (Y/n)"
+        prompt "Configure Claude Code for this project? (Y/n)"
     else
-        prompt "Créer le projet avec cette configuration? (Y/n)"
+        prompt "Create the project with this configuration? (Y/n)"
     fi
     read -r -n 1 confirm
     echo
 
     if [[ $confirm =~ ^[Nn]$ ]]; then
-        info "Opération annulée"
+        info "Operation cancelled"
         exit 0
     fi
 }
@@ -1263,13 +1263,13 @@ confirm_choices() {
 create_project() {
     echo ""
 
-    # Convertir PROJECT_PATH en chemin absolu (TARGET_DIR)
+    # Convert PROJECT_PATH to absolute path (TARGET_DIR)
     local TARGET_DIR
     if $EXISTING_PROJECT; then
-        info "Configuration du projet existant..."
+        info "Configuring existing project..."
         TARGET_DIR="$(get_absolute_path "$PROJECT_PATH")"
     else
-        info "Création du projet..."
+        info "Creating project..."
         if ! $DRY_RUN; then
             mkdir -p "$PROJECT_PATH"
         else
@@ -1278,22 +1278,22 @@ create_project() {
         TARGET_DIR="$(get_absolute_path "$PROJECT_PATH")"
     fi
 
-    debug "Répertoire cible: $TARGET_DIR"
-    $DRY_RUN && warning "Mode dry-run activé - aucune modification ne sera effectuée"
+    debug "Target directory: $TARGET_DIR"
+    $DRY_RUN && warning "Dry-run mode enabled - no changes will be made"
 
-    # Nettoyer les anciens fichiers Claude si le dossier existe
+    # Clean old Claude files if the folder exists
     if [[ -d "$TARGET_DIR/.claude" ]]; then
         clean_claude_dirs "$TARGET_DIR"
     fi
 
-    # Installer les fichiers Claude (commandes, agents, skills, rules, styles, templates)
+    # Install Claude files (commands, agents, skills, rules, styles, templates)
     install_claude_files "$TARGET_DIR"
-    success "Commandes Claude installées ($(count_commands_cached) commandes, $(count_agents_cached) agents, $(count_skills_cached) skills)"
+    success "Claude commands installed ($(count_commands_cached) commands, $(count_agents_cached) agents, $(count_skills_cached) skills)"
 
-    # Générer ou copier CLAUDE.md
+    # Generate or copy CLAUDE.md
     if [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then
-        # Utiliser le template spécifique si un type est détecté
-        # La génération intelligente est réservée aux projets sans template dédié
+        # Use the specific template if a type is detected
+        # Smart generation is reserved for projects without a dedicated template
         local use_template=false
         case $PROJECT_TYPE in
             react|vue|node-api|python|go|rust|java|fullstack|flutter|neovim)
@@ -1302,8 +1302,8 @@ create_project() {
         esac
 
         if $use_template; then
-            # Copier le template spécifique au type de projet
-            info "Configuration du template CLAUDE.md..."
+            # Copy the template specific to the project type
+            info "Configuring CLAUDE.md template..."
             case $PROJECT_TYPE in
                 react)     copy_file "$SOCLE_DIR/templates/CLAUDE.react.md" "$TARGET_DIR/CLAUDE.md" ;;
                 vue)       copy_file "$SOCLE_DIR/templates/CLAUDE.vue.md" "$TARGET_DIR/CLAUDE.md" ;;
@@ -1316,16 +1316,16 @@ create_project() {
                 flutter)   copy_file "$SOCLE_DIR/templates/CLAUDE.flutter.md" "$TARGET_DIR/CLAUDE.md" ;;
                 neovim)    copy_file "$SOCLE_DIR/templates/CLAUDE.neovim.md" "$TARGET_DIR/CLAUDE.md" ;;
             esac
-            success "Template CLAUDE.md configuré (${PROJECT_TYPE})"
+            success "CLAUDE.md template configured (${PROJECT_TYPE})"
         elif $EXISTING_PROJECT && [[ ${#DETECTED_SCRIPTS[@]} -gt 0 || ${#DETECTED_FOLDERS[@]} -gt 0 ]]; then
-            # Générer un CLAUDE.md intelligent pour les projets existants sans template
+            # Generate a smart CLAUDE.md for existing projects without a template
             generate_smart_claude_md "$TARGET_DIR/CLAUDE.md"
         else
-            # Copier le template générique
-            info "Configuration du template CLAUDE.md..."
+            # Copy the generic template
+            info "Configuring CLAUDE.md template..."
             copy_file "$SOCLE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
 
-            # Remplacer le nom du projet dans CLAUDE.md
+            # Replace the project name in CLAUDE.md
             if ! $DRY_RUN; then
                 # Escape PROJECT_NAME for safe sed substitution (use | delimiter)
                 local safe_name="${PROJECT_NAME//|/\\|}"
@@ -1333,92 +1333,92 @@ create_project() {
                 sed -i '' "s|# Projet .*|# Projet ${safe_name}|" "$TARGET_DIR/CLAUDE.md" 2>/dev/null || true
             fi
 
-            success "Template CLAUDE.md configuré (${PROJECT_TYPE})"
+            success "CLAUDE.md template configured (${PROJECT_TYPE})"
         fi
 
-        # Aligner CLAUDE.md sur le layout v1.30+ et garantir les 7 @imports
-        # canoniques (cohérence avec run_simple_mode et update.sh).
+        # Align CLAUDE.md with the v1.30+ layout and ensure the 7 canonical
+        # @imports (consistency with run_simple_mode and update.sh).
         if ! $DRY_RUN && [[ -f "$TARGET_DIR/CLAUDE.md" ]]; then
             rewrite_claude_md_paths "$TARGET_DIR/CLAUDE.md"
             ensure_claude_md_imports "$TARGET_DIR/CLAUDE.md"
         fi
     else
-        warning "CLAUDE.md existe déjà, ignoré"
+        warning "CLAUDE.md already exists, skipped"
     fi
 
-    # Copier CLAUDE.local.md.example (seulement si n'existe pas)
+    # Copy CLAUDE.local.md.example (only if it doesn't exist)
     if [[ ! -f "$TARGET_DIR/CLAUDE.local.md.example" ]]; then
         copy_file "$SOCLE_DIR/CLAUDE.local.md.example" "$TARGET_DIR/"
-        success "CLAUDE.local.md.example copié"
+        success "CLAUDE.local.md.example copied"
     fi
 
-    # Composants optionnels (using shared functions)
+    # Optional components (using shared functions)
     if $INCLUDE_CICD; then
         install_cicd_files "$TARGET_DIR"
     elif [[ "$CICD_ACTION" == "merge" ]]; then
         merge_cicd_workflows "$TARGET_DIR"
     elif [[ "$CICD_ACTION" == "replace" ]]; then
-        warning "Remplacement des workflows existants..."
+        warning "Replacing existing workflows..."
         make_dir "$TARGET_DIR/.github/workflows"
         if ! $DRY_RUN; then
             rm -f "$TARGET_DIR/.github/workflows/"*.yml "$TARGET_DIR/.github/workflows/"*.yaml 2>/dev/null || true
             cp -r "$SOCLE_DIR/.github/workflows/"* "$TARGET_DIR/.github/workflows/"
         else
-            echo -e "${DIM}[DRY-RUN]${NC} Remplacement des workflows dans $TARGET_DIR/.github/workflows/"
+            echo -e "${DIM}[DRY-RUN]${NC} Replacing workflows in $TARGET_DIR/.github/workflows/"
         fi
-        success "GitHub Actions remplacés par les templates du socle"
+        success "GitHub Actions replaced with the foundation templates"
     fi
     $INCLUDE_HOOKS && install_hooks_files "$TARGET_DIR"
     $INCLUDE_MCP && install_mcp_file "$TARGET_DIR"
     $INCLUDE_DOCKER && create_dockerfile "$TARGET_DIR"
 
-    # .gitignore et git init
+    # .gitignore and git init
     update_gitignore_file "$TARGET_DIR"
 
     if [[ ! -d "$TARGET_DIR/.git" ]]; then
         if ! $DRY_RUN; then
             if (cd "$TARGET_DIR" && git init -q); then
-                success "Repository git initialisé"
+                success "git repository initialized"
             else
-                warning "Échec de git init dans $TARGET_DIR"
+                warning "git init failed in $TARGET_DIR"
             fi
         else
-            echo -e "${DIM}[DRY-RUN]${NC} git init dans $TARGET_DIR"
+            echo -e "${DIM}[DRY-RUN]${NC} git init in $TARGET_DIR"
         fi
     fi
 }
 
-# Crée un Dockerfile dans un répertoire spécifié
+# Create a Dockerfile in a specified directory
 # Arguments:
-#   $1 - Répertoire cible (chemin absolu, défaut: répertoire courant)
+#   $1 - Target directory (absolute path, default: current directory)
 
 print_next_steps() {
     echo ""
     echo -e "${BOLD}${GREEN}═══════════════════════════════════════════════════════════════${NC}"
     if $EXISTING_PROJECT; then
-        echo -e "${BOLD}${GREEN}  Projet configuré avec succès !${NC}"
+        echo -e "${BOLD}${GREEN}  Project configured successfully!${NC}"
     else
-        echo -e "${BOLD}${GREEN}  Projet créé avec succès !${NC}"
+        echo -e "${BOLD}${GREEN}  Project created successfully!${NC}"
     fi
     echo -e "${BOLD}${GREEN}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
-    info "Prochaines étapes:"
+    info "Next steps:"
     echo ""
 
     if ! $EXISTING_PROJECT; then
-        echo -e "  ${CYAN}1.${NC} Aller dans le projet:"
+        echo -e "  ${CYAN}1.${NC} Go into the project:"
         echo -e "     ${YELLOW}cd ${PROJECT_NAME}${NC}"
         echo ""
     fi
 
-    echo -e "  ${CYAN}$( $EXISTING_PROJECT && echo "1" || echo "2" ).${NC} Vérifier et personnaliser CLAUDE.md"
+    echo -e "  ${CYAN}$( $EXISTING_PROJECT && echo "1" || echo "2" ).${NC} Check and customize CLAUDE.md"
     echo ""
-    echo -e "  ${CYAN}$( $EXISTING_PROJECT && echo "2" || echo "3" ).${NC} Lancer Claude Code:"
+    echo -e "  ${CYAN}$( $EXISTING_PROJECT && echo "2" || echo "3" ).${NC} Launch Claude Code:"
     echo -e "     ${YELLOW}claude${NC}"
     echo ""
 
     if $INCLUDE_HOOKS; then
-        echo -e "  ${CYAN}$( $EXISTING_PROJECT && echo "3" || echo "4" ).${NC} Activer les hooks (optionnel):"
+        echo -e "  ${CYAN}$( $EXISTING_PROJECT && echo "3" || echo "4" ).${NC} Enable the hooks (optional):"
         case "$DETECTED_PKG_MANAGER" in
             bun)
                 echo -e "     ${YELLOW}bun add -d husky lint-staged @commitlint/cli @commitlint/config-conventional${NC}"
@@ -1440,7 +1440,7 @@ print_next_steps() {
         echo ""
     fi
 
-    echo -e "  ${CYAN}Commandes disponibles:${NC}"
+    echo -e "  ${CYAN}Available commands:${NC}"
     echo -e "     /work:work-explore, /work:work-plan, /work:work-commit, etc."
     echo ""
     echo -e "${BOLD}═══════════════════════════════════════════════════════════════${NC}"
@@ -1458,136 +1458,136 @@ validate_socle_dirs() {
 }
 
 main() {
-    # Parser les arguments en premier
+    # Parse arguments first
     parse_args "$@"
 
     # Validate that the socle installation is intact
     validate_socle_dirs
 
-    # Mode minimal: delegue a export-minimal.sh avec --dest-dir
+    # Minimal mode: delegates to export-minimal.sh with --dest-dir
     if $MINIMAL_MODE; then
         if ! $QUIET; then
             echo ""
-            echo -e "${BOLD}${CYAN}Claude-Socle - Installation Minimale${NC}"
+            echo -e "${BOLD}${CYAN}Claude-Socle - Minimal Install${NC}"
             echo ""
         fi
         run_minimal_mode
         exit 0
     fi
 
-    # Mode simple: installation directe sans détection de stack
+    # Simple mode: direct install without stack detection
     if $SIMPLE_MODE; then
-        # Honorer -t/--type meme en mode simple (sinon le filtrage rules
-        # tombe sur "generic" et copie React/TS au lieu du stack demande).
+        # Honor -t/--type even in simple mode (otherwise the rules filter
+        # falls back to "generic" and copies React/TS instead of the requested stack).
         if [[ -n "$FORCE_TYPE" ]]; then
             PROJECT_TYPE="$FORCE_TYPE"
             DETECTED_TYPE="$FORCE_TYPE"
         fi
-        # Afficher le banner (sauf en mode silencieux)
+        # Show the banner (except in quiet mode)
         if ! $QUIET; then
             echo ""
-            echo -e "${BOLD}${CYAN}Claude-Socle - Installation Simple${NC}"
+            echo -e "${BOLD}${CYAN}Claude-Socle - Simple Install${NC}"
             echo ""
         fi
         run_simple_mode
         exit 0
     fi
 
-    # Afficher le banner (sauf en mode non-interactif silencieux)
+    # Show the banner (except in quiet non-interactive mode)
     if ! $NON_INTERACTIVE; then
         print_banner
     fi
 
-    # Vérifier si un chemin est passé en argument
+    # Check whether a path is passed as argument
     if [[ -n "$PROJECT_PATH" ]]; then
-        # Si --path est aussi fourni, PROJECT_PATH est le nom du projet
+        # If --path is also provided, PROJECT_PATH is the project name
         if [[ -n "$PARENT_PATH" ]]; then
             PROJECT_NAME="$PROJECT_PATH"
-            # Valider le nom du projet
+            # Validate the project name
             if [[ ! "$PROJECT_NAME" =~ ^[a-zA-Z][a-zA-Z0-9_-]*$ ]]; then
-                error "Le nom du projet doit commencer par une lettre et contenir uniquement lettres, chiffres, - et _"
+                error "The project name must start with a letter and contain only letters, digits, - and _"
             fi
-            # Résoudre le chemin parent
+            # Resolve the parent path
             if [[ "$PARENT_PATH" = /* ]]; then
                 PARENT_PATH="$PARENT_PATH"
             else
                 PARENT_PATH="$(cd "$PWD" && cd "$PARENT_PATH" 2>/dev/null && pwd)" || PARENT_PATH="$PWD/$PARENT_PATH"
             fi
-            # Créer le dossier parent si nécessaire
+            # Create the parent folder if necessary
             if [[ ! -d "$PARENT_PATH" ]]; then
-                mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
+                mkdir -p "$PARENT_PATH" || error "Unable to create folder: $PARENT_PATH"
             fi
             PROJECT_PATH="${PARENT_PATH}/${PROJECT_NAME}"
             if [[ -d "$PROJECT_PATH" ]]; then
                 EXISTING_PROJECT=true
                 PROJECT_PATH="$(cd "$PROJECT_PATH" && pwd)"
-                info "Analyse du projet existant: $PROJECT_PATH"
+                info "Analyzing existing project: $PROJECT_PATH"
                 echo ""
                 detect_stack "$PROJECT_PATH"
             else
-                info "Création du nouveau projet: $PROJECT_PATH"
+                info "Creating new project: $PROJECT_PATH"
             fi
         elif [[ -d "$PROJECT_PATH" ]]; then
             PROJECT_PATH="$(cd "$PROJECT_PATH" && pwd)"
             EXISTING_PROJECT=true
-            info "Analyse du projet existant: $PROJECT_PATH"
+            info "Analyzing existing project: $PROJECT_PATH"
             echo ""
             detect_stack "$PROJECT_PATH"
         elif $NON_INTERACTIVE; then
-            # En mode non-interactif, créer le dossier s'il n'existe pas
+            # In non-interactive mode, create the folder if it doesn't exist
             mkdir -p "$PROJECT_PATH"
             PROJECT_PATH="$(cd "$PROJECT_PATH" && pwd)"
-            info "Création du nouveau projet: $PROJECT_PATH"
+            info "Creating new project: $PROJECT_PATH"
         else
-            error "Le chemin '$PROJECT_PATH' n'existe pas"
+            error "The path '$PROJECT_PATH' does not exist"
         fi
     fi
 
-    # Appliquer le type forcé si spécifié
+    # Apply the forced type if specified
     if [[ -n "$FORCE_TYPE" ]]; then
         PROJECT_TYPE="$FORCE_TYPE"
         DETECTED_TYPE="$FORCE_TYPE"
     fi
 
-    # Mode non-interactif
+    # Non-interactive mode
     if $NON_INTERACTIVE; then
-        # Utiliser le nom du dossier ou un nom par défaut
+        # Use the folder name or a default name
         if [[ -z "$PROJECT_NAME" ]]; then
             if [[ -n "$PROJECT_PATH" ]]; then
                 PROJECT_NAME=$(basename "$PROJECT_PATH")
             else
                 PROJECT_NAME="new-project"
-                # Utiliser PARENT_PATH si fourni, sinon PWD
+                # Use PARENT_PATH if provided, otherwise PWD
                 local base_path="${PARENT_PATH:-$PWD}"
                 if [[ -n "$PARENT_PATH" ]] && [[ ! -d "$PARENT_PATH" ]]; then
-                    mkdir -p "$PARENT_PATH" || error "Impossible de créer le dossier: $PARENT_PATH"
+                    mkdir -p "$PARENT_PATH" || error "Unable to create folder: $PARENT_PATH"
                 fi
                 PROJECT_PATH="${base_path}/${PROJECT_NAME}"
                 mkdir -p "$PROJECT_PATH"
             fi
         fi
 
-        # Utiliser le type détecté ou générique
+        # Use the detected type or generic
         if [[ -z "$PROJECT_TYPE" ]]; then
             PROJECT_TYPE="${DETECTED_TYPE:-generic}"
         fi
 
-        # Utiliser les valeurs par défaut pour les options non spécifiées
-        # (Les options sont déjà à false par défaut, --ci/--hooks/etc les activent)
+        # Use defaults for unspecified options
+        # (Options are already false by default, --ci/--hooks/etc enable them)
 
-        # Respecter la détection pour éviter les doublons
+        # Honor detection to avoid duplicates
         $DETECTED_CICD && INCLUDE_CICD=false
         $DETECTED_HOOKS && INCLUDE_HOOKS=false
         $DETECTED_DOCKER && INCLUDE_DOCKER=false
 
-        info "Mode non-interactif activé"
-        info "Projet: $PROJECT_NAME ($PROJECT_TYPE)"
+        info "Non-interactive mode enabled"
+        info "Project: $PROJECT_NAME ($PROJECT_TYPE)"
         echo ""
 
         create_project
         print_next_steps
     else
-        # Mode interactif standard
+        # Standard interactive mode
         get_project_name
         get_project_type
         get_options
@@ -1597,5 +1597,5 @@ main() {
     fi
 }
 
-# Lancer le script
+# Run the script
 main "$@"

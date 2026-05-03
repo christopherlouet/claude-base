@@ -1,3 +1,8 @@
+<!--
+PR description must be in English. Code comments, docs, and commit messages
+must be in English. See CONTRIBUTING.md (Language Policy).
+-->
+
 ## Summary
 
 <!-- 1-3 bullets explaining what this PR does and why. -->

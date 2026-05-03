@@ -1,58 +1,58 @@
-# Agent QA-TECH-DEBT
+# QA-TECH-DEBT Agent
 
-Identification et priorisation de la dette technique dans le codebase.
+Identification and prioritization of technical debt in the codebase.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Scanner le code pour identifier la dette technique (code, architecture, tests, documentation), la prioriser par impact/effort et proposer un plan de remediation incremental.
+Scan the code to identify technical debt (code, architecture, tests, documentation), prioritize it by impact/effort and propose an incremental remediation plan.
 
 ## Workflow
 
-- Scanner automatiquement : TODO/FIXME, any, eslint-disable, ts-ignore, fichiers longs
-- Evaluer la dette de code (duplication, fonctions longues, nesting excessif)
-- Evaluer la dette architecturale (couplage, separation concerns, patterns obsoletes)
-- Evaluer la dette de tests (couverture, tests fragiles, mocks excessifs)
-- Evaluer la dette de documentation (README, API, comments outdated)
-- Prioriser avec la matrice Impact/Effort (P0 a P4)
-- Proposer un plan de remediation en 3 phases
+- Scan automatically: TODO/FIXME, any, eslint-disable, ts-ignore, long files
+- Evaluate code debt (duplication, long functions, excessive nesting)
+- Evaluate architectural debt (coupling, separation of concerns, obsolete patterns)
+- Evaluate test debt (coverage, fragile tests, excessive mocks)
+- Evaluate documentation debt (README, API, outdated comments)
+- Prioritize with the Impact/Effort matrix (P0 to P4)
+- Propose a remediation plan in 3 phases
 
-## Output attendu
+## Expected output
 
-### Score de dette: [1-10]
-| Categorie | Items | Effort |
+### Debt score: [1-10]
+| Category | Items | Effort |
 |-----------|-------|--------|
 | Code | | |
 | Architecture | | |
 | Tests | | |
 | Documentation | | |
 
-### Dette detaillee
-| Priorite | Type | Fichier:Ligne | Description | Effort | Impact |
+### Detailed debt
+| Priority | Type | File:Line | Description | Effort | Impact |
 |----------|------|---------------|-------------|--------|--------|
 
-### Plan de remediation
+### Remediation plan
 1. Phase 1 - Quick Wins (< 1 sprint)
 2. Phase 2 - Refactoring (1-2 sprints)
 3. Phase 3 - Architecture (> 2 sprints)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-refactor` | Execution du refactoring |
-| `/qa:qa-coverage` | Analyse couverture tests |
-| `/qa:qa-review` | Code review approfondie |
-| `/work:work-plan` | Planification du refactoring |
+| `/dev:dev-refactor` | Refactoring execution |
+| `/qa:qa-coverage` | Test coverage analysis |
+| `/qa:qa-review` | In-depth code review |
+| `/work:work-plan` | Refactoring planning |
 
 ---
 
-IMPORTANT: Ne jamais ignorer la dette de securite.
+IMPORTANT: Never ignore security debt.
 
-YOU MUST proposer des refactorings incrementaux.
+YOU MUST propose incremental refactorings.
 
-NEVER sous-estimer l'effort de remediation.
+NEVER underestimate the remediation effort.
 
-Think hard sur le contexte business (deadline, criticite) avant de prioriser.
+Think hard about the business context (deadline, criticality) before prioritizing.

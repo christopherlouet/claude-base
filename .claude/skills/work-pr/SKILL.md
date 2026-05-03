@@ -1,6 +1,6 @@
 ---
 name: work-pr
-description: Créer une Pull Request complète et bien documentée. Utiliser quand l'utilisateur veut créer une PR, soumettre ses changements, ou préparer une demande de merge.
+description: Create a complete and well-documented Pull Request. Use when the user wants to create a PR, submit their changes, or prepare a merge request.
 allowed-tools:
   - Read
   - Bash
@@ -10,117 +10,117 @@ context: fork
 disable-model-invocation: true
 ---
 
-# Créer une Pull Request
+# Create a Pull Request
 
-## Objectif
+## Objective
 
-Créer une PR complète, bien documentée, prête pour review.
+Create a complete, well-documented PR, ready for review.
 
 ## Instructions
 
-### 1. Vérifier l'état
+### 1. Check the state
 
 ```bash
-# État des changements
+# State of changes
 git status --short
 
-# Différences avec la branche cible
+# Differences with the target branch
 git diff main...HEAD --stat
 
-# Historique des commits
+# Commit history
 git log main...HEAD --oneline
 ```
 
-### 2. Préparer la branche
+### 2. Prepare the branch
 
 ```bash
-# S'assurer d'être à jour
+# Make sure to be up to date
 git fetch origin
-git rebase origin/main  # ou merge selon convention
+git rebase origin/main  # or merge depending on convention
 
-# Vérifier les tests
+# Check the tests
 npm test
 
-# Vérifier le lint
+# Check the lint
 npm run lint
 ```
 
-### 3. Template de PR
+### 3. PR Template
 
 ```markdown
 ## Description
 
-[Résumé clair de ce que fait cette PR en 2-3 phrases]
+[Clear summary of what this PR does in 2-3 sentences]
 
-## Type de changement
+## Type of change
 
-- [ ] Nouvelle fonctionnalité (feat)
-- [ ] Correction de bug (fix)
+- [ ] New feature (feat)
+- [ ] Bug fix (fix)
 - [ ] Refactoring (refactor)
 - [ ] Documentation (docs)
-- [ ] Autre: [préciser]
+- [ ] Other: [specify]
 
-## Changements
+## Changes
 
-### Ajouts
-- [Fichier/fonction ajouté]
+### Additions
+- [Added file/function]
 
 ### Modifications
-- [Fichier/fonction modifié]
+- [Modified file/function]
 
-### Suppressions
-- [Fichier/fonction supprimé]
+### Removals
+- [Removed file/function]
 
-## Comment tester
+## How to test
 
-1. [Étape de test 1]
-2. [Étape de test 2]
-3. Vérifier que [résultat attendu]
+1. [Test step 1]
+2. [Test step 2]
+3. Check that [expected result]
 
 ## Checklist
 
-- [ ] Code auto-reviewé
-- [ ] Tests ajoutés/mis à jour
-- [ ] Documentation mise à jour
-- [ ] Pas de console.log oubliés
-- [ ] Lint passe
-- [ ] Build passe
+- [ ] Code self-reviewed
+- [ ] Tests added/updated
+- [ ] Documentation updated
+- [ ] No forgotten console.log
+- [ ] Lint passes
+- [ ] Build passes
 
-## Screenshots (si UI)
+## Screenshots (if UI)
 
-[Avant/Après si applicable]
+[Before/After if applicable]
 
-## Issues liées
+## Related issues
 
-Fixes #[numéro] (ou Refs #[numéro])
+Fixes #[number] (or Refs #[number])
 ```
 
-### 4. Créer la PR
+### 4. Create the PR
 
 ```bash
-# Pousser la branche
+# Push the branch
 git push -u origin $(git branch --show-current)
 
-# Créer la PR avec GitHub CLI
+# Create the PR with GitHub CLI
 gh pr create \
   --title "type(scope): description" \
   --body "$(cat PR_BODY.md)" \
   --base main
 ```
 
-## Bonnes pratiques
+## Best practices
 
-| Faire | Ne pas faire |
+| Do | Don't |
 |-------|--------------|
-| Titre descriptif | "Fix bug" |
-| Description complète | PR vide |
-| Petites PRs focalisées | PRs géantes |
-| Tests inclus | PR sans tests |
-| Screenshots UI | Changements UI non documentés |
+| Descriptive title | "Fix bug" |
+| Complete description | Empty PR |
+| Small focused PRs | Giant PRs |
+| Tests included | PR without tests |
+| UI screenshots | Undocumented UI changes |
 
-## Règles
+## Rules
 
-- UNE PR = UN sujet
-- Toujours inclure des tests
-- Répondre aux commentaires rapidement
-- Squash si historique bruyant
+- ONE PR = ONE topic
+- Always include tests
+- Respond to comments quickly
+- Squash if history is noisy

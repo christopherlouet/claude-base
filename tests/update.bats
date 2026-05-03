@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 # =============================================================================
-# Tests pour update.sh
+# Tests for update.sh
 # =============================================================================
 
 load 'test_helper'
@@ -18,186 +18,186 @@ teardown() {
 }
 
 # =============================================================================
-# Tests de base
+# Basic tests
 # =============================================================================
 
-@test "update.sh existe et est exécutable" {
+@test "update.sh exists and is executable" {
     [ -f "$UPDATE_SCRIPT" ]
     [ -x "$UPDATE_SCRIPT" ]
 }
 
-@test "update.sh affiche l'aide avec --help" {
+@test "update.sh shows help with --help" {
     run "$UPDATE_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"USAGE"* ]]
     [[ "$output" == *"mise à jour"* ]] || [[ "$output" == *"update"* ]] || [[ "$output" == *"MAJ"* ]]
 }
 
-@test "update.sh affiche la version avec --version" {
+@test "update.sh shows version with --version" {
     run "$UPDATE_SCRIPT" --version
     [ "$status" -eq 0 ]
     [[ "$output" == *"update"* ]]
 }
 
 # =============================================================================
-# Tests de mise à jour
+# Update tests
 # =============================================================================
 
-@test "update.sh échoue sur un projet non configuré" {
+@test "update.sh fails on a non-configured project" {
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
-    # Devrait échouer ou avertir car pas de .claude
+    # Should fail or warn because no .claude
     [[ "$status" -ne 0 ]] || [[ "$output" == *".claude"* ]] || [[ "$output" == *"non"* ]] || true
 }
 
-@test "update.sh fonctionne sur un projet configuré" {
-    # Installer d'abord avec new-project.sh --simple
+@test "update.sh works on a configured project" {
+    # First install with new-project.sh --simple
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Puis mettre à jour
+    # Then update
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 }
 
-@test "update.sh préserve les fichiers locaux" {
+@test "update.sh preserves local files" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Créer un fichier local
-    echo "# Mes notes" > "$TEST_DIR/CLAUDE.local.md"
+    # Create a local file
+    echo "# My notes" > "$TEST_DIR/CLAUDE.local.md"
 
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Vérifier que le fichier local existe toujours
+    # Verify the local file still exists
     [ -f "$TEST_DIR/CLAUDE.local.md" ]
     run cat "$TEST_DIR/CLAUDE.local.md"
-    [[ "$output" == *"Mes notes"* ]]
+    [[ "$output" == *"My notes"* ]]
 }
 
-@test "update.sh met à jour les commandes" {
+@test "update.sh updates the commands" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Simuler une ancienne version en supprimant un fichier
+    # Simulate an old version by removing a file
     rm "$TEST_DIR/.claude/commands/work/work-explore.md" 2>/dev/null || true
 
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier devrait être restauré
+    # The file should be restored
     [ -f "$TEST_DIR/.claude/commands/work/work-explore.md" ]
 }
 
 # =============================================================================
-# Tests des options
+# Option tests
 # =============================================================================
 
-@test "update.sh --dry-run ne modifie rien" {
+@test "update.sh --dry-run does not modify anything" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer un fichier
+    # Remove a file
     rm "$TEST_DIR/.claude/commands/work/work-explore.md"
 
     run "$UPDATE_SCRIPT" -y -n "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier ne devrait PAS être restauré en dry-run
+    # The file should NOT be restored in dry-run
     [ ! -f "$TEST_DIR/.claude/commands/work/work-explore.md" ]
 }
 
-@test "update.sh affiche les changements" {
+@test "update.sh shows the changes" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
-    # Devrait afficher quelque chose sur les fichiers
+    # Should display something about files
     [[ "$output" == *"fichier"* ]] || [[ "$output" == *"file"* ]] || [[ "$output" == *"OK"* ]] || true
 }
 
 # =============================================================================
-# Tests des nouvelles options (--clean, --agents, --rules, --styles, --all)
+# Tests for new options (--clean, --agents, --rules, --styles, --all)
 # =============================================================================
 
-@test "update.sh --clean supprime les anciens fichiers" {
+@test "update.sh --clean removes the old files" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Ajouter un fichier obsolète dans commands (dans un sous-répertoire existant)
+    # Add an obsolete file in commands (in an existing subdirectory)
     echo "# Old command" > "$TEST_DIR/.claude/commands/work/old-command.md"
     [ -f "$TEST_DIR/.claude/commands/work/old-command.md" ]
 
     run "$UPDATE_SCRIPT" -y --clean "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier obsolète ne devrait plus exister (tout le dossier a été recréé)
+    # The obsolete file should no longer exist (the whole folder was recreated)
     [ ! -f "$TEST_DIR/.claude/commands/work/old-command.md" ]
 }
 
-@test "update.sh --agents met à jour les agents" {
+@test "update.sh --agents updates the agents" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer un agent
+    # Remove an agent
     rm -f "$TEST_DIR/.claude/agents/"*.md 2>/dev/null || true
 
     run "$UPDATE_SCRIPT" -y --agents "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Les agents devraient être restaurés
+    # The agents should be restored
     local count
     count=$(find "$TEST_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 0 ]
 }
 
-@test "update.sh --rules met à jour les rules" {
+@test "update.sh --rules updates the rules" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer les rules
+    # Remove the rules
     rm -f "$TEST_DIR/.claude/rules/"*.md 2>/dev/null || true
 
     run "$UPDATE_SCRIPT" -y --rules "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Les rules devraient être restaurés
+    # The rules should be restored
     local count
     count=$(find "$TEST_DIR/.claude/rules" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 0 ]
 }
 
-@test "update.sh --styles met à jour les output-styles" {
+@test "update.sh --styles updates the output-styles" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer les styles
+    # Remove the styles
     rm -f "$TEST_DIR/.claude/output-styles/"*.md 2>/dev/null || true
 
     run "$UPDATE_SCRIPT" -y --styles "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Les styles devraient être restaurés
+    # The styles should be restored
     local count
     count=$(find "$TEST_DIR/.claude/output-styles" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 0 ]
 }
 
-@test "update.sh --all met à jour tout avec nettoyage" {
+@test "update.sh --all updates everything with cleanup" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Ajouter un fichier obsolète dans commands (dans un sous-répertoire)
+    # Add an obsolete file in commands (in a subdirectory)
     echo "# Old" > "$TEST_DIR/.claude/commands/work/obsolete.md"
     [ -f "$TEST_DIR/.claude/commands/work/obsolete.md" ]
 
     run "$UPDATE_SCRIPT" -y --all "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Les fichiers obsolètes ne devraient plus exister
+    # The obsolete files should no longer exist
     [ ! -f "$TEST_DIR/.claude/commands/work/obsolete.md" ]
 
-    # Vérifier que les répertoires sont présents
+    # Verify that the directories are present
     [ -d "$TEST_DIR/.claude/commands" ]
     [ -d "$TEST_DIR/.claude/skills" ]
     [ -d "$TEST_DIR/.claude/agents" ]
@@ -205,7 +205,7 @@ teardown() {
     [ -d "$TEST_DIR/.claude/output-styles" ]
 }
 
-@test "update.sh --help affiche les nouvelles options" {
+@test "update.sh --help shows the new options" {
     run "$UPDATE_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"--clean"* ]]
@@ -218,124 +218,124 @@ teardown() {
 }
 
 # =============================================================================
-# Tests de detection des fichiers orphelins
+# Orphan file detection tests
 # =============================================================================
 
-@test "update.sh --detect-orphans detecte les fichiers absents du socle" {
+@test "update.sh --detect-orphans detects files absent from the foundation" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Ajouter un fichier orphelin (absent du socle)
+    # Add an orphan file (absent from the foundation)
     echo "# Orphan command" > "$TEST_DIR/.claude/commands/work/orphan-command.md"
     [ -f "$TEST_DIR/.claude/commands/work/orphan-command.md" ]
 
     run "$UPDATE_SCRIPT" -y --detect-orphans "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Devrait mentionner les orphelins
-    [[ "$output" == *"orphelin"* ]] || [[ "$output" == *"Orphelins"* ]]
+    # Should mention the orphans
+    [[ "$output" == *"orphelin"* ]] || [[ "$output" == *"Orphelins"* ]] || [[ "$output" == *"orphan"* ]] || [[ "$output" == *"Orphans"* ]]
 
-    # Le fichier devrait toujours exister (detection seulement)
+    # The file should still exist (detection only)
     [ -f "$TEST_DIR/.claude/commands/work/orphan-command.md" ]
 }
 
-@test "update.sh --remove-orphans supprime les fichiers absents du socle" {
+@test "update.sh --remove-orphans removes files absent from the foundation" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Ajouter un fichier orphelin
+    # Add an orphan file
     echo "# Orphan command" > "$TEST_DIR/.claude/commands/work/orphan-to-delete.md"
     [ -f "$TEST_DIR/.claude/commands/work/orphan-to-delete.md" ]
 
     run "$UPDATE_SCRIPT" -y --remove-orphans "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier orphelin devrait etre supprime
+    # The orphan file should be removed
     [ ! -f "$TEST_DIR/.claude/commands/work/orphan-to-delete.md" ]
 
-    # Les fichiers valides devraient toujours exister
+    # The valid files should still exist
     [ -f "$TEST_DIR/.claude/commands/work/work-explore.md" ]
 }
 
 # =============================================================================
-# Tests de --upgrade-claude-md
+# --upgrade-claude-md tests
 # =============================================================================
 
-@test "update.sh --upgrade-claude-md copie .claude/docs/reference/" {
+@test "update.sh --upgrade-claude-md copies .claude/docs/reference/" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer .claude/docs/reference/ s'il existe déjà
+    # Remove .claude/docs/reference/ if it already exists
     rm -rf "$TEST_DIR/.claude/docs/reference"
 
-    # Supprimer les @imports du CLAUDE.md pour simuler un ancien projet
+    # Remove the @imports from CLAUDE.md to simulate an old project
     sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
 
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # .claude/docs/reference/ doit exister avec des fichiers
+    # .claude/docs/reference/ must exist with files
     [ -d "$TEST_DIR/.claude/docs/reference" ]
     local count
     count=$(find "$TEST_DIR/.claude/docs/reference" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$count" -gt 0 ]
 }
 
-@test "update.sh --upgrade-claude-md ajoute les @imports dans CLAUDE.md" {
+@test "update.sh --upgrade-claude-md adds the @imports in CLAUDE.md" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer .claude/docs/reference/ et les @imports
+    # Remove .claude/docs/reference/ and the @imports
     rm -rf "$TEST_DIR/.claude/docs/reference"
     sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
 
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # CLAUDE.md doit contenir les @imports (nouveau layout)
+    # CLAUDE.md must contain the @imports (new layout)
     grep -q "@\.claude/docs/reference/commands\.md" "$TEST_DIR/CLAUDE.md"
     grep -q "@\.claude/docs/reference/agents-catalog\.md" "$TEST_DIR/CLAUDE.md"
     grep -q "@\.claude/docs/reference/skills-catalog\.md" "$TEST_DIR/CLAUDE.md"
 }
 
-@test "update.sh --upgrade-claude-md crée un backup" {
+@test "update.sh --upgrade-claude-md creates a backup" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer les @imports pour déclencher la migration
+    # Remove the @imports to trigger the migration
     rm -rf "$TEST_DIR/.claude/docs/reference"
     sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
 
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Un fichier backup doit exister
+    # A backup file must exist
     local backup_count
     backup_count=$(find "$TEST_DIR" -maxdepth 1 -name "CLAUDE.md.backup.*" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$backup_count" -ge 1 ]
 }
 
-@test "update.sh --upgrade-claude-md skip si @imports déjà présents" {
+@test "update.sh --upgrade-claude-md skips if @imports already present" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Premier run: ajoute les @imports manquants
+    # First run: adds the missing @imports
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Second run: tous les @imports sont présents, doit skip
+    # Second run: all @imports are present, must skip
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Pas de backup créé (skip) - contient tous les @imports
-    [[ "$output" == *"skip"* ]] || [[ "$output" == *"déjà"* ]] || [[ "$output" == *"contient tous les @imports"* ]]
+    # No backup created (skip) - contains all @imports
+    [[ "$output" == *"skip"* ]] || [[ "$output" == *"déjà"* ]] || [[ "$output" == *"contient tous les @imports"* ]] || [[ "$output" == *"already"* ]] || [[ "$output" == *"contains all @imports"* ]]
 }
 
-@test "update.sh --upgrade-claude-md détecte les sections dupliquées" {
+@test "update.sh --upgrade-claude-md detects duplicated sections" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer les @imports et ajouter une section dupliquée
+    # Remove the @imports and add a duplicated section
     rm -rf "$TEST_DIR/.claude/docs/reference"
     sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
     echo "" >> "$TEST_DIR/CLAUDE.md"
@@ -345,60 +345,60 @@ teardown() {
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # La section dupliquée doit être supprimée (mode -y)
+    # The duplicated section must be removed (mode -y)
     ! grep -q "^## Commandes Essentielles" "$TEST_DIR/CLAUDE.md"
 }
 
-@test "update.sh --all inclut la migration CLAUDE.md" {
+@test "update.sh --all includes the CLAUDE.md migration" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer les @imports
+    # Remove the @imports
     rm -rf "$TEST_DIR/.claude/docs/reference"
     sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
 
     run "$UPDATE_SCRIPT" -y --all "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # .claude/docs/reference/ doit exister
+    # .claude/docs/reference/ must exist
     [ -d "$TEST_DIR/.claude/docs/reference" ]
-    # @imports doivent être présents
+    # @imports must be present
     grep -q "@\.claude/docs/reference/" "$TEST_DIR/CLAUDE.md"
 }
 
-@test "update.sh --dry-run --upgrade-claude-md ne modifie rien" {
+@test "update.sh --dry-run --upgrade-claude-md does not modify anything" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Supprimer les @imports
+    # Remove the @imports
     rm -rf "$TEST_DIR/.claude/docs/reference"
     sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
 
     run "$UPDATE_SCRIPT" -y -n --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # .claude/docs/reference/ ne doit PAS exister
+    # .claude/docs/reference/ must NOT exist
     [ ! -d "$TEST_DIR/.claude/docs/reference" ]
-    # @imports ne doivent PAS être présents
+    # @imports must NOT be present
     ! grep -q "@docs/reference/" "$TEST_DIR/CLAUDE.md"
 }
 
-@test "update.sh --help affiche --upgrade-claude-md" {
+@test "update.sh --help shows --upgrade-claude-md" {
     run "$UPDATE_SCRIPT" --help
     [ "$status" -eq 0 ]
     [[ "$output" == *"--upgrade-claude-md"* ]]
 }
 
-@test "update.sh --detect-orphans --dry-run ne supprime pas les fichiers" {
+@test "update.sh --detect-orphans --dry-run does not remove the files" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Ajouter un fichier orphelin
+    # Add an orphan file
     echo "# Orphan" > "$TEST_DIR/.claude/commands/work/dry-run-orphan.md"
 
     run "$UPDATE_SCRIPT" -y -n --remove-orphans "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Le fichier devrait toujours exister en dry-run
+    # The file should still exist in dry-run
     [ -f "$TEST_DIR/.claude/commands/work/dry-run-orphan.md" ]
 }

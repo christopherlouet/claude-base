@@ -1,35 +1,35 @@
-# Projet Python
+# Python Project
 
-## Commandes Essentielles
-- `pip install -r requirements.txt` - Installer les dépendances
-- `python -m pytest` - Lancer les tests
-- `python -m pytest --cov` - Tests avec couverture
+## Essential Commands
+- `pip install -r requirements.txt` - Install dependencies
+- `python -m pytest` - Run tests
+- `python -m pytest --cov` - Tests with coverage
 - `python -m flake8` - Linter
 - `python -m black .` - Formatter
 - `python -m mypy .` - Type checking
-- `python main.py` - Lancer l'application
+- `python main.py` - Run the application
 
-## Environnement virtuel
+## Virtual environment
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 ```
 
-## Structure du Projet
-- `/src` ou `/app` - Code source principal
-- `/tests` - Tests pytest
-- `/scripts` - Scripts utilitaires
+## Project Structure
+- `/src` or `/app` - Main source code
+- `/tests` - pytest tests
+- `/scripts` - Utility scripts
 - `/config` - Configuration
-- `requirements.txt` - Dépendances de production
-- `requirements-dev.txt` - Dépendances de développement
+- `requirements.txt` - Production dependencies
+- `requirements-dev.txt` - Development dependencies
 
-## Conventions Python
-- IMPORTANT: Suivre PEP 8
-- IMPORTANT: Type hints sur toutes les fonctions publiques
-- YOU MUST écrire des docstrings (Google style ou NumPy style)
-- Snake_case pour fonctions et variables
-- PascalCase pour classes
+## Python Conventions
+- IMPORTANT: Follow PEP 8
+- IMPORTANT: Type hints on all public functions
+- YOU MUST write docstrings (Google style or NumPy style)
+- snake_case for functions and variables
+- PascalCase for classes
 
 ## Type Hints
 ```python
@@ -47,12 +47,12 @@ def process_data(items: list[dict[str, Any]], limit: int = 10) -> list[str]:
 ```
 
 ## Tests
-- pytest pour tests unitaires
-- pytest-cov pour couverture
-- fixtures pour setup/teardown
-- Mocks limités (unittest.mock si nécessaire)
+- pytest for unit tests
+- pytest-cov for coverage
+- fixtures for setup/teardown
+- Limited mocks (unittest.mock if necessary)
 
-## Qualité de code
+## Code quality
 ```bash
 # Formatter
 black .
@@ -63,17 +63,17 @@ flake8 .
 # Type checker
 mypy .
 
-# Tout en un (si configuré)
+# All in one (if configured)
 pre-commit run --all-files
 ```
 
-## Gestion des erreurs
+## Error handling
 ```python
 class CustomError(Exception):
-    """Description de l'erreur custom."""
+    """Description of the custom error."""
     pass
 
-# Utilisation
+# Usage
 try:
     result = risky_operation()
 except SpecificError as e:
@@ -85,25 +85,25 @@ except SpecificError as e:
 - Format: `type(scope): description`
 - Types: feat, fix, refactor, test, docs, chore
 
-## Hooks Claude Code 2.1+
+## Claude Code 2.1+ Hooks
 
 | Hook | Type | Action |
 |------|------|--------|
-| Branch protection | PreToolUse | Bloque les modifications sur main/master |
-| Auto-format | PostToolUse | Black/Prettier sur fichiers Python modifiés |
-| Type check | PostToolUse | MyPy après édition |
-| Lint check | PostToolUse | Flake8/Ruff après édition |
-| Test avant commit | PreToolUse | Exécute `pytest` avant chaque commit |
-| Détection secrets | PreToolUse | Bloque les secrets hardcodés |
+| Branch protection | PreToolUse | Blocks modifications on main/master |
+| Auto-format | PostToolUse | Black/Prettier on modified Python files |
+| Type check | PostToolUse | MyPy after edit |
+| Lint check | PostToolUse | Flake8/Ruff after edit |
+| Test before commit | PreToolUse | Runs `pytest` before each commit |
+| Secret detection | PreToolUse | Blocks hardcoded secrets |
 
-## Skills disponibles
+## Available skills
 
 | Skill | Usage |
 |-------|-------|
-| `exploring-codebase` | Analyser un codebase existant |
-| `planning-implementation` | Définir un plan avant de coder |
-| `test-driven-development` | Cycle TDD Red-Green-Refactor |
-| `reviewing-code` | Revue de code approfondie |
-| `debugging-issues` | Diagnostic méthodique |
+| `exploring-codebase` | Analyze an existing codebase |
+| `planning-implementation` | Define a plan before coding |
+| `test-driven-development` | TDD Red-Green-Refactor cycle |
+| `reviewing-code` | In-depth code review |
+| `debugging-issues` | Methodical diagnosis |
 | `generating-commit-messages` | Conventional Commits |
-| `creating-pull-requests` | PR complète et documentée |
+| `creating-pull-requests` | Complete and documented PR |

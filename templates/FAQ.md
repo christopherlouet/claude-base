@@ -1,312 +1,312 @@
-# FAQ - Questions Fréquentes
+# FAQ - Frequently Asked Questions
 
-Réponses aux questions les plus courantes sur claude-socle et les agents Claude Code.
-
----
-
-## Général
-
-### Qu'est-ce que claude-socle ?
-
-claude-socle est un template de configuration pour Claude Code qui fournit un ensemble d'agents (slash commands) prêts à l'emploi pour optimiser votre workflow de développement.
+Answers to the most common questions about claude-socle and Claude Code agents.
 
 ---
 
-### Quelle est la différence entre Claude Code et les agents ?
+## General
 
-- **Claude Code** : L'outil CLI officiel d'Anthropic pour interagir avec Claude
-- **Agents** : Des prompts pré-configurés (fichiers `.md`) qui spécialisent Claude pour des tâches spécifiques
+### What is claude-socle?
+
+claude-socle is a configuration template for Claude Code that provides a set of agents (slash commands) ready to use to optimize your development workflow.
 
 ---
 
-### Comment installer claude-socle ?
+### What's the difference between Claude Code and agents?
+
+- **Claude Code**: Anthropic's official CLI tool for interacting with Claude
+- **Agents**: Pre-configured prompts (`.md` files) that specialize Claude for specific tasks
+
+---
+
+### How do I install claude-socle?
 
 ```bash
-# 1. Installer Claude Code
+# 1. Install Claude Code
 npm install -g @anthropic-ai/claude-code
 
-# 2. Copier le dossier .claude dans votre projet
-cp -r chemin/vers/claude-socle/.claude votre-projet/
+# 2. Copy the .claude folder into your project
+cp -r path/to/claude-socle/.claude your-project/
 
-# 3. C'est prêt !
-cd votre-projet
+# 3. Ready to go!
+cd your-project
 claude
 /explore
 ```
 
 ---
 
-### Les agents fonctionnent-ils avec d'autres LLMs ?
+### Do the agents work with other LLMs?
 
-Non, les agents claude-socle sont conçus spécifiquement pour Claude Code et l'API Anthropic. Cependant, les templates et structures peuvent être adaptés pour d'autres systèmes.
+No, claude-socle agents are designed specifically for Claude Code and the Anthropic API. However, the templates and structures can be adapted for other systems.
 
 ---
 
 ## Agents
 
-### Comment créer mon propre agent ?
+### How do I create my own agent?
 
-1. Créer un fichier `.md` dans `.claude/commands/`
-2. Suivre la structure standard :
+1. Create a `.md` file in `.claude/commands/`
+2. Follow the standard structure:
 
 ```markdown
-# Agent MON-AGENT
+# Agent MY-AGENT
 
-Description courte de l'agent.
+Short description of the agent.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
-[Objectif de l'agent]
+## Goal
+[Goal of the agent]
 
 ## Instructions
-[Instructions détaillées]
+[Detailed instructions]
 
-## Output attendu
-[Format de sortie]
+## Expected output
+[Output format]
 
 ---
 
-IMPORTANT: [Instructions critiques]
+IMPORTANT: [Critical instructions]
 ```
 
 ---
 
-### Comment nommer mes agents ?
+### How should I name my agents?
 
-| Convention | Exemple | Usage |
+| Convention | Example | Usage |
 |------------|---------|-------|
-| `dev-*` | `dev-tdd.md` | Développement |
-| `qa-*` | `qa-review.md` | Qualité |
-| `ops-*` | `ops-ci.md` | Opérations |
+| `dev-*` | `dev-tdd.md` | Development |
+| `qa-*` | `qa-review.md` | Quality |
+| `ops-*` | `ops-ci.md` | Operations |
 | `doc-*` | `doc-api.md` | Documentation |
 | `biz-*` | `biz-mvp.md` | Business |
 | `work-*` | `work-commit.md` | Workflow |
 
 ---
 
-### Puis-je modifier les agents existants ?
+### Can I modify existing agents?
 
-Oui ! Les agents sont de simples fichiers Markdown. Vous pouvez :
-- Les modifier pour les adapter à vos besoins
-- Les dupliquer pour créer des variantes
-- Les étendre avec vos propres instructions
+Yes! Agents are simple Markdown files. You can:
+- Modify them to fit your needs
+- Duplicate them to create variants
+- Extend them with your own instructions
 
 ---
 
-### Comment passer des arguments à un agent ?
+### How do I pass arguments to an agent?
 
 ```bash
-# Syntaxe
+# Syntax
 /agent-name argument1 argument2
 
-# Exemples
+# Examples
 /explore src/services/
 /review AuthService
 /commit "feat: add login"
 ```
 
-Les arguments sont injectés via le placeholder `$ARGUMENTS` dans l'agent.
+Arguments are injected via the `$ARGUMENTS` placeholder in the agent.
 
 ---
 
-### Pourquoi mon agent ignore-t-il certaines instructions ?
+### Why is my agent ignoring some instructions?
 
-Quelques raisons possibles :
+A few possible reasons:
 
-1. **Instructions contradictoires** : Vérifiez qu'il n'y a pas de conflits
-2. **Instructions trop nombreuses** : Priorisez les plus importantes
-3. **Format** : Utilisez `IMPORTANT:`, `YOU MUST`, `NEVER` pour les règles critiques
+1. **Contradictory instructions**: Check that there are no conflicts
+2. **Too many instructions**: Prioritize the most important ones
+3. **Format**: Use `IMPORTANT:`, `YOU MUST`, `NEVER` for critical rules
 
 ---
 
 ## Workflow
 
-### Quel est le workflow recommandé ?
+### What is the recommended workflow?
 
 ```
-1. /explore  → Comprendre le code existant
-2. /plan     → Planifier les modifications
-3. /tdd      → Développer avec tests
-4. /review   → Vérifier la qualité
-5. /commit   → Commiter les changements
-6. /pr       → Créer la Pull Request
+1. /explore  → Understand the existing code
+2. /plan     → Plan the changes
+3. /tdd      → Develop with tests
+4. /review   → Verify quality
+5. /commit   → Commit the changes
+6. /pr       → Create the Pull Request
 ```
 
 ---
 
-### Dois-je toujours suivre ce workflow ?
+### Do I always have to follow this workflow?
 
-Non, c'est une recommandation. Adaptez selon vos besoins :
+No, it's a recommendation. Adapt it to your needs:
 
-| Tâche | Workflow suggéré |
-|-------|------------------|
-| Bug fix simple | `explore → fix → commit` |
-| Nouvelle feature | `explore → plan → tdd → review → commit → pr` |
+| Task | Suggested workflow |
+|------|--------------------|
+| Simple bug fix | `explore → fix → commit` |
+| New feature | `explore → plan → tdd → review → commit → pr` |
 | Refactoring | `explore → plan → refactor → review → commit` |
 | Documentation | `doc → commit` |
 
 ---
 
-### Quand utiliser `/explore` vs `/onboard` ?
+### When should I use `/explore` vs `/onboard`?
 
 | Agent | Usage |
 |-------|-------|
-| `/explore` | Exploration ciblée d'une partie du code |
-| `/onboard` | Découverte complète d'un nouveau codebase |
+| `/explore` | Targeted exploration of part of the code |
+| `/onboard` | Full discovery of a new codebase |
 
 ---
 
-## Performance et coûts
+## Performance and costs
 
-### Comment réduire la consommation de tokens ?
+### How do I reduce token consumption?
 
-1. **Utilisez des agents ciblés** plutôt que des agents génériques
-2. **Spécifiez les fichiers** à analyser
-3. **Évitez les requêtes vagues** comme "analyse tout le projet"
-4. **Utilisez `explore`** pour identifier d'abord les fichiers pertinents
-
----
-
-### Quelle est la taille maximale de contexte ?
-
-Claude a une fenetre de contexte de 200k tokens (1M en beta avec Opus 4.7). Pour les projets volumineux :
-- Utilisez des agents cibles
-- Analysez par module/dossier
-- Excluez les fichiers non pertinents
-- Avec Opus 4.7, le Context Compaction resume automatiquement le contexte ancien
+1. **Use targeted agents** rather than generic ones
+2. **Specify the files** to analyze
+3. **Avoid vague requests** like "analyze the whole project"
+4. **Use `explore`** to first identify relevant files
 
 ---
 
-### Qu'est-ce que l'Adaptive Thinking d'Opus 4.7 ?
+### What is the maximum context size?
 
-L'Adaptive Thinking remplace le toggle "extended thinking" par 3 niveaux d'effort (`low`, `medium`, `high`). Le modele ajuste automatiquement son raisonnement selon la complexite de la tache. Cela permet d'optimiser le rapport cout/qualite sans configuration manuelle.
-
----
-
-### Les agents augmentent-ils les coûts ?
-
-Les agents sont des prompts pré-configurés. Ils n'ajoutent pas de coût par eux-mêmes, mais des instructions plus détaillées peuvent légèrement augmenter la consommation de tokens par requête.
+Claude has a 200k token context window (1M in beta with Opus 4.7). For large projects:
+- Use targeted agents
+- Analyze by module/folder
+- Exclude irrelevant files
+- With Opus 4.7, Context Compaction automatically summarizes old context
 
 ---
 
-## Personnalisation
+### What is Opus 4.7's Adaptive Thinking?
 
-### Comment ajouter mes conventions de code ?
+Adaptive Thinking replaces the "extended thinking" toggle with 3 effort levels (`low`, `medium`, `high`). The model automatically adjusts its reasoning based on the complexity of the task. This optimizes the cost/quality ratio without manual configuration.
 
-Modifiez le fichier `CLAUDE.md` à la racine de votre projet :
+---
+
+### Do agents increase costs?
+
+Agents are pre-configured prompts. They don't add cost on their own, but more detailed instructions may slightly increase token consumption per request.
+
+---
+
+## Customization
+
+### How do I add my code conventions?
+
+Edit the `CLAUDE.md` file at the root of your project:
 
 ```markdown
-## Conventions de Code
+## Code Conventions
 
-### Nommage
+### Naming
 - Variables: camelCase
-- Constantes: SCREAMING_SNAKE
-- Fichiers: kebab-case
+- Constants: SCREAMING_SNAKE
+- Files: kebab-case
 
-### Règles spécifiques
-- [Vos règles ici]
+### Specific rules
+- [Your rules here]
 ```
 
 ---
 
-### Comment partager mes agents avec mon équipe ?
+### How do I share my agents with my team?
 
-Les agents sont dans le dossier `.claude/commands/`. Options :
+Agents live in the `.claude/commands/` folder. Options:
 
-1. **Commit dans le repo** : Les agents seront partagés avec le code
-2. **Repo séparé** : Créez un repo dédié aux agents d'équipe
-3. **Submodule** : Utilisez un submodule git pour les agents partagés
+1. **Commit in the repo**: Agents will be shared along with the code
+2. **Separate repo**: Create a dedicated repo for team agents
+3. **Submodule**: Use a git submodule for shared agents
 
 ---
 
-### Puis-je avoir des agents privés et partagés ?
+### Can I have private and shared agents?
 
-Oui, utilisez deux sources :
+Yes, use two sources:
 
 ```
-projet/
+project/
 ├── .claude/
-│   └── commands/           # Agents du projet (partagés)
+│   └── commands/           # Project agents (shared)
 │       └── ...
 └── ~/.claude/
-    └── commands/           # Agents personnels (privés)
+    └── commands/           # Personal agents (private)
         └── ...
 ```
 
 ---
 
-## Dépannage
+## Troubleshooting
 
-### Où trouver de l'aide ?
+### Where can I find help?
 
-1. **TROUBLESHOOTING.md** : Guide de résolution des problèmes
-2. **Documentation Claude Code** : https://code.claude.com/docs/en/overview
-3. **GitHub Issues** : https://github.com/anthropics/claude-code/issues
-
----
-
-### Comment reporter un bug ?
-
-Avant de reporter :
-1. Vérifiez dans TROUBLESHOOTING.md
-2. Cherchez dans les issues existantes
-3. Préparez : version, OS, étapes de reproduction, logs
+1. **TROUBLESHOOTING.md**: Problem-solving guide
+2. **Claude Code documentation**: https://code.claude.com/docs/en/overview
+3. **GitHub Issues**: https://github.com/anthropics/claude-code/issues
 
 ---
 
-### L'agent X ne fonctionne pas comme attendu
+### How do I report a bug?
 
-1. Relisez les instructions de l'agent
-2. Vérifiez que vous passez les bons arguments
-3. Essayez avec un exemple simple
-4. Consultez TROUBLESHOOTING.md
+Before reporting:
+1. Check TROUBLESHOOTING.md
+2. Search existing issues
+3. Prepare: version, OS, reproduction steps, logs
 
 ---
 
-## Mises à jour
+### Agent X doesn't behave as expected
 
-### Comment mettre à jour les agents ?
+1. Re-read the agent's instructions
+2. Check that you're passing the right arguments
+3. Try with a simple example
+4. Check TROUBLESHOOTING.md
+
+---
+
+## Updates
+
+### How do I update the agents?
 
 ```bash
-# Si vous utilisez un repo git
+# If you use a git repo
 git pull origin main
 
-# Si copie manuelle
-# Téléchargez la nouvelle version et remplacez .claude/commands/
+# If manual copy
+# Download the new version and replace .claude/commands/
 ```
 
 ---
 
-### Les mises à jour écrasent-elles mes modifications ?
+### Do updates overwrite my modifications?
 
-Si vous avez modifié les agents :
-1. **Sauvegardez** vos modifications avant la mise à jour
-2. **Utilisez des fichiers séparés** pour vos agents personnalisés
-3. **Versionnez** avec git pour suivre les changements
-
----
-
-## Questions techniques
-
-### Les agents peuvent-ils appeler d'autres agents ?
-
-Les agents peuvent **référencer** d'autres agents dans leurs instructions, mais pas les appeler automatiquement. L'utilisateur doit invoquer chaque agent manuellement.
+If you've modified the agents:
+1. **Back up** your changes before updating
+2. **Use separate files** for your customized agents
+3. **Version** with git to track changes
 
 ---
 
-### Quelle est la syntaxe supportée dans les agents ?
+## Technical questions
 
-- **Markdown standard** : Titres, listes, tableaux, code blocks
-- **Placeholders** : `$ARGUMENTS` pour les arguments
-- **Instructions spéciales** : `IMPORTANT:`, `YOU MUST`, `NEVER`, `Think hard`
+### Can agents call other agents?
+
+Agents can **reference** other agents in their instructions, but cannot call them automatically. The user must invoke each agent manually.
 
 ---
 
-### Puis-je utiliser des variables d'environnement ?
+### What syntax is supported in agents?
 
-Les agents n'ont pas accès direct aux variables d'environnement. Passez les valeurs via `$ARGUMENTS` :
+- **Standard Markdown**: Titles, lists, tables, code blocks
+- **Placeholders**: `$ARGUMENTS` for arguments
+- **Special instructions**: `IMPORTANT:`, `YOU MUST`, `NEVER`, `Think hard`
+
+---
+
+### Can I use environment variables?
+
+Agents don't have direct access to environment variables. Pass values via `$ARGUMENTS`:
 
 ```bash
 /deploy production $MY_API_KEY
@@ -316,22 +316,22 @@ Les agents n'ont pas accès direct aux variables d'environnement. Passez les val
 
 ## Contribution
 
-### Comment contribuer à claude-socle ?
+### How do I contribute to claude-socle?
 
-1. Fork le repo
-2. Créez une branche pour vos modifications
-3. Suivez les conventions existantes
-4. Testez vos agents
-5. Créez une Pull Request
+1. Fork the repo
+2. Create a branch for your changes
+3. Follow the existing conventions
+4. Test your agents
+5. Create a Pull Request
 
-Voir CONTRIBUTING.md pour plus de détails.
+See CONTRIBUTING.md for more details.
 
 ---
 
-### Puis-je proposer de nouveaux agents ?
+### Can I propose new agents?
 
-Absolument ! Les contributions sont bienvenues :
-- Nouveaux agents pour des cas d'usage manquants
-- Améliorations des agents existants
-- Corrections de bugs
-- Amélioration de la documentation
+Absolutely! Contributions are welcome:
+- New agents for missing use cases
+- Improvements to existing agents
+- Bug fixes
+- Documentation improvements

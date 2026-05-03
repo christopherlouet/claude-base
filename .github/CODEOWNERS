@@ -1,4 +1,4 @@
-# CODEOWNERS - Définit les reviewers obligatoires pour les fichiers sensibles
+# CODEOWNERS - Defines mandatory reviewers for sensitive files
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 # Default owners for everything in the repo

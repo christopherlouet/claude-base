@@ -1,9 +1,9 @@
-# Exemple de développement d'API
+# API development example
 
-## Contexte
-Créer un endpoint pour gérer les produits d'un e-commerce.
+## Context
+Create an endpoint to manage products of an e-commerce.
 
-## Contrat défini
+## Defined contract
 
 ### Endpoint
 `POST /api/v1/products`
@@ -12,7 +12,7 @@ Créer un endpoint pour gérer les produits d'un e-commerce.
 ```json
 {
   "name": "iPhone 15 Pro",
-  "description": "Smartphone Apple dernière génération",
+  "description": "Latest generation Apple smartphone",
   "price": 1209.99,
   "category": "electronics",
   "stock": 50
@@ -28,7 +28,7 @@ Créer un endpoint pour gérer les produits d'un e-commerce.
   "data": {
     "id": "prod_abc123",
     "name": "iPhone 15 Pro",
-    "description": "Smartphone Apple dernière génération",
+    "description": "Latest generation Apple smartphone",
     "price": 1209.99,
     "category": "electronics",
     "stock": 50,
@@ -51,9 +51,9 @@ Créer un endpoint pour gérer les produits d'un e-commerce.
 }
 ```
 
-## Implémentation
+## Implementation
 
-### 1. Schema de validation (Zod)
+### 1. Validation schema (Zod)
 
 ```typescript
 // src/schemas/product.ts
@@ -134,14 +134,14 @@ router.post('/', authenticate, createProduct);
 export default router;
 ```
 
-### 5. Documentation OpenAPI
+### 5. OpenAPI documentation
 
 ```yaml
 # openapi/products.yaml
 paths:
   /api/v1/products:
     post:
-      summary: Créer un produit
+      summary: Create a product
       tags: [Products]
       security:
         - bearerAuth: []
@@ -172,7 +172,7 @@ paths:
                   default: 0
       responses:
         '201':
-          description: Produit créé
+          description: Product created
           content:
             application/json:
               schema:
@@ -229,11 +229,11 @@ describe('POST /api/v1/products', () => {
 });
 ```
 
-## Résultat
+## Result
 
-Endpoint créé avec:
-- Validation Zod
-- Gestion d'erreurs
-- Documentation OpenAPI
-- Tests d'intégration
-- Authentification requise
+Endpoint created with:
+- Zod validation
+- Error handling
+- OpenAPI documentation
+- Integration tests
+- Authentication required

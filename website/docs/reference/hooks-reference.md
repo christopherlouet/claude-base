@@ -1,7 +1,7 @@
 ---
 sidebar_position: 14
 title: "Hooks (Claude Code 2.1+)"
-description: "Le projet inclut des hooks automatiques dans `.claude/settings.json`:"
+description: "The project includes automatic hooks in `.claude/settings.json`:"
 tags:
   - "reference"
 ---
@@ -10,129 +10,129 @@ tags:
 
 # Hooks (Claude Code 2.1+)
 
-Le projet inclut des hooks automatiques dans `.claude/settings.json`:
+The project includes automatic hooks in `.claude/settings.json`:
 
-## Hook Events disponibles
+## Available Hook Events
 
 | Event | Type | Description |
 |-------|------|-------------|
-| `SessionStart` | command | Déclenché au démarrage d'une session (matchers: `startup`, `resume`, `clear`, `compact`) |
-| `UserPromptSubmit` | command | Quand l'utilisateur soumet un prompt (validation, contexte additionnel) |
-| `PreToolUse` | command/prompt | Avant l'exécution d'un outil (matcher: `Edit\|Write`, `Bash`) |
-| `PermissionRequest` | command/prompt | Quand un dialog de permission est affiché |
-| `PostToolUse` | command | Après l'exécution réussie d'un outil |
-| `PostToolUseFailure` | command | Après l'échec d'un outil |
-| `SubagentStart` | command | Démarrage d'un sub-agent |
-| `SubagentStop` | command/prompt | Fin d'exécution d'un sub-agent |
-| `Stop` | command/prompt | Quand Claude finit de répondre |
-| `StopFailure` | command | Quand un turn finit sur erreur API (rate limit, auth failure) — CLI 2.1.78+ |
-| `Setup` | command | Initialisation (`init`) et maintenance (`maintenance`) du projet |
+| `SessionStart` | command | Triggered at session startup (matchers: `startup`, `resume`, `clear`, `compact`) |
+| `UserPromptSubmit` | command | When the user submits a prompt (validation, additional context) |
+| `PreToolUse` | command/prompt | Before tool execution (matcher: `Edit\|Write`, `Bash`) |
+| `PermissionRequest` | command/prompt | When a permission dialog is shown |
+| `PostToolUse` | command | After successful tool execution |
+| `PostToolUseFailure` | command | After a tool failure |
+| `SubagentStart` | command | Sub-agent startup |
+| `SubagentStop` | command/prompt | End of sub-agent execution |
+| `Stop` | command/prompt | When Claude finishes responding |
+| `StopFailure` | command | When a turn ends on an API error (rate limit, auth failure) — CLI 2.1.78+ |
+| `Setup` | command | Project initialization (`init`) and maintenance (`maintenance`) |
 | `Notification` | command | Notifications (`permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`) |
-| `PreCompact` | command | Avant compaction du contexte (matchers: `manual`, `auto`) |
-| `PostCompact` | command | Apres compaction du contexte |
-| `SessionEnd` | command | Fin de session |
-| `TeammateIdle` | command | Quand un agent teammate devient inactif (Agent Teams) |
-| `TaskCreated` | command | Quand une tache est creee via `TaskCreate` (CLI 2.1.84+) |
-| `TaskCompleted` | command | Quand une tache est marquee terminee |
-| `WorktreeCreate` | http | Hook `type: "http"` invoque a la creation d'un worktree, doit retourner `hookSpecificOutput.worktreePath` (CLI 2.1.84+) |
-| `InstructionsLoaded` | command | Quand CLAUDE.md et rules sont charges |
-| `Elicitation` | command | Quand un serveur MCP demande un input structure |
-| `ElicitationResult` | command | Quand l'utilisateur repond a une Elicitation MCP |
-| `PermissionDenied` | command | Apres un refus de permission par l'auto mode classifier. Retourner `\{retry: true\}` pour retenter |
-| `CwdChanged` | command | Quand le repertoire de travail change |
-| `FileChanged` | command | Quand un fichier est modifie |
+| `PreCompact` | command | Before context compaction (matchers: `manual`, `auto`) |
+| `PostCompact` | command | After context compaction |
+| `SessionEnd` | command | End of session |
+| `TeammateIdle` | command | When a teammate agent becomes idle (Agent Teams) |
+| `TaskCreated` | command | When a task is created via `TaskCreate` (CLI 2.1.84+) |
+| `TaskCompleted` | command | When a task is marked as completed |
+| `WorktreeCreate` | http | Hook `type: "http"` invoked when creating a worktree, must return `hookSpecificOutput.worktreePath` (CLI 2.1.84+) |
+| `InstructionsLoaded` | command | When CLAUDE.md and rules are loaded |
+| `Elicitation` | command | When an MCP server requests structured input |
+| `ElicitationResult` | command | When the user responds to an MCP Elicitation |
+| `PermissionDenied` | command | After a permission denial by the auto mode classifier. Return `\{retry: true\}` to retry |
+| `CwdChanged` | command | When the working directory changes |
+| `FileChanged` | command | When a file is modified |
 
-## Types de hooks
+## Hook types
 
 | Type | Description |
 |------|-------------|
-| `command` | Execute un script bash (deterministe, rapide) |
-| `prompt` | Evalue via un LLM Haiku (contextuel, intelligent) - pour `Stop`, `SubagentStop`, `PreToolUse` |
-| `http` | Envoie un POST JSON vers une URL (webhook externe) - CLI 2.1.70+ |
+| `command` | Executes a bash script (deterministic, fast) |
+| `prompt` | Evaluated via a Haiku LLM (contextual, intelligent) - for `Stop`, `SubagentStop`, `PreToolUse` |
+| `http` | Sends a JSON POST to a URL (external webhook) - CLI 2.1.70+ |
 
-## Proprietes des hooks
+## Hook properties
 
-| Propriete | Description |
+| Property | Description |
 |-----------|-------------|
-| `async` | `true` pour executer en arriere-plan sans bloquer (CLI 2.1.70+) |
-| `onFailure` | `"block"` pour bloquer, `"ignore"` pour continuer |
-| `timeout` | Timeout en millisecondes |
-| `if` | Condition d'activation utilisant la syntaxe permission rules (CLI 2.1.90+) |
-| `additionalContext` | Chaine de contexte supplementaire injectee dans le hook PreToolUse (CLI 2.1.110+) |
+| `async` | `true` to run in background without blocking (CLI 2.1.70+) |
+| `onFailure` | `"block"` to block, `"ignore"` to continue |
+| `timeout` | Timeout in milliseconds |
+| `if` | Activation condition using permission rules syntax (CLI 2.1.90+) |
+| `additionalContext` | Additional context string injected into the PreToolUse hook (CLI 2.1.110+) |
 
-### Permission `defer` (PreToolUse)
+### `defer` permission (PreToolUse)
 
-Les hooks PreToolUse peuvent retourner `"defer"` comme decision de permission. La session headless se met en pause au tool call et peut reprendre avec `-p --resume` pour re-evaluer le hook. Utile pour les workflows CI/CD necessitant une approbation humaine.
+PreToolUse hooks can return `"defer"` as a permission decision. The headless session pauses at the tool call and can resume with `-p --resume` to re-evaluate the hook. Useful for CI/CD workflows requiring human approval.
 
-## Hooks configurés
+## Configured hooks
 
-| Hook | Déclencheur | Action |
+| Hook | Trigger | Action |
 |------|-------------|--------|
-| **Session info** | SessionStart (startup) | Affiche les informations du projet au démarrage |
-| **Check node_modules** | SessionStart (startup) | Vérifie que node_modules existe si package.json présent |
-| **Protection main** | PreToolUse (Edit/Write) | Bloque modifications sur main/master |
-| **Détection secrets** | PreToolUse (Write/Edit) | Gitleaks vérifie les secrets avant écriture |
-| **Tests pre-commit** | PreToolUse (Bash git commit) | Exécute les tests avant un commit. Detecte et repare Husky si necessaire |
-| **CI locale pre-push** | PreToolUse (Bash git push) | Lint + type-check + tests avant push. Desactivable avec `SKIP_PRE_PUSH_CI=1` |
-| **Destructive ops guard** | PreToolUse (Bash) | Bloque les DELETE/DROP/TRUNCATE/rm destructifs sans confirmation |
-| **Command validator** | PreToolUse (Bash) | Valide les commandes contre 8 categories de risque (fork bombs, pipe-to-shell, disk destruction, privilege escalation, etc.). Desactivable avec `SKIP_COMMAND_VALIDATOR=1` |
-| **RTK token optimizer** | PreToolUse (Bash) | Reecrit les commandes via RTK pour reduire les tokens (-60-90%). Desactive par defaut, activer avec `ENABLE_RTK=1` |
-| **Auto-format TS/JS** | PostToolUse (Edit/Write) | Prettier sur fichiers TS/JS |
-| **Auto-format Python** | PostToolUse (Edit/Write) | Ruff/Black sur fichiers .py |
-| **Auto-format Go** | PostToolUse (Edit/Write) | gofmt sur fichiers .go |
-| **Auto-format Rust** | PostToolUse (Edit/Write) | rustfmt sur fichiers .rs |
-| **Auto-format Dart** | PostToolUse (Edit/Write) | dart format sur fichiers .dart |
-| **Auto-format Lua** | PostToolUse (Edit/Write) | stylua sur fichiers .lua |
-| **Type-check** | PostToolUse (Edit/Write) | Vérifie les types TypeScript |
-| **ESLint** | PostToolUse (Edit/Write) | Lint JS/TS après modification |
+| **Session info** | SessionStart (startup) | Displays project information at startup |
+| **Check node_modules** | SessionStart (startup) | Verifies that node_modules exists if package.json is present |
+| **Main protection** | PreToolUse (Edit/Write) | Blocks modifications on main/master |
+| **Secret detection** | PreToolUse (Write/Edit) | Gitleaks checks for secrets before writing |
+| **Pre-commit tests** | PreToolUse (Bash git commit) | Runs tests before a commit. Detects and repairs Husky if needed |
+| **Local pre-push CI** | PreToolUse (Bash git push) | Lint + type-check + tests before push. Disable with `SKIP_PRE_PUSH_CI=1` |
+| **Destructive ops guard** | PreToolUse (Bash) | Blocks destructive DELETE/DROP/TRUNCATE/rm without confirmation |
+| **Command validator** | PreToolUse (Bash) | Validates commands against 8 risk categories (fork bombs, pipe-to-shell, disk destruction, privilege escalation, etc.). Disable with `SKIP_COMMAND_VALIDATOR=1` |
+| **RTK token optimizer** | PreToolUse (Bash) | Rewrites commands via RTK to reduce tokens (-60-90%). Disabled by default, enable with `ENABLE_RTK=1` |
+| **Auto-format TS/JS** | PostToolUse (Edit/Write) | Prettier on TS/JS files |
+| **Auto-format Python** | PostToolUse (Edit/Write) | Ruff/Black on .py files |
+| **Auto-format Go** | PostToolUse (Edit/Write) | gofmt on .go files |
+| **Auto-format Rust** | PostToolUse (Edit/Write) | rustfmt on .rs files |
+| **Auto-format Dart** | PostToolUse (Edit/Write) | dart format on .dart files |
+| **Auto-format Lua** | PostToolUse (Edit/Write) | stylua on .lua files |
+| **Type-check** | PostToolUse (Edit/Write) | Checks TypeScript types |
+| **ESLint** | PostToolUse (Edit/Write) | Lints JS/TS after modification |
 | **Auto-install** | PostToolUse (Edit package.json) | npm/yarn/pnpm/bun install |
-| **Auto-sync Python** | PostToolUse (Edit pyproject.toml) | uv sync ou pip install |
+| **Auto-sync Python** | PostToolUse (Edit pyproject.toml) | uv sync or pip install |
 | **Auto pub get** | PostToolUse (Edit pubspec.yaml) | flutter/dart pub get |
 | **Auto go mod tidy** | PostToolUse (Edit go.mod) | go mod tidy |
 | **Auto cargo check** | PostToolUse (Edit Cargo.toml) | cargo check |
-| **Coverage check** | PostToolUse (Edit test files) | Vérifie la couverture de tests |
-| **Setup init** | Setup (init) | Installe les dépendances au premier lancement |
-| **Setup maintenance** | Setup (maintenance) | Audit et mise à jour périodique |
-| **Notification permission** | Notification (permission_prompt) | Log les demandes de permission |
-| **Notification idle** | Notification (idle_prompt) | Log quand Claude attend l'utilisateur |
-| **SubagentStop** | SubagentStop | Log la fin des sub-agents |
-| **SessionEnd** | SessionEnd | Log la fin de session |
-| **PreCompact** | PreCompact | Log avant compaction du contexte |
-| **PostCompact** | PostCompact | Log apres compaction du contexte (async) |
-| **TeammateIdle** | TeammateIdle | Log quand un teammate devient inactif (async) |
-| **TaskCompleted** | TaskCompleted | Log quand une tache est terminee (async) |
-| **InstructionsLoaded** | InstructionsLoaded | Log le chargement des instructions (async) |
-| **Elicitation** | Elicitation | Log les demandes MCP Elicitation (async) |
-| **ElicitationResult** | ElicitationResult | Log les reponses MCP Elicitation (async) |
-| **PermissionDenied** | PermissionDenied | Log les permissions refusees par l'auto mode (async, CLI 2.1.111+) |
-| **UserPromptSubmit** | UserPromptSubmit | Log les submissions de prompt utilisateur (async) |
-| **Prompt context injection** | UserPromptSubmit | Injecte branche, fichiers modifies, LOC diff et hint `/assistant-auto` si pas de slash command (desactiver: `SKIP_PROMPT_CONTEXT=1`) |
-| **PostToolUseFailure** | PostToolUseFailure | Log les echecs d'outils pour debugging (async) |
-| **Check .env** | SessionStart | Verifie que .env est dans .gitignore |
-| **Warning hooks tiers** | SessionStart | Avertit si des hooks personnalises sont detectes |
+| **Coverage check** | PostToolUse (Edit test files) | Checks test coverage |
+| **Setup init** | Setup (init) | Installs dependencies on first launch |
+| **Setup maintenance** | Setup (maintenance) | Periodic audit and update |
+| **Notification permission** | Notification (permission_prompt) | Logs permission requests |
+| **Notification idle** | Notification (idle_prompt) | Logs when Claude is waiting for the user |
+| **SubagentStop** | SubagentStop | Logs the end of sub-agents |
+| **SessionEnd** | SessionEnd | Logs the end of the session |
+| **PreCompact** | PreCompact | Logs before context compaction |
+| **PostCompact** | PostCompact | Logs after context compaction (async) |
+| **TeammateIdle** | TeammateIdle | Logs when a teammate becomes idle (async) |
+| **TaskCompleted** | TaskCompleted | Logs when a task is completed (async) |
+| **InstructionsLoaded** | InstructionsLoaded | Logs instructions loading (async) |
+| **Elicitation** | Elicitation | Logs MCP Elicitation requests (async) |
+| **ElicitationResult** | ElicitationResult | Logs MCP Elicitation responses (async) |
+| **PermissionDenied** | PermissionDenied | Logs permissions denied by auto mode (async, CLI 2.1.111+) |
+| **UserPromptSubmit** | UserPromptSubmit | Logs user prompt submissions (async) |
+| **Prompt context injection** | UserPromptSubmit | Injects branch, modified files, LOC diff and `/assistant-auto` hint if no slash command (disable: `SKIP_PROMPT_CONTEXT=1`) |
+| **PostToolUseFailure** | PostToolUseFailure | Logs tool failures for debugging (async) |
+| **Check .env** | SessionStart | Verifies that .env is in .gitignore |
+| **Third-party hooks warning** | SessionStart | Warns if custom hooks are detected |
 
-## Variables d'environnement des hooks
+## Hook environment variables
 
 | Variable | Usage |
 |----------|-------|
-| `ALLOW_MAIN_EDIT=1` | Désactiver la protection de branche main |
-| `SKIP_PRE_COMMIT_TESTS=1` | Désactiver les tests avant commit |
-| `SKIP_COMMAND_VALIDATOR=1` | Désactiver la validation de sécurité des commandes |
-| `SKIP_PRE_PUSH_CI=1` | Désactiver la vérification CI locale avant push |
-| `SKIP_DESTRUCTIVE_CHECK=1` | Désactiver la protection contre les opérations destructives |
-| `SKIP_PROMPT_CONTEXT=1` | Désactiver l'injection de contexte repo sur les prompts libres |
-| `ENABLE_RTK=1` | Activer l'optimisation de tokens RTK |
+| `ALLOW_MAIN_EDIT=1` | Disable main branch protection |
+| `SKIP_PRE_COMMIT_TESTS=1` | Disable tests before commit |
+| `SKIP_COMMAND_VALIDATOR=1` | Disable command security validation |
+| `SKIP_PRE_PUSH_CI=1` | Disable local CI verification before push |
+| `SKIP_DESTRUCTIVE_CHECK=1` | Disable protection against destructive operations |
+| `SKIP_PROMPT_CONTEXT=1` | Disable repo context injection on free-form prompts |
+| `ENABLE_RTK=1` | Enable RTK token optimization |
 
-## Fichiers de logs
+## Log files
 
-Les hooks de logging ecrivent dans `/tmp/` (mode append, nettoyes au redemarrage):
+Logging hooks write to `/tmp/` (append mode, cleaned at restart):
 
-| Fichier | Contenu |
+| File | Content |
 |---------|---------|
-| `/tmp/claude-sessions.log` | Demarrage, fin de session, compaction, taches |
-| `/tmp/claude-agents.log` | Activite des sub-agents et teammates |
-| `/tmp/claude-notifications.log` | Permissions et attentes utilisateur |
-| `/tmp/claude-mcp.log` | Evenements MCP Elicitation |
-| `/tmp/claude-permissions.log` | Permissions refusees par l'auto mode classifier |
-| `/tmp/claude-prompts.log` | Submissions de prompt utilisateur (timestamps) |
-| `/tmp/claude-failures.log` | Echecs d'outils avec nom de l'outil |
+| `/tmp/claude-sessions.log` | Startup, end of session, compaction, tasks |
+| `/tmp/claude-agents.log` | Sub-agent and teammate activity |
+| `/tmp/claude-notifications.log` | Permissions and user waits |
+| `/tmp/claude-mcp.log` | MCP Elicitation events |
+| `/tmp/claude-permissions.log` | Permissions denied by the auto mode classifier |
+| `/tmp/claude-prompts.log` | User prompt submissions (timestamps) |
+| `/tmp/claude-failures.log` | Tool failures with tool name |

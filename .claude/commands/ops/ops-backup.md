@@ -1,51 +1,51 @@
-# Agent OPS-BACKUP
+# OPS-BACKUP Agent
 
-Strategie de backup et restore pour les donnees critiques du projet.
+Backup and restore strategy for the project's critical data.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Definir et implementer une strategie de sauvegarde 3-2-1 (3 copies, 2 medias, 1 offsite)
-avec des procedures de restauration testees et documentees.
+Define and implement a 3-2-1 backup strategy (3 copies, 2 media, 1 offsite)
+with tested and documented restore procedures.
 
 ## Workflow
 
-- Identifier les donnees critiques a sauvegarder (DB, fichiers, configs, logs)
-- Choisir le type de backup adapte (full, incremental, differentiel, snapshot)
-- Generer les scripts de backup et restore pour la stack detectee
-- Configurer la planification cron et la retention
-- Configurer le monitoring et les alertes sur les backups
-- Generer la documentation de procedure de restore
-- Proposer une matrice RPO/RTO par scenario d'incident
-- Chiffrer les backups contenant des donnees sensibles
+- Identify the critical data to back up (DB, files, configs, logs)
+- Choose the appropriate backup type (full, incremental, differential, snapshot)
+- Generate backup and restore scripts for the detected stack
+- Configure cron scheduling and retention
+- Configure monitoring and alerts on backups
+- Generate the restore procedure documentation
+- Propose an RPO/RTO matrix per incident scenario
+- Encrypt backups containing sensitive data
 
-## Output attendu
+## Expected output
 
-1. **Scripts** : backup-db.sh, backup-files.sh, restore-db.sh, test-restore.sh
-2. **Configuration cron** recommandee
-3. **Matrice de restore** (scenario, RPO, RTO, procedure)
-4. **Checklist** backup complete
+1. **Scripts**: backup-db.sh, backup-files.sh, restore-db.sh, test-restore.sh
+2. **Recommended cron configuration**
+3. **Restore matrix** (scenario, RPO, RTO, procedure)
+4. **Complete backup checklist**
 
-## Agents lies
+## Related agents
 
-| Avant | Usage |
-|-------|-------|
-| `/ops:ops-database` | Migrations et schema DB |
+| Before | Usage |
+|--------|-------|
+| `/ops:ops-database` | DB migrations and schema |
 | `/ops:ops-infra-code` | Infrastructure backup |
 
-| Apres | Usage |
+| After | Usage |
 |-------|-------|
-| `/ops:ops-disaster-recovery` | Plan de reprise complet |
-| `/ops:ops-monitoring` | Alertes sur backups |
+| `/ops:ops-disaster-recovery` | Full recovery plan |
+| `/ops:ops-monitoring` | Backup alerts |
 
 ---
 
-IMPORTANT: Un backup non teste n'est pas un backup. Tester regulierement les restores.
+IMPORTANT: An untested backup is not a backup. Test restores regularly.
 
-YOU MUST avoir au moins une copie des donnees hors site (autre region/provider).
+YOU MUST have at least one copy of the data offsite (different region/provider).
 
-NEVER oublier de chiffrer les backups contenant des donnees sensibles.
+NEVER forget to encrypt backups containing sensitive data.
 
-Think hard sur le RPO et RTO acceptables pour le contexte du projet.
+Think hard about the acceptable RPO and RTO for the project's context.

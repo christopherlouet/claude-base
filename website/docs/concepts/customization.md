@@ -1,126 +1,126 @@
 ---
 sidebar_position: 22
-title: "Guide de Personnalisation"
-description: "Comment adapter claude-socle à vos besoins spécifiques."
+title: "Customization Guide"
+description: "How to adapt claude-socle to your specific needs."
 tags:
   - "concept"
 ---
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Guide de Personnalisation
+# Customization Guide
 
-Comment adapter claude-socle à vos besoins spécifiques.
+How to adapt claude-socle to your specific needs.
 
 ---
 
-## 1. Personnaliser CLAUDE.md
+## 1. Customize CLAUDE.md
 
-### Structure recommandée
+### Recommended structure
 
 ```markdown
-# Projet [Nom]
+# Project [Name]
 
-## Commandes Essentielles
-[Commandes npm/yarn/make spécifiques à votre projet]
+## Essential Commands
+[npm/yarn/make commands specific to your project]
 
-## Structure du Projet
-[Arborescence avec description de chaque dossier]
+## Project Structure
+[Tree structure with description of each folder]
 
-## Conventions de Code
-[Règles spécifiques à votre équipe]
+## Code Conventions
+[Rules specific to your team]
 
 ## Git & Commits
-[Format de commit, branches, workflow]
+[Commit format, branches, workflow]
 
-## Points d'attention
-[Pièges courants, dette technique, zones sensibles]
+## Points of attention
+[Common pitfalls, technical debt, sensitive areas]
 ```
 
-### Mots-clés d'emphase
+### Emphasis keywords
 
-Claude accorde plus d'attention à certains mots-clés :
+Claude pays more attention to certain keywords:
 
-| Mot-clé | Usage |
+| Keyword | Usage |
 |---------|-------|
-| `IMPORTANT:` | Règle critique à respecter |
-| `YOU MUST` | Obligation absolue |
-| `NEVER` | Interdiction |
-| `ALWAYS` | Toujours faire ainsi |
-| `WARNING:` | Point d'attention |
+| `IMPORTANT:` | Critical rule to follow |
+| `YOU MUST` | Absolute obligation |
+| `NEVER` | Prohibition |
+| `ALWAYS` | Always do this |
+| `WARNING:` | Point of attention |
 
-**Exemple:**
+**Example:**
 ```markdown
-## Sécurité
-- IMPORTANT: Toujours valider les entrées utilisateur
-- YOU MUST utiliser des requêtes paramétrées
-- NEVER logger de mots de passe ou tokens
+## Security
+- IMPORTANT: Always validate user input
+- YOU MUST use parameterized queries
+- NEVER log passwords or tokens
 ```
 
-### Contexte métier
+### Business context
 
-Ajoutez du contexte métier pour que Claude comprenne mieux :
+Add business context so Claude understands better:
 
 ```markdown
-## Contexte métier
-Ce projet est une application e-commerce B2B.
-- Les "clients" sont des entreprises, pas des particuliers
-- Un "panier" peut contenir des milliers d'articles
-- Les "commandes" passent par un workflow de validation
+## Business context
+This project is a B2B e-commerce application.
+- "Customers" are companies, not individuals
+- A "cart" can contain thousands of items
+- "Orders" go through a validation workflow
 ```
 
 ---
 
-## 2. Créer des commandes personnalisées
+## 2. Create custom commands
 
-### Emplacement
+### Location
 
-- **Projet**: `.claude/commands/` (partagé via git)
-- **Personnel**: `~/.claude/commands/` (global)
+- **Project**: `.claude/commands/` (shared via git)
+- **Personal**: `~/.claude/commands/` (global)
 
-&gt; **Note**: Les commandes du socle sont organisées en sous-répertoires par catégorie
+&gt; **Note**: Foundation commands are organized into subdirectories by category
 &gt; (work/, dev/, qa/, ops/, doc/, biz/, growth/, data/, legal/).
-&gt; Vos commandes personnalisées peuvent être à la racine de `.claude/commands/`
-&gt; ou dans un sous-répertoire de votre choix.
+&gt; Your custom commands can be at the root of `.claude/commands/`
+&gt; or in a subdirectory of your choice.
 
-### Structure d'une commande
+### Structure of a command
 
 ```markdown
-# Nom de la commande
+# Command name
 
-Description courte de ce que fait la commande.
+Short description of what the command does.
 
-## Contexte
+## Context
 $ARGUMENTS
 
 ## Instructions
-1. Étape 1
-2. Étape 2
+1. Step 1
+2. Step 2
 ...
 
-## Output attendu
-[Format de sortie]
+## Expected output
+[Output format]
 
 ---
 
-[Instructions supplémentaires avec IMPORTANT/YOU MUST]
+[Additional instructions with IMPORTANT/YOU MUST]
 ```
 
-### Exemple: Commande de déploiement
+### Example: deployment command
 
 `.claude/commands/deploy.md`:
 ```markdown
-# Agent DEPLOY
+# DEPLOY Agent
 
-Déploie l'application sur l'environnement spécifié.
+Deploys the application to the specified environment.
 
-## Environnement
+## Environment
 $ARGUMENTS
 
-## Prérequis
-- [ ] Tests passent
+## Prerequisites
+- [ ] Tests pass
 - [ ] Build OK
-- [ ] Changelog à jour
+- [ ] Changelog up to date
 
 ## Workflow
 
@@ -131,35 +131,35 @@ npm run deploy:staging
 ```
 
 ### Production
-IMPORTANT: Nécessite approbation manuelle
+IMPORTANT: Requires manual approval
 ```bash
 npm run build:prod
 npm run deploy:prod
 ```
 
-## Post-déploiement
-- [ ] Vérifier les healthchecks
-- [ ] Monitorer les erreurs
-- [ ] Notifier l'équipe
+## Post-deployment
+- [ ] Check healthchecks
+- [ ] Monitor errors
+- [ ] Notify the team
 
 ---
 
-NEVER déployer en production sans review.
+NEVER deploy to production without review.
 ```
 
-Usage: `/deploy staging` ou `/deploy production`
+Usage: `/deploy staging` or `/deploy production`
 
-### Variables disponibles
+### Available variables
 
 | Variable | Description |
 |----------|-------------|
-| `$ARGUMENTS` | Arguments passés à la commande |
+| `$ARGUMENTS` | Arguments passed to the command |
 
 ---
 
-## 3. Configurer les permissions
+## 3. Configure permissions
 
-### Fichier `.claude/settings.json`
+### `.claude/settings.json` file
 
 ```json
 {
@@ -183,18 +183,18 @@ Usage: `/deploy staging` ou `/deploy production`
 }
 ```
 
-### Patterns de permission
+### Permission patterns
 
 | Pattern | Description |
 |---------|-------------|
-| `Bash(cmd:*)` | Autorise `cmd` avec tous arguments |
-| `Bash(cmd arg:*)` | Autorise `cmd arg` avec suite libre |
-| `Edit` | Modification de fichiers |
-| `Write` | Création de fichiers |
+| `Bash(cmd:*)` | Allows `cmd` with any arguments |
+| `Bash(cmd arg:*)` | Allows `cmd arg` with any continuation |
+| `Edit` | File modification |
+| `Write` | File creation |
 
-### Permissions par environnement
+### Permissions by environment
 
-Créez `.claude/settings.local.json` (gitignore) pour des permissions locales plus permissives :
+Create `.claude/settings.local.json` (gitignore) for more permissive local permissions:
 
 ```json
 {
@@ -209,23 +209,23 @@ Créez `.claude/settings.local.json` (gitignore) pour des permissions locales pl
 
 ---
 
-## 4. Configurer les hooks
+## 4. Configure hooks
 
-### Dans `.claude/settings.json`
+### In `.claude/settings.json`
 
-Les hooks sont configurés directement dans le fichier `settings.json` :
+Hooks are configured directly in the `settings.json` file:
 
 ```json
 {
   "hooks": {
     "PreToolUse": [
       {
-        "description": "Protection branche main",
+        "description": "Main branch protection",
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then echo \"Modification bloquée sur $branch\"; exit 1; fi'",
+            "command": "bash -c 'branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then echo \"Modification blocked on $branch\"; exit 1; fi'",
             "onFailure": "block"
           }
         ]
@@ -233,7 +233,7 @@ Les hooks sont configurés directement dans le fichier `settings.json` :
     ],
     "PostToolUse": [
       {
-        "description": "Auto-format après édition",
+        "description": "Auto-format after editing",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -247,110 +247,110 @@ Les hooks sont configurés directement dans le fichier `settings.json` :
 }
 ```
 
-### Types de hooks
+### Hook types
 
-| Hook | Déclencheur |
-|------|-------------|
-| `SessionStart` | Démarrage de session (matchers : `startup`, `resume`, `clear`, `compact`) |
-| `SessionEnd` | Fin de session |
-| `UserPromptSubmit` | Quand l'utilisateur soumet un prompt (peut injecter du contexte) |
-| `PreToolUse` | Avant l'utilisation d'un outil (Edit, Write, Bash, Read…) |
-| `PostToolUse` | Après l'utilisation d'un outil |
-| `Stop` | Quand Claude termine une réponse |
-| `Notification` | Notifications système (permissions, idle…) |
+| Hook | Trigger |
+|------|---------|
+| `SessionStart` | Session start (matchers: `startup`, `resume`, `clear`, `compact`) |
+| `SessionEnd` | Session end |
+| `UserPromptSubmit` | When the user submits a prompt (can inject context) |
+| `PreToolUse` | Before using a tool (Edit, Write, Bash, Read…) |
+| `PostToolUse` | After using a tool |
+| `Stop` | When Claude finishes a response |
+| `Notification` | System notifications (permissions, idle…) |
 
-### Matchers disponibles
+### Available matchers
 
-| Matcher | Outils ciblés |
-|---------|---------------|
-| `Edit` | Modifications de fichiers |
-| `Write` | Création de fichiers |
-| `Bash` | Commandes shell |
-| `Read` | Lecture de fichiers |
-| `Glob`, `Grep` | Recherche |
-| `Edit\|Write` | Plusieurs outils (regex) |
-| `*` | Tous les outils |
+| Matcher | Targeted tools |
+|---------|----------------|
+| `Edit` | File modifications |
+| `Write` | File creation |
+| `Bash` | Shell commands |
+| `Read` | File reading |
+| `Glob`, `Grep` | Search |
+| `Edit\|Write` | Multiple tools (regex) |
+| `*` | All tools |
 
-### Variables d'environnement
+### Environment variables
 
 | Variable | Description |
 |----------|-------------|
-| `$CLAUDE_PROJECT_DIR` | Racine du projet (équivalent `pwd` au démarrage) |
-| `$CLAUDE_SESSION_ID` | Identifiant unique de la session |
-| `$CLAUDE_FILE_PATH` | Chemin du fichier concerné (PreToolUse/PostToolUse Edit/Write) |
-| `$CLAUDE_TOOL_NAME` | Nom de l'outil utilisé |
+| `$CLAUDE_PROJECT_DIR` | Project root (equivalent to `pwd` at startup) |
+| `$CLAUDE_SESSION_ID` | Unique session identifier |
+| `$CLAUDE_FILE_PATH` | Path of the file concerned (PreToolUse/PostToolUse Edit/Write) |
+| `$CLAUDE_TOOL_NAME` | Name of the tool used |
 
-Les hooks reçoivent aussi le payload JSON sur `stdin` (utiliser `jq` pour parser).
+Hooks also receive the JSON payload on `stdin` (use `jq` to parse).
 
-### Comportement en cas d'échec
+### Behavior on failure
 
-| onFailure | Effet |
-|-----------|-------|
-| `block` | Bloque l'action (PreToolUse uniquement) |
-| `continue` | Continue malgré l'erreur |
-| (absent) | Continue par défaut |
+| onFailure | Effect |
+|-----------|--------|
+| `block` | Blocks the action (PreToolUse only) |
+| `continue` | Continues despite the error |
+| (absent) | Continues by default |
 
 ---
 
-## 5. Créer des skills personnalisés
+## 5. Create custom skills
 
-Les skills sont déclenchés automatiquement par Claude selon le contexte (mots-clés dans la conversation). Idéaux pour les patterns récurrents qu'on ne veut pas invoquer manuellement.
+Skills are triggered automatically by Claude based on context (keywords in the conversation). Ideal for recurring patterns you don't want to invoke manually.
 
-### Emplacement
+### Location
 
 ```
 .claude/skills/
-└── mon-skill/
-    ├── SKILL.md          # Frontmatter + instructions principales
-    ├── examples/         # (optionnel) Exemples détaillés
-    └── references/       # (optionnel) Références volumineuses
+└── my-skill/
+    ├── SKILL.md          # Frontmatter + main instructions
+    ├── examples/         # (optional) Detailed examples
+    └── references/       # (optional) Large references
 ```
 
-### Format `SKILL.md`
+### `SKILL.md` format
 
 ```yaml
 ---
-name: mon-skill
-description: Quand déclencher ce skill (mots-clés ou contexte)
+name: my-skill
+description: When to trigger this skill (keywords or context)
 allowed-tools:
   - Read
   - Grep
   - Glob
   - Edit
   - Write
-context: fork    # `fork` (recommandé) ou `inherit`
+context: fork    # `fork` (recommended) or `inherit`
 ---
 
-# Mon Skill
+# My Skill
 
 ## Trigger
 
-Activé quand l'utilisateur mentionne :
+Activated when the user mentions:
 - "pattern X"
-- "approche Y"
+- "approach Y"
 
 ## Instructions
 
-[Le prompt complet du skill — peut faire jusqu'à 500 lignes]
+[The full skill prompt — can be up to 500 lines]
 
 ## Examples
 
-Pour les exemples volumineux, déporter dans `examples/` et inclure via lien.
+For large examples, move them to `examples/` and include via link.
 ```
 
-### Bonnes pratiques
+### Best practices
 
-- **`context: fork`** : isole le skill de la conversation principale (recommandé pour les workflows complexes).
-- **Limiter `allowed-tools`** : principe du moindre privilège.
-- **Description précise** : Claude utilise la description pour décider du déclenchement, soyez spécifique.
-- **Skills ≠ Agents** : un skill complète Claude ; un agent est un sous-processus isolé.
+- **`context: fork`**: isolates the skill from the main conversation (recommended for complex workflows).
+- **Limit `allowed-tools`**: principle of least privilege.
+- **Precise description**: Claude uses the description to decide on triggering, be specific.
+- **Skills ≠ Agents**: a skill complements Claude; an agent is an isolated subprocess.
 
-### Exemple : skill de revue de code TypeScript
+### Example: TypeScript code review skill
 
 ```yaml
 ---
 name: review-typescript-strict
-description: Activer quand l'utilisateur veut une review TypeScript stricte (any, types implicites, null safety)
+description: Activate when the user wants a strict TypeScript review (any, implicit types, null safety)
 allowed-tools:
   - Read
   - Grep
@@ -358,23 +358,23 @@ allowed-tools:
 context: fork
 ---
 
-# Review TypeScript Strict
+# Strict TypeScript Review
 
-Quand l'utilisateur demande une review TypeScript :
+When the user requests a TypeScript review:
 
-1. Détecter les `any` explicites (autres que les justifiés en commentaire).
-2. Détecter les types implicites (paramètres sans type).
-3. Vérifier la null safety (optional chaining, nullish coalescing).
-4. Produire un rapport avec ligne:colonne pour chaque problème.
+1. Detect explicit `any` (other than those justified in a comment).
+2. Detect implicit types (parameters without type).
+3. Check null safety (optional chaining, nullish coalescing).
+4. Produce a report with line:column for each issue.
 ```
 
 ---
 
-## 6. Intégrer des serveurs MCP
+## 6. Integrate MCP servers
 
-### Fichier `.mcp.json`
+### `.mcp.json` file
 
-&gt; **Important sécurité** : par défaut, les MCP sont désactivés dans le socle (`.mcp.json` minimal). N'activez que les serveurs nécessaires et examinez leurs permissions.
+&gt; **Security important**: by default, MCPs are disabled in the foundation (minimal `.mcp.json`). Only enable the servers you need and review their permissions.
 
 ```json
 {
@@ -394,102 +394,102 @@ Quand l'utilisateur demande une review TypeScript :
 }
 ```
 
-### Serveurs MCP populaires
+### Popular MCP servers
 
-| Serveur | Package | Usage |
-|---------|---------|-------|
-| Filesystem | `@modelcontextprotocol/server-filesystem` | Accès fichiers contrôlé |
-| Postgres | `@modelcontextprotocol/server-postgres` | Requêtes PostgreSQL |
-| GitHub | `@modelcontextprotocol/server-github` | API GitHub (issues, PRs) |
-| Puppeteer | `@modelcontextprotocol/server-puppeteer` | Automatisation navigateur |
-| Fetch | `@modelcontextprotocol/server-fetch` | Requêtes HTTP |
-| Memory | `@modelcontextprotocol/server-memory` | Mémoire knowledge graph |
+| Server | Package | Usage |
+|--------|---------|-------|
+| Filesystem | `@modelcontextprotocol/server-filesystem` | Controlled file access |
+| Postgres | `@modelcontextprotocol/server-postgres` | PostgreSQL queries |
+| GitHub | `@modelcontextprotocol/server-github` | GitHub API (issues, PRs) |
+| Puppeteer | `@modelcontextprotocol/server-puppeteer` | Browser automation |
+| Fetch | `@modelcontextprotocol/server-fetch` | HTTP requests |
+| Memory | `@modelcontextprotocol/server-memory` | Knowledge graph memory |
 
-Liste complète : &lt;https://github.com/modelcontextprotocol/servers&gt;.
+Full list: &lt;https://github.com/modelcontextprotocol/servers&gt;.
 
 ---
 
-## 7. Adapter pour votre équipe
+## 7. Adapt for your team
 
-### Conventions d'équipe
+### Team conventions
 
-Ajoutez dans CLAUDE.md :
+Add to CLAUDE.md:
 
 ```markdown
-## Conventions d'équipe
+## Team conventions
 
 ### Code review
-- Minimum 1 approbation requise
-- Auteur ne merge pas sa propre PR
-- Squash merge préféré
+- Minimum 1 approval required
+- Author does not merge their own PR
+- Squash merge preferred
 
 ### Communication
-- Tickets Jira format: PROJ-123
-- Commits référencent le ticket: "feat(PROJ-123): ..."
+- Jira ticket format: PROJ-123
+- Commits reference the ticket: "feat(PROJ-123): ..."
 
-### Déploiements
-- Staging: automatique sur develop
-- Production: manuel, les mercredis uniquement
+### Deployments
+- Staging: automatic on develop
+- Production: manual, Wednesdays only
 ```
 
 ### Onboarding
 
-Créez une commande d'onboarding spécifique :
+Create a specific onboarding command:
 
 `.claude/commands/team-onboard.md`:
 ```markdown
-# Onboarding Équipe
+# Team Onboarding
 
-Guide le nouveau développeur à travers le projet.
+Guides the new developer through the project.
 
-## Étapes
+## Steps
 
-1. **Architecture**: Expliquer la structure
-2. **Setup**: Guider l'installation locale
-3. **Workflow**: Expliquer le processus de dev
-4. **Conventions**: Présenter les règles d'équipe
-5. **Ressources**: Lister la documentation importante
+1. **Architecture**: Explain the structure
+2. **Setup**: Guide local installation
+3. **Workflow**: Explain the dev process
+4. **Conventions**: Present team rules
+5. **Resources**: List important documentation
 
-## Liens utiles
-- Wiki: [lien]
-- Jira: [lien]
+## Useful links
+- Wiki: [link]
+- Jira: [link]
 - Slack: #channel-dev
 ```
 
-### Partage des configurations
+### Sharing configurations
 
-1. **Versionner** `.claude/` et `CLAUDE.md` dans git
-2. **Gitignore** `CLAUDE.local.md` et `.claude/settings.local.json`
-3. **Documenter** les commandes personnalisées dans le README
-
----
-
-## Bonnes pratiques
-
-1. **Commencer simple** - Ajouter des commandes au fur et à mesure des besoins
-2. **Documenter les commandes** - Le futur vous remerciera
-3. **Tester les permissions** - Vérifier que rien de dangereux n'est autorisé
-4. **Itérer** - Améliorer CLAUDE.md basé sur l'expérience
-5. **Partager** - Les bonnes configurations profitent à toute l'équipe
+1. **Version** `.claude/` and `CLAUDE.md` in git
+2. **Gitignore** `CLAUDE.local.md` and `.claude/settings.local.json`
+3. **Document** custom commands in the README
 
 ---
 
-## Dépannage
+## Best practices
 
-### Claude ne trouve pas mes commandes
+1. **Start simple** - Add commands as needs arise
+2. **Document commands** - Future you will thank you
+3. **Test permissions** - Check that nothing dangerous is allowed
+4. **Iterate** - Improve CLAUDE.md based on experience
+5. **Share** - Good configurations benefit the whole team
 
-- Vérifier le chemin: `.claude/commands/nom.md`
-- Vérifier que le fichier a l'extension `.md`
-- Relancer Claude Code après ajout
+---
 
-### Les permissions ne fonctionnent pas
+## Troubleshooting
 
-- Vérifier la syntaxe JSON
-- Les patterns sont sensibles à la casse
-- Utiliser des wildcards `:*` pour les arguments
+### Claude doesn't find my commands
 
-### Les hooks ne se déclenchent pas
+- Check the path: `.claude/commands/name.md`
+- Check that the file has the `.md` extension
+- Restart Claude Code after adding
 
-- Vérifier `"enabled": true`
-- Vérifier que la commande existe
-- Consulter les logs Claude
+### Permissions don't work
+
+- Check the JSON syntax
+- Patterns are case-sensitive
+- Use `:*` wildcards for arguments
+
+### Hooks don't trigger
+
+- Check `"enabled": true`
+- Check that the command exists
+- Consult Claude logs

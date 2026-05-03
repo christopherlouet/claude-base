@@ -2,8 +2,8 @@
 
 # =============================================================================
 # Claude-Socle Generators Library
-# Generation de CLAUDE.md intelligent
-# Extrait de new-project.sh pour maintenance independante
+# Smart CLAUDE.md generation
+# Extracted from new-project.sh for independent maintenance
 # =============================================================================
 
 # Guard: common.sh must be sourced first
@@ -15,44 +15,44 @@ fi
 generate_smart_claude_md() {
     local output_file="$1"
 
-    info "Génération intelligente du CLAUDE.md..."
+    info "Smart CLAUDE.md generation..."
 
     cat > "$output_file" << EOF
-# Projet ${PROJECT_NAME}
+# ${PROJECT_NAME} Project
 
 EOF
 
-    # Section Commandes Essentielles
-    echo "## Commandes Essentielles" >> "$output_file"
+    # Essential Commands section
+    echo "## Essential Commands" >> "$output_file"
     echo "" >> "$output_file"
 
     if [[ ${#DETECTED_SCRIPTS[@]} -gt 0 ]]; then
-        echo "| Commande | Description |" >> "$output_file"
-        echo "|----------|-------------|" >> "$output_file"
+        echo "| Command | Description |" >> "$output_file"
+        echo "|---------|-------------|" >> "$output_file"
 
-        # Mapper les scripts courants à leurs descriptions
+        # Map common scripts to their descriptions
         for script in "${DETECTED_SCRIPTS[@]}"; do
             local desc=""
             case "$script" in
-                dev|start:dev|serve)     desc="Serveur de développement" ;;
-                start)                    desc="Démarrer l'application" ;;
-                build)                    desc="Build de production" ;;
-                test)                     desc="Lancer les tests" ;;
-                test:watch)               desc="Tests en mode watch" ;;
-                test:cov|test:coverage)   desc="Tests avec couverture" ;;
-                test:e2e)                 desc="Tests end-to-end" ;;
-                lint)                     desc="Vérifier le code (linter)" ;;
-                lint:fix)                 desc="Corriger automatiquement le linting" ;;
-                format)                   desc="Formater le code" ;;
-                typecheck|type-check)     desc="Vérifier les types TypeScript" ;;
-                clean)                    desc="Nettoyer les fichiers générés" ;;
-                db:migrate)               desc="Lancer les migrations DB" ;;
-                db:seed)                  desc="Peupler la base de données" ;;
-                docker:build)             desc="Build de l'image Docker" ;;
-                docker:up)                desc="Démarrer les containers" ;;
-                storybook)                desc="Lancer Storybook" ;;
-                generate)                 desc="Générer du code" ;;
-                preview)                  desc="Prévisualiser le build" ;;
+                dev|start:dev|serve)     desc="Development server" ;;
+                start)                    desc="Start the application" ;;
+                build)                    desc="Production build" ;;
+                test)                     desc="Run tests" ;;
+                test:watch)               desc="Tests in watch mode" ;;
+                test:cov|test:coverage)   desc="Tests with coverage" ;;
+                test:e2e)                 desc="End-to-end tests" ;;
+                lint)                     desc="Check the code (linter)" ;;
+                lint:fix)                 desc="Automatically fix linting" ;;
+                format)                   desc="Format the code" ;;
+                typecheck|type-check)     desc="Check TypeScript types" ;;
+                clean)                    desc="Clean generated files" ;;
+                db:migrate)               desc="Run DB migrations" ;;
+                db:seed)                  desc="Seed the database" ;;
+                docker:build)             desc="Build the Docker image" ;;
+                docker:up)                desc="Start the containers" ;;
+                storybook)                desc="Launch Storybook" ;;
+                generate)                 desc="Generate code" ;;
+                preview)                  desc="Preview the build" ;;
                 *)                        desc="Script $script" ;;
             esac
             local run_cmd="$DETECTED_PKG_MANAGER run"
@@ -61,60 +61,60 @@ EOF
             echo "| \`$run_cmd $script\` | $desc |" >> "$output_file"
         done
     else
-        # Scripts par défaut selon le type de projet
+        # Default scripts based on project type
         case "$PROJECT_TYPE" in
             react|vue)
                 cat >> "$output_file" << 'EOF'
-| Commande | Description |
-|----------|-------------|
-| `npm install` | Installer les dépendances |
-| `npm run dev` | Serveur de développement |
-| `npm run build` | Build de production |
-| `npm test` | Lancer les tests |
-| `npm run lint` | Vérifier le code |
+| Command | Description |
+|---------|-------------|
+| `npm install` | Install dependencies |
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm test` | Run tests |
+| `npm run lint` | Check the code |
 EOF
                 ;;
             python)
                 cat >> "$output_file" << 'EOF'
-| Commande | Description |
-|----------|-------------|
-| `pip install -r requirements.txt` | Installer les dépendances |
-| `python main.py` | Lancer l'application |
-| `pytest` | Lancer les tests |
-| `flake8` | Vérifier le code |
+| Command | Description |
+|---------|-------------|
+| `pip install -r requirements.txt` | Install dependencies |
+| `python main.py` | Run the application |
+| `pytest` | Run tests |
+| `flake8` | Check the code |
 EOF
                 ;;
             go)
                 cat >> "$output_file" << 'EOF'
-| Commande | Description |
-|----------|-------------|
-| `go mod download` | Télécharger les dépendances |
-| `go run .` | Lancer l'application |
-| `go test ./...` | Lancer les tests |
-| `go build` | Compiler |
+| Command | Description |
+|---------|-------------|
+| `go mod download` | Download dependencies |
+| `go run .` | Run the application |
+| `go test ./...` | Run tests |
+| `go build` | Compile |
 EOF
                 ;;
             flutter)
                 cat >> "$output_file" << 'EOF'
-| Commande | Description |
-|----------|-------------|
-| `flutter pub get` | Installer les dépendances |
-| `flutter run` | Lancer en mode debug |
-| `flutter test` | Lancer les tests |
+| Command | Description |
+|---------|-------------|
+| `flutter pub get` | Install dependencies |
+| `flutter run` | Run in debug mode |
+| `flutter test` | Run tests |
 | `flutter build apk` | Build Android |
 | `flutter build ios` | Build iOS |
 | `flutter build web` | Build Web |
-| `flutter analyze` | Analyser le code |
+| `flutter analyze` | Analyze the code |
 EOF
                 ;;
             *)
                 cat >> "$output_file" << 'EOF'
-| Commande | Description |
-|----------|-------------|
-| `npm install` | Installer les dépendances |
-| `npm run dev` | Serveur de développement |
-| `npm test` | Lancer les tests |
-| `npm run build` | Build de production |
+| Command | Description |
+|---------|-------------|
+| `npm install` | Install dependencies |
+| `npm run dev` | Development server |
+| `npm test` | Run tests |
+| `npm run build` | Production build |
 EOF
                 ;;
         esac
@@ -122,8 +122,8 @@ EOF
 
     echo "" >> "$output_file"
 
-    # Section Structure du Projet
-    echo "## Structure du Projet" >> "$output_file"
+    # Project Structure section
+    echo "## Project Structure" >> "$output_file"
     echo "" >> "$output_file"
     echo '```' >> "$output_file"
 
@@ -134,55 +134,55 @@ EOF
             local desc=""
 
             case "$folder" in
-                src)         desc="Code source principal" ;;
-                lib)         desc="Bibliothèques et utilitaires" ;;
-                app)         desc="Application principale" ;;
-                pages)       desc="Pages de l'application" ;;
-                components)  desc="Composants UI réutilisables" ;;
-                services)    desc="Logique métier et services" ;;
-                utils)       desc="Fonctions utilitaires" ;;
+                src)         desc="Main source code" ;;
+                lib)         desc="Libraries and utilities" ;;
+                app)         desc="Main application" ;;
+                pages)       desc="Application pages" ;;
+                components)  desc="Reusable UI components" ;;
+                services)    desc="Business logic and services" ;;
+                utils)       desc="Utility functions" ;;
                 hooks)       desc="Custom hooks" ;;
-                api)         desc="Endpoints API" ;;
-                routes)      desc="Définition des routes" ;;
-                controllers) desc="Contrôleurs" ;;
-                models)      desc="Modèles de données" ;;
-                views)       desc="Vues / Templates" ;;
+                api)         desc="API endpoints" ;;
+                routes)      desc="Route definitions" ;;
+                controllers) desc="Controllers" ;;
+                models)      desc="Data models" ;;
+                views)       desc="Views / Templates" ;;
                 tests|test|__tests__|spec) desc="Tests" ;;
-                public)      desc="Fichiers publics statiques" ;;
-                static)      desc="Assets statiques" ;;
-                assets)      desc="Ressources (images, fonts)" ;;
-                styles)      desc="Styles CSS/SCSS" ;;
+                public)      desc="Static public files" ;;
+                static)      desc="Static assets" ;;
+                assets)      desc="Resources (images, fonts)" ;;
+                styles)      desc="CSS/SCSS styles" ;;
                 config)      desc="Configuration" ;;
-                scripts)     desc="Scripts utilitaires" ;;
+                scripts)     desc="Utility scripts" ;;
                 docs)        desc="Documentation" ;;
-                packages)    desc="Packages du monorepo" ;;
-                apps)        desc="Applications du monorepo" ;;
-                android)     desc="Code Android natif" ;;
-                ios)         desc="Code iOS natif" ;;
-                macos)       desc="Code macOS natif" ;;
-                linux)       desc="Code Linux natif" ;;
-                windows)     desc="Code Windows natif" ;;
-                widgets)     desc="Widgets Flutter réutilisables" ;;
-                screens)     desc="Écrans de l'application" ;;
+                packages)    desc="Monorepo packages" ;;
+                apps)        desc="Monorepo applications" ;;
+                android)     desc="Native Android code" ;;
+                ios)         desc="Native iOS code" ;;
+                macos)       desc="Native macOS code" ;;
+                linux)       desc="Native Linux code" ;;
+                windows)     desc="Native Windows code" ;;
+                widgets)     desc="Reusable Flutter widgets" ;;
+                screens)     desc="Application screens" ;;
                 providers)   desc="State management (Provider/Riverpod)" ;;
                 blocs)       desc="State management (BLoC)" ;;
-                repositories) desc="Couche d'accès aux données" ;;
+                repositories) desc="Data access layer" ;;
                 *)           desc="$folder" ;;
             esac
 
-            echo "/$folder    # $desc ($count fichiers)" >> "$output_file"
+            echo "/$folder    # $desc ($count files)" >> "$output_file"
         done
     else
-        echo "/src        # Code source" >> "$output_file"
+        echo "/src        # Source code" >> "$output_file"
         echo "/tests      # Tests" >> "$output_file"
     fi
 
     echo '```' >> "$output_file"
     echo "" >> "$output_file"
 
-    # Section Technologies
+    # Technologies section
     if [[ ${#DETECTED_DEPENDENCIES[@]} -gt 0 ]] || [[ ${#DETECTED_MAIN_DEPS[@]} -gt 0 ]]; then
-        echo "## Technologies Utilisées" >> "$output_file"
+        echo "## Technologies Used" >> "$output_file"
         echo "" >> "$output_file"
 
         if [[ -n "$DETECTED_FRAMEWORK" ]]; then
@@ -190,11 +190,11 @@ EOF
         fi
 
         if [[ ${#DETECTED_MAIN_DEPS[@]} -gt 0 ]]; then
-            echo "- **Dépendances principales**: ${DETECTED_MAIN_DEPS[*]}" >> "$output_file"
+            echo "- **Main dependencies**: ${DETECTED_MAIN_DEPS[*]}" >> "$output_file"
         fi
 
         if [[ " ${DETECTED_DEPENDENCIES[*]} " =~ " TypeScript " ]]; then
-            echo "- **Langage**: TypeScript" >> "$output_file"
+            echo "- **Language**: TypeScript" >> "$output_file"
         fi
 
         # Extract test frameworks from detected dependencies
@@ -212,55 +212,55 @@ EOF
         echo "" >> "$output_file"
     fi
 
-    # Section Conventions de Code
+    # Code Conventions section
     cat >> "$output_file" << 'EOF'
-## Conventions de Code
+## Code Conventions
 
-### Principes
-- IMPORTANT: Toujours comprendre le code existant avant de modifier
-- IMPORTANT: Écrire des tests pour les nouvelles fonctionnalités
-- YOU MUST suivre les conventions de nommage du projet
-- Préférer les fonctions pures et l'immutabilité
+### Principles
+- IMPORTANT: Always understand the existing code before modifying
+- IMPORTANT: Write tests for new features
+- YOU MUST follow the project's naming conventions
+- Prefer pure functions and immutability
 
 ### Git & Commits
-- Format de commit: `type(scope): description`
+- Commit format: `type(scope): description`
 - Types: feat, fix, docs, style, refactor, test, chore
 - Branches: `feature/`, `fix/`, `refactor/`
-- IMPORTANT: Ne jamais push sur main directement
+- IMPORTANT: Never push directly to main
 
 EOF
 
-    # Section Workflow
+    # Workflow section
     cat >> "$output_file" << 'EOF'
-## Workflow Préféré
+## Preferred Workflow
 
-1. **EXPLORE**: Lire et comprendre avant de coder
-2. **PLAN**: Proposer un plan avant d'implémenter
-3. **CODE**: Implémenter avec tests
-4. **COMMIT**: Commits atomiques et descriptifs
+1. **EXPLORE**: Read and understand before coding
+2. **PLAN**: Propose a plan before implementing
+3. **CODE**: Implement with tests
+4. **COMMIT**: Atomic and descriptive commits
 
 EOF
 
-    # Section Agents Disponibles
-    echo "## Agents Disponibles ($(count_commands_cached) commandes, $(count_agents_cached) agents)" >> "$output_file"
+    # Available Agents section
+    echo "## Available Agents ($(count_commands_cached) commands, $(count_agents_cached) agents)" >> "$output_file"
     echo "" >> "$output_file"
     cat >> "$output_file" << 'EOF'
-| Catégorie | Commandes |
-|-----------|-----------|
+| Category | Commands |
+|----------|----------|
 | **Workflow** | \`/work:work-explore\`, \`/work:work-plan\`, \`/work:work-commit\`, \`/work:work-pr\` |
-| **Développement** | \`/dev:dev-tdd\`, \`/dev:dev-test\`, \`/dev:dev-debug\`, \`/dev:dev-refactor\`, \`/dev:dev-api\` |
-| **Qualité** | \`/qa:qa-review\`, \`/qa:qa-security\`, \`/qa:qa-perf\`, \`/qa:wcag-audit\` |
+| **Development** | \`/dev:dev-tdd\`, \`/dev:dev-test\`, \`/dev:dev-debug\`, \`/dev:dev-refactor\`, \`/dev:dev-api\` |
+| **Quality** | \`/qa:qa-review\`, \`/qa:qa-security\`, \`/qa:qa-perf\`, \`/qa:wcag-audit\` |
 | **Ops** | \`/ops:ops-hotfix\`, \`/ops:ops-release\`, \`/ops:ops-migrate\`, \`/ops:ops-docker\` |
 
-Utilisez \`/doc:doc-onboard\` pour découvrir tous les agents disponibles.
+Use \`/doc:doc-onboard\` to discover all available agents.
 
 EOF
 
-    success "CLAUDE.md généré avec les informations du projet"
+    success "CLAUDE.md generated with project information"
 }
 
 # =============================================================================
-# Export des fonctions pour les sous-shells
+# Export functions for sub-shells
 # =============================================================================
 
 export -f generate_smart_claude_md

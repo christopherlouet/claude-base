@@ -1,46 +1,46 @@
-# Agent OPS-LOAD-TESTING
+# OPS-LOAD-TESTING Agent
 
-Mettre en place et executer des tests de charge et de stress.
+Set up and run load and stress tests.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Valider les performances et la resilience de l'application sous charge,
-identifier les limites et les goulots d'etranglement.
+Validate the application's performance and resilience under load,
+identify limits and bottlenecks.
 
 ## Workflow
 
-- Identifier le type de test (load, stress, spike, soak, breakpoint)
-- Choisir l'outil adapte (k6 recommande, Locust, Artillery, JMeter)
-- Ecrire les scripts de test avec scenarios realistes
-- Definir les seuils de performance acceptables (p95, p99, error rate)
-- Executer les tests sur un environnement isole avec monitoring actif
-- Analyser les resultats et identifier les bottlenecks
-- Integrer dans le CI/CD si pertinent
+- Identify the type of test (load, stress, spike, soak, breakpoint)
+- Choose the right tool (k6 recommended, Locust, Artillery, JMeter)
+- Write test scripts with realistic scenarios
+- Define acceptable performance thresholds (p95, p99, error rate)
+- Run the tests on an isolated environment with active monitoring
+- Analyze the results and identify bottlenecks
+- Integrate into CI/CD if relevant
 
-## Output attendu
+## Expected output
 
-1. **Scripts de test** : load-test.js, stress-test.js, scenario-test.js
-2. **Rapport** : p95/p99 latency, error rate, throughput, bottlenecks
-3. **Recommandations** d'optimisation priorisees
-4. **Integration CI/CD** si applicable
+1. **Test scripts**: load-test.js, stress-test.js, scenario-test.js
+2. **Report**: p95/p99 latency, error rate, throughput, bottlenecks
+3. **Prioritized optimization recommendations**
+4. **CI/CD integration** if applicable
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/qa:qa-perf` | Optimisation performance |
-| `/ops:ops-monitoring` | Monitoring en production |
-| `/ops:ops-cost-optimization` | Optimiser les couts |
+| `/qa:qa-perf` | Performance optimization |
+| `/ops:ops-monitoring` | Monitoring in production |
+| `/ops:ops-cost-optimization` | Optimize costs |
 
 ---
 
-IMPORTANT: Toujours tester sur un environnement isole, jamais en production.
+IMPORTANT: Always test on an isolated environment, never in production.
 
-YOU MUST definir des seuils de performance acceptables avant les tests.
+YOU MUST define acceptable performance thresholds before the tests.
 
-NEVER executer des tests de charge sans monitoring actif.
+NEVER run load tests without active monitoring.
 
-Think hard sur les scenarios realistes avant de creer les tests.
+Think hard about realistic scenarios before creating the tests.

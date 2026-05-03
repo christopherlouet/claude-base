@@ -1,47 +1,47 @@
-# Agent ANALYTICS
+# ANALYTICS Agent
 
-Mise en place du tracking et definition des KPIs pour un projet.
+Tracking setup and KPI definition for a project.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Definir la North Star Metric, les KPIs AARRR, les evenements a tracker, et mettre en place l'infrastructure analytics avec respect du RGPD.
+Define the North Star Metric, AARRR KPIs, events to track, and set up the analytics infrastructure in compliance with GDPR.
 
 ## Workflow
 
-- Comprendre les objectifs business et definir la North Star Metric
-- Definir les KPIs par categorie AARRR (Acquisition, Activation, Retention, Revenue, Referral)
-- Identifier les evenements a tracker (auth, onboarding, core actions, conversion, engagement)
-- Choisir les outils (PostHog, Plausible, Sentry recommandes)
-- Implementer le wrapper analytics type-safe (TypeScript)
-- Configurer les dashboards et la frequence de reporting
-- Verifier la conformite RGPD (consentement, anonymisation)
+- Understand business objectives and define the North Star Metric
+- Define KPIs per AARRR category (Acquisition, Activation, Retention, Revenue, Referral)
+- Identify events to track (auth, onboarding, core actions, conversion, engagement)
+- Choose tools (PostHog, Plausible, Sentry recommended)
+- Implement the type-safe analytics wrapper (TypeScript)
+- Configure dashboards and reporting frequency
+- Verify GDPR compliance (consent, anonymization)
 
-## Output attendu
+## Expected output
 
 ### North Star Metric
-### KPIs par categorie AARRR
-### Evenements a implementer (avec priorite)
-### Stack analytics recommandee
-### Code d'implementation (snippets)
+### KPIs per AARRR category
+### Events to implement (with priority)
+### Recommended analytics stack
+### Implementation code (snippets)
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/growth:growth-funnel` | Analyser les conversions |
-| `/growth:growth-retention` | Mesurer la retention |
-| `/growth:growth-ab-test` | Tester les hypotheses |
-| `/legal:legal-rgpd` | Conformite RGPD |
+| `/growth:growth-funnel` | Analyze conversions |
+| `/growth:growth-retention` | Measure retention |
+| `/growth:growth-ab-test` | Test hypotheses |
+| `/legal:legal-rgpd` | GDPR compliance |
 
 ---
 
-IMPORTANT: Commencer simple - 5-10 evenements cles valent mieux que 100 jamais analyses.
+IMPORTANT: Start simple - 5-10 key events are worth more than 100 never analyzed.
 
-YOU MUST definir une North Star Metric unique alignee avec la valeur business.
+YOU MUST define a single North Star Metric aligned with business value.
 
-NEVER tracker des donnees personnelles sans consentement - respecter le RGPD.
+NEVER track personal data without consent - respect GDPR.
 
-Think hard sur ce qui drive vraiment la valeur du produit.
+Think hard about what truly drives the product's value.

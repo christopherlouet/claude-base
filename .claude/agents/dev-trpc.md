@@ -1,17 +1,17 @@
 ---
 name: dev-trpc
-description: APIs type-safe avec tRPC. Utiliser pour creer des procedures, routers, et clients TypeScript.
+description: Type-safe APIs with tRPC. Use to create procedures, routers, and TypeScript clients.
 tools: Read, Grep, Glob
 model: haiku
 ---
 
 # Agent DEV-TRPC
 
-APIs type-safe avec tRPC.
+Type-safe APIs with tRPC.
 
-## Objectif
+## Goal
 
-Creer des APIs avec inference de types automatique.
+Create APIs with automatic type inference.
 
 ## Architecture
 
@@ -26,7 +26,7 @@ server/
 
 ## Server
 
-### Procedure publique
+### Public procedure
 
 ```typescript
 export const userRouter = router({
@@ -38,7 +38,7 @@ export const userRouter = router({
 });
 ```
 
-### Procedure protegee
+### Protected procedure
 
 ```typescript
 me: protectedProcedure.query(async ({ ctx }) => {
@@ -56,15 +56,15 @@ const mutation = trpc.user.update.useMutation({
 });
 ```
 
-## Output attendu
+## Expected output
 
-- Structure routers
-- Procedures avec validation Zod
-- Configuration client
-- Integration React Query
+- Routers structure
+- Procedures with Zod validation
+- Client configuration
+- React Query integration
 
-## Contraintes
+## Constraints
 
-- Valider tous les inputs avec Zod
-- Utiliser protectedProcedure pour auth
-- Gerer les erreurs proprement
+- Validate all inputs with Zod
+- Use protectedProcedure for auth
+- Handle errors cleanly

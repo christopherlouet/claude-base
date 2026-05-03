@@ -1,8 +1,8 @@
 # Cloud-init — Proxmox
 
-Templates cloud-config et upload via Terraform.
+Cloud-config templates and upload via Terraform.
 
-## Template cloud-config
+## Cloud-config template
 
 ```yaml
 #cloud-config
@@ -31,7 +31,7 @@ runcmd:
   - systemctl start qemu-guest-agent
 ```
 
-## Upload snippet cloud-init
+## Cloud-init snippet upload
 
 ```hcl
 resource "proxmox_virtual_environment_file" "cloud_config" {
@@ -44,22 +44,22 @@ resource "proxmox_virtual_environment_file" "cloud_config" {
       hostname = var.hostname
       domain   = var.domain
       username = var.username
-      ssh_keys = indent(6, join("\n", [for key in var.ssh_keys : "- ${key}"]))
+      ssh_keys = indent(6, join("\n", [for key in var.ssh_keys: "- ${key}"]))
     })
     file_name = "${var.hostname}-cloud-config.yaml"
   }
 }
 ```
 
-## Usage typique
+## Typical usage
 
-1. Creer un template de base avec cloud-init active (une seule fois, manuellement ou via Packer)
-2. Cloner le template dans Terraform avec un cloud-config genere dynamiquement
-3. Au boot, cloud-init applique : hostname, users, SSH keys, packages, runcmd
+1. Create a base template with cloud-init enabled (once only, manually or via Packer)
+2. Clone the template in Terraform with a dynamically generated cloud-config
+3. At boot, cloud-init applies: hostname, users, SSH keys, packages, runcmd
 
-## Bonnes pratiques
+## Best practices
 
-- Toujours inclure `qemu-guest-agent` (permet a Proxmox de voir l'IP et l'etat)
-- `manage_etc_hosts: true` pour que `/etc/hosts` colle au hostname
-- Prefere SSH keys au password
-- Ne jamais hardcoder de secrets dans le cloud-config (utiliser Vault ou injection post-boot)
+- Always include `qemu-guest-agent` (lets Proxmox see the IP and the state)
+- `manage_etc_hosts: true` so that `/etc/hosts` matches the hostname
+- Prefer SSH keys over passwords
+- Never hardcode secrets in the cloud-config (use Vault or post-boot injection)

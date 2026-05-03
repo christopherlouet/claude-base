@@ -1,98 +1,98 @@
 ---
 sidebar_position: 1
-title: Bienvenue
-description: Template de configuration Claude Code pour un workflow optimal
+title: Welcome
+description: Claude Code configuration template for an optimal workflow
 slug: /
 ---
 
 import Stats, { SOCLE_STATS } from '@site/src/components/Stats';
 
-# Bienvenue sur claude-socle
+# Welcome to claude-socle
 
-> **Template de configuration Claude Code pour un workflow optimal : Explore → Specify → Plan → TDD → Audit → Commit**
+> **Claude Code configuration template for an optimal workflow: Explore → Specify → Plan → TDD → Audit → Commit**
 
-claude-socle est un ensemble complet de configurations, commandes et automatisations pour maximiser votre productivite avec Claude Code. Il propose un workflow structure et des agents specialises pour chaque type de tache.
+claude-socle is a complete set of configurations, commands, and automations to maximize your productivity with Claude Code. It offers a structured workflow and specialized agents for each type of task.
 
 <Stats items={SOCLE_STATS} />
 
-## Pourquoi claude-socle ?
+## Why claude-socle?
 
-### Le probleme
+### The problem
 
-Quand on utilise Claude Code sans structure :
-- On code sans comprendre l'existant → bugs et regressions
-- On implemente sans plan → refactoring constant
-- On fait des commits geants → historique illisible
-- On perd du temps a chercher les bonnes commandes
+When you use Claude Code without structure:
+- You code without understanding the existing code → bugs and regressions
+- You implement without a plan → constant refactoring
+- You make giant commits → unreadable history
+- You waste time looking for the right commands
 
-### La solution
+### The solution
 
-claude-socle impose un workflow structure :
+claude-socle enforces a structured workflow:
 
 ```
 Explore → Specify → Plan → TDD → Audit → Commit
 ```
 
-Chaque etape a ses commandes dediees, ses agents specialises et ses bonnes pratiques.
+Each step has its dedicated commands, specialized agents, and best practices.
 
-## Chiffres cles
+## Key numbers
 
-| Composant | Nombre | Description |
+| Component | Count | Description |
 |-----------|--------|-------------|
-| **Commands** | 131 | Commandes declenchees manuellement (`/nom`) |
-| **Agents** | 63 | Sub-agents autonomes avec contexte isole |
-| **Skills** | 54 | Auto-declenchement sur mots-cles |
-| **Rules** | 30 | Regles par technologie/fichier |
+| **Commands** | 131 | Manually triggered commands (`/name`) |
+| **Agents** | 63 | Autonomous sub-agents with isolated context |
+| **Skills** | 54 | Auto-triggered on keywords |
+| **Rules** | 30 | Rules per technology/file |
 
-## Domaines couverts
+## Domains covered
 
-| Domaine | Commandes | Description |
+| Domain | Commands | Description |
 |---------|-----------|-------------|
-| **WORK** | 15 | Workflow principal (explore, plan, commit, PR) |
-| **DEV** | 23 | Developpement (TDD, API, composants, debug) |
-| **QA** | 16 | Qualite (review, securite, performance, a11y) |
+| **WORK** | 15 | Main workflow (explore, plan, commit, PR) |
+| **DEV** | 23 | Development (TDD, API, components, debug) |
+| **QA** | 16 | Quality (review, security, performance, a11y) |
 | **OPS** | 34 | Operations (CI/CD, Docker, monitoring, GitFlow) |
 | **DOC** | 9 | Documentation (changelog, README, architecture) |
 | **BIZ** | 11 | Business (model, MVP, pricing, pitch) |
-| **GROWTH** | 11 | Croissance (SEO, analytics, landing, funnel) |
-| **DATA** | 3 | Donnees (pipeline, analytics, modeling) |
-| **LEGAL** | 5 | Legal (RGPD, CGU, paiement) |
+| **GROWTH** | 11 | Growth (SEO, analytics, landing, funnel) |
+| **DATA** | 3 | Data (pipeline, analytics, modeling) |
+| **LEGAL** | 5 | Legal (GDPR, ToS, payment) |
 
-## Demarrage rapide
+## Quick start
 
 ```bash
-# Cloner le template
+# Clone the template
 git clone https://github.com/christopherlouet/claude-socle.git .claude
 
-# Ou utiliser le script d'installation
+# Or use the install script
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh | bash
 ```
 
-Puis dans Claude Code :
+Then in Claude Code:
 
 ```bash
-# Decouvrir les commandes disponibles
+# Discover available commands
 /assistant
 
-# Commencer par explorer le code
+# Start by exploring the code
 /work:work-explore
 
-# Planifier une modification
+# Plan a change
 /work:work-plan
 ```
 
-## Prochaines etapes
+## Next steps
 
 import Link from '@docusaurus/Link';
 
 <div className="quick-actions">
   <Link className="quick-action" to="/docs/guides/learning-path">
-    Parcours d'apprentissage (9h30, 5 niveaux)
+    Learning path (9h30, 5 levels)
   </Link>
   <Link className="quick-action" to="/docs/intro/quick-start">
-    Quick Start en 5 min
+    Quick Start in 5 min
   </Link>
   <Link className="quick-action" to="/docs/intro/what-is-claude-code">
-    Qu'est-ce que Claude Code ?
+    What is Claude Code?
   </Link>
 </div>

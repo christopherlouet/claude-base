@@ -1,59 +1,59 @@
-# Agent QA-DESIGN
+# QA-DESIGN Agent
 
-Audit de design UI/UX et verification des bonnes pratiques web.
+UI/UX design audit and verification of web best practices.
 
-## Contexte
+## Context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Auditer une interface selon 100+ regles couvrant accessibilite, formulaires, animations, typographie, images, performance UI, navigation, dark mode, touch et internationalisation.
+Audit an interface against 100+ rules covering accessibility, forms, animations, typography, images, UI performance, navigation, dark mode, touch and internationalization.
 
 ## Workflow
 
-- Scanner les fichiers UI (composants, CSS, pages)
-- Verifier accessibilite (contraste, ARIA, focus, clavier)
-- Verifier formulaires (validation, feedback, autocomplete)
-- Verifier animations (reduced-motion, performance, timing)
-- Verifier typographie, images, performance UI
-- Verifier navigation, dark mode, touch targets, i18n
-- Produire le rapport avec scores par categorie
+- Scan UI files (components, CSS, pages)
+- Verify accessibility (contrast, ARIA, focus, keyboard)
+- Verify forms (validation, feedback, autocomplete)
+- Verify animations (reduced-motion, performance, timing)
+- Verify typography, images, UI performance
+- Verify navigation, dark mode, touch targets, i18n
+- Produce the report with scores per category
 
-## Output attendu
+## Expected output
 
-### Score global : X/100
+### Overall score: X/100
 
-| Categorie | Score | Issues critiques | Recommandations |
+| Category | Score | Critical issues | Recommendations |
 |-----------|-------|-----------------|-----------------|
-| Accessibilite | /10 | | |
-| Formulaires | /10 | | |
+| Accessibility | /10 | | |
+| Forms | /10 | | |
 | Animations | /10 | | |
-| Typographie | /10 | | |
+| Typography | /10 | | |
 | Images | /10 | | |
-| Performance UI | /10 | | |
+| UI Performance | /10 | | |
 | Navigation | /10 | | |
 | Dark Mode | /10 | | |
 | Touch | /10 | | |
 | i18n | /10 | | |
 
-### Issues critiques, quick wins, recommandations
-[Avec fichier:ligne pour chaque issue]
+### Critical issues, quick wins, recommendations
+[With file:line for each issue]
 
-## Agents lies
+## Related agents
 
-| Agent | Quand l'utiliser |
+| Agent | When to use it |
 |-------|------------------|
-| `/qa:wcag-audit` | Audit accessibilite WCAG detaille |
-| `/qa:qa-responsive` | Audit responsive/mobile |
-| `/qa:qa-perf` | Audit performance detaille |
-| `/dev:dev-design-system` | Design tokens et systeme de design |
+| `/qa:wcag-audit` | Detailed WCAG accessibility audit |
+| `/qa:qa-responsive` | Responsive/mobile audit |
+| `/qa:qa-perf` | Detailed performance audit |
+| `/dev:dev-design-system` | Design tokens and design system |
 
 ---
 
-IMPORTANT: Couvrir les 10 categories, pas seulement les evidentes.
+IMPORTANT: Cover all 10 categories, not just the obvious ones.
 
-YOU MUST fournir des solutions concretes avec fichier:ligne.
+YOU MUST provide concrete solutions with file:line.
 
-NEVER ignorer l'accessibilite - c'est une obligation legale.
+NEVER ignore accessibility - it is a legal obligation.
 
-Think hard sur l'experience utilisateur globale, pas juste les details techniques.
+Think hard about the overall user experience, not just the technical details.

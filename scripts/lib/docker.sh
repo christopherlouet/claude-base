@@ -2,8 +2,8 @@
 
 # =============================================================================
 # Claude-Socle Docker Library
-# Generation de Dockerfile et .dockerignore
-# Extrait de new-project.sh pour maintenance independante
+# Dockerfile and .dockerignore generation
+# Extracted from new-project.sh for independent maintenance
 # =============================================================================
 
 # Guard: common.sh must be sourced first
@@ -15,23 +15,23 @@ fi
 create_dockerfile() {
     local target_dir="${1:-.}"
 
-    info "Création des fichiers Docker..."
+    info "Creating Docker files..."
 
-    # Ne pas écraser un Dockerfile existant
+    # Do not overwrite an existing Dockerfile
     if [[ -f "$target_dir/Dockerfile" ]]; then
-        warning "Dockerfile existe déjà, ignoré"
+        warning "Dockerfile already exists, skipped"
         return
     fi
 
     if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} Création de Dockerfile dans $target_dir"
+        echo -e "${DIM}[DRY-RUN]${NC} Creating Dockerfile in $target_dir"
         return
     fi
 
-    # Utiliser le type détecté ou générique
+    # Use the detected type or generic
     local type="${PROJECT_TYPE:-generic}"
 
-    # Créer un Dockerfile basique selon le type de projet
+    # Create a basic Dockerfile based on the project type
     case $type in
         react|vue)
             cat > "$target_dir/Dockerfile" << 'EOF'
@@ -157,7 +157,7 @@ EOF
             ;;
     esac
 
-    # Créer .dockerignore si n'existe pas
+    # Create .dockerignore if it does not exist
     if [[ ! -f "$target_dir/.dockerignore" ]]; then
         cat > "$target_dir/.dockerignore" << 'EOF'
 node_modules
@@ -183,11 +183,11 @@ target
 EOF
     fi
 
-    success "Fichiers Docker créés"
+    success "Docker files created"
 }
 
 # =============================================================================
-# Export des fonctions pour les sous-shells
+# Export functions for sub-shells
 # =============================================================================
 
 export -f create_dockerfile

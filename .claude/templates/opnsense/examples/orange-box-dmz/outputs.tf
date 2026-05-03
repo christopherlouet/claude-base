@@ -1,5 +1,5 @@
 # =============================================================================
-# Outputs - OPNsense derrière Box Orange
+# Outputs - OPNsense behind Orange Box
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -7,7 +7,7 @@
 # -----------------------------------------------------------------------------
 
 output "wan_interface" {
-  description = "Interface WAN configurée"
+  description = "Configured WAN interface"
   value = {
     id          = opnsense_interface.wan.id
     device      = opnsense_interface.wan.device
@@ -17,7 +17,7 @@ output "wan_interface" {
 }
 
 output "lan_interface" {
-  description = "Interface LAN configurée"
+  description = "Configured LAN interface"
   value = {
     id        = opnsense_interface.lan.id
     device    = opnsense_interface.lan.device
@@ -32,7 +32,7 @@ output "lan_interface" {
 # -----------------------------------------------------------------------------
 
 output "dhcp_server" {
-  description = "Serveur DHCP configuré"
+  description = "Configured DHCP server"
   value = {
     id         = opnsense_dhcp_v4_server.lan.id
     interface  = opnsense_dhcp_v4_server.lan.interface
@@ -47,12 +47,12 @@ output "dhcp_server" {
 # -----------------------------------------------------------------------------
 
 output "firewall_rules_count" {
-  description = "Nombre de règles firewall créées"
+  description = "Number of firewall rules created"
   value       = 7  # anti_lockout + web + dns_udp + dns_tcp + ntp + icmp + block_all
 }
 
 output "anti_lockout_rule" {
-  description = "Règle anti-lockout (CRITIQUE)"
+  description = "Anti-lockout rule (CRITICAL)"
   value = {
     id          = opnsense_firewall_filter.anti_lockout.id
     interface   = opnsense_firewall_filter.anti_lockout.interface
@@ -66,7 +66,7 @@ output "anti_lockout_rule" {
 # -----------------------------------------------------------------------------
 
 output "aliases" {
-  description = "Aliases créés"
+  description = "Created aliases"
   value = {
     ports_web   = opnsense_firewall_alias.ports_web.name
     ports_admin = opnsense_firewall_alias.ports_admin.name
@@ -79,7 +79,7 @@ output "aliases" {
 # -----------------------------------------------------------------------------
 
 output "dns_forwarders" {
-  description = "Forwarders DNS configurés"
+  description = "Configured DNS forwarders"
   value = [
     opnsense_unbound_forward.cloudflare_1.host,
     opnsense_unbound_forward.cloudflare_2.host
@@ -87,25 +87,25 @@ output "dns_forwarders" {
 }
 
 # -----------------------------------------------------------------------------
-# Résumé
+# Summary
 # -----------------------------------------------------------------------------
 
 output "summary" {
-  description = "Résumé de la configuration"
+  description = "Configuration summary"
   value = <<-EOT
     ╔═══════════════════════════════════════════════════════════════╗
-    ║           OPNsense - Configuration Box Orange                  ║
+    ║           OPNsense - Orange Box Configuration                  ║
     ╠═══════════════════════════════════════════════════════════════╣
-    ║  WAN: ${opnsense_interface.wan.device} (DHCP depuis Box Orange)
+    ║  WAN: ${opnsense_interface.wan.device} (DHCP from Orange Box)
     ║  LAN: ${opnsense_interface.lan.device} (${opnsense_interface.lan.ipv4_addr}/${opnsense_interface.lan.ipv4_mask})
     ║
     ║  DHCP: ${opnsense_dhcp_v4_server.lan.range_from} - ${opnsense_dhcp_v4_server.lan.range_to}
     ║  DNS: Cloudflare (1.1.1.1, 1.0.0.1)
-    ║  Domaine: ${opnsense_dhcp_v4_server.lan.domain}
+    ║  Domain: ${opnsense_dhcp_v4_server.lan.domain}
     ║
-    ║  Firewall: 7 règles (anti-lockout + web + dns + ntp + icmp)
+    ║  Firewall: 7 rules (anti-lockout + web + dns + ntp + icmp)
     ╚═══════════════════════════════════════════════════════════════╝
 
-    Accès admin: https://${opnsense_interface.lan.ipv4_addr}
+    Admin access: https://${opnsense_interface.lan.ipv4_addr}
   EOT
 }

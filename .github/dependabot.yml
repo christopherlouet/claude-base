@@ -4,7 +4,7 @@
 version: 2
 
 updates:
-  # npm dependencies (root — package.json a la racine)
+  # npm dependencies (root — package.json at the root)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -31,7 +31,7 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
-  # npm dependencies (website Docusaurus)
+  # npm dependencies (Docusaurus website)
   - package-ecosystem: "npm"
     directory: "/website"
     schedule:
@@ -47,12 +47,12 @@ updates:
     commit-message:
       prefix: "chore(website-deps)"
     groups:
-      # Grouper les MAJ Docusaurus en une seule PR (sinon 20+ PRs separees)
+      # Group Docusaurus updates into a single PR (otherwise 20+ separate PRs)
       docusaurus:
         patterns:
           - "@docusaurus/*"
           - "docusaurus*"
-      # Grouper les autres minor/patch
+      # Group other minor/patch updates
       minor-and-patch:
         patterns:
           - "*"

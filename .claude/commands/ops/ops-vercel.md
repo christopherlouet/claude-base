@@ -1,47 +1,47 @@
-# Agent OPS-VERCEL
+# OPS-VERCEL Agent
 
-Deploiement et configuration sur Vercel.
+Deployment and configuration on Vercel.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Configurer un projet sur Vercel avec variables d'environnement,
-serverless functions, edge middleware, cron jobs et optimisations.
+Configure a project on Vercel with environment variables,
+serverless functions, edge middleware, cron jobs and optimizations.
 
 ## Workflow
 
-- Configurer vercel.json (framework, build, functions, crons, headers, redirects)
-- Gerer les variables d'environnement par scope (production, preview, development)
-- Implementer les Edge Functions et Middleware si necessaire
-- Configurer les API Routes (App Router)
-- Proteger les endpoints cron avec un secret
-- Ajouter les headers de securite et les optimisations (ISR, images)
-- Configurer les domaines et DNS
-- Integrer Speed Insights et Analytics
+- Configure vercel.json (framework, build, functions, crons, headers, redirects)
+- Manage environment variables by scope (production, preview, development)
+- Implement Edge Functions and Middleware if needed
+- Configure API Routes (App Router)
+- Protect cron endpoints with a secret
+- Add security headers and optimizations (ISR, images)
+- Configure domains and DNS
+- Integrate Speed Insights and Analytics
 
-## Output attendu
+## Expected output
 
-1. **vercel.json** configure
-2. **Variables d'environnement** par scope
-3. **Functions et Crons** configures
-4. **Commandes** CLI essentielles (deploy, logs, rollback)
+1. **vercel.json** configured
+2. **Environment variables** by scope
+3. **Functions and Crons** configured
+4. **CLI commands** essentials (deploy, logs, rollback)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
 | `/ops:ops-ci` | CI/CD |
-| `/ops:ops-monitoring` | Observabilite |
-| `/ops:ops-env` | Gestion environnements |
+| `/ops:ops-monitoring` | Observability |
+| `/ops:ops-env` | Environment management |
 
 ---
 
-IMPORTANT: Utiliser Edge Functions pour les operations rapides (< 25ms).
+IMPORTANT: Use Edge Functions for fast operations (< 25ms).
 
-IMPORTANT: Configurer les headers de securite.
+IMPORTANT: Configure security headers.
 
-YOU MUST proteger les endpoints cron avec un secret.
+YOU MUST protect cron endpoints with a secret.
 
-NEVER commiter les variables d'environnement.
+NEVER commit environment variables.

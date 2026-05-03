@@ -1,8 +1,8 @@
-# Exemples de Messages de Commit
+# Commit Message Examples
 
-## Nouvelle fonctionnalité
+## New feature
 
-**Changement**: Ajout d'un bouton de déconnexion dans le header
+**Change**: Add a logout button in the header
 
 ```bash
 git diff --staged
@@ -23,9 +23,9 @@ Refs: #234
 
 ---
 
-## Correction de bug
+## Bug fix
 
-**Changement**: Fix d'un crash quand l'email est null
+**Change**: Fix a crash when email is null
 
 ```bash
 git diff --staged
@@ -46,7 +46,7 @@ Fixes: #456
 
 ## Refactoring
 
-**Changement**: Extraction de la logique de prix dans un module séparé
+**Change**: Extract pricing logic into a separate module
 
 ```bash
 git diff --staged
@@ -68,7 +68,7 @@ refactor(pricing): extract price calculation to dedicated module
 
 ## Tests
 
-**Changement**: Ajout de tests pour le composant Button
+**Change**: Add tests for the Button component
 
 ```bash
 git diff --staged
@@ -88,7 +88,7 @@ test(ui): add unit tests for Button component
 
 ## Documentation
 
-**Changement**: Mise à jour du README avec nouvelles instructions
+**Change**: Update the README with new instructions
 
 ```bash
 git diff --staged
@@ -108,7 +108,7 @@ docs(readme): update installation and usage instructions
 
 ## Breaking Change
 
-**Changement**: Changement de l'API d'authentification
+**Change**: Change the authentication API
 
 ```bash
 git diff --staged

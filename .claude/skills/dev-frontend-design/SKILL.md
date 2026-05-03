@@ -1,6 +1,6 @@
 ---
 name: dev-frontend-design
-description: Design UI distinctif avec direction artistique forte. Declencher quand l'utilisateur veut creer une interface, une landing page, un composant visuel, ou quand on detecte la creation de code frontend sans direction design definie.
+description: Distinctive UI design with strong art direction. Trigger when the user wants to create an interface, a landing page, a visual component, or when frontend code creation is detected without a defined design direction.
 allowed-tools:
   - Read
   - Write
@@ -10,140 +10,140 @@ allowed-tools:
 context: fork
 ---
 
-# Frontend Design avec Direction Artistique
+# Frontend Design with Art Direction
 
-## Principe
+## Principle
 
-Les interfaces generees par IA se ressemblent toutes. Typographie Inter/Roboto, palette bleu/violet, cards arrondies, meme rythme visuel. Pour sortir du lot, il faut **s'engager sur une direction artistique avant d'ecrire du code**.
+AI-generated interfaces all look alike. Inter/Roboto typography, blue/purple palette, rounded cards, same visual rhythm. To stand out, you must **commit to an art direction before writing any code**.
 
-## Workflow obligatoire
+## Mandatory workflow
 
-### 1. Verifier la direction dans CLAUDE.md
+### 1. Check the direction in CLAUDE.md
 
-Lire le CLAUDE.md du projet pour trouver une directive `Style:` :
+Read the project's CLAUDE.md to find a `Style:` directive:
 
 ```markdown
 ## Design Direction
-Style: terminal    # ou cockpit, vitality, editorial, glass, signal
+Style: terminal    # or cockpit, vitality, editorial, glass, signal
 ```
 
-Si trouve, appliquer strictement la direction (voir rule `.claude/rules/design-style.md`).
+If found, strictly apply the direction (see rule `.claude/rules/design-style.md`).
 
-### 2. Si aucune direction definie — DEMANDER
+### 2. If no direction is defined — ASK
 
-Avant de coder, poser la question a l'utilisateur :
+Before coding, ask the user:
 
-> Aucune direction artistique n'est definie dans CLAUDE.md. Avant de coder, choisis une direction :
+> No art direction is defined in CLAUDE.md. Before coding, choose a direction:
 >
-> - **terminal** : monospace, noir/vert neon, sharp edges (pour outils dev, CLI web)
-> - **cockpit** : dense, multi-panels, indicateurs temps reel (pour dashboards, monitoring)
-> - **vitality** : colore, anime, arrondi genereux (pour apps B2C, gamifiees)
-> - **editorial** : serif, aere, papier/ivoire (pour blogs, long form)
-> - **glass** : glassmorphism, gradients, depth (pour apps moderne premium)
-> - **signal** : minimal, gris/blanc, dense utilitaire (pour outils productivite)
+> - **terminal**: monospace, black/neon green, sharp edges (for dev tools, web CLI)
+> - **cockpit**: dense, multi-panels, real-time indicators (for dashboards, monitoring)
+> - **vitality**: colorful, animated, generously rounded (for B2C apps, gamified)
+> - **editorial**: serif, airy, paper/ivory (for blogs, long form)
+> - **glass**: glassmorphism, gradients, depth (for premium modern apps)
+> - **signal**: minimal, gray/white, dense utilitarian (for productivity tools)
 
-## Fonts — ce qu'il faut bannir
+## Fonts — what to ban
 
-**Interdit** (overused par l'IA) :
+**Forbidden** (overused by AI):
 - Inter, Roboto, Arial, Space Grotesk
-- Helvetica (sauf direction editorial explicite)
+- Helvetica (unless explicit editorial direction)
 
-**Preferer** selon la direction :
+**Prefer** depending on the direction:
 
-| Direction | Fonts recommandees |
+| Direction | Recommended fonts |
 |-----------|-------------------|
 | terminal | JetBrains Mono, Fira Code, IBM Plex Mono, Berkeley Mono |
-| cockpit | DM Sans, Geist, IBM Plex Sans + Geist Mono pour les chiffres |
+| cockpit | DM Sans, Geist, IBM Plex Sans + Geist Mono for numbers |
 | vitality | Nunito, Plus Jakarta Sans, Bricolage Grotesque, Instrument Serif |
 | editorial | Playfair Display, Lora, Merriweather, Fraunces + Inter-like sans-serif |
 | glass | Geist, SF Pro, Neue Haas Grotesk |
 | signal | Geist Mono, IBM Plex Mono, system-ui |
 
-IMPORTANT: Si aucune direction n'est choisie et que l'utilisateur refuse d'en choisir une, utiliser **Geist** (neutre moderne) mais JAMAIS Inter/Roboto.
+IMPORTANT: If no direction is chosen and the user refuses to choose one, use **Geist** (modern neutral) but NEVER Inter/Roboto.
 
-## Couleurs — proscrire le generique
+## Colors — banish the generic
 
-**Patterns a eviter** :
-- Palette bleu/violet IA-stereotype (#6366f1, #8b5cf6, gradients)
-- Pastels mous sans contraste
-- Gris neutres type Tailwind defaut
+**Patterns to avoid**:
+- AI-stereotype blue/purple palette (#6366f1, #8b5cf6, gradients)
+- Soft pastels without contrast
+- Tailwind-default neutral grays
 
-**Preferer** :
+**Prefer**:
 
-| Direction | Palette type |
+| Direction | Typical palette |
 |-----------|-------------|
-| terminal | `#0a0a0a` + un seul accent neon (`#00ff9c`, `#00d8ff`, `#ffb000`) |
-| cockpit | Dark stratifie (`#0d1117`, `#161b22`) + couleurs fonctionnelles (alerte rouge, OK vert) |
-| vitality | 3-4 couleurs vives distinctes (ex: `#ff6b35`, `#004e89`, `#ffd23f`), fond clair |
-| editorial | Noir/blanc/creme + 1 accent (rouge coquelicot, bleu nuit, vert mousse) |
-| glass | Fond gradient ou image + surfaces `rgba` semi-transparentes |
-| signal | Gris/blanc uniquement + couleurs strictement signaletiques |
+| terminal | `#0a0a0a` + a single neon accent (`#00ff9c`, `#00d8ff`, `#ffb000`) |
+| cockpit | Layered dark (`#0d1117`, `#161b22`) + functional colors (alert red, OK green) |
+| vitality | 3-4 distinct vivid colors (e.g., `#ff6b35`, `#004e89`, `#ffd23f`), light background |
+| editorial | Black/white/cream + 1 accent (poppy red, midnight blue, moss green) |
+| glass | Gradient or image background + semi-transparent `rgba` surfaces |
+| signal | Gray/white only + strictly signaling colors |
 
-## Radius — signer la personnalite
+## Radius — sign the personality
 
 | Direction | Radius |
 |-----------|--------|
 | terminal, editorial | 0-4px (sharp) |
-| cockpit, signal | 4-6px (subtil) |
-| glass | 12-16px (fluide) |
-| vitality | 12-16px (genereux) |
+| cockpit, signal | 4-6px (subtle) |
+| glass | 12-16px (fluid) |
+| vitality | 12-16px (generous) |
 
-IMPORTANT: Ne PAS utiliser `rounded-xl` / `rounded-2xl` par defaut "parce que c'est joli". Le radius est une signature.
+IMPORTANT: Do NOT use `rounded-xl` / `rounded-2xl` by default "because it looks nice". Radius is a signature.
 
-## Animations — rejeter le defaut
+## Animations — reject the default
 
-**A eviter** :
-- Transitions lineaires `transition-all duration-300`
-- Hover avec scale `1.05` generique
+**Avoid**:
+- Linear transitions `transition-all duration-300`
+- Generic `1.05` scale hover
 
-**Preferer** :
+**Prefer**:
 
-| Direction | Style animation |
+| Direction | Animation style |
 |-----------|----------------|
 | terminal | Caret blink, scanlines, glow pulse (100-150ms, step easing) |
-| cockpit | Transitions instantanees, pulse sur indicateurs, fade pour updates |
-| vitality | Spring/bounce subtil, progress fluides, celebratory feedback |
-| editorial | Fade-in au scroll (300-500ms, ease-out), transitions douces |
-| glass | Blur transitions, fade avec depth, parallax subtil |
-| signal | Quasi-absentes (50-100ms), feedback immediat |
+| cockpit | Instant transitions, pulse on indicators, fade for updates |
+| vitality | Subtle spring/bounce, fluid progress, celebratory feedback |
+| editorial | Fade-in on scroll (300-500ms, ease-out), smooth transitions |
+| glass | Blur transitions, fade with depth, subtle parallax |
+| signal | Almost absent (50-100ms), instant feedback |
 
-## Layout — briser la grille IA
+## Layout — break the AI grid
 
-**Patterns a eviter** :
-- Hero centre + 3 cards en grid + CTA + footer
-- Sections successives pleine largeur identiques
-- Padding uniforme partout
+**Patterns to avoid**:
+- Centered hero + 3 cards in a grid + CTA + footer
+- Identical successive full-width sections
+- Uniform padding everywhere
 
-**Preferer** :
-- Asymetrie intentionnelle
-- Densites variables selon les zones (dense/aere)
-- Grilles non alignees sur colonnes uniformes
-- Whitespace strategique (editorial) ou densite max (cockpit, signal)
+**Prefer**:
+- Intentional asymmetry
+- Variable density per zone (dense/airy)
+- Grids not aligned on uniform columns
+- Strategic whitespace (editorial) or maximum density (cockpit, signal)
 
-## Checklist avant ecriture de code
+## Checklist before writing code
 
-- [ ] Direction artistique identifiee et validee avec l'utilisateur
-- [ ] Fonts choisies (pas Inter/Roboto/Arial par defaut)
-- [ ] Palette definie (pas bleu/violet IA-stereotype)
-- [ ] Radius coherent avec la direction
-- [ ] Animations coherentes avec la direction
-- [ ] Layout non-stereotype (pas hero/grid/CTA auto)
+- [ ] Art direction identified and validated with the user
+- [ ] Fonts chosen (not Inter/Roboto/Arial by default)
+- [ ] Palette defined (not AI-stereotype blue/purple)
+- [ ] Radius consistent with the direction
+- [ ] Animations consistent with the direction
+- [ ] Non-stereotype layout (not auto hero/grid/CTA)
 
-## Output attendu
+## Expected output
 
-1. **Confirmation** de la direction choisie
-2. **Tokens design** : fonts, couleurs, radius, spacing (CSS custom properties ou theme Tailwind)
-3. **Composants** respectant strictement la direction
-4. **Pas de fallback generique** — si la direction est choisie, la suivre integralement
+1. **Confirmation** of the chosen direction
+2. **Design tokens**: fonts, colors, radius, spacing (CSS custom properties or Tailwind theme)
+3. **Components** strictly respecting the direction
+4. **No generic fallback** — once the direction is chosen, follow it fully
 
-## Regles
+## Rules
 
-IMPORTANT: NEVER coder du frontend sans avoir confirme la direction artistique.
+IMPORTANT: NEVER code frontend without having confirmed the art direction.
 
-IMPORTANT: NEVER utiliser Inter, Roboto, Arial, Space Grotesk par defaut.
+IMPORTANT: NEVER use Inter, Roboto, Arial, Space Grotesk by default.
 
-IMPORTANT: NEVER proposer un hero centre + grid 3-cards "parce que c'est safe".
+IMPORTANT: NEVER propose a centered hero + 3-card grid "because it's safe".
 
-YOU MUST lire `.claude/rules/design-style.md` pour les details par direction.
+YOU MUST read `.claude/rules/design-style.md` for details per direction.
 
-YOU MUST expliquer a l'utilisateur le POURQUOI des choix design (engagement artistique > neutralite).
+YOU MUST explain to the user the WHY of the design choices (artistic commitment > neutrality).

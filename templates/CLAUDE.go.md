@@ -1,51 +1,51 @@
-# Projet Go
+# Go Project
 
-## Commandes Essentielles
-- `go mod download` - Télécharger les dépendances
-- `go build ./...` - Compiler le projet
-- `go test ./...` - Lancer les tests
-- `go test -cover ./...` - Tests avec couverture
-- `go test -race ./...` - Tests avec détection de race conditions
-- `go run main.go` - Lancer l'application
-- `go fmt ./...` - Formatter le code
-- `go vet ./...` - Analyse statique
-- `golangci-lint run` - Linter complet
+## Essential Commands
+- `go mod download` - Download dependencies
+- `go build ./...` - Compile the project
+- `go test ./...` - Run tests
+- `go test -cover ./...` - Tests with coverage
+- `go test -race ./...` - Tests with race condition detection
+- `go run main.go` - Run the application
+- `go fmt ./...` - Format the code
+- `go vet ./...` - Static analysis
+- `golangci-lint run` - Full linter
 
-## Structure du Projet
+## Project Structure
 ```
 /
-├── cmd/                    # Points d'entrée (main packages)
+├── cmd/                    # Entry points (main packages)
 │   └── app/
 │       └── main.go
-├── internal/               # Code privé au module
+├── internal/               # Module-private code
 │   ├── handlers/          # HTTP handlers
 │   ├── services/          # Business logic
 │   ├── repository/        # Data access
 │   └── models/            # Domain models
-├── pkg/                    # Code public réutilisable
-├── api/                    # Specs OpenAPI, protobuf
+├── pkg/                    # Public reusable code
+├── api/                    # OpenAPI, protobuf specs
 ├── configs/                # Configuration files
-├── scripts/                # Scripts utilitaires
+├── scripts/                # Utility scripts
 ├── go.mod
 └── go.sum
 ```
 
-## Conventions Go
+## Go Conventions
 
-### Nommage
-- IMPORTANT: Packages en minuscules, un mot (`user`, pas `userService`)
-- IMPORTANT: Interfaces avec suffixe `-er` (`Reader`, `Writer`, `Handler`)
-- Exporter avec majuscule, garder privé avec minuscule
-- Acronymes en majuscules (`HTTPHandler`, pas `HttpHandler`)
+### Naming
+- IMPORTANT: Packages in lowercase, one word (`user`, not `userService`)
+- IMPORTANT: Interfaces with `-er` suffix (`Reader`, `Writer`, `Handler`)
+- Export with uppercase, keep private with lowercase
+- Acronyms in uppercase (`HTTPHandler`, not `HttpHandler`)
 
 ### Structures
 ```go
-// Bon: Interface petite et focalisée
+// Good: Small and focused interface
 type Reader interface {
     Read(p []byte) (n int, err error)
 }
 
-// Bon: Struct avec tags appropriés
+// Good: Struct with appropriate tags
 type User struct {
     ID        int64     `json:"id" db:"id"`
     Email     string    `json:"email" db:"email"`
@@ -53,31 +53,31 @@ type User struct {
 }
 ```
 
-### Gestion des erreurs
-- IMPORTANT: Toujours vérifier les erreurs
-- IMPORTANT: Wrapper les erreurs avec contexte (`fmt.Errorf("doing X: %w", err)`)
-- Utiliser `errors.Is()` et `errors.As()` pour comparer
+### Error handling
+- IMPORTANT: Always check errors
+- IMPORTANT: Wrap errors with context (`fmt.Errorf("doing X: %w", err)`)
+- Use `errors.Is()` and `errors.As()` to compare
 
 ```go
-// Bon
+// Good
 if err != nil {
     return fmt.Errorf("failed to fetch user %d: %w", id, err)
 }
 
-// Mauvais
+// Bad
 if err != nil {
-    return err  // Pas de contexte
+    return err  // No context
 }
 ```
 
-### Concurrence
-- IMPORTANT: Pas de goroutine sans contrôle de lifecycle
-- Utiliser `context.Context` pour cancellation
-- Préférer les channels aux mutex quand possible
-- `sync.WaitGroup` pour attendre plusieurs goroutines
+### Concurrency
+- IMPORTANT: No goroutine without lifecycle control
+- Use `context.Context` for cancellation
+- Prefer channels over mutexes when possible
+- `sync.WaitGroup` to wait for multiple goroutines
 
 ```go
-// Bon pattern
+// Good pattern
 func process(ctx context.Context) error {
     g, ctx := errgroup.WithContext(ctx)
 
@@ -132,38 +132,38 @@ func TestUserService_Create(t *testing.T) {
 ```
 
 ### Mocks
-- Utiliser interfaces pour injection de dépendances
-- `go generate` avec mockgen si nécessaire
-- Préférer les fakes aux mocks quand possible
+- Use interfaces for dependency injection
+- `go generate` with mockgen if needed
+- Prefer fakes over mocks when possible
 
 ## Performance
-- Pré-allouer les slices quand la taille est connue
-- Utiliser `sync.Pool` pour objets fréquemment alloués
-- `strings.Builder` pour concaténation de strings
-- Profiler avant d'optimiser (`pprof`)
+- Pre-allocate slices when size is known
+- Use `sync.Pool` for frequently allocated objects
+- `strings.Builder` for string concatenation
+- Profile before optimizing (`pprof`)
 
 ## Git & Commits
 - Format: `type(scope): description`
 - Types: feat, fix, refactor, test, docs, chore
 
-## Hooks Claude Code 2.1+
+## Claude Code 2.1+ Hooks
 
 | Hook | Type | Action |
 |------|------|--------|
-| Branch protection | PreToolUse | Bloque les modifications sur main/master |
-| Auto-format | PostToolUse | `go fmt` sur fichiers Go modifiés |
-| Vet check | PostToolUse | `go vet` après édition |
-| Test avant commit | PreToolUse | Exécute `go test` avant chaque commit |
-| Détection secrets | PreToolUse | Bloque les secrets hardcodés |
+| Branch protection | PreToolUse | Blocks modifications on main/master |
+| Auto-format | PostToolUse | `go fmt` on modified Go files |
+| Vet check | PostToolUse | `go vet` after edit |
+| Test before commit | PreToolUse | Runs `go test` before each commit |
+| Secret detection | PreToolUse | Blocks hardcoded secrets |
 
-## Skills disponibles
+## Available Skills
 
 | Skill | Usage |
 |-------|-------|
-| `exploring-codebase` | Analyser un codebase existant |
-| `planning-implementation` | Définir un plan avant de coder |
-| `test-driven-development` | Cycle TDD Red-Green-Refactor |
-| `reviewing-code` | Revue de code approfondie |
-| `debugging-issues` | Diagnostic méthodique |
+| `exploring-codebase` | Analyze an existing codebase |
+| `planning-implementation` | Define a plan before coding |
+| `test-driven-development` | TDD Red-Green-Refactor cycle |
+| `reviewing-code` | Thorough code review |
+| `debugging-issues` | Methodical diagnosis |
 | `generating-commit-messages` | Conventional Commits |
-| `creating-pull-requests` | PR complète et documentée |
+| `creating-pull-requests` | Complete and documented PR |

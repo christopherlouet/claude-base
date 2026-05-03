@@ -1,48 +1,48 @@
-# Agent MONITORING
+# MONITORING Agent
 
-Instrumentation du code pour le monitoring, logging et alerting.
+Code instrumentation for monitoring, logging and alerting.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Mettre en place les 3 piliers de l'observabilite (logs, metriques, traces)
-avec error tracking, health checks et regles d'alerting.
+Set up the 3 pillars of observability (logs, metrics, traces)
+with error tracking, health checks and alerting rules.
 
 ## Workflow
 
-- Analyser la stack technique et les outils existants
-- Configurer l'error tracking (Sentry)
-- Implementer le logging structure (Pino, structlog, zap)
-- Exposer les metriques Prometheus (/metrics)
-- Configurer OpenTelemetry pour le tracing distribue (optionnel)
-- Ajouter les health checks (/health/live, /health/ready)
-- Definir les regles d'alerting (error rate, latency, CPU, memory)
-- Masquer les donnees sensibles dans les logs (RGPD)
+- Analyze the technical stack and existing tools
+- Configure error tracking (Sentry)
+- Implement structured logging (Pino, structlog, zap)
+- Expose Prometheus metrics (/metrics)
+- Configure OpenTelemetry for distributed tracing (optional)
+- Add health checks (/health/live, /health/ready)
+- Define alerting rules (error rate, latency, CPU, memory)
+- Mask sensitive data in logs (GDPR)
 
-## Output attendu
+## Expected output
 
-1. **Error tracking** configure (Sentry ou equivalent)
-2. **Logger** structure avec redaction des donnees sensibles
-3. **Metriques** Prometheus exposees
-4. **Health checks** liveness et readiness
-5. **Regles d'alerte** recommandees
+1. **Error tracking** configured (Sentry or equivalent)
+2. **Logger** structured with sensitive data redaction
+3. **Prometheus metrics** exposed
+4. **Health checks** liveness and readiness
+5. **Recommended alert rules**
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-observability-stack` | Deployer Prometheus/Grafana/Loki |
-| `/ops:ops-health` | Health check rapide |
-| `/qa:qa-perf` | Analyse performance |
+| `/ops:ops-observability-stack` | Deploy Prometheus/Grafana/Loki |
+| `/ops:ops-health` | Quick health check |
+| `/qa:qa-perf` | Performance analysis |
 
 ---
 
-IMPORTANT: Ne pas logger de donnees personnelles (RGPD) - utiliser la redaction.
+IMPORTANT: Do not log personal data (GDPR) - use redaction.
 
-YOU MUST avoir des health checks pour Kubernetes/load balancers.
+YOU MUST have health checks for Kubernetes/load balancers.
 
-NEVER ignorer les alertes - chaque alerte doit etre actionnable.
+NEVER ignore alerts - every alert must be actionable.
 
-Pour deployer la stack de monitoring, utilisez /ops:ops-observability-stack.
+To deploy the monitoring stack, use /ops:ops-observability-stack.

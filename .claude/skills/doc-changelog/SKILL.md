@@ -1,6 +1,6 @@
 ---
 name: doc-changelog
-description: Maintenance du CHANGELOG selon Keep a Changelog. Declencher quand l'utilisateur veut documenter les changements ou preparer une release.
+description: CHANGELOG maintenance following Keep a Changelog. Trigger when the user wants to document changes or prepare a release.
 allowed-tools:
   - Read
   - Write
@@ -13,7 +13,7 @@ disable-model-invocation: true
 
 # Changelog Maintenance
 
-## Format Keep a Changelog
+## Keep a Changelog Format
 
 ```markdown
 # Changelog
@@ -54,10 +54,10 @@ All notable changes will be documented here.
 | Fixed | Bug fixes |
 | Security | Security fixes |
 
-## Bonnes pratiques
+## Best practices
 
-- Une entree par changement significatif
-- Liens vers issues/PRs
-- Date format ISO (YYYY-MM-DD)
-- [Unreleased] toujours a jour
-- Ecrire pour les utilisateurs
+- One entry per significant change
+- Links to issues/PRs
+- ISO date format (YYYY-MM-DD)
+- [Unreleased] always up to date
+- Write for users

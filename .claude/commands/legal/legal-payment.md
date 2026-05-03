@@ -1,49 +1,49 @@
-# Agent PAYMENT
+# PAYMENT Agent
 
-Integration de paiements et gestion des abonnements.
+Payment integration and subscription management.
 
-## Contexte de la demande
+## Request context
 $ARGUMENTS
 
-## Objectif
+## Objective
 
-Integrer un systeme de paiement complet avec checkout, webhooks,
-gestion des abonnements et conformite legale.
+Integrate a complete payment system with checkout, webhooks,
+subscription management and legal compliance.
 
 ## Workflow
 
-- Analyser les besoins (one-shot, abonnement, usage-based, B2B/B2C)
-- Choisir le provider adapte (Stripe, Paddle, LemonSqueezy)
-- Implementer le checkout (session, redirection, success/cancel)
-- Configurer les webhooks essentiels (checkout.completed, invoice.paid, subscription.updated/deleted)
-- Gerer les etats d'abonnement et la logique d'acces aux features
-- Configurer le Customer Portal (factures, paiement, changement de plan, annulation)
-- Tester avec les cartes de test et Stripe CLI
-- Verifier la securite (signature webhook, HTTPS, pas de prix client-side)
+- Analyze the needs (one-shot, subscription, usage-based, B2B/B2C)
+- Choose the right provider (Stripe, Paddle, LemonSqueezy)
+- Implement the checkout (session, redirection, success/cancel)
+- Configure essential webhooks (checkout.completed, invoice.paid, subscription.updated/deleted)
+- Handle subscription states and feature access logic
+- Configure the Customer Portal (invoices, payment, plan change, cancellation)
+- Test with test cards and Stripe CLI
+- Verify security (webhook signature, HTTPS, no client-side prices)
 
-## Output attendu
+## Expected output
 
-1. **Architecture** retenue (provider, type, integration)
-2. **Plans** a creer avec prix et features
-3. **Webhooks** a implementer avec actions
-4. **Code** d'implementation pret a l'emploi
-5. **Checklist** de lancement (products, webhooks, portal, tests, mode live)
+1. **Architecture** chosen (provider, type, integration)
+2. **Plans** to create with prices and features
+3. **Webhooks** to implement with actions
+4. **Code** ready-to-use implementation
+5. **Checklist** for launch (products, webhooks, portal, tests, live mode)
 
-## Agents lies
+## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/legal:legal-docs` | CGV et mentions legales |
-| `/legal:legal-rgpd` | Conformite donnees de paiement |
-| `/qa:qa-security` | Securite des transactions |
-| `/biz:biz-pricing` | Definir la strategie de prix |
+| `/legal:legal-docs` | Terms of sale and legal notices |
+| `/legal:legal-rgpd` | Payment data compliance |
+| `/qa:qa-security` | Transaction security |
+| `/biz:biz-pricing` | Define the pricing strategy |
 
 ---
 
-IMPORTANT: Toujours utiliser les webhooks - ne jamais faire confiance au retour du checkout seul.
+IMPORTANT: Always use webhooks - never trust the checkout return alone.
 
-YOU MUST verifier la signature des webhooks.
+YOU MUST verify the webhook signature.
 
-NEVER stocker les numeros de carte - utiliser Stripe.js/Elements.
+NEVER store card numbers - use Stripe.js/Elements.
 
-Think hard sur les edge cases (paiement echoue, downgrade, remboursement).
+Think hard about edge cases (failed payment, downgrade, refund).

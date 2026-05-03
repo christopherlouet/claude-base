@@ -2,22 +2,22 @@
 
 # =============================================================================
 # Claude-Socle Update Script
-# Met à jour les commandes Claude depuis le socle
+# Updates Claude commands from the foundation
 # =============================================================================
 
 set -euo pipefail
 
-# Charger la librairie commune
+# Load common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
 
-# Version lue depuis le fichier VERSION
+# Version read from the VERSION file
 VERSION=$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null || echo "unknown")
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
 
-# Activer le handler d'erreur et vérifier les prérequis
+# Enable error handler and check prerequisites
 enable_error_handler
 check_base_requirements
 
@@ -54,7 +54,7 @@ REMOVE_ORPHANS=false
 UPGRADE_CLAUDE_MD=false
 RESTORE_BACKUP=""
 
-# Compteurs
+# Counters
 UPDATED=0
 ADDED=0
 SKIPPED=0
@@ -84,7 +84,7 @@ safe_mktemp() {
 }
 
 # =============================================================================
-# Aide
+# Help
 # =============================================================================
 
 show_help() {
@@ -92,69 +92,69 @@ show_help() {
 ${BOLD}Claude-Socle Update${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
-    $(basename "$0") [OPTIONS] [CHEMIN]
+    $(basename "$0") [OPTIONS] [PATH]
 
 ${BOLD}DESCRIPTION${NC}
-    Met à jour les commandes et configuration Claude Code d'un projet.
-    Crée automatiquement une sauvegarde avant la mise à jour.
+    Updates the Claude Code commands and configuration of a project.
+    Automatically creates a backup before updating.
 
 ${BOLD}ARGUMENTS${NC}
-    CHEMIN              Répertoire à mettre à jour (défaut: répertoire courant)
+    PATH                Directory to update (default: current directory)
 
 ${BOLD}OPTIONS${NC}
-    -h, --help          Affiche cette aide
-    -v, --version       Affiche la version
-    -y, --yes           Mode non-interactif (répond oui aux questions)
-    -f, --force         Force la mise à jour (écrase tous les fichiers)
-    -n, --dry-run       Simule la mise à jour sans rien modifier
-    -q, --quiet         Mode silencieux
-    --verbose           Mode verbeux (debug)
-    --backup-only       Crée uniquement un backup sans mettre à jour
-    --clean             Supprime les anciens fichiers avant mise à jour
-    --detect-orphans    Detecte les fichiers absents du socle (orphelins)
-    --remove-orphans    Supprime les fichiers orphelins (implique --detect-orphans)
-    --settings          Met aussi à jour settings.json
-    --skills            Met aussi à jour le répertoire skills/
-    --agents            Met aussi à jour le répertoire agents/
-    --rules             Met aussi à jour le répertoire rules/
-    --styles            Met aussi à jour le répertoire output-styles/
-    --templates         Met aussi à jour le répertoire templates/
-    --hook-scripts      Met aussi à jour les scripts dans scripts/hooks/ (referencees par settings.json)
-    --all               Met à jour tout (commandes, settings, skills, agents, rules, styles, templates, hook-scripts)
-    --upgrade-claude-md Migrer CLAUDE.md vers @imports (copie .claude/docs/reference/)
-    --changelog         Affiche les nouveautés du socle
-    --restore BACKUP    Restaure depuis un backup précédent
-    --add-hook HOOK     Ajoute un hook au settings.json existant sans ecraser (ex: rtk)
+    -h, --help          Show this help
+    -v, --version       Show the version
+    -y, --yes           Non-interactive mode (answers yes to questions)
+    -f, --force         Force update (overwrites all files)
+    -n, --dry-run       Simulate the update without modifying anything
+    -q, --quiet         Quiet mode
+    --verbose           Verbose mode (debug)
+    --backup-only       Create only a backup without updating
+    --clean             Delete old files before updating
+    --detect-orphans    Detect files absent from the foundation (orphans)
+    --remove-orphans    Remove orphan files (implies --detect-orphans)
+    --settings          Also update settings.json
+    --skills            Also update the skills/ directory
+    --agents            Also update the agents/ directory
+    --rules             Also update the rules/ directory
+    --styles            Also update the output-styles/ directory
+    --templates         Also update the templates/ directory
+    --hook-scripts      Also update the scripts in scripts/hooks/ (referenced by settings.json)
+    --all               Update everything (commands, settings, skills, agents, rules, styles, templates, hook-scripts)
+    --upgrade-claude-md Migrate CLAUDE.md to @imports (copies .claude/docs/reference/)
+    --changelog         Show what's new in the foundation
+    --restore BACKUP    Restore from a previous backup
+    --add-hook HOOK     Add a hook to the existing settings.json without overwriting (e.g., rtk)
 
-${BOLD}HOOKS DISPONIBLES${NC}
-    rtk                 RTK token optimizer (reduit les tokens de 60-90%, necessite: brew install rtk)
+${BOLD}AVAILABLE HOOKS${NC}
+    rtk                 RTK token optimizer (reduces tokens by 60-90%, requires: brew install rtk)
 
-${BOLD}EXEMPLES${NC}
-    # Mise à jour interactive
-    $(basename "$0") ./mon-projet
+${BOLD}EXAMPLES${NC}
+    # Interactive update
+    $(basename "$0") ./my-project
 
-    # Mise à jour forcée de tout
-    $(basename "$0") -f --all ./mon-projet
+    # Forced update of everything
+    $(basename "$0") -f --all ./my-project
 
-    # Backup seulement
-    $(basename "$0") --backup-only ./mon-projet
+    # Backup only
+    $(basename "$0") --backup-only ./my-project
 
-    # Voir ce qui serait mis à jour
-    $(basename "$0") --dry-run ./mon-projet
+    # See what would be updated
+    $(basename "$0") --dry-run ./my-project
 
-    # Detecter les fichiers orphelins
-    $(basename "$0") --detect-orphans ./mon-projet
+    # Detect orphan files
+    $(basename "$0") --detect-orphans ./my-project
 
-    # Supprimer les fichiers orphelins
-    $(basename "$0") --remove-orphans ./mon-projet
+    # Remove orphan files
+    $(basename "$0") --remove-orphans ./my-project
 
-    # Restaurer depuis un backup
-    $(basename "$0") --restore .claude/commands.backup.20240101_120000 ./mon-projet
+    # Restore from a backup
+    $(basename "$0") --restore .claude/commands.backup.20240101_120000 ./my-project
 
-    # Ajouter le hook RTK (token optimizer) sans ecraser settings.json
-    $(basename "$0") --add-hook rtk ./mon-projet
+    # Add the RTK hook (token optimizer) without overwriting settings.json
+    $(basename "$0") --add-hook rtk ./my-project
 
-${BOLD}STATISTIQUES DU SOCLE${NC}
+${BOLD}FOUNDATION STATISTICS${NC}
     Agents:    $(count_agents "$SOCLE_DIR")
     Skills:    $(count_skills "$SOCLE_DIR")
     Hooks:     $(count_hooks "$SOCLE_DIR")
@@ -169,15 +169,15 @@ show_version() {
 show_changelog() {
     local changelog_file="$SOCLE_DIR/CHANGELOG.md"
     if [[ -f "$changelog_file" ]]; then
-        # Afficher les 50 premières lignes du changelog
+        # Show the first 50 lines of the changelog
         head -50 "$changelog_file"
     else
-        info "Pas de changelog disponible"
+        info "No changelog available"
     fi
 }
 
 # =============================================================================
-# Parsing des arguments
+# Argument parsing
 # =============================================================================
 
 # shellcheck disable=SC2034
@@ -256,26 +256,26 @@ parse_args() {
                 ;;
             --add-hook)
                 if [[ -z "${2:-}" ]]; then
-                    error "Option --add-hook requiert un argument (nom du hook, ex: rtk)"
+                    error "Option --add-hook requires an argument (hook name, e.g., rtk)"
                 fi
                 ADD_HOOK="$2"
                 shift 2
                 ;;
             --restore)
                 if [[ -z "${2:-}" ]]; then
-                    error "Option --restore requiert un argument (chemin du backup)"
+                    error "Option --restore requires an argument (backup path)"
                 fi
                 RESTORE_BACKUP="$2"
                 shift 2
                 ;;
             -*)
-                error "Option inconnue: $1\nUtilisez --help pour l'aide"
+                error "Unknown option: $1\nUse --help for help"
                 ;;
             *)
                 if [[ -z "$TARGET_DIR" ]]; then
                     TARGET_DIR="$1"
                 else
-                    error "Trop d'arguments: $1"
+                    error "Too many arguments: $1"
                 fi
                 shift
                 ;;
@@ -286,7 +286,7 @@ parse_args() {
 }
 
 # =============================================================================
-# Fonctions de mise à jour
+# Update functions
 # =============================================================================
 
 create_backup() {
@@ -300,7 +300,7 @@ create_backup() {
             echo "$backup_dir"
         else
             cp -r "$TARGET_DIR/$COMMANDS_SUBDIR" "$backup_dir"
-            success "Backup créé: $backup_dir"
+            success "Backup created: $backup_dir"
             echo "$backup_dir"
         fi
     fi
@@ -316,7 +316,7 @@ restore_backup() {
 
     if [[ ! -d "$backup_path" ]]; then
         # List available backups
-        info "Backups disponibles:"
+        info "Available backups:"
         local found=false
         while IFS= read -r bdir; do
             if [[ -d "$bdir" ]]; then
@@ -326,17 +326,17 @@ restore_backup() {
         done < <(find "$TARGET_DIR/$COMMANDS_SUBDIR".backup.* -maxdepth 0 -type d 2>/dev/null | sort -r || true)
 
         if ! $found; then
-            info "  (aucun backup trouvé)"
+            info "  (no backup found)"
         fi
 
-        error "Backup non trouvé: $backup_path"
+        error "Backup not found: $backup_path"
     fi
 
-    section "Restauration depuis backup"
+    section "Restore from backup"
     info "Source: $backup_path"
 
     if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} Restauration de $backup_path vers $TARGET_DIR/$COMMANDS_SUBDIR"
+        echo -e "${DIM}[DRY-RUN]${NC} Restore $backup_path to $TARGET_DIR/$COMMANDS_SUBDIR"
         return
     fi
 
@@ -345,22 +345,22 @@ restore_backup() {
         local safety_backup
         safety_backup="$TARGET_DIR/$COMMANDS_SUBDIR.pre-restore.$(date +%Y%m%d_%H%M%S)"
         cp -r "$TARGET_DIR/$COMMANDS_SUBDIR" "$safety_backup"
-        info "Backup de sécurité: $safety_backup"
+        info "Safety backup: $safety_backup"
     fi
 
     rm -rf "${TARGET_DIR:?}/${COMMANDS_SUBDIR:?}"
     cp -r "$backup_path" "$TARGET_DIR/$COMMANDS_SUBDIR"
-    success "Restauration terminée depuis $(basename "$backup_path")"
+    success "Restore completed from $(basename "$backup_path")"
 }
 
 update_command_file() {
     local src="$1"
-    local rel_path="$2"  # Chemin relatif depuis commands/ (ex: work/work-explore.md)
+    local rel_path="$2"  # Relative path from commands/ (e.g., work/work-explore.md)
     local filename
     filename=$(basename "$src")
     local dest="$TARGET_DIR/$COMMANDS_SUBDIR/$rel_path"
 
-    # Créer le sous-répertoire si nécessaire
+    # Create the subdirectory if needed
     local dest_dir
     dest_dir=$(dirname "$dest")
     if [[ ! -d "$dest_dir" ]] && ! $DRY_RUN; then
@@ -368,32 +368,32 @@ update_command_file() {
     fi
 
     if [[ -f "$dest" ]]; then
-        # Le fichier existe, vérifier s'il a changé
+        # The file exists, check if it has changed
         if diff -q "$src" "$dest" > /dev/null 2>&1; then
-            # Identique, rien à faire
-            debug "$filename: identique"
+            # Identical, nothing to do
+            debug "$filename: identical"
             return
         fi
 
-        # Fichier différent
+        # File differs
         if $FORCE_UPDATE; then
-            # Mode force: écraser
+            # Force mode: overwrite
             if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} Mise à jour: $filename"
+                echo -e "${DIM}[DRY-RUN]${NC} Update: $filename"
             else
                 cp "$src" "$dest"
             fi
-            success "  $filename mis à jour"
+            success "  $filename updated"
             ((UPDATED++)) || true
         elif ${NON_INTERACTIVE:-false}; then
-            # Mode non-interactif sans force: ignorer
-            warning "  $filename ignoré (utilisez --force pour écraser)"
+            # Non-interactive mode without force: skip
+            warning "  $filename skipped (use --force to overwrite)"
             ((SKIPPED++)) || true
         else
-            # Mode interactif: demander
+            # Interactive mode: ask
             echo ""
-            prompt "$filename a été modifié. Que faire?"
-            echo "  [y] Écraser  [n] Ignorer  [d] Voir le diff"
+            prompt "$filename has been modified. What to do?"
+            echo "  [y] Overwrite  [n] Skip  [d] View diff"
             read -r -n 1 choice
             echo
 
@@ -401,45 +401,45 @@ update_command_file() {
                 d|D)
                     echo ""
                     echo -e "${DIM}--- Local${NC}"
-                    echo -e "${DIM}+++ Socle${NC}"
+                    echo -e "${DIM}+++ Foundation${NC}"
                     diff "$dest" "$src" || true
                     echo ""
-                    if confirm "Écraser $filename?" "n"; then
+                    if confirm "Overwrite $filename?" "n"; then
                         cp "$src" "$dest"
-                        success "  $filename mis à jour"
+                        success "  $filename updated"
                         ((UPDATED++)) || true
                     else
-                        warning "  $filename ignoré"
+                        warning "  $filename skipped"
                         ((SKIPPED++)) || true
                     fi
                     ;;
                 y|Y)
                     cp "$src" "$dest"
-                    success "  $filename mis à jour"
+                    success "  $filename updated"
                     ((UPDATED++)) || true
                     ;;
                 *)
-                    warning "  $filename ignoré"
+                    warning "  $filename skipped"
                     ((SKIPPED++)) || true
                     ;;
             esac
         fi
     else
-        # Nouveau fichier
+        # New file
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Ajout: $filename"
+            echo -e "${DIM}[DRY-RUN]${NC} Add: $filename"
         else
             cp "$src" "$dest"
         fi
-        success "  $filename ajouté (nouveau)"
+        success "  $filename added (new)"
         ((ADDED++)) || true
     fi
 }
 
 update_commands() {
-    section "Mise à jour des commandes"
+    section "Updating commands"
 
-    # Créer le répertoire s'il n'existe pas
+    # Create the directory if it doesn't exist
     if [[ ! -d "$TARGET_DIR/$COMMANDS_SUBDIR" ]]; then
         make_dir "$TARGET_DIR/$COMMANDS_SUBDIR"
     fi
@@ -447,11 +447,11 @@ update_commands() {
     local before
     before=$(find "$TARGET_DIR/$COMMANDS_SUBDIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 
-    # Parcourir récursivement les commandes du socle
+    # Recursively iterate over the commands of the foundation
     local socle_commands_dir="$SOCLE_DIR/$COMMANDS_SUBDIR"
     while IFS= read -r cmd; do
         if [[ -f "$cmd" ]]; then
-            # Calculer le chemin relatif depuis commands/
+            # Compute the relative path from commands/
             local rel_path="${cmd#"$socle_commands_dir"/}"
             update_command_file "$cmd" "$rel_path"
         fi
@@ -460,7 +460,7 @@ update_commands() {
     local after
     after=$(find "$TARGET_DIR/$COMMANDS_SUBDIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 
-    info "Commandes: $before → $after"
+    info "Commands: $before → $after"
 }
 
 add_hook() {
@@ -468,27 +468,27 @@ add_hook() {
     local settings_file="$TARGET_DIR/.claude/settings.json"
 
     if [[ ! -f "$settings_file" ]]; then
-        error "settings.json non trouve dans $TARGET_DIR/.claude/"
+        error "settings.json not found in $TARGET_DIR/.claude/"
     fi
 
     if ! command -v jq &>/dev/null; then
-        error "jq est requis pour --add-hook. Installez-le: https://jqlang.github.io/jq/download/"
+        error "jq is required for --add-hook. Install it: https://jqlang.github.io/jq/download/"
     fi
 
     case "$hook_name" in
         rtk)
-            section "Ajout du hook RTK (token optimizer)"
+            section "Adding RTK hook (token optimizer)"
 
             # Check if hook already exists
             if jq -e '.hooks.PreToolUse[]? | select(.description | test("RTK"))' "$settings_file" >/dev/null 2>&1; then
-                success "Hook RTK deja present dans settings.json"
+                success "RTK hook already present in settings.json"
                 return
             fi
 
             local rtk_hook
             rtk_hook=$(cat <<'HOOKJSON'
 {
-    "description": "RTK token optimizer - reecrit les commandes pour reduire les tokens de 60-90% (installer rtk: brew install rtk)",
+    "description": "RTK token optimizer - rewrites commands to reduce tokens by 60-90% (install rtk: brew install rtk)",
     "matcher": "Bash",
     "hooks": [
         {
@@ -503,7 +503,7 @@ HOOKJSON
 )
 
             if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} Ajout du hook RTK dans settings.json"
+                echo -e "${DIM}[DRY-RUN]${NC} Add RTK hook to settings.json"
                 return
             fi
 
@@ -512,39 +512,39 @@ HOOKJSON
             jq --argjson hook "$rtk_hook" '.hooks.PreToolUse += [$hook]' "$settings_file" > "$tmp"
             cp "$tmp" "$settings_file"
             rm -f "$tmp"
-            success "Hook RTK ajoute a settings.json"
-            info "Installez RTK: brew install rtk (ou cargo install --git https://github.com/rtk-ai/rtk)"
+            success "RTK hook added to settings.json"
+            info "Install RTK: brew install rtk (or cargo install --git https://github.com/rtk-ai/rtk)"
             ;;
         *)
-            error "Hook inconnu: $hook_name. Hooks disponibles: rtk"
+            error "Unknown hook: $hook_name. Available hooks: rtk"
             ;;
     esac
 }
 
 update_settings() {
-    section "Mise à jour de settings.json"
+    section "Updating settings.json"
 
     local src="$SOCLE_DIR/.claude/settings.json"
     local dest="$TARGET_DIR/.claude/settings.json"
 
     if [[ ! -f "$src" ]]; then
-        warning "settings.json source non trouvé"
+        warning "Source settings.json not found"
         return
     fi
 
     if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
         copy_file "$src" "$dest"
-        success "settings.json mis à jour"
+        success "settings.json updated"
     elif [[ -f "$dest" ]]; then
-        if confirm "Mettre à jour .claude/settings.json?" "n"; then
+        if confirm "Update .claude/settings.json?" "n"; then
             copy_file "$src" "$dest"
-            success "settings.json mis à jour"
+            success "settings.json updated"
         else
-            warning "settings.json ignoré"
+            warning "settings.json skipped"
         fi
     else
         copy_file "$src" "$dest"
-        success "settings.json créé"
+        success "settings.json created"
     fi
 }
 
@@ -584,13 +584,13 @@ update_directory() {
     local src_subdir="$2"
     local label="$3"
 
-    section "Mise à jour des $label"
+    section "Updating $label"
 
     local src_dir="$SOCLE_DIR/$src_subdir"
     local dest_dir="$TARGET_DIR/$src_subdir"
 
     if [[ ! -d "$src_dir" ]]; then
-        warning "Répertoire $label source non trouvé"
+        warning "Source $label directory not found"
         return
     fi
 
@@ -635,7 +635,7 @@ update_directory() {
         if [[ -f "$dest_file" ]]; then
             # File exists — check if identical
             if diff -q "$src_file" "$dest_file" > /dev/null 2>&1; then
-                debug "$rel_path: identique"
+                debug "$rel_path: identical"
                 ((dir_identical++)) || true
                 continue
             fi
@@ -643,19 +643,19 @@ update_directory() {
             # File differs
             if $FORCE_UPDATE; then
                 if $DRY_RUN; then
-                    echo -e "${DIM}[DRY-RUN]${NC} Mise à jour: $rel_path"
+                    echo -e "${DIM}[DRY-RUN]${NC} Update: $rel_path"
                 else
                     cp "$src_file" "$dest_file"
                 fi
-                debug "  $rel_path mis à jour"
+                debug "  $rel_path updated"
                 ((dir_updated++)) || true
             elif ${NON_INTERACTIVE:-false}; then
-                warning "  $rel_path ignoré (utilisez --force pour écraser)"
+                warning "  $rel_path skipped (use --force to overwrite)"
                 ((dir_skipped++)) || true
             else
                 echo ""
-                prompt "$rel_path a été modifié. Que faire?"
-                echo "  [y] Écraser  [n] Ignorer  [d] Voir le diff"
+                prompt "$rel_path has been modified. What to do?"
+                echo "  [y] Overwrite  [n] Skip  [d] View diff"
                 read -r -n 1 choice
                 echo
 
@@ -663,25 +663,25 @@ update_directory() {
                     d|D)
                         echo ""
                         echo -e "${DIM}--- Local${NC}"
-                        echo -e "${DIM}+++ Socle${NC}"
+                        echo -e "${DIM}+++ Foundation${NC}"
                         diff "$dest_file" "$src_file" || true
                         echo ""
-                        if confirm "Écraser $rel_path?" "n"; then
+                        if confirm "Overwrite $rel_path?" "n"; then
                             cp "$src_file" "$dest_file"
-                            debug "  $rel_path mis à jour"
+                            debug "  $rel_path updated"
                             ((dir_updated++)) || true
                         else
-                            warning "  $rel_path ignoré"
+                            warning "  $rel_path skipped"
                             ((dir_skipped++)) || true
                         fi
                         ;;
                     y|Y)
                         cp "$src_file" "$dest_file"
-                        debug "  $rel_path mis à jour"
+                        debug "  $rel_path updated"
                         ((dir_updated++)) || true
                         ;;
                     *)
-                        warning "  $rel_path ignoré"
+                        warning "  $rel_path skipped"
                         ((dir_skipped++)) || true
                         ;;
                 esac
@@ -689,11 +689,11 @@ update_directory() {
         else
             # New file
             if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} Ajout: $rel_path"
+                echo -e "${DIM}[DRY-RUN]${NC} Add: $rel_path"
             else
                 cp "$src_file" "$dest_file"
             fi
-            debug "  $rel_path ajouté (nouveau)"
+            debug "  $rel_path added (new)"
             ((dir_added++)) || true
         fi
     done < <(eval "find \"$src_dir\" $find_pattern 2>/dev/null" || true)
@@ -721,7 +721,7 @@ update_directory() {
         done < <(find "$src_dir" -type f ! -name "*.md" 2>/dev/null || true)
     fi
 
-    success "$label: $dir_added ajouté(s), $dir_updated mis à jour, $dir_identical identique(s), $dir_skipped ignoré(s)"
+    success "$label: $dir_added added, $dir_updated updated, $dir_identical identical, $dir_skipped skipped"
 }
 
 
@@ -766,10 +766,10 @@ _remove_section_from_file() {
     echo "$tmp_cleaned"
 }
 
-# Migre une install legacy (docs/reference/, @docs/reference/) vers le layout
-# .claude/docs/ introduit en v1.30. Idempotent : no-op si rien à migrer.
-# Conserve les guides personnalisés par l'utilisateur.
-# Arguments: aucun (utilise $TARGET_DIR)
+# Migrates a legacy install (docs/reference/, @docs/reference/) to the
+# .claude/docs/ layout introduced in v1.30. Idempotent: no-op if nothing to migrate.
+# Preserves user-customized guides.
+# Arguments: none (uses $TARGET_DIR)
 migrate_legacy_docs() {
     local claude_md="$TARGET_DIR/CLAUDE.md"
 
@@ -785,12 +785,12 @@ migrate_legacy_docs() {
         return 0
     fi
 
-    info "Migration legacy détectée : docs/ → .claude/docs/"
+    info "Legacy migration detected: docs/ → .claude/docs/"
 
     if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} Migration docs/reference/ → .claude/docs/reference/"
-        echo -e "${DIM}[DRY-RUN]${NC} Migration docs/guides/ → .claude/docs/guides/ (si présent)"
-        echo -e "${DIM}[DRY-RUN]${NC} Réécriture @docs/reference/ → @.claude/docs/reference/ dans CLAUDE.md"
+        echo -e "${DIM}[DRY-RUN]${NC} Migrate docs/reference/ → .claude/docs/reference/"
+        echo -e "${DIM}[DRY-RUN]${NC} Migrate docs/guides/ → .claude/docs/guides/ (if present)"
+        echo -e "${DIM}[DRY-RUN]${NC} Rewrite @docs/reference/ → @.claude/docs/reference/ in CLAUDE.md"
         return 0
     fi
 
@@ -798,14 +798,14 @@ migrate_legacy_docs() {
         make_dir "$TARGET_DIR/.claude/docs/reference"
         cp -r "$TARGET_DIR/docs/reference/"* "$TARGET_DIR/.claude/docs/reference/" 2>/dev/null || true
         rm -rf "$TARGET_DIR/docs/reference"
-        success "Migré: docs/reference/ → .claude/docs/reference/"
+        success "Migrated: docs/reference/ → .claude/docs/reference/"
     fi
 
     if [[ -d "$TARGET_DIR/docs/guides" ]]; then
         make_dir "$TARGET_DIR/.claude/docs/guides"
         cp -r "$TARGET_DIR/docs/guides/"* "$TARGET_DIR/.claude/docs/guides/" 2>/dev/null || true
         rm -rf "$TARGET_DIR/docs/guides"
-        success "Migré: docs/guides/ → .claude/docs/guides/"
+        success "Migrated: docs/guides/ → .claude/docs/guides/"
     fi
 
     if [[ -f "$claude_md" ]] && $has_legacy_imports; then
@@ -813,57 +813,57 @@ migrate_legacy_docs() {
         backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
         cp "$claude_md" "$backup_file"
         rewrite_claude_md_paths "$claude_md"
-        success "Réécrit @docs/reference/ → @.claude/docs/reference/ dans CLAUDE.md"
+        success "Rewrote @docs/reference/ → @.claude/docs/reference/ in CLAUDE.md"
     fi
 
     for f in "docs/ARCHITECTURE.md" "docs/WORKFLOWS.md"; do
         if [[ -f "$TARGET_DIR/$f" ]]; then
-            warning "$f existe (issu d'une install antérieure du socle ou de votre projet) — non géré par le socle, à conserver ou supprimer manuellement."
+            warning "$f exists (from a previous foundation install or your project) — not managed by the foundation, keep or remove manually."
         fi
     done
 
-    # Nettoyer le dossier docs/ s'il est désormais vide
+    # Clean up the docs/ folder if it is now empty
     if [[ -d "$TARGET_DIR/docs" ]] && [[ -z "$(ls -A "$TARGET_DIR/docs" 2>/dev/null)" ]]; then
         rmdir "$TARGET_DIR/docs"
     fi
 }
 
 upgrade_claude_md() {
-    section "Migration CLAUDE.md vers @imports"
+    section "Migrating CLAUDE.md to @imports"
 
     local claude_md="$TARGET_DIR/CLAUDE.md"
 
-    # Vérifier que CLAUDE.md existe
+    # Verify CLAUDE.md exists
     if [[ ! -f "$claude_md" ]]; then
-        warning "CLAUDE.md non trouvé dans $TARGET_DIR"
+        warning "CLAUDE.md not found in $TARGET_DIR"
         return
     fi
 
-    # Backup AVANT toute modification (migrate_legacy_docs peut reecrire CLAUDE.md)
-    # On ne le supprime en fin de fonction que si CLAUDE.md final == backup.
+    # Backup BEFORE any modification (migrate_legacy_docs may rewrite CLAUDE.md)
+    # We only remove it at the end of the function if final CLAUDE.md == backup.
     local backup_file=""
     if ! $DRY_RUN; then
         backup_file="${claude_md}.backup.$(date +%Y%m%d_%H%M%S)"
         cp "$claude_md" "$backup_file"
     fi
 
-    # Migration legacy si nécessaire (déplace docs/* → .claude/docs/*)
+    # Legacy migration if needed (moves docs/* → .claude/docs/*)
     migrate_legacy_docs
 
-    # Copier docs/reference/ du socle vers .claude/docs/reference/ (toujours, pour mettre à jour)
+    # Copy docs/reference/ from the foundation to .claude/docs/reference/ (always, to update)
     local src_ref="$SOCLE_DIR/docs/reference"
     local dest_ref="$TARGET_DIR/.claude/docs/reference"
 
     if [[ ! -d "$src_ref" ]]; then
-        warning "docs/reference/ non trouvé dans le socle"
+        warning "docs/reference/ not found in the foundation"
         return
     fi
 
     if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/reference/ → .claude/docs/reference/"
-        echo -e "${DIM}[DRY-RUN]${NC} Copie docs/guides/ → .claude/docs/guides/"
-        echo -e "${DIM}[DRY-RUN]${NC} Vérification @imports manquants"
-        echo -e "${DIM}[DRY-RUN]${NC} Backup CLAUDE.md si modifications"
+        echo -e "${DIM}[DRY-RUN]${NC} Copy docs/reference/ → .claude/docs/reference/"
+        echo -e "${DIM}[DRY-RUN]${NC} Copy docs/guides/ → .claude/docs/guides/"
+        echo -e "${DIM}[DRY-RUN]${NC} Check missing @imports"
+        echo -e "${DIM}[DRY-RUN]${NC} Backup CLAUDE.md if modifications"
         return
     fi
 
@@ -871,10 +871,10 @@ upgrade_claude_md() {
     cp -r "$src_ref/"* "$dest_ref/"
     local ref_count
     ref_count=$(find "$dest_ref" -type f -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
-    success ".claude/docs/reference/ copié ($ref_count fichiers)"
+    success ".claude/docs/reference/ copied ($ref_count files)"
 
-    # Copier docs/guides/ vers .claude/docs/guides/ — uniquement les nouveaux fichiers
-    # Les guides existants sont conservés (potentiellement personnalisés)
+    # Copy docs/guides/ to .claude/docs/guides/ — only new files
+    # Existing guides are preserved (potentially customized)
     if [[ -d "$SOCLE_DIR/docs/guides" ]]; then
         make_dir "$TARGET_DIR/.claude/docs/guides"
         local guides_added=0
@@ -883,37 +883,37 @@ upgrade_claude_md() {
             local guide_rel="${guide_file#"$SOCLE_DIR"/docs/guides/}"
             local guide_dest="$TARGET_DIR/.claude/docs/guides/$guide_rel"
             if [[ -f "$guide_dest" ]]; then
-                debug "Conservé (existant): .claude/docs/guides/$guide_rel"
+                debug "Preserved (existing): .claude/docs/guides/$guide_rel"
                 ((guides_skipped++)) || true
             else
                 local guide_dest_dir
                 guide_dest_dir=$(dirname "$guide_dest")
                 [[ -d "$guide_dest_dir" ]] || mkdir -p "$guide_dest_dir"
                 cp "$guide_file" "$guide_dest"
-                debug "Ajouté: .claude/docs/guides/$guide_rel"
+                debug "Added: .claude/docs/guides/$guide_rel"
                 ((guides_added++)) || true
             fi
         done < <(find "$SOCLE_DIR/docs/guides" -name "*.md" -type f 2>/dev/null || true)
         if [[ $guides_added -gt 0 ]]; then
-            success ".claude/docs/guides/: $guides_added ajouté(s), $guides_skipped conservé(s)"
+            success ".claude/docs/guides/: $guides_added added, $guides_skipped preserved"
         else
-            info ".claude/docs/guides/: $guides_skipped fichier(s) existant(s) conservé(s)"
+            info ".claude/docs/guides/: $guides_skipped existing file(s) preserved"
         fi
     fi
 
-    # Copier docs/STACK-RECIPES.md (consolidation des stack guides legacy)
+    # Copy docs/STACK-RECIPES.md (consolidation of legacy stack guides)
     if [[ -f "$SOCLE_DIR/docs/STACK-RECIPES.md" ]]; then
         cp "$SOCLE_DIR/docs/STACK-RECIPES.md" "$TARGET_DIR/.claude/docs/STACK-RECIPES.md"
-        debug "STACK-RECIPES.md sync vers .claude/docs/"
+        debug "STACK-RECIPES.md synced to .claude/docs/"
     fi
 
-    # Compter @imports avant pour reporter ce qui a ete ajoute
-    # (grep -c retourne 1 si 0 matches, d'ou le `|| true` pour set -e)
+    # Count @imports before to report what was added
+    # (grep -c returns 1 if 0 matches, hence the `|| true` for set -e)
     local imports_before
     imports_before=$(grep -cE "^@\.claude/docs/reference/" "$claude_md" 2>/dev/null || true)
     imports_before=${imports_before:-0}
 
-    # Garantir les 7 @imports canoniques (factorise dans lib/common.sh)
+    # Guarantee the 7 canonical @imports (factored in lib/common.sh)
     ensure_claude_md_imports "$claude_md"
 
     local imports_after
@@ -922,21 +922,21 @@ upgrade_claude_md() {
     local added=$((imports_after - imports_before))
 
     if [[ $added -gt 0 ]]; then
-        success "Ajoute $added @import(s) manquant(s) dans CLAUDE.md"
+        success "Added $added missing @import(s) in CLAUDE.md"
     fi
 
-    # Verifier si CLAUDE.md a ete modifie (par migrate_legacy_docs ou ensure_imports).
-    # Si identique au backup, retirer le backup (rien a sauvegarder).
+    # Check if CLAUDE.md was modified (by migrate_legacy_docs or ensure_imports).
+    # If identical to backup, remove the backup (nothing to save).
     if [[ -n "$backup_file" ]] && [[ -f "$backup_file" ]]; then
         if cmp -s "$claude_md" "$backup_file"; then
             rm -f "$backup_file"
-            success "CLAUDE.md contient déjà les 7 @imports canoniques"
+            success "CLAUDE.md already contains the 7 canonical @imports"
         else
-            success "Backup créé: $(basename "$backup_file")"
+            success "Backup created: $(basename "$backup_file")"
         fi
     fi
 
-    # Détecter et proposer de supprimer les sections dupliquées
+    # Detect and offer to remove duplicate sections
     local -a duplicate_sections=(
         "## Commandes Essentielles"
         "## Structure Recommandée"
@@ -950,27 +950,27 @@ upgrade_claude_md() {
             found_duplicates=true
 
             if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
-                # Supprimer automatiquement la section
+                # Automatically remove the section
                 local cleaned_file
                 cleaned_file=$(_remove_section_from_file "$claude_md" "$section_title")
                 cp "$cleaned_file" "$claude_md"
-                success "Section supprimée: $section_title"
+                success "Section removed: $section_title"
             else
-                warning "Section dupliquée détectée: $section_title"
-                if confirm "Supprimer cette section (remplacée par @imports)?" "y"; then
+                warning "Duplicate section detected: $section_title"
+                if confirm "Remove this section (replaced by @imports)?" "y"; then
                     local cleaned_file
                     cleaned_file=$(_remove_section_from_file "$claude_md" "$section_title")
                     cp "$cleaned_file" "$claude_md"
-                    success "Section supprimée: $section_title"
+                    success "Section removed: $section_title"
                 else
-                    info "Section conservée: $section_title"
+                    info "Section preserved: $section_title"
                 fi
             fi
         fi
     done
 
     if ! $found_duplicates; then
-        info "Aucune section dupliquée détectée"
+        info "No duplicate section detected"
     fi
 }
 
@@ -987,14 +987,14 @@ detect_orphan_files() {
         return
     fi
 
-    # Trouver les fichiers dans le target (md, tf, yaml, yml, json)
+    # Find files in the target (md, tf, yaml, yml, json)
     while IFS= read -r target_file; do
         if [[ -f "$target_file" ]]; then
-            # Calculer le chemin relatif
+            # Compute the relative path
             local rel_path="${target_file#"$target_dir"/}"
             local socle_file="$socle_dir/$rel_path"
 
-            # Verifier si le fichier existe dans le socle (also check for renames by basename)
+            # Check if the file exists in the foundation (also check for renames by basename)
             if [[ ! -f "$socle_file" ]]; then
                 ((ORPHANS_FOUND++)) || true
                 local filename
@@ -1008,23 +1008,23 @@ detect_orphan_files() {
 
                 if [[ -n "$possible_rename" ]]; then
                     local socle_rel="${possible_rename#"$socle_dir"/}"
-                    info "  $filename peut-être déplacé vers $socle_rel dans le socle"
+                    info "  $filename may have been moved to $socle_rel in the foundation"
                 fi
 
                 if $REMOVE_ORPHANS; then
                     if $DRY_RUN; then
-                        echo -e "${DIM}[DRY-RUN]${NC} Suppression orphelin: $subdir/$rel_path"
+                        echo -e "${DIM}[DRY-RUN]${NC} Remove orphan: $subdir/$rel_path"
                     else
                         rm -f "$target_file"
                         ((ORPHANS_REMOVED++)) || true
                     fi
-                    warning "  $filename supprimé (orphelin)"
+                    warning "  $filename removed (orphan)"
                 elif ${NON_INTERACTIVE:-false}; then
-                    warning "  $filename est orphelin (absent du socle)"
+                    warning "  $filename is an orphan (absent from the foundation)"
                 else
                     echo ""
-                    prompt "$filename est absent du socle. Que faire?"
-                    echo "  [d] Supprimer  [k] Garder"
+                    prompt "$filename is absent from the foundation. What to do?"
+                    echo "  [d] Delete  [k] Keep"
                     read -r -n 1 choice
                     echo
 
@@ -1034,10 +1034,10 @@ detect_orphan_files() {
                                 rm -f "$target_file"
                                 ((ORPHANS_REMOVED++)) || true
                             fi
-                            warning "  $filename supprimé"
+                            warning "  $filename removed"
                             ;;
                         *)
-                            info "  $filename conservé"
+                            info "  $filename kept"
                             ;;
                     esac
                 fi
@@ -1045,32 +1045,32 @@ detect_orphan_files() {
         fi
     done < <(find "$target_dir" -type f \( -name "*.md" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" \) 2>/dev/null || true)
 
-    # Nettoyer les repertoires vides (including non-empty orphan dirs with only orphan files already removed)
+    # Clean up empty directories (including non-empty orphan dirs with only orphan files already removed)
     if $REMOVE_ORPHANS && ! $DRY_RUN; then
         find "$target_dir" -type d -empty -delete 2>/dev/null || true
     fi
 }
 
 detect_all_orphans() {
-    section "Détection des fichiers orphelins"
+    section "Detecting orphan files"
 
     local dirs_to_check=("commands" "skills" "agents" "rules" "output-styles" "templates")
 
     for subdir in "${dirs_to_check[@]}"; do
         if [[ -d "$TARGET_DIR/.claude/$subdir" ]]; then
-            debug "Vérification de .claude/$subdir"
+            debug "Checking .claude/$subdir"
             detect_orphan_files "$subdir"
         fi
     done
 
     if [[ $ORPHANS_FOUND -eq 0 ]]; then
-        success "Aucun fichier orphelin détecté"
+        success "No orphan file detected"
     else
         if $REMOVE_ORPHANS; then
-            success "$ORPHANS_REMOVED/$ORPHANS_FOUND fichier(s) orphelin(s) supprimé(s)"
+            success "$ORPHANS_REMOVED/$ORPHANS_FOUND orphan file(s) removed"
         else
-            warning "$ORPHANS_FOUND fichier(s) orphelin(s) détecté(s)"
-            info "Utilisez --remove-orphans pour les supprimer"
+            warning "$ORPHANS_FOUND orphan file(s) detected"
+            info "Use --remove-orphans to remove them"
         fi
     fi
 }
@@ -1078,25 +1078,25 @@ detect_all_orphans() {
 print_summary() {
     echo ""
     separator "="
-    success "Mise à jour terminée!"
+    success "Update completed!"
     separator "="
     echo ""
 
-    info "Résumé:"
+    info "Summary:"
     if $CLEAN_BEFORE_UPDATE; then
-        echo "  Synchronisés: $ADDED  (recopiés depuis le socle après --clean)"
+        echo "  Synced:     $ADDED  (re-copied from the foundation after --clean)"
     else
-        echo "  Ajoutés:    $ADDED"
+        echo "  Added:      $ADDED"
     fi
-    echo "  Mis à jour: $UPDATED"
-    echo "  Ignorés:    $SKIPPED"
+    echo "  Updated:    $UPDATED"
+    echo "  Skipped:    $SKIPPED"
     if $DETECT_ORPHANS; then
-        echo "  Orphelins:  $ORPHANS_FOUND (${ORPHANS_REMOVED} supprimé(s))"
+        echo "  Orphans:    $ORPHANS_FOUND (${ORPHANS_REMOVED} removed)"
     fi
     echo ""
 
     if [[ -n "${BACKUP_DIR:-}" ]] && [[ -d "${BACKUP_DIR:-}" ]]; then
-        info "Backup disponible: $BACKUP_DIR"
+        info "Backup available: $BACKUP_DIR"
         echo ""
     fi
 }
@@ -1108,9 +1108,9 @@ print_summary() {
 main() {
     parse_args "$@"
 
-    # Vérifications
+    # Checks
     if [[ ! -d "$TARGET_DIR/.claude" ]]; then
-        error "Pas de configuration Claude trouvée dans '$TARGET_DIR'. Utilisez install.sh d'abord."
+        error "No Claude configuration found in '$TARGET_DIR'. Use install.sh first."
     fi
 
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
@@ -1127,37 +1127,37 @@ main() {
         exit 0
     fi
 
-    title "Mise à jour Claude Code"
-    info "Projet: $TARGET_DIR"
-    $DRY_RUN && warning "Mode dry-run activé"
+    title "Claude Code Update"
+    info "Project: $TARGET_DIR"
+    $DRY_RUN && warning "Dry-run mode enabled"
     echo ""
 
-    # Créer le backup
+    # Create the backup
     BACKUP_DIR=$(create_backup)
 
-    # Mode backup-only
+    # Backup-only mode
     if $BACKUP_ONLY; then
-        success "Backup créé avec succès"
+        success "Backup created successfully"
         exit 0
     fi
 
-    # Nettoyage des anciens fichiers si demandé
+    # Clean up old files if requested
     if $CLEAN_BEFORE_UPDATE; then
         clean_claude_dirs "$TARGET_DIR"
     fi
 
-    # Mise à jour des commandes
+    # Update commands
     update_commands
 
-    # Ajouter CLAUDE.md s'il est absent
+    # Add CLAUDE.md if absent
     if [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Ajout: CLAUDE.md"
+            echo -e "${DIM}[DRY-RUN]${NC} Add: CLAUDE.md"
         else
             cp "$SOCLE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
             rewrite_claude_md_paths "$TARGET_DIR/CLAUDE.md"
         fi
-        success "CLAUDE.md ajouté (absent du projet)"
+        success "CLAUDE.md added (absent from the project)"
     fi
 
     # Data-driven optional updates
@@ -1166,14 +1166,14 @@ main() {
     # type=dir: calls update_directory with remaining args (name|subdir|label)
     # type=claude_md: calls upgrade_claude_md
     local -a update_entries=(
-        "UPDATE_SETTINGS|settings|Mettre à jour .claude/settings.json?"
-        "UPDATE_SKILLS|dir|Mettre à jour .claude/skills/?|skills|$SKILLS_SUBDIR|Skills"
-        "UPDATE_AGENTS|dir|Mettre à jour .claude/agents/?|agents|$AGENTS_SUBDIR|Agents"
-        "UPDATE_RULES|dir|Mettre à jour .claude/rules/?|rules|$RULES_SUBDIR|Rules"
-        "UPDATE_STYLES|dir|Mettre à jour .claude/output-styles/?|styles|$STYLES_SUBDIR|Output-styles"
-        "UPDATE_TEMPLATES|dir|Mettre à jour .claude/templates/?|templates|$TEMPLATES_SUBDIR|Templates"
-        "UPDATE_HOOK_SCRIPTS|dir|Mettre à jour scripts/hooks/?|hook_scripts|$HOOK_SCRIPTS_SUBDIR|Hook Scripts"
-        "UPGRADE_CLAUDE_MD|claude_md|Migrer CLAUDE.md vers @imports (docs/reference/)?"
+        "UPDATE_SETTINGS|settings|Update .claude/settings.json?"
+        "UPDATE_SKILLS|dir|Update .claude/skills/?|skills|$SKILLS_SUBDIR|Skills"
+        "UPDATE_AGENTS|dir|Update .claude/agents/?|agents|$AGENTS_SUBDIR|Agents"
+        "UPDATE_RULES|dir|Update .claude/rules/?|rules|$RULES_SUBDIR|Rules"
+        "UPDATE_STYLES|dir|Update .claude/output-styles/?|styles|$STYLES_SUBDIR|Output-styles"
+        "UPDATE_TEMPLATES|dir|Update .claude/templates/?|templates|$TEMPLATES_SUBDIR|Templates"
+        "UPDATE_HOOK_SCRIPTS|dir|Update scripts/hooks/?|hook_scripts|$HOOK_SCRIPTS_SUBDIR|Hook Scripts"
+        "UPGRADE_CLAUDE_MD|claude_md|Migrate CLAUDE.md to @imports (docs/reference/)?"
     )
 
     for entry in "${update_entries[@]}"; do
@@ -1199,12 +1199,12 @@ main() {
         fi
     done
 
-    # Detection des fichiers orphelins
+    # Detect orphan files
     if $DETECT_ORPHANS; then
         detect_all_orphans
     fi
 
-    # Résumé
+    # Summary
     print_summary
 }
 

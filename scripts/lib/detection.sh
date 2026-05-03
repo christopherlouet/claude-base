@@ -2,8 +2,8 @@
 
 # =============================================================================
 # Claude-Socle Detection Library
-# Fonctions de detection de stack technique
-# Extrait de new-project.sh pour reutilisation (doctor.sh, validate.sh)
+# Tech stack detection functions
+# Extracted from new-project.sh for reuse (doctor.sh, validate.sh)
 # =============================================================================
 
 # Guard: common.sh must be sourced first
@@ -15,7 +15,7 @@ fi
 detect_nodejs() {
     local dir="$1"
 
-    # Détecter le gestionnaire de paquets
+    # Detect the package manager
     if [[ -f "$dir/bun.lockb" ]] || [[ -f "$dir/bun.lock" ]]; then
         DETECTED_PKG_MANAGER="bun"
     elif [[ -f "$dir/pnpm-lock.yaml" ]]; then
@@ -36,7 +36,7 @@ detect_nodejs() {
     extract_npm_scripts "$dir/package.json"
     extract_main_dependencies "$dir/package.json"
 
-    # Détecter le framework
+    # Detect the framework
     if grep -q '"react"' "$dir/package.json" 2>/dev/null; then
         DETECTED_TYPE="react"
         DETECTED_FRAMEWORK="React"
@@ -134,7 +134,7 @@ detect_python() {
 
     extract_python_dependencies "$dir"
 
-    # Détecter le framework Python
+    # Detect the Python framework
     for config_file in "$dir/requirements.txt" "$dir/pyproject.toml"; do
         if [[ -f "$config_file" ]]; then
             if grep -qi "django" "$config_file" 2>/dev/null; then
@@ -212,7 +212,7 @@ detect_flutter() {
     fi
     DETECTED_DEPENDENCIES+=("Flutter" "Dart")
 
-    # Packages Flutter courants
+    # Common Flutter packages
     for pkg in supabase firebase; do
         if grep -q "$pkg" "$dir/pubspec.yaml" 2>/dev/null; then
             DETECTED_DEPENDENCIES+=("${pkg^}")
@@ -229,7 +229,7 @@ detect_flutter() {
         DETECTED_DEPENDENCIES+=("GraphQL")
     fi
 
-    # Plateformes cibles
+    # Target platforms
     local platforms=()
     [[ -d "$dir/android" ]] && platforms+=("Android")
     [[ -d "$dir/ios" ]] && platforms+=("iOS")
@@ -245,7 +245,7 @@ detect_flutter() {
 detect_neovim() {
     local dir="$1"
 
-    # Cherche init.lua + lua/ à la racine ou dans nvim/ (dotfiles pattern)
+    # Look for init.lua + lua/ at the root or in nvim/ (dotfiles pattern)
     local nvim_root=""
     if [[ -f "$dir/init.lua" ]] && [[ -d "$dir/lua" ]]; then
         nvim_root="$dir"
@@ -338,7 +338,7 @@ detect_cicd() {
 detect_stack() {
     local dir="$1"
 
-    info "Analyse de la stack technique..."
+    info "Analyzing tech stack..."
     echo ""
 
     # Reset
@@ -364,37 +364,37 @@ detect_stack() {
     detect_cicd "$dir"
     detect_folder_structure "$dir"
 
-    # Afficher les résultats de la détection
+    # Display the detection results
     if [[ ${#DETECTED_DEPENDENCIES[@]} -gt 0 ]]; then
-        echo -e "${BOLD}  Stack détectée:${NC}"
+        echo -e "${BOLD}  Detected stack:${NC}"
         echo ""
         if [[ -n "$DETECTED_FRAMEWORK" ]]; then
-            detected "Framework principal: ${BOLD}$DETECTED_FRAMEWORK${NC}"
+            detected "Main framework: ${BOLD}$DETECTED_FRAMEWORK${NC}"
         fi
 
         echo -e "  ${DIM}Technologies:${NC} ${DETECTED_DEPENDENCIES[*]}"
         echo ""
 
         if [[ ${#DETECTED_SCRIPTS[@]} -gt 0 ]]; then
-            detected "Scripts détectés: ${#DETECTED_SCRIPTS[@]} (${DETECTED_PKG_MANAGER})"
+            detected "Detected scripts: ${#DETECTED_SCRIPTS[@]} (${DETECTED_PKG_MANAGER})"
         fi
 
         if [[ ${#DETECTED_FOLDERS[@]} -gt 0 ]]; then
-            detected "Structure de dossiers analysée"
+            detected "Folder structure analyzed"
         fi
 
         if $DETECTED_CICD; then
-            detected "CI/CD déjà configuré"
+            detected "CI/CD already configured"
         fi
         if $DETECTED_HOOKS; then
-            detected "Pre-commit hooks déjà configurés"
+            detected "Pre-commit hooks already configured"
         fi
         if $DETECTED_DOCKER; then
-            detected "Docker déjà configuré"
+            detected "Docker already configured"
         fi
         echo ""
     else
-        warning "Aucune stack technique détectée"
+        warning "No tech stack detected"
         echo ""
     fi
 }
@@ -402,9 +402,9 @@ detect_stack() {
 extract_npm_scripts() {
     local package_json="$1"
 
-    # Extraire les scripts avec une approche simple
+    # Extract scripts with a simple approach
     if command -v node &> /dev/null; then
-        # Utiliser Node.js si disponible (NODE_PATH pour éviter l'injection de commande)
+        # Use Node.js if available (NODE_PATH to avoid command injection)
         mapfile -t DETECTED_SCRIPTS < <(NODE_PKG_PATH="$package_json" node -e "
             const pkg = require(process.env.NODE_PKG_PATH);
             if (pkg.scripts) {
@@ -412,7 +412,7 @@ extract_npm_scripts() {
             }
         " 2>/dev/null)
     else
-        # Fallback: extraction basique avec sed (compatible macOS/Linux)
+        # Fallback: basic extraction with sed (macOS/Linux compatible)
         mapfile -t DETECTED_SCRIPTS < <(sed -n 's/.*"\([^"]*\)"[[:space:]]*:.*/\1/p' "$package_json" 2>/dev/null | head -20)
     fi
 }
@@ -444,12 +444,12 @@ extract_python_dependencies() {
 detect_folder_structure() {
     local dir="$1"
 
-    # Détecter les dossiers courants (incluant Flutter: lib, android, ios, web, macos, linux, windows)
+    # Detect common folders (including Flutter: lib, android, ios, web, macos, linux, windows)
     local common_folders=("src" "lib" "app" "pages" "components" "services" "utils" "hooks" "api" "routes" "controllers" "models" "views" "tests" "test" "__tests__" "spec" "public" "static" "assets" "styles" "config" "scripts" "docs" "packages" "apps" "android" "ios" "web" "macos" "linux" "windows" "widgets" "screens" "providers" "blocs" "repositories")
 
     for folder in "${common_folders[@]}"; do
         if [[ -d "$dir/$folder" ]]; then
-            # Compter les fichiers dans le dossier
+            # Count files in the folder
             local count
             count=$(find "$dir/$folder" -type f 2>/dev/null | wc -l)
             if [[ $count -gt 0 ]]; then
@@ -461,7 +461,7 @@ detect_folder_structure() {
 
 
 # =============================================================================
-# Export des fonctions pour les sous-shells
+# Export functions for sub-shells
 # =============================================================================
 
 export -f detect_nodejs detect_python detect_go detect_rust detect_java
