@@ -76,7 +76,7 @@ At startup, you should see a message similar to:
 
 ```
 === Claude Code Session ===
-Version socle: 1.31.1
+Version socle: 1.31.2
 Commandes: <!-- count:commands -->131<!-- /count -->
 Agents: <!-- count:agents -->63<!-- /count -->
 ===========================

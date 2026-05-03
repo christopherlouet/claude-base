@@ -553,4 +553,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Socle v1.31.1 - <!-- count:commands -->131<!-- /count --> commands - <!-- count:agents -->63<!-- /count --> agents - <!-- count:skills -->54<!-- /count --> skills - <!-- count:rules -->30<!-- /count --> rules*
+*Claude-Socle v1.31.2 - <!-- count:commands -->131<!-- /count --> commands - <!-- count:agents -->63<!-- /count --> agents - <!-- count:skills -->54<!-- /count --> skills - <!-- count:rules -->30<!-- /count --> rules*
