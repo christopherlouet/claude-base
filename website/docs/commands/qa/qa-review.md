@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Performs a thorough and constructive code review.
 
 ## Target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

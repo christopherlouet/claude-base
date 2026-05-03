@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Define the pricing strategy for a product or service.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

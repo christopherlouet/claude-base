@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Deployment of serverless applications (AWS Lambda, Vercel, Cloudflare Workers).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

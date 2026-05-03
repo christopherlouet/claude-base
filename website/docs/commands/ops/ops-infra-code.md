@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Implements Infrastructure as Code (IaC) with Terraform, CloudFormation or Pulumi.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

@@ -10,9 +10,9 @@ tags:
 
 # Stack Recipes
 
-&gt; For each stack, the **commands / agents / skills / rules** of the foundation that activate, plus 1-2 external links for generic best practices.
-&gt;
-&gt; The foundation does not reinvent REST conventions or Flutter Clean Architecture — it **applies them automatically** via its path-specific rules and specialized agents. This page is an orientation map, not a manual.
+> For each stack, the **commands / agents / skills / rules** of the foundation that activate, plus 1-2 external links for generic best practices.
+>
+> The foundation does not reinvent REST conventions or Flutter Clean Architecture — it **applies them automatically** via its path-specific rules and specialized agents. This page is an orientation map, not a manual.
 
 ---
 
@@ -230,7 +230,7 @@ tags:
 
 ---
 
-## Business &amp; Growth
+## Business & Growth
 
 ### From the foundation
 

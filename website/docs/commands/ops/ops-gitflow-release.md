@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Manage release branches with GitFlow (start, finish, list).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

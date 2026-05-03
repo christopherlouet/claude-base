@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Manage urgent hotfixes with GitFlow (start, finish, list).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

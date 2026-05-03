@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Security audit based on OWASP Top 10.
 
 ## Audit target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

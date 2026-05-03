@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Code refactoring with behavior preservation and quality improvement.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -27,11 +27,11 @@ WITHOUT changing its external behavior. Atomic commits at each transformation.
 
 ## Workflow
 
-- **Prepare**: Run tests, check coverage (&gt;80% = safe, 60-80% = add tests, &lt;60% = tests first)
+- **Prepare**: Run tests, check coverage (>80% = safe, 60-80% = add tests, &lt;60% = tests first)
 - **Analyze**: Identify code smells (Long Method, Large Class, Duplicate Code, Deep Nesting, Magic Numbers, Feature Envy, etc.)
 - **Plan**: List transformations by priority and risk
 - **Execute**: For each transformation: apply ONE transformation, run tests, if OK commit, if KO revert
-- **Validate**: Final tests, coverage &gt;= initial, lint and typecheck OK
+- **Validate**: Final tests, coverage >= initial, lint and typecheck OK
 
 ## Main techniques
 

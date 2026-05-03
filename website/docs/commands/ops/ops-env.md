@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Environment management (dev, staging, prod) and environment variables.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

@@ -92,7 +92,7 @@ Best practices:
 
 Hardening applied directly by the CLI. Worth knowing to write consistent `permissions` rules and avoid unintentional bypasses:
 
-- **Extended dangerous paths**: `/private/\{etc,var,tmp,home\}` (macOS) are treated as dangerous removal targets just like `/etc`, `/var`, etc.
+- **Extended dangerous paths**: `/private/{etc,var,tmp,home}` (macOS) are treated as dangerous removal targets just like `/etc`, `/var`, etc.
 - **Deny rules resistant to execution wrappers**: a `deny: Bash(rm -rf *)` rule also matches when the command is wrapped in `env`, `sudo`, `watch`, `ionice` or `setsid`. No longer rely on these wrappers to bypass a deny rule.
 - **`Bash(find:*)` no longer auto-approves `-exec`/`-delete`**: these sub-commands can modify or delete files, so they now trigger a separate permission prompt even if `find:*` is allowlisted.
 - **Sandbox deniedDomains**: prefer `sandbox.network.deniedDomains` to explicitly exclude sensitive domains even under a wildcard `allowedDomains`.

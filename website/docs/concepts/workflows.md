@@ -10,7 +10,7 @@ tags:
 
 # Visual Workflows
 
-&gt; Diagrams of the recommended workflows
+> Diagrams of the recommended workflows
 
 ## Main Workflow: Explore → Specify → Plan → TDD → Audit → Commit
 

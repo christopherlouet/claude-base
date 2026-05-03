@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Audit, analysis and update of project dependencies.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

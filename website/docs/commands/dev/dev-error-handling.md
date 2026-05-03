@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Implements a robust and consistent error handling strategy.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

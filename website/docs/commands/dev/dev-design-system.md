@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Creation and maintenance of design systems and component libraries.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -39,7 +39,7 @@ composite components and patterns, all documented in Storybook.
 ## Expected output
 
 Audit of the existing design system or creation plan by phases
-(tokens &gt; primitives &gt; composites &gt; documentation).
+(tokens > primitives > composites > documentation).
 
 ## Related agents
 

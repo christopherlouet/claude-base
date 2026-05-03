@@ -24,7 +24,7 @@ Aligned with the Anthropic 2026 pattern (official `code-review` plugin):
 - Auto-scope `git diff main...HEAD` by default
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
@@ -32,7 +32,7 @@ Run a continuous quality improvement loop: audit the project in parallel,
 validate findings (false-positive filter), fix high-signal P0/P1 issues,
 verify tests, and repeat until the target score is reached.
 
-## Parameters (extract from `&lt;arguments&gt;`)
+## Parameters (extract from `<arguments>`)
 
 - **Target score**: minimum score to stop (default: 90/100)
 - **Max iterations**: maximum number of cycles (default: 5)
@@ -60,7 +60,7 @@ AUDIT (4 parallel sub-agents) → VALIDATE (false-positive filter)
 3. **FILTER**: excludes nitpicks/style, keeps only high-signal P0/P1
 4. **FIX**: fix P0 then P1 with TDD, atomic commits (skipped if `--audit-only`)
 5. **VERIFY**: full tests, lint, type-check — revert on regression
-6. **CHECK**: score &gt;= target AND 0 P0/P1 → STOP, otherwise → AUDIT
+6. **CHECK**: score >= target AND 0 P0/P1 → STOP, otherwise → AUDIT
 
 ## Expected output
 

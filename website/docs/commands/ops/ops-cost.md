@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Track token consumption and Claude Code costs.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

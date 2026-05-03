@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Design and implement data models (schemas, ERD, data warehouse).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

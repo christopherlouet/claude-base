@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Create and configure Neovim plugins, LSP, keymaps and features in Lua.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

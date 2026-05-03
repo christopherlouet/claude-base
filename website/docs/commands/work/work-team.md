@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Launches a coordinated team of agents (Agent Teams) to parallelize work.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
@@ -30,7 +30,7 @@ Each agent works in parallel on its scope, the lead synthesizes the results.
 - Check that Agent Teams is enabled (`$CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` = 1)
 - Analyze the task and choose the appropriate pattern (see below)
 - Spawn the agents with clear roles and distinct scopes
-- Coordinate via task list, direct messaging, delegate mode if &gt; 3 agents
+- Coordinate via task list, direct messaging, delegate mode if > 3 agents
 - Synthesize the results into a consolidated report
 - Cleanup: shutdown each agent + resource cleanup
 

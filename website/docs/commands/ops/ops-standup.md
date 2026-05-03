@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Morning briefing: commits, PRs, CI, blockers and priorities of the day.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

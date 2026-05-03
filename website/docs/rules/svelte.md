@@ -47,9 +47,9 @@ Svelte 5+ uses **runes**: `$state`, `$derived`, `$effect`, `$props`. Do not use 
 |----------|----------|
 | `let count = 0` (reactive) | `let count = $state(0)` |
 | `$: double = count * 2` | `let double = $derived(count * 2)` |
-| `export let title` | `let \{ title \} = $props()` |
-| `$: \{ console.log(count) \}` | `$effect(() =&gt; \{ console.log(count) \})` |
-| `&lt;slot /&gt;` | `\{@render children?.()\}` |
+| `export let title` | `let { title } = $props()` |
+| `$: { console.log(count) }` | `$effect(() => { console.log(count) })` |
+| `<slot />` | `{@render children?.()}` |
 
 ## Props and events
 
@@ -135,7 +135,7 @@ export const actions = {
 | `let count = 0` reactive (Svelte 5) | `let count = $state(0)` |
 | `$: double = count * 2` (Svelte 5) | `$derived()` |
 | `createEventDispatcher` | Callback props |
-| `&lt;slot /&gt;` (Svelte 5) | `\{@render children?.()\}` |
+| `<slot />` (Svelte 5) | `{@render children?.()}` |
 | Sensitive data in `+page.ts` | Use `+page.server.ts` |
 | `fetch` directly in the component | `load` function with SvelteKit's fetch |
 

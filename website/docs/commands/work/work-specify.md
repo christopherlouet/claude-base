@@ -18,12 +18,12 @@ import CommandCard from '@site/src/components/CommandCard';
 Creates a structured functional specification. SPECIFICATION mode only.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
 Create a complete and testable functional specification BEFORE planning.
-Step between exploration and planning: **EXPLORE -&gt; (BRAINSTORM) -&gt; SPECIFY -&gt; PLAN -&gt; TDD -&gt; AUDIT -&gt; COMMIT**
+Step between exploration and planning: **EXPLORE -> (BRAINSTORM) -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT**
 Focus on the WHAT (functionality, value), not the HOW (technical implementation).
 
 ## Workflow
@@ -43,7 +43,7 @@ Focus on the WHAT (functionality, value), not the HOW (technical implementation)
 
 Generate `specs/[feature-name]/spec.md` with:
 1. **Summary** (1-3 sentences, user value)
-2. **User Stories** (P1 &gt; P2 &gt; P3, with acceptance criteria)
+2. **User Stories** (P1 > P2 > P3, with acceptance criteria)
 3. **Functional Requirements** (EF-XXX)
 4. **Edge Cases**
 5. **Entities** (if data is involved)

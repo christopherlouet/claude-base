@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Define OKRs (Objectives and Key Results) for a given period.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

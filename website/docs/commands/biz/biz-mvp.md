@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Define the Minimum Viable Product and prioritize features.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

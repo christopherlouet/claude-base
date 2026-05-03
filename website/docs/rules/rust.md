@@ -306,7 +306,7 @@ mod tests {
 
 - `unwrap()` in production (use `?` or `expect`)
 - Useless `clone()`
-- `Box&lt;dyn Trait&gt;` when generics suffice
+- `Box<dyn Trait>` when generics suffice
 - Explicit lifetimes when elision suffices
 - `unsafe` without documented justification
 - Allocations in hot loops

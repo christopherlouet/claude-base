@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Quick workflow for trivial changes (1-3 files, &lt; 50 lines, zero risk).
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

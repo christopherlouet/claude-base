@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Manage feature branches with GitFlow (start, finish, list, publish, pull).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

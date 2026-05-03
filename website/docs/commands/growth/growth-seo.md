@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 SEO audit and optimization recommendations for organic search ranking.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

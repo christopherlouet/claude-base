@@ -66,7 +66,7 @@ Major framework or dependency migrations are risky. Always follow a structured p
 | Webpack | `rm -rf node_modules/.cache/` |
 | TypeScript | `rm -rf tsconfig.tsbuildinfo` |
 | Prisma | `npx prisma generate` |
-| Python | `find . -type d -name __pycache__ -exec rm -rf \{\} +` |
+| Python | `find . -type d -name __pycache__ -exec rm -rf {} +` |
 | Go | `go clean -cache` |
 | Rust | `cargo clean` |
 | Flutter | `flutter clean` |

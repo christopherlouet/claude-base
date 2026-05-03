@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Complete workflow to fix a bug, from diagnosis to deployment.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

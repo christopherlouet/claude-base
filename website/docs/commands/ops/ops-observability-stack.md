@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Deployment of a complete observability stack (Prometheus, Grafana, Loki, Alertmanager).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

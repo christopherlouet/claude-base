@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Create or document REST/GraphQL endpoints.
 
 ## Endpoint or API to process
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

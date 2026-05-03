@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Conducts structured user research to inform product decisions.
 
 ## Research topic
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

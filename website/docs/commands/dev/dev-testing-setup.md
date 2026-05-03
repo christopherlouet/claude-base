@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Configures the testing infrastructure for a project.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

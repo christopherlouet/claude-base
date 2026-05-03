@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Renames the current branch (typically a `feature/auto-*` branch created by the PreToolUse hook).
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
@@ -47,10 +47,10 @@ The prefix (`feature/`, `fix/`, `refactor/`...) is optional: if absent, `feature
     - Refuse if the branch is `main` or `master` (impossible to rename in place without confusion)
     - Check that the new name is valid (no spaces, no git-special characters)
 2. **Rename locally**
-    - `git branch -m &lt;new-name&gt;`
+    - `git branch -m <new-name>`
 3. **Sync the remote (if the branch has been pushed)**
-    - Detect the upstream (`git rev-parse --abbrev-ref --symbolic-full-name @\{u\}`)
-    - If upstream exists: `git push origin :&lt;old-name&gt; &lt;new-name&gt;` then `git push origin -u &lt;new-name&gt;`
+    - Detect the upstream (`git rev-parse --abbrev-ref --symbolic-full-name @{u}`)
+    - If upstream exists: `git push origin :<old-name> <new-name>` then `git push origin -u <new-name>`
     - Otherwise: no push, just a message indicating that the branch is local
 4. **Confirm**
     - Display the new branch and its remote tracking

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Quick onboarding on an unknown codebase.
 
 ## Project or area to explore
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

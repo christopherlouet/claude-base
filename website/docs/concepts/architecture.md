@@ -10,7 +10,7 @@ tags:
 
 # Claude Code Foundation Architecture
 
-&gt; Understand the difference between Commands, Agents, Skills and Rules
+> Understand the difference between Commands, Agents, Skills and Rules
 
 ## Why do some files exist in commands/ AND agents/?
 

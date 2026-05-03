@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Design and implement ETL/ELT data pipelines.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Generate an OpenAPI/Swagger specification for an API.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

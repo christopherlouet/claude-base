@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Creating type-safe APIs with tRPC.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

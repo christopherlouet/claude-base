@@ -67,7 +67,7 @@ These rules apply to files matching the following patterns:
 ## Streaming and Suspense
 
 - Use `loading.tsx` for automatic per-route Suspense boundaries
-- Wrap async components in `&lt;Suspense fallback=\{...\}&gt;` for granular streaming
+- Wrap async components in `<Suspense fallback={...}>` for granular streaming
 - Progressive rendering pattern:
 
 ```tsx
@@ -84,7 +84,7 @@ export default function Page() {
 }
 ```
 
-- `loading.tsx` + `&lt;Suspense&gt;` = automatic streaming (no need for `export const dynamic`)
+- `loading.tsx` + `<Suspense>` = automatic streaming (no need for `export const dynamic`)
 - Avoid cascades: parallelize fetches within the same Server Component
 
 ## Server Components - Strict constraints
@@ -105,7 +105,7 @@ export default function Page() {
 - `forwardRef` is no longer necessary: `ref` is a direct prop
 - `useActionState` replaces `useFormState`
 - `use()` to read promises/context in components
-- `&lt;form action=\{serverAction\}&gt;` for mutations
+- `<form action={serverAction}>` for mutations
 
 ## URL State Management
 
@@ -117,7 +117,7 @@ export default function Page() {
 
 - DO NOT use `'use client'` on pages/layouts unless absolutely necessary
 - DO NOT fetch in useEffect if a Server Component can provide the data
-- DO NOT use `router.push()` when a `&lt;Link&gt;` is enough
+- DO NOT use `router.push()` when a `<Link>` is enough
 - DO NOT use `getServerSideProps`/`getStaticProps` with App Router
 - DO NOT forget Suspense boundaries (causes bad LCP/CLS)
 - DO NOT use `forwardRef` in a React 19+ project

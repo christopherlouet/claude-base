@@ -101,7 +101,7 @@ class AuthFailure extends AuthState {
 - NEVER block the main isolate
 - Avoid setState in StatelessWidget
 - Do not ignore async errors
-- Avoid widgets that are too deep (&gt; 10 levels)
+- Avoid widgets that are too deep (> 10 levels)
 
 ## Automatic application
 

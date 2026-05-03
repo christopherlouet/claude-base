@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Generation of professional documents in various office formats.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

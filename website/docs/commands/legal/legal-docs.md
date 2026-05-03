@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Generation of legal documents (Terms of Service, Sales Terms, Legal Notice, Privacy Policy).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

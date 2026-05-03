@@ -43,7 +43,7 @@ Any addition, removal or rename in `.claude/` silently breaks the docs and tests
 
 ## Files to update when adding / removing
 
-### New command (`.claude/commands/&lt;ns&gt;/&lt;cmd&gt;.md`)
+### New command (`.claude/commands/<ns>/<cmd>.md`)
 
 - `README.md`: "Available Commands (N)" line + inline mention
 - `CLAUDE.md`: "N commands" counter
@@ -55,19 +55,19 @@ Any addition, removal or rename in `.claude/` silently breaks the docs and tests
 - `website/docusaurus.config.ts`: `Commands (N)`
 - `docs/reference/commands.md`: catalog entry
 
-### New agent (`.claude/agents/&lt;ns&gt;/&lt;agent&gt;.md`)
+### New agent (`.claude/agents/<ns>/<agent>.md`)
 
 - All `agents: 'N'` / `Agents (N)` / `N sub-agents` files
 - `docs/reference/agents-catalog.md`: entry with description + use case
 - `.claude/settings.json` SessionStart hook (agents counter)
 
-### New skill (`.claude/skills/&lt;skill&gt;/SKILL.md`)
+### New skill (`.claude/skills/<skill>/SKILL.md`)
 
 - All `skills: 'N'` / `N Skills`
 - `docs/reference/skills-catalog.md`: entry with trigger conditions
 - `CLAUDE.md`: "N skills" counter
 
-### New rule (`.claude/rules/&lt;rule&gt;.md`)
+### New rule (`.claude/rules/<rule>.md`)
 
 - `.claude/rules/README.md`: row in the table + "Available rules (N)" counter
 - `website/docs/reference/rules.md` if present

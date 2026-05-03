@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Detailed analysis of a specific competitor.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

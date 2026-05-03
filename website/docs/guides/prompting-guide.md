@@ -10,11 +10,11 @@ tags:
 
 # Advanced Prompting Guide
 
-&gt; Prompting techniques recommended by Boris Cherny (creator of Claude Code) to maximize the quality of results.
+> Prompting techniques recommended by Boris Cherny (creator of Claude Code) to maximize the quality of results.
 
 ## Fundamental Principle
 
-&gt; "The more specific and detailed the specification, the better the output."
+> "The more specific and detailed the specification, the better the output."
 
 The more precise your request, the better the result. Claude Code excels when it has clear context and well-defined expectations.
 
@@ -217,7 +217,7 @@ Include:
 
 Boris recommends using voice dictation (fn x2 on macOS) for more detailed prompts:
 
-&gt; "When I dictate prompts, I tend to be much more detailed than when I type. The extra context always improves results."
+> "When I dictate prompts, I tend to be much more detailed than when I type. The extra context always improves results."
 
 ### Benefits
 - More natural = more details
@@ -238,7 +238,7 @@ Boris recommends using voice dictation (fn x2 on macOS) for more detailed prompt
 
 Effective prompting rarely follows a direct path. The recommended pattern is: broad first, then progressive narrowing.
 
-**Pattern: Broad -&gt; Precise -&gt; Refined**
+**Pattern: Broad -> Precise -> Refined**
 
 **Turn 1 - Broad (exploration)**
 ```

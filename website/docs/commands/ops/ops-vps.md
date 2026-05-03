@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Deployment to a VPS server (OVH, Hetzner, DigitalOcean, Scaleway, etc.).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

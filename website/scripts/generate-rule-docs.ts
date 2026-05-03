@@ -17,6 +17,7 @@ import {
   generateFrontmatter,
   escapeMdx,
 } from './utils/parse-frontmatter.js';
+import { escapeMdxContent } from './utils/escape-mdx-content.js';
 
 const CLAUDE_DIR = path.resolve(__dirname, '../../.claude');
 const RULES_DIR = path.join(CLAUDE_DIR, 'rules');
@@ -59,36 +60,6 @@ function parseRuleFile(filePath: string): RuleInfo | null {
 }
 
 /**
- * Wrap code blocks in markdown to prevent MDX parsing issues
- * Only escape content outside of code blocks
- */
-function escapeNonCodeContent(content: string): string {
-  const parts: string[] = [];
-  let lastIndex = 0;
-
-  // Match code blocks (fenced with ``` or indented)
-  const codeBlockRegex = /```[\s\S]*?```/g;
-  let match;
-
-  while ((match = codeBlockRegex.exec(content)) !== null) {
-    // Escape content before this code block
-    if (match.index > lastIndex) {
-      parts.push(escapeMdx(content.slice(lastIndex, match.index)));
-    }
-    // Keep code block as-is
-    parts.push(match[0]);
-    lastIndex = match.index + match[0].length;
-  }
-
-  // Escape remaining content after last code block
-  if (lastIndex < content.length) {
-    parts.push(escapeMdx(content.slice(lastIndex)));
-  }
-
-  return parts.join('');
-}
-
-/**
  * Generate the Docusaurus page content for a rule
  */
 function generateRulePage(rule: RuleInfo, position: number): string {
@@ -109,7 +80,7 @@ function generateRulePage(rule: RuleInfo, position: number): string {
     : '_All files_';
 
   // Escape content outside code blocks
-  const safeContent = escapeNonCodeContent(rule.content);
+  const safeContent = escapeMdxContent(rule.content);
   const safeDesc = escapeMdx(rule.description);
 
   return `${frontmatter}

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Dockerization and containerization of projects.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

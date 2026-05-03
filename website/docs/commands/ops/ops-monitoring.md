@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Code instrumentation for monitoring, logging and alerting.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

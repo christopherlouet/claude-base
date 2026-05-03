@@ -48,7 +48,7 @@ If no direction is specified, apply `modern` (equivalent of the former glass).
 | Spacing | Compact, dense, tight padding (8-12px), aligned grids |
 | Animations | Scan lines, glow pulse, caret blink, fast fade-in (100-150ms). No bounce or spring |
 | Components | Bordered cards (1px solid), prompt-style inputs, outlined buttons, monochrome badges |
-| Anti-patterns | Rounded corners &gt; 8px, colored gradients, cartoon illustrations, diffuse shadows, pastels |
+| Anti-patterns | Rounded corners > 8px, colored gradients, cartoon illustrations, diffuse shadows, pastels |
 
 ### cockpit — The pilot's dashboard
 

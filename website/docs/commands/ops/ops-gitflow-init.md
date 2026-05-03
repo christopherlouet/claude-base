@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Initialize GitFlow on the repository with the appropriate branches and conventions.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

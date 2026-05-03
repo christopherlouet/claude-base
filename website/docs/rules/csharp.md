@@ -9,7 +9,7 @@ tags:
 
 # Rules: csharp
 
-> // 2. Private readonly fields private readonly IUserRepository _userRepository; private readonly ILogger&lt;UserService&gt; _logger;
+> // 2. Private readonly fields private readonly IUserRepository _userRepository; private readonly ILogger&lt;UserService> _logger;
 
 ## Affected files
 

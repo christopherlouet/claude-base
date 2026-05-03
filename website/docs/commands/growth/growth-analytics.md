@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Tracking setup and KPI definition for a project.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

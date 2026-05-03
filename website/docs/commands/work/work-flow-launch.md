@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Technical workflow to develop and launch a product, from setup to go-live.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -33,8 +33,8 @@ Prerequisites: business analysis completed, MVP defined, budget and timeline app
 - CI/CD configuration and environments
 
 ### Phase 2: Development
-- Core features per User Story (tests -&gt; code -&gt; review -&gt; merge)
-- Tests and QA: unit &gt; 80%, integration, critical E2E, security review
+- Core features per User Story (tests -> code -> review -> merge)
+- Tests and QA: unit > 80%, integration, critical E2E, security review
 - Responsive and accessibility
 
 ### Phase 3: Launch

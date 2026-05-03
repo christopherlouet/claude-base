@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Complete workflow to prepare and publish a release.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

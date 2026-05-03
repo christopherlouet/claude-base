@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 GDPR compliance audit of a project.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

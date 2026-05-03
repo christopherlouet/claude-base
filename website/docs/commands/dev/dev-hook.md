@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Create a React custom hook with tests and documentation.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

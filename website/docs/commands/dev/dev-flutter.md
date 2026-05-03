@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Create Flutter widgets, screens and features with Clean Architecture.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

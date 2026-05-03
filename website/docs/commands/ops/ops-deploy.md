@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Secure deployment with mandatory pre-deploy checklist.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

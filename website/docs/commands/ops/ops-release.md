@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Release workflow with changelog and versioning.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

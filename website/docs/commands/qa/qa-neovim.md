@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Quality and performance audit of a Neovim configuration.
 
 ## Target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

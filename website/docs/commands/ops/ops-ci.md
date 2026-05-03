@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Configure CI/CD pipelines (GitHub Actions, GitLab CI, etc.).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

@@ -29,7 +29,7 @@ _All files_
 | Standard (feature, bugfix) | Full | Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit |
 | Batch (backlog of stories) | Batch | `/work:work-batch "prd.json"` |
 
-## Mandatory Cycle: Explore -&gt; (Brainstorm) -&gt; Specify -&gt; Plan -&gt; TDD -&gt; Audit -&gt; Commit
+## Mandatory Cycle: Explore -> (Brainstorm) -> Specify -> Plan -> TDD -> Audit -> Commit
 
 ### 0. CI BASELINE (recommended)
 

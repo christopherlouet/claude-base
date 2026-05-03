@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Code internationalization and localization.
 
 ## Target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

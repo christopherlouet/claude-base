@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Market analysis and competitive research for a project.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

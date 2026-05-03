@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Generate a complete UI component with tests, types and documentation.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -32,7 +32,7 @@ types first, then tests (RED), implementation (GREEN), refactoring and Storybook
 - Write the tests (`[ComponentName].test.tsx`): render, variants, click, disabled, className
 - Implement the component (`[ComponentName].tsx`) with forwardRef, clsx, CSS modules
 - Create the Storybook stories (`[ComponentName].stories.tsx`) with argTypes
-- Verify: typed props, disabled handling, modular CSS, tests &gt;80%, accessibility (aria-*, role, tabIndex)
+- Verify: typed props, disabled handling, modular CSS, tests >80%, accessibility (aria-*, role, tabIndex)
 
 ## Expected output
 

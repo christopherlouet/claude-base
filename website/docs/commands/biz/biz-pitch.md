@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Create a pitch deck and prepare the presentation of a project.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -29,7 +29,7 @@ Produce an elevator pitch, a one-pager and the detailed structure of a pitch dec
 - Understand the project (problem, solution, target, differentiation)
 - Write the elevator pitch (30 seconds)
 - Structure the 12 slides (Title, Problem, Solution, Demo, Business Model, Traction, Market, Competition, Team, Roadmap, Financials, Ask)
-- Write the content of each slide (benefits &gt; features)
+- Write the content of each slide (benefits > features)
 - Create the one-pager (one-page summary)
 - Anticipate investor questions
 - Prepare visual recommendations

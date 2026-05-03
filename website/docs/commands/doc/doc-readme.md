@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Generates or improves a project's README to maximize its adoption and understanding.
 
 ## Project
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

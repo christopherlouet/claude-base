@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 End-to-End tests with Playwright or Cypress.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

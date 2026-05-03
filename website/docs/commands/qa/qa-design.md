@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 UI/UX design audit and verification of web best practices.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Quick health check of a project. Express diagnostic in 5 minutes.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 

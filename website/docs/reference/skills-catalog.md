@@ -116,7 +116,7 @@ hooks:
 | `$ARGUMENTS` | All arguments passed to the skill |
 | `$ARGUMENTS[N]` | Argument at index N (0-based) |
 | `$N` | Shortcut for `$ARGUMENTS[N]` |
-| `$\{CLAUDE_SESSION_ID\}` | ID of the current session |
+| `${CLAUDE_SESSION_ID}` | ID of the current session |
 
 ### Dynamic Context Injection
 Inject dynamic content into a skill with the syntax:

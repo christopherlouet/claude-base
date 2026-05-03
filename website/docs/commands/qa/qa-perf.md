@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Performance analysis and optimization.
 
 ## Target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -30,7 +30,7 @@ Measure, identify bottlenecks and optimize performance following a data-driven a
 - Identify bottlenecks (code, frontend, backend)
 - Profile with the appropriate tools (DevTools, Lighthouse, autocannon)
 - Check Core Web Vitals (LCP, FID, CLS, TTFB, INP)
-- Propose optimizations by priority (algorithm &gt; cache &gt; lazy loading)
+- Propose optimizations by priority (algorithm > cache > lazy loading)
 - Measure after optimization to validate impact
 
 ## Expected output
@@ -48,7 +48,7 @@ Measure, identify bottlenecks and optimize performance following a data-driven a
 2. [Optimization 2] - Estimated gain: [X%]
 
 ### Results after optimization
-- Metric 1: [before] -&gt; [after] ([X% improvement])
+- Metric 1: [before] -> [after] ([X% improvement])
 
 ## Related agents
 

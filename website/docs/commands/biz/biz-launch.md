@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Business and strategic analysis for the launch of a new product/service.
 
 ## Project context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

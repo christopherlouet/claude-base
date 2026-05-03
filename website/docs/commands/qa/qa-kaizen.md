@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Continuous improvement of code and processes with the Kaizen methodology.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

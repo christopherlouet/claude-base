@@ -24,7 +24,7 @@ Visual tests and browser debugging via Claude Code's Chrome integration.
 
 ## Usage
 
-Performs a visual audit of the specified page or URL: `&lt;arguments&gt;`
+Performs a visual audit of the specified page or URL: `<arguments>`
 
 ## Capabilities
 

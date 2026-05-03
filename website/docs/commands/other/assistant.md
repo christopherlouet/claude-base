@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Single entry point of the Claude Code foundation. Guides toward the right commands, agents, skills and workflows.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -81,7 +81,7 @@ Always wait for confirmation before executing.
 ## Expected output
 
 1. **Detect** the project type
-2. **Recommend**: question -&gt; direct answer, simple task -&gt; command, complex task -&gt; workflow
+2. **Recommend**: question -> direct answer, simple task -> command, complex task -> workflow
 3. **Propose** to launch the first command (wait for confirmation)
 
 ---

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Schema design, migrations, and database optimization.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

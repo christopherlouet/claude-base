@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Accessibility audit based on WCAG 2.1/2.2 and the axe-core reference.
 
 ## Audit target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Set up a robust API versioning strategy.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Goal
 
@@ -32,7 +32,7 @@ URL Path versioning recommended for most cases.
 - Structure the code: versioned API layer, non-versioned Service layer
 - Identify the types of changes (additive = safe, breaking = new version)
 - Implement routing by version
-- Define the deprecation timeline (Active &gt; Deprecated &gt; Sunset &gt; Off)
+- Define the deprecation timeline (Active > Deprecated > Sunset > Off)
 - Add deprecation headers (Deprecation, Sunset, Link successor-version)
 - Document breaking changes and the migration guide
 - Configure monitoring by version (requests, clients, errors, latency)

@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Analyze and improve the test coverage of the code.
 
 ## Target
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

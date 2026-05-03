@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Lists the `feedback` memories captured for the current project (and globally) — the "lessons" learned from user corrections.
 
 ## Context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
@@ -34,7 +34,7 @@ Provide an overview of the self-improvement system: which rules, counter-example
 ## Workflow
 
 1. **Locate the memory directory**
-    - Per-project: `~/.claude/projects/&lt;project-slug&gt;/memory/`
+    - Per-project: `~/.claude/projects/<project-slug>/memory/`
     - Global: `~/.claude/memory/` (if it exists)
 2. **Filter feedback memories**
     - Read `MEMORY.md` and each `feedback_*.md` file
@@ -72,7 +72,7 @@ Provide an overview of the self-improvement system: which rules, counter-example
 |-----------|--------|
 | No memory | Informative message + link to the auto-memory doc |
 | Memory without `type: feedback` | Ignore (only list feedback) |
-| Keyword filter with no match | Message "No memory matches '&lt;keyword&gt;'" |
+| Keyword filter with no match | Message "No memory matches '&lt;keyword>'" |
 | Orphan memory (file without an entry in MEMORY.md) | WARN, suggest re-indexing |
 
 ---

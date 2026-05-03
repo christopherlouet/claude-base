@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Explain complex code in detail.
 
 ## Code to explain
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

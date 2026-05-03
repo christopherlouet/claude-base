@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Publishing mobile applications to stores (App Store, Google Play).
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 

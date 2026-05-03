@@ -18,7 +18,7 @@ import CommandCard from '@site/src/components/CommandCard';
 Configuration and usage of Prisma ORM.
 
 ## Request context
-`&lt;arguments&gt;`
+`<arguments>`
 
 ## Objective
 
