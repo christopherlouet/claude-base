@@ -38,7 +38,7 @@
     },
     {
       "path": "website/scripts/generate-agent-docs.ts",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "cd4f7dae6d348249e7aa485127c643144a539062c549188f4051a30953884521"
     },
     {
