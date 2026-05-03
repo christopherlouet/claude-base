@@ -13,6 +13,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.31.1] - 2026-05-03
+
+Hardening release: 5 CodeQL alerts closed, Docusaurus URLs cleaned up,
+canonical 6-step workflow now reflected in onboarding pages and tutorials.
+
+### Fixed
+
+- **Documentation cohesion (#107)**: 6 onboarding/tutorial pages still showed the legacy 4-step workflow (Explore → Plan → Code → Commit). They now reflect the canonical 6-step workflow documented in `CLAUDE.md`: Explore → **Specify** → Plan → TDD → **Audit** → Commit. Pages updated: `intro/quick-start.md`, `workflow/explore-plan-code-commit.md`, `guides/migration.md`, `tutorials/01-first-project.md`, `tutorials/02-feature-react.md`, `tutorials/03-api-rest-node.md`. Promoted `qa-review` / `qa-security` references to the canonical `qa-loop "score 90"`.
+- 6 auto-regenerated MDX-escape touch-ups in `website/docs/{commands,concepts,reference,rules}/` produced by `website/scripts/generate-*.ts` after the `escapeMdx` fix.
+
+### Changed
+
+- **3 French-named tutorial files renamed to English (#107)**: leftover from the FR→EN migration shipped in v1.31.0. `01-premier-projet.md` → `01-first-project.md`, `05-audit-securite.md` → `05-security-audit.md`, `10-projet-complet.md` → `10-complete-project.md`. Old URLs (`/docs/tutorials/premier-projet`, etc.) preserved via a new `@docusaurus/plugin-client-redirects` configuration — no broken external links.
+- **CI workflow rename (#105)**: `.github/workflows/codeql.yml` → `security.yml`. The file ran ShellCheck + Gitleaks but never CodeQL (Default Setup runs separately). Filename now matches what the workflow does. README badge URL updated.
+
+### Security
+
+- **5 CodeQL alerts closed (#106)**:
+  - **HIGH (3)** in `website/scripts/utils/parse-frontmatter.ts`:
+    - `escapeMdx()` was missing `&` and `\` escaping. An input like `&lt;script&gt;` would survive untouched and render as `<script>` in MDX, enabling XSS via frontmatter-injected content. Fixed escape order: `&` → `\\` → `\{}` → `<>` so already-encoded entities stay literal and braces don't get ambiguous backslashes.
+    - `serializeFrontmatter()` did not escape `\` before `"`. Input `foo\bar` produced invalid YAML; input `"; key: x` could break out of the quoted scalar.
+  - **MEDIUM (2)** in `.github/workflows/{ci,pr-check}.yml`: missing explicit `permissions:` block, jobs ran with the default `GITHUB_TOKEN` scope (read+write across contents/issues/PRs). Added least-privilege blocks (`contents: read` on `ci.yml`, `contents: read` + `pull-requests: read` on `pr-check.yml`).
+- **GitHub CodeQL Default Setup enabled** for TypeScript files in `website/`. Documented in README "Security measures" section.
+
+---
+
 ## [1.31.0] - 2026-05-03
 
 ### Added
