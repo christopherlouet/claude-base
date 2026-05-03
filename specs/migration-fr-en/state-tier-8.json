@@ -48,7 +48,7 @@
     },
     {
       "path": "website/scripts/generate-rule-docs.ts",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "f241e67c02454fdcb63ab736854fd194e79d03e89a2e3c922a3ff83f40331a60"
     },
     {
