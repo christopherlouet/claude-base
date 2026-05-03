@@ -1,183 +1,183 @@
 # Terminal Themes Collection
 
-Collection de thèmes visuels complets pour le terminal : prompt (Starship), listing de fichiers (eza/ls), et **GNOME Terminal** (Ubuntu).
+Complete visual theme collection for the terminal: prompt (Starship), file listing (eza/ls), and **GNOME Terminal** (Ubuntu).
 
-## Thèmes disponibles
+## Available themes
 
-| Thème | Description | Ambiance |
+| Theme | Description | Vibe |
 |-------|-------------|----------|
-| `matrix` | Vert sur noir, style hacker | "Wake up, Neo..." |
-| `cyberpunk` | Neon pink & cyan, futuriste | Night City vibes |
-| `dracula` | Thème sombre avec accents violets | Classique et elegant |
-| `catppuccin` | Couleurs pastels douces | Facile pour les yeux |
-| `nord` | Tons bleus arctiques | Calme et concentre |
-| `gruvbox` | Couleurs chaudes retro | Excellent contraste |
-| `tokyo-night` | Inspire des lumieres de Tokyo | Moderne et sleek |
+| `matrix` | Green on black, hacker style | "Wake up, Neo..." |
+| `cyberpunk` | Neon pink & cyan, futuristic | Night City vibes |
+| `dracula` | Dark theme with purple accents | Classic and elegant |
+| `catppuccin` | Soft pastel colors | Easy on the eyes |
+| `nord` | Arctic blue tones | Calm and focused |
+| `gruvbox` | Warm retro colors | Excellent contrast |
+| `tokyo-night` | Inspired by Tokyo lights | Modern and sleek |
 
-## Composants d'un theme
+## Components of a theme
 
-Chaque theme inclut 3 fichiers :
+Each theme includes 3 files:
 
-| Fichier | Cible | Usage |
+| File | Target | Usage |
 |---------|-------|-------|
-| `starship-themes/<theme>.toml` | Prompt Starship | Ligne de commande |
-| `eza-<theme>.sh` | eza (moderne) | Listing fichiers avec icones |
-| `ls-<theme>.sh` | ls (natif) | Listing fichiers standard |
+| `starship-themes/<theme>.toml` | Starship prompt | Command line |
+| `eza-<theme>.sh` | eza (modern) | File listing with icons |
+| `ls-<theme>.sh` | ls (native) | Standard file listing |
 
-## Installation rapide
+## Quick install
 
 ### 0. GNOME Terminal (Ubuntu)
 
 ```bash
-# Mode interactif (recommandé)
+# Interactive mode (recommended)
 ./install-gnome-terminal-theme.sh
 
-# Installer un thème spécifique (crée un nouveau profil)
+# Install a specific theme (creates a new profile)
 ./install-gnome-terminal-theme.sh dracula
 
-# Appliquer au profil par défaut
+# Apply to the default profile
 ./install-gnome-terminal-theme.sh -d tokyo-night
 
-# Installer TOUS les thèmes d'un coup
+# Install ALL themes at once
 ./install-gnome-terminal-theme.sh --all
 
-# Lister les thèmes disponibles
+# List available themes
 ./install-gnome-terminal-theme.sh --list
 ```
 
-Après installation, change de profil via: **Clic droit → Profils → [Thème]**
+After installation, switch profile via: **Right click → Profiles → [Theme]**
 
 ### 1. Starship (prompt)
 
 ```bash
-# Mode interactif
+# Interactive mode
 ./install-starship-theme.sh
 
-# Ou directement
+# Or directly
 ./install-starship-theme.sh matrix
 ```
 
-### 2. Configuration complete (exemple Matrix)
+### 2. Complete configuration (Matrix example)
 
-Ajoutez a votre `~/.zshrc` ou `~/.bashrc` :
+Add to your `~/.zshrc` or `~/.bashrc`:
 
 ```bash
 # Starship prompt
-eval "$(starship init zsh)"  # ou bash
+eval "$(starship init zsh)"  # or bash
 
-# Couleurs fichiers (choisir eza OU ls)
-source /chemin/vers/scripts/themes/eza-matrix.sh
-# ou
-source /chemin/vers/scripts/themes/ls-matrix.sh
+# File colors (choose eza OR ls)
+source /path/to/scripts/themes/eza-matrix.sh
+# or
+source /path/to/scripts/themes/ls-matrix.sh
 ```
 
-Puis rechargez :
+Then reload:
 
 ```bash
 source ~/.zshrc
 ```
 
-## Fichiers par theme
+## Files per theme
 
 ### Matrix
 ```bash
-source eza-matrix.sh   # ou ls-matrix.sh
+source eza-matrix.sh   # or ls-matrix.sh
 ```
-- Dossiers : Vert vif (#00ff00)
-- Fichiers code : Vert vif
-- Config : Jaune-vert (#ccff00)
-- Archives/.env : Rouge (#ff0000)
+- Folders: Bright green (#00ff00)
+- Code files: Bright green
+- Config: Yellow-green (#ccff00)
+- Archives/.env: Red (#ff0000)
 
 ### Cyberpunk
 ```bash
-source eza-cyberpunk.sh   # ou ls-cyberpunk.sh
+source eza-cyberpunk.sh   # or ls-cyberpunk.sh
 ```
-- Dossiers : Rose neon (#ff00ff)
-- Fichiers code : Vert neon (#39ff14)
-- Symlinks : Cyan (#00ffff)
-- Archives/.env : Rouge neon (#ff0040)
+- Folders: Neon pink (#ff00ff)
+- Code files: Neon green (#39ff14)
+- Symlinks: Cyan (#00ffff)
+- Archives/.env: Neon red (#ff0040)
 
 ### Dracula
 ```bash
-source eza-dracula.sh   # ou ls-dracula.sh
+source eza-dracula.sh   # or ls-dracula.sh
 ```
-- Dossiers : Violet (#bd93f9)
-- Fichiers code : Jaune/Cyan
-- HTML/CSS : Rose (#ff79c6)
-- Archives/.env : Rouge (#ff5555)
+- Folders: Purple (#bd93f9)
+- Code files: Yellow/Cyan
+- HTML/CSS: Pink (#ff79c6)
+- Archives/.env: Red (#ff5555)
 
 ### Catppuccin (Mocha)
 ```bash
-source eza-catppuccin.sh   # ou ls-catppuccin.sh
+source eza-catppuccin.sh   # or ls-catppuccin.sh
 ```
-- Dossiers : Lavande (#b4befe)
-- Fichiers code : Bleu/Jaune
-- Symlinks : Teal (#94e2d5)
-- Archives/.env : Rouge (#f38ba8)
+- Folders: Lavender (#b4befe)
+- Code files: Blue/Yellow
+- Symlinks: Teal (#94e2d5)
+- Archives/.env: Red (#f38ba8)
 
 ### Nord
 ```bash
-source eza-nord.sh   # ou ls-nord.sh
+source eza-nord.sh   # or ls-nord.sh
 ```
-- Dossiers : Bleu frost (#81a1c1)
-- Fichiers code : Jaune/Cyan
-- Executables : Vert (#a3be8c)
-- Archives/.env : Rouge (#bf616a)
+- Folders: Frost blue (#81a1c1)
+- Code files: Yellow/Cyan
+- Executables: Green (#a3be8c)
+- Archives/.env: Red (#bf616a)
 
 ### Gruvbox
 ```bash
-source eza-gruvbox.sh   # ou ls-gruvbox.sh
+source eza-gruvbox.sh   # or ls-gruvbox.sh
 ```
-- Dossiers : Jaune (#fabd2f)
-- Fichiers code : Bleu/Aqua
-- Executables : Vert (#b8bb26)
-- Archives/.env : Rouge (#fb4934)
+- Folders: Yellow (#fabd2f)
+- Code files: Blue/Aqua
+- Executables: Green (#b8bb26)
+- Archives/.env: Red (#fb4934)
 
 ### Tokyo Night
 ```bash
-source eza-tokyo-night.sh   # ou ls-tokyo-night.sh
+source eza-tokyo-night.sh   # or ls-tokyo-night.sh
 ```
-- Dossiers : Bleu (#7aa2f7)
-- Fichiers code : Jaune/Bleu
-- Symlinks : Cyan (#7dcfff)
-- Archives/.env : Rouge (#f7768e)
+- Folders: Blue (#7aa2f7)
+- Code files: Yellow/Blue
+- Symlinks: Cyan (#7dcfff)
+- Archives/.env: Red (#f7768e)
 
-## Aliases inclus
+## Included aliases
 
-Les fichiers eza incluent ces aliases :
+The eza files include these aliases:
 
-| Alias | Commande |
+| Alias | Command |
 |-------|----------|
 | `ls` | `eza --icons --group-directories-first` |
 | `ll` | `eza -l --icons --git` |
 | `la` | `eza -la --icons --git` |
-| `lt` | `eza -T --level=2` (arborescence) |
+| `lt` | `eza -T --level=2` (tree view) |
 | `l` | `eza -l --icons` |
 
-Les fichiers ls incluent :
+The ls files include:
 
-| Alias | Commande |
+| Alias | Command |
 |-------|----------|
 | `ls` | `ls --color=auto` |
 | `ll` | `ls -lah --color=auto` |
 | `la` | `ls -A --color=auto` |
 | `l` | `ls -lh --color=auto` |
 
-## Prerequis
+## Prerequisites
 
-- **Starship** : Le script l'installera automatiquement si absent
-- **eza** : `apt install eza` ou `brew install eza` (optionnel, pour eza-*.sh)
-- **Nerd Font** : Recommandee pour les icones
+- **Starship**: The script will install it automatically if missing
+- **eza**: `apt install eza` or `brew install eza` (optional, for eza-*.sh)
+- **Nerd Font**: Recommended for the icons
   - [FiraCode Nerd Font](https://www.nerdfonts.com/font-downloads)
   - [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads)
 
-## Installation Starship
+## Starship installation
 
 ```bash
 # Linux / macOS
 curl -sS https://starship.rs/install.sh | sh
 
-# macOS avec Homebrew
+# macOS with Homebrew
 brew install starship
 
 # Arch Linux
@@ -187,7 +187,7 @@ pacman -S starship
 apt install starship
 ```
 
-## Installation eza
+## eza installation
 
 ```bash
 # Ubuntu/Debian (22.04+)
@@ -203,19 +203,19 @@ pacman -S eza
 cargo install eza
 ```
 
-## Restaurer la configuration
+## Restore configuration
 
-Le script Starship cree automatiquement une backup :
+The Starship script automatically creates a backup:
 
 ```bash
-# Lister les backups
+# List backups
 ls ~/.config/starship.toml.backup.*
 
-# Restaurer
+# Restore
 cp ~/.config/starship.toml.backup.YYYYMMDD_HHMMSS ~/.config/starship.toml
 ```
 
-## Ressources
+## Resources
 
 - [Starship](https://starship.rs/config/)
 - [eza](https://github.com/eza-community/eza)
