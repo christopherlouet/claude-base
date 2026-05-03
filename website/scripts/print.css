@@ -1,4 +1,4 @@
-/* Prince CSS — masque la chrome Docusaurus et prépare le rendu PDF. */
+/* Prince CSS — hides Docusaurus chrome and prepares PDF rendering. */
 
 @page {
   size: A4;
@@ -20,7 +20,7 @@
   @bottom-right { content: ""; }
 }
 
-/* Masque navigation, sidebar, TOC, footer, breadcrumbs, edit links */
+/* Hide navigation, sidebar, TOC, footer, breadcrumbs, edit links */
 .navbar,
 nav.navbar,
 .theme-doc-sidebar-container,
@@ -49,7 +49,7 @@ button[class*="collapseSidebar"],
   display: none !important;
 }
 
-/* Layout : pleine largeur */
+/* Layout: full width */
 html,
 body {
   background: white !important;
@@ -75,7 +75,7 @@ main[class*="docMainContainer"],
   display: block !important;
 }
 
-/* Titres */
+/* Headings */
 h1 {
   font-size: 22pt;
   string-set: doc-title content();
@@ -135,7 +135,7 @@ pre code {
   padding: 0;
 }
 
-/* Tableaux */
+/* Tables */
 table {
   border-collapse: collapse;
   width: 100%;
@@ -155,7 +155,7 @@ th {
   font-weight: bold;
 }
 
-/* Liens : afficher l'URL après le texte (sauf intra-doc) */
+/* Links: display the URL after the text (except intra-doc) */
 a {
   color: #0366d6;
   text-decoration: none;
@@ -168,7 +168,7 @@ a[href^="http"]:after {
   word-break: break-all;
 }
 
-/* Admonitions Docusaurus */
+/* Docusaurus admonitions */
 [class*="admonition"] {
   border-left: 3pt solid #999;
   padding: 6pt 10pt;
@@ -189,7 +189,7 @@ img {
   page-break-inside: avoid;
 }
 
-/* Masque les boutons / UI interactive */
+/* Hide buttons / interactive UI */
 button,
 [role="button"],
 .copy-button,
