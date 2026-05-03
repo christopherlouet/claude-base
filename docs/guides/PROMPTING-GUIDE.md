@@ -232,14 +232,14 @@ Effective prompting rarely follows a direct path. The recommended pattern is: br
 
 **Turn 1 - Broad (exploration)**
 ```
-"Je veux ameliorer les performances de l'API. Quels sont les goulots
-d'etranglement classiques dans une API Node.js/PostgreSQL ?"
+"I want to improve the API performance. What are the classic
+bottlenecks in a Node.js/PostgreSQL API?"
 ```
 
 **Turn 2 - Precise (focusing)**
 ```
-"Pour les N+1 queries que tu as identifiees, montre-moi comment les
-detecter dans ce fichier: src/services/userService.ts"
+"For the N+1 queries you identified, show me how to detect
+them in this file: src/services/userService.ts"
 ```
 
 **Turn 3 - Refined (implementation)**
