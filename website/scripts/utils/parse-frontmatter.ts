@@ -114,8 +114,13 @@ export function generateFrontmatter(data: Record<string, unknown>): string {
         }
       }
     } else if (typeof value === 'string') {
-      // Escape quotes in string values
-      const escaped = value.replace(/"/g, '\\"');
+      // Escape backslashes FIRST, then quotes, so that an already-escaped
+      // sequence like `\"` in the input becomes `\\"` (preserving the
+      // literal backslash) rather than `\\\"` (which would re-escape an
+      // already-escaped quote).
+      const escaped = value
+        .replace(/\\/g, '\\\\')
+        .replace(/"/g, '\\"');
       lines.push(`${key}: "${escaped}"`);
     } else if (typeof value === 'boolean' || typeof value === 'number') {
       lines.push(`${key}: ${value}`);
@@ -177,10 +182,17 @@ export function extractSection(content: string, heading: string): string | null 
 /**
  * Escape special MDX characters in text
  * This prevents MDX from interpreting { } < > as JSX expressions
+ * and HTML from interpreting & as an entity prefix.
+ *
+ * Order matters: escape & FIRST (so already-encoded entities stay literal),
+ * then \ (so subsequent \{ insertions don't introduce ambiguity), then
+ * the syntactic characters.
  */
 export function escapeMdx(text: string): string {
   if (!text) return '';
   return text
+    .replace(/&/g, '&amp;')
+    .replace(/\\/g, '\\\\')
     .replace(/\{/g, '\\{')
     .replace(/\}/g, '\\}')
     .replace(/</g, '&lt;')

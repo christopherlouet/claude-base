@@ -11,6 +11,10 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Least-privilege default for the GITHUB_TOKEN
+permissions:
+  contents: read
+
 jobs:
   lint-and-test:
     name: Lint & Test
