@@ -47,10 +47,10 @@ Claude Code on its own is powerful, but it requires that you know exactly what t
 
 Concretely, claude-socle adds the following to the `.claude/` folder of your project:
 
-- **131 commands**: pre-written instructions for common tasks (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
-- **63 agents**: specialized sub-processes that activate automatically for analysis or audit tasks
-- **54 skills**: behaviors that trigger automatically based on your keywords
-- **30 rules**: code conventions applied automatically based on the files you modify
+- **<!-- count:commands -->131<!-- /count --> commands**: pre-written instructions for common tasks (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
+- **<!-- count:agents -->63<!-- /count --> agents**: specialized sub-processes that activate automatically for analysis or audit tasks
+- **<!-- count:skills -->54<!-- /count --> skills**: behaviors that trigger automatically based on your keywords
+- **<!-- count:rules -->30<!-- /count --> rules**: code conventions applied automatically based on the files you modify
 
 Without claude-socle, you have to specify everything in every session. With claude-socle, best practices are integrated and activated automatically.
 
@@ -76,9 +76,9 @@ At startup, you should see a message similar to:
 
 ```
 === Claude Code Session ===
-Version socle: 1.30.0
-Commandes: 131
-Agents: 63
+Version socle: 1.31.1
+Commandes: <!-- count:commands -->131<!-- /count -->
+Agents: <!-- count:agents -->63<!-- /count -->
 ===========================
 ```
 
@@ -412,7 +412,7 @@ You can also invoke agents via commands:
 /work:work-explore  # Launches the work-explore agent
 ```
 
-The 63 agents are grouped into the same domains as the commands. Haiku agents (22) are used for fast and economical tasks (exploration, documentation, simple audits). Sonnet agents (35) for complex analyses (security, performance, debug, architecture).
+The <!-- count:agents -->63<!-- /count --> agents are grouped into the same domains as the commands. Haiku agents (22) are used for fast and economical tasks (exploration, documentation, simple audits). Sonnet agents (35) for complex analyses (security, performance, debug, architecture).
 
 ---
 
@@ -477,7 +477,7 @@ Claude modifies src/api/auth.ts
   - Input validation, XSS protection
 ```
 
-The 30 rules of the foundation cover:
+The <!-- count:rules -->30<!-- /count --> rules of the foundation cover:
 - Languages: TypeScript, Python, Go, Java, C#, Ruby, PHP, Rust, Flutter/Dart
 - Frameworks: React, Next.js
 - Cross-cutting domains: Testing, Security, API, Git, Workflow, Performance, Accessibility
@@ -498,7 +498,7 @@ The 30 rules of the foundation cover:
 
 ### 2.6 The 9 domains: overview
 
-Claude-socle organizes its 131 commands into 9 domains. Each domain covers an aspect of software development.
+Claude-socle organizes its <!-- count:commands -->131<!-- /count --> commands into 9 domains. Each domain covers an aspect of software development.
 
 ```
 .claude/commands/
@@ -1891,7 +1891,7 @@ An agent must have a minimal body (30-55 lines) and delegate to the skill. A ski
 
 #### The ratio and its importance
 
-The foundation currently contains: 131 commands, 54 skills, 63 agents, 30 rules (indicative numbers, verify with `.claude/`). This ratio reflects a philosophy: commands are the main entry point, agents are specialized and constrained, skills provide the substance.
+The foundation currently contains: <!-- count:commands -->131<!-- /count --> commands, <!-- count:skills -->54<!-- /count --> skills, <!-- count:agents -->63<!-- /count --> agents, <!-- count:rules -->30<!-- /count --> rules (indicative numbers, verify with `.claude/`). This ratio reflects a philosophy: commands are the main entry point, agents are specialized and constrained, skills provide the substance.
 
 #### CLAUDE.md and @imports
 

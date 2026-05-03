@@ -237,4 +237,4 @@ Enable the servers as needed to extend Claude's capabilities.
 
 - [Installation](/docs/intro/installation) - Complete installation guide
 - [Workflows](/docs/workflow) - See the workflows in action
-- [Commands](/docs/commands) - Explore the 131 commands
+- [Commands](/docs/commands) - Explore the <!-- count:commands -->131<!-- /count --> commands

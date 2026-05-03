@@ -165,6 +165,35 @@ EOF
     [[ "$output" == *"66 skills"* ]]
 }
 
+@test "scan_drift Layer 2: detects 'Commands (N available)' (text after digit)" {
+    # Heading with extra text after the digit: '## Commands (55 available)'
+    # The plain '## Label (N)' pattern would miss this because of the trailing
+    # ' available'. The extended pattern accepts [^)]* after the digit.
+    cat > "$TEST_DIR/docs/ARCHITECTURE.md" <<'EOF'
+# Foundation
+
+## Commands (55 available)
+EOF
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"55 commands"* ]]
+}
+
+@test "scan_drift Layer 2: detects multi-column table '| **Agents** | ... | ... | N |'" {
+    # 4-column table with the bold label cell and the number cell separated
+    # by intermediate cells. The plain adjacent pattern would miss this.
+    cat > "$TEST_DIR/website/docs/intro/what-is-claude-code.md" <<'EOF'
+# What
+
+| Component | Trigger | Example | Count |
+|-----------|---------|---------|-------|
+| **Agents** | Via commands | Isolated autonomous sub-agents | 88 |
+EOF
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"88 agents"* ]] || [[ "$output" == *"88 sub-agents"* ]]
+}
+
 # =============================================================================
 # Layer 2 tests — scan_tests_drift (badges + Test layout)
 # =============================================================================

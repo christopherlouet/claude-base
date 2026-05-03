@@ -21,15 +21,32 @@ const REPO_ROOT = path.resolve(__dirname, '../..');
 const COUNTS_PATH = path.join(REPO_ROOT, 'counts.json');
 
 const MD_FILES: string[] = [
-  // Website docs
+  // Website docs (intro)
   'website/docs/intro/index.md',
   'website/docs/intro/architecture.md',
+  'website/docs/intro/quick-start.md',
+  'website/docs/intro/installation.md',
+  'website/docs/intro/what-is-claude-code.md',
+  // Website docs (guides — website-only, not synced from docs/)
+  'website/docs/guides/faq.md',
+  'website/docs/guides/migration.md',
+  'website/docs/guides/learning-path.md',
+  'website/docs/guides/claude-code-training.md',
+  // Website docs (reference — website-only)
+  'website/docs/reference/index.md',
+  'website/docs/reference/commands-matrix.md',
+  'website/docs/reference/agents-matrix.md',
+  // Website docs (concepts — website-only)
+  'website/docs/concepts/orchestrator.md',
   // Repo root
   'README.md',
   'CLAUDE.md',
-  // Foundation docs
+  'CONTRIBUTING.md',
+  // Foundation docs (will be synced; markers preserved by sync-docs)
   'docs/CHEATSHEET.md',
   'docs/ARCHITECTURE.md',
+  'docs/reference/agents-catalog.md',
+  'docs/reference/skills-catalog.md',
 ];
 
 const MARKER_RE = /<!--\s*count:([\w.]+)\s*-->[^<]*<!--\s*\/count\s*-->/g;
@@ -66,7 +83,7 @@ export function injectCountsMd(): { processed: number; updated: number; missingK
     processed += 1;
 
     const original = fs.readFileSync(absPath, 'utf-8');
-    const next = original.replace(MARKER_RE, (match, key: string) => {
+    let next = original.replace(MARKER_RE, (match, key: string) => {
       const value = resolveKey(counts, key);
       if (value === null) {
         if (!missingKeys.includes(key)) missingKeys.push(key);
@@ -74,6 +91,10 @@ export function injectCountsMd(): { processed: number; updated: number; missingK
       }
       return `<!-- count:${key} -->${value}<!-- /count -->`;
     });
+
+    // Special case: shields.io test count badge (URLs can't contain HTML markers).
+    // Pattern: `tests-NNN%20passing` or `tests-NNN+passing` -> rewrite NNN.
+    next = next.replace(/(tests-)\d+(%20|\+| )passing/g, `$1${counts.tests}$2passing`);
 
     if (next !== original) {
       fs.writeFileSync(absPath, next, 'utf-8');

@@ -207,10 +207,10 @@ scan_drift() {
     # We avoid "15 work commands" (subset by domain), "22 Haiku agents" (by model), etc.
     # Cataloged "TOTAL" cases :
     #   1. `Label disponibles (N)`             -- e.g. `Skills disponibles (54)` (French canonical header)
-    #   2. `## Label (N)` / `### Label (N)`    -- markdown heading, e.g. `## Skills (54)`
+    #   2. `## Label (N[ available|...])`      -- markdown heading, e.g. `## Skills (54)` or `## Skills (54 available)`
     #   3. `'N Label'` / `'N Sub-Agents'`      -- string literal in TS/TSX components
-    #   4. `\*\*Label\*\* \| N \|`             -- table row with bold label cell
-    #   5. `# Label (N)`                        -- top heading
+    #   4. `\*\*Label\*\* \| ... \| N \|`      -- table row with bold label cell, possibly multi-column
+    #   5. `# N Label`                          -- top heading prefix
     # The label can be singular (Skill) or plural (Skills), Capitalized or ALLCAPS.
     # The form `Sub-Agents` is accepted for agent.
     local label_cap_singular label_cap_plural alt_form
@@ -219,9 +219,12 @@ scan_drift() {
     alt_form=""
     [[ "$label_singular" == "agent" ]] && alt_form="|Sub-Agents?|sub-agents?"
 
-    # Build the unified regex
+    # Build the unified regex.
+    # Pattern 2 accepts trailing text inside the parentheses (e.g. "Commands (131 available)").
+    # Pattern 4 accepts up to 4 intermediate cells before the number cell (e.g.
+    # `| **Agents** | foo | bar | baz | 63 |`) — common in 3+ column tables.
     local lab="(${label_cap_singular}|${label_cap_plural}${alt_form})"
-    local pattern_re="(${lab}\s+disponibles?\s+\(([0-9]+)\)|^#{1,4}\s+${lab}\s+\(([0-9]+)\)|'([0-9]+)\s+${lab}'|\|\s*\*\*${lab}\*\*\s*\|\s*([0-9]+)\s*\||^#{1,4}\s+([0-9]+)\s+${lab}\b)"
+    local pattern_re="(${lab}\s+disponibles?\s+\(([0-9]+)\)|^#{1,4}\s+${lab}\s+\(([0-9]+)[^)]*\)|'([0-9]+)\s+${lab}'|\|\s*\*\*${lab}\*\*\s*\|(\s*[^|]*\|){0,4}\s*([0-9]+)\s*\||^#{1,4}\s+([0-9]+)\s+${lab}\b)"
 
     while IFS= read -r match; do
         [[ -z "$match" ]] && continue

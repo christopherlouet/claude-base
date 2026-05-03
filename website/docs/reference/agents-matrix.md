@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: Agents Matrix
-description: Breakdown of the 63 agents by model
+description: Breakdown of all claude-socle agents by model
 ---
 
 # Agents Matrix
 
-> **63 sub-agents** with model and tools
+> **<!-- count:agents -->63<!-- /count --> sub-agents** with model and tools
 >
 > For the exhaustive and always up-to-date list, see the [Agents catalog](/docs/reference/agents-catalog) (auto-generated from `.claude/agents/`).
 

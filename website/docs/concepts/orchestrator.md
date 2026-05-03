@@ -155,7 +155,7 @@ The orchestrator automatically detects your environment:
 
 ## Sub-Agents activated automatically
 
-The orchestrator knows the 63 specialized agents and activates them based on context:
+The orchestrator knows the <!-- count:agents -->63<!-- /count --> specialized agents and activates them based on context:
 
 | Detected context | Activated agent | Model |
 |------------------|-----------------|-------|
@@ -184,7 +184,7 @@ Result returned to the main conversation
 
 ## Skills triggered automatically
 
-The 54 skills activate based on keywords in the conversation:
+The <!-- count:skills -->54<!-- /count --> skills activate based on keywords in the conversation:
 
 | Keywords | Activated skill | Action |
 |----------|-----------------|--------|

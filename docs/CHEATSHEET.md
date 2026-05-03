@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (131)
+## Commands by Category (<!-- count:commands -->131<!-- /count -->)
 
 ### Orchestrator (1)
 
