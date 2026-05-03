@@ -38,11 +38,29 @@ jobs:
       - name: Validate documentation counts
         run: bash scripts/validate-counts.sh
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install website dependencies
+        run: npm --prefix website ci
+
+      - name: Counts gate (regenerate counts.json + injector + git diff)
+        run: |
+          npm --prefix website run generate
+          if ! git diff --exit-code -- counts.json README.md CLAUDE.md docs/ website/docs/ website/sidebars.ts website/docusaurus.config.ts website/src/; then
+            echo "::error::counts.json or its consumers are out of sync. Run 'npm --prefix website run generate' locally and commit the result."
+            exit 1
+          fi
+
       - name: Generate summary
         if: always()
         run: |
           echo "## CI Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- ShellCheck: lint on \`scripts/\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Bats: 258 tests" >> $GITHUB_STEP_SUMMARY
-          echo "- Counts: documentation consistency" >> $GITHUB_STEP_SUMMARY
+          echo "- Bats: see job logs for the test count" >> $GITHUB_STEP_SUMMARY
+          echo "- Counts: documentation consistency (validate-counts.sh + counts.json gate)" >> $GITHUB_STEP_SUMMARY

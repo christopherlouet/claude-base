@@ -160,7 +160,18 @@ check_count() {
 info "Checking documentation..."
 echo ""
 
-# --- CLAUDE.md ---
+# Layer 1 redundant checks for files now covered by:
+#   - counts.json + CI gate (TS consumers: Stats.tsx, FeatureComparison.tsx,
+#     index.tsx, sidebars.ts, docusaurus.config.ts)
+#   - inject-counts-md.ts (instrumented MD: intro/index.md, intro/architecture.md,
+#     README.md, docs/CHEATSHEET.md, docs/ARCHITECTURE.md)
+# were removed as part of the counts-source-of-truth refactor.
+# See specs/counts-source-of-truth/ for design notes.
+#
+# Remaining Layer 1 check: CLAUDE.md FR-era patterns kept as defense-in-depth
+# in case narrative counters are ever re-added to CLAUDE.md.
+
+# --- CLAUDE.md (defense in depth) ---
 info "CLAUDE.md"
 check_count "$SOCLE_DIR/CLAUDE.md" \
     "[0-9]+ commandes" "$ACTUAL_COMMANDS" "commands"
@@ -168,72 +179,6 @@ check_count "$SOCLE_DIR/CLAUDE.md" \
     "[0-9]+ sub-agents" "$ACTUAL_AGENTS" "agents"
 check_count "$SOCLE_DIR/CLAUDE.md" \
     "[0-9]+ skills" "$ACTUAL_SKILLS" "skills"
-
-# --- README.md ---
-info "README.md"
-check_count "$SOCLE_DIR/README.md" \
-    "Commandes Disponibles \([0-9]+\)" "$ACTUAL_COMMANDS" "commands header"
-check_count "$SOCLE_DIR/README.md" \
-    "\*\*118 commandes\*\*" "$ACTUAL_COMMANDS" "commands inline"
-
-# --- Website index.tsx ---
-info "website/src/pages/index.tsx"
-check_count "$SOCLE_DIR/website/src/pages/index.tsx" \
-    "'[0-9]+ Commands'" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/src/pages/index.tsx" \
-    "'[0-9]+ Sub-Agents'" "$ACTUAL_AGENTS" "agents"
-check_count "$SOCLE_DIR/website/src/pages/index.tsx" \
-    "'[0-9]+ Skills'" "$ACTUAL_SKILLS" "skills"
-check_count "$SOCLE_DIR/website/src/pages/index.tsx" \
-    "'[0-9]+ Rules'" "$ACTUAL_RULES" "rules"
-
-# --- Website architecture ---
-info "website/docs/intro/architecture.md"
-check_count "$SOCLE_DIR/website/docs/intro/architecture.md" \
-    "Commands \([0-9]+\)" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/docs/intro/architecture.md" \
-    "Agents \([0-9]+\)" "$ACTUAL_AGENTS" "agents"
-check_count "$SOCLE_DIR/website/docs/intro/architecture.md" \
-    "Skills \([0-9]+\)" "$ACTUAL_SKILLS" "skills"
-check_count "$SOCLE_DIR/website/docs/intro/architecture.md" \
-    "Rules \([0-9]+\)" "$ACTUAL_RULES" "rules"
-
-# --- Website intro/index.md ---
-info "website/docs/intro/index.md"
-check_count "$SOCLE_DIR/website/docs/intro/index.md" \
-    "Commands.*[0-9]+" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/docs/intro/index.md" \
-    "Agents.*[0-9]+" "$ACTUAL_AGENTS" "agents"
-
-# --- Website cheatsheet ---
-info "website/docs/reference/cheatsheet.md"
-check_count "$SOCLE_DIR/website/docs/reference/cheatsheet.md" \
-    "[0-9]+ Commands \| [0-9]+ Agents" "$ACTUAL_COMMANDS" "commands footer"
-
-# --- FeatureComparison.tsx ---
-info "website/src/components/FeatureComparison.tsx"
-check_count "$SOCLE_DIR/website/src/components/FeatureComparison.tsx" \
-    "commands: '[0-9]+'" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/src/components/FeatureComparison.tsx" \
-    "agents: '[0-9]+'" "$ACTUAL_AGENTS" "agents"
-check_count "$SOCLE_DIR/website/src/components/FeatureComparison.tsx" \
-    "skills: '[0-9]+'" "$ACTUAL_SKILLS" "skills"
-
-# --- Stats.tsx (Welcome page hero) ---
-info "website/src/components/Stats.tsx"
-check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
-    "number: [0-9]+, label: 'Commands'" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
-    "number: [0-9]+, label: 'Agents'" "$ACTUAL_AGENTS" "agents"
-check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
-    "number: [0-9]+, label: 'Skills'" "$ACTUAL_SKILLS" "skills"
-check_count "$SOCLE_DIR/website/src/components/Stats.tsx" \
-    "number: [0-9]+, label: 'Rules'" "$ACTUAL_RULES" "rules"
-
-# --- docusaurus.config.ts ---
-info "website/docusaurus.config.ts"
-check_count "$SOCLE_DIR/website/docusaurus.config.ts" \
-    "Commands \([0-9]+\)" "$ACTUAL_COMMANDS" "commands"
 
 echo ""
 
