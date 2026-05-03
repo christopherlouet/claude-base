@@ -53,7 +53,7 @@ claude
 At startup you should see:
 ```
 === Claude Code Session ===
-Version socle: 1.31.0
+Version socle: 1.31.1
 Commandes: 131
 Agents: 63
 ===========================
