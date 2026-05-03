@@ -18,7 +18,7 @@
     },
     {
       "path": ".claude/templates/github-actions/claude-security-review.yml",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "d3daa578d7730e42bcecc8fc36c541bd19f548ce4195716e1128b4306a52c079"
     },
     {
