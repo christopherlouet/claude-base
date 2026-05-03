@@ -1,115 +1,115 @@
-# Templates OPNsense - Infrastructure as Code
+# OPNsense Templates - Infrastructure as Code
 
-Templates Terraform pour gérer OPNsense de manière déclarative.
+Terraform templates to manage OPNsense declaratively.
 
-## Table des matières
+## Table of contents
 
-- [Prérequis](#prérequis)
+- [Prerequisites](#prerequisites)
 - [Structure](#structure)
-- [Configuration initiale](#configuration-initiale)
-- [Modules disponibles](#modules-disponibles)
-- [Exemple complet](#exemple-complet)
-- [Sécurité](#sécurité)
+- [Initial configuration](#initial-configuration)
+- [Available modules](#available-modules)
+- [Complete example](#complete-example)
+- [Security](#security)
 - [Troubleshooting](#troubleshooting)
 
-## Prérequis
+## Prerequisites
 
 ### OPNsense
 
-- **Version**: 24.1 ou supérieure
-- **API activée**: System > Settings > Administration > Enable API
-- **Utilisateur API**: System > Access > Users > Créer user avec clés API
+- **Version**: 24.1 or higher
+- **API enabled**: System > Settings > Administration > Enable API
+- **API user**: System > Access > Users > Create user with API keys
 
 ### Terraform
 
 - **Version**: 1.9+
 - **Provider**: `browningluke/opnsense` >= 0.11
 
-### Réseau
+### Network
 
-- OPNsense accessible depuis la machine Terraform
-- Ports 443 (HTTPS) et 80 (HTTP si non-SSL)
+- OPNsense reachable from the Terraform machine
+- Ports 443 (HTTPS) and 80 (HTTP if non-SSL)
 
 ## Structure
 
 ```
 .claude/templates/opnsense/
-├── README.md                 # Ce fichier
-├── provider-template.tf      # Configuration provider
-├── interfaces-module.tf      # Module interfaces WAN/LAN
-├── firewall-module.tf        # Module règles firewall
-├── nat-module.tf             # Module NAT/port forward
-├── services-module.tf        # Module DHCP/DNS
-├── aliases-module.tf         # Module groupes d'adresses
+├── README.md                 # This file
+├── provider-template.tf      # Provider configuration
+├── interfaces-module.tf      # WAN/LAN interfaces module
+├── firewall-module.tf        # Firewall rules module
+├── nat-module.tf             # NAT/port forward module
+├── services-module.tf        # DHCP/DNS module
+├── aliases-module.tf         # Address groups module
 └── examples/
-    └── orange-box-dmz/       # Exemple complet Box Orange
+    └── orange-box-dmz/       # Complete Orange Box example
         ├── main.tf
         ├── variables.tf
         ├── outputs.tf
         └── README.md
 ```
 
-## Configuration initiale
+## Initial configuration
 
-### 1. Créer un template VM OPNsense (Proxmox)
+### 1. Create an OPNsense VM template (Proxmox)
 
 ```bash
-# Télécharger l'ISO OPNsense
+# Download the OPNsense ISO
 wget https://mirror.ams1.nl.leaseweb.net/opnsense/releases/24.1/OPNsense-24.1-dvd-amd64.iso
 
-# Créer VM dans Proxmox
+# Create VM in Proxmox
 # - CPU: 2 cores
 # - RAM: 4 GB
 # - Disk: 32 GB
 # - Network: 2 interfaces (WAN + LAN)
 
-# Installer OPNsense manuellement
-# Convertir en template après configuration de base
+# Install OPNsense manually
+# Convert to template after base configuration
 ```
 
-### 2. Activer l'API OPNsense
+### 2. Enable the OPNsense API
 
-1. Connectez-vous à l'interface web: `https://<IP-OPNsense>`
-2. Allez dans **System > Settings > Administration**
-3. Cochez **Enable API**
-4. Sauvegardez
+1. Log in to the web interface: `https://<IP-OPNsense>`
+2. Go to **System > Settings > Administration**
+3. Check **Enable API**
+4. Save
 
-### 3. Créer un utilisateur API
+### 3. Create an API user
 
 1. **System > Access > Users**
-2. Cliquez **+** pour ajouter un utilisateur
-3. Nom: `terraform`
-4. Cochez **Generate scrambled password**
-5. Dans la section **API keys**, cliquez **+**
-6. Téléchargez les clés (fichier `.txt`)
-7. Assignez les permissions:
-   - `GUI All pages` (pour accès complet)
-   - Ou permissions granulaires selon besoins
+2. Click **+** to add a user
+3. Name: `terraform`
+4. Check **Generate scrambled password**
+5. In the **API keys** section, click **+**
+6. Download the keys (`.txt` file)
+7. Assign permissions:
+   - `GUI All pages` (for full access)
+   - Or granular permissions as needed
 
-### 4. Configurer les credentials
+### 4. Configure credentials
 
 ```bash
-# Méthode recommandée: variables d'environnement
+# Recommended method: environment variables
 export TF_VAR_opnsense_uri="https://192.168.10.1"
-export TF_VAR_opnsense_api_key="votre-api-key"
-export TF_VAR_opnsense_api_secret="votre-api-secret"
+export TF_VAR_opnsense_api_key="your-api-key"
+export TF_VAR_opnsense_api_secret="your-api-secret"
 
-# Alternative: terraform.tfvars (NE PAS COMMITER)
-# Ajouter terraform.tfvars à .gitignore
+# Alternative: terraform.tfvars (DO NOT COMMIT)
+# Add terraform.tfvars to .gitignore
 ```
 
-## Modules disponibles
+## Available modules
 
 ### interfaces-module.tf
 
-Configure les interfaces réseau (WAN, LAN, VLANs).
+Configures network interfaces (WAN, LAN, VLANs).
 
 ```hcl
 module "interfaces" {
   source = "./.claude/templates/opnsense"
 
   wan_interface = "vtnet0"
-  wan_type      = "dhcp"  # ou "static"
+  wan_type      = "dhcp"  # or "static"
 
   lan_interface = "vtnet1"
   lan_ip        = "192.168.10.1"
@@ -119,7 +119,7 @@ module "interfaces" {
 
 ### firewall-module.tf
 
-Gère les règles de pare-feu.
+Manages firewall rules.
 
 ```hcl
 module "firewall" {
@@ -134,7 +134,7 @@ module "firewall" {
       source      = "lan"
       destination = "any"
       port        = "80,443"
-      description = "Autoriser HTTP/HTTPS sortant"
+      description = "Allow outbound HTTP/HTTPS"
     }
   ]
 }
@@ -142,7 +142,7 @@ module "firewall" {
 
 ### nat-module.tf
 
-Configure NAT outbound et port forwarding.
+Configures outbound NAT and port forwarding.
 
 ```hcl
 module "nat" {
@@ -155,7 +155,7 @@ module "nat" {
       external_port = "443"
       target_ip     = "192.168.10.20"
       target_port   = "443"
-      description   = "HTTPS vers serveur web"
+      description   = "HTTPS to web server"
     }
   ]
 }
@@ -163,7 +163,7 @@ module "nat" {
 
 ### services-module.tf
 
-Configure DHCP et DNS.
+Configures DHCP and DNS.
 
 ```hcl
 module "services" {
@@ -187,7 +187,7 @@ module "services" {
 
 ### aliases-module.tf
 
-Crée des groupes d'adresses pour simplifier les règles.
+Creates address groups to simplify rules.
 
 ```hcl
 module "aliases" {
@@ -208,24 +208,24 @@ module "aliases" {
 }
 ```
 
-## Exemple complet
+## Complete example
 
-Voir le dossier `examples/orange-box-dmz/` pour une configuration complète:
+See the `examples/orange-box-dmz/` folder for a complete configuration:
 
-- Box Orange configurée en DMZ vers OPNsense
-- Interface WAN en DHCP
-- Interface LAN en 192.168.10.0/24
-- Règles firewall de base
-- NAT outbound automatique
-- Serveur DHCP
+- Orange Box configured in DMZ to OPNsense
+- WAN interface in DHCP
+- LAN interface in 192.168.10.0/24
+- Base firewall rules
+- Automatic outbound NAT
+- DHCP server
 
-## Sécurité
+## Security
 
-### Règles obligatoires
+### Mandatory rules
 
 #### 1. Anti-lockout
 
-**TOUJOURS** inclure une règle permettant l'accès admin:
+**ALWAYS** include a rule allowing admin access:
 
 ```hcl
 resource "opnsense_firewall_filter" "anti_lockout" {
@@ -236,71 +236,71 @@ resource "opnsense_firewall_filter" "anti_lockout" {
   source_net       = "lan"
   destination_net  = "(self)"
   destination_port = "443"
-  description      = "ANTI-LOCKOUT: Accès admin"
-  sequence         = 1  # Priorité haute
+  description      = "ANTI-LOCKOUT: Admin access"
+  sequence         = 1  # High priority
 }
 ```
 
-#### 2. Credentials sécurisés
+#### 2. Secure credentials
 
-- **NE JAMAIS** commiter les clés API
-- Utiliser variables d'environnement ou vault
-- Ajouter `*.tfvars` à `.gitignore`
+- **NEVER** commit API keys
+- Use environment variables or vault
+- Add `*.tfvars` to `.gitignore`
 
-#### 3. Certificat HTTPS
+#### 3. HTTPS certificate
 
-En production, utiliser un certificat valide:
+In production, use a valid certificate:
 
 ```hcl
 provider "opnsense" {
-  allow_insecure = false  # Exiger certificat valide
+  allow_insecure = false  # Require valid certificate
 }
 ```
 
-### Bonnes pratiques
+### Best practices
 
-1. **Deny by default**: Bloquer tout, autoriser explicitement
-2. **Logging**: Activer les logs sur les règles block
-3. **Documentation**: Commenter chaque règle
-4. **Aliases**: Utiliser des aliases pour la lisibilité
-5. **Test**: Valider en lab avant production
+1. **Deny by default**: Block everything, allow explicitly
+2. **Logging**: Enable logs on block rules
+3. **Documentation**: Comment every rule
+4. **Aliases**: Use aliases for readability
+5. **Test**: Validate in lab before production
 
 ## Troubleshooting
 
-### Erreur de connexion API
+### API connection error
 
 ```bash
-# Tester la connexion
+# Test the connection
 curl -k -u "api-key:api-secret" \
   "https://<opnsense-ip>/api/core/firmware/status"
 
-# Vérifier:
-# - API activée dans OPNsense
-# - Credentials corrects
-# - Pare-feu n'est pas bloquant
-# - Certificat (si allow_insecure = false)
+# Check:
+# - API enabled in OPNsense
+# - Correct credentials
+# - Firewall is not blocking
+# - Certificate (if allow_insecure = false)
 ```
 
-### Lockout (accès perdu)
+### Lockout (lost access)
 
-1. Accéder via console Proxmox
-2. Désactiver temporairement le firewall:
+1. Access via Proxmox console
+2. Temporarily disable the firewall:
    ```bash
    pfctl -d
    ```
-3. Corriger via interface web
-4. Réactiver:
+3. Fix via web interface
+4. Re-enable:
    ```bash
    pfctl -e
    ```
 
-### Terraform state corrompu
+### Corrupted Terraform state
 
 ```bash
-# Importer une ressource existante
-terraform import opnsense_firewall_filter.rule "uuid-de-la-regle"
+# Import an existing resource
+terraform import opnsense_firewall_filter.rule "uuid-of-the-rule"
 
-# Rafraîchir le state
+# Refresh the state
 terraform refresh
 ```
 
@@ -308,14 +308,14 @@ terraform refresh
 
 ```hcl
 provider "opnsense" {
-  # Augmenter le timeout si nécessaire
+  # Increase the timeout if needed
   request_timeout = 60
 }
 ```
 
-## Ressources
+## Resources
 
-- [Documentation OPNsense](https://docs.opnsense.org/)
-- [Provider Terraform browningluke/opnsense](https://registry.terraform.io/providers/browningluke/opnsense/latest/docs)
-- [API OPNsense](https://docs.opnsense.org/development/api.html)
-- [Best Practices Terraform](https://terraform-best-practices.com)
+- [OPNsense Documentation](https://docs.opnsense.org/)
+- [Terraform Provider browningluke/opnsense](https://registry.terraform.io/providers/browningluke/opnsense/latest/docs)
+- [OPNsense API](https://docs.opnsense.org/development/api.html)
+- [Terraform Best Practices](https://terraform-best-practices.com)
