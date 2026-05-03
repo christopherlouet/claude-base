@@ -1,3 +1,4 @@
+```ts
 #!/usr/bin/env ts-node
 /**
  * Generate skill documentation pages from .claude/skills
@@ -55,7 +56,7 @@ function extractKeywords(content: string, name: string): string[] {
   keywords.push(...nameParts.filter((p) => p.length > 2));
 
   // Look for trigger patterns in content
-  const triggerMatch = content.match(/declenche[^\n]*:\s*([^\n]+)/i);
+  const triggerMatch = content.match(/trigger[^\n]*:\s*([^\n]+)/i);
   if (triggerMatch) {
     const triggers = triggerMatch[1].split(/[,;]/);
     keywords.push(...triggers.map((t) => t.trim().toLowerCase()).filter((t) => t.length > 2));
@@ -182,7 +183,7 @@ function generateSkillPage(skill: SkillInfo, position: number): string {
 
   const toolsList = skill.allowedTools.length > 0
     ? skill.allowedTools.map((t) => `\`${t}\``).join(', ')
-    : '_Tous les outils_';
+    : '_All tools_';
 
   const keywordsList = skill.keywords.length > 0
     ? skill.keywords.map((k) => `\`${k}\``).join(', ')
@@ -198,43 +199,43 @@ ${contextBadge}
 
 ## Configuration
 
-| Propriete | Valeur |
+| Property | Value |
 |-----------|--------|
-| **Contexte** | ${skill.context} |
-| **Outils autorises** | ${toolsList} |
-| **Mots-cles** | ${keywordsList} |
+| **Context** | ${skill.context} |
+| **Allowed tools** | ${toolsList} |
+| **Keywords** | ${keywordsList} |
 
-## Description detaillee
+## Detailed description
 
 ${rewriteReferenceLinks(skill.content, skill.name)}
 
-## Declenchement automatique
+## Automatic triggering
 
-Ce skill est automatiquement active lorsque :
-- Les mots-cles correspondants sont detectes dans la conversation
-- Le contexte de la tache correspond au domaine du skill
+This skill is automatically activated when:
+- The matching keywords are detected in the conversation
+- The task context matches the skill's domain
 
-### Exemples de declenchement
+### Triggering examples
 
-${skill.keywords.slice(0, 3).map((k) => `- _"Je veux ${k}..."_`).join('\n')}
+${skill.keywords.slice(0, 3).map((k) => `- _"I want to ${k}..."_`).join('\n')}
 
-## Contexte ${skill.context}
+## Context ${skill.context}
 
 ${skill.context === 'fork' ? `
-**Fork** signifie que le skill s'execute dans un contexte isole :
-- Ne pollue pas la conversation principale
-- Les resultats sont retournes proprement
-- Ideal pour les taches autonomes
+**Fork** means the skill runs in an isolated context:
+- Does not pollute the main conversation
+- Results are returned cleanly
+- Ideal for autonomous tasks
 ` : `
-**Shared** signifie que le skill partage le contexte de conversation :
-- Acces a l'historique complet
-- Modifications visibles immediatement
-- Ideal pour les taches interactives
+**Shared** means the skill shares the conversation context:
+- Access to the full history
+- Changes visible immediately
+- Ideal for interactive tasks
 `}
 ${skill.examples.length > 0 ? `
 ---
 
-## Exemples pratiques
+## Practical examples
 
 ${skill.examples.map((ex, idx) => `
 ### ${idx + 1}. ${ex.title}
@@ -244,9 +245,9 @@ ${ex.content}
 ` : ''}
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux skills](/docs/skills)
+- [Back to skills](/docs/skills)
 - [Architecture](/docs/intro/architecture)
 `;
 }
@@ -258,7 +259,7 @@ function generateSkillsIndex(skills: SkillInfo[]): string {
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: 'Skills',
-    description: `Catalogue des ${skills.length} skills auto-declenches`,
+    description: `Catalog of ${skills.length} auto-triggered skills`,
   });
 
   const forkSkills = skills.filter((s) => s.context === 'fork');
@@ -278,46 +279,46 @@ import Stats from '@site/src/components/Stats';
 import { SkillGrid } from '@site/src/components/SkillCard';
 import SkillCard from '@site/src/components/SkillCard';
 
-# Catalogue des Skills
+# Skills Catalog
 
-> **${skills.length} skills** auto-declenches par mots-cles
+> **${skills.length} skills** auto-triggered by keywords
 
 <Stats items={[
-  { number: ${forkSkills.length}, label: 'Skills Fork' },
-  { number: ${sharedSkills.length}, label: 'Skills Shared' },
+  { number: ${forkSkills.length}, label: 'Fork Skills' },
+  { number: ${sharedSkills.length}, label: 'Shared Skills' },
   { number: ${skills.length}, label: 'Total' },
 ]} />
 
-## Qu'est-ce qu'un Skill ?
+## What is a Skill?
 
-Les **skills** sont des comportements auto-declenches :
+**Skills** are auto-triggered behaviors:
 
-- **Declenchement automatique** : Active par mots-cles dans la conversation
-- **Contexte configurable** : Fork (isole) ou Shared (partage)
-- **Outils restreints** : Acces limite via \`allowed-tools\`
-- **Transparence** : L'utilisateur voit quand un skill est active
+- **Automatic triggering**: Activated by keywords in the conversation
+- **Configurable context**: Fork (isolated) or Shared (shared)
+- **Restricted tools**: Limited access via \`allowed-tools\`
+- **Transparency**: The user sees when a skill is activated
 
-## Skills par contexte
+## Skills by context
 
 ### Fork (${forkSkills.length} skills)
 
-Skills avec contexte isole.
+Skills with isolated context.
 
-| Skill | Description | Mots-cles |
+| Skill | Description | Keywords |
 |-------|-------------|-----------|
 ${generateTable(forkSkills)}
 
 ${sharedSkills.length > 0 ? `
 ### Shared (${sharedSkills.length} skills)
 
-Skills avec contexte partage.
+Skills with shared context.
 
-| Skill | Description | Mots-cles |
+| Skill | Description | Keywords |
 |-------|-------------|-----------|
 ${generateTable(sharedSkills)}
 ` : ''}
 
-## Vue en cartes
+## Card view
 
 <SkillGrid>
 ${skills.slice(0, 12).map((s) => `  <SkillCard
@@ -329,15 +330,15 @@ ${skills.slice(0, 12).map((s) => `  <SkillCard
   />`).join('\n')}
 </SkillGrid>
 
-[Voir tous les skills...](#skills-par-contexte)
+[See all skills...](#skills-by-context)
 
 ---
 
-## Voir aussi
+## See also
 
-- [Architecture](/docs/intro/architecture) - Comprendre Commands vs Agents vs Skills
-- [Commands](/docs/commands) - Les commandes manuelles
-- [Agents](/docs/agents) - Les sub-agents autonomes
+- [Architecture](/docs/intro/architecture) - Understand Commands vs Agents vs Skills
+- [Commands](/docs/commands) - Manual commands
+- [Agents](/docs/agents) - Autonomous sub-agents
 `;
 }
 
@@ -392,3 +393,4 @@ async function generateSkillDocs(): Promise<void> {
 generateSkillDocs().catch(console.error);
 
 export { generateSkillDocs };
+```
