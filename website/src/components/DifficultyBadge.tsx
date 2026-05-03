@@ -9,9 +9,9 @@ export interface DifficultyBadgeProps {
 }
 
 const difficultyLabels: Record<Difficulty, string> = {
-  beginner: 'Débutant',
-  intermediate: 'Intermédiaire',
-  advanced: 'Avancé',
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
 };
 
 const difficultyIcons: Record<Difficulty, string> = {
