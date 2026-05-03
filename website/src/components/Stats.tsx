@@ -23,9 +23,11 @@ export default function Stats({ items }: StatsProps): JSX.Element {
 }
 
 // Pre-defined stats for claude-socle
+// IMPORTANT: keep in sync with .claude/{commands,agents,skills,rules}/ counts.
+// Validated by scripts/validate-counts.sh on every PR.
 export const SOCLE_STATS: StatItem[] = [
-  { number: 123, label: 'Commands' },
-  { number: 59, label: 'Agents' },
-  { number: 42, label: 'Skills' },
-  { number: 24, label: 'Rules' },
+  { number: 131, label: 'Commands' },
+  { number: 63, label: 'Agents' },
+  { number: 54, label: 'Skills' },
+  { number: 30, label: 'Rules' },
 ];
