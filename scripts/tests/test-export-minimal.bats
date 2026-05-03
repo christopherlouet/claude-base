@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
-# Tests smoke pour le mode export minimal du socle.
-# Couvre : manifest integrity, --minimal flag de new-project.sh, export-minimal.sh archive.
+# Smoke tests for the foundation's minimal export mode.
+# Covers: manifest integrity, --minimal flag of new-project.sh, export-minimal.sh archive.
 
 setup() {
   REPO_ROOT="$(cd "$BATS_TEST_DIRNAME/../.." && pwd)"
@@ -21,22 +21,22 @@ teardown() {
 # Manifest
 # =============================================================================
 
-@test "manifest: fichier existe" {
+@test "manifest: file exists" {
   [ -f "$MANIFEST" ]
 }
 
-@test "manifest: contient au moins 20 entrees non-commentaires" {
+@test "manifest: contains at least 20 non-comment entries" {
   local count
   count=$(grep -cvE '^\s*(#|$)' "$MANIFEST")
   [ "$count" -ge 20 ]
 }
 
-@test "manifest: chaque chemin existe dans le repo" {
+@test "manifest: each path exists in the repo" {
   local missing=()
   while IFS= read -r line; do
     [[ "$line" =~ ^\s*$ ]] && continue
     [[ "$line" =~ ^\s*# ]] && continue
-    # Supporter la syntaxe SRC:DST — ne valider que SRC dans le repo
+    # Support SRC:DST syntax — only validate SRC in the repo
     local src="${line%%:*}"
     src="${src%/}"
     if [ ! -e "$REPO_ROOT/$src" ]; then
@@ -51,20 +51,20 @@ teardown() {
   fi
 }
 
-@test "manifest: contient les commandes essentielles" {
+@test "manifest: contains the essential commands" {
   grep -qE '^\.claude/commands/assistant\.md$' "$MANIFEST"
   grep -qE '^\.claude/commands/work/work-explore\.md$' "$MANIFEST"
   grep -qE '^\.claude/commands/dev/dev-tdd\.md$' "$MANIFEST"
   grep -qE '^\.claude/commands/qa/qa-audit\.md$' "$MANIFEST"
 }
 
-@test "manifest: contient les rules essentielles" {
+@test "manifest: contains the essential rules" {
   grep -qE '^\.claude/rules/workflow\.md$' "$MANIFEST"
   grep -qE '^\.claude/rules/tdd-enforcement\.md$' "$MANIFEST"
   grep -qE '^\.claude/rules/security\.md$' "$MANIFEST"
 }
 
-@test "manifest: inclut au moins un skill (dir avec SKILL.md)" {
+@test "manifest: includes at least one skill (dir with SKILL.md)" {
   grep -qE '^\.claude/skills/[a-z-]+/?$' "$MANIFEST"
 }
 
@@ -72,24 +72,24 @@ teardown() {
 # export-minimal.sh
 # =============================================================================
 
-@test "export-minimal.sh: script executable" {
+@test "export-minimal.sh: executable script" {
   [ -x "$EXPORT_SCRIPT" ]
 }
 
-@test "export-minimal.sh: --help retourne 0 et affiche usage" {
+@test "export-minimal.sh: --help returns 0 and displays usage" {
   run "$EXPORT_SCRIPT" --help
   [ "$status" -eq 0 ]
   [[ "$output" =~ [Uu]sage ]]
 }
 
-@test "export-minimal.sh: produit une archive .tar.gz" {
+@test "export-minimal.sh: produces a .tar.gz archive" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
   [ -f "$TMP_DIR/test.tar.gz" ]
   [ -s "$TMP_DIR/test.tar.gz" ]
 }
 
-@test "export-minimal.sh: archive taille < 500 KB" {
+@test "export-minimal.sh: archive size < 500 KB" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
   local size
@@ -97,38 +97,38 @@ teardown() {
   [ "$size" -lt 512000 ]
 }
 
-@test "export-minimal.sh: archive contient CLAUDE.md en racine" {
+@test "export-minimal.sh: archive contains CLAUDE.md at root" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
   tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-socle-minimal/CLAUDE\.md$'
 }
 
-@test "export-minimal.sh: archive contient .claude/commands/assistant.md" {
+@test "export-minimal.sh: archive contains .claude/commands/assistant.md" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
   tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-socle-minimal/\.claude/commands/assistant\.md$'
 }
 
-@test "export-minimal.sh: archive contient .claude/settings.json" {
+@test "export-minimal.sh: archive contains .claude/settings.json" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
   tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-socle-minimal/\.claude/settings\.json$'
 }
 
-@test "export-minimal.sh: archive contient au moins un skill complet (SKILL.md)" {
+@test "export-minimal.sh: archive contains at least one complete skill (SKILL.md)" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
   tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-socle-minimal/\.claude/skills/[a-z-]+/SKILL\.md$'
 }
 
-@test "export-minimal.sh: archive n'inclut PAS les domaines exclus (biz, growth, legal)" {
+@test "export-minimal.sh: archive does NOT include excluded domains (biz, growth, legal)" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
   ! tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '\.claude/commands/(biz|growth|legal)/'
   ! tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '\.claude/agents/biz-'
 }
 
-@test "export-minimal.sh: idempotent (2 runs consécutifs produisent la même liste de fichiers)" {
+@test "export-minimal.sh: idempotent (2 consecutive runs produce the same file list)" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/a.tar.gz"
   [ "$status" -eq 0 ]
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/b.tar.gz"
@@ -136,12 +136,12 @@ teardown() {
   diff <(tar -tzf "$TMP_DIR/a.tar.gz" | sort) <(tar -tzf "$TMP_DIR/b.tar.gz" | sort)
 }
 
-@test "export-minimal.sh: --output avec path traversal rejeté" {
+@test "export-minimal.sh: --output with path traversal rejected" {
   run "$EXPORT_SCRIPT" --output "../../../etc/evil.tar.gz"
   [ "$status" -ne 0 ]
 }
 
-@test "export-minimal.sh: archive bit-reproducible (mtime fixe)" {
+@test "export-minimal.sh: archive bit-reproducible (fixed mtime)" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/a.tar.gz"
   [ "$status" -eq 0 ]
   sleep 1
@@ -153,7 +153,7 @@ teardown() {
   [ "$sum_a" = "$sum_b" ]
 }
 
-@test "export-minimal.sh: manifest avec plus d'un ':' rejeté" {
+@test "export-minimal.sh: manifest with more than one ':' rejected" {
   local fake_manifest="$TMP_DIR/bad-manifest.txt"
   echo 'CLAUDE.md:foo:bar' > "$fake_manifest"
   run "$EXPORT_SCRIPT" --manifest "$fake_manifest" --output "$TMP_DIR/out.tar.gz"
@@ -161,7 +161,7 @@ teardown() {
   [[ "$output" =~ ambig ]]
 }
 
-@test "export-minimal.sh: manifest avec chemin absolu rejeté" {
+@test "export-minimal.sh: manifest with absolute path rejected" {
   local fake_manifest="$TMP_DIR/abs-manifest.txt"
   echo '/etc/passwd' > "$fake_manifest"
   run "$EXPORT_SCRIPT" --manifest "$fake_manifest" --output "$TMP_DIR/out.tar.gz"
@@ -169,8 +169,8 @@ teardown() {
   [[ "$output" =~ absolu ]]
 }
 
-@test "export-minimal.sh: manifest avec symlink sortant rejeté" {
-  # Creer un fake symlink sortant DANS le repo
+@test "export-minimal.sh: manifest with outgoing symlink rejected" {
+  # Create a fake outgoing symlink IN the repo
   local link="$REPO_ROOT/_test-bad-symlink-$$"
   ln -s /etc/passwd "$link"
   local fake_manifest="$TMP_DIR/link-manifest.txt"
@@ -185,13 +185,13 @@ teardown() {
 # new-project.sh --minimal
 # =============================================================================
 
-@test "new-project.sh: --minimal présent dans --help" {
+@test "new-project.sh: --minimal present in --help" {
   run "$NEW_PROJECT" --help
   [ "$status" -eq 0 ]
   [[ "$output" =~ --minimal ]]
 }
 
-@test "new-project.sh: --minimal installe dans un dossier cible" {
+@test "new-project.sh: --minimal installs in a target folder" {
   run "$NEW_PROJECT" --minimal -y "$TMP_DIR/proj"
   [ "$status" -eq 0 ]
   [ -f "$TMP_DIR/proj/CLAUDE.md" ]
@@ -200,7 +200,7 @@ teardown() {
   [ -d "$TMP_DIR/proj/.claude/skills/work-quick" ]
 }
 
-@test "new-project.sh: --minimal n'installe PAS les domaines exclus" {
+@test "new-project.sh: --minimal does NOT install excluded domains" {
   run "$NEW_PROJECT" --minimal -y "$TMP_DIR/proj"
   [ "$status" -eq 0 ]
   [ ! -d "$TMP_DIR/proj/.claude/commands/biz" ]

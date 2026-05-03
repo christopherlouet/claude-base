@@ -33,7 +33,7 @@
     },
     {
       "path": "scripts/tests/test-export-minimal.bats",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "635165ee347532fa686327ce8061b65a29cad8c620d8744dc88e1972edfb3c13"
     },
     {
