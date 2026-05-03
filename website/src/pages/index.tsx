@@ -40,7 +40,7 @@ const FeatureList: FeatureItem[] = [
     emoji: '🎯',
     description: (
       <>
-        Des commandes slash pour chaque situation : workflow, dev, QA, ops, docs, business, growth, data et legal.
+        Slash commands for every situation: workflow, dev, QA, ops, docs, business, growth, data and legal.
       </>
     ),
   },
@@ -49,7 +49,7 @@ const FeatureList: FeatureItem[] = [
     emoji: '🤖',
     description: (
       <>
-        Des agents autonomes avec contexte isole pour les audits, explorations et analyses complexes.
+        Autonomous agents with isolated context for audits, explorations and complex analyses.
       </>
     ),
   },
@@ -58,7 +58,7 @@ const FeatureList: FeatureItem[] = [
     emoji: '⚡',
     description: (
       <>
-        Des skills auto-declenches par mots-cles pour TDD, commits, debugging, reviews et plus.
+        Skills auto-triggered by keywords for TDD, commits, debugging, reviews and more.
       </>
     ),
   },
@@ -67,7 +67,7 @@ const FeatureList: FeatureItem[] = [
     emoji: '📏',
     description: (
       <>
-        Des regles modulaires par langage : TypeScript, React, Flutter, Python, Go, Rust et plus.
+        Modular rules per language: TypeScript, React, Flutter, Python, Go, Rust and more.
       </>
     ),
   },
@@ -106,7 +106,7 @@ function HomepageWorkflow(): JSX.Element {
     <section className={styles.workflow}>
       <div className="container">
         <Heading as="h2" className="text--center margin-bottom--lg">
-          Workflow Recommande
+          Recommended Workflow
         </Heading>
         <div className={styles.workflowDiagram}>
           <div className={styles.workflowStep}>
@@ -150,15 +150,15 @@ function HomepageCTA(): JSX.Element {
       <div className="container">
         <div className="row">
           <div className="col col--6 col--offset-3 text--center">
-            <Heading as="h2">Pret a commencer ?</Heading>
+            <Heading as="h2">Ready to get started?</Heading>
             <p>
-              Du debutant a l'expert en 5 niveaux progressifs, ou demarrez en 5 minutes.
+              From beginner to expert in 5 progressive levels, or get started in 5 minutes.
             </p>
             <div className={styles.buttons}>
               <Link
                 className="button button--primary button--lg margin-right--md"
                 to="/docs/guides/learning-path">
-                Parcours d'apprentissage
+                Learning path
               </Link>
               <Link
                 className="button button--secondary button--lg"
@@ -177,7 +177,7 @@ export default function Home(): JSX.Element {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title="Accueil"
+      title="Home"
       description={siteConfig.tagline}>
       <HomepageHeader />
       <main>
