@@ -1,3 +1,4 @@
+```typescript
 import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
 const sidebars: SidebarsConfig = {
@@ -17,11 +18,11 @@ const sidebars: SidebarsConfig = {
     },
   ],
 
-  // Concepts Claude Code sidebar
+  // Claude Code Concepts sidebar
   conceptsSidebar: [
     {
       type: 'category',
-      label: 'Concepts Claude Code',
+      label: 'Claude Code Concepts',
       collapsed: false,
       link: {
         type: 'doc',
@@ -184,7 +185,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'Orchestrateur & Outils (4)',
+          label: 'Orchestrator & Tools (4)',
           collapsed: false,
           items: [
             'commands/other/assistant',
@@ -249,7 +250,7 @@ const sidebars: SidebarsConfig = {
   tutorialsSidebar: [
     {
       type: 'category',
-      label: 'Tutoriels',
+      label: 'Tutorials',
       collapsed: false,
       link: {
         type: 'doc',
@@ -269,7 +270,7 @@ const sidebars: SidebarsConfig = {
         'tutorials/api-go',
         {
           type: 'category',
-          label: 'Projet fil rouge',
+          label: 'End-to-end project',
           collapsed: false,
           items: [
             'tutorials/projet-complet',
@@ -283,7 +284,7 @@ const sidebars: SidebarsConfig = {
   examplesSidebar: [
     {
       type: 'category',
-      label: 'Exemples',
+      label: 'Examples',
       collapsed: false,
       link: {
         type: 'doc',
@@ -348,7 +349,7 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'category',
-          label: 'Parcours',
+          label: 'Learning paths',
           collapsed: false,
           items: [
             'guides/claude-code-training',
@@ -358,7 +359,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'Par stack',
+          label: 'By stack',
           collapsed: false,
           items: [
             'concepts/stack-recipes',
@@ -366,7 +367,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'Par role',
+          label: 'By role',
           collapsed: true,
           items: [
             'guides/startup',
@@ -375,7 +376,7 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'Avance',
+          label: 'Advanced',
           collapsed: true,
           items: [
             'guides/extending-guide',
@@ -393,7 +394,7 @@ const sidebars: SidebarsConfig = {
   referenceSidebar: [
     {
       type: 'category',
-      label: 'Référence',
+      label: 'Reference',
       collapsed: false,
       link: {
         type: 'doc',
@@ -416,3 +417,4 @@ const sidebars: SidebarsConfig = {
 };
 
 export default sidebars;
+```
