@@ -1,0 +1,70 @@
+{
+  "tier": 7,
+  "files": [
+    {
+      "path": ".claude/templates/opnsense/README.md",
+      "status": "todo",
+      "checksum_source": "1f0b56c60885857e5d8540dfcd4298ae48067b276997d7b8ac3ad43479c14eac"
+    },
+    {
+      "path": ".claude/templates/opnsense/examples/orange-box-dmz/README.md",
+      "status": "todo",
+      "checksum_source": "302a5adda32aea78c064458ea62a187779edd1fe2e06d75eccd3326288c95e42"
+    },
+    {
+      "path": ".claude/templates/proxmox/README.md",
+      "status": "todo",
+      "checksum_source": "0d601f88f88787a62f1edf9dca5ed7f92ee7234661169b1ae9af7c1880644ba6"
+    },
+    {
+      "path": "scripts/themes/README.md",
+      "status": "todo",
+      "checksum_source": "ad2e164be23410946593eaea7b7f60c90dc8d4a1505673fd956af442107c3dd8"
+    },
+    {
+      "path": "scripts/themes/install-gnome-terminal-theme.sh",
+      "status": "todo",
+      "checksum_source": "7c1d4e3c5288a57f48a7fd59e39552167a6a5c2515b77b9e52e11a34df03316c"
+    },
+    {
+      "path": "scripts/themes/install-starship-theme.sh",
+      "status": "todo",
+      "checksum_source": "396e98a14da29953d6a4a6c33cebb79c5ad23f0e89f9934a4e38b89a8d86fd27"
+    },
+    {
+      "path": "scripts/tests/test-export-minimal.bats",
+      "status": "todo",
+      "checksum_source": "635165ee347532fa686327ce8061b65a29cad8c620d8744dc88e1972edfb3c13"
+    },
+    {
+      "path": "website/docusaurus.config.ts",
+      "status": "todo",
+      "checksum_source": "2e3ce020868eae0091f7b0667d0f4d432a834ec139b1a82b6414c9e2123dd584"
+    },
+    {
+      "path": "website/scripts/generate-pdfs.ts",
+      "status": "todo",
+      "checksum_source": "eda5d0cf56c60d069c56981e80cf799df07302834734ff2633e648a34b24d7d7"
+    },
+    {
+      "path": "website/scripts/print.css",
+      "status": "todo",
+      "checksum_source": "2b5aa896ac19e24e7901feaf5f66600da755856e5ff613f50895596f409dcc0d"
+    },
+    {
+      "path": "website/sidebars.ts",
+      "status": "todo",
+      "checksum_source": "b70f41f8b9538579a2c0b52d36486c8b8fc44bc154a7c60775545028cbf8440b"
+    },
+    {
+      "path": "website/src/components/DifficultyBadge.tsx",
+      "status": "todo",
+      "checksum_source": "1cc191b9f9894bdd6993276257d02a2dfc5876c13dc2f078de58094d5b483fb4"
+    },
+    {
+      "path": "website/src/components/TutorialCard.tsx",
+      "status": "todo",
+      "checksum_source": "bfc49eb78bebadba19fc5f74921211a5b7539a7d3e78dee665fced783eaad8e4"
+    }
+  ]
+}
