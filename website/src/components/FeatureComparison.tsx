@@ -1,4 +1,5 @@
 import React from 'react';
+import counts from '../../../counts.json';
 
 export interface ComparisonRow {
   aspect: string;
@@ -45,9 +46,9 @@ const DEFAULT_DATA: ComparisonRow[] = [
   },
   {
     aspect: 'Nombre',
-    Commands: '131',
-    Agents: '63',
-    Skills: '54',
+    Commands: String(counts.commands),
+    Agents: String(counts.agents),
+    Skills: String(counts.skills),
   },
 ];
 

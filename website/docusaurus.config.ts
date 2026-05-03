@@ -1,6 +1,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import counts from '../counts.json';
 
 const config: Config = {
   // Enable Mermaid diagrams
@@ -136,17 +137,17 @@ const config: Config = {
             {
               type: 'docSidebar',
               sidebarId: 'agentsSidebar',
-              label: 'Agents (63)',
+              label: `Agents (${counts.agents})`,
             },
             {
               type: 'docSidebar',
               sidebarId: 'skillsSidebar',
-              label: 'Skills (54)',
+              label: `Skills (${counts.skills})`,
             },
             {
               type: 'docSidebar',
               sidebarId: 'rulesSidebar',
-              label: 'Rules (30)',
+              label: `Rules (${counts.rules})`,
             },
           ],
         },
@@ -204,15 +205,15 @@ const config: Config = {
           title: 'Components',
           items: [
             {
-              label: 'Commands (131)',
+              label: `Commands (${counts.commands})`,
               to: '/docs/commands',
             },
             {
-              label: 'Agents (63)',
+              label: `Agents (${counts.agents})`,
               to: '/docs/agents',
             },
             {
-              label: 'Skills (54)',
+              label: `Skills (${counts.skills})`,
               to: '/docs/skills',
             },
           ],

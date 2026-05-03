@@ -6,6 +6,7 @@ import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 
 import styles from './index.module.css';
+import counts from '../../../counts.json';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
@@ -36,7 +37,7 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: '131 Commands',
+    title: `${counts.commands} Commands`,
     emoji: '🎯',
     description: (
       <>
@@ -45,7 +46,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '63 Sub-Agents',
+    title: `${counts.agents} Sub-Agents`,
     emoji: '🤖',
     description: (
       <>
@@ -54,7 +55,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '54 Skills',
+    title: `${counts.skills} Skills`,
     emoji: '⚡',
     description: (
       <>
@@ -63,7 +64,7 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: '30 Rules',
+    title: `${counts.rules} Rules`,
     emoji: '📏',
     description: (
       <>
