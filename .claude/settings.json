@@ -62,7 +62,7 @@
   "hooks": {
     "SessionStart": [
       {
-        "description": "Afficher les informations du projet au demarrage",
+        "description": "Display project information at startup",
         "hooks": [
           {
             "type": "command",
@@ -72,7 +72,7 @@
         ]
       },
       {
-        "description": "Verifier que node_modules existe si package.json present",
+        "description": "Check that node_modules exists if package.json present",
         "hooks": [
           {
             "type": "command",
@@ -82,7 +82,7 @@
         ]
       },
       {
-        "description": "Verifier que .env est dans .gitignore si present",
+        "description": "Check that .env is in .gitignore if present",
         "hooks": [
           {
             "type": "command",
@@ -92,7 +92,7 @@
         ]
       },
       {
-        "description": "Avertir si le projet contient des hooks personnalises",
+        "description": "Warn if the project contains custom hooks",
         "hooks": [
           {
             "type": "command",
@@ -104,7 +104,7 @@
     ],
     "PreToolUse": [
       {
-        "description": "Empecher les modifications sur la branche main/master (desactiver avec ALLOW_MAIN_EDIT=1)",
+        "description": "Prevent modifications on the main/master branch (disable with ALLOW_MAIN_EDIT=1)",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -116,7 +116,7 @@
         ]
       },
       {
-        "description": "Detecter les secrets avec gitleaks avant ecriture",
+        "description": "Detect secrets with gitleaks before writing",
         "matcher": "Write|Edit",
         "hooks": [
           {
@@ -128,7 +128,7 @@
         ]
       },
       {
-        "description": "Executer les tests avant un commit (desactiver avec SKIP_PRE_COMMIT_TESTS=1). Detecte Husky et adapte le comportement.",
+        "description": "Run tests before a commit (disable with SKIP_PRE_COMMIT_TESTS=1). Detects Husky and adapts behavior.",
         "matcher": "Bash",
         "hooks": [
           {
@@ -140,7 +140,7 @@
         ]
       },
       {
-        "description": "Verifier CI locale avant git push (desactiver avec SKIP_PRE_PUSH_CI=1)",
+        "description": "Check local CI before git push (disable with SKIP_PRE_PUSH_CI=1)",
         "matcher": "Bash",
         "hooks": [
           {
@@ -152,7 +152,7 @@
         ]
       },
       {
-        "description": "Confirmation obligatoire avant operations destructives sur les donnees (desactiver avec SKIP_DESTRUCTIVE_CHECK=1)",
+        "description": "Mandatory confirmation before destructive operations on data (disable with SKIP_DESTRUCTIVE_CHECK=1)",
         "matcher": "Bash",
         "hooks": [
           {
@@ -164,7 +164,7 @@
         ]
       },
       {
-        "description": "Pre-deploy safety: verify build prod passes before deploying (desactiver avec SKIP_PRE_DEPLOY_BUILD=1)",
+        "description": "Pre-deploy safety: verify build prod passes before deploying (disable with SKIP_PRE_DEPLOY_BUILD=1)",
         "matcher": "Bash",
         "hooks": [
           {
@@ -176,7 +176,7 @@
         ]
       },
       {
-        "description": "Validation de securite des commandes Bash (desactiver avec SKIP_COMMAND_VALIDATOR=1)",
+        "description": "Security validation of Bash commands (disable with SKIP_COMMAND_VALIDATOR=1)",
         "matcher": "Bash",
         "hooks": [
           {
@@ -188,7 +188,7 @@
         ]
       },
       {
-        "description": "RTK token optimizer - reecrit les commandes pour reduire les tokens de 60-90% (activer avec ENABLE_RTK=1, installer rtk: brew install rtk)",
+        "description": "RTK token optimizer - rewrites commands to reduce tokens by 60-90% (enable with ENABLE_RTK=1, install rtk: brew install rtk)",
         "matcher": "Bash",
         "hooks": [
           {
@@ -202,7 +202,7 @@
     ],
     "PostToolUse": [
       {
-        "description": "Rappel socle : compteurs doc coherents apres modif dans .claude/ (desactiver avec SKIP_SOCLE_INTEGRITY=1)",
+        "description": "Foundation reminder: doc counters consistent after modification in .claude/ (disable with SKIP_SOCLE_INTEGRITY=1)",
         "matcher": "Edit|Write|MultiEdit|NotebookEdit",
         "hooks": [
           {
@@ -214,7 +214,7 @@
         ]
       },
       {
-        "description": "Auto-format TypeScript/JavaScript apres modification",
+        "description": "Auto-format TypeScript/JavaScript after modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -226,7 +226,7 @@
         ]
       },
       {
-        "description": "Type-check TypeScript apres modification",
+        "description": "Type-check TypeScript after modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -238,7 +238,7 @@
         ]
       },
       {
-        "description": "ESLint verification apres modification JS/TS",
+        "description": "ESLint check after JS/TS modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -250,7 +250,7 @@
         ]
       },
       {
-        "description": "Auto-format Python apres modification",
+        "description": "Auto-format Python after modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -262,7 +262,7 @@
         ]
       },
       {
-        "description": "Auto-format Lua apres modification",
+        "description": "Auto-format Lua after modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -274,7 +274,7 @@
         ]
       },
       {
-        "description": "Auto-format Go apres modification",
+        "description": "Auto-format Go after modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -286,7 +286,7 @@
         ]
       },
       {
-        "description": "Auto-format Rust apres modification",
+        "description": "Auto-format Rust after modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -298,7 +298,7 @@
         ]
       },
       {
-        "description": "Auto-format Dart/Flutter apres modification",
+        "description": "Auto-format Dart/Flutter after modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -310,7 +310,7 @@
         ]
       },
       {
-        "description": "Auto-install apres modification de package.json",
+        "description": "Auto-install after package.json modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -322,7 +322,7 @@
         ]
       },
       {
-        "description": "Auto-sync apres modification de pyproject.toml",
+        "description": "Auto-sync after pyproject.toml modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -334,7 +334,7 @@
         ]
       },
       {
-        "description": "Auto pub get apres modification de pubspec.yaml",
+        "description": "Auto pub get after pubspec.yaml modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -346,7 +346,7 @@
         ]
       },
       {
-        "description": "Auto go mod tidy apres modification de go.mod",
+        "description": "Auto go mod tidy after go.mod modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -358,7 +358,7 @@
         ]
       },
       {
-        "description": "Auto cargo check apres modification de Cargo.toml",
+        "description": "Auto cargo check after Cargo.toml modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -370,7 +370,7 @@
         ]
       },
       {
-        "description": "Verifier couverture de tests apres modification de tests",
+        "description": "Check test coverage after tests modification",
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -385,7 +385,7 @@
     "Setup": [
       {
         "matcher": "init",
-        "description": "Installer les dependances du projet au premier lancement",
+        "description": "Install project dependencies on first launch",
         "hooks": [
           {
             "type": "command",
@@ -396,7 +396,7 @@
       },
       {
         "matcher": "maintenance",
-        "description": "Maintenance periodique: audit et mise a jour",
+        "description": "Periodic maintenance: audit and update",
         "hooks": [
           {
             "type": "command",
@@ -408,7 +408,7 @@
     ],
     "Notification": [
       {
-        "description": "Logger les notifications de permission",
+        "description": "Log permission notifications",
         "matcher": "permission_prompt",
         "hooks": [
           {
@@ -420,7 +420,7 @@
         ]
       },
       {
-        "description": "Logger quand Claude attend l'utilisateur",
+        "description": "Log when Claude is waiting for the user",
         "matcher": "idle_prompt",
         "hooks": [
           {
@@ -434,7 +434,7 @@
     ],
     "SubagentStop": [
       {
-        "description": "Logger la fin des sub-agents pour tracabilite",
+        "description": "Log sub-agent completion for traceability",
         "hooks": [
           {
             "type": "command",
@@ -447,7 +447,7 @@
     ],
     "TeammateIdle": [
       {
-        "description": "Logger quand un agent teammate devient inactif",
+        "description": "Log when a teammate agent becomes inactive",
         "hooks": [
           {
             "type": "command",
@@ -460,7 +460,7 @@
     ],
     "TaskCompleted": [
       {
-        "description": "Logger quand une tache est terminee",
+        "description": "Log when a task is completed",
         "hooks": [
           {
             "type": "command",
@@ -473,7 +473,7 @@
     ],
     "SessionEnd": [
       {
-        "description": "Logger la fin de session",
+        "description": "Log session end",
         "hooks": [
           {
             "type": "command",
@@ -486,7 +486,7 @@
     ],
     "PreCompact": [
       {
-        "description": "Logger avant compaction du contexte",
+        "description": "Log before context compaction",
         "hooks": [
           {
             "type": "command",
@@ -499,7 +499,7 @@
     ],
     "PostCompact": [
       {
-        "description": "Logger apres compaction du contexte",
+        "description": "Log after context compaction",
         "hooks": [
           {
             "type": "command",
@@ -512,7 +512,7 @@
     ],
     "InstructionsLoaded": [
       {
-        "description": "Logger le chargement des instructions (CLAUDE.md et rules)",
+        "description": "Log loading of instructions (CLAUDE.md and rules)",
         "hooks": [
           {
             "type": "command",
@@ -525,7 +525,7 @@
     ],
     "Elicitation": [
       {
-        "description": "Logger les demandes d'input MCP Elicitation",
+        "description": "Log MCP Elicitation input requests",
         "hooks": [
           {
             "type": "command",
@@ -538,7 +538,7 @@
     ],
     "ElicitationResult": [
       {
-        "description": "Logger les reponses d'Elicitation MCP",
+        "description": "Log MCP Elicitation responses",
         "hooks": [
           {
             "type": "command",
@@ -551,7 +551,7 @@
     ],
     "PermissionDenied": [
       {
-        "description": "Logger les permissions refusees par l'auto mode classifier (CLI 2.1.111+)",
+        "description": "Log permissions denied by the auto mode classifier (CLI 2.1.111+)",
         "hooks": [
           {
             "type": "command",
@@ -564,7 +564,7 @@
     ],
     "UserPromptSubmit": [
       {
-        "description": "Logger les prompts utilisateur pour debugging et analytics",
+        "description": "Log user prompts for debugging and analytics",
         "hooks": [
           {
             "type": "command",
@@ -575,7 +575,7 @@
         ]
       },
       {
-        "description": "Injecter le contexte repo et un hint de routing semantique vers /assistant-auto quand le prompt n'est pas une slash command (desactiver avec SKIP_PROMPT_CONTEXT=1)",
+        "description": "Inject repo context and a semantic routing hint to /assistant-auto when the prompt is not a slash command (disable with SKIP_PROMPT_CONTEXT=1)",
         "hooks": [
           {
             "type": "command",
@@ -587,7 +587,7 @@
     ],
     "PostToolUseFailure": [
       {
-        "description": "Logger les echecs d'outils pour debugging",
+        "description": "Log tool failures for debugging",
         "hooks": [
           {
             "type": "command",
