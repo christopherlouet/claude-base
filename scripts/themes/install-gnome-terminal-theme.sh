@@ -1,12 +1,12 @@
 #!/bin/bash
 # =============================================================================
 # install-gnome-terminal-theme.sh
-# Configure les thèmes de couleurs pour GNOME Terminal (Ubuntu)
+# Configures color themes for GNOME Terminal (Ubuntu)
 # =============================================================================
 
 set -e
 
-# Couleurs pour l'affichage
+# Colors for display
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -15,12 +15,12 @@ MAGENTA='\033[0;35m'
 NC='\033[0m' # No Color
 BOLD='\033[1m'
 
-# Chemin dconf pour GNOME Terminal
+# dconf path for GNOME Terminal
 DCONF_PROFILE_BASE="/org/gnome/terminal/legacy/profiles:/"
 
 # =============================================================================
-# Définition des thèmes (palettes 16 couleurs)
-# Format: background, foreground, puis palette de 16 couleurs
+# Theme definitions (16-color palettes)
+# Format: background, foreground, then 16-color palette
 # =============================================================================
 
 declare -A THEMES
@@ -75,7 +75,7 @@ THEMES[tokyo-night_cursor]="#C0CAF5"
 THEMES[tokyo-night_palette]="['#15161E', '#F7768E', '#9ECE6A', '#E0AF68', '#7AA2F7', '#BB9AF7', '#7DCFFF', '#A9B1D6', '#414868', '#F7768E', '#9ECE6A', '#E0AF68', '#7AA2F7', '#BB9AF7', '#7DCFFF', '#C0CAF5']"
 
 # =============================================================================
-# Fonctions
+# Functions
 # =============================================================================
 
 print_header() {
@@ -113,14 +113,14 @@ print_theme_preview() {
 
 check_dependencies() {
     if ! command -v dconf &> /dev/null; then
-        echo -e "${RED}Erreur: dconf n'est pas installé${NC}"
-        echo "Installe-le avec: sudo apt install dconf-cli"
+        echo -e "${RED}Error: dconf is not installed${NC}"
+        echo "Install it with: sudo apt install dconf-cli"
         exit 1
     fi
 
-    # Vérifier que GNOME Terminal est installé
+    # Check that GNOME Terminal is installed
     if ! command -v gnome-terminal &> /dev/null; then
-        echo -e "${RED}Erreur: GNOME Terminal n'est pas installé${NC}"
+        echo -e "${RED}Error: GNOME Terminal is not installed${NC}"
         exit 1
     fi
 }
@@ -143,23 +143,23 @@ create_new_profile() {
     local new_uuid
     new_uuid=$(generate_uuid)
 
-    echo -e "${CYAN}Création du profil '${profile_name}'...${NC}"
+    echo -e "${CYAN}Creating profile '${profile_name}'...${NC}"
 
-    # Récupérer la liste actuelle des profils
+    # Get the current profile list
     local current_list
     current_list=$(dconf read /org/gnome/terminal/legacy/profiles:/list)
 
     if [[ -z "$current_list" || "$current_list" == "@as []" ]]; then
-        # Aucun profil, créer la liste
+        # No profile, create the list
         dconf write /org/gnome/terminal/legacy/profiles:/list "['$new_uuid']"
     else
-        # Ajouter à la liste existante
+        # Append to the existing list
         local new_list
         new_list=$(echo "$current_list" | sed "s/]$/, '$new_uuid']/")
         dconf write /org/gnome/terminal/legacy/profiles:/list "$new_list"
     fi
 
-    # Configurer le nouveau profil
+    # Configure the new profile
     local profile_path="${DCONF_PROFILE_BASE}:${new_uuid}/"
 
     dconf write "${profile_path}visible-name" "'${profile_name}'"
@@ -182,12 +182,12 @@ apply_to_default_profile() {
     default_uuid=$(get_default_profile)
 
     if [[ -z "$default_uuid" ]]; then
-        echo -e "${YELLOW}Aucun profil par défaut trouvé, création d'un nouveau profil...${NC}"
+        echo -e "${YELLOW}No default profile found, creating a new profile...${NC}"
         create_new_profile "$theme_key"
         return
     fi
 
-    echo -e "${CYAN}Application au profil par défaut...${NC}"
+    echo -e "${CYAN}Applying to default profile...${NC}"
 
     local profile_path="${DCONF_PROFILE_BASE}:${default_uuid}/"
 
@@ -202,7 +202,7 @@ apply_to_default_profile() {
 }
 
 list_themes() {
-    echo -e "${BOLD}Thèmes disponibles:${NC}\n"
+    echo -e "${BOLD}Available themes:${NC}\n"
     echo -e "  ${BOLD}1)${NC}"; print_theme_preview "matrix"
     echo -e "  ${BOLD}2)${NC}"; print_theme_preview "cyberpunk"
     echo -e "  ${BOLD}3)${NC}"; print_theme_preview "dracula"
@@ -243,34 +243,34 @@ theme_name_to_key() {
 }
 
 install_all_themes() {
-    echo -e "${CYAN}Installation de tous les thèmes...${NC}\n"
+    echo -e "${CYAN}Installing all themes...${NC}\n"
 
     for theme in matrix cyberpunk dracula catppuccin nord gruvbox tokyo-night; do
         local uuid
         uuid=$(create_new_profile "$theme")
-        echo -e "  ${GREEN}✓${NC} ${THEMES[${theme}_name]} installé (profil: ${uuid:0:8}...)"
+        echo -e "  ${GREEN}✓${NC} ${THEMES[${theme}_name]} installed (profile: ${uuid:0:8}...)"
     done
 
-    echo -e "\n${GREEN}${BOLD}Tous les thèmes ont été installés !${NC}"
-    echo -e "Ouvre ${BOLD}GNOME Terminal → Préférences${NC} pour changer de profil."
+    echo -e "\n${GREEN}${BOLD}All themes have been installed!${NC}"
+    echo -e "Open ${BOLD}GNOME Terminal → Preferences${NC} to switch profile."
 }
 
 show_usage() {
     echo "Usage: $0 [OPTIONS] [THEME]"
     echo ""
     echo "Options:"
-    echo "  -l, --list          Lister les thèmes disponibles"
-    echo "  -a, --all           Installer tous les thèmes comme profils"
-    echo "  -d, --default       Appliquer au profil par défaut (au lieu de créer)"
-    echo "  -h, --help          Afficher cette aide"
+    echo "  -l, --list          List available themes"
+    echo "  -a, --all           Install all themes as profiles"
+    echo "  -d, --default       Apply to the default profile (instead of creating one)"
+    echo "  -h, --help          Show this help"
     echo ""
-    echo "Thèmes: matrix, cyberpunk, dracula, catppuccin, nord, gruvbox, tokyo-night"
+    echo "Themes: matrix, cyberpunk, dracula, catppuccin, nord, gruvbox, tokyo-night"
     echo ""
-    echo "Exemples:"
-    echo "  $0                  Mode interactif"
-    echo "  $0 dracula          Créer un profil Dracula"
-    echo "  $0 -d nord          Appliquer Nord au profil par défaut"
-    echo "  $0 --all            Installer tous les thèmes"
+    echo "Examples:"
+    echo "  $0                  Interactive mode"
+    echo "  $0 dracula          Create a Dracula profile"
+    echo "  $0 -d nord          Apply Nord to the default profile"
+    echo "  $0 --all            Install all themes"
 }
 
 # =============================================================================
@@ -281,7 +281,7 @@ main() {
     local apply_default=false
     local theme_key=""
 
-    # Parser les arguments
+    # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
             -l|--list)
@@ -303,14 +303,14 @@ main() {
                 exit 0
                 ;;
             -*)
-                echo -e "${RED}Option inconnue: $1${NC}"
+                echo -e "${RED}Unknown option: $1${NC}"
                 show_usage
                 exit 1
                 ;;
             *)
                 theme_key=$(theme_name_to_key "$1")
                 if [[ -z "$theme_key" ]]; then
-                    echo -e "${RED}Thème inconnu: $1${NC}"
+                    echo -e "${RED}Unknown theme: $1${NC}"
                     list_themes
                     exit 1
                 fi
@@ -322,15 +322,15 @@ main() {
     check_dependencies
     print_header
 
-    # Mode interactif si pas de thème spécifié
+    # Interactive mode if no theme specified
     if [[ -z "$theme_key" ]]; then
         list_themes
 
         echo -e "${BOLD}Options:${NC}"
-        echo "  a) Installer tous les thèmes"
-        echo "  q) Quitter"
+        echo "  a) Install all themes"
+        echo "  q) Quit"
         echo ""
-        read -p "Choisis un thème (1-7, a, ou q): " choice
+        read -p "Pick a theme (1-7, a, or q): " choice
 
         case $choice in
             [1-7])
@@ -341,23 +341,23 @@ main() {
                 exit 0
                 ;;
             q|Q)
-                echo "Annulé."
+                echo "Cancelled."
                 exit 0
                 ;;
             *)
-                echo -e "${RED}Choix invalide${NC}"
+                echo -e "${RED}Invalid choice${NC}"
                 exit 1
                 ;;
         esac
 
         echo ""
-        read -p "Appliquer au profil par défaut ? (o/N): " apply_choice
+        read -p "Apply to the default profile? (y/N): " apply_choice
         if [[ "$apply_choice" =~ ^[oOyY]$ ]]; then
             apply_default=true
         fi
     fi
 
-    # Appliquer le thème
+    # Apply the theme
     echo ""
     if [[ "$apply_default" == true ]]; then
         apply_to_default_profile "$theme_key"
@@ -365,11 +365,11 @@ main() {
         create_new_profile "$theme_key"
     fi
 
-    echo -e "\n${GREEN}${BOLD}✓ Thème ${THEMES[${theme_key}_name]} installé !${NC}"
+    echo -e "\n${GREEN}${BOLD}✓ Theme ${THEMES[${theme_key}_name]} installed!${NC}"
     echo ""
-    echo -e "Pour voir le changement:"
-    echo -e "  • ${BOLD}Nouveau terminal${NC}: Ouvre un nouvel onglet/fenêtre"
-    echo -e "  • ${BOLD}Changer de profil${NC}: Clic droit → Profils → ${THEMES[${theme_key}_name]}"
+    echo -e "To see the change:"
+    echo -e "  • ${BOLD}New terminal${NC}: Open a new tab/window"
+    echo -e "  • ${BOLD}Switch profile${NC}: Right-click → Profiles → ${THEMES[${theme_key}_name]}"
     echo ""
 }
 
