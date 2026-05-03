@@ -43,7 +43,7 @@
     },
     {
       "path": "website/scripts/generate-pdfs.ts",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "eda5d0cf56c60d069c56981e80cf799df07302834734ff2633e648a34b24d7d7"
     },
     {

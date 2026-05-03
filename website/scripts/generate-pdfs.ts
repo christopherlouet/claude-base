@@ -38,7 +38,7 @@ const SAFE_SLUG = /^[a-z0-9-]+$/;
 
 export function resolveOutputPath(outDir: string, slug: string): string {
   if (!SAFE_SLUG.test(slug)) {
-    throw new Error(`slug invalide : "${slug}" (doit matcher ${SAFE_SLUG})`);
+    throw new Error(`invalid slug: "${slug}" (must match ${SAFE_SLUG})`);
   }
   return path.join(outDir, `${slug}.pdf`);
 }
@@ -69,20 +69,20 @@ async function main(): Promise<void> {
   const cssFile = path.join(scriptDir, 'print.css');
 
   if (!checkPrinceAvailable()) {
-    console.error('[error] PrinceXML non trouvé dans le PATH.');
-    console.error('        Installe Prince depuis https://www.princexml.com/download/');
-    console.error('        Ubuntu 24.04 : sudo dpkg -i prince_*_ubuntu24.04_amd64.deb');
+    console.error('[error] PrinceXML not found in PATH.');
+    console.error('        Install Prince from https://www.princexml.com/download/');
+    console.error('        Ubuntu 24.04: sudo dpkg -i prince_*_ubuntu24.04_amd64.deb');
     process.exit(1);
   }
 
   if (!checkBuildExists(buildDir)) {
-    console.error(`[error] ${buildDir} introuvable.`);
-    console.error('        Lance "npm run build" avant de générer les PDFs.');
+    console.error(`[error] ${buildDir} not found.`);
+    console.error('        Run "npm run build" before generating the PDFs.');
     process.exit(1);
   }
 
   if (!fs.existsSync(cssFile)) {
-    console.error(`[error] CSS print introuvable : ${cssFile}`);
+    console.error(`[error] print CSS not found: ${cssFile}`);
     process.exit(1);
   }
 
@@ -100,7 +100,7 @@ async function main(): Promise<void> {
     const progress = `[${i + 1}/${PDF_TARGETS.length}]`;
 
     if (!fs.existsSync(htmlFile)) {
-      console.warn(`${progress} skip ${target.slug} (${target.htmlPath} absent du build)`);
+      console.warn(`${progress} skip ${target.slug} (${target.htmlPath} missing from build)`);
       failures.push(target.slug);
       continue;
     }
@@ -114,7 +114,7 @@ async function main(): Promise<void> {
       generated++;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error(`        échec : ${msg}`);
+      console.error(`        failure: ${msg}`);
       failures.push(target.slug);
     }
   }
@@ -124,7 +124,7 @@ async function main(): Promise<void> {
   console.log(`Output    : ${path.relative(process.cwd(), outDir)}/`);
 
   if (failures.length > 0) {
-    console.error(`Échecs    : ${failures.join(', ')}`);
+    console.error(`Failures  : ${failures.join(', ')}`);
     process.exit(1);
   }
 }
