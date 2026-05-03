@@ -1,3 +1,4 @@
+```typescript
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
@@ -29,7 +30,7 @@ const config: Config = {
     ],
   ],
   title: 'claude-socle',
-  tagline: 'Template de configuration Claude Code pour un workflow optimal : Explore → Specify → Plan → TDD → Commit',
+  tagline: 'Claude Code configuration template for an optimal workflow: Explore → Specify → Plan → TDD → Commit',
   favicon: 'img/favicon.svg',
 
   // GitHub Pages configuration
@@ -56,7 +57,7 @@ const config: Config = {
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
         },
-        blog: false, // Désactivé pour la v1
+        blog: false, // Disabled for v1
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -90,7 +91,7 @@ const config: Config = {
           type: 'doc',
           docId: 'guides/learning-path',
           position: 'left',
-          label: 'Parcours',
+          label: 'Path',
         },
         {
           type: 'docSidebar',
@@ -108,7 +109,7 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialsSidebar',
           position: 'left',
-          label: 'Tutoriels',
+          label: 'Tutorials',
         },
         {
           type: 'docSidebar',
@@ -118,7 +119,7 @@ const config: Config = {
         },
         {
           type: 'dropdown',
-          label: 'Composants',
+          label: 'Components',
           position: 'left',
           items: [
             {
@@ -142,7 +143,7 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'examplesSidebar',
           position: 'left',
-          label: 'Exemples',
+          label: 'Examples',
         },
         {
           type: 'docSidebar',
@@ -154,7 +155,7 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'referenceSidebar',
           position: 'left',
-          label: 'Référence',
+          label: 'Reference',
         },
         {
           href: 'https://github.com/christopherlouet/claude-socle',
@@ -175,7 +176,7 @@ const config: Config = {
               to: '/docs/intro/quick-start',
             },
             {
-              label: 'Concepts Claude Code',
+              label: 'Claude Code Concepts',
               to: '/docs/concepts',
             },
             {
@@ -189,7 +190,7 @@ const config: Config = {
           ],
         },
         {
-          title: 'Composants',
+          title: 'Components',
           items: [
             {
               label: 'Commands (131)',
@@ -206,14 +207,14 @@ const config: Config = {
           ],
         },
         {
-          title: 'Ressources',
+          title: 'Resources',
           items: [
             {
               label: 'Guides',
               to: '/docs/guides',
             },
             {
-              label: 'Référence',
+              label: 'Reference',
               to: '/docs/reference',
             },
             {
@@ -247,3 +248,4 @@ const config: Config = {
 };
 
 export default config;
+```
