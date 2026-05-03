@@ -578,6 +578,26 @@
         "website/src/components/DifficultyBadge.tsx",
         "website/src/components/TutorialCard.tsx"
       ]
+    },
+    "8": {
+      "label": "Final ultimate audit: settings + Docusaurus generators + index page + templates",
+      "files_count": 13,
+      "words": 0,
+      "files": [
+        ".claude/agents/ops-deps.md",
+        ".claude/settings.json",
+        ".claude/templates/github-actions/claude-review.yml",
+        ".claude/templates/github-actions/claude-security-review.yml",
+        "docs/guides/PROMPTING-GUIDE.md",
+        ".mcp.env.example",
+        "scripts/lib/minimal-claude-md.template",
+        "website/scripts/generate-agent-docs.ts",
+        "website/scripts/generate-command-docs.ts",
+        "website/scripts/generate-rule-docs.ts",
+        "website/scripts/generate-skill-docs.ts",
+        "website/src/components/WorkflowDiagram.tsx",
+        "website/src/pages/index.tsx"
+      ]
     }
   },
   "notes": [
