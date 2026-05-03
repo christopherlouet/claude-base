@@ -256,11 +256,11 @@ const sidebars: SidebarsConfig = {
         id: 'tutorials/index',
       },
       items: [
-        'tutorials/premier-projet',
+        'tutorials/first-project',
         'tutorials/feature-react',
         'tutorials/api-rest-node',
         'tutorials/flutter-supabase',
-        'tutorials/audit-securite',
+        'tutorials/security-audit',
         'tutorials/cicd-github',
         'tutorials/refactoring-legacy',
         'tutorials/proxmox-infra',
@@ -272,7 +272,7 @@ const sidebars: SidebarsConfig = {
           label: 'End-to-end project',
           collapsed: false,
           items: [
-            'tutorials/projet-complet',
+            'tutorials/complete-project',
           ],
         },
       ],

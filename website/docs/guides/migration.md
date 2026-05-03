@@ -328,7 +328,10 @@ After the migration, check:
 ### Commands
 
 - [ ] `/work:work-explore` works
+- [ ] `/work:work-specify` works
 - [ ] `/work:work-plan` works
+- [ ] `/dev:dev-tdd` works
+- [ ] `/qa:qa-loop` works
 - [ ] `/work:work-commit` works
 
 ### Customization

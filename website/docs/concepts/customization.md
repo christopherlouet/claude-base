@@ -268,7 +268,7 @@ Hooks are configured directly in the `settings.json` file:
 | `Bash` | Shell commands |
 | `Read` | File reading |
 | `Glob`, `Grep` | Search |
-| `Edit\|Write` | Multiple tools (regex) |
+| `Edit\\|Write` | Multiple tools (regex) |
 | `*` | All tools |
 
 ### Environment variables

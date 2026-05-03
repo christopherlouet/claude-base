@@ -173,7 +173,7 @@ tags:
 ## LEGAL-: Legal (5)
 | Command | Usage |
 |---------|-------|
-| `/legal:legal-docs` | ToS, T&Cs, legal notices |
+| `/legal:legal-docs` | ToS, T&amp;Cs, legal notices |
 | `/legal:legal-rgpd` | RGPD/GDPR compliance |
 | `/legal:legal-payment` | Payment integration |
 | `/legal:legal-terms-of-service` | Terms of Service |
@@ -195,11 +195,11 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 
 | Domain | Agents | Models |
 |--------|--------|--------|
-| Exploration & Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
-| Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-coverage`, `qa-responsive`, `qa-e2e`, `qa-tech-debt`, `qa-design`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
+| Exploration &amp; Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
+| Quality &amp; Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-coverage`, `qa-responsive`, `qa-e2e`, `qa-tech-debt`, `qa-design`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
 | Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-serverless`, `ops-vercel`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
 | Development | `dev-debug`, `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`, `dev-prompt-engineering`, `dev-rag`, `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-ai-integration`, `dev-document`, `dev-tdd` | haiku/sonnet/**opus** (tdd, debug, rag) |
-| Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |
+| Business &amp; Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |
 | Data | `data-pipeline`, `data-analytics`, `data-modeling` | haiku/sonnet |
 | Legal | `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service` | haiku/sonnet |
 

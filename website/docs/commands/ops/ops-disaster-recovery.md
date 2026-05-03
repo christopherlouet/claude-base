@@ -28,7 +28,7 @@ in case of a major disaster, with clear and tested RPO/RTO metrics.
 ## Workflow
 
 - Assess service criticality (mission critical, business critical, standard)
-- Choose the suitable strategy (Backup & Restore, Pilot Light, Warm Standby, Hot Standby)
+- Choose the suitable strategy (Backup &amp; Restore, Pilot Light, Warm Standby, Hot Standby)
 - Document the DR runbook (failover, failback, emergency contacts)
 - Configure replication and cross-region backups
 - Define DR tests (tabletop, simulation, full failover)

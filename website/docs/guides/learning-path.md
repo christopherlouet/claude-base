@@ -2264,6 +2264,6 @@ You have completed the learning path. Move on to practice:
 | Next step | Description |
 |----------------|-------------|
 | [Hands-on tutorials](/docs/tutorials) | 10 progressive tutorials to practice (15 min to 4h) |
-| [TaskFlow capstone project](/docs/tutorials/projet-complet) | Build a mini-SaaS from A to Z with the full workflow |
+| [TaskFlow capstone project](/docs/tutorials/complete-project) | Build a mini-SaaS from A to Z with the full workflow |
 | [Guides by technology](/docs/guides) | Deepen your stack (Web, Mobile, API, Python, Go, Infra) |
 | [Extending the foundation](/docs/guides/extending-guide) | Create your own rules, skills and agents |

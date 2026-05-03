@@ -77,12 +77,26 @@ Claude will analyze:
 - The dependencies
 - The points of attention
 
-### Step 2: Plan
+### Step 2: Specify
 
-Once the code is understood, plan your modification:
+Define the user stories and acceptance criteria before designing:
 
 ```bash
-/work:work-plan "Add an authentication feature"
+/work:work-specify "Add an authentication feature"
+```
+
+Claude will produce:
+- Prioritized user stories (P1 = MVP, P2, P3)
+- Acceptance criteria (Given/When/Then)
+- Functional requirements and edge cases
+- Out-of-scope explicitly listed
+
+### Step 3: Plan
+
+Once the spec is validated, plan the implementation:
+
+```bash
+/work:work-plan
 ```
 
 Claude will propose:
@@ -91,19 +105,27 @@ Claude will propose:
 - The identified risks
 - The tests to write
 
-### Step 3: Code
+### Step 4: TDD
 
-Implement following the plan:
+Implement following the plan, tests first:
 
 ```bash
-# In TDD (recommended)
 /dev:dev-tdd "Implement the authentication service"
-
-# Or direct implementation
-# Claude will follow the validated plan
 ```
 
-### Step 4: Commit
+Red → Green → Refactor cycle, 80%+ coverage on new code.
+
+### Step 5: Audit
+
+Run the adaptive audit + fix loop until target score:
+
+```bash
+/qa:qa-loop "score 90"
+```
+
+Covers security, performance, accessibility — fixes are applied automatically until the target score is reached.
+
+### Step 6: Commit
 
 Create a clean commit:
 
@@ -124,8 +146,10 @@ Or a complete Pull Request:
 | `/assistant` | Entry point - guides you to the right commands (guide mode) |
 | `/assistant-auto` | Automatic execution of the suitable workflow (auto mode) |
 | `/work:work-explore` | Explore and understand the code |
+| `/work:work-specify` | Specify user stories and acceptance criteria |
 | `/work:work-plan` | Plan a modification |
 | `/dev:dev-tdd` | Develop in TDD |
+| `/qa:qa-loop` | Adaptive audit + fix loop until target score |
 | `/work:work-commit` | Create a clean commit |
 | `/work:work-pr` | Create a Pull Request |
 

@@ -44,7 +44,7 @@ These files can break production silently (no error in dev):
 
 | File | Risk | Mandatory test |
 |---------|--------|-----------------|
-| `middleware.ts/proxy.ts` | CSP can block scripts → blank page | `npm run build && npm start`, check CSP headers with curl |
+| `middleware.ts/proxy.ts` | CSP can block scripts → blank page | `npm run build &amp;&amp; npm start`, check CSP headers with curl |
 | `layout.tsx` | `headers()` breaks SSG → 500 on static pages | `npm run build` must pass without error |
 | `sw.js` | HTML cache → broken hydration after deploy | Test in real browser with DevTools &gt; Application &gt; SW |
 | `docker-compose.production.yml` | `read_only` breaks framework cache | `docker compose up` locally before deploy |
@@ -73,9 +73,9 @@ NEVER chain more than 2 hotfixes in prod. On the 2nd failure → REVERT.
 | Tests pass | `npm test` / `pytest` / `go test` | Yes |
 | Types OK (if applicable) | `npx tsc --noEmit` / `mypy .` | Yes |
 | Lint OK | `npm run lint` / `ruff check .` / `golangci-lint run` | Yes |
-| No hardcoded secrets | `grep -rn "password\|secret\|api_key" docker-compose*.yml` | Yes |
+| No hardcoded secrets | `grep -rn "password\\|secret\\|api_key" docker-compose*.yml` | Yes |
 | DB migrations up to date | `prisma migrate status` / equivalent | Yes |
-| CSP headers verified | `curl -sI localhost:3000 \| grep csp` | If middleware modified |
+| CSP headers verified | `curl -sI localhost:3000 \\| grep csp` | If middleware modified |
 | SW does not cache HTML | Check navigate handler in sw.js | If SW modified |
 | Docker works | `docker compose -f docker-compose.production.yml up` locally | If Docker modified |
 | DB backup done | Backup script | Yes |
@@ -99,7 +99,7 @@ NEVER chain more than 2 hotfixes in prod. On the 2nd failure → REVERT.
 | Env | CSP | SW | Docker | Debug | Test method |
 |-----|-----|-----|--------|-------|-------------|
 | Dev | Permissive | Not active | No | Yes | `npm run dev` |
-| Local build | Prod | Active if registered | No | No | `npm run build && npm start` |
+| Local build | Prod | Active if registered | No | No | `npm run build &amp;&amp; npm start` |
 | Staging | Prod | Active | Yes | No | Via deploy script |
 | Prod | Strict | Active | Yes | No | Via deploy script |
 

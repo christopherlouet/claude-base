@@ -20,7 +20,7 @@ Follow these tutorials in order for an optimal progression:
     description="Discover the basic workflow by creating your first feature with claude-socle."
     duration="15 min"
     difficulty="beginner"
-    href="/docs/tutorials/premier-projet"
+    href="/docs/tutorials/first-project"
   />
   <TutorialCard
     title="React feature"
@@ -51,7 +51,7 @@ Follow these tutorials in order for an optimal progression:
     description="Run a complete OWASP security audit and fix the vulnerabilities."
     duration="30 min"
     difficulty="intermediate"
-    href="/docs/tutorials/audit-securite"
+    href="/docs/tutorials/security-audit"
     prerequisites={['Existing web project']}
   />
   <TutorialCard
@@ -112,7 +112,7 @@ Follow these tutorials in order for an optimal progression:
     description="Build a mini-SaaS from A to Z using the full foundation workflow: Specify, Plan, TDD, Audit, CI/CD, Deploy."
     duration="3-4h"
     difficulty="advanced"
-    href="/docs/tutorials/projet-complet"
+    href="/docs/tutorials/complete-project"
     prerequisites={['Tutorials 01-06', 'Node.js', 'React']}
   />
 </TutorialGrid>

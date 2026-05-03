@@ -645,7 +645,7 @@ api-todos/
 - [API Guide](/docs/concepts/stack-recipes) - REST best practices, versioning, pagination
 - [Auth Guide](/docs/concepts/stack-recipes) - OAuth2, JWT, API keys with FastAPI
 - [Database Guide](/docs/concepts/stack-recipes) - SQLAlchemy, Alembic, migrations
-- [Tutorial 10: Full project](/docs/tutorials/projet-complet) - Capstone integrating all guides
+- [Tutorial 10: Full project](/docs/tutorials/complete-project) - Capstone integrating all guides
 
 ---
 

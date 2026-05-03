@@ -18,7 +18,7 @@ The project includes automatic hooks in `.claude/settings.json`:
 |-------|------|-------------|
 | `SessionStart` | command | Triggered at session startup (matchers: `startup`, `resume`, `clear`, `compact`) |
 | `UserPromptSubmit` | command | When the user submits a prompt (validation, additional context) |
-| `PreToolUse` | command/prompt | Before tool execution (matcher: `Edit\|Write`, `Bash`) |
+| `PreToolUse` | command/prompt | Before tool execution (matcher: `Edit\\|Write`, `Bash`) |
 | `PermissionRequest` | command/prompt | When a permission dialog is shown |
 | `PostToolUse` | command | After successful tool execution |
 | `PostToolUseFailure` | command | After a tool failure |
