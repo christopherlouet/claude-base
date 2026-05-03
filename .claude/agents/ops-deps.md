@@ -10,7 +10,7 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "echo '[OPS-DEPS] Audit des dependances...'"
+          command: "echo '[OPS-DEPS] Auditing dependencies...'"
           timeout: 5000
 ---
 
