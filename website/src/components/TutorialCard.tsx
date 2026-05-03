@@ -29,7 +29,7 @@ export default function TutorialCard({
       <p className="tutorial-card__description">{description}</p>
       {prerequisites.length > 0 && (
         <div className="tutorial-card__prerequisites">
-          <span className="tutorial-card__prerequisites-label">Prérequis:</span>
+          <span className="tutorial-card__prerequisites-label">Prerequisites:</span>
           {prerequisites.map((prereq) => (
             <span key={prereq} className="tutorial-card__prerequisite">
               {prereq}

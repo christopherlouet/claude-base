@@ -63,7 +63,7 @@
     },
     {
       "path": "website/src/components/TutorialCard.tsx",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "bfc49eb78bebadba19fc5f74921211a5b7539a7d3e78dee665fced783eaad8e4"
     }
   ]
