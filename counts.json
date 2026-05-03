@@ -1,0 +1,19 @@
+{
+  "commands": 131,
+  "agents": 63,
+  "skills": 54,
+  "rules": 30,
+  "tests": 317,
+  "testFiles": 17,
+  "byDomain": {
+    "biz": 11,
+    "data": 3,
+    "dev": 23,
+    "doc": 9,
+    "growth": 11,
+    "legal": 5,
+    "ops": 34,
+    "qa": 16,
+    "work": 15
+  }
+}

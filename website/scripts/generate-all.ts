@@ -8,6 +8,7 @@ import { generateAgentDocs } from './generate-agent-docs.js';
 import { generateSkillDocs } from './generate-skill-docs.js';
 import { generateRuleDocs } from './generate-rule-docs.js';
 import { syncDocs } from './sync-docs.js';
+import { generateCounts } from './generate-counts.js';
 
 interface GenerationStats {
   commands: number;
@@ -34,6 +35,11 @@ async function generateAll(): Promise<GenerationStats> {
   };
 
   try {
+    // Generate counts.json (source of truth for all counter numbers)
+    console.log('\n📊 Generating counts.json...');
+    console.log('─'.repeat(50));
+    generateCounts();
+
     // Generate command docs
     console.log('\n📚 Generating command documentation...');
     console.log('─'.repeat(50));
