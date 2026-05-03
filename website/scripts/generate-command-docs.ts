@@ -1,3 +1,4 @@
+```typescript
 #!/usr/bin/env ts-node
 /**
  * Generate command documentation pages from .claude/commands
@@ -50,7 +51,7 @@ function parseCommandFile(filePath: string): CommandInfo | null {
     return {
       name: fileName,
       domain,
-      description: description || `Commande ${name}`,
+      description: description || `Command ${name}`,
       filePath,
       content,
     };
@@ -129,10 +130,10 @@ ${content}
 
 ---
 
-## Voir aussi
+## See also
 
-- [Retour aux commandes ${DOMAIN_LABELS[command.domain]}](/docs/commands/${command.domain})
-- [Toutes les commandes](/docs/commands)
+- [Back to ${DOMAIN_LABELS[command.domain]} commands](/docs/commands/${command.domain})
+- [All commands](/docs/commands)
 `;
 }
 
@@ -146,7 +147,7 @@ function generateDomainIndex(domain: Domain, commands: CommandInfo[]): string {
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: label,
-    description: `Commandes ${label} - ${description}`,
+    description: `${label} commands - ${description}`,
   });
 
   const commandsList = commands
@@ -163,21 +164,21 @@ function generateDomainIndex(domain: Domain, commands: CommandInfo[]): string {
 import { CommandGrid } from '@site/src/components/CommandCard';
 import CommandCard from '@site/src/components/CommandCard';
 
-# Commandes ${label}
+# ${label} Commands
 
 > ${description}
 
-## Vue d'ensemble
+## Overview
 
-Ce domaine contient **${commands.length} commandes** pour ${description.toLowerCase()}.
+This domain contains **${commands.length} commands** for ${description.toLowerCase()}.
 
-## Liste des commandes
+## Commands list
 
-| Commande | Description |
+| Command | Description |
 |----------|-------------|
 ${commandsList}
 
-## Commandes en detail
+## Commands in detail
 
 <CommandGrid>
 ${commands.map((cmd) => `  <CommandCard
@@ -190,7 +191,7 @@ ${commands.map((cmd) => `  <CommandCard
 
 ---
 
-[Retour a toutes les commandes](/docs/commands)
+[Back to all commands](/docs/commands)
 `;
 }
 
@@ -206,7 +207,7 @@ function generateMainIndex(commandsByDomain: Map<Domain, CommandInfo[]>): string
   const frontmatter = generateFrontmatter({
     sidebar_position: 1,
     title: 'Commands',
-    description: `Catalogue des ${totalForDescription} commandes claude-socle`,
+    description: `Catalog of ${totalForDescription} claude-socle commands`,
   });
 
   let totalCommands = 0;
@@ -226,7 +227,7 @@ ${commands.slice(0, 5).map((cmd) => {
     const cmdLabel = domain === 'other' ? `/${cmd.name}` : `/${domain}:${cmd.name}`;
     return `- [\`${cmdLabel}\`](/docs/commands/${domain}/${cmd.name})`;
   }).join('\n')}
-${commands.length > 5 ? `- [... et ${commands.length - 5} autres](/docs/commands/${domain})` : ''}
+${commands.length > 5 ? `- [... and ${commands.length - 5} more](/docs/commands/${domain})` : ''}
 `);
   }
 
@@ -234,46 +235,46 @@ ${commands.length > 5 ? `- [... et ${commands.length - 5} autres](/docs/commands
 
 import Stats from '@site/src/components/Stats';
 
-# Catalogue des Commandes
+# Commands Catalog
 
-> **${totalCommands} commandes** organisees en **${commandsByDomain.size} domaines**
+> **${totalCommands} commands** organized in **${commandsByDomain.size} domains**
 
 <Stats items={[
-  { number: ${totalCommands}, label: 'Commandes' },
-  { number: ${commandsByDomain.size}, label: 'Domaines' },
+  { number: ${totalCommands}, label: 'Commands' },
+  { number: ${commandsByDomain.size}, label: 'Domains' },
 ]} />
 
-## Comment utiliser les commandes
+## How to use commands
 
-Les commandes sont declenchees manuellement avec le prefixe \`/\` :
+Commands are triggered manually with the \`/\` prefix:
 
 \`\`\`bash
 /work:work-explore
-/dev:dev-tdd "Description de la feature"
+/dev:dev-tdd "Feature description"
 /qa:qa-security
 \`\`\`
 
-## Domaines
+## Domains
 
 ${domainSections.join('\n')}
 
-## Guide de choix rapide
+## Quick choice guide
 
-| Besoin | Commande recommandee |
+| Need | Recommended command |
 |--------|---------------------|
-| Explorer le code | \`/work:work-explore\` |
-| Specifier le besoin | \`/work:work-specify\` |
-| Planifier une modification | \`/work:work-plan\` |
-| Developper en TDD | \`/dev:dev-tdd\` |
-| Creer un commit | \`/work:work-commit\` |
-| Audit de securite | \`/qa:qa-security\` |
-| Audit complet | \`/qa:qa-audit\` |
-| Creer une PR | \`/work:work-pr\` |
+| Explore the code | \`/work:work-explore\` |
+| Specify the need | \`/work:work-specify\` |
+| Plan a change | \`/work:work-plan\` |
+| Develop with TDD | \`/dev:dev-tdd\` |
+| Create a commit | \`/work:work-commit\` |
+| Security audit | \`/qa:qa-security\` |
+| Full audit | \`/qa:qa-audit\` |
+| Create a PR | \`/work:work-pr\` |
 | Release | \`/ops:ops-release\` |
 
 ---
 
-Utilisez \`/assistant\` pour obtenir des recommandations personnalisees.
+Use \`/assistant\` to get personalized recommendations.
 `;
 }
 
@@ -356,3 +357,4 @@ async function generateCommandDocs(): Promise<void> {
 generateCommandDocs().catch(console.error);
 
 export { generateCommandDocs };
+```

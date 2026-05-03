@@ -43,7 +43,7 @@
     },
     {
       "path": "website/scripts/generate-command-docs.ts",
-      "status": "todo",
+      "status": "draft",
       "checksum_source": "d70efa38a5fa544ad3b21d8c624e0b3764ea7e584dce42172116e57324eccb22"
     },
     {
