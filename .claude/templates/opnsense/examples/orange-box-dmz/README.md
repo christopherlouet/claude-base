@@ -1,42 +1,42 @@
-# Exemple: OPNsense derrière Box Orange en DMZ
+# Example: OPNsense behind Orange Box in DMZ
 
-Configuration Terraform complète pour déployer OPNsense derrière une box Orange (Livebox) en mode DMZ.
+Complete Terraform configuration to deploy OPNsense behind an Orange box (Livebox) in DMZ mode.
 
 ## Architecture
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│    Internet     │     │   Box Orange    │     │    OPNsense     │
+│    Internet     │     │   Orange Box    │     │    OPNsense     │
 │                 │────▶│  192.168.1.1    │────▶│   WAN: DHCP     │
-│                 │     │   Mode DMZ      │     │   LAN: .10.1    │
+│                 │     │   DMZ Mode      │     │   LAN: .10.1    │
 └─────────────────┘     └─────────────────┘     └────────┬────────┘
                                                          │
                                            ┌─────────────┴─────────────┐
                                            │       LAN 192.168.10.0/24 │
                                            │                           │
                                     ┌──────┴──────┐             ┌──────┴──────┐
-                                    │  Serveurs   │             │  Clients    │
+                                    │   Servers   │             │   Clients   │
                                     │  .10.20+    │             │  DHCP       │
                                     └─────────────┘             └─────────────┘
 ```
 
-## Prérequis
+## Prerequisites
 
-### 1. OPNsense installé
+### 1. OPNsense installed
 
-- VM Proxmox ou machine physique
-- 2 interfaces réseau (WAN + LAN)
-- API activée (System > Settings > Administration)
-- Utilisateur API créé avec clés
+- Proxmox VM or physical machine
+- 2 network interfaces (WAN + LAN)
+- API enabled (System > Settings > Administration)
+- API user created with keys
 
-### 2. Box Orange configurée
+### 2. Orange Box configured
 
-1. Accéder à la Livebox: `http://192.168.1.1`
-2. Aller dans **Réseau > NAT/PAT > DMZ**
-3. Activer la DMZ vers l'IP WAN d'OPNsense
-4. Optionnel: Désactiver le WiFi de la box si OPNsense gère le réseau
+1. Access the Livebox: `http://192.168.1.1`
+2. Go to **Network > NAT/PAT > DMZ**
+3. Enable DMZ to OPNsense's WAN IP
+4. Optional: Disable the box's WiFi if OPNsense manages the network
 
-### 3. Terraform installé
+### 3. Terraform installed
 
 ```bash
 # macOS
@@ -48,113 +48,113 @@ unzip terraform_1.9.0_linux_amd64.zip
 sudo mv terraform /usr/local/bin/
 ```
 
-## Utilisation
+## Usage
 
-### 1. Configurer les credentials
+### 1. Configure credentials
 
 ```bash
-# Variables d'environnement (recommandé)
+# Environment variables (recommended)
 export TF_VAR_opnsense_uri="https://192.168.10.1"
-export TF_VAR_opnsense_api_key="votre-api-key"
-export TF_VAR_opnsense_api_secret="votre-api-secret"
+export TF_VAR_opnsense_api_key="your-api-key"
+export TF_VAR_opnsense_api_secret="your-api-secret"
 ```
 
-Ou créer un fichier `terraform.tfvars` (NE PAS COMMITER):
+Or create a `terraform.tfvars` file (DO NOT COMMIT):
 
 ```hcl
 opnsense_uri        = "https://192.168.10.1"
-opnsense_api_key    = "votre-api-key"
-opnsense_api_secret = "votre-api-secret"
+opnsense_api_key    = "your-api-key"
+opnsense_api_secret = "your-api-secret"
 ```
 
-### 2. Personnaliser les variables
+### 2. Customize variables
 
-Éditer `variables.tf` ou créer `terraform.tfvars`:
+Edit `variables.tf` or create `terraform.tfvars`:
 
 ```hcl
-# Réseau
+# Network
 lan_ip           = "192.168.10.1"
 lan_subnet       = 24
 dhcp_range_start = "192.168.10.100"
 dhcp_range_end   = "192.168.10.200"
 local_domain     = "home.local"
 
-# Interfaces (adapter selon votre matériel)
-wan_device = "vtnet0"  # ou em0, igb0...
-lan_device = "vtnet1"  # ou em1, igb1...
+# Interfaces (adapt to your hardware)
+wan_device = "vtnet0"  # or em0, igb0...
+lan_device = "vtnet1"  # or em1, igb1...
 ```
 
-### 3. Déployer
+### 3. Deploy
 
 ```bash
-# Initialiser Terraform
+# Initialize Terraform
 terraform init
 
-# Prévisualiser les changements
+# Preview changes
 terraform plan
 
-# Appliquer la configuration
+# Apply the configuration
 terraform apply
 
-# Voir les outputs
+# View outputs
 terraform output
 terraform output summary
 ```
 
-## Ce qui est configuré
+## What is configured
 
 ### Interfaces
 
 | Interface | Configuration |
 |-----------|---------------|
-| WAN | DHCP (IP assignée par la box) |
-| LAN | 192.168.10.1/24 (statique) |
+| WAN | DHCP (IP assigned by the box) |
+| LAN | 192.168.10.1/24 (static) |
 
 ### Firewall
 
-| Règle | Description |
-|-------|-------------|
-| Anti-lockout | Accès admin depuis LAN (seq: 1) |
-| HTTP/HTTPS | Autoriser navigation web sortante |
-| DNS | Autoriser résolution DNS |
-| NTP | Autoriser synchronisation horaire |
-| ICMP | Autoriser ping sortant |
-| Block all | Bloquer et logger tout le reste |
+| Rule | Description |
+|------|-------------|
+| Anti-lockout | Admin access from LAN (seq: 1) |
+| HTTP/HTTPS | Allow outbound web browsing |
+| DNS | Allow DNS resolution |
+| NTP | Allow time synchronization |
+| ICMP | Allow outbound ping |
+| Block all | Block and log everything else |
 
 ### Services
 
 | Service | Configuration |
 |---------|---------------|
-| DHCP | Plage 192.168.10.100-200 |
-| DNS | Forwarders Cloudflare (1.1.1.1) |
+| DHCP | Range 192.168.10.100-200 |
+| DNS | Cloudflare forwarders (1.1.1.1) |
 
 ### Aliases
 
-| Alias | Contenu |
+| Alias | Content |
 |-------|---------|
 | PORTS_WEB | 80, 443 |
 | PORTS_ADMIN | 22, 443 |
 | DNS_PUBLIC | 1.1.1.1, 1.0.0.1, 8.8.8.8, 8.8.4.4 |
 
-## Personnalisation
+## Customization
 
-### Ajouter une réservation DHCP
+### Add a DHCP reservation
 
-Décommenter dans `main.tf`:
+Uncomment in `main.tf`:
 
 ```hcl
 resource "opnsense_dhcp_v4_static_map" "server_example" {
   interface   = "lan"
-  mac         = "00:11:22:33:44:55"  # MAC de votre serveur
+  mac         = "00:11:22:33:44:55"  # MAC of your server
   ipaddr      = "192.168.10.20"
   hostname    = "server"
-  description = "Serveur principal"
+  description = "Main server"
 }
 ```
 
-### Ajouter un port forwarding
+### Add a port forwarding
 
-Décommenter dans `main.tf`:
+Uncomment in `main.tf`:
 
 ```hcl
 resource "opnsense_nat_port_forward" "https_to_web" {
@@ -166,13 +166,13 @@ resource "opnsense_nat_port_forward" "https_to_web" {
   destination_port = "443"
   target           = "192.168.10.20"
   local_port       = "443"
-  description      = "HTTPS vers serveur web"
+  description      = "HTTPS to web server"
   nat_reflection   = "enable"
   filter_rule_association = "add-associated"
 }
 ```
 
-### Ajouter une entrée DNS locale
+### Add a local DNS entry
 
 ```hcl
 resource "opnsense_unbound_host_override" "server" {
@@ -185,43 +185,43 @@ resource "opnsense_unbound_host_override" "server" {
 
 ## Troubleshooting
 
-### Erreur de connexion API
+### API connection error
 
 ```bash
-# Tester la connexion
+# Test the connection
 curl -k -u "$TF_VAR_opnsense_api_key:$TF_VAR_opnsense_api_secret" \
   "$TF_VAR_opnsense_uri/api/core/firmware/status"
 ```
 
-### Lockout (accès perdu)
+### Lockout (lost access)
 
-1. Accéder via console Proxmox
-2. Désactiver le firewall: `pfctl -d`
-3. Corriger via interface web
-4. Réactiver: `pfctl -e`
+1. Access via Proxmox console
+2. Disable the firewall: `pfctl -d`
+3. Fix via web interface
+4. Re-enable: `pfctl -e`
 
-### State désynchronisé
+### Desynchronized state
 
 ```bash
-# Rafraîchir le state
+# Refresh the state
 terraform refresh
 
-# Importer une ressource existante
-terraform import opnsense_firewall_filter.rule "uuid-de-la-regle"
+# Import an existing resource
+terraform import opnsense_firewall_filter.rule "uuid-of-the-rule"
 ```
 
-## Fichiers
+## Files
 
-| Fichier | Description |
-|---------|-------------|
-| `main.tf` | Configuration principale |
-| `variables.tf` | Variables d'entrée |
-| `outputs.tf` | Valeurs de sortie |
-| `terraform.tfvars` | Valeurs personnalisées (NE PAS COMMITER) |
+| File | Description |
+|------|-------------|
+| `main.tf` | Main configuration |
+| `variables.tf` | Input variables |
+| `outputs.tf` | Output values |
+| `terraform.tfvars` | Custom values (DO NOT COMMIT) |
 
-## Sécurité
+## Security
 
-- **NE JAMAIS** commiter les credentials API
-- Ajouter `terraform.tfvars` et `*.tfstate*` à `.gitignore`
-- Utiliser des variables d'environnement en CI/CD
-- Toujours garder la règle anti-lockout active
+- **NEVER** commit API credentials
+- Add `terraform.tfvars` and `*.tfstate*` to `.gitignore`
+- Use environment variables in CI/CD
+- Always keep the anti-lockout rule active
