@@ -1,78 +1,78 @@
-# Projet (socle minimal)
+# Project (minimal foundation)
 
-> Configuration Claude Code minimale pour le parcours Niveau 1 + Niveau 2 du learning-path.
-> Workflow : Explore → Plan → TDD → Audit → Commit.
+> Minimal Claude Code configuration for the Level 1 + Level 2 path of the learning-path.
+> Workflow: Explore → Plan → TDD → Audit → Commit.
 
 @.claude/docs/reference/best-practices.md
 @.claude/docs/reference/project-structures.md
 
-## Parcours recommande
+## Recommended path
 
-Lis d'abord **`.claude/docs/guides/learning-path.md`** pour comprendre Claude Code et claude-socle,
-puis enchaine avec les sections ci-dessous.
+First read **`.claude/docs/guides/learning-path.md`** to understand Claude Code and claude-socle,
+then continue with the sections below.
 
-## Workflow Obligatoire : Explore → Plan → TDD → Audit → Commit
+## Mandatory Workflow: Explore → Plan → TDD → Audit → Commit
 
-1. **EXPLORE** (`/work:work-explore`) — Lire et comprendre le code AVANT de modifier
-2. **PLAN** (`/work:work-plan`) — Architecture, fichiers, taches, risques
-3. **TDD** (`/dev:dev-tdd`) — Tests AVANT le code, cycle Red-Green-Refactor, couverture 80%+
-4. **AUDIT** (`/qa:qa-audit`) — Audit qualite adaptatif
-5. **COMMIT** (`/work:work-commit` ou `/work:work-pr`) — Conventional Commits
+1. **EXPLORE** (`/work:work-explore`) — Read and understand the code BEFORE modifying
+2. **PLAN** (`/work:work-plan`) — Architecture, files, tasks, risks
+3. **TDD** (`/dev:dev-tdd`) — Tests BEFORE code, Red-Green-Refactor cycle, 80%+ coverage
+4. **AUDIT** (`/qa:qa-audit`) — Adaptive quality audit
+5. **COMMIT** (`/work:work-commit` or `/work:work-pr`) — Conventional Commits
 
-## Commandes disponibles (minimal)
+## Available commands (minimal)
 
-| Domaine | Commande | Usage |
+| Domain | Command | Usage |
 |---------|----------|-------|
-| Orchestration | `/assistant` | Point d'entree, guide vers la bonne commande |
-| Orchestration | `/assistant-auto` | Routing semantique automatique |
-| Work | `/work:work-explore` | Comprendre le code existant |
-| Work | `/work:work-plan` | Planifier l'implementation |
-| Work | `/work:work-quick` | Changement trivial (< 50 LOC) |
-| Work | `/work:work-flow-feature` | Cycle complet nouvelle feature |
-| Work | `/work:work-flow-bugfix` | Cycle complet correction de bug |
-| Work | `/work:work-commit` | Creer un commit |
-| Work | `/work:work-pr` | Creer une PR |
+| Orchestration | `/assistant` | Entry point, guides to the right command |
+| Orchestration | `/assistant-auto` | Automatic semantic routing |
+| Work | `/work:work-explore` | Understand the existing code |
+| Work | `/work:work-plan` | Plan the implementation |
+| Work | `/work:work-quick` | Trivial change (< 50 LOC) |
+| Work | `/work:work-flow-feature` | Full cycle for a new feature |
+| Work | `/work:work-flow-bugfix` | Full cycle for a bug fix |
+| Work | `/work:work-commit` | Create a commit |
+| Work | `/work:work-pr` | Create a PR |
 | Dev | `/dev:dev-tdd` | TDD Red-Green-Refactor |
-| QA | `/qa:qa-review` | Revue de code |
-| QA | `/qa:qa-audit` | Audit complet |
-| Doc | `/doc:doc-onboard` | Onboarding sur le codebase |
-| Doc | `/doc:doc-explain` | Expliquer du code |
+| QA | `/qa:qa-review` | Code review |
+| QA | `/qa:qa-audit` | Full audit |
+| Doc | `/doc:doc-onboard` | Onboarding on the codebase |
+| Doc | `/doc:doc-explain` | Explain code |
 
-## Conventions de Code
+## Code Conventions
 
-- **TypeScript** : strict mode, pas de `any`, interfaces. Details dans `.claude/rules/typescript.md`
-- **Tests** : couverture 80%+, pas de mocks sauf deps externes, edge cases. Details dans `.claude/rules/testing.md`
-- **Securite** : valider entrees, echapper outputs, requetes parametrees. Details dans `.claude/rules/security.md`
-- **Nommage** : camelCase (vars/fonctions), PascalCase (classes/composants), SCREAMING_SNAKE (constantes), kebab-case (fichiers)
+- **TypeScript**: strict mode, no `any`, interfaces. Details in `.claude/rules/typescript.md`
+- **Tests**: 80%+ coverage, no mocks except external deps, edge cases. Details in `.claude/rules/testing.md`
+- **Security**: validate inputs, escape outputs, parameterized queries. Details in `.claude/rules/security.md`
+- **Naming**: camelCase (vars/functions), PascalCase (classes/components), SCREAMING_SNAKE (constants), kebab-case (files)
 
-### Gestion des secrets
+### Secrets management
 
-- IMPORTANT: Ne jamais commiter de secrets (.env, credentials, API keys)
-- Utiliser des variables d'environnement
+- IMPORTANT: Never commit secrets (.env, credentials, API keys)
+- Use environment variables
 
-## Happy Path par Defaut (Routing Semantique)
+## Default Happy Path (Semantic Routing)
 
-Toute demande sans slash command explicite beneficie automatiquement du contexte repo injecte par le hook `UserPromptSubmit` (`scripts/hooks/prompt-context.sh`). Ce contexte hinte un routing vers `/assistant-auto`.
+Any request without an explicit slash command automatically benefits from the repo context injected by the `UserPromptSubmit` hook (`scripts/hooks/prompt-context.sh`). This context hints a routing to `/assistant-auto`.
 
-- Intention triviale (< 50 LOC, 1-3 fichiers) → `/work:work-quick`
-- Feature / bugfix standard → `/work:work-flow-feature` ou `/work:work-flow-bugfix`
+- Trivial intent (< 50 LOC, 1-3 files) → `/work:work-quick`
+- Standard feature / bugfix → `/work:work-flow-feature` or `/work:work-flow-bugfix`
 
-Desactiver : `SKIP_PROMPT_CONTEXT=1`.
+Disable: `SKIP_PROMPT_CONTEXT=1`.
 
 ## Documentation
 
-| Reference | Chemin |
+| Reference | Path |
 |-----------|--------|
-| Parcours Novice a Pro | `.claude/docs/guides/learning-path.md` |
-| Bonnes pratiques | `.claude/docs/reference/best-practices.md` |
-| Structures de projet | `.claude/docs/reference/project-structures.md` |
+| Novice to Pro Path | `.claude/docs/guides/learning-path.md` |
+| Best practices | `.claude/docs/reference/best-practices.md` |
+| Project structures | `.claude/docs/reference/project-structures.md` |
 
-## Anti-patterns a Eviter
+## Anti-patterns to Avoid
 
-- Coder sans comprendre l'existant
-- Implementer sans plan valide
-- Coder AVANT d'ecrire les tests (violer TDD)
-- Commiter sans audit
-- Commits geants multi-fonctionnalites
-- `any` partout en TypeScript
-- Prompts vagues sans contexte ni exemples
+- Coding without understanding the existing code
+- Implementing without a validated plan
+- Coding BEFORE writing the tests (violating TDD)
+- Committing without an audit
+- Giant multi-feature commits
+- `any` everywhere in TypeScript
+- Vague prompts without context or examples
