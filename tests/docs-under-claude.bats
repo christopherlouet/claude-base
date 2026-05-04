@@ -189,11 +189,12 @@ make_legacy_install() {
         rm -rf "$target/.claude/docs"
     fi
     if [[ -f "$target/CLAUDE.md" ]]; then
-        sed -i \
+        # `-i.bak` works on both GNU sed (Linux) and BSD sed (macOS).
+        sed -i.bak \
             -e 's|@\.claude/docs/reference/|@docs/reference/|g' \
             -e 's|`\.claude/docs/reference/|`docs/reference/|g' \
             -e 's|`\.claude/docs/guides/|`docs/guides/|g' \
-            "$target/CLAUDE.md"
+            "$target/CLAUDE.md" && rm -f "$target/CLAUDE.md.bak"
     fi
 }
 

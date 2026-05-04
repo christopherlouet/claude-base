@@ -1559,8 +1559,9 @@ create_project() {
             if ! $DRY_RUN; then
                 # Escape PROJECT_NAME for safe sed substitution (use | delimiter)
                 local safe_name="${PROJECT_NAME//|/\\|}"
-                sed -i "s|# Projet .*|# Projet ${safe_name}|" "$TARGET_DIR/CLAUDE.md" 2>/dev/null || \
-                sed -i '' "s|# Projet .*|# Projet ${safe_name}|" "$TARGET_DIR/CLAUDE.md" 2>/dev/null || true
+                # `-i.bak` works on both GNU sed (Linux) and BSD sed (macOS).
+                sed -i.bak "s|# Projet .*|# Projet ${safe_name}|" "$TARGET_DIR/CLAUDE.md" 2>/dev/null \
+                    && rm -f "$TARGET_DIR/CLAUDE.md.bak" || true
             fi
 
             success "CLAUDE.md template configured (${PROJECT_TYPE})"
