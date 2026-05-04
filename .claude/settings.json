@@ -100,6 +100,16 @@
             "timeout": 3000
           }
         ]
+      },
+      {
+        "description": "Probe Claude Code version for the output rewriter (requires 2.1.121+). Writes a sentinel consumed by post-edit and bash-output rewriter hooks.",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check-cli-version.sh\"",
+            "timeout": 2000
+          }
+        ]
       }
     ],
     "PreToolUse": [

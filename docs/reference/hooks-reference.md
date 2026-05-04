@@ -100,6 +100,7 @@ PreToolUse hooks can return `"defer"` as a permission decision. The headless ses
 | **PostToolUseFailure** | PostToolUseFailure | Logs tool failures for debugging (async) |
 | **Check .env** | SessionStart | Checks that .env is in .gitignore |
 | **Third-party hooks warning** | SessionStart | Warns if custom hooks are detected |
+| **CLI version probe** | SessionStart | Probes Claude Code version for the output rewriter (requires 2.1.121+). Writes `/tmp/claude-rewriter-supported` (`1` or `0`) consumed by post-edit and bash-output rewriter hooks |
 
 ## Hook Environment Variables
 
