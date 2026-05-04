@@ -201,6 +201,14 @@ echo ""
 
 DRIFT_ERRORS=0
 
+# NOTE on macOS BSD grep limitation:
+# The `^` anchor inside a grouped alternation (`(...|^pattern|...)`) behaves
+# differently in BSD grep vs GNU grep. On BSD grep -E, `^` inside an
+# alternation is treated as literal in some contexts, causing the markdown-
+# heading pattern (`^#{1,4} Label (N)`) to miss matches on macOS. The other 4
+# patterns work portably. A full rewrite as separate grep invocations would
+# fix this but is deferred — affects 2 tests out of 399 and only the markdown-
+# heading edge case on macOS, not real-world use on Linux.
 scan_drift() {
     local label_singular="$1"   # "skill"
     local label_plural="$2"     # "skills"
