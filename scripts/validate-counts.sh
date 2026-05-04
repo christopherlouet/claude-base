@@ -227,7 +227,10 @@ scan_drift() {
     # Pattern 4 accepts up to 4 intermediate cells before the number cell (e.g.
     # `| **Agents** | foo | bar | baz | 63 |`) — common in 3+ column tables.
     local lab="(${label_cap_singular}|${label_cap_plural}${alt_form})"
-    local pattern_re="(${lab}\s+disponibles?\s+\(([0-9]+)\)|^#{1,4}\s+${lab}\s+\(([0-9]+)[^)]*\)|'([0-9]+)\s+${lab}'|\|\s*\*\*${lab}\*\*\s*\|(\s*[^|]*\|){0,4}\s*([0-9]+)\s*\||^#{1,4}\s+([0-9]+)\s+${lab}\b)"
+    # POSIX ERE only — BSD grep does not support Perl-style `\s` (whitespace)
+    # or `\b` (word boundary). Replaced with `[[:space:]]` and `($|[^[:alnum:]_])`.
+    local ws='[[:space:]]'
+    local pattern_re="(${lab}${ws}+disponibles?${ws}+\(([0-9]+)\)|^#{1,4}${ws}+${lab}${ws}+\(([0-9]+)[^)]*\)|'([0-9]+)${ws}+${lab}'|\|${ws}*\*\*${lab}\*\*${ws}*\|(${ws}*[^|]*\|){0,4}${ws}*([0-9]+)${ws}*\||^#{1,4}${ws}+([0-9]+)${ws}+${lab}($|[^[:alnum:]_]))"
 
     while IFS= read -r match; do
         [[ -z "$match" ]] && continue
@@ -321,7 +324,7 @@ scan_tests_drift() {
             DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
         fi
     done < <(
-        grep -rnE '\([0-9]+ files?,\s*[0-9]+ tests\)' \
+        grep -rnE '\([0-9]+ files?,[[:space:]]*[0-9]+ tests\)' \
             --include="*.md" --include="*.ts" --include="*.tsx" \
             --exclude-dir=node_modules --exclude-dir=.git \
             --exclude-dir=build --exclude-dir=.docusaurus \
