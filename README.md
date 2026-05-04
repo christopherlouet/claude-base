@@ -45,6 +45,8 @@ claude-socle's unique value (vs assembling marketplace plugins alone):
 
 **Honest limit**: for any single vertical task, there's likely a more specialized marketplace plugin. We're tracking this — see `specs/marketplace-audit/` for the per-domain comparison work in progress.
 
+**Presets coming**: a curated bundle system (`./scripts/new-project.sh --preset <stack>`) is being designed to install foundation + recommended marketplace plugins together for a given stack. See `specs/presets/spec.md` for the format and `specs/presets/roadmap.md` for the named target stacks (3 in pipeline, 24+ community-wanted across web, backend, mobile, data, infra). Stack-specific naming only — no `web-app` or `backend-app`. If your daily stack isn't on the list, contributions welcome.
+
 ## Installation
 
 ### Option 1: Installation script (recommended)

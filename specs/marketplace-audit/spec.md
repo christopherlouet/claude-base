@@ -17,7 +17,8 @@ This spec plans a **per-domain audit** that decides, evidence in hand, which pac
 ## Goals
 
 - **Honest evaluation per domain**: for each of the 9 domains (`biz`, `data`, `dev`, `doc`, `growth`, `legal`, `ops`, `qa`, `work`), compare what claude-socle ships against the top 1-3 marketplace alternatives.
-- **Decision matrix**: each pack ends up in one of three buckets — `Keep`, `Reduce-to-pointer`, `Remove`.
+- **Decision matrix**: each pack ends up in one of four buckets — `Keep`, `Reduce-to-pointer`, `Move-to-preset-recommendation`, `Remove`.
+- **Feed the preset roadmap**: packs that land in `Move-to-preset-recommendation` become curated entries in the relevant preset's `marketplace_plugins` list — the audit and the preset roadmap are coupled deliverables.
 - **No silent breakage**: every removal goes through a deprecation period (one minor release) with clear migration guidance.
 - **Documented final positioning**: post-audit, the README + EXTENDING-GUIDE communicate where claude-socle's depth genuinely lives and where users should look to the marketplace.
 
@@ -47,6 +48,7 @@ Each pack (defined as a `commands/<domain>/<name>.md` plus its associated agent/
 |---|---|---|
 | 10-12 | **Keep** | Document the integration story explicitly. |
 | 7-9 | **Reduce-to-pointer** | Replace pack content with a one-paragraph entry pointing to the marketplace alternative + a quick "how to combine with claude-socle workflow" note. |
+| 7-9, fits a preset stack | **Move-to-preset-recommendation** | Drop the pack from the foundation and instead recommend the marketplace alternative inside a relevant preset's `marketplace_plugins` list (see `specs/presets/spec.md`). The preset becomes the curated path for that pack's users. |
 | 4-6 | **Remove** | Deprecate in next minor release. README pointer to marketplace alternatives. |
 
 ### Marketplace alternative search protocol
