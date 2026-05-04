@@ -1,0 +1,5 @@
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory.
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+added 247 packages, and audited 248 packages in 12s
+found 0 vulnerabilities
+(exit code: 0)

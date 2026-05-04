@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+=================================== FAILURES ===================================
+>           User.create(email='not-an-email')
+E           AssertionError: DID NOT RAISE <class 'ValueError'>
+tests/test_user.py:42: AssertionError
+>       user.delete()
+E       AttributeError: 'User' object has no attribute 'delete'
+=========================== short test summary info ============================
+FAILED tests/test_user.py::test_user_create_invalid - AssertionError: DID NOT RAISE
+FAILED tests/test_user.py::test_user_delete_cascade - AttributeError: 'User' object has no attribute 'delete'
+========================= 2 failed, 22 passed in 1.37s =========================
+(exit code: 1)

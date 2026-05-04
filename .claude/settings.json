@@ -390,6 +390,18 @@
             "onFailure": "ignore"
           }
         ]
+      },
+      {
+        "description": "Output rewriter — trim noisy Bash command outputs (npm/pnpm/yarn/bun, pytest, go, cargo). Disable with SKIP_BASH_OUTPUT_FILTER=1; verbose with BASH_OUTPUT_FILTER_VERBOSE=1. Requires Claude Code 2.1.121+ (sentinel set by SessionStart probe).",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/bash-output-filter.sh\"",
+            "timeout": 5000,
+            "onFailure": "ignore"
+          }
+        ]
       }
     ],
     "Setup": [

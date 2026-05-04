@@ -1,0 +1,40 @@
+# npm audit report
+
+ansi-regex  3.0.0 - 4.1.0
+Severity: high
+Inefficient Regular Expression Complexity in chalk/ansi-regex - https://github.com/advisories/GHSA-93q8-gq69-wqmw
+fix available via `npm audit fix`
+node_modules/ansi-regex
+  strip-ansi  4.0.0 - 6.0.0
+  Depends on vulnerable versions of ansi-regex
+  node_modules/strip-ansi
+
+semver  7.0.0 - 7.5.1
+Severity: moderate
+semver vulnerable to Regular Expression Denial of Service - https://github.com/advisories/GHSA-c2qf-rxjj-qqgw
+fix available via `npm audit fix`
+node_modules/semver
+
+node-fetch  <2.6.7
+Severity: high
+node-fetch is vulnerable to exposure of sensitive information to an unauthorized actor - https://github.com/advisories/GHSA-r683-j2x4-v87g
+fix available via `npm audit fix --force`
+Will install node-fetch@2.7.0, which is a breaking change
+node_modules/node-fetch
+
+minimist  <0.2.4
+Severity: critical
+Prototype Pollution in minimist - https://github.com/advisories/GHSA-vh95-rmgr-6w4m
+fix available via `npm audit fix`
+node_modules/minimist
+
+ws  6.0.0 - 6.2.2 || 7.0.0 - 7.5.9
+Severity: high
+ReDoS in ws - https://github.com/advisories/GHSA-6fc8-4gx4-v693
+fix available via `npm audit fix`
+node_modules/ws
+
+5 vulnerabilities (1 critical, 3 high, 1 moderate)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force

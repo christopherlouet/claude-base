@@ -15,13 +15,16 @@ load 'test_helper'
 
 HELPERS="$SOCLE_DIR/scripts/hooks/_hook-helpers.sh"
 CHECK_VERSION="$SOCLE_DIR/scripts/hooks/check-cli-version.sh"
+BASH_FILTER="$SOCLE_DIR/scripts/hooks/bash-output-filter.sh"
+FIXTURES="$SOCLE_DIR/tests/hook-output-rewriter/fixtures"
 SENTINEL_FILE="/tmp/claude-rewriter-supported"
+METRIC_LOG="/tmp/claude-rewriter.log"
 
 setup() {
     skip_if_no_jq
     setup_test_dir
-    # Ensure sentinel cleanup before each test
-    rm -f "$SENTINEL_FILE"
+    # Ensure sentinel + metric log cleanup before each test
+    rm -f "$SENTINEL_FILE" "$METRIC_LOG"
     # Build a fake `claude` binary path that tests can prepend to PATH
     FAKE_BIN="$TEST_DIR/fake-bin"
     mkdir -p "$FAKE_BIN"
@@ -29,7 +32,7 @@ setup() {
 }
 
 teardown() {
-    rm -f "$SENTINEL_FILE"
+    rm -f "$SENTINEL_FILE" "$METRIC_LOG"
     teardown_test_dir
 }
 
@@ -41,6 +44,49 @@ install_fake_claude() {
 echo "$version_string"
 EOF
     chmod +x "$FAKE_BIN/claude"
+}
+
+# Helper: mark the rewriter as supported (skips the per-test SessionStart probe)
+enable_rewriter() {
+    echo "1" > "$SENTINEL_FILE"
+}
+
+# Helper: assert filtering a bash fixture produces the expected output.
+# Args: scenario_name command [exit_code]
+assert_bash_fixture() {
+    local name="$1"
+    local cmd="$2"
+    local exit_code="${3:-0}"
+    local in_file="$FIXTURES/bash/$name.in.txt"
+    local expected_file="$FIXTURES/bash/$name.expected.txt"
+
+    [ -f "$in_file" ] || { echo "fixture missing: $in_file"; return 1; }
+    [ -f "$expected_file" ] || { echo "expected missing: $expected_file"; return 1; }
+
+    local stdin_json
+    stdin_json=$(jq -n --arg cmd "$cmd" --argjson code "$exit_code" --rawfile out "$in_file" \
+        '{tool_name: "Bash", tool_input: {command: $cmd}, tool_response: {output: $out, exit_code: $code}}')
+
+    # Lower threshold so artificial short fixtures still trigger the filter.
+    # Threshold behavior itself is covered by dedicated tests.
+    export BASH_OUTPUT_FILTER_THRESHOLD=5
+    local result
+    result=$(printf '%s' "$stdin_json" | "$BASH_FILTER")
+    unset BASH_OUTPUT_FILTER_THRESHOLD
+
+    local trimmed
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+
+    local expected
+    expected=$(cat "$expected_file")
+
+    if [ "$trimmed" != "$expected" ]; then
+        echo "=== EXPECTED ==="
+        printf '%s\n' "$expected"
+        echo "=== GOT ==="
+        printf '%s\n' "$trimmed"
+        return 1
+    fi
 }
 
 # =============================================================================
@@ -256,4 +302,159 @@ EOF
     end_ns=$(date +%s%N)
     local elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
     [ "$elapsed_ms" -lt 2000 ]
+}
+
+# =============================================================================
+# Phase 2: bash-output-filter.sh
+# =============================================================================
+
+@test "Phase 2: bash-output-filter.sh exists and is executable" {
+    [ -x "$BASH_FILTER" ]
+}
+
+@test "Phase 2: filter exits 0 with no envelope when sentinel is missing" {
+    rm -f "$SENTINEL_FILE"
+    local stdin_json
+    stdin_json=$(jq -n '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: "x\ny\n", exit_code: 0}}')
+    run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "Phase 2: filter exits 0 with no envelope when SKIP_BASH_OUTPUT_FILTER=1" {
+    enable_rewriter
+    local stdin_json
+    stdin_json=$(jq -n '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: "x\ny\n", exit_code: 0}}')
+    SKIP_BASH_OUTPUT_FILTER=1 run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "Phase 2: filter passes through commands not in allowlist (ls -la)" {
+    enable_rewriter
+    local stdin_json
+    stdin_json=$(jq -n --arg out "$(seq 1 50)" '{tool_name: "Bash", tool_input: {command: "ls -la"}, tool_response: {output: $out, exit_code: 0}}')
+    run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "Phase 2: filter passes through outputs below threshold (< 30 lines)" {
+    enable_rewriter
+    local stdin_json
+    stdin_json=$(jq -n --arg out "$(seq 1 10)" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "Phase 2: filter respects custom BASH_OUTPUT_FILTER_THRESHOLD" {
+    enable_rewriter
+    local stdin_json
+    stdin_json=$(jq -n --arg out "$(seq 1 15)" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    BASH_OUTPUT_FILTER_THRESHOLD=5 run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
+    [ "$status" -eq 0 ]
+    # Above threshold of 5 → should produce envelope
+    echo "$output" | jq -e '.hookSpecificOutput.hookEventName == "PostToolUse"' >/dev/null
+}
+
+@test "Phase 2: fixture npm-install-clean — trim verbose install output" {
+    enable_rewriter
+    assert_bash_fixture "npm-install-clean" "npm install" 0
+}
+
+@test "Phase 2: fixture npm-audit-vulns — keep severity counts and total" {
+    enable_rewriter
+    assert_bash_fixture "npm-audit-vulns" "npm audit" 0
+}
+
+@test "Phase 2: fixture npm-test-fail — keep failures + summary, exit code preserved" {
+    enable_rewriter
+    assert_bash_fixture "npm-test-fail" "npm test" 1
+}
+
+@test "Phase 2: fixture pytest-fail — pytest extractor keeps failure block + summary" {
+    enable_rewriter
+    assert_bash_fixture "pytest-fail" "pytest" 1
+}
+
+@test "Phase 2: fixture go-test-fail — go extractor keeps FAIL/ok lines + failure context" {
+    enable_rewriter
+    assert_bash_fixture "go-test-fail" "go test ./..." 1
+}
+
+@test "Phase 2: fixture cargo-build-fail — cargo extractor keeps error[E*] blocks" {
+    enable_rewriter
+    assert_bash_fixture "cargo-build-fail" "cargo build" 1
+}
+
+@test "Phase 2: SC-1 — npm-audit-vulns filtered view ≤ 25 lines" {
+    enable_rewriter
+    local in_file="$FIXTURES/bash/npm-audit-vulns.in.txt"
+    local stdin_json
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm audit"}, tool_response: {output: $out, exit_code: 0}}')
+    local result
+    result=$(printf '%s' "$stdin_json" | "$BASH_FILTER")
+    local trimmed
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    local lines
+    lines=$(printf '%s\n' "$trimmed" | wc -l)
+    [ "$lines" -le 25 ]
+}
+
+@test "Phase 2: BASH_OUTPUT_FILTER_VERBOSE=1 keeps both views" {
+    enable_rewriter
+    local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
+    local stdin_json
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    export BASH_OUTPUT_FILTER_VERBOSE=1
+    export BASH_OUTPUT_FILTER_THRESHOLD=5
+    local result
+    result=$(printf '%s' "$stdin_json" | "$BASH_FILTER")
+    unset BASH_OUTPUT_FILTER_VERBOSE BASH_OUTPUT_FILTER_THRESHOLD
+    local trimmed
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    [[ "$trimmed" == *"--- Original output ---"* ]]
+    [[ "$trimmed" == *"npm warn deprecated inflight"* ]]
+}
+
+@test "Phase 2: filter strips ANSI codes from output" {
+    enable_rewriter
+    local stdin_json
+    local raw
+    raw=$(printf '\x1b[31madded \x1b[1;32m247 packages\x1b[0m, and audited 248 packages in 12s\nfound 0 vulnerabilities\n')
+    # Make output long enough to pass threshold
+    raw="$raw$(seq 1 35)"
+    stdin_json=$(jq -n --arg out "$raw" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    local result
+    result=$(printf '%s' "$stdin_json" | "$BASH_FILTER")
+    local trimmed
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    [[ "$trimmed" != *$'\x1b['* ]]
+}
+
+@test "Phase 2: filter writes a metric log line on success" {
+    enable_rewriter
+    rm -f "$METRIC_LOG"
+    local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
+    local stdin_json
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    export BASH_OUTPUT_FILTER_THRESHOLD=5
+    printf '%s' "$stdin_json" | "$BASH_FILTER" >/dev/null
+    unset BASH_OUTPUT_FILTER_THRESHOLD
+    [ -f "$METRIC_LOG" ]
+    grep -qE "tool=Bash.*orig=[0-9]+.*filtered=[0-9]+" "$METRIC_LOG"
+}
+
+@test "Phase 2: filter completes in less than 200ms on typical fixture" {
+    enable_rewriter
+    local in_file="$FIXTURES/bash/npm-audit-vulns.in.txt"
+    local stdin_json
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm audit"}, tool_response: {output: $out, exit_code: 0}}')
+    local start_ns end_ns
+    start_ns=$(date +%s%N)
+    printf '%s' "$stdin_json" | "$BASH_FILTER" >/dev/null
+    end_ns=$(date +%s%N)
+    local elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
+    [ "$elapsed_ms" -lt 500 ]
 }

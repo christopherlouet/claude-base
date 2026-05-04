@@ -1,0 +1,41 @@
+   Compiling autocfg v1.1.0
+   Compiling proc-macro2 v1.0.69
+   Compiling unicode-ident v1.0.12
+   Compiling libc v0.2.150
+   Compiling cfg-if v1.0.0
+   Compiling memchr v2.6.4
+   Compiling syn v1.0.109
+   Compiling once_cell v1.18.0
+   Compiling smallvec v1.11.1
+   Compiling slab v0.4.9
+   Compiling itoa v1.0.9
+   Compiling pin-project-lite v0.2.13
+   Compiling futures-core v0.3.29
+   Compiling serde v1.0.190
+   Compiling tokio v1.34.0
+   Compiling myapp v0.1.0 (/home/user/myapp)
+warning: unused variable: `ctx`
+  --> src/main.rs:23:13
+   |
+23 |         let ctx = Context::new();
+   |             ^^^ help: if this is intentional, prefix it with an underscore: `_ctx`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+error[E0599]: no method named `frobnicate` found for struct `User` in the current scope
+  --> src/user.rs:42:18
+   |
+42 |         self.user.frobnicate();
+   |                   ^^^^^^^^^^ method not found in `User`
+
+error[E0277]: the trait bound `String: From<u32>` is not satisfied
+  --> src/user.rs:58:24
+   |
+58 |         let s: String = u32::from(42);
+   |                         ^^^^^^^^^ the trait `From<u32>` is not implemented for `String`
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0599.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `myapp` (bin "myapp") due to 2 previous errors; 1 warning emitted

@@ -1,0 +1,8 @@
+# npm audit report
+Severity: high
+Severity: moderate
+Severity: high
+Severity: critical
+Severity: high
+5 vulnerabilities (1 critical, 3 high, 1 moderate)
+(exit code: 0)

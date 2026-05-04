@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
-[![Tests](https://img.shields.io/badge/tests-342%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-359%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-socle?label=release&color=blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
@@ -105,7 +105,7 @@ claude-socle/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->342<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->359<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
@@ -458,7 +458,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->18<!-- /count --> files, <!-- count:tests -->342<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->18<!-- /count --> files, <!-- count:tests -->359<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|
