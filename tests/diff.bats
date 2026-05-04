@@ -57,6 +57,17 @@ teardown() {
 @test "diff.sh compares an installed project" {
     # Install the foundation with new-project.sh --simple
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    if [ "$status" -ne 0 ]; then
+        echo "=== DEBUG: new-project.sh -y --simple exit $status ==="
+        echo "=== DEBUG: bash version ==="
+        bash --version | head -1
+        echo "=== DEBUG: which bash ==="
+        which bash
+        echo "=== DEBUG: env PATH ==="
+        echo "$PATH"
+        echo "=== DEBUG: stderr+stdout from script ==="
+        echo "$output"
+    fi
     [ "$status" -eq 0 ]
 
     # Then compare. diff.sh exits 0 if everything is in sync, exits 1 if there are
