@@ -201,14 +201,6 @@ echo ""
 
 DRIFT_ERRORS=0
 
-# NOTE on macOS BSD grep limitation:
-# The `^` anchor inside a grouped alternation (`(...|^pattern|...)`) behaves
-# differently in BSD grep vs GNU grep. On BSD grep -E, `^` inside an
-# alternation is treated as literal in some contexts, causing the markdown-
-# heading pattern (`^#{1,4} Label (N)`) to miss matches on macOS. The other 4
-# patterns work portably. A full rewrite as separate grep invocations would
-# fix this but is deferred — affects 2 tests out of 399 and only the markdown-
-# heading edge case on macOS, not real-world use on Linux.
 scan_drift() {
     local label_singular="$1"   # "skill"
     local label_plural="$2"     # "skills"
@@ -230,30 +222,39 @@ scan_drift() {
     alt_form=""
     [[ "$label_singular" == "agent" ]] && alt_form="|Sub-Agents?|sub-agents?"
 
-    # Build the unified regex.
-    # Pattern 2 accepts trailing text inside the parentheses (e.g. "Commands (131 available)").
-    # Pattern 4 accepts up to 4 intermediate cells before the number cell (e.g.
-    # `| **Agents** | foo | bar | baz | 63 |`) — common in 3+ column tables.
+    # POSIX ERE only — `\s` and `\b` are GNU-only; replaced with `[[:space:]]`.
+    # IMPORTANT: split into separate patterns instead of one big alternation.
+    # BSD grep -E (macOS) does NOT treat `^` inside `(...|^pattern|...)` as a
+    # line anchor — it's parsed as literal `^`. Splitting each pattern into
+    # its own grep invocation avoids this entirely (each `^` is then at the
+    # start of its own pattern, which BSD grep handles correctly).
     local lab="(${label_cap_singular}|${label_cap_plural}${alt_form})"
-    # POSIX ERE only — BSD grep does not support Perl-style `\s` (whitespace)
-    # or `\b` (word boundary). Replaced with `[[:space:]]` and `($|[^[:alnum:]_])`.
     local ws='[[:space:]]'
-    local pattern_re="(${lab}${ws}+disponibles?${ws}+\(([0-9]+)\)|^#{1,4}${ws}+${lab}${ws}+\(([0-9]+)[^)]*\)|'([0-9]+)${ws}+${lab}'|\|${ws}*\*\*${lab}\*\*${ws}*\|(${ws}*[^|]*\|){0,4}${ws}*([0-9]+)${ws}*\||^#{1,4}${ws}+([0-9]+)${ws}+${lab}($|[^[:alnum:]_]))"
 
-    while IFS= read -r match; do
-        [[ -z "$match" ]] && continue
+    # Each entry is a separate ERE pattern. The 5th uses `($|[^[:alnum:]_])`
+    # in place of `\b` (word boundary) for portability.
+    local patterns=(
+        "${lab}${ws}+disponibles?${ws}+\(([0-9]+)\)"
+        "^#{1,4}${ws}+${lab}${ws}+\(([0-9]+)[^)]*\)"
+        "'([0-9]+)${ws}+${lab}'"
+        "\|${ws}*\*\*${lab}\*\*${ws}*\|(${ws}*[^|]*\|){0,4}${ws}*([0-9]+)${ws}*\|"
+        "^#{1,4}${ws}+([0-9]+)${ws}+${lab}($|[^[:alnum:]_])"
+    )
+
+    process_match() {
+        local match="$1" pattern="$2"
+        [[ -z "$match" ]] && return
         local file_part="${match%%:*}"
         local rest="${match#*:}"
         local line_num="${rest%%:*}"
         local content="${rest#*:}"
 
         # Skip the scanner itself
-        [[ "$file_part" == *"validate-counts.sh"* ]] && continue
+        [[ "$file_part" == *"validate-counts.sh"* ]] && return
 
-        # Extract the number(s) in the total context
+        # Extract the number(s) from the matched portion of this line
         local nums
-        nums=$(echo "$content" | grep -oiE "${pattern_re}" | grep -oE '[0-9]+' | sort -u)
-
+        nums=$(echo "$content" | grep -oiE "$pattern" | grep -oE '[0-9]+' | sort -u)
         for n in $nums; do
             [[ "$n" -le 5 ]] && continue
             if [[ "$n" != "$actual" ]]; then
@@ -262,15 +263,35 @@ scan_drift() {
                 DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
             fi
         done
-    done < <(
-        grep -rniE "$pattern_re" \
-            --include="*.md" --include="*.ts" --include="*.tsx" --include="*.json" \
-            --exclude-dir=node_modules --exclude-dir=.git \
-            --exclude-dir=build --exclude-dir=.docusaurus \
-            --exclude-dir=memory \
-            --exclude="CHANGELOG.md" \
-            "$SOCLE_DIR" 2>/dev/null
-    )
+    }
+
+    # Run one grep per pattern so each `^` anchor is independently honored.
+    # De-duplicate via sort -u so the same line+number isn't reported twice.
+    local seen_keys=""
+    local pat
+    for pat in "${patterns[@]}"; do
+        while IFS= read -r match; do
+            [[ -z "$match" ]] && continue
+            # Dedup on file:line — across patterns, the same line might match more than one
+            local file_part="${match%%:*}"
+            local rest="${match#*:}"
+            local line_num="${rest%%:*}"
+            local key="$file_part:$line_num"
+            case "$seen_keys" in
+                *"|$key|"*) continue ;;
+            esac
+            seen_keys="${seen_keys}|$key|"
+            process_match "$match" "$pat"
+        done < <(
+            grep -rniE "$pat" \
+                --include="*.md" --include="*.ts" --include="*.tsx" --include="*.json" \
+                --exclude-dir=node_modules --exclude-dir=.git \
+                --exclude-dir=build --exclude-dir=.docusaurus \
+                --exclude-dir=memory \
+                --exclude="CHANGELOG.md" \
+                "$SOCLE_DIR" 2>/dev/null
+        )
+    done
 }
 
 scan_drift "command" "commands" "$ACTUAL_COMMANDS"
