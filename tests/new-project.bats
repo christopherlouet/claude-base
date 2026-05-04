@@ -342,3 +342,26 @@ EOF
     # The obsolete file should no longer exist
     [ ! -f "$TEST_DIR/.claude/commands/old-command.md" ]
 }
+
+# =============================================================================
+# Dry-run exit code regression (bash 5+ set -eo pipefail behavior)
+# =============================================================================
+
+@test "new-project.sh --simple --dry-run exits 0 when stdout is non-TTY" {
+    # Regression: bash 5+ with `set -eo pipefail` kills an assignment whose
+    # command-sub contains a pipeline where one stage fails. In dry-run,
+    # print_simple_summary did `$(find $non_existent_dir | wc -l | tr -d ' ')`,
+    # find exited 1, pipefail propagated, the assignment died via set -e.
+    # The visible symptom was: exit 1 when stdout is redirected (not a TTY).
+    run bash -c "'$NEW_PROJECT_SCRIPT' --simple --dry-run '$TEST_DIR/dry-target' >/dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    # Dry-run must still not have written anything
+    [ ! -d "$TEST_DIR/dry-target/.claude" ]
+}
+
+@test "new-project.sh --simple --dry-run exits 0 when stdout goes to TTY-like" {
+    # Same regression, ensuring it works for both stdout-redirect and direct.
+    run "$NEW_PROJECT_SCRIPT" --simple --dry-run "$TEST_DIR/dry-target-2"
+    [ "$status" -eq 0 ]
+    [ ! -d "$TEST_DIR/dry-target-2/.claude" ]
+}

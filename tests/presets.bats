@@ -141,13 +141,10 @@ EOF
     [[ "$output" == *"project path"* ]] || [[ "$output" == *"required"* ]]
 }
 
-@test "presets: --preset nextjs --dry-run does not write files" {
+@test "presets: --preset nextjs --dry-run does not write files and exits 0" {
     local target="$TEST_DIR/dry-target"
-    # Note: there is a pre-existing latent bug in --simple --dry-run that
-    # surfaces only when stdout is non-TTY (print_simple_summary fails on
-    # `find $non_existent_dir` with set -e + pipefail). Out of scope for this PR.
-    # The contract that matters here: dry-run must not create files.
     run "$NEW_PROJECT" --preset nextjs --dry-run "$target"
+    [ "$status" -eq 0 ]
     [ ! -d "$target/.claude" ]
 }
 
