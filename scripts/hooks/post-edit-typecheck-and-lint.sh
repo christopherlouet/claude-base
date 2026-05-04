@@ -64,14 +64,18 @@ fi
 TSC_OUTPUT=""
 ESLINT_OUTPUT=""
 
+# tsc and eslint may output paths in either absolute or cwd-relative form.
+# We grep for both so the file-match works regardless of how the tool resolves paths.
+REL_PATH="${FILE_PATH#"$PWD"/}"
+
 if [ "$RUN_TSC" = "1" ] && [ -f tsconfig.json ] && [ -x node_modules/.bin/tsc ]; then
     RAW_TSC=$(node_modules/.bin/tsc --noEmit 2>&1 || true)
-    TSC_OUTPUT=$(printf '%s\n' "$RAW_TSC" | grep -F "$FILE_PATH" | head -20 || true)
+    TSC_OUTPUT=$(printf '%s\n' "$RAW_TSC" | grep -F -e "$FILE_PATH" -e "$REL_PATH" | head -20 || true)
 fi
 
 if [ "$RUN_ESLINT" = "1" ] && [ -x node_modules/.bin/eslint ]; then
     RAW_ESLINT=$(node_modules/.bin/eslint "$FILE_PATH" --max-warnings 0 2>&1 || true)
-    ESLINT_OUTPUT=$(printf '%s\n' "$RAW_ESLINT" | grep -B1 -A2 "$FILE_PATH" 2>/dev/null | head -20 || true)
+    ESLINT_OUTPUT=$(printf '%s\n' "$RAW_ESLINT" | grep -B1 -A2 -e "$FILE_PATH" -e "$REL_PATH" 2>/dev/null | head -20 || true)
     if [ -z "$ESLINT_OUTPUT" ]; then
         ESLINT_OUTPUT=$(printf '%s\n' "$RAW_ESLINT" | grep -E '(error|warning|problem|^[[:space:]]+[0-9]+:[0-9]+)' | head -20 || true)
     fi
