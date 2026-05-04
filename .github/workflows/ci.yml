@@ -17,8 +17,20 @@ permissions:
 
 jobs:
   lint-and-test:
-    name: Lint & Test
-    runs-on: ubuntu-latest
+    name: Lint & Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        experimental: [false]
+        include:
+          # macOS is exploratory: BSD utilities (sed, awk, find, date) differ
+          # from GNU on Ubuntu. Multi-OS CI is opt-in until portability issues
+          # are caught and fixed in dedicated PRs. Failure does NOT block merges.
+          - os: macos-latest
+            experimental: true
     steps:
       - name: Checkout
         uses: actions/checkout@v6
