@@ -136,8 +136,11 @@ check_count() {
         return
     fi
 
+    # `-oE` (extended regex, POSIX) instead of `-oP` (Perl regex, GNU-only).
+    # The patterns passed by callers use only ERE-compatible features
+    # (character classes, +/* quantifiers, anchors) so no semantic loss.
     local found
-    found=$(grep -oP "$pattern" "$file" 2>/dev/null | head -1 || echo "")
+    found=$(grep -oE "$pattern" "$file" 2>/dev/null | head -1 || echo "")
 
     if [[ -z "$found" ]]; then
         debug "$rel_path: pattern not found for $label"
@@ -145,7 +148,7 @@ check_count() {
     fi
 
     local count
-    count=$(echo "$found" | grep -oP '[0-9]+' | head -1)
+    count=$(echo "$found" | grep -oE '[0-9]+' | head -1)
 
     if [[ "$count" != "$expected" ]]; then
         error_no_exit "$rel_path: $label = $count (expected: $expected)"
