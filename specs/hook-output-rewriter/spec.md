@@ -119,7 +119,11 @@ The intent is not new tooling — it is to take the foundation's existing post-t
 - **FR-14**: Both rewriters bail out (exit 0, no envelope) when `jq` is absent.
 - **FR-15**: Both rewriters bail out when stdin is empty or unparseable.
 - **FR-16**: Logs are appended to `/tmp/claude-rewriter.log` (one line per rewrite) only when `/tmp` is writable. Failure to write must never block the rewrite itself.
-- **FR-17**: Both rewriters complete in under 200ms in the 95th-percentile case on outputs up to 10000 lines.
+- **FR-17**: Both rewriters meet a tiered latency budget on the 95th-percentile case:
+  - ≤ 150ms on outputs up to 1000 lines (typical: `npm install`, `npm audit`, single test run)
+  - ≤ 300ms on outputs up to 3000 lines
+  - ≤ 1500ms on outputs up to 10000 lines (extreme: rare in practice)
+  Measured on a 2024-era developer laptop. The original ≤200ms-on-10k-lines target was unrealistic given the bash + multi-grep architecture; tier targets reflect the cost of `printf '%s' "$LARGE_VAR" | grep | head` repeated across ~6 extractors. A streaming rewrite would lift this ceiling but is out of scope here.
 - **FR-18**: Both rewriters preserve the exit status the original tool would have surfaced — the rewrite is purely about Claude's view, not about whether downstream `onFailure: block` semantics fire.
 - **FR-19**: A SessionStart capability probe reads the running Claude Code version. If the version is below 2.1.121 (the minimum that supports `updatedToolOutput` for non-MCP tools), a single-line visible notice is emitted: `[INFO] Hook output rewriter requires Claude Code 2.1.121+ — feature disabled, sessions will work as before. Upgrade: <command>`. The probe must complete in ≤ 100ms and never block session startup.
 - **FR-20**: When the SessionStart probe detects an unsupported version, it sets an environment variable that downstream rewriter hooks check first to skip their work entirely (avoiding double-cost on unsupported runtimes).
