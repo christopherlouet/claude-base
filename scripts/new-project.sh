@@ -994,8 +994,15 @@ print_simple_summary() {
     echo "  - .claude/commands/      ($(count_commands_cached) commands)"
     echo "  - .claude/skills/        ($(count_skills_cached) skills)"
     echo "  - .claude/agents/        ($(count_agents_cached) agents)"
-    local rules_count rules_total project_type_label
-    rules_count=$(find "$target_dir/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    # Counts that read from $target_dir are guarded with [ -d ] because in
+    # dry-run mode the target directory does NOT exist on disk. Without the
+    # guard, `find $non_existent_dir | wc -l | tr -d ' '` exits 1 (pipefail
+    # propagates find's failure) and `set -eo pipefail` kills the assignment
+    # in bash 5+. Reading from $SOCLE_DIR is always safe.
+    local rules_count=0 rules_total project_type_label
+    if [[ -d "$target_dir/$RULES_DIR" ]]; then
+        rules_count=$(find "$target_dir/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    fi
     rules_total=$(find "$SOCLE_DIR/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     project_type_label="${PROJECT_TYPE:-generic}"
     echo "  - .claude/rules/         ($rules_count rules for stack '$project_type_label', $rules_total available in the foundation)"
@@ -1004,8 +1011,10 @@ print_simple_summary() {
     echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
     echo "  - .claude/docs/reference/ (CLAUDE.md @import files)"
     echo "  - .claude/docs/guides/    (guides per domain)"
-    local hook_scripts_count
-    hook_scripts_count=$(find "$target_dir/scripts/hooks" -name "*.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
+    local hook_scripts_count=0
+    if [[ -d "$target_dir/scripts/hooks" ]]; then
+        hook_scripts_count=$(find "$target_dir/scripts/hooks" -name "*.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
+    fi
     echo "  - scripts/hooks/         ($hook_scripts_count scripts referenced by settings.json)"
     echo "  - CLAUDE.md"
     echo "  - CLAUDE.local.md.example"
