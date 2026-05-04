@@ -41,8 +41,13 @@ jobs:
           scandir: './scripts'
           severity: warning
 
-      - name: Setup Bats
+      - name: Setup Bats (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
         uses: bats-core/bats-action@4.0.0
+
+      - name: Setup Bats (macOS via Homebrew)
+        if: matrix.os == 'macos-latest'
+        run: brew install bats-core
 
       - name: Run Bats tests
         run: bats tests/*.bats
