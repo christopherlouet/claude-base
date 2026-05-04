@@ -655,14 +655,16 @@ rewrite_claude_md_paths() {
 
     [[ -f "$claude_md" ]] || return 0
 
-    sed -i \
+    # `-i.bak` works on both GNU sed (Linux) and BSD sed (macOS).
+    # Cleanup the .bak file after the successful in-place edit.
+    sed -i.bak \
         -e 's|^@docs/reference/|@.claude/docs/reference/|g' \
         -e 's|`docs/reference/|`.claude/docs/reference/|g' \
         -e 's|`docs/guides/|`.claude/docs/guides/|g' \
         -e 's|`docs/STACK-RECIPES\.md`|`.claude/docs/STACK-RECIPES.md`|g' \
         -e '/| Architecture |.*`docs\/ARCHITECTURE\.md`/d' \
         -e '/| Workflows visuels |.*`docs\/WORKFLOWS\.md`/d' \
-        "$claude_md"
+        "$claude_md" && rm -f "$claude_md.bak"
 }
 
 # Ensures the presence of the 7 canonical @imports in CLAUDE.md.

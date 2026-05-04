@@ -269,7 +269,7 @@ teardown() {
     rm -rf "$TEST_DIR/.claude/docs/reference"
 
     # Remove the @imports from CLAUDE.md to simulate an old project
-    sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+    sed -i.bak '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md" && rm -f "$TEST_DIR/CLAUDE.md.bak"
 
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
@@ -287,7 +287,7 @@ teardown() {
 
     # Remove .claude/docs/reference/ and the @imports
     rm -rf "$TEST_DIR/.claude/docs/reference"
-    sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+    sed -i.bak '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md" && rm -f "$TEST_DIR/CLAUDE.md.bak"
 
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
@@ -304,7 +304,7 @@ teardown() {
 
     # Remove the @imports to trigger the migration
     rm -rf "$TEST_DIR/.claude/docs/reference"
-    sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+    sed -i.bak '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md" && rm -f "$TEST_DIR/CLAUDE.md.bak"
 
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
@@ -337,7 +337,7 @@ teardown() {
 
     # Remove the @imports and add a duplicated section
     rm -rf "$TEST_DIR/.claude/docs/reference"
-    sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+    sed -i.bak '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md" && rm -f "$TEST_DIR/CLAUDE.md.bak"
     echo "" >> "$TEST_DIR/CLAUDE.md"
     echo "## Commandes Essentielles" >> "$TEST_DIR/CLAUDE.md"
     echo "Contenu inline ancien" >> "$TEST_DIR/CLAUDE.md"
@@ -355,7 +355,7 @@ teardown() {
 
     # Remove the @imports
     rm -rf "$TEST_DIR/.claude/docs/reference"
-    sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+    sed -i.bak '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md" && rm -f "$TEST_DIR/CLAUDE.md.bak"
 
     run "$UPDATE_SCRIPT" -y --all "$TEST_DIR"
     [ "$status" -eq 0 ]
@@ -372,7 +372,7 @@ teardown() {
 
     # Remove the @imports
     rm -rf "$TEST_DIR/.claude/docs/reference"
-    sed -i '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md"
+    sed -i.bak '/@\.claude\/docs\/reference/d' "$TEST_DIR/CLAUDE.md" && rm -f "$TEST_DIR/CLAUDE.md.bak"
 
     run "$UPDATE_SCRIPT" -y -n --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]

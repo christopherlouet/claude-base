@@ -116,7 +116,9 @@ bump_file() {
         if $DRY_RUN; then
             info "[DRY-RUN] $rel_path: $label"
         else
-            sed -i "s|$old_pattern|$new_pattern|g" "$file"
+            # `-i.bak` works on both GNU sed and BSD sed (macOS).
+            # Cleanup .bak after successful in-place edit.
+            sed -i.bak "s|$old_pattern|$new_pattern|g" "$file" && rm -f "$file.bak"
             success "$rel_path: $label"
         fi
         CHANGES=$((CHANGES + 1))
