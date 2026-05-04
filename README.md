@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
-[![Tests](https://img.shields.io/badge/tests-370%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-386%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-socle?label=release&color=blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
@@ -45,7 +45,7 @@ claude-socle's unique value (vs assembling marketplace plugins alone):
 
 **Honest limit**: for any single vertical task, there's likely a more specialized marketplace plugin. We're tracking this — see `specs/marketplace-audit/` for the per-domain comparison work in progress.
 
-**Presets coming**: a curated bundle system (`./scripts/new-project.sh --preset <stack>`) is being designed to install foundation + recommended marketplace plugins together for a given stack. See `specs/presets/spec.md` for the format and `specs/presets/roadmap.md` for the named target stacks (3 in pipeline, 24+ community-wanted across web, backend, mobile, data, infra). Stack-specific naming only — no `web-app` or `backend-app`. If your daily stack isn't on the list, contributions welcome.
+**Presets**: the first preset (`nextjs`) ships with this release. Use `./scripts/new-project.sh --preset nextjs <path>` to install foundation + applied filters for a Next.js stack. See `.claude/presets/README.md` for usage and `specs/presets/roadmap.md` for the named target stacks (24+ community-wanted across web, backend, mobile, data, infra). Stack-specific naming only — no `web-app` or `backend-app`. Contributions welcome for stacks not yet covered.
 
 ## Installation
 
@@ -131,13 +131,13 @@ claude-socle/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->370<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->386<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
 │   ├── validate.bats            # Validation tests
 │   ├── docs-under-claude.bats   # v1.30 layout tests
-│   └── ...                      # <!-- count:testFiles -->18<!-- /count --> test files in total
+│   └── ...                      # <!-- count:testFiles -->19<!-- /count --> test files in total
 │
 ├── .gitleaks.toml               # gitleaks config (secret detection)
 ├── VERSION                      # Centralized socle version (1.30.0)
@@ -484,7 +484,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->18<!-- /count --> files, <!-- count:tests -->370<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->19<!-- /count --> files, <!-- count:tests -->386<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|

@@ -79,6 +79,13 @@ MINIMAL_MODE=false
 SKIP_PROMPTS=false
 DESIGN_STYLE=""
 
+# Preset mode (curated bundle per stack — see specs/presets/spec.md)
+PRESET_NAME=""
+PRESET_FILE=""
+PRESET_LIST_AND_EXIT=false
+# Set by load_preset() — used by install_claude_files / apply_preset_filter
+PRESET_SKILLS_DROP=()
+
 # Detection variables (used by lib/detection.sh functions)
 DETECTED_TYPE=""
 DETECTED_FRAMEWORK=""
@@ -136,6 +143,10 @@ ${BOLD}OPTIONS${NC}
     --simple            Simple install mode (equivalent to the old install.sh)
     --install-only      Alias for --simple
     --minimal           Minimal install (Level 1+2 learning-path) via manifest
+    --preset NAME       Curated bundle per stack — applies foundation filters,
+                        installs marketplace plugins, and sets defaults.
+                        Run --list-presets to see what's available.
+    --list-presets      List available presets and exit
 
 ${BOLD}EXAMPLES${NC}
     # Interactive new project
@@ -162,6 +173,10 @@ ${BOLD}EXAMPLES${NC}
     # Simple mode (quick install without detection)
     $(basename "$0") --simple .
     $(basename "$0") --simple --all ./my-project
+
+    # Preset (Next.js stack — see specs/presets/spec.md)
+    $(basename "$0") --preset nextjs ./my-app
+    $(basename "$0") --list-presets
 
     # Dry-run mode (simulation)
     $(basename "$0") --dry-run --simple .
@@ -282,6 +297,14 @@ parse_args() {
                 MINIMAL_MODE=true
                 NON_INTERACTIVE=true
                 SKIP_PROMPTS=true
+                shift
+                ;;
+            --preset)
+                PRESET_NAME="$2"
+                shift 2
+                ;;
+            --list-presets)
+                PRESET_LIST_AND_EXIT=true
                 shift
                 ;;
             -*)
@@ -544,6 +567,198 @@ copy_filtered_rules() {
     if [[ $skipped -gt 0 ]]; then
         debug "Rules: $copied copied, $skipped skipped (languages not detected)"
     fi
+}
+
+# =============================================================================
+# Preset support (curated bundles per stack — see specs/presets/spec.md)
+# =============================================================================
+
+# Resolve a preset name to a JSON file path. Searches official then community.
+# Arguments:
+#   $1 - Preset name (e.g. "nextjs")
+# Output: path to .json file, or empty if not found.
+resolve_preset_file() {
+    local name="$1"
+    local official="$SOCLE_DIR/.claude/presets/$name.json"
+    local community="$SOCLE_DIR/.claude/presets/community/$name.json"
+    if [[ -f "$official" ]]; then
+        echo "$official"
+    elif [[ -f "$community" ]]; then
+        echo "$community"
+    else
+        echo ""
+    fi
+}
+
+# List all available presets (official + community) with status and displayName.
+list_presets() {
+    if ! command -v jq >/dev/null 2>&1; then
+        warning "jq required to list presets"
+        return 1
+    fi
+    local presets_dir="$SOCLE_DIR/.claude/presets"
+    [[ -d "$presets_dir" ]] || { info "No presets directory found"; return 0; }
+
+    info "Available presets:"
+    echo ""
+    printf "  %-20s %-22s %s\n" "NAME" "STATUS" "DISPLAY NAME"
+    printf "  %-20s %-22s %s\n" "----" "------" "------------"
+    local found=0
+    while IFS= read -r f; do
+        local name status display
+        name=$(jq -r '.name // ""' "$f" 2>/dev/null)
+        status=$(jq -r '.status // ""' "$f" 2>/dev/null)
+        display=$(jq -r '.displayName // ""' "$f" 2>/dev/null)
+        [[ -z "$name" ]] && continue
+        printf "  %-20s %-22s %s\n" "$name" "$status" "$display"
+        found=$((found + 1))
+    done < <(find "$presets_dir" -maxdepth 2 -name "*.json" -type f | sort)
+
+    if [[ $found -eq 0 ]]; then
+        echo "  (none — see specs/presets/roadmap.md)"
+    fi
+    echo ""
+    info "Use: $(basename "$0") --preset <name> <project-path>"
+}
+
+# Load a preset JSON file and populate PRESET_* globals.
+# Arguments:
+#   $1 - Preset name
+# On success: sets PRESET_FILE and applies the preset's defaults to global flags
+# (only if those flags weren't explicitly set by the user). Returns 0.
+# On failure (preset not found, invalid JSON): returns 2.
+load_preset() {
+    local name="$1"
+    local file
+    file=$(resolve_preset_file "$name")
+    if [[ -z "$file" ]]; then
+        error "preset not found: $name\nRun: $(basename "$0") --list-presets"
+    fi
+
+    if ! command -v jq >/dev/null 2>&1; then
+        error "jq is required to use --preset"
+    fi
+
+    if ! jq -e . "$file" >/dev/null 2>&1; then
+        error "preset has invalid JSON: $file"
+    fi
+
+    PRESET_FILE="$file"
+    info "Preset: $(jq -r '.displayName // .name' "$file") ($(jq -r '.status' "$file"))"
+    debug "Preset file: $file"
+
+    # Apply preset defaults — but only if the user did not pass the flag.
+    # This way --preset nextjs --no-mcp would still respect the user's no-mcp
+    # (though --no-mcp doesn't exist; we use absence of --mcp as default).
+    # Convention: a flag is considered "user-set" if its global is true.
+    # For ci/hooks/mcp/docker, all default to false, so any true at this
+    # point came from the user.
+    local p_ci p_hooks p_mcp p_docker p_style
+    p_ci=$(jq -r '.defaults.ci // false' "$file")
+    p_hooks=$(jq -r '.defaults.hooks // false' "$file")
+    p_mcp=$(jq -r '.defaults.mcp // false' "$file")
+    p_docker=$(jq -r '.defaults.docker // false' "$file")
+    p_style=$(jq -r '.defaults.designStyle // ""' "$file")
+
+    [[ "$INCLUDE_CICD" = "false" && "$p_ci" = "true" ]] && INCLUDE_CICD=true
+    [[ "$INCLUDE_HOOKS" = "false" && "$p_hooks" = "true" ]] && INCLUDE_HOOKS=true
+    [[ "$INCLUDE_MCP" = "false" && "$p_mcp" = "true" ]] && INCLUDE_MCP=true
+    [[ "$INCLUDE_DOCKER" = "false" && "$p_docker" = "true" ]] && INCLUDE_DOCKER=true
+    [[ -z "$DESIGN_STYLE" && -n "$p_style" ]] && DESIGN_STYLE="$p_style"
+
+    # Apply foundation type if user did not pass --type.
+    if [[ -z "$FORCE_TYPE" ]]; then
+        local first_type
+        first_type=$(jq -r '.appliesToTypes[0] // ""' "$file")
+        if [[ -n "$first_type" ]]; then
+            FORCE_TYPE="$first_type"
+            debug "Preset sets type: $FORCE_TYPE"
+        fi
+    fi
+
+    # Capture skills.drop list for later filtering by apply_preset_filter().
+    PRESET_SKILLS_DROP=()
+    while IFS= read -r skill; do
+        [[ -z "$skill" ]] && continue
+        PRESET_SKILLS_DROP+=("$skill")
+    done < <(jq -r '.foundation.skills.drop[]? // empty' "$file")
+}
+
+# Drop skills listed in the preset's foundation.skills.drop array from the
+# target installation. Called after install_claude_files() copied everything.
+# Arguments:
+#   $1 - Target directory (absolute path)
+apply_preset_filter() {
+    local target_dir="$1"
+    [[ -z "$PRESET_FILE" ]] && return 0
+    [[ ${#PRESET_SKILLS_DROP[@]} -eq 0 ]] && return 0
+
+    local dropped=0
+    for skill in "${PRESET_SKILLS_DROP[@]}"; do
+        local skill_path="$target_dir/.claude/skills/$skill"
+        if [[ -d "$skill_path" ]]; then
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} rm -rf $skill_path"
+            else
+                rm -rf "$skill_path"
+            fi
+            dropped=$((dropped + 1))
+        fi
+    done
+    if [[ $dropped -gt 0 ]]; then
+        debug "Preset filter: $dropped skill(s) dropped (out of stack scope)"
+    fi
+}
+
+# Install marketplace plugins listed in the preset.
+# Lenient mode (B): if `claude plugin install` is unavailable (CLI < 2.1.119)
+# OR if a plugin install fails, warn and continue. Foundation install completes
+# regardless. Optional plugins are skipped without confirmation.
+install_marketplace_plugins() {
+    [[ -z "$PRESET_FILE" ]] && return 0
+    if ! command -v jq >/dev/null 2>&1; then
+        return 0
+    fi
+
+    local count
+    count=$(jq -r '.marketplacePlugins | length' "$PRESET_FILE" 2>/dev/null || echo 0)
+    [[ "$count" = "0" || -z "$count" ]] && return 0
+
+    # Capability check: does `claude plugin` exist?
+    if ! command -v claude >/dev/null 2>&1; then
+        warning "claude CLI not found — skipping marketplace plugin install"
+        return 0
+    fi
+    if ! claude plugin --help >/dev/null 2>&1; then
+        warning "claude plugin command not available (CLI < 2.1.119?) — skipping marketplace plugin install"
+        return 0
+    fi
+
+    info "Installing marketplace plugins from preset..."
+    local i id rationale optional installed=0 skipped=0 failed=0
+    for i in $(seq 0 $((count - 1))); do
+        id=$(jq -r ".marketplacePlugins[$i].id" "$PRESET_FILE")
+        rationale=$(jq -r ".marketplacePlugins[$i].rationale // \"\"" "$PRESET_FILE")
+        optional=$(jq -r ".marketplacePlugins[$i].optional // false" "$PRESET_FILE")
+
+        if [[ "$optional" = "true" ]] && ! $NON_INTERACTIVE; then
+            if ! confirm "Install optional plugin $id ($rationale)?" "y"; then
+                skipped=$((skipped + 1))
+                continue
+            fi
+        fi
+
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} claude plugin install $id"
+            installed=$((installed + 1))
+        elif claude plugin install "$id" 2>&1 | tail -3; then
+            installed=$((installed + 1))
+        else
+            warning "Failed to install $id — continuing"
+            failed=$((failed + 1))
+        fi
+    done
+    info "Marketplace plugins: $installed installed, $skipped skipped, $failed failed"
 }
 
 # Install all .claude/ files (commands, skills, agents, rules, etc.)
@@ -871,6 +1086,9 @@ run_simple_mode() {
     # Install Claude files
     install_claude_files "$target_dir"
 
+    # Apply preset filter (drops skills listed in preset.foundation.skills.drop)
+    apply_preset_filter "$target_dir"
+
     # Install CLAUDE.md
     install_claude_md_file "$target_dir"
 
@@ -882,6 +1100,9 @@ run_simple_mode() {
 
     # Update .gitignore
     update_gitignore_file "$target_dir"
+
+    # Install marketplace plugins (capability-checked, lenient on failure)
+    install_marketplace_plugins
 
     # Initialize git if not already done
     if [[ ! -d "$target_dir/.git" ]] && ! $DRY_RUN; then
@@ -1463,6 +1684,29 @@ main() {
 
     # Validate that the socle installation is intact
     validate_socle_dirs
+
+    # --list-presets short-circuits everything else
+    if $PRESET_LIST_AND_EXIT; then
+        list_presets
+        exit 0
+    fi
+
+    # Load preset (if any) BEFORE mode dispatch so defaults propagate
+    # to MINIMAL/SIMPLE/interactive modes consistently.
+    if [[ -n "$PRESET_NAME" ]]; then
+        if $MINIMAL_MODE; then
+            error "--preset and --minimal are mutually exclusive"
+        fi
+        load_preset "$PRESET_NAME"
+        # Preset implies non-interactive simple install (avoid double-asking
+        # for things the preset already decided).
+        if [[ -z "$PROJECT_PATH" ]]; then
+            error "--preset requires a project path argument"
+        fi
+        SIMPLE_MODE=true
+        NON_INTERACTIVE=true
+        SKIP_PROMPTS=true
+    fi
 
     # Minimal mode: delegates to export-minimal.sh with --dest-dir
     if $MINIMAL_MODE; then
