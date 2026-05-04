@@ -7,7 +7,7 @@
 
 ## What ships now (in this PR)
 
-**Zero preset `.yaml` files.** Only the format spec (`spec.md`) and this roadmap. Each concrete preset lands in its own dedicated follow-up PR so it can be reviewed atomically and held to its own quality bar.
+**Zero preset `.json` files.** Only the format spec (`spec.md`) and this roadmap. Each concrete preset lands in its own dedicated follow-up PR so it can be reviewed atomically and held to its own quality bar.
 
 This deliberate decoupling avoids two anti-patterns:
 - Shipping fake or skeleton presets to "look complete" at MVP launch.
@@ -24,7 +24,7 @@ These three presets are committed to land in dedicated follow-up PRs over the ne
 | `cli-tools` | Python or Shell automation | GitHub API helpers, dependency analyzers, headless-friendly patterns | TBD PR |
 
 **Each one will land with**:
-- Its `.yaml` manifest under `.claude/presets/`
+- Its `.json` manifest under `.claude/presets/`
 - A `tests/presets.bats` test verifying dry-run install
 - A short demo recipe under `docs/recipes/`
 - An entry in `CHANGELOG.md`
@@ -86,11 +86,11 @@ If your daily stack isn't here, it's exactly the kind of contribution that would
 3. **Open an issue first** describing the stack, target audience, and the marketplace plugins you'd bundle (with rationale per plugin)
 4. **Wait for maintainer feedback** — we may suggest narrowing scope, splitting into multiple presets, or merging with an existing one
 5. **Submit a PR** with:
-   - `.claude/presets/community/<name>.yaml` (status: `community-curated`)
+   - `.claude/presets/community/<name>.json` (status: `community-curated`)
    - `tests/presets.bats` test entry
    - `docs/recipes/<name>-<scenario>.md` if relevant
    - Maintenance commitment statement in PR description (commit to quarterly review for ≥1 year)
-6. **Maintainer reviews** the YAML against the spec, the marketplace plugins for trustworthiness, and the test for correctness
+6. **Maintainer reviews** the JSON manifest against the spec, the marketplace plugins for trustworthiness, and the test for correctness
 7. On acceptance, the preset moves to `.claude/presets/community/` and ships in the next minor release
 
 A formal `specs/presets/contributing.md` document with full criteria will land alongside the first community preset proposal — until then, this section is the contract.

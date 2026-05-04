@@ -16,7 +16,7 @@ A **preset** is a curated bundle that, for one specific stack (e.g. Next.js, Pro
 
 Presets are the answer to a recurring user question: *"I have a Next.js SaaS / a Proxmox homelab / a Python automation tool — what should I install on top of claude-socle to be productive immediately?"*
 
-This spec defines the **format** and the **install mechanism**. No actual preset `.yaml` ships in this spec's PR — concrete presets land in dedicated follow-up PRs (one per preset) so each one gets focused review and lives or dies on its own merits. See `specs/presets/roadmap.md` for the list of presets in pipeline + community-targeted stacks.
+This spec defines the **format** and the **install mechanism**. No actual preset `.json` ships in this spec's PR — concrete presets land in dedicated follow-up PRs (one per preset) so each one gets focused review and lives or dies on its own merits. See `specs/presets/roadmap.md` for the list of presets in pipeline + community-targeted stacks.
 
 ## Goals
 
@@ -40,91 +40,106 @@ This spec defines the **format** and the **install mechanism**. No actual preset
 
 ```
 .claude/presets/
-├── nextjs.yaml                  # Maintainer-vouched (in pipeline, ships in follow-up PR)
-├── homelab-proxmox.yaml         # Maintainer-vouched (in pipeline)
-├── cli-tools.yaml               # Maintainer-vouched (in pipeline)
+├── nextjs.json                  # Maintainer-vouched (in pipeline, ships in follow-up PR)
+├── homelab-proxmox.json         # Maintainer-vouched (in pipeline)
+├── cli-tools.json               # Maintainer-vouched (in pipeline)
 ├── community/                   # Future home for community-contributed presets
 │   └── README.md                # Explains contribution requirements
 └── README.md                    # Format reference, points to spec.md
 ```
 
-### YAML schema
+### JSON schema
 
-```yaml
----
-name: nextjs                       # Required. Stack-specific. Lowercase, hyphens.
-displayName: "Next.js full-stack"  # Required. Short human-readable.
-description: |                     # Required. 2-3 lines. Explicit about scope.
-  Next.js (App Router) + React + TypeScript. Includes auth scaffolding,
-  database access patterns, and Vercel deploy. Does NOT bundle payment
-  or subscription logic — see docs/recipes/saas-monetization.md if needed.
+Format chosen: JSON. Rationale: `jq` is already a hard dependency of the foundation (used by 4+ hooks, `update.sh`, `validate-counts.sh`), `yq` is not. JSON+jq is consistent with `settings.json`, `.mcp.json`, `counts.json`. The `rationale` field on each plugin replaces what would have been a YAML inline comment, making the curation reasoning structured and queryable.
 
-version: 1.0.0                     # Optional. Defaults to repo's claude-socle version.
-status: maintainer-vouched         # Required. One of: maintainer-vouched | community-curated | draft
-author:
-  name: Chris
-  github: christopherlouet
+```json
+{
+  "$schema": "https://github.com/christopherlouet/claude-socle/blob/main/specs/presets/schema.json",
 
-# Existing foundation type this preset assumes (or extends)
-applies_to_types: [react, fullstack]
+  "name": "nextjs",
+  "displayName": "Next.js full-stack",
+  "description": "Next.js (App Router) + React + TypeScript. Includes auth scaffolding, database access patterns, and Vercel deploy. Does NOT bundle payment or subscription logic — see docs/recipes/saas-monetization.md if needed.",
 
-# Foundation modules to enable
-foundation:
-  rules:                           # Subset of .claude/rules/ to keep on install
-    - typescript
-    - react
-    - nextjs
-    - accessibility
-    - performance
-    - security
-  commands:                        # Subset of .claude/commands/ to keep
-    domains: [work, dev, qa, ops, growth, doc]
-    excludes: []                   # Optional explicit exclusion list
-  agents:                          # Subset of .claude/agents/ to keep
-    domains: [work, dev, qa, ops, growth, doc]
-  skills:                          # Specific skills to keep regardless of domain
-    keep:
-      - dev-shadcn
-      - dev-nextjs
-      - dev-prisma
-      - dev-react-perf
-      - growth-cro
+  "version": "1.0.0",
+  "status": "maintainer-vouched",
 
-# Marketplace plugins to install via `claude plugin install`
-marketplace_plugins:
-  - id: anthropic-official/vercel-deploy
-    why: "Deploy preview + production via Vercel CLI"
-    install: claude plugin install anthropic-official/vercel-deploy
-    optional: false                # If false, --preset install fails without it. Default true.
-  - id: supabase/auth-helpers
-    why: "Auth flows + RLS templates"
-    install: claude plugin install supabase/auth-helpers
-    optional: true
+  "author": {
+    "name": "Chris",
+    "github": "christopherlouet"
+  },
 
-# Defaults applied to new-project.sh flags (user can override)
-defaults:
-  ci: true                         # GitHub Actions
-  hooks: true                      # Husky / pre-commit
-  mcp: true                        # MCP config
-  docker: false                    # Dockerfile
-  design_style: editorial          # One of: terminal cockpit vitality editorial glass signal
+  "appliesToTypes": ["react", "fullstack"],
 
-# Things this preset does NOT cover (for honest scoping)
-out_of_scope:
-  - Payment processing (Stripe, etc.)
-  - Native mobile companion (use a flutter or swift preset)
-  - Backend in non-Node languages
+  "foundation": {
+    "rules": [
+      "typescript",
+      "react",
+      "nextjs",
+      "accessibility",
+      "performance",
+      "security"
+    ],
+    "commands": {
+      "domains": ["work", "dev", "qa", "ops", "growth", "doc"],
+      "excludes": []
+    },
+    "agents": {
+      "domains": ["work", "dev", "qa", "ops", "growth", "doc"]
+    },
+    "skills": {
+      "keep": [
+        "dev-shadcn",
+        "dev-nextjs",
+        "dev-prisma",
+        "dev-react-perf",
+        "growth-cro"
+      ]
+    }
+  },
 
-# Community-targeted alternatives (named explicitly so contributors know we know)
-related_presets_wanted:
-  - astro                          # Content / static-first JS
-  - sveltekit                      # Alternative JS framework
-  - vue-nuxt                       # Vue community
-  - django                         # Python full-stack
-  - rails                          # Ruby
-  - laravel                        # PHP
----
+  "marketplacePlugins": [
+    {
+      "id": "anthropic-official/vercel-deploy",
+      "rationale": "Deploy preview + production via Vercel CLI",
+      "install": "claude plugin install anthropic-official/vercel-deploy",
+      "optional": false
+    },
+    {
+      "id": "supabase/auth-helpers",
+      "rationale": "Auth flows + RLS templates",
+      "install": "claude plugin install supabase/auth-helpers",
+      "optional": true
+    }
+  ],
+
+  "defaults": {
+    "ci": true,
+    "hooks": true,
+    "mcp": true,
+    "docker": false,
+    "designStyle": "editorial"
+  },
+
+  "outOfScope": [
+    "Payment processing (Stripe, etc.)",
+    "Native mobile companion (use a flutter or swift preset)",
+    "Backend in non-Node languages"
+  ],
+
+  "relatedPresetsWanted": [
+    "astro",
+    "sveltekit",
+    "vue-nuxt",
+    "django",
+    "rails",
+    "laravel"
+  ]
+}
 ```
+
+### Field naming
+
+JSON convention is camelCase (`appliesToTypes`, `marketplacePlugins`, `designStyle`, `outOfScope`, `relatedPresetsWanted`). This matches the existing `settings.json` / Claude Code config style. Bash readers use `jq` queries: `jq -r '.foundation.rules[]'`, `jq -r '.marketplacePlugins[].id'`, etc.
 
 ### Mandatory fields
 
@@ -165,7 +180,7 @@ related_presets_wanted:
 
 ### Resolution order
 
-1. `--preset` flag is resolved against `.claude/presets/<name>.yaml`, then `.claude/presets/community/<name>.yaml`
+1. `--preset` flag is resolved against `.claude/presets/<name>.json`, then `.claude/presets/community/<name>.json`
 2. If not found: list available presets and exit with code 2
 3. If found:
    a. Set `--type` from `applies_to_types[0]` if `--type` not already passed
@@ -197,7 +212,7 @@ related_presets_wanted:
 
 ## Versioning
 
-- Presets ship versioned with claude-socle releases. `nextjs.yaml` from v1.32 → ships in `claude-socle@1.32`.
+- Presets ship versioned with claude-socle releases. `nextjs.json` from v1.32 → ships in `claude-socle@1.32`.
 - A preset's `version:` field defaults to claude-socle's version unless explicitly set (community-curated presets MAY pin earlier versions if they need stability).
 - Breaking changes to a preset (e.g. dropping a marketplace plugin a user relied on) are flagged in the CHANGELOG and trigger a minor bump.
 - No per-preset semver tree at MVP. If demand emerges, can be added later via the `version:` field.
@@ -205,7 +220,7 @@ related_presets_wanted:
 ## Tooling
 
 - `./scripts/new-project.sh --list-presets` — list installed presets with status, displayName
-- `./scripts/validate-presets.sh` (new, ~50 LOC) — validate every preset YAML against the schema, fail CI if invalid. Lives under `scripts/`.
+- `./scripts/validate-presets.sh` (new, ~50 LOC) — validate every preset JSON against the schema (jq queries on required fields, type checks, enum checks for `status`), fail CI if invalid. Lives under `scripts/`.
 - `tests/presets.bats` — for each preset, dry-run install in tmp dir, verify expected files copied, verify plugin list parsed.
 
 ## Risks
@@ -215,7 +230,7 @@ related_presets_wanted:
 | Marketplace plugin gets abandoned/compromised | Quarterly review of every preset's plugins. Pin to specific git refs when possible. Status tier visible. |
 | User installs preset, plugin install fails halfway | Foundation install completes first; plugin install is post-step. Failure is loud but non-fatal. |
 | Maintainer ships fake "vouched" preset for stack they don't really use | Status tiers explicit. PR review enforces. CONTRIBUTING.md acceptance criteria mandate ≥3 months prod use claim. |
-| Preset YAML schema drift over time | `scripts/validate-presets.sh` in CI prevents drift. Schema versioned in spec. |
+| Preset JSON schema drift over time | `scripts/validate-presets.sh` in CI prevents drift. Schema versioned in spec. JSON Schema file at `specs/presets/schema.json` may be added later for stricter validation. |
 | Community feels stacks they care about are missing | `related_presets_wanted` field + dedicated roadmap doc + active contribution invitation. |
 | `--preset` clashes with future native plugin system | Compatible: presets layer foundation + native plugin install. If foundation is later ported, preset becomes plugin-of-plugins. |
 
