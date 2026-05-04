@@ -13,6 +13,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **First preset: `nextjs` + preset system mechanism**: `./scripts/new-project.sh --preset nextjs <path>`
+  installs the foundation with stack-specific filters applied. The first concrete
+  preset ships alongside the install mechanism (parsing, filtering, plugin install
+  capability check). The `nextjs` preset is intentionally minimal at v1: it filters
+  out 6 clearly-out-of-stack skills (Flutter, Proxmox, OPNsense, mobile-release,
+  infra-code, data-pipeline) and bundles ZERO marketplace plugins. Plugins will
+  be added incrementally in follow-up PRs as each one is validated in real
+  production use, not assumed from name. See `.claude/presets/nextjs.json`,
+  `.claude/presets/README.md`, `specs/presets/spec.md`.
+- New `--list-presets` flag to discover available presets with their status tier.
+- New `scripts/validate-presets.sh` — jq-based JSON schema check for preset
+  manifests. Runs on each preset PR via the existing CI (called by `bash scripts/lint.sh`).
+- New tests `tests/presets.bats` (16 tests) covering manifest validation, filter
+  behavior on real install, capability fallback, and CLI flag composition.
+- New recipe `docs/recipes/saas-monetization.md` — the first opt-in recipe
+  documenting subscription/billing patterns for those who need them, kept
+  deliberately separate from the `nextjs` preset (preset = stack essentials,
+  recipe = product opinion).
+
+### Changed
+
+- `scripts/new-project.sh`: gains `--preset NAME` and `--list-presets` flags.
+  `--preset` composes with existing `--type`, `--ci`, `--hooks`, `--mcp`,
+  `--docker`, `--style` flags (preset's defaults apply only when the user
+  did not pass the corresponding flag, so user choice always wins).
+
+### Notes
+
+- The preset format is **JSON** (not YAML as initially drafted in the planning
+  spec). Pivot reason: the codebase has no YAML parser (`yq` is not a hard
+  dependency) but `jq` is required by 4+ existing hooks, `update.sh`, and
+  `validate-counts.sh`. JSON + jq is consistent with `settings.json`,
+  `.mcp.json`, `counts.json`. The choice is documented in `specs/presets/spec.md` § "JSON schema".
+
+### Earlier additions (already in [Unreleased])
+
 - **PostToolUse output rewriter (`feature/hook-output-rewriter`)**: three
   coordinated hooks that exploit the new `hookSpecificOutput.updatedToolOutput`
   envelope (Claude Code 2.1.121+) to tighten the feedback loop on

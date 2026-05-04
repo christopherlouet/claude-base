@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/christopherlouet/claude-socle/blob/main/specs/presets/schema.json",
+
+  "name": "nextjs",
+  "displayName": "Next.js full-stack",
+  "description": "Next.js (App Router) + React + TypeScript. The foundation rules and workflow are kept; clearly other-stack skills (Flutter, Proxmox, OPNsense, mobile release, data pipeline) are filtered out. Bundles ZERO marketplace plugins at v1 — plugin curation is added incrementally as each one is validated in real production use, not assumed. Auth, ORM, deploy and payment patterns are decisions left to the developer; see docs/recipes/saas-monetization.md if a subscription model is needed.",
+
+  "version": "1.0.0",
+  "status": "maintainer-vouched",
+
+  "author": {
+    "name": "Chris",
+    "github": "christopherlouet"
+  },
+
+  "appliesToTypes": ["react", "fullstack"],
+
+  "foundation": {
+    "skills": {
+      "drop": [
+        "dev-flutter",
+        "ops-mobile-release",
+        "ops-opnsense",
+        "ops-proxmox",
+        "ops-infra-code",
+        "data-pipeline"
+      ]
+    }
+  },
+
+  "marketplacePlugins": [],
+
+  "defaults": {
+    "ci": true,
+    "hooks": true,
+    "mcp": false,
+    "docker": false,
+    "designStyle": "editorial"
+  },
+
+  "outOfScope": [
+    "Payment processing — see docs/recipes/saas-monetization.md if subscription/billing is needed",
+    "Native mobile companion — use a Flutter or Swift preset (community contributions wanted)",
+    "Backend in non-Node languages — see roadmap for Django, FastAPI, Rails, Laravel, etc."
+  ],
+
+  "relatedPresetsWanted": [
+    "astro",
+    "sveltekit",
+    "vue-nuxt",
+    "django",
+    "fastapi",
+    "rails",
+    "laravel"
+  ]
+}
