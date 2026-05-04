@@ -250,3 +250,52 @@ EOF
     # no failure when style differs from nextjs preset)
     [ -d "$target/.claude" ]
 }
+
+# =============================================================================
+# cli-tools preset
+# =============================================================================
+
+@test "presets: cli-tools.json exists and is valid JSON" {
+    [ -f "$SOCLE_DIR/.claude/presets/cli-tools.json" ]
+    run jq -e . "$SOCLE_DIR/.claude/presets/cli-tools.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: cli-tools.json has required fields" {
+    local f="$SOCLE_DIR/.claude/presets/cli-tools.json"
+    [ "$(jq -r '.name' "$f")" = "cli-tools" ]
+    [ "$(jq -r '.status' "$f")" = "maintainer-vouched" ]
+    [ "$(jq -r '.defaults.designStyle' "$f")" = "terminal" ]
+}
+
+@test "presets: --list-presets shows all three vouched presets" {
+    run "$NEW_PROJECT" --list-presets
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"homelab-proxmox"* ]]
+    [[ "$output" == *"cli-tools"* ]]
+}
+
+@test "presets: --preset cli-tools drops UI/mobile/infra-heavy skills" {
+    local target="$TEST_DIR/proj-cli"
+    "$NEW_PROJECT" --preset cli-tools "$target" >/dev/null 2>&1
+    [ ! -d "$target/.claude/skills/dev-flutter" ]
+    [ ! -d "$target/.claude/skills/dev-nextjs" ]
+    [ ! -d "$target/.claude/skills/dev-shadcn" ]
+    [ ! -d "$target/.claude/skills/ops-proxmox" ]
+    [ ! -d "$target/.claude/skills/ops-opnsense" ]
+    [ ! -d "$target/.claude/skills/qa-chrome" ]
+    [ ! -d "$target/.claude/skills/qa-e2e" ]
+    [ ! -d "$target/.claude/skills/growth-cro" ]
+}
+
+@test "presets: --preset cli-tools keeps automation/scripting skills" {
+    local target="$TEST_DIR/proj-cli"
+    "$NEW_PROJECT" --preset cli-tools "$target" >/dev/null 2>&1
+    [ -d "$target/.claude/skills/dev-debug" ]
+    [ -d "$target/.claude/skills/dev-tdd" ]
+    [ -d "$target/.claude/skills/web-scraping" ]
+    [ -d "$target/.claude/skills/parallel-agents" ]
+    [ -d "$target/.claude/skills/qa-review" ]
+    [ -d "$target/.claude/skills/work-quick" ]
+}
