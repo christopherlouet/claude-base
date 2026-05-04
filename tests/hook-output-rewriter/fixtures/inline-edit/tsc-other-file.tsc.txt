@@ -1,0 +1,2 @@
+src/bar.ts(8,3): error TS2304: Cannot find name 'baz'.
+src/baz.ts(99,1): error TS1005: ';' expected.

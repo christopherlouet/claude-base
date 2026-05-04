@@ -1,0 +1,30 @@
+FAIL  src/services/auth.test.ts
+  ● AuthService › login › should reject invalid credentials
+  ● AuthService › logout › should clear session token
+Test Suites: 1 failed, 4 passed, 5 total
+Tests:       2 failed, 38 passed, 40 total
+Snapshots:   0 total
+Time:        4.213 s
+
+--- Failure context (last 20 lines) ---
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "session_token"
+    Received: undefined
+
+      67 |   it('should clear session token', () => {
+      68 |     authService.logout();
+    > 69 |     expect(localStorage.removeItem).toHaveBeenCalledWith('session_token');
+         |                                     ^
+      70 |   });
+
+PASS  src/components/Button.test.tsx
+PASS  src/components/Form.test.tsx
+
+Test Suites: 1 failed, 4 passed, 5 total
+Tests:       2 failed, 38 passed, 40 total
+Snapshots:   0 total
+Time:        4.213 s
+Ran all test suites.
+(exit code: 1)

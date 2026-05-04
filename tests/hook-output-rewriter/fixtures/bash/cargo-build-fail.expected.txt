@@ -1,0 +1,9 @@
+warning: unused variable: `ctx`
+  --> src/main.rs:23:13
+error[E0599]: no method named `frobnicate` found for struct `User` in the current scope
+  --> src/user.rs:42:18
+error[E0277]: the trait bound `String: From<u32>` is not satisfied
+  --> src/user.rs:58:24
+error: aborting due to 2 previous errors; 1 warning emitted
+error: could not compile `myapp` (bin "myapp") due to 2 previous errors; 1 warning emitted
+(exit code: 1)

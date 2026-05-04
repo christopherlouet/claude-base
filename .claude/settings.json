@@ -100,6 +100,16 @@
             "timeout": 3000
           }
         ]
+      },
+      {
+        "description": "Probe Claude Code version for the output rewriter (requires 2.1.121+). Writes a sentinel consumed by post-edit and bash-output rewriter hooks.",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check-cli-version.sh\"",
+            "timeout": 2000
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -226,25 +236,13 @@
         ]
       },
       {
-        "description": "Type-check TypeScript after modification",
+        "description": "Output rewriter — runs tsc + eslint after Edit/Write on TS/JS files and appends errors to the tool result envelope (CLI 2.1.121+). Replaces the former inline tsc + eslint blocks. Disable: SKIP_INLINE_EDIT_ERRORS=1.",
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx)$\"; then if [ -f tsconfig.json ] && [ -f node_modules/.bin/tsc ]; then npx tsc --noEmit 2>&1 | head -20 || true; fi; fi'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh\"",
             "timeout": 30000,
-            "onFailure": "ignore"
-          }
-        ]
-      },
-      {
-        "description": "ESLint check after JS/TS modification",
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx)$\"; then if [ -f node_modules/.bin/eslint ]; then npx eslint \"$TOOL_FILE\" --max-warnings 0 2>&1 | head -20 || true; fi; fi'",
-            "timeout": 15000,
             "onFailure": "ignore"
           }
         ]
@@ -377,6 +375,18 @@
             "type": "command",
             "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(test|spec)\\.(ts|tsx|js|jsx)$\"; then if [ -f package.json ] && grep -q \"test:coverage\" package.json; then echo \"Verification couverture...\"; npm run test:coverage -- --silent 2>&1 | grep -E \"(All files|Statements|Branches|Functions|Lines)\" | head -5 || true; fi; fi'",
             "timeout": 60000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
+        "description": "Output rewriter — trim noisy Bash command outputs (npm/pnpm/yarn/bun, pytest, go, cargo). Disable with SKIP_BASH_OUTPUT_FILTER=1; verbose with BASH_OUTPUT_FILTER_VERBOSE=1. Requires Claude Code 2.1.121+ (sentinel set by SessionStart probe).",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/bash-output-filter.sh\"",
+            "timeout": 5000,
             "onFailure": "ignore"
           }
         ]

@@ -73,8 +73,7 @@ PreToolUse hooks can return `"defer"` as a permission decision. The headless ses
 | **Auto-format Rust** | PostToolUse (Edit/Write) | rustfmt on .rs files |
 | **Auto-format Dart** | PostToolUse (Edit/Write) | dart format on .dart files |
 | **Auto-format Lua** | PostToolUse (Edit/Write) | stylua on .lua files |
-| **Type-check** | PostToolUse (Edit/Write) | Checks TypeScript types |
-| **ESLint** | PostToolUse (Edit/Write) | Lint JS/TS after modification |
+| **Inline edit errors (output rewriter)** | PostToolUse (Edit/Write) | Runs tsc + eslint on edited TS/JS files and appends errors to the tool result envelope (CLI 2.1.121+). Disable: `SKIP_INLINE_EDIT_ERRORS=1`. Replaces the former inline tsc + eslint blocks. |
 | **Auto-install** | PostToolUse (Edit package.json) | npm/yarn/pnpm/bun install |
 | **Auto-sync Python** | PostToolUse (Edit pyproject.toml) | uv sync or pip install |
 | **Auto pub get** | PostToolUse (Edit pubspec.yaml) | flutter/dart pub get |
@@ -100,6 +99,21 @@ PreToolUse hooks can return `"defer"` as a permission decision. The headless ses
 | **PostToolUseFailure** | PostToolUseFailure | Logs tool failures for debugging (async) |
 | **Check .env** | SessionStart | Checks that .env is in .gitignore |
 | **Third-party hooks warning** | SessionStart | Warns if custom hooks are detected |
+| **CLI version probe** | SessionStart | Probes Claude Code version for the output rewriter (requires 2.1.121+). Writes `/tmp/claude-rewriter-supported` (`1` or `0`) consumed by post-edit and bash-output rewriter hooks |
+
+## Output rewriter (CLI 2.1.121+)
+
+Three coordinated hooks that exploit `hookSpecificOutput.updatedToolOutput` to tighten Claude's feedback loop on PostToolUse Bash and Edit/Write events.
+
+| Hook | Event | Role |
+|------|-------|------|
+| `check-cli-version.sh` | SessionStart | Probes `claude --version` and writes `/tmp/claude-rewriter-supported` (`1` if >= 2.1.121, `0` otherwise). On unsupported CLI, prints a one-line notice. |
+| `bash-output-filter.sh` | PostToolUse (Bash) | Trims allowlisted noisy command outputs (`npm`/`pnpm`/`yarn`/`bun` install/audit/test/build, `pytest`, `go test`/`build`, `cargo build`/`test`/`check`) to actionable lines. Outputs below 30 lines pass through unchanged. |
+| `post-edit-typecheck-and-lint.sh` | PostToolUse (Edit\|Write) | Replaces the former inline tsc + eslint blocks. Runs `tsc --noEmit` (TS/TSX) + `eslint` (TS/TSX/JS/JSX), grep filters for the just-edited file, appends errors as a delimited section to the Edit/Write tool result envelope. Status stays SUCCESS. |
+
+All three hooks bail out silently if the sentinel reports unsupported, if `jq` is absent, or if their respective opt-out env var is set. The Bash filter and inline-edit hook share the helpers in `_hook-helpers.sh` (sourced, not registered).
+
+Migration path: existing projects must run `./scripts/update.sh -f --all <project>` to get the consolidated `.claude/settings.json`. If only `--hook-scripts` ran, `post-edit-typecheck-and-lint.sh` will detect the legacy state at runtime (old `npx tsc --noEmit` references in `.claude/settings.json`) and emit a one-line notice once per session.
 
 ## Hook Environment Variables
 
@@ -112,6 +126,10 @@ PreToolUse hooks can return `"defer"` as a permission decision. The headless ses
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
 | `SKIP_PROMPT_CONTEXT=1` | Disable repo context injection on free-form prompts |
 | `ENABLE_RTK=1` | Enable RTK token optimization |
+| `SKIP_BASH_OUTPUT_FILTER=1` | Disable the Bash output filter (output rewriter) |
+| `SKIP_INLINE_EDIT_ERRORS=1` | Disable the inline edit errors hook (output rewriter) |
+| `BASH_OUTPUT_FILTER_VERBOSE=1` | Keep both filtered and original views in the rewritten output |
+| `BASH_OUTPUT_FILTER_THRESHOLD=<N>` | Override the noise threshold (default 30 lines) below which Bash outputs pass through unchanged |
 
 ## Log Files
 
@@ -126,3 +144,4 @@ Logging hooks write to `/tmp/` (append mode, cleared on restart):
 | `/tmp/claude-permissions.log` | Permissions denied by the auto mode classifier |
 | `/tmp/claude-prompts.log` | User prompt submissions (timestamps) |
 | `/tmp/claude-failures.log` | Tool failures with tool name |
+| `/tmp/claude-rewriter.log` | Output rewriter activity (tool name, original / filtered line counts) |

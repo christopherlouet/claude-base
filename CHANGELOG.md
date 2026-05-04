@@ -11,6 +11,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **PostToolUse output rewriter (`feature/hook-output-rewriter`)**: three
+  coordinated hooks that exploit the new `hookSpecificOutput.updatedToolOutput`
+  envelope (Claude Code 2.1.121+) to tighten the feedback loop on
+  foundation-equipped projects.
+  - `bash-output-filter.sh` (PostToolUse Bash) trims noisy outputs of
+    allowlisted package-manager / build / test commands
+    (npm/pnpm/yarn/bun install/audit/test/build, pytest, go test/build,
+    cargo build/test/check) to actionable lines only. Threshold guard
+    skips outputs under 30 lines.
+  - `post-edit-typecheck-and-lint.sh` (PostToolUse Edit|Write)
+    consolidates the former two inline tsc + eslint blocks into a single
+    script that **inlines** type/lint errors mentioning the just-edited
+    file into the Edit/Write tool result envelope. Status stays SUCCESS;
+    annotations are appended under delimited sections.
+  - `check-cli-version.sh` (SessionStart) probes `claude --version` and
+    sets a sentinel consumed by the two PostToolUse hooks. On older
+    CLIs, prints one notice and falls back silently.
+- 12 test fixtures under `tests/hook-output-rewriter/fixtures/`
+  (6 Bash, 6 inline-edit) covering the 6 distinct extractor branches.
+- 45 new bats tests (`tests/hook-output-rewriter.bats`).
+- Hook env vars: `SKIP_BASH_OUTPUT_FILTER`, `SKIP_INLINE_EDIT_ERRORS`,
+  `BASH_OUTPUT_FILTER_VERBOSE`, `BASH_OUTPUT_FILTER_THRESHOLD`.
+- Metric log at `/tmp/claude-rewriter.log` (one line per rewrite).
+
+### Changed
+
+- `.claude/settings.json`: the two PostToolUse Edit|Write blocks
+  "Type-check TypeScript" and "ESLint check" are removed and replaced
+  by a single block calling `post-edit-typecheck-and-lint.sh`.
+  Behavior parity is preserved when the new feature is disabled
+  (`SKIP_INLINE_EDIT_ERRORS=1` falls back to legacy stdout side-messages).
+- `scripts/update.sh`: the interactive prompt for `.claude/settings.json`
+  now flags this release explicitly and warns when declining.
+
+### Migration
+
+- **Existing projects**: run `./scripts/update.sh -f --all <project>` to
+  get the new hooks coherently. Partial updates
+  (e.g. `--hook-scripts` without `--settings`) are detected at runtime
+  by `post-edit-typecheck-and-lint.sh` and trigger a one-line notice
+  once per session pointing to the correct command.
+- **Older CLIs (< 2.1.121)**: the SessionStart probe emits a single
+  visible notice on session start and the rewriter hooks remain
+  inactive. No upgrade is forced; sessions work as before.
+
 ---
 
 ## [1.31.2] - 2026-05-03

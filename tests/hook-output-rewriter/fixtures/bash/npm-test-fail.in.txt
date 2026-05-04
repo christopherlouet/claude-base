@@ -1,0 +1,43 @@
+> myapp@1.0.0 test
+> jest
+
+PASS  src/utils/format.test.ts
+PASS  src/utils/parse.test.ts
+FAIL  src/services/auth.test.ts
+  ● AuthService › login › should reject invalid credentials
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      42 |     const result = await authService.login('user', 'wrong');
+      43 |     expect(result.authenticated).toBe(false);
+    > 44 |     expect(result.locked).toBe(false);
+         |                            ^
+      45 |     expect(result.error).toBe('Invalid credentials');
+      46 |   });
+
+      at Object.<anonymous> (src/services/auth.test.ts:44:28)
+
+  ● AuthService › logout › should clear session token
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "session_token"
+    Received: undefined
+
+      67 |   it('should clear session token', () => {
+      68 |     authService.logout();
+    > 69 |     expect(localStorage.removeItem).toHaveBeenCalledWith('session_token');
+         |                                     ^
+      70 |   });
+
+PASS  src/components/Button.test.tsx
+PASS  src/components/Form.test.tsx
+
+Test Suites: 1 failed, 4 passed, 5 total
+Tests:       2 failed, 38 passed, 40 total
+Snapshots:   0 total
+Time:        4.213 s
+Ran all test suites.
