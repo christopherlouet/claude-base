@@ -57,6 +57,15 @@ jobs:
           # Put GNU grep ahead of BSD grep in PATH for subsequent steps
           echo "/opt/homebrew/opt/grep/libexec/gnubin" >> "$GITHUB_PATH"
 
+      - name: Verify grep is GNU (macOS only)
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "PATH=$PATH"
+          which grep
+          grep --version | head -1
+          echo "Test ^ inside alternation:"
+          echo -e "abc\n## Skills (99)" | grep -niE '(zzz|^#{1,4}[[:space:]]+(Skill|Skills)[[:space:]]+\(([0-9]+)[^)]*\))'
+
       - name: Run Bats tests
         run: bats tests/*.bats
 
