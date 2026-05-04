@@ -45,9 +45,17 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: bats-core/bats-action@4.0.0
 
-      - name: Setup Bats (macOS via Homebrew)
+      - name: Setup Bats, Bash 5+, GNU grep (macOS via Homebrew)
         if: matrix.os == 'macos-latest'
-        run: brew install bats-core
+        # macOS ships bash 3.2 (Apple froze updates since GPLv3 in 2007) and
+        # BSD grep (different ERE behavior than GNU grep). Homebrew installs:
+        #   bash 5+        at /opt/homebrew/bin/bash
+        #   GNU grep       at /opt/homebrew/opt/grep/libexec/gnubin/grep
+        # PATH is updated below to put GNU grep ahead of BSD grep.
+        run: |
+          brew install bats-core bash grep
+          # Put GNU grep ahead of BSD grep in PATH for subsequent steps
+          echo "/opt/homebrew/opt/grep/libexec/gnubin" >> "$GITHUB_PATH"
 
       - name: Run Bats tests
         run: bats tests/*.bats

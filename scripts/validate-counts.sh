@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # =============================================================================
 # Claude-Socle Validate Counts Script
@@ -96,21 +96,27 @@ fi
 info "Counting actual files..."
 echo ""
 
+# `wc -l` on BSD (macOS) pads its output with leading whitespace
+# (e.g. "       1") whereas GNU wc emits "1". Strip whitespace via `tr` so
+# the comparisons below (which use literal string equality) work uniformly.
+# Without this, every counter on macOS reads as " N" and fails to match the
+# clean integers extracted from documentation files.
+
 # Count commands (md files in commands/ subdirectories, exclude README.md index files)
-ACTUAL_COMMANDS=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f | wc -l)
+ACTUAL_COMMANDS=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f | wc -l | tr -d '[:space:]')
 
 # Count agents (exclude README.md index files)
-ACTUAL_AGENTS=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l)
+ACTUAL_AGENTS=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 # Count skills (directories with SKILL.md)
-ACTUAL_SKILLS=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l)
+ACTUAL_SKILLS=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 # Count rules (exclude README.md index files)
-ACTUAL_RULES=$(find "$SOCLE_DIR/.claude/rules" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l)
+ACTUAL_RULES=$(find "$SOCLE_DIR/.claude/rules" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 # Count tests (count `@test` lines across .bats files — fast, static, no execution)
 ACTUAL_TESTS=$(awk '/^@test/{n++} END{print n+0}' "$SOCLE_DIR"/tests/*.bats 2>/dev/null || echo 0)
-ACTUAL_TEST_FILES=$(find "$SOCLE_DIR/tests" -name "*.bats" -type f 2>/dev/null | wc -l)
+ACTUAL_TEST_FILES=$(find "$SOCLE_DIR/tests" -name "*.bats" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 echo "  Commands : $ACTUAL_COMMANDS"
 echo "  Agents   : $ACTUAL_AGENTS"
@@ -222,27 +228,39 @@ scan_drift() {
     alt_form=""
     [[ "$label_singular" == "agent" ]] && alt_form="|Sub-Agents?|sub-agents?"
 
-    # Build the unified regex.
-    # Pattern 2 accepts trailing text inside the parentheses (e.g. "Commands (131 available)").
-    # Pattern 4 accepts up to 4 intermediate cells before the number cell (e.g.
-    # `| **Agents** | foo | bar | baz | 63 |`) — common in 3+ column tables.
+    # POSIX ERE only — `\s` and `\b` are GNU-only; replaced with `[[:space:]]`.
+    # IMPORTANT: split into separate patterns instead of one big alternation.
+    # BSD grep -E (macOS) does NOT treat `^` inside `(...|^pattern|...)` as a
+    # line anchor — it's parsed as literal `^`. Splitting each pattern into
+    # its own grep invocation avoids this entirely (each `^` is then at the
+    # start of its own pattern, which BSD grep handles correctly).
     local lab="(${label_cap_singular}|${label_cap_plural}${alt_form})"
-    local pattern_re="(${lab}\s+disponibles?\s+\(([0-9]+)\)|^#{1,4}\s+${lab}\s+\(([0-9]+)[^)]*\)|'([0-9]+)\s+${lab}'|\|\s*\*\*${lab}\*\*\s*\|(\s*[^|]*\|){0,4}\s*([0-9]+)\s*\||^#{1,4}\s+([0-9]+)\s+${lab}\b)"
+    local ws='[[:space:]]'
 
-    while IFS= read -r match; do
-        [[ -z "$match" ]] && continue
+    # Each entry is a separate ERE pattern. The 5th uses `($|[^[:alnum:]_])`
+    # in place of `\b` (word boundary) for portability.
+    local patterns=(
+        "${lab}${ws}+disponibles?${ws}+\(([0-9]+)\)"
+        "^#{1,4}${ws}+${lab}${ws}+\(([0-9]+)[^)]*\)"
+        "'([0-9]+)${ws}+${lab}'"
+        "\|${ws}*\*\*${lab}\*\*${ws}*\|(${ws}*[^|]*\|){0,4}${ws}*([0-9]+)${ws}*\|"
+        "^#{1,4}${ws}+([0-9]+)${ws}+${lab}($|[^[:alnum:]_])"
+    )
+
+    process_match() {
+        local match="$1" pattern="$2"
+        [[ -z "$match" ]] && return
         local file_part="${match%%:*}"
         local rest="${match#*:}"
         local line_num="${rest%%:*}"
         local content="${rest#*:}"
 
         # Skip the scanner itself
-        [[ "$file_part" == *"validate-counts.sh"* ]] && continue
+        [[ "$file_part" == *"validate-counts.sh"* ]] && return
 
-        # Extract the number(s) in the total context
+        # Extract the number(s) from the matched portion of this line
         local nums
-        nums=$(echo "$content" | grep -oiE "${pattern_re}" | grep -oE '[0-9]+' | sort -u)
-
+        nums=$(echo "$content" | grep -oiE "$pattern" | grep -oE '[0-9]+' | sort -u)
         for n in $nums; do
             [[ "$n" -le 5 ]] && continue
             if [[ "$n" != "$actual" ]]; then
@@ -251,15 +269,35 @@ scan_drift() {
                 DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
             fi
         done
-    done < <(
-        grep -rniE "$pattern_re" \
-            --include="*.md" --include="*.ts" --include="*.tsx" --include="*.json" \
-            --exclude-dir=node_modules --exclude-dir=.git \
-            --exclude-dir=build --exclude-dir=.docusaurus \
-            --exclude-dir=memory \
-            --exclude="CHANGELOG.md" \
-            "$SOCLE_DIR" 2>/dev/null
-    )
+    }
+
+    # Run one grep per pattern so each `^` anchor is independently honored.
+    # De-duplicate via sort -u so the same line+number isn't reported twice.
+    local seen_keys=""
+    local pat
+    for pat in "${patterns[@]}"; do
+        while IFS= read -r match; do
+            [[ -z "$match" ]] && continue
+            # Dedup on file:line — across patterns, the same line might match more than one
+            local file_part="${match%%:*}"
+            local rest="${match#*:}"
+            local line_num="${rest%%:*}"
+            local key="$file_part:$line_num"
+            case "$seen_keys" in
+                *"|$key|"*) continue ;;
+            esac
+            seen_keys="${seen_keys}|$key|"
+            process_match "$match" "$pat"
+        done < <(
+            grep -rniE "$pat" \
+                --include="*.md" --include="*.ts" --include="*.tsx" --include="*.json" \
+                --exclude-dir=node_modules --exclude-dir=.git \
+                --exclude-dir=build --exclude-dir=.docusaurus \
+                --exclude-dir=memory \
+                --exclude="CHANGELOG.md" \
+                "$SOCLE_DIR" 2>/dev/null
+        )
+    done
 }
 
 scan_drift "command" "commands" "$ACTUAL_COMMANDS"
@@ -321,7 +359,7 @@ scan_tests_drift() {
             DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
         fi
     done < <(
-        grep -rnE '\([0-9]+ files?,\s*[0-9]+ tests\)' \
+        grep -rnE '\([0-9]+ files?,[[:space:]]*[0-9]+ tests\)' \
             --include="*.md" --include="*.ts" --include="*.tsx" \
             --exclude-dir=node_modules --exclude-dir=.git \
             --exclude-dir=build --exclude-dir=.docusaurus \

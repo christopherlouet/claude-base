@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # =============================================================================
 # validate-presets.sh
 # =============================================================================
@@ -143,13 +143,18 @@ validate_one() {
         else
             local n
             n=$(jq -r '.marketplacePlugins | length' "$file")
-            for i in $(seq 0 $((n - 1))); do
-                local pid prat
-                pid=$(jq -r ".marketplacePlugins[$i].id // empty" "$file")
-                prat=$(jq -r ".marketplacePlugins[$i].rationale // empty" "$file")
-                [ -n "$pid" ] || errs+=("marketplacePlugins[$i].id missing")
-                [ -n "$prat" ] || errs+=("marketplacePlugins[$i].rationale missing")
-            done
+            # Guard the loop: BSD seq (macOS) iterates `0\n-1` for `seq 0 -1`
+            # whereas GNU seq returns empty. Skip when no plugins.
+            if [ "$n" -gt 0 ]; then
+                local i
+                for i in $(seq 0 $((n - 1))); do
+                    local pid prat
+                    pid=$(jq -r ".marketplacePlugins[$i].id // empty" "$file")
+                    prat=$(jq -r ".marketplacePlugins[$i].rationale // empty" "$file")
+                    [ -n "$pid" ] || errs+=("marketplacePlugins[$i].id missing")
+                    [ -n "$prat" ] || errs+=("marketplacePlugins[$i].rationale missing")
+                done
+            fi
         fi
     fi
 
