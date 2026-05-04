@@ -16,15 +16,18 @@ load 'test_helper'
 HELPERS="$SOCLE_DIR/scripts/hooks/_hook-helpers.sh"
 CHECK_VERSION="$SOCLE_DIR/scripts/hooks/check-cli-version.sh"
 BASH_FILTER="$SOCLE_DIR/scripts/hooks/bash-output-filter.sh"
+INLINE_EDIT="$SOCLE_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh"
 FIXTURES="$SOCLE_DIR/tests/hook-output-rewriter/fixtures"
 SENTINEL_FILE="/tmp/claude-rewriter-supported"
 METRIC_LOG="/tmp/claude-rewriter.log"
+LEGACY_NOTICE_SENTINEL="/tmp/claude-socle-legacy-warned"
 
 setup() {
     skip_if_no_jq
     setup_test_dir
     # Ensure sentinel + metric log cleanup before each test
     rm -f "$SENTINEL_FILE" "$METRIC_LOG"
+    rm -f "$LEGACY_NOTICE_SENTINEL".*
     # Build a fake `claude` binary path that tests can prepend to PATH
     FAKE_BIN="$TEST_DIR/fake-bin"
     mkdir -p "$FAKE_BIN"
@@ -33,6 +36,7 @@ setup() {
 
 teardown() {
     rm -f "$SENTINEL_FILE" "$METRIC_LOG"
+    rm -f "$LEGACY_NOTICE_SENTINEL".*
     teardown_test_dir
 }
 
@@ -49,6 +53,42 @@ EOF
 # Helper: mark the rewriter as supported (skips the per-test SessionStart probe)
 enable_rewriter() {
     echo "1" > "$SENTINEL_FILE"
+}
+
+# Helper: set up a fake TS project at $TEST_DIR with mock tsc/eslint.
+# Args: tsc_fixture (path or empty), eslint_fixture (path or empty)
+# Each fixture file's content is what the mock binary prints.
+# Mock binaries exit 1 if their fixture file is non-empty (simulating found errors).
+setup_fake_ts_project() {
+    local tsc_fixture="$1" eslint_fixture="$2"
+    mkdir -p "$TEST_DIR/node_modules/.bin"
+    touch "$TEST_DIR/tsconfig.json"
+
+    if [ -n "$tsc_fixture" ]; then
+        cat > "$TEST_DIR/node_modules/.bin/tsc" <<EOF
+#!/usr/bin/env bash
+cat "$tsc_fixture"
+exit 1
+EOF
+        chmod +x "$TEST_DIR/node_modules/.bin/tsc"
+    fi
+
+    if [ -n "$eslint_fixture" ]; then
+        cat > "$TEST_DIR/node_modules/.bin/eslint" <<EOF
+#!/usr/bin/env bash
+cat "$eslint_fixture"
+exit 1
+EOF
+        chmod +x "$TEST_DIR/node_modules/.bin/eslint"
+    fi
+}
+
+# Helper: build an Edit-tool stdin JSON for a given file path.
+edit_stdin_json() {
+    local file_path="$1"
+    local response="${2:-The file $file_path has been edited.}"
+    jq -n --arg fp "$file_path" --arg resp "$response" \
+        '{tool_name: "Edit", tool_input: {file_path: $fp}, tool_response: $resp}'
 }
 
 # Helper: assert filtering a bash fixture produces the expected output.
@@ -457,4 +497,197 @@ assert_bash_fixture() {
     end_ns=$(date +%s%N)
     local elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
     [ "$elapsed_ms" -lt 500 ]
+}
+
+# =============================================================================
+# Phase 3: post-edit-typecheck-and-lint.sh
+# =============================================================================
+
+@test "Phase 3: post-edit-typecheck-and-lint.sh exists and is executable" {
+    [ -x "$INLINE_EDIT" ]
+}
+
+@test "Phase 3: skips when capability sentinel is missing" {
+    rm -f "$SENTINEL_FILE"
+    setup_fake_ts_project "$FIXTURES/inline-edit/tsc-single-error.tsc.txt" ""
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$TEST_DIR/src/foo.ts")
+    cd "$TEST_DIR"
+    run bash -c "printf '%s' '$stdin_json' | '$INLINE_EDIT'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "Phase 3: skips when SKIP_INLINE_EDIT_ERRORS=1" {
+    enable_rewriter
+    setup_fake_ts_project "$FIXTURES/inline-edit/tsc-single-error.tsc.txt" ""
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$TEST_DIR/src/foo.ts")
+    cd "$TEST_DIR"
+    SKIP_INLINE_EDIT_ERRORS=1 run bash -c "printf '%s' '$stdin_json' | '$INLINE_EDIT'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "Phase 3: skips for non-TS/JS file extensions (.py)" {
+    enable_rewriter
+    setup_fake_ts_project "$FIXTURES/inline-edit/tsc-single-error.tsc.txt" ""
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$TEST_DIR/src/script.py")
+    cd "$TEST_DIR"
+    run bash -c "printf '%s' '$stdin_json' | '$INLINE_EDIT'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "Phase 3: tsc-single-error appends type error block to edit result" {
+    enable_rewriter
+    mkdir -p "$TEST_DIR/node_modules/.bin"
+    touch "$TEST_DIR/tsconfig.json"
+    local file_path="$TEST_DIR/src/foo.ts"
+    {
+        echo '#!/usr/bin/env bash'
+        echo "echo \"$file_path(42,15): error TS2304: Cannot find name 'bar'.\""
+        echo 'exit 1'
+    } > "$TEST_DIR/node_modules/.bin/tsc"
+    chmod +x "$TEST_DIR/node_modules/.bin/tsc"
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$file_path" "Edit OK")
+    cd "$TEST_DIR"
+    local result
+    result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
+    local trimmed
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    [[ "$trimmed" == *"Edit OK"* ]]
+    [[ "$trimmed" == *"--- Type errors (tsc) ---"* ]]
+    [[ "$trimmed" == *"TS2304"* ]]
+    [[ "$trimmed" == *"foo.ts"* ]]
+}
+
+@test "Phase 3: tsc-multi-errors appends all 3 lines under one section" {
+    enable_rewriter
+    mkdir -p "$TEST_DIR/node_modules/.bin"
+    touch "$TEST_DIR/tsconfig.json"
+    local file_path="$TEST_DIR/src/foo.ts"
+    {
+        echo '#!/usr/bin/env bash'
+        echo "echo \"$file_path(12,5): error TS2322: Type 'string' is not assignable to type 'number'.\""
+        echo "echo \"$file_path(28,9): error TS2552: Cannot find name 'undefned'.\""
+        echo "echo \"$file_path(45,7): error TS2554: Expected 1 arguments, but got 0.\""
+        echo 'exit 1'
+    } > "$TEST_DIR/node_modules/.bin/tsc"
+    chmod +x "$TEST_DIR/node_modules/.bin/tsc"
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$file_path")
+    cd "$TEST_DIR"
+    local result
+    result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
+    local trimmed
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    [[ "$trimmed" == *"TS2322"* ]]
+    [[ "$trimmed" == *"TS2552"* ]]
+    [[ "$trimmed" == *"TS2554"* ]]
+}
+
+@test "Phase 3: tsc-other-file does NOT append errors from unrelated files (FR-6)" {
+    enable_rewriter
+    setup_fake_ts_project "$FIXTURES/inline-edit/tsc-other-file.tsc.txt" ""
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$TEST_DIR/src/foo.ts")
+    cd "$TEST_DIR"
+    run bash -c "printf '%s' '$stdin_json' | '$INLINE_EDIT'"
+    [ "$status" -eq 0 ]
+    # Errors mention bar.ts and baz.ts, edit was on foo.ts → no envelope
+    [ -z "$output" ]
+}
+
+@test "Phase 3: eslint-only mode for .js files (no tsc)" {
+    enable_rewriter
+    mkdir -p "$TEST_DIR/node_modules/.bin"
+    local file_path="$TEST_DIR/src/foo.js"
+    {
+        echo '#!/usr/bin/env bash'
+        echo "echo \"$file_path\""
+        echo "echo \"  12:5  error  'unused' is assigned a value but never used  no-unused-vars\""
+        echo 'echo ""'
+        echo 'echo "OK 1 problem (1 error, 0 warnings)"'
+        echo 'exit 1'
+    } > "$TEST_DIR/node_modules/.bin/eslint"
+    chmod +x "$TEST_DIR/node_modules/.bin/eslint"
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$file_path")
+    cd "$TEST_DIR"
+    local result
+    result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
+    local trimmed
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    [[ "$trimmed" == *"--- Lint errors (eslint) ---"* ]]
+    [[ "$trimmed" == *"no-unused-vars"* ]]
+    [[ "$trimmed" != *"--- Type errors (tsc) ---"* ]]
+}
+
+@test "Phase 3: tsc + eslint both fire, sections appear in order" {
+    enable_rewriter
+    mkdir -p "$TEST_DIR/node_modules/.bin"
+    touch "$TEST_DIR/tsconfig.json"
+    local file_path="$TEST_DIR/src/foo.ts"
+    {
+        echo '#!/usr/bin/env bash'
+        echo "echo \"$file_path(15,9): error TS2322: Type 'string' is not assignable to type 'number'.\""
+        echo 'exit 1'
+    } > "$TEST_DIR/node_modules/.bin/tsc"
+    chmod +x "$TEST_DIR/node_modules/.bin/tsc"
+    {
+        echo '#!/usr/bin/env bash'
+        echo "echo \"$file_path\""
+        echo "echo \"  20:1  warning  Missing JSDoc comment  require-jsdoc\""
+        echo 'exit 1'
+    } > "$TEST_DIR/node_modules/.bin/eslint"
+    chmod +x "$TEST_DIR/node_modules/.bin/eslint"
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$file_path")
+    cd "$TEST_DIR"
+    local result
+    result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
+    local trimmed
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    [[ "$trimmed" == *"--- Type errors (tsc) ---"* ]]
+    [[ "$trimmed" == *"--- Lint errors (eslint) ---"* ]]
+    local tsc_pos eslint_pos
+    tsc_pos=$(printf '%s' "$trimmed" | grep -n -- "--- Type errors" | head -1 | cut -d: -f1)
+    eslint_pos=$(printf '%s' "$trimmed" | grep -n -- "--- Lint errors" | head -1 | cut -d: -f1)
+    [ "$tsc_pos" -lt "$eslint_pos" ]
+}
+
+@test "Phase 3: no errors found passes through unchanged (no envelope)" {
+    enable_rewriter
+    mkdir -p "$TEST_DIR/node_modules/.bin"
+    touch "$TEST_DIR/tsconfig.json"
+    {
+        echo '#!/usr/bin/env bash'
+        echo 'exit 0'
+    } > "$TEST_DIR/node_modules/.bin/tsc"
+    chmod +x "$TEST_DIR/node_modules/.bin/tsc"
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$TEST_DIR/src/foo.ts")
+    cd "$TEST_DIR"
+    run bash -c "printf '%s' '$stdin_json' | '$INLINE_EDIT'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "Phase 3: legacy state detection emits notice when settings.json has old inline tsc" {
+    enable_rewriter
+    setup_fake_ts_project "$FIXTURES/inline-edit/tsc-single-error.tsc.txt" ""
+    mkdir -p "$TEST_DIR/.claude"
+    {
+        echo '{"hooks":{"PostToolUse":[{"matcher":"Edit|Write","hooks":[{"type":"command","command":"bash -c'\''npx tsc --noEmit 2>&1 | head -20 || true'\''"}]}]}}'
+    } > "$TEST_DIR/.claude/settings.json"
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$TEST_DIR/src/foo.ts")
+    cd "$TEST_DIR"
+    rm -f "$LEGACY_NOTICE_SENTINEL".*
+    local out
+    out=$(printf '%s' "$stdin_json" | "$INLINE_EDIT" 2>&1)
+    [[ "$out" == *"predate"* ]] || [[ "$out" == *"legacy"* ]] || [[ "$out" == *"update.sh"* ]]
 }

@@ -83,8 +83,7 @@ PreToolUse hooks can return `"defer"` as a permission decision. The headless ses
 | **Auto-format Rust** | PostToolUse (Edit/Write) | rustfmt on .rs files |
 | **Auto-format Dart** | PostToolUse (Edit/Write) | dart format on .dart files |
 | **Auto-format Lua** | PostToolUse (Edit/Write) | stylua on .lua files |
-| **Type-check** | PostToolUse (Edit/Write) | Checks TypeScript types |
-| **ESLint** | PostToolUse (Edit/Write) | Lint JS/TS after modification |
+| **Inline edit errors (output rewriter)** | PostToolUse (Edit/Write) | Runs tsc + eslint on edited TS/JS files and appends errors to the tool result envelope (CLI 2.1.121+). Disable: `SKIP_INLINE_EDIT_ERRORS=1`. Replaces the former inline tsc + eslint blocks. |
 | **Auto-install** | PostToolUse (Edit package.json) | npm/yarn/pnpm/bun install |
 | **Auto-sync Python** | PostToolUse (Edit pyproject.toml) | uv sync or pip install |
 | **Auto pub get** | PostToolUse (Edit pubspec.yaml) | flutter/dart pub get |
@@ -123,6 +122,10 @@ PreToolUse hooks can return `"defer"` as a permission decision. The headless ses
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
 | `SKIP_PROMPT_CONTEXT=1` | Disable repo context injection on free-form prompts |
 | `ENABLE_RTK=1` | Enable RTK token optimization |
+| `SKIP_BASH_OUTPUT_FILTER=1` | Disable the Bash output filter (output rewriter) |
+| `SKIP_INLINE_EDIT_ERRORS=1` | Disable the inline edit errors hook (output rewriter) |
+| `BASH_OUTPUT_FILTER_VERBOSE=1` | Keep both filtered and original views in the rewritten output |
+| `BASH_OUTPUT_FILTER_THRESHOLD=<N>` | Override the noise threshold (default 30 lines) below which Bash outputs pass through unchanged |
 
 ## Log Files
 
@@ -137,3 +140,4 @@ Logging hooks write to `/tmp/` (append mode, cleared on restart):
 | `/tmp/claude-permissions.log` | Permissions denied by the auto mode classifier |
 | `/tmp/claude-prompts.log` | User prompt submissions (timestamps) |
 | `/tmp/claude-failures.log` | Tool failures with tool name |
+| `/tmp/claude-rewriter.log` | Output rewriter activity (tool name, original / filtered line counts) |

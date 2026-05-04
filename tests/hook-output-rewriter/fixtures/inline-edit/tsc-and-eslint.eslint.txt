@@ -1,0 +1,5 @@
+
+/abs/path/src/foo.ts
+  20:1  warning  Missing JSDoc comment  require-jsdoc
+
+✖ 1 problem (0 errors, 1 warning)

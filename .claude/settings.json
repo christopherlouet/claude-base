@@ -236,25 +236,13 @@
         ]
       },
       {
-        "description": "Type-check TypeScript after modification",
+        "description": "Output rewriter — runs tsc + eslint after Edit/Write on TS/JS files and appends errors to the tool result envelope (CLI 2.1.121+). Replaces the former inline tsc + eslint blocks. Disable: SKIP_INLINE_EDIT_ERRORS=1.",
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx)$\"; then if [ -f tsconfig.json ] && [ -f node_modules/.bin/tsc ]; then npx tsc --noEmit 2>&1 | head -20 || true; fi; fi'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh\"",
             "timeout": 30000,
-            "onFailure": "ignore"
-          }
-        ]
-      },
-      {
-        "description": "ESLint check after JS/TS modification",
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx)$\"; then if [ -f node_modules/.bin/eslint ]; then npx eslint \"$TOOL_FILE\" --max-warnings 0 2>&1 | head -20 || true; fi; fi'",
-            "timeout": 15000,
             "onFailure": "ignore"
           }
         ]

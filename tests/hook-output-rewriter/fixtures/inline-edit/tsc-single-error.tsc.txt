@@ -1,0 +1,1 @@
+src/foo.ts(42,15): error TS2304: Cannot find name 'bar'.
