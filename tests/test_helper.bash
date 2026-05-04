@@ -119,3 +119,25 @@ skip_if_no_jq() {
         skip "jq is not installed"
     fi
 }
+
+# Returns current time in milliseconds since epoch.
+# Portable across GNU coreutils (Ubuntu) and BSD utilities (macOS):
+# - GNU `date +%s%N` works (nanoseconds, divided by 1e6 for ms)
+# - BSD `date` does NOT support %N
+# - Both have python3 preinstalled on CI runners
+# - Fallback to second-level precision multiplied by 1000 if neither
+#   python3 nor gdate is available (loses sub-second accuracy)
+now_ms() {
+    if command -v python3 &>/dev/null; then
+        python3 -c 'import time; print(int(time.time()*1000))'
+    elif command -v gdate &>/dev/null; then
+        gdate +%s%3N
+    elif date +%s%N 2>/dev/null | grep -qE '^[0-9]+$'; then
+        # GNU date with nanosecond support (Linux without coreutils renamed)
+        echo $(($(date +%s%N) / 1000000))
+    else
+        # Last resort: second-level precision (loses sub-second granularity).
+        # Tests asserting < 1s thresholds will fail on this fallback.
+        echo $(( $(date +%s) * 1000 ))
+    fi
+}
