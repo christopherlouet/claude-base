@@ -336,11 +336,11 @@ assert_bash_fixture() {
 
 @test "Phase 1: check-cli-version completes in less than 2 seconds" {
     install_fake_claude "2.1.126 (Claude Code)"
-    local start_ns end_ns
-    start_ns=$(date +%s%N)
+    local start_ms end_ms
+    start_ms=$(now_ms)
     PATH="$FAKE_BIN:$PATH" "$CHECK_VERSION" >/dev/null 2>&1
-    end_ns=$(date +%s%N)
-    local elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
+    end_ms=$(now_ms)
+    local elapsed_ms=$(( end_ms - start_ms ))
     [ "$elapsed_ms" -lt 2000 ]
 }
 
@@ -491,11 +491,11 @@ assert_bash_fixture() {
     local in_file="$FIXTURES/bash/npm-audit-vulns.in.txt"
     local stdin_json
     stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm audit"}, tool_response: {output: $out, exit_code: 0}}')
-    local start_ns end_ns
-    start_ns=$(date +%s%N)
+    local start_ms end_ms
+    start_ms=$(now_ms)
     printf '%s' "$stdin_json" | "$BASH_FILTER" >/dev/null
-    end_ns=$(date +%s%N)
-    local elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
+    end_ms=$(now_ms)
+    local elapsed_ms=$(( end_ms - start_ms ))
     [ "$elapsed_ms" -lt 500 ]
 }
 
