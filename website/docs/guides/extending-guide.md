@@ -599,6 +599,50 @@ prop typing, and store management automatically on `.svelte` files.
 
 ---
 
+## 7. Native plugin migration: current state
+
+Claude Code shipped a native plugin system between CLI 2.1.119 and 2.1.126 (April-May 2026). At first glance, porting `claude-socle` to a native plugin (`claude plugin install claude-socle`) would unlock distribution via the Anthropic marketplace. **This is not the path the foundation has taken — yet.**
+
+### Why we kept the standalone `.claude/` foundation
+
+A research pass on May 4, 2026 against the official plugin docs ([code.claude.com/docs/en/plugins](https://code.claude.com/docs/en/plugins)) surfaced three documented gaps that prevent a clean port today:
+
+| Gap | Impact on `claude-socle` |
+|---|---|
+| **Rules (`.claude/rules/`) are not a plugin component** | The 30 path-specific rules in this foundation cannot ship via plugin. Users would need to copy them manually post-install. |
+| **`settings.json` scope inside plugins is limited** to `agent` and `subagentStatusLine` | Plugins cannot configure `permissions`, `env`, or top-level `hooks` for the user's session. Foundation defaults (deny lists, env, ~15 PostToolUse hooks) cannot be auto-installed. |
+| **No first-install / setup callback** | `scripts/new-project.sh` (the foundation orchestrator) has no equivalent. A plugin user gets skills/agents/commands immediately but no workspace setup. |
+
+For a foundation whose value sits in the **integration of all four extension types plus settings + setup logic**, losing two of those layers (rules + settings + setup) is a non-starter today.
+
+### When porting will make sense
+
+Re-evaluate when at least 2 of the 3 gaps land:
+
+- Plugin manifests gain a `rules/` contribution type
+- Plugin `settings.json` scope expands to include at least `permissions` and `env`
+- A documented `postInstall` / setup hook arrives for plugins
+
+Track the [Claude Code CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) for these features. Realistic window: 6-12 months.
+
+### For contributors who want to publish their own pack
+
+If you've extended the foundation with a thematic pack (e.g. a `stripe-pack`, a `rails-pack`) and want it shareable today **without depending on `claude-socle`**, native plugins are a solid option:
+
+- Manifest format: `.claude-plugin/plugin.json` (JSON, not YAML)
+- Repo layout: `commands/`, `agents/`, `skills/`, `hooks/hooks.json` at the plugin root
+- Installation: `claude plugin install <github-org>/<repo>`
+- Marketplace: list it on [claudemarketplaces.com](https://claudemarketplaces.com/) once stable
+- Reference: [code.claude.com/docs/en/plugins](https://code.claude.com/docs/en/plugins)
+
+Note that as of May 2026 the marketplace is dominated by **single-purpose plugins** (1-5 skills each). Foundation-scale plugins are rare; smaller atomic packs align better with current ecosystem conventions.
+
+### What if you want both
+
+A pragmatic interim pattern: **keep `claude-socle` as your project's `.claude/` template** (for the integrated foundation experience), and **layer external native plugins on top** for vertical-specific additions (e.g. install a community Stripe plugin alongside the foundation). The two systems coexist cleanly — they read different config namespaces.
+
+---
+
 ## Recap of locations
 
 ```
