@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Third preset: `cli-tools`** — Python or Shell automation tools,
+  GitHub API helpers, headless-friendly scripts. Targets developers
+  building CLI utilities, dependency analyzers, code-mod tooling, or
+  ops automation that runs in CI/cron without a UI. Filters out 13
+  app/UI/mobile/infra-heavy skills. Bundles ZERO marketplace plugins
+  at v1. Default `designStyle: terminal` (matches headless CLI usage).
+  See `.claude/presets/cli-tools.json`. With this PR, the 3
+  maintainer-vouched presets in `specs/presets/roadmap.md` pipeline
+  are all live.
 - **Second preset: `homelab-proxmox`** — Proxmox VE + Terraform + Ansible
   + monitoring (Prometheus/Grafana). Targets sysadmins running
   infrastructure-as-code on a personal or small-team Proxmox cluster.

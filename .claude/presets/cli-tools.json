@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/christopherlouet/claude-socle/blob/main/specs/presets/schema.json",
+
+  "name": "cli-tools",
+  "displayName": "CLI tools / automation scripts",
+  "description": "Python or Shell automation tools, GitHub API helpers, headless-friendly scripts. Targets developers building CLI utilities, dependency analyzers, code-mod tooling, or ops automation that runs in CI/cron without a UI. Filters out application/UI/mobile/infra-heavy skills (React, Next.js, Flutter, Proxmox, OPNsense, mobile-release, frontend-design, conversion optimization, UI testing). Bundles ZERO marketplace plugins at v1 — CLI-specific plugins (gh API helpers, packaging, distribution) will be added incrementally as validated. Defaults reflect headless usage (no Docker, no MCP).",
+
+  "version": "1.0.0",
+  "status": "maintainer-vouched",
+
+  "author": {
+    "name": "Chris",
+    "github": "christopherlouet"
+  },
+
+  "appliesToTypes": ["python", "generic"],
+
+  "foundation": {
+    "skills": {
+      "drop": [
+        "dev-flutter",
+        "dev-shadcn",
+        "dev-nextjs",
+        "dev-react-perf",
+        "dev-frontend-design",
+        "ops-mobile-release",
+        "ops-proxmox",
+        "ops-opnsense",
+        "growth-cro",
+        "qa-chrome",
+        "qa-responsive",
+        "qa-design",
+        "qa-e2e"
+      ]
+    }
+  },
+
+  "marketplacePlugins": [],
+
+  "defaults": {
+    "ci": true,
+    "hooks": true,
+    "mcp": false,
+    "docker": false,
+    "designStyle": "terminal"
+  },
+
+  "outOfScope": [
+    "Web application development (use the nextjs preset)",
+    "Infrastructure-as-code (use the homelab-proxmox preset for homelab IaC)",
+    "Mobile / desktop apps (community contributions wanted for flutter, swift, tauri)",
+    "GUI testing patterns — CLI tools are typically tested via stdin/stdout fixtures"
+  ],
+
+  "relatedPresetsWanted": [
+    "django",
+    "fastapi",
+    "go-cli",
+    "rust-cli",
+    "node-cli"
+  ]
+}
