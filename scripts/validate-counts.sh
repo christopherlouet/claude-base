@@ -96,21 +96,27 @@ fi
 info "Counting actual files..."
 echo ""
 
+# `wc -l` on BSD (macOS) pads its output with leading whitespace
+# (e.g. "       1") whereas GNU wc emits "1". Strip whitespace via `tr` so
+# the comparisons below (which use literal string equality) work uniformly.
+# Without this, every counter on macOS reads as " N" and fails to match the
+# clean integers extracted from documentation files.
+
 # Count commands (md files in commands/ subdirectories, exclude README.md index files)
-ACTUAL_COMMANDS=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f | wc -l)
+ACTUAL_COMMANDS=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f | wc -l | tr -d '[:space:]')
 
 # Count agents (exclude README.md index files)
-ACTUAL_AGENTS=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l)
+ACTUAL_AGENTS=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 # Count skills (directories with SKILL.md)
-ACTUAL_SKILLS=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l)
+ACTUAL_SKILLS=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 # Count rules (exclude README.md index files)
-ACTUAL_RULES=$(find "$SOCLE_DIR/.claude/rules" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l)
+ACTUAL_RULES=$(find "$SOCLE_DIR/.claude/rules" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 # Count tests (count `@test` lines across .bats files — fast, static, no execution)
 ACTUAL_TESTS=$(awk '/^@test/{n++} END{print n+0}' "$SOCLE_DIR"/tests/*.bats 2>/dev/null || echo 0)
-ACTUAL_TEST_FILES=$(find "$SOCLE_DIR/tests" -name "*.bats" -type f 2>/dev/null | wc -l)
+ACTUAL_TEST_FILES=$(find "$SOCLE_DIR/tests" -name "*.bats" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 echo "  Commands : $ACTUAL_COMMANDS"
 echo "  Agents   : $ACTUAL_AGENTS"
