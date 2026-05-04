@@ -111,6 +111,20 @@ PreToolUse hooks can return `"defer"` as a permission decision. The headless ses
 | **Third-party hooks warning** | SessionStart | Warns if custom hooks are detected |
 | **CLI version probe** | SessionStart | Probes Claude Code version for the output rewriter (requires 2.1.121+). Writes `/tmp/claude-rewriter-supported` (`1` or `0`) consumed by post-edit and bash-output rewriter hooks |
 
+## Output rewriter (CLI 2.1.121+)
+
+Three coordinated hooks that exploit `hookSpecificOutput.updatedToolOutput` to tighten Claude's feedback loop on PostToolUse Bash and Edit/Write events.
+
+| Hook | Event | Role |
+|------|-------|------|
+| `check-cli-version.sh` | SessionStart | Probes `claude --version` and writes `/tmp/claude-rewriter-supported` (`1` if >= 2.1.121, `0` otherwise). On unsupported CLI, prints a one-line notice. |
+| `bash-output-filter.sh` | PostToolUse (Bash) | Trims allowlisted noisy command outputs (`npm`/`pnpm`/`yarn`/`bun` install/audit/test/build, `pytest`, `go test`/`build`, `cargo build`/`test`/`check`) to actionable lines. Outputs below 30 lines pass through unchanged. |
+| `post-edit-typecheck-and-lint.sh` | PostToolUse (Edit\\|Write) | Replaces the former inline tsc + eslint blocks. Runs `tsc --noEmit` (TS/TSX) + `eslint` (TS/TSX/JS/JSX), grep filters for the just-edited file, appends errors as a delimited section to the Edit/Write tool result envelope. Status stays SUCCESS. |
+
+All three hooks bail out silently if the sentinel reports unsupported, if `jq` is absent, or if their respective opt-out env var is set. The Bash filter and inline-edit hook share the helpers in `_hook-helpers.sh` (sourced, not registered).
+
+Migration path: existing projects must run `./scripts/update.sh -f --all <project>` to get the consolidated `.claude/settings.json`. If only `--hook-scripts` ran, `post-edit-typecheck-and-lint.sh` will detect the legacy state at runtime (old `npx tsc --noEmit` references in `.claude/settings.json`) and emit a one-line notice once per session.
+
 ## Hook Environment Variables
 
 | Variable | Usage |

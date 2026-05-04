@@ -536,11 +536,11 @@ update_settings() {
         copy_file "$src" "$dest"
         success "settings.json updated"
     elif [[ -f "$dest" ]]; then
-        if confirm "Update .claude/settings.json?" "n"; then
+        if confirm "Update .claude/settings.json? (recommended for this release - adds output rewriter)" "n"; then
             copy_file "$src" "$dest"
             success "settings.json updated"
         else
-            warning "settings.json skipped"
+            warning "settings.json skipped (declining may leave hook scripts unwired - rerun with --settings to enable)"
         fi
     else
         copy_file "$src" "$dest"
