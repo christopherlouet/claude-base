@@ -21,6 +21,32 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 - Ready-to-use CI/CD and pre-commit hooks
 - Multi-stack support: Node.js, Python, Go, Rust, Flutter, Docker, K8s, Terraform, Proxmox
 
+## How it fits in the Claude Code ecosystem
+
+claude-socle is a **workflow foundation**, not a competing plugin marketplace. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via `new-project.sh`.
+
+For specialized depth on individual verticals — GDPR/GRC compliance, advanced SEO, deep cloud integrations — the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) and community marketplaces (e.g. [claudemarketplaces.com](https://claudemarketplaces.com/), [awesome-claude-plugins](https://github.com/ComposioHQ/awesome-claude-plugins)) often ship plugins that go further than what this foundation bundles. That's expected: a foundation curates **breadth + integration**, marketplace plugins curate **depth on a single domain**.
+
+**Recommended pattern**
+
+```
+claude-socle (foundation)         ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
+       +
+marketplace plugins (verticals)   ← Stripe, GDPR-GRC, SEO, AWS Bedrock, Rails, ...
+```
+
+claude-socle's unique value (vs assembling marketplace plugins alone):
+
+- Workflow rigor coordinated as one experience (TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates)
+- Anti-drift counter strategy across the entire foundation (CI-enforced, see [PR #110](https://github.com/christopherlouet/claude-socle/pull/110))
+- 30 path-specific rules (currently not a plugin component, see `docs/guides/EXTENDING-GUIDE.md` § 7)
+- PostToolUse output rewriter for Bash + tsc/eslint (see [PR #116](https://github.com/christopherlouet/claude-socle/pull/116))
+- Integrated setup via `new-project.sh`, including hooks, permissions and env defaults
+
+**Honest limit**: for any single vertical task, there's likely a more specialized marketplace plugin. We're tracking this — see `specs/marketplace-audit/` for the per-domain comparison work in progress.
+
+**Presets coming**: a curated bundle system (`./scripts/new-project.sh --preset <stack>`) is being designed to install foundation + recommended marketplace plugins together for a given stack. See `specs/presets/spec.md` for the format and `specs/presets/roadmap.md` for the named target stacks (3 in pipeline, 24+ community-wanted across web, backend, mobile, data, infra). Stack-specific naming only — no `web-app` or `backend-app`. If your daily stack isn't on the list, contributions welcome.
+
 ## Installation
 
 ### Option 1: Installation script (recommended)
