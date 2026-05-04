@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Second preset: `homelab-proxmox`** — Proxmox VE + Terraform + Ansible
+  + monitoring (Prometheus/Grafana). Targets sysadmins running
+  infrastructure-as-code on a personal or small-team Proxmox cluster.
+  Filters out 10 app/UI/mobile-only skills (`dev-flutter`, `dev-shadcn`,
+  `dev-nextjs`, `dev-react-perf`, `dev-frontend-design`,
+  `ops-mobile-release`, `growth-cro`, `qa-chrome`, `qa-responsive`,
+  `qa-design`). Bundles ZERO marketplace plugins at v1 — Terraform-specific
+  plugins will be added incrementally as validated. Default
+  `designStyle: cockpit` (matches infra/ops aesthetic).
+  See `.claude/presets/homelab-proxmox.json`.
 - **First preset: `nextjs` + preset system mechanism**: `./scripts/new-project.sh --preset nextjs <path>`
   installs the foundation with stack-specific filters applied. The first concrete
   preset ships alongside the install mechanism (parsing, filtering, plugin install

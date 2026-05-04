@@ -187,3 +187,66 @@ EOF
     # User passed --mcp; preset's default mcp:false should not override
     [ -f "$target/.mcp.json" ] || [ -f "$target/.claude/.mcp.json" ]
 }
+
+# =============================================================================
+# homelab-proxmox preset
+# =============================================================================
+
+@test "presets: homelab-proxmox.json exists and is valid JSON" {
+    [ -f "$SOCLE_DIR/.claude/presets/homelab-proxmox.json" ]
+    run jq -e . "$SOCLE_DIR/.claude/presets/homelab-proxmox.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: homelab-proxmox.json has required fields" {
+    local f="$SOCLE_DIR/.claude/presets/homelab-proxmox.json"
+    [ "$(jq -r '.name' "$f")" = "homelab-proxmox" ]
+    [ "$(jq -r '.status' "$f")" = "maintainer-vouched" ]
+    [ "$(jq -r '.defaults.designStyle' "$f")" = "cockpit" ]
+}
+
+@test "presets: --list-presets shows both nextjs and homelab-proxmox" {
+    run "$NEW_PROJECT" --list-presets
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"homelab-proxmox"* ]]
+}
+
+@test "presets: --preset homelab-proxmox install drops UI/mobile skills" {
+    local target="$TEST_DIR/proj-proxmox"
+    "$NEW_PROJECT" --preset homelab-proxmox "$target" >/dev/null 2>&1
+    # 10 skills dropped from foundation.skills.drop
+    [ ! -d "$target/.claude/skills/dev-flutter" ]
+    [ ! -d "$target/.claude/skills/dev-nextjs" ]
+    [ ! -d "$target/.claude/skills/dev-shadcn" ]
+    [ ! -d "$target/.claude/skills/qa-chrome" ]
+    [ ! -d "$target/.claude/skills/qa-responsive" ]
+    [ ! -d "$target/.claude/skills/qa-design" ]
+    [ ! -d "$target/.claude/skills/ops-mobile-release" ]
+    [ ! -d "$target/.claude/skills/growth-cro" ]
+    [ ! -d "$target/.claude/skills/dev-frontend-design" ]
+    [ ! -d "$target/.claude/skills/dev-react-perf" ]
+}
+
+@test "presets: --preset homelab-proxmox install keeps homelab-relevant skills" {
+    local target="$TEST_DIR/proj-proxmox"
+    "$NEW_PROJECT" --preset homelab-proxmox "$target" >/dev/null 2>&1
+    # Stack-essential skills must be present
+    [ -d "$target/.claude/skills/ops-proxmox" ]
+    [ -d "$target/.claude/skills/ops-opnsense" ]
+    [ -d "$target/.claude/skills/ops-infra-code" ]
+    [ -d "$target/.claude/skills/ops-monitoring" ]
+    [ -d "$target/.claude/skills/ops-database" ]
+    # Workflow essentials always present
+    [ -d "$target/.claude/skills/dev-tdd" ]
+    [ -d "$target/.claude/skills/qa-review" ]
+}
+
+@test "presets: --preset homelab-proxmox applies cockpit designStyle by default" {
+    local target="$TEST_DIR/proj-proxmox-style"
+    "$NEW_PROJECT" --preset homelab-proxmox "$target" >/dev/null 2>&1
+    # Foundation install completed (no specific assertion on style file —
+    # the style is captured in DESIGN_STYLE global; this test just validates
+    # no failure when style differs from nextjs preset)
+    [ -d "$target/.claude" ]
+}

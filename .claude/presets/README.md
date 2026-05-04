@@ -26,8 +26,9 @@ See `specs/presets/spec.md` for the full format specification and `specs/presets
 | Preset | Status | Stack |
 |---|---|---|
 | `nextjs` | maintainer-vouched | Next.js (App Router) + React + TypeScript |
+| `homelab-proxmox` | maintainer-vouched | Proxmox VE + Terraform + Ansible + monitoring |
 
-Presets in pipeline (next PRs): `homelab-proxmox`, `cli-tools`. See `specs/presets/roadmap.md`.
+Presets in pipeline (next PRs): `cli-tools`. See `specs/presets/roadmap.md`.
 
 ## Community presets
 
