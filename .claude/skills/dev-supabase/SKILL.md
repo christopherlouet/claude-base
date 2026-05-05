@@ -220,4 +220,4 @@ Supabase publishes their own official agent skills at [`supabase/agent-skills`](
 
 When working on a Supabase project, install both vendor skills alongside this one. This skill captures the framework-agnostic patterns the foundation imposes (TDD, security defaults, naming conventions) independent of Supabase's evolving API surface; the vendor skills capture the canonical API + Postgres patterns. Both together is the recommended setup.
 
-This recommendation is based on the audit pilot in `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`. Re-evaluation is triggered if Supabase changes ownership or diverges from open-source defaults.
+This recommendation is based on the audit pilot in `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`. Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Re-evaluation is triggered if Supabase changes ownership or diverges from open-source defaults.

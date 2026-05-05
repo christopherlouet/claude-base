@@ -255,4 +255,4 @@ shadcn/ui ships its **canonical agent skill directly inside the library repo** a
 
 When working on a project using shadcn/ui, install the canonical skill alongside this one. The vendor's skill is the highest-trust source possible (it IS the library). This skill captures the **integration patterns** the foundation imposes (TDD on customised components, accessibility audit triggers, anti-pattern enforcement) that complement the canonical reference.
 
-Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.

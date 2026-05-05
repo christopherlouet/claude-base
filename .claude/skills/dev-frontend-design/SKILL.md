@@ -154,4 +154,4 @@ Anthropic ships a `frontend-design` plugin in their official Claude Code reposit
 
 Users of `claude.com/code` likely already have this plugin installed by default. This skill captures the **art-direction taxonomy** (terminal, cockpit, vitality, editorial, glass, signal) the foundation imposes via `.claude/rules/design-style.md` plus the workflow integration (project's CLAUDE.md `Style:` declaration) — these are claude-base specific. The Anthropic plugin and this skill are complementary rather than duplicates.
 
-Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
