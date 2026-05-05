@@ -408,3 +408,11 @@ YOU MUST use `select` instead of `include` when you know the fields (security + 
 NEVER commit `.env` with DATABASE_URL. Always `.env.example` with placeholders.
 
 NEVER rename a field directly: 2 steps (add new → backfill → remove old).
+
+## See also
+
+Prisma publishes their own official agent skills at [`prisma/skills`](https://github.com/prisma/skills) (maintained by the Prisma team, last commit 2026-04-02). The repo specifically covers **Prisma v7** patterns (ESM-only, driver adapters, `prisma.config.ts`) which include breaking changes from v6. The vendor skill is the canonical source for keeping up with Prisma version drift.
+
+When working on a Prisma project, install the vendor skill alongside this one — particularly if migrating to or starting on v7. This skill covers the framework-agnostic patterns we impose (schema design, migration discipline, RLS-when-applicable, anti-patterns); Prisma's skill covers the API/CLI surface that evolves with each Prisma release.
+
+Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.

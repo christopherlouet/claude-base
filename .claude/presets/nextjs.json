@@ -41,7 +41,8 @@
   "outOfScope": [
     "Payment processing — see docs/recipes/saas-monetization.md if subscription/billing is needed",
     "Native mobile companion — use a Flutter or Swift preset (community contributions wanted)",
-    "Backend in non-Node languages — see roadmap for Django, FastAPI, Rails, Laravel, etc."
+    "Backend in non-Node languages — see roadmap for Django, FastAPI, Rails, Laravel, etc.",
+    "Vendor-specific React/Next.js patterns — pair this preset with the vendor skill at vercel-labs/agent-skills (react-best-practices) for canonical Vercel guidance; see specs/marketplace-audit/dev-skills-pilot-2026-05-05.md"
   ],
 
   "relatedPresetsWanted": [

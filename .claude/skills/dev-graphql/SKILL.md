@@ -115,3 +115,11 @@ function UserProfile({ userId }) {
   return <Profile user={data.user} />;
 }
 ```
+
+## See also
+
+Apollo GraphQL publishes their own official agent skills at [`apollographql/skills`](https://github.com/apollographql/skills) (maintained by the Apollo team, last commit 2026-05-04). The repo covers Apollo Client, Apollo Server 5, Apollo Connectors, Federation 2, and Apollo Kotlin — the **Apollo-specific** stack.
+
+When working on a project that uses Apollo, install the vendor skill alongside this one. This skill captures the **stack-agnostic** angle (schema design, DataLoader, N+1 prevention, query depth limits, generic security) that complements Apollo's vendor-specific guidance. Both together is the recommended setup for Apollo users; for non-Apollo GraphQL stacks (Yoga, Pothos, Mercurius, Strawberry, gqlgen), this skill remains the primary reference.
+
+Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.

@@ -248,3 +248,11 @@ YOU MUST respect the Radix primitives (DialogTitle, Label associated with Input,
 NEVER override styles via `!important` — modify the CSS variables.
 
 NEVER copy shadcn components into `node_modules/` or a folder internal to libs.
+
+## See also
+
+shadcn/ui ships its **canonical agent skill directly inside the library repo** at [`shadcn-ui/ui/skills/shadcn`](https://github.com/shadcn-ui/ui/tree/main/skills/shadcn) (113K+ stars, last commit 2026-05-05). The SKILL.md in the canonical repo is updated alongside the CLI v4 release flow, so it tracks Radix + Base UI primitives, registry workflows, and theming patterns the moment they ship.
+
+When working on a project using shadcn/ui, install the canonical skill alongside this one. The vendor's skill is the highest-trust source possible (it IS the library). This skill captures the **integration patterns** the foundation imposes (TDD on customised components, accessibility audit triggers, anti-pattern enforcement) that complement the canonical reference.
+
+Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.

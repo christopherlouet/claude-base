@@ -19,7 +19,7 @@ tags:
 |-----------|--------|
 | **Context** | fork |
 | **Allowed tools** | `Read`, `Write`, `Edit`, `Glob`, `Grep` |
-| **Keywords** | `dev`, `frontend`, `design`, `because it looks nice`, `because it's safe` |
+| **Keywords** | `dev`, `frontend`, `design`, `because it looks nice`, `because it's safe`, `inter font + purple gradient` |
 
 ## Detailed description
 
@@ -160,6 +160,14 @@ IMPORTANT: NEVER propose a centered hero + 3-card grid "because it's safe".
 YOU MUST read `.claude/rules/design-style.md` for details per direction.
 
 YOU MUST explain to the user the WHY of the design choices (artistic commitment > neutrality).
+
+## See also
+
+Anthropic ships a `frontend-design` plugin in their official Claude Code repository: [`anthropics/claude-code/plugins/frontend-design`](https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design) (also installable from the marketplace at [claude.com/plugins/frontend-design](https://claude.com/plugins/frontend-design); 277K+ installs as of March 2026). It covers similar territory: bold design choices, typography, animations, and avoiding the "Inter font + purple gradient" generic aesthetic.
+
+Users of `claude.com/code` likely already have this plugin installed by default. This skill captures the **art-direction taxonomy** (terminal, cockpit, vitality, editorial, glass, signal) the foundation imposes via `.claude/rules/design-style.md` plus the workflow integration (project's CLAUDE.md `Style:` declaration) — these are claude-base specific. The Anthropic plugin and this skill are complementary rather than duplicates.
+
+Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
 
 ## Automatic triggering
 
