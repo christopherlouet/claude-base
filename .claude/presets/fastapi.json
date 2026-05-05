@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/christopherlouet/claude-socle/blob/main/specs/presets/schema.json",
+
+  "name": "fastapi",
+  "displayName": "FastAPI backend (Python async)",
+  "description": "FastAPI + Pydantic + SQLAlchemy/async ORM. Targets developers building HTTP APIs, LLM-backed services, or async data ingestion endpoints in Python. The foundation rules and workflow are kept; clearly non-applicable skills are filtered out: frontend-only stacks (Next.js, Shadcn, React perf, frontend design), mobile stacks (Flutter, mobile-release), homelab-specific ops (Proxmox, OPNsense), and UI-bound QA (Chrome, design, browser E2E). Skills that ARE kept and useful for backend work include `dev-api`, `dev-auth`, `dev-graphql`, `dev-prompt-engineering` (LLM API backends), `dev-supabase` (Python SDK), `ops-database`, `ops-docker`, `ops-monitoring`, `qa-perf`, `qa-security`. Bundles ZERO marketplace plugins at v1 — Python-specific plugin curation will be added incrementally as each one is validated in real production use, not assumed.",
+
+  "version": "1.0.0",
+  "status": "maintainer-vouched",
+
+  "author": {
+    "name": "Chris",
+    "github": "christopherlouet"
+  },
+
+  "appliesToTypes": ["python", "generic"],
+
+  "foundation": {
+    "skills": {
+      "drop": [
+        "dev-flutter",
+        "dev-shadcn",
+        "dev-nextjs",
+        "dev-react-perf",
+        "dev-frontend-design",
+        "ops-mobile-release",
+        "ops-proxmox",
+        "ops-opnsense",
+        "growth-cro",
+        "qa-chrome",
+        "qa-design",
+        "qa-e2e"
+      ]
+    }
+  },
+
+  "marketplacePlugins": [],
+
+  "defaults": {
+    "ci": true,
+    "hooks": true,
+    "mcp": false,
+    "docker": true,
+    "designStyle": "editorial"
+  },
+
+  "outOfScope": [
+    "Frontend rendering — pair with the nextjs preset, or community presets for Astro/SvelteKit/Vue/Nuxt when shipped",
+    "Mobile / desktop apps (community contributions wanted for flutter, swift, tauri)",
+    "Authentication strategy choice — FastAPI has many viable patterns (JWT, OAuth2, fastapi-users, Authlib); the foundation does not pick one",
+    "Container orchestration beyond docker-compose — Kubernetes patterns belong to a future k8s preset",
+    "Backends in other languages — see roadmap for Django, Flask, Rails, Spring Boot, Gin, Axum"
+  ],
+
+  "relatedPresetsWanted": [
+    "django",
+    "flask",
+    "rails",
+    "laravel",
+    "spring-boot",
+    "gin",
+    "axum",
+    "kubernetes"
+  ]
+}

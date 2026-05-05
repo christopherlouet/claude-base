@@ -1,33 +1,24 @@
 # Presets — roadmap & invitation
 
-**Date**: 2026-05-04
+**Date**: 2026-05-05
 **Status**: Living document — updated as presets ship or community proposals land.
 
 ---
 
-## What ships now (in this PR)
+## Shipped (maintainer-vouched)
 
-**Zero preset `.json` files.** Only the format spec (`spec.md`) and this roadmap. Each concrete preset lands in its own dedicated follow-up PR so it can be reviewed atomically and held to its own quality bar.
+| Preset | Stack | Shipped in |
+|---|---|---|
+| `nextjs` | Next.js (App Router) + React + TypeScript | v1.32.0 (PR #119) |
+| `homelab-proxmox` | Proxmox VE + Terraform + Ansible + monitoring | v1.32.0 (PR #120) |
+| `cli-tools` | Python or Shell automation, GitHub API helpers, headless scripts | v1.32.0 (PR #121) |
+| `fastapi` | FastAPI + Pydantic + SQLAlchemy/async ORM (Python async backend) | v1.33.0 (this PR) |
 
-This deliberate decoupling avoids two anti-patterns:
-- Shipping fake or skeleton presets to "look complete" at MVP launch.
-- Ossifying the format around assumptions only proven once the first real preset is built.
-
-## What ships next (maintainer-vouched, in pipeline)
-
-These three presets are committed to land in dedicated follow-up PRs over the next 2-3 weeks. Each one reflects a stack the maintainer uses in production today.
-
-| Preset | Stack | What it bundles | Tracking |
-|---|---|---|---|
-| `nextjs` | Next.js (App Router) + React + TypeScript | Auth scaffolding, DB patterns, Vercel deploy. **No payment / subscription** (see `docs/recipes/saas-monetization.md` if needed). | TBD PR |
-| `homelab-proxmox` | Proxmox VE + Terraform + monitoring | VM/LXC modules, Prometheus + Grafana stack, backup recipes | TBD PR |
-| `cli-tools` | Python or Shell automation | GitHub API helpers, dependency analyzers, headless-friendly patterns | TBD PR |
-
-**Each one will land with**:
-- Its `.json` manifest under `.claude/presets/`
-- A `tests/presets.bats` test verifying dry-run install
-- A short demo recipe under `docs/recipes/`
-- An entry in `CHANGELOG.md`
+Each shipped preset has:
+- `.json` manifest under `.claude/presets/`
+- `tests/presets.bats` test entries (≥6 per preset)
+- Entry in `.claude/presets/README.md`
+- Entry in `CHANGELOG.md`
 
 ## What is NOT covered (stacks where contributions are wanted)
 
@@ -48,8 +39,7 @@ These stacks **do not have a preset yet, and won't until either** (a) a maintain
 | Stack | Why we don't have it yet |
 |---|---|
 | **Django** | Full-fat Python web. Maintainer hasn't shipped a Django app. |
-| **FastAPI** | Python API. Closer to maintainer's tooling but not used in prod web context. |
-| **Flask** | Lighter Python web. Same reason as above. |
+| **Flask** | Lighter Python web. Maintainer's prod usage skewed to FastAPI; Flask preset open to a contributor. |
 | **Rails** | Ruby. Iconic stack; no prod experience at maintainer level. |
 | **Laravel** | PHP. Open to a contributor with prod experience. |
 | **Spring Boot** | Java enterprise. Open to a contributor. |
@@ -112,13 +102,13 @@ Every preset (vouched or community) is subject to:
 
 ## Quick reference (count)
 
-| Category | In pipeline | Community-wanted |
+| Category | Shipped | Community-wanted |
 |---|---|---|
 | JS web frameworks | 1 (`nextjs`) | 5+ |
-| Non-Node backend frameworks | 0 | 9+ |
+| Non-Node backend frameworks | 1 (`fastapi`) | 8+ |
 | Infrastructure / homelab | 1 (`homelab-proxmox`) | 3+ |
 | CLI / automation | 1 (`cli-tools`) | — |
 | Mobile / desktop | 0 | 5+ |
 | Data / AI pipelines | 0 | 2+ |
 
-**3 in pipeline. 24+ named as community-wanted.** That ratio is the foundation's honest position.
+**4 shipped. 23+ named as community-wanted.** That ratio is the foundation's honest position.

@@ -28,8 +28,9 @@ See `specs/presets/spec.md` for the full format specification and `specs/presets
 | `nextjs` | maintainer-vouched | Next.js (App Router) + React + TypeScript |
 | `homelab-proxmox` | maintainer-vouched | Proxmox VE + Terraform + Ansible + monitoring |
 | `cli-tools` | maintainer-vouched | Python or Shell automation, GitHub API helpers, headless scripts |
+| `fastapi` | maintainer-vouched | FastAPI + Pydantic + SQLAlchemy/async ORM (Python async backend) |
 
-The 3 maintainer-vouched presets cover the maintainer's actual production usage. For other stacks (Astro, Django, Rails, Laravel, SvelteKit, FastAPI, Vue/Nuxt, Spring Boot, Phoenix, Go-Gin, Rust-Axum, Flutter, etc.), community contributions are welcomed — see `specs/presets/roadmap.md`.
+The 4 maintainer-vouched presets cover the maintainer's actual production usage. For other stacks (Astro, Django, Rails, Laravel, SvelteKit, Vue/Nuxt, Spring Boot, Phoenix, Go-Gin, Rust-Axum, Flutter, etc.), community contributions are welcomed — see `specs/presets/roadmap.md`.
 
 ## Community presets
 
