@@ -402,3 +402,92 @@ teardown() {
     # The file should still exist in dry-run
     [ -f "$TEST_DIR/.claude/commands/work/dry-run-orphan.md" ]
 }
+
+# =============================================================================
+# --add-plugin flag (mirrors --add-hook pattern, lets users opt into a
+# marketplace plugin without overwriting their settings.json on update.sh
+# --settings)
+# =============================================================================
+
+@test "update.sh --help documents --add-plugin" {
+    run "$UPDATE_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"--add-plugin"* ]]
+}
+
+@test "update.sh --add-plugin requires an argument" {
+    run "$UPDATE_SCRIPT" --add-plugin
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"--add-plugin"* ]] || [[ "$output" == *"argument"* ]]
+}
+
+@test "update.sh --add-plugin adds plugin to settings.json enabledPlugins" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    run "$UPDATE_SCRIPT" -y --add-plugin "astral@astral-sh" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run jq -e '.enabledPlugins["astral@astral-sh"]' "$TEST_DIR/.claude/settings.json"
+    [ "$status" -eq 0 ]
+    [ "$output" = "true" ]
+}
+
+@test "update.sh --add-plugin is idempotent (already enabled)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    "$UPDATE_SCRIPT" -y --add-plugin "astral@astral-sh" "$TEST_DIR" >/dev/null 2>&1
+    run "$UPDATE_SCRIPT" -y --add-plugin "astral@astral-sh" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"already"* ]] || [[ "$output" == *"enabled"* ]]
+}
+
+@test "update.sh --add-plugin preserves existing enabledPlugins entries" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    # Inject an existing plugin entry
+    local tmp
+    tmp=$(mktemp)
+    jq '.enabledPlugins = {"existing@vendor": true}' "$TEST_DIR/.claude/settings.json" > "$tmp"
+    mv "$tmp" "$TEST_DIR/.claude/settings.json"
+
+    run "$UPDATE_SCRIPT" -y --add-plugin "astral@astral-sh" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # Both entries must coexist
+    [ "$(jq -r '.enabledPlugins["existing@vendor"]' "$TEST_DIR/.claude/settings.json")" = "true" ]
+    [ "$(jq -r '.enabledPlugins["astral@astral-sh"]' "$TEST_DIR/.claude/settings.json")" = "true" ]
+}
+
+@test "update.sh --add-plugin --dry-run does not modify settings.json" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    local before_md5
+    before_md5=$(md5sum "$TEST_DIR/.claude/settings.json" | cut -d' ' -f1)
+
+    run "$UPDATE_SCRIPT" -y -n --add-plugin "astral@astral-sh" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    local after_md5
+    after_md5=$(md5sum "$TEST_DIR/.claude/settings.json" | cut -d' ' -f1)
+    [ "$before_md5" = "$after_md5" ]
+}
+
+@test "update.sh --add-plugin fails when settings.json is missing" {
+    mkdir -p "$TEST_DIR/.claude"
+    # Note: NO settings.json created
+    run "$UPDATE_SCRIPT" -y --add-plugin "astral@astral-sh" "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"settings.json"* ]] || [[ "$output" == *"not found"* ]]
+}
+
+@test "update.sh --add-plugin preserves the rest of settings.json (hooks, permissions)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    # Capture the .hooks and .permissions sections before the change
+    local hooks_before permissions_before
+    hooks_before=$(jq -c '.hooks' "$TEST_DIR/.claude/settings.json")
+    permissions_before=$(jq -c '.permissions' "$TEST_DIR/.claude/settings.json")
+
+    run "$UPDATE_SCRIPT" -y --add-plugin "astral@astral-sh" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    local hooks_after permissions_after
+    hooks_after=$(jq -c '.hooks' "$TEST_DIR/.claude/settings.json")
+    permissions_after=$(jq -c '.permissions' "$TEST_DIR/.claude/settings.json")
+
+    [ "$hooks_before" = "$hooks_after" ]
+    [ "$permissions_before" = "$permissions_after" ]
+}

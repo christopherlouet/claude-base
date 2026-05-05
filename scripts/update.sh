@@ -41,6 +41,7 @@ TARGET_DIR=""
 FORCE_UPDATE=false
 BACKUP_ONLY=false
 ADD_HOOK=""
+ADD_PLUGIN=""
 UPDATE_SETTINGS=false
 UPDATE_SKILLS=false
 UPDATE_AGENTS=false
@@ -125,6 +126,9 @@ ${BOLD}OPTIONS${NC}
     --changelog         Show what's new in the foundation
     --restore BACKUP    Restore from a previous backup
     --add-hook HOOK     Add a hook to the existing settings.json without overwriting (e.g., rtk)
+    --add-plugin ID     Enable a marketplace plugin in the existing settings.json
+                        without overwriting other keys (e.g., astral@astral-sh).
+                        Idempotent: re-running on an already-enabled plugin succeeds silently.
 
 ${BOLD}AVAILABLE HOOKS${NC}
     rtk                 RTK token optimizer (reduces tokens by 60-90%, requires: brew install rtk)
@@ -153,6 +157,9 @@ ${BOLD}EXAMPLES${NC}
 
     # Add the RTK hook (token optimizer) without overwriting settings.json
     $(basename "$0") --add-hook rtk ./my-project
+
+    # Enable a marketplace plugin in settings.json (idempotent)
+    $(basename "$0") --add-plugin astral@astral-sh ./my-project
 
 ${BOLD}FOUNDATION STATISTICS${NC}
     Agents:    $(count_agents "$SOCLE_DIR")
@@ -259,6 +266,13 @@ parse_args() {
                     error "Option --add-hook requires an argument (hook name, e.g., rtk)"
                 fi
                 ADD_HOOK="$2"
+                shift 2
+                ;;
+            --add-plugin)
+                if [[ -z "${2:-}" ]]; then
+                    error "Option --add-plugin requires an argument (plugin id, e.g., astral@astral-sh)"
+                fi
+                ADD_PLUGIN="$2"
                 shift 2
                 ;;
             --restore)
@@ -519,6 +533,43 @@ HOOKJSON
             error "Unknown hook: $hook_name. Available hooks: rtk"
             ;;
     esac
+}
+
+# Enable a marketplace plugin in the project's settings.json without
+# overwriting other keys. Mirrors add_hook (rtk) but targets the
+# `enabledPlugins` object instead of `hooks.PreToolUse`. Idempotent:
+# returns success if the plugin is already enabled.
+add_plugin() {
+    local plugin_id="$1"
+    local settings_file="$TARGET_DIR/.claude/settings.json"
+
+    if [[ ! -f "$settings_file" ]]; then
+        error "settings.json not found in $TARGET_DIR/.claude/"
+    fi
+
+    if ! command -v jq &>/dev/null; then
+        error "jq is required for --add-plugin. Install it: https://jqlang.github.io/jq/download/"
+    fi
+
+    section "Adding marketplace plugin: $plugin_id"
+
+    if jq -e --arg id "$plugin_id" '.enabledPlugins[$id] == true' "$settings_file" >/dev/null 2>&1; then
+        success "Plugin '$plugin_id' is already enabled in settings.json"
+        return
+    fi
+
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} Add plugin '$plugin_id' to enabledPlugins in settings.json"
+        return
+    fi
+
+    local tmp
+    tmp=$(safe_mktemp)
+    jq --arg id "$plugin_id" '.enabledPlugins[$id] = true' "$settings_file" > "$tmp"
+    cp "$tmp" "$settings_file"
+    rm -f "$tmp"
+    success "Plugin '$plugin_id' enabled in settings.json"
+    info "Install the plugin if you have not already: claude plugin install $plugin_id"
 }
 
 update_settings() {
@@ -1124,6 +1175,12 @@ main() {
     # Handle --add-hook
     if [[ -n "$ADD_HOOK" ]]; then
         add_hook "$ADD_HOOK"
+        exit 0
+    fi
+
+    # Handle --add-plugin
+    if [[ -n "$ADD_PLUGIN" ]]; then
+        add_plugin "$ADD_PLUGIN"
         exit 0
     fi
 

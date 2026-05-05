@@ -94,9 +94,9 @@ The decision must not create unreasonable friction for users who legitimately wa
 
 Total: ~30 seconds. The recipe at `docs/recipes/python-toolchain-options.md` documents this explicitly with copy-paste snippets. The default `update.sh` does not touch `settings.json`, so the user's manual entry is preserved on subsequent foundation updates unless `--settings` is explicitly requested.
 
-## Future improvement (not in this PR)
+## Future improvement — landed same day
 
-A `--add-plugin <id>` flag on `scripts/update.sh`, mirroring the existing `--add-hook` pattern, would eliminate the residual friction of `update.sh --settings` overwriting manual additions. Estimated effort: ~30 LOC + 3-4 bats tests. Tracked separately.
+A `--add-plugin <id>` flag on `scripts/update.sh`, mirroring the existing `--add-hook` pattern, eliminates the residual friction of `update.sh --settings` overwriting manual additions. Shipped in a follow-up PR same day (v1.33.0). 8 bats tests cover the helper.
 
 ## Methodology gaps observed
 

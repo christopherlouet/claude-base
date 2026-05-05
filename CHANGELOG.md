@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`update.sh --add-plugin <id>` flag**: idempotent helper that adds
+  an entry to `enabledPlugins` in a project's `.claude/settings.json`
+  without overwriting other keys. Mirrors the existing `--add-hook`
+  pattern. Useful when a user wants to opt into a marketplace plugin
+  (e.g. `astral@astral-sh`) and avoid losing the entry if a later
+  `update.sh --settings` overwrites the file. 8 bats tests cover the
+  helper (idempotent re-run, `--dry-run`, missing settings.json,
+  preservation of existing keys).
 - **Marketplace plugin audit pilot — `cli-tools` preset**: first audit
   conducted under the methodology in `specs/marketplace-audit/spec.md`,
   using `gh search code` to cross-reference plugin adoption across real-product
