@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Unified CLI dispatcher `bin/claude-base`**: a thin shell router that
+  exposes user-facing verbs (`init`, `update`, `validate`, `preset list`,
+  `preset show <name>`, `uninstall`, `version`, `help`) and forwards to
+  the existing scripts under `scripts/`. The underlying scripts remain
+  callable directly — the dispatcher is purely additive. Adds a coherent
+  CLI surface so users no longer need to remember the path to each script.
+  17 bats tests in `tests/dispatcher.bats` cover help, version, preset
+  list/show, arg forwarding to the four wrapped scripts, and unknown-verb
+  error handling. Usage example: `claude-base init --preset fastapi
+  ./my-api`. New `preset show NAME` prints the JSON manifest of a preset
+  (uses `jq` if available, falls back to `cat`).
+
 ### Changed
 
 - **Project renamed `claude-socle` → `claude-base`** for English-language
