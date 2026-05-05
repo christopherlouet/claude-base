@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+
+# =============================================================================
+# claude-base — unified CLI dispatcher
+# =============================================================================
+# Routes user-facing verbs to the underlying scripts under scripts/. The
+# scripts remain callable directly; this dispatcher is purely additive and
+# provides a coherent CLI surface (claude-base init, update, validate, ...).
+#
+# Implementation: thin shell router. Each verb is one line.
+# =============================================================================
+
+set -u
+
+DISPATCHER_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE_ROOT="$(dirname "$DISPATCHER_PATH")"
+SCRIPTS_DIR="$BASE_ROOT/scripts"
+PRESETS_DIR="$BASE_ROOT/.claude/presets"
+
+VERSION_FILE="$BASE_ROOT/VERSION"
+VERSION=$(cat "$VERSION_FILE" 2>/dev/null || echo "unknown")
+
+show_help() {
+    cat <<EOF
+claude-base v${VERSION} — unified CLI for the claude-base foundation
+
+USAGE
+    claude-base <command> [options] [args]
+
+COMMANDS
+    init              Install the foundation in a project (alias for new-project.sh)
+    update            Update an installed project to the current foundation version
+    validate          Validate the integrity of an installed project
+    preset list       List available presets (alias for new-project.sh --list-presets)
+    preset show NAME  Print the JSON manifest of a preset
+    uninstall         Remove the foundation from a project
+    version           Print the foundation version
+    help              Show this help message
+
+EXAMPLES
+    claude-base init --preset fastapi ./my-api
+    claude-base init --simple ./my-project
+    claude-base update --all ./my-project
+    claude-base validate ./my-project
+    claude-base preset list
+    claude-base preset show nextjs
+
+DIRECT SCRIPT ACCESS
+    The underlying scripts under scripts/ remain callable directly. The
+    dispatcher is purely additive and shares no state with them.
+
+LEARN MORE
+    Full documentation: https://github.com/christopherlouet/claude-base
+EOF
+}
+
+show_unknown() {
+    local verb="$1"
+    cat >&2 <<EOF
+claude-base: unknown command '$verb'
+
+Available commands: init, update, validate, preset, uninstall, version, help
+
+Run 'claude-base help' for full usage.
+EOF
+    exit 2
+}
+
+cmd_preset() {
+    local subcmd="${1:-}"
+    case "$subcmd" in
+        list|"")
+            "$SCRIPTS_DIR/new-project.sh" --list-presets
+            ;;
+        show)
+            shift
+            local name="${1:-}"
+            if [[ -z "$name" ]]; then
+                echo "claude-base: 'preset show' requires a preset name (e.g. nextjs, fastapi)" >&2
+                exit 2
+            fi
+            local file="$PRESETS_DIR/$name.json"
+            if [[ ! -f "$file" ]]; then
+                # Fallback: look in community/
+                file="$PRESETS_DIR/community/$name.json"
+            fi
+            if [[ ! -f "$file" ]]; then
+                echo "claude-base: preset '$name' not found" >&2
+                echo "Run 'claude-base preset list' to see available presets." >&2
+                exit 1
+            fi
+            if command -v jq &>/dev/null; then
+                jq . "$file"
+            else
+                cat "$file"
+            fi
+            ;;
+        --help|-h|help)
+            cat <<EOF
+USAGE
+    claude-base preset list           List all available presets with status
+    claude-base preset show NAME      Print the JSON manifest of a preset
+
+EOF
+            ;;
+        *)
+            echo "claude-base preset: unknown subcommand '$subcmd'" >&2
+            echo "Available subcommands: list, show" >&2
+            exit 2
+            ;;
+    esac
+}
+
+main() {
+    local verb="${1:-help}"
+    shift || true
+
+    case "$verb" in
+        init)
+            exec "$SCRIPTS_DIR/new-project.sh" "$@"
+            ;;
+        update)
+            exec "$SCRIPTS_DIR/update.sh" "$@"
+            ;;
+        validate)
+            exec "$SCRIPTS_DIR/validate.sh" "$@"
+            ;;
+        preset)
+            cmd_preset "$@"
+            ;;
+        uninstall)
+            exec "$SCRIPTS_DIR/uninstall.sh" "$@"
+            ;;
+        version|--version|-v)
+            echo "claude-base v${VERSION}"
+            ;;
+        help|--help|-h|"")
+            show_help
+            ;;
+        *)
+            show_unknown "$verb"
+            ;;
+    esac
+}
+
+main "$@"
