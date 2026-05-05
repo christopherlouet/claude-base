@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **One-liner install script `install.sh`**: clones the foundation to
+  `~/.local/share/claude-base` and symlinks the dispatcher into
+  `~/.local/bin/claude-base` so `claude-base init/update/validate/...`
+  works from any directory after a single `curl | bash` invocation. The
+  script refuses to run as root, never modifies shell rc files (the
+  symlink lives in `~/.local/bin`, which most modern distros put on
+  `PATH` automatically), and supports `--target`, `--bin`, `--update`,
+  `--dry-run`. 14 bats tests in `tests/install.bats` cover help,
+  argument validation, dry-run, idempotent re-install detection,
+  refusal to overwrite non-git directories, and security disclaimers.
+  README "Installation" section reorganised: Option 1 is now the
+  one-liner, Option 2 keeps the manual `git clone` path for users who
+  prefer to pin a specific version, Option 3 keeps the cp-only
+  minimal install.
 - **Unified CLI dispatcher `bin/claude-base`**: a thin shell router that
   exposes user-facing verbs (`init`, `update`, `validate`, `preset list`,
   `preset show <name>`, `uninstall`, `version`, `help`) and forwards to
