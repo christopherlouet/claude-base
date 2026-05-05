@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.32.0] - 2026-05-05
+
+Headline release: PostToolUse output rewriter (Claude Code 2.1.121+),
+preset system with 3 maintainer-vouched presets (nextjs, homelab-proxmox,
+cli-tools), and a multi-OS CI matrix that brings macOS to first-class
+support after a focused portability sweep.
+
 ### Added
 
 - **Third preset: `cli-tools`** — Python or Shell automation tools,
@@ -51,27 +58,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   deliberately separate from the `nextjs` preset (preset = stack essentials,
   recipe = product opinion).
 
-### Changed
+### Added (output rewriter)
 
-- `scripts/new-project.sh`: gains `--preset NAME` and `--list-presets` flags.
-  `--preset` composes with existing `--type`, `--ci`, `--hooks`, `--mcp`,
-  `--docker`, `--style` flags (preset's defaults apply only when the user
-  did not pass the corresponding flag, so user choice always wins).
-
-### Notes
-
-- The preset format is **JSON** (not YAML as initially drafted in the planning
-  spec). Pivot reason: the codebase has no YAML parser (`yq` is not a hard
-  dependency) but `jq` is required by 4+ existing hooks, `update.sh`, and
-  `validate-counts.sh`. JSON + jq is consistent with `settings.json`,
-  `.mcp.json`, `counts.json`. The choice is documented in `specs/presets/spec.md` § "JSON schema".
-
-### Earlier additions (already in [Unreleased])
-
-- **PostToolUse output rewriter (`feature/hook-output-rewriter`)**: three
-  coordinated hooks that exploit the new `hookSpecificOutput.updatedToolOutput`
-  envelope (Claude Code 2.1.121+) to tighten the feedback loop on
-  foundation-equipped projects.
+- **PostToolUse output rewriter (#116)**: three coordinated hooks that
+  exploit the new `hookSpecificOutput.updatedToolOutput` envelope
+  (Claude Code 2.1.121+) to tighten the feedback loop on foundation-equipped
+  projects.
   - `bash-output-filter.sh` (PostToolUse Bash) trims noisy outputs of
     allowlisted package-manager / build / test commands
     (npm/pnpm/yarn/bun install/audit/test/build, pytest, go test/build,
@@ -92,8 +84,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `BASH_OUTPUT_FILTER_VERBOSE`, `BASH_OUTPUT_FILTER_THRESHOLD`.
 - Metric log at `/tmp/claude-rewriter.log` (one line per rewrite).
 
+### Added (CI / docs)
+
+- **macOS-latest in the CI matrix (#122)**: Bats + ShellCheck + counts
+  gate now run on macOS in addition to Ubuntu. The macOS column is
+  marked `experimental: true` so portability regressions surface
+  without blocking merges. After the portability sweep below, both
+  columns pass green at v1.32.0.
+- **Native plugin migration status (#117)**: `docs/guides/EXTENDING-GUIDE.md`
+  now documents which parts of the foundation could move to native
+  Claude Code plugins (CLI 2.1.121+) and the three structural gaps
+  that currently block a full port (rules not a plugin component,
+  `settings.json` plugin scope, no setup callback). The foundation
+  stays standalone; revisit when 2/3 gaps land.
+
+### Fixed (macOS / BSD portability)
+
+A focused sweep so every script works identically on Ubuntu (GNU coreutils)
+and macOS (BSD coreutils). Each fix is small in isolation but together
+they unblock first-class macOS support.
+
+- `date +%s%N` (GNU-only nanoseconds) replaced with a portable
+  `now_ms` helper that prefers `python3`, falls back to `gdate`,
+  then `date`, then second-resolution as a last resort (#125).
+- `readlink -f` (GNU) replaced with a `realpath` fallback chain
+  in `scripts/export-minimal.sh` (#126).
+- `sed -i` invocations made portable across BSD (`-i ''`) and GNU
+  (`-i`) via a small wrapper in `scripts/lib/common.sh` (#127).
+- `grep -P` (Perl regex, GNU-only) replaced with `grep -oE` (POSIX
+  ERE) — same semantics for the patterns we use (#128).
+- `#!/bin/bash` shebangs replaced with `#!/usr/bin/env bash` so
+  Homebrew's bash 5+ is picked up on macOS (Apple ships bash 3.2,
+  which lacks features we rely on) (#129).
+- `seq 0 -1` guarded for BSD (which counts down) so empty preset
+  marketplace plugin arrays don't loop (#129).
+- `[[:space:]]` and `($|[^[:alnum:]_])` replace `\s` and `\b` in
+  `scan_drift` patterns for BSD grep ERE compatibility (#129).
+- `BSD wc -l` whitespace padding stripped via `tr -d '[:space:]'`
+  in `validate-counts.sh` count assignments — the silent killer
+  of literal string equality on macOS (#129).
+- `scripts/new-project.sh --simple --dry-run` no longer exits 1 on
+  bash 5+: the `find | wc | tr` pipeline under `set -e` + `pipefail`
+  was killing the assignment when the directory didn't exist (#123).
+
 ### Changed
 
+- `scripts/new-project.sh`: gains `--preset NAME` and `--list-presets` flags.
+  `--preset` composes with existing `--type`, `--ci`, `--hooks`, `--mcp`,
+  `--docker`, `--style` flags (preset's defaults apply only when the user
+  did not pass the corresponding flag, so user choice always wins).
 - `.claude/settings.json`: the two PostToolUse Edit|Write blocks
   "Type-check TypeScript" and "ESLint check" are removed and replaced
   by a single block calling `post-edit-typecheck-and-lint.sh`.
@@ -101,6 +140,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (`SKIP_INLINE_EDIT_ERRORS=1` falls back to legacy stdout side-messages).
 - `scripts/update.sh`: the interactive prompt for `.claude/settings.json`
   now flags this release explicitly and warns when declining.
+- `actions/setup-node` bumped from v4 to v6 in `.github/workflows/`
+  (Dependabot, #115).
+
+### Notes
+
+- The preset format is **JSON** (not YAML as initially drafted in the planning
+  spec). Pivot reason: the codebase has no YAML parser (`yq` is not a hard
+  dependency) but `jq` is required by 4+ existing hooks, `update.sh`, and
+  `validate-counts.sh`. JSON + jq is consistent with `settings.json`,
+  `.mcp.json`, `counts.json`. The choice is documented in `specs/presets/spec.md` § "JSON schema".
 
 ### Migration
 
