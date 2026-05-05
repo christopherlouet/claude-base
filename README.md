@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
-[![Tests](https://img.shields.io/badge/tests-430%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-444%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
@@ -49,37 +49,62 @@ claude-base's unique value (vs assembling marketplace plugins alone):
 
 ## Installation
 
-### Option 1: Installation script (recommended)
+### Option 1: One-liner (recommended)
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
+```
+
+This clones the foundation to `~/.local/share/claude-base` and symlinks the
+dispatcher into `~/.local/bin/claude-base`. The installer never runs as root,
+never modifies your shell rc files, and only requires `git`. After install:
+
+```bash
+claude-base init --preset fastapi ./my-api      # Python backend
+claude-base init --preset nextjs   ./my-web-app # Next.js fullstack
+claude-base init --simple          ./my-project # Foundation only, no preset
+claude-base preset list                          # Discover available presets
+claude-base help                                 # All commands
+```
+
+To update the foundation later:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash -s -- --update
+```
+
+If `~/.local/bin` is not on your `PATH`, add it (most modern distros already do):
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"  # add to ~/.bashrc or ~/.zshrc
+```
+
+### Option 2: Manual git clone
+
+```bash
+git clone https://github.com/christopherlouet/claude-base.git
+cd claude-base
+
 # Install in an existing project
 ./scripts/new-project.sh --simple /path/to/your/project
 
-# Or run from inside the target project
-/path/to/claude-base/scripts/new-project.sh --simple .
+# Or via the dispatcher (same result)
+./bin/claude-base init --simple /path/to/your/project
 
 # Full install with CI/CD, hooks, Docker
 ./scripts/new-project.sh --all /path/to/your/project
 ```
 
-### Option 2: Manual copy
+### Option 3: Manual copy (minimal)
 
 ```bash
-# Copy the Claude configuration
+# Copy the Claude configuration directly
 cp -r claude-base/.claude your-project/
 cp claude-base/CLAUDE.md your-project/
 
 # Optional
 cp claude-base/.mcp.json your-project/
 cp claude-base/.github your-project/ -r
-```
-
-### Option 3: Use as a template
-
-```bash
-cp -r claude-base my-new-project
-cd my-new-project
-# Customize CLAUDE.md for your project
 ```
 
 ## Structure
@@ -131,13 +156,13 @@ claude-base/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->430<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->444<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
 │   ├── validate.bats            # Validation tests
 │   ├── docs-under-claude.bats   # v1.30 layout tests
-│   └── ...                      # <!-- count:testFiles -->20<!-- /count --> test files in total
+│   └── ...                      # <!-- count:testFiles -->21<!-- /count --> test files in total
 │
 ├── .gitleaks.toml               # gitleaks config (secret detection)
 ├── VERSION                      # Centralized foundation version (1.30.0)
@@ -484,7 +509,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->20<!-- /count --> files, <!-- count:tests -->430<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->21<!-- /count --> files, <!-- count:tests -->444<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|
