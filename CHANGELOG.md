@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.33.0] - 2026-05-05
+
+Maintenance and ecosystem release: a 4th maintainer-vouched preset
+(`fastapi`), the first marketplace plugin audit pilot under the
+methodology in `specs/marketplace-audit/spec.md`, a recipe documenting
+three Python toolchain paths, and a new `update.sh --add-plugin` helper
+that closes the friction gap for users opting into marketplace plugins.
+
 ### Added
 
 - **`update.sh --add-plugin <id>` flag**: idempotent helper that adds
