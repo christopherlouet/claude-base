@@ -427,7 +427,7 @@ Prisma publishes their own official agent skills at [`prisma/skills`](https://gi
 
 When working on a Prisma project, install the vendor skill alongside this one — particularly if migrating to or starting on v7. This skill covers the framework-agnostic patterns we impose (schema design, migration discipline, RLS-when-applicable, anti-patterns); Prisma's skill covers the API/CLI surface that evolves with each Prisma release.
 
-Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
 
 ## Automatic triggering
 

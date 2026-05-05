@@ -13,6 +13,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Recipe `docs/recipes/recommended-vendor-skills.md`** — actionable
+  companion to the marketplace audit pilots. Lists the 6 vendor skills
+  validated by the dev-* audit (Supabase, Prisma, Apollo, Vercel,
+  shadcn/ui, Anthropic frontend-design), the 2 stack-specific ones
+  (Lingui, Callstack RN), the install command per vendor (with
+  fallbacks where the install method is not yet stable), and the
+  vendors explicitly **rejected** with reasons (Astral on positioning
+  grounds, Greptile and pyright-lsp on technical grounds, commit-commands
+  on overlap grounds). Re-evaluation triggers documented (vendor
+  acquisition, install method change, repo archival, quarterly review).
+  Each `## See also` section in the 6 dev-* skills now points to this
+  recipe alongside the pilot trace.
+
+### Documentation
+
+- The 6 `## See also` sections in `dev-supabase`, `dev-prisma`,
+  `dev-graphql`, `dev-nextjs`, `dev-shadcn`, `dev-frontend-design`
+  now cross-link to `docs/recipes/recommended-vendor-skills.md` for
+  the actionable install command. The previous version pointed only
+  to the pilot trace (analysis); now it also points to the recipe
+  (action). No content removed.
+
 - **Marketplace audit pilot — `dev-*` skills (17 skills)**: second audit
   conducted under the methodology in `specs/marketplace-audit/spec.md`,
   applied to all 17 `dev-*` skills. Findings: 9 KEEP-OURS, 6 POINT-TO-VENDOR

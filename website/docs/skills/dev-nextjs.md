@@ -328,7 +328,7 @@ Vercel Labs publishes their own official agent skills at [`vercel-labs/agent-ski
 
 When working on a Next.js project, install the vendor skill alongside this one. This skill captures the **opinionated workflow patterns** the foundation imposes (TDD-first, security defaults, deploy-safety, anti-patterns) independent of Vercel's evolving Next.js API surface; the vendor skill captures the canonical App Router / Server Components / caching patterns.
 
-Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
 
 ## Automatic triggering
 
