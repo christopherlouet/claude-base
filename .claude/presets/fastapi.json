@@ -49,7 +49,8 @@
     "Mobile / desktop apps (community contributions wanted for flutter, swift, tauri)",
     "Authentication strategy choice — FastAPI has many viable patterns (JWT, OAuth2, fastapi-users, Authlib); the foundation does not pick one",
     "Container orchestration beyond docker-compose — Kubernetes patterns belong to a future k8s preset",
-    "Backends in other languages — see roadmap for Django, Flask, Rails, Spring Boot, Gin, Axum"
+    "Backends in other languages — see roadmap for Django, Flask, Rails, Spring Boot, Gin, Axum",
+    "Toolchain choice (uv vs pdm vs pip, ruff vs flake8, ty vs mypy) — see docs/recipes/python-toolchain-options.md for the three documented paths and the rationale for not bundling astral@astral-sh by default"
   ],
 
   "relatedPresetsWanted": [

@@ -49,7 +49,8 @@
     "Web application development (use the nextjs preset)",
     "Infrastructure-as-code (use the homelab-proxmox preset for homelab IaC)",
     "Mobile / desktop apps (community contributions wanted for flutter, swift, tauri)",
-    "GUI testing patterns — CLI tools are typically tested via stdin/stdout fixtures"
+    "GUI testing patterns — CLI tools are typically tested via stdin/stdout fixtures",
+    "Toolchain choice (uv vs pdm vs pip, ruff vs flake8, ty vs mypy) — see docs/recipes/python-toolchain-options.md for the three documented paths and the rationale for not bundling astral@astral-sh by default"
   ],
 
   "relatedPresetsWanted": [
