@@ -13,6 +13,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Marketplace plugin audit pilot — `cli-tools` preset**: first audit
+  conducted under the methodology in `specs/marketplace-audit/spec.md`,
+  using `gh search code` to cross-reference plugin adoption across real-product
+  repos (filtering out dotfiles, templates, config kits, portfolios). Four
+  candidates evaluated: `pyright-lsp@claude-plugins-official` (rejected —
+  active LSP infrastructure bugs), `greptile@claude-plugins-official`
+  (rejected — recurrent OAuth bugs), `commit-commands@claude-plugins-official`
+  (rejected — overlaps with foundation `/work:work-commit`), and
+  `astral@astral-sh` (rejected on positioning grounds). The Astral
+  toolchain plugin had strong technical and adoption signal (13+ qualifying
+  real-product repos) but was rejected because Astral was acquired by
+  OpenAI on 2026-03-19; bundling OpenAI-acquired tooling in an
+  Anthropic-ecosystem kit would publish a dissonant signal. Outcome:
+  `cli-tools.json` `marketplacePlugins` stays `[]`. Full trace in
+  `specs/marketplace-audit/cli-tools-pilot-2026-05-05.md`.
+- **Recipe: `docs/recipes/python-toolchain-options.md`**: documents
+  three paths for picking a Python toolchain inside `cli-tools` or
+  `fastapi` projects — Astral (perf-first, OpenAI-adjacent),
+  vendor-neutral (pdm/poetry + flake8/black + mypy), or PyPA defaults
+  (pip + venv + flake8 + mypy). Includes opt-in instructions for the
+  `astral@astral-sh` plugin and a decision matrix. Aligned with the
+  established "stack-essential agnostic, recipes = product opinion"
+  doctrine.
 - **Fourth preset: `fastapi`** — FastAPI + Pydantic + SQLAlchemy/async ORM
   for developers building HTTP APIs, LLM-backed services, or async data
   ingestion endpoints in Python. Filters out 12 non-applicable skills
