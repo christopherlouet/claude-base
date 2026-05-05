@@ -296,3 +296,74 @@ EOF
     [ -d "$target/.claude/skills/qa-review" ]
     [ -d "$target/.claude/skills/work-quick" ]
 }
+
+# =============================================================================
+# fastapi preset (4th maintainer-vouched preset — Python async backend)
+# =============================================================================
+
+@test "presets: fastapi.json exists and is valid JSON" {
+    [ -f "$SOCLE_DIR/.claude/presets/fastapi.json" ]
+    run jq -e . "$SOCLE_DIR/.claude/presets/fastapi.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: fastapi.json has required fields" {
+    local f="$SOCLE_DIR/.claude/presets/fastapi.json"
+    [ "$(jq -r '.name' "$f")" = "fastapi" ]
+    [ "$(jq -r '.status' "$f")" = "maintainer-vouched" ]
+    [ "$(jq -r '.defaults.designStyle' "$f")" = "editorial" ]
+    [ "$(jq -r '.defaults.docker' "$f")" = "true" ]
+    # appliesToTypes contains "python"
+    [[ "$(jq -r '.appliesToTypes[]' "$f" | tr '\n' ' ')" == *"python"* ]]
+}
+
+@test "presets: --list-presets shows all four vouched presets" {
+    run "$NEW_PROJECT" --list-presets
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"homelab-proxmox"* ]]
+    [[ "$output" == *"cli-tools"* ]]
+    [[ "$output" == *"fastapi"* ]]
+}
+
+@test "presets: --preset fastapi drops frontend/mobile/homelab skills" {
+    local target="$TEST_DIR/proj-fastapi"
+    "$NEW_PROJECT" --preset fastapi "$target" >/dev/null 2>&1
+    [ ! -d "$target/.claude/skills/dev-flutter" ]
+    [ ! -d "$target/.claude/skills/dev-nextjs" ]
+    [ ! -d "$target/.claude/skills/dev-shadcn" ]
+    [ ! -d "$target/.claude/skills/dev-react-perf" ]
+    [ ! -d "$target/.claude/skills/dev-frontend-design" ]
+    [ ! -d "$target/.claude/skills/ops-mobile-release" ]
+    [ ! -d "$target/.claude/skills/ops-proxmox" ]
+    [ ! -d "$target/.claude/skills/ops-opnsense" ]
+    [ ! -d "$target/.claude/skills/qa-chrome" ]
+    [ ! -d "$target/.claude/skills/qa-design" ]
+    [ ! -d "$target/.claude/skills/qa-e2e" ]
+    [ ! -d "$target/.claude/skills/growth-cro" ]
+}
+
+@test "presets: --preset fastapi keeps backend-relevant skills" {
+    local target="$TEST_DIR/proj-fastapi"
+    "$NEW_PROJECT" --preset fastapi "$target" >/dev/null 2>&1
+    [ -d "$target/.claude/skills/dev-api" ]
+    [ -d "$target/.claude/skills/dev-auth" ]
+    [ -d "$target/.claude/skills/dev-tdd" ]
+    [ -d "$target/.claude/skills/dev-prompt-engineering" ]
+    [ -d "$target/.claude/skills/ops-database" ]
+    [ -d "$target/.claude/skills/ops-docker" ]
+    [ -d "$target/.claude/skills/ops-monitoring" ]
+    [ -d "$target/.claude/skills/qa-perf" ]
+    [ -d "$target/.claude/skills/qa-security" ]
+}
+
+@test "presets: --preset fastapi installs successfully on a Python project" {
+    # FastAPI defaults docker=true (unique among the 4 vouched presets) and
+    # designStyle=editorial. No file-level assertion on those — they live
+    # in foundation state. Smoke-check that the install completed.
+    local target="$TEST_DIR/proj-fastapi-smoke"
+    run "$NEW_PROJECT" --preset fastapi "$target"
+    [ "$status" -eq 0 ]
+    [ -d "$target/.claude" ]
+    [ -d "$target/.claude/skills" ]
+}

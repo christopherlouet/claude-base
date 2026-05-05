@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Fourth preset: `fastapi`** — FastAPI + Pydantic + SQLAlchemy/async ORM
+  for developers building HTTP APIs, LLM-backed services, or async data
+  ingestion endpoints in Python. Filters out 12 non-applicable skills
+  (frontend stacks, mobile, homelab-specific ops, browser-bound QA).
+  Keeps `dev-api`, `dev-auth`, `dev-graphql`, `dev-prompt-engineering`
+  (LLM API backends), `dev-supabase`, `ops-database`, `ops-docker`,
+  `ops-monitoring`, `qa-perf`, `qa-security`. Bundles ZERO marketplace
+  plugins at v1 — Python-specific plugin curation will be added
+  incrementally as validated. Default `docker: true` (containerised
+  deployment is the dominant pattern), `designStyle: editorial`.
+  See `.claude/presets/fastapi.json`. With this PR, the maintainer-vouched
+  preset catalogue grows to 4: nextjs, homelab-proxmox, cli-tools, fastapi.
+
 ## [1.32.0] - 2026-05-05
 
 Headline release: PostToolUse output rewriter (Claude Code 2.1.121+),
