@@ -29,8 +29,9 @@ See `specs/presets/spec.md` for the full format specification and `specs/presets
 | `homelab-proxmox` | maintainer-vouched | Proxmox VE + Terraform + Ansible + monitoring |
 | `cli-tools` | maintainer-vouched | Python or Shell automation, GitHub API helpers, headless scripts |
 | `fastapi` | maintainer-vouched | FastAPI + Pydantic + SQLAlchemy/async ORM (Python async backend) |
+| `astro` | maintainer-vouched | Astro + TypeScript + Content Collections (content/static-first web) |
 
-The 4 maintainer-vouched presets cover the maintainer's actual production usage. For other stacks (Astro, Django, Rails, Laravel, SvelteKit, Vue/Nuxt, Spring Boot, Phoenix, Go-Gin, Rust-Axum, Flutter, etc.), community contributions are welcomed — see `specs/presets/roadmap.md`.
+The 5 maintainer-vouched presets cover the maintainer's actual production usage. For other stacks (Django, Rails, Laravel, SvelteKit, Vue/Nuxt, Spring Boot, Phoenix, Go-Gin, Rust-Axum, Flutter, etc.), community contributions are welcomed — see `specs/presets/roadmap.md`.
 
 ## Community presets
 
