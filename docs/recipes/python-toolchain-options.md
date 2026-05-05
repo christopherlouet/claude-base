@@ -54,7 +54,13 @@ claude plugin install astral@astral-sh
 }
 ```
 
-If `update.sh --settings` is run later, the `enabledPlugins` entry will be overwritten. Until a future `--add-plugin` helper lands in claude-socle, either avoid `--settings` updates or re-add the entry afterwards.
+Alternatively, use the `--add-plugin` helper (claude-socle ≥ v1.33.0):
+
+```bash
+./scripts/update.sh --add-plugin astral@astral-sh ./your-project
+```
+
+This adds the entry to `enabledPlugins` without touching the rest of `settings.json` and is idempotent — re-running on an already-enabled plugin succeeds silently. Useful if `update.sh --settings` is run later: just re-run the `--add-plugin` command to restore the entry.
 
 ### Path 2 — Vendor-neutral (community-maintained)
 
@@ -126,7 +132,7 @@ pip install -r requirements.txt
 
 - If a vendor-neutral Claude Code plugin equivalent to `astral@astral-sh` ships (e.g. for `pdm` or `mypy`), Path 2 will gain a CC integration option.
 - If Astral's roadmap under OpenAI publishes meaningful Codex-specific divergence — or stays neutral after 12 months — the policy filter on `astral@astral-sh` may be reconsidered.
-- If a future `scripts/update.sh --add-plugin <id>` lands in claude-socle, the install flow for Path 1 becomes one command.
+- ✅ `scripts/update.sh --add-plugin <id>` shipped in v1.33.0 (idempotent helper that adds an entry to `enabledPlugins` without overwriting other keys).
 
 The pilot trace is in `specs/marketplace-audit/cli-tools-pilot-2026-05-05.md`. Re-evaluation criteria are listed there.
 
