@@ -306,3 +306,14 @@ YOU MUST use `revalidatePath` or `revalidateTag` after every mutation to invalid
 NEVER fetch inside middleware (Edge, slow).
 
 NEVER expose business logic in a Route Handler without checking auth.
+
+## See also
+
+Vercel Labs publishes their own official agent skills at [`vercel-labs/agent-skills`](https://github.com/vercel-labs/agent-skills) (maintained by Vercel Engineering, last commit 2026-05-05). The repo ships:
+
+- **`react-best-practices`** — 40+ rules across 8 categories from Vercel Engineering, kept current with each Next.js release.
+- Companion skills covering View Transitions, React Composition Patterns, Web Design Guidelines.
+
+When working on a Next.js project, install the vendor skill alongside this one. This skill captures the **opinionated workflow patterns** the foundation imposes (TDD-first, security defaults, deploy-safety, anti-patterns) independent of Vercel's evolving Next.js API surface; the vendor skill captures the canonical App Router / Server Components / caching patterns.
+
+Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.

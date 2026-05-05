@@ -210,3 +210,14 @@ SELECT indexrelname, idx_scan
 FROM pg_stat_user_indexes
 WHERE idx_scan = 0;
 ```
+
+## See also
+
+Supabase publishes their own official agent skills at [`supabase/agent-skills`](https://github.com/supabase/agent-skills) (maintained by the Supabase team, last commit 2026-04-30). The repo ships two skills:
+
+- **`supabase`** — covers all Supabase products (Auth, DB, Edge Functions, Realtime, Storage) with current API patterns. Authoritative on schema migrations, RLS policy templates, and Edge Functions runtime details that this skill cannot keep up to date with at every API release.
+- **`supabase-postgres-best-practices`** — 30 rules across 8 categories from the Supabase team. Goes deeper than this skill on Postgres-specific optimisation, indexing strategy, and pg_* extension usage.
+
+When working on a Supabase project, install both vendor skills alongside this one. This skill captures the framework-agnostic patterns the foundation imposes (TDD, security defaults, naming conventions) independent of Supabase's evolving API surface; the vendor skills capture the canonical API + Postgres patterns. Both together is the recommended setup.
+
+This recommendation is based on the audit pilot in `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`. Re-evaluation is triggered if Supabase changes ownership or diverges from open-source defaults.

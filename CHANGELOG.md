@@ -13,6 +13,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Marketplace audit pilot — `dev-*` skills (17 skills)**: second audit
+  conducted under the methodology in `specs/marketplace-audit/spec.md`,
+  applied to all 17 `dev-*` skills. Findings: 9 KEEP-OURS, 6 POINT-TO-VENDOR
+  (tool vendors publish their own skill), 2 GAP-OUTSCOPE-POINTER (community
+  has narrower or stack-specific coverage). 0 POINT-TO-COMMUNITY — no
+  non-vendor community skill cleared the cross-reference bar. Tool vendors
+  validated: Supabase (`supabase/agent-skills`), Prisma (`prisma/skills`),
+  Apollo GraphQL (`apollographql/skills`), Vercel Labs (`vercel-labs/agent-skills`),
+  shadcn/ui (`shadcn-ui/ui/skills/shadcn`, in-repo), Anthropic
+  (`anthropics/claude-code/plugins/frontend-design`). All 6 vendors verified
+  via `gh api` (existence, maintenance, vendor-neutrality). Outcome:
+  documentation-only updates (no skill deletions, no counter changes).
+  Full trace in `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
+- **`## See also` sections in 6 SKILL.md files**: `dev-supabase`,
+  `dev-prisma`, `dev-graphql`, `dev-nextjs`, `dev-shadcn`, `dev-frontend-design`
+  now point to the canonical vendor skill alongside our skill. Framing:
+  our skill captures **opinionated workflow patterns** (TDD, security
+  defaults, foundation conventions); the vendor skill captures the
+  **canonical API/stack patterns** that evolve with each vendor release.
+  Users get the best of both worlds: install both.
+- **Preset `outOfScope` updates**:
+  - `nextjs.json` mentions `vercel-labs/agent-skills` (`react-best-practices`)
+    for canonical Vercel guidance.
+  - `astro.json` mentions `lingui/skills` for Lingui-based content sites.
 - **Fifth preset: `astro`** — Astro + TypeScript + Content Collections for
   developers building content-heavy sites: marketing pages, documentation
   sites, blogs, landing pages. First preset for a non-Next.js web framework,
