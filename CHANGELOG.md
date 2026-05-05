@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.34.0] - 2026-05-05
+
+Identity and distribution release: the project is renamed `claude-socle` →
+`claude-base` for English-language consistency, a unified CLI dispatcher
+`bin/claude-base` exposes coherent verbs (`init`, `update`, `validate`,
+`preset list/show`, `uninstall`), and a one-liner installer makes
+`curl | bash` the recommended install path. The GitHub repo is renamed
+at the same time; old URLs continue to redirect automatically.
+
 ### Added
 
 - **One-liner install script `install.sh`**: clones the foundation to

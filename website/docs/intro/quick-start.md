@@ -53,7 +53,7 @@ claude
 At startup you should see:
 ```
 === Claude Code Session ===
-Version: 1.33.0
+Version: 1.34.0
 Commandes: <!-- count:commands -->131<!-- /count -->
 Agents: <!-- count:agents -->63<!-- /count -->
 ===========================
