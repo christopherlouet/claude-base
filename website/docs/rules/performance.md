@@ -1,5 +1,5 @@
 ---
-sidebar_position: 15
+sidebar_position: 16
 title: "performance"
 description: "IMPORTANT: LCP  2.5s - Optimize above-the-fold images. IMPORTANT: INP  200ms - Avoid blocking operations. IMPORTANT: CLS  0.1 - Always specify media d"
 tags:

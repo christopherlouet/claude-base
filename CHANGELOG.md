@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Project renamed `claude-socle` → `claude-base`** for English-language
+  consistency with the rest of the codebase (the FR→EN migration in v1.31.0
+  left the project name as the only French-coded element). The new name is
+  shorter, EN-native, and matches the vocabulary already used throughout the
+  documentation. The GitHub repo is renamed at the same time
+  (`christopherlouet/claude-socle` → `christopherlouet/claude-base`); old
+  URLs continue to redirect via GitHub's automatic 301. Internal renames:
+  `SOCLE_DIR` → `BASE_DIR` (bash), `SKIP_SOCLE_INTEGRITY` → `SKIP_BASE_INTEGRITY`
+  (env var), `SOCLE_STATS` → `BASE_STATS` (TypeScript constant), files
+  `socle-maintenance.md` → `base-maintenance.md`,
+  `socle-integrity-check.sh` → `base-integrity-check.sh`,
+  `audit-socle.sh` → `audit-base.sh`. Historical CHANGELOG entries
+  (v1.32.0 and earlier) keep their original `claude-socle` references —
+  those releases were genuinely shipped under the old name.
+
 ## [1.33.0] - 2026-05-05
 
 Maintenance and ecosystem release: a 4th maintainer-vouched preset

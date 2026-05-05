@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 24
 title: "service-worker"
 description: "The SW must NEVER cache `request.mode === \"navigate\"` responses. Caching HTML pages causes: - Stale JS references after deployments - Broken React/Vue"
 tags:

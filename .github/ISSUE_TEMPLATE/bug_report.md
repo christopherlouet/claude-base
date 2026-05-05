@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a defect in claude-socle
+about: Report a defect in claude-base
 title: "[Bug] "
 labels: ["bug", "triage"]
 assignees: []
@@ -28,7 +28,7 @@ What actually happened. Include error messages or stack traces if relevant.
 
 ## Environment
 
-- claude-socle version: <!-- e.g. v1.30.0 (run `cat VERSION`) -->
+- claude-base version: <!-- e.g. v1.30.0 (run `cat VERSION`) -->
 - Claude Code CLI version: <!-- run `claude --version` -->
 - OS: <!-- e.g. Ubuntu 24.04, macOS 14.2, Windows 11 (WSL2) -->
 - Shell: <!-- bash, zsh, fish -->

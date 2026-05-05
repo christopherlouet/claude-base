@@ -1,13 +1,13 @@
 # Documentation Index
 
-> Quick navigation in the claude-socle documentation.
+> Quick navigation in the claude-base documentation.
 
 ## By Experience Level
 
 | Level | Document | Description |
 |--------|----------|-------------|
 | Beginner | [QUICKSTART.md](./QUICKSTART.md) | Quick start in 5 minutes |
-| Beginner | [Docusaurus Documentation](https://christopherlouet.github.io/claude-socle/) | Complete user guide (website) |
+| Beginner | [Docusaurus Documentation](https://christopherlouet.github.io/claude-base/) | Complete user guide (website) |
 | Intermediate | [CHEATSHEET.md](./CHEATSHEET.md) | Quick command reference |
 | Advanced | [ARCHITECTURE.md](./ARCHITECTURE.md) | Commands/Agents/Skills architecture |
 | Advanced | [CUSTOMIZATION.md](./CUSTOMIZATION.md) | Customization guide |
@@ -50,7 +50,7 @@
 ### I'm looking for a specific command
 
 1. [CHEATSHEET.md](./CHEATSHEET.md) - Quick reference
-2. [Commands catalog](https://christopherlouet.github.io/claude-socle/docs/commands) - Exhaustive list (Docusaurus)
+2. [Commands catalog](https://christopherlouet.github.io/claude-base/docs/commands) - Exhaustive list (Docusaurus)
 
 ## Documentation Structure
 
@@ -71,11 +71,11 @@ docs/
     └── TROUBLESHOOTING-GUIDE.md
 ```
 
-> For the complete documentation (commands, agents, skills, rules), see the [Docusaurus site](https://christopherlouet.github.io/claude-socle/).
+> For the complete documentation (commands, agents, skills, rules), see the [Docusaurus site](https://christopherlouet.github.io/claude-base/).
 
 ## External Documentation
 
-- [Docusaurus Documentation](https://christopherlouet.github.io/claude-socle/) - Complete documentation site
+- [Docusaurus Documentation](https://christopherlouet.github.io/claude-base/) - Complete documentation site
 - [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) - Anthropic best practices
 - [Claude Code Documentation](https://code.claude.com/docs/en/overview) - Official documentation
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle IDE Integration Script
-# Configures IDEs for optimal integration with claude-socle
+# Claude-Base IDE Integration Script
+# Configures IDEs for optimal integration with claude-base
 # =============================================================================
 
 set -euo pipefail
@@ -12,7 +12,7 @@ VERSION="1.0.0"
 # Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC2034  # Used by sourced scripts
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -30,19 +30,19 @@ FORCE=false
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle IDE Integration${NC} v${VERSION}
+${BOLD}Claude-Base IDE Integration${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") <setup|check|remove> <ide> [OPTIONS] [PATH]
 
 ${BOLD}DESCRIPTION${NC}
-    Configures IDEs for optimal integration with claude-socle.
+    Configures IDEs for optimal integration with claude-base.
     Generates snippets, tasks, keybindings and extension recommendations.
 
 ${BOLD}COMMANDS${NC}
     setup <ide>     Configure the specified IDE
     check <ide>     Check the existing configuration
-    remove <ide>    Remove the claude-socle configuration
+    remove <ide>    Remove the claude-base configuration
 
 ${BOLD}SUPPORTED IDES${NC}
     vscode          Visual Studio Code
@@ -77,7 +77,7 @@ EOF
 }
 
 show_version() {
-    echo "Claude-Socle IDE Integration v${VERSION}"
+    echo "Claude-Base IDE Integration v${VERSION}"
 }
 
 # =============================================================================
@@ -126,7 +126,7 @@ setup_vscode_settings() {
     cat > "$settings_file" << 'EOF'
 {
     // ==========================================================================
-    // Claude-Socle VSCode Settings
+    // Claude-Base VSCode Settings
     // ==========================================================================
 
     // Editor
@@ -195,7 +195,7 @@ setup_vscode_tasks() {
     "version": "2.0.0",
     "tasks": [
         // ==========================================================================
-        // Claude-Socle Tasks
+        // Claude-Base Tasks
         // ==========================================================================
         {
             "label": "Claude: Validate Project",
@@ -222,7 +222,7 @@ setup_vscode_tasks() {
             "problemMatcher": []
         },
         {
-            "label": "Claude: Update from Socle",
+            "label": "Claude: Update from claude-base",
             "type": "shell",
             "command": "./scripts/update.sh",
             "args": ["."],
@@ -314,7 +314,7 @@ setup_vscode_extensions() {
     cat > "$extensions_file" << 'EOF'
 {
     // ==========================================================================
-    // Claude-Socle Recommended Extensions
+    // Claude-Base Recommended Extensions
     // ==========================================================================
     "recommendations": [
         // Essential
@@ -365,17 +365,17 @@ EOF
 
 setup_vscode_snippets() {
     local config_dir="$1"
-    local snippets_file="$config_dir/claude-socle.code-snippets"
+    local snippets_file="$config_dir/claude-base.code-snippets"
 
     if [[ -f "$snippets_file" ]] && ! $FORCE; then
-        warning "claude-socle.code-snippets already exists (use --force to overwrite)"
+        warning "claude-base.code-snippets already exists (use --force to overwrite)"
         return
     fi
 
     cat > "$snippets_file" << 'EOF'
 {
     // ==========================================================================
-    // Claude-Socle Snippets
+    // Claude-Base Snippets
     // ==========================================================================
 
     // Workflow Commands
@@ -509,7 +509,7 @@ setup_vscode_snippets() {
 }
 EOF
 
-    success "claude-socle.code-snippets created"
+    success "claude-base.code-snippets created"
 }
 
 check_vscode() {
@@ -533,8 +533,8 @@ check_vscode() {
             fi
         done
 
-        if [[ -f "$config_dir/claude-socle.code-snippets" ]]; then
-            echo -e "  ${GREEN}✓${NC} claude-socle.code-snippets"
+        if [[ -f "$config_dir/claude-base.code-snippets" ]]; then
+            echo -e "  ${GREEN}✓${NC} claude-base.code-snippets"
         else
             echo -e "  ${YELLOW}⚠${NC} snippets missing"
             ((issues++))
@@ -562,7 +562,7 @@ remove_vscode() {
 
     info "Removing the VSCode configuration..."
 
-    for file in settings.json tasks.json extensions.json claude-socle.code-snippets; do
+    for file in settings.json tasks.json extensions.json claude-base.code-snippets; do
         if [[ -f "$config_dir/$file" ]]; then
             rm "$config_dir/$file"
             success "Removed: $file"
@@ -782,9 +782,9 @@ remove_idea() {
         return
     fi
 
-    info "Removing the claude-socle IntelliJ configuration..."
+    info "Removing the claude-base IntelliJ configuration..."
 
-    # Remove the claude-socle run configurations
+    # Remove the claude-base run configurations
     if [[ -d "$config_dir/runConfigurations" ]]; then
         rm -f "$config_dir/runConfigurations/Claude_"*.xml
         success "Run configurations removed"
@@ -813,7 +813,7 @@ setup_vim() {
     # Create a Vim configuration file
     cat > "$vimrc" << 'EOF'
 " =============================================================================
-" Claude-Socle Vim Configuration
+" Claude-Base Vim Configuration
 " Source this file in your .vimrc: source .vimrc.claude
 " =============================================================================
 

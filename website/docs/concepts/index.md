@@ -6,7 +6,7 @@ description: Understand the fundamental concepts of Claude Code
 
 # Claude Code Concepts
 
-> Understand the Claude Code ecosystem to better use claude-socle
+> Understand the Claude Code ecosystem to better use claude-base
 
 ## Overview
 
@@ -153,6 +153,6 @@ User types: "Run a security audit"
 
 ## See also
 
-- [Installation](/docs/intro/installation) - Install claude-socle
-- [Architecture](/docs/intro/architecture) - claude-socle architecture
+- [Installation](/docs/intro/installation) - Install claude-base
+- [Architecture](/docs/intro/architecture) - claude-base architecture
 - [Quick Start](/docs/intro/quick-start) - Get started quickly

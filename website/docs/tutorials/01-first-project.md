@@ -1,12 +1,12 @@
 ---
 sidebar_position: 2
 title: "01 - First project"
-description: Discover the basic workflow by creating your first feature with claude-socle
+description: Discover the basic workflow by creating your first feature with claude-base
 ---
 
 import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
-# First project with claude-socle
+# First project with claude-base
 
 <DifficultyBadge level="beginner" /> **Estimated duration: 15 minutes**
 
@@ -20,7 +20,7 @@ By the end of this tutorial, you will know how to:
 - Use `/work:work-plan` to plan an implementation
 - Use `/work:work-flow-feature` to create a complete feature
 - Use `/qa:qa-loop` to audit and reach the target quality score
-- Understand the development cycle with claude-socle
+- Understand the development cycle with claude-base
 
 ## Prerequisites
 

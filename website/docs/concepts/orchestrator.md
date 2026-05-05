@@ -10,11 +10,11 @@ description: Single entry point that orchestrates commands, agents and skills
 
 ## What is the Orchestrator?
 
-The **orchestrator** is the single entry point of claude-socle. It analyzes your request, detects your project context, and points you to the most appropriate commands, agents and skills.
+The **orchestrator** is the single entry point of claude-base. It analyzes your request, detects your project context, and points you to the most appropriate commands, agents and skills.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        SOCLE CLAUDE CODE                        │
+│                        CLAUDE-BASE FOUNDATION                        │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
@@ -235,7 +235,7 @@ User: "/assistant I want to fix a login bug"
 
 ### Use `/assistant` (guide mode) when:
 
-- You are **new** to claude-socle
+- You are **new** to claude-base
 - You don't know **which command** to use
 - You want to **validate** the workflow before execution
 - You are switching **project type** (Web → Mobile for example)
@@ -243,7 +243,7 @@ User: "/assistant I want to fix a login bug"
 
 ### Use `/assistant-auto` (automatic mode) when:
 
-- You are **familiar** with claude-socle
+- You are **familiar** with claude-base
 - You want **immediate execution** without confirmation
 - You are doing **repetitive** tasks (features, bugfixes)
 - You prefer **speed** over validation

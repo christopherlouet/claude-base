@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Update Script
+# Claude-Base Update Script
 # Updates Claude commands from the foundation
 # =============================================================================
 
@@ -9,7 +9,7 @@ set -euo pipefail
 
 # Load common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # Version read from the VERSION file
 VERSION=$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null || echo "unknown")
@@ -90,7 +90,7 @@ safe_mktemp() {
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Update${NC} v${VERSION}
+${BOLD}Claude-Base Update${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS] [PATH]
@@ -162,19 +162,19 @@ ${BOLD}EXAMPLES${NC}
     $(basename "$0") --add-plugin astral@astral-sh ./my-project
 
 ${BOLD}FOUNDATION STATISTICS${NC}
-    Agents:    $(count_agents "$SOCLE_DIR")
-    Skills:    $(count_skills "$SOCLE_DIR")
-    Hooks:     $(count_hooks "$SOCLE_DIR")
+    Agents:    $(count_agents "$BASE_DIR")
+    Skills:    $(count_skills "$BASE_DIR")
+    Hooks:     $(count_hooks "$BASE_DIR")
 
 EOF
 }
 
 show_version() {
-    echo "claude-socle update v${VERSION}"
+    echo "claude-base update v${VERSION}"
 }
 
 show_changelog() {
-    local changelog_file="$SOCLE_DIR/CHANGELOG.md"
+    local changelog_file="$BASE_DIR/CHANGELOG.md"
     if [[ -f "$changelog_file" ]]; then
         # Show the first 50 lines of the changelog
         head -50 "$changelog_file"
@@ -462,14 +462,14 @@ update_commands() {
     before=$(find "$TARGET_DIR/$COMMANDS_SUBDIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 
     # Recursively iterate over the commands of the foundation
-    local socle_commands_dir="$SOCLE_DIR/$COMMANDS_SUBDIR"
+    local base_commands_dir="$BASE_DIR/$COMMANDS_SUBDIR"
     while IFS= read -r cmd; do
         if [[ -f "$cmd" ]]; then
             # Compute the relative path from commands/
-            local rel_path="${cmd#"$socle_commands_dir"/}"
+            local rel_path="${cmd#"$base_commands_dir"/}"
             update_command_file "$cmd" "$rel_path"
         fi
-    done < <(find "$socle_commands_dir" -name "*.md" -type f 2>/dev/null || true)
+    done < <(find "$base_commands_dir" -name "*.md" -type f 2>/dev/null || true)
 
     local after
     after=$(find "$TARGET_DIR/$COMMANDS_SUBDIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
@@ -575,7 +575,7 @@ add_plugin() {
 update_settings() {
     section "Updating settings.json"
 
-    local src="$SOCLE_DIR/.claude/settings.json"
+    local src="$BASE_DIR/.claude/settings.json"
     local dest="$TARGET_DIR/.claude/settings.json"
 
     if [[ ! -f "$src" ]]; then
@@ -628,7 +628,7 @@ _count_dir_files() {
 # Uses per-file diff checking to avoid overwriting user customizations.
 # Arguments:
 #   $1 - name: internal identifier (skills, agents, rules, styles, templates)
-#   $2 - src_subdir: relative path from socle root (.claude/skills, etc.)
+#   $2 - src_subdir: relative path from foundation root (.claude/skills, etc.)
 #   $3 - label: display name for messages (Skills, Agents, etc.)
 update_directory() {
     local name="$1"
@@ -637,7 +637,7 @@ update_directory() {
 
     section "Updating $label"
 
-    local src_dir="$SOCLE_DIR/$src_subdir"
+    local src_dir="$BASE_DIR/$src_subdir"
     local dest_dir="$TARGET_DIR/$src_subdir"
 
     if [[ ! -d "$src_dir" ]]; then
@@ -902,7 +902,7 @@ upgrade_claude_md() {
     migrate_legacy_docs
 
     # Copy docs/reference/ from the foundation to .claude/docs/reference/ (always, to update)
-    local src_ref="$SOCLE_DIR/docs/reference"
+    local src_ref="$BASE_DIR/docs/reference"
     local dest_ref="$TARGET_DIR/.claude/docs/reference"
 
     if [[ ! -d "$src_ref" ]]; then
@@ -926,12 +926,12 @@ upgrade_claude_md() {
 
     # Copy docs/guides/ to .claude/docs/guides/ — only new files
     # Existing guides are preserved (potentially customized)
-    if [[ -d "$SOCLE_DIR/docs/guides" ]]; then
+    if [[ -d "$BASE_DIR/docs/guides" ]]; then
         make_dir "$TARGET_DIR/.claude/docs/guides"
         local guides_added=0
         local guides_skipped=0
         while IFS= read -r guide_file; do
-            local guide_rel="${guide_file#"$SOCLE_DIR"/docs/guides/}"
+            local guide_rel="${guide_file#"$BASE_DIR"/docs/guides/}"
             local guide_dest="$TARGET_DIR/.claude/docs/guides/$guide_rel"
             if [[ -f "$guide_dest" ]]; then
                 debug "Preserved (existing): .claude/docs/guides/$guide_rel"
@@ -944,7 +944,7 @@ upgrade_claude_md() {
                 debug "Added: .claude/docs/guides/$guide_rel"
                 ((guides_added++)) || true
             fi
-        done < <(find "$SOCLE_DIR/docs/guides" -name "*.md" -type f 2>/dev/null || true)
+        done < <(find "$BASE_DIR/docs/guides" -name "*.md" -type f 2>/dev/null || true)
         if [[ $guides_added -gt 0 ]]; then
             success ".claude/docs/guides/: $guides_added added, $guides_skipped preserved"
         else
@@ -953,8 +953,8 @@ upgrade_claude_md() {
     fi
 
     # Copy docs/STACK-RECIPES.md (consolidation of legacy stack guides)
-    if [[ -f "$SOCLE_DIR/docs/STACK-RECIPES.md" ]]; then
-        cp "$SOCLE_DIR/docs/STACK-RECIPES.md" "$TARGET_DIR/.claude/docs/STACK-RECIPES.md"
+    if [[ -f "$BASE_DIR/docs/STACK-RECIPES.md" ]]; then
+        cp "$BASE_DIR/docs/STACK-RECIPES.md" "$TARGET_DIR/.claude/docs/STACK-RECIPES.md"
         debug "STACK-RECIPES.md synced to .claude/docs/"
     fi
 
@@ -1032,7 +1032,7 @@ upgrade_claude_md() {
 detect_orphan_files() {
     local subdir="$1"
     local target_dir="$TARGET_DIR/.claude/$subdir"
-    local socle_dir="$SOCLE_DIR/.claude/$subdir"
+    local base_dir="$BASE_DIR/.claude/$subdir"
 
     if [[ ! -d "$target_dir" ]]; then
         return
@@ -1043,23 +1043,23 @@ detect_orphan_files() {
         if [[ -f "$target_file" ]]; then
             # Compute the relative path
             local rel_path="${target_file#"$target_dir"/}"
-            local socle_file="$socle_dir/$rel_path"
+            local base_file="$base_dir/$rel_path"
 
             # Check if the file exists in the foundation (also check for renames by basename)
-            if [[ ! -f "$socle_file" ]]; then
+            if [[ ! -f "$base_file" ]]; then
                 ((ORPHANS_FOUND++)) || true
                 local filename
                 filename=$(basename "$target_file")
 
-                # Check if the file might have been renamed (same basename exists elsewhere in socle)
+                # Check if the file might have been renamed (same basename exists elsewhere in the foundation)
                 local possible_rename=""
-                if [[ -d "$socle_dir" ]]; then
-                    possible_rename=$(find "$socle_dir" -name "$filename" -type f 2>/dev/null | head -1 || true)
+                if [[ -d "$base_dir" ]]; then
+                    possible_rename=$(find "$base_dir" -name "$filename" -type f 2>/dev/null | head -1 || true)
                 fi
 
                 if [[ -n "$possible_rename" ]]; then
-                    local socle_rel="${possible_rename#"$socle_dir"/}"
-                    info "  $filename may have been moved to $socle_rel in the foundation"
+                    local base_rel="${possible_rename#"$base_dir"/}"
+                    info "  $filename may have been moved to $base_rel in the foundation"
                 fi
 
                 if $REMOVE_ORPHANS; then
@@ -1211,7 +1211,7 @@ main() {
         if $DRY_RUN; then
             echo -e "${DIM}[DRY-RUN]${NC} Add: CLAUDE.md"
         else
-            cp "$SOCLE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
+            cp "$BASE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
             rewrite_claude_md_paths "$TARGET_DIR/CLAUDE.md"
         fi
         success "CLAUDE.md added (absent from the project)"

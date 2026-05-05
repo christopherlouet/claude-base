@@ -8,7 +8,7 @@ The full text is available at: <https://www.contributor-covenant.org/version/2/1
 
 Instances of unacceptable behavior may be reported to the project maintainers via:
 
-- A confidential GitHub Security Advisory: <https://github.com/christopherlouet/claude-socle/security/advisories>
+- A confidential GitHub Security Advisory: <https://github.com/christopherlouet/claude-base/security/advisories>
 - An issue tagged `conduct` (for non-sensitive matters)
 
 All complaints will be reviewed and investigated promptly and fairly.

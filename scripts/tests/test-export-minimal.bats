@@ -8,7 +8,7 @@ setup() {
   MANIFEST="$REPO_ROOT/scripts/lib/minimal-manifest.txt"
   EXPORT_SCRIPT="$REPO_ROOT/scripts/export-minimal.sh"
   NEW_PROJECT="$REPO_ROOT/scripts/new-project.sh"
-  TMP_DIR="$(mktemp -d -t socle-minimal-test-XXXXXX)"
+  TMP_DIR="$(mktemp -d -t base-minimal-test-XXXXXX)"
 }
 
 teardown() {
@@ -100,25 +100,25 @@ teardown() {
 @test "export-minimal.sh: archive contains CLAUDE.md at root" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
-  tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-socle-minimal/CLAUDE\.md$'
+  tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-base-minimal/CLAUDE\.md$'
 }
 
 @test "export-minimal.sh: archive contains .claude/commands/assistant.md" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
-  tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-socle-minimal/\.claude/commands/assistant\.md$'
+  tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-base-minimal/\.claude/commands/assistant\.md$'
 }
 
 @test "export-minimal.sh: archive contains .claude/settings.json" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
-  tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-socle-minimal/\.claude/settings\.json$'
+  tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-base-minimal/\.claude/settings\.json$'
 }
 
 @test "export-minimal.sh: archive contains at least one complete skill (SKILL.md)" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
-  tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-socle-minimal/\.claude/skills/[a-z-]+/SKILL\.md$'
+  tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '^claude-base-minimal/\.claude/skills/[a-z-]+/SKILL\.md$'
 }
 
 @test "export-minimal.sh: archive does NOT include excluded domains (biz, growth, legal)" {

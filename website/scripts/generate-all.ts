@@ -23,7 +23,7 @@ async function generateAll(): Promise<GenerationStats> {
   const startTime = Date.now();
 
   console.log('╔════════════════════════════════════════════════════════════╗');
-  console.log('║          claude-socle Documentation Generator              ║');
+  console.log('║          claude-base Documentation Generator              ║');
   console.log('╚════════════════════════════════════════════════════════════╝');
   console.log('');
 

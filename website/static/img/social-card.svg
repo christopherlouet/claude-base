@@ -27,7 +27,7 @@
 
   <!-- Main title -->
   <text x="350" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="bold" fill="white">
-    claude-socle
+    claude-base
   </text>
 
   <!-- Subtitle -->

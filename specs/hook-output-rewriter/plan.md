@@ -23,7 +23,7 @@ Existing `.claude/settings.json` is overwrite-updated by `update.sh -f --all`; f
 | Aspect | Choice | Notes |
 |---|---|---|
 | Language | Bash 4+ (with portable patterns) | macOS BSD utilities expected to work — covered in Phase 5 audit |
-| Output envelope | `jq -Rs '{hookSpecificOutput: {hookEventName: "PostToolUse", updatedToolOutput: .}}'` | Same pattern as existing `prompt-context.sh` and `socle-integrity-check.sh`, just with `updatedToolOutput` instead of `additionalContext` |
+| Output envelope | `jq -Rs '{hookSpecificOutput: {hookEventName: "PostToolUse", updatedToolOutput: .}}'` | Same pattern as existing `prompt-context.sh` and `base-integrity-check.sh`, just with `updatedToolOutput` instead of `additionalContext` |
 | Allowlist (Bash) | Hardcoded array of regex shapes in `bash-output-filter.sh` | Per FR-1 and clarification Q1 (resolved) |
 | ANSI strip | `sed -E 's/\x1b\[[0-9;]*[a-zA-Z]//g'` | Tested on BSD sed in Phase 5 |
 | Capability probe | `claude --version` parsed as `MAJOR.MINOR.PATCH`, compared to `2.1.121` | One probe per session (SessionStart), result cached in `CLAUDE_REWRITER_SUPPORTED` env |
@@ -35,7 +35,7 @@ Existing `.claude/settings.json` is overwrite-updated by `update.sh -f --all`; f
 - Do not break the existing post-edit feedback loop. Users disabling the new behavior (`SKIP_INLINE_EDIT_ERRORS=1`) must see the same tsc/eslint output they see today (just as a side message, not inlined).
 - Do not change the public contract of `update.sh` other than the prompt copy (FR-23).
 - Do not add any new agent/command/skill/rule (no `validate-counts.sh` impact). Only new hook scripts and test files.
-- All changes pass: `bats tests/*.bats` + `shellcheck scripts/hooks/*.sh` + `bash scripts/validate-counts.sh` + `bash scripts/audit-socle.sh`.
+- All changes pass: `bats tests/*.bats` + `shellcheck scripts/hooks/*.sh` + `bash scripts/validate-counts.sh` + `bash scripts/audit-base.sh`.
 
 ## Constitution check
 
@@ -87,7 +87,7 @@ tests/
 | `scripts/update.sh` | Update interactive prompt copy at the settings.json prompt (line 539) per FR-23 | FR-23 |
 | `docs/reference/hooks-reference.md` | Add new section "Output rewriter (CLI 2.1.121+)" listing the new hooks, env vars, log path. Update `## Hook Environment Variables` table. | FR-19, FR-22 |
 | `CHANGELOG.md` | New entry under `## [Unreleased]`: Added (output rewriter), Changed (settings.json hooks consolidation), Migration note (FR-21) | FR-21 |
-| `.claude/rules/socle-maintenance.md` | No counter change. Verify "shellcheck on new hooks" line still applies (it does). | none |
+| `.claude/rules/base-maintenance.md` | No counter change. Verify "shellcheck on new hooks" line still applies (it does). | none |
 
 ### Data flow
 
@@ -170,7 +170,7 @@ Implement US-2 and US-3 (inline side). Smaller script but more sensitive (touche
 
 ### Phase 4 — Migration & docs (1h)
 
-Cover the upgrade path for existing claude-socle-using projects.
+Cover the upgrade path for existing claude-base-using projects.
 
 **Tasks**: T050-T058 (see tasks.md)
 
@@ -211,7 +211,7 @@ Before opening the PR:
 - [ ] `bats tests/*.bats` (full suite) still green — no regression on existing tests
 - [ ] `shellcheck scripts/hooks/*.sh` exit 0 on the 4 new/modified scripts
 - [ ] `bash scripts/validate-counts.sh` exit 0
-- [ ] `bash scripts/audit-socle.sh` exit 0 (no new agent/skill/rule = no counter delta expected)
+- [ ] `bash scripts/audit-base.sh` exit 0 (no new agent/skill/rule = no counter delta expected)
 - [ ] Manual session A — supported CLI: trigger an Edit on a TS file with a type error → verify error block appended to Edit result; trigger `npm audit` → verify trimmed view
 - [ ] Manual session B — `SKIP_INLINE_EDIT_ERRORS=1` and `SKIP_BASH_OUTPUT_FILTER=1` both set → verify byte-identical legacy behavior (stdout side-messages, full Bash output)
 - [ ] Manual session C — old settings.json (simulated by reverting to pre-PR settings.json on a copy of the repo) → verify FR-22 legacy-detection notice fires once

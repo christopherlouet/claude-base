@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: Agents Matrix
-description: Breakdown of all claude-socle agents by model
+description: Breakdown of all claude-base agents by model
 ---
 
 # Agents Matrix

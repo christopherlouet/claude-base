@@ -19,7 +19,7 @@ The intent is not new tooling — it is to take the foundation's existing post-t
 - **Less conversation noise**: long, low-signal command outputs become short, signal-only views before Claude reads them.
 - **Tighter feedback loop**: type/lint errors are surfaced inside the result of the edit that caused them, not as a delayed side note.
 - **Off by absence**: any project that does not opt in (older CLI, missing tools, opt-out flag) behaves exactly like today.
-- **Foundation idempotence**: `validate-counts.sh`, `audit-socle.sh`, the existing test suite, and CI all remain green with zero changes to public counters/catalogs.
+- **Foundation idempotence**: `validate-counts.sh`, `audit-base.sh`, the existing test suite, and CI all remain green with zero changes to public counters/catalogs.
 
 ## Non-goals
 
@@ -35,7 +35,7 @@ The intent is not new tooling — it is to take the foundation's existing post-t
 
 ### US-1 (P1) — Noisy commands return only what's actionable
 
-**As a** developer using claude-socle on a Node/Python/Go project
+**As a** developer using claude-base on a Node/Python/Go project
 **I want** outputs of `npm audit`, `npm install`, build, test, lint and equivalents to be trimmed to errors, warnings, counts and exit summary before Claude reads them
 **So that** Claude doesn't waste turns parsing 200 lines of progress logs to find the one failure.
 
@@ -47,7 +47,7 @@ The intent is not new tooling — it is to take the foundation's existing post-t
 
 ### US-2 (P1) — Type and lint errors surface alongside the edit
 
-**As a** developer using claude-socle on a TypeScript project
+**As a** developer using claude-base on a TypeScript project
 **I want** any new `tsc` or `eslint` errors detected by the foundation's existing post-edit hooks to appear as part of the same edit's result
 **So that** Claude treats them as immediate consequences of the edit, not as a separate informational message that may scroll past.
 
@@ -131,7 +131,7 @@ The intent is not new tooling — it is to take the foundation's existing post-t
 ### Migration path (existing projects)
 
 - **FR-21**: The release that introduces this feature documents the migration path explicitly: existing projects must run `./scripts/update.sh -f --all` (or at minimum `--settings` AND `--hook-scripts` together) to get a coherent state. The CHANGELOG entry calls this out.
-- **FR-22**: The new replacement hook script (subsuming the old inline tsc/eslint blocks per US-2 strategy A) detects at runtime whether the host's `.claude/settings.json` still references the old inline blocks (signal of partial update). If so, it emits a one-line notice once per session: `[INFO] claude-socle: settings.json appears to predate the output rewriter — re-run ./scripts/update.sh -f --all to enable. Continuing with legacy behavior.`
+- **FR-22**: The new replacement hook script (subsuming the old inline tsc/eslint blocks per US-2 strategy A) detects at runtime whether the host's `.claude/settings.json` still references the old inline blocks (signal of partial update). If so, it emits a one-line notice once per session: `[INFO] claude-base: settings.json appears to predate the output rewriter — re-run ./scripts/update.sh -f --all to enable. Continuing with legacy behavior.`
 - **FR-23**: For interactive `update.sh` runs, the prompt for `.claude/settings.json` (currently defaulting to "n") changes to flag this release specifically: `Update .claude/settings.json? (recommended for this release — adds output rewriter)` with the default still "n" to preserve user customizations, but the prompt makes the cost of declining explicit.
 - **FR-24**: The `update.sh -f --all` path remains a full overwrite of `.claude/settings.json` (no merge logic introduced). Users who customized settings are reminded by the existing backup mechanism (`commands.backup.<timestamp>`) and the new prompt copy from FR-23.
 
@@ -162,7 +162,7 @@ The intent is not new tooling — it is to take the foundation's existing post-t
 - **SC-2**: On a curated benchmark of 10 noisy command captures (under `tests/hook-output-rewriter/fixtures/bash/`), no actionable line (error, warning, summary, exit code) is dropped in any of the 10 cases.
 - **SC-3**: On a curated benchmark of 5 TypeScript edit+error pairs (under `tests/hook-output-rewriter/fixtures/inline-edit/`), Claude reaches a clean `tsc` in ≤ 2 follow-up turns with the inline pattern, vs ≤ 4 follow-up turns without (measured against a fresh session, same prompt).
 - **SC-4**: With both `SKIP_*` flags set, the foundation behaves byte-identically to the prior release on the existing test suite.
-- **SC-5**: `validate-counts.sh` and `audit-socle.sh` pass on the PR. New hooks pass `shellcheck`. New scripts are covered by `bats` tests.
+- **SC-5**: `validate-counts.sh` and `audit-base.sh` pass on the PR. New hooks pass `shellcheck`. New scripts are covered by `bats` tests.
 - **SC-6**: Cumulative wall-clock latency added by both rewriters on a representative session (10 edits + 5 noisy commands) is ≤ 1.5s.
 
 ## Out of scope

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 title: "go"
 description: "// Custom errors var ErrUserNotFound = errors.New(\"user not found\")"
 tags:

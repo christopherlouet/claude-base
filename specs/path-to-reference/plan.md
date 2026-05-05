@@ -1,4 +1,4 @@
-# Plan: claude-socle — week of 2026-05-04 to 2026-05-10
+# Plan: claude-base — week of 2026-05-04 to 2026-05-10
 
 **Goal**: move from ~8/10 to ~9/10 in a single week, via 5 buildable workstreams identified in the competitive audit on 2026-05-03.
 
@@ -22,7 +22,7 @@
 - `docs/BENCHMARK.md` (methodology + results)
 - `specs/benchmark/scenarios/`: 3-5 reproducible scenarios
 - Dedicated section on the Docusaurus website
-- Short LinkedIn announcement (humble tone: "I wanted to measure whether claude-socle actually adds anything")
+- Short LinkedIn announcement (humble tone: "I wanted to measure whether claude-base actually adds anything")
 
 **Candidate scenarios (pick 3-5)**:
 1. Node.js + Express + Zod REST CRUD with tests
@@ -70,7 +70,7 @@ dependencies: []
 ---
 ```
 
-**Acceptance test**: an external contributor can publish `claude-socle-stripe-pack` and a user installs it via `./scripts/new-project.sh --add stripe-pack`.
+**Acceptance test**: an external contributor can publish `claude-base-stripe-pack` and a user installs it via `./scripts/new-project.sh --add stripe-pack`.
 
 ### Workstream 3 — Multi-OS CI (impact +0.2, effort ~2h)
 
@@ -91,9 +91,9 @@ dependencies: []
 
 **Content**:
 - Factual narrative of the 7 PRs from Sunday 2026-05-03 (#107 → #113)
-- Before/after for each PR: duration, context, what would have differed without claude-socle
+- Before/after for each PR: duration, context, what would have differed without claude-base
 - Aggregate metrics: 7 PRs, 2 releases, 0 regressions, 319 tests green at every commit
-- A "what claude-socle did NOT save me from" section (honesty)
+- A "what claude-base did NOT save me from" section (honesty)
 
 **Why it's credible**: it is real time, verifiable via git log + GitHub PRs. Zero marketing.
 
@@ -147,7 +147,7 @@ By the end of the week of 2026-05-10:
 ## Out of scope (next week or later)
 
 - Automatic memory bank (competes with the native auto-memory in CLI 2.1.76+)
-- npm CLI `npx claude-socle init` (maintenance load > short-term benefit)
+- npm CLI `npx claude-base init` (maintenance load > short-term benefit)
 - Web UI for interactive browsing (1-2 days, after Workstream 2 if appetite remains)
 - Docusaurus internationalisation (FR + EN, not urgent)
 - Logo / visual identity

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalog of 63 claude-socle sub-agents"
+description: "Catalog of 63 claude-base sub-agents"
 ---
 
 import Stats from '@site/src/components/Stats';

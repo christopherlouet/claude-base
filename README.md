@@ -1,18 +1,18 @@
-# claude-socle
+# claude-base
 
-[![CI](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/ci.yml)
-[![Security](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-socle/actions/workflows/security.yml)
-[![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-socle/actions)
+[![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
+[![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
+[![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
 [![Tests](https://img.shields.io/badge/tests-413%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Release](https://img.shields.io/github/v/release/christopherlouet/claude-socle?label=release&color=blue)](https://github.com/christopherlouet/claude-socle/releases/latest)
-[![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-socle/)
+[![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
+[![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
 
 A Claude Code configuration kit for a solid, reproducible development workflow.
 
 ## What is it?
 
-**claude-socle** is a configuration bundle for [Claude Code](https://code.claude.com/docs/en/overview) that gives you:
+**claude-base** is a configuration bundle for [Claude Code](https://code.claude.com/docs/en/overview) that gives you:
 
 - A structured development workflow: **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
 - **<!-- count:commands -->131<!-- /count --> commands**, **<!-- count:agents -->63<!-- /count --> sub-agents**, and **<!-- count:skills -->54<!-- /count --> skills** for a wide range of tasks
@@ -23,24 +23,24 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 
 ## How it fits in the Claude Code ecosystem
 
-claude-socle is a **workflow foundation**, not a competing plugin marketplace. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via `new-project.sh`.
+claude-base is a **workflow foundation**, not a competing plugin marketplace. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via `new-project.sh`.
 
 For specialized depth on individual verticals — GDPR/GRC compliance, advanced SEO, deep cloud integrations — the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) and community marketplaces (e.g. [claudemarketplaces.com](https://claudemarketplaces.com/), [awesome-claude-plugins](https://github.com/ComposioHQ/awesome-claude-plugins)) often ship plugins that go further than what this foundation bundles. That's expected: a foundation curates **breadth + integration**, marketplace plugins curate **depth on a single domain**.
 
 **Recommended pattern**
 
 ```
-claude-socle (foundation)         ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
+claude-base (foundation)         ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
        +
 marketplace plugins (verticals)   ← Stripe, GDPR-GRC, SEO, AWS Bedrock, Rails, ...
 ```
 
-claude-socle's unique value (vs assembling marketplace plugins alone):
+claude-base's unique value (vs assembling marketplace plugins alone):
 
 - Workflow rigor coordinated as one experience (TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates)
-- Anti-drift counter strategy across the entire foundation (CI-enforced, see [PR #110](https://github.com/christopherlouet/claude-socle/pull/110))
+- Anti-drift counter strategy across the entire foundation (CI-enforced, see [PR #110](https://github.com/christopherlouet/claude-base/pull/110))
 - 30 path-specific rules (currently not a plugin component, see `docs/guides/EXTENDING-GUIDE.md` § 7)
-- PostToolUse output rewriter for Bash + tsc/eslint (see [PR #116](https://github.com/christopherlouet/claude-socle/pull/116))
+- PostToolUse output rewriter for Bash + tsc/eslint (see [PR #116](https://github.com/christopherlouet/claude-base/pull/116))
 - Integrated setup via `new-project.sh`, including hooks, permissions and env defaults
 
 **Honest limit**: for any single vertical task, there's likely a more specialized marketplace plugin. We're tracking this — see `specs/marketplace-audit/` for the per-domain comparison work in progress.
@@ -56,7 +56,7 @@ claude-socle's unique value (vs assembling marketplace plugins alone):
 ./scripts/new-project.sh --simple /path/to/your/project
 
 # Or run from inside the target project
-/path/to/claude-socle/scripts/new-project.sh --simple .
+/path/to/claude-base/scripts/new-project.sh --simple .
 
 # Full install with CI/CD, hooks, Docker
 ./scripts/new-project.sh --all /path/to/your/project
@@ -66,18 +66,18 @@ claude-socle's unique value (vs assembling marketplace plugins alone):
 
 ```bash
 # Copy the Claude configuration
-cp -r claude-socle/.claude your-project/
-cp claude-socle/CLAUDE.md your-project/
+cp -r claude-base/.claude your-project/
+cp claude-base/CLAUDE.md your-project/
 
 # Optional
-cp claude-socle/.mcp.json your-project/
-cp claude-socle/.github your-project/ -r
+cp claude-base/.mcp.json your-project/
+cp claude-base/.github your-project/ -r
 ```
 
 ### Option 3: Use as a template
 
 ```bash
-cp -r claude-socle my-new-project
+cp -r claude-base my-new-project
 cd my-new-project
 # Customize CLAUDE.md for your project
 ```
@@ -85,7 +85,7 @@ cd my-new-project
 ## Structure
 
 ```
-claude-socle/
+claude-base/
 ├── CLAUDE.md                    # Main project instructions
 ├── CLAUDE.local.md.example      # Local config template
 ├── README.md                    # This file
@@ -140,7 +140,7 @@ claude-socle/
 │   └── ...                      # <!-- count:testFiles -->19<!-- /count --> test files in total
 │
 ├── .gitleaks.toml               # gitleaks config (secret detection)
-├── VERSION                      # Centralized socle version (1.30.0)
+├── VERSION                      # Centralized foundation version (1.30.0)
 │
 ├── scripts/                     # Utility scripts
 │   ├── new-project.sh           # Create / install (modes --simple, --all)
@@ -148,7 +148,7 @@ claude-socle/
 │   ├── validate.sh              # Validation
 │   ├── uninstall.sh             # Uninstall
 │   ├── doctor.sh                # Diagnostic
-│   ├── diff.sh                  # Diff against the socle
+│   ├── diff.sh                  # Diff against the foundation
 │   ├── hooks/                   # Hook scripts referenced by settings.json
 │   └── lib/common.sh            # Shared library
 │
@@ -174,7 +174,7 @@ claude-socle/
     ├── CUSTOMIZATION.md         # Customization guide
     ├── reference/               # Reference docs (best-practices, hooks…)
     └── guides/                  # 4 specific guides
-        ├── EXTENDING-GUIDE.md   # Extend the socle
+        ├── EXTENDING-GUIDE.md   # Extend the foundation
         ├── TEAM-GUIDE.md        # Team adoption
         ├── PROMPTING-GUIDE.md   # Prompting techniques
         └── TROUBLESHOOTING-GUIDE.md
@@ -196,7 +196,7 @@ Commands are grouped into 9 domains:
 | `data-` | 3 | `/data:data-pipeline`, `/data:data-modeling`, `/data:data-analytics` |
 | `legal-` | 5 | `/legal:legal-rgpd`, `/legal:legal-terms-of-service`, `/legal:legal-privacy-policy` |
 
-→ **Full list**: [docs/CHEATSHEET.md](docs/CHEATSHEET.md) or the [Docusaurus catalog](https://christopherlouet.github.io/claude-socle/docs/commands).
+→ **Full list**: [docs/CHEATSHEET.md](docs/CHEATSHEET.md) or the [Docusaurus catalog](https://christopherlouet.github.io/claude-base/docs/commands).
 
 → **By stack**: [docs/STACK-RECIPES.md](docs/STACK-RECIPES.md) lists the relevant commands for each stack (Web, Mobile, API, Auth, etc.).
 
@@ -295,7 +295,7 @@ cp templates/CLAUDE.react.md CLAUDE.md
 # Full diagnostic
 ./scripts/doctor.sh /path/to/project
 
-# Diff against the socle
+# Diff against the foundation
 ./scripts/diff.sh /path/to/project
 
 # Uninstall
@@ -326,7 +326,7 @@ See [docs/QUICKSTART.md](docs/QUICKSTART.md), [docs/CHEATSHEET.md](docs/CHEATSHE
 
 ## IDE Integration
 
-Configure your IDE for the best experience with claude-socle.
+Configure your IDE for the best experience with claude-base.
 
 ```bash
 # Configure VSCode/Cursor
@@ -380,7 +380,7 @@ npx husky install
 
 ### Online documentation
 
-The full documentation site lives at **[https://christopherlouet.github.io/claude-socle/](https://christopherlouet.github.io/claude-socle/)**.
+The full documentation site lives at **[https://christopherlouet.github.io/claude-base/](https://christopherlouet.github.io/claude-base/)**.
 
 It covers:
 - Quick start guide
@@ -397,7 +397,7 @@ It covers:
 - **[WORKFLOWS.md](docs/WORKFLOWS.md)**: Workflow diagrams
 - **[STACK-RECIPES.md](docs/STACK-RECIPES.md)**: Commands/agents/skills per stack (Web, Mobile, API…)
 - **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)**: Customization guide
-- **[guides/EXTENDING-GUIDE.md](docs/guides/EXTENDING-GUIDE.md)**: Extend the socle (custom commands/skills/rules)
+- **[guides/EXTENDING-GUIDE.md](docs/guides/EXTENDING-GUIDE.md)**: Extend the foundation (custom commands/skills/rules)
 - **[guides/TEAM-GUIDE.md](docs/guides/TEAM-GUIDE.md)**: Team adoption
 
 ## Default Permissions
@@ -417,7 +417,7 @@ It covers:
 
 ## Secret Detection (gitleaks)
 
-The socle uses [gitleaks](https://github.com/gitleaks/gitleaks) to automatically catch secrets in code.
+The foundation uses [gitleaks](https://github.com/gitleaks/gitleaks) to automatically catch secrets in code.
 
 ### Install gitleaks
 
@@ -455,7 +455,7 @@ gitleaks detect --staged --config .gitleaks.toml
 
 ## Automated Tests
 
-The socle ships with [bats-core](https://github.com/bats-core/bats-core) tests that validate every script.
+The foundation ships with [bats-core](https://github.com/bats-core/bats-core) tests that validate every script.
 
 ### Install bats
 
@@ -511,7 +511,7 @@ brew install bats-core
 | Change | Impact | Migration |
 |--------|--------|-----------|
 | `install.sh` removed | Installation scripts | Use `new-project.sh --simple` |
-| Agents YAML structure | Agent files | Re-copy from the socle |
+| Agents YAML structure | Agent files | Re-copy from the foundation |
 
 #### New features
 
@@ -526,8 +526,8 @@ brew install bats-core
 cp CLAUDE.md CLAUDE.md.backup
 cp .claude/settings.local.json .claude/settings.local.json.backup
 
-# 2. Update the socle
-cd /path/to/claude-socle
+# 2. Update the foundation
+cd /path/to/claude-base
 git pull origin main
 
 # 3. Reinstall (overwrites existing files)
@@ -552,7 +552,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full history of changes.
 
 ## Production Readiness
 
-claude-socle is **production-ready** with:
+claude-base is **production-ready** with:
 
 | Criterion | Status | Score |
 |-----------|--------|-------|

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Lint Script
+# Claude-Base Lint Script
 # Check shell code quality with ShellCheck
 # =============================================================================
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -20,7 +20,7 @@ enable_error_handler
 # Variables
 # =============================================================================
 
-VERSION=$(cat "$SOCLE_DIR/VERSION" 2>/dev/null || echo "unknown")
+VERSION=$(cat "$BASE_DIR/VERSION" 2>/dev/null || echo "unknown")
 FIX_MODE=false
 SEVERITY="warning"  # error, warning, info, style
 
@@ -30,7 +30,7 @@ SEVERITY="warning"  # error, warning, info, style
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Lint${NC} v${VERSION}
+${BOLD}Claude-Base Lint${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS]
@@ -88,7 +88,7 @@ run_lint() {
     # Find all shell scripts
     while IFS= read -r -d '' script; do
         scripts+=("$script")
-    done < <(find "$SOCLE_DIR/scripts" -name "*.sh" -type f -print0)
+    done < <(find "$BASE_DIR/scripts" -name "*.sh" -type f -print0)
 
     if [[ ${#scripts[@]} -eq 0 ]]; then
         warning "No script found"
@@ -109,7 +109,7 @@ run_lint() {
     $FIX_MODE && shellcheck_opts+=("--format=diff")
 
     for script in "${scripts[@]}"; do
-        local relative_path="${script#$SOCLE_DIR/}"
+        local relative_path="${script#$BASE_DIR/}"
         
         if shellcheck "${shellcheck_opts[@]}" "$script" 2>/dev/null; then
             success "$relative_path"
@@ -149,7 +149,7 @@ main() {
                 exit 0
                 ;;
             -v|--version)
-                echo "claude-socle lint v${VERSION}"
+                echo "claude-base lint v${VERSION}"
                 exit 0
                 ;;
             -s|--severity)

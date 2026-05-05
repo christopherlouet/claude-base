@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Doctor Script
+# Claude-Base Doctor Script
 # Complete diagnostic of the Claude Code environment
 # =============================================================================
 
@@ -11,7 +11,7 @@ VERSION="1.0.0"
 
 # Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -37,7 +37,7 @@ CHECKS_WARNED=0
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Doctor${NC} v${VERSION}
+${BOLD}Claude-Base Doctor${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS] [PATH]
@@ -61,7 +61,7 @@ ${BOLD}CHECKS PERFORMED${NC}
     - Dependencies (git, jq, node, etc.)
     - Claude Code CLI
     - Project configuration
-    - claude-socle foundation
+    - claude-base foundation
 
 ${BOLD}EXAMPLES${NC}
     # Simple diagnostic
@@ -77,7 +77,7 @@ EOF
 }
 
 show_version() {
-    echo "claude-socle doctor v${VERSION}"
+    echo "claude-base doctor v${VERSION}"
 }
 
 # =============================================================================
@@ -373,21 +373,21 @@ check_project_config() {
     fi
 }
 
-check_socle() {
-    section "5. claude-socle foundation"
+check_foundation() {
+    section "5. claude-base foundation"
 
-    if [[ -d "$SOCLE_DIR/.claude/commands" ]]; then
-        check_pass "Foundation found: $SOCLE_DIR"
+    if [[ -d "$BASE_DIR/.claude/commands" ]]; then
+        check_pass "Foundation found: $BASE_DIR"
 
         # Statistics
         local agents
         local skills
         local hooks
         local templates
-        agents=$(count_agents "$SOCLE_DIR")
-        skills=$(count_skills "$SOCLE_DIR")
-        hooks=$(count_hooks "$SOCLE_DIR")
-        templates=$(count_templates "$SOCLE_DIR")
+        agents=$(count_agents "$BASE_DIR")
+        skills=$(count_skills "$BASE_DIR")
+        hooks=$(count_hooks "$BASE_DIR")
+        templates=$(count_templates "$BASE_DIR")
 
         check_pass "Agents available: $agents"
         check_pass "Skills available: $skills"
@@ -464,7 +464,7 @@ main() {
     check_dependencies
     check_claude_code
     check_project_config
-    check_socle
+    check_foundation
 
     if [[ "$OUTPUT_FORMAT" == "json" ]]; then
         # Restore stdout and stderr, then print the JSON

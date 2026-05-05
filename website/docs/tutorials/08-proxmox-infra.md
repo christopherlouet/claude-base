@@ -10,7 +10,7 @@ import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
 <DifficultyBadge level="advanced" /> **Estimated duration: 60 minutes**
 
-This tutorial shows you how to deploy and manage a Proxmox VE infrastructure using Terraform and the claude-socle tools.
+This tutorial shows you how to deploy and manage a Proxmox VE infrastructure using Terraform and the claude-base tools.
 
 ## Objectives
 

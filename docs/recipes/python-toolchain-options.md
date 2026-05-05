@@ -10,9 +10,9 @@ This recipe lives outside the presets deliberately. The choice of Python toolcha
 
 The dominant modern Python toolchain in 2026 is Astral's stack (`uv` + `ruff` + `ty`). Adoption is large and the tools are excellent. The official Claude Code marketplace plugin is `astral@astral-sh` — a high-quality skills bundle that integrates the toolchain into Claude Code via `/astral:uv`, `/astral:ruff`, `/astral:ty` commands.
 
-claude-socle does **not** bundle `astral@astral-sh` in the `cli-tools` or `fastapi` preset. Two reasons:
+claude-base does **not** bundle `astral@astral-sh` in the `cli-tools` or `fastapi` preset. Two reasons:
 
-1. **Vendor positioning**: Astral was acquired by OpenAI on 2026-03-19 ([source](https://openai.com/index/openai-to-acquire-astral/)). claude-socle is a configuration kit for Claude Code (Anthropic). Publishing an implicit endorsement of OpenAI-acquired tooling in an Anthropic-ecosystem kit would be dissonant for users who deliberately chose Claude Code over Codex. The MIT license protects today's code; it does not protect against future roadmap drift toward Codex-specific integration.
+1. **Vendor positioning**: Astral was acquired by OpenAI on 2026-03-19 ([source](https://openai.com/index/openai-to-acquire-astral/)). claude-base is a configuration kit for Claude Code (Anthropic). Publishing an implicit endorsement of OpenAI-acquired tooling in an Anthropic-ecosystem kit would be dissonant for users who deliberately chose Claude Code over Codex. The MIT license protects today's code; it does not protect against future roadmap drift toward Codex-specific integration.
 
 2. **Stack-essential vs opinion**: A preset bundles what every project on the stack needs. Two developers building Python CLI tools or FastAPI services will legitimately diverge on toolchain politics — some are Astral-pragmatic, others are vendor-neutral, others are conservative-PyPA. Bundling one path forces a non-essential opinion. Documenting the three paths is more useful.
 
@@ -54,7 +54,7 @@ claude plugin install astral@astral-sh
 }
 ```
 
-Alternatively, use the `--add-plugin` helper (claude-socle ≥ v1.33.0):
+Alternatively, use the `--add-plugin` helper (claude-base ≥ v1.33.0):
 
 ```bash
 ./scripts/update.sh --add-plugin astral@astral-sh ./your-project

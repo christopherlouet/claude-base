@@ -1,7 +1,7 @@
 ---
 sidebar_position: 13
 title: "Troubleshooting Guide"
-description: " Solve common problems with Claude Code and the claude-socle foundation"
+description: " Solve common problems with Claude Code and the claude-base foundation"
 tags:
   - "guide"
 ---
@@ -10,7 +10,7 @@ tags:
 
 # Troubleshooting Guide
 
-> Solve common problems with Claude Code and the claude-socle foundation
+> Solve common problems with Claude Code and the claude-base foundation
 
 ## Sections
 

@@ -11,7 +11,7 @@
 
 load 'test_helper'
 
-HOOK_SCRIPT="$SOCLE_DIR/scripts/hooks/prompt-context.sh"
+HOOK_SCRIPT="$BASE_DIR/scripts/hooks/prompt-context.sh"
 
 setup() {
     skip_if_no_jq

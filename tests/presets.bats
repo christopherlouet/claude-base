@@ -12,8 +12,8 @@
 
 load 'test_helper'
 
-NEW_PROJECT="$SOCLE_DIR/scripts/new-project.sh"
-VALIDATE_PRESETS="$SOCLE_DIR/scripts/validate-presets.sh"
+NEW_PROJECT="$BASE_DIR/scripts/new-project.sh"
+VALIDATE_PRESETS="$BASE_DIR/scripts/validate-presets.sh"
 
 setup() {
     skip_if_no_jq
@@ -29,13 +29,13 @@ teardown() {
 # =============================================================================
 
 @test "presets: nextjs.json exists and is valid JSON" {
-    [ -f "$SOCLE_DIR/.claude/presets/nextjs.json" ]
-    run jq -e . "$SOCLE_DIR/.claude/presets/nextjs.json"
+    [ -f "$BASE_DIR/.claude/presets/nextjs.json" ]
+    run jq -e . "$BASE_DIR/.claude/presets/nextjs.json"
     [ "$status" -eq 0 ]
 }
 
 @test "presets: nextjs.json has required fields" {
-    local f="$SOCLE_DIR/.claude/presets/nextjs.json"
+    local f="$BASE_DIR/.claude/presets/nextjs.json"
     [ "$(jq -r '.name' "$f")" = "nextjs" ]
     [ "$(jq -r '.status' "$f")" = "maintainer-vouched" ]
     [ -n "$(jq -r '.displayName' "$f")" ]
@@ -44,7 +44,7 @@ teardown() {
 }
 
 @test "presets: nextjs.json defaults are well-typed" {
-    local f="$SOCLE_DIR/.claude/presets/nextjs.json"
+    local f="$BASE_DIR/.claude/presets/nextjs.json"
     [ "$(jq -r '.defaults.ci | type' "$f")" = "boolean" ]
     [ "$(jq -r '.defaults.hooks | type' "$f")" = "boolean" ]
     [ "$(jq -r '.defaults.mcp | type' "$f")" = "boolean" ]
@@ -52,7 +52,7 @@ teardown() {
 }
 
 @test "presets: nextjs.json drops at least one out-of-stack skill" {
-    local f="$SOCLE_DIR/.claude/presets/nextjs.json"
+    local f="$BASE_DIR/.claude/presets/nextjs.json"
     local n
     n=$(jq -r '.foundation.skills.drop | length' "$f")
     [ "$n" -ge 1 ]
@@ -154,7 +154,7 @@ EOF
     [ -d "$target/.claude/skills" ]
     # Each skill in foundation.skills.drop must be absent post-install
     local drops
-    drops=$(jq -r '.foundation.skills.drop[]' "$SOCLE_DIR/.claude/presets/nextjs.json")
+    drops=$(jq -r '.foundation.skills.drop[]' "$BASE_DIR/.claude/presets/nextjs.json")
     while IFS= read -r skill; do
         [ -z "$skill" ] && continue
         [ ! -d "$target/.claude/skills/$skill" ]
@@ -190,13 +190,13 @@ EOF
 # =============================================================================
 
 @test "presets: homelab-proxmox.json exists and is valid JSON" {
-    [ -f "$SOCLE_DIR/.claude/presets/homelab-proxmox.json" ]
-    run jq -e . "$SOCLE_DIR/.claude/presets/homelab-proxmox.json"
+    [ -f "$BASE_DIR/.claude/presets/homelab-proxmox.json" ]
+    run jq -e . "$BASE_DIR/.claude/presets/homelab-proxmox.json"
     [ "$status" -eq 0 ]
 }
 
 @test "presets: homelab-proxmox.json has required fields" {
-    local f="$SOCLE_DIR/.claude/presets/homelab-proxmox.json"
+    local f="$BASE_DIR/.claude/presets/homelab-proxmox.json"
     [ "$(jq -r '.name' "$f")" = "homelab-proxmox" ]
     [ "$(jq -r '.status' "$f")" = "maintainer-vouched" ]
     [ "$(jq -r '.defaults.designStyle' "$f")" = "cockpit" ]
@@ -253,13 +253,13 @@ EOF
 # =============================================================================
 
 @test "presets: cli-tools.json exists and is valid JSON" {
-    [ -f "$SOCLE_DIR/.claude/presets/cli-tools.json" ]
-    run jq -e . "$SOCLE_DIR/.claude/presets/cli-tools.json"
+    [ -f "$BASE_DIR/.claude/presets/cli-tools.json" ]
+    run jq -e . "$BASE_DIR/.claude/presets/cli-tools.json"
     [ "$status" -eq 0 ]
 }
 
 @test "presets: cli-tools.json has required fields" {
-    local f="$SOCLE_DIR/.claude/presets/cli-tools.json"
+    local f="$BASE_DIR/.claude/presets/cli-tools.json"
     [ "$(jq -r '.name' "$f")" = "cli-tools" ]
     [ "$(jq -r '.status' "$f")" = "maintainer-vouched" ]
     [ "$(jq -r '.defaults.designStyle' "$f")" = "terminal" ]
@@ -302,13 +302,13 @@ EOF
 # =============================================================================
 
 @test "presets: fastapi.json exists and is valid JSON" {
-    [ -f "$SOCLE_DIR/.claude/presets/fastapi.json" ]
-    run jq -e . "$SOCLE_DIR/.claude/presets/fastapi.json"
+    [ -f "$BASE_DIR/.claude/presets/fastapi.json" ]
+    run jq -e . "$BASE_DIR/.claude/presets/fastapi.json"
     [ "$status" -eq 0 ]
 }
 
 @test "presets: fastapi.json has required fields" {
-    local f="$SOCLE_DIR/.claude/presets/fastapi.json"
+    local f="$BASE_DIR/.claude/presets/fastapi.json"
     [ "$(jq -r '.name' "$f")" = "fastapi" ]
     [ "$(jq -r '.status' "$f")" = "maintainer-vouched" ]
     [ "$(jq -r '.defaults.designStyle' "$f")" = "editorial" ]

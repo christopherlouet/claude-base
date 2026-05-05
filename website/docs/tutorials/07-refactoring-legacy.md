@@ -10,7 +10,7 @@ import DifficultyBadge from '@site/src/components/DifficultyBadge';
 
 <DifficultyBadge level="advanced" /> **Estimated duration: 60 minutes**
 
-This tutorial shows you how to methodically refactor a legacy project using TDD and the claude-socle tools.
+This tutorial shows you how to methodically refactor a legacy project using TDD and the claude-base tools.
 
 ## Objectives
 

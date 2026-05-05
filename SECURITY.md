@@ -10,7 +10,7 @@
 
 ## Reporting a Vulnerability
 
-We take the security of claude-socle seriously. If you believe you have found a security vulnerability, please report it to us as described below.
+We take the security of claude-base seriously. If you believe you have found a security vulnerability, please report it to us as described below.
 
 ### How to Report
 
@@ -19,7 +19,7 @@ We take the security of claude-socle seriously. If you believe you have found a 
 Instead, please report them via one of the following methods:
 
 1. **GitHub Security Advisories** (Preferred)
-   - Go to the [Security tab](https://github.com/christopherlouet/claude-socle/security/advisories)
+   - Go to the [Security tab](https://github.com/christopherlouet/claude-base/security/advisories)
    - Click "Report a vulnerability"
    - Fill out the form with details
 
@@ -64,7 +64,7 @@ Please include the following information in your report:
 
 ### Built-in Protections
 
-claude-socle includes several security measures:
+claude-base includes several security measures:
 
 | Measure | Description |
 |---------|-------------|
@@ -85,11 +85,11 @@ claude-socle includes several security measures:
 
 ## Security Best Practices
 
-When using claude-socle, follow these best practices:
+When using claude-base, follow these best practices:
 
 ### Do's
 
-- ✅ Keep the socle updated to the latest version
+- ✅ Keep the foundation updated to the latest version
 - ✅ Review `.claude/settings.json` permissions for your needs
 - ✅ Use `CLAUDE.local.md` for sensitive project-specific instructions
 - ✅ Enable all pre-commit hooks
@@ -157,9 +157,9 @@ Dependabot may show alerts on transitive dependencies of Docusaurus 3.10
 
 These alerts are common to **all Docusaurus 3.10 sites** (LangChain, NestJS,
 Tauri, Metabase, etc. exhibit the same alerts). They do not affect the
-runtime security of the socle itself (commands, agents, skills, rules, scripts).
+runtime security of the foundation itself (commands, agents, skills, rules, scripts).
 
-If a vulnerability with **runtime impact** on the socle is reported, it will
+If a vulnerability with **runtime impact** on the foundation is reported, it will
 be triaged according to the severity table above and not waved off as a
 Docusaurus transitive.
 
@@ -167,9 +167,9 @@ Docusaurus transitive.
 
 For security-related questions that are not vulnerabilities:
 
-- Open a [GitHub Discussion](https://github.com/christopherlouet/claude-socle/discussions)
+- Open a [GitHub Discussion](https://github.com/christopherlouet/claude-base/discussions)
 - Tag your question with "security"
 
 ---
 
-Thank you for helping keep claude-socle and its users safe!
+Thank you for helping keep claude-base and its users safe!

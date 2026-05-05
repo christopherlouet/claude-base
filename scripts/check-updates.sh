@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Check Updates
+# Claude-Base Check Updates
 # Checks available updates (Claude Code CLI, community skills)
 # =============================================================================
 
@@ -11,8 +11,8 @@ VERSION="1.0.0"
 
 # Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck disable=SC2034  # SOCLE_DIR used by common.sh
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+# shellcheck disable=SC2034  # BASE_DIR used by common.sh
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -53,7 +53,7 @@ GITHUB_API="https://api.github.com/repos/anthropics/claude-code/releases/latest"
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Check Updates${NC} v${VERSION}
+${BOLD}Claude-Base Check Updates${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS]
@@ -98,7 +98,7 @@ EOF
 }
 
 show_version() {
-    echo "claude-socle check-updates v${VERSION}"
+    echo "claude-base check-updates v${VERSION}"
 }
 
 # =============================================================================
@@ -358,7 +358,7 @@ main() {
     cache_init
 
     if [[ "$OUTPUT_FORMAT" == "text" ]]; then
-        title "Claude-Socle Check Updates"
+        title "Claude-Base Check Updates"
     fi
 
     # Checks

@@ -317,4 +317,4 @@ touch .claude/skills/my-skill/examples/example.md
 
 - [Commands](./commands) - Manual instructions
 - [Agents](./agents) - Autonomous sub-agents
-- [Skills catalog](/docs/skills) - All claude-socle skills
+- [Skills catalog](/docs/skills) - All claude-base skills

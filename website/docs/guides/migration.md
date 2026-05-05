@@ -1,16 +1,16 @@
 ---
 sidebar_position: 8
 title: Migration Guide
-description: Migrate an existing project to claude-socle
+description: Migrate an existing project to claude-base
 ---
 
-# Migration Guide to claude-socle
+# Migration Guide to claude-base
 
-This guide walks you through integrating claude-socle into an existing project.
+This guide walks you through integrating claude-base into an existing project.
 
 ## Overview
 
-Migrating to claude-socle consists of:
+Migrating to claude-base consists of:
 1. Copying the configuration files
 2. Adapting the rules to your stack
 3. Validating the installation
@@ -26,11 +26,11 @@ Migrating to claude-socle consists of:
 
 ## Standard Migration
 
-### Step 1: Download claude-socle
+### Step 1: Download claude-base
 
 ```bash
 # Clone the repository
-git clone https://github.com/christopherlouet/claude-socle.git /tmp/claude-socle
+git clone https://github.com/christopherlouet/claude-base.git /tmp/claude-base
 ```
 
 ### Step 2: Copy the files
@@ -40,13 +40,13 @@ git clone https://github.com/christopherlouet/claude-socle.git /tmp/claude-socle
 cd your-project
 
 # Copy the .claude folder
-cp -r /tmp/claude-socle/.claude/ .
+cp -r /tmp/claude-base/.claude/ .
 
 # Copy CLAUDE.md
-cp /tmp/claude-socle/CLAUDE.md .
+cp /tmp/claude-base/CLAUDE.md .
 
 # Copy .mcp.json (optional)
-cp /tmp/claude-socle/.mcp.json .
+cp /tmp/claude-base/.mcp.json .
 ```
 
 ### Step 3: Verify the structure
@@ -204,7 +204,7 @@ If exploration works, the migration succeeded.
 
 ## Migration from Standard Claude Code
 
-If you are already using Claude Code without claude-socle:
+If you are already using Claude Code without claude-base:
 
 ### Key differences
 
@@ -223,10 +223,10 @@ If you are already using Claude Code without claude-socle:
    cp -r .claude/ .claude-backup/
    ```
 
-2. **Install claude-socle**
+2. **Install claude-base**
    ```bash
-   cp -r /tmp/claude-socle/.claude/ .
-   cp /tmp/claude-socle/CLAUDE.md .
+   cp -r /tmp/claude-base/.claude/ .
+   cp /tmp/claude-base/CLAUDE.md .
    ```
 
 3. **Reintegrate your customizations**

@@ -1,6 +1,6 @@
 # Customization Guide
 
-How to adapt claude-socle to your specific needs.
+How to adapt claude-base to your specific needs.
 
 ---
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# socle-integrity-check.sh — PostToolUse hook
+# base-integrity-check.sh — PostToolUse hook
 # =============================================================================
 # Invoked by Claude Code after each Edit / Write / NotebookEdit.
 # If the modified file is in .claude/skills|agents|commands|rules/
@@ -11,13 +11,13 @@
 # IMPORTANT: non-blocking. A warning appears in the session but the
 # modification goes through. The goal is to remind, not to prevent.
 #
-# Disable: SKIP_SOCLE_INTEGRITY=1
+# Disable: SKIP_BASE_INTEGRITY=1
 # =============================================================================
 
 set -u
 
 # Quick bail-outs
-[ "${SKIP_SOCLE_INTEGRITY:-0}" = "1" ] && exit 0
+[ "${SKIP_BASE_INTEGRITY:-0}" = "1" ] && exit 0
 command -v jq >/dev/null 2>&1 || exit 0
 
 INPUT=$(cat 2>/dev/null || true)
@@ -48,13 +48,13 @@ VALIDATE="$PROJECT_DIR/scripts/validate-counts.sh"
 # We only run validate-counts if the project is the foundation itself
 # (avoids false positives in projects that consume the foundation without
 # maintaining the counters).
-[ -f "$PROJECT_DIR/scripts/audit-socle.sh" ] || exit 0
+[ -f "$PROJECT_DIR/scripts/audit-base.sh" ] || exit 0
 
 # Silent execution, we only capture the return code
 if ! OUTPUT=$("$VALIDATE" 2>&1); then
     # Warning visible in the session without blocking
     {
-        echo "[SOCLE-INTEGRITY] Inconsistent counters after modification of:"
+        echo "[BASE-INTEGRITY] Inconsistent counters after modification of:"
         echo "  $FILE_PATH"
         echo ""
         echo "Summary:"

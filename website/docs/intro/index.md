@@ -5,17 +5,17 @@ description: Claude Code configuration template for an optimal workflow
 slug: /
 ---
 
-import Stats, { SOCLE_STATS } from '@site/src/components/Stats';
+import Stats, { BASE_STATS } from '@site/src/components/Stats';
 
-# Welcome to claude-socle
+# Welcome to claude-base
 
 > **Claude Code configuration template for an optimal workflow: Explore → Specify → Plan → TDD → Audit → Commit**
 
-claude-socle is a complete set of configurations, commands, and automations to maximize your productivity with Claude Code. It offers a structured workflow and specialized agents for each type of task.
+claude-base is a complete set of configurations, commands, and automations to maximize your productivity with Claude Code. It offers a structured workflow and specialized agents for each type of task.
 
-<Stats items={SOCLE_STATS} />
+<Stats items={BASE_STATS} />
 
-## Why claude-socle?
+## Why claude-base?
 
 ### The problem
 
@@ -27,7 +27,7 @@ When you use Claude Code without structure:
 
 ### The solution
 
-claude-socle enforces a structured workflow:
+claude-base enforces a structured workflow:
 
 ```
 Explore → Specify → Plan → TDD → Audit → Commit
@@ -62,10 +62,10 @@ Each step has its dedicated commands, specialized agents, and best practices.
 
 ```bash
 # Clone the template
-git clone https://github.com/christopherlouet/claude-socle.git .claude
+git clone https://github.com/christopherlouet/claude-base.git .claude
 
 # Or use the install script
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh | bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh | bash
 ```
 
 Then in Claude Code:

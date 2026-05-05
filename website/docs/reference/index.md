@@ -6,7 +6,7 @@ description: Quick reference and matrices
 
 # Reference
 
-> Quick access to all claude-socle resources
+> Quick access to all claude-base resources
 
 ## Reference matrices
 

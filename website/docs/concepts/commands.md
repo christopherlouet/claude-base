@@ -261,4 +261,4 @@ In Claude Code, use `/help` to see the available commands, or explore the `.clau
 
 - [Skills](./skills) - Automatic behaviors
 - [Agents](./agents) - Autonomous sub-agents
-- [Commands catalog](/docs/commands) - All claude-socle commands
+- [Commands catalog](/docs/commands) - All claude-base commands

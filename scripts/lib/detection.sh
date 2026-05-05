@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Detection Library
+# Claude-Base Detection Library
 # Tech stack detection functions
 # Extracted from new-project.sh for reuse (doctor.sh, validate.sh)
 # =============================================================================

@@ -43,7 +43,7 @@ We are going to create a **notes app** with:
 2. Create a new project
 3. Note the URL and the anon key
 
-### Configure with claude-socle
+### Configure with claude-base
 
 ```bash
 /dev:dev-supabase "Configure Supabase for a notes app with auth and CRUD"

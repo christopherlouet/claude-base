@@ -11,9 +11,9 @@
 
 load 'test_helper'
 
-QA_LOOP_AGENT="$SOCLE_DIR/.claude/agents/qa-loop.md"
-QA_LOOP_CMD="$SOCLE_DIR/.claude/commands/qa/qa-loop.md"
-QA_CLAUDEMD_AGENT="$SOCLE_DIR/.claude/agents/qa-claudemd.md"
+QA_LOOP_AGENT="$BASE_DIR/.claude/agents/qa-loop.md"
+QA_LOOP_CMD="$BASE_DIR/.claude/commands/qa/qa-loop.md"
+QA_CLAUDEMD_AGENT="$BASE_DIR/.claude/agents/qa-claudemd.md"
 
 # =============================================================================
 # qa-claudemd agent (new)
@@ -136,5 +136,5 @@ QA_CLAUDEMD_AGENT="$SOCLE_DIR/.claude/agents/qa-claudemd.md"
 # =============================================================================
 
 @test "agents-catalog: lists qa-claudemd" {
-    grep -qE "qa-claudemd" "$SOCLE_DIR/docs/reference/agents-catalog.md"
+    grep -qE "qa-claudemd" "$BASE_DIR/docs/reference/agents-catalog.md"
 }

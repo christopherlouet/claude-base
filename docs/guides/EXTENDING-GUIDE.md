@@ -1,11 +1,11 @@
 # Foundation Extension Guide
 
-> How to customize and extend the claude-socle foundation for your own projects.
+> How to customize and extend the claude-base foundation for your own projects.
 
 > **Dual audience**: this guide covers two distinct cases.
 >
 > - **You are extending your user project** (adding custom commands/rules/skills): your `@imports` in `CLAUDE.md` should point to `@.claude/docs/...` (since the foundation's documentation is installed under `.claude/docs/` on your side).
-> - **You are contributing to the claude-socle repo**: the foundation's `@imports` point to `@docs/...` (the foundation keeps its documentation directly under `docs/`). See also [CONTRIBUTING.md](https://github.com/christopherlouet/claude-socle/blob/main/CONTRIBUTING.md).
+> - **You are contributing to the claude-base repo**: the foundation's `@imports` point to `@docs/...` (the foundation keeps its documentation directly under `docs/`). See also [CONTRIBUTING.md](https://github.com/christopherlouet/claude-base/blob/main/CONTRIBUTING.md).
 
 ## Overview
 
@@ -503,8 +503,8 @@ Files always loaded (imports in this project):
 ```bash
 # 1. Fork the repository on GitHub
 # 2. Clone your fork
-git clone https://github.com/<you>/claude-socle.git
-cd claude-socle
+git clone https://github.com/<you>/claude-base.git
+cd claude-base
 
 # 3. Create a feature branch
 git checkout -b feature/my-python-typing-skill
@@ -591,13 +591,13 @@ prop typing, and store management automatically on `.svelte` files.
 
 ## 7. Native plugin migration: current state
 
-Claude Code shipped a native plugin system between CLI 2.1.119 and 2.1.126 (April-May 2026). At first glance, porting `claude-socle` to a native plugin (`claude plugin install claude-socle`) would unlock distribution via the Anthropic marketplace. **This is not the path the foundation has taken — yet.**
+Claude Code shipped a native plugin system between CLI 2.1.119 and 2.1.126 (April-May 2026). At first glance, porting `claude-base` to a native plugin (`claude plugin install claude-base`) would unlock distribution via the Anthropic marketplace. **This is not the path the foundation has taken — yet.**
 
 ### Why we kept the standalone `.claude/` foundation
 
 A research pass on May 4, 2026 against the official plugin docs ([code.claude.com/docs/en/plugins](https://code.claude.com/docs/en/plugins)) surfaced three documented gaps that prevent a clean port today:
 
-| Gap | Impact on `claude-socle` |
+| Gap | Impact on `claude-base` |
 |---|---|
 | **Rules (`.claude/rules/`) are not a plugin component** | The 30 path-specific rules in this foundation cannot ship via plugin. Users would need to copy them manually post-install. |
 | **`settings.json` scope inside plugins is limited** to `agent` and `subagentStatusLine` | Plugins cannot configure `permissions`, `env`, or top-level `hooks` for the user's session. Foundation defaults (deny lists, env, ~15 PostToolUse hooks) cannot be auto-installed. |
@@ -617,7 +617,7 @@ Track the [Claude Code CHANGELOG](https://github.com/anthropics/claude-code/blob
 
 ### For contributors who want to publish their own pack
 
-If you've extended the foundation with a thematic pack (e.g. a `stripe-pack`, a `rails-pack`) and want it shareable today **without depending on `claude-socle`**, native plugins are a solid option:
+If you've extended the foundation with a thematic pack (e.g. a `stripe-pack`, a `rails-pack`) and want it shareable today **without depending on `claude-base`**, native plugins are a solid option:
 
 - Manifest format: `.claude-plugin/plugin.json` (JSON, not YAML)
 - Repo layout: `commands/`, `agents/`, `skills/`, `hooks/hooks.json` at the plugin root
@@ -629,7 +629,7 @@ Note that as of May 2026 the marketplace is dominated by **single-purpose plugin
 
 ### What if you want both
 
-A pragmatic interim pattern: **keep `claude-socle` as your project's `.claude/` template** (for the integrated foundation experience), and **layer external native plugins on top** for vertical-specific additions (e.g. install a community Stripe plugin alongside the foundation). The two systems coexist cleanly — they read different config namespaces.
+A pragmatic interim pattern: **keep `claude-base` as your project's `.claude/` template** (for the integrated foundation experience), and **layer external native plugins on top** for vertical-specific additions (e.g. install a community Stripe plugin alongside the foundation). The two systems coexist cleanly — they read different config namespaces.
 
 ---
 

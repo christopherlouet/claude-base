@@ -1,14 +1,14 @@
 ---
 sidebar_position: 3
 title: Architecture
-description: Understand the architecture of claude-socle
+description: Understand the architecture of claude-base
 ---
 
 import FeatureComparison from '@site/src/components/FeatureComparison';
 
 # Architecture
 
-claude-socle is composed of several types of components that work together to help you be more productive.
+claude-base is composed of several types of components that work together to help you be more productive.
 
 ## Overview
 
@@ -46,7 +46,7 @@ graph TB
 ### File structure
 
 ```
-claude-socle/
+claude-base/
 ├── .claude/
 │   ├── commands/       # <!-- count:commands -->131<!-- /count --> manual commands (/name)
 │   │   ├── work/       # Main workflow

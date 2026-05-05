@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Uninstall Script
+# Claude-Base Uninstall Script
 # Removes the Claude Code configuration from a project
 # =============================================================================
 
@@ -12,7 +12,7 @@ VERSION="1.0.0"
 # Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC2034  # Used by sourced scripts
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -37,7 +37,7 @@ REMOVE_LOCAL_FILES=false
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Uninstall${NC} v${VERSION}
+${BOLD}Claude-Base Uninstall${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS] [PATH]
@@ -79,7 +79,7 @@ EOF
 }
 
 show_version() {
-    echo "claude-socle uninstall v${VERSION}"
+    echo "claude-base uninstall v${VERSION}"
 }
 
 # =============================================================================

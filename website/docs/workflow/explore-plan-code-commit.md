@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Explore → Specify → Plan → TDD → Audit → Commit
-description: The main claude-socle workflow with mandatory TDD
+description: The main claude-base workflow with mandatory TDD
 ---
 
 import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDiagram';

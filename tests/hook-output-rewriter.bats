@@ -13,14 +13,14 @@
 
 load 'test_helper'
 
-HELPERS="$SOCLE_DIR/scripts/hooks/_hook-helpers.sh"
-CHECK_VERSION="$SOCLE_DIR/scripts/hooks/check-cli-version.sh"
-BASH_FILTER="$SOCLE_DIR/scripts/hooks/bash-output-filter.sh"
-INLINE_EDIT="$SOCLE_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh"
-FIXTURES="$SOCLE_DIR/tests/hook-output-rewriter/fixtures"
+HELPERS="$BASE_DIR/scripts/hooks/_hook-helpers.sh"
+CHECK_VERSION="$BASE_DIR/scripts/hooks/check-cli-version.sh"
+BASH_FILTER="$BASE_DIR/scripts/hooks/bash-output-filter.sh"
+INLINE_EDIT="$BASE_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh"
+FIXTURES="$BASE_DIR/tests/hook-output-rewriter/fixtures"
 SENTINEL_FILE="/tmp/claude-rewriter-supported"
 METRIC_LOG="/tmp/claude-rewriter.log"
-LEGACY_NOTICE_SENTINEL="/tmp/claude-socle-legacy-warned"
+LEGACY_NOTICE_SENTINEL="/tmp/claude-base-legacy-warned"
 
 setup() {
     skip_if_no_jq

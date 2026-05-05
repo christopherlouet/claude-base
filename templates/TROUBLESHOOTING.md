@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Guide for resolving common issues with Claude Code and claude-socle agents.
+Guide for resolving common issues with Claude Code and claude-base agents.
 
 ## Table of Contents
 

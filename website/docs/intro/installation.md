@@ -1,12 +1,12 @@
 ---
 sidebar_position: 4
 title: Installation
-description: Complete installation guide for claude-socle
+description: Complete installation guide for claude-base
 ---
 
 # Installation
 
-Complete guide to install and configure claude-socle in your project.
+Complete guide to install and configure claude-base in your project.
 
 ## Prerequisites
 
@@ -38,20 +38,20 @@ The foundation exposes a single script that copies the `.claude/` configuration,
 
 ```bash
 # 1. Clone the foundation (just once, anywhere)
-git clone https://github.com/christopherlouet/claude-socle.git ~/.claude-socle
+git clone https://github.com/christopherlouet/claude-base.git ~/.claude-base
 
 # 2. Simple installation (just .claude/ + CLAUDE.md)
-~/.claude-socle/scripts/new-project.sh --simple /path/to/your-project
+~/.claude-base/scripts/new-project.sh --simple /path/to/your-project
 
 # 3. Or full installation (adds hooks, MCP, .github/, CI scripts)
-~/.claude-socle/scripts/new-project.sh --all /path/to/your-project
+~/.claude-base/scripts/new-project.sh --all /path/to/your-project
 ```
 
 You can also run the script from your project:
 
 ```bash
 cd /path/to/your-project
-~/.claude-socle/scripts/new-project.sh --simple .
+~/.claude-base/scripts/new-project.sh --simple .
 ```
 
 #### Useful options
@@ -70,18 +70,18 @@ For fine-grained control over what is copied:
 
 ```bash
 # Clone the foundation into a temporary folder
-git clone --depth 1 https://github.com/christopherlouet/claude-socle.git temp-socle
+git clone --depth 1 https://github.com/christopherlouet/claude-base.git temp-base
 
 # Copy the bare minimum
-cp -r temp-socle/.claude /path/to/your-project/
-cp temp-socle/CLAUDE.md /path/to/your-project/
+cp -r temp-base/.claude /path/to/your-project/
+cp temp-base/CLAUDE.md /path/to/your-project/
 
 # Optional
-cp temp-socle/.mcp.json /path/to/your-project/
-cp -r temp-socle/.github /path/to/your-project/
+cp temp-base/.mcp.json /path/to/your-project/
+cp -r temp-base/.github /path/to/your-project/
 
 # Clean up
-rm -rf temp-socle
+rm -rf temp-base
 ```
 
 ### Method 3: Use as a template
@@ -89,7 +89,7 @@ rm -rf temp-socle
 For a new project, the foundation can serve directly as a skeleton:
 
 ```bash
-git clone https://github.com/christopherlouet/claude-socle.git my-new-project
+git clone https://github.com/christopherlouet/claude-base.git my-new-project
 cd my-new-project
 
 # Reinitialize the git history (optional)
@@ -113,7 +113,7 @@ You should see the welcome message from the `SessionStart` hook:
 
 ```
 === Claude Code Session ===
-Version socle: 1.33.0
+Version: 1.33.0
 Commandes: <!-- count:commands -->131<!-- /count -->
 Agents: <!-- count:agents -->63<!-- /count -->
 ===========================
@@ -139,11 +139,11 @@ You should see the orientation guide. Then try a simple workflow:
 
 ```bash
 # Update the local foundation
-cd ~/.claude-socle
+cd ~/.claude-base
 git pull origin main
 
 # Re-synchronize the files in your project
-~/.claude-socle/scripts/update.sh /path/to/your-project
+~/.claude-base/scripts/update.sh /path/to/your-project
 ```
 
 The `update.sh` script is idempotent: it updates the foundation files (commands, agents, skills, rules, scripts/hooks) without touching your customizations (`CLAUDE.md`, `.claude/settings.local.json`).
@@ -244,7 +244,7 @@ If the hook is present but does not execute, check that the scripts in the `scri
 ls .claude/commands/
 
 # Re-synchronize from the foundation
-~/.claude-socle/scripts/update.sh .
+~/.claude-base/scripts/update.sh .
 ```
 
 ### Permission errors on hooks
@@ -258,14 +258,14 @@ chmod +x .claude/scripts/*.sh scripts/hooks/*.sh
 ```bash
 # Backup + clean reinstall
 ./scripts/uninstall.sh --keep-claude-md .
-~/.claude-socle/scripts/new-project.sh --simple .
+~/.claude-base/scripts/new-project.sh --simple .
 ```
 
 ### Full diagnosis
 
 ```bash
-~/.claude-socle/scripts/doctor.sh /path/to/your-project
-~/.claude-socle/scripts/diff.sh   /path/to/your-project
+~/.claude-base/scripts/doctor.sh /path/to/your-project
+~/.claude-base/scripts/diff.sh   /path/to/your-project
 ```
 
 ## Next steps

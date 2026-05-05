@@ -10,7 +10,7 @@ tags:
 
 # Troubleshooting Guide
 
-> Resolve common issues with Claude Code and the claude-socle foundation
+> Resolve common issues with Claude Code and the claude-base foundation
 
 ## Sections
 

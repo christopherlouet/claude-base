@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Validate Counts Script
+# Claude-Base Validate Counts Script
 # Verifies that counters (commands, agents, skills, rules) are consistent
 # between actual files and documentation
 # =============================================================================
@@ -9,7 +9,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -23,7 +23,7 @@ check_base_requirements
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Validate Counts${NC}
+${BOLD}Claude-Base Validate Counts${NC}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS]
@@ -103,20 +103,20 @@ echo ""
 # clean integers extracted from documentation files.
 
 # Count commands (md files in commands/ subdirectories, exclude README.md index files)
-ACTUAL_COMMANDS=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f | wc -l | tr -d '[:space:]')
+ACTUAL_COMMANDS=$(find "$BASE_DIR/.claude/commands" -name "*.md" -not -name "README.md" -type f | wc -l | tr -d '[:space:]')
 
 # Count agents (exclude README.md index files)
-ACTUAL_AGENTS=$(find "$SOCLE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+ACTUAL_AGENTS=$(find "$BASE_DIR/.claude/agents" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 # Count skills (directories with SKILL.md)
-ACTUAL_SKILLS=$(find "$SOCLE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+ACTUAL_SKILLS=$(find "$BASE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 # Count rules (exclude README.md index files)
-ACTUAL_RULES=$(find "$SOCLE_DIR/.claude/rules" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+ACTUAL_RULES=$(find "$BASE_DIR/.claude/rules" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 # Count tests (count `@test` lines across .bats files — fast, static, no execution)
-ACTUAL_TESTS=$(awk '/^@test/{n++} END{print n+0}' "$SOCLE_DIR"/tests/*.bats 2>/dev/null || echo 0)
-ACTUAL_TEST_FILES=$(find "$SOCLE_DIR/tests" -name "*.bats" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+ACTUAL_TESTS=$(awk '/^@test/{n++} END{print n+0}' "$BASE_DIR"/tests/*.bats 2>/dev/null || echo 0)
+ACTUAL_TEST_FILES=$(find "$BASE_DIR/tests" -name "*.bats" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
 echo "  Commands : $ACTUAL_COMMANDS"
 echo "  Agents   : $ACTUAL_AGENTS"
@@ -135,7 +135,7 @@ check_count() {
     local expected="$3"
     local label="$4"
 
-    local rel_path="${file#"$SOCLE_DIR"/}"
+    local rel_path="${file#"$BASE_DIR"/}"
 
     if [[ ! -f "$file" ]]; then
         debug "File not found: $rel_path"
@@ -182,11 +182,11 @@ echo ""
 
 # --- CLAUDE.md (defense in depth) ---
 info "CLAUDE.md"
-check_count "$SOCLE_DIR/CLAUDE.md" \
+check_count "$BASE_DIR/CLAUDE.md" \
     "[0-9]+ commandes" "$ACTUAL_COMMANDS" "commands"
-check_count "$SOCLE_DIR/CLAUDE.md" \
+check_count "$BASE_DIR/CLAUDE.md" \
     "[0-9]+ sub-agents" "$ACTUAL_AGENTS" "agents"
-check_count "$SOCLE_DIR/CLAUDE.md" \
+check_count "$BASE_DIR/CLAUDE.md" \
     "[0-9]+ skills" "$ACTUAL_SKILLS" "skills"
 
 echo ""
@@ -264,7 +264,7 @@ scan_drift() {
         for n in $nums; do
             [[ "$n" -le 5 ]] && continue
             if [[ "$n" != "$actual" ]]; then
-                local rel="${file_part#"$SOCLE_DIR"/}"
+                local rel="${file_part#"$BASE_DIR"/}"
                 error_no_exit "${rel}:${line_num} drift -> $n ${label_plural} (canonical: $actual)"
                 DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
             fi
@@ -295,7 +295,7 @@ scan_drift() {
                 --exclude-dir=build --exclude-dir=.docusaurus \
                 --exclude-dir=memory \
                 --exclude="CHANGELOG.md" \
-                "$SOCLE_DIR" 2>/dev/null
+                "$BASE_DIR" 2>/dev/null
         )
     done
 }
@@ -324,7 +324,7 @@ scan_tests_drift() {
         local n
         n=$(echo "$content" | grep -oiE 'tests-[0-9]+' | grep -oE '[0-9]+' | head -1)
         if [[ -n "$n" ]] && [[ "$n" != "$actual_tests" ]]; then
-            local rel="${file_part#"$SOCLE_DIR"/}"
+            local rel="${file_part#"$BASE_DIR"/}"
             error_no_exit "${rel}:${line_num} drift -> tests-$n badge (canonical: $actual_tests)"
             DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
         fi
@@ -335,7 +335,7 @@ scan_tests_drift() {
             --exclude-dir=build --exclude-dir=.docusaurus \
             --exclude-dir=memory \
             --exclude="CHANGELOG.md" \
-            "$SOCLE_DIR" 2>/dev/null
+            "$BASE_DIR" 2>/dev/null
     )
 
     # Pattern 2 : `(N files, M tests)` captures both counters
@@ -349,7 +349,7 @@ scan_tests_drift() {
         local nf nt rel
         nf=$(echo "$content" | grep -oE '\([0-9]+ files?' | grep -oE '[0-9]+' | head -1)
         nt=$(echo "$content" | grep -oE '[0-9]+ tests\)' | grep -oE '[0-9]+' | head -1)
-        rel="${file_part#"$SOCLE_DIR"/}"
+        rel="${file_part#"$BASE_DIR"/}"
         if [[ -n "$nf" ]] && [[ "$nf" != "$actual_files" ]]; then
             error_no_exit "${rel}:${line_num} drift -> $nf test files (canonical: $actual_files)"
             DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
@@ -365,7 +365,7 @@ scan_tests_drift() {
             --exclude-dir=build --exclude-dir=.docusaurus \
             --exclude-dir=memory \
             --exclude="CHANGELOG.md" \
-            "$SOCLE_DIR" 2>/dev/null
+            "$BASE_DIR" 2>/dev/null
     )
 }
 
@@ -393,7 +393,7 @@ else
         echo ""
         info "To fix automatically, update the files above"
         info "or re-run the generation scripts:"
-        echo "  cd $SOCLE_DIR/website && npm run generate:all"
+        echo "  cd $BASE_DIR/website && npm run generate:all"
     fi
     exit 1
 fi

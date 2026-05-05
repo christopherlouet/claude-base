@@ -198,10 +198,10 @@ This SKILL.md section contains the core principles. For technical details with f
 
 | File | Content |
 |---------|---------|
-| [`references/terraform-modules.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/terraform-modules.md) | VM modules, LXC, usage, network, storage |
-| [`references/cloud-init.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/cloud-init.md) | cloud-config templates, snippet uploads |
-| [`references/backup-ha.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/backup-ha.md) | PBS schedule, commands, HA configuration |
-| [`references/troubleshooting.md`](https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/ops-proxmox/references/troubleshooting.md) | Common issues, diagnostic commands, recovery |
+| [`references/terraform-modules.md`](https://github.com/christopherlouet/claude-base/blob/main/.claude/skills/ops-proxmox/references/terraform-modules.md) | VM modules, LXC, usage, network, storage |
+| [`references/cloud-init.md`](https://github.com/christopherlouet/claude-base/blob/main/.claude/skills/ops-proxmox/references/cloud-init.md) | cloud-config templates, snippet uploads |
+| [`references/backup-ha.md`](https://github.com/christopherlouet/claude-base/blob/main/.claude/skills/ops-proxmox/references/backup-ha.md) | PBS schedule, commands, HA configuration |
+| [`references/troubleshooting.md`](https://github.com/christopherlouet/claude-base/blob/main/.claude/skills/ops-proxmox/references/troubleshooting.md) | Common issues, diagnostic commands, recovery |
 
 ## Rules
 

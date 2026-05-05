@@ -1,4 +1,4 @@
-# claude-socle Project
+# claude-base Project
 
 > Claude Code configuration template for an optimal workflow: Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
 

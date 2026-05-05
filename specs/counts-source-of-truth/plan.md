@@ -68,7 +68,7 @@ Create the source of truth and prove the generator works in isolation. Nothing e
 Wire the 5 TypeScript files to import from `counts.json`. Highest-leverage step: drift-impossible-by-construction for everything Docusaurus renders from TS.
 
 **Files to modify**:
-- `website/src/components/Stats.tsx` — replace `SOCLE_STATS` literal with computed-from-counts.json
+- `website/src/components/Stats.tsx` — replace `BASE_STATS` literal with computed-from-counts.json
 - `website/src/components/FeatureComparison.tsx` — replace `'131', '63', '54'` with `counts.commands.toString()` etc.
 - `website/src/pages/index.tsx` — replace `'131 Commands'`, `'63 Sub-Agents'`, `'54 Skills'`, `'30 Rules'` with template literals
 - `website/sidebars.ts` — replace `'WORK (15)'`, etc. (9 lines) with `\`WORK (${counts.byDomain.work})\``

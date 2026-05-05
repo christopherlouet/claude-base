@@ -1,7 +1,7 @@
 ---
 sidebar_position: 22
 title: "Customization Guide"
-description: "How to adapt claude-socle to your specific needs."
+description: "How to adapt claude-base to your specific needs."
 tags:
   - "concept"
 ---
@@ -10,7 +10,7 @@ tags:
 
 # Customization Guide
 
-How to adapt claude-socle to your specific needs.
+How to adapt claude-base to your specific needs.
 
 ---
 

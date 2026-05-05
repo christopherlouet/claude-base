@@ -1,14 +1,14 @@
 # FAQ - Frequently Asked Questions
 
-Answers to the most common questions about claude-socle and Claude Code agents.
+Answers to the most common questions about claude-base and Claude Code agents.
 
 ---
 
 ## General
 
-### What is claude-socle?
+### What is claude-base?
 
-claude-socle is a configuration template for Claude Code that provides a set of agents (slash commands) ready to use to optimize your development workflow.
+claude-base is a configuration template for Claude Code that provides a set of agents (slash commands) ready to use to optimize your development workflow.
 
 ---
 
@@ -19,14 +19,14 @@ claude-socle is a configuration template for Claude Code that provides a set of 
 
 ---
 
-### How do I install claude-socle?
+### How do I install claude-base?
 
 ```bash
 # 1. Install Claude Code
 npm install -g @anthropic-ai/claude-code
 
 # 2. Copy the .claude folder into your project
-cp -r path/to/claude-socle/.claude your-project/
+cp -r path/to/claude-base/.claude your-project/
 
 # 3. Ready to go!
 cd your-project
@@ -38,7 +38,7 @@ claude
 
 ### Do the agents work with other LLMs?
 
-No, claude-socle agents are designed specifically for Claude Code and the Anthropic API. However, the templates and structures can be adapted for other systems.
+No, claude-base agents are designed specifically for Claude Code and the Anthropic API. However, the templates and structures can be adapted for other systems.
 
 ---
 
@@ -316,7 +316,7 @@ Agents don't have direct access to environment variables. Pass values via `$ARGU
 
 ## Contribution
 
-### How do I contribute to claude-socle?
+### How do I contribute to claude-base?
 
 1. Fork the repo
 2. Create a branch for your changes

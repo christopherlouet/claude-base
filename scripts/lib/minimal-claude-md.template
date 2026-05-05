@@ -8,7 +8,7 @@
 
 ## Recommended path
 
-First read **`.claude/docs/guides/learning-path.md`** to understand Claude Code and claude-socle,
+First read **`.claude/docs/guides/learning-path.md`** to understand Claude Code and claude-base,
 then continue with the sections below.
 
 ## Mandatory Workflow: Explore → Plan → TDD → Audit → Commit
