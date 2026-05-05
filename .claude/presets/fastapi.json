@@ -1,5 +1,5 @@
 {
-  "$schema": "https://github.com/christopherlouet/claude-socle/blob/main/specs/presets/schema.json",
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
 
   "name": "fastapi",
   "displayName": "FastAPI backend (Python async)",

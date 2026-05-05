@@ -240,8 +240,8 @@
 
 ## See also
 
-- [EXTENDING-GUIDE](https://github.com/christopherlouet/claude-socle/blob/main/docs/guides/EXTENDING-GUIDE.md) — How to add your own commands, skills, agents, rules
-- [TEAM-GUIDE](https://github.com/christopherlouet/claude-socle/blob/main/docs/guides/TEAM-GUIDE.md) — Team adoption, shared conventions
-- [PROMPTING-GUIDE](https://github.com/christopherlouet/claude-socle/blob/main/docs/guides/PROMPTING-GUIDE.md) — Claude Code prompting techniques
-- [TROUBLESHOOTING-GUIDE](https://github.com/christopherlouet/claude-socle/blob/main/docs/guides/TROUBLESHOOTING-GUIDE.md) — Common problems
-- [Docusaurus site](https://christopherlouet.github.io/claude-socle/) — Complete catalog (commands, agents, skills, rules)
+- [EXTENDING-GUIDE](https://github.com/christopherlouet/claude-base/blob/main/docs/guides/EXTENDING-GUIDE.md) — How to add your own commands, skills, agents, rules
+- [TEAM-GUIDE](https://github.com/christopherlouet/claude-base/blob/main/docs/guides/TEAM-GUIDE.md) — Team adoption, shared conventions
+- [PROMPTING-GUIDE](https://github.com/christopherlouet/claude-base/blob/main/docs/guides/PROMPTING-GUIDE.md) — Claude Code prompting techniques
+- [TROUBLESHOOTING-GUIDE](https://github.com/christopherlouet/claude-base/blob/main/docs/guides/TROUBLESHOOTING-GUIDE.md) — Common problems
+- [Docusaurus site](https://christopherlouet.github.io/claude-base/) — Complete catalog (commands, agents, skills, rules)

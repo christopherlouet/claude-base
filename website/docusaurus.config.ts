@@ -41,15 +41,15 @@ const config: Config = {
       },
     ],
   ],
-  title: 'claude-socle',
+  title: 'claude-base',
   tagline: 'Claude Code configuration template for an optimal workflow: Explore → Specify → Plan → TDD → Commit',
   favicon: 'img/favicon.svg',
 
   // GitHub Pages configuration
   url: 'https://christopherlouet.github.io',
-  baseUrl: '/claude-socle/',
+  baseUrl: '/claude-base/',
   organizationName: 'christopherlouet',
-  projectName: 'claude-socle',
+  projectName: 'claude-base',
   trailingSlash: false,
 
   onBrokenLinks: 'throw',
@@ -65,7 +65,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/christopherlouet/claude-socle/tree/main/website/',
+          editUrl: 'https://github.com/christopherlouet/claude-base/tree/main/website/',
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
         },
@@ -87,9 +87,9 @@ const config: Config = {
     },
 
     navbar: {
-      title: 'claude-socle',
+      title: 'claude-base',
       logo: {
-        alt: 'claude-socle Logo',
+        alt: 'claude-base Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -170,7 +170,7 @@ const config: Config = {
           label: 'Reference',
         },
         {
-          href: 'https://github.com/christopherlouet/claude-socle',
+          href: 'https://github.com/christopherlouet/claude-base',
           label: 'GitHub',
           position: 'right',
         },
@@ -231,12 +231,12 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/christopherlouet/claude-socle',
+              href: 'https://github.com/christopherlouet/claude-base',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} claude-socle. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} claude-base. Built with Docusaurus.`,
     },
 
     prism: {

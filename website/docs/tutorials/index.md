@@ -1,14 +1,14 @@
 ---
 sidebar_position: 1
 title: Tutorials
-description: Learn how to use claude-socle with progressive step-by-step tutorials
+description: Learn how to use claude-base with progressive step-by-step tutorials
 ---
 
 import TutorialCard, { TutorialGrid } from '@site/src/components/TutorialCard';
 
 # Tutorials
 
-Welcome to the claude-socle tutorials! These hands-on guides walk you step-by-step through mastering the **Explore → Specify → Plan → TDD → Audit → Commit** workflow.
+Welcome to the claude-base tutorials! These hands-on guides walk you step-by-step through mastering the **Explore → Specify → Plan → TDD → Audit → Commit** workflow.
 
 ## Recommended path
 
@@ -17,7 +17,7 @@ Follow these tutorials in order for an optimal progression:
 <TutorialGrid>
   <TutorialCard
     title="First project"
-    description="Discover the basic workflow by creating your first feature with claude-socle."
+    description="Discover the basic workflow by creating your first feature with claude-base."
     duration="15 min"
     difficulty="beginner"
     href="/docs/tutorials/first-project"
@@ -122,7 +122,7 @@ Follow these tutorials in order for an optimal progression:
 Before starting, make sure you have:
 
 - **Claude Code** installed and working
-- **claude-socle** configured in your project (see [Installation](/docs/intro/installation))
+- **claude-base** configured in your project (see [Installation](/docs/intro/installation))
 - Basic command-line knowledge
 
 ## How to use these tutorials
@@ -136,4 +136,4 @@ Before starting, make sure you have:
 
 - Check the [FAQ](/docs/guides/faq) for common questions
 - Check [Troubleshooting](/docs/guides/troubleshooting) if you run into issues
-- Open a [GitHub issue](https://github.com/christopherlouet/claude-socle/issues) if you're stuck
+- Open a [GitHub issue](https://github.com/christopherlouet/claude-base/issues) if you're stuck

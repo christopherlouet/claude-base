@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Commands Matrix
-description: Breakdown of all claude-socle commands by domain
+description: Breakdown of all claude-base commands by domain
 ---
 
 # Commands Matrix

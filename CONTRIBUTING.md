@@ -1,4 +1,4 @@
-# Contributing to claude-socle
+# Contributing to claude-base
 
 Thanks for considering a contribution. This guide explains how to participate effectively.
 
@@ -22,8 +22,8 @@ If you've started drafting a PR or issue in French, we'll politely ask you to re
 
 ```bash
 # Clone the repo
-git clone https://github.com/christopherlouet/claude-socle.git
-cd claude-socle
+git clone https://github.com/christopherlouet/claude-base.git
+cd claude-base
 
 # Install the documentation site dependencies
 cd website && npm install && cd ..

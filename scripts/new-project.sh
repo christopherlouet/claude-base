@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle New Project Script
+# Claude-Base New Project Script
 # Creates a new project or configures an existing project with Claude Code
 # =============================================================================
 
@@ -11,7 +11,7 @@ VERSION=$(cat "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/VERSION" 2>/dev/
 
 # Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -41,21 +41,21 @@ _CACHED_SKILL_COUNT=""
 
 count_commands_cached() {
     if [[ -z "$_CACHED_CMD_COUNT" ]]; then
-        _CACHED_CMD_COUNT=$(find "$SOCLE_DIR/$COMMANDS_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        _CACHED_CMD_COUNT=$(find "$BASE_DIR/$COMMANDS_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     fi
     echo "$_CACHED_CMD_COUNT"
 }
 
 count_agents_cached() {
     if [[ -z "$_CACHED_AGENT_COUNT" ]]; then
-        _CACHED_AGENT_COUNT=$(find "$SOCLE_DIR/$AGENTS_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        _CACHED_AGENT_COUNT=$(find "$BASE_DIR/$AGENTS_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     fi
     echo "$_CACHED_AGENT_COUNT"
 }
 
 count_skills_cached() {
     if [[ -z "$_CACHED_SKILL_COUNT" ]]; then
-        _CACHED_SKILL_COUNT=$(count_skills "$SOCLE_DIR")
+        _CACHED_SKILL_COUNT=$(count_skills "$BASE_DIR")
     fi
     echo "$_CACHED_SKILL_COUNT"
 }
@@ -111,7 +111,7 @@ CICD_ACTION="skip"
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle New Project${NC} v${VERSION}
+${BOLD}Claude-Base New Project${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS] [PATH]
@@ -214,7 +214,7 @@ EOF
 }
 
 show_version() {
-    echo "claude-socle new-project v${VERSION}"
+    echo "claude-base new-project v${VERSION}"
 }
 
 # =============================================================================
@@ -458,20 +458,20 @@ merge_cicd_workflows() {
             "Security audit"|"Dependency cache"|"Coverage upload"|"Automated tests"|"Linting")
                 # These features are in ci.yml
                 if [[ "$added_ci" == false ]] && [[ ! -f "$dir/.github/workflows/ci.yml" ]]; then
-                    copy_file "$SOCLE_DIR/.github/workflows/ci.yml" "$dir/.github/workflows/"
+                    copy_file "$BASE_DIR/.github/workflows/ci.yml" "$dir/.github/workflows/"
                     success "ci.yml added (lint, test, build, security)"
                     added_ci=true
                 fi
                 ;;
             "PR validation")
                 if [[ ! -f "$dir/.github/workflows/pr-check.yml" ]]; then
-                    copy_file "$SOCLE_DIR/.github/workflows/pr-check.yml" "$dir/.github/workflows/"
+                    copy_file "$BASE_DIR/.github/workflows/pr-check.yml" "$dir/.github/workflows/"
                     success "pr-check.yml added (PR validation, labels)"
                 fi
                 ;;
             "Automated release")
                 if [[ ! -f "$dir/.github/workflows/release.yml" ]]; then
-                    copy_file "$SOCLE_DIR/.github/workflows/release.yml" "$dir/.github/workflows/"
+                    copy_file "$BASE_DIR/.github/workflows/release.yml" "$dir/.github/workflows/"
                     success "release.yml added (changelog, GitHub Release)"
                 fi
                 ;;
@@ -579,8 +579,8 @@ copy_filtered_rules() {
 # Output: path to .json file, or empty if not found.
 resolve_preset_file() {
     local name="$1"
-    local official="$SOCLE_DIR/.claude/presets/$name.json"
-    local community="$SOCLE_DIR/.claude/presets/community/$name.json"
+    local official="$BASE_DIR/.claude/presets/$name.json"
+    local community="$BASE_DIR/.claude/presets/community/$name.json"
     if [[ -f "$official" ]]; then
         echo "$official"
     elif [[ -f "$community" ]]; then
@@ -596,7 +596,7 @@ list_presets() {
         warning "jq required to list presets"
         return 1
     fi
-    local presets_dir="$SOCLE_DIR/.claude/presets"
+    local presets_dir="$BASE_DIR/.claude/presets"
     [[ -d "$presets_dir" ]] || { info "No presets directory found"; return 0; }
 
     info "Available presets:"
@@ -764,24 +764,24 @@ install_marketplace_plugins() {
 # Install all .claude/ files (commands, skills, agents, rules, etc.)
 # Arguments:
 #   $1 - Target directory (absolute path)
-# Copies a socle subdirectory to target, with dry-run support
+# Copies a foundation subdirectory to target, with dry-run support
 # Arguments:
 #   $1 - Relative subdirectory (e.g. ".claude/commands")
 #   $2 - Target base directory
 #   $3 - Label for debug output
-copy_socle_dir() {
+copy_base_dir() {
     local subdir="$1"
     local target_dir="$2"
     local label="$3"
 
-    if [[ -d "$SOCLE_DIR/$subdir" ]]; then
+    if [[ -d "$BASE_DIR/$subdir" ]]; then
         # Check directory is not empty before copying
-        if find "$SOCLE_DIR/$subdir" -maxdepth 1 -mindepth 1 -print -quit | grep -q .; then
+        if find "$BASE_DIR/$subdir" -maxdepth 1 -mindepth 1 -print -quit | grep -q .; then
             debug "Copying $label..."
             if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/$subdir/* → $target_dir/$subdir/"
+                echo -e "${DIM}[DRY-RUN]${NC} cp -r $BASE_DIR/$subdir/* → $target_dir/$subdir/"
             else
-                cp -r "$SOCLE_DIR/$subdir/"* "$target_dir/$subdir/"
+                cp -r "$BASE_DIR/$subdir/"* "$target_dir/$subdir/"
             fi
         fi
     fi
@@ -798,67 +798,67 @@ install_claude_files() {
     done
 
     # Copy subdirectories
-    copy_socle_dir "$COMMANDS_DIR" "$target_dir" "commands"
-    copy_socle_dir "$SKILLS_DIR" "$target_dir" "skills"
-    copy_socle_dir "$AGENTS_DIR" "$target_dir" "agents"
-    copy_socle_dir "$STYLES_DIR" "$target_dir" "output-styles"
-    copy_socle_dir "$TEMPLATES_DIR" "$target_dir" "templates"
+    copy_base_dir "$COMMANDS_DIR" "$target_dir" "commands"
+    copy_base_dir "$SKILLS_DIR" "$target_dir" "skills"
+    copy_base_dir "$AGENTS_DIR" "$target_dir" "agents"
+    copy_base_dir "$STYLES_DIR" "$target_dir" "output-styles"
+    copy_base_dir "$TEMPLATES_DIR" "$target_dir" "templates"
 
     # Copy settings.json
-    copy_file "$SOCLE_DIR/.claude/settings.json" "$target_dir/.claude/"
+    copy_file "$BASE_DIR/.claude/settings.json" "$target_dir/.claude/"
 
     # Copy rules (filtered by project type)
     debug "Copying filtered rules for type: ${DETECTED_TYPE:-generic}..."
-    copy_filtered_rules "$SOCLE_DIR/$RULES_DIR" "$target_dir/$RULES_DIR" "${DETECTED_TYPE:-generic}"
+    copy_filtered_rules "$BASE_DIR/$RULES_DIR" "$target_dir/$RULES_DIR" "${DETECTED_TYPE:-generic}"
 
     # Copy docs/reference/ to .claude/docs/reference/ (required for CLAUDE.md @imports)
-    if [[ -d "$SOCLE_DIR/docs/reference" ]]; then
+    if [[ -d "$BASE_DIR/docs/reference" ]]; then
         debug "Copying docs/reference/ to .claude/docs/reference/ (required for CLAUDE.md @imports)..."
         make_dir "$target_dir/.claude/docs/reference"
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/reference/* → $target_dir/.claude/docs/reference/"
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $BASE_DIR/docs/reference/* → $target_dir/.claude/docs/reference/"
         else
-            cp -r "$SOCLE_DIR/docs/reference/"* "$target_dir/.claude/docs/reference/"
+            cp -r "$BASE_DIR/docs/reference/"* "$target_dir/.claude/docs/reference/"
         fi
     fi
 
     # Copy docs/guides/ to .claude/docs/guides/
-    if [[ -d "$SOCLE_DIR/docs/guides" ]]; then
+    if [[ -d "$BASE_DIR/docs/guides" ]]; then
         debug "Copying docs/guides/ to .claude/docs/guides/..."
         make_dir "$target_dir/.claude/docs/guides"
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/docs/guides/* → $target_dir/.claude/docs/guides/"
+            echo -e "${DIM}[DRY-RUN]${NC} cp -r $BASE_DIR/docs/guides/* → $target_dir/.claude/docs/guides/"
         else
-            cp -r "$SOCLE_DIR/docs/guides/"* "$target_dir/.claude/docs/guides/"
+            cp -r "$BASE_DIR/docs/guides/"* "$target_dir/.claude/docs/guides/"
         fi
     fi
 
     # Copy docs/STACK-RECIPES.md to .claude/docs/ (consolidation of the 13 legacy stack guides)
-    if [[ -f "$SOCLE_DIR/docs/STACK-RECIPES.md" ]]; then
+    if [[ -f "$BASE_DIR/docs/STACK-RECIPES.md" ]]; then
         debug "Copying docs/STACK-RECIPES.md to .claude/docs/..."
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp $SOCLE_DIR/docs/STACK-RECIPES.md → $target_dir/.claude/docs/"
+            echo -e "${DIM}[DRY-RUN]${NC} cp $BASE_DIR/docs/STACK-RECIPES.md → $target_dir/.claude/docs/"
         else
-            cp "$SOCLE_DIR/docs/STACK-RECIPES.md" "$target_dir/.claude/docs/STACK-RECIPES.md"
+            cp "$BASE_DIR/docs/STACK-RECIPES.md" "$target_dir/.claude/docs/STACK-RECIPES.md"
         fi
     fi
 
     # Copy .mcp.env.example if available
-    if [[ -f "$SOCLE_DIR/.mcp.env.example" ]] && [[ ! -f "$target_dir/.mcp.env.example" ]]; then
-        copy_file "$SOCLE_DIR/.mcp.env.example" "$target_dir/"
+    if [[ -f "$BASE_DIR/.mcp.env.example" ]] && [[ ! -f "$target_dir/.mcp.env.example" ]]; then
+        copy_file "$BASE_DIR/.mcp.env.example" "$target_dir/"
     fi
 
     # Copy scripts/hooks/ (referenced by settings.json)
     # Without these scripts, the SessionStart/PreToolUse/UserPromptSubmit hooks
     # fail silently. Counterpart of the update.sh fix (commit dcaa059).
-    if [[ -d "$SOCLE_DIR/scripts/hooks" ]]; then
+    if [[ -d "$BASE_DIR/scripts/hooks" ]]; then
         debug "Copying scripts/hooks/ (required for settings.json)..."
         make_dir "$target_dir/scripts/hooks"
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp $SOCLE_DIR/scripts/hooks/*.sh → $target_dir/scripts/hooks/"
+            echo -e "${DIM}[DRY-RUN]${NC} cp $BASE_DIR/scripts/hooks/*.sh → $target_dir/scripts/hooks/"
             echo -e "${DIM}[DRY-RUN]${NC} chmod +x $target_dir/scripts/hooks/*.sh"
         else
-            cp "$SOCLE_DIR/scripts/hooks/"*.sh "$target_dir/scripts/hooks/" 2>/dev/null || true
+            cp "$BASE_DIR/scripts/hooks/"*.sh "$target_dir/scripts/hooks/" 2>/dev/null || true
             find "$target_dir/scripts/hooks" -type f -name "*.sh" -exec chmod +x {} + 2>/dev/null || true
         fi
     fi
@@ -876,9 +876,9 @@ install_cicd_files() {
     make_dir "$target_dir/.github/workflows"
 
     if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} cp -r $SOCLE_DIR/.github/workflows/* → $target_dir/.github/workflows/"
+        echo -e "${DIM}[DRY-RUN]${NC} cp -r $BASE_DIR/.github/workflows/* → $target_dir/.github/workflows/"
     else
-        cp -r "$SOCLE_DIR/.github/workflows/"* "$target_dir/.github/workflows/"
+        cp -r "$BASE_DIR/.github/workflows/"* "$target_dir/.github/workflows/"
     fi
 
     success "GitHub Actions installed"
@@ -896,10 +896,10 @@ install_hooks_files() {
     if $DRY_RUN; then
         echo -e "${DIM}[DRY-RUN]${NC} cp -r husky + config files → $target_dir/"
     else
-        cp -r "$SOCLE_DIR/.husky/"* "$target_dir/.husky/"
-        cp "$SOCLE_DIR/.pre-commit-config.yaml" "$target_dir/" 2>/dev/null || true
-        cp "$SOCLE_DIR/.lintstagedrc.json" "$target_dir/"
-        cp "$SOCLE_DIR/.commitlintrc.json" "$target_dir/"
+        cp -r "$BASE_DIR/.husky/"* "$target_dir/.husky/"
+        cp "$BASE_DIR/.pre-commit-config.yaml" "$target_dir/" 2>/dev/null || true
+        cp "$BASE_DIR/.lintstagedrc.json" "$target_dir/"
+        cp "$BASE_DIR/.commitlintrc.json" "$target_dir/"
         if ! chmod +x "$target_dir/.husky/"* 2>/dev/null; then
                 warning "Unable to make husky hooks executable"
             fi
@@ -915,7 +915,7 @@ install_mcp_file() {
     local target_dir="$1"
 
     info "Installing MCP configuration..."
-    copy_file "$SOCLE_DIR/.mcp.json" "$target_dir/"
+    copy_file "$BASE_DIR/.mcp.json" "$target_dir/"
     success "MCP configuration installed"
 }
 
@@ -940,7 +940,7 @@ update_gitignore_file() {
             success ".gitignore updated"
         fi
     else
-        copy_file "$SOCLE_DIR/.gitignore" "$target_dir/"
+        copy_file "$BASE_DIR/.gitignore" "$target_dir/"
         success ".gitignore created"
     fi
 }
@@ -954,7 +954,7 @@ install_claude_md_file() {
     if [[ -f "$target_dir/CLAUDE.md" ]]; then
         warning "CLAUDE.md already exists, skipped"
     else
-        copy_file "$SOCLE_DIR/CLAUDE.md" "$target_dir/"
+        copy_file "$BASE_DIR/CLAUDE.md" "$target_dir/"
         if ! $DRY_RUN; then
             rewrite_claude_md_paths "$target_dir/CLAUDE.md"
             # Align with update.sh: ensure the 7 canonical @imports
@@ -975,7 +975,7 @@ install_claude_md_file() {
 
     # Copy CLAUDE.local.md.example
     if [[ ! -f "$target_dir/CLAUDE.local.md.example" ]]; then
-        copy_file "$SOCLE_DIR/CLAUDE.local.md.example" "$target_dir/"
+        copy_file "$BASE_DIR/CLAUDE.local.md.example" "$target_dir/"
         success "CLAUDE.local.md.example copied"
     fi
 }
@@ -998,17 +998,17 @@ print_simple_summary() {
     # dry-run mode the target directory does NOT exist on disk. Without the
     # guard, `find $non_existent_dir | wc -l | tr -d ' '` exits 1 (pipefail
     # propagates find's failure) and `set -eo pipefail` kills the assignment
-    # in bash 5+. Reading from $SOCLE_DIR is always safe.
+    # in bash 5+. Reading from $BASE_DIR is always safe.
     local rules_count=0 rules_total project_type_label
     if [[ -d "$target_dir/$RULES_DIR" ]]; then
         rules_count=$(find "$target_dir/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     fi
-    rules_total=$(find "$SOCLE_DIR/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    rules_total=$(find "$BASE_DIR/$RULES_DIR" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     project_type_label="${PROJECT_TYPE:-generic}"
     echo "  - .claude/rules/         ($rules_count rules for stack '$project_type_label', $rules_total available in the foundation)"
     echo "  - .claude/output-styles/ (output styles)"
     echo "  - .claude/templates/     (spec templates, Proxmox, etc.)"
-    echo "  - .claude/settings.json  ($(count_hooks "$SOCLE_DIR") hooks)"
+    echo "  - .claude/settings.json  ($(count_hooks "$BASE_DIR") hooks)"
     echo "  - .claude/docs/reference/ (CLAUDE.md @import files)"
     echo "  - .claude/docs/guides/    (guides per domain)"
     local hook_scripts_count=0
@@ -1052,7 +1052,7 @@ run_minimal_mode() {
     $DRY_RUN && { warning "Dry-run mode - no changes"; return 0; }
     echo ""
 
-    local export_script="$SOCLE_DIR/scripts/export-minimal.sh"
+    local export_script="$BASE_DIR/scripts/export-minimal.sh"
     [[ -x "$export_script" ]] || error "export-minimal.sh not found or not executable: $export_script"
 
     "$export_script" --dest-dir "$target_dir" || error "export-minimal.sh failed"
@@ -1083,7 +1083,7 @@ run_simple_mode() {
     fi
     target_dir="$(get_absolute_path "$target_dir")"
 
-    info "Installing claude-socle in: $target_dir"
+    info "Installing claude-base in: $target_dir"
     $DRY_RUN && warning "Dry-run mode enabled - no changes will be made"
     echo ""
 
@@ -1146,7 +1146,7 @@ print_banner() {
     echo "║  ╚█████╔╝███████╗██║  ██║╚██████╔╝██████╔╝███████╗           ║"
     echo "║   ╚════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝           ║"
     echo "║                                                               ║"
-    echo "║              SOCLE - Project Configuration                    ║"
+    echo "║              claude-base - Project Configuration                    ║"
     echo "║                                                               ║"
     echo "╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -1535,16 +1535,16 @@ create_project() {
             # Copy the template specific to the project type
             info "Configuring CLAUDE.md template..."
             case $PROJECT_TYPE in
-                react)     copy_file "$SOCLE_DIR/templates/CLAUDE.react.md" "$TARGET_DIR/CLAUDE.md" ;;
-                vue)       copy_file "$SOCLE_DIR/templates/CLAUDE.vue.md" "$TARGET_DIR/CLAUDE.md" ;;
-                node-api)  copy_file "$SOCLE_DIR/templates/CLAUDE.node-api.md" "$TARGET_DIR/CLAUDE.md" ;;
-                python)    copy_file "$SOCLE_DIR/templates/CLAUDE.python.md" "$TARGET_DIR/CLAUDE.md" ;;
-                go)        copy_file "$SOCLE_DIR/templates/CLAUDE.go.md" "$TARGET_DIR/CLAUDE.md" ;;
-                rust)      copy_file "$SOCLE_DIR/templates/CLAUDE.rust.md" "$TARGET_DIR/CLAUDE.md" ;;
-                java)      copy_file "$SOCLE_DIR/templates/CLAUDE.java.md" "$TARGET_DIR/CLAUDE.md" ;;
-                fullstack) copy_file "$SOCLE_DIR/templates/CLAUDE.fullstack.md" "$TARGET_DIR/CLAUDE.md" ;;
-                flutter)   copy_file "$SOCLE_DIR/templates/CLAUDE.flutter.md" "$TARGET_DIR/CLAUDE.md" ;;
-                neovim)    copy_file "$SOCLE_DIR/templates/CLAUDE.neovim.md" "$TARGET_DIR/CLAUDE.md" ;;
+                react)     copy_file "$BASE_DIR/templates/CLAUDE.react.md" "$TARGET_DIR/CLAUDE.md" ;;
+                vue)       copy_file "$BASE_DIR/templates/CLAUDE.vue.md" "$TARGET_DIR/CLAUDE.md" ;;
+                node-api)  copy_file "$BASE_DIR/templates/CLAUDE.node-api.md" "$TARGET_DIR/CLAUDE.md" ;;
+                python)    copy_file "$BASE_DIR/templates/CLAUDE.python.md" "$TARGET_DIR/CLAUDE.md" ;;
+                go)        copy_file "$BASE_DIR/templates/CLAUDE.go.md" "$TARGET_DIR/CLAUDE.md" ;;
+                rust)      copy_file "$BASE_DIR/templates/CLAUDE.rust.md" "$TARGET_DIR/CLAUDE.md" ;;
+                java)      copy_file "$BASE_DIR/templates/CLAUDE.java.md" "$TARGET_DIR/CLAUDE.md" ;;
+                fullstack) copy_file "$BASE_DIR/templates/CLAUDE.fullstack.md" "$TARGET_DIR/CLAUDE.md" ;;
+                flutter)   copy_file "$BASE_DIR/templates/CLAUDE.flutter.md" "$TARGET_DIR/CLAUDE.md" ;;
+                neovim)    copy_file "$BASE_DIR/templates/CLAUDE.neovim.md" "$TARGET_DIR/CLAUDE.md" ;;
             esac
             success "CLAUDE.md template configured (${PROJECT_TYPE})"
         elif $EXISTING_PROJECT && [[ ${#DETECTED_SCRIPTS[@]} -gt 0 || ${#DETECTED_FOLDERS[@]} -gt 0 ]]; then
@@ -1553,7 +1553,7 @@ create_project() {
         else
             # Copy the generic template
             info "Configuring CLAUDE.md template..."
-            copy_file "$SOCLE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
+            copy_file "$BASE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
 
             # Replace the project name in CLAUDE.md
             if ! $DRY_RUN; then
@@ -1579,7 +1579,7 @@ create_project() {
 
     # Copy CLAUDE.local.md.example (only if it doesn't exist)
     if [[ ! -f "$TARGET_DIR/CLAUDE.local.md.example" ]]; then
-        copy_file "$SOCLE_DIR/CLAUDE.local.md.example" "$TARGET_DIR/"
+        copy_file "$BASE_DIR/CLAUDE.local.md.example" "$TARGET_DIR/"
         success "CLAUDE.local.md.example copied"
     fi
 
@@ -1593,7 +1593,7 @@ create_project() {
         make_dir "$TARGET_DIR/.github/workflows"
         if ! $DRY_RUN; then
             rm -f "$TARGET_DIR/.github/workflows/"*.yml "$TARGET_DIR/.github/workflows/"*.yaml 2>/dev/null || true
-            cp -r "$SOCLE_DIR/.github/workflows/"* "$TARGET_DIR/.github/workflows/"
+            cp -r "$BASE_DIR/.github/workflows/"* "$TARGET_DIR/.github/workflows/"
         else
             echo -e "${DIM}[DRY-RUN]${NC} Replacing workflows in $TARGET_DIR/.github/workflows/"
         fi
@@ -1682,9 +1682,9 @@ print_next_steps() {
 # Main
 # =============================================================================
 
-validate_socle_dirs() {
+validate_base_dirs() {
     for required_dir in "$COMMANDS_DIR" "$SKILLS_DIR" "$AGENTS_DIR" "$RULES_DIR"; do
-        [[ -d "$SOCLE_DIR/$required_dir" ]] || error "Socle directory missing: $SOCLE_DIR/$required_dir"
+        [[ -d "$BASE_DIR/$required_dir" ]] || error "Foundation directory missing: $BASE_DIR/$required_dir"
     done
 }
 
@@ -1692,8 +1692,8 @@ main() {
     # Parse arguments first
     parse_args "$@"
 
-    # Validate that the socle installation is intact
-    validate_socle_dirs
+    # Validate that the foundation installation is intact
+    validate_base_dirs
 
     # --list-presets short-circuits everything else
     if $PRESET_LIST_AND_EXIT; then
@@ -1722,7 +1722,7 @@ main() {
     if $MINIMAL_MODE; then
         if ! $QUIET; then
             echo ""
-            echo -e "${BOLD}${CYAN}Claude-Socle - Minimal Install${NC}"
+            echo -e "${BOLD}${CYAN}Claude-Base - Minimal Install${NC}"
             echo ""
         fi
         run_minimal_mode
@@ -1740,7 +1740,7 @@ main() {
         # Show the banner (except in quiet mode)
         if ! $QUIET; then
             echo ""
-            echo -e "${BOLD}${CYAN}Claude-Socle - Simple Install${NC}"
+            echo -e "${BOLD}${CYAN}Claude-Base - Simple Install${NC}"
             echo ""
         fi
         run_simple_mode

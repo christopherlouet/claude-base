@@ -81,7 +81,7 @@ Phase 2 and Phase 3 are independent and can run in parallel after Phase 1 comple
 - **T033** [US2] Implement eslint invocation: `if [ -f node_modules/.bin/eslint ]; then npx eslint "$file_path" --max-warnings 0 2>&1 | head -20; fi`. Capture into `ESLINT_OUTPUT`.
 - **T034** [US2] If both `TSC_OUTPUT` and `ESLINT_OUTPUT` are empty: exit 0 with no envelope (FR-9).
 - **T035** [US2] Build annotated `updatedToolOutput`: take the original `tool_response` from stdin, append `\n\n--- Type errors (tsc) ---\n<TSC_OUTPUT>` and/or `\n\n--- Lint errors (eslint) ---\n<ESLINT_OUTPUT>`. Status remains SUCCESS (FR-6 clarified).
-- **T036** [US2] Implement legacy-state detection (FR-22): on first run per session, check whether `.claude/settings.json` still references the old inline `npx tsc --noEmit 2>&1 | head -20` pattern. If yes, `echo` a one-line notice once (sentinel at `/tmp/claude-socle-legacy-warned-${PPID}`).
+- **T036** [US2] Implement legacy-state detection (FR-22): on first run per session, check whether `.claude/settings.json` still references the old inline `npx tsc --noEmit 2>&1 | head -20` pattern. If yes, `echo` a one-line notice once (sentinel at `/tmp/claude-base-legacy-warned-${PPID}`).
 
 ### Wiring (T037)
 
@@ -115,7 +115,7 @@ Phase 2 and Phase 3 are independent and can run in parallel after Phase 1 comple
   - Added: "PostToolUse output rewriter — trims noisy Bash command outputs and inlines tsc/eslint errors into Edit/Write results (requires Claude Code 2.1.121+)"
   - Changed: "Consolidated the inline tsc + eslint PostToolUse hooks into a single script for clearer flow and exact-output rewriting"
   - Migration note: "Existing projects: run `./scripts/update.sh -f --all <project>` to get the new hooks. Partial updates are detected at runtime and the foundation falls back to legacy behavior with a one-line notice."
-- **T063** [US-N/A] [P] Verify `validate-counts.sh` and `audit-socle.sh` are unaffected (no agent/command/skill/rule added). Run both, expect exit 0.
+- **T063** [US-N/A] [P] Verify `validate-counts.sh` and `audit-base.sh` are unaffected (no agent/command/skill/rule added). Run both, expect exit 0.
 - **T064** [US-N/A] Manual: open a fresh terminal, run `./scripts/update.sh --dry-run --all /path/to/test-project` → confirm new prompt copy is shown for settings.json.
 
 ## Phase 5 — Audit & manual validation (1h)
@@ -135,7 +135,7 @@ Before opening the PR:
 - [ ] `bats tests/*.bats` (full suite) still green — no regression
 - [ ] `shellcheck scripts/hooks/*.sh` exit 0
 - [ ] `bash scripts/validate-counts.sh` exit 0
-- [ ] `bash scripts/audit-socle.sh` exit 0
+- [ ] `bash scripts/audit-base.sh` exit 0
 - [ ] Manual sessions A, B, C all behave per spec
 - [ ] CHANGELOG entry written and consistent with FR-21
 - [ ] PR description includes 1 transcript snippet for SC-1

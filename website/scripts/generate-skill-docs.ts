@@ -160,7 +160,7 @@ function parseSkillFile(dirPath: string): SkillInfo | null {
  * isn't synced to the Docusaurus site — link to the source on GitHub.
  */
 function rewriteReferenceLinks(content: string, skillName: string): string {
-  const baseUrl = `https://github.com/christopherlouet/claude-socle/blob/main/.claude/skills/${skillName}/references`;
+  const baseUrl = `https://github.com/christopherlouet/claude-base/blob/main/.claude/skills/${skillName}/references`;
   return content.replace(
     /\]\(references\/([^)]+)\)/g,
     (_, file) => `](${baseUrl}/${file})`,

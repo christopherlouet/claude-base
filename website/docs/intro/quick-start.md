@@ -1,14 +1,14 @@
 ---
 sidebar_position: 2
 title: Quick Start
-description: Get started with claude-socle in 5 minutes
+description: Get started with claude-base in 5 minutes
 ---
 
 import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDiagram';
 
 # Quick Start
 
-Be productive with claude-socle in less than 5 minutes.
+Be productive with claude-base in less than 5 minutes.
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ Be productive with claude-socle in less than 5 minutes.
 
 ```bash
 # In your project directory
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh | bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh | bash
 ```
 
 This script:
@@ -33,13 +33,13 @@ This script:
 
 ```bash
 # Clone the repository
-git clone https://github.com/christopherlouet/claude-socle.git temp-socle
+git clone https://github.com/christopherlouet/claude-base.git temp-base
 
 # Copy the .claude folder
-cp -r temp-socle/.claude .
+cp -r temp-base/.claude .
 
 # Clean up
-rm -rf temp-socle
+rm -rf temp-base
 ```
 
 ## Verification
@@ -53,7 +53,7 @@ claude
 At startup you should see:
 ```
 === Claude Code Session ===
-Version socle: 1.33.0
+Version: 1.33.0
 Commandes: <!-- count:commands -->131<!-- /count -->
 Agents: <!-- count:agents -->63<!-- /count -->
 ===========================

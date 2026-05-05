@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Audit Script
+# Claude-Base Audit Script
 # Validates foundation health: SKILL.md frontmatter, doc links, schemas,
 # coherence between components. Complement to validate-counts.sh which
 # only checks counters.
@@ -10,7 +10,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -24,7 +24,7 @@ check_base_requirements
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Audit${NC}
+${BOLD}Claude-Base Audit${NC}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS]
@@ -112,7 +112,7 @@ get_frontmatter_field() {
 
 audit_skills() {
     echo "${BOLD}[INFO] Auditing skills...${NC}"
-    local skills_dir="$SOCLE_DIR/.claude/skills"
+    local skills_dir="$BASE_DIR/.claude/skills"
 
     [[ ! -d "$skills_dir" ]] && return 0
 
@@ -121,7 +121,7 @@ audit_skills() {
         skill_dir=$(dirname "$skill_file")
         local expected_name
         expected_name=$(basename "$skill_dir")
-        local rel_path="${skill_file#"$SOCLE_DIR"/}"
+        local rel_path="${skill_file#"$BASE_DIR"/}"
 
         # Check: frontmatter delimiters
         if ! head -1 "$skill_file" | grep -q '^---$'; then
@@ -164,12 +164,12 @@ audit_skills() {
 
 audit_agents() {
     echo "${BOLD}[INFO] Auditing agents...${NC}"
-    local agents_dir="$SOCLE_DIR/.claude/agents"
+    local agents_dir="$BASE_DIR/.claude/agents"
 
     [[ ! -d "$agents_dir" ]] && return 0
 
     while IFS= read -r -d '' agent_file; do
-        local rel_path="${agent_file#"$SOCLE_DIR"/}"
+        local rel_path="${agent_file#"$BASE_DIR"/}"
 
         if ! head -1 "$agent_file" | grep -q '^---$'; then
             report_issue "$rel_path" "frontmatter missing"
@@ -198,7 +198,7 @@ audit_agents() {
 
 audit_rules() {
     echo "${BOLD}[INFO] Auditing rules...${NC}"
-    local rules_dir="$SOCLE_DIR/.claude/rules"
+    local rules_dir="$BASE_DIR/.claude/rules"
 
     [[ ! -d "$rules_dir" ]] && return 0
 
@@ -207,7 +207,7 @@ audit_rules() {
         name=$(basename "$rule_file" .md)
         [[ "$name" == "README" ]] && continue
 
-        local rel_path="${rule_file#"$SOCLE_DIR"/}"
+        local rel_path="${rule_file#"$BASE_DIR"/}"
 
         # Rules MAY have frontmatter with paths, but it's not required (global rules)
         if head -1 "$rule_file" | grep -q '^---$'; then
@@ -233,12 +233,12 @@ audit_rules() {
 
 audit_doc_links() {
     echo "${BOLD}[INFO] Auditing links in docs/...${NC}"
-    local docs_dir="$SOCLE_DIR/docs"
+    local docs_dir="$BASE_DIR/docs"
 
     [[ ! -d "$docs_dir" ]] && return 0
 
     while IFS= read -r -d '' doc_file; do
-        local rel_path="${doc_file#"$SOCLE_DIR"/}"
+        local rel_path="${doc_file#"$BASE_DIR"/}"
         local doc_dir
         doc_dir=$(dirname "$doc_file")
 
@@ -285,9 +285,9 @@ audit_counts() {
 # Main
 # =============================================================================
 
-cd "$SOCLE_DIR"
+cd "$BASE_DIR"
 
-echo "${BOLD}=== Claude-Socle Audit ===${NC}"
+echo "${BOLD}=== Claude-Base Audit ===${NC}"
 echo ""
 
 audit_skills

@@ -124,7 +124,7 @@ describe('POST /api/todos', () => {
   it('should create a new todo', async () => {
     const newTodo = {
       title: 'Learn TDD',
-      description: 'Follow the claude-socle tutorial',
+      description: 'Follow the claude-base tutorial',
     };
 
     const response = await request(app)

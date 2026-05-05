@@ -1,5 +1,5 @@
 ---
-sidebar_position: 22
+sidebar_position: 23
 title: "security"
 description: "3 attack vectors identified (Feb. 2026) when cloning untrusted repos:"
 tags:

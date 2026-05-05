@@ -1,12 +1,12 @@
 ---
 sidebar_position: 10
 title: "Learning Path - From Novice to Pro"
-description: "Progressive guide to mastering Claude Code and claude-socle, from first launch to advanced usage"
+description: "Progressive guide to mastering Claude Code and claude-base, from first launch to advanced usage"
 ---
 
 # Learning Path: From Novice to Pro
 
-This guide walks you step by step through mastering Claude Code and claude-socle, from first launch to building complex applications. It is structured into 5 progressive levels, each with practical exercises, common mistakes to avoid, and a checkpoint to know when to move on to the next.
+This guide walks you step by step through mastering Claude Code and claude-base, from first launch to building complex applications. It is structured into 5 progressive levels, each with practical exercises, common mistakes to avoid, and a checkpoint to know when to move on to the next.
 
 | Level | Title | Duration | What you learn |
 |--------|-------|-------|----------------------|
@@ -22,7 +22,7 @@ This guide walks you step by step through mastering Claude Code and claude-socle
 
 ## Level 1 - Discovery (30 minutes)
 
-**Goal:** Understand what Claude Code is, install claude-socle and complete your first interactions.
+**Goal:** Understand what Claude Code is, install claude-base and complete your first interactions.
 
 **Audience:** You have never opened Claude Code, or you have used it as a simple terminal chatbot without any particular configuration.
 
@@ -41,18 +41,18 @@ The fundamental difference from a classic chatbot:
 | One answer per message | Can chain dozens of operations |
 | No persistence | Automatic memory between sessions |
 
-### 1.2 What is claude-socle?
+### 1.2 What is claude-base?
 
-Claude Code on its own is powerful, but it requires that you know exactly what to ask it. claude-socle is a configuration template that turns Claude Code into a structured and reproducible system.
+Claude Code on its own is powerful, but it requires that you know exactly what to ask it. claude-base is a configuration template that turns Claude Code into a structured and reproducible system.
 
-Concretely, claude-socle adds the following to the `.claude/` folder of your project:
+Concretely, claude-base adds the following to the `.claude/` folder of your project:
 
 - **<!-- count:commands -->131<!-- /count --> commands**: pre-written instructions for common tasks (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
 - **<!-- count:agents -->63<!-- /count --> agents**: specialized sub-processes that activate automatically for analysis or audit tasks
 - **<!-- count:skills -->54<!-- /count --> skills**: behaviors that trigger automatically based on your keywords
 - **<!-- count:rules -->30<!-- /count --> rules**: code conventions applied automatically based on the files you modify
 
-Without claude-socle, you have to specify everything in every session. With claude-socle, best practices are integrated and activated automatically.
+Without claude-base, you have to specify everything in every session. With claude-base, best practices are integrated and activated automatically.
 
 ### 1.3 Installation
 
@@ -60,10 +60,10 @@ Follow the [full installation guide](/docs/intro/installation) for details. In s
 
 ```bash
 # In your project's directory
-git clone https://github.com/christopherlouet/claude-socle.git temp-socle
-cp -r temp-socle/.claude .
-cp temp-socle/CLAUDE.md .
-rm -rf temp-socle
+git clone https://github.com/christopherlouet/claude-base.git temp-base
+cp -r temp-base/.claude .
+cp temp-base/CLAUDE.md .
+rm -rf temp-base
 ```
 
 Verify the installation by launching Claude Code:
@@ -76,7 +76,7 @@ At startup, you should see a message similar to:
 
 ```
 === Claude Code Session ===
-Version socle: 1.33.0
+Version: 1.33.0
 Commandes: <!-- count:commands -->131<!-- /count -->
 Agents: <!-- count:agents -->63<!-- /count -->
 ===========================
@@ -166,7 +166,7 @@ You can also explore a specific aspect:
 Choose an existing project on your machine (regardless of size or language).
 
 1. Position yourself in the project directory: `cd /path/to/my-project`
-2. Install claude-socle if it is not done
+2. Install claude-base if it is not done
 3. Launch Claude Code: `claude`
 4. Run `/work:work-explore` and read the produced report
 5. Ask two questions in natural language about the code (for example: "What are the main dependencies of this project?" or "Where is the main business logic?")
@@ -212,7 +212,7 @@ You are ready for Level 2 when you can answer "yes" to these questions:
 
 ### 2.1 The mandatory workflow
 
-Claude-socle imposes a six-step workflow for any significant development. This is not a suggestion: skipping steps consistently produces lower-quality results and introduces regressions.
+Claude-base imposes a six-step workflow for any significant development. This is not a suggestion: skipping steps consistently produces lower-quality results and introduces regressions.
 
 ```
 EXPLORE -> SPECIFY -> PLAN -> TDD -> AUDIT -> COMMIT
@@ -498,7 +498,7 @@ The <!-- count:rules -->30<!-- /count --> rules of the foundation cover:
 
 ### 2.6 The 9 domains: overview
 
-Claude-socle organizes its <!-- count:commands -->131<!-- /count --> commands into 9 domains. Each domain covers an aspect of software development.
+Claude-base organizes its <!-- count:commands -->131<!-- /count --> commands into 9 domains. Each domain covers an aspect of software development.
 
 ```
 .claude/commands/
@@ -635,7 +635,7 @@ This level transforms your usage of Claude Code into a professional workflow. Yo
 
 ### 3.1 TDD with Claude Code
 
-Test-Driven Development is not optional in claude-socle: it is a workflow constraint. The `tdd-enforcement` rule triggers automatically when you ask Claude to implement, add, create or fix code. Understanding why TDD works better with an LLM than solo is the key to this level.
+Test-Driven Development is not optional in claude-base: it is a workflow constraint. The `tdd-enforcement` rule triggers automatically when you ask Claude to implement, add, create or fix code. Understanding why TDD works better with an LLM than solo is the key to this level.
 
 #### The Red-Green-Refactor cycle in practice
 
@@ -873,7 +873,7 @@ Issues are classified by priority:
 
 #### Exercise 3.2
 
-On an existing project or the claude-socle starter:
+On an existing project or the claude-base starter:
 1. Run `/qa:qa-audit` and read the report without fixing anything
 2. Identify the 3 most important P0/P1 issues
 3. Run `/qa:qa-loop "score 85"` and observe the fix loop
@@ -883,7 +883,7 @@ On an existing project or the claude-socle starter:
 
 ### 3.3 Hooks - Invisible automation
 
-Each time Claude modifies a file, a chain of hooks runs automatically. These hooks are the reason claude-socle guarantees consistent quality without conscious effort on your part.
+Each time Claude modifies a file, a chain of hooks runs automatically. These hooks are the reason claude-base guarantees consistent quality without conscious effort on your part.
 
 #### What is a hook and why it matters
 
@@ -1220,7 +1220,7 @@ git commit -m "feat(auth): implement login flow - WIP: session refresh pending"
 
 ### 3.6 Shortcut workflows
 
-The full workflow Explore → Specify → Plan → TDD → Audit → Commit is the reference. But not all changes justify 6 steps. claude-socle provides shortcuts adapted to the complexity of each situation.
+The full workflow Explore → Specify → Plan → TDD → Audit → Commit is the reference. But not all changes justify 6 steps. claude-base provides shortcuts adapted to the complexity of each situation.
 
 #### `/work:work-quick` for trivial changes
 
@@ -1867,7 +1867,7 @@ This level is intended for users who want to understand the foundation's archite
 
 ### 5.1 Architecture decisions
 
-#### Why claude-socle is designed this way
+#### Why claude-base is designed this way
 
 The foundation addresses a concrete problem: by default, Claude Code starts without context, without conventions, and without workflow. Each session starts from scratch. The foundation solves this by providing a complete and maintainable configuration.
 

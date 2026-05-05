@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Common Library
+# Claude-Base Common Library
 # Functions shared between all scripts
 # =============================================================================
 
 # Version read from the centralized VERSION file
 _COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-_SOCLE_ROOT="$(dirname "$(dirname "$_COMMON_SCRIPT_DIR")")"
+_BASE_ROOT="$(dirname "$(dirname "$_COMMON_SCRIPT_DIR")")"
 # shellcheck disable=SC2034  # Exported for use by other scripts
-COMMON_LIB_VERSION=$(cat "$_SOCLE_ROOT/VERSION" 2>/dev/null || echo "1.0.0")
-unset _COMMON_SCRIPT_DIR _SOCLE_ROOT
+COMMON_LIB_VERSION=$(cat "$_BASE_ROOT/VERSION" 2>/dev/null || echo "1.0.0")
+unset _COMMON_SCRIPT_DIR _BASE_ROOT
 
 # =============================================================================
 # Colors and styles (ANSI-C quoting notation for compatibility)
@@ -190,7 +190,7 @@ check_base_requirements() {
 
 # Returns the foundation path from the calling script
 # Return: Absolute path of the foundation directory
-get_socle_dir() {
+get_base_dir() {
     local script_dir
     script_dir="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
     echo "$(dirname "$script_dir")"
@@ -434,9 +434,9 @@ validate_input() {
 # Arguments:
 #   $1 - Foundation path (optional)
 # Return: Version or "unknown"
-get_socle_version() {
-    local socle_dir="${1:-$(get_socle_dir)}"
-    local version_file="$socle_dir/VERSION"
+get_foundation_version() {
+    local base_dir="${1:-$(get_base_dir)}"
+    local version_file="$base_dir/VERSION"
 
     if [[ -f "$version_file" ]]; then
         cat "$version_file"
@@ -502,8 +502,8 @@ section() {
 #   $1 - Foundation path (optional)
 # Return: Number of agents
 count_agents() {
-    local socle_dir="${1:-$(get_socle_dir)}"
-    find "$socle_dir/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
+    local base_dir="${1:-$(get_base_dir)}"
+    find "$base_dir/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
 }
 
 # Counts the number of skills (directories in skills/)
@@ -511,8 +511,8 @@ count_agents() {
 #   $1 - Foundation path (optional)
 # Return: Number of skills
 count_skills() {
-    local socle_dir="${1:-$(get_socle_dir)}"
-    count_dirs "$socle_dir/.claude/skills"
+    local base_dir="${1:-$(get_base_dir)}"
+    count_dirs "$base_dir/.claude/skills"
 }
 
 # Counts the number of configured hooks
@@ -520,8 +520,8 @@ count_skills() {
 #   $1 - Foundation path (optional)
 # Return: Number of hooks (Pre + Post)
 count_hooks() {
-    local socle_dir="${1:-$(get_socle_dir)}"
-    local settings_file="$socle_dir/.claude/settings.json"
+    local base_dir="${1:-$(get_base_dir)}"
+    local settings_file="$base_dir/.claude/settings.json"
 
     if [[ -f "$settings_file" ]] && command_exists jq; then
         local pre post
@@ -538,21 +538,21 @@ count_hooks() {
 #   $1 - Foundation path (optional)
 # Return: Number of templates
 count_templates() {
-    local socle_dir="${1:-$(get_socle_dir)}"
-    count_files "$socle_dir/templates" "CLAUDE.*.md"
+    local base_dir="${1:-$(get_base_dir)}"
+    count_files "$base_dir/templates" "CLAUDE.*.md"
 }
 
 # Displays foundation statistics
 # Arguments:
 #   $1 - Foundation path (optional)
-show_socle_stats() {
-    local socle_dir="${1:-$(get_socle_dir)}"
+show_foundation_stats() {
+    local base_dir="${1:-$(get_base_dir)}"
 
     local agents skills hooks templates
-    agents=$(count_agents "$socle_dir")
-    skills=$(count_skills "$socle_dir")
-    hooks=$(count_hooks "$socle_dir")
-    templates=$(count_templates "$socle_dir")
+    agents=$(count_agents "$base_dir")
+    skills=$(count_skills "$base_dir")
+    hooks=$(count_hooks "$base_dir")
+    templates=$(count_templates "$base_dir")
 
     echo "  Agents:    $agents"
     echo "  Skills:    $skills"
@@ -561,10 +561,10 @@ show_socle_stats() {
 }
 
 # =============================================================================
-# Persistent cache (~/.cache/claude-socle/)
+# Persistent cache (~/.cache/claude-base/)
 # =============================================================================
 
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/claude-socle"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/claude-base"
 CACHE_DEFAULT_TTL=86400  # 24h
 
 # Initializes the cache directory
@@ -748,12 +748,12 @@ enable_error_handler() {
 
 export -f info success warning error error_no_exit debug prompt detected
 export -f command_exists check_dependencies check_optional_dependencies check_base_requirements
-export -f get_socle_dir get_absolute_path count_files count_dirs confirm
+export -f get_base_dir get_absolute_path count_files count_dirs confirm
 export -f run_cmd copy_file copy_dir make_dir
 export -f validate_json json_get
-export -f get_socle_version version_gte
+export -f get_foundation_version version_gte
 export -f separator title section
-export -f count_agents count_skills count_hooks count_templates show_socle_stats
+export -f count_agents count_skills count_hooks count_templates show_foundation_stats
 export -f on_error enable_error_handler
 export -f cache_init cache_valid cache_read cache_write
 export -f clean_claude_dirs rewrite_claude_md_paths ensure_claude_md_imports

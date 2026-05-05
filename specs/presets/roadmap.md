@@ -67,7 +67,7 @@ These stacks **do not have a preset yet, and won't until either** (a) a maintain
 | **Data pipelines (dbt / Airflow / Dagster)** | Out of maintainer's stack. |
 | **AI / RAG pipelines** | Specific enough to warrant its own preset. |
 
-If your daily stack isn't here, it's exactly the kind of contribution that would expand claude-socle's honest coverage.
+If your daily stack isn't here, it's exactly the kind of contribution that would expand claude-base's honest coverage.
 
 ## How to contribute a preset
 

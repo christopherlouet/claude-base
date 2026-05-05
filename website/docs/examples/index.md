@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
 title: Code Examples
-description: Practical examples for every domain with claude-socle
+description: Practical examples for every domain with claude-base
 ---
 
 # Code Examples
 
-Practical, ready-to-use examples to get started quickly with claude-socle.
+Practical, ready-to-use examples to get started quickly with claude-base.
 
 ## Web (React/Next.js)
 

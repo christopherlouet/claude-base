@@ -29,7 +29,7 @@ Claude Code is powerful but unstructured. Without a framework, you:
 - Forget the tests (regressions)
 - Make giant commits (unreadable history)
 
-**claude-socle** enforces a structured workflow with pre-configured commands, agents, skills and rules:
+**claude-base** enforces a structured workflow with pre-configured commands, agents, skills and rules:
 
 ```
 Explore → Specify → Plan → TDD → Audit → Commit

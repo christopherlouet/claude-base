@@ -8,26 +8,26 @@
 
 ## Summary
 
-The Claude Code plugin marketplace ecosystem (≈4200 skills, ≈770 MCP servers, ≈101 official plugins as of May 2026) is large and growing. For many verticals (legal/GRC, SEO, dev-stack helpers, cloud integrations) it almost certainly contains plugins that go deeper than the equivalent packs bundled in claude-socle.
+The Claude Code plugin marketplace ecosystem (≈4200 skills, ≈770 MCP servers, ≈101 official plugins as of May 2026) is large and growing. For many verticals (legal/GRC, SEO, dev-stack helpers, cloud integrations) it almost certainly contains plugins that go deeper than the equivalent packs bundled in claude-base.
 
-This is not a flaw of claude-socle per se — its value lies in workflow integration, not vertical depth — but **without an honest comparison, the foundation risks becoming a local maximum**: well-integrated yet sub-optimal at every individual task.
+This is not a flaw of claude-base per se — its value lies in workflow integration, not vertical depth — but **without an honest comparison, the foundation risks becoming a local maximum**: well-integrated yet sub-optimal at every individual task.
 
 This spec plans a **per-domain audit** that decides, evidence in hand, which packs to keep, reduce to a pointer, or remove from the foundation. It is the largest scoped change envisioned since the public release: it touches potentially 30-50% of the bundled `commands/`, `agents/` and `skills/`.
 
 ## Goals
 
-- **Honest evaluation per domain**: for each of the 9 domains (`biz`, `data`, `dev`, `doc`, `growth`, `legal`, `ops`, `qa`, `work`), compare what claude-socle ships against the top 1-3 marketplace alternatives.
+- **Honest evaluation per domain**: for each of the 9 domains (`biz`, `data`, `dev`, `doc`, `growth`, `legal`, `ops`, `qa`, `work`), compare what claude-base ships against the top 1-3 marketplace alternatives.
 - **Decision matrix**: each pack ends up in one of four buckets — `Keep`, `Reduce-to-pointer`, `Move-to-preset-recommendation`, `Remove`.
 - **Feed the preset roadmap**: packs that land in `Move-to-preset-recommendation` become curated entries in the relevant preset's `marketplace_plugins` list — the audit and the preset roadmap are coupled deliverables.
 - **No silent breakage**: every removal goes through a deprecation period (one minor release) with clear migration guidance.
-- **Documented final positioning**: post-audit, the README + EXTENDING-GUIDE communicate where claude-socle's depth genuinely lives and where users should look to the marketplace.
+- **Documented final positioning**: post-audit, the README + EXTENDING-GUIDE communicate where claude-base's depth genuinely lives and where users should look to the marketplace.
 
 ## Non-goals
 
-- Replicating the marketplace inside claude-socle (we are not a curated index).
+- Replicating the marketplace inside claude-base (we are not a curated index).
 - Auto-installation of marketplace plugins via `new-project.sh` (out of scope; depends on plugin system maturing per `docs/guides/EXTENDING-GUIDE.md` § 7).
 - Per-pack absolute ranking (numeric scores). Qualitative rationale is enough.
-- Audit of `work/` (the workflow orchestration commands are claude-socle's defining feature; not in scope for removal).
+- Audit of `work/` (the workflow orchestration commands are claude-base's defining feature; not in scope for removal).
 
 ## Methodology
 
@@ -47,7 +47,7 @@ Each pack (defined as a `commands/<domain>/<name>.md` plus its associated agent/
 | Total | Bucket | Action |
 |---|---|---|
 | 10-12 | **Keep** | Document the integration story explicitly. |
-| 7-9 | **Reduce-to-pointer** | Replace pack content with a one-paragraph entry pointing to the marketplace alternative + a quick "how to combine with claude-socle workflow" note. |
+| 7-9 | **Reduce-to-pointer** | Replace pack content with a one-paragraph entry pointing to the marketplace alternative + a quick "how to combine with claude-base workflow" note. |
 | 7-9, fits a preset stack | **Move-to-preset-recommendation** | Drop the pack from the foundation and instead recommend the marketplace alternative inside a relevant preset's `marketplace_plugins` list (see `specs/presets/spec.md`). The preset becomes the curated path for that pack's users. |
 | 4-6 | **Remove** | Deprecate in next minor release. README pointer to marketplace alternatives. |
 
@@ -115,7 +115,7 @@ The audit itself takes time but does not produce code changes. It produces a `de
 - README and EXTENDING-GUIDE updated to reflect the post-audit positioning.
 - A measurable reduction OR validation in foundation surface: either (a) at least 20% of audited packs move to `Reduce-to-pointer` or `Remove`, or (b) the audit confirms ≥80% are `Keep` and the README claims that explicitly.
 - Deprecation entries in CHANGELOG for any removed packs.
-- No `validate-counts.sh` regression, no `audit-socle.sh` regression after implementation.
+- No `validate-counts.sh` regression, no `audit-base.sh` regression after implementation.
 
 ## Clarification points
 

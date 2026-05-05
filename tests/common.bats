@@ -162,12 +162,12 @@ teardown() {
 }
 
 # =============================================================================
-# Tests SOCLE_DIR (via test_helper)
+# Tests BASE_DIR (via test_helper)
 # =============================================================================
 
-@test "SOCLE_DIR is defined and points to the foundation" {
-    [ -n "$SOCLE_DIR" ]
-    [ -d "$SOCLE_DIR" ]
-    [ -d "$SOCLE_DIR/scripts" ]
-    [ -f "$SOCLE_DIR/VERSION" ]
+@test "BASE_DIR is defined and points to the foundation" {
+    [ -n "$BASE_DIR" ]
+    [ -d "$BASE_DIR" ]
+    [ -d "$BASE_DIR/scripts" ]
+    [ -f "$BASE_DIR/VERSION" ]
 }

@@ -266,4 +266,4 @@ Expected format.
 
 - [Commands](./commands) - Manual instructions
 - [Skills](./skills) - Automatic behaviors
-- [Agents catalog](/docs/agents) - All claude-socle agents
+- [Agents catalog](/docs/agents) - All claude-base agents

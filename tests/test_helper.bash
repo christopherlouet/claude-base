@@ -5,8 +5,8 @@
 # =============================================================================
 
 # Load the foundation's common library
-SOCLE_DIR="$(cd "$(dirname "$BATS_TEST_DIRNAME")" && pwd)"
-source "$SOCLE_DIR/scripts/lib/common.sh"
+BASE_DIR="$(cd "$(dirname "$BATS_TEST_DIRNAME")" && pwd)"
+source "$BASE_DIR/scripts/lib/common.sh"
 
 # Create a temporary directory for tests
 setup_test_dir() {

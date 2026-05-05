@@ -224,43 +224,43 @@ EOF
 # =============================================================================
 
 @test "E2E: The foundation itself is valid" {
-    SOCLE_DIR="$BATS_TEST_DIRNAME/.."
+    BASE_DIR="$BATS_TEST_DIRNAME/.."
 
     # Validation of the foundation
-    run "$VALIDATE_SCRIPT" "$SOCLE_DIR"
+    run "$VALIDATE_SCRIPT" "$BASE_DIR"
     [ "$status" -eq 0 ]
 }
 
 @test "E2E: The foundation passes doctor" {
-    SOCLE_DIR="$BATS_TEST_DIRNAME/.."
+    BASE_DIR="$BATS_TEST_DIRNAME/.."
 
-    run "$DOCTOR_SCRIPT" "$SOCLE_DIR"
+    run "$DOCTOR_SCRIPT" "$BASE_DIR"
     [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
 }
 
 @test "E2E: All agents are present and valid" {
-    SOCLE_DIR="$BATS_TEST_DIRNAME/.."
+    BASE_DIR="$BATS_TEST_DIRNAME/.."
 
     # Count agents (recursively in subdirectories)
-    agent_count=$(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l)
+    agent_count=$(find "$BASE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l)
     [ "$agent_count" -ge 70 ]
 
     # Check that each agent has a title
     while IFS= read -r agent; do
         run head -1 "$agent"
         [[ "$output" == "# "* ]]
-    done < <(find "$SOCLE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null)
+    done < <(find "$BASE_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null)
 }
 
 @test "E2E: All skills are present and valid" {
-    SOCLE_DIR="$BATS_TEST_DIRNAME/.."
+    BASE_DIR="$BATS_TEST_DIRNAME/.."
 
     # Count skills
-    skill_count=$(ls -d "$SOCLE_DIR/.claude/skills/"*/ 2>/dev/null | wc -l)
+    skill_count=$(ls -d "$BASE_DIR/.claude/skills/"*/ 2>/dev/null | wc -l)
     [ "$skill_count" -ge 5 ]
 
     # Check that each skill has a README
-    for skill in "$SOCLE_DIR/.claude/skills/"*/; do
+    for skill in "$BASE_DIR/.claude/skills/"*/; do
         [ -f "${skill}README.md" ] || [ -f "${skill}index.md" ] || [ -f "${skill}skill.md" ] || true
     done
 }

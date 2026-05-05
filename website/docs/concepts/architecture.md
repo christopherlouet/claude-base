@@ -315,7 +315,7 @@ Cross-cutting rules (16):
 ├── service-worker.md      # sw.js, service-worker*
 ├── lsp.md                 # Multi-language — LSP vs Grep
 ├── research.md            # Multi-language — check native before building
-└── socle-maintenance.md   # .claude/** — sync catalog counters
+└── base-maintenance.md   # .claude/** — sync catalog counters
 ```
 
 Rules per language/framework (14):

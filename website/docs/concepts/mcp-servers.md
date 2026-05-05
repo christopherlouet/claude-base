@@ -270,7 +270,7 @@ Browser automation:
 }
 ```
 
-### Recommended configuration for claude-socle
+### Recommended configuration for claude-base
 
 ```json
 {

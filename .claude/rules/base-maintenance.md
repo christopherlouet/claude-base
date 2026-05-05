@@ -1,34 +1,18 @@
 ---
-sidebar_position: 24
-title: "socle-maintenance"
-description: "Any addition, removal or rename in `.claude/` silently breaks the docs and tests if counters are not kept in sync. The PostToolUse hook `socle-integri"
-tags:
-  - "rule"
-  - "socle-maintenance"
+paths:
+  - ".claude/skills/**"
+  - ".claude/agents/**"
+  - ".claude/commands/**"
+  - ".claude/rules/**"
+  - ".claude/settings.json"
+  - "scripts/hooks/**"
 ---
-
-# Rules: socle-maintenance
-
-> Any addition, removal or rename in `.claude/` silently breaks the docs and tests if counters are not kept in sync. The PostToolUse hook `socle-integrity-check` warns but does not block — discipline is
-
-## Affected files
-
-These rules apply to files matching the following patterns:
-
-- `.claude/skills/**`
-- `.claude/agents/**`
-- `.claude/commands/**`
-- `.claude/rules/**`
-- `.claude/settings.json`
-- `scripts/hooks/**`
-
-## Detailed rules
 
 # Foundation Maintenance
 
 ## Principle
 
-Any addition, removal or rename in `.claude/` silently breaks the docs and tests if counters are not kept in sync. The PostToolUse hook `socle-integrity-check` warns but does not block — discipline is on whoever makes the change.
+Any addition, removal or rename in `.claude/` silently breaks the docs and tests if counters are not kept in sync. The PostToolUse hook `base-integrity-check` warns but does not block — discipline is on whoever makes the change.
 
 ## Mandatory checklist before commit
 
@@ -38,7 +22,7 @@ Any addition, removal or rename in `.claude/` silently breaks the docs and tests
 | SessionStart message up to date | Inspect `.claude/settings.json` (hardcoded commands / agents) | Yes if addition/removal |
 | Catalog up to date | Check `docs/reference/agents-catalog.md` and `docs/reference/skills-catalog.md` | Yes |
 | Rules README up to date | `.claude/rules/README.md`: row + header counter | Yes if new rule |
-| Structural audit | `./scripts/audit-socle.sh` | Recommended |
+| Structural audit | `./scripts/audit-base.sh` | Recommended |
 | Shellcheck on new hooks | `shellcheck scripts/hooks/*.sh` | Yes |
 
 ## Files to update when adding / removing
@@ -94,17 +78,3 @@ IMPORTANT: The counters hardcoded in the SessionStart hook are the first thing t
 NEVER commit a script in `scripts/hooks/` without shellcheck + real-world testing.
 
 NEVER duplicate counter information anywhere other than the files listed above — centralize in `validate-counts.sh` as the source of truth.
-
-## Automatic application
-
-These rules are automatically applied by Claude during:
-- Reading the matching files
-- Modifying code
-- Suggestions and fixes
-
----
-
-## See also
-
-- [Back to rules](/docs/rules)
-- [Architecture](/docs/intro/architecture)

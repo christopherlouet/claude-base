@@ -1,6 +1,6 @@
-# Quick Start - claude-socle
+# Quick Start - claude-base
 
-> Get started with claude-socle in 5 minutes
+> Get started with claude-base in 5 minutes
 
 ## Installation (30 seconds)
 
@@ -9,7 +9,7 @@
 ./scripts/new-project.sh --simple /path/to/your-project
 
 # Or from your project
-/path/to/claude-socle/scripts/new-project.sh --simple .
+/path/to/claude-base/scripts/new-project.sh --simple .
 ```
 
 ## First usage
@@ -104,4 +104,4 @@ The foundation's mandatory workflow, step by step:
 
 - [Cheatsheet](./CHEATSHEET.md) - Quick reference
 - [Customization](./CUSTOMIZATION.md) - Customization
-- [Docusaurus documentation](https://christopherlouet.github.io/claude-socle/) - Full documentation
+- [Docusaurus documentation](https://christopherlouet.github.io/claude-base/) - Full documentation

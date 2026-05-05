@@ -66,7 +66,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"=== Claude Code Session ===\"; if [ -f VERSION ]; then echo \"Version socle: $(cat VERSION)\"; fi; if [ -d .claude/commands ]; then echo \"Commandes: $(find .claude/commands -name \"*.md\" -type f 2>/dev/null | wc -l | tr -d \" \")\"; fi; if [ -d .claude/agents ]; then echo \"Agents: $(find .claude/agents -name \"*.md\" -type f 2>/dev/null | wc -l | tr -d \" \")\"; fi; echo \"===========================\"'",
+            "command": "bash -c 'echo \"=== Claude Code Session ===\"; if [ -f VERSION ]; then echo \"Version: $(cat VERSION)\"; fi; if [ -d .claude/commands ]; then echo \"Commandes: $(find .claude/commands -name \"*.md\" -type f 2>/dev/null | wc -l | tr -d \" \")\"; fi; if [ -d .claude/agents ]; then echo \"Agents: $(find .claude/agents -name \"*.md\" -type f 2>/dev/null | wc -l | tr -d \" \")\"; fi; echo \"===========================\"'",
             "timeout": 5000
           }
         ]
@@ -212,12 +212,12 @@
     ],
     "PostToolUse": [
       {
-        "description": "Foundation reminder: doc counters consistent after modification in .claude/ (disable with SKIP_SOCLE_INTEGRITY=1)",
+        "description": "Foundation reminder: doc counters consistent after modification in .claude/ (disable with SKIP_BASE_INTEGRITY=1)",
         "matcher": "Edit|Write|MultiEdit|NotebookEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/socle-integrity-check.sh\"",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/base-integrity-check.sh\"",
             "timeout": 10000,
             "onFailure": "ignore"
           }

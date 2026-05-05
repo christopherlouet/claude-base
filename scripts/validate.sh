@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Validation Script
+# Claude-Base Validation Script
 # Validates the Claude Code configuration of a project
 # =============================================================================
 
@@ -12,7 +12,7 @@ VERSION="1.1.0"
 # Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC2034  # Used by sourced scripts
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -43,7 +43,7 @@ declare -a JSON_SUCCESS=()
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Validate${NC} v${VERSION}
+${BOLD}Claude-Base Validate${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS] [PATH]
@@ -82,7 +82,7 @@ EOF
 }
 
 show_version() {
-    echo "claude-socle validate v${VERSION}"
+    echo "claude-base validate v${VERSION}"
 }
 
 # =============================================================================

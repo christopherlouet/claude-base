@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Docker Library
+# Claude-Base Docker Library
 # Dockerfile and .dockerignore generation
 # Extracted from new-project.sh for independent maintenance
 # =============================================================================

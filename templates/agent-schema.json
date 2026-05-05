@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://claude-socle/agent-schema.json",
-  "title": "Claude-Socle Agent Schema",
-  "description": "Validation schema for claude-socle agents",
+  "$id": "https://claude-base/agent-schema.json",
+  "title": "Claude-Base Agent Schema",
+  "description": "Validation schema for claude-base agents",
   "type": "object",
   "required": ["title", "description", "context", "objective"],
   "properties": {

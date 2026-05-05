@@ -1,14 +1,14 @@
 ---
 sidebar_position: 4
 title: Scripts
-description: Catalog of claude-socle utility scripts
+description: Catalog of claude-base utility scripts
 ---
 
 import Stats from '@site/src/components/Stats';
 
 # Utility Scripts
 
-> **14 scripts** to install, configure and maintain claude-socle
+> **14 scripts** to install, configure and maintain claude-base
 
 <Stats items={[
   { number: 14, label: 'Scripts' },
@@ -25,7 +25,7 @@ The scripts are organized into 5 categories:
 | **Maintenance** | `update.sh`, `diff.sh`, `uninstall.sh`, `check-updates.sh` | Maintain the foundation |
 | **Diagnostic** | `doctor.sh`, `validate.sh`, `validate-counts.sh` | Verify the installation |
 | **Tools** | `ide.sh` | IDE configuration |
-| **Internal** | `lint.sh`, `test.sh`, `bump-version.sh`, `audit-socle.sh`, `export-minimal.sh` | CI and foundation maintenance |
+| **Internal** | `lint.sh`, `test.sh`, `bump-version.sh`, `audit-base.sh`, `export-minimal.sh` | CI and foundation maintenance |
 
 ---
 
@@ -37,7 +37,7 @@ Main script to create a new project or configure an existing project.
 
 ```bash
 # Quick install (recommended)
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh | bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh | bash
 
 # Or from the cloned foundation
 ./scripts/new-project.sh [OPTIONS] [PATH]
@@ -82,7 +82,7 @@ Updates commands, agents, skills and rules from the foundation.
 
 ```bash
 # Quick update
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/update.sh | bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/update.sh | bash
 
 # Or from the cloned foundation
 ./scripts/update.sh [OPTIONS] [PATH]
@@ -190,7 +190,7 @@ Compares the local configuration with the foundation to identify differences.
 **Output:**
 
 ```
-📊 Comparison with the claude-socle foundation
+📊 Comparison with the claude-base foundation
 
 New files (local):              2
 Modified files:                 5
@@ -340,7 +340,7 @@ Validates the Claude Code configuration and computes a quality score.
 
 ### ide.sh
 
-Configures IDEs for optimal integration with claude-socle.
+Configures IDEs for optimal integration with claude-base.
 
 ```bash
 ./scripts/ide.sh <setup|check|remove> <ide> [OPTIONS] [PATH]
@@ -417,12 +417,12 @@ Updates the foundation's version (`VERSION`, badges, references).
 ./scripts/bump-version.sh <new-version>
 ```
 
-### audit-socle.sh
+### audit-base.sh
 
 Full structural audit: detects orphan files, broken references, inconsistencies between the foundation and the documentation.
 
 ```bash
-./scripts/audit-socle.sh
+./scripts/audit-base.sh
 ```
 
 ### export-minimal.sh
@@ -430,11 +430,11 @@ Full structural audit: detects orphan files, broken references, inconsistencies 
 Exports a minimal configuration of the foundation as a `.tar.gz` archive (or copies directly to a target folder). Used by `new-project.sh --minimal` for projects that only want a subset of the foundation.
 
 ```bash
-# Default archive (dist/claude-socle-minimal.tar.gz)
+# Default archive (dist/claude-base-minimal.tar.gz)
 ./scripts/export-minimal.sh
 
 # Archive with custom path
-./scripts/export-minimal.sh --output /tmp/socle.tar.gz
+./scripts/export-minimal.sh --output /tmp/claude-base.tar.gz
 
 # Direct copy to a folder (no archive)
 ./scripts/export-minimal.sh --dest-dir /path/project
@@ -450,13 +450,13 @@ Several scripts can be run directly from GitHub:
 
 ```bash
 # Install
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh | bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh | bash
 
 # Update
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/update.sh | bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/update.sh | bash
 
 # With options (requires downloading first)
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-socle/main/scripts/new-project.sh -o /tmp/new-project.sh
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh -o /tmp/new-project.sh
 chmod +x /tmp/new-project.sh
 /tmp/new-project.sh --cicd --hooks
 ```

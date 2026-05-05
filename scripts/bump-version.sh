@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Bump Version Script
+# Claude-Base Bump Version Script
 # Updates the version in all referenced files
 # =============================================================================
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -22,7 +22,7 @@ check_base_requirements
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Bump Version${NC}
+${BOLD}Claude-Base Bump Version${NC}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") <new-version>
@@ -91,7 +91,7 @@ fi
 # Main
 # =============================================================================
 
-CURRENT_VERSION=$(cat "$SOCLE_DIR/VERSION" 2>/dev/null || echo "unknown")
+CURRENT_VERSION=$(cat "$BASE_DIR/VERSION" 2>/dev/null || echo "unknown")
 
 info "Bump version: ${BOLD}$CURRENT_VERSION${NC} -> ${BOLD}$NEW_VERSION${NC}"
 echo ""
@@ -105,7 +105,7 @@ bump_file() {
     local new_pattern="$3"
     local label="$4"
 
-    local rel_path="${file#"$SOCLE_DIR"/}"
+    local rel_path="${file#"$BASE_DIR"/}"
 
     if [[ ! -f "$file" ]]; then
         warning "File not found: $rel_path"
@@ -132,23 +132,23 @@ info "1/4 VERSION file"
 if $DRY_RUN; then
     info "[DRY-RUN] VERSION: $CURRENT_VERSION -> $NEW_VERSION"
 else
-    echo "$NEW_VERSION" > "$SOCLE_DIR/VERSION"
+    echo "$NEW_VERSION" > "$BASE_DIR/VERSION"
     success "VERSION: $CURRENT_VERSION -> $NEW_VERSION"
 fi
 CHANGES=$((CHANGES + 1))
 
 # 2. README.md badge
 info "2/4 README.md"
-bump_file "$SOCLE_DIR/README.md" \
+bump_file "$BASE_DIR/README.md" \
     "release-v${CURRENT_VERSION}-blue" \
     "release-v${NEW_VERSION}-blue" \
     "Version badge"
 
 # 3. Website quick-start verification message
 info "3/4 Website quick-start"
-bump_file "$SOCLE_DIR/website/docs/intro/quick-start.md" \
-    "Version socle: ${CURRENT_VERSION}" \
-    "Version socle: ${NEW_VERSION}" \
+bump_file "$BASE_DIR/website/docs/intro/quick-start.md" \
+    "Version: ${CURRENT_VERSION}" \
+    "Version: ${NEW_VERSION}" \
     "Verification message"
 
 # 4. README.md versioning policy
@@ -156,7 +156,7 @@ info "4/4 README.md versioning policy"
 CURRENT_MINOR="${CURRENT_VERSION%.*}"
 NEW_MINOR="${NEW_VERSION%.*}"
 if [[ "$CURRENT_MINOR" != "$NEW_MINOR" ]]; then
-    bump_file "$SOCLE_DIR/README.md" \
+    bump_file "$BASE_DIR/README.md" \
         "${CURRENT_MINOR}.x | Actuel" \
         "${NEW_MINOR}.x | Actuel" \
         "Versioning policy (current)"

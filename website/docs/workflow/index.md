@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Workflows
-description: Recommended workflows for claude-socle
+description: Recommended workflows for claude-base
 ---
 
 import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDiagram';
@@ -14,7 +14,7 @@ import WorkflowDiagram, { MAIN_WORKFLOW } from '@site/src/components/WorkflowDia
 
 <WorkflowDiagram steps={MAIN_WORKFLOW} title="Explore → Specify → Plan → TDD → Audit → Commit" />
 
-The main claude-socle workflow follows 6 mandatory steps (+ 1 optional):
+The main claude-base workflow follows 6 mandatory steps (+ 1 optional):
 
 1. **Explore** - Understand the existing code before modifying
 1b. **Brainstorm** _(optional)_ - Structured ideation before specification (alternatives, fuzzy ideas)

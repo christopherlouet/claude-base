@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 title: "flutter"
 description: "// State abstract class AuthState  class AuthInitial extends AuthState  class AuthLoading extends AuthState  class AuthSuccess extends AuthState  clas"
 tags:

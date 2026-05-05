@@ -18,5 +18,5 @@ export type { WorkflowDiagramProps, WorkflowStep } from './WorkflowDiagram';
 export { default as FeatureComparison } from './FeatureComparison';
 export type { FeatureComparisonProps, ComparisonRow } from './FeatureComparison';
 
-export { default as Stats, SOCLE_STATS } from './Stats';
+export { default as Stats, BASE_STATS } from './Stats';
 export type { StatsProps } from './Stats';

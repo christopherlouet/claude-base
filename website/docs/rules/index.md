@@ -31,6 +31,7 @@ import Stats from '@site/src/components/Stats';
 | [`accessibility`](/docs/rules/accessibility) | IMPORTANT: Every image must have an alt attribute.... | `**/*.tsx`, `**/*.jsx`... |
 | [`api`](/docs/rules/api) | // Error \{ "success": false, "error": \{ "code": "V... | `**/api/**`, `**/routes/**`... |
 | [`astro`](/docs/rules/astro) | Astro renders **zero JS by default**. Components a... | `**/*.astro`, `**/astro.config.*`... |
+| [`base-maintenance`](/docs/rules/base-maintenance) | Any addition, removal or rename in `.claude/` sile... | `.claude/skills/**`, `.claude/agents/**`... |
 | [`csharp`](/docs/rules/csharp) | // 2. Private readonly fields private readonly IUs... | `**/*.cs`, `**/*.csproj`... |
 | [`deploy-safety`](/docs/rules/deploy-safety) | Every deployment must be validated before executio... | `**/docker-compose*.yml`, `**/docker-compose*.yaml`... |
 | [`design-style`](/docs/rules/design-style) | The project's design direction is defined in CLAUD... | `**/*.tsx`, `**/*.jsx`... |
@@ -50,7 +51,6 @@ import Stats from '@site/src/components/Stats';
 | [`rust`](/docs/rules/rust) | // 2. Constants const MAX_CONNECTIONS: usize = 100... | `**/*.rs`, `**/Cargo.toml` |
 | [`security`](/docs/rules/security) | 3 attack vectors identified (Feb. 2026) when cloni... | `**/auth/**`, `**/api/**`... |
 | [`service-worker`](/docs/rules/service-worker) | The SW must NEVER cache `request.mode === "navigat... | `**/sw.js`, `**/service-worker*`... |
-| [`socle-maintenance`](/docs/rules/socle-maintenance) | Any addition, removal or rename in `.claude/` sile... | `.claude/skills/**`, `.claude/agents/**`... |
 | [`svelte`](/docs/rules/svelte) | Svelte 5+ uses **runes**: `$state`, `$derived`, `$... | `**/*.svelte`, `**/*.svelte.ts`... |
 | [`tdd-enforcement`](/docs/rules/tdd-enforcement) | IMPORTANT: When the user asks to implement, add, c... | `**/*.ts`, `**/*.tsx`... |
 | [`testing`](/docs/rules/testing) | // Act - Execute the action const result = functio... | `**/*.test.ts`, `**/*.test.tsx`... |

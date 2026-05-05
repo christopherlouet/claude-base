@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Test Runner
+# Claude-Base Test Runner
 # Run bats tests to validate the foundation
 # =============================================================================
 
@@ -9,8 +9,8 @@ set -euo pipefail
 
 # Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
-TESTS_DIR="$SOCLE_DIR/tests"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
+TESTS_DIR="$BASE_DIR/tests"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -19,7 +19,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 # Variables
 # =============================================================================
 
-VERSION=$(cat "$SOCLE_DIR/VERSION" 2>/dev/null || echo "unknown")
+VERSION=$(cat "$BASE_DIR/VERSION" 2>/dev/null || echo "unknown")
 VERBOSE=false
 FILTER=""
 
@@ -29,13 +29,13 @@ FILTER=""
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Test Runner${NC} v${VERSION}
+${BOLD}Claude-Base Test Runner${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS] [FILTER]
 
 ${BOLD}DESCRIPTION${NC}
-    Run bats tests to validate the claude-socle foundation.
+    Run bats tests to validate the claude-base foundation.
     Requires bats-core installed.
 
 ${BOLD}ARGUMENTS${NC}
@@ -103,7 +103,7 @@ run_tests() {
         error "No test file found"
     fi
 
-    title "Claude-Socle Tests"
+    title "Claude-Base Tests"
     info "Test files: ${#test_files[@]}"
     echo ""
 
@@ -134,7 +134,7 @@ main() {
                 exit 0
                 ;;
             --version)
-                echo "claude-socle test v${VERSION}"
+                echo "claude-base test v${VERSION}"
                 exit 0
                 ;;
             -v|--verbose)

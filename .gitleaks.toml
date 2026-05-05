@@ -1,9 +1,9 @@
 # =============================================================================
-# Gitleaks Configuration for claude-socle
+# Gitleaks Configuration for claude-base
 # Documentation: https://github.com/gitleaks/gitleaks
 # =============================================================================
 
-title = "claude-socle gitleaks config"
+title = "claude-base gitleaks config"
 
 # =============================================================================
 # Rules - Secret patterns to detect

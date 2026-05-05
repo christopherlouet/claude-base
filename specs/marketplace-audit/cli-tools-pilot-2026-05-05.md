@@ -47,7 +47,7 @@ Four plugins surfaced from the official marketplace `anthropics/claude-plugins-o
 - Purpose: `/commit` and `/commit-push-pr` commands
 - Real-product cross-reference: not found in qualifying repos
 - Maintenance signal: no specific bugs
-- **Verdict**: REJECT — overlaps with claude-socle's existing `/work:work-commit` and `/work:work-pr` commands; adds noise, not value
+- **Verdict**: REJECT — overlaps with claude-base's existing `/work:work-commit` and `/work:work-pr` commands; adds noise, not value
 
 ### `astral@astral-sh`
 
@@ -60,9 +60,9 @@ Four plugins surfaced from the official marketplace `anthropics/claude-plugins-o
 
 Astral was acquired by OpenAI on 2026-03-19 ([OpenAI announcement](https://openai.com/index/openai-to-acquire-astral/), [Astral blog](https://astral.sh/blog/openai)). Tools remain MIT-licensed; the team is joining OpenAI's Codex effort.
 
-The signal-and-maintenance evaluation **passes** the methodology bar. The policy filter, however, raises a positioning concern specific to claude-socle:
+The signal-and-maintenance evaluation **passes** the methodology bar. The policy filter, however, raises a positioning concern specific to claude-base:
 
-- claude-socle is a configuration kit for **Claude Code (Anthropic)**.
+- claude-base is a configuration kit for **Claude Code (Anthropic)**.
 - Bundling `astral@astral-sh` in `cli-tools.json` would publish an implicit endorsement of OpenAI-acquired tooling in a kit aimed at Anthropic's ecosystem.
 - The MIT license protects the code but does not protect against future roadmap drift toward Codex-specific integration, attention migration of the Astral team toward Codex, or feature gating behind OpenAI APIs in subsequent versions.
 - For users who deliberately chose Claude Code over Codex, the bundling would publish a dissonant signal.

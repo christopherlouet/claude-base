@@ -2,7 +2,7 @@
   <!-- Background circle -->
   <circle cx="50" cy="50" r="45" fill="#6366f1" />
 
-  <!-- Inner design - stylized "CS" for claude-socle -->
+  <!-- Inner design - stylized "CS" for claude-base -->
   <g fill="white">
     <!-- Left bracket -->
     <path d="M25 30 L35 30 L35 35 L30 35 L30 65 L35 65 L35 70 L25 70 Z" />

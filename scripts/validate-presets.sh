@@ -30,8 +30,8 @@
 set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PRESETS_DIR="$SOCLE_DIR/.claude/presets"
+BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PRESETS_DIR="$BASE_DIR/.claude/presets"
 
 QUIET=false
 SINGLE_FILE=""
@@ -81,7 +81,7 @@ errors=()
 
 validate_one() {
     local file="$1"
-    local rel="${file#"$SOCLE_DIR/"}"
+    local rel="${file#"$BASE_DIR/"}"
     local errs=()
 
     if ! jq -e . "$file" >/dev/null 2>&1; then

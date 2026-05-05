@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-> Solve common problems with Claude Code and the claude-socle foundation
+> Solve common problems with Claude Code and the claude-base foundation
 
 ## Sections
 

@@ -1,18 +1,18 @@
 ---
 sidebar_position: 6
 title: FAQ
-description: Frequently asked questions about claude-socle
+description: Frequently asked questions about claude-base
 ---
 
 # Frequently Asked Questions (FAQ)
 
-Find here the answers to the most common questions about claude-socle.
+Find here the answers to the most common questions about claude-base.
 
 ## General Questions
 
-### What is claude-socle?
+### What is claude-base?
 
-**claude-socle** is a configuration template for Claude Code that provides:
+**claude-base** is a configuration template for Claude Code that provides:
 - **<!-- count:commands -->131<!-- /count --> commands** organized by domain (WORK, DEV, QA, OPS, etc.)
 - **<!-- count:agents -->63<!-- /count --> agents** specialized with isolated context
 - **<!-- count:skills -->54<!-- /count --> skills** with automatic triggering
@@ -21,7 +21,7 @@ Find here the answers to the most common questions about claude-socle.
 
 ### What's the difference with standard Claude Code?
 
-| Aspect | Standard Claude Code | claude-socle |
+| Aspect | Standard Claude Code | claude-base |
 |--------|---------------------|--------------|
 | Commands | Basic commands | <!-- count:commands -->131<!-- /count --> specialized commands |
 | Workflow | Free | Structured (Explore → Plan → TDD) |
@@ -30,27 +30,27 @@ Find here the answers to the most common questions about claude-socle.
 | Rules | Manual | <!-- count:rules -->30<!-- /count --> rules per language |
 | Templates | No | Spec, Plan, Tasks |
 
-### How to install claude-socle?
+### How to install claude-base?
 
 ```bash
 # Clone the repository
-git clone https://github.com/christopherlouet/claude-socle.git
+git clone https://github.com/christopherlouet/claude-base.git
 
 # Copy the configuration files
-cp -r claude-socle/.claude/ your-project/
-cp claude-socle/CLAUDE.md your-project/
-cp claude-socle/.mcp.json your-project/
+cp -r claude-base/.claude/ your-project/
+cp claude-base/CLAUDE.md your-project/
+cp claude-base/.mcp.json your-project/
 
 # Or use the installation script
-./claude-socle/scripts/new-project.sh --simple .
+./claude-base/scripts/new-project.sh --simple .
 ```
 
 See the [Installation](/docs/intro/installation) guide for more details.
 
-### How to update claude-socle?
+### How to update claude-base?
 
 ```bash
-# In the claude-socle folder
+# In the claude-base folder
 git pull origin main
 
 # Copy the updated files
@@ -67,7 +67,7 @@ If you have customized commands, run a diff before copying so you don't lose you
 1. **Documentation**: This site (you're here!)
 2. **FAQ**: This page
 3. **Troubleshooting**: [Troubleshooting guide](/docs/guides/troubleshooting)
-4. **GitHub Issues**: [Report an issue](https://github.com/christopherlouet/claude-socle/issues)
+4. **GitHub Issues**: [Report an issue](https://github.com/christopherlouet/claude-base/issues)
 
 ---
 
@@ -90,8 +90,8 @@ ls -la .claude/commands/
 # Check that the command exists
 ls -la .claude/commands/dev/  # For example
 
-# If missing, copy back from claude-socle
-cp -r path/to/claude-socle/.claude/commands/ .claude/
+# If missing, copy back from claude-base
+cp -r path/to/claude-base/.claude/commands/ .claude/
 ```
 
 ### How to create a custom command?
@@ -151,7 +151,7 @@ Or consult the [commands reference](/docs/commands).
 - Create new commands
 
 :::warning Updates
-Your modifications will be overwritten during claude-socle updates. Keep a copy of your customizations.
+Your modifications will be overwritten during claude-base updates. Keep a copy of your customizations.
 :::
 
 ---
@@ -353,10 +353,10 @@ npm run build
 - [Troubleshooting](/docs/guides/troubleshooting) - Errors and diagnostics
 - [Tutorials](/docs/tutorials) - Step-by-step guides
 - [Reference](/docs/reference/commands) - Quick cheatsheet
-- [GitHub Issues](https://github.com/christopherlouet/claude-socle/issues) - Report an issue
+- [GitHub Issues](https://github.com/christopherlouet/claude-base/issues) - Report an issue
 
 ---
 
 :::info Question not listed?
-If your question isn't here, consult the [troubleshooting](/docs/guides/troubleshooting) or [open an issue](https://github.com/christopherlouet/claude-socle/issues).
+If your question isn't here, consult the [troubleshooting](/docs/guides/troubleshooting) or [open an issue](https://github.com/christopherlouet/claude-base/issues).
 :::

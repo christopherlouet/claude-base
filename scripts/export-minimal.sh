@@ -4,7 +4,7 @@
 # Usage:
 #   scripts/export-minimal.sh [--output PATH] [--dest-dir PATH] [--help]
 #
-# --output PATH   : path of the archive to produce (default: dist/claude-socle-minimal.tar.gz)
+# --output PATH   : path of the archive to produce (default: dist/claude-base-minimal.tar.gz)
 # --dest-dir PATH : copy files directly into a target folder (no archive)
 #                   (internal usage for `new-project.sh --minimal`)
 # --help          : display this help
@@ -19,7 +19,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 MANIFEST_FILE="$SCRIPT_DIR/lib/minimal-manifest.txt"
 CLAUDE_MD_TEMPLATE="$SCRIPT_DIR/lib/minimal-claude-md.template"
-ARCHIVE_PREFIX="claude-socle-minimal"
+ARCHIVE_PREFIX="claude-base-minimal"
 DEFAULT_OUTPUT="$REPO_ROOT/dist/${ARCHIVE_PREFIX}.tar.gz"
 
 # =============================================================================

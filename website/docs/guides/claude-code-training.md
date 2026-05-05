@@ -9,7 +9,7 @@ tags:
 
 # Claude Code Training
 
-This guide is the mandatory prerequisite before using claude-socle. It teaches you how to master Claude Code itself — Anthropic's CLI tool — before adding the foundation's configuration layer on top.
+This guide is the mandatory prerequisite before using claude-base. It teaches you how to master Claude Code itself — Anthropic's CLI tool — before adding the foundation's configuration layer on top.
 
 | Module | Topic | Duration |
 |--------|-------|----------|
@@ -617,7 +617,7 @@ MCP is a standard protocol that allows connecting Claude Code to external servic
 }
 ```
 
-MCP servers are disabled by default in claude-socle for security reasons. Enable only those you need.
+MCP servers are disabled by default in claude-base for security reasons. Enable only those you need.
 
 ---
 
@@ -785,7 +785,7 @@ brew upgrade claude
 
 ## Transition to the foundation
 
-You now master Claude Code. Here's what claude-socle adds on top:
+You now master Claude Code. Here's what claude-base adds on top:
 
 **Without the foundation**, Claude Code is a powerful but "blank" agent. At each session, you have to explain your conventions, your workflow, what you expect from it.
 

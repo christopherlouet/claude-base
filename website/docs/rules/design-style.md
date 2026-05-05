@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 8
 title: "design-style"
 description: "The project's design direction is defined in CLAUDE.md:"
 tags:

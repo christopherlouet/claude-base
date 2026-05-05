@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 14
 title: "migration-safety"
 description: "Major framework or dependency migrations are risky. Always follow a structured process to avoid cascades of CI failures."
 tags:

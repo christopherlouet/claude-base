@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Generators Library
+# Claude-Base Generators Library
 # Smart CLAUDE.md generation
 # Extracted from new-project.sh for independent maintenance
 # =============================================================================

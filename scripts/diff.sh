@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# Claude-Socle Diff Script
+# Claude-Base Diff Script
 # Compares a project's configuration with the foundation
 # =============================================================================
 
@@ -11,7 +11,7 @@ VERSION="1.0.0"
 
 # Load the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOCLE_DIR="$(dirname "$SCRIPT_DIR")"
+BASE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
@@ -37,7 +37,7 @@ IDENTICAL_FILES=0
 
 show_help() {
     cat << EOF
-${BOLD}Claude-Socle Diff${NC} v${VERSION}
+${BOLD}Claude-Base Diff${NC} v${VERSION}
 
 ${BOLD}USAGE${NC}
     $(basename "$0") [OPTIONS] [PATH]
@@ -79,7 +79,7 @@ EOF
 }
 
 show_version() {
-    echo "claude-socle diff v${VERSION}"
+    echo "claude-base diff v${VERSION}"
 }
 
 # =============================================================================
@@ -154,16 +154,16 @@ show_diff_content() {
 }
 
 compare_file() {
-    local socle_file="$1"
+    local base_file="$1"
     local local_file="$2"
     local filename="$3"
     # shellcheck disable=SC2034  # Reserved for future category-based filtering
     local category="$4"
 
     if [[ -f "$local_file" ]]; then
-        if [[ -f "$socle_file" ]]; then
+        if [[ -f "$base_file" ]]; then
             # Both files exist
-            if diff -q "$socle_file" "$local_file" > /dev/null 2>&1; then
+            if diff -q "$base_file" "$local_file" > /dev/null 2>&1; then
                 # Identical
                 ((IDENTICAL_FILES++)) || true
                 if [[ "$SHOW_ONLY" == "all" ]] && ! $QUIET; then
@@ -176,7 +176,7 @@ compare_file() {
                     echo -e "  ${YELLOW}~ $filename${NC}"
                     if $SHOW_CONTENT; then
                         echo ""
-                        show_diff_content "$local_file" "$socle_file"
+                        show_diff_content "$local_file" "$base_file"
                         echo ""
                     fi
                 fi
@@ -188,7 +188,7 @@ compare_file() {
                 echo -e "  ${RED}- $filename${NC} ${DIM}(local only)${NC}"
             fi
         fi
-    elif [[ -f "$socle_file" ]]; then
+    elif [[ -f "$base_file" ]]; then
         # New in the foundation
         ((NEW_FILES++)) || true
         if [[ "$SHOW_ONLY" == "all" ]] || [[ "$SHOW_ONLY" == "new" ]]; then
@@ -200,19 +200,19 @@ compare_file() {
 compare_commands() {
     section "Commands (.claude/commands/)"
 
-    local socle_dir="$SOCLE_DIR/.claude/commands"
+    local base_dir="$BASE_DIR/.claude/commands"
     local local_dir="$TARGET_DIR/.claude/commands"
 
     # Build a unique list of all files with relative paths
     local all_files=()
 
     # Foundation files (recursive)
-    if [[ -d "$socle_dir" ]]; then
+    if [[ -d "$base_dir" ]]; then
         while IFS= read -r f; do
             # Compute the relative path
-            local rel_path="${f#$socle_dir/}"
+            local rel_path="${f#$base_dir/}"
             all_files+=("$rel_path")
-        done < <(find "$socle_dir" -name "*.md" -type f 2>/dev/null)
+        done < <(find "$base_dir" -name "*.md" -type f 2>/dev/null)
     fi
 
     # Local files (recursive)
@@ -230,22 +230,22 @@ compare_commands() {
 
     # Compare each file
     for rel_path in $unique_files; do
-        compare_file "$socle_dir/$rel_path" "$local_dir/$rel_path" "$rel_path" "commands"
+        compare_file "$base_dir/$rel_path" "$local_dir/$rel_path" "$rel_path" "commands"
     done
 }
 
 compare_skills() {
     section "Skills (.claude/skills/)"
 
-    local socle_dir="$SOCLE_DIR/.claude/skills"
+    local base_dir="$BASE_DIR/.claude/skills"
     local local_dir="$TARGET_DIR/.claude/skills"
 
     # Build a unique list of all skills
     local all_skills=()
 
     # Foundation skills
-    if [[ -d "$socle_dir" ]]; then
-        for d in "$socle_dir/"*/; do
+    if [[ -d "$base_dir" ]]; then
+        for d in "$base_dir/"*/; do
             [[ -d "$d" ]] && all_skills+=("$(basename "$d")")
         done
     fi
@@ -263,9 +263,9 @@ compare_skills() {
 
     # Compare each skill
     for skillname in $unique_skills; do
-        local socle_skill="$socle_dir/$skillname/SKILL.md"
+        local base_skill="$base_dir/$skillname/SKILL.md"
         local local_skill="$local_dir/$skillname/SKILL.md"
-        compare_file "$socle_skill" "$local_skill" "$skillname/SKILL.md" "skills"
+        compare_file "$base_skill" "$local_skill" "$skillname/SKILL.md" "skills"
     done
 }
 
@@ -274,14 +274,14 @@ compare_settings() {
 
     # settings.json
     compare_file \
-        "$SOCLE_DIR/.claude/settings.json" \
+        "$BASE_DIR/.claude/settings.json" \
         "$TARGET_DIR/.claude/settings.json" \
         "settings.json" \
         "config"
 
     # CLAUDE.md
     compare_file \
-        "$SOCLE_DIR/CLAUDE.md" \
+        "$BASE_DIR/CLAUDE.md" \
         "$TARGET_DIR/CLAUDE.md" \
         "CLAUDE.md" \
         "config"
@@ -333,7 +333,7 @@ main() {
 
     title "Comparison with the foundation"
     info "Project:    $TARGET_DIR"
-    info "Foundation: $SOCLE_DIR"
+    info "Foundation: $BASE_DIR"
     echo ""
 
     # Legend

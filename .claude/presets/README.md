@@ -44,7 +44,7 @@ Community contributions land under `.claude/presets/community/` after maintainer
   "displayName": "<short human-readable>",
   "description": "<2-3 lines, explicit about scope, names what is OUT>",
   "status": "maintainer-vouched | community-curated | draft",
-  "appliesToTypes": ["<existing claude-socle type>"],
+  "appliesToTypes": ["<existing claude-base type>"],
   "foundation": {
     "skills": { "drop": ["<skill-to-not-install>"] }
   },

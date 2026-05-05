@@ -50,7 +50,7 @@ setup() {
         printf '@test "test%s" { :; }\n' 1 2 3 4 5
     } > "$TEST_DIR/tests/sample.bats"
 
-    # Copy the script and its library (the script will resolve SOCLE_DIR=TEST_DIR)
+    # Copy the script and its library (the script will resolve BASE_DIR=TEST_DIR)
     cp "$VALIDATE_COUNTS_SCRIPT_REAL" "$TEST_DIR/scripts/validate-counts.sh"
     cp -r "$BATS_TEST_DIRNAME/../scripts/lib/"* "$TEST_DIR/scripts/lib/"
     chmod +x "$TEST_DIR/scripts/validate-counts.sh"
@@ -106,7 +106,7 @@ teardown() {
     # Create a CLAUDE.md with a wrong counter: "999 commandes" instead of 3
     cat > "$TEST_DIR/CLAUDE.md" <<'EOF'
 # Test
-Le socle a 999 commandes.
+The foundation has 999 commandes.
 EOF
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 1 ]

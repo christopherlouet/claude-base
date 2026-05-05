@@ -18,7 +18,7 @@ Conventions: `T###` task ID, `[P]` parallelizable, `[USX]` user story trace.
 
 ## Phase 2 — TS consumers (30 min)
 
-- **T010** [US1] [P] Refactor `website/src/components/Stats.tsx` — `SOCLE_STATS` reads from `counts.json`
+- **T010** [US1] [P] Refactor `website/src/components/Stats.tsx` — `BASE_STATS` reads from `counts.json`
 - **T011** [US1] [P] Refactor `website/src/components/FeatureComparison.tsx` — replace 3 string literals with `counts.commands.toString()` etc.
 - **T012** [US1] [P] Refactor `website/src/pages/index.tsx` — 4 `FeatureItem.title` use template literals from counts
 - **T013** [US1] [P] Refactor `website/sidebars.ts` — 9 domain category labels use `\`WORK (${counts.byDomain.work})\`` etc.

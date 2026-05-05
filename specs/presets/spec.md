@@ -14,7 +14,7 @@ A **preset** is a curated bundle that, for one specific stack (e.g. Next.js, Pro
 2. Which **marketplace plugins** to install on top via `claude plugin install`
 3. Which **default flags** to set (CI, hooks, MCP, Docker, design style)
 
-Presets are the answer to a recurring user question: *"I have a Next.js SaaS / a Proxmox homelab / a Python automation tool — what should I install on top of claude-socle to be productive immediately?"*
+Presets are the answer to a recurring user question: *"I have a Next.js SaaS / a Proxmox homelab / a Python automation tool — what should I install on top of claude-base to be productive immediately?"*
 
 This spec defines the **format** and the **install mechanism**. No actual preset `.json` ships in this spec's PR — concrete presets land in dedicated follow-up PRs (one per preset) so each one gets focused review and lives or dies on its own merits. See `specs/presets/roadmap.md` for the list of presets in pipeline + community-targeted stacks.
 
@@ -54,7 +54,7 @@ Format chosen: JSON. Rationale: `jq` is already a hard dependency of the foundat
 
 ```json
 {
-  "$schema": "https://github.com/christopherlouet/claude-socle/blob/main/specs/presets/schema.json",
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
 
   "name": "nextjs",
   "displayName": "Next.js full-stack",
@@ -212,8 +212,8 @@ JSON convention is camelCase (`appliesToTypes`, `marketplacePlugins`, `designSty
 
 ## Versioning
 
-- Presets ship versioned with claude-socle releases. `nextjs.json` from v1.32 → ships in `claude-socle@1.32`.
-- A preset's `version:` field defaults to claude-socle's version unless explicitly set (community-curated presets MAY pin earlier versions if they need stability).
+- Presets ship versioned with claude-base releases. `nextjs.json` from v1.32 → ships in `claude-base@1.32`.
+- A preset's `version:` field defaults to claude-base's version unless explicitly set (community-curated presets MAY pin earlier versions if they need stability).
 - Breaking changes to a preset (e.g. dropping a marketplace plugin a user relied on) are flagged in the CHANGELOG and trigger a minor bump.
 - No per-preset semver tree at MVP. If demand emerges, can be added later via the `version:` field.
 
@@ -239,7 +239,7 @@ JSON convention is camelCase (`appliesToTypes`, `marketplacePlugins`, `designSty
 - Spec accepted, schema stabilized.
 - 3 maintainer-vouched presets in pipeline (`nextjs`, `homelab-proxmox`, `cli-tools`) shipped via dedicated follow-up PRs over the following 2-3 weeks.
 - At least 1 community-contributed preset accepted within 6 months of MVP.
-- Zero CI / `validate-counts.sh` / `audit-socle.sh` regression on any preset PR.
+- Zero CI / `validate-counts.sh` / `audit-base.sh` regression on any preset PR.
 - README + EXTENDING-GUIDE link to `specs/presets/roadmap.md` so the community can find the contribution path.
 
 ## Clarification points

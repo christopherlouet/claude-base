@@ -103,7 +103,7 @@ teardown() {
 @test "ide.sh setup vscode creates the snippets" {
     run "$IDE_SCRIPT" setup vscode "$TEST_PROJECT"
     [[ "$status" -eq 0 ]]
-    [[ -f "$TEST_PROJECT/.vscode/claude-socle.code-snippets" ]]
+    [[ -f "$TEST_PROJECT/.vscode/claude-base.code-snippets" ]]
 }
 
 @test "settings.json contains the Claude configuration" {
@@ -128,9 +128,9 @@ teardown() {
 
 @test "snippets contain the Claude commands" {
     "$IDE_SCRIPT" setup vscode "$TEST_PROJECT"
-    grep -q "work-explore" "$TEST_PROJECT/.vscode/claude-socle.code-snippets"
-    grep -q "work-plan" "$TEST_PROJECT/.vscode/claude-socle.code-snippets"
-    grep -q "dev-tdd" "$TEST_PROJECT/.vscode/claude-socle.code-snippets"
+    grep -q "work-explore" "$TEST_PROJECT/.vscode/claude-base.code-snippets"
+    grep -q "work-plan" "$TEST_PROJECT/.vscode/claude-base.code-snippets"
+    grep -q "dev-tdd" "$TEST_PROJECT/.vscode/claude-base.code-snippets"
 }
 
 # =============================================================================

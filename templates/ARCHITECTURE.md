@@ -1,12 +1,12 @@
-# claude-socle Architecture
+# claude-base Architecture
 
-This document describes the architecture and organization of claude-socle agents.
+This document describes the architecture and organization of claude-base agents.
 
 ## Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    CLAUDE-SOCLE                              │
+│                    CLAUDE-BASE                              │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
@@ -35,7 +35,7 @@ This document describes the architecture and organization of claude-socle agents
 ## Folder Structure
 
 ```
-claude-socle/
+claude-base/
 ├── .claude/
 │   └── commands/              # Agents (slash commands)
 │       ├── work-*.md          # General workflow

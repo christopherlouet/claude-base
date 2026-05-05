@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
 title: "java"
 description: "// 2. Static fields private static final Logger logger = LoggerFactory.getLogger(UserService.class);"
 tags:
