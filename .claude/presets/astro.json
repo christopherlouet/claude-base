@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+
+  "name": "astro",
+  "displayName": "Astro content/static-first",
+  "description": "Astro + TypeScript + Content Collections. Targets developers building content-heavy sites: marketing pages, documentation sites, blogs, landing pages. Astro's islands architecture lets users mix React/Vue/Svelte/Solid components selectively, so this preset keeps the broader frontend toolkit (`dev-frontend-design`, `dev-shadcn`, `dev-react-perf`, `qa-chrome`, `qa-design`) and only filters out clearly non-applicable skills (mobile, homelab, the Next.js framework specifically). Bundles ZERO marketplace plugins at v1 — Astro-specific plugin curation will be added incrementally as each one is validated in real production use, not assumed.",
+
+  "version": "1.0.0",
+  "status": "maintainer-vouched",
+
+  "author": {
+    "name": "Chris",
+    "github": "christopherlouet"
+  },
+
+  "appliesToTypes": ["astro", "fullstack"],
+
+  "foundation": {
+    "skills": {
+      "drop": [
+        "dev-flutter",
+        "dev-nextjs",
+        "ops-mobile-release",
+        "ops-proxmox",
+        "ops-opnsense",
+        "ops-infra-code",
+        "data-pipeline"
+      ]
+    }
+  },
+
+  "marketplacePlugins": [],
+
+  "defaults": {
+    "ci": true,
+    "hooks": true,
+    "mcp": false,
+    "docker": false,
+    "designStyle": "editorial"
+  },
+
+  "outOfScope": [
+    "Native mobile companion — use a Flutter or Swift preset (community contributions wanted)",
+    "Heavy SSR/full-stack backend logic — pair with the fastapi preset for a Python API, or use the nextjs preset if you need a JS-native fullstack with extensive server logic",
+    "Homelab IaC — use the homelab-proxmox preset for Proxmox/Terraform/Ansible patterns",
+    "Real-time / streaming apps — Astro excels at SSG and selective hydration; for heavy streaming UIs, SvelteKit or Next.js are better fits",
+    "Toolchain choice (uv vs pdm vs pip, ruff vs flake8) — Python is rarely the primary stack for Astro, but if backend services are added see docs/recipes/python-toolchain-options.md"
+  ],
+
+  "relatedPresetsWanted": [
+    "sveltekit",
+    "vue-nuxt",
+    "remix",
+    "eleventy",
+    "qwik"
+  ]
+}

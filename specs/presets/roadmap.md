@@ -12,7 +12,8 @@
 | `nextjs` | Next.js (App Router) + React + TypeScript | v1.32.0 (PR #119) |
 | `homelab-proxmox` | Proxmox VE + Terraform + Ansible + monitoring | v1.32.0 (PR #120) |
 | `cli-tools` | Python or Shell automation, GitHub API helpers, headless scripts | v1.32.0 (PR #121) |
-| `fastapi` | FastAPI + Pydantic + SQLAlchemy/async ORM (Python async backend) | v1.33.0 (this PR) |
+| `fastapi` | FastAPI + Pydantic + SQLAlchemy/async ORM (Python async backend) | v1.33.0 (PR #132) |
+| `astro` | Astro + TypeScript + Content Collections (content/static-first web) | v1.35.0 (this PR) |
 
 Each shipped preset has:
 - `.json` manifest under `.claude/presets/`
@@ -28,7 +29,6 @@ These stacks **do not have a preset yet, and won't until either** (a) a maintain
 
 | Stack | Why we don't have it yet |
 |---|---|
-| **Astro** | Content / static-first JS — different design center than Next.js. Maintainer doesn't run Astro in prod. |
 | **SvelteKit** | Different reactivity model. No prod use yet. |
 | **Vue / Nuxt** | Major community we don't represent. Open to a contributor with prod experience. |
 | **Remix** | Now under React Router umbrella; status uncertain. Open to a contributor. |
@@ -104,11 +104,11 @@ Every preset (vouched or community) is subject to:
 
 | Category | Shipped | Community-wanted |
 |---|---|---|
-| JS web frameworks | 1 (`nextjs`) | 5+ |
+| JS web frameworks | 2 (`nextjs`, `astro`) | 4+ |
 | Non-Node backend frameworks | 1 (`fastapi`) | 8+ |
 | Infrastructure / homelab | 1 (`homelab-proxmox`) | 3+ |
 | CLI / automation | 1 (`cli-tools`) | — |
 | Mobile / desktop | 0 | 5+ |
 | Data / AI pipelines | 0 | 2+ |
 
-**4 shipped. 23+ named as community-wanted.** That ratio is the foundation's honest position.
+**5 shipped. 22+ named as community-wanted.** That ratio is the foundation's honest position.

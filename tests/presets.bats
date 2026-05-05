@@ -367,3 +367,66 @@ EOF
     [ -d "$target/.claude" ]
     [ -d "$target/.claude/skills" ]
 }
+
+# =============================================================================
+# astro preset (5th maintainer-vouched preset — content/static-first web)
+# =============================================================================
+
+@test "presets: astro.json exists and is valid JSON" {
+    [ -f "$BASE_DIR/.claude/presets/astro.json" ]
+    run jq -e . "$BASE_DIR/.claude/presets/astro.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: astro.json has required fields" {
+    local f="$BASE_DIR/.claude/presets/astro.json"
+    [ "$(jq -r '.name' "$f")" = "astro" ]
+    [ "$(jq -r '.status' "$f")" = "maintainer-vouched" ]
+    [ "$(jq -r '.defaults.designStyle' "$f")" = "editorial" ]
+    [[ "$(jq -r '.appliesToTypes[]' "$f" | tr '\n' ' ')" == *"astro"* ]]
+}
+
+@test "presets: --list-presets shows all five vouched presets" {
+    run "$NEW_PROJECT" --list-presets
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"homelab-proxmox"* ]]
+    [[ "$output" == *"cli-tools"* ]]
+    [[ "$output" == *"fastapi"* ]]
+    [[ "$output" == *"astro"* ]]
+}
+
+@test "presets: --preset astro drops mobile/homelab/non-Astro-framework skills" {
+    local target="$TEST_DIR/proj-astro"
+    "$NEW_PROJECT" --preset astro "$target" >/dev/null 2>&1
+    [ ! -d "$target/.claude/skills/dev-flutter" ]
+    [ ! -d "$target/.claude/skills/dev-nextjs" ]
+    [ ! -d "$target/.claude/skills/ops-mobile-release" ]
+    [ ! -d "$target/.claude/skills/ops-proxmox" ]
+    [ ! -d "$target/.claude/skills/ops-opnsense" ]
+    [ ! -d "$target/.claude/skills/ops-infra-code" ]
+    [ ! -d "$target/.claude/skills/data-pipeline" ]
+}
+
+@test "presets: --preset astro keeps broader frontend skills (islands architecture)" {
+    local target="$TEST_DIR/proj-astro"
+    "$NEW_PROJECT" --preset astro "$target" >/dev/null 2>&1
+    # Astro's islands architecture lets users mix React/Vue/Svelte components,
+    # so frontend skills that fastapi/cli-tools drop stay relevant here.
+    [ -d "$target/.claude/skills/dev-shadcn" ]
+    [ -d "$target/.claude/skills/dev-react-perf" ]
+    [ -d "$target/.claude/skills/dev-frontend-design" ]
+    # Content sites care strongly about CRO, design audit, browser testing
+    [ -d "$target/.claude/skills/growth-cro" ]
+    [ -d "$target/.claude/skills/qa-design" ]
+    [ -d "$target/.claude/skills/qa-chrome" ]
+    [ -d "$target/.claude/skills/qa-perf" ]
+    # i18n is core to many Astro content sites
+    [ -d "$target/.claude/skills/dev-i18n" ]
+}
+
+@test "presets: --preset astro applies editorial designStyle by default" {
+    local target="$TEST_DIR/proj-astro-style"
+    "$NEW_PROJECT" --preset astro "$target" >/dev/null 2>&1
+    [ -d "$target/.claude" ]
+}

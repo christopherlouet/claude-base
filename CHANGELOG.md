@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Fifth preset: `astro`** — Astro + TypeScript + Content Collections for
+  developers building content-heavy sites: marketing pages, documentation
+  sites, blogs, landing pages. First preset for a non-Next.js web framework,
+  validating that the preset pattern works for stacks structurally distinct
+  from React/Next.js. Astro's islands architecture lets users mix
+  React/Vue/Svelte/Solid components selectively, so this preset keeps the
+  broader frontend toolkit (`dev-frontend-design`, `dev-shadcn`,
+  `dev-react-perf`, `qa-chrome`, `qa-design`, `qa-perf`, `dev-i18n`) and
+  only filters out 7 clearly non-applicable skills (mobile, homelab-specific
+  ops, the Next.js framework specifically, infra-code, data pipelines).
+  Bundles ZERO marketplace plugins at v1 — Astro-specific plugin curation
+  will be added incrementally as validated. Default `designStyle: editorial`
+  (matches content/marketing/docs aesthetic). See `.claude/presets/astro.json`.
+  Catalogue grows to 5 maintainer-vouched presets: nextjs, homelab-proxmox,
+  cli-tools, fastapi, astro.
+
 ## [1.34.0] - 2026-05-05
 
 Identity and distribution release: the project is renamed `claude-socle` →
