@@ -158,6 +158,33 @@ validate_one() {
         fi
     fi
 
+    # recommendedVendorSkills: optional; if present, must be an array; each
+    # entry must have id, url, rationale, condition.
+    if jq -e '.recommendedVendorSkills' "$file" >/dev/null 2>&1; then
+        local t
+        t=$(jq -r '.recommendedVendorSkills | type' "$file")
+        if [ "$t" != "array" ]; then
+            errs+=("recommendedVendorSkills must be an array")
+        else
+            local n
+            n=$(jq -r '.recommendedVendorSkills | length' "$file")
+            if [ "$n" -gt 0 ]; then
+                local i
+                for i in $(seq 0 $((n - 1))); do
+                    local rid rurl rrat rcond
+                    rid=$(jq -r ".recommendedVendorSkills[$i].id // empty" "$file")
+                    rurl=$(jq -r ".recommendedVendorSkills[$i].url // empty" "$file")
+                    rrat=$(jq -r ".recommendedVendorSkills[$i].rationale // empty" "$file")
+                    rcond=$(jq -r ".recommendedVendorSkills[$i].condition // empty" "$file")
+                    [ -n "$rid" ] || errs+=("recommendedVendorSkills[$i].id missing")
+                    [ -n "$rurl" ] || errs+=("recommendedVendorSkills[$i].url missing")
+                    [ -n "$rrat" ] || errs+=("recommendedVendorSkills[$i].rationale missing")
+                    [ -n "$rcond" ] || errs+=("recommendedVendorSkills[$i].condition missing")
+                done
+            fi
+        fi
+    fi
+
     if [ "${#errs[@]}" -eq 0 ]; then
         $QUIET || echo "[OK]    $rel"
         return 0

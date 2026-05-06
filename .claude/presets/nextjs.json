@@ -30,6 +30,45 @@
 
   "marketplacePlugins": [],
 
+  "recommendedVendorSkills": [
+    {
+      "id": "vercel-labs/agent-skills",
+      "url": "https://github.com/vercel-labs/agent-skills",
+      "rationale": "Canonical react-best-practices and Next.js patterns from Vercel Engineering",
+      "condition": "always"
+    },
+    {
+      "id": "frontend-design@claude-plugins-official",
+      "url": "https://claude.com/plugins/frontend-design",
+      "rationale": "Anthropic's official UI design plugin (avoid generic Inter+purple aesthetic)",
+      "condition": "always"
+    },
+    {
+      "id": "supabase/agent-skills",
+      "url": "https://github.com/supabase/agent-skills",
+      "rationale": "Auth, DB, Edge Functions, Realtime, Storage patterns + Postgres best practices",
+      "condition": "if using Supabase"
+    },
+    {
+      "id": "prisma/skills",
+      "url": "https://github.com/prisma/skills",
+      "rationale": "Prisma ORM patterns, especially v7 (ESM-only, driver adapters)",
+      "condition": "if using Prisma"
+    },
+    {
+      "id": "shadcn-ui/ui (skills/shadcn)",
+      "url": "https://github.com/shadcn-ui/ui/tree/main/skills/shadcn",
+      "rationale": "shadcn/ui CLI v4, Radix + Base UI primitives, theming patterns",
+      "condition": "if using shadcn/ui"
+    },
+    {
+      "id": "apollographql/skills",
+      "url": "https://github.com/apollographql/skills",
+      "rationale": "Apollo Client, Apollo Server 5, Federation 2",
+      "condition": "if using Apollo GraphQL"
+    }
+  ],
+
   "defaults": {
     "ci": true,
     "hooks": true,

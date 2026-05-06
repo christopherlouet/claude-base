@@ -34,6 +34,27 @@
 
   "marketplacePlugins": [],
 
+  "recommendedVendorSkills": [
+    {
+      "id": "antonbabenko/terraform-skill",
+      "url": "https://github.com/antonbabenko/terraform-skill",
+      "rationale": "Comprehensive Terraform/OpenTofu patterns (the de-facto community skill)",
+      "condition": "always (Terraform is core to this preset)"
+    },
+    {
+      "id": "pulumi/agent-skills",
+      "url": "https://github.com/pulumi/agent-skills",
+      "rationale": "Pulumi authoring + migration workflows (Terraform→Pulumi)",
+      "condition": "if using Pulumi instead of Terraform"
+    },
+    {
+      "id": "grafana/skills",
+      "url": "https://github.com/grafana/skills",
+      "rationale": "Grafana, LGTM stack for monitoring and observability",
+      "condition": "if using Grafana / Prometheus stack"
+    }
+  ],
+
   "defaults": {
     "ci": true,
     "hooks": true,

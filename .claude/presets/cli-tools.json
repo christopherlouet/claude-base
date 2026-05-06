@@ -37,6 +37,8 @@
 
   "marketplacePlugins": [],
 
+  "recommendedVendorSkills": [],
+
   "defaults": {
     "ci": true,
     "hooks": true,

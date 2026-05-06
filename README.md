@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
-[![Tests](https://img.shields.io/badge/tests-450%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-455%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
@@ -25,17 +25,17 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 
 claude-base is a **workflow foundation**, not a competing plugin marketplace. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via `new-project.sh`.
 
-For specialized depth on individual verticals — GDPR/GRC compliance, advanced SEO, deep cloud integrations — the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) and community marketplaces (e.g. [claudemarketplaces.com](https://claudemarketplaces.com/), [awesome-claude-plugins](https://github.com/ComposioHQ/awesome-claude-plugins)) often ship plugins that go further than what this foundation bundles. That's expected: a foundation curates **breadth + integration**, marketplace plugins curate **depth on a single domain**.
+For deeper coverage of specific tools — vendor-published skills for Terraform, Postgres, Playwright, MongoDB, observability stacks, framework-specific patterns — the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) and community-published skills often ship targeted depth that goes further than what this foundation bundles. That's expected: a foundation curates **breadth + workflow integration**, vendor skills curate **depth on a single tool or stack**.
 
 **Recommended pattern**
 
 ```
-claude-base (foundation)         ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
+claude-base (foundation)        ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
        +
-marketplace plugins (verticals)   ← Stripe, GDPR-GRC, SEO, AWS Bedrock, Rails, ...
+vendor skills (specific tools)  ← Terraform, Postgres, Playwright, Grafana, Prisma, MongoDB, ...
 ```
 
-claude-base's unique value (vs assembling marketplace plugins alone):
+claude-base's unique value (vs assembling vendor skills alone):
 
 - Workflow rigor coordinated as one experience (TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates)
 - Anti-drift counter strategy across the entire foundation (CI-enforced, see [PR #110](https://github.com/christopherlouet/claude-base/pull/110))
@@ -43,9 +43,21 @@ claude-base's unique value (vs assembling marketplace plugins alone):
 - PostToolUse output rewriter for Bash + tsc/eslint (see [PR #116](https://github.com/christopherlouet/claude-base/pull/116))
 - Integrated setup via `new-project.sh`, including hooks, permissions and env defaults
 
-**Honest limit**: for any single vertical task, there's likely a more specialized marketplace plugin. We're tracking this — see `specs/marketplace-audit/` for the per-domain comparison work in progress.
+**Honest limit**: for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources.
 
 **Presets**: the first preset (`nextjs`) ships with this release. Use `./scripts/new-project.sh --preset nextjs <path>` to install foundation + applied filters for a Next.js stack. See `.claude/presets/README.md` for usage and `specs/presets/roadmap.md` for the named target stacks (24+ community-wanted across web, backend, mobile, data, infra). Stack-specific naming only — no `web-app` or `backend-app`. Contributions welcome for stacks not yet covered.
+
+## Strategy & trajectory
+
+claude-base's long-term position is **a foundation that lives alongside the official Claude Code marketplace, not in opposition to it**. The kit's irreducible value is the workflow rigor (TDD, audit-loop, anti-drift), the path-specific rules, and the foundation conventions. Everything else — domain-specific knowledge — is increasingly available as vendor-published skills/plugins.
+
+Three mechanisms keep the foundation aligned with that trajectory:
+
+1. **Periodic marketplace audits**. The maintainer evaluates community and vendor-published skills against the foundation, applies a vendor-neutrality filter (we reject vendors acquired by direct Anthropic competitors — e.g. Astral acquired by OpenAI in March 2026), and documents the verdict per skill. The user-facing output is the recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md).
+2. **Recommended vendor skills per preset**. Each preset ships a `recommendedVendorSkills` array — a curated list printed at the end of `claude-base init`, telling the user which validated vendor skills complement their stack. Manual install today; the foundation does NOT auto-install third-party code.
+3. **Trajectory-driven automation**. As more vendors migrate to the official Claude Code marketplace, the install mechanism becomes uniform (`claude plugin install <id>`) and Anthropic-vetted. At that point, automating the install of recommended vendor skills becomes safe — the supply-chain risk is no longer "git clone arbitrary URL" but "install Anthropic-reviewed plugin." We do not automate today (~21% of audited vendors are on the official marketplace) but we will revisit when the ratio inverts.
+
+The recipe is the canonical, user-facing index of every validated source, with install commands, vendor-neutrality status, and explicit re-evaluation triggers.
 
 ## Installation
 
@@ -156,7 +168,7 @@ claude-base/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->450<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->455<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
@@ -509,7 +521,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->21<!-- /count --> files, <!-- count:tests -->450<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->21<!-- /count --> files, <!-- count:tests -->455<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|
