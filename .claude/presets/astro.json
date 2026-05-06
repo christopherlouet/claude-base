@@ -31,6 +31,27 @@
 
   "marketplacePlugins": [],
 
+  "recommendedVendorSkills": [
+    {
+      "id": "vercel-labs/agent-skills",
+      "url": "https://github.com/vercel-labs/agent-skills",
+      "rationale": "react-best-practices (Vercel Engineering) for React islands within Astro",
+      "condition": "if using React islands"
+    },
+    {
+      "id": "shadcn-ui/ui (skills/shadcn)",
+      "url": "https://github.com/shadcn-ui/ui/tree/main/skills/shadcn",
+      "rationale": "shadcn/ui patterns within Astro components",
+      "condition": "if using shadcn/ui"
+    },
+    {
+      "id": "frontend-design@claude-plugins-official",
+      "url": "https://claude.com/plugins/frontend-design",
+      "rationale": "Anthropic's official UI design plugin (essential for content/marketing sites)",
+      "condition": "always"
+    }
+  ],
+
   "defaults": {
     "ci": true,
     "hooks": true,

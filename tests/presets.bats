@@ -430,3 +430,59 @@ EOF
     "$NEW_PROJECT" --preset astro "$target" >/dev/null 2>&1
     [ -d "$target/.claude" ]
 }
+
+# =============================================================================
+# recommendedVendorSkills (printed at install end, never auto-installed)
+# =============================================================================
+
+@test "presets: nextjs has at least 3 recommendedVendorSkills entries" {
+    local f="$BASE_DIR/.claude/presets/nextjs.json"
+    local n
+    n=$(jq -r '.recommendedVendorSkills | length' "$f")
+    [ "$n" -ge 3 ]
+}
+
+@test "presets: validate-presets.sh validates recommendedVendorSkills schema" {
+    cat > "$TEST_DIR/bad-recs.json" <<'EOF'
+{
+  "name": "x",
+  "displayName": "x",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["react"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "recommendedVendorSkills": [
+    {"id": "missing-fields"}
+  ]
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-recs.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"recommendedVendorSkills"* ]]
+}
+
+@test "presets: --preset nextjs prints Recommended vendor skills section" {
+    local target="$TEST_DIR/proj-rec"
+    run "$NEW_PROJECT" --preset nextjs "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Recommended vendor skills"* ]]
+    [[ "$output" == *"vercel-labs"* ]]
+    [[ "$output" == *"recommended-vendor-skills.md"* ]]
+}
+
+@test "presets: --preset cli-tools (empty list) does NOT print the section" {
+    local target="$TEST_DIR/proj-cli-rec"
+    run "$NEW_PROJECT" --preset cli-tools "$target"
+    [ "$status" -eq 0 ]
+    # When recommendedVendorSkills is [], the heading should not appear
+    [[ "$output" != *"Recommended vendor skills for this stack"* ]]
+}
+
+@test "presets: --preset homelab-proxmox prints terraform-skill always pair" {
+    local target="$TEST_DIR/proj-proxmox-rec"
+    run "$NEW_PROJECT" --preset homelab-proxmox "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Always pair with this preset"* ]]
+    [[ "$output" == *"terraform-skill"* ]]
+}

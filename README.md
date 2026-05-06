@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
-[![Tests](https://img.shields.io/badge/tests-450%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-455%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
@@ -46,6 +46,20 @@ claude-base's unique value (vs assembling marketplace plugins alone):
 **Honest limit**: for any single vertical task, there's likely a more specialized marketplace plugin. We're tracking this — see `specs/marketplace-audit/` for the per-domain comparison work in progress.
 
 **Presets**: the first preset (`nextjs`) ships with this release. Use `./scripts/new-project.sh --preset nextjs <path>` to install foundation + applied filters for a Next.js stack. See `.claude/presets/README.md` for usage and `specs/presets/roadmap.md` for the named target stacks (24+ community-wanted across web, backend, mobile, data, infra). Stack-specific naming only — no `web-app` or `backend-app`. Contributions welcome for stacks not yet covered.
+
+## Strategy & trajectory
+
+claude-base's long-term position is **a foundation that lives alongside the official Claude Code marketplace, not in opposition to it**. The kit's irreducible value is the workflow rigor (TDD, audit-loop, anti-drift), the path-specific rules, and the foundation conventions. Everything else — domain-specific knowledge — is increasingly available as vendor-published skills/plugins.
+
+We track this trajectory through three mechanisms:
+
+1. **Per-domain marketplace audits** under `specs/marketplace-audit/`. Each pilot evaluates community/vendor skills against the foundation, classifies them (Keep, Reduce-to-pointer, Recommend), and documents the verdict transparently. As of v1.36.0, four domains audited: cli-tools, dev-*, qa-*, ops-* (38 candidates evaluated, 14 vendor pointers added).
+2. **Honest curation policy**. Vendor-neutrality is a non-negotiable filter (see `feedback_plugin_curation_vendor_neutrality` in maintainer memory): we reject pointers to vendors acquired by direct Anthropic competitors (notably OpenAI), regardless of technical merit. The Astral toolchain (acquired by OpenAI March 2026) is the worked example.
+3. **Recommended vendor skills per preset**. Each preset ships a `recommendedVendorSkills` array — a curated list printed at the end of `claude-base init`, telling the user which validated vendor skills complement their stack. Manual install today; the foundation does NOT auto-install third-party code.
+
+**As more vendors migrate to the official marketplace** (Anthropic's `claude-plugins-official`), the install mechanism becomes uniform (`claude plugin install <id>`) and Anthropic-vetted. At that point, automating the install of recommended vendor skills becomes safe — the supply-chain risk is no longer "git clone arbitrary URL" but "install Anthropic-reviewed plugin." We do not automate today (May 2026, ~3 of 14 audited vendors are on the official marketplace) but we will revisit when the ratio inverts.
+
+The recipe `docs/recipes/recommended-vendor-skills.md` is the user-facing index of every validated source, with install commands, vendor-neutrality status, and explicit re-evaluation triggers.
 
 ## Installation
 
@@ -156,7 +170,7 @@ claude-base/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->450<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->455<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
@@ -509,7 +523,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->21<!-- /count --> files, <!-- count:tests -->450<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->21<!-- /count --> files, <!-- count:tests -->455<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|

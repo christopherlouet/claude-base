@@ -36,6 +36,33 @@
 
   "marketplacePlugins": [],
 
+  "recommendedVendorSkills": [
+    {
+      "id": "supabase/agent-skills",
+      "url": "https://github.com/supabase/agent-skills",
+      "rationale": "Postgres best practices (30 rules) + Supabase Python SDK patterns",
+      "condition": "if using Postgres or Supabase"
+    },
+    {
+      "id": "mongodb/agent-skills",
+      "url": "https://github.com/mongodb/agent-skills",
+      "rationale": "MongoDB schema design, indexing, query patterns, operational safeguards",
+      "condition": "if using MongoDB"
+    },
+    {
+      "id": "grafana/skills",
+      "url": "https://github.com/grafana/skills",
+      "rationale": "Grafana, LGTM stack (Loki/Tempo/Mimir), k6 perf testing",
+      "condition": "if using Grafana / observability stack"
+    },
+    {
+      "id": "antonbabenko/terraform-skill",
+      "url": "https://github.com/antonbabenko/terraform-skill",
+      "rationale": "Comprehensive Terraform/OpenTofu patterns",
+      "condition": "if deploying via Terraform/OpenTofu"
+    }
+  ],
+
   "defaults": {
     "ci": true,
     "hooks": true,

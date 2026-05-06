@@ -13,6 +13,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`recommendedVendorSkills` per preset** (printed at the end of
+  `claude-base init`): each preset now ships a curated list of vendor
+  skills sourced from the marketplace audit pilots. The list is printed
+  at install time, separated into "Always pair with this preset" vs
+  "Add if your project uses these tools" (conditional). The user opts
+  in manually via the install commands documented in the recipe; the
+  foundation does NOT auto-install third-party code. This is **N1** in
+  the strategic discussion of automation levels — N2 (interactive
+  prompts) and N3 (full auto) are deferred until ≥70% of validated
+  vendors migrate to the official Claude Code marketplace (currently
+  ~21%, ~3 of 14). 5 new bats tests cover schema validation, Always
+  vs conditional separation, and the empty-list case (cli-tools).
+  All 5 vouched presets populated.
+- **README "Strategy & trajectory" section**: documents claude-base's
+  long-term position alongside the official Claude Code marketplace
+  (not in opposition to it). Three mechanisms explained: per-domain
+  marketplace audits, vendor-neutrality policy, recommended vendor
+  skills per preset. Explicit roadmap for re-evaluating automation
+  (N2/N3) once marketplace adoption stabilises.
 - **Marketplace audit pilot — `ops-*` skills (10 skills)**: fourth audit
   conducted under the methodology in `specs/marketplace-audit/spec.md`.
   Findings: 7 KEEP-OURS (ops-ci, ops-ci-fix, ops-docker, ops-mobile-release,

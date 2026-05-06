@@ -112,6 +112,21 @@ Format chosen: JSON. Rationale: `jq` is already a hard dependency of the foundat
     }
   ],
 
+  "recommendedVendorSkills": [
+    {
+      "id": "vercel-labs/agent-skills",
+      "url": "https://github.com/vercel-labs/agent-skills",
+      "rationale": "Canonical Next.js + React patterns from Vercel Engineering",
+      "condition": "always"
+    },
+    {
+      "id": "supabase/agent-skills",
+      "url": "https://github.com/supabase/agent-skills",
+      "rationale": "Auth, DB, Edge Functions, Storage patterns + Postgres best practices",
+      "condition": "if using Supabase"
+    }
+  ],
+
   "defaults": {
     "ci": true,
     "hooks": true,
@@ -152,6 +167,8 @@ JSON convention is camelCase (`appliesToTypes`, `marketplacePlugins`, `designSty
 | `foundation.rules` | Drives the existing `get_rules_for_type` filter |
 | `marketplace_plugins[].why` | Forces the curator to justify each plugin |
 | `out_of_scope` | The honesty gate — no preset can claim everything |
+
+The optional **`recommendedVendorSkills`** field (added in v1.36.0) is an array of validated community/vendor skills the user is encouraged to install alongside the preset. It is **printed at the end of `claude-base init`** but never auto-installed. Each entry has `id` (vendor's skill identifier), `url` (canonical source), `rationale` (one-line justification), and `condition` (e.g. `"always"` or `"if using Supabase"`). The `"always"` recommendations print first as "Always pair with this preset"; conditional ones print under "Add if your project uses these tools." Sources for these recommendations come from the marketplace audit pilots in `specs/marketplace-audit/*-pilot-*.md`. The audit methodology (vendor-neutrality filter, etc.) is the gatekeeper for what enters this list.
 
 ### Status tiers
 
