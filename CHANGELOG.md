@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.35.0] - 2026-05-06
+
+Curation release: a fifth maintainer-vouched preset (`astro`, content/
+static-first web), the dev-* marketplace audit pilot identifying 6 vendor
+skills worth pointing to (Supabase, Prisma, Apollo, Vercel, shadcn,
+Anthropic frontend-design), and a centralised recipe documenting how
+to install each validated vendor skill. The kit's surface stays
+conservative; the new value is in **better discovery** of canonical
+vendor sources alongside the foundation.
+
 ### Added
 
 - **Recipe `docs/recipes/recommended-vendor-skills.md`** — actionable
