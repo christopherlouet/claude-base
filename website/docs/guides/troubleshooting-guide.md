@@ -401,6 +401,28 @@ git pull --rebase origin main
 git checkout -b feature/new-attempt
 ```
 
+### Complete project cleanup (foundation + Claude Code state)
+
+The foundation install and Claude Code's runtime state for a project live in two distinct places. A "clean slate" usually means wiping both.
+
+| Tool | Scope | Removes |
+|------|-------|---------|
+| `bash scripts/uninstall.sh` (or `claude-base` dispatcher's uninstall flow) | Project-local foundation install | `<project>/.claude/`, `CLAUDE.md`, `CLAUDE.local.md`, claude-base entries in `.gitignore` |
+| `claude project purge <path>` (CLI 2.1.126+) | Per-project Claude Code runtime state | `~/.claude/projects/<encoded-path>/` (transcripts, memory), `~/.claude/tasks/`, `~/.claude/file-history/`, `~/.claude/debug/`, the project entry in `~/.claude.json` |
+
+The two scopes do not overlap. `uninstall.sh` does not touch `~/.claude/`; `claude project purge` does not touch the project directory. For a full teardown, run both:
+
+```bash
+# 1. Remove the foundation install from the project directory
+bash scripts/uninstall.sh
+
+# 2. Wipe Claude Code's runtime state for this project (preview first)
+claude project purge --dry-run /path/to/project
+claude project purge /path/to/project
+```
+
+`claude project purge` accepts `--dry-run`, `-i` (interactive per-item), `-y` (skip confirmation), and `--all` (every project, mutually exclusive with a path). The foundation's `uninstall.sh` is unchanged for backward compatibility — it prints a reminder pointing at `claude project purge` after a successful uninstall.
+
 ---
 
 ## 6. Performance optimization

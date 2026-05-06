@@ -315,6 +315,14 @@ uninstall() {
         info "A backup was created in the project directory"
     fi
 
+    # Complementary cleanup tip — runtime state lives outside this directory.
+    if ! $DRY_RUN; then
+        echo ""
+        info "For a complete teardown, also wipe Claude Code's runtime state for this project:"
+        info "  claude project purge \"$TARGET_DIR\""
+        info "(Removes transcripts, tasks, file history, and the project entry from ~/.claude.)"
+    fi
+
     echo ""
 }
 
