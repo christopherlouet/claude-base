@@ -25,17 +25,17 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 
 claude-base is a **workflow foundation**, not a competing plugin marketplace. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via `new-project.sh`.
 
-For specialized depth on individual verticals — GDPR/GRC compliance, advanced SEO, deep cloud integrations — the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) and community marketplaces (e.g. [claudemarketplaces.com](https://claudemarketplaces.com/), [awesome-claude-plugins](https://github.com/ComposioHQ/awesome-claude-plugins)) often ship plugins that go further than what this foundation bundles. That's expected: a foundation curates **breadth + integration**, marketplace plugins curate **depth on a single domain**.
+For deeper coverage of specific tools — vendor-published skills for Terraform, Postgres, Playwright, MongoDB, observability stacks, framework-specific patterns — the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) and community-published skills often ship targeted depth that goes further than what this foundation bundles. That's expected: a foundation curates **breadth + workflow integration**, vendor skills curate **depth on a single tool or stack**.
 
 **Recommended pattern**
 
 ```
-claude-base (foundation)         ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
+claude-base (foundation)        ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
        +
-marketplace plugins (verticals)   ← Stripe, GDPR-GRC, SEO, AWS Bedrock, Rails, ...
+vendor skills (specific tools)  ← Terraform, Postgres, Playwright, Grafana, Prisma, MongoDB, ...
 ```
 
-claude-base's unique value (vs assembling marketplace plugins alone):
+claude-base's unique value (vs assembling vendor skills alone):
 
 - Workflow rigor coordinated as one experience (TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates)
 - Anti-drift counter strategy across the entire foundation (CI-enforced, see [PR #110](https://github.com/christopherlouet/claude-base/pull/110))
@@ -43,7 +43,7 @@ claude-base's unique value (vs assembling marketplace plugins alone):
 - PostToolUse output rewriter for Bash + tsc/eslint (see [PR #116](https://github.com/christopherlouet/claude-base/pull/116))
 - Integrated setup via `new-project.sh`, including hooks, permissions and env defaults
 
-**Honest limit**: for any single vertical task, there's likely a more specialized marketplace plugin. We're tracking this — see `specs/marketplace-audit/` for the per-domain comparison work in progress.
+**Honest limit**: for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources.
 
 **Presets**: the first preset (`nextjs`) ships with this release. Use `./scripts/new-project.sh --preset nextjs <path>` to install foundation + applied filters for a Next.js stack. See `.claude/presets/README.md` for usage and `specs/presets/roadmap.md` for the named target stacks (24+ community-wanted across web, backend, mobile, data, infra). Stack-specific naming only — no `web-app` or `backend-app`. Contributions welcome for stacks not yet covered.
 
