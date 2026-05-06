@@ -158,6 +158,14 @@ Types:
 - Distinguish blocking vs nice-to-have
 - Verify naming consistency in the code review
 
+## See also
+
+Anthropic ships an official **multi-agent code-review plugin** at [`anthropics/claude-plugins-official/plugins/code-review`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/code-review) (18,629★, last commit 2026-05-06). It runs 4 parallel sub-agents and applies confidence scoring (default 80%). Different format from this skill (plugin vs SKILL.md) but same intent.
+
+When working on a project where multi-agent parallel review is preferred, install the official plugin alongside this skill. This skill captures the **review checklist + workflow conventions** (security, performance, quality, atomic feedback); the plugin handles the parallel-agent orchestration. Both can coexist.
+
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.
+
 ## Automatic triggering
 
 This skill is automatically activated when:

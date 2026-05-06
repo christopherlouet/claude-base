@@ -11,6 +11,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Marketplace audit pilot — `qa-*` skills (7 skills)**: third audit
+  conducted under the methodology in `specs/marketplace-audit/spec.md`.
+  Findings: 1 KEEP-OURS (qa-tech-debt), 1 GAP-OUTSCOPE-POINTER (qa-design),
+  5 POINT-TO-VENDOR/COMMUNITY: Anthropic `code-review` plugin (qa-review),
+  `addyosmani/web-quality-skills` (qa-perf), `ChromeDevTools/chrome-devtools-mcp`
+  (qa-chrome), `agamm/claude-code-owasp` + Semgrep plugin (qa-security),
+  `microsoft/playwright-cli` (qa-e2e, accepted under case-by-case
+  vendor-neutrality review per the memory rule on Microsoft tools predating
+  their OpenAI commercial relationship). All vendors verified via
+  `gh api repos/<owner>/<repo>` (existence, maintenance, neutrality).
+  QA domain is the strongest vendor-signal of the three audits done so
+  far. Full trace in `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.
+- **`## See also` sections in 5 qa-* SKILL.md files**: `qa-review`,
+  `qa-perf`, `qa-chrome`, `qa-security`, `qa-e2e` now point to the
+  validated vendor sources. The qa-e2e entry includes an explicit
+  vendor-neutrality disclosure for the Microsoft/Playwright case.
+- **`docs/recipes/recommended-vendor-skills.md` extended** with the 6
+  new qa-domain entries (Anthropic code-review, Addy Osmani web-quality,
+  Chrome DevTools MCP, agamm OWASP, Semgrep, Microsoft Playwright with
+  case-by-case framing). Recipe "Last verified" date bumped to 2026-05-06.
+
 ## [1.35.0] - 2026-05-06
 
 Curation release: a fifth maintainer-vouched preset (`astro`, content/
