@@ -252,6 +252,18 @@ NEVER use fragile CSS selectors (classes, dynamic IDs).
 
 NEVER use `waitForTimeout` - use web-first assertions which retry automatically.
 
+## See also
+
+The Microsoft Playwright team publishes their own SKILL.md at [`microsoft/playwright-cli/skills/playwright-cli`](https://github.com/microsoft/playwright-cli/tree/main/skills/playwright-cli) (9,978★, last commit 2026-05-04). Authoritative on Playwright API patterns, kept in sync with each Playwright release.
+
+When working on a Playwright project, install the vendor skill alongside this one. This skill captures the **opinionated workflow patterns** the foundation imposes (TDD, anti-fragility rules, don't-do lists); the vendor skill captures the **canonical API patterns** that evolve with each Playwright release. Both together is the recommended setup for Playwright users.
+
+**Vendor-neutrality disclosure**: Microsoft owns Playwright. Per the foundation's vendor curation policy, Microsoft tools that **predate the company's deepening OpenAI commercial relationship** (e.g. VSCode, GitHub, Playwright created in 2020) are evaluated case-by-case rather than auto-rejected. Playwright remains MIT-licensed and the de-facto standard for E2E testing. We point to the vendor skill because no equivalent vendor-neutral source maintains the API canonically and the community alternative `lackeyjb/playwright-skill` was 5 months stale at audit time. Re-evaluate this pointer if Microsoft's commercial alignment with OpenAI changes the project's roadmap visibly (e.g. direct OpenAI product integration).
+
+For Cypress users (the other framework this skill covers), no vendor-published Cypress skill was identified at the time of the audit; the framework-agnostic guidance in this skill remains the primary reference.
+
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.
+
 ## Automatic triggering
 
 This skill is automatically activated when:

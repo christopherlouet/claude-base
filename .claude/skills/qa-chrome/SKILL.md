@@ -85,3 +85,13 @@ Structured report with:
 - List of errors found
 - Recommendations for fixes
 - Overall score (OK / Warnings / Errors)
+
+## See also
+
+[`ChromeDevTools/chrome-devtools-mcp`](https://github.com/ChromeDevTools/chrome-devtools-mcp) (38,221★, last commit 2026-05-05) is maintained by the official Google Chrome DevTools team. Apache-2.0.
+
+**Format note**: this is an MCP server, NOT a SKILL.md skill. It exposes Chrome DevTools features (network inspection, profiling, accessibility tree) as MCP tools that Claude Code can invoke directly during a session — different mechanism than this skill, which describes how to read DevTools manually.
+
+When working on a project where Claude Code needs **direct programmatic access to Chrome DevTools**, configure the `chrome-devtools-mcp` server in your project's `.mcp.json`. This skill remains useful for the **manual review checklist** (what to look for, how to interpret); the MCP server adds the automation layer.
+
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.

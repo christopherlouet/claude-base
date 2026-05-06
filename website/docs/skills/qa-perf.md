@@ -102,6 +102,14 @@ npm run build -- --analyze
 node --prof app.js
 ```
 
+## See also
+
+[`addyosmani/web-quality-skills`](https://github.com/addyosmani/web-quality-skills) (1,862★, last commit 2026-05-03) is maintained by Addy Osmani — Chrome DevTools / Lighthouse engineering lead at Google for ~14 years. Covers Core Web Vitals (LCP, INP, CLS), perf, accessibility, and SEO. Independent personal repo, MIT.
+
+When working on a project that targets Web Vitals optimisation, install this vendor skill alongside `qa-perf`. This skill captures the **measurement workflow** (profiling commands, when to invoke, foundation conventions); the vendor skill captures the **canonical thresholds and remediation patterns** that Chrome's performance team enforces. Both together is the recommended setup.
+
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.
+
 ## Automatic triggering
 
 This skill is automatically activated when:

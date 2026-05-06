@@ -2,7 +2,7 @@
 
 **Audience**: developers using claude-base who want to enrich the foundation with skills published by tool vendors. NOT a complete index of every Claude Code skill in the wild — only the ones that passed claude-base's audit methodology.
 
-**Last verified**: 2026-05-05.
+**Last verified**: 2026-05-06.
 
 This recipe lives outside the foundation deliberately. The recommended skills are NOT bundled or auto-installed by claude-base. The user opts in per project, per skill, when their stack matches. Our role is curation (which skills are worth trusting) — the vendors handle their own distribution.
 
@@ -10,7 +10,13 @@ This recipe lives outside the foundation deliberately. The recommended skills ar
 
 ## Why this recipe exists
 
-The `dev-*` audit pilot (see `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`) and the `cli-tools` audit pilot (see `specs/marketplace-audit/cli-tools-pilot-2026-05-05.md`) identified a small set of vendor-published skills that complement the claude-base foundation:
+Three audit pilots identified a small set of vendor-published skills that complement the claude-base foundation:
+
+- `cli-tools` plugin pilot (`specs/marketplace-audit/cli-tools-pilot-2026-05-05.md`)
+- `dev-*` skills pilot (`specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`)
+- `qa-*` skills pilot (`specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`)
+
+Combined findings:
 
 - Our skills capture **opinionated workflow patterns** (TDD, security defaults, anti-patterns, foundation conventions). These are stack-agnostic.
 - Vendor skills capture **canonical API/stack patterns** that evolve with each release. These are stack-specific and vendor-authoritative.
@@ -163,6 +169,129 @@ claude-base update --add-plugin frontend-design@claude-plugins-official ./your-p
 ```
 
 **Vendor-neutrality**: Anthropic is, by definition, the home ecosystem.
+
+---
+
+### Anthropic — `code-review` plugin (qa-review companion)
+
+**Covers**: Multi-agent code-review plugin with 4 parallel sub-agents and confidence scoring (default 80%).
+
+**When to install**: any project where multi-agent parallel review is the preferred workflow.
+
+**Pair with**: claude-base's `qa-review` skill (manual review checklist + workflow conventions).
+
+**Install**:
+```bash
+claude plugin install code-review@claude-plugins-official
+claude-base update --add-plugin code-review@claude-plugins-official ./your-project
+```
+
+**Vendor-neutrality**: Anthropic. Zero concern.
+
+---
+
+### Addy Osmani — `web-quality-skills` (qa-perf companion)
+
+**Covers**: Core Web Vitals (LCP, INP, CLS), perf, accessibility, SEO. Maintained by Addy Osmani (14 years Chrome DevTools / Lighthouse engineering lead at Google).
+
+**When to install**: any project targeting Web Vitals optimisation.
+
+**Pair with**: claude-base's `qa-perf` skill (measurement workflow).
+
+**Install** (verify on the repo's README):
+```bash
+git clone --depth 1 https://github.com/addyosmani/web-quality-skills ~/dev/vendor-skills/web-quality
+# Symlink the relevant skill subdirectories into ./.claude/skills/
+```
+
+**Vendor-neutrality**: Personal repo, not Google-org-owned. Author has Google affiliation but the project is independent. Acceptable.
+
+---
+
+### Google Chrome DevTools — `chrome-devtools-mcp` (qa-chrome companion)
+
+**Covers**: Programmatic access to Chrome DevTools (network inspection, profiling, accessibility tree) as MCP tools that Claude Code can invoke directly during a session.
+
+**Format note**: This is an **MCP server**, NOT a SKILL.md skill. Configuration mechanism is different.
+
+**When to install**: any project where Claude Code needs direct programmatic access to Chrome DevTools.
+
+**Pair with**: claude-base's `qa-chrome` skill (manual review checklist).
+
+**Install** (verify on their repo's README):
+```bash
+# Configure in your project's .mcp.json:
+# {
+#   "mcpServers": {
+#     "chrome-devtools": {
+#       "command": "npx",
+#       "args": ["@chrome-devtools/mcp-server"]
+#     }
+#   }
+# }
+```
+
+**Vendor-neutrality**: Google. Web-tooling neutral.
+
+---
+
+### Microsoft — `playwright-cli` skill (qa-e2e companion, case-by-case)
+
+**Covers**: Authoritative Playwright API patterns from the Microsoft Playwright team. Updated alongside each Playwright release.
+
+**When to install**: any Playwright-based project.
+
+**Pair with**: claude-base's `qa-e2e` skill (workflow patterns, anti-fragility rules).
+
+**Install** (verify on their repo):
+```bash
+git clone --depth 1 https://github.com/microsoft/playwright-cli ~/dev/vendor-skills/playwright
+ln -s ~/dev/vendor-skills/playwright/skills/playwright-cli ./.claude/skills/playwright-cli
+```
+
+**Vendor-neutrality** (CASE-BY-CASE per `feedback_plugin_curation_vendor_neutrality` memory):
+
+Microsoft owns Playwright. Per the foundation's policy, Microsoft tools that **predate the company's deepening OpenAI commercial relationship** are evaluated case-by-case rather than auto-rejected. Playwright was created in 2020, predates that deepening, remains MIT-licensed, and is the de-facto standard for E2E testing (78,000★ on the core repo). The community alternative `lackeyjb/playwright-skill` exists but was 5 months stale at audit time.
+
+**Decision (2026-05-06)**: pointer to `microsoft/playwright-cli` accepted for the qa-e2e skill. Re-evaluate if Microsoft's commercial alignment with OpenAI changes the project's roadmap visibly (e.g. direct OpenAI product integration into Playwright).
+
+---
+
+### agamm — `claude-code-owasp` (qa-security companion)
+
+**Covers**: OWASP Top 10:2025, ASVS 5.0, 20 language-specific quirks. Independent author.
+
+**When to install**: any security audit context.
+
+**Pair with**: claude-base's `qa-security` skill (manual review workflow).
+
+**Install** (verify on their repo):
+```bash
+git clone --depth 1 https://github.com/agamm/claude-code-owasp ~/dev/vendor-skills/owasp
+# Skill content lives under .claude/ — copy or symlink as appropriate
+```
+
+**Adoption signal**: 171★ at audit time — modest. The value is in pointing to a faithful implementation of the canonical OWASP standard, not in popularity.
+
+**Vendor-neutrality**: Independent author.
+
+---
+
+### Semgrep — `semgrep` plugin (qa-security companion, automated scanner)
+
+**Covers**: Static analysis engine integrated into Claude Code via the official Semgrep plugin.
+
+**When to install**: any project where automated security scanning is wanted alongside manual review.
+
+**Pair with**: claude-base's `qa-security` skill + the OWASP skill above.
+
+**Install**:
+```bash
+claude plugin install semgrep@claude-plugins-official  # or via claude.com/plugins/semgrep
+claude-base update --add-plugin semgrep@claude-plugins-official ./your-project
+```
+
+**Vendor-neutrality**: Semgrep is an independent security company.
 
 ---
 

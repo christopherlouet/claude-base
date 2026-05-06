@@ -171,6 +171,17 @@ app.use(helmet({
 
 Think hard about every potential attack vector.
 
+## See also
+
+Two community sources complement this skill:
+
+- [`agamm/claude-code-owasp`](https://github.com/agamm/claude-code-owasp) (171★, last commit 2026-04-28) — covers OWASP Top 10:2025, ASVS 5.0, and 20 language-specific quirks. Independent author. Adoption is modest at the time of this audit; the value is in pointing to a faithful implementation of the canonical OWASP standard rather than in popularity.
+- [`semgrep` official Claude plugin](https://claude.com/plugins/semgrep) — Semgrep is an independent security company; their plugin integrates the static-analysis engine into Claude Code sessions for automated scanning.
+
+When working on a security audit, install one or both alongside this skill. This skill captures the **manual review workflow** (when to invoke, what to escalate, blocking criteria); the OWASP skill captures the **canonical attack catalogue with current 2025-2026 categories**; the Semgrep plugin adds the **automated scanner** layer.
+
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.
+
 ## Automatic triggering
 
 This skill is automatically activated when:
