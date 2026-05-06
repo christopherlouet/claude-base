@@ -112,11 +112,14 @@ run_tests() {
 
     # Parallelization: --jobs auto if GNU parallel or rush available, otherwise sequential.
     # ~4.3x speedup on multi-core machines (3min17 sequential → 46s with 8 jobs).
+    # --no-parallelize-within-files: tests within the same file run serially to avoid
+    # races on shared /tmp sentinels (hook-output-rewriter.bats); files still run in
+    # parallel across workers, so the speedup is preserved.
     if command -v parallel >/dev/null 2>&1 || command -v rush >/dev/null 2>&1; then
         local cores
         cores=$(nproc 2>/dev/null || echo "4")
         local jobs=$((cores > 8 ? 8 : cores))
-        bats_opts+=("--jobs" "$jobs")
+        bats_opts+=("--jobs" "$jobs" "--no-parallelize-within-files")
     fi
 
     bats "${bats_opts[@]}" "${test_files[@]}"
