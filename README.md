@@ -51,15 +51,13 @@ claude-base's unique value (vs assembling marketplace plugins alone):
 
 claude-base's long-term position is **a foundation that lives alongside the official Claude Code marketplace, not in opposition to it**. The kit's irreducible value is the workflow rigor (TDD, audit-loop, anti-drift), the path-specific rules, and the foundation conventions. Everything else — domain-specific knowledge — is increasingly available as vendor-published skills/plugins.
 
-We track this trajectory through three mechanisms:
+Three mechanisms keep the foundation aligned with that trajectory:
 
-1. **Per-domain marketplace audits** under `specs/marketplace-audit/`. Each pilot evaluates community/vendor skills against the foundation, classifies them (Keep, Reduce-to-pointer, Recommend), and documents the verdict transparently. As of v1.36.0, four domains audited: cli-tools, dev-*, qa-*, ops-* (38 candidates evaluated, 14 vendor pointers added).
-2. **Honest curation policy**. Vendor-neutrality is a non-negotiable filter (see `feedback_plugin_curation_vendor_neutrality` in maintainer memory): we reject pointers to vendors acquired by direct Anthropic competitors (notably OpenAI), regardless of technical merit. The Astral toolchain (acquired by OpenAI March 2026) is the worked example.
-3. **Recommended vendor skills per preset**. Each preset ships a `recommendedVendorSkills` array — a curated list printed at the end of `claude-base init`, telling the user which validated vendor skills complement their stack. Manual install today; the foundation does NOT auto-install third-party code.
+1. **Periodic marketplace audits**. The maintainer evaluates community and vendor-published skills against the foundation, applies a vendor-neutrality filter (we reject vendors acquired by direct Anthropic competitors — e.g. Astral acquired by OpenAI in March 2026), and documents the verdict per skill. The user-facing output is the recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md).
+2. **Recommended vendor skills per preset**. Each preset ships a `recommendedVendorSkills` array — a curated list printed at the end of `claude-base init`, telling the user which validated vendor skills complement their stack. Manual install today; the foundation does NOT auto-install third-party code.
+3. **Trajectory-driven automation**. As more vendors migrate to the official Claude Code marketplace, the install mechanism becomes uniform (`claude plugin install <id>`) and Anthropic-vetted. At that point, automating the install of recommended vendor skills becomes safe — the supply-chain risk is no longer "git clone arbitrary URL" but "install Anthropic-reviewed plugin." We do not automate today (~21% of audited vendors are on the official marketplace) but we will revisit when the ratio inverts.
 
-**As more vendors migrate to the official marketplace** (Anthropic's `claude-plugins-official`), the install mechanism becomes uniform (`claude plugin install <id>`) and Anthropic-vetted. At that point, automating the install of recommended vendor skills becomes safe — the supply-chain risk is no longer "git clone arbitrary URL" but "install Anthropic-reviewed plugin." We do not automate today (May 2026, ~3 of 14 audited vendors are on the official marketplace) but we will revisit when the ratio inverts.
-
-The recipe `docs/recipes/recommended-vendor-skills.md` is the user-facing index of every validated source, with install commands, vendor-neutrality status, and explicit re-evaluation triggers.
+The recipe is the canonical, user-facing index of every validated source, with install commands, vendor-neutrality status, and explicit re-evaluation triggers.
 
 ## Installation
 
