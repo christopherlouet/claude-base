@@ -13,6 +13,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Marketplace audit pilot — `ops-*` skills (10 skills)**: fourth audit
+  conducted under the methodology in `specs/marketplace-audit/spec.md`.
+  Findings: 7 KEEP-OURS (ops-ci, ops-ci-fix, ops-docker, ops-mobile-release,
+  ops-opnsense, ops-proxmox, ops-standup), 3 POINT-TO-VENDOR/COMMUNITY:
+  `mongodb/agent-skills` for ops-database, `antonbabenko/terraform-skill`
+  + `pulumi/agent-skills` for ops-infra-code, `grafana/skills` for
+  ops-monitoring. ops-mobile-release HOLDS (Fastlane skill stale + Android
+  incomplete; re-evaluate later). ops-ci-fix and ops-standup are
+  workflow-specific with no marketplace equivalent — claude-base's
+  irreducible value. All 4 sources verified via `gh api`. No vendor
+  required CASE-BY-CASE review (no Microsoft/Google ambiguity here).
+  Full trace in `specs/marketplace-audit/ops-skills-pilot-2026-05-06.md`.
+- **`## See also` sections in 3 ops-* SKILL.md files**: `ops-database`,
+  `ops-infra-code`, `ops-monitoring` now point to the validated vendor
+  sources. The ops-infra-code attribution footer (already crediting
+  antonbabenko) was upgraded to a full `## See also` framing alongside
+  the new Pulumi pointer.
+- **`docs/recipes/recommended-vendor-skills.md` extended** with 4 new
+  vendor entries (MongoDB, antonbabenko/terraform-skill, Pulumi, Grafana).
+
+### Cumulative across 4 audits
+
+- 38 skills/plugins evaluated across 4 domains
+- 14 vendor pointers added
+- 17 KEEP-OURS verdicts (claude-base skills retained)
+- Trend: vendor-published skills accelerating in 2026; claude-base's
+  workflow-specific skills (ops-ci-fix, ops-standup, ops-opnsense, etc.)
+  remain irreducible value with no marketplace equivalent.
+
 - **Marketplace audit pilot — `qa-*` skills (7 skills)**: third audit
   conducted under the methodology in `specs/marketplace-audit/spec.md`.
   Findings: 1 KEEP-OURS (qa-tech-debt), 1 GAP-OUTSCOPE-POINTER (qa-design),
