@@ -1,0 +1,87 @@
+US-2 verification transcript — `--plugin-dir` and `--plugin-url`
+================================================================
+
+Captured: 2026-05-06
+Claude Code version: 2.1.131 (local)
+Method: CLI introspection + plugin-validate subcommand (no --print runtime test
+because subprocess claude inside an authenticated session does not inherit the
+parent's auth, and we declined to run `claude setup-token` for this scope).
+
+CLI help output (verbatim from `claude --help`)
+-----------------------------------------------
+
+  --plugin-dir <path>    Load a plugin from a directory or .zip for this
+                         session only (repeatable: --plugin-dir A
+                         --plugin-dir B.zip) (default: [])
+  --plugin-url <url>     Fetch a plugin .zip from a URL for this session only
+                         (repeatable: --plugin-url A --plugin-url B)
+                         (default: [])
+
+Confirms:
+  - Both flags are session-scoped (transient, no persistence)
+  - Both flags are repeatable
+  - --plugin-dir accepts both directories AND .zip files
+  - --plugin-url fetches .zip archives from URLs
+
+Manifest format check
+---------------------
+
+Created minimal plugin at /tmp/cli-2131-verify/test-plugin/.claude-plugin/plugin.json:
+
+  {
+    "name": "claude-base-verify",
+    "version": "0.0.1",
+    "description": "Minimal plugin used to verify --plugin-dir / --plugin-url"
+  }
+
+Ran: `claude --bare plugin validate ./test-plugin`
+
+Output:
+  Validating plugin manifest: /tmp/cli-2131-verify/test-plugin/.claude-plugin/plugin.json
+  ⚠ Found 1 warning:
+    ❯ author: No author information provided. Consider adding author details
+  ✔ Validation passed with warnings
+
+Confirms: minimum viable plugin manifest = name + version + description (with
+optional author for attribution). The `.claude-plugin/plugin.json` location is
+the canonical path.
+
+Caveat — .zip not accepted by `plugin validate`
+-----------------------------------------------
+
+Ran: `claude --bare plugin validate ./test-plugin.zip` (a valid zip of the dir
+above)
+
+Output:
+  Validating plugin manifest: /tmp/cli-2131-verify/test-plugin.zip
+  ✘ Found 1 error:
+    ❯ json: Invalid JSON syntax: JSON Parse error: Unexpected identifier "PK"
+  ✘ Validation failed
+
+Interpretation: the `plugin validate` subcommand reads the path argument as a
+JSON file, not as an archive. The "PK" identifier is the standard zip magic
+number (PK\x03\x04). Asymmetry with `--plugin-dir` runtime, which DOES accept
+.zip per the help text.
+
+Recipe implication: if a user wants to validate a plugin manifest, they must
+unzip first OR validate the manifest directory before zipping for distribution.
+
+Skill overrides — `skillOverrides`
+----------------------------------
+
+Method: ran `strings /home/chris/.local/share/claude/versions/2.1.131 | grep
+skillOverrides` (binary string dump on the CC native build).
+
+Result: the literal string `skillOverrides` is present in the binary, confirming
+the key is recognized at the settings.json schema level. The three values
+documented in the upstream changelog (`off`, `user-invocable-only`, `name-only`)
+are not all individually retrievable from the noisy binary dump and were not
+isolated; the documentation will name them as listed in the upstream CHANGELOG
+entry for 2.1.129 ("skillOverrides setting now functional with off,
+user-invocable-only, and name-only options") and defer authoritative semantics
+to the upstream source.
+
+Live behavior verification (which mode disables what, coexistence with the
+foundation's `foundation.skills.drop[]` array) was not performed in this session
+to avoid burning subscription quota in subprocess `--print` calls without
+inherited auth.

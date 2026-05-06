@@ -280,11 +280,26 @@ Ecosystem of community extensions for Claude Code. A plugin can contain skills, 
 
 | Action | Command |
 |--------|----------|
-| Load a local plugin | `claude --plugin-dir ./my-plugin` |
+| Load a local plugin (directory or `.zip`) | `claude --plugin-dir ./my-plugin` |
+| Load a remote plugin | `claude --plugin-url https://example.com/my-plugin.zip` |
 | Namespaced skills | `/my-plugin:skill-name` |
 | Plugin executables | Files in `bin/` invocable as Bash commands |
 
 Plugins can be distributed via an Anthropic-managed directory. Setting `disableSkillShellExecution` to disable shell execution in unverified plugins.
+
+### Evaluating a plugin before adoption (CLI 2.1.128+)
+
+Both `--plugin-dir <path>` (local directory or `.zip`) and `--plugin-url <url>` (remote `.zip`) are session-scoped: the plugin is loaded for the current `claude` invocation only and disappears at session end. They are repeatable, so multiple plugins can be combined for a single trial. This is the foundation's recommended way to validate a plugin against your workflow before requesting it for permanent inclusion in a preset's `marketplacePlugins` list — consistent with the validation-first policy described in [`docs/recipes/recommended-vendor-skills.md`](../recipes/recommended-vendor-skills.md).
+
+Recipe — try a plugin without committing to it:
+
+1. **Get the plugin**. Either clone the repo (`git clone <repo>`) or download the release `.zip` to a temp dir.
+2. **Validate the manifest**. Run `claude plugin validate <unzipped-path>`. The validator reads `<path>/.claude-plugin/plugin.json`; pass an unzipped directory, not a `.zip` (the validator reads the path argument as a JSON file). Confirm at minimum `name`, `version`, `description` are present; `author` is recommended.
+3. **Load it transiently**. Either `claude --plugin-dir ./plugin/` or `claude --plugin-dir ./plugin.zip` or `claude --plugin-url <url>`. The plugin is active for this session only.
+4. **Use the plugin in your real workflow**. Invoke its skills (`/<plugin-name>:<skill>`), trigger its hooks, exercise the surface you care about. Take notes.
+5. **Cleanup is automatic**. Exit the session — no installed state remains. Repeat with `--plugin-dir`/`--plugin-url` if you want to compare with another plugin or against the un-augmented baseline.
+
+If after this trial the plugin is worth adopting, raise an issue or pull request against the relevant preset under [`presets/`](../../presets/) with the validation evidence (the marketplace-audit methodology under [`specs/marketplace-audit/`](../../specs/marketplace-audit/) describes the bar).
 
 ## Scheduled Tasks (Cloud)
 

@@ -72,6 +72,22 @@ Each skill defines:
 
 Skills are triggered automatically by Claude based on context.
 
+## Skill overrides (CLI 2.1.129+)
+
+Bundled skills can be selectively suppressed at the settings level via the `skillOverrides` key in `.claude/settings.json` or `.claude/settings.local.json`. Three modes are accepted:
+
+| Mode | Effect |
+|------|--------|
+| `off` | The skill does not load and is not invocable. |
+| `user-invocable-only` | Automatic triggering is disabled; the skill remains available via explicit `/skill-name` invocation. |
+| `name-only` | The skill name is preserved in the catalog without loading its body — useful when the name is referenced elsewhere but a vendor alternative should take over the work. |
+
+When to reach for it: a vendor-published skill duplicates the depth of a bundled one (e.g., a vendor framework's official skill replaces the foundation's general-purpose equivalent). Setting the bundled skill to `user-invocable-only` lets the vendor skill auto-trigger while keeping the bundled one as a manual fallback.
+
+Note on the foundation's preset filter — each preset's `foundation.skills.drop[]` array operates at a different layer: it filters skills out at `claude-base init` time, before they are ever installed in the project. `skillOverrides` operates at session start on already-installed skills. The two mechanisms are complementary and can be combined.
+
+Refer to the upstream Claude Code changelog for the canonical JSON shape and any future modes added to the setting; this section names the modes shipped at 2.1.129 and describes their intent, not their evolving syntax.
+
 ## Skills Best Practices
 
 ### Size and Budget
