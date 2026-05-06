@@ -15,11 +15,13 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 **claude-base** is a configuration bundle for [Claude Code](https://code.claude.com/docs/en/overview) that gives you:
 
 - A structured development workflow: **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
-- **<!-- count:commands -->131<!-- /count --> commands**, **<!-- count:agents -->63<!-- /count --> sub-agents**, and **<!-- count:skills -->54<!-- /count --> skills** for a wide range of tasks
-- Built-in conventions and best practices (TDD enforcement, security, accessibility, performance)
-- A speed-up for your development through reusable, opinionated commands
-- Ready-to-use CI/CD and pre-commit hooks
-- Multi-stack support: Node.js, Python, Go, Rust, Flutter, Docker, K8s, Terraform, Proxmox
+- **<!-- count:commands -->131<!-- /count --> commands**, **<!-- count:agents -->63<!-- /count --> sub-agents**, **<!-- count:skills -->54<!-- /count --> skills**, and **30 path-specific rules** wired together
+- **5 stack-specific presets** (`nextjs`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) installable via `claude-base init --preset <name> <path>`
+- **Curated vendor skill pointers** per preset, surfaced at install time via the recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) — 14 vendor skills validated across 4 marketplace audit pilots
+- **One-liner install** via `curl | bash` + unified CLI dispatcher (`claude-base init/update/validate/preset/uninstall`)
+- Built-in conventions enforced via path-specific rules: TDD (mandatory tests-first), security (OWASP defaults), accessibility (WCAG), performance (Core Web Vitals), deploy-safety
+- Ready-to-use CI/CD workflows and pre-commit hooks, including a counts.json anti-drift gate
+- PostToolUse output rewriter for noisy bash + inline tsc/eslint errors (Claude Code 2.1.121+)
 
 ## How it fits in the Claude Code ecosystem
 
@@ -38,14 +40,14 @@ vendor skills (specific tools)  ← Terraform, Postgres, Playwright, Grafana, Pr
 claude-base's unique value (vs assembling vendor skills alone):
 
 - Workflow rigor coordinated as one experience (TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates)
-- Anti-drift counter strategy across the entire foundation (CI-enforced, see [PR #110](https://github.com/christopherlouet/claude-base/pull/110))
-- 30 path-specific rules (currently not a plugin component, see `docs/guides/EXTENDING-GUIDE.md` § 7)
-- PostToolUse output rewriter for Bash + tsc/eslint (see [PR #116](https://github.com/christopherlouet/claude-base/pull/116))
-- Integrated setup via `new-project.sh`, including hooks, permissions and env defaults
+- Anti-drift counter strategy across the entire foundation, CI-enforced via `counts.json`
+- 30 path-specific rules (currently not a plugin component — see `docs/guides/EXTENDING-GUIDE.md` § 7)
+- PostToolUse output rewriter for Bash + tsc/eslint (Claude Code 2.1.121+)
+- Integrated install + update flow via the `claude-base` CLI (init, update, validate, preset, uninstall)
 
 **Honest limit**: for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources.
 
-**Presets**: the first preset (`nextjs`) ships with this release. Use `./scripts/new-project.sh --preset nextjs <path>` to install foundation + applied filters for a Next.js stack. See `.claude/presets/README.md` for usage and `specs/presets/roadmap.md` for the named target stacks (24+ community-wanted across web, backend, mobile, data, infra). Stack-specific naming only — no `web-app` or `backend-app`. Contributions welcome for stacks not yet covered.
+**Presets**: stack-specific presets (`nextjs`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) installable via `claude-base init --preset <name> <path>`. Each preset filters the foundation to the relevant skills + ships a curated `recommendedVendorSkills` list printed at the end of the install. See [`.claude/presets/README.md`](./.claude/presets/README.md) for the canonical catalogue and [`specs/presets/roadmap.md`](./specs/presets/roadmap.md) for community-wanted stacks. Stack-specific naming only — no `web-app` or `backend-app`. Contributions welcome for stacks not yet covered.
 
 ## Strategy & trajectory
 
