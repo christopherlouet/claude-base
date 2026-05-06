@@ -21,6 +21,11 @@ semantic versioning, complete tests, production build, tag, deployment.
 - **TAG**: Annotated tag `git tag -a vX.Y.Z`, push, GitHub release with notes
 - **DEPLOY**: Production deployment with rollback plan ready
 
+## Performance notes
+
+- **Use the project's parallel test runner** when one exists. On claude-base specifically, `bash scripts/test.sh` runs ~4.5x faster than `bats tests/*.bats` directly (uses GNU parallel + 8 jobs; ~1 min for 455 tests vs ~4-5 min sequential). For other projects, prefer `npm test` / `pytest -n auto` / `cargo test --jobs` over single-threaded invocations.
+- **Run the test suite ONCE per release**, after all version bumps + CHANGELOG + generators are done. Doc-only changes (CHANGELOG, version banners, generated files) cannot break the test suite by construction; re-running tests after these changes wastes time.
+
 ## Expected output
 
 1. **Audit**: Quality go/no-go report
