@@ -293,12 +293,19 @@ This skill uses **progressive disclosure** - essential information in this file,
 
 See [terraform-best-practices.com](https://terraform-best-practices.com) for the full guides.
 
-## Attribution
+## See also
 
-This skill is adapted from [terraform-skill](https://github.com/antonbabenko/terraform-skill) by Anton Babenko.
-Additional resources:
-- [terraform-best-practices.com](https://terraform-best-practices.com)
-- [Compliance.tf](https://compliance.tf)
+This skill was originally adapted from [`antonbabenko/terraform-skill`](https://github.com/antonbabenko/terraform-skill) (1,797★, last commit 2026-04-22) — the de-facto community Terraform skill maintained by Anton Babenko. The upstream is more comprehensive than this excerpt: reference files for CI/CD workflows, code patterns, testing frameworks, security compliance.
+
+For Pulumi users, [`pulumi/agent-skills`](https://github.com/pulumi/agent-skills) (44★, last commit 2026-05-04) is the official skill from Pulumi covering authoring patterns and migration workflows (Terraform→Pulumi, CloudFormation→Pulumi).
+
+When working on a Terraform/OpenTofu/Pulumi project, install the relevant upstream alongside this skill. This skill keeps a thin foundation-workflow wrapper (module hierarchy, naming conventions, integration with `ops-deploy`); the upstream skills capture the canonical breadth of HCL / Pulumi patterns that evolves with each release.
+
+**Vendor-neutrality**: `antonbabenko/terraform-skill` is community-authored (independent maintainer, not IBM/HashiCorp). HashiCorp was acquired by IBM in February 2025; IBM has Watson but is not a direct Anthropic/OpenAI competitor. Pulumi is independent. Both pass the vendor-neutrality filter.
+
+Additional Terraform reference: [terraform-best-practices.com](https://terraform-best-practices.com), [Compliance.tf](https://compliance.tf).
+
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/ops-skills-pilot-2026-05-06.md`.
 
 ## Automatic triggering
 

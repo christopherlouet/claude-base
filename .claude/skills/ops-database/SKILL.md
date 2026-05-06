@@ -87,3 +87,15 @@ EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
 -- Missing indexes
 SELECT * FROM pg_stat_user_indexes WHERE idx_scan = 0;
 ```
+
+## See also
+
+MongoDB publishes their own official agent skills at [`mongodb/agent-skills`](https://github.com/mongodb/agent-skills) (102★, last commit 2026-05-04). The repo covers schema design heuristics, indexing strategies, query patterns, and operational safeguards specific to MongoDB.
+
+For PostgreSQL, the `dev-supabase` skill already points to [`supabase/agent-skills`](https://github.com/supabase/agent-skills) which includes a `supabase-postgres-best-practices` skill (30 rules across 8 categories) — useful for any Postgres project, not just Supabase-managed.
+
+When working on a project using one of these databases, install the relevant vendor skill alongside this one. This skill captures the **stack-neutral conventions** (naming, soft-delete patterns, `updated_at` triggers, partitioning strategy); the vendor skills capture the **canonical operational patterns** specific to MongoDB or Postgres.
+
+**Vendor-neutrality**: MongoDB Inc. is independent. Supabase is independent. Both pass the vendor-neutrality filter.
+
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/ops-skills-pilot-2026-05-06.md`.

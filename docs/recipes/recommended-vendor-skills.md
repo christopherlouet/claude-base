@@ -10,11 +10,12 @@ This recipe lives outside the foundation deliberately. The recommended skills ar
 
 ## Why this recipe exists
 
-Three audit pilots identified a small set of vendor-published skills that complement the claude-base foundation:
+Four audit pilots identified a small set of vendor-published skills that complement the claude-base foundation:
 
 - `cli-tools` plugin pilot (`specs/marketplace-audit/cli-tools-pilot-2026-05-05.md`)
 - `dev-*` skills pilot (`specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`)
 - `qa-*` skills pilot (`specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`)
+- `ops-*` skills pilot (`specs/marketplace-audit/ops-skills-pilot-2026-05-06.md`)
 
 Combined findings:
 
@@ -274,6 +275,78 @@ git clone --depth 1 https://github.com/agamm/claude-code-owasp ~/dev/vendor-skil
 **Adoption signal**: 171★ at audit time — modest. The value is in pointing to a faithful implementation of the canonical OWASP standard, not in popularity.
 
 **Vendor-neutrality**: Independent author.
+
+---
+
+### MongoDB — `mongodb/agent-skills` (ops-database companion)
+
+**Covers**: MongoDB schema design heuristics, indexing strategies, query patterns, operational safeguards.
+
+**When to install**: any project using MongoDB.
+
+**Pair with**: claude-base's `ops-database` skill (stack-neutral conventions: naming, soft-delete, updated_at triggers).
+
+**Install** (verify on their repo):
+```bash
+git clone --depth 1 https://github.com/mongodb/agent-skills ~/dev/vendor-skills/mongodb
+# Symlink the relevant skill subdirectories into ./.claude/skills/
+```
+
+**Vendor-neutrality**: MongoDB Inc. is independent.
+
+---
+
+### Anton Babenko — `terraform-skill` (ops-infra-code companion, Terraform/OpenTofu)
+
+**Covers**: comprehensive Terraform/OpenTofu patterns — CI/CD workflows, code patterns, testing frameworks, security compliance, quick reference. The de-facto community Terraform skill.
+
+**When to install**: any project using Terraform or OpenTofu.
+
+**Pair with**: claude-base's `ops-infra-code` skill (foundation-workflow integration: module hierarchy, naming conventions, link to `ops-deploy`).
+
+**Install** (verify on the repo):
+```bash
+git clone --depth 1 https://github.com/antonbabenko/terraform-skill ~/dev/vendor-skills/terraform
+ln -s ~/dev/vendor-skills/terraform/skills/terraform ./.claude/skills/terraform
+```
+
+**Vendor-neutrality**: community-authored (Anton Babenko, independent maintainer). HashiCorp acquired by IBM (Feb 2025) but the skill author is independent. IBM has Watson but is not a direct Anthropic/OpenAI competitor. Acceptable.
+
+---
+
+### Pulumi — `pulumi/agent-skills` (ops-infra-code companion, Pulumi)
+
+**Covers**: Pulumi authoring patterns + migration workflows (Terraform→Pulumi, CloudFormation→Pulumi).
+
+**When to install**: any project using Pulumi (or migrating from Terraform/CloudFormation to Pulumi).
+
+**Pair with**: claude-base's `ops-infra-code` skill.
+
+**Install** (verify on their repo and docs at <https://www.pulumi.com/docs/ai/skills/>):
+```bash
+git clone --depth 1 https://github.com/pulumi/agent-skills ~/dev/vendor-skills/pulumi
+# Symlink the relevant skill subdirectories into ./.claude/skills/
+```
+
+**Vendor-neutrality**: Pulumi is independent.
+
+---
+
+### Grafana Labs — `grafana/skills` (ops-monitoring companion)
+
+**Covers**: Grafana Core, Grafana Cloud, the LGTM stack (Loki, Grafana, Tempo, Mimir), k6 performance testing, Grafana app SDK. Companion repo `grafana/pyroscope-skills` covers continuous profiling.
+
+**When to install**: any project using the Grafana / LGTM observability stack.
+
+**Pair with**: claude-base's `ops-monitoring` skill (three-pillar overview, foundation OTEL skeleton).
+
+**Install** (verify on the repo):
+```bash
+git clone --depth 1 https://github.com/grafana/skills ~/dev/vendor-skills/grafana
+# Symlink the relevant skill subdirectories into ./.claude/skills/
+```
+
+**Vendor-neutrality**: Grafana Labs is independent.
 
 ---
 

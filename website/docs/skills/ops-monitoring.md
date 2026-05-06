@@ -94,6 +94,16 @@ app.get('/ready', async (req, res) => {
 });
 ```
 
+## See also
+
+Grafana Labs publishes their own official agent skills at [`grafana/skills`](https://github.com/grafana/skills) (31★, last commit 2026-05-04). The repo covers Grafana Core, Grafana Cloud, the LGTM stack (Loki/Grafana/Tempo/Mimir), k6 performance testing, and the Grafana app SDK. A separate companion repo [`grafana/pyroscope-skills`](https://github.com/grafana/pyroscope-skills) covers continuous profiling.
+
+When working on a project that uses the Grafana / LGTM stack, install the vendor skill alongside this one. This skill captures the **three-pillar instrumentation overview** (logs / metrics / traces) and the foundation's basic OTEL + health-check skeleton; the vendor skill captures the **canonical Grafana operational patterns** that evolve with each Grafana release. For non-Grafana stacks (Datadog, New Relic, Honeycomb, etc.), this skill remains the primary reference.
+
+**Vendor-neutrality**: Grafana Labs is independent. No concern.
+
+Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/ops-skills-pilot-2026-05-06.md`.
+
 ## Automatic triggering
 
 This skill is automatically activated when:
