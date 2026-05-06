@@ -64,6 +64,12 @@ The project includes automatic hooks in `.claude/settings.json`:
 
 PreToolUse hooks can return `"defer"` as a permission decision. The headless session pauses at the tool call and can resume with `-p --resume` to re-evaluate the hook. Useful for CI/CD workflows requiring human approval.
 
+### MCP transient retry (CLI 2.1.128+)
+
+When a hook interacts with an MCP server, transient connection failures are auto-retried by the runtime. Hook authors do not need to wrap MCP calls in custom retry logic for transient cases (the typical "server momentarily unavailable" pattern). Permanent failures are not retried.
+
+The exact retry bound and the failure-classification heuristics are tuned upstream and may evolve between releases — refer to the [Claude Code changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) for the canonical behavior at the version you target.
+
 ## Configured Hooks
 
 | Hook | Trigger | Action |
