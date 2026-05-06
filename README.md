@@ -121,6 +121,10 @@ cp claude-base/.mcp.json your-project/
 cp claude-base/.github your-project/ -r
 ```
 
+### Keeping Claude Code itself up to date
+
+The commands above install and update **claude-base** — they do not touch the underlying Claude Code CLI. If you installed Claude Code through Homebrew or WinGet, you can opt into background upgrades by exporting `CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE=1` in your shell. This has no effect on the curl one-liner install of claude-base, and no effect if you installed Claude Code through any other channel. Available in Claude Code 2.1.129+.
+
 ## Structure
 
 ```
