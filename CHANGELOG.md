@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **`work-flow-release` agent: performance notes added** to the command
+  documentation. Two practical tips: (1) use `bash scripts/test.sh`
+  (parallel, ~1 min) instead of `bats tests/*.bats` (sequential, ~4-5 min)
+  — 4.5x speedup on the 455-test suite via GNU parallel + 8 jobs;
+  (2) run the test suite ONCE per release, after all doc/version bumps
+  are done, since CHANGELOG and version banners cannot break tests by
+  construction. Net saving observed on the v1.32–v1.35 releases:
+  ~7 minutes per release flow that was lost to slow sequential invocation
+  + redundant re-runs.
+
 ### Added
 
 - **`recommendedVendorSkills` per preset** (printed at the end of
