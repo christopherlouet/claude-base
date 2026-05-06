@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.36.0] - 2026-05-06
+
+Curation + UX release. Two more marketplace audit pilots (qa-* and ops-*)
+bring the cumulative coverage to **38 candidates evaluated, 14 vendor
+pointers added** across 4 domains. The recommended vendor skills are
+now **printed at the end of `claude-base init`**, so users discover
+the curated complements at install time rather than having to read the
+recipe. The README gains a "Strategy & trajectory" section documenting
+the foundation's long-term position alongside the official Claude Code
+marketplace, and the `work-flow-release` command doc gains performance
+notes that save ~7 minutes per release.
+
 ### Changed
 
 - **`work-flow-release` agent: performance notes added** to the command
