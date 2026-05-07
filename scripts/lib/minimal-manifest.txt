@@ -46,8 +46,18 @@
 # === Config ===
 .claude/settings.json
 
-# === Hook routing semantique ===
+# === Hooks (referenced by .claude/settings.json) ===
+# All scripts referenced by settings.json must ship here, otherwise
+# fresh --minimal installs end up with hooks pointing at missing files.
+# Drift guard: tests/manifest-hooks-coverage.bats.
+scripts/hooks/_hook-helpers.sh
+scripts/hooks/base-integrity-check.sh
+scripts/hooks/bash-output-filter.sh
+scripts/hooks/check-cli-version.sh
+scripts/hooks/command-validator.sh
+scripts/hooks/post-edit-typecheck-and-lint.sh
 scripts/hooks/prompt-context.sh
+scripts/hooks/setup-deps.sh
 
 # === Documentation minimale ===
 docs/reference/best-practices.md:.claude/docs/reference/best-practices.md

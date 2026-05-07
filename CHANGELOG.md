@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **`--minimal` install ships every hook script referenced by
+  `.claude/settings.json`.** Previously the minimal manifest only listed
+  `prompt-context.sh`, while `settings.json` referenced 7 distinct
+  `scripts/hooks/*.sh` files. Fresh minimal installs ended up with
+  hooks pointing at missing files (observed on `claude-i18n-migration`,
+  bootstrapped via `--minimal`, where every Bash command silently
+  bypassed `command-validator.sh` because the script did not exist on
+  disk). Manifest now ships the 6 missing hooks plus the shared
+  `_hook-helpers.sh` library sourced by 3 of them.
+
+### Added
+
+- **Drift-guard test (`tests/manifest-hooks-coverage.bats`)**: every
+  `scripts/hooks/*.sh` referenced by the source `.claude/settings.json`
+  must be listed in `scripts/lib/minimal-manifest.txt`, and the helper
+  is shipped whenever a sourcing hook is shipped. Prevents the same
+  drift from recurring.
+
 ## [1.36.0] - 2026-05-06
 
 Curation + UX release. Two more marketplace audit pilots (qa-* and ops-*)
