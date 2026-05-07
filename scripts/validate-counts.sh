@@ -175,7 +175,6 @@ echo ""
 #   - inject-counts-md.ts (instrumented MD: intro/index.md, intro/architecture.md,
 #     README.md, docs/CHEATSHEET.md, docs/ARCHITECTURE.md)
 # were removed as part of the counts-source-of-truth refactor.
-# See specs/counts-source-of-truth/ for design notes.
 #
 # Remaining Layer 1 check: CLAUDE.md FR-era patterns kept as defense-in-depth
 # in case narrative counters are ever re-added to CLAUDE.md.
