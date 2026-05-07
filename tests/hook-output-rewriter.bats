@@ -18,16 +18,20 @@ CHECK_VERSION="$BASE_DIR/scripts/hooks/check-cli-version.sh"
 BASH_FILTER="$BASE_DIR/scripts/hooks/bash-output-filter.sh"
 INLINE_EDIT="$BASE_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh"
 FIXTURES="$BASE_DIR/tests/hook-output-rewriter/fixtures"
-SENTINEL_FILE="/tmp/claude-rewriter-supported"
-METRIC_LOG="/tmp/claude-rewriter.log"
-LEGACY_NOTICE_SENTINEL="/tmp/claude-base-legacy-warned"
 
 setup() {
     skip_if_no_jq
     setup_test_dir
-    # Ensure sentinel + metric log cleanup before each test
-    rm -f "$SENTINEL_FILE" "$METRIC_LOG"
-    rm -f "$LEGACY_NOTICE_SENTINEL".*
+    # Per-test isolation: each test gets its own sentinel/log paths under
+    # $BATS_TEST_TMPDIR (auto-cleaned by bats). Hooks consume them via the
+    # HOOK_REWRITER_SENTINEL / HOOK_REWRITER_METRIC_LOG / HOOK_LEGACY_NOTICE_SENTINEL
+    # env vars so parallel tests do not race on shared /tmp paths.
+    SENTINEL_FILE="$BATS_TEST_TMPDIR/claude-rewriter-supported"
+    METRIC_LOG="$BATS_TEST_TMPDIR/claude-rewriter.log"
+    LEGACY_NOTICE_SENTINEL="$BATS_TEST_TMPDIR/claude-base-legacy-warned"
+    export HOOK_REWRITER_SENTINEL="$SENTINEL_FILE"
+    export HOOK_REWRITER_METRIC_LOG="$METRIC_LOG"
+    export HOOK_LEGACY_NOTICE_SENTINEL="$LEGACY_NOTICE_SENTINEL"
     # Build a fake `claude` binary path that tests can prepend to PATH
     FAKE_BIN="$TEST_DIR/fake-bin"
     mkdir -p "$FAKE_BIN"
@@ -35,8 +39,6 @@ setup() {
 }
 
 teardown() {
-    rm -f "$SENTINEL_FILE" "$METRIC_LOG"
-    rm -f "$LEGACY_NOTICE_SENTINEL".*
     teardown_test_dir
 }
 

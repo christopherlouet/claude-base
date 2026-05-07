@@ -167,7 +167,7 @@ SHORT_CMD=$(printf '%s' "$CMD" | head -c 50)
 {
     printf '%s tool=Bash cmd=%s orig=%s filtered=%s\n' \
         "$(date -u +%FT%TZ)" "$SHORT_CMD" "$ORIG_LINES" "$NEW_LINES" \
-        >> /tmp/claude-rewriter.log
+        >> "$HOOK_REWRITER_METRIC_LOG"
 } 2>/dev/null || true
 
 exit 0
