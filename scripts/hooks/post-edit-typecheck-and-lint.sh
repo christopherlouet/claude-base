@@ -19,7 +19,8 @@
 # Disable: SKIP_INLINE_EDIT_ERRORS=1
 # Legacy detection: if .claude/settings.json still references the old inline
 # tsc/eslint blocks (signal of a partial update), emit one notice per session
-# (sentinel: /tmp/claude-base-legacy-warned.<PPID>).
+# (sentinel: $HOOK_LEGACY_NOTICE_SENTINEL.<PPID>, default base
+# /tmp/claude-base-legacy-warned).
 # =============================================================================
 
 set -u
@@ -50,7 +51,7 @@ esac
 # -----------------------------------------------------------------------------
 # Legacy state detection (FR-22)
 # -----------------------------------------------------------------------------
-LEGACY_SENTINEL="/tmp/claude-base-legacy-warned.${PPID}"
+LEGACY_SENTINEL="${HOOK_LEGACY_NOTICE_SENTINEL}.${PPID}"
 if [ ! -f "$LEGACY_SENTINEL" ] && [ -f ".claude/settings.json" ]; then
     if grep -q 'npx tsc --noEmit' .claude/settings.json 2>/dev/null; then
         echo "[INFO] claude-base: settings.json appears to predate the output rewriter — re-run ./scripts/update.sh -f --all to enable. Continuing with legacy behavior." >&2

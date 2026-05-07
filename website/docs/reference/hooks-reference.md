@@ -146,6 +146,9 @@ Migration path: existing projects must run `./scripts/update.sh -f --all <projec
 | `SKIP_INLINE_EDIT_ERRORS=1` | Disable the inline edit errors hook (output rewriter) |
 | `BASH_OUTPUT_FILTER_VERBOSE=1` | Keep both filtered and original views in the rewritten output |
 | `BASH_OUTPUT_FILTER_THRESHOLD=<N>` | Override the noise threshold (default 30 lines) below which Bash outputs pass through unchanged |
+| `HOOK_REWRITER_SENTINEL=<path>` | Override the capability sentinel path (default `/tmp/claude-rewriter-supported`). Used by tests to isolate parallel runs under `$BATS_TEST_TMPDIR` |
+| `HOOK_REWRITER_METRIC_LOG=<path>` | Override the bash filter metric log path (default `/tmp/claude-rewriter.log`). Same testing rationale |
+| `HOOK_LEGACY_NOTICE_SENTINEL=<path>` | Override the legacy notice sentinel base path (default `/tmp/claude-base-legacy-warned`, suffixed with `.PPID`). Same testing rationale |
 
 ## Log Files
 

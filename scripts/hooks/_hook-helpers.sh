@@ -16,6 +16,13 @@
 # propagate to other hook invocations (each hook is its own subshell). A
 # sentinel file is fast (~1ms read) and OS-portable. Limitation: concurrent
 # Claude sessions on the same host share the sentinel; acceptable for v1.
+#
+# Path overrides (used by tests for per-process isolation under
+# $BATS_TEST_TMPDIR — production defaults are the documented /tmp paths):
+#   HOOK_REWRITER_SENTINEL       — capability sentinel (default /tmp/claude-rewriter-supported)
+#   HOOK_REWRITER_METRIC_LOG     — bash-output-filter metric log (default /tmp/claude-rewriter.log)
+#   HOOK_LEGACY_NOTICE_SENTINEL  — legacy notice sentinel base, suffixed with .PPID by post-edit
+#                                  (default /tmp/claude-base-legacy-warned)
 # =============================================================================
 
 # Avoid double-sourcing
@@ -23,6 +30,8 @@
 HOOK_HELPERS_LOADED=1
 
 HOOK_REWRITER_SENTINEL="${HOOK_REWRITER_SENTINEL:-/tmp/claude-rewriter-supported}"
+HOOK_REWRITER_METRIC_LOG="${HOOK_REWRITER_METRIC_LOG:-/tmp/claude-rewriter.log}"
+HOOK_LEGACY_NOTICE_SENTINEL="${HOOK_LEGACY_NOTICE_SENTINEL:-/tmp/claude-base-legacy-warned}"
 
 # hook_bail_if_disabled <ENV_VAR_NAME>
 # Exits the calling script with code 0 if the named env var equals "1".
