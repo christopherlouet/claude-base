@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.36.1] - 2026-05-08
+
+Patch release. Critical fix for `--minimal` installs: the manifest used by
+`scripts/export-minimal.sh` only shipped one of the 7 hook scripts referenced
+by the source `.claude/settings.json`, leaving fresh minimal installs with
+hooks pointing at missing files. A drift-guard bats test now prevents the
+same regression from recurring.
+
 ### Fixed
 
 - **`--minimal` install ships every hook script referenced by
