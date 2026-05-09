@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
-[![Tests](https://img.shields.io/badge/tests-494%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-512%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
@@ -174,13 +174,13 @@ claude-base/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->494<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->512<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
 │   ├── validate.bats            # Validation tests
 │   ├── docs-under-claude.bats   # v1.30 layout tests
-│   └── ...                      # <!-- count:testFiles -->24<!-- /count --> test files in total
+│   └── ...                      # <!-- count:testFiles -->25<!-- /count --> test files in total
 │
 ├── .gitleaks.toml               # gitleaks config (secret detection)
 ├── VERSION                      # Centralized foundation version (1.30.0)
@@ -527,7 +527,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->24<!-- /count --> files, <!-- count:tests -->494<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->25<!-- /count --> files, <!-- count:tests -->512<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|

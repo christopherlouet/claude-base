@@ -298,6 +298,22 @@ EOF
     [[ "$output" != *"Detected stack — multiple presets match"* ]]
 }
 
+@test "presets: interactive menu prepends matching preset as option 1 (US-4)" {
+    # Existing Next.js fixture, run interactively (no -y, no --simple).
+    # The menu must show "Use preset: nextjs" as option 1 and renumber the
+    # standard types so React becomes option 2.
+    local target="$TEST_DIR/proj-interactive-menu"
+    mkdir -p "$target"
+    touch "$target/next.config.js"
+    echo '{"dependencies":{"next":"^15"},"name":"smoke"}' > "$target/package.json"
+    # Feed enough lines so the script does not block; the timeout caps
+    # runtime in case of accidental infinite loop.
+    run bash -c "echo -e '1\nn\nn\nn\nn\n\nn' | timeout 10 '$NEW_PROJECT' --dry-run '$target' 2>&1"
+    [[ "$output" == *"Use preset: nextjs"* ]]
+    [[ "$output" == *"2) React / Next.js"* ]]
+    [[ "$output" == *"Choice [1-12]"* ]]
+}
+
 @test "presets: explicit --preset suppresses the Detected stack line (EF-016)" {
     # The target dir matches the nextjs detect rule; without --preset we
     # would print "Detected stack — preset matches: nextjs". With --preset
