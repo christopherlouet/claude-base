@@ -676,6 +676,52 @@ EOF
     [[ "$output" == *"recommendedVendorSkills"* ]]
 }
 
+# =============================================================================
+# US-5 — fixture pairing: each preset's detect rule must match its paired
+# fixture under tests/presets-fixtures/<preset>/. Drift-guard: if upstream
+# renames its config file or signal, the paired test fails loudly.
+# =============================================================================
+
+@test "presets: nextjs detect rule matches its fixture (US-5)" {
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/nextjs'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+}
+
+@test "presets: fastapi detect rule matches its fixture (US-5)" {
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/fastapi'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"fastapi"* ]]
+}
+
+@test "presets: astro detect rule matches its fixture (US-5)" {
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/astro'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"astro"* ]]
+}
+
+@test "presets: homelab-proxmox detect rule matches its fixture (US-5)" {
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/homelab-proxmox'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"homelab-proxmox"* ]]
+}
+
 @test "presets: --preset nextjs prints Recommended vendor skills section" {
     local target="$TEST_DIR/proj-rec"
     run "$NEW_PROJECT" --preset nextjs "$target"
