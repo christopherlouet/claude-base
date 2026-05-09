@@ -89,6 +89,7 @@ apply_type_choice() {
     [[ "$choice" =~ ^[0-9]+$ ]] || return 1
 
     if (( choice >= 1 && choice <= n )); then
+        # shellcheck disable=SC2034  # consumed by new-project.sh::main
         PRESET_NAME="${MATCHED_PRESETS[$((choice - 1))]}"
         return 0
     fi
@@ -97,6 +98,7 @@ apply_type_choice() {
     if (( std_idx < 0 || std_idx >= ${#_MENU_STD_TYPES[@]} )); then
         return 1
     fi
+    # shellcheck disable=SC2034  # consumed by new-project.sh::main
     PROJECT_TYPE="${_MENU_STD_TYPES[$std_idx]}"
     return 0
 }
