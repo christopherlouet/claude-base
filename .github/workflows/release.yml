@@ -39,18 +39,39 @@ jobs:
           echo "rules=$(find .claude/rules -name '*.md' -not -name 'README.md' | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
           echo "styles=$(find .claude/output-styles -name '*.md' -not -name 'README.md' | wc -l | tr -d ' ')" >> $GITHUB_OUTPUT
 
-      - name: Generate changelog
-        id: changelog
-        uses: metcalfc/changelog-generator@v4.7.0
-        with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        run: |
+          # Tag is vX.Y.Z; CHANGELOG.md heading is "## [X.Y.Z] - DATE".
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          # Print every line between "## [VERSION]" (exclusive) and the
+          # next "## [" heading (exclusive). Empty when VERSION is missing.
+          NOTES=$(awk -v ver="$VERSION" '
+            /^## \[/{
+              if (capture) exit
+              if ($0 ~ "^## \\[" ver "\\]") { capture=1; next }
+            }
+            capture { print }
+          ' CHANGELOG.md)
+
+          if [ -z "$NOTES" ]; then
+            echo "::warning::No CHANGELOG.md section found for v$VERSION — using fallback body"
+            NOTES="Release v$VERSION. See [CHANGELOG.md](./CHANGELOG.md) for details."
+          fi
+
+          # Multi-line step output (GitHub Actions heredoc syntax).
+          {
+            echo "body<<RELNOTES_EOF"
+            echo "$NOTES"
+            echo "RELNOTES_EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
           body: |
-            ## Changelog
-            ${{ steps.changelog.outputs.changelog }}
+            ${{ steps.notes.outputs.body }}
 
             ## Installation
 
