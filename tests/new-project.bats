@@ -365,3 +365,23 @@ EOF
     [ "$status" -eq 0 ]
     [ ! -d "$TEST_DIR/dry-target-2/.claude" ]
 }
+
+# =============================================================================
+# Foundation version marker (T1.3 — written after install)
+# =============================================================================
+
+@test "new-project.sh --simple writes .claude/.foundation-version with the foundation version" {
+    run "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/marker-target"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/marker-target/.claude/.foundation-version" ]
+    local marker_content expected
+    marker_content=$(cat "$TEST_DIR/marker-target/.claude/.foundation-version")
+    expected=$(cat "$BASE_DIR/VERSION")
+    [ "$marker_content" = "$expected" ]
+}
+
+@test "new-project.sh --simple --dry-run does NOT write the marker" {
+    run "$NEW_PROJECT_SCRIPT" --simple --dry-run -y "$TEST_DIR/dry-marker-target"
+    [ "$status" -eq 0 ]
+    [ ! -f "$TEST_DIR/dry-marker-target/.claude/.foundation-version" ]
+}
