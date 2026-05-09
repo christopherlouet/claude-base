@@ -17,6 +17,8 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 - A structured development workflow: **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
 - **<!-- count:commands -->131<!-- /count --> commands**, **<!-- count:agents -->63<!-- /count --> sub-agents**, **<!-- count:skills -->54<!-- /count --> skills**, and **30 path-specific rules** wired together
 - **5 stack-specific presets** (`nextjs`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) installable via `claude-base init --preset <name> <path>`
+- **Auto-detection of presets** — `claude-base init <existing-project>` recognizes the stack via marker files (e.g. `next.config.js`, `pyproject.toml` containing `fastapi`) and surfaces the matching preset at the top of the type menu. Standalone audit via `claude-base init --detect-only <path>`. Adding a new preset is data-driven (a `.json` manifest with a `detect` block — no code change in detection scripts).
+- **Preset-aware updates** — `claude-base update --all` keeps the preset's skill filter applied, so a project bootstrapped with `--preset nextjs` no longer drifts back to the unfiltered foundation on every refresh. Override with `--preset <name>`, opt out with `--no-preset`. The filter is COPY-only — files already on disk are never deleted.
 - **Curated vendor skill pointers** per preset, surfaced at install time via the recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) — 14 vendor skills validated across 4 marketplace audit pilots
 - **One-liner install** via `curl | bash` + unified CLI dispatcher (`claude-base init/update/validate/preset/uninstall`)
 - Built-in conventions enforced via path-specific rules: TDD (mandatory tests-first), security (OWASP defaults), accessibility (WCAG), performance (Core Web Vitals), deploy-safety
@@ -47,7 +49,7 @@ claude-base's unique value (vs assembling vendor skills alone):
 
 **Honest limit**: for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources.
 
-**Presets**: stack-specific presets (`nextjs`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) installable via `claude-base init --preset <name> <path>`. Each preset filters the foundation to the relevant skills + ships a curated `recommendedVendorSkills` list printed at the end of the install. See [`.claude/presets/README.md`](./.claude/presets/README.md) for the canonical catalogue and [`specs/presets/roadmap.md`](./specs/presets/roadmap.md) for community-wanted stacks. Stack-specific naming only — no `web-app` or `backend-app`. Contributions welcome for stacks not yet covered.
+**Presets**: stack-specific presets (`nextjs`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) installable via `claude-base init --preset <name> <path>`. Each preset filters the foundation to the relevant skills + ships a curated `recommendedVendorSkills` list printed at the end of the install. Four of them also self-describe a `detect` block, so running `claude-base init <existing-project>` (or `claude-base update`) auto-recognises the stack and applies the right filter — without persisting any state on disk. See [`.claude/presets/README.md`](./.claude/presets/README.md) for the canonical catalogue and [`specs/presets/roadmap.md`](./specs/presets/roadmap.md) for community-wanted stacks. Stack-specific naming only — no `web-app` or `backend-app`. Contributions welcome for stacks not yet covered.
 
 ## Strategy & trajectory
 
@@ -543,6 +545,12 @@ brew install bats-core
 | `lint.bats` | Linting script tests |
 | `e2e.bats` | End-to-end tests |
 | `prompt-context.bats` | UserPromptSubmit hook tests |
+| `presets.bats` | Preset manifest schema + suggestion + integration tests |
+| `preset-detect.bats` | `scan_presets()` library unit tests (data-driven detection) |
+| `preset-e2e.bats` | Per-preset end-to-end (bootstrap + validate + doctor + hook drift-guard) |
+| `update-presets.bats` | Preset-aware update behaviour (`--preset`, `--no-preset`, filter, multi-match) |
+| `menu.bats` | Interactive type-menu rendering when matched presets prepend |
+| `manifest-hooks-coverage.bats` | Drift guard between source `settings.json` hooks and the minimal-install manifest |
 | `diff.bats`, `ide.bats`, `learn.bats`, `uninstall.bats`, `test-runner.bats` | Tests for the related scripts |
 
 ## Migration & Breaking Changes
