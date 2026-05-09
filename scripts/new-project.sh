@@ -1119,6 +1119,9 @@ run_minimal_mode() {
 
     "$export_script" --dest-dir "$target_dir" || error "export-minimal.sh failed"
 
+    # Write foundation version marker (T1.3)
+    write_foundation_marker "$target_dir" "$VERSION"
+
     success "Minimal install complete in $target_dir"
     echo ""
     info "Next steps:"
@@ -1177,6 +1180,11 @@ run_simple_mode() {
 
     # Print recommended vendor skills (information only, no install)
     print_recommended_vendor_skills "$PRESET_FILE"
+
+    # Write foundation version marker (T1.3) — skip in dry-run
+    if ! $DRY_RUN; then
+        write_foundation_marker "$target_dir" "$VERSION"
+    fi
 
     # Initialize git if not already done
     if [[ ! -d "$target_dir/.git" ]] && ! $DRY_RUN; then
@@ -1648,6 +1656,11 @@ create_project() {
 
     # .gitignore and git init
     update_gitignore_file "$TARGET_DIR"
+
+    # Write foundation version marker (T1.3) — skip in dry-run
+    if ! $DRY_RUN; then
+        write_foundation_marker "$TARGET_DIR" "$VERSION"
+    fi
 
     if [[ ! -d "$TARGET_DIR/.git" ]]; then
         if ! $DRY_RUN; then

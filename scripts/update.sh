@@ -196,6 +196,13 @@ EOF
 
 show_version() {
     echo "claude-base update v${VERSION}"
+
+    # T1.5 — surface the project marker when invoked from inside a configured project
+    local project_marker
+    project_marker=$(read_foundation_marker_from_project "$PWD")
+    if [[ -n "$project_marker" ]]; then
+        echo "  project: $project_marker"
+    fi
 }
 
 show_changelog() {
@@ -1435,6 +1442,11 @@ main() {
 
     # Summary
     print_summary
+
+    # Write foundation version marker (T1.4) — skip in dry-run
+    if ! $DRY_RUN; then
+        write_foundation_marker "$TARGET_DIR" "$VERSION"
+    fi
 }
 
 main "$@"
