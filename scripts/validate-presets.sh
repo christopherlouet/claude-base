@@ -187,11 +187,11 @@ validate_one() {
 
             # Each files[i] must be a non-empty string.
             if [ "$dfiles_n" -gt 0 ]; then
-                local fi
-                for fi in $(seq 0 $((dfiles_n - 1))); do
+                local idx
+                for idx in $(seq 0 $((dfiles_n - 1))); do
                     local fname
-                    fname=$(jq -r ".detect.files[$fi] // empty" "$file")
-                    [ -n "$fname" ] || errs+=("detect.files[$fi] must be a non-empty string")
+                    fname=$(jq -r ".detect.files[$idx] // empty" "$file")
+                    [ -n "$fname" ] || errs+=("detect.files[$idx] must be a non-empty string")
                 done
             fi
 
