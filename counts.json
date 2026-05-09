@@ -3,8 +3,8 @@
   "agents": 63,
   "skills": 54,
   "rules": 30,
-  "tests": 457,
-  "testFiles": 22,
+  "tests": 494,
+  "testFiles": 24,
   "byDomain": {
     "biz": 11,
     "data": 3,

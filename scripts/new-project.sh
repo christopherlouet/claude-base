@@ -17,6 +17,8 @@ BASE_DIR="$(dirname "$SCRIPT_DIR")"
 source "$SCRIPT_DIR/lib/common.sh"
 # shellcheck source=lib/detection.sh
 source "$SCRIPT_DIR/lib/detection.sh"
+# shellcheck source=lib/preset-detect.sh
+source "$SCRIPT_DIR/lib/preset-detect.sh"
 # shellcheck source=lib/generators.sh
 source "$SCRIPT_DIR/lib/generators.sh"
 # shellcheck source=lib/docker.sh
@@ -85,6 +87,10 @@ PRESET_FILE=""
 PRESET_LIST_AND_EXIT=false
 # Set by load_preset() — used by install_claude_files / apply_preset_filter
 PRESET_SKILLS_DROP=()
+# Populated by populate_matched_presets() — list of preset names whose
+# detect rule matches PROJECT_PATH. Empty when --preset was passed
+# explicitly (EF-016) or when no preset matches.
+MATCHED_PRESETS=()
 
 # Detection variables (used by lib/detection.sh functions)
 DETECTED_TYPE=""
@@ -825,6 +831,48 @@ print_recommended_vendor_skills() {
     [[ "$printed_conditional" = "1" ]] && echo ""
 
     echo "  See docs/recipes/recommended-vendor-skills.md for install commands."
+    echo ""
+}
+
+# Populate MATCHED_PRESETS by scanning PROJECT_PATH against every preset's
+# detect block (via lib/preset-detect.sh::scan_presets).
+#
+# Skipped entirely when:
+#   - --preset was passed explicitly (EF-016: explicit user intent wins,
+#     no commentary about other matches);
+#   - PROJECT_PATH is empty or does not exist on disk (nothing to scan).
+#
+# Errors degrade silently: scan_presets returns 0 with empty output when
+# jq is missing or any preset is malformed.
+populate_matched_presets() {
+    MATCHED_PRESETS=()
+    [[ -n "$PRESET_NAME" ]] && return 0
+    [[ -z "$PROJECT_PATH" || ! -d "$PROJECT_PATH" ]] && return 0
+
+    local matches preset
+    matches=$(scan_presets "$PROJECT_PATH" 2>/dev/null)
+    [[ -z "$matches" ]] && return 0
+
+    while IFS= read -r preset; do
+        [[ -n "$preset" ]] && MATCHED_PRESETS+=("$preset")
+    done <<< "$matches"
+}
+
+# Print one or more suggestion lines based on MATCHED_PRESETS.
+# No-op when the list is empty.
+# Phase 5 (US-4) refines the interactive flow to surface matches inside
+# the type menu; this helper covers the non-interactive paths today.
+print_preset_suggestions() {
+    [[ ${#MATCHED_PRESETS[@]} -eq 0 ]] && return 0
+
+    echo ""
+    if [[ ${#MATCHED_PRESETS[@]} -eq 1 ]]; then
+        info "Detected stack — preset matches: ${BOLD}${MATCHED_PRESETS[0]}${NC}"
+        echo "  Try: $(basename "$0") --preset ${MATCHED_PRESETS[0]} <path>"
+    else
+        info "Detected stack — multiple presets match: ${MATCHED_PRESETS[*]}"
+        echo "  Try: $(basename "$0") --preset <name> <path>"
+    fi
     echo ""
 }
 
@@ -1813,6 +1861,11 @@ main() {
             echo -e "${BOLD}${CYAN}Claude-Base - Simple Install${NC}"
             echo ""
         fi
+        # Detect matching presets (skipped when --preset was explicit, EF-016).
+        populate_matched_presets
+        if ! $QUIET; then
+            print_preset_suggestions
+        fi
         run_simple_mode
         exit 0
     fi
@@ -1848,6 +1901,8 @@ main() {
                 info "Analyzing existing project: $PROJECT_PATH"
                 echo ""
                 detect_stack "$PROJECT_PATH"
+                populate_matched_presets
+                print_preset_suggestions
             else
                 info "Creating new project: $PROJECT_PATH"
             fi
@@ -1857,6 +1912,8 @@ main() {
             info "Analyzing existing project: $PROJECT_PATH"
             echo ""
             detect_stack "$PROJECT_PATH"
+            populate_matched_presets
+            print_preset_suggestions
         elif $NON_INTERACTIVE; then
             # In non-interactive mode, create the folder if it doesn't exist
             mkdir -p "$PROJECT_PATH"

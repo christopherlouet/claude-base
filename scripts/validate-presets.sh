@@ -158,6 +158,57 @@ validate_one() {
         fi
     fi
 
+    # detect: optional data-driven detection rule. See
+    # specs/presets-detection-and-e2e/spec.md for the schema:
+    #   - combinator: "allOf" | "anyOf" (optional, default "anyOf")
+    #   - files: array of strings (file names or simple globs), optional
+    #   - depFiles: array of {path, contains}, optional
+    # Constraint: (files | length) + (depFiles | length) MUST be > 0.
+    if jq -e '.detect' "$file" >/dev/null 2>&1; then
+        local dt
+        dt=$(jq -r '.detect | type' "$file")
+        if [ "$dt" != "object" ]; then
+            errs+=("detect must be an object")
+        else
+            local dcomb
+            dcomb=$(jq -r '.detect.combinator // "anyOf"' "$file")
+            case "$dcomb" in
+                allOf|anyOf) ;;
+                *) errs+=("detect.combinator '$dcomb' must be 'allOf' or 'anyOf'") ;;
+            esac
+
+            local dfiles_n ddeps_n
+            dfiles_n=$(jq -r '(.detect.files // []) | length' "$file")
+            ddeps_n=$(jq -r '(.detect.depFiles // []) | length' "$file")
+
+            if [ "$dfiles_n" = "0" ] && [ "$ddeps_n" = "0" ]; then
+                errs+=("detect must declare at least one signal (files or depFiles)")
+            fi
+
+            # Each files[i] must be a non-empty string.
+            if [ "$dfiles_n" -gt 0 ]; then
+                local idx
+                for idx in $(seq 0 $((dfiles_n - 1))); do
+                    local fname
+                    fname=$(jq -r ".detect.files[$idx] // empty" "$file")
+                    [ -n "$fname" ] || errs+=("detect.files[$idx] must be a non-empty string")
+                done
+            fi
+
+            # Each depFiles[i] must have non-empty path and contains.
+            if [ "$ddeps_n" -gt 0 ]; then
+                local di
+                for di in $(seq 0 $((ddeps_n - 1))); do
+                    local dpath dcontains
+                    dpath=$(jq -r ".detect.depFiles[$di].path // empty" "$file")
+                    dcontains=$(jq -r ".detect.depFiles[$di].contains // empty" "$file")
+                    [ -n "$dpath" ] || errs+=("detect.depFiles[$di].path missing")
+                    [ -n "$dcontains" ] || errs+=("detect.depFiles[$di].contains missing")
+                done
+            fi
+        fi
+    fi
+
     # recommendedVendorSkills: optional; if present, must be an array; each
     # entry must have id, url, rationale, condition.
     if jq -e '.recommendedVendorSkills' "$file" >/dev/null 2>&1; then

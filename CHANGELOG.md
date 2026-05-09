@@ -11,6 +11,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Data-driven preset detection.** Each preset manifest gains an
+  optional `detect` block that self-describes how to recognize its
+  target stack: `files` (file names or simple globs) and/or `depFiles`
+  (`{path, contains}` pairs), combined via `allOf` or `anyOf`
+  (default `anyOf`). When `new-project.sh` runs on an existing
+  project, every available preset is evaluated against the directory
+  and matching presets are surfaced as an info line — "Detected
+  stack — preset matches: nextjs / Try: new-project.sh --preset
+  nextjs <path>". Adding a new preset (e.g. `django.json`) now
+  requires only a manifest with a `detect` block; no edits to
+  `scripts/lib/detection.sh` or to `new-project.sh`. When `--preset`
+  is passed explicitly, detection is skipped entirely (the explicit
+  user intent wins, no commentary about other matches). The four
+  maintainer-vouched presets `nextjs`, `fastapi`, `astro`, and
+  `homelab-proxmox` ship with a `detect` block; `cli-tools` stays
+  without one (target too generic to detect reliably). See
+  `specs/presets-detection-and-e2e/spec.md` (US-1, US-2).
+
+- **Per-preset end-to-end test suite (`tests/preset-e2e.bats`).** For
+  each maintainer-vouched preset, `bats` bootstraps a target
+  directory via `new-project.sh --preset`, runs `validate.sh -q` and
+  `doctor.sh` against it, then asserts every `scripts/hooks/*.sh`
+  path referenced by the bootstrapped `settings.json` resolves to
+  an existing file in the target tree — drift-guard against the
+  v1.36.1 regression class (install completes, hooks point at
+  missing files). A self-check test deletes a referenced hook
+  post-bootstrap and asserts the helper fires with a precise
+  "Missing hooks" message, so the assertion is real and not
+  silently passing. The existing `tests/manifest-hooks-coverage.bats`
+  guards the source manifest; this new suite guards the
+  bootstrapped output, which is what end users actually run. See
+  `specs/presets-detection-and-e2e/spec.md` (US-3).
+
+### Changed
+
+- **`scripts/validate-presets.sh` enforces the optional `detect`
+  block schema.** Rejects manifests with `combinator` outside
+  `{allOf, anyOf}`, with both `files` and `depFiles` empty (a
+  detection rule with no signals is meaningless), or with `depFiles`
+  entries missing `path` or `contains`.
+
 ## [1.36.1] - 2026-05-08
 
 Patch release. Critical fix for `--minimal` installs: the manifest used by

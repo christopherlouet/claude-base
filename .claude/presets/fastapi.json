@@ -15,6 +15,15 @@
 
   "appliesToTypes": ["python", "generic"],
 
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [
+      {"path": "requirements.txt", "contains": "fastapi"},
+      {"path": "pyproject.toml", "contains": "fastapi"},
+      {"path": "Pipfile", "contains": "fastapi"}
+    ]
+  },
+
   "foundation": {
     "skills": {
       "drop": [

@@ -15,6 +15,14 @@
 
   "appliesToTypes": ["react", "fullstack"],
 
+  "detect": {
+    "combinator": "anyOf",
+    "files": ["next.config.js", "next.config.mjs", "next.config.ts"],
+    "depFiles": [
+      {"path": "package.json", "contains": "\"next\""}
+    ]
+  },
+
   "foundation": {
     "skills": {
       "drop": [

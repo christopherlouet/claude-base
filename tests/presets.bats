@@ -115,6 +115,204 @@ EOF
 }
 
 # =============================================================================
+# validate-presets.sh: optional `detect` block (data-driven detection)
+# See specs/presets-detection-and-e2e/spec.md (EF-010).
+# =============================================================================
+
+@test "presets: validate-presets.sh accepts a valid detect block (anyOf + files + depFiles)" {
+    cat > "$TEST_DIR/with-detect.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["react"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "files": ["next.config.js"],
+    "depFiles": [{"path": "package.json", "contains": "\"next\""}]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/with-detect.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: validate-presets.sh accepts a detect block with only files (no depFiles)" {
+    cat > "$TEST_DIR/files-only.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "allOf",
+    "files": ["manage.py"]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/files-only.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: validate-presets.sh accepts a detect block omitting combinator (defaults to anyOf)" {
+    cat > "$TEST_DIR/no-combinator.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "files": ["astro.config.mjs"]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/no-combinator.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: validate-presets.sh rejects a detect block with no signals (empty files AND depFiles)" {
+    cat > "$TEST_DIR/empty-detect.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "files": [],
+    "depFiles": []
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/empty-detect.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"detect"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a detect block with a bad combinator" {
+    cat > "$TEST_DIR/bad-combinator.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "alwaysmatch",
+    "files": ["next.config.js"]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-combinator.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"combinator"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a depFiles entry missing path" {
+    cat > "$TEST_DIR/bad-depfile-path.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"contains": "fastapi"}]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-depfile-path.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"depFiles"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a depFiles entry missing contains" {
+    cat > "$TEST_DIR/bad-depfile-contains.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"path": "requirements.txt"}]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-depfile-contains.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"depFiles"* ]]
+}
+
+# =============================================================================
+# new-project.sh: integration of preset suggestion (US-1, EF-016)
+# =============================================================================
+
+@test "presets: --simple -y on a Next.js project prints the preset suggestion" {
+    local target="$TEST_DIR/proj-nextjs-suggest"
+    mkdir -p "$target"
+    touch "$target/next.config.js"
+    echo '{"dependencies":{"next":"^15"},"name":"smoke"}' > "$target/package.json"
+    run "$NEW_PROJECT" -y --simple --dry-run "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Detected stack"* ]]
+    [[ "$output" == *"nextjs"* ]]
+}
+
+@test "presets: --simple -y on a FastAPI project prints the preset suggestion" {
+    local target="$TEST_DIR/proj-fastapi-suggest"
+    mkdir -p "$target"
+    echo "fastapi==0.110" > "$target/requirements.txt"
+    run "$NEW_PROJECT" -y --simple --dry-run "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Detected stack"* ]]
+    [[ "$output" == *"fastapi"* ]]
+}
+
+@test "presets: --simple -y on an empty project prints no preset suggestion" {
+    local target="$TEST_DIR/proj-empty-suggest"
+    mkdir -p "$target"
+    run "$NEW_PROJECT" -y --simple --dry-run "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Detected stack — preset matches"* ]]
+    [[ "$output" != *"Detected stack — multiple presets match"* ]]
+}
+
+@test "presets: explicit --preset suppresses the Detected stack line (EF-016)" {
+    # The target dir matches the nextjs detect rule; without --preset we
+    # would print "Detected stack — preset matches: nextjs". With --preset
+    # nextjs explicit, no such suggestion line should appear (EF-016: the
+    # explicit choice is honored without commentary).
+    local target="$TEST_DIR/proj-explicit-preset"
+    mkdir -p "$target"
+    touch "$target/next.config.js"
+    echo '{"dependencies":{"next":"^15"},"name":"smoke"}' > "$target/package.json"
+    run "$NEW_PROJECT" --preset nextjs --dry-run "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Detected stack"* ]]
+}
+
+# =============================================================================
 # new-project.sh --list-presets
 # =============================================================================
 
