@@ -1,6 +1,6 @@
 # Spec: preset detection (data-driven) + per-preset end-to-end coverage
 
-**Status**: Draft
+**Status**: Validated (P1 stories shipped — US-1 + US-2 + US-3; P2/P3 deferred to follow-up PR)
 **Date**: 2026-05-09
 **Owner**: Chris
 **Extends**: `specs/presets/spec.md` (the preset system itself)
