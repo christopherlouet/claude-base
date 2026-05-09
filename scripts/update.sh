@@ -16,6 +16,8 @@ VERSION=$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null || echo "unknown")
 
 # shellcheck source=lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
+# shellcheck source=lib/preset-detect.sh
+source "$SCRIPT_DIR/lib/preset-detect.sh"
 
 # Enable error handler and check prerequisites
 enable_error_handler
@@ -52,6 +54,17 @@ UPDATE_HOOK_SCRIPTS=false
 CLEAN_BEFORE_UPDATE=false
 DETECT_ORPHANS=false
 REMOVE_ORPHANS=false
+
+# Preset-aware updates (specs/presets-update-aware/).
+# UPDATE_PRESET_NAME and UPDATE_NO_PRESET are set by parse_args from
+# --preset NAME / --no-preset; ACTIVE_PRESET_* are populated by
+# resolve_active_preset() once TARGET_DIR is finalized.
+UPDATE_PRESET_NAME=""
+UPDATE_NO_PRESET=false
+ACTIVE_PRESET_NAME=""
+ACTIVE_PRESET_FILE=""
+ACTIVE_PRESET_SOURCE=""
+ACTIVE_PRESET_DROP_LIST=()
 UPGRADE_CLAUDE_MD=false
 RESTORE_BACKUP=""
 
@@ -129,6 +142,12 @@ ${BOLD}OPTIONS${NC}
     --add-plugin ID     Enable a marketplace plugin in the existing settings.json
                         without overwriting other keys (e.g., astral@astral-sh).
                         Idempotent: re-running on an already-enabled plugin succeeds silently.
+    --preset NAME       Apply NAME's skill filter for this update (e.g. nextjs).
+                        Skips skills the preset drops; prevents update --all from
+                        silently re-introducing them. Resolves official then
+                        community presets.
+    --no-preset         Disable preset filtering (every foundation skill copied,
+                        as in pre-v1.37 behavior). Mutually exclusive with --preset.
 
 ${BOLD}AVAILABLE HOOKS${NC}
     rtk                 RTK token optimizer (reduces tokens by 60-90%, requires: brew install rtk)
@@ -160,6 +179,12 @@ ${BOLD}EXAMPLES${NC}
 
     # Enable a marketplace plugin in settings.json (idempotent)
     $(basename "$0") --add-plugin astral@astral-sh ./my-project
+
+    # Apply the nextjs preset's skill filter for this update
+    $(basename "$0") --preset nextjs --all ./my-app
+
+    # Force the unfiltered foundation (skip preset auto-detection)
+    $(basename "$0") --no-preset --all ./my-app
 
 ${BOLD}FOUNDATION STATISTICS${NC}
     Agents:    $(count_agents "$BASE_DIR")
@@ -282,6 +307,17 @@ parse_args() {
                 RESTORE_BACKUP="$2"
                 shift 2
                 ;;
+            --preset)
+                if [[ -z "${2:-}" ]]; then
+                    error "Option --preset requires an argument (preset name, e.g. nextjs)"
+                fi
+                UPDATE_PRESET_NAME="$2"
+                shift 2
+                ;;
+            --no-preset)
+                UPDATE_NO_PRESET=true
+                shift
+                ;;
             -*)
                 error "Unknown option: $1\nUse --help for help"
                 ;;
@@ -297,6 +333,11 @@ parse_args() {
     done
 
     TARGET_DIR="${TARGET_DIR:-.}"
+
+    # Mutual exclusion: --preset NAME and --no-preset cannot be combined.
+    if [[ -n "$UPDATE_PRESET_NAME" ]] && $UPDATE_NO_PRESET; then
+        error "--preset and --no-preset are mutually exclusive"
+    fi
 }
 
 # =============================================================================
@@ -624,6 +665,102 @@ _count_dir_files() {
     esac
 }
 
+# =============================================================================
+# Preset-aware updates (specs/presets-update-aware/)
+# =============================================================================
+
+# resolve_active_preset
+#
+# Decides which preset's filter applies to this update run, based on:
+#   --no-preset                    → no active preset (no filter)
+#   --preset NAME                  → resolve NAME against .claude/presets/
+#   (none of the above)            → call scan_presets() on TARGET_DIR
+#                                    - 0 matches: no active preset
+#                                    - 1 match : that preset becomes active
+#                                    - 2+ match: refuse, list, instruct
+#
+# Sets ACTIVE_PRESET_NAME / FILE / SOURCE on success, or fails loud.
+# Then calls load_active_drop_list to populate ACTIVE_PRESET_DROP_LIST.
+resolve_active_preset() {
+    if $UPDATE_NO_PRESET; then
+        return 0
+    fi
+
+    local presets_dir="$BASE_DIR/.claude/presets"
+
+    if [[ -n "$UPDATE_PRESET_NAME" ]]; then
+        local file="$presets_dir/$UPDATE_PRESET_NAME.json"
+        if [[ ! -f "$file" ]]; then
+            file="$presets_dir/community/$UPDATE_PRESET_NAME.json"
+        fi
+        if [[ ! -f "$file" ]]; then
+            error "preset not found: $UPDATE_PRESET_NAME (run 'claude-base preset list' to see available presets)"
+        fi
+        ACTIVE_PRESET_NAME="$UPDATE_PRESET_NAME"
+        ACTIVE_PRESET_FILE="$file"
+        ACTIVE_PRESET_SOURCE="--preset"
+        load_active_drop_list
+        return 0
+    fi
+
+    # Auto-detect via scan_presets (PR #160 lib).
+    if ! command -v jq >/dev/null 2>&1; then
+        return 0
+    fi
+
+    local matches
+    matches=$(scan_presets "$TARGET_DIR" 2>/dev/null || true)
+    [[ -z "$matches" ]] && return 0
+
+    local count
+    count=$(echo "$matches" | wc -l | tr -d '[:space:]')
+
+    if [[ "$count" -gt 1 ]]; then
+        local list
+        list=$(echo "$matches" | tr '\n' ' ' | sed 's/ $//')
+        error "multiple presets match the project: $list\nRe-run with --preset <name> to pick one, or --no-preset to skip preset filtering"
+    fi
+
+    ACTIVE_PRESET_NAME="$matches"
+    ACTIVE_PRESET_FILE="$presets_dir/$matches.json"
+    [[ -f "$ACTIVE_PRESET_FILE" ]] || ACTIVE_PRESET_FILE="$presets_dir/community/$matches.json"
+    ACTIVE_PRESET_SOURCE="detected"
+    load_active_drop_list
+    return 0
+}
+
+# load_active_drop_list
+#
+# Reads .foundation.skills.drop[] from ACTIVE_PRESET_FILE into the global
+# ACTIVE_PRESET_DROP_LIST array. No-op if no active preset or jq is missing.
+load_active_drop_list() {
+    ACTIVE_PRESET_DROP_LIST=()
+    [[ -z "$ACTIVE_PRESET_FILE" ]] && return 0
+    command -v jq >/dev/null 2>&1 || return 0
+
+    local skill
+    while IFS= read -r skill; do
+        [[ -z "$skill" ]] && continue
+        ACTIVE_PRESET_DROP_LIST+=("$skill")
+    done < <(jq -r '.foundation.skills.drop[]? // empty' "$ACTIVE_PRESET_FILE" 2>/dev/null)
+}
+
+# is_skill_dropped <rel_path>
+#
+# Returns 0 (true) when the leading directory of <rel_path> is in the active
+# preset's drop list — meaning the file should be skipped during the skills
+# copy step. Returns 1 (false) otherwise (or when no preset is active).
+is_skill_dropped() {
+    [[ "${#ACTIVE_PRESET_DROP_LIST[@]}" -eq 0 ]] && return 1
+    local rel="$1"
+    local skill_name="${rel%%/*}"
+    local s
+    for s in "${ACTIVE_PRESET_DROP_LIST[@]}"; do
+        [[ "$s" == "$skill_name" ]] && return 0
+    done
+    return 1
+}
+
 # Generic update for a .claude/ subdirectory
 # Uses per-file diff checking to avoid overwriting user customizations.
 # Arguments:
@@ -646,6 +783,17 @@ update_directory() {
     fi
 
     make_dir "$dest_dir"
+
+    # Dry-run preview of preset-filtered skills (US-5). Announces each
+    # skill that the active preset will skip, once per skill.
+    if [[ "$name" = "skills" ]] && $DRY_RUN && [[ "${#ACTIVE_PRESET_DROP_LIST[@]}" -gt 0 ]]; then
+        local _drop_skill
+        for _drop_skill in "${ACTIVE_PRESET_DROP_LIST[@]}"; do
+            if [[ -d "$src_dir/$_drop_skill" ]]; then
+                echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): $_drop_skill"
+            fi
+        done
+    fi
 
     local dir_updated=0
     local dir_added=0
@@ -672,6 +820,15 @@ update_directory() {
         fi
 
         local rel_path="${src_file#"$src_dir"/}"
+
+        # Active preset filter: skip files belonging to a dropped skill.
+        # COPY-only — never deletes what's already on disk (EF-011).
+        if [[ "$name" = "skills" ]] && is_skill_dropped "$rel_path"; then
+            debug "skills/$rel_path skipped (preset filter: $ACTIVE_PRESET_NAME)"
+            ((dir_skipped++)) || true
+            continue
+        fi
+
         local dest_file="$dest_dir/$rel_path"
         local filename
         filename=$(basename "$src_file")
@@ -758,6 +915,10 @@ update_directory() {
     if [[ "$name" == "skills" ]]; then
         while IFS= read -r src_file; do
             local rel_path="${src_file#"$src_dir"/}"
+            # Active preset filter: skip files belonging to a dropped skill.
+            if is_skill_dropped "$rel_path"; then
+                continue
+            fi
             local dest_file="$dest_dir/$rel_path"
             local file_dest_dir
             file_dest_dir=$(dirname "$dest_file")
@@ -1165,6 +1326,17 @@ main() {
     fi
 
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
+
+    # Resolve which preset (if any) governs this update run. Sets
+    # ACTIVE_PRESET_* and populates ACTIVE_PRESET_DROP_LIST. Fails fast on
+    # bogus --preset name or on multi-match without explicit override.
+    resolve_active_preset
+
+    # Announce the active preset (silence preserves byte-identity with
+    # today's update output when no preset is active — CS-006).
+    if [[ -n "$ACTIVE_PRESET_NAME" ]]; then
+        info "Active preset: $ACTIVE_PRESET_NAME ($ACTIVE_PRESET_SOURCE) — skill filter applied"
+    fi
 
     # Handle --restore
     if [[ -n "$RESTORE_BACKUP" ]]; then
