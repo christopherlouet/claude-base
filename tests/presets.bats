@@ -306,9 +306,12 @@ EOF
     mkdir -p "$target"
     touch "$target/next.config.js"
     echo '{"dependencies":{"next":"^15"},"name":"smoke"}' > "$target/package.json"
-    # Feed enough lines so the script does not block; the timeout caps
-    # runtime in case of accidental infinite loop.
-    run bash -c "echo -e '1\nn\nn\nn\nn\n\nn' | timeout 10 '$NEW_PROJECT' --dry-run '$target' 2>&1"
+    # Write input to a file (portable across GNU/BSD; no `timeout` —
+    # not available on macOS by default). The script reads each prompt
+    # until stdin is exhausted, then exits on EOF.
+    local input_file="$TEST_DIR/menu-input"
+    printf '1\nn\nn\nn\nn\n\nn\n' > "$input_file"
+    run bash -c "'$NEW_PROJECT' --dry-run '$target' < '$input_file' 2>&1"
     [[ "$output" == *"Use preset: nextjs"* ]]
     [[ "$output" == *"2) React / Next.js"* ]]
     [[ "$output" == *"Choice [1-12]"* ]]
