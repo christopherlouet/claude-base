@@ -1,6 +1,6 @@
 # Spec: preset-aware updates — keep the preset filter coherent across the project lifecycle
 
-**Status**: Draft
+**Status**: Validated — all P1+P2+P3 stories shipped (US-1 through US-7)
 **Date**: 2026-05-09
 **Owner**: Chris
 **Builds on**: `specs/presets-detection-and-e2e/` (shipped 2026-05-09 in PR #160 + PR #161)

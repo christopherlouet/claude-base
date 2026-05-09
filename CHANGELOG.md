@@ -13,6 +13,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Preset-aware updates.** `claude-base update` (and `scripts/update.sh`)
+  now respects the active preset's skill filter so a project bootstrapped
+  with `--preset X` no longer drifts back to the unfiltered foundation
+  on every `update --all`. The active preset is determined at update
+  time by the existing `scan_presets()` library shipped earlier today
+  — no new persisted state on disk. Two new flags:
+  - `--preset <name>` overrides auto-detection and applies the named
+    preset's filter (resolves official then community presets).
+  - `--no-preset` disables filtering for this run; behaviour identical
+    to today's `update --all` (kept as the explicit opt-out path).
+  Mutually exclusive with each other. When two or more presets match
+  a project without an explicit override, `update` refuses to proceed
+  and instructs the user to disambiguate (no silent precedence).
+  When an active preset is set, `update` prints one line:
+  `Active preset: <name> (<source>) — skill filter applied`. When no
+  preset is active, the output is byte-identical to today's. The
+  filter is COPY-only — files already on disk are never deleted, so
+  user customizations under a dropped-skill directory survive intact.
+  `--dry-run` lists the skills the active preset will skip. See
+  `specs/presets-update-aware/spec.md`.
+
 - **Detected presets surface inside the interactive type menu.** When
   `claude-base init` (or `new-project.sh`) runs interactively on an
   existing project, every preset whose `detect` rule matches now
