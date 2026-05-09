@@ -11,6 +11,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.37.0] - 2026-05-09
+
+Minor release. Closes the preset story across three coordinated additions:
+**data-driven preset detection** (matching presets surface automatically
+when running on an existing project, both inside the interactive type
+menu and via the new `--detect-only` audit flag), **per-preset
+end-to-end coverage** with a hook drift-guard against the v1.36.1
+regression class, and **preset-aware updates** that keep the active
+filter coherent across the entire project lifecycle (no more silent
+drift back to the unfiltered foundation on `update --all`). Adding a
+new preset is now mechanical — a `.json` manifest with a `detect`
+block plus a small fixture, no code change required. The README and
+`.claude/presets/` docs are updated to surface the new behaviour.
+
+Three specs land alongside the code as the historical record:
+- [`specs/presets-detection-and-e2e/`](./specs/presets-detection-and-e2e/) — detection + E2E
+- [`specs/presets-update-aware/`](./specs/presets-update-aware/) — preset-aware updates
+- [`specs/presets/`](./specs/presets/) — original preset system (v1)
+
 ### Added
 
 - **Preset-aware updates.** `claude-base update` (and `scripts/update.sh`)
