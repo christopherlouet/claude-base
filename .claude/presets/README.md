@@ -46,6 +46,13 @@ Community contributions land under `.claude/presets/community/` after maintainer
   "description": "<2-3 lines, explicit about scope, names what is OUT>",
   "status": "maintainer-vouched | community-curated | draft",
   "appliesToTypes": ["<existing claude-base type>"],
+  "detect": {
+    "combinator": "anyOf",
+    "files": ["<config-file>", "<glob.*>"],
+    "depFiles": [
+      {"path": "<dep-manifest>", "contains": "<substring>"}
+    ]
+  },
   "foundation": {
     "skills": { "drop": ["<skill-to-not-install>"] }
   },
@@ -57,3 +64,46 @@ Community contributions land under `.claude/presets/community/` after maintainer
 ```
 
 Field naming is camelCase (matches `settings.json` and other Claude Code config files). Validation runs via `scripts/validate-presets.sh` (jq-based schema check, executed in CI).
+
+### `detect` block (data-driven detection)
+
+Optional. When present, every available preset is evaluated against the target directory whenever `claude-base init` runs without `--preset`. Matching presets are surfaced as additional menu entries (interactive mode) or as an info banner (non-interactive). When `--preset <name>` is passed explicitly, detection is skipped entirely.
+
+| Field | Type | Notes |
+|---|---|---|
+| `combinator` | string | `allOf` (every signal must match) or `anyOf` (at least one). Defaults to `anyOf` when omitted. |
+| `files` | array of strings | File names or simple globs (e.g. `next.config.*`). A signal matches when the named file exists (recursive search up to depth 2) in the target dir. |
+| `depFiles` | array of `{path, contains}` | A signal matches when `<path>` exists in the target dir AND its contents contain `<contains>` (case-insensitive, fixed-string). |
+
+At least one of `files` or `depFiles` MUST contain a non-empty signal — a `detect` block with no signals is meaningless and rejected by `validate-presets.sh`.
+
+#### Worked examples
+
+**Next.js — file presence OR dependency match (anyOf):**
+
+```json
+"detect": {
+  "combinator": "anyOf",
+  "files": ["next.config.js", "next.config.mjs", "next.config.ts"],
+  "depFiles": [
+    {"path": "package.json", "contains": "\"next\""}
+  ]
+}
+```
+
+**FastAPI — dependency match across three Python manifest formats:**
+
+```json
+"detect": {
+  "combinator": "anyOf",
+  "depFiles": [
+    {"path": "requirements.txt", "contains": "fastapi"},
+    {"path": "pyproject.toml",   "contains": "fastapi"},
+    {"path": "Pipfile",          "contains": "fastapi"}
+  ]
+}
+```
+
+**Standalone audit:** `claude-base init --detect-only <path>` prints which presets would match the given directory without performing any install.
+
+**Drift-guard:** every preset that ships a `detect` block also ships a paired fixture under `tests/presets-fixtures/<preset>/` and a test asserting the rule matches its own fixture. If upstream renames a marker file (e.g. Astro changes `astro.config.mjs`), the paired test fails loudly.

@@ -722,6 +722,47 @@ EOF
     [[ "$output" == *"homelab-proxmox"* ]]
 }
 
+# =============================================================================
+# US-6 — --detect-only standalone mode (P3): prints matching preset names
+# without performing any install. Useful for users who want to audit the
+# detection without committing to anything.
+# =============================================================================
+
+@test "presets: --detect-only on a Next.js fixture prints nextjs and exits 0" {
+    local target="$TEST_DIR/proj-detect-only"
+    mkdir -p "$target"
+    touch "$target/next.config.js"
+    echo '{"dependencies":{"next":"^15"}}' > "$target/package.json"
+    run "$NEW_PROJECT" --detect-only "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    # No file writes
+    [ ! -d "$target/.claude" ]
+}
+
+@test "presets: --detect-only on an empty dir reports no match and exits 0" {
+    local target="$TEST_DIR/proj-detect-only-empty"
+    mkdir -p "$target"
+    run "$NEW_PROJECT" --detect-only "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"No matching preset"* ]]
+    [ ! -d "$target/.claude" ]
+}
+
+@test "presets: --detect-only without a path fails with a clear error" {
+    run "$NEW_PROJECT" --detect-only
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"path"* ]] || [[ "$output" == *"required"* ]]
+}
+
+@test "presets: --detect-only and --preset are mutually exclusive" {
+    local target="$TEST_DIR/proj-detect-only-conflict"
+    mkdir -p "$target"
+    run "$NEW_PROJECT" --detect-only --preset nextjs "$target"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"mutually exclusive"* ]] || [[ "$output" == *"--preset"* ]]
+}
+
 @test "presets: --preset nextjs prints Recommended vendor skills section" {
     local target="$TEST_DIR/proj-rec"
     run "$NEW_PROJECT" --preset nextjs "$target"

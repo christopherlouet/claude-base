@@ -87,6 +87,7 @@ DESIGN_STYLE=""
 PRESET_NAME=""
 PRESET_FILE=""
 PRESET_LIST_AND_EXIT=false
+DETECT_ONLY=false
 # Set by load_preset() — used by install_claude_files / apply_preset_filter
 PRESET_SKILLS_DROP=()
 # Populated by populate_matched_presets() — list of preset names whose
@@ -155,6 +156,8 @@ ${BOLD}OPTIONS${NC}
                         installs marketplace plugins, and sets defaults.
                         Run --list-presets to see what's available.
     --list-presets      List available presets and exit
+    --detect-only PATH  Scan PATH against preset detect rules, print matching
+                        preset names, then exit 0 (no file writes).
 
 ${BOLD}EXAMPLES${NC}
     # Interactive new project
@@ -313,6 +316,10 @@ parse_args() {
                 ;;
             --list-presets)
                 PRESET_LIST_AND_EXIT=true
+                shift
+                ;;
+            --detect-only)
+                DETECT_ONLY=true
                 shift
                 ;;
             -*)
@@ -1796,6 +1803,30 @@ main() {
     # --list-presets short-circuits everything else
     if $PRESET_LIST_AND_EXIT; then
         list_presets
+        exit 0
+    fi
+
+    # --detect-only: scan the target dir, print matches, exit. No file writes.
+    if $DETECT_ONLY; then
+        if [[ -n "$PRESET_NAME" ]]; then
+            error "--detect-only and --preset are mutually exclusive"
+        fi
+        if [[ -z "$PROJECT_PATH" ]]; then
+            error "--detect-only requires a path argument"
+        fi
+        if [[ ! -d "$PROJECT_PATH" ]]; then
+            error "Path does not exist: $PROJECT_PATH"
+        fi
+        local _matches
+        _matches=$(scan_presets "$PROJECT_PATH")
+        if [[ -z "$_matches" ]]; then
+            info "No matching preset for: $PROJECT_PATH"
+        else
+            info "Matching preset(s) for $PROJECT_PATH:"
+            while IFS= read -r _p; do
+                [[ -n "$_p" ]] && echo "  - $_p"
+            done <<< "$_matches"
+        fi
         exit 0
     fi
 
