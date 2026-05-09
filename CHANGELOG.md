@@ -13,6 +13,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Detected presets surface inside the interactive type menu.** When
+  `claude-base init` (or `new-project.sh`) runs interactively on an
+  existing project, every preset whose `detect` rule matches now
+  appears as an additional menu entry placed at the top of the type
+  menu — labelled `Use preset: <name>` and visually distinguished
+  from the standard 11 type options that follow (renumbered to start
+  at N+1, where N is the number of matches). Picking a preset entry
+  behaves as if `--preset <name>` had been passed; picking a
+  standard type proceeds as today. The information banner that
+  previously appeared in interactive mode is removed (it would
+  duplicate the new menu entries); the banner is kept in
+  non-interactive flows (`-y`, `--simple`) where there is no menu.
+  See `specs/presets-detection-and-e2e/spec.md` (US-4).
+
+- **Paired fixture-rule drift-guard.** Every preset that ships a
+  `detect` block now ships a paired fixture under
+  `tests/presets-fixtures/<preset>/` containing the minimal marker
+  files that should match the rule (e.g.
+  `tests/presets-fixtures/nextjs/next.config.js` +
+  `package.json` with the `next` dependency). A new bats case per
+  preset asserts `scan_presets` returns the preset's own name when
+  given its fixture. If upstream renames a marker file (e.g. Astro
+  changes `astro.config.mjs`), the paired test fails loudly with
+  the rule that no longer matches its own fixture. See
+  `specs/presets-detection-and-e2e/spec.md` (US-5).
+
+- **`--detect-only` standalone audit mode.** `new-project.sh
+  --detect-only PATH` (and `claude-base init --detect-only PATH`)
+  scans the target directory against every preset's `detect` rule
+  and prints matching preset names to stdout, then exits 0 without
+  performing any install. Mutually exclusive with `--preset`
+  (an explicit choice makes detection moot). See
+  `specs/presets-detection-and-e2e/spec.md` (US-6, P3).
+
+- **Documentation: `detect` block format reference.**
+  `.claude/presets/README.md` gains a section describing the
+  optional `detect` block schema with two worked examples (Next.js
+  files + depFiles, FastAPI depFiles across three Python manifest
+  formats), the combinator semantics, the standalone audit usage,
+  and a pointer to the paired-fixture drift-guard. See
+  `specs/presets-detection-and-e2e/spec.md` (US-7, P3).
+
 - **Data-driven preset detection.** Each preset manifest gains an
   optional `detect` block that self-describes how to recognize its
   target stack: `files` (file names or simple globs) and/or `depFiles`
