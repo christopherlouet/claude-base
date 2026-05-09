@@ -23,6 +23,8 @@ source "$SCRIPT_DIR/lib/preset-detect.sh"
 source "$SCRIPT_DIR/lib/menu.sh"
 # shellcheck source=lib/generators.sh
 source "$SCRIPT_DIR/lib/generators.sh"
+# shellcheck source=lib/preset-recommendations.sh
+source "$SCRIPT_DIR/lib/preset-recommendations.sh"
 # shellcheck source=lib/docker.sh
 source "$SCRIPT_DIR/lib/docker.sh"
 
@@ -776,72 +778,8 @@ install_marketplace_plugins() {
     info "Marketplace plugins: $installed installed, $skipped skipped, $failed failed"
 }
 
-# Print the preset's recommendedVendorSkills list at the end of install.
-# Format: separates "always" recommendations (highly relevant for the stack)
-# from conditional ones (apply only if the user uses the named tool).
-# Only prints; never installs anything. The user opts in manually via the
-# recipe's documented install commands.
-print_recommended_vendor_skills() {
-    [[ -z "$PRESET_FILE" ]] && return 0
-    if ! command -v jq >/dev/null 2>&1; then
-        return 0
-    fi
-
-    local count
-    count=$(jq -r '.recommendedVendorSkills | length' "$PRESET_FILE" 2>/dev/null || echo 0)
-    [[ "$count" = "0" || -z "$count" || "$count" = "null" ]] && return 0
-
-    echo ""
-    echo -e "${BOLD}📚 Recommended vendor skills for this stack (opt-in):${NC}"
-    echo ""
-
-    local i rid rurl rrat rcond
-    local printed_always=0 printed_conditional=0
-
-    # First pass: always recommendations
-    for i in $(seq 0 $((count - 1))); do
-        rcond=$(jq -r ".recommendedVendorSkills[$i].condition" "$PRESET_FILE")
-        case "$rcond" in
-            always*)
-                if [[ "$printed_always" = "0" ]]; then
-                    echo -e "  ${BOLD}Always pair with this preset:${NC}"
-                    printed_always=1
-                fi
-                rid=$(jq -r ".recommendedVendorSkills[$i].id" "$PRESET_FILE")
-                rurl=$(jq -r ".recommendedVendorSkills[$i].url" "$PRESET_FILE")
-                rrat=$(jq -r ".recommendedVendorSkills[$i].rationale" "$PRESET_FILE")
-                echo "    • $rid"
-                echo "      $rrat"
-                echo "      → $rurl"
-                ;;
-        esac
-    done
-    [[ "$printed_always" = "1" ]] && echo ""
-
-    # Second pass: conditional recommendations
-    for i in $(seq 0 $((count - 1))); do
-        rcond=$(jq -r ".recommendedVendorSkills[$i].condition" "$PRESET_FILE")
-        case "$rcond" in
-            always*) ;;
-            *)
-                if [[ "$printed_conditional" = "0" ]]; then
-                    echo -e "  ${BOLD}Add if your project uses these tools:${NC}"
-                    printed_conditional=1
-                fi
-                rid=$(jq -r ".recommendedVendorSkills[$i].id" "$PRESET_FILE")
-                rurl=$(jq -r ".recommendedVendorSkills[$i].url" "$PRESET_FILE")
-                rrat=$(jq -r ".recommendedVendorSkills[$i].rationale" "$PRESET_FILE")
-                echo "    • $rid — $rcond"
-                echo "      $rrat"
-                echo "      → $rurl"
-                ;;
-        esac
-    done
-    [[ "$printed_conditional" = "1" ]] && echo ""
-
-    echo "  See docs/recipes/recommended-vendor-skills.md for install commands."
-    echo ""
-}
+# Note: print_recommended_vendor_skills moved to scripts/lib/preset-recommendations.sh
+# (sourced above) so update.sh can reuse the same printer at the end of an update.
 
 # Populate MATCHED_PRESETS by scanning PROJECT_PATH against every preset's
 # detect block (via lib/preset-detect.sh::scan_presets).
@@ -1238,7 +1176,7 @@ run_simple_mode() {
     install_marketplace_plugins
 
     # Print recommended vendor skills (information only, no install)
-    print_recommended_vendor_skills
+    print_recommended_vendor_skills "$PRESET_FILE"
 
     # Initialize git if not already done
     if [[ ! -d "$target_dir/.git" ]] && ! $DRY_RUN; then
