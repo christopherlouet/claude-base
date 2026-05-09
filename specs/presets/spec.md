@@ -4,6 +4,8 @@
 **Date**: 2026-05-04
 **Owner**: Chris
 
+> **Extension**: data-driven detection + per-preset E2E coverage are specified separately in [`specs/presets-detection-and-e2e/spec.md`](../presets-detection-and-e2e/spec.md). That spec adds an optional `detect` block to the manifest format and a per-preset end-to-end test loop. Refer to it for the detection rule schema, the `--detect-only` flag, and the in-menu suggestion behavior.
+
 ---
 
 ## Summary

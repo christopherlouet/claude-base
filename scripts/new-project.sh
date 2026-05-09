@@ -19,6 +19,8 @@ source "$SCRIPT_DIR/lib/common.sh"
 source "$SCRIPT_DIR/lib/detection.sh"
 # shellcheck source=lib/preset-detect.sh
 source "$SCRIPT_DIR/lib/preset-detect.sh"
+# shellcheck source=lib/menu.sh
+source "$SCRIPT_DIR/lib/menu.sh"
 # shellcheck source=lib/generators.sh
 source "$SCRIPT_DIR/lib/generators.sh"
 # shellcheck source=lib/docker.sh
@@ -85,6 +87,7 @@ DESIGN_STYLE=""
 PRESET_NAME=""
 PRESET_FILE=""
 PRESET_LIST_AND_EXIT=false
+DETECT_ONLY=false
 # Set by load_preset() — used by install_claude_files / apply_preset_filter
 PRESET_SKILLS_DROP=()
 # Populated by populate_matched_presets() — list of preset names whose
@@ -153,6 +156,8 @@ ${BOLD}OPTIONS${NC}
                         installs marketplace plugins, and sets defaults.
                         Run --list-presets to see what's available.
     --list-presets      List available presets and exit
+    --detect-only PATH  Scan PATH against preset detect rules, print matching
+                        preset names, then exit 0 (no file writes).
 
 ${BOLD}EXAMPLES${NC}
     # Interactive new project
@@ -311,6 +316,10 @@ parse_args() {
                 ;;
             --list-presets)
                 PRESET_LIST_AND_EXIT=true
+                shift
+                ;;
+            --detect-only)
+                DETECT_ONLY=true
                 shift
                 ;;
             -*)
@@ -1385,72 +1394,50 @@ get_project_type() {
     prompt "Project type:"
     echo ""
 
-    # Set the default choice based on detection
+    # Compute the default choice. Preset entries (when MATCHED_PRESETS is
+    # non-empty) occupy options 1..N; the standard 11 types follow at
+    # N+1..N+11. When at least one preset matched, default to the first
+    # preset entry; otherwise map DETECTED_TYPE to its standard option.
+    local n=${#MATCHED_PRESETS[@]}
     local default_choice=""
-    case $DETECTED_TYPE in
-        react)     default_choice="1" ;;
-        vue)       default_choice="2" ;;
-        node-api)  default_choice="3" ;;
-        python)    default_choice="4" ;;
-        go)        default_choice="5" ;;
-        rust)      default_choice="6" ;;
-        java)      default_choice="7" ;;
-        fullstack) default_choice="8" ;;
-        flutter)   default_choice="9" ;;
-        neovim)    default_choice="10" ;;
-        *)         default_choice="" ;;
-    esac
+    if [[ $n -gt 0 ]]; then
+        default_choice="1"
+    else
+        case $DETECTED_TYPE in
+            react)     default_choice="1" ;;
+            vue)       default_choice="2" ;;
+            node-api)  default_choice="3" ;;
+            python)    default_choice="4" ;;
+            go)        default_choice="5" ;;
+            rust)      default_choice="6" ;;
+            java)      default_choice="7" ;;
+            fullstack) default_choice="8" ;;
+            flutter)   default_choice="9" ;;
+            neovim)    default_choice="10" ;;
+            *)         default_choice="" ;;
+        esac
+    fi
 
-    # Show options with the default indicated
-    print_option() {
-        local num="$1"
-        local label="$2"
-        if [[ "$num" == "$default_choice" ]]; then
-            echo -e "  ${GREEN}${num})${NC} ${BOLD}${label}${NC} ${GREEN}← detected${NC}"
-        else
-            echo "  $num) $label"
-        fi
-    }
-
-    print_option "1" "React / Next.js"
-    print_option "2" "Vue.js"
-    print_option "3" "Node.js API"
-    print_option "4" "Python"
-    print_option "5" "Go"
-    print_option "6" "Rust"
-    print_option "7" "Java / Spring Boot"
-    print_option "8" "Fullstack (Monorepo)"
-    print_option "9" "Flutter / Mobile"
-    print_option "10" "Neovim / Lua"
-    print_option "11" "Other / Generic"
+    # Render the menu (sets _TYPE_MENU_TOTAL).
+    print_type_menu "$default_choice"
     echo ""
 
+    local total="${_TYPE_MENU_TOTAL:-11}"
     if [[ -n "$default_choice" ]]; then
-        prompt "Choice [1-11] (default: $default_choice): "
+        prompt "Choice [1-$total] (default: $default_choice): "
     else
-        prompt "Choice [1-11]: "
+        prompt "Choice [1-$total]: "
     fi
     read -r choice
 
-    # Use the default if input is empty
     if [[ -z "$choice" ]] && [[ -n "$default_choice" ]]; then
         choice="$default_choice"
     fi
 
-    case $choice in
-        1) PROJECT_TYPE="react" ;;
-        2) PROJECT_TYPE="vue" ;;
-        3) PROJECT_TYPE="node-api" ;;
-        4) PROJECT_TYPE="python" ;;
-        5) PROJECT_TYPE="go" ;;
-        6) PROJECT_TYPE="rust" ;;
-        7) PROJECT_TYPE="java" ;;
-        8) PROJECT_TYPE="fullstack" ;;
-        9) PROJECT_TYPE="flutter" ;;
-        10) PROJECT_TYPE="neovim" ;;
-        11) PROJECT_TYPE="generic" ;;
-        *) PROJECT_TYPE="${DETECTED_TYPE:-generic}" ;;
-    esac
+    if ! apply_type_choice "$choice"; then
+        # Invalid input — fall back to detected type or generic.
+        PROJECT_TYPE="${DETECTED_TYPE:-generic}"
+    fi
 }
 
 get_options() {
@@ -1819,6 +1806,30 @@ main() {
         exit 0
     fi
 
+    # --detect-only: scan the target dir, print matches, exit. No file writes.
+    if $DETECT_ONLY; then
+        if [[ -n "$PRESET_NAME" ]]; then
+            error "--detect-only and --preset are mutually exclusive"
+        fi
+        if [[ -z "$PROJECT_PATH" ]]; then
+            error "--detect-only requires a path argument"
+        fi
+        if [[ ! -d "$PROJECT_PATH" ]]; then
+            error "Path does not exist: $PROJECT_PATH"
+        fi
+        local _matches
+        _matches=$(scan_presets "$PROJECT_PATH")
+        if [[ -z "$_matches" ]]; then
+            info "No matching preset for: $PROJECT_PATH"
+        else
+            info "Matching preset(s) for $PROJECT_PATH:"
+            while IFS= read -r _p; do
+                [[ -n "$_p" ]] && echo "  - $_p"
+            done <<< "$_matches"
+        fi
+        exit 0
+    fi
+
     # Load preset (if any) BEFORE mode dispatch so defaults propagate
     # to MINIMAL/SIMPLE/interactive modes consistently.
     if [[ -n "$PRESET_NAME" ]]; then
@@ -1901,8 +1912,8 @@ main() {
                 info "Analyzing existing project: $PROJECT_PATH"
                 echo ""
                 detect_stack "$PROJECT_PATH"
+                # Matches are surfaced inside the type menu (US-4) — no banner.
                 populate_matched_presets
-                print_preset_suggestions
             else
                 info "Creating new project: $PROJECT_PATH"
             fi
@@ -1912,8 +1923,8 @@ main() {
             info "Analyzing existing project: $PROJECT_PATH"
             echo ""
             detect_stack "$PROJECT_PATH"
+            # Matches are surfaced inside the type menu (US-4) — no banner.
             populate_matched_presets
-            print_preset_suggestions
         elif $NON_INTERACTIVE; then
             # In non-interactive mode, create the folder if it doesn't exist
             mkdir -p "$PROJECT_PATH"
@@ -1971,6 +1982,12 @@ main() {
         # Standard interactive mode
         get_project_name
         get_project_type
+        # If the user picked a preset entry from the type menu, load it
+        # and skip per-option prompts (preset decides defaults).
+        if [[ -n "$PRESET_NAME" && -z "$PRESET_FILE" ]]; then
+            load_preset "$PRESET_NAME"
+            SKIP_PROMPTS=true
+        fi
         get_options
         confirm_choices
         create_project

@@ -298,6 +298,25 @@ EOF
     [[ "$output" != *"Detected stack — multiple presets match"* ]]
 }
 
+@test "presets: interactive menu prepends matching preset as option 1 (US-4)" {
+    # Existing Next.js fixture, run interactively (no -y, no --simple).
+    # The menu must show "Use preset: nextjs" as option 1 and renumber the
+    # standard types so React becomes option 2.
+    local target="$TEST_DIR/proj-interactive-menu"
+    mkdir -p "$target"
+    touch "$target/next.config.js"
+    echo '{"dependencies":{"next":"^15"},"name":"smoke"}' > "$target/package.json"
+    # Write input to a file (portable across GNU/BSD; no `timeout` —
+    # not available on macOS by default). The script reads each prompt
+    # until stdin is exhausted, then exits on EOF.
+    local input_file="$TEST_DIR/menu-input"
+    printf '1\nn\nn\nn\nn\n\nn\n' > "$input_file"
+    run bash -c "'$NEW_PROJECT' --dry-run '$target' < '$input_file' 2>&1"
+    [[ "$output" == *"Use preset: nextjs"* ]]
+    [[ "$output" == *"2) React / Next.js"* ]]
+    [[ "$output" == *"Choice [1-12]"* ]]
+}
+
 @test "presets: explicit --preset suppresses the Detected stack line (EF-016)" {
     # The target dir matches the nextjs detect rule; without --preset we
     # would print "Detected stack — preset matches: nextjs". With --preset
@@ -658,6 +677,93 @@ EOF
     run "$VALIDATE_PRESETS" "$TEST_DIR/bad-recs.json"
     [ "$status" -eq 1 ]
     [[ "$output" == *"recommendedVendorSkills"* ]]
+}
+
+# =============================================================================
+# US-5 — fixture pairing: each preset's detect rule must match its paired
+# fixture under tests/presets-fixtures/<preset>/. Drift-guard: if upstream
+# renames its config file or signal, the paired test fails loudly.
+# =============================================================================
+
+@test "presets: nextjs detect rule matches its fixture (US-5)" {
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/nextjs'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+}
+
+@test "presets: fastapi detect rule matches its fixture (US-5)" {
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/fastapi'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"fastapi"* ]]
+}
+
+@test "presets: astro detect rule matches its fixture (US-5)" {
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/astro'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"astro"* ]]
+}
+
+@test "presets: homelab-proxmox detect rule matches its fixture (US-5)" {
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/homelab-proxmox'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"homelab-proxmox"* ]]
+}
+
+# =============================================================================
+# US-6 — --detect-only standalone mode (P3): prints matching preset names
+# without performing any install. Useful for users who want to audit the
+# detection without committing to anything.
+# =============================================================================
+
+@test "presets: --detect-only on a Next.js fixture prints nextjs and exits 0" {
+    local target="$TEST_DIR/proj-detect-only"
+    mkdir -p "$target"
+    touch "$target/next.config.js"
+    echo '{"dependencies":{"next":"^15"}}' > "$target/package.json"
+    run "$NEW_PROJECT" --detect-only "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    # No file writes
+    [ ! -d "$target/.claude" ]
+}
+
+@test "presets: --detect-only on an empty dir reports no match and exits 0" {
+    local target="$TEST_DIR/proj-detect-only-empty"
+    mkdir -p "$target"
+    run "$NEW_PROJECT" --detect-only "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"No matching preset"* ]]
+    [ ! -d "$target/.claude" ]
+}
+
+@test "presets: --detect-only without a path fails with a clear error" {
+    run "$NEW_PROJECT" --detect-only
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"path"* ]] || [[ "$output" == *"required"* ]]
+}
+
+@test "presets: --detect-only and --preset are mutually exclusive" {
+    local target="$TEST_DIR/proj-detect-only-conflict"
+    mkdir -p "$target"
+    run "$NEW_PROJECT" --detect-only --preset nextjs "$target"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"mutually exclusive"* ]] || [[ "$output" == *"--preset"* ]]
 }
 
 @test "presets: --preset nextjs prints Recommended vendor skills section" {
