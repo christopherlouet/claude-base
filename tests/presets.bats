@@ -115,6 +115,156 @@ EOF
 }
 
 # =============================================================================
+# validate-presets.sh: optional `detect` block (data-driven detection)
+# See specs/presets-detection-and-e2e/spec.md (EF-010).
+# =============================================================================
+
+@test "presets: validate-presets.sh accepts a valid detect block (anyOf + files + depFiles)" {
+    cat > "$TEST_DIR/with-detect.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["react"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "files": ["next.config.js"],
+    "depFiles": [{"path": "package.json", "contains": "\"next\""}]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/with-detect.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: validate-presets.sh accepts a detect block with only files (no depFiles)" {
+    cat > "$TEST_DIR/files-only.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "allOf",
+    "files": ["manage.py"]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/files-only.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: validate-presets.sh accepts a detect block omitting combinator (defaults to anyOf)" {
+    cat > "$TEST_DIR/no-combinator.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "files": ["astro.config.mjs"]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/no-combinator.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: validate-presets.sh rejects a detect block with no signals (empty files AND depFiles)" {
+    cat > "$TEST_DIR/empty-detect.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "files": [],
+    "depFiles": []
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/empty-detect.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"detect"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a detect block with a bad combinator" {
+    cat > "$TEST_DIR/bad-combinator.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "alwaysmatch",
+    "files": ["next.config.js"]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-combinator.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"combinator"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a depFiles entry missing path" {
+    cat > "$TEST_DIR/bad-depfile-path.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"contains": "fastapi"}]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-depfile-path.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"depFiles"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a depFiles entry missing contains" {
+    cat > "$TEST_DIR/bad-depfile-contains.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"path": "requirements.txt"}]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-depfile-contains.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"depFiles"* ]]
+}
+
+# =============================================================================
 # new-project.sh --list-presets
 # =============================================================================
 
