@@ -457,6 +457,45 @@ version_gte() {
     [[ "$(printf '%s\n' "$v2" "$v1" | sort -V | head -n1)" == "$v2" ]]
 }
 
+# Writes the foundation version marker into a target project.
+# Marker location: <target_dir>/.claude/.foundation-version
+# Marker content: single-line semver + trailing newline (e.g. "1.37.0\n").
+# Idempotent: re-running with the same args produces an identical file.
+# Arguments:
+#   $1 - Target project directory (created with parents if missing)
+#   $2 - Version string to write
+# Return: 0 on success, 1 on missing arg or write failure
+write_foundation_marker() {
+    local target_dir="$1"
+    local version="$2"
+
+    if [[ -z "$target_dir" || -z "$version" ]]; then
+        return 1
+    fi
+
+    local claude_dir="$target_dir/.claude"
+    mkdir -p "$claude_dir" || return 1
+    printf '%s\n' "$version" > "$claude_dir/.foundation-version"
+}
+
+# Reads the foundation version marker from a target project.
+# Marker location: <target_dir>/.claude/.foundation-version
+# Returns the first line (semver), trailing newline stripped. Empty if missing.
+# Pure read: never creates the file or any parent directory.
+# Arguments:
+#   $1 - Target project directory
+# Return: 0 always (caller checks output non-empty if needed)
+read_foundation_marker_from_project() {
+    local target_dir="$1"
+    local marker_file="$target_dir/.claude/.foundation-version"
+
+    if [[ -z "$target_dir" || ! -f "$marker_file" ]]; then
+        return 0
+    fi
+
+    head -n 1 "$marker_file"
+}
+
 # =============================================================================
 # Display functions
 # =============================================================================
