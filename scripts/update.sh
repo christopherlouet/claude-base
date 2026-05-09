@@ -809,6 +809,15 @@ update_directory() {
         fi
 
         local rel_path="${src_file#"$src_dir"/}"
+
+        # Active preset filter: skip files belonging to a dropped skill.
+        # COPY-only — never deletes what's already on disk (EF-011).
+        if [[ "$name" = "skills" ]] && is_skill_dropped "$rel_path"; then
+            debug "skills/$rel_path skipped (preset filter: $ACTIVE_PRESET_NAME)"
+            ((dir_skipped++)) || true
+            continue
+        fi
+
         local dest_file="$dest_dir/$rel_path"
         local filename
         filename=$(basename "$src_file")
@@ -895,6 +904,10 @@ update_directory() {
     if [[ "$name" == "skills" ]]; then
         while IFS= read -r src_file; do
             local rel_path="${src_file#"$src_dir"/}"
+            # Active preset filter: skip files belonging to a dropped skill.
+            if is_skill_dropped "$rel_path"; then
+                continue
+            fi
             local dest_file="$dest_dir/$rel_path"
             local file_dest_dir
             file_dest_dir=$(dirname "$dest_file")
