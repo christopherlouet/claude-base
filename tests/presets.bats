@@ -265,6 +265,54 @@ EOF
 }
 
 # =============================================================================
+# new-project.sh: integration of preset suggestion (US-1, EF-016)
+# =============================================================================
+
+@test "presets: --simple -y on a Next.js project prints the preset suggestion" {
+    local target="$TEST_DIR/proj-nextjs-suggest"
+    mkdir -p "$target"
+    touch "$target/next.config.js"
+    echo '{"dependencies":{"next":"^15"},"name":"smoke"}' > "$target/package.json"
+    run "$NEW_PROJECT" -y --simple --dry-run "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Detected stack"* ]]
+    [[ "$output" == *"nextjs"* ]]
+}
+
+@test "presets: --simple -y on a FastAPI project prints the preset suggestion" {
+    local target="$TEST_DIR/proj-fastapi-suggest"
+    mkdir -p "$target"
+    echo "fastapi==0.110" > "$target/requirements.txt"
+    run "$NEW_PROJECT" -y --simple --dry-run "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Detected stack"* ]]
+    [[ "$output" == *"fastapi"* ]]
+}
+
+@test "presets: --simple -y on an empty project prints no preset suggestion" {
+    local target="$TEST_DIR/proj-empty-suggest"
+    mkdir -p "$target"
+    run "$NEW_PROJECT" -y --simple --dry-run "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Detected stack — preset matches"* ]]
+    [[ "$output" != *"Detected stack — multiple presets match"* ]]
+}
+
+@test "presets: explicit --preset suppresses the Detected stack line (EF-016)" {
+    # The target dir matches the nextjs detect rule; without --preset we
+    # would print "Detected stack — preset matches: nextjs". With --preset
+    # nextjs explicit, no such suggestion line should appear (EF-016: the
+    # explicit choice is honored without commentary).
+    local target="$TEST_DIR/proj-explicit-preset"
+    mkdir -p "$target"
+    touch "$target/next.config.js"
+    echo '{"dependencies":{"next":"^15"},"name":"smoke"}' > "$target/package.json"
+    run "$NEW_PROJECT" --preset nextjs --dry-run "$target"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Detected stack"* ]]
+}
+
+# =============================================================================
 # new-project.sh --list-presets
 # =============================================================================
 

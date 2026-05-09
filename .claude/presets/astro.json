@@ -15,6 +15,14 @@
 
   "appliesToTypes": ["astro", "fullstack"],
 
+  "detect": {
+    "combinator": "anyOf",
+    "files": ["astro.config.mjs", "astro.config.ts", "astro.config.js"],
+    "depFiles": [
+      {"path": "package.json", "contains": "\"astro\""}
+    ]
+  },
+
   "foundation": {
     "skills": {
       "drop": [

@@ -15,6 +15,18 @@
 
   "appliesToTypes": ["generic"],
 
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [
+      {"path": "main.tf", "contains": "telmate/proxmox"},
+      {"path": "main.tf", "contains": "bpg/proxmox"},
+      {"path": "providers.tf", "contains": "telmate/proxmox"},
+      {"path": "providers.tf", "contains": "bpg/proxmox"},
+      {"path": "terraform.tf", "contains": "telmate/proxmox"},
+      {"path": "terraform.tf", "contains": "bpg/proxmox"}
+    ]
+  },
+
   "foundation": {
     "skills": {
       "drop": [
