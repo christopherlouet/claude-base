@@ -784,6 +784,17 @@ update_directory() {
 
     make_dir "$dest_dir"
 
+    # Dry-run preview of preset-filtered skills (US-5). Announces each
+    # skill that the active preset will skip, once per skill.
+    if [[ "$name" = "skills" ]] && $DRY_RUN && [[ "${#ACTIVE_PRESET_DROP_LIST[@]}" -gt 0 ]]; then
+        local _drop_skill
+        for _drop_skill in "${ACTIVE_PRESET_DROP_LIST[@]}"; do
+            if [[ -d "$src_dir/$_drop_skill" ]]; then
+                echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): $_drop_skill"
+            fi
+        done
+    fi
+
     local dir_updated=0
     local dir_added=0
     local dir_skipped=0

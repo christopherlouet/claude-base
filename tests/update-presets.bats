@@ -153,6 +153,71 @@ teardown() {
     [ -d "$proj/.claude/skills/dev-tdd" ]
 }
 
+# =============================================================================
+# Phase 4 — Visibility line (US-4)
+# =============================================================================
+
+@test "update-presets: auto-detected preset prints Active preset (detected) line (T023/US-4)" {
+    local proj="$TEST_DIR/proj-vis-detected"
+    "$NEW_PROJECT" --preset nextjs "$proj" >/dev/null 2>&1
+    touch "$proj/next.config.js"
+    echo '{"dependencies":{"next":"^15"}}' > "$proj/package.json"
+    run "$UPDATE" -y --dry-run --skills "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Active preset: nextjs"* ]]
+    [[ "$output" == *"detected"* ]]
+}
+
+@test "update-presets: --preset prints Active preset (via --preset) line (T024/US-4)" {
+    local proj="$TEST_DIR/proj-vis-explicit"
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    run "$UPDATE" -y --dry-run --preset fastapi --skills "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Active preset: fastapi"* ]]
+    [[ "$output" == *"--preset"* ]]
+}
+
+@test "update-presets: --no-preset stays silent on Active preset line (T025/US-4)" {
+    local proj="$TEST_DIR/proj-vis-noflag"
+    "$NEW_PROJECT" --preset nextjs "$proj" >/dev/null 2>&1
+    touch "$proj/next.config.js"
+    echo '{"dependencies":{"next":"^15"}}' > "$proj/package.json"
+    run "$UPDATE" -y --dry-run --no-preset --skills "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Active preset:"* ]]
+}
+
+# =============================================================================
+# Phase 6 — Orphan detection respects active preset (US-6)
+# =============================================================================
+
+@test "update-presets: --detect-orphans on a preset project does not flag dropped skills (T029/US-6)" {
+    local proj="$TEST_DIR/proj-orphans-aware"
+    "$NEW_PROJECT" --preset nextjs "$proj" >/dev/null 2>&1
+    # Add nextjs detect markers so resolution picks the preset.
+    touch "$proj/next.config.js"
+    echo '{"dependencies":{"next":"^15"}}' > "$proj/package.json"
+    run "$UPDATE" -y --detect-orphans "$proj"
+    [ "$status" -eq 0 ] || [ "$status" -eq 1 ]
+    # Dropped skills (e.g. dev-flutter) must NOT be reported as orphans.
+    [[ "$output" != *"dev-flutter is an orphan"* ]]
+    [[ "$output" != *"orphan: .claude/skills/dev-flutter"* ]]
+}
+
+# =============================================================================
+# Phase 5 — Dry-run lists skipped skills (US-5)
+# =============================================================================
+
+@test "update-presets: --dry-run with active preset lists skipped skills (T027/US-5)" {
+    local proj="$TEST_DIR/proj-dry-run-list"
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    run "$UPDATE" -y --dry-run --preset nextjs --skills "$proj"
+    [ "$status" -eq 0 ]
+    # The nextjs preset drops dev-flutter; dry-run must announce the skip.
+    [[ "$output" == *"Skip (preset filter)"* ]]
+    [[ "$output" == *"dev-flutter"* ]]
+}
+
 @test "update-presets: filter is COPY-only, never deletes existing nested skill files (T019/EF-011)" {
     local proj="$TEST_DIR/proj-copy-only"
     "$NEW_PROJECT" --preset nextjs "$proj" >/dev/null 2>&1
