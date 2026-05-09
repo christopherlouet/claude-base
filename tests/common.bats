@@ -97,6 +97,137 @@ teardown() {
 }
 
 # =============================================================================
+# Tests for foundation marker (T1.1 — write_foundation_marker)
+# =============================================================================
+
+@test "write_foundation_marker creates the marker file with the version" {
+    mkdir -p "$TEST_DIR/.claude"
+    run write_foundation_marker "$TEST_DIR" "1.37.0"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/.claude/.foundation-version" ]
+    [ "$(cat "$TEST_DIR/.claude/.foundation-version")" = "1.37.0" ]
+}
+
+@test "write_foundation_marker appends a trailing newline" {
+    mkdir -p "$TEST_DIR/.claude"
+    write_foundation_marker "$TEST_DIR" "1.37.0"
+    # Compare byte-exact: printf '%s\n' "1.37.0" should equal the file content.
+    printf '%s\n' "1.37.0" > "$TEST_DIR/expected"
+    diff "$TEST_DIR/expected" "$TEST_DIR/.claude/.foundation-version"
+}
+
+@test "write_foundation_marker creates .claude/ if missing" {
+    # No .claude/ subdir exists yet
+    [ ! -d "$TEST_DIR/.claude" ]
+    run write_foundation_marker "$TEST_DIR" "1.37.0"
+    [ "$status" -eq 0 ]
+    [ -d "$TEST_DIR/.claude" ]
+    [ -f "$TEST_DIR/.claude/.foundation-version" ]
+}
+
+@test "write_foundation_marker creates target_dir if missing" {
+    local nested="$TEST_DIR/new/nested/project"
+    [ ! -d "$nested" ]
+    run write_foundation_marker "$nested" "1.37.0"
+    [ "$status" -eq 0 ]
+    [ -f "$nested/.claude/.foundation-version" ]
+}
+
+@test "write_foundation_marker is idempotent (same args produce same content)" {
+    mkdir -p "$TEST_DIR/.claude"
+    write_foundation_marker "$TEST_DIR" "1.37.0"
+    local first_sha
+    first_sha=$(sha256sum "$TEST_DIR/.claude/.foundation-version" | cut -d' ' -f1)
+
+    write_foundation_marker "$TEST_DIR" "1.37.0"
+    local second_sha
+    second_sha=$(sha256sum "$TEST_DIR/.claude/.foundation-version" | cut -d' ' -f1)
+
+    [ "$first_sha" = "$second_sha" ]
+}
+
+@test "write_foundation_marker overwrites an existing marker with a new version" {
+    mkdir -p "$TEST_DIR/.claude"
+    echo "1.36.0" > "$TEST_DIR/.claude/.foundation-version"
+    run write_foundation_marker "$TEST_DIR" "1.37.0"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/.claude/.foundation-version")" = "1.37.0" ]
+}
+
+@test "write_foundation_marker returns 1 if target_dir is empty" {
+    run write_foundation_marker "" "1.37.0"
+    [ "$status" -eq 1 ]
+}
+
+@test "write_foundation_marker returns 1 if version is empty" {
+    run write_foundation_marker "$TEST_DIR" ""
+    [ "$status" -eq 1 ]
+}
+
+# =============================================================================
+# Tests for foundation marker (T1.2 — read_foundation_marker_from_project)
+# =============================================================================
+
+@test "read_foundation_marker_from_project returns the version when marker exists" {
+    mkdir -p "$TEST_DIR/.claude"
+    printf '%s\n' "1.37.0" > "$TEST_DIR/.claude/.foundation-version"
+    run read_foundation_marker_from_project "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ "$output" = "1.37.0" ]
+}
+
+@test "read_foundation_marker_from_project strips the trailing newline" {
+    mkdir -p "$TEST_DIR/.claude"
+    printf '%s\n' "1.37.0" > "$TEST_DIR/.claude/.foundation-version"
+    run read_foundation_marker_from_project "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # If a trailing newline leaked through, output would be "1.37.0\n" — bats run captures
+    # output without the trailing newline, but the test asserts the precise expected string.
+    [ "${#output}" -eq 6 ]
+}
+
+@test "read_foundation_marker_from_project returns empty when marker is missing" {
+    mkdir -p "$TEST_DIR/.claude"
+    run read_foundation_marker_from_project "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "read_foundation_marker_from_project returns empty when target_dir does not exist" {
+    run read_foundation_marker_from_project "$TEST_DIR/nonexistent"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "read_foundation_marker_from_project returns empty when arg is empty" {
+    run read_foundation_marker_from_project ""
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "read_foundation_marker_from_project does not create the marker file as a side effect" {
+    [ ! -d "$TEST_DIR/.claude" ]
+    run read_foundation_marker_from_project "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ ! -f "$TEST_DIR/.claude/.foundation-version" ]
+}
+
+@test "read_foundation_marker_from_project returns first line when marker has multiple lines" {
+    mkdir -p "$TEST_DIR/.claude"
+    printf '%s\n%s\n' "1.37.0" "extra-line" > "$TEST_DIR/.claude/.foundation-version"
+    run read_foundation_marker_from_project "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ "$output" = "1.37.0" ]
+}
+
+@test "read_foundation_marker_from_project round-trips with write_foundation_marker" {
+    write_foundation_marker "$TEST_DIR" "1.42.0"
+    run read_foundation_marker_from_project "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ "$output" = "1.42.0" ]
+}
+
+# =============================================================================
 # Tests for foundation statistics
 # =============================================================================
 
