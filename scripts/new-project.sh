@@ -1178,8 +1178,10 @@ run_simple_mode() {
     # Install marketplace plugins (capability-checked, lenient on failure)
     install_marketplace_plugins
 
-    # Print recommended vendor skills (information only, no install)
-    print_recommended_vendor_skills "$PRESET_FILE"
+    # Print recommended vendor skills (information only, no install).
+    # 2nd arg lets the printer detect project-scoped installs via
+    # detect_skill_install_status (T3.2).
+    print_recommended_vendor_skills "$PRESET_FILE" "$target_dir"
 
     # Write foundation version marker (T1.3) — skip in dry-run
     if ! $DRY_RUN; then

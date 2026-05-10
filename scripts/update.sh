@@ -1450,7 +1450,7 @@ main() {
     # rediscover) opt-in vendor skills throughout the project lifecycle.
     # Gated to honor --quiet and skipped when no preset governs this run.
     if [[ -n "$ACTIVE_PRESET_FILE" ]] && ! ${QUIET:-false}; then
-        print_recommended_vendor_skills "$ACTIVE_PRESET_FILE"
+        print_recommended_vendor_skills "$ACTIVE_PRESET_FILE" "$TARGET_DIR"
     fi
 
     # Write foundation version marker (T1.4) — skip in dry-run

@@ -59,13 +59,29 @@ detect_skill_install_status() {
     return 0
 }
 
-# print_recommended_vendor_skills <preset_file>
+# Internal: format an install-status marker with color. Emits one of
+# [OK] / [--] / [?] wrapped in ANSI color codes (or plain text when colors
+# are disabled — common.sh handles NO_COLOR / non-TTY by emptying the vars).
+_format_install_marker() {
+    case "$1" in
+        installed)     printf '%s[OK]%s' "${GREEN:-}" "${NC:-}" ;;
+        not_installed) printf '%s[--]%s' "${DIM:-}" "${NC:-}" ;;
+        unknown|*)     printf '%s[?]%s'  "${YELLOW:-}" "${NC:-}" ;;
+    esac
+}
+
+# print_recommended_vendor_skills <preset_file> [project_dir]
 #
 # Prints the preset's recommendedVendorSkills array, grouped into two
 # sections: "always" recommendations (highly relevant for the stack) and
 # conditional ones (apply only if the user uses the named tool). Each item
-# shows id, rationale and URL. The section closes with a pointer to the
-# canonical recipe.
+# is prefixed with an install-status marker:
+#   - [OK]   already installed (user-global or project-scope)
+#   - [--]   not installed (the user can opt in)
+#   - [?]    unknown — marketplace plugin handles ('@' in id) live outside
+#            the .claude/skills/ filesystem layout
+# Items also show id, rationale and URL. Section closes with a pointer to
+# the canonical recipe.
 #
 # Silent (returns 0 with no output) when:
 #   - the preset_file argument is empty
@@ -75,9 +91,12 @@ detect_skill_install_status() {
 #
 # Arguments:
 #   $1 - Absolute path to the preset JSON manifest
+#   $2 - Optional project directory (forwarded to detect_skill_install_status
+#        for the project-scope check). Empty / unset → user-global only.
 # Return: 0 always
 print_recommended_vendor_skills() {
     local preset_file="$1"
+    local project_dir="${2:-}"
 
     [[ -z "$preset_file" || ! -f "$preset_file" ]] && return 0
     if ! command -v jq >/dev/null 2>&1; then
@@ -92,7 +111,7 @@ print_recommended_vendor_skills() {
     echo -e "${BOLD}📚 Recommended vendor skills for this stack (opt-in):${NC}"
     echo ""
 
-    local i rid rurl rrat rcond
+    local i rid rurl rrat rcond rstatus rmarker
     local printed_always=0 printed_conditional=0
 
     # First pass: always recommendations
@@ -107,7 +126,9 @@ print_recommended_vendor_skills() {
                 rid=$(jq -r ".recommendedVendorSkills[$i].id" "$preset_file")
                 rurl=$(jq -r ".recommendedVendorSkills[$i].url" "$preset_file")
                 rrat=$(jq -r ".recommendedVendorSkills[$i].rationale" "$preset_file")
-                echo "    • $rid"
+                rstatus=$(detect_skill_install_status "$rid" "$project_dir")
+                rmarker=$(_format_install_marker "$rstatus")
+                echo -e "    $rmarker • $rid"
                 echo "      $rrat"
                 echo "      → $rurl"
                 ;;
@@ -128,7 +149,9 @@ print_recommended_vendor_skills() {
                 rid=$(jq -r ".recommendedVendorSkills[$i].id" "$preset_file")
                 rurl=$(jq -r ".recommendedVendorSkills[$i].url" "$preset_file")
                 rrat=$(jq -r ".recommendedVendorSkills[$i].rationale" "$preset_file")
-                echo "    • $rid — $rcond"
+                rstatus=$(detect_skill_install_status "$rid" "$project_dir")
+                rmarker=$(_format_install_marker "$rstatus")
+                echo -e "    $rmarker • $rid — $rcond"
                 echo "      $rrat"
                 echo "      → $rurl"
                 ;;
