@@ -183,3 +183,60 @@ PRESET_MIXED='{
     [ "$status" -eq 0 ]
     [ "$output" = "installed" ]
 }
+
+# -----------------------------------------------------------------------------
+# T3.2 — print_recommended_vendor_skills shows install-status markers
+# Uses the optional 2nd arg (project_dir) so the printer can detect both
+# user-global and project-scoped installs.
+# -----------------------------------------------------------------------------
+
+PRESET_T32_MIXED='{
+  "name":"t32-mixed",
+  "recommendedVendorSkills":[
+    {"id":"vercel-react-best-practices","url":"https://example.com/v","rationale":"Canonical Next.js patterns","condition":"always"},
+    {"id":"frontend-design@claude-plugins-official","url":"https://example.com/f","rationale":"Anthropic plugin","condition":"always"},
+    {"id":"prisma-cli","url":"https://example.com/p","rationale":"Prisma CLI patterns","condition":"if using Prisma"}
+  ]
+}'
+
+@test "print_recommended_vendor_skills marks user-global installs with [OK] (T3.2)" {
+    make_preset "$PRESET_T32_MIXED"
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills/vercel-react-best-practices"
+    NO_COLOR=1 HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$TEST_DIR/preset.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[OK]"*"vercel-react-best-practices"* ]]
+}
+
+@test "print_recommended_vendor_skills marks missing skills with [--] (T3.2)" {
+    make_preset "$PRESET_T32_MIXED"
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    NO_COLOR=1 HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$TEST_DIR/preset.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[--]"*"prisma-cli"* ]]
+}
+
+@test "print_recommended_vendor_skills marks marketplace plugins with [?] (T3.2)" {
+    make_preset "$PRESET_T32_MIXED"
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    NO_COLOR=1 HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$TEST_DIR/preset.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[?]"*"frontend-design@claude-plugins-official"* ]]
+}
+
+@test "print_recommended_vendor_skills detects project-scoped installs via 2nd arg (T3.2)" {
+    make_preset "$PRESET_T32_MIXED"
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    mkdir -p "$TEST_DIR/proj-installed/.claude/skills/prisma-cli"
+    NO_COLOR=1 HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$TEST_DIR/preset.json" "$TEST_DIR/proj-installed"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[OK]"*"prisma-cli"* ]]
+}
+
+@test "print_recommended_vendor_skills with NO_COLOR=1 emits no ANSI escape sequences (T3.4)" {
+    make_preset "$PRESET_T32_MIXED"
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills/vercel-react-best-practices"
+    NO_COLOR=1 HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$TEST_DIR/preset.json"
+    [ "$status" -eq 0 ]
+    # Assert no ESC (\033 / 0x1b) in output.
+    [[ "$output" != *$'\033'* ]]
+}
