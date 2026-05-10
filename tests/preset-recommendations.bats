@@ -135,3 +135,51 @@ PRESET_MIXED='{
     conditional_line=$(printf '%s\n' "$output" | grep -n "Add if your project uses" | cut -d: -f1)
     [ "$always_line" -lt "$conditional_line" ]
 }
+
+# -----------------------------------------------------------------------------
+# T3.1 — detect_skill_install_status <skill_id> [project_dir]
+# Returns: "installed" | "not_installed" | "unknown"
+# -----------------------------------------------------------------------------
+
+@test "detect_skill_install_status: id containing '@' is reported as unknown (marketplace plugin)" {
+    HOME="$TEST_DIR/fake-home" run detect_skill_install_status "frontend-design@claude-plugins-official"
+    [ "$status" -eq 0 ]
+    [ "$output" = "unknown" ]
+}
+
+@test "detect_skill_install_status: user-global install is detected" {
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills/vercel-react-best-practices"
+    HOME="$TEST_DIR/fake-home" run detect_skill_install_status "vercel-react-best-practices"
+    [ "$status" -eq 0 ]
+    [ "$output" = "installed" ]
+}
+
+@test "detect_skill_install_status: project-scoped install is detected when given project_dir" {
+    mkdir -p "$TEST_DIR/fake-home"
+    mkdir -p "$TEST_DIR/proj-detect/.claude/skills/prisma-cli"
+    HOME="$TEST_DIR/fake-home" run detect_skill_install_status "prisma-cli" "$TEST_DIR/proj-detect"
+    [ "$status" -eq 0 ]
+    [ "$output" = "installed" ]
+}
+
+@test "detect_skill_install_status: returns not_installed when neither location has the skill" {
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    mkdir -p "$TEST_DIR/proj-empty/.claude/skills"
+    HOME="$TEST_DIR/fake-home" run detect_skill_install_status "nonexistent-skill" "$TEST_DIR/proj-empty"
+    [ "$status" -eq 0 ]
+    [ "$output" = "not_installed" ]
+}
+
+@test "detect_skill_install_status: empty install dir is still 'installed' (filesystem semantics)" {
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills/dev-shadcn"
+    HOME="$TEST_DIR/fake-home" run detect_skill_install_status "dev-shadcn"
+    [ "$status" -eq 0 ]
+    [ "$output" = "installed" ]
+}
+
+@test "detect_skill_install_status: project_dir argument is optional (user-global lookup still works)" {
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills/dev-tdd"
+    HOME="$TEST_DIR/fake-home" run detect_skill_install_status "dev-tdd"
+    [ "$status" -eq 0 ]
+    [ "$output" = "installed" ]
+}
