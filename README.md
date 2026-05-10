@@ -176,13 +176,13 @@ claude-base/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->536<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->593<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
 │   ├── validate.bats            # Validation tests
 │   ├── docs-under-claude.bats   # v1.30 layout tests
-│   └── ...                      # <!-- count:testFiles -->26<!-- /count --> test files in total
+│   └── ...                      # <!-- count:testFiles -->27<!-- /count --> test files in total
 │
 ├── .gitleaks.toml               # gitleaks config (secret detection)
 ├── VERSION                      # Centralized foundation version (1.30.0)
@@ -529,7 +529,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->26<!-- /count --> files, <!-- count:tests -->536<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->27<!-- /count --> files, <!-- count:tests -->593<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|
