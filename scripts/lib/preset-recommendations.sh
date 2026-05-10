@@ -14,6 +14,51 @@ if ! declare -f info >/dev/null 2>&1; then
     exit 1
 fi
 
+# detect_skill_install_status <skill_id> [project_dir]
+#
+# Reports whether a recommended vendor skill is already present in the
+# user-global Claude config or (optionally) the given project. Pure
+# filesystem check — no network, no Claude CLI invocation, honors the
+# foundation's "observe, never install" supply-chain rule.
+#
+# Outputs one of:
+#   - "installed"     a directory exists at $HOME/.claude/skills/<id> or
+#                     <project_dir>/.claude/skills/<id> (empty dir counts;
+#                     filesystem presence is the truth, not validity)
+#   - "not_installed" no such directory in either location
+#   - "unknown"       skill_id contains '@' (marketplace plugin handle —
+#                     plugins live elsewhere and aren't FS-observable here)
+#
+# Arguments:
+#   $1 - skill id (e.g. "vercel-react-best-practices",
+#        "frontend-design@claude-plugins-official")
+#   $2 - optional project directory (skipped when empty/unset)
+# Return: 0 always
+detect_skill_install_status() {
+    local skill_id="$1"
+    local project_dir="${2:-}"
+
+    case "$skill_id" in
+        *@*)
+            echo "unknown"
+            return 0
+            ;;
+    esac
+
+    if [[ -d "${HOME:-}/.claude/skills/$skill_id" ]]; then
+        echo "installed"
+        return 0
+    fi
+
+    if [[ -n "$project_dir" && -d "$project_dir/.claude/skills/$skill_id" ]]; then
+        echo "installed"
+        return 0
+    fi
+
+    echo "not_installed"
+    return 0
+}
+
 # print_recommended_vendor_skills <preset_file>
 #
 # Prints the preset's recommendedVendorSkills array, grouped into two
