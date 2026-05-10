@@ -18,6 +18,8 @@ VERSION=$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null || echo "unknown")
 source "$SCRIPT_DIR/lib/common.sh"
 # shellcheck source=lib/preset-detect.sh
 source "$SCRIPT_DIR/lib/preset-detect.sh"
+# shellcheck source=lib/preset-recommendations.sh
+source "$SCRIPT_DIR/lib/preset-recommendations.sh"
 
 # Enable error handler and check prerequisites
 enable_error_handler
@@ -1442,6 +1444,14 @@ main() {
 
     # Summary
     print_summary
+
+    # Re-print the preset's recommended vendor skills (T2.3/T2.4 — US-2).
+    # Mirrors the new-project.sh post-install hint so users discover (and
+    # rediscover) opt-in vendor skills throughout the project lifecycle.
+    # Gated to honor --quiet and skipped when no preset governs this run.
+    if [[ -n "$ACTIVE_PRESET_FILE" ]] && ! ${QUIET:-false}; then
+        print_recommended_vendor_skills "$ACTIVE_PRESET_FILE"
+    fi
 
     # Write foundation version marker (T1.4) — skip in dry-run
     if ! $DRY_RUN; then
