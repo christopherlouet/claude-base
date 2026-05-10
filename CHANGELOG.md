@@ -11,6 +11,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Update lifecycle visibility
+
+Closes the gap between `claude-base init` (which prints a curated
+welcome with vendor-skill recommendations) and `claude-base update`
+(which used to be silent). After `init` produces a project, the
+foundation now leaves traceable signals across the project's lifetime.
+
+**Foundation version marker** (US-1). Every project now carries a
+`.claude/.foundation-version` file with the foundation `VERSION` that
+last produced or updated it. `init` writes it on bootstrap, `update`
+refreshes it on every successful run (skipped in dry-run), and
+`update --version` surfaces it when invoked from inside a project so
+you can compare against the foundation's CLI version without parsing
+git history.
+
+**Recommendations re-printed at update** (US-2). The active preset's
+`recommendedVendorSkills` list, previously shown only by `init`, is
+now re-printed at the end of `update` so users discover (and
+rediscover) opt-in vendor skills throughout the project lifecycle.
+Gated by `--quiet` and skipped when no preset governs the run.
+
+**Install-status indicators** (US-3). Each recommendation item is now
+prefixed with `[OK]` (already installed in user-global or project
+scope) / `[--]` (not installed) / `[?]` (marketplace plugin handle —
+filesystem cannot tell). An inline install pointer follows the URL
+line: `claude plugin install <id>` for marketplace handles,
+`git clone --depth 1 <url>` for GitHub vendor repos, kept aligned
+with [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md).
+Detection is pure filesystem (no network, no Claude CLI invocation),
+honoring the foundation's "observe, never install" supply-chain rule.
+
+**Dry-run conflicts in non-TTY** (US-4). `update --dry-run -y` used
+to silently warn `X skipped (use --force to overwrite)` and bump a
+single `Skipped:` counter for every locally-modified file. CI runners
+only saw a number; the actual filenames were buried. The new behavior
+collects those files into a "Conflicts requiring decision (N)"
+section before the summary, splits the count from `Skipped:`, and
+keeps exit code 0 (per the dry-run-is-informational contract).
+Interactive TTY runs are byte-identical to before.
+
+**Team setup pattern documented** (US-5). New section in
+[`docs/guides/TEAM-GUIDE.md`](./docs/guides/TEAM-GUIDE.md#when-claude-is-gitignored--scope-choices-for-plugins--skills)
+covering "When `.claude/` is gitignored": why a team would do that,
+what it breaks for project-scope plugins/skills, and which scope
+(`user` / `project` / `local`) to use per use case. README entry now
+links directly to it.
+
+Spec lives at [`specs/update-lifecycle-visibility/`](./specs/update-lifecycle-visibility/).
+
 ## [1.37.0] - 2026-05-09
 
 Minor release. Closes the preset story across three coordinated additions:

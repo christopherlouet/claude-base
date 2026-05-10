@@ -18,6 +18,8 @@ VERSION=$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null || echo "unknown")
 source "$SCRIPT_DIR/lib/common.sh"
 # shellcheck source=lib/preset-detect.sh
 source "$SCRIPT_DIR/lib/preset-detect.sh"
+# shellcheck source=lib/preset-recommendations.sh
+source "$SCRIPT_DIR/lib/preset-recommendations.sh"
 
 # Enable error handler and check prerequisites
 enable_error_handler
@@ -74,6 +76,11 @@ ADDED=0
 SKIPPED=0
 ORPHANS_FOUND=0
 ORPHANS_REMOVED=0
+
+# US-4 — collected when a non-interactive dry-run sees a file that would
+# have triggered an interactive prompt. Surfaces these in a dedicated
+# section so CI / scripted runs can see what a human would need to decide.
+DRY_RUN_CONFLICTS=()
 
 # Temp files tracking for cleanup
 _TEMP_FILES=()
@@ -196,6 +203,13 @@ EOF
 
 show_version() {
     echo "claude-base update v${VERSION}"
+
+    # T1.5 — surface the project marker when invoked from inside a configured project
+    local project_marker
+    project_marker=$(read_foundation_marker_from_project "$PWD")
+    if [[ -n "$project_marker" ]]; then
+        echo "  project: $project_marker"
+    fi
 }
 
 show_changelog() {
@@ -441,9 +455,14 @@ update_command_file() {
             success "  $filename updated"
             ((UPDATED++)) || true
         elif ${NON_INTERACTIVE:-false}; then
-            # Non-interactive mode without force: skip
-            warning "  $filename skipped (use --force to overwrite)"
-            ((SKIPPED++)) || true
+            if $DRY_RUN; then
+                # T4.1: surface what a human would have been asked about,
+                # instead of silently counting it as "skipped".
+                DRY_RUN_CONFLICTS+=("$filename")
+            else
+                warning "  $filename skipped (use --force to overwrite)"
+                ((SKIPPED++)) || true
+            fi
         else
             # Interactive mode: ask
             echo ""
@@ -858,8 +877,14 @@ update_directory() {
                 debug "  $rel_path updated"
                 ((dir_updated++)) || true
             elif ${NON_INTERACTIVE:-false}; then
-                warning "  $rel_path skipped (use --force to overwrite)"
-                ((dir_skipped++)) || true
+                if $DRY_RUN; then
+                    # T4.1: surface what a human would have been asked
+                    # about, instead of silently counting as "skipped".
+                    DRY_RUN_CONFLICTS+=("$name/$rel_path")
+                else
+                    warning "  $rel_path skipped (use --force to overwrite)"
+                    ((dir_skipped++)) || true
+                fi
             else
                 echo ""
                 prompt "$rel_path has been modified. What to do?"
@@ -1287,6 +1312,25 @@ detect_all_orphans() {
     fi
 }
 
+# T4.2 — surface dry-run conflicts in non-TTY mode. Listed BEFORE the
+# final summary so CI / scripted runs see what files a human would need
+# to decide on. Silent (returns immediately) when the array is empty,
+# preserving byte-identity with the legacy output for clean dry-runs.
+print_dry_run_conflicts() {
+    [[ "${#DRY_RUN_CONFLICTS[@]}" -eq 0 ]] && return 0
+
+    echo ""
+    warning "Conflicts requiring decision (${#DRY_RUN_CONFLICTS[@]})"
+    echo "  These files differ from the foundation. In an interactive run"
+    echo "  you'd be prompted to overwrite, skip, or view diff. Re-run"
+    echo "  without --dry-run, drop -y, or pass --force to choose."
+    echo ""
+    local path
+    for path in "${DRY_RUN_CONFLICTS[@]}"; do
+        echo "  - $path"
+    done
+}
+
 print_summary() {
     echo ""
     separator "="
@@ -1302,6 +1346,11 @@ print_summary() {
     fi
     echo "  Updated:    $UPDATED"
     echo "  Skipped:    $SKIPPED"
+    # T4.3: dry-run conflicts are tracked separately from auto-skipped
+    # files so the count reflects what a human would still need to decide.
+    if [[ "${#DRY_RUN_CONFLICTS[@]}" -gt 0 ]]; then
+        echo "  Conflicts:  ${#DRY_RUN_CONFLICTS[@]} (would prompt in TTY mode)"
+    fi
     if $DETECT_ORPHANS; then
         echo "  Orphans:    $ORPHANS_FOUND (${ORPHANS_REMOVED} removed)"
     fi
@@ -1433,8 +1482,24 @@ main() {
         detect_all_orphans
     fi
 
+    # Surface non-TTY dry-run conflicts (T4.2) before the summary.
+    print_dry_run_conflicts
+
     # Summary
     print_summary
+
+    # Re-print the preset's recommended vendor skills (T2.3/T2.4 — US-2).
+    # Mirrors the new-project.sh post-install hint so users discover (and
+    # rediscover) opt-in vendor skills throughout the project lifecycle.
+    # Gated to honor --quiet and skipped when no preset governs this run.
+    if [[ -n "$ACTIVE_PRESET_FILE" ]] && ! ${QUIET:-false}; then
+        print_recommended_vendor_skills "$ACTIVE_PRESET_FILE" "$TARGET_DIR"
+    fi
+
+    # Write foundation version marker (T1.4) — skip in dry-run
+    if ! $DRY_RUN; then
+        write_foundation_marker "$TARGET_DIR" "$VERSION"
+    fi
 }
 
 main "$@"

@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
-[![Tests](https://img.shields.io/badge/tests-536%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-593%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
@@ -176,13 +176,13 @@ claude-base/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->536<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->593<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
 │   ├── validate.bats            # Validation tests
 │   ├── docs-under-claude.bats   # v1.30 layout tests
-│   └── ...                      # <!-- count:testFiles -->26<!-- /count --> test files in total
+│   └── ...                      # <!-- count:testFiles -->27<!-- /count --> test files in total
 │
 ├── .gitleaks.toml               # gitleaks config (secret detection)
 ├── VERSION                      # Centralized foundation version (1.30.0)
@@ -443,7 +443,7 @@ It covers:
 - **[STACK-RECIPES.md](docs/STACK-RECIPES.md)**: Commands/agents/skills per stack (Web, Mobile, API…)
 - **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)**: Customization guide
 - **[guides/EXTENDING-GUIDE.md](docs/guides/EXTENDING-GUIDE.md)**: Extend the foundation (custom commands/skills/rules)
-- **[guides/TEAM-GUIDE.md](docs/guides/TEAM-GUIDE.md)**: Team adoption
+- **[guides/TEAM-GUIDE.md](docs/guides/TEAM-GUIDE.md)**: Team adoption — including [`When .claude/ is gitignored`](docs/guides/TEAM-GUIDE.md#when-claude-is-gitignored--scope-choices-for-plugins--skills) (scope choices for plugins & skills)
 
 ## Default Permissions
 
@@ -529,7 +529,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->26<!-- /count --> files, <!-- count:tests -->536<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->27<!-- /count --> files, <!-- count:tests -->593<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|

@@ -40,6 +40,67 @@ teardown() {
 }
 
 # =============================================================================
+# Foundation version marker (T1.4 — written after update; T1.5 — surfaced in --version)
+# =============================================================================
+
+@test "update.sh writes .claude/.foundation-version after a successful update" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Erase the marker created by init to verify update re-creates it
+    rm -f "$TEST_DIR/proj/.claude/.foundation-version"
+
+    run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/proj/.claude/.foundation-version" ]
+    local marker expected
+    marker=$(cat "$TEST_DIR/proj/.claude/.foundation-version")
+    expected=$(cat "$BASE_DIR/VERSION")
+    [ "$marker" = "$expected" ]
+}
+
+@test "update.sh --dry-run does NOT modify .claude/.foundation-version" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Force an old version into the marker
+    echo "1.0.0-old" > "$TEST_DIR/proj/.claude/.foundation-version"
+
+    run "$UPDATE_SCRIPT" --dry-run -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # Marker must still hold the old fake version
+    [ "$(cat "$TEST_DIR/proj/.claude/.foundation-version")" = "1.0.0-old" ]
+}
+
+@test "update.sh creates the marker on a project that never had one" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    rm -f "$TEST_DIR/proj/.claude/.foundation-version"
+    [ ! -f "$TEST_DIR/proj/.claude/.foundation-version" ]
+
+    run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/proj/.claude/.foundation-version" ]
+}
+
+@test "update.sh --version surfaces the project marker when run from inside a project" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Set a distinguishable marker so we can assert it's read
+    echo "1.36.0-test" > "$TEST_DIR/proj/.claude/.foundation-version"
+
+    cd "$TEST_DIR/proj"
+    run "$UPDATE_SCRIPT" --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"claude-base update v"* ]]
+    [[ "$output" == *"1.36.0-test"* ]]
+}
+
+@test "update.sh --version does NOT show a project marker when run outside a project" {
+    cd "$TEST_DIR"
+    run "$UPDATE_SCRIPT" --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"claude-base update v"* ]]
+    # The output should NOT mention any 1.36.0-test or similar fake marker
+    # (we just assert it doesn't include a "project:" line that T1.5 will add)
+    [[ "$output" != *"project:"* ]]
+}
+
+# =============================================================================
 # Update tests
 # =============================================================================
 
@@ -490,4 +551,61 @@ teardown() {
 
     [ "$hooks_before" = "$hooks_after" ]
     [ "$permissions_before" = "$permissions_after" ]
+}
+
+# =============================================================================
+# US-4 — Dry-run conflicts in non-TTY (T4.1, T4.2, T4.3, T4.4)
+# Non-interactive dry-run used to silently report differing files as
+# "skipped". US-4 surfaces them as "Conflicts requiring decision" so that
+# CI / scripted runs see what would have prompted a human, and reports the
+# count separately from auto-skipped files.
+# =============================================================================
+
+@test "update.sh --dry-run -y surfaces a modified file as a conflict (T4.1/T4.2)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    [ -d "$TEST_DIR/proj/.claude" ]
+    # Customise a command so it differs from the foundation source.
+    echo "# user-customised work-explore" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Conflicts requiring decision"* ]]
+    [[ "$output" == *"work-explore.md"* ]]
+}
+
+@test "update.sh --dry-run -y replaces silent skipped warning with conflict tracking (T4.1)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    echo "# customised" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # The legacy silent warning must NOT appear for the conflict file in dry-run.
+    [[ "$output" != *"work-explore.md skipped (use --force to overwrite)"* ]]
+}
+
+@test "update.sh summary reports Conflicts: count separately from Skipped: when conflicts exist (T4.3)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    echo "# customised" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Conflicts:"* ]]
+}
+
+@test "update.sh --dry-run -y exits 0 even when conflicts are listed (T4.4)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    echo "# customised A" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+    echo "# customised B" > "$TEST_DIR/proj/.claude/commands/work/work-plan.md"
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+}
+
+@test "update.sh --dry-run -y with no modifications shows no conflict section (T4.5 regression)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    # Pristine project — no customisations.
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Conflicts requiring decision"* ]]
 }
