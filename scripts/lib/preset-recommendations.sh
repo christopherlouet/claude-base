@@ -70,6 +70,25 @@ _format_install_marker() {
     esac
 }
 
+# Internal: emit an install-pointer line for an item, aligned with
+# docs/recipes/recommended-vendor-skills.md. Patterns recognised:
+#   - id contains '@'  → marketplace plugin → `claude plugin install <id>`
+#   - id contains '/'  → GitHub vendor repo → `git clone --depth 1 <url>`
+#   - otherwise        → no pointer (URL line above is enough)
+# Args: $1=id, $2=url. Writes the line to stdout (or nothing).
+_format_install_pointer() {
+    local id="$1"
+    local url="$2"
+    case "$id" in
+        *@*)
+            printf '      $ claude plugin install %s' "$id"
+            ;;
+        */*)
+            printf '      $ git clone --depth 1 %s' "$url"
+            ;;
+    esac
+}
+
 # print_recommended_vendor_skills <preset_file> [project_dir]
 #
 # Prints the preset's recommendedVendorSkills array, grouped into two
@@ -111,7 +130,7 @@ print_recommended_vendor_skills() {
     echo -e "${BOLD}📚 Recommended vendor skills for this stack (opt-in):${NC}"
     echo ""
 
-    local i rid rurl rrat rcond rstatus rmarker
+    local i rid rurl rrat rcond rstatus rmarker rpointer
     local printed_always=0 printed_conditional=0
 
     # First pass: always recommendations
@@ -131,6 +150,8 @@ print_recommended_vendor_skills() {
                 echo -e "    $rmarker • $rid"
                 echo "      $rrat"
                 echo "      → $rurl"
+                rpointer=$(_format_install_pointer "$rid" "$rurl")
+                [[ -n "$rpointer" ]] && echo "$rpointer"
                 ;;
         esac
     done
@@ -154,6 +175,8 @@ print_recommended_vendor_skills() {
                 echo -e "    $rmarker • $rid — $rcond"
                 echo "      $rrat"
                 echo "      → $rurl"
+                rpointer=$(_format_install_pointer "$rid" "$rurl")
+                [[ -n "$rpointer" ]] && echo "$rpointer"
                 ;;
         esac
     done
