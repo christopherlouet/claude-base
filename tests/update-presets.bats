@@ -237,3 +237,46 @@ teardown() {
     # No SKILL.md was added from the foundation (filter blocked the copy).
     [ ! -f "$proj/.claude/skills/dev-flutter/SKILL.md" ]
 }
+
+# =============================================================================
+# Phase 6 — Recommendations re-printed at end of update (US-2, T2.3/T2.4)
+# =============================================================================
+
+@test "update-presets: --preset nextjs reprints recommended vendor skills section (T2.3)" {
+    local proj="$TEST_DIR/proj-reco-nextjs"
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    run "$UPDATE" -y --dry-run --preset nextjs --skills "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Recommended vendor skills for this stack"* ]]
+    [[ "$output" == *"vercel-labs/agent-skills"* ]]
+    [[ "$output" == *"docs/recipes/recommended-vendor-skills.md"* ]]
+}
+
+@test "update-presets: --quiet suppresses the recommendations section (T2.3)" {
+    local proj="$TEST_DIR/proj-reco-quiet"
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    run "$UPDATE" -y --dry-run --quiet --preset nextjs --skills "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Recommended vendor skills for this stack"* ]]
+}
+
+@test "update-presets: no active preset means no recommendations section (T2.3)" {
+    local proj="$TEST_DIR/proj-reco-no-preset"
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    run "$UPDATE" -y --dry-run --no-preset --skills "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Recommended vendor skills for this stack"* ]]
+}
+
+@test "update-presets: recommendations appear AFTER the Update completed banner (T2.4/EF-004)" {
+    local proj="$TEST_DIR/proj-reco-order"
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    run "$UPDATE" -y --dry-run --preset nextjs --skills "$proj"
+    [ "$status" -eq 0 ]
+    local banner_line reco_line
+    banner_line=$(echo "$output" | grep -n "Update completed" | head -1 | cut -d: -f1)
+    reco_line=$(echo "$output" | grep -n "Recommended vendor skills for this stack" | head -1 | cut -d: -f1)
+    [ -n "$banner_line" ]
+    [ -n "$reco_line" ]
+    [ "$reco_line" -gt "$banner_line" ]
+}
