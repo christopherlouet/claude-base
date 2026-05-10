@@ -552,3 +552,60 @@ teardown() {
     [ "$hooks_before" = "$hooks_after" ]
     [ "$permissions_before" = "$permissions_after" ]
 }
+
+# =============================================================================
+# US-4 — Dry-run conflicts in non-TTY (T4.1, T4.2, T4.3, T4.4)
+# Non-interactive dry-run used to silently report differing files as
+# "skipped". US-4 surfaces them as "Conflicts requiring decision" so that
+# CI / scripted runs see what would have prompted a human, and reports the
+# count separately from auto-skipped files.
+# =============================================================================
+
+@test "update.sh --dry-run -y surfaces a modified file as a conflict (T4.1/T4.2)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    [ -d "$TEST_DIR/proj/.claude" ]
+    # Customise a command so it differs from the foundation source.
+    echo "# user-customised work-explore" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Conflicts requiring decision"* ]]
+    [[ "$output" == *"work-explore.md"* ]]
+}
+
+@test "update.sh --dry-run -y replaces silent skipped warning with conflict tracking (T4.1)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    echo "# customised" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # The legacy silent warning must NOT appear for the conflict file in dry-run.
+    [[ "$output" != *"work-explore.md skipped (use --force to overwrite)"* ]]
+}
+
+@test "update.sh summary reports Conflicts: count separately from Skipped: when conflicts exist (T4.3)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    echo "# customised" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Conflicts:"* ]]
+}
+
+@test "update.sh --dry-run -y exits 0 even when conflicts are listed (T4.4)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    echo "# customised A" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+    echo "# customised B" > "$TEST_DIR/proj/.claude/commands/work/work-plan.md"
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+}
+
+@test "update.sh --dry-run -y with no modifications shows no conflict section (T4.5 regression)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    # Pristine project — no customisations.
+
+    run "$UPDATE_SCRIPT" -y -n "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Conflicts requiring decision"* ]]
+}
