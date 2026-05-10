@@ -175,6 +175,61 @@ API_SECRET_KEY=your_secret_key_32_characters
 # NEVER committed
 ```
 
+### When `.claude/` is gitignored — scope choices for plugins & skills
+
+Some teams gitignore `.claude/` entirely (treating Claude Code config as personal tooling, not part of the codebase). That's a valid choice, but it changes how plugins, skills, and MCP servers should be installed because **nothing under `.claude/` will follow the project for teammates**.
+
+#### (a) Why a team would gitignore `.claude/`
+
+| Reason | When it makes sense |
+|--------|---------------------|
+| Treat AI tooling as personal preference | Polyglot teams where members use different AI assistants (Claude, Cursor, Copilot, none) |
+| Avoid leaking workflow opinions | Open-source projects where contributors shouldn't be forced into one workflow |
+| Faster, cleaner PR diffs | Large monorepos where `.claude/` churn would dominate `git log` |
+| Vendored secrets concern | Teams that prefer to keep all `.claude/settings.local.json` material out of history, full stop |
+
+#### (b) Consequence: project-scope installs do not propagate
+
+When `.claude/` is gitignored, anything you install with project scope vanishes for the next teammate who clones the repo:
+
+- `claude plugin install foo` with `--scope project` → writes to `.claude/settings.json` → **lost** on clone.
+- `npx skills add bar --to ./.claude/skills/` → writes under `.claude/skills/` → **lost** on clone.
+- A custom hook script under `scripts/hooks/` → committed (outside `.claude/`) → **kept**, but the hook reference in `.claude/settings.json` → **lost**.
+
+The teammate sees a perfectly working repo, runs `claude` inside it, and silently loses every project-scoped extension you added. No error, no warning. This is the trap US-5 documents.
+
+#### (c) Recommended scope per use case
+
+Three install scopes are available; pick the one that survives the gitignore boundary:
+
+| Scope | Where it lives | Survives `.claude/` gitignore? | When to use |
+|-------|----------------|--------------------------------|-------------|
+| **`user`** | `~/.claude/` (per-developer) | Yes — outside the repo | Personal preferences (theme, status line, keybindings); skills that all teammates will install anyway via shared onboarding doc |
+| **`project`** | `<repo>/.claude/` (per-repo) | **No** if `.claude/` is gitignored | Conventions you're willing to commit; rules that should activate automatically when anyone opens the repo |
+| **`local`** | `<repo>/.claude/settings.local.json` | **No** (always gitignored by convention) | Per-developer, per-repo overrides (env-specific paths, secrets) |
+
+If `.claude/` is gitignored, the practical advice is:
+
+1. **Default to `user` scope** for plugins and skills. Each teammate runs the install command themselves (one-time, documented in the onboarding section of TEAM-GUIDE).
+2. **Document the recommended set** in the project's README or `docs/guides/onboarding.md` — including the exact install commands. The foundation's `print_recommended_vendor_skills` (re-printed at the end of every `update`) helps here: it lists the curated skills with their `claude plugin install <id>` / `git clone --depth 1 <url>` pointers.
+3. **Track the foundation version** via the `.claude/.foundation-version` marker the foundation now writes (US-1). Even though `.claude/` is gitignored locally, that file gives you a stable reference if a teammate hits drift between their local foundation version and yours — they can ask you to share which version of claude-base produced the project.
+
+#### (d) Concrete example per scope
+
+| Scope | Example | Command |
+|-------|---------|---------|
+| **`user`** | The whole team uses `frontend-design` for UI work | `claude plugin install frontend-design@claude-plugins-official` (each dev runs this once on their machine) |
+| **`project`** *(only if `.claude/` is committed)* | Project-specific rule that auto-activates on `*.tsx` | `cp my-rule.md .claude/rules/` + commit |
+| **`local`** | Personal API key for a vendor MCP server | `.claude/settings.local.json` with the vendor section, never committed |
+
+The trade-off:
+
+- **`user` scope** keeps the gitignore clean but adds onboarding friction (each teammate must install the recommended set themselves).
+- **`project` scope** auto-propagates if `.claude/` is committed but breaks completely if `.claude/` is gitignored.
+- **`local` scope** is always per-developer, per-repo — useful for secrets but unsuitable for shared conventions.
+
+If you want auto-propagation without committing `.claude/` wholesale, a partial-gitignore pattern works: gitignore `.claude/settings.local.json` and `.claude/.foundation-version`, but commit `.claude/rules/`, `.claude/agents/`, and `.claude/commands/`. The foundation's `update` flow respects this — `--clean` only touches files it owns.
+
 ---
 
 ## 3. Code conventions
