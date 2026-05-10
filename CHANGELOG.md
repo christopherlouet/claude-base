@@ -11,12 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Update lifecycle visibility
+## [1.38.0] - 2026-05-10
 
-Closes the gap between `claude-base init` (which prints a curated
-welcome with vendor-skill recommendations) and `claude-base update`
-(which used to be silent). After `init` produces a project, the
-foundation now leaves traceable signals across the project's lifetime.
+Minor release. Closes the lifecycle-visibility gap between
+`claude-base init` (which prints a curated welcome with vendor-skill
+recommendations) and `claude-base update` (which used to be silent).
+After `init` produces a project, the foundation now leaves traceable
+signals across the entire project lifetime: a foundation-version
+marker, a re-printed recommendation list with install-status indicators
+and inline install pointers, and visible dry-run conflicts in non-TTY
+mode. A new TEAM-GUIDE section documents the scope choices when
+`.claude/` is gitignored.
+
+Behaviour-additive across the board — no breaking change. +57 tests
+(536 → 593). Spec lives at
+[`specs/update-lifecycle-visibility/`](./specs/update-lifecycle-visibility/).
 
 **Foundation version marker** (US-1). Every project now carries a
 `.claude/.foundation-version` file with the foundation `VERSION` that
