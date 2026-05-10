@@ -240,3 +240,56 @@ PRESET_T32_MIXED='{
     # Assert no ESC (\033 / 0x1b) in output.
     [[ "$output" != *$'\033'* ]]
 }
+
+# -----------------------------------------------------------------------------
+# T3.3 — inline install pointer per item, aligned with
+# docs/recipes/recommended-vendor-skills.md (marketplace plugins via
+# `claude plugin install`, GitHub vendor repos via `git clone`).
+# -----------------------------------------------------------------------------
+
+PRESET_T33_INSTALLS='{
+  "name":"t33-installs",
+  "recommendedVendorSkills":[
+    {"id":"frontend-design@claude-plugins-official","url":"https://claude.com/plugins/frontend-design","rationale":"Anthropic plugin","condition":"always"},
+    {"id":"vercel-labs/agent-skills","url":"https://github.com/vercel-labs/agent-skills","rationale":"Vercel patterns","condition":"always"},
+    {"id":"plain-skill-id","url":"https://example.com/plain","rationale":"misc","condition":"if using foo"}
+  ]
+}'
+
+@test "print_recommended_vendor_skills shows 'claude plugin install <id>' for marketplace handles (T3.3)" {
+    make_preset "$PRESET_T33_INSTALLS"
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$TEST_DIR/preset.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"claude plugin install frontend-design@claude-plugins-official"* ]]
+}
+
+@test "print_recommended_vendor_skills shows 'git clone --depth 1 <url>' for GitHub org/repo ids (T3.3)" {
+    make_preset "$PRESET_T33_INSTALLS"
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$TEST_DIR/preset.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"git clone --depth 1 https://github.com/vercel-labs/agent-skills"* ]]
+}
+
+@test "print_recommended_vendor_skills omits an install pointer for bare-id items (T3.3)" {
+    make_preset "$PRESET_T33_INSTALLS"
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$TEST_DIR/preset.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"claude plugin install plain-skill-id"* ]]
+    [[ "$output" != *"git clone --depth 1 https://example.com/plain"* ]]
+}
+
+@test "print_recommended_vendor_skills install pointer follows the URL line (T3.3)" {
+    make_preset "$PRESET_T33_INSTALLS"
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$TEST_DIR/preset.json"
+    [ "$status" -eq 0 ]
+    local url_line install_line
+    url_line=$(printf '%s\n' "$output" | grep -n "https://claude.com/plugins/frontend-design" | head -1 | cut -d: -f1)
+    install_line=$(printf '%s\n' "$output" | grep -n "claude plugin install frontend-design@claude-plugins-official" | head -1 | cut -d: -f1)
+    [ -n "$url_line" ]
+    [ -n "$install_line" ]
+    [ "$install_line" -gt "$url_line" ]
+}
