@@ -77,6 +77,11 @@ SKIPPED=0
 ORPHANS_FOUND=0
 ORPHANS_REMOVED=0
 
+# US-4 — collected when a non-interactive dry-run sees a file that would
+# have triggered an interactive prompt. Surfaces these in a dedicated
+# section so CI / scripted runs can see what a human would need to decide.
+DRY_RUN_CONFLICTS=()
+
 # Temp files tracking for cleanup
 _TEMP_FILES=()
 
@@ -450,9 +455,14 @@ update_command_file() {
             success "  $filename updated"
             ((UPDATED++)) || true
         elif ${NON_INTERACTIVE:-false}; then
-            # Non-interactive mode without force: skip
-            warning "  $filename skipped (use --force to overwrite)"
-            ((SKIPPED++)) || true
+            if $DRY_RUN; then
+                # T4.1: surface what a human would have been asked about,
+                # instead of silently counting it as "skipped".
+                DRY_RUN_CONFLICTS+=("$filename")
+            else
+                warning "  $filename skipped (use --force to overwrite)"
+                ((SKIPPED++)) || true
+            fi
         else
             # Interactive mode: ask
             echo ""
@@ -867,8 +877,14 @@ update_directory() {
                 debug "  $rel_path updated"
                 ((dir_updated++)) || true
             elif ${NON_INTERACTIVE:-false}; then
-                warning "  $rel_path skipped (use --force to overwrite)"
-                ((dir_skipped++)) || true
+                if $DRY_RUN; then
+                    # T4.1: surface what a human would have been asked
+                    # about, instead of silently counting as "skipped".
+                    DRY_RUN_CONFLICTS+=("$name/$rel_path")
+                else
+                    warning "  $rel_path skipped (use --force to overwrite)"
+                    ((dir_skipped++)) || true
+                fi
             else
                 echo ""
                 prompt "$rel_path has been modified. What to do?"
@@ -1296,6 +1312,25 @@ detect_all_orphans() {
     fi
 }
 
+# T4.2 — surface dry-run conflicts in non-TTY mode. Listed BEFORE the
+# final summary so CI / scripted runs see what files a human would need
+# to decide on. Silent (returns immediately) when the array is empty,
+# preserving byte-identity with the legacy output for clean dry-runs.
+print_dry_run_conflicts() {
+    [[ "${#DRY_RUN_CONFLICTS[@]}" -eq 0 ]] && return 0
+
+    echo ""
+    warning "Conflicts requiring decision (${#DRY_RUN_CONFLICTS[@]})"
+    echo "  These files differ from the foundation. In an interactive run"
+    echo "  you'd be prompted to overwrite, skip, or view diff. Re-run"
+    echo "  without --dry-run, drop -y, or pass --force to choose."
+    echo ""
+    local path
+    for path in "${DRY_RUN_CONFLICTS[@]}"; do
+        echo "  - $path"
+    done
+}
+
 print_summary() {
     echo ""
     separator "="
@@ -1311,6 +1346,11 @@ print_summary() {
     fi
     echo "  Updated:    $UPDATED"
     echo "  Skipped:    $SKIPPED"
+    # T4.3: dry-run conflicts are tracked separately from auto-skipped
+    # files so the count reflects what a human would still need to decide.
+    if [[ "${#DRY_RUN_CONFLICTS[@]}" -gt 0 ]]; then
+        echo "  Conflicts:  ${#DRY_RUN_CONFLICTS[@]} (would prompt in TTY mode)"
+    fi
     if $DETECT_ORPHANS; then
         echo "  Orphans:    $ORPHANS_FOUND (${ORPHANS_REMOVED} removed)"
     fi
@@ -1441,6 +1481,9 @@ main() {
     if $DETECT_ORPHANS; then
         detect_all_orphans
     fi
+
+    # Surface non-TTY dry-run conflicts (T4.2) before the summary.
+    print_dry_run_conflicts
 
     # Summary
     print_summary
