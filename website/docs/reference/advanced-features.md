@@ -289,7 +289,7 @@ Plugins can be distributed via an Anthropic-managed directory. Setting `disableS
 
 ### Evaluating a plugin before adoption (CLI 2.1.128+)
 
-Both `--plugin-dir <path>` (local directory or `.zip`) and `--plugin-url <url>` (remote `.zip`) are session-scoped: the plugin is loaded for the current `claude` invocation only and disappears at session end. They are repeatable, so multiple plugins can be combined for a single trial. This is the foundation's recommended way to validate a plugin against your workflow before requesting it for permanent inclusion in a preset's `marketplacePlugins` list — consistent with the validation-first policy described in [`docs/recipes/recommended-vendor-skills.md`](../recipes/recommended-vendor-skills.md).
+Both `--plugin-dir <path>` (local directory or `.zip`) and `--plugin-url <url>` (remote `.zip`) are session-scoped: the plugin is loaded for the current `claude` invocation only and disappears at session end. They are repeatable, so multiple plugins can be combined for a single trial. This is the foundation's recommended way to validate a plugin against your workflow before requesting it for permanent inclusion in a preset's `marketplacePlugins` list — consistent with the validation-first policy described in [`docs/recipes/recommended-vendor-skills.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/recommended-vendor-skills.md).
 
 Recipe — try a plugin without committing to it:
 
