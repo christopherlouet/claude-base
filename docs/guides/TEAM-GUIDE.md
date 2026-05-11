@@ -38,8 +38,8 @@ Example of a project CLAUDE.md:
 
 > Node.js/TypeScript REST API with PostgreSQL
 
-@docs/conventions.md
-@docs/architecture.md
+@.claude/docs/reference/best-practices.md
+@.claude/docs/reference/project-structures.md
 
 ## Mandatory Workflow
 
