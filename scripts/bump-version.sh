@@ -148,12 +148,27 @@ bump_file "$BASE_DIR/README.md" \
     "release-v${NEW_VERSION}-blue" \
     "Version badge"
 
-# 3. Website quick-start verification message
-info "3/4 Website quick-start"
-bump_file "$BASE_DIR/website/docs/intro/quick-start.md" \
-    "Version: ${CURRENT_VERSION}" \
-    "Version: ${NEW_VERSION}" \
-    "Verification message"
+# 3. Docs: SessionStart "Version: X.Y.Z" example outputs
+# Multiple files show what the user sees at session startup; they all
+# carry the same `Version: ${VERSION}` line. Adding a file here is the
+# only place to keep them in sync — bump_file's warning will catch any
+# new doc that drifts at the next release.
+info "3/4 Docs SessionStart examples"
+for docfile in \
+    "$BASE_DIR/website/docs/intro/quick-start.md" \
+    "$BASE_DIR/website/docs/intro/installation.md" \
+    "$BASE_DIR/website/docs/guides/learning-path.md"; do
+    bump_file "$docfile" \
+        "Version: ${CURRENT_VERSION}" \
+        "Version: ${NEW_VERSION}" \
+        "SessionStart verification message"
+done
+
+# 3b. docs/CHEATSHEET.md footer (uses `vX.Y.Z` format, not `Version: ...`)
+bump_file "$BASE_DIR/docs/CHEATSHEET.md" \
+    "Claude-Base v${CURRENT_VERSION}" \
+    "Claude-Base v${NEW_VERSION}" \
+    "CHEATSHEET footer"
 
 # 4. README.md versioning policy
 info "4/4 README.md versioning policy"
