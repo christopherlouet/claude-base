@@ -10,6 +10,7 @@ import { generateRuleDocs } from './generate-rule-docs.js';
 import { syncDocs } from './sync-docs.js';
 import { generateCounts } from './generate-counts.js';
 import { injectCountsMd } from './inject-counts-md.js';
+import { injectVersionMd } from './inject-version-md.js';
 
 interface GenerationStats {
   commands: number;
@@ -71,6 +72,12 @@ async function generateAll(): Promise<GenerationStats> {
     console.log('\n📝 Injecting counts into Markdown markers...');
     console.log('─'.repeat(50));
     injectCountsMd();
+
+    // Inject the foundation VERSION into instrumented Markdown files
+    // (same staging consideration as counts — runs after sync).
+    console.log('\n📝 Injecting VERSION into Markdown markers...');
+    console.log('─'.repeat(50));
+    injectVersionMd();
 
     const endTime = Date.now();
     stats.totalTime = (endTime - startTime) / 1000;
