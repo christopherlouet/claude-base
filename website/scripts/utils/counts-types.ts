@@ -35,4 +35,22 @@ export interface Counts {
    * picked up automatically — consumers must handle missing keys.
    */
   byDomain: Record<string, number>;
+
+  /** Total *.json manifests under .claude/presets/ (top level, excludes community/) */
+  presets: number;
+
+  /**
+   * Total vendor entries listed under the "Recommended vendor skills
+   * (by domain)" section of docs/recipes/recommended-vendor-skills.md.
+   * Excludes the "Stack-specific" and "Vendors evaluated and NOT
+   * recommended" subsections.
+   */
+  vendorSkillsValidated: number;
+
+  /**
+   * Total marketplace-audit pilot specs under specs/marketplace-audit/
+   * matching the `*-pilot-*.md` filename pattern. Excludes spec.md and
+   * other non-pilot documents.
+   */
+  marketplaceAuditPilots: number;
 }

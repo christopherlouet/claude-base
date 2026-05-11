@@ -10,7 +10,7 @@ This recipe lives outside the foundation deliberately. The recommended skills ar
 
 ## Why this recipe exists
 
-Four audit pilots identified a small set of vendor-published skills that complement the claude-base foundation:
+<!-- count:marketplaceAuditPilots -->4<!-- /count --> audit pilots identified a small set of vendor-published skills that complement the claude-base foundation:
 
 - `cli-tools` plugin pilot (`specs/marketplace-audit/cli-tools-pilot-2026-05-05.md`)
 - `dev-*` skills pilot (`specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`)

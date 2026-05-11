@@ -47,6 +47,7 @@ const MD_FILES: string[] = [
   'docs/ARCHITECTURE.md',
   'docs/reference/agents-catalog.md',
   'docs/reference/skills-catalog.md',
+  'docs/recipes/recommended-vendor-skills.md',
 ];
 
 const MARKER_RE = /<!--\s*count:([\w.]+)\s*-->[^<]*<!--\s*\/count\s*-->/g;

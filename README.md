@@ -16,10 +16,10 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 
 - A structured development workflow: **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
 - **<!-- count:commands -->131<!-- /count --> commands**, **<!-- count:agents -->63<!-- /count --> sub-agents**, **<!-- count:skills -->54<!-- /count --> skills**, and **30 path-specific rules** wired together
-- **5 stack-specific presets** (`nextjs`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) installable via `claude-base init --preset <name> <path>`
+- **<!-- count:presets -->5<!-- /count --> stack-specific presets** (`nextjs`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) installable via `claude-base init --preset <name> <path>`
 - **Auto-detection of presets** — `claude-base init <existing-project>` recognizes the stack via marker files (e.g. `next.config.js`, `pyproject.toml` containing `fastapi`) and surfaces the matching preset at the top of the type menu. Standalone audit via `claude-base init --detect-only <path>`. Adding a new preset is data-driven (a `.json` manifest with a `detect` block — no code change in detection scripts).
 - **Preset-aware updates** — `claude-base update --all` keeps the preset's skill filter applied, so a project bootstrapped with `--preset nextjs` no longer drifts back to the unfiltered foundation on every refresh. Override with `--preset <name>`, opt out with `--no-preset`. The filter is COPY-only — files already on disk are never deleted.
-- **Curated vendor skill pointers** per preset, surfaced at install time via the recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) — 14 vendor skills validated across 4 marketplace audit pilots
+- **Curated vendor skill pointers** per preset, surfaced at install time via the recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) — <!-- count:vendorSkillsValidated -->16<!-- /count --> vendor skills validated across <!-- count:marketplaceAuditPilots -->4<!-- /count --> marketplace audit pilots
 - **One-liner install** via `curl | bash` + unified CLI dispatcher (`claude-base init/update/validate/preset/uninstall`)
 - Built-in conventions enforced via path-specific rules: TDD (mandatory tests-first), security (OWASP defaults), accessibility (WCAG), performance (Core Web Vitals), deploy-safety
 - Ready-to-use CI/CD workflows and pre-commit hooks, including a counts.json anti-drift gate
