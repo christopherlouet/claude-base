@@ -123,7 +123,11 @@ bump_file() {
         fi
         CHANGES=$((CHANGES + 1))
     else
-        debug "$rel_path: pattern not found ($old_pattern)"
+        # Drift is silent killer #1 of bump-version: a file already stale
+        # at version N-1 won't match the CURRENT_VERSION pattern, so the
+        # bump becomes a no-op and the drift compounds every release.
+        # Surface it so the maintainer can fix or override manually.
+        warning "$rel_path: $label — pattern not found ('$old_pattern'). File may already drift; check manually."
     fi
 }
 
