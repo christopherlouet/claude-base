@@ -383,8 +383,8 @@ Rather than putting everything in CLAUDE.md, you can include other files:
 ```markdown
 # My Project
 
-@docs/conventions.md
-@docs/architecture.md
+@.claude/docs/reference/best-practices.md
+@.claude/docs/reference/project-structures.md
 ```
 
 These files are loaded automatically. Useful to avoid having a 500-line CLAUDE.md.
