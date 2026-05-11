@@ -15,5 +15,8 @@
     "ops": 34,
     "qa": 16,
     "work": 15
-  }
+  },
+  "presets": 5,
+  "vendorSkillsValidated": 16,
+  "marketplaceAuditPilots": 4
 }

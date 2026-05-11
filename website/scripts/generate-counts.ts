@@ -19,6 +19,8 @@ const REPO_ROOT = path.resolve(__dirname, '../..');
 const CLAUDE_DIR = path.join(REPO_ROOT, '.claude');
 const TESTS_DIR = path.join(REPO_ROOT, 'tests');
 const OUTPUT_PATH = path.join(REPO_ROOT, 'counts.json');
+const RECIPE_PATH = path.join(REPO_ROOT, 'docs/recipes/recommended-vendor-skills.md');
+const AUDIT_DIR = path.join(REPO_ROOT, 'specs/marketplace-audit');
 
 function countMarkdownFiles(dir: string, opts: { excludeReadme?: boolean } = {}): number {
   if (!fs.existsSync(dir)) return 0;
@@ -59,6 +61,65 @@ function countCommandsByDomain(commandsDir: string): Record<string, number> {
   return byDomain;
 }
 
+/**
+ * Count `.json` files at the top level of `dir`. NOT recursive — keeps
+ * subdirectories (e.g. .claude/presets/community/) out of the official
+ * preset count. Returns 0 for missing directories.
+ */
+export function countJsonFiles(dir: string): number {
+  if (!fs.existsSync(dir)) return 0;
+  let total = 0;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isFile() && entry.name.endsWith('.json')) total += 1;
+  }
+  return total;
+}
+
+/**
+ * Count files whose name matches `pattern` at the top level of `dir`.
+ * NOT recursive. Directories are skipped even when their name matches.
+ * Returns 0 for missing directories.
+ */
+export function countFilesMatching(dir: string, pattern: RegExp): number {
+  if (!fs.existsSync(dir)) return 0;
+  let total = 0;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isFile() && pattern.test(entry.name)) total += 1;
+  }
+  return total;
+}
+
+/**
+ * Count vendor entries in the "Recommended vendor skills (by domain)"
+ * section of the recipe markdown. An entry is any `### ` heading
+ * (exactly H3) between that section's H2 heading and the next H2. The
+ * "Stack-specific" and "Vendors evaluated and NOT recommended" sections
+ * are deliberately excluded — they live under their own H2s and stop
+ * the scan when reached.
+ *
+ * Pure function: takes the markdown content as a string for testability.
+ */
+export function countVendorSkillsInRecipe(markdown: string): number {
+  const SECTION_PREFIX = '## Recommended vendor skills';
+  let inSection = false;
+  let count = 0;
+  for (const line of markdown.split('\n')) {
+    if (line.startsWith(SECTION_PREFIX)) {
+      inSection = true;
+      continue;
+    }
+    if (!inSection) continue;
+    if (line.startsWith('## ')) break; // next H2 closes the section
+    if (line.startsWith('### ')) count += 1;
+  }
+  return count;
+}
+
+function countVendorSkillsValidatedFromFile(recipePath: string): number {
+  if (!fs.existsSync(recipePath)) return 0;
+  return countVendorSkillsInRecipe(fs.readFileSync(recipePath, 'utf-8'));
+}
+
 function countBatsTests(testsDir: string): { tests: number; testFiles: number } {
   if (!fs.existsSync(testsDir)) return { tests: 0, testFiles: 0 };
   let tests = 0;
@@ -83,6 +144,9 @@ export function computeCounts(): Counts {
     tests,
     testFiles,
     byDomain: countCommandsByDomain(path.join(CLAUDE_DIR, 'commands')),
+    presets: countJsonFiles(path.join(CLAUDE_DIR, 'presets')),
+    vendorSkillsValidated: countVendorSkillsValidatedFromFile(RECIPE_PATH),
+    marketplaceAuditPilots: countFilesMatching(AUDIT_DIR, /-pilot-.*\.md$/),
   };
 }
 
@@ -90,7 +154,7 @@ export function generateCounts(): Counts {
   const counts = computeCounts();
   const json = JSON.stringify(counts, null, 2) + '\n';
   fs.writeFileSync(OUTPUT_PATH, json, 'utf-8');
-  console.log(`📊 counts.json written: ${counts.commands} commands, ${counts.agents} agents, ${counts.skills} skills, ${counts.rules} rules, ${counts.tests} tests in ${counts.testFiles} files`);
+  console.log(`📊 counts.json written: ${counts.commands} commands, ${counts.agents} agents, ${counts.skills} skills, ${counts.rules} rules, ${counts.tests} tests in ${counts.testFiles} files, ${counts.presets} presets, ${counts.vendorSkillsValidated} vendor skills validated, ${counts.marketplaceAuditPilots} audit pilots`);
   return counts;
 }
 
