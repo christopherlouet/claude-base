@@ -299,7 +299,7 @@ Recipe — try a plugin without committing to it:
 4. **Use the plugin in your real workflow**. Invoke its skills (`/<plugin-name>:<skill>`), trigger its hooks, exercise the surface you care about. Take notes.
 5. **Cleanup is automatic**. Exit the session — no installed state remains. Repeat with `--plugin-dir`/`--plugin-url` if you want to compare with another plugin or against the un-augmented baseline.
 
-If after this trial the plugin is worth adopting, raise an issue or pull request against the relevant preset under [`presets/`](../../presets/) with the validation evidence (the marketplace-audit methodology under [`specs/marketplace-audit/`](../../specs/marketplace-audit/) describes the bar).
+If after this trial the plugin is worth adopting, raise an issue or pull request against the relevant preset under [`.claude/presets/`](https://github.com/christopherlouet/claude-base/tree/main/.claude/presets) with the validation evidence (the marketplace-audit methodology under [`specs/marketplace-audit/`](https://github.com/christopherlouet/claude-base/tree/main/specs/marketplace-audit) describes the bar).
 
 ## Scheduled Tasks (Cloud)
 
