@@ -860,3 +860,59 @@ EOF
     run "$VALIDATE_PRESETS" "$TEST_DIR/drop-only.json"
     [ "$status" -eq 0 ]
 }
+
+# =============================================================================
+# react-vite-spa preset (T018-T022)
+# =============================================================================
+
+@test "presets: react-vite-spa.json exists and is valid JSON (T018)" {
+    [ -f "$BASE_DIR/.claude/presets/react-vite-spa.json" ]
+    run jq -e . "$BASE_DIR/.claude/presets/react-vite-spa.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: react-vite-spa.json has required fields (T019)" {
+    local f="$BASE_DIR/.claude/presets/react-vite-spa.json"
+    [ "$(jq -r '.name' "$f")" = "react-vite-spa" ]
+    [ "$(jq -r '.status' "$f")" = "maintainer-vouched" ]
+    local desc_len
+    desc_len=$(jq -r '.description | length' "$f")
+    [ "$desc_len" -ge 80 ]
+    [ "$(jq -r '.appliesToTypes | length' "$f")" -ge 1 ]
+    [ "$(jq -r '.version' "$f")" = "1.0.0" ]
+}
+
+@test "presets: react-vite-spa uses keep XOR drop (T020)" {
+    local f="$BASE_DIR/.claude/presets/react-vite-spa.json"
+    # keep must exist and be a non-empty array
+    [ "$(jq -r '.foundation.skills.keep | type' "$f")" = "array" ]
+    [ "$(jq -r '.foundation.skills.keep | length' "$f")" -gt 0 ]
+    # drop must NOT exist
+    [ "$(jq -r '.foundation.skills | has("drop")' "$f")" = "false" ]
+    # Additionally: a known out-of-stack skill must NOT be in the keep list
+    local in_keep
+    in_keep=$(jq -r '.foundation.skills.keep[] | select(. == "dev-flutter")' "$f")
+    [ -z "$in_keep" ]
+}
+
+@test "presets: react-vite-spa has honest outOfScope and relatedPresetsWanted (T021)" {
+    local f="$BASE_DIR/.claude/presets/react-vite-spa.json"
+    [ "$(jq -r '.outOfScope | length' "$f")" -ge 4 ]
+    [ "$(jq -r '.relatedPresetsWanted | length' "$f")" -ge 3 ]
+}
+
+@test "presets: react-vite-spa bundles no marketplace plugins at v1 and 4 vendor recommendations (T022)" {
+    local f="$BASE_DIR/.claude/presets/react-vite-spa.json"
+    # marketplacePlugins must be an empty array
+    [ "$(jq -r '.marketplacePlugins | length' "$f")" -eq 0 ]
+    # exactly 4 recommendedVendorSkills
+    [ "$(jq -r '.recommendedVendorSkills | length' "$f")" -eq 4 ]
+    # exactly 2 always conditions
+    local always_count
+    always_count=$(jq -r '[.recommendedVendorSkills[] | select(.condition == "always")] | length' "$f")
+    [ "$always_count" -eq 2 ]
+    # exactly 2 conditional (non-always) entries
+    local conditional_count
+    conditional_count=$(jq -r '[.recommendedVendorSkills[] | select(.condition != "always")] | length' "$f")
+    [ "$conditional_count" -eq 2 ]
+}

@@ -149,6 +149,20 @@ e2e_check_hooks() {
 # failure mode that produced v1.36.1 undetected.
 # =============================================================================
 
+@test "preset-e2e: react-vite-spa bootstraps, validates, and ships every referenced hook (T023)" {
+    local target
+    target=$(e2e_bootstrap react-vite-spa)
+    [ -d "$target/.claude" ]
+
+    run "$VALIDATE" -q "$target"
+    [ "$status" -eq 0 ]
+
+    run "$DOCTOR" "$target"
+    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+
+    e2e_check_hooks "$target"
+}
+
 @test "preset-e2e: hook drift-guard fails when a referenced hook is missing (self-check)" {
     local target
     target=$(e2e_bootstrap nextjs)
