@@ -66,6 +66,39 @@ teardown() {
     [[ "$output" == *"--preset"* ]] || [[ "$output" == *"--no-preset"* ]]
 }
 
+@test "update-presets: multi-match nextjs+react-vite-spa hybrid refuses with disambiguation message (T044)" {
+    # Hybrid fixture: satisfies BOTH nextjs (next.config.js + "next" in package.json)
+    # and react-vite-spa (vite.config.ts + "react-router-dom" in package.json).
+    # The update --skills auto-detect path must refuse and name both matches.
+    local proj="$TEST_DIR/proj-hybrid-multi"
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    cat > "$proj/vite.config.ts" <<'EOF'
+import { defineConfig } from 'vite';
+export default defineConfig({});
+EOF
+    cat > "$proj/next.config.js" <<'EOF'
+module.exports = {};
+EOF
+    cat > "$proj/package.json" <<'EOF'
+{
+  "name": "hybrid-fixture",
+  "version": "0.0.0",
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.0.0",
+    "vite": "^5.0.0"
+  }
+}
+EOF
+    run "$UPDATE" -y --dry-run --skills "$proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"react-vite-spa"* ]]
+    [[ "$output" == *"--preset"* ]] || [[ "$output" == *"--no-preset"* ]]
+}
+
 @test "update-presets: --preset nextjs resolves and update proceeds (T006)" {
     local proj="$TEST_DIR/proj-resolve-ok"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1

@@ -360,3 +360,39 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"react-vite-spa"* ]]
 }
+
+# =============================================================================
+# US-6 Phase 7: multi-match disambiguation — hybrid project
+# A project satisfying BOTH nextjs and react-vite-spa detect rules must
+# surface both preset names so the caller can prompt for disambiguation.
+# =============================================================================
+
+@test "preset-detect: hybrid project matches both nextjs and react-vite-spa (T043)" {
+    # Build a hybrid fixture inline (not a permanent fixture under presets-fixtures/).
+    # nextjs detect: anyOf → next.config.js present OR package.json contains "next"
+    # react-vite-spa detect: allOf → vite.config.* present AND package.json contains "react-router-dom"
+    cat > "$TEST_DIR/proj/vite.config.ts" <<'EOF'
+import { defineConfig } from 'vite';
+export default defineConfig({});
+EOF
+    cat > "$TEST_DIR/proj/next.config.js" <<'EOF'
+module.exports = {};
+EOF
+    cat > "$TEST_DIR/proj/package.json" <<'EOF'
+{
+  "name": "hybrid-fixture",
+  "version": "0.0.0",
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.0.0",
+    "vite": "^5.0.0"
+  }
+}
+EOF
+    run scan_official "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"react-vite-spa"* ]]
+}
