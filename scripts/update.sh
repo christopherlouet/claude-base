@@ -67,6 +67,12 @@ ACTIVE_PRESET_NAME=""
 ACTIVE_PRESET_FILE=""
 ACTIVE_PRESET_SOURCE=""
 ACTIVE_PRESET_DROP_LIST=()
+# shellcheck disable=SC2034
+ACTIVE_PRESET_KEEP_LIST=()
+# Optional override: path to a directory containing preset JSON files.
+# When set, resolve_active_preset() looks there BEFORE the official presets dir.
+# Intended for testing only (synthetic presets); not documented in --help.
+PRESETS_DIR_OVERRIDE=""
 UPGRADE_CLAUDE_MD=false
 RESTORE_BACKUP=""
 
@@ -331,6 +337,13 @@ parse_args() {
             --no-preset)
                 UPDATE_NO_PRESET=true
                 shift
+                ;;
+            --presets-dir)
+                if [[ -z "${2:-}" ]]; then
+                    error "Option --presets-dir requires an argument (path to presets directory)"
+                fi
+                PRESETS_DIR_OVERRIDE="$2"
+                shift 2
                 ;;
             -*)
                 error "Unknown option: $1\nUse --help for help"
@@ -708,7 +721,16 @@ resolve_active_preset() {
     local presets_dir="$BASE_DIR/.claude/presets"
 
     if [[ -n "$UPDATE_PRESET_NAME" ]]; then
-        local file="$presets_dir/$UPDATE_PRESET_NAME.json"
+        local file=""
+        # PRESETS_DIR_OVERRIDE is checked first so tests can inject synthetic
+        # presets without touching the official presets tree.
+        if [[ -n "$PRESETS_DIR_OVERRIDE" ]]; then
+            local override_file="$PRESETS_DIR_OVERRIDE/$UPDATE_PRESET_NAME.json"
+            [[ -f "$override_file" ]] && file="$override_file"
+        fi
+        if [[ -z "$file" ]]; then
+            file="$presets_dir/$UPDATE_PRESET_NAME.json"
+        fi
         if [[ ! -f "$file" ]]; then
             file="$presets_dir/community/$UPDATE_PRESET_NAME.json"
         fi
@@ -719,6 +741,7 @@ resolve_active_preset() {
         ACTIVE_PRESET_FILE="$file"
         ACTIVE_PRESET_SOURCE="--preset"
         load_active_drop_list
+        load_active_keep_list
         return 0
     fi
 
@@ -745,7 +768,27 @@ resolve_active_preset() {
     [[ -f "$ACTIVE_PRESET_FILE" ]] || ACTIVE_PRESET_FILE="$presets_dir/community/$matches.json"
     ACTIVE_PRESET_SOURCE="detected"
     load_active_drop_list
+    load_active_keep_list
     return 0
+}
+
+# _load_skill_field <jq_path> <array_name>
+#
+# Internal helper — reads a JSON array of strings from ACTIVE_PRESET_FILE into
+# the named global array. No-op if no active preset file or jq is missing.
+# Public callers: load_active_drop_list, load_active_keep_list.
+_load_skill_field() {
+    local jq_path="$1"
+    local arr_name="$2"
+    eval "${arr_name}=()"
+    [[ -z "$ACTIVE_PRESET_FILE" ]] && return 0
+    command -v jq >/dev/null 2>&1 || return 0
+
+    local _skill
+    while IFS= read -r _skill; do
+        [[ -z "$_skill" ]] && continue
+        eval "${arr_name}+=(\"\$_skill\")"
+    done < <(jq -r "${jq_path}[]? // empty" "$ACTIVE_PRESET_FILE" 2>/dev/null)
 }
 
 # load_active_drop_list
@@ -753,15 +796,15 @@ resolve_active_preset() {
 # Reads .foundation.skills.drop[] from ACTIVE_PRESET_FILE into the global
 # ACTIVE_PRESET_DROP_LIST array. No-op if no active preset or jq is missing.
 load_active_drop_list() {
-    ACTIVE_PRESET_DROP_LIST=()
-    [[ -z "$ACTIVE_PRESET_FILE" ]] && return 0
-    command -v jq >/dev/null 2>&1 || return 0
+    _load_skill_field '.foundation.skills.drop' ACTIVE_PRESET_DROP_LIST
+}
 
-    local skill
-    while IFS= read -r skill; do
-        [[ -z "$skill" ]] && continue
-        ACTIVE_PRESET_DROP_LIST+=("$skill")
-    done < <(jq -r '.foundation.skills.drop[]? // empty' "$ACTIVE_PRESET_FILE" 2>/dev/null)
+# load_active_keep_list
+#
+# Reads .foundation.skills.keep[] from ACTIVE_PRESET_FILE into the global
+# ACTIVE_PRESET_KEEP_LIST array. No-op if no active preset or jq is missing.
+load_active_keep_list() {
+    _load_skill_field '.foundation.skills.keep' ACTIVE_PRESET_KEEP_LIST
 }
 
 # is_skill_dropped <rel_path>
@@ -775,6 +818,23 @@ is_skill_dropped() {
     local skill_name="${rel%%/*}"
     local s
     for s in "${ACTIVE_PRESET_DROP_LIST[@]}"; do
+        [[ "$s" == "$skill_name" ]] && return 0
+    done
+    return 1
+}
+
+# is_skill_kept <rel_path>
+#
+# Returns 0 (true) when the keep list is EMPTY (no keep filter — no constraint)
+# OR when the leading directory of <rel_path> IS in the keep list.
+# Returns 1 (false) when the keep list is non-empty and the skill is NOT in it,
+# meaning the file should be skipped during the skills copy step.
+is_skill_kept() {
+    [[ "${#ACTIVE_PRESET_KEEP_LIST[@]}" -eq 0 ]] && return 0
+    local rel="$1"
+    local skill_name="${rel%%/*}"
+    local s
+    for s in "${ACTIVE_PRESET_KEEP_LIST[@]}"; do
         [[ "$s" == "$skill_name" ]] && return 0
     done
     return 1
@@ -805,13 +865,24 @@ update_directory() {
 
     # Dry-run preview of preset-filtered skills (US-5). Announces each
     # skill that the active preset will skip, once per skill.
-    if [[ "$name" = "skills" ]] && $DRY_RUN && [[ "${#ACTIVE_PRESET_DROP_LIST[@]}" -gt 0 ]]; then
-        local _drop_skill
-        for _drop_skill in "${ACTIVE_PRESET_DROP_LIST[@]}"; do
-            if [[ -d "$src_dir/$_drop_skill" ]]; then
-                echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): $_drop_skill"
-            fi
-        done
+    if [[ "$name" = "skills" ]] && $DRY_RUN; then
+        if [[ "${#ACTIVE_PRESET_KEEP_LIST[@]}" -gt 0 ]]; then
+            # keep-mode: announce every foundation skill NOT in the keep list.
+            local _src_skill_dir _src_skill_name
+            while IFS= read -r _src_skill_dir; do
+                _src_skill_name="$(basename "$_src_skill_dir")"
+                if ! is_skill_kept "$_src_skill_name"; then
+                    echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): $_src_skill_name"
+                fi
+            done < <(find "$src_dir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort || true)
+        elif [[ "${#ACTIVE_PRESET_DROP_LIST[@]}" -gt 0 ]]; then
+            local _drop_skill
+            for _drop_skill in "${ACTIVE_PRESET_DROP_LIST[@]}"; do
+                if [[ -d "$src_dir/$_drop_skill" ]]; then
+                    echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): $_drop_skill"
+                fi
+            done
+        fi
     fi
 
     local dir_updated=0
@@ -840,12 +911,22 @@ update_directory() {
 
         local rel_path="${src_file#"$src_dir"/}"
 
-        # Active preset filter: skip files belonging to a dropped skill.
+        # Active preset filter: skip files excluded by the active preset.
+        # keep-mode: skip when the skill is NOT in the keep list.
+        # drop-mode: skip when the skill IS in the drop list.
         # COPY-only — never deletes what's already on disk (EF-011).
-        if [[ "$name" = "skills" ]] && is_skill_dropped "$rel_path"; then
-            debug "skills/$rel_path skipped (preset filter: $ACTIVE_PRESET_NAME)"
-            ((dir_skipped++)) || true
-            continue
+        if [[ "$name" = "skills" ]]; then
+            if [[ "${#ACTIVE_PRESET_KEEP_LIST[@]}" -gt 0 ]]; then
+                if ! is_skill_kept "$rel_path"; then
+                    debug "skills/$rel_path skipped (preset keep-filter: $ACTIVE_PRESET_NAME)"
+                    ((dir_skipped++)) || true
+                    continue
+                fi
+            elif is_skill_dropped "$rel_path"; then
+                debug "skills/$rel_path skipped (preset drop-filter: $ACTIVE_PRESET_NAME)"
+                ((dir_skipped++)) || true
+                continue
+            fi
         fi
 
         local dest_file="$dest_dir/$rel_path"
@@ -940,8 +1021,12 @@ update_directory() {
     if [[ "$name" == "skills" ]]; then
         while IFS= read -r src_file; do
             local rel_path="${src_file#"$src_dir"/}"
-            # Active preset filter: skip files belonging to a dropped skill.
-            if is_skill_dropped "$rel_path"; then
+            # Active preset filter: keep-mode or drop-mode (mirrors main copy loop).
+            if [[ "${#ACTIVE_PRESET_KEEP_LIST[@]}" -gt 0 ]]; then
+                if ! is_skill_kept "$rel_path"; then
+                    continue
+                fi
+            elif is_skill_dropped "$rel_path"; then
                 continue
             fi
             local dest_file="$dest_dir/$rel_path"
