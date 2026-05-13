@@ -3,8 +3,8 @@
   "agents": 63,
   "skills": 54,
   "rules": 30,
-  "tests": 593,
-  "testFiles": 27,
+  "tests": 620,
+  "testFiles": 28,
   "byDomain": {
     "biz": 11,
     "data": 3,
@@ -16,7 +16,7 @@
     "qa": 16,
     "work": 15
   },
-  "presets": 5,
+  "presets": 6,
   "vendorSkillsValidated": 16,
   "marketplaceAuditPilots": 4
 }

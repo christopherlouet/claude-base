@@ -13,7 +13,8 @@
 | `homelab-proxmox` | Proxmox VE + Terraform + Ansible + monitoring | v1.32.0 (PR #120) |
 | `cli-tools` | Python or Shell automation, GitHub API helpers, headless scripts | v1.32.0 (PR #121) |
 | `fastapi` | FastAPI + Pydantic + SQLAlchemy/async ORM (Python async backend) | v1.33.0 (PR #132) |
-| `astro` | Astro + TypeScript + Content Collections (content/static-first web) | v1.35.0 (this PR) |
+| `astro` | Astro + TypeScript + Content Collections (content/static-first web) | v1.35.0 |
+| `react-vite-spa` | React + Vite + React Router for Single-Page Apps (no SSR, Capacitor-compatible) | v1.39.0 (this PR) |
 
 Each shipped preset has:
 - `.json` manifest under `.claude/presets/`
@@ -104,11 +105,11 @@ Every preset (vouched or community) is subject to:
 
 | Category | Shipped | Community-wanted |
 |---|---|---|
-| JS web frameworks | 2 (`nextjs`, `astro`) | 4+ |
+| JS web frameworks | 3 (`nextjs`, `astro`, `react-vite-spa`) | 4+ |
 | Non-Node backend frameworks | 1 (`fastapi`) | 8+ |
 | Infrastructure / homelab | 1 (`homelab-proxmox`) | 3+ |
 | CLI / automation | 1 (`cli-tools`) | — |
 | Mobile / desktop | 0 | 5+ |
 | Data / AI pipelines | 0 | 2+ |
 
-**5 shipped. 22+ named as community-wanted.** That ratio is the foundation's honest position.
+**6 shipped. 22+ named as community-wanted.** That ratio is the foundation's honest position.

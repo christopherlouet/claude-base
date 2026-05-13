@@ -293,3 +293,40 @@ PRESET_T33_INSTALLS='{
     [ -n "$install_line" ]
     [ "$install_line" -gt "$url_line" ]
 }
+
+# -----------------------------------------------------------------------------
+# T037-T038 — react-vite-spa preset integration: actual manifest drives output
+# Uses the real .claude/presets/react-vite-spa.json (not a synthetic fixture)
+# so the assertions act as a living contract between the manifest and the lib.
+# NO_COLOR=1 ensures markers are plain-text ([OK]/[--]/[?]) without ANSI codes.
+# HOME is redirected to an empty fake dir so no real ~/.claude/skills bleeds in.
+# -----------------------------------------------------------------------------
+
+@test "preset-recommendations: react-vite-spa prints always-pair entries (T037)" {
+    local preset_file="$BASE_DIR/.claude/presets/react-vite-spa.json"
+    [ -f "$preset_file" ]
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    NO_COLOR=1 HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$preset_file"
+    [ "$status" -eq 0 ]
+    # Section header for always-pair recommendations
+    [[ "$output" == *"Always pair with this preset:"* ]]
+    # Both always-condition entries must appear
+    [[ "$output" == *"vercel-labs/agent-skills"* ]]
+    [[ "$output" == *"frontend-design@claude-plugins-official"* ]]
+}
+
+@test "preset-recommendations: react-vite-spa prints conditional entries (T038)" {
+    local preset_file="$BASE_DIR/.claude/presets/react-vite-spa.json"
+    [ -f "$preset_file" ]
+    mkdir -p "$TEST_DIR/fake-home/.claude/skills"
+    NO_COLOR=1 HOME="$TEST_DIR/fake-home" run print_recommended_vendor_skills "$preset_file"
+    [ "$status" -eq 0 ]
+    # Section header for conditional recommendations
+    [[ "$output" == *"Add if your project uses these tools:"* ]]
+    # Both conditional entries must appear
+    [[ "$output" == *"shadcn-ui/ui (skills/shadcn)"* ]]
+    [[ "$output" == *"lingui/skills"* ]]
+    # Their condition strings must be surfaced in the output line
+    [[ "$output" == *"if using shadcn/ui"* ]]
+    [[ "$output" == *"if using Lingui for i18n"* ]]
+}

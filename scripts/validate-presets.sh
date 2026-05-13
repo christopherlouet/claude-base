@@ -13,6 +13,9 @@
 #   - appliesToTypes is a non-empty array
 #   - defaults has the 5 expected boolean / string fields
 #   - foundation.skills.drop (if present) is an array of strings
+#   - foundation.skills.keep (if present) is a non-empty array of strings
+#   - foundation.skills.drop and foundation.skills.keep are mutually exclusive
+#     (XOR): a preset may declare at most one of the two
 #   - marketplacePlugins (if present) is an array; each entry has id +
 #     rationale + optional booleans
 #
@@ -129,10 +132,40 @@ validate_one() {
         [ "$v" = "boolean" ] || errs+=("defaults.$k must be boolean (got $v)")
     done
 
-    if jq -e '.foundation.skills.drop' "$file" >/dev/null 2>&1; then
+    # XOR: foundation.skills.drop and foundation.skills.keep are mutually
+    # exclusive. A preset may declare at most one of the two.
+    local has_drop has_keep
+    has_drop=$(jq -r 'if .foundation.skills | has("drop") then "yes" else "no" end' "$file")
+    has_keep=$(jq -r 'if .foundation.skills | has("keep") then "yes" else "no" end' "$file")
+    if [ "$has_drop" = "yes" ] && [ "$has_keep" = "yes" ]; then
+        errs+=("foundation.skills.drop and foundation.skills.keep are mutually exclusive — use one or the other, not both")
+    fi
+
+    if [ "$has_drop" = "yes" ]; then
         local t
         t=$(jq -r '.foundation.skills.drop | type' "$file")
         [ "$t" = "array" ] || errs+=("foundation.skills.drop must be an array")
+    fi
+
+    # foundation.skills.keep: if present, must be a non-empty array of strings.
+    if [ "$has_keep" = "yes" ]; then
+        local kt klen
+        kt=$(jq -r '.foundation.skills.keep | type' "$file")
+        if [ "$kt" != "array" ]; then
+            errs+=("foundation.skills.keep must be an array")
+        else
+            klen=$(jq -r '.foundation.skills.keep | length' "$file")
+            [ "$klen" -gt 0 ] || errs+=("foundation.skills.keep must be a non-empty array")
+            # Each entry must be a non-empty string.
+            if [ "$klen" -gt 0 ]; then
+                local ki
+                for ki in $(seq 0 $((klen - 1))); do
+                    local kentry
+                    kentry=$(jq -r ".foundation.skills.keep[$ki] | type" "$file")
+                    [ "$kentry" = "string" ] || errs+=("foundation.skills.keep[$ki] must be a string")
+                done
+            fi
+        fi
     fi
 
     if jq -e '.marketplacePlugins' "$file" >/dev/null 2>&1; then

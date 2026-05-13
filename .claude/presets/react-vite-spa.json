@@ -1,0 +1,132 @@
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+
+  "name": "react-vite-spa",
+  "displayName": "React Vite SPA",
+  "description": "React + Vite + React Router for Single-Page Applications. Targets SPAs without SSR/RSC: client-rendered apps, PWAs, and Capacitor-wrapped mobile shells. Keeps the full frontend toolkit (shadcn, react-perf, i18n, auth, graphql) and filters out server-centric, homelab, and mobile-native skills. Not the right preset for SSR/RSC (use `nextjs`), static-content sites (use `astro`), or native mobile distribution beyond a Capacitor wrap.",
+
+  "version": "1.0.0",
+  "status": "maintainer-vouched",
+
+  "author": {
+    "name": "Chris",
+    "github": "christopherlouet"
+  },
+
+  "appliesToTypes": ["react", "fullstack"],
+
+  "detect": {
+    "combinator": "allOf",
+    "files": ["vite.config.*"],
+    "depFiles": [
+      {"path": "package.json", "contains": "\"react-router-dom\""}
+    ]
+  },
+
+  "foundation": {
+    "skills": {
+      "keep": [
+        "agent-teams",
+        "api-mocking",
+        "dev-api",
+        "dev-auth",
+        "dev-debug",
+        "dev-document",
+        "dev-error-handling",
+        "dev-frontend-design",
+        "dev-graphql",
+        "dev-i18n",
+        "dev-prisma",
+        "dev-prompt-engineering",
+        "dev-react-perf",
+        "dev-refactor",
+        "dev-shadcn",
+        "dev-supabase",
+        "dev-tdd",
+        "doc-changelog",
+        "doc-generate",
+        "feature-flags",
+        "git-worktrees",
+        "growth-cro",
+        "ops-ci",
+        "ops-ci-fix",
+        "ops-database",
+        "ops-docker",
+        "ops-monitoring",
+        "ops-standup",
+        "parallel-agents",
+        "qa-chrome",
+        "qa-design",
+        "qa-e2e",
+        "qa-perf",
+        "qa-review",
+        "qa-security",
+        "qa-tech-debt",
+        "session-handoff",
+        "state-management",
+        "web-scraping",
+        "work-batch",
+        "work-brainstorm",
+        "work-commit",
+        "work-explore",
+        "work-plan",
+        "work-pr",
+        "work-quick",
+        "writing-skills"
+      ]
+    }
+  },
+
+  "marketplacePlugins": [],
+
+  "recommendedVendorSkills": [
+    {
+      "id": "vercel-labs/agent-skills",
+      "url": "https://github.com/vercel-labs/agent-skills",
+      "rationale": "Canonical React patterns from Vercel Engineering (valid outside Next.js for SPA work)",
+      "condition": "always"
+    },
+    {
+      "id": "frontend-design@claude-plugins-official",
+      "url": "https://claude.com/plugins/frontend-design",
+      "rationale": "Anthropic's official UI design plugin (avoid generic Inter+purple aesthetic)",
+      "condition": "always"
+    },
+    {
+      "id": "shadcn-ui/ui (skills/shadcn)",
+      "url": "https://github.com/shadcn-ui/ui/tree/main/skills/shadcn",
+      "rationale": "shadcn/ui CLI v4, Radix + Base UI primitives, theming patterns",
+      "condition": "if using shadcn/ui"
+    },
+    {
+      "id": "lingui/skills",
+      "url": "https://github.com/lingui/skills",
+      "rationale": "Lingui i18n patterns for React (sourced from specs/marketplace-audit/dev-skills-pilot)",
+      "condition": "if using Lingui for i18n"
+    }
+  ],
+
+  "defaults": {
+    "ci": true,
+    "hooks": true,
+    "mcp": false,
+    "docker": false,
+    "designStyle": "editorial"
+  },
+
+  "outOfScope": [
+    "Server-side rendering or React Server Components — use the `nextjs` preset",
+    "Static-content / blog / marketing sites — use the `astro` preset",
+    "Native mobile distribution beyond a Capacitor wrap — community contributions wanted for `flutter`, `swift`, `react-native`",
+    "Opinionated state management library choice (Redux/Zustand/Jotai) — the React community has not converged; preset stays neutral",
+    "Opinionated data-fetching library choice (TanStack Query/SWR/Apollo) — preset stays neutral",
+    "Build-tool alternatives (Rollup, esbuild, Rspack, Turbopack) — Vite is the explicit target"
+  ],
+
+  "relatedPresetsWanted": [
+    "sveltekit",
+    "vue-nuxt",
+    "remix",
+    "react-native"
+  ]
+}

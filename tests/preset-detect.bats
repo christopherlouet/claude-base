@@ -253,3 +253,146 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"made-up-stack"* ]]
 }
+
+# =============================================================================
+# US-2 Phase 3: react-vite-spa shipped detection rule vs fixtures
+# Tests use the official .claude/presets/ dir (PRESETS_DIR=$BASE_DIR/.claude/presets)
+# so they exercise the SHIPPED allOf rule (files + depFiles) end-to-end.
+# =============================================================================
+
+# Helper: invoke scan_presets against the official presets dir.
+scan_official() {
+    local target="$1"
+    bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$PRESET_DETECT_LIB'
+        PRESETS_DIR='$BASE_DIR/.claude/presets' scan_presets '$target'
+    "
+}
+
+@test "preset-detect: react-vite-spa fixture matches react-vite-spa (T027)" {
+    # The fixture must satisfy allOf: vite.config.ts present AND package.json
+    # contains "react-router-dom". Both signals must be present.
+    local fixture="$BASE_DIR/tests/presets-fixtures/react-vite-spa"
+    run scan_official "$fixture"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"react-vite-spa"* ]]
+}
+
+@test "preset-detect: astro fixture does NOT match react-vite-spa (T028)" {
+    # The astro fixture has no vite.config.* and no package.json with
+    # react-router-dom, so the allOf check fails on both signals.
+    local fixture="$BASE_DIR/tests/presets-fixtures/astro"
+    run scan_official "$fixture"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"react-vite-spa"* ]]
+}
+
+@test "preset-detect: nextjs fixture does NOT match react-vite-spa (T029)" {
+    # The nextjs fixture has next.config.js and package.json with "next" dep
+    # but no vite.config.* — the files signal of allOf fails.
+    local fixture="$BASE_DIR/tests/presets-fixtures/nextjs"
+    run scan_official "$fixture"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"react-vite-spa"* ]]
+}
+
+@test "preset-detect: react-vite-spa drift-guard — missing react-router-dom breaks match (T030)" {
+    # Copy the react-vite-spa fixture to a writable temp dir, strip
+    # react-router-dom from package.json, and verify that the preset no
+    # longer matches (the depFiles signal is load-bearing in the allOf).
+    cp -r "$BASE_DIR/tests/presets-fixtures/react-vite-spa/." "$TEST_DIR/proj/"
+    # Remove the react-router-dom entry from dependencies.
+    jq 'del(.dependencies["react-router-dom"])' "$TEST_DIR/proj/package.json" \
+        > "$TEST_DIR/proj/package.json.tmp"
+    mv "$TEST_DIR/proj/package.json.tmp" "$TEST_DIR/proj/package.json"
+    run scan_official "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"react-vite-spa"* ]]
+}
+
+@test "preset-detect: react-vite-spa matches a real-world project with a single vite.config.ts (T030b)" {
+    # Regression guard against treating each entry in detect.files[] as an
+    # independent allOf signal. Real projects ship ONE vite.config.* (TS or JS
+    # or MJS), never the three at once. The detect rule must use a glob so the
+    # files signal is "any vite.config.* exists", not "all three exist".
+    cat > "$TEST_DIR/proj/vite.config.ts" <<'EOF'
+import { defineConfig } from 'vite';
+export default defineConfig({});
+EOF
+    cat > "$TEST_DIR/proj/package.json" <<'EOF'
+{
+  "name": "real-world-spa",
+  "version": "0.0.0",
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.0.0",
+    "vite": "^5.0.0"
+  }
+}
+EOF
+    run scan_official "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"react-vite-spa"* ]]
+}
+
+@test "preset-detect: react-vite-spa matches a real-world project with a single vite.config.js (T030c)" {
+    # Same regression guard but with the .js variant — confirms the glob covers
+    # every documented extension, not just .ts.
+    cat > "$TEST_DIR/proj/vite.config.js" <<'EOF'
+import { defineConfig } from 'vite';
+export default defineConfig({});
+EOF
+    cat > "$TEST_DIR/proj/package.json" <<'EOF'
+{
+  "name": "real-world-spa-js",
+  "version": "0.0.0",
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.0.0",
+    "vite": "^5.0.0"
+  }
+}
+EOF
+    run scan_official "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"react-vite-spa"* ]]
+}
+
+# =============================================================================
+# US-6 Phase 7: multi-match disambiguation — hybrid project
+# A project satisfying BOTH nextjs and react-vite-spa detect rules must
+# surface both preset names so the caller can prompt for disambiguation.
+# =============================================================================
+
+@test "preset-detect: hybrid project matches both nextjs and react-vite-spa (T043)" {
+    # Build a hybrid fixture inline (not a permanent fixture under presets-fixtures/).
+    # nextjs detect: anyOf → next.config.js present OR package.json contains "next"
+    # react-vite-spa detect: allOf → vite.config.* present AND package.json contains "react-router-dom"
+    cat > "$TEST_DIR/proj/vite.config.ts" <<'EOF'
+import { defineConfig } from 'vite';
+export default defineConfig({});
+EOF
+    cat > "$TEST_DIR/proj/next.config.js" <<'EOF'
+module.exports = {};
+EOF
+    cat > "$TEST_DIR/proj/package.json" <<'EOF'
+{
+  "name": "hybrid-fixture",
+  "version": "0.0.0",
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.0.0",
+    "vite": "^5.0.0"
+  }
+}
+EOF
+    run scan_official "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"react-vite-spa"* ]]
+}
