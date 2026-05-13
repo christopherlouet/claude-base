@@ -371,3 +371,68 @@ EOF
     # Assert: a skill that was excluded by the keep-filter is now present.
     [ -d "$proj/.claude/skills/dev-flutter" ]
 }
+
+# =============================================================================
+# Phase 4 — US-3 update lifecycle exerciser: react-vite-spa real preset (T033-T035)
+# Integration tests that exercise load_active_keep_list + is_skill_kept against
+# the actual .claude/presets/react-vite-spa.json (no synthetic preset).
+# =============================================================================
+
+@test "update-presets: react-vite-spa keep filter survives update (T033)" {
+    local proj="$TEST_DIR/proj-react-vite-spa-keep"
+
+    # Bootstrap with the real react-vite-spa preset.
+    "$NEW_PROJECT" --preset react-vite-spa -y "$proj" >/dev/null 2>&1
+    [ -d "$proj/.claude" ]
+
+    # dev-tdd is in the react-vite-spa keep list — must be present after bootstrap.
+    [ -d "$proj/.claude/skills/dev-tdd" ]
+
+    # Simulate user deleting dev-tdd (e.g. accidental rm or branch reset).
+    rm -rf "$proj/.claude/skills/dev-tdd"
+    [ ! -d "$proj/.claude/skills/dev-tdd" ]
+
+    # Run update with explicit --preset react-vite-spa (cleanest form: matches how
+    # the user bootstrapped the project).
+    run "$UPDATE" -y -f --preset react-vite-spa --skills "$proj"
+    [ "$status" -eq 0 ]
+
+    # dev-tdd must be re-added (it is in the keep list).
+    [ -d "$proj/.claude/skills/dev-tdd" ]
+
+    # dev-flutter must still be absent (not in the keep list — filter held).
+    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+}
+
+@test "update-presets: react-vite-spa --no-preset reverses keep-filter (T034)" {
+    local proj="$TEST_DIR/proj-react-vite-spa-no-preset"
+
+    # Bootstrap with the real react-vite-spa preset — dev-flutter absent.
+    "$NEW_PROJECT" --preset react-vite-spa -y "$proj" >/dev/null 2>&1
+    [ -d "$proj/.claude" ]
+    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+
+    # Run update --no-preset --skills: no preset filter applied, every foundation
+    # skill is eligible for re-add.
+    run "$UPDATE" -y -f --no-preset --skills "$proj"
+    [ "$status" -eq 0 ]
+
+    # dev-flutter must now be present (filter explicitly disabled).
+    [ -d "$proj/.claude/skills/dev-flutter" ]
+}
+
+@test "update-presets: react-vite-spa dry-run lists non-kept skills as skipped (T035)" {
+    local proj="$TEST_DIR/proj-react-vite-spa-dryrun"
+
+    # Bootstrap with the real react-vite-spa preset.
+    "$NEW_PROJECT" --preset react-vite-spa -y "$proj" >/dev/null 2>&1
+    [ -d "$proj/.claude" ]
+
+    # Run dry-run with explicit --preset react-vite-spa.
+    run "$UPDATE" -y --dry-run --preset react-vite-spa --skills "$proj"
+    [ "$status" -eq 0 ]
+
+    # dev-flutter is NOT in the react-vite-spa keep list; dry-run must announce skip.
+    [[ "$output" == *"Skip (preset filter)"* ]]
+    [[ "$output" == *"dev-flutter"* ]]
+}
