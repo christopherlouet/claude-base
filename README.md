@@ -176,7 +176,7 @@ claude-base/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->618<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->620<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
@@ -529,7 +529,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->28<!-- /count --> files, <!-- count:tests -->618<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->28<!-- /count --> files, <!-- count:tests -->620<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|
