@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.39.0] - 2026-05-13
+
+Minor release. Ships the 6th maintainer-vouched preset (`react-vite-spa`)
+for React Single-Page Apps built on Vite + React Router, anchored on the
+maintainer's actual production stack. Bundled with a foundational runtime
+extension the preset depends on: support for `keep`-style skills filters
+(whitelist), mutually exclusive with the existing `drop`-style filter
+(blacklist). The 5 previously shipped presets keep their `drop` form and
+are entirely unchanged.
+
+Behaviour-additive across the board, no breaking change. +27 tests
+(593 → 620). Spec lives at
+[`specs/preset-react-vite-spa/`](./specs/preset-react-vite-spa/).
+
 ### Added
 
 - **6th maintainer-vouched preset `react-vite-spa`** — React Single-Page
