@@ -1,6 +1,6 @@
 # Spec: update lifecycle visibility — close the bootstrap → maintenance gap
 
-**Status**: Draft
+**Status**: Validated — all 5 user stories shipped in PR #166 (v1.38.0, 2026-05-10)
 **Date**: 2026-05-09
 **Owner**: Chris
 **Builds on**: `specs/presets-update-aware/` (shipped v1.37.0)

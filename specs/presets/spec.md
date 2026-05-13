@@ -1,6 +1,6 @@
 # Spec: presets — curated bundles per stack
 
-**Status**: Draft (planning, not yet validated)
+**Status**: Validated — format + install mechanism shipped in PR #119 (v1.32.0); 5 maintainer-vouched presets live (`nextjs`, `homelab-proxmox`, `cli-tools`, `fastapi`, `astro`)
 **Date**: 2026-05-04
 **Owner**: Chris
 
