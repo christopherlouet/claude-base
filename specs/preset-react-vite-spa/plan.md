@@ -215,7 +215,7 @@ Sub-phases (TDD per Red-Green-Refactor):
   - `name: "react-vite-spa"`, `displayName: "React Vite SPA"`, `status: "maintainer-vouched"`, `version: "1.0.0"`
   - `description` (2–3 lines): names IN (React + Vite + React Router + i18next + Tanstack Query + Tailwind as the typical add-on stack) and OUT (no SSR/RSC, no SSG-first, no opinionated state lib). Includes the Capacitor informational note (compatible mobile wrap pattern, no Capacitor-specific tooling bundled). NO project names referenced.
   - `appliesToTypes: ["react", "fullstack"]`
-  - `detect: {combinator: "allOf", files: ["vite.config.ts","vite.config.js","vite.config.mjs"], depFiles: [{path: "package.json", contains: "\"react-router-dom\""}]}`
+  - `detect: {combinator: "allOf", files: ["vite.config.*"], depFiles: [{path: "package.json", contains: "\"react-router-dom\""}]}` — single glob entry. Each item in `files[]` is an independent signal under `allOf`, so three discrete `vite.config.{ts,js,mjs}` entries would have required every variant to coexist (impossible in real projects). One glob covers any extension.
   - `foundation.skills.keep: [...]` — the curated keep list (see T026 for content)
   - `marketplacePlugins: []`
   - `recommendedVendorSkills`: the 4 audit-validated entries (vercel-labs/agent-skills always, frontend-design always, shadcn-ui conditional, lingui conditional)

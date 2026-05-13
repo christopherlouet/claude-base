@@ -130,7 +130,7 @@ Refactor (optional):
 - [ ] T025 — [US-1] Write `.claude/presets/react-vite-spa.json`:
   - `$schema`, `name`, `displayName`, `description`, `version: "1.0.0"`, `status: "maintainer-vouched"`, `author`
   - `appliesToTypes: ["react", "fullstack"]`
-  - `detect`: `{"combinator": "allOf", "files": ["vite.config.ts","vite.config.js","vite.config.mjs"], "depFiles": [{"path":"package.json","contains":"\"react-router-dom\""}]}`
+  - `detect`: `{"combinator": "allOf", "files": ["vite.config.*"], "depFiles": [{"path":"package.json","contains":"\"react-router-dom\""}]}` — single glob entry; each item in `files[]` is an independent signal under `allOf`, so listing the three explicit extensions would have required every variant to coexist (broken for real projects).
   - `foundation.skills.keep: [...]` — exhaustive list from T026
   - `marketplacePlugins: []`
   - `recommendedVendorSkills`:
