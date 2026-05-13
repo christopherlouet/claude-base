@@ -90,8 +90,16 @@ PRESET_NAME=""
 PRESET_FILE=""
 PRESET_LIST_AND_EXIT=false
 DETECT_ONLY=false
+# Optional override: path to a directory containing preset JSON files.
+# When set, resolve_preset_file() looks there BEFORE the official presets dir.
+# Intended for testing only (synthetic presets); not documented in --help.
+PRESETS_DIR_OVERRIDE=""
 # Set by load_preset() — used by install_claude_files / apply_preset_filter
 PRESET_SKILLS_DROP=()
+# Set by load_preset() — mutually exclusive with PRESET_SKILLS_DROP (XOR).
+# When non-empty, apply_preset_filter() removes every installed skill whose
+# top-level directory name is NOT in this list.
+PRESET_SKILLS_KEEP=()
 # Populated by populate_matched_presets() — list of preset names whose
 # detect rule matches PROJECT_PATH. Empty when --preset was passed
 # explicitly (EF-016) or when no preset matches.
@@ -314,6 +322,10 @@ parse_args() {
                 ;;
             --preset)
                 PRESET_NAME="$2"
+                shift 2
+                ;;
+            --presets-dir)
+                PRESETS_DIR_OVERRIDE="$2"
                 shift 2
                 ;;
             --list-presets)
@@ -596,6 +608,15 @@ copy_filtered_rules() {
 # Output: path to .json file, or empty if not found.
 resolve_preset_file() {
     local name="$1"
+    # PRESETS_DIR_OVERRIDE is checked first so tests can inject synthetic presets
+    # without touching the official presets tree.
+    if [[ -n "$PRESETS_DIR_OVERRIDE" ]]; then
+        local override_file="$PRESETS_DIR_OVERRIDE/$name.json"
+        if [[ -f "$override_file" ]]; then
+            echo "$override_file"
+            return
+        fi
+    fi
     local official="$BASE_DIR/.claude/presets/$name.json"
     local community="$BASE_DIR/.claude/presets/community/$name.json"
     if [[ -f "$official" ]]; then
@@ -694,23 +715,73 @@ load_preset() {
     fi
 
     # Capture skills.drop list for later filtering by apply_preset_filter().
+    # XOR invariant: a preset may declare EITHER drop[] OR keep[], never both.
+    # The validator (validate-presets.sh) enforces this at authoring time;
+    # apply_preset_filter() branches on which list is non-empty at runtime.
     PRESET_SKILLS_DROP=()
     while IFS= read -r skill; do
         [[ -z "$skill" ]] && continue
         PRESET_SKILLS_DROP+=("$skill")
     done < <(jq -r '.foundation.skills.drop[]? // empty' "$file")
+
+    # Capture skills.keep list (mutually exclusive with drop — XOR).
+    PRESET_SKILLS_KEEP=()
+    while IFS= read -r skill; do
+        [[ -z "$skill" ]] && continue
+        PRESET_SKILLS_KEEP+=("$skill")
+    done < <(jq -r '.foundation.skills.keep[]? // empty' "$file")
 }
 
-# Drop skills listed in the preset's foundation.skills.drop array from the
-# target installation. Called after install_claude_files() copied everything.
+# Apply the preset's skill filter to the target installation.
+# Called after install_claude_files() has already copied every skill.
+#
+# XOR invariant: a preset declares EITHER foundation.skills.drop[] OR
+# foundation.skills.keep[], never both (validator enforces this).
+#   - drop branch: remove the explicitly listed skills.
+#   - keep branch: remove every installed skill whose top-level directory
+#     name is NOT in the keep list.
+#
 # Arguments:
 #   $1 - Target directory (absolute path)
 apply_preset_filter() {
     local target_dir="$1"
     [[ -z "$PRESET_FILE" ]] && return 0
+
+    # --- keep branch ---
+    if [[ ${#PRESET_SKILLS_KEEP[@]} -gt 0 ]]; then
+        local removed=0
+        local skill_name
+        while IFS= read -r skill_dir; do
+            skill_name="$(basename "$skill_dir")"
+            # Check whether skill_name is in the keep list.
+            local keep=false
+            local s
+            for s in "${PRESET_SKILLS_KEEP[@]}"; do
+                if [[ "$s" = "$skill_name" ]]; then
+                    keep=true
+                    break
+                fi
+            done
+            if ! $keep; then
+                if $DRY_RUN; then
+                    echo -e "${DIM}[DRY-RUN]${NC} rm -rf $skill_dir (keep filter: not in keep list)"
+                else
+                    rm -rf "$skill_dir"
+                fi
+                removed=$((removed + 1))
+            fi
+        done < <(find "$target_dir/.claude/skills" -maxdepth 1 -mindepth 1 -type d 2>/dev/null)
+        if [[ $removed -gt 0 ]]; then
+            debug "Preset keep-filter: $removed skill(s) removed (not in keep list)"
+        fi
+        return 0
+    fi
+
+    # --- drop branch (unchanged) ---
     [[ ${#PRESET_SKILLS_DROP[@]} -eq 0 ]] && return 0
 
     local dropped=0
+    local skill
     for skill in "${PRESET_SKILLS_DROP[@]}"; do
         local skill_path="$target_dir/.claude/skills/$skill"
         if [[ -d "$skill_path" ]]; then
