@@ -310,3 +310,53 @@ scan_official() {
     [ "$status" -eq 0 ]
     [[ "$output" != *"react-vite-spa"* ]]
 }
+
+@test "preset-detect: react-vite-spa matches a real-world project with a single vite.config.ts (T030b)" {
+    # Regression guard against treating each entry in detect.files[] as an
+    # independent allOf signal. Real projects ship ONE vite.config.* (TS or JS
+    # or MJS), never the three at once. The detect rule must use a glob so the
+    # files signal is "any vite.config.* exists", not "all three exist".
+    cat > "$TEST_DIR/proj/vite.config.ts" <<'EOF'
+import { defineConfig } from 'vite';
+export default defineConfig({});
+EOF
+    cat > "$TEST_DIR/proj/package.json" <<'EOF'
+{
+  "name": "real-world-spa",
+  "version": "0.0.0",
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.0.0",
+    "vite": "^5.0.0"
+  }
+}
+EOF
+    run scan_official "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"react-vite-spa"* ]]
+}
+
+@test "preset-detect: react-vite-spa matches a real-world project with a single vite.config.js (T030c)" {
+    # Same regression guard but with the .js variant — confirms the glob covers
+    # every documented extension, not just .ts.
+    cat > "$TEST_DIR/proj/vite.config.js" <<'EOF'
+import { defineConfig } from 'vite';
+export default defineConfig({});
+EOF
+    cat > "$TEST_DIR/proj/package.json" <<'EOF'
+{
+  "name": "real-world-spa-js",
+  "version": "0.0.0",
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.0.0",
+    "vite": "^5.0.0"
+  }
+}
+EOF
+    run scan_official "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"react-vite-spa"* ]]
+}
