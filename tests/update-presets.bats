@@ -280,3 +280,94 @@ teardown() {
     [ -n "$reco_line" ]
     [ "$reco_line" -gt "$banner_line" ]
 }
+
+# =============================================================================
+# Phase 1.C — keep-filter persists across update lifecycle (T010, T011)
+# =============================================================================
+
+@test "update-presets: keep-preset filter holds on --skills re-add (T010)" {
+    # Arrange: synthetic keep-preset that keeps only dev-tdd and dev-refactor.
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    mkdir -p "$preset_dir"
+    cat > "$preset_dir/keep-two.json" << 'EOF'
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "keep-two",
+  "displayName": "Synthetic keep-two",
+  "description": "Synthetic preset: keeps only dev-tdd and dev-refactor.",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["keep-two.marker"]},
+  "foundation": {
+    "skills": {
+      "keep": ["dev-tdd", "dev-refactor"]
+    }
+  },
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+
+    local proj="$TEST_DIR/proj-keep-update"
+
+    # Bootstrap with the synthetic keep-preset (new-project.sh already supports --presets-dir).
+    "$NEW_PROJECT" --preset keep-two --presets-dir "$preset_dir" -y "$proj" >/dev/null 2>&1
+    [ -d "$proj/.claude" ]
+    # After bootstrap: kept skills present, non-kept absent.
+    [ -d "$proj/.claude/skills/dev-tdd" ]
+    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+
+    # Act: delete one kept skill, then run update --skills with the same preset filter.
+    rm -rf "$proj/.claude/skills/dev-tdd"
+    [ ! -d "$proj/.claude/skills/dev-tdd" ]
+
+    run "$UPDATE" -y -f --preset keep-two --presets-dir "$preset_dir" --skills "$proj"
+    [ "$status" -eq 0 ]
+
+    # Assert: kept skill is re-added.
+    [ -d "$proj/.claude/skills/dev-tdd" ]
+    # Assert: non-kept skill is still absent (filter held).
+    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+}
+
+@test "update-presets: --no-preset reverses keep-filter, all skills re-added (T011)" {
+    # Arrange: same synthetic keep-preset.
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    mkdir -p "$preset_dir"
+    cat > "$preset_dir/keep-two.json" << 'EOF'
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "keep-two",
+  "displayName": "Synthetic keep-two",
+  "description": "Synthetic preset: keeps only dev-tdd and dev-refactor.",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["keep-two.marker"]},
+  "foundation": {
+    "skills": {
+      "keep": ["dev-tdd", "dev-refactor"]
+    }
+  },
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+
+    local proj="$TEST_DIR/proj-keep-no-preset"
+
+    # Bootstrap with the synthetic keep-preset.
+    "$NEW_PROJECT" --preset keep-two --presets-dir "$preset_dir" -y "$proj" >/dev/null 2>&1
+    [ -d "$proj/.claude" ]
+    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+
+    # Act: run update --no-preset --skills — filter disabled, all foundation skills re-added.
+    run "$UPDATE" -y -f --no-preset --skills "$proj"
+    [ "$status" -eq 0 ]
+
+    # Assert: a skill that was excluded by the keep-filter is now present.
+    [ -d "$proj/.claude/skills/dev-flutter" ]
+}
