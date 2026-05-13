@@ -13,12 +13,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **6th maintainer-vouched preset `react-vite-spa`** — React Single-Page
+  Apps built on Vite + React Router. First preset to use the new
+  `keep`-style filter (whitelists 47 of 54 foundation skills); drops
+  `dev-flutter`, `dev-nextjs`, `ops-mobile-release`, `ops-proxmox`,
+  `ops-opnsense`, `ops-infra-code`, `data-pipeline`. Detection rule is
+  strict `allOf`: any `vite.config.*` AND `react-router-dom` in
+  `package.json` — avoids false positives on Astro / Vue+Vite /
+  Svelte+Vite. Bundles ZERO marketplace plugins at v1; ships with 4
+  audit-validated `recommendedVendorSkills` entries (vercel-labs +
+  frontend-design always; shadcn-ui + lingui conditional). Compatible
+  with a Capacitor wrap for mobile distribution. Spec lives at
+  [`specs/preset-react-vite-spa/`](./specs/preset-react-vite-spa/).
+
 - **Runtime support for `keep`-style skills filter** in preset manifests
   (`foundation.skills.keep[]`), mutually exclusive with the existing
   `drop[]` form. A preset declaring `keep:` whitelists the listed skills
   during bootstrap and update; every other foundation skill is skipped.
   `validate-presets.sh` enforces the XOR at validation time. The 5
-  shipped presets (`nextjs`, `astro`, `fastapi`, `cli-tools`,
+  previously shipped presets (`nextjs`, `astro`, `fastapi`, `cli-tools`,
   `homelab-proxmox`) continue to use `drop` and are unchanged. Spec
   lives at [`specs/preset-react-vite-spa/`](./specs/preset-react-vite-spa/).
 
