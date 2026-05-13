@@ -253,3 +253,60 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"made-up-stack"* ]]
 }
+
+# =============================================================================
+# US-2 Phase 3: react-vite-spa shipped detection rule vs fixtures
+# Tests use the official .claude/presets/ dir (PRESETS_DIR=$BASE_DIR/.claude/presets)
+# so they exercise the SHIPPED allOf rule (files + depFiles) end-to-end.
+# =============================================================================
+
+# Helper: invoke scan_presets against the official presets dir.
+scan_official() {
+    local target="$1"
+    bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$PRESET_DETECT_LIB'
+        PRESETS_DIR='$BASE_DIR/.claude/presets' scan_presets '$target'
+    "
+}
+
+@test "preset-detect: react-vite-spa fixture matches react-vite-spa (T027)" {
+    # The fixture must satisfy allOf: vite.config.ts present AND package.json
+    # contains "react-router-dom". Both signals must be present.
+    local fixture="$BASE_DIR/tests/presets-fixtures/react-vite-spa"
+    run scan_official "$fixture"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"react-vite-spa"* ]]
+}
+
+@test "preset-detect: astro fixture does NOT match react-vite-spa (T028)" {
+    # The astro fixture has no vite.config.* and no package.json with
+    # react-router-dom, so the allOf check fails on both signals.
+    local fixture="$BASE_DIR/tests/presets-fixtures/astro"
+    run scan_official "$fixture"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"react-vite-spa"* ]]
+}
+
+@test "preset-detect: nextjs fixture does NOT match react-vite-spa (T029)" {
+    # The nextjs fixture has next.config.js and package.json with "next" dep
+    # but no vite.config.* — the files signal of allOf fails.
+    local fixture="$BASE_DIR/tests/presets-fixtures/nextjs"
+    run scan_official "$fixture"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"react-vite-spa"* ]]
+}
+
+@test "preset-detect: react-vite-spa drift-guard — missing react-router-dom breaks match (T030)" {
+    # Copy the react-vite-spa fixture to a writable temp dir, strip
+    # react-router-dom from package.json, and verify that the preset no
+    # longer matches (the depFiles signal is load-bearing in the allOf).
+    cp -r "$BASE_DIR/tests/presets-fixtures/react-vite-spa/." "$TEST_DIR/proj/"
+    # Remove the react-router-dom entry from dependencies.
+    jq 'del(.dependencies["react-router-dom"])' "$TEST_DIR/proj/package.json" \
+        > "$TEST_DIR/proj/package.json.tmp"
+    mv "$TEST_DIR/proj/package.json.tmp" "$TEST_DIR/proj/package.json"
+    run scan_official "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"react-vite-spa"* ]]
+}
