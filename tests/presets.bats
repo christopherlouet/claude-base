@@ -790,3 +790,73 @@ EOF
     [[ "$output" == *"Always pair with this preset"* ]]
     [[ "$output" == *"terraform-skill"* ]]
 }
+
+# =============================================================================
+# T003-T005 — validator XOR enforcement: foundation.skills drop vs keep
+# (Phase 1.A — must FAIL before T006 implementation)
+# =============================================================================
+
+@test "presets: validate-presets.sh rejects a preset declaring both drop and keep in foundation.skills (T003)" {
+    cat > "$TEST_DIR/both-drop-and-keep.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["react"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "foundation": {
+    "skills": {
+      "drop": ["dev-flutter"],
+      "keep": ["dev-tdd"]
+    }
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/both-drop-and-keep.json"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"mutually exclusive"* ]]
+}
+
+@test "presets: validate-presets.sh accepts a preset with only keep in foundation.skills (T004)" {
+    cat > "$TEST_DIR/keep-only.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["react"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "foundation": {
+    "skills": {
+      "keep": ["dev-tdd"]
+    }
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/keep-only.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: validate-presets.sh accepts a preset with only drop in foundation.skills (regression T005)" {
+    cat > "$TEST_DIR/drop-only.json" <<'EOF'
+{
+  "name": "synthetic",
+  "displayName": "Synthetic",
+  "description": "x",
+  "status": "draft",
+  "appliesToTypes": ["react"],
+  "defaults": {"ci": true, "hooks": true, "mcp": false, "docker": false},
+  "outOfScope": [],
+  "foundation": {
+    "skills": {
+      "drop": ["dev-flutter"]
+    }
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/drop-only.json"
+    [ "$status" -eq 0 ]
+}
