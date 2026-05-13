@@ -17,7 +17,7 @@
 
   "detect": {
     "combinator": "allOf",
-    "files": ["vite.config.ts", "vite.config.js", "vite.config.mjs"],
+    "files": ["vite.config.*"],
     "depFiles": [
       {"path": "package.json", "contains": "\"react-router-dom\""}
     ]
