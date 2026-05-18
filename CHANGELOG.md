@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`AGENTS.md` cross-tool entry point at repo root**. Thin index
+  (~45 lines) signaling SKILL.md open standard compliance to
+  Codex / Cursor / Copilot / Gemini CLI and other Agent
+  Skills-compatible tools. Points to `CLAUDE.md` for the full
+  workflow, `.claude/skills/` / `.claude/rules/` / `.claude/agents/`
+  / `.claude/presets/` for the artifacts, and names the foundation's
+  key conventions. Zero functional change — existing skills already
+  use the standard frontmatter (`name` + `description`); Claude-
+  specific extensions (`allowed-tools`, `context: fork`, `model`)
+  are tolerated by other tools as unknown fields.
+
 - **Third preset tier `vendor-pointer` + first instance `phaser`**.
   Introduces a new preset tier alongside `maintainer-vouched` and
   `community-curated` for thin pointer-only manifests whose authority
