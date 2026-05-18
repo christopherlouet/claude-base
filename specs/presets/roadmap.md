@@ -14,7 +14,7 @@
 | `cli-tools` | Python or Shell automation, GitHub API helpers, headless scripts | v1.32.0 (PR #121) |
 | `fastapi` | FastAPI + Pydantic + SQLAlchemy/async ORM (Python async backend) | v1.33.0 (PR #132) |
 | `astro` | Astro + TypeScript + Content Collections (content/static-first web) | v1.35.0 |
-| `react-vite-spa` | React + Vite + React Router for Single-Page Apps (no SSR, Capacitor-compatible) | v1.39.0 (this PR) |
+| `react-vite-spa` | React + Vite + React Router for Single-Page Apps (no SSR, Capacitor-compatible) | v1.39.0 (PR #178) |
 
 Each shipped preset has:
 - `.json` manifest under `.claude/presets/`
