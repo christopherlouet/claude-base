@@ -268,6 +268,27 @@ Examples of common configurations:
 
 Advantages: faster operations, less noise in exploration, more targeted Claude Code context.
 
+## Background isolation tuning (CLI 2.1.141+ / 2.1.142+)
+
+When background sessions or agents write to disk, the runtime defaults to moving them into an isolated worktree under `.claude/worktrees/`. Two settings let you override this for repos where worktrees are impractical or where the branch base needs to be explicit:
+
+```json
+// In .claude/settings.json
+{
+  "worktree": {
+    "bgIsolation": "none",
+    "baseRef": "head"
+  }
+}
+```
+
+| Setting | Values | Behavior |
+|---|---|---|
+| `worktree.bgIsolation` | `"auto"` (default) / `"none"` | `"none"` lets background sessions edit the working copy directly — opt-in escape hatch for repos where the auto-isolation breaks tooling. |
+| `worktree.baseRef` | `"fresh"` / `"head"` | `"fresh"` branches new worktrees from `origin/<default>` (the upstream tip), `"head"` from local HEAD. Use `"head"` when you want background sessions to inherit your in-progress local commits. |
+
+Both apply to `--worktree`, the `EnterWorktree` tool, and agent-isolation worktrees.
+
 ## Limitations
 
 - A branch can only be used in ONE worktree at a time
