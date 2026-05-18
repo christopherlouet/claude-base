@@ -40,6 +40,15 @@ If any vendor below is later acquired by an Anthropic competitor, the correspond
 
 ---
 
+## Install-time tips (CLI 2.1.141+)
+
+Two recent CLI behaviors worth knowing when running `claude plugin install` against the recommendations below:
+
+- **HTTPS clone for GitHub plugin sources**: set `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` in your environment to clone plugin repositories over HTTPS instead of SSH. Useful in CI runners or sandboxed environments where SSH keys are not provisioned.
+- **Dependency enforcement**: `claude plugin enable` force-enables transitive dependencies, and `claude plugin disable` now refuses when another enabled plugin depends on the target. No more silent breakage from disabling a dependency.
+
+---
+
 ## Recommended vendor skills (by domain)
 
 ### Supabase — `supabase/agent-skills`

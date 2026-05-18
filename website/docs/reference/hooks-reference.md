@@ -68,6 +68,10 @@ PreToolUse hooks can return `"defer"` as a permission decision. The headless ses
 
 When a hook interacts with an MCP server, transient connection failures are auto-retried by the runtime. Hook authors do not need to wrap MCP calls in custom retry logic for transient cases (the typical "server momentarily unavailable" pattern). Permanent failures are not retried.
 
+### `terminalSequence` field (CLI 2.1.141+)
+
+Hook JSON output gained a `terminalSequence` field that emits raw terminal escape sequences — desktop notifications, window-title updates, and the bell — without requiring a controlling terminal. Useful for background or daemonized hooks that want to surface status outside the Claude Code TUI. See the [upstream changelog](https://code.claude.com/docs/en/changelog) for the exact escape codes accepted.
+
 The exact retry bound and the failure-classification heuristics are tuned upstream and may evolve between releases — refer to the [Claude Code changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) for the canonical behavior at the version you target.
 
 ## Configured Hooks
