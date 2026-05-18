@@ -2,7 +2,7 @@
 
 **Audience**: developers using claude-base who want to enrich the foundation with skills published by tool vendors. NOT a complete index of every Claude Code skill in the wild — only the ones that passed claude-base's audit methodology.
 
-**Last verified**: 2026-05-06.
+**Last verified**: 2026-05-18.
 
 This recipe lives outside the foundation deliberately. The recommended skills are NOT bundled or auto-installed by claude-base. The user opts in per project, per skill, when their stack matches. Our role is curation (which skills are worth trusting) — the vendors handle their own distribution.
 
@@ -197,6 +197,29 @@ claude-base update --add-plugin code-review@claude-plugins-official ./your-proje
 ```
 
 **Vendor-neutrality**: Anthropic. Zero concern.
+
+---
+
+### Phaser — `phaserjs/phaser/skills/`
+
+**Covers**: 28 SKILL.md files shipped inside the vendor's main repo, covering scene lifecycle, sprites, physics (Arcade and Matter.js), tilemaps, animations, input handling, particles, cameras, audio, asset pipelines, plus a dedicated `v3-to-v4-migration` skill aligned with Phaser 4 (released April 2026). The skills are updated alongside each release of the framework itself.
+
+**When to install**: any 2D web or mobile-web game project built on Phaser (v3 or v4). For a renderer-only stack (no scene graph, no physics) PixiJS is a better fit and is named under "Adjacent options" below.
+
+**Pair with**: no bundled foundation skill on this topic yet — game-dev is an acknowledged gap. See `specs/presets/roadmap.md` §"Game / Interactive media" for the contribution path.
+
+**Install** (verify on the vendor's README at <https://github.com/phaserjs/phaser>):
+```bash
+git clone --depth 1 https://github.com/phaserjs/phaser ~/dev/vendor-skills/phaser
+# Symlink the relevant skill subdirectories into ./.claude/skills/
+ln -s ~/dev/vendor-skills/phaser/skills/game-setup-and-config \
+      ./.claude/skills/phaser-game-setup-and-config
+# Repeat for the other skills you need (28 in total).
+```
+
+**Vendor-neutrality**: Phaser Studio Inc. (organization), independent, MIT-licensed. Verified via `gh api repos/phaserjs/phaser` on 2026-05-18 — 39,638★, last commit 2026-04-30, archived: false, fork: false. Not acquired by an Anthropic competitor as of verification date. Note: the OpenAI-published `openai/plugins/game-studio/skills/phaser-2d-game` exists but is **rejected** under the vendor-neutrality filter (see "Vendors evaluated and NOT recommended" further down for the policy; the same reasoning that excludes Astral applies here).
+
+**Adjacent options (not separately evaluated)**: PixiJS (renderer, see `arimxyer/toolchest`), Kaplay (simpler component-based framework), Excalibur (TypeScript-first scene + physics). These are named so readers on those stacks know the foundation is aware of them; full audit deferred to a future marketplace-audit pilot.
 
 ---
 
