@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`playwright` vendor-pointer preset (2nd instance of the tier)**.
+  Surfaces `microsoft/playwright-cli` (Apache-2.0, 10,457★, verified
+  2026-05-18, last commit 2026-05-07) at install time on projects
+  whose `package.json` contains `"@playwright/test"`. Vendor-
+  neutrality accepted **case-by-case** per the foundation policy:
+  Microsoft owns Playwright (created 2020, pre-OpenAI commercial
+  deepening), de-facto standard for E2E testing. Counter `presets`
+  goes from 7 to 8 (auto-regenerated). Follows the pattern
+  established by the `phaser` preset; same vendor-pointer tier
+  rules (no `foundation.skills` filter, no `marketplacePlugins`,
+  no `defaults`, single-entry `detect`).
+
 - **`AGENTS.md` cross-tool entry point at repo root**. Thin index
   (~45 lines) signaling SKILL.md open standard compliance to
   Codex / Cursor / Copilot / Gemini CLI and other Agent

@@ -32,6 +32,7 @@ See `specs/presets/spec.md` for the full format specification and `specs/presets
 | `astro` | maintainer-vouched | Astro + TypeScript + Content Collections (content/static-first web) |
 | `react-vite-spa` | maintainer-vouched | React + Vite + React Router for Single-Page Apps (no SSR, Capacitor-compatible) |
 | `phaser` | vendor-pointer | Phaser 2D web game framework — pointer to `phaserjs/phaser/skills/` |
+| `playwright` | vendor-pointer | Playwright end-to-end testing framework — pointer to `microsoft/playwright-cli` (case-by-case vendor-neutrality) |
 
 The 6 maintainer-vouched presets cover the maintainer's actual production usage. The 1 vendor-pointer preset (`phaser`) surfaces a vendor-published skill suite at install time without a maintainer prod-use claim — its authority comes from the vendor's authorship of the pointed-to skill, validated via the marketplace-audit methodology. See [`specs/presets-vendor-pointer-tier/spec.md`](../../specs/presets-vendor-pointer-tier/spec.md) for the tier definition. For other stacks (Django, Rails, Laravel, SvelteKit, Vue/Nuxt, Spring Boot, Phoenix, Go-Gin, Rust-Axum, Flutter, etc.), community contributions are welcomed — see `specs/presets/roadmap.md`.
 

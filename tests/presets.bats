@@ -1069,3 +1069,26 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"phaser"* ]]
 }
+
+# =============================================================================
+# playwright vendor-pointer preset (2nd vendor-pointer instance)
+# =============================================================================
+
+@test "presets: playwright.json (vendor-pointer) is accepted by validate-presets.sh" {
+    [ -f "$BASE_DIR/.claude/presets/playwright.json" ]
+    [ "$(jq -r '.status' "$BASE_DIR/.claude/presets/playwright.json")" = "vendor-pointer" ]
+    run "$VALIDATE_PRESETS"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"playwright.json"* ]]
+}
+
+@test "presets: playwright detect rule matches its fixture (US-5)" {
+    [ -d "$BASE_DIR/tests/presets-fixtures/playwright" ]
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/playwright'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"playwright"* ]]
+}
