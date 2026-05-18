@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Vendor-skill pointer for game development**.
+  `docs/recipes/recommended-vendor-skills.md` gains a Phaser entry
+  pointing to the vendor-published skill suite at
+  `phaserjs/phaser/skills/` (28 SKILL.md files, MIT, independent,
+  39,638★ verified 2026-05-18). `specs/presets/roadmap.md` gains a
+  `Game / Interactive media` subsection under "What is NOT covered"
+  acknowledging the gap, with a signpost to the existing
+  contribution path. Counter `vendorSkillsValidated` goes from 16
+  to 17 (auto-regenerated). No bundled skill or preset added.
+  Spec at [`specs/vendor-skills-game-dev/`](./specs/vendor-skills-game-dev/).
+
 ### Changed
 
 - **Documentation refresh for Claude Code 2.1.141 / 2.1.142**. Surface

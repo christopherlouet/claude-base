@@ -68,6 +68,14 @@ These stacks **do not have a preset yet, and won't until either** (a) a maintain
 | **Data pipelines (dbt / Airflow / Dagster)** | Out of maintainer's stack. |
 | **AI / RAG pipelines** | Specific enough to warrant its own preset. |
 
+### Game / Interactive media
+
+| Stack | Why we don't have it yet |
+|---|---|
+| **2D web game framework (generic)** | No maintainer production use yet. The canonical vendor (Phaser Studio Inc., MIT-licensed) publishes its own skill suite — see `docs/recipes/recommended-vendor-skills.md` §"Phaser". A preset would need a contributor with ≥3 months production use on a Phaser-based game. |
+
+Contributions welcome — see `## How to contribute a preset` below.
+
 If your daily stack isn't here, it's exactly the kind of contribution that would expand claude-base's honest coverage.
 
 ## How to contribute a preset
@@ -111,5 +119,6 @@ Every preset (vouched or community) is subject to:
 | CLI / automation | 1 (`cli-tools`) | — |
 | Mobile / desktop | 0 | 5+ |
 | Data / AI pipelines | 0 | 2+ |
+| Game / Interactive media | 0 | 1+ |
 
-**6 shipped. 22+ named as community-wanted.** That ratio is the foundation's honest position.
+**6 shipped. 23+ named as community-wanted.** That ratio is the foundation's honest position.
