@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`pulumi` vendor-pointer preset (3rd instance of the tier)**.
+  Surfaces `pulumi/agent-skills` (Apache-2.0, 48★, verified
+  2026-05-18, last commit 2026-05-13) at install time on projects
+  containing a `Pulumi.yaml` config file. Exercises the `files[1]`
+  shape of the EF-005 detect rule (vs `depFiles[1]` used by phaser
+  and playwright) — first vendor-pointer with a file-presence
+  detect rather than dependency-substring. Pulumi is independent
+  (no vendor-neutrality concern). Counter `presets` goes from 8
+  to 9 (auto-regenerated). Follows the pattern established by
+  the `phaser` and `playwright` presets.
+
 - **`playwright` vendor-pointer preset (2nd instance of the tier)**.
   Surfaces `microsoft/playwright-cli` (Apache-2.0, 10,457★, verified
   2026-05-18, last commit 2026-05-07) at install time on projects

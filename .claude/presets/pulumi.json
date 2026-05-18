@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+
+  "name": "pulumi",
+  "displayName": "Pulumi (vendor-pointer)",
+  "description": "Pointer-only preset for the Pulumi Infrastructure-as-Code framework. Surfaces the canonical Pulumi skill suite (`pulumi/agent-skills`, Apache-2.0) at install time on projects containing a `Pulumi.yaml` config — authoritative Pulumi authoring patterns + migration workflows (Terraform→Pulumi, CloudFormation→Pulumi). No foundation skill filter, no marketplace plugin, no defaults override. Pulumi is independent (no vendor-neutrality concern). See `docs/recipes/recommended-vendor-skills.md` §Pulumi and `specs/presets-vendor-pointer-tier/spec.md` for the tier semantics.",
+
+  "version": "1.0.0",
+  "status": "vendor-pointer",
+
+  "author": {
+    "name": "Chris",
+    "github": "christopherlouet"
+  },
+
+  "appliesToTypes": ["generic"],
+
+  "detect": {
+    "combinator": "anyOf",
+    "files": ["Pulumi.yaml"]
+  },
+
+  "recommendedVendorSkills": [
+    {
+      "id": "pulumi/agent-skills",
+      "url": "https://github.com/pulumi/agent-skills",
+      "rationale": "Canonical Pulumi authoring patterns + migration workflows (Terraform→Pulumi, CloudFormation→Pulumi). Verified via `gh api repos/pulumi/agent-skills` on 2026-05-18 — 48★, last commit 2026-05-13, Apache-2.0, not archived. Pair with claude-base's `ops-infra-code` skill (module hierarchy, naming conventions, deploy workflow).",
+      "condition": "always"
+    }
+  ],
+
+  "outOfScope": [
+    "Foundation skill curation — no `foundation.skills.keep/drop` filter (vendor-pointer tier)",
+    "Marketplace plugins — none bundled (vendor-pointer tier)",
+    "Opinionated install-time defaults — inherited from foundation defaults",
+    "Terraform projects — see the `antonbabenko/terraform-skill` recipe entry instead",
+    "CloudFormation / CDK / Bicep / generic IaC tooling — out of this preset's scope"
+  ],
+
+  "relatedPresetsWanted": []
+}

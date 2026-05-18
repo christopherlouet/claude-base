@@ -27,7 +27,8 @@ Each shipped preset has:
 | Preset | Stack | Shipped in |
 |---|---|---|
 | `phaser` | Phaser 2D web game framework — pointer to `phaserjs/phaser/skills/` | v1.40.0 (PR #185) |
-| `playwright` | Playwright end-to-end testing framework — pointer to `microsoft/playwright-cli` | v1.40.0 (this PR) |
+| `playwright` | Playwright end-to-end testing framework — pointer to `microsoft/playwright-cli` | v1.40.0 (PR #188) |
+| `pulumi` | Pulumi Infrastructure-as-Code framework — pointer to `pulumi/agent-skills` | v1.40.0 (this PR) |
 
 The `vendor-pointer` tier is for thin pointer-only manifests whose authority comes from the vendor (validated via the marketplace-audit methodology), not from maintainer production use. See [`specs/presets-vendor-pointer-tier/spec.md`](../presets-vendor-pointer-tier/spec.md) for the tier definition.
 
@@ -136,9 +137,9 @@ Every preset (vouched or community) is subject to:
 | Mobile / desktop | 0 | 5+ |
 | Data / AI pipelines | 0 | 2+ |
 | Game / Interactive media | 0 | 1+ |
-| Vendor-pointer presets | 2 (`phaser`, `playwright`) | 4+ |
+| Vendor-pointer presets | 3 (`phaser`, `playwright`, `pulumi`) | 3+ |
 
-**6 maintainer-vouched + 2 vendor-pointer = 8 shipped. 27+ named as community-wanted** (23+ maintainer-vouched candidates + 4+ vendor-pointer candidates). That ratio is the foundation's honest position.
+**6 maintainer-vouched + 3 vendor-pointer = 9 shipped. 26+ named as community-wanted** (23+ maintainer-vouched candidates + 3+ vendor-pointer candidates). That ratio is the foundation's honest position.
 
 ## Vendor-pointer candidates
 
@@ -148,7 +149,7 @@ These vendors already have validated entries in [`docs/recipes/recommended-vendo
 |---|---|---|
 | **Apollo GraphQL** | `apollographql/skills` | `package.json contains "@apollo/client"` (dominant package) |
 | ~~**Microsoft Playwright**~~ | ~~`microsoft/playwright-cli`~~ | ~~`package.json contains "@playwright/test"`~~ — **shipped as `playwright` preset** |
-| **Pulumi** | `pulumi/agent-skills` | single-file detect on `Pulumi.yaml` |
+| ~~**Pulumi**~~ | ~~`pulumi/agent-skills`~~ | ~~single-file detect on `Pulumi.yaml`~~ — **shipped as `pulumi` preset** |
 | **MongoDB** | `mongodb/agent-skills` | `package.json contains "mongodb"` (pick one per the strict-detect rule; `mongoose` could be a second vendor-pointer) |
 | **Grafana Labs** | `grafana/skills` | TBD per project shape — likely a single config-file pattern |
 

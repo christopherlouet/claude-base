@@ -1092,3 +1092,30 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"playwright"* ]]
 }
+
+# =============================================================================
+# pulumi vendor-pointer preset (3rd vendor-pointer instance) — uses files[1]
+# detect rule (vs depFiles[1] for phaser/playwright), exercises EF-005 XOR.
+# =============================================================================
+
+@test "presets: pulumi.json (vendor-pointer) is accepted by validate-presets.sh" {
+    [ -f "$BASE_DIR/.claude/presets/pulumi.json" ]
+    [ "$(jq -r '.status' "$BASE_DIR/.claude/presets/pulumi.json")" = "vendor-pointer" ]
+    # Specifically a files[1] detect (not depFiles)
+    [ "$(jq -r '.detect.files | length' "$BASE_DIR/.claude/presets/pulumi.json")" -eq 1 ]
+    [ "$(jq -r '.detect | has("depFiles")' "$BASE_DIR/.claude/presets/pulumi.json")" = "false" ]
+    run "$VALIDATE_PRESETS"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"pulumi.json"* ]]
+}
+
+@test "presets: pulumi detect rule matches its fixture (US-5)" {
+    [ -f "$BASE_DIR/tests/presets-fixtures/pulumi/Pulumi.yaml" ]
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/pulumi'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"pulumi"* ]]
+}
