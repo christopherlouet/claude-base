@@ -237,6 +237,14 @@ The lead will:
 3. The test-writer can start with the tests (TDD) while the devs are planning
 4. Merge once all agents are done
 
+## Recent CLI surface (CLI 2.1.142+)
+
+The `claude agents` subcommand for dispatched background sessions gained per-session configuration flags: `--add-dir`, `--settings`, `--mcp-config`, `--plugin-dir`, `--permission-mode`, `--model`, `--effort`, `--dangerously-skip-permissions`. Useful when a teammate needs a different model than the lead (e.g. dispatch a Haiku worker for grep-heavy tasks while the lead stays on Opus), a tighter permission mode, or an alternate `.mcp-config`. Fast mode now defaults to **Opus 4.7**.
+
+### Agent View (research preview)
+
+Anthropic ships an **Agent View** (research preview, May 2026): a unified terminal dashboard that lists every running session, their current state, last responses, and a key to jump back into any of them. Complementary to the in-process Team Lead model — Agent View covers cross-process sessions that the Team Lead can't see. See the [official preview note](https://code.claude.com/docs/en/whats-new) for activation.
+
 ## See also
 
 - Skill `parallel-agents` for orchestration via Task sub-agents

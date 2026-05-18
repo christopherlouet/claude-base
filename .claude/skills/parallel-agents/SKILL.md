@@ -204,3 +204,7 @@ See the `agent-teams` skill for full documentation.
 - ALWAYS provide full context to each agent
 - COMBINE results into a coherent report
 - PREFER `isolation: "worktree"` when agents modify many files
+
+## Dispatched sessions (CLI 2.1.142+)
+
+For workloads that outgrow in-process Task sub-agents, the `claude agents` CLI dispatches background sessions with their own configuration. Flags `--add-dir`, `--settings`, `--mcp-config`, `--plugin-dir`, `--permission-mode`, `--model`, `--effort` let each dispatched session run with a tailored model/effort/permission profile. Pair with the `agent-teams` skill for coordinated multi-process work, and use Agent View (research preview) to monitor running sessions.
