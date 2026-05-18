@@ -1,6 +1,6 @@
 # Spec: presets — curated bundles per stack
 
-**Status**: Validated — format + install mechanism shipped in PR #119 (v1.32.0); 6 maintainer-vouched presets live (`nextjs`, `homelab-proxmox`, `cli-tools`, `fastapi`, `astro`, `react-vite-spa`)
+**Status**: Validated — format + install mechanism shipped in PR #119 (v1.32.0); 6 maintainer-vouched presets live (`nextjs`, `homelab-proxmox`, `cli-tools`, `fastapi`, `astro`, `react-vite-spa`) + 1 vendor-pointer preset (`phaser`) live since the introduction of the `vendor-pointer` tier (see `specs/presets-vendor-pointer-tier/`)
 **Date**: 2026-05-04
 **Owner**: Chris
 
@@ -178,7 +178,19 @@ The optional **`recommendedVendorSkills`** field (added in v1.36.0) is an array 
 |---|---|---|
 | `maintainer-vouched` | Maintainer uses it in prod, ≥3 months, monthly review | Yes, in `.claude/presets/` |
 | `community-curated` | Contributor uses it in prod, signed maintenance commitment | Yes, in `.claude/presets/community/` |
+| `vendor-pointer` | Vendor source already validated in `docs/recipes/recommended-vendor-skills.md` (no maintainer prod-use claim required — authority comes from the vendor's authorship of the pointed-to skill) | Yes, in `.claude/presets/` |
 | `draft` | Skeleton, marketplace plugins not yet verified | No (hidden behind `--include-draft` flag) |
+
+### Field rules under `status: vendor-pointer`
+
+The `vendor-pointer` tier is deliberately scoped to thin pointer-only manifests. The validation script (`scripts/validate-presets.sh`) enforces the following rules:
+
+- `recommendedVendorSkills[]` MUST be present with ≥1 entry (EF-003).
+- `marketplacePlugins[]`, `foundation.skills.keep[]`, `foundation.skills.drop[]`, and `defaults` MUST be absent or empty (EF-004). Foundation defaults are inherited.
+- `detect` MUST contain exactly 1 signal entry: either `files[]` of length 1 OR `depFiles[]` of length 1 (XOR, EF-005).
+- Bar to ship: the pointed-to vendor source MUST already pass the marketplace-audit methodology and be listed in `docs/recipes/recommended-vendor-skills.md`. No production-use claim required from the shipper.
+
+Full spec: [`specs/presets-vendor-pointer-tier/spec.md`](../presets-vendor-pointer-tier/spec.md).
 
 ## Install mechanism
 
