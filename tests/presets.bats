@@ -916,3 +916,156 @@ EOF
     conditional_count=$(jq -r '[.recommendedVendorSkills[] | select(.condition != "always")] | length' "$f")
     [ "$conditional_count" -eq 2 ]
 }
+
+# =============================================================================
+# vendor-pointer tier tests (spec: presets-vendor-pointer-tier)
+#
+# T004-T008: negative tests for the tier-conditional validation rules
+#   EF-003: recommendedVendorSkills MUST be non-empty
+#   EF-004: marketplacePlugins / foundation.skills.{keep,drop} / defaults
+#           MUST be absent or empty
+#   EF-005: detect MUST contain exactly 1 signal entry (files[1] XOR
+#           depFiles[1])
+# T009: positive test for the shipped phaser preset
+# T018: phaser detect rule must match its paired fixture (drift-guard)
+# =============================================================================
+
+@test "presets: validate-presets.sh rejects a vendor-pointer preset declaring marketplacePlugins (EF-004, T004)" {
+    cat > "$TEST_DIR/bad-vp-mp.json" <<'EOF'
+{
+  "name": "bad-vp-mp",
+  "displayName": "Bad vendor-pointer with marketplacePlugins",
+  "description": "Test fixture: vendor-pointer presets must not declare marketplacePlugins per EF-004.",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"path": "package.json", "contains": "foo"}]
+  },
+  "recommendedVendorSkills": [
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+  ],
+  "marketplacePlugins": [
+    {"id": "some/plugin", "rationale": "should be forbidden"}
+  ]
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-vp-mp.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"marketplacePlugins"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a vendor-pointer preset declaring foundation.skills.keep (EF-004, T005)" {
+    cat > "$TEST_DIR/bad-vp-keep.json" <<'EOF'
+{
+  "name": "bad-vp-keep",
+  "displayName": "Bad vendor-pointer with foundation.skills.keep",
+  "description": "Test fixture: vendor-pointer presets must not declare foundation.skills.keep per EF-004.",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"path": "package.json", "contains": "foo"}]
+  },
+  "recommendedVendorSkills": [
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+  ],
+  "foundation": {
+    "skills": { "keep": ["dev-tdd"] }
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-vp-keep.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"foundation.skills.keep"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a vendor-pointer preset missing recommendedVendorSkills (EF-003, T006)" {
+    cat > "$TEST_DIR/bad-vp-no-vendor.json" <<'EOF'
+{
+  "name": "bad-vp-no-vendor",
+  "displayName": "Bad vendor-pointer with no recommendedVendorSkills",
+  "description": "Test fixture: vendor-pointer presets must declare at least one recommendedVendorSkills entry per EF-003.",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"path": "package.json", "contains": "foo"}]
+  }
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-vp-no-vendor.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"recommendedVendorSkills"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a vendor-pointer preset with multi-entry detect.depFiles (EF-005, T007)" {
+    cat > "$TEST_DIR/bad-vp-multi.json" <<'EOF'
+{
+  "name": "bad-vp-multi",
+  "displayName": "Bad vendor-pointer with multi-entry detect",
+  "description": "Test fixture: vendor-pointer presets must have a detect rule with exactly 1 signal entry per EF-005.",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [
+      {"path": "package.json", "contains": "foo"},
+      {"path": "package.json", "contains": "bar"}
+    ]
+  },
+  "recommendedVendorSkills": [
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+  ]
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-vp-multi.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"detect MUST contain exactly 1 signal entry"* ]]
+}
+
+@test "presets: validate-presets.sh rejects a vendor-pointer preset with both files and depFiles (EF-005 XOR, T008)" {
+    cat > "$TEST_DIR/bad-vp-xor.json" <<'EOF'
+{
+  "name": "bad-vp-xor",
+  "displayName": "Bad vendor-pointer with both files and depFiles",
+  "description": "Test fixture: vendor-pointer presets must use either files OR depFiles, not both — EF-005 XOR.",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "files": ["foo.config.ts"],
+    "depFiles": [{"path": "package.json", "contains": "foo"}]
+  },
+  "recommendedVendorSkills": [
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+  ]
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-vp-xor.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"detect MUST contain exactly 1 signal entry"* ]]
+}
+
+@test "presets: phaser.json (vendor-pointer) is accepted by validate-presets.sh (T009)" {
+    [ -f "$BASE_DIR/.claude/presets/phaser.json" ]
+    run "$VALIDATE_PRESETS"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"phaser.json"* ]]
+}
+
+@test "presets: phaser detect rule matches its fixture (US-5, T018)" {
+    [ -d "$BASE_DIR/tests/presets-fixtures/phaser" ]
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/phaser'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"phaser"* ]]
+}

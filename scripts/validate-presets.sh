@@ -74,7 +74,7 @@ else
     fi
 fi
 
-ALLOWED_STATUS='["maintainer-vouched","community-curated","draft"]'
+ALLOWED_STATUS='["maintainer-vouched","community-curated","vendor-pointer","draft"]'
 ALLOWED_DESIGN_STYLE='["terminal","cockpit","vitality","editorial","glass","signal"]'
 NAME_PATTERN='^[a-z][a-z0-9-]*$'
 
@@ -103,7 +103,12 @@ validate_one() {
     [ -n "$(jq -r '.displayName // empty' "$file")" ] || errs+=("missing required field: displayName")
     [ -n "$(jq -r '.description // empty' "$file")" ] || errs+=("missing required field: description")
     [ "$types" = "array" ] || errs+=("appliesToTypes must be a non-empty array")
-    [ "$(jq -r '.defaults // empty | type' "$file")" = "object" ] || errs+=("defaults must be an object")
+    # defaults is required for all tiers EXCEPT vendor-pointer
+    # (spec: presets-vendor-pointer-tier EF-004 — vendor-pointer presets
+    # inherit foundation defaults; declaring overrides is forbidden)
+    if [ "$status" != "vendor-pointer" ]; then
+        [ "$(jq -r '.defaults // empty | type' "$file")" = "object" ] || errs+=("defaults must be an object")
+    fi
     [ "$(jq -r '.outOfScope // empty | type' "$file")" = "array" ] || errs+=("outOfScope must be an array")
 
     if [ -n "$name" ] && ! [[ "$name" =~ $NAME_PATTERN ]]; then
@@ -112,25 +117,29 @@ validate_one() {
 
     if [ -n "$status" ]; then
         case "$status" in
-            maintainer-vouched|community-curated|draft) ;;
+            maintainer-vouched|community-curated|vendor-pointer|draft) ;;
             *) errs+=("status '$status' not in $ALLOWED_STATUS") ;;
         esac
     fi
 
-    local style
-    style=$(jq -r '.defaults.designStyle // empty' "$file")
-    if [ -n "$style" ]; then
-        case "$style" in
-            terminal|cockpit|vitality|editorial|glass|signal) ;;
-            *) errs+=("defaults.designStyle '$style' not in $ALLOWED_DESIGN_STYLE") ;;
-        esac
-    fi
+    # defaults shape checks — skipped for vendor-pointer tier which
+    # inherits foundation defaults and forbids the field entirely (EF-004)
+    if [ "$status" != "vendor-pointer" ]; then
+        local style
+        style=$(jq -r '.defaults.designStyle // empty' "$file")
+        if [ -n "$style" ]; then
+            case "$style" in
+                terminal|cockpit|vitality|editorial|glass|signal) ;;
+                *) errs+=("defaults.designStyle '$style' not in $ALLOWED_DESIGN_STYLE") ;;
+            esac
+        fi
 
-    for k in ci hooks mcp docker; do
-        local v
-        v=$(jq -r ".defaults.$k | type" "$file")
-        [ "$v" = "boolean" ] || errs+=("defaults.$k must be boolean (got $v)")
-    done
+        for k in ci hooks mcp docker; do
+            local v
+            v=$(jq -r ".defaults.$k | type" "$file")
+            [ "$v" = "boolean" ] || errs+=("defaults.$k must be boolean (got $v)")
+        done
+    fi
 
     # XOR: foundation.skills.drop and foundation.skills.keep are mutually
     # exclusive. A preset may declare at most one of the two.
@@ -267,6 +276,42 @@ validate_one() {
                 done
             fi
         fi
+    fi
+
+    # ------------------------------------------------------------------
+    # vendor-pointer tier rules
+    # spec: specs/presets-vendor-pointer-tier/spec.md
+    # ------------------------------------------------------------------
+    if [ "$status" = "vendor-pointer" ]; then
+        # EF-003: recommendedVendorSkills MUST be present, non-empty
+        local vp_vendors_n
+        vp_vendors_n=$(jq -r '.recommendedVendorSkills // [] | length' "$file")
+        [ "$vp_vendors_n" -ge 1 ] || errs+=("vendor-pointer preset requires recommendedVendorSkills[] with >=1 entry (EF-003)")
+
+        # EF-004: marketplacePlugins MUST be absent or empty
+        local vp_mp_n
+        vp_mp_n=$(jq -r '.marketplacePlugins // [] | length' "$file")
+        [ "$vp_mp_n" -eq 0 ] || errs+=("vendor-pointer preset MUST NOT declare marketplacePlugins (EF-004)")
+
+        # EF-004: foundation.skills.keep/drop MUST be absent or empty
+        local vp_keep_n vp_drop_n
+        vp_keep_n=$(jq -r '.foundation.skills.keep // [] | length' "$file")
+        [ "$vp_keep_n" -eq 0 ] || errs+=("vendor-pointer preset MUST NOT declare foundation.skills.keep (EF-004)")
+        vp_drop_n=$(jq -r '.foundation.skills.drop // [] | length' "$file")
+        [ "$vp_drop_n" -eq 0 ] || errs+=("vendor-pointer preset MUST NOT declare foundation.skills.drop (EF-004)")
+
+        # EF-004: defaults MUST be absent (foundation defaults inherited)
+        local vp_has_defaults
+        vp_has_defaults=$(jq -r 'if has("defaults") then "yes" else "no" end' "$file")
+        [ "$vp_has_defaults" = "no" ] || errs+=("vendor-pointer preset MUST NOT declare defaults (EF-004)")
+
+        # EF-005: detect MUST contain exactly 1 signal entry
+        #   (files[1] XOR depFiles[1])
+        local vp_files_n vp_deps_n vp_total
+        vp_files_n=$(jq -r '.detect.files // [] | length' "$file")
+        vp_deps_n=$(jq -r '.detect.depFiles // [] | length' "$file")
+        vp_total=$((vp_files_n + vp_deps_n))
+        [ "$vp_total" -eq 1 ] || errs+=("vendor-pointer preset detect MUST contain exactly 1 signal entry (got $vp_total: files=$vp_files_n + depFiles=$vp_deps_n) (EF-005)")
     fi
 
     if [ "${#errs[@]}" -eq 0 ]; then

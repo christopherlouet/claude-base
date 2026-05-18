@@ -22,6 +22,21 @@ Each shipped preset has:
 - Entry in `.claude/presets/README.md`
 - Entry in `CHANGELOG.md`
 
+## Shipped (vendor-pointer)
+
+| Preset | Stack | Shipped in |
+|---|---|---|
+| `phaser` | Phaser 2D web game framework — pointer to `phaserjs/phaser/skills/` | v1.40.0 (this PR) |
+
+The `vendor-pointer` tier is for thin pointer-only manifests whose authority comes from the vendor (validated via the marketplace-audit methodology), not from maintainer production use. See [`specs/presets-vendor-pointer-tier/spec.md`](../presets-vendor-pointer-tier/spec.md) for the tier definition.
+
+Each shipped vendor-pointer preset has:
+- `.json` manifest under `.claude/presets/`
+- A positive bats test + a fixture-pairing test under `tests/presets-fixtures/<preset>/`
+- Entry in `.claude/presets/README.md`
+- Entry in `CHANGELOG.md`
+- The pointed-to vendor source already validated in `docs/recipes/recommended-vendor-skills.md`
+
 ## What is NOT covered (stacks where contributions are wanted)
 
 These stacks **do not have a preset yet, and won't until either** (a) a maintainer adopts them in production, or (b) a community contributor ships one with a maintenance commitment. Naming them here is the explicit signal that we know they exist and want them.
@@ -120,5 +135,20 @@ Every preset (vouched or community) is subject to:
 | Mobile / desktop | 0 | 5+ |
 | Data / AI pipelines | 0 | 2+ |
 | Game / Interactive media | 0 | 1+ |
+| Vendor-pointer presets | 1 (`phaser`) | 5+ |
 
-**6 shipped. 23+ named as community-wanted.** That ratio is the foundation's honest position.
+**6 maintainer-vouched + 1 vendor-pointer = 7 shipped. 28+ named as community-wanted** (23+ maintainer-vouched candidates + 5+ vendor-pointer candidates). That ratio is the foundation's honest position.
+
+## Vendor-pointer candidates
+
+These vendors already have validated entries in [`docs/recipes/recommended-vendor-skills.md`](../../docs/recipes/recommended-vendor-skills.md) and could become `vendor-pointer` presets in future PRs following the same pattern as `phaser`. Each is its own PR; this list is acknowledgment, not commitment.
+
+| Vendor | Recipe source | Candidate detect rule |
+|---|---|---|
+| **Apollo GraphQL** | `apollographql/skills` | `package.json contains "@apollo/client"` (dominant package) |
+| **Microsoft Playwright** | `microsoft/playwright-cli` | `package.json contains "@playwright/test"` |
+| **Pulumi** | `pulumi/agent-skills` | single-file detect on `Pulumi.yaml` |
+| **MongoDB** | `mongodb/agent-skills` | `package.json contains "mongodb"` (pick one per the strict-detect rule; `mongoose` could be a second vendor-pointer) |
+| **Grafana Labs** | `grafana/skills` | TBD per project shape — likely a single config-file pattern |
+
+Each candidate would ship as its own PR + spec amendment, not in this initial batch.

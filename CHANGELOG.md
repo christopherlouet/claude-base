@@ -13,6 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Third preset tier `vendor-pointer` + first instance `phaser`**.
+  Introduces a new preset tier alongside `maintainer-vouched` and
+  `community-curated` for thin pointer-only manifests whose authority
+  comes from the vendor (validated via the marketplace-audit
+  methodology) rather than from maintainer production use. The tier
+  forbids `foundation.skills` filters, `marketplacePlugins`, and
+  `defaults` overrides; requires `recommendedVendorSkills[]` with ≥1
+  entry; requires a simple `detect` rule (exactly 1 signal entry,
+  `files[1]` XOR `depFiles[1]`). First instance `phaser` wraps the
+  `phaserjs/phaser/skills/` entry shipped previously, so a user
+  creating a Phaser-based project receives the vendor pointer at
+  install time via the existing `print_recommended_vendor_skills`
+  pipeline. Counter `presets` goes from 6 to 7 (auto-regenerated).
+  5 candidate vendors (Apollo, Pulumi, MongoDB, Grafana, Playwright)
+  named in the roadmap for follow-up PRs. Spec at
+  [`specs/presets-vendor-pointer-tier/`](./specs/presets-vendor-pointer-tier/).
+
 - **Vendor-skill pointer for game development**.
   `docs/recipes/recommended-vendor-skills.md` gains a Phaser entry
   pointing to the vendor-published skill suite at
