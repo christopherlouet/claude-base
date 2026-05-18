@@ -11,6 +11,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Documentation refresh for Claude Code 2.1.141 / 2.1.142**. Surface
+  six recent CLI behaviors across the foundation docs without any
+  behavioral change to the foundation itself:
+  - `docs/reference/best-practices.md` — note **Auto Dream / Dreaming**
+    (Anthropic managed memory) as complementary to the existing
+    file-based auto-memory system; document the Rewind menu's
+    **"Summarize up to here"** entry (CLI 2.1.141).
+  - `docs/reference/hooks-reference.md` — document the new
+    **`terminalSequence`** hook JSON field (CLI 2.1.141) for
+    desktop notifications / window titles / bells without a TTY.
+  - `docs/recipes/recommended-vendor-skills.md` — new
+    **"Install-time tips (CLI 2.1.141+)"** section covering the
+    `CLAUDE_CODE_PLUGIN_PREFER_HTTPS` env var and plugin
+    dependency enforcement on `enable` / `disable`.
+  - `.claude/skills/git-worktrees/SKILL.md` — document
+    **`worktree.bgIsolation`** and **`worktree.baseRef`**
+    settings (CLI 2.1.141+).
+  - `.claude/skills/agent-teams/SKILL.md` and
+    `.claude/skills/parallel-agents/SKILL.md` — document the new
+    `claude agents` flags (`--add-dir`, `--settings`,
+    `--mcp-config`, `--plugin-dir`, `--permission-mode`,
+    `--model`, `--effort`, …) shipped in CLI 2.1.142, and
+    Anthropic's **Agent View** research preview as a
+    complementary cross-process session monitor.
+
 ## [1.39.0] - 2026-05-13
 
 Minor release. Ships the 6th maintainer-vouched preset (`react-vite-spa`)
