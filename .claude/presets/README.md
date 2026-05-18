@@ -64,6 +64,8 @@ Community contributions land under `.claude/presets/community/` after maintainer
 }
 ```
 
+The `foundation.skills` filter supports two mutually-exclusive forms: `drop` (blacklist — install every foundation skill except those listed) or `keep` (whitelist — install only the listed skills). `validate-presets.sh` rejects a manifest declaring both. See `react-vite-spa.json` for a `keep`-style example and the other shipped presets for `drop`-style.
+
 Field naming is camelCase (matches `settings.json` and other Claude Code config files). Validation runs via `scripts/validate-presets.sh` (jq-based schema check, executed in CI).
 
 ### `detect` block (data-driven detection)
