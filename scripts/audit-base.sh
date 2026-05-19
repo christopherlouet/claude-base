@@ -263,6 +263,31 @@ audit_doc_links() {
 }
 
 # =============================================================================
+# Audit: Doc drift (delegated to audit-docs.sh) — syntactic firewall for
+# paths / claude-base verbs / init+update flags / local scripts / npm scripts
+# =============================================================================
+
+audit_docs_drift() {
+    echo "${BOLD}[INFO] Auditing doc drift (via audit-docs.sh)...${NC}"
+    if ! bash "$SCRIPT_DIR/audit-docs.sh" > /dev/null 2>&1; then
+        # Re-run and capture output for display
+        local output
+        output=$(bash "$SCRIPT_DIR/audit-docs.sh" 2>&1 || true)
+        if [[ -n "$output" ]]; then
+            while IFS= read -r line; do
+                echo "${RED}$line${NC}"
+                # Count each drift line as one issue
+                if [[ "$line" =~ ^[[:space:]]+.+:\[ ]] || [[ "$line" == *"[paths]"* ]] \
+                   || [[ "$line" == *"[verbs]"* ]] || [[ "$line" == *"[flags]"* ]] \
+                   || [[ "$line" == *"[scripts]"* ]] || [[ "$line" == *"[npm]"* ]]; then
+                    ((ISSUES++)) || true
+                fi
+            done <<< "$output"
+        fi
+    fi
+}
+
+# =============================================================================
 # Audit: Counts coherence (delegated to validate-counts.sh)
 # =============================================================================
 
@@ -294,6 +319,7 @@ audit_skills
 audit_agents
 audit_rules
 audit_doc_links
+audit_docs_drift
 audit_counts
 
 echo ""
