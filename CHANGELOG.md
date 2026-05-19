@@ -13,6 +13,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Pre-detection category prompt + `categories[]` schema extension**.
+  When a user runs `claude-base init` on an empty directory (or a
+  script-created directory) with no `--preset`/`--type` flag and
+  auto-detection produces no match, a new prompt asks "What are
+  you building?" with an 8-entry taxonomy locked to the roadmap
+  (Web frontend / API-Backend / Mobile-Desktop / Game-Interactive
+  media / Data-Database / Infra-DevOps / CLI-Automation /
+  Other-Generic). The chosen category filters the subsequent
+  type-and-preset menu down to relevant entries. The preset
+  manifest schema gains an optional `categories: [string]` field
+  (strict enum validated by `validate-presets.sh`); presets without
+  it remain accessible via detect / `--preset` / `claude-base
+  preset list` (soft migration, no breaking change for community
+  contributors). All 11 shipped presets retrofitted with their
+  category in the same delivery. The prompt is silently skipped
+  on non-TTY, `--skip-prompts`, `--yes`, `--preset`, `--type`, or
+  when auto-detect already produced a match (5 guards combined).
+  Default choice is "Other / Generic" (regression-safe: falls back
+  to the full unfiltered menu). Cross-cutting tool-presets like
+  `playwright` declare multi-category (`["web-frontend",
+  "api-backend"]`) to appear in both contexts where E2E tests
+  actually run. Counter `presets` unchanged at 11; `tests` grows
+  to 645 (+10 new bats tests including a drift-guard that compares
+  the lib taxonomy vs the roadmap section at every CI run). New
+  library `scripts/lib/category-map.sh` holds the 8-entry enum,
+  the category-to-types mapping, and the `ask_category` /
+  `apply_category_choice` helpers. Spec at
+  [`specs/preset-category-prompt/`](./specs/preset-category-prompt/).
+
 - **`mongodb` vendor-pointer preset (5th instance of the tier)**.
   Surfaces `mongodb/agent-skills` (Apache-2.0, 114★, verified
   2026-05-19, last commit 2026-05-18) at install time on projects

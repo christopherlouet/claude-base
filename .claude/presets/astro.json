@@ -77,6 +77,8 @@
     "i18n library-specific patterns — for Lingui-based content sites, pair this preset with lingui/skills (the official Lingui agent skill); see specs/marketplace-audit/dev-skills-pilot-2026-05-05.md"
   ],
 
+  "categories": ["web-frontend"],
+
   "relatedPresetsWanted": [
     "sveltekit",
     "vue-nuxt",

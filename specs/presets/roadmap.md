@@ -41,6 +41,23 @@ Each shipped vendor-pointer preset has:
 - Entry in `CHANGELOG.md`
 - The pointed-to vendor source already validated in `docs/recipes/recommended-vendor-skills.md`
 
+## Category taxonomy
+
+Locked 8-entry intent enum, mirrored by the pre-detection category prompt in `scripts/lib/category-map.sh` and enforced by `validate-presets.sh` (strict enum on the optional `categories[]` field of preset manifests). The drift-guard bats test ([`tests/presets.bats`](../../tests/presets.bats) T013) reads both this section and the library at every CI run.
+
+| Slug | Display label | Maps to roadmap section |
+|---|---|---|
+| `web-frontend` | Web frontend | Web frameworks (alternatives to Next.js) |
+| `api-backend` | API / Backend | Backend frameworks (non-Node) |
+| `mobile-desktop` | Mobile / Desktop | Mobile / Desktop |
+| `game-interactive-media` | Game / Interactive media | Game / Interactive media |
+| `data-database` | Data / Database | (Other infra / data — database side) |
+| `infra-devops` | Infra / DevOps | Other infra / data |
+| `cli-automation` | CLI / Automation | (CLI tools — covered by the `cli-tools` preset) |
+| `other-generic` | Other / Generic | Fallback (full unfiltered menu) |
+
+A preset declares `categories: [string]` to opt into the filtered menu. Multi-category is allowed for legitimately cross-cutting presets. Spec at [`specs/preset-category-prompt/spec.md`](../preset-category-prompt/spec.md).
+
 ## What is NOT covered (stacks where contributions are wanted)
 
 These stacks **do not have a preset yet, and won't until either** (a) a maintainer adopts them in production, or (b) a community contributor ships one with a maintenance commitment. Naming them here is the explicit signal that we know they exist and want them.

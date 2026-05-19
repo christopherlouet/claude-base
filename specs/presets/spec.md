@@ -172,6 +172,8 @@ JSON convention is camelCase (`appliesToTypes`, `marketplacePlugins`, `designSty
 
 The optional **`recommendedVendorSkills`** field (added in v1.36.0) is an array of validated community/vendor skills the user is encouraged to install alongside the preset. It is **printed at the end of `claude-base init`** but never auto-installed. Each entry has `id` (vendor's skill identifier), `url` (canonical source), `rationale` (one-line justification), and `condition` (e.g. `"always"` or `"if using Supabase"`). The `"always"` recommendations print first as "Always pair with this preset"; conditional ones print under "Add if your project uses these tools." Sources for these recommendations come from the marketplace audit pilots in `specs/marketplace-audit/*-pilot-*.md`. The audit methodology (vendor-neutrality filter, etc.) is the gatekeeper for what enters this list.
 
+The optional **`categories`** field (added by [`specs/preset-category-prompt/spec.md`](../preset-category-prompt/spec.md)) is an array of intent slugs from a locked 8-entry enum (`web-frontend`, `api-backend`, `mobile-desktop`, `game-interactive-media`, `data-database`, `infra-devops`, `cli-automation`, `other-generic`). When present, the preset appears in the pre-detection category prompt's filtered menu. When absent, the preset remains accessible via auto-detection, `--preset` flag, and `claude-base preset list` (soft migration — no breaking change for community contributors). The validation script enforces the strict enum. Multi-category declarations are allowed for legitimately cross-cutting presets.
+
 ### Status tiers
 
 | Status | Quality bar | Visible to default users |

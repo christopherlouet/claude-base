@@ -81,6 +81,8 @@
     "Cloud infrastructure beyond Proxmox/OPNsense — see roadmap for AWS, GCP, Azure presets"
   ],
 
+  "categories": ["infra-devops"],
+
   "relatedPresetsWanted": [
     "homelab-truenas",
     "homelab-unraid",

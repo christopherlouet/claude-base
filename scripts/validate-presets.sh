@@ -75,6 +75,7 @@ else
 fi
 
 ALLOWED_STATUS='["maintainer-vouched","community-curated","vendor-pointer","draft"]'
+ALLOWED_CATEGORIES='["web-frontend","api-backend","mobile-desktop","game-interactive-media","data-database","infra-devops","cli-automation","other-generic"]'
 ALLOWED_DESIGN_STYLE='["terminal","cockpit","vitality","editorial","glass","signal"]'
 NAME_PATTERN='^[a-z][a-z0-9-]*$'
 
@@ -312,6 +313,30 @@ validate_one() {
         vp_deps_n=$(jq -r '.detect.depFiles // [] | length' "$file")
         vp_total=$((vp_files_n + vp_deps_n))
         [ "$vp_total" -eq 1 ] || errs+=("vendor-pointer preset detect MUST contain exactly 1 signal entry (got $vp_total: files=$vp_files_n + depFiles=$vp_deps_n) (EF-005)")
+    fi
+
+    # ------------------------------------------------------------------
+    # categories[] strict-enum validation
+    # spec: specs/preset-category-prompt/spec.md EF-006
+    # When present, each entry MUST be one of the 8 locked slugs.
+    # Empty array is allowed (treated as field-absent).
+    # ------------------------------------------------------------------
+    if jq -e '.categories' "$file" >/dev/null 2>&1; then
+        local cat_type
+        cat_type=$(jq -r '.categories | type' "$file")
+        if [ "$cat_type" != "array" ]; then
+            errs+=("categories must be an array (got $cat_type)")
+        else
+            local cat_n
+            cat_n=$(jq -r '.categories | length' "$file")
+            local ci cval
+            for ci in $(seq 0 $((cat_n - 1))); do
+                cval=$(jq -r ".categories[$ci]" "$file")
+                if ! echo "$ALLOWED_CATEGORIES" | jq -e ". | index(\"$cval\")" >/dev/null 2>&1; then
+                    errs+=("categories[$ci] '$cval' not in $ALLOWED_CATEGORIES (EF-006)")
+                fi
+            done
+        fi
     fi
 
     if [ "${#errs[@]}" -eq 0 ]; then

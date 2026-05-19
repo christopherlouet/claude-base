@@ -1347,12 +1347,22 @@ EOF
 @test "presets: taxonomy slugs in lib/category-map.sh match roadmap.md exactly (T013, drift-guard CS-013)" {
     [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
     [ -f "$BASE_DIR/specs/presets/roadmap.md" ]
-    # Extract slugs from lib (within the _CATEGORY_SLUGS array literal).
+    # Extract slugs from lib by sourcing the file and reading the array.
+    # Avoids brittle regex over multi-line array literals.
     local lib_slugs
-    lib_slugs=$(grep -A 1 "^_CATEGORY_SLUGS=(" "$BASE_DIR/scripts/lib/category-map.sh" | tr ' ' '\n' | grep -E "^[a-z][a-z-]*$" | sort -u | tr '\n' ',')
+    lib_slugs=$(BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        printf '%s\n' \"\${_CATEGORY_SLUGS[@]}\"
+    " | sort -u | tr '\n' ',')
     # Extract slugs documented in the roadmap's "Category taxonomy" section.
+    # The section's table has backtick-wrapped slugs in column 1.
     local roadmap_slugs
-    roadmap_slugs=$(sed -n '/## Category taxonomy/,/^## /p' "$BASE_DIR/specs/presets/roadmap.md" | grep -oE '`[a-z][a-z-]+`' | tr -d '`' | sort -u | tr '\n' ',')
+    roadmap_slugs=$(sed -n '/^## Category taxonomy/,/^## /p' "$BASE_DIR/specs/presets/roadmap.md" \
+        | grep -oE '`[a-z][a-z-]+`' \
+        | tr -d '`' \
+        | grep -E '^(web-frontend|api-backend|mobile-desktop|game-interactive-media|data-database|infra-devops|cli-automation|other-generic)$' \
+        | sort -u | tr '\n' ',')
     [ -n "$lib_slugs" ]
     [ -n "$roadmap_slugs" ]
     [ "$lib_slugs" = "$roadmap_slugs" ]

@@ -89,6 +89,8 @@
     "Toolchain choice (uv vs pdm vs pip, ruff vs flake8, ty vs mypy) — see docs/recipes/python-toolchain-options.md for the three documented paths and the rationale for not bundling astral@astral-sh by default"
   ],
 
+  "categories": ["api-backend"],
+
   "relatedPresetsWanted": [
     "django",
     "flask",

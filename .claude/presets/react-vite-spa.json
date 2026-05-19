@@ -123,6 +123,8 @@
     "Build-tool alternatives (Rollup, esbuild, Rspack, Turbopack) — Vite is the explicit target"
   ],
 
+  "categories": ["web-frontend"],
+
   "relatedPresetsWanted": [
     "sveltekit",
     "vue-nuxt",

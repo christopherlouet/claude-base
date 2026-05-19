@@ -21,6 +21,8 @@ source "$SCRIPT_DIR/lib/detection.sh"
 source "$SCRIPT_DIR/lib/preset-detect.sh"
 # shellcheck source=lib/menu.sh
 source "$SCRIPT_DIR/lib/menu.sh"
+# shellcheck source=lib/category-map.sh
+source "$SCRIPT_DIR/lib/category-map.sh"
 # shellcheck source=lib/generators.sh
 source "$SCRIPT_DIR/lib/generators.sh"
 # shellcheck source=lib/preset-recommendations.sh
@@ -1409,14 +1411,61 @@ get_project_name() {
 }
 
 get_project_type() {
+    # ------------------------------------------------------------------
+    # Pre-detection category prompt (spec: preset-category-prompt EF-001)
+    # Fires only when ALL 4 guards hold (NON_INTERACTIVE already filtered
+    # upstream by the caller):
+    #   (a) stdin is a TTY              → [ -t 0 ]
+    #   (b) no --preset flag was passed → -z "$PRESET_NAME"
+    #   (c) no --type flag was passed   → -z "$FORCE_TYPE"
+    #   (d) no detection hit            → ${#MATCHED_PRESETS[@]} -eq 0
+    # The category prompt itself defaults to "other-generic" (CP1 lock)
+    # which is regression-safe (falls back to the unfiltered menu).
+    # ------------------------------------------------------------------
+    local SELECTED_CATEGORY_SLUG=""
+    if [ -t 0 ] \
+        && [[ -z "$PRESET_NAME" ]] \
+        && [[ -z "$FORCE_TYPE" ]] \
+        && [[ ${#MATCHED_PRESETS[@]} -eq 0 ]]; then
+        SELECTED_CATEGORY_SLUG=$(ask_category)
+    fi
+
     echo ""
     prompt "Project type:"
     echo ""
 
-    # Compute the default choice. Preset entries (when MATCHED_PRESETS is
-    # non-empty) occupy options 1..N; the standard 11 types follow at
-    # N+1..N+11. When at least one preset matched, default to the first
-    # preset entry; otherwise map DETECTED_TYPE to its standard option.
+    # Branch on whether the category prompt ran. When it did AND the user
+    # picked a non-default category, route to the filtered menu. Otherwise
+    # the original menu logic (preserves existing behavior + MATCHED_PRESETS
+    # handling).
+    local use_filtered=false
+    if [[ -n "$SELECTED_CATEGORY_SLUG" ]]; then
+        use_filtered=true
+    fi
+
+    if $use_filtered; then
+        # Render filtered menu (sets _TYPE_MENU_TOTAL + _FILTERED_PRESETS
+        # + _FILTERED_STD_TYPES).
+        print_filtered_type_menu "$SELECTED_CATEGORY_SLUG"
+        echo ""
+
+        local total="${_TYPE_MENU_TOTAL:-0}"
+        if [[ "$total" -eq 0 ]]; then
+            # No relevant entries at all — fall back to the unfiltered menu.
+            use_filtered=false
+        else
+            prompt "Choice [1-$total]: "
+            read -r choice
+
+            if ! apply_filtered_type_choice "$choice"; then
+                # Invalid input → fall back to other-generic (current behavior).
+                PROJECT_TYPE="generic"
+            fi
+            return 0
+        fi
+    fi
+
+    # Original (unfiltered) menu logic — regression-safe path.
     local n=${#MATCHED_PRESETS[@]}
     local default_choice=""
     if [[ $n -gt 0 ]]; then

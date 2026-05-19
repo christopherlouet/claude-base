@@ -40,6 +40,8 @@
     "Non-Apollo GraphQL stacks (Yoga, Pothos, Mercurius, Strawberry, gqlgen) — claude-base's `dev-graphql` skill covers those"
   ],
 
+  "categories": ["api-backend"],
+
   "relatedPresetsWanted": [
     "apollo-server"
   ]

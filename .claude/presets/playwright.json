@@ -39,5 +39,7 @@
     "Unit / integration testing (Vitest, Jest, etc.) — distinct from E2E"
   ],
 
+  "categories": ["web-frontend", "api-backend"],
+
   "relatedPresetsWanted": []
 }
