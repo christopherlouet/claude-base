@@ -91,7 +91,7 @@ Everything is plain markdown + JSON. No daemon, no telemetry, no network access 
 | Sub-agents | <!-- count:agents -->63<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
 | Skills | <!-- count:skills -->54<!-- /count --> | Auto-triggered on keywords in your prompts |
 | Path-specific rules | <!-- count:rules -->30<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
-| Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles (6 maintainer-vouched + 5 vendor-pointer) |
+| Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles ; tier breakdown in [Going deeper](#going-deeper) |
 
 Full catalogue: [Docusaurus reference](https://christopherlouet.github.io/claude-base/docs/reference) — or browse `.claude/` directly after install.
 
@@ -537,31 +537,21 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->29<!-- /count --> files, <!-- count:tests -->659<!-- /count --> tests)
+### Test layout
 
-| File | Description |
-|------|-------------|
-| `smoke.bats` | Smoke tests (fast integrity check) |
-| `common.bats` | Utility function tests |
-| `new-project.bats` | Install script tests |
-| `update.bats` | Update script tests |
-| `docs-under-claude.bats` | Structural layout tests (`.claude/docs/`) |
-| `audit-docs.bats` | Doc drift firewall tests (`scripts/audit-docs.sh`) |
-| `install.bats` | One-liner installer tests (`install.sh`) |
-| `validate.bats` | Validation script tests |
-| `doctor.bats` | Diagnostic script tests |
-| `gitleaks.bats` | gitleaks config tests |
-| `qa-loop.bats` | Audit-fix loop workflow tests |
-| `lint.bats` | Linting script tests |
-| `e2e.bats` | End-to-end tests |
-| `prompt-context.bats` | UserPromptSubmit hook tests |
-| `presets.bats` | Preset manifest schema + suggestion + integration tests |
-| `preset-detect.bats` | `scan_presets()` library unit tests (data-driven detection) |
-| `preset-e2e.bats` | Per-preset end-to-end (bootstrap + validate + doctor + hook drift-guard) |
-| `update-presets.bats` | Preset-aware update behaviour (`--preset`, `--no-preset`, filter, multi-match) |
-| `menu.bats` | Interactive type-menu rendering when matched presets prepend |
-| `manifest-hooks-coverage.bats` | Drift guard between source `settings.json` hooks and the minimal-install manifest |
-| `diff.bats`, `ide.bats`, `uninstall.bats`, `test-runner.bats`, `dispatcher.bats` | Tests for the related scripts |
+<!-- count:tests -->659<!-- /count --> bats tests across <!-- count:testFiles -->29<!-- /count --> files. A few anchors :
+
+| Area | File | Tests |
+|---|---|---|
+| Smoke + utility | `smoke.bats`, `common.bats` | Fast integrity check + lib unit tests |
+| Installer + dispatcher | `install.bats`, `new-project.bats`, `dispatcher.bats` | One-liner installer, `claude-base init` flow, CLI dispatcher |
+| Update flow | `update.bats`, `update-presets.bats` | Refresh logic, preset-aware filters |
+| Preset system | `presets.bats`, `preset-detect.bats`, `preset-e2e.bats` | Manifest schema, data-driven detection, per-preset E2E |
+| Quality gates | `validate.bats`, `qa-loop.bats`, `audit-docs.bats` | Validation, audit-fix loop, doc-drift firewall |
+| End-to-end | `e2e.bats` | Full bootstrap → validate → uninstall cycle |
+| Drift guards | `manifest-hooks-coverage.bats`, `docs-under-claude.bats` | Hooks coverage, structural layout |
+
+Full file-by-file inventory at `tests/`. Run via `./scripts/test.sh` (parallel) or `bats tests/*.bats` (sequential).
 
 ## Upgrades & Changelog
 
@@ -600,7 +590,7 @@ claude-base is **production-ready** with:
 
 ### Security measures
 
-- **Gitleaks**: 24+ secret detection rules (CI workflow + local scan)
+- **Gitleaks**: secret detection ruleset (CI workflow + local scan) — see `.gitleaks.toml`
 - **ShellCheck**: bash linting on all `scripts/` (CI workflow `security.yml`, severity warning)
 - **Deny list**: dangerous commands blocked (`rm -rf /`, `sudo`, `git push --force`)
 - **Protection hooks**: blocks edits on main/master
