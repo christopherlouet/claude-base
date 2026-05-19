@@ -43,6 +43,7 @@ Each step has its dedicated commands, specialized agents, and best practices.
 | **Agents** | <!-- count:agents -->63<!-- /count --> | Autonomous sub-agents with isolated context |
 | **Skills** | <!-- count:skills -->54<!-- /count --> | Auto-triggered on keywords |
 | **Rules** | <!-- count:rules -->30<!-- /count --> | Rules per technology/file |
+| **Presets** | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles installable via `--preset <name>` |
 
 ## Domains covered
 
@@ -66,7 +67,15 @@ git clone https://github.com/christopherlouet/claude-base.git .claude
 
 # Or use the install script
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh | bash
+
+# Stack-specific install (auto-filtered foundation + curated vendor pointers)
+claude-base init --preset nextjs   ./my-web-app    # Next.js fullstack
+claude-base init --preset fastapi  ./my-api        # Python async backend
+claude-base init --preset phaser   ./my-game       # 2D web game (vendor-pointer)
+claude-base preset list                            # See all 11 presets
 ```
+
+When no `--preset` is passed on an empty directory, an interactive prompt asks **"What are you building?"** with an 8-entry intent taxonomy (Web frontend / API-Backend / Mobile-Desktop / Game-Interactive media / Data-Database / Infra-DevOps / CLI-Automation / Other-Generic) and filters the subsequent menu accordingly.
 
 Then in Claude Code:
 

@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **Surface preset system in the Docusaurus public-facing pages**.
+  Four website intro pages updated to reflect the foundation's
+  composition layer (11 presets across 3 tiers) that was
+  shipped over the past 2 weeks but invisible on the public
+  site: `index.md` (Welcome) adds a Presets row to the Key
+  numbers table + a stack-specific install snippet;
+  `what-is-claude-code.md` augments the "4 components" framing
+  with a 5th "composition layer" paragraph; `quick-start.md`
+  gains two new install options (Option 3 `--preset` + Option 4
+  interactive category prompt with the 8-entry taxonomy
+  rendered inline); `architecture.md` gains a "Presets" section
+  in Main components covering the 3 tiers + AGENTS.md cross-tool
+  entry point. Pure documentation hygiene.
+
 - **Surface category prompt + AGENTS.md in README; new `Author a preset` section in EXTENDING-GUIDE**.
   Two recent user-facing additions were under-documented despite
   being shipped : the pre-detection category prompt (PR #192)
