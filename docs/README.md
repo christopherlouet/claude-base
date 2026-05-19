@@ -19,7 +19,7 @@
 
 [STACK-RECIPES.md](./STACK-RECIPES.md) — for each stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, etc.), lists the commands / agents / skills / rules of the foundation that get activated + external links for best practices.
 
-### Specific guides (4)
+### Specific guides
 
 | Guide | Description |
 |-------|-------------|
@@ -63,8 +63,9 @@ docs/
 ├── ARCHITECTURE.md        # Technical architecture
 ├── CUSTOMIZATION.md       # Customization
 ├── WORKFLOWS.md           # Workflow diagrams
-├── reference/             # Reference documentation
-└── guides/                # 4 specific guides
+├── reference/             # Reference documentation (best-practices, hooks, advanced features, catalogues)
+├── recipes/               # Targeted recipes (vendor skills, Python toolchain, SaaS monetization)
+└── guides/                # Specific guides
     ├── EXTENDING-GUIDE.md
     ├── TEAM-GUIDE.md
     ├── PROMPTING-GUIDE.md
