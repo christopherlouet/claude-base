@@ -257,8 +257,8 @@ chmod +x .claude/scripts/*.sh scripts/hooks/*.sh
 
 ```bash
 # Backup + clean reinstall
-./scripts/uninstall.sh --keep-claude-md .
-~/.local/share/claude-base/scripts/new-project.sh --simple .
+claude-base uninstall --keep-claude-md .
+claude-base init --simple .
 ```
 
 ### Full diagnosis

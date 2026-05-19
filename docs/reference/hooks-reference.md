@@ -123,7 +123,7 @@ Three coordinated hooks that exploit `hookSpecificOutput.updatedToolOutput` to t
 
 All three hooks bail out silently if the sentinel reports unsupported, if `jq` is absent, or if their respective opt-out env var is set. The Bash filter and inline-edit hook share the helpers in `_hook-helpers.sh` (sourced, not registered).
 
-Migration path: existing projects must run `./scripts/update.sh -f --all <project>` to get the consolidated `.claude/settings.json`. If only `--hook-scripts` ran, `post-edit-typecheck-and-lint.sh` will detect the legacy state at runtime (old `npx tsc --noEmit` references in `.claude/settings.json`) and emit a one-line notice once per session.
+Migration path: existing projects must run `claude-base update -f --all <project>` to get the consolidated `.claude/settings.json`. If only `--hook-scripts` ran, `post-edit-typecheck-and-lint.sh` will detect the legacy state at runtime (old `npx tsc --noEmit` references in `.claude/settings.json`) and emit a one-line notice once per session.
 
 ## Hook Environment Variables
 

@@ -57,10 +57,10 @@ claude plugin install astral@astral-sh
 Alternatively, use the `--add-plugin` helper (claude-base ≥ v1.33.0):
 
 ```bash
-./scripts/update.sh --add-plugin astral@astral-sh ./your-project
+claude-base update --add-plugin astral@astral-sh ./your-project
 ```
 
-This adds the entry to `enabledPlugins` without touching the rest of `settings.json` and is idempotent — re-running on an already-enabled plugin succeeds silently. Useful if `update.sh --settings` is run later: just re-run the `--add-plugin` command to restore the entry.
+This adds the entry to `enabledPlugins` without touching the rest of `settings.json` and is idempotent — re-running on an already-enabled plugin succeeds silently. Useful if `claude-base update --settings` is run later: just re-run the `--add-plugin` command to restore the entry.
 
 ### Path 2 — Vendor-neutral (community-maintained)
 

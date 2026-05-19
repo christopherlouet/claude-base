@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Docs canonicalized on the `claude-base` CLI**. The dispatcher
+  (`claude-base init / update / validate / uninstall`) is now the
+  canonical entry point in user-facing docs ; direct `./scripts/X.sh`
+  invocations are framed as advanced/internal access only. Touches
+  README, CLAUDE.md, QUICKSTART, PROMPTING-GUIDE, TEAM-GUIDE,
+  recipes (saas-monetization, python-toolchain-options),
+  hooks-reference (mirrored), installation.md, learning-path.md, and
+  `website/docs/reference/scripts.md` (restructured to lead with the
+  dispatcher CLI and surface direct-script access as an advanced
+  fallback). In-repo contributor commands normalized to
+  `./bin/claude-base init` instead of `./scripts/new-project.sh`.
+  Stale `curl ... /scripts/new-project.sh | bash` recipe replaced
+  with the canonical `curl ... /install.sh | bash` one-liner.
+  Behaviour unchanged ; scripts remain callable directly. Motivated
+  by ergonomic consistency : after `curl|bash` install, users have
+  `claude-base` on PATH and should not need to know about
+  `./scripts/` layout.
+
 ### Added
 
 - **Doc drift firewall: `scripts/audit-docs.sh`**. Catches 5 categories of

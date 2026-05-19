@@ -46,7 +46,7 @@
 | Foundation Extension Guide | `docs/guides/EXTENDING-GUIDE.md` |
 | Novice to Pro Path | `website/docs/guides/learning-path.md` |
 
-Setup: `./scripts/new-project.sh --simple .`
+Setup: `./bin/claude-base init --simple .`
 
 ## Default Happy Path (Semantic Routing)
 

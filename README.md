@@ -110,14 +110,11 @@ export PATH="$HOME/.local/bin:$PATH"  # add to ~/.bashrc or ~/.zshrc
 git clone https://github.com/christopherlouet/claude-base.git
 cd claude-base
 
-# Install in an existing project
-./scripts/new-project.sh --simple /path/to/your/project
-
-# Or via the dispatcher (same result)
+# Install in an existing project (in-repo dispatcher — no PATH install yet)
 ./bin/claude-base init --simple /path/to/your/project
 
 # Full install with CI/CD, hooks, Docker
-./scripts/new-project.sh --all /path/to/your/project
+./bin/claude-base init --all /path/to/your/project
 ```
 
 ### Option 3: Manual copy (minimal)
@@ -330,30 +327,36 @@ Commands are grouped into 9 domains:
 cp templates/CLAUDE.react.md CLAUDE.md
 ```
 
-## Utility Scripts
+## Utility CLI (`claude-base`)
+
+After `curl | bash` install, the unified dispatcher is on your PATH. Use it as the canonical entry point:
 
 ```bash
 # Create a new project (interactive)
-./scripts/new-project.sh
+claude-base init
 
 # Install in an existing project
-./scripts/new-project.sh --simple /path/to/project
+claude-base init --simple /path/to/project
 
 # Update commands
-./scripts/update.sh /path/to/project
+claude-base update /path/to/project
 
 # Validate the configuration
-./scripts/validate.sh /path/to/project
-./scripts/validate.sh --json /path/to/project   # for CI/CD
+claude-base validate /path/to/project
+claude-base validate --json /path/to/project   # for CI/CD
 
+# Uninstall
+claude-base uninstall /path/to/project
+```
+
+Maintenance / diagnostic tools without a dispatcher alias (still callable directly from a foundation clone):
+
+```bash
 # Full diagnostic
 ./scripts/doctor.sh /path/to/project
 
 # Diff against the foundation
 ./scripts/diff.sh /path/to/project
-
-# Uninstall
-./scripts/uninstall.sh /path/to/project
 
 # IDE integration (VSCode, IntelliJ, Vim/Neovim)
 ./scripts/ide.sh setup vscode
@@ -591,7 +594,7 @@ cd /path/to/claude-base
 git pull origin main
 
 # 3. Reinstall (overwrites existing files)
-./scripts/new-project.sh --simple /path/to/your/project
+claude-base init --simple /path/to/your/project
 
 # 4. Restore your customizations
 # Manually merge CLAUDE.md.backup into the new CLAUDE.md
