@@ -42,6 +42,37 @@ cp -r temp-base/.claude .
 rm -rf temp-base
 ```
 
+### Option 3: Stack-specific install with `--preset`
+
+```bash
+# Pick a preset that matches your stack — 11 available
+claude-base init --preset nextjs        ./my-web-app
+claude-base init --preset react-vite-spa ./my-spa
+claude-base init --preset fastapi       ./my-api
+claude-base init --preset phaser        ./my-2d-game
+claude-base preset list                 # see all 11
+```
+
+Each preset filters the foundation to the relevant skills, ships a curated `recommendedVendorSkills` list printed at install end, and (for several) self-describes a `detect` block so running `claude-base init <existing-project>` auto-recognises the stack.
+
+### Option 4: Interactive on an empty directory (don't know which preset?)
+
+If you run `claude-base init ./my-project` on an empty directory without a preset flag, an **interactive category prompt** fires :
+
+```
+What are you building?
+  1) Web frontend
+  2) API / Backend
+  3) Mobile / Desktop
+  4) Game / Interactive media
+  5) Data / Database
+  6) Infra / DevOps
+  7) CLI / Automation
+  8) Other / Generic     ← default
+```
+
+The chosen category filters the subsequent menu to relevant presets + types. Default "Other / Generic" → full unfiltered menu (regression-safe). Skipped on non-TTY, `--skip-prompts`, `--yes`, `--preset`, `--type`, or when auto-detection produced a match. See [`specs/preset-category-prompt/spec.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/preset-category-prompt/spec.md) for the full design.
+
 ## Verification
 
 Launch Claude Code in your project:

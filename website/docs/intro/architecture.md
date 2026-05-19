@@ -70,6 +70,19 @@ claude-base/
 
 ## Main components
 
+### Presets (<!-- count:presets -->11<!-- /count -->)
+
+**Presets** are stack-specific bundles that, on `claude-base init --preset <name>`, configure the foundation (skills filter, defaults, vendor pointers) for one specific stack.
+
+**Three tiers:**
+- **`maintainer-vouched`** (6) : maintainer uses the stack in production ≥3 months. Opinionated foundation filter + curated `marketplacePlugins` + `recommendedVendorSkills`.
+- **`vendor-pointer`** (5) : thin pointer-only manifests where authority comes from the vendor (validated via marketplace-audit methodology). No foundation filter, no marketplace plugins, no defaults overrides.
+- **`community-curated`** (0 instances) : contributor with signed maintenance commitment.
+
+**Discoverability:** when `claude-base init` runs on an empty directory without `--preset` / `--type` and auto-detection produces no match, a pre-prompt asks "What are you building?" with an 8-entry intent taxonomy and filters the subsequent menu accordingly. Each preset opts in by declaring `categories: [string]` in its manifest (strict enum, validated).
+
+**Cross-tool entry point:** the foundation ships an `AGENTS.md` at repo root signaling SKILL.md open-standard compliance to Codex / Cursor / Copilot / Gemini CLI. Skills under `.claude/skills/` are theoretically portable in form ; Claude-specific extensions (`allowed-tools`, `context: fork`, `model`) are silently ignored by other tools.
+
 ### Commands (<!-- count:commands -->131<!-- /count -->)
 
 **Commands** are instructions triggered manually with `/name`.
