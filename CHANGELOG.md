@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- **Latent counter drift: hard-coded numbers wrapped in `<!-- count:* -->` markers**.
+  Doc audit pass identified 5 hard-coded counter references in
+  prose that would silently drift when new artifacts ship:
+  `website/docs/intro/index.md` ("See all 11 presets") and
+  `docs/CHEATSHEET.md` ASCII boxes (DEV 23 / QA 16 / OPS 34 /
+  GROWTH 11 commands). All wrapped in `count:presets` /
+  `count:byDomain.{dev,qa,ops,growth}` markers — the auto-regen
+  pipeline now owns them. Values currently match counts.json,
+  but the next preset/command added in any of those domains
+  will auto-bump these instead of going stale.
+
 - **Doc drift: install path corrected to `~/.local/share/claude-base/`**.
   `website/docs/intro/installation.md` previously documented the
   install location as `~/.claude-base/` (10 occurrences). The

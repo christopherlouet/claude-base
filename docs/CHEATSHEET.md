@@ -49,7 +49,7 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       DEV- : DEVELOPMENT (23 commands)                      │
+│                       DEV- : DEVELOPMENT (<!-- count:byDomain.dev -->23<!-- /count --> commands)                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  TDD cycle     : tdd, test, testing-setup, debug, refactor                  │
 │  API & types   : api, api-versioning, graphql, trpc, prisma                 │
@@ -61,7 +61,7 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          QA- : QUALITY (16 commands)                        │
+│                          QA- : QUALITY (<!-- count:byDomain.qa -->16<!-- /count --> commands)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Main audit      : qa-loop (audit + fix loop, score ≥ 90)                   │
 │  Targeted audits : security, perf, design, responsive, coverage, tech-debt  │
@@ -71,7 +71,7 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       OPS- : OPERATIONS (34 commands)                       │
+│                       OPS- : OPERATIONS (<!-- count:byDomain.ops -->34<!-- /count --> commands)                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Release & deploy : release, deploy, rollback, hotfix, mobile-release       │
 │  GitFlow          : gitflow-{init, feature, release, hotfix}                │
@@ -121,7 +121,7 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       GROWTH- : GROWTH (11 commands)                        │
+│                       GROWTH- : GROWTH (<!-- count:byDomain.growth -->11<!-- /count --> commands)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Acquisition     : landing, seo, ab-test, cro                               │
 │  Measurement     : analytics, app-store-analytics, funnel                   │
