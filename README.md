@@ -287,13 +287,10 @@ Commands are grouped into 9 domains:
 # 4. Build the widget/screen in TDD
 /dev:dev-tdd UserProfileScreen with BLoC + widget tests
 
-# 5. Wire up the Supabase backend
-/dev:dev-supabase user profile endpoint
-
-# 6. Mobile quality audit + fix loop
+# 5. Mobile quality audit + fix loop
 /qa:qa-loop "score 90"
 
-# 7. Open the PR
+# 6. Open the PR
 /work:work-pr user profile screen
 ```
 
@@ -314,9 +311,14 @@ Commands are grouped into 9 domains:
 | `CLAUDE.neovim.md` | Neovim / Lua config |
 
 ```bash
-# Use a template
+# Recommended: scaffold via the dispatcher (works post-install, any cwd)
+claude-base init --type react ./my-app
+
+# Or copy the template manually (from a foundation clone)
 cp templates/CLAUDE.react.md CLAUDE.md
 ```
+
+The dispatcher path additionally wires hooks, settings, and preset-specific filtering ; the raw `cp` only installs the project-instructions file.
 
 ## Utility CLI (`claude-base`)
 
@@ -440,7 +442,7 @@ It covers:
 - Catalog of <!-- count:commands -->131<!-- /count --> commands, <!-- count:agents -->63<!-- /count --> agents, <!-- count:skills -->54<!-- /count --> skills, <!-- count:rules -->30<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
-- Specific guides: Extending, Team, Prompting, Troubleshooting
+- Specific guides: Learning path, Extending, Team, Prompting, Troubleshooting
 
 ### Local documentation
 
@@ -450,8 +452,12 @@ It covers:
 - **[WORKFLOWS.md](docs/WORKFLOWS.md)**: Workflow diagrams
 - **[STACK-RECIPES.md](docs/STACK-RECIPES.md)**: Commands/agents/skills per stack (Web, Mobile, API…)
 - **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)**: Customization guide
+- **[recipes/](docs/recipes/)**: Targeted recipes — recommended vendor skills, Python toolchain options, SaaS monetization, etc.
 - **[guides/EXTENDING-GUIDE.md](docs/guides/EXTENDING-GUIDE.md)**: Extend the foundation (custom commands/skills/rules)
 - **[guides/TEAM-GUIDE.md](docs/guides/TEAM-GUIDE.md)**: Team adoption — including [`When .claude/ is gitignored`](docs/guides/TEAM-GUIDE.md#when-claude-is-gitignored--scope-choices-for-plugins--skills) (scope choices for plugins & skills)
+- **[guides/PROMPTING-GUIDE.md](docs/guides/PROMPTING-GUIDE.md)**: Prompting techniques
+- **[guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md)**: Common issues and fixes
+- **Learning path** (Docusaurus only): [9h30, 5 levels novice → pro](https://christopherlouet.github.io/claude-base/docs/guides/learning-path)
 
 ## Default Permissions
 
