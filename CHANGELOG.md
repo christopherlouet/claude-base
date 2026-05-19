@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Doc drift: install path corrected to `~/.local/share/claude-base/`**.
+  `website/docs/intro/installation.md` previously documented the
+  install location as `~/.claude-base/` (10 occurrences). The
+  canonical path per `install.sh:33` is `$HOME/.local/share/claude-base`
+  (XDG Base Directory spec). User following the doc literally would
+  clone to a non-canonical location ; the docs now match the script.
+
 ## [1.40.0] - 2026-05-19
 
 Minor release. Two-week burst of foundation-level features around preset discovery and curation, plus a documentation hygiene sweep that surfaces them across README / EXTENDING-GUIDE / Docusaurus public pages. Headline additions: a new **`vendor-pointer` preset tier** (5 instances shipped: phaser, playwright, pulumi, apollo, mongodb), an **interactive category prompt** in `claude-base init` (8-entry intent taxonomy), an **`AGENTS.md`** cross-tool entry point at repo root, and an **optional `categories[]` field** on the preset manifest schema. All 11 shipped presets retrofitted in the same delivery. Counter `presets` 6 → 11 ; `vendorSkillsValidated` 16 → 17 ; `tests` 620 → 645 (+25 bats tests).
