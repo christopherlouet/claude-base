@@ -13,6 +13,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **README front-door rewrite**. Replaces the kitchen-sink "What is it?" feature
+  list with a 30-second tagline + Try it block + "Is it for you?" persona-fit
+  table + reordered "How it fits in the Claude Code ecosystem" promoted above
+  the fold. Adds a "What you get on disk" tangible-artifact section and a
+  static "60-second tour" with realistic terminal output (asciinema placeholder
+  for when a real recording lands). The detailed appendix pieces (three-tier
+  preset breakdown, category prompt, cross-tool AGENTS.md compatibility,
+  long-term direction with vendor-neutrality stance) move to a "Going deeper"
+  section near the bottom, off the front-door bounce path. Demystifies the big
+  numbers (131 commands ≠ 131 to learn ; mandatory workflow is 5 slash-commands).
+  Motivated by fresh-eyes analysis : a HN-arriving dev needs "what is it / is
+  it for me / show me / let me try" answered in 30 seconds, not after 70 lines
+  of feature list.
+
+  Latent drifts caught and fixed in passing : `website/docs/intro/index.md`
+  had the stale `curl ... /scripts/new-project.sh | bash` recipe that PR #202
+  missed ; `docusaurus.config.ts` tagline dropped the Audit phase (5-phase
+  workflow instead of 6).
+
 - **Docs canonicalized on the `claude-base` CLI**. The dispatcher
   (`claude-base init / update / validate / uninstall`) is now the
   canonical entry point in user-facing docs ; direct `./scripts/X.sh`

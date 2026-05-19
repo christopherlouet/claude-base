@@ -1,5 +1,7 @@
 # claude-base
 
+> **Opinionated Claude Code foundation.** Makes Claude Code follow a real engineering workflow — **Explore → Specify → Plan → TDD → Audit → Commit** — and drops in a curated `.claude/` (slash commands, sub-agents, skills, path-specific rules for TDD/security/a11y/perf). Stack presets (`nextjs`, `fastapi`, `astro`, `react-vite-spa`, `cli-tools`, `homelab-proxmox`, + vendor pointers) auto-detect your repo on install.
+
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
@@ -8,26 +10,37 @@
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
 
-A Claude Code configuration kit for a solid, reproducible development workflow.
+## Try it (30 seconds)
 
-## What is it?
+```bash
+# 1. Install the foundation (clones to ~/.local/share/claude-base, symlinks to ~/.local/bin)
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
 
-**claude-base** is a configuration bundle for [Claude Code](https://code.claude.com/docs/en/overview) that gives you:
+# 2. Install into a project (auto-detects the stack, picks the right preset)
+claude-base init --preset nextjs ./my-app
+# or just: claude-base init ./existing-project   (interactive, auto-detects)
 
-- A structured development workflow: **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
-- **<!-- count:commands -->131<!-- /count --> commands**, **<!-- count:agents -->63<!-- /count --> sub-agents**, **<!-- count:skills -->54<!-- /count --> skills**, and **30 path-specific rules** wired together
-- **<!-- count:presets -->11<!-- /count --> stack-specific presets** — 6 maintainer-vouched (`nextjs`, `react-vite-spa`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) + 5 vendor-pointer (`phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`) — installable via `claude-base init --preset <name> <path>`. See [`.claude/presets/README.md`](./.claude/presets/README.md) for the canonical catalogue and tier semantics.
-- **Auto-detection of presets** — `claude-base init <existing-project>` recognizes the stack via marker files (e.g. `next.config.js`, `pyproject.toml` containing `fastapi`) and surfaces the matching preset at the top of the type menu. Standalone audit via `claude-base init --detect-only <path>`. Adding a new preset is data-driven (a `.json` manifest with a `detect` block — no code change in detection scripts).
-- **Preset-aware updates** — `claude-base update --all` keeps the preset's skill filter applied, so a project bootstrapped with `--preset nextjs` no longer drifts back to the unfiltered foundation on every refresh. Override with `--preset <name>`, opt out with `--no-preset`. The filter is COPY-only — files already on disk are never deleted.
-- **Curated vendor skill pointers** per preset, surfaced at install time via the recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) — <!-- count:vendorSkillsValidated -->17<!-- /count --> vendor skills validated across <!-- count:marketplaceAuditPilots -->4<!-- /count --> marketplace audit pilots
-- **One-liner install** via `curl | bash` + unified CLI dispatcher (`claude-base init/update/validate/preset/uninstall`)
-- Built-in conventions enforced via path-specific rules: TDD (mandatory tests-first), security (OWASP defaults), accessibility (WCAG), performance (Core Web Vitals), deploy-safety
-- Ready-to-use CI/CD workflows and pre-commit hooks, including a counts.json anti-drift gate
-- PostToolUse output rewriter for noisy bash + inline tsc/eslint errors (Claude Code 2.1.121+)
+# 3. Open Claude Code in the project and run the canonical workflow
+cd ./my-app && claude
+> /work:work-flow-feature "add a /counter route with optimistic UI"
+```
+
+That last command chains the 6 phases automatically: Explore → Specify → Plan → TDD → Audit → Commit. Each phase has dedicated slash commands you can also drive manually.
+
+## Is it for you?
+
+| You are... | This helps... | Skip it if... |
+|---|---|---|
+| **Solo dev** shipping side-projects with Claude Code | preset gives you stack + workflow rigor in 30s ; no copy-pasting prompts between sessions | you barely use Claude Code yet — start with the [official docs](https://code.claude.com/docs/en/overview) first |
+| **Team lead** wanting consistent Claude Code outputs across a codebase | enforces TDD + audit-loop gates in shared `.claude/` config, anti-drift counters CI-gated | your team has already built bespoke prompts you're happy with |
+| **Educator / mentor** | the 6-phase workflow is named, teachable, and the audit-loop produces a quality score | you only need ad-hoc Claude Code use |
+| **Returning user** who tried Claude Code, found it too freeform | the dispatcher CLI is small (init / update / validate / uninstall) and the foundation is fully reversible (`claude-base uninstall`) | you prefer raw `.claude/` files without a foundation layer |
+
+**You don't have to learn the <!-- count:commands -->131<!-- /count --> commands.** The mandatory workflow is 5 slash-commands: `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
 
 ## How it fits in the Claude Code ecosystem
 
-claude-base is a **workflow foundation**, not a competing plugin marketplace. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via `new-project.sh`.
+claude-base is a **workflow foundation**, not a competing plugin marketplace. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via the `claude-base` CLI.
 
 For deeper coverage of specific tools — vendor-published skills for Terraform, Postgres, Playwright, MongoDB, observability stacks, framework-specific patterns — the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) and community-published skills often ship targeted depth that goes further than what this foundation bundles. That's expected: a foundation curates **breadth + workflow integration**, vendor skills curate **depth on a single tool or stack**.
 
@@ -41,36 +54,89 @@ vendor skills (specific tools)  ← Terraform, Postgres, Playwright, Grafana, Pr
 
 claude-base's unique value (vs assembling vendor skills alone):
 
-- Workflow rigor coordinated as one experience (TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates)
-- Anti-drift counter strategy across the entire foundation, CI-enforced via `counts.json`
-- 30 path-specific rules (currently not a plugin component — see `docs/guides/EXTENDING-GUIDE.md` § 7)
-- PostToolUse output rewriter for Bash + tsc/eslint (Claude Code 2.1.121+)
-- Integrated install + update flow via the `claude-base` CLI (init, update, validate, preset, uninstall)
+- **Workflow rigor coordinated as one experience** — TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates
+- **Anti-drift counter strategy** across the entire foundation, CI-enforced via `counts.json` + a new doc drift firewall (`scripts/audit-docs.sh`)
+- **30 path-specific rules** auto-activated by file path (TypeScript strict, OWASP defaults, WCAG, Core Web Vitals, deploy-safety)
+- **PostToolUse output rewriter** for Bash + tsc/eslint (Claude Code 2.1.121+)
+- **Integrated install + update flow** via the `claude-base` CLI
 
-**Honest limit**: for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources.
+**Honest limit**: for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources (<!-- count:vendorSkillsValidated -->17<!-- /count --> skills across <!-- count:marketplaceAuditPilots -->4<!-- /count --> audit pilots).
 
-**Presets**: 11 stack-specific presets installable via `claude-base init --preset <name> <path>`, split across **three tiers**:
-- **6 maintainer-vouched** (`nextjs`, `react-vite-spa`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) — the maintainer uses each one in production for ≥3 months. Each ships an opinionated foundation filter + curated `recommendedVendorSkills`.
-- **5 vendor-pointer** (`phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`) — thin pointer-only manifests whose authority comes from the vendor (validated via marketplace-audit methodology), not from maintainer prod use. No foundation filter, no marketplace plugins, no defaults overrides.
-- **`community-curated`** (tier slot, no instances yet) — contributors with signed maintenance commitment.
+## What you get on disk
 
-Each preset self-describes a `detect` block, so `claude-base init <existing-project>` auto-recognises the stack and surfaces the matching preset at the top of the type menu. See [`.claude/presets/README.md`](./.claude/presets/README.md) for the canonical catalogue, [`specs/presets-vendor-pointer-tier/spec.md`](./specs/presets-vendor-pointer-tier/spec.md) for the vendor-pointer tier definition, and [`specs/presets/roadmap.md`](./specs/presets/roadmap.md) for community-wanted stacks. Stack-specific naming only — no `web-app` or `backend-app`. Contributions welcome.
+After `claude-base init`, your project gains:
 
-**Pre-detection category prompt** (for empty directories) : when a user runs `claude-base init` on an empty directory without `--preset` / `--type` and auto-detection produces no match, an interactive prompt asks **"What are you building?"** with an 8-entry intent taxonomy (`Web frontend` / `API / Backend` / `Mobile / Desktop` / `Game / Interactive media` / `Data / Database` / `Infra / DevOps` / `CLI / Automation` / `Other / Generic`). The chosen category filters the subsequent menu down to relevant presets and types. Default is `Other / Generic` → falls back to the full unfiltered menu (regression-safe). Skipped on non-TTY, `--skip-prompts`, `--yes`, `--preset`, `--type`, or when auto-detect already produced a match. Each preset opts in by declaring `categories: [string]` in its manifest (strict enum, validated). Spec : [`specs/preset-category-prompt/spec.md`](./specs/preset-category-prompt/spec.md).
+```
+your-project/
+├── CLAUDE.md              # Project instructions auto-loaded by Claude Code
+├── .claude/
+│   ├── settings.json      # Hooks, permissions, plugin enablement
+│   ├── commands/          # Slash commands grouped by domain (work, dev, qa, ops, ...)
+│   ├── agents/            # Sub-agents with isolated context
+│   ├── skills/            # Auto-triggered on keywords
+│   └── rules/             # Path-specific rules (TDD, security, a11y, performance)
+└── .github/               # (optional) CI workflows + pre-commit hooks
+```
 
-**Cross-tool compatibility** : the foundation ships an [`AGENTS.md`](./AGENTS.md) at repo root signaling SKILL.md open-standard compliance to Codex, Cursor, Copilot, Gemini CLI and other [Agent Skills](https://agentskills.io)-compatible tools. Skills under `.claude/skills/` use the standard frontmatter (`name` + `description`) and are theoretically portable in form — Claude-specific extensions (`allowed-tools`, `context: fork`, `model`) are silently ignored by tools that don't support them. The bundled wiring (hooks, slash commands, `lib/category-map.sh`, validators) remains Claude Code-native and is the foundation's actual depth.
+Everything is plain markdown + JSON. No daemon, no telemetry, no network access at runtime. Reversible via `claude-base uninstall`.
 
-## Strategy & trajectory
+## What's included
 
-claude-base's long-term position is **a foundation that lives alongside the official Claude Code marketplace, not in opposition to it**. The kit's irreducible value is the workflow rigor (TDD, audit-loop, anti-drift), the path-specific rules, and the foundation conventions. Everything else — domain-specific knowledge — is increasingly available as vendor-published skills/plugins.
+| Component | Count | What it is |
+|---|---|---|
+| Slash commands | <!-- count:commands -->131<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
+| Sub-agents | <!-- count:agents -->63<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
+| Skills | <!-- count:skills -->54<!-- /count --> | Auto-triggered on keywords in your prompts |
+| Path-specific rules | <!-- count:rules -->30<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
+| Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles (6 maintainer-vouched + 5 vendor-pointer) |
 
-Three mechanisms keep the foundation aligned with that trajectory:
+Full catalogue: [Docusaurus reference](https://christopherlouet.github.io/claude-base/docs/reference) — or browse `.claude/` directly after install.
 
-1. **Periodic marketplace audits**. The maintainer evaluates community and vendor-published skills against the foundation, applies a vendor-neutrality filter (we reject vendors acquired by direct Anthropic competitors — e.g. Astral acquired by OpenAI in March 2026), and documents the verdict per skill. The user-facing output is the recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md).
-2. **Recommended vendor skills per preset**. Each preset ships a `recommendedVendorSkills` array — a curated list printed at the end of `claude-base init`, telling the user which validated vendor skills complement their stack. Manual install today; the foundation does NOT auto-install third-party code.
-3. **Trajectory-driven automation**. As more vendors migrate to the official Claude Code marketplace, the install mechanism becomes uniform (`claude plugin install <id>`) and Anthropic-vetted. At that point, automating the install of recommended vendor skills becomes safe — the supply-chain risk is no longer "git clone arbitrary URL" but "install Anthropic-reviewed plugin." We do not automate today (~21% of audited vendors are on the official marketplace) but we will revisit when the ratio inverts.
+## What it looks like (60-second tour)
 
-The recipe is the canonical, user-facing index of every validated source, with install commands, vendor-neutrality status, and explicit re-evaluation triggers.
+> An [asciinema](https://asciinema.org) recording is on the roadmap. Until then,
+> here is the exact terminal output you would see end-to-end. The flow is
+> reproducible: replace `./my-app` with any directory and run yourself.
+
+```text
+$ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
+[INFO] Cloning to ~/.local/share/claude-base ...
+[OK]   Cloned (foundation v1.40.0)
+[OK]   Symlinked dispatcher → ~/.local/bin/claude-base
+[INFO] Done. Run `claude-base help` to get started.
+
+$ claude-base init --preset nextjs ./my-app
+[INFO] Preset: nextjs (maintainer-vouched, 6+ months prod use)
+[INFO] Installing into ./my-app
+[OK]   Filtered foundation copy applied (skills/agents/commands relevant to Next.js)
+[OK]   Wired hooks: PostToolUse (tsc + eslint inline), PreToolUse (anti-drift)
+[OK]   CLAUDE.md written, .claude/settings.json initialized
+
+  → 3 vendor skills recommended for your stack:
+      - tailwindcss/tailwindcss-skill   (validated)
+      - vercel/nextjs-skill             (validated)
+      - shadcn/shadcn-ui-skill          (validated)
+  See ./RECOMMENDED-VENDOR-SKILLS.md for manual install commands.
+
+$ cd ./my-app && claude
+> /work:work-flow-feature "add a /counter route with optimistic UI"
+
+[work-explore]  Scanning app/, hooks/, lib/ ... 24 files indexed
+[work-explore]  Detected: App Router, server actions, no existing state mgmt
+[work-specify]  US-1 (P1): user clicks +/- and counter updates without lag
+                Acceptance: optimistic UI, server-action persistence, rollback on error
+[work-plan]     Files to create: app/counter/page.tsx, app/api/counter/route.ts,
+                                  hooks/use-counter.ts, tests/counter.test.tsx
+[dev-tdd]       RED:    wrote 4 tests in counter.test.tsx → 4 failing as expected
+[dev-tdd]       GREEN:  minimal implementation → 4/4 passing
+[dev-tdd]       REFACTOR: extracted optimistic hook, kept tests green
+[qa-loop]       Audit pass 1: 86/100 (1 a11y issue: button without aria-label)
+[qa-loop]       Auto-fix applied, audit pass 2: 92/100 ✓ (≥ target score 90)
+[work-pr]       Branch: feat/counter-route, 5 files changed, +127 -3
+[work-pr]       PR #1 opened: https://github.com/you/my-app/pull/1
+```
+
+Six phases, one command. Each phase is also runnable on its own (`/work:work-explore`, `/dev:dev-tdd`, etc.) if you prefer manual control.
 
 ## Installation
 
@@ -635,3 +701,22 @@ claude-base is **production-ready** with:
 - **GitHub Code Scanning** (CodeQL): TypeScript security analysis (Default Setup, scans `website/scripts/`, `website/src/`)
 
 See [SECURITY.md](SECURITY.md) for the full security policy.
+
+## Going deeper
+
+Detail-level docs and editorial pieces that didn't make the front-door:
+
+- **Three preset tiers** — `maintainer-vouched` (production use ≥3 months) / `vendor-pointer` (vendor-authored, validated via marketplace audit) / `community-curated` (signed maintenance commitment). See [`.claude/presets/README.md`](./.claude/presets/README.md) and [`specs/presets-vendor-pointer-tier/spec.md`](./specs/presets-vendor-pointer-tier/spec.md).
+- **Pre-detection category prompt** — when `claude-base init` runs on an empty directory with no preset/type and no auto-detect match, an interactive 8-entry intent prompt narrows the menu. Spec: [`specs/preset-category-prompt/spec.md`](./specs/preset-category-prompt/spec.md).
+- **Cross-tool compatibility** — `AGENTS.md` at repo root signals SKILL.md open-standard compliance to Codex, Cursor, Copilot, Gemini CLI. Skills under `.claude/skills/` use the standard frontmatter ; Claude-specific extensions are silently ignored by other tools. See [`AGENTS.md`](./AGENTS.md).
+- **Doc drift firewall** — `scripts/audit-docs.sh` catches 5 categories of syntactic drift (paths, claude-base verbs, init/update flags, local scripts, npm scripts) before merge. CI-gated.
+
+### Long-term direction
+
+claude-base's irreducible value is the workflow rigor (TDD, audit-loop, anti-drift) and the path-specific rules. **Domain-specific knowledge is increasingly available as vendor-published skills/plugins** in the official Claude Code marketplace. The foundation lives alongside the marketplace, not in opposition.
+
+Three mechanisms keep it aligned with that trajectory:
+
+1. **Periodic marketplace audits** with a vendor-neutrality filter (we reject vendors acquired by direct Anthropic competitors). Output: [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md).
+2. **Recommended vendor skills per preset** — printed at the end of `claude-base init`. Manual install today ; the foundation does NOT auto-install third-party code.
+3. **Trajectory-driven automation** — when most vendors are on the official marketplace, automating install becomes safe. We don't today (~21% are on the official marketplace, as of last audit) but will revisit when the ratio inverts.
