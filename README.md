@@ -74,7 +74,10 @@ your-project/
 │   ├── commands/          # Slash commands grouped by domain (work, dev, qa, ops, ...)
 │   ├── agents/            # Sub-agents with isolated context
 │   ├── skills/            # Auto-triggered on keywords
-│   └── rules/             # Path-specific rules (TDD, security, a11y, performance)
+│   ├── rules/             # Path-specific rules (TDD, security, a11y, performance)
+│   ├── presets/           # Stack-specific bundle manifests
+│   ├── output-styles/     # Output rendering styles
+│   └── templates/         # Per-stack CLAUDE.*.md scaffolds
 └── .github/               # (optional) CI workflows + pre-commit hooks
 ```
 
@@ -358,7 +361,7 @@ Once installed, the fastest way to learn the workflow is the built-in orchestrat
 /assistant              # guided mode: explains and suggests commands
 /assistant-auto "..."   # automatic mode: routes to the right workflow
 
-# Or follow the canonical 7-step workflow
+# Or follow the canonical 6-step workflow
 /work:work-explore
 /work:work-specify
 /work:work-plan
@@ -405,9 +408,14 @@ Configure your IDE for the best experience with claude-base.
 
 ### GitHub Actions
 
-- **ci.yml**: Tests, lint, build, security audit
-- **pr-check.yml**: PR format / size / labels validation
+- **ci.yml**: Tests (bats + node), shellcheck, lint, build
+- **security.yml**: Gitleaks + shellcheck-security workflow
+- **pr-check.yml**: PR format / size / labels validation (uses `amannn/action-semantic-pull-request`)
+- **docs.yml**: Builds and deploys the Docusaurus site to GitHub Pages
 - **release.yml**: Automated releases with changelog
+- **dependabot-auto-merge.yml**: Auto-merges dependabot PRs that pass CI
+
+Full file-by-file at `.github/workflows/`.
 
 ### Pre-commit Hooks
 
@@ -555,53 +563,28 @@ brew install bats-core
 | `manifest-hooks-coverage.bats` | Drift guard between source `settings.json` hooks and the minimal-install manifest |
 | `diff.bats`, `ide.bats`, `uninstall.bats`, `test-runner.bats`, `dispatcher.bats` | Tests for the related scripts |
 
-## Migration & Breaking Changes
+## Upgrades & Changelog
 
-### Upgrading to v1.10.x
+For per-release details (Added / Changed / Fixed / Security / Removed), see [CHANGELOG.md](CHANGELOG.md) — kept in [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
 
-#### Breaking changes
-
-| Change | Impact | Migration |
-|--------|--------|-----------|
-| `install.sh` removed | Installation scripts | Use `new-project.sh --simple` |
-| Agents YAML structure | Agent files | Re-copy from the foundation |
-
-#### New features
-
-- **Agent `dev-tdd`**: TDD development with the Red-Green-Refactor cycle
-- **Commands**: `/dev:dev-ai-integration`, `/growth:growth-localization`, `/qa:qa-tech-debt`
-- **Generic permissions**: wildcards for npm, git, docker, terraform, etc.
-
-#### Migration guide
+### Upgrading an installed project
 
 ```bash
-# 1. Back up your customizations
-cp CLAUDE.md CLAUDE.md.backup
-cp .claude/settings.local.json .claude/settings.local.json.backup
+# Upgrade the foundation itself (refreshes ~/.local/share/claude-base)
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash -s -- --update
 
-# 2. Update the foundation
-cd /path/to/claude-base
-git pull origin main
+# Refresh an installed project to the current foundation
+claude-base update /path/to/your/project
 
-# 3. Reinstall (overwrites existing files)
-claude-base init --simple /path/to/your/project
-
-# 4. Restore your customizations
-# Manually merge CLAUDE.md.backup into the new CLAUDE.md
+# Or refresh with a specific preset filter applied
+claude-base update --preset nextjs /path/to/your/project
 ```
+
+`claude-base update` is COPY-only by default — existing files in your project's `.claude/` are not deleted. Pass `--clean` to wipe-and-replace (a backup is created first).
 
 ### Versioning policy
 
-| Version | Support | Notes |
-|---------|---------|-------|
-| 1.30.x | Current | Stable release (docs relocated to `.claude/docs/`) |
-| 1.29.x | Supported | Security fixes |
-| 1.28.x | Supported | Security fixes |
-| < 1.28 | Unsupported | Update recommended |
-
-### Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for the full history of changes.
+The foundation follows [Semantic Versioning](https://semver.org/). Each release is tagged `vX.Y.Z` and shipped with a GitHub Release containing the relevant CHANGELOG excerpt. Pin via `git checkout vX.Y.Z` in `~/.local/share/claude-base` if you need reproducible installs. Behaviour-breaking changes between minor versions are explicitly called out in the CHANGELOG under `### Breaking`.
 
 ## Production Readiness
 
