@@ -376,35 +376,13 @@ See [docs/QUICKSTART.md](docs/QUICKSTART.md), [docs/CHEATSHEET.md](docs/CHEATSHE
 
 ## IDE Integration
 
-Configure your IDE for the best experience with claude-base.
-
 ```bash
-# Configure VSCode/Cursor
-./scripts/ide.sh setup vscode
-
-# Configure IntelliJ IDEA
-./scripts/ide.sh setup idea
-
-# Configure Vim/Neovim
-./scripts/ide.sh setup vim
-
-# Configure all IDEs at once
-./scripts/ide.sh setup all
-
-# Verify the configuration
-./scripts/ide.sh check vscode
-
-# Remove the configuration
-./scripts/ide.sh remove vscode
+./scripts/ide.sh setup <vscode|idea|vim|all>   # configure
+./scripts/ide.sh check  <vscode|idea|vim>      # verify
+./scripts/ide.sh remove <vscode|idea|vim>      # uninstall
 ```
 
-### IDE Features
-
-| IDE | Features |
-|-----|----------|
-| **VSCode/Cursor** | Settings, Tasks, Extensions, Snippets |
-| **IntelliJ IDEA** | Run Configurations, Code Style, Templates |
-| **Vim/Neovim** | Abbreviations, Mappings, Autocmds |
+Sets up Settings/Tasks/Extensions/Snippets (VSCode/Cursor), Run Configurations/Code Style/Templates (IntelliJ), or Abbreviations/Mappings/Autocmds (Vim/Neovim). Run `./scripts/ide.sh --help` for the full surface.
 
 ## CI/CD Included
 
@@ -421,15 +399,7 @@ Full file-by-file at `.github/workflows/`.
 
 ### Pre-commit Hooks
 
-- Auto lint and format
-- Conventional Commits validation
-- Secret detection
-
-```bash
-# Enable husky
-npm install husky lint-staged @commitlint/cli @commitlint/config-conventional -D
-npx husky install
-```
+The foundation ships `.husky/` with auto-lint, Conventional Commits validation, and secret detection (gitleaks). Enabled automatically when `claude-base init` runs with `--hooks` or `--all`. To re-enable manually in an existing install : `npx husky install` (assumes husky + lint-staged + commitlint are already in your project's devDependencies).
 
 ## Documentation
 
@@ -459,15 +429,6 @@ It covers:
 - **[guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md)**: Common issues and fixes
 - **Learning path** (Docusaurus only): [9h30, 5 levels novice → pro](https://christopherlouet.github.io/claude-base/docs/guides/learning-path)
 
-## Default Permissions
-
-| Allowed | Blocked |
-|---------|---------|
-| ✅ File editing | ❌ `git push --force` |
-| ✅ npm test/lint/build | ❌ `rm -rf` |
-| ✅ git status/diff/add/commit | |
-| ✅ gh issue/pr | |
-
 ## Resources
 
 - [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
@@ -476,71 +437,23 @@ It covers:
 
 ## Secret Detection (gitleaks)
 
-The foundation uses [gitleaks](https://github.com/gitleaks/gitleaks) to automatically catch secrets in code.
+The foundation ships a pre-configured [gitleaks](https://github.com/gitleaks/gitleaks) ruleset at `.gitleaks.toml`. It runs automatically via pre-commit hooks (when enabled) and on every PR through `security.yml`. Detected categories include AWS/GitHub/GitLab/Stripe/Slack tokens, JWTs, private keys, and database URLs — see `.gitleaks.toml` for the exact rules.
 
-### Install gitleaks
-
-```bash
-# macOS
-brew install gitleaks
-
-# Linux (via go)
-go install github.com/gitleaks/gitleaks/v8@latest
-
-# Docker
-docker pull ghcr.io/gitleaks/gitleaks:latest
-```
-
-### Usage
+Install gitleaks itself per the [upstream instructions](https://github.com/gitleaks/gitleaks#installing). Local scan :
 
 ```bash
-# Scan the project
-gitleaks detect --source . --config .gitleaks.toml
-
-# Scan before commit (automatic via hooks)
-gitleaks detect --staged --config .gitleaks.toml
+gitleaks detect --source . --config .gitleaks.toml          # full scan
+gitleaks detect --staged --config .gitleaks.toml            # staged-only (pre-commit)
 ```
-
-### Detected secrets
-
-- AWS access keys
-- GitHub/GitLab tokens
-- Stripe API keys
-- Slack tokens / webhooks
-- JWT tokens
-- Private keys (RSA, EC, etc.)
-- Database URLs
-- And many more…
 
 ## Automated Tests
 
-The foundation ships with [bats-core](https://github.com/bats-core/bats-core) tests that validate every script.
-
-### Install bats
+The foundation ships with [bats-core](https://github.com/bats-core/bats-core) tests that validate every script. Install bats via the [upstream instructions](https://github.com/bats-core/bats-core#installation) (or `./scripts/test.sh --install-bats` to use the foundation's bundled helper).
 
 ```bash
-# Via npm
-npm install -g bats
-
-# Via brew (macOS)
-brew install bats-core
-
-# Via the script
-./scripts/test.sh --install-bats
-```
-
-### Run the tests
-
-```bash
-# All tests
-./scripts/test.sh
-
-# Specific tests
-./scripts/test.sh validate
-./scripts/test.sh gitleaks
-
-# Verbose mode
-./scripts/test.sh -v
+./scripts/test.sh                # parallel run, all tests
+./scripts/test.sh validate       # filter to one suite (e.g. validate.bats)
+./scripts/test.sh -v             # verbose
 ```
 
 ### Test layout
@@ -584,15 +497,13 @@ The foundation follows [Semantic Versioning](https://semver.org/). Each release 
 
 ## Production Readiness
 
-claude-base is **production-ready** with:
+Concrete signals rather than a self-assessment score :
 
-| Criterion | Status | Score |
-|-----------|--------|-------|
-| Features | ✅ Mature | 9/10 |
-| Tests | ✅ Complete | 8/10 |
-| CI/CD | ✅ Mature | 8/10 |
-| Security | ✅ Mature | 9/10 |
-| Documentation | ✅ Mature | 9/10 |
+- <!-- count:tests -->659<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- Six GitHub Actions workflows (CI, security, docs, PR check, release, dependabot auto-merge) gating merges
+- Doc drift firewall (`scripts/audit-docs.sh`) catches syntactic doc drift before merge — see [PR #201](https://github.com/christopherlouet/claude-base/pull/201)
+- Counter anti-drift gate (`scripts/validate-counts.sh`) regenerated from `counts.json`
+- Pinned versions via git tags (current : v<!-- version -->1.41.0<!-- /version -->) with full `CHANGELOG.md` in Keep-a-Changelog format
 
 ### Security measures
 
