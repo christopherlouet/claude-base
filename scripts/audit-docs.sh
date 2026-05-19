@@ -33,9 +33,11 @@ source "$SCRIPT_DIR/lib/common.sh"
 # =============================================================================
 
 # bin/claude-base case @ ~line 120
+# shellcheck disable=SC2034  # consumed by audit_verbs via is_in_array nameref
 KNOWN_VERBS=(init update validate preset uninstall version help)
 
 # scripts/new-project.sh @ lines 258-337
+# shellcheck disable=SC2034  # consumed by _audit_flags_pass via nameref
 KNOWN_INIT_FLAGS=(
     --verbose --ci --hooks --mcp --docker --all --style --skip-prompts
     --minimal --preset --presets-dir --list-presets --detect-only
@@ -43,6 +45,7 @@ KNOWN_INIT_FLAGS=(
 )
 
 # scripts/update.sh
+# shellcheck disable=SC2034  # consumed by _audit_flags_pass via nameref
 KNOWN_UPDATE_FLAGS=(
     --add-hook --add-plugin --agents --all --backup-only --changelog
     --clean --detect-orphans --hook-scripts --no-preset --preset
@@ -53,7 +56,10 @@ KNOWN_UPDATE_FLAGS=(
 # Path prefixes legitimate when audit_paths scans claude-containing paths.
 # The regex `~/.*claude.*` already filters out unrelated ~/X paths
 # (~/.zshrc, ~/.ssh, ~/.kube, etc.) so this allowlist need only enumerate
-# the foundation's canonical claude-related paths.
+# the foundation's canonical claude-related paths. Tildes are intentional
+# literal strings (we string-match against grep extractions, not paths to
+# expand) — silence SC2088.
+# shellcheck disable=SC2088
 KNOWN_PATH_PREFIXES=(
     "~/.claude/"                  # Claude Code user config dir
     "~/.claude.json"              # Claude Code user state file
@@ -191,7 +197,7 @@ report_drift() {
     # Normalize file path to relative if under BASE_DIR
     local rel="$file"
     case "$file" in
-        "$BASE_DIR/"*) rel="${file#$BASE_DIR/}" ;;
+        "$BASE_DIR/"*) rel="${file#"$BASE_DIR/"}" ;;
     esac
     DRIFTS+=("$rel:$line: [$category] $message")
 }
@@ -228,6 +234,7 @@ audit_paths() {
     # paths (~/.zshrc, ~/.ssh/*, ~/.kube/*, ~/.tmux.conf) are tutorial-legit
     # and not the firewall's job.
     local raw
+    # shellcheck disable=SC2088  # literal pattern for grep, not a path
     raw=$(grep -nEoH '~/[a-zA-Z0-9._/-]*claude[a-zA-Z0-9._/-]*' "${SCOPE_FILES[@]}" 2>/dev/null || true)
     [[ -z "$raw" ]] && return 0
 
@@ -327,7 +334,7 @@ _audit_flags_pass() {
     local -n allowlist="$allowlist_name"
 
     local raw
-    raw=$(grep -nEoH "claude-base $verb[^\n]*--[a-zA-Z][a-zA-Z-]+" "${SCOPE_FILES[@]}" 2>/dev/null || true)
+    raw=$(grep -nEoH "claude-base ${verb}[^\n]*--[a-zA-Z][a-zA-Z-]+" "${SCOPE_FILES[@]}" 2>/dev/null || true)
     [[ -z "$raw" ]] && return 0
 
     local line file_part lineno match flag
@@ -381,7 +388,7 @@ audit_scripts() {
     raw=$(grep -nEoH '\./scripts/[a-zA-Z][a-zA-Z0-9_-]*\.sh' "${audit_files[@]}" 2>/dev/null || true)
     [[ -z "$raw" ]] && return 0
 
-    local line file_part lineno script script_basename original
+    local line file_part lineno script original
     while IFS= read -r line; do
         file_part="${line%%:*}"
         local rest="${line#*:}"
