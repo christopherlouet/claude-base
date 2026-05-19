@@ -132,7 +132,7 @@ bump_file() {
 }
 
 # 1. VERSION file
-info "1/4 VERSION file"
+info "1/2 VERSION file"
 if $DRY_RUN; then
     info "[DRY-RUN] VERSION: $CURRENT_VERSION -> $NEW_VERSION"
 else
@@ -141,32 +141,20 @@ else
 fi
 CHANGES=$((CHANGES + 1))
 
-# 2. README.md badge
-info "2/4 README.md"
-bump_file "$BASE_DIR/README.md" \
-    "release-v${CURRENT_VERSION}-blue" \
-    "release-v${NEW_VERSION}-blue" \
-    "Version badge"
-
-# 3. Markdown version markers — handled by `npm --prefix website run generate`
-# Files with `<!-- version -->X.Y.Z<!-- /version -->` markers (quick-start,
-# installation, learning-path, CHEATSHEET, …) are kept in sync by
-# website/scripts/inject-version-md.ts, which reads VERSION directly. No
-# pattern-match sed needed here. Adding a new file to the marker list lives
+# 2. Markdown version markers — handled by `npm --prefix website run generate`
+# Files with `<!-- version -->X.Y.Z<!-- /version -->` markers (README badge,
+# CHEATSHEET footer, quick-start, installation, learning-path, …) are kept in
+# sync by website/scripts/inject-version-md.ts, which reads VERSION directly.
+# No pattern-match sed needed here. Adding a new file to the marker list lives
 # in inject-version-md.ts, not this script.
-info "3/4 Markdown version markers"
+#
+# Historical note : earlier versions of this script also patched a static
+# `release-v${VER}-blue` badge URL and a "Versioning policy" table in README.
+# Both were removed in PR #206 (README front-door rewrite) — the release
+# badge is now dynamic via shields.io's GitHub-release endpoint, and the
+# versioning-policy table was replaced by a generic CHANGELOG pointer.
+info "2/2 Markdown version markers"
 info "  (handled by 'npm --prefix website run generate' — run it after this script)"
-
-# 4. README.md versioning policy
-info "4/4 README.md versioning policy"
-CURRENT_MINOR="${CURRENT_VERSION%.*}"
-NEW_MINOR="${NEW_VERSION%.*}"
-if [[ "$CURRENT_MINOR" != "$NEW_MINOR" ]]; then
-    bump_file "$BASE_DIR/README.md" \
-        "${CURRENT_MINOR}.x | Actuel" \
-        "${NEW_MINOR}.x | Actuel" \
-        "Versioning policy (current)"
-fi
 
 echo ""
 if $DRY_RUN; then
