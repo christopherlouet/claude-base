@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.41.0] - 2026-05-19
+
+Minor release. Post-v1.40.0 follow-up focused on **doc-drift hardening** and **front-door UX**. Headline addition: a new **`scripts/audit-docs.sh` doc drift firewall** integrated into `audit-base.sh` — catches 5 syntactic drift categories (paths, claude-base verbs, init/update flags, local scripts, npm scripts) before merge, with per-category env-var bypass and 14 new bats tests. Two doc hygiene PRs canonicalize user-facing docs on the `claude-base` CLI dispatcher (no more `./scripts/X.sh` confusion for post-install users) and rewrite the README front-door for HN/Reddit-style first-time visitors (30s pitch, persona-fit table, "What you get on disk" tangible artifact, 60-second tour). Two `Fixed` entries close pre-existing latent drift (install path, hard-coded counter prose).
+
+Counters : `tests` 645 → 659 (+14 audit-docs bats). No new commands/agents/skills/rules/presets. Behaviour-additive across the board, no breaking change.
+
 ### Changed
 
 - **README front-door rewrite**. Replaces the kitchen-sink "What is it?" feature

@@ -101,7 +101,7 @@ Full catalogue: [Docusaurus reference](https://christopherlouet.github.io/claude
 ```text
 $ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
 [INFO] Cloning to ~/.local/share/claude-base ...
-[OK]   Cloned (foundation v1.40.0)
+[OK]   Cloned (foundation v1.41.0)
 [OK]   Symlinked dispatcher → ~/.local/bin/claude-base
 [INFO] Done. Run `claude-base help` to get started.
 
