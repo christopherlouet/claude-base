@@ -62,13 +62,10 @@ Each step has its dedicated commands, specialized agents, and best practices.
 ## Quick start
 
 ```bash
-# Clone the template
-git clone https://github.com/christopherlouet/claude-base.git .claude
+# Install the foundation (one-liner)
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
 
-# Or use the install script
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh | bash
-
-# Stack-specific install (auto-filtered foundation + curated vendor pointers)
+# Stack-specific init (auto-filtered foundation + curated vendor pointers)
 claude-base init --preset nextjs   ./my-web-app    # Next.js fullstack
 claude-base init --preset fastapi  ./my-api        # Python async backend
 claude-base init --preset phaser   ./my-game       # 2D web game (vendor-pointer)

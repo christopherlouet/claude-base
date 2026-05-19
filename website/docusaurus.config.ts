@@ -42,7 +42,7 @@ const config: Config = {
     ],
   ],
   title: 'claude-base',
-  tagline: 'Claude Code configuration template for an optimal workflow: Explore → Specify → Plan → TDD → Commit',
+  tagline: 'Opinionated Claude Code foundation: Explore → Specify → Plan → TDD → Audit → Commit',
   favicon: 'img/favicon.svg',
 
   // GitHub Pages configuration
