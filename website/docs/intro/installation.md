@@ -38,20 +38,20 @@ The foundation exposes a single script that copies the `.claude/` configuration,
 
 ```bash
 # 1. Clone the foundation (just once, anywhere)
-git clone https://github.com/christopherlouet/claude-base.git ~/.claude-base
+git clone https://github.com/christopherlouet/claude-base.git ~/.local/share/claude-base
 
 # 2. Simple installation (just .claude/ + CLAUDE.md)
-~/.claude-base/scripts/new-project.sh --simple /path/to/your-project
+~/.local/share/claude-base/scripts/new-project.sh --simple /path/to/your-project
 
 # 3. Or full installation (adds hooks, MCP, .github/, CI scripts)
-~/.claude-base/scripts/new-project.sh --all /path/to/your-project
+~/.local/share/claude-base/scripts/new-project.sh --all /path/to/your-project
 ```
 
 You can also run the script from your project:
 
 ```bash
 cd /path/to/your-project
-~/.claude-base/scripts/new-project.sh --simple .
+~/.local/share/claude-base/scripts/new-project.sh --simple .
 ```
 
 #### Useful options
@@ -139,11 +139,11 @@ You should see the orientation guide. Then try a simple workflow:
 
 ```bash
 # Update the local foundation
-cd ~/.claude-base
+cd ~/.local/share/claude-base
 git pull origin main
 
 # Re-synchronize the files in your project
-~/.claude-base/scripts/update.sh /path/to/your-project
+~/.local/share/claude-base/scripts/update.sh /path/to/your-project
 ```
 
 The `update.sh` script is idempotent: it updates the foundation files (commands, agents, skills, rules, scripts/hooks) without touching your customizations (`CLAUDE.md`, `.claude/settings.local.json`).
@@ -244,7 +244,7 @@ If the hook is present but does not execute, check that the scripts in the `scri
 ls .claude/commands/
 
 # Re-synchronize from the foundation
-~/.claude-base/scripts/update.sh .
+~/.local/share/claude-base/scripts/update.sh .
 ```
 
 ### Permission errors on hooks
@@ -258,14 +258,14 @@ chmod +x .claude/scripts/*.sh scripts/hooks/*.sh
 ```bash
 # Backup + clean reinstall
 ./scripts/uninstall.sh --keep-claude-md .
-~/.claude-base/scripts/new-project.sh --simple .
+~/.local/share/claude-base/scripts/new-project.sh --simple .
 ```
 
 ### Full diagnosis
 
 ```bash
-~/.claude-base/scripts/doctor.sh /path/to/your-project
-~/.claude-base/scripts/diff.sh   /path/to/your-project
+~/.local/share/claude-base/scripts/doctor.sh /path/to/your-project
+~/.local/share/claude-base/scripts/diff.sh   /path/to/your-project
 ```
 
 ## Next steps
