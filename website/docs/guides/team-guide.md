@@ -339,10 +339,10 @@ export ANTHROPIC_API_KEY=sk-ant-your-key
 ### Step 3: Initialize the foundation
 
 ```bash
-./scripts/new-project.sh --simple .
+./bin/claude-base init --simple .
 ```
 
-This script configures the hooks, the permissions, and verifies the `.claude/` structure.
+This dispatcher invocation configures the hooks, the permissions, and verifies the `.claude/` structure.
 
 ### Step 4: Copy the environment variables
 

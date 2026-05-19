@@ -2117,9 +2117,9 @@ The `scripts/validate.sh` script verifies the integrity of the configuration. It
 - Basic security (no secrets in committed files)
 
 ```bash
-./scripts/validate.sh .              # Validate the current directory
-./scripts/validate.sh --format json  # JSON output for CI
-./scripts/validate.sh --format score # Score output only
+claude-base validate .              # Validate the current directory
+claude-base validate --format json  # JSON output for CI
+claude-base validate --format score # Score output only
 ```
 
 #### Adding a command
@@ -2163,7 +2163,7 @@ git checkout -b feature/my-specialized-agent
 /dev:dev-tdd "add the my-specialized-agent agent"
 
 # 3. Validate
-./scripts/validate.sh .
+claude-base validate .
 
 # 4. Audit
 /qa:qa-loop "score 90"

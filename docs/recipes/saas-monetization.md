@@ -184,5 +184,5 @@ It does NOT install Stripe, billing schema, or webhook handlers. If you're using
 The recipe assumes you've installed the foundation via:
 
 ```bash
-./scripts/new-project.sh --preset nextjs ./my-app
+claude-base init --preset nextjs ./my-app
 ```

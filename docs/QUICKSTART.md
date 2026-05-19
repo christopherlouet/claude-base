@@ -5,11 +5,11 @@
 ## Installation (30 seconds)
 
 ```bash
-# From the foundation
-./scripts/new-project.sh --simple /path/to/your-project
+# After installing the foundation (curl | bash — see README)
+claude-base init --simple /path/to/your-project
 
-# Or from your project
-/path/to/claude-base/scripts/new-project.sh --simple .
+# Or from your project, current directory
+claude-base init --simple .
 ```
 
 ## First usage

@@ -33,14 +33,14 @@ The scripts are organized into 5 categories:
 
 ### new-project.sh
 
-Main script to create a new project or configure an existing project.
+Installs the foundation in a new or existing project. **User-facing CLI: `claude-base init`** (alias for this script — same args, dispatched via `bin/claude-base`).
 
 ```bash
-# Quick install (recommended)
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh | bash
+# Quick install of the foundation itself (recommended)
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
 
-# Or from the cloned foundation
-./scripts/new-project.sh [OPTIONS] [PATH]
+# Then, to install the foundation into a project:
+claude-base init [OPTIONS] [PATH]
 ```
 
 **Main options:**
@@ -59,12 +59,14 @@ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/s
 
 ```bash
 # New React project with CI/CD
-./scripts/new-project.sh -t react -n my-app --cicd --hooks
+claude-base init -t react -n my-app --cicd --hooks
 
 # Configure an existing project
 cd my-existing-project
-./scripts/new-project.sh --cicd --hooks
+claude-base init --cicd --hooks
 ```
+
+**Direct script access (advanced)** — from a foundation clone, `./scripts/new-project.sh [OPTIONS] [PATH]` is equivalent.
 
 **Features:**
 - Automatic project type detection
@@ -78,14 +80,10 @@ cd my-existing-project
 
 ### update.sh
 
-Updates commands, agents, skills and rules from the foundation.
+Updates commands, agents, skills and rules from the foundation. **User-facing CLI: `claude-base update`**.
 
 ```bash
-# Quick update
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/update.sh | bash
-
-# Or from the cloned foundation
-./scripts/update.sh [OPTIONS] [PATH]
+claude-base update [OPTIONS] [PATH]
 ```
 
 **Options:**
@@ -106,14 +104,16 @@ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/s
 
 ```bash
 # Standard update
-./scripts/update.sh
+claude-base update
 
 # Forced update with cleanup
-./scripts/update.sh --force --clean
+claude-base update --force --clean
 
 # Update skills only
-./scripts/update.sh --skills
+claude-base update --skills
 ```
+
+**Direct script access (advanced)** — `./scripts/update.sh [OPTIONS] [PATH]` is equivalent.
 
 ---
 
@@ -202,10 +202,10 @@ Identical files:               98
 
 ### uninstall.sh
 
-Removes the Claude Code configuration from a project.
+Removes the Claude Code configuration from a project. **User-facing CLI: `claude-base uninstall`**.
 
 ```bash
-./scripts/uninstall.sh [OPTIONS] [PATH]
+claude-base uninstall [OPTIONS] [PATH]
 ```
 
 **Options:**
@@ -221,11 +221,13 @@ Removes the Claude Code configuration from a project.
 
 ```bash
 # Uninstall with backup (default)
-./scripts/uninstall.sh
+claude-base uninstall
 
 # Full uninstall
-./scripts/uninstall.sh --force --no-backup
+claude-base uninstall --force --no-backup
 ```
+
+**Direct script access (advanced)** — `./scripts/uninstall.sh [OPTIONS] [PATH]` is equivalent.
 
 :::caution
 By default, a backup is created in `.claude-backup-YYYYMMDD-HHMMSS/`.
@@ -291,10 +293,10 @@ Result: 4 OK, 1 warning, 1 error
 
 ### validate.sh
 
-Validates the Claude Code configuration and computes a quality score.
+Validates the Claude Code configuration and computes a quality score. **User-facing CLI: `claude-base validate`**.
 
 ```bash
-./scripts/validate.sh [OPTIONS] [PATH]
+claude-base validate [OPTIONS] [PATH]
 ```
 
 **Options:**
@@ -304,22 +306,15 @@ Validates the Claude Code configuration and computes a quality score.
 | `--json` | JSON output format |
 | `--score` | Show only the score |
 
-**Special actions (used by hooks):**
+**Special actions (used internally by hooks, not user-facing):**
 
 ```bash
-# Protect the main branch
+# These subcommands are invoked by hook scripts in .claude/settings.json
+# and call validate.sh directly. Users do NOT invoke them via claude-base.
 ./scripts/validate.sh protect-main
-
-# Auto-format
 ./scripts/validate.sh auto-format $FILE_PATH
-
-# Type check
 ./scripts/validate.sh typecheck $FILE_PATH
-
-# Auto-install dependencies
 ./scripts/validate.sh auto-install $FILE_PATH
-
-# Session message
 ./scripts/validate.sh session-start
 ```
 
@@ -327,12 +322,14 @@ Validates the Claude Code configuration and computes a quality score.
 
 ```bash
 # Full validation
-./scripts/validate.sh
+claude-base validate
 
 # Score only
-./scripts/validate.sh --score
+claude-base validate --score
 # Output: 85
 ```
+
+**Direct script access (advanced)** — `./scripts/validate.sh [OPTIONS] [PATH]` is equivalent.
 
 ---
 
@@ -427,7 +424,7 @@ Full structural audit: detects orphan files, broken references, inconsistencies 
 
 ### export-minimal.sh
 
-Exports a minimal configuration of the foundation as a `.tar.gz` archive (or copies directly to a target folder). Used by `new-project.sh --minimal` for projects that only want a subset of the foundation.
+Exports a minimal configuration of the foundation as a `.tar.gz` archive (or copies directly to a target folder). Used internally by `claude-base init --minimal` for projects that only want a subset of the foundation.
 
 ```bash
 # Default archive (dist/claude-base-minimal.tar.gz)
@@ -444,34 +441,25 @@ The manifest of included files is defined in `scripts/lib/minimal-manifest.txt`.
 
 ---
 
-## Usage with curl
-
-Several scripts can be run directly from GitHub:
+## Installing the foundation itself (one-liner)
 
 ```bash
-# Install
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh | bash
-
-# Update
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/update.sh | bash
-
-# With options (requires downloading first)
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh -o /tmp/new-project.sh
-chmod +x /tmp/new-project.sh
-/tmp/new-project.sh --cicd --hooks
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
 ```
+
+This clones the foundation to `~/.local/share/claude-base/` and symlinks the `claude-base` dispatcher into `~/.local/bin/`. After that, all the user-facing commands below are available on your PATH.
 
 ---
 
 ## Summary
 
-| Script | Main usage | Quick command |
-|--------|-----------------|-----------------|
-| `new-project.sh` | Create/configure a project | `curl ... \| bash` |
-| `update.sh` | Update | `curl ... \| bash` |
-| `check-updates.sh` | Check for updates | `./scripts/check-updates.sh` |
-| `diff.sh` | Compare with the foundation | `./scripts/diff.sh` |
-| `uninstall.sh` | Uninstall | `./scripts/uninstall.sh` |
-| `doctor.sh` | Diagnose | `./scripts/doctor.sh --fix` |
-| `validate.sh` | Validate config | `./scripts/validate.sh` |
-| `ide.sh` | Configure IDEs | `./scripts/ide.sh setup vscode` |
+| Script | User-facing CLI | Main usage |
+|--------|-----------------|------------|
+| `new-project.sh` | `claude-base init` | Create/configure a project |
+| `update.sh` | `claude-base update` | Update an installed project |
+| `validate.sh` | `claude-base validate` | Validate config |
+| `uninstall.sh` | `claude-base uninstall` | Uninstall the foundation |
+| `check-updates.sh` | _(no alias)_ — `./scripts/check-updates.sh` | Check for updates |
+| `diff.sh` | _(no alias)_ — `./scripts/diff.sh` | Compare with the foundation |
+| `doctor.sh` | _(no alias)_ — `./scripts/doctor.sh --fix` | Diagnose |
+| `ide.sh` | _(no alias)_ — `./scripts/ide.sh setup vscode` | Configure IDEs |
