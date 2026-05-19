@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **Fix preset list drift in README and canonical catalogues**.
+  Five drifts corrected: `README.md` "Why claude-base" line + the
+  later "Presets" subsection listed only 6 presets while the
+  auto-bumped badge said 11 (the 5 vendor-pointer instances
+  shipped #185-#191 were never named in the narrative);
+  `.claude/presets/README.md` text still said "1 vendor-pointer
+  preset (`phaser`)" frozen at PR #185; the manifest-shape
+  example in the same file lacked `vendor-pointer` in the
+  status enum; `specs/presets/spec.md` status header was frozen
+  at "1 vendor-pointer". Pure documentation hygiene — the README
+  now lists all 11 presets across their 3 tiers and links to the
+  canonical catalogue + the vendor-pointer tier spec.
+
 - **Mark 4 shipped specs as Validated**. `specs/marketplace-audit/`
   (Living document, 4 audit pilots in use), `specs/vendor-skills-game-dev/`
   (shipped #183), `specs/presets-vendor-pointer-tier/` (shipped #185,

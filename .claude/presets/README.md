@@ -41,7 +41,7 @@ See `specs/presets/spec.md` for the full format specification and `specs/presets
 
 When a user runs `claude-base init ./empty-dir` interactively without `--preset` or `--type`, and auto-detection produces no match, a pre-prompt asks "What are you building?" with an 8-entry intent taxonomy (Web frontend / API-Backend / Mobile-Desktop / Game-Interactive media / Data-Database / Infra-DevOps / CLI-Automation / Other-Generic). The chosen category filters the subsequent menu down to relevant presets and types. A preset opts in by declaring `categories: [string]` in its manifest (strict enum validated by `validate-presets.sh`). Presets without `categories[]` remain accessible via auto-detection, `--preset` flag, and `claude-base preset list` (soft migration). Spec: [`specs/preset-category-prompt/spec.md`](../../specs/preset-category-prompt/spec.md).
 
-The 6 maintainer-vouched presets cover the maintainer's actual production usage. The 1 vendor-pointer preset (`phaser`) surfaces a vendor-published skill suite at install time without a maintainer prod-use claim — its authority comes from the vendor's authorship of the pointed-to skill, validated via the marketplace-audit methodology. See [`specs/presets-vendor-pointer-tier/spec.md`](../../specs/presets-vendor-pointer-tier/spec.md) for the tier definition. For other stacks (Django, Rails, Laravel, SvelteKit, Vue/Nuxt, Spring Boot, Phoenix, Go-Gin, Rust-Axum, Flutter, etc.), community contributions are welcomed — see `specs/presets/roadmap.md`.
+The 6 maintainer-vouched presets cover the maintainer's actual production usage. The 5 vendor-pointer presets (`phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`) surface vendor-published skill suites at install time without a maintainer prod-use claim — their authority comes from the vendor's authorship of the pointed-to skill, validated via the marketplace-audit methodology. See [`specs/presets-vendor-pointer-tier/spec.md`](../../specs/presets-vendor-pointer-tier/spec.md) for the tier definition. For other stacks (Django, Rails, Laravel, SvelteKit, Vue/Nuxt, Spring Boot, Phoenix, Go-Gin, Rust-Axum, Flutter, etc.), community contributions are welcomed — see `specs/presets/roadmap.md`.
 
 ## Community presets
 
@@ -54,7 +54,7 @@ Community contributions land under `.claude/presets/community/` after maintainer
   "name": "<stack-specific-lowercase-with-hyphens>",
   "displayName": "<short human-readable>",
   "description": "<2-3 lines, explicit about scope, names what is OUT>",
-  "status": "maintainer-vouched | community-curated | draft",
+  "status": "maintainer-vouched | community-curated | vendor-pointer | draft",
   "appliesToTypes": ["<existing claude-base type>"],
   "detect": {
     "combinator": "anyOf",
