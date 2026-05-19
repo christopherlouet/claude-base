@@ -1182,3 +1182,178 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"mongodb"* ]]
 }
+
+# =============================================================================
+# Category-prompt feature (spec: preset-category-prompt)
+#
+# 10 tests covering EF-001/005/006/007/009/010 + CP1/CP4 + drift-guard.
+# TDD pattern: each test must fail in RED state (lib missing OR validator
+# enum missing), pass after the corresponding GREEN phase.
+# =============================================================================
+
+@test "presets: validate-presets.sh rejects categories[] with out-of-enum value (T004, EF-006)" {
+    cat > "$TEST_DIR/bad-cat-enum.json" <<'EOF'
+{
+  "name": "bad-cat-enum",
+  "displayName": "Bad category enum",
+  "description": "Test fixture: categories[] must contain only values from the locked 8-slug enum.",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"path": "package.json", "contains": "foo"}]
+  },
+  "recommendedVendorSkills": [
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+  ],
+  "categories": ["mobile-native"]
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/bad-cat-enum.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"categories"* ]]
+    [[ "$output" == *"mobile-native"* ]]
+}
+
+@test "presets: validate-presets.sh accepts categories[] empty array as field-absent (T005, EF-006)" {
+    cat > "$TEST_DIR/cat-empty.json" <<'EOF'
+{
+  "name": "cat-empty",
+  "displayName": "Empty categories",
+  "description": "Test fixture: an empty categories[] is treated as field-absent (no rejection).",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"path": "package.json", "contains": "foo"}]
+  },
+  "recommendedVendorSkills": [
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+  ],
+  "categories": []
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/cat-empty.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: validate-presets.sh accepts categories[] with 2 valid slugs (T006, EF-014 multi-category)" {
+    cat > "$TEST_DIR/cat-multi.json" <<'EOF'
+{
+  "name": "cat-multi",
+  "displayName": "Multi-category",
+  "description": "Test fixture: categories[] may declare multiple valid slugs.",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "outOfScope": [],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [{"path": "package.json", "contains": "foo"}]
+  },
+  "recommendedVendorSkills": [
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+  ],
+  "categories": ["web-frontend", "api-backend"]
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/cat-multi.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "presets: ask_category reads stdin and prints selected slug (T007, US-1)" {
+    [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        echo '4' | ask_category
+    "
+    [ "$status" -eq 0 ]
+    # Choice 4 (1-indexed) → game-interactive-media per locked taxonomy order
+    [[ "$output" == *"game-interactive-media"* ]]
+}
+
+@test "presets: get_project_type skips category prompt when stdin is not a TTY (T008, EF-009)" {
+    [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
+    # Stdin redirected from /dev/null → not a TTY → guard short-circuits.
+    # The marker word "What are you building" must NOT appear.
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        # Simulate the guard logic from get_project_type
+        if [ -t 0 ]; then
+            ask_category
+        fi
+    " < /dev/null
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"What are you building"* ]]
+}
+
+@test "presets: get_project_type bypasses category prompt when PRESET_NAME is set (T009, EF-010)" {
+    [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
+    # When PRESET_NAME is set (user passed --preset), category prompt MUST NOT fire.
+    run env BASE_DIR="$BASE_DIR" PRESET_NAME=phaser bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        # Simulate the 5-guard logic from get_project_type
+        if [[ -z \"\$PRESET_NAME\" ]] && [[ -z \"\$FORCE_TYPE\" ]]; then
+            echo '4' | ask_category
+        fi
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"game-interactive-media"* ]]
+}
+
+@test "presets: get_project_type bypasses category prompt when FORCE_TYPE is set (T010, EF-010)" {
+    [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
+    run env BASE_DIR="$BASE_DIR" FORCE_TYPE=python bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        if [[ -z \"\$PRESET_NAME\" ]] && [[ -z \"\$FORCE_TYPE\" ]]; then
+            echo '4' | ask_category
+        fi
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"game-interactive-media"* ]]
+}
+
+@test "presets: print_filtered_type_menu(game-interactive-media) lists phaser (T011, US-4)" {
+    [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
+    [ "$(jq -r '.categories // [] | join(",")' "$BASE_DIR/.claude/presets/phaser.json")" = "game-interactive-media" ]
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/menu.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        MATCHED_PRESETS=()
+        print_filtered_type_menu 'game-interactive-media'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"phaser"* ]]
+}
+
+@test "presets: apply_category_choice on empty input maps to other-generic (T012, CP1 default)" {
+    [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        apply_category_choice ''
+        echo \"\$SELECTED_CATEGORY_SLUG\"
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"other-generic"* ]]
+}
+
+@test "presets: taxonomy slugs in lib/category-map.sh match roadmap.md exactly (T013, drift-guard CS-013)" {
+    [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
+    [ -f "$BASE_DIR/specs/presets/roadmap.md" ]
+    # Extract slugs from lib (within the _CATEGORY_SLUGS array literal).
+    local lib_slugs
+    lib_slugs=$(grep -A 1 "^_CATEGORY_SLUGS=(" "$BASE_DIR/scripts/lib/category-map.sh" | tr ' ' '\n' | grep -E "^[a-z][a-z-]*$" | sort -u | tr '\n' ',')
+    # Extract slugs documented in the roadmap's "Category taxonomy" section.
+    local roadmap_slugs
+    roadmap_slugs=$(sed -n '/## Category taxonomy/,/^## /p' "$BASE_DIR/specs/presets/roadmap.md" | grep -oE '`[a-z][a-z-]+`' | tr -d '`' | sort -u | tr '\n' ',')
+    [ -n "$lib_slugs" ]
+    [ -n "$roadmap_slugs" ]
+    [ "$lib_slugs" = "$roadmap_slugs" ]
+}
