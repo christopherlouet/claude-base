@@ -40,6 +40,8 @@
     "Non-Node MongoDB stacks (Python `pymongo`, Go driver, Java driver) — out of this preset's scope"
   ],
 
+  "categories": ["data-database"],
+
   "relatedPresetsWanted": [
     "mongoose"
   ]

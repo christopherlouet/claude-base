@@ -92,6 +92,8 @@
     "Vendor-specific React/Next.js patterns — pair this preset with the vendor skill at vercel-labs/agent-skills (react-best-practices) for canonical Vercel guidance; see specs/marketplace-audit/dev-skills-pilot-2026-05-05.md"
   ],
 
+  "categories": ["web-frontend", "api-backend"],
+
   "relatedPresetsWanted": [
     "astro",
     "sveltekit",
