@@ -329,13 +329,19 @@ validate_one() {
         else
             local cat_n
             cat_n=$(jq -r '.categories | length' "$file")
-            local ci cval
-            for ci in $(seq 0 $((cat_n - 1))); do
-                cval=$(jq -r ".categories[$ci]" "$file")
-                if ! echo "$ALLOWED_CATEGORIES" | jq -e ". | index(\"$cval\")" >/dev/null 2>&1; then
-                    errs+=("categories[$ci] '$cval' not in $ALLOWED_CATEGORIES (EF-006)")
-                fi
-            done
+            # Guard: empty array → skip the loop (treated as field-absent).
+            # Required for macOS BSD seq compatibility (GNU `seq 0 -1` is
+            # empty, BSD `seq 0 -1` outputs "0\n-1" — would iterate and
+            # falsely reject the empty-array case).
+            if [ "$cat_n" -gt 0 ]; then
+                local ci cval
+                for ci in $(seq 0 $((cat_n - 1))); do
+                    cval=$(jq -r ".categories[$ci]" "$file")
+                    if ! echo "$ALLOWED_CATEGORIES" | jq -e ". | index(\"$cval\")" >/dev/null 2>&1; then
+                        errs+=("categories[$ci] '$cval' not in $ALLOWED_CATEGORIES (EF-006)")
+                    fi
+                done
+            fi
         fi
     fi
 
