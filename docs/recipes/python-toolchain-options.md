@@ -132,7 +132,7 @@ pip install -r requirements.txt
 
 - If a vendor-neutral Claude Code plugin equivalent to `astral@astral-sh` ships (e.g. for `pdm` or `mypy`), Path 2 will gain a CC integration option.
 - If Astral's roadmap under OpenAI publishes meaningful Codex-specific divergence — or stays neutral after 12 months — the policy filter on `astral@astral-sh` may be reconsidered.
-- ✅ `scripts/update.sh --add-plugin <id>` shipped in v1.33.0 (idempotent helper that adds an entry to `enabledPlugins` without overwriting other keys).
+- ✅ `claude-base update --add-plugin <id>` shipped in v1.33.0 (idempotent helper that adds an entry to `enabledPlugins` without overwriting other keys). The underlying script remains `scripts/update.sh` for foundation contributors.
 
 The pilot trace is in `specs/marketplace-audit/cli-tools-pilot-2026-05-05.md`. Re-evaluation criteria are listed there.
 
