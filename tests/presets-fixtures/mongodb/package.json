@@ -1,0 +1,11 @@
+{
+  "name": "fixture-mongodb",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "mongodb": "^6.10.0"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^9.0.0"
+  }
+}

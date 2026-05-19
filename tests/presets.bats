@@ -1146,3 +1146,39 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"apollo"* ]]
 }
+
+# =============================================================================
+# mongodb vendor-pointer preset (5th vendor-pointer instance) — exercises the
+# colon-anchored substring pattern ("mongodb":) to avoid false positives on
+# packages whose name starts with "mongodb" (mongodb-memory-server, etc.).
+# The paired fixture intentionally includes mongodb-memory-server as a
+# devDependency to validate the disambiguation.
+# =============================================================================
+
+@test "presets: mongodb.json (vendor-pointer) uses colon-anchored substring (regression guard)" {
+    [ -f "$BASE_DIR/.claude/presets/mongodb.json" ]
+    [ "$(jq -r '.status' "$BASE_DIR/.claude/presets/mongodb.json")" = "vendor-pointer" ]
+    # The substring MUST include the trailing colon to disambiguate from
+    # mongodb-memory-server, @types/mongodb, mongodb-runner, etc.
+    local contains
+    contains=$(jq -r '.detect.depFiles[0].contains' "$BASE_DIR/.claude/presets/mongodb.json")
+    [ "$contains" = '"mongodb":' ]
+    run "$VALIDATE_PRESETS"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"mongodb.json"* ]]
+}
+
+@test "presets: mongodb detect rule matches its fixture (US-5)" {
+    [ -d "$BASE_DIR/tests/presets-fixtures/mongodb" ]
+    # Fixture includes mongodb-memory-server as a devDependency — the detect
+    # must still match because the direct mongodb dep is present.
+    grep -q '"mongodb-memory-server"' "$BASE_DIR/tests/presets-fixtures/mongodb/package.json"
+    grep -q '"mongodb": ' "$BASE_DIR/tests/presets-fixtures/mongodb/package.json"
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/mongodb'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"mongodb"* ]]
+}

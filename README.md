@@ -3,7 +3,7 @@
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
-[![Tests](https://img.shields.io/badge/tests-633%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-635%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
@@ -16,7 +16,7 @@ A Claude Code configuration kit for a solid, reproducible development workflow.
 
 - A structured development workflow: **Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit**
 - **<!-- count:commands -->131<!-- /count --> commands**, **<!-- count:agents -->63<!-- /count --> sub-agents**, **<!-- count:skills -->54<!-- /count --> skills**, and **30 path-specific rules** wired together
-- **<!-- count:presets -->10<!-- /count --> stack-specific presets** (`nextjs`, `react-vite-spa`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) installable via `claude-base init --preset <name> <path>`
+- **<!-- count:presets -->11<!-- /count --> stack-specific presets** (`nextjs`, `react-vite-spa`, `fastapi`, `astro`, `cli-tools`, `homelab-proxmox`) installable via `claude-base init --preset <name> <path>`
 - **Auto-detection of presets** — `claude-base init <existing-project>` recognizes the stack via marker files (e.g. `next.config.js`, `pyproject.toml` containing `fastapi`) and surfaces the matching preset at the top of the type menu. Standalone audit via `claude-base init --detect-only <path>`. Adding a new preset is data-driven (a `.json` manifest with a `detect` block — no code change in detection scripts).
 - **Preset-aware updates** — `claude-base update --all` keeps the preset's skill filter applied, so a project bootstrapped with `--preset nextjs` no longer drifts back to the unfiltered foundation on every refresh. Override with `--preset <name>`, opt out with `--no-preset`. The filter is COPY-only — files already on disk are never deleted.
 - **Curated vendor skill pointers** per preset, surfaced at install time via the recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) — <!-- count:vendorSkillsValidated -->17<!-- /count --> vendor skills validated across <!-- count:marketplaceAuditPilots -->4<!-- /count --> marketplace audit pilots
@@ -176,7 +176,7 @@ claude-base/
 ├── .lintstagedrc.json           # lint-staged config
 ├── .commitlintrc.json           # commitlint config
 │
-├── tests/                       # <!-- count:tests -->633<!-- /count --> automated tests (bats)
+├── tests/                       # <!-- count:tests -->635<!-- /count --> automated tests (bats)
 │   ├── test_helper.bash         # Shared helpers
 │   ├── new-project.bats         # Install script tests
 │   ├── update.bats              # Update script tests
@@ -529,7 +529,7 @@ brew install bats-core
 ./scripts/test.sh -v
 ```
 
-### Test layout (<!-- count:testFiles -->28<!-- /count --> files, <!-- count:tests -->633<!-- /count --> tests)
+### Test layout (<!-- count:testFiles -->28<!-- /count --> files, <!-- count:tests -->635<!-- /count --> tests)
 
 | File | Description |
 |------|-------------|

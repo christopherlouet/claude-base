@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`mongodb` vendor-pointer preset (5th instance of the tier)**.
+  Surfaces `mongodb/agent-skills` (Apache-2.0, 114★, verified
+  2026-05-19, last commit 2026-05-18) at install time on projects
+  whose `package.json` contains `"mongodb":` (colon-anchored
+  substring — disambiguates from `mongodb-memory-server`,
+  `@types/mongodb`, `mongodb-runner`, etc. that would all match
+  a bare `mongodb` substring). The paired fixture intentionally
+  includes `mongodb-memory-server` as a `devDependency` to
+  validate the disambiguation in a regression test. Mongoose ODM
+  remains a separate hypothetical candidate per the strict
+  1-entry detect rule (EF-005). MongoDB Inc. is independent
+  (no vendor-neutrality concern). Counter `presets` 10 → 11
+  (auto-regenerated).
+
 - **`apollo` vendor-pointer preset (4th instance of the tier)**.
   Surfaces `apollographql/skills` (MIT, 72★, verified 2026-05-19,
   last commit 2026-05-14) at install time on projects whose
