@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Mark 4 shipped specs as Validated**. `specs/marketplace-audit/`
+  (Living document, 4 audit pilots in use), `specs/vendor-skills-game-dev/`
+  (shipped #183), `specs/presets-vendor-pointer-tier/` (shipped #185,
+  5 instances live), `specs/preset-category-prompt/` (shipped #192).
+  Status headers updated with PR references and live-deliverable
+  pointers. Pure documentation hygiene — no functional change.
+
 ### Added
 
 - **Pre-detection category prompt + `categories[]` schema extension**.

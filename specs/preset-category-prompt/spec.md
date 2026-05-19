@@ -1,6 +1,6 @@
 # Spec: pre-detection category prompt (Option C1)
 
-**Status**: Draft (planning, not yet validated)
+**Status**: Validated — all P1+P2+P3 stories shipped in PR #192 (2026-05-19). Pre-detection category prompt live in `scripts/new-project.sh`; `categories[]` schema extension enforced by `scripts/validate-presets.sh`; all 11 shipped presets retrofitted; 8-entry taxonomy mirrored by [`specs/presets/roadmap.md`](../presets/roadmap.md) §"Category taxonomy" (drift-guard test).
 **Date**: 2026-05-19
 **Owner**: Chris
 
