@@ -27,16 +27,19 @@ teardown() {
 # Category: paths (EF-001)
 # =============================================================================
 
-@test "audit-docs: rejects unknown ~/X path prefix (T005, EF-001)" {
+@test "audit-docs: rejects unknown ~/X claude-related path prefix (T005, EF-001)" {
+    # Threat model: typos of foundation paths. We narrow scope to paths
+    # containing "claude" — generic ~/X paths (~/.ssh, ~/.zshrc) are
+    # tutorial-legit and out of scope.
     cat > "$TEST_DIR/bad-path.md" <<'EOF'
 # Bad path
 
-Run `~/nonexistent-prefix/foo` to break things.
+Run `~/.claude-bogus-install/foo` to break things.
 EOF
     run "$AUDIT_DOCS" --target "$TEST_DIR/bad-path.md" --category paths
     [ "$status" -eq 1 ]
     [[ "$output" == *"paths"* ]]
-    [[ "$output" == *"nonexistent-prefix"* ]]
+    [[ "$output" == *"claude-bogus-install"* ]]
 }
 
 @test "audit-docs: accepts known ~/.local/share/claude-base/ path (T006, EF-001)" {
@@ -195,14 +198,14 @@ EOF
     cat > "$TEST_DIR/mixed-drift.md" <<'EOF'
 # Mixed drift
 
-Run `claude-base bogusverb` against `~/nonexistent/foo`.
+Run `claude-base bogusverb` against `~/.claude-bogus/foo`.
 EOF
     run env AUDIT_DOCS_SKIP_PATHS=1 "$AUDIT_DOCS" --target "$TEST_DIR/mixed-drift.md"
     [ "$status" -eq 1 ]
     [[ "$output" == *"verbs"* ]]
     [[ "$output" == *"bogusverb"* ]]
-    # The path drift should NOT be reported
-    [[ "$output" != *"nonexistent"* ]]
+    # The path drift should NOT be reported (skipped via env var)
+    [[ "$output" != *"claude-bogus"* ]]
 }
 
 # =============================================================================

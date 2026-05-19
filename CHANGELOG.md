@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Doc drift firewall: `scripts/audit-docs.sh`**. Catches 5 categories of
+  syntactic drift in hand-maintained docs that the existing gates miss:
+  unknown `~/X` claude-related path prefixes, unknown `claude-base <verb>`
+  invocations, unknown `claude-base init|update --<flag>` flags, references
+  to missing `./scripts/<X>.sh`, and unknown `npm --prefix website run <X>`
+  scripts. Each category is allowlisted from a small bash array at the top
+  of the script — 1-line edit to extend. Wired into `audit-base.sh` as a
+  new step. Exits non-zero on any drift ; per-category bypass via
+  `AUDIT_DOCS_SKIP_{PATHS,VERBS,FLAGS,SCRIPTS,NPM}=1`. Historical bugs that
+  would have been caught earlier: PR #199 (`~/.claude-base/` install path
+  drift, 10 occurrences, latent for months). Threat model focuses on
+  foundation-path typos — generic user paths (`~/.ssh`, `~/.kube`,
+  `~/.zshrc`) are out of scope. Spec :
+  `specs/audit-docs/spec.md`. +14 bats tests (zero-FP gate against the
+  real foundation repo included).
+
 ### Fixed
 
 - **Latent counter drift: hard-coded numbers wrapped in `<!-- count:* -->` markers**.
