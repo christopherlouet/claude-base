@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.40.0] - 2026-05-19
+
+Minor release. Two-week burst of foundation-level features around preset discovery and curation, plus a documentation hygiene sweep that surfaces them across README / EXTENDING-GUIDE / Docusaurus public pages. Headline additions: a new **`vendor-pointer` preset tier** (5 instances shipped: phaser, playwright, pulumi, apollo, mongodb), an **interactive category prompt** in `claude-base init` (8-entry intent taxonomy), an **`AGENTS.md`** cross-tool entry point at repo root, and an **optional `categories[]` field** on the preset manifest schema. All 11 shipped presets retrofitted in the same delivery. Counter `presets` 6 → 11 ; `vendorSkillsValidated` 16 → 17 ; `tests` 620 → 645 (+25 bats tests).
+
+Behaviour-additive across the board, no breaking change. The category prompt is silently skipped on non-TTY, `--skip-prompts`, `--yes`, `--preset`, `--type`, or when auto-detect already produced a match — default flow for existing users unchanged.
+
 ### Changed
 
 - **Surface preset system in the Docusaurus public-facing pages**.
@@ -180,7 +186,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   to 17 (auto-regenerated). No bundled skill or preset added.
   Spec at [`specs/vendor-skills-game-dev/`](./specs/vendor-skills-game-dev/).
 
-### Changed
+### Changed (additional)
 
 - **Documentation refresh for Claude Code 2.1.141 / 2.1.142**. Surface
   six recent CLI behaviors across the foundation docs without any
@@ -206,6 +212,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
     `--model`, `--effort`, …) shipped in CLI 2.1.142, and
     Anthropic's **Agent View** research preview as a
     complementary cross-process session monitor.
+
+- **Commit batch-2 marketplace-audit plan**. `specs/marketplace-audit/batch-2-plan-2026-05-18.md`
+  (151 lines, finalized plan for legal + growth audits against
+  `anthropics/claude-plugins-official` — narrowed comparator,
+  3-bucket verdict matrix, no-rubric, count-drift acknowledged)
+  was sitting untracked in the working tree through the entire
+  feature burst. Committed for visibility to future sessions.
+  Planning artifact; pilots execute in follow-up sessions.
+
+### Fixed
+
+- **Docusaurus broken-link fix for `EXTENDING-GUIDE §8`**.
+  `docs/guides/EXTENDING-GUIDE.md` §8 "Author a preset" (shipped
+  earlier in this release) introduced 3 relative links
+  (`../../specs/presets-vendor-pointer-tier/spec.md`,
+  `../../specs/preset-category-prompt/spec.md`,
+  `../../specs/presets/roadmap.md`) that the Docusaurus build
+  couldn't resolve because `specs/` is not synced to
+  `website/docs/`. Added the 3 paths to `LINK_MAP` in
+  `website/scripts/sync-docs.ts` to rewrite them to GitHub URLs
+  during the doc sync — same pattern as existing
+  `../../.claude/presets/` and `../../specs/marketplace-audit/`
+  entries. Deploy Documentation workflow on `main` is restored.
+
+- **vite bumped to `^6.4.2` in react-vite-spa fixture**. The
+  `tests/presets-fixtures/react-vite-spa/package.json` stub
+  declared `"vite": "^5.0.0"`. Bumped to `^6.4.2` (silences
+  Dependabot, no exploit surface because the fixture is a
+  string-match target only — `npm install` is never executed
+  on it). See "Security" below for the underlying CVE detail.
+
+### Security
+
+- **CVE-2026-39365 / GHSA-4w7w-66w2-5vf9** (medium severity, vite
+  path-traversal in optimized-deps `.map` handling, range `≤ 6.4.1`,
+  patched in `6.4.2`). Fixed by bumping the `react-vite-spa`
+  fixture to `^6.4.2`. The fixture is a stub `package.json` used
+  only for detect-rule string matching (no `npm install`, no vite
+  dev server start) — practical exploit surface is zero, but the
+  bump silences Dependabot durably and tracks current versions.
 
 ## [1.39.0] - 2026-05-13
 

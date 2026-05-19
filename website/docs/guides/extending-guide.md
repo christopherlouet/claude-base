@@ -657,7 +657,7 @@ Three tiers, with different bars to ship :
 | `community-curated` | A community contributor's prod use | Signed maintenance commitment ≥ 1 year, issue-first proposal | Same as maintainer-vouched but lives under `.claude/presets/community/` |
 | `vendor-pointer` | The vendor's authorship of the pointed-to skill (validated via the marketplace-audit methodology) | Vendor source already validated in `docs/recipes/recommended-vendor-skills.md`. No prod-use claim required from the shipper. | **Forbidden**: `foundation.skills.*`, `marketplacePlugins`, `defaults` overrides. **Required**: `recommendedVendorSkills` with ≥ 1 entry, simple `detect` (1 signal exactly). |
 
-The `vendor-pointer` tier is the **lowest-cost contribution path** for stacks where a vendor publishes a canonical skill suite (Phaser, Playwright, Apollo, MongoDB, Pulumi…). See [`specs/presets-vendor-pointer-tier/spec.md`](../../specs/presets-vendor-pointer-tier/spec.md) for the full enforcement rules (EF-003/004/005).
+The `vendor-pointer` tier is the **lowest-cost contribution path** for stacks where a vendor publishes a canonical skill suite (Phaser, Playwright, Apollo, MongoDB, Pulumi…). See [`specs/presets-vendor-pointer-tier/spec.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/presets-vendor-pointer-tier/spec.md) for the full enforcement rules (EF-003/004/005).
 
 ### Minimal manifest (vendor-pointer)
 
@@ -692,11 +692,11 @@ The `vendor-pointer` tier is the **lowest-cost contribution path** for stacks wh
 
 ### Declare a `categories[]` for menu discovery
 
-When `claude-base init` runs on an empty directory without `--preset` / `--type`, a pre-detection prompt asks "What are you building?" with an 8-entry intent taxonomy (locked enum, mirrored by [`specs/presets/roadmap.md`](../../specs/presets/roadmap.md) §"Category taxonomy") :
+When `claude-base init` runs on an empty directory without `--preset` / `--type`, a pre-detection prompt asks "What are you building?" with an 8-entry intent taxonomy (locked enum, mirrored by [`specs/presets/roadmap.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/presets/roadmap.md) §"Category taxonomy") :
 
 `web-frontend` · `api-backend` · `mobile-desktop` · `game-interactive-media` · `data-database` · `infra-devops` · `cli-automation` · `other-generic`
 
-A preset declares `categories: [<slug>]` to opt into the filtered menu after the user picks a category. Multi-category is allowed for legitimately cross-cutting cases (e.g. `["web-frontend", "api-backend"]` for `nextjs` or `playwright`). Validation is strict-enum — see [`specs/preset-category-prompt/spec.md`](../../specs/preset-category-prompt/spec.md). Omitting the field keeps the preset accessible via auto-detection, `--preset` flag, and `claude-base preset list` (soft migration — no breaking change).
+A preset declares `categories: [<slug>]` to opt into the filtered menu after the user picks a category. Multi-category is allowed for legitimately cross-cutting cases (e.g. `["web-frontend", "api-backend"]` for `nextjs` or `playwright`). Validation is strict-enum — see [`specs/preset-category-prompt/spec.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/preset-category-prompt/spec.md). Omitting the field keeps the preset accessible via auto-detection, `--preset` flag, and `claude-base preset list` (soft migration — no breaking change).
 
 ### Workflow
 
