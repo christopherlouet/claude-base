@@ -1,6 +1,6 @@
 # Spec: per-domain audit vs Claude Code marketplace
 
-**Status**: Draft (planning, not yet validated)
+**Status**: Validated — Living document. Methodology in use; 4 audit pilots shipped (cli-tools, dev-skills, qa-skills, ops-skills 2026-05-05/06); the methodology is the gatekeeper for [`docs/recipes/recommended-vendor-skills.md`](../../docs/recipes/recommended-vendor-skills.md) (17 vendor entries validated as of 2026-05-19).
 **Date**: 2026-05-04
 **Owner**: Chris
 

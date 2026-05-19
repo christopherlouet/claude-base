@@ -1,6 +1,6 @@
 # Spec: acknowledge game-dev as a vendor-pointer gap
 
-**Status**: Draft (planning, not yet validated)
+**Status**: Validated — all P1+P2 stories shipped in PR #183 (2026-05-18). Phaser vendor pointer live in [`docs/recipes/recommended-vendor-skills.md`](../../docs/recipes/recommended-vendor-skills.md); [`specs/presets/roadmap.md`](../presets/roadmap.md) "Game / Interactive media" subsection live; counter `vendorSkillsValidated` 16 → 17.
 **Date**: 2026-05-18
 **Owner**: Chris
 
