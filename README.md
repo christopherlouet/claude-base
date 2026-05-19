@@ -199,103 +199,25 @@ cp claude-base/.github your-project/ -r
 
 The commands above install and update **claude-base** — they do not touch the underlying Claude Code CLI. If you installed Claude Code through Homebrew or WinGet, you can opt into background upgrades by exporting `CLAUDE_CODE_PACKAGE_MANAGER_AUTO_UPDATE=1` in your shell. This has no effect on the curl one-liner install of claude-base, and no effect if you installed Claude Code through any other channel. Available in Claude Code 2.1.129+.
 
-## Structure
+## Repository layout
 
-```
-claude-base/
-├── CLAUDE.md                    # Main project instructions
-├── CLAUDE.local.md.example      # Local config template
-├── README.md                    # This file
-├── .gitignore
-│
-├── .claude/
-│   ├── settings.json            # Permissions and hooks
-│   ├── skills/                  # <!-- count:skills -->54<!-- /count --> specialized skills
-│   └── commands/                # <!-- count:commands -->131<!-- /count --> available commands
-│       ├── assistant.md         # Main orchestrator
-│       ├── work/                # Workflow (15 commands)
-│       │   ├── work-explore.md
-│       │   ├── work-plan.md
-│       │   ├── work-commit.md
-│       │   ├── work-pr.md
-│       │   └── ...
-│       ├── dev/                 # Development (23 commands)
-│       │   ├── dev-tdd.md
-│       │   ├── dev-api.md
-│       │   └── ...
-│       ├── qa/                  # Quality (16 commands)
-│       │   ├── qa-review.md
-│       │   ├── qa-security.md
-│       │   └── ...
-│       ├── ops/                 # Operations (34 commands)
-│       ├── doc/                 # Documentation (9 commands)
-│       ├── biz/                 # Business (11 commands)
-│       ├── growth/              # Growth (11 commands)
-│       ├── data/                # Data (3 commands)
-│       └── legal/               # Legal (5 commands)
-│
-├── .mcp.json                    # MCP configuration
-│
-├── .github/workflows/           # GitHub Actions CI/CD
-│   ├── ci.yml                   # Tests, lint, build
-│   ├── pr-check.yml             # PR validation
-│   └── release.yml              # Automated releases
-│
-├── .husky/                      # Git hooks
-│   ├── pre-commit
-│   └── commit-msg
-├── .pre-commit-config.yaml      # Pre-commit config
-├── .lintstagedrc.json           # lint-staged config
-├── .commitlintrc.json           # commitlint config
-│
-├── tests/                       # <!-- count:tests -->659<!-- /count --> automated tests (bats)
-│   ├── test_helper.bash         # Shared helpers
-│   ├── new-project.bats         # Install script tests
-│   ├── update.bats              # Update script tests
-│   ├── validate.bats            # Validation tests
-│   ├── docs-under-claude.bats   # v1.30 layout tests
-│   └── ...                      # <!-- count:testFiles -->29<!-- /count --> test files in total
-│
-├── .gitleaks.toml               # gitleaks config (secret detection)
-├── VERSION                      # Centralized foundation version (1.30.0)
-│
-├── scripts/                     # Utility scripts
-│   ├── new-project.sh           # Create / install (modes --simple, --all)
-│   ├── update.sh                # Update
-│   ├── validate.sh              # Validation
-│   ├── uninstall.sh             # Uninstall
-│   ├── doctor.sh                # Diagnostic
-│   ├── diff.sh                  # Diff against the foundation
-│   ├── hooks/                   # Hook scripts referenced by settings.json
-│   └── lib/common.sh            # Shared library
-│
-├── templates/                   # 11 CLAUDE.*.md templates by stack
-│   ├── CLAUDE.react.md          # React
-│   ├── CLAUDE.nextjs.md         # Next.js (App Router)
-│   ├── CLAUDE.vue.md            # Vue.js 3
-│   ├── CLAUDE.node-api.md       # Node.js API
-│   ├── CLAUDE.python.md         # Python
-│   ├── CLAUDE.go.md             # Go
-│   ├── CLAUDE.rust.md           # Rust
-│   ├── CLAUDE.java.md           # Java / Spring Boot
-│   ├── CLAUDE.fullstack.md      # Fullstack monorepo
-│   ├── CLAUDE.flutter.md        # Flutter / Dart (Mobile)
-│   └── CLAUDE.neovim.md         # Neovim / Lua config
-│
-└── docs/                        # Documentation (English)
-    ├── QUICKSTART.md            # 5-minute getting started
-    ├── CHEATSHEET.md            # Command quick reference
-    ├── ARCHITECTURE.md          # Commands vs Agents vs Skills vs Rules
-    ├── WORKFLOWS.md             # Workflow diagrams
-    ├── STACK-RECIPES.md         # Commands/agents/skills per stack
-    ├── CUSTOMIZATION.md         # Customization guide
-    ├── reference/               # Reference docs (best-practices, hooks…)
-    └── guides/                  # 4 specific guides
-        ├── EXTENDING-GUIDE.md   # Extend the foundation
-        ├── TEAM-GUIDE.md        # Team adoption
-        ├── PROMPTING-GUIDE.md   # Prompting techniques
-        └── TROUBLESHOOTING-GUIDE.md
-```
+After `curl | bash` install, the foundation lives at `~/.local/share/claude-base/`. The repo's top-level layout:
+
+| Path | Role |
+|---|---|
+| `bin/claude-base` | CLI dispatcher (`init` / `update` / `validate` / `preset` / `uninstall` / `version` / `help`) |
+| `install.sh` | One-liner installer — clones to `~/.local/share/claude-base/`, symlinks the dispatcher to `~/.local/bin/` |
+| `.claude/` | Foundation kit — `skills/`, `agents/`, `commands/`, `rules/`, `presets/`, `output-styles/`, `templates/`, `settings.json` |
+| `scripts/` | Implementation scripts behind the CLI + maintenance tools (`audit-base.sh`, `audit-docs.sh`, `doctor.sh`, `diff.sh`, ...) + hook scripts |
+| `templates/` | Stack-specific `CLAUDE.*.md` templates + advisory docs (`FAQ.md`, `PERFORMANCE-GUIDE.md`, `TROUBLESHOOTING.md`) |
+| `docs/` | Human-maintained documentation — `QUICKSTART.md`, `CHEATSHEET.md`, `ARCHITECTURE.md`, `WORKFLOWS.md`, `STACK-RECIPES.md`, `CUSTOMIZATION.md`, `recipes/`, `reference/`, `guides/` |
+| `website/` | [Docusaurus site](https://christopherlouet.github.io/claude-base/) — `docs/` is auto-mirrored here by `npm --prefix website run generate` |
+| `specs/` | Feature specs consumed by the workflow agents (`/work:work-specify`, `/work:work-plan`) |
+| `tests/` | <!-- count:tests -->659<!-- /count --> bats tests across <!-- count:testFiles -->29<!-- /count --> files |
+| `.github/workflows/` | CI : `ci.yml`, `security.yml`, `docs.yml`, `pr-check.yml`, `release.yml`, `dependabot-auto-merge.yml` |
+| `AGENTS.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `counts.json` | Project metadata |
+
+For the full file-by-file reference, see the [Docusaurus reference docs](https://christopherlouet.github.io/claude-base/docs/reference).
 
 ## Available Commands (<!-- count:commands -->131<!-- /count -->)
 
@@ -303,15 +225,15 @@ Commands are grouped into 9 domains:
 
 | Domain | Count | Examples |
 |---------|------:|----------|
-| `work-` | 15 | `/work:work-explore`, `/work:work-plan`, `/work:work-commit`, `/work:work-pr`, `/work:work-flow-feature` |
-| `dev-` | 23 | `/dev:dev-tdd`, `/dev:dev-debug`, `/dev:dev-api`, `/dev:dev-flutter`, `/dev:dev-prisma` |
-| `qa-` | 16 | `/qa:qa-loop`, `/qa:qa-security`, `/qa:qa-perf`, `/qa:wcag-audit`, `/qa:qa-e2e` |
-| `ops-` | 34 | `/ops:ops-deploy`, `/ops:ops-docker`, `/ops:ops-monitoring`, `/ops:ops-k8s`, `/ops:ops-rollback` |
-| `doc-` | 9 | `/doc:doc-onboard`, `/doc:doc-explain`, `/doc:doc-changelog`, `/doc:doc-architecture` |
-| `biz-` | 11 | `/biz:biz-model`, `/biz:biz-mvp`, `/biz:biz-pricing`, `/biz:biz-personas` |
-| `growth-` | 11 | `/growth:growth-landing`, `/growth:growth-seo`, `/growth:growth-cro`, `/growth:growth-funnel` |
-| `data-` | 3 | `/data:data-pipeline`, `/data:data-modeling`, `/data:data-analytics` |
-| `legal-` | 5 | `/legal:legal-rgpd`, `/legal:legal-terms-of-service`, `/legal:legal-privacy-policy` |
+| `work-` | <!-- count:byDomain.work -->15<!-- /count --> | `/work:work-explore`, `/work:work-plan`, `/work:work-commit`, `/work:work-pr`, `/work:work-flow-feature` |
+| `dev-` | <!-- count:byDomain.dev -->23<!-- /count --> | `/dev:dev-tdd`, `/dev:dev-debug`, `/dev:dev-api`, `/dev:dev-flutter`, `/dev:dev-prisma` |
+| `qa-` | <!-- count:byDomain.qa -->16<!-- /count --> | `/qa:qa-loop`, `/qa:qa-security`, `/qa:qa-perf`, `/qa:wcag-audit`, `/qa:qa-e2e` |
+| `ops-` | <!-- count:byDomain.ops -->34<!-- /count --> | `/ops:ops-deploy`, `/ops:ops-docker`, `/ops:ops-monitoring`, `/ops:ops-k8s`, `/ops:ops-rollback` |
+| `doc-` | <!-- count:byDomain.doc -->9<!-- /count --> | `/doc:doc-onboard`, `/doc:doc-explain`, `/doc:doc-changelog`, `/doc:doc-architecture` |
+| `biz-` | <!-- count:byDomain.biz -->11<!-- /count --> | `/biz:biz-model`, `/biz:biz-mvp`, `/biz:biz-pricing`, `/biz:biz-personas` |
+| `growth-` | <!-- count:byDomain.growth -->11<!-- /count --> | `/growth:growth-landing`, `/growth:growth-seo`, `/growth:growth-cro`, `/growth:growth-funnel` |
+| `data-` | <!-- count:byDomain.data -->3<!-- /count --> | `/data:data-pipeline`, `/data:data-modeling`, `/data:data-analytics` |
+| `legal-` | <!-- count:byDomain.legal -->5<!-- /count --> | `/legal:legal-rgpd`, `/legal:legal-terms-of-service`, `/legal:legal-privacy-policy` |
 
 → **Full list**: [docs/CHEATSHEET.md](docs/CHEATSHEET.md) or the [Docusaurus catalog](https://christopherlouet.github.io/claude-base/docs/commands).
 
@@ -372,7 +294,7 @@ Commands are grouped into 9 domains:
 /work:work-pr user profile screen
 ```
 
-## Available Templates (11)
+## Available Templates
 
 | Template | Language / Framework |
 |----------|---------------------|
@@ -615,7 +537,9 @@ brew install bats-core
 | `common.bats` | Utility function tests |
 | `new-project.bats` | Install script tests |
 | `update.bats` | Update script tests |
-| `docs-under-claude.bats` | v1.30 layout tests (`.claude/docs/`) |
+| `docs-under-claude.bats` | Structural layout tests (`.claude/docs/`) |
+| `audit-docs.bats` | Doc drift firewall tests (`scripts/audit-docs.sh`) |
+| `install.bats` | One-liner installer tests (`install.sh`) |
 | `validate.bats` | Validation script tests |
 | `doctor.bats` | Diagnostic script tests |
 | `gitleaks.bats` | gitleaks config tests |
@@ -629,7 +553,7 @@ brew install bats-core
 | `update-presets.bats` | Preset-aware update behaviour (`--preset`, `--no-preset`, filter, multi-match) |
 | `menu.bats` | Interactive type-menu rendering when matched presets prepend |
 | `manifest-hooks-coverage.bats` | Drift guard between source `settings.json` hooks and the minimal-install manifest |
-| `diff.bats`, `ide.bats`, `learn.bats`, `uninstall.bats`, `test-runner.bats` | Tests for the related scripts |
+| `diff.bats`, `ide.bats`, `uninstall.bats`, `test-runner.bats`, `dispatcher.bats` | Tests for the related scripts |
 
 ## Migration & Breaking Changes
 
