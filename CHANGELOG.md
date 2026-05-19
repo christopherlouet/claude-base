@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`apollo` vendor-pointer preset (4th instance of the tier)**.
+  Surfaces `apollographql/skills` (MIT, 72★, verified 2026-05-19,
+  last commit 2026-05-14) at install time on projects whose
+  `package.json` contains `"@apollo/client"`. The vendor's skill
+  suite covers Apollo Client, Apollo Server 5, Apollo Connectors,
+  Federation 2, and Apollo Kotlin — but the strict 1-entry detect
+  rule (EF-005) forces a choice; this preset targets the dominant
+  client-side use case. Server-side Apollo (`@apollo/server`,
+  `@apollo/gateway`) and Apollo Kotlin are documented in
+  `outOfScope` for a hypothetical follow-up `apollo-server` preset.
+  Apollo GraphQL Inc. is independent (no vendor-neutrality
+  concern). Counter `presets` 9 → 10 (auto-regenerated).
+
 - **`pulumi` vendor-pointer preset (3rd instance of the tier)**.
   Surfaces `pulumi/agent-skills` (Apache-2.0, 48★, verified
   2026-05-18, last commit 2026-05-13) at install time on projects

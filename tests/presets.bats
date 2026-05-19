@@ -1119,3 +1119,30 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"pulumi"* ]]
 }
+
+# =============================================================================
+# apollo vendor-pointer preset (4th vendor-pointer instance) — depFiles[1] on
+# "@apollo/client" (the dominant Apollo entry point). Server-side Apollo is
+# documented in outOfScope per the strict 1-entry detect rule (EF-005).
+# =============================================================================
+
+@test "presets: apollo.json (vendor-pointer) is accepted by validate-presets.sh" {
+    [ -f "$BASE_DIR/.claude/presets/apollo.json" ]
+    [ "$(jq -r '.status' "$BASE_DIR/.claude/presets/apollo.json")" = "vendor-pointer" ]
+    # Detect targets the client-side package, not server-side
+    [ "$(jq -r '.detect.depFiles[0].contains' "$BASE_DIR/.claude/presets/apollo.json")" = '"@apollo/client"' ]
+    run "$VALIDATE_PRESETS"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"apollo.json"* ]]
+}
+
+@test "presets: apollo detect rule matches its fixture (US-5)" {
+    [ -d "$BASE_DIR/tests/presets-fixtures/apollo" ]
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/preset-detect.sh'
+        scan_presets '$BASE_DIR/tests/presets-fixtures/apollo'
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"apollo"* ]]
+}

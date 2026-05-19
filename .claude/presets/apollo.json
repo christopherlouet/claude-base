@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+
+  "name": "apollo",
+  "displayName": "Apollo GraphQL Client (vendor-pointer)",
+  "description": "Pointer-only preset for projects using Apollo Client. Surfaces the canonical Apollo skill suite (`apollographql/skills`, MIT) at install time on projects whose `package.json` contains `\"@apollo/client\"`. The vendor's skill suite covers Apollo Client, Apollo Server 5, Apollo Connectors, Federation 2, and Apollo Kotlin — but this preset detects on the client package (the most common entry point); server-side and Kotlin uses are listed in `outOfScope` because the strict 1-entry detect rule (EF-005) forces a choice. Server-side Apollo users still benefit from the recipe entry pointer, just not from auto-detection. Apollo GraphQL Inc. is independent (no vendor-neutrality concern). See `docs/recipes/recommended-vendor-skills.md` §Apollo GraphQL and `specs/presets-vendor-pointer-tier/spec.md` for the tier semantics.",
+
+  "version": "1.0.0",
+  "status": "vendor-pointer",
+
+  "author": {
+    "name": "Chris",
+    "github": "christopherlouet"
+  },
+
+  "appliesToTypes": ["generic"],
+
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [
+      {"path": "package.json", "contains": "\"@apollo/client\""}
+    ]
+  },
+
+  "recommendedVendorSkills": [
+    {
+      "id": "apollographql/skills",
+      "url": "https://github.com/apollographql/skills",
+      "rationale": "Canonical Apollo skill suite from Apollo GraphQL Inc., covering Apollo Client, Apollo Server 5, Apollo Connectors, Federation 2, and Apollo Kotlin. Verified via `gh api repos/apollographql/skills` on 2026-05-19 — 72★, last commit 2026-05-14, MIT, not archived. Pair with claude-base's `dev-graphql` skill (schema design, DataLoader, N+1 prevention, security).",
+      "condition": "always"
+    }
+  ],
+
+  "outOfScope": [
+    "Foundation skill curation — no `foundation.skills.keep/drop` filter (vendor-pointer tier)",
+    "Marketplace plugins — none bundled (vendor-pointer tier)",
+    "Opinionated install-time defaults — inherited from foundation defaults",
+    "Server-side Apollo (`@apollo/server`, `@apollo/server-*`, `@apollo/gateway`) — not auto-detected here per the strict 1-entry detect rule (EF-005). The vendor's skill suite still covers Apollo Server 5 and Federation 2; install manually via the recipe pointer or wait for a hypothetical follow-up `apollo-server` preset",
+    "Apollo Kotlin (`apollo-kotlin`) — out of scope (mobile / JVM stack, not JavaScript)",
+    "Non-Apollo GraphQL stacks (Yoga, Pothos, Mercurius, Strawberry, gqlgen) — claude-base's `dev-graphql` skill covers those"
+  ],
+
+  "relatedPresetsWanted": [
+    "apollo-server"
+  ]
+}
