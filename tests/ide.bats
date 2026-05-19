@@ -256,6 +256,39 @@ teardown() {
 }
 
 # =============================================================================
+# Dry-run tests — flag advertised in --help, must not touch the filesystem
+# =============================================================================
+
+@test "ide.sh setup vscode --dry-run writes nothing to disk" {
+    run "$IDE_SCRIPT" setup vscode --dry-run "$TEST_PROJECT"
+    [[ "$status" -eq 0 ]]
+    [[ ! -d "$TEST_PROJECT/.vscode" ]]
+    [[ ! -f "$TEST_PROJECT/.vscode/settings.json" ]]
+    [[ ! -f "$TEST_PROJECT/.vscode/tasks.json" ]]
+    [[ ! -f "$TEST_PROJECT/.vscode/extensions.json" ]]
+}
+
+@test "ide.sh setup idea --dry-run writes nothing to disk" {
+    run "$IDE_SCRIPT" setup idea --dry-run "$TEST_PROJECT"
+    [[ "$status" -eq 0 ]]
+    [[ ! -d "$TEST_PROJECT/.idea" ]]
+}
+
+@test "ide.sh setup vim --dry-run writes nothing to disk" {
+    run "$IDE_SCRIPT" setup vim --dry-run "$TEST_PROJECT"
+    [[ "$status" -eq 0 ]]
+    [[ ! -f "$TEST_PROJECT/.vimrc.claude" ]]
+}
+
+@test "ide.sh setup all --dry-run writes nothing to disk" {
+    run "$IDE_SCRIPT" setup all --dry-run "$TEST_PROJECT"
+    [[ "$status" -eq 0 ]]
+    [[ ! -d "$TEST_PROJECT/.vscode" ]]
+    [[ ! -d "$TEST_PROJECT/.idea" ]]
+    [[ ! -f "$TEST_PROJECT/.vimrc.claude" ]]
+}
+
+# =============================================================================
 # Structure tests
 # =============================================================================
 
