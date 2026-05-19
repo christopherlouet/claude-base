@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **Surface category prompt + AGENTS.md in README; new `Author a preset` section in EXTENDING-GUIDE**.
+  Two recent user-facing additions were under-documented despite
+  being shipped : the pre-detection category prompt (PR #192)
+  and the `AGENTS.md` cross-tool entry point (PR #187). The
+  README's "Presets" section now describes the 8-entry intent
+  taxonomy + when the prompt fires, and a new "Cross-tool
+  compatibility" paragraph names `AGENTS.md` and the SKILL.md
+  open-standard angle. `docs/guides/EXTENDING-GUIDE.md` gains a
+  new "## 8. Author a preset" section covering the 3 tiers
+  (maintainer-vouched / community-curated / vendor-pointer),
+  a minimal manifest example, the `categories[]` field, and a
+  10-step workflow. Pure documentation hygiene — no code change.
+
 - **Fix preset list drift in README and canonical catalogues**.
   Five drifts corrected: `README.md` "Why claude-base" line + the
   later "Presets" subsection listed only 6 presets while the

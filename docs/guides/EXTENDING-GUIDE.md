@@ -633,6 +633,76 @@ A pragmatic interim pattern: **keep `claude-base` as your project's `.claude/` t
 
 ---
 
+## 8. Author a preset
+
+A **preset** is a curated stack bundle that, on `claude-base init --preset <name>`, configures the foundation (rules / commands / agents / skills filter, defaults, marketplace pointers) for a specific stack. The catalogue lives under `.claude/presets/`.
+
+### Pick the right tier
+
+Three tiers, with different bars to ship :
+
+| Tier | Authority source | Bar | Manifest content |
+|---|---|---|---|
+| `maintainer-vouched` | The maintainer's prod use | ≥ 3 months production use + monthly review commitment | Opinionated `foundation.skills.keep` / `drop` filter, curated `marketplacePlugins`, `recommendedVendorSkills`, `defaults` (CI/hooks/MCP/Docker/designStyle) |
+| `community-curated` | A community contributor's prod use | Signed maintenance commitment ≥ 1 year, issue-first proposal | Same as maintainer-vouched but lives under `.claude/presets/community/` |
+| `vendor-pointer` | The vendor's authorship of the pointed-to skill (validated via the marketplace-audit methodology) | Vendor source already validated in `docs/recipes/recommended-vendor-skills.md`. No prod-use claim required from the shipper. | **Forbidden**: `foundation.skills.*`, `marketplacePlugins`, `defaults` overrides. **Required**: `recommendedVendorSkills` with ≥ 1 entry, simple `detect` (1 signal exactly). |
+
+The `vendor-pointer` tier is the **lowest-cost contribution path** for stacks where a vendor publishes a canonical skill suite (Phaser, Playwright, Apollo, MongoDB, Pulumi…). See [`specs/presets-vendor-pointer-tier/spec.md`](../../specs/presets-vendor-pointer-tier/spec.md) for the full enforcement rules (EF-003/004/005).
+
+### Minimal manifest (vendor-pointer)
+
+```json
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "myvendor",
+  "displayName": "MyVendor (vendor-pointer)",
+  "description": "Pointer-only preset for MyVendor. Surfaces the canonical skill suite at install time.",
+  "version": "1.0.0",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [
+      {"path": "package.json", "contains": "\"myvendor\":"}
+    ]
+  },
+  "recommendedVendorSkills": [
+    {
+      "id": "myvendor/skills",
+      "url": "https://github.com/myvendor/skills",
+      "rationale": "Canonical MyVendor skill suite. Verified via gh api on YYYY-MM-DD — N stars, MIT, not archived.",
+      "condition": "always"
+    }
+  ],
+  "categories": ["api-backend"],
+  "outOfScope": [],
+  "relatedPresetsWanted": []
+}
+```
+
+### Declare a `categories[]` for menu discovery
+
+When `claude-base init` runs on an empty directory without `--preset` / `--type`, a pre-detection prompt asks "What are you building?" with an 8-entry intent taxonomy (locked enum, mirrored by [`specs/presets/roadmap.md`](../../specs/presets/roadmap.md) §"Category taxonomy") :
+
+`web-frontend` · `api-backend` · `mobile-desktop` · `game-interactive-media` · `data-database` · `infra-devops` · `cli-automation` · `other-generic`
+
+A preset declares `categories: [<slug>]` to opt into the filtered menu after the user picks a category. Multi-category is allowed for legitimately cross-cutting cases (e.g. `["web-frontend", "api-backend"]` for `nextjs` or `playwright`). Validation is strict-enum — see [`specs/preset-category-prompt/spec.md`](../../specs/preset-category-prompt/spec.md). Omitting the field keeps the preset accessible via auto-detection, `--preset` flag, and `claude-base preset list` (soft migration — no breaking change).
+
+### Workflow
+
+1. **Read** `specs/presets/spec.md` (format) and the tier-specific spec (`specs/presets-vendor-pointer-tier/spec.md` if vendor-pointer).
+2. **Verify the vendor source** via `gh api repos/<owner>/<repo>` for stars / last commit / archived flag / license. Apply the vendor-neutrality filter (no vendors acquired by Anthropic competitors).
+3. **Draft the manifest** under `.claude/presets/<name>.json` (or `community/<name>.json` for community-curated).
+4. **Create a paired fixture** under `tests/presets-fixtures/<name>/` matching the detect rule.
+5. **Add bats tests** (positive accept + fixture-pairing) in `tests/presets.bats`.
+6. **Update the roadmap** (`specs/presets/roadmap.md` §"Shipped …" and §"Vendor-pointer candidates" if applicable).
+7. **Update the catalogue** (`.claude/presets/README.md` table row).
+8. **Regenerate counts** via `npm --prefix website run generate` (auto-bumps `counts.json#presets` + README badges).
+9. **Run the gauntlet** : `./scripts/validate-presets.sh`, `./scripts/validate-counts.sh`, `./scripts/audit-base.sh`, `bats tests/presets.bats`.
+10. **Open a PR** referencing the spec. The `categories[]` enum, the tier rules, and the drift-guard taxonomy test will catch most mistakes in CI.
+
+---
+
 ## Recap of locations
 
 ```
