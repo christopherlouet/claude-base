@@ -306,6 +306,26 @@ copy_dir() {
     cp -r "$src" "$dest"
 }
 
+# Writes stdin content to a file (simulation if DRY_RUN=true).
+# Drop-in replacement for `cat > "$path" <<'EOF' ... EOF` that respects
+# the DRY_RUN flag. In dry-run mode, the heredoc body is discarded.
+# Arguments:
+#   $1 - Destination file path
+# Reads:
+#   stdin
+write_file() {
+    local dest="$1"
+
+    if $DRY_RUN; then
+        # Drain stdin so the heredoc body doesn't leak to the next command
+        cat >/dev/null
+        echo -e "${DIM}[DRY-RUN]${NC} write $dest"
+        return 0
+    fi
+
+    cat > "$dest"
+}
+
 # Creates a directory (simulation if DRY_RUN=true)
 # Arguments:
 #   $1 - Directory path

@@ -123,7 +123,7 @@ setup_vscode_settings() {
         return
     fi
 
-    cat > "$settings_file" << 'EOF'
+    write_file "$settings_file" << 'EOF'
 {
     // ==========================================================================
     // Claude-Base VSCode Settings
@@ -190,7 +190,7 @@ setup_vscode_tasks() {
         return
     fi
 
-    cat > "$tasks_file" << 'EOF'
+    write_file "$tasks_file" << 'EOF'
 {
     "version": "2.0.0",
     "tasks": [
@@ -311,7 +311,7 @@ setup_vscode_extensions() {
         return
     fi
 
-    cat > "$extensions_file" << 'EOF'
+    write_file "$extensions_file" << 'EOF'
 {
     // ==========================================================================
     // Claude-Base Recommended Extensions
@@ -372,7 +372,7 @@ setup_vscode_snippets() {
         return
     fi
 
-    cat > "$snippets_file" << 'EOF'
+    write_file "$snippets_file" << 'EOF'
 {
     // ==========================================================================
     // Claude-Base Snippets
@@ -607,7 +607,7 @@ setup_idea_templates() {
     make_dir "$templates_dir"
 
     # Claude Agent template
-    cat > "$templates_dir/Claude Agent Command.md" << 'EOF'
+    write_file "$templates_dir/Claude Agent Command.md" << 'EOF'
 # ${NAME}
 
 ${DESCRIPTION}
@@ -638,7 +638,7 @@ setup_idea_run_configs() {
     make_dir "$run_dir"
 
     # Validate configuration
-    cat > "$run_dir/Claude_Validate.xml" << 'EOF'
+    write_file "$run_dir/Claude_Validate.xml" << 'EOF'
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Claude: Validate" type="ShConfigurationType">
     <option name="SCRIPT_TEXT" value="" />
@@ -658,7 +658,7 @@ setup_idea_run_configs() {
 EOF
 
     # Doctor configuration
-    cat > "$run_dir/Claude_Doctor.xml" << 'EOF'
+    write_file "$run_dir/Claude_Doctor.xml" << 'EOF'
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Claude: Doctor" type="ShConfigurationType">
     <option name="SCRIPT_TEXT" value="" />
@@ -678,7 +678,7 @@ EOF
 EOF
 
     # Test configuration
-    cat > "$run_dir/Claude_Test.xml" << 'EOF'
+    write_file "$run_dir/Claude_Test.xml" << 'EOF'
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Claude: Run Tests" type="ShConfigurationType">
     <option name="SCRIPT_TEXT" value="" />
@@ -706,7 +706,7 @@ setup_idea_codestyle() {
 
     make_dir "$codestyle_dir"
 
-    cat > "$codestyle_dir/Project.xml" << 'EOF'
+    write_file "$codestyle_dir/Project.xml" << 'EOF'
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
     <option name="RIGHT_MARGIN" value="100" />
@@ -811,7 +811,7 @@ setup_vim() {
     local nvim_dir="$dir/.config/nvim"
 
     # Create a Vim configuration file
-    cat > "$vimrc" << 'EOF'
+    write_file "$vimrc" << 'EOF'
 " =============================================================================
 " Claude-Base Vim Configuration
 " Source this file in your .vimrc: source .vimrc.claude
