@@ -658,7 +658,7 @@ list_presets() {
         echo "  (none — see specs/presets/roadmap.md)"
     fi
     echo ""
-    info "Use: $(basename "$0") --preset <name> <project-path>"
+    info "Use: $(cli_usage init) --preset <name> <project-path>"
 }
 
 # Load a preset JSON file and populate PRESET_* globals.
@@ -888,10 +888,10 @@ print_preset_suggestions() {
     echo ""
     if [[ ${#MATCHED_PRESETS[@]} -eq 1 ]]; then
         info "Detected stack — preset matches: ${BOLD}${MATCHED_PRESETS[0]}${NC}"
-        echo "  Try: $(basename "$0") --preset ${MATCHED_PRESETS[0]} <path>"
+        echo "  Try: $(cli_usage init) --preset ${MATCHED_PRESETS[0]} <path>"
     else
         info "Detected stack — multiple presets match: ${MATCHED_PRESETS[*]}"
-        echo "  Try: $(basename "$0") --preset <name> <path>"
+        echo "  Try: $(cli_usage init) --preset <name> <path>"
     fi
     echo ""
 }
