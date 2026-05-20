@@ -11,6 +11,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.41.2] - 2026-05-20
+
+Patch release. Six PRs since v1.41.1, same day — three bug fixes (one **critical** for every `curl | bash` user), one security CVE patch, plus the first asciinema GIF embedded in the README and an honest positioning vs `github/spec-kit`. No new commands/agents/skills/rules/presets ; no breaking change.
+
+Counters : `tests` 692 → **695** (+3 dispatcher symlink regression tests + minor adjustments). All other counts unchanged.
+
+### Fixed
+
+- **🔴 Critical : dispatcher symlink resolution** (#220). The `bin/claude-base` dispatcher computed `BASE_ROOT` via `dirname + cd + pwd` without resolving symlinks — but `install.sh` creates `~/.local/bin/claude-base` as a symlink to `~/.local/share/claude-base/bin/claude-base`. Result : **every user installed via `curl | bash` had a broken CLI** :
+  - `claude-base version` → `vunknown` (VERSION file not found at wrong BASE_ROOT)
+  - `claude-base init/update/validate/preset` → `No such file or directory` for the underlying script
+  Why CI didn't catch it : the bats suite always invoked the dispatcher directly from a foundation clone, never through a symlink. The bug only manifested for the documented one-liner install flow. Fix : portable bash idiom walking symlinks (works on Linux + macOS without coreutils / GNU `readlink -f`). +2 bats regression tests reproducing the symlink invocation. Discovered while building the asciinema demo recording inside a clean Docker container.
+
+- **Security : bump `ws` to 8.20.1** (#219, [Dependabot alert #43](https://github.com/christopherlouet/claude-base/security/dependabot/43)). Moderate-severity uninitialized-memory-disclosure in `ws >= 8.0.0 < 8.20.1`. Resolved transitively (via `webpack-dev-server`) by `npm audit fix` — no manual override needed. 3-line diff in `website/package-lock.json`. No production impact (`ws` is only used by the Docusaurus dev server, doesn't ship in the built site).
+
+- **Docusaurus rendering : strip count markers from fenced code blocks** (#218). The `inject-counts-md.ts` regen pipeline wrote `<!-- count:KEY -->NNN<!-- /count -->` everywhere uniformly. MDX strips HTML comments outside code fences but leaves them as **literal text inside fences**, so the markers leaked as visible text on /docs/intro/architecture and 7 other pages. User-reported via screenshot. Fix : strip the comment-wrappers inside code fences only (kept outside fences where the regen pipeline still uses them for auto-bump). +1 bats regression test scanning every `.md` for marker-in-fence (CI-gated).
+
+### Added
+
+- **Asciinema demo recording scaffolding** (#221). New `website/demo/{Dockerfile.demo,scenario.sh,record.sh,README.md}` to regenerate the README "60-second tour" GIF reproducibly :
+  - Isolated Docker container (Ubuntu 24.04 + Node + Claude Code CLI, non-root `demo` user matching host UID 1000)
+  - asciinema rec wrapping a `docker run` with the host's `~/.claude/` mounted into a writable temp copy (slash commands need to write back ; the host's real auth state is never touched)
+  - Renders the GIF via `agg --speed 1.5`
+  - `bash website/demo/record.sh` end-to-end (~60-90s for the recording, depending on Claude API latency)
+  - Auto-regen explicitly NOT wired to CI (Anthropic auth can't be exposed to CI secrets safely)
+
+- **Real asciinema GIF embedded in README** (#222). Replaces the previous static "60-second tour" prose with `60-second-tour.gif` (123 KB, 40s playback). Shows real `curl | bash` install + real `claude-base init --preset nextjs` + real `claude --print '/assistant How to use /dev:dev-tdd?'` reply with markdown coloring (H1 cyan, H2 yellow, inline code green, **bold**), Unicode braille `thinking...` spinner during the API wait, and a closing CTA. Reproducible via `bash website/demo/record.sh`.
+
+### Changed
+
+- **README positioning vs `github/spec-kit`** (#223). github/spec-kit (103K stars, by GitHub) is the canonical Spec-Driven Development toolkit covering `/speckit.{specify,plan,tasks,implement}` across 30+ AI agents. claude-base shares vocabulary ('Specify → Plan → Tasks'), risking visitor confusion. New `## How it fits in the AI-coding ecosystem` section with a dedicated `### vs Spec Kit` subsection + 10-row comparison table. Positions claude-base as the **Claude-Code-native discipline layer** (TDD enforced + qa-loop audit + 30 path-rules + hooks + anti-drift CI) complementary to spec-kit's multi-agent SDD primitives. Investigated whether claude-base could ship as a spec-kit extension : architecturally incompatible (no rules engine, no hooks-into-`settings.json`, no presets-with-vendor-pointers in spec-kit's manifest schema). Drop the idea, position side-by-side honestly.
+
 ## [1.41.1] - 2026-05-20
 
 Patch release. Twelve PRs since v1.41.0, all polish — 3 bug fixes + 2 test-coverage additions + 7 documentation cleanups. No new commands/agents/skills/rules/presets ; no breaking change.

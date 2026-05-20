@@ -553,4 +553,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->1.41.1<!-- /version --> - <!-- count:commands -->131<!-- /count --> commands - <!-- count:agents -->63<!-- /count --> agents - <!-- count:skills -->54<!-- /count --> skills - <!-- count:rules -->30<!-- /count --> rules*
+*Claude-Base v<!-- version -->1.41.2<!-- /version --> - <!-- count:commands -->131<!-- /count --> commands - <!-- count:agents -->63<!-- /count --> agents - <!-- count:skills -->54<!-- /count --> skills - <!-- count:rules -->30<!-- /count --> rules*
