@@ -12,7 +12,20 @@
 
 set -u
 
-DISPATCHER_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve symlinks so the dispatcher works whether invoked directly (from a
+# foundation clone) OR via the symlink that install.sh creates at
+# ~/.local/bin/claude-base → ~/.local/share/claude-base/bin/claude-base.
+# Without this, BASE_ROOT lands at ~/.local instead of the foundation root,
+# and every subsequent script exec fails. Portable bash idiom — works on
+# Linux + macOS without coreutils / GNU readlink dependency.
+_cb_src="${BASH_SOURCE[0]}"
+while [[ -L "$_cb_src" ]]; do
+    _cb_dir="$(cd -P "$(dirname "$_cb_src")" >/dev/null 2>&1 && pwd)"
+    _cb_src="$(readlink "$_cb_src")"
+    [[ "$_cb_src" != /* ]] && _cb_src="$_cb_dir/$_cb_src"
+done
+DISPATCHER_PATH="$(cd -P "$(dirname "$_cb_src")" >/dev/null 2>&1 && pwd)"
+unset _cb_src _cb_dir
 BASE_ROOT="$(dirname "$DISPATCHER_PATH")"
 SCRIPTS_DIR="$BASE_ROOT/scripts"
 PRESETS_DIR="$BASE_ROOT/.claude/presets"
