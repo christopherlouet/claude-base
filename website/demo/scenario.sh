@@ -109,8 +109,10 @@ cd "${HOME}/work/my-app"
 # /assistant is the foundation's orchestrator. With a focused question it
 # returns a short tailored answer — perfect for a demo frame.
 claude --print --output-format text "/assistant How to use /dev:dev-tdd?" < /dev/null 2>&1 | head -10 | colorize_md
-# Read-time : Claude's reply is the payoff, give the eye time to land
-pause 9
+# Read-time : Claude's reply is the payoff (8 lines w/ markdown + code
+# blocks). Give plenty of read time — this is THE frame viewers will
+# screenshot or pause on.
+pause 15
 
 # Step 5 — closing CTA (all visible at once, no late URL)
 clear
