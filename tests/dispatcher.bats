@@ -190,3 +190,42 @@ teardown() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"new-project.sh"* ]] || [[ "$output" == *"./scripts/new-project.sh"* ]]
 }
+
+# =============================================================================
+# Symlink invocation — install.sh creates ~/.local/bin/claude-base as a
+# symlink to ~/.local/share/claude-base/bin/claude-base. The dispatcher must
+# resolve the symlink to compute BASE_ROOT correctly ; otherwise BASE_ROOT
+# lands at ~/.local instead of ~/.local/share/claude-base, and every
+# subsequent script exec fails with "No such file or directory".
+#
+# Regression caught while preparing the asciinema demo recording — the
+# scripted curl|bash flow ended with broken `claude-base init`.
+# =============================================================================
+
+@test "dispatcher: invocation via symlink resolves BASE_ROOT correctly (version)" {
+    # Create a symlink mirroring what install.sh does
+    setup_test_dir
+    local symlink="$TEST_DIR/claude-base"
+    ln -s "$DISPATCHER" "$symlink"
+
+    run "$symlink" version
+    [ "$status" -eq 0 ]
+    # If the resolution is wrong, VERSION file isn't found and output is
+    # "claude-base vunknown" ; if correct, we get the real version
+    [[ "$output" != *"vunknown"* ]]
+    [[ "$output" =~ v[0-9]+\.[0-9]+\.[0-9]+ ]]
+    teardown_test_dir
+}
+
+@test "dispatcher: invocation via symlink can run subcommands (preset list)" {
+    setup_test_dir
+    local symlink="$TEST_DIR/claude-base"
+    ln -s "$DISPATCHER" "$symlink"
+
+    run "$symlink" preset list
+    [ "$status" -eq 0 ]
+    # If BASE_ROOT was wrong, this would fail with "No such file or directory"
+    [[ "$output" != *"No such file or directory"* ]]
+    [[ "$output" == *"Available presets"* ]] || [[ "$output" == *"NAME"* ]]
+    teardown_test_dir
+}
