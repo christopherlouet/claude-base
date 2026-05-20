@@ -1,0 +1,47 @@
+# =============================================================================
+# Demo recording environment for the README "60-second tour" asciinema cast.
+#
+# This image is NOT shipped to users — it's only used by website/demo/record.sh
+# to produce a reproducible recording of `claude-base init + a real Claude
+# session` inside an isolated environment.
+#
+# Build :   docker build -t claude-base-demo -f website/demo/Dockerfile.demo website/demo/
+# Run   :   see website/demo/record.sh
+# =============================================================================
+
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TERM=xterm-256color
+
+# Minimal toolchain :
+#   - curl + git + ca-certificates  → installer + foundation clone
+#   - bash                          → the recorded shell
+#   - tree                          → "show what was installed" step
+#   - nodejs + npm                  → @anthropic-ai/claude-code prerequisite
+#   - jq                            → install.sh dependency
+#   - less                          → claude TUI pager fallback
+#   - sudo                          → not used at runtime, only for image-build niceties
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl git bash ca-certificates tree jq less \
+        nodejs npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Claude Code CLI globally (as root, before dropping privileges).
+# Pinned to the latest available at image build time ; bump on demand by
+# rebuilding the image.
+RUN npm install -g @anthropic-ai/claude-code
+
+# Create a non-root user — install.sh refuses to run as root, by design.
+RUN useradd --create-home --shell /bin/bash demo
+
+# Recording entrypoint. Owned by demo so the script runs cleanly.
+COPY --chown=demo:demo scenario.sh /usr/local/bin/scenario
+RUN chmod +x /usr/local/bin/scenario
+
+# Pre-warm a clean /home/demo/work workspace.
+USER demo
+ENV PATH="/home/demo/.local/bin:${PATH}"
+WORKDIR /home/demo/work
+
+CMD ["/bin/bash", "-l"]
