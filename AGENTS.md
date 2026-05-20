@@ -25,7 +25,7 @@ Each subdirectory contains a `SKILL.md` (with YAML frontmatter) plus optional `e
 
 Path-scoped coding rules auto-activated by file type: [`.claude/rules/`](.claude/rules/)
 
-30 rules covering TypeScript, React, Next.js, Flutter, Go, Python, security, TDD enforcement, accessibility, performance, and more. Catalog and priority order: [`.claude/rules/README.md`](.claude/rules/README.md).
+<!-- count:rules -->30<!-- /count --> rules covering TypeScript, React, Next.js, Flutter, Go, Python, security, TDD enforcement, accessibility, performance, and more. Catalog and priority order: [`.claude/rules/README.md`](.claude/rules/README.md).
 
 ## Agents
 
@@ -35,7 +35,7 @@ Each `.md` file describes a focused sub-agent. Catalog: [`docs/reference/agents-
 
 ## Presets
 
-Curated stack bundles: [`.claude/presets/`](.claude/presets/) (maintainer-vouched, vendor-pointer). Install via `./scripts/new-project.sh --preset <name> <path>`.
+Curated stack bundles: [`.claude/presets/`](.claude/presets/) (maintainer-vouched, vendor-pointer). Install via `claude-base init --preset <name> <path>`.
 
 ## Key Conventions
 
