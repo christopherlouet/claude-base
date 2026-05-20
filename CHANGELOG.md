@@ -11,6 +11,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.41.1] - 2026-05-20
+
+Patch release. Twelve PRs since v1.41.0, all polish — 3 bug fixes + 2 test-coverage additions + 7 documentation cleanups. No new commands/agents/skills/rules/presets ; no breaking change.
+
+Counters : `tests` 659 → **692** (+33 bats), `commands/agents/skills/rules/presets` unchanged.
+
+### Fixed
+
+- **`scripts/ide.sh --dry-run` end-to-end** (#210). The `--dry-run` flag was advertised in `--help` but only partially functional : the lib-helper `run_cmd` skipped `mkdir`, but 10 heredoc-style file writes bypassed the dry-run gate and either errored (VSCode/IntelliJ : `cat: .vscode/settings.json: No such file or directory`) or silently wrote the file (Vim case). Introduced a new `write_file` helper in `scripts/lib/common.sh` (drop-in replacement for `cat > "$path" <<EOF`, symmetric to `copy_file` / `copy_dir`) and migrated the 10 call sites. The flag now works end-to-end ; 4 new bats tests cover the regression class.
+
+- **`scripts/bump-version.sh` obsolete steps removed** (#212). The release-flow bumper had four steps but two were silent no-ops since PR #206 :
+  - Step 2 looked for the static `release-v${VER}-blue` badge URL that was replaced by a dynamic shields.io GitHub-release endpoint.
+  - Step 4 looked for the `${MINOR}.x | Actuel` row in a French versioning-policy table that was rewritten as the generic "Upgrades & Changelog" pointer.
+  Each release emitted two `[!] pattern not found, may already drift` warnings — noise mainteners learn to ignore. Removed both steps cleanly, renumbered the remaining two, added a historical-note comment to prevent reinstatement. Surfaced by 10 new bats tests covering the release flow's dry-run path.
+
+- **Dispatcher CLI naming canonicalized end-to-end** (#216). Running `claude-base preset list` (or auto-detection hints) leaked the underlying script names in user-visible output : `Use: new-project.sh --preset <name> <path>`, `Try: new-project.sh --preset <name> <path>`. The dispatcher help also advertised `(alias for new-project.sh)`. Introduced an env-var-gated `cli_usage` helper that switches between `claude-base <verb>` (dispatcher mode) and `./scripts/X.sh` (direct foundation-contributor mode), wired through 4 call sites in `new-project.sh` + `diff.sh`. The canonicalization PR #202 sweep now extends to runtime output.
+
+### Added
+
+- **`tests/validate-presets.bats`** (#211) — 16 new tests covering preset manifest validation : JSON syntax rejection, required-field detection, status enum, name pattern (kebab-case), defaults shape, foundation.skills XOR (drop ⊕ keep), vendor-pointer tier semantics, marketplacePlugins shape, plus a regression test that all <!-- count:presets -->11<!-- /count --> shipped foundation presets validate cleanly. Closes the highest-value gap in the scripts/ bats coverage matrix — `validate-presets.sh` is invoked by `audit-base.sh` on every PR.
+
+- **`tests/bump-version.bats`** (#212) — 10 new tests covering the release flow's bump step in `--dry-run` mode (CI-safe, no fixture repo needed). Argument validation (missing arg, non-semver formats), dry-run safety (VERSION + README hashes byte-for-byte unchanged), and a regression test that the script's sed patterns still match the real README. The regression test was the canary that surfaced the obsolete-steps bug fixed above.
+
+- **`tests/dispatcher.bats` CLI-naming assertions** (#216) — 3 new tests : the dispatcher emits `claude-base init` in `preset list` footer ; dispatcher `--help` no longer leaks "alias for new-project.sh" ; foundation-contributor path (direct script invocation) still keeps the raw script name in its hint.
+
+### Changed
+
+- **README front-door rewrite** (#203, #205-#209) — five-PR sweep on `README.md` :
+  - Rewrote the first ~130 lines for HN/Reddit-style first-time visitors : opinionated tagline, 30-second `Try it` block, `Is it for you?` persona-fit table, `What you get on disk` tangible artifact, static `60-second tour` with realistic terminal output, `How it fits in the Claude Code ecosystem` promoted above the fold.
+  - Replaced the ~100-line file-by-file tree in the Structure section with a 13-row architecture-level table pointing to Docusaurus for file-by-file detail.
+  - Wrapped the 9 by-domain command counts in `<!-- count:byDomain.X -->` markers so they stay in sync via the regen pipeline.
+  - Killed 3 hard-coded counts (gitleaks `24+` rules, presets `6 maintainer-vouched + 5 vendor-pointer` breakdown, 19-row test-layout enumeration) — replaced with anchors-only tables + pointers to the source-of-truth file.
+  - Trimmed 6 verbose sections (IDE Integration, Pre-commit Hooks setup, Default Permissions table, gitleaks install, bats install, Production Readiness self-scores) by pointing to upstream docs instead of duplicating setup instructions.
+  - Fixed 4 visible drifts : `.claude/` tree listing 4 of 7 directories, "canonical 7-step workflow" mention, CI/CD section listing 3 of 6 workflows, stale "Migration & Breaking Changes" section frozen at v1.10/v1.30. Replaced the migration section with a generic "Upgrades & Changelog" pointer.
+  - Editorial consistency : added `recipes/` + `learning-path.md` pointers in Documentation, dropped phantom `dev-supabase` step from the Mobile Flutter walkthrough, surfaced `claude-base init --type react` as the preferred template-install path.
+
+  Net : README 720 → 536 lines (-184, -25%). All counts now in markers or self-counting tables.
+
+- **`docs/reference/agents-catalog.md` H2 counts wrapped in markers** (#213). 9 section headers (`## WORK-: Main Workflow (15)`, `## DEV-: Development (23)`, ...) had hardcoded counts — same anti-pattern eliminated from README in #205. Wrap all 9 with `<!-- count:byDomain.X -->N<!-- /count -->` so the regen pipeline keeps them in sync. Also fixed `docs/README.md` tree (missed `recipes/` directory) and the last user-facing `./scripts/update.sh` reference in `docs/recipes/python-toolchain-options.md`.
+
+- **`website/docs/intro/` pages canonicalized on `claude-base` CLI** (#214). The Docusaurus intro/ pages still documented the pre-dispatcher install flow that PR #202 fixed everywhere else. Replaced 5 stale `~/.local/share/claude-base/scripts/X.sh` invocations with the dispatcher form across `intro/installation.md` Method 1 / Update section / Troubleshooting, plus the `curl ... /scripts/new-project.sh | bash` recipe in `intro/quick-start.md`. Dropped hardcoded `(6 maintainer-vouched + 5 vendor-pointer)` tier breakdown from `intro/what-is-claude-code.md`. Corrected the `concepts/index.md:114` skill reference from non-existent `"security-audit"` to canonical `qa-security`.
+
+- **`AGENTS.md` (root cross-tool entry point) cleanup** (#215). Two latent drifts that PR #202 and PR #213 missed because both passes touched only files under `docs/` and `website/docs/` — but AGENTS.md is at repo root and is read by Codex / Cursor / Copilot / Gemini CLI : `./scripts/new-project.sh --preset` → `claude-base init --preset` (canonical), and hardcoded `30 rules covering ...` wrapped in `<!-- count:rules -->` marker. Plus renamed `website/docs/tutorials/opnsense-firewall.md` → `09-opnsense-firewall.md` to close the 01-08, **gap**, 10-12 file-tree numbering gap (Docusaurus strips numeric prefixes when deriving IDs, so URLs and sidebar entries are unchanged).
+
 ## [1.41.0] - 2026-05-19
 
 Minor release. Post-v1.40.0 follow-up focused on **doc-drift hardening** and **front-door UX**. Headline addition: a new **`scripts/audit-docs.sh` doc drift firewall** integrated into `audit-base.sh` — catches 5 syntactic drift categories (paths, claude-base verbs, init/update flags, local scripts, npm scripts) before merge, with per-category env-var bypass and 14 new bats tests. Two doc hygiene PRs canonicalize user-facing docs on the `claude-base` CLI dispatcher (no more `./scripts/X.sh` confusion for post-install users) and rewrite the README front-door for HN/Reddit-style first-time visitors (30s pitch, persona-fit table, "What you get on disk" tangible artifact, 60-second tour). Two `Fixed` entries close pre-existing latent drift (install path, hard-coded counter prose).
