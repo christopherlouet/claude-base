@@ -19,44 +19,54 @@ set -euo pipefail
 # dispatcher) is picked up after the installer runs.
 export PATH="${HOME}/.local/bin:${PATH}"
 
-# Visible prompt for the recording — keep it short.
-export PS1='\[\e[36m\]demo\[\e[0m\]:\[\e[33m\]\w\[\e[0m\] $ '
+pause() { sleep "${1:-2}"; }
 
-pause() { sleep "${1:-0.6}"; }
-
+# Step 1 — install
 clear
-pause 0.5
-echo "# Step 1 — install the foundation"
-pause 0.8
-
-set -x
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
-{ set +x; } 2>/dev/null
-pause 1.2
-
-clear
-echo "# Step 2 — drop the foundation into a new Next.js project"
-pause 0.8
-
-set -x
-claude-base init --preset nextjs --yes ${HOME}/work/my-app
-{ set +x; } 2>/dev/null
-pause 1.2
-
-clear
-echo "# Step 3 — what we got on disk"
-pause 0.6
-set -x
-tree -L 2 ${HOME}/work/my-app/.claude
-{ set +x; } 2>/dev/null
+echo
+echo "  ❯ Install the foundation"
+echo
+pause 2
+echo '  $ curl -fsSL .../install.sh | bash'
 pause 1.5
+# Run the installer ; suppress git-clone noise but keep [OK]/[INFO] lines
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh 2>/dev/null | bash 2>&1 \
+    | grep -E '^\[(OK|INFO|WARN|ERROR)\]' | head -4
+pause 3
 
+# Step 2 — init
 clear
-echo "# Now drop into Claude Code and let the workflow drive your feature :"
-echo ""
-echo "    cd ./my-app && claude"
-echo "    > /work:work-flow-feature \"add a /counter route\""
-echo ""
-echo "# Explore → Specify → Plan → TDD → Audit → Commit"
-echo "# All wired up. github.com/christopherlouet/claude-base"
-pause 2.5
+echo
+echo "  ❯ Drop the foundation into a new Next.js project"
+echo
+pause 2
+echo '  $ claude-base init --preset nextjs ./my-app'
+pause 1.5
+claude-base init --preset nextjs --yes "${HOME}/work/my-app" 2>&1 \
+    | grep -E '^\[(OK|INFO|WARN|ERROR)\]' | head -6
+pause 3
+
+# Step 3 — what we got
+clear
+echo
+echo "  ❯ What landed on disk"
+echo
+pause 2
+echo '  $ ls .claude/'
+pause 1.5
+ls -1 "${HOME}/work/my-app/.claude/" | sed 's|^|    |'
+pause 4
+
+# Step 4 — closing CTA
+clear
+echo
+echo "  ❯ Next : cd ./my-app && claude"
+echo
+echo "  Then drive the 6-phase workflow with one command :"
+echo "  /work:work-flow-feature \"add a /counter route\""
+echo
+# Emit a trailing event after each second so asciinema captures the read-time
+# (idle silence at the END of a session is not recorded — events must occur)
+for _ in 1 2 3 4 5 6; do sleep 1; printf "" ; done
+echo "  github.com/christopherlouet/claude-base"
+sleep 2
