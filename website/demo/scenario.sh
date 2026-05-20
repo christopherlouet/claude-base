@@ -83,7 +83,23 @@ ls -1 "${HOME}/work/my-app/.claude/" \
 # Read-time : 8 short dir names, scan-friendly
 pause 4
 
-# Step 4 — closing CTA (all visible at once, no late URL)
+# Step 4 — ask Claude (real session, with the foundation's CLAUDE.md loaded)
+clear
+echo
+echo $'  \033[1;36m❯\033[0m Ask Claude — the foundation is now in context'
+echo
+pause 1
+printf "  %s cd ./my-app && claude --print 'What does this foundation enforce in 2 sentences?'\n" "$PROMPT_GREY"
+pause 0.8
+cd "${HOME}/work/my-app"
+# --output-format text emits the raw reply only, no TUI escapes (no PTY needed
+# now that the demo user UID matches the host's, so common.sh auth read works).
+claude --print --output-format text \
+    "What does this foundation enforce in 2 sentences? Be terse."
+# Read-time : Claude's reply is the payoff, give it room
+pause 6
+
+# Step 5 — closing CTA (all visible at once, no late URL)
 clear
 echo
 echo $'  \033[1;36m❯\033[0m Next : \033[1;32mcd ./my-app && claude\033[0m'

@@ -32,8 +32,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # rebuilding the image.
 RUN npm install -g @anthropic-ai/claude-code
 
-# Create a non-root user — install.sh refuses to run as root, by design.
-RUN useradd --create-home --shell /bin/bash demo
+# Rename Ubuntu 24.04's pre-existing `ubuntu` user (UID 1000) to `demo`,
+# matching the typical host UID. The host's mounted ~/.claude/.claude.json
+# are chmod 600, owned by the host's UID 1000 — using a UID 1001 user
+# inside the container would silently fail to read them (Claude exits
+# 0 with no output). install.sh refuses root, so a non-root user is
+# required anyway.
+RUN userdel --remove ubuntu 2>/dev/null ; rm -rf /home/ubuntu ; \
+    useradd --uid 1000 --user-group --create-home --shell /bin/bash demo
 
 # Recording entrypoint. Owned by demo so the script runs cleanly.
 COPY --chown=demo:demo scenario.sh /usr/local/bin/scenario
