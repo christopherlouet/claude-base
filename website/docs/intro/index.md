@@ -69,7 +69,7 @@ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/i
 claude-base init --preset nextjs   ./my-web-app    # Next.js fullstack
 claude-base init --preset fastapi  ./my-api        # Python async backend
 claude-base init --preset phaser   ./my-game       # 2D web game (vendor-pointer)
-claude-base preset list                            # See all <!-- count:presets -->11<!-- /count --> presets
+claude-base preset list                            # See all 11 presets
 ```
 
 When no `--preset` is passed on an empty directory, an interactive prompt asks **"What are you building?"** with an 8-entry intent taxonomy (Web frontend / API-Backend / Mobile-Desktop / Game-Interactive media / Data-Database / Infra-DevOps / CLI-Automation / Other-Generic) and filters the subsequent menu accordingly.

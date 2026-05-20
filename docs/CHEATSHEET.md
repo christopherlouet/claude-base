@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: <!-- count:commands -->131<!-- /count --> commands | <!-- count:agents -->63<!-- /count --> agents | <!-- count:skills -->54<!-- /count --> skills | 9 categories       ║
+║  Total: 131 commands | 63 agents | 54 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -49,7 +49,7 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       DEV- : DEVELOPMENT (<!-- count:byDomain.dev -->23<!-- /count --> commands)                      │
+│                       DEV- : DEVELOPMENT (23 commands)                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  TDD cycle     : tdd, test, testing-setup, debug, refactor                  │
 │  API & types   : api, api-versioning, graphql, trpc, prisma                 │
@@ -61,7 +61,7 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          QA- : QUALITY (<!-- count:byDomain.qa -->16<!-- /count --> commands)                        │
+│                          QA- : QUALITY (16 commands)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Main audit      : qa-loop (audit + fix loop, score ≥ 90)                   │
 │  Targeted audits : security, perf, design, responsive, coverage, tech-debt  │
@@ -71,7 +71,7 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       OPS- : OPERATIONS (<!-- count:byDomain.ops -->34<!-- /count --> commands)                       │
+│                       OPS- : OPERATIONS (34 commands)                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Release & deploy : release, deploy, rollback, hotfix, mobile-release       │
 │  GitFlow          : gitflow-{init, feature, release, hotfix}                │
@@ -121,7 +121,7 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       GROWTH- : GROWTH (<!-- count:byDomain.growth -->11<!-- /count --> commands)                        │
+│                       GROWTH- : GROWTH (11 commands)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Acquisition     : landing, seo, ab-test, cro                               │
 │  Measurement     : analytics, app-store-analytics, funnel                   │

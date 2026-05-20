@@ -20,10 +20,10 @@ graph TB
     end
 
     subgraph ".claude/"
-        CMDS[commands/<br/><!-- count:commands -->131<!-- /count --> commands]
-        AGENTS[agents/<br/><!-- count:agents -->63<!-- /count --> sub-agents]
-        SKILLS[skills/<br/><!-- count:skills -->54<!-- /count --> skills]
-        RULES[rules/<br/><!-- count:rules -->30<!-- /count --> rules]
+        CMDS[commands/<br/>131 commands]
+        AGENTS[agents/<br/>63 sub-agents]
+        SKILLS[skills/<br/>54 skills]
+        RULES[rules/<br/>30 rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
     end
@@ -48,7 +48,7 @@ graph TB
 ```
 claude-base/
 ├── .claude/
-│   ├── commands/       # <!-- count:commands -->131<!-- /count --> manual commands (/name)
+│   ├── commands/       # 131 manual commands (/name)
 │   │   ├── work/       # Main workflow
 │   │   ├── dev/        # Development
 │   │   ├── qa/         # Quality
@@ -58,9 +58,9 @@ claude-base/
 │   │   ├── growth/     # Growth
 │   │   ├── data/       # Data
 │   │   └── legal/      # Legal
-│   ├── agents/         # <!-- count:agents -->63<!-- /count --> autonomous sub-agents
-│   ├── skills/         # <!-- count:skills -->54<!-- /count --> auto-triggered skills
-│   ├── rules/          # <!-- count:rules -->30<!-- /count --> rules per technology
+│   ├── agents/         # 63 autonomous sub-agents
+│   ├── skills/         # 54 auto-triggered skills
+│   ├── rules/          # 30 rules per technology
 │   ├── templates/      # Spec/plan templates
 │   ├── output-styles/  # Output styles
 │   └── settings.json   # Configuration and hooks

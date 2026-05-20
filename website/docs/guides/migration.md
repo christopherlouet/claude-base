@@ -58,10 +58,10 @@ ls -la .claude/
 You should see:
 ```
 .claude/
-├── commands/      # <!-- count:commands -->131<!-- /count --> commands
-├── agents/        # <!-- count:agents -->63<!-- /count --> agents
-├── skills/        # <!-- count:skills -->54<!-- /count --> skills
-├── rules/         # <!-- count:rules -->30<!-- /count --> rules
+├── commands/      # 131 commands
+├── agents/        # 63 agents
+├── skills/        # 54 skills
+├── rules/         # 30 rules
 ├── templates/     # Spec templates
 ├── output-styles/ # Output styles
 └── settings.json  # Configuration
