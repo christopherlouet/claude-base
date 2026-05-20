@@ -33,6 +33,20 @@ colorize() {
             s/\\[ERROR\\]/\\\033[0;31m[ERROR]\\\033[0m/g'
 }
 
+# Colorize Markdown emitted by `claude --print --output-format text` :
+#   - # H1  →  bold cyan
+#   - ## H2 →  bold yellow
+#   - **bold**  →  bold white
+#   - `inline` →  green
+#   - ``` fences →  dim grey delimiter (content stays default)
+colorize_md() {
+    sed -E $'s/^(# .*)$/\\\033[1;36m\\1\\\033[0m/;
+            s/^(## .*)$/\\\033[1;33m\\1\\\033[0m/;
+            s/\\*\\*([^*]+)\\*\\*/\\\033[1m\\1\\\033[0m/g;
+            s/`([^`]+)`/\\\033[0;32m\\1\\\033[0m/g;
+            s/^```(.*)$/\\\033[2;37m```\\1\\\033[0m/'
+}
+
 # Visual prompt for the "$" line — bold + dim to match terminal palette
 PROMPT_GREY=$'\033[1;30m$\033[0m'
 
@@ -94,7 +108,7 @@ pause 0.8
 cd "${HOME}/work/my-app"
 # /assistant is the foundation's orchestrator. With a focused question it
 # returns a short tailored answer — perfect for a demo frame.
-claude --print --output-format text "/assistant How to use /dev:dev-tdd?" < /dev/null 2>&1 | head -10
+claude --print --output-format text "/assistant How to use /dev:dev-tdd?" < /dev/null 2>&1 | head -10 | colorize_md
 # Read-time : Claude's reply is the payoff, give the eye time to land
 pause 9
 
