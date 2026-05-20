@@ -38,11 +38,35 @@ That last command chains the 6 phases automatically: Explore → Specify → Pla
 
 **You don't have to learn the <!-- count:commands -->131<!-- /count --> commands.** The mandatory workflow is 5 slash-commands: `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
 
-## How it fits in the Claude Code ecosystem
+## How it fits in the AI-coding ecosystem
 
-claude-base is a **workflow foundation**, not a competing plugin marketplace. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via the `claude-base` CLI.
+claude-base is a **Claude Code-native discipline foundation**. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via the `claude-base` CLI.
 
-For deeper coverage of specific tools — vendor-published skills for Terraform, Postgres, Playwright, MongoDB, observability stacks, framework-specific patterns — the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) and community-published skills often ship targeted depth that goes further than what this foundation bundles. That's expected: a foundation curates **breadth + workflow integration**, vendor skills curate **depth on a single tool or stack**.
+Two adjacent ecosystems share part of the surface area :
+
+### vs [Spec Kit](https://github.com/github/spec-kit) (GitHub, Spec-Driven Development across 30+ agents)
+
+Spec Kit is the **canonical SDD primitives toolkit** : `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, `/speckit.implement` — agent-agnostic, well-documented, batteries-included. If you need spec-driven development that works across Claude, Codex, Cursor, Copilot and 30+ other agents, **use spec-kit**.
+
+claude-base is **the opinionated discipline layer on top of (or in place of) those primitives, specifically for Claude Code**. It adds what Spec Kit does not :
+
+| | spec-kit | claude-base |
+|---|---|---|
+| Scope | Multi-agent (30+) | Claude Code-native + cross-tool via [`AGENTS.md`](./AGENTS.md) |
+| Spec → Plan → Tasks → Implement | ✓ | ✓ (different command names ; same workflow shape) |
+| Explore phase (read-before-write) | — | ✓ `/work:work-explore` |
+| TDD enforced (tests-first mandatory) | — | ✓ via `tdd-enforcement` rule + `/dev:dev-tdd` |
+| Adaptive audit-fix loop (quality score) | — | ✓ `/qa:qa-loop "score 90"` |
+| Path-specific rules (TS strict, OWASP, WCAG, perf...) | — | ✓ 30 auto-activated rules |
+| Hooks wired into `settings.json` (PostToolUse tsc+eslint, gitleaks, anti-drift) | — | ✓ |
+| Anti-drift CI strategy (`counts.json`, `audit-docs.sh` firewall) | — | ✓ |
+| Stack presets with vendor-skill pointers | — | ✓ <!-- count:presets -->11<!-- /count --> presets, 3 tiers |
+
+**They are complementary, not competing.** If you adopt SDD primitives, spec-kit is the canonical choice. If you want Claude Code with deep TDD/audit/rules baked in, claude-base ships the opinionated stack. There's no clean way to package claude-base as a spec-kit extension (the rules engine, hooks wiring, and presets system have no spec-kit equivalent) — but a project can reasonably use both : spec-kit for the multi-agent SDD primitives, claude-base for the Claude-Code-side discipline.
+
+### vs the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) (vendor-published skills/plugins)
+
+For deeper coverage of **specific tools** — vendor-published skills for Terraform, Postgres, Playwright, MongoDB, observability stacks, framework-specific patterns — the marketplace and community skills often ship targeted depth that goes further than what this foundation bundles. That's expected : a foundation curates **breadth + workflow integration**, vendor skills curate **depth on a single tool or stack**.
 
 **Recommended pattern**
 
@@ -52,15 +76,15 @@ claude-base (foundation)        ← Explore → TDD → Audit, anti-drift, qa-lo
 vendor skills (specific tools)  ← Terraform, Postgres, Playwright, Grafana, Prisma, MongoDB, ...
 ```
 
-claude-base's unique value (vs assembling vendor skills alone):
+claude-base's unique value (vs assembling vendor skills alone) :
 
 - **Workflow rigor coordinated as one experience** — TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates
-- **Anti-drift counter strategy** across the entire foundation, CI-enforced via `counts.json` + a new doc drift firewall (`scripts/audit-docs.sh`)
+- **Anti-drift counter strategy** across the entire foundation, CI-enforced via `counts.json` + a doc drift firewall (`scripts/audit-docs.sh`)
 - **30 path-specific rules** auto-activated by file path (TypeScript strict, OWASP defaults, WCAG, Core Web Vitals, deploy-safety)
 - **PostToolUse output rewriter** for Bash + tsc/eslint (Claude Code 2.1.121+)
 - **Integrated install + update flow** via the `claude-base` CLI
 
-**Honest limit**: for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources (<!-- count:vendorSkillsValidated -->17<!-- /count --> skills across <!-- count:marketplaceAuditPilots -->4<!-- /count --> audit pilots).
+**Honest limit** : for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources (<!-- count:vendorSkillsValidated -->17<!-- /count --> skills across <!-- count:marketplaceAuditPilots -->4<!-- /count --> audit pilots).
 
 ## What you get on disk
 
