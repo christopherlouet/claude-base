@@ -111,7 +111,7 @@ User types: "Run a security audit"
     ┌─────────────────────────────────────┐
     │ Claude analyzes the request         │
     │                                     │
-    │ 1. Skill "security-audit" detected? │──── No ────┐
+    │ 1. Skill "qa-security" detected?    │──── No ────┐
     │    (keywords: security, OWASP)      │            │
     └─────────────────────────────────────┘            │
          │ Yes                                         │
