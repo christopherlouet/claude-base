@@ -83,21 +83,20 @@ ls -1 "${HOME}/work/my-app/.claude/" \
 # Read-time : 8 short dir names, scan-friendly
 pause 4
 
-# Step 4 — ask Claude via /assistant (the foundation's orchestrator)
+# Step 4 — ask Claude how to use a specific foundation command
 clear
 echo
 echo $'  \033[1;36m❯\033[0m Ask Claude — the foundation is now in context'
 echo
 pause 1
-printf "  %s cd ./my-app && claude --print '/assistant'\n" "$PROMPT_GREY"
+printf "  %s claude --print '/assistant How to use /dev:dev-tdd?'\n" "$PROMPT_GREY"
 pause 0.8
 cd "${HOME}/work/my-app"
-# /assistant is the foundation's orchestrator slash-command. It auto-detects
-# the project type and routes to the right workflow. head -8 keeps just the
-# project-detection summary which is the most demo-worthy chunk.
-claude --print --output-format text "/assistant" < /dev/null 2>&1 | head -8
-# Read-time : Claude's reply is the payoff, give it room
-pause 6
+# /assistant is the foundation's orchestrator. With a focused question it
+# returns a short tailored answer — perfect for a demo frame.
+claude --print --output-format text "/assistant How to use /dev:dev-tdd?" < /dev/null 2>&1 | head -10
+# Read-time : Claude's reply is the payoff, give the eye time to land
+pause 9
 
 # Step 5 — closing CTA (all visible at once, no late URL)
 clear
