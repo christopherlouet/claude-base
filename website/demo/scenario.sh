@@ -52,19 +52,11 @@ tree -L 2 ${HOME}/work/my-app/.claude
 pause 1.5
 
 clear
-echo "# Step 4 — say hi to Claude with the foundation loaded"
-pause 1.2
-
-cd ${HOME}/work/my-app
-set -x
-claude --print --output-format text \
-    "In one sentence, what does the /work:work-flow-feature command do? Be concise."
-{ set +x; } 2>/dev/null
-
-pause 1.5
-clear
-echo "# Now drop into Claude Code:  cd ./my-app && claude"
-echo "# Then run:  /work:work-flow-feature \"add a /counter route\""
+echo "# Now drop into Claude Code and let the workflow drive your feature :"
 echo ""
-echo "# claude-base — github.com/christopherlouet/claude-base"
-pause 2
+echo "    cd ./my-app && claude"
+echo "    > /work:work-flow-feature \"add a /counter route\""
+echo ""
+echo "# Explore → Specify → Plan → TDD → Audit → Commit"
+echo "# All wired up. github.com/christopherlouet/claude-base"
+pause 2.5
