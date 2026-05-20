@@ -116,8 +116,8 @@ You should see the welcome message from the `SessionStart` hook:
 ```
 === Claude Code Session ===
 Version: <!-- version -->1.41.1<!-- /version -->
-Commandes: <!-- count:commands -->131<!-- /count -->
-Agents: <!-- count:agents -->63<!-- /count -->
+Commandes: 131
+Agents: 63
 ===========================
 ```
 
