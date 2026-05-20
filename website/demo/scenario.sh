@@ -139,7 +139,7 @@ cd "${HOME}/work/my-app"
 # returns a short tailored answer — perfect for a demo frame.
 # Spinner runs in background to indicate the API wait isn't a hang.
 spin_start
-CLAUDE_REPLY="$(claude --print --output-format text "/assistant How to use /dev:dev-tdd?" < /dev/null 2>&1 | head -10)"
+CLAUDE_REPLY="$(claude --model haiku --print --output-format text "/assistant How to use /dev:dev-tdd?" < /dev/null 2>&1 | head -10)"
 spin_stop
 echo "$CLAUDE_REPLY" | colorize_md
 # Read-time : Claude's reply is the payoff (8 lines w/ markdown + code
