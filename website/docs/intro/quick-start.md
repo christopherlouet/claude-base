@@ -17,17 +17,22 @@ Be productive with claude-base in less than 5 minutes.
 
 ## Installation
 
-### Option 1: Automatic script (recommended)
+### Option 1: One-liner install (recommended)
 
 ```bash
-# In your project directory
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/scripts/new-project.sh | bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
 ```
 
-This script:
-- Clones the foundation into `.claude/`
-- Configures the hooks and settings
-- Verifies the installation
+This installer :
+- Clones the foundation to `~/.local/share/claude-base/`
+- Symlinks the `claude-base` dispatcher to `~/.local/bin/`
+- Never modifies your shell rc files, never runs as root, only requires `git`
+
+After install, use `claude-base init` to set up a project :
+
+```bash
+claude-base init --simple /path/to/your-project
+```
 
 ### Option 2: Manual installation
 
@@ -50,7 +55,7 @@ claude-base init --preset nextjs        ./my-web-app
 claude-base init --preset react-vite-spa ./my-spa
 claude-base init --preset fastapi       ./my-api
 claude-base init --preset phaser        ./my-2d-game
-claude-base preset list                 # see all 11
+claude-base preset list                 # discover all available presets
 ```
 
 Each preset filters the foundation to the relevant skills, ships a curated `recommendedVendorSkills` list printed at install end, and (for several) self-describes a `detect` block so running `claude-base init <existing-project>` auto-recognises the stack.

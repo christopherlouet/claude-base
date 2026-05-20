@@ -32,27 +32,29 @@ Complete guide to install and configure claude-base in your project.
 
 Three methods are available depending on your use case. The first is recommended.
 
-### Method 1: `new-project.sh` script (recommended)
+### Method 1: One-liner install + `claude-base init` (recommended)
 
-The foundation exposes a single script that copies the `.claude/` configuration, `CLAUDE.md` and the necessary files into your existing project or into a new project.
+The foundation ships a one-liner installer that clones to `~/.local/share/claude-base/` and symlinks the `claude-base` dispatcher to `~/.local/bin/`. After install, use the CLI to drop the foundation into any project.
 
 ```bash
-# 1. Clone the foundation (just once, anywhere)
-git clone https://github.com/christopherlouet/claude-base.git ~/.local/share/claude-base
+# 1. Install the foundation itself (one-liner, once per machine)
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
 
-# 2. Simple installation (just .claude/ + CLAUDE.md)
-~/.local/share/claude-base/scripts/new-project.sh --simple /path/to/your-project
+# 2. Simple installation into a project (just .claude/ + CLAUDE.md)
+claude-base init --simple /path/to/your-project
 
 # 3. Or full installation (adds hooks, MCP, .github/, CI scripts)
-~/.local/share/claude-base/scripts/new-project.sh --all /path/to/your-project
+claude-base init --all /path/to/your-project
 ```
 
-You can also run the script from your project:
+You can also run it from the project directory :
 
 ```bash
 cd /path/to/your-project
-~/.local/share/claude-base/scripts/new-project.sh --simple .
+claude-base init --simple .
 ```
+
+The installer never modifies your shell rc files, never runs as root, and only requires `git`. If `~/.local/bin` is not on your `PATH`, the installer prints the line to add to `~/.bashrc` or `~/.zshrc`.
 
 #### Useful options
 
@@ -138,15 +140,14 @@ You should see the orientation guide. Then try a simple workflow:
 ## Update
 
 ```bash
-# Update the local foundation
-cd ~/.local/share/claude-base
-git pull origin main
+# Refresh the foundation itself
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash -s -- --update
 
-# Re-synchronize the files in your project
-~/.local/share/claude-base/scripts/update.sh /path/to/your-project
+# Then re-synchronize the files in your project
+claude-base update /path/to/your-project
 ```
 
-The `update.sh` script is idempotent: it updates the foundation files (commands, agents, skills, rules, scripts/hooks) without touching your customizations (`CLAUDE.md`, `.claude/settings.local.json`).
+`claude-base update` is idempotent : it refreshes the foundation files (commands, agents, skills, rules, scripts/hooks) without touching your customizations (`CLAUDE.md`, `.claude/settings.local.json`). Use `--clean` if you want a wipe-and-replace (a backup is created first).
 
 ## Customization
 
@@ -244,7 +245,7 @@ If the hook is present but does not execute, check that the scripts in the `scri
 ls .claude/commands/
 
 # Re-synchronize from the foundation
-~/.local/share/claude-base/scripts/update.sh .
+claude-base update .
 ```
 
 ### Permission errors on hooks
@@ -262,6 +263,8 @@ claude-base init --simple .
 ```
 
 ### Full diagnosis
+
+`doctor.sh` and `diff.sh` are foundation-internal tools (no dispatcher alias). Invoke them directly from the foundation clone :
 
 ```bash
 ~/.local/share/claude-base/scripts/doctor.sh /path/to/your-project
