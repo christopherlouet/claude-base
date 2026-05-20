@@ -32,7 +32,8 @@ pause 0.8
 # Run the installer ; suppress git-clone noise but keep [OK]/[INFO] lines
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh 2>/dev/null | bash 2>&1 \
     | grep -E '^\[(OK|INFO|WARN|ERROR)\]' | head -4
-pause 1.5
+# Read-time : 4 lines of output, give the eye time to land before next clear
+pause 3
 
 # Step 2 — init
 clear
@@ -44,7 +45,8 @@ echo '  $ claude-base init --preset nextjs ./my-app'
 pause 0.8
 claude-base init --preset nextjs --yes "${HOME}/work/my-app" 2>&1 \
     | grep -E '^\[(OK|INFO|WARN|ERROR)\]' | head -6
-pause 2
+# Read-time : 6 lines of output, the densest frame
+pause 4
 
 # Step 3 — what we got
 clear
@@ -55,7 +57,8 @@ pause 1
 echo '  $ ls .claude/'
 pause 0.8
 ls -1 "${HOME}/work/my-app/.claude/" | sed 's|^|    |'
-pause 3.5
+# Read-time : 8 short dir names, scan-friendly
+pause 4
 
 # Step 4 — closing CTA (all visible at once, no late URL)
 clear
