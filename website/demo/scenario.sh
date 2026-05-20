@@ -42,7 +42,7 @@ echo
 echo $'  \033[1;36m❯\033[0m Install the foundation'
 echo
 pause 1
-printf "  %s curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash\n" "$PROMPT_GREY"
+printf "  %s curl -fsSL \033[4;36mhttps://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh\033[0m | bash\n" "$PROMPT_GREY"
 pause 0.8
 # Run the installer ; suppress git-clone noise but keep [OK]/[INFO] lines.
 # Colorize the tags (install.sh doesn't emit them with color natively).
@@ -83,19 +83,19 @@ ls -1 "${HOME}/work/my-app/.claude/" \
 # Read-time : 8 short dir names, scan-friendly
 pause 4
 
-# Step 4 — ask Claude (real session, with the foundation's CLAUDE.md loaded)
+# Step 4 — ask Claude via /assistant (the foundation's orchestrator)
 clear
 echo
 echo $'  \033[1;36m❯\033[0m Ask Claude — the foundation is now in context'
 echo
 pause 1
-printf "  %s cd ./my-app && claude --print 'What does this foundation enforce in 2 sentences?'\n" "$PROMPT_GREY"
+printf "  %s cd ./my-app && claude --print '/assistant'\n" "$PROMPT_GREY"
 pause 0.8
 cd "${HOME}/work/my-app"
-# --output-format text emits the raw reply only, no TUI escapes (no PTY needed
-# now that the demo user UID matches the host's, so common.sh auth read works).
-claude --print --output-format text \
-    "What does this foundation enforce in 2 sentences? Be terse."
+# /assistant is the foundation's orchestrator slash-command. It auto-detects
+# the project type and routes to the right workflow. head -8 keeps just the
+# project-detection summary which is the most demo-worthy chunk.
+claude --print --output-format text "/assistant" < /dev/null 2>&1 | head -8
 # Read-time : Claude's reply is the payoff, give it room
 pause 6
 
@@ -107,7 +107,7 @@ echo
 echo "  Then drive the 6-phase workflow with one command :"
 echo $'  \033[1;33m/work:work-flow-feature "add a /counter route"\033[0m'
 echo
-echo $'  \033[2;37mgithub.com/christopherlouet/claude-base\033[0m'
+echo $'  \033[4;36mhttps://github.com/christopherlouet/claude-base\033[0m'
 echo
 # Emit per-second events so asciinema captures the read-time (idle silence
 # at the END of a session is not recorded — invisible events must occur).
