@@ -19,52 +19,146 @@ set -euo pipefail
 # dispatcher) is picked up after the installer runs.
 export PATH="${HOME}/.local/bin:${PATH}"
 
-# Visible prompt for the recording — keep it short.
-export PS1='\[\e[36m\]demo\[\e[0m\]:\[\e[33m\]\w\[\e[0m\] $ '
+pause() { sleep "${1:-1}"; }
 
-pause() { sleep "${1:-0.6}"; }
+# Colorize [INFO]/[OK]/[WARN]/[ERROR] tags emitted by scripts that strip
+# colors when stdout isn't a TTY (install.sh has no native color logic ;
+# common.sh's color is gated on `[[ -t 1 ]]` which fails behind a pipe).
+# sed-injects ANSI escapes around the tags so the recording stays colorized
+# regardless of how the underlying tool detects its environment.
+colorize() {
+    sed -E $'s/\\[OK\\]/\\\033[0;32m[OK]\\\033[0m/g;
+            s/\\[INFO\\]/\\\033[0;34m[INFO]\\\033[0m/g;
+            s/\\[WARN\\]/\\\033[0;33m[WARN]\\\033[0m/g;
+            s/\\[ERROR\\]/\\\033[0;31m[ERROR]\\\033[0m/g'
+}
 
+# Colorize Markdown emitted by `claude --print --output-format text` :
+#   - # H1  →  bold cyan
+#   - ## H2 →  bold yellow
+#   - **bold**  →  bold white
+#   - `inline` →  green
+#   - ``` fences →  dim grey delimiter (content stays default)
+colorize_md() {
+    sed -E $'s/^(# .*)$/\\\033[1;36m\\1\\\033[0m/;
+            s/^(## .*)$/\\\033[1;33m\\1\\\033[0m/;
+            s/\\*\\*([^*]+)\\*\\*/\\\033[1m\\1\\\033[0m/g;
+            s/`([^`]+)`/\\\033[0;32m\\1\\\033[0m/g;
+            s/^```(.*)$/\\\033[2;37m```\\1\\\033[0m/'
+}
+
+# Visual prompt for the "$" line — bold + dim to match terminal palette
+PROMPT_GREY=$'\033[1;30m$\033[0m'
+
+# Background spinner for long-running API calls (e.g. claude --print).
+# Without this, the recording shows a frozen frame for ~20s during the
+# Claude API round-trip and the viewer wonders if the demo crashed.
+# Unicode braille frames @ 5Hz : ~100 events over 20s, cast-friendly.
+spin_start() {
+    {
+        # Array (not string substring) — bash's ${var:i:1} would slice
+        # bytes and produce broken UTF-8 mid-codepoint for braille chars.
+        local frames=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+        local i=0
+        while :; do
+            printf '\r  \033[1;36m%s\033[0m thinking...' "${frames[$i]}"
+            sleep 0.2
+            i=$(( (i+1) % 10 ))
+        done
+    } &
+    SPIN_PID=$!
+    disown "$SPIN_PID" 2>/dev/null || true
+}
+
+spin_stop() {
+    [[ -n "${SPIN_PID:-}" ]] || return 0
+    kill "$SPIN_PID" 2>/dev/null
+    wait "$SPIN_PID" 2>/dev/null
+    SPIN_PID=
+    # Clear the spinner line so the actual output starts clean
+    printf "\r\033[K"
+}
+
+# Step 1 — install
 clear
-pause 0.5
-echo "# Step 1 — install the foundation"
+echo
+echo $'  \033[1;36m❯\033[0m Install the foundation'
+echo
+pause 1
+printf "  %s curl -fsSL \033[4;36mhttps://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh\033[0m | bash\n" "$PROMPT_GREY"
 pause 0.8
+# Run the installer ; suppress git-clone noise but keep [OK]/[INFO] lines.
+# Colorize the tags (install.sh doesn't emit them with color natively).
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh 2>/dev/null | bash 2>&1 \
+    | grep -E '^\[(OK|INFO|WARN|ERROR)\]' | head -4 | colorize
+# Read-time : 4 lines of output, give the eye time to land before next clear
+pause 4
 
-set -x
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
-{ set +x; } 2>/dev/null
-pause 1.2
-
+# Step 2 — init
 clear
-echo "# Step 2 — drop the foundation into a new Next.js project"
+echo
+echo $'  \033[1;36m❯\033[0m Drop the foundation into a new Next.js project'
+echo
+pause 1
+printf "  %s claude-base init --preset nextjs ./my-app\n" "$PROMPT_GREY"
 pause 0.8
+# script -qec wraps the command in a PTY so common.sh's `[[ -t 1 ]]` check
+# passes — colors are emitted natively. fallback to colorize() if any tag
+# slipped through uncolored.
+script -qec "claude-base init --preset nextjs --yes \"${HOME}/work/my-app\"" /dev/null 2>&1 \
+    | tr -d '\r' \
+    | grep -aE '\[(OK|INFO|WARN|ERROR)\]' | head -6
+# Read-time : 6 lines of output, the densest frame
+pause 4
 
-set -x
-claude-base init --preset nextjs --yes ${HOME}/work/my-app
-{ set +x; } 2>/dev/null
-pause 1.2
-
+# Step 3 — what we got
 clear
-echo "# Step 3 — what we got on disk"
-pause 0.6
-set -x
-tree -L 2 ${HOME}/work/my-app/.claude
-{ set +x; } 2>/dev/null
-pause 1.5
+echo
+echo $'  \033[1;36m❯\033[0m What landed on disk'
+echo
+pause 1
+printf "  %s ls .claude/\n" "$PROMPT_GREY"
+pause 0.8
+# Colorize directories blue (like default ls --color=auto)
+ls -1 "${HOME}/work/my-app/.claude/" \
+    | sed -E $'s/^([a-z-]+)$/\\\033[1;34m\\1\\\033[0m/' \
+    | sed 's|^|    |'
+# Read-time : 8 short dir names, scan-friendly
+pause 4
 
+# Step 4 — ask Claude how to use a specific foundation command
 clear
-echo "# Step 4 — say hi to Claude with the foundation loaded"
-pause 1.2
+echo
+echo $'  \033[1;36m❯\033[0m Ask Claude — the foundation is now in context'
+echo
+pause 1
+printf "  %s claude --print '/assistant How to use /dev:dev-tdd?'\n" "$PROMPT_GREY"
+pause 0.8
+cd "${HOME}/work/my-app"
+# /assistant is the foundation's orchestrator. With a focused question it
+# returns a short tailored answer — perfect for a demo frame.
+# Spinner runs in background to indicate the API wait isn't a hang.
+spin_start
+CLAUDE_REPLY="$(claude --model haiku --print --output-format text "/assistant How to use /dev:dev-tdd?" < /dev/null 2>&1 | head -10)"
+spin_stop
+echo "$CLAUDE_REPLY" | colorize_md
+# Read-time : Claude's reply is the payoff (8 lines w/ markdown + code
+# blocks). Give plenty of read time — this is THE frame viewers will
+# screenshot or pause on.
+pause 17
 
-cd ${HOME}/work/my-app
-set -x
-claude --print --output-format text \
-    "In one sentence, what does the /work:work-flow-feature command do? Be concise."
-{ set +x; } 2>/dev/null
-
-pause 1.5
+# Step 5 — closing CTA (all visible at once, no late URL)
 clear
-echo "# Now drop into Claude Code:  cd ./my-app && claude"
-echo "# Then run:  /work:work-flow-feature \"add a /counter route\""
-echo ""
-echo "# claude-base — github.com/christopherlouet/claude-base"
-pause 2
+echo
+echo $'  \033[1;36m❯\033[0m Next : \033[1;32mcd ./my-app && claude\033[0m'
+echo
+echo "  Then drive the 6-phase workflow with one command :"
+echo $'  \033[1;33m/work:work-flow-feature "add a /counter route"\033[0m'
+echo
+echo $'  \033[4;36mhttps://github.com/christopherlouet/claude-base\033[0m'
+echo
+# Emit per-second events so asciinema captures the read-time (idle silence
+# at the END of a session is not recorded — invisible events must occur).
+# `printf ' \b'` writes a space + backspace = visually no-op but generates
+# an event asciinema can record.
+for _ in 1 2 3 4 5; do sleep 1; printf ' \b'; done

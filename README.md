@@ -95,51 +95,26 @@ Everything is plain markdown + JSON. No daemon, no telemetry, no network access 
 
 Full catalogue: [Docusaurus reference](https://christopherlouet.github.io/claude-base/docs/reference) — or browse `.claude/` directly after install.
 
-## What it looks like (60-second tour)
+## What it looks like
 
-> An [asciinema](https://asciinema.org) recording is on the roadmap. Until then,
-> here is the exact terminal output you would see end-to-end. The flow is
-> reproducible: replace `./my-app` with any directory and run yourself.
+![claude-base install tour](./website/static/img/60-second-tour.gif)
 
-```text
-$ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
-[INFO] Cloning to ~/.local/share/claude-base ...
-[OK]   Cloned (foundation v1.41.1)
-[OK]   Symlinked dispatcher → ~/.local/bin/claude-base
-[INFO] Done. Run `claude-base help` to get started.
+Real `curl | bash` install + `claude-base init --preset nextjs` + the resulting `.claude/` tree on disk, recorded inside an isolated Docker container. ~10 seconds end-to-end (recording scaffolding under [`website/demo/`](./website/demo/), reproducible).
 
-$ claude-base init --preset nextjs ./my-app
-[INFO] Preset: nextjs (maintainer-vouched, 6+ months prod use)
-[INFO] Installing into ./my-app
-[OK]   Filtered foundation copy applied (skills/agents/commands relevant to Next.js)
-[OK]   Wired hooks: PostToolUse (tsc + eslint inline), PreToolUse (anti-drift)
-[OK]   CLAUDE.md written, .claude/settings.json initialized
+From there you `cd ./my-app && claude` and the foundation drives the 6-phase workflow :
 
-  → 3 vendor skills recommended for your stack:
-      - tailwindcss/tailwindcss-skill   (validated)
-      - vercel/nextjs-skill             (validated)
-      - shadcn/shadcn-ui-skill          (validated)
-  See ./RECOMMENDED-VENDOR-SKILLS.md for manual install commands.
-
-$ cd ./my-app && claude
+```
 > /work:work-flow-feature "add a /counter route with optimistic UI"
 
-[work-explore]  Scanning app/, hooks/, lib/ ... 24 files indexed
-[work-explore]  Detected: App Router, server actions, no existing state mgmt
-[work-specify]  US-1 (P1): user clicks +/- and counter updates without lag
-                Acceptance: optimistic UI, server-action persistence, rollback on error
-[work-plan]     Files to create: app/counter/page.tsx, app/api/counter/route.ts,
-                                  hooks/use-counter.ts, tests/counter.test.tsx
-[dev-tdd]       RED:    wrote 4 tests in counter.test.tsx → 4 failing as expected
-[dev-tdd]       GREEN:  minimal implementation → 4/4 passing
-[dev-tdd]       REFACTOR: extracted optimistic hook, kept tests green
-[qa-loop]       Audit pass 1: 86/100 (1 a11y issue: button without aria-label)
-[qa-loop]       Auto-fix applied, audit pass 2: 92/100 ✓ (≥ target score 90)
-[work-pr]       Branch: feat/counter-route, 5 files changed, +127 -3
-[work-pr]       PR #1 opened: https://github.com/you/my-app/pull/1
+[work-explore]  Scans app/, hooks/, lib/ → detects the project shape
+[work-specify]  Drafts user stories + acceptance criteria
+[work-plan]     Lists the files to touch + identifies risks
+[dev-tdd]       RED → GREEN → REFACTOR cycle, tests before code
+[qa-loop]       Audit + auto-fix until target score (default ≥ 90)
+[work-pr]       Branch, commit, push, open the PR
 ```
 
-Six phases, one command. Each phase is also runnable on its own (`/work:work-explore`, `/dev:dev-tdd`, etc.) if you prefer manual control.
+One command chains the 6 phases. Each phase is also runnable on its own (`/work:work-explore`, `/dev:dev-tdd`, etc.) if you prefer manual control.
 
 ## Installation
 

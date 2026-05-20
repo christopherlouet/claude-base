@@ -64,21 +64,33 @@ echo "[INFO] Recording $CAST ..."
 # Remove old cast so asciinema doesn't refuse to overwrite.
 rm -f "$CAST"
 
+# Stage the host's Claude auth into a writable temp copy. Slash commands
+# (e.g. /assistant) need to write back to ~/.claude.json — read-only mount
+# would error with EROFS. The temp copy isolates the container's writes from
+# the host's session state.
+AUTH_TMP="$(mktemp -d)"
+trap 'rm -rf "$AUTH_TMP"' EXIT
+cp -r "$HOME/.claude/" "$AUTH_TMP/claude/"
+cp    "$HOME/.claude.json"     "$AUTH_TMP/claude.json"
+chmod -R u+w "$AUTH_TMP"
+
 # `--overwrite` would mid-run prompt ; we just rm above to keep this quiet.
-# Mount the host's Claude auth read-only so `claude` inside the container
-# can talk to Anthropic as the host user (Max subscription).
+# The temp auth copy is read-write inside the container ; the host's real
+# ~/.claude / ~/.claude.json are never touched by the recording.
 asciinema rec "$CAST" \
-    --idle-time-limit 2 \
-    --title "claude-base — 60-second tour" \
+    --idle-time-limit 5 \
+    --title "claude-base — quick tour" \
     --command "docker run --rm -i \
-        -v $HOME/.claude:/home/demo/.claude:ro \
-        -v $HOME/.claude.json:/home/demo/.claude.json:ro \
+        -v $AUTH_TMP/claude:/home/demo/.claude:rw \
+        -v $AUTH_TMP/claude.json:/home/demo/.claude.json:rw \
         -e TERM=xterm-256color \
         $IMAGE_TAG \
         /usr/local/bin/scenario"
 
 # -----------------------------------------------------------------------------
-# 4. Render the GIF (sped up x1.5 for the README embed)
+# 4. Render the GIF (sped up x1.5 for the README embed — compresses the
+#    inevitable Claude API wait in Step 4 without making the readable steps
+#    feel rushed thanks to their generous source pauses).
 # -----------------------------------------------------------------------------
 echo "[INFO] Rendering $GIF ..."
 agg --speed 1.5 --theme monokai --font-size 18 "$CAST" "$GIF"
