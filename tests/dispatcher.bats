@@ -160,3 +160,33 @@ teardown() {
     [[ "$output" == *"unknown command"* ]]
     [[ "$output" == *"init"* ]]
 }
+
+# =============================================================================
+# User-visible CLI naming — when invoked via the dispatcher, scripts emit
+# `claude-base init` / `claude-base update` in their hints, not the raw
+# `new-project.sh` / `update.sh`. Verifies the CLAUDE_BASE_DISPATCHER env var
+# wiring + the cli_usage helper.
+# =============================================================================
+
+@test "dispatcher: preset list output references 'claude-base init', not new-project.sh" {
+    run "$DISPATCHER" preset list
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"claude-base init"* ]]
+    [[ "$output" != *"Use: new-project.sh"* ]]
+}
+
+@test "dispatcher: --help text does not leak 'alias for new-project.sh'" {
+    run "$DISPATCHER" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"alias for new-project.sh"* ]]
+    [[ "$output" != *"alias for new-project.sh --list-presets"* ]]
+}
+
+@test "direct script: ./scripts/new-project.sh --list-presets keeps the raw script name in its hint" {
+    # Foundation-contributor path : if you run the underlying script directly,
+    # the hint should reference the script you actually invoked.
+    local script="$BATS_TEST_DIRNAME/../scripts/new-project.sh"
+    run "$script" --list-presets
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"new-project.sh"* ]] || [[ "$output" == *"./scripts/new-project.sh"* ]]
+}

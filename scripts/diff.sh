@@ -304,7 +304,7 @@ print_summary() {
     echo ""
 
     if [[ $NEW_FILES -gt 0 ]] || [[ $MODIFIED_FILES -gt 0 ]]; then
-        info "To synchronize: ./scripts/update.sh --force $TARGET_DIR"
+        info "To synchronize: $(cli_usage update update.sh) --force $TARGET_DIR"
     else
         success "Configuration up to date with the foundation!"
     fi

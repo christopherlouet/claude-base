@@ -306,6 +306,48 @@ copy_dir() {
     cp -r "$src" "$dest"
 }
 
+# Returns the user-facing CLI name to print in hints / "Use: …" messages.
+# When invoked through the unified dispatcher (`bin/claude-base`), the env
+# var CLAUDE_BASE_DISPATCHER is set and we surface the dispatcher verb form
+# (e.g. "claude-base init") instead of the underlying script name. When
+# invoked directly (foundation contributor path), we keep the raw script
+# name so the hint stays accurate.
+#
+# Usage :
+#   # Most common : verb derived from $0 basename
+#   info "Use: $(cli_usage init) --preset <name> <path>"
+#   #   dispatcher  → "Use: claude-base init --preset <name> <path>"
+#   #   direct      → "Use: ./scripts/new-project.sh --preset <name> <path>"
+#
+#   # When the hint suggests a different script than the caller :
+#   # (e.g. diff.sh suggests `update`)
+#   info "To sync: $(cli_usage update update.sh) --force $TARGET"
+#   #   dispatcher  → "To sync: claude-base update --force $TARGET"
+#   #   direct      → "To sync: ./scripts/update.sh --force $TARGET"
+#
+# Arguments :
+#   $1 - Dispatcher verb emitted in dispatcher mode (e.g. "init", "update")
+#   $2 - (optional) Script filename used in direct mode. Defaults to
+#        the caller's $0 basename. Required when the suggested script
+#        differs from the caller.
+cli_usage() {
+    local verb="${1:-}"
+    local script="${2:-}"
+    if [[ -n "${CLAUDE_BASE_DISPATCHER:-}" ]]; then
+        if [[ -n "$verb" ]]; then
+            echo "claude-base $verb"
+        else
+            echo "claude-base"
+        fi
+    else
+        if [[ -n "$script" ]]; then
+            echo "./scripts/$script"
+        else
+            echo "./scripts/$(basename "$0")"
+        fi
+    fi
+}
+
 # Writes stdin content to a file (simulation if DRY_RUN=true).
 # Drop-in replacement for `cat > "$path" <<'EOF' ... EOF` that respects
 # the DRY_RUN flag. In dry-run mode, the heredoc body is discarded.

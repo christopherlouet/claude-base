@@ -28,10 +28,10 @@ USAGE
     claude-base <command> [options] [args]
 
 COMMANDS
-    init              Install the foundation in a project (alias for new-project.sh)
+    init              Install the foundation in a project
     update            Update an installed project to the current foundation version
     validate          Validate the integrity of an installed project
-    preset list       List available presets (alias for new-project.sh --list-presets)
+    preset list       List available presets
     preset show NAME  Print the JSON manifest of a preset
     uninstall         Remove the foundation from a project
     version           Print the foundation version
@@ -114,6 +114,11 @@ EOF
 main() {
     local verb="${1:-help}"
     shift || true
+
+    # Mark dispatcher-invoked context so child scripts can switch their
+    # user-facing hints from "./scripts/<X>.sh" to "claude-base <verb>".
+    # Consumed by scripts/lib/common.sh::cli_usage.
+    export CLAUDE_BASE_DISPATCHER=1
 
     case "$verb" in
         init)
