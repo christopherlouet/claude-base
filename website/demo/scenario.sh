@@ -50,6 +50,35 @@ colorize_md() {
 # Visual prompt for the "$" line — bold + dim to match terminal palette
 PROMPT_GREY=$'\033[1;30m$\033[0m'
 
+# Background spinner for long-running API calls (e.g. claude --print).
+# Without this, the recording shows a frozen frame for ~20s during the
+# Claude API round-trip and the viewer wonders if the demo crashed.
+# Unicode braille frames @ 5Hz : ~100 events over 20s, cast-friendly.
+spin_start() {
+    {
+        # Array (not string substring) — bash's ${var:i:1} would slice
+        # bytes and produce broken UTF-8 mid-codepoint for braille chars.
+        local frames=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+        local i=0
+        while :; do
+            printf '\r  \033[1;36m%s\033[0m thinking...' "${frames[$i]}"
+            sleep 0.2
+            i=$(( (i+1) % 10 ))
+        done
+    } &
+    SPIN_PID=$!
+    disown "$SPIN_PID" 2>/dev/null || true
+}
+
+spin_stop() {
+    [[ -n "${SPIN_PID:-}" ]] || return 0
+    kill "$SPIN_PID" 2>/dev/null
+    wait "$SPIN_PID" 2>/dev/null
+    SPIN_PID=
+    # Clear the spinner line so the actual output starts clean
+    printf "\r\033[K"
+}
+
 # Step 1 — install
 clear
 echo
@@ -63,7 +92,7 @@ pause 0.8
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh 2>/dev/null | bash 2>&1 \
     | grep -E '^\[(OK|INFO|WARN|ERROR)\]' | head -4 | colorize
 # Read-time : 4 lines of output, give the eye time to land before next clear
-pause 3
+pause 4
 
 # Step 2 — init
 clear
@@ -108,11 +137,15 @@ pause 0.8
 cd "${HOME}/work/my-app"
 # /assistant is the foundation's orchestrator. With a focused question it
 # returns a short tailored answer — perfect for a demo frame.
-claude --print --output-format text "/assistant How to use /dev:dev-tdd?" < /dev/null 2>&1 | head -10 | colorize_md
+# Spinner runs in background to indicate the API wait isn't a hang.
+spin_start
+CLAUDE_REPLY="$(claude --print --output-format text "/assistant How to use /dev:dev-tdd?" < /dev/null 2>&1 | head -10)"
+spin_stop
+echo "$CLAUDE_REPLY" | colorize_md
 # Read-time : Claude's reply is the payoff (8 lines w/ markdown + code
 # blocks). Give plenty of read time — this is THE frame viewers will
 # screenshot or pause on.
-pause 15
+pause 17
 
 # Step 5 — closing CTA (all visible at once, no late URL)
 clear
