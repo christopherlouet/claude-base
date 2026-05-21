@@ -6,7 +6,7 @@ description: Breakdown of all claude-base commands by domain
 
 # Commands Matrix
 
-> **<!-- count:commands -->129<!-- /count --> commands** organized by domain
+> **<!-- count:commands -->128<!-- /count --> commands** organized by domain
 >
 > For the exhaustive and always up-to-date list, see the [Commands Catalog](/docs/reference/commands) (auto-generated from `.claude/commands/`).
 
@@ -154,12 +154,11 @@ description: Breakdown of all claude-base commands by domain
 | `/growth:growth-localization` | Multi-market localization strategy |
 | `/growth:growth-app-store-analytics` | App Store analytics |
 
-## DATA - Data (3)
+## DATA - Data (2)
 
 | Command | Description |
 |----------|-------------|
 | `/data:data-pipeline` | ETL/ELT pipelines |
-| `/data:data-analytics` | Analysis and reports |
 | `/data:data-modeling` | Data modeling |
 
 ## LEGAL - Legal (5)

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 8
 title: "dev-ai-integration"
 description: "Integration of LLMs and AI APIs into applications."
 tags:

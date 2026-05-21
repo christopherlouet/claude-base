@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 title: "/data:data-modeling"
 description: "Design and implement data models (schemas, ERD, data warehouse)."
 tags:
@@ -46,7 +46,7 @@ ERD, data dictionary and example queries.
 | Agent | When to use it |
 |-------|------------------|
 | `/data:data-pipeline` | Feed the model |
-| `/data:data-analytics` | Analyze the data |
+| `/growth:growth-analytics` | Analyze KPIs on the modeled data |
 | `/ops:ops-database` | Optimize performance |
 | `/doc:doc-architecture` | Document the architecture |
 

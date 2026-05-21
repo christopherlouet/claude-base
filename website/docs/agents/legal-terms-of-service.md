@@ -1,5 +1,5 @@
 ---
-sidebar_position: 34
+sidebar_position: 33
 title: "legal-terms-of-service"
 description: "Creation of compliant Terms of Service."
 tags:

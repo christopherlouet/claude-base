@@ -549,7 +549,7 @@ flowchart TD
     C --> E[data-modeling]
     D --> F[Data Quality Tests]
     E --> F
-    F --> G[data-analytics]
+    F --> G[growth-analytics]
     G --> H[ops-monitoring]
 ```
 

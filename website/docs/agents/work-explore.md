@@ -1,5 +1,5 @@
 ---
-sidebar_position: 62
+sidebar_position: 61
 title: "work-explore"
 description: "EXPLORATION mode: codebase analysis without modifying files."
 tags:

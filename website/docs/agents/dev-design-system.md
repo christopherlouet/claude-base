@@ -1,5 +1,5 @@
 ---
-sidebar_position: 12
+sidebar_position: 11
 title: "dev-design-system"
 description: "Design systems and component libraries."
 tags:

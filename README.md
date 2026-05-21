@@ -36,7 +36,7 @@ That last command chains the 6 phases automatically: Explore → Specify → Pla
 | **Educator / mentor** | the 6-phase workflow is named, teachable, and the audit-loop produces a quality score | you only need ad-hoc Claude Code use |
 | **Returning user** who tried Claude Code, found it too freeform | the dispatcher CLI is small (init / update / validate / uninstall) and the foundation is fully reversible (`claude-base uninstall`) | you prefer raw `.claude/` files without a foundation layer |
 
-**You don't have to learn the <!-- count:commands -->129<!-- /count --> commands.** The mandatory workflow is 5 slash-commands: `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
+**You don't have to learn the <!-- count:commands -->128<!-- /count --> commands.** The mandatory workflow is 5 slash-commands: `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
 
 ## How it fits in the AI-coding ecosystem
 
@@ -111,8 +111,8 @@ Everything is plain markdown + JSON. No daemon, no telemetry, no network access 
 
 | Component | Count | What it is |
 |---|---|---|
-| Slash commands | <!-- count:commands -->129<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
-| Sub-agents | <!-- count:agents -->62<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
+| Slash commands | <!-- count:commands -->128<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
+| Sub-agents | <!-- count:agents -->61<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
 | Skills | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords in your prompts |
 | Path-specific rules | <!-- count:rules -->30<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
 | Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles ; tier breakdown in [Going deeper](#going-deeper) |
@@ -221,7 +221,7 @@ After `curl | bash` install, the foundation lives at `~/.local/share/claude-base
 
 For the full file-by-file reference, see the [Docusaurus reference docs](https://christopherlouet.github.io/claude-base/docs/reference).
 
-## Available Commands (<!-- count:commands -->129<!-- /count -->)
+## Available Commands (<!-- count:commands -->128<!-- /count -->)
 
 Commands are grouped into 9 domains:
 
@@ -234,7 +234,7 @@ Commands are grouped into 9 domains:
 | `doc-` | <!-- count:byDomain.doc -->8<!-- /count --> | `/doc:doc-onboard`, `/doc:doc-explain`, `/doc:doc-changelog`, `/doc:doc-architecture` |
 | `biz-` | <!-- count:byDomain.biz -->11<!-- /count --> | `/biz:biz-model`, `/biz:biz-mvp`, `/biz:biz-pricing`, `/biz:biz-personas` |
 | `growth-` | <!-- count:byDomain.growth -->11<!-- /count --> | `/growth:growth-landing`, `/growth:growth-seo`, `/growth:growth-cro`, `/growth:growth-funnel` |
-| `data-` | <!-- count:byDomain.data -->3<!-- /count --> | `/data:data-pipeline`, `/data:data-modeling`, `/data:data-analytics` |
+| `data-` | <!-- count:byDomain.data -->2<!-- /count --> | `/data:data-pipeline`, `/data:data-modeling` |
 | `legal-` | <!-- count:byDomain.legal -->5<!-- /count --> | `/legal:legal-rgpd`, `/legal:legal-terms-of-service`, `/legal:legal-privacy-policy` |
 
 → **Full list**: [docs/CHEATSHEET.md](docs/CHEATSHEET.md) or the [Docusaurus catalog](https://christopherlouet.github.io/claude-base/docs/commands).
@@ -408,7 +408,7 @@ The full documentation site lives at **[https://christopherlouet.github.io/claud
 
 It covers:
 - Quick start guide
-- Catalog of <!-- count:commands -->129<!-- /count --> commands, <!-- count:agents -->62<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->30<!-- /count --> rules
+- Catalog of <!-- count:commands -->128<!-- /count --> commands, <!-- count:agents -->61<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->30<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Learning path, Extending, Team, Prompting, Troubleshooting

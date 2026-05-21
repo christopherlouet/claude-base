@@ -1,5 +1,5 @@
 ---
-sidebar_position: 59
+sidebar_position: 58
 title: "qa-tech-debt"
 description: "Identification and prioritization of technical debt."
 tags:

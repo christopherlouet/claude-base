@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalog of 62 claude-base sub-agents"
+description: "Catalog of 61 claude-base sub-agents"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Agent Catalog
 
-> **62 sub-agents** with isolated context for autonomous tasks
+> **61 sub-agents** with isolated context for autonomous tasks
 
 <Stats items={[
   { number: 22, label: 'Haiku agents' },
-  { number: 34, label: 'Sonnet agents' },
-  { number: 62, label: 'Total' },
+  { number: 33, label: 'Sonnet agents' },
+  { number: 61, label: 'Total' },
 ]} />
 
 ## What is an Agent?
@@ -58,7 +58,7 @@ Fast and economical agents for simple tasks.
 | [`wcag-audit`](/docs/agents/wcag-audit) | Accessibility audit per WCAG 2.1/2.2 level AA, inspired by t... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | EXPLORATION mode: codebase analysis without modifying files. | Read, Grep, Glob |
 
-### Sonnet (34 agents)
+### Sonnet (33 agents)
 
 Agents for complex tasks requiring in-depth analysis.
 
@@ -67,7 +67,6 @@ Agents for complex tasks requiring in-depth analysis.
 | [`biz-competitor`](/docs/agents/biz-competitor) | Competitive analysis and strategic positioning for a project... | Read, Grep, Glob... |
 | [`biz-mvp`](/docs/agents/biz-mvp) | Definition and planning of the Minimum Viable Product. | Read, Grep, Glob... |
 | [`biz-personas`](/docs/agents/biz-personas) | Creation of user personas based on data. | Read, Grep, Glob... |
-| [`data-analytics`](/docs/agents/data-analytics) | Data analysis and generation of actionable insights. | Read, Grep, Glob... |
 | [`data-modeling`](/docs/agents/data-modeling) | Design of dimensional data models for analytics. | Read, Grep, Glob... |
 | [`data-pipeline`](/docs/agents/data-pipeline) | Design and implementation of ETL/ELT data pipelines. | Read, Grep, Glob... |
 | [`dev-ai-integration`](/docs/agents/dev-ai-integration) | Integration of LLMs and AI APIs into applications. | Read, Grep, Glob... |
@@ -77,7 +76,7 @@ Agents for complex tasks requiring in-depth analysis.
 | [`dev-supabase`](/docs/agents/dev-supabase) | Complete integration of Supabase as a backend. | Read, Grep, Glob... |
 | [`dev-test`](/docs/agents/dev-test) | Generation of complete and maintainable tests. | Read, Grep, Glob... |
 | [`doc-generate`](/docs/agents/doc-generate) | Generation of complete and maintainable documentation. | Read, Grep, Glob... |
-| [`growth-analytics`](/docs/agents/growth-analytics) | Analytics and tracking implementation. | Read, Grep, Glob... |
+| [`growth-analytics`](/docs/agents/growth-analytics) | Analytics and tracking implementation, plus post-launch data... | Read, Grep, Glob... |
 | [`growth-funnel`](/docs/agents/growth-funnel) | Analysis and optimization of conversion funnels. | Read, Grep, Glob... |
 | [`growth-landing`](/docs/agents/growth-landing) | Creation of landing pages optimized for conversion. | Read, Grep, Glob... |
 | [`growth-seo`](/docs/agents/growth-seo) | Technical SEO audit and optimization recommendations. | Read, Grep, Glob... |
@@ -146,13 +145,6 @@ Agents for critical tasks.
     href="/docs/agents/biz-personas"
   />
   <AgentCard
-    name="data-analytics"
-    description="Data analysis and generation of actionable insights."
-    model="sonnet"
-    tools={["Read","Grep","Glob","Edit"]}
-    href="/docs/agents/data-analytics"
-  />
-  <AgentCard
     name="data-modeling"
     description="Design of dimensional data models for analytics."
     model="sonnet"
@@ -200,6 +192,13 @@ Agents for critical tasks.
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/dev-document"
+  />
+  <AgentCard
+    name="dev-flutter"
+    description="Flutter development with Clean Architecture and BLoC."
+    model="sonnet"
+    tools={["Read","Grep","Glob","Edit"]}
+    href="/docs/agents/dev-flutter"
   />
 </AgentGrid>
 

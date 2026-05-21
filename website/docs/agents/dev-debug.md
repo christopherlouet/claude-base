@@ -1,5 +1,5 @@
 ---
-sidebar_position: 11
+sidebar_position: 10
 title: "dev-debug"
 description: "Bug diagnostic and resolution. The `dev-debug` skill provides the detailed methodology."
 tags:

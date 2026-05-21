@@ -1,5 +1,5 @@
 ---
-sidebar_position: 36
+sidebar_position: 35
 title: "ops-cost"
 description: "Token consumption analysis and cost optimization recommendations."
 tags:

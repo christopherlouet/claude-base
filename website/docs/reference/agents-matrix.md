@@ -6,13 +6,13 @@ description: Breakdown of all claude-base agents by model
 
 # Agents Matrix
 
-> **<!-- count:agents -->62<!-- /count --> sub-agents** with model and tools
+> **<!-- count:agents -->61<!-- /count --> sub-agents** with model and tools
 >
 > For the exhaustive and always up-to-date list, see the [Agents catalog](/docs/reference/agents-catalog) (auto-generated from `.claude/agents/`).
 
 ## By model
 
-Current breakdown: **22 Haiku** (fast/economical), **35 Sonnet** (analysis), **6 without explicit model**.
+Current breakdown: **22 Haiku** (fast/economical), **34 Sonnet** (analysis), **6 without explicit model**.
 
 ### Haiku (Fast/Economical)
 
@@ -49,7 +49,6 @@ Current breakdown: **22 Haiku** (fast/economical), **35 Sonnet** (analysis), **6
 
 | Agent | Description | Tools |
 |-------|-------------|-------|
-| `data-analytics` | Data analysis | Read, Grep, Glob, Edit, Write, Bash |
 | `data-modeling` | Data warehouse modeling | Read, Grep, Glob, Edit, Write |
 | `data-pipeline` | ETL/ELT pipelines | Read, Grep, Glob, Edit, Write, Bash |
 | `dev-ai-integration` | LLM integration (OpenAI, Claude) | Read, Grep, Glob, Bash |
@@ -156,11 +155,10 @@ Current breakdown: **22 Haiku** (fast/economical), **35 Sonnet** (analysis), **6
 | `growth-localization` | haiku | Multi-market localization |
 | `growth-seo` | haiku | Technical SEO audit |
 
-### Data (3)
+### Data (2)
 
 | Agent | Model | Usage |
 |-------|-------|-------|
-| `data-analytics` | sonnet | Data analysis |
 | `data-modeling` | sonnet | Data warehouse modeling |
 | `data-pipeline` | sonnet | ETL/ELT pipelines |
 
