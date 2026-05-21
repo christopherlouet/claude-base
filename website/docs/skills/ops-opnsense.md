@@ -1,5 +1,5 @@
 ---
-sidebar_position: 34
+sidebar_position: 33
 title: "ops-opnsense"
 description: "OPNsense configuration via Terraform. Trigger for interfaces, firewall, NAT, DHCP/DNS, aliases."
 tags:

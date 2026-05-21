@@ -1,5 +1,5 @@
 ---
-sidebar_position: 17
+sidebar_position: 16
 title: "/dev:dev-rag"
 description: "Design and implementation of RAG (Retrieval-Augmented Generation) systems."
 tags:
@@ -44,7 +44,6 @@ vector database schema, documented pipeline and evaluation results.
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-prompt-engineering` | Optimize prompts |
 | `/dev:dev-api` | RAG endpoints |
 | `/ops:ops-database` | DB configuration |
 | `/qa:qa-perf` | System performance |

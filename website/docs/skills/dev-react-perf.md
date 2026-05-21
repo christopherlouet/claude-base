@@ -1,5 +1,5 @@
 ---
-sidebar_position: 17
+sidebar_position: 16
 title: "dev-react-perf"
 description: "React/Next.js performance optimization. Trigger when the user wants to optimize rendering, reduce re-renders, or improve Core Web Vitals."
 tags:

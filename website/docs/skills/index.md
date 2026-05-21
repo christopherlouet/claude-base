@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Skills"
-description: "Catalog of 54 auto-triggered skills"
+description: "Catalog of 53 auto-triggered skills"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Skills Catalog
 
-> **54 skills** auto-triggered by keywords
+> **53 skills** auto-triggered by keywords
 
 <Stats items={[
-  { number: 54, label: 'Fork Skills' },
+  { number: 53, label: 'Fork Skills' },
   { number: 0, label: 'Shared Skills' },
-  { number: 54, label: 'Total' },
+  { number: 53, label: 'Total' },
 ]} />
 
 ## What is a Skill?
@@ -29,7 +29,7 @@ import SkillCard from '@site/src/components/SkillCard';
 
 ## Skills by context
 
-### Fork (54 skills)
+### Fork (53 skills)
 
 Skills with isolated context.
 
@@ -49,7 +49,6 @@ Skills with isolated context.
 | [`dev-i18n`](/docs/skills/dev-i18n) | Internationalization (i18n) and localization (l10n... | dev, i18n, d'accord |
 | [`dev-nextjs`](/docs/skills/dev-nextjs) | Next.js development (App Router, Server Components... | dev, nextjs, use client |
 | [`dev-prisma`](/docs/skills/dev-prisma) | Development with Prisma ORM (schema, migrations, t... | dev, prisma, prisma —  |
-| [`dev-prompt-engineering`](/docs/skills/dev-prompt-engineering) | Prompt optimization for LLMs. Trigger when the use... | dev, prompt, engineering |
 | [`dev-react-perf`](/docs/skills/dev-react-perf) | React/Next.js performance optimization. Trigger wh... | dev, react, perf |
 | [`dev-refactor`](/docs/skills/dev-refactor) | Code refactoring to improve quality. Trigger when ... | dev, refactor |
 | [`dev-shadcn`](/docs/skills/dev-shadcn) | Integration and customization of shadcn/ui (copy-p... | dev, shadcn |

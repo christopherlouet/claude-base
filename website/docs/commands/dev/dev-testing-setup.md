@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 22
 title: "/dev:dev-testing-setup"
 description: "Configures the testing infrastructure for a project."
 tags:

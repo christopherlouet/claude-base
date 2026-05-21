@@ -6,7 +6,7 @@ description: Breakdown of all claude-base commands by domain
 
 # Commands Matrix
 
-> **<!-- count:commands -->130<!-- /count --> commands** organized by domain
+> **<!-- count:commands -->129<!-- /count --> commands** organized by domain
 >
 > For the exhaustive and always up-to-date list, see the [Commands Catalog](/docs/reference/commands) (auto-generated from `.claude/commands/`).
 
@@ -47,7 +47,6 @@ description: Breakdown of all claude-base commands by domain
 | `/dev:dev-supabase` | Supabase backend |
 | `/dev:dev-graphql` | GraphQL API |
 | `/dev:dev-neovim` | Neovim plugins |
-| `/dev:dev-prompt-engineering` | LLM prompt optimization |
 | `/dev:dev-rag` | RAG (Retrieval-Augmented Generation) systems |
 | `/dev:dev-design-system` | Design tokens and component library |
 | `/dev:dev-prisma` | Prisma ORM (schema, migrations, queries) |

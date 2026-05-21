@@ -1,5 +1,5 @@
 ---
-sidebar_position: 30
+sidebar_position: 29
 title: "ops-docker"
 description: "Docker and Docker Compose containerization. Trigger when the user wants to dockerize an application or create containers."
 tags:

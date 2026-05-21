@@ -1,5 +1,5 @@
 ---
-sidebar_position: 26
+sidebar_position: 25
 title: "growth-cro"
 description: "Conversion rate optimization (CRO). Trigger when the user wants to optimize conversions, improve a signup form, a checkout, a landing page, or an onboarding."
 tags:

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 49
+sidebar_position: 48
 title: "work-brainstorm"
 description: "Structured ideation before specification. Transform a vague idea into a validated design via questioning and exploration of alternatives. Trigger when the user has a fuzzy idea, wants to explore approaches, or hesitates between several directions."
 tags:

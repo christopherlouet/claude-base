@@ -566,7 +566,6 @@ EOF
     [ -d "$target/.claude/skills/dev-api" ]
     [ -d "$target/.claude/skills/dev-auth" ]
     [ -d "$target/.claude/skills/dev-tdd" ]
-    [ -d "$target/.claude/skills/dev-prompt-engineering" ]
     [ -d "$target/.claude/skills/ops-database" ]
     [ -d "$target/.claude/skills/ops-docker" ]
     [ -d "$target/.claude/skills/ops-monitoring" ]

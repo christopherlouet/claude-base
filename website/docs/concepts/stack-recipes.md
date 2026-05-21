@@ -217,10 +217,8 @@ tags:
 | Type | Element | Activation |
 |---|---|---|
 | Command | `/dev:dev-ai-integration` | LLM integration (OpenAI, Claude) |
-| Command | `/dev:dev-prompt-engineering` | Prompt optimization |
 | Command | `/dev:dev-rag` | RAG systems (retrieval-augmented generation) |
 | Command | `/dev:dev-mcp` | MCP server creation |
-| Skill auto | `dev-prompt-engineering` | Activated on `prompt`, `instruction`, `few-shot`, `LLM` |
 
 ### External best practices
 

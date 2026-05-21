@@ -1,5 +1,5 @@
 ---
-sidebar_position: 41
+sidebar_position: 40
 title: "qa-perf"
 description: "Application performance optimization. Trigger when the user wants to improve speed, reduce latency, or optimize resources."
 tags:

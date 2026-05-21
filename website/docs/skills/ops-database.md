@@ -1,5 +1,5 @@
 ---
-sidebar_position: 29
+sidebar_position: 28
 title: "ops-database"
 description: "Database schema design. Trigger when the user wants to create tables, migrations, or optimize queries."
 tags:

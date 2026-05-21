@@ -1,5 +1,5 @@
 ---
-sidebar_position: 50
+sidebar_position: 49
 title: "work-commit"
 description: "Generates clear commit messages following Conventional Commits. Use when the user wants to commit, asks for a commit message, or after completing a modification."
 tags:

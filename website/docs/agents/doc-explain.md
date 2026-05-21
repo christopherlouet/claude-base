@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 22
 title: "doc-explain"
 description: "Pedagogical explanation of complex code."
 tags:

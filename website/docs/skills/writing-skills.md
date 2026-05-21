@@ -1,5 +1,5 @@
 ---
-sidebar_position: 55
+sidebar_position: 54
 title: "writing-skills"
 description: "Guide for creating new skills for the Claude Code foundation. Trigger when the user wants to create a skill, add a command, or extend the foundation."
 tags:

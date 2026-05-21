@@ -1,5 +1,5 @@
 ---
-sidebar_position: 32
+sidebar_position: 31
 title: "legal-payment"
 description: "Secure and compliant payment integration."
 tags:

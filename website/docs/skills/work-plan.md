@@ -1,5 +1,5 @@
 ---
-sidebar_position: 52
+sidebar_position: 51
 title: "work-plan"
 description: "Plan the implementation of a feature. Use when the user wants to plan, architect, define an approach, or before coding a complex feature."
 tags:

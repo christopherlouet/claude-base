@@ -1,5 +1,5 @@
 ---
-sidebar_position: 46
+sidebar_position: 45
 title: "state-management"
 description: "State management patterns and implementation. Trigger when the user wants to manage global state, use Redux, Zustand, or other solutions."
 tags:

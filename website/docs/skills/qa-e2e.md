@@ -1,5 +1,5 @@
 ---
-sidebar_position: 40
+sidebar_position: 39
 title: "qa-e2e"
 description: "End-to-end tests with Playwright or Cypress. Trigger when the user wants to create user journey tests, UI integration tests, or browser automation."
 tags:

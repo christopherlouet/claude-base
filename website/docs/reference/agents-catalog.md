@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Available Agents (130 commands, 63 sub-agents, 54 skills)"
+title: "Available Agents (129 commands, 62 sub-agents, 53 skills)"
 description: "Claude automatically delegates to specialized agents (isolated context, restricted tools)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Available Agents (<!-- count:commands -->130<!-- /count --> commands, <!-- count:agents -->63<!-- /count --> sub-agents, <!-- count:skills -->54<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->129<!-- /count --> commands, <!-- count:agents -->62<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -35,7 +35,7 @@ tags:
 | `/work:work-flow-release` | Full release workflow |
 | `/work:work-flow-launch` | Full product launch workflow |
 
-## DEV-: Development (<!-- count:byDomain.dev -->23<!-- /count -->)
+## DEV-: Development (<!-- count:byDomain.dev -->22<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/dev:dev-tdd` | TDD development |
@@ -55,7 +55,6 @@ tags:
 | `/dev:dev-supabase` | Supabase backend (Auth, DB, Storage, Postgres perf) |
 | `/dev:dev-graphql` | GraphQL client/server API |
 | `/dev:dev-neovim` | Neovim/Lua plugins and config |
-| `/dev:dev-prompt-engineering` | LLM prompt optimization |
 | `/dev:dev-rag` | RAG systems (Retrieval-Augmented Generation) |
 | `/dev:dev-design-system` | Design tokens and component library |
 | `/dev:dev-prisma` | Prisma ORM (schema, migrations, queries) |
@@ -178,7 +177,7 @@ tags:
 | `/legal:legal-terms-of-service` | Terms of Service |
 | `/legal:legal-privacy-policy` | Privacy Policy |
 
-## Sub-Agents (<!-- count:agents -->63<!-- /count -->)
+## Sub-Agents (<!-- count:agents -->62<!-- /count -->)
 
 Claude automatically delegates to specialized agents (isolated context, restricted tools).
 
@@ -197,7 +196,7 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 | Exploration & Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
 | Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-coverage`, `qa-responsive`, `qa-e2e`, `qa-tech-debt`, `qa-design`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
 | Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-serverless`, `ops-vercel`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
-| Development | `dev-debug`, `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`, `dev-prompt-engineering`, `dev-rag`, `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-ai-integration`, `dev-document`, `dev-tdd` | haiku/sonnet/**opus** (tdd, debug, rag) |
+| Development | `dev-debug`, `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`, `dev-rag`, `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-ai-integration`, `dev-document`, `dev-tdd` | haiku/sonnet/**opus** (tdd, debug, rag) |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |
 | Data | `data-pipeline`, `data-analytics`, `data-modeling` | haiku/sonnet |
 | Legal | `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service` | haiku/sonnet |

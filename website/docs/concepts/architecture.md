@@ -100,7 +100,7 @@ This architecture enables:
 | **Model** | Default | Default | Configurable | N/A |
 | **Use case** | Explicit actions | Detected patterns | Isolated tasks | Constraints |
 
-## Commands (<!-- count:commands -->130<!-- /count --> available)
+## Commands (<!-- count:commands -->129<!-- /count --> available)
 
 ### Definition
 Prompts invoked manually with the `/command-name` syntax.
@@ -147,7 +147,7 @@ $ARGUMENTS - Arguments passed by the user
 - Specific actions
 - Complex tasks requiring a detailed prompt
 
-## Skills (<!-- count:skills -->54<!-- /count --> available)
+## Skills (<!-- count:skills -->53<!-- /count --> available)
 
 ### Definition
 Patterns automatically triggered by Claude based on the conversation context.
@@ -207,7 +207,7 @@ When the user mentions "TDD", "test first", or "write tests first"...
 - Desired contextual triggering
 - Standardization of behaviors
 
-## Agents (<!-- count:agents -->63<!-- /count --> available)
+## Agents (<!-- count:agents -->62<!-- /count --> available)
 
 ### Definition
 Specialized sub-agents with isolated context, automatic delegation.

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 36
+sidebar_position: 35
 title: "ops-standup"
 description: "Cross-repo morning briefing. Aggregation of recent commits, PRs, CI, blockers and priorities of the day. Trigger when the user wants a standup, an activity summary, or to know what happened."
 tags:

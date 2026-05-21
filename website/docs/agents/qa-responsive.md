@@ -1,5 +1,5 @@
 ---
-sidebar_position: 58
+sidebar_position: 57
 title: "qa-responsive"
 description: "Audit of responsive design and mobile experience."
 tags:

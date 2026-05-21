@@ -1,5 +1,5 @@
 ---
-sidebar_position: 44
+sidebar_position: 43
 title: "qa-tech-debt"
 description: "Technical debt management and prioritization. Trigger when the user wants to identify, prioritize, or plan the repayment of technical debt."
 tags:

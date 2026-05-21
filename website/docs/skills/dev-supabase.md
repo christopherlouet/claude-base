@@ -1,5 +1,5 @@
 ---
-sidebar_position: 20
+sidebar_position: 19
 title: "dev-supabase"
 description: "Backend development with Supabase. Trigger when the user wants to configure auth, the database, or Supabase storage."
 tags:

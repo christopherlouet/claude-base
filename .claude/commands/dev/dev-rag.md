@@ -29,7 +29,6 @@ vector database schema, documented pipeline and evaluation results.
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-prompt-engineering` | Optimize prompts |
 | `/dev:dev-api` | RAG endpoints |
 | `/ops:ops-database` | DB configuration |
 | `/qa:qa-perf` | System performance |

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 21
+sidebar_position: 20
 title: "/dev:dev-tdd"
 description: "Implements a feature by following the TDD (Test-Driven Development) cycle."
 tags:

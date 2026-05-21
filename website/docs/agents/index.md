@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalog of 63 claude-base sub-agents"
+description: "Catalog of 62 claude-base sub-agents"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Agent Catalog
 
-> **63 sub-agents** with isolated context for autonomous tasks
+> **62 sub-agents** with isolated context for autonomous tasks
 
 <Stats items={[
   { number: 22, label: 'Haiku agents' },
-  { number: 35, label: 'Sonnet agents' },
-  { number: 63, label: 'Total' },
+  { number: 34, label: 'Sonnet agents' },
+  { number: 62, label: 'Total' },
 ]} />
 
 ## What is an Agent?
@@ -58,7 +58,7 @@ Fast and economical agents for simple tasks.
 | [`wcag-audit`](/docs/agents/wcag-audit) | Accessibility audit per WCAG 2.1/2.2 level AA, inspired by t... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | EXPLORATION mode: codebase analysis without modifying files. | Read, Grep, Glob |
 
-### Sonnet (35 agents)
+### Sonnet (34 agents)
 
 Agents for complex tasks requiring in-depth analysis.
 
@@ -74,7 +74,6 @@ Agents for complex tasks requiring in-depth analysis.
 | [`dev-component`](/docs/agents/dev-component) | Creation of modular and reusable UI components. | Read, Grep, Glob... |
 | [`dev-document`](/docs/agents/dev-document) | Generation of office documents and reports. | Read, Grep, Glob... |
 | [`dev-flutter`](/docs/agents/dev-flutter) | Flutter development with Clean Architecture and BLoC. | Read, Grep, Glob... |
-| [`dev-prompt-engineering`](/docs/agents/dev-prompt-engineering) | Systematic prompt optimization for LLM applications. | Read, Grep, Glob... |
 | [`dev-supabase`](/docs/agents/dev-supabase) | Complete integration of Supabase as a backend. | Read, Grep, Glob... |
 | [`dev-test`](/docs/agents/dev-test) | Generation of complete and maintainable tests. | Read, Grep, Glob... |
 | [`doc-generate`](/docs/agents/doc-generate) | Generation of complete and maintainable documentation. | Read, Grep, Glob... |
