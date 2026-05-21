@@ -29,7 +29,7 @@ This domain contains **11 commands** for croissance (seo, analytics, landing, fu
 | [`/growth:growth-localization`](/docs/commands/growth/growth-localization) | Localization strategy and international expansion. |
 | [`/growth:growth-onboarding`](/docs/commands/growth/growth-onboarding) | Design an effective user onboarding journey. |
 | [`/growth:growth-retention`](/docs/commands/growth/growth-retention) | Analyzes and improves user retention with data-driven strategies. |
-| [`/growth:growth-seo`](/docs/commands/growth/growth-seo) | SEO audit and optimization recommendations for organic search ranking. |
+| [`/growth:growth-seo`](/docs/commands/growth/growth-seo) | SEO audit and optimization for organic search ranking. |
 
 ## Commands in detail
 
@@ -96,7 +96,7 @@ This domain contains **11 commands** for croissance (seo, analytics, landing, fu
   />
   <CommandCard
     name="growth-seo"
-    description="SEO audit and optimization recommendations for organic search ranking."
+    description="SEO audit and optimization for organic search ranking."
     domain="growth"
     href="/docs/commands/growth/growth-seo"
   />
