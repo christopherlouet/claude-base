@@ -48,7 +48,7 @@ Skills with isolated context.
 | [`dev-graphql`](/docs/skills/dev-graphql) | GraphQL API development. Trigger when the user wan... | dev, graphql |
 | [`dev-i18n`](/docs/skills/dev-i18n) | Internationalization (i18n) and localization (l10n... | dev, i18n, d'accord |
 | [`dev-nextjs`](/docs/skills/dev-nextjs) | Next.js development (App Router, Server Components... | dev, nextjs, use client |
-| [`dev-prisma`](/docs/skills/dev-prisma) | Development with Prisma ORM (schema, migrations, t... | dev, prisma |
+| [`dev-prisma`](/docs/skills/dev-prisma) | Development with Prisma ORM (schema, migrations, t... | dev, prisma, prisma —  |
 | [`dev-prompt-engineering`](/docs/skills/dev-prompt-engineering) | Prompt optimization for LLMs. Trigger when the use... | dev, prompt, engineering |
 | [`dev-react-perf`](/docs/skills/dev-react-perf) | React/Next.js performance optimization. Trigger wh... | dev, react, perf |
 | [`dev-refactor`](/docs/skills/dev-refactor) | Code refactoring to improve quality. Trigger when ... | dev, refactor |
