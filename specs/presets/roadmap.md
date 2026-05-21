@@ -156,9 +156,9 @@ Every preset (vouched or community) is subject to:
 | Mobile / desktop | 0 | 5+ |
 | Data / AI pipelines | 0 | 2+ |
 | Game / Interactive media | 0 | 1+ |
-| Vendor-pointer presets | 5 (`phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`) | 1+ |
+| Vendor-pointer presets | 5 (`phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`) | — (recipe-only fallback) |
 
-**6 maintainer-vouched + 5 vendor-pointer = 11 shipped. 24+ named as community-wanted** (23+ maintainer-vouched candidates + 1+ vendor-pointer candidates). That ratio is the foundation's honest position.
+**6 maintainer-vouched + 5 vendor-pointer = 11 shipped. 23+ named as community-wanted** (all maintainer-vouched candidates; the vendor-pointer queue is intentionally closed — see below). That ratio is the foundation's honest position.
 
 ## Vendor-pointer candidates
 
@@ -170,6 +170,6 @@ These vendors already have validated entries in [`docs/recipes/recommended-vendo
 | ~~**Microsoft Playwright**~~ | ~~`microsoft/playwright-cli`~~ | ~~`package.json contains "@playwright/test"`~~ — **shipped as `playwright` preset** |
 | ~~**Pulumi**~~ | ~~`pulumi/agent-skills`~~ | ~~single-file detect on `Pulumi.yaml`~~ — **shipped as `pulumi` preset** |
 | ~~**MongoDB**~~ | ~~`mongodb/agent-skills`~~ | ~~`package.json contains "mongodb"`~~ — **shipped as `mongodb` preset** (substring colon-anchored to `"mongodb":` to disambiguate from `mongodb-memory-server` etc.; `mongoose` ODM remains a separate hypothetical candidate) |
-| **Grafana Labs** | `grafana/skills` | TBD per project shape — likely a single config-file pattern |
+| ~~**Grafana Labs**~~ | ~~`grafana/skills`~~ | ~~TBD per project shape~~ — **kept recipe-only**: detect rule is not decidable under the strict 1-entry EF-005 constraint. Grafana projects split between config-driven (`grafana.ini`, on-prem), provisioning-driven (`provisioning/datasources/*.yaml`, Kubernetes/Helm), and dashboard-driven (`dashboards/*.json`) shapes; any single signal mis-detects the others. Grafana is also typically a *companion* to a primary app stack, not the primary stack itself, so a preset would rarely be the selected candidate. Install path remains [`docs/recipes/recommended-vendor-skills.md`](../../docs/recipes/recommended-vendor-skills.md). |
 
-Each candidate would ship as its own PR + spec amendment, not in this initial batch.
+The vendor-pointer queue is now closed. New candidates would require both a clear single-signal detect rule and a primary-stack use case; revisit only if those constraints are met.

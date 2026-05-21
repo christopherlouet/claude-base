@@ -446,6 +446,32 @@ This list is part of the curation work. Naming what we rejected matters as much 
 
 ---
 
+## Skill discovery — marketplaces & aggregators
+
+Beyond the curated list above, several public indexes catalogue Claude Code skills, plugins, and agents at much larger scale. Use them when you need broader coverage than this recipe (e.g., niche stacks we haven't audited), or to monitor what the ecosystem ships outside vendor-authored skills.
+
+We do **not** vouch for entries discovered through these indexes — only for the entries listed earlier in this recipe. Treat them as discovery surfaces, not curation surfaces.
+
+| Source | Type | Scope | Note |
+|---|---|---|---|
+| [`claude.com/plugins`](https://claude.com/plugins) | Anthropic-official | Browsable plugin catalog with install counts and "Anthropic Verified" badges | The canonical first-party directory. Start here. |
+| [`anthropics/claude-plugins-official`](https://github.com/anthropics/claude-plugins-official) | Anthropic-official | Marketplace repo auto-loaded by Claude Code; contains `/plugins` (internal) and `/external_plugins` (partner) | Read manifests directly when `claude.com/plugins` doesn't surface enough detail. |
+| [`anthropics/claude-plugins-community`](https://github.com/anthropics/claude-plugins-community) | Anthropic-official (tier-2) | Nightly-synced mirror of community submissions that passed Anthropic's automated security review | PRs auto-closed; submit via `clau.de/plugin-directory-submission`. |
+| [`agentskills.io`](https://agentskills.io) | Open standard | Spec for the `SKILL.md` format (originally Anthropic, now also adopted by Codex, Cursor, Copilot, Gemini CLI, VS Code) | Confirms portability — skills authored against this spec run across multiple LLM agents, not only Claude Code. |
+| [`hesreallyhim/awesome-claude-code`](https://github.com/hesreallyhim/awesome-claude-code) | Community awesome-list | Broad index: skills, hooks, slash-commands, agent orchestrators, apps, plugins | Largest general-purpose community list. Verify ToC state — index was under renovation as of 2026-05. |
+| [`ComposioHQ/awesome-claude-skills`](https://github.com/ComposioHQ/awesome-claude-skills) | Community awesome-list (vendor-maintained) | 1000+ skills across docs, dev, data, business, security | Maintained by Composio (SaaS-integration vendor); breadth is real but expect Composio's own integrations to be over-represented. |
+| [`claudemarketplaces.com`](https://claudemarketplaces.com) | Third-party index | Plugins, skills, MCP servers ranked by installs + stars + community votes | Independent operator, transparent ranking signals. |
+| [`skillsmp.com`](https://skillsmp.com) | Third-party index, cross-LLM | Aggregates `SKILL.md` content for Claude Code, Codex CLI, and ChatGPT | Useful if you're using more than one agent. Expect noise at that volume. |
+
+URLs verified live (HTTP 200) on 2026-05-21.
+
+**Excluded from this list** (same vendor-neutrality / quality rationale as the rest of the recipe):
+
+- "SkillKit" / `agenstskills.com` — unclear provenance, domain name appears to typo-squat `agentskills.io`.
+- Duplicate awesome-lists (`travisvn/awesome-claude-skills`, `BehiSecc/awesome-claude-skills`, `GetBindu/awesome-claude-code-and-skills`, `jqueryscript/awesome-claude-code`) — content overlaps `hesreallyhim` and `ComposioHQ` without adding signal.
+
+---
+
 ## When this list will change
 
 This recipe is a living document. Triggers for re-evaluation:
