@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Available Agents (131 commands, 63 sub-agents, 54 skills)"
+title: "Available Agents (130 commands, 63 sub-agents, 54 skills)"
 description: "Claude automatically delegates to specialized agents (isolated context, restricted tools)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Available Agents (<!-- count:commands -->131<!-- /count --> commands, <!-- count:agents -->63<!-- /count --> sub-agents, <!-- count:skills -->54<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->130<!-- /count --> commands, <!-- count:agents -->63<!-- /count --> sub-agents, <!-- count:skills -->54<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -120,7 +120,7 @@ tags:
 | `/ops:ops-standup` | Cross-repo morning briefing (commits, PRs, CI, blockers, priorities) |
 | `/ops:ops-ci-fix` | Autonomous diagnosis and repair of failing CI/CD pipelines |
 
-## DOC-: Documentation (<!-- count:byDomain.doc -->9<!-- /count -->)
+## DOC-: Documentation (<!-- count:byDomain.doc -->8<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/doc:doc-generate` | Generate documentation |
