@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 8
 title: "/doc:doc-onboard"
 description: "Quick onboarding on an unknown codebase."
 tags:

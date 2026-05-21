@@ -30,7 +30,7 @@ Assess and prioritize international markets, plan localization (language, cultur
 
 | Agent | Usage |
 |-------|-------|
-| `/doc:doc-i18n` | Technical i18n implementation |
+| `dev-i18n` skill | Technical i18n implementation (i18next/next-intl/formatjs/flutter ARB) |
 | `/legal:legal-rgpd` | GDPR compliance |
 | `/growth:growth-seo` | International SEO |
 | `/biz:biz-market` | Market research |

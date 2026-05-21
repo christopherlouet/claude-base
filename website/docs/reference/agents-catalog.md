@@ -127,7 +127,6 @@ tags:
 | `/doc:doc-changelog` | Generate/maintain the changelog |
 | `/doc:doc-explain` | Explain complex code |
 | `/doc:doc-onboard` | Discover a codebase |
-| `/doc:doc-i18n` | Internationalization |
 | `/doc:doc-fix-issue` | Fix a GitHub issue |
 | `/doc:doc-api-spec` | Generate OpenAPI/Swagger spec |
 | `/doc:doc-readme` | Create/improve README |

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 9
 title: "/doc:doc-readme"
 description: "Generates or improves a project's README to maximize its adoption and understanding."
 tags:

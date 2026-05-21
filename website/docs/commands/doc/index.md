@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Overview
 
-This domain contains **9 commands** for documentation (changelog, readme, architecture).
+This domain contains **8 commands** for documentation (changelog, readme, architecture).
 
 ## Commands list
 
@@ -25,7 +25,6 @@ This domain contains **9 commands** for documentation (changelog, readme, archit
 | [`/doc:doc-explain`](/docs/commands/doc/doc-explain) | Explain complex code in detail. |
 | [`/doc:doc-fix-issue`](/docs/commands/doc/doc-fix-issue) | Fix a GitHub issue autonomously and completely. |
 | [`/doc:doc-generate`](/docs/commands/doc/doc-generate) | Documentation generation for code. |
-| [`/doc:doc-i18n`](/docs/commands/doc/doc-i18n) | Code internationalization and localization. |
 | [`/doc:doc-onboard`](/docs/commands/doc/doc-onboard) | Quick onboarding on an unknown codebase. |
 | [`/doc:doc-readme`](/docs/commands/doc/doc-readme) | Generates or improves a project's README to maximize its adoption and understanding. |
 
@@ -67,12 +66,6 @@ This domain contains **9 commands** for documentation (changelog, readme, archit
     description="Documentation generation for code."
     domain="doc"
     href="/docs/commands/doc/doc-generate"
-  />
-  <CommandCard
-    name="doc-i18n"
-    description="Code internationalization and localization."
-    domain="doc"
-    href="/docs/commands/doc/doc-i18n"
   />
   <CommandCard
     name="doc-onboard"
