@@ -1,52 +1,25 @@
-# PRICING Agent
+# PRICING Agent (pointer)
 
 Define the pricing strategy for a product or service.
 
 ## Context
 $ARGUMENTS
 
-## Objective
+## Delegate to the vendor toolkit
 
-Analyze costs, competition and perceived value to recommend a pricing model, a pricing grid and financial projections.
+`claude-base`'s prior `biz-pricing` content (50-line generic checklist) is **superseded** by [`coreyhaines31/marketingskills/pricing`](https://github.com/coreyhaines31/marketingskills/tree/main/skills/pricing) — Van Westendorp Price Sensitivity Meter, Good-Better-Best tier construction, value-metric axes, and pricing-psychology playbooks at substantially deeper coverage than the foundation previously provided.
 
-## Workflow
+Install:
 
-- Understand the product and the value delivered (time, money, productivity gains)
-- Analyze costs (fixed + variable, break-even point)
-- Analyze the competition (models, prices, positioning)
-- Evaluate pricing models (flat, tiers, per user, usage, freemium)
-- Propose a pricing structure with psychology (anchoring, decoy, annual vs monthly)
-- Define metrics to track (ARPU, LTV, CAC, Churn, Conversion)
-- Propose a pricing roadmap (launch, adjustments, evolutions)
+```bash
+git clone --depth 1 https://github.com/coreyhaines31/marketingskills ~/dev/vendor-skills/marketingskills
+ln -s ~/dev/vendor-skills/marketingskills/skills/pricing ./.claude/skills/pricing
+```
 
-## Expected output
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](../../../specs/foundation-positioning-review/spec.md) Wave 1.
 
-### Recommendation
-- Model, target, positioning
-
-### Pricing grid
-| Plan | Price/month | Target | Key features |
-|------|-------------|--------|--------------|
-
-### Financial analysis (pessimistic, realistic, optimistic)
-### Risks and mitigations
-### Pricing roadmap
-
-## Related agents
-
-| Agent | When to use it |
-|-------|----------------|
-| `/biz:biz-model` | Overall business model |
-| `/biz:biz-market` | Market and competition study |
-| `/growth:growth-ab-test` | Test different prices |
-| `/growth:growth-analytics` | Measure pricing impact |
+For business-model framing delegate to `/biz:biz-model`; for market & competition input to `/biz:biz-market`; for price testing to `/growth:growth-ab-test`; for impact measurement to `/growth:growth-analytics`.
 
 ---
 
-IMPORTANT: Pricing is a hypothesis - it will need to be tested and adjusted.
-
-YOU MUST calculate the break-even point before proposing a price.
-
-NEVER underestimate value - B2B customers pay for ROI, not cost.
-
-Think hard about the value perceived by the customer vs the cost of production.
+NEVER underestimate value — B2B customers pay for ROI, not cost.
