@@ -1,5 +1,5 @@
 ---
-sidebar_position: 39
+sidebar_position: 38
 title: "qa-design"
 description: "UI/UX design audit and verification of web best practices. Trigger when the user wants to audit the design, verify the UI/UX, or improve the user interface."
 tags:

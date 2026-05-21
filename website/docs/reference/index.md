@@ -12,8 +12,8 @@ description: Quick reference and matrices
 
 | Reference | Description |
 |-----------|-------------|
-| [Commands matrix](/docs/reference/commands-matrix) | <!-- count:commands -->130<!-- /count --> commands with domain and description |
-| [Agents matrix](/docs/reference/agents-matrix) | <!-- count:agents -->63<!-- /count --> agents with model and tools |
+| [Commands matrix](/docs/reference/commands-matrix) | <!-- count:commands -->129<!-- /count --> commands with domain and description |
+| [Agents matrix](/docs/reference/agents-matrix) | <!-- count:agents -->62<!-- /count --> agents with model and tools |
 | [Utility scripts](/docs/reference/scripts) | Installation and maintenance scripts |
 | [Cheatsheet](/docs/reference/commands) | Quick reference card |
 
@@ -24,7 +24,7 @@ description: Quick reference and matrices
 | Domain | Commands | Description |
 |---------|-----------|-------------|
 | [WORK](/docs/commands/work) | <!-- count:byDomain.work -->15<!-- /count --> | Main workflow |
-| [DEV](/docs/commands/dev) | <!-- count:byDomain.dev -->23<!-- /count --> | Development |
+| [DEV](/docs/commands/dev) | <!-- count:byDomain.dev -->22<!-- /count --> | Development |
 | [QA](/docs/commands/qa) | <!-- count:byDomain.qa -->16<!-- /count --> | Quality |
 | [OPS](/docs/commands/ops) | <!-- count:byDomain.ops -->34<!-- /count --> | Operations |
 | [DOC](/docs/commands/doc) | <!-- count:byDomain.doc -->8<!-- /count --> | Documentation |
@@ -37,9 +37,9 @@ description: Quick reference and matrices
 
 | Component | Count | Link |
 |-----------|--------|------|
-| Commands | <!-- count:commands -->130<!-- /count --> | [View](/docs/commands) |
-| Agents | <!-- count:agents -->63<!-- /count --> | [View](/docs/agents) |
-| Skills | <!-- count:skills -->54<!-- /count --> | [View](/docs/skills) |
+| Commands | <!-- count:commands -->129<!-- /count --> | [View](/docs/commands) |
+| Agents | <!-- count:agents -->62<!-- /count --> | [View](/docs/agents) |
+| Skills | <!-- count:skills -->53<!-- /count --> | [View](/docs/skills) |
 | Rules | <!-- count:rules -->30<!-- /count --> | [View](/docs/rules) |
 
 ## Shortcuts

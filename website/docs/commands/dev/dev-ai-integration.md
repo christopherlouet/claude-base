@@ -45,7 +45,6 @@ cost estimation, and risks with mitigations.
 | Agent | Usage |
 |-------|-------|
 | `/dev:dev-rag` | RAG systems |
-| `/dev:dev-prompt-engineering` | Optimize prompts |
 | `/dev:dev-api` | API endpoints |
 | `/ops:ops-monitoring` | Production monitoring |
 

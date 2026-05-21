@@ -1,5 +1,5 @@
 ---
-sidebar_position: 53
+sidebar_position: 52
 title: "work-pr"
 description: "Create a complete and well-documented Pull Request. Use when the user wants to create a PR, submit their changes, or prepare a merge request."
 tags:

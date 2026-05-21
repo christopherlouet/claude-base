@@ -13,7 +13,7 @@ import CommandCard from '@site/src/components/CommandCard';
 
 ## Overview
 
-This domain contains **23 commands** for developpement (tdd, api, composants, debug).
+This domain contains **22 commands** for developpement (tdd, api, composants, debug).
 
 ## Commands list
 
@@ -33,7 +33,6 @@ This domain contains **23 commands** for developpement (tdd, api, composants, de
 | [`/dev:dev-mcp`](/docs/commands/dev/dev-mcp) | Guide for creating quality MCP (Model Context Protocol) servers. |
 | [`/dev:dev-neovim`](/docs/commands/dev/dev-neovim) | Create and configure Neovim plugins, LSP, keymaps and features in Lua. |
 | [`/dev:dev-prisma`](/docs/commands/dev/dev-prisma) | Configuration and usage of Prisma ORM. |
-| [`/dev:dev-prompt-engineering`](/docs/commands/dev/dev-prompt-engineering) | Systematic prompt optimization for LLM applications. |
 | [`/dev:dev-rag`](/docs/commands/dev/dev-rag) | Design and implementation of RAG (Retrieval-Augmented Generation) systems. |
 | [`/dev:dev-react-perf`](/docs/commands/dev/dev-react-perf) | React/Next.js performance optimization based on rules prioritized by impact. |
 | [`/dev:dev-refactor`](/docs/commands/dev/dev-refactor) | Code refactoring with behavior preservation and quality improvement. |
@@ -129,12 +128,6 @@ This domain contains **23 commands** for developpement (tdd, api, composants, de
     description="Configuration and usage of Prisma ORM."
     domain="dev"
     href="/docs/commands/dev/dev-prisma"
-  />
-  <CommandCard
-    name="dev-prompt-engineering"
-    description="Systematic prompt optimization for LLM applications."
-    domain="dev"
-    href="/docs/commands/dev/dev-prompt-engineering"
   />
   <CommandCard
     name="dev-rag"

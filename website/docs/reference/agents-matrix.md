@@ -6,7 +6,7 @@ description: Breakdown of all claude-base agents by model
 
 # Agents Matrix
 
-> **<!-- count:agents -->63<!-- /count --> sub-agents** with model and tools
+> **<!-- count:agents -->62<!-- /count --> sub-agents** with model and tools
 >
 > For the exhaustive and always up-to-date list, see the [Agents catalog](/docs/reference/agents-catalog) (auto-generated from `.claude/agents/`).
 
@@ -57,7 +57,6 @@ Current breakdown: **22 Haiku** (fast/economical), **35 Sonnet** (analysis), **6
 | `dev-debug` | Bug investigation | Read, Grep, Glob, Bash |
 | `dev-document` | Document generation (PDF, DOCX) | Read, Grep, Glob, Edit, Write, Bash |
 | `dev-flutter` | Flutter widgets and screens | Read, Grep, Glob, Edit, Write, Bash |
-| `dev-prompt-engineering` | LLM prompt optimization | Read, Grep, Glob, WebFetch |
 | `dev-rag` | RAG systems | Read, Grep, Glob, Bash |
 | `dev-supabase` | Supabase backend | Read, Grep, Glob, Edit, Write, Bash |
 | `dev-tdd` | TDD development | Read, Grep, Glob, Edit, Write, Bash |
@@ -134,7 +133,6 @@ Current breakdown: **22 Haiku** (fast/economical), **35 Sonnet** (analysis), **6
 | `dev-debug` | sonnet | Bug investigation and diagnosis |
 | `dev-document` | sonnet | Office document generation |
 | `dev-flutter` | sonnet | Flutter widgets and screens |
-| `dev-prompt-engineering` | sonnet | LLM prompt optimization |
 | `dev-rag` | sonnet | RAG architecture |
 | `dev-supabase` | sonnet | Supabase backend |
 | `dev-tdd` | sonnet | TDD development (Red-Green-Refactor) |

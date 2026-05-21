@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 23
 title: "feature-flags"
 description: "Feature flags and toggles management. Trigger when the user wants to implement feature flagging, A/B testing, or progressive deployment."
 tags:

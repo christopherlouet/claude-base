@@ -1,5 +1,5 @@
 ---
-sidebar_position: 23
+sidebar_position: 22
 title: "doc-generate"
 description: "Technical documentation generation. Trigger when the user wants to create a README, API docs, or guides."
 tags:

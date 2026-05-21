@@ -1,17 +1,17 @@
 ---
 sidebar_position: 1
 title: "Commands"
-description: "Catalog of 130 claude-base commands"
+description: "Catalog of 129 claude-base commands"
 ---
 
 import Stats from '@site/src/components/Stats';
 
 # Commands Catalog
 
-> **130 commands** organized in **10 domains**
+> **129 commands** organized in **10 domains**
 
 <Stats items={[
-  { number: 130, label: 'Commands' },
+  { number: 129, label: 'Commands' },
   { number: 10, label: 'Domains' },
 ]} />
 
@@ -61,7 +61,7 @@ Commands are triggered manually with the `/` prefix:
 
 
 
-### [DEV](/docs/commands/dev) (23)
+### [DEV](/docs/commands/dev) (22)
 
 > Developpement (TDD, API, composants, debug)
 
@@ -70,7 +70,7 @@ Commands are triggered manually with the `/` prefix:
 - [`/dev:dev-api-versioning`](/docs/commands/dev/dev-api-versioning)
 - [`/dev:dev-component`](/docs/commands/dev/dev-component)
 - [`/dev:dev-debug`](/docs/commands/dev/dev-debug)
-- [... and 18 more](/docs/commands/dev)
+- [... and 17 more](/docs/commands/dev)
 
 
 ### [DOC](/docs/commands/doc) (8)

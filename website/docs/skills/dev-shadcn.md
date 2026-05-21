@@ -1,5 +1,5 @@
 ---
-sidebar_position: 19
+sidebar_position: 18
 title: "dev-shadcn"
 description: "Integration and customization of shadcn/ui (copy-paste React components, Radix + Tailwind). Trigger when the user wants to install shadcn, add components, customize the theme, or when shadcn/ui usage is detected in the project."
 tags:

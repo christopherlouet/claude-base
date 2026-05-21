@@ -1,5 +1,5 @@
 ---
-sidebar_position: 62
+sidebar_position: 61
 title: "work-batch"
 description: "Autonomous execution of stories from a PRD. The `work-batch` skill provides the formats and methodology."
 tags:

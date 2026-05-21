@@ -1,5 +1,5 @@
 ---
-sidebar_position: 22
+sidebar_position: 21
 title: "doc-changelog"
 description: "CHANGELOG maintenance following Keep a Changelog. Trigger when the user wants to document changes or prepare a release."
 tags:

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 16
 title: "Skills (Claude Code 2.1+)"
-description: "In addition to commands, the project includes **54 Skills** in `.claude/skills/`:"
+description: "In addition to commands, the project includes **53 Skills** in `.claude/skills/`:"
 tags:
   - "reference"
 ---
@@ -10,7 +10,7 @@ tags:
 
 # Skills (Claude Code 2.1+)
 
-In addition to commands, the project includes **<!-- count:skills -->54<!-- /count --> Skills** in `.claude/skills/`:
+In addition to commands, the project includes **<!-- count:skills -->53<!-- /count --> Skills** in `.claude/skills/`:
 
 ## Core skills
 | Skill | Automatic trigger | Context |
@@ -44,7 +44,6 @@ In addition to commands, the project includes **<!-- count:skills -->54<!-- /cou
 | `ops-mobile-release` | "App Store", "Play Store", "Fastlane" | fork |
 | `data-pipeline` | "ETL", "Airflow", "dbt" | fork |
 | `qa-perf` | "optimize", "latency", "TTFB" | fork |
-| `dev-prompt-engineering` | "prompt", "instruction", "few-shot", "LLM" | fork |
 | `qa-e2e` | "E2E", "Playwright", "Cypress", "user journey" | fork |
 | `feature-flags` | "feature flag", "A/B test", "progressive deployment" | fork |
 | `ops-infra-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | fork |

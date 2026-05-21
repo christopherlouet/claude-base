@@ -83,7 +83,7 @@ claude-base/
 
 **Cross-tool entry point:** the foundation ships an `AGENTS.md` at repo root signaling SKILL.md open-standard compliance to Codex / Cursor / Copilot / Gemini CLI. Skills under `.claude/skills/` are theoretically portable in form ; Claude-specific extensions (`allowed-tools`, `context: fork`, `model`) are silently ignored by other tools.
 
-### Commands (<!-- count:commands -->130<!-- /count -->)
+### Commands (<!-- count:commands -->129<!-- /count -->)
 
 **Commands** are instructions triggered manually with `/name`.
 
@@ -100,7 +100,7 @@ claude-base/
 /qa:qa-security
 ```
 
-### Agents (<!-- count:agents -->63<!-- /count -->)
+### Agents (<!-- count:agents -->62<!-- /count -->)
 
 **Agents** are autonomous sub-agents with an isolated context.
 
@@ -116,7 +116,7 @@ claude-base/
 "Explore the auth code" → Claude delegates to the work-explore agent (haiku)
 ```
 
-### Skills (<!-- count:skills -->54<!-- /count -->)
+### Skills (<!-- count:skills -->53<!-- /count -->)
 
 **Skills** are auto-triggered by keywords in the conversation.
 
@@ -250,4 +250,4 @@ Enable the servers as needed to extend Claude's capabilities.
 
 - [Installation](/docs/intro/installation) - Complete installation guide
 - [Workflows](/docs/workflow) - See the workflows in action
-- [Commands](/docs/commands) - Explore the <!-- count:commands -->130<!-- /count --> commands
+- [Commands](/docs/commands) - Explore the <!-- count:commands -->129<!-- /count --> commands

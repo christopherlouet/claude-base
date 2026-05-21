@@ -1,14 +1,14 @@
 {
-  "commands": 130,
-  "agents": 63,
-  "skills": 54,
+  "commands": 129,
+  "agents": 62,
+  "skills": 53,
   "rules": 30,
   "tests": 695,
   "testFiles": 32,
   "byDomain": {
     "biz": 11,
     "data": 3,
-    "dev": 23,
+    "dev": 22,
     "doc": 8,
     "growth": 11,
     "legal": 5,

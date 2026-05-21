@@ -1,5 +1,5 @@
 ---
-sidebar_position: 33
+sidebar_position: 32
 title: "ops-monitoring"
 description: "Application instrumentation for monitoring. Trigger when the user wants to add logs, metrics, or traces."
 tags:

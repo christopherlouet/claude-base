@@ -1,5 +1,5 @@
 ---
-sidebar_position: 38
+sidebar_position: 37
 title: "qa-chrome"
 description: "Visual tests and browser debugging via Chrome. Use to test web pages, verify visual rendering, debug with the console, or automate browser actions. Trigger when the user mentions \"visual test\", \"Chrome\", \"browser\", \"browser console\", \"DOM\", \"screenshot\", \"GIF\"."
 tags:

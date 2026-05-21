@@ -40,7 +40,6 @@ skill-name/
 | `dev-i18n` | i18n, translation, locale, multiple languages | Internationalization (next-intl, react-i18next, vue-i18n, ARB) |
 | `dev-nextjs` | Next.js, App Router, RSC, Server Actions | Next.js development (caching, streaming, middleware) |
 | `dev-prisma` | Prisma, schema.prisma, migration, type-safe queries | Development with Prisma ORM |
-| `dev-prompt-engineering` | prompt, instruction, few-shot, LLM | Prompt optimization for LLMs |
 | `dev-react-perf` | React perf, re-render, memo | React/Next.js performance optimization |
 | `dev-refactor` | refactor, clean code, restructure | Code refactoring |
 | `dev-shadcn` | shadcn, shadcn/ui, Radix, copy-paste components | Integration and customization of shadcn/ui |
