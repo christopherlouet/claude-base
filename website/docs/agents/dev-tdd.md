@@ -1,5 +1,5 @@
 ---
-sidebar_position: 18
+sidebar_position: 17
 title: "dev-tdd"
 description: "Test-driven development. The `dev-tdd` skill provides the detailed methodology."
 tags:

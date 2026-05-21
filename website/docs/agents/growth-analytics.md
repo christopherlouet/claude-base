@@ -1,7 +1,7 @@
 ---
-sidebar_position: 25
+sidebar_position: 24
 title: "growth-analytics"
-description: "Analytics and tracking implementation."
+description: "Analytics and tracking implementation, plus post-launch data analysis on the collected events."
 tags:
   - "agent"
   - "sonnet"
@@ -11,7 +11,7 @@ tags:
 
 <span className="badge badge--sonnet">Sonnet</span>
 
-> Analytics and tracking implementation.
+> Analytics and tracking implementation, plus post-launch data analysis on the collected events.
 
 ## Configuration
 
@@ -27,7 +27,7 @@ tags:
 
 # Agent GROWTH-ANALYTICS
 
-Analytics and tracking implementation.
+Analytics and tracking implementation, plus post-launch data analysis on the collected events.
 
 ## Workflow
 
@@ -36,6 +36,7 @@ Analytics and tracking implementation.
 3. **Client implementation**: trackEvent, trackPageView, identify, trackConversion
 4. **Server-side**: sensitive events (revenue) always server-side
 5. **KPI dashboard**: Acquisition (CAC), Activation, Engagement (DAU/MAU), Revenue (MRR/LTV), Retention
+6. **Post-launch analysis**: once events flow, run analytical SQL on the warehouse — cohort retention, RFM segmentation, window-function aggregations — to explain KPI movements
 
 ## Core events
 
@@ -53,6 +54,7 @@ Analytics and tracking implementation.
 2. Documented tracking plan
 3. Core events implemented
 4. KPI dashboard configured
+5. Analytical SQL queries (cohort, RFM, window functions) when KPIs need root-cause analysis
 
 ## Guidelines
 
@@ -60,6 +62,7 @@ Analytics and tracking implementation.
 - NEVER track personal data without consent
 - IMPORTANT: Consistent naming convention `[Object]_[Action]`
 - YOU MUST configure RGPD consent before tracking
+- IMPORTANT: Profile data (missing values, duplicates) before drawing conclusions from analytical queries
 
 Think hard about the metrics that really matter.
 

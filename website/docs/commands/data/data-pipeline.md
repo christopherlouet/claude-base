@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 title: "/data:data-pipeline"
 description: "Design and implement ETL/ELT data pipelines."
 tags:
@@ -48,7 +48,7 @@ orchestration (cron, SLA) and monitoring (metrics, alerts).
 | Agent | When to use it |
 |-------|------------------|
 | `/data:data-modeling` | Model the data |
-| `/data:data-analytics` | Analyze the results |
+| `/growth:growth-analytics` | Analyze the results (cohort, RFM, KPIs) |
 | `/ops:ops-monitoring` | Configure monitoring |
 | `/dev:dev-test` | Test the pipeline |
 

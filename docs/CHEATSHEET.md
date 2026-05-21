@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 129 commands | 62 agents | 53 skills | 9 categories       ║
+║  Total: 128 commands | 61 agents | 53 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -134,10 +134,10 @@
 │                              DATA- : DATA                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌──────────┐  ┌───────────┐  ┌──────────┐                               │
-│   │ PIPELINE │  │ ANALYTICS │  │ MODELING │                               │
-│   │ ETL/ELT  │  │ Reports   │  │ DWH      │                               │
-│   └──────────┘  └───────────┘  └──────────┘                               │
+│   ┌──────────┐  ┌──────────┐                                                │
+│   │ PIPELINE │  │ MODELING │                                                │
+│   │ ETL/ELT  │  │ DWH      │                                                │
+│   └──────────┘  └──────────┘                                                │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->129<!-- /count -->)
+## Commands by Category (<!-- count:commands -->128<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -338,12 +338,11 @@
 | `/growth:growth-localization` | Multi-market localization |
 | `/growth:growth-cro` | Conversion optimization (CRO) |
 
-### DATA- : Data (3)
+### DATA- : Data (2)
 
 | Command | Usage |
 |----------|-------|
 | `/data:data-pipeline` | ETL/ELT pipelines |
-| `/data:data-analytics` | Data analysis |
 | `/data:data-modeling` | Data warehouse modeling |
 
 ### LEGAL- : Legal (5)
@@ -551,4 +550,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->1.41.2<!-- /version --> - <!-- count:commands -->129<!-- /count --> commands - <!-- count:agents -->62<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->30<!-- /count --> rules*
+*Claude-Base v<!-- version -->1.41.2<!-- /version --> - <!-- count:commands -->128<!-- /count --> commands - <!-- count:agents -->61<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->30<!-- /count --> rules*

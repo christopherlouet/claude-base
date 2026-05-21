@@ -32,7 +32,7 @@ Choose the library suited to the format and the project's language.
 | `/doc:doc-generate` | Technical documentation (Markdown) |
 | `/doc:doc-api-spec` | API specification (OpenAPI) |
 | `/biz:biz-pitch` | Pitch deck presentation |
-| `/data:data-analytics` | Analysis report with data |
+| `/growth:growth-analytics` | Analysis report with data |
 
 ---
 

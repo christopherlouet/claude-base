@@ -1,5 +1,5 @@
 ---
-sidebar_position: 32
+sidebar_position: 31
 title: "legal-privacy-policy"
 description: "Creation of a GDPR-compliant privacy policy."
 tags:

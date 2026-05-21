@@ -190,7 +190,7 @@
 |---|---|---|
 | Command | `/data:data-pipeline` | ETL/ELT pipelines (Airflow, dbt) |
 | Command | `/data:data-modeling` | Data warehouse modeling (star/snowflake) |
-| Command | `/data:data-analytics` | Reports and KPIs |
+| Command | `/growth:growth-analytics` | KPIs, cohort/RFM analysis, reports |
 | Skill auto | `data-pipeline` | Activated on `ETL`, `Airflow`, `dbt` |
 
 ### External best practices

@@ -165,7 +165,6 @@ tags:
 | Command | Usage |
 |---------|-------|
 | `/data:data-pipeline` | Design ETL/ELT pipelines |
-| `/data:data-analytics` | Data analysis and reports |
 | `/data:data-modeling` | Data warehouse modeling |
 
 ## LEGAL-: Legal (<!-- count:byDomain.legal -->5<!-- /count -->)
@@ -198,7 +197,7 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 | Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-serverless`, `ops-vercel`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
 | Development | `dev-debug`, `dev-component`, `dev-test`, `dev-flutter`, `dev-supabase`, `dev-rag`, `dev-design-system`, `dev-prisma`, `dev-trpc`, `dev-ai-integration`, `dev-document`, `dev-tdd` | haiku/sonnet/**opus** (tdd, debug, rag) |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |
-| Data | `data-pipeline`, `data-analytics`, `data-modeling` | haiku/sonnet |
+| Data | `data-pipeline`, `data-modeling` | haiku/sonnet |
 | Legal | `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service` | haiku/sonnet |
 
 ### Agent Configuration

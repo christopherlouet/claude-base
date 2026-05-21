@@ -47,8 +47,8 @@ Claude Code on its own is powerful, but it requires that you know exactly what t
 
 Concretely, claude-base adds the following to the `.claude/` folder of your project:
 
-- **<!-- count:commands -->129<!-- /count --> commands**: pre-written instructions for common tasks (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
-- **<!-- count:agents -->62<!-- /count --> agents**: specialized sub-processes that activate automatically for analysis or audit tasks
+- **<!-- count:commands -->128<!-- /count --> commands**: pre-written instructions for common tasks (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
+- **<!-- count:agents -->61<!-- /count --> agents**: specialized sub-processes that activate automatically for analysis or audit tasks
 - **<!-- count:skills -->53<!-- /count --> skills**: behaviors that trigger automatically based on your keywords
 - **<!-- count:rules -->30<!-- /count --> rules**: code conventions applied automatically based on the files you modify
 
@@ -412,7 +412,7 @@ You can also invoke agents via commands:
 /work:work-explore  # Launches the work-explore agent
 ```
 
-The <!-- count:agents -->62<!-- /count --> agents are grouped into the same domains as the commands. Haiku agents (22) are used for fast and economical tasks (exploration, documentation, simple audits). Sonnet agents (35) for complex analyses (security, performance, debug, architecture).
+The <!-- count:agents -->61<!-- /count --> agents are grouped into the same domains as the commands. Haiku agents (22) are used for fast and economical tasks (exploration, documentation, simple audits). Sonnet agents (35) for complex analyses (security, performance, debug, architecture).
 
 ---
 
@@ -498,7 +498,7 @@ The <!-- count:rules -->30<!-- /count --> rules of the foundation cover:
 
 ### 2.6 The 9 domains: overview
 
-Claude-base organizes its <!-- count:commands -->129<!-- /count --> commands into 9 domains. Each domain covers an aspect of software development.
+Claude-base organizes its <!-- count:commands -->128<!-- /count --> commands into 9 domains. Each domain covers an aspect of software development.
 
 ```
 .claude/commands/
@@ -1891,7 +1891,7 @@ An agent must have a minimal body (30-55 lines) and delegate to the skill. A ski
 
 #### The ratio and its importance
 
-The foundation currently contains: <!-- count:commands -->129<!-- /count --> commands, <!-- count:skills -->53<!-- /count --> skills, <!-- count:agents -->62<!-- /count --> agents, <!-- count:rules -->30<!-- /count --> rules (indicative numbers, verify with `.claude/`). This ratio reflects a philosophy: commands are the main entry point, agents are specialized and constrained, skills provide the substance.
+The foundation currently contains: <!-- count:commands -->128<!-- /count --> commands, <!-- count:skills -->53<!-- /count --> skills, <!-- count:agents -->61<!-- /count --> agents, <!-- count:rules -->30<!-- /count --> rules (indicative numbers, verify with `.claude/`). This ratio reflects a philosophy: commands are the main entry point, agents are specialized and constrained, skills provide the substance.
 
 #### CLAUDE.md and @imports
 

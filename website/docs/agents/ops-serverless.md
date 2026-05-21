@@ -1,5 +1,5 @@
 ---
-sidebar_position: 47
+sidebar_position: 46
 title: "ops-serverless"
 description: "Deployment of serverless applications."
 tags:

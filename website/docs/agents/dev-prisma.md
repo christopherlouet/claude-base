@@ -1,5 +1,5 @@
 ---
-sidebar_position: 15
+sidebar_position: 14
 title: "dev-prisma"
 description: "Prisma ORM for type-safe databases."
 tags:

@@ -1,17 +1,17 @@
 ---
 sidebar_position: 1
 title: "Commands"
-description: "Catalog of 129 claude-base commands"
+description: "Catalog of 128 claude-base commands"
 ---
 
 import Stats from '@site/src/components/Stats';
 
 # Commands Catalog
 
-> **129 commands** organized in **10 domains**
+> **128 commands** organized in **10 domains**
 
 <Stats items={[
-  { number: 129, label: 'Commands' },
+  { number: 128, label: 'Commands' },
   { number: 10, label: 'Domains' },
 ]} />
 
@@ -51,11 +51,10 @@ Commands are triggered manually with the `/` prefix:
 - [... and 6 more](/docs/commands/biz)
 
 
-### [DATA](/docs/commands/data) (3)
+### [DATA](/docs/commands/data) (2)
 
 > Donnees (pipeline, analytics, modeling)
 
-- [`/data:data-analytics`](/docs/commands/data/data-analytics)
 - [`/data:data-modeling`](/docs/commands/data/data-modeling)
 - [`/data:data-pipeline`](/docs/commands/data/data-pipeline)
 

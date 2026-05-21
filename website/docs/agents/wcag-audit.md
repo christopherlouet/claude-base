@@ -1,5 +1,5 @@
 ---
-sidebar_position: 60
+sidebar_position: 59
 title: "wcag-audit"
 description: "Accessibility audit per WCAG 2.1/2.2 level AA, inspired by the axe-core reference."
 tags:
