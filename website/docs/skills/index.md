@@ -53,7 +53,7 @@ Skills with isolated context.
 | [`dev-react-perf`](/docs/skills/dev-react-perf) | React/Next.js performance optimization. Trigger wh... | dev, react, perf |
 | [`dev-refactor`](/docs/skills/dev-refactor) | Code refactoring to improve quality. Trigger when ... | dev, refactor |
 | [`dev-shadcn`](/docs/skills/dev-shadcn) | Integration and customization of shadcn/ui (copy-p... | dev, shadcn |
-| [`dev-supabase`](/docs/skills/dev-supabase) | Backend development with Supabase. Trigger when th... | dev, supabase |
+| [`dev-supabase`](/docs/skills/dev-supabase) | Backend development with Supabase. Trigger when th... | dev, supabase, supabase —  |
 | [`dev-tdd`](/docs/skills/dev-tdd) | TDD development with Red-Green-Refactor cycle. Use... | dev, tdd, as a reference |
 | [`doc-changelog`](/docs/skills/doc-changelog) | CHANGELOG maintenance following Keep a Changelog. ... | doc, changelog |
 | [`doc-generate`](/docs/skills/doc-generate) | Technical documentation generation. Trigger when t... | doc, generate |
