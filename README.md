@@ -84,7 +84,7 @@ claude-base's unique value (vs assembling vendor skills alone) :
 - **PostToolUse output rewriter** for Bash + tsc/eslint (Claude Code 2.1.121+)
 - **Integrated install + update flow** via the `claude-base` CLI
 
-**Honest limit** : for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources (<!-- count:vendorSkillsValidated -->17<!-- /count --> skills across <!-- count:marketplaceAuditPilots -->4<!-- /count --> audit pilots).
+**Honest limit** : for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources (<!-- count:vendorSkillsValidated -->21<!-- /count --> skills across <!-- count:marketplaceAuditPilots -->5<!-- /count --> audit pilots).
 
 ## What you get on disk
 
