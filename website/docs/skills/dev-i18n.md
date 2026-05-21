@@ -407,7 +407,6 @@ Add `hreflang` in `<head>` and sitemap.xml.
 
 ## Complement with the foundation
 
-- Agent `doc-i18n`: helps with documentation translation
 - Rule `.claude/rules/accessibility.md`: `lang="fr"`, `dir="rtl"` for a11y
 - Skill `growth-localization`: localization strategy (markets, pricing per country)
 

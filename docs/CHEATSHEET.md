@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 131 commands | 63 agents | 54 skills | 9 categories       ║
+║  Total: 130 commands | 63 agents | 54 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -89,10 +89,10 @@
 │                          DOC- : DOCUMENTATION                               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌──────────┐  ┌───────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     │
-│   │ GENERATE │  │ CHANGELOG │  │ EXPLAIN │  │ ONBOARD │  │  I18N   │     │
-│   │ Auto doc │  │ History   │  │ Teach   │  │ Discover│  │ Translate│    │
-│   └──────────┘  └───────────┘  └─────────┘  └─────────┘  └─────────┘     │
+│   ┌──────────┐  ┌───────────┐  ┌─────────┐  ┌─────────┐                  │
+│   │ GENERATE │  │ CHANGELOG │  │ EXPLAIN │  │ ONBOARD │                  │
+│   │ Auto doc │  │ History   │  │ Teach   │  │ Discover│                  │
+│   └──────────┘  └───────────┘  └─────────┘  └─────────┘                  │
 │                                                                             │
 │   ┌───────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐            │
 │   │ FIX-ISSUE │  │ API-SPEC │  │  README  │  │ ARCHITECTURE │            │
@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->131<!-- /count -->)
+## Commands by Category (<!-- count:commands -->130<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -302,7 +302,6 @@
 | `/doc:doc-changelog` | Changelog |
 | `/doc:doc-explain` | Explain complex code |
 | `/doc:doc-onboard` | Discover a codebase |
-| `/doc:doc-i18n` | Internationalization |
 | `/doc:doc-fix-issue` | Fix GitHub issue |
 | `/doc:doc-api-spec` | OpenAPI/Swagger spec |
 | `/doc:doc-readme` | Create/improve README |
@@ -553,4 +552,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->1.41.2<!-- /version --> - <!-- count:commands -->131<!-- /count --> commands - <!-- count:agents -->63<!-- /count --> agents - <!-- count:skills -->54<!-- /count --> skills - <!-- count:rules -->30<!-- /count --> rules*
+*Claude-Base v<!-- version -->1.41.2<!-- /version --> - <!-- count:commands -->130<!-- /count --> commands - <!-- count:agents -->63<!-- /count --> agents - <!-- count:skills -->54<!-- /count --> skills - <!-- count:rules -->30<!-- /count --> rules*

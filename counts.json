@@ -1,5 +1,5 @@
 {
-  "commands": 131,
+  "commands": 130,
   "agents": 63,
   "skills": 54,
   "rules": 30,
@@ -9,7 +9,7 @@
     "biz": 11,
     "data": 3,
     "dev": 23,
-    "doc": 9,
+    "doc": 8,
     "growth": 11,
     "legal": 5,
     "ops": 34,
