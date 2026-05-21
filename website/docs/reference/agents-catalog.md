@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Available Agents (129 commands, 62 sub-agents, 53 skills)"
+title: "Available Agents (128 commands, 61 sub-agents, 53 skills)"
 description: "Claude automatically delegates to specialized agents (isolated context, restricted tools)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Available Agents (<!-- count:commands -->129<!-- /count --> commands, <!-- count:agents -->62<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->128<!-- /count --> commands, <!-- count:agents -->61<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -161,7 +161,7 @@ tags:
 | `/growth:growth-localization` | Multi-market localization strategy |
 | `/growth:growth-cro` | Conversion rate optimization (CRO) |
 
-## DATA-: Data (<!-- count:byDomain.data -->3<!-- /count -->)
+## DATA-: Data (<!-- count:byDomain.data -->2<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/data:data-pipeline` | Design ETL/ELT pipelines |
@@ -176,7 +176,7 @@ tags:
 | `/legal:legal-terms-of-service` | Terms of Service |
 | `/legal:legal-privacy-policy` | Privacy Policy |
 
-## Sub-Agents (<!-- count:agents -->62<!-- /count -->)
+## Sub-Agents (<!-- count:agents -->61<!-- /count -->)
 
 Claude automatically delegates to specialized agents (isolated context, restricted tools).
 
