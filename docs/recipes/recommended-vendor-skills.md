@@ -10,12 +10,13 @@ This recipe lives outside the foundation deliberately. The recommended skills ar
 
 ## Why this recipe exists
 
-<!-- count:marketplaceAuditPilots -->4<!-- /count --> audit pilots identified a small set of vendor-published skills that complement the claude-base foundation:
+<!-- count:marketplaceAuditPilots -->5<!-- /count --> audit pilots identified a small set of vendor-published skills that complement the claude-base foundation:
 
 - `cli-tools` plugin pilot (`specs/marketplace-audit/cli-tools-pilot-2026-05-05.md`)
 - `dev-*` skills pilot (`specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`)
 - `qa-*` skills pilot (`specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`)
 - `ops-*` skills pilot (`specs/marketplace-audit/ops-skills-pilot-2026-05-06.md`)
+- `growth-*` skills pilot (`specs/marketplace-audit/growth-skills-pilot-2026-05-21.md`)
 
 Combined findings:
 
@@ -397,6 +398,87 @@ claude-base update --add-plugin semgrep@claude-plugins-official ./your-project
 ```
 
 **Vendor-neutrality**: Semgrep is an independent security company.
+
+---
+
+### PostHog — `PostHog/skills` (growth-analytics companion)
+
+**Covers**: Product analytics instrumentation across 50+ frameworks (Next.js, Nuxt, SvelteKit, Astro, Django, Flask, FastAPI, Rails, Laravel, Android, iOS, React Native, Expo, Flutter…), feature flags, error tracking, LLM analytics, session replay, cohorts, funnels. The flagship skill `instrument-product-analytics` walks the agent through platform detection, SDK install, framework-specific initialization, 10-15 file event planning, server-side event coverage, user identification (with `X-POSTHOG-DISTINCT-ID` header pattern), and env-var management via the PostHog MCP server.
+
+**When to install**: any project using PostHog as analytics backend.
+
+**Pair with**: claude-base's `growth-analytics` command (North Star + AARRR taxonomy + GDPR consent layer). The vendor covers PostHog-specific instrumentation; the foundation covers the strategic event-design layer.
+
+**Install**:
+```bash
+git clone --depth 1 https://github.com/PostHog/skills ~/dev/vendor-skills/posthog
+ln -s ~/dev/vendor-skills/posthog/skills/omnibus/instrument-product-analytics \
+      ./.claude/skills/instrument-product-analytics
+# Other PostHog sub-skills available under skills/posthog/{product-analytics,feature-flags,error-tracking,logs,llm-analytics,migrations,integration}
+```
+
+**Vendor-neutrality**: PostHog is independent, MIT-licensed, not acquired by an Anthropic competitor as of 2026-05-21.
+
+---
+
+### Resend — `resend/resend-skills` (growth-email companion)
+
+**Covers**: Transactional and marketing email infrastructure. `email-best-practices` covers deliverability, double opt-in, suppression lists, idempotent sending, webhook handling, list management. Companion skills: `resend` (SDK usage), `resend-cli`, `react-email` (template patterns), `agent-email-inbox` (inbound).
+
+**When to install**: any project sending transactional or marketing email via Resend.
+
+**Pair with**: claude-base's `growth-email` command (D0/D1/D3/D7 onboarding sequence design, re-engagement, upgrade emails). The vendor covers the deliverability infrastructure; the foundation covers the lifecycle sequence design.
+
+**Install**:
+```bash
+git clone --depth 1 https://github.com/resend/resend-skills ~/dev/vendor-skills/resend
+ln -s ~/dev/vendor-skills/resend/skills/resend ./.claude/skills/resend
+ln -s ~/dev/vendor-skills/resend/skills/email-best-practices ./.claude/skills/email-best-practices
+ln -s ~/dev/vendor-skills/resend/skills/react-email ./.claude/skills/react-email
+```
+
+**Vendor-neutrality**: Resend is independent (Series A 2024), MIT-licensed, not acquired by an Anthropic competitor as of 2026-05-21.
+
+---
+
+### AgriciDaniel — `claude-seo` (growth-seo companion, community-with-mass-adoption)
+
+**Covers**: Universal SEO toolkit with 28 SKILL.md files. Auto-detects business type (Local Service / E-commerce / SaaS) and triggers specialized workflows. Crawls up to 500 pages with 7-weighted scoring (Technical 22%, Content 23%, On-Page 20%, Schema 10%, Performance 10%, AI-search Readiness 10%, Images 5%) producing a 0-100 SEO Health Score. Sub-skills: `seo-audit`, `seo-technical`, `seo-content`, `seo-schema`, `seo-sitemap`, `seo-local`, `seo-maps`, `seo-google`, `seo-backlinks`, `seo-cluster`, `seo-drift`, `seo-ecommerce`, `seo-geo`, `seo-hreflang`, `seo-images`, `seo-content-brief`, `seo-page`, `seo-programmatic`, `seo-competitor-pages`, `seo-plan`, `seo-flow`, `seo-sxo`, `seo-image-gen`. Integrations: DataForSEO, Firecrawl, Google APIs, Common Crawl. Outputs FULL-AUDIT-REPORT.md + ACTION-PLAN.md + PDF.
+
+**When to install**: any project where SEO matters (most public-facing web projects).
+
+**Pair with**: claude-base's `growth-seo` command — scheduled to be reduced to a thin pointer per [`specs/foundation-positioning-review/spec.md`](../../specs/foundation-positioning-review/spec.md) Wave 1, since the vendor is materially deeper across every axis our foundation command covered.
+
+**Install**:
+```bash
+git clone --depth 1 https://github.com/AgriciDaniel/claude-seo ~/dev/vendor-skills/claude-seo
+# The repo ships install.sh / install.ps1 for plugin-style installation
+~/dev/vendor-skills/claude-seo/install.sh ./your-project
+```
+
+**Vendor-neutrality**: Community-authored (single maintainer, AgriciDaniel), MIT-licensed. Mass adoption (6,800+★ as of 2026-05-21) passes the methodology's "≥3 verified production repos" lower bar by orders of magnitude.
+
+---
+
+### Corey Haines — `coreyhaines31/marketingskills` (broad marketing toolkit, community-with-mass-adoption)
+
+**Covers**: 30 marketing sub-skills covering most of the growth/marketing surface: `ab-testing`, `ad-creative`, `ads`, `ai-seo`, `analytics`, `aso`, `churn-prevention`, `co-marketing`, `cold-email`, `community-marketing`, `competitor-profiling`, `competitors`, `content-strategy`, `copy-editing`, `copywriting`, `cro`, `customer-research`, `directory-submissions`, `emails`, `free-tools`, `image`, `launch`, `lead-magnets`, `marketing-ideas`, `marketing-psychology`, `onboarding`, `paywalls`, `popups`, `pricing`, `product-marketing`. Skills include concrete frameworks (Van Westendorp + Good-Better-Best for pricing, page-type frameworks for CRO, etc.) and cross-skill references between the sub-skills.
+
+**When to install**: any project doing growth/marketing work. Note: single-maintainer dependency (Corey Haines) — verify update cadence before relying in production.
+
+**Pair with**: claude-base's `growth-*` commands and `growth-cro` skill. Many of those foundation resources will be reduced to thin pointers per [`specs/foundation-positioning-review/spec.md`](../../specs/foundation-positioning-review/spec.md) — this toolkit becomes the deep-execution layer, the foundation keeps cross-cutting wraps (GDPR, anti-patterns, workflow integration, unique angles like paywall strategies in `growth-cro` or pipeline-side analytics in `growth-app-store-analytics`).
+
+**Install**:
+```bash
+git clone --depth 1 https://github.com/coreyhaines31/marketingskills ~/dev/vendor-skills/marketingskills
+# Symlink only the sub-skills you need; the toolkit is broad
+ln -s ~/dev/vendor-skills/marketingskills/skills/cro ./.claude/skills/cro
+ln -s ~/dev/vendor-skills/marketingskills/skills/pricing ./.claude/skills/pricing
+ln -s ~/dev/vendor-skills/marketingskills/skills/onboarding ./.claude/skills/onboarding
+# ... pick what your project needs
+```
+
+**Vendor-neutrality**: Single-maintainer community project (Corey Haines). 29,800+★ as of 2026-05-21 confirms strong adoption signal. Single-maintainer dependency — assess maintenance cadence before adoption in critical projects.
 
 ---
 
