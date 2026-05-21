@@ -1,7 +1,7 @@
 ---
 sidebar_position: 12
 title: "/growth:growth-seo"
-description: "SEO audit and optimization recommendations for organic search ranking."
+description: "SEO audit and optimization for organic search ranking."
 tags:
   - "growth"
   - "command"
@@ -13,58 +13,29 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--growth">GROWTH</span>
 
 
-# SEO Agent
+# SEO Agent (pointer)
 
-SEO audit and optimization recommendations for organic search ranking.
+SEO audit and optimization for organic search ranking.
 
 ## Context
 `<arguments>`
 
-## Objective
+## Delegate to the vendor toolkit
 
-Audit technical, on-page and content SEO, then provide prioritized recommendations to improve search engine ranking.
+`claude-base`'s prior `growth-seo` content is **superseded** by [`AgriciDaniel/claude-seo`](https://github.com/AgriciDaniel/claude-seo) — 28 SKILL.md, business-type auto-detection, 7-category scoring, DataForSEO/Firecrawl/Google integrations. Install + delegate:
 
-## Workflow
+```bash
+git clone --depth 1 https://github.com/AgriciDaniel/claude-seo ~/dev/vendor-skills/claude-seo
+~/dev/vendor-skills/claude-seo/install.sh ./
+```
 
-- Analyze technical SEO (robots.txt, sitemap, canonical, redirects, crawlability)
-- Check Core Web Vitals (LCP, FID, CLS)
-- Audit on-page (title tags, meta descriptions, headings, image alt)
-- Evaluate content (keywords, quality, search intent)
-- Check structured data (Schema.org, Open Graph, Twitter Cards)
-- Analyze off-page (backlinks, local presence)
-- Check mobile-first and international SEO (hreflang)
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"AgriciDaniel — `claude-seo`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](../../../specs/foundation-positioning-review/spec.md) Wave 1.
 
-## Expected output
-
-### Overall SEO score
-- Technical: [X/100], On-page: [X/100], Content: [X/100]
-
-### Critical issues
-| Issue | Impact | Page(s) | Action |
-|-------|--------|---------|--------|
-
-### Recommendations by priority (high, medium, low)
-### Recommended meta tags per page
-### Suggested target keywords
-
-## Related agents
-
-| Agent | When to use |
-|-------|-------------|
-| `/growth:growth-landing` | Optimize landing pages |
-| `/qa:qa-perf` | Improve Core Web Vitals |
-| `/qa:wcag-audit` | Accessibility (indirect SEO impact) |
-| `/growth:growth-analytics` | Track SEO performance |
+For Core Web Vitals work delegate to `/qa:qa-perf`; for accessibility (indirect SEO factor) to `/qa:wcag-audit`; for SEO performance tracking to `/growth:growth-analytics`.
 
 ---
 
-IMPORTANT: SEO is continuous work — these recommendations are a starting point.
-
-YOU MUST check Core Web Vitals — Google uses them as a ranking factor.
-
 NEVER sacrifice user experience for SEO.
-
-Think hard about the search intent of target users.
 
 
 ---
