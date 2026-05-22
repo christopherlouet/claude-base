@@ -56,7 +56,7 @@ Skills with isolated context.
 | [`dev-tdd`](/docs/skills/dev-tdd) | TDD development with Red-Green-Refactor cycle. Use... | dev, tdd, as a reference |
 | [`doc-changelog`](/docs/skills/doc-changelog) | CHANGELOG maintenance following Keep a Changelog. ... | doc, changelog |
 | [`doc-generate`](/docs/skills/doc-generate) | Technical documentation generation. Trigger when t... | doc, generate |
-| [`feature-flags`](/docs/skills/feature-flags) | Feature flags and toggles management. Trigger when... | feature, flags, feature flag |
+| [`feature-flags`](/docs/skills/feature-flags) | Feature flags and toggles management. Trigger when... | feature, flags, why did user x see variant y |
 | [`git-worktrees`](/docs/skills/git-worktrees) | Using git worktrees for parallel development. Trig... | git, worktrees, parallel sessions |
 | [`growth-cro`](/docs/skills/growth-cro) | Conversion rate optimization (CRO). Trigger when t... | growth, cro, how |
 | [`ops-ci`](/docs/skills/ops-ci) | CI/CD pipeline configuration. Trigger when the use... | ops |
