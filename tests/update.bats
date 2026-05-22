@@ -642,3 +642,36 @@ teardown() {
     # The interactive prompt line must NOT appear in --dry-run.
     [[ "$output" != *"has been modified. What to do?"* ]]
 }
+
+# =============================================================================
+# Dogfood finding #2 — counter delta is correct in --dry-run
+# Captured 2026-05-22 in specs/dogfood-v2-findings/spec.md. The "Commands:
+# X → Y" line in update output reads `after` from the target dir, but in
+# dry-run nothing is written, so before == after even when the foundation
+# count would differ. The fix is to compute `after` from the foundation
+# source dir (which is the would-be-state post-update).
+# =============================================================================
+
+@test "update.sh --dry-run reports correct counter delta when target has extras (friction #2)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+
+    # Foundation has N commands; inject 3 extras that don't exist in the
+    # foundation, so the count diverges. After update --clean (implicit
+    # in --all) the extras would be gone; before is N+3, after should be N.
+    mkdir -p "$TEST_DIR/proj/.claude/commands/work"
+    echo "# extra 1" > "$TEST_DIR/proj/.claude/commands/work/extra-fake-1.md"
+    echo "# extra 2" > "$TEST_DIR/proj/.claude/commands/work/extra-fake-2.md"
+    echo "# extra 3" > "$TEST_DIR/proj/.claude/commands/work/extra-fake-3.md"
+
+    local before_count after_count
+    before_count=$(find "$TEST_DIR/proj/.claude/commands" -name "*.md" -type f | wc -l | tr -d ' ')
+    after_count=$(find "$BATS_TEST_DIRNAME/../.claude/commands" -name "*.md" -type f | wc -l | tr -d ' ')
+
+    run bash -c "'$UPDATE_SCRIPT' -n -y --all '$TEST_DIR/proj' </dev/null"
+    [ "$status" -eq 0 ]
+    # The delta must reflect what would have happened, not the
+    # untouched-in-dry-run target. before > after expected (extras would
+    # be removed by --clean).
+    [[ "$output" == *"Commands: $before_count → $after_count"* ]]
+    [ "$before_count" -gt "$after_count" ]
+}
