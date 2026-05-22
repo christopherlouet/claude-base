@@ -41,6 +41,35 @@ If any vendor below is later acquired by an Anthropic competitor, the correspond
 
 ---
 
+## By stack (quick lookup)
+
+After running `claude-base init`, install the vendor skills that match your detected stack. This matrix is hand-maintained; [`phase-6-curator-bindings.md`](../../specs/foundation-positioning-review/phase-6-curator-bindings.md) plans auto-generation from preset JSONs.
+
+| Stack | Required (install first) | Recommended (install if relevant) | Optional |
+|---|---|---|---|
+| **Next.js** (preset `nextjs`) | `vercel-labs/agent-skills`, `prisma/skills` (if using Prisma), `supabase/agent-skills` (if using Supabase) | `addyosmani/web-quality-skills` (Web Vitals), `microsoft/playwright-cli` (E2E), `frontend-design` plugin | `apollographql/skills`, `PostHog/skills` |
+| **FastAPI** (preset `fastapi`) | — (no Python-specific skill validated yet; see *Vendors evaluated and NOT recommended* below) | `code-review` plugin (Anthropic), `Semgrep` plugin (security scanning) | `grafana/skills` (if LGTM stack), `pulumi/agent-skills` (if Pulumi IaC) |
+| **Astro** (preset `astro`) | `frontend-design` plugin | `addyosmani/web-quality-skills`, `AgriciDaniel/claude-seo` | `microsoft/playwright-cli` |
+| **React + Vite SPA** (preset `react-vite-spa`) | `frontend-design` plugin, `vercel-labs/agent-skills` (if deploying to Vercel) | `addyosmani/web-quality-skills`, `chrome-devtools-mcp`, `microsoft/playwright-cli` | `apollographql/skills` (if GraphQL) |
+| **CLI tools** (preset `cli-tools`) | — | `code-review` plugin, `Semgrep` plugin | `chrome-devtools-mcp` (for CLI tools that drive a browser) |
+| **Homelab Proxmox** (preset `homelab-proxmox`) | `pulumi/agent-skills` (if Pulumi), terraform vendor skill | `grafana/skills` (LGTM stack) | — |
+| **Phaser game** (preset `phaser`) | `phaserjs/phaser/skills` (canonical) | `frontend-design` plugin (for HUD/UI) | — |
+| **Playwright** (preset `playwright`) | `microsoft/playwright-cli` | `chrome-devtools-mcp` | — |
+| **Pulumi** (preset `pulumi`) | `pulumi/agent-skills` | `Semgrep` plugin | `grafana/skills` |
+| **Apollo GraphQL** (preset `apollo`) | `apollographql/skills` | `frontend-design` plugin | — |
+| **MongoDB** (preset `mongodb`) | `mongodb/agent-skills` (vendor) | `Semgrep` plugin | — |
+
+**Cross-stack growth/marketing skills** (install if shipping a product, not a pure side-project):
+
+- `coreyhaines31/marketingskills` — broad marketing toolkit (CRO, copywriting, lifecycle, ASO)
+- `PostHog/skills` — product analytics + feature flags + session replay
+- `resend/resend-skills` — transactional email (D0/D1/D3/D7 lifecycle)
+- `AgriciDaniel/claude-seo` — SEO audit + content strategy
+
+All entries below link to detailed install instructions and rationale.
+
+---
+
 ## Install-time tips (CLI 2.1.141+)
 
 Two recent CLI behaviors worth knowing when running `claude plugin install` against the recommendations below:
