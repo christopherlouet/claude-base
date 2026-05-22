@@ -200,23 +200,92 @@ The migration is functionally correct (the canonical location is now `.claude/do
 
 ---
 
+### 8. Preset detection: depFiles signal does not match subdir layouts (NEW 2026-05-22)
+
+> **Status**: ✅ **fixed in PR #254** (merged 2026-05-22). Kept here for the audit trail.
+
+Real-world IaC repos commonly use `infrastructure/<provider>/versions.tf` (depth 3) rather than `main.tf` at the root. The `depFiles` signal in `scripts/lib/preset-detect.sh` only matched root-level files (`[[ -f $target_dir/$dpath ]]`), so the homelab-proxmox preset failed to detect a project where the canonical `bpg/proxmox` provider declaration lived in `infrastructure/proxmox/versions.tf`.
+
+**Two coordinated fixes shipped together** in #254:
+
+1. `scripts/lib/preset-detect.sh` — `depFiles` now uses `find -maxdepth 3 -name "$dpath" -type f` per entry, then content-grep each match. Depth-3 covers IaC convention without scan-cost blow-up.
+2. `.claude/presets/homelab-proxmox.json` — added `versions.tf` to the candidate paths (alongside `main.tf` / `providers.tf` / `terraform.tf`). The `required_providers` block lives in versions.tf by Terraform convention.
+
+Validated end-to-end on the maintainer's homelab project: preset correctly detected, 12 skills filtered out, vendor matrix surfaced.
+
+**Lesson worth keeping**: detect rules for any preset should aim to match the most common project layouts in that ecosystem, not just one specific structure. The `versions.tf` addition was as load-bearing as the subdir-scan logic — both required to close the friction.
+
+---
+
+### 9. `claude-base update` silently adds new tracked-eligible files to project (NEW 2026-05-22)
+
+**Discovered during a real `claude-base update --all --yes` on a homelab Proxmox project** (the same dogfooding session that surfaced friction #8). Mirror of friction #7: instead of silently *removing* tracked files, the update silently *adds* tracked-eligible files.
+
+**Symptom**: after the update, `git status` reports 5 untracked files in `scripts/hooks/`:
+
+```
+?? scripts/hooks/_hook-helpers.sh
+?? scripts/hooks/base-integrity-check.sh
+?? scripts/hooks/bash-output-filter.sh
+?? scripts/hooks/check-cli-version.sh
+?? scripts/hooks/post-edit-typecheck-and-lint.sh
+```
+
+These are foundation hook scripts copied by the update. They live in `scripts/hooks/` (outside `.claude/` which is the only gitignored prefix by convention), so they are tracked-eligible. No message in the update output indicates that files were added at a tracked path. If the user does `git commit -a` after the update without inspection, they push 5 new files they did not author.
+
+**Compounding observation (legacy rename leftover)**: the project also still has 4 *previously-tracked* hook scripts from an older foundation version: `command-validator.sh`, `prompt-context.sh`, `setup-deps.sh`, and `socle-integrity-check.sh` ("socle" being the pre-rebrand name of the foundation). The v2.0 update renamed `socle-integrity-check.sh` to `base-integrity-check.sh` but did not delete the legacy file. Result: project has both `socle-integrity-check.sh` (tracked, orphan, references a removed foundation concept) and `base-integrity-check.sh` (untracked, current). Same root cause as #9 — the update does not reconcile tracked-eligible files against the foundation's current state, it just adds new ones.
+
+**Impact**:
+
+- *Solo project*: minor — the user runs `git status`, sees the new files, decides to `.gitignore` them (treating foundation-managed) or `git add` them (project-owned). Either is a valid choice but the user has to make it.
+- *Team project*: medium — if the user does `git commit -a`, they push 5 new files colleagues did not see come in. Especially impactful if those colleagues had project-local equivalents under `scripts/hooks/` (collision risk: same filename, different intent).
+- *Legacy artifacts*: separate slow-burn issue — tracked-yet-orphan hook scripts accumulate across rebrands. The `socle-*` → `base-*` rename added 1 dead file in this project; future renames will add more.
+
+**Proposed fix** (any combination):
+
+1. **Pre-add git-tracking check + summary**: before copying `scripts/hooks/*.sh` (or any tracked-eligible foundation file outside `.claude/`), record the list. After the update, emit a clear summary:
+   ```
+   [INFO] Added 5 foundation-managed files outside .claude/:
+     scripts/hooks/_hook-helpers.sh
+     scripts/hooks/base-integrity-check.sh
+     ...
+   [INFO] You can either:
+     a) Track them: `git add scripts/hooks/*.sh && git commit`
+     b) Ignore them: add `scripts/hooks/*.sh` to your .gitignore
+   ```
+2. **Move hooks to `.claude/hooks/`**: foundation hooks living under `scripts/hooks/` collide namespace-wise with project-owned scripts. Putting them inside `.claude/hooks/` (which is already gitignored) would eliminate the friction. This is a bigger change (paths referenced in `.claude/settings.json` would need updating) but is the more architecturally clean fix.
+3. **Legacy-file cleanup hook**: detect renames between foundation versions (e.g. `socle-integrity-check.sh` → `base-integrity-check.sh`) and prompt to delete the old file. Heuristic: any tracked file in `scripts/hooks/` whose basename is not in the current foundation's hook set and matches a known pre-rename pattern.
+
+**Effort**: ~1h for (1), ~3h for (2) (with cross-ref update + bats coverage), ~2h for (3). Suggested order: (1) immediate UX win, (3) targeted cleanup, (2) longer-term refactor.
+
+**Severity**: medium. Reversible but cumulative — each major foundation update will accumulate more silently-added files and rename-orphans unless addressed.
+
+---
+
 ## Prioritization
 
 | # | Friction | Severity | Effort | Status |
 |---|---|---|---|---|
 | 3 | `--dry-run` interactive | **CRITICAL (agents/CI)** | ~1h | ✅ **fixed in PR #248** (merged 2026-05-22) |
 | 2 | Counter delta wrong | medium | ~1h | ✅ **fixed in PR #251** (merged 2026-05-22) |
-| 7 | Legacy migration silently deletes tracked files | medium | ~1h | ⏳ next (NEW, discovered during real update) |
+| 8 | depFiles signal: subdir layouts | medium | ~2h | ✅ **fixed in PR #254** (merged 2026-05-22) |
+| 7 | Legacy migration silently deletes tracked files | medium | ~1h | ⏳ next (discovered during real update) |
+| 9 | Update silently adds tracked-eligible files (mirror of #7) + legacy rename orphans | medium | ~1-3h | ⏳ pending (discovered during real update on second project) |
 | 4 | "Modified" message | medium | ~2h | ⏳ pending — UX polish |
 | 6 | Pre-flight version delta UI | low (REVISED) | ~30 min | ⏳ pending — see revised entry above; marker mechanism already exists |
 | 5 | `--clean` doc | low | ~30 min | ⏳ pending — doc-only |
 | 1 | CLI re-install doc | low | ~15 min | ⏳ pending — doc-only |
 
-**Aggregate effort**: ~7 hours across 7 PRs (was 6). Could be batched into 2-3 PRs if a maintainer wants atomic shipping (e.g. #4+#7 as the "update UX clarity" PR, #1+#5+#6 as the "v2.0.0 docs polish" PR).
+**Aggregate effort**: ~10 hours across 9 findings (3 closed = ~3h done, 6 remaining = ~7h). Could be batched into 2-3 PRs if a maintainer wants atomic shipping (e.g. #4+#7+#9 as the "update file-state UX" PR, #1+#5+#6 as the "v2.0.0 docs polish" PR).
 
 ## Out of scope
 
-Initial audit was a dry-run only. A real `update --all --yes` was subsequently performed on the same project on 2026-05-22 (after #248/#251 merged, so frictions #3 and #2 were fixed) and surfaced friction #7. The remaining preset diversity (`fastapi`, `astro`, `homelab-proxmox`, `cli-tools`, `phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`, `react-vite-spa`) is still uncovered. A subsequent dogfooding pass on `homelab-proxmox` (the rare preset) and `cli-tools` (the empty-vendor-skills preset) would surface preset-specific bugs that this report does not catch.
+Three dogfood passes ran on 2026-05-22 against real projects on the maintainer's machine:
+- Pass 1 (Next.js preset, pre-Wave-1 baseline, dry-run only) — surfaced #1-#6.
+- Pass 2 (same Next.js preset, real update post-#248/#251) — surfaced #7.
+- Pass 3 (homelab-proxmox preset, pre-Wave-1 baseline, real update post-#254) — surfaced #8 (fixed in same session) and #9.
+
+Remaining preset diversity (`fastapi`, `astro`, `cli-tools`, `phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`, `react-vite-spa`) is still uncovered. Next recommended dogfooding pass: `cli-tools` (a project with `recommendedVendorSkills: []` — would validate the empty-matrix UX).
 
 ## Related memories
 
