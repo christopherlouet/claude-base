@@ -152,8 +152,8 @@ The user has not edited any of these locally. The message *should* communicate "
 | # | Friction | Severity | Effort | Status |
 |---|---|---|---|---|
 | 3 | `--dry-run` interactive | **CRITICAL (agents/CI)** | ~1h | ✅ **fixed in PR #248** (merged 2026-05-22) |
-| 2 | Counter delta wrong | medium | ~1h | ⏳ next — user-facing trust |
-| 4 | "Modified" message | medium | ~2h | ⏳ pending — UX polish |
+| 2 | Counter delta wrong | medium | ~1h | ✅ **fixed in PR #251** (merged 2026-05-22) |
+| 4 | "Modified" message | medium | ~2h | ⏳ next — UX polish |
 | 6 | Pre-flight version delta UI | low (REVISED) | ~30 min | ⏳ pending — see revised entry above; marker mechanism already exists |
 | 5 | `--clean` doc | low | ~30 min | ⏳ pending — doc-only |
 | 1 | CLI re-install doc | low | ~15 min | ⏳ pending — doc-only |
