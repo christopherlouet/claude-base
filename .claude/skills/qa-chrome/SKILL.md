@@ -11,87 +11,45 @@ disable-model-invocation: true
 argument-hint: "[url-or-page]"
 ---
 
-# Visual Tests and Chrome Debugging
+# Visual Tests and Chrome Debugging (pointer)
+
+DevTools features (network inspection, profiling, accessibility tree, console replay) are canonical at the Chrome team's MCP server:
+
+- **`ChromeDevTools/chrome-devtools-mcp`** — [github.com/ChromeDevTools/chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) (Apache-2.0, maintained by the Google Chrome DevTools team). Configure in `.mcp.json` to give Claude Code direct programmatic access during a session.
+
+This skill scopes to the **manual-review checklist** when using Claude Code's `--chrome` flag — *what to look for*, not *how the API works*.
 
 ## Prerequisites
 
-- Claude Code launched with `--chrome` flag
-- "Claude in Chrome" extension installed (v1.0.36+)
-- Google Chrome open
+- Claude Code launched with `--chrome`
+- "Claude in Chrome" extension v1.0.36+
+- Google Chrome open (not Brave/Arc/Firefox; no headless mode; WSL unsupported)
 
-## Instructions
+## Manual-review checklist
 
-### 1. Verify the Chrome connection
+When asked to visually validate a page or flow:
 
-Verify that the Chrome integration is active. If not, ask the user to relaunch with `claude --chrome`.
-
-### 2. Available capabilities
-
-| Action | Description |
-|--------|-------------|
-| Navigation | Open a URL, navigate between pages |
-| Interaction | Click, type text, fill out forms |
-| Inspection | Read the DOM, console logs, network requests |
-| Capture | Take screenshots, record GIFs |
-| Test | Verify rendering, test user journeys |
-
-### 3. Test workflows
-
-#### Visual test of a page
-1. Open the page in Chrome
-2. Verify the visual rendering (layout, colors, typography)
-3. Test responsiveness (resize the window)
-4. Capture a screenshot for reference
-
-#### Console debugging
-1. Open the page
-2. Read the console errors
-3. Identify the source of the errors in the code
-4. Propose fixes
-
-#### User journey test
-1. Navigate to the starting point
-2. Follow the journey step by step (click, input, navigation)
-3. Verify each step
-4. Report anomalies
-
-#### GIF recording
-1. Start the recording
-2. Execute the journey
-3. Save the GIF
-
-### 4. Verification checklist
-
-- [ ] Page loads without console error
-- [ ] Correct layout (no overflow, no overlap)
-- [ ] Readable texts (contrast, size)
-- [ ] Images loaded
-- [ ] Working links
-- [ ] Fillable forms
-- [ ] Responsive OK (mobile, tablet, desktop)
-- [ ] No network error (404, 500)
-
-### 5. Limitations
-
-- Requires Chrome (not Brave, Arc, or Firefox)
-- Visible Chrome window required (no headless)
-- JavaScript dialogs (alert, confirm) block the flow
-- WSL not supported
+- [ ] Page loads with no console error
+- [ ] Layout correct (no overflow, no overlap, no z-index bug)
+- [ ] Text readable (contrast meets WCAG AA — see `wcag-audit`)
+- [ ] Images loaded (no broken sources, lazy-load completes)
+- [ ] Links functional (no 404 in network panel)
+- [ ] Forms submittable (validation triggers on bad input)
+- [ ] Responsive OK across mobile/tablet/desktop breakpoints — see `qa-responsive`
+- [ ] No network error (no 4xx/5xx unless intentional)
 
 ## Expected output
 
-Structured report with:
-- Screenshots/GIFs if relevant
-- List of errors found
-- Recommendations for fixes
-- Overall score (OK / Warnings / Errors)
+Structured report:
+- Screenshots/GIFs of issues
+- List of console + network errors with source location
+- Recommendations sorted by severity
+- Overall verdict: `OK` / `Warnings` / `Errors`
 
 ## See also
 
-[`ChromeDevTools/chrome-devtools-mcp`](https://github.com/ChromeDevTools/chrome-devtools-mcp) (38,221★, last commit 2026-05-05) is maintained by the official Google Chrome DevTools team. Apache-2.0.
-
-**Format note**: this is an MCP server, NOT a SKILL.md skill. It exposes Chrome DevTools features (network inspection, profiling, accessibility tree) as MCP tools that Claude Code can invoke directly during a session — different mechanism than this skill, which describes how to read DevTools manually.
-
-When working on a project where Claude Code needs **direct programmatic access to Chrome DevTools**, configure the `chrome-devtools-mcp` server in your project's `.mcp.json`. This skill remains useful for the **manual review checklist** (what to look for, how to interpret); the MCP server adds the automation layer.
-
-Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.
+- `chrome-devtools-mcp` (vendor MCP server, programmatic layer) — `docs/recipes/recommended-vendor-skills.md`
+- `qa-design` skill — UI/UX heuristics overlap with the checklist
+- `qa-responsive` skill — breakpoint testing complement
+- `wcag-audit` — accessibility gate when contrast/readability issues surface
+- Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`
