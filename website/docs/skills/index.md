@@ -62,7 +62,7 @@ Skills with isolated context.
 | [`ops-ci`](/docs/skills/ops-ci) | CI/CD pipeline configuration. Trigger when the use... | ops |
 | [`ops-ci-fix`](/docs/skills/ops-ci-fix) | Autonomous diagnosis and repair of failing CI/CD p... | ops, fix |
 | [`ops-database`](/docs/skills/ops-database) | Database schema design. Trigger when the user want... | ops, database |
-| [`ops-docker`](/docs/skills/ops-docker) | Docker and Docker Compose containerization. Trigge... | ops, docker |
+| [`ops-docker`](/docs/skills/ops-docker) | Docker and Docker Compose containerization. Trigge... | ops, docker, node:20 with full npm |
 | [`ops-infra-code`](/docs/skills/ops-infra-code) | Infrastructure as Code with Terraform/OpenTofu. Tr... | ops, infra, code |
 | [`ops-mobile-release`](/docs/skills/ops-mobile-release) | Publishing apps to the App Store and Google Play. ... | ops, mobile, release |
 | [`ops-monitoring`](/docs/skills/ops-monitoring) | Application instrumentation for monitoring. Trigge... | ops, monitoring |

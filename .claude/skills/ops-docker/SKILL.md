@@ -12,73 +12,28 @@ context: fork
 disable-model-invocation: true
 ---
 
-# Docker Containerization
+# Docker Containerization (pointer)
 
-## Multi-Stage Dockerfile
+Dockerfile syntax, Compose schema and image-publish flows drift on each release and are canonical at:
 
-```dockerfile
-# Stage 1: Build
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
+- **Docker official** — [docs.docker.com](https://docs.docker.com) (Engine + Compose + Buildx)
+- **Dockerfile best practices** — [docs.docker.com/develop/develop-images/dockerfile_best-practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+- **Snyk Container Security** — [snyk.io/learn/container-security](https://snyk.io/learn/container-security/) (vulnerability scanning, base-image hardening)
+- **Hadolint** — [github.com/hadolint/hadolint](https://github.com/hadolint/hadolint) (Dockerfile linter, CI-integrable)
+- **Dive** — [github.com/wagoodman/dive](https://github.com/wagoodman/dive) (image layer analysis)
 
-# Stage 2: Production
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
+## Foundation discipline (keep across releases)
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
+- **Multi-stage builds**: always separate build deps from runtime image. The "node:20 with full npm" image weighs 1GB+; the runtime layer should be ~100MB. Build stage produces artifacts, runtime stage copies them in.
+- **Non-root user**: `RUN addgroup -S app && adduser -S app -G app && USER app` — never run app code as root inside the container, even if "it's just a sandbox".
+- **.dockerignore mandatory**: forgotten `.git/` or `node_modules/` in the build context bloats images by hundreds of MB and leaks secrets. The `.dockerignore` rules mirror your `.gitignore` plus build artifacts.
+- **HEALTHCHECK at the Dockerfile level**: not just at the orchestrator level. Lets Docker/Compose detect unhealthy containers before the orchestrator does.
+- **Pin base image major+minor** (`node:20-alpine`, not `node:latest` or bare `node:20`): floating tags break reproducibility; SHA pinning is overkill for most apps but worth it for security-critical builds.
+- **Secret management**: never `COPY .env` or hardcode credentials in `ENV`. Use BuildKit secrets (`--mount=type=secret`) or runtime-injected env vars from the orchestrator.
 
-COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
-COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
+## See also
 
-EXPOSE 3000
-HEALTHCHECK CMD wget -q --spider http://localhost:3000/health || exit 1
-CMD ["node", "dist/index.js"]
-```
-
-## Docker Compose
-
-```yaml
-version: '3.8'
-
-services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_URL=postgres://user:pass@db:5432/app
-    depends_on:
-      db:
-        condition: service_healthy
-
-  db:
-    image: postgres:16-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
-      POSTGRES_DB: app
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d app"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres_data:
-```
-
-## Best practices
-
-- Multi-stage builds to reduce size
-- Non-root user for security
-- .dockerignore to exclude unnecessary files
-- Health checks for availability
-- Labels for metadata
+- `/ops:ops-deploy` — deployment checklist consumes the built image
+- `/ops:ops-database` — Compose patterns for DB services (`depends_on: { condition: service_healthy }`)
+- `qa-security` — image scanning gate (Snyk/Trivy) before push
+- `ops-ci` — Hadolint + image scan as CI steps
