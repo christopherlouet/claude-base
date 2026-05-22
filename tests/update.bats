@@ -609,3 +609,36 @@ teardown() {
     [ "$status" -eq 0 ]
     [[ "$output" != *"Conflicts requiring decision"* ]]
 }
+
+# =============================================================================
+# Dogfood finding #3 — --dry-run alone (no -y) must not prompt
+# Captured 2026-05-22 in specs/dogfood-v2-findings/spec.md. Without this
+# guarantee, agents / CI / scripted invocations of `update --dry-run` block
+# on stdin EOF as soon as a "modified" file is encountered. The fix is for
+# --dry-run to imply --yes (non-interactive) implicitly.
+# =============================================================================
+
+@test "update.sh --dry-run alone (no -y) completes with closed stdin (friction #3)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    # Customise a command so the update would normally prompt.
+    echo "# user-customised work-explore" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+
+    # Pipe empty stdin to simulate non-TTY (agent / CI / scripted invocation).
+    # If --dry-run still prompts, the subshell receives EOF and exits non-zero.
+    run bash -c "'$UPDATE_SCRIPT' -n '$TEST_DIR/proj' </dev/null"
+    [ "$status" -eq 0 ]
+    # And the conflict surfacing from US-4 must still work (since --dry-run
+    # implies --yes, the conflict tracking path is reached).
+    [[ "$output" == *"Conflicts requiring decision"* ]]
+    [[ "$output" == *"work-explore.md"* ]]
+}
+
+@test "update.sh --dry-run alone (no -y) does not print 'has been modified' prompt (friction #3)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    echo "# customised" > "$TEST_DIR/proj/.claude/commands/work/work-explore.md"
+
+    run bash -c "'$UPDATE_SCRIPT' -n '$TEST_DIR/proj' </dev/null"
+    [ "$status" -eq 0 ]
+    # The interactive prompt line must NOT appear in --dry-run.
+    [[ "$output" != *"has been modified. What to do?"* ]]
+}
