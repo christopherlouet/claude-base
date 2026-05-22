@@ -551,8 +551,15 @@ update_commands() {
         fi
     done < <(find "$base_commands_dir" -name "*.md" -type f 2>/dev/null || true)
 
+    # Dogfood finding #2: `after` must reflect the would-be-state, not the
+    # current target. In dry-run nothing is written, so reading from
+    # $TARGET_DIR would always yield `after == before` and hide the real
+    # delta. Read from the foundation source (which is what a clean update
+    # would deposit). For commands specifically, presets do not filter
+    # commands today (only skills via foundation.skills.drop), so the
+    # source count is the correct target.
     local after
-    after=$(find "$TARGET_DIR/$COMMANDS_SUBDIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+    after=$(find "$base_commands_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 
     info "Commands: $before → $after"
 }
