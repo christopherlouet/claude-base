@@ -19,198 +19,41 @@ tags:
 |-----------|--------|
 | **Context** | fork |
 | **Allowed tools** | `Read`, `Write`, `Edit`, `Glob`, `Grep`, `Bash` |
-| **Keywords** | `api`, `mocking`, `mock api`, `msw`, `test without backend`, `fake api`, `stub endpoint` |
+| **Keywords** | `api`, `mocking` |
 
 ## Detailed description
 
-# API Mocking
+# API Mocking (pointer)
 
-## Triggers
+MSW handler API, browser/node setup, install commands and request-interception internals are canonical at vendor docs and drift on each release:
 
-- "mock API"
-- "MSW"
-- "test without backend"
-- "fake API"
-- "stub endpoint"
+- **MSW** — [mswjs.io](https://mswjs.io) (recommended default; browser worker + Node server, single handler set)
+- **nock** — [github.com/nock/nock](https://github.com/nock/nock) (Node-only HTTP interception)
+- **json-server** — [github.com/typicode/json-server](https://github.com/typicode/json-server) (full REST fake server from a JSON file)
+- **Mirage JS** — [miragejs.com](https://miragejs.com) (browser-only, models + factories)
 
-## Tools
-
-| Tool | Usage | Install |
-|------|-------|---------|
-| MSW | Browser/Node | `npm i -D msw` |
-| nock | Node only | `npm i -D nock` |
-| json-server | REST fake | `npm i -D json-server` |
-| Mirage JS | Browser | `npm i -D miragejs` |
-
-## MSW Setup (Recommended)
-
-### Installation
-
-```bash
-npm install -D msw
-npx msw init public/ --save
-```
-
-### Structure
+## Tool selection (version-agnostic)
 
 ```
-src/
-├── mocks/
-│   ├── handlers.ts      # Request handlers
-│   ├── server.ts        # Node server (tests)
-│   └── browser.ts       # Browser worker (dev)
-└── ...
+Need to mock HTTP for tests/dev?
+├── Browser AND Node from one handler set → MSW
+├── Node-only unit tests, low ceremony → nock
+├── Need a stateful REST fake server (CRUD) → json-server
+└── Browser-only with relational fixtures (factories) → Mirage JS
 ```
 
-### Handlers
+## Foundation discipline (keep across releases)
 
-```typescript
-// src/mocks/handlers.ts
-import { http, HttpResponse } from 'msw';
+- **Type-safe mocks**: derive mock payloads from the same TypeScript types as the real API (e.g. shared `types/api.ts`). A mock that compiles against stale types is the #1 source of mock-prod divergence.
+- **Reset between tests**: always `resetHandlers()` (MSW) or `cleanAll()` (nock) in `afterEach` — leaked state across tests is a debugging tax.
+- **Realistic failure modes**: simulate 5xx/timeouts/auth errors, not just happy paths. The mock is only useful if it exercises the same edge cases as prod.
+- **Unhandled = error**: in tests use `onUnhandledRequest: 'error'` (MSW) so a typo'd URL fails loudly instead of silently passing.
 
-export const handlers = [
-  // GET /api/users
-  http.get('/api/users', () => {
-    return HttpResponse.json([
-      { id: 1, name: 'John' },
-      { id: 2, name: 'Jane' },
-    ]);
-  }),
+## See also
 
-  // POST /api/users
-  http.post('/api/users', async ({ request }) => {
-    const body = await request.json();
-    return HttpResponse.json(
-      { id: 3, ...body },
-      { status: 201 }
-    );
-  }),
-
-  // Error simulation
-  http.get('/api/error', () => {
-    return HttpResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
-  }),
-];
-```
-
-### Server (Tests)
-
-```typescript
-// src/mocks/server.ts
-import { setupServer } from 'msw/node';
-import { handlers } from './handlers';
-
-export const server = setupServer(...handlers);
-```
-
-### Test Setup
-
-```typescript
-// vitest.setup.ts or jest.setup.ts
-import { beforeAll, afterEach, afterAll } from 'vitest';
-import { server } from './src/mocks/server';
-
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-```
-
-### Browser (Dev)
-
-```typescript
-// src/mocks/browser.ts
-import { setupWorker } from 'msw/browser';
-import { handlers } from './handlers';
-
-export const worker = setupWorker(...handlers);
-```
-
-```typescript
-// main.tsx (development only)
-async function enableMocking() {
-  if (process.env.NODE_ENV !== 'development') return;
-
-  const { worker } = await import('./mocks/browser');
-  return worker.start();
-}
-
-enableMocking().then(() => {
-  ReactDOM.render(<App />, document.getElementById('root'));
-});
-```
-
-## Patterns
-
-### Override per test
-
-```typescript
-import { server } from '../mocks/server';
-import { http, HttpResponse } from 'msw';
-
-test('handles error', async () => {
-  server.use(
-    http.get('/api/users', () => {
-      return HttpResponse.json(null, { status: 500 });
-    })
-  );
-
-  // Test error handling...
-});
-```
-
-### Delay simulation
-
-```typescript
-http.get('/api/slow', async () => {
-  await delay(2000); // 2 seconds
-  return HttpResponse.json({ data: 'slow response' });
-});
-```
-
-### Auth simulation
-
-```typescript
-http.get('/api/protected', ({ request }) => {
-  const authHeader = request.headers.get('Authorization');
-
-  if (!authHeader?.startsWith('Bearer ')) {
-    return HttpResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    );
-  }
-
-  return HttpResponse.json({ secret: 'data' });
-});
-```
-
-## Nock (Node.js)
-
-```typescript
-import nock from 'nock';
-
-beforeEach(() => {
-  nock('https://api.example.com')
-    .get('/users')
-    .reply(200, [{ id: 1, name: 'John' }]);
-});
-
-afterEach(() => {
-  nock.cleanAll();
-});
-```
-
-## Best Practices
-
-| Practice | Description |
-|----------|-------------|
-| Type-safe | Use the same types as the real API |
-| Realistic | Simulate delays and errors |
-| Isolated | Reset between each test |
-| Maintained | Keep up to date with the API |
+- `dev-tdd` — mocks live in test setup; this skill activates from TDD work
+- `qa-e2e` — Playwright/Cypress tests often layer MSW for deterministic stubs
+- `dev-testing-setup` — wires the global `setupServer` into vitest/jest config
 
 ## Automatic triggering
 
@@ -222,7 +65,6 @@ This skill is automatically activated when:
 
 - _"I want to api..."_
 - _"I want to mocking..."_
-- _"I want to mock api..."_
 
 ## Context fork
 

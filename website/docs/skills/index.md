@@ -36,7 +36,7 @@ Skills with isolated context.
 | Skill | Description | Keywords |
 |-------|-------------|-----------|
 | [`agent-teams`](/docs/skills/agent-teams) | Multi-agent team orchestration with native Agent T... | agent, teams, audit-team |
-| [`api-mocking`](/docs/skills/api-mocking) | API mock configuration for tests. Trigger when the... | api, mocking, mock api |
+| [`api-mocking`](/docs/skills/api-mocking) | API mock configuration for tests. Trigger when the... | api, mocking |
 | [`data-pipeline`](/docs/skills/data-pipeline) | ETL/ELT pipeline design. Trigger when the user wan... | data, pipeline |
 | [`dev-api`](/docs/skills/dev-api) | Develop and document a REST or GraphQL API. Use wh... | dev, api, field1 |
 | [`dev-auth`](/docs/skills/dev-auth) | Modern web auth implementation (better-auth, Lucia... | dev, auth, user can edit if owner |
@@ -104,7 +104,7 @@ Skills with isolated context.
   <SkillCard
     name="api-mocking"
     description="API mock configuration for tests. Trigger when the user wants to mock APIs, use "
-    keywords={["api","mocking","mock api","msw"]}
+    keywords={["api","mocking"]}
     context="fork"
     href="/docs/skills/api-mocking"
   />
