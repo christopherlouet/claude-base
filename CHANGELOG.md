@@ -11,6 +11,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-05-22
+
+**Major release — positioning pivot.** No CLI breaking change; the major-version bump reflects a strategic repositioning of the foundation under a `workflow framework + curator` framing.
+
+The Strategic memo at [`specs/foundation-positioning-review/spec.md`](specs/foundation-positioning-review/spec.md) (PR #226, merged 2026-05-21) opened a 5-phase review of the foundation. The premise: a 1-maintainer foundation cannot systematically be deeper or fresher than a 6,700+ community skill ecosystem refreshed daily, so each foundation resource has to justify its existence under a 4-tier rubric (KEEP-AS-IS / KEEP+POINT-TO-VENDOR / REDUCE-TO-POINTER / DEPRECATE).
+
+Phases 0-5 closed between 2026-05-21 and 2026-05-22 across 18 PRs. Cumulative LOC removed from foundation skill content: **~1.5 KLOC across 15 reduction/deprecation PRs**, without losing the foundation's unique angles (workflow integration, anti-drift CI, path-rules, hooks, foundation discipline that survives vendor releases).
+
+### Migration guide
+
+**No CLI breaking change.** `claude-base init / update / validate / uninstall / preset` all behave identically to v1.41.2. Tests, presets, hooks, rules — unchanged.
+
+**What changed in the skill layer**: 7 skills + 3 commands + 2 agents were either reduced to vendor pointers (with a thin foundation-discipline overlay) or deprecated outright. If you had **inline reliance** on the previous code examples in any of these skills, you now need to install the corresponding vendor skill from [`docs/recipes/recommended-vendor-skills.md`](docs/recipes/recommended-vendor-skills.md):
+
+| Foundation skill (reduced or removed) | Install vendor replacement for depth |
+|---|---|
+| `dev-prisma` (Wave 1) | `prisma/skills` |
+| `dev-supabase` (Wave 1) | `supabase/agent-skills` |
+| `dev-shadcn` (Wave 1) | shadcn canonical skill (in main repo) |
+| `growth-seo` (Wave 1) | `AgriciDaniel/claude-seo` |
+| `biz-pricing` (Wave 1) | `coreyhaines31/marketingskills/pricing` |
+| `state-management` (Wave 3) | Zustand / Redux Toolkit / Jotai / TanStack Query official docs |
+| `api-mocking` (Wave 3) | MSW (`mswjs.io`) |
+| `feature-flags` (Wave 3) | LaunchDarkly / Unleash / ConfigCat / OpenFeature |
+| `ops-docker` (Wave 3) | Docker official + Snyk + Hadolint |
+| `git-worktrees` (Wave 3) | `git-scm.com/docs/git-worktree` |
+| `qa-chrome` (Wave 3) | `ChromeDevTools/chrome-devtools-mcp` |
+| `qa-perf` (Wave 3) | `addyosmani/web-quality-skills` |
+| `data-analytics` (Wave 2, **DEPRECATED**) | use `/growth:growth-analytics` — the cohort/RFM SQL angle was merged in |
+| `doc-i18n` (Wave 2, **DEPRECATED**) | use the foundation's existing `dev-i18n` skill |
+| `dev-prompt-engineering` (Wave 2, **DEPRECATED**) | ecosystem of community prompt-engineering skills — see marketplace |
+
+The recipe now ships a [By stack](docs/recipes/recommended-vendor-skills.md#by-stack-quick-lookup) matrix at the top — find your detected preset (nextjs / fastapi / astro / react-vite-spa / etc.) and install the listed required + recommended vendor skills.
+
+### Changed
+
+- **README pivot to "workflow framework + curator" framing** (this PR). Top pitch states both roles explicitly. "How it fits" section explains the rationale (1-maintainer can't out-update 6,700+ community skills daily, so we curate + ship workflow). vs-marketplace subsection makes the curator pattern primary instead of an apologetic addendum, and forward-references the Phase 6 vision.
+
+- **Recipe `recommended-vendor-skills.md` gains a `By stack` matrix** (this PR). Quick-lookup section at the top, additive to the existing per-domain organisation. Covers all 11 validated presets plus cross-stack growth/marketing skills.
+
+### Phased work summary
+
+- **Phase 0** (spec.md, PR #226) — Strategic memo: 4-tier rubric, ~150 resources scored by 3 parallel research agents, verdict distribution recorded.
+- **Phase 1** (PR #227) — Recipe enrichment: added `coreyhaines31/marketingskills`, `PostHog/skills`, `resend/resend-skills`, `AgriciDaniel/claude-seo` + growth-skills-pilot trace. `marketplaceAuditPilots` 4 → 5.
+- **Phase 2 — Wave 1 REDUCE** (PRs #228-#232) — 5 resources reduced to vendor pointers: `growth-seo`, `biz-pricing`, `dev-shadcn`, `dev-prisma`, `dev-supabase`. `biz-mvp` and `biz-okr` deferred from this wave when vendor verification fell through (weak community signal at the time).
+- **Phase 3 — Wave 2 DEPRECATE** (PRs #233-#235) — 3 resources removed: `doc-i18n` (overlapped foundation's `dev-i18n`), `dev-prompt-engineering` (no foundation-unique angle), `data-analytics` (MERGE variant — cohort/RFM SQL reinjected into `growth-analytics` first in a `feat` commit, then deleted in a `docs` commit). Counters: commands 130→128, agents 63→61, skills 54→53, byDomain.data 3→2.
+- **Phase 4 — Wave 3 REDUCE** (PRs #236, #237, #238, #240, #241, #242, #243) — 7 resources reduced: `git-worktrees`, `state-management`, `api-mocking`, `feature-flags`, `ops-docker` skill, `qa-chrome`, `qa-perf`. Wave 3 cumulative -1,418 LOC. The `feature-flags` PR also dropped the unreferenced 324-LOC `examples/feature-toggle.md` (orphan); same pattern applied to `ops-docker/examples/multi-stage.md`. The `qa-perf` PR fixed an obsolete metric (FID → INP, per Google March 2024 Web Vitals update).
+- **Phase 5 — Repositioning + v2.0.0** (this PR) — README pivot + Recipe per-stack matrix + this CHANGELOG entry + VERSION bump.
+- **Phase 6 — Curator bindings** (vision captured in #239) — Operationalises the curator claim post-v2.0.0: preset schema gains `vendorSkills.{required,recommended,optional}[]`, `claude-base init` surfaces recommendations as a single Y/n prompt. Vision-only at v2.0.0; implementation lands in v2.1+.
+
 ## [1.41.2] - 2026-05-20
 
 Patch release. Six PRs since v1.41.1, same day — three bug fixes (one **critical** for every `curl | bash` user), one security CVE patch, plus the first asciinema GIF embedded in the README and an honest positioning vs `github/spec-kit`. No new commands/agents/skills/rules/presets ; no breaking change.
