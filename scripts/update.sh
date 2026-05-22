@@ -255,6 +255,13 @@ parse_args() {
                 ;;
             -n|--dry-run)
                 DRY_RUN=true
+                # Dogfood finding #3 (specs/dogfood-v2-findings/spec.md):
+                # dry-run implies non-interactive. Without this, agents / CI /
+                # scripted invocations block on stdin EOF when a "modified"
+                # file is encountered. The DRY_RUN_CONFLICTS surfacing path
+                # (T4.1) already handles the reporting side; this just gates
+                # the prompt branch from being entered.
+                NON_INTERACTIVE=true
                 shift
                 ;;
             -q|--quiet)
