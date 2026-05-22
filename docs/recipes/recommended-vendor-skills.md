@@ -43,21 +43,23 @@ If any vendor below is later acquired by an Anthropic competitor, the correspond
 
 ## By stack (quick lookup)
 
-After running `claude-base init`, install the vendor skills that match your detected stack. This matrix is hand-maintained; [`phase-6-curator-bindings.md`](../../specs/foundation-positioning-review/phase-6-curator-bindings.md) plans auto-generation from preset JSONs.
+After running `claude-base init`, install the vendor skills that match your detected stack. The matrix below is **auto-generated** from each preset's `recommendedVendorSkills[]` field via `website/scripts/generate-recipe-matrix.ts` — do not edit by hand; edit the preset JSONs and re-run `npm --prefix website run generate`. *Always pair* entries are unconditional recommendations for the stack; *Conditional* entries apply only if the named tool is in use.
 
-| Stack | Required (install first) | Recommended (install if relevant) | Optional |
-|---|---|---|---|
-| **Next.js** (preset `nextjs`) | `vercel-labs/agent-skills`, `prisma/skills` (if using Prisma), `supabase/agent-skills` (if using Supabase) | `addyosmani/web-quality-skills` (Web Vitals), `microsoft/playwright-cli` (E2E), `frontend-design` plugin | `apollographql/skills`, `PostHog/skills` |
-| **FastAPI** (preset `fastapi`) | — (no Python-specific skill validated yet; see *Vendors evaluated and NOT recommended* below) | `code-review` plugin (Anthropic), `Semgrep` plugin (security scanning) | `grafana/skills` (if LGTM stack), `pulumi/agent-skills` (if Pulumi IaC) |
-| **Astro** (preset `astro`) | `frontend-design` plugin | `addyosmani/web-quality-skills`, `AgriciDaniel/claude-seo` | `microsoft/playwright-cli` |
-| **React + Vite SPA** (preset `react-vite-spa`) | `frontend-design` plugin, `vercel-labs/agent-skills` (if deploying to Vercel) | `addyosmani/web-quality-skills`, `chrome-devtools-mcp`, `microsoft/playwright-cli` | `apollographql/skills` (if GraphQL) |
-| **CLI tools** (preset `cli-tools`) | — | `code-review` plugin, `Semgrep` plugin | `chrome-devtools-mcp` (for CLI tools that drive a browser) |
-| **Homelab Proxmox** (preset `homelab-proxmox`) | `pulumi/agent-skills` (if Pulumi), terraform vendor skill | `grafana/skills` (LGTM stack) | — |
-| **Phaser game** (preset `phaser`) | `phaserjs/phaser/skills` (canonical) | `frontend-design` plugin (for HUD/UI) | — |
-| **Playwright** (preset `playwright`) | `microsoft/playwright-cli` | `chrome-devtools-mcp` | — |
-| **Pulumi** (preset `pulumi`) | `pulumi/agent-skills` | `Semgrep` plugin | `grafana/skills` |
-| **Apollo GraphQL** (preset `apollo`) | `apollographql/skills` | `frontend-design` plugin | — |
-| **MongoDB** (preset `mongodb`) | `mongodb/agent-skills` (vendor) | `Semgrep` plugin | — |
+<!-- recipe-matrix:start -->
+| Preset | Always pair | Conditional |
+|---|---|---|
+| `apollo` (Apollo GraphQL Client (vendor-pointer)) | `apollographql/skills` | — |
+| `astro` (Astro content/static-first) | `frontend-design@claude-plugins-official` | `vercel-labs/agent-skills` (if using React islands), `shadcn-ui/ui (skills/shadcn)` (if using shadcn/ui) |
+| `cli-tools` (CLI tools / automation scripts) | — | — |
+| `fastapi` (FastAPI backend (Python async)) | — | `supabase/agent-skills` (if using Postgres or Supabase), `mongodb/agent-skills` (if using MongoDB), `grafana/skills` (if using Grafana / observability stack), `antonbabenko/terraform-skill` (if deploying via Terraform/OpenTofu) |
+| `homelab-proxmox` (Proxmox VE homelab) | `antonbabenko/terraform-skill` | `pulumi/agent-skills` (if using Pulumi instead of Terraform), `grafana/skills` (if using Grafana / Prometheus stack) |
+| `mongodb` (MongoDB (vendor-pointer)) | `mongodb/agent-skills` | — |
+| `nextjs` (Next.js full-stack) | `vercel-labs/agent-skills`, `frontend-design@claude-plugins-official` | `supabase/agent-skills` (if using Supabase), `prisma/skills` (if using Prisma), `shadcn-ui/ui (skills/shadcn)` (if using shadcn/ui), `apollographql/skills` (if using Apollo GraphQL) |
+| `phaser` (Phaser (vendor-pointer)) | `phaserjs/phaser/skills` | — |
+| `playwright` (Playwright (vendor-pointer)) | `microsoft/playwright-cli` | — |
+| `pulumi` (Pulumi (vendor-pointer)) | `pulumi/agent-skills` | — |
+| `react-vite-spa` (React Vite SPA) | `vercel-labs/agent-skills`, `frontend-design@claude-plugins-official` | `shadcn-ui/ui (skills/shadcn)` (if using shadcn/ui), `lingui/skills` (if using Lingui for i18n) |
+<!-- recipe-matrix:end -->
 
 **Cross-stack growth/marketing skills** (install if shipping a product, not a pure side-project):
 
