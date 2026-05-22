@@ -133,7 +133,7 @@ Per maintainer guidance 2026-05-21: foundation user IS the maintainer; no need t
 | **3 — Wave 2 DEPRECATE** | `doc-i18n` removal. `dev-prompt-engineering` removal. `data-analytics` merge into `growth-analytics`. | 1-2 | ~1 session |
 | **4 — Wave 3 expansion (entering C)** | Rest of REDUCE: `qa-chrome/perf` skills, `ops-grafana-dashboard/vercel/k8s/docker/observability-stack`, biz-* remaining, `state-management/feature-flags/api-mocking/git-worktrees` skills, growth-* remaining. | 5-8 | ~2-3 sessions |
 | **5 — Repositioning + v2.0.0** | README pivots to "workflow framework + curator" framing. CHANGELOG migration guide. Major version bump. Recipe TOC restructure. | 1 (atomic) | ~1 session |
-| **6 — Curator bindings** | Operationalise the "curator" claim: bind detected stacks to validated vendor skills via preset `vendorSkills.*[]` arrays, surface them in `claude-base init`. Vision capture: [`phase-6-curator-bindings.md`](phase-6-curator-bindings.md). Lands post-v2.0.0. | 4-6 | ~5-6 sessions |
+| **6 — Curator bindings** | Operationalise the "curator" claim. **Audit on 2026-05-22 (post-v2.0.0) found the schema (`recommendedVendorSkills[]` with `condition` field) + CLI integration + validation gate are already shipped in v1.x**; only recipe auto-gen + optional conflict detection + optional lock file remain. Realigned plan: [`phase-6-curator-bindings.md`](phase-6-curator-bindings.md). | 1-3 | ~1-3 sessions |
 
 ## Pre-locked KEEP-AS-IS (NOT for review under this spec)
 
