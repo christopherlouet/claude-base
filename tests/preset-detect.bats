@@ -123,6 +123,45 @@ scan_in_temp() {
 }
 
 # =============================================================================
+# Dogfood finding #8 — depFiles signal supports common subdirectory layouts
+# Captured 2026-05-22 in specs/dogfood-v2-findings/spec.md. Real-world IaC
+# repos commonly place .tf files in infrastructure/, terraform/, iac/ etc.
+# rather than at the root. The `files` signal already uses `find -maxdepth 2`,
+# but `depFiles` was root-only — asymmetric and broke detection for the
+# homelab-proxmox preset against a project layout like
+# `pve-home/infrastructure/proxmox/versions.tf`.
+# =============================================================================
+
+@test "preset-detect: depFiles signal matches when path exists in a subdirectory (friction #8)" {
+    make_synthetic_preset "iac" '{"combinator":"anyOf","depFiles":[{"path":"versions.tf","contains":"bpg/proxmox"}]}'
+    # Mimic the real-world pve-home layout: Terraform code under
+    # infrastructure/proxmox/, NOT at the project root.
+    mkdir -p "$TEST_DIR/proj/infrastructure/proxmox"
+    echo 'proxmox = { source = "bpg/proxmox" }' > "$TEST_DIR/proj/infrastructure/proxmox/versions.tf"
+    run scan_in_temp "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"iac"* ]]
+}
+
+@test "preset-detect: depFiles signal still matches when path exists at root (regression for friction #8)" {
+    make_synthetic_preset "iac" '{"combinator":"anyOf","depFiles":[{"path":"versions.tf","contains":"bpg/proxmox"}]}'
+    echo 'proxmox = { source = "bpg/proxmox" }' > "$TEST_DIR/proj/versions.tf"
+    run scan_in_temp "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"iac"* ]]
+}
+
+@test "preset-detect: depFiles signal does NOT match when subdir file lacks expected content (friction #8)" {
+    make_synthetic_preset "iac" '{"combinator":"anyOf","depFiles":[{"path":"versions.tf","contains":"bpg/proxmox"}]}'
+    mkdir -p "$TEST_DIR/proj/infrastructure/proxmox"
+    # Wrong provider (aws not proxmox) → must not match
+    echo 'aws = { source = "hashicorp/aws" }' > "$TEST_DIR/proj/infrastructure/proxmox/versions.tf"
+    run scan_in_temp "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"iac"* ]]
+}
+
+# =============================================================================
 # Combinator semantics
 # =============================================================================
 
