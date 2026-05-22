@@ -147,22 +147,76 @@ The user has not edited any of these locally. The message *should* communicate "
 
 ---
 
+### 7. Legacy docs/ → .claude/docs/ migration silently deletes tracked files (NEW 2026-05-22)
+
+**Discovered during a real `claude-base update --all --yes` on a project**, where the dry-run had not surfaced this side-effect because dry-run only PRINTS the rm operations without showing the cascading git-state impact.
+
+**Symptom**: a project predating the `.claude/docs/` migration has 7 foundation reference files at `docs/reference/{advanced-features,agents-catalog,best-practices,commands,hooks-reference,project-structures,skills-catalog}.md` (tracked in git). After `update --all`, the log prints:
+
+```
+[INFO] Legacy migration detected: docs/ → .claude/docs/
+[OK] Migrated: docs/reference/ → .claude/docs/reference/
+[OK] .claude/docs/reference/ copied (7 files)
+```
+
+But `git status` reveals 7 deletions in the project root:
+
+```
+ D docs/reference/advanced-features.md
+ D docs/reference/agents-catalog.md
+ D docs/reference/best-practices.md
+ D docs/reference/commands.md
+ D docs/reference/hooks-reference.md
+ D docs/reference/project-structures.md
+ D docs/reference/skills-catalog.md
+```
+
+The migration is functionally correct (the canonical location is now `.claude/docs/` which is gitignored), but the UX is misleading: "Migrated" suggests a benign relocation, while the git-state effect is "7 tracked-file deletions in user's repo".
+
+**Impact**:
+
+- *Solo project*: minor — the user runs `git status`, sees the deletions, commits them (or restores them if they wanted the old location).
+- *Team project*: medium — if the user does `git commit -a` after the update without inspection, they push 7 deletions to colleagues who experience the loss without context. Especially impactful if the project uses pre-commit hooks that stage automatically.
+- *CI runs of `claude-base update`*: high — a CI workflow running `update` then committing dirty state would silently drop tracked files.
+
+**Likely cause**: `scripts/new-project.sh` or `scripts/update.sh` has logic that does `mv docs/ .claude/docs/` (or rm-then-copy equivalent) when an old project layout is detected. The git-tracked status of the source files is not checked before the move.
+
+**Proposed fix** (any combination):
+
+1. **Pre-move git-tracking check**: before moving, query `git ls-files` on the source paths. If any are tracked, emit a prominent warning:
+   ```
+   [WARN] Legacy migration will REMOVE 7 git-tracked files in docs/reference/.
+          The canonical location moves to .claude/docs/ (gitignored).
+          You will need to `git add -A && git commit -m "chore: drop legacy docs/"`
+          to record the removal. Continue? [y/N]
+   ```
+   In `--yes` mode, still print the warning so post-update reading shows what happened.
+2. **Rename the message**: replace `[OK] Migrated` with `[OK] Removed legacy docs/reference/ (7 files now in .claude/docs/reference/, gitignored)`.
+3. **Add a one-liner to v2.0.0 CHANGELOG migration guide**: heads-up that this happens on first update from a pre-`.claude/docs/` baseline.
+
+**Effort**: ~1h. The git check is `git -C <dir> ls-files --error-unmatch <file>` per file (or batch). The message rename is a 1-line change. The CHANGELOG note is ~3 lines.
+
+**Severity**: medium. Reversible (`git restore docs/reference/` or `git reset HEAD -- docs/reference/`) but surprising and team-impactful.
+
+---
+
 ## Prioritization
 
 | # | Friction | Severity | Effort | Status |
 |---|---|---|---|---|
 | 3 | `--dry-run` interactive | **CRITICAL (agents/CI)** | ~1h | ✅ **fixed in PR #248** (merged 2026-05-22) |
 | 2 | Counter delta wrong | medium | ~1h | ✅ **fixed in PR #251** (merged 2026-05-22) |
-| 4 | "Modified" message | medium | ~2h | ⏳ next — UX polish |
+| 7 | Legacy migration silently deletes tracked files | medium | ~1h | ⏳ next (NEW, discovered during real update) |
+| 4 | "Modified" message | medium | ~2h | ⏳ pending — UX polish |
 | 6 | Pre-flight version delta UI | low (REVISED) | ~30 min | ⏳ pending — see revised entry above; marker mechanism already exists |
 | 5 | `--clean` doc | low | ~30 min | ⏳ pending — doc-only |
 | 1 | CLI re-install doc | low | ~15 min | ⏳ pending — doc-only |
 
-**Aggregate effort**: ~6 hours across 6 PRs. Could be batched into 2-3 PRs if a maintainer wants atomic shipping (e.g. #3+#6 as the "automation-friendly update" PR, #2+#4 as the "update UX clarity" PR, #1+#5 as the "v2.0.0 docs polish" PR).
+**Aggregate effort**: ~7 hours across 7 PRs (was 6). Could be batched into 2-3 PRs if a maintainer wants atomic shipping (e.g. #4+#7 as the "update UX clarity" PR, #1+#5+#6 as the "v2.0.0 docs polish" PR).
 
 ## Out of scope
 
-This audit ran against one project on one preset (Next.js, pre-Wave-1 baseline). Friction unique to other presets (`fastapi`, `astro`, `homelab-proxmox`, `cli-tools`, `phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`, `react-vite-spa`) is not covered. A subsequent dogfooding pass on `homelab-proxmox` (the rare preset) and `cli-tools` (the empty-vendor-skills preset) would surface preset-specific bugs that this report does not catch.
+Initial audit was a dry-run only. A real `update --all --yes` was subsequently performed on the same project on 2026-05-22 (after #248/#251 merged, so frictions #3 and #2 were fixed) and surfaced friction #7. The remaining preset diversity (`fastapi`, `astro`, `homelab-proxmox`, `cli-tools`, `phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`, `react-vite-spa`) is still uncovered. A subsequent dogfooding pass on `homelab-proxmox` (the rare preset) and `cli-tools` (the empty-vendor-skills preset) would surface preset-specific bugs that this report does not catch.
 
 ## Related memories
 
