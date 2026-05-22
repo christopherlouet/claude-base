@@ -120,19 +120,30 @@ The user has not edited any of these locally. The message *should* communicate "
 
 ---
 
-### 6. No `.claude/VERSION` file in installed projects
+### 6. Version-pinning mechanism: gap analysis (REVISED 2026-05-22)
 
-**Symptom**: a project installed via `claude-base init` does not have a `.claude/VERSION` file (or equivalent). The user cannot tell which foundation version is currently installed without running `claude-base validate` or comparing file hashes.
+> **Original framing was wrong.** Initial spec entry claimed the foundation lacked a per-project version marker. Post-write audit found `write_foundation_marker` (in `scripts/lib/common.sh:540`) IS wired into `new-project.sh:1196, 1261, 1784` (init) and `update.sh:1593` (post-update). The marker file is `<target>/.claude/.foundation-version`, tested by 3 bats files (`new-project.bats`, `update.bats`, `common.bats`). Friction was overstated by failing to `grep "write_foundation_marker"` (used the literal filename `.foundation-version` instead, missing the indirect calls). Lesson reinforced [[feedback-verify-code-claims]].
 
-**Impact**:
+**What's actually in place** (verified 2026-05-22):
 
-- Diagnostic friction: a user reporting a bug cannot quickly answer "what version are you on" without an active CLI install.
-- Migration friction: `update` cannot apply version-specific migration logic if it doesn't know the previous version.
-- Documentation friction: example outputs in docs (e.g. `Commandes: 131` blocks in `quick-start.md`) get stale because there's no per-project pinning.
+- ✓ `.foundation-version` written on every `init` (`new-project.sh:1196/1261/1784`).
+- ✓ `.foundation-version` written on every successful `update` (`update.sh:1593`, skipped in dry-run).
+- ✓ Pre-flight read in `update.sh:215-217`: shows `project: <version>` in the banner when a marker exists.
+- ✓ Tests assert: marker is written on init, written on update, NOT modified by dry-run.
 
-**Proposed fix**: write `.claude/VERSION` (single-line text file) on every `init` and `update`. Add an `--upgrade-from PATH` flag to `update` that reads the previous version from this file and runs version-specific migration steps if needed. Future-proofing for v2.x and beyond.
+**What's actually still gapping** (smaller scope):
 
-**Effort**: ~1h — write the file on init/update, add a bats test asserting it exists post-init, no behaviour change otherwise.
+1. **Backfill for pre-marker projects**: projects that haven't been `update`d since the marker mechanism shipped (e.g. observed in one project on the maintainer's machine) have no `.foundation-version`. *Auto-resolves on first real `update`*, so this is friction the user hits once and never again. No fix needed — just verify the first-update path handles a missing marker gracefully (it does today: writes the marker post-update, no error on missing pre-state).
+
+2. **Pre-flight delta not shown**: `update.sh:215-217` prints `project: 1.41.2` in the banner but does NOT compare against the foundation's current `$VERSION` to print `1.41.2 → 2.0.0 (major)`. Minor UX gap — a delta line would tell the user "you're about to make a major version jump" at a glance.
+
+3. **No version-specific migration hook**: `update.sh` reads the previous version but never branches on it. There's no mechanism like `if old_version < 2.0.0 then run_v2_migration_steps`. This is *nice-to-have*, not blocking — claude-base hasn't yet needed a major migration that couldn't be expressed via the existing file-overwrite + orphan-detection flow.
+
+**Revised severity**: low. Gap #1 self-heals, #2 is cosmetic, #3 is speculative.
+
+**Proposed fix** (if any work is done at all): add ~5 lines to the banner in `update.sh` to compute `<previous> → <new>` and tag it `(patch / minor / major)`. Skip gap #3 entirely until a real migration justifies the framework cost.
+
+**Effort**: ~30 min if scoped to #2 only. ~0 if deferred.
 
 ---
 
@@ -141,9 +152,9 @@ The user has not edited any of these locally. The message *should* communicate "
 | # | Friction | Severity | Effort | Status |
 |---|---|---|---|---|
 | 3 | `--dry-run` interactive | **CRITICAL (agents/CI)** | ~1h | ✅ **fixed in PR #248** (merged 2026-05-22) |
-| 6 | No `.claude/VERSION` | high (diagnostics) | ~1h | ⏳ next — unblocks #2 and future migration logic |
-| 2 | Counter delta wrong | medium | ~1h | ⏳ pending — user-facing trust |
+| 2 | Counter delta wrong | medium | ~1h | ⏳ next — user-facing trust |
 | 4 | "Modified" message | medium | ~2h | ⏳ pending — UX polish |
+| 6 | Pre-flight version delta UI | low (REVISED) | ~30 min | ⏳ pending — see revised entry above; marker mechanism already exists |
 | 5 | `--clean` doc | low | ~30 min | ⏳ pending — doc-only |
 | 1 | CLI re-install doc | low | ~15 min | ⏳ pending — doc-only |
 
