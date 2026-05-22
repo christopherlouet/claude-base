@@ -11,180 +11,37 @@ context: fork
 user-invocable: false
 ---
 
-# Feature Flags Skill
+# Feature Flags (pointer)
 
-## Triggers
+SDK code, targeting rules syntax and dashboard integration drift on each vendor release and are canonical at:
 
-This skill activates when the user mentions:
-- "feature flag", "feature toggle"
-- "A/B test", "experimentation"
-- "progressive deployment", "canary"
-- "enable/disable a feature"
+- **LaunchDarkly** — [launchdarkly.com/docs](https://launchdarkly.com/docs) (SaaS, advanced targeting + experimentation)
+- **Unleash** — [docs.getunleash.io](https://docs.getunleash.io) (self-hosted open source)
+- **ConfigCat** — [configcat.com/docs](https://configcat.com/docs) (SaaS, generous free tier)
+- **PostHog Feature Flags** — [posthog.com/docs/feature-flags](https://posthog.com/docs/feature-flags) (paired with product analytics; see also recipe)
+- **OpenFeature** — [openfeature.dev](https://openfeature.dev) (vendor-neutral SDK standard — use to avoid lock-in)
 
-## Use cases
+## Use-case taxonomy (version-agnostic)
 
-| Use case | Description |
-|----------|-------------|
-| **Release toggles** | Deploy inactive code |
-| **Experiment toggles** | A/B testing |
-| **Ops toggles** | Circuit breakers |
-| **Permission toggles** | Features by role/plan |
+| Type | Purpose | Lifetime |
+|---|---|---|
+| **Release toggle** | Deploy inactive code; flip on after smoke test | Short (days/weeks) |
+| **Experiment toggle** | A/B test; emits exposure events for analysis | Bounded by experiment duration |
+| **Ops toggle** | Circuit breakers, kill switches, degraded modes | Long-lived |
+| **Permission toggle** | Feature gating by role/plan/cohort | Permanent (treat like config) |
 
-## Solutions
+Choose by lifetime: short → cheap implementation, long-lived → invest in observability + naming discipline.
 
-| Solution | Type | Advantages |
-|----------|------|-----------|
-| **LaunchDarkly** | SaaS | Complete, advanced targeting |
-| **Unleash** | Self-hosted | Open source, free |
-| **ConfigCat** | SaaS | Simple, generous free tier |
-| **Custom** | DIY | Full control |
+## Foundation discipline (keep across releases)
 
-## Simple implementation
+- **Default OFF**: every flag defaults to its conservative value (usually off). A flag that ships defaulting to ON is a hidden behaviour change.
+- **2-sprint rule**: remove release toggles within 2 sprints of full rollout. Stale flags accrue as tech debt — surface them via `qa-tech-debt`.
+- **Log every evaluation**: missing evaluation logs make debugging "why did user X see variant Y" impossible. Vendor SDKs offer this; if rolling custom, log it.
+- **No business logic in flag values**: a flag is a boolean (or enum); complex conditions belong in code paths the flag selects, not inside the flag service.
+- **Naming convention**: `<scope>_<feature>_<variant>` (e.g. `checkout_express_enabled`). Scope-first sorts/filters cleanly in dashboards.
 
-### Configuration
+## See also
 
-```typescript
-// lib/features.ts
-type FeatureFlags = {
-  newDashboard: boolean;
-  darkMode: boolean;
-  betaFeatures: boolean;
-};
-
-const defaultFlags: FeatureFlags = {
-  newDashboard: false,
-  darkMode: true,
-  betaFeatures: false,
-};
-
-export function getFeatureFlags(userId?: string): FeatureFlags {
-  // In production: fetch from service
-  if (process.env.NODE_ENV === 'development') {
-    return {
-      ...defaultFlags,
-      newDashboard: true,
-      betaFeatures: true,
-    };
-  }
-
-  return defaultFlags;
-}
-
-export function isFeatureEnabled(
-  flag: keyof FeatureFlags,
-  userId?: string
-): boolean {
-  const flags = getFeatureFlags(userId);
-  return flags[flag];
-}
-```
-
-### React hook
-
-```typescript
-// hooks/useFeatureFlag.ts
-import { useEffect, useState } from 'react';
-import { isFeatureEnabled } from '@/lib/features';
-import { useUser } from './useUser';
-
-export function useFeatureFlag(flag: string): boolean {
-  const { user } = useUser();
-  const [enabled, setEnabled] = useState(false);
-
-  useEffect(() => {
-    setEnabled(isFeatureEnabled(flag, user?.id));
-  }, [flag, user?.id]);
-
-  return enabled;
-}
-```
-
-### Usage
-
-```tsx
-// components/Dashboard.tsx
-import { useFeatureFlag } from '@/hooks/useFeatureFlag';
-
-export function Dashboard() {
-  const showNewDashboard = useFeatureFlag('newDashboard');
-
-  if (showNewDashboard) {
-    return <NewDashboard />;
-  }
-
-  return <LegacyDashboard />;
-}
-```
-
-## With LaunchDarkly
-
-```typescript
-// lib/launchdarkly.ts
-import * as LaunchDarkly from 'launchdarkly-node-server-sdk';
-
-const client = LaunchDarkly.init(process.env.LAUNCHDARKLY_SDK_KEY!);
-
-export async function getFlag(
-  flagKey: string,
-  user: { key: string; email?: string },
-  defaultValue: boolean = false
-): Promise<boolean> {
-  await client.waitForInitialization();
-  return client.variation(flagKey, user, defaultValue);
-}
-```
-
-```tsx
-// React client
-import { useFlags } from 'launchdarkly-react-client-sdk';
-
-function Component() {
-  const { newDashboard } = useFlags();
-  return newDashboard ? <New />: <Old />;
-}
-```
-
-## Best practices
-
-### Naming
-
-```
-# Format: <scope>_<feature>_<variant>
-dashboard_new_layout
-checkout_express_enabled
-user_profile_v2
-```
-
-### Lifecycle
-
-```
-1. Create flag (disabled)
-2. Deploy code behind flag
-3. Enable for internal users
-4. Gradual rollout (10% → 50% → 100%)
-5. Remove flag + old code
-```
-
-### Targeting
-
-```typescript
-// Targeting rules
-const rules = [
-  { attribute: 'email', operator: 'endsWith', value: '@company.com', enabled: true },
-  { attribute: 'plan', operator: 'equals', value: 'enterprise', enabled: true },
-  { attribute: 'userId', operator: 'inList', value: betaUserIds, enabled: true },
-  { attribute: 'percentage', operator: 'lessThan', value: 10, enabled: true },
-];
-```
-
-## Rules
-
-IMPORTANT: Always have a default value (flag off).
-
-IMPORTANT: Remove obsolete flags (technical debt).
-
-YOU MUST log flag evaluations for debugging.
-
-NEVER store complex business logic in flags.
-
-NEVER leave flags in production more than 2 sprints after full rollout.
+- `growth-ab-test` skill — experiment design, sample-size, exposure analysis (consumes experiment toggles)
+- `qa-tech-debt` — flag-debt scan surfaces stale flags past the 2-sprint window
+- `dev-tdd` — flag-gated code paths must be tested in BOTH states (on/off), not just the new path
