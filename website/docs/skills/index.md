@@ -78,7 +78,7 @@ Skills with isolated context.
 | [`qa-security`](/docs/skills/qa-security) | Perform a security audit based on OWASP. Use when ... | security |
 | [`qa-tech-debt`](/docs/skills/qa-tech-debt) | Technical debt management and prioritization. Trig... | tech, debt, technical debt |
 | [`session-handoff`](/docs/skills/session-handoff) | Context transfer between AI sessions. Trigger when... | session, handoff |
-| [`state-management`](/docs/skills/state-management) | State management patterns and implementation. Trig... | state, management, state management |
+| [`state-management`](/docs/skills/state-management) | State management patterns and implementation. Trig... | state, management |
 | [`web-scraping`](/docs/skills/web-scraping) | Clean LLM-ready web scraping via Firecrawl (scrape... | web, scraping, extract data from ... |
 | [`work-batch`](/docs/skills/work-batch) | Sequential execution of user stories from a PRD fi... | work, batch |
 | [`work-brainstorm`](/docs/skills/work-brainstorm) | Structured ideation before specification. Transfor... | work, brainstorm, i have a vague idea |
