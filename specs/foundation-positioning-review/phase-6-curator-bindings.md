@@ -1,138 +1,121 @@
-# Phase 6 — Curator Bindings (vision addendum)
+# Phase 6 — Curator Bindings
 
-> **Status**: planning · vision capture · post-v2.0.0 · non-blocking for Phases 3-5
-> **Parent spec**: [`spec.md`](spec.md) (Phases 0-5)
-> **Captured**: 2026-05-22
+> **Status**: realigned 2026-05-22 (this revision). Most of the original v1 vision is already shipped in v1.x — this doc now tracks what *remains* honestly.
+> **Parent spec**: [`spec.md`](spec.md)
+> **History**: vision captured in PR #239 assumed greenfield. Audit on 2026-05-22 (post-v2.0.0) found the curator-bindings mechanism was largely already implemented under different names. This revision realigns the doc with reality and re-scopes the remaining work.
 
-## Why this addendum exists
+## What's already shipped (as of v2.0.0)
 
-The parent spec stops the foundation-positioning work at **Phase 5 — Repositioning + v2.0.0** (README pivots to *"workflow framework + curator"* framing, recipe TOC restructure). That repositioning is honest *messaging* but does not close the loop *operationally*: after Phases 1-5 ship, the user still has cognitive load to figure out **which vendor skills to install for their stack**.
+The curator-bindings mechanism the original vision proposed already exists, just under different naming. The original spec called for "implement preset schema extension"; that work was done in v1.x and is operational today.
 
-The strategic intent behind Waves 1-3 was always **delegate depth to the vendor ecosystem, keep workflow rigor in the foundation**. Phase 6 makes that intent actionable: the foundation *binds* detected stacks to validated vendor skills, so the user does not have to read the recipe and guess.
+### Schema (in `.claude/presets/*.json`)
 
-## Current gap (post-Phase 5 state)
-
-After Phases 0-5 ship, the end-to-end user experience is:
-
-1. `claude-base init` detects stack → applies matching preset → installs foundation skills.
-2. README/recipe says *"for tool-specific depth, install vendor skills from `docs/recipes/recommended-vendor-skills.md`"*.
-3. User opens recipe (currently organised by domain: analytics, email, SEO, security…).
-4. User cross-references recipe entries against their detected stack mentally.
-5. User installs vendor skills one-by-one via the Claude Code marketplace or git.
-
-Steps 3-5 are pure cognitive load on the user. The foundation has *all the information* needed to skip those steps — it already detects the stack, it already has a curated recipe — it just doesn't wire them together.
-
-## Vision
-
-```
-$ claude-base init ./my-app
-[detected] Next.js 15 + Prisma + Tailwind
-[preset]   applied: nextjs (15 foundation skills installed)
-[curator]  3 validated vendor skills recommended for this stack:
-             • posthog/posthog-skills        — product analytics, 1.2k★
-             • prisma-driver-adapter-impl    — Prisma v7 driver work, vendor-published
-             • vercel/turborepo-skills       — monorepo orchestration, 800★
-           Install? [Y/n]
-```
-
-The user makes **one decision** (install vs. skip), not N decisions per skill. The recipe is still the source of truth, but the foundation surfaces only the relevant subset.
-
-## Proposed architecture sketch
-
-### 1. Preset schema extension
-
-Add to each `.claude/presets/*.json`:
+Each preset has a `recommendedVendorSkills[]` field. Each entry has shape:
 
 ```json
 {
-  "foundation": { "skills": { "keep": [...] } },
-  "vendorSkills": {
-    "required":    [{ "source": "vendor/repo", "reason": "stack-critical" }],
-    "recommended": [{ "source": "vendor/repo", "reason": "best practice" }],
-    "optional":    [{ "source": "vendor/repo", "reason": "useful for X" }]
-  }
+  "id": "vendor/repo or skill@marketplace",
+  "url": "https://github.com/... or https://claude.com/plugins/...",
+  "rationale": "Why this skill pairs with this preset",
+  "condition": "always" | "if using X"
 }
 ```
 
-Tiers map to install behaviour:
-- **required**: prompted with default-yes
-- **recommended**: prompted with default-yes, can be skipped en bloc
-- **optional**: listed, default-no
+The `condition` field handles tier-ification: `"always"` items are unconditional recommendations for the stack; any other string is a conditional recommendation (e.g. `"if using Prisma"`, `"if using Supabase"`). The original vision proposed three explicit tiers (required/recommended/optional); the binary "always vs conditional" implementation is functionally sufficient and was kept.
 
-### 2. Recipe restructure (additive)
+State as of 2026-05-22:
 
-The current per-domain organisation in [`docs/recipes/recommended-vendor-skills.md`](../../docs/recipes/recommended-vendor-skills.md) stays — it's still the curated knowledge base. Add a **per-stack matrix** alongside:
+| Preset | `recommendedVendorSkills[]` count | Notes |
+|---|---|---|
+| `apollo` | 1 | apollographql/skills |
+| `astro` | 3 | frontend-design + addyosmani/web-quality-skills + claude-seo |
+| `cli-tools` | 0 | **intentionally empty** — preset is headless/UI-less; vendor skills are stack-specific. See cli-tools.json description field. |
+| `fastapi` | 4 | code-review + Semgrep + grafana + pulumi |
+| `homelab-proxmox` | 3 | pulumi + terraform + grafana |
+| `mongodb` | 1 | mongodb/agent-skills |
+| `nextjs` | 6 | vercel + frontend-design + supabase + prisma + shadcn + apollo |
+| `phaser` | 1 | phaserjs/phaser/skills |
+| `playwright` | 1 | microsoft/playwright-cli |
+| `pulumi` | 1 | pulumi/agent-skills |
+| `react-vite-spa` | 4 | vercel + frontend-design + addyosmani + playwright-cli |
 
-```markdown
-## By stack
-| Stack | Required | Recommended | Optional |
-|---|---|---|---|
-| Next.js | … | … | … |
-| FastAPI | … | … | … |
-| Astro | … | … | … |
-…
-```
+### CLI integration
 
-The matrix is generated from the preset JSON `vendorSkills.*[]` arrays — single source of truth, no drift.
+`scripts/lib/preset-recommendations.sh` exposes `print_recommended_vendor_skills <preset_file> [project_dir]` which:
 
-### 3. CLI flow extension
+1. Groups entries into *Always pair with this preset* vs *Add if your project uses these tools*.
+2. Detects install status via filesystem check (`detect_skill_install_status` — checks `$HOME/.claude/skills/<id>` and `<project_dir>/.claude/skills/<id>`).
+3. Marks each entry: `[OK]` installed, `[--]` not installed, `[?]` marketplace plugin (filesystem unknown).
+4. Prints install pointer per entry (`git clone --depth 1 <url>` for `vendor/repo`, `claude plugin install <id>` for `@marketplace` handles).
+5. Closes with a pointer to the canonical recipe.
 
-`claude-base init` gains a post-preset step:
+Wired into both `scripts/new-project.sh:1257` (at the end of `claude-base init`) and `scripts/update.sh:1581` (at the end of `claude-base update`). The vision's *"one prompt during init"* UX is operational: users see the curated list when their stack is detected, without opening the recipe.
 
-1. After preset detection + foundation install, read `presets/<detected>.json` `vendorSkills.*[]`.
-2. Filter out already-installed vendor skills (idempotent).
-3. Prompt the user (single Y/n, or interactive picker for `--interactive` mode).
-4. Delegate install to the marketplace API (`claude plugin install <source>`) or git clone fallback.
-5. Log installed vendor skills to `.claude/vendor-skills.lock.json` for traceability + uninstall reversibility.
+### Validation
 
-### 4. Validation gate
+- `scripts/validate-presets.sh` validates the `recommendedVendorSkills[]` schema (shape, required keys, condition format).
+- `tests/presets.bats` asserts:
+  - `nextjs` has ≥3 entries (L654)
+  - `validate-presets.sh` enforces shape (L661-678)
+  - Empty `recommendedVendorSkills[]` correctly suppresses the heading at install time (L781)
+  - `react-vite-spa` has exactly 4 entries with correct tier split (L908+)
 
-Each preset fixture in `tests/presets-fixtures/<stack>/` gains a smoke test asserting the recommended vendor skills install cleanly and don't conflict with foundation skills (no duplicate slash commands, no rule-path collisions).
+## What's actually remaining
 
-## Out of scope (deliberate)
+Three items remain unimplemented. Listed in order of value-to-effort:
 
-- **Bundling vendor skill content into claude-base**: vendor skills stay distinct artifacts maintained by their authors. The foundation curates the *list*, not the *content*. This is the whole point of the Waves 1-3 REDUCE — claude-base does not chase vendor freshness.
-- **Auto-updating installed vendor skills**: that's the Claude Code marketplace's job, not claude-base's. We surface the recommendation; the marketplace handles version drift.
-- **Becoming a marketplace**: claude-base is a discipline foundation. The curator role is *trusted-list maintenance*, not *artifact distribution*.
+### 1. Recipe auto-gen from preset JSONs (highest value)
+
+The per-stack matrix added at the top of `docs/recipes/recommended-vendor-skills.md` in PR #244 is **hand-maintained**. Drift risk: if a preset's `recommendedVendorSkills[]` changes, the matrix doesn't update. Either:
+
+- Add a `website/scripts/generate-recipe-matrix.ts` that reads all 11 preset JSONs and rewrites the "## By stack" section between marker comments. Wire into `npm --prefix website run generate`.
+- Or extend `scripts/audit-docs.sh` to detect divergence between the matrix and the preset JSONs as a CI gate.
+
+Estimated 1 session, single PR.
+
+### 2. Conflict detection at install time
+
+If a vendor skill defines `/dev-prisma` (slash command) and the foundation already has `dev-prisma`, the foundation wins by precedence but the user has no warning. Add to `print_recommended_vendor_skills`:
+
+- Optionally parse the vendor skill's manifest (when checking `[OK]` status) and warn about slash-command name collisions.
+- Print a one-liner: `⚠ this skill defines /dev-prisma which already exists in the foundation; the foundation version wins`.
+
+Estimated 1 session, single PR. Lower priority — most validated vendor skills don't collide with foundation namespaces by design.
+
+### 3. `vendorSkills.lock.json` for traceability
+
+If a future `claude-base sync` subcommand wants to handle stack pivots (e.g. user adds Prisma to a Next.js project months after `init` and the curator should re-prompt), there needs to be a record of what was installed by `init`. Today the install-status check is purely filesystem-based (no record of *when* or *via which preset*).
+
+- Add `.claude/vendor-skills.lock.json` with `{installed: [{id, installedAt, viaPreset}]}`.
+- Update on each `init` / `update` that triggers an install acceptance.
+
+Estimated 1-2 sessions, single PR. Lowest priority — current UX works without it; only matters if/when a stack-pivot UX is added.
+
+## Out of scope (deliberate, unchanged from original)
+
+- **Bundling vendor skill content into claude-base**: vendor skills stay distinct artifacts maintained by their authors. The foundation curates the *list*, not the *content*.
+- **Auto-updating installed vendor skills**: that's the Claude Code marketplace's job.
+- **Auto-installing vendor skills without user opt-in**: the foundation prints recommendations and install commands; the user runs them. This was a deliberate supply-chain decision (the comment at the top of `preset-recommendations.sh` makes it explicit).
+- **Becoming a marketplace**: the curator role is *trusted-list maintenance*, not *artifact distribution*.
 
 ## Open questions
 
-1. **Version pinning** — should the preset pin to a `vendorSkills[*].minVersion`, or always pull `latest`? Pinning protects against breaking changes but ages quickly without active maintenance.
-2. **Marketplace API vs. git fallback** — first iteration: marketplace-only. Git fallback for vendor skills not yet on the marketplace adds installer complexity.
-3. **Stack pivot UX** — when a user adds Prisma to a Next.js app months after `init`, how does the curator re-prompt? Re-running `claude-base init` is the simplest path; an explicit `claude-base sync` subcommand is cleaner but adds CLI surface.
-4. **Conflict detection** — if a vendor skill defines `/dev-prisma` and the foundation has `dev-prisma`, the foundation's slash-command takes precedence. Do we warn the user at install time?
-5. **Telemetry trust** — should we rank vendor skills in the recipe by install count / GitHub stars / time-since-last-update? Today the recipe is curated manually with audit pilots; data-driven ranking is a separate spec.
+The original vision listed 5 open questions. Four are now resolved by the existing implementation; one remains:
 
-## Roadmap position
+1. ~~Version pinning~~ — **Resolved**: not pinned today, vendor skills follow `latest`. Acceptable given the observe-only install model.
+2. ~~Marketplace API vs git fallback~~ — **Resolved**: both work today via the `_format_install_pointer` heuristic (`@` → marketplace, `/` → git clone).
+3. **Stack pivot UX** — *Still open*. Re-running `claude-base init` is the current path; an explicit `claude-base sync` subcommand is cleaner but adds CLI surface.
+4. ~~Conflict detection~~ — *Tracked as item #2 above*.
+5. ~~Telemetry trust / data-driven ranking~~ — **Resolved**: not in scope. The recipe is curated manually with audit pilots, which is the right design for a 1-maintainer foundation.
 
-| Phase | Status | Blocking for Phase 6? |
-|---|---|---|
-| 0 — Strategic memo | ✅ done (#226) | No |
-| 1 — Recipe enrichment | ✅ done (#227) | No |
-| 2 — Wave 1 REDUCE | ✅ done (5 PRs) | No |
-| 3 — Wave 2 DEPRECATE | ✅ done (3 PRs) | No |
-| 4 — Wave 3 expansion | 🔄 in flight (3/N) | No |
-| 5 — Repositioning + v2.0.0 | ⏳ pending | **Yes — repositioning narrative is the conceptual hook for the curator framing** |
-| **6 — Curator bindings** | ⏳ this doc | — |
+## Why the original vision underestimated existing state
 
-Phase 6 should land **after** Phase 5 ships, so the messaging in the v2.0.0 README ("workflow framework + curator") has operational substance to back it up.
+The original [`phase-6-curator-bindings.md`](phase-6-curator-bindings.md) (committed in PR #239 on 2026-05-22) was written without grepping `.claude/presets/*.json` for existing curator-binding fields, or reading `scripts/lib/preset-recommendations.sh`. Lesson: when writing a "vision spec" that proposes new architecture, always read the existing implementation first. See [[feedback-verify-code-claims]].
 
-## Estimated effort
-
-- Preset schema extension: ~1 session (add field, migrate 11 preset JSONs with empty arrays, update preset validation script).
-- Recipe restructure + auto-gen of per-stack matrix: ~1 session.
-- CLI flow extension: ~2 sessions (install logic, prompt UX, lock file, idempotency tests).
-- Validation gate: ~1 session (extend `tests/presets.bats` with vendor-skill assertions per fixture).
-- Documentation + migration guide for users on `< v2.0.0` presets: ~1 session.
-
-**Total: 5-6 sessions, 4-6 PRs**, after Phase 5 ships.
-
-## Success criteria
-
-A new user running `claude-base init` on a Next.js + Prisma project gets a curated, validated set of vendor skills installed in one prompt, *without ever opening the recipe markdown file*. The recipe remains the source of truth for the curator (us), not a homework assignment for the user.
+This realignment isn't a regression — the work to ship Phases 0-5 (Waves 1-3 + v2.0.0 cut) is unaffected. The Phase 6 *deliverables* shrink accordingly.
 
 ## Related memories
 
 - [[project-foundation-positioning-review]] — the parent strategic work
 - [[feedback-community-is-baseline]] — the framing that justifies delegating depth
-- [[project-vendor-pointer-backlog]] — precursor work that established the curator pattern
+- [[feedback-verify-code-claims]] — the lesson this realignment surfaces
