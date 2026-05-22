@@ -88,16 +88,33 @@ _evaluate_preset() {
         done
     fi
 
-    # depFiles signals (file exists AND case-insensitive substring match)
+    # depFiles signals (file exists AND case-insensitive substring match).
+    # Dogfood finding #8 (specs/dogfood-v2-findings/spec.md): use `find
+    # -maxdepth 3` (one level deeper than the `files` signal above) to
+    # cover common IaC layouts like `infrastructure/proxmox/versions.tf`
+    # — IaC projects routinely place .tf files at depth 3 under
+    # infrastructure/<provider>/, while .config files in `files` stay
+    # near the root (depth 2 is enough). A subdir file with non-matching
+    # content correctly produces a miss (the content grep is still
+    # authoritative — see the friction-#8 regression test).
     local deps_n
     deps_n=$(jq -r '(.detect.depFiles // []) | length' "$file" 2>/dev/null)
     if [[ -n "$deps_n" && "$deps_n" -gt 0 ]]; then
-        local di dpath dcontains
+        local di dpath dcontains dfound dmatched
         for di in $(seq 0 $((deps_n - 1))); do
             dpath=$(jq -r ".detect.depFiles[$di].path // empty" "$file")
             dcontains=$(jq -r ".detect.depFiles[$di].contains // empty" "$file")
             [[ -z "$dpath" || -z "$dcontains" ]] && continue
-            if [[ -f "$target_dir/$dpath" ]] && grep -qiF -- "$dcontains" "$target_dir/$dpath" 2>/dev/null; then
+            dmatched=0
+            # Locate candidate files by basename at depth ≤2, then content-
+            # check each. -print0 + read -d for filenames with spaces.
+            while IFS= read -r -d '' dfound; do
+                if grep -qiF -- "$dcontains" "$dfound" 2>/dev/null; then
+                    dmatched=1
+                    break
+                fi
+            done < <(find "$target_dir" -maxdepth 3 -name "$dpath" -type f -print0 2>/dev/null)
+            if [[ "$dmatched" -eq 1 ]]; then
                 results+=("match")
             else
                 results+=("miss")

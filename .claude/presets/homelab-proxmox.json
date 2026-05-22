@@ -23,7 +23,9 @@
       {"path": "providers.tf", "contains": "telmate/proxmox"},
       {"path": "providers.tf", "contains": "bpg/proxmox"},
       {"path": "terraform.tf", "contains": "telmate/proxmox"},
-      {"path": "terraform.tf", "contains": "bpg/proxmox"}
+      {"path": "terraform.tf", "contains": "bpg/proxmox"},
+      {"path": "versions.tf", "contains": "telmate/proxmox"},
+      {"path": "versions.tf", "contains": "bpg/proxmox"}
     ]
   },
 
