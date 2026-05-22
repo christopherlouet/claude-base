@@ -23,92 +23,47 @@ tags:
 
 ## Detailed description
 
-# Performance Optimization
+# Performance Optimization (pointer)
 
-## Key metrics
+Canonical thresholds, current Web Vitals (LCP/INP/CLS — note INP replaced FID in 2024), and Chrome perf-team remediation patterns are at:
 
-| Metric | Target | Tool |
-|--------|--------|------|
-| TTFB | < 200ms | DevTools |
-| LCP | < 2.5s | Lighthouse |
-| FID | < 100ms | Web Vitals |
-| CLS | < 0.1 | Lighthouse |
+- **`addyosmani/web-quality-skills`** — [github.com/addyosmani/web-quality-skills](https://github.com/addyosmani/web-quality-skills) (MIT, 1.8k★, maintained by Addy Osmani — Chrome DevTools / Lighthouse engineering lead). Covers Core Web Vitals, perf, a11y, SEO.
+- **web.dev/vitals** — [web.dev/vitals](https://web.dev/vitals) (Google's canonical Web Vitals reference)
+- **Vercel React best practices** — see `vercel-react-best-practices` skill (foundation-installed) for React-specific patterns
 
-## Backend
+## Foundation workflow (when to invoke this skill)
 
-### Database
-```sql
--- Index on frequently filtered columns
-CREATE INDEX idx_users_email ON users(email);
+`qa-perf` is dispatched by `qa-loop` during the AUDIT phase, in parallel with `qa-security` / `wcag-audit` / `qa-claudemd`. It's a **measurement workflow**, not an optimisation cookbook:
 
--- EXPLAIN to analyze
-EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
+1. **Measure first**: run Lighthouse / WebPageTest / DevTools Performance against a *known scope* (the URL, page, or endpoint from `argument-hint`).
+2. **Compare to canonical thresholds** (see table below).
+3. **Identify the bottleneck axis**: render-blocking JS? N+1 DB query? Image weight? Bundle size? Each axis has a dedicated vendor remediation guide.
+4. **Recommend with quantified impact** (e.g. "lazy-loading hero image saves ~400ms LCP per Lighthouse run #3").
+5. **Re-measure after the fix** — a perf change without before/after numbers is theatre.
 
--- Avoid N+1 with JOIN
-SELECT u.*, p.* FROM users u
-LEFT JOIN posts p ON p.user_id = u.id;
-```
+## Canonical Web Vitals thresholds (2024-2026)
 
-### Caching
-```typescript
-// Redis cache
-async function getUser(id: string) {
-  const cached = await redis.get(`user:${id}`);
-  if (cached) return JSON.parse(cached);
+| Metric | Good | Needs improvement | Poor | Tool |
+|---|---|---|---|---|
+| **LCP** (Largest Contentful Paint) | < 2.5s | 2.5–4s | > 4s | Lighthouse, web-vitals |
+| **INP** (Interaction to Next Paint, replaces FID) | < 200ms | 200–500ms | > 500ms | web-vitals |
+| **CLS** (Cumulative Layout Shift) | < 0.1 | 0.1–0.25 | > 0.25 | Lighthouse, web-vitals |
+| **TTFB** | < 200ms | 200–600ms | > 600ms | DevTools Network |
 
-  const user = await db.user.findUnique({ where: { id } });
-  await redis.setex(`user:${id}`, 3600, JSON.stringify(user));
-  return user;
-}
-```
+## Foundation discipline (keep across releases)
 
-### Connection pooling
-```typescript
-const pool = new Pool({
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
-```
-
-## Frontend
-
-### Code splitting
-```tsx
-const HeavyComponent = lazy(() => import('./HeavyComponent'));
-```
-
-### Image optimization
-```tsx
-<Image src="/photo.jpg" width={800} height={600} priority />
-```
-
-### Memoization
-```tsx
-const value = useMemo(() => expensive(data), [data]);
-const handler = useCallback(() => action(id), [id]);
-```
-
-## Tools
-
-```bash
-# Lighthouse
-npx lighthouse https://example.com --view
-
-# Bundle analyzer
-npm run build -- --analyze
-
-# Node.js profiling
-node --prof app.js
-```
+- **No optimisation without measurement**: profile before changing code. Guessed bottlenecks are wrong ~70% of the time.
+- **Before/after numbers mandatory**: every perf PR must include the Lighthouse delta or equivalent. Without numbers, the work is unprovable.
+- **Cache invalidation > caching**: adding a cache is easy; correctly invalidating it is the bug surface. Surface cache TTLs in code review.
+- **N+1 is the #1 backend perf bug**: when an endpoint feels slow, instrument query count before optimising anything else.
 
 ## See also
 
-[`addyosmani/web-quality-skills`](https://github.com/addyosmani/web-quality-skills) (1,862★, last commit 2026-05-03) is maintained by Addy Osmani — Chrome DevTools / Lighthouse engineering lead at Google for ~14 years. Covers Core Web Vitals (LCP, INP, CLS), perf, accessibility, and SEO. Independent personal repo, MIT.
-
-When working on a project that targets Web Vitals optimisation, install this vendor skill alongside `qa-perf`. This skill captures the **measurement workflow** (profiling commands, when to invoke, foundation conventions); the vendor skill captures the **canonical thresholds and remediation patterns** that Chrome's performance team enforces. Both together is the recommended setup.
-
-Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.
+- `qa-chrome` skill — DevTools manual review (paired layer)
+- `dev-react-perf` skill — React-specific re-render audit + memoization patterns
+- `ops-monitoring` — production perf instrumentation (OTEL, RUM)
+- `vercel-react-best-practices` skill (foundation-installed)
+- Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`
 
 ## Automatic triggering
 
