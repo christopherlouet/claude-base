@@ -1,6 +1,6 @@
 # claude-base
 
-> **Opinionated Claude Code foundation.** Makes Claude Code follow a real engineering workflow — **Explore → Specify → Plan → TDD → Audit → Commit** — and drops in a curated `.claude/` (slash commands, sub-agents, skills, path-specific rules for TDD/security/a11y/perf). Stack presets (`nextjs`, `fastapi`, `astro`, `react-vite-spa`, `cli-tools`, `homelab-proxmox`, + vendor pointers) auto-detect your repo on install.
+> **Workflow framework + curator for Claude Code.** Makes Claude Code follow a real engineering workflow — **Explore → Specify → Plan → TDD → Audit → Commit** — wired through hooks, path-specific rules, and an anti-drift CI gate. Stack presets (`nextjs`, `fastapi`, `astro`, `react-vite-spa`, `cli-tools`, `homelab-proxmox`) auto-detect your repo and point you at a curated set of vendor skills for tool-specific depth, so you don't have to figure out which community skill to trust.
 
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
@@ -40,7 +40,12 @@ That last command chains the 6 phases automatically: Explore → Specify → Pla
 
 ## How it fits in the AI-coding ecosystem
 
-claude-base is a **Claude Code-native discipline foundation**. It curates a coherent rigor (Explore → Specify → Plan → TDD → Audit), wires hooks/rules/conventions, and orchestrates project setup via the `claude-base` CLI.
+claude-base plays **two roles**, both Claude-Code-native:
+
+1. **Workflow framework** — the foundation owns the rigor: Explore → Specify → Plan → TDD → Audit, enforced via path-specific rules (TypeScript strict, OWASP, WCAG, perf), wired into hooks (`settings.json`, PostToolUse tsc+eslint, gitleaks, anti-drift counters), orchestrated via the `claude-base` CLI.
+2. **Curator** — for tool-specific depth (React, Prisma, Supabase, MSW, Docker, Web Vitals, Chrome DevTools, analytics, email, SEO…), the foundation points to vendor-published skills validated through audit pilots (see [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md)). Each vendor maintains their own canonical content; we curate the list of which ones are worth trusting.
+
+The foundation does NOT chase vendor freshness: a 1-maintainer project can't out-update a 6,700+ skill ecosystem refreshed daily. Instead, the skills the foundation ships either (a) capture **workflow patterns** that survive across vendor releases (TDD discipline, audit-loop orchestration, deploy-safety checklists), or (b) **point** to the canonical vendor source with a thin foundation-specific discipline overlay.
 
 Two adjacent ecosystems share part of the surface area :
 
@@ -66,25 +71,27 @@ claude-base is **the opinionated discipline layer on top of (or in place of) tho
 
 ### vs the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) (vendor-published skills/plugins)
 
-For deeper coverage of **specific tools** — vendor-published skills for Terraform, Postgres, Playwright, MongoDB, observability stacks, framework-specific patterns — the marketplace and community skills often ship targeted depth that goes further than what this foundation bundles. That's expected : a foundation curates **breadth + workflow integration**, vendor skills curate **depth on a single tool or stack**.
+For deeper coverage of **specific tools** — vendor-published skills for Terraform, Postgres, Playwright, MongoDB, observability stacks, framework-specific patterns — the marketplace and community skills ship targeted depth that goes further than what a foundation could bundle. That's the design: a foundation curates **workflow integration + a trusted list**, vendor skills curate **depth on a single tool or stack**.
 
 **Recommended pattern**
 
 ```
-claude-base (foundation)        ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
+claude-base (workflow framework + curator)   ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
        +
-vendor skills (specific tools)  ← Terraform, Postgres, Playwright, Grafana, Prisma, MongoDB, ...
+vendor skills (tool-specific depth)          ← Prisma, Supabase, Playwright, Grafana, MSW, PostHog, ...
 ```
 
-claude-base's unique value (vs assembling vendor skills alone) :
+The foundation ships <!-- count:commands -->128<!-- /count --> commands + <!-- count:agents -->61<!-- /count --> agents + <!-- count:skills -->53<!-- /count --> skills, but most skills are **thin pointers** pairing the canonical vendor source with a few foundation-specific discipline lines (security/GDPR wraps, anti-patterns, cross-skill orchestration). What's NOT pointer-shaped is the workflow layer:
 
 - **Workflow rigor coordinated as one experience** — TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates
 - **Anti-drift counter strategy** across the entire foundation, CI-enforced via `counts.json` + a doc drift firewall (`scripts/audit-docs.sh`)
-- **30 path-specific rules** auto-activated by file path (TypeScript strict, OWASP defaults, WCAG, Core Web Vitals, deploy-safety)
+- **<!-- count:rules -->30<!-- /count --> path-specific rules** auto-activated by file path (TypeScript strict, OWASP defaults, WCAG, Core Web Vitals, deploy-safety)
 - **PostToolUse output rewriter** for Bash + tsc/eslint (Claude Code 2.1.121+)
 - **Integrated install + update flow** via the `claude-base` CLI
 
-**Honest limit** : for any specific tool integration, there's likely a more specialized vendor skill that goes deeper. The recipe [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) is the curated list of validated sources (<!-- count:vendorSkillsValidated -->21<!-- /count --> skills across <!-- count:marketplaceAuditPilots -->5<!-- /count --> audit pilots).
+**How the curator role works today**: [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) lists <!-- count:vendorSkillsValidated -->21<!-- /count --> vendor skills validated through <!-- count:marketplaceAuditPilots -->5<!-- /count --> audit pilots, organised by stack (see the *By stack* matrix) and by domain. You install the ones matching your stack; the foundation does not bundle them (vendors handle their own distribution and updates).
+
+**Where this is going**: see [`specs/foundation-positioning-review/phase-6-curator-bindings.md`](./specs/foundation-positioning-review/phase-6-curator-bindings.md) — the next milestone wires preset detection to per-stack vendor-skill recommendations, surfaced in a single `claude-base init` prompt instead of leaving the curation as a homework assignment.
 
 ## What you get on disk
 
