@@ -138,14 +138,14 @@ The user has not edited any of these locally. The message *should* communicate "
 
 ## Prioritization
 
-| # | Friction | Severity | Effort | Recommended order |
+| # | Friction | Severity | Effort | Status |
 |---|---|---|---|---|
-| 3 | `--dry-run` interactive | **CRITICAL (agents/CI)** | ~1h | **first** — blocking for automation |
-| 6 | No `.claude/VERSION` | high (diagnostics) | ~1h | second — unblocks #2 and future migration logic |
-| 2 | Counter delta wrong | medium | ~1h | third — user-facing trust |
-| 4 | "Modified" message | medium | ~2h | fourth — UX polish |
-| 5 | `--clean` doc | low | ~30 min | fifth — doc-only |
-| 1 | CLI re-install doc | low | ~15 min | sixth — doc-only |
+| 3 | `--dry-run` interactive | **CRITICAL (agents/CI)** | ~1h | ✅ **fixed in PR #248** (merged 2026-05-22) |
+| 6 | No `.claude/VERSION` | high (diagnostics) | ~1h | ⏳ next — unblocks #2 and future migration logic |
+| 2 | Counter delta wrong | medium | ~1h | ⏳ pending — user-facing trust |
+| 4 | "Modified" message | medium | ~2h | ⏳ pending — UX polish |
+| 5 | `--clean` doc | low | ~30 min | ⏳ pending — doc-only |
+| 1 | CLI re-install doc | low | ~15 min | ⏳ pending — doc-only |
 
 **Aggregate effort**: ~6 hours across 6 PRs. Could be batched into 2-3 PRs if a maintainer wants atomic shipping (e.g. #3+#6 as the "automation-friendly update" PR, #2+#4 as the "update UX clarity" PR, #1+#5 as the "v2.0.0 docs polish" PR).
 
