@@ -11,6 +11,7 @@ import { syncDocs } from './sync-docs.js';
 import { generateCounts } from './generate-counts.js';
 import { injectCountsMd } from './inject-counts-md.js';
 import { injectVersionMd } from './inject-version-md.js';
+import { generateRecipeMatrix } from './generate-recipe-matrix.js';
 
 interface GenerationStats {
   commands: number;
@@ -61,6 +62,13 @@ async function generateAll(): Promise<GenerationStats> {
     console.log('\n📏 Generating rule documentation...');
     console.log('─'.repeat(50));
     await generateRuleDocs();
+
+    // Regenerate the per-stack matrix in the recipe doc from preset
+    // JSONs (runs BEFORE sync so the website mirror gets the updated
+    // matrix automatically). Phase 6 — curator bindings auto-gen.
+    console.log('\n🍳 Regenerating recipe per-stack matrix...');
+    console.log('─'.repeat(50));
+    generateRecipeMatrix();
 
     // Sync docs/ to website/docs/
     console.log('\n📄 Syncing docs/ to website/docs/...');
