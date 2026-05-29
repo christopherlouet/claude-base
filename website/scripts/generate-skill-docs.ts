@@ -16,6 +16,7 @@ import {
   extractDescription,
   generateFrontmatter,
 } from './utils/parse-frontmatter.js';
+import { rewriteUnsyncedRepoLinks } from './utils/rewrite-links.js';
 
 const CLAUDE_DIR = path.resolve(__dirname, '../../.claude');
 const SKILLS_DIR = path.join(CLAUDE_DIR, 'skills');
@@ -206,7 +207,7 @@ ${contextBadge}
 
 ## Detailed description
 
-${rewriteReferenceLinks(skill.content, skill.name)}
+${rewriteUnsyncedRepoLinks(rewriteReferenceLinks(skill.content, skill.name))}
 
 ## Automatic triggering
 

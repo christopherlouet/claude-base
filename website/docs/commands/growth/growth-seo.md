@@ -29,7 +29,7 @@ git clone --depth 1 https://github.com/AgriciDaniel/claude-seo ~/dev/vendor-skil
 ~/dev/vendor-skills/claude-seo/install.sh ./
 ```
 
-Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"AgriciDaniel — `claude-seo`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](../../../specs/foundation-positioning-review/spec.md) Wave 1.
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/recommended-vendor-skills.md) §"AgriciDaniel — `claude-seo`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/foundation-positioning-review/spec.md) Wave 1.
 
 For Core Web Vitals work delegate to `/qa:qa-perf`; for accessibility (indirect SEO factor) to `/qa:wcag-audit`; for SEO performance tracking to `/growth:growth-analytics`.
 

@@ -43,7 +43,7 @@ ln -s ~/dev/vendor-skills/supabase/skills/supabase-postgres-best-practices \
 - **`supabase`** — Auth, DB, Edge Functions, Realtime, Storage with current API patterns.
 - **`supabase-postgres-best-practices`** — 30 rules across 8 categories (indexing, RLS perf, schema design, pg_* extensions).
 
-Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Supabase — `supabase/agent-skills`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](../../../specs/foundation-positioning-review/spec.md) Wave 1.
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/recommended-vendor-skills.md) §"Supabase — `supabase/agent-skills`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/foundation-positioning-review/spec.md) Wave 1.
 
 ## Foundation-unique angle preserved: cross-cutting discipline
 

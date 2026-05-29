@@ -17,6 +17,7 @@ import {
   generateFrontmatter,
 } from './utils/parse-frontmatter.js';
 import { escapeMdxContent } from './utils/escape-mdx-content.js';
+import { rewriteUnsyncedRepoLinks } from './utils/rewrite-links.js';
 import { Domain, DOMAIN_LABELS, DOMAIN_DESCRIPTIONS } from './utils/types.js';
 
 const CLAUDE_DIR = path.resolve(__dirname, '../../.claude');
@@ -81,6 +82,9 @@ function generateCommandPage(command: CommandInfo, position: number): string {
 
   // Remove the $ARGUMENTS placeholder
   content = content.replace(/\$ARGUMENTS/g, '`<arguments>`');
+
+  // Route links to unsynced repo trees (docs/recipes, specs) to GitHub
+  content = rewriteUnsyncedRepoLinks(content);
 
   // Escape MDX-problematic characters outside code regions
   content = escapeMdxContent(content);
