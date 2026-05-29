@@ -38,7 +38,7 @@ git clone --depth 1 https://github.com/prisma/skills ~/dev/vendor-skills/prisma
 # Skill content lives in CLAUDE.md / AGENTS.md per their convention.
 ```
 
-Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Prisma — `prisma/skills`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](../../../specs/foundation-positioning-review/spec.md) Wave 1.
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/recommended-vendor-skills.md) §"Prisma — `prisma/skills`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/foundation-positioning-review/spec.md) Wave 1.
 
 ## Foundation-unique angle preserved: cross-cutting discipline
 

@@ -31,7 +31,7 @@ git clone --depth 1 https://github.com/coreyhaines31/marketingskills ~/dev/vendo
 ln -s ~/dev/vendor-skills/marketingskills/skills/pricing ./.claude/skills/pricing
 ```
 
-Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](../../../specs/foundation-positioning-review/spec.md) Wave 1.
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/foundation-positioning-review/spec.md) Wave 1.
 
 For business-model framing delegate to `/biz:biz-model`; for market & competition input to `/biz:biz-market`; for price testing to `/growth:growth-ab-test`; for impact measurement to `/growth:growth-analytics`.
 

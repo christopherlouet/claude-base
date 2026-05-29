@@ -38,7 +38,7 @@ git clone --depth 1 https://github.com/shadcn-ui/ui ~/dev/vendor-skills/shadcn-u
 ln -s ~/dev/vendor-skills/shadcn-ui/skills/shadcn ./.claude/skills/shadcn
 ```
 
-Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"shadcn/ui — canonical skill in main repo". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](../../../specs/foundation-positioning-review/spec.md) Wave 1.
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/recommended-vendor-skills.md) §"shadcn/ui — canonical skill in main repo". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/foundation-positioning-review/spec.md) Wave 1.
 
 ## Foundation-unique angle preserved: art direction
 
