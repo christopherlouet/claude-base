@@ -30,6 +30,22 @@ These rules apply to files matching the following patterns:
 
 Any addition, removal or rename in `.claude/` silently breaks the docs and tests if counters are not kept in sync. The PostToolUse hook `base-integrity-check` warns but does not block — discipline is on whoever makes the change.
 
+## Generated artifacts — never hand-edit `website/docs/`
+
+`website/docs/` is **fully auto-generated** from `docs/` and `.claude/` by `npm --prefix website run generate`:
+
+- `sync-docs.ts` mirrors `docs/` → `website/docs/{reference,guides,concepts}` (adds Docusaurus frontmatter, rewrites links, escapes MDX).
+- `generate-{command,agent,skill,rule}-docs.ts` produce the per-resource pages from `.claude/` (that is why `website/docs/` has ~364 files vs ~21 in `docs/`).
+
+Every generated file carries a `<!-- Auto-generated from docs/ - DO NOT EDIT -->` banner.
+
+| Do | Don't |
+|----|-------|
+| Edit the **sources**: `docs/`, `templates/`, `.claude/` | Edit any file under `website/docs/` by hand — it is overwritten on the next generate |
+| After editing a source doc or a `.claude/` resource, run `npm --prefix website run generate` and commit the regenerated `website/docs/` alongside | Push a source change without regenerating — the committed mirror goes stale |
+
+CI enforces this: the `ci.yml` **"Counts gate"** re-runs `generate` and fails the PR via `git diff --exit-code` on `docs/`, `website/docs/`, `counts.json`, `README.md`, `CLAUDE.md` and the Docusaurus config if the committed output is out of sync.
+
 ## Mandatory checklist before commit
 
 | Check | Command | Blocking |
