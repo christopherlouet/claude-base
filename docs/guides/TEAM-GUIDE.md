@@ -74,7 +74,7 @@ Examples of personal preferences:
 # Personal preferences
 
 - Preferred response language: English
-- Preferred model: claude-opus-4-6 for complex tasks
+- Preferred model: claude-opus-4-8 for complex tasks
 - Response format: concise, no repetition
 - My shortcuts: /w = work, /q = qa
 ```
@@ -293,10 +293,10 @@ paths:
 
 | Usage | Model | Why |
 |-------|-------|-----|
-| Architecture, design | Opus 4.7 | Most advanced reasoning, 1M context, `xhigh` effort |
+| Architecture, design | Opus 4.8 | Most advanced reasoning, 1M context, `xhigh` effort |
 | Feature implementation | Sonnet | Speed/quality balance |
 | Exploration, reading | Haiku | Fast for simple operations |
-| Security audits | Sonnet or Opus 4.7 | Detection of subtle flaws |
+| Security audits | Sonnet or Opus 4.8 | Detection of subtle flaws |
 | PR reviews in CI | Haiku | Low cost, high volume |
 | Cloud review (large PRs) | `/ultrareview` | Parallel agents in cloud |
 
@@ -554,7 +554,7 @@ Using the right effort level avoids consuming tokens unnecessarily:
 /effort low      # Reading, exploration
 /effort medium   # Standard implementation
 /effort high     # Architecture, refactoring
-/effort max      # Critical debug (Opus 4.7 only)
+/effort max      # Critical debug (Opus 4.8 only)
 ```
 
 ### RTK: 60-90% token reduction
@@ -577,7 +577,7 @@ Then install: `brew install rtk`. See savings with `rtk gain`.
 |-------|---------------------------|-------------------|
 | Explore (medium codebase) | 50k - 150k input | Haiku |
 | Specify (user stories) | 5k - 20k | Sonnet |
-| Plan (complex feature) | 10k - 40k | Opus 4.7 |
+| Plan (complex feature) | 10k - 40k | Opus 4.8 |
 | TDD (implementation) | 30k - 100k | Sonnet |
 | Quality audit | 20k - 60k | Sonnet |
 | PR review | 5k - 15k | Haiku |

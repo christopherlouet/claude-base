@@ -1,16 +1,16 @@
 ---
 sidebar_position: 10
 title: Advanced Features
-description: Opus 4.7, Agent Teams, Plugins, LSP, MCP and advanced features of Claude Code
+description: Opus 4.8, Agent Teams, Plugins, LSP, MCP and advanced features of Claude Code
 ---
 
 # Advanced Features
 
-> Advanced capabilities of Claude Code: Opus 4.7, Agent Teams, Plugins, LSP and more
+> Advanced capabilities of Claude Code: Opus 4.8, Agent Teams, Plugins, LSP and more
 
-## Opus 4.7: New Capabilities
+## Opus 4.8: New Capabilities
 
-Claude Opus 4.7 (`claude-opus-4-6`) brings major improvements for Claude Code.
+Claude Opus 4.8 (`claude-opus-4-8`) brings major improvements for Claude Code.
 
 ### Adaptive Thinking
 
@@ -27,7 +27,7 @@ The model automatically adjusts its effort based on the detected complexity. It 
 
 ```typescript
 const response = await anthropic.messages.create({
-  model: 'claude-opus-4-6',
+  model: 'claude-opus-4-8',
   max_tokens: 16384,
   thinking: {
     type: 'enabled',
@@ -38,9 +38,9 @@ const response = await anthropic.messages.create({
 });
 ```
 
-### 1M token context window (beta)
+### 1M token context window (default)
 
-Opus 4.7 supports up to **1 million tokens** as input (beta). Standard pricing applies up to 200k tokens, with premium pricing beyond that.
+Opus 4.8 supports up to **1 million tokens** as input **by default** on the Claude API, Amazon Bedrock and Vertex AI (no longer a beta opt-in). Standard pricing applies up to 200k tokens, with premium pricing beyond that.
 
 | Tier | Pricing |
 |---------|-------------|

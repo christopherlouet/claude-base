@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **docs: refresh model references to Opus 4.8** (Anthropic news, week of 2026-05-22). Bumped every `Opus 4.7` → `Opus 4.8` and corrected the latest-Opus model ID `claude-opus-4-6` → `claude-opus-4-8` across `docs/`, `website/docs/`, `templates/` and `.claude/` (CHANGELOG/specs left untouched as historical record). Updated the `dev-ai-integration` SDK matrix to `Opus 4.8, Sonnet 4.6, Haiku 4.5`.
+- **docs: Opus 4.8 facts** — defaults to `high` effort, **1M context window now default** (not beta) on API/Bedrock/Vertex, ~4× less likely than 4.7 to let a self-authored code flaw pass. Reflected in `advanced-features.md`, `best-practices.md`, `templates/FAQ.md`, `website/docs/concepts/advanced-features.md`.
+
+### Added
+
+- **docs: Dynamic Workflows section** (`advanced-features.md` + website mirror) — native Opus 4.8 Workflow capability orchestrating tens–hundreds of background agents with deterministic control flow, plus a "which mechanism" comparison vs `parallel-agents` and Agent Teams.
+- **docs: pointers** for week-of-2026-05-22 Anthropic releases — Claude Security public beta / Project Glasswing, `/code-review --fix` (CLI 2.1.152) auto-applying to the working tree + native skill management, doubled Claude Code rate limits, and Managed Agents private-MCP sandbox + Compliance API.
+
 ## [2.0.0] - 2026-05-22
 
 **Major release — positioning pivot.** No CLI breaking change; the major-version bump reflects a strategic repositioning of the foundation under a `workflow framework + curator` framing.
