@@ -30,7 +30,7 @@ Integration: PostToolUse hooks (auto-format, type-check, lint), PreToolUse on co
 
 | Context | Model | Rationale |
 |----------|--------|---------------|
-| Complex tasks | **Opus 4.7** | Most advanced reasoning, adaptive thinking, 1M context, `xhigh` effort |
+| Complex tasks | **Opus 4.8** | Most advanced reasoning, adaptive thinking, 1M context, `xhigh` effort |
 | Audits and analyses | **Sonnet** | Good speed/quality balance |
 | Simple tasks | **Haiku** | Fast for trivial operations |
 
@@ -55,7 +55,7 @@ See `docs/guides/PROMPTING-GUIDE.md` for the complete guide.
 | Exploring code, reading files | `low` | No need for deep reasoning |
 | Implementing a standard feature | `medium` | Speed/quality balance |
 | Designing an architecture, audit, complex debug | `high` | Deep reasoning required |
-| Critical system architecture, advanced security audit | `xhigh` | Maximum reasoning (Opus 4.7 required) |
+| Critical system architecture, advanced security audit | `xhigh` | Maximum reasoning (Opus 4.8 required) |
 
 Command: `/effort low`, `/effort medium`, `/effort high`, `/effort xhigh` (interactive slider).
 

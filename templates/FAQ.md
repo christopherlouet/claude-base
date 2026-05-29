@@ -171,15 +171,15 @@ No, it's a recommendation. Adapt it to your needs:
 
 ### What is the maximum context size?
 
-Claude has a 200k token context window (1M in beta with Opus 4.7). For large projects:
+Claude has a 200k token context window by default (1M by default with Opus 4.8 on the API, Bedrock and Vertex AI). For large projects:
 - Use targeted agents
 - Analyze by module/folder
 - Exclude irrelevant files
-- With Opus 4.7, Context Compaction automatically summarizes old context
+- With Opus 4.8, Context Compaction automatically summarizes old context
 
 ---
 
-### What is Opus 4.7's Adaptive Thinking?
+### What is Opus 4.8's Adaptive Thinking?
 
 Adaptive Thinking replaces the "extended thinking" toggle with 3 effort levels (`low`, `medium`, `high`). The model automatically adjusts its reasoning based on the complexity of the task. This optimizes the cost/quality ratio without manual configuration.
 

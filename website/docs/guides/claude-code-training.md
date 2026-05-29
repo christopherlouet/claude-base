@@ -345,7 +345,7 @@ Claude Code uses a "context window" — the total amount of information it can p
 |-------|---------|------------------------|
 | Haiku 4.5 | 200k tokens | ~150,000 words |
 | Sonnet 4.6 | 200k tokens | ~150,000 words |
-| Opus 4.7 | 1M tokens | ~750,000 words (~5 novels) |
+| Opus 4.8 | 1M tokens | ~750,000 words (~5 novels) |
 
 When the context is full, responses become less accurate (Claude "forgets" the beginnings of the session). `/compact` solves this problem.
 
@@ -528,26 +528,26 @@ The effort level controls the depth of Claude's reasoning. The higher the effort
 | low | `/effort low` | Explore code, read files, simple questions | "What does this file do?" |
 | medium | `/effort medium` | Implement a standard feature, fix a bug | "Add email validation" |
 | high | `/effort high` | Design an architecture, major refactoring, audit | "Refactor the auth module" |
-| max | `/effort max` | Complex debug, critical security (Opus 4.7 only) | "Find the memory leak" |
+| max | `/effort max` | Complex debug, critical security (Opus 4.8 only) | "Find the memory leak" |
 
 ### Available models
 
 | Model | Strength | Use case | Speed |
 |-------|----------|----------|-------|
-| Opus 4.7 | Best reasoning, 1M context | Architecture, audit, complex debug | Slow |
+| Opus 4.8 | Best reasoning, 1M context | Architecture, audit, complex debug | Slow |
 | Sonnet 4.6 | Quality/speed balance | Daily development | Medium |
 | Haiku 4.5 | Very fast | Simple tasks, rephrasing, questions | Fast |
 
 Switch model:
 ```bash
-/model opus     # Opus 4.7
+/model opus     # Opus 4.8
 /model sonnet   # Sonnet 4.6 (default)
 /model haiku    # Haiku 4.5
 ```
 
 Or on the command line:
 ```bash
-claude --model claude-opus-4-6
+claude --model claude-opus-4-8
 ```
 
 ### Fast mode

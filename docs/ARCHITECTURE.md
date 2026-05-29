@@ -246,7 +246,7 @@ Instructions for the agent...
 |--------|-------|------|---------|----------|------------|
 | haiku | Simple tasks, reading | $ | Fast | 200k | 8k |
 | sonnet | Complex tasks, analysis | $$ | Medium | 200k | 64k |
-| opus (4.7) | Critical tasks, adaptive thinking | $$$ | Slower | 1M | 128k |
+| opus (4.8) | Critical tasks, adaptive thinking | $$$ | Slower | 1M | 128k |
 
 ### Agent example
 ```yaml

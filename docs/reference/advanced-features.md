@@ -45,7 +45,7 @@ Best practices:
 | `low` | `/effort low` | Exploration, formatting, simple tasks |
 | `medium` | `/effort medium` | Standard development, fixes |
 | `high` | `/effort high` | Architecture, audit, complex refactoring, debug |
-| `xhigh` | `/effort xhigh` | Maximum reasoning — critical system architecture, advanced security audit (Opus 4.7 required) |
+| `xhigh` | `/effort xhigh` | Maximum reasoning — critical system architecture, advanced security audit (Opus 4.8 required) |
 
 Recommendations per foundation workflow:
 
@@ -83,13 +83,15 @@ vscode://anthropic.claude-code/open
 
 Useful for: CI/CD integration, setup scripts, notification hooks.
 
-## Opus 4.7
+## Opus 4.8
+
+Current frontier model (released 2026-05-28, supersedes Opus 4.7). **Defaults to `high` effort.** Anthropic reports it is roughly **4× less likely than Opus 4.7 to let a flaw in code it has written pass unremarked** — a strong asset for the TDD and Audit phases of the workflow.
 
 Adaptive Thinking: Claude automatically adjusts the depth of its reasoning based on the complexity of the task. Replaces `budget_tokens` (deprecated). 4 effort levels (`low`, `medium`, `high`, `xhigh`) to guide reasoning.
 
-1M token window, 128k output tokens, automatic Context Compaction. Reasoning is interleaved between tool calls (interleaved thinking) for agentic workflows.
+**1M token context window by default** on the Claude API, Amazon Bedrock and Vertex AI (no longer a beta opt-in). 128k output tokens, automatic Context Compaction. Reasoning is interleaved between tool calls (interleaved thinking) for agentic workflows.
 
-New in v2.1.111: `xhigh` unlocks Opus 4.7's maximum reasoning. Auto mode available for Max subscribers (intelligent automatic permissions).
+`xhigh` unlocks Opus 4.8's maximum reasoning (introduced as a tier in v2.1.111). Auto mode available for Max subscribers (intelligent automatic permissions). Fast mode runs on Opus 4.8 (also available on 4.7/4.6).
 
 ## Checkpoint / Rewind
 
@@ -115,7 +117,7 @@ Recommended in the TDD Refactor phase: if the refactoring breaks the tests, `/re
 
 ## Fast Mode (Research Preview)
 
-Same Opus 4.7 model, 2.5x faster output. Toggle with `/fast`. Premium cost (see Anthropic pricing).
+Same Opus 4.8 model, 2.5x faster output. Toggle with `/fast`. Premium cost (see Anthropic pricing).
 
 | Use case | Recommendation |
 |-------------|----------------|
@@ -162,6 +164,29 @@ See `.claude/skills/agent-teams/SKILL.md` for the full documentation.
 
 A subagent stuck for more than 10 minutes without progress fails with an explicit error message instead of remaining in a silent hang. Isolated worktrees grant Read/Edit on the files of their own worktree. Permission dialog crashes during tool requests by a teammate are fixed (CLI 2.1.114+).
 
+## Dynamic Workflows (Opus 4.8)
+
+Introduced with Opus 4.8: a native **Workflow** capability that orchestrates work across **tens to hundreds of agents in the background** for large, complex tasks. Unlike the two mechanisms above, control flow is **deterministic and scripted** (loops, conditionals, fan-out, fan-in) rather than model-driven — you describe the structure (pipeline, parallel fan-out, adversarial verification) and the harness drives the agents.
+
+Ask Claude to "create a workflow that…" and it generates a script orchestrating the fleet. Typical shapes:
+
+| Shape | When to use |
+|-------|-------------|
+| **Pipeline** | Each item flows through N stages independently (migrate → verify per file) — no barrier between stages |
+| **Parallel fan-out** | Independent tasks that must all complete before the next step (multi-dimension review) |
+| **Adversarial verify** | Spawn N skeptics per finding; keep only what survives a majority refute — kills plausible-but-wrong results |
+| **Loop-until-dry** | Unknown-size discovery (bugs, edge cases): keep spawning finders until K rounds find nothing new |
+
+### When to use which mechanism
+
+| Mechanism | Coordination | Best for |
+|-----------|-------------|----------|
+| `parallel-agents` skill | Task-based fan-out, manual | A handful of independent sub-tasks within one session |
+| Agent Teams (experimental) | Inter-agent messaging, live | Long-running collaborative work with a lead + teammates |
+| **Dynamic Workflows** | Deterministic script, background | Scale (dozens–hundreds of agents): audits, migrations, exhaustive review |
+
+> Explicit opt-in: dynamic workflows can spawn many agents and consume a large token budget — they run only when you request that scale, not by inference.
+
 ## MCP Configuration
 
 MCP servers in `.mcp.json` (all disabled by default):
@@ -197,6 +222,10 @@ Permission relay: channels declaring the `permission` capability can relay appro
 ### MCP Elicitation (CLI 2.1.76+)
 
 MCP servers can request structured input from the user during a task via interactive dialogs. Associated hooks: `Elicitation` (request) and `ElicitationResult` (response).
+
+### Managed Agents — private MCP & sandbox (Enterprise)
+
+As of May 2026, **Claude Managed Agents** can run in a **sandbox you control** and connect to your **private MCP servers** — both the execution environment and the services it reaches stay within your enterprise boundaries. Paired with **Compliance API** integrations (security/compliance tooling), this lets IT and security teams govern Claude across the platform. Enterprise-only; out of scope for the local foundation, listed here as a pointer. See the [Anthropic news feed](https://www.anthropic.com/news).
 
 ### MCP OAuth RFC 9728 (CLI 2.1.85+)
 
@@ -239,9 +268,11 @@ Recommendations: always `async: true` and `onFailure: "ignore"` to avoid blockin
 
 ## Claude Code Security (Enterprise/Team)
 
-Vulnerability scanning tool using Opus 4.7 to analyze code beyond traditional static analysis. Reasons about data flows, interactions between components, and architectural patterns.
+Vulnerability scanning tool that reasons about code beyond traditional static analysis — data flows, interactions between components, and architectural patterns.
 
-Prerequisites: Enterprise or Team plan. Complement to `/qa:qa-security` for an in-depth audit. See [Anthropic announcement](https://www.anthropic.com/news/claude-code-security).
+**Claude Security** entered **public beta on 2026-05-22** for Claude Enterprise customers: it scans code repositories for vulnerabilities and generates proposed fixes. It is the productized form of **Project Glasswing**, whose first quantified results (also 2026-05-22) reported 10,000+ high/critical-severity vulnerabilities found across widely used internet software via ~50 partner organizations.
+
+Prerequisites: Enterprise or Team plan. Complement to `/qa:qa-security` (local, OWASP-based) for an in-depth audit. See [Anthropic announcement](https://www.anthropic.com/news/claude-code-security).
 
 ## RTK - Token Optimization (optional)
 
@@ -346,6 +377,12 @@ Cloud commands that delegate work to parallel agents on Anthropic's infrastructu
 `/ultraplan` automatically creates a cloud environment on first launch. The plan can be revised via a web editor before execution.
 
 `/ultrareview` launches several agents in parallel for a more exhaustive review than local `/qa:qa-review`. Ideal for PRs of more than 500 lines.
+
+### Local /code-review --fix (CLI 2.1.152+)
+
+The local `/code-review` flow gained `--fix`: review findings are **applied automatically to the working tree** instead of only being reported. Combine with the foundation's `qa-loop` (audit + iterative fix to score 90) for a tight local loop, or `--comment` to post findings as inline PR comments. The same release added native **skill management** (list/enable skills from within Claude Code) — complementary to the foundation's `writing-skills` / `base-maintenance` conventions.
+
+> **Rate limits**: Anthropic **doubled Claude Code rate limits** (May 2026) for developers, startups and enterprises — fewer throttling interruptions on agentic/parallel workloads.
 
 ## TUI Fullscreen (Research Preview, CLI 2.1.89+)
 

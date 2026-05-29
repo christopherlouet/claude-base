@@ -48,7 +48,7 @@ Claude Code is a CLI tool from Anthropic that lets you interact with Claude dire
 | [**MCP Servers**](/docs/concepts/mcp-servers) | Extensions via Model Context Protocol | .mcp.json configuration |
 | [**Output Styles**](/docs/concepts/output-styles) | Response formatting styles | `/output-style name` |
 | [**Templates**](/docs/concepts/templates) | Models for specs, plans and tasks | `/work:work-specify`, `/work:work-plan` |
-| [**Advanced Features**](/docs/concepts/advanced-features) | Opus 4.7, Agent Teams, Plugins, LSP | Advanced configuration |
+| [**Advanced Features**](/docs/concepts/advanced-features) | Opus 4.8, Agent Teams, Plugins, LSP | Advanced configuration |
 
 ## Quick comparison
 
