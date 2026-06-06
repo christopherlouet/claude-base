@@ -748,10 +748,12 @@ record_foundation_state() {
         while IFS= read -r m; do
             mods+=("$m")
         done < <(modules_list)
-        write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" "${mods[@]}"
+        write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" "${mods[@]}" \
+            || error "failed to write .claude/foundation.json in $dir"
         rm -f "$dir/.claude/.foundation-version"
     else
-        write_foundation_marker "$dir" "$VERSION"
+        write_foundation_marker "$dir" "$VERSION" \
+            || error "failed to write .claude/foundation.json in $dir"
     fi
 }
 
@@ -1216,7 +1218,8 @@ run_minimal_mode() {
     # Record foundation state (US-1). Minimal installs ship no horizontal
     # module (the minimal manifest excludes biz/legal/growth) — record an
     # empty module set so validation never expects their items (EF-211).
-    write_foundation_manifest "$target_dir" "$VERSION" ""
+    write_foundation_manifest "$target_dir" "$VERSION" "" \
+        || error "failed to write .claude/foundation.json in $target_dir"
 
     success "Minimal install complete in $target_dir"
     echo ""

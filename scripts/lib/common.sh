@@ -190,6 +190,13 @@ check_base_requirements() {
         error "git is required but is not installed"
     fi
 
+    # jq is required on every install/update path since the project manifest
+    # (.claude/foundation.json) replaced the legacy version marker
+    # (specs/foundation-modules EF-204).
+    if ! command_exists jq; then
+        error "jq is required but is not installed"
+    fi
+
     debug "Base requirements OK (bash $BASH_VERSION, git $(git --version | cut -d' ' -f3))"
 }
 

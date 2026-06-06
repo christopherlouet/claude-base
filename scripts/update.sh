@@ -767,8 +767,14 @@ resolve_active_preset() {
     # whose .claude/foundation.json names its preset never goes through
     # auto-detection — the multi-match refusal path becomes unreachable
     # for migrated projects (CS-205).
-    local recorded
-    recorded="$(manifest_preset "$TARGET_DIR" 2>/dev/null || true)"
+    # Status 1 = no manifest (legacy project, fall through to detection);
+    # status 2 = corrupted manifest → loud error, never a silent fallback.
+    local recorded=""
+    local mp_status=0
+    recorded="$(manifest_preset "$TARGET_DIR" 2>/dev/null)" || mp_status=$?
+    if [[ "$mp_status" -eq 2 ]]; then
+        error "corrupted .claude/foundation.json in $TARGET_DIR — fix the JSON by hand, or delete it and re-run update to regenerate it"
+    fi
     if [[ -n "$recorded" ]]; then
         local mfile=""
         if [[ -n "$PRESETS_DIR_OVERRIDE" ]]; then

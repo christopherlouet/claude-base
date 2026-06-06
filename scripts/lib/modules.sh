@@ -73,20 +73,37 @@ _manifest_path() {
 }
 
 # write_foundation_manifest <dir> <version> <preset-or-empty> [modules...]
+# Single jq invocation, atomic tmp+mv write: a failing jq can never leave a
+# partial manifest behind, and a non-file squatting the destination path is
+# refused instead of being silently written into.
 write_foundation_manifest() {
     local dir="${1:?target dir required}" version="${2:?version required}"
     local preset="${3:-}"
     shift 3 || shift $#
+    local manifest
+    manifest="$(_manifest_path "$dir")"
+    if [[ -e "$manifest" && ! -f "$manifest" ]]; then
+        printf 'modules: refusing to write manifest: %s exists and is not a regular file\n' \
+            "$manifest" >&2
+        return 1
+    fi
     mkdir -p "$dir/.claude" || return 1
-    local preset_json="null"
-    [[ -n "$preset" ]] && preset_json="\"$preset\""
-    # Build the modules JSON array from the remaining args via jq for safe
-    # escaping (jq is a hard dependency of the foundation).
-    printf '%s\n' "$@" | jq -R . | jq -s \
+    local tmp
+    tmp="$(mktemp)" || return 1
+    # Modules arrive as positional args ($ARGS.positional — safe escaping);
+    # an empty preset maps to null.
+    if ! jq -n \
         --arg version "$version" \
-        --argjson preset "$preset_json" \
-        '{version: $version, preset: $preset, modules: (. | map(select(length > 0)))}' \
-        > "$(_manifest_path "$dir")"
+        --arg preset_str "$preset" \
+        --args \
+        '{version: $version,
+          preset: (if $preset_str == "" then null else $preset_str end),
+          modules: ($ARGS.positional | map(select(length > 0)))}' \
+        "$@" > "$tmp"; then
+        rm -f "$tmp"
+        return 1
+    fi
+    mv "$tmp" "$manifest" || { rm -f "$tmp"; return 1; }
 }
 
 # read_foundation_manifest <dir> — print the manifest JSON.
