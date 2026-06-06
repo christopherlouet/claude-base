@@ -67,7 +67,7 @@ tags:
 | `--chrome` | Enable Chrome integration (visual tests) | `claude --chrome` |
 | `--teleport` | Enable Teleport connection (remote) | `claude --teleport` |
 | `--remote` | Connect to a remote session | `claude --remote <session-id>` |
-| `--fallback-model` | Fallback model if the primary is unavailable | `claude --fallback-model haiku` |
+| `--fallback-model` | Fallback model if the primary is unavailable (also applies to interactive sessions since CLI 2.1.166; see the `fallbackModel` setting for a cascade of up to 3 models) | `claude --fallback-model haiku` |
 | `--plugin-dir` | Plugin directory to load | `claude --plugin-dir ./plugins` |
 | `--bare` | Minimal scripted mode (skip hooks, LSP, plugins, skills) | `claude -p --bare "query"` |
 | `--channels` | Enable channels (Telegram, Discord, iMessage) | `claude --channels` |
