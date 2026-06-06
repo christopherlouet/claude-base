@@ -162,12 +162,31 @@ migrate_legacy_marker() {
     local version
     version="$(head -n1 "$marker" | tr -d '[:space:]')"
     [[ -n "$version" ]] || version="unknown"
+    # Detectable state recorded (EF-205): a module is recorded iff at least
+    # one of its bundle paths exists in the project (handles legacy minimal
+    # installs that never shipped biz/legal/growth). When nothing is
+    # detectable (no commands dir at all), assume the full set —
+    # conservative: a legacy standard install shipped the whole catalog.
     local mods=()
-    while IFS= read -r m; do
-        mods+=("$m")
-    done < <(modules_list)
+    local m p found
+    if [[ -d "$dir/.claude/commands" ]]; then
+        while IFS= read -r m; do
+            found=false
+            while IFS= read -r p; do
+                if [[ -e "$dir/$p" ]]; then
+                    found=true
+                    break
+                fi
+            done < <(module_bundle_paths "$m")
+            $found && mods+=("$m")
+        done < <(modules_list)
+    else
+        while IFS= read -r m; do
+            mods+=("$m")
+        done < <(modules_list)
+    fi
     write_foundation_manifest "$dir" "$version" "" "${mods[@]}" || return 1
     rm -f "$marker"
-    printf 'modules: migrated legacy version marker to .claude/foundation.json (v%s, full module set assumed)\n' \
-        "$version"
+    printf 'modules: migrated legacy version marker to .claude/foundation.json (v%s, modules: %s)\n' \
+        "$version" "${mods[*]:-none}"
 }

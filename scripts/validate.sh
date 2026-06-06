@@ -174,6 +174,45 @@ add_check() {
 # Validations
 # =============================================================================
 
+# Foundation manifest (.claude/foundation.json) — specs/foundation-modules
+# EF-211: recorded modules must have their items present; absence of
+# unrecorded modules is never a defect.
+validate_foundation_manifest() {
+    [[ "$OUTPUT_FORMAT" == "text" ]] && section "Foundation manifest"
+
+    local manifest="$TARGET_DIR/.claude/foundation.json"
+    local marker="$TARGET_DIR/.claude/.foundation-version"
+
+    if [[ ! -f "$manifest" ]]; then
+        if [[ -f "$marker" ]]; then
+            add_warning "legacy .foundation-version marker found — run a foundation update to migrate to foundation.json" "manifest"
+        else
+            add_warning ".claude/foundation.json missing — run a foundation update to create it" "manifest"
+        fi
+        return 0
+    fi
+
+    if ! jq . "$manifest" >/dev/null 2>&1; then
+        add_error ".claude/foundation.json is corrupted (invalid JSON) — fix it by hand or run a foundation update" "manifest"
+        return 0
+    fi
+    add_success ".claude/foundation.json present and valid" "manifest" 2
+
+    # EF-211: every recorded module must have its items present.
+    local m p missing
+    while IFS= read -r m; do
+        missing=0
+        while IFS= read -r p; do
+            [[ -e "$TARGET_DIR/$p" ]] || missing=$((missing + 1))
+        done < <(module_bundle_paths "$m" 2>/dev/null)
+        if [[ $missing -gt 0 ]]; then
+            add_warning "module '$m' is recorded in foundation.json but $missing item(s) are missing — run a foundation update to restore them" "manifest"
+        else
+            add_success "module '$m' complete" "manifest" 1
+        fi
+    done < <(manifest_modules "$TARGET_DIR" 2>/dev/null)
+}
+
 validate_structure() {
     [[ "$OUTPUT_FORMAT" == "text" ]] && section "1. Base structure"
 
@@ -660,6 +699,7 @@ main() {
 
     # Run the validations
     validate_structure
+    validate_foundation_manifest
     validate_commands
     validate_skills
     validate_hooks

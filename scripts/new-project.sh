@@ -734,6 +734,27 @@ load_preset() {
     done < <(jq -r '.foundation.skills.keep[]? // empty' "$file")
 }
 
+# Records the project's foundation state into .claude/foundation.json
+# (specs/foundation-modules US-1). With an active preset, the manifest
+# records its name so updates skip auto-detection (CS-205). Module set is
+# the full catalog at v1 — preset defaultModules lands with US-5.
+# Arguments:
+#   $1 - Target directory (absolute path)
+record_foundation_state() {
+    local dir="$1"
+    if [[ -n "$PRESET_NAME" ]]; then
+        local mods=()
+        local m
+        while IFS= read -r m; do
+            mods+=("$m")
+        done < <(modules_list)
+        write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" "${mods[@]}"
+        rm -f "$dir/.claude/.foundation-version"
+    else
+        write_foundation_marker "$dir" "$VERSION"
+    fi
+}
+
 # Apply the preset's skill filter to the target installation.
 # Called after install_claude_files() has already copied every skill.
 #
@@ -1192,8 +1213,10 @@ run_minimal_mode() {
 
     "$export_script" --dest-dir "$target_dir" || error "export-minimal.sh failed"
 
-    # Write foundation version marker (T1.3)
-    write_foundation_marker "$target_dir" "$VERSION"
+    # Record foundation state (US-1). Minimal installs ship no horizontal
+    # module (the minimal manifest excludes biz/legal/growth) — record an
+    # empty module set so validation never expects their items (EF-211).
+    write_foundation_manifest "$target_dir" "$VERSION" ""
 
     success "Minimal install complete in $target_dir"
     echo ""
@@ -1256,9 +1279,9 @@ run_simple_mode() {
     # detect_skill_install_status (T3.2).
     print_recommended_vendor_skills "$PRESET_FILE" "$target_dir"
 
-    # Write foundation version marker (T1.3) — skip in dry-run
+    # Record foundation state (US-1) — skip in dry-run
     if ! $DRY_RUN; then
-        write_foundation_marker "$target_dir" "$VERSION"
+        record_foundation_state "$target_dir"
     fi
 
     # Initialize git if not already done
@@ -1779,9 +1802,9 @@ create_project() {
     # .gitignore and git init
     update_gitignore_file "$TARGET_DIR"
 
-    # Write foundation version marker (T1.3) — skip in dry-run
+    # Record foundation state (US-1) — skip in dry-run
     if ! $DRY_RUN; then
-        write_foundation_marker "$TARGET_DIR" "$VERSION"
+        record_foundation_state "$TARGET_DIR"
     fi
 
     if [[ ! -d "$TARGET_DIR/.git" ]]; then
