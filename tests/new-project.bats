@@ -367,21 +367,25 @@ EOF
 }
 
 # =============================================================================
-# Foundation version marker (T1.3 — written after install)
+# Foundation version manifest (written after install)
+# Since specs/foundation-modules: .claude/foundation.json replaces the legacy
+# .foundation-version marker (EF-204/EF-205).
 # =============================================================================
 
-@test "new-project.sh --simple writes .claude/.foundation-version with the foundation version" {
+@test "new-project.sh --simple writes .claude/foundation.json with the foundation version" {
     run "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/marker-target"
     [ "$status" -eq 0 ]
-    [ -f "$TEST_DIR/marker-target/.claude/.foundation-version" ]
-    local marker_content expected
-    marker_content=$(cat "$TEST_DIR/marker-target/.claude/.foundation-version")
+    [ -f "$TEST_DIR/marker-target/.claude/foundation.json" ]
+    # Direct replacement (EF-205): the legacy marker must NOT be written.
+    [ ! -f "$TEST_DIR/marker-target/.claude/.foundation-version" ]
+    local manifest_version expected
+    manifest_version=$(jq -r '.version' "$TEST_DIR/marker-target/.claude/foundation.json")
     expected=$(cat "$BASE_DIR/VERSION")
-    [ "$marker_content" = "$expected" ]
+    [ "$manifest_version" = "$expected" ]
 }
 
-@test "new-project.sh --simple --dry-run does NOT write the marker" {
+@test "new-project.sh --simple --dry-run does NOT write the manifest" {
     run "$NEW_PROJECT_SCRIPT" --simple --dry-run -y "$TEST_DIR/dry-marker-target"
     [ "$status" -eq 0 ]
-    [ ! -f "$TEST_DIR/dry-marker-target/.claude/.foundation-version" ]
+    [ ! -f "$TEST_DIR/dry-marker-target/.claude/foundation.json" ]
 }

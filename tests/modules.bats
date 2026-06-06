@@ -22,10 +22,11 @@ teardown() {
     teardown_test_dir
 }
 
-# Source the lib in a subshell-friendly way for `run`.
+# Source the lib in a subshell-friendly way for `run`, preserving argument
+# boundaries (incl. empty args — the preset slot may legitimately be "").
 # Usage: run_lib <function> [args...]
 run_lib() {
-    run bash -c "source '$MODULES_LIB' && $*"
+    run bash -c 'source "$1"; shift; "$@"' _ "$MODULES_LIB" "$@"
 }
 
 # =============================================================================
@@ -60,7 +61,7 @@ run_lib() {
 }
 
 @test "modules: module_exists rejects empty name" {
-    run_lib module_exists "''"
+    run_lib module_exists ""
     [ "$status" -ne 0 ]
 }
 
@@ -155,4 +156,106 @@ run_lib() {
         [[ "$output" != *"commands/work/"* ]]
         [[ "$output" != *"assistant"* ]]
     done
+}
+
+# =============================================================================
+# Project manifest (.claude/foundation.json) — EF-204/EF-205
+# =============================================================================
+
+@test "manifest: write then read roundtrip" {
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" "nextjs" legal growth
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/.claude/foundation.json" ]
+    run bash -c "jq -r '.version' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "2.1.0" ]
+    run bash -c "jq -r '.preset' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "nextjs" ]
+    run bash -c "jq -r '.modules | join(\",\")' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "legal,growth" ]
+}
+
+@test "manifest: write without preset stores null" {
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" "" biz legal growth
+    [ "$status" -eq 0 ]
+    run bash -c "jq -r '.preset' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "null" ]
+}
+
+@test "manifest: manifest_preset and manifest_modules read back values" {
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" "fastapi" legal
+    run_lib manifest_preset "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ "$output" = "fastapi" ]
+    run_lib manifest_modules "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ "$output" = "legal" ]
+}
+
+@test "manifest: manifest_preset is empty when preset is null" {
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" "" legal
+    run_lib manifest_preset "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "manifest: manifest_has_module distinguishes installed from absent" {
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" "" legal
+    run_lib manifest_has_module "$TEST_DIR" legal
+    [ "$status" -eq 0 ]
+    run_lib manifest_has_module "$TEST_DIR" biz
+    [ "$status" -ne 0 ]
+}
+
+@test "manifest: read fails cleanly when manifest is missing" {
+    run_lib read_foundation_manifest "$TEST_DIR"
+    [ "$status" -ne 0 ]
+}
+
+@test "manifest: corrupted JSON fails loud with path and repair hint" {
+    mkdir -p "$TEST_DIR/.claude"
+    echo "{ broken" > "$TEST_DIR/.claude/foundation.json"
+    run_lib manifest_modules "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"foundation.json"* ]]
+    [[ "$output" == *"update"* ]]
+}
+
+@test "manifest: unknown module names in manifest warn but are ignored" {
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" "" legal bizz
+    run_lib manifest_modules "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"legal"* ]]
+    [[ "$output" != *"bizz"* ]] || [[ "$output" == *"warning"* ]]
+}
+
+# =============================================================================
+# Legacy marker migration — EF-205
+# =============================================================================
+
+@test "migration: legacy marker becomes manifest with full module set" {
+    mkdir -p "$TEST_DIR/.claude"
+    echo "1.40.0" > "$TEST_DIR/.claude/.foundation-version"
+    run_lib migrate_legacy_marker "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/.claude/foundation.json" ]
+    [ ! -f "$TEST_DIR/.claude/.foundation-version" ]
+    run bash -c "jq -r '.version' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "1.40.0" ]
+    run bash -c "jq -r '.modules | sort | join(\",\")' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "biz,growth,legal" ]
+}
+
+@test "migration: no-op when manifest already present" {
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" "nextjs" legal
+    echo "1.40.0" > "$TEST_DIR/.claude/.foundation-version"
+    run_lib migrate_legacy_marker "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run bash -c "jq -r '.version' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "2.1.0" ]
+}
+
+@test "migration: no-op when neither marker nor manifest exist" {
+    run_lib migrate_legacy_marker "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ ! -f "$TEST_DIR/.claude/foundation.json" ]
 }

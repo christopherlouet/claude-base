@@ -40,54 +40,70 @@ teardown() {
 }
 
 # =============================================================================
-# Foundation version marker (T1.4 — written after update; T1.5 — surfaced in --version)
+# Foundation version manifest (written after update; surfaced in --version)
+# Since specs/foundation-modules: .claude/foundation.json replaces the legacy
+# .foundation-version marker (EF-204/EF-205).
 # =============================================================================
 
-@test "update.sh writes .claude/.foundation-version after a successful update" {
+@test "update.sh writes .claude/foundation.json after a successful update" {
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
-    # Erase the marker created by init to verify update re-creates it
-    rm -f "$TEST_DIR/proj/.claude/.foundation-version"
+    # Erase the manifest created by init to verify update re-creates it
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
 
     run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
-    [ -f "$TEST_DIR/proj/.claude/.foundation-version" ]
-    local marker expected
-    marker=$(cat "$TEST_DIR/proj/.claude/.foundation-version")
+    [ -f "$TEST_DIR/proj/.claude/foundation.json" ]
+    local manifest_version expected
+    manifest_version=$(jq -r '.version' "$TEST_DIR/proj/.claude/foundation.json")
     expected=$(cat "$BASE_DIR/VERSION")
-    [ "$marker" = "$expected" ]
+    [ "$manifest_version" = "$expected" ]
 }
 
-@test "update.sh --dry-run does NOT modify .claude/.foundation-version" {
+@test "update.sh --dry-run does NOT modify .claude/foundation.json" {
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
-    # Force an old version into the marker
-    echo "1.0.0-old" > "$TEST_DIR/proj/.claude/.foundation-version"
+    # Force an old version into the manifest
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    jq '.version = "1.0.0-old"' "$manifest" > "$manifest.tmp" && mv "$manifest.tmp" "$manifest"
 
     run "$UPDATE_SCRIPT" --dry-run -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
-    # Marker must still hold the old fake version
-    [ "$(cat "$TEST_DIR/proj/.claude/.foundation-version")" = "1.0.0-old" ]
+    # Manifest must still hold the old fake version
+    [ "$(jq -r '.version' "$manifest")" = "1.0.0-old" ]
 }
 
-@test "update.sh creates the marker on a project that never had one" {
+@test "update.sh creates the manifest on a project that never had one" {
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
-    rm -f "$TEST_DIR/proj/.claude/.foundation-version"
-    [ ! -f "$TEST_DIR/proj/.claude/.foundation-version" ]
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
+    [ ! -f "$TEST_DIR/proj/.claude/foundation.json" ]
 
     run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
-    [ -f "$TEST_DIR/proj/.claude/.foundation-version" ]
+    [ -f "$TEST_DIR/proj/.claude/foundation.json" ]
 }
 
-@test "update.sh --version surfaces the project marker when run from inside a project" {
+@test "update.sh --version surfaces the project manifest version when run from inside a project" {
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
-    # Set a distinguishable marker so we can assert it's read
-    echo "1.36.0-test" > "$TEST_DIR/proj/.claude/.foundation-version"
+    # Set a distinguishable version in the manifest so we can assert it's read
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    jq '.version = "1.36.0-test"' "$manifest" > "$manifest.tmp" && mv "$manifest.tmp" "$manifest"
 
     cd "$TEST_DIR/proj"
     run "$UPDATE_SCRIPT" --version
     [ "$status" -eq 0 ]
     [[ "$output" == *"claude-base update v"* ]]
     [[ "$output" == *"1.36.0-test"* ]]
+}
+
+@test "update.sh --version falls back to the legacy marker on a pre-modules project" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Simulate a legacy install: marker only, no manifest
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
+    echo "1.30.0-legacy" > "$TEST_DIR/proj/.claude/.foundation-version"
+
+    cd "$TEST_DIR/proj"
+    run "$UPDATE_SCRIPT" --version
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"1.30.0-legacy"* ]]
 }
 
 @test "update.sh --version does NOT show a project marker when run outside a project" {
