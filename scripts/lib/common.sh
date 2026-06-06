@@ -10,6 +10,11 @@ _COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _BASE_ROOT="$(dirname "$(dirname "$_COMMON_SCRIPT_DIR")")"
 # shellcheck disable=SC2034  # Exported for use by other scripts
 COMMON_LIB_VERSION=$(cat "$_BASE_ROOT/VERSION" 2>/dev/null || echo "1.0.0")
+
+# Foundation modules: bundle registry + project manifest (.claude/foundation.json).
+# Required by the versioning functions below (specs/foundation-modules).
+# shellcheck source=scripts/lib/modules.sh
+source "$_COMMON_SCRIPT_DIR/modules.sh"
 unset _COMMON_SCRIPT_DIR _BASE_ROOT
 
 # =============================================================================
@@ -519,9 +524,13 @@ version_gte() {
     [[ "$(printf '%s\n' "$v2" "$v1" | sort -V | head -n1)" == "$v2" ]]
 }
 
-# Writes the foundation version marker into a target project.
-# Marker location: <target_dir>/.claude/.foundation-version
-# Marker content: single-line semver + trailing newline (e.g. "1.37.0\n").
+# Records the foundation version into a target project.
+# Since specs/foundation-modules: writes .claude/foundation.json (EF-204),
+# never the legacy .foundation-version marker (EF-205, direct replacement).
+# - Existing manifest: only .version is updated (preset/modules preserved).
+# - No manifest yet: created with no preset and the full module set
+#   (conservative default — matches a full catalog install).
+# - A stale legacy marker is removed either way.
 # Idempotent: re-running with the same args produces an identical file.
 # Arguments:
 #   $1 - Target project directory (created with parents if missing)
@@ -535,26 +544,46 @@ write_foundation_marker() {
         return 1
     fi
 
-    local claude_dir="$target_dir/.claude"
-    mkdir -p "$claude_dir" || return 1
-    printf '%s\n' "$version" > "$claude_dir/.foundation-version"
+    local manifest="$target_dir/.claude/foundation.json"
+    if [[ -f "$manifest" ]]; then
+        local tmp
+        tmp="$(mktemp)" || return 1
+        if ! jq --arg version "$version" '.version = $version' "$manifest" > "$tmp"; then
+            rm -f "$tmp"
+            return 1
+        fi
+        mv "$tmp" "$manifest" || return 1
+    else
+        local mods=()
+        local m
+        while IFS= read -r m; do
+            mods+=("$m")
+        done < <(modules_list)
+        write_foundation_manifest "$target_dir" "$version" "" "${mods[@]}" || return 1
+    fi
+    rm -f "$target_dir/.claude/.foundation-version"
+    return 0
 }
 
-# Reads the foundation version marker from a target project.
-# Marker location: <target_dir>/.claude/.foundation-version
-# Returns the first line (semver), trailing newline stripped. Empty if missing.
-# Pure read: never creates the file or any parent directory.
+# Reads the foundation version from a target project.
+# Manifest-first (.claude/foundation.json), legacy .foundation-version
+# fallback (pre-modules installs — migration happens in update, not here).
+# Pure read: never creates or removes any file.
 # Arguments:
 #   $1 - Target project directory
 # Return: 0 always (caller checks output non-empty if needed)
 read_foundation_marker_from_project() {
     local target_dir="$1"
-    local marker_file="$target_dir/.claude/.foundation-version"
+    [[ -z "$target_dir" ]] && return 0
 
-    if [[ -z "$target_dir" || ! -f "$marker_file" ]]; then
+    local manifest="$target_dir/.claude/foundation.json"
+    if [[ -f "$manifest" ]]; then
+        jq -r '.version // empty' "$manifest" 2>/dev/null
         return 0
     fi
 
+    local marker_file="$target_dir/.claude/.foundation-version"
+    [[ -f "$marker_file" ]] || return 0
     head -n 1 "$marker_file"
 }
 
