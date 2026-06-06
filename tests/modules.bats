@@ -270,3 +270,19 @@ run_lib() {
     run bash -c "jq -r '.modules | join(\",\")' '$TEST_DIR/.claude/foundation.json'"
     [ "$output" = "legal" ]
 }
+
+@test "manifest: write_foundation_manifest leaves no partial file when jq fails" {
+    mkdir -p "$TEST_DIR/fakebin"
+    printf '#!/usr/bin/env bash\nexit 7\n' > "$TEST_DIR/fakebin/jq"
+    chmod +x "$TEST_DIR/fakebin/jq"
+    run bash -c "PATH='$TEST_DIR/fakebin':\$PATH; source '$MODULES_LIB'; write_foundation_manifest '$TEST_DIR/proj' '2.1.0' '' legal"
+    [ "$status" -ne 0 ]
+    [ ! -f "$TEST_DIR/proj/.claude/foundation.json" ]
+}
+
+@test "manifest: write_foundation_manifest refuses a non-file destination" {
+    mkdir -p "$TEST_DIR/.claude/foundation.json"   # directory squatting the path
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" "" legal
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"not a regular file"* ]]
+}

@@ -426,3 +426,10 @@ EOF
     [ "$(jq -r '.preset' "$manifest")" = "null" ]
     [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "biz,growth,legal" ]
 }
+
+@test "new-project.sh --simple fails loud when the manifest cannot be written" {
+    mkdir -p "$TEST_DIR/proj/.claude/foundation.json"   # directory squatting the path
+    run "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"foundation"* ]]
+}

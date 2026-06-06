@@ -556,3 +556,15 @@ EOF
     [[ "$output" == *"synth-drop"* ]]
     [[ "$output" != *"multiple presets match"* ]]
 }
+
+@test "update-presets: corrupted manifest fails loud instead of silent auto-detect fallback" {
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    _write_synthetic_preset "$preset_dir"
+    "$NEW_PROJECT" --preset synth-drop --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    echo "{ broken" > "$TEST_DIR/proj/.claude/foundation.json"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"foundation.json"* ]]
+}

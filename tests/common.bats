@@ -314,3 +314,12 @@ teardown() {
     [ -d "$BASE_DIR/scripts" ]
     [ -f "$BASE_DIR/VERSION" ]
 }
+
+@test "check_base_requirements requires jq (foundation-modules hard dependency)" {
+    # Override command_exists to simulate a machine without jq: every other
+    # tool resolves, jq does not. write_foundation_marker now needs jq on
+    # every install path, so the requirements gate must catch it upfront.
+    run bash -c "source '$BATS_TEST_DIRNAME/../scripts/lib/common.sh'; command_exists() { [[ \"\$1\" != jq ]]; }; check_base_requirements"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"jq"* ]]
+}
