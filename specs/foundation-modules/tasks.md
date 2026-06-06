@@ -17,12 +17,12 @@
 
 **Goal**: Module bundles exist as reviewable data; registry lib can enumerate and parse them.
 
-- [ ] T001 - CI baseline: run `bats tests/` + shellcheck, record pre-existing failures (workflow rule: never confuse them with new ones)
-- [ ] T002 - [P] Create `scripts/lib/modules/biz.txt` — all `.claude/commands/biz/*.md` (11) + `.claude/agents/biz-*.md` (4), minimal-manifest syntax
-- [ ] T003 - [P] Create `scripts/lib/modules/legal.txt` — `.claude/commands/legal/*.md` (5) + `.claude/agents/legal-*.md` (4)
-- [ ] T004 - [P] Create `scripts/lib/modules/growth.txt` — `.claude/commands/growth/*.md` (11) + `.claude/agents/growth-*.md` (6) + `.claude/skills/growth-cro/`
-- [ ] T005 - Write failing tests in `tests/modules.bats`: registry lists exactly {biz, legal, growth}; bundle parse returns the expected path sets; bundle paths all exist in the repo (drift guard)
-- [ ] T006 - Implement registry half of `scripts/lib/modules.sh`: `modules_list()`, `module_bundle_paths(name)`, `module_exists(name)` — make T005 green
+- [x] T001 - CI baseline: run `bats tests/` + shellcheck, record pre-existing failures (workflow rule: never confuse them with new ones)
+- [x] T002 - [P] Create `scripts/lib/modules/biz.txt` — all `.claude/commands/biz/*.md` (11) + `.claude/agents/biz-*.md` (4), minimal-manifest syntax
+- [x] T003 - [P] Create `scripts/lib/modules/legal.txt` — `.claude/commands/legal/*.md` (5) + `.claude/agents/legal-*.md` (4)
+- [x] T004 - [P] Create `scripts/lib/modules/growth.txt` — `.claude/commands/growth/*.md` (11) + `.claude/agents/growth-*.md` (6) + `.claude/skills/growth-cro/`
+- [x] T005 - Write failing tests in `tests/modules.bats`: registry lists exactly {biz, legal, growth}; bundle parse returns the expected path sets; bundle paths all exist in the repo (drift guard)
+- [x] T006 - Implement registry half of `scripts/lib/modules.sh`: `modules_list()`, `module_bundle_paths(name)`, `module_exists(name)` — make T005 green
 
 **Checkpoint**: `bats tests/modules.bats` green; bundles reviewed as data.
 
@@ -32,10 +32,10 @@
 
 **Goal**: `.claude/foundation.json` read/write/migrate helpers, single source of truth.
 
-- [ ] T007 - Write failing tests in `tests/modules.bats`: manifest write→read roundtrip; missing manifest detection; corrupted JSON → loud error with path + repair hint; unknown module names inside manifest → warning, ignored
-- [ ] T008 - Implement manifest half of `scripts/lib/modules.sh`: `write_foundation_manifest(dir, version, preset, modules...)`, `read_foundation_manifest(dir)`, `manifest_preset(dir)`, `manifest_modules(dir)`, `manifest_has_module(dir, name)`, `migrate_legacy_marker(dir)` — make T007 green
-- [ ] T009 - Inventory every internal reader of `.claude/.foundation-version`: `grep -rn "foundation-version\|foundation_marker" scripts/ tests/ .claude/` — exhaustive list in PR description (breaking-change control, EF-205)
-- [ ] T010 - Update `scripts/lib/common.sh`: `write_foundation_marker()` (:530) delegates to manifest writer; `read_foundation_version()` (:543) reads manifest first, falls back to legacy marker (migration trigger only); update every reader from T009
+- [x] T007 - Write failing tests in `tests/modules.bats`: manifest write→read roundtrip; missing manifest detection; corrupted JSON → loud error with path + repair hint; unknown module names inside manifest → warning, ignored
+- [x] T008 - Implement manifest half of `scripts/lib/modules.sh`: `write_foundation_manifest(dir, version, preset, modules...)`, `read_foundation_manifest(dir)`, `manifest_preset(dir)`, `manifest_modules(dir)`, `manifest_has_module(dir, name)`, `migrate_legacy_marker(dir)` — make T007 green
+- [x] T009 - Inventory every internal reader of `.claude/.foundation-version`: `grep -rn "foundation-version\|foundation_marker" scripts/ tests/ .claude/` — exhaustive list in PR description (breaking-change control, EF-205)
+- [x] T010 - Update `scripts/lib/common.sh`: `write_foundation_marker()` (:530) delegates to manifest writer; `read_foundation_version()` (:543) reads manifest first, falls back to legacy marker (migration trigger only); update every reader from T009
 
 **Checkpoint**: manifest helpers green; no existing suite broken (`bats tests/`).
 
@@ -49,15 +49,15 @@
 
 ### Tests first (RED)
 
-- [ ] T011 [US1] Extend `tests/new-project.bats`: bare init writes manifest {version, preset:null, modules:[biz,legal,growth]}; `--preset nextjs` init records the preset; legacy marker file absent after init
-- [ ] T012 [P] [US1] Extend `tests/update.bats`: legacy project (marker only) → update creates manifest (full module set assumed), removes marker, reports the migration; `validate.sh` passes after migration
-- [ ] T013 [P] [US1] Extend `tests/update-presets.bats`: manifest-recorded preset used without detection; `--preset NAME` overrides manifest; `--no-preset` still disables filtering; multi-match refusal unreachable when manifest present (CS-205)
+- [x] T011 [US1] Extend `tests/new-project.bats`: bare init writes manifest {version, preset:null, modules:[biz,legal,growth]}; `--preset nextjs` init records the preset; legacy marker file absent after init
+- [x] T012 [P] [US1] Extend `tests/update.bats`: legacy project (marker only) → update creates manifest (full module set assumed), removes marker, reports the migration; `validate.sh` passes after migration
+- [x] T013 [P] [US1] Extend `tests/update-presets.bats`: manifest-recorded preset used without detection; `--preset NAME` overrides manifest; `--no-preset` still disables filtering; multi-match refusal unreachable when manifest present (CS-205)
 
 ### Implementation (GREEN)
 
-- [ ] T014 [US1] `scripts/new-project.sh`: replace marker write (:1196 + simple-mode path) with `write_foundation_manifest` (preset name when used, full module list v1)
-- [ ] T015 [US1] `scripts/update.sh`: `resolve_active_preset()` (:730) resolution order — explicit flag > `--no-preset` > manifest > legacy auto-detect (+ trigger `migrate_legacy_marker`, report line); `print_summary()` (:1433) migration notice
-- [ ] T016 [US1] `scripts/validate.sh`: read manifest when present; report recorded-but-missing module items; never flag absent unrecorded modules (EF-211) — extend `tests/validate.bats` first
+- [x] T014 [US1] `scripts/new-project.sh`: replace marker write (:1196 + simple-mode path) with `write_foundation_manifest` (preset name when used, full module list v1)
+- [x] T015 [US1] `scripts/update.sh`: `resolve_active_preset()` (:730) resolution order — explicit flag > `--no-preset` > manifest > legacy auto-detect (+ trigger `migrate_legacy_marker`, report line); `print_summary()` (:1433) migration notice
+- [x] T016 [US1] `scripts/validate.sh`: read manifest when present; report recorded-but-missing module items; never flag absent unrecorded modules (EF-211) — extend `tests/validate.bats` first
 
 **Checkpoint US-1**: legacy fixture migrates cleanly; recorded preset drives update.
 
