@@ -7,6 +7,7 @@
 load 'test_helper'
 
 VALIDATE_SCRIPT="$BATS_TEST_DIRNAME/../scripts/validate.sh"
+NEW_PROJECT_SCRIPT="$BATS_TEST_DIRNAME/../scripts/new-project.sh"
 
 setup() {
     setup_test_dir
@@ -244,4 +245,50 @@ EOF
     create_minimal_project
     run "$VALIDATE_SCRIPT" --verbose "$TEST_DIR"
     [ "$status" -eq 0 ]
+}
+
+# =============================================================================
+# Foundation manifest validation (specs/foundation-modules US-1/EF-211, T016)
+# =============================================================================
+
+@test "validate.sh accepts a project with a valid foundation manifest" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    run "$VALIDATE_SCRIPT" "$TEST_DIR/proj"
+    [[ "$output" == *"foundation.json"* ]]
+    [[ "$output" != *"corrupted"* ]]
+}
+
+@test "validate.sh reports recorded-but-missing module items (EF-211)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # legal is recorded (full set at init) — remove its files.
+    rm -rf "$TEST_DIR/proj/.claude/commands/legal"
+    run "$VALIDATE_SCRIPT" "$TEST_DIR/proj"
+    [[ "$output" == *"legal"* ]]
+    [[ "$output" == *"missing"* ]]
+}
+
+@test "validate.sh never flags absent unrecorded modules (EF-211)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Unrecord biz, then remove its files: absence must NOT be a defect.
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    jq '.modules = ["legal", "growth"]' "$manifest" > "$manifest.tmp" && mv "$manifest.tmp" "$manifest"
+    rm -rf "$TEST_DIR/proj/.claude/commands/biz"
+    find "$TEST_DIR/proj/.claude/agents" -maxdepth 1 -name "biz-*.md" -delete
+    run "$VALIDATE_SCRIPT" "$TEST_DIR/proj"
+    [[ "$output" != *"module 'biz'"* ]]
+}
+
+@test "validate.sh flags a corrupted foundation manifest" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    echo "{ broken" > "$TEST_DIR/proj/.claude/foundation.json"
+    run "$VALIDATE_SCRIPT" "$TEST_DIR/proj"
+    [[ "$output" == *"corrupted"* ]] || [[ "$output" == *"invalid JSON"* ]]
+}
+
+@test "validate.sh notes a legacy marker pending migration" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
+    echo "1.30.0" > "$TEST_DIR/proj/.claude/.foundation-version"
+    run "$VALIDATE_SCRIPT" "$TEST_DIR/proj"
+    [[ "$output" == *"legacy"* ]] || [[ "$output" == *"migrate"* ]]
 }

@@ -389,3 +389,40 @@ EOF
     [ "$status" -eq 0 ]
     [ ! -f "$TEST_DIR/dry-marker-target/.claude/foundation.json" ]
 }
+
+@test "new-project.sh --preset records the preset name in foundation.json (US-1)" {
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    mkdir -p "$preset_dir"
+    cat > "$preset_dir/synth-rec.json" << 'EOF'
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "synth-rec",
+  "displayName": "Synthetic recording preset",
+  "description": "Synthetic preset for manifest preset-recording test.",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["synth-rec.marker"]},
+  "foundation": {"skills": {"drop": ["dev-flutter"]}},
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+    run "$NEW_PROJECT_SCRIPT" --preset synth-rec --presets-dir "$preset_dir" -y "$TEST_DIR/proj-rec"
+    [ "$status" -eq 0 ]
+    local manifest="$TEST_DIR/proj-rec/.claude/foundation.json"
+    [ -f "$manifest" ]
+    [ "$(jq -r '.preset' "$manifest")" = "synth-rec" ]
+    # v1: presets do not change the module set (US-5 is later) — full set.
+    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "biz,growth,legal" ]
+    [ ! -f "$TEST_DIR/proj-rec/.claude/.foundation-version" ]
+}
+
+@test "new-project.sh bare init records null preset and full module set (US-1)" {
+    run "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj-bare"
+    [ "$status" -eq 0 ]
+    local manifest="$TEST_DIR/proj-bare/.claude/foundation.json"
+    [ "$(jq -r '.preset' "$manifest")" = "null" ]
+    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "biz,growth,legal" ]
+}

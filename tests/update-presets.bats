@@ -469,3 +469,90 @@ EOF
     [[ "$output" == *"Skip (preset filter)"* ]]
     [[ "$output" == *"dev-flutter"* ]]
 }
+
+# =============================================================================
+# Manifest-first preset resolution (specs/foundation-modules US-1, T013)
+# Resolution order: --preset > --no-preset > manifest > auto-detect (legacy).
+# =============================================================================
+
+# Helper: synthetic preset dir with a drop-one preset whose detect rule
+# matches a marker file we control.
+_write_synthetic_preset() {
+    local preset_dir="$1"
+    mkdir -p "$preset_dir"
+    cat > "$preset_dir/synth-drop.json" << 'EOF'
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "synth-drop",
+  "displayName": "Synthetic drop preset",
+  "description": "Synthetic preset for manifest-first resolution tests: drops dev-flutter.",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["synth-drop.marker"]},
+  "foundation": {"skills": {"drop": ["dev-flutter"]}},
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+}
+
+@test "update-presets: manifest-recorded preset drives the update without detection" {
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    _write_synthetic_preset "$preset_dir"
+
+    "$NEW_PROJECT" --preset synth-drop --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # The project manifest must record the preset...
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "synth-drop" ]
+    # ...and NO detect marker file exists (auto-detection would find nothing).
+    [ ! -f "$TEST_DIR/proj/synth-drop.marker" ]
+
+    run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"synth-drop"* ]]
+    [[ "$output" == *"manifest"* ]]
+    # The preset's skill filter applied: dev-flutter not reinstalled.
+    [ ! -d "$TEST_DIR/proj/.claude/skills/dev-flutter" ]
+}
+
+@test "update-presets: --preset flag overrides the manifest-recorded preset" {
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    _write_synthetic_preset "$preset_dir"
+
+    "$NEW_PROJECT" --preset synth-drop --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    # Explicit --preset nextjs must win over the recorded synth-drop.
+    run "$UPDATE" --preset nextjs --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"--preset"* ]]
+}
+
+@test "update-presets: --no-preset still disables filtering despite the manifest" {
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    _write_synthetic_preset "$preset_dir"
+
+    "$NEW_PROJECT" --preset synth-drop --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    run "$UPDATE" --no-preset --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # Full catalog restored: dev-flutter is back.
+    [ -d "$TEST_DIR/proj/.claude/skills/dev-flutter" ]
+}
+
+@test "update-presets: multi-match refusal is unreachable when the manifest records a preset (CS-205)" {
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    _write_synthetic_preset "$preset_dir"
+    # Second synthetic preset whose detect rule matches the same marker.
+    sed 's/synth-drop/synth-two/g' "$preset_dir/synth-drop.json" > "$preset_dir/synth-two.json"
+
+    "$NEW_PROJECT" --preset synth-drop --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Plant BOTH detect markers: auto-detection alone would refuse (2 matches).
+    touch "$TEST_DIR/proj/synth-drop.marker" "$TEST_DIR/proj/synth-two.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"synth-drop"* ]]
+    [[ "$output" != *"multiple presets match"* ]]
+}

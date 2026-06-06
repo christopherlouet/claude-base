@@ -691,3 +691,29 @@ teardown() {
     [[ "$output" == *"Commands: $before_count → $after_count"* ]]
     [ "$before_count" -gt "$after_count" ]
 }
+
+@test "update.sh migrates a legacy marker to the manifest and reports it (EF-205)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Simulate a pre-modules install: legacy marker only, no manifest.
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
+    echo "1.30.0" > "$TEST_DIR/proj/.claude/.foundation-version"
+
+    run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/proj/.claude/foundation.json" ]
+    [ ! -f "$TEST_DIR/proj/.claude/.foundation-version" ]
+    [[ "$output" == *"migrated"* ]]
+    # Conservative migration: full module set assumed (EF-205).
+    [ "$(jq -r '.modules | sort | join(",")' "$TEST_DIR/proj/.claude/foundation.json")" = "biz,growth,legal" ]
+}
+
+@test "update.sh --dry-run does NOT migrate a legacy marker" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
+    echo "1.30.0" > "$TEST_DIR/proj/.claude/.foundation-version"
+
+    run "$UPDATE_SCRIPT" --dry-run -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ ! -f "$TEST_DIR/proj/.claude/foundation.json" ]
+    [ -f "$TEST_DIR/proj/.claude/.foundation-version" ]
+}

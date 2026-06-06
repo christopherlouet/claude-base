@@ -259,3 +259,14 @@ run_lib() {
     [ "$status" -eq 0 ]
     [ ! -f "$TEST_DIR/.claude/foundation.json" ]
 }
+
+@test "migration: detects installed modules from project content (EF-205)" {
+    # A legacy minimal-style install: commands dir present, legal only.
+    mkdir -p "$TEST_DIR/.claude/commands/legal"
+    touch "$TEST_DIR/.claude/commands/legal/legal-rgpd.md"
+    echo "1.30.0" > "$TEST_DIR/.claude/.foundation-version"
+    run_lib migrate_legacy_marker "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run bash -c "jq -r '.modules | join(\",\")' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "legal" ]
+}
