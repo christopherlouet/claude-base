@@ -1,0 +1,26 @@
+# Module "biz" — business strategy domain bundle.
+# Same syntax as minimal-manifest.txt: one path per line, relative to the
+# repo root. Empty lines and lines starting with # are ignored.
+# A path ending with / is a directory copied recursively.
+# Drift guard: tests/modules.bats asserts every path exists in the repo.
+
+# === Commands (11) ===
+.claude/commands/biz/biz-competitor.md
+.claude/commands/biz/biz-launch.md
+.claude/commands/biz/biz-market.md
+.claude/commands/biz/biz-model.md
+.claude/commands/biz/biz-mvp.md
+.claude/commands/biz/biz-okr.md
+.claude/commands/biz/biz-personas.md
+.claude/commands/biz/biz-pitch.md
+.claude/commands/biz/biz-pricing.md
+.claude/commands/biz/biz-research.md
+.claude/commands/biz/biz-roadmap.md
+
+# === Agents (4) ===
+.claude/agents/biz-competitor.md
+.claude/agents/biz-model.md
+.claude/agents/biz-mvp.md
+.claude/agents/biz-personas.md
+
+# === Skills (0) ===

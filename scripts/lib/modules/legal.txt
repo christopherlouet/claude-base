@@ -1,0 +1,20 @@
+# Module "legal" — legal compliance domain bundle.
+# Same syntax as minimal-manifest.txt: one path per line, relative to the
+# repo root. Empty lines and lines starting with # are ignored.
+# A path ending with / is a directory copied recursively.
+# Drift guard: tests/modules.bats asserts every path exists in the repo.
+
+# === Commands (5) ===
+.claude/commands/legal/legal-docs.md
+.claude/commands/legal/legal-payment.md
+.claude/commands/legal/legal-privacy-policy.md
+.claude/commands/legal/legal-rgpd.md
+.claude/commands/legal/legal-terms-of-service.md
+
+# === Agents (4) ===
+.claude/agents/legal-payment.md
+.claude/agents/legal-privacy-policy.md
+.claude/agents/legal-rgpd.md
+.claude/agents/legal-terms-of-service.md
+
+# === Skills (0) ===
