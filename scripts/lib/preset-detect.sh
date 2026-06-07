@@ -12,6 +12,35 @@ if ! declare -f info >/dev/null 2>&1; then
     exit 1
 fi
 
+# resolve_preset_file <name>
+#
+# Resolve a preset name to its JSON manifest path. Lookup order:
+#   1. PRESETS_DIR_OVERRIDE (tests inject synthetic presets without touching
+#      the official tree)
+#   2. official presets dir ($BASE_DIR/.claude/presets/)
+#   3. community/ subdirectory
+# Output: path to the .json file, or empty if not found (status 0 either
+# way — callers test output non-emptiness).
+resolve_preset_file() {
+    local name="$1"
+    if [[ -n "${PRESETS_DIR_OVERRIDE:-}" ]]; then
+        local override_file="$PRESETS_DIR_OVERRIDE/$name.json"
+        if [[ -f "$override_file" ]]; then
+            echo "$override_file"
+            return
+        fi
+    fi
+    local official="$BASE_DIR/.claude/presets/$name.json"
+    local community="$BASE_DIR/.claude/presets/community/$name.json"
+    if [[ -f "$official" ]]; then
+        echo "$official"
+    elif [[ -f "$community" ]]; then
+        echo "$community"
+    else
+        echo ""
+    fi
+}
+
 # scan_presets <target_dir>
 #
 # Iterates over every preset manifest under PRESETS_DIR (default
