@@ -327,6 +327,7 @@ parse_args() {
                 shift 2
                 ;;
             --presets-dir)
+                # shellcheck disable=SC2034  # consumed by lib/preset-detect.sh::resolve_preset_file
                 PRESETS_DIR_OVERRIDE="$2"
                 shift 2
                 ;;
