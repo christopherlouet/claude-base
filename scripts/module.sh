@@ -56,9 +56,12 @@ show_help() {
     fi
     cat <<EOF
 ${BOLD}USAGE${NC}
-    $prog add    <module> [OPTIONS] [--target DIR]
-    $prog remove <module> [OPTIONS] [--target DIR]
-    $prog modules         [--target DIR]
+    $prog add    <module> [OPTIONS] [path]
+    $prog remove <module> [OPTIONS] [path]
+    $prog modules         [OPTIONS] [path]
+
+    [path] is the project directory (default: \$PWD) — same contract as
+    init/update/validate. --target DIR is the equivalent explicit flag.
 
 ${BOLD}COMMANDS${NC}
     add     Install a foundation module into the project
@@ -74,10 +77,10 @@ ${BOLD}OPTIONS${NC}
     --target DIR          Project directory to operate on (default: \$PWD)
 
 ${BOLD}EXAMPLES${NC}
-    $prog add legal
-    $prog add biz --target ./my-project --dry-run
+    $prog add legal .
+    $prog add biz --dry-run ./my-project
     $prog remove growth --force
-    $prog modules
+    $prog modules .
 EOF
 }
 
@@ -121,7 +124,9 @@ parse_args() {
         fi
     fi
 
-    # Remaining options.
+    # Remaining options + optional positional target dir (same CLI
+    # contract as init/update/validate: 'claude-base add legal .').
+    local positional_target=""
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --target)
@@ -144,9 +149,17 @@ parse_args() {
                 show_help
                 exit 0
                 ;;
-            *)
+            -*)
                 echo "${RED}[X]${NC} module.sh: unknown option '$1'" >&2
                 exit 2
+                ;;
+            *)
+                if [[ -n "$positional_target" ]]; then
+                    echo "${RED}[X]${NC} module.sh: unexpected extra argument '$1' (target already set to '$positional_target')" >&2
+                    exit 2
+                fi
+                positional_target="$1"
+                TARGET_DIR="$1"
                 ;;
         esac
         shift
@@ -161,7 +174,13 @@ require_foundation_project() {
     local dir="$1"
     if [[ ! -f "$dir/.claude/foundation.json" ]]; then
         echo "${RED}[X]${NC} '$dir' is not a foundation project (no .claude/foundation.json)." >&2
-        echo "Run 'claude-base init' first to initialise a project." >&2
+        if [[ -f "$dir/.claude/.foundation-version" ]]; then
+            # Legacy pre-manifest project: the migration path is update,
+            # not init (EF-205 — update migrates the marker on first contact).
+            echo "Legacy version marker detected — run 'claude-base update' to migrate this project first." >&2
+        else
+            echo "Run 'claude-base init' first to initialise a project." >&2
+        fi
         exit 1
     fi
 }
@@ -399,6 +418,9 @@ cmd_remove() {
                         echo "${DIM}[DRY-RUN]${NC} Remove: $rel_path"
                     else
                         rm -f "$dest_file"
+                        # Drop the parent once emptied — same contract as
+                        # the init-time filter (no hollow module dirs).
+                        rmdir "$(dirname "$dest_file")" 2>/dev/null || true
                     fi
                     ((removed++)) || true
                 else
@@ -417,6 +439,9 @@ cmd_remove() {
                     echo "${DIM}[DRY-RUN]${NC} Remove: $bundle_path"
                 else
                     rm -f "$dest_file"
+                    # Drop the parent once emptied — same contract as
+                    # the init-time filter (no hollow module dirs).
+                    rmdir "$(dirname "$dest_file")" 2>/dev/null || true
                 fi
                 ((removed++)) || true
             else

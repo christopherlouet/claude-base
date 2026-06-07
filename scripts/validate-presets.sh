@@ -339,11 +339,28 @@ validate_one() {
                 local di dmval
                 for di in $(seq 0 $((dm_n - 1))); do
                     dmval=$(jq -r ".defaultModules[$di]" "$file")
+                    # Same name discipline as module_exists() in
+                    # lib/modules.sh: only [a-z0-9-] — a raw -f test would
+                    # accept traversal-shaped names ('./biz') that happen
+                    # to resolve to a bundle file.
+                    case "$dmval" in
+                        *[!a-z0-9-]*|"")
+                            errs+=("defaultModules[$di] '$dmval' is not a valid module name (lowercase letters, digits and dashes only)")
+                            continue
+                            ;;
+                    esac
                     # Valid module names are those with a bundle file in scripts/lib/modules/
                     if [ ! -f "$SCRIPT_DIR/lib/modules/$dmval.txt" ]; then
                         errs+=("defaultModules[$di] '$dmval' is not a known module name")
                     fi
                 done
+                # Duplicates would flow verbatim into foundation.json
+                # (write_foundation_manifest does not dedup).
+                local dm_dups
+                dm_dups=$(jq -r '.defaultModules | group_by(.) | map(select(length > 1) | .[0]) | join(", ")' "$file")
+                if [ -n "$dm_dups" ]; then
+                    errs+=("defaultModules contains duplicate entries: $dm_dups")
+                fi
             fi
         fi
     fi
