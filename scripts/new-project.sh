@@ -803,6 +803,10 @@ apply_modules_filter() {
                         rm -rf "$full"
                     else
                         rm -f "$full"
+                        # Drop the parent directory once emptied (e.g.
+                        # .claude/commands/biz/ after its last command):
+                        # a hollow module dir would shadow the real state.
+                        rmdir "$(dirname "$full")" 2>/dev/null || true
                     fi
                 fi
             fi

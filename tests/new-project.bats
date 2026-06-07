@@ -475,6 +475,14 @@ EOF
     local legal_count
     legal_count=$(find "$TEST_DIR/proj-dm/.claude/agents" -name "legal-*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     [ "$legal_count" -gt 0 ]
+    # No file of a non-selected module survives the filter.
+    local biz_count
+    biz_count=$(find "$TEST_DIR/proj-dm/.claude" -name "biz-*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    [ "$biz_count" -eq 0 ]
+    # Emptied module directories are removed too — no hollow biz/growth
+    # shells left under commands/.
+    [ ! -d "$TEST_DIR/proj-dm/.claude/commands/biz" ]
+    [ ! -d "$TEST_DIR/proj-dm/.claude/commands/growth" ]
 }
 
 @test "new-project.sh preset without defaultModules installs all modules (backward compat, US-5)" {
