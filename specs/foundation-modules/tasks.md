@@ -71,13 +71,13 @@
 
 ### Tests first (RED)
 
-- [ ] T017 [US2] Extend `tests/modules.bats`: add fresh (files + manifest + summary); add idempotent (re-add refreshes, single manifest entry); unknown module → fail with available list (exit code distinct); dry-run lists files, writes nothing; non-foundation target → refused; partial manual copy → converged and owned (heals staleness, CS-202 precondition); user-modified file → update-style conflict behavior (backup, prompt/non-interactive listing)
-- [ ] T018 [P] [US2] Extend `tests/dispatcher.bats`: `claude-base add|remove|modules` routed to `scripts/module.sh`; help text lists the verbs
+- [x] T017 [US2] Extend `tests/modules.bats`: add fresh (files + manifest + summary); add idempotent (re-add refreshes, single manifest entry); unknown module → fail with available list (exit code distinct); dry-run lists files, writes nothing; non-foundation target → refused; partial manual copy → converged and owned (heals staleness, CS-202 precondition); user-modified file → update-style conflict behavior (backup, prompt/non-interactive listing)
+- [x] T018 [P] [US2] Extend `tests/dispatcher.bats`: `claude-base add|remove|modules` routed to `scripts/module.sh`; help text lists the verbs
 
 ### Implementation (GREEN)
 
-- [ ] T019 [US2] Create `scripts/module.sh`: arg parsing (add/remove/list, `--dry-run`, target dir), `cmd_add()` using `module_bundle_paths` + the `update_directory()` conflict path from `scripts/update.sh` (sourced or extracted helper — decide at implementation, prefer extraction to `scripts/lib/modules.sh` if sourcing update.sh is too heavy), manifest record, summary
-- [ ] T020 [US2] `bin/claude-base`: route `add`, `remove`, `modules` verbs + `show_help()` entries
+- [x] T019 [US2] Create `scripts/module.sh`: arg parsing (add/remove/list, `--dry-run`, target dir), `cmd_add()` using `module_bundle_paths` + the `update_directory()` conflict path from `scripts/update.sh` (sourced or extracted helper — decide at implementation, prefer extraction to `scripts/lib/modules.sh` if sourcing update.sh is too heavy), manifest record, summary
+- [x] T020 [US2] `bin/claude-base`: route `add`, `remove`, `modules` verbs + `show_help()` entries
 
 **Checkpoint MVP**: `init` → `add legal` → `validate` green end-to-end on a tmp project.
 
