@@ -759,10 +759,42 @@ resolve_active_preset() {
         return 0
     fi
 
-    # Auto-detect via scan_presets (PR #160 lib).
     if ! command -v jq >/dev/null 2>&1; then
         return 0
     fi
+
+    # Manifest-recorded preset (specs/foundation-modules US-1): a project
+    # whose .claude/foundation.json names its preset never goes through
+    # auto-detection — the multi-match refusal path becomes unreachable
+    # for migrated projects (CS-205).
+    # Status 1 = no manifest (legacy project, fall through to detection);
+    # status 2 = corrupted manifest → loud error, never a silent fallback.
+    local recorded=""
+    local mp_status=0
+    recorded="$(manifest_preset "$TARGET_DIR" 2>/dev/null)" || mp_status=$?
+    if [[ "$mp_status" -eq 2 ]]; then
+        error "corrupted .claude/foundation.json in $TARGET_DIR — fix the JSON by hand, or delete it and re-run update to regenerate it"
+    fi
+    if [[ -n "$recorded" ]]; then
+        local mfile=""
+        if [[ -n "$PRESETS_DIR_OVERRIDE" ]]; then
+            local override_file="$PRESETS_DIR_OVERRIDE/$recorded.json"
+            [[ -f "$override_file" ]] && mfile="$override_file"
+        fi
+        [[ -z "$mfile" ]] && mfile="$presets_dir/$recorded.json"
+        [[ -f "$mfile" ]] || mfile="$presets_dir/community/$recorded.json"
+        if [[ -f "$mfile" ]]; then
+            ACTIVE_PRESET_NAME="$recorded"
+            ACTIVE_PRESET_FILE="$mfile"
+            ACTIVE_PRESET_SOURCE="manifest"
+            load_active_drop_list
+            load_active_keep_list
+            return 0
+        fi
+        warning "preset recorded in foundation.json not found: $recorded — falling back to auto-detection"
+    fi
+
+    # Auto-detect via scan_presets (PR #160 lib) — legacy projects only.
 
     local matches
     matches=$(scan_presets "$TARGET_DIR" 2>/dev/null || true)
@@ -1474,6 +1506,12 @@ main() {
     fi
 
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
+
+    # Legacy marker → manifest migration on first contact (EF-205, direct
+    # replacement). Real runs only — dry-run must not mutate the project.
+    if ! $DRY_RUN; then
+        migrate_legacy_marker "$TARGET_DIR"
+    fi
 
     # Resolve which preset (if any) governs this update run. Sets
     # ACTIVE_PRESET_* and populates ACTIVE_PRESET_DROP_LIST. Fails fast on

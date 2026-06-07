@@ -367,21 +367,69 @@ EOF
 }
 
 # =============================================================================
-# Foundation version marker (T1.3 — written after install)
+# Foundation version manifest (written after install)
+# Since specs/foundation-modules: .claude/foundation.json replaces the legacy
+# .foundation-version marker (EF-204/EF-205).
 # =============================================================================
 
-@test "new-project.sh --simple writes .claude/.foundation-version with the foundation version" {
+@test "new-project.sh --simple writes .claude/foundation.json with the foundation version" {
     run "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/marker-target"
     [ "$status" -eq 0 ]
-    [ -f "$TEST_DIR/marker-target/.claude/.foundation-version" ]
-    local marker_content expected
-    marker_content=$(cat "$TEST_DIR/marker-target/.claude/.foundation-version")
+    [ -f "$TEST_DIR/marker-target/.claude/foundation.json" ]
+    # Direct replacement (EF-205): the legacy marker must NOT be written.
+    [ ! -f "$TEST_DIR/marker-target/.claude/.foundation-version" ]
+    local manifest_version expected
+    manifest_version=$(jq -r '.version' "$TEST_DIR/marker-target/.claude/foundation.json")
     expected=$(cat "$BASE_DIR/VERSION")
-    [ "$marker_content" = "$expected" ]
+    [ "$manifest_version" = "$expected" ]
 }
 
-@test "new-project.sh --simple --dry-run does NOT write the marker" {
+@test "new-project.sh --simple --dry-run does NOT write the manifest" {
     run "$NEW_PROJECT_SCRIPT" --simple --dry-run -y "$TEST_DIR/dry-marker-target"
     [ "$status" -eq 0 ]
-    [ ! -f "$TEST_DIR/dry-marker-target/.claude/.foundation-version" ]
+    [ ! -f "$TEST_DIR/dry-marker-target/.claude/foundation.json" ]
+}
+
+@test "new-project.sh --preset records the preset name in foundation.json (US-1)" {
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    mkdir -p "$preset_dir"
+    cat > "$preset_dir/synth-rec.json" << 'EOF'
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "synth-rec",
+  "displayName": "Synthetic recording preset",
+  "description": "Synthetic preset for manifest preset-recording test.",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["synth-rec.marker"]},
+  "foundation": {"skills": {"drop": ["dev-flutter"]}},
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+    run "$NEW_PROJECT_SCRIPT" --preset synth-rec --presets-dir "$preset_dir" -y "$TEST_DIR/proj-rec"
+    [ "$status" -eq 0 ]
+    local manifest="$TEST_DIR/proj-rec/.claude/foundation.json"
+    [ -f "$manifest" ]
+    [ "$(jq -r '.preset' "$manifest")" = "synth-rec" ]
+    # v1: presets do not change the module set (US-5 is later) — full set.
+    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "biz,growth,legal" ]
+    [ ! -f "$TEST_DIR/proj-rec/.claude/.foundation-version" ]
+}
+
+@test "new-project.sh bare init records null preset and full module set (US-1)" {
+    run "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj-bare"
+    [ "$status" -eq 0 ]
+    local manifest="$TEST_DIR/proj-bare/.claude/foundation.json"
+    [ "$(jq -r '.preset' "$manifest")" = "null" ]
+    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "biz,growth,legal" ]
+}
+
+@test "new-project.sh --simple fails loud when the manifest cannot be written" {
+    mkdir -p "$TEST_DIR/proj/.claude/foundation.json"   # directory squatting the path
+    run "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"foundation"* ]]
 }
