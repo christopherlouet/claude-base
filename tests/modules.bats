@@ -511,3 +511,151 @@ run_module() {
     backup_count=$(find "$(dirname "$TEST_DIR/$first_path")" -name "*.backup.*" -type f 2>/dev/null | wc -l)
     [ "$backup_count" -ge 1 ]
 }
+
+# =============================================================================
+# module remove — cmd_remove (T023, US-4)
+#
+# Spec: specs/foundation-modules/spec.md — CS-206
+# Clean removal: foundation-owned files removed, user-modified preserved,
+# manifest unrecorded. Zero silent deletions.
+# =============================================================================
+
+# -----------------------------------------------------------------------
+# clean remove — foundation-owned files gone, manifest unrecorded (CS-206)
+# -----------------------------------------------------------------------
+
+@test "module remove: clean remove deletes foundation-owned files" {
+    setup_lean_project
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    run_module remove legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Every legal bundle file must be gone.
+    local p
+    while IFS= read -r p; do
+        [ ! -f "$TEST_DIR/$p" ] || {
+            echo "Still present after remove: $p" >&2
+            return 1
+        }
+    done < <(bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; module_bundle_paths legal")
+}
+
+@test "module remove: clean remove unrecords the module in the manifest" {
+    setup_lean_project
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    run_module remove legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    run bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
+                 manifest_has_module '$TEST_DIR' legal"
+    [ "$status" -ne 0 ]
+}
+
+@test "module remove: summary reports how many files were removed" {
+    setup_lean_project
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    run_module remove legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # Output must mention removal count or module name.
+    [[ "$output" == *"legal"* ]]
+    [[ "$output" == *"removed"* ]] || [[ "$output" == *"remove"* ]]
+}
+
+# -----------------------------------------------------------------------
+# user-modified file — preserved with explicit notice (CS-206)
+# -----------------------------------------------------------------------
+
+@test "module remove: user-modified file is preserved with explicit notice" {
+    setup_lean_project
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Modify one legal file to simulate user customisation.
+    local modified_path
+    modified_path=$(bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
+                             module_bundle_paths legal" | head -1)
+    echo "# user customisation" >> "$TEST_DIR/$modified_path"
+
+    run_module remove legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # The modified file must still be present.
+    [ -f "$TEST_DIR/$modified_path" ]
+    # Output must say it was preserved (not silently ignored).
+    [[ "$output" == *"preserved"* ]] || [[ "$output" == *"user-modified"* ]]
+}
+
+# -----------------------------------------------------------------------
+# remove not-installed → clean message, no error spiral (CS-206)
+# -----------------------------------------------------------------------
+
+@test "module remove: remove not-installed module gives clean message with exit 0" {
+    setup_lean_project
+    # Do NOT install the module; remove must handle gracefully.
+    run_module remove legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # Must say it's not installed, not blow up.
+    [[ "$output" == *"not installed"* ]] || [[ "$output" == *"nothing"* ]] || [[ "$output" == *"not recorded"* ]]
+}
+
+# -----------------------------------------------------------------------
+# remove with all files absent after removal → unrecord + notice (CS-206)
+# -----------------------------------------------------------------------
+
+@test "module remove: module with zero foundation-owned files left → unrecord + notice" {
+    setup_lean_project
+    # Record legal in the manifest but plant NO actual files (simulates a
+    # project where legal was never actually deployed despite the manifest entry).
+    bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
+             write_foundation_manifest '$TEST_DIR' '2.1.0' '' legal"
+
+    run_module remove legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # legal must be unrecorded from the manifest.
+    run bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
+                 manifest_has_module '$TEST_DIR' legal"
+    [ "$status" -ne 0 ]
+}
+
+# -----------------------------------------------------------------------
+# dry-run — lists files to remove, writes nothing (CS-206)
+# -----------------------------------------------------------------------
+
+@test "module remove --dry-run: lists files to remove, writes nothing" {
+    setup_lean_project
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Capture file list before dry-run.
+    local before_count
+    before_count=$(find "$TEST_DIR/.claude" -type f | wc -l)
+
+    run_module remove legal --target "$TEST_DIR" --dry-run
+    [ "$status" -eq 0 ]
+    # Output must reference legal and removal action.
+    [[ "$output" == *"legal"* ]]
+    [[ "$output" == *"DRY-RUN"* ]] || [[ "$output" == *"dry-run"* ]] || [[ "$output" == *"dry_run"* ]] || [[ "$output" == *"Remove"* ]]
+
+    # File count in .claude must be unchanged (nothing actually removed).
+    local after_count
+    after_count=$(find "$TEST_DIR/.claude" -type f | wc -l)
+    [ "$before_count" -eq "$after_count" ]
+}
+
+@test "module remove --dry-run: manifest is not modified" {
+    setup_lean_project
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    run_module remove legal --target "$TEST_DIR" --dry-run
+    [ "$status" -eq 0 ]
+    # legal must still be recorded after dry-run.
+    run bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
+                 manifest_has_module '$TEST_DIR' legal"
+    [ "$status" -eq 0 ]
+}
