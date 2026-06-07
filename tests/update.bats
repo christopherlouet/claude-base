@@ -810,3 +810,90 @@ _init_legal_only_project() {
     # Dry-run must name at least one absent module in its output.
     [[ "$output" == *"biz"* ]] || [[ "$output" == *"growth"* ]]
 }
+
+# =============================================================================
+# US-3 hardening — code-review findings on PR #267
+# =============================================================================
+
+@test "update --all --no-preset: corrupted manifest fails loud, no silent module skip (review)" {
+    # Contract (EF-204): a corrupted manifest is a loud error, never a
+    # silent fallback. --no-preset bypasses resolve_active_preset's check,
+    # so the module filter itself must fail loud too.
+    local proj="$TEST_DIR/proj_corrupt"
+    "$NEW_PROJECT_SCRIPT" --simple -y "$proj" >/dev/null 2>&1
+    echo '{not json' > "$proj/.claude/foundation.json"
+
+    run "$UPDATE_SCRIPT" -y --all --no-preset "$proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"foundation.json"* ]]
+}
+
+@test "update --all --dry-run: legacy project previews the SAME module filtering as the real run (review)" {
+    # A legacy minimal project (marker, no manifest, legal files only).
+    # The real run migrates the marker then filters; dry-run must preview
+    # that filtering — not announce installing every absent-module file —
+    # while still writing nothing.
+    local proj
+    proj="$(_init_legal_only_project)"
+    # Convert to legacy: drop the manifest, restore the version marker.
+    rm -f "$proj/.claude/foundation.json"
+    echo "1.40.0" > "$proj/.claude/.foundation-version"
+
+    run "$UPDATE_SCRIPT" -y -n --all "$proj"
+    [ "$status" -eq 0 ]
+    # Dry-run writes nothing: no manifest created, marker untouched.
+    [ ! -f "$proj/.claude/foundation.json" ]
+    [ -f "$proj/.claude/.foundation-version" ]
+    # No absent-module file is previewed as an addition.
+    [[ "$output" != *"biz-competitor"* ]]
+    # The module skip is announced instead.
+    [[ "$output" == *"not installed"* ]]
+}
+
+@test "update --all: summary counts module-skipped FILES, not just module names (review)" {
+    local proj
+    proj="$(_init_legal_only_project)"
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    # Summary must carry a numeric file count for the module skips,
+    # e.g. "Modules not installed (skipped): biz, growth (26 files)".
+    [[ "$output" =~ [Mm]odules\ not\ installed.*\([0-9]+\ files\) ]]
+}
+
+@test "update --all: commands 'after' count excludes absent-module commands (review)" {
+    local proj
+    proj="$(_init_legal_only_project)"
+
+    local total absent expected
+    total=$(find "$BASE_DIR/.claude/commands" -name "*.md" -type f | wc -l | tr -d ' ')
+    absent=$(grep -ch '^\.claude/commands/' \
+        "$BASE_DIR/scripts/lib/modules/biz.txt" \
+        "$BASE_DIR/scripts/lib/modules/growth.txt" \
+        | awk '{s+=$1} END {print s}')
+    expected=$((total - absent))
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Commands: "*"→ $expected"* ]]
+}
+
+@test "update --all: warns about on-disk files of an absent module, preserves them (review)" {
+    # Reachable state: interrupted remove, hand-edited manifest, or manual
+    # restore. The filter must not silently strand these files forever.
+    local proj
+    proj="$(_init_legal_only_project)"
+    # Simulate a leftover biz file (module absent from the manifest).
+    local biz_cmd
+    biz_cmd=$(grep '^\.claude/commands/' "$BASE_DIR/scripts/lib/modules/biz.txt" | head -1)
+    mkdir -p "$proj/$(dirname "$biz_cmd")"
+    cp "$BASE_DIR/$biz_cmd" "$proj/$biz_cmd"
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    # Warned, with the adopt-or-remove hint naming the module.
+    [[ "$output" == *"biz"* ]]
+    [[ "$output" == *"add biz"* ]]
+    # Preserved: update never deletes user files.
+    [ -f "$proj/$biz_cmd" ]
+}
