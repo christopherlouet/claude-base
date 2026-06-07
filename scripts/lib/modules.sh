@@ -50,6 +50,30 @@ module_exists() {
     [[ -f "$MODULES_BUNDLES_DIR/$name.txt" ]]
 }
 
+# path_module <repo-relative-path> — print the module name that owns <path>,
+# or print nothing (empty) if the path is a core foundation item not owned
+# by any optional module bundle.
+# Used by update.sh to decide whether a file should be skipped when its
+# owning module is absent from the project manifest.
+path_module() {
+    local path="${1:-}"
+    [[ -n "$path" ]] || return 0
+    local m
+    while IFS= read -r m; do
+        local p
+        while IFS= read -r p; do
+            # Directory entry (trailing /): check if path starts with it.
+            if [[ "$p" == */ ]]; then
+                [[ "$path" == "${p%/}"/* || "$path" == "${p%/}" ]] && { printf '%s\n' "$m"; return 0; }
+            else
+                [[ "$path" == "$p" ]] && { printf '%s\n' "$m"; return 0; }
+            fi
+        done < <(module_bundle_paths "$m")
+    done < <(modules_list)
+    # Not owned by any module — it is a core path.
+    return 0
+}
+
 # module_bundle_paths <name> — print the bundle's repo-relative paths,
 # one per line, comments and empty lines stripped. Fails loud on unknown.
 module_bundle_paths() {

@@ -88,6 +88,12 @@ ORPHANS_REMOVED=0
 # section so CI / scripted runs can see what a human would need to decide.
 DRY_RUN_CONFLICTS=()
 
+# US-3 — module-aware update.
+# Tracks distinct module names that were skipped because they are not
+# recorded in the project manifest. Used by print_summary() to produce
+# the "biz, growth: not installed (skipped)" report line.
+SKIPPED_MODULE_NAMES=()
+
 # Temp files tracking for cleanup
 _TEMP_FILES=()
 
@@ -442,12 +448,60 @@ restore_backup() {
     success "Restore completed from $(basename "$backup_path")"
 }
 
+# =============================================================================
+# US-3 — module-aware filtering helpers
+# =============================================================================
+
+# _module_of_rel_path <repo-relative-path>
+# Returns the module name that owns the path, or empty string for core paths.
+# Uses path_module() from scripts/lib/modules.sh (sourced via common.sh).
+_module_of_rel_path() {
+    path_module "${1:-}" 2>/dev/null || true
+}
+
+# _is_module_installed <module-name>
+# Returns 0 (true) if the module is recorded in the project manifest, or if
+# there is no manifest at all (legacy project: do not filter). Also returns 0
+# for empty module names (i.e., core paths).
+_is_module_installed() {
+    local mod="${1:-}"
+    [[ -z "$mod" ]] && return 0                  # Core path — always include.
+    [[ -z "$TARGET_DIR" ]] && return 0           # Safety: no target, no filter.
+    [[ -f "$TARGET_DIR/.claude/foundation.json" ]] || return 0  # Legacy: no manifest → no filter.
+    manifest_has_module "$TARGET_DIR" "$mod" 2>/dev/null
+}
+
+# _track_skipped_module <module-name>
+# Records a module name in SKIPPED_MODULE_NAMES if not already present.
+_track_skipped_module() {
+    local mod="${1:-}"
+    [[ -z "$mod" ]] && return 0
+    local m
+    for m in "${SKIPPED_MODULE_NAMES[@]+"${SKIPPED_MODULE_NAMES[@]}"}"; do
+        [[ "$m" == "$mod" ]] && return 0
+    done
+    SKIPPED_MODULE_NAMES+=("$mod")
+}
+
 update_command_file() {
     local src="$1"
     local rel_path="$2"  # Relative path from commands/ (e.g., work/work-explore.md)
     local filename
     filename=$(basename "$src")
     local dest="$TARGET_DIR/$COMMANDS_SUBDIR/$rel_path"
+
+    # US-3: module-aware filter — skip files owned by absent modules.
+    local _repo_rel_path="$COMMANDS_SUBDIR/$rel_path"
+    local _owning_module
+    _owning_module="$(_module_of_rel_path "$_repo_rel_path")"
+    if [[ -n "$_owning_module" ]] && ! _is_module_installed "$_owning_module"; then
+        _track_skipped_module "$_owning_module"
+        debug "$rel_path skipped (module '$_owning_module' not installed)"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Skip (module not installed: $_owning_module): $filename"
+        fi
+        return
+    fi
 
     # Create the subdirectory if needed
     local dest_dir
@@ -939,6 +993,21 @@ update_directory() {
         fi
 
         local rel_path="${src_file#"$src_dir"/}"
+
+        # US-3: module-aware filter — skip files owned by absent modules.
+        # src_subdir is e.g. ".claude/agents"; rel_path is e.g. "biz-competitor.md".
+        local _dir_repo_rel="$src_subdir/$rel_path"
+        local _dir_owning_module
+        _dir_owning_module="$(_module_of_rel_path "$_dir_repo_rel")"
+        if [[ -n "$_dir_owning_module" ]] && ! _is_module_installed "$_dir_owning_module"; then
+            _track_skipped_module "$_dir_owning_module"
+            debug "$_dir_repo_rel skipped (module '$_dir_owning_module' not installed)"
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Skip (module not installed: $_dir_owning_module): $(basename "$src_file")"
+            fi
+            ((dir_skipped++)) || true
+            continue
+        fi
 
         # Active preset filter: skip files excluded by the active preset.
         # keep-mode: skip when the skill is NOT in the keep list.
@@ -1467,6 +1536,14 @@ print_summary() {
     fi
     if $DETECT_ORPHANS; then
         echo "  Orphans:    $ORPHANS_FOUND (${ORPHANS_REMOVED} removed)"
+    fi
+    # US-3: report modules that were not installed and whose files were skipped.
+    if [[ "${#SKIPPED_MODULE_NAMES[@]}" -gt 0 ]]; then
+        local _skipped_mod_list
+        _skipped_mod_list="$(printf '%s, ' "${SKIPPED_MODULE_NAMES[@]}")"
+        _skipped_mod_list="${_skipped_mod_list%, }"
+        echo "  Modules not installed (skipped): $_skipped_mod_list"
+        info "  Tip: run 'claude-base add <module>' to install a module."
     fi
     echo ""
 
