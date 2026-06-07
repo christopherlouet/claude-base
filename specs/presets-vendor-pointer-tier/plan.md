@@ -113,7 +113,7 @@ No source-code scaffolding needed beyond hand-edits below.
 - `.claude/skills/` (no new bundled skill — same discipline as PR #183)
 - `.claude/settings.json` (no command/agent/skill count changed)
 - Other shipped preset manifests (`nextjs.json`, etc.) — they stay `maintainer-vouched` per EF-013
-- Already-shipped specs (`specs/preset-react-vite-spa/`, `specs/vendor-skills-game-dev/`, etc.) — historical docs
+- Already-shipped specs (`specs/archive/preset-react-vite-spa/`, `specs/archive/vendor-skills-game-dev/`, etc.) — historical docs
 
 ---
 
