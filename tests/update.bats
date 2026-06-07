@@ -717,3 +717,187 @@ teardown() {
     [ ! -f "$TEST_DIR/proj/.claude/foundation.json" ]
     [ -f "$TEST_DIR/proj/.claude/.foundation-version" ]
 }
+
+# =============================================================================
+# US-3 — module-aware update (T021)
+#
+# Spec: specs/foundation-modules/spec.md — CS-202/CS-203
+# When a project has only a subset of modules installed, update must:
+#   - Refresh files that belong to installed modules (treat them like core).
+#   - Skip files that belong to absent modules (never copy them).
+#   - Report installed-module updates and absent-module skips distinctly.
+#   - In dry-run, name the module alongside each skipped item.
+# =============================================================================
+
+_modules_lib="$BATS_TEST_DIRNAME/../scripts/lib/modules.sh"
+
+# Helper: set up a project with ONLY the 'legal' module recorded.
+# Returns the project path in $TEST_DIR/proj_us3.
+_init_legal_only_project() {
+    local proj="$TEST_DIR/proj_us3"
+    "$NEW_PROJECT_SCRIPT" --simple -y "$proj" >/dev/null 2>&1
+    # Rewrite the manifest to record only 'legal'.
+    jq '.modules = ["legal"]' "$proj/.claude/foundation.json" > "$proj/.claude/foundation.json.tmp"
+    mv "$proj/.claude/foundation.json.tmp" "$proj/.claude/foundation.json"
+    # Remove all biz and growth bundle items (files and directories).
+    local p
+    while IFS= read -r p; do
+        # Strip trailing / for directory entries.
+        local clean_p="${p%/}"
+        rm -rf "$proj/$clean_p"
+    done < <(bash -c "source '$_modules_lib'; module_bundle_paths biz")
+    while IFS= read -r p; do
+        local clean_p="${p%/}"
+        rm -rf "$proj/$clean_p"
+    done < <(bash -c "source '$_modules_lib'; module_bundle_paths growth")
+    echo "$proj"
+}
+
+@test "update --all: installed module (legal) files are refreshed when stale (US-3)" {
+    local proj
+    proj="$(_init_legal_only_project)"
+    # Corrupt a legal file to make it differ from the foundation.
+    local legal_cmd
+    legal_cmd=$(bash -c "source '$_modules_lib'; module_bundle_paths legal" | grep "commands" | head -1)
+    echo "# stale" > "$proj/$legal_cmd"
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    # The legal file must have been restored to the foundation copy.
+    diff "$BASE_DIR/$legal_cmd" "$proj/$legal_cmd"
+}
+
+@test "update --all: absent module (biz) files are NOT installed (US-3 / CS-202)" {
+    local proj
+    proj="$(_init_legal_only_project)"
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    # No biz command should exist after the update.
+    local biz_cmd
+    biz_cmd=$(bash -c "source '$_modules_lib'; module_bundle_paths biz" | grep "commands" | head -1)
+    [ ! -f "$proj/$biz_cmd" ]
+}
+
+@test "update --all: absent module (growth) files are NOT installed (US-3 / CS-203)" {
+    local proj
+    proj="$(_init_legal_only_project)"
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    local growth_cmd
+    growth_cmd=$(bash -c "source '$_modules_lib'; module_bundle_paths growth" | grep "commands" | head -1)
+    [ ! -f "$proj/$growth_cmd" ]
+}
+
+@test "update --all: summary reports absent modules as skipped (CS-203 / US-3)" {
+    local proj
+    proj="$(_init_legal_only_project)"
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    # The output must mention that biz and growth are not installed / skipped.
+    [[ "$output" == *"biz"* ]] || [[ "$output" == *"growth"* ]]
+    [[ "$output" == *"skip"* ]] || [[ "$output" == *"not installed"* ]] || [[ "$output" == *"module"* ]]
+}
+
+@test "update --all --dry-run: names the module for each skipped module item (US-3)" {
+    local proj
+    proj="$(_init_legal_only_project)"
+
+    run "$UPDATE_SCRIPT" -y -n --all "$proj"
+    [ "$status" -eq 0 ]
+    # Dry-run must name at least one absent module in its output.
+    [[ "$output" == *"biz"* ]] || [[ "$output" == *"growth"* ]]
+}
+
+# =============================================================================
+# US-3 hardening — code-review findings on PR #267
+# =============================================================================
+
+@test "update --all --no-preset: corrupted manifest fails loud, no silent module skip (review)" {
+    # Contract (EF-204): a corrupted manifest is a loud error, never a
+    # silent fallback. --no-preset bypasses resolve_active_preset's check,
+    # so the module filter itself must fail loud too.
+    local proj="$TEST_DIR/proj_corrupt"
+    "$NEW_PROJECT_SCRIPT" --simple -y "$proj" >/dev/null 2>&1
+    echo '{not json' > "$proj/.claude/foundation.json"
+
+    run "$UPDATE_SCRIPT" -y --all --no-preset "$proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"foundation.json"* ]]
+}
+
+@test "update --all --dry-run: legacy project previews the SAME module filtering as the real run (review)" {
+    # A legacy minimal project (marker, no manifest, legal files only).
+    # The real run migrates the marker then filters; dry-run must preview
+    # that filtering — not announce installing every absent-module file —
+    # while still writing nothing.
+    local proj
+    proj="$(_init_legal_only_project)"
+    # Convert to legacy: drop the manifest, restore the version marker.
+    rm -f "$proj/.claude/foundation.json"
+    echo "1.40.0" > "$proj/.claude/.foundation-version"
+
+    run "$UPDATE_SCRIPT" -y -n --all "$proj"
+    [ "$status" -eq 0 ]
+    # Dry-run writes nothing: no manifest created, marker untouched.
+    [ ! -f "$proj/.claude/foundation.json" ]
+    [ -f "$proj/.claude/.foundation-version" ]
+    # No absent-module file is previewed as an ADDITION (the name may
+    # appear in "Skip (module not installed: ...)" lines — that is the
+    # correct preview of the real run's filtering).
+    ! grep -E "Add.*biz-competitor" <<<"$output"
+    # The module skip is announced instead.
+    [[ "$output" == *"not installed"* ]]
+}
+
+@test "update --all: summary counts module-skipped FILES, not just module names (review)" {
+    local proj
+    proj="$(_init_legal_only_project)"
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    # Summary must carry a numeric file count for the module skips,
+    # e.g. "Modules not installed (skipped): biz, growth (26 files)".
+    [[ "$output" =~ [Mm]odules\ not\ installed.*\([0-9]+\ files\) ]]
+}
+
+@test "update --all: commands 'after' count excludes absent-module commands (review)" {
+    local proj
+    proj="$(_init_legal_only_project)"
+
+    local total absent expected
+    total=$(find "$BASE_DIR/.claude/commands" -name "*.md" -type f | wc -l | tr -d ' ')
+    absent=$(grep -ch '^\.claude/commands/' \
+        "$BASE_DIR/scripts/lib/modules/biz.txt" \
+        "$BASE_DIR/scripts/lib/modules/growth.txt" \
+        | awk '{s+=$1} END {print s}')
+    expected=$((total - absent))
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Commands: "*"→ $expected"* ]]
+}
+
+@test "update: warns about on-disk files of an absent module, preserves them (review)" {
+    # Reachable state: interrupted remove, hand-edited manifest, or manual
+    # restore. A plain update must not silently strand these files forever.
+    # (--all is out of scope here: it cleans foundation dirs first, which
+    # resolves the stale state by itself.)
+    local proj
+    proj="$(_init_legal_only_project)"
+    # Simulate a leftover biz file (module absent from the manifest).
+    local biz_cmd
+    biz_cmd=$(grep '^\.claude/commands/' "$BASE_DIR/scripts/lib/modules/biz.txt" | head -1)
+    mkdir -p "$proj/$(dirname "$biz_cmd")"
+    cp "$BASE_DIR/$biz_cmd" "$proj/$biz_cmd"
+
+    run "$UPDATE_SCRIPT" -y "$proj"
+    [ "$status" -eq 0 ]
+    # Warned, with the adopt-or-remove hint naming the module.
+    [[ "$output" == *"biz"* ]]
+    [[ "$output" == *"add biz"* ]]
+    # Preserved: update never deletes user files.
+    [ -f "$proj/$biz_cmd" ]
+}

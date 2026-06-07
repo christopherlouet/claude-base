@@ -88,6 +88,12 @@ ORPHANS_REMOVED=0
 # section so CI / scripted runs can see what a human would need to decide.
 DRY_RUN_CONFLICTS=()
 
+# US-3 — module-aware update.
+# Count of files skipped because their owning module is absent from the
+# project manifest. Used by print_summary() together with the absent
+# module names collected by _load_module_filter().
+MODULE_FILES_SKIPPED=0
+
 # Temp files tracking for cleanup
 _TEMP_FILES=()
 
@@ -442,12 +448,117 @@ restore_backup() {
     success "Restore completed from $(basename "$backup_path")"
 }
 
+# =============================================================================
+# US-3 — module-aware filtering (precomputed once, zero forks per file)
+# =============================================================================
+# The manifest and the bundle registry are both static during a run, so the
+# absent-module path set is computed ONCE by _load_module_filter(), then
+# _module_skip_check() is a pure-bash lookup — same pattern as
+# ACTIVE_PRESET_DROP_LIST (loaded once, array lookups per file).
+# Parallel arrays (no associative arrays: macOS bash 3.2 portability).
+
+# Exact file paths owned by absent modules, with their owning module.
+ABSENT_MODULE_FILES=()
+ABSENT_MODULE_FILE_OWNERS=()
+# Directory prefixes (bundle entries with a trailing /) owned by absent
+# modules, with their owning module.
+ABSENT_MODULE_DIRS=()
+ABSENT_MODULE_DIR_OWNERS=()
+# Set by _module_skip_check on a match (the owning module name).
+MODULE_SKIP_MATCH=""
+
+# _load_module_filter
+# Builds the absent-module path set from the project manifest. Called once
+# from main() after the legacy migration. Behavior:
+#   - Corrupted manifest → loud error (EF-204: never a silent fallback —
+#     resolve_active_preset only covers preset-governed runs; --no-preset
+#     must fail loud here too).
+#   - No manifest but a legacy marker (dry-run only — real runs migrated
+#     already): filter on detect_legacy_modules so the preview matches
+#     what the real run will do after migration.
+#   - No manifest, no marker: no filter (nothing to be module-aware about).
+# Also warns about on-disk files of absent modules (stale state from an
+# interrupted remove or a hand-edited manifest): update never deletes user
+# files, so surface them with an adopt-or-remove hint instead.
+_load_module_filter() {
+    local installed=""
+    if [[ -f "$TARGET_DIR/.claude/foundation.json" ]]; then
+        local mm_status=0
+        installed="$(manifest_modules "$TARGET_DIR")" || mm_status=$?
+        if [[ "$mm_status" -ne 0 ]]; then
+            error "unreadable .claude/foundation.json in $TARGET_DIR — fix the JSON by hand, or delete it and re-run update to regenerate it"
+        fi
+    elif [[ -f "$TARGET_DIR/.claude/.foundation-version" ]]; then
+        # Reachable in dry-run only: real runs migrate the marker first.
+        installed="$(detect_legacy_modules "$TARGET_DIR")"
+        info "Legacy project: previewing post-migration module filtering"
+    else
+        return 0
+    fi
+
+    local m p stale
+    while IFS= read -r m; do
+        case " ${installed//$'\n'/ } " in
+            *" $m "*) continue ;;
+        esac
+        stale=false
+        while IFS= read -r p; do
+            if [[ "$p" == */ ]]; then
+                ABSENT_MODULE_DIRS+=("${p%/}")
+                ABSENT_MODULE_DIR_OWNERS+=("$m")
+                [[ -e "$TARGET_DIR/${p%/}" ]] && stale=true
+            else
+                ABSENT_MODULE_FILES+=("$p")
+                ABSENT_MODULE_FILE_OWNERS+=("$m")
+                [[ -e "$TARGET_DIR/$p" ]] && stale=true
+            fi
+        done < <(module_bundle_paths "$m")
+        if $stale; then
+            warning "Files of module '$m' are present but the module is not in the manifest — run 'claude-base add $m' to adopt them, or remove them manually"
+        fi
+    done < <(modules_list)
+}
+
+# _module_skip_check <repo-relative-path>
+# Returns 0 (skip) if the path is owned by an absent module, setting
+# MODULE_SKIP_MATCH to the module name. Returns 1 (keep) otherwise.
+# Pure bash: no subprocess, safe to call per file.
+_module_skip_check() {
+    local path="${1:-}"
+    MODULE_SKIP_MATCH=""
+    [[ -z "$path" ]] && return 1
+    local i
+    for ((i = 0; i < ${#ABSENT_MODULE_FILES[@]}; i++)); do
+        if [[ "$path" == "${ABSENT_MODULE_FILES[$i]}" ]]; then
+            MODULE_SKIP_MATCH="${ABSENT_MODULE_FILE_OWNERS[$i]}"
+            return 0
+        fi
+    done
+    for ((i = 0; i < ${#ABSENT_MODULE_DIRS[@]}; i++)); do
+        if [[ "$path" == "${ABSENT_MODULE_DIRS[$i]}"/* ]]; then
+            MODULE_SKIP_MATCH="${ABSENT_MODULE_DIR_OWNERS[$i]}"
+            return 0
+        fi
+    done
+    return 1
+}
+
 update_command_file() {
     local src="$1"
     local rel_path="$2"  # Relative path from commands/ (e.g., work/work-explore.md)
     local filename
     filename=$(basename "$src")
     local dest="$TARGET_DIR/$COMMANDS_SUBDIR/$rel_path"
+
+    # US-3: module-aware filter — skip files owned by absent modules.
+    if _module_skip_check "$COMMANDS_SUBDIR/$rel_path"; then
+        ((MODULE_FILES_SKIPPED++)) || true
+        debug "$rel_path skipped (module '$MODULE_SKIP_MATCH' not installed)"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Skip (module not installed: $MODULE_SKIP_MATCH): $filename"
+        fi
+        return
+    fi
 
     # Create the subdirectory if needed
     local dest_dir
@@ -555,11 +666,16 @@ update_commands() {
     # current target. In dry-run nothing is written, so reading from
     # $TARGET_DIR would always yield `after == before` and hide the real
     # delta. Read from the foundation source (which is what a clean update
-    # would deposit). For commands specifically, presets do not filter
-    # commands today (only skills via foundation.skills.drop), so the
-    # source count is the correct target.
+    # would deposit), minus commands the module filter excludes (US-3):
+    # absent-module commands are never deposited, so they are not part of
+    # the would-be-state. Presets still do not filter commands today.
     local after
     after=$(find "$base_commands_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+    local _absent_cmds=0 _p
+    for _p in ${ABSENT_MODULE_FILES[@]+"${ABSENT_MODULE_FILES[@]}"}; do
+        [[ "$_p" == "$COMMANDS_SUBDIR"/* && -f "$BASE_DIR/$_p" ]] && ((_absent_cmds++)) || true
+    done
+    after=$((after - _absent_cmds))
 
     info "Commands: $before → $after"
 }
@@ -940,6 +1056,18 @@ update_directory() {
 
         local rel_path="${src_file#"$src_dir"/}"
 
+        # US-3: module-aware filter — skip files owned by absent modules.
+        # src_subdir is e.g. ".claude/agents"; rel_path is e.g. "biz-competitor.md".
+        if _module_skip_check "$src_subdir/$rel_path"; then
+            ((MODULE_FILES_SKIPPED++)) || true
+            debug "$src_subdir/$rel_path skipped (module '$MODULE_SKIP_MATCH' not installed)"
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Skip (module not installed: $MODULE_SKIP_MATCH): $(basename "$src_file")"
+            fi
+            ((dir_skipped++)) || true
+            continue
+        fi
+
         # Active preset filter: skip files excluded by the active preset.
         # keep-mode: skip when the skill is NOT in the keep list.
         # drop-mode: skip when the skill IS in the drop list.
@@ -1050,6 +1178,13 @@ update_directory() {
     if [[ "$name" == "skills" ]]; then
         while IFS= read -r src_file; do
             local rel_path="${src_file#"$src_dir"/}"
+            # US-3: module filter applies to supporting files too — a
+            # non-md asset of an absent module must not be installed.
+            if _module_skip_check "$src_subdir/$rel_path"; then
+                ((MODULE_FILES_SKIPPED++)) || true
+                debug "$src_subdir/$rel_path skipped (module '$MODULE_SKIP_MATCH' not installed)"
+                continue
+            fi
             # Active preset filter: keep-mode or drop-mode (mirrors main copy loop).
             if [[ "${#ACTIVE_PRESET_KEEP_LIST[@]}" -gt 0 ]]; then
                 if ! is_skill_kept "$rel_path"; then
@@ -1468,6 +1603,22 @@ print_summary() {
     if $DETECT_ORPHANS; then
         echo "  Orphans:    $ORPHANS_FOUND (${ORPHANS_REMOVED} removed)"
     fi
+    # US-3: report modules that were not installed and whose files were skipped.
+    if [[ "$MODULE_FILES_SKIPPED" -gt 0 ]]; then
+        local _absent_names=() _seen _n _m
+        for _n in ${ABSENT_MODULE_FILE_OWNERS[@]+"${ABSENT_MODULE_FILE_OWNERS[@]}"} ${ABSENT_MODULE_DIR_OWNERS[@]+"${ABSENT_MODULE_DIR_OWNERS[@]}"}; do
+            _seen=false
+            for _m in ${_absent_names[@]+"${_absent_names[@]}"}; do
+                [[ "$_m" == "$_n" ]] && { _seen=true; break; }
+            done
+            $_seen || _absent_names+=("$_n")
+        done
+        local _skipped_mod_list
+        _skipped_mod_list="$(printf '%s, ' "${_absent_names[@]}")"
+        _skipped_mod_list="${_skipped_mod_list%, }"
+        echo "  Modules not installed (skipped): $_skipped_mod_list ($MODULE_FILES_SKIPPED files)"
+        info "  Tip: run 'claude-base add <module>' to install a module."
+    fi
     echo ""
 
     if [[ -n "${BACKUP_DIR:-}" ]] && [[ -d "${BACKUP_DIR:-}" ]]; then
@@ -1543,6 +1694,11 @@ main() {
     if $CLEAN_BEFORE_UPDATE; then
         clean_claude_dirs "$TARGET_DIR"
     fi
+
+    # US-3: build the absent-module path set once (fails loud on a
+    # corrupted manifest). Placed after the early-exit handlers so
+    # --restore stays available as the repair path.
+    _load_module_filter
 
     # Update commands
     update_commands

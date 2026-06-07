@@ -50,6 +50,30 @@ module_exists() {
     [[ -f "$MODULES_BUNDLES_DIR/$name.txt" ]]
 }
 
+# path_module <repo-relative-path> — print the module name that owns <path>,
+# or print nothing (empty) if the path is a core foundation item not owned
+# by any optional module bundle.
+# Used by update.sh to decide whether a file should be skipped when its
+# owning module is absent from the project manifest.
+path_module() {
+    local path="${1:-}"
+    [[ -n "$path" ]] || return 0
+    local m
+    while IFS= read -r m; do
+        local p
+        while IFS= read -r p; do
+            # Directory entry (trailing /): check if path starts with it.
+            if [[ "$p" == */ ]]; then
+                [[ "$path" == "${p%/}"/* || "$path" == "${p%/}" ]] && { printf '%s\n' "$m"; return 0; }
+            else
+                [[ "$path" == "$p" ]] && { printf '%s\n' "$m"; return 0; }
+            fi
+        done < <(module_bundle_paths "$m")
+    done < <(modules_list)
+    # Not owned by any module — it is a core path.
+    return 0
+}
+
 # module_bundle_paths <name> — print the bundle's repo-relative paths,
 # one per line, comments and empty lines stripped. Fails loud on unknown.
 module_bundle_paths() {
@@ -168,10 +192,35 @@ manifest_has_module() {
 # Legacy marker migration — EF-205 (direct replacement, decided 2026-06-06)
 # -----------------------------------------------------------------------------
 
+# detect_legacy_modules <dir> — print the module set a legacy-marker
+# migration would record, one per line. Pure read (no writes): lets a
+# dry-run preview the exact post-migration filtering without migrating.
+# Detectable state (EF-205): a module is recorded iff at least one of its
+# bundle paths exists in the project (handles legacy minimal installs that
+# never shipped biz/legal/growth). When nothing is detectable (no commands
+# dir at all), assume the full default set — conservative: a legacy
+# standard install shipped the whole catalog.
+detect_legacy_modules() {
+    local dir="${1:?target dir required}"
+    local m p
+    if [[ -d "$dir/.claude/commands" ]]; then
+        while IFS= read -r m; do
+            while IFS= read -r p; do
+                if [[ -e "$dir/$p" ]]; then
+                    printf '%s\n' "$m"
+                    break
+                fi
+            done < <(module_bundle_paths "$m")
+        done < <(modules_list)
+    else
+        modules_default_set
+    fi
+}
+
 # migrate_legacy_marker <dir> — if no manifest exists but the legacy
 # .claude/.foundation-version marker does, create the manifest from it
-# (version from marker, no preset, full module set — conservative: the
-# legacy install shipped the whole catalog) and remove the marker.
+# (version from marker, no preset, modules from detect_legacy_modules)
+# and remove the marker.
 # No-op (status 0) when there is nothing to migrate or already migrated.
 migrate_legacy_marker() {
     local dir="${1:?target dir required}"
@@ -192,29 +241,11 @@ migrate_legacy_marker() {
         version="0.0.0"
         printf 'modules: warning: legacy marker has no readable version, migrating as 0.0.0\n' >&2
     fi
-    # Detectable state recorded (EF-205): a module is recorded iff at least
-    # one of its bundle paths exists in the project (handles legacy minimal
-    # installs that never shipped biz/legal/growth). When nothing is
-    # detectable (no commands dir at all), assume the full set —
-    # conservative: a legacy standard install shipped the whole catalog.
     local mods=()
-    local m p found
-    if [[ -d "$dir/.claude/commands" ]]; then
-        while IFS= read -r m; do
-            found=false
-            while IFS= read -r p; do
-                if [[ -e "$dir/$p" ]]; then
-                    found=true
-                    break
-                fi
-            done < <(module_bundle_paths "$m")
-            $found && mods+=("$m")
-        done < <(modules_list)
-    else
-        while IFS= read -r m; do
-            mods+=("$m")
-        done < <(modules_default_set)
-    fi
+    local m
+    while IFS= read -r m; do
+        mods+=("$m")
+    done < <(detect_legacy_modules "$dir")
     write_foundation_manifest "$dir" "$version" "" "${mods[@]}" || return 1
     rm -f "$marker"
     printf 'modules: migrated legacy version marker to .claude/foundation.json (v%s, modules: %s)\n' \

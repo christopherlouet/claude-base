@@ -91,11 +91,11 @@
 
 ### Tests first (RED)
 
-- [ ] T021 [US3] Extend `tests/update.bats`: installed module updated like core; absent module items NOT copied (`update --all`); report lines distinct (updated vs module-skipped); dry-run shows module names on module items
+- [x] T021 [US3] Extend `tests/update.bats`: installed module updated like core; absent module items NOT copied (`update --all`); report lines distinct (updated vs module-skipped); dry-run shows module names on module items
 
 ### Implementation (GREEN)
 
-- [ ] T022 [US3] `scripts/update.sh`: in `update_commands()` (:533) and `update_directory()` (:863), consult `manifest_has_module` via a path→module predicate in `scripts/lib/modules.sh` (`path_module(path)` returns module name or empty=core); skip + count when module absent; `print_summary()` module section
+- [x] T022 [US3] `scripts/update.sh`: in `update_commands()` (:533) and `update_directory()` (:863), consult `manifest_has_module` via a path→module predicate in `scripts/lib/modules.sh` (`path_module(path)` returns module name or empty=core); skip + count when module absent; `print_summary()` module section
 
 **Checkpoint US-3**: staleness scenario from the filtering spec is now a passing test.
 
@@ -109,11 +109,11 @@
 
 ### Tests first (RED)
 
-- [ ] T023 [US4] Extend `tests/modules.bats`: clean remove (files + manifest + summary); user-modified file preserved with explicit notice; remove not-installed → clean message, no error spiral; remove with zero foundation-owned files left → unrecord + notice; dry-run
+- [x] T023 [US4] Extend `tests/modules.bats`: clean remove (files + manifest + summary); user-modified file preserved with explicit notice; remove not-installed → clean message, no error spiral; remove with zero foundation-owned files left → unrecord + notice; dry-run
 
 ### Implementation (GREEN)
 
-- [ ] T024 [US4] `scripts/module.sh`: `cmd_remove()` — ownership check (file identical to foundation copy → remove; differs → preserve + notice), manifest unrecord, summary
+- [x] T024 [US4] `scripts/module.sh`: `cmd_remove()` — ownership check (file identical to foundation copy → remove; differs → preserve + notice), manifest unrecord, summary
 
 **Checkpoint US-4**: removal matrix green, 0 silent deletions.
 
