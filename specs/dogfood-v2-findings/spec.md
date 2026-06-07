@@ -1,5 +1,7 @@
 # Dogfood findings — v2.0.0 release readiness
 
+> **Status: 📌 Closed** — post-release audit findings (2026-05-22); lessons folded into rules and follow-up specs.
+
 > **Status**: post-release audit · captured 2026-05-22 (same day as v2.0.0 cut)
 > **Method**: maintainer ran `claude-base update --dry-run --all` against a private project last synced to v1.32 (pre-Wave-1), observed friction without performing the actual update.
 > **Outcome**: 6 frictions identified, ordered by impact below. No regression introduced; the project was not modified.

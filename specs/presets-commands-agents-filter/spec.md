@@ -1,5 +1,7 @@
 # Spec: presets — extend filtering to commands and agents
 
+> **Status: 🔵 Ready for planning** — clarified in the #264 design review; not implemented yet.
+
 **Status**: Clarified — all 3 clarification points resolved (2026-06-06), ready for planning
 **Date**: 2026-06-06
 **Owner**: Chris

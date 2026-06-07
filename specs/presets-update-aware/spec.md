@@ -1,5 +1,7 @@
 # Spec: preset-aware updates — keep the preset filter coherent across the project lifecycle
 
+> **Status: ✅ Shipped** — PR #162 (2026-05-09).
+
 **Status**: Validated — all P1+P2+P3 stories shipped (US-1 through US-7)
 **Date**: 2026-05-09
 **Owner**: Chris

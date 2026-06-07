@@ -1,5 +1,7 @@
 # Spec: Foundation positioning review (2026-05-21)
 
+> **Status: 📌 Reference** — strategic baseline (positioning, curator role); informs roadmap, no direct implementation.
+
 **Status**: Strategic review — informs phased reduction work tracked in this folder. No code changes are made by this doc itself; it is the north star for subsequent PRs.
 **Date**: 2026-05-21
 **Owner**: Chris

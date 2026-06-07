@@ -1,5 +1,7 @@
 # Spec: foundation modules — installable horizontal domains
 
+> **Status: ✅ Shipped** — PRs #265–#269 (S1–S4 + polish, 2026-06-07). 28/28 tasks delivered.
+
 **Status**: Clarified — all 3 clarification points resolved (2026-06-06), ready for planning
 **Date**: 2026-06-06
 **Owner**: Chris
