@@ -74,6 +74,17 @@ path_module() {
     return 0
 }
 
+# remove_bundle_file <abs-path> — remove a bundle-owned file and drop its
+# parent directory once emptied (a hollow module dir would shadow the real
+# state). Owned here so every remover (claude-base remove, the init-time
+# defaultModules filter) shares one contract. Best-effort rmdir: a
+# non-empty parent is left alone.
+remove_bundle_file() {
+    local f="${1:?file path required}"
+    rm -f "$f"
+    rmdir "$(dirname "$f")" 2>/dev/null || true
+}
+
 # module_bundle_paths <name> — print the bundle's repo-relative paths,
 # one per line, comments and empty lines stripped. Fails loud on unknown.
 module_bundle_paths() {

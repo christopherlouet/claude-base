@@ -724,3 +724,25 @@ run_module() {
     run bash -c "jq -r '.modules | length' '$TEST_DIR/.claude/foundation.json'"
     [ "$output" = "0" ]
 }
+
+# =============================================================================
+# Polish session — shared bundle-file removal helper (lib-owned)
+# =============================================================================
+
+@test "modules: remove_bundle_file drops the file and its emptied parent" {
+    mkdir -p "$TEST_DIR/x/sub"
+    touch "$TEST_DIR/x/sub/f.md"
+    run_lib remove_bundle_file "$TEST_DIR/x/sub/f.md"
+    [ "$status" -eq 0 ]
+    [ ! -e "$TEST_DIR/x/sub" ]
+    [ -d "$TEST_DIR/x" ]
+}
+
+@test "modules: remove_bundle_file keeps a non-empty parent" {
+    mkdir -p "$TEST_DIR/y"
+    touch "$TEST_DIR/y/f.md" "$TEST_DIR/y/keep.md"
+    run_lib remove_bundle_file "$TEST_DIR/y/f.md"
+    [ "$status" -eq 0 ]
+    [ ! -e "$TEST_DIR/y/f.md" ]
+    [ -e "$TEST_DIR/y/keep.md" ]
+}

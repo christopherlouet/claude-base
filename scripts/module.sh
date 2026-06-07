@@ -423,10 +423,7 @@ cmd_remove() {
                     if $DRY_RUN; then
                         echo "${DIM}[DRY-RUN]${NC} Remove: $rel_path"
                     else
-                        rm -f "$dest_file"
-                        # Drop the parent once emptied — same contract as
-                        # the init-time filter (no hollow module dirs).
-                        rmdir "$(dirname "$dest_file")" 2>/dev/null || true
+                        remove_bundle_file "$dest_file"
                     fi
                     ((removed++)) || true
                 else
@@ -444,10 +441,7 @@ cmd_remove() {
                 if $DRY_RUN; then
                     echo "${DIM}[DRY-RUN]${NC} Remove: $bundle_path"
                 else
-                    rm -f "$dest_file"
-                    # Drop the parent once emptied — same contract as
-                    # the init-time filter (no hollow module dirs).
-                    rmdir "$(dirname "$dest_file")" 2>/dev/null || true
+                    remove_bundle_file "$dest_file"
                 fi
                 ((removed++)) || true
             else

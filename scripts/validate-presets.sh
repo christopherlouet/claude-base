@@ -36,6 +36,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PRESETS_DIR="$BASE_DIR/.claude/presets"
 
+# Bundle registry — single source of truth for module name validity
+# (module_exists: [a-z0-9-] syntax guard + bundle file existence).
+# shellcheck source=scripts/lib/modules.sh
+source "$SCRIPT_DIR/lib/modules.sh"
+
 QUIET=false
 SINGLE_FILE=""
 
@@ -339,18 +344,11 @@ validate_one() {
                 local di dmval
                 for di in $(seq 0 $((dm_n - 1))); do
                     dmval=$(jq -r ".defaultModules[$di]" "$file")
-                    # Same name discipline as module_exists() in
-                    # lib/modules.sh: only [a-z0-9-] — a raw -f test would
-                    # accept traversal-shaped names ('./biz') that happen
-                    # to resolve to a bundle file.
-                    case "$dmval" in
-                        *[!a-z0-9-]*|"")
-                            errs+=("defaultModules[$di] '$dmval' is not a valid module name (lowercase letters, digits and dashes only)")
-                            continue
-                            ;;
-                    esac
-                    # Valid module names are those with a bundle file in scripts/lib/modules/
-                    if [ ! -f "$SCRIPT_DIR/lib/modules/$dmval.txt" ]; then
+                    # module_exists (lib/modules.sh) is the single source
+                    # of truth: [a-z0-9-] syntax guard (rejects
+                    # traversal-shaped names like './biz') + bundle file
+                    # existence.
+                    if ! module_exists "$dmval"; then
                         errs+=("defaultModules[$di] '$dmval' is not a known module name")
                     fi
                 done

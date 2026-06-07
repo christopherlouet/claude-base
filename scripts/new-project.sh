@@ -716,6 +716,8 @@ load_preset() {
 # If the preset declares defaultModules[], validate each entry against known
 # modules and print the valid ones (invalid entries are warned and skipped).
 # If not declared (or no preset), falls back to modules_default_set (all modules).
+# INTERNAL: costs 2 jq forks per call — consumers must go through the
+# memoised load_module_partition / SELECTED_MODULES / SKIPPED_MODULES.
 preset_default_modules() {
     if [[ -n "$PRESET_FILE" ]]; then
         local dm_type
@@ -809,11 +811,10 @@ apply_modules_filter() {
                 if [[ "$p" == */ ]]; then
                     rm -rf "$full"
                 else
-                    rm -f "$full"
-                    # Drop the parent directory once emptied (e.g.
-                    # .claude/commands/biz/ after its last command):
-                    # a hollow module dir would shadow the real state.
-                    rmdir "$(dirname "$full")" 2>/dev/null || true
+                    # Shared remover (lib/modules.sh): rm + drop the
+                    # parent dir once emptied — same contract as
+                    # claude-base remove.
+                    remove_bundle_file "$full"
                 fi
             fi
         done < <(module_bundle_paths "$mod")
@@ -2029,6 +2030,10 @@ main() {
             error "--preset and --minimal are mutually exclusive"
         fi
         load_preset "$PRESET_NAME"
+        # Eager: the module partition depends on PRESET_FILE — computing
+        # it here makes the state dependency explicit instead of relying
+        # on whichever consumer happens to run first.
+        load_module_partition
         # Preset implies non-interactive simple install (avoid double-asking
         # for things the preset already decided).
         if [[ -z "$PROJECT_PATH" ]]; then
@@ -2178,6 +2183,8 @@ main() {
         # and skip per-option prompts (preset decides defaults).
         if [[ -n "$PRESET_NAME" && -z "$PRESET_FILE" ]]; then
             load_preset "$PRESET_NAME"
+            # Eager partition load — see the run_simple_mode call site.
+            load_module_partition
             SKIP_PROMPTS=true
         fi
         get_options
