@@ -1,5 +1,7 @@
 # Spec: react-vite-spa — 6th maintainer-vouched preset
 
+> **Status: ✅ Shipped** — PR #178 (2026-05-13).
+
 **Status**: Validated — all 6 user stories shipped on `feature/preset-react-vite-spa` (2026-05-13). Tests 593 → 620 (+27). Runtime `keep` filter + 6th maintainer-vouched preset + paired fixture + e2e drift-guard + multi-match disambiguation.
 **Date**: 2026-05-13
 **Owner**: Chris

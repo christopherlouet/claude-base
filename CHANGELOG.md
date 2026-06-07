@@ -312,7 +312,7 @@ Behaviour-additive across the board, no breaking change. The category prompt is 
   canonical catalogue + the vendor-pointer tier spec.
 
 - **Mark 4 shipped specs as Validated**. `specs/marketplace-audit/`
-  (Living document, 4 audit pilots in use), `specs/vendor-skills-game-dev/`
+  (Living document, 4 audit pilots in use), `specs/archive/vendor-skills-game-dev/`
   (shipped #183), `specs/presets-vendor-pointer-tier/` (shipped #185,
   5 instances live), `specs/preset-category-prompt/` (shipped #192).
   Status headers updated with PR references and live-deliverable
@@ -436,7 +436,7 @@ Behaviour-additive across the board, no breaking change. The category prompt is 
   acknowledging the gap, with a signpost to the existing
   contribution path. Counter `vendorSkillsValidated` goes from 16
   to 17 (auto-regenerated). No bundled skill or preset added.
-  Spec at [`specs/vendor-skills-game-dev/`](./specs/vendor-skills-game-dev/).
+  Spec at [`specs/archive/vendor-skills-game-dev/`](./specs/archive/vendor-skills-game-dev/).
 
 ### Changed (additional)
 
@@ -517,7 +517,7 @@ are entirely unchanged.
 
 Behaviour-additive across the board, no breaking change. +27 tests
 (593 → 620). Spec lives at
-[`specs/preset-react-vite-spa/`](./specs/preset-react-vite-spa/).
+[`specs/archive/preset-react-vite-spa/`](./specs/archive/preset-react-vite-spa/).
 
 ### Added
 
@@ -532,7 +532,7 @@ Behaviour-additive across the board, no breaking change. +27 tests
   audit-validated `recommendedVendorSkills` entries (vercel-labs +
   frontend-design always; shadcn-ui + lingui conditional). Compatible
   with a Capacitor wrap for mobile distribution. Spec lives at
-  [`specs/preset-react-vite-spa/`](./specs/preset-react-vite-spa/).
+  [`specs/archive/preset-react-vite-spa/`](./specs/archive/preset-react-vite-spa/).
 
 - **Runtime support for `keep`-style skills filter** in preset manifests
   (`foundation.skills.keep[]`), mutually exclusive with the existing
@@ -541,7 +541,7 @@ Behaviour-additive across the board, no breaking change. +27 tests
   `validate-presets.sh` enforces the XOR at validation time. The 5
   previously shipped presets (`nextjs`, `astro`, `fastapi`, `cli-tools`,
   `homelab-proxmox`) continue to use `drop` and are unchanged. Spec
-  lives at [`specs/preset-react-vite-spa/`](./specs/preset-react-vite-spa/).
+  lives at [`specs/archive/preset-react-vite-spa/`](./specs/archive/preset-react-vite-spa/).
 
 ## [1.38.0] - 2026-05-10
 
@@ -557,7 +557,7 @@ mode. A new TEAM-GUIDE section documents the scope choices when
 
 Behaviour-additive across the board — no breaking change. +57 tests
 (536 → 593). Spec lives at
-[`specs/update-lifecycle-visibility/`](./specs/update-lifecycle-visibility/).
+[`specs/archive/update-lifecycle-visibility/`](./specs/archive/update-lifecycle-visibility/).
 
 **Foundation version marker** (US-1). Every project now carries a
 `.claude/.foundation-version` file with the foundation `VERSION` that
@@ -599,7 +599,7 @@ what it breaks for project-scope plugins/skills, and which scope
 (`user` / `project` / `local`) to use per use case. README entry now
 links directly to it.
 
-Spec lives at [`specs/update-lifecycle-visibility/`](./specs/update-lifecycle-visibility/).
+Spec lives at [`specs/archive/update-lifecycle-visibility/`](./specs/archive/update-lifecycle-visibility/).
 
 ## [1.37.0] - 2026-05-09
 

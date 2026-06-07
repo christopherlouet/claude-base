@@ -1,5 +1,7 @@
 # Spec: `vendor-pointer` preset tier + first instance
 
+> **Status: ✅ Shipped** — PR #185 (2026-05-18); 5 vendor-pointer presets live.
+
 **Status**: Validated — tier introduced in PR #185 (2026-05-18); 5 instances live (`phaser` #185, `playwright` #188, `pulumi` #189, `apollo` #190, `mongodb` #191). Validation enforced by `scripts/validate-presets.sh` (EF-003/004/005); roadmap section "Shipped (vendor-pointer)" in [`specs/presets/roadmap.md`](../presets/roadmap.md).
 **Date**: 2026-05-18
 **Owner**: Chris

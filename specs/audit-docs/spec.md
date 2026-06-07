@@ -1,5 +1,7 @@
 # Spec: `audit-docs.sh` — Doc drift firewall
 
+> **Status: ✅ Shipped** — doc-drift firewall live since PR #201 (2026-05-19), CI-gated via `tests/audit-docs.bats`.
+
 **Status**: Draft (planning, not yet validated)
 **Date**: 2026-05-19
 **Owner**: Chris

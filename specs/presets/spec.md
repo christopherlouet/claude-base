@@ -1,5 +1,7 @@
 # Spec: presets — curated bundles per stack
 
+> **Status: ✅ Shipped** — spec PR #118; preset system live since v1.32.0, extended by the follow-up preset specs.
+
 **Status**: Validated — format + install mechanism shipped in PR #119 (v1.32.0); 6 maintainer-vouched presets live (`nextjs`, `homelab-proxmox`, `cli-tools`, `fastapi`, `astro`, `react-vite-spa`) + 5 vendor-pointer presets live (`phaser`, `playwright`, `pulumi`, `apollo`, `mongodb`) since the introduction of the `vendor-pointer` tier (see `specs/presets-vendor-pointer-tier/`)
 **Date**: 2026-05-04
 **Owner**: Chris

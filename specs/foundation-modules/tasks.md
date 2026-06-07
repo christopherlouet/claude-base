@@ -127,12 +127,12 @@
 
 ### Tests first (RED)
 
-- [ ] T025 [US5] Extend `tests/validate-presets.bats`: `defaultModules` optional, array of known module names; unknown name → error; forbidden on vendor-pointer tier (EF-210)
-- [ ] T026 [P] [US5] Extend `tests/new-project.bats`: preset with `defaultModules` → exact set installed + recorded; preset without → all modules (backward compat); init summary names available-not-installed modules with the add command
+- [x] T025 [US5] Extend `tests/validate-presets.bats`: `defaultModules` optional, array of known module names; unknown name → error; forbidden on vendor-pointer tier (EF-210)
+- [x] T026 [P] [US5] Extend `tests/new-project.bats`: preset with `defaultModules` → exact set installed + recorded; preset without → all modules (backward compat); init summary names available-not-installed modules with the add command
 
 ### Implementation (GREEN)
 
-- [ ] T027 [US5] `scripts/validate-presets.sh`: `defaultModules` validation + vendor-pointer interdiction; `scripts/new-project.sh`: honor `defaultModules` at install + manifest record + summary block
+- [x] T027 [US5] `scripts/validate-presets.sh`: `defaultModules` validation + vendor-pointer interdiction; `scripts/new-project.sh`: honor `defaultModules` at install + manifest record + summary block
 
 **Checkpoint US-5**: synthetic-preset fixture green.
 
@@ -140,9 +140,9 @@
 
 ## Phase 8: Polish & delivery
 
-- [ ] T028 [P] Docs: `docs/reference/commands.md` (add/remove/modules verbs), `.claude/presets/README.md` (`defaultModules`), CHANGELOG entry with **breaking-change note** (marker → manifest)
-- [ ] T029 [P] Regenerate website mirror: `cd website && npm run generate` (never hand-edit `website/docs`)
-- [ ] T030 - Full gate: `bats tests/` (all suites incl. the 97 preset tests), shellcheck, `scripts/validate-presets.sh`; then `/qa:qa-loop "score 90"` before PR
+- [x] T028 [P] Docs: `docs/reference/commands.md` (add/remove/modules verbs), `.claude/presets/README.md` (`defaultModules`), CHANGELOG entry with **breaking-change note** (marker → manifest)
+- [x] T029 [P] Regenerate website mirror: `cd website && npm run generate` (never hand-edit `website/docs`)
+- [x] T030 - Full gate: `bats tests/` (all suites incl. the 97 preset tests), shellcheck, `scripts/validate-presets.sh`; then `/qa:qa-loop "score 90"` before PR
 
 ---
 

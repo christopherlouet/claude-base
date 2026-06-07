@@ -1,5 +1,7 @@
 # Spec: preset detection (data-driven) + per-preset end-to-end coverage
 
+> **Status: ✅ Shipped** — PR #160 (2026-05-09).
+
 **Status**: Validated — all P1+P2+P3 stories shipped (US-1 through US-7)
 **Date**: 2026-05-09
 **Owner**: Chris

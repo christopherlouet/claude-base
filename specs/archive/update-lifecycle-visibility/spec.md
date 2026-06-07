@@ -1,5 +1,7 @@
 # Spec: update lifecycle visibility — close the bootstrap → maintenance gap
 
+> **Status: ✅ Shipped** — PR #166 (2026-05-10), v1.38.0.
+
 **Status**: Validated — all 5 user stories shipped in PR #166 (v1.38.0, 2026-05-10)
 **Date**: 2026-05-09
 **Owner**: Chris
