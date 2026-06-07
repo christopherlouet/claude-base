@@ -316,6 +316,39 @@ validate_one() {
     fi
 
     # ------------------------------------------------------------------
+    # defaultModules[] — US-5 (EF-210)
+    # Optional array of known module names (biz, legal, growth).
+    # - If present, must be an array.
+    # - Each entry must be a known module name (from scripts/lib/modules/).
+    # - MUST NOT appear on vendor-pointer tier (EF-210).
+    # ------------------------------------------------------------------
+    if jq -e '.defaultModules' "$file" >/dev/null 2>&1; then
+        # EF-210: forbidden on vendor-pointer tier
+        if [ "$status" = "vendor-pointer" ]; then
+            errs+=("vendor-pointer preset MUST NOT declare defaultModules (EF-210)")
+        fi
+
+        local dm_type
+        dm_type=$(jq -r '.defaultModules | type' "$file")
+        if [ "$dm_type" != "array" ]; then
+            errs+=("defaultModules must be an array (got $dm_type)")
+        else
+            local dm_n
+            dm_n=$(jq -r '.defaultModules | length' "$file")
+            if [ "$dm_n" -gt 0 ]; then
+                local di dmval
+                for di in $(seq 0 $((dm_n - 1))); do
+                    dmval=$(jq -r ".defaultModules[$di]" "$file")
+                    # Valid module names are those with a bundle file in scripts/lib/modules/
+                    if [ ! -f "$SCRIPT_DIR/lib/modules/$dmval.txt" ]; then
+                        errs+=("defaultModules[$di] '$dmval' is not a known module name")
+                    fi
+                done
+            fi
+        fi
+    fi
+
+    # ------------------------------------------------------------------
     # categories[] strict-enum validation
     # spec: specs/preset-category-prompt/spec.md EF-006
     # When present, each entry MUST be one of the 8 locked slugs.

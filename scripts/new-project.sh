@@ -712,10 +712,35 @@ load_preset() {
     done < <(jq -r '.foundation.skills.keep[]? // empty' "$file")
 }
 
+# preset_default_modules — print the module set for the active preset.
+# If the preset declares defaultModules[], validate each entry against known
+# modules and print the valid ones (invalid entries are warned and skipped).
+# If not declared (or no preset), falls back to modules_default_set (all modules).
+preset_default_modules() {
+    if [[ -n "$PRESET_FILE" ]]; then
+        local dm_type
+        dm_type=$(jq -r '.defaultModules // empty | type' "$PRESET_FILE" 2>/dev/null)
+        if [[ "$dm_type" = "array" ]]; then
+            local m
+            while IFS= read -r m; do
+                [[ -z "$m" ]] && continue
+                if module_exists "$m"; then
+                    printf '%s\n' "$m"
+                else
+                    printf 'new-project: warning: preset declares unknown module "%s", ignored\n' "$m" >&2
+                fi
+            done < <(jq -r '.defaultModules[] // empty' "$PRESET_FILE" 2>/dev/null)
+            return 0
+        fi
+    fi
+    # No preset or no defaultModules declared → full catalog (backward compat)
+    modules_default_set
+}
+
 # Records the project's foundation state into .claude/foundation.json
 # (specs/foundation-modules US-1). With an active preset, the manifest
-# records its name so updates skip auto-detection (CS-205). Module set is
-# the full catalog at v1 — preset defaultModules lands with US-5.
+# records its name so updates skip auto-detection (CS-205). When the preset
+# declares defaultModules[], only those modules are recorded (US-5).
 # Arguments:
 #   $1 - Target directory (absolute path)
 record_foundation_state() {
@@ -725,7 +750,7 @@ record_foundation_state() {
         local m
         while IFS= read -r m; do
             mods+=("$m")
-        done < <(modules_default_set)
+        done < <(preset_default_modules)
         write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" "${mods[@]}" \
             || error "failed to write .claude/foundation.json in $dir"
         rm -f "$dir/.claude/.foundation-version"
@@ -733,6 +758,56 @@ record_foundation_state() {
         record_foundation_version "$dir" "$VERSION" \
             || error "failed to write .claude/foundation.json in $dir"
     fi
+}
+
+# apply_modules_filter — remove files belonging to modules NOT in the selected
+# set (US-5). Called after install_claude_files() when a preset declares
+# defaultModules[]. No-op when no preset is active or defaultModules is absent.
+# Arguments:
+#   $1 - Target directory (absolute path)
+apply_modules_filter() {
+    local target_dir="$1"
+    [[ -z "$PRESET_FILE" ]] && return 0
+
+    # Only act when the preset explicitly declares defaultModules[]
+    local dm_type
+    dm_type=$(jq -r '.defaultModules // empty | type' "$PRESET_FILE" 2>/dev/null)
+    [[ "$dm_type" = "array" ]] || return 0
+
+    # Build the set of selected modules
+    local selected=()
+    local m
+    while IFS= read -r m; do
+        [[ -n "$m" ]] && selected+=("$m")
+    done < <(preset_default_modules)
+
+    # For each known module, if it is NOT selected, remove its bundle files
+    while IFS= read -r mod; do
+        local in_selected=false
+        local s
+        for s in "${selected[@]}"; do
+            [[ "$s" = "$mod" ]] && { in_selected=true; break; }
+        done
+        $in_selected && continue
+
+        # Remove each path in the module bundle
+        local p
+        while IFS= read -r p; do
+            [[ -z "$p" ]] && continue
+            local full="$target_dir/$p"
+            if [[ -e "$full" ]]; then
+                if $DRY_RUN; then
+                    echo -e "${DIM}[DRY-RUN]${NC} skip module '$mod': $p"
+                else
+                    if [[ "$p" == */ ]]; then
+                        rm -rf "$full"
+                    else
+                        rm -f "$full"
+                    fi
+                fi
+            fi
+        done < <(module_bundle_paths "$mod")
+    done < <(modules_list)
 }
 
 # Apply the preset's skill filter to the target installation.
@@ -1165,6 +1240,9 @@ print_simple_summary() {
     info "Available commands:"
     echo "  /work:work-explore, /work:work-plan, /work:work-commit, etc."
     echo ""
+
+    # US-5: when a preset restricted the module set, advertise the others
+    print_skipped_modules_hint
 }
 
 # Run simple mode (direct install without detection)
@@ -1239,6 +1317,9 @@ run_simple_mode() {
 
     # Apply preset filter (drops skills listed in preset.foundation.skills.drop)
     apply_preset_filter "$target_dir"
+
+    # Apply module filter — remove files for modules not in defaultModules (US-5)
+    apply_modules_filter "$target_dir"
 
     # Install CLAUDE.md
     install_claude_md_file "$target_dir"
@@ -1695,6 +1776,10 @@ create_project() {
 
     # Install Claude files (commands, agents, skills, rules, styles, templates)
     install_claude_files "$TARGET_DIR"
+
+    # Apply module filter — remove files for modules not in defaultModules (US-5)
+    apply_modules_filter "$TARGET_DIR"
+
     success "Claude commands installed ($(count_commands_cached) commands, $(count_agents_cached) agents, $(count_skills_cached) skills)"
 
     # Generate or copy CLAUDE.md
@@ -1856,7 +1941,50 @@ print_next_steps() {
     echo -e "  ${CYAN}Available commands:${NC}"
     echo -e "     /work:work-explore, /work:work-plan, /work:work-commit, etc."
     echo ""
+
+    # US-5: when a preset restricted the module set, advertise the others
+    print_skipped_modules_hint
+
     echo -e "${BOLD}═══════════════════════════════════════════════════════════════${NC}"
+    echo ""
+}
+
+# print_skipped_modules_hint — US-5: when init installed a subset of modules
+# (via preset defaultModules), list the available-but-not-installed modules
+# with the `claude-base add` command to get them.
+# No-op when all modules were installed or no preset is active.
+print_skipped_modules_hint() {
+    [[ -z "$PRESET_FILE" ]] && return 0
+
+    # Only act when the preset explicitly declares defaultModules[]
+    local dm_type
+    dm_type=$(jq -r '.defaultModules // empty | type' "$PRESET_FILE" 2>/dev/null)
+    [[ "$dm_type" = "array" ]] || return 0
+
+    # Build the set of selected modules
+    local selected=()
+    local m
+    while IFS= read -r m; do
+        [[ -n "$m" ]] && selected+=("$m")
+    done < <(preset_default_modules)
+
+    # Collect modules that were NOT installed
+    local skipped=()
+    while IFS= read -r mod; do
+        local in_selected=false
+        local s
+        for s in "${selected[@]}"; do
+            [[ "$s" = "$mod" ]] && { in_selected=true; break; }
+        done
+        $in_selected || skipped+=("$mod")
+    done < <(modules_list)
+
+    [[ "${#skipped[@]}" -eq 0 ]] && return 0
+
+    echo -e "  ${CYAN}Optional modules (not installed by this preset):${NC}"
+    for mod in "${skipped[@]}"; do
+        echo -e "     ${YELLOW}claude-base add $mod${NC}    # install the $mod domain"
+    done
     echo ""
 }
 

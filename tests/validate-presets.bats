@@ -241,6 +241,76 @@ EOF
 }
 
 # =============================================================================
+# defaultModules — US-5 (EF-210)
+# Optional array of known module names; unknown name → error;
+# forbidden on vendor-pointer tier (EF-210).
+# =============================================================================
+
+@test "validate-presets.sh accepts a manifest with a valid defaultModules array" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.defaultModules = ["biz","legal"]' "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [[ "$status" -eq 0 ]]
+}
+
+@test "validate-presets.sh accepts a manifest with an empty defaultModules array" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.defaultModules = []' "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [[ "$status" -eq 0 ]]
+}
+
+@test "validate-presets.sh rejects defaultModules when it is not an array" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.defaultModules = "biz"' "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [[ "$status" -eq 1 ]]
+    [[ "$output" == *"defaultModules"* ]]
+}
+
+@test "validate-presets.sh rejects defaultModules containing an unknown module name" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.defaultModules = ["biz","not-a-module"]' "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [[ "$status" -eq 1 ]]
+    [[ "$output" == *"defaultModules"* ]]
+    [[ "$output" == *"not-a-module"* ]]
+}
+
+@test "validate-presets.sh rejects defaultModules on a vendor-pointer preset (EF-210)" {
+    cat > "$TEST_DIR/vp2.json" <<'EOF'
+{
+  "name": "test-vendor2",
+  "displayName": "Test vendor2",
+  "description": "Vendor pointer manifest with forbidden defaultModules.",
+  "version": "1.0.0",
+  "status": "vendor-pointer",
+  "appliesToTypes": ["generic"],
+  "detect": {
+    "combinator": "anyOf",
+    "depFiles": [
+      { "path": "package.json", "contains": "\"test-vendor2\":" }
+    ]
+  },
+  "recommendedVendorSkills": [
+    {
+      "id": "test-vendor2/skill",
+      "url": "https://example.org/skill",
+      "rationale": "test",
+      "condition": "always"
+    }
+  ],
+  "defaultModules": ["biz"],
+  "outOfScope": []
+}
+EOF
+    run "$VALIDATE_PRESETS" "$TEST_DIR/vp2.json"
+    [[ "$status" -eq 1 ]]
+    [[ "$output" == *"defaultModules"* ]]
+    [[ "$output" == *"vendor-pointer"* ]]
+}
+
+# =============================================================================
 # Regression : the foundation's own shipped presets all validate
 # =============================================================================
 
