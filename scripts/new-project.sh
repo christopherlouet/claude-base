@@ -327,6 +327,7 @@ parse_args() {
                 shift 2
                 ;;
             --presets-dir)
+                # shellcheck disable=SC2034  # consumed by lib/preset-detect.sh::resolve_preset_file
                 PRESETS_DIR_OVERRIDE="$2"
                 shift 2
                 ;;
@@ -604,31 +605,8 @@ copy_filtered_rules() {
 # Preset support (curated bundles per stack — see specs/presets/spec.md)
 # =============================================================================
 
-# Resolve a preset name to a JSON file path. Searches official then community.
-# Arguments:
-#   $1 - Preset name (e.g. "nextjs")
-# Output: path to .json file, or empty if not found.
-resolve_preset_file() {
-    local name="$1"
-    # PRESETS_DIR_OVERRIDE is checked first so tests can inject synthetic presets
-    # without touching the official presets tree.
-    if [[ -n "$PRESETS_DIR_OVERRIDE" ]]; then
-        local override_file="$PRESETS_DIR_OVERRIDE/$name.json"
-        if [[ -f "$override_file" ]]; then
-            echo "$override_file"
-            return
-        fi
-    fi
-    local official="$BASE_DIR/.claude/presets/$name.json"
-    local community="$BASE_DIR/.claude/presets/community/$name.json"
-    if [[ -f "$official" ]]; then
-        echo "$official"
-    elif [[ -f "$community" ]]; then
-        echo "$community"
-    else
-        echo ""
-    fi
-}
+# Preset name → JSON file resolution lives in lib/preset-detect.sh
+# (resolve_preset_file), shared with update.sh::resolve_active_preset.
 
 # List all available presets (official + community) with status and displayName.
 list_presets() {
@@ -747,12 +725,12 @@ record_foundation_state() {
         local m
         while IFS= read -r m; do
             mods+=("$m")
-        done < <(modules_list)
+        done < <(modules_default_set)
         write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" "${mods[@]}" \
             || error "failed to write .claude/foundation.json in $dir"
         rm -f "$dir/.claude/.foundation-version"
     else
-        write_foundation_marker "$dir" "$VERSION" \
+        record_foundation_version "$dir" "$VERSION" \
             || error "failed to write .claude/foundation.json in $dir"
     fi
 }

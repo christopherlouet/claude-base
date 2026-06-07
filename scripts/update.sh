@@ -732,23 +732,12 @@ resolve_active_preset() {
         return 0
     fi
 
-    local presets_dir="$BASE_DIR/.claude/presets"
-
     if [[ -n "$UPDATE_PRESET_NAME" ]]; then
-        local file=""
-        # PRESETS_DIR_OVERRIDE is checked first so tests can inject synthetic
-        # presets without touching the official presets tree.
-        if [[ -n "$PRESETS_DIR_OVERRIDE" ]]; then
-            local override_file="$PRESETS_DIR_OVERRIDE/$UPDATE_PRESET_NAME.json"
-            [[ -f "$override_file" ]] && file="$override_file"
-        fi
+        # Name → file resolution (override, official, community) is shared
+        # with new-project.sh via lib/preset-detect.sh.
+        local file
+        file="$(resolve_preset_file "$UPDATE_PRESET_NAME")"
         if [[ -z "$file" ]]; then
-            file="$presets_dir/$UPDATE_PRESET_NAME.json"
-        fi
-        if [[ ! -f "$file" ]]; then
-            file="$presets_dir/community/$UPDATE_PRESET_NAME.json"
-        fi
-        if [[ ! -f "$file" ]]; then
             error "preset not found: $UPDATE_PRESET_NAME (run 'claude-base preset list' to see available presets)"
         fi
         ACTIVE_PRESET_NAME="$UPDATE_PRESET_NAME"
@@ -776,14 +765,9 @@ resolve_active_preset() {
         error "corrupted .claude/foundation.json in $TARGET_DIR — fix the JSON by hand, or delete it and re-run update to regenerate it"
     fi
     if [[ -n "$recorded" ]]; then
-        local mfile=""
-        if [[ -n "$PRESETS_DIR_OVERRIDE" ]]; then
-            local override_file="$PRESETS_DIR_OVERRIDE/$recorded.json"
-            [[ -f "$override_file" ]] && mfile="$override_file"
-        fi
-        [[ -z "$mfile" ]] && mfile="$presets_dir/$recorded.json"
-        [[ -f "$mfile" ]] || mfile="$presets_dir/community/$recorded.json"
-        if [[ -f "$mfile" ]]; then
+        local mfile
+        mfile="$(resolve_preset_file "$recorded")"
+        if [[ -n "$mfile" ]]; then
             ACTIVE_PRESET_NAME="$recorded"
             ACTIVE_PRESET_FILE="$mfile"
             ACTIVE_PRESET_SOURCE="manifest"
@@ -810,8 +794,7 @@ resolve_active_preset() {
     fi
 
     ACTIVE_PRESET_NAME="$matches"
-    ACTIVE_PRESET_FILE="$presets_dir/$matches.json"
-    [[ -f "$ACTIVE_PRESET_FILE" ]] || ACTIVE_PRESET_FILE="$presets_dir/community/$matches.json"
+    ACTIVE_PRESET_FILE="$(resolve_preset_file "$matches")"
     ACTIVE_PRESET_SOURCE="detected"
     load_active_drop_list
     load_active_keep_list
@@ -1633,9 +1616,9 @@ main() {
         print_recommended_vendor_skills "$ACTIVE_PRESET_FILE" "$TARGET_DIR"
     fi
 
-    # Write foundation version marker (T1.4) — skip in dry-run
+    # Record the foundation version in the manifest (T1.4) — skip in dry-run
     if ! $DRY_RUN; then
-        write_foundation_marker "$TARGET_DIR" "$VERSION"
+        record_foundation_version "$TARGET_DIR" "$VERSION"
     fi
 }
 

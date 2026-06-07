@@ -535,7 +535,7 @@ version_gte() {
 # Since specs/foundation-modules: writes .claude/foundation.json (EF-204),
 # never the legacy .foundation-version marker (EF-205, direct replacement).
 # - Existing manifest: only .version is updated (preset/modules preserved).
-# - No manifest yet: created with no preset and the full module set
+# - No manifest yet: created with no preset and modules_default_set
 #   (conservative default — matches a full catalog install).
 # - A stale legacy marker is removed either way.
 # Idempotent: re-running with the same args produces an identical file.
@@ -543,7 +543,7 @@ version_gte() {
 #   $1 - Target project directory (created with parents if missing)
 #   $2 - Version string to write
 # Return: 0 on success, 1 on missing arg or write failure
-write_foundation_marker() {
+record_foundation_version() {
     local target_dir="$1"
     local version="$2"
 
@@ -565,11 +565,19 @@ write_foundation_marker() {
         local m
         while IFS= read -r m; do
             mods+=("$m")
-        done < <(modules_list)
+        done < <(modules_default_set)
         write_foundation_manifest "$target_dir" "$version" "" "${mods[@]}" || return 1
     fi
     rm -f "$target_dir/.claude/.foundation-version"
     return 0
+}
+
+# Deprecated alias (renamed in S2 of specs/foundation-modules): the function
+# has written the foundation.json manifest — not the legacy marker — since
+# EF-204/EF-205 landed. Kept for downstream sourcers of this lib.
+write_foundation_marker() {
+    printf 'common: write_foundation_marker is deprecated, use record_foundation_version\n' >&2
+    record_foundation_version "$@"
 }
 
 # Reads the foundation version from a target project.

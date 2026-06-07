@@ -68,6 +68,23 @@ EOF
     [[ "$output" == *"bogusverb"* ]]
 }
 
+@test "audit-docs: accepts the module verbs add/remove/modules (EF-002)" {
+    # Verbs shipped by specs/foundation-modules S2 (claude-base add/remove/
+    # modules). Pinned here so the T028 docs task (S4) cannot trip the
+    # zero-FP gate: documenting the verbs must not read as drift.
+    cat > "$TEST_DIR/module-verbs.md" <<'EOF'
+# Module verbs
+
+```bash
+claude-base add legal ./my-project
+claude-base remove growth ./my-project
+claude-base modules ./my-project
+```
+EOF
+    run "$AUDIT_DOCS" --target "$TEST_DIR/module-verbs.md" --category verbs
+    [ "$status" -eq 0 ]
+}
+
 @test "audit-docs: ignores claude-base is a foundation (English prose) (T008, EF-002)" {
     cat > "$TEST_DIR/prose.md" <<'EOF'
 # Prose

@@ -229,3 +229,55 @@ teardown() {
     [[ "$output" == *"Available presets"* ]] || [[ "$output" == *"NAME"* ]]
     teardown_test_dir
 }
+
+# =============================================================================
+# Module verbs — add, remove, modules (T018, US-2)
+# These tests verify routing correctness; the underlying scripts/module.sh
+# behaviour is covered by modules.bats.
+# =============================================================================
+
+@test "dispatcher: help text lists 'add' verb" {
+    run "$DISPATCHER"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"add"* ]]
+}
+
+@test "dispatcher: help text lists 'modules' verb" {
+    run "$DISPATCHER"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"modules"* ]]
+}
+
+@test "dispatcher: 'modules' verb is dispatched (shows available modules)" {
+    run "$DISPATCHER" modules
+    [ "$status" -eq 0 ]
+    # Must list the three known modules.
+    [[ "$output" == *"biz"* ]]
+    [[ "$output" == *"legal"* ]]
+    [[ "$output" == *"growth"* ]]
+}
+
+@test "dispatcher: 'add --help' forwards to module.sh (shows usage)" {
+    run "$DISPATCHER" add --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"USAGE"* ]] || [[ "$output" == *"add"* ]]
+}
+
+@test "dispatcher: 'remove --help' forwards to module.sh (shows usage)" {
+    run "$DISPATCHER" remove --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"USAGE"* ]] || [[ "$output" == *"remove"* ]]
+}
+
+@test "dispatcher: 'add' with unknown module fails with non-zero exit" {
+    # module.sh must return non-zero for unknown modules; dispatcher must relay it.
+    run "$DISPATCHER" add totally-unknown-module-xyz --target /tmp
+    [ "$status" -ne 0 ]
+}
+
+@test "dispatcher: 'modules' verb routes to module.sh, not new-project.sh" {
+    # Verify the output does NOT include raw script paths from other scripts.
+    run "$DISPATCHER" modules
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"new-project.sh"* ]]
+}

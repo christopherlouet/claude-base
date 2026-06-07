@@ -30,6 +30,14 @@ modules_list() {
     done | sort
 }
 
+# modules_default_set — the module set to record when no explicit choice
+# exists (init without module flags, version recording on a manifest-less
+# project, legacy migration fallback). Full catalog at v1; preset
+# defaultModules (US-5) will hook in here so every call site inherits it.
+modules_default_set() {
+    modules_list
+}
+
 # module_exists <name> — 0 if <name> is a known module.
 # Rejects empty names and anything that is not a plain lowercase word
 # (defense against path traversal: the name is used to build a file path).
@@ -178,7 +186,12 @@ migrate_legacy_marker() {
     [[ -f "$marker" ]] || return 0
     local version
     version="$(head -n1 "$marker" | tr -d '[:space:]')"
-    [[ -n "$version" ]] || version="unknown"
+    if [[ -z "$version" ]]; then
+        # "unknown" would defeat version_gte comparisons downstream;
+        # 0.0.0 sorts below every real release and stays honest.
+        version="0.0.0"
+        printf 'modules: warning: legacy marker has no readable version, migrating as 0.0.0\n' >&2
+    fi
     # Detectable state recorded (EF-205): a module is recorded iff at least
     # one of its bundle paths exists in the project (handles legacy minimal
     # installs that never shipped biz/legal/growth). When nothing is
@@ -200,7 +213,7 @@ migrate_legacy_marker() {
     else
         while IFS= read -r m; do
             mods+=("$m")
-        done < <(modules_list)
+        done < <(modules_default_set)
     fi
     write_foundation_manifest "$dir" "$version" "" "${mods[@]}" || return 1
     rm -f "$marker"

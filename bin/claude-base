@@ -44,6 +44,9 @@ COMMANDS
     init              Install the foundation in a project
     update            Update an installed project to the current foundation version
     validate          Validate the integrity of an installed project
+    add <module>      Install a domain module (biz, legal, growth)
+    remove <module>   Remove a domain module from the project
+    modules           List available modules and their installation status
     preset list       List available presets
     preset show NAME  Print the JSON manifest of a preset
     uninstall         Remove the foundation from a project
@@ -55,6 +58,10 @@ EXAMPLES
     claude-base init --simple ./my-project
     claude-base update --all ./my-project
     claude-base validate ./my-project
+    claude-base add legal
+    claude-base add biz --target ./my-project --dry-run
+    claude-base remove growth
+    claude-base modules
     claude-base preset list
     claude-base preset show nextjs
 
@@ -72,7 +79,7 @@ show_unknown() {
     cat >&2 <<EOF
 claude-base: unknown command '$verb'
 
-Available commands: init, update, validate, preset, uninstall, version, help
+Available commands: init, update, validate, add, remove, modules, preset, uninstall, version, help
 
 Run 'claude-base help' for full usage.
 EOF
@@ -142,6 +149,15 @@ main() {
             ;;
         validate)
             exec "$SCRIPTS_DIR/validate.sh" "$@"
+            ;;
+        add)
+            exec "$SCRIPTS_DIR/module.sh" add "$@"
+            ;;
+        remove)
+            exec "$SCRIPTS_DIR/module.sh" remove "$@"
+            ;;
+        modules)
+            exec "$SCRIPTS_DIR/module.sh" modules "$@"
             ;;
         preset)
             cmd_preset "$@"
