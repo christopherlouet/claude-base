@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   The legacy plain-text version marker is no longer written by `claude-base init` or `claude-base update`.
   All foundation tooling reads the JSON manifest first; `update` creates the manifest and removes the
   marker on first contact with a legacy project (migration is automatic and reported).
+  **The migration only runs through `claude-base update`**: on a legacy project, run `update`
+  once before using the `add`/`remove`/`modules` verbs (they require the manifest and will
+  point you at `update` otherwise).
   **Impact for external readers**: any script, CI step, or tool that reads
   `.claude/.foundation-version` directly must be updated to read
   `.claude/foundation.json` (field `version`). Example migration:

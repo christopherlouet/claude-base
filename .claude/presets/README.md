@@ -83,7 +83,11 @@ A preset may declare which **horizontal domain modules** it installs by default:
 "defaultModules": ["legal"]
 ```
 
-- **Absent or empty array** → all modules installed (backward compatible default).
+- **Absent (key not declared)** → all modules installed (backward compatible
+  default, EF-210: "absence means all modules").
+- **Empty array (`[]`)** → **zero** modules installed: an explicit empty set is
+  honored, not treated as absent. The init summary prints a `claude-base add`
+  hint for every module.
 - **Non-empty array** → only the listed modules are installed and recorded in
   `foundation.json`; init summary prints a `claude-base add <mod>` hint for
   each available-but-not-installed module.

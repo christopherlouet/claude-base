@@ -62,7 +62,9 @@ tags:
 
 Installable horizontal domain modules (biz, legal, growth) are managed with
 three `claude-base` verbs. They work on an **already-initialized project** —
-run `claude-base init` first if the target directory has no `.claude/` yet.
+run `claude-base init` first if the target directory has no `.claude/` yet,
+or `claude-base update` once if the project predates `foundation.json`
+(legacy `.foundation-version` marker — update migrates it automatically).
 
 | Command | Description |
 |---------|-------------|
