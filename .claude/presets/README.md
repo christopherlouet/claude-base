@@ -75,6 +75,27 @@ Community contributions land under `.claude/presets/community/` after maintainer
 
 The `foundation.skills` filter supports two mutually-exclusive forms: `drop` (blacklist — install every foundation skill except those listed) or `keep` (whitelist — install only the listed skills). `validate-presets.sh` rejects a manifest declaring both. See `react-vite-spa.json` for a `keep`-style example and the other shipped presets for `drop`-style.
 
+### `defaultModules` (optional, US-5)
+
+A preset may declare which **horizontal domain modules** it installs by default:
+
+```json
+"defaultModules": ["legal"]
+```
+
+- **Absent (key not declared)** → all modules installed (backward compatible
+  default, EF-210: "absence means all modules").
+- **Empty array (`[]`)** → **zero** modules installed: an explicit empty set is
+  honored, not treated as absent. The init summary prints a `claude-base add`
+  hint for every module.
+- **Non-empty array** → only the listed modules are installed and recorded in
+  `foundation.json`; init summary prints a `claude-base add <mod>` hint for
+  each available-but-not-installed module.
+- **Allowed values**: `"biz"`, `"legal"`, `"growth"` (the three v1 modules).
+- **Forbidden** on `vendor-pointer` tier (EF-210 — vendor-pointer presets inherit
+  foundation defaults wholesale).
+- `validate-presets.sh` rejects unknown names and non-array values.
+
 Field naming is camelCase (matches `settings.json` and other Claude Code config files). Validation runs via `scripts/validate-presets.sh` (jq-based schema check, executed in CI).
 
 ### `detect` block (data-driven detection)

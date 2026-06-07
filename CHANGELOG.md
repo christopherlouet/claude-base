@@ -11,7 +11,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Foundation modules: installable horizontal domain modules** (`biz`, `legal`, `growth`).
+  Implemented across four sessions (S1–S4), covering specs/foundation-modules/ (US-1 through US-5):
+  - `claude-base add <module>` / `claude-base remove <module>` / `claude-base modules` CLI verbs.
+  - Module-aware update: `update --all` refreshes installed modules and skips absent ones.
+  - Preset `defaultModules[]` field: a preset may declare which modules to install by default;
+    init summary advertises the rest with `claude-base add` hints.
+  - `scripts/validate-presets.sh` validates `defaultModules[]` (known names, non-array error,
+    forbidden on vendor-pointer tier EF-210).
+  - `scripts/module.sh`: add/remove commands with dry-run, idempotency, conflict handling.
+  - `scripts/lib/modules/`: bundle manifests for `biz` (11 commands + 4 agents), `legal`
+    (5 commands + 4 agents), `growth` (11 commands + 6 agents + growth-cro skill).
+  - `docs/reference/commands.md`: `claude-base add/remove/modules` section.
+  - `.claude/presets/README.md`: `defaultModules` field documentation.
+
 ### Changed
+
+- **⚠ BREAKING — `.claude/.foundation-version` marker replaced by `.claude/foundation.json` manifest** (EF-205).
+  The legacy plain-text version marker is no longer written by `claude-base init` or `claude-base update`.
+  All foundation tooling reads the JSON manifest first; `update` creates the manifest and removes the
+  marker on first contact with a legacy project (migration is automatic and reported).
+  **The migration only runs through `claude-base update`**: on a legacy project, run `update`
+  once before using the `add`/`remove`/`modules` verbs (they require the manifest and will
+  point you at `update` otherwise).
+  **Impact for external readers**: any script, CI step, or tool that reads
+  `.claude/.foundation-version` directly must be updated to read
+  `.claude/foundation.json` (field `version`). Example migration:
+  ```bash
+  # before
+  cat .claude/.foundation-version
+  # after
+  jq -r '.version' .claude/foundation.json
+  ```
 
 - **docs: refresh model references to Opus 4.8** (Anthropic news, week of 2026-05-22). Bumped every `Opus 4.7` → `Opus 4.8` and corrected the latest-Opus model ID `claude-opus-4-6` → `claude-opus-4-8` across `docs/`, `website/docs/`, `templates/` and `.claude/` (CHANGELOG/specs left untouched as historical record). Updated the `dev-ai-integration` SDK matrix to `Opus 4.8, Sonnet 4.6, Haiku 4.5`.
 - **docs: Opus 4.8 facts** — defaults to `high` effort, **1M context window now default** (not beta) on API/Bedrock/Vertex, ~4× less likely than 4.7 to let a self-authored code flaw pass. Reflected in `advanced-features.md`, `best-practices.md`, `templates/FAQ.md`, `website/docs/concepts/advanced-features.md`.

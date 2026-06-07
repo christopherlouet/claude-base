@@ -712,27 +712,112 @@ load_preset() {
     done < <(jq -r '.foundation.skills.keep[]? // empty' "$file")
 }
 
+# preset_default_modules — print the module set for the active preset.
+# If the preset declares defaultModules[], validate each entry against known
+# modules and print the valid ones (invalid entries are warned and skipped).
+# If not declared (or no preset), falls back to modules_default_set (all modules).
+preset_default_modules() {
+    if [[ -n "$PRESET_FILE" ]]; then
+        local dm_type
+        dm_type=$(jq -r '.defaultModules // empty | type' "$PRESET_FILE" 2>/dev/null)
+        if [[ "$dm_type" = "array" ]]; then
+            local m
+            while IFS= read -r m; do
+                [[ -z "$m" ]] && continue
+                if module_exists "$m"; then
+                    printf '%s\n' "$m"
+                else
+                    printf 'new-project: warning: preset declares unknown module "%s", ignored\n' "$m" >&2
+                fi
+            done < <(jq -r '.defaultModules[] // empty' "$PRESET_FILE" 2>/dev/null)
+            return 0
+        fi
+    fi
+    # No preset or no defaultModules declared → full catalog (backward compat)
+    modules_default_set
+}
+
+# Selected/skipped module partition — computed ONCE per run (the preset and
+# the bundle registry are static), then shared by apply_modules_filter,
+# record_foundation_state and print_skipped_modules_hint. Same precedent as
+# update.sh::_load_module_filter. Parallel plain arrays (bash 3.2).
+_MODULE_PARTITION_LOADED=false
+SELECTED_MODULES=()
+SKIPPED_MODULES=()
+
+# load_module_partition — populate SELECTED_MODULES / SKIPPED_MODULES from
+# preset_default_modules vs the full catalog. Idempotent (lazy, load-once).
+load_module_partition() {
+    $_MODULE_PARTITION_LOADED && return 0
+    _MODULE_PARTITION_LOADED=true
+    local m s in_selected
+    while IFS= read -r m; do
+        [[ -n "$m" ]] && SELECTED_MODULES+=("$m")
+    done < <(preset_default_modules)
+    while IFS= read -r m; do
+        in_selected=false
+        for s in ${SELECTED_MODULES[@]+"${SELECTED_MODULES[@]}"}; do
+            [[ "$s" = "$m" ]] && { in_selected=true; break; }
+        done
+        $in_selected || SKIPPED_MODULES+=("$m")
+    done < <(modules_list)
+}
+
 # Records the project's foundation state into .claude/foundation.json
 # (specs/foundation-modules US-1). With an active preset, the manifest
-# records its name so updates skip auto-detection (CS-205). Module set is
-# the full catalog at v1 — preset defaultModules lands with US-5.
+# records its name so updates skip auto-detection (CS-205). When the preset
+# declares defaultModules[], only those modules are recorded (US-5).
 # Arguments:
 #   $1 - Target directory (absolute path)
 record_foundation_state() {
     local dir="$1"
     if [[ -n "$PRESET_NAME" ]]; then
-        local mods=()
-        local m
-        while IFS= read -r m; do
-            mods+=("$m")
-        done < <(modules_default_set)
-        write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" "${mods[@]}" \
+        load_module_partition
+        write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" \
+            ${SELECTED_MODULES[@]+"${SELECTED_MODULES[@]}"} \
             || error "failed to write .claude/foundation.json in $dir"
         rm -f "$dir/.claude/.foundation-version"
     else
         record_foundation_version "$dir" "$VERSION" \
             || error "failed to write .claude/foundation.json in $dir"
     fi
+}
+
+# apply_modules_filter — remove files belonging to modules NOT in the selected
+# set (US-5). Called after install_claude_files() when a preset declares
+# defaultModules[]. No-op when no preset is active or defaultModules is absent.
+# Arguments:
+#   $1 - Target directory (absolute path)
+apply_modules_filter() {
+    local target_dir="$1"
+    # Dry-run installs nothing, so there is nothing to filter ([[ -e ]]
+    # below would never match) — the skipped set still shows up via
+    # print_skipped_modules_hint.
+    $DRY_RUN && return 0
+
+    load_module_partition
+
+    # Remove the bundle files of every non-selected module. When the
+    # preset declares no defaultModules (or no preset is active), the
+    # skipped set is empty and this is a no-op.
+    local mod p
+    for mod in ${SKIPPED_MODULES[@]+"${SKIPPED_MODULES[@]}"}; do
+        while IFS= read -r p; do
+            [[ -z "$p" ]] && continue
+            local full="$target_dir/$p"
+            if [[ -e "$full" ]]; then
+                if [[ "$p" == */ ]]; then
+                    rm -rf "$full"
+                else
+                    rm -f "$full"
+                    # Drop the parent directory once emptied (e.g.
+                    # .claude/commands/biz/ after its last command):
+                    # a hollow module dir would shadow the real state.
+                    rmdir "$(dirname "$full")" 2>/dev/null || true
+                fi
+            fi
+        done < <(module_bundle_paths "$mod")
+    done
 }
 
 # Apply the preset's skill filter to the target installation.
@@ -1165,6 +1250,9 @@ print_simple_summary() {
     info "Available commands:"
     echo "  /work:work-explore, /work:work-plan, /work:work-commit, etc."
     echo ""
+
+    # US-5: when a preset restricted the module set, advertise the others
+    print_skipped_modules_hint
 }
 
 # Run simple mode (direct install without detection)
@@ -1239,6 +1327,9 @@ run_simple_mode() {
 
     # Apply preset filter (drops skills listed in preset.foundation.skills.drop)
     apply_preset_filter "$target_dir"
+
+    # Apply module filter — remove files for modules not in defaultModules (US-5)
+    apply_modules_filter "$target_dir"
 
     # Install CLAUDE.md
     install_claude_md_file "$target_dir"
@@ -1695,6 +1786,10 @@ create_project() {
 
     # Install Claude files (commands, agents, skills, rules, styles, templates)
     install_claude_files "$TARGET_DIR"
+
+    # Apply module filter — remove files for modules not in defaultModules (US-5)
+    apply_modules_filter "$TARGET_DIR"
+
     success "Claude commands installed ($(count_commands_cached) commands, $(count_agents_cached) agents, $(count_skills_cached) skills)"
 
     # Generate or copy CLAUDE.md
@@ -1856,7 +1951,27 @@ print_next_steps() {
     echo -e "  ${CYAN}Available commands:${NC}"
     echo -e "     /work:work-explore, /work:work-plan, /work:work-commit, etc."
     echo ""
+
+    # US-5: when a preset restricted the module set, advertise the others
+    print_skipped_modules_hint
+
     echo -e "${BOLD}═══════════════════════════════════════════════════════════════${NC}"
+    echo ""
+}
+
+# print_skipped_modules_hint — US-5: when init installed a subset of modules
+# (via preset defaultModules), list the available-but-not-installed modules
+# with the `claude-base add` command to get them.
+# No-op when all modules were installed or no preset is active.
+print_skipped_modules_hint() {
+    load_module_partition
+    [[ "${#SKIPPED_MODULES[@]}" -eq 0 ]] && return 0
+
+    local mod
+    echo -e "  ${CYAN}Optional modules (not installed by this preset):${NC}"
+    for mod in "${SKIPPED_MODULES[@]}"; do
+        echo -e "     ${YELLOW}claude-base add $mod${NC}    # install the $mod domain"
+    done
     echo ""
 }
 

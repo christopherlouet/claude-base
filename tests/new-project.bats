@@ -433,3 +433,75 @@ EOF
     [ "$status" -ne 0 ]
     [[ "$output" == *"foundation"* ]]
 }
+
+# =============================================================================
+# US-5: preset defaultModules — init installs only declared modules;
+# backward compat: no defaultModules → all modules; summary shows hints.
+# =============================================================================
+
+# Helper: write a synthetic preset with defaultModules into $1
+# $1 = directory, $2 = preset name, $3 = JSON array of defaultModules (or empty string for absent)
+_write_preset_with_dm() {
+    local dir="$1" name="$2" dm_json="$3"
+    mkdir -p "$dir"
+    local dm_field=""
+    [[ -n "$dm_json" ]] && dm_field=", \"defaultModules\": $dm_json"
+    cat > "$dir/$name.json" <<EOF
+{
+  "name": "$name",
+  "displayName": "Synthetic $name preset",
+  "description": "Synthetic preset for US-5 test.",
+  "version": "1.0.0",
+  "status": "community-curated",
+  "appliesToTypes": ["generic"],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false},
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "outOfScope": []${dm_field}
+}
+EOF
+}
+
+@test "new-project.sh preset with defaultModules installs only those modules and records them (US-5)" {
+    local preset_dir="$TEST_DIR/presets-dm"
+    _write_preset_with_dm "$preset_dir" "slim-preset" '["legal"]'
+    run "$NEW_PROJECT_SCRIPT" --preset slim-preset --presets-dir "$preset_dir" -y "$TEST_DIR/proj-dm"
+    [ "$status" -eq 0 ]
+    local manifest="$TEST_DIR/proj-dm/.claude/foundation.json"
+    [ -f "$manifest" ]
+    # Only "legal" must be in the manifest modules
+    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "legal" ]
+    # At least one legal agent/command must be present (bundle was installed)
+    local legal_count
+    legal_count=$(find "$TEST_DIR/proj-dm/.claude/agents" -name "legal-*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    [ "$legal_count" -gt 0 ]
+    # No file of a non-selected module survives the filter.
+    local biz_count
+    biz_count=$(find "$TEST_DIR/proj-dm/.claude" -name "biz-*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    [ "$biz_count" -eq 0 ]
+    # Emptied module directories are removed too — no hollow biz/growth
+    # shells left under commands/.
+    [ ! -d "$TEST_DIR/proj-dm/.claude/commands/biz" ]
+    [ ! -d "$TEST_DIR/proj-dm/.claude/commands/growth" ]
+}
+
+@test "new-project.sh preset without defaultModules installs all modules (backward compat, US-5)" {
+    local preset_dir="$TEST_DIR/presets-no-dm"
+    _write_preset_with_dm "$preset_dir" "full-preset" ""
+    run "$NEW_PROJECT_SCRIPT" --preset full-preset --presets-dir "$preset_dir" -y "$TEST_DIR/proj-no-dm"
+    [ "$status" -eq 0 ]
+    local manifest="$TEST_DIR/proj-no-dm/.claude/foundation.json"
+    [ -f "$manifest" ]
+    # All three modules must be present
+    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "biz,growth,legal" ]
+}
+
+@test "new-project.sh init summary lists available-but-not-installed modules with claude-base add hint (US-5)" {
+    local preset_dir="$TEST_DIR/presets-hint"
+    _write_preset_with_dm "$preset_dir" "hint-preset" '["legal"]'
+    run "$NEW_PROJECT_SCRIPT" --preset hint-preset --presets-dir "$preset_dir" -y "$TEST_DIR/proj-hint"
+    [ "$status" -eq 0 ]
+    # Summary must mention the two not-installed modules (biz, growth) with the add verb
+    [[ "$output" == *"claude-base add"* ]]
+    [[ "$output" == *"biz"* ]] || [[ "$output" == *"growth"* ]]
+}
