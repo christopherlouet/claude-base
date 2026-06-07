@@ -126,15 +126,21 @@ parse_args() {
 
     # Remaining options + optional positional target dir (same CLI
     # contract as init/update/validate: 'claude-base add legal .').
-    local positional_target=""
+    # target_set tracks ANY explicit target (--target or positional) so a
+    # second one is an error — update.sh rejects extra targets the same way.
+    local target_set=false
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --target)
                 shift
+                $target_set && { echo "${RED}[X]${NC} module.sh: target already specified ('$TARGET_DIR')" >&2; exit 2; }
                 TARGET_DIR="${1:?--target requires a directory}"
+                target_set=true
                 ;;
             --target=*)
+                $target_set && { echo "${RED}[X]${NC} module.sh: target already specified ('$TARGET_DIR')" >&2; exit 2; }
                 TARGET_DIR="${1#--target=}"
+                target_set=true
                 ;;
             --dry-run|-n)
                 DRY_RUN=true
@@ -154,12 +160,12 @@ parse_args() {
                 exit 2
                 ;;
             *)
-                if [[ -n "$positional_target" ]]; then
-                    echo "${RED}[X]${NC} module.sh: unexpected extra argument '$1' (target already set to '$positional_target')" >&2
+                if $target_set; then
+                    echo "${RED}[X]${NC} module.sh: unexpected extra argument '$1' (target already set to '$TARGET_DIR')" >&2
                     exit 2
                 fi
-                positional_target="$1"
                 TARGET_DIR="$1"
+                target_set=true
                 ;;
         esac
         shift

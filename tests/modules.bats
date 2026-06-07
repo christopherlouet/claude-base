@@ -711,3 +711,16 @@ run_module() {
     [ "$status" -eq 0 ]
     [ ! -d "$TEST_DIR/.claude/commands/biz" ]
 }
+
+@test "module add: explicit --target plus a positional dir is an error (review)" {
+    # update.sh rejects extra targets ('Too many arguments') — the module
+    # verbs must not silently let the positional overwrite --target.
+    setup_lean_project
+    mkdir -p "$TEST_DIR/other/.claude"
+    run_module add legal --target "$TEST_DIR" "$TEST_DIR/other"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"target"* ]]
+    # Neither project was touched.
+    run bash -c "jq -r '.modules | length' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "0" ]
+}
