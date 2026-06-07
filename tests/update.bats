@@ -844,8 +844,10 @@ _init_legal_only_project() {
     # Dry-run writes nothing: no manifest created, marker untouched.
     [ ! -f "$proj/.claude/foundation.json" ]
     [ -f "$proj/.claude/.foundation-version" ]
-    # No absent-module file is previewed as an addition.
-    [[ "$output" != *"biz-competitor"* ]]
+    # No absent-module file is previewed as an ADDITION (the name may
+    # appear in "Skip (module not installed: ...)" lines — that is the
+    # correct preview of the real run's filtering).
+    ! grep -E "Add.*biz-competitor" <<<"$output"
     # The module skip is announced instead.
     [[ "$output" == *"not installed"* ]]
 }
@@ -878,9 +880,11 @@ _init_legal_only_project() {
     [[ "$output" == *"Commands: "*"→ $expected"* ]]
 }
 
-@test "update --all: warns about on-disk files of an absent module, preserves them (review)" {
+@test "update: warns about on-disk files of an absent module, preserves them (review)" {
     # Reachable state: interrupted remove, hand-edited manifest, or manual
-    # restore. The filter must not silently strand these files forever.
+    # restore. A plain update must not silently strand these files forever.
+    # (--all is out of scope here: it cleans foundation dirs first, which
+    # resolves the stale state by itself.)
     local proj
     proj="$(_init_legal_only_project)"
     # Simulate a leftover biz file (module absent from the manifest).
@@ -889,7 +893,7 @@ _init_legal_only_project() {
     mkdir -p "$proj/$(dirname "$biz_cmd")"
     cp "$BASE_DIR/$biz_cmd" "$proj/$biz_cmd"
 
-    run "$UPDATE_SCRIPT" -y --all "$proj"
+    run "$UPDATE_SCRIPT" -y "$proj"
     [ "$status" -eq 0 ]
     # Warned, with the adopt-or-remove hint naming the module.
     [[ "$output" == *"biz"* ]]

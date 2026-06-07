@@ -192,10 +192,35 @@ manifest_has_module() {
 # Legacy marker migration — EF-205 (direct replacement, decided 2026-06-06)
 # -----------------------------------------------------------------------------
 
+# detect_legacy_modules <dir> — print the module set a legacy-marker
+# migration would record, one per line. Pure read (no writes): lets a
+# dry-run preview the exact post-migration filtering without migrating.
+# Detectable state (EF-205): a module is recorded iff at least one of its
+# bundle paths exists in the project (handles legacy minimal installs that
+# never shipped biz/legal/growth). When nothing is detectable (no commands
+# dir at all), assume the full default set — conservative: a legacy
+# standard install shipped the whole catalog.
+detect_legacy_modules() {
+    local dir="${1:?target dir required}"
+    local m p
+    if [[ -d "$dir/.claude/commands" ]]; then
+        while IFS= read -r m; do
+            while IFS= read -r p; do
+                if [[ -e "$dir/$p" ]]; then
+                    printf '%s\n' "$m"
+                    break
+                fi
+            done < <(module_bundle_paths "$m")
+        done < <(modules_list)
+    else
+        modules_default_set
+    fi
+}
+
 # migrate_legacy_marker <dir> — if no manifest exists but the legacy
 # .claude/.foundation-version marker does, create the manifest from it
-# (version from marker, no preset, full module set — conservative: the
-# legacy install shipped the whole catalog) and remove the marker.
+# (version from marker, no preset, modules from detect_legacy_modules)
+# and remove the marker.
 # No-op (status 0) when there is nothing to migrate or already migrated.
 migrate_legacy_marker() {
     local dir="${1:?target dir required}"
@@ -216,29 +241,11 @@ migrate_legacy_marker() {
         version="0.0.0"
         printf 'modules: warning: legacy marker has no readable version, migrating as 0.0.0\n' >&2
     fi
-    # Detectable state recorded (EF-205): a module is recorded iff at least
-    # one of its bundle paths exists in the project (handles legacy minimal
-    # installs that never shipped biz/legal/growth). When nothing is
-    # detectable (no commands dir at all), assume the full set —
-    # conservative: a legacy standard install shipped the whole catalog.
     local mods=()
-    local m p found
-    if [[ -d "$dir/.claude/commands" ]]; then
-        while IFS= read -r m; do
-            found=false
-            while IFS= read -r p; do
-                if [[ -e "$dir/$p" ]]; then
-                    found=true
-                    break
-                fi
-            done < <(module_bundle_paths "$m")
-            $found && mods+=("$m")
-        done < <(modules_list)
-    else
-        while IFS= read -r m; do
-            mods+=("$m")
-        done < <(modules_default_set)
-    fi
+    local m
+    while IFS= read -r m; do
+        mods+=("$m")
+    done < <(detect_legacy_modules "$dir")
     write_foundation_manifest "$dir" "$version" "" "${mods[@]}" || return 1
     rm -f "$marker"
     printf 'modules: migrated legacy version marker to .claude/foundation.json (v%s, modules: %s)\n' \
