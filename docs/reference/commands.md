@@ -48,6 +48,42 @@
 | `go vet ./...` | Analyze code |
 | `golangci-lint run` | Full linter |
 
+## claude-base CLI — module management
+
+Installable horizontal domain modules (biz, legal, growth) are managed with
+three `claude-base` verbs. They work on an **already-initialized project** —
+run `claude-base init` first if the target directory has no `.claude/` yet.
+
+| Command | Description |
+|---------|-------------|
+| `claude-base add <module> [path]` | Install a module and record it in `foundation.json` |
+| `claude-base add <module> --dry-run [path]` | Preview what would be installed (no writes) |
+| `claude-base remove <module> [path]` | Remove a module (preserves user-modified files) |
+| `claude-base remove <module> --dry-run [path]` | Preview what would be removed (no writes) |
+| `claude-base modules [path]` | List available modules and their install status |
+
+**Examples:**
+
+```bash
+# Install the legal compliance module into the current project
+claude-base add legal .
+
+# Preview installing the biz module without writing anything
+claude-base add biz --dry-run .
+
+# Remove the growth module (user-modified files are preserved with a notice)
+claude-base remove growth .
+
+# Check which modules are installed
+claude-base modules .
+```
+
+Available modules: `biz` (11 commands + 4 agents), `legal` (5 commands + 4 agents),
+`growth` (11 commands + 6 agents + growth-cro skill).
+
+**Tip:** `claude-base init --preset <name>` automatically installs the preset's
+`defaultModules` set and prints a `claude-base add` hint for the rest.
+
 ## Advanced CLI Flags
 
 | Flag | Description | Example |
