@@ -97,76 +97,87 @@ teardown() {
 }
 
 # =============================================================================
-# Tests for foundation version recording (write_foundation_marker)
+# Tests for foundation version recording (record_foundation_version)
 # Since specs/foundation-modules: writes .claude/foundation.json (manifest),
 # never the legacy .foundation-version marker (EF-204/EF-205).
 # =============================================================================
 
-@test "write_foundation_marker creates the manifest with the version" {
+@test "record_foundation_version creates the manifest with the version" {
     mkdir -p "$TEST_DIR/.claude"
-    run write_foundation_marker "$TEST_DIR" "1.37.0"
+    run record_foundation_version "$TEST_DIR" "1.37.0"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/.claude/foundation.json" ]
     [ ! -f "$TEST_DIR/.claude/.foundation-version" ]
     [ "$(jq -r '.version' "$TEST_DIR/.claude/foundation.json")" = "1.37.0" ]
 }
 
-@test "write_foundation_marker defaults to no preset and full module set" {
-    run write_foundation_marker "$TEST_DIR" "1.37.0"
+@test "record_foundation_version defaults to no preset and full module set" {
+    run record_foundation_version "$TEST_DIR" "1.37.0"
     [ "$status" -eq 0 ]
     [ "$(jq -r '.preset' "$TEST_DIR/.claude/foundation.json")" = "null" ]
     [ "$(jq -r '.modules | sort | join(",")' "$TEST_DIR/.claude/foundation.json")" = "biz,growth,legal" ]
 }
 
-@test "write_foundation_marker creates .claude/ and target_dir if missing" {
+@test "record_foundation_version creates .claude/ and target_dir if missing" {
     local nested="$TEST_DIR/new/nested/project"
     [ ! -d "$nested" ]
-    run write_foundation_marker "$nested" "1.37.0"
+    run record_foundation_version "$nested" "1.37.0"
     [ "$status" -eq 0 ]
     [ -f "$nested/.claude/foundation.json" ]
 }
 
-@test "write_foundation_marker is idempotent (same args produce same content)" {
-    write_foundation_marker "$TEST_DIR" "1.37.0"
+@test "record_foundation_version is idempotent (same args produce same content)" {
+    record_foundation_version "$TEST_DIR" "1.37.0"
     local first_sha
     first_sha=$(sha256sum "$TEST_DIR/.claude/foundation.json" | cut -d' ' -f1)
 
-    write_foundation_marker "$TEST_DIR" "1.37.0"
+    record_foundation_version "$TEST_DIR" "1.37.0"
     local second_sha
     second_sha=$(sha256sum "$TEST_DIR/.claude/foundation.json" | cut -d' ' -f1)
 
     [ "$first_sha" = "$second_sha" ]
 }
 
-@test "write_foundation_marker updates version but preserves preset and modules" {
+@test "record_foundation_version updates version but preserves preset and modules" {
     # An existing manifest (e.g. written at init with a preset and a module
     # subset) must keep its preset/modules when update bumps the version.
     source "$BATS_TEST_DIRNAME/../scripts/lib/modules.sh"
     write_foundation_manifest "$TEST_DIR" "1.36.0" "nextjs" legal
-    run write_foundation_marker "$TEST_DIR" "1.37.0"
+    run record_foundation_version "$TEST_DIR" "1.37.0"
     [ "$status" -eq 0 ]
     [ "$(jq -r '.version' "$TEST_DIR/.claude/foundation.json")" = "1.37.0" ]
     [ "$(jq -r '.preset' "$TEST_DIR/.claude/foundation.json")" = "nextjs" ]
     [ "$(jq -r '.modules | join(",")' "$TEST_DIR/.claude/foundation.json")" = "legal" ]
 }
 
-@test "write_foundation_marker removes a stale legacy marker" {
+@test "record_foundation_version removes a stale legacy marker" {
     mkdir -p "$TEST_DIR/.claude"
     echo "1.36.0" > "$TEST_DIR/.claude/.foundation-version"
-    run write_foundation_marker "$TEST_DIR" "1.37.0"
+    run record_foundation_version "$TEST_DIR" "1.37.0"
     [ "$status" -eq 0 ]
     [ ! -f "$TEST_DIR/.claude/.foundation-version" ]
     [ -f "$TEST_DIR/.claude/foundation.json" ]
 }
 
-@test "write_foundation_marker returns 1 if target_dir is empty" {
-    run write_foundation_marker "" "1.37.0"
+@test "record_foundation_version returns 1 if target_dir is empty" {
+    run record_foundation_version "" "1.37.0"
     [ "$status" -eq 1 ]
 }
 
-@test "write_foundation_marker returns 1 if version is empty" {
-    run write_foundation_marker "$TEST_DIR" ""
+@test "record_foundation_version returns 1 if version is empty" {
+    run record_foundation_version "$TEST_DIR" ""
     [ "$status" -eq 1 ]
+}
+
+@test "write_foundation_marker is a deprecated alias for record_foundation_version" {
+    # Legacy name kept for downstream sourcers of lib/common.sh — same
+    # behavior, plus a one-line deprecation notice on stderr.
+    run write_foundation_marker "$TEST_DIR" "1.37.0"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/.claude/foundation.json" ]
+    [ "$(jq -r '.version' "$TEST_DIR/.claude/foundation.json")" = "1.37.0" ]
+    [[ "$output" == *"deprecated"* ]]
+    [[ "$output" == *"record_foundation_version"* ]]
 }
 
 # =============================================================================
@@ -176,7 +187,7 @@ teardown() {
 # =============================================================================
 
 @test "read_foundation_marker_from_project reads the manifest version" {
-    write_foundation_marker "$TEST_DIR" "1.37.0"
+    record_foundation_version "$TEST_DIR" "1.37.0"
     run read_foundation_marker_from_project "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ "$output" = "1.37.0" ]
@@ -191,7 +202,7 @@ teardown() {
 }
 
 @test "read_foundation_marker_from_project prefers manifest over legacy marker" {
-    write_foundation_marker "$TEST_DIR" "1.37.0"
+    record_foundation_version "$TEST_DIR" "1.37.0"
     printf '%s\n' "1.30.0" > "$TEST_DIR/.claude/.foundation-version"
     run read_foundation_marker_from_project "$TEST_DIR"
     [ "$status" -eq 0 ]
@@ -232,8 +243,8 @@ teardown() {
     [ "$output" = "1.36.0" ]
 }
 
-@test "read_foundation_marker_from_project round-trips with write_foundation_marker" {
-    write_foundation_marker "$TEST_DIR" "1.42.0"
+@test "read_foundation_marker_from_project round-trips with record_foundation_version" {
+    record_foundation_version "$TEST_DIR" "1.42.0"
     run read_foundation_marker_from_project "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ "$output" = "1.42.0" ]
@@ -317,7 +328,7 @@ teardown() {
 
 @test "check_base_requirements requires jq (foundation-modules hard dependency)" {
     # Override command_exists to simulate a machine without jq: every other
-    # tool resolves, jq does not. write_foundation_marker now needs jq on
+    # tool resolves, jq does not. record_foundation_version now needs jq on
     # every install path, so the requirements gate must catch it upfront.
     run bash -c "source '$BATS_TEST_DIRNAME/../scripts/lib/common.sh'; command_exists() { [[ \"\$1\" != jq ]]; }; check_base_requirements"
     [ "$status" -ne 0 ]

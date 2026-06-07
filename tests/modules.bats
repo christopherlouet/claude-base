@@ -70,6 +70,18 @@ run_lib() {
     [ "$status" -ne 0 ]
 }
 
+@test "modules: modules_default_set returns the full catalog" {
+    # Lib-owned default for "no explicit module choice" call sites
+    # (init, version recording, legacy migration). Full set at v1;
+    # preset defaultModules will hook in here with US-5.
+    run_lib modules_default_set
+    [ "$status" -eq 0 ]
+    [ "${lines[0]}" = "biz" ]
+    [ "${lines[1]}" = "growth" ]
+    [ "${lines[2]}" = "legal" ]
+    [ "${#lines[@]}" -eq 3 ]
+}
+
 # =============================================================================
 # Bundle parsing
 # =============================================================================
@@ -243,6 +255,29 @@ run_lib() {
     [ "$output" = "1.40.0" ]
     run bash -c "jq -r '.modules | sort | join(\",\")' '$TEST_DIR/.claude/foundation.json'"
     [ "$output" = "biz,growth,legal" ]
+}
+
+@test "migration: empty legacy marker migrates as 0.0.0 with a warning" {
+    # An empty/whitespace-only marker has no usable version. "unknown" is
+    # not sortable by version_gte; 0.0.0 keeps comparisons meaningful and
+    # the warning tells the user what happened.
+    mkdir -p "$TEST_DIR/.claude"
+    : > "$TEST_DIR/.claude/.foundation-version"
+    run_lib migrate_legacy_marker "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/.claude/foundation.json" ]
+    [ ! -f "$TEST_DIR/.claude/.foundation-version" ]
+    [ "$(jq -r '.version' "$TEST_DIR/.claude/foundation.json")" = "0.0.0" ]
+    [[ "$output" == *"warning"* ]]
+    [[ "$output" == *"0.0.0"* ]]
+}
+
+@test "migration: whitespace-only legacy marker migrates as 0.0.0" {
+    mkdir -p "$TEST_DIR/.claude"
+    printf '   \n' > "$TEST_DIR/.claude/.foundation-version"
+    run_lib migrate_legacy_marker "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.version' "$TEST_DIR/.claude/foundation.json")" = "0.0.0" ]
 }
 
 @test "migration: no-op when manifest already present" {
