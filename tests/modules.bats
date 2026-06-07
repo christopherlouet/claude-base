@@ -659,3 +659,55 @@ run_module() {
                  manifest_has_module '$TEST_DIR' legal"
     [ "$status" -eq 0 ]
 }
+
+# =============================================================================
+# PR #268 review hardening — positional target, legacy hint, dir cleanup
+# =============================================================================
+
+@test "module add: accepts a positional target dir like init/update/validate (review)" {
+    # The docs examples use 'claude-base add legal .' — the module verbs
+    # must honor the same positional-path contract as every other verb.
+    setup_lean_project
+    run_module add legal "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run bash -c "jq -r '.modules | join(\",\")' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "legal" ]
+}
+
+@test "module modules: accepts a positional dir (review)" {
+    setup_lean_project
+    run_module modules "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"legal"* ]]
+}
+
+@test "module add: positional dir combines with flags in any position (review)" {
+    setup_lean_project
+    run_module add legal --dry-run "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # dry-run: nothing recorded
+    run bash -c "jq -r '.modules | length' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "0" ]
+}
+
+@test "module add: legacy project (marker, no manifest) hints at claude-base update (review)" {
+    # require_foundation_project must not send a legacy user to 'init' —
+    # the migration path is 'claude-base update' (EF-205).
+    mkdir -p "$TEST_DIR/.claude"
+    echo "1.40.0" > "$TEST_DIR/.claude/.foundation-version"
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"update"* ]]
+    [[ "$output" != *"'claude-base init'"* ]]
+}
+
+@test "module remove: emptied module directories are removed (review)" {
+    # Same contract as the init-time filter: no hollow
+    # .claude/commands/<module>/ shells after the last file is removed.
+    setup_lean_project
+    run_module add biz --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run_module remove biz --target "$TEST_DIR" --non-interactive
+    [ "$status" -eq 0 ]
+    [ ! -d "$TEST_DIR/.claude/commands/biz" ]
+}

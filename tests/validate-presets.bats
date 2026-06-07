@@ -318,3 +318,28 @@ EOF
     run "$VALIDATE_PRESETS"
     [[ "$status" -eq 0 ]]
 }
+
+# =============================================================================
+# PR #268 review hardening — defaultModules name guard + duplicates
+# =============================================================================
+
+@test "validate-presets.sh rejects a defaultModules name with path separators (review)" {
+    # Mirror module_exists(): only [a-z0-9-] names are module names. A raw
+    # -f test accepts "./biz" (resolves to an existing bundle file) while
+    # module_exists rejects it — pin the syntax guard, not just -f.
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.defaultModules = ["./biz"]' "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"defaultModules"* ]]
+}
+
+@test "validate-presets.sh rejects duplicate defaultModules entries (review)" {
+    # Duplicates would flow verbatim into foundation.json (no dedup
+    # downstream) — malformed manifest, catch it at validation time.
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.defaultModules = ["legal", "legal"]' "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"duplicate"* ]]
+}
