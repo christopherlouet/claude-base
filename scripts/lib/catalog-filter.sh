@@ -198,7 +198,9 @@ catalog_floor_violations() {
     local catalog="$1" root="$2" mode="$3"
     shift 3
     [[ "$mode" == drop ]] || return 0
-    local entry relpath
+    # Enumerate once, not once per exact-name entry.
+    local entry relpath items
+    items="$(catalog_list_items "$catalog" "$root")"
     for entry in "$@"; do
         case "$entry" in
             domain:work)
@@ -212,12 +214,13 @@ catalog_floor_violations() {
         esac
         # Exact name: flag it if it resolves to a floor item in this catalog.
         while IFS= read -r relpath; do
+            [[ -z "$relpath" ]] && continue
             _resolve "$catalog" "$relpath"
             if [[ "$_CF_NAME" == "$entry" ]] && _is_floor "$catalog"; then
                 printf '%s\n' "$entry"
                 break
             fi
-        done < <(catalog_list_items "$catalog" "$root")
+        done <<< "$items"
     done
 }
 
@@ -228,9 +231,17 @@ catalog_unknown_entries() {
     _cf_valid_catalog "$1" || return $?
     local catalog="$1" root="$2"
     shift 2
-    local domains items entry dom
-    domains="$(catalog_list_domains "$catalog" "$root")"
+    # Enumerate items once; derive the present-domain set from that same list
+    # (avoids a second catalog walk via catalog_list_domains). Dups in $domains
+    # are harmless — the membership test below is a substring match.
+    local domains items entry dom relpath
     items="$(catalog_list_items "$catalog" "$root")"
+    domains=""
+    while IFS= read -r relpath; do
+        [[ -z "$relpath" ]] && continue
+        _resolve "$catalog" "$relpath"
+        [[ -n "$_CF_DOMAIN" ]] && domains+="$_CF_DOMAIN"$'\n'
+    done <<< "$items"
     for entry in "$@"; do
         case "$entry" in
             domain:*)
