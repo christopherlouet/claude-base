@@ -15,6 +15,11 @@ COMMON_LIB_VERSION=$(cat "$_BASE_ROOT/VERSION" 2>/dev/null || echo "1.0.0")
 # Required by the versioning functions below (specs/foundation-modules).
 # shellcheck source=scripts/lib/modules.sh
 source "$_COMMON_SCRIPT_DIR/modules.sh"
+# Preset command/agent filtering SSOT (specs/presets-commands-agents-filter):
+# domain resolution + drop/keep removal sets + EF-111 floor. Consumed by
+# new-project.sh (install), and later update.sh + validate-presets.sh.
+# shellcheck source=scripts/lib/catalog-filter.sh
+source "$_COMMON_SCRIPT_DIR/catalog-filter.sh"
 unset _COMMON_SCRIPT_DIR _BASE_ROOT
 
 # =============================================================================
