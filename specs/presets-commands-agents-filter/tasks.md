@@ -33,12 +33,12 @@
 **Independent test**: init with a manifest declaring `foundation.commands.drop` / `foundation.agents.drop` → those items absent; `--dry-run` lists them; a no-filter preset installs byte-identical.
 
 ### Tests (RED first) ⚠️
-- [ ] T004 [P] [US1] — install tests: filtered install removes declared commands/agents; dry-run lists every removed item (EF-107); no-filter preset = byte-identical (CS-103, EF-106); project validation passes on filtered install (EF-110)
+- [x] T004 [P] [US1] — install tests (`tests/new-project-catalog-filter.bats`, 8): drop domain+item, keep/whitelist+floor, dry-run lists removals (EF-107), no-filter = byte-identical full catalog (CS-103/EF-106), EF-111 floor survives, EF-110 validation passes, +2 malformed-preset robustness guards
 
 ### Implementation
-- [ ] T005 [US1] — `load_preset()` in `scripts/new-project.sh` reads `foundation.commands`/`foundation.agents` into globals (mirror `PRESET_SKILLS_DROP/KEEP`)
-- [ ] T006 [US1] — `apply_catalog_filters()` in `scripts/new-project.sh` using `catalog-filter.sh`; wire next to `apply_modules_filter` (~line 1330) and the dry-run install path (~line 1792)
-- [ ] T007 [US1] — dry-run `[DRY-RUN]` line per removed command/agent; verify the no-field path is inert (EF-106)
+- [x] T005 [US1] — `load_preset()` reads `foundation.commands`/`foundation.agents` via `_load_catalog_filter` into `PRESET_{COMMANDS,AGENTS}_{MODE,ENTRIES}`; `common.sh` sources `catalog-filter.sh`
+- [x] T006 [US1] — `apply_catalog_filters()` via `catalog_removal_set` + shared `remove_bundle_file`; wired right after `apply_preset_filter` in `run_simple_mode` (identical path coverage to the skill filter → EF-106/EF-109 by construction)
+- [x] T007 [US1] — dry-run enumerates the source catalog, prints `catalog filter: would remove …`, installs nothing; no-field path inert (EF-106); malformed filter tolerated (review fix)
 
 **Checkpoint**: a real manifest reduces a real install; full suite green.
 
