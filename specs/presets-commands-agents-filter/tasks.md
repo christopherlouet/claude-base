@@ -50,11 +50,11 @@
 **Independent test**: `validate-presets.sh` rejects malformed filters with explicit messages; warns on unknown names; passes good filters.
 
 ### Tests (RED first) ⚠️
-- [ ] T008 [P] [US2] — validate-presets tests: drop XOR keep rejection (EF-104); vendor-pointer tier ban (EF-105); EF-111 floor rejection of `domain:work`, `assistant`, `assistant-auto`; horizontal-domain rejection of `domain:biz|legal|growth` (+ defaultModules hint); unknown-name warning naming the entry (EF-105 / Edge "Unknown name")
+- [x] T008 [P] [US2] — validate-presets tests (15 new): drop XOR keep rejection (EF-104); drop-array/keep-non-empty types; vendor-pointer tier ban (EF-105); EF-111 floor rejection of `domain:work`, `assistant`/`assistant-auto`, exact work items; horizontal-domain rejection of `domain:biz|legal|growth` + exact module items (+ defaultModules hint), drop AND keep mode; unknown-name `[WARN]` (non-fatal); keep-mode floor-omission accepted; clean stack filter `[OK]`; real-presets regression
 
 ### Implementation
-- [ ] T009 [US2] — extend `scripts/validate-presets.sh`: per-catalog XOR + tier checks (reuse the `foundation.skills` block shape), `catalog_floor_violations` for EF-111, module-domain rejection, unknown-name warning via `catalog_list_domains`/`catalog_list_items`
-- [ ] T010 [US2] — reuse the `defaultModules[]` validation skeleton shape for array/type/dedup checks; shellcheck clean
+- [x] T009 [US2] — `scripts/validate-presets.sh`: sources `catalog-filter.sh`; new non-fatal `[WARN]` channel; `_catalog_filter_findings()` helper (E:/W: routing) doing per-catalog XOR/types, `catalog_floor_violations` (EF-111), module-domain rejection (`module_exists`), `catalog_unknown_entries` warnings; vendor-pointer tier ban extended to commands/agents; fail-loud default on unexpected output
+- [x] T010 [US2] — mirrors the `foundation.skills` block shape; shellcheck `-S warning` clean
 
 **Checkpoint**: malformed filter caught with actionable message; good filter passes.
 
