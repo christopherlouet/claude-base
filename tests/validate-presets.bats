@@ -343,3 +343,156 @@ EOF
     [ "$status" -ne 0 ]
     [[ "$output" == *"duplicate"* ]]
 }
+
+# =============================================================================
+# foundation.commands / foundation.agents catalog filters — US-2 (S3)
+# spec: specs/presets-commands-agents-filter/spec.md (EF-104/105/111)
+# Baseline write_valid_manifest + jq mutation, one logical assertion each.
+# =============================================================================
+
+@test "validate-presets.sh rejects commands.drop and commands.keep together (XOR)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":["domain:ops"],"keep":["domain:work"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"mutually exclusive"* ]]
+    [[ "$output" == *"commands"* ]]
+}
+
+@test "validate-presets.sh rejects commands.drop that is not an array" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":"not-an-array"}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"commands.drop must be an array"* ]]
+}
+
+@test "validate-presets.sh rejects empty commands.keep array" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"keep":[]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"commands.keep"* ]]
+}
+
+@test "validate-presets.sh rejects agents filter on a vendor-pointer preset (tier)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    # Shape a vendor-pointer preset: status, vendor skills, single detect signal,
+    # no defaults, then add the forbidden agents filter.
+    jq '.status="vendor-pointer"
+        | .recommendedVendorSkills=[{"id":"x/y","url":"https://x","rationale":"r","condition":"always"}]
+        | .detect={"combinator":"anyOf","files":["m.marker"]}
+        | del(.defaults) | del(.foundation.skills)
+        | .foundation.agents={"drop":["dev-flutter"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"vendor-pointer"* ]]
+    [[ "$output" == *"agents"* ]]
+}
+
+@test "validate-presets.sh rejects dropping the protected floor domain:work (EF-111)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":["domain:work"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"floor"* ]] || [[ "$output" == *"EF-111"* ]]
+    [[ "$output" == *"work"* ]]
+}
+
+@test "validate-presets.sh rejects dropping an assistant entry point (EF-111)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":["assistant-auto"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"assistant-auto"* ]]
+}
+
+@test "validate-presets.sh rejects targeting a module-owned domain (biz -> defaultModules)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":["domain:biz"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"biz"* ]]
+    [[ "$output" == *"defaultModules"* ]] || [[ "$output" == *"module"* ]]
+}
+
+@test "validate-presets.sh warns (non-fatal) on an unknown command name" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":["domain:nope","no-such-command"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"WARN"* ]]
+    [[ "$output" == *"nope"* ]]
+    [[ "$output" == *"no-such-command"* ]]
+}
+
+@test "validate-presets.sh accepts a clean stack-scoped command/agent filter" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":["domain:ops","data-pipeline"]}
+        | .foundation.agents = {"drop":["dev-flutter"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[OK]"* ]]
+}
+
+@test "validate-presets.sh still validates the real presets dir (regression)" {
+    run "$VALIDATE_PRESETS"
+    [ "$status" -eq 0 ]
+}
+
+# --- S3 review: additional spec-coverage (amendment + keep-mode + agents floor) ---
+
+@test "validate-presets.sh rejects domain:legal and domain:growth (modules, not preset filters)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":["domain:legal"]} | .foundation.agents = {"drop":["domain:growth"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"legal"* ]]
+    [[ "$output" == *"growth"* ]]
+}
+
+@test "validate-presets.sh rejects an exact module-owned item (biz-competitor)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.agents = {"drop":["biz-competitor"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"biz"* ]]
+}
+
+@test "validate-presets.sh rejects an exact work-domain item drop (EF-111)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.agents = {"drop":["work-explore"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"work-explore"* ]]
+}
+
+@test "validate-presets.sh rejects a module domain in keep mode too" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"keep":["domain:work","domain:biz"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"biz"* ]]
+}
+
+@test "validate-presets.sh accepts keep mode that omits the floor (force-kept, no violation)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"keep":["domain:ops"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[OK]"* ]]
+}

@@ -40,6 +40,9 @@ PRESETS_DIR="$BASE_DIR/.claude/presets"
 # (module_exists: [a-z0-9-] syntax guard + bundle file existence).
 # shellcheck source=scripts/lib/modules.sh
 source "$SCRIPT_DIR/lib/modules.sh"
+# Command/agent catalog filter SSOT (domain resolution, floor, unknown names).
+# shellcheck source=scripts/lib/catalog-filter.sh
+source "$SCRIPT_DIR/lib/catalog-filter.sh"
 
 QUIET=false
 SINGLE_FILE=""
@@ -88,10 +91,87 @@ pass=0
 fail=0
 errors=()
 
+# _catalog_filter_findings <file> <catalog> — validate foundation.<catalog>
+# (commands|agents) drop/keep filter. Echoes findings one per line, prefixed
+# "E:" (fatal error) or "W:" (non-fatal warning); the caller routes them.
+# Delegates domain/floor/unknown logic to lib/catalog-filter.sh (SSOT).
+_catalog_filter_findings() {
+    local file="$1" catalog="$2"
+    local root="$BASE_DIR/.claude/$catalog"
+
+    local has_drop has_keep
+    has_drop=$(jq -r "(.foundation.${catalog})? // {} | if type==\"object\" and has(\"drop\") then \"yes\" else \"no\" end" "$file")
+    has_keep=$(jq -r "(.foundation.${catalog})? // {} | if type==\"object\" and has(\"keep\") then \"yes\" else \"no\" end" "$file")
+    [ "$has_drop" = "no" ] && [ "$has_keep" = "no" ] && return 0
+
+    # XOR — drop and keep are mutually exclusive.
+    if [ "$has_drop" = "yes" ] && [ "$has_keep" = "yes" ]; then
+        echo "E:foundation.${catalog}.drop and foundation.${catalog}.keep are mutually exclusive — use one or the other, not both"
+    fi
+
+    # Type checks; establish the active mode (a valid single-mode array).
+    local mode=""
+    if [ "$has_drop" = "yes" ]; then
+        if [ "$(jq -r "(.foundation.${catalog}.drop)? // null | type" "$file")" != "array" ]; then
+            echo "E:foundation.${catalog}.drop must be an array"
+        else
+            mode="drop"
+        fi
+    fi
+    if [ "$has_keep" = "yes" ]; then
+        if [ "$(jq -r "(.foundation.${catalog}.keep)? // null | type" "$file")" != "array" ]; then
+            echo "E:foundation.${catalog}.keep must be an array"
+        elif [ "$(jq -r "(.foundation.${catalog}.keep)? // [] | length" "$file")" -eq 0 ]; then
+            echo "E:foundation.${catalog}.keep must be a non-empty array"
+        else
+            if [ "$(jq -r "[(.foundation.${catalog}.keep)?[]? | select(type!=\"string\")] | length" "$file")" -ne 0 ]; then
+                echo "E:foundation.${catalog}.keep entries must be strings"
+            fi
+            [ -z "$mode" ] && mode="keep"
+        fi
+    fi
+    [ -n "$mode" ] || return 0
+
+    # Collect entries of the active mode.
+    local entries=() e
+    while IFS= read -r e; do
+        [ -z "$e" ] && continue
+        entries+=("$e")
+    done < <(jq -r "(.foundation.${catalog}.${mode})? // [] | .[]? // empty" "$file")
+
+    # EF-111 — the protected floor cannot be excluded.
+    local v
+    while IFS= read -r v; do
+        [ -z "$v" ] && continue
+        echo "E:foundation.${catalog}.${mode} cannot exclude the protected floor: $v (the work domain + assistant/assistant-auto are mandatory, EF-111)"
+    done < <(catalog_floor_violations "$catalog" "$root" "$mode" ${entries[@]+"${entries[@]}"})
+
+    # Horizontal module-owned domains (biz/legal/growth) are out of scope here —
+    # they are installable modules, not preset exclusions.
+    for e in ${entries[@]+"${entries[@]}"}; do
+        local edom=""
+        case "$e" in
+            domain:*) edom="${e#domain:}" ;;
+            *-*)      edom="${e%%-*}" ;;
+        esac
+        if [ -n "$edom" ] && module_exists "$edom"; then
+            echo "E:foundation.${catalog} must not target the '$edom' domain — it is an installable module; use defaultModules instead (see specs/foundation-modules)"
+        fi
+    done
+
+    # Unknown names — non-fatal warning (install ignores them).
+    local u
+    while IFS= read -r u; do
+        [ -z "$u" ] && continue
+        echo "W:foundation.${catalog}: '$u' matches no known command/agent or domain (typo? ignored at install)"
+    done < <(catalog_unknown_entries "$catalog" "$root" ${entries[@]+"${entries[@]}"})
+}
+
 validate_one() {
     local file="$1"
     local rel="${file#"$BASE_DIR/"}"
     local errs=()
+    local warns=()
 
     if ! jq -e . "$file" >/dev/null 2>&1; then
         errs+=("invalid JSON syntax")
@@ -182,6 +262,19 @@ validate_one() {
             fi
         fi
     fi
+
+    # foundation.commands / foundation.agents catalog filters (US-2).
+    # The helper echoes E:/W:-prefixed findings; route them to errs/warns.
+    local cf_line
+    while IFS= read -r cf_line; do
+        case "$cf_line" in
+            E:*) errs+=("${cf_line#E:}") ;;
+            W:*) warns+=("${cf_line#W:}") ;;
+            # Fail loud: any unexpected line is surfaced as an error rather than
+            # silently swallowed (a validator must never hide output).
+            *)   errs+=("internal: unexpected catalog-filter output: $cf_line") ;;
+        esac
+    done < <(_catalog_filter_findings "$file" commands; _catalog_filter_findings "$file" agents)
 
     if jq -e '.marketplacePlugins' "$file" >/dev/null 2>&1; then
         local t
@@ -306,6 +399,16 @@ validate_one() {
         vp_drop_n=$(jq -r '.foundation.skills.drop // [] | length' "$file")
         [ "$vp_drop_n" -eq 0 ] || errs+=("vendor-pointer preset MUST NOT declare foundation.skills.drop (EF-004)")
 
+        # EF-105 tier rule: command/agent filters are likewise forbidden — a
+        # vendor-pointer preset inherits the full foundation catalog.
+        local vp_cat vp_m vp_n
+        for vp_cat in commands agents; do
+            for vp_m in keep drop; do
+                vp_n=$(jq -r "(.foundation.${vp_cat}.${vp_m})? // [] | length" "$file")
+                [ "$vp_n" -eq 0 ] || errs+=("vendor-pointer preset MUST NOT declare foundation.${vp_cat}.${vp_m} (EF-105 tier rule)")
+            done
+        done
+
         # EF-004: defaults MUST be absent (foundation defaults inherited)
         local vp_has_defaults
         vp_has_defaults=$(jq -r 'if has("defaults") then "yes" else "no" end' "$file")
@@ -391,6 +494,16 @@ validate_one() {
                 done
             fi
         fi
+    fi
+
+    # Non-fatal warnings (e.g. unknown command/agent names) — surfaced but
+    # never flip the exit status.
+    if [ "${#warns[@]}" -gt 0 ]; then
+        echo "[WARN]  $rel"
+        local w
+        for w in "${warns[@]}"; do
+            echo "        - $w"
+        done
     fi
 
     if [ "${#errs[@]}" -eq 0 ]; then
