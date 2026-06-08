@@ -23,7 +23,7 @@ Feature specs consumed by the workflow agents (`/work:work-specify`, `/work:work
 | [preset-category-prompt](preset-category-prompt/spec.md) | ✅ Shipped | #192 (2026-05-19) |
 | [audit-docs](audit-docs/spec.md) | ✅ Shipped | #201 (2026-05-19) |
 | [foundation-modules](foundation-modules/spec.md) | ✅ Shipped | #265–#269 (2026-06-07) |
-| [presets-commands-agents-filter](presets-commands-agents-filter/spec.md) | 🔵 Ready for planning | — (design review #264) |
+| [presets-commands-agents-filter](presets-commands-agents-filter/spec.md) | 🟢 Planned | — (plan + tasks 2026-06-08, S1 next) |
 | [marketplace-audit](marketplace-audit/spec.md) | ♻️ Living document | continuous (vendor-curation gatekeeper) |
 | [foundation-positioning-review](foundation-positioning-review/spec.md) | 📌 Reference | strategic baseline |
 | [dogfood-v2-findings](dogfood-v2-findings/spec.md) | 📌 Closed | findings folded into rules/specs |
