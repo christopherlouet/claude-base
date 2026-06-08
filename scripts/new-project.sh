@@ -102,6 +102,14 @@ PRESET_SKILLS_DROP=()
 # When non-empty, apply_preset_filter() removes every installed skill whose
 # top-level directory name is NOT in this list.
 PRESET_SKILLS_KEEP=()
+# Set by load_preset() — command/agent catalog filters (US-1). Each catalog
+# independently declares drop XOR keep; MODE is "drop"|"keep"|"" and ENTRIES
+# holds the opaque list entries (exact item name or domain:<name>). Consumed
+# by apply_catalog_filters() via the catalog-filter lib.
+PRESET_COMMANDS_MODE=""
+PRESET_COMMANDS_ENTRIES=()
+PRESET_AGENTS_MODE=""
+PRESET_AGENTS_ENTRIES=()
 # Populated by populate_matched_presets() — list of preset names whose
 # detect rule matches PROJECT_PATH. Empty when --preset was passed
 # explicitly (EF-016) or when no preset matches.
@@ -710,6 +718,39 @@ load_preset() {
         [[ -z "$skill" ]] && continue
         PRESET_SKILLS_KEEP+=("$skill")
     done < <(jq -r '.foundation.skills.keep[]? // empty' "$file")
+
+    # Capture command/agent catalog filters (US-1). Each catalog declares
+    # drop XOR keep (validator-enforced); entries are opaque (exact item name
+    # or domain:<name>) — the catalog-filter lib resolves them at apply time.
+    _load_catalog_filter "$file" commands PRESET_COMMANDS_MODE PRESET_COMMANDS_ENTRIES
+    _load_catalog_filter "$file" agents   PRESET_AGENTS_MODE   PRESET_AGENTS_ENTRIES
+}
+
+# _load_catalog_filter <preset-file> <catalog> <mode-var> <entries-array-var>
+# Read foundation.<catalog>.{drop,keep} from the preset into the named globals.
+# Sets MODE to "drop"|"keep"|"" and fills the ENTRIES array. drop wins if both
+# are present (the validator forbids that at authoring time — defense only).
+_load_catalog_filter() {
+    local file="$1" catalog="$2" mode_var="$3" arr_var="$4"
+    eval "$mode_var=''"
+    eval "$arr_var=()"
+    local mode entry
+    for mode in drop keep; do
+        local n
+        # Tolerant of a malformed preset (scalar foundation, or a non-array
+        # drop/keep): the `?` suppresses index errors so a bad manifest never
+        # crashes the install under `set -euo pipefail`, and a non-array value
+        # counts as 0 (declared-but-empty is ignored, the validator flags it).
+        n=$(jq -r "(.foundation.${catalog}.${mode})? // [] | if type==\"array\" then length else 0 end" "$file")
+        if [[ "$n" -gt 0 ]]; then
+            eval "$mode_var=\$mode"
+            while IFS= read -r entry; do
+                [[ -z "$entry" ]] && continue
+                eval "$arr_var+=(\"\$entry\")"
+            done < <(jq -r "(.foundation.${catalog}.${mode})? // [] | .[]? // empty" "$file")
+            break
+        fi
+    done
 }
 
 # preset_default_modules — print the module set for the active preset.
@@ -884,6 +925,55 @@ apply_preset_filter() {
     done
     if [[ $dropped -gt 0 ]]; then
         debug "Preset filter: $dropped skill(s) dropped (out of stack scope)"
+    fi
+}
+
+# apply_catalog_filters — remove commands/agents excluded by the preset's
+# foundation.commands / foundation.agents filter (US-1). Delegates the
+# drop/keep + domain:<name> + EF-111 floor logic to the catalog-filter lib
+# (single source of truth, shared with update + validate). No-op when neither
+# catalog declares a filter (EF-106 byte-identical install).
+#
+# Arguments:
+#   $1 - Target directory (absolute path)
+apply_catalog_filters() {
+    local target_dir="$1"
+    [[ -z "$PRESET_FILE" ]] && return 0
+    _apply_one_catalog_filter "$target_dir" commands "$PRESET_COMMANDS_MODE" \
+        ${PRESET_COMMANDS_ENTRIES[@]+"${PRESET_COMMANDS_ENTRIES[@]}"}
+    _apply_one_catalog_filter "$target_dir" agents "$PRESET_AGENTS_MODE" \
+        ${PRESET_AGENTS_ENTRIES[@]+"${PRESET_AGENTS_ENTRIES[@]}"}
+}
+
+# _apply_one_catalog_filter <target_dir> <catalog> <mode> [entries...]
+# Resolve the removal set via catalog_removal_set and delete each item.
+# Uses the shared remove_bundle_file (lib/modules.sh) so an emptied command
+# domain dir (.claude/commands/<domain>/) is cleaned up — no hollow shell.
+_apply_one_catalog_filter() {
+    local target_dir="$1" catalog="$2" mode="$3"
+    shift 3
+    [[ -z "$mode" ]] && return 0
+    # In dry-run nothing was installed yet, so enumerate against the source
+    # foundation catalog to report what WOULD be removed; otherwise scan the
+    # populated project. Removal paths are catalog-relative either way.
+    local scan_root
+    if $DRY_RUN; then
+        scan_root="$BASE_DIR/.claude/$catalog"
+    else
+        scan_root="$target_dir/.claude/$catalog"
+    fi
+    local removed=0 rel
+    while IFS= read -r rel; do
+        [[ -z "$rel" ]] && continue
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} catalog filter: would remove $catalog/$rel"
+        else
+            remove_bundle_file "$target_dir/.claude/$catalog/$rel"
+        fi
+        removed=$((removed + 1))
+    done < <(catalog_removal_set "$catalog" "$scan_root" "$mode" "$@")
+    if [[ $removed -gt 0 ]]; then
+        debug "Preset $catalog filter ($mode): $removed item(s) removed"
     fi
 }
 
@@ -1328,6 +1418,9 @@ run_simple_mode() {
 
     # Apply preset filter (drops skills listed in preset.foundation.skills.drop)
     apply_preset_filter "$target_dir"
+
+    # Apply command/agent catalog filter (preset.foundation.commands/agents, US-1)
+    apply_catalog_filters "$target_dir"
 
     # Apply module filter — remove files for modules not in defaultModules (US-5)
     apply_modules_filter "$target_dir"

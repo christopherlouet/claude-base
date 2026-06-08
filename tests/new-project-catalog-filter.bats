@@ -1,0 +1,222 @@
+#!/usr/bin/env bats
+
+# =============================================================================
+# Tests for the install-time command/agent filter (US-1, S2).
+#
+# Spec: specs/presets-commands-agents-filter/spec.md (US-1, EF-101/106/107/110/111)
+# Plan: specs/presets-commands-agents-filter/plan.md (Phase 2, T004-T007)
+#
+# A preset's foundation.commands / foundation.agents drop|keep filter is applied
+# at init by apply_catalog_filters(), consuming the S1 catalog-filter lib. These
+# tests drive that behaviour through the real CLI (scripts/new-project.sh
+# --preset … --presets-dir … -y <proj>), mirroring tests/new-project-preset-filter.bats.
+# =============================================================================
+
+load 'test_helper'
+
+NEW_PROJECT="$BASE_DIR/scripts/new-project.sh"
+
+setup() {
+    skip_if_no_jq
+    setup_test_dir
+}
+
+teardown() {
+    teardown_test_dir
+}
+
+# Write a synthetic preset JSON into a temp presets dir and echo the dir.
+# $1 = preset name, $2 = the "foundation" object body (JSON), $3 = presets dir.
+_write_preset() {
+    local name="$1" foundation="$2" dir="$3"
+    mkdir -p "$dir"
+    cat > "$dir/$name.json" << EOF
+{
+  "\$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "$name",
+  "displayName": "Synthetic $name",
+  "description": "Synthetic preset for catalog-filter install tests ($name).",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["$name.marker"]},
+  "foundation": $foundation,
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+    echo "$dir"
+}
+
+# ---------------------------------------------------------------------------
+# T004a — drop: a domain (commands) + an exact item (agents) are removed,
+#          no hollow command-domain dir is left behind.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: drop domain:ops (commands) + dev-flutter (agent)" {
+    local pdir="$TEST_DIR/presets"
+    _write_preset "drop-ops" \
+        '{"commands": {"drop": ["domain:ops"]}, "agents": {"drop": ["dev-flutter"]}}' \
+        "$pdir" >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset drop-ops --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+    [ -d "$proj/.claude" ]
+
+    # The ops command domain is gone, and the emptied dir is removed (no hollow shell).
+    [ ! -e "$proj/.claude/commands/ops" ]
+    # The dropped agent is gone.
+    [ ! -e "$proj/.claude/agents/dev-flutter.md" ]
+    # Non-targeted catalogs/domains are intact (filter is not over-broad).
+    [ -d "$proj/.claude/commands/work" ]
+    [ -f "$proj/.claude/agents/work-explore.md" ]
+    # Agents of the ops domain are NOT removed (commands filter is catalog-scoped).
+    [ -f "$proj/.claude/agents/ops-deploy.md" ]
+}
+
+# ---------------------------------------------------------------------------
+# T004b — keep (whitelist): only kept domain + floor survive on commands.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: keep domain:work (commands) drops the rest, floor stays" {
+    local pdir="$TEST_DIR/presets"
+    _write_preset "keep-work" \
+        '{"commands": {"keep": ["domain:work"]}}' \
+        "$pdir" >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset keep-work --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+
+    # Kept domain present.
+    [ -d "$proj/.claude/commands/work" ]
+    # Floor entry points present even though not in the keep list.
+    [ -f "$proj/.claude/commands/assistant.md" ]
+    [ -f "$proj/.claude/commands/assistant-auto.md" ]
+    # A non-kept, non-floor domain is removed.
+    [ ! -e "$proj/.claude/commands/ops" ]
+    # Agents catalog declared no filter → untouched (full set).
+    [ -f "$proj/.claude/agents/ops-deploy.md" ]
+}
+
+# ---------------------------------------------------------------------------
+# T006a — EF-106: a preset with NO command/agent filter installs the full
+#          catalog, byte-for-byte identical to the unfiltered foundation.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: no command/agent filter = full catalog (EF-106)" {
+    local pdir="$TEST_DIR/presets"
+    _write_preset "skills-only" \
+        '{"skills": {"drop": ["dev-flutter"]}}' \
+        "$pdir" >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset skills-only --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+
+    # Command + agent counts match the foundation catalog exactly.
+    local src_cmds proj_cmds src_agents proj_agents
+    src_cmds=$(find "$BASE_DIR/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' ')
+    proj_cmds=$(find "$proj/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' ')
+    src_agents=$(find "$BASE_DIR/.claude/agents" -maxdepth 1 -type f -name '*.md' | wc -l | tr -d ' ')
+    proj_agents=$(find "$proj/.claude/agents" -maxdepth 1 -type f -name '*.md' | wc -l | tr -d ' ')
+    [ "$proj_cmds" -eq "$src_cmds" ]
+    [ "$proj_agents" -eq "$src_agents" ]
+}
+
+# ---------------------------------------------------------------------------
+# T006b — EF-111: even a preset that tries to drop domain:work cannot remove
+#          the protected floor at install time.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: drop domain:work cannot remove the floor (EF-111)" {
+    local pdir="$TEST_DIR/presets"
+    _write_preset "drop-work" \
+        '{"commands": {"drop": ["domain:work", "assistant", "assistant-auto"]}}' \
+        "$pdir" >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset drop-work --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+
+    [ -d "$proj/.claude/commands/work" ]
+    [ -f "$proj/.claude/commands/assistant.md" ]
+    [ -f "$proj/.claude/commands/assistant-auto.md" ]
+}
+
+# ---------------------------------------------------------------------------
+# T007a — dry-run (EF-107): lists what would be removed, removes nothing.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: --dry-run lists removals, installs nothing" {
+    local pdir="$TEST_DIR/presets"
+    _write_preset "drop-ops" \
+        '{"commands": {"drop": ["domain:ops"]}}' \
+        "$pdir" >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset drop-ops --presets-dir "$pdir" -y --dry-run "$proj"
+    [ "$status" -eq 0 ]
+    # Dry-run must emit a filter-specific removal line for the dropped command
+    # domain (distinct from generic install/copy DRY-RUN lines) and install nothing.
+    [[ "$output" == *"catalog filter"* ]]
+    [[ "$output" == *"commands/ops"* ]]
+    [ ! -d "$proj/.claude/commands/ops" ]
+}
+
+# ---------------------------------------------------------------------------
+# Robustness (code review): a malformed filter (non-array drop, or scalar
+# foundation) must not crash the install under set -euo pipefail; the bad
+# declaration is ignored (full catalog) — the validator flags it in S3.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: malformed non-array drop does not crash, ignored" {
+    local pdir="$TEST_DIR/presets"
+    _write_preset "bad-drop" \
+        '{"commands": {"drop": "not-an-array"}}' \
+        "$pdir" >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset bad-drop --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+    # Bad filter ignored → ops commands still present (full catalog).
+    [ -d "$proj/.claude/commands/ops" ]
+}
+
+@test "catalog-filter install: scalar foundation does not crash the install" {
+    local pdir="$TEST_DIR/presets"
+    mkdir -p "$pdir"
+    cat > "$pdir/scalar-foundation.json" << 'EOF'
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "scalar-foundation",
+  "displayName": "Synthetic scalar-foundation",
+  "description": "Malformed: foundation is a scalar; install must not crash.",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["scalar-foundation.marker"]},
+  "foundation": 123,
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+    local proj="$TEST_DIR/proj"
+    run "$NEW_PROJECT" --preset scalar-foundation --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+    [ -d "$proj/.claude/commands/ops" ]
+}
+
+# ---------------------------------------------------------------------------
+# T007b — EF-110: project validation passes on a filtered install.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: filtered project passes validation (EF-110)" {
+    local pdir="$TEST_DIR/presets"
+    _write_preset "drop-ops" \
+        '{"commands": {"drop": ["domain:ops"]}, "agents": {"drop": ["dev-flutter"]}}' \
+        "$pdir" >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset drop-ops --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+
+    run "$BASE_DIR/scripts/validate.sh" "$proj"
+    [ "$status" -eq 0 ]
+}
