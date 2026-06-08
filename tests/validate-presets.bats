@@ -448,3 +448,51 @@ EOF
     run "$VALIDATE_PRESETS"
     [ "$status" -eq 0 ]
 }
+
+# --- S3 review: additional spec-coverage (amendment + keep-mode + agents floor) ---
+
+@test "validate-presets.sh rejects domain:legal and domain:growth (modules, not preset filters)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":["domain:legal"]} | .foundation.agents = {"drop":["domain:growth"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"legal"* ]]
+    [[ "$output" == *"growth"* ]]
+}
+
+@test "validate-presets.sh rejects an exact module-owned item (biz-competitor)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.agents = {"drop":["biz-competitor"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"biz"* ]]
+}
+
+@test "validate-presets.sh rejects an exact work-domain item drop (EF-111)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.agents = {"drop":["work-explore"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"work-explore"* ]]
+}
+
+@test "validate-presets.sh rejects a module domain in keep mode too" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"keep":["domain:work","domain:biz"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"biz"* ]]
+}
+
+@test "validate-presets.sh accepts keep mode that omits the floor (force-kept, no violation)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"keep":["domain:ops"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[OK]"* ]]
+}

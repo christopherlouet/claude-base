@@ -270,6 +270,9 @@ validate_one() {
         case "$cf_line" in
             E:*) errs+=("${cf_line#E:}") ;;
             W:*) warns+=("${cf_line#W:}") ;;
+            # Fail loud: any unexpected line is surfaced as an error rather than
+            # silently swallowed (a validator must never hide output).
+            *)   errs+=("internal: unexpected catalog-filter output: $cf_line") ;;
         esac
     done < <(_catalog_filter_findings "$file" commands; _catalog_filter_findings "$file" agents)
 
