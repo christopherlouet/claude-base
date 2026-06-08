@@ -1,6 +1,6 @@
 # Spec: presets — extend filtering to commands and agents
 
-> **Status: 🔵 Ready for planning** — clarified in the #264 design review; not implemented yet.
+> **Status: 🟢 Planned** — clarified (#264) + planned 2026-06-08 ([`plan.md`](plan.md) · [`tasks.md`](tasks.md)); implementation pending (S1 next).
 
 **Status**: Clarified — all 3 clarification points resolved (2026-06-06), ready for planning
 **Date**: 2026-06-06
@@ -86,7 +86,7 @@ Acceptance criteria:
 
 - **Unknown name**: a filter names `bizz` (typo) or an item removed from the foundation since the preset was written → validation warning naming the unknown entry; install proceeds, nothing matches, nothing breaks.
 - **Empty result**: a domain exclusion matches zero installed items (e.g. preset combined with simple mode, or domain already absent) → silent no-op, no error.
-- **Double declaration**: the same item appears in both a domain exclusion and an item retention → retention wins (refinement semantics); validated, documented.
+- **Double declaration**: the same item appears in both a domain entry and an exact-item entry of the **same** list → idempotent (resolved once); validated, documented. _Resolved 2026-06-08:_ a single catalog list carries one polarity only (drop XOR keep). To retain one item of an otherwise-excluded domain, use **keep mode** as a whitelist (e.g. `"keep": ["domain:work", "ops-deploy"]`). Cross-mode inline refinement (a `!item` rescue inside a drop list) is **deferred** — no new syntax in v1.
 - **Cross-catalog divergence**: a preset drops the `ops-proxmox` skill but not the `ops-proxmox` agent/command (or vice versa) → allowed (catalogs are filtered independently), but the simulation output makes the per-catalog result visible so the author can spot unintended divergence.
 - **Near-name traps**: item names do not align perfectly across catalogs (e.g. a command and an agent with different names for the same topic) → no automatic cross-catalog derivation; each catalog is filtered only by its own declarations.
 - **Core protection**: a manifest excluding the `work` domain or the orchestration entry points → rejected at validation (EF-111), never discovered at install time.
@@ -126,9 +126,9 @@ Acceptance criteria:
 
 ## Clarification Points
 
-1. ~~**Manifest vocabulary**~~ — **RESOLVED (2026-06-06)**: align on `drop`/`keep` extended with `domain:<name>` entries, same XOR rule as skills; the parent spec's historical `domains`/`excludes` example is amended in the same change (CS-105). Example:
+1. ~~**Manifest vocabulary**~~ — **RESOLVED (2026-06-06)**: align on `drop`/`keep` extended with `domain:<name>` entries, same XOR rule as skills; the parent spec's historical `domains`/`excludes` example is amended in the same change (CS-105). Example (amended 2026-06-08 — stack-scoped only; `domain:biz|legal|growth` are now rejected as they are owned by the modules feature):
    ```json
-   "commands": { "drop": ["domain:biz", "domain:legal", "ops-proxmox"] }
+   "commands": { "drop": ["domain:ops", "data-pipeline"] }
    ```
 2. ~~**Core protection list (EF-111)**~~ — **RESOLVED (2026-06-06)**: the floor is the `work` domain + the `assistant`/`assistant-auto` orchestration entry points, exactly as EF-111 states. `qa`/`dev`/`doc` items remain excludable — a preset may legitimately drop them for its stack.
 3. ~~**US-4 adoption scope for `nextjs`**~~ — **RESOLVED (2026-06-06), then AMENDED the same day**: the initial "ambitious" decision (also exclude `biz`/`legal`/`growth`) was superseded by the foundation-modules spec — horizontal domains become opt-in modules instead of preset exclusions, which answers the underlying concern (easy, update-tracked reinstallation, especially for `legal`) better than any exclusion mitigation. `nextjs` adoption is now the conservative stack mirror only.
