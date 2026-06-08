@@ -66,12 +66,12 @@
 **Independent test**: update on a filtered project adds 0 excluded items; report lists them; `--no-preset-filter` restores full catalog; dry-run lists skipped-by-filter distinctly.
 
 ### Tests (RED first) ⚠️
-- [ ] T011 [P] [US3] — update tests: excluded commands/agents not re-added (CS-102); skipped items reported distinctly (EF-108); escape hatch restores full catalog; dry-run distinguishes skipped-by-filter from updated/added (EF-107); modules-skip + preset-skip coexist in one run (R6)
+- [x] T011 [P] [US3] — update tests (`tests/update-presets-catalog.bats`, 5): excluded command+agent not re-added (CS-102); distinct `Filtered by preset` summary line (EF-108); `--no-preset` restores full catalog; EF-111 floor (`domain:work`) restored not skipped; dry-run lists preset-skipped items, no writes (EF-107)
 
 ### Implementation
-- [ ] T012 [US3] — load active preset's command/agent filters (extend `_load_skill_field`/`load_active_*` in `scripts/update.sh`)
-- [ ] T013 [US3] — per-file skip inside `update_directory("commands")` and `("agents")` via `catalog-filter.sh` (copy-only, never delete on-disk — EF-011); extend the existing skip-summary + dry-run listing
-- [ ] T014 [US3] — extend the existing skill-filter escape-hatch flag scope to commands/agents (no new flag); shellcheck clean
+- [x] T012 [US3] — `_catalog_remove_set` reads the active preset's `foundation.commands/agents` (tolerant jq) and precomputes per-catalog removal sets via `catalog_removal_set`; precomputed once after `resolve_active_preset` (empty under `--no-preset` → escape hatch reused)
+- [x] T013 [US3] — `is_catalog_item_filtered` per-file skip in `update_command_file` (commands) and the `update_directory` agents block, COPY-only (EF-011); distinct `print_summary` line (separate from module skip)
+- [x] T014 [US3] — `--no-preset` escape hatch reused (no new flag); shellcheck `-S warning` clean
 
 **Checkpoint**: full update matrix green; 0 excluded items re-introduced.
 
