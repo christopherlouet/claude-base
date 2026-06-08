@@ -162,6 +162,49 @@ EOF
 }
 
 # ---------------------------------------------------------------------------
+# Robustness (code review): a malformed filter (non-array drop, or scalar
+# foundation) must not crash the install under set -euo pipefail; the bad
+# declaration is ignored (full catalog) — the validator flags it in S3.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: malformed non-array drop does not crash, ignored" {
+    local pdir="$TEST_DIR/presets"
+    _write_preset "bad-drop" \
+        '{"commands": {"drop": "not-an-array"}}' \
+        "$pdir" >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset bad-drop --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+    # Bad filter ignored → ops commands still present (full catalog).
+    [ -d "$proj/.claude/commands/ops" ]
+}
+
+@test "catalog-filter install: scalar foundation does not crash the install" {
+    local pdir="$TEST_DIR/presets"
+    mkdir -p "$pdir"
+    cat > "$pdir/scalar-foundation.json" << 'EOF'
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "scalar-foundation",
+  "displayName": "Synthetic scalar-foundation",
+  "description": "Malformed: foundation is a scalar; install must not crash.",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["scalar-foundation.marker"]},
+  "foundation": 123,
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+    local proj="$TEST_DIR/proj"
+    run "$NEW_PROJECT" --preset scalar-foundation --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+    [ -d "$proj/.claude/commands/ops" ]
+}
+
+# ---------------------------------------------------------------------------
 # T007b — EF-110: project validation passes on a filtered install.
 # ---------------------------------------------------------------------------
 @test "catalog-filter install: filtered project passes validation (EF-110)" {

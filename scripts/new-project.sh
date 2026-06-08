@@ -737,13 +737,17 @@ _load_catalog_filter() {
     local mode entry
     for mode in drop keep; do
         local n
-        n=$(jq -r ".foundation.${catalog}.${mode} // [] | length" "$file")
+        # Tolerant of a malformed preset (scalar foundation, or a non-array
+        # drop/keep): the `?` suppresses index errors so a bad manifest never
+        # crashes the install under `set -euo pipefail`, and a non-array value
+        # counts as 0 (declared-but-empty is ignored, the validator flags it).
+        n=$(jq -r "(.foundation.${catalog}.${mode})? // [] | if type==\"array\" then length else 0 end" "$file")
         if [[ "$n" -gt 0 ]]; then
             eval "$mode_var=\$mode"
             while IFS= read -r entry; do
                 [[ -z "$entry" ]] && continue
                 eval "$arr_var+=(\"\$entry\")"
-            done < <(jq -r ".foundation.${catalog}.${mode}[]? // empty" "$file")
+            done < <(jq -r "(.foundation.${catalog}.${mode})? // [] | .[]? // empty" "$file")
             break
         fi
     done
