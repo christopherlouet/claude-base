@@ -19,9 +19,9 @@
 **Goal**: SSOT for command/agent filtering (`scripts/lib/catalog-filter.sh`). EF-102/103/104/111 core logic.
 **Independent test**: lib helpers green via `tests/catalog-filter.bats`; no consumer wired, zero behaviour change elsewhere.
 
-- [ ] T001 [P] — RED: `tests/catalog-filter.bats` — domain resolution for commands (`commands/<domain>/x.md`) and agents (`<domain>-x.md`), domainless commands (`assistant`, `git-rename`, `lessons`), `domain:<name>` + exact-item matching, drop & keep removal sets, floor protection (work + assistant/assistant-auto), enumeration (`catalog_list_domains`/`catalog_list_items`), unknown-name detection
-- [ ] T002 — GREEN: `scripts/lib/catalog-filter.sh` — `catalog_item_domain`, `catalog_list_domains`, `catalog_list_items`, `catalog_entry_matches`, `catalog_removal_set`, `catalog_floor_violations` (macOS bash 3.2 discipline, parallel arrays, `while read`)
-- [ ] T003 — REFACTOR: shellcheck clean (`-S warning`, no `-x`); dedupe against `lib/modules.sh` idioms
+- [x] T001 [P] — RED: `tests/catalog-filter.bats` — domain resolution for commands (`commands/<domain>/x.md`) and agents (`<domain>-x.md`), domainless commands (`assistant`, `git-rename`, `lessons`), `domain:<name>` + exact-item matching, drop & keep removal sets, floor protection (work + assistant/assistant-auto), enumeration (`catalog_list_domains`/`catalog_list_items`), unknown-name detection — 36 tests, 34 RED before impl
+- [x] T002 — GREEN: `scripts/lib/catalog-filter.sh` — `catalog_item_domain`, `catalog_item_name`, `catalog_list_domains`, `catalog_list_items`, `catalog_entry_matches`, `catalog_removal_set`, `catalog_floor_violations`, `catalog_unknown_entries` (bash 3.2: single `_resolve` → `_CF_DOMAIN`/`_CF_NAME`, no per-item subshell) — 36/36 green
+- [x] T003 — REFACTOR: shellcheck `-S warning` clean (CI-equivalent, no `-x`); idioms mirror `lib/modules.sh`
 
 **Checkpoint**: lib green in isolation.
 
