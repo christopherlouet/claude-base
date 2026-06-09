@@ -69,6 +69,17 @@ ACTIVE_PRESET_SOURCE=""
 ACTIVE_PRESET_DROP_LIST=()
 # shellcheck disable=SC2034
 ACTIVE_PRESET_KEEP_LIST=()
+# Command/agent catalog filter (US-3) — newline lists of repo-relative paths
+# the active preset excludes, precomputed once after resolve_active_preset.
+# Empty when no preset / --no-preset (escape hatch reused for free).
+CATALOG_REMOVE_COMMANDS=""
+CATALOG_REMOVE_AGENTS=""
+PRESET_FILTER_SKIPPED=0
+# Commands a clean update would actually deposit (every command not skipped by
+# the module or preset filter). Accumulated in update_command_file so the
+# reported "Commands: N → M" count derives from the single deposit pass — no
+# second tree walk, no skip logic duplicated outside update_command_file.
+COMMANDS_DEPOSITED=0
 # Optional override: path to a directory containing preset JSON files.
 # When set, resolve_active_preset() looks there BEFORE the official presets dir.
 # Intended for testing only (synthetic presets); not documented in --help.
@@ -560,6 +571,22 @@ update_command_file() {
         return
     fi
 
+    # US-3: preset command filter — skip commands the active preset excludes.
+    # COPY-only: returning leaves any on-disk copy untouched (EF-011).
+    if is_catalog_item_filtered "$CATALOG_REMOVE_COMMANDS" "$rel_path"; then
+        ((PRESET_FILTER_SKIPPED++)) || true
+        debug "commands/$rel_path skipped (preset filter: $ACTIVE_PRESET_NAME)"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): commands/$rel_path"
+        fi
+        return
+    fi
+
+    # Past both skip gates: this command IS part of the would-be-state
+    # (added/updated/identical all leave it on disk). Counted here so the
+    # summary count and the actual deposit can never diverge.
+    ((COMMANDS_DEPOSITED++)) || true
+
     # Create the subdirectory if needed
     local dest_dir
     dest_dir=$(dirname "$dest")
@@ -665,17 +692,12 @@ update_commands() {
     # Dogfood finding #2: `after` must reflect the would-be-state, not the
     # current target. In dry-run nothing is written, so reading from
     # $TARGET_DIR would always yield `after == before` and hide the real
-    # delta. Read from the foundation source (which is what a clean update
-    # would deposit), minus commands the module filter excludes (US-3):
-    # absent-module commands are never deposited, so they are not part of
-    # the would-be-state. Presets still do not filter commands today.
-    local after
-    after=$(find "$base_commands_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
-    local _absent_cmds=0 _p
-    for _p in ${ABSENT_MODULE_FILES[@]+"${ABSENT_MODULE_FILES[@]}"}; do
-        [[ "$_p" == "$COMMANDS_SUBDIR"/* && -f "$BASE_DIR/$_p" ]] && ((_absent_cmds++)) || true
-    done
-    after=$((after - _absent_cmds))
+    # delta. COMMANDS_DEPOSITED is accumulated by update_command_file during
+    # the deposit loop above — it counts exactly the commands that pass both
+    # skip gates (module + preset filter, US-3), in both real and dry-run
+    # runs. Using it keeps the count and the actual deposit in lockstep with
+    # zero duplicated skip logic and no second tree walk.
+    local after=$COMMANDS_DEPOSITED
 
     info "Commands: $before → $after"
 }
@@ -952,6 +974,42 @@ load_active_keep_list() {
     _load_skill_field '.foundation.skills.keep' ACTIVE_PRESET_KEEP_LIST
 }
 
+# _catalog_remove_set <catalog>
+#
+# Print the repo-relative paths (one per line) that the active preset's
+# foundation.<catalog> filter excludes from the foundation source catalog.
+# Delegates drop/keep + domain:<name> + EF-111 floor to the catalog-filter lib
+# (catalog_removal_set). No-op (empty) if no active preset or jq is missing —
+# which is what makes --no-preset (ACTIVE_PRESET_FILE empty) an escape hatch.
+_catalog_remove_set() {
+    local catalog="$1"
+    [[ -z "$ACTIVE_PRESET_FILE" ]] && return 0
+    command -v jq >/dev/null 2>&1 || return 0
+    local m mode="" n
+    for m in drop keep; do
+        n=$(jq -r "(.foundation.${catalog}.${m})? // [] | if type==\"array\" then length else 0 end" "$ACTIVE_PRESET_FILE")
+        [[ "$n" -gt 0 ]] && { mode="$m"; break; }
+    done
+    [[ -z "$mode" ]] && return 0
+    local entries=() e
+    while IFS= read -r e; do
+        [[ -z "$e" ]] && continue
+        entries+=("$e")
+    done < <(jq -r "(.foundation.${catalog}.${mode})? // [] | .[]? // empty" "$ACTIVE_PRESET_FILE")
+    catalog_removal_set "$catalog" "$BASE_DIR/.claude/$catalog" "$mode" ${entries[@]+"${entries[@]}"}
+}
+
+# is_catalog_item_filtered <remove_set> <rel_path>
+# 0 if <rel_path> is a line in the newline-delimited <remove_set>.
+is_catalog_item_filtered() {
+    local set="$1" rel="$2"
+    [[ -z "$set" ]] && return 1
+    case $'\n'"$set"$'\n' in
+        *$'\n'"$rel"$'\n'*) return 0 ;;
+    esac
+    return 1
+}
+
 # is_skill_dropped <rel_path>
 #
 # Returns 0 (true) when the leading directory of <rel_path> is in the active
@@ -1084,6 +1142,18 @@ update_directory() {
                 ((dir_skipped++)) || true
                 continue
             fi
+        fi
+
+        # US-3: preset agent filter — skip agents the active preset excludes
+        # (COPY-only, never deletes on-disk — EF-011).
+        if [[ "$name" = "agents" ]] && is_catalog_item_filtered "$CATALOG_REMOVE_AGENTS" "$rel_path"; then
+            ((PRESET_FILTER_SKIPPED++)) || true
+            debug "agents/$rel_path skipped (preset filter: $ACTIVE_PRESET_NAME)"
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): agents/$rel_path"
+            fi
+            ((dir_skipped++)) || true
+            continue
         fi
 
         local dest_file="$dest_dir/$rel_path"
@@ -1619,6 +1689,11 @@ print_summary() {
         echo "  Modules not installed (skipped): $_skipped_mod_list ($MODULE_FILES_SKIPPED files)"
         info "  Tip: run 'claude-base add <module>' to install a module."
     fi
+    # US-3: report command/agent files skipped by the active preset's filter,
+    # distinct from the module-skip line above.
+    if [[ "$PRESET_FILTER_SKIPPED" -gt 0 ]]; then
+        echo "  Filtered by preset (skipped): $PRESET_FILTER_SKIPPED command/agent file(s) excluded by '${ACTIVE_PRESET_NAME:-preset}'"
+    fi
     echo ""
 
     if [[ -n "${BACKUP_DIR:-}" ]] && [[ -d "${BACKUP_DIR:-}" ]]; then
@@ -1652,10 +1727,15 @@ main() {
     # bogus --preset name or on multi-match without explicit override.
     resolve_active_preset
 
+    # US-3: precompute the command/agent removal sets once from the active
+    # preset (empty when no preset / --no-preset → filter inert).
+    CATALOG_REMOVE_COMMANDS="$(_catalog_remove_set commands)"
+    CATALOG_REMOVE_AGENTS="$(_catalog_remove_set agents)"
+
     # Announce the active preset (silence preserves byte-identity with
     # today's update output when no preset is active — CS-006).
     if [[ -n "$ACTIVE_PRESET_NAME" ]]; then
-        info "Active preset: $ACTIVE_PRESET_NAME ($ACTIVE_PRESET_SOURCE) — skill filter applied"
+        info "Active preset: $ACTIVE_PRESET_NAME ($ACTIVE_PRESET_SOURCE) — preset filter applied (skills, commands, agents)"
     fi
 
     # Handle --restore
