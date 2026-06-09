@@ -259,7 +259,10 @@ migrate_legacy_marker() {
     while IFS= read -r m; do
         mods+=("$m")
     done < <(detect_legacy_modules "$dir")
-    write_foundation_manifest "$dir" "$version" "" "${mods[@]}" || return 1
+    # Empty-safe expansion: mods can be empty (detect_legacy_modules falls back
+    # to modules_default_set, which is empty since v3) — "${mods[@]}" aborts
+    # under `set -u` on bash 3.2 (macOS).
+    write_foundation_manifest "$dir" "$version" "" ${mods[@]+"${mods[@]}"} || return 1
     rm -f "$marker"
     printf 'modules: migrated legacy version marker to .claude/foundation.json (v%s, modules: %s)\n' \
         "$version" "${mods[*]:-none}"
