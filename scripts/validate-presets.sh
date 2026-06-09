@@ -132,12 +132,12 @@ _catalog_filter_findings() {
     fi
     [ -n "$mode" ] || return 0
 
-    # Collect entries of the active mode.
+    # Collect entries of the active mode (parsing delegated to the lib SSOT).
     local entries=() e
     while IFS= read -r e; do
         [ -z "$e" ] && continue
         entries+=("$e")
-    done < <(jq -r "(.foundation.${catalog}.${mode})? // [] | .[]? // empty" "$file")
+    done < <(cf_filter_entries "$file" "$catalog" "$mode")
 
     # EF-111 — the protected floor cannot be excluded.
     local v

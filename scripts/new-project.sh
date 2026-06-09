@@ -732,25 +732,18 @@ load_preset() {
 # are present (the validator forbids that at authoring time — defense only).
 _load_catalog_filter() {
     local file="$1" catalog="$2" mode_var="$3" arr_var="$4"
-    eval "$mode_var=''"
-    eval "$arr_var=()"
+    # (mode, entries) parsing is delegated to the catalog-filter lib (SSOT),
+    # which is tolerant of a malformed preset (scalar/non-array → no mode).
     local mode entry
-    for mode in drop keep; do
-        local n
-        # Tolerant of a malformed preset (scalar foundation, or a non-array
-        # drop/keep): the `?` suppresses index errors so a bad manifest never
-        # crashes the install under `set -euo pipefail`, and a non-array value
-        # counts as 0 (declared-but-empty is ignored, the validator flags it).
-        n=$(jq -r "(.foundation.${catalog}.${mode})? // [] | if type==\"array\" then length else 0 end" "$file")
-        if [[ "$n" -gt 0 ]]; then
-            eval "$mode_var=\$mode"
-            while IFS= read -r entry; do
-                [[ -z "$entry" ]] && continue
-                eval "$arr_var+=(\"\$entry\")"
-            done < <(jq -r "(.foundation.${catalog}.${mode})? // [] | .[]? // empty" "$file")
-            break
-        fi
-    done
+    mode=$(cf_filter_mode "$file" "$catalog")
+    eval "$mode_var=\$mode"
+    eval "$arr_var=()"
+    if [[ -n "$mode" ]]; then
+        while IFS= read -r entry; do
+            [[ -z "$entry" ]] && continue
+            eval "$arr_var+=(\"\$entry\")"
+        done < <(cf_filter_entries "$file" "$catalog" "$mode")
+    fi
 }
 
 # preset_default_modules — print the module set for the active preset.
