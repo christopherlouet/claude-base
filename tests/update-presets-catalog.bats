@@ -199,3 +199,30 @@ EOF
     [ -f "$proj/.claude/commands/biz/biz-mvp.md" ]      # module refreshed, not skipped
     [ -f "$proj/.claude/commands/work/work-plan.md" ]   # kept core present
 }
+
+# ---------------------------------------------------------------------------
+# EF-309 generalised (thematic-modules S1) — a `keep` whitelist on update must
+# NOT skip a CROSS-DOMAIN module item (module ≠ domain). A synthetic `thematic`
+# module owns ops-deploy (domain `ops`, not a module). Opted in, a deleted
+# ops-deploy must be re-added by a keep[domain:work] update — without the
+# CF_EXCLUDE_ITEMS wiring it would land in the keep removal set and be skipped.
+# ---------------------------------------------------------------------------
+@test "update catalog-filter: keep does not skip a cross-domain module item (EF-309 generalised)" {
+    local bdir="$TEST_DIR/bundles"
+    mkdir -p "$bdir"
+    cp "$BASE_DIR"/scripts/lib/modules/*.txt "$bdir"/
+    printf '%s\n' '.claude/commands/ops/ops-deploy.md' '.claude/agents/ops-deploy.md' \
+        > "$bdir/thematic.txt"
+    export MODULES_BUNDLES_DIR="$bdir"
+
+    local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
+    _write_cat_preset "$pdir" "keep-work" '{"commands":{"keep":["domain:work"]}}' '["thematic"]'
+    "$NEW_PROJECT" -y --preset keep-work --presets-dir "$pdir" "$proj" >/dev/null 2>&1
+    [ -f "$proj/.claude/commands/ops/ops-deploy.md" ]   # module item opted in at install
+    rm -f "$proj/.claude/commands/ops/ops-deploy.md"
+
+    run "$UPDATE" -y -f --preset keep-work --presets-dir "$pdir" "$proj"
+    [ "$status" -eq 0 ]
+    [ -f "$proj/.claude/commands/ops/ops-deploy.md" ]   # cross-domain item refreshed, not skipped
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]   # kept core present
+}

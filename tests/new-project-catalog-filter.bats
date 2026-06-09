@@ -293,3 +293,46 @@ EOF
     # A module NOT opted in is simply absent (opt-in default), not "swept".
     [ ! -d "$proj/.claude/commands/legal" ]
 }
+
+# ---------------------------------------------------------------------------
+# EF-309 generalised (thematic-modules S1) — a `keep` whitelist must NOT sweep
+# up a CROSS-DOMAIN module item (module ≠ domain). A synthetic `thematic`
+# module owns ops-deploy (command + agent) — its domain `ops` is NOT a module.
+# Opted in, a keep[domain:work] install must keep ops-deploy (module-owned by
+# name) while a sibling ops item NOT owned (ops-health) is still swept.
+# This fails without the CF_EXCLUDE_ITEMS wiring (ops-deploy would be removed).
+# ---------------------------------------------------------------------------
+# Build a temp bundles dir = real bundles + a synthetic cross-domain `thematic`.
+# Echoes the dir; caller exports MODULES_BUNDLES_DIR to it.
+_synthetic_bundles_dir() {
+    local dir="$TEST_DIR/bundles"
+    mkdir -p "$dir"
+    cp "$BASE_DIR"/scripts/lib/modules/*.txt "$dir"/
+    cat > "$dir/thematic.txt" <<'EOF'
+# Synthetic cross-domain module for S1 tests (domain `ops` is not a module).
+.claude/commands/ops/ops-deploy.md
+.claude/agents/ops-deploy.md
+EOF
+    echo "$dir"
+}
+
+@test "catalog-filter install: keep does not sweep a cross-domain module item (EF-309 generalised)" {
+    local bdir; bdir="$(_synthetic_bundles_dir)"
+    export MODULES_BUNDLES_DIR="$bdir"
+    local pdir="$TEST_DIR/presets"
+    _write_preset "keep-work-only" \
+        '{"commands": {"keep": ["domain:work"]}, "agents": {"keep": ["domain:work"]}}' \
+        "$pdir" '["thematic"]' >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset keep-work-only --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+
+    # Whitelisted core kept.
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]
+    # Cross-domain module-owned item survives the keep (out of jurisdiction).
+    [ -f "$proj/.claude/commands/ops/ops-deploy.md" ]
+    [ -f "$proj/.claude/agents/ops-deploy.md" ]
+    # A non-owned sibling of the SAME (ops) domain is still swept by the keep.
+    [ ! -f "$proj/.claude/commands/ops/ops-health.md" ]
+}

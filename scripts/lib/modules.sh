@@ -105,6 +105,29 @@ module_bundle_paths() {
     done < "$MODULES_BUNDLES_DIR/$name.txt"
 }
 
+# module_owned_item_names <catalog> — print the item NAMES (basename without
+# .md) owned by ANY module bundle for the given catalog (commands|agents), one
+# per line, sorted-unique. This is the item-level companion to "module domains"
+# (modules_list): a thematic module (module ≠ domain, EF-402) owns arbitrary
+# cross-domain items, so the catalog filter consumes this set as CF_EXCLUDE_ITEMS
+# to keep those items out of its jurisdiction (a `keep` whitelist must never
+# sweep them up — EF-309 generalised). Directory/skill bundle entries are
+# ignored: the catalog filter governs commands + agents only.
+module_owned_item_names() {
+    local catalog="${1:?catalog required}" m p base
+    while IFS= read -r m; do
+        while IFS= read -r p; do
+            # Only .md files under .claude/<catalog>/ (case '*' spans '/').
+            case "$p" in
+                .claude/"$catalog"/*.md) ;;
+                *) continue ;;
+            esac
+            base="${p##*/}"
+            printf '%s\n' "${base%.md}"
+        done < <(module_bundle_paths "$m")
+    done < <(modules_list) | LC_ALL=C sort -u
+}
+
 # -----------------------------------------------------------------------------
 # Project manifest (.claude/foundation.json) — EF-204
 # Single source of truth for a project's foundation state:
