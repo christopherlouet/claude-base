@@ -22,6 +22,7 @@ import {
   countVendorSkillsInRecipe,
   countJsonFiles,
   countFilesMatching,
+  countModuleOwned,
 } from './generate-counts.js';
 
 function withTempDir(fn: (dir: string) => void): void {
@@ -149,6 +150,37 @@ describe('countFilesMatching', () => {
       fs.mkdirSync(path.join(dir, 'foo-pilot-x.md'));
       fs.writeFileSync(path.join(dir, 'bar-pilot-y.md'), '');
       assert.equal(countFilesMatching(dir, /-pilot-.*\.md$/), 1);
+    });
+  });
+});
+
+describe('countModuleOwned', () => {
+  it('sums commands/agents/skills across bundle .txt files, ignoring comments', () => {
+    withTempDir((dir) => {
+      fs.writeFileSync(
+        path.join(dir, 'biz.txt'),
+        [
+          '# comment',
+          '',
+          '.claude/commands/biz/biz-mvp.md',
+          '.claude/commands/biz/biz-pitch.md',
+          '.claude/agents/biz-mvp.md',
+        ].join('\n'),
+      );
+      fs.writeFileSync(
+        path.join(dir, 'growth.txt'),
+        ['.claude/commands/growth/growth-cro.md', '.claude/skills/growth-cro/'].join('\n'),
+      );
+      const owned = countModuleOwned(dir);
+      assert.deepEqual(owned, { commands: 3, agents: 1, skills: 1 });
+    });
+  });
+
+  it('returns zeros when the modules directory is absent', () => {
+    assert.deepEqual(countModuleOwned(path.join(os.tmpdir(), 'no-such-modules-dir-xyz')), {
+      commands: 0,
+      agents: 0,
+      skills: 0,
     });
   });
 });
