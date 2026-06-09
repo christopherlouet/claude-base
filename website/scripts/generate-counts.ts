@@ -134,12 +134,45 @@ function countBatsTests(testsDir: string): { tests: number; testFiles: number } 
   return { tests, testFiles };
 }
 
+/**
+ * Module-owned item totals, summed from the horizontal module bundles under
+ * scripts/lib/modules/*.txt (one repo-relative path per line; # comments and
+ * blank lines ignored; a trailing / marks a directory). Used to derive the
+ * "core" (default-install) counts as full − module-owned.
+ */
+export function countModuleOwned(
+  modulesDir: string = path.join(REPO_ROOT, 'scripts/lib/modules'),
+): { commands: number; agents: number; skills: number } {
+  const owned = { commands: 0, agents: 0, skills: 0 };
+  if (!fs.existsSync(modulesDir)) return owned;
+  for (const entry of fs.readdirSync(modulesDir, { withFileTypes: true })) {
+    if (!entry.isFile() || !entry.name.endsWith('.txt')) continue;
+    for (const raw of fs.readFileSync(path.join(modulesDir, entry.name), 'utf-8').split('\n')) {
+      const line = raw.trim();
+      if (!line || line.startsWith('#')) continue;
+      if (line.startsWith('.claude/commands/')) owned.commands += 1;
+      else if (line.startsWith('.claude/agents/')) owned.agents += 1;
+      else if (line.startsWith('.claude/skills/')) owned.skills += 1;
+    }
+  }
+  return owned;
+}
+
 export function computeCounts(): Counts {
   const { tests, testFiles } = countBatsTests(TESTS_DIR);
+  const commands = countMarkdownFiles(path.join(CLAUDE_DIR, 'commands'), { excludeReadme: true });
+  const agents = countMarkdownFiles(path.join(CLAUDE_DIR, 'agents'), { excludeReadme: true });
+  const skills = countSkills(path.join(CLAUDE_DIR, 'skills'));
+  const moduleOwned = countModuleOwned();
   return {
-    commands: countMarkdownFiles(path.join(CLAUDE_DIR, 'commands'), { excludeReadme: true }),
-    agents: countMarkdownFiles(path.join(CLAUDE_DIR, 'agents'), { excludeReadme: true }),
-    skills: countSkills(path.join(CLAUDE_DIR, 'skills')),
+    commands,
+    agents,
+    skills,
+    core: {
+      commands: commands - moduleOwned.commands,
+      agents: agents - moduleOwned.agents,
+      skills: skills - moduleOwned.skills,
+    },
     rules: countMarkdownFiles(path.join(CLAUDE_DIR, 'rules'), { excludeReadme: true }),
     tests,
     testFiles,

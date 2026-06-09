@@ -126,6 +126,43 @@ echo "  Tests    : $ACTUAL_TESTS (in $ACTUAL_TEST_FILES files)"
 echo ""
 
 # =============================================================================
+# Core vs full-foundation split (horizontal-pure-modules S4, EF-311)
+# =============================================================================
+# A default install ships the CORE; the horizontal domains (biz/legal/growth)
+# are opt-in modules. counts.json carries both the full-foundation totals and a
+# "core" object — assert core == full − module-owned (summed from the bundles),
+# so the published "what a default project gets" numbers can never drift.
+# Guarded by counts.json existence (the test fake foundation has none).
+if [[ -f "$BASE_DIR/counts.json" ]] && command -v jq >/dev/null 2>&1; then
+    _MOD_CMDS=0; _MOD_AGENTS=0; _MOD_SKILLS=0
+    _m=""; _p=""
+    while IFS= read -r _m; do
+        [[ -z "$_m" ]] && continue
+        while IFS= read -r _p; do
+            case "$_p" in
+                .claude/commands/*) _MOD_CMDS=$((_MOD_CMDS + 1)) ;;
+                .claude/agents/*)   _MOD_AGENTS=$((_MOD_AGENTS + 1)) ;;
+                .claude/skills/*)   _MOD_SKILLS=$((_MOD_SKILLS + 1)) ;;
+            esac
+        done < <(module_bundle_paths "$_m")
+    done < <(modules_list)
+
+    _check_core() {
+        local key="$1" expected="$2" got
+        got=$(jq -r ".core.${key} // \"<missing>\"" "$BASE_DIR/counts.json")
+        if [[ "$got" != "$expected" ]]; then
+            error_no_exit "counts.json: core.${key} = ${got} (expected: ${expected} = full − module-owned)"
+            ERRORS=$((ERRORS + 1))
+        elif $VERBOSE; then
+            success "counts.json: core.${key} = ${got}"
+        fi
+    }
+    _check_core commands "$((ACTUAL_COMMANDS - _MOD_CMDS))"
+    _check_core agents   "$((ACTUAL_AGENTS - _MOD_AGENTS))"
+    _check_core skills   "$((ACTUAL_SKILLS - _MOD_SKILLS))"
+fi
+
+# =============================================================================
 # Check documentation files
 # =============================================================================
 
