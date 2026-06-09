@@ -21,8 +21,10 @@
 # The protected floor (EF-111) is the `work` domain + the `assistant` and
 # `assistant-auto` command entry points; it is force-kept in BOTH modes.
 #
-# This lib only resolves/matches. Horizontal domains (biz/legal/growth) carry
-# no special meaning here — their rejection lives in validate-presets (S3).
+# The lib resolves/matches, computes removal sets, and parses a preset file
+# into (mode, entries) via the jq-backed cf_filter_* helpers at the bottom.
+# Horizontal domains (biz/legal/growth) carry no special meaning here — their
+# rejection lives in validate-presets (S3).
 #
 # Portability: macOS bash 3.2 — no associative arrays, no readarray. The hot
 # path (catalog_removal_set) resolves each item once via _resolve into the
