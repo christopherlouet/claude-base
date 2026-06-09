@@ -571,7 +571,10 @@ record_foundation_version() {
         while IFS= read -r m; do
             mods+=("$m")
         done < <(modules_default_set)
-        write_foundation_manifest "$target_dir" "$version" "" "${mods[@]}" || return 1
+        # Guard the array expansion: modules_default_set is empty since v3
+        # (opt-in default), and "${mods[@]}" on an empty array aborts under
+        # `set -u` on bash 3.2 (macOS) — use the empty-safe idiom.
+        write_foundation_manifest "$target_dir" "$version" "" ${mods[@]+"${mods[@]}"} || return 1
     fi
     rm -f "$target_dir/.claude/.foundation-version"
     return 0

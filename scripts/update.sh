@@ -559,7 +559,9 @@ migrate_horizontal_optin() {
     # On an unparseable manifest, defer to _load_module_filter's loud error
     # (EF-204) — never abort here silently under set -e.
     old_ver="$(jq -r '.version // "0.0.0"' "$manifest" 2>/dev/null)" || return 0
-    [[ -n "$old_ver" && "$old_ver" != "null" ]] || old_ver="0.0.0"
+    # Normalize non-version sentinels to 0.0.0 so they count as pre-flip
+    # ("unknown" otherwise sorts AFTER 3.0.0 under sort -V and would skip).
+    case "$old_ver" in ''|null|unknown) old_ver="0.0.0" ;; esac
     # Only a crossing update (manifest version < 3.0.0) migrates.
     version_gte "$old_ver" "3.0.0" && return 0
     local m horizontal=()
@@ -570,7 +572,11 @@ migrate_horizontal_optin() {
 
     HORIZONTAL_OPTIN_MIGRATED=("${horizontal[@]}")
     warning "v3: horizontal domains (${horizontal[*]}) are now opt-in modules and are no longer tracked by this project."
-    info "  Their files were left in place. Run 'claude-base add <module>' (e.g. claude-base add ${horizontal[0]}) to keep them updated."
+    if $CLEAN_BEFORE_UPDATE; then
+        info "  --clean removed their files; run 'claude-base add <module>' (e.g. claude-base add ${horizontal[0]}) to reinstall."
+    else
+        info "  Their files were left in place; run 'claude-base add <module>' (e.g. claude-base add ${horizontal[0]}) to keep them updated."
+    fi
     $DRY_RUN && return 0
 
     local tmp
