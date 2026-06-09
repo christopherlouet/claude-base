@@ -146,3 +146,33 @@ _manifest_modules_joined() {
     [ "$status" -eq 0 ]
     [ "$(_manifest_modules_joined "$proj")" = "" ]
 }
+
+# ---------------------------------------------------------------------------
+# Review fix A1 — under --clean/--all the horizontal files ARE removed (clean
+# wipes them, opt-in does not re-deposit), so the migration message must NOT
+# claim they were "left in place"; it must point at re-install.
+# ---------------------------------------------------------------------------
+@test "migration: --all crossing message does not falsely claim files were kept" {
+    local proj
+    proj="$(_setup_preflip_project)"
+
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"left in place"* ]]
+    [[ "$output" == *"claude-base add"* ]]
+}
+
+# ---------------------------------------------------------------------------
+# Review fix A2 — a manifest whose version is the literal "unknown" must be
+# treated as pre-flip (crossing) and migrated, not skipped.
+# ---------------------------------------------------------------------------
+@test "migration: manifest version 'unknown' is treated as a crossing update" {
+    local proj
+    proj="$(_setup_preflip_project)"
+    jq '.version = "unknown"' "$proj/.claude/foundation.json" > "$proj/.claude/foundation.json.tmp"
+    mv "$proj/.claude/foundation.json.tmp" "$proj/.claude/foundation.json"
+
+    run "$UPDATE_SCRIPT" -y "$proj"
+    [ "$status" -eq 0 ]
+    [ "$(_manifest_modules_joined "$proj")" = "" ]   # migrated (horizontal dropped)
+}
