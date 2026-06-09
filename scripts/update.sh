@@ -985,17 +985,15 @@ _catalog_remove_set() {
     local catalog="$1"
     [[ -z "$ACTIVE_PRESET_FILE" ]] && return 0
     command -v jq >/dev/null 2>&1 || return 0
-    local m mode="" n
-    for m in drop keep; do
-        n=$(jq -r "(.foundation.${catalog}.${m})? // [] | if type==\"array\" then length else 0 end" "$ACTIVE_PRESET_FILE")
-        [[ "$n" -gt 0 ]] && { mode="$m"; break; }
-    done
+    # (mode, entries) parsing delegated to the catalog-filter lib (SSOT).
+    local mode
+    mode=$(cf_filter_mode "$ACTIVE_PRESET_FILE" "$catalog")
     [[ -z "$mode" ]] && return 0
     local entries=() e
     while IFS= read -r e; do
         [[ -z "$e" ]] && continue
         entries+=("$e")
-    done < <(jq -r "(.foundation.${catalog}.${mode})? // [] | .[]? // empty" "$ACTIVE_PRESET_FILE")
+    done < <(cf_filter_entries "$ACTIVE_PRESET_FILE" "$catalog" "$mode")
     catalog_removal_set "$catalog" "$BASE_DIR/.claude/$catalog" "$mode" ${entries[@]+"${entries[@]}"}
 }
 

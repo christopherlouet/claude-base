@@ -371,3 +371,89 @@ _build_fixture_catalog() {
     [ "$status" -eq 0 ]
     [ "${#lines[@]}" -ge 5 ]
 }
+
+# =============================================================================
+# Preset-file parsing helpers (cf_filter_mode / cf_filter_entries) — the SSOT
+# for "parse a preset file into (mode, entries)", previously hand-copied in
+# new-project.sh, update.sh and validate-presets.sh. jq-backed.
+# =============================================================================
+
+# Write a foundation.<catalog> filter object into a preset file and echo its path.
+# $1 = catalog (commands|agents), $2 = filter body (JSON object), file at $TEST_DIR.
+_write_filter_preset() {
+    local catalog="$1" body="$2" f="$TEST_DIR/preset.json"
+    printf '{"name":"t","foundation":{"%s":%s}}\n' "$catalog" "$body" > "$f"
+    echo "$f"
+}
+
+@test "cf_filter_mode: drop present → drop" {
+    skip_if_no_jq
+    local f; f=$(_write_filter_preset commands '{"drop":["dev-flutter"]}')
+    run_lib cf_filter_mode "$f" commands
+    [ "$status" -eq 0 ]
+    [ "$output" = "drop" ]
+}
+
+@test "cf_filter_mode: keep present → keep" {
+    skip_if_no_jq
+    local f; f=$(_write_filter_preset commands '{"keep":["work-plan"]}')
+    run_lib cf_filter_mode "$f" commands
+    [ "$status" -eq 0 ]
+    [ "$output" = "keep" ]
+}
+
+@test "cf_filter_mode: both present → drop wins (drop-first)" {
+    skip_if_no_jq
+    local f; f=$(_write_filter_preset commands '{"drop":["x"],"keep":["y"]}')
+    run_lib cf_filter_mode "$f" commands
+    [ "$output" = "drop" ]
+}
+
+@test "cf_filter_mode: neither present → empty" {
+    skip_if_no_jq
+    local f; f=$(_write_filter_preset commands '{}')
+    run_lib cf_filter_mode "$f" commands
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "cf_filter_mode: empty array → empty (declared-but-empty ignored)" {
+    skip_if_no_jq
+    local f; f=$(_write_filter_preset commands '{"drop":[]}')
+    run_lib cf_filter_mode "$f" commands
+    [ -z "$output" ]
+}
+
+@test "cf_filter_mode: scalar (malformed) → empty, no crash" {
+    skip_if_no_jq
+    local f; f=$(_write_filter_preset commands '{"drop":"oops"}')
+    run_lib cf_filter_mode "$f" commands
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "cf_filter_mode: missing catalog key → empty" {
+    skip_if_no_jq
+    local f; f=$(_write_filter_preset commands '{"drop":["x"]}')
+    run_lib cf_filter_mode "$f" agents
+    [ -z "$output" ]
+}
+
+@test "cf_filter_entries: lists the entries of the active mode, one per line" {
+    skip_if_no_jq
+    local f; f=$(_write_filter_preset commands '{"drop":["dev-flutter","domain:ops","data-pipeline"]}')
+    run_lib cf_filter_entries "$f" commands drop
+    [ "$status" -eq 0 ]
+    [ "${#lines[@]}" -eq 3 ]
+    [ "${lines[0]}" = "dev-flutter" ]
+    [ "${lines[1]}" = "domain:ops" ]
+    [ "${lines[2]}" = "data-pipeline" ]
+}
+
+@test "cf_filter_entries: empty/missing mode → no output" {
+    skip_if_no_jq
+    local f; f=$(_write_filter_preset commands '{"drop":["x"]}')
+    run_lib cf_filter_entries "$f" commands keep
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}

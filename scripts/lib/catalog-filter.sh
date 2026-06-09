@@ -21,8 +21,10 @@
 # The protected floor (EF-111) is the `work` domain + the `assistant` and
 # `assistant-auto` command entry points; it is force-kept in BOTH modes.
 #
-# This lib only resolves/matches. Horizontal domains (biz/legal/growth) carry
-# no special meaning here — their rejection lives in validate-presets (S3).
+# The lib resolves/matches, computes removal sets, and parses a preset file
+# into (mode, entries) via the jq-backed cf_filter_* helpers at the bottom.
+# Horizontal domains (biz/legal/growth) carry no special meaning here — their
+# rejection lives in validate-presets (S3).
 #
 # Portability: macOS bash 3.2 — no associative arrays, no readarray. The hot
 # path (catalog_removal_set) resolves each item once via _resolve into the
@@ -271,4 +273,32 @@ _cf_items_have_name() {
         [[ "$_CF_NAME" == "$name" ]] && return 0
     done <<< "$items"
     return 1
+}
+
+# =============================================================================
+# Preset-file parsing (jq-backed) — the SSOT for turning a preset JSON file
+# into (mode, entries) for a given catalog. Centralised here so install
+# (new-project.sh), update (update.sh) and validation (validate-presets.sh)
+# share one jq probe instead of three hand-copied ones. Requires jq; callers
+# already guard on its presence (or run in jq-dependent paths).
+# =============================================================================
+
+# cf_filter_mode <preset-file> <catalog> — echo the active filter polarity for
+# foundation.<catalog>: "drop" or "keep" (drop wins when both are non-empty
+# arrays), or nothing when neither is a non-empty array. Tolerant of a
+# malformed preset: a scalar/non-array value counts as 0 (the `?` suppresses
+# index errors so a bad manifest never aborts a `set -euo pipefail` caller).
+cf_filter_mode() {
+    local file="$1" catalog="$2" mode n
+    for mode in drop keep; do
+        n=$(jq -r "(.foundation.${catalog}.${mode})? // [] | if type==\"array\" then length else 0 end" "$file")
+        [[ "$n" -gt 0 ]] && { printf '%s\n' "$mode"; return 0; }
+    done
+    return 0
+}
+
+# cf_filter_entries <preset-file> <catalog> <mode> — echo the string entries of
+# foundation.<catalog>.<mode>, one per line (empty/non-array/absent → nothing).
+cf_filter_entries() {
+    jq -r "(.foundation.${2}.${3})? // [] | .[]? // empty" "$1"
 }
