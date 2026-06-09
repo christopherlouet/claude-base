@@ -75,6 +75,11 @@ ACTIVE_PRESET_KEEP_LIST=()
 CATALOG_REMOVE_COMMANDS=""
 CATALOG_REMOVE_AGENTS=""
 PRESET_FILTER_SKIPPED=0
+# Commands a clean update would actually deposit (every command not skipped by
+# the module or preset filter). Accumulated in update_command_file so the
+# reported "Commands: N → M" count derives from the single deposit pass — no
+# second tree walk, no skip logic duplicated outside update_command_file.
+COMMANDS_DEPOSITED=0
 # Optional override: path to a directory containing preset JSON files.
 # When set, resolve_active_preset() looks there BEFORE the official presets dir.
 # Intended for testing only (synthetic presets); not documented in --help.
@@ -577,6 +582,11 @@ update_command_file() {
         return
     fi
 
+    # Past both skip gates: this command IS part of the would-be-state
+    # (added/updated/identical all leave it on disk). Counted here so the
+    # summary count and the actual deposit can never diverge.
+    ((COMMANDS_DEPOSITED++)) || true
+
     # Create the subdirectory if needed
     local dest_dir
     dest_dir=$(dirname "$dest")
@@ -682,21 +692,12 @@ update_commands() {
     # Dogfood finding #2: `after` must reflect the would-be-state, not the
     # current target. In dry-run nothing is written, so reading from
     # $TARGET_DIR would always yield `after == before` and hide the real
-    # delta. Derive `after` from the foundation source counting only the
-    # commands a clean update would actually deposit — i.e. mirror the exact
-    # skip predicates in update_command_file: absent-module files (US-3) and
-    # preset-filtered commands (US-3) are never deposited, so neither counts
-    # toward the would-be-state. Deriving from the same predicates also
-    # avoids double-subtracting a command that is both module-absent and
-    # preset-filtered (it returns on the first check at runtime).
-    local after=0 _rel
-    while IFS= read -r cmd; do
-        [[ -f "$cmd" ]] || continue
-        _rel="${cmd#"$base_commands_dir"/}"
-        _module_skip_check "$COMMANDS_SUBDIR/$_rel" && continue
-        is_catalog_item_filtered "$CATALOG_REMOVE_COMMANDS" "$_rel" && continue
-        ((after++)) || true
-    done < <(find "$base_commands_dir" -name "*.md" -type f 2>/dev/null || true)
+    # delta. COMMANDS_DEPOSITED is accumulated by update_command_file during
+    # the deposit loop above — it counts exactly the commands that pass both
+    # skip gates (module + preset filter, US-3), in both real and dry-run
+    # runs. Using it keeps the count and the actual deposit in lockstep with
+    # zero duplicated skip logic and no second tree walk.
+    local after=$COMMANDS_DEPOSITED
 
     info "Commands: $before → $after"
 }

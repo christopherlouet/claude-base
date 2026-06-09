@@ -124,8 +124,8 @@ EOF
 
     run "$UPDATE" -y --dry-run --preset synth-cat --presets-dir "$pdir" --agents "$proj"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"preset filter"* ]]
-    [[ "$output" == *"ops"* ]]
+    # Exact skip line for a dropped ops command (not just any 'ops' token).
+    [[ "$output" == *"Skip (preset filter): commands/ops/"* ]]
     # Dry-run must not re-create the removed file.
     [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
 }
@@ -151,4 +151,23 @@ EOF
     local reported
     reported=$(echo "$output" | grep "Commands:" | head -1 | grep -oE '[0-9]+' | tail -1)
     [ "$reported" -eq "$expected" ]
+}
+
+# ---------------------------------------------------------------------------
+# keep-mode (whitelist) on update — exercises the keep branch of
+# _catalog_remove_set (update-specific mode detection, distinct from the lib).
+# A commands.keep=[domain:work] preset must keep work (+ floor) and drop the
+# rest; a previously-removed ops command stays removed, work-plan is restored.
+# ---------------------------------------------------------------------------
+@test "update catalog-filter: keep-mode whitelist holds on update" {
+    local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
+    _write_cat_preset "$pdir" "keep-work" '{"commands":{"keep":["domain:work"]}}'
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    rm -f "$proj/.claude/commands/ops/ops-proxmox.md" "$proj/.claude/commands/work/work-plan.md"
+
+    run "$UPDATE" -y -f --preset keep-work --presets-dir "$pdir" "$proj"
+    [ "$status" -eq 0 ]
+    # Non-whitelisted command stays out; whitelisted (work) command restored.
+    [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]
 }
