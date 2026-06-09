@@ -84,11 +84,10 @@ Format chosen: JSON. Rationale: `jq` is already a hard dependency of the foundat
       "security"
     ],
     "commands": {
-      "domains": ["work", "dev", "qa", "ops", "growth", "doc"],
-      "excludes": []
+      "drop": ["dev-flutter", "domain:ops", "data-pipeline"]
     },
     "agents": {
-      "domains": ["work", "dev", "qa", "ops", "growth", "doc"]
+      "drop": ["dev-flutter", "domain:ops", "data-pipeline"]
     },
     "skills": {
       "keep": [
@@ -155,6 +154,10 @@ Format chosen: JSON. Rationale: `jq` is already a hard dependency of the foundat
   ]
 }
 ```
+
+### Foundation command & agent filtering (implemented)
+
+`foundation.commands` and `foundation.agents` each accept a `drop` (blacklist) **or** `keep` (whitelist) array — the same single-polarity shape as `foundation.skills`. Entries are either an exact item name (`dev-flutter`, `data-pipeline`) or a whole domain via the `domain:<name>` form (`domain:ops`). A protected floor is never removable (the `work` command domain plus `assistant`/`assistant-auto`), so a preset can never strand the core workflow. The capability is implemented across install (`new-project.sh`), update (`update.sh`) and validation (`validate-presets.sh`) — see [`specs/presets-commands-agents-filter/`](../presets-commands-agents-filter/) for the full spec, and `.claude/presets/nextjs.json` for the shipped worked example. Horizontal domains (`biz`/`legal`/`growth`) are **not** filtered here — they are opt-in modules (`defaultModules`), and validation rejects any attempt to `drop` them via the catalog filter.
 
 ### Field naming
 

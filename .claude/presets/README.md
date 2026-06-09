@@ -64,7 +64,9 @@ Community contributions land under `.claude/presets/community/` after maintainer
     ]
   },
   "foundation": {
-    "skills": { "drop": ["<skill-to-not-install>"] }
+    "skills":   { "drop": ["<skill-to-not-install>"] },
+    "commands": { "drop": ["<command-to-not-install>", "domain:<whole-domain>"] },
+    "agents":   { "drop": ["<agent-to-not-install>"] }
   },
   "marketplacePlugins": [],
   "defaults": { "ci": true, "hooks": true, "mcp": false, "docker": false, "designStyle": "editorial" },
@@ -74,6 +76,25 @@ Community contributions land under `.claude/presets/community/` after maintainer
 ```
 
 The `foundation.skills` filter supports two mutually-exclusive forms: `drop` (blacklist — install every foundation skill except those listed) or `keep` (whitelist — install only the listed skills). `validate-presets.sh` rejects a manifest declaring both. See `react-vite-spa.json` for a `keep`-style example and the other shipped presets for `drop`-style.
+
+### `foundation.commands` / `foundation.agents` (optional)
+
+Scope the installed catalog of commands and agents exactly like `foundation.skills`, with the same mutually-exclusive `drop` / `keep` polarity. Two entry forms are accepted:
+
+- **Exact item name** — `"dev-flutter"`, `"data-pipeline"` (the file basename without `.md`).
+- **Whole domain** — `"domain:ops"` matches every `commands/ops/*.md` (and every `ops-*` agent).
+
+Rules enforced by `validate-presets.sh`:
+
+- **`drop` XOR `keep`** — declaring both is an error.
+- **Protected floor (EF-111)** — the `work` command domain plus `assistant`/`assistant-auto` can never be removed; a `drop` targeting them is rejected.
+- **Horizontal domains stay with modules** — dropping `domain:biz` / `domain:legal` / `domain:growth` (or their items) is rejected; use `defaultModules` instead. Those domains are installable modules, not preset exclusions.
+- **Vendor-pointer tier** — may not declare command/agent filters (inherits foundation wholesale).
+- Unknown item names produce a non-fatal `[WARN]`.
+
+Behaviour: filters apply at `init` **and** on `claude-base update` (excluded items are skipped, COPY-only — never deleting on-disk; `update --no-preset` re-installs the full catalog). See `.claude/presets/nextjs.json` for the shipped worked example.
+
+> **Keep the three drop lists in sync per stack.** A stack preset typically drops a skill *and* its command *and* its agent counterpart together. The lists are validated independently (no enforced coupling), and the mapping is **not** always 1:1 — e.g. `ops-mobile-release` ships as a skill and a command but has no agent, so it belongs in `skills.drop`/`commands.drop` but not `agents.drop`. When adding a new other-stack exclusion, check whether each catalog actually has a counterpart before listing it (a missing counterpart only triggers a harmless `[WARN]`).
 
 ### `defaultModules` (optional, US-5)
 

@@ -95,10 +95,10 @@
 
 ## Phase 6 — Polish, docs & spec reconciliation · S6
 
-- [ ] T018 [P] — CS-105: amend `specs/presets/spec.md` (announced command/agent filtering now implemented; correct the stale `domains`/`excludes` example to `drop`/`keep` + `domain:`)
-- [ ] T019 [P] — document new fields + `domain:<name>` form in `.claude/presets/README.md` and relevant `docs/`
-- [ ] T020 — counts gate: `npm --prefix website run generate`; confirm no catalog-count drift; reword any doc claiming "every project gets 128 commands / 61 agents"
-- [ ] T021 — final: full `bats tests/` + shellcheck (CI options), `/code-review high` per session with adversarial verify
+- [x] T018 [P] — CS-105: amended `specs/presets/spec.md` — corrected the stale `commands.domains`/`excludes` + `agents.domains` example to `drop` + `domain:` form; added a "Foundation command & agent filtering (implemented)" subsection pointing to `specs/presets-commands-agents-filter/` and the nextjs worked example
+- [x] T019 [P] — documented the new `foundation.commands`/`foundation.agents` fields + `domain:<name>` form in `.claude/presets/README.md` (quick-reference block + dedicated section: drop XOR keep, EF-111 floor, horizontal-domain rejection, vendor-pointer ban, update behaviour) + a "keep the three drop lists in sync" note (loose coupling, asymmetry is legit)
+- [x] T020 — counts gate: `npm --prefix website run generate` clean, no catalog-count drift. No doc claimed "every project gets 128/61" — `CHEATSHEET.md` states the foundation catalog *total*, which stays accurate (presets filter a given install, not the catalog); left as-is
+- [x] T021 — final: full `bats tests/` + shellcheck green; docs-only PR (no shell changed) → lighter inline review in lieu of `/code-review high` fan-out (per per-session review-cost guidance)
 
 ---
 
