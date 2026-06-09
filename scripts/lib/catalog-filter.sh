@@ -121,23 +121,37 @@ catalog_entry_matches() {
 # Public — enumeration
 # -----------------------------------------------------------------------------
 
+# _cf_domain_excluded <catalog> <relpath> — 0 if the item's domain is listed in
+# CF_EXCLUDE_DOMAINS (space/newline-separated). Module-owned domains are passed
+# here by the consumer (from modules_list) so the filter governs the core only
+# (US-4 / EF-309) — the lib stays decoupled from modules.sh. Domainless items
+# (empty domain) are never excluded.
+_cf_domain_excluded() {
+    [[ -n "${CF_EXCLUDE_DOMAINS:-}" ]] || return 1
+    _resolve "$1" "$2"
+    [[ -n "$_CF_DOMAIN" ]] || return 1
+    case " ${CF_EXCLUDE_DOMAINS//$'\n'/ } " in
+        *" $_CF_DOMAIN "*) return 0 ;;
+    esac
+    return 1
+}
+
 # catalog_list_items <catalog> <root> — print item paths relative to <root>,
-# one per line, sorted. Missing root → no output, exit 0.
+# one per line, sorted. Missing root → no output, exit 0. Items whose domain is
+# in CF_EXCLUDE_DOMAINS (module-owned) are skipped, so every enumerating
+# consumer (removal set, floor, unknown) sees the core only.
 catalog_list_items() {
     _cf_valid_catalog "$1" || return $?
     local catalog="$1" root="${2:-}"
     [[ -n "$root" && -d "$root" ]] || return 0
     root="${root%/}"
-    local f
-    if [[ "$catalog" == commands ]]; then
-        while IFS= read -r f; do
-            printf '%s\n' "${f#"$root"/}"
-        done < <(find "$root" -type f -name '*.md' | LC_ALL=C sort)
-    else
-        while IFS= read -r f; do
-            printf '%s\n' "${f#"$root"/}"
-        done < <(find "$root" -maxdepth 1 -type f -name '*.md' | LC_ALL=C sort)
-    fi
+    local f rel maxdepth=()
+    [[ "$catalog" == agents ]] && maxdepth=(-maxdepth 1)
+    while IFS= read -r f; do
+        rel="${f#"$root"/}"
+        _cf_domain_excluded "$catalog" "$rel" && continue
+        printf '%s\n' "$rel"
+    done < <(find "$root" ${maxdepth[@]+"${maxdepth[@]}"} -type f -name '*.md' | LC_ALL=C sort)
 }
 
 # catalog_list_domains <catalog> <root> — print the distinct domains present

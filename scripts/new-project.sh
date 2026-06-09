@@ -955,6 +955,12 @@ _apply_one_catalog_filter() {
     else
         scan_root="$target_dir/.claude/$catalog"
     fi
+    # US-4 (horizontal-pure-modules S1): module-owned domains are out of the
+    # preset filter's jurisdiction — pass them as the exclusion set so a `keep`
+    # whitelist never sweeps up a module (EF-309). The lib reads CF_EXCLUDE_DOMAINS.
+    local CF_EXCLUDE_DOMAINS
+    # shellcheck disable=SC2034  # consumed by catalog_list_items in the lib (process-sub subshell)
+    CF_EXCLUDE_DOMAINS="$(modules_list)"
     local removed=0 rel
     while IFS= read -r rel; do
         [[ -z "$rel" ]] && continue

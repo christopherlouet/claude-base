@@ -994,6 +994,11 @@ _catalog_remove_set() {
         [[ -z "$e" ]] && continue
         entries+=("$e")
     done < <(cf_filter_entries "$ACTIVE_PRESET_FILE" "$catalog" "$mode")
+    # US-4 (horizontal-pure-modules S1): module domains are out of the filter's
+    # jurisdiction — exclude them so a keep whitelist never skips a module item.
+    local CF_EXCLUDE_DOMAINS
+    # shellcheck disable=SC2034  # consumed by catalog_list_items in the lib (process-sub subshell)
+    CF_EXCLUDE_DOMAINS="$(modules_list)"
     catalog_removal_set "$catalog" "$BASE_DIR/.claude/$catalog" "$mode" ${entries[@]+"${entries[@]}"}
 }
 

@@ -259,3 +259,30 @@ EOF
     # A kept item survives (install is not hollowed out).
     [ -f "$proj/.claude/commands/work/work-plan.md" ]
 }
+
+# ---------------------------------------------------------------------------
+# S1 / EF-309 — a `keep` whitelist over the core must NOT remove module-owned
+# (biz/legal/growth) commands/agents: modules are out of the filter's
+# jurisdiction (governed by defaultModules, not the preset filter). Modules are
+# still installed by default in S1 (the opt-in flip is S2), so they are present
+# to be (not) swept.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: keep whitelist does not sweep up module items (EF-309)" {
+    local pdir="$TEST_DIR/presets"
+    _write_preset "keep-work-only" \
+        '{"commands": {"keep": ["domain:work"]}, "agents": {"keep": ["domain:work"]}}' \
+        "$pdir" >/dev/null
+    local proj="$TEST_DIR/proj"
+
+    run "$NEW_PROJECT" --preset keep-work-only --presets-dir "$pdir" -y "$proj"
+    [ "$status" -eq 0 ]
+
+    # Whitelisted core kept; non-kept non-module core removed.
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]
+    [ ! -f "$proj/.claude/commands/dev/dev-tdd.md" ]
+    # Module-owned domains survive the keep (not in the filter's jurisdiction).
+    [ -f "$proj/.claude/commands/biz/biz-mvp.md" ]
+    [ -f "$proj/.claude/agents/biz-mvp.md" ]
+    [ -f "$proj/.claude/commands/legal/legal-rgpd.md" ] || [ -d "$proj/.claude/commands/legal" ]
+    [ -f "$proj/.claude/commands/growth/growth-cro.md" ] || [ -d "$proj/.claude/commands/growth" ]
+}
