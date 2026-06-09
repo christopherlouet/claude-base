@@ -111,11 +111,12 @@ teardown() {
     [ "$(jq -r '.version' "$TEST_DIR/.claude/foundation.json")" = "1.37.0" ]
 }
 
-@test "record_foundation_version defaults to no preset and full module set" {
+@test "record_foundation_version defaults to no preset and empty module set (v3 opt-in)" {
     run record_foundation_version "$TEST_DIR" "1.37.0"
     [ "$status" -eq 0 ]
     [ "$(jq -r '.preset' "$TEST_DIR/.claude/foundation.json")" = "null" ]
-    [ "$(jq -r '.modules | sort | join(",")' "$TEST_DIR/.claude/foundation.json")" = "biz,growth,legal" ]
+    # v3: horizontal domains are opt-in — no modules recorded by default.
+    [ "$(jq -r '.modules | sort | join(",")' "$TEST_DIR/.claude/foundation.json")" = "" ]
 }
 
 @test "record_foundation_version creates .claude/ and target_dir if missing" {

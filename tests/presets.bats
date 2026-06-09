@@ -632,8 +632,9 @@ EOF
     [ -d "$target/.claude/skills/dev-shadcn" ]
     [ -d "$target/.claude/skills/dev-react-perf" ]
     [ -d "$target/.claude/skills/dev-frontend-design" ]
-    # Content sites care strongly about CRO, design audit, browser testing
-    [ -d "$target/.claude/skills/growth-cro" ]
+    # Content sites care about design audit, browser testing, perf (core skills).
+    # (growth-cro is now a `growth` module skill — opt-in via `claude-base add
+    # growth`, no longer installed by a core-only preset.)
     [ -d "$target/.claude/skills/qa-design" ]
     [ -d "$target/.claude/skills/qa-chrome" ]
     [ -d "$target/.claude/skills/qa-perf" ]

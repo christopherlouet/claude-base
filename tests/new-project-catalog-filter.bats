@@ -26,10 +26,13 @@ teardown() {
 }
 
 # Write a synthetic preset JSON into a temp presets dir and echo the dir.
-# $1 = preset name, $2 = the "foundation" object body (JSON), $3 = presets dir.
+# $1 = preset name, $2 = the "foundation" object body (JSON), $3 = presets dir,
+# $4 = optional defaultModules JSON array (e.g. '["biz","legal","growth"]').
 _write_preset() {
-    local name="$1" foundation="$2" dir="$3"
+    local name="$1" foundation="$2" dir="$3" dm="${4:-}"
     mkdir -p "$dir"
+    local dm_line=""
+    [ -n "$dm" ] && dm_line="  \"defaultModules\": $dm,"
     cat > "$dir/$name.json" << EOF
 {
   "\$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
@@ -40,6 +43,7 @@ _write_preset() {
   "status": "community",
   "appliesToTypes": ["any"],
   "detect": {"combinator": "anyOf", "files": ["$name.marker"]},
+$dm_line
   "foundation": $foundation,
   "marketplacePlugins": [],
   "recommendedVendorSkills": [],
@@ -105,9 +109,12 @@ EOF
 # ---------------------------------------------------------------------------
 @test "catalog-filter install: no command/agent filter = full catalog (EF-106)" {
     local pdir="$TEST_DIR/presets"
+    # Opt into every module so "full catalog" is on disk to compare against —
+    # the point of EF-106 is that the absence of a command/agent FILTER removes
+    # nothing, not that modules install by default (they no longer do, v3).
     _write_preset "skills-only" \
         '{"skills": {"drop": ["dev-flutter"]}}' \
-        "$pdir" >/dev/null
+        "$pdir" '["biz","legal","growth"]' >/dev/null
     local proj="$TEST_DIR/proj"
 
     run "$NEW_PROJECT" --preset skills-only --presets-dir "$pdir" -y "$proj"
@@ -261,17 +268,17 @@ EOF
 }
 
 # ---------------------------------------------------------------------------
-# S1 / EF-309 — a `keep` whitelist over the core must NOT remove module-owned
+# EF-309 — a `keep` whitelist over the core must NOT remove module-owned
 # (biz/legal/growth) commands/agents: modules are out of the filter's
-# jurisdiction (governed by defaultModules, not the preset filter). Modules are
-# still installed by default in S1 (the opt-in flip is S2), so they are present
-# to be (not) swept.
+# jurisdiction (governed by defaultModules, not the preset filter). Since v3
+# modules are opt-in, so the preset explicitly opts into biz via defaultModules
+# to put a module on disk, then we assert the keep filter does not sweep it.
 # ---------------------------------------------------------------------------
 @test "catalog-filter install: keep whitelist does not sweep up module items (EF-309)" {
     local pdir="$TEST_DIR/presets"
     _write_preset "keep-work-only" \
         '{"commands": {"keep": ["domain:work"]}, "agents": {"keep": ["domain:work"]}}' \
-        "$pdir" >/dev/null
+        "$pdir" '["biz"]' >/dev/null
     local proj="$TEST_DIR/proj"
 
     run "$NEW_PROJECT" --preset keep-work-only --presets-dir "$pdir" -y "$proj"
@@ -280,9 +287,9 @@ EOF
     # Whitelisted core kept; non-kept non-module core removed.
     [ -f "$proj/.claude/commands/work/work-plan.md" ]
     [ ! -f "$proj/.claude/commands/dev/dev-tdd.md" ]
-    # Module-owned domains survive the keep (not in the filter's jurisdiction).
+    # The opted-in module survives the keep (not in the filter's jurisdiction).
     [ -f "$proj/.claude/commands/biz/biz-mvp.md" ]
     [ -f "$proj/.claude/agents/biz-mvp.md" ]
-    [ -f "$proj/.claude/commands/legal/legal-rgpd.md" ] || [ -d "$proj/.claude/commands/legal" ]
-    [ -f "$proj/.claude/commands/growth/growth-cro.md" ] || [ -d "$proj/.claude/commands/growth" ]
+    # A module NOT opted in is simply absent (opt-in default), not "swept".
+    [ ! -d "$proj/.claude/commands/legal" ]
 }

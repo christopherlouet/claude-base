@@ -70,16 +70,14 @@ run_lib() {
     [ "$status" -ne 0 ]
 }
 
-@test "modules: modules_default_set returns the full catalog" {
-    # Lib-owned default for "no explicit module choice" call sites
-    # (init, version recording, legacy migration). Full set at v1;
-    # preset defaultModules will hook in here with US-5.
+@test "modules: modules_default_set is empty (opt-in by default, v3 — EF-302)" {
+    # Lib-owned default for "no explicit module choice" call sites (init,
+    # version recording). From v3.0.0 horizontal domains are pure opt-in:
+    # absence of an explicit choice means NO modules (supersedes EF-210).
     run_lib modules_default_set
     [ "$status" -eq 0 ]
-    [ "${lines[0]}" = "biz" ]
-    [ "${lines[1]}" = "growth" ]
-    [ "${lines[2]}" = "legal" ]
-    [ "${#lines[@]}" -eq 3 ]
+    [ -z "$output" ]
+    [ "${#lines[@]}" -eq 0 ]
 }
 
 # =============================================================================
@@ -244,7 +242,7 @@ run_lib() {
 # Legacy marker migration — EF-205
 # =============================================================================
 
-@test "migration: legacy marker becomes manifest with full module set" {
+@test "migration: legacy marker becomes manifest with empty module set (v3 opt-in/strict)" {
     mkdir -p "$TEST_DIR/.claude"
     echo "1.40.0" > "$TEST_DIR/.claude/.foundation-version"
     run_lib migrate_legacy_marker "$TEST_DIR"
@@ -253,8 +251,10 @@ run_lib() {
     [ ! -f "$TEST_DIR/.claude/.foundation-version" ]
     run bash -c "jq -r '.version' '$TEST_DIR/.claude/foundation.json'"
     [ "$output" = "1.40.0" ]
+    # v3: horizontal is opt-in. A legacy marker (pre-manifest) migrates with NO
+    # modules recorded (strict — files on disk are untouched; `add` to resume).
     run bash -c "jq -r '.modules | sort | join(\",\")' '$TEST_DIR/.claude/foundation.json'"
-    [ "$output" = "biz,growth,legal" ]
+    [ "$output" = "" ]
 }
 
 @test "migration: empty legacy marker migrates as 0.0.0 with a warning" {

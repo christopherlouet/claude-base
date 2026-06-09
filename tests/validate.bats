@@ -260,7 +260,9 @@ EOF
 
 @test "validate.sh reports recorded-but-missing module items (EF-211)" {
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
-    # legal is recorded (full set at init) — remove its files.
+    # v3: modules are opt-in — explicitly install + record legal, then remove
+    # its files to create the recorded-but-missing condition.
+    bash -c "FOUNDATION_ROOT='$BATS_TEST_DIRNAME/..' '$BATS_TEST_DIRNAME/../scripts/module.sh' add legal --target '$TEST_DIR/proj'" >/dev/null 2>&1
     rm -rf "$TEST_DIR/proj/.claude/commands/legal"
     run "$VALIDATE_SCRIPT" "$TEST_DIR/proj"
     [[ "$output" == *"legal"* ]]
