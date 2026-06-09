@@ -136,10 +136,27 @@ _cf_domain_excluded() {
     return 1
 }
 
+# _cf_item_excluded <catalog> <relpath> — 0 if the item's NAME is listed in
+# CF_EXCLUDE_ITEMS (space/newline-separated). This is the item-level twin of
+# _cf_domain_excluded: a module ≠ a domain (thematic modules, EF-402) may own
+# arbitrary cross-domain items, so the consumer passes the union of item names
+# from all bundles. Honored alongside CF_EXCLUDE_DOMAINS; the lib stays
+# decoupled from modules.sh. Unnamed items are never excluded.
+_cf_item_excluded() {
+    [[ -n "${CF_EXCLUDE_ITEMS:-}" ]] || return 1
+    _resolve "$1" "$2"
+    [[ -n "$_CF_NAME" ]] || return 1
+    case " ${CF_EXCLUDE_ITEMS//$'\n'/ } " in
+        *" $_CF_NAME "*) return 0 ;;
+    esac
+    return 1
+}
+
 # catalog_list_items <catalog> <root> — print item paths relative to <root>,
 # one per line, sorted. Missing root → no output, exit 0. Items whose domain is
-# in CF_EXCLUDE_DOMAINS (module-owned) are skipped, so every enumerating
-# consumer (removal set, floor, unknown) sees the core only.
+# in CF_EXCLUDE_DOMAINS (a horizontal module) OR whose name is in
+# CF_EXCLUDE_ITEMS (a cross-domain thematic-module item) are skipped, so every
+# enumerating consumer (removal set, floor, unknown) sees the core only.
 catalog_list_items() {
     _cf_valid_catalog "$1" || return $?
     local catalog="$1" root="${2:-}"
@@ -150,6 +167,7 @@ catalog_list_items() {
     while IFS= read -r f; do
         rel="${f#"$root"/}"
         _cf_domain_excluded "$catalog" "$rel" && continue
+        _cf_item_excluded "$catalog" "$rel" && continue
         printf '%s\n' "$rel"
     done < <(find "$root" ${maxdepth[@]+"${maxdepth[@]}"} -type f -name '*.md' | LC_ALL=C sort)
 }

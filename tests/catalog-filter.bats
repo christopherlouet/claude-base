@@ -276,6 +276,85 @@ _build_fixture_catalog() {
 }
 
 # =============================================================================
+# Item-level exclusion (CF_EXCLUDE_ITEMS) — module ≠ domain (thematic modules)
+# A module may own arbitrary cross-domain items whose domains are NOT modules.
+# The consumer builds the item-name set from all bundles; the lib skips those
+# items from the core enumeration, exactly as it does for CF_EXCLUDE_DOMAINS.
+# =============================================================================
+
+@test "items: list_items skips exactly the CF_EXCLUDE_ITEMS, same-domain siblings stay" {
+    # ops-proxmox is excluded by NAME; ops-deploy (same domain) must remain —
+    # proving the exclusion is item-level, not domain-level.
+    CF_EXCLUDE_ITEMS="ops-proxmox" run_lib catalog_list_items commands "$CMD_ROOT"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"ops/ops-proxmox.md"* ]]
+    [[ "$output" == *"ops/ops-deploy.md"* ]]
+    [ "${#lines[@]}" -eq 8 ]
+}
+
+@test "items: a cross-domain set excludes by name regardless of domain" {
+    CF_EXCLUDE_ITEMS="ops-proxmox biz-mvp git-rename" \
+        run_lib catalog_list_items commands "$CMD_ROOT"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"ops/ops-proxmox.md"* ]]
+    [[ "$output" != *"biz/biz-mvp.md"* ]]
+    [[ "$output" != *"git-rename.md"* ]]
+    # untouched siblings across those same domains
+    [[ "$output" == *"ops/ops-deploy.md"* ]]
+    [[ "$output" == *"work/work-plan.md"* ]]
+    [ "${#lines[@]}" -eq 6 ]
+}
+
+@test "items: newline-separated set is honored (consumer feeds modules_list-style)" {
+    CF_EXCLUDE_ITEMS=$'ops-proxmox\nbiz-mvp' \
+        run_lib catalog_list_items commands "$CMD_ROOT"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"ops/ops-proxmox.md"* ]]
+    [[ "$output" != *"biz/biz-mvp.md"* ]]
+    [ "${#lines[@]}" -eq 7 ]
+}
+
+@test "items: item-set and domain-set are honored together (horizontal no regression)" {
+    # biz excluded by DOMAIN (horizontal module), ops-proxmox by ITEM (thematic);
+    # ops-deploy (ops domain, not a module, not the named item) survives.
+    CF_EXCLUDE_DOMAINS="biz" CF_EXCLUDE_ITEMS="ops-proxmox" \
+        run_lib catalog_list_items commands "$CMD_ROOT"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"biz/biz-mvp.md"* ]]
+    [[ "$output" != *"ops/ops-proxmox.md"* ]]
+    [[ "$output" == *"ops/ops-deploy.md"* ]]
+    [ "${#lines[@]}" -eq 7 ]
+}
+
+@test "items: agents honor CF_EXCLUDE_ITEMS too" {
+    CF_EXCLUDE_ITEMS="ops-proxmox" run_lib catalog_list_items agents "$AGT_ROOT"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"ops-proxmox.md"* ]]
+    [[ "$output" == *"ops-deploy.md"* ]]
+    [ "${#lines[@]}" -eq 5 ]
+}
+
+@test "items: unset CF_EXCLUDE_ITEMS excludes nothing (default behaviour)" {
+    run_lib catalog_list_items commands "$CMD_ROOT"
+    [ "$status" -eq 0 ]
+    [ "${#lines[@]}" -eq 9 ]
+}
+
+@test "items: keep whitelist never sweeps up a cross-domain module item (EF-309 generalised)" {
+    # keep[domain:work] over a core where ops-proxmox is module-owned (excluded
+    # upstream): the removal set must NOT name ops-proxmox — it is out of the
+    # filter's jurisdiction, never enumerated, so the whitelist cannot drop it.
+    CF_EXCLUDE_ITEMS="ops-proxmox" \
+        run_lib catalog_removal_set commands "$CMD_ROOT" keep "domain:work"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"ops/ops-proxmox.md"* ]]
+    # non-module, non-kept core items are still swept by the whitelist
+    [[ "$output" == *"ops/ops-deploy.md"* ]]
+    [[ "$output" == *"biz/biz-mvp.md"* ]]
+    [[ "$output" != *"work/"* ]]
+}
+
+# =============================================================================
 # Floor violations (EF-111) — validation helper, DROP mode only
 # =============================================================================
 

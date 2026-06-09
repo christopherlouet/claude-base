@@ -1053,11 +1053,15 @@ _catalog_remove_set() {
         [[ -z "$e" ]] && continue
         entries+=("$e")
     done < <(cf_filter_entries "$ACTIVE_PRESET_FILE" "$catalog" "$mode")
-    # US-4 (horizontal-pure-modules S1): module domains are out of the filter's
-    # jurisdiction — exclude them so a keep whitelist never skips a module item.
-    local CF_EXCLUDE_DOMAINS
+    # Module-owned items are out of the filter's jurisdiction — exclude them so a
+    # keep whitelist never skips a module item. Horizontal modules = whole domains
+    # (CF_EXCLUDE_DOMAINS); thematic modules (module ≠ domain, EF-402) = cross-
+    # domain items by name (CF_EXCLUDE_ITEMS). Both honored together by the lib.
+    local CF_EXCLUDE_DOMAINS CF_EXCLUDE_ITEMS
     # shellcheck disable=SC2034  # consumed by catalog_list_items in the lib (process-sub subshell)
     CF_EXCLUDE_DOMAINS="$(modules_list)"
+    # shellcheck disable=SC2034  # consumed by catalog_list_items in the lib (process-sub subshell)
+    CF_EXCLUDE_ITEMS="$(module_owned_item_names "$catalog")"
     catalog_removal_set "$catalog" "$BASE_DIR/.claude/$catalog" "$mode" ${entries[@]+"${entries[@]}"}
 }
 
