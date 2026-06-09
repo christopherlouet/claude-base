@@ -171,3 +171,22 @@ EOF
     [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
     [ -f "$proj/.claude/commands/work/work-plan.md" ]
 }
+
+# ---------------------------------------------------------------------------
+# S1 / EF-309 — a `keep` whitelist on update must NOT skip module-owned
+# (biz/legal/growth) items: they are out of the preset filter's jurisdiction,
+# so update still refreshes them. (Modules install by default in S1.)
+# ---------------------------------------------------------------------------
+@test "update catalog-filter: keep whitelist does not skip module items (EF-309)" {
+    local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
+    _write_cat_preset "$pdir" "keep-work" '{"commands":{"keep":["domain:work"]}}'
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    # User removes a module command; a keep[domain:work] update must re-add it
+    # (the filter does not govern module domains).
+    rm -f "$proj/.claude/commands/biz/biz-mvp.md"
+
+    run "$UPDATE" -y -f --preset keep-work --presets-dir "$pdir" "$proj"
+    [ "$status" -eq 0 ]
+    [ -f "$proj/.claude/commands/biz/biz-mvp.md" ]      # module refreshed, not skipped
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]   # kept core present
+}

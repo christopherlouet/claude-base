@@ -457,3 +457,62 @@ _write_filter_preset() {
     [ "$status" -eq 0 ]
     [ -z "$output" ]
 }
+
+# =============================================================================
+# CF_EXCLUDE_DOMAINS — module-owned domains are out of the filter's jurisdiction
+# (S1, US-4 / EF-309). catalog_list_items skips them, so removal-set / floor /
+# unknown enumeration never touch module items — a `keep` whitelist can no
+# longer sweep up modules. The fixture's `biz` domain stands in for a module.
+# =============================================================================
+
+@test "exclude-domains: catalog_list_items omits an excluded domain (commands)" {
+    export CF_EXCLUDE_DOMAINS="biz"
+    run_lib catalog_list_items commands "$CMD_ROOT"
+    unset CF_EXCLUDE_DOMAINS
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"biz/"* ]]            # excluded
+    [[ "$output" == *"work/work-plan.md"* ]]   # core kept
+    [[ "$output" == *"ops/ops-proxmox.md"* ]]  # other core kept
+}
+
+@test "exclude-domains: catalog_list_items omits an excluded domain (agents)" {
+    export CF_EXCLUDE_DOMAINS="biz"
+    run_lib catalog_list_items agents "$AGT_ROOT"
+    unset CF_EXCLUDE_DOMAINS
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"biz-mvp.md"* ]]
+    [[ "$output" == *"ops-proxmox.md"* ]]
+}
+
+@test "exclude-domains: keep whitelist never removes an excluded (module) item" {
+    # keep only the work domain. Without exclusion, biz + ops would be removed.
+    # With biz excluded (a module), the removal set must contain NO biz item.
+    export CF_EXCLUDE_DOMAINS="biz"
+    run_lib catalog_removal_set commands "$CMD_ROOT" keep "domain:work"
+    unset CF_EXCLUDE_DOMAINS
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"biz/"* ]]                # module never swept up
+    [[ "$output" == *"ops/ops-proxmox.md"* ]]  # non-kept core still removed
+}
+
+@test "exclude-domains: drop of an excluded domain yields nothing (out of jurisdiction)" {
+    export CF_EXCLUDE_DOMAINS="biz"
+    run_lib catalog_removal_set commands "$CMD_ROOT" drop "domain:biz"
+    unset CF_EXCLUDE_DOMAINS
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]   # biz is not in the enumerated catalog → nothing to drop
+}
+
+@test "exclude-domains: floor still protected with exclusion active" {
+    export CF_EXCLUDE_DOMAINS="biz"
+    run_lib catalog_removal_set commands "$CMD_ROOT" drop "domain:work"
+    unset CF_EXCLUDE_DOMAINS
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"work/"* ]]   # floor never removed
+}
+
+@test "exclude-domains: empty CF_EXCLUDE_DOMAINS = no exclusion (back-compat)" {
+    run_lib catalog_list_items commands "$CMD_ROOT"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"biz/biz-mvp.md"* ]]   # not excluded when unset
+}
