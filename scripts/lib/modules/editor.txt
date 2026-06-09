@@ -1,0 +1,8 @@
+# Module "editor" — editor/IDE tooling (Neovim).
+# Same syntax as minimal-manifest.txt: one repo-relative path per line,
+# # comments and empty lines ignored, trailing / = directory.
+# Drift guard: tests/modules.bats asserts every path exists and no overlap.
+
+# === Commands (2) ===
+.claude/commands/dev/dev-neovim.md
+.claude/commands/qa/qa-neovim.md

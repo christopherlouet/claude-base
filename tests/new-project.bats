@@ -529,14 +529,17 @@ EOF
     [ -d "$TEST_DIR/.claude/commands/ops" ]
 }
 
-@test "new-project.sh default install count = full catalog minus horizontal (CS-301)" {
+@test "new-project.sh default install count = full catalog minus all modules (CS-301)" {
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
-    local full horiz proj_cmds
+    # A default install ships the core only — every module (horizontal AND
+    # thematic) is opt-in, so the deposited command count is full minus every
+    # module-owned command. Computed from the bundles so it auto-tracks new modules.
+    local full module_cmds proj_cmds
     full=$(find "$BASE_DIR/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' ')
-    horiz=$(find "$BASE_DIR/.claude/commands/biz" "$BASE_DIR/.claude/commands/legal" "$BASE_DIR/.claude/commands/growth" -type f -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
+    module_cmds=$(grep -h '^\.claude/commands/' "$BASE_DIR"/scripts/lib/modules/*.txt | grep -c '\.md$')
     proj_cmds=$(find "$TEST_DIR/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' ')
-    [ "$proj_cmds" -eq "$((full - horiz))" ]
+    [ "$proj_cmds" -eq "$((full - module_cmds))" ]
 }
 
 @test "new-project.sh bare install advertises opt-in modules with add hint (S2/EF-301)" {

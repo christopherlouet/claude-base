@@ -1,0 +1,16 @@
+# Module "data-eng" — data engineering: pipelines (ETL/ELT) + warehouse modeling.
+# Owns the whole data/ domain (it leaves the universal core entirely).
+# Same syntax as minimal-manifest.txt: one repo-relative path per line,
+# # comments and empty lines ignored, trailing / = directory.
+# Drift guard: tests/modules.bats asserts every path exists and no overlap.
+
+# === Commands (2) ===
+.claude/commands/data/data-pipeline.md
+.claude/commands/data/data-modeling.md
+
+# === Agents (2) ===
+.claude/agents/data-pipeline.md
+.claude/agents/data-modeling.md
+
+# === Skills (1 directory) ===
+.claude/skills/data-pipeline/

@@ -37,13 +37,20 @@ run_lib() {
     [ -f "$MODULES_LIB" ]
 }
 
-@test "modules: modules_list returns exactly biz, growth, legal (sorted)" {
+@test "modules: modules_list returns the 12 modules (3 horizontal + 9 thematic, sorted)" {
     run_lib modules_list
     [ "$status" -eq 0 ]
-    [ "${lines[0]}" = "biz" ]
-    [ "${lines[1]}" = "growth" ]
-    [ "${lines[2]}" = "legal" ]
-    [ "${#lines[@]}" -eq 3 ]
+    # 3 horizontal + 9 thematic, lexically sorted.
+    local expected="ai api-data biz data-eng editor frontend growth iac legal mobile observability self-hosted"
+    [ "$(echo "$output" | tr '\n' ' ' | sed 's/ $//')" = "$expected" ]
+    [ "${#lines[@]}" -eq 12 ]
+}
+
+@test "modules: each thematic module exists (module_exists)" {
+    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend; do
+        run_lib module_exists "$m"
+        [ "$status" -eq 0 ]
+    done
 }
 
 @test "modules: module_exists accepts known modules" {
@@ -128,14 +135,30 @@ run_lib() {
 # Drift guard — bundles must match the repo catalogs
 # =============================================================================
 
-@test "modules: every bundle path exists in the repo" {
-    for m in biz legal growth; do
+@test "modules: every bundle path exists in the repo (all modules)" {
+    local all_modules
+    all_modules=$(bash -c "source '$MODULES_LIB' && modules_list")
+    for m in $all_modules; do
         run_lib module_bundle_paths "$m"
         [ "$status" -eq 0 ]
         for line in "${lines[@]}"; do
             [ -e "$REPO_ROOT/$line" ]
         done
     done
+}
+
+@test "modules: no item is owned by two modules (EF-404 no-overlap drift guard)" {
+    # Every bundle path must belong to exactly one module — the safety net for
+    # the cross-domain item-level exclusion (S1). A path listed twice would be
+    # double-counted in the core/full split and ambiguously owned.
+    local all_modules dupes
+    all_modules=$(bash -c "source '$MODULES_LIB' && modules_list")
+    dupes=$(
+        for m in $all_modules; do
+            bash -c "source '$MODULES_LIB' && module_bundle_paths $m"
+        done | LC_ALL=C sort | uniq -d
+    )
+    [ -z "$dupes" ] || { echo "items owned by >1 module:"; echo "$dupes"; false; }
 }
 
 @test "modules: bundles cover every repo catalog item of their domain (no orphan)" {
@@ -159,13 +182,27 @@ run_lib() {
     done
 }
 
-@test "modules: bundles never include core workflow or orchestrators (EF-203)" {
-    for m in biz legal growth; do
+@test "modules: bundles never include core workflow or orchestrators (EF-203, all modules)" {
+    local all_modules
+    all_modules=$(bash -c "source '$MODULES_LIB' && modules_list")
+    for m in $all_modules; do
         run_lib module_bundle_paths "$m"
         [ "$status" -eq 0 ]
         [[ "$output" != *"commands/work/"* ]]
         [[ "$output" != *"assistant"* ]]
+        # the universal monitoring/component entry points stay core, never modular
+        [[ "$output" != *"commands/ops/ops-monitoring.md"* ]]
+        [[ "$output" != *"commands/dev/dev-component.md"* ]]
     done
+}
+
+@test "modules: thematic bundle item counts are stable (api-data, frontend, mobile)" {
+    run_lib module_bundle_paths api-data
+    [ "${#lines[@]}" -eq 10 ]   # 4 cmds + 3 agents + 3 skills
+    run_lib module_bundle_paths frontend
+    [ "${#lines[@]}" -eq 7 ]    # 2 cmds + 1 agent + 4 skills
+    run_lib module_bundle_paths mobile
+    [ "${#lines[@]}" -eq 6 ]    # 3 cmds + 1 agent + 2 skills
 }
 
 # =============================================================================
@@ -372,6 +409,22 @@ run_module() {
         }
     done < <(bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
                       module_bundle_paths legal")
+}
+
+@test "module add: fresh add installs a cross-domain thematic module (mobile)" {
+    setup_lean_project
+    run_module add mobile --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # mobile spans dev/ops/qa — every listed path (commands, agent, skills) lands.
+    local p
+    while IFS= read -r p; do
+        [ -e "$TEST_DIR/$p" ] || { echo "Missing: $p" >&2; return 1; }
+    done < <(bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
+                      module_bundle_paths mobile")
+    # spot-check the cross-domain spread actually materialised
+    [ -f "$TEST_DIR/.claude/commands/dev/dev-flutter.md" ]
+    [ -f "$TEST_DIR/.claude/commands/ops/ops-mobile-release.md" ]
+    [ -f "$TEST_DIR/.claude/commands/qa/qa-mobile.md" ]
 }
 
 @test "module add: fresh add records the module in the manifest" {

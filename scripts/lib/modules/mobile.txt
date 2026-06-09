@@ -1,0 +1,17 @@
+# Module "mobile" — cross-domain bundle: everything for mobile app dev.
+# Spans dev/ops/qa. Same syntax as minimal-manifest.txt: one repo-relative
+# path per line, # comments and empty lines ignored, trailing / = directory.
+# Drift guard: tests/modules.bats asserts every path exists and no item is
+# owned by two modules.
+
+# === Commands (3) ===
+.claude/commands/dev/dev-flutter.md
+.claude/commands/ops/ops-mobile-release.md
+.claude/commands/qa/qa-mobile.md
+
+# === Agents (1) ===
+.claude/agents/dev-flutter.md
+
+# === Skills (2 directories) ===
+.claude/skills/dev-flutter/
+.claude/skills/ops-mobile-release/

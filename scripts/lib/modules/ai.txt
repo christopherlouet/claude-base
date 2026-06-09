@@ -1,0 +1,13 @@
+# Module "ai" — LLM/AI building blocks: RAG, MCP servers, AI integration.
+# Same syntax as minimal-manifest.txt: one repo-relative path per line,
+# # comments and empty lines ignored, trailing / = directory.
+# Drift guard: tests/modules.bats asserts every path exists and no overlap.
+
+# === Commands (3) ===
+.claude/commands/dev/dev-rag.md
+.claude/commands/dev/dev-mcp.md
+.claude/commands/dev/dev-ai-integration.md
+
+# === Agents (2) ===
+.claude/agents/dev-rag.md
+.claude/agents/dev-ai-integration.md

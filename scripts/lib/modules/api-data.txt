@@ -1,0 +1,20 @@
+# Module "api-data" — typed data/API layer: Prisma, Supabase, GraphQL, tRPC.
+# Same syntax as minimal-manifest.txt: one repo-relative path per line,
+# # comments and empty lines ignored, trailing / = directory.
+# Drift guard: tests/modules.bats asserts every path exists and no overlap.
+
+# === Commands (4) ===
+.claude/commands/dev/dev-prisma.md
+.claude/commands/dev/dev-supabase.md
+.claude/commands/dev/dev-graphql.md
+.claude/commands/dev/dev-trpc.md
+
+# === Agents (3) ===
+.claude/agents/dev-prisma.md
+.claude/agents/dev-supabase.md
+.claude/agents/dev-trpc.md
+
+# === Skills (3 directories) ===
+.claude/skills/dev-prisma/
+.claude/skills/dev-supabase/
+.claude/skills/dev-graphql/

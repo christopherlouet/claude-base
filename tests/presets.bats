@@ -879,7 +879,7 @@ EOF
     desc_len=$(jq -r '.description | length' "$f")
     [ "$desc_len" -ge 80 ]
     [ "$(jq -r '.appliesToTypes | length' "$f")" -ge 1 ]
-    [ "$(jq -r '.version' "$f")" = "1.0.0" ]
+    [ "$(jq -r '.version' "$f")" = "1.1.0" ]
 }
 
 @test "presets: react-vite-spa uses keep XOR drop (T020)" {

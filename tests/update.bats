@@ -681,10 +681,13 @@ teardown() {
 
     local before_count after_count
     before_count=$(find "$TEST_DIR/proj/.claude/commands" -name "*.md" -type f | wc -l | tr -d ' ')
-    # v3: a --simple project records no modules, so update --all deposits the
-    # CORE only — exclude the horizontal module domains from the expected after.
-    after_count=$(find "$BATS_TEST_DIRNAME/../.claude/commands" -name "*.md" -type f \
-        -not -path "*/biz/*" -not -path "*/legal/*" -not -path "*/growth/*" | wc -l | tr -d ' ')
+    # v3+: a --simple project records no modules, so update --all deposits the
+    # CORE only — full minus every module-owned command (horizontal AND thematic),
+    # counted from the bundles so the expectation auto-tracks new modules.
+    local full_cmds module_cmds
+    full_cmds=$(find "$BATS_TEST_DIRNAME/../.claude/commands" -name "*.md" -type f | wc -l | tr -d ' ')
+    module_cmds=$(grep -h '^\.claude/commands/' "$BATS_TEST_DIRNAME/../scripts/lib/modules/"*.txt | grep -c '\.md$')
+    after_count=$((full_cmds - module_cmds))
 
     run bash -c "'$UPDATE_SCRIPT' -n -y --all '$TEST_DIR/proj' </dev/null"
     [ "$status" -eq 0 ]
@@ -861,12 +864,14 @@ _init_legal_only_project() {
     local proj
     proj="$(_init_legal_only_project)"
 
-    local total absent expected
+    # The project records only `legal`, so update --all deposits core + legal.
+    # Absent = every module-owned command EXCEPT legal's (all other modules,
+    # horizontal AND thematic, are not in the manifest). Counted from bundles.
+    local total all_module_cmds legal_cmds absent expected
     total=$(find "$BASE_DIR/.claude/commands" -name "*.md" -type f | wc -l | tr -d ' ')
-    absent=$(grep -ch '^\.claude/commands/' \
-        "$BASE_DIR/scripts/lib/modules/biz.txt" \
-        "$BASE_DIR/scripts/lib/modules/growth.txt" \
-        | awk '{s+=$1} END {print s}')
+    all_module_cmds=$(grep -h '^\.claude/commands/' "$BASE_DIR/scripts/lib/modules/"*.txt | grep -c '\.md$')
+    legal_cmds=$(grep -h '^\.claude/commands/' "$BASE_DIR/scripts/lib/modules/legal.txt" | grep -c '\.md$')
+    absent=$((all_module_cmds - legal_cmds))
     expected=$((total - absent))
 
     run "$UPDATE_SCRIPT" -y --all "$proj"

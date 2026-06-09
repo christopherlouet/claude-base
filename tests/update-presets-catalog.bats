@@ -24,13 +24,13 @@ teardown() {
     teardown_test_dir
 }
 
-# Synthetic preset dropping the ops command domain + the dev-flutter agent.
+# Synthetic preset dropping the ops command domain + the ops-docker agent.
 # $4 = optional defaultModules JSON array (e.g. '["biz"]') — modules are opt-in
 # since v3, so a test that needs a horizontal module on disk declares it here.
 _write_cat_preset() {
     local dir="$1" name="${2:-synth-cat}" foundation="${3:-}" dm="${4:-}"
     mkdir -p "$dir"
-    [ -z "$foundation" ] && foundation='{"commands":{"drop":["domain:ops"]},"agents":{"drop":["dev-flutter"]}}'
+    [ -z "$foundation" ] && foundation='{"commands":{"drop":["domain:ops"]},"agents":{"drop":["ops-docker"]}}'
     local dm_line=""
     [ -n "$dm" ] && dm_line="  \"defaultModules\": $dm,"
     cat > "$dir/$name.json" <<EOF
@@ -59,16 +59,16 @@ EOF
     local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
     _write_cat_preset "$pdir"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
-    [ -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
-    [ -f "$proj/.claude/agents/dev-flutter.md" ]
+    [ -f "$proj/.claude/commands/ops/ops-deploy.md" ]
+    [ -f "$proj/.claude/agents/ops-docker.md" ]
 
     # User removes them; the filtering update must not bring them back.
-    rm -f "$proj/.claude/commands/ops/ops-proxmox.md" "$proj/.claude/agents/dev-flutter.md"
+    rm -f "$proj/.claude/commands/ops/ops-deploy.md" "$proj/.claude/agents/ops-docker.md"
 
     run "$UPDATE" -y -f --preset synth-cat --presets-dir "$pdir" --agents "$proj"
     [ "$status" -eq 0 ]
-    [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
-    [ ! -f "$proj/.claude/agents/dev-flutter.md" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-deploy.md" ]
+    [ ! -f "$proj/.claude/agents/ops-docker.md" ]
 }
 
 # ---------------------------------------------------------------------------
@@ -78,7 +78,7 @@ EOF
     local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
     _write_cat_preset "$pdir"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
-    rm -f "$proj/.claude/commands/ops/ops-proxmox.md"
+    rm -f "$proj/.claude/commands/ops/ops-deploy.md"
 
     run "$UPDATE" -y -f --preset synth-cat --presets-dir "$pdir" --agents "$proj"
     [ "$status" -eq 0 ]
@@ -93,12 +93,12 @@ EOF
     local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
     _write_cat_preset "$pdir"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
-    rm -f "$proj/.claude/commands/ops/ops-proxmox.md" "$proj/.claude/agents/dev-flutter.md"
+    rm -f "$proj/.claude/commands/ops/ops-deploy.md" "$proj/.claude/agents/ops-docker.md"
 
     run "$UPDATE" -y -f --no-preset --agents "$proj"
     [ "$status" -eq 0 ]
-    [ -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
-    [ -f "$proj/.claude/agents/dev-flutter.md" ]
+    [ -f "$proj/.claude/commands/ops/ops-deploy.md" ]
+    [ -f "$proj/.claude/agents/ops-docker.md" ]
 }
 
 # ---------------------------------------------------------------------------
@@ -125,14 +125,14 @@ EOF
     local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
     _write_cat_preset "$pdir"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
-    rm -f "$proj/.claude/commands/ops/ops-proxmox.md"
+    rm -f "$proj/.claude/commands/ops/ops-deploy.md"
 
     run "$UPDATE" -y --dry-run --preset synth-cat --presets-dir "$pdir" --agents "$proj"
     [ "$status" -eq 0 ]
     # Exact skip line for a dropped ops command (not just any 'ops' token).
     [[ "$output" == *"Skip (preset filter): commands/ops/"* ]]
     # Dry-run must not re-create the removed file.
-    [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-deploy.md" ]
 }
 
 # ---------------------------------------------------------------------------
@@ -146,11 +146,18 @@ EOF
     _write_cat_preset "$pdir"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
 
-    local total horiz ops_count expected
+    # A --simple project records no modules → it deposits the CORE only
+    # (total minus every module-owned command). The synth-cat preset then drops
+    # domain:ops, which can only remove the CORE ops commands (the module-owned
+    # ops commands are already absent). expected = core_total − core_ops.
+    local total module_cmds core_total ops_all ops_module core_ops expected
     total=$(find "$BASE_DIR/.claude/commands" -name '*.md' -type f | wc -l | tr -d ' ')
-    horiz=$(find "$BASE_DIR/.claude/commands/biz" "$BASE_DIR/.claude/commands/legal" "$BASE_DIR/.claude/commands/growth" -name '*.md' -type f 2>/dev/null | wc -l | tr -d ' ')
-    ops_count=$(find "$BASE_DIR/.claude/commands/ops" -name '*.md' -type f | wc -l | tr -d ' ')
-    expected=$((total - horiz - ops_count))
+    module_cmds=$(grep -h '^\.claude/commands/' "$BASE_DIR/scripts/lib/modules/"*.txt | grep -c '\.md$')
+    core_total=$((total - module_cmds))
+    ops_all=$(find "$BASE_DIR/.claude/commands/ops" -name '*.md' -type f | wc -l | tr -d ' ')
+    ops_module=$(grep -h '^\.claude/commands/ops/' "$BASE_DIR/scripts/lib/modules/"*.txt | grep -c '\.md$')
+    core_ops=$((ops_all - ops_module))
+    expected=$((core_total - core_ops))
 
     run "$UPDATE" -y --dry-run --preset synth-cat --presets-dir "$pdir" --agents "$proj"
     [ "$status" -eq 0 ]
@@ -169,12 +176,12 @@ EOF
     local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
     _write_cat_preset "$pdir" "keep-work" '{"commands":{"keep":["domain:work"]}}'
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
-    rm -f "$proj/.claude/commands/ops/ops-proxmox.md" "$proj/.claude/commands/work/work-plan.md"
+    rm -f "$proj/.claude/commands/ops/ops-deploy.md" "$proj/.claude/commands/work/work-plan.md"
 
     run "$UPDATE" -y -f --preset keep-work --presets-dir "$pdir" "$proj"
     [ "$status" -eq 0 ]
     # Non-whitelisted command stays out; whitelisted (work) command restored.
-    [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-deploy.md" ]
     [ -f "$proj/.claude/commands/work/work-plan.md" ]
 }
 
