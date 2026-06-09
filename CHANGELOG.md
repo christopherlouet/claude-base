@@ -13,6 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Preset command & agent filtering** (`foundation.commands` / `foundation.agents`).
+  A preset may now scope the installed catalog of commands and agents the same way it
+  already scoped skills, via `drop` (blacklist) or `keep` (whitelist) lists supporting
+  exact item names and the `domain:<name>` form. Shipped across four sessions
+  (S1–S4, specs/presets-commands-agents-filter/, US-1 through US-3):
+  - `scripts/lib/catalog-filter.sh`: shared SSOT for domain resolution, `domain:<name>` +
+    exact-item matching, and the protected floor (`work` + `assistant`/`assistant-auto`
+    are never removable — EF-111).
+  - Install-time filter (`scripts/new-project.sh`): `apply_catalog_filters()` reduces a
+    real install; `--dry-run` lists removals; a no-filter preset is byte-identical to a
+    full install.
+  - Update-time filter (`scripts/update.sh`): excluded commands/agents are skipped
+    (COPY-only — never deletes on-disk), reported on a distinct `Filtered by preset` line;
+    `--no-preset` restores the full catalog.
+  - Validation (`scripts/validate-presets.sh`): rejects `drop` XOR `keep`, floor and
+    horizontal-domain (`biz`/`legal`/`growth`, owned by modules) removal, and vendor-pointer
+    tier filters; warns on unknown item names.
+  - **`nextjs` preset adopts the filter** (v1.1.0): excludes the command/agent counterparts
+    of its already-dropped skills (`dev-flutter`, `ops-mobile-release`, `ops-opnsense`,
+    `ops-proxmox`, `ops-infra-code`, `data-pipeline`) — 6 fewer commands, 5 fewer agents.
 - **Foundation modules: installable horizontal domain modules** (`biz`, `legal`, `growth`).
   Implemented across four sessions (S1–S4), covering specs/foundation-modules/ (US-1 through US-5):
   - `claude-base add <module>` / `claude-base remove <module>` / `claude-base modules` CLI verbs.
@@ -29,6 +49,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **`nextjs` preset now filters commands and agents (v1.0.0 → v1.1.0).** Existing `nextjs`
+  projects that run `claude-base update` will no longer be offered the 6 commands / 5 agents
+  matching its dropped skills (`dev-flutter`, `ops-mobile-release`, `ops-opnsense`,
+  `ops-proxmox`, `ops-infra-code`, `data-pipeline`); already-installed copies are left on disk
+  untouched (COPY-only). Run `update --no-preset` to re-install the full catalog (the
+  next update copies the excluded files back in; nothing is deleted in the meantime).
 - **⚠ BREAKING — `.claude/.foundation-version` marker replaced by `.claude/foundation.json` manifest** (EF-205).
   The legacy plain-text version marker is no longer written by `claude-base init` or `claude-base update`.
   All foundation tooling reads the JSON manifest first; `update` creates the manifest and removes the

@@ -3,9 +3,9 @@
 
   "name": "nextjs",
   "displayName": "Next.js full-stack",
-  "description": "Next.js (App Router) + React + TypeScript. The foundation rules and workflow are kept; clearly other-stack skills (Flutter, Proxmox, OPNsense, mobile release, data pipeline) are filtered out. Bundles ZERO marketplace plugins at v1 — plugin curation is added incrementally as each one is validated in real production use, not assumed. Auth, ORM, deploy and payment patterns are decisions left to the developer; see docs/recipes/saas-monetization.md if a subscription model is needed.",
+  "description": "Next.js (App Router) + React + TypeScript. The foundation rules and workflow are kept; clearly other-stack skills, commands and agents (Flutter, Proxmox, OPNsense, mobile release, infra-as-code, data pipeline) are filtered out. Bundles ZERO marketplace plugins at v1 — plugin curation is added incrementally as each one is validated in real production use, not assumed. Auth, ORM, deploy and payment patterns are decisions left to the developer; see docs/recipes/saas-monetization.md if a subscription model is needed.",
 
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "maintainer-vouched",
 
   "author": {
@@ -28,6 +28,25 @@
       "drop": [
         "dev-flutter",
         "ops-mobile-release",
+        "ops-opnsense",
+        "ops-proxmox",
+        "ops-infra-code",
+        "data-pipeline"
+      ]
+    },
+    "commands": {
+      "drop": [
+        "dev-flutter",
+        "ops-mobile-release",
+        "ops-opnsense",
+        "ops-proxmox",
+        "ops-infra-code",
+        "data-pipeline"
+      ]
+    },
+    "agents": {
+      "drop": [
+        "dev-flutter",
         "ops-opnsense",
         "ops-proxmox",
         "ops-infra-code",
