@@ -129,3 +129,26 @@ EOF
     # Dry-run must not re-create the removed file.
     [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
 }
+
+# ---------------------------------------------------------------------------
+# Reporting — the "Commands: N → M" would-be count must subtract the commands
+# the preset filters out, not just absent-module commands. With domain:ops
+# dropped, M must equal (foundation total − ops command count). Regression
+# guard for the stale "Presets still do not filter commands today" path.
+# ---------------------------------------------------------------------------
+@test "update catalog-filter: Commands count reflects the preset filter" {
+    local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
+    _write_cat_preset "$pdir"
+    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+
+    local total ops_count expected
+    total=$(find "$BASE_DIR/.claude/commands" -name '*.md' -type f | wc -l | tr -d ' ')
+    ops_count=$(find "$BASE_DIR/.claude/commands/ops" -name '*.md' -type f | wc -l | tr -d ' ')
+    expected=$((total - ops_count))
+
+    run "$UPDATE" -y --dry-run --preset synth-cat --presets-dir "$pdir" --agents "$proj"
+    [ "$status" -eq 0 ]
+    local reported
+    reported=$(echo "$output" | grep "Commands:" | head -1 | grep -oE '[0-9]+' | tail -1)
+    [ "$reported" -eq "$expected" ]
+}

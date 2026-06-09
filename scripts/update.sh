@@ -682,17 +682,21 @@ update_commands() {
     # Dogfood finding #2: `after` must reflect the would-be-state, not the
     # current target. In dry-run nothing is written, so reading from
     # $TARGET_DIR would always yield `after == before` and hide the real
-    # delta. Read from the foundation source (which is what a clean update
-    # would deposit), minus commands the module filter excludes (US-3):
-    # absent-module commands are never deposited, so they are not part of
-    # the would-be-state. Presets still do not filter commands today.
-    local after
-    after=$(find "$base_commands_dir" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || echo "0")
-    local _absent_cmds=0 _p
-    for _p in ${ABSENT_MODULE_FILES[@]+"${ABSENT_MODULE_FILES[@]}"}; do
-        [[ "$_p" == "$COMMANDS_SUBDIR"/* && -f "$BASE_DIR/$_p" ]] && ((_absent_cmds++)) || true
-    done
-    after=$((after - _absent_cmds))
+    # delta. Derive `after` from the foundation source counting only the
+    # commands a clean update would actually deposit — i.e. mirror the exact
+    # skip predicates in update_command_file: absent-module files (US-3) and
+    # preset-filtered commands (US-3) are never deposited, so neither counts
+    # toward the would-be-state. Deriving from the same predicates also
+    # avoids double-subtracting a command that is both module-absent and
+    # preset-filtered (it returns on the first check at runtime).
+    local after=0 _rel
+    while IFS= read -r cmd; do
+        [[ -f "$cmd" ]] || continue
+        _rel="${cmd#"$base_commands_dir"/}"
+        _module_skip_check "$COMMANDS_SUBDIR/$_rel" && continue
+        is_catalog_item_filtered "$CATALOG_REMOVE_COMMANDS" "$_rel" && continue
+        ((after++)) || true
+    done < <(find "$base_commands_dir" -name "*.md" -type f 2>/dev/null || true)
 
     info "Commands: $before → $after"
 }
@@ -1730,7 +1734,7 @@ main() {
     # Announce the active preset (silence preserves byte-identity with
     # today's update output when no preset is active — CS-006).
     if [[ -n "$ACTIVE_PRESET_NAME" ]]; then
-        info "Active preset: $ACTIVE_PRESET_NAME ($ACTIVE_PRESET_SOURCE) — skill filter applied"
+        info "Active preset: $ACTIVE_PRESET_NAME ($ACTIVE_PRESET_SOURCE) — preset filter applied (skills, commands, agents)"
     fi
 
     # Handle --restore
