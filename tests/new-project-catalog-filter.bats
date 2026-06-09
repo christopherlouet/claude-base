@@ -220,3 +220,42 @@ EOF
     run "$BASE_DIR/scripts/validate.sh" "$proj"
     [ "$status" -eq 0 ]
 }
+
+# ---------------------------------------------------------------------------
+# T015 — CS-101: the shipped `nextjs` preset (stack-mirror filter) trims at
+# least 6 commands and 5 agents (the command/agent counterparts of its dropped
+# skills) vs the full catalog. nextjs keeps every module (defaultModules:null),
+# so the reduction is purely the stack-mirror filter — horizontal-domain
+# reduction is out of scope here (measured by foundation-modules CS-201/203).
+# Uses the REAL official preset, not a synthetic one.
+# ---------------------------------------------------------------------------
+@test "catalog-filter install: nextjs preset trims >=6 commands and >=5 agents (CS-101)" {
+    local proj="$TEST_DIR/proj-nextjs"
+    run "$NEW_PROJECT" --preset nextjs -y "$proj"
+    [ "$status" -eq 0 ]
+
+    local src_cmds proj_cmds src_agents proj_agents
+    src_cmds=$(find "$BASE_DIR/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' ')
+    proj_cmds=$(find "$proj/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' ')
+    src_agents=$(find "$BASE_DIR/.claude/agents" -maxdepth 1 -type f -name '*.md' | wc -l | tr -d ' ')
+    proj_agents=$(find "$proj/.claude/agents" -maxdepth 1 -type f -name '*.md' | wc -l | tr -d ' ')
+
+    [ "$((src_cmds - proj_cmds))" -ge 6 ]
+    [ "$((src_agents - proj_agents))" -ge 5 ]
+
+    # The specific stack-mirror counterparts are gone (diagnostic precision).
+    [ ! -f "$proj/.claude/commands/dev/dev-flutter.md" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-mobile-release.md" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-opnsense.md" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-infra-code.md" ]
+    [ ! -f "$proj/.claude/commands/data/data-pipeline.md" ]
+    [ ! -f "$proj/.claude/agents/dev-flutter.md" ]
+    [ ! -f "$proj/.claude/agents/ops-opnsense.md" ]
+    [ ! -f "$proj/.claude/agents/ops-proxmox.md" ]
+    [ ! -f "$proj/.claude/agents/ops-infra-code.md" ]
+    [ ! -f "$proj/.claude/agents/data-pipeline.md" ]
+
+    # A kept item survives (install is not hollowed out).
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]
+}

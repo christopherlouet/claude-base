@@ -83,11 +83,11 @@
 **Independent test**: `nextjs` install → ≥ 6 fewer commands and ≥ 5 fewer agents than unfiltered (CS-101).
 
 ### Tests (RED first) ⚠️
-- [ ] T015 [P] [US4] — test `nextjs` install yields ≥ 6 fewer commands and ≥ 5 fewer agents (counterparts of dropped skills)
+- [x] T015 [P] [US4] — `tests/new-project-catalog-filter.bats`: real `nextjs` install yields ≥ 6 fewer commands and ≥ 5 fewer agents vs full catalog (count diff + the 6 command / 5 agent counterparts asserted absent + a kept item present). `defaultModules:null` keeps all modules, so the reduction is purely the stack-mirror filter (CS-101 isolated from horizontal-domain reduction)
 
 ### Implementation
-- [ ] T016 [US4] — add `foundation.commands`/`foundation.agents` drop lists to `.claude/presets/nextjs.json` (`dev-flutter`, `ops-mobile-release`, `ops-opnsense`, `ops-proxmox`, `ops-infra-code`, `data-pipeline`); update `description` to name exclusions
-- [ ] T017 [US4] — bump `nextjs` version (minor); CHANGELOG entry with behaviour-change note for existing users (per parent-spec versioning rule)
+- [x] T016 [US4] — added `foundation.commands` (6) / `foundation.agents` (5 — `ops-mobile-release` has no agent counterpart, omitted to avoid an unknown-name `[WARN]`) drop lists to `.claude/presets/nextjs.json`; `description` updated to name command/agent exclusions; `validate-presets.sh` passes `[OK]`
+- [x] T017 [US4] — bumped `nextjs` `1.0.0` → `1.1.0` (minor); CHANGELOG `Added` (feature + adoption) + `Changed` (behaviour-change note: existing nextjs projects lose 6 cmds / 5 agents on update, `--no-preset` restores)
 
 **Checkpoint**: nextjs is the worked example; one preset = one reviewed change.
 
