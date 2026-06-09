@@ -32,10 +32,12 @@ modules_list() {
 
 # modules_default_set — the module set to record when no explicit choice
 # exists (init without module flags, version recording on a manifest-less
-# project, legacy migration fallback). Full catalog at v1; preset
-# defaultModules (US-5) will hook in here so every call site inherits it.
+# project). From v3.0.0 the horizontal domains (biz/legal/growth) are pure
+# opt-in modules: absence of an explicit choice means NO modules (supersedes
+# foundation-modules EF-210 "absence means all"). A default install ships the
+# core only; `claude-base add <module>` or a preset's defaultModules opts in.
 modules_default_set() {
-    modules_list
+    :  # empty set — opt-in by default
 }
 
 # module_exists <name> — 0 if <name> is a known module.
