@@ -681,7 +681,10 @@ teardown() {
 
     local before_count after_count
     before_count=$(find "$TEST_DIR/proj/.claude/commands" -name "*.md" -type f | wc -l | tr -d ' ')
-    after_count=$(find "$BATS_TEST_DIRNAME/../.claude/commands" -name "*.md" -type f | wc -l | tr -d ' ')
+    # v3: a --simple project records no modules, so update --all deposits the
+    # CORE only — exclude the horizontal module domains from the expected after.
+    after_count=$(find "$BATS_TEST_DIRNAME/../.claude/commands" -name "*.md" -type f \
+        -not -path "*/biz/*" -not -path "*/legal/*" -not -path "*/growth/*" | wc -l | tr -d ' ')
 
     run bash -c "'$UPDATE_SCRIPT' -n -y --all '$TEST_DIR/proj' </dev/null"
     [ "$status" -eq 0 ]
@@ -703,8 +706,10 @@ teardown() {
     [ -f "$TEST_DIR/proj/.claude/foundation.json" ]
     [ ! -f "$TEST_DIR/proj/.claude/.foundation-version" ]
     [[ "$output" == *"migrated"* ]]
-    # Conservative migration: full module set assumed (EF-205).
-    [ "$(jq -r '.modules | sort | join(",")' "$TEST_DIR/proj/.claude/foundation.json")" = "biz,growth,legal" ]
+    # v3 strict migration: a legacy marker carries no recorded modules, so it
+    # migrates with an empty module set (horizontal is opt-in; on-disk files are
+    # untouched, `claude-base add` to resume tracking them).
+    [ "$(jq -r '.modules | sort | join(",")' "$TEST_DIR/proj/.claude/foundation.json")" = "" ]
 }
 
 @test "update.sh --dry-run does NOT migrate a legacy marker" {
@@ -731,25 +736,14 @@ teardown() {
 
 _modules_lib="$BATS_TEST_DIRNAME/../scripts/lib/modules.sh"
 
-# Helper: set up a project with ONLY the 'legal' module recorded.
+# Helper: set up a project with ONLY the 'legal' module installed + recorded.
 # Returns the project path in $TEST_DIR/proj_us3.
+# v3: modules are opt-in, so a --simple install ships the core only; we then
+# explicitly add legal (files + manifest record). biz/growth stay absent.
 _init_legal_only_project() {
     local proj="$TEST_DIR/proj_us3"
     "$NEW_PROJECT_SCRIPT" --simple -y "$proj" >/dev/null 2>&1
-    # Rewrite the manifest to record only 'legal'.
-    jq '.modules = ["legal"]' "$proj/.claude/foundation.json" > "$proj/.claude/foundation.json.tmp"
-    mv "$proj/.claude/foundation.json.tmp" "$proj/.claude/foundation.json"
-    # Remove all biz and growth bundle items (files and directories).
-    local p
-    while IFS= read -r p; do
-        # Strip trailing / for directory entries.
-        local clean_p="${p%/}"
-        rm -rf "$proj/$clean_p"
-    done < <(bash -c "source '$_modules_lib'; module_bundle_paths biz")
-    while IFS= read -r p; do
-        local clean_p="${p%/}"
-        rm -rf "$proj/$clean_p"
-    done < <(bash -c "source '$_modules_lib'; module_bundle_paths growth")
+    bash -c "FOUNDATION_ROOT='$BATS_TEST_DIRNAME/..' '$BATS_TEST_DIRNAME/../scripts/module.sh' add legal --target '$proj'" >/dev/null 2>&1
     echo "$proj"
 }
 

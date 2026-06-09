@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **⚠ BREAKING (v3.0.0) — horizontal domains (`biz`/`legal`/`growth`) are now pure opt-in modules.**
+  A default install (no preset, or a preset that does not declare `defaultModules`)
+  ships the **core only** — business, legal and growth commands/agents/skills are no
+  longer installed by default (supersedes the foundation-modules rule "absence of
+  `defaultModules` means all modules"). Opt in per project with
+  `claude-base add biz|legal|growth`, or declare `defaultModules` in a preset.
+  **Migration**: on `claude-base update`, an existing project no longer refreshes
+  horizontal domains it carried only by the old default; on-disk files are **not
+  deleted** — run `claude-base add <module>` to resume tracking them. See
+  `specs/horizontal-pure-modules/`.
+
 ### Added
 
 - **Preset command & agent filtering** (`foundation.commands` / `foundation.agents`).

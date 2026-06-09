@@ -46,7 +46,6 @@
         "doc-generate",
         "feature-flags",
         "git-worktrees",
-        "growth-cro",
         "ops-ci",
         "ops-ci-fix",
         "ops-database",

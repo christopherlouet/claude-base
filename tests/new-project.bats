@@ -414,17 +414,18 @@ EOF
     local manifest="$TEST_DIR/proj-rec/.claude/foundation.json"
     [ -f "$manifest" ]
     [ "$(jq -r '.preset' "$manifest")" = "synth-rec" ]
-    # v1: presets do not change the module set (US-5 is later) — full set.
-    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "biz,growth,legal" ]
+    # v3: a preset with no defaultModules records NO modules (opt-in default).
+    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "" ]
     [ ! -f "$TEST_DIR/proj-rec/.claude/.foundation-version" ]
 }
 
-@test "new-project.sh bare init records null preset and full module set (US-1)" {
+@test "new-project.sh bare init records null preset and empty module set (US-1, v3 opt-in)" {
     run "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj-bare"
     [ "$status" -eq 0 ]
     local manifest="$TEST_DIR/proj-bare/.claude/foundation.json"
     [ "$(jq -r '.preset' "$manifest")" = "null" ]
-    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "biz,growth,legal" ]
+    # v3: horizontal domains are opt-in — a bare init records no modules.
+    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "" ]
 }
 
 @test "new-project.sh --simple fails loud when the manifest cannot be written" {
@@ -485,15 +486,18 @@ EOF
     [ ! -d "$TEST_DIR/proj-dm/.claude/commands/growth" ]
 }
 
-@test "new-project.sh preset without defaultModules installs all modules (backward compat, US-5)" {
+@test "new-project.sh preset without defaultModules installs no modules (v3 opt-in, supersedes US-5 backward compat)" {
     local preset_dir="$TEST_DIR/presets-no-dm"
     _write_preset_with_dm "$preset_dir" "full-preset" ""
     run "$NEW_PROJECT_SCRIPT" --preset full-preset --presets-dir "$preset_dir" -y "$TEST_DIR/proj-no-dm"
     [ "$status" -eq 0 ]
     local manifest="$TEST_DIR/proj-no-dm/.claude/foundation.json"
     [ -f "$manifest" ]
-    # All three modules must be present
-    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "biz,growth,legal" ]
+    # v3: absence of defaultModules means NO modules (opt-in) — not "all".
+    [ "$(jq -r '.modules | sort | join(",")' "$manifest")" = "" ]
+    [ ! -d "$TEST_DIR/proj-no-dm/.claude/commands/biz" ]
+    [ ! -d "$TEST_DIR/proj-no-dm/.claude/commands/legal" ]
+    [ ! -d "$TEST_DIR/proj-no-dm/.claude/commands/growth" ]
 }
 
 @test "new-project.sh init summary lists available-but-not-installed modules with claude-base add hint (US-5)" {
@@ -504,4 +508,39 @@ EOF
     # Summary must mention the two not-installed modules (biz, growth) with the add verb
     [[ "$output" == *"claude-base add"* ]]
     [[ "$output" == *"biz"* ]] || [[ "$output" == *"growth"* ]]
+}
+
+# =============================================================================
+# S2 (horizontal-pure-modules) — default install is CORE ONLY (opt-in modules).
+# =============================================================================
+
+@test "new-project.sh default install is core-only — no horizontal modules (S2/EF-301)" {
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # Horizontal domains are NOT installed by default (opt-in via claude-base add).
+    [ ! -d "$TEST_DIR/.claude/commands/biz" ]
+    [ ! -d "$TEST_DIR/.claude/commands/legal" ]
+    [ ! -d "$TEST_DIR/.claude/commands/growth" ]
+    [ ! -f "$TEST_DIR/.claude/agents/biz-mvp.md" ]
+    [ ! -f "$TEST_DIR/.claude/agents/growth-cro.md" ]
+    # Core is present.
+    [ -f "$TEST_DIR/.claude/commands/work/work-plan.md" ]
+    [ -d "$TEST_DIR/.claude/commands/dev" ]
+    [ -d "$TEST_DIR/.claude/commands/ops" ]
+}
+
+@test "new-project.sh default install count = full catalog minus horizontal (CS-301)" {
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    local full horiz proj_cmds
+    full=$(find "$BASE_DIR/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' ')
+    horiz=$(find "$BASE_DIR/.claude/commands/biz" "$BASE_DIR/.claude/commands/legal" "$BASE_DIR/.claude/commands/growth" -type f -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
+    proj_cmds=$(find "$TEST_DIR/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' ')
+    [ "$proj_cmds" -eq "$((full - horiz))" ]
+}
+
+@test "new-project.sh bare install advertises opt-in modules with add hint (S2/EF-301)" {
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"claude-base add"* ]]
 }

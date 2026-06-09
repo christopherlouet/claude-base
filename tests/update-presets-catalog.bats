@@ -25,10 +25,14 @@ teardown() {
 }
 
 # Synthetic preset dropping the ops command domain + the dev-flutter agent.
+# $4 = optional defaultModules JSON array (e.g. '["biz"]') — modules are opt-in
+# since v3, so a test that needs a horizontal module on disk declares it here.
 _write_cat_preset() {
-    local dir="$1" name="${2:-synth-cat}" foundation="${3:-}"
+    local dir="$1" name="${2:-synth-cat}" foundation="${3:-}" dm="${4:-}"
     mkdir -p "$dir"
     [ -z "$foundation" ] && foundation='{"commands":{"drop":["domain:ops"]},"agents":{"drop":["dev-flutter"]}}'
+    local dm_line=""
+    [ -n "$dm" ] && dm_line="  \"defaultModules\": $dm,"
     cat > "$dir/$name.json" <<EOF
 {
   "\$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
@@ -39,6 +43,7 @@ _write_cat_preset() {
   "status": "community",
   "appliesToTypes": ["any"],
   "detect": {"combinator": "anyOf", "files": ["$name.marker"]},
+$dm_line
   "foundation": $foundation,
   "marketplacePlugins": [],
   "recommendedVendorSkills": [],
@@ -132,19 +137,20 @@ EOF
 
 # ---------------------------------------------------------------------------
 # Reporting — the "Commands: N → M" would-be count must subtract the commands
-# the preset filters out, not just absent-module commands. With domain:ops
-# dropped, M must equal (foundation total − ops command count). Regression
-# guard for the stale "Presets still do not filter commands today" path.
+# the preset filters out. A --simple project records no modules (v3 opt-in), so
+# the would-be core also excludes the horizontal domains. With domain:ops
+# dropped, M = (full catalog − horizontal modules − ops command count).
 # ---------------------------------------------------------------------------
 @test "update catalog-filter: Commands count reflects the preset filter" {
     local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
     _write_cat_preset "$pdir"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
 
-    local total ops_count expected
+    local total horiz ops_count expected
     total=$(find "$BASE_DIR/.claude/commands" -name '*.md' -type f | wc -l | tr -d ' ')
+    horiz=$(find "$BASE_DIR/.claude/commands/biz" "$BASE_DIR/.claude/commands/legal" "$BASE_DIR/.claude/commands/growth" -name '*.md' -type f 2>/dev/null | wc -l | tr -d ' ')
     ops_count=$(find "$BASE_DIR/.claude/commands/ops" -name '*.md' -type f | wc -l | tr -d ' ')
-    expected=$((total - ops_count))
+    expected=$((total - horiz - ops_count))
 
     run "$UPDATE" -y --dry-run --preset synth-cat --presets-dir "$pdir" --agents "$proj"
     [ "$status" -eq 0 ]
@@ -173,14 +179,17 @@ EOF
 }
 
 # ---------------------------------------------------------------------------
-# S1 / EF-309 — a `keep` whitelist on update must NOT skip module-owned
+# EF-309 — a `keep` whitelist on update must NOT skip module-owned
 # (biz/legal/growth) items: they are out of the preset filter's jurisdiction,
-# so update still refreshes them. (Modules install by default in S1.)
+# so update still refreshes them. Since v3 modules are opt-in, the preset opts
+# into biz (defaultModules) so it is installed + recorded, then we verify the
+# keep filter does not cause it to be skipped on update.
 # ---------------------------------------------------------------------------
 @test "update catalog-filter: keep whitelist does not skip module items (EF-309)" {
     local pdir="$TEST_DIR/presets" proj="$TEST_DIR/proj"
-    _write_cat_preset "$pdir" "keep-work" '{"commands":{"keep":["domain:work"]}}'
-    "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    _write_cat_preset "$pdir" "keep-work" '{"commands":{"keep":["domain:work"]}}' '["biz"]'
+    "$NEW_PROJECT" -y --preset keep-work --presets-dir "$pdir" "$proj" >/dev/null 2>&1
+    [ -f "$proj/.claude/commands/biz/biz-mvp.md" ]   # biz opted in at install
     # User removes a module command; a keep[domain:work] update must re-add it
     # (the filter does not govern module domains).
     rm -f "$proj/.claude/commands/biz/biz-mvp.md"
