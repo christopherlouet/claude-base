@@ -524,10 +524,63 @@ _load_module_filter() {
                 [[ -e "$TARGET_DIR/$p" ]] && stale=true
             fi
         done < <(module_bundle_paths "$m")
-        if $stale; then
+        if $stale && ! _is_just_migrated "$m"; then
             warning "Files of module '$m' are present but the module is not in the manifest — run 'claude-base add $m' to adopt them, or remove them manually"
         fi
     done < <(modules_list)
+}
+
+# _is_just_migrated <module> — 0 if <module> was dropped by the v3 horizontal
+# opt-in migration on THIS run (so _load_module_filter suppresses the generic
+# "present but unrecorded" warning — migrate_horizontal_optin already explained
+# it). Empty on a non-crossing update, so the orphan warning fires normally.
+_is_just_migrated() {
+    local x
+    for x in ${HORIZONTAL_OPTIN_MIGRATED[@]+"${HORIZONTAL_OPTIN_MIGRATED[@]}"}; do
+        [[ "$x" == "$1" ]] && return 0
+    done
+    return 1
+}
+
+# migrate_horizontal_optin — v3 strict crossing-update migration (US-3,
+# EF-307/308). On the first update of a project whose manifest predates v3.0.0
+# (horizontal installed by the old opt-out default), the horizontal domains
+# (biz/legal/growth) become opt-in: drop them from the manifest so the
+# subsequent _load_module_filter skips them (COPY-only — on-disk files stay),
+# and tell the user how to opt back in. No-op on a v3+ manifest, when no
+# horizontal module is recorded, or with no manifest (legacy markers were
+# migrated to an empty set in S2). dry-run reports only.
+HORIZONTAL_OPTIN_MIGRATED=()
+migrate_horizontal_optin() {
+    local manifest="$TARGET_DIR/.claude/foundation.json"
+    [[ -f "$manifest" ]] || return 0
+    command -v jq >/dev/null 2>&1 || return 0
+    local old_ver
+    # On an unparseable manifest, defer to _load_module_filter's loud error
+    # (EF-204) — never abort here silently under set -e.
+    old_ver="$(jq -r '.version // "0.0.0"' "$manifest" 2>/dev/null)" || return 0
+    [[ -n "$old_ver" && "$old_ver" != "null" ]] || old_ver="0.0.0"
+    # Only a crossing update (manifest version < 3.0.0) migrates.
+    version_gte "$old_ver" "3.0.0" && return 0
+    local m horizontal=()
+    while IFS= read -r m; do
+        case "$m" in biz|legal|growth) horizontal+=("$m") ;; esac
+    done < <(manifest_modules "$TARGET_DIR" 2>/dev/null)
+    [[ ${#horizontal[@]} -gt 0 ]] || return 0
+
+    HORIZONTAL_OPTIN_MIGRATED=("${horizontal[@]}")
+    warning "v3: horizontal domains (${horizontal[*]}) are now opt-in modules and are no longer tracked by this project."
+    info "  Their files were left in place. Run 'claude-base add <module>' (e.g. claude-base add ${horizontal[0]}) to keep them updated."
+    $DRY_RUN && return 0
+
+    local tmp
+    tmp="$(mktemp)" || error "v3 migration: mktemp failed"
+    if jq '.modules = (.modules - ["biz","legal","growth"])' "$manifest" > "$tmp"; then
+        mv "$tmp" "$manifest"
+    else
+        rm -f "$tmp"
+        error "v3 migration: failed to rewrite $manifest"
+    fi
 }
 
 # _module_skip_check <repo-relative-path>
@@ -1777,6 +1830,12 @@ main() {
     if $CLEAN_BEFORE_UPDATE; then
         clean_claude_dirs "$TARGET_DIR"
     fi
+
+    # v3 strict migration (US-3): on a crossing update (manifest < 3.0.0), drop
+    # the horizontal domains from the manifest so they become opt-in. Must run
+    # BEFORE _load_module_filter so the reduced set drives the absent-module
+    # filtering (the horizontal files are then skipped, never deleted).
+    migrate_horizontal_optin
 
     # US-3: build the absent-module path set once (fails loud on a
     # corrupted manifest). Placed after the early-exit handlers so
