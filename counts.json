@@ -2,8 +2,13 @@
   "commands": 128,
   "agents": 61,
   "skills": 53,
+  "core": {
+    "commands": 101,
+    "agents": 47,
+    "skills": 52
+  },
   "rules": 30,
-  "tests": 902,
+  "tests": 903,
   "testFiles": 37,
   "byDomain": {
     "biz": 11,

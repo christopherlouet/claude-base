@@ -20,6 +20,18 @@ export interface Counts {
   /** Total SKILL.md files under .claude/skills/ */
   skills: number;
 
+  /**
+   * What a DEFAULT (opt-in) install ships: the full catalog minus the
+   * horizontal module-owned items (biz/legal/growth bundles). The
+   * commands/agents/skills above are the foundation catalog (core + modules).
+   * See specs/horizontal-pure-modules/.
+   */
+  core: {
+    commands: number;
+    agents: number;
+    skills: number;
+  };
+
   /** Total .md files under .claude/rules/ (excluding README.md) */
   rules: number;
 

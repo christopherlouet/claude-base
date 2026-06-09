@@ -746,3 +746,35 @@ run_module() {
     [ ! -e "$TEST_DIR/y/f.md" ]
     [ -e "$TEST_DIR/y/keep.md" ]
 }
+
+# =============================================================================
+# counts.json core split (S4) — core = full foundation minus module-owned items.
+# The "core" totals are what a default (opt-in) install ships; the full totals
+# are what the repo catalogs. They must stay in lockstep with the bundles.
+# =============================================================================
+
+@test "counts: core = full catalog minus module-owned items (S4/EF-311)" {
+    local counts="$REPO_ROOT/counts.json"
+    [ -f "$counts" ]
+
+    # Module-owned totals, summed from the real bundles.
+    local mc=0 ma=0 ms=0 m p
+    while IFS= read -r m; do
+        while IFS= read -r p; do
+            case "$p" in
+                .claude/commands/*) mc=$((mc + 1)) ;;
+                .claude/agents/*)   ma=$((ma + 1)) ;;
+                .claude/skills/*)   ms=$((ms + 1)) ;;
+            esac
+        done < <(bash -c "source '$REPO_ROOT/scripts/lib/modules.sh'; module_bundle_paths $m")
+    done < <(bash -c "source '$REPO_ROOT/scripts/lib/modules.sh'; modules_list")
+
+    local full_c full_a full_s
+    full_c=$(jq -r '.commands' "$counts")
+    full_a=$(jq -r '.agents' "$counts")
+    full_s=$(jq -r '.skills' "$counts")
+
+    [ "$(jq -r '.core.commands' "$counts")" -eq "$((full_c - mc))" ]
+    [ "$(jq -r '.core.agents' "$counts")" -eq "$((full_a - ma))" ]
+    [ "$(jq -r '.core.skills' "$counts")" -eq "$((full_s - ms))" ]
+}
