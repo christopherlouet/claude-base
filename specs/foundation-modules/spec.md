@@ -72,9 +72,11 @@ Acceptance criteria:
 
 Acceptance criteria:
 
+> ⚠️ **The "no declaration → all modules" criteria below were SUPERSEDED in v3.0.0** by [`specs/horizontal-pure-modules/`](../horizontal-pure-modules/spec.md): absence now installs the **core only** (opt-in). The first criterion (explicit set) still holds.
+
 - **Given** a preset declaring an explicit default module set, **When** I init with it, **Then** exactly those modules are installed and recorded, and the init summary names the available-but-not-installed modules with the add command to get them.
-- **Given** a preset with no module declaration, **When** I init with it, **Then** all modules are installed (today's behavior — backward compatible).
-- **Given** a bare init without preset, **Then** all modules are installed and recorded (no behavior change beyond the manifest).
+- ~~**Given** a preset with no module declaration, **When** I init with it, **Then** all modules are installed~~ → **v3: no modules installed (opt-in core only)**.
+- ~~**Given** a bare init without preset, **Then** all modules are installed and recorded~~ → **v3: core only, no modules recorded**.
 
 ## Functional Requirements
 
@@ -89,7 +91,7 @@ Acceptance criteria:
 | EF-207 | `remove <module>` removes foundation-owned bundle files, preserves user-modified files with notice, unrecords the module, supports dry-run. |
 | EF-208 | Update maintains core + recorded modules; unrecorded modules are skipped and reported as such. |
 | EF-209 | When a manifest records the preset, update uses it directly; explicit flags still override; the no-preset escape hatch remains. |
-| EF-210 | A preset MAY declare its default module set; absence means "all modules" (backward compatible). Vendor-pointer presets MUST NOT declare one (tier inheritance rule). |
+| EF-210 | ⚠️ **SUPERSEDED (v3.0.0) by [`specs/horizontal-pure-modules/`](../horizontal-pure-modules/spec.md) EF-302.** A preset MAY declare its default module set; ~~absence means "all modules" (backward compatible)~~ **absence now means NO modules (opt-in default)** — horizontal domains are pure opt-in modules. Vendor-pointer presets MUST NOT declare one (tier inheritance rule). |
 | EF-211 | Project validation understands the manifest: recorded modules present → OK; absence of unrecorded modules is never a defect; recorded-but-missing items are reported. |
 | EF-212 | Module discovery: a list command shows available modules, their content summary (item counts), and installed status per project. |
 

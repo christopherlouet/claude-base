@@ -96,25 +96,29 @@ Behaviour: filters apply at `init` **and** on `claude-base update` (excluded ite
 
 > **Keep the three drop lists in sync per stack.** A stack preset typically drops a skill *and* its command *and* its agent counterpart together. The lists are validated independently (no enforced coupling), and the mapping is **not** always 1:1 — e.g. `ops-mobile-release` ships as a skill and a command but has no agent, so it belongs in `skills.drop`/`commands.drop` but not `agents.drop`. When adding a new other-stack exclusion, check whether each catalog actually has a counterpart before listing it (a missing counterpart only triggers a harmless `[WARN]`).
 
-### `defaultModules` (optional, US-5)
+### `defaultModules` (optional)
 
-A preset may declare which **horizontal domain modules** it installs by default:
+The horizontal domains (`biz`, `legal`, `growth`) are **opt-in modules** since
+v3.0.0 — a default install ships the **core only**. A preset may declare which
+modules to install by default:
 
 ```json
 "defaultModules": ["legal"]
 ```
 
-- **Absent (key not declared)** → all modules installed (backward compatible
-  default, EF-210: "absence means all modules").
-- **Empty array (`[]`)** → **zero** modules installed: an explicit empty set is
-  honored, not treated as absent. The init summary prints a `claude-base add`
-  hint for every module.
+- **Absent (key not declared)** → **no modules** installed (opt-in default, v3.0.0;
+  supersedes the foundation-modules rule "absence means all modules"). The init
+  summary prints a `claude-base add <mod>` hint for every available module.
+- **Empty array (`[]`)** → same as absent: **zero** modules installed.
 - **Non-empty array** → only the listed modules are installed and recorded in
   `foundation.json`; init summary prints a `claude-base add <mod>` hint for
   each available-but-not-installed module.
-- **Allowed values**: `"biz"`, `"legal"`, `"growth"` (the three v1 modules).
-- **Forbidden** on `vendor-pointer` tier (EF-210 — vendor-pointer presets inherit
-  foundation defaults wholesale).
+- **Restore after install** → `claude-base add biz|legal|growth` at any time; an
+  existing project crossing the v3.0.0 update stops tracking horizontal domains
+  (files left in place) until re-added.
+- **Allowed values**: `"biz"`, `"legal"`, `"growth"`.
+- **Forbidden** on `vendor-pointer` tier (tier inheritance rule — vendor-pointer
+  presets inherit foundation defaults wholesale).
 - `validate-presets.sh` rejects unknown names and non-array values.
 
 Field naming is camelCase (matches `settings.json` and other Claude Code config files). Validation runs via `scripts/validate-presets.sh` (jq-based schema check, executed in CI).
