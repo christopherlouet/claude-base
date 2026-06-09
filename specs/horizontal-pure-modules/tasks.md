@@ -87,15 +87,13 @@
 
 ---
 
-## Phase 6 — Stack presets adopt a module-safe core filter (US-7) · S6
+## Phase 6 — Stack presets adopt a module-safe core filter (US-7) · S6 — DEFERRED
 
-### Tests (RED first) ⚠️
-- [ ] T021 [P] [US7] — per-preset install-reduction tests (mirror nextjs #277) for `fastapi`, `astro`, `react-vite-spa`: each yields a measurably reduced, module-free core; specific off-stack core items absent, a kept core item present
+> **Deferred to the `thematic-modules` spec** (2026-06-09). Ergonomic `keep`-by-domain
+> (owner's preferred polarity) needs the scattered off-stack items pulled into
+> thematic modules first — see `docs/designs/2026-06-09-core-plus-thematic-modules-design.md`.
 
-### Implementation
-- [ ] T022 [US7] — add a core-only `keep` (or off-stack `drop`) filter to `.claude/presets/{fastapi,astro,react-vite-spa}.json`; minor bump each + CHANGELOG; `validate-presets.sh` `[OK]`
-
-**Checkpoint**: the three presets are the worked examples of the clean model.
+- [ ] ~~T021 / T022~~ → moved to `thematic-modules` (preset adoption via ergonomic `keep`)
 
 ---
 

@@ -49,10 +49,15 @@
 **Independent test**: audit-docs clean; counts gate clean after `npm --prefix website run generate`.
 **Risk**: low — docs only.
 
-### Phase 6 — Stack presets adopt a module-safe core filter (US-7) · S6
-**Goal**: `fastapi`, `astro`, `react-vite-spa` express a core-only `keep` (now module-safe) or `drop` of off-stack core items; minor bump each + CHANGELOG (EF — CS-307).
-**Independent test**: each install yields a measurably reduced, module-free core; validate-presets `[OK]`.
-**Risk**: low — per-preset, isolated; mirrors the nextjs #277 precedent.
+### Phase 6 — Stack presets adopt a module-safe core filter (US-7) · S6 — **DEFERRED**
+**Status (2026-06-09)**: deferred to the follow-on `thematic-modules` spec.
+A complementary brainstorm ([`docs/designs/2026-06-09-core-plus-thematic-modules-design.md`](../../docs/designs/2026-06-09-core-plus-thematic-modules-design.md))
+established that ergonomic `keep`-by-domain (owner's preferred polarity, see
+[[prefer-keep-whitelist-over-drop]]) needs the scattered off-stack items
+(dev-flutter, ops-proxmox/opnsense/mobile-release/infra-code, data-pipeline, …)
+pulled into **thematic modules** first — otherwise a `domain:` keep can't subtract
+them. So preset adoption moves into `thematic-modules` where the core is already
+ergonomic. S1–S5 here ship unchanged (the mechanism).
 
 ---
 
