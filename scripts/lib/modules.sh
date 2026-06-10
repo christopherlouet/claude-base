@@ -128,6 +128,27 @@ module_owned_item_names() {
     done < <(modules_list) | LC_ALL=C sort -u
 }
 
+# module_of_item <catalog> <name> — print the module that owns the <catalog>
+# (commands|agents) item named <name>, or nothing if no module owns it. Used by
+# validate-presets to name the owning module in a rejection message (EF-406).
+module_of_item() {
+    local catalog="${1:?catalog required}" name="${2:?name required}" m p base
+    while IFS= read -r m; do
+        while IFS= read -r p; do
+            case "$p" in
+                .claude/"$catalog"/*.md) ;;
+                *) continue ;;
+            esac
+            base="${p##*/}"
+            if [ "${base%.md}" = "$name" ]; then
+                printf '%s\n' "$m"
+                return 0
+            fi
+        done < <(module_bundle_paths "$m")
+    done < <(modules_list)
+    return 0
+}
+
 # -----------------------------------------------------------------------------
 # Project manifest (.claude/foundation.json) — EF-204
 # Single source of truth for a project's foundation state:

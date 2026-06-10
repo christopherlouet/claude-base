@@ -536,7 +536,8 @@ _load_module_filter() {
 # it). Empty on a non-crossing update, so the orphan warning fires normally.
 _is_just_migrated() {
     local x
-    for x in ${HORIZONTAL_OPTIN_MIGRATED[@]+"${HORIZONTAL_OPTIN_MIGRATED[@]}"}; do
+    for x in ${HORIZONTAL_OPTIN_MIGRATED[@]+"${HORIZONTAL_OPTIN_MIGRATED[@]}"} \
+             ${THEMATIC_OPTIN_MIGRATED[@]+"${THEMATIC_OPTIN_MIGRATED[@]}"}; do
         [[ "$x" == "$1" ]] && return 0
     done
     return 1
@@ -587,6 +588,53 @@ migrate_horizontal_optin() {
         rm -f "$tmp"
         error "v3 migration: failed to rewrite $manifest"
     fi
+}
+
+# migrate_thematic_optin — S3 crossing report for the thematic-modules change
+# (US-3 generalised, EF-405). The platform/stack themes (mobile, self-hosted,
+# iac, data-eng, observability, editor, api-data, ai, frontend) used to be CORE
+# and were therefore NEVER manifest-recorded. So, unlike the horizontal flip,
+# there is nothing to drop from the manifest — the absent-module filter already
+# skips them (COPY-only, on-disk files stay). This function only:
+#   (a) reports the crossing ONCE with the `claude-base add` instruction, and
+#   (b) marks the affected thematic modules as just-migrated so the per-module
+#       orphan nag in _load_module_filter is replaced by one consolidated line.
+# Gated to a crossing (manifest < THEMATIC_RELEASE) AND the presence of thematic
+# files that are not yet opted in — so a fresh post-flip install (no such files)
+# never sees it. MUST run BEFORE clean_claude_dirs so file presence is intact.
+THEMATIC_RELEASE="4.0.0"
+THEMATIC_OPTIN_MIGRATED=()
+migrate_thematic_optin() {
+    local manifest="$TARGET_DIR/.claude/foundation.json"
+    [[ -f "$manifest" ]] || return 0
+    command -v jq >/dev/null 2>&1 || return 0
+    local old_ver
+    old_ver="$(jq -r '.version // "0.0.0"' "$manifest" 2>/dev/null)" || return 0
+    case "$old_ver" in ''|null|unknown) old_ver="0.0.0" ;; esac
+    version_gte "$old_ver" "$THEMATIC_RELEASE" && return 0
+
+    # Thematic modules whose files are present but NOT opted in = had them as core.
+    local m present=()
+    while IFS= read -r m; do
+        case "$m" in biz|legal|growth) continue ;; esac
+        manifest_has_module "$TARGET_DIR" "$m" && continue
+        local p found=false
+        while IFS= read -r p; do
+            [[ -z "$p" ]] && continue
+            if [[ -e "$TARGET_DIR/${p%/}" ]]; then found=true; break; fi
+        done < <(module_bundle_paths "$m")
+        $found && present+=("$m")
+    done < <(modules_list)
+    [[ ${#present[@]} -gt 0 ]] || return 0
+
+    THEMATIC_OPTIN_MIGRATED=("${present[@]}")
+    warning "Platform/stack themes (${present[*]}) are now opt-in modules and are no longer refreshed by this project."
+    if $CLEAN_BEFORE_UPDATE; then
+        info "  --clean removed their files; run 'claude-base add <module>' (e.g. claude-base add ${present[0]}) to reinstall the ones you need."
+    else
+        info "  Their files were left in place; run 'claude-base add <module>' (e.g. claude-base add ${present[0]}) to keep them updated."
+    fi
+    # No manifest rewrite: thematic items were core, never recorded.
 }
 
 # _module_skip_check <repo-relative-path>
@@ -1835,6 +1883,11 @@ main() {
         success "Backup created successfully"
         exit 0
     fi
+
+    # Thematic crossing report (S3, US-3 generalised): detect pre-flip thematic
+    # files BEFORE --clean wipes them, so the report/suppression is accurate even
+    # under --clean. No manifest rewrite (thematic items were never recorded).
+    migrate_thematic_optin
 
     # Clean up old files if requested
     if $CLEAN_BEFORE_UPDATE; then
