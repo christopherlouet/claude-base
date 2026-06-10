@@ -88,7 +88,7 @@ Rules enforced by `validate-presets.sh`:
 
 - **`drop` XOR `keep`** — declaring both is an error.
 - **Protected floor (EF-111)** — the `work` command domain plus `assistant`/`assistant-auto` can never be removed; a `drop` targeting them is rejected.
-- **Horizontal domains stay with modules** — dropping `domain:biz` / `domain:legal` / `domain:growth` (or their items) is rejected; use `defaultModules` instead. Those domains are installable modules, not preset exclusions.
+- **Module-owned items stay with modules** — a filter targeting any module-owned item is rejected; use `defaultModules` instead. This covers the horizontal domains (`domain:biz` / `domain:legal` / `domain:growth`) **and** any cross-domain thematic-module item (`dev-flutter`, `ops-proxmox`, `data-pipeline`, …) whose own domain is not itself a module. The rejection names the owning module.
 - **Vendor-pointer tier** — may not declare command/agent filters (inherits foundation wholesale).
 - Unknown item names produce a non-fatal `[WARN]`.
 
@@ -98,25 +98,34 @@ Behaviour: filters apply at `init` **and** on `claude-base update` (excluded ite
 
 ### `defaultModules` (optional)
 
-The horizontal domains (`biz`, `legal`, `growth`) are **opt-in modules** since
-v3.0.0 — a default install ships the **core only**. A preset may declare which
-modules to install by default:
+A **module** is a named, opt-in, composable bundle. Since v4.0.0 a module may span
+several domains (`module ≠ domain`): a default install ships the **minimal universal
+core only**, and everything platform/stack-specific is an opt-in module. A preset
+declares which modules its stack needs:
 
 ```json
-"defaultModules": ["legal"]
+"defaultModules": ["api-data", "frontend"]
 ```
 
-- **Absent (key not declared)** → **no modules** installed (opt-in default, v3.0.0;
-  supersedes the foundation-modules rule "absence means all modules"). The init
+**The 13 modules:**
+
+| Kind | Modules |
+|------|---------|
+| Horizontal domains | `biz`, `legal`, `growth` |
+| Thematic (cross-domain) | `mobile`, `self-hosted`, `iac`, `data-eng`, `observability`, `editor`, `api-data`, `ai`, `frontend`, `nextjs` |
+
+`frontend` is **framework-agnostic** React tooling (React-perf, shadcn, design); the `nextjs` framework is a **separate** module (a mutually-exclusive project choice). So a Next.js preset opts into `frontend` **and** `nextjs`, while an Astro or Vite-SPA preset opts into `frontend` only.
+
+- **Absent (key not declared)** → **no modules** installed (opt-in default). The init
   summary prints a `claude-base add <mod>` hint for every available module.
 - **Empty array (`[]`)** → same as absent: **zero** modules installed.
 - **Non-empty array** → only the listed modules are installed and recorded in
   `foundation.json`; init summary prints a `claude-base add <mod>` hint for
   each available-but-not-installed module.
-- **Restore after install** → `claude-base add biz|legal|growth` at any time; an
-  existing project crossing the v3.0.0 update stops tracking horizontal domains
-  (files left in place) until re-added.
-- **Allowed values**: `"biz"`, `"legal"`, `"growth"`.
+- **Restore after install** → `claude-base add <module>` at any time; an existing
+  project crossing the v4.0.0 update stops tracking the now-modularised items
+  (files left in place, COPY-only) until re-added.
+- **Allowed values**: any of the 13 module names above.
 - **Forbidden** on `vendor-pointer` tier (tier inheritance rule — vendor-pointer
   presets inherit foundation defaults wholesale).
 - `validate-presets.sh` rejects unknown names and non-array values.

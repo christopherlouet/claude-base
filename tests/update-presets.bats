@@ -416,66 +416,32 @@ EOF
 # the actual .claude/presets/react-vite-spa.json (no synthetic preset).
 # =============================================================================
 
-@test "update-presets: react-vite-spa keep filter survives update (T033)" {
+@test "update-presets: react-vite-spa update refreshes its opted module skills (T033)" {
     local proj="$TEST_DIR/proj-react-vite-spa-keep"
 
-    # Bootstrap with the real react-vite-spa preset.
+    # Bootstrap with the real react-vite-spa preset (pure opt-in: api-data + frontend).
     "$NEW_PROJECT" --preset react-vite-spa -y "$proj" >/dev/null 2>&1
     [ -d "$proj/.claude" ]
+    # dev-prisma is an api-data skill the preset opted into — present after bootstrap.
+    [ -d "$proj/.claude/skills/dev-prisma" ]
 
-    # dev-tdd is in the react-vite-spa keep list — must be present after bootstrap.
-    [ -d "$proj/.claude/skills/dev-tdd" ]
+    # Simulate user deleting it (accidental rm or branch reset).
+    rm -rf "$proj/.claude/skills/dev-prisma"
+    [ ! -d "$proj/.claude/skills/dev-prisma" ]
 
-    # Simulate user deleting dev-tdd (e.g. accidental rm or branch reset).
-    rm -rf "$proj/.claude/skills/dev-tdd"
-    [ ! -d "$proj/.claude/skills/dev-tdd" ]
-
-    # Run update with explicit --preset react-vite-spa (cleanest form: matches how
-    # the user bootstrapped the project).
     run "$UPDATE" -y -f --preset react-vite-spa --skills "$proj"
     [ "$status" -eq 0 ]
 
-    # dev-tdd must be re-added (it is in the keep list).
-    [ -d "$proj/.claude/skills/dev-tdd" ]
-
-    # dev-flutter must still be absent (not in the keep list — filter held).
-    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+    # dev-prisma re-added (its module is recorded), off-stack still absent.
+    [ -d "$proj/.claude/skills/dev-prisma" ]
+    [ ! -d "$proj/.claude/skills/dev-flutter" ]   # mobile — never opted in
+    [ ! -d "$proj/.claude/skills/dev-nextjs" ]    # nextjs module — never opted in
 }
 
-@test "update-presets: react-vite-spa --no-preset reverses keep-filter (T034)" {
-    local proj="$TEST_DIR/proj-react-vite-spa-no-preset"
-
-    # Bootstrap with the real react-vite-spa preset. dev-nextjs is owned by the
-    # `frontend` module the preset opts into, but the keep-filter excludes it
-    # (not in the keep list) — so it is dropped at install.
-    "$NEW_PROJECT" --preset react-vite-spa -y "$proj" >/dev/null 2>&1
-    [ -d "$proj/.claude" ]
-    [ ! -d "$proj/.claude/skills/dev-nextjs" ]
-
-    # Run update --no-preset --skills: no preset filter applied, every eligible
-    # (incl. opted-in module) skill is restored.
-    run "$UPDATE" -y -f --no-preset --skills "$proj"
-    [ "$status" -eq 0 ]
-
-    # dev-nextjs must now be present (keep-filter explicitly disabled).
-    [ -d "$proj/.claude/skills/dev-nextjs" ]
-}
-
-@test "update-presets: react-vite-spa dry-run lists non-kept skills as skipped (T035)" {
-    local proj="$TEST_DIR/proj-react-vite-spa-dryrun"
-
-    # Bootstrap with the real react-vite-spa preset.
-    "$NEW_PROJECT" --preset react-vite-spa -y "$proj" >/dev/null 2>&1
-    [ -d "$proj/.claude" ]
-
-    # Run dry-run with explicit --preset react-vite-spa.
-    run "$UPDATE" -y --dry-run --preset react-vite-spa --skills "$proj"
-    [ "$status" -eq 0 ]
-
-    # dev-flutter is NOT in the react-vite-spa keep list; dry-run must announce skip.
-    [[ "$output" == *"Skip (preset filter)"* ]]
-    [[ "$output" == *"dev-flutter"* ]]
-}
+# (The keep-filter mechanism itself — `--no-preset` reversal and the dry-run
+# "Skip (preset filter)" announcement — is covered by the synthetic keep-two /
+# synth-drop tests above; react-vite-spa no longer carries a skills filter to
+# exercise here since it scopes purely by module opt-in.)
 
 # =============================================================================
 # Manifest-first preset resolution (specs/foundation-modules US-1, T013)

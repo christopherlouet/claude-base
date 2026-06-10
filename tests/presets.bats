@@ -886,20 +886,16 @@ EOF
     desc_len=$(jq -r '.description | length' "$f")
     [ "$desc_len" -ge 80 ]
     [ "$(jq -r '.appliesToTypes | length' "$f")" -ge 1 ]
-    [ "$(jq -r '.version' "$f")" = "1.1.0" ]
+    [ "$(jq -r '.version' "$f")" = "1.2.0" ]
 }
 
-@test "presets: react-vite-spa uses keep XOR drop (T020)" {
+@test "presets: react-vite-spa scopes via defaultModules, no foundation filter (T020)" {
     local f="$BASE_DIR/.claude/presets/react-vite-spa.json"
-    # keep must exist and be a non-empty array
-    [ "$(jq -r '.foundation.skills.keep | type' "$f")" = "array" ]
-    [ "$(jq -r '.foundation.skills.keep | length' "$f")" -gt 0 ]
-    # drop must NOT exist
-    [ "$(jq -r '.foundation.skills | has("drop")' "$f")" = "false" ]
-    # Additionally: a known out-of-stack skill must NOT be in the keep list
-    local in_keep
-    in_keep=$(jq -r '.foundation.skills.keep[] | select(. == "dev-flutter")' "$f")
-    [ -z "$in_keep" ]
+    # Pure opt-in: it requests its stack modules and carries no catalog/skills
+    # filter at all (the keep list it used to need only trimmed dev-nextjs, which
+    # is now its own module the preset simply does not opt into).
+    [ "$(jq -r '.defaultModules | join(",")' "$f")" = "api-data,frontend" ]
+    [ "$(jq -r '.foundation | length' "$f")" -eq 0 ]
 }
 
 @test "presets: react-vite-spa has honest outOfScope and relatedPresetsWanted (T021)" {

@@ -1,6 +1,6 @@
 # Spec: Thematic modules (generalise "module" beyond horizontal domains)
 
-**Status**: draft · **Created**: 2026-06-09 · **Design**: [`docs/designs/2026-06-09-core-plus-thematic-modules-design.md`](../../docs/designs/2026-06-09-core-plus-thematic-modules-design.md)
+**Status**: shipped (v4.0.0, S1–S5 — PRs #288–#291 + docs/release) · **Created**: 2026-06-09 · **Design**: [`docs/designs/2026-06-09-core-plus-thematic-modules-design.md`](../../docs/designs/2026-06-09-core-plus-thematic-modules-design.md)
 **Builds on**: [`specs/horizontal-pure-modules/`](../horizontal-pure-modules/spec.md) (shipped — the opt-in module mechanism, core/full counts, strict crossing migration)
 
 ## Summary
@@ -123,8 +123,13 @@ published counts stay correct.
 - **EF-403** — A default install contains zero items belonging to any module
   (horizontal or thematic); each is installed only via opt-in.
 - **EF-404** — Modules are grouped at **theme level, never per-item** (each module
-  owns a coherent multi-item theme); **no item belongs to two modules**. (The set
-  is ~11–12 incl. the 3 horizontal after the `dev-*` decision — see Clarifications.)
+  owns a coherent theme); **no item belongs to two modules**. The shipped set is
+  **13** incl. the 3 horizontal. A **framework** counts as a theme even when it
+  currently owns a single item: `nextjs` (the Next.js framework) is its own module,
+  separate from the framework-agnostic `frontend` tooling, because a framework is a
+  mutually-exclusive project choice — opting in is the clean alternative to dropping
+  it out of `frontend` (and it eliminated the last preset filter). The per-item ban
+  still rules out splitting an additive library (e.g. shadcn) into its own module.
 - **EF-405** — The crossing-update migration applies to newly-modularised items
   exactly as to horizontal ones: stop refresh, never delete, report + `add` hint,
   idempotent.

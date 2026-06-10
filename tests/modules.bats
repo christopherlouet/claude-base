@@ -37,20 +37,33 @@ run_lib() {
     [ -f "$MODULES_LIB" ]
 }
 
-@test "modules: modules_list returns the 12 modules (3 horizontal + 9 thematic, sorted)" {
+@test "modules: modules_list returns the 13 modules (3 horizontal + 10 thematic, sorted)" {
     run_lib modules_list
     [ "$status" -eq 0 ]
-    # 3 horizontal + 9 thematic, lexically sorted.
-    local expected="ai api-data biz data-eng editor frontend growth iac legal mobile observability self-hosted"
+    # 3 horizontal + 10 thematic, lexically sorted.
+    local expected="ai api-data biz data-eng editor frontend growth iac legal mobile nextjs observability self-hosted"
     [ "$(echo "$output" | tr '\n' ' ' | sed 's/ $//')" = "$expected" ]
-    [ "${#lines[@]}" -eq 12 ]
+    [ "${#lines[@]}" -eq 13 ]
 }
 
 @test "modules: each thematic module exists (module_exists)" {
-    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend; do
+    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend nextjs; do
         run_lib module_exists "$m"
         [ "$status" -eq 0 ]
     done
+}
+
+@test "modules: nextjs is a framework module owning just the dev-nextjs skill (EF-404 framework grain)" {
+    # A framework is a mutually-exclusive project choice, so it is its own opt-in
+    # unit rather than an item dropped out of the framework-agnostic frontend
+    # module. One skill today; the theme is the framework, not a single item.
+    run_lib module_bundle_paths nextjs
+    [ "$status" -eq 0 ]
+    [ "${#lines[@]}" -eq 1 ]
+    [ "${lines[0]}" = ".claude/skills/dev-nextjs/" ]
+    # and frontend no longer carries it
+    run_lib module_bundle_paths frontend
+    [[ "$output" != *"dev-nextjs"* ]]
 }
 
 @test "modules: module_exists accepts known modules" {
@@ -200,7 +213,7 @@ run_lib() {
     run_lib module_bundle_paths api-data
     [ "${#lines[@]}" -eq 10 ]   # 4 cmds + 3 agents + 3 skills
     run_lib module_bundle_paths frontend
-    [ "${#lines[@]}" -eq 7 ]    # 2 cmds + 1 agent + 4 skills
+    [ "${#lines[@]}" -eq 6 ]    # 2 cmds + 1 agent + 3 skills (dev-nextjs split out)
     run_lib module_bundle_paths mobile
     [ "${#lines[@]}" -eq 6 ]    # 3 cmds + 1 agent + 2 skills
 }

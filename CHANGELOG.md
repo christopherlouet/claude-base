@@ -13,20 +13,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- **Stack presets re-scoped onto thematic modules (whitelist-first).** Stack
-  scoping now flows through `defaultModules` — an **opt-in whitelist** that is
-  robust as the catalog grows (nothing off-stack can creep in) — instead of
-  `drop` lists that named module-owned items and would rot with every new item.
-  Most vouched presets therefore carry **no catalog/skills filter at all** (pure
-  opt-in): `fastapi` 1.0→1.1 (opts into `api-data`, keeping the prisma/supabase/
-  graphql it carried as core), `nextjs` 1.3→1.4 (`api-data`+`frontend`),
-  `homelab-proxmox` 1.1→1.2 (`self-hosted`+`iac`+`observability`), `cli-tools`
-  1.0→1.1 (minimal, no modules). `react-vite-spa` 1.1 keeps its `skills.keep`
-  whitelist (genuinely selective). `astro` 1.1→1.2 (`frontend`) keeps a single
-  `skills.drop: ["dev-nextjs"]` — the textbook escape-hatch use of `drop`:
-  trimming one skill out of an opted-in module. No preset filter references a
-  module-owned item in a command/agent filter (validate-presets enforces this).
-  See `specs/thematic-modules/`.
+- **⚠ BREAKING (v4.0.0) — platform/stack tooling is now opt-in thematic modules.**
+  Generalises the module mechanism beyond the horizontal domains: ten **thematic,
+  cross-domain** modules now carry the platform/stack-specific items that used to
+  live in the core — `mobile`, `self-hosted`, `iac`, `data-eng`, `observability`,
+  `editor`, `api-data` (Prisma/Supabase/GraphQL/tRPC), `ai` (RAG/MCP/AI-integration),
+  `frontend` (framework-agnostic React tooling: React-perf/shadcn/design) and
+  `nextjs` (the Next.js framework itself — a mutually-exclusive choice, so its own
+  opt-in unit). With the 3 horizontal domains that makes **13 modules**. **A default
+  install now ships a minimal universal core only** — its command/agent/skill totals
+  drop to **76/34/39** (from 101/47/52); the full catalog (128/61/53) is unchanged.
+  Opt in per project with `claude-base add <module>` (e.g. `claude-base add mobile`),
+  or declare `defaultModules` in a preset (the vouched presets do this for their stacks).
+  **Migration**: on `claude-base update`, an existing project crossing the change stops
+  refreshing the now-modularised items; their on-disk files are **not deleted** (COPY-only),
+  the update reports the themes once, and `claude-base add <module>` resumes tracking
+  the ones you want. A preset filter may no longer target a module-owned command/agent
+  (it is out of the filter's jurisdiction — use `defaultModules`). See
+  `specs/thematic-modules/`.
+- **Stack presets re-scoped onto thematic modules (whitelist-first, pure opt-in).**
+  Stack scoping now flows entirely through `defaultModules` — an **opt-in whitelist**
+  that is robust as the catalog grows (nothing off-stack can creep in) — instead of
+  `drop`/`keep` filters that named module-owned items and would rot with every new
+  item. **Every vouched preset now carries no catalog/skills filter at all**, scoping
+  purely by which modules it requests: `fastapi` 1.0→1.1 (`api-data`, keeping the
+  prisma/supabase/graphql it carried as core), `nextjs` 1.3→1.5 (`api-data`+`frontend`
+  +`nextjs`), `homelab-proxmox` 1.1→1.2 (`self-hosted`+`iac`+`observability`),
+  `astro` 1.1→1.3 (`frontend` — Next.js simply not requested, no `drop` needed),
+  `react-vite-spa` 1.1→1.2 (`api-data`+`frontend`), `cli-tools` 1.0→1.1 (minimal,
+  no modules). Extracting `nextjs` into its own module removed the last filter the
+  presets needed. See `specs/thematic-modules/`.
 - **⚠ BREAKING (v3.0.0) — horizontal domains (`biz`/`legal`/`growth`) are now pure opt-in modules.**
   A default install (no preset, or a preset that does not declare `defaultModules`)
   ships the **core only** — business, legal and growth commands/agents/skills are no
