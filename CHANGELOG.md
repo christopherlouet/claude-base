@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **Stack presets re-scoped onto thematic modules (whitelist-first).** Stack
+  scoping now flows through `defaultModules` — an **opt-in whitelist** that is
+  robust as the catalog grows (nothing off-stack can creep in) — instead of
+  `drop` lists that named module-owned items and would rot with every new item.
+  Most vouched presets therefore carry **no catalog/skills filter at all** (pure
+  opt-in): `fastapi` 1.0→1.1 (opts into `api-data`, keeping the prisma/supabase/
+  graphql it carried as core), `nextjs` 1.3→1.4 (`api-data`+`frontend`),
+  `homelab-proxmox` 1.1→1.2 (`self-hosted`+`iac`+`observability`), `cli-tools`
+  1.0→1.1 (minimal, no modules). `react-vite-spa` 1.1 keeps its `skills.keep`
+  whitelist (genuinely selective). `astro` 1.1→1.2 (`frontend`) keeps a single
+  `skills.drop: ["dev-nextjs"]` — the textbook escape-hatch use of `drop`:
+  trimming one skill out of an opted-in module. No preset filter references a
+  module-owned item in a command/agent filter (validate-presets enforces this).
+  See `specs/thematic-modules/`.
 - **⚠ BREAKING (v3.0.0) — horizontal domains (`biz`/`legal`/`growth`) are now pure opt-in modules.**
   A default install (no preset, or a preset that does not declare `defaultModules`)
   ships the **core only** — business, legal and growth commands/agents/skills are no

@@ -140,6 +140,8 @@ EOF
 
 @test "update-presets: explicit --preset override blocks re-add (T016/US-2)" {
     local proj="$TEST_DIR/proj-explicit-override"
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    _write_synthetic_preset "$preset_dir"   # synth-drop drops the CORE skill qa-chrome
     # Bootstrap simple — every core skill installed including qa-chrome.
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
     [ -d "$proj/.claude/skills/qa-chrome" ]
@@ -148,17 +150,19 @@ EOF
     rm -rf "$proj/.claude/skills/qa-chrome"
     [ ! -d "$proj/.claude/skills/qa-chrome" ]
 
-    # Run update with explicit --preset homelab-proxmox (which drops qa-chrome).
-    run "$UPDATE" -y -f --preset homelab-proxmox --skills "$proj"
+    # Run update with explicit --preset synth-drop (which drops qa-chrome).
+    run "$UPDATE" -y -f --preset synth-drop --presets-dir "$preset_dir" --skills "$proj"
     [ "$status" -eq 0 ]
-    # qa-chrome must NOT be re-added — homelab-proxmox filter blocks copy.
+    # qa-chrome must NOT be re-added — the preset filter blocks copy.
     [ ! -d "$proj/.claude/skills/qa-chrome" ]
 }
 
 @test "update-presets: --no-preset disables filter, dropped skills re-added (T017/US-3)" {
     local proj="$TEST_DIR/proj-no-preset-flag"
-    # Bootstrap with homelab-proxmox preset — it drops the CORE skill qa-chrome.
-    "$NEW_PROJECT" --preset homelab-proxmox "$proj" >/dev/null 2>&1
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    _write_synthetic_preset "$preset_dir"   # synth-drop drops the CORE skill qa-chrome
+    # Bootstrap with synth-drop — it drops the CORE skill qa-chrome.
+    "$NEW_PROJECT" --preset synth-drop --presets-dir "$preset_dir" "$proj" >/dev/null 2>&1
     [ ! -d "$proj/.claude/skills/qa-chrome" ]
 
     # Run update --no-preset --skills: filter disabled, every skill copied.
@@ -240,11 +244,15 @@ EOF
 @test "update-presets: --dry-run with active preset lists skipped skills (T027/US-5)" {
     local proj="$TEST_DIR/proj-dry-run-list"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
-    run "$UPDATE" -y --dry-run --preset nextjs --skills "$proj"
+    # The vouched presets now scope by module opt-in and keep no core-skill drop,
+    # so a synthetic preset that drops the CORE skill qa-chrome exercises the
+    # dry-run filter announcement.
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    _write_synthetic_preset "$preset_dir"
+    run "$UPDATE" -y --dry-run --preset synth-drop --presets-dir "$preset_dir" --skills "$proj"
     [ "$status" -eq 0 ]
-    # The nextjs preset drops dev-flutter; dry-run must announce the skip.
     [[ "$output" == *"Skip (preset filter)"* ]]
-    [[ "$output" == *"dev-flutter"* ]]
+    [[ "$output" == *"qa-chrome"* ]]
 }
 
 @test "update-presets: filter is COPY-only, never deletes existing nested skill files (T019/EF-011)" {
