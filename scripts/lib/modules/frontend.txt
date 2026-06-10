@@ -1,0 +1,18 @@
+# Module "frontend" — framework-specific frontend tooling: React perf, shadcn/ui,
+# Next.js, art-direction design, design systems. (Generic dev-component stays
+# in the core.) Same syntax as minimal-manifest.txt: one repo-relative path per
+# line, # comments and empty lines ignored, trailing / = directory.
+# Drift guard: tests/modules.bats asserts every path exists and no overlap.
+
+# === Commands (2) ===
+.claude/commands/dev/dev-react-perf.md
+.claude/commands/dev/dev-design-system.md
+
+# === Agents (1) ===
+.claude/agents/dev-design-system.md
+
+# === Skills (4 directories) ===
+.claude/skills/dev-react-perf/
+.claude/skills/dev-shadcn/
+.claude/skills/dev-frontend-design/
+.claude/skills/dev-nextjs/

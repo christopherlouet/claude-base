@@ -5,13 +5,15 @@
   "displayName": "React Vite SPA",
   "description": "React + Vite + React Router for Single-Page Applications. Targets SPAs without SSR/RSC: client-rendered apps, PWAs, and Capacitor-wrapped mobile shells. Keeps the full frontend toolkit (shadcn, react-perf, i18n, auth, graphql) and filters out server-centric, homelab, and mobile-native skills. Not the right preset for SSR/RSC (use `nextjs`), static-content sites (use `astro`), or native mobile distribution beyond a Capacitor wrap.",
 
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "maintainer-vouched",
 
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
+
+  "defaultModules": ["api-data", "frontend"],
 
   "appliesToTypes": ["react", "fullstack"],
 

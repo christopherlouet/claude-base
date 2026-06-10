@@ -140,36 +140,32 @@ EOF
 
 @test "update-presets: explicit --preset override blocks re-add (T016/US-2)" {
     local proj="$TEST_DIR/proj-explicit-override"
-    # Bootstrap simple — every skill installed including dev-shadcn (frontend).
+    # Bootstrap simple — every core skill installed including qa-chrome.
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
-    [ -d "$proj/.claude/skills/dev-shadcn" ]
+    [ -d "$proj/.claude/skills/qa-chrome" ]
 
-    # Simulate user removing dev-shadcn from the project.
-    rm -rf "$proj/.claude/skills/dev-shadcn"
-    [ ! -d "$proj/.claude/skills/dev-shadcn" ]
+    # Simulate user removing qa-chrome from the project.
+    rm -rf "$proj/.claude/skills/qa-chrome"
+    [ ! -d "$proj/.claude/skills/qa-chrome" ]
 
-    # Run update with explicit --preset homelab-proxmox (which drops dev-shadcn).
+    # Run update with explicit --preset homelab-proxmox (which drops qa-chrome).
     run "$UPDATE" -y -f --preset homelab-proxmox --skills "$proj"
     [ "$status" -eq 0 ]
-    # dev-shadcn must NOT be re-added — homelab-proxmox filter blocks copy.
-    [ ! -d "$proj/.claude/skills/dev-shadcn" ]
+    # qa-chrome must NOT be re-added — homelab-proxmox filter blocks copy.
+    [ ! -d "$proj/.claude/skills/qa-chrome" ]
 }
 
 @test "update-presets: --no-preset disables filter, dropped skills re-added (T017/US-3)" {
     local proj="$TEST_DIR/proj-no-preset-flag"
-    # Bootstrap with nextjs preset — dev-flutter absent.
-    "$NEW_PROJECT" --preset nextjs "$proj" >/dev/null 2>&1
-    [ ! -d "$proj/.claude/skills/dev-flutter" ]
-
-    # Add nextjs detect markers so that without --no-preset, detection would fire.
-    touch "$proj/next.config.js"
-    echo '{"dependencies":{"next":"^15"}}' > "$proj/package.json"
+    # Bootstrap with homelab-proxmox preset — it drops the CORE skill qa-chrome.
+    "$NEW_PROJECT" --preset homelab-proxmox "$proj" >/dev/null 2>&1
+    [ ! -d "$proj/.claude/skills/qa-chrome" ]
 
     # Run update --no-preset --skills: filter disabled, every skill copied.
     run "$UPDATE" -y -f --no-preset --skills "$proj"
     [ "$status" -eq 0 ]
-    # dev-flutter MUST now be present.
-    [ -d "$proj/.claude/skills/dev-flutter" ]
+    # qa-chrome MUST now be present.
+    [ -d "$proj/.claude/skills/qa-chrome" ]
 }
 
 @test "update-presets: no flag, no match - every skill re-added (T018/CS-006)" {
@@ -392,17 +388,18 @@ EOF
 
     local proj="$TEST_DIR/proj-keep-no-preset"
 
-    # Bootstrap with the synthetic keep-preset.
+    # Bootstrap with the synthetic keep-preset. qa-review is a CORE skill the
+    # keep-two whitelist excludes, so it is dropped at install.
     "$NEW_PROJECT" --preset keep-two --presets-dir "$preset_dir" -y "$proj" >/dev/null 2>&1
     [ -d "$proj/.claude" ]
-    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+    [ ! -d "$proj/.claude/skills/qa-review" ]
 
     # Act: run update --no-preset --skills — filter disabled, all foundation skills re-added.
     run "$UPDATE" -y -f --no-preset --skills "$proj"
     [ "$status" -eq 0 ]
 
     # Assert: a skill that was excluded by the keep-filter is now present.
-    [ -d "$proj/.claude/skills/dev-flutter" ]
+    [ -d "$proj/.claude/skills/qa-review" ]
 }
 
 # =============================================================================
@@ -440,18 +437,20 @@ EOF
 @test "update-presets: react-vite-spa --no-preset reverses keep-filter (T034)" {
     local proj="$TEST_DIR/proj-react-vite-spa-no-preset"
 
-    # Bootstrap with the real react-vite-spa preset — dev-flutter absent.
+    # Bootstrap with the real react-vite-spa preset. dev-nextjs is owned by the
+    # `frontend` module the preset opts into, but the keep-filter excludes it
+    # (not in the keep list) — so it is dropped at install.
     "$NEW_PROJECT" --preset react-vite-spa -y "$proj" >/dev/null 2>&1
     [ -d "$proj/.claude" ]
-    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+    [ ! -d "$proj/.claude/skills/dev-nextjs" ]
 
-    # Run update --no-preset --skills: no preset filter applied, every foundation
-    # skill is eligible for re-add.
+    # Run update --no-preset --skills: no preset filter applied, every eligible
+    # (incl. opted-in module) skill is restored.
     run "$UPDATE" -y -f --no-preset --skills "$proj"
     [ "$status" -eq 0 ]
 
-    # dev-flutter must now be present (filter explicitly disabled).
-    [ -d "$proj/.claude/skills/dev-flutter" ]
+    # dev-nextjs must now be present (keep-filter explicitly disabled).
+    [ -d "$proj/.claude/skills/dev-nextjs" ]
 }
 
 @test "update-presets: react-vite-spa dry-run lists non-kept skills as skipped (T035)" {
@@ -485,12 +484,12 @@ _write_synthetic_preset() {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
   "name": "synth-drop",
   "displayName": "Synthetic drop preset",
-  "description": "Synthetic preset for manifest-first resolution tests: drops dev-flutter.",
+  "description": "Synthetic preset for manifest-first resolution tests: drops qa-chrome.",
   "version": "1.0.0",
   "status": "community",
   "appliesToTypes": ["any"],
   "detect": {"combinator": "anyOf", "files": ["synth-drop.marker"]},
-  "foundation": {"skills": {"drop": ["dev-flutter"]}},
+  "foundation": {"skills": {"drop": ["qa-chrome"]}},
   "marketplacePlugins": [],
   "recommendedVendorSkills": [],
   "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
@@ -512,8 +511,8 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"synth-drop"* ]]
     [[ "$output" == *"manifest"* ]]
-    # The preset's skill filter applied: dev-flutter not reinstalled.
-    [ ! -d "$TEST_DIR/proj/.claude/skills/dev-flutter" ]
+    # The preset's skill filter applied: qa-chrome not reinstalled.
+    [ ! -d "$TEST_DIR/proj/.claude/skills/qa-chrome" ]
 }
 
 @test "update-presets: --preset flag overrides the manifest-recorded preset" {
@@ -537,8 +536,8 @@ EOF
 
     run "$UPDATE" --no-preset --skills -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
-    # Full catalog restored: dev-flutter is back.
-    [ -d "$TEST_DIR/proj/.claude/skills/dev-flutter" ]
+    # Full catalog restored: qa-chrome is back.
+    [ -d "$TEST_DIR/proj/.claude/skills/qa-chrome" ]
 }
 
 @test "update-presets: multi-match refusal is unreachable when the manifest records a preset (CS-205)" {

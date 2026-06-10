@@ -5,13 +5,15 @@
   "displayName": "Proxmox VE homelab",
   "description": "Proxmox VE + Terraform + Ansible + monitoring (Prometheus/Grafana). Targets sysadmins running infrastructure-as-code on a personal or small-team Proxmox cluster. Filters out app/UI/mobile-only skills (React, Next.js, Flutter, mobile-release, frontend-design, conversion optimization). Bundles ZERO marketplace plugins at v1 — Terraform-specific plugins will be added incrementally as they are validated in real production use. Rules from the foundation are path-gated (react.md activates on .tsx files only, etc.) so they remain inert on a Terraform/Ansible repo.",
 
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "maintainer-vouched",
 
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
+
+  "defaultModules": ["self-hosted", "iac", "observability"],
 
   "appliesToTypes": ["generic"],
 

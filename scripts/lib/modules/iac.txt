@@ -1,0 +1,16 @@
+# Module "iac" — Infrastructure as Code: Terraform/OpenTofu, K8s, serverless.
+# Same syntax as minimal-manifest.txt: one repo-relative path per line,
+# # comments and empty lines ignored, trailing / = directory.
+# Drift guard: tests/modules.bats asserts every path exists and no overlap.
+
+# === Commands (3) ===
+.claude/commands/ops/ops-infra-code.md
+.claude/commands/ops/ops-k8s.md
+.claude/commands/ops/ops-serverless.md
+
+# === Agents (2) ===
+.claude/agents/ops-infra-code.md
+.claude/agents/ops-serverless.md
+
+# === Skills (1 directory) ===
+.claude/skills/ops-infra-code/
