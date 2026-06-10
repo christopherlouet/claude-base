@@ -436,8 +436,11 @@ EOF
 
 @test "validate-presets.sh accepts a clean stack-scoped command/agent filter" {
     write_valid_manifest "$TEST_DIR/x.json"
-    jq '.foundation.commands = {"drop":["domain:ops","data-pipeline"]}
-        | .foundation.agents = {"drop":["dev-flutter"]}' \
+    # CORE-only entries: domain:ops (a partly-modularised domain — drops only its
+    # core commands) + dev-debug (core command) + dev-debug agent. None is
+    # module-owned, so the filter is accepted.
+    jq '.foundation.commands = {"drop":["domain:ops","dev-debug"]}
+        | .foundation.agents = {"drop":["dev-debug"]}' \
         "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
     run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
     [ "$status" -eq 0 ]
@@ -468,6 +471,42 @@ EOF
     run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
     [ "$status" -eq 1 ]
     [[ "$output" == *"biz"* ]]
+}
+
+# --- S3 (thematic modules): item-level rejection generalised cross-domain ---
+# The filter must reject ANY module-owned item, not just horizontal-domain ones.
+# These items live under non-module domains (dev/ops/data) yet belong to a
+# thematic module, so the old "entry's domain is a module" heuristic missed them.
+
+@test "validate-presets.sh rejects a cross-domain module-owned command (dev-flutter -> mobile)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"drop":["dev-flutter"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"dev-flutter"* ]]
+    [[ "$output" == *"mobile"* ]]
+    [[ "$output" == *"defaultModules"* ]] || [[ "$output" == *"module"* ]]
+}
+
+@test "validate-presets.sh rejects a cross-domain module-owned agent (ops-proxmox -> self-hosted)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.agents = {"drop":["ops-proxmox"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"ops-proxmox"* ]]
+    [[ "$output" == *"self-hosted"* ]]
+}
+
+@test "validate-presets.sh rejects a thematic item in keep mode too (data-pipeline -> data-eng)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.commands = {"keep":["domain:work","data-pipeline"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"data-pipeline"* ]]
+    [[ "$output" == *"data-eng"* ]]
 }
 
 @test "validate-presets.sh rejects an exact work-domain item drop (EF-111)" {

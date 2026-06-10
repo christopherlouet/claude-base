@@ -176,3 +176,89 @@ _manifest_modules_joined() {
     [ "$status" -eq 0 ]
     [ "$(_manifest_modules_joined "$proj")" = "" ]   # migrated (horizontal dropped)
 }
+
+# ===========================================================================
+# Thematic-modules crossing migration (S3, US-3 generalised, EF-405)
+# Thematic items (mobile/self-hosted/iac/data-eng/observability/editor/
+# api-data/ai/frontend) used to be CORE — never manifest-recorded. A project
+# crossing the thematic release (< 4.0.0) with those files present must:
+# stop refreshing them (COPY-only, files kept), report ONE consolidated
+# message + add hint (not one orphan nag per module), and rewrite NO manifest.
+# ===========================================================================
+
+# Pre-thematic project: core install + all thematic files on disk but NOT
+# recorded (modules=[]) and version rewound to a pre-4.0.0 value — exactly the
+# state of a project installed when those items were still core.
+_setup_pre_thematic_project() {
+    local proj="$TEST_DIR/proj"
+    "$NEW_PROJECT_SCRIPT" --simple -y "$proj" >/dev/null 2>&1
+    local m
+    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend; do
+        _add_module "$m" "$proj"
+    done
+    jq '.version = "3.5.0" | .modules = []' "$proj/.claude/foundation.json" > "$proj/.claude/foundation.json.tmp"
+    mv "$proj/.claude/foundation.json.tmp" "$proj/.claude/foundation.json"
+    echo "$proj"
+}
+
+@test "migration: thematic crossing keeps files, stops refreshing, reports add hint (EF-405)" {
+    local proj
+    proj="$(_setup_pre_thematic_project)"
+    [ -f "$proj/.claude/commands/dev/dev-flutter.md" ]
+    echo "# STALE" > "$proj/.claude/commands/dev/dev-flutter.md"
+
+    run "$UPDATE_SCRIPT" -y "$proj"
+    [ "$status" -eq 0 ]
+    # File retained (COPY-only) and NOT refreshed (still stale → was skipped).
+    [ -f "$proj/.claude/commands/dev/dev-flutter.md" ]
+    grep -q "# STALE" "$proj/.claude/commands/dev/dev-flutter.md"
+    # Reported with the opt-in instruction, naming the themes.
+    [[ "$output" == *"opt-in modules"* ]]
+    [[ "$output" == *"claude-base add"* ]]
+    # No manifest rewrite — thematic items were core, never recorded.
+    [ "$(jq -r '.modules | length' "$proj/.claude/foundation.json")" -eq 0 ]
+}
+
+@test "migration: thematic crossing consolidates the orphan nag (not one per module)" {
+    local proj
+    proj="$(_setup_pre_thematic_project)"
+    run "$UPDATE_SCRIPT" -y "$proj"
+    [ "$status" -eq 0 ]
+    # The generic per-module "present but the module is not in the manifest" nag
+    # must be suppressed for thematic modules (replaced by one crossing message).
+    [[ "$output" != *"present but the module is not in the manifest"* ]]
+}
+
+@test "migration: after re-adding a thematic module, update refreshes it again" {
+    local proj
+    proj="$(_setup_pre_thematic_project)"
+    "$UPDATE_SCRIPT" -y "$proj" >/dev/null 2>&1           # crossing
+    _add_module mobile "$proj"                             # opt back in
+    rm -f "$proj/.claude/commands/dev/dev-flutter.md"      # simulate it going missing
+
+    run "$UPDATE_SCRIPT" -y "$proj"
+    [ "$status" -eq 0 ]
+    # mobile is recorded again → the missing file is re-added (no longer
+    # module-skipped). Other thematic modules stay skipped.
+    [ -f "$proj/.claude/commands/dev/dev-flutter.md" ]
+}
+
+@test "migration: thematic --all crossing message does not claim files were kept" {
+    local proj
+    proj="$(_setup_pre_thematic_project)"
+    run "$UPDATE_SCRIPT" -y --all "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"left in place"* ]]
+    [[ "$output" == *"claude-base add"* ]]
+}
+
+@test "migration: a v4 manifest shows no thematic crossing report" {
+    local proj
+    proj="$(_setup_pre_thematic_project)"
+    jq '.version = "4.0.0"' "$proj/.claude/foundation.json" > "$proj/.claude/foundation.json.tmp"
+    mv "$proj/.claude/foundation.json.tmp" "$proj/.claude/foundation.json"
+
+    run "$UPDATE_SCRIPT" -y "$proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"opt-in modules"* ]]
+}

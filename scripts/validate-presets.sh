@@ -146,17 +146,30 @@ _catalog_filter_findings() {
         echo "E:foundation.${catalog}.${mode} cannot exclude the protected floor: $v (the work domain + assistant/assistant-auto are mandatory, EF-111)"
     done < <(catalog_floor_violations "$catalog" "$root" "$mode" ${entries[@]+"${entries[@]}"})
 
-    # Horizontal module-owned domains (biz/legal/growth) are out of scope here —
-    # they are installable modules, not preset exclusions.
+    # Module boundary (EF-406) — the catalog filter governs the CORE only; every
+    # module-owned item is out of its jurisdiction. Two forms:
+    #   domain:<m>  → reject when <m> is a horizontal module (a whole domain).
+    #   <item-name> → reject when the item is owned by ANY module, including a
+    #                 cross-domain thematic one (dev-flutter, ops-proxmox…) whose
+    #                 domain is NOT itself a module. Use defaultModules instead.
+    local owned_items
+    owned_items="$(module_owned_item_names "$catalog")"
     for e in ${entries[@]+"${entries[@]}"}; do
-        local edom=""
         case "$e" in
-            domain:*) edom="${e#domain:}" ;;
-            *-*)      edom="${e%%-*}" ;;
+            domain:*)
+                local edom="${e#domain:}"
+                if module_exists "$edom"; then
+                    echo "E:foundation.${catalog} must not target the '$edom' domain — it is an installable module; use defaultModules instead (see specs/thematic-modules)"
+                fi
+                ;;
+            *)
+                if printf '%s\n' "$owned_items" | grep -qxF -- "$e"; then
+                    local owner
+                    owner="$(module_of_item "$catalog" "$e")"
+                    echo "E:foundation.${catalog} must not target '$e' — it is owned by the '${owner:-unknown}' module; use defaultModules instead (see specs/thematic-modules)"
+                fi
+                ;;
         esac
-        if [ -n "$edom" ] && module_exists "$edom"; then
-            echo "E:foundation.${catalog} must not target the '$edom' domain — it is an installable module; use defaultModules instead (see specs/foundation-modules)"
-        fi
     done
 
     # Unknown names — non-fatal warning (install ignores them).
