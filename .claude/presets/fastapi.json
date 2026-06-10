@@ -5,7 +5,7 @@
   "displayName": "FastAPI backend (Python async)",
   "description": "FastAPI + Pydantic + SQLAlchemy/async ORM. Targets developers building HTTP APIs, LLM-backed services, or async data ingestion endpoints in Python. The foundation rules and workflow are kept; clearly non-applicable skills are filtered out: frontend-only stacks (Next.js, Shadcn, React perf, frontend design), mobile stacks (Flutter, mobile-release), homelab-specific ops (Proxmox, OPNsense), and UI-bound QA (Chrome, design, browser E2E). Skills that ARE kept and useful for backend work include `dev-api`, `dev-auth`, `dev-graphql`, `dev-supabase` (Python SDK), `ops-database`, `ops-docker`, `ops-monitoring`, `qa-perf`, `qa-security`. Bundles ZERO marketplace plugins at v1 — Python-specific plugin curation will be added incrementally as each one is validated in real production use, not assumed.",
 
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "maintainer-vouched",
 
   "author": {
@@ -24,24 +24,9 @@
     ]
   },
 
-  "foundation": {
-    "skills": {
-      "drop": [
-        "dev-flutter",
-        "dev-shadcn",
-        "dev-nextjs",
-        "dev-react-perf",
-        "dev-frontend-design",
-        "ops-mobile-release",
-        "ops-proxmox",
-        "ops-opnsense",
-        "growth-cro",
-        "qa-chrome",
-        "qa-design",
-        "qa-e2e"
-      ]
-    }
-  },
+  "defaultModules": ["api-data"],
+
+  "foundation": {},
 
   "marketplacePlugins": [],
 

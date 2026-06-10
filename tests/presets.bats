@@ -51,11 +51,15 @@ teardown() {
     [ "$(jq -r '.defaults.docker | type' "$f")" = "boolean" ]
 }
 
-@test "presets: nextjs.json drops at least one out-of-stack skill" {
+@test "presets: nextjs.json scopes its stack via defaultModules (no module-owned filter)" {
     local f="$BASE_DIR/.claude/presets/nextjs.json"
+    # Stack-scoping moved from a skills.drop list to module opt-in: nextjs opts
+    # into a non-empty, stack-relevant module set (and references no module-owned
+    # item in any catalog filter — validate-presets enforces that separately).
     local n
-    n=$(jq -r '.foundation.skills.drop | length' "$f")
+    n=$(jq -r '.defaultModules | length' "$f")
     [ "$n" -ge 1 ]
+    [[ "$(jq -r '.defaultModules | join(",")' "$f")" == *"frontend"* ]]
 }
 
 # =============================================================================
@@ -365,17 +369,21 @@ EOF
     [ ! -d "$target/.claude" ]
 }
 
-@test "presets: --preset nextjs install actually drops the listed skills" {
+@test "presets: --preset nextjs install excludes off-stack module skills" {
     local target="$TEST_DIR/proj"
     "$NEW_PROJECT" --preset nextjs "$target" >/dev/null 2>&1
     [ -d "$target/.claude/skills" ]
-    # Each skill in foundation.skills.drop must be absent post-install
-    local drops
-    drops=$(jq -r '.foundation.skills.drop[]' "$BASE_DIR/.claude/presets/nextjs.json")
-    while IFS= read -r skill; do
-        [ -z "$skill" ] && continue
-        [ ! -d "$target/.claude/skills/$skill" ]
-    done <<< "$drops"
+    # nextjs opts into api-data + frontend only; everything in the modules it does
+    # NOT request is absent (the exclusion is now by module opt-in, not a filter).
+    [ ! -d "$target/.claude/skills/dev-flutter" ]        # mobile
+    [ ! -d "$target/.claude/skills/ops-mobile-release" ] # mobile
+    [ ! -d "$target/.claude/skills/ops-proxmox" ]        # self-hosted
+    [ ! -d "$target/.claude/skills/ops-opnsense" ]       # self-hosted
+    [ ! -d "$target/.claude/skills/ops-infra-code" ]     # iac
+    [ ! -d "$target/.claude/skills/data-pipeline" ]      # data-eng
+    # ... while the requested stack skills are present.
+    [ -d "$target/.claude/skills/dev-nextjs" ]           # frontend
+    [ -d "$target/.claude/skills/dev-prisma" ]           # api-data
 }
 
 @test "presets: --preset nextjs install keeps stack-relevant skills" {
@@ -426,20 +434,19 @@ EOF
     [[ "$output" == *"homelab-proxmox"* ]]
 }
 
-@test "presets: --preset homelab-proxmox install drops UI/mobile skills" {
+@test "presets: --preset homelab-proxmox install excludes off-stack module skills" {
     local target="$TEST_DIR/proj-proxmox"
     "$NEW_PROJECT" --preset homelab-proxmox "$target" >/dev/null 2>&1
-    # 10 skills dropped from foundation.skills.drop
-    [ ! -d "$target/.claude/skills/dev-flutter" ]
-    [ ! -d "$target/.claude/skills/dev-nextjs" ]
-    [ ! -d "$target/.claude/skills/dev-shadcn" ]
-    [ ! -d "$target/.claude/skills/qa-chrome" ]
-    [ ! -d "$target/.claude/skills/qa-responsive" ]
-    [ ! -d "$target/.claude/skills/qa-design" ]
-    [ ! -d "$target/.claude/skills/ops-mobile-release" ]
-    [ ! -d "$target/.claude/skills/growth-cro" ]
-    [ ! -d "$target/.claude/skills/dev-frontend-design" ]
-    [ ! -d "$target/.claude/skills/dev-react-perf" ]
+    # Scoping is by module opt-in: homelab requests self-hosted + iac +
+    # observability only, so the frontend/mobile/growth module skills are absent
+    # (universal core skills like qa-chrome stay — they are not module-owned).
+    [ ! -d "$target/.claude/skills/dev-flutter" ]          # mobile
+    [ ! -d "$target/.claude/skills/dev-nextjs" ]           # frontend
+    [ ! -d "$target/.claude/skills/dev-shadcn" ]           # frontend
+    [ ! -d "$target/.claude/skills/dev-react-perf" ]       # frontend
+    [ ! -d "$target/.claude/skills/dev-frontend-design" ]  # frontend
+    [ ! -d "$target/.claude/skills/ops-mobile-release" ]   # mobile
+    [ ! -d "$target/.claude/skills/growth-cro" ]           # growth
 }
 
 @test "presets: --preset homelab-proxmox install keeps homelab-relevant skills" {
@@ -490,17 +497,18 @@ EOF
     [[ "$output" == *"cli-tools"* ]]
 }
 
-@test "presets: --preset cli-tools drops UI/mobile/infra-heavy skills" {
+@test "presets: --preset cli-tools excludes off-stack module skills" {
     local target="$TEST_DIR/proj-cli"
     "$NEW_PROJECT" --preset cli-tools "$target" >/dev/null 2>&1
-    [ ! -d "$target/.claude/skills/dev-flutter" ]
-    [ ! -d "$target/.claude/skills/dev-nextjs" ]
-    [ ! -d "$target/.claude/skills/dev-shadcn" ]
-    [ ! -d "$target/.claude/skills/ops-proxmox" ]
-    [ ! -d "$target/.claude/skills/ops-opnsense" ]
-    [ ! -d "$target/.claude/skills/qa-chrome" ]
-    [ ! -d "$target/.claude/skills/qa-e2e" ]
-    [ ! -d "$target/.claude/skills/growth-cro" ]
+    # cli-tools opts into no module → every themed skill is absent (universal
+    # core skills remain; they are not module-owned).
+    [ ! -d "$target/.claude/skills/dev-flutter" ]      # mobile
+    [ ! -d "$target/.claude/skills/dev-nextjs" ]       # frontend
+    [ ! -d "$target/.claude/skills/dev-shadcn" ]       # frontend
+    [ ! -d "$target/.claude/skills/dev-prisma" ]       # api-data
+    [ ! -d "$target/.claude/skills/ops-proxmox" ]      # self-hosted
+    [ ! -d "$target/.claude/skills/ops-opnsense" ]     # self-hosted
+    [ ! -d "$target/.claude/skills/growth-cro" ]       # growth
 }
 
 @test "presets: --preset cli-tools keeps automation/scripting skills" {
@@ -543,21 +551,20 @@ EOF
     [[ "$output" == *"fastapi"* ]]
 }
 
-@test "presets: --preset fastapi drops frontend/mobile/homelab skills" {
+@test "presets: --preset fastapi excludes off-stack module skills" {
     local target="$TEST_DIR/proj-fastapi"
     "$NEW_PROJECT" --preset fastapi "$target" >/dev/null 2>&1
-    [ ! -d "$target/.claude/skills/dev-flutter" ]
-    [ ! -d "$target/.claude/skills/dev-nextjs" ]
-    [ ! -d "$target/.claude/skills/dev-shadcn" ]
-    [ ! -d "$target/.claude/skills/dev-react-perf" ]
-    [ ! -d "$target/.claude/skills/dev-frontend-design" ]
-    [ ! -d "$target/.claude/skills/ops-mobile-release" ]
-    [ ! -d "$target/.claude/skills/ops-proxmox" ]
-    [ ! -d "$target/.claude/skills/ops-opnsense" ]
-    [ ! -d "$target/.claude/skills/qa-chrome" ]
-    [ ! -d "$target/.claude/skills/qa-design" ]
-    [ ! -d "$target/.claude/skills/qa-e2e" ]
-    [ ! -d "$target/.claude/skills/growth-cro" ]
+    # fastapi opts into api-data only → frontend/mobile/self-hosted/growth module
+    # skills are absent (universal core skills like qa-chrome stay).
+    [ ! -d "$target/.claude/skills/dev-flutter" ]          # mobile
+    [ ! -d "$target/.claude/skills/dev-nextjs" ]           # frontend
+    [ ! -d "$target/.claude/skills/dev-shadcn" ]           # frontend
+    [ ! -d "$target/.claude/skills/dev-react-perf" ]       # frontend
+    [ ! -d "$target/.claude/skills/dev-frontend-design" ]  # frontend
+    [ ! -d "$target/.claude/skills/ops-mobile-release" ]   # mobile
+    [ ! -d "$target/.claude/skills/ops-proxmox" ]          # self-hosted
+    [ ! -d "$target/.claude/skills/ops-opnsense" ]         # self-hosted
+    [ ! -d "$target/.claude/skills/growth-cro" ]           # growth
 }
 
 @test "presets: --preset fastapi keeps backend-relevant skills" {
@@ -1366,4 +1373,82 @@ EOF
     [ -n "$lib_slugs" ]
     [ -n "$roadmap_slugs" ]
     [ "$lib_slugs" = "$roadmap_slugs" ]
+}
+
+# ===========================================================================
+# T015 (thematic-modules S4) — per-preset stack-scoped reduction.
+# Each vouched preset installs a measurably reduced, stack-relevant catalog:
+# off-stack module items are absent, the requested module + core items are
+# present. The exclusion is driven by module opt-in (defaultModules) now, not a
+# long skills.drop list — so the filters reference no module-owned item.
+# ===========================================================================
+
+# full-catalog command count (every command shipped by the foundation)
+_full_cmd_count() {
+    find "$BASE_DIR/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' '
+}
+_proj_cmd_count() {
+    find "$1/.claude/commands" -type f -name '*.md' | wc -l | tr -d ' '
+}
+
+@test "presets: fastapi install is reduced and opts into api-data (T015)" {
+    local proj="$TEST_DIR/proj-fastapi-red"
+    run "$NEW_PROJECT" --preset fastapi -y "$proj"
+    [ "$status" -eq 0 ]
+    # measurably reduced vs the full catalog
+    [ "$(_proj_cmd_count "$proj")" -lt "$(_full_cmd_count)" ]
+    # api-data restored (it never dropped prisma/supabase/graphql)
+    [ -f "$proj/.claude/commands/dev/dev-prisma.md" ]
+    [ -d "$proj/.claude/skills/dev-supabase" ]
+    # off-stack themes absent (frontend / mobile / self-hosted)
+    [ ! -f "$proj/.claude/commands/dev/dev-react-perf.md" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
+    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+    # core kept
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]
+    [ -d "$proj/.claude/skills/dev-tdd" ]
+}
+
+@test "presets: astro install is reduced, keeps frontend, trims dev-nextjs (T015)" {
+    local proj="$TEST_DIR/proj-astro-red"
+    run "$NEW_PROJECT" --preset astro -y "$proj"
+    [ "$status" -eq 0 ]
+    [ "$(_proj_cmd_count "$proj")" -lt "$(_full_cmd_count)" ]
+    # frontend opted in (shadcn/react-perf), but the Next.js skill is trimmed
+    [ -d "$proj/.claude/skills/dev-shadcn" ]
+    [ -f "$proj/.claude/commands/dev/dev-react-perf.md" ]
+    [ ! -d "$proj/.claude/skills/dev-nextjs" ]
+    # off-stack absent (data-eng / self-hosted)
+    [ ! -f "$proj/.claude/commands/data/data-pipeline.md" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]
+}
+
+@test "presets: react-vite-spa install is reduced, keeps api-data + frontend (T015)" {
+    local proj="$TEST_DIR/proj-rv-red"
+    run "$NEW_PROJECT" --preset react-vite-spa -y "$proj"
+    [ "$status" -eq 0 ]
+    [ "$(_proj_cmd_count "$proj")" -lt "$(_full_cmd_count)" ]
+    # whitelisted module skills present (frontend + api-data), nextjs omitted
+    [ -d "$proj/.claude/skills/dev-shadcn" ]
+    [ -d "$proj/.claude/skills/dev-prisma" ]
+    [ ! -d "$proj/.claude/skills/dev-nextjs" ]
+    # off-stack absent (mobile / self-hosted)
+    [ ! -d "$proj/.claude/skills/dev-flutter" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]
+}
+
+@test "presets: cli-tools install is minimal — no opt-in modules (T015)" {
+    local proj="$TEST_DIR/proj-cli-red"
+    run "$NEW_PROJECT" --preset cli-tools -y "$proj"
+    [ "$status" -eq 0 ]
+    [ "$(_proj_cmd_count "$proj")" -lt "$(_full_cmd_count)" ]
+    # no modules opted in → all themed items absent
+    [ ! -d "$proj/.claude/skills/dev-prisma" ]
+    [ ! -d "$proj/.claude/skills/dev-shadcn" ]
+    [ ! -f "$proj/.claude/commands/ops/ops-proxmox.md" ]
+    # core kept
+    [ -d "$proj/.claude/skills/dev-tdd" ]
+    [ -f "$proj/.claude/commands/work/work-plan.md" ]
 }

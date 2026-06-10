@@ -5,7 +5,7 @@
   "displayName": "Astro content/static-first",
   "description": "Astro + TypeScript + Content Collections. Targets developers building content-heavy sites: marketing pages, documentation sites, blogs, landing pages. Astro's islands architecture lets users mix React/Vue/Svelte/Solid components selectively, so this preset keeps the broader frontend toolkit (`dev-frontend-design`, `dev-shadcn`, `dev-react-perf`, `qa-chrome`, `qa-design`) and only filters out clearly non-applicable skills (mobile, homelab, the Next.js framework specifically). Bundles ZERO marketplace plugins at v1 — Astro-specific plugin curation will be added incrementally as each one is validated in real production use, not assumed.",
 
-  "version": "1.1.0",
+  "version": "1.2.0",
   "status": "maintainer-vouched",
 
   "author": {
@@ -28,13 +28,7 @@
   "foundation": {
     "skills": {
       "drop": [
-        "dev-flutter",
-        "dev-nextjs",
-        "ops-mobile-release",
-        "ops-proxmox",
-        "ops-opnsense",
-        "ops-infra-code",
-        "data-pipeline"
+        "dev-nextjs"
       ]
     }
   },
