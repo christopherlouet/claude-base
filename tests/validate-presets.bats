@@ -478,14 +478,14 @@ EOF
 # These items live under non-module domains (dev/ops/data) yet belong to a
 # thematic module, so the old "entry's domain is a module" heuristic missed them.
 
-@test "validate-presets.sh rejects a cross-domain module-owned command (dev-flutter -> mobile)" {
+@test "validate-presets.sh rejects a cross-domain module-owned command (dev-flutter -> flutter)" {
     write_valid_manifest "$TEST_DIR/x.json"
     jq '.foundation.commands = {"drop":["dev-flutter"]}' \
         "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
     run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
     [ "$status" -eq 1 ]
     [[ "$output" == *"dev-flutter"* ]]
-    [[ "$output" == *"mobile"* ]]
+    [[ "$output" == *"flutter"* ]]
     [[ "$output" == *"defaultModules"* ]] || [[ "$output" == *"module"* ]]
 }
 

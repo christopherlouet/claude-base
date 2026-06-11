@@ -3,12 +3,12 @@
   "agents": 61,
   "skills": 53,
   "core": {
-    "commands": 76,
-    "agents": 34,
+    "commands": 75,
+    "agents": 33,
     "skills": 39
   },
   "rules": 30,
-  "tests": 927,
+  "tests": 928,
   "testFiles": 37,
   "byDomain": {
     "biz": 11,

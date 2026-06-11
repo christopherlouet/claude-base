@@ -107,14 +107,18 @@ declares which modules its stack needs:
 "defaultModules": ["api-data", "frontend"]
 ```
 
-**The 13 modules:**
+**The 14 modules:**
 
 | Kind | Modules |
 |------|---------|
 | Horizontal domains | `biz`, `legal`, `growth` |
-| Thematic (cross-domain) | `mobile`, `self-hosted`, `iac`, `data-eng`, `observability`, `editor`, `api-data`, `ai`, `frontend`, `nextjs` |
+| Thematic (cross-domain) | `mobile`, `self-hosted`, `iac`, `data-eng`, `observability`, `editor`, `api-data`, `ai`, `frontend`, `nextjs`, `flutter` |
 
-`frontend` is **framework-agnostic** React tooling (React-perf, shadcn, design); the `nextjs` framework is a **separate** module (a mutually-exclusive project choice). So a Next.js preset opts into `frontend` **and** `nextjs`, while an Astro or Vite-SPA preset opts into `frontend` only.
+**Framework grain.** A framework is a mutually-exclusive project choice, so it is its own opt-in unit rather than an item bundled into a broader agnostic module:
+- `frontend` = framework-agnostic React tooling (React-perf, shadcn, design); `nextjs` = the Next.js framework. A Next.js preset opts into `frontend` **and** `nextjs`; Astro/Vite-SPA opt into `frontend` only.
+- `mobile` = framework-agnostic app lifecycle (store release, testing); `flutter` = the Flutter framework. A Flutter preset opts into `mobile` **and** `flutter`.
+
+(An **additive** library — shadcn, Prisma — stays grouped in its theme; only a mutually-exclusive framework earns its own module.)
 
 - **Absent (key not declared)** → **no modules** installed (opt-in default). The init
   summary prints a `claude-base add <mod>` hint for every available module.
@@ -125,7 +129,7 @@ declares which modules its stack needs:
 - **Restore after install** → `claude-base add <module>` at any time; an existing
   project crossing the v4.0.0 update stops tracking the now-modularised items
   (files left in place, COPY-only) until re-added.
-- **Allowed values**: any of the 13 module names above.
+- **Allowed values**: any of the 14 module names above.
 - **Forbidden** on `vendor-pointer` tier (tier inheritance rule — vendor-pointer
   presets inherit foundation defaults wholesale).
 - `validate-presets.sh` rejects unknown names and non-array values.

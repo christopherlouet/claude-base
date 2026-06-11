@@ -193,7 +193,7 @@ _setup_pre_thematic_project() {
     local proj="$TEST_DIR/proj"
     "$NEW_PROJECT_SCRIPT" --simple -y "$proj" >/dev/null 2>&1
     local m
-    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend; do
+    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend nextjs flutter; do
         _add_module "$m" "$proj"
     done
     jq '.version = "3.5.0" | .modules = []' "$proj/.claude/foundation.json" > "$proj/.claude/foundation.json.tmp"
@@ -233,12 +233,12 @@ _setup_pre_thematic_project() {
     local proj
     proj="$(_setup_pre_thematic_project)"
     "$UPDATE_SCRIPT" -y "$proj" >/dev/null 2>&1           # crossing
-    _add_module mobile "$proj"                             # opt back in
+    _add_module flutter "$proj"                            # opt back in (dev-flutter lives in flutter)
     rm -f "$proj/.claude/commands/dev/dev-flutter.md"      # simulate it going missing
 
     run "$UPDATE_SCRIPT" -y "$proj"
     [ "$status" -eq 0 ]
-    # mobile is recorded again → the missing file is re-added (no longer
+    # flutter is recorded again → the missing file is re-added (no longer
     # module-skipped). Other thematic modules stay skipped.
     [ -f "$proj/.claude/commands/dev/dev-flutter.md" ]
 }

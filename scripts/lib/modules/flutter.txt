@@ -1,0 +1,18 @@
+# Module "flutter" — the Flutter framework (widgets, screens, Clean Architecture,
+# BLoC). A framework is a mutually-exclusive project choice, distinct from the
+# framework-agnostic mobile lifecycle tooling in the "mobile" module — so it is
+# its own opt-in unit rather than an item bundled into mobile (a Flutter project
+# opts into mobile + flutter; a React Native project would opt into mobile only,
+# plus a future react-native module). Mirrors the frontend/nextjs split.
+# Same syntax as minimal-manifest.txt: one repo-relative path per line, # comments
+# and empty lines ignored, trailing / = directory.
+# Drift guard: tests/modules.bats asserts every path exists and no overlap.
+
+# === Commands (1) ===
+.claude/commands/dev/dev-flutter.md
+
+# === Agents (1) ===
+.claude/agents/dev-flutter.md
+
+# === Skills (1 directory) ===
+.claude/skills/dev-flutter/

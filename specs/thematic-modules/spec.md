@@ -124,12 +124,16 @@ published counts stay correct.
   (horizontal or thematic); each is installed only via opt-in.
 - **EF-404** — Modules are grouped at **theme level, never per-item** (each module
   owns a coherent theme); **no item belongs to two modules**. The shipped set is
-  **13** incl. the 3 horizontal. A **framework** counts as a theme even when it
-  currently owns a single item: `nextjs` (the Next.js framework) is its own module,
-  separate from the framework-agnostic `frontend` tooling, because a framework is a
-  mutually-exclusive project choice — opting in is the clean alternative to dropping
-  it out of `frontend` (and it eliminated the last preset filter). The per-item ban
-  still rules out splitting an additive library (e.g. shadcn) into its own module.
+  **14** incl. the 3 horizontal. A **framework** counts as a theme even when it
+  currently owns a single item, because a framework is a mutually-exclusive project
+  choice — so it gets its own module rather than being bundled into the agnostic
+  theme tooling: `nextjs` (Next.js) is split from the framework-agnostic `frontend`
+  module, and `flutter` (Flutter) from the framework-agnostic `mobile` lifecycle
+  module (store-release + testing). The per-item ban still rules out splitting an
+  **additive** library (e.g. shadcn, Prisma) into its own module. Separately, a
+  vendor-specific item that lived in the core moves to the relevant module rather
+  than staying universal — e.g. `ops-vercel` (the Vercel deploy target) joins `iac`
+  alongside `serverless`.
 - **EF-405** — The crossing-update migration applies to newly-modularised items
   exactly as to horizontal ones: stop refresh, never delete, report + `add` hint,
   idempotent.
