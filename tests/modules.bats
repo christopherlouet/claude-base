@@ -37,33 +37,37 @@ run_lib() {
     [ -f "$MODULES_LIB" ]
 }
 
-@test "modules: modules_list returns the 13 modules (3 horizontal + 10 thematic, sorted)" {
+@test "modules: modules_list returns the 14 modules (3 horizontal + 11 thematic, sorted)" {
     run_lib modules_list
     [ "$status" -eq 0 ]
-    # 3 horizontal + 10 thematic, lexically sorted.
-    local expected="ai api-data biz data-eng editor frontend growth iac legal mobile nextjs observability self-hosted"
+    # 3 horizontal + 11 thematic, lexically sorted.
+    local expected="ai api-data biz data-eng editor flutter frontend growth iac legal mobile nextjs observability self-hosted"
     [ "$(echo "$output" | tr '\n' ' ' | sed 's/ $//')" = "$expected" ]
-    [ "${#lines[@]}" -eq 13 ]
+    [ "${#lines[@]}" -eq 14 ]
 }
 
 @test "modules: each thematic module exists (module_exists)" {
-    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend nextjs; do
+    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend nextjs flutter; do
         run_lib module_exists "$m"
         [ "$status" -eq 0 ]
     done
 }
 
-@test "modules: nextjs is a framework module owning just the dev-nextjs skill (EF-404 framework grain)" {
+@test "modules: framework modules are their own opt-in unit (EF-404 framework grain)" {
     # A framework is a mutually-exclusive project choice, so it is its own opt-in
-    # unit rather than an item dropped out of the framework-agnostic frontend
-    # module. One skill today; the theme is the framework, not a single item.
+    # unit rather than an item bundled into a broader agnostic module.
+    # nextjs (the Next.js framework) — split out of the agnostic `frontend` tooling.
     run_lib module_bundle_paths nextjs
-    [ "$status" -eq 0 ]
     [ "${#lines[@]}" -eq 1 ]
     [ "${lines[0]}" = ".claude/skills/dev-nextjs/" ]
-    # and frontend no longer carries it
     run_lib module_bundle_paths frontend
     [[ "$output" != *"dev-nextjs"* ]]
+    # flutter (the Flutter framework) — split out of the agnostic `mobile` lifecycle.
+    run_lib module_bundle_paths flutter
+    [ "${#lines[@]}" -eq 3 ]   # cmd + agent + skill
+    [[ "$output" == *"dev-flutter"* ]]
+    run_lib module_bundle_paths mobile
+    [[ "$output" != *"dev-flutter"* ]]   # mobile keeps only the agnostic release/test tooling
 }
 
 @test "modules: module_exists accepts known modules" {
@@ -215,7 +219,7 @@ run_lib() {
     run_lib module_bundle_paths frontend
     [ "${#lines[@]}" -eq 6 ]    # 2 cmds + 1 agent + 3 skills (dev-nextjs split out)
     run_lib module_bundle_paths mobile
-    [ "${#lines[@]}" -eq 6 ]    # 3 cmds + 1 agent + 2 skills
+    [ "${#lines[@]}" -eq 3 ]    # 2 cmds + 1 skill (dev-flutter split into its own module)
 }
 
 # =============================================================================
@@ -428,16 +432,26 @@ run_module() {
     setup_lean_project
     run_module add mobile --target "$TEST_DIR"
     [ "$status" -eq 0 ]
-    # mobile spans dev/ops/qa — every listed path (commands, agent, skills) lands.
+    # mobile spans ops/qa (framework-agnostic lifecycle) — every listed path lands.
     local p
     while IFS= read -r p; do
         [ -e "$TEST_DIR/$p" ] || { echo "Missing: $p" >&2; return 1; }
     done < <(bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
                       module_bundle_paths mobile")
-    # spot-check the cross-domain spread actually materialised
-    [ -f "$TEST_DIR/.claude/commands/dev/dev-flutter.md" ]
+    # spot-check the cross-domain spread (ops + qa) materialised
     [ -f "$TEST_DIR/.claude/commands/ops/ops-mobile-release.md" ]
     [ -f "$TEST_DIR/.claude/commands/qa/qa-mobile.md" ]
+    # the Flutter framework is a SEPARATE module — not pulled in by `add mobile`
+    [ ! -f "$TEST_DIR/.claude/commands/dev/dev-flutter.md" ]
+}
+
+@test "module add: flutter framework module installs the dev-flutter trio" {
+    setup_lean_project
+    run_module add flutter --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/.claude/commands/dev/dev-flutter.md" ]
+    [ -f "$TEST_DIR/.claude/agents/dev-flutter.md" ]
+    [ -d "$TEST_DIR/.claude/skills/dev-flutter" ]
 }
 
 @test "module add: fresh add records the module in the manifest" {

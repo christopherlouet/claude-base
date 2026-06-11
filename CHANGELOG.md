@@ -14,15 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - **⚠ BREAKING (v4.0.0) — platform/stack tooling is now opt-in thematic modules.**
-  Generalises the module mechanism beyond the horizontal domains: ten **thematic,
+  Generalises the module mechanism beyond the horizontal domains: eleven **thematic,
   cross-domain** modules now carry the platform/stack-specific items that used to
-  live in the core — `mobile`, `self-hosted`, `iac`, `data-eng`, `observability`,
-  `editor`, `api-data` (Prisma/Supabase/GraphQL/tRPC), `ai` (RAG/MCP/AI-integration),
-  `frontend` (framework-agnostic React tooling: React-perf/shadcn/design) and
-  `nextjs` (the Next.js framework itself — a mutually-exclusive choice, so its own
-  opt-in unit). With the 3 horizontal domains that makes **13 modules**. **A default
-  install now ships a minimal universal core only** — its command/agent/skill totals
-  drop to **76/34/39** (from 101/47/52); the full catalog (128/61/53) is unchanged.
+  live in the core — `mobile` (framework-agnostic app lifecycle: store release +
+  testing), `self-hosted`, `iac` (Terraform/K8s/serverless + the Vercel deploy
+  target), `data-eng`, `observability`, `editor`, `api-data` (Prisma/Supabase/
+  GraphQL/tRPC), `ai` (RAG/MCP/AI-integration), `frontend` (framework-agnostic
+  React tooling: React-perf/shadcn/design), and the two **framework** modules
+  `nextjs` (Next.js) and `flutter` (Flutter) — a framework is a mutually-exclusive
+  choice, so each is its own opt-in unit rather than an item bundled into the
+  agnostic `frontend`/`mobile` tooling. With the 3 horizontal domains that makes
+  **14 modules**. **A default install now ships a minimal universal core only** —
+  its command/agent/skill totals drop to **75/33/39** (from 101/47/52); the full
+  catalog (128/61/53) is unchanged.
   Opt in per project with `claude-base add <module>` (e.g. `claude-base add mobile`),
   or declare `defaultModules` in a preset (the vouched presets do this for their stacks).
   **Migration**: on `claude-base update`, an existing project crossing the change stops

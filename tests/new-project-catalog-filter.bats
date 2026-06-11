@@ -114,7 +114,7 @@ EOF
     # nothing, not that modules install by default (they no longer do, v3).
     _write_preset "skills-only" \
         '{"skills": {"drop": ["dev-flutter"]}}' \
-        "$pdir" '["ai","api-data","biz","data-eng","editor","frontend","growth","iac","legal","mobile","observability","self-hosted"]' >/dev/null
+        "$pdir" '["ai","api-data","biz","data-eng","editor","flutter","frontend","growth","iac","legal","mobile","nextjs","observability","self-hosted"]' >/dev/null
     local proj="$TEST_DIR/proj"
 
     run "$NEW_PROJECT" --preset skills-only --presets-dir "$pdir" -y "$proj"
