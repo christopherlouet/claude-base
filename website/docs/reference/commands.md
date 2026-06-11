@@ -1,7 +1,7 @@
 ---
 sidebar_position: 13
 title: "Essential Commands"
-description: "Installable horizontal domain modules (biz, legal, growth) are managed with three `claude-base` verbs. They work on an **already-initialized project**"
+description: "Installable opt-in modules — 3 horizontal domains (`biz`, `legal`, `growth`) plus 10 thematic cross-domain modules (`mobile`, `self-hosted`, `iac`, `d"
 tags:
   - "reference"
 ---
@@ -60,7 +60,9 @@ tags:
 
 ## claude-base CLI — module management
 
-Installable horizontal domain modules (biz, legal, growth) are managed with
+Installable opt-in modules — 3 horizontal domains (`biz`, `legal`, `growth`)
+plus 10 thematic cross-domain modules (`mobile`, `self-hosted`, `iac`, `data-eng`,
+`observability`, `editor`, `api-data`, `ai`, `frontend`, `nextjs`) — are managed with
 three `claude-base` verbs. They work on an **already-initialized project** —
 run `claude-base init` first if the target directory has no `.claude/` yet,
 or `claude-base update` once if the project predates `foundation.json`

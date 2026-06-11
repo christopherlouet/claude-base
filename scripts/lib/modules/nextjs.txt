@@ -1,0 +1,12 @@
+# Module "nextjs" — the Next.js framework (App Router, RSC, caching, Server
+# Actions). A framework is a mutually-exclusive project choice, distinct from the
+# framework-agnostic React tooling in the "frontend" module — so it is its own
+# opt-in unit rather than an item dropped out of frontend (the nextjs preset opts
+# into frontend + nextjs; astro/react-vite-spa opt into frontend only). One skill
+# today; framework-specific commands/agents would join here as they appear.
+# Same syntax as minimal-manifest.txt: one repo-relative path per line, # comments
+# and empty lines ignored, trailing / = directory.
+# Drift guard: tests/modules.bats asserts every path exists and no overlap.
+
+# === Skills (1 directory) ===
+.claude/skills/dev-nextjs/

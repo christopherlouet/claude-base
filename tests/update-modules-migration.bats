@@ -66,7 +66,7 @@ _manifest_modules_joined() {
     grep -q "# STALE" "$proj/.claude/commands/biz/biz-mvp.md"
     # Manifest no longer records the horizontal modules, version bumped.
     [ "$(_manifest_modules_joined "$proj")" = "" ]
-    [ "$(jq -r '.version' "$proj/.claude/foundation.json")" = "3.0.0" ]
+    [ "$(jq -r '.version' "$proj/.claude/foundation.json")" = "4.0.0" ]
     # Migration is reported with the opt-in instruction.
     [[ "$output" == *"claude-base add"* ]]
 }
@@ -118,7 +118,7 @@ _manifest_modules_joined() {
     run "$UPDATE_SCRIPT" -y "$proj"                 # second update
     [ "$status" -eq 0 ]
     [ "$(_manifest_modules_joined "$proj")" = "" ]
-    [ "$(jq -r '.version' "$proj/.claude/foundation.json")" = "3.0.0" ]
+    [ "$(jq -r '.version' "$proj/.claude/foundation.json")" = "4.0.0" ]
 }
 
 # ---------------------------------------------------------------------------

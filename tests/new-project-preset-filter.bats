@@ -135,39 +135,41 @@ EOF
 }
 
 # ---------------------------------------------------------------------------
-# T024 — react-vite-spa keep filter: kept skills present, OUT skills absent
+# T024 — react-vite-spa scopes purely by module opt-in (api-data + frontend);
+# its opted module skills are present, off-stack module skills absent, no filter.
 # ---------------------------------------------------------------------------
-@test "new-project-preset-filter: react-vite-spa applies keep filter (T024)" {
+@test "new-project-preset-filter: react-vite-spa scopes via module opt-in (T024)" {
     local proj="$TEST_DIR/proj-react-vite-spa"
 
-    # --- Act: bootstrap with the real react-vite-spa preset ---
     run "$NEW_PROJECT" --preset react-vite-spa -y "$proj"
     [ "$status" -eq 0 ]
     [ -d "$proj/.claude" ]
 
-    # --- Assert: every skill in the keep list MUST be present ---
-    local keep_list
-    keep_list=$(jq -r '.foundation.skills.keep[]' "$BASE_DIR/.claude/presets/react-vite-spa.json")
-    while IFS= read -r skill; do
-        [ -z "$skill" ] && continue
+    # --- Opted-in module skills (api-data + frontend) MUST be present ---
+    local in_skills=(
+        "dev-prisma" "dev-supabase" "dev-graphql"        # api-data
+        "dev-react-perf" "dev-shadcn" "dev-frontend-design"  # frontend
+        "dev-tdd" "qa-review"                            # core
+    )
+    for skill in "${in_skills[@]}"; do
         if [ ! -d "$proj/.claude/skills/$skill" ]; then
-            echo "ERROR: kept skill '$skill' is absent after install" >&2
+            echo "ERROR: opted-in skill '$skill' is absent after install" >&2
             return 1
         fi
-    done <<< "$keep_list"
+    done
 
-    # --- Assert: known out-of-scope skills MUST be absent ---
+    # --- Off-stack module skills (not opted in) MUST be absent ---
     local out_skills=(
-        "dev-flutter"
-        "ops-mobile-release"
-        "ops-proxmox"
-        "ops-opnsense"
-        "ops-infra-code"
-        "data-pipeline"
+        "dev-flutter"          # mobile
+        "dev-nextjs"           # nextjs (its own module — SPA, not Next.js)
+        "ops-mobile-release"   # mobile
+        "ops-proxmox"          # self-hosted
+        "ops-infra-code"       # iac
+        "data-pipeline"        # data-eng
     )
     for skill in "${out_skills[@]}"; do
         if [ -d "$proj/.claude/skills/$skill" ]; then
-            echo "ERROR: out-of-scope skill '$skill' is present but should be absent" >&2
+            echo "ERROR: off-stack skill '$skill' is present but should be absent" >&2
             return 1
         fi
     done

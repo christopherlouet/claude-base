@@ -5,7 +5,7 @@
   "displayName": "React Vite SPA",
   "description": "React + Vite + React Router for Single-Page Applications. Targets SPAs without SSR/RSC: client-rendered apps, PWAs, and Capacitor-wrapped mobile shells. Keeps the full frontend toolkit (shadcn, react-perf, i18n, auth, graphql) and filters out server-centric, homelab, and mobile-native skills. Not the right preset for SSR/RSC (use `nextjs`), static-content sites (use `astro`), or native mobile distribution beyond a Capacitor wrap.",
 
-  "version": "1.1.0",
+  "version": "1.2.0",
   "status": "maintainer-vouched",
 
   "author": {
@@ -25,57 +25,7 @@
     ]
   },
 
-  "foundation": {
-    "skills": {
-      "keep": [
-        "agent-teams",
-        "api-mocking",
-        "dev-api",
-        "dev-auth",
-        "dev-debug",
-        "dev-document",
-        "dev-error-handling",
-        "dev-frontend-design",
-        "dev-graphql",
-        "dev-i18n",
-        "dev-prisma",
-        "dev-react-perf",
-        "dev-refactor",
-        "dev-shadcn",
-        "dev-supabase",
-        "dev-tdd",
-        "doc-changelog",
-        "doc-generate",
-        "feature-flags",
-        "git-worktrees",
-        "ops-ci",
-        "ops-ci-fix",
-        "ops-database",
-        "ops-docker",
-        "ops-monitoring",
-        "ops-standup",
-        "parallel-agents",
-        "qa-chrome",
-        "qa-design",
-        "qa-e2e",
-        "qa-perf",
-        "qa-review",
-        "qa-security",
-        "qa-tech-debt",
-        "session-handoff",
-        "state-management",
-        "web-scraping",
-        "work-batch",
-        "work-brainstorm",
-        "work-commit",
-        "work-explore",
-        "work-plan",
-        "work-pr",
-        "work-quick",
-        "writing-skills"
-      ]
-    }
-  },
+  "foundation": {},
 
   "marketplacePlugins": [],
 

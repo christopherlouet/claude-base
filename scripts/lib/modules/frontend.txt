@@ -1,7 +1,9 @@
-# Module "frontend" — framework-specific frontend tooling: React perf, shadcn/ui,
-# Next.js, art-direction design, design systems. (Generic dev-component stays
-# in the core.) Same syntax as minimal-manifest.txt: one repo-relative path per
-# line, # comments and empty lines ignored, trailing / = directory.
+# Module "frontend" — framework-AGNOSTIC React frontend tooling: React perf,
+# shadcn/ui, art-direction design, design systems. Cross-framework (Next.js,
+# Astro islands, Vite SPA all want these). The Next.js framework itself is a
+# separate, mutually-exclusive choice — see the "nextjs" module. (Generic
+# dev-component stays in the core.) Same syntax as minimal-manifest.txt: one
+# repo-relative path per line, # comments and empty lines ignored, / = directory.
 # Drift guard: tests/modules.bats asserts every path exists and no overlap.
 
 # === Commands (2) ===
@@ -11,8 +13,7 @@
 # === Agents (1) ===
 .claude/agents/dev-design-system.md
 
-# === Skills (4 directories) ===
+# === Skills (3 directories) ===
 .claude/skills/dev-react-perf/
 .claude/skills/dev-shadcn/
 .claude/skills/dev-frontend-design/
-.claude/skills/dev-nextjs/

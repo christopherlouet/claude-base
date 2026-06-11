@@ -5,7 +5,7 @@
   "displayName": "Next.js full-stack",
   "description": "Next.js (App Router) + React + TypeScript. The foundation rules and workflow are kept; clearly other-stack themes (Flutter, Proxmox, OPNsense, mobile release, infra-as-code, data pipeline) are simply not opted into — they live in thematic modules this preset does not request. Bundles ZERO marketplace plugins at v1 — plugin curation is added incrementally as each one is validated in real production use, not assumed. Auth, ORM, deploy and payment patterns are decisions left to the developer; see docs/recipes/saas-monetization.md if a subscription model is needed.",
 
-  "version": "1.4.0",
+  "version": "1.5.0",
   "status": "maintainer-vouched",
 
   "author": {
@@ -13,7 +13,7 @@
     "github": "christopherlouet"
   },
 
-  "defaultModules": ["api-data", "frontend"],
+  "defaultModules": ["api-data", "frontend", "nextjs"],
 
   "appliesToTypes": ["react", "fullstack"],
 
