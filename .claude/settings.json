@@ -19,8 +19,6 @@
       "AskFollowup",
       "Skill(*)",
       "Task(*)",
-      "mcp__*",
-
       "Bash"
     ],
     "deny": [
