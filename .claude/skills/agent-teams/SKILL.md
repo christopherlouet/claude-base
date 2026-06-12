@@ -241,6 +241,8 @@ The lead will:
 
 The `claude agents` subcommand for dispatched background sessions gained per-session configuration flags: `--add-dir`, `--settings`, `--mcp-config`, `--plugin-dir`, `--permission-mode`, `--model`, `--effort`, `--dangerously-skip-permissions`. Useful when a teammate needs a different model than the lead (e.g. dispatch a Haiku worker for grep-heavy tasks while the lead stays on Opus), a tighter permission mode, or an alternate `.mcp-config`. Fast mode runs on **Opus 4.8** (also available on 4.7/4.6).
 
+For the foundation's own heaviest dispatched sessions (large multi-PR migrations, deep audits), `--model claude-fable-5` selects Anthropic's most capable model — a deliberate, costlier choice (~2× Opus 4.8). This is a per-session selection only: agent `model:` frontmatter is unchanged and there is no `fable` tier alias.
+
 ### Agent View (research preview)
 
 Anthropic ships an **Agent View** (research preview, May 2026): a unified terminal dashboard that lists every running session, their current state, last responses, and a key to jump back into any of them. Complementary to the in-process Team Lead model — Agent View covers cross-process sessions that the Team Lead can't see. See the [official preview note](https://code.claude.com/docs/en/whats-new) for activation.

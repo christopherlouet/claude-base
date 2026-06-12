@@ -171,7 +171,7 @@ No, it's a recommendation. Adapt it to your needs:
 
 ### What is the maximum context size?
 
-Claude has a 200k token context window by default (1M by default with Opus 4.8 on the API, Bedrock and Vertex AI). For large projects:
+Claude has a 200k token context window by default (1M by default with Opus 4.8 and Fable 5 on the API, Bedrock and Vertex AI). For large projects:
 - Use targeted agents
 - Analyze by module/folder
 - Exclude irrelevant files
@@ -181,7 +181,7 @@ Claude has a 200k token context window by default (1M by default with Opus 4.8 o
 
 ### What is Opus 4.8's Adaptive Thinking?
 
-Adaptive Thinking replaces the "extended thinking" toggle with 3 effort levels (`low`, `medium`, `high`). The model automatically adjusts its reasoning based on the complexity of the task. This optimizes the cost/quality ratio without manual configuration.
+Adaptive Thinking replaces the "extended thinking" toggle with effort levels (`low`, `medium`, `high`, `xhigh`). The model automatically adjusts its reasoning based on the complexity of the task. This optimizes the cost/quality ratio without manual configuration. On **Fable 5** — Anthropic's most capable tier — thinking is always on and cannot be disabled; effort still controls its depth.
 
 ---
 
