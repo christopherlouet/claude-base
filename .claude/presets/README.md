@@ -107,18 +107,19 @@ declares which modules its stack needs:
 "defaultModules": ["api-data", "frontend"]
 ```
 
-**The 14 modules:**
+**The 15 modules:**
 
 | Kind | Modules |
 |------|---------|
 | Horizontal domains | `biz`, `legal`, `growth` |
-| Thematic (cross-domain) | `mobile`, `self-hosted`, `iac`, `data-eng`, `observability`, `editor`, `api-data`, `ai`, `frontend`, `nextjs`, `flutter` |
+| Thematic (cross-domain) | `mobile`, `self-hosted`, `iac`, `data-eng`, `observability`, `editor`, `api-data`, `ai`, `frontend`, `nextjs`, `flutter`, `gitflow` |
 
-**Framework grain.** A framework is a mutually-exclusive project choice, so it is its own opt-in unit rather than an item bundled into a broader agnostic module:
+**Mutually-exclusive grain.** A mutually-exclusive choice (a framework, or an alternative workflow) is its own opt-in unit rather than an item bundled into a broader agnostic module — a project picks one, so it should opt in to one:
 - `frontend` = framework-agnostic React tooling (React-perf, shadcn, design); `nextjs` = the Next.js framework. A Next.js preset opts into `frontend` **and** `nextjs`; Astro/Vite-SPA opt into `frontend` only.
 - `mobile` = framework-agnostic app lifecycle (store release, testing); `flutter` = the Flutter framework. A Flutter preset opts into `mobile` **and** `flutter`.
+- `gitflow` = the GitFlow branching model (init/feature/release/hotfix), incompatible with the foundation's default trunk-ish flow — opt in only if your project uses GitFlow.
 
-(An **additive** library — shadcn, Prisma — stays grouped in its theme; only a mutually-exclusive framework earns its own module.)
+(An **additive** library — shadcn, Prisma — stays grouped in its theme; only a mutually-exclusive choice earns its own module.)
 
 - **Absent (key not declared)** → **no modules** installed (opt-in default). The init
   summary prints a `claude-base add <mod>` hint for every available module.
@@ -129,7 +130,7 @@ declares which modules its stack needs:
 - **Restore after install** → `claude-base add <module>` at any time; an existing
   project crossing the v4.0.0 update stops tracking the now-modularised items
   (files left in place, COPY-only) until re-added.
-- **Allowed values**: any of the 14 module names above.
+- **Allowed values**: any of the 15 module names above.
 - **Forbidden** on `vendor-pointer` tier (tier inheritance rule — vendor-pointer
   presets inherit foundation defaults wholesale).
 - `validate-presets.sh` rejects unknown names and non-array values.
