@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **docs: Claude Fable 5 model tier.** Documented Anthropic's most capable model
+  (`claude-fable-5`, ~$10/$50 per MTok = 2× Opus 4.8, 1M context default, 128K
+  output, same tokenizer as Opus 4.8) as the deliberate escalation **above**
+  Opus 4.8 — Opus 4.8 stays the default for complex work. Positioned in
+  `best-practices.md`, `advanced-features.md` and `TEAM-GUIDE.md`; added to the
+  `dev-ai-integration` SDK matrix with its four API caveats (thinking always-on
+  / `thinking:{type:"disabled"}` → 400, no assistant prefill, refusal classifiers
+  cyber/bio, 30-day data retention required); runtime note in `TEAM-GUIDE.md` and
+  the `agent-teams` skill recommending `--model claude-fable-5` for the
+  foundation's heaviest sessions — **no agent frontmatter change, no `fable` tier
+  alias**; FAQ touch-ups. Website mirror regenerated.
+
 ## [4.0.0] - 2026-06-12
 
 ### Changed

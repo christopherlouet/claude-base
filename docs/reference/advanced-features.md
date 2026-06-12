@@ -83,6 +83,12 @@ vscode://anthropic.claude-code/open
 
 Useful for: CI/CD integration, setup scripts, notification hooks.
 
+## Fable 5 (most capable tier)
+
+`claude-fable-5` is Anthropic's most capable widely-released model — the tier **above** Opus 4.8 for the most demanding reasoning and long-horizon autonomous work. 1M context (default and max), 128K output, same tokenizer as Opus 4.8. Pricing is **~$10/$50 per MTok — 2× Opus 4.8** — so reach for it deliberately, not as a default.
+
+Behaviourally it differs from Opus 4.8: thinking is always on (the raw chain of thought is never returned) and individual turns on hard tasks can run several minutes — plan for streaming and async check-ins. Opus 4.8 remains the documented default; Fable 5 is the costlier escalation when a task genuinely exceeds it. For the API-level caveats when building with the SDK (no `thinking:{type:"disabled"}`, no assistant prefill, refusal classifiers, 30-day data retention), see the `dev-ai-integration` agent.
+
 ## Opus 4.8
 
 Current frontier model (released 2026-05-28, supersedes Opus 4.7). **Defaults to `high` effort.** Anthropic reports it is roughly **4× less likely than Opus 4.7 to let a flaw in code it has written pass unremarked** — a strong asset for the TDD and Audit phases of the workflow.

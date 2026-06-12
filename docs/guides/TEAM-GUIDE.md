@@ -293,12 +293,15 @@ paths:
 
 | Usage | Model | Why |
 |-------|-------|-----|
+| Hardest / long-horizon autonomous work | Fable 5 (`claude-fable-5`) | Anthropic's most capable model; ~2× Opus 4.8 cost — **deliberate** use, not a default |
 | Architecture, design | Opus 4.8 | Most advanced reasoning, 1M context, `xhigh` effort |
 | Feature implementation | Sonnet | Speed/quality balance |
 | Exploration, reading | Haiku | Fast for simple operations |
 | Security audits | Sonnet or Opus 4.8 | Detection of subtle flaws |
 | PR reviews in CI | Haiku | Low cost, high volume |
 | Cloud review (large PRs) | `/ultrareview` | Parallel agents in cloud |
+
+> **Running the foundation's own heavy sessions on Fable 5:** for large multi-PR migrations or deep audits of claude-base itself, dispatch the session on the strongest model with `--model claude-fable-5` (or pick it via `/model`). This is a deliberate, costlier choice (~2× Opus 4.8). Agent `model:` frontmatter is **not** changed — there is no `fable` tier alias; Fable 5 is selected per-session, not pinned to an agent.
 
 ---
 

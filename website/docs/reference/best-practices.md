@@ -30,9 +30,12 @@ Integration: PostToolUse hooks (auto-format, type-check, lint), PreToolUse on co
 
 | Context | Model | Rationale |
 |----------|--------|---------------|
-| Complex tasks | **Opus 4.8** | Most advanced reasoning, adaptive thinking, 1M context, `xhigh` effort |
+| Most demanding / long-horizon autonomous work | **Fable 5** (`claude-fable-5`) | Anthropic's most capable model — deepest reasoning, long-horizon agentic runs. Reach for it **deliberately**: ~$10/$50 per MTok (2× Opus 4.8) |
+| Complex tasks (default) | **Opus 4.8** | Most advanced reasoning, adaptive thinking, 1M context, `xhigh` effort |
 | Audits and analyses | **Sonnet** | Good speed/quality balance |
 | Simple tasks | **Haiku** | Fast for trivial operations |
+
+> **Fable 5 vs Opus 4.8:** Opus 4.8 stays the default for complex work. Fable 5 (1M context by default, 128K output, same tokenizer as Opus 4.8) is a **costlier escalation** — 2× Opus per token — for the hardest long-horizon tasks, not a drop-in replacement.
 
 ## Advanced Prompting
 
@@ -58,6 +61,8 @@ See `docs/guides/PROMPTING-GUIDE.md` for the complete guide.
 | Critical system architecture, advanced security audit | `xhigh` | Maximum reasoning (Opus 4.8 required) |
 
 Command: `/effort low`, `/effort medium`, `/effort high`, `/effort xhigh` (interactive slider).
+
+> Effort tunes reasoning depth **on the current model**; it is not a model upgrade. For the hardest long-horizon work, escalating the *model* to Fable 5 (`claude-fable-5`, ~2× Opus 4.8) is the distinct, costlier lever — see "Recommended Model" above.
 
 ## Automatic Memory (CLI 2.1.76+)
 
