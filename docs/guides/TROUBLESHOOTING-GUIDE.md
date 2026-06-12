@@ -20,7 +20,7 @@
 | "Context window full" or automatic compaction | Too many files read, long session, verbose logs included | `/compact` to summarize, avoid reading `/tmp/` or `node_modules/` |
 | Very slow session, high token count | Repeated reading of large files, uncompacted context | `/compact` between phases, use `effort low` for exploration |
 | Silent hook that does not trigger | Non-executable script, wrong path, timeout exceeded | Check the logs in `/tmp/claude-sessions.log`, test the script manually |
-| MCP server missing or disconnected | Server disabled in `.mcp.json`, missing dependency | Check `"disabled": true` in `.mcp.json`, restart with `/mcp` |
+| MCP server missing or disconnected | Server not listed in `.mcp.json`, pending approval, or missing dependency/env var | A server is active only if present in `.mcp.json` (no `enabled` flag — copy it from `.mcp.json.example`); approve project servers (`claude mcp reset-project-choices`), restart with `/mcp` |
 | Agent or skill that does not trigger | Wrong namespace, description too vague, missing file | Check the exact name with `/help`, read the description in the `.md` file |
 | Permission refusal loop | Command in the `deny` list of `settings.json`, strict auto mode | `/less-permission-prompts` to optimize allowlists, or `SKIP_COMMAND_VALIDATOR=1` |
 | Too many permission prompts | Permissions too restrictive for the workflow | `/less-permission-prompts` scans transcripts and proposes optimized allowlists |
