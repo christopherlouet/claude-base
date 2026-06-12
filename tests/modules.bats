@@ -37,19 +37,31 @@ run_lib() {
     [ -f "$MODULES_LIB" ]
 }
 
-@test "modules: modules_list returns the 14 modules (3 horizontal + 11 thematic, sorted)" {
+@test "modules: modules_list returns the 15 modules (3 horizontal + 12 thematic, sorted)" {
     run_lib modules_list
     [ "$status" -eq 0 ]
-    # 3 horizontal + 11 thematic, lexically sorted.
-    local expected="ai api-data biz data-eng editor flutter frontend growth iac legal mobile nextjs observability self-hosted"
+    # 3 horizontal + 12 thematic, lexically sorted.
+    local expected="ai api-data biz data-eng editor flutter frontend gitflow growth iac legal mobile nextjs observability self-hosted"
     [ "$(echo "$output" | tr '\n' ' ' | sed 's/ $//')" = "$expected" ]
-    [ "${#lines[@]}" -eq 14 ]
+    [ "${#lines[@]}" -eq 15 ]
 }
 
 @test "modules: each thematic module exists (module_exists)" {
-    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend nextjs flutter; do
+    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend nextjs flutter gitflow; do
         run_lib module_exists "$m"
         [ "$status" -eq 0 ]
+    done
+}
+
+@test "modules: gitflow is a commands-only opt-in workflow module (mutually-exclusive)" {
+    # GitFlow is a branching model incompatible with the foundation's default
+    # trunk-ish flow — a project picks one, so the 4 GitFlow commands are an
+    # opt-in module rather than universal core. No agents, no skills.
+    run_lib module_bundle_paths gitflow
+    [ "$status" -eq 0 ]
+    [ "${#lines[@]}" -eq 4 ]
+    for line in "${lines[@]}"; do
+        [[ "$line" == .claude/commands/ops/ops-gitflow-*.md ]]
     done
 }
 

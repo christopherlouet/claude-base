@@ -193,7 +193,7 @@ _setup_pre_thematic_project() {
     local proj="$TEST_DIR/proj"
     "$NEW_PROJECT_SCRIPT" --simple -y "$proj" >/dev/null 2>&1
     local m
-    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend nextjs flutter; do
+    for m in mobile self-hosted iac data-eng observability editor api-data ai frontend nextjs flutter gitflow; do
         _add_module "$m" "$proj"
     done
     jq '.version = "3.5.0" | .modules = []' "$proj/.claude/foundation.json" > "$proj/.claude/foundation.json.tmp"
