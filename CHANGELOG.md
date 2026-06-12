@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   the `agent-teams` skill recommending `--model claude-fable-5` for the
   foundation's heaviest sessions — **no agent frontmatter change, no `fable` tier
   alias**; FAQ touch-ups. Website mirror regenerated.
+- **docs: proactive Fable 5 escalation note** in `best-practices.md` (`@`-imported,
+  so always in context) — Claude is guided to *surface* a Fable 5 suggestion when a
+  session becomes a long-horizon chantier (multi-PR migration, deep audit, large
+  refactor), while leaving the switch to the user (no `fable` alias → no self-switch).
 
 ## [4.0.0] - 2026-06-12
 

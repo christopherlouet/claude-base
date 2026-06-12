@@ -29,6 +29,8 @@ _(Fable 5 sits one tier above Opus 4.8 for the hardest long-horizon work — see
 
 > **Fable 5 vs Opus 4.8:** Opus 4.8 stays the default for complex work. Fable 5 (1M context by default, 128K output, same tokenizer as Opus 4.8) is a **costlier escalation** — 2× Opus per token — for the hardest long-horizon tasks, not a drop-in replacement.
 
+**Proactively flag the escalation.** When a session turns into a long-horizon *chantier* — a multi-PR migration, a deep audit, or a large refactor that visibly exceeds Opus 4.8's comfort zone — say so and suggest escalating the model to Fable 5 (`/model`, or relaunch with `--model claude-fable-5`). It is a deliberate, costlier choice (2× Opus) and there is **no `fable` tier alias**, so Claude cannot switch itself mid-session — surface the recommendation and let the user decide. Don't suggest it for routine work where Opus 4.8 is the right default.
+
 ## Advanced Prompting
 
 | Avoid | Prefer |
