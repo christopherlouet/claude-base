@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-06-12
+
 ### Changed
 
 - **⚠ BREAKING (v4.0.0) — platform/stack tooling is now opt-in thematic modules.**
@@ -49,16 +51,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `react-vite-spa` 1.1→1.2 (`api-data`+`frontend`), `cli-tools` 1.0→1.1 (minimal,
   no modules). Extracting `nextjs` into its own module removed the last filter the
   presets needed. See `specs/thematic-modules/`.
-- **⚠ BREAKING (v3.0.0) — horizontal domains (`biz`/`legal`/`growth`) are now pure opt-in modules.**
-  A default install (no preset, or a preset that does not declare `defaultModules`)
-  ships the **core only** — business, legal and growth commands/agents/skills are no
-  longer installed by default (supersedes the foundation-modules rule "absence of
-  `defaultModules` means all modules"). Opt in per project with
-  `claude-base add biz|legal|growth`, or declare `defaultModules` in a preset.
-  **Migration**: on `claude-base update`, an existing project no longer refreshes
-  horizontal domains it carried only by the old default; on-disk files are **not
-  deleted** — run `claude-base add <module>` to resume tracking them. See
-  `specs/horizontal-pure-modules/`.
+
+### Fixed
+
+- **MCP off by default, for real.** The foundation shipped `.mcp.json` with 13 servers
+  each marked `"enabled": false` — but that is not a field of the `.mcp.json` format, so
+  Claude Code ignored it and treated all 13 as live (pending approval / failing to
+  connect), surfacing as `/doctor` setup issues. `.mcp.json` now ships **empty**
+  (`"mcpServers": {}`); the curated catalogue moved to `.mcp.json.example` (copy the
+  servers you need). Also removed the invalid `"mcp__*"` allow rule from
+  `.claude/settings.json` (an allow pattern cannot use a bare tool-name wildcard — it
+  was skipped with a warning at startup). The related docs were corrected.
+
+## [3.0.0] - 2026-06-09
 
 ### Added
 
@@ -95,9 +100,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
     (5 commands + 4 agents), `growth` (11 commands + 6 agents + growth-cro skill).
   - `docs/reference/commands.md`: `claude-base add/remove/modules` section.
   - `.claude/presets/README.md`: `defaultModules` field documentation.
+- **docs: Dynamic Workflows section** (`advanced-features.md` + website mirror) — native Opus 4.8 Workflow capability orchestrating tens–hundreds of background agents with deterministic control flow, plus a "which mechanism" comparison vs `parallel-agents` and Agent Teams.
+- **docs: pointers** for week-of-2026-05-22 Anthropic releases — Claude Security public beta / Project Glasswing, `/code-review --fix` (CLI 2.1.152) auto-applying to the working tree + native skill management, doubled Claude Code rate limits, and Managed Agents private-MCP sandbox + Compliance API.
 
 ### Changed
 
+- **⚠ BREAKING (v3.0.0) — horizontal domains (`biz`/`legal`/`growth`) are now pure opt-in modules.**
+  A default install (no preset, or a preset that does not declare `defaultModules`)
+  ships the **core only** — business, legal and growth commands/agents/skills are no
+  longer installed by default (supersedes the foundation-modules rule "absence of
+  `defaultModules` means all modules"). Opt in per project with
+  `claude-base add biz|legal|growth`, or declare `defaultModules` in a preset.
+  **Migration**: on `claude-base update`, an existing project no longer refreshes
+  horizontal domains it carried only by the old default; on-disk files are **not
+  deleted** — run `claude-base add <module>` to resume tracking them. See
+  `specs/horizontal-pure-modules/`.
 - **`nextjs` preset now filters commands and agents (v1.0.0 → v1.1.0).** Existing `nextjs`
   projects that run `claude-base update` will no longer be offered the 6 commands / 5 agents
   matching its dropped skills (`dev-flutter`, `ops-mobile-release`, `ops-opnsense`,
@@ -123,11 +140,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - **docs: refresh model references to Opus 4.8** (Anthropic news, week of 2026-05-22). Bumped every `Opus 4.7` → `Opus 4.8` and corrected the latest-Opus model ID `claude-opus-4-6` → `claude-opus-4-8` across `docs/`, `website/docs/`, `templates/` and `.claude/` (CHANGELOG/specs left untouched as historical record). Updated the `dev-ai-integration` SDK matrix to `Opus 4.8, Sonnet 4.6, Haiku 4.5`.
 - **docs: Opus 4.8 facts** — defaults to `high` effort, **1M context window now default** (not beta) on API/Bedrock/Vertex, ~4× less likely than 4.7 to let a self-authored code flaw pass. Reflected in `advanced-features.md`, `best-practices.md`, `templates/FAQ.md`, `website/docs/concepts/advanced-features.md`.
-
-### Added
-
-- **docs: Dynamic Workflows section** (`advanced-features.md` + website mirror) — native Opus 4.8 Workflow capability orchestrating tens–hundreds of background agents with deterministic control flow, plus a "which mechanism" comparison vs `parallel-agents` and Agent Teams.
-- **docs: pointers** for week-of-2026-05-22 Anthropic releases — Claude Security public beta / Project Glasswing, `/code-review --fix` (CLI 2.1.152) auto-applying to the working tree + native skill management, doubled Claude Code rate limits, and Managed Agents private-MCP sandbox + Compliance API.
 
 ## [2.0.0] - 2026-05-22
 
