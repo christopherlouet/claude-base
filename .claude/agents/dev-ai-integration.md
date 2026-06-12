@@ -36,7 +36,7 @@ Integration of LLMs and AI APIs into applications.
 
 1. **Thinking is always on** — omit the `thinking` parameter; `thinking: {type: "disabled"}` returns a 400. Control depth with `output_config.effort` instead. The raw chain of thought is never returned (summaries via `display: "summarized"`).
 2. **No assistant prefill** — last-assistant-turn prefills return a 400. Use structured outputs (`output_config.format`) or system-prompt instructions to shape responses.
-3. **Refusal stop reason** — safety classifiers (cyber/bio) may return HTTP 200 with `stop_reason: "refusal"`. Check `stop_reason` before reading `content`; benign security/life-sciences work can occasionally false-positive.
+3. **Refusal stop reason** — safety classifiers (cyber/bio) may return HTTP 200 with `stop_reason: "refusal"`. Check `stop_reason` before reading `content`; benign security/life-sciences work can occasionally trigger a false positive.
 4. **30-day data retention required** — Fable 5 is unavailable under zero-data-retention; such orgs receive a 400 on every request.
 
 ## Best Practices

@@ -18,6 +18,8 @@ Integration: PostToolUse hooks (auto-format, type-check, lint), PreToolUse on co
 
 > "I use Opus with adaptive thinking for everything." -- Boris Cherny
 
+_(Fable 5 sits one tier above Opus 4.8 for the hardest long-horizon work — see the table below.)_
+
 | Context | Model | Rationale |
 |----------|--------|---------------|
 | Most demanding / long-horizon autonomous work | **Fable 5** (`claude-fable-5`) | Anthropic's most capable model — deepest reasoning, long-horizon agentic runs. Reach for it **deliberately**: ~$10/$50 per MTok (2× Opus 4.8) |
