@@ -1230,8 +1230,12 @@ install_mcp_file() {
     local target_dir="$1"
 
     info "Installing MCP configuration..."
+    # .mcp.json ships EMPTY (no server is active unless listed here — there is no
+    # per-server 'enabled' flag in the format). The reference catalogue of servers
+    # ships alongside as .mcp.json.example; copy the ones you need into .mcp.json.
     copy_file "$BASE_DIR/.mcp.json" "$target_dir/"
-    success "MCP configuration installed"
+    [[ -f "$BASE_DIR/.mcp.json.example" ]] && copy_file "$BASE_DIR/.mcp.json.example" "$target_dir/"
+    success "MCP configuration installed (.mcp.json empty; see .mcp.json.example to enable servers)"
 }
 
 # Update or create .gitignore

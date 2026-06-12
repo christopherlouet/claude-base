@@ -1,0 +1,95 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/mcp.schema.json",
+  "_comment": "Reference catalogue of MCP servers — NOT loaded by Claude Code (only .mcp.json is). To enable a server, copy its block into .mcp.json's mcpServers and provide the referenced env vars. There is no per-server 'enabled' field in the .mcp.json format: a server is active iff it is present in .mcp.json. The 'description' lines below are informational; Claude Code ignores unknown fields. Project-scoped servers prompt for approval on first use (claude mcp reset-project-choices to re-prompt).",
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+      "description": "Advanced filesystem access"
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "description": "Persistent memory across sessions"
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-fetch"],
+      "description": "HTTP requests to external APIs"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub integration (issues, PRs, repos)"
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      },
+      "description": "PostgreSQL connection for queries and migrations"
+    },
+    "sqlite": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-sqlite", "--db-path", "./data/local.db"],
+      "description": "Local SQLite database"
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-puppeteer"],
+      "description": "Browser automation for screenshots and UI tests"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-sequential-thinking"],
+      "description": "Structured step-by-step reasoning"
+    },
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-slack"],
+      "env": {
+        "SLACK_BOT_TOKEN": "${SLACK_BOT_TOKEN}",
+        "SLACK_TEAM_ID": "${SLACK_TEAM_ID}"
+      },
+      "description": "Slack integration for bug search, thread analysis, team comms (recommended by Boris Cherny)"
+    },
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-sentry"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
+        "SENTRY_ORG": "${SENTRY_ORG}"
+      },
+      "description": "Sentry integration for error analysis and monitoring (recommended by Boris Cherny)"
+    },
+    "bigquery": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-bigquery"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}",
+        "BIGQUERY_PROJECT_ID": "${BIGQUERY_PROJECT_ID}"
+      },
+      "description": "BigQuery integration for direct analytics queries (recommended by Boris Cherny — skips writing SQL by hand)"
+    },
+    "linear": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-linear"],
+      "env": {
+        "LINEAR_API_KEY": "${LINEAR_API_KEY}"
+      },
+      "description": "Linear integration for project management and issues"
+    },
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@anthropics/mcp-server-notion"],
+      "env": {
+        "NOTION_API_KEY": "${NOTION_API_KEY}"
+      },
+      "description": "Notion integration for docs and knowledge bases"
+    }
+  }
+}

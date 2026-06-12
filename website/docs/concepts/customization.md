@@ -374,7 +374,7 @@ When the user requests a TypeScript review:
 
 ### `.mcp.json` file
 
-> **Security important**: by default, MCPs are disabled in the foundation (minimal `.mcp.json`). Only enable the servers you need and review their permissions.
+> **Security important**: the foundation ships `.mcp.json` **empty** (`"mcpServers": {}`) — no MCP server runs by default. A server is active **only if listed** in `.mcp.json` (the format has no per-server `enabled` flag). A curated catalogue ships as **`.mcp.json.example`** (a reference file Claude does not load); copy the server blocks you need into `.mcp.json`, provide their env vars, and review their permissions. Project-scoped servers prompt for approval on first use.
 
 ```json
 {

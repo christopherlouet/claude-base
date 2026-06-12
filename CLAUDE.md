@@ -26,7 +26,7 @@
 ### Secrets management
 - IMPORTANT: Never commit secrets (.env, credentials, API keys)
 - Use environment variables, placeholders in examples
-- MCP servers disabled by default in `.mcp.json`
+- MCP servers off by default: `.mcp.json` ships empty (`{}`) — enable one by copying its block from `.mcp.json.example` (there is no per-server `enabled` flag)
 - Avoid `curl URL | sh`, prefer download + verify + execute
 
 ## Documentation and References

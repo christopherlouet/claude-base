@@ -138,7 +138,7 @@ ALLOW_MAIN_EDIT=1 claude
 
 ### MCP servers: shared `.mcp.json`
 
-The `.mcp.json` file is committed to git with all servers **disabled by default** (`"enabled": false`). Each developer enables the servers they need in their `.claude/settings.local.json` or directly in `.mcp.json` on their branch.
+The `.mcp.json` file is committed to git **empty** (`"mcpServers": {}`) — no server is active by default. There is **no per-server `enabled` flag** in the `.mcp.json` format: a server is active iff it is listed in `.mcp.json`. The curated catalogue ships alongside as **`.mcp.json.example`** (a reference file Claude does not load); each developer copies the server blocks they need into `.mcp.json` and provides the referenced env vars. Project-scoped servers prompt for approval on first use.
 
 ```json
 // .mcp.json (committed, disabled by default)
