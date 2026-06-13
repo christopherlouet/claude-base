@@ -5,7 +5,8 @@
   "global": {
     "rejectArchived": true,
     "maxStaleDays": 365,
-    "missingLicenseVerdict": "flag"
+    "missingLicenseVerdict": "flag",
+    "collapseDropPct": 50
   },
   "tracks": {
     "authority": {
