@@ -511,7 +511,7 @@ Concrete signals rather than a self-assessment score :
 - Six GitHub Actions workflows (CI, security, docs, PR check, release, dependabot auto-merge) gating merges
 - Doc drift firewall (`scripts/audit-docs.sh`) catches syntactic doc drift before merge — see [PR #201](https://github.com/christopherlouet/claude-base/pull/201)
 - Counter anti-drift gate (`scripts/validate-counts.sh`) regenerated from `counts.json`
-- Pinned versions via git tags (current : v<!-- version -->4.0.0<!-- /version -->) with full `CHANGELOG.md` in Keep-a-Changelog format
+- Pinned versions via git tags (current : v<!-- version -->4.1.0<!-- /version -->) with full `CHANGELOG.md` in Keep-a-Changelog format
 
 ### Security measures
 
