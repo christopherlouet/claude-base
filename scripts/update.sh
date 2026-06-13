@@ -1974,12 +1974,28 @@ main() {
     # rediscover) opt-in vendor skills throughout the project lifecycle.
     # Gated to honor --quiet and skipped when no preset governs this run.
     if [[ -n "$ACTIVE_PRESET_FILE" ]] && ! ${QUIET:-false}; then
+        # US-9: surface a CHANGED recommendation set (added / removed / re-pinned)
+        # vs the snapshot recorded in the manifest — a tracked change on update,
+        # not a silent drift. Empty on a first run (no prior snapshot) or no change.
+        local _rec_drift
+        _rec_drift="$(recommendation_drift "$ACTIVE_PRESET_FILE" "$TARGET_DIR" || true)"
+        if [[ -n "$_rec_drift" ]]; then
+            section "Recommendation changes since your last update"
+            printf '%s\n\n' "$_rec_drift"
+        fi
         print_recommended_vendor_skills "$ACTIVE_PRESET_FILE" "$TARGET_DIR"
     fi
 
     # Record the foundation version in the manifest (T1.4) — skip in dry-run
     if ! $DRY_RUN; then
         record_foundation_version "$TARGET_DIR" "$VERSION"
+        # Persist the new recommendation snapshot so the NEXT update can diff
+        # against it (US-9). After record_foundation_version so the manifest exists.
+        # Explicit `if` (not `&&`) so a no-preset run can't return non-zero under
+        # `set -e` and abort the script.
+        if [[ -n "$ACTIVE_PRESET_FILE" ]]; then
+            record_recommendations_snapshot "$ACTIVE_PRESET_FILE" "$TARGET_DIR" || true
+        fi
     fi
 }
 

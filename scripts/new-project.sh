@@ -813,6 +813,11 @@ record_foundation_state() {
             ${SELECTED_MODULES[@]+"${SELECTED_MODULES[@]}"} \
             || error "failed to write .claude/foundation.json in $dir"
         rm -f "$dir/.claude/.foundation-version"
+        # US-9: record the initial recommendation snapshot so the first later
+        # `update` can diff against it (added / removed / re-pinned).
+        if [[ -n "$PRESET_FILE" ]]; then
+            record_recommendations_snapshot "$PRESET_FILE" "$dir" || true
+        fi
     else
         record_foundation_version "$dir" "$VERSION" \
             || error "failed to write .claude/foundation.json in $dir"
