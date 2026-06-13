@@ -34,25 +34,41 @@
       "id": "vercel-labs/agent-skills",
       "url": "https://github.com/vercel-labs/agent-skills",
       "rationale": "Canonical React patterns from Vercel Engineering (valid outside Next.js for SPA work)",
-      "condition": "always"
+      "condition": "always",
+      "pinnedRef": "f8a72b9603728bb92a217a879b7e62e43ad76c81",
+      "trustTrack": "authority",
+      "provenance": "Vercel",
+      "lastVerified": "2026-06-13"
     },
     {
       "id": "frontend-design@claude-plugins-official",
       "url": "https://claude.com/plugins/frontend-design",
       "rationale": "Anthropic's official UI design plugin (avoid generic Inter+purple aesthetic)",
-      "condition": "always"
+      "condition": "always",
+      "pinnedRef": "ca9f6045fc90c8244f9e787fb57d54b380f9a27c",
+      "trustTrack": "authority",
+      "provenance": "Anthropic",
+      "lastVerified": "2026-06-13"
     },
     {
       "id": "shadcn-ui/ui (skills/shadcn)",
       "url": "https://github.com/shadcn-ui/ui/tree/main/skills/shadcn",
       "rationale": "shadcn/ui CLI v4, Radix + Base UI primitives, theming patterns",
-      "condition": "if using shadcn/ui"
+      "condition": "if using shadcn/ui",
+      "pinnedRef": "shadcn@4.11.0",
+      "trustTrack": "authority",
+      "provenance": "shadcn",
+      "lastVerified": "2026-06-13"
     },
     {
       "id": "lingui/skills",
       "url": "https://github.com/lingui/skills",
       "rationale": "Lingui i18n patterns for React (sourced from specs/marketplace-audit/dev-skills-pilot)",
-      "condition": "if using Lingui for i18n"
+      "condition": "if using Lingui for i18n",
+      "pinnedRef": "a969c9a73e8a7a12f4002372ab41650d25d8beb6",
+      "trustTrack": "authority",
+      "provenance": "Lingui",
+      "lastVerified": "2026-06-13"
     }
   ],
 

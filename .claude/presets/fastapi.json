@@ -35,25 +35,41 @@
       "id": "supabase/agent-skills",
       "url": "https://github.com/supabase/agent-skills",
       "rationale": "Postgres best practices (30 rules) + Supabase Python SDK patterns",
-      "condition": "if using Postgres or Supabase"
+      "condition": "if using Postgres or Supabase",
+      "pinnedRef": "v0.1.5",
+      "trustTrack": "authority",
+      "provenance": "Supabase",
+      "lastVerified": "2026-06-13"
     },
     {
       "id": "mongodb/agent-skills",
       "url": "https://github.com/mongodb/agent-skills",
       "rationale": "MongoDB schema design, indexing, query patterns, operational safeguards",
-      "condition": "if using MongoDB"
+      "condition": "if using MongoDB",
+      "pinnedRef": "v1.1.0",
+      "trustTrack": "authority",
+      "provenance": "MongoDB",
+      "lastVerified": "2026-06-13"
     },
     {
       "id": "grafana/skills",
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack (Loki/Tempo/Mimir), k6 perf testing",
-      "condition": "if using Grafana / observability stack"
+      "condition": "if using Grafana / observability stack",
+      "pinnedRef": "0198138c75512f9b2adfb27b49aebce87c3ccfdf",
+      "trustTrack": "authority",
+      "provenance": "Grafana Labs",
+      "lastVerified": "2026-06-13"
     },
     {
       "id": "antonbabenko/terraform-skill",
       "url": "https://github.com/antonbabenko/terraform-skill",
       "rationale": "Comprehensive Terraform/OpenTofu patterns",
-      "condition": "if deploying via Terraform/OpenTofu"
+      "condition": "if deploying via Terraform/OpenTofu",
+      "pinnedRef": "v1.17.1",
+      "trustTrack": "community",
+      "provenance": "Anton Babenko (community)",
+      "lastVerified": "2026-06-13"
     }
   ],
 

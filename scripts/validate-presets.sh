@@ -46,10 +46,16 @@ source "$SCRIPT_DIR/lib/catalog-filter.sh"
 
 QUIET=false
 SINGLE_FILE=""
+REGISTRY_FILE=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --quiet|-q) QUIET=true; shift ;;
+        --registry)
+            REGISTRY_FILE="${2:-}"
+            [ -n "$REGISTRY_FILE" ] || { echo "Error: --registry requires a file path" >&2; exit 2; }
+            shift 2
+            ;;
         --help|-h)
             sed -nE 's/^# ?//p' "$0" | sed -nE '/^validate-presets/,/^Exit/p'
             exit 0
@@ -67,7 +73,17 @@ done
 
 command -v jq >/dev/null 2>&1 || { echo "[ERROR] jq is required" >&2; exit 2; }
 
-if [ -n "$SINGLE_FILE" ]; then
+# --registry is its own mode; combining it with a positional preset file would
+# silently drop one of the two from validation — reject the ambiguity.
+if [ -n "$REGISTRY_FILE" ] && [ -n "$SINGLE_FILE" ]; then
+    echo "[ERROR] --registry cannot be combined with a positional preset file" >&2
+    exit 2
+fi
+
+if [ -n "$REGISTRY_FILE" ]; then
+    # registry-only mode: validate the canonicalVendor registry, no presets.
+    FILES=()
+elif [ -n "$SINGLE_FILE" ]; then
     if [ ! -f "$SINGLE_FILE" ]; then
         echo "[ERROR] file not found: $SINGLE_FILE" >&2
         exit 2
@@ -86,6 +102,30 @@ ALLOWED_STATUS='["maintainer-vouched","community-curated","vendor-pointer","draf
 ALLOWED_CATEGORIES='["web-frontend","api-backend","mobile-desktop","game-interactive-media","data-database","infra-devops","cli-automation","other-generic"]'
 ALLOWED_DESIGN_STYLE='["terminal","cockpit","vitality","editorial","glass","signal"]'
 NAME_PATTERN='^[a-z][a-z0-9-]*$'
+
+# EF-005 — a pinned reference must be immutable. This is a deterministic SHAPE
+# guard: it rejects the well-known floating aliases (latest/HEAD/main…) and the
+# common branch-shaped names (release-*, feature/*, dev-*…). It cannot prove a
+# ref is truly a tag/SHA from the string alone (that distinction is fundamentally
+# a repo lookup) — the authoritative immutability check is the gh-resolving
+# trust scorer in Slice 2/3. A tag or full commit SHA passes here.
+_is_floating_ref() {
+    case "$1" in
+        latest|LATEST|HEAD|head|main|master|develop|trunk|stable|edge|next|nightly|canary|"") return 0 ;;
+    esac
+    # Branch-shaped names: a known branch word, optionally followed by '/' or '-'
+    # (e.g. release-2.x, feature/foo, hotfix/bar, dev-spike). Case-insensitive.
+    if [[ "$1" =~ ^([Rr]elease|[Rr]eleases|[Hh]otfix|[Ff]eature|[Ff]eat|[Bb]ugfix|[Ff]ix|[Dd]ev|[Dd]evelop|[Ss]taging|[Ss]napshot|[Pp]rod|[Pp]roduction)([/-]) ]]; then
+        return 0
+    fi
+    return 1
+}
+
+# ISO calendar date (YYYY-MM-DD) shape guard for lastVerified fields. Month/day
+# ranges are bounded so obvious typos (e.g. 9999-99-99) are caught.
+_is_iso_date() {
+    [[ "$1" =~ ^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$ ]]
+}
 
 pass=0
 fail=0
@@ -385,6 +425,35 @@ validate_one() {
                     [ -n "$rurl" ] || errs+=("recommendedVendorSkills[$i].url missing")
                     [ -n "$rrat" ] || errs+=("recommendedVendorSkills[$i].rationale missing")
                     [ -n "$rcond" ] || errs+=("recommendedVendorSkills[$i].condition missing")
+
+                    # Curation-engine fields (specs/marketplace-curation-engine,
+                    # Slice 1): every recommendation is pinned, trust-tracked,
+                    # provenance-disclosed and dated.
+                    local rpin rtrack rprov rverif
+                    rpin=$(jq -r ".recommendedVendorSkills[$i].pinnedRef // empty" "$file")
+                    rtrack=$(jq -r ".recommendedVendorSkills[$i].trustTrack // empty" "$file")
+                    rprov=$(jq -r ".recommendedVendorSkills[$i].provenance // empty" "$file")
+                    rverif=$(jq -r ".recommendedVendorSkills[$i].lastVerified // empty" "$file")
+                    # EF-005: pinned to an immutable tag/SHA — no floating refs.
+                    if [ -z "$rpin" ]; then
+                        errs+=("recommendedVendorSkills[$i].pinnedRef missing (EF-005: pin to a tag or commit SHA)")
+                    elif _is_floating_ref "$rpin"; then
+                        errs+=("recommendedVendorSkills[$i].pinnedRef '$rpin' is a floating ref — pin to a tag or commit SHA (EF-005)")
+                    fi
+                    # EF-003: two trust tracks.
+                    case "$rtrack" in
+                        authority|community) ;;
+                        "") errs+=("recommendedVendorSkills[$i].trustTrack missing (EF-003: authority|community)") ;;
+                        *) errs+=("recommendedVendorSkills[$i].trustTrack '$rtrack' must be 'authority' or 'community' (EF-003)") ;;
+                    esac
+                    # EF-008: publisher provenance disclosed.
+                    [ -n "$rprov" ] || errs+=("recommendedVendorSkills[$i].provenance missing (EF-008)")
+                    # lastVerified ISO date (YYYY-MM-DD).
+                    if [ -z "$rverif" ]; then
+                        errs+=("recommendedVendorSkills[$i].lastVerified missing")
+                    elif ! _is_iso_date "$rverif"; then
+                        errs+=("recommendedVendorSkills[$i].lastVerified '$rverif' must be an ISO date (YYYY-MM-DD)")
+                    fi
                 done
             fi
         fi
@@ -531,6 +600,109 @@ validate_one() {
     fi
 }
 
+# validate_registry <file> — validate a .claude/curation/registry.json
+# canonicalVendor registry (specs/marketplace-curation-engine, EF-001). Each
+# record names a graduatable foundation skill and its pinned, trust-tracked,
+# provenance-disclosed canonical vendor.
+validate_registry() {
+    local file="$1"
+    local rel; rel="$(basename "$file")"
+    local errs=()
+
+    if ! jq empty "$file" >/dev/null 2>&1; then
+        echo "[FAIL]  $rel"
+        echo "        - invalid JSON syntax"
+        return 1
+    fi
+
+    if [ "$(jq -r '.records | type' "$file" 2>/dev/null)" != "array" ]; then
+        echo "[FAIL]  $rel"
+        echo "        - records must be an array"
+        return 1
+    fi
+
+    local n; n=$(jq -r '.records | length' "$file")
+    if [ "$n" -gt 0 ]; then
+        local i
+        for i in $(seq 0 $((n - 1))); do
+            local fs vid pin track verdict prov neut verif st
+            fs=$(jq -r ".records[$i].foundationSkill // empty" "$file")
+            vid=$(jq -r ".records[$i].vendorId // empty" "$file")
+            pin=$(jq -r ".records[$i].pinnedRef // empty" "$file")
+            track=$(jq -r ".records[$i].trustTrack // empty" "$file")
+            verdict=$(jq -r ".records[$i].trustVerdict // empty" "$file")
+            prov=$(jq -r ".records[$i].provenance // empty" "$file")
+            neut=$(jq -r ".records[$i].adviceNeutrality // empty" "$file")
+            verif=$(jq -r ".records[$i].lastVerified // empty" "$file")
+            st=$(jq -r ".records[$i].status // empty" "$file")
+
+            [ -n "$fs" ] || errs+=("records[$i].foundationSkill missing")
+            [ -n "$vid" ] || errs+=("records[$i].vendorId missing")
+            if [ -z "$pin" ]; then
+                errs+=("records[$i].pinnedRef missing (EF-005)")
+            elif _is_floating_ref "$pin"; then
+                errs+=("records[$i].pinnedRef '$pin' is a floating ref — pin to a tag or commit SHA (EF-005)")
+            fi
+            case "$track" in
+                authority|community) ;;
+                "") errs+=("records[$i].trustTrack missing (EF-003)") ;;
+                *) errs+=("records[$i].trustTrack '$track' must be 'authority' or 'community' (EF-003)") ;;
+            esac
+            case "$verdict" in
+                pass|flag|fail) ;;
+                "") errs+=("records[$i].trustVerdict missing") ;;
+                *) errs+=("records[$i].trustVerdict '$verdict' must be 'pass', 'flag' or 'fail'") ;;
+            esac
+            [ -n "$prov" ] || errs+=("records[$i].provenance missing (EF-008)")
+            case "$neut" in
+                pass|flag) ;;
+                "") errs+=("records[$i].adviceNeutrality missing (EF-008)") ;;
+                *) errs+=("records[$i].adviceNeutrality '$neut' must be 'pass' or 'flag'") ;;
+            esac
+            if [ -z "$verif" ]; then
+                errs+=("records[$i].lastVerified missing")
+            elif ! _is_iso_date "$verif"; then
+                errs+=("records[$i].lastVerified '$verif' must be an ISO date (YYYY-MM-DD)")
+            fi
+            case "$st" in
+                candidate|graduating|graduated) ;;
+                "") errs+=("records[$i].status missing") ;;
+                *) errs+=("records[$i].status '$st' must be 'candidate', 'graduating' or 'graduated'") ;;
+            esac
+        done
+    fi
+
+    if [ "${#errs[@]}" -eq 0 ]; then
+        $QUIET || echo "[OK]    $rel (registry, $n record(s))"
+        return 0
+    else
+        echo "[FAIL]  $rel"
+        local e
+        for e in "${errs[@]}"; do
+            echo "        - $e"
+        done
+        return 1
+    fi
+}
+
+# Registry-only mode (--registry <file>): validate just the registry and exit.
+# (--registry + a positional file is already rejected during arg handling.)
+if [ -n "$REGISTRY_FILE" ]; then
+    if [ ! -f "$REGISTRY_FILE" ]; then
+        echo "[ERROR] registry not found: $REGISTRY_FILE" >&2
+        exit 2
+    fi
+    if validate_registry "$REGISTRY_FILE"; then
+        echo ""
+        $QUIET || echo "[OK] registry valid"
+        exit 0
+    else
+        echo ""
+        echo "[FAIL] registry invalid"
+        exit 1
+    fi
+fi
+
 for f in "${FILES[@]}"; do
     if validate_one "$f"; then
         pass=$((pass + 1))
@@ -540,11 +712,21 @@ for f in "${FILES[@]}"; do
     fi
 done
 
+# Full-dir run also validates the shipped canonicalVendor registry, when present.
+registry_fail=0
+if [ -z "$SINGLE_FILE" ]; then
+    DEFAULT_REGISTRY="$BASE_DIR/.claude/curation/registry.json"
+    if [ -f "$DEFAULT_REGISTRY" ]; then
+        validate_registry "$DEFAULT_REGISTRY" || registry_fail=1
+    fi
+fi
+
 echo ""
-if [ "$fail" -eq 0 ]; then
+if [ "$fail" -eq 0 ] && [ "$registry_fail" -eq 0 ]; then
     $QUIET || echo "[OK] $pass preset(s) valid"
     exit 0
 else
-    echo "[FAIL] $fail preset(s) invalid out of $((pass + fail))"
+    [ "$fail" -gt 0 ] && echo "[FAIL] $fail preset(s) invalid out of $((pass + fail))"
+    [ "$registry_fail" -gt 0 ] && echo "[FAIL] registry invalid"
     exit 1
 fi
