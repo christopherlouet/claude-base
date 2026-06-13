@@ -87,7 +87,7 @@ The foundation ships <!-- count:commands -->128<!-- /count --> commands + <!-- c
 
 - **Workflow rigor coordinated as one experience** — TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates
 - **Anti-drift counter strategy** across the entire foundation, CI-enforced via `counts.json` + a doc drift firewall (`scripts/audit-docs.sh`)
-- **<!-- count:rules -->30<!-- /count --> path-specific rules** auto-activated by file path (TypeScript strict, OWASP defaults, WCAG, Core Web Vitals, deploy-safety)
+- **<!-- count:rules -->31<!-- /count --> path-specific rules** auto-activated by file path (TypeScript strict, OWASP defaults, WCAG, Core Web Vitals, deploy-safety)
 - **PostToolUse output rewriter** for Bash + tsc/eslint (Claude Code 2.1.121+)
 - **Integrated install + update flow** via the `claude-base` CLI
 
@@ -123,7 +123,7 @@ Everything is plain markdown + JSON. No daemon, no telemetry, no network access 
 | Slash commands | <!-- count:commands -->128<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
 | Sub-agents | <!-- count:agents -->61<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
 | Skills | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords in your prompts |
-| Path-specific rules | <!-- count:rules -->30<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
+| Path-specific rules | <!-- count:rules -->31<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
 | Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles ; tier breakdown in [Going deeper](#going-deeper) |
 
 Full catalogue: [Docusaurus reference](https://christopherlouet.github.io/claude-base/docs/reference) — or browse `.claude/` directly after install.
@@ -417,7 +417,7 @@ The full documentation site lives at **[https://christopherlouet.github.io/claud
 
 It covers:
 - Quick start guide
-- Catalog of <!-- count:commands -->128<!-- /count --> commands, <!-- count:agents -->61<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->30<!-- /count --> rules
+- Catalog of <!-- count:commands -->128<!-- /count --> commands, <!-- count:agents -->61<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->31<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Learning path, Extending, Team, Prompting, Troubleshooting

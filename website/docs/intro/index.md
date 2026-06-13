@@ -42,7 +42,7 @@ Each step has its dedicated commands, specialized agents, and best practices.
 | **Commands** | <!-- count:commands -->128<!-- /count --> | Manually triggered commands (`/name`) |
 | **Agents** | <!-- count:agents -->61<!-- /count --> | Autonomous sub-agents with isolated context |
 | **Skills** | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords |
-| **Rules** | <!-- count:rules -->30<!-- /count --> | Rules per technology/file |
+| **Rules** | <!-- count:rules -->31<!-- /count --> | Rules per technology/file |
 | **Presets** | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles installable via `--preset <name>` |
 
 ## Domains covered

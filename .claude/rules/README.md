@@ -2,7 +2,7 @@
 
 Modular rules applied automatically based on the modified files (path-specific rules).
 
-## Available rules (30)
+## Available rules (31)
 
 | Rule | Target paths | Description |
 |------|-------------|-------------|
@@ -33,6 +33,7 @@ Modular rules applied automatically based on the modified files (path-specific r
 | `tdd-enforcement` | `**/*.ts`, `**/*.tsx`, `**/*.dart`, `**/*.py`, `**/*.go`, ... | Proactive TDD mandatory for all code |
 | `testing` | `**/*.test.ts`, `**/*.spec.ts`, `**/tests/**` | 80% coverage, mocks, edge cases |
 | `typescript` | `**/*.ts`, `**/*.tsx`, `**/*.mts` | Strict mode, no any, interfaces |
+| `vendor-precedence` | _(global)_ | Foundation-vs-vendor & vendor-vs-vendor advice precedence (security/workflow = foundation; tool API = vendor) |
 | `verification` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, ... | 4-phase verification before completion |
 | `vue` | `**/*.vue`, `**/composables/**`, `**/stores/**`, `**/nuxt.config.*` | Composition API, Pinia, Nuxt 3+ |
 | `workflow` | _(global)_ | Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit |
@@ -51,7 +52,7 @@ When a file matches several rules (e.g., `.tsx` activates typescript + react + a
 | 6 | `testing` | Test standards |
 | 7 | `performance`, `accessibility`, `design-style` | Optimizations and best practices |
 | 8 | `api`, `lsp` | Interface conventions |
-| 9 | `research`, `deploy-safety`, `base-maintenance` | Process guardrails |
+| 9 | `research`, `deploy-safety`, `base-maintenance`, `vendor-precedence` | Process guardrails |
 
 ### Example: modifying `src/components/Button.tsx`
 

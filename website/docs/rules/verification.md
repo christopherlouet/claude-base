@@ -1,5 +1,5 @@
 ---
-sidebar_position: 29
+sidebar_position: 30
 title: "verification"
 description: "Any implementation must be verified BEFORE being considered complete. Never assume a fix works without proving it."
 tags:

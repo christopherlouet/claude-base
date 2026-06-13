@@ -1,17 +1,17 @@
 ---
 sidebar_position: 1
 title: "Rules"
-description: "Catalog of 30 rules by technology"
+description: "Catalog of 31 rules by technology"
 ---
 
 import Stats from '@site/src/components/Stats';
 
 # Rules Catalog
 
-> **30 rules** automatically applied by file path
+> **31 rules** automatically applied by file path
 
 <Stats items={[
-  { number: 30, label: 'Rules' },
+  { number: 31, label: 'Rules' },
   { number: 156, label: 'Patterns' },
 ]} />
 
@@ -55,6 +55,7 @@ import Stats from '@site/src/components/Stats';
 | [`tdd-enforcement`](/docs/rules/tdd-enforcement) | IMPORTANT: When the user asks to implement, add, c... | `**/*.ts`, `**/*.tsx`... |
 | [`testing`](/docs/rules/testing) | // Act - Execute the action const result = functio... | `**/*.test.ts`, `**/*.test.tsx`... |
 | [`typescript`](/docs/rules/typescript) | TypeScript Rules | `**/*.ts`, `**/*.tsx`... |
+| [`vendor-precedence`](/docs/rules/vendor-precedence) | When a project has opted into both the foundation ... | - |
 | [`verification`](/docs/rules/verification) | Any implementation must be verified BEFORE being c... | `**/*.ts`, `**/*.tsx`... |
 | [`vue`](/docs/rules/vue) | const count = ref(0) const double = computed(() =>... | `**/*.vue`, `**/composables/**`... |
 | [`workflow`](/docs/rules/workflow) | Before starting work on an existing project: | - |
