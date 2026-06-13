@@ -1,0 +1,23 @@
+{
+  "_comment": "Community-trust thresholds for scripts/lib/trust-score.sh (Slice 2, specs/marketplace-curation-engine). Deterministic, public-signal-only scoring — NO LLM, NO 'build N production repos' bar (EF-002). Two tracks (EF-003): 'authority' (the vendor's own org) has NO popularity bar; 'community' (third-party) applies the global popularity bar. Clarification 2: global bars first, specialise per-domain later. License is a SOFT signal here (we point, never copy — EF-010); the hard safety/integrity screen is separate (EF-006).",
+  "version": "1.0.0",
+  "verdicts": ["pass", "flag", "fail"],
+  "global": {
+    "rejectArchived": true,
+    "maxStaleDays": 365,
+    "missingLicenseVerdict": "flag",
+    "unrecognizedLicenseIsPresent": true
+  },
+  "tracks": {
+    "authority": {
+      "appliesPopularityBar": false,
+      "minStars": 0,
+      "note": "The vendor's own organisation publishes the skill — institutional authority is the dominant signal, so no popularity floor (EF-003). Archive + recency + license still apply."
+    },
+    "community": {
+      "appliesPopularityBar": true,
+      "minStars": 500,
+      "note": "Third-party author with no institutional authority — a high popularity bar applies before recommendation (EF-003). Calibrated so the seeded community vendors clear it; refine per-domain later."
+    }
+  }
+}
