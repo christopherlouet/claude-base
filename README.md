@@ -430,7 +430,7 @@ It covers:
 - **[WORKFLOWS.md](docs/WORKFLOWS.md)**: Workflow diagrams
 - **[STACK-RECIPES.md](docs/STACK-RECIPES.md)**: Commands/agents/skills per stack (Web, Mobile, API…)
 - **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)**: Customization guide
-- **[recipes/](docs/recipes/)**: Targeted recipes — recommended vendor skills, Python toolchain options, SaaS monetization, etc.
+- **[recipes/](docs/recipes/)**: Targeted recipes — recommended vendor skills, Python toolchain options, SaaS monetization, nightly curation-bot deploy, etc.
 - **[guides/EXTENDING-GUIDE.md](docs/guides/EXTENDING-GUIDE.md)**: Extend the foundation (custom commands/skills/rules)
 - **[guides/TEAM-GUIDE.md](docs/guides/TEAM-GUIDE.md)**: Team adoption — including [`When .claude/ is gitignored`](docs/guides/TEAM-GUIDE.md#when-claude-is-gitignored--scope-choices-for-plugins--skills) (scope choices for plugins & skills)
 - **[guides/PROMPTING-GUIDE.md](docs/guides/PROMPTING-GUIDE.md)**: Prompting techniques
