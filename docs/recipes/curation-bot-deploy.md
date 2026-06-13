@@ -162,7 +162,42 @@ jq '.findingCount' /var/lib/curation-bot/digest/digest.json
 
 ---
 
-## Scope and forward references
+## Monthly discovery (the one LLM job — keep it separate)
 
-- This recipe covers the **nightly LLM-free watch** only. The **monthly discovery** sweep (Slice 5) runs a budgeted `claude -p` pass on a **dedicated, capped API key** — deploy it as a *separate* timer with its own `EnvironmentFile` carrying the model key, never mixed into this one.
-- The bot only ever **proposes**. Acting on a digest (approving a re-pin, removing a dead recommendation) stays a human decision, consistent with the foundation's observe-never-install stance.
+`scripts/curation-discover.sh` surfaces **newly-published** community skills in covered domains and proposes the ones that clear trust + safety + advice-neutrality. The trust and safety gates are LLM-free; only the advice-neutrality + fit judgment calls a model (`claude -p`, Haiku triage with escalation), under a **hard token budget** that **fails safe** — budget exhaustion defers the remaining candidates and is reported, never a silent stop or runaway spend (EF-012).
+
+Because it bills against the post-2026-06-15 agentic credit, it runs **monthly** on a **dedicated, capped API key — in its own unit with its own `EnvironmentFile`, never mixed with the nightly watch** (which must stay $0).
+
+`/etc/claude-base-discover.env` (chmod 600 — the **only** place the model key lives):
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxx   # a dedicated key with a low monthly cap set in the console
+```
+
+Wrapper `/opt/claude-base/scripts/curation-discover-run.sh`:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+REPO=/opt/claude-base
+OUT=/var/lib/curation-bot/discovery
+
+mkdir -p "$OUT"
+git -C "$REPO" fetch --quiet origin main
+git -C "$REPO" reset --hard --quiet origin/main
+
+# --budget caps token spend; the script stops and reports on exhaustion.
+"$REPO/scripts/curation-discover.sh" --digest-dir "$OUT" --budget 150000
+# Review $OUT/proposals.md, then open candidates manually — discovery never auto-adds.
+```
+
+`/etc/systemd/system/curation-discover.service` mirrors the watch service but with `EnvironmentFile=/etc/claude-base-discover.env` and `ExecStart=…/curation-discover-run.sh`; the timer uses `OnCalendar=*-*-01 04:00:00` (monthly). Keep `gh` auth available too (discovery still reads public signals). After a run, review `proposals.md` and open any candidate yourself — discovery proposes, it never installs.
+
+> Setting a **hard monthly spend cap on the API key in the Anthropic console** is the real backstop: even if `--budget` were misconfigured, the key cannot overspend.
+
+---
+
+## Scope
+
+- Two timers, two trust boundaries: the **nightly watch** ($0, `gh`-only) and the **monthly discovery** (model key, capped). Never share an `EnvironmentFile` — the model key must never be present in the nightly path.
+- The bot only ever **proposes**. Acting on a digest (approving a re-pin, removing a dead recommendation, adding a discovered candidate) stays a human decision, consistent with the foundation's observe-never-install stance.

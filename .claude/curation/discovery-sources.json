@@ -1,0 +1,14 @@
+{
+  "_comment": "Discovery source queries for scripts/curation-discover.sh (Slice 5, specs/marketplace-curation-engine). MONTHLY, model-using, budget-capped (EF-012) — distinct from the nightly LLM-free rot-watch. Each query is a GitHub search/repositories qualifier string over a covered domain; results are scored (trust + safety, LLM-free) then judged (advice-neutrality + fit, LLM) before being PROPOSED for maintainer review. Proposal only — never auto-added (observe-never-install). Periodic + targeted (clarification 3): covered domains + known channels (skills.sh, vendor orgs).",
+  "version": "1.0.0",
+  "perPage": 15,
+  "sources": [
+    { "domain": "nextjs",   "query": "claude skill nextjs in:name,description,readme" },
+    { "domain": "react",    "query": "claude code skill react in:name,description,readme" },
+    { "domain": "fastapi",  "query": "claude skill fastapi python in:name,description,readme" },
+    { "domain": "astro",    "query": "claude skill astro in:name,description,readme" },
+    { "domain": "database", "query": "claude code skill postgres OR prisma in:name,description,readme" },
+    { "domain": "infra",    "query": "claude skill terraform OR kubernetes in:name,description,readme" },
+    { "domain": "testing",  "query": "claude code skill playwright OR vitest in:name,description,readme" }
+  ]
+}

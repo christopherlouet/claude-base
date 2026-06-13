@@ -275,6 +275,9 @@ check_skills() {
             cache_write "$cache_key" "checked"
             success "skills.sh reachable ($skills_count references found)"
             echo -e "    ${DIM}Browse: $skills_url${NC}"
+            # Scored candidate proposals (trust + safety + advice-neutrality) come
+            # from the curation discovery engine, not this reachability ping.
+            echo -e "    ${DIM}Proposals: scripts/curation-discover.sh (monthly, budget-capped — see docs/recipes/curation-bot-deploy.md)${NC}"
         else
             SKILLS_STATUS="ok"
             cache_write "$cache_key" "checked"
