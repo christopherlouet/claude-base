@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "recordSchema": {
     "foundationSkill": "id of the graduatable foundation skill (matches the audit verdict row)",
-    "vendorId": "canonical replacement vendor skill (repo or repo subpath)",
-    "vendorUrl": "pointer to the vendor skill (never copied — EF-010)",
+    "vendorId": "canonical replacement vendor skill (repo or repo subpath). A '+'-joined subpath (e.g. coreyhaines31/marketingskills/cro+analytics) is a human notation meaning the foundation skill maps to SEVERAL skills inside one repo — it is NOT a literal filesystem path; resolvers must split on '+' and resolve each against the repo at pinnedRef.",
+    "vendorUrl": "pointer to the vendor skill repo (never copied — EF-010). For a marketplace plugin the URL may be the marketplace page while pinnedRef resolves against the underlying git repo (see dev-frontend-design).",
     "pinnedRef": "immutable reference: release tag or full commit SHA (EF-005)",
     "trustTrack": "authority (vendor's own org, low popularity bar) | community (third-party, high bar) — EF-003",
     "trustVerdict": "pass | flag | fail — outcome of the trust criterion (scored by scripts/lib/trust-score.sh in Slice 2)",

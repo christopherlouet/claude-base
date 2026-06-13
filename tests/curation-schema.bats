@@ -349,20 +349,23 @@ mutate() { # mutate <file> <jq-program>
 }
 
 # =============================================================================
-# pinnedRef — branch-shaped names are floating too (EF-005 shape guard)
+# pinnedRef — floating aliases rejected case-insensitively (EF-005 shape guard).
+# The guard is deliberately conservative: it rejects the universal floating
+# aliases only; tag-vs-branch for ambiguous names is resolved later by the gh
+# scorer (Slice 2), so an ambiguous `release-2.x` is ACCEPTED at shape level.
 # =============================================================================
 
-@test "validate-presets.sh rejects a branch-shaped pinnedRef in a recommendation (EF-005)" {
+@test "validate-presets.sh rejects an uppercase floating alias pinnedRef (MAIN)" {
     write_manifest_with_vendor "$TEST_DIR/test-stack.json"
-    mutate "$TEST_DIR/test-stack.json" '.recommendedVendorSkills[0].pinnedRef = "release-2.x"'
+    mutate "$TEST_DIR/test-stack.json" '.recommendedVendorSkills[0].pinnedRef = "MAIN"'
     run "$VALIDATE_PRESETS" "$TEST_DIR/test-stack.json"
     [[ "$status" -eq 1 ]]
     [[ "$output" == *"pinnedRef"* ]]
 }
 
-@test "validate-presets.sh rejects a branch-shaped pinnedRef in a registry record (EF-005)" {
+@test "validate-presets.sh rejects a mixed-case floating alias pinnedRef in a registry record (HEAD)" {
     write_valid_registry "$TEST_DIR/registry.json"
-    mutate "$TEST_DIR/registry.json" '.records[0].pinnedRef = "feature/foo"'
+    mutate "$TEST_DIR/registry.json" '.records[0].pinnedRef = "Head"'
     run "$VALIDATE_PRESETS" --registry "$TEST_DIR/registry.json"
     [[ "$status" -eq 1 ]]
     [[ "$output" == *"pinnedRef"* ]]
@@ -371,6 +374,20 @@ mutate() { # mutate <file> <jq-program>
 @test "validate-presets.sh accepts a name@version tag pinnedRef (e.g. shadcn@4.11.0)" {
     write_manifest_with_vendor "$TEST_DIR/test-stack.json"
     mutate "$TEST_DIR/test-stack.json" '.recommendedVendorSkills[0].pinnedRef = "shadcn@4.11.0"'
+    run "$VALIDATE_PRESETS" "$TEST_DIR/test-stack.json"
+    [[ "$status" -eq 0 ]]
+}
+
+@test "validate-presets.sh accepts an immutable tag whose name starts with a branch word (release-1.0.0)" {
+    write_manifest_with_vendor "$TEST_DIR/test-stack.json"
+    mutate "$TEST_DIR/test-stack.json" '.recommendedVendorSkills[0].pinnedRef = "release-1.0.0"'
+    run "$VALIDATE_PRESETS" "$TEST_DIR/test-stack.json"
+    [[ "$status" -eq 0 ]]
+}
+
+@test "validate-presets.sh accepts an ambiguous ref at shape level (deferred to the gh scorer)" {
+    write_manifest_with_vendor "$TEST_DIR/test-stack.json"
+    mutate "$TEST_DIR/test-stack.json" '.recommendedVendorSkills[0].pinnedRef = "release-2.x"'
     run "$VALIDATE_PRESETS" "$TEST_DIR/test-stack.json"
     [[ "$status" -eq 0 ]]
 }
@@ -390,4 +407,32 @@ mutate() { # mutate <file> <jq-program>
 @test "validate-presets.sh errors when --registry has no path" {
     run "$VALIDATE_PRESETS" --registry
     [[ "$status" -eq 2 ]]
+}
+
+# =============================================================================
+# Coverage for enforced-but-previously-untested branches
+# =============================================================================
+
+@test "validate-presets.sh rejects recommendedVendorSkills when it is not an array" {
+    write_manifest_with_vendor "$TEST_DIR/test-stack.json"
+    mutate "$TEST_DIR/test-stack.json" '.recommendedVendorSkills = {}'
+    run "$VALIDATE_PRESETS" "$TEST_DIR/test-stack.json"
+    [[ "$status" -eq 1 ]]
+    [[ "$output" == *"recommendedVendorSkills"* ]]
+}
+
+@test "validate-presets.sh rejects a registry record missing vendorUrl" {
+    write_valid_registry "$TEST_DIR/registry.json"
+    mutate "$TEST_DIR/registry.json" 'del(.records[0].vendorUrl)'
+    run "$VALIDATE_PRESETS" --registry "$TEST_DIR/registry.json"
+    [[ "$status" -eq 1 ]]
+    [[ "$output" == *"vendorUrl"* ]]
+}
+
+# Default mode (no args) validates the shipped presets AND the shipped registry,
+# exercising the full-dir registry coupling (registry_fail wiring).
+@test "validate-presets.sh default run validates presets and the shipped registry" {
+    run "$VALIDATE_PRESETS"
+    [[ "$status" -eq 0 ]]
+    [[ "$output" == *"registry"* ]]
 }

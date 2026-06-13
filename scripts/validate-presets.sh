@@ -103,26 +103,24 @@ ALLOWED_CATEGORIES='["web-frontend","api-backend","mobile-desktop","game-interac
 ALLOWED_DESIGN_STYLE='["terminal","cockpit","vitality","editorial","glass","signal"]'
 NAME_PATTERN='^[a-z][a-z0-9-]*$'
 
-# EF-005 — a pinned reference must be immutable. This is a deterministic SHAPE
-# guard: it rejects the well-known floating aliases (latest/HEAD/main…) and the
-# common branch-shaped names (release-*, feature/*, dev-*…). It cannot prove a
-# ref is truly a tag/SHA from the string alone (that distinction is fundamentally
-# a repo lookup) — the authoritative immutability check is the gh-resolving
-# trust scorer in Slice 2/3. A tag or full commit SHA passes here.
+# EF-005 — a pinned reference must be immutable. This is a deliberately
+# CONSERVATIVE shape guard: a tag and a branch are indistinguishable from the
+# string alone (both are just refs), so this only rejects the universal floating
+# aliases (latest/HEAD/main/master…), case-insensitively. Ambiguous names like
+# `release-2.x` pass here — they MIGHT be a tag — and are resolved authoritatively
+# (tag vs branch) by the gh-resolving trust scorer in Slice 2/3. Trying to also
+# reject "branch-shaped" names rejects legitimate tags (`release-1.0.0`,
+# `fix-2.3.1`), so we don't. A tag or commit SHA passes here.
 _is_floating_ref() {
-    case "$1" in
-        latest|LATEST|HEAD|head|main|master|develop|trunk|stable|edge|next|nightly|canary|"") return 0 ;;
+    case "${1,,}" in
+        ""|latest|head|main|master|develop|trunk|stable|edge|next|nightly|canary|default|current|tip|wip) return 0 ;;
+        *) return 1 ;;
     esac
-    # Branch-shaped names: a known branch word, optionally followed by '/' or '-'
-    # (e.g. release-2.x, feature/foo, hotfix/bar, dev-spike). Case-insensitive.
-    if [[ "$1" =~ ^([Rr]elease|[Rr]eleases|[Hh]otfix|[Ff]eature|[Ff]eat|[Bb]ugfix|[Ff]ix|[Dd]ev|[Dd]evelop|[Ss]taging|[Ss]napshot|[Pp]rod|[Pp]roduction)([/-]) ]]; then
-        return 0
-    fi
-    return 1
 }
 
-# ISO calendar date (YYYY-MM-DD) shape guard for lastVerified fields. Month/day
-# ranges are bounded so obvious typos (e.g. 9999-99-99) are caught.
+# ISO date (YYYY-MM-DD) shape guard for lastVerified fields. Month is bounded
+# 01-12 and day 01-31; it does NOT validate day-of-month against the month, so
+# e.g. 2026-02-30 still passes — it is a cheap shape/typo guard, not a calendar.
 _is_iso_date() {
     [[ "$1" =~ ^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$ ]]
 }
@@ -625,9 +623,10 @@ validate_registry() {
     if [ "$n" -gt 0 ]; then
         local i
         for i in $(seq 0 $((n - 1))); do
-            local fs vid pin track verdict prov neut verif st
+            local fs vid vurl pin track verdict prov neut verif st
             fs=$(jq -r ".records[$i].foundationSkill // empty" "$file")
             vid=$(jq -r ".records[$i].vendorId // empty" "$file")
+            vurl=$(jq -r ".records[$i].vendorUrl // empty" "$file")
             pin=$(jq -r ".records[$i].pinnedRef // empty" "$file")
             track=$(jq -r ".records[$i].trustTrack // empty" "$file")
             verdict=$(jq -r ".records[$i].trustVerdict // empty" "$file")
@@ -638,6 +637,7 @@ validate_registry() {
 
             [ -n "$fs" ] || errs+=("records[$i].foundationSkill missing")
             [ -n "$vid" ] || errs+=("records[$i].vendorId missing")
+            [ -n "$vurl" ] || errs+=("records[$i].vendorUrl missing")
             if [ -z "$pin" ]; then
                 errs+=("records[$i].pinnedRef missing (EF-005)")
             elif _is_floating_ref "$pin"; then
