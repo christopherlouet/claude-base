@@ -23,13 +23,19 @@ teardown() {
     teardown_test_dir
 }
 
-# fake_gh_returns <json> — install a fake `gh` that prints <json> for any
-# `gh api ...` call (one repo per test, so the path is irrelevant).
+# fake_gh_returns <json> — install a fake `gh` that prints <json> ONLY for a
+# `gh api repos/...` call. Path-aware on purpose: a regression that queried the
+# wrong endpoint (users/, /forks, …) makes the fake fail, so tests catch it.
 fake_gh_returns() {
     printf '%s' "$1" > "$TEST_DIR/repo.json"
     cat > "$TEST_DIR/fakebin/gh" <<EOF
 #!/usr/bin/env bash
-cat "$TEST_DIR/repo.json"
+if [ "\$1" = "api" ] && [[ "\$2" == repos/* ]]; then
+    cat "$TEST_DIR/repo.json"
+else
+    echo "fake gh: unexpected call: \$*" >&2
+    exit 1
+fi
 EOF
     chmod +x "$TEST_DIR/fakebin/gh"
 }
@@ -190,8 +196,69 @@ verdict_of() { printf '%s' "$1" | jq -r '.verdict'; }
     fake_gh_returns "$(repo_json 82 3 '2026-06-12T17:14:23Z' false MIT)"
     score "apollographql/skills" authority
     [[ "$(printf '%s' "$output" | jq -r '.stars')" -eq 82 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.forks')" -eq 3 ]]
     [[ "$(printf '%s' "$output" | jq -r '.license')" == "MIT" ]]
     [[ "$(printf '%s' "$output" | jq -r '.ageDays')" -eq 1 ]]
+}
+
+@test "trust_score: community track passes at exactly the popularity bar (>= boundary)" {
+    # minStars=500; `-lt 500` is false at 500 → 500 passes.
+    fake_gh_returns "$(repo_json 500 10 '2026-06-10T00:00:00Z' false MIT)"
+    score "person/exactly-bar" community
+    [[ "$(verdict_of "$output")" == "pass" ]]
+}
+
+@test "trust_score: a future pushed_at (clock skew) is NOT flagged and clamps ageDays to 0" {
+    fake_gh_returns "$(repo_json 5000 200 '2026-06-14T00:00:00Z' false MIT)"
+    score "vendor/fresh-mirror" authority
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.ageDays')" -eq 0 ]]
+    [[ "$output" != *"unknown-recency"* ]]
+}
+
+@test "trust_score: an unparseable pushed_at flags bad-date (distinct from a future push)" {
+    fake_gh_returns '{"stargazers_count":5000,"forks_count":1,"pushed_at":"garbage","archived":false,"license":{"spdx_id":"MIT"}}'
+    score "vendor/baddate" authority
+    [[ "$(verdict_of "$output")" == "flag" ]]
+    [[ "$output" == *"bad-date"* ]]
+}
+
+@test "trust_score: a malformed (non-numeric) star count fails CLOSED, never empty/exit-0" {
+    fake_gh_returns '{"stargazers_count":"lots","forks_count":5,"pushed_at":"2026-06-10T00:00:00Z","archived":false,"license":{"spdx_id":"MIT"}}'
+    score "person/garbled" community
+    [[ "$status" -eq 0 ]]
+    [[ -n "$output" ]]
+    # coerced to 0 stars → below the community bar → fail (closed), not silent.
+    [[ "$(verdict_of "$output")" == "fail" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.stars')" -eq 0 ]]
+}
+
+@test "trust_score: returns 3 when the thresholds file is missing (operational error)" {
+    fake_gh_returns "$(repo_json 100 5 '2026-06-10T00:00:00Z' false MIT)"
+    run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_NOW=2026-06-13 \
+        CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 \
+        CURATION_THRESHOLDS="$TEST_DIR/does-not-exist.json" \
+        bash -c "source '$TRUST_LIB'; trust_score 'vendor/x' authority 2>/dev/null"
+    [[ "$status" -eq 3 ]]
+}
+
+# =============================================================================
+# CLI entrypoint (trust-score.sh run as an executable)
+# =============================================================================
+
+@test "trust_score CLI: prints a verdict for <repo> <track>" {
+    fake_gh_returns "$(repo_json 82 3 '2026-06-12T00:00:00Z' false MIT)"
+    run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_NOW=2026-06-13 \
+        CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 \
+        bash "$TRUST_LIB" apollographql/skills authority
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "pass" ]]
+}
+
+@test "trust_score CLI: exits 2 on wrong argument count" {
+    run bash "$TRUST_LIB" only-one-arg
+    [[ "$status" -eq 2 ]]
+    [[ "$output" == *"Usage:"* ]]
 }
 
 @test "trust_score: FAILS SAFE on gh error (verdict=error, exit 3)" {

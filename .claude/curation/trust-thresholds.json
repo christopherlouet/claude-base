@@ -5,8 +5,7 @@
   "global": {
     "rejectArchived": true,
     "maxStaleDays": 365,
-    "missingLicenseVerdict": "flag",
-    "unrecognizedLicenseIsPresent": true
+    "missingLicenseVerdict": "flag"
   },
   "tracks": {
     "authority": {
