@@ -42,7 +42,7 @@ while [ $# -gt 0 ]; do
         --digest-dir) DIGEST_DIR="${2:-}"; [ -n "$DIGEST_DIR" ] || { echo "--digest-dir requires a path" >&2; exit 2; }; shift 2 ;;
         --registry) REGISTRY="${2:-}"; [ -n "$REGISTRY" ] || { echo "--registry requires a path" >&2; exit 2; }; shift 2 ;;
         --presets-dir) PRESETS_DIR="${2:-}"; [ -n "$PRESETS_DIR" ] || { echo "--presets-dir requires a path" >&2; exit 2; }; shift 2 ;;
-        --thresholds) export CURATION_THRESHOLDS="${2:-}"; shift 2 ;;
+        --thresholds) CURATION_THRESHOLDS="${2:-}"; [ -n "$CURATION_THRESHOLDS" ] || { echo "--thresholds requires a path" >&2; exit 2; }; export CURATION_THRESHOLDS; shift 2 ;;
         -h|--help) sed -nE 's/^# ?//p' "$0" | sed -nE '/^curation-watch/,/^Exit/p'; exit 0 ;;
         *) echo "Unknown option: $1" >&2; exit 2 ;;
     esac
@@ -61,6 +61,7 @@ _repo_root() {
         http://github.com/*)  s="${s#http://github.com/}" ;;
         *://*) return 0 ;;  # some other URL (e.g. claude.com marketplace) → skip
     esac
+    s="${s%%[?#]*}"   # drop any ?query / #fragment
     # take the first two slash-separated segments
     local owner="${s%%/*}"; local rest="${s#*/}"; local repo="${rest%%/*}"
     [ -n "$owner" ] && [ -n "$repo" ] && [ "$owner" != "$rest" ] && printf '%s/%s\n' "$owner" "$repo"
@@ -85,25 +86,21 @@ collect_targets() {
             track=$(printf '%s' "$line" | jq -r '.track')
             pin=$(printf '%s' "$line" | jq -r '.pinnedRef')
             jq -cn --arg r "$root" --arg t "$track" --arg p "$pin" '{repoRoot:$r, track:$t, pinnedRef:$p}'
-        done | jq -s 'unique_by(.repoRoot + "@" + .pinnedRef)'
+        done | jq -s 'unique_by([.repoRoot, .pinnedRef])'
 }
 
-# resolve_current_ref <repo> <pinnedRef> — the repo's current good ref: a 40-hex
-# pin compares against HEAD sha; a tag pin compares against the latest release
-# tag (falling back to HEAD sha when the repo publishes no releases). Echoes the
-# current ref, or nothing on gh failure.
+# resolve_current_ref <repo> <pinnedRef> — the repo's current good ref, compared
+# LIKE-WITH-LIKE: a 40-hex SHA pin resolves to HEAD sha; a tag pin resolves to the
+# latest release tag. A tag pin on a repo that publishes NO releases stays
+# UNRESOLVED (empty) rather than falling back to a sha — comparing a tag to a sha
+# would report drift on every run. Echoes the current ref, or nothing when it
+# cannot be resolved (gh failure or tag-pin-without-releases).
 resolve_current_ref() {
     local repo="$1" pinned="$2"
     if [[ "$pinned" =~ ^[0-9a-f]{40}$ ]]; then
-        curation_gh_api "repos/$repo/commits/HEAD" | jq -r '.sha // empty'
-        return
-    fi
-    local tag
-    tag=$(curation_gh_api "repos/$repo/releases/latest" 2>/dev/null | jq -r '.tag_name // empty')
-    if [ -n "$tag" ]; then
-        printf '%s\n' "$tag"
+        curation_gh_api "repos/$repo/commits/HEAD" 2>/dev/null | jq -r '.sha // empty'
     else
-        curation_gh_api "repos/$repo/commits/HEAD" | jq -r '.sha // empty'
+        curation_gh_api "repos/$repo/releases/latest" 2>/dev/null | jq -r '.tag_name // empty'
     fi
 }
 
@@ -162,16 +159,21 @@ NOW=$(curation_now)
 targets=$(collect_targets)
 n_targets=$(printf '%s' "$targets" | jq 'length')
 
-findings='[]'
-i=0
-while [ "$i" -lt "$n_targets" ]; do
-    repo=$(printf '%s' "$targets" | jq -r ".[$i].repoRoot")
-    track=$(printf '%s' "$targets" | jq -r ".[$i].track")
-    pin=$(printf '%s' "$targets" | jq -r ".[$i].pinnedRef")
-    finding=$(watch_one "$repo" "$track" "$pin")
-    findings=$(printf '%s' "$findings" | jq -c --argjson f "$finding" '. + [$f]')
-    i=$((i + 1))
-done
+# One pass over the targets; accumulate each finding into a bash array.
+findings_arr=()
+while IFS= read -r t; do
+    [ -n "$t" ] || continue
+    repo=$(printf '%s' "$t" | jq -r '.repoRoot')
+    track=$(printf '%s' "$t" | jq -r '.track')
+    pin=$(printf '%s' "$t" | jq -r '.pinnedRef')
+    findings_arr+=("$(watch_one "$repo" "$track" "$pin")")
+done < <(printf '%s' "$targets" | jq -c '.[]')
+
+if [ "${#findings_arr[@]}" -gt 0 ]; then
+    findings=$(printf '%s\n' "${findings_arr[@]}" | jq -s '.')
+else
+    findings='[]'
+fi
 
 # Counts by type. Only actionable findings (rot / drift / error) are SURFACED to
 # the operator; "clean" and standing "flag" conditions are counted but not
@@ -186,14 +188,23 @@ digest=$(jq -cn \
     '{generatedAt:$generatedAt, scope:{targets:$targets}, counts:$counts,
       findingCount:($findings|length), findings:$findings}')
 
-# Idempotent lastVerified update: stamp every scored registry record with NOW
-# (the run happened, regardless of verdict). Skipped under --dry-run.
+# Idempotent lastVerified update — only records whose repo was ACTUALLY verified
+# this run (verdict != error) are stamped; a gh-errored target keeps its old
+# date so "verified" never lies about a repo we could not reach. The temp file
+# is created in the registry's own directory so the mv is an atomic same-fs
+# rename. Skipped under --dry-run.
 if [ "$DRY_RUN" = false ]; then
-    tmp=$(mktemp)
-    if jq --arg now "$NOW" '.records |= map(.lastVerified = $now)' "$REGISTRY" > "$tmp" 2>/dev/null; then
-        mv "$tmp" "$REGISTRY"
+    scored_ok=$(printf '%s' "$findings" | jq -c '[.[] | select(.verdict != "error") | .subject] | unique')
+    reg_dir=$(dirname "$REGISTRY")
+    if tmp=$(mktemp "$reg_dir/.registry.XXXXXX" 2>/dev/null) \
+        && jq --arg now "$NOW" --argjson ok "$scored_ok" \
+            '.records |= map(if (.vendorId | split("/")[0:2] | join("/")) as $r | ($ok | index($r)) then .lastVerified = $now else . end)' \
+            "$REGISTRY" > "$tmp" 2>/dev/null \
+        && mv "$tmp" "$REGISTRY"; then
+        :
     else
-        rm -f "$tmp"; curation_warn "could not update lastVerified in $REGISTRY"
+        [ -n "${tmp:-}" ] && rm -f "$tmp"
+        curation_warn "could not update lastVerified in $REGISTRY"
     fi
 fi
 
@@ -207,8 +218,9 @@ render_markdown() {
     fi
     printf '| Subject | Type | Verdict | Pinned | Current | Action |\n'
     printf '|---|---|---|---|---|---|\n'
-    printf '%s' "$surfaced" | jq -r '.[] |
-        "| \(.subject) | \(.type) | \(.verdict) | \(.pinnedRef) | \(.currentRef // "?") | \(.proposedAction) |"'
+    printf '%s' "$surfaced" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
+        .[] |
+        "| \(.subject|esc) | \(.type|esc) | \(.verdict|esc) | \(.pinnedRef|esc) | \((.currentRef // "?")|esc) | \(.proposedAction|esc) |"'
 }
 
 if [ -n "$DIGEST_DIR" ]; then

@@ -199,6 +199,89 @@ run_watch() {
 # dedupe
 # =============================================================================
 
+@test "watch: --thresholds as the last argument errors cleanly (no hang)" {
+    registry_one "acme/x" "v1.0.0" authority
+    run timeout 10 env PATH="$TEST_DIR/fakebin:$PATH" \
+        bash "$WATCH" --registry "$TEST_DIR/registry.json" --thresholds
+    [[ "$status" -eq 2 ]]
+}
+
+@test "watch: does NOT refresh lastVerified for a gh-errored (unverified) record" {
+    jq -cn '
+      {version:"1.0.0", records:[
+        {foundationSkill:"ok", vendorId:"acme/ok", vendorUrl:"https://github.com/acme/ok",
+         pinnedRef:"v1.0.0", trustTrack:"authority", trustVerdict:"pass", provenance:"A",
+         adviceNeutrality:"pass", lastVerified:"2026-01-01", status:"candidate", sourceAudit:"t", flags:[]},
+        {foundationSkill:"gone", vendorId:"acme/gone", vendorUrl:"https://github.com/acme/gone",
+         pinnedRef:"v1.0.0", trustTrack:"authority", trustVerdict:"pass", provenance:"A",
+         adviceNeutrality:"pass", lastVerified:"2026-01-01", status:"candidate", sourceAudit:"t", flags:[]}]}' \
+        > "$TEST_DIR/registry.json"
+    # only acme/ok has fixtures; acme/gone gh-errors
+    gh_fixture "repos/acme/ok" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/ok/releases/latest" '{"tag_name":"v1.0.0"}'
+    run_watch
+    [[ "$(jq -r '.records[] | select(.vendorId=="acme/ok").lastVerified' "$TEST_DIR/registry.json")" == "2026-06-13" ]]
+    [[ "$(jq -r '.records[] | select(.vendorId=="acme/gone").lastVerified' "$TEST_DIR/registry.json")" == "2026-01-01" ]]
+}
+
+@test "watch: a mixed run counts and surfaces the right subset (clean+rot+drift)" {
+    jq -cn '
+      {version:"1.0.0", records:[
+        {foundationSkill:"c", vendorId:"acme/clean", vendorUrl:"https://github.com/acme/clean",
+         pinnedRef:"v2.0.0", trustTrack:"authority", trustVerdict:"pass", provenance:"A",
+         adviceNeutrality:"pass", lastVerified:"2026-01-01", status:"candidate", sourceAudit:"t", flags:[]},
+        {foundationSkill:"r", vendorId:"acme/rot", vendorUrl:"https://github.com/acme/rot",
+         pinnedRef:"v1.0.0", trustTrack:"authority", trustVerdict:"pass", provenance:"A",
+         adviceNeutrality:"pass", lastVerified:"2026-01-01", status:"candidate", sourceAudit:"t", flags:[]},
+        {foundationSkill:"d", vendorId:"acme/drift", vendorUrl:"https://github.com/acme/drift",
+         pinnedRef:"v1.0.0", trustTrack:"authority", trustVerdict:"pass", provenance:"A",
+         adviceNeutrality:"pass", lastVerified:"2026-01-01", status:"candidate", sourceAudit:"t", flags:[]}]}' \
+        > "$TEST_DIR/registry.json"
+    gh_fixture "repos/acme/clean" "$(repo_meta 90 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/clean/releases/latest" '{"tag_name":"v2.0.0"}'
+    gh_fixture "repos/acme/rot" "$(repo_meta 90 '2026-06-12T00:00:00Z' true MIT)"
+    gh_fixture "repos/acme/rot/releases/latest" '{"tag_name":"v1.0.0"}'
+    gh_fixture "repos/acme/drift" "$(repo_meta 90 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/drift/releases/latest" '{"tag_name":"v3.0.0"}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.scope.targets')" -eq 3 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.counts.clean')" -eq 1 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.counts.rot')" -eq 1 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.counts.drift')" -eq 1 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 2 ]]
+    [[ "$(printf '%s' "$output" | jq -r '[.findings[].type] | sort | join(",")')" == "drift,rot" ]]
+}
+
+@test "watch: collects and scores a target sourced from a preset recommendation" {
+    echo '{"version":"1.0.0","records":[]}' > "$TEST_DIR/registry.json"
+    jq -cn '{name:"p", recommendedVendorSkills:[
+        {id:"acme/from-preset", url:"https://github.com/acme/from-preset", rationale:"r",
+         condition:"always", pinnedRef:"v1.0.0", trustTrack:"authority", provenance:"A",
+         lastVerified:"2026-01-01"}]}' > "$TEST_DIR/presets/p.json"
+    gh_fixture "repos/acme/from-preset" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/from-preset/releases/latest" '{"tag_name":"v2.0.0"}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.scope.targets')" -eq 1 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].subject')" == "acme/from-preset" ]]
+}
+
+@test "watch: a tag pin on a repo with NO releases is not falsely flagged as drift" {
+    registry_one "acme/notags" "v1.0.0" authority
+    gh_fixture "repos/acme/notags" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    # no releases/latest fixture → gh 404 → current ref unresolved → no drift
+    run_watch
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: --digest-dir markdown renders a complete table row for a finding" {
+    registry_one "acme/x" "v1.0.0" authority
+    gh_fixture "repos/acme/x" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/x/releases/latest" '{"tag_name":"v1.2.0"}'
+    run_watch --digest-dir "$TEST_DIR/digest"
+    grep -qE '^\| acme/x \| drift \| pass \| v1\.0\.0 \| v1\.2\.0 \| re-pin \|$' "$TEST_DIR/digest/digest.md"
+}
+
 @test "watch: scores a repo once even when several records share its repo-root" {
     jq -cn '
       {version:"1.0.0", records:[
