@@ -30,11 +30,19 @@ _WATCH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$_WATCH_DIR/lib/curation-common.sh"
 # shellcheck source=scripts/lib/trust-score.sh
 source "$_WATCH_DIR/lib/trust-score.sh"
+# shellcheck source=scripts/lib/curation-safety.sh
+source "$_WATCH_DIR/lib/curation-safety.sh"
+# shellcheck source=scripts/lib/curation-emit.sh
+source "$_WATCH_DIR/lib/curation-emit.sh"
 
 REGISTRY="${CURATION_REGISTRY:-$_WATCH_DIR/../.claude/curation/registry.json}"
 PRESETS_DIR="${CURATION_PRESETS_DIR:-$_WATCH_DIR/../.claude/presets}"
+STATE_FILE="${CURATION_STATE:-}"
 DIGEST_DIR=""
 DRY_RUN=false
+EMIT_ISSUE=false
+EMIT_PR=false
+PR_DRAFT=true   # auto-emitted re-pins are DRAFT by default; --no-draft to override
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -42,7 +50,12 @@ while [ $# -gt 0 ]; do
         --digest-dir) DIGEST_DIR="${2:-}"; [ -n "$DIGEST_DIR" ] || { echo "--digest-dir requires a path" >&2; exit 2; }; shift 2 ;;
         --registry) REGISTRY="${2:-}"; [ -n "$REGISTRY" ] || { echo "--registry requires a path" >&2; exit 2; }; shift 2 ;;
         --presets-dir) PRESETS_DIR="${2:-}"; [ -n "$PRESETS_DIR" ] || { echo "--presets-dir requires a path" >&2; exit 2; }; shift 2 ;;
+        --state-file) STATE_FILE="${2:-}"; [ -n "$STATE_FILE" ] || { echo "--state-file requires a path" >&2; exit 2; }; shift 2 ;;
         --thresholds) CURATION_THRESHOLDS="${2:-}"; [ -n "$CURATION_THRESHOLDS" ] || { echo "--thresholds requires a path" >&2; exit 2; }; export CURATION_THRESHOLDS; shift 2 ;;
+        --emit-issue) EMIT_ISSUE=true; shift ;;
+        --emit-pr) EMIT_PR=true; shift ;;
+        --draft) PR_DRAFT=true; shift ;;        # explicit (default); kept for clarity
+        --no-draft) PR_DRAFT=false; shift ;;    # escape hatch: open a ready PR
         -h|--help) sed -nE 's/^# ?//p' "$0" | sed -nE '/^curation-watch/,/^Exit/p'; exit 0 ;;
         *) echo "Unknown option: $1" >&2; exit 2 ;;
     esac
@@ -50,6 +63,17 @@ done
 
 command -v jq >/dev/null 2>&1 || { echo "[ERROR] jq is required" >&2; exit 2; }
 [ -f "$REGISTRY" ] || { echo "[ERROR] registry not found: $REGISTRY" >&2; exit 2; }
+
+# watch-state.json lives beside the registry by default — it is the cross-run
+# memory the sustained-collapse / license-change detectors need (a single noisy
+# reading must never alarm; only a SUSTAINED signal does — spec edge case).
+[ -n "$STATE_FILE" ] || STATE_FILE="$(dirname "$REGISTRY")/watch-state.json"
+
+# Collapse drop threshold (percent below the reference popularity). Read from the
+# thresholds file with a documented default so a config typo never silently
+# changes sensitivity.
+COLLAPSE_PCT=$(jq -r '(.global.collapseDropPct | numbers) // 50' "$CURATION_THRESHOLDS" 2>/dev/null || echo 50)
+[ -n "$COLLAPSE_PCT" ] || COLLAPSE_PCT=50
 
 # _repo_root <vendorId-or-url> — the scoreable owner/repo (first two path
 # segments), derived from a registry vendorId (owner/repo[/subpath…]) or a
@@ -152,6 +176,55 @@ watch_one() {
           stars:.stars, license:.license, ageDays:.ageDays, proposedAction:$action}'
 }
 
+# apply_state <finding> <priorSubjectState|null> — fold cross-run state into a
+# base finding. Detects two STATE-BASED signals the single-run scorer cannot:
+#   * popularity collapse — current stars fell ≥ COLLAPSE_PCT% below the tracked
+#     reference; surfaced only once SUSTAINED (collapseStreak ≥ 2) so a single
+#     noisy reading / metric reset never alarms (spec edge case). The reference
+#     is held steady WHILE collapsed (so consecutive runs keep comparing to the
+#     pre-drop level) and re-tracks the current value once recovered.
+#   * license change — a previously-recorded real license differs now (removed or
+#     swapped); we point, never copy (EF-010), but a license regressing is a
+#     review-worthy change.
+# Both only ever re-type a soft/drift finding (never a hard rot/error) and force
+# proposedAction back to "propose" — neither is safe to auto-re-pin. Echoes a
+# JSON object {finding:<augmented>, state:<newSubjectState>}.
+apply_state() {
+    local finding="$1" prior="$2"
+    jq -cn --argjson f "$finding" --argjson prior "$prior" \
+        --argjson pct "$COLLAPSE_PCT" --arg now "$NOW" '
+        ($f.stars) as $cur
+        | ($f.license // "NONE") as $lic
+        | (if $prior == null then ($cur // 0) else ($prior.refStars // $prior.stars // $cur // 0) end) as $ref
+        # Collapse only when we actually observed a star count this run; an absent
+        # reading must NOT fabricate a 0-star "collapse". ≥ COLLAPSE_PCT% drop uses
+        # <= so a clean 50% halving (the canonical example) is caught.
+        | (($prior != null) and ($cur != null) and ($ref > 0) and (($cur * 100) <= ($ref * (100 - $pct)))) as $collapsed
+        | (if $collapsed then (($prior.collapseStreak // 0) + 1) else 0 end) as $streak
+        | (if $collapsed then $ref else ($cur // $ref) end) as $newref
+        | ($collapsed and ($streak >= 2)) as $collapseActive
+        | ($prior.license // null) as $plic
+        # A license CHANGE requires a real license on BOTH sides (removed → NONE,
+        # or swapped MIT→GPL); NOASSERTION means "present but unclassified" (see
+        # trust-score) so MIT→NOASSERTION is not a regression and must not flag.
+        | (($plic != null)
+           and ($plic | IN("", "NONE", "null", "NOASSERTION") | not)
+           and ($lic | IN("", "null", "NOASSERTION") | not)
+           and ($plic != $lic)) as $licChanged
+        | ($f
+           | (if $licChanged then .reasons += ["license-change:\($plic)->\($lic)"] else . end)
+           | (if $collapseActive then .reasons += ["collapse:\($cur)<ref\($ref)"] else . end)
+           | (if (.type == "clean" or .type == "flag" or .type == "drift") then
+                 (if $licChanged then .type = "license" | .proposedAction = "propose"
+                  elif $collapseActive then .type = "collapse" | .proposedAction = "propose"
+                  else . end)
+              else . end)
+           | .collapseStreak = $streak) as $nf
+        | {finding:$nf,
+           state:{stars:$cur, license:$lic, verdict:$f.verdict,
+                  refStars:$newref, collapseStreak:$streak, lastSeen:$now}}'
+}
+
 # ---------------------------------------------------------------------------
 # Run
 # ---------------------------------------------------------------------------
@@ -159,14 +232,37 @@ NOW=$(curation_now)
 targets=$(collect_targets)
 n_targets=$(printf '%s' "$targets" | jq 'length')
 
-# One pass over the targets; accumulate each finding into a bash array.
+# Prior cross-run state (empty object on first ever run).
+if [ -f "$STATE_FILE" ]; then
+    OLD_STATE=$(cat "$STATE_FILE" 2>/dev/null)
+    printf '%s' "$OLD_STATE" | jq -e . >/dev/null 2>&1 || OLD_STATE='{"subjects":{}}'
+else
+    OLD_STATE='{"subjects":{}}'
+fi
+
+# One pass over the targets; accumulate each finding + its new state entry.
 findings_arr=()
+state_arr=()
 while IFS= read -r t; do
     [ -n "$t" ] || continue
     repo=$(printf '%s' "$t" | jq -r '.repoRoot')
     track=$(printf '%s' "$t" | jq -r '.track')
     pin=$(printf '%s' "$t" | jq -r '.pinnedRef')
-    findings_arr+=("$(watch_one "$repo" "$track" "$pin")")
+    base=$(watch_one "$repo" "$track" "$pin")
+    subject=$(printf '%s' "$base" | jq -r '.subject')
+    verdict=$(printf '%s' "$base" | jq -r '.verdict')
+    prior=$(printf '%s' "$OLD_STATE" | jq -c --arg s "$subject" '.subjects[$s] // null')
+    if [ "$verdict" = "error" ]; then
+        # No fresh observation this run — surface the error finding but PRESERVE
+        # the subject's prior state (streak / reference must survive a transient
+        # gh outage, else a flapping API would reset the sustained signal).
+        findings_arr+=("$base")
+        [ "$prior" != "null" ] && state_arr+=("$(jq -cn --arg s "$subject" --argjson v "$prior" '{subject:$s, state:$v}')")
+        continue
+    fi
+    applied=$(apply_state "$base" "$prior")
+    findings_arr+=("$(printf '%s' "$applied" | jq -c '.finding')")
+    state_arr+=("$(printf '%s' "$applied" | jq -c --arg s "$subject" '{subject:$s, state:.state}')")
 done < <(printf '%s' "$targets" | jq -c '.[]')
 
 if [ "${#findings_arr[@]}" -gt 0 ]; then
@@ -175,11 +271,20 @@ else
     findings='[]'
 fi
 
+# Rebuild the state object from THIS run's subjects (prunes vanished targets).
+if [ "${#state_arr[@]}" -gt 0 ]; then
+    new_subjects=$(printf '%s\n' "${state_arr[@]}" | jq -s 'map({(.subject): .state}) | add // {}')
+else
+    new_subjects='{}'
+fi
+new_state=$(jq -cn --arg now "$NOW" --argjson subj "$new_subjects" \
+    '{version:"1.0.0", updatedAt:$now, subjects:$subj}')
+
 # Counts by type. Only actionable findings (rot / drift / error) are SURFACED to
 # the operator; "clean" and standing "flag" conditions are counted but not
 # re-alarmed each run (no-noise contract).
 counts=$(printf '%s' "$findings" | jq -c 'group_by(.type) | map({(.[0].type): length}) | add // {}')
-surfaced=$(printf '%s' "$findings" | jq -c '[.[] | select(.type == "rot" or .type == "drift" or .type == "error")]')
+surfaced=$(printf '%s' "$findings" | jq -c '[.[] | select(.type == "rot" or .type == "drift" or .type == "error" or .type == "collapse" or .type == "license")]')
 n_surfaced=$(printf '%s' "$surfaced" | jq 'length')
 
 digest=$(jq -cn \
@@ -187,6 +292,40 @@ digest=$(jq -cn \
     --argjson counts "$counts" --argjson findings "$surfaced" \
     '{generatedAt:$generatedAt, scope:{targets:$targets}, counts:$counts,
       findingCount:($findings|length), findings:$findings}')
+
+# render_markdown — the human-readable digest (also the issue body). Defined here
+# so the emission step below can reuse it before the file-persistence step runs.
+render_markdown() {
+    printf '# Curation digest — %s\n\n' "$NOW"
+    printf -- '- Targets scored: **%s**\n- Findings: **%s**\n\n' "$n_targets" "$n_surfaced"
+    if [ "$n_surfaced" -eq 0 ]; then
+        printf 'No rot or drift detected. lastVerified refreshed.\n'
+        return
+    fi
+    printf '| Subject | Type | Verdict | Pinned | Current | Action |\n'
+    printf '|---|---|---|---|---|---|\n'
+    printf '%s' "$surfaced" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
+        .[] |
+        "| \(.subject|esc) | \(.type|esc) | \(.verdict|esc) | \(.pinnedRef|esc) | \((.currentRef // "?")|esc) | \(.proposedAction|esc) |"'
+}
+
+# OPT-IN gh emission (Slice 3b). Runs BEFORE the file-persistence step so the
+# re-pin PR sees a CLEAN working tree (the lastVerified / state writes below
+# would otherwise dirty it). Both paths are no-ops unless their flag is set and
+# fully fail-safe. Skipped entirely under --dry-run (no outbound mutation).
+if [ "$DRY_RUN" = false ]; then
+    if [ "$EMIT_PR" = true ]; then
+        repin_summary=$(emit_repin_pr "$surfaced" "$REGISTRY" "$PRESETS_DIR" "$PR_DRAFT" "$NOW")
+        n_drafted=$(printf '%s' "$repin_summary" | jq -r '.drafted | length' 2>/dev/null || echo 0)
+        [ "${n_drafted:-0}" -gt 0 ] && echo "[OK] re-pin draft PR: $n_drafted skill(s)" >&2
+    fi
+    if [ "$EMIT_ISSUE" = true ] && [ "$n_surfaced" -gt 0 ]; then
+        issue_body=$(mktemp 2>/dev/null)
+        render_markdown > "$issue_body"
+        emit_issue "Curation digest — $NOW" "$issue_body"
+        rm -f "$issue_body"
+    fi
+fi
 
 # Idempotent lastVerified update — only records whose repo was ACTUALLY verified
 # this run (verdict != error) are stamped; a gh-errored target keeps its old
@@ -206,23 +345,21 @@ if [ "$DRY_RUN" = false ]; then
         [ -n "${tmp:-}" ] && rm -f "$tmp"
         curation_warn "could not update lastVerified in $REGISTRY"
     fi
+
+    # Persist the cross-run state (atomic same-fs rename). Skipped under
+    # --dry-run so a dry run never advances the sustained-collapse counters.
+    state_dir=$(dirname "$STATE_FILE")
+    if tmp=$(mktemp "$state_dir/.watch-state.XXXXXX" 2>/dev/null) \
+        && printf '%s\n' "$new_state" > "$tmp" \
+        && mv "$tmp" "$STATE_FILE"; then
+        :
+    else
+        [ -n "${tmp:-}" ] && rm -f "$tmp"
+        curation_warn "could not update state file $STATE_FILE"
+    fi
 fi
 
 # Emit the digest. Markdown form when a digest dir is given; JSON always.
-render_markdown() {
-    printf '# Curation digest — %s\n\n' "$NOW"
-    printf -- '- Targets scored: **%s**\n- Findings: **%s**\n\n' "$n_targets" "$n_surfaced"
-    if [ "$n_surfaced" -eq 0 ]; then
-        printf 'No rot or drift detected. lastVerified refreshed.\n'
-        return
-    fi
-    printf '| Subject | Type | Verdict | Pinned | Current | Action |\n'
-    printf '|---|---|---|---|---|---|\n'
-    printf '%s' "$surfaced" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
-        .[] |
-        "| \(.subject|esc) | \(.type|esc) | \(.verdict|esc) | \(.pinnedRef|esc) | \((.currentRef // "?")|esc) | \(.proposedAction|esc) |"'
-}
-
 if [ -n "$DIGEST_DIR" ]; then
     mkdir -p "$DIGEST_DIR"
     printf '%s\n' "$digest" > "$DIGEST_DIR/digest.json"
