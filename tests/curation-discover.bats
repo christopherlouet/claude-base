@@ -235,6 +235,46 @@ healthy_candidate() {
     [[ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 0 ]]
 }
 
+# =============================================================================
+# US-8 — moat-encroachment strategic signal (not a graduation candidate)
+# =============================================================================
+
+@test "discover: a high-trust skill encroaching on a durable workflow pattern is a moat SIGNAL, not a proposal" {
+    healthy_candidate "rival/tdd-orchestrator"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"covers TDD+audit workflow","borderline":false,"encroachesMoat":true,"tokensUsed":50}'
+    run_discover
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.moatSignals | length')" -eq 1 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.moatSignals[0].repo')" == "rival/tdd-orchestrator" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.counts.moat')" -eq 1 ]]
+}
+
+@test "discover: moat-encroachment overrides a high-fit proposal (strategic, never auto-candidate)" {
+    healthy_candidate "rival/audit-loop"
+    # high fit + neutral, but encroaches → must NOT be proposed
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"great audit loop","borderline":false,"encroachesMoat":true,"tokensUsed":50}'
+    run_discover
+    [[ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.moatSignals | length')" -eq 1 ]]
+}
+
+@test "discover: a non-encroaching candidate is unaffected (still proposed)" {
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"nextjs depth","borderline":false,"encroachesMoat":false,"tokensUsed":50}'
+    run_discover
+    [[ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 1 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.moatSignals | length')" -eq 0 ]]
+}
+
+@test "discover: --digest-dir surfaces moat signals in the markdown" {
+    healthy_candidate "rival/explore-plan"
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"explore→plan→commit","borderline":false,"encroachesMoat":true,"tokensUsed":50}'
+    run_discover --digest-dir "$TEST_DIR/out"
+    grep -q "rival/explore-plan" "$TEST_DIR/out/proposals.md"
+    grep -qiE 'moat|encroach' "$TEST_DIR/out/proposals.md"
+}
+
 @test "discover: --digest-dir writes proposals.json + proposals.md" {
     healthy_candidate "newauthor/next-skill"
     llm_response '{"neutrality":"pass","fit":5,"rationale":"strong fit","borderline":false,"tokensUsed":50}'

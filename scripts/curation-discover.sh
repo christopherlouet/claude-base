@@ -130,14 +130,18 @@ llm_judge() {
     local repo="$1" ref="$2" content="$3" model="$4" prompt out
     prompt=$(cat <<PROMPT
 You are curating community Claude Code skills for a workflow foundation.
-Judge the skill below on TWO axes and reply with ONLY a JSON object:
-{"neutrality":"pass"|"flag","fit":0-5,"rationale":"<short>","borderline":true|false,"tokensUsed":<int>}
+Judge the skill below and reply with ONLY a JSON object:
+{"neutrality":"pass"|"flag","fit":0-5,"rationale":"<short>","borderline":true|false,"encroachesMoat":true|false,"tokensUsed":<int>}
 
 - advice-neutrality: "flag" if it pushes the user toward proprietary lock-in or away
   from their chosen stack / Claude; "pass" otherwise. Publisher identity is NOT a
   criterion — judge the advice, not who wrote it.
 - fit: 0-5, how well it covers a domain the foundation points at (web/app/api/db/infra/testing).
 - borderline: true if you are unsure and a stronger model should re-judge.
+- encroachesMoat: true if the skill covers a DURABLE WORKFLOW-ORCHESTRATION pattern the
+  foundation itself owns — TDD enforcement, the audit/review loop, the
+  Explore→Specify→Plan→Commit workflow, anti-drift/verification discipline (NOT mere
+  tool-specific API depth). This is a STRATEGIC signal, not a recommendation.
 
 Repo: $repo @ $ref
 --- SKILL CONTENT (truncated) ---
@@ -161,8 +165,9 @@ candidates=$(collect_candidates)
 n_candidates=$(printf '%s\n' "$candidates" | awk 'NF' | wc -l | tr -d ' ')
 
 spent=0
-proposed=0 rejected=0 deferred=0
+proposed=0 rejected=0 deferred=0 moat=0
 proposals_arr=()
+moat_arr=()
 
 if [ "$n_candidates" -gt 0 ]; then
   while IFS= read -r repo; do
@@ -200,7 +205,18 @@ if [ "$n_candidates" -gt 0 ]; then
 
     neutrality=$(printf '%s' "$verdict" | jq -r '.neutrality')
     fit=$(printf '%s' "$verdict" | jq -r '(.fit | numbers | floor) // 0')
-    if [ "$neutrality" = "pass" ] && [ "$fit" -ge "$FIT_THRESHOLD" ]; then
+    encroaches=$(printf '%s' "$verdict" | jq -r '.encroachesMoat // false')
+    if [ "$encroaches" = "true" ]; then
+        # US-8: a credible skill covering a durable workflow pattern is a STRATEGIC
+        # signal for the maintainer — never a graduation candidate. It bypasses the
+        # proposal path entirely (regardless of fit/neutrality).
+        moat=$((moat + 1))
+        moat_arr+=("$(jq -cn \
+            --arg repo "$repo" --arg prov "${repo%%/*}" --arg ref "$ref" \
+            --argjson trust "$score" --argjson judge "$verdict" \
+            '{repo:$repo, provenance:$prov, pinnedRef:$ref, trustVerdict:$trust.verdict,
+              fit:$judge.fit, rationale:$judge.rationale}')")
+    elif [ "$neutrality" = "pass" ] && [ "$fit" -ge "$FIT_THRESHOLD" ]; then
         proposed=$((proposed + 1))
         proposals_arr+=("$(jq -cn \
             --arg repo "$repo" --arg prov "${repo%%/*}" --arg ref "$ref" \
@@ -220,17 +236,23 @@ if [ "${#proposals_arr[@]}" -gt 0 ]; then
 else
     proposals='[]'
 fi
+if [ "${#moat_arr[@]}" -gt 0 ]; then
+    moat_signals=$(printf '%s\n' "${moat_arr[@]}" | jq -s '.')
+else
+    moat_signals='[]'
+fi
 
 exhausted=$([ "$deferred" -gt 0 ] && echo true || echo false)
 digest=$(jq -cn \
     --arg now "$NOW" --argjson cand "$n_candidates" \
     --argjson proposed "$proposed" --argjson rejected "$rejected" --argjson deferred "$deferred" \
+    --argjson moat "$moat" \
     --argjson limit "$BUDGET" --argjson spent "$spent" --argjson exhausted "$exhausted" \
-    --argjson proposals "$proposals" \
+    --argjson proposals "$proposals" --argjson moatSignals "$moat_signals" \
     '{generatedAt:$now, scope:{candidates:$cand},
-      counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred},
+      counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred, moat:$moat},
       budget:{limit:$limit, spent:$spent, exhausted:$exhausted},
-      proposals:$proposals}')
+      proposals:$proposals, moatSignals:$moatSignals}')
 
 render_markdown() {
     printf '# Curation discovery — %s\n\n' "$NOW"
@@ -238,12 +260,24 @@ render_markdown() {
         "$n_candidates" "$proposed" "$rejected" "$deferred"
     printf -- '- Budget: %s / %s tokens%s\n\n' "$spent" "$BUDGET" \
         "$([ "$exhausted" = true ] && echo ' — **exhausted (rest deferred)**' || echo '')"
-    if [ "$proposed" -eq 0 ]; then
-        printf 'No new candidates proposed.\n'; return
+    if [ "$proposed" -gt 0 ]; then
+        printf '## Proposed candidates\n\n'
+        printf '| Repo | Provenance | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
+        printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
+            .[] | "| \(.repo|esc) | \(.provenance|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+        printf '\n'
     fi
-    printf '| Repo | Provenance | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
-    printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
-        .[] | "| \(.repo|esc) | \(.provenance|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+    if [ "$moat" -gt 0 ]; then
+        printf '## ⚠️ Moat-encroachment signals (strategic — NOT graduation candidates)\n\n'
+        printf 'High-trust skills covering durable workflow patterns the foundation owns. Review strategically; do not auto-adopt.\n\n'
+        printf '| Repo | Provenance | Fit | Why it encroaches |\n|---|---|---|---|\n'
+        printf '%s' "$moat_signals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
+            .[] | "| \(.repo|esc) | \(.provenance|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+        printf '\n'
+    fi
+    if [ "$proposed" -eq 0 ] && [ "$moat" -eq 0 ]; then
+        printf 'No new candidates proposed.\n'
+    fi
 }
 
 if [ -n "$DIGEST_DIR" ] && [ "$DRY_RUN" = false ]; then
