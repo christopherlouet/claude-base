@@ -575,3 +575,24 @@ Semantic code navigation via `.lsp.json`. Activation: `export ENABLE_LSP_TOOL=1`
 
 LSP for: symbol definitions, references, diagnostics. Grep for: textual searches.
 See `.claude/rules/lsp.md` for detailed rules.
+
+## Marketplace Curation Engine
+
+A deterministic, **billing-safe** system that keeps the recommended vendor-skill list
+current — observe-and-propose only, never auto-install. Two scheduled jobs:
+
+- **Nightly rot-watch** (`scripts/curation-watch.sh`) — **LLM-free → $0 tokens**. Re-verifies
+  every recommended/pointed skill (archived / abandoned / sustained popularity-collapse /
+  license-change / **content-drift vs the pinned ref**) and emits ONE digest. Opt-in,
+  fail-safe GitHub emission: `--emit-issue` (propose-only) and `--emit-pr --draft` (low-risk
+  re-pin, gated by a pin-time safety screen).
+- **Monthly discovery** (`scripts/curation-discover.sh`) — model-using under a **hard token
+  budget + fail-safe** (the 2026-06-15 agentic-billing change). Trust + safety gates run
+  first (LLM-free); only survivors reach the advice-neutrality + fit judge. Flags
+  *moat-encroachment* as a strategic signal, never an auto-candidate.
+
+Deploy both as cron/systemd timers — the monthly job uses a **dedicated, capped API key**
+in its own env, never mixed with the $0 nightly path. See
+[`../recipes/curation-bot-deploy.md`](../recipes/curation-bot-deploy.md). Policy:
+advice-neutrality + provenance (not publisher-veto); foundation-vs-vendor precedence in
+[`../../.claude/rules/vendor-precedence.md`](../../.claude/rules/vendor-precedence.md).

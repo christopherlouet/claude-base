@@ -68,10 +68,17 @@ This project is a B2B e-commerce application.
 - **Project**: `.claude/commands/` (shared via git)
 - **Personal**: `~/.claude/commands/` (global)
 
-> **Note**: The foundation's commands are organized into subdirectories by category
-> (work/, dev/, qa/, ops/, doc/, biz/, growth/, data/, legal/).
+> **Note**: The foundation's commands are organized into subdirectories by category.
+> A default install is **core-only** (work/, dev/, qa/, ops/, doc/, data/); the
+> horizontal domains biz/, growth/, legal/ and platform/stack tooling are **opt-in
+> modules** — add them with `claude-base add <module> .` (list with `claude-base modules`).
 > Your custom commands can be at the root of `.claude/commands/`
 > or in a subdirectory of your choice.
+>
+> **Vendor skills**: if you also opt into recommended vendor skills, the global rule
+> [`.claude/rules/vendor-precedence.md`](../.claude/rules/vendor-precedence.md) defines
+> precedence when their advice and the foundation's conflict (foundation owns
+> security/workflow; vendor owns tool-specific API).
 
 ### Structure of a command
 
