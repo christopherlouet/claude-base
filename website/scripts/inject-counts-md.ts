@@ -40,6 +40,7 @@ const MD_FILES: string[] = [
   'website/docs/concepts/orchestrator.md',
   // Repo root
   'README.md',
+  'AGENTS.md',
   'CLAUDE.md',
   'CONTRIBUTING.md',
   // Foundation docs (will be synced; markers preserved by sync-docs)

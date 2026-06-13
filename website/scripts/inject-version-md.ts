@@ -21,6 +21,7 @@ const REPO_ROOT = path.resolve(__dirname, '../..');
 const VERSION_PATH = path.join(REPO_ROOT, 'VERSION');
 
 const MD_FILES: string[] = [
+  'README.md',
   'website/docs/intro/quick-start.md',
   'website/docs/intro/installation.md',
   'website/docs/guides/learning-path.md',

@@ -278,3 +278,51 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"consistent"* ]] || [[ "$output" == *"No drift"* ]] || [[ "$output" == *"consistent"* ]] || [[ "$output" == *"No drift"* ]] || [[ "$output" == *"coherents"* ]] || [[ "$output" == *"Aucun drift"* ]]
 }
+
+# =============================================================================
+# Layer 2 tests — injected markers (count + version) — added for the doc-gate
+# hardening (catches markers an injector forgot to cover, e.g. AGENTS.md)
+# =============================================================================
+
+@test "marker drift: a wrong <!-- count:rules --> marker is flagged (canonical 4)" {
+    printf 'rules: <!-- count:rules -->99<!-- /count --> here\n' > "$TEST_DIR/AGENTS.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"count:rules marker = 99"* ]]
+    [[ "$output" == *"canonical: 4"* ]]
+}
+
+@test "marker drift: a correct <!-- count:rules --> marker passes" {
+    printf 'rules: <!-- count:rules -->4<!-- /count --> here\n' > "$TEST_DIR/AGENTS.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}
+
+@test "marker drift: a wrong <!-- count:commands --> marker is flagged (canonical 3)" {
+    printf 'cmds: <!-- count:commands -->77<!-- /count -->\n' > "$TEST_DIR/AGENTS.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"count:commands marker = 77"* ]]
+}
+
+@test "version marker drift: a marker not matching VERSION is flagged" {
+    printf '1.0.0' > "$TEST_DIR/VERSION"
+    printf 'current: <!-- version -->9.9.9<!-- /version -->\n' > "$TEST_DIR/AGENTS.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"version marker = 9.9.9"* ]]
+    [[ "$output" == *"canonical: 1.0.0"* ]]
+}
+
+@test "version marker drift: a marker matching VERSION passes" {
+    printf '1.0.0' > "$TEST_DIR/VERSION"
+    printf 'current: <!-- version -->1.0.0<!-- /version -->\n' > "$TEST_DIR/AGENTS.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}
+
+@test "version marker drift: no VERSION file → version check is a no-op (no crash)" {
+    printf 'current: <!-- version -->9.9.9<!-- /version -->\n' > "$TEST_DIR/AGENTS.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}
