@@ -87,12 +87,15 @@ jobs:
           echo "- Bats: see job logs for the test count" >> $GITHUB_STEP_SUMMARY
           echo "- Counts: documentation consistency (validate-counts.sh + counts.json gate)" >> $GITHUB_STEP_SUMMARY
 
-  # macOS portability check. BSD utilities (sed, awk, find, date, grep, wc)
-  # differ from GNU on Ubuntu. Runs:
-  #   - on every push to main/develop (catches anything that bypassed PR CI)
-  #   - on PRs that touch shell-related paths (scripts, tests, workflows,
-  #     VERSION, settings.json, presets) — skipped on doc-only PRs
-  # `experimental: true` means failures don't block merges.
+  # macOS portability check — BSD utilities (sed, awk, date, grep, base64, wc)
+  # differ from GNU on Ubuntu. This column verifies ONLY what is portability-
+  # sensitive: the bash test suite and the bash count-validator running under
+  # macOS's toolchain. ShellCheck (same binary everywhere), the Node/docusaurus
+  # counts gate and `npm ci` are platform-independent and already covered by the
+  # ubuntu column, so they are intentionally omitted here — that npm install +
+  # site generation was the slow part of this job and tested nothing macOS-
+  # specific. Runs on every push to main/develop and on PRs touching shell paths
+  # (skipped on doc-only PRs). `continue-on-error: true` → never blocks a merge.
   lint-and-test-macos:
     name: Lint & Test (macos-latest)
     runs-on: macos-latest
@@ -102,12 +105,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@master
-        with:
-          scandir: './scripts'
-          severity: warning
 
       - name: Setup Bats, Bash 5+, GNU grep (macOS via Homebrew)
         # macOS ships bash 3.2 (Apple froze updates since GPLv3 in 2007) and
@@ -123,23 +120,5 @@ jobs:
       - name: Run Bats tests
         run: bats tests/*.bats
 
-      - name: Validate documentation counts
+      - name: Validate documentation counts (bash portability)
         run: bash scripts/validate-counts.sh
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: website/package-lock.json
-
-      - name: Install website dependencies
-        run: npm --prefix website ci
-
-      - name: Counts gate (regenerate counts.json + injector + git diff)
-        run: |
-          npm --prefix website run generate
-          if ! git diff --exit-code -- counts.json README.md CLAUDE.md docs/ website/docs/ website/sidebars.ts website/docusaurus.config.ts website/src/; then
-            echo "::error::counts.json or its consumers are out of sync. Run 'npm --prefix website run generate' locally and commit the result."
-            exit 1
-          fi
