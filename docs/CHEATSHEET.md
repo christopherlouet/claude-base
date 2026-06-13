@@ -388,6 +388,20 @@
 
 ---
 
+## claude-base CLI (install & modules)
+
+```
+claude-base init [--preset <name>] .    Install (core-only by default; auto-detects stack)
+claude-base modules                     List modules + what's installed
+claude-base add <module> .              Opt into a module (biz, growth, legal, mobile, iac…)
+claude-base remove <module> .           Opt back out
+claude-base update [--all] .            Update; keeps the preset filter + flags recommendation drift
+claude-base validate .                  Check the install
+```
+
+Default install is **core-only** (work, dev, qa, ops, doc, data). Horizontal domains and
+platform/stack tooling are opt-in modules.
+
 ## Common Scenarios
 
 ### New project

@@ -13,6 +13,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Marketplace curation engine.** A deterministic, billing-safe, observe-never-install
+  system that keeps the recommended vendor-skill list honest and current — replacing
+  one-off manual audit snapshots. Layers:
+  - **Data model** — `.claude/curation/registry.json` (canonicalVendor records with
+    pinned refs + two trust tracks), `trust-thresholds.json`, `discovery-sources.json`;
+    every recommendation pinned to a fixed ref, provenance disclosed.
+  - **Trust scorer** (`scripts/lib/trust-score.sh`) — deterministic, **LLM-free**,
+    two-track (authority vs a community popularity/recency bar); no "build N production
+    repos" requirement.
+  - **Nightly rot-watch** (`scripts/curation-watch.sh`) — **LLM-free → $0 tokens**;
+    flags archived / abandoned / **sustained popularity-collapse** / license-change /
+    **content-drift vs the pin** into ONE reviewable digest; opt-in, fail-safe GitHub
+    emission (`--emit-issue` propose-only, `--emit-pr --draft` low-risk re-pin gated by
+    a pin-time **safety screen** `scripts/lib/curation-safety.sh`).
+  - **Monthly discovery** (`scripts/curation-discover.sh`) — model-using under a **hard
+    token budget + fail-safe** (the 2026-06-15 agentic-billing change); trust + safety
+    gates run first (LLM-free), then an advice-neutrality + fit judge; surfaces
+    **moat-encroachment** as a strategic signal, never an auto-candidate.
+  - **Vendor precedence rule** (`.claude/rules/vendor-precedence.md`) — foundation owns
+    security/workflow, vendor owns tool-specific API; vendor-vs-vendor resolved by
+    condition-scoping → registry → authority → advice-neutrality.
+  - **Recommendation drift on `update`** — a changed preset recommendation set
+    (added/removed/re-pinned) is surfaced as a tracked change (snapshot in
+    `.claude/foundation.json`), no longer a silent drift.
+  - **Deploy recipe** (`docs/recipes/curation-bot-deploy.md`) — nightly ($0) + monthly
+    (dedicated capped API key) systemd/cron bot; observe-and-propose only.
 - **docs: Claude Fable 5 model tier.** Documented Anthropic's most capable model
   (`claude-fable-5`, ~$10/$50 per MTok = 2× Opus 4.8, 1M context default, 128K
   output, same tokenizer as Opus 4.8) as the deliberate escalation **above**
@@ -28,6 +54,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   so always in context) — Claude is guided to *surface* a Fable 5 suggestion when a
   session becomes a long-horizon chantier (multi-PR migration, deep audit, large
   refactor), while leaving the switch to the user (no `fable` alias → no self-switch).
+
+### Changed
+
+- **Curation policy: advice-neutrality + provenance replaces the publisher-veto.**
+  Vendor skills are no longer excluded on publisher identity (e.g. a tool acquired by
+  an Anthropic competitor); they are judged on whether their *advice* pushes lock-in or
+  steers off the user's stack/Claude, with the publisher **disclosed as provenance**.
+  The "≥3 production repos" community bar is dropped for a public community-trust bar.
+  Updated `recommended-vendor-skills.md`, `python-toolchain-options.md` (Astral re-judged
+  on merit), `README.md`, `EXTENDING-GUIDE.md`.
+- **CI ~40% faster.** Bats run in parallel via `scripts/test.sh` on both columns; the
+  macOS column slimmed to portability-only (no redundant Node/npm/counts-gate). macOS
+  Lint & Test ~12–14 min → ~7–8 min; ubuntu ~9 min → ~5 min.
+
+### Fixed
+
+- **Anti-drift gate now validates `<!-- count:* -->` and `<!-- version -->` markers**
+  (`validate-counts.sh`), and `generate` maintains them in `AGENTS.md` + the README
+  version marker. Caught long-stale values the gate previously missed (AGENTS rules
+  30→31; README version marker 1.41.0→4.0.0).
 
 ## [4.0.0] - 2026-06-12
 

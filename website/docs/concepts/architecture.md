@@ -487,6 +487,33 @@ All read-only, isolated contexts
 └────────────────────────────────────────────────────────────────┘
 ```
 
+## Curation Engine
+
+A deterministic, billing-safe subsystem that keeps the recommended vendor-skill list
+honest (the foundation's *curator* role). It never installs — it observes and proposes.
+
+```
+DATA      .claude/curation/registry.json        canonicalVendor records (pinned ref, two trust tracks)
+          .claude/curation/trust-thresholds.json  popularity/recency bars (authority vs community)
+          .claude/curation/discovery-sources.json  per-domain GitHub search queries
+          .claude/presets/*.json                 recommendedVendorSkills[] (pinned, provenance)
+
+SCORING   scripts/lib/trust-score.sh             public signals → verdict   [LLM-FREE]
+          scripts/lib/curation-safety.sh         pin-time content safety screen (≠ trust)
+
+WATCH     scripts/curation-watch.sh   NIGHTLY    rot + content-drift → ONE digest   [LLM-FREE, $0]
+          scripts/curation-discover.sh MONTHLY   new candidates → trust+safety gate (LLM-free)
+                                                 → advice-neutrality+fit judge      [LLM, budget-capped]
+
+POLICY    .claude/rules/vendor-precedence.md     foundation-vs-vendor advice precedence
+DEPLOY    docs/recipes/curation-bot-deploy.md    nightly ($0) + monthly (capped key) bot
+```
+
+- **Nightly path is LLM-free → $0 tokens** (immune to metered agentic billing); the
+  monthly discovery is the only model-using part, under a hard budget + fail-safe.
+- **Observe-never-install**: the most it does is open a *draft* PR (low-risk re-pin) or a
+  *propose-only* issue. Recommendation **drift** is also surfaced on `claude-base update`.
+
 ## Summary
 
 | Concept | Trigger | Context | Main usage |
