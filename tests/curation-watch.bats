@@ -201,7 +201,10 @@ run_watch() {
 
 @test "watch: --thresholds as the last argument errors cleanly (no hang)" {
     registry_one "acme/x" "v1.0.0" authority
-    run timeout 10 env PATH="$TEST_DIR/fakebin:$PATH" \
+    # The empty-path guard exits 2 before any loop can spin, so this returns
+    # immediately — no `timeout` wrapper needed (and `timeout` is absent on
+    # stock macOS, which must stay green).
+    run env PATH="$TEST_DIR/fakebin:$PATH" \
         bash "$WATCH" --registry "$TEST_DIR/registry.json" --thresholds
     [[ "$status" -eq 2 ]]
 }
