@@ -27,7 +27,11 @@
       "id": "apollographql/skills",
       "url": "https://github.com/apollographql/skills",
       "rationale": "Canonical Apollo skill suite from Apollo GraphQL Inc., covering Apollo Client, Apollo Server 5, Apollo Connectors, Federation 2, and Apollo Kotlin. Verified via `gh api repos/apollographql/skills` on 2026-05-19 — 72★, last commit 2026-05-14, MIT, not archived. Pair with claude-base's `dev-graphql` skill (schema design, DataLoader, N+1 prevention, security).",
-      "condition": "always"
+      "condition": "always",
+      "pinnedRef": "v1.2.5",
+      "trustTrack": "authority",
+      "provenance": "Apollo GraphQL",
+      "lastVerified": "2026-06-13"
     }
   ],
 

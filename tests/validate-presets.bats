@@ -218,7 +218,11 @@ EOF
       "id": "test-vendor/skill",
       "url": "https://example.org/skill",
       "rationale": "test",
-      "condition": "always"
+      "condition": "always",
+      "pinnedRef": "v1.0.0",
+      "trustTrack": "authority",
+      "provenance": "Test Vendor",
+      "lastVerified": "2026-06-13"
     }
   ],
   "outOfScope": []

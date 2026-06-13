@@ -40,19 +40,31 @@
       "id": "antonbabenko/terraform-skill",
       "url": "https://github.com/antonbabenko/terraform-skill",
       "rationale": "Comprehensive Terraform/OpenTofu patterns (the de-facto community skill)",
-      "condition": "always (Terraform is core to this preset)"
+      "condition": "always (Terraform is core to this preset)",
+      "pinnedRef": "v1.17.1",
+      "trustTrack": "community",
+      "provenance": "Anton Babenko (community)",
+      "lastVerified": "2026-06-13"
     },
     {
       "id": "pulumi/agent-skills",
       "url": "https://github.com/pulumi/agent-skills",
       "rationale": "Pulumi authoring + migration workflows (Terraform→Pulumi)",
-      "condition": "if using Pulumi instead of Terraform"
+      "condition": "if using Pulumi instead of Terraform",
+      "pinnedRef": "43626f25e118f4e107a63772084d9ce8d185efbb",
+      "trustTrack": "authority",
+      "provenance": "Pulumi",
+      "lastVerified": "2026-06-13"
     },
     {
       "id": "grafana/skills",
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack for monitoring and observability",
-      "condition": "if using Grafana / Prometheus stack"
+      "condition": "if using Grafana / Prometheus stack",
+      "pinnedRef": "0198138c75512f9b2adfb27b49aebce87c3ccfdf",
+      "trustTrack": "authority",
+      "provenance": "Grafana Labs",
+      "lastVerified": "2026-06-13"
     }
   ],
 

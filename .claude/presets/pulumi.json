@@ -25,7 +25,11 @@
       "id": "pulumi/agent-skills",
       "url": "https://github.com/pulumi/agent-skills",
       "rationale": "Canonical Pulumi authoring patterns + migration workflows (Terraform→Pulumi, CloudFormation→Pulumi). Verified via `gh api repos/pulumi/agent-skills` on 2026-05-18 — 48★, last commit 2026-05-13, Apache-2.0, not archived. Pair with claude-base's `ops-infra-code` skill (module hierarchy, naming conventions, deploy workflow).",
-      "condition": "always"
+      "condition": "always",
+      "pinnedRef": "43626f25e118f4e107a63772084d9ce8d185efbb",
+      "trustTrack": "authority",
+      "provenance": "Pulumi",
+      "lastVerified": "2026-06-13"
     }
   ],
 

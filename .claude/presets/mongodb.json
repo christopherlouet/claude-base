@@ -27,7 +27,11 @@
       "id": "mongodb/agent-skills",
       "url": "https://github.com/mongodb/agent-skills",
       "rationale": "Canonical MongoDB skill suite from MongoDB Inc., covering schema design heuristics, indexing strategies, query patterns, and operational safeguards. Verified via `gh api repos/mongodb/agent-skills` on 2026-05-19 — 114★, last commit 2026-05-18, Apache-2.0, not archived. Pair with claude-base's `ops-database` skill (stack-neutral conventions: naming, soft-delete, updated_at triggers).",
-      "condition": "always"
+      "condition": "always",
+      "pinnedRef": "v1.1.0",
+      "trustTrack": "authority",
+      "provenance": "MongoDB",
+      "lastVerified": "2026-06-13"
     }
   ],
 

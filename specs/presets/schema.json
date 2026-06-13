@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "title": "claude-base preset",
+  "description": "Formal shape of a .claude/presets/*.json preset. Formalises the existing preset model (the 11 shipped presets) and adds the curation-engine recommendation fields (pinnedRef, trustTrack, provenance, lastVerified) introduced by specs/marketplace-curation-engine. Every recommendedVendorSkills[] entry is pinned to an immutable reference (EF-005), carries a trust track (EF-003), discloses its publisher (EF-008) and records when it was last verified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "displayName", "description", "version", "status"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Pointer to this schema."
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Stable kebab-case identifier (lowercase, no leading digit); matches the file name and the validator's NAME_PATTERN."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the preset."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["maintainer-vouched", "community-curated", "vendor-pointer", "draft"],
+      "description": "Matches the validator's ALLOWED_STATUS. maintainer-vouched: curated by the foundation maintainer. community-curated: contributed/curated by the community. vendor-pointer: a thin preset that defers to recommendedVendorSkills (see specs/presets-vendor-pointer-tier). draft: work in progress."
+    },
+    "author": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "github": { "type": "string" }
+      }
+    },
+    "defaultModules": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Thematic modules opted into by default (see core-plus-thematic-modules design)."
+    },
+    "appliesToTypes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "detect": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Data-driven auto-detection rule. At least one of files/depFiles must be non-empty.",
+      "properties": {
+        "combinator": {
+          "type": "string",
+          "enum": ["allOf", "anyOf"],
+          "default": "anyOf"
+        },
+        "files": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "depFiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "contains"],
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "contains": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "foundation": {
+      "type": "object",
+      "description": "Foundation catalogue filter (keep/drop on commands/agents/skills). Empty object = inherit the full catalogue.",
+      "additionalProperties": true
+    },
+    "marketplacePlugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "rationale"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "recommendedVendorSkills": {
+      "type": "array",
+      "description": "Third-party skills the foundation points to (never copies — EF-010). Every entry is pinned, trust-tracked, provenance-disclosed and dated.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "url",
+          "rationale",
+          "condition",
+          "pinnedRef",
+          "trustTrack",
+          "provenance",
+          "lastVerified"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable skill identifier (repo or repo subpath)."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "minLength": 1
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1
+          },
+          "condition": {
+            "type": "string",
+            "minLength": 1,
+            "description": "When to surface this recommendation (e.g. 'always', 'if using Prisma')."
+          },
+          "pinnedRef": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Immutable reference (release tag or full commit SHA). 'latest' / branch names are NOT allowed (EF-005)."
+          },
+          "trustTrack": {
+            "type": "string",
+            "enum": ["authority", "community"],
+            "description": "authority: published by the tool's own organisation (low popularity bar). community: third-party author (high popularity/recency bar). See EF-003."
+          },
+          "provenance": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Disclosed publisher of the skill (EF-008)."
+          },
+          "lastVerified": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            "description": "ISO date the pin + trust signals were last re-verified."
+          }
+        }
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ci": { "type": "boolean" },
+        "hooks": { "type": "boolean" },
+        "mcp": { "type": "boolean" },
+        "docker": { "type": "boolean" },
+        "designStyle": {
+          "type": "string",
+          "enum": ["terminal", "cockpit", "vitality", "editorial", "glass", "signal"]
+        }
+      }
+    },
+    "outOfScope": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "categories": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "relatedPresetsWanted": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

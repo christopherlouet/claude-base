@@ -947,7 +947,7 @@ EOF
     "depFiles": [{"path": "package.json", "contains": "foo"}]
   },
   "recommendedVendorSkills": [
-    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always", "pinnedRef": "v1.0.0", "trustTrack": "authority", "provenance": "Example", "lastVerified": "2026-06-13"}
   ],
   "marketplacePlugins": [
     {"id": "some/plugin", "rationale": "should be forbidden"}
@@ -973,7 +973,7 @@ EOF
     "depFiles": [{"path": "package.json", "contains": "foo"}]
   },
   "recommendedVendorSkills": [
-    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always", "pinnedRef": "v1.0.0", "trustTrack": "authority", "provenance": "Example", "lastVerified": "2026-06-13"}
   ],
   "foundation": {
     "skills": { "keep": ["dev-tdd"] }
@@ -1022,7 +1022,7 @@ EOF
     ]
   },
   "recommendedVendorSkills": [
-    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always", "pinnedRef": "v1.0.0", "trustTrack": "authority", "provenance": "Example", "lastVerified": "2026-06-13"}
   ]
 }
 EOF
@@ -1046,7 +1046,7 @@ EOF
     "depFiles": [{"path": "package.json", "contains": "foo"}]
   },
   "recommendedVendorSkills": [
-    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always", "pinnedRef": "v1.0.0", "trustTrack": "authority", "provenance": "Example", "lastVerified": "2026-06-13"}
   ]
 }
 EOF
@@ -1208,7 +1208,7 @@ EOF
     "depFiles": [{"path": "package.json", "contains": "foo"}]
   },
   "recommendedVendorSkills": [
-    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always", "pinnedRef": "v1.0.0", "trustTrack": "authority", "provenance": "Example", "lastVerified": "2026-06-13"}
   ],
   "categories": ["mobile-native"]
 }
@@ -1233,7 +1233,7 @@ EOF
     "depFiles": [{"path": "package.json", "contains": "foo"}]
   },
   "recommendedVendorSkills": [
-    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always", "pinnedRef": "v1.0.0", "trustTrack": "authority", "provenance": "Example", "lastVerified": "2026-06-13"}
   ],
   "categories": []
 }
@@ -1256,7 +1256,7 @@ EOF
     "depFiles": [{"path": "package.json", "contains": "foo"}]
   },
   "recommendedVendorSkills": [
-    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always"}
+    {"id": "x/y", "url": "https://example.com", "rationale": "test", "condition": "always", "pinnedRef": "v1.0.0", "trustTrack": "authority", "provenance": "Example", "lastVerified": "2026-06-13"}
   ],
   "categories": ["web-frontend", "api-backend"]
 }
