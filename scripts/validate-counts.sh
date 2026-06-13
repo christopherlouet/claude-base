@@ -407,6 +407,61 @@ scan_tests_drift() {
 
 scan_tests_drift "$ACTUAL_TESTS" "$ACTUAL_TEST_FILES"
 
+# --- Injected marker drift: <!-- count:KEY -->N<!-- /count --> must equal the
+# canonical actual for KEY, anywhere it appears. Unlike the targeted prose
+# patterns above, a marker is an EXPLICIT canonical counter, so any mismatch is a
+# real drift (this catches files an injector forgot to cover — e.g. AGENTS.md).
+scan_marker_drift() {
+    local line fp rest lno content key n want rel
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        fp="${line%%:*}"; rest="${line#*:}"; lno="${rest%%:*}"; content="${rest#*:}"
+        key=$(printf '%s' "$content" | sed -nE 's/.*count:([a-zA-Z]+).*/\1/p')
+        n=$(printf '%s' "$content" | grep -oE '[0-9]+' | head -1)
+        case "$key" in
+            commands)  want="$ACTUAL_COMMANDS" ;;
+            agents)    want="$ACTUAL_AGENTS" ;;
+            skills)    want="$ACTUAL_SKILLS" ;;
+            rules)     want="$ACTUAL_RULES" ;;
+            tests)     want="$ACTUAL_TESTS" ;;
+            testFiles) want="$ACTUAL_TEST_FILES" ;;
+            *) continue ;;
+        esac
+        if [[ "$n" != "$want" ]]; then
+            rel="${fp#"$BASE_DIR"/}"
+            error_no_exit "${rel}:${lno} drift -> count:${key} marker = $n (canonical: $want)"
+            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+        fi
+    done < <(grep -rnoE '<!-- count:[a-zA-Z]+ -->[0-9]+' \
+        --include="*.md" --exclude-dir=node_modules --exclude-dir=.git \
+        --exclude-dir=build --exclude-dir=.docusaurus --exclude-dir=memory \
+        "$BASE_DIR" 2>/dev/null)
+}
+scan_marker_drift
+
+# --- Version marker drift: <!-- version -->X<!-- /version --> must equal VERSION.
+scan_version_drift() {
+    local vstr line fp rest lno content v rel
+    [[ -f "$BASE_DIR/VERSION" ]] || return 0
+    vstr=$(tr -d '[:space:]' < "$BASE_DIR/VERSION" 2>/dev/null)
+    [[ -n "$vstr" ]] || return 0
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        fp="${line%%:*}"; rest="${line#*:}"; lno="${rest%%:*}"; content="${rest#*:}"
+        v=$(printf '%s' "$content" | sed -nE 's/.*-->([^<]*)<!--.*/\1/p')
+        [[ -n "$v" ]] || continue
+        if [[ "$v" != "$vstr" ]]; then
+            rel="${fp#"$BASE_DIR"/}"
+            error_no_exit "${rel}:${lno} drift -> version marker = $v (canonical: $vstr)"
+            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+        fi
+    done < <(grep -rnoE '<!-- ?version ?-->[^<]*<!-- ?/version ?-->' \
+        --include="*.md" --exclude-dir=node_modules --exclude-dir=.git \
+        --exclude-dir=build --exclude-dir=.docusaurus --exclude-dir=memory \
+        "$BASE_DIR" 2>/dev/null)
+}
+scan_version_drift
+
 if [[ "$DRIFT_ERRORS" -eq 0 ]]; then
     success "No drift detected (global scan)"
 else
