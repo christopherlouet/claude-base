@@ -185,3 +185,67 @@ print_recommended_vendor_skills() {
     echo "  See docs/recipes/recommended-vendor-skills.md for install commands."
     echo ""
 }
+
+# =============================================================================
+# Recommendation drift (US-9, specs/marketplace-curation-engine)
+#
+# Snapshot the preset's recommendedVendorSkills set into the project manifest
+# (.claude/foundation.json → .recommendations) at install/update, then diff the
+# current preset against that snapshot so a changed recommendation set (added /
+# removed / re-pinned) surfaces as a TRACKED change on the next update instead of
+# silently drifting. Pure jq; never installs anything (observe-never-install).
+# =============================================================================
+
+# recommendations_snapshot_from_preset <preset_file>
+# stdout: JSON array [{id, pinnedRef}] sorted by id (stable diff). [] if none.
+recommendations_snapshot_from_preset() {
+    local pf="$1"
+    [ -f "$pf" ] || { echo '[]'; return 0; }
+    jq -c '[.recommendedVendorSkills[]? | {id: .id, pinnedRef: (.pinnedRef // "")}] | sort_by(.id)' \
+        "$pf" 2>/dev/null || echo '[]'
+}
+
+# _recommendation_diff_lines <old-json-array> <new-json-array>
+# stdout: human lines (+ added / - removed / ~ repinned). Empty if identical.
+_recommendation_diff_lines() {
+    jq -rn --argjson old "$1" --argjson new "$2" '
+        ($old | map({(.id): .pinnedRef}) | add // {}) as $o
+        | ($new | map({(.id): .pinnedRef}) | add // {}) as $n
+        | ( [ $n | to_entries[] | select($o[.key] == null) | "+ added: \(.key) @ \(.value)" ]
+          + [ $o | to_entries[] | select($n[.key] == null) | "- removed: \(.key)" ]
+          + [ $n | to_entries[] | select($o[.key] != null and $o[.key] != .value)
+                | "~ repinned: \(.key) \($o[.key]) → \(.value)" ]
+          ) | .[]'
+}
+
+# recommendation_drift <preset_file> <target_dir>
+# stdout: drift lines vs the manifest's stored snapshot. Empty (exit 0) when there
+# is no prior snapshot (first run — no false drift) or no change.
+recommendation_drift() {
+    local pf="$1" dir="$2"
+    local manifest="$dir/.claude/foundation.json"
+    [ -f "$manifest" ] || return 0
+    local old new
+    old=$(jq -c '.recommendations // empty' "$manifest" 2>/dev/null)
+    [ -n "$old" ] || return 0
+    new=$(recommendations_snapshot_from_preset "$pf")
+    _recommendation_diff_lines "$old" "$new"
+}
+
+# record_recommendations_snapshot <preset_file> <target_dir>
+# Persist the current snapshot into .claude/foundation.json (.recommendations),
+# preserving the other manifest fields. No-op (exit 0) when no manifest exists.
+record_recommendations_snapshot() {
+    local pf="$1" dir="$2"
+    local manifest="$dir/.claude/foundation.json"
+    [ -f "$manifest" ] || return 0
+    local snap tmp
+    snap=$(recommendations_snapshot_from_preset "$pf")
+    tmp=$(mktemp) || return 1
+    if jq --argjson rec "$snap" '.recommendations = $rec' "$manifest" > "$tmp" 2>/dev/null; then
+        mv "$tmp" "$manifest"
+    else
+        rm -f "$tmp"
+        return 1
+    fi
+}
