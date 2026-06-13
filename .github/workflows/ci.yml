@@ -55,7 +55,9 @@ jobs:
         uses: bats-core/bats-action@4.0.0
 
       - name: Run Bats tests
-        run: bats tests/*.bats
+        # ./scripts/test.sh runs bats with --jobs (GNU parallel, capped at 8) —
+        # ~4x faster than serial; falls back to serial if parallel is absent.
+        run: ./scripts/test.sh
 
       - name: Validate documentation counts
         run: bash scripts/validate-counts.sh
@@ -113,12 +115,14 @@ jobs:
         #   GNU grep       at /opt/homebrew/opt/grep/libexec/gnubin/grep
         # PATH is updated below to put GNU grep ahead of BSD grep.
         run: |
-          brew install bats-core bash grep
+          brew install bats-core bash grep parallel
           # Put GNU grep ahead of BSD grep in PATH for subsequent steps
           echo "/opt/homebrew/opt/grep/libexec/gnubin" >> "$GITHUB_PATH"
 
       - name: Run Bats tests
-        run: bats tests/*.bats
+        # ./scripts/test.sh runs bats with --jobs (GNU parallel, capped at 8) —
+        # ~4x faster than serial; falls back to serial if parallel is absent.
+        run: ./scripts/test.sh
 
       - name: Validate documentation counts (bash portability)
         run: bash scripts/validate-counts.sh
