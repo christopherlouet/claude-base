@@ -701,7 +701,7 @@ A preset declares `categories: [<slug>]` to opt into the filtered menu after the
 ### Workflow
 
 1. **Read** `specs/presets/spec.md` (format) and the tier-specific spec (`specs/presets-vendor-pointer-tier/spec.md` if vendor-pointer).
-2. **Verify the vendor source** via `gh api repos/<owner>/<repo>` for stars / last commit / archived flag / license. Apply the vendor-neutrality filter (no vendors acquired by Anthropic competitors).
+2. **Verify the vendor source** via `gh api repos/<owner>/<repo>` for stars / last commit / archived flag / license, then apply the **advice-neutrality** filter (does the skill's *advice* push lock-in or steer users off their stack/Claude?) and **disclose the publisher as provenance** — identity is not a veto. See `docs/recipes/recommended-vendor-skills.md` for the full methodology.
 3. **Draft the manifest** under `.claude/presets/<name>.json` (or `community/<name>.json` for community-curated).
 4. **Create a paired fixture** under `tests/presets-fixtures/<name>/` matching the detect rule.
 5. **Add bats tests** (positive accept + fixture-pairing) in `tests/presets.bats`.

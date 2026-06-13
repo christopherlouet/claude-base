@@ -10,11 +10,11 @@ This recipe lives outside the presets deliberately. The choice of Python toolcha
 
 The dominant modern Python toolchain in 2026 is Astral's stack (`uv` + `ruff` + `ty`). Adoption is large and the tools are excellent. The official Claude Code marketplace plugin is `astral@astral-sh` — a high-quality skills bundle that integrates the toolchain into Claude Code via `/astral:uv`, `/astral:ruff`, `/astral:ty` commands.
 
-claude-base does **not** bundle `astral@astral-sh` in the `cli-tools` or `fastapi` preset. Two reasons:
+claude-base does **not** bundle `astral@astral-sh` in the `cli-tools` or `fastapi` preset — but **not** because of who owns Astral. One reason, with one disclosure:
 
-1. **Vendor positioning**: Astral was acquired by OpenAI on 2026-03-19 ([source](https://openai.com/index/openai-to-acquire-astral/)). claude-base is a configuration kit for Claude Code (Anthropic). Publishing an implicit endorsement of OpenAI-acquired tooling in an Anthropic-ecosystem kit would be dissonant for users who deliberately chose Claude Code over Codex. The MIT license protects today's code; it does not protect against future roadmap drift toward Codex-specific integration.
+1. **Stack-essential vs opinion** (the actual reason): A preset bundles what every project on the stack needs. Two developers building Python CLI tools or FastAPI services will legitimately diverge on toolchain choice — some are Astral-pragmatic, others conservative-PyPA. Bundling one path forces a non-essential opinion. Documenting the paths and letting you choose is more useful.
 
-2. **Stack-essential vs opinion**: A preset bundles what every project on the stack needs. Two developers building Python CLI tools or FastAPI services will legitimately diverge on toolchain politics — some are Astral-pragmatic, others are vendor-neutral, others are conservative-PyPA. Bundling one path forces a non-essential opinion. Documenting the three paths is more useful.
+2. **Provenance, disclosed — not a veto**: Astral was acquired by OpenAI on 2026-03-19 ([source](https://openai.com/index/openai-to-acquire-astral/)). Under claude-base's **advice-neutrality** policy (see `docs/recipes/recommended-vendor-skills.md`), this is disclosed so you decide with full information — it is **not** a disqualifier. The tools (`uv`/`ruff`/`ty`) are MIT-licensed, advice-neutral CLI utilities that don't push lock-in or steer you off Claude; an independent curator has no duty to enforce Anthropic's competitive lines. If a future roadmap drifts toward Codex-specific lock-in, *that* (lock-in advice, not ownership) would change the assessment.
 
 The full reasoning is in `specs/marketplace-audit/cli-tools-pilot-2026-05-05.md`.
 
@@ -120,7 +120,7 @@ pip install -r requirements.txt
 | Concern | Path 1 (Astral) | Path 2 (Neutral) | Path 3 (PyPA) |
 |---|---|---|---|
 | Speed | Best | Average | Slowest |
-| Vendor neutrality | Now OpenAI-owned | Community | Most neutral |
+| Ownership (provenance) | OpenAI-owned (disclosed, not a veto) | Community | Most independent |
 | CC plugin available | Yes (`astral@astral-sh`) | Not yet | No (legacy) |
 | Toolchain coverage | All three layers in one plugin | Mix-and-match | Mix-and-match |
 | Future risk | Roadmap drift toward Codex | Maintainer fatigue (some tools are solo-maintained) | Slow evolution but stable |

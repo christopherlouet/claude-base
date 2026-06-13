@@ -204,7 +204,7 @@ _All 3 clarifications resolved during `/work:work-clarify` on 2026-05-18. See "L
 
 ## Cross-references
 
-- Methodology that gives the tier its authority: `specs/marketplace-audit/spec.md` (vendor-neutrality filter, search protocol, decision rubric).
+- Methodology that gives the tier its authority: `specs/marketplace-audit/spec.md` (decision rubric) + `docs/recipes/recommended-vendor-skills.md` (advice-neutrality + provenance, community-trust bar, safety screen).
 - Recipe entry that this spec's first instance wraps: `docs/recipes/recommended-vendor-skills.md` §"Phaser — `phaserjs/phaser/skills/`" (shipped in PR #183).
 - Existing tier semantics being extended: `specs/presets/spec.md` §"Status tiers".
 - Roadmap to be amended: `specs/presets/roadmap.md` §"What is NOT covered" and §"Quick reference (count)".
