@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [4.1.0] - 2026-06-13
+
 ### Added
 
 - **Marketplace curation engine.** A deterministic, billing-safe, observe-never-install

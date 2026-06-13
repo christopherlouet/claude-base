@@ -89,7 +89,7 @@ claude
 At startup you should see:
 ```
 === Claude Code Session ===
-Version: <!-- version -->4.0.0<!-- /version -->
+Version: <!-- version -->4.1.0<!-- /version -->
 Commandes: 128
 Agents: 61
 ===========================
