@@ -32,12 +32,13 @@ This recipe is the actionable companion to the audit pilots: it tells you **how*
 
 Each vendor below was evaluated against the audit methodology in `specs/marketplace-audit/spec.md`. Specifically:
 
-1. **Authorship**: published by the tool vendor itself (high signal) or by a community member with verified adoption (≥3 real-product repos)
-2. **Maintenance**: active commits in the past 60 days, open issue triage, no chronic infrastructure bugs
-3. **Vendor-neutrality filter** (per `feedback_plugin_curation_vendor_neutrality` memory): no acquisition by OpenAI / direct Anthropic competitor. Vendors acquired by such are filtered out, regardless of technical merit.
-4. **Existence verified** via `gh api repos/<owner>/<repo>` on 2026-05-05 (stars, last commit timestamp, archived flag)
+1. **Trust** — public, two-track signals (no "build N production repos" requirement): a skill published by the tool vendor's own organisation clears on **authority** (institutional signal, no popularity floor); a third-party/community skill clears on a **community-trust bar** (popularity, forks, recency, maintenance activity, not-archived, license — install/download counts where a channel exposes them). This is what the curation engine's deterministic scorer (`scripts/lib/trust-score.sh`) checks.
+2. **Maintenance**: active commits in a recency window, open issue triage, no chronic infrastructure bugs.
+3. **Safety/integrity screen** (distinct from trust — popularity ≠ safety): the skill's own content is screened for obviously-dangerous instructions, and every recommendation is **pinned to a fixed reference**, never `@latest` (`scripts/lib/curation-safety.sh`).
+4. **Advice-neutrality + provenance** (this *replaces* the former publisher-veto): we judge whether a skill's **advice** pushes the user toward proprietary lock-in or away from their chosen stack / Claude — applied **uniformly to every vendor**, not just to competitors. **Publisher identity is NOT an exclusion criterion**; an excellent skill is not rejected because of who acquired its author. Instead the **publisher is disclosed as provenance** on every entry so you decide with full information, and a skill that advocates a competing primary stack is **scoped by a usage condition** rather than blanket-banned. (We are an independent curator with no duty to enforce Anthropic's competitive lines — the `vendor-neutrality-not-publisher-veto` principle supersedes the earlier `feedback_plugin_curation_vendor_neutrality` veto.)
+5. **Existence/signals verified** via `gh api repos/<owner>/<repo>` (stars, last commit timestamp, archived flag).
 
-If any vendor below is later acquired by an Anthropic competitor, the corresponding entry must be reviewed.
+If a vendor's **advice** later turns lock-in-pushing, or its content fails the safety screen, or it goes stale/archived, the corresponding entry is reviewed. A change of *owner* alone is recorded as provenance, not an automatic disqualification.
 
 ---
 
@@ -103,7 +104,7 @@ ln -s ~/dev/vendor-skills/supabase/skills/supabase-postgres-best-practices \
       ./.claude/skills/supabase-postgres-best-practices
 ```
 
-**Vendor-neutrality**: Supabase is independent (Series C funding), MIT-licensed, not acquired by OpenAI / Microsoft / Anthropic competitors as of 2026-05-05.
+**Provenance & advice-neutrality**: Supabase is independent (Series C funding), MIT-licensed, not acquired by OpenAI / Microsoft / Anthropic competitors as of 2026-05-05.
 
 ---
 
@@ -125,7 +126,7 @@ git clone --depth 1 https://github.com/prisma/skills ~/dev/vendor-skills/prisma
 # Skill content lives in CLAUDE.md / AGENTS.md — copy or symlink as needed
 ```
 
-**Vendor-neutrality**: Prisma is independent, not acquired.
+**Provenance & advice-neutrality**: Prisma is independent, not acquired.
 
 ---
 
@@ -143,7 +144,7 @@ git clone --depth 1 https://github.com/apollographql/skills ~/dev/vendor-skills/
 # Symlink the relevant skill subdirectories into ./.claude/skills/
 ```
 
-**Vendor-neutrality**: Apollo GraphQL Inc. is independent.
+**Provenance & advice-neutrality**: Apollo GraphQL Inc. is independent.
 
 ---
 
@@ -161,7 +162,7 @@ git clone --depth 1 https://github.com/vercel-labs/agent-skills ~/dev/vendor-ski
 # Symlink the relevant skill subdirectories into ./.claude/skills/
 ```
 
-**Vendor-neutrality**: Vercel is independent. Note: Vercel's `v0` product is an AI-coding tool that competes adjacently with Claude Code; Vercel itself is not acquired by OpenAI / Anthropic competitors. Re-evaluate if this changes.
+**Provenance & advice-neutrality**: Vercel is independent. Note: Vercel's `v0` product is an AI-coding tool that competes adjacently with Claude Code; Vercel itself is not acquired by OpenAI / Anthropic competitors. Re-evaluate if this changes.
 
 ---
 
@@ -183,7 +184,7 @@ git clone --depth 1 https://github.com/shadcn-ui/ui ~/dev/vendor-skills/shadcn-u
 ln -s ~/dev/vendor-skills/shadcn-ui/skills/shadcn ./.claude/skills/shadcn
 ```
 
-**Vendor-neutrality**: shadcn/ui is open-source under MIT, individual maintainer (no vendor capture risk).
+**Provenance & advice-neutrality**: shadcn/ui is open-source under MIT, individual maintainer (no vendor capture risk).
 
 ---
 
@@ -210,7 +211,7 @@ Or use the claude-base helper (idempotent):
 claude-base update --add-plugin frontend-design@claude-plugins-official ./your-project
 ```
 
-**Vendor-neutrality**: Anthropic is, by definition, the home ecosystem.
+**Provenance & advice-neutrality**: Anthropic is, by definition, the home ecosystem.
 
 ---
 
@@ -228,7 +229,7 @@ claude plugin install code-review@claude-plugins-official
 claude-base update --add-plugin code-review@claude-plugins-official ./your-project
 ```
 
-**Vendor-neutrality**: Anthropic. Zero concern.
+**Provenance & advice-neutrality**: Anthropic. Zero concern.
 
 ---
 
@@ -249,7 +250,7 @@ ln -s ~/dev/vendor-skills/phaser/skills/game-setup-and-config \
 # Repeat for the other skills you need (28 in total).
 ```
 
-**Vendor-neutrality**: Phaser Studio Inc. (organization), independent, MIT-licensed. Verified via `gh api repos/phaserjs/phaser` on 2026-05-18 — 39,638★, last commit 2026-04-30, archived: false, fork: false. Not acquired by an Anthropic competitor as of verification date. Note: the OpenAI-published `openai/plugins/game-studio/skills/phaser-2d-game` exists but is **rejected** under the vendor-neutrality filter (see "Vendors evaluated and NOT recommended" further down for the policy; the same reasoning that excludes Astral applies here).
+**Provenance & advice-neutrality**: Phaser Studio Inc. (organization), independent, MIT-licensed. Verified via `gh api repos/phaserjs/phaser` on 2026-05-18 — 39,638★, last commit 2026-04-30, archived: false, fork: false. The skill's advice is stack-neutral (it teaches Phaser, not lock-in). Note: an OpenAI-published `openai/plugins/game-studio/skills/phaser-2d-game` also exists; under the advice-neutrality policy it is **not excluded on publisher identity** — we point at `phaserjs/phaser` here because the engine vendor's own skill wins on **authority and fit**, not because the OpenAI one is banned (its provenance would simply be disclosed if preferred).
 
 **Adjacent options (not separately evaluated)**: PixiJS (renderer, see `arimxyer/toolchest`), Kaplay (simpler component-based framework), Excalibur (TypeScript-first scene + physics). These are named so readers on those stacks know the foundation is aware of them; full audit deferred to a future marketplace-audit pilot.
 
@@ -269,7 +270,7 @@ git clone --depth 1 https://github.com/addyosmani/web-quality-skills ~/dev/vendo
 # Symlink the relevant skill subdirectories into ./.claude/skills/
 ```
 
-**Vendor-neutrality**: Personal repo, not Google-org-owned. Author has Google affiliation but the project is independent. Acceptable.
+**Provenance & advice-neutrality**: Personal repo, not Google-org-owned. Author has Google affiliation but the project is independent. Acceptable.
 
 ---
 
@@ -296,7 +297,7 @@ git clone --depth 1 https://github.com/addyosmani/web-quality-skills ~/dev/vendo
 # }
 ```
 
-**Vendor-neutrality**: Google. Web-tooling neutral.
+**Provenance & advice-neutrality**: Google. Web-tooling neutral.
 
 ---
 
@@ -314,11 +315,11 @@ git clone --depth 1 https://github.com/microsoft/playwright-cli ~/dev/vendor-ski
 ln -s ~/dev/vendor-skills/playwright/skills/playwright-cli ./.claude/skills/playwright-cli
 ```
 
-**Vendor-neutrality** (CASE-BY-CASE per `feedback_plugin_curation_vendor_neutrality` memory):
+**Provenance & advice-neutrality**:
 
-Microsoft owns Playwright. Per the foundation's policy, Microsoft tools that **predate the company's deepening OpenAI commercial relationship** are evaluated case-by-case rather than auto-rejected. Playwright was created in 2020, predates that deepening, remains MIT-licensed, and is the de-facto standard for E2E testing (78,000★ on the core repo). The community alternative `lackeyjb/playwright-skill` exists but was 5 months stale at audit time.
+Provenance: Microsoft owns Playwright. Under the advice-neutrality policy this is **disclosed, not disqualifying** — what matters is that the skill's advice is stack-neutral: Playwright (created 2020, MIT-licensed) is the de-facto E2E standard (78,000★ on the core repo) and teaches a portable testing tool, not lock-in. The community alternative `lackeyjb/playwright-skill` exists but was 5 months stale at audit time.
 
-**Decision (2026-05-06)**: pointer to `microsoft/playwright-cli` accepted for the qa-e2e skill. Re-evaluate if Microsoft's commercial alignment with OpenAI changes the project's roadmap visibly (e.g. direct OpenAI product integration into Playwright).
+**Decision (2026-05-06)**: pointer to `microsoft/playwright-cli` accepted for the qa-e2e skill. Re-evaluate only if its **advice** turns lock-in-pushing or it fails the safety/maintenance bar — a change in Microsoft's commercial alignment alone is recorded as provenance, not a trigger.
 
 ---
 
@@ -338,7 +339,7 @@ git clone --depth 1 https://github.com/agamm/claude-code-owasp ~/dev/vendor-skil
 
 **Adoption signal**: 171★ at audit time — modest. The value is in pointing to a faithful implementation of the canonical OWASP standard, not in popularity.
 
-**Vendor-neutrality**: Independent author.
+**Provenance & advice-neutrality**: Independent author.
 
 ---
 
@@ -356,7 +357,7 @@ git clone --depth 1 https://github.com/mongodb/agent-skills ~/dev/vendor-skills/
 # Symlink the relevant skill subdirectories into ./.claude/skills/
 ```
 
-**Vendor-neutrality**: MongoDB Inc. is independent.
+**Provenance & advice-neutrality**: MongoDB Inc. is independent.
 
 ---
 
@@ -374,7 +375,7 @@ git clone --depth 1 https://github.com/antonbabenko/terraform-skill ~/dev/vendor
 ln -s ~/dev/vendor-skills/terraform/skills/terraform ./.claude/skills/terraform
 ```
 
-**Vendor-neutrality**: community-authored (Anton Babenko, independent maintainer). HashiCorp acquired by IBM (Feb 2025) but the skill author is independent. IBM has Watson but is not a direct Anthropic/OpenAI competitor. Acceptable.
+**Provenance & advice-neutrality**: community-authored (Anton Babenko, independent maintainer). HashiCorp acquired by IBM (Feb 2025) but the skill author is independent. IBM has Watson but is not a direct Anthropic/OpenAI competitor. Acceptable.
 
 ---
 
@@ -392,7 +393,7 @@ git clone --depth 1 https://github.com/pulumi/agent-skills ~/dev/vendor-skills/p
 # Symlink the relevant skill subdirectories into ./.claude/skills/
 ```
 
-**Vendor-neutrality**: Pulumi is independent.
+**Provenance & advice-neutrality**: Pulumi is independent.
 
 ---
 
@@ -410,7 +411,7 @@ git clone --depth 1 https://github.com/grafana/skills ~/dev/vendor-skills/grafan
 # Symlink the relevant skill subdirectories into ./.claude/skills/
 ```
 
-**Vendor-neutrality**: Grafana Labs is independent.
+**Provenance & advice-neutrality**: Grafana Labs is independent.
 
 ---
 
@@ -428,7 +429,7 @@ claude plugin install semgrep@claude-plugins-official  # or via claude.com/plugi
 claude-base update --add-plugin semgrep@claude-plugins-official ./your-project
 ```
 
-**Vendor-neutrality**: Semgrep is an independent security company.
+**Provenance & advice-neutrality**: Semgrep is an independent security company.
 
 ---
 
@@ -448,7 +449,7 @@ ln -s ~/dev/vendor-skills/posthog/skills/omnibus/instrument-product-analytics \
 # Other PostHog sub-skills available under skills/posthog/{product-analytics,feature-flags,error-tracking,logs,llm-analytics,migrations,integration}
 ```
 
-**Vendor-neutrality**: PostHog is independent, MIT-licensed, not acquired by an Anthropic competitor as of 2026-05-21.
+**Provenance & advice-neutrality**: PostHog is independent, MIT-licensed, not acquired by an Anthropic competitor as of 2026-05-21.
 
 ---
 
@@ -468,7 +469,7 @@ ln -s ~/dev/vendor-skills/resend/skills/email-best-practices ./.claude/skills/em
 ln -s ~/dev/vendor-skills/resend/skills/react-email ./.claude/skills/react-email
 ```
 
-**Vendor-neutrality**: Resend is independent (Series A 2024), MIT-licensed, not acquired by an Anthropic competitor as of 2026-05-21.
+**Provenance & advice-neutrality**: Resend is independent (Series A 2024), MIT-licensed, not acquired by an Anthropic competitor as of 2026-05-21.
 
 ---
 
@@ -487,7 +488,7 @@ git clone --depth 1 https://github.com/AgriciDaniel/claude-seo ~/dev/vendor-skil
 ~/dev/vendor-skills/claude-seo/install.sh ./your-project
 ```
 
-**Vendor-neutrality**: Community-authored (single maintainer, AgriciDaniel), MIT-licensed. Mass adoption (6,800+★ as of 2026-05-21) passes the methodology's "≥3 verified production repos" lower bar by orders of magnitude.
+**Provenance & advice-neutrality**: Community-authored (single maintainer, AgriciDaniel), MIT-licensed. Mass adoption (6,800+★ as of 2026-05-21) clears the community-trust bar by orders of magnitude. Advice is stack-neutral (SEO guidance, no lock-in).
 
 ---
 
@@ -509,7 +510,7 @@ ln -s ~/dev/vendor-skills/marketingskills/skills/onboarding ./.claude/skills/onb
 # ... pick what your project needs
 ```
 
-**Vendor-neutrality**: Single-maintainer community project (Corey Haines). 29,800+★ as of 2026-05-21 confirms strong adoption signal. Single-maintainer dependency — assess maintenance cadence before adoption in critical projects.
+**Provenance & advice-neutrality**: Single-maintainer community project (Corey Haines). 29,800+★ as of 2026-05-21 confirms strong adoption signal. Single-maintainer dependency — assess maintenance cadence before adoption in critical projects.
 
 ---
 
@@ -521,7 +522,7 @@ ln -s ~/dev/vendor-skills/marketingskills/skills/onboarding ./.claude/skills/onb
 
 **Install only if**: your project uses Lingui specifically. For other i18n libraries (next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations), claude-base's framework-agnostic `dev-i18n` skill is sufficient.
 
-**Vendor-neutrality**: Lingui is community-maintained.
+**Provenance & advice-neutrality**: Lingui is community-maintained.
 
 ---
 
@@ -531,7 +532,7 @@ ln -s ~/dev/vendor-skills/marketingskills/skills/onboarding ./.claude/skills/onb
 
 **Install only if**: your project is React Native. Out of scope for web React.
 
-**Vendor-neutrality**: Callstack is independent.
+**Provenance & advice-neutrality**: Callstack is independent.
 
 ---
 
@@ -541,9 +542,9 @@ This list is part of the curation work. Naming what we rejected matters as much 
 
 ### Astral — `astral@astral-sh` (uv / ruff / ty)
 
-**Rejected on positioning grounds**: Astral was acquired by OpenAI on 2026-03-19. Bundling OpenAI-acquired tooling in an Anthropic-ecosystem kit publishes a dissonant signal. Tools remain MIT-licensed, but future roadmap drift toward Codex-specific integration is plausible.
+**Not bundled by default — but no longer vetoed on identity.** Under the advice-neutrality policy (above), the tooling itself is advice-neutral: `uv`/`ruff`/`ty` are MIT-licensed CLI dev tools that don't push the user toward proprietary lock-in or away from Claude. We do **not** exclude it on identity. Provenance: Astral was acquired by OpenAI on 2026-03-19 — disclosed so you decide with full information, not a disqualifier.
 
-**If you want it anyway**: see `docs/recipes/python-toolchain-options.md` for the opt-in path. claude-base does not bundle this plugin.
+It stays out of the default preset bundle for a *different* reason: a Python toolchain is a **project opinion, not a stack essential** (some teams are Astral-pragmatic, others conservative-PyPA). See `docs/recipes/python-toolchain-options.md`, which documents Astral as a first-class opt-in path alongside the alternatives, with provenance disclosed.
 
 ### `greptile@claude-plugins-official`
 
@@ -578,7 +579,7 @@ We do **not** vouch for entries discovered through these indexes — only for th
 
 URLs verified live (HTTP 200) on 2026-05-21.
 
-**Excluded from this list** (same vendor-neutrality / quality rationale as the rest of the recipe):
+**Excluded from this list** (same quality / provenance rationale as the rest of the recipe):
 
 - "SkillKit" / `agenstskills.com` — unclear provenance, domain name appears to typo-squat `agentskills.io`.
 - Duplicate awesome-lists (`travisvn/awesome-claude-skills`, `BehiSecc/awesome-claude-skills`, `GetBindu/awesome-claude-code-and-skills`, `jqueryscript/awesome-claude-code`) — content overlaps `hesreallyhim` and `ComposioHQ` without adding signal.
@@ -591,7 +592,8 @@ This recipe is a living document. Triggers for re-evaluation:
 
 | Trigger | Action |
 |---------|--------|
-| Any vendor in this recipe is acquired by OpenAI / Microsoft (>50% economic ownership) / direct Claude Code competitor | Move to "Not recommended" with explanation |
+| A vendor's **advice** turns lock-in-pushing or steers away from the user's stack/Claude | Re-scope with a usage condition, or move to "Not recommended" with explanation |
+| A vendor is acquired by OpenAI / Microsoft / a Claude Code competitor | **Update the disclosed provenance** — not, by itself, a move to "Not recommended" (advice-neutrality, not publisher identity, decides) |
 | A vendor's install method changes (especially: migration from git-clone to marketplace) | Update the install commands |
 | A vendor's repo is archived or marked deprecated | Move to "Not recommended" with explanation |
 | New vendor publishes a skill that passes the methodology bar | Add to recommended list |

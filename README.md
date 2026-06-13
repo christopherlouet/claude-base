@@ -539,6 +539,6 @@ claude-base's irreducible value is the workflow rigor (TDD, audit-loop, anti-dri
 
 Three mechanisms keep it aligned with that trajectory:
 
-1. **Periodic marketplace audits** with a vendor-neutrality filter (we reject vendors acquired by direct Anthropic competitors). Output: [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md).
+1. **Periodic marketplace audits** with an **advice-neutrality** filter (we judge whether a skill's *advice* pushes lock-in or steers you off your stack/Claude — publisher identity is *disclosed as provenance*, not a veto). Output: [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md).
 2. **Recommended vendor skills per preset** — printed at the end of `claude-base init`. Manual install today ; the foundation does NOT auto-install third-party code.
 3. **Trajectory-driven automation** — when most vendors are on the official marketplace, automating install becomes safe. We don't today (~21% are on the official marketplace, as of last audit) but will revisit when the ratio inverts.
