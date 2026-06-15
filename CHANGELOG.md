@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Command-side vendor graduation — Wave 2 (POINT, safe set).** Vendor `## See also`
+  pointers added to the commands whose deeper vendor is **already curated** (registry +
+  recipe), keeping each command's full body and workflow orchestration: `growth-ab-test`,
+  `growth-funnel`, `growth-landing`, `growth-onboarding`, `growth-retention` →
+  `coreyhaines31/marketingskills` sub-skills; `ops-observability-stack` → `grafana/skills`
+  (with a caveat that the command wires the full Prometheus+Loki+Alertmanager stack a single
+  vendor skill does not replace). Sibling agents `growth-funnel` and `growth-landing` get the
+  same block, and the already-graduated `growth-seo` agent is backfilled with its
+  `AgriciDaniel/claude-seo` pointer. Additive only — no content removed, no count change. The
+  biz POINT packs are deferred to a verification-gated Wave 3.
+
 ### Changed
 
 - **Command-side vendor graduation — Wave 1 (REDUCE).** The two `ops` commands that merely
