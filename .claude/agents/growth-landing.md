@@ -39,3 +39,7 @@ Hero (headline + CTA) -> Social Proof -> Problem/Solution -> Features/Benefits -
 - IMPORTANT: WebP images with lazy loading
 
 Think hard about what converts visitors.
+
+## See also
+
+For deeper conversion-copy methodology, pair this with [`coreyhaines31/marketingskills`](https://github.com/coreyhaines31/marketingskills) (`copywriting`, `cro`, `marketing-psychology` sub-skills) — install per [`docs/recipes/recommended-vendor-skills.md`](../../docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Use the vendor for the deep copy/psychology layer; keep this agent for the foundation workflow orchestration (components, SEO, Core Web Vitals).

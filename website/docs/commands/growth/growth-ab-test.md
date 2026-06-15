@@ -56,6 +56,10 @@ Define the hypothesis, calculate sample size, configure the test, and analyze th
 | `/growth:growth-landing` | Optimize the landing pages |
 | `/growth:growth-funnel` | Analyze the impact on the funnel |
 
+## See also
+
+For deeper A/B-test methodology (hypothesis templates, sample-size calculators, segmentation playbooks), pair this with [`coreyhaines31/marketingskills`](https://github.com/coreyhaines31/marketingskills) (`ab-testing` sub-skill) — install per [`docs/recipes/recommended-vendor-skills.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Use the vendor for the deep execution layer; keep this command for the foundation workflow orchestration.
+
 ---
 
 IMPORTANT: Never stop a test prematurely based on partial results.

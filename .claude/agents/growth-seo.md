@@ -44,3 +44,7 @@ Technical SEO audit and optimization recommendations.
 - NEVER ignore Core Web Vitals
 
 Think hard about the SEO impact of every issue.
+
+## See also
+
+For deeper SEO coverage (business-type detection, multi-category scoring, DataForSEO/Firecrawl integrations), pair this with [`AgriciDaniel/claude-seo`](https://github.com/AgriciDaniel/claude-seo) — install per [`docs/recipes/recommended-vendor-skills.md`](../../docs/recipes/recommended-vendor-skills.md) §"AgriciDaniel — `claude-seo`". Use the vendor for the deep execution layer; keep this agent for the foundation workflow orchestration.

@@ -39,6 +39,10 @@ Identify churn factors, improve engagement, and set up retention mechanisms (ree
 | `/growth:growth-email` | Reengagement campaigns |
 | `/growth:growth-ab-test` | Test strategies |
 
+## See also
+
+For deeper retention methodology (cohort/RFM analysis, churn-prevention playbooks), pair this with [`coreyhaines31/marketingskills`](https://github.com/coreyhaines31/marketingskills) (`churn-prevention` sub-skill) — install per [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Use the vendor for the deep execution layer; keep this command for the foundation workflow orchestration.
+
 ---
 
 IMPORTANT: Retention is decided as early as onboarding. The first 7 days are critical.

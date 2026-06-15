@@ -58,6 +58,10 @@ Design a landing page with a single goal and a clear CTA, structured to maximize
 | `/growth:growth-analytics` | Track conversions |
 | `/qa:qa-perf` | Optimize performance |
 
+## See also
+
+For deeper conversion-copy methodology, pair this with [`coreyhaines31/marketingskills`](https://github.com/coreyhaines31/marketingskills) (`copywriting`, `cro`, `marketing-psychology` sub-skills) — install per [`docs/recipes/recommended-vendor-skills.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Use the vendor for the deep copy/psychology layer; keep this command for the foundation workflow orchestration (SEO, performance, A/B tests).
+
 ---
 
 IMPORTANT: One landing page = one goal = one CTA. No distractions.
