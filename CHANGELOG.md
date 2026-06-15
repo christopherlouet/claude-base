@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Command-side vendor graduation — Wave 1 (REDUCE).** The two `ops` commands that merely
+  wrapped a tool their **authority** vendor documents far better are reduced to
+  pointer-commands (the `biz-pricing` model): `ops-vercel` → `vercel-labs/agent-skills` and
+  `ops-grafana-dashboard` → `grafana/skills`. The `ops-vercel` agent gains a `## See also`
+  block (functional instructions kept). No command/agent count change. Both vendors are
+  already curated (registry + recipe). Rationale and the reconciled
+  2 REDUCE · 11 POINT · 4 KEEP verdict table: `specs/command-vendor-graduation/spec.md`.
+
 ## [4.1.0] - 2026-06-13
 
 ### Added
