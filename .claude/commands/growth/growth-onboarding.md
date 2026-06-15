@@ -38,6 +38,10 @@ Bring the user to the "Aha moment" as fast as possible with onboarding tailored 
 | `/growth:growth-email` | Companion email sequence |
 | `/dev:dev-component` | Create the UI components |
 
+## See also
+
+For deeper activation methodology (Aha-moment mapping, segmentation), pair this with [`coreyhaines31/marketingskills`](https://github.com/coreyhaines31/marketingskills) (`onboarding` sub-skill) — install per [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Use the vendor for the deep execution layer; keep this command for the foundation workflow orchestration.
+
 ---
 
 IMPORTANT: Goal #1 is to bring the user to the "Aha moment" as fast as possible.

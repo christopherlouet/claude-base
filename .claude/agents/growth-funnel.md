@@ -43,3 +43,7 @@ Analysis and optimization of conversion funnels.
 - YOU MUST segment the analysis (by device, source, cohort)
 
 Think hard about the critical friction points.
+
+## See also
+
+For deeper CRO methodology, pair this with [`coreyhaines31/marketingskills`](https://github.com/coreyhaines31/marketingskills) (`cro` sub-skill) — install per [`docs/recipes/recommended-vendor-skills.md`](../../docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Use the vendor for the deep optimization playbooks; keep this agent for the funnel mapping + foundation workflow orchestration.

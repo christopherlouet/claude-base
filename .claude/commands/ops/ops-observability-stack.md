@@ -37,6 +37,10 @@ dev/staging or Kubernetes with Helm for production.
 | `/ops:ops-k8s` | Deploy on Kubernetes |
 | `/ops:ops-docker` | Containerize the services |
 
+## See also
+
+For Grafana-specific depth, pair this with [`grafana/skills`](https://github.com/grafana/skills) — install per [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Grafana Labs — `grafana/skills`". The vendor covers the Grafana surface; keep this command for the **multi-tool wiring** it orchestrates (Prometheus + Loki + Alertmanager + Promtail + exporters), which no single vendor skill replaces.
+
 ---
 
 IMPORTANT: Always test the stack in staging before production.

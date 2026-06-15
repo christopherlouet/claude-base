@@ -40,6 +40,10 @@ Map the funnel, measure conversion rates per step, identify drop-offs, diagnose 
 | `/growth:growth-landing` | Optimize landing page |
 | `/growth:growth-onboarding` | Improve activation |
 
+## See also
+
+For deeper CRO methodology (page-type frameworks, optimization playbooks), pair this with [`coreyhaines31/marketingskills`](https://github.com/coreyhaines31/marketingskills) (`cro` sub-skill) — install per [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Use the vendor for the deep optimization layer; keep this command for the funnel mapping + foundation workflow orchestration.
+
 ---
 
 IMPORTANT: Optimize one step at a time to measure the real impact.
