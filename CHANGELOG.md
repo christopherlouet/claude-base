@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-06-15
+
 ### Added
 
 - **Command-side vendor graduation — Wave 2 (POINT, safe set).** Vendor `## See also`
