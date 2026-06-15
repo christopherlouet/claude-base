@@ -26,6 +26,7 @@ Feature specs consumed by the workflow agents (`/work:work-specify`, `/work:work
 | [presets-commands-agents-filter](presets-commands-agents-filter/spec.md) | 🟢 Planned | — (plan + tasks 2026-06-08, S1 next) |
 | [marketplace-audit](marketplace-audit/spec.md) | ♻️ Living document | continuous (vendor-curation gatekeeper) |
 | [foundation-positioning-review](foundation-positioning-review/spec.md) | 📌 Reference | strategic baseline |
+| [command-vendor-graduation](command-vendor-graduation/spec.md) | 🔵 Ready for planning | — (audit 2026-06-15: 2 REDUCE · 11 POINT · 4 KEEP) |
 | [dogfood-v2-findings](dogfood-v2-findings/spec.md) | 📌 Closed | findings folded into rules/specs |
 
 ## Archived (shipped, no live references)
