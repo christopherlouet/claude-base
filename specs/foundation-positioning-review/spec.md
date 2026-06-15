@@ -79,6 +79,25 @@ GitHub code search rate-limited in 2 of 3 agent runs; affected verdicts are mark
 
 ### REDUCE-TO-POINTER — vendor materially superior (~30 resources)
 
+> **Reconciliation note (2026-06-15).** The command-side rows below were re-judged in
+> [`specs/command-vendor-graduation/spec.md`](../command-vendor-graduation/spec.md) against two
+> facts that postdate this review: (a) biz/growth commands are now **pure opt-in modules**, so
+> the "maintenance burden on the core" argument behind their REDUCE verdict is void; (b) these
+> commands are **orchestrators** with workflow cross-links, not content packs. The reconciled
+> rule: **REDUCE ⟺ an _authority_ vendor owns the underlying tool; otherwise POINT (keep +
+> `## See also`); KEEP when no vendor clears the community-trust bar.** Net command-side outcome:
+> **2 REDUCE** (`ops-vercel`, `ops-grafana-dashboard`) · **6 POINT** (5 growth + `ops-observability-stack`)
+> · **9 KEEP**. The skill-side REDUCE rows here are already shipped (skills are ~45–56 LOC pointers).
+>
+> **KEEP (command-side, not graduated) — recorded reasons:**
+> - `ops-k8s` — no canonical authority skill of comparable breadth (helm/kustomize fragmented).
+> - `doc-api-spec` — stack-neutral (explores any API → OpenAPI); community alternatives are framework-specific.
+> - `doc-changelog` — bound to the foundation's Conventional-Commits + `ops-release`/`work-commit` workflow.
+> - `legal-privacy-policy` — GDPR code-audit angle + `legal-rgpd`/`legal-docs` integration (batch-2: legal = KEEP-OURS).
+> - `biz-mvp`/`biz-okr`/`biz-roadmap`/`biz-personas`/`biz-pitch` — **no community skill cleared the
+>   500★ trust bar** on verification (2026-06-15); the original vendor names here were provisional
+>   and resolved to 404. Pointing at a sub-bar/unvetted repo would breach the curation safety gate.
+
 | # | Resource | Vendor canonical | Why reduce |
 |---|---|---|---|
 | 1 | `growth-seo` (53 L) | `AgriciDaniel/claude-seo` 6.8k★ | 28 SKILL.md, business-type detect, 7-category scoring, DataForSEO/Firecrawl integrations. Our 53 L genuinely thinner across every axis. |
