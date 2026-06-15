@@ -13,34 +13,27 @@ import CommandCard from '@site/src/components/CommandCard';
 <span className="badge badge--ops">OPS</span>
 
 
-# GRAFANA-DASHBOARD Agent
+# GRAFANA-DASHBOARD Agent (pointer)
 
 Creation of Grafana dashboards with automatic provisioning.
 
-## Request context
+## Context
 `<arguments>`
 
-## Goal
+## Delegate to the vendor toolkit
 
-Generate complete Grafana dashboards with datasources, panels,
-variables, alerts and provisioning for different types of monitoring.
+`claude-base`'s prior `ops-grafana-dashboard` content (47-line checklist) is **superseded** by [`grafana/skills`](https://github.com/grafana/skills) — Grafana's own toolkit covers dashboards, provisioning (datasources.yaml/dashboards.yaml), panels, variables and alerting at the depth and currency a hand-maintained checklist cannot match; this command wrapped a tool the vendor owns.
 
-## Workflow
+Install:
 
-- Identify the dashboard type (REST API, Application, Database, Infrastructure, Custom)
-- Generate the provisioning files (datasources.yaml, dashboards.yaml)
-- Create the JSON dashboards with adapted panels and thresholds
-- Configure the filtering variables (env, service, namespace)
-- Define the alerting rules and contact points
-- Generate the Grafana integration docker-compose
-- Validate that the target metrics exist
+```bash
+git clone --depth 1 https://github.com/grafana/skills ~/dev/vendor-skills/grafana-skills
+ln -s ~/dev/vendor-skills/grafana-skills/skills/<sub> ./.claude/skills/<sub>
+```
 
-## Expected output
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/recommended-vendor-skills.md) §"Grafana Labs — `grafana/skills`". Reduction rationale: [`specs/command-vendor-graduation/spec.md`](https://github.com/christopherlouet/claude-base/blob/main/specs/command-vendor-graduation/spec.md).
 
-1. **Provisioning files**: datasources.yaml, dashboards.yaml
-2. **JSON dashboards**: one per selected type
-3. **Alerts**: configured rules and contact points
-4. **Docker Compose**: Grafana integration ready
+To instrument code so metrics exist delegate to `/ops:ops-monitoring`; to stand up the full stack to `/ops:ops-observability-stack`; for Kubernetes to `/ops:ops-k8s`.
 
 ## Related agents
 
@@ -52,13 +45,7 @@ variables, alerts and provisioning for different types of monitoring.
 
 ---
 
-IMPORTANT: Always test the dashboards locally before deployment.
-
-YOU MUST adapt the thresholds to the application context.
-
 NEVER expose Grafana without authentication in production.
-
-Think hard about the most relevant metrics for the context.
 
 
 ---

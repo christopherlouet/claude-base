@@ -1,32 +1,24 @@
-# OPS-VERCEL Agent
+# OPS-VERCEL Agent (pointer)
 
 Deployment and configuration on Vercel.
 
-## Request context
+## Context
 $ARGUMENTS
 
-## Objective
+## Delegate to the vendor toolkit
 
-Configure a project on Vercel with environment variables,
-serverless functions, edge middleware, cron jobs and optimizations.
+`claude-base`'s prior `ops-vercel` content (47-line config checklist) is **superseded** by [`vercel-labs/agent-skills`](https://github.com/vercel-labs/agent-skills) — Vercel's own toolkit stays in sync with the platform (vercel.json, Edge/serverless functions, cron protection, ISR, env scopes, Speed Insights) at depth a hand-maintained checklist cannot match.
 
-## Workflow
+Install:
 
-- Configure vercel.json (framework, build, functions, crons, headers, redirects)
-- Manage environment variables by scope (production, preview, development)
-- Implement Edge Functions and Middleware if needed
-- Configure API Routes (App Router)
-- Protect cron endpoints with a secret
-- Add security headers and optimizations (ISR, images)
-- Configure domains and DNS
-- Integrate Speed Insights and Analytics
+```bash
+git clone --depth 1 https://github.com/vercel-labs/agent-skills ~/dev/vendor-skills/vercel-agent-skills
+ln -s ~/dev/vendor-skills/vercel-agent-skills/skills/<sub> ./.claude/skills/<sub>
+```
 
-## Expected output
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Vercel — `vercel-labs/agent-skills`". Reduction rationale: [`specs/command-vendor-graduation/spec.md`](../../../specs/command-vendor-graduation/spec.md).
 
-1. **vercel.json** configured
-2. **Environment variables** by scope
-3. **Functions and Crons** configured
-4. **CLI commands** essentials (deploy, logs, rollback)
+For the CI/CD pipeline delegate to `/ops:ops-ci`; for observability to `/ops:ops-monitoring`; for environment management to `/ops:ops-env`.
 
 ## Related agents
 
@@ -38,10 +30,4 @@ serverless functions, edge middleware, cron jobs and optimizations.
 
 ---
 
-IMPORTANT: Use Edge Functions for fast operations (< 25ms).
-
-IMPORTANT: Configure security headers.
-
-YOU MUST protect cron endpoints with a secret.
-
-NEVER commit environment variables.
+YOU MUST protect cron endpoints with a secret, and NEVER commit environment variables.

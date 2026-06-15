@@ -74,3 +74,7 @@ vercel logs --follow # Real-time logs
 - Edge Functions for < 25ms
 - Protect crons with a secret
 - Do not commit env vars
+
+## See also
+
+For deeper, always-current Vercel coverage, pair this with [`vercel-labs/agent-skills`](https://github.com/vercel-labs/agent-skills) — install per [`docs/recipes/recommended-vendor-skills.md`](../../docs/recipes/recommended-vendor-skills.md) §"Vercel — `vercel-labs/agent-skills`". Use the vendor toolkit for the deep execution layer; keep this agent for the foundation workflow orchestration (CI, monitoring, env).
