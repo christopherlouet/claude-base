@@ -21,8 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (with a caveat that the command wires the full Prometheus+Loki+Alertmanager stack a single
   vendor skill does not replace). Sibling agents `growth-funnel` and `growth-landing` get the
   same block, and the already-graduated `growth-seo` agent is backfilled with its
-  `AgriciDaniel/claude-seo` pointer. Additive only — no content removed, no count change. The
-  biz POINT packs are deferred to a verification-gated Wave 3.
+  `AgriciDaniel/claude-seo` pointer. Additive only — no content removed, no count change.
+- **Command-side vendor graduation — close-out (biz verification).** The 5 biz POINT
+  candidates (`biz-mvp`/`okr`/`roadmap`/`personas`/`pitch`) were gated on the curation
+  community-trust bar (≥500★, not archived, recent). No domain skill cleared it (the
+  positioning-spec's biz vendor names were provisional and resolved to 404), so **all 5 stay
+  KEEP** — the foundation never points at an unvetted/sub-bar repo. **Final command-side
+  outcome: 2 REDUCE · 6 POINT · 9 KEEP.** Reconciliation note + recorded KEEP reasons land in
+  `specs/foundation-positioning-review/spec.md`; the wave is closed in
+  `specs/command-vendor-graduation/spec.md`.
 
 ### Changed
 

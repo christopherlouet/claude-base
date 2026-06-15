@@ -1,6 +1,9 @@
 # Spec — Command-side vendor graduation (Wave: biz/growth/ops/doc/legal commands)
 
-> Status: 🔵 Ready for planning · 2026-06-15 · Owner: Chris
+> Status: ✅ Shipped · 2026-06-15 · Owner: Chris
+> Delivered: PR-A #320 (REDUCE) · PR-B #322 (safe POINT) · PR-C/D close-out (biz verification + KEEP record).
+> **Final verdict after verification: 2 REDUCE · 6 POINT · 9 KEEP** (the 5 biz POINT
+> candidates fell back to KEEP — no vendor cleared the community-trust bar; see §8).
 > Strategic north star: `specs/foundation-positioning-review/spec.md` (4-tier rubric)
 > Reconciles: `specs/foundation-positioning-review/spec.md` (REDUCE verdicts) ×
 > `specs/marketplace-audit/batch-2-plan-2026-05-18.md` (pointer-only, mostly KEEP-OURS)
@@ -18,7 +21,9 @@ fixes the precedent's blind spot — **graduated commands whose sibling agent st
 full duplicated content with no vendor pointer** (e.g. `growth-seo` command is a pointer but
 `growth-seo` agent is untouched).
 
-The audit (2026-06-15, EXPLORE phase) produced: **2 REDUCE · 11 POINT · 4 KEEP.**
+The audit (2026-06-15, EXPLORE phase) produced: **2 REDUCE · 11 POINT · 4 KEEP** — of which
+the 5 biz POINT candidates later fell back to KEEP after vendor verification (§8), giving a
+**final 2 REDUCE · 6 POINT · 9 KEEP**.
 
 ### Reconciliation logic (why these verdicts, not the raw positioning-spec list)
 
@@ -61,11 +66,11 @@ grafana) truly graduate.
 | `ops-grafana-dashboard` | grafana/skills | **authority** | observability | **REDUCE** | no |
 | `growth-ab-test` | coreyhaines31/marketingskills/ab-testing | community | growth | **POINT** | no |
 | `growth-landing` | corey copywriting+cro+marketing-psychology | community | growth | **POINT** | yes |
-| `biz-mvp` | gsd:mvp-phase / slavingia (×3) | community | biz | **POINT** | yes |
-| `biz-okr` | orchestkit/okr-design | community | biz | **POINT** | no |
-| `biz-roadmap` | memstack / majiayu roadmap | community | biz | **POINT** | no |
-| `biz-personas` | UX persona suites | community | biz | **POINT** | yes |
-| `biz-pitch` | kai-slide-creator | community | biz | **POINT** | no |
+| `biz-mvp` | _none ≥500★_ (was: gsd/slavingia, 404) | community | biz | **KEEP** (§8) | yes |
+| `biz-okr` | _none ≥500★_ (was: orchestkit/okr-design, 404) | community | biz | **KEEP** (§8) | no |
+| `biz-roadmap` | _none ≥500★_ (was: memstack/majiayu, 404) | community | biz | **KEEP** (§8) | no |
+| `biz-personas` | _none ≥500★_ (was: UX persona suites) | community | biz | **KEEP** (§8) | yes |
+| `biz-pitch` | _none ≥500★_ (was: kai-slide-creator, 404) | community | biz | **KEEP** (§8) | no |
 | `growth-funnel` | coreyhaines31/marketingskills/cro | community | growth | **POINT** | yes |
 | `growth-onboarding` | coreyhaines31/marketingskills/onboarding | community | growth | **POINT** | no |
 | `growth-retention` | coreyhaines31/marketingskills/churn-prevention | community | growth | **POINT** | no |
@@ -225,3 +230,30 @@ So that the rot-watch covers the command-side graduations too (not just skill-si
    Docs/data only.
 
 Atomic per the workflow's anti-pattern against giant multi-feature commits.
+
+## 8. Verification outcome (2026-06-15) — biz POINT → KEEP
+
+The 5 biz POINT candidates were gated on the curation bar (community-track: ≥500★, not
+archived, < 365 days, per `.claude/curation/trust-thresholds.json`). The positioning-spec's
+biz vendor names were provisional ("Agent 1 sampling thin"); **none resolved to a real repo**
+(`orchestkit/okr-design`, `memstack/roadmap-builder`, `majiayu/roadmap`, `kai-slide-creator`,
+`slavingia/mvp`, `easychen/mvp` → all 404). A GitHub search per domain found **no dedicated
+skill clearing the 500★ bar**:
+
+| Pack | Best domain-specific skill found | Stars | Verdict |
+|---|---|---|---|
+| `biz-okr` | `agenmod/okr-skill`, `sngmd/Okr-Skills` | ≤4★ | **KEEP** — far below bar |
+| `biz-roadmap` | (none surfaced) | — | **KEEP** — no candidate |
+| `biz-mvp` | (none; only generic PM repos) | ≤2★ | **KEEP** — no candidate |
+| `biz-personas` | `DollhouseMCP/mcp-server` (not a personas skill) | 35★ | **KEEP** — no fit, below bar |
+| `biz-pitch` | `moefc32/pitch-deck-generator` | ≤11★ | **KEEP** — far below bar |
+
+The already-curated `coreyhaines31/marketingskills` (29.8k★) covers marketing methodology but
+ships **no** mvp/okr/roadmap/pitch skill, and its `customer-research` sub-skill is too broad to
+stand in for `biz-personas` without a misleading pointer. **Decision: all 5 biz packs stay
+KEEP** — pointing at an unvetted/sub-bar repo would violate the foundation's own curation
+safety gate (`.claude/rules/vendor-precedence.md` T1). No recipe entry, no registry record, no
+command/agent change for the biz packs. This is the gate working as designed.
+
+**Final tally: 2 REDUCE · 6 POINT · 9 KEEP.** US-3(biz)/US-5(biz)/US-7 resolve to "no passers,
+nothing to add". The 9 KEEP reasons are recorded in `specs/foundation-positioning-review/spec.md`.
