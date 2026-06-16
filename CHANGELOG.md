@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Stack-pivot re-detection on `update`.** When a project has outgrown the preset
+  recorded in `.claude/foundation.json` (e.g. a `react-vite-spa` project that now also
+  matches `nextjs`), `claude-base update` prints a **non-blocking notice** naming the
+  recorded preset, the newly-detected one(s), and the exact `claude-base update --preset <name>`
+  command to adopt the change. **Observe-and-propose, never auto-switch**: the recorded
+  preset and the skill filter are left untouched (CS-205 sticky guarantee preserved); the
+  user opts in explicitly. The notice fires only when the active preset comes from the
+  manifest — not on legacy projects, steady-state, `--no-preset`, or an explicit `--preset`
+  adoption. Project-side counterpart of the foundation-side recommendation-drift surfacing.
+  Closes `phase-6-curator-bindings` open question #3.
+
 ## [4.2.0] - 2026-06-15
 
 ### Added

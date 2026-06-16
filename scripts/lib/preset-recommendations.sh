@@ -311,7 +311,8 @@ preset_pivot_notice() {
     local detected_list
     detected_list="$(echo "$detected" | sort)"
 
-    printf 'Your project may have changed stack.\n'
+    # Headline is provided by the caller's section() header (matches the
+    # recommendation_drift convention); the body starts at the recorded preset.
     printf 'Recorded preset : %s\n' "$recorded"
     printf 'Detected preset(s):\n'
     while IFS= read -r name; do
