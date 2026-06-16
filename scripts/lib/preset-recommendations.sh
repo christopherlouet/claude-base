@@ -249,3 +249,83 @@ record_recommendations_snapshot() {
         return 1
     fi
 }
+
+# =============================================================================
+# Stack-pivot re-detection notice (specs/stack-pivot-redetect, CS-205)
+#
+# When a project's recorded preset diverges from the stack the detector would
+# now select, surface a non-blocking, non-mutating notice at update time.
+# The recorded preset and skill filter are left strictly untouched — this helper
+# only prints a suggestion; the user adopts via `claude-base update --preset`.
+#
+# Divergence rule (FR-3, plan.md):
+#   D = scan_presets(target_dir)
+#   - D empty              → silent (project matches nothing; avoid noise)
+#   - D == {recorded}      → silent (steady-state)
+#   - anything else        → print notice listing D and the adoption command
+#
+# Fail-safe: any error inside the check must never propagate — the caller wraps
+# with `|| true` but we also `return 0` unconditionally at the end.
+# =============================================================================
+
+# preset_pivot_notice <recorded_preset_name> <target_dir>
+#
+# Echoes a concise notice block when the project's detected preset set diverges
+# from the recorded one. Emits nothing (and exits 0) for steady-state, legacy,
+# empty-detection, or jq-absent situations. Pure/offline; no writes.
+#
+# Arguments:
+#   $1 - recorded preset name (from .claude/foundation.json .preset)
+#   $2 - target project directory
+# Return: 0 always (fail-safe)
+preset_pivot_notice() {
+    local recorded="${1:-}"
+    local target_dir="${2:-}"
+
+    # Guard: jq required (consistent with scan_presets / resolve_active_preset)
+    if ! command -v jq >/dev/null 2>&1; then
+        return 0
+    fi
+
+    # Guard: need a recorded preset name to compare against
+    [[ -z "$recorded" ]] && return 0
+
+    # Run the detector; degrade silently on any error
+    local detected
+    detected="$(scan_presets "$target_dir" 2>/dev/null || true)"
+
+    # Empty detection → silent (FR-3 conservative decision: matches nothing,
+    # could be files-removed noise; revisit only if real need appears)
+    [[ -z "$detected" ]] && return 0
+
+    # Steady-state: detected set == {recorded} → silent
+    # $detected is a newline-separated list from scan_presets. Sort it and
+    # compare as a single space-separated string to {recorded}.
+    local detected_sorted
+    detected_sorted="$(echo "$detected" | sort | tr '\n' ' ' | sed 's/ $//')"
+    if [[ "$detected_sorted" == "$recorded" ]]; then
+        return 0
+    fi
+
+    # Divergence: detected set differs from {recorded} — print notice
+    local detected_list
+    detected_list="$(echo "$detected" | sort)"
+
+    printf 'Your project may have changed stack.\n'
+    printf 'Recorded preset : %s\n' "$recorded"
+    printf 'Detected preset(s):\n'
+    while IFS= read -r name; do
+        printf '  • %s\n' "$name"
+    done <<< "$detected_list"
+    printf '\nTo adopt the new preset, run:\n'
+    # If exactly one detected preset, name it directly; else give --preset hint
+    local detected_count
+    detected_count="$(echo "$detected" | grep -c '.'  || true)"
+    if [[ "$detected_count" -eq 1 ]]; then
+        printf '  claude-base update --preset %s\n' "$detected"
+    else
+        printf '  claude-base update --preset <name>\n'
+    fi
+
+    return 0
+}

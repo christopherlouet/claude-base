@@ -1974,6 +1974,24 @@ main() {
     # rediscover) opt-in vendor skills throughout the project lifecycle.
     # Gated to honor --quiet and skipped when no preset governs this run.
     if [[ -n "$ACTIVE_PRESET_FILE" ]] && ! ${QUIET:-false}; then
+        # specs/stack-pivot-redetect (CS-205): surface when the project's stack
+        # has pivoted away from its recorded preset. Non-blocking, non-mutating.
+        # Fires only when the preset comes from the manifest (SOURCE=manifest):
+        #   - SOURCE=--preset → user is already adopting a new preset, no notice needed
+        #   - SOURCE=detected → legacy project with no recorded baseline, skip
+        # Fail-safe: || true + explicit if, never a trailing && under set -e.
+        if [[ "${ACTIVE_PRESET_SOURCE:-}" == "manifest" ]]; then
+            local _pivot
+            # Thread PRESETS_DIR_OVERRIDE → PRESETS_DIR so scan_presets inside
+            # preset_pivot_notice uses the same preset tree as resolve_preset_file.
+            # The subshell env override is fail-safe: any error → empty string.
+            _pivot="$(PRESETS_DIR="${PRESETS_DIR_OVERRIDE:-${PRESETS_DIR:-}}" \
+                preset_pivot_notice "$ACTIVE_PRESET_NAME" "$TARGET_DIR" || true)"
+            if [[ -n "$_pivot" ]]; then
+                section "Your project may have changed stack"
+                printf '%s\n\n' "$_pivot"
+            fi
+        fi
         # US-9: surface a CHANGED recommendation set (added / removed / re-pinned)
         # vs the snapshot recorded in the manifest — a tracked change on update,
         # not a silent drift. Empty on a first run (no prior snapshot) or no change.
