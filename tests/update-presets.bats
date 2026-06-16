@@ -541,3 +541,140 @@ EOF
     [ "$status" -ne 0 ]
     [[ "$output" == *"foundation.json"* ]]
 }
+
+# =============================================================================
+# Stack-pivot re-detection notice (specs/stack-pivot-redetect, CS-205)
+# T003: pivoted project → pivot notice printed + manifest byte-identical + exit 0
+# T005: no-notice cases (legacy/no-manifest, steady-state, --no-preset, --preset)
+# =============================================================================
+
+# Helper: write two synthetic presets for pivot tests.
+#   pivot-alpha: detect marker = pivot-alpha.marker
+#   pivot-beta:  detect marker = pivot-beta.marker
+_write_pivot_presets() {
+    local preset_dir="$1"
+    mkdir -p "$preset_dir"
+    cat > "$preset_dir/pivot-alpha.json" << 'EOF'
+{
+  "name": "pivot-alpha",
+  "displayName": "Pivot Alpha",
+  "description": "Synthetic pivot preset A (alpha.marker)",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["pivot-alpha.marker"]},
+  "foundation": {"skills": {"drop": [], "keep": []}},
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+    cat > "$preset_dir/pivot-beta.json" << 'EOF'
+{
+  "name": "pivot-beta",
+  "displayName": "Pivot Beta",
+  "description": "Synthetic pivot preset B (beta.marker)",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["pivot-beta.marker"]},
+  "foundation": {"skills": {"drop": [], "keep": []}},
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+}
+
+# T003: pivoted project → notice printed, manifest byte-identical, exit 0
+@test "update-presets: pivot notice printed on stack divergence (T003)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    # Bootstrap with pivot-alpha (no detect marker in project dir)
+    "$NEW_PROJECT" --preset pivot-alpha --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "pivot-alpha" ]
+
+    # Snapshot the manifest bytes before the update
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    cp "$manifest" "$TEST_DIR/manifest.before"
+
+    # Pivot: place the beta marker (project now matches pivot-beta, not alpha)
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # Pivot notice must appear in stdout
+    [[ "$output" == *"pivot-alpha"* ]] || [[ "$output" == *"changed stack"* ]]
+    [[ "$output" == *"pivot-beta"* ]]
+    [[ "$output" == *"claude-base update --preset pivot-beta"* ]]
+    # CS-205 byte-identical guard: manifest must not have been mutated by the notice
+    cmp -s "$TEST_DIR/manifest.before" "$manifest"
+}
+
+# T005a: legacy project (no foundation.json) → no pivot notice
+@test "update-presets: no pivot notice for legacy project without foundation.json (T005a)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    # Remove the manifest to simulate a truly legacy project
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
+    # Plant beta marker so detection would fire if notice ran
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # Pivot notice must NOT appear (no recorded baseline)
+    [[ "$output" != *"claude-base update --preset"* ]] || true
+    [[ "$output" != *"changed stack"* ]]
+}
+
+# T005b: steady-state → no pivot notice
+@test "update-presets: no pivot notice for steady-state project (T005b)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" --preset pivot-beta --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "pivot-beta" ]
+
+    # Only the beta marker: detected == recorded → steady state
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"changed stack"* ]]
+    # Suggested adoption command must NOT appear for steady state
+    [[ "$output" != *"claude-base update --preset pivot-beta"* ]]
+}
+
+# T005c: --no-preset → no pivot notice
+@test "update-presets: no pivot notice when --no-preset is used (T005c)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" --preset pivot-alpha --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Pivot the project stack
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --no-preset --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # --no-preset disables preset governance entirely → no notice
+    [[ "$output" != *"changed stack"* ]]
+    [[ "$output" != *"claude-base update --preset"* ]]
+}
+
+# T005d: explicit --preset (adoption path) → no pivot notice
+@test "update-presets: no pivot notice when explicit --preset is used (T005d)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" --preset pivot-alpha --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Pivot the project stack
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    # Explicit --preset: this IS the adoption → no notice expected
+    run "$UPDATE" --presets-dir "$preset_dir" --preset pivot-beta --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"changed stack"* ]]
+}
