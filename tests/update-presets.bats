@@ -604,8 +604,10 @@ EOF
 
     run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
-    # Pivot notice must appear in stdout
-    [[ "$output" == *"pivot-alpha"* ]] || [[ "$output" == *"changed stack"* ]]
+    # Pivot notice must appear in stdout — assert BOTH the section header AND the
+    # recorded preset name (an OR here would pass while one half is broken).
+    [[ "$output" == *"changed stack"* ]]
+    [[ "$output" == *"pivot-alpha"* ]]
     [[ "$output" == *"pivot-beta"* ]]
     [[ "$output" == *"claude-base update --preset pivot-beta"* ]]
     # CS-205 byte-identical guard: manifest must not have been mutated by the notice
@@ -625,8 +627,8 @@ EOF
 
     run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
-    # Pivot notice must NOT appear (no recorded baseline)
-    [[ "$output" != *"claude-base update --preset"* ]] || true
+    # Pivot notice must NOT appear (no recorded baseline) — hard assertions.
+    [[ "$output" != *"claude-base update --preset"* ]]
     [[ "$output" != *"changed stack"* ]]
 }
 
@@ -677,4 +679,8 @@ EOF
     run "$UPDATE" --presets-dir "$preset_dir" --preset pivot-beta --skills -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
     [[ "$output" != *"changed stack"* ]]
+    # ...and the adoption path actually ran (proves the no-notice is because of
+    # the --preset source, not because the whole block was dead): pivot-beta is
+    # the active preset, sourced from the explicit flag.
+    [[ "$output" == *"Active preset: pivot-beta (--preset)"* ]]
 }

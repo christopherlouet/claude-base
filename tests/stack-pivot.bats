@@ -71,8 +71,9 @@ call() {
 # T001 — Unit test suite for preset_pivot_notice (RED: helper is absent)
 # ---------------------------------------------------------------------------
 
-# Case 1: divergence — recorded react-vite-spa, dir now matches nextjs
-@test "pivot-notice: divergence → output non-empty, names recorded + detected" {
+# Case 1: divergence, R ∉ D — recorded react-vite-spa no longer matches; dir now
+# matches only nextjs (single detected preset → adoption command names it).
+@test "pivot-notice: divergence (recorded no longer detected) → names recorded + detected, suggests the single preset" {
     # Arrange: two synthetic presets with distinct detect markers
     make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
     make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
@@ -104,24 +105,16 @@ call() {
     [ -z "$output" ]
 }
 
-# Case 3: R ∉ D — recorded react-vite-spa, dir only matches nextjs (not vite)
-@test "pivot-notice: recorded preset no longer detected → non-empty with no-longer-matches wording" {
-    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
-    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+# Case 3 (was a duplicate of Case 1: same arrange/call, R ∉ D) removed — Case 1
+# already covers the recorded-no-longer-detected single-preset path, and Case 4
+# below covers the multi-detected path. The two divergence shapes are distinct
+# and each has exactly one test.
 
-    # Only next.config.js: react-vite-spa no longer matches
-    touch "$TEST_DIR/proj/next.config.js"
-
-    call "preset_pivot_notice 'react-vite-spa' '$TEST_DIR/proj'"
-
-    [ "$status" -eq 0 ]
-    [ -n "$output" ]
-    [[ "$output" == *"react-vite-spa"* ]]
-    [[ "$output" == *"nextjs"* ]]
-}
-
-# Case 4: multi-match — dir matches nextjs + react-vite-spa → lists both, suggests --preset, exit 0
-@test "pivot-notice: multi-match → lists all detected presets, suggests --preset, exit 0" {
+# Case 4: multi-match — recorded react-vite-spa still matches AND nextjs also
+# matches (R ∈ D, |D| > 1) → lists both, and the adoption hint uses the generic
+# `<name>` placeholder (NOT a single concrete preset), exercising the else-branch
+# of the count logic that Case 1 does not.
+@test "pivot-notice: multi-match → lists all detected presets, suggests generic --preset <name>, exit 0" {
     make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
     make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
 
@@ -136,8 +129,8 @@ call() {
     # Must list both detected presets
     [[ "$output" == *"nextjs"* ]]
     [[ "$output" == *"react-vite-spa"* ]]
-    # Must suggest --preset
-    [[ "$output" == *"--preset"* ]]
+    # Multi-match → generic placeholder, not a single concrete --preset <one>
+    [[ "$output" == *"claude-base update --preset <name>"* ]]
 }
 
 # Case 5: empty-detection — dir matches nothing → output empty (silent per FR-3 decision)
