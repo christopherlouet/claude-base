@@ -268,6 +268,35 @@ record_recommendations_snapshot() {
 # with `|| true` but we also `return 0` unconditionally at the end.
 # =============================================================================
 
+# _preset_detected_sorted <target_dir>
+#
+# Single source of truth for "what presets does this project match now": echoes
+# the detected preset names, sorted, one per line (empty when nothing matches or
+# jq is absent). Pure/offline, fail-safe. Shared by preset_pivot_notice and
+# preset_pivot_report so the detection + ordering live in one place.
+_preset_detected_sorted() {
+    local target_dir="${1:-}"
+    command -v jq >/dev/null 2>&1 || return 0
+    scan_presets "$target_dir" 2>/dev/null | sort || true
+}
+
+# _preset_adoption_hint <detected_list> [indent]
+#
+# Prints the `claude-base update --preset …` adoption command for a detected
+# set: names the single preset when exactly one matched, else the generic
+# `<name>` placeholder. <detected_list> is the newline-sorted detector output.
+_preset_adoption_hint() {
+    local detected_list="$1"
+    local indent="${2:-}"
+    local count
+    count="$(printf '%s\n' "$detected_list" | grep -c '.' || true)"
+    if [[ "$count" -eq 1 ]]; then
+        printf '%sclaude-base update --preset %s\n' "$indent" "$detected_list"
+    else
+        printf '%sclaude-base update --preset <name>\n' "$indent"
+    fi
+}
+
 # preset_pivot_notice <recorded_preset_name> <target_dir>
 #
 # Echoes a concise notice block when the project's detected preset set diverges
@@ -282,35 +311,22 @@ preset_pivot_notice() {
     local recorded="${1:-}"
     local target_dir="${2:-}"
 
-    # Guard: jq required (consistent with scan_presets / resolve_active_preset)
-    if ! command -v jq >/dev/null 2>&1; then
-        return 0
-    fi
-
     # Guard: need a recorded preset name to compare against
     [[ -z "$recorded" ]] && return 0
 
-    # Run the detector; degrade silently on any error
-    local detected
-    detected="$(scan_presets "$target_dir" 2>/dev/null || true)"
+    local detected_list
+    detected_list="$(_preset_detected_sorted "$target_dir")"
 
-    # Empty detection → silent (FR-3 conservative decision: matches nothing,
-    # could be files-removed noise; revisit only if real need appears)
-    [[ -z "$detected" ]] && return 0
+    # Empty detection (or jq absent) → silent (FR-3 conservative decision:
+    # matches nothing, could be files-removed noise; revisit only if needed)
+    [[ -z "$detected_list" ]] && return 0
 
     # Steady-state: detected set == {recorded} → silent
-    # $detected is a newline-separated list from scan_presets. Sort it and
-    # compare as a single space-separated string to {recorded}.
-    local detected_sorted
-    detected_sorted="$(echo "$detected" | sort | tr '\n' ' ' | sed 's/ $//')"
-    if [[ "$detected_sorted" == "$recorded" ]]; then
-        return 0
-    fi
+    local detected_joined
+    detected_joined="$(printf '%s\n' "$detected_list" | tr '\n' ' ' | sed 's/ $//')"
+    [[ "$detected_joined" == "$recorded" ]] && return 0
 
-    # Divergence: detected set differs from {recorded} — print notice
-    local detected_list
-    detected_list="$(echo "$detected" | sort)"
-
+    # Divergence: detected set differs from {recorded} — print notice.
     # Headline is provided by the caller's section() header (matches the
     # recommendation_drift convention); the body starts at the recorded preset.
     printf 'Recorded preset : %s\n' "$recorded"
@@ -319,13 +335,47 @@ preset_pivot_notice() {
         printf '  • %s\n' "$name"
     done <<< "$detected_list"
     printf '\nTo adopt the new preset, run:\n'
-    # If exactly one detected preset, name it directly; else give --preset hint
-    local detected_count
-    detected_count="$(echo "$detected" | grep -c '.'  || true)"
-    if [[ "$detected_count" -eq 1 ]]; then
-        printf '  claude-base update --preset %s\n' "$detected"
+    _preset_adoption_hint "$detected_list" '  '
+
+    return 0
+}
+
+# preset_pivot_report <recorded_preset_name> <target_dir>
+#
+# Read-only report for `claude-base update --detect-only`: ALWAYS prints the
+# recorded preset, the detected set, and an explicit `Diverges: yes|no` verdict
+# (unlike preset_pivot_notice, which is silent on the steady state). Pure/
+# offline; no writes. Return 0 always (fail-safe).
+preset_pivot_report() {
+    local recorded="${1:-}"
+    local target_dir="${2:-}"
+
+    local detected_list
+    detected_list="$(_preset_detected_sorted "$target_dir")"
+
+    printf 'Recorded preset : %s\n' "${recorded:-(none)}"
+    if [[ -z "$detected_list" ]]; then
+        printf 'Detected preset(s): (none)\n'
     else
-        printf '  claude-base update --preset <name>\n'
+        printf 'Detected preset(s):\n'
+        while IFS= read -r name; do
+            printf '  • %s\n' "$name"
+        done <<< "$detected_list"
+    fi
+
+    # No recorded baseline → nothing to diverge from.
+    if [[ -z "$recorded" ]]; then
+        printf 'Diverges: n/a (no recorded preset)\n'
+        return 0
+    fi
+
+    local detected_joined
+    detected_joined="$(printf '%s\n' "$detected_list" | tr '\n' ' ' | sed 's/ $//')"
+    if [[ -n "$detected_list" && "$detected_joined" != "$recorded" ]]; then
+        printf 'Diverges: yes\n\nTo adopt, run:\n'
+        _preset_adoption_hint "$detected_list" '  '
+    else
+        printf 'Diverges: no\n'
     fi
 
     return 0

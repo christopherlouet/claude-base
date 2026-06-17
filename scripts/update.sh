@@ -63,6 +63,10 @@ REMOVE_ORPHANS=false
 # resolve_active_preset() once TARGET_DIR is finalized.
 UPDATE_PRESET_NAME=""
 UPDATE_NO_PRESET=false
+# --detect-only (specs/stack-pivot-redetect US-3): read-only check of whether
+# the project still matches its recorded preset. Prints a report and exits 0
+# without mutating anything.
+UPDATE_DETECT_ONLY=false
 ACTIVE_PRESET_NAME=""
 ACTIVE_PRESET_FILE=""
 ACTIVE_PRESET_SOURCE=""
@@ -178,6 +182,9 @@ ${BOLD}OPTIONS${NC}
                         community presets.
     --no-preset         Disable preset filtering (every foundation skill copied,
                         as in pre-v1.37 behavior). Mutually exclusive with --preset.
+    --detect-only       Read-only: report whether the project still matches its
+                        recorded preset (recorded vs detected, Diverges: yes/no),
+                        then exit without updating. Mutually exclusive with --preset.
 
 ${BOLD}AVAILABLE HOOKS${NC}
     rtk                 RTK token optimizer (reduces tokens by 60-90%, requires: brew install rtk)
@@ -360,6 +367,10 @@ parse_args() {
                 ;;
             --no-preset)
                 UPDATE_NO_PRESET=true
+                shift
+                ;;
+            --detect-only)
+                UPDATE_DETECT_ONLY=true
                 shift
                 ;;
             --presets-dir)
@@ -1829,6 +1840,22 @@ main() {
     fi
 
     TARGET_DIR="$(get_absolute_path "$TARGET_DIR")"
+
+    # --detect-only (US-3): read-only stack-pivot check. Resolve the recorded
+    # preset and report whether the project still matches it, then exit 0 —
+    # BEFORE any mutation (migration, filtering, copying). Mutates nothing.
+    if $UPDATE_DETECT_ONLY; then
+        if [[ -n "$UPDATE_PRESET_NAME" ]]; then
+            error "--detect-only and --preset are mutually exclusive"
+        fi
+        local _recorded
+        _recorded="$(manifest_preset "$TARGET_DIR" 2>/dev/null || true)"
+        # Thread PRESETS_DIR_OVERRIDE → PRESETS_DIR so scan_presets uses the
+        # same tree as the rest of the run (parity with the notice call site).
+        PRESETS_DIR="${PRESETS_DIR_OVERRIDE:-${PRESETS_DIR:-}}" \
+            preset_pivot_report "$_recorded" "$TARGET_DIR" || true
+        exit 0
+    fi
 
     # Legacy marker → manifest migration on first contact (EF-205, direct
     # replacement). Real runs only — dry-run must not mutate the project.
