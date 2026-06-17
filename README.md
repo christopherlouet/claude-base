@@ -83,7 +83,7 @@ vendor skills (tool-specific depth)          ← Prisma, Supabase, Playwright, G
 
 The foundation ships <!-- count:commands -->128<!-- /count --> commands + <!-- count:agents -->61<!-- /count --> agents + <!-- count:skills -->53<!-- /count --> skills, but most skills are **thin pointers** pairing the canonical vendor source with a few foundation-specific discipline lines (security/GDPR wraps, anti-patterns, cross-skill orchestration). What's NOT pointer-shaped is the workflow layer:
 
-> A **default install ships the core only** — the horizontal activity domains (`biz`, `legal`, `growth`) are **opt-in modules** (`claude-base add <module>`), not part of the default catalog. The totals above are the full foundation (core + modules); a fresh project gets the smaller core slice. See [`specs/horizontal-pure-modules/`](specs/horizontal-pure-modules/).
+> A **default install ships the core only** — both the horizontal activity domains (`biz`, `legal`, `growth`) and the stack/thematic domains (`nextjs`, `flutter`, `iac`, `observability`, …) are **opt-in modules** (`claude-base add <module>`), not part of the default catalog. There are **15 modules in total** — run `claude-base modules` to list them. The totals above are the full foundation (core + modules); a fresh project gets the smaller core slice. See [`specs/horizontal-pure-modules/`](specs/horizontal-pure-modules/).
 
 - **Workflow rigor coordinated as one experience** — TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates
 - **Anti-drift counter strategy** across the entire foundation, CI-enforced via `counts.json` + a doc drift firewall (`scripts/audit-docs.sh`)
@@ -495,9 +495,12 @@ claude-base update /path/to/your/project
 
 # Or refresh with a specific preset filter applied
 claude-base update --preset nextjs /path/to/your/project
+
+# Read-only: check whether your project still matches its recorded preset
+claude-base update --detect-only /path/to/your/project
 ```
 
-`claude-base update` is COPY-only by default — existing files in your project's `.claude/` are not deleted. Pass `--clean` to wipe-and-replace (a backup is created first).
+`claude-base update` is COPY-only by default — existing files in your project's `.claude/` are not deleted. Pass `--clean` to wipe-and-replace (a backup is created first). `update` also **flags a stack pivot**: if your project has outgrown its recorded preset (e.g. a Vite SPA that grew into Next.js), it prints a non-blocking notice pointing at `claude-base update --preset <name>`; `--detect-only` reports that check (`Diverges: yes/no`) without updating anything.
 
 ### Versioning policy
 

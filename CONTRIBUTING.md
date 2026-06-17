@@ -34,10 +34,10 @@ cd website && npm install && cd ..
 
 ```
 .claude/
-  commands/    # 131 commands (source of truth)
-  agents/      # 63 sub-agents
-  skills/      # 54 skills
-  rules/       # 30 contextual rules
+  commands/    # 128 commands (source of truth)
+  agents/      # 61 sub-agents
+  skills/      # 53 skills
+  rules/       # 31 contextual rules
   templates/   # Specification templates
   settings.json # Hooks and permissions
 website/       # Docusaurus site (generated docs)
