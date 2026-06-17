@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Runtime security hooks were silently inert (read the wrong input).** `scripts/hooks/command-validator.sh`
+  and the four inline `PreToolUse` gates in `.claude/settings.json` (pre-commit tests, pre-push CI,
+  destructive-op confirmation, pre-deploy build) read the command to inspect from a `TOOL_INPUT`
+  environment variable. The current Claude Code CLI passes hook input on **stdin as JSON**
+  (`.tool_input.command`), not via that env var (see https://code.claude.com/docs/en/hooks) — so the
+  variable was always empty and every guard exited 0 without validating anything. They now read the
+  payload from stdin (falling back to the raw payload if `jq` is missing, so a missing `jq` cannot
+  silently bypass the screen) and block via the documented **exit code 2** (was a non-blocking `exit 1`).
+  Added `tests/command-validator.bats` (behavioral coverage of every block category over the real stdin
+  envelope, plus a drift guard asserting no `settings.json` hook relies on the unset `TOOL_INPUT`).
+
 ### Added
 
 - **Stack-pivot re-detection on `update`.** When a project has outgrown the preset
