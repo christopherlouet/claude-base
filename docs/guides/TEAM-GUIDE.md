@@ -238,7 +238,7 @@ If you want auto-propagation without committing `.claude/` wholesale, a partial-
 
 Files in `.claude/rules/` are committed to git and activate automatically based on the modified files. This is the most efficient mechanism to share code conventions without putting them in CLAUDE.md.
 
-The foundation includes 30 pre-configured rules. For a team, the most important to commit are:
+The foundation includes 31 pre-configured rules. For a team, the most important to commit are:
 
 | Rule | Automatic activation | Team usefulness |
 |------|---------------------|-----------------|

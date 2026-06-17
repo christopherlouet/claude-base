@@ -395,7 +395,8 @@ claude-base init [--preset <name>] .    Install (core-only by default; auto-dete
 claude-base modules                     List modules + what's installed
 claude-base add <module> .              Opt into a module (biz, growth, legal, mobile, iac…)
 claude-base remove <module> .           Opt back out
-claude-base update [--all] .            Update; keeps the preset filter + flags recommendation drift
+claude-base update [--all] .            Update; keeps the preset filter + flags recommendation/stack drift
+claude-base update --detect-only .      Read-only: does the project still match its recorded preset?
 claude-base validate .                  Check the install
 ```
 

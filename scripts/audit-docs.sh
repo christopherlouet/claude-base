@@ -49,7 +49,7 @@ KNOWN_INIT_FLAGS=(
 # shellcheck disable=SC2034  # consumed by _audit_flags_pass via nameref
 KNOWN_UPDATE_FLAGS=(
     --add-hook --add-plugin --agents --all --backup-only --changelog
-    --clean --detect-orphans --hook-scripts --no-preset --preset
+    --clean --detect-only --detect-orphans --hook-scripts --no-preset --preset
     --presets-dir --remove-orphans --restore --rules --settings --skills
     --styles --templates --upgrade-claude-md --verbose
 )
