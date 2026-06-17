@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   manifest — not on legacy projects, steady-state, `--no-preset`, or an explicit `--preset`
   adoption. Project-side counterpart of the foundation-side recommendation-drift surfacing.
   Closes `phase-6-curator-bindings` open question #3.
+- **`claude-base update --detect-only`.** Read-only companion to the stack-pivot notice:
+  reports the recorded preset, the currently-detected preset(s), and an explicit
+  `Diverges: yes/no` verdict, then exits without updating anything (scriptable / CI-friendly).
+  Mutually exclusive with `--preset`. Implements stack-pivot US-3; a regression guard also
+  pins US-4 (a project matching multiple presets is surfaced, never aborted).
 
 ## [4.2.0] - 2026-06-15
 

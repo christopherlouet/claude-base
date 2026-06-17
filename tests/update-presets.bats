@@ -684,3 +684,110 @@ EOF
     # the active preset, sourced from the explicit flag.
     [[ "$output" == *"Active preset: pivot-beta (--preset)"* ]]
 }
+
+# =============================================================================
+# US-3 — read-only `update --detect-only`: report recorded vs detected, exit 0,
+# mutate nothing. US-4 — multi-match never aborts a recorded-project update.
+# =============================================================================
+
+# US-3a: --detect-only on a pivoted project → Diverges: yes, exit 0, no mutation
+@test "update-presets: --detect-only reports divergence read-only, no mutation (US-3)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" --preset pivot-alpha --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    cp "$manifest" "$TEST_DIR/manifest.before"
+    # Whole-tree snapshot (structure): a fall-through real update would create a
+    # commands.backup.<ts>/ dir even though the sticky manifest stays identical,
+    # so the manifest cmp alone is too narrow — snapshot every .claude path.
+    local tree_before
+    tree_before="$(cd "$TEST_DIR/proj" && find .claude | sort)"
+
+    # Pivot the stack
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --detect-only -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"pivot-alpha"* ]]
+    [[ "$output" == *"pivot-beta"* ]]
+    [[ "$output" == *"Diverges: yes"* ]]
+    # Read-only: the .claude tree must be unchanged (no new files/backup dirs),
+    # the manifest byte-identical, and no update must have run.
+    local tree_after
+    tree_after="$(cd "$TEST_DIR/proj" && find .claude | sort)"
+    [ "$tree_before" = "$tree_after" ]
+    cmp -s "$TEST_DIR/manifest.before" "$manifest"
+    [[ "$output" != *"Update completed"* ]]
+}
+
+# US-3b: --detect-only on a steady-state project → Diverges: no, exit 0
+@test "update-presets: --detect-only reports no divergence for steady state (US-3)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" --preset pivot-beta --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --detect-only -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Diverges: no"* ]]
+}
+
+# US-3c: --detect-only and --preset are mutually exclusive
+@test "update-presets: --detect-only and --preset are mutually exclusive (US-3)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+    "$NEW_PROJECT" --preset pivot-alpha --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    run "$UPDATE" --presets-dir "$preset_dir" --detect-only --preset pivot-beta -y "$TEST_DIR/proj"
+    [ "$status" -ne 0 ]
+    # Match the full message, not just "detect-only" (which could leak from an
+    # unrelated error), to pin the mutual-exclusion path specifically.
+    [[ "$output" == *"detect-only"*"mutually exclusive"* ]]
+}
+
+# US-3d: --detect-only on a legacy marker-only project (no manifest) is read-only
+# — it must NOT migrate the marker into a foundation.json (the trickiest no-write
+# path: the normal flow would migrate on first contact).
+@test "update-presets: --detect-only does not migrate a legacy marker (US-3)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    # Simulate a legacy project: drop the manifest, leave a version marker.
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
+    echo "1.0.0" > "$TEST_DIR/proj/.claude/.foundation-version"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --detect-only -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # No recorded preset → the report says so, and exits read-only
+    [[ "$output" == *"Diverges: n/a"* ]]
+    # The marker must NOT have been migrated to a manifest
+    [ -f "$TEST_DIR/proj/.claude/.foundation-version" ]
+    [ ! -f "$TEST_DIR/proj/.claude/foundation.json" ]
+}
+
+# US-4: a recorded project that now matches MULTIPLE presets must still complete
+# (the legacy multi-match abort must NOT fire) and list all detected presets.
+@test "update-presets: multi-match never aborts a recorded-project update (US-4)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" --preset pivot-alpha --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Both markers present → detected = {pivot-alpha, pivot-beta}, recorded still alpha
+    touch "$TEST_DIR/proj/pivot-alpha.marker"
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # The legacy multi-match abort must NOT be triggered for a recorded project
+    [[ "$output" != *"multiple presets match"* ]]
+    # The update must actually COMPLETE (not silently no-op while exiting 0)
+    [[ "$output" == *"Update completed"* ]]
+    # Notice lists both and uses the generic placeholder (>1 detected)
+    [[ "$output" == *"changed stack"* ]]
+    [[ "$output" == *"pivot-alpha"* ]]
+    [[ "$output" == *"pivot-beta"* ]]
+    [[ "$output" == *"claude-base update --preset <name>"* ]]
+}

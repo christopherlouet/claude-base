@@ -190,3 +190,50 @@ FAKEJQ
 
     [ "$status" -eq 0 ]
 }
+
+# ---------------------------------------------------------------------------
+# US-3 — preset_pivot_report (read-only, always prints a verdict)
+# Unlike preset_pivot_notice (silent on steady-state), the report ALWAYS prints
+# the recorded preset, the detected set, and an explicit Diverges: yes|no line.
+# ---------------------------------------------------------------------------
+
+# Report 1: divergence → Diverges: yes + names + adoption hint
+@test "pivot-report: divergence → reports recorded, detected, Diverges: yes + hint" {
+    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    touch "$TEST_DIR/proj/next.config.js"
+
+    call "preset_pivot_report 'react-vite-spa' '$TEST_DIR/proj'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"react-vite-spa"* ]]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"Diverges: yes"* ]]
+    [[ "$output" == *"claude-base update --preset nextjs"* ]]
+}
+
+# Report 2: steady-state → Diverges: no (and NO adoption hint)
+@test "pivot-report: steady-state → Diverges: no, no adoption hint" {
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    touch "$TEST_DIR/proj/next.config.js"
+
+    call "preset_pivot_report 'nextjs' '$TEST_DIR/proj'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"nextjs"* ]]
+    [[ "$output" == *"Diverges: no"* ]]
+    [[ "$output" != *"To adopt"* ]]
+}
+
+# Report 3: no recorded baseline (legacy) → still prints, exit 0, no crash
+@test "pivot-report: no recorded preset → reports a (none) baseline, exit 0" {
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    touch "$TEST_DIR/proj/next.config.js"
+
+    call "preset_pivot_report '' '$TEST_DIR/proj'"
+
+    [ "$status" -eq 0 ]
+    [ -n "$output" ]
+    # The detected preset is still surfaced even without a recorded baseline
+    [[ "$output" == *"nextjs"* ]]
+}
