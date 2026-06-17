@@ -91,15 +91,16 @@ run_validator() {
 # --- Drift guard: no settings.json hook may rely on the unset TOOL_INPUT env
 #     var as its SOLE input source (it must read the payload from stdin) -----
 
-@test "settings.json: every hook using TOOL_INPUT also reads the stdin payload" {
+@test "settings.json: every hook reading a TOOL_* input var also reads the stdin payload" {
     local settings="$BASE_DIR/.claude/settings.json"
     [ -f "$settings" ]
-    # Each hook "command" string that references TOOL_INPUT must also populate
-    # it from stdin (cat + jq .tool_input.command). Extract command strings and
-    # check the invariant per-command.
+    # The CLI passes hook input on stdin as JSON, NOT via TOOL_* env vars. Any
+    # hook command that references one of these input vars ($TOOL_INPUT /
+    # $TOOL_FILE / $TOOL_CONTENT / $TOOL_NAME) must therefore populate it from
+    # the stdin payload (cat | jq ...) — otherwise the hook is a silent no-op.
     local bad
     bad=$(jq -r '.hooks[][]?.hooks[]?.command // empty' "$settings" \
-        | grep -F 'TOOL_INPUT' \
-        | grep -vF 'tool_input.command' || true)
+        | grep -E 'TOOL_(INPUT|FILE|CONTENT|NAME)' \
+        | grep -vF '$(cat' || true)
     [ -z "$bad" ]
 }

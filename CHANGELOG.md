@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- **The remaining inline hooks read unset env vars too (auto-format + secret scan were inert).** Same
+  root cause as the `command-validator` fix: the gitleaks secret-scanner read `$TOOL_CONTENT`, the 12
+  PostToolUse auto-format/install hooks (prettier, ruff, gofmt, rustfmt, stylua, dart, bun/uv/flutter/go/
+  cargo installers, vitest) read `$TOOL_FILE`, and the failure logger read `$TOOL_NAME` — all env vars
+  the CLI never sets, so every one was a silent no-op (files were never auto-formatted, secrets never
+  scanned on write). They now read the payload from stdin (`.tool_input.file_path` /
+  `.tool_input.content`//`.new_string` / `.tool_name`); gitleaks blocks via exit 2. The settings.json
+  drift guard is generalised to fail on ANY `$TOOL_*` input var not sourced from stdin.
 - **Runtime security hooks were silently inert (read the wrong input).** `scripts/hooks/command-validator.sh`
   and the four inline `PreToolUse` gates in `.claude/settings.json` (pre-commit tests, pre-push CI,
   destructive-op confirmation, pre-deploy build) read the command to inspect from a `TOOL_INPUT`
