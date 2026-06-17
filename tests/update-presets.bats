@@ -684,3 +684,76 @@ EOF
     # the active preset, sourced from the explicit flag.
     [[ "$output" == *"Active preset: pivot-beta (--preset)"* ]]
 }
+
+# =============================================================================
+# US-3 — read-only `update --detect-only`: report recorded vs detected, exit 0,
+# mutate nothing. US-4 — multi-match never aborts a recorded-project update.
+# =============================================================================
+
+# US-3a: --detect-only on a pivoted project → Diverges: yes, exit 0, no mutation
+@test "update-presets: --detect-only reports divergence read-only, no mutation (US-3)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" --preset pivot-alpha --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    cp "$manifest" "$TEST_DIR/manifest.before"
+
+    # Pivot the stack
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --detect-only -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"pivot-alpha"* ]]
+    [[ "$output" == *"pivot-beta"* ]]
+    [[ "$output" == *"Diverges: yes"* ]]
+    # Read-only: manifest must be byte-identical, and no update must have run
+    cmp -s "$TEST_DIR/manifest.before" "$manifest"
+    [[ "$output" != *"Update completed"* ]]
+}
+
+# US-3b: --detect-only on a steady-state project → Diverges: no, exit 0
+@test "update-presets: --detect-only reports no divergence for steady state (US-3)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" --preset pivot-beta --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --detect-only -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Diverges: no"* ]]
+}
+
+# US-3c: --detect-only and --preset are mutually exclusive
+@test "update-presets: --detect-only and --preset are mutually exclusive (US-3)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+    "$NEW_PROJECT" --preset pivot-alpha --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    run "$UPDATE" --presets-dir "$preset_dir" --detect-only --preset pivot-beta -y "$TEST_DIR/proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"detect-only"* ]]
+}
+
+# US-4: a recorded project that now matches MULTIPLE presets must still complete
+# (the legacy multi-match abort must NOT fire) and list all detected presets.
+@test "update-presets: multi-match never aborts a recorded-project update (US-4)" {
+    local preset_dir="$TEST_DIR/pivot-presets"
+    _write_pivot_presets "$preset_dir"
+
+    "$NEW_PROJECT" --preset pivot-alpha --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Both markers present → detected = {pivot-alpha, pivot-beta}, recorded still alpha
+    touch "$TEST_DIR/proj/pivot-alpha.marker"
+    touch "$TEST_DIR/proj/pivot-beta.marker"
+
+    run "$UPDATE" --presets-dir "$preset_dir" --skills -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # The legacy multi-match abort must NOT be triggered for a recorded project
+    [[ "$output" != *"multiple presets match"* ]]
+    # Notice lists both and uses the generic placeholder (>1 detected)
+    [[ "$output" == *"changed stack"* ]]
+    [[ "$output" == *"pivot-alpha"* ]]
+    [[ "$output" == *"pivot-beta"* ]]
+    [[ "$output" == *"claude-base update --preset <name>"* ]]
+}
