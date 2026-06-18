@@ -1,5 +1,5 @@
 ---
-sidebar_position: 53
+sidebar_position: 51
 title: "qa-e2e"
 description: "End-to-End tests for critical user journeys."
 tags:
