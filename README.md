@@ -2,6 +2,8 @@
 
 > **Workflow framework + curator for Claude Code.** Makes Claude Code follow a real engineering workflow — **Explore → Specify → Plan → TDD → Audit → Commit** — wired through hooks, path-specific rules, and an anti-drift CI gate. Stack presets (`nextjs`, `fastapi`, `astro`, `react-vite-spa`, `cli-tools`, `homelab-proxmox`) auto-detect your repo and point you at a curated set of vendor skills for tool-specific depth, so you don't have to figure out which community skill to trust.
 
+_Where most Claude Code setups add more agents, claude-base adds **guardrails**: every change is tested-first, audited to a quality score, and screened for secrets and destructive commands — the conventions injected per file by your stack. It's the discipline-and-safety layer for AI-assisted coding: use it on its own, or alongside a multi-agent orchestrator._
+
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
