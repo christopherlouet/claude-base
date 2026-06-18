@@ -32,11 +32,13 @@ while our core carries far more. A first scan shows the surplus is **not** empty
 wrappers (only ~2 pointer agents, ~2 short commands) — so the audit must target
 **overlap, redundancy, and vendor-graduation candidates**, not hollow files.
 
-- [ ] **Data-driven catalog audit** (M). For every command/agent/skill, classify:
-  genuinely-distinct vs overlapping-with-a-sibling vs candidate-for-vendor-graduation
-  vs rarely-load-bearing. Produce a kill/merge/keep/graduate proposal with evidence
-  (cross-reference graph, semantic overlap, what each uniquely adds). Decide the core
-  target (targeted consolidation vs aggressive lean) **after** seeing the numbers.
+- [x] **Data-driven catalog audit** (done 2026-06-18 — see `specs/consolidation-audit-2026-06/audit.md`).
+  Finding: the surface is mostly earned (≈70% of items genuinely distinct), not bloated —
+  aggressive lean-to-20 is NOT supported. Targeted consolidation yields ~110 cmd / ~48
+  agents / 53 skills (−18-20 cmds, −13 passthrough agents). Sequenced into 4 waves.
+- [ ] **Decide the target** (maintainer): full targeted consolidation (4 waves) vs Wave-1-only
+  (collapse the 13 passthrough agents — safest zero-loss win). Then execute wave by wave
+  via the module-change loop (bats RED→GREEN, counts regen, one PR per wave).
 - [ ] Re-run the tri-modal (command vs agent vs skill) overlap analysis interrupted
   in a prior session (carried over from the deep-analysis backlog).
 
