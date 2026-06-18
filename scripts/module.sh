@@ -432,6 +432,14 @@ cmd_remove() {
                     ((preserved++)) || true
                 fi
             done < <(find "$src_dir" -type f 2>/dev/null | sort || true)
+            # remove_bundle_file only rmdir's each file's immediate parent, so a
+            # bundle dir holding a nested subtree (e.g. skills/growth-cro/ with
+            # an examples/ subdir) is left behind when the top dir is emptied
+            # only after a sibling subtree is removed. Prune any now-empty dirs
+            # depth-first; -empty preserves a dir the user dropped a file into.
+            if ! $DRY_RUN && [[ -d "$TARGET_DIR/$dir_path" ]]; then
+                find "$TARGET_DIR/$dir_path" -depth -type d -empty -delete 2>/dev/null || true
+            fi
         else
             src_file="$FOUNDATION_ROOT/$bundle_path"
             dest_file="$TARGET_DIR/$bundle_path"

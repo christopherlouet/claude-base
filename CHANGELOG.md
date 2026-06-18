@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- **`claude-base remove` left a hollow skill directory when a bundle dir had a nested subtree.** `remove_bundle_file`
+  only `rmdir`'s each file's immediate parent, so a bundle directory holding a nested subdir (e.g.
+  `skills/growth-cro/` with an `examples/` subdir) was left behind: the top dir is emptied only after the
+  sibling subtree is removed, and the early `rmdir` is never retried. The leftover empty dir re-triggered
+  `update`'s "files of module X present but the module is not in the manifest" warning even after a clean
+  remove. `cmd_remove` now prunes any now-empty directories depth-first (`find -depth -type d -empty -delete`,
+  which preserves a dir the user dropped a file into). Added a regression test in `tests/modules.bats`.
 - **The remaining inline hooks read unset env vars too (auto-format + secret scan were inert).** Same
   root cause as the `command-validator` fix: the gitleaks secret-scanner read `$TOOL_CONTENT`, the 12
   PostToolUse auto-format/install hooks (prettier, ruff, gofmt, rustfmt, stylua, dart, bun/uv/flutter/go/

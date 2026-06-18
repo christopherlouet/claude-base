@@ -804,6 +804,22 @@ run_module() {
     [ ! -d "$TEST_DIR/.claude/commands/biz" ]
 }
 
+@test "module remove: a skill dir with a nested subdir is fully removed (review)" {
+    # Regression: growth's skills/growth-cro/ holds SKILL.md AND a nested
+    # examples/ subdir. remove_bundle_file only rmdir's a file's immediate
+    # parent, so the top dir — emptied only after the sibling subtree is
+    # gone — was left behind, re-triggering update's "module present but not
+    # in the manifest" warning. The whole tree must be gone after remove.
+    setup_lean_project
+    run_module add growth --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -d "$TEST_DIR/.claude/skills/growth-cro/examples" ]
+
+    run_module remove growth --target "$TEST_DIR" --non-interactive
+    [ "$status" -eq 0 ]
+    [ ! -d "$TEST_DIR/.claude/skills/growth-cro" ]
+}
+
 @test "module add: explicit --target plus a positional dir is an error (review)" {
     # update.sh rejects extra targets ('Too many arguments') — the module
     # verbs must not silently let the positional overwrite --target.
