@@ -83,7 +83,7 @@ claude-base (workflow framework + curator)   ← Explore → TDD → Audit, anti
 vendor skills (tool-specific depth)          ← Prisma, Supabase, Playwright, Grafana, MSW, PostHog, ...
 ```
 
-The foundation ships <!-- count:commands -->128<!-- /count --> commands + <!-- count:agents -->61<!-- /count --> agents + <!-- count:skills -->53<!-- /count --> skills, but most skills are **thin pointers** pairing the canonical vendor source with a few foundation-specific discipline lines (security/GDPR wraps, anti-patterns, cross-skill orchestration). What's NOT pointer-shaped is the workflow layer:
+The foundation ships <!-- count:commands -->128<!-- /count --> commands + <!-- count:agents -->58<!-- /count --> agents + <!-- count:skills -->53<!-- /count --> skills, but most skills are **thin pointers** pairing the canonical vendor source with a few foundation-specific discipline lines (security/GDPR wraps, anti-patterns, cross-skill orchestration). What's NOT pointer-shaped is the workflow layer:
 
 > A **default install ships the core only** — both the horizontal activity domains (`biz`, `legal`, `growth`) and the stack/thematic domains (`nextjs`, `flutter`, `iac`, `observability`, …) are **opt-in modules** (`claude-base add <module>`), not part of the default catalog. There are **15 modules in total** — run `claude-base modules` to list them. The totals above are the full foundation (core + modules); a fresh project gets the smaller core slice. See [`specs/horizontal-pure-modules/`](specs/horizontal-pure-modules/).
 
@@ -123,7 +123,7 @@ Everything is plain markdown + JSON. No daemon, no telemetry, no network access 
 | Component | Count | What it is |
 |---|---|---|
 | Slash commands | <!-- count:commands -->128<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
-| Sub-agents | <!-- count:agents -->61<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
+| Sub-agents | <!-- count:agents -->58<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
 | Skills | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords in your prompts |
 | Path-specific rules | <!-- count:rules -->31<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
 | Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles ; tier breakdown in [Going deeper](#going-deeper) |
@@ -419,7 +419,7 @@ The full documentation site lives at **[https://christopherlouet.github.io/claud
 
 It covers:
 - Quick start guide
-- Catalog of <!-- count:commands -->128<!-- /count --> commands, <!-- count:agents -->61<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->31<!-- /count --> rules
+- Catalog of <!-- count:commands -->128<!-- /count --> commands, <!-- count:agents -->58<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->31<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Learning path, Extending, Team, Prompting, Troubleshooting

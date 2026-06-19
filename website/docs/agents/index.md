@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalog of 61 claude-base sub-agents"
+description: "Catalog of 58 claude-base sub-agents"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Agent Catalog
 
-> **61 sub-agents** with isolated context for autonomous tasks
+> **58 sub-agents** with isolated context for autonomous tasks
 
 <Stats items={[
-  { number: 22, label: 'Haiku agents' },
+  { number: 19, label: 'Haiku agents' },
   { number: 33, label: 'Sonnet agents' },
-  { number: 61, label: 'Total' },
+  { number: 58, label: 'Total' },
 ]} />
 
 ## What is an Agent?
@@ -29,7 +29,7 @@ import AgentCard from '@site/src/components/AgentCard';
 
 ## Agents by model
 
-### Haiku (22 agents)
+### Haiku (19 agents)
 
 Fast and economical agents for simple tasks.
 
@@ -51,10 +51,7 @@ Fast and economical agents for simple tasks.
 | [`ops-health`](/docs/agents/ops-health) | Quick health check to evaluate the general state of a projec... | Read, Grep, Glob... |
 | [`ops-serverless`](/docs/agents/ops-serverless) | Deployment of serverless applications. | Read, Grep, Glob... |
 | [`ops-vercel`](/docs/agents/ops-vercel) | Deployment on Vercel. | Read, Grep, Glob... |
-| [`qa-coverage`](/docs/agents/qa-coverage) | Analysis of test coverage and quality of existing tests. | Read, Grep, Glob... |
-| [`qa-design`](/docs/agents/qa-design) | UI/UX design audit with 100+ verification rules. | Read, Grep, Glob |
 | [`qa-responsive`](/docs/agents/qa-responsive) | Audit of responsive design and mobile experience. | Read, Grep, Glob |
-| [`qa-tech-debt`](/docs/agents/qa-tech-debt) | Identification and prioritization of technical debt. | Read, Grep, Glob |
 | [`wcag-audit`](/docs/agents/wcag-audit) | Accessibility audit per WCAG 2.1/2.2 level AA, inspired by t... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | EXPLORATION mode: codebase analysis without modifying files. | Read, Grep, Glob |
 

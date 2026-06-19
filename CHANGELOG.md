@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Consolidation Wave 1 (catalog audit P0): collapsed 3 passthrough qa agents** (`qa-design`,
+  `qa-tech-debt`, `qa-coverage`). These sub-agents were pure skill-passthroughs (read-only,
+  default tools, not dispatched by `qa-loop`); the capability is unchanged — `qa-design` and
+  `qa-tech-debt` still ship as auto-triggering skills + slash commands, and `qa-coverage` as a
+  slash command. Agents 61 → 58 (core 33 → 30). First of several audit-driven consolidation
+  batches — see `specs/consolidation-audit-2026-06/audit.md` and `ROADMAP.md`.
+
 ### Fixed
 
 - **`claude-base remove` left a hollow skill directory when a bundle dir had a nested subtree.** `remove_bundle_file`
