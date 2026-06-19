@@ -1,5 +1,5 @@
 ---
-sidebar_position: 27
+sidebar_position: 25
 title: "legal-rgpd"
 description: "GDPR compliance (General Data Protection Regulation)."
 tags:

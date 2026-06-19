@@ -1,5 +1,5 @@
 ---
-sidebar_position: 50
+sidebar_position: 48
 title: "qa-security"
 description: "OWASP Top 10 security audit. The `qa-security` skill provides the detailed checklist."
 tags:

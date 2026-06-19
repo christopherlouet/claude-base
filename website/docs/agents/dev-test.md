@@ -1,5 +1,5 @@
 ---
-sidebar_position: 14
+sidebar_position: 12
 title: "dev-test"
 description: "Generation of complete and maintainable tests."
 tags:

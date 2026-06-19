@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalog of 53 claude-base sub-agents"
+description: "Catalog of 51 claude-base sub-agents"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Agent Catalog
 
-> **53 sub-agents** with isolated context for autonomous tasks
+> **51 sub-agents** with isolated context for autonomous tasks
 
 <Stats items={[
   { number: 16, label: 'Haiku agents' },
-  { number: 31, label: 'Sonnet agents' },
-  { number: 53, label: 'Total' },
+  { number: 30, label: 'Sonnet agents' },
+  { number: 51, label: 'Total' },
 ]} />
 
 ## What is an Agent?
@@ -52,7 +52,7 @@ Fast and economical agents for simple tasks.
 | [`wcag-audit`](/docs/agents/wcag-audit) | Accessibility audit per WCAG 2.1/2.2 level AA, inspired by t... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | EXPLORATION mode: codebase analysis without modifying files. | Read, Grep, Glob |
 
-### Sonnet (31 agents)
+### Sonnet (30 agents)
 
 Agents for complex tasks requiring in-depth analysis.
 
@@ -63,7 +63,6 @@ Agents for complex tasks requiring in-depth analysis.
 | [`biz-personas`](/docs/agents/biz-personas) | Creation of user personas based on data. | Read, Grep, Glob... |
 | [`data-modeling`](/docs/agents/data-modeling) | Design of dimensional data models for analytics. | Read, Grep, Glob... |
 | [`data-pipeline`](/docs/agents/data-pipeline) | Design and implementation of ETL/ELT data pipelines. | Read, Grep, Glob... |
-| [`dev-ai-integration`](/docs/agents/dev-ai-integration) | Integration of LLMs and AI APIs into applications. | Read, Grep, Glob... |
 | [`dev-document`](/docs/agents/dev-document) | Generation of office documents and reports. | Read, Grep, Glob... |
 | [`dev-flutter`](/docs/agents/dev-flutter) | Flutter development with Clean Architecture and BLoC. | Read, Grep, Glob... |
 | [`dev-test`](/docs/agents/dev-test) | Generation of complete and maintainable tests. | Read, Grep, Glob... |
@@ -91,14 +90,13 @@ Agents for complex tasks requiring in-depth analysis.
 | [`work-quick`](/docs/agents/work-quick) | Quick workflow for trivial changes. The `work-quick` skill p... | Read, Grep, Glob... |
 
 
-### Opus (6 agents)
+### Opus (5 agents)
 
 Agents for critical tasks.
 
 | Agent | Description | Tools |
 |-------|-------------|--------|
 | [`dev-debug`](/docs/agents/dev-debug) | Bug diagnostic and resolution. The `dev-debug` skill provide... | Read, Grep, Glob... |
-| [`dev-rag`](/docs/agents/dev-rag) | Architecture and implementation of RAG systems. | Read, Grep, Glob... |
 | [`dev-tdd`](/docs/agents/dev-tdd) | Test-driven development. The `dev-tdd` skill provides the de... | Read, Grep, Glob... |
 | [`qa-audit`](/docs/agents/qa-audit) | Complete quality audit covering 5 domains. | Read, Grep, Glob... |
 | [`qa-loop`](/docs/agents/qa-loop) | Autonomous **AUDIT (parallel) → VALIDATE → FIX → VERIFY → CH... | Read, Grep, Glob... |
@@ -151,13 +149,6 @@ Agents for critical tasks.
     href="/docs/agents/data-pipeline"
   />
   <AgentCard
-    name="dev-ai-integration"
-    description="Integration of LLMs and AI APIs into applications."
-    model="sonnet"
-    tools={["Read","Grep","Glob","Bash"]}
-    href="/docs/agents/dev-ai-integration"
-  />
-  <AgentCard
     name="dev-debug"
     description="Bug diagnostic and resolution. The `dev-debug` skill provides the detailed metho"
     model="opus"
@@ -179,18 +170,25 @@ Agents for critical tasks.
     href="/docs/agents/dev-flutter"
   />
   <AgentCard
-    name="dev-rag"
-    description="Architecture and implementation of RAG systems."
-    model="opus"
-    tools={["Read","Grep","Glob","Bash"]}
-    href="/docs/agents/dev-rag"
-  />
-  <AgentCard
     name="dev-tdd"
     description="Test-driven development. The `dev-tdd` skill provides the detailed methodology."
     model="opus"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/dev-tdd"
+  />
+  <AgentCard
+    name="dev-test"
+    description="Generation of complete and maintainable tests."
+    model="sonnet"
+    tools={["Read","Grep","Glob","Edit"]}
+    href="/docs/agents/dev-test"
+  />
+  <AgentCard
+    name="doc-changelog"
+    description="Changelog management following the Keep a Changelog convention."
+    model="haiku"
+    tools={["Read","Grep","Glob","Edit"]}
+    href="/docs/agents/doc-changelog"
   />
 </AgentGrid>
 
