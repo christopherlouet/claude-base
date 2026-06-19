@@ -1,5 +1,5 @@
 ---
-sidebar_position: 36
+sidebar_position: 33
 title: "ops-database"
 description: "Database design and management."
 tags:

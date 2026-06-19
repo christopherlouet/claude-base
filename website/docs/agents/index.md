@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalog of 58 claude-base sub-agents"
+description: "Catalog of 55 claude-base sub-agents"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Agent Catalog
 
-> **58 sub-agents** with isolated context for autonomous tasks
+> **55 sub-agents** with isolated context for autonomous tasks
 
 <Stats items={[
-  { number: 19, label: 'Haiku agents' },
-  { number: 33, label: 'Sonnet agents' },
-  { number: 58, label: 'Total' },
+  { number: 17, label: 'Haiku agents' },
+  { number: 32, label: 'Sonnet agents' },
+  { number: 55, label: 'Total' },
 ]} />
 
 ## What is an Agent?
@@ -29,7 +29,7 @@ import AgentCard from '@site/src/components/AgentCard';
 
 ## Agents by model
 
-### Haiku (19 agents)
+### Haiku (17 agents)
 
 Fast and economical agents for simple tasks.
 
@@ -37,8 +37,6 @@ Fast and economical agents for simple tasks.
 |-------|-------------|--------|
 | [`biz-model`](/docs/agents/biz-model) | Business analysis and business model proposal for a project. | Read, Grep, Glob... |
 | [`dev-design-system`](/docs/agents/dev-design-system) | Design systems and component libraries. | Read, Grep, Glob |
-| [`dev-prisma`](/docs/agents/dev-prisma) | Prisma ORM for type-safe databases. | Read, Grep, Glob... |
-| [`dev-trpc`](/docs/agents/dev-trpc) | Type-safe APIs with tRPC. | Read, Grep, Glob |
 | [`doc-changelog`](/docs/agents/doc-changelog) | Changelog management following the Keep a Changelog conventi... | Read, Grep, Glob... |
 | [`doc-explain`](/docs/agents/doc-explain) | Pedagogical explanation of complex code. | Read, Grep, Glob |
 | [`doc-onboard`](/docs/agents/doc-onboard) | Guide for discovering and understanding a codebase. | Read, Grep, Glob |
@@ -55,7 +53,7 @@ Fast and economical agents for simple tasks.
 | [`wcag-audit`](/docs/agents/wcag-audit) | Accessibility audit per WCAG 2.1/2.2 level AA, inspired by t... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | EXPLORATION mode: codebase analysis without modifying files. | Read, Grep, Glob |
 
-### Sonnet (33 agents)
+### Sonnet (32 agents)
 
 Agents for complex tasks requiring in-depth analysis.
 
@@ -70,7 +68,6 @@ Agents for complex tasks requiring in-depth analysis.
 | [`dev-component`](/docs/agents/dev-component) | Creation of modular and reusable UI components. | Read, Grep, Glob... |
 | [`dev-document`](/docs/agents/dev-document) | Generation of office documents and reports. | Read, Grep, Glob... |
 | [`dev-flutter`](/docs/agents/dev-flutter) | Flutter development with Clean Architecture and BLoC. | Read, Grep, Glob... |
-| [`dev-supabase`](/docs/agents/dev-supabase) | Complete integration of Supabase as a backend. | Read, Grep, Glob... |
 | [`dev-test`](/docs/agents/dev-test) | Generation of complete and maintainable tests. | Read, Grep, Glob... |
 | [`doc-generate`](/docs/agents/doc-generate) | Generation of complete and maintainable documentation. | Read, Grep, Glob... |
 | [`growth-analytics`](/docs/agents/growth-analytics) | Analytics and tracking implementation, plus post-launch data... | Read, Grep, Glob... |

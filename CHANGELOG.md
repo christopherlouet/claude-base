@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `qa-tech-debt` still ship as auto-triggering skills + slash commands, and `qa-coverage` as a
   slash command. Agents 61 → 58 (core 33 → 30). First of several audit-driven consolidation
   batches — see `specs/consolidation-audit-2026-06/audit.md` and `ROADMAP.md`.
+- **Consolidation Wave 1 (batch B): collapsed 3 passthrough api-data agents** (`dev-prisma`,
+  `dev-supabase`, `dev-trpc`). Passthrough runners over vendor-pointer skills (read-only/default
+  tools, not dispatched); capability unchanged — `dev-prisma`/`dev-supabase` still ship as
+  vendor-pointer skills + slash commands, `dev-trpc` as a slash command. The `api-data` module
+  bundle drops to 4 commands + 3 skills (0 agents). Agents 58 → 55 (core unchanged at 30 —
+  these are module agents).
 
 ### Fixed
 

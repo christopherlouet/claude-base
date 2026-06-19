@@ -1,5 +1,5 @@
 ---
-sidebar_position: 15
+sidebar_position: 14
 title: "dev-rag"
 description: "Architecture and implementation of RAG systems."
 tags:

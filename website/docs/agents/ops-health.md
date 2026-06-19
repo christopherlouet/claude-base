@@ -1,5 +1,5 @@
 ---
-sidebar_position: 40
+sidebar_position: 37
 title: "ops-health"
 description: "Quick health check to evaluate the general state of a project."
 tags:

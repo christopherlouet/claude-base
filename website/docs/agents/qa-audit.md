@@ -1,5 +1,5 @@
 ---
-sidebar_position: 48
+sidebar_position: 45
 title: "qa-audit"
 description: "Complete quality audit covering 5 domains."
 tags:
