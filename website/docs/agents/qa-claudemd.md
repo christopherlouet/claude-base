@@ -1,5 +1,5 @@
 ---
-sidebar_position: 45
+sidebar_position: 43
 title: "qa-claudemd"
 description: "Audit of compliance with the project's CLAUDE.md and the repo's documented conventions."
 tags:

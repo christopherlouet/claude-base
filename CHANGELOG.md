@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   capability unchanged — both remain `/dev:` slash commands. `dev-component` was a core agent,
   `dev-design-system` a `frontend` module agent (bundle drops to 2 commands + 3 skills). Agents
   55 → 53 (core 30 → 29).
+- **Consolidation Wave 1 (batch D): collapsed 2 passthrough ai agents** (`dev-ai-integration`,
+  `dev-rag`). Passthrough runners (no skill, no delegation, not dispatched); capability unchanged
+  — both remain `/dev:` slash commands. The `ai` module bundle drops to 3 commands (0 agents).
+  Agents 53 → 51 (core unchanged at 29 — module agents).
 
 ### Fixed
 

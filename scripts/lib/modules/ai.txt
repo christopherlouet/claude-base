@@ -8,6 +8,4 @@
 .claude/commands/dev/dev-mcp.md
 .claude/commands/dev/dev-ai-integration.md
 
-# === Agents (2) ===
-.claude/agents/dev-rag.md
-.claude/agents/dev-ai-integration.md
+# === Agents (0 — dev-rag, dev-ai-integration collapsed, passthrough; Wave 1) ===

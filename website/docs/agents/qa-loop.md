@@ -1,5 +1,5 @@
 ---
-sidebar_position: 47
+sidebar_position: 45
 title: "qa-loop"
 description: "Autonomous **AUDIT (parallel) → VALIDATE → FIX → VERIFY → CHECK** loop with stop criteria. Adopts the Anthropic 2026 pattern (official `code-review` plugin): parallelization, false positive validation"
 tags:

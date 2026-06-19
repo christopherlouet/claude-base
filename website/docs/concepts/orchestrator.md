@@ -155,7 +155,7 @@ The orchestrator automatically detects your environment:
 
 ## Sub-Agents activated automatically
 
-The orchestrator knows the <!-- count:agents -->53<!-- /count --> specialized agents and activates them based on context:
+The orchestrator knows the <!-- count:agents -->51<!-- /count --> specialized agents and activates them based on context:
 
 | Detected context | Activated agent | Model |
 |------------------|-----------------|-------|
