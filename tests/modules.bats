@@ -227,7 +227,7 @@ run_lib() {
 
 @test "modules: thematic bundle item counts are stable (api-data, frontend, mobile)" {
     run_lib module_bundle_paths api-data
-    [ "${#lines[@]}" -eq 10 ]   # 4 cmds + 3 agents + 3 skills
+    [ "${#lines[@]}" -eq 7 ]    # 4 cmds + 3 skills (3 agents collapsed — Wave 1)
     run_lib module_bundle_paths frontend
     [ "${#lines[@]}" -eq 6 ]    # 2 cmds + 1 agent + 3 skills (dev-nextjs split out)
     run_lib module_bundle_paths mobile

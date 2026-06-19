@@ -1,5 +1,5 @@
 ---
-sidebar_position: 38
+sidebar_position: 35
 title: "ops-deps"
 description: "Audit, analysis and recommendations for project dependencies."
 tags:

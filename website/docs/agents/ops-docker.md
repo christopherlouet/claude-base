@@ -1,5 +1,5 @@
 ---
-sidebar_position: 39
+sidebar_position: 36
 title: "ops-docker"
 description: "Docker containerization optimized for production."
 tags:

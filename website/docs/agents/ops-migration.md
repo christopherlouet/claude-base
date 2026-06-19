@@ -1,5 +1,5 @@
 ---
-sidebar_position: 42
+sidebar_position: 39
 title: "ops-migration"
 description: "Planning and execution of technical migrations."
 tags:

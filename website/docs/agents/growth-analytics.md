@@ -1,5 +1,5 @@
 ---
-sidebar_position: 24
+sidebar_position: 21
 title: "growth-analytics"
 description: "Analytics and tracking implementation, plus post-launch data analysis on the collected events."
 tags:

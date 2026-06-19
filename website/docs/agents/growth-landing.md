@@ -1,5 +1,5 @@
 ---
-sidebar_position: 27
+sidebar_position: 24
 title: "growth-landing"
 description: "Creation of landing pages optimized for conversion."
 tags:

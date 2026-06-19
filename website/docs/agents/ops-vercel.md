@@ -1,5 +1,5 @@
 ---
-sidebar_position: 47
+sidebar_position: 44
 title: "ops-vercel"
 description: "Deployment on Vercel."
 tags:

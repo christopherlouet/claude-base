@@ -9,10 +9,7 @@
 .claude/commands/dev/dev-graphql.md
 .claude/commands/dev/dev-trpc.md
 
-# === Agents (3) ===
-.claude/agents/dev-prisma.md
-.claude/agents/dev-supabase.md
-.claude/agents/dev-trpc.md
+# === Agents (0 — collapsed: were passthrough runners over vendor-pointer skills) ===
 
 # === Skills (3 directories) ===
 .claude/skills/dev-prisma/

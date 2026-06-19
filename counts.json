@@ -1,6 +1,6 @@
 {
   "commands": 128,
-  "agents": 58,
+  "agents": 55,
   "skills": 53,
   "core": {
     "commands": 71,
