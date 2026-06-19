@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 9
 title: "dev-flutter"
 description: "Flutter development with Clean Architecture and BLoC."
 tags:

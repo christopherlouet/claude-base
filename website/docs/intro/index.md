@@ -40,7 +40,7 @@ Each step has its dedicated commands, specialized agents, and best practices.
 | Component | Count | Description |
 |-----------|--------|-------------|
 | **Commands** | <!-- count:commands -->128<!-- /count --> | Manually triggered commands (`/name`) |
-| **Agents** | <!-- count:agents -->51<!-- /count --> | Autonomous sub-agents with isolated context |
+| **Agents** | <!-- count:agents -->48<!-- /count --> | Autonomous sub-agents with isolated context |
 | **Skills** | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords |
 | **Rules** | <!-- count:rules -->31<!-- /count --> | Rules per technology/file |
 | **Presets** | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles installable via `--preset <name>` |

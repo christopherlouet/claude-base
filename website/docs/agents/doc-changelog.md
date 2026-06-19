@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 12
 title: "doc-changelog"
 description: "Changelog management following the Keep a Changelog convention."
 tags:

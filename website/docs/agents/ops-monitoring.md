@@ -1,5 +1,5 @@
 ---
-sidebar_position: 36
+sidebar_position: 35
 title: "ops-monitoring"
 description: "Complete instrumentation for observability (3 pillars)."
 tags:

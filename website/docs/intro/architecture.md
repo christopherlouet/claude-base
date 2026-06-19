@@ -100,7 +100,7 @@ claude-base/
 /qa:qa-security
 ```
 
-### Agents (<!-- count:agents -->51<!-- /count -->)
+### Agents (<!-- count:agents -->48<!-- /count -->)
 
 **Agents** are autonomous sub-agents with an isolated context.
 

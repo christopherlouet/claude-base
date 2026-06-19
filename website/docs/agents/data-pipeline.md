@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 6
 title: "data-pipeline"
 description: "Design and implementation of ETL/ELT data pipelines."
 tags:
