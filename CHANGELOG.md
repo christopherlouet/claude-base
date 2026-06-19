@@ -19,12 +19,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   transitive deps (undici, webpack-dev-server, http-proxy-middleware, js-yaml, joi, @babel/core, …) that
   no user could ever reach. Removing the manifest auto-resolves those alerts. CI/deploy now `npm install`
   (not `npm ci`) and resolve current (patched) transitive versions at build time; docs builds are no
-  longer reproducible by lockfile, which is acceptable for a static docs site. (The separate, larger
-  cleanup — not committing the generated `website/docs/` mirror — is deferred: the `--minimal` installer
-  sources `website/docs/guides/learning-path.md` via `minimal-manifest.txt`, so that source must be
-  relocated first. See ROADMAP.md.)
+  longer reproducible by lockfile, which is acceptable for a static docs site.
 
 ### Changed
+
+- **Stopped committing the auto-generated catalog mirrors** `website/docs/{agents,commands,skills,rules}`
+  (~275 files, now gitignored). These are regenerated from `.claude/` by `npm run generate` at CI/deploy
+  time — committing them churned dozens of files per catalog PR and silently drifted (a stale
+  `commands/doc/doc-i18n.md` orphan was lingering). The **authored** website docs
+  (`intro/concepts/examples/tutorials/workflow/guides` incl. `learning-path.md`, and `reference`) stay
+  committed, so the `--minimal` installer (which sources `guides/learning-path.md`) is unaffected and the
+  docs site still deploys in full. The counts gate is unchanged (counts.json + source-doc markers; the
+  CI git-diff drift-guard still covers the committed authored docs). Net: catalog PRs no longer carry
+  hundreds of generated-file diffs.
 
 - **Consolidation Wave 1 (catalog audit P0): collapsed 3 passthrough qa agents** (`qa-design`,
   `qa-tech-debt`, `qa-coverage`). These sub-agents were pure skill-passthroughs (read-only,
