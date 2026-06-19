@@ -207,7 +207,7 @@ When the user mentions "TDD", "test first", or "write tests first"...
 - Desired contextual triggering
 - Standardization of behaviors
 
-## Agents (<!-- count:agents -->51<!-- /count --> available)
+## Agents (<!-- count:agents -->48<!-- /count --> available)
 
 ### Definition
 Specialized sub-agents with isolated context, automatic delegation.

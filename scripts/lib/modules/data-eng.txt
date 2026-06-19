@@ -8,9 +8,8 @@
 .claude/commands/data/data-pipeline.md
 .claude/commands/data/data-modeling.md
 
-# === Agents (2) ===
+# === Agents (1 — data-modeling collapsed, passthrough; Wave 1) ===
 .claude/agents/data-pipeline.md
-.claude/agents/data-modeling.md
 
 # === Skills (1 directory) ===
 .claude/skills/data-pipeline/

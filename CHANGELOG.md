@@ -34,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `dev-rag`). Passthrough runners (no skill, no delegation, not dispatched); capability unchanged
   — both remain `/dev:` slash commands. The `ai` module bundle drops to 3 commands (0 agents).
   Agents 53 → 51 (core unchanged at 29 — module agents).
+- **Consolidation Wave 1 (batch E, final): collapsed 3 passthrough iac/data agents**
+  (`ops-vercel`, `ops-serverless`, `data-modeling`). Passthrough runners (no skill, no delegation,
+  not dispatched); capability unchanged — all remain slash commands (`ops-vercel` is already a
+  vendor pointer command). The `iac` bundle keeps `ops-infra-code` (3 → 1 agent); `data-eng`
+  keeps `data-pipeline` (2 → 1 agent). Agents 51 → 48 (core unchanged at 29). **Completes
+  Wave 1 of the consolidation audit: 61 → 48 agents (−13), zero capability loss.**
 
 ### Fixed
 

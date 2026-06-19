@@ -13,7 +13,7 @@ description: Quick reference and matrices
 | Reference | Description |
 |-----------|-------------|
 | [Commands matrix](/docs/reference/commands-matrix) | <!-- count:commands -->128<!-- /count --> commands with domain and description |
-| [Agents matrix](/docs/reference/agents-matrix) | <!-- count:agents -->51<!-- /count --> agents with model and tools |
+| [Agents matrix](/docs/reference/agents-matrix) | <!-- count:agents -->48<!-- /count --> agents with model and tools |
 | [Utility scripts](/docs/reference/scripts) | Installation and maintenance scripts |
 | [Cheatsheet](/docs/reference/commands) | Quick reference card |
 
@@ -38,7 +38,7 @@ description: Quick reference and matrices
 | Component | Count | Link |
 |-----------|--------|------|
 | Commands | <!-- count:commands -->128<!-- /count --> | [View](/docs/commands) |
-| Agents | <!-- count:agents -->51<!-- /count --> | [View](/docs/agents) |
+| Agents | <!-- count:agents -->48<!-- /count --> | [View](/docs/agents) |
 | Skills | <!-- count:skills -->53<!-- /count --> | [View](/docs/skills) |
 | Rules | <!-- count:rules -->31<!-- /count --> | [View](/docs/rules) |
 

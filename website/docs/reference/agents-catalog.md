@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Available Agents (128 commands, 51 sub-agents, 53 skills)"
+title: "Available Agents (128 commands, 48 sub-agents, 53 skills)"
 description: "Claude automatically delegates to specialized agents (isolated context, restricted tools)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Available Agents (<!-- count:commands -->128<!-- /count --> commands, <!-- count:agents -->51<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->128<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -176,7 +176,7 @@ tags:
 | `/legal:legal-terms-of-service` | Terms of Service |
 | `/legal:legal-privacy-policy` | Privacy Policy |
 
-## Sub-Agents (<!-- count:agents -->51<!-- /count -->)
+## Sub-Agents (<!-- count:agents -->48<!-- /count -->)
 
 Claude automatically delegates to specialized agents (isolated context, restricted tools).
 
@@ -194,10 +194,10 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 |--------|--------|--------|
 | Exploration & Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
 | Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-responsive`, `qa-e2e`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
-| Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-serverless`, `ops-vercel`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
+| Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
 | Development | `dev-debug`, `dev-test`, `dev-flutter`, `dev-document`, `dev-tdd` | haiku/sonnet (tdd, debug) |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |
-| Data | `data-pipeline`, `data-modeling` | haiku/sonnet |
+| Data | `data-pipeline` | haiku/sonnet |
 | Legal | `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service` | haiku/sonnet |
 
 ### Agent Configuration

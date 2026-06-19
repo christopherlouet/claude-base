@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalog of 51 claude-base sub-agents"
+description: "Catalog of 48 claude-base sub-agents"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Agent Catalog
 
-> **51 sub-agents** with isolated context for autonomous tasks
+> **48 sub-agents** with isolated context for autonomous tasks
 
 <Stats items={[
-  { number: 16, label: 'Haiku agents' },
-  { number: 30, label: 'Sonnet agents' },
-  { number: 51, label: 'Total' },
+  { number: 14, label: 'Haiku agents' },
+  { number: 29, label: 'Sonnet agents' },
+  { number: 48, label: 'Total' },
 ]} />
 
 ## What is an Agent?
@@ -29,7 +29,7 @@ import AgentCard from '@site/src/components/AgentCard';
 
 ## Agents by model
 
-### Haiku (16 agents)
+### Haiku (14 agents)
 
 Fast and economical agents for simple tasks.
 
@@ -46,13 +46,11 @@ Fast and economical agents for simple tasks.
 | [`ops-cost`](/docs/agents/ops-cost) | Token consumption analysis and cost optimization recommendat... | Read, Grep, Glob... |
 | [`ops-deps`](/docs/agents/ops-deps) | Audit, analysis and recommendations for project dependencies... | Read, Grep, Glob... |
 | [`ops-health`](/docs/agents/ops-health) | Quick health check to evaluate the general state of a projec... | Read, Grep, Glob... |
-| [`ops-serverless`](/docs/agents/ops-serverless) | Deployment of serverless applications. | Read, Grep, Glob... |
-| [`ops-vercel`](/docs/agents/ops-vercel) | Deployment on Vercel. | Read, Grep, Glob... |
 | [`qa-responsive`](/docs/agents/qa-responsive) | Audit of responsive design and mobile experience. | Read, Grep, Glob |
 | [`wcag-audit`](/docs/agents/wcag-audit) | Accessibility audit per WCAG 2.1/2.2 level AA, inspired by t... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | EXPLORATION mode: codebase analysis without modifying files. | Read, Grep, Glob |
 
-### Sonnet (30 agents)
+### Sonnet (29 agents)
 
 Agents for complex tasks requiring in-depth analysis.
 
@@ -61,7 +59,6 @@ Agents for complex tasks requiring in-depth analysis.
 | [`biz-competitor`](/docs/agents/biz-competitor) | Competitive analysis and strategic positioning for a project... | Read, Grep, Glob... |
 | [`biz-mvp`](/docs/agents/biz-mvp) | Definition and planning of the Minimum Viable Product. | Read, Grep, Glob... |
 | [`biz-personas`](/docs/agents/biz-personas) | Creation of user personas based on data. | Read, Grep, Glob... |
-| [`data-modeling`](/docs/agents/data-modeling) | Design of dimensional data models for analytics. | Read, Grep, Glob... |
 | [`data-pipeline`](/docs/agents/data-pipeline) | Design and implementation of ETL/ELT data pipelines. | Read, Grep, Glob... |
 | [`dev-document`](/docs/agents/dev-document) | Generation of office documents and reports. | Read, Grep, Glob... |
 | [`dev-flutter`](/docs/agents/dev-flutter) | Flutter development with Clean Architecture and BLoC. | Read, Grep, Glob... |
@@ -135,13 +132,6 @@ Agents for critical tasks.
     href="/docs/agents/biz-personas"
   />
   <AgentCard
-    name="data-modeling"
-    description="Design of dimensional data models for analytics."
-    model="sonnet"
-    tools={["Read","Grep","Glob","Edit"]}
-    href="/docs/agents/data-modeling"
-  />
-  <AgentCard
     name="data-pipeline"
     description="Design and implementation of ETL/ELT data pipelines."
     model="sonnet"
@@ -189,6 +179,13 @@ Agents for critical tasks.
     model="haiku"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/doc-changelog"
+  />
+  <AgentCard
+    name="doc-explain"
+    description="Pedagogical explanation of complex code."
+    model="haiku"
+    tools={["Read","Grep","Glob"]}
+    href="/docs/agents/doc-explain"
   />
 </AgentGrid>
 

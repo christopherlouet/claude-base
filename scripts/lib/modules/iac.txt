@@ -11,10 +11,8 @@
 .claude/commands/ops/ops-serverless.md
 .claude/commands/ops/ops-vercel.md
 
-# === Agents (3) ===
+# === Agents (1 — ops-serverless, ops-vercel collapsed, passthrough; Wave 1) ===
 .claude/agents/ops-infra-code.md
-.claude/agents/ops-serverless.md
-.claude/agents/ops-vercel.md
 
 # === Skills (1 directory) ===
 .claude/skills/ops-infra-code/
