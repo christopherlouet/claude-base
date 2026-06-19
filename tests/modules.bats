@@ -229,7 +229,7 @@ run_lib() {
     run_lib module_bundle_paths api-data
     [ "${#lines[@]}" -eq 7 ]    # 4 cmds + 3 skills (3 agents collapsed — Wave 1)
     run_lib module_bundle_paths frontend
-    [ "${#lines[@]}" -eq 6 ]    # 2 cmds + 1 agent + 3 skills (dev-nextjs split out)
+    [ "${#lines[@]}" -eq 5 ]    # 2 cmds + 3 skills (dev-design-system agent collapsed — Wave 1)
     run_lib module_bundle_paths mobile
     [ "${#lines[@]}" -eq 3 ]    # 2 cmds + 1 skill (dev-flutter split into its own module)
 }

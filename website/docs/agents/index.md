@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "Agents"
-description: "Catalog of 55 claude-base sub-agents"
+description: "Catalog of 53 claude-base sub-agents"
 ---
 
 import Stats from '@site/src/components/Stats';
@@ -10,12 +10,12 @@ import AgentCard from '@site/src/components/AgentCard';
 
 # Agent Catalog
 
-> **55 sub-agents** with isolated context for autonomous tasks
+> **53 sub-agents** with isolated context for autonomous tasks
 
 <Stats items={[
-  { number: 17, label: 'Haiku agents' },
-  { number: 32, label: 'Sonnet agents' },
-  { number: 55, label: 'Total' },
+  { number: 16, label: 'Haiku agents' },
+  { number: 31, label: 'Sonnet agents' },
+  { number: 53, label: 'Total' },
 ]} />
 
 ## What is an Agent?
@@ -29,14 +29,13 @@ import AgentCard from '@site/src/components/AgentCard';
 
 ## Agents by model
 
-### Haiku (17 agents)
+### Haiku (16 agents)
 
 Fast and economical agents for simple tasks.
 
 | Agent | Description | Tools |
 |-------|-------------|--------|
 | [`biz-model`](/docs/agents/biz-model) | Business analysis and business model proposal for a project. | Read, Grep, Glob... |
-| [`dev-design-system`](/docs/agents/dev-design-system) | Design systems and component libraries. | Read, Grep, Glob |
 | [`doc-changelog`](/docs/agents/doc-changelog) | Changelog management following the Keep a Changelog conventi... | Read, Grep, Glob... |
 | [`doc-explain`](/docs/agents/doc-explain) | Pedagogical explanation of complex code. | Read, Grep, Glob |
 | [`doc-onboard`](/docs/agents/doc-onboard) | Guide for discovering and understanding a codebase. | Read, Grep, Glob |
@@ -53,7 +52,7 @@ Fast and economical agents for simple tasks.
 | [`wcag-audit`](/docs/agents/wcag-audit) | Accessibility audit per WCAG 2.1/2.2 level AA, inspired by t... | Read, Grep, Glob |
 | [`work-explore`](/docs/agents/work-explore) | EXPLORATION mode: codebase analysis without modifying files. | Read, Grep, Glob |
 
-### Sonnet (32 agents)
+### Sonnet (31 agents)
 
 Agents for complex tasks requiring in-depth analysis.
 
@@ -65,7 +64,6 @@ Agents for complex tasks requiring in-depth analysis.
 | [`data-modeling`](/docs/agents/data-modeling) | Design of dimensional data models for analytics. | Read, Grep, Glob... |
 | [`data-pipeline`](/docs/agents/data-pipeline) | Design and implementation of ETL/ELT data pipelines. | Read, Grep, Glob... |
 | [`dev-ai-integration`](/docs/agents/dev-ai-integration) | Integration of LLMs and AI APIs into applications. | Read, Grep, Glob... |
-| [`dev-component`](/docs/agents/dev-component) | Creation of modular and reusable UI components. | Read, Grep, Glob... |
 | [`dev-document`](/docs/agents/dev-document) | Generation of office documents and reports. | Read, Grep, Glob... |
 | [`dev-flutter`](/docs/agents/dev-flutter) | Flutter development with Clean Architecture and BLoC. | Read, Grep, Glob... |
 | [`dev-test`](/docs/agents/dev-test) | Generation of complete and maintainable tests. | Read, Grep, Glob... |
@@ -160,25 +158,11 @@ Agents for critical tasks.
     href="/docs/agents/dev-ai-integration"
   />
   <AgentCard
-    name="dev-component"
-    description="Creation of modular and reusable UI components."
-    model="sonnet"
-    tools={["Read","Grep","Glob","Edit"]}
-    href="/docs/agents/dev-component"
-  />
-  <AgentCard
     name="dev-debug"
     description="Bug diagnostic and resolution. The `dev-debug` skill provides the detailed metho"
     model="opus"
     tools={["Read","Grep","Glob","Bash"]}
     href="/docs/agents/dev-debug"
-  />
-  <AgentCard
-    name="dev-design-system"
-    description="Design systems and component libraries."
-    model="haiku"
-    tools={["Read","Grep","Glob"]}
-    href="/docs/agents/dev-design-system"
   />
   <AgentCard
     name="dev-document"
@@ -193,6 +177,20 @@ Agents for critical tasks.
     model="sonnet"
     tools={["Read","Grep","Glob","Edit"]}
     href="/docs/agents/dev-flutter"
+  />
+  <AgentCard
+    name="dev-rag"
+    description="Architecture and implementation of RAG systems."
+    model="opus"
+    tools={["Read","Grep","Glob","Bash"]}
+    href="/docs/agents/dev-rag"
+  />
+  <AgentCard
+    name="dev-tdd"
+    description="Test-driven development. The `dev-tdd` skill provides the detailed methodology."
+    model="opus"
+    tools={["Read","Grep","Glob","Edit"]}
+    href="/docs/agents/dev-tdd"
   />
 </AgentGrid>
 

@@ -213,7 +213,7 @@ If you are already using Claude Code without claude-base:
 | Workflow | Ad-hoc | Explore → Specify → Plan → TDD → Audit → Commit |
 | Commands | Manual | `/work:work-*`, `/dev:dev-*`, etc. |
 | Conventions | Repeated | In CLAUDE.md and rules |
-| Agents | No | <!-- count:agents -->55<!-- /count --> specialized agents |
+| Agents | No | <!-- count:agents -->53<!-- /count --> specialized agents |
 
 ### Migration steps
 
