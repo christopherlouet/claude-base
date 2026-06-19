@@ -46,6 +46,9 @@ website/build/
 website/.docusaurus/
 website/.cache-loader/
 website/pdf/
+# Build-time dependency tree of the docs site — never shipped to users; kept out
+# of the repo so Dependabot doesn't scan it (npm install resolves at build time).
+website/package-lock.json
 
 # Installers locaux
 *.deb

@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Security
+
+- **Stopped committing `website/package-lock.json`** (now gitignored). The Docusaurus docs site is a
+  build-time tree that is never shipped to users (`claude-base init` never installs `website/`), yet its
+  committed lockfile was the manifest Dependabot scanned — generating a recurring stream of alerts for
+  transitive deps (undici, webpack-dev-server, http-proxy-middleware, js-yaml, joi, @babel/core, …) that
+  no user could ever reach. Removing the manifest auto-resolves those alerts. CI/deploy now `npm install`
+  (not `npm ci`) and resolve current (patched) transitive versions at build time; docs builds are no
+  longer reproducible by lockfile, which is acceptable for a static docs site. (The separate, larger
+  cleanup — not committing the generated `website/docs/` mirror — is deferred: the `--minimal` installer
+  sources `website/docs/guides/learning-path.md` via `minimal-manifest.txt`, so that source must be
+  relocated first. See ROADMAP.md.)
+
 ### Changed
 
 - **Consolidation Wave 1 (catalog audit P0): collapsed 3 passthrough qa agents** (`qa-design`,
