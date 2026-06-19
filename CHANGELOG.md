@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   vendor-pointer skills + slash commands, `dev-trpc` as a slash command. The `api-data` module
   bundle drops to 4 commands + 3 skills (0 agents). Agents 58 → 55 (core unchanged at 30 —
   these are module agents).
+- **Consolidation Wave 1 (batch C): collapsed 2 passthrough frontend agents** (`dev-component`,
+  `dev-design-system`). Passthrough runners (no skill, no delegation, not dispatched);
+  capability unchanged — both remain `/dev:` slash commands. `dev-component` was a core agent,
+  `dev-design-system` a `frontend` module agent (bundle drops to 2 commands + 3 skills). Agents
+  55 → 53 (core 30 → 29).
 
 ### Fixed
 

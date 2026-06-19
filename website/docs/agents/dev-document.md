@@ -1,5 +1,5 @@
 ---
-sidebar_position: 12
+sidebar_position: 10
 title: "dev-document"
 description: "Generation of office documents and reports."
 tags:

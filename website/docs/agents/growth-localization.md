@@ -1,5 +1,5 @@
 ---
-sidebar_position: 25
+sidebar_position: 23
 title: "growth-localization"
 description: "Localization strategy and international expansion."
 tags:

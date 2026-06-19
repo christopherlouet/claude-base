@@ -1,5 +1,5 @@
 ---
-sidebar_position: 34
+sidebar_position: 32
 title: "ops-deploy"
 description: "Secure deployment with mandatory pre-deploy validation."
 tags:

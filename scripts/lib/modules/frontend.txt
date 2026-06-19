@@ -10,8 +10,7 @@
 .claude/commands/dev/dev-react-perf.md
 .claude/commands/dev/dev-design-system.md
 
-# === Agents (1) ===
-.claude/agents/dev-design-system.md
+# === Agents (0 — dev-design-system collapsed, passthrough; Wave 1) ===
 
 # === Skills (3 directories) ===
 .claude/skills/dev-react-perf/
