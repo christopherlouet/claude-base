@@ -46,6 +46,15 @@ website/build/
 website/.docusaurus/
 website/.cache-loader/
 website/pdf/
+# Auto-generated catalog mirrors — regenerated from .claude/ by `npm run generate`
+# at CI/deploy time. Not committed: they churned on every catalog change (dozens
+# of files per PR) and drifted (stale orphan pages). The AUTHORED website docs
+# (intro/concepts/examples/tutorials/workflow/guides incl. learning-path/reference)
+# stay committed. counts.json + source-doc markers remain under the counts gate.
+website/docs/agents/
+website/docs/commands/
+website/docs/skills/
+website/docs/rules/
 # Build-time dependency tree of the docs site — never shipped to users; kept out
 # of the repo so Dependabot doesn't scan it (npm install resolves at build time).
 website/package-lock.json
