@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Removed
+
+- **Consolidation Wave 2 (doc cluster): removed `/doc:doc-readme` and `/doc:doc-architecture`** — both
+  were subsets of `/doc:doc-generate`, which already documents README, architecture/ADR, API and inline
+  docs by type. **Breaking** (the two slash commands are gone), but no capability is lost: use
+  `/doc:doc-generate` (pick the README or architecture/ADR doc type). Commands 128 → 126 (core 71 → 69).
+  Part of the audit-driven command consolidation — see `specs/consolidation-audit-2026-06/audit.md`.
+
 ### Security
 
 - **Stopped committing `website/package-lock.json`** (now gitignored). The Docusaurus docs site is a

@@ -38,7 +38,6 @@ Quickly understand a project in 30 minutes: type, stack, architecture, data flow
 | `/work:work-explore` | Explore in depth |
 | `/doc:doc-explain` | Understand specific code |
 | `/ops:ops-health` | Assess project health |
-| `/doc:doc-readme` | Consult/create the README |
 
 ---
 

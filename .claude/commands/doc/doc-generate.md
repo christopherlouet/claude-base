@@ -29,8 +29,6 @@ Generate the appropriate documentation (inline JSDoc/TSDoc, module README, API d
 | Agent | When to use it |
 |-------|----------------|
 | `/doc:doc-api-spec` | OpenAPI documentation |
-| `/doc:doc-readme` | Project README |
-| `/doc:doc-architecture` | Architecture documentation |
 | `/doc:doc-explain` | Explain complex code |
 
 ---
