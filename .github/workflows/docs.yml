@@ -32,10 +32,12 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: website/package-lock.json
+          cache-dependency-path: website/package.json
 
       - name: Install dependencies
-        run: npm ci
+        # website/package-lock.json is gitignored (build-time docs tree, never
+        # shipped) — use npm install, not npm ci.
+        run: npm install
         working-directory: website
 
       - name: Generate documentation from sources
