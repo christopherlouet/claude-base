@@ -36,7 +36,7 @@ with annotations, installation instructions and evaluation results.
 | Agent | Usage |
 |-------|-------|
 | `/dev:dev-api` | If creating a REST API in parallel |
-| `/dev:dev-test` | MCP server tests |
+| `/dev:dev-tdd` | MCP server tests |
 | `/doc:doc-api-spec` | OpenAPI documentation of the target API |
 
 ---

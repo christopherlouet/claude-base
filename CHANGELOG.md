@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Removed
 
+- **Consolidation Wave 3 (dev cluster): removed `/dev:dev-test`, `/dev:dev-hook` and `/dev:dev-testing-setup`**
+  (and the `dev-test` agent). **Breaking**, no capability lost: the whole test lifecycle now lives in
+  `/dev:dev-tdd` — the test-first cycle, **generating tests for existing code** (AAA, edge/error/boundary, coverage
+  thresholds) and **test-infrastructure setup** (framework, MSW, npm scripts, CI), all in its command + skill;
+  custom-hook creation folded into `/dev:dev-component` (UI components or hooks). ~21 referencing files rewired
+  (`/dev:dev-test`→`/dev:dev-tdd`, `/dev:dev-hook`→`/dev:dev-component`, `/dev:dev-testing-setup`→`/dev:dev-tdd`).
+  Commands 110 → 107 (core 63 → 60; `dev` 19 → 16), agents 46 → 45 (core 28 → 27). Part of the audit-driven
+  consolidation — see `specs/consolidation-audit-2026-06/audit.md`.
+
 - **Consolidation Wave 3 (growth cluster): removed `/growth:growth-funnel` and `/growth:growth-onboarding`**
   (opt-in `growth` module; the `growth-funnel` agent is removed too). **Breaking**, no capability lost — both
   folded into `/growth:growth-cro`, the CRO hub: funnel mapping/analysis (step performance, drop-off diagnosis,

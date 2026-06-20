@@ -43,7 +43,7 @@ Scan the code to identify technical debt (code, architecture, tests, documentati
 | Agent | Usage |
 |-------|-------|
 | `/dev:dev-refactor` | Refactoring execution |
-| `/dev:dev-test` | Generate the missing tests (coverage gaps) |
+| `/dev:dev-tdd` | Generate the missing tests (coverage gaps) |
 | `/qa:qa-review` | In-depth code review |
 | `/work:work-plan` | Refactoring planning |
 

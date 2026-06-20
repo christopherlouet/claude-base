@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 110 commands | 46 agents | 53 skills | 9 categories       ║
+║  Total: 107 commands | 45 agents | 53 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -49,15 +49,15 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       DEV- : DEVELOPMENT (19 commands)                      │
+│                       DEV- : DEVELOPMENT (16 commands)                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  TDD cycle     : tdd, test, testing-setup, debug, refactor                  │
+│  TDD cycle     : tdd (cycle + test-gen + infra setup), debug, refactor      │
 │  API & types   : api (REST/GraphQL/tRPC + versioning), prisma               │
-│  UI & front    : component, hook, design-system, react-perf, error-handling │
+│  UI & front    : component (+hooks), design-system, react-perf, error-handling│
 │  Mobile/Edit   : flutter, neovim                                            │
 │  AI / Document : ai-integration, rag, mcp, document                         │
 │  Backend BaaS  : supabase                                                   │
-│  → Full details: "DEV- : Development (19)" table below                      │
+│  → Full details: "DEV- : Development (16)" table below                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -179,7 +179,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->110<!-- /count -->)
+## Commands by Category (<!-- count:commands -->107<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -207,19 +207,16 @@
 | `/work:work-flow-release` | Full release workflow |
 | `/work:work-flow-launch` | Full launch workflow |
 
-### DEV- : Development (19)
+### DEV- : Development (16)
 
 | Command | Usage |
 |----------|-------|
-| `/dev:dev-tdd` | TDD development |
-| `/dev:dev-test` | Generate tests |
-| `/dev:dev-testing-setup` | Configure test infrastructure |
+| `/dev:dev-tdd` | TDD cycle + test generation + test infra setup |
 | `/dev:dev-debug` | Debug a problem |
 | `/dev:dev-refactor` | Guided refactoring |
 | `/dev:dev-document` | Document generation (PDF, DOCX, XLSX, PPTX) |
 | `/dev:dev-api` | Create/document REST, GraphQL, or tRPC API + versioning |
-| `/dev:dev-component` | Create a complete UI component |
-| `/dev:dev-hook` | Create a React/Vue hook |
+| `/dev:dev-component` | Create a complete UI component (or custom hook) |
 | `/dev:dev-error-handling` | Error handling strategy |
 | `/dev:dev-react-perf` | React/Next.js optimization |
 | `/dev:dev-mcp` | Create MCP servers |
@@ -550,4 +547,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->110<!-- /count --> commands - <!-- count:agents -->46<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
+*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->107<!-- /count --> commands - <!-- count:agents -->45<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*

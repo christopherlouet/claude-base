@@ -34,7 +34,7 @@ documentation with usage and props.
 | `/dev:dev-supabase` | Supabase backend configuration |
 | `/dev:dev-api` | GraphQL/REST integration |
 | `/qa:qa-mobile` | Mobile performance and accessibility audit |
-| `/dev:dev-test` | Complementary tests |
+| `/dev:dev-tdd` | Complementary tests |
 
 ---
 

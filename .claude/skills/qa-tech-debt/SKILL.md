@@ -126,7 +126,7 @@ npm test -- --coverage          # Jest / Vitest
 - Prioritise critical business code; 100% coverage != 100% quality — never sacrifice test
   quality to hit a number.
 - Add missing tests for branches, boundary conditions and error paths; wire a coverage
-  gate into CI (`/ops:ops-ci`). Generate the tests via `/dev:dev-test` or `/dev:dev-tdd`.
+  gate into CI (`/ops:ops-ci`). Generate the tests via `/dev:dev-tdd` or `/dev:dev-tdd`.
 
 ## Continuous improvement (Kaizen)
 

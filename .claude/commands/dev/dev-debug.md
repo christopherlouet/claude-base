@@ -39,7 +39,7 @@ Use the `dev-debug` skill for the detailed methodology (4 phases: Observation, H
 | Agent | When to use it |
 |-------|------------------|
 | `/work:work-explore` | Understand the code context |
-| `/dev:dev-test` | Add regression tests |
+| `/dev:dev-tdd` | Add regression tests |
 | `/work:work-commit` | Commit the fix |
 
 ---

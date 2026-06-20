@@ -64,7 +64,7 @@ TDD cycle:
 
 ### Integration with commands
 
-When a development command is used (`/dev:dev-component`, `/dev:dev-api`, `/dev:dev-hook`, etc.), Claude MUST:
+When a development command is used (`/dev:dev-component`, `/dev:dev-api`, `/dev:dev-component`, etc.), Claude MUST:
 1. Check whether tests exist for the code concerned
 2. If not, propose to start with the tests
 3. If yes, ensure the tests pass before modification

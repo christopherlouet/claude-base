@@ -35,7 +35,7 @@ orchestration (cron, SLA) and monitoring (metrics, alerts).
 | `/data:data-modeling` | Model the data |
 | `/growth:growth-analytics` | Analyze the results (cohort, RFM, KPIs) |
 | `/ops:ops-monitoring` | Configure monitoring |
-| `/dev:dev-test` | Test the pipeline |
+| `/dev:dev-tdd` | Test the pipeline |
 
 ---
 

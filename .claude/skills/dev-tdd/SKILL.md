@@ -322,6 +322,33 @@ npm run test:coverage
 npm test -- --grep "test name"
 ```
 
+## Generating tests for existing code
+
+TDD is test-first, but the same discipline applies when back-filling tests on code that
+already exists (legacy, coverage gaps).
+
+1. **Analyze** the target: public functions, dependencies, conditional branches, side effects.
+2. **Enumerate cases** by category:
+   - Nominal (happy path) — valid inputs, expected behavior.
+   - Edge — `null`, `undefined`, `""`, `[]`, `{}`, `0`, `-1`, `MAX_INT`, empty/very long strings.
+   - Errors — invalid inputs, expected exceptions, impossible states.
+   - Boundary — off-by-one, thresholds (just before / exactly / just after), state transitions.
+3. **Write** in AAA structure (Arrange-Act-Assert) with descriptive names.
+4. **Verify** — run, then check coverage: critical business logic 90%+, services/utils 80%+, UI 70%+.
+
+Same rules as test-first: no mocks except external deps, tests independent and order-free.
+
+## Test infrastructure setup
+
+When a project has no test setup yet:
+
+- **Framework** matched to the stack: Vitest (React/Vue/Node), Pytest (Python), `go test` (Go).
+- **Coverage thresholds** configured (new code 80%, critical 90%, utils 100%, UI 70%).
+- **Mocks**: MSW for API mocks (preferred over manual mocks); never mock what can be tested for real (pure functions, utils).
+- **Layout**: co-located or `__tests__`; global setup + shared mocks.
+- **npm scripts**: `test`, `test:watch`, `test:ui`, `test:coverage`, `test:ci`.
+- **CI/CD**: GitHub Actions job running the suite with coverage upload (`/ops:ops-ci`).
+
 ## Rules
 
 - NEVER write the code before the tests

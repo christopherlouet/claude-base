@@ -39,8 +39,8 @@ Each step has its dedicated commands, specialized agents, and best practices.
 
 | Component | Count | Description |
 |-----------|--------|-------------|
-| **Commands** | <!-- count:commands -->110<!-- /count --> | Manually triggered commands (`/name`) |
-| **Agents** | <!-- count:agents -->46<!-- /count --> | Autonomous sub-agents with isolated context |
+| **Commands** | <!-- count:commands -->107<!-- /count --> | Manually triggered commands (`/name`) |
+| **Agents** | <!-- count:agents -->45<!-- /count --> | Autonomous sub-agents with isolated context |
 | **Skills** | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords |
 | **Rules** | <!-- count:rules -->31<!-- /count --> | Rules per technology/file |
 | **Presets** | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles installable via `--preset <name>` |
@@ -50,7 +50,7 @@ Each step has its dedicated commands, specialized agents, and best practices.
 | Domain | Commands | Description |
 |---------|-----------|-------------|
 | **WORK** | <!-- count:byDomain.work -->15<!-- /count --> | Main workflow (explore, plan, commit, PR) |
-| **DEV** | <!-- count:byDomain.dev -->19<!-- /count --> | Development (TDD, API, components, debug) |
+| **DEV** | <!-- count:byDomain.dev -->16<!-- /count --> | Development (TDD, API, components, debug) |
 | **QA** | <!-- count:byDomain.qa -->13<!-- /count --> | Quality (review, security, performance, a11y) |
 | **OPS** | <!-- count:byDomain.ops -->28<!-- /count --> | Operations (CI/CD, Docker, monitoring, GitFlow) |
 | **DOC** | <!-- count:byDomain.doc -->6<!-- /count --> | Documentation (changelog, README, architecture) |

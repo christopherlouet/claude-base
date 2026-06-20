@@ -33,7 +33,7 @@ minimal fix, verification, commit with issue reference, PR or hotfix.
 | Agent | Usage |
 |-------|-------|
 | `/dev:dev-debug` | In-depth diagnosis |
-| `/dev:dev-test` | Generate regression tests |
+| `/dev:dev-tdd` | Generate regression tests |
 | `/qa:qa-review` | Quick review (simple bugfix) |
 | `/qa:qa-loop` | Audit + fix loop (critical bug, score 90) |
 | `/ops:ops-hotfix` | Critical bug in production |

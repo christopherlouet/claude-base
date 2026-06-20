@@ -31,7 +31,7 @@ then propose a prioritized and secure update plan.
 | Agent | Usage |
 |-------|-------|
 | `/qa:qa-security` | Vulnerability audit |
-| `/dev:dev-test` | Test after update |
+| `/dev:dev-tdd` | Test after update |
 | `/ops:ops-ci` | Automate updates |
 
 ---

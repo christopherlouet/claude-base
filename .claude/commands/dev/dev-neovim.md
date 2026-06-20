@@ -33,7 +33,7 @@ For a complete feature: spec + config + tests
 | `/qa:qa-neovim` | Audit the config (perf, keymaps) |
 | `/dev:dev-debug` | Debug a problem |
 | `/work:work-explore` | Understand an existing config |
-| `/dev:dev-test` | Write more tests |
+| `/dev:dev-tdd` | Write more tests |
 
 ---
 

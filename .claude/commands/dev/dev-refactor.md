@@ -36,7 +36,7 @@ transformations performed with atomic commits, result (tests, coverage, complexi
 | Agent | When to use it |
 |-------|------------------|
 | `/work:work-explore` | Understand the code before refactoring |
-| `/dev:dev-test` | Add missing tests |
+| `/dev:dev-tdd` | Add missing tests |
 | `/qa:qa-review` | Post-refactoring review |
 | `/work:work-commit` | Atomic commits |
 

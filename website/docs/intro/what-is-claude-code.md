@@ -39,8 +39,8 @@ Explore → Specify → Plan → TDD → Audit → Commit
 
 | Component | Trigger | Example | Count |
 |-----------|--------------|---------|--------|
-| **Commands** | Manual (`/name`) | `/work:work-explore` | <!-- count:commands -->110<!-- /count --> |
-| **Agents** | Via commands | Isolated autonomous sub-agents | <!-- count:agents -->46<!-- /count --> |
+| **Commands** | Manual (`/name`) | `/work:work-explore` | <!-- count:commands -->107<!-- /count --> |
+| **Agents** | Via commands | Isolated autonomous sub-agents | <!-- count:agents -->45<!-- /count --> |
 | **Skills** | Automatic (keywords) | Triggers when "bug" is mentioned | <!-- count:skills -->53<!-- /count --> |
 | **Rules** | Automatic (files) | Activates when a `.tsx` is modified | <!-- count:rules -->31<!-- /count --> |
 

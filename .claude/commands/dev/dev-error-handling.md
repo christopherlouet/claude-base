@@ -32,7 +32,7 @@ makes debugging easier and provides a better user experience.
 | Agent | When to use |
 |-------|-------------|
 | `/dev:dev-debug` | Diagnose errors |
-| `/dev:dev-test` | Test error cases |
+| `/dev:dev-tdd` | Test error cases |
 | `/ops:ops-monitoring` | Alerts on errors |
 | `/dev:dev-api` | Document API errors |
 | `/qa:qa-review` | Review error handling |
