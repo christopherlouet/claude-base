@@ -7,9 +7,9 @@
 # Commands only — no agents or skills. Same syntax as minimal-manifest.txt:
 # one repo-relative path per line, # comments and empty lines ignored.
 # Drift guard: tests/modules.bats asserts every path exists and no overlap.
+#
+# Wave 2: the four ops-gitflow-{init,feature,release,hotfix} commands were collapsed
+# into a single mode-arg command, /ops:ops-gitflow <init|feature|release|hotfix> <action>.
 
-# === Commands (4) ===
-.claude/commands/ops/ops-gitflow-init.md
-.claude/commands/ops/ops-gitflow-feature.md
-.claude/commands/ops/ops-gitflow-release.md
-.claude/commands/ops/ops-gitflow-hotfix.md
+# === Commands (1) ===
+.claude/commands/ops/ops-gitflow.md
