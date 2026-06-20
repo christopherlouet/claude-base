@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Removed
 
+- **Consolidation Wave 3 (biz cluster): removed `/biz:biz-market` and `/biz:biz-okr`** (opt-in `biz` module).
+  **Breaking**, no capability lost: market study (TAM/SAM/SOM, competitive map, PESTEL, positioning) folded into
+  `/biz:biz-competitor` (now spans a full market study **and** a single-competitor profile, command + agent);
+  OKR definition folded into `/biz:biz-roadmap` (now plans the roadmap **and** defines the OKRs it rolls up to).
+  `biz` module bundle 11 → 9 commands. Commands 114 → 112 (core unchanged — biz is module-owned; `biz` 11 → 9).
+  Cross-refs redirected. Part of the audit-driven consolidation — see `specs/consolidation-audit-2026-06/audit.md`.
+
 - **Consolidation Wave 3 (ops twins): removed `/ops:ops-observability-stack`, `/ops:ops-cost-optimization`
   and `/ops:ops-disaster-recovery`.** **Breaking**, no capability lost — each folded into its twin:
   observability-stack → `/ops:ops-monitoring` (now instruments code **and** deploys the

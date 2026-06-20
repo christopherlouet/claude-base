@@ -18,7 +18,7 @@ ln -s ~/dev/vendor-skills/marketingskills/skills/pricing ./.claude/skills/pricin
 
 Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Corey Haines — `coreyhaines31/marketingskills`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](../../../specs/foundation-positioning-review/spec.md) Wave 1.
 
-For business-model framing delegate to `/biz:biz-model`; for market & competition input to `/biz:biz-market`; for price testing to `/growth:growth-ab-test`; for impact measurement to `/growth:growth-analytics`.
+For business-model framing delegate to `/biz:biz-model`; for market & competition input to `/biz:biz-competitor`; for price testing to `/growth:growth-ab-test`; for impact measurement to `/growth:growth-analytics`.
 
 ---
 

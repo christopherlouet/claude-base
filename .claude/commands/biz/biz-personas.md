@@ -35,7 +35,7 @@ Develop 3-5 personas based on real data (analytics, interviews, support) that se
 | Agent | When to use it |
 |-------|----------------|
 | `/biz:biz-research` | User research |
-| `/biz:biz-market` | Market study |
+| `/biz:biz-competitor` | Market & competitive study |
 | `/biz:biz-mvp` | Define the MVP for a persona |
 | `/growth:growth-onboarding` | Journey per persona |
 

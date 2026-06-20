@@ -31,9 +31,8 @@ Produce an elevator pitch, a one-pager and the detailed structure of a pitch dec
 | Agent | When to use it |
 |-------|----------------|
 | `/biz:biz-model` | Business model to present |
-| `/biz:biz-market` | Market data |
 | `/biz:biz-roadmap` | Product vision |
-| `/biz:biz-competitor` | Competitive positioning |
+| `/biz:biz-competitor` | Market data & competitive positioning |
 
 ---
 
