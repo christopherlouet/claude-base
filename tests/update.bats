@@ -900,3 +900,140 @@ _init_legal_only_project() {
     # Preserved: update never deletes user files.
     [ -f "$proj/$biz_cmd" ]
 }
+
+# =============================================================================
+# --restore flag (restore_backup)
+#
+# These exercise the destructive `rm -rf "$TARGET_DIR/.claude/commands"` branch
+# that was previously only reachable via the (flag-driven but untested)
+# --restore path.
+# =============================================================================
+
+@test "update.sh --restore replaces .claude/commands with the backup contents" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    [ -d "$TEST_DIR/.claude/commands" ]
+
+    # Build a backup holding a sentinel that does not exist in the live dir
+    local backup="$TEST_DIR/.claude/commands.backup.20240101_120000"
+    mkdir -p "$backup"
+    echo "from-backup" > "$backup/sentinel.md"
+    # A live-only file that must be gone after restore
+    echo "live" > "$TEST_DIR/.claude/commands/live-only.md"
+
+    run "$UPDATE_SCRIPT" -y --restore "$backup" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # The sentinel from the backup is now live, the live-only file is gone
+    [ -f "$TEST_DIR/.claude/commands/sentinel.md" ]
+    [ ! -f "$TEST_DIR/.claude/commands/live-only.md" ]
+}
+
+@test "update.sh --restore creates a pre-restore safety backup of the live dir" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    local backup="$TEST_DIR/.claude/commands.backup.20240101_120000"
+    mkdir -p "$backup"
+    echo "from-backup" > "$backup/sentinel.md"
+
+    run "$UPDATE_SCRIPT" -y --restore "$backup" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # A .pre-restore.* safety copy of the previous live dir must exist
+    run bash -c "ls -d $TEST_DIR/.claude/commands.pre-restore.* 2>/dev/null"
+    [ -n "$output" ]
+}
+
+@test "update.sh --restore --dry-run does not modify .claude/commands" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    local backup="$TEST_DIR/.claude/commands.backup.20240101_120000"
+    mkdir -p "$backup"
+    echo "from-backup" > "$backup/sentinel.md"
+
+    run "$UPDATE_SCRIPT" -y --dry-run --restore "$backup" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Dry-run must not pull the sentinel into the live dir
+    [ ! -f "$TEST_DIR/.claude/commands/sentinel.md" ]
+}
+
+@test "update.sh --restore errors on a non-existent backup" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+
+    run "$UPDATE_SCRIPT" -y --restore ".claude/commands.backup.does-not-exist" "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"not found"* ]] || [[ "$output" == *"backup"* ]]
+}
+
+@test "update.sh --restore requires an argument" {
+    run "$UPDATE_SCRIPT" --restore
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"--restore"* ]] || [[ "$output" == *"argument"* ]]
+}
+
+# =============================================================================
+# --add-hook flag (add_hook)
+# =============================================================================
+
+@test "update.sh --help documents --add-hook" {
+    run "$UPDATE_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"--add-hook"* ]]
+}
+
+@test "update.sh --add-hook requires an argument" {
+    run "$UPDATE_SCRIPT" --add-hook
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"--add-hook"* ]] || [[ "$output" == *"argument"* ]]
+}
+
+# The foundation's settings.json already ships an (ENABLE_RTK-gated) RTK hook,
+# so --add-hook rtk is a no-op on a fresh install. Strip it first to exercise
+# the actual add path.
+_strip_rtk_hook() {
+    local sf="$1/.claude/settings.json"
+    jq '.hooks.PreToolUse = ((.hooks.PreToolUse // []) | map(select((.description // "") | test("RTK") | not)))' \
+        "$sf" > "$sf.tmp" && mv "$sf.tmp" "$sf"
+}
+
+@test "update.sh --add-hook rtk adds the RTK hook to settings.json" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    _strip_rtk_hook "$TEST_DIR"
+    # Precondition: no RTK hook present
+    run jq -e '.hooks.PreToolUse[]? | select(.description | test("RTK"))' "$TEST_DIR/.claude/settings.json"
+    [ "$status" -ne 0 ]
+
+    run "$UPDATE_SCRIPT" -y --add-hook rtk "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run jq -e '.hooks.PreToolUse[]? | select(.description | test("RTK"))' "$TEST_DIR/.claude/settings.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "update.sh --add-hook rtk is idempotent" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    _strip_rtk_hook "$TEST_DIR"
+    "$UPDATE_SCRIPT" -y --add-hook rtk "$TEST_DIR" >/dev/null 2>&1
+
+    run "$UPDATE_SCRIPT" -y --add-hook rtk "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"already"* ]] || [[ "$output" == *"present"* ]]
+    # Still exactly one RTK hook
+    run jq '[.hooks.PreToolUse[]? | select(.description | test("RTK"))] | length' "$TEST_DIR/.claude/settings.json"
+    [ "$output" = "1" ]
+}
+
+@test "update.sh --add-hook --dry-run does not modify settings.json" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    _strip_rtk_hook "$TEST_DIR"
+
+    run "$UPDATE_SCRIPT" -y --dry-run --add-hook rtk "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run jq -e '.hooks.PreToolUse[]? | select(.description | test("RTK"))' "$TEST_DIR/.claude/settings.json"
+    [ "$status" -ne 0 ]
+}
+
+@test "update.sh --add-hook rejects an unknown hook" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+
+    run "$UPDATE_SCRIPT" -y --add-hook bogus "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"Unknown hook"* ]] || [[ "$output" == *"bogus"* ]]
+}

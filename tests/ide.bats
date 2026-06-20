@@ -289,6 +289,63 @@ teardown() {
 }
 
 # =============================================================================
+# IntelliJ / Vim / all remove tests
+#
+# These exercise the destructive `rm -f`/`rm` branches (remove_idea,
+# remove_vim, remove_all) that previously had no coverage — only the VSCode
+# remove path was tested.
+# =============================================================================
+
+@test "ide.sh remove idea removes the claude-base run configurations and templates" {
+    "$IDE_SCRIPT" setup idea "$TEST_PROJECT"
+    # Precondition: setup created at least one claude-base run configuration
+    ls "$TEST_PROJECT/.idea/runConfigurations/Claude_"*.xml >/dev/null 2>&1
+
+    run "$IDE_SCRIPT" remove idea "$TEST_PROJECT"
+    [[ "$status" -eq 0 ]]
+
+    # No claude-base run configuration survives the removal
+    run bash -c "ls $TEST_PROJECT/.idea/runConfigurations/Claude_*.xml 2>/dev/null"
+    [[ "$output" == "" ]]
+}
+
+@test "ide.sh remove idea is a no-op when no .idea exists" {
+    run "$IDE_SCRIPT" remove idea "$TEST_PROJECT"
+    [[ "$status" -eq 0 ]]
+    [[ "$output" == *"No IntelliJ"* ]] || [[ "$output" == *"configuration"* ]]
+}
+
+@test "ide.sh remove vim removes the vim configuration" {
+    "$IDE_SCRIPT" setup vim "$TEST_PROJECT"
+    [[ -f "$TEST_PROJECT/.vimrc.claude" ]]
+
+    run "$IDE_SCRIPT" remove vim "$TEST_PROJECT"
+    [[ "$status" -eq 0 ]]
+    [[ ! -f "$TEST_PROJECT/.vimrc.claude" ]]
+}
+
+@test "ide.sh remove vim is a no-op when no vim config exists" {
+    run "$IDE_SCRIPT" remove vim "$TEST_PROJECT"
+    [[ "$status" -eq 0 ]]
+    [[ "$output" == *"No Vim"* ]] || [[ "$output" == *"configuration"* ]]
+}
+
+@test "ide.sh remove all removes vscode, idea and vim configurations" {
+    "$IDE_SCRIPT" setup all "$TEST_PROJECT"
+    [[ -d "$TEST_PROJECT/.vscode" ]]
+    [[ -d "$TEST_PROJECT/.idea" ]]
+    [[ -f "$TEST_PROJECT/.vimrc.claude" ]]
+
+    run "$IDE_SCRIPT" remove all "$TEST_PROJECT"
+    [[ "$status" -eq 0 ]]
+
+    [[ ! -f "$TEST_PROJECT/.vscode/settings.json" ]]
+    [[ ! -f "$TEST_PROJECT/.vimrc.claude" ]]
+    run bash -c "ls $TEST_PROJECT/.idea/runConfigurations/Claude_*.xml 2>/dev/null"
+    [[ "$output" == "" ]]
+}
+
+# =============================================================================
 # Structure tests
 # =============================================================================
 
