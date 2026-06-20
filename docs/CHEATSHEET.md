@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 107 commands | 45 agents | 53 skills | 9 categories       ║
+║  Total: 106 commands | 45 agents | 53 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -89,15 +89,11 @@
 │                          DOC- : DOCUMENTATION                               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌──────────┐  ┌───────────┐  ┌─────────┐  ┌─────────┐                  │
-│   │ GENERATE │  │ CHANGELOG │  │ EXPLAIN │  │ ONBOARD │                  │
-│   │ Auto doc │  │ History   │  │ Teach   │  │ Discover│                  │
-│   └──────────┘  └───────────┘  └─────────┘  └─────────┘                  │
-│                                                                             │
-│   ┌───────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐            │
-│   │ FIX-ISSUE │  │ API-SPEC │  │  README  │  │ ARCHITECTURE │            │
-│   │ GitHub    │  │ OpenAPI  │  │ Readme   │  │ Archi doc    │            │
-│   └───────────┘  └──────────┘  └──────────┘  └──────────────┘            │
+│   ┌──────────┐  ┌───────────┐  ┌─────────┐  ┌─────────┐  ┌──────────┐    │
+│   │ GENERATE │  │ CHANGELOG │  │ EXPLAIN │  │ ONBOARD │  │ API-SPEC │    │
+│   │ Auto doc │  │ History   │  │ Teach   │  │ Discover│  │ OpenAPI  │    │
+│   └──────────┘  └───────────┘  └─────────┘  └─────────┘  └──────────┘    │
+│   (generate covers README + architecture/ADR doc types)                     │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -179,7 +175,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->107<!-- /count -->)
+## Commands by Category (<!-- count:commands -->106<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -279,18 +275,15 @@
 | `/ops:ops-standup` | Cross-repo morning briefing |
 | `/ops:ops-ci-fix` | Autonomous CI diagnostic and repair |
 
-### DOC- : Documentation (9)
+### DOC- : Documentation (5)
 
 | Command | Usage |
 |----------|-------|
-| `/doc:doc-generate` | Generate documentation |
+| `/doc:doc-generate` | Generate documentation (README, architecture/ADR, API, inline) |
 | `/doc:doc-changelog` | Changelog |
 | `/doc:doc-explain` | Explain complex code |
 | `/doc:doc-onboard` | Discover a codebase |
-| `/doc:doc-fix-issue` | Fix GitHub issue |
 | `/doc:doc-api-spec` | OpenAPI/Swagger spec |
-| `/doc:doc-readme` | Create/improve README |
-| `/doc:doc-architecture` | Document the architecture |
 
 ### BIZ- : Business (9)
 
@@ -547,4 +540,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->107<!-- /count --> commands - <!-- count:agents -->45<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
+*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->106<!-- /count --> commands - <!-- count:agents -->45<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*

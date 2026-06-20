@@ -80,7 +80,7 @@ claude-base/
 │              │ ci, monitoring, load-testing, backup           │
 ├──────────────┼──────────────────────────────────────────────┤
 │ DOC-*        │ Documentation                                │
-│              │ api, changelog, fix-issue                    │
+│              │ generate, changelog, api-spec                │
 ├──────────────┼──────────────────────────────────────────────┤
 │ BIZ-*        │ Business                                     │
 │              │ launch, market, mvp, pricing                 │

@@ -12,6 +12,7 @@ minimal fix, verification, commit with issue reference, PR or hotfix.
 
 ## Workflow
 
+- **ISSUE (if applicable)**: When fixing a GitHub issue, start by retrieving it (`gh issue view <n>`, comments, labels) to ground the diagnosis; the commit/PR will close it via `Fixes #<n>`
 - **BRANCH**: Create branch `fix/[name]` from up-to-date main
 - **DIAGNOSIS**: Reproduce the bug, isolate the problem, identify the root cause
 - **TEST**: Write a failing test that proves the bug (MUST fail before the fix)

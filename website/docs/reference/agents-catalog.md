@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Available Agents (107 commands, 45 sub-agents, 53 skills)"
+title: "Available Agents (106 commands, 45 sub-agents, 53 skills)"
 description: "Claude automatically delegates to specialized agents (isolated context, restricted tools)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Available Agents (<!-- count:commands -->107<!-- /count --> commands, <!-- count:agents -->45<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->45<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -104,14 +104,13 @@ tags:
 | `/ops:ops-standup` | Cross-repo morning briefing (commits, PRs, CI, blockers, priorities) |
 | `/ops:ops-ci-fix` | Autonomous diagnosis and repair of failing CI/CD pipelines |
 
-## DOC-: Documentation (<!-- count:byDomain.doc -->6<!-- /count -->)
+## DOC-: Documentation (<!-- count:byDomain.doc -->5<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/doc:doc-generate` | Generate documentation |
 | `/doc:doc-changelog` | Generate/maintain the changelog |
 | `/doc:doc-explain` | Explain complex code |
 | `/doc:doc-onboard` | Discover a codebase |
-| `/doc:doc-fix-issue` | Fix a GitHub issue |
 | `/doc:doc-api-spec` | Generate OpenAPI/Swagger spec |
 
 ## BIZ-: Business (<!-- count:byDomain.biz -->9<!-- /count -->)

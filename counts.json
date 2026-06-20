@@ -1,9 +1,9 @@
 {
-  "commands": 107,
+  "commands": 106,
   "agents": 45,
   "skills": 53,
   "core": {
-    "commands": 60,
+    "commands": 59,
     "agents": 27,
     "skills": 39
   },
@@ -14,7 +14,7 @@
     "biz": 9,
     "data": 2,
     "dev": 16,
-    "doc": 6,
+    "doc": 5,
     "growth": 9,
     "legal": 5,
     "ops": 28,
