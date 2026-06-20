@@ -77,7 +77,7 @@ claude-base/
 │              │ review, automation                           │
 ├──────────────┼──────────────────────────────────────────────┤
 │ OPS-*        │ Operations                                   │
-│              │ ci, monitoring, load-testing, disaster-recovery│
+│              │ ci, monitoring, load-testing, backup           │
 ├──────────────┼──────────────────────────────────────────────┤
 │ DOC-*        │ Documentation                                │
 │              │ api, changelog, fix-issue                    │

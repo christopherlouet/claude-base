@@ -83,6 +83,17 @@ app.get('/ready', async (req, res) => {
 });
 ```
 
+## Deploying the observability stack
+
+Once the code is instrumented, deploy the backing stack (Prometheus + Grafana + Loki + Alertmanager).
+
+- **Mode**: Docker Compose for dev/staging, Kubernetes + Helm for production (or Victoria Metrics / managed).
+- **Prometheus**: `prometheus.yml` scrape configs + `alert.rules.yml`.
+- **Alertmanager**: `alertmanager.yml` routes + receivers (Slack / PagerDuty / email).
+- **Grafana**: provision datasources + dashboards.
+- **Loki + Promtail**: log aggregation; add `node-exporter` + `cAdvisor` for system metrics.
+- Persistent storage for metrics data; **never** expose Prometheus/Alertmanager without auth in production; configure alerts before going to prod and test the stack in staging first.
+
 ## See also
 
 Grafana Labs publishes their own official agent skills at [`grafana/skills`](https://github.com/grafana/skills) (31★, last commit 2026-05-04). The repo covers Grafana Core, Grafana Cloud, the LGTM stack (Loki/Grafana/Tempo/Mimir), k6 performance testing, and the Grafana app SDK. A separate companion repo [`grafana/pyroscope-skills`](https://github.com/grafana/pyroscope-skills) covers continuous profiling.

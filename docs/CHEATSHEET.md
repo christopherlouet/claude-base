@@ -71,18 +71,18 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       OPS- : OPERATIONS (31 commands)                       │
+│                       OPS- : OPERATIONS (28 commands)                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Release & deploy : release, deploy, rollback, hotfix, mobile-release       │
 │  GitFlow          : gitflow <init|feature|release|hotfix> <action>          │
 │  CI/CD            : ci, ci-fix, deps                                        │
 │  Infra            : docker, k8s, vps, vercel, serverless,                   │
 │                     proxmox, opnsense, infra-code                           │
-│  Observability    : monitoring, observability-stack, grafana-dashboard,     │
+│  Observability    : monitoring (+stack deploy), grafana-dashboard,          │
 │                     load-testing, health                                    │
-│  Data/Sec         : database, backup, disaster-recovery, secrets-management │
-│  Meta-ops         : env, migrate, cost, cost-optimization, standup          │
-│  → Full details: "OPS- : Operations (31)" table below                       │
+│  Data/Sec         : database, backup (+DR), secrets-management              │
+│  Meta-ops         : env, migrate, cost (tokens+cloud FinOps), standup       │
+│  → Full details: "OPS- : Operations (28)" table below                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->117<!-- /count -->)
+## Commands by Category (<!-- count:commands -->114<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -248,7 +248,7 @@
 | `/qa:qa-chrome` | Chrome visual tests |
 | `/qa:qa-loop` | Audit + fix loop until target score (90 by default) |
 
-### OPS- : Operations (31)
+### OPS- : Operations (28)
 
 | Command | Usage |
 |----------|-------|
@@ -262,16 +262,13 @@
 | `/ops:ops-vps` | VPS deployment |
 | `/ops:ops-migrate` | Code/deps migration |
 | `/ops:ops-ci` | CI/CD pipelines |
-| `/ops:ops-monitoring` | Logs, metrics, alerts |
-| `/ops:ops-observability-stack` | Prometheus, Grafana, Loki |
+| `/ops:ops-monitoring` | Logs, metrics, alerts + deploy stack (Prometheus/Grafana/Loki) |
 | `/ops:ops-grafana-dashboard` | Grafana dashboards |
 | `/ops:ops-database` | DB schema, migrations |
 | `/ops:ops-health` | Quick health check |
 | `/ops:ops-env` | Environment management |
-| `/ops:ops-backup` | Backup/restore strategy |
+| `/ops:ops-backup` | Backup/restore + disaster recovery (RPO/RTO) |
 | `/ops:ops-load-testing` | Load testing |
-| `/ops:ops-cost-optimization` | Cloud cost optimization |
-| `/ops:ops-disaster-recovery` | Disaster recovery plan |
 | `/ops:ops-infra-code` | Infrastructure as Code |
 | `/ops:ops-proxmox` | Proxmox VE infrastructure |
 | `/ops:ops-opnsense` | OPNsense configuration |
@@ -556,4 +553,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->117<!-- /count --> commands - <!-- count:agents -->47<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
+*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->114<!-- /count --> commands - <!-- count:agents -->47<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*

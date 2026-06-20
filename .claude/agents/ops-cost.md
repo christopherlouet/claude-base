@@ -1,6 +1,6 @@
 ---
 name: ops-cost
-description: Token consumption tracking and Claude Code costs. Metrics, trends, and optimization.
+description: Cost tracking and optimization — Claude Code token consumption (metrics, trends) and cloud infrastructure FinOps (right-sizing, commitments, savings).
 tools: Read, Grep, Glob, Bash
 model: haiku
 permissionMode: default

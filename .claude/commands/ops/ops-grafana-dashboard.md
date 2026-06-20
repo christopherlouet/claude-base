@@ -18,14 +18,13 @@ ln -s ~/dev/vendor-skills/grafana-skills/skills/<sub> ./.claude/skills/<sub>
 
 Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Grafana Labs — `grafana/skills`". Reduction rationale: [`specs/command-vendor-graduation/spec.md`](../../../specs/command-vendor-graduation/spec.md).
 
-To instrument code so metrics exist delegate to `/ops:ops-monitoring`; to stand up the full stack to `/ops:ops-observability-stack`; for Kubernetes to `/ops:ops-k8s`.
+To instrument code so metrics exist, and to stand up the full stack (Prometheus/Grafana/Loki/Alertmanager), delegate to `/ops:ops-monitoring`; for Kubernetes to `/ops:ops-k8s`.
 
 ## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/ops:ops-monitoring` | Instrument the code to expose metrics |
-| `/ops:ops-observability-stack` | Deploy Prometheus/Grafana/Loki |
+| `/ops:ops-monitoring` | Instrument code + deploy Prometheus/Grafana/Loki |
 | `/ops:ops-k8s` | Kubernetes deployment |
 
 ---

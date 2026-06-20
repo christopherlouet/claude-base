@@ -33,7 +33,7 @@ with cold start optimization and CI/CD integration.
 |-------|-------|
 | `/ops:ops-ci` | Serverless CI/CD |
 | `/ops:ops-monitoring` | Observability |
-| `/ops:ops-cost-optimization` | Cost optimization |
+| `/ops:ops-cost` | Cloud cost optimization (FinOps) |
 
 ---
 

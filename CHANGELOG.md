@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Removed
 
+- **Consolidation Wave 3 (ops twins): removed `/ops:ops-observability-stack`, `/ops:ops-cost-optimization`
+  and `/ops:ops-disaster-recovery`.** **Breaking**, no capability lost — each folded into its twin:
+  observability-stack → `/ops:ops-monitoring` (now instruments code **and** deploys the
+  Prometheus/Grafana/Loki/Alertmanager stack, command + skill); cost-optimization → `/ops:ops-cost` (now
+  covers both Claude Code token costs **and** cloud-infra FinOps, in two clearly separated sections);
+  disaster-recovery → `/ops:ops-backup` (now backup/restore **and** DR: RPO/RTO strategies, runbook,
+  failover scripts). The `observability` module bundle drops to 2 commands (observability-stack was
+  module-owned, now core via ops-monitoring). Commands 117 → 114 (core 65 → 63; `ops` 31 → 28).
+  Cross-refs redirected. Part of the audit-driven consolidation — see `specs/consolidation-audit-2026-06/audit.md`.
+
 - **Consolidation Wave 3 (qa cluster): removed `/qa:qa-responsive`, `/qa:qa-coverage` and `/qa:qa-kaizen`** (and
   the now-orphaned `qa-responsive` agent). **Breaking**, but no capability is lost: responsive/mobile-first
   breakpoint auditing folded into `/qa:qa-design` (new "Responsive & breakpoints" category — its command + skill);

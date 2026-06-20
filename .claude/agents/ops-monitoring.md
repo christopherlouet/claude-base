@@ -1,6 +1,6 @@
 ---
 name: ops-monitoring
-description: Application instrumentation and monitoring. Use to add structured logs, Prometheus metrics, and OpenTelemetry traces.
+description: Application instrumentation and monitoring, and deploying the observability stack. Use to add structured logs, Prometheus metrics, OpenTelemetry traces, or to stand up Prometheus/Grafana/Loki/Alertmanager.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 permissionMode: default
