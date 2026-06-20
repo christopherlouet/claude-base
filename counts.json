@@ -1,10 +1,10 @@
 {
-  "commands": 110,
-  "agents": 46,
+  "commands": 107,
+  "agents": 45,
   "skills": 53,
   "core": {
-    "commands": 63,
-    "agents": 28,
+    "commands": 60,
+    "agents": 27,
     "skills": 39
   },
   "rules": 31,
@@ -13,7 +13,7 @@
   "byDomain": {
     "biz": 9,
     "data": 2,
-    "dev": 19,
+    "dev": 16,
     "doc": 6,
     "growth": 9,
     "legal": 5,

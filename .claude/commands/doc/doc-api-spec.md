@@ -41,7 +41,7 @@ Explore the API code, identify routes and models, and generate a complete OpenAP
 |-------|----------------|
 | `/dev:dev-api` | Create or modify the API |
 | `/doc:doc-generate` | General documentation |
-| `/dev:dev-test` | Test endpoints |
+| `/dev:dev-tdd` | Test endpoints |
 | `/qa:qa-security` | Check API security |
 
 ---

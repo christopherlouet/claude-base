@@ -42,8 +42,7 @@ Automate tests at all levels (unit, integration, E2E) to ensure quality and acce
 
 | Agent | Usage |
 |-------|-------|
-| `/dev:dev-testing-setup` | Initial configuration |
-| `/dev:dev-tdd` | TDD development |
+| `/dev:dev-tdd` | TDD cycle + test infra setup |
 | `/ops:ops-ci` | CI/CD pipeline |
 | `/qa:qa-perf` | Performance tests |
 

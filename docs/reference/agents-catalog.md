@@ -1,4 +1,4 @@
-# Available Agents (<!-- count:commands -->110<!-- /count --> commands, <!-- count:agents -->46<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->107<!-- /count --> commands, <!-- count:agents -->45<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -25,18 +25,15 @@
 | `/work:work-flow-release` | Full release workflow |
 | `/work:work-flow-launch` | Full product launch workflow |
 
-## DEV-: Development (<!-- count:byDomain.dev -->19<!-- /count -->)
+## DEV-: Development (<!-- count:byDomain.dev -->16<!-- /count -->)
 | Command | Usage |
 |---------|-------|
-| `/dev:dev-tdd` | TDD development |
-| `/dev:dev-test` | Generate tests |
-| `/dev:dev-testing-setup` | Set up testing infrastructure |
+| `/dev:dev-tdd` | TDD cycle + generate tests for existing code + test infra setup |
 | `/dev:dev-debug` | Debug an issue (4-phase methodology) |
 | `/dev:dev-refactor` | Guided refactoring + entropy reduction |
 | `/dev:dev-document` | Document generation (PDF, DOCX, XLSX, PPTX) |
 | `/dev:dev-api` | Create/document a REST, GraphQL, or tRPC API + versioning |
-| `/dev:dev-component` | Create a complete UI component |
-| `/dev:dev-hook` | Create a React/Vue hook |
+| `/dev:dev-component` | Create a complete UI component (or custom hook) |
 | `/dev:dev-error-handling` | Error handling strategy |
 | `/dev:dev-react-perf` | React/Next.js performance optimization |
 | `/dev:dev-mcp` | Create MCP servers (Model Context Protocol) |
@@ -148,7 +145,7 @@
 | `/legal:legal-terms-of-service` | Terms of Service |
 | `/legal:legal-privacy-policy` | Privacy Policy |
 
-## Sub-Agents (<!-- count:agents -->46<!-- /count -->)
+## Sub-Agents (<!-- count:agents -->45<!-- /count -->)
 
 Claude automatically delegates to specialized agents (isolated context, restricted tools).
 
@@ -167,7 +164,7 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 | Exploration & Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
 | Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-e2e`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
 | Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
-| Development | `dev-debug`, `dev-test`, `dev-flutter`, `dev-document`, `dev-tdd` | haiku/sonnet (tdd, debug) |
+| Development | `dev-debug`, `dev-flutter`, `dev-document`, `dev-tdd` | haiku/sonnet (tdd, debug) |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-localization`, `growth-cro` | haiku |
 | Data | `data-pipeline` | haiku/sonnet |
 | Legal | `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service` | haiku/sonnet |

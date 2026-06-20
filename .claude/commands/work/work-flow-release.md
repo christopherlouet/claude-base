@@ -39,7 +39,7 @@ semantic versioning, complete tests, production build, tag, deployment.
 |-------|-------|
 | `/qa:qa-audit` | Quality audit |
 | `/doc:doc-changelog` | Changelog |
-| `/dev:dev-test` | Complete tests |
+| `/dev:dev-tdd` | Complete tests |
 | `/ops:ops-release` | Simplified alternative |
 | `/ops:ops-monitoring` | Post-deployment |
 

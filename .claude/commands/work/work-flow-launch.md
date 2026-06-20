@@ -39,7 +39,7 @@ Prerequisites: business analysis completed, MVP defined, budget and timeline app
 | Agent | Usage |
 |-------|-------|
 | `/biz:biz-launch` | Prior business analysis |
-| `/dev:dev-testing-setup` | Configure tests |
+| `/dev:dev-tdd` | Configure tests |
 | `/ops:ops-ci` | Advanced CI/CD |
 | `/qa:qa-security` | Security audit |
 | `/growth:growth-seo` | Advanced SEO |

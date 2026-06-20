@@ -38,7 +38,7 @@ Use the `dev-api` skill for the detailed methodology (RESTful structure, validat
 | Agent | When to use it |
 |-------|------------------|
 | `/doc:doc-api-spec` | Generate OpenAPI/Swagger spec |
-| `/dev:dev-test` | Test the endpoints |
+| `/dev:dev-tdd` | Test the endpoints |
 | `/qa:qa-security` | API security audit |
 | `/qa:qa-review` | API code review |
 

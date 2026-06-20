@@ -1,14 +1,22 @@
 # Agent DEV-COMPONENT
 
-Generate a complete UI component with tests, types and documentation.
+Generate a complete UI component — or a custom React hook — with tests, types and documentation.
 
 ## Request context
 $ARGUMENTS
 
 ## Objective
 
-Create a complete React component following the TDD approach:
+Create a complete React component (or a reusable custom **hook**) following the TDD approach:
 types first, then tests (RED), implementation (GREEN), refactoring and Storybook.
+
+## Custom hook mode
+
+When the request is a hook rather than a component:
+- Define the hook (problem, parameters, return, side effects) and its types (`Options`, `Return`) with JSDoc.
+- Write tests with `renderHook` (initial state, success, errors, refetch, options change).
+- Implement (useState/useEffect/useCallback/useMemo); clean up side effects (AbortController, clearTimeout, removeEventListener) — no memory leaks.
+- Output: `use[HookName].ts` + `use[HookName].test.ts` + export in `index.ts` + usage docs.
 
 ## Workflow
 
@@ -32,8 +40,7 @@ types first, then tests (RED), implementation (GREEN), refactoring and Storybook
 
 | Agent | When to use it |
 |-------|------------------|
-| `/dev:dev-hook` | Create an associated hook |
-| `/dev:dev-test` | Complementary tests |
+| `/dev:dev-tdd` | Complementary tests / TDD cycle |
 | `/qa:wcag-audit` | Component accessibility audit |
 | `/qa:qa-design` | Verify responsive/UI design |
 

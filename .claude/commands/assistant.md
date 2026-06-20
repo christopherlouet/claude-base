@@ -14,7 +14,7 @@ Always wait for confirmation before executing.
 
 | Indicator | Type | Recommended workflow |
 |------------|------|---------------------|
-| `package.json` + React/Next/Vue | **Web Frontend** | `/dev:dev-component`, `/dev:dev-hook` |
+| `package.json` + React/Next/Vue | **Web Frontend** | `/dev:dev-component` (UI + hooks) |
 | `pubspec.yaml` + Flutter | **Mobile** | `/dev:dev-flutter`, `/dev:dev-supabase` |
 | `package.json` + Express/Fastify/NestJS | **Node API** | `/dev:dev-api` (REST/GraphQL/tRPC) |
 | `requirements.txt` / `pyproject.toml` | **Python** | `/dev:dev-api`, `/dev:dev-tdd` |

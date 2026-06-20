@@ -41,7 +41,7 @@ load 'test_helper'
 
 @test "smoke: essential dev commands exist" {
     [ -f "$BASE_DIR/.claude/commands/dev/dev-tdd.md" ]
-    [ -f "$BASE_DIR/.claude/commands/dev/dev-test.md" ]
+    [ -f "$BASE_DIR/.claude/commands/dev/dev-component.md" ]
     [ -f "$BASE_DIR/.claude/commands/dev/dev-debug.md" ]
     [ -f "$BASE_DIR/.claude/commands/dev/dev-api.md" ]
 }

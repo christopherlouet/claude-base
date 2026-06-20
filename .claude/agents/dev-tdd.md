@@ -1,6 +1,6 @@
 ---
 name: dev-tdd
-description: TDD development with Red-Green-Refactor cycle. Use to implement a feature by writing tests BEFORE the code. Trigger automatically when the user asks for TDD, wants to write tests first, mentions "test first", or asks to implement, add, create, fix, correct code, a new feature, a bugfix, or a functionality.
+description: TDD development with Red-Green-Refactor cycle, plus generating tests for existing code and setting up test infrastructure. Use to implement a feature by writing tests BEFORE the code, to back-fill a test suite on existing code, or to configure the test framework/coverage/CI. Trigger automatically when the user asks for TDD, wants to write tests first, mentions "test first", wants to generate/add tests or set up testing, or asks to implement, add, create, fix, correct code, a new feature, a bugfix, or a functionality.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: opus
 permissionMode: default

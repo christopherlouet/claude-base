@@ -12,9 +12,8 @@
 
 | Type | Element | Activation |
 |---|---|---|
-| Command | `/dev:dev-component` | Complete UI component creation (tests + stories) |
+| Command | `/dev:dev-component` | Complete UI component (+ custom hooks) — tests + stories |
 | Command | `/dev:dev-react-perf` | Rendering optimization (Core Web Vitals, memoization) |
-| Command | `/dev:dev-hook` | Custom React/Vue hooks creation |
 | Command | `/dev:dev-design-system` | Tokens, shared components |
 | Command | `/qa:qa-design`, `/qa:qa-chrome` | UI/UX + responsive/mobile-first, Chrome visual audits |
 | Command | `/qa:wcag-audit` | WCAG 2.1 AA accessibility |
@@ -147,9 +146,7 @@
 
 | Type | Element | Activation |
 |---|---|---|
-| Command | `/dev:dev-tdd` | Red-Green-Refactor cycle (mandatory workflow) |
-| Command | `/dev:dev-test` | Test generation |
-| Command | `/dev:dev-testing-setup` | Test infrastructure configuration |
+| Command | `/dev:dev-tdd` | Red-Green-Refactor cycle (mandatory workflow) + test generation + test infra setup |
 | Command | `/qa:qa-e2e` | E2E tests (Playwright, Cypress) |
 | Command | `/qa:qa-automation`, `/qa:qa-tech-debt` | Automation, coverage & tech-debt |
 | Skill auto | `qa-e2e`, `api-mocking` | Activated on keywords (`E2E`, `MSW`, `mock API`) |
