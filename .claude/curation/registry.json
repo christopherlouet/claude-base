@@ -199,7 +199,7 @@
       "flags": ["reduce-planned"]
     },
     {
-      "foundationSkill": "growth-funnel",
+      "foundationSkill": "growth-cro",
       "vendorId": "coreyhaines31/marketingskills/cro+analytics",
       "vendorUrl": "https://github.com/coreyhaines31/marketingskills",
       "pinnedRef": "v2.3.0",
@@ -227,7 +227,7 @@
       "flags": ["reduce-planned"]
     },
     {
-      "foundationSkill": "growth-onboarding",
+      "foundationSkill": "growth-cro",
       "vendorId": "coreyhaines31/marketingskills/onboarding",
       "vendorUrl": "https://github.com/coreyhaines31/marketingskills",
       "pinnedRef": "v2.3.0",

@@ -137,10 +137,12 @@ run_lib() {
     [ "${#lines[@]}" -eq 13 ]
 }
 
-@test "modules: module_bundle_paths growth returns 18 entries incl. skill dir" {
+@test "modules: module_bundle_paths growth returns 15 entries incl. skill dir" {
+    # Wave 3: growth-funnel (cmd+agent) + growth-onboarding (cmd) folded into growth-cro
+    # (9 cmds + 5 agents + 1 skill = 15).
     run_lib module_bundle_paths growth
     [ "$status" -eq 0 ]
-    [ "${#lines[@]}" -eq 18 ]
+    [ "${#lines[@]}" -eq 15 ]
     [[ "$output" == *".claude/skills/growth-cro/"* ]]
 }
 

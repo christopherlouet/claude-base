@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Removed
 
+- **Consolidation Wave 3 (growth cluster): removed `/growth:growth-funnel` and `/growth:growth-onboarding`**
+  (opt-in `growth` module; the `growth-funnel` agent is removed too). **Breaking**, no capability lost — both
+  folded into `/growth:growth-cro`, the CRO hub: funnel mapping/analysis (step performance, drop-off diagnosis,
+  ICE prioritization) added to its command + skill (new "Funnel mapping & analysis" section); onboarding/activation
+  was already covered by the skill's Onboarding-CRO section. The Corey-Haines vendor pairings in the curation
+  registry re-point from growth-funnel/growth-onboarding to growth-cro. `growth` module bundle 11 → 9 commands,
+  6 → 5 agents. Commands 112 → 110 (core unchanged — growth is module-owned; `growth` 11 → 9), agents 47 → 46.
+  Cross-refs redirected. Part of the audit-driven consolidation — see `specs/consolidation-audit-2026-06/audit.md`.
+
 - **Consolidation Wave 3 (biz cluster): removed `/biz:biz-market` and `/biz:biz-okr`** (opt-in `biz` module).
   **Breaking**, no capability lost: market study (TAM/SAM/SOM, competitive map, PESTEL, positioning) folded into
   `/biz:biz-competitor` (now spans a full market study **and** a single-competitor profile, command + agent);

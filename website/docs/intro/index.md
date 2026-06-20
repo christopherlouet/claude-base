@@ -39,8 +39,8 @@ Each step has its dedicated commands, specialized agents, and best practices.
 
 | Component | Count | Description |
 |-----------|--------|-------------|
-| **Commands** | <!-- count:commands -->112<!-- /count --> | Manually triggered commands (`/name`) |
-| **Agents** | <!-- count:agents -->47<!-- /count --> | Autonomous sub-agents with isolated context |
+| **Commands** | <!-- count:commands -->110<!-- /count --> | Manually triggered commands (`/name`) |
+| **Agents** | <!-- count:agents -->46<!-- /count --> | Autonomous sub-agents with isolated context |
 | **Skills** | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords |
 | **Rules** | <!-- count:rules -->31<!-- /count --> | Rules per technology/file |
 | **Presets** | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles installable via `--preset <name>` |
@@ -55,7 +55,7 @@ Each step has its dedicated commands, specialized agents, and best practices.
 | **OPS** | <!-- count:byDomain.ops -->28<!-- /count --> | Operations (CI/CD, Docker, monitoring, GitFlow) |
 | **DOC** | <!-- count:byDomain.doc -->6<!-- /count --> | Documentation (changelog, README, architecture) |
 | **BIZ** | <!-- count:byDomain.biz -->9<!-- /count --> | Business (model, MVP, pricing, pitch) |
-| **GROWTH** | <!-- count:byDomain.growth -->11<!-- /count --> | Growth (SEO, analytics, landing, funnel) |
+| **GROWTH** | <!-- count:byDomain.growth -->9<!-- /count --> | Growth (SEO, analytics, landing, funnel) |
 | **DATA** | <!-- count:byDomain.data -->2<!-- /count --> | Data (pipeline, analytics, modeling) |
 | **LEGAL** | <!-- count:byDomain.legal -->5<!-- /count --> | Legal (GDPR, ToS, payment) |
 

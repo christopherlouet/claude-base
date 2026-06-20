@@ -35,7 +35,7 @@ Identify churn factors, improve engagement, and set up retention mechanisms (ree
 | Agent | When to use it |
 |-------|----------------|
 | `/growth:growth-analytics` | Configure tracking |
-| `/growth:growth-onboarding` | Improve activation |
+| `/growth:growth-cro` | Improve onboarding/activation |
 | `/growth:growth-email` | Reengagement campaigns |
 | `/growth:growth-ab-test` | Test strategies |
 

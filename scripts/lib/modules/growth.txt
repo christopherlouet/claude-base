@@ -4,23 +4,21 @@
 # A path ending with / is a directory copied recursively.
 # Drift guard: tests/modules.bats asserts every path exists in the repo.
 
-# === Commands (11) ===
+# === Commands (9) ===
+# Wave 3: growth-funnel + growth-onboarding folded into growth-cro (the CRO hub).
 .claude/commands/growth/growth-ab-test.md
 .claude/commands/growth/growth-analytics.md
 .claude/commands/growth/growth-app-store-analytics.md
 .claude/commands/growth/growth-cro.md
 .claude/commands/growth/growth-email.md
-.claude/commands/growth/growth-funnel.md
 .claude/commands/growth/growth-landing.md
 .claude/commands/growth/growth-localization.md
-.claude/commands/growth/growth-onboarding.md
 .claude/commands/growth/growth-retention.md
 .claude/commands/growth/growth-seo.md
 
-# === Agents (6) ===
+# === Agents (5) ===
 .claude/agents/growth-analytics.md
 .claude/agents/growth-cro.md
-.claude/agents/growth-funnel.md
 .claude/agents/growth-landing.md
 .claude/agents/growth-localization.md
 .claude/agents/growth-seo.md
