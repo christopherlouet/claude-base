@@ -63,10 +63,8 @@ tags:
 
 | Type | Element | Activation |
 |---|---|---|
-| Command | `/dev:dev-api` | REST endpoints, controllers, services |
-| Command | `/dev:dev-api-versioning` | Versioning strategies |
-| Command | `/dev:dev-graphql` | GraphQL schema, resolvers |
-| Command | `/dev:dev-trpc` | Type-safe TypeScript APIs |
+| Command | `/dev:dev-api` | REST endpoints, GraphQL, tRPC, controllers, services, versioning |
+| Skill auto | `dev-graphql` | GraphQL schema, resolvers, DataLoader, N+1 |
 | Command | `/qa:qa-security` | OWASP Top 10 audit |
 | Command | `/doc:doc-api-spec` | OpenAPI/Swagger spec |
 | Rule auto | `api.md`, `security.md` | `**/api/**`, `**/routes/**`, `**/auth/**` |

@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Removed
 
+- **Consolidation Wave 2 (API cluster): removed `/dev:dev-graphql`, `/dev:dev-trpc` and `/dev:dev-api-versioning`** —
+  folded into `/dev:dev-api`, the single API command of record. **Breaking** (the three slash commands are gone),
+  but no capability is lost: `/dev:dev-api` now covers REST, GraphQL, tRPC and versioning, and its `dev-api` skill
+  gained dedicated **tRPC** (type-safe routers, Zod, `protectedProcedure`) and **API versioning** (URL-path strategy,
+  deprecation timeline, `Deprecation`/`Sunset` headers) sections. GraphQL schema/resolver depth stays in the
+  auto-triggered `dev-graphql` **skill** (kept — it anchors the Apollo vendor-skill pairing). Commands 126 → 123
+  (core 69 → 68 — the `api-data` module bundle drops the two folded commands, so they move from module-owned to
+  core; `dev` 22 → 19). Cross-refs in `assistant`, `dev-flutter`, `dev-supabase` redirected to `/dev:dev-api`.
+  Part of the audit-driven command consolidation — see `specs/consolidation-audit-2026-06/audit.md`.
+
 - **Consolidation Wave 2 (doc cluster): removed `/doc:doc-readme` and `/doc:doc-architecture`** — both
   were subsets of `/doc:doc-generate`, which already documents README, architecture/ADR, API and inline
   docs by type. **Breaking** (the two slash commands are gone), but no capability is lost: use

@@ -793,7 +793,7 @@ You now master Claude Code. Here's what claude-base adds on top:
 
 | What the foundation adds | Description |
 |--------------------------|-------------|
-| <!-- count:commands -->126<!-- /count --> commands (`/work:*`, `/dev:*`, `/qa:*`, `/ops:*`) | Pre-written workflows for common tasks |
+| <!-- count:commands -->123<!-- /count --> commands (`/work:*`, `/dev:*`, `/qa:*`, `/ops:*`) | Pre-written workflows for common tasks |
 | <!-- count:agents -->48<!-- /count --> specialized agents | Sub-processes for audit, security, tests, etc. |
 | <!-- count:skills -->53<!-- /count --> skills | Behaviors triggered by keywords |
 | <!-- count:rules -->31<!-- /count --> rules | Code conventions activated automatically based on the modified files |

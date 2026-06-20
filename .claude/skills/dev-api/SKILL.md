@@ -1,6 +1,6 @@
 ---
 name: dev-api
-description: Develop and document a REST or GraphQL API. Use when the user wants to create an endpoint, a route, or structure an API.
+description: Develop and document a REST, GraphQL, or tRPC API, including versioning strategy. Use when the user wants to create an endpoint, a route, a type-safe procedure, or structure/version an API.
 allowed-tools:
   - Read
   - Edit
@@ -129,6 +129,42 @@ describe('POST /api/users', () => {
   });
 });
 ```
+
+### 7. tRPC (type-safe TypeScript)
+
+For a full-stack TypeScript monorepo, tRPC gives end-to-end type safety with no codegen.
+
+```typescript
+// Server: initTRPC + Zod-validated procedures
+const t = initTRPC.context<Context>().create({ transformer: superjson });
+const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session) throw new TRPCError({ code: 'UNAUTHORIZED' });
+  return next({ ctx: { ...ctx, user: ctx.session.user } });
+});
+
+export const userRouter = t.router({
+  list: t.procedure.input(z.object({ cursor: z.string().nullish() }))
+    .query(({ input, ctx }) => ctx.userService.paginate(input)),      // cursor-based pagination
+  create: protectedProcedure.input(createUserSchema)
+    .mutation(({ input, ctx }) => ctx.userService.create(input)),
+});
+```
+
+- Build the context (prisma, session, user); use `protectedProcedure` for authenticated operations.
+- Group routers per domain (public queries / protected queries / mutations).
+- Client: `httpBatchLink` + transformer + provider; hooks `useQuery`, `useMutation`, `useInfiniteQuery`.
+- IMPORTANT: always validate inputs with Zod; NEVER expose sensitive data in public queries.
+
+### 8. API versioning
+
+Let the API evolve while keeping existing clients working. **URL Path** versioning (`/v1/`, `/v2/`) is recommended for most cases.
+
+- Choose the strategy: URL Path (default), Query Param, Header, or Content Negotiation.
+- Structure the code: versioned API layer, **non-versioned** Service layer.
+- Classify changes: additive = safe (same version), breaking = new version.
+- Deprecation timeline: Active → Deprecated → Sunset → Off, with `Deprecation`, `Sunset` and `Link` (successor-version) headers.
+- Document every breaking change with a migration guide; monitor per version (requests, clients, errors, latency).
+- IMPORTANT: never remove a version without a deprecation period; NEVER make breaking changes in a minor version.
 
 ## API Checklist
 
