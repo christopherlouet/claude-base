@@ -33,26 +33,10 @@ ccusage --daily
 ccusage --since 2026-03-01 --until 2026-03-23
 ```
 
-### RTK (optimization)
-
-```bash
-# Installation
-brew install rtk
-
-# View the savings achieved
-rtk gain
-
-# Discover unoptimized commands
-rtk discover
-```
-
-Enable RTK: add `ENABLE_RTK=1` in `env` of `.claude/settings.json`.
-
 ## Reduction strategies
 
 | Strategy | Savings | How |
 |----------|---------|-----|
-| RTK rewrite | 60-90% | Automatically active via PreToolUse hook |
 | `/compact` between phases | 20-40% | Reduce accumulated context |
 | Haiku agents for simple tasks | 50-70% | Exploration, reading, search |
 | Focused session scope | 30-50% | 1-5 tasks per session max |

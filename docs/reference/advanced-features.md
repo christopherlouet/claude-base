@@ -284,23 +284,6 @@ Vulnerability scanning tool that reasons about code beyond traditional static an
 
 Prerequisites: Enterprise or Team plan. Complement to `/qa:qa-security` (local, OWASP-based) for an in-depth audit. See [Anthropic announcement](https://www.anthropic.com/news/claude-code-security).
 
-## RTK - Token Optimization (optional)
-
-[RTK](https://github.com/rtk-ai/rtk) (Rust Token Killer) is a CLI proxy that compresses command outputs before they reach the LLM context. 60-90% reduction in tokens consumed.
-
-Installation: `brew install rtk` (or `cargo install --git https://github.com/rtk-ai/rtk`)
-
-The foundation includes a PreToolUse hook that automatically rewrites commands if RTK is installed:
-- `git status` → `rtk git status` (~10 tokens instead of ~200)
-- `cat file.rs` → `rtk read file.rs` (signatures only in aggressive mode)
-- `cargo test` → `rtk cargo test` (-90% on test outputs)
-
-The hook is transparent: if RTK is not installed, nothing changes. Disable with `RTK_DISABLED=1`.
-
-Useful commands:
-- `rtk gain`: see token savings
-- `rtk discover`: identify unoptimized commands in history
-
 ## CLAUDE.md @imports
 
 `@path/to/file` syntax to import files. Relative and absolute paths supported, recursive imports (max 5 levels). View loaded imports with `/memory`.

@@ -107,7 +107,6 @@ The `.claude/settings.local.json` file is in `.gitignore`. Each developer can ov
 | Format/lint/tests hooks | Yes | Override possible |
 | Common env variables | Yes (`INSIDE_CLAUDE_CODE`) | Yes (tokens, local paths) |
 | `includeCoAuthoredBy` | Yes (false recommended) | No |
-| `ENABLE_RTK` | No | Yes (individual choice) |
 | Default model | No | Yes |
 
 ### Shared hooks
@@ -559,20 +558,6 @@ Using the right effort level avoids consuming tokens unnecessarily:
 /effort high     # Architecture, refactoring
 /effort max      # Critical debug (Opus 4.8 only)
 ```
-
-### RTK: 60-90% token reduction
-
-RTK automatically rewrites commands to reduce consumption. Enabled per developer in `settings.local.json`:
-
-```json
-{
-  "env": {
-    "ENABLE_RTK": "1"
-  }
-}
-```
-
-Then install: `brew install rtk`. See savings with `rtk gain`.
 
 ### Typical consumption per workflow phase
 

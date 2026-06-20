@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Removed
+
+- **Removed RTK (token optimizer) from the foundation entirely.** The opt-in RTK integration
+  shipped a `PreToolUse` hook (gated by `ENABLE_RTK=1`) that rewrote every Bash command via
+  `rtk rewrite` before execution. Its guards (`onFailure: ignore`, `command -v` checks) prevented
+  the *hook* from failing but not a *bad rewrite* from breaking the real command — a recurring
+  source of errors. The advertised "60–90% token savings" only cover the Bash command text (a
+  minor fraction of real token spend), and prompt caching + larger contexts have since eroded the
+  value. Net: poor risk/reward against the foundation's "reduction over features" principle.
+  **Removed:** the RTK `settings.json` hook, the `update.sh --add-hook` flag and `add_hook`
+  function (it only ever supported `rtk`, so the whole `--add-hook` mechanism is gone), and all
+  RTK documentation (best-practices, troubleshooting, advanced-features, hooks-reference,
+  team-guide, ops-cost, learning-path). The unrelated `--add-plugin` flag is unchanged.
+
 ## [5.0.0] - 2026-06-20
 
 > **MAJOR — audit-driven catalog consolidation (Waves 1–4).** A targeted reduction of the command

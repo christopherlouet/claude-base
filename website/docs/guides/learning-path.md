@@ -988,7 +988,6 @@ At the start of each session, several hooks run:
 | `SKIP_PRE_PUSH_CI=1` | Skip local pre-push CI |
 | `SKIP_COMMAND_VALIDATOR=1` | Disable command validation |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive protection |
-| `ENABLE_RTK=1` | Enable RTK token optimization (-60-90%) |
 
 These variables can be defined in `.claude/settings.local.json` for a persistent session, or exported in the shell for one-off use.
 
@@ -1739,7 +1738,6 @@ The foundation exposes variables to disable hooks if necessary:
 | `SKIP_COMMAND_VALIDATOR=1` | Command security validation |
 | `SKIP_PRE_PUSH_CI=1` | Local CI before push |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Destructive operation protection |
-| `ENABLE_RTK=1` | Enable RTK token optimization |
 
 Configure these variables in `settings.local.json` (gitignored) for your personal environment.
 
@@ -1921,37 +1919,6 @@ Each Claude Code session consumes tokens for:
 - Bash command outputs
 
 The context grows over the course of the session and never decreases (except with `/compact` or `/clear`).
-
-#### RTK: 60-90% reduction on command outputs
-
-[RTK](https://github.com/rtk-ai/rtk) (Rust Token Killer) is a CLI proxy that compresses command outputs before they reach the LLM context.
-
-Installation:
-```bash
-brew install rtk
-# or
-cargo install --git https://github.com/rtk-ai/rtk
-```
-
-Activation in the foundation (disabled by default):
-
-```json
-{
-  "env": {
-    "ENABLE_RTK": "1"
-  }
-}
-```
-
-The foundation's `PreToolUse` hook automatically rewrites commands if RTK is installed:
-- `git status` becomes `rtk git status` (~10 tokens instead of ~200)
-- `cargo test` becomes `rtk cargo test` (-90% on test outputs)
-
-Measurement commands:
-```bash
-rtk gain       # See the savings achieved
-rtk discover   # Identify unoptimized commands
-```
 
 #### /compact and /clear strategies
 
@@ -2209,7 +2176,6 @@ In `.claude/settings.local.json` (gitignored, personal):
 ```json
 {
   "env": {
-    "ENABLE_RTK": "1",
     "SKIP_PRE_PUSH_CI": "0"
   }
 }

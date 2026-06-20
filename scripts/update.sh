@@ -44,7 +44,6 @@ HOOK_SCRIPTS_SUBDIR="scripts/hooks"
 TARGET_DIR=""
 FORCE_UPDATE=false
 BACKUP_ONLY=false
-ADD_HOOK=""
 ADD_PLUGIN=""
 UPDATE_SETTINGS=false
 UPDATE_SKILLS=false
@@ -172,7 +171,6 @@ ${BOLD}OPTIONS${NC}
     --upgrade-claude-md Migrate CLAUDE.md to @imports (copies .claude/docs/reference/)
     --changelog         Show what's new in the foundation
     --restore BACKUP    Restore from a previous backup
-    --add-hook HOOK     Add a hook to the existing settings.json without overwriting (e.g., rtk)
     --add-plugin ID     Enable a marketplace plugin in the existing settings.json
                         without overwriting other keys (e.g., astral@astral-sh).
                         Idempotent: re-running on an already-enabled plugin succeeds silently.
@@ -185,9 +183,6 @@ ${BOLD}OPTIONS${NC}
     --detect-only       Read-only: report whether the project still matches its
                         recorded preset (recorded vs detected, Diverges: yes/no),
                         then exit without updating. Mutually exclusive with --preset.
-
-${BOLD}AVAILABLE HOOKS${NC}
-    rtk                 RTK token optimizer (reduces tokens by 60-90%, requires: brew install rtk)
 
 ${BOLD}EXAMPLES${NC}
     # Interactive update
@@ -210,9 +205,6 @@ ${BOLD}EXAMPLES${NC}
 
     # Restore from a backup
     $(basename "$0") --restore .claude/commands.backup.20240101_120000 ./my-project
-
-    # Add the RTK hook (token optimizer) without overwriting settings.json
-    $(basename "$0") --add-hook rtk ./my-project
 
     # Enable a marketplace plugin in settings.json (idempotent)
     $(basename "$0") --add-plugin astral@astral-sh ./my-project
@@ -336,13 +328,6 @@ parse_args() {
             --changelog)
                 show_changelog
                 exit 0
-                ;;
-            --add-hook)
-                if [[ -z "${2:-}" ]]; then
-                    error "Option --add-hook requires an argument (hook name, e.g., rtk)"
-                fi
-                ADD_HOOK="$2"
-                shift 2
                 ;;
             --add-plugin)
                 if [[ -z "${2:-}" ]]; then
@@ -820,67 +805,8 @@ update_commands() {
     info "Commands: $before → $after"
 }
 
-add_hook() {
-    local hook_name="$1"
-    local settings_file="$TARGET_DIR/.claude/settings.json"
-
-    if [[ ! -f "$settings_file" ]]; then
-        error "settings.json not found in $TARGET_DIR/.claude/"
-    fi
-
-    if ! command -v jq &>/dev/null; then
-        error "jq is required for --add-hook. Install it: https://jqlang.github.io/jq/download/"
-    fi
-
-    case "$hook_name" in
-        rtk)
-            section "Adding RTK hook (token optimizer)"
-
-            # Check if hook already exists
-            if jq -e '.hooks.PreToolUse[]? | select(.description | test("RTK"))' "$settings_file" >/dev/null 2>&1; then
-                success "RTK hook already present in settings.json"
-                return
-            fi
-
-            local rtk_hook
-            rtk_hook=$(cat <<'HOOKJSON'
-{
-    "description": "RTK token optimizer - rewrites commands to reduce tokens by 60-90% (install rtk: brew install rtk)",
-    "matcher": "Bash",
-    "hooks": [
-        {
-            "type": "command",
-            "command": "bash -c 'command -v rtk >/dev/null 2>&1 || exit 0; command -v jq >/dev/null 2>&1 || exit 0; INPUT=$(cat); CMD=$(echo \"$INPUT\" | jq -r \".tool_input.command // empty\"); [ -z \"$CMD\" ] && exit 0; REWRITTEN=$(rtk rewrite \"$CMD\" 2>/dev/null) || exit 0; [ \"$CMD\" = \"$REWRITTEN\" ] && exit 0; ORIGINAL_INPUT=$(echo \"$INPUT\" | jq -c \".tool_input\"); UPDATED_INPUT=$(echo \"$ORIGINAL_INPUT\" | jq --arg cmd \"$REWRITTEN\" \".command = \\$cmd\"); jq -n --argjson updated \"$UPDATED_INPUT\" \"{\\\"hookSpecificOutput\\\":{\\\"hookEventName\\\":\\\"PreToolUse\\\",\\\"permissionDecision\\\":\\\"allow\\\",\\\"permissionDecisionReason\\\":\\\"RTK auto-rewrite\\\",\\\"updatedInput\\\":\\$updated}}\"'",
-            "timeout": 5000,
-            "onFailure": "ignore"
-        }
-    ]
-}
-HOOKJSON
-)
-
-            if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} Add RTK hook to settings.json"
-                return
-            fi
-
-            local tmp
-            tmp=$(safe_mktemp)
-            jq --argjson hook "$rtk_hook" '.hooks.PreToolUse += [$hook]' "$settings_file" > "$tmp"
-            cp "$tmp" "$settings_file"
-            rm -f "$tmp"
-            success "RTK hook added to settings.json"
-            info "Install RTK: brew install rtk (or cargo install --git https://github.com/rtk-ai/rtk)"
-            ;;
-        *)
-            error "Unknown hook: $hook_name. Available hooks: rtk"
-            ;;
-    esac
-}
-
 # Enable a marketplace plugin in the project's settings.json without
-# overwriting other keys. Mirrors add_hook (rtk) but targets the
-# `enabledPlugins` object instead of `hooks.PreToolUse`. Idempotent:
+# overwriting other keys. Targets the `enabledPlugins` object. Idempotent:
 # returns success if the plugin is already enabled.
 add_plugin() {
     local plugin_id="$1"
@@ -1882,12 +1808,6 @@ main() {
     # Handle --restore
     if [[ -n "$RESTORE_BACKUP" ]]; then
         restore_backup "$RESTORE_BACKUP"
-        exit 0
-    fi
-
-    # Handle --add-hook
-    if [[ -n "$ADD_HOOK" ]]; then
-        add_hook "$ADD_HOOK"
         exit 0
     fi
 

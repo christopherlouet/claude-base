@@ -76,7 +76,6 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Local pre-push CI** | PreToolUse (Bash git push) | Lint + type-check + tests before push. Disable with `SKIP_PRE_PUSH_CI=1` |
 | **Destructive ops guard** | PreToolUse (Bash) | Blocks destructive DELETE/DROP/TRUNCATE/rm without confirmation |
 | **Command validator** | PreToolUse (Bash) | Validates commands against 8 risk categories (fork bombs, pipe-to-shell, disk destruction, privilege escalation, etc.). Disable with `SKIP_COMMAND_VALIDATOR=1` |
-| **RTK token optimizer** | PreToolUse (Bash) | Rewrites commands via RTK to reduce tokens (-60-90%). Disabled by default, enable with `ENABLE_RTK=1` |
 | **Auto-format TS/JS** | PostToolUse (Edit/Write) | Prettier on TS/JS files |
 | **Auto-format Python** | PostToolUse (Edit/Write) | Ruff/Black on .py files |
 | **Auto-format Go** | PostToolUse (Edit/Write) | gofmt on .go files |
@@ -135,7 +134,6 @@ Migration path: existing projects must run `claude-base update -f --all <project
 | `SKIP_PRE_PUSH_CI=1` | Disable local pre-push CI check |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
 | `SKIP_PROMPT_CONTEXT=1` | Disable repo context injection on free-form prompts |
-| `ENABLE_RTK=1` | Enable RTK token optimization |
 | `SKIP_BASH_OUTPUT_FILTER=1` | Disable the Bash output filter (output rewriter) |
 | `SKIP_INLINE_EDIT_ERRORS=1` | Disable the inline edit errors hook (output rewriter) |
 | `BASH_OUTPUT_FILTER_VERBOSE=1` | Keep both filtered and original views in the rewritten output |
