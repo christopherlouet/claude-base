@@ -6,7 +6,7 @@ description: Breakdown of all claude-base commands by domain
 
 # Commands Matrix
 
-> **<!-- count:commands -->107<!-- /count --> commands** organized by domain
+> **<!-- count:commands -->106<!-- /count --> commands** organized by domain
 >
 > For the exhaustive and always up-to-date list, see the [Commands Catalog](/docs/reference/commands) (auto-generated from `.claude/commands/`).
 

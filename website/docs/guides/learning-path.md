@@ -47,7 +47,7 @@ Claude Code on its own is powerful, but it requires that you know exactly what t
 
 Concretely, claude-base adds the following to the `.claude/` folder of your project:
 
-- **<!-- count:commands -->107<!-- /count --> commands**: pre-written instructions for common tasks (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
+- **<!-- count:commands -->106<!-- /count --> commands**: pre-written instructions for common tasks (`/work:work-explore`, `/dev:dev-tdd`, `/qa:qa-security`, etc.)
 - **<!-- count:agents -->45<!-- /count --> agents**: specialized sub-processes that activate automatically for analysis or audit tasks
 - **<!-- count:skills -->53<!-- /count --> skills**: behaviors that trigger automatically based on your keywords
 - **<!-- count:rules -->31<!-- /count --> rules**: code conventions applied automatically based on the files you modify
@@ -498,7 +498,7 @@ The <!-- count:rules -->31<!-- /count --> rules of the foundation cover:
 
 ### 2.6 The 9 domains: overview
 
-Claude-base organizes its <!-- count:commands -->107<!-- /count --> commands into 9 domains. Each domain covers an aspect of software development.
+Claude-base organizes its <!-- count:commands -->106<!-- /count --> commands into 9 domains. Each domain covers an aspect of software development.
 
 ```
 .claude/commands/
@@ -1891,7 +1891,7 @@ An agent must have a minimal body (30-55 lines) and delegate to the skill. A ski
 
 #### The ratio and its importance
 
-The foundation currently contains: <!-- count:commands -->107<!-- /count --> commands, <!-- count:skills -->53<!-- /count --> skills, <!-- count:agents -->45<!-- /count --> agents, <!-- count:rules -->31<!-- /count --> rules (indicative numbers, verify with `.claude/`). This ratio reflects a philosophy: commands are the main entry point, agents are specialized and constrained, skills provide the substance.
+The foundation currently contains: <!-- count:commands -->106<!-- /count --> commands, <!-- count:skills -->53<!-- /count --> skills, <!-- count:agents -->45<!-- /count --> agents, <!-- count:rules -->31<!-- /count --> rules (indicative numbers, verify with `.claude/`). This ratio reflects a philosophy: commands are the main entry point, agents are specialized and constrained, skills provide the substance.
 
 #### CLAUDE.md and @imports
 

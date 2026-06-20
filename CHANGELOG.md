@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Removed
+
+- **Consolidation Wave 4 (cleanup): removed `/doc:doc-fix-issue`** (misfiled in `doc/` — it was an
+  autonomous GitHub-issue→PR TDD bugfix flow, not documentation). **Breaking**, no capability lost: it
+  duplicated `/work:work-flow-bugfix`, which already runs the full branch→failing-test→fix→verify→PR cycle
+  with issue-referenced commits; that command gained an explicit **ISSUE** step (`gh issue view`, close via
+  `Fixes #<n>`). Commands 107 → 106 (core 60 → 59; `doc` 6 → 5). Closes the audit-driven consolidation
+  (Waves 1–4) — see `specs/consolidation-audit-2026-06/audit.md`.
+
+### Fixed
+
+- **Stack-coupling cleanup (Wave 4): de-coupled `/dev:dev-supabase` from Flutter.** The command body
+  hard-coded a Flutter app (`supabase_flutter`, `--dart-define`, `main.dart`) despite its generic name —
+  a copy-from-template artifact. It now initializes the Supabase client for the **detected stack**
+  (`@supabase/supabase-js` for web/Node, `supabase-py` for Python, `supabase_flutter` for Flutter), keeping
+  the universal RLS/security emphasis. (The `dev-graphql` Flutter coupling was already resolved when its
+  command was removed in the Wave 2 API merge; the kept skills were already stack-agnostic.)
+
 ### Changed
 
 - **Consolidation Wave 3 (work, floor): slimmed `/work:work-commit-push-pr` to a thin orchestrator**

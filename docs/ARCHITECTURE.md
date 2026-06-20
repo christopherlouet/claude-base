@@ -90,7 +90,7 @@ This architecture enables:
 | **Model** | Default | Default | Configurable | N/A |
 | **Use case** | Explicit actions | Detected patterns | Isolated tasks | Constraints |
 
-## Commands (<!-- count:commands -->107<!-- /count --> available)
+## Commands (<!-- count:commands -->106<!-- /count --> available)
 
 ### Definition
 Prompts invoked manually with the `/command-name` syntax.
