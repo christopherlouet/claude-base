@@ -16,7 +16,7 @@
 | Command | `/dev:dev-react-perf` | Rendering optimization (Core Web Vitals, memoization) |
 | Command | `/dev:dev-hook` | Custom React/Vue hooks creation |
 | Command | `/dev:dev-design-system` | Tokens, shared components |
-| Command | `/qa:qa-design`, `/qa:qa-responsive`, `/qa:qa-chrome` | UI/UX, mobile-first, Chrome visual audits |
+| Command | `/qa:qa-design`, `/qa:qa-chrome` | UI/UX + responsive/mobile-first, Chrome visual audits |
 | Command | `/qa:wcag-audit` | WCAG 2.1 AA accessibility |
 | Skill auto | `dev-shadcn`, `dev-nextjs`, `dev-frontend-design` | Activated on keywords (`shadcn`, `App Router`, `landing page`) |
 | Rules auto | `react.md`, `nextjs.md`, `vue.md`, `svelte.md`, `astro.md`, `accessibility.md`, `performance.md`, `design-style.md` | Based on `**/*.tsx`, `**/components/**`, `**/app/**` |
@@ -152,7 +152,7 @@
 | Command | `/dev:dev-test` | Test generation |
 | Command | `/dev:dev-testing-setup` | Test infrastructure configuration |
 | Command | `/qa:qa-e2e` | E2E tests (Playwright, Cypress) |
-| Command | `/qa:qa-automation`, `/qa:qa-coverage` | Automation, coverage |
+| Command | `/qa:qa-automation`, `/qa:qa-tech-debt` | Automation, coverage & tech-debt |
 | Skill auto | `qa-e2e`, `api-mocking` | Activated on keywords (`E2E`, `MSW`, `mock API`) |
 | Rule auto | `tdd-enforcement.md`, `testing.md` | All TS/Py/Go/Dart code, tests/, *.test.* |
 

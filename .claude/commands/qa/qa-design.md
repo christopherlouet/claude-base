@@ -7,7 +7,7 @@ $ARGUMENTS
 
 ## Objective
 
-Audit an interface against 100+ rules covering accessibility, forms, animations, typography, images, UI performance, navigation, dark mode, touch and internationalization.
+Audit an interface against 100+ rules covering accessibility, forms, animations, typography, images, UI performance, navigation, dark mode, touch, internationalization and responsive/mobile-first breakpoints.
 
 ## Workflow
 
@@ -17,6 +17,7 @@ Audit an interface against 100+ rules covering accessibility, forms, animations,
 - Verify animations (reduced-motion, performance, timing)
 - Verify typography, images, UI performance
 - Verify navigation, dark mode, touch targets, i18n
+- Verify responsive/mobile-first across the 7 breakpoints (320→2560px), viewport, touch sizing
 - Produce the report with scores per category
 
 ## Expected output
@@ -35,6 +36,7 @@ Audit an interface against 100+ rules covering accessibility, forms, animations,
 | Dark Mode | /10 | | |
 | Touch | /10 | | |
 | i18n | /10 | | |
+| Responsive | /10 | | |
 
 ### Critical issues, quick wins, recommendations
 [With file:line for each issue]
@@ -44,13 +46,12 @@ Audit an interface against 100+ rules covering accessibility, forms, animations,
 | Agent | When to use it |
 |-------|------------------|
 | `/qa:wcag-audit` | Detailed WCAG accessibility audit |
-| `/qa:qa-responsive` | Responsive/mobile audit |
 | `/qa:qa-perf` | Detailed performance audit |
 | `/dev:dev-design-system` | Design tokens and design system |
 
 ---
 
-IMPORTANT: Cover all 10 categories, not just the obvious ones.
+IMPORTANT: Cover all 11 categories, not just the obvious ones.
 
 YOU MUST provide concrete solutions with file:line.
 

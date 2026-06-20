@@ -35,7 +35,7 @@ types first, then tests (RED), implementation (GREEN), refactoring and Storybook
 | `/dev:dev-hook` | Create an associated hook |
 | `/dev:dev-test` | Complementary tests |
 | `/qa:wcag-audit` | Component accessibility audit |
-| `/qa:qa-responsive` | Verify responsiveness |
+| `/qa:qa-design` | Verify responsive/UI design |
 
 ---
 

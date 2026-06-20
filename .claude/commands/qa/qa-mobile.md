@@ -42,7 +42,7 @@ Audit performance, accessibility, responsive and stability of a mobile applicati
 | `/dev:dev-flutter` | Fix widgets |
 | `/qa:qa-perf` | In-depth performance audit |
 | `/qa:wcag-audit` | In-depth accessibility |
-| `/qa:qa-responsive` | Detailed responsive web |
+| `/qa:qa-design` | Responsive/UI web audit |
 
 ---
 

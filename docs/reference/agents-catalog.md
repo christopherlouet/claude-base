@@ -1,4 +1,4 @@
-# Available Agents (<!-- count:commands -->120<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->117<!-- /count --> commands, <!-- count:agents -->47<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -48,7 +48,7 @@
 | `/dev:dev-prisma` | Prisma ORM (schema, migrations, queries) |
 | `/dev:dev-ai-integration` | LLM integration (OpenAI, Claude API) |
 
-## QA-: Quality (<!-- count:byDomain.qa -->16<!-- /count -->)
+## QA-: Quality (<!-- count:byDomain.qa -->13<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/qa:qa-review` | Thorough code review + naming analysis |
@@ -57,16 +57,13 @@
 | `/qa:wcag-audit` | WCAG accessibility audit |
 | `/qa:qa-audit` | Full quality audit |
 | `/qa:qa-chrome` | Chrome visual tests (DOM debugging, responsive, captures) |
-| `/qa:qa-design` | UI/UX audit (100+ web design rules) |
-| `/qa:qa-responsive` | Responsive/mobile web audit |
+| `/qa:qa-design` | UI/UX audit (100+ web design rules, incl. responsive/mobile-first) |
 | `/qa:qa-automation` | Test automation |
-| `/qa:qa-coverage` | Test coverage analysis |
 | `/qa:qa-loop` | Autonomous audit-fix loop with stop criteria |
-| `/qa:qa-kaizen` | Continuous improvement (PDCA, Muda) |
 | `/qa:qa-mobile` | Mobile app quality audit (Flutter) |
 | `/qa:qa-neovim` | Neovim config audit (perf, keymaps) |
 | `/qa:qa-e2e` | End-to-End tests (Playwright, Cypress) |
-| `/qa:qa-tech-debt` | Identify and prioritize technical debt |
+| `/qa:qa-tech-debt` | Identify/prioritize technical debt (incl. coverage + Kaizen) |
 
 ## OPS-: Operations (<!-- count:byDomain.ops -->31<!-- /count -->)
 | Command | Usage |
@@ -158,7 +155,7 @@
 | `/legal:legal-terms-of-service` | Terms of Service |
 | `/legal:legal-privacy-policy` | Privacy Policy |
 
-## Sub-Agents (<!-- count:agents -->48<!-- /count -->)
+## Sub-Agents (<!-- count:agents -->47<!-- /count -->)
 
 Claude automatically delegates to specialized agents (isolated context, restricted tools).
 
@@ -175,7 +172,7 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 | Domain | Agents | Models |
 |--------|--------|--------|
 | Exploration & Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
-| Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-responsive`, `qa-e2e`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
+| Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-e2e`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
 | Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
 | Development | `dev-debug`, `dev-test`, `dev-flutter`, `dev-document`, `dev-tdd` | haiku/sonnet (tdd, debug) |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |

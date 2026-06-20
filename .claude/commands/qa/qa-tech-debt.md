@@ -7,17 +7,17 @@ $ARGUMENTS
 
 ## Objective
 
-Scan the code to identify technical debt (code, architecture, tests, documentation), prioritize it by impact/effort and propose an incremental remediation plan.
+Scan the code to identify technical debt (code, architecture, tests, documentation), prioritize it by impact/effort and propose an incremental remediation plan. Covers test-coverage analysis and the Kaizen (PDCA) continuous-improvement angle — see the `qa-tech-debt` skill.
 
 ## Workflow
 
 - Scan automatically: TODO/FIXME, any, eslint-disable, ts-ignore, long files
 - Evaluate code debt (duplication, long functions, excessive nesting)
 - Evaluate architectural debt (coupling, separation of concerns, obsolete patterns)
-- Evaluate test debt (coverage, fragile tests, excessive mocks)
+- Evaluate test debt: measure coverage (statements/branches/functions), categorize gaps by criticality, propose a CI coverage gate
 - Evaluate documentation debt (README, API, outdated comments)
 - Prioritize with the Impact/Effort matrix (P0 to P4)
-- Propose a remediation plan in 3 phases
+- Propose a remediation plan in 3 phases; for incremental fixes, run the PDCA/Kaizen cycle (one change at a time, measure before/after)
 
 ## Expected output
 
@@ -43,7 +43,7 @@ Scan the code to identify technical debt (code, architecture, tests, documentati
 | Agent | Usage |
 |-------|-------|
 | `/dev:dev-refactor` | Refactoring execution |
-| `/qa:qa-coverage` | Test coverage analysis |
+| `/dev:dev-test` | Generate the missing tests (coverage gaps) |
 | `/qa:qa-review` | In-depth code review |
 | `/work:work-plan` | Refactoring planning |
 

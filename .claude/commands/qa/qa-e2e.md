@@ -39,7 +39,7 @@ Set up and execute E2E tests on critical user journeys, using the Page Object Mo
 | Agent | Usage |
 |-------|-------|
 | `/qa:qa-automation` | Automation strategy |
-| `/qa:qa-coverage` | Test coverage |
+| `/qa:qa-tech-debt` | Test coverage & debt |
 | `/qa:wcag-audit` | Accessibility |
 | `/ops:ops-ci` | CI/CD integration |
 

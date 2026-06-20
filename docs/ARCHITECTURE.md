@@ -90,7 +90,7 @@ This architecture enables:
 | **Model** | Default | Default | Configurable | N/A |
 | **Use case** | Explicit actions | Detected patterns | Isolated tasks | Constraints |
 
-## Commands (<!-- count:commands -->120<!-- /count --> available)
+## Commands (<!-- count:commands -->117<!-- /count --> available)
 
 ### Definition
 Prompts invoked manually with the `/command-name` syntax.
@@ -197,7 +197,7 @@ When the user mentions "TDD", "test first", or "write tests first"...
 - Desired contextual triggering
 - Standardization of behaviors
 
-## Agents (<!-- count:agents -->48<!-- /count --> available)
+## Agents (<!-- count:agents -->47<!-- /count --> available)
 
 ### Definition
 Specialized sub-agents with isolated context, automatic delegation.
@@ -406,8 +406,7 @@ Applied rules: typescript.md, react.md, security.md
 1. /qa:qa-audit            → Command (explicit)
    ├── qa-security      → Agent (parallel)
    ├── qa-perf          → Agent (parallel)
-   ├── wcag-audit          → Agent (parallel)
-   └── qa-coverage      → Agent (parallel)
+   └── wcag-audit          → Agent (parallel)
 
 All read-only, isolated contexts
 ```
