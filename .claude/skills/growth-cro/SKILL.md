@@ -1,6 +1,6 @@
 ---
 name: growth-cro
-description: Conversion rate optimization (CRO). Trigger when the user wants to optimize conversions, improve a signup form, a checkout, a landing page, or an onboarding.
+description: Conversion rate optimization (CRO) and funnel analysis. Trigger when the user wants to optimize conversions, map/analyze a conversion funnel, improve a signup form, a checkout, a landing page, or an onboarding/activation flow.
 allowed-tools:
   - Read
   - Glob
@@ -177,6 +177,24 @@ Signup → [Activation] → [Aha Moment] → [Habit Formation]
 - Monthly/annual toggle (show the savings)
 - Feature comparison table below
 - FAQ on billing
+
+## 7. Funnel mapping & analysis
+
+Before optimizing a single step, map and measure the whole funnel.
+
+1. **Map the steps** — events, pages, actions from entry to conversion.
+2. **Measure** — conversion per step and the global rate.
+
+| Step | Users | Conv. | Drop-off | Trend |
+|------|-------|-------|----------|-------|
+| ...  | ...   | ...   | ...      | ...   |
+
+3. **Segment** — device, source, country, cohort (drop-offs often hide in a segment).
+4. **Diagnose drop-offs** — friction (effort), anxiety (trust), clarity (confusion) — ask *why*, not just *how much*.
+5. **Prioritize** — score opportunities with ICE (Impact × Confidence × Ease); optimize one step at a time.
+6. **Monitor** — continuous tracking + alerts on step regressions.
+
+Reliable tracking is a prerequisite — never analyze a funnel on unreliable data.
 
 ## Metrics to track
 

@@ -37,7 +37,7 @@ Produce the essential email templates (welcome, confirmation, password reset, on
 
 | Agent | When to use it |
 |-------|------------------|
-| `/growth:growth-onboarding` | Activation email sequence |
+| `/growth:growth-cro` | Activation/onboarding journey |
 | `/growth:growth-retention` | Re-engagement emails |
 | `/growth:growth-analytics` | Track email performance |
 | `/legal:legal-rgpd` | Compliance for marketing emails |

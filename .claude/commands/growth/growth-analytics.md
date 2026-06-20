@@ -31,7 +31,7 @@ Define the North Star Metric, AARRR KPIs, events to track, and set up the analyt
 
 | Agent | When to use it |
 |-------|------------------|
-| `/growth:growth-funnel` | Analyze conversions |
+| `/growth:growth-cro` | Analyze funnel conversions |
 | `/growth:growth-retention` | Measure retention |
 | `/growth:growth-ab-test` | Test hypotheses |
 | `/legal:legal-rgpd` | GDPR compliance |

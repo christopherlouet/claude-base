@@ -39,7 +39,7 @@ Define the hypothesis, calculate sample size, configure the test, and analyze th
 |-------|----------------|
 | `/growth:growth-analytics` | Define the metrics |
 | `/growth:growth-landing` | Optimize the landing pages |
-| `/growth:growth-funnel` | Analyze the impact on the funnel |
+| `/growth:growth-cro` | Analyze the impact on the funnel |
 
 ## See also
 

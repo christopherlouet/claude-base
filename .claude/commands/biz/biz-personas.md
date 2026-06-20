@@ -37,7 +37,7 @@ Develop 3-5 personas based on real data (analytics, interviews, support) that se
 | `/biz:biz-research` | User research |
 | `/biz:biz-competitor` | Market & competitive study |
 | `/biz:biz-mvp` | Define the MVP for a persona |
-| `/growth:growth-onboarding` | Journey per persona |
+| `/growth:growth-cro` | Onboarding/activation journey per persona |
 
 ---
 

@@ -224,4 +224,4 @@ For common tasks, use the complete workflows:
 
 - [Understand the architecture](/docs/intro/architecture) - Difference between Commands, Agents and Skills
 - [See the workflows](/docs/workflow) - Detailed workflows by task type
-- [Explore the commands](/docs/commands) - Complete catalog of the <!-- count:commands -->112<!-- /count --> commands
+- [Explore the commands](/docs/commands) - Complete catalog of the <!-- count:commands -->110<!-- /count --> commands

@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 112 commands | 47 agents | 53 skills | 9 categories       ║
+║  Total: 110 commands | 46 agents | 53 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -121,13 +121,14 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       GROWTH- : GROWTH (11 commands)                        │
+│                       GROWTH- : GROWTH (9 commands)                         │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Acquisition     : landing, seo, ab-test, cro                               │
-│  Measurement     : analytics, app-store-analytics, funnel                   │
-│  Engagement      : email, onboarding, retention                             │
+│  Acquisition     : landing, seo, ab-test                                    │
+│  Conversion      : cro (funnel + onboarding/activation)                     │
+│  Measurement     : analytics, app-store-analytics                           │
+│  Engagement      : email, retention                                         │
 │  International   : localization                                             │
-│  → Full details: "GROWTH- : Growth (11)" table below                        │
+│  → Full details: "GROWTH- : Growth (9)" table below                         │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -178,7 +179,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->112<!-- /count -->)
+## Commands by Category (<!-- count:commands -->110<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -308,7 +309,7 @@
 | `/biz:biz-personas` | User personas |
 | `/biz:biz-research` | User research |
 
-### GROWTH- : Growth (11)
+### GROWTH- : Growth (9)
 
 | Command | Usage |
 |----------|-------|
@@ -316,13 +317,11 @@
 | `/growth:growth-seo` | SEO audit |
 | `/growth:growth-analytics` | Tracking and KPIs |
 | `/growth:growth-app-store-analytics` | App/Play Store metrics |
-| `/growth:growth-onboarding` | User journey |
 | `/growth:growth-email` | Email templates |
 | `/growth:growth-ab-test` | A/B testing |
 | `/growth:growth-retention` | Retention strategies |
-| `/growth:growth-funnel` | Funnel analysis |
 | `/growth:growth-localization` | Multi-market localization |
-| `/growth:growth-cro` | Conversion optimization (CRO) |
+| `/growth:growth-cro` | CRO + funnel + onboarding/activation |
 
 ### DATA- : Data (2)
 
@@ -551,4 +550,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->112<!-- /count --> commands - <!-- count:agents -->47<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
+*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->110<!-- /count --> commands - <!-- count:agents -->46<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*

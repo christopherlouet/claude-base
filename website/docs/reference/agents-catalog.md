@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Available Agents (112 commands, 47 sub-agents, 53 skills)"
+title: "Available Agents (110 commands, 46 sub-agents, 53 skills)"
 description: "Claude automatically delegates to specialized agents (isolated context, restricted tools)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Available Agents (<!-- count:commands -->112<!-- /count --> commands, <!-- count:agents -->47<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->110<!-- /count --> commands, <!-- count:agents -->46<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -130,20 +130,18 @@ tags:
 | `/biz:biz-personas` | Create user personas |
 | `/biz:biz-research` | User research |
 
-## GROWTH-: Growth (<!-- count:byDomain.growth -->11<!-- /count -->)
+## GROWTH-: Growth (<!-- count:byDomain.growth -->9<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/growth:growth-landing` | Create/optimize a landing page |
 | `/growth:growth-seo` | SEO audit |
 | `/growth:growth-analytics` | Tracking and KPI setup |
 | `/growth:growth-app-store-analytics` | App Store / Google Play metrics |
-| `/growth:growth-onboarding` | UX onboarding journey |
 | `/growth:growth-email` | Email marketing templates |
 | `/growth:growth-ab-test` | Plan A/B tests |
 | `/growth:growth-retention` | Retention strategies |
-| `/growth:growth-funnel` | Funnel analysis and optimization |
 | `/growth:growth-localization` | Multi-market localization strategy |
-| `/growth:growth-cro` | Conversion rate optimization (CRO) |
+| `/growth:growth-cro` | CRO + funnel analysis + onboarding/activation |
 
 ## DATA-: Data (<!-- count:byDomain.data -->2<!-- /count -->)
 | Command | Usage |
@@ -160,7 +158,7 @@ tags:
 | `/legal:legal-terms-of-service` | Terms of Service |
 | `/legal:legal-privacy-policy` | Privacy Policy |
 
-## Sub-Agents (<!-- count:agents -->47<!-- /count -->)
+## Sub-Agents (<!-- count:agents -->46<!-- /count -->)
 
 Claude automatically delegates to specialized agents (isolated context, restricted tools).
 
@@ -180,7 +178,7 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 | Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-e2e`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
 | Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
 | Development | `dev-debug`, `dev-test`, `dev-flutter`, `dev-document`, `dev-tdd` | haiku/sonnet (tdd, debug) |
-| Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-funnel`, `growth-localization`, `growth-cro` | haiku |
+| Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-localization`, `growth-cro` | haiku |
 | Data | `data-pipeline` | haiku/sonnet |
 | Legal | `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service` | haiku/sonnet |
 

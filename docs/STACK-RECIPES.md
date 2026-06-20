@@ -222,7 +222,7 @@
 | Type | Element | Activation |
 |---|---|---|
 | Commands BIZ | `/biz:biz-model`, `biz-mvp`, `biz-pricing`, `biz-pitch`, `biz-roadmap` (+OKR), `biz-launch`, `biz-competitor` (+market), `biz-personas`, `biz-research` | Product strategy |
-| Commands GROWTH | `/growth:growth-landing`, `growth-seo`, `growth-analytics`, `growth-ab-test`, `growth-cro`, `growth-funnel`, `growth-onboarding`, `growth-retention`, `growth-email`, `growth-localization`, `growth-app-store-analytics` | Acquisition / activation / retention |
+| Commands GROWTH | `/growth:growth-landing`, `growth-seo`, `growth-analytics`, `growth-ab-test`, `growth-cro` (+funnel +onboarding), `growth-retention`, `growth-email`, `growth-localization`, `growth-app-store-analytics` | Acquisition / activation / retention |
 | Commands LEGAL | `/legal:legal-rgpd`, `legal-payment`, `legal-terms-of-service`, `legal-privacy-policy` | Compliance |
 | Skill auto | `growth-cro` | Activated on `conversion`, `signup flow`, `paywall` |
 

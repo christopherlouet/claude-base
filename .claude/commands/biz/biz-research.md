@@ -34,7 +34,7 @@ Conduct methodical user research (framing, collection, analysis, reporting) that
 | `/biz:biz-personas` | Create/update personas |
 | `/growth:growth-analytics` | Complement with quantitative data |
 | `/growth:growth-ab-test` | Validate hypotheses |
-| `/growth:growth-onboarding` | Improve user journey |
+| `/growth:growth-cro` | Improve the onboarding/conversion journey |
 
 ---
 
