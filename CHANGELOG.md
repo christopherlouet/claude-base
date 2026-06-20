@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Removed
 
+- **Consolidation Wave 2 (GitFlow family): collapsed `/ops:ops-gitflow-{init,feature,release,hotfix}` into a single
+  `/ops:ops-gitflow` mode-arg command.** Usage: `/ops:ops-gitflow <init|feature|release|hotfix> <action>` (e.g.
+  `ops-gitflow feature start <name>`, `ops-gitflow release finish 2.0.0`). **Breaking** (the four slash commands are
+  gone), but no capability is lost — every init/feature/release/hotfix flow lives in the one command. The GitFlow
+  commands remain an **opt-in `gitflow` module** (mutually exclusive with the foundation's default trunk-ish flow), so
+  the core trunk-flow `/ops:ops-release` and `/ops:ops-hotfix` are deliberately **untouched**. Commands 123 → 120
+  (`ops` 34 → 31; core unchanged — module-owned commands shrink in lockstep). Part of the audit-driven command
+  consolidation — see `specs/consolidation-audit-2026-06/audit.md`.
+
 - **Consolidation Wave 2 (API cluster): removed `/dev:dev-graphql`, `/dev:dev-trpc` and `/dev:dev-api-versioning`** —
   folded into `/dev:dev-api`, the single API command of record. **Breaking** (the three slash commands are gone),
   but no capability is lost: `/dev:dev-api` now covers REST, GraphQL, tRPC and versioning, and its `dev-api` skill

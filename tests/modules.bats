@@ -55,14 +55,14 @@ run_lib() {
 
 @test "modules: gitflow is a commands-only opt-in workflow module (mutually-exclusive)" {
     # GitFlow is a branching model incompatible with the foundation's default
-    # trunk-ish flow — a project picks one, so the 4 GitFlow commands are an
+    # trunk-ish flow — a project picks one, so the GitFlow command is an
     # opt-in module rather than universal core. No agents, no skills.
+    # Wave 2: the four ops-gitflow-{init,feature,release,hotfix} commands were
+    # collapsed into a single mode-arg command (/ops:ops-gitflow <mode> <action>).
     run_lib module_bundle_paths gitflow
     [ "$status" -eq 0 ]
-    [ "${#lines[@]}" -eq 4 ]
-    for line in "${lines[@]}"; do
-        [[ "$line" == .claude/commands/ops/ops-gitflow-*.md ]]
-    done
+    [ "${#lines[@]}" -eq 1 ]
+    [ "${lines[0]}" = ".claude/commands/ops/ops-gitflow.md" ]
 }
 
 @test "modules: framework modules are their own opt-in unit (EF-404 framework grain)" {

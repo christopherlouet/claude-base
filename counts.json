@@ -1,5 +1,5 @@
 {
-  "commands": 123,
+  "commands": 120,
   "agents": 48,
   "skills": 53,
   "core": {
@@ -17,7 +17,7 @@
     "doc": 6,
     "growth": 11,
     "legal": 5,
-    "ops": 34,
+    "ops": 31,
     "qa": 16,
     "work": 15
   },

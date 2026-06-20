@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Available Agents (123 commands, 48 sub-agents, 53 skills)"
+title: "Available Agents (120 commands, 48 sub-agents, 53 skills)"
 description: "Claude automatically delegates to specialized agents (isolated context, restricted tools)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Available Agents (<!-- count:commands -->123<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->120<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -78,15 +78,12 @@ tags:
 | `/qa:qa-e2e` | End-to-End tests (Playwright, Cypress) |
 | `/qa:qa-tech-debt` | Identify and prioritize technical debt |
 
-## OPS-: Operations (<!-- count:byDomain.ops -->34<!-- /count -->)
+## OPS-: Operations (<!-- count:byDomain.ops -->31<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/ops:ops-hotfix` | Urgent production fix |
 | `/ops:ops-release` | Create a release |
-| `/ops:ops-gitflow-init` | Initialize GitFlow (create develop, configure) |
-| `/ops:ops-gitflow-feature` | Manage feature branches (start/finish) |
-| `/ops:ops-gitflow-release` | Manage release branches (start/finish) |
-| `/ops:ops-gitflow-hotfix` | Manage GitFlow hotfixes (start/finish) |
+| `/ops:ops-gitflow` | GitFlow `<init\|feature\|release\|hotfix> <action>` (init, branch start/finish/list) |
 | `/ops:ops-deps` | Audit and update dependencies |
 | `/ops:ops-docker` | Dockerize a project |
 | `/ops:ops-k8s` | Kubernetes deployment (manifests, Helm) |

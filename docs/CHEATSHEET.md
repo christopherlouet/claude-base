@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 123 commands | 48 agents | 53 skills | 9 categories       ║
+║  Total: 120 commands | 48 agents | 53 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -71,10 +71,10 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       OPS- : OPERATIONS (34 commands)                       │
+│                       OPS- : OPERATIONS (31 commands)                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Release & deploy : release, deploy, rollback, hotfix, mobile-release       │
-│  GitFlow          : gitflow-{init, feature, release, hotfix}                │
+│  GitFlow          : gitflow <init|feature|release|hotfix> <action>          │
 │  CI/CD            : ci, ci-fix, deps                                        │
 │  Infra            : docker, k8s, vps, vercel, serverless,                   │
 │                     proxmox, opnsense, infra-code                           │
@@ -82,7 +82,7 @@
 │                     load-testing, health                                    │
 │  Data/Sec         : database, backup, disaster-recovery, secrets-management │
 │  Meta-ops         : env, migrate, cost, cost-optimization, standup          │
-│  → Full details: "OPS- : Operations (34)" table below                       │
+│  → Full details: "OPS- : Operations (31)" table below                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->123<!-- /count -->)
+## Commands by Category (<!-- count:commands -->120<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -251,17 +251,14 @@
 | `/qa:qa-chrome` | Chrome visual tests |
 | `/qa:qa-loop` | Audit + fix loop until target score (90 by default) |
 
-### OPS- : Operations (34)
+### OPS- : Operations (31)
 
 | Command | Usage |
 |----------|-------|
 | `/ops:ops-hotfix` | Urgent production fix |
 | `/ops:ops-release` | Create a release |
 | `/ops:ops-rollback` | Safe rollback |
-| `/ops:ops-gitflow-init` | Initialize GitFlow |
-| `/ops:ops-gitflow-feature` | Feature branches |
-| `/ops:ops-gitflow-release` | Release branches |
-| `/ops:ops-gitflow-hotfix` | GitFlow hotfixes |
+| `/ops:ops-gitflow` | GitFlow: `<init\|feature\|release\|hotfix> <action>` |
 | `/ops:ops-deps` | Dependency audit and updates |
 | `/ops:ops-docker` | Dockerize |
 | `/ops:ops-k8s` | Kubernetes deployment |
@@ -562,4 +559,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->123<!-- /count --> commands - <!-- count:agents -->48<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
+*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->120<!-- /count --> commands - <!-- count:agents -->48<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*

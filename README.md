@@ -38,7 +38,7 @@ That last command chains the 6 phases automatically: Explore → Specify → Pla
 | **Educator / mentor** | the 6-phase workflow is named, teachable, and the audit-loop produces a quality score | you only need ad-hoc Claude Code use |
 | **Returning user** who tried Claude Code, found it too freeform | the dispatcher CLI is small (init / update / validate / uninstall) and the foundation is fully reversible (`claude-base uninstall`) | you prefer raw `.claude/` files without a foundation layer |
 
-**You don't have to learn the <!-- count:commands -->123<!-- /count --> commands.** The mandatory workflow is 5 slash-commands: `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
+**You don't have to learn the <!-- count:commands -->120<!-- /count --> commands.** The mandatory workflow is 5 slash-commands: `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
 
 ## How it fits in the AI-coding ecosystem
 
@@ -83,7 +83,7 @@ claude-base (workflow framework + curator)   ← Explore → TDD → Audit, anti
 vendor skills (tool-specific depth)          ← Prisma, Supabase, Playwright, Grafana, MSW, PostHog, ...
 ```
 
-The foundation ships <!-- count:commands -->123<!-- /count --> commands + <!-- count:agents -->48<!-- /count --> agents + <!-- count:skills -->53<!-- /count --> skills, but most skills are **thin pointers** pairing the canonical vendor source with a few foundation-specific discipline lines (security/GDPR wraps, anti-patterns, cross-skill orchestration). What's NOT pointer-shaped is the workflow layer:
+The foundation ships <!-- count:commands -->120<!-- /count --> commands + <!-- count:agents -->48<!-- /count --> agents + <!-- count:skills -->53<!-- /count --> skills, but most skills are **thin pointers** pairing the canonical vendor source with a few foundation-specific discipline lines (security/GDPR wraps, anti-patterns, cross-skill orchestration). What's NOT pointer-shaped is the workflow layer:
 
 > A **default install ships the core only** — both the horizontal activity domains (`biz`, `legal`, `growth`) and the stack/thematic domains (`nextjs`, `flutter`, `iac`, `observability`, …) are **opt-in modules** (`claude-base add <module>`), not part of the default catalog. There are **15 modules in total** — run `claude-base modules` to list them. The totals above are the full foundation (core + modules); a fresh project gets the smaller core slice. See [`specs/horizontal-pure-modules/`](specs/horizontal-pure-modules/).
 
@@ -122,7 +122,7 @@ Everything is plain markdown + JSON. No daemon, no telemetry, no network access 
 
 | Component | Count | What it is |
 |---|---|---|
-| Slash commands | <!-- count:commands -->123<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
+| Slash commands | <!-- count:commands -->120<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
 | Sub-agents | <!-- count:agents -->48<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
 | Skills | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords in your prompts |
 | Path-specific rules | <!-- count:rules -->31<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
@@ -232,7 +232,7 @@ After `curl | bash` install, the foundation lives at `~/.local/share/claude-base
 
 For the full file-by-file reference, see the [Docusaurus reference docs](https://christopherlouet.github.io/claude-base/docs/reference).
 
-## Available Commands (<!-- count:commands -->123<!-- /count -->)
+## Available Commands (<!-- count:commands -->120<!-- /count -->)
 
 Commands are grouped into 9 domains:
 
@@ -241,7 +241,7 @@ Commands are grouped into 9 domains:
 | `work-` | <!-- count:byDomain.work -->15<!-- /count --> | `/work:work-explore`, `/work:work-plan`, `/work:work-commit`, `/work:work-pr`, `/work:work-flow-feature` |
 | `dev-` | <!-- count:byDomain.dev -->19<!-- /count --> | `/dev:dev-tdd`, `/dev:dev-debug`, `/dev:dev-api`, `/dev:dev-flutter`, `/dev:dev-prisma` |
 | `qa-` | <!-- count:byDomain.qa -->16<!-- /count --> | `/qa:qa-loop`, `/qa:qa-security`, `/qa:qa-perf`, `/qa:wcag-audit`, `/qa:qa-e2e` |
-| `ops-` | <!-- count:byDomain.ops -->34<!-- /count --> | `/ops:ops-deploy`, `/ops:ops-docker`, `/ops:ops-monitoring`, `/ops:ops-k8s`, `/ops:ops-rollback` |
+| `ops-` | <!-- count:byDomain.ops -->31<!-- /count --> | `/ops:ops-deploy`, `/ops:ops-docker`, `/ops:ops-monitoring`, `/ops:ops-k8s`, `/ops:ops-rollback` |
 | `doc-` | <!-- count:byDomain.doc -->6<!-- /count --> | `/doc:doc-onboard`, `/doc:doc-explain`, `/doc:doc-changelog`, `/doc:doc-architecture` |
 | `biz-` | <!-- count:byDomain.biz -->11<!-- /count --> | `/biz:biz-model`, `/biz:biz-mvp`, `/biz:biz-pricing`, `/biz:biz-personas` |
 | `growth-` | <!-- count:byDomain.growth -->11<!-- /count --> | `/growth:growth-landing`, `/growth:growth-seo`, `/growth:growth-cro`, `/growth:growth-funnel` |
@@ -419,7 +419,7 @@ The full documentation site lives at **[https://christopherlouet.github.io/claud
 
 It covers:
 - Quick start guide
-- Catalog of <!-- count:commands -->123<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->31<!-- /count --> rules
+- Catalog of <!-- count:commands -->120<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->31<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Learning path, Extending, Team, Prompting, Troubleshooting
