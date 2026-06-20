@@ -204,6 +204,76 @@ EOF
 }
 
 # =============================================================================
+# --ci-existing flag tests
+#
+# These drive the existing-CI/CD decision non-interactively so the destructive
+# merge/replace branches (which delete *.yml) are reachable in tests instead of
+# being gated behind the interactive `get_cicd_choice` prompt.
+# =============================================================================
+
+@test "new-project.sh --help documents --ci-existing" {
+    run "$NEW_PROJECT_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"--ci-existing"* ]]
+}
+
+@test "new-project.sh --ci-existing rejects an invalid value" {
+    run "$NEW_PROJECT_SCRIPT" --ci-existing bogus "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"ci-existing"* ]] || [[ "$output" == *"keep"* ]]
+}
+
+@test "new-project.sh --ci-existing without a value fails with a clean error" {
+    run "$NEW_PROJECT_SCRIPT" --ci-existing
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"ci-existing"* ]]
+}
+
+@test "new-project.sh --ci-existing replace removes existing workflows and installs the foundation ones" {
+    mkdir -p "$TEST_DIR/.github/workflows"
+    echo "name: Custom" > "$TEST_DIR/.github/workflows/custom.yml"
+
+    run "$NEW_PROJECT_SCRIPT" -y --ci-existing replace "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # The custom workflow is gone, replaced by the foundation templates
+    [ ! -f "$TEST_DIR/.github/workflows/custom.yml" ]
+    [ -f "$TEST_DIR/.github/workflows/ci.yml" ]
+}
+
+@test "new-project.sh --ci-existing merge keeps existing workflows and adds the missing ones" {
+    mkdir -p "$TEST_DIR/.github/workflows"
+    # Only automated tests present → ci.yml (lint/security/...) is missing and added
+    cat > "$TEST_DIR/.github/workflows/custom.yml" << 'EOF'
+name: Custom
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm test
+EOF
+
+    run "$NEW_PROJECT_SCRIPT" -y --ci-existing merge "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # The custom workflow survives AND foundation workflows were added
+    [ -f "$TEST_DIR/.github/workflows/custom.yml" ]
+    [ -f "$TEST_DIR/.github/workflows/ci.yml" ]
+}
+
+@test "new-project.sh --ci-existing keep leaves existing CI/CD untouched and adds nothing" {
+    mkdir -p "$TEST_DIR/.github/workflows"
+    echo "name: Custom" > "$TEST_DIR/.github/workflows/custom.yml"
+
+    run "$NEW_PROJECT_SCRIPT" -y --ci-existing keep "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    [ -f "$TEST_DIR/.github/workflows/custom.yml" ]
+    [ ! -f "$TEST_DIR/.github/workflows/ci.yml" ]
+}
+
+# =============================================================================
 # Security tests
 # =============================================================================
 

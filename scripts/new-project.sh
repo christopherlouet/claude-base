@@ -133,6 +133,11 @@ DETECTED_PKG_MANAGER="npm"
 CICD_MISSING=()
 CICD_PRESENT=()
 CICD_ACTION="skip"
+# Non-interactive existing-CI/CD decision (keep|merge|replace), set by --ci-existing.
+CI_EXISTING=""
+# Set once the CI/CD decision has been resolved by the flag, so the interactive
+# prompt is skipped.
+CICD_RESOLVED=false
 
 # =============================================================================
 # Help and version
@@ -163,6 +168,7 @@ ${BOLD}OPTIONS${NC}
     -t, --type TYPE     Force the project type (react, vue, node-api, python, go, rust, java, fullstack, generic)
     -p, --path PATH     Parent folder where the project will be created (default: current directory)
     --ci                Include GitHub Actions (CI/CD)
+    --ci-existing MODE  Handle existing CI/CD non-interactively: keep|merge|replace
     --hooks             Include pre-commit hooks (husky)
     --mcp               Include MCP configuration
     --docker            Include Dockerfile
@@ -290,6 +296,14 @@ parse_args() {
             --ci)
                 INCLUDE_CICD=true
                 shift
+                ;;
+            --ci-existing)
+                CI_EXISTING="${2:-}"
+                case "$CI_EXISTING" in
+                    keep|merge|replace) ;;
+                    *) error "Invalid --ci-existing value: '$CI_EXISTING' (expected: keep, merge, or replace)" ;;
+                esac
+                shift 2
                 ;;
             --hooks)
                 INCLUDE_HOOKS=true
@@ -1709,7 +1723,26 @@ get_project_type() {
     fi
 }
 
+# Resolve an explicit --ci-existing flag (keep|merge|replace) into CICD_ACTION,
+# so the destructive merge/replace branches are reachable non-interactively
+# without the `get_cicd_choice` prompt. Only applies when existing CI/CD was
+# actually detected; otherwise it is a no-op. Sets CICD_RESOLVED on success so
+# callers skip any further CI/CD prompting. Shared by the non-interactive flow
+# and get_options (interactive flow).
+resolve_ci_existing() {
+    [[ -n "$CI_EXISTING" ]] && $DETECTED_CICD || return 0
+    case "$CI_EXISTING" in
+        keep)    CICD_ACTION="skip" ;;
+        merge)   analyze_existing_cicd "$PROJECT_PATH"; CICD_ACTION="merge" ;;
+        replace) CICD_ACTION="replace" ;;
+    esac
+    INCLUDE_CICD=false
+    CICD_RESOLVED=true
+}
+
 get_options() {
+    resolve_ci_existing
+
     # If --skip-prompts is enabled, use the provided flags without asking
     if $SKIP_PROMPTS; then
         debug "Skip prompts enabled - using CLI flags"
@@ -1726,17 +1759,22 @@ get_options() {
 
     # CI/CD
     if $DETECTED_CICD; then
-        # Analyze the existing CI/CD and propose improvements
-        analyze_existing_cicd "$PROJECT_PATH"
-        suggest_cicd_improvements
-
-        if [[ ${#CICD_MISSING[@]} -gt 0 ]]; then
-            get_cicd_choice
+        if $CICD_RESOLVED; then
+            # Already decided by --ci-existing; do not prompt.
+            INCLUDE_CICD=false
         else
-            echo -e "  ${GREEN}✓${NC} CI/CD complete, no improvements suggested"
-            CICD_ACTION="skip"
+            # Analyze the existing CI/CD and propose improvements
+            analyze_existing_cicd "$PROJECT_PATH"
+            suggest_cicd_improvements
+
+            if [[ ${#CICD_MISSING[@]} -gt 0 ]]; then
+                get_cicd_choice
+            else
+                echo -e "  ${GREEN}✓${NC} CI/CD complete, no improvements suggested"
+                CICD_ACTION="skip"
+            fi
+            INCLUDE_CICD=false
         fi
-        INCLUDE_CICD=false
     else
         if $EXISTING_PROJECT; then
             prompt "Add GitHub Actions (CI/CD)? (Y/n)"
@@ -2273,6 +2311,9 @@ main() {
         $DETECTED_CICD && INCLUDE_CICD=false
         $DETECTED_HOOKS && INCLUDE_HOOKS=false
         $DETECTED_DOCKER && INCLUDE_DOCKER=false
+
+        # An explicit --ci-existing flag drives merge/replace of existing CI/CD.
+        resolve_ci_existing
 
         info "Non-interactive mode enabled"
         info "Project: $PROJECT_NAME ($PROJECT_TYPE)"
