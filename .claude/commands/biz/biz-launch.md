@@ -32,7 +32,7 @@ Validate business viability BEFORE development: value proposition, market, MVP, 
 | Agent | When to use it |
 |-------|------------------|
 | `/work:work-flow-launch` | Technical workflow after business validation |
-| `/biz:biz-market` | Deepen the market analysis |
+| `/biz:biz-competitor` | Deepen the market & competitive analysis |
 | `/biz:biz-mvp` | Detail the MVP definition |
 | `/biz:biz-pricing` | Refine the pricing strategy |
 | `/legal:legal-rgpd` | GDPR compliance detail |

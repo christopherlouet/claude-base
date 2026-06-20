@@ -184,8 +184,7 @@ firecrawl scrape https://example.com/changelog \
 | Combo | Usage |
 |-------|-------|
 | `web-scraping` -> `dev:dev-rag` | Build a corpus for RAG ingestion |
-| `web-scraping` -> `biz:biz-competitor` | Factual competitive analysis |
-| `web-scraping` -> `biz:biz-market` | Market research based on real data |
+| `web-scraping` -> `biz:biz-competitor` | Factual competitive & market analysis on real data |
 | `web-scraping` + `writing-skills` | Import third-party lib docs into a local skill |
 | `qa-chrome` instead of `web-scraping` | Visual tests, DOM interaction, screenshots |
 

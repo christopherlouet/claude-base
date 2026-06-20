@@ -1,5 +1,5 @@
 {
-  "commands": 114,
+  "commands": 112,
   "agents": 47,
   "skills": 53,
   "core": {
@@ -11,7 +11,7 @@
   "tests": 1113,
   "testFiles": 45,
   "byDomain": {
-    "biz": 11,
+    "biz": 9,
     "data": 2,
     "dev": 19,
     "doc": 6,

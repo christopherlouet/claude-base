@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Available Agents (114 commands, 47 sub-agents, 53 skills)"
+title: "Available Agents (112 commands, 47 sub-agents, 53 skills)"
 description: "Claude automatically delegates to specialized agents (isolated context, restricted tools)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Available Agents (<!-- count:commands -->114<!-- /count --> commands, <!-- count:agents -->47<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->112<!-- /count --> commands, <!-- count:agents -->47<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -117,18 +117,16 @@ tags:
 | `/doc:doc-fix-issue` | Fix a GitHub issue |
 | `/doc:doc-api-spec` | Generate OpenAPI/Swagger spec |
 
-## BIZ-: Business (<!-- count:byDomain.biz -->11<!-- /count -->)
+## BIZ-: Business (<!-- count:byDomain.biz -->9<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/biz:biz-model` | Business model, Lean Canvas |
-| `/biz:biz-market` | Market study |
 | `/biz:biz-mvp` | Define the MVP |
 | `/biz:biz-pricing` | Pricing strategy |
 | `/biz:biz-pitch` | Create a pitch deck |
-| `/biz:biz-roadmap` | Plan the roadmap |
+| `/biz:biz-roadmap` | Plan the roadmap + define OKRs |
 | `/biz:biz-launch` | Full launch workflow |
-| `/biz:biz-competitor` | Competitive analysis |
-| `/biz:biz-okr` | Define OKRs |
+| `/biz:biz-competitor` | Market study + competitive analysis |
 | `/biz:biz-personas` | Create user personas |
 | `/biz:biz-research` | User research |
 

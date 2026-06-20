@@ -34,7 +34,7 @@ Explore the codebase to understand the features, evaluate the value proposition,
 | Agent | When to use it |
 |-------|------------------|
 | `/biz:biz-mvp` | Define the MVP |
-| `/biz:biz-market` | Deepen the market study |
+| `/biz:biz-competitor` | Deepen the market & competitive study |
 | `/biz:biz-pricing` | Define the pricing strategy |
 | `/biz:biz-pitch` | Prepare a pitch deck |
 | `/biz:biz-roadmap` | Plan the product roadmap |

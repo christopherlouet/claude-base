@@ -4,13 +4,12 @@
 # A path ending with / is a directory copied recursively.
 # Drift guard: tests/modules.bats asserts every path exists in the repo.
 
-# === Commands (11) ===
+# === Commands (9) ===
+# Wave 3: biz-market folded into biz-competitor; biz-okr folded into biz-roadmap.
 .claude/commands/biz/biz-competitor.md
 .claude/commands/biz/biz-launch.md
-.claude/commands/biz/biz-market.md
 .claude/commands/biz/biz-model.md
 .claude/commands/biz/biz-mvp.md
-.claude/commands/biz/biz-okr.md
 .claude/commands/biz/biz-personas.md
 .claude/commands/biz/biz-pitch.md
 .claude/commands/biz/biz-pricing.md

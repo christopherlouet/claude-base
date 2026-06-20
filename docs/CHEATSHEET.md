@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 117 commands | 47 agents | 53 skills | 9 categories       ║
+║  Total: 112 commands | 47 agents | 53 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -104,15 +104,15 @@
 │                             BIZ- : BUSINESS                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐        │
-│   │  MODEL  │  │ MARKET  │  │   MVP   │  │ PRICING │  │  PITCH  │        │
-│   │ Canvas  │  │ TAM/SAM │  │ Minimum │  │ Strategy│  │ Deck    │        │
-│   └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘        │
+│   ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐                     │
+│   │  MODEL  │  │   MVP   │  │ PRICING │  │  PITCH  │                     │
+│   │ Canvas  │  │ Minimum │  │ Strategy│  │ Deck    │                     │
+│   └─────────┘  └─────────┘  └─────────┘  └─────────┘                     │
 │                                                                             │
-│   ┌─────────┐  ┌─────────┐  ┌────────────┐  ┌─────────┐  ┌──────────┐    │
-│   │ ROADMAP │  │ LAUNCH  │  │ COMPETITOR │  │   OKR   │  │ RESEARCH │    │
-│   │ Planning│  │ Go-to   │  │ Analysis   │  │ Object  │  │ User res │    │
-│   └─────────┘  └─────────┘  └────────────┘  └─────────┘  └──────────┘    │
+│   ┌──────────────┐  ┌─────────┐  ┌──────────────────┐  ┌──────────┐      │
+│   │ ROADMAP +OKR │  │ LAUNCH  │  │ COMPETITOR +market│  │ RESEARCH │      │
+│   │ Plan + OKRs  │  │ Go-to   │  │ TAM/SAM + SWOT    │  │ User res │      │
+│   └──────────────┘  └─────────┘  └──────────────────┘  └──────────┘      │
 │                                                                             │
 │   ┌──────────┐                                                             │
 │   │ PERSONAS │                                                             │
@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->114<!-- /count -->)
+## Commands by Category (<!-- count:commands -->112<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -294,19 +294,17 @@
 | `/doc:doc-readme` | Create/improve README |
 | `/doc:doc-architecture` | Document the architecture |
 
-### BIZ- : Business (11)
+### BIZ- : Business (9)
 
 | Command | Usage |
 |----------|-------|
 | `/biz:biz-model` | Business model, Lean Canvas |
-| `/biz:biz-market` | Market study |
 | `/biz:biz-mvp` | Define the MVP |
 | `/biz:biz-pricing` | Pricing strategy |
 | `/biz:biz-pitch` | Pitch deck |
-| `/biz:biz-roadmap` | Product roadmap |
+| `/biz:biz-roadmap` | Product roadmap + OKRs |
 | `/biz:biz-launch` | Launch workflow |
-| `/biz:biz-competitor` | Competitive analysis |
-| `/biz:biz-okr` | OKRs |
+| `/biz:biz-competitor` | Market study + competitive analysis |
 | `/biz:biz-personas` | User personas |
 | `/biz:biz-research` | User research |
 
@@ -553,4 +551,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->114<!-- /count --> commands - <!-- count:agents -->47<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
+*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->112<!-- /count --> commands - <!-- count:agents -->47<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*

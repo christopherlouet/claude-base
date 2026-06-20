@@ -130,10 +130,11 @@ run_lib() {
     done
 }
 
-@test "modules: module_bundle_paths biz returns 15 entries" {
+@test "modules: module_bundle_paths biz returns 13 entries" {
+    # Wave 3: biz-market folded into biz-competitor, biz-okr into biz-roadmap (11 -> 9 cmds + 4 agents).
     run_lib module_bundle_paths biz
     [ "$status" -eq 0 ]
-    [ "${#lines[@]}" -eq 15 ]
+    [ "${#lines[@]}" -eq 13 ]
 }
 
 @test "modules: module_bundle_paths growth returns 18 entries incl. skill dir" {

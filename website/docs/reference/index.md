@@ -12,7 +12,7 @@ description: Quick reference and matrices
 
 | Reference | Description |
 |-----------|-------------|
-| [Commands matrix](/docs/reference/commands-matrix) | <!-- count:commands -->114<!-- /count --> commands with domain and description |
+| [Commands matrix](/docs/reference/commands-matrix) | <!-- count:commands -->112<!-- /count --> commands with domain and description |
 | [Agents matrix](/docs/reference/agents-matrix) | <!-- count:agents -->47<!-- /count --> agents with model and tools |
 | [Utility scripts](/docs/reference/scripts) | Installation and maintenance scripts |
 | [Cheatsheet](/docs/reference/commands) | Quick reference card |
@@ -28,7 +28,7 @@ description: Quick reference and matrices
 | [QA](/docs/commands/qa) | <!-- count:byDomain.qa -->13<!-- /count --> | Quality |
 | [OPS](/docs/commands/ops) | <!-- count:byDomain.ops -->28<!-- /count --> | Operations |
 | [DOC](/docs/commands/doc) | <!-- count:byDomain.doc -->6<!-- /count --> | Documentation |
-| [BIZ](/docs/commands/biz) | <!-- count:byDomain.biz -->11<!-- /count --> | Business |
+| [BIZ](/docs/commands/biz) | <!-- count:byDomain.biz -->9<!-- /count --> | Business |
 | [GROWTH](/docs/commands/growth) | <!-- count:byDomain.growth -->11<!-- /count --> | Growth |
 | [DATA](/docs/commands/data) | <!-- count:byDomain.data -->2<!-- /count --> | Data |
 | [LEGAL](/docs/commands/legal) | <!-- count:byDomain.legal -->5<!-- /count --> | Legal |
@@ -37,7 +37,7 @@ description: Quick reference and matrices
 
 | Component | Count | Link |
 |-----------|--------|------|
-| Commands | <!-- count:commands -->114<!-- /count --> | [View](/docs/commands) |
+| Commands | <!-- count:commands -->112<!-- /count --> | [View](/docs/commands) |
 | Agents | <!-- count:agents -->47<!-- /count --> | [View](/docs/agents) |
 | Skills | <!-- count:skills -->53<!-- /count --> | [View](/docs/skills) |
 | Rules | <!-- count:rules -->31<!-- /count --> | [View](/docs/rules) |
