@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 120 commands | 48 agents | 53 skills | 9 categories       ║
+║  Total: 117 commands | 47 agents | 53 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -61,13 +61,13 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          QA- : QUALITY (16 commands)                        │
+│                          QA- : QUALITY (13 commands)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Main audit      : qa-loop (audit + fix loop, score ≥ 90)                   │
-│  Targeted audits : security, perf, design, responsive, coverage, tech-debt  │
-│                    review, audit, automation, e2e, kaizen                   │
+│  Targeted audits : security, perf, design (UI/UX + responsive), tech-debt   │
+│                    (debt + coverage + kaizen), review, audit, automation,e2e│
 │  Specific        : wcag-audit (a11y), mobile, neovim, chrome (visual)       │
-│  → Full details: "QA- : Quality (16)" table below                           │
+│  → Full details: "QA- : Quality (13)" table below                           │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->120<!-- /count -->)
+## Commands by Category (<!-- count:commands -->117<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -230,7 +230,7 @@
 | `/dev:dev-rag` | RAG systems |
 | `/dev:dev-ai-integration` | LLM integration (OpenAI, Claude) |
 
-### QA- : Quality (16)
+### QA- : Quality (13)
 
 | Command | Usage |
 |----------|-------|
@@ -239,15 +239,12 @@
 | `/qa:qa-perf` | Performance analysis |
 | `/qa:wcag-audit` | WCAG accessibility audit |
 | `/qa:qa-audit` | Full audit (all in one) |
-| `/qa:qa-design` | UI/UX audit (100+ rules) |
-| `/qa:qa-responsive` | Responsive/mobile audit |
+| `/qa:qa-design` | UI/UX audit (100+ rules, incl. responsive/mobile) |
 | `/qa:qa-automation` | Test automation |
-| `/qa:qa-coverage` | Test coverage analysis |
 | `/qa:qa-e2e` | E2E tests (Playwright, Cypress) |
-| `/qa:qa-kaizen` | Continuous improvement |
 | `/qa:qa-mobile` | Mobile app quality audit |
 | `/qa:qa-neovim` | Neovim config audit |
-| `/qa:qa-tech-debt` | Technical debt |
+| `/qa:qa-tech-debt` | Technical debt (incl. coverage + kaizen) |
 | `/qa:qa-chrome` | Chrome visual tests |
 | `/qa:qa-loop` | Audit + fix loop until target score (90 by default) |
 
@@ -559,4 +556,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->120<!-- /count --> commands - <!-- count:agents -->48<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
+*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->117<!-- /count --> commands - <!-- count:agents -->47<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*

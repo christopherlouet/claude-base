@@ -415,7 +415,7 @@ git branch -m feature/descriptive-name
 | Business logic, UX | Human mandatory | Standard GitHub PR |
 | Security, auth, payment | Human + Claude | `/qa:qa-security` before PR |
 | Code quality, conventions | Claude | `/qa:qa-loop "score 90"` |
-| Tests, coverage | Claude | `/qa:qa-coverage` |
+| Tests, coverage | Claude | `/qa:qa-tech-debt` |
 | Accessibility | Claude | `/qa:wcag-audit` |
 | Performance | Claude | `/qa:qa-perf` |
 

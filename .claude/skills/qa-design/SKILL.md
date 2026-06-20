@@ -1,6 +1,6 @@
 ---
 name: qa-design
-description: UI/UX design audit and verification of web best practices. Trigger when the user wants to audit the design, verify the UI/UX, or improve the user interface.
+description: UI/UX design audit and verification of web best practices, including responsive/mobile-first breakpoints. Trigger when the user wants to audit the design, verify the UI/UX, check responsive behaviour, or improve the user interface.
 allowed-tools:
   - Read
   - Glob
@@ -31,6 +31,7 @@ Audit a web interface against 100+ rules covering accessibility, forms, animatio
 │  8. DARK MODE           CSS variables, images, contrast          │
 │  9. TOUCH INTERACTIONS  Target size, swipe, gestures             │
 │  10. INTERNATIONALIZATION  RTL, dates, plurals, translations    │
+│  11. RESPONSIVE         Breakpoints, mobile-first, viewport       │
 │                                                                   │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -173,6 +174,23 @@ color:\s*#[def][def][def]|color:\s*#[cdef]{6}
 | I18N3 | Local date formats | No hardcoded US format |
 | I18N4 | Plurals handled | No "1 item(s)" |
 
+## 11. Responsive & breakpoints
+
+Mobile-first audit across the 7 breakpoints (320, 375, 425, 768, 1024, 1440, 2560px).
+
+| # | Rule | Detail |
+|---|------|--------|
+| R1 | Viewport meta + mobile-first CSS | `min-width` media queries, not `max-width` |
+| R2 | No fixed-pixel container widths | Fluid layouts (flex/grid, %, `max-width`) |
+| R3 | Touch targets >= 44px, spacing >= 8px | Shared with category 9 (Touch) |
+| R4 | Body font >= 16px, line-height >= 1.5 | Mobile readability (shared with Typography) |
+| R5 | Responsive images (`srcset`, `sizes`, lazy) | Shared with category 5 (Images) |
+| R6 | Forms usable on mobile | Inputs >= 44px, correct `type`, right keyboard |
+| R7 | Portrait + landscape both tested | No clipped/overflowing content |
+
+Report a per-breakpoint OK/KO table (Mobile 320-425, Tablet 768, Desktop 1024-1440)
+and list issues by breakpoint with severity. Test on real devices, not only DevTools.
+
 ## Expected output
 
 ```markdown
@@ -194,6 +212,7 @@ color:\s*#[def][def][def]|color:\s*#[cdef]{6}
 | Dark Mode | X/10 | [N issues] |
 | Touch | X/10 | [N issues] |
 | i18n | X/10 | [N issues] |
+| Responsive | X/10 | [N issues] |
 
 ### Critical issues
 - [CRITICAL] [file:line] - Description

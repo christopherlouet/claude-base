@@ -1,10 +1,10 @@
 {
-  "commands": 120,
-  "agents": 48,
+  "commands": 117,
+  "agents": 47,
   "skills": 53,
   "core": {
-    "commands": 68,
-    "agents": 29,
+    "commands": 65,
+    "agents": 28,
     "skills": 39
   },
   "rules": 31,
@@ -18,7 +18,7 @@
     "growth": 11,
     "legal": 5,
     "ops": 31,
-    "qa": 16,
+    "qa": 13,
     "work": 15
   },
   "presets": 11,

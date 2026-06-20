@@ -12,8 +12,8 @@ description: Quick reference and matrices
 
 | Reference | Description |
 |-----------|-------------|
-| [Commands matrix](/docs/reference/commands-matrix) | <!-- count:commands -->120<!-- /count --> commands with domain and description |
-| [Agents matrix](/docs/reference/agents-matrix) | <!-- count:agents -->48<!-- /count --> agents with model and tools |
+| [Commands matrix](/docs/reference/commands-matrix) | <!-- count:commands -->117<!-- /count --> commands with domain and description |
+| [Agents matrix](/docs/reference/agents-matrix) | <!-- count:agents -->47<!-- /count --> agents with model and tools |
 | [Utility scripts](/docs/reference/scripts) | Installation and maintenance scripts |
 | [Cheatsheet](/docs/reference/commands) | Quick reference card |
 
@@ -25,7 +25,7 @@ description: Quick reference and matrices
 |---------|-----------|-------------|
 | [WORK](/docs/commands/work) | <!-- count:byDomain.work -->15<!-- /count --> | Main workflow |
 | [DEV](/docs/commands/dev) | <!-- count:byDomain.dev -->19<!-- /count --> | Development |
-| [QA](/docs/commands/qa) | <!-- count:byDomain.qa -->16<!-- /count --> | Quality |
+| [QA](/docs/commands/qa) | <!-- count:byDomain.qa -->13<!-- /count --> | Quality |
 | [OPS](/docs/commands/ops) | <!-- count:byDomain.ops -->31<!-- /count --> | Operations |
 | [DOC](/docs/commands/doc) | <!-- count:byDomain.doc -->6<!-- /count --> | Documentation |
 | [BIZ](/docs/commands/biz) | <!-- count:byDomain.biz -->11<!-- /count --> | Business |
@@ -37,8 +37,8 @@ description: Quick reference and matrices
 
 | Component | Count | Link |
 |-----------|--------|------|
-| Commands | <!-- count:commands -->120<!-- /count --> | [View](/docs/commands) |
-| Agents | <!-- count:agents -->48<!-- /count --> | [View](/docs/agents) |
+| Commands | <!-- count:commands -->117<!-- /count --> | [View](/docs/commands) |
+| Agents | <!-- count:agents -->47<!-- /count --> | [View](/docs/agents) |
 | Skills | <!-- count:skills -->53<!-- /count --> | [View](/docs/skills) |
 | Rules | <!-- count:rules -->31<!-- /count --> | [View](/docs/rules) |
 

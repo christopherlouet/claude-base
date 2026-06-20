@@ -74,7 +74,6 @@ For a complete runtime audit, use as a complement:
 
 | Agent | When to use it |
 |-------|------------------|
-| `/qa:qa-responsive` | Responsive mobile design |
 | `/qa:qa-audit` | Full audit (includes a11y) |
 | `/qa:qa-design` | Full UI/UX audit |
 | `/qa:qa-chrome` | Visual browser tests |

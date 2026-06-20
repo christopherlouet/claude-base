@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Removed
 
+- **Consolidation Wave 3 (qa cluster): removed `/qa:qa-responsive`, `/qa:qa-coverage` and `/qa:qa-kaizen`** (and
+  the now-orphaned `qa-responsive` agent). **Breaking**, but no capability is lost: responsive/mobile-first
+  breakpoint auditing folded into `/qa:qa-design` (new "Responsive & breakpoints" category — its command + skill);
+  test-coverage analysis and the Kaizen/PDCA continuous-improvement angle folded into `/qa:qa-tech-debt` (its
+  command + skill). Commands 120 → 117 (core 68 → 65; `qa` 16 → 13), agents 48 → 47 (core 29 → 28). Cross-refs in
+  `dev-component`, `qa-e2e`, `qa-mobile`, `wcag-audit`, the `qa-chrome` skill and the docs redirected to
+  `/qa:qa-design` / `/qa:qa-tech-debt`. Part of the audit-driven command consolidation — see
+  `specs/consolidation-audit-2026-06/audit.md`.
+
 - **Consolidation Wave 2 (GitFlow family): collapsed `/ops:ops-gitflow-{init,feature,release,hotfix}` into a single
   `/ops:ops-gitflow` mode-arg command.** Usage: `/ops:ops-gitflow <init|feature|release|hotfix> <action>` (e.g.
   `ops-gitflow feature start <name>`, `ops-gitflow release finish 2.0.0`). **Breaking** (the four slash commands are
