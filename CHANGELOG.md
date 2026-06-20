@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Consolidation Wave 3 (work, floor): slimmed `/work:work-commit-push-pr` to a thin orchestrator**
+  that delegates to `/work:work-commit` and `/work:work-pr` instead of restating their commit-message
+  and PR conventions. No command removed (−0); removes duplication so the conventions have a single
+  source of record. The `legal` cluster was evaluated and **kept intact** (legal-docs is a genuine
+  umbrella for legal-notice/sales-terms/doc-selection, distinct from the deep-dive specialists) —
+  closing Wave 3. See `specs/consolidation-audit-2026-06/audit.md`.
+
 ### Removed
 
 - **Consolidation Wave 3 (dev cluster): removed `/dev:dev-test`, `/dev:dev-hook` and `/dev:dev-testing-setup`**
