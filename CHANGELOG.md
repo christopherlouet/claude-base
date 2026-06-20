@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [5.0.0] - 2026-06-20
+
+> **MAJOR — audit-driven catalog consolidation (Waves 1–4).** A targeted reduction of the command
+> surface (≈130 → 106 commands, 63 → 45 agents) with **no capability loss**: overlapping and
+> passthrough commands were folded into a single command of record per concern, opt-in module
+> bundles updated in lockstep, and cross-references redirected. Every removal is **breaking** (the
+> old slash command is gone) but its capability now lives in the documented replacement below.
+> See `specs/consolidation-audit-2026-06/audit.md`.
+
 ### Removed
 
 - **Consolidation Wave 4 (cleanup): removed `/doc:doc-fix-issue`** (misfiled in `doc/` — it was an
