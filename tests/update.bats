@@ -481,9 +481,8 @@ teardown() {
 }
 
 # =============================================================================
-# --add-plugin flag (mirrors --add-hook pattern, lets users opt into a
-# marketplace plugin without overwriting their settings.json on update.sh
-# --settings)
+# --add-plugin flag (lets users opt into a marketplace plugin without
+# overwriting their settings.json on update.sh --settings)
 # =============================================================================
 
 @test "update.sh --help documents --add-plugin" {
@@ -967,73 +966,4 @@ _init_legal_only_project() {
     run "$UPDATE_SCRIPT" --restore
     [ "$status" -ne 0 ]
     [[ "$output" == *"--restore"* ]] || [[ "$output" == *"argument"* ]]
-}
-
-# =============================================================================
-# --add-hook flag (add_hook)
-# =============================================================================
-
-@test "update.sh --help documents --add-hook" {
-    run "$UPDATE_SCRIPT" --help
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"--add-hook"* ]]
-}
-
-@test "update.sh --add-hook requires an argument" {
-    run "$UPDATE_SCRIPT" --add-hook
-    [ "$status" -ne 0 ]
-    [[ "$output" == *"--add-hook"* ]] || [[ "$output" == *"argument"* ]]
-}
-
-# The foundation's settings.json already ships an (ENABLE_RTK-gated) RTK hook,
-# so --add-hook rtk is a no-op on a fresh install. Strip it first to exercise
-# the actual add path.
-_strip_rtk_hook() {
-    local sf="$1/.claude/settings.json"
-    jq '.hooks.PreToolUse = ((.hooks.PreToolUse // []) | map(select((.description // "") | test("RTK") | not)))' \
-        "$sf" > "$sf.tmp" && mv "$sf.tmp" "$sf"
-}
-
-@test "update.sh --add-hook rtk adds the RTK hook to settings.json" {
-    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
-    _strip_rtk_hook "$TEST_DIR"
-    # Precondition: no RTK hook present
-    run jq -e '.hooks.PreToolUse[]? | select(.description | test("RTK"))' "$TEST_DIR/.claude/settings.json"
-    [ "$status" -ne 0 ]
-
-    run "$UPDATE_SCRIPT" -y --add-hook rtk "$TEST_DIR"
-    [ "$status" -eq 0 ]
-    run jq -e '.hooks.PreToolUse[]? | select(.description | test("RTK"))' "$TEST_DIR/.claude/settings.json"
-    [ "$status" -eq 0 ]
-}
-
-@test "update.sh --add-hook rtk is idempotent" {
-    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
-    _strip_rtk_hook "$TEST_DIR"
-    "$UPDATE_SCRIPT" -y --add-hook rtk "$TEST_DIR" >/dev/null 2>&1
-
-    run "$UPDATE_SCRIPT" -y --add-hook rtk "$TEST_DIR"
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"already"* ]] || [[ "$output" == *"present"* ]]
-    # Still exactly one RTK hook
-    run jq '[.hooks.PreToolUse[]? | select(.description | test("RTK"))] | length' "$TEST_DIR/.claude/settings.json"
-    [ "$output" = "1" ]
-}
-
-@test "update.sh --add-hook --dry-run does not modify settings.json" {
-    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
-    _strip_rtk_hook "$TEST_DIR"
-
-    run "$UPDATE_SCRIPT" -y --dry-run --add-hook rtk "$TEST_DIR"
-    [ "$status" -eq 0 ]
-    run jq -e '.hooks.PreToolUse[]? | select(.description | test("RTK"))' "$TEST_DIR/.claude/settings.json"
-    [ "$status" -ne 0 ]
-}
-
-@test "update.sh --add-hook rejects an unknown hook" {
-    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
-
-    run "$UPDATE_SCRIPT" -y --add-hook bogus "$TEST_DIR"
-    [ "$status" -ne 0 ]
-    [[ "$output" == *"Unknown hook"* ]] || [[ "$output" == *"bogus"* ]]
 }

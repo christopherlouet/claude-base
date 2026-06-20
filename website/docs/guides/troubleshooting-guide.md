@@ -462,24 +462,6 @@ grep -r "functionName" src/ --include="*.ts" -l
 # then read only the relevant files
 ```
 
-**Enable RTK to reduce tokens by 60-90%:**
-
-In `.claude/settings.local.json` (not committed):
-
-```json
-{
-  "env": {
-    "ENABLE_RTK": "1"
-  }
-}
-```
-
-Check the savings achieved:
-
-```bash
-rtk gain
-```
-
 ### Avoid reading large files
 
 Files and directories never to read in their entirety:

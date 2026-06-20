@@ -122,14 +122,6 @@ Enable in `.claude/settings.local.json`:
 
 Compatible with API key, Bedrock, Vertex, and Foundry. Alternative: `FORCE_PROMPT_CACHING_5M` to force the 5-minute TTL (useful if telemetry is disabled).
 
-### RTK (optional)
-
-> Reduce token consumption by 60-90% with [RTK](https://github.com/rtk-ai/rtk).
-
-Installation: `brew install rtk`. The foundation includes a PreToolUse hook that automatically rewrites commands. Disabled by default, enable with `ENABLE_RTK=1` in the `env` section of `.claude/settings.json` or `.claude/settings.local.json`.
-
-`rtk gain` to see the savings. `rtk discover` to find unoptimized commands.
-
 ## Quick Command
 
 `/work:work-commit-push-pr "description"` -- commit + push + PR in a single command.
