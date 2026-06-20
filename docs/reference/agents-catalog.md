@@ -1,4 +1,4 @@
-# Available Agents (<!-- count:commands -->126<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->123<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -25,7 +25,7 @@
 | `/work:work-flow-release` | Full release workflow |
 | `/work:work-flow-launch` | Full product launch workflow |
 
-## DEV-: Development (<!-- count:byDomain.dev -->22<!-- /count -->)
+## DEV-: Development (<!-- count:byDomain.dev -->19<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/dev:dev-tdd` | TDD development |
@@ -34,8 +34,7 @@
 | `/dev:dev-debug` | Debug an issue (4-phase methodology) |
 | `/dev:dev-refactor` | Guided refactoring + entropy reduction |
 | `/dev:dev-document` | Document generation (PDF, DOCX, XLSX, PPTX) |
-| `/dev:dev-api` | Create/document an API |
-| `/dev:dev-api-versioning` | API versioning |
+| `/dev:dev-api` | Create/document a REST, GraphQL, or tRPC API + versioning |
 | `/dev:dev-component` | Create a complete UI component |
 | `/dev:dev-hook` | Create a React/Vue hook |
 | `/dev:dev-error-handling` | Error handling strategy |
@@ -43,12 +42,10 @@
 | `/dev:dev-mcp` | Create MCP servers (Model Context Protocol) |
 | `/dev:dev-flutter` | Flutter widgets and screens |
 | `/dev:dev-supabase` | Supabase backend (Auth, DB, Storage, Postgres perf) |
-| `/dev:dev-graphql` | GraphQL client/server API |
 | `/dev:dev-neovim` | Neovim/Lua plugins and config |
 | `/dev:dev-rag` | RAG systems (Retrieval-Augmented Generation) |
 | `/dev:dev-design-system` | Design tokens and component library |
 | `/dev:dev-prisma` | Prisma ORM (schema, migrations, queries) |
-| `/dev:dev-trpc` | Type-safe APIs with tRPC |
 | `/dev:dev-ai-integration` | LLM integration (OpenAI, Claude API) |
 
 ## QA-: Quality (<!-- count:byDomain.qa -->16<!-- /count -->)

@@ -6,7 +6,7 @@
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                         CLAUDE CODE AGENTS - CHEATSHEET                       ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
-║  Total: 128 commands | 61 agents | 53 skills | 9 categories       ║
+║  Total: 123 commands | 48 agents | 53 skills | 9 categories       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -49,15 +49,15 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       DEV- : DEVELOPMENT (22 commands)                      │
+│                       DEV- : DEVELOPMENT (19 commands)                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  TDD cycle     : tdd, test, testing-setup, debug, refactor                  │
-│  API & types   : api, api-versioning, graphql, trpc, prisma                 │
+│  API & types   : api (REST/GraphQL/tRPC + versioning), prisma               │
 │  UI & front    : component, hook, design-system, react-perf, error-handling │
 │  Mobile/Edit   : flutter, neovim                                            │
 │  AI / Document : ai-integration, rag, mcp, document                         │
 │  Backend BaaS  : supabase                                                   │
-│  → Full details: "DEV- : Development (22)" table below                      │
+│  → Full details: "DEV- : Development (19)" table below                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->126<!-- /count -->)
+## Commands by Category (<!-- count:commands -->123<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -206,7 +206,7 @@
 | `/work:work-flow-release` | Full release workflow |
 | `/work:work-flow-launch` | Full launch workflow |
 
-### DEV- : Development (22)
+### DEV- : Development (19)
 
 | Command | Usage |
 |----------|-------|
@@ -216,8 +216,7 @@
 | `/dev:dev-debug` | Debug a problem |
 | `/dev:dev-refactor` | Guided refactoring |
 | `/dev:dev-document` | Document generation (PDF, DOCX, XLSX, PPTX) |
-| `/dev:dev-api` | Create/document REST API |
-| `/dev:dev-api-versioning` | API versioning |
+| `/dev:dev-api` | Create/document REST, GraphQL, or tRPC API + versioning |
 | `/dev:dev-component` | Create a complete UI component |
 | `/dev:dev-hook` | Create a React/Vue hook |
 | `/dev:dev-error-handling` | Error handling strategy |
@@ -225,12 +224,10 @@
 | `/dev:dev-mcp` | Create MCP servers |
 | `/dev:dev-flutter` | Flutter widgets and screens |
 | `/dev:dev-supabase` | Supabase backend (Auth, DB, Storage) |
-| `/dev:dev-graphql` | GraphQL client/server API |
 | `/dev:dev-neovim` | Neovim plugins and config |
 | `/dev:dev-design-system` | Design tokens and components |
 | `/dev:dev-prisma` | Prisma ORM |
 | `/dev:dev-rag` | RAG systems |
-| `/dev:dev-trpc` | Type-safe tRPC APIs |
 | `/dev:dev-ai-integration` | LLM integration (OpenAI, Claude) |
 
 ### QA- : Quality (16)
@@ -565,4 +562,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->126<!-- /count --> commands - <!-- count:agents -->48<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
+*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->123<!-- /count --> commands - <!-- count:agents -->48<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*

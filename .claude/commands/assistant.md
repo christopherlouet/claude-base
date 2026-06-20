@@ -16,7 +16,7 @@ Always wait for confirmation before executing.
 |------------|------|---------------------|
 | `package.json` + React/Next/Vue | **Web Frontend** | `/dev:dev-component`, `/dev:dev-hook` |
 | `pubspec.yaml` + Flutter | **Mobile** | `/dev:dev-flutter`, `/dev:dev-supabase` |
-| `package.json` + Express/Fastify/NestJS | **Node API** | `/dev:dev-api`, `/dev:dev-graphql` |
+| `package.json` + Express/Fastify/NestJS | **Node API** | `/dev:dev-api` (REST/GraphQL/tRPC) |
 | `requirements.txt` / `pyproject.toml` | **Python** | `/dev:dev-api`, `/dev:dev-tdd` |
 | `go.mod` | **Go** | `/dev:dev-api`, `/dev:dev-tdd` |
 | `init.lua` / `.config/nvim` | **Neovim** | `/dev:dev-neovim`, `/qa:qa-neovim` |

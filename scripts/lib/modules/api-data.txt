@@ -1,13 +1,15 @@
-# Module "api-data" — typed data/API layer: Prisma, Supabase, GraphQL, tRPC.
+# Module "api-data" — typed data/API layer: Prisma, Supabase, GraphQL.
 # Same syntax as minimal-manifest.txt: one repo-relative path per line,
 # # comments and empty lines ignored, trailing / = directory.
 # Drift guard: tests/modules.bats asserts every path exists and no overlap.
+#
+# Note: the dev-graphql + dev-trpc + dev-api-versioning COMMANDS were folded into
+# the core /dev:dev-api command (Wave 2 API cluster). The dev-graphql SKILL is kept
+# below (it anchors the Apollo vendor-skill pairing); tRPC has no standalone skill.
 
-# === Commands (4) ===
+# === Commands (2) ===
 .claude/commands/dev/dev-prisma.md
 .claude/commands/dev/dev-supabase.md
-.claude/commands/dev/dev-graphql.md
-.claude/commands/dev/dev-trpc.md
 
 # === Agents (0 — collapsed: were passthrough runners over vendor-pointer skills) ===
 

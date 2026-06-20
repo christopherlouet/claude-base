@@ -32,7 +32,7 @@ repositories with CRUD, Realtime and Storage services, unit tests.
 | Agent | When to use it |
 |-------|------------------|
 | `/dev:dev-flutter` | Widgets and screens |
-| `/dev:dev-graphql` | GraphQL alternative/complement |
+| `/dev:dev-api` | GraphQL/REST alternative/complement |
 | `/ops:ops-database` | Schema design |
 | `/qa:qa-security` | RLS security audit |
 

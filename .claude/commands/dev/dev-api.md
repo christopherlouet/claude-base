@@ -1,6 +1,6 @@
 # API Agent
 
-Create or document REST/GraphQL endpoints.
+Create or document REST, GraphQL, or tRPC endpoints, with a versioning strategy.
 
 ## Endpoint or API to process
 $ARGUMENTS
@@ -9,7 +9,7 @@ $ARGUMENTS
 
 Develop well-structured, documented, and testable APIs following the TDD approach.
 
-Use the `dev-api` skill for the detailed methodology (RESTful structure, validation, OpenAPI documentation, tests).
+Use the `dev-api` skill for the detailed methodology (RESTful structure, validation, OpenAPI documentation, tests, **tRPC** type-safe routers, and **API versioning**). For GraphQL schema/resolver depth (DataLoader, N+1 prevention, Apollo pairing), the dedicated `dev-graphql` skill triggers automatically.
 
 ## TDD prerequisites
 

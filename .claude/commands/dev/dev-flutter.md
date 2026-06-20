@@ -32,7 +32,7 @@ documentation with usage and props.
 | Agent | When to use it |
 |-------|------------------|
 | `/dev:dev-supabase` | Supabase backend configuration |
-| `/dev:dev-graphql` | GraphQL integration |
+| `/dev:dev-api` | GraphQL/REST integration |
 | `/qa:qa-mobile` | Mobile performance and accessibility audit |
 | `/dev:dev-test` | Complementary tests |
 
