@@ -33,7 +33,6 @@ ERD, data dictionary and example queries.
 | `/data:data-pipeline` | Feed the model |
 | `/growth:growth-analytics` | Analyze KPIs on the modeled data |
 | `/ops:ops-database` | Optimize performance |
-| `/doc:doc-architecture` | Document the architecture |
 
 ---
 

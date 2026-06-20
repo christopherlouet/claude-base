@@ -1,4 +1,4 @@
-# Available Agents (<!-- count:commands -->128<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->126<!-- /count --> commands, <!-- count:agents -->48<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -109,7 +109,7 @@
 | `/ops:ops-standup` | Cross-repo morning briefing (commits, PRs, CI, blockers, priorities) |
 | `/ops:ops-ci-fix` | Autonomous diagnosis and repair of failing CI/CD pipelines |
 
-## DOC-: Documentation (<!-- count:byDomain.doc -->8<!-- /count -->)
+## DOC-: Documentation (<!-- count:byDomain.doc -->6<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/doc:doc-generate` | Generate documentation |
@@ -118,8 +118,6 @@
 | `/doc:doc-onboard` | Discover a codebase |
 | `/doc:doc-fix-issue` | Fix a GitHub issue |
 | `/doc:doc-api-spec` | Generate OpenAPI/Swagger spec |
-| `/doc:doc-readme` | Create/improve README |
-| `/doc:doc-architecture` | Document the architecture |
 
 ## BIZ-: Business (<!-- count:byDomain.biz -->11<!-- /count -->)
 | Command | Usage |

@@ -178,7 +178,7 @@
 
 ---
 
-## Commands by Category (<!-- count:commands -->128<!-- /count -->)
+## Commands by Category (<!-- count:commands -->126<!-- /count -->)
 
 ### Orchestrator (1)
 
@@ -565,4 +565,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->128<!-- /count --> commands - <!-- count:agents -->48<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
+*Claude-Base v<!-- version -->4.2.0<!-- /version --> - <!-- count:commands -->126<!-- /count --> commands - <!-- count:agents -->48<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->31<!-- /count --> rules*
