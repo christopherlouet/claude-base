@@ -1,4 +1,4 @@
-# Available Agents (<!-- count:commands -->117<!-- /count --> commands, <!-- count:agents -->47<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->114<!-- /count --> commands, <!-- count:agents -->47<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -65,7 +65,7 @@
 | `/qa:qa-e2e` | End-to-End tests (Playwright, Cypress) |
 | `/qa:qa-tech-debt` | Identify/prioritize technical debt (incl. coverage + Kaizen) |
 
-## OPS-: Operations (<!-- count:byDomain.ops -->31<!-- /count -->)
+## OPS-: Operations (<!-- count:byDomain.ops -->28<!-- /count -->)
 | Command | Usage |
 |---------|-------|
 | `/ops:ops-hotfix` | Urgent production fix |
@@ -77,17 +77,14 @@
 | `/ops:ops-vps` | VPS deployment (OVH, Hetzner, DigitalOcean) |
 | `/ops:ops-migrate` | Code/dependency migration |
 | `/ops:ops-ci` | CI/CD configuration |
-| `/ops:ops-monitoring` | Code instrumentation (logs, metrics, traces) |
-| `/ops:ops-observability-stack` | Deploy Prometheus, Grafana, Loki, Alertmanager |
+| `/ops:ops-monitoring` | Instrument code + deploy the observability stack (Prometheus/Grafana/Loki) |
 | `/ops:ops-grafana-dashboard` | Create Grafana dashboards (templates, alerts) |
 | `/ops:ops-database` | DB schema, migrations |
 | `/ops:ops-health` | Quick health check |
 | `/ops:ops-env` | Environment management |
-| `/ops:ops-backup` | Backup/restore strategy |
 | `/ops:ops-load-testing` | Load and stress tests |
-| `/ops:ops-cost-optimization` | Cloud cost optimization |
-| `/ops:ops-cost` | Track Claude Code token consumption and costs |
-| `/ops:ops-disaster-recovery` | Disaster recovery plan |
+| `/ops:ops-cost` | Costs: Claude Code tokens + cloud FinOps optimization |
+| `/ops:ops-backup` | Backup/restore + disaster recovery (RPO/RTO, failover) |
 | `/ops:ops-infra-code` | Infrastructure as Code (Terraform) |
 | `/ops:ops-secrets-management` | Secure secrets management |
 | `/ops:ops-mobile-release` | App Store / Google Play publishing |

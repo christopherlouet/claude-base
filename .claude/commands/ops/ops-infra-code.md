@@ -36,7 +36,7 @@ Use the `ops-infra-code` skill for detailed Terraform patterns.
 | `/ops:ops-docker` | Containerize the application |
 | `/ops:ops-ci` | CI/CD pipeline |
 | `/ops:ops-secrets-management` | Secrets management |
-| `/ops:ops-cost-optimization` | Optimize costs |
+| `/ops:ops-cost` | Optimize cloud costs (FinOps) |
 
 ---
 

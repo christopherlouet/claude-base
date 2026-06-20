@@ -1,10 +1,10 @@
-# Module "observability" — dashboards, the observability stack, load testing.
-# (ops-monitoring stays in the core — it is the universal entry point.)
+# Module "observability" — dashboards and load testing.
+# (ops-monitoring stays in the core — it is the universal entry point. Wave 3 folded
+# the ops-observability-stack command into ops-monitoring, so it is core now too.)
 # Same syntax as minimal-manifest.txt: one repo-relative path per line,
 # # comments and empty lines ignored, trailing / = directory.
 # Drift guard: tests/modules.bats asserts every path exists and no overlap.
 
-# === Commands (3) ===
+# === Commands (2) ===
 .claude/commands/ops/ops-grafana-dashboard.md
-.claude/commands/ops/ops-observability-stack.md
 .claude/commands/ops/ops-load-testing.md

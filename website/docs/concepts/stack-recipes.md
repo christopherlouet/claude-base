@@ -139,8 +139,7 @@ tags:
 
 | Type | Element | Activation |
 |---|---|---|
-| Command | `/ops:ops-monitoring` | Logs, metrics, alerts |
-| Command | `/ops:ops-observability-stack` | Prometheus + Grafana + Loki |
+| Command | `/ops:ops-monitoring` | Logs, metrics, alerts + deploy Prometheus/Grafana/Loki stack |
 | Command | `/ops:ops-grafana-dashboard` | Grafana dashboards |
 | Command | `/ops:ops-load-testing` | Load tests |
 | Command | `/ops:ops-health` | Health checks |

@@ -1,16 +1,17 @@
 # OPS-BACKUP Agent
 
-Backup and restore strategy for the project's critical data.
+Backup, restore **and disaster-recovery** strategy for the project's critical data.
 
 ## Request context
 $ARGUMENTS
 
 ## Objective
 
-Define and implement a 3-2-1 backup strategy (3 copies, 2 media, 1 offsite)
-with tested and documented restore procedures.
+Define and implement a 3-2-1 backup strategy (3 copies, 2 media, 1 offsite) with tested,
+documented restore procedures — and, for business continuity, a disaster-recovery (DR) plan
+with clear, tested RPO/RTO.
 
-## Workflow
+## Workflow — backup & restore
 
 - Identify the critical data to back up (DB, files, configs, logs)
 - Choose the appropriate backup type (full, incremental, differential, snapshot)
@@ -21,12 +22,21 @@ with tested and documented restore procedures.
 - Propose an RPO/RTO matrix per incident scenario
 - Encrypt backups containing sensitive data
 
+## Workflow — disaster recovery (DR)
+
+- Assess service criticality (mission critical, business critical, standard)
+- Choose the DR strategy (Backup & Restore, Pilot Light, Warm Standby, Hot Standby) per target RPO/RTO
+- Document the DR runbook (failover, failback, emergency contacts)
+- Configure replication and cross-region backups
+- Define DR tests (tabletop, simulation, full failover); generate `activate-dr.sh`, `validate-dr.sh`, `test-dr-failover.sh`
+- Monitor DR health (replication lag, backup status, site health)
+
 ## Expected output
 
-1. **Scripts**: backup-db.sh, backup-files.sh, restore-db.sh, test-restore.sh
+1. **Scripts**: backup-db.sh, backup-files.sh, restore-db.sh, test-restore.sh (+ DR: activate-dr.sh, validate-dr.sh, test-dr-failover.sh)
 2. **Recommended cron configuration**
-3. **Restore matrix** (scenario, RPO, RTO, procedure)
-4. **Complete backup checklist**
+3. **Restore matrix** (scenario, RPO, RTO, procedure) and chosen **DR strategy** with runbook
+4. **Complete backup + DR checklist**
 
 ## Related agents
 
@@ -37,15 +47,17 @@ with tested and documented restore procedures.
 
 | After | Usage |
 |-------|-------|
-| `/ops:ops-disaster-recovery` | Full recovery plan |
-| `/ops:ops-monitoring` | Backup alerts |
+| `/ops:ops-monitoring` | Backup/DR alerts |
+| `/ops:ops-cost` | Optimize backup/DR costs |
 
 ---
 
-IMPORTANT: An untested backup is not a backup. Test restores regularly.
+IMPORTANT: An untested backup is not a backup. Test restores AND DR failover regularly.
 
 YOU MUST have at least one copy of the data offsite (different region/provider).
 
-NEVER forget to encrypt backups containing sensitive data.
+YOU MUST measure actual RTO and RPO during DR tests, and document procedures accessibly.
 
-Think hard about the acceptable RPO and RTO for the project's context.
+NEVER forget to encrypt backups containing sensitive data; NEVER assume DR works without testing it.
+
+Think hard about the acceptable RPO/RTO and the most likely disaster scenarios for the context.

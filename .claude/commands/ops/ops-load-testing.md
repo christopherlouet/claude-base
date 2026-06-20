@@ -33,7 +33,7 @@ identify limits and bottlenecks.
 |-------|-------|
 | `/qa:qa-perf` | Performance optimization |
 | `/ops:ops-monitoring` | Monitoring in production |
-| `/ops:ops-cost-optimization` | Optimize costs |
+| `/ops:ops-cost` | Optimize cloud costs (FinOps) |
 
 ---
 
