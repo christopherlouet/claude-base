@@ -293,3 +293,15 @@ teardown() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"doctor"* ]]
 }
+
+@test "dispatcher: lessons verb forwards to lessons.sh" {
+    run "$DISPATCHER" lessons --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"bootstrap-scan"* ]] || [[ "$output" == *"Usage"* ]]
+}
+
+@test "dispatcher: help lists the lessons verb" {
+    run "$DISPATCHER"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"lessons"* ]]
+}

@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Personal lessons referential — `/lessons` capture/recall/prune modes (Phase 2).**
+  The `/lessons` command gains `--promote` (explicit capture, fallback to the
+  reflex), `--bootstrap` (one-off backfill from existing per-project `feedback`
+  memories so you don't start from scratch), and `--prune` (keep the store under
+  budget). The deterministic parts live in a tested helper exposed as
+  `claude-base lessons` (`bootstrap-scan` lists promotable candidates across
+  `~/.claude/projects/*/memory/`; `prune-check` reports the store's size vs its
+  budget and flags duplicate lines) — the generalize/sanitize/confirm judgment
+  stays with the model, per the `self-improvement` rule. Still mechanism-only:
+  nothing is written without confirmation and lessons never enter any repo.
 - **Personal cross-project lessons referential (mechanism only).** A new global
   `self-improvement` rule turns "lessons learned" into a human-gated reflex:
   after a genuinely instructive moment (a multi-attempt fix, an explicit user
