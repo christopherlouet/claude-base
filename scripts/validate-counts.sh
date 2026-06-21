@@ -342,6 +342,46 @@ scan_drift "skill" "skills" "$ACTUAL_SKILLS"
 scan_drift "rule" "rules" "$ACTUAL_RULES"
 
 # -----------------------------------------------------------------------------
+# Dedicated prose scan for CONTRIBUTING.md inline-comment counts.
+# Its counts live inside a fenced directory tree (e.g. `commands/  # 106 commands`)
+# so they cannot carry <!-- count --> markers, and the `#` is not line-anchored,
+# so the global scan_drift (pattern 5 requires `^#`) misses them. This targeted
+# scan of the one file closes that gate hole without risking global false
+# positives. The -le 5 guard (as in scan_drift) skips small subset-style numbers.
+# -----------------------------------------------------------------------------
+scan_contributing_drift() {
+    local contributing="$BASE_DIR/CONTRIBUTING.md"
+    [ -f "$contributing" ] || return 0
+
+    _contrib_check() {
+        local label_re="$1" plural="$2" actual="$3"
+        # Allow an optional adjective between the number and the label, so
+        # "# 32 contextual rules" / "# 45 sub-agents" are matched, not just
+        # "# 32 rules". The adjective is [a-z-]+ (no digits), so the only number
+        # extracted is the count itself.
+        local re="#[[:space:]]*[0-9]+[[:space:]]+([a-z-]+[[:space:]]+)?(${label_re})"
+        local match lineno n
+        while IFS= read -r match; do
+            [ -z "$match" ] && continue
+            lineno="${match%%:*}"
+            n=$(printf '%s' "${match#*:}" | grep -oiE "$re" | grep -oE '[0-9]+' | head -1)
+            [ -z "$n" ] && continue
+            [ "$n" -le 5 ] && continue
+            if [ "$n" != "$actual" ]; then
+                error_no_exit "CONTRIBUTING.md:${lineno} drift -> $n ${plural} (canonical: $actual)"
+                DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+            fi
+        done < <(grep -niE "$re" "$contributing" 2>/dev/null)
+    }
+
+    _contrib_check "commands?" "commands" "$ACTUAL_COMMANDS"
+    _contrib_check "(sub-)?agents?" "agents" "$ACTUAL_AGENTS"
+    _contrib_check "skills?" "skills" "$ACTUAL_SKILLS"
+    _contrib_check "rules?" "rules" "$ACTUAL_RULES"
+}
+scan_contributing_drift
+
+# -----------------------------------------------------------------------------
 # Dedicated drift scan for test counters (specific patterns: README shields.io
 # badge + "Test layout" section)
 # -----------------------------------------------------------------------------

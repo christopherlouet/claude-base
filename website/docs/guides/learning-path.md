@@ -59,12 +59,17 @@ Without claude-base, you have to specify everything in every session. With claud
 Follow the [full installation guide](/docs/intro/installation) for details. In summary:
 
 ```bash
-# In your project's directory
-git clone https://github.com/christopherlouet/claude-base.git temp-base
-cp -r temp-base/.claude .
-cp temp-base/CLAUDE.md .
-rm -rf temp-base
+# 1. Install the foundation (puts `claude-base` on your PATH)
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
+
+# 2. In your project's directory, scaffold the foundation
+claude-base init --simple .
 ```
+
+This is the same canonical path as the README and QUICKSTART: the one-liner
+installs the `claude-base` dispatcher, then `init` scaffolds `.claude/` and
+`CLAUDE.md` into your project (so the `claude-base update` / `doctor` / `lessons`
+commands used later in this guide are available).
 
 Verify the installation by launching Claude Code:
 

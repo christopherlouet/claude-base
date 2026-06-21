@@ -326,3 +326,53 @@ EOF
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 0 ]
 }
+
+# =============================================================================
+# CONTRIBUTING.md inline-comment counts (gate-hole fix #5)
+# Counts live in a code fence (e.g. "commands/  # 128 commands"), so they can't
+# carry <!-- count --> markers and the # is not line-anchored — they escaped the
+# global scan. A targeted prose scan of CONTRIBUTING.md closes that hole.
+# =============================================================================
+
+@test "validate-counts.sh detects a drift in CONTRIBUTING.md inline comment (commands)" {
+    # Fake foundation has 3 commands; declare 99 in a fenced tree comment.
+    printf '# Contributing\n\n```\n.claude/\n  commands/    # 99 commands (source of truth)\n```\n' \
+        > "$TEST_DIR/CONTRIBUTING.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"99 commands"* ]]
+    [[ "$output" == *"canonical: 3"* ]]
+}
+
+@test "validate-counts.sh detects a drift in CONTRIBUTING.md inline comment (sub-agents)" {
+    # Fake foundation has 2 agents; declare 88 sub-agents.
+    printf '# Contributing\n\n```\n  agents/      # 88 sub-agents\n```\n' \
+        > "$TEST_DIR/CONTRIBUTING.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"88 agents"* ]]
+    [[ "$output" == *"canonical: 2"* ]]
+}
+
+@test "validate-counts.sh accepts a CONTRIBUTING.md with correct inline counts" {
+    # The -le 5 guard skips small subset numbers, so push commands above it (6)
+    # and declare the matching count — this actually exercises the accept path.
+    touch "$TEST_DIR/.claude/commands/work/cmd4.md" \
+          "$TEST_DIR/.claude/commands/work/cmd5.md" \
+          "$TEST_DIR/.claude/commands/work/cmd6.md"
+    printf '# Contributing\n\n```\n  commands/    # 6 commands\n```\n' \
+        > "$TEST_DIR/CONTRIBUTING.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}
+
+@test "validate-counts.sh catches a drifted count even with an adjective (contextual rules)" {
+    # Fake foundation has 4 rules; "# 99 contextual rules" must still be caught
+    # despite the adjective between the number and the label.
+    printf '# Contributing\n\n```\n  rules/       # 99 contextual rules\n```\n' \
+        > "$TEST_DIR/CONTRIBUTING.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"99 rules"* ]]
+    [[ "$output" == *"canonical: 4"* ]]
+}
