@@ -1,16 +1,18 @@
 # claude-base
 
-> **Workflow framework + curator for Claude Code.** Makes Claude Code follow a real engineering workflow — **Explore → Specify → Plan → TDD → Audit → Commit** — wired through hooks, path-specific rules, and an anti-drift CI gate. Stack presets (`nextjs`, `fastapi`, `astro`, `react-vite-spa`, `cli-tools`, `homelab-proxmox`) auto-detect your repo and point you at a curated set of vendor skills for tool-specific depth, so you don't have to figure out which community skill to trust.
+> **Make Claude Code follow a real engineering workflow** — Explore → Specify → Plan → TDD → Audit → Commit — with guardrails that test-first, audit to a quality score, and block secrets + destructive commands automatically.
 
-_Where most Claude Code setups add more agents, claude-base adds **guardrails**: every change is tested-first, audited to a quality score, and screened for secrets and destructive commands — the conventions injected per file by your stack. It's the discipline-and-safety layer for AI-assisted coding: use it on its own, or alongside a multi-agent orchestrator._
+Most Claude Code setups add more agents. claude-base adds **discipline and safety**: per-file rules, hooks, and an anti-drift CI gate. One install, auto-detects your stack — and it **learns from your mistakes across every project** so you stop repeating them.
 
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
-[![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
 [![Tests](https://img.shields.io/badge/tests-1178%20passing-brightgreen)](./tests)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
-[![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
+![claude-base install tour](./website/static/img/60-second-tour.gif)
+
+_A real `curl | bash` install + `claude-base init` scaffolding the foundation into a project — start to finish._
 
 ## Try it (30 seconds)
 
@@ -128,15 +130,13 @@ Everything is plain markdown + JSON. No daemon, no telemetry, no network access 
 | Path-specific rules | <!-- count:rules -->32<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
 | Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles ; tier breakdown in [Going deeper](#going-deeper) |
 
+**Learns across projects.** A personal, human-gated **lessons referential**: after a hard-won fix or a correction, claude-base proposes a generalized, sanitized one-line lesson and — on your confirmation — stores it in your own `~/.claude/rules/lessons.md`, which Claude Code loads into **every** project. A mistake made once stops recurring everywhere; run `/lessons --bootstrap` to seed it from what you already learned. The lessons stay yours — never committed to any repo. [How it works →](docs/recipes/personal-lessons-referential.md)
+
 Full catalogue: [Docusaurus reference](https://christopherlouet.github.io/claude-base/docs/reference) — or browse `.claude/` directly after install.
 
-## What it looks like
+## The 6-phase workflow in action
 
-![claude-base install tour](./website/static/img/60-second-tour.gif)
-
-Real `curl | bash` install + `claude-base init --preset nextjs` + the resulting `.claude/` tree on disk, recorded inside an isolated Docker container. ~10 seconds end-to-end (recording scaffolding under [`website/demo/`](./website/demo/), reproducible).
-
-From there you `cd ./my-app && claude` and the foundation drives the 6-phase workflow :
+After install, you `cd ./my-app && claude` and the foundation drives the workflow (the [top demo](#claude-base) is the real install, recorded in an isolated Docker container — reproducible, scaffolding under [`website/demo/`](./website/demo/)):
 
 ```
 > /work:work-flow-feature "add a /counter route with optimistic UI"
@@ -249,7 +249,7 @@ After `curl | bash` install, the foundation lives at `~/.local/share/claude-base
 
 | Path | Role |
 |---|---|
-| `bin/claude-base` | CLI dispatcher (`init` / `update` / `validate` / `doctor` / `lessons` / `preset` / `uninstall` / `version` / `help`) |
+| `bin/claude-base` | CLI dispatcher (`init` / `update` / `validate` / `doctor` / `lessons` / `add` / `remove` / `modules` / `preset` / `uninstall` / `version` / `help`) |
 | `install.sh` | One-liner installer — clones to `~/.local/share/claude-base/`, symlinks the dispatcher to `~/.local/bin/` |
 | `.claude/` | Foundation kit — `skills/`, `agents/`, `commands/`, `rules/`, `presets/`, `output-styles/`, `templates/`, `settings.json` |
 | `scripts/` | Implementation scripts behind the CLI + maintenance tools (`audit-base.sh`, `audit-docs.sh`, `doctor.sh`, `diff.sh`, ...) + hook scripts |
@@ -379,16 +379,24 @@ claude-base update /path/to/project
 claude-base validate /path/to/project
 claude-base validate --json /path/to/project   # for CI/CD
 
+# Diagnose a project (config, deps, and downstream security drift)
+claude-base doctor /path/to/project
+
+# Add / remove / list the opt-in domain modules
+claude-base modules
+claude-base add nextjs /path/to/project
+
+# Personal cross-project lessons (seed, prune the store)
+claude-base lessons bootstrap-scan
+/lessons --bootstrap    # the guided flow, from inside Claude Code
+
 # Uninstall
 claude-base uninstall /path/to/project
 ```
 
-Maintenance / diagnostic tools without a dispatcher alias (still callable directly from a foundation clone):
+Maintenance tools without a dispatcher alias (still callable directly from a foundation clone):
 
 ```bash
-# Full diagnostic
-./scripts/doctor.sh /path/to/project
-
 # Diff against the foundation
 ./scripts/diff.sh /path/to/project
 
@@ -557,6 +565,8 @@ Concrete signals rather than a self-assessment score :
 - **Protection hooks**: blocks edits on main/master
 - **GitHub Secret Scanning**: enabled on the public repo
 - **GitHub Code Scanning** (CodeQL): TypeScript security analysis (Default Setup, scans `website/scripts/`, `website/src/`)
+- **Downstream drift detection**: `claude-base doctor` (and an advisory after `claude-base update`) flags an installed project whose `settings.json` / hook scripts have fallen behind the foundation — e.g. security hooks on a stale input contract that would silently no-op — and points you at the resync command
+- **Verified install**: `install.sh --ref <tag>` pins to a released tag and each release publishes `SHA256SUMS`, so the installer can be verified before execution (see [Installation](#installation))
 
 See [SECURITY.md](SECURITY.md) for the full security policy.
 
