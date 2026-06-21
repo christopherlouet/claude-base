@@ -51,6 +51,13 @@ paths:
 - Verify dependencies before installation
 - Use lockfiles (package-lock.json)
 
+## Supply chain — installers and pipe-to-shell
+
+- IMPORTANT: Avoid `curl URL | sh` (piping a remote script straight into a shell runs it unverified). Prefer **download → verify → execute**: fetch the script, check it against a published checksum/signature, then run it. The foundation's `command-validator.sh` hook blocks pipe-to-shell in agent sessions.
+- Pin installers to a released **tag**, not a moving branch (`main`), so installs are reproducible and a mid-flight bad commit can't reach users.
+- Publish per-release `SHA256SUMS` (computed on the tagged commit so they never drift from what ships) and document the verify step; fetch the script from the **same tag** as the checksum, not from `main`.
+- Treat `curl URL | sudo sh` as a hard no — it combines unverified code with privilege escalation.
+
 ## Authentication
 
 - Hash passwords with bcrypt or argon2

@@ -14,6 +14,7 @@
 # Flags:
 #   --target DIR    Install to DIR instead of ~/.local/share/claude-base
 #   --bin DIR       Symlink the dispatcher into DIR instead of ~/.local/bin
+#   --ref TAG       Pin the install to a release tag (default: main tip)
 #   --update        Update an existing install (git pull instead of clone)
 #   --dry-run       Print actions without performing them
 #   --help          Show this help
@@ -29,14 +30,21 @@
 
 set -eu
 
-REPO_URL="https://github.com/christopherlouet/claude-base.git"
+# CLAUDE_BASE_REPO_URL overrides the source repo (used by the test suite to
+# point at a local fixture repo so clone/update paths run offline).
+REPO_URL="${CLAUDE_BASE_REPO_URL:-https://github.com/christopherlouet/claude-base.git}"
 DEFAULT_TARGET="$HOME/.local/share/claude-base"
 DEFAULT_BIN="$HOME/.local/bin"
 
 TARGET_DIR=""
 BIN_DIR=""
+REF=""
 UPDATE=false
 DRY_RUN=false
+
+# Where we record the pinned tag, inside .git so it never shows up in
+# `git status` and never collides with tracked files.
+PIN_BASENAME=".git/claude-base-ref"
 
 show_help() {
     cat <<'EOF'
@@ -49,6 +57,9 @@ USAGE
 OPTIONS
     --target DIR    Install to DIR instead of ~/.local/share/claude-base
     --bin DIR       Symlink the dispatcher into DIR instead of ~/.local/bin
+    --ref TAG       Pin the install to a release tag (e.g. v5.0.0) instead of
+                    the moving main tip. A pinned install stays pinned across
+                    --update; pass --ref again to move it, or --ref main for latest.
     --update        Update an existing install (git pull instead of clone)
     --dry-run, -n   Print actions without performing them
     --help, -h      Show this help
@@ -85,6 +96,60 @@ run() {
     fi
 }
 
+# Record (or clear) the pinned tag under .git. A tag pin is written; main/master
+# or an empty ref means "track the moving tip", so any stale pin is removed.
+record_pin() {
+    local ref="$1"
+    case "$ref" in
+        ""|main|master) rm -f "$TARGET_DIR/$PIN_BASENAME" 2>/dev/null || true ;;
+        *) printf '%s\n' "$ref" > "$TARGET_DIR/$PIN_BASENAME" ;;
+    esac
+}
+
+# Clone the foundation. With a ref, pin to that tag (shallow --branch clone);
+# without one, clone the default branch (the historical behavior).
+clone_at() {
+    local ref="$1"
+    if [ -n "$ref" ]; then
+        info "Cloning $REPO_URL at $ref into $TARGET_DIR"
+        run "git clone --depth 1 --branch \"$ref\" \"$REPO_URL\" \"$TARGET_DIR\""
+    else
+        info "Cloning $REPO_URL into $TARGET_DIR"
+        run "git clone --depth 1 \"$REPO_URL\" \"$TARGET_DIR\""
+    fi
+    $DRY_RUN || record_pin "$ref"
+}
+
+# Update an existing install. A new --ref re-installs at that tag (clean
+# re-clone, so the tag ref is present for `git describe`). With no --ref, a
+# pinned install is left untouched (tags are immutable) and a non-pinned one
+# fast-forwards the tracked branch, exactly as before.
+update_install() {
+    local pin=""
+    [ -f "$TARGET_DIR/$PIN_BASENAME" ] && pin="$(cat "$TARGET_DIR/$PIN_BASENAME")"
+
+    if [ -n "$REF" ]; then
+        info "Re-installing $TARGET_DIR at $REF"
+        # Clone into a staging dir first and swap only once the clone succeeds,
+        # so a bad --ref (typo, missing tag, network blip) can never destroy a
+        # working install. Under set -e a failed clone aborts here, before the
+        # live dir is ever touched.
+        local staging="${TARGET_DIR}.new.$$"
+        local live="$TARGET_DIR"
+        run "rm -rf \"$staging\""
+        TARGET_DIR="$staging"
+        clone_at "$REF"
+        TARGET_DIR="$live"
+        run "rm -rf \"$live\""
+        run "mv \"$staging\" \"$live\""
+    elif [ -n "$pin" ]; then
+        info "Install is pinned to $pin. Pass --ref <tag> to move it, or --ref main for the latest."
+    else
+        info "Updating existing install at $TARGET_DIR"
+        run "git -C \"$TARGET_DIR\" pull --ff-only"
+    fi
+}
+
 while [ $# -gt 0 ]; do
     case "$1" in
         --target)
@@ -95,6 +160,11 @@ while [ $# -gt 0 ]; do
         --bin)
             [ -z "${2:-}" ] && err "--bin requires a path"
             BIN_DIR="$2"
+            shift 2
+            ;;
+        --ref)
+            [ -z "${2:-}" ] && err "--ref requires a tag"
+            REF="$2"
             shift 2
             ;;
         --update)
@@ -132,8 +202,7 @@ fi
 
 if [ -d "$TARGET_DIR/.git" ]; then
     if $UPDATE; then
-        info "Updating existing install at $TARGET_DIR"
-        run "git -C \"$TARGET_DIR\" pull --ff-only"
+        update_install
     else
         info "claude-base already installed at $TARGET_DIR"
         info "Use --update to pull the latest changes, or --target to install to a different path."
@@ -142,8 +211,7 @@ if [ -d "$TARGET_DIR/.git" ]; then
 elif [ -e "$TARGET_DIR" ]; then
     err "$TARGET_DIR exists but is not a git repository. Refusing to overwrite."
 else
-    info "Cloning $REPO_URL into $TARGET_DIR"
-    run "git clone --depth 1 \"$REPO_URL\" \"$TARGET_DIR\""
+    clone_at "$REF"
 fi
 
 # ---- Symlink the dispatcher ----

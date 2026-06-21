@@ -106,6 +106,34 @@ create_settings_with_hooks() {
 EOF
 }
 
+# Build a local git repo that stands in for the foundation remote, so install.sh
+# can clone/update it offline (point CLAUDE_BASE_REPO_URL at "file://$repo").
+# Layout: an executable bin/claude-base (install.sh's dispatcher check) and two
+# tags — v1.0.0 (older) and v2.0.0 (the default-branch tip). v2.0.0 sits on the
+# tip on purpose: a plain (non-pinned) clone lands on a tagged commit, which is
+# exactly why "was this pinned?" must be tracked explicitly, not inferred.
+create_fake_foundation_repo() {
+    local repo="$1"
+    mkdir -p "$repo/bin"
+    git -C "$repo" init -q
+    # Pin the default branch name deterministically (host git may default to
+    # master or main); symbolic-ref works on every git version, pre-commit.
+    git -C "$repo" symbolic-ref HEAD refs/heads/main
+    git -C "$repo" config user.email test@example.com
+    git -C "$repo" config user.name "Test"
+    git -C "$repo" config commit.gpgsign false
+    printf '#!/usr/bin/env bash\necho dispatcher\n' > "$repo/bin/claude-base"
+    chmod +x "$repo/bin/claude-base"
+    echo "1.0.0" > "$repo/VERSION"
+    git -C "$repo" add -A
+    git -C "$repo" commit -q -m "v1"
+    git -C "$repo" tag v1.0.0
+    echo "2.0.0" > "$repo/VERSION"
+    git -C "$repo" add -A
+    git -C "$repo" commit -q -m "v2"
+    git -C "$repo" tag v2.0.0
+}
+
 # Check if gitleaks is installed
 skip_if_no_gitleaks() {
     if ! command -v gitleaks &>/dev/null; then
