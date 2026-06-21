@@ -104,7 +104,7 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **ElicitationResult** | ElicitationResult | Logs MCP Elicitation responses (async) |
 | **PermissionDenied** | PermissionDenied | Logs permissions denied by auto mode (async, CLI 2.1.111+) |
 | **UserPromptSubmit** | UserPromptSubmit | Logs user prompt submissions (async) |
-| **Prompt context injection** | UserPromptSubmit | Injects branch, modified files, LOC diff and `/assistant-auto` hint if no slash command (disable: `SKIP_PROMPT_CONTEXT=1`) |
+| **Prompt context injection** | UserPromptSubmit | Injects branch, modified files, LOC diff and `/assistant-auto` hint if no slash command (disable: `SKIP_PROMPT_CONTEXT=1`). Also injects a once-per-session **vendor-precedence** hint when a graduated vendor skill is installed (prefer it over the foundation pointer, vendor-precedence T3; pure-shell helper `_vendor-precedence-hint.sh`, disable: `SKIP_VENDOR_PRECEDENCE=1`) |
 | **PostToolUseFailure** | PostToolUseFailure | Logs tool failures for debugging (async) |
 | **Check .env** | SessionStart | Checks that .env is in .gitignore |
 | **Third-party hooks warning** | SessionStart | Warns if custom hooks are detected |
@@ -134,6 +134,7 @@ Migration path: existing projects must run `claude-base update -f --all <project
 | `SKIP_PRE_PUSH_CI=1` | Disable local pre-push CI check |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
 | `SKIP_PROMPT_CONTEXT=1` | Disable repo context injection on free-form prompts |
+| `SKIP_VENDOR_PRECEDENCE=1` | Disable the once-per-session installed-vendor precedence hint |
 | `SKIP_BASH_OUTPUT_FILTER=1` | Disable the Bash output filter (output rewriter) |
 | `SKIP_INLINE_EDIT_ERRORS=1` | Disable the inline edit errors hook (output rewriter) |
 | `BASH_OUTPUT_FILTER_VERBOSE=1` | Keep both filtered and original views in the rewritten output |
