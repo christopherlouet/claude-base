@@ -42,62 +42,16 @@ That last command chains the 6 phases automatically: Explore → Specify → Pla
 
 **You don't have to learn the <!-- count:commands -->106<!-- /count --> commands.** The mandatory workflow is 5 slash-commands: `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
 
-## How it fits in the AI-coding ecosystem
+## How it compares
 
-claude-base plays **two roles**, both Claude-Code-native:
+claude-base is the opinionated **discipline layer for Claude Code** — it doesn't compete with the tools below, it composes with them:
 
-1. **Workflow framework** — the foundation owns the rigor: Explore → Specify → Plan → TDD → Audit, enforced via path-specific rules (TypeScript strict, OWASP, WCAG, perf), wired into hooks (`settings.json`, PostToolUse tsc+eslint, gitleaks, anti-drift counters), orchestrated via the `claude-base` CLI.
-2. **Curator** — for tool-specific depth (React, Prisma, Supabase, MSW, Docker, Web Vitals, Chrome DevTools, analytics, email, SEO…), the foundation points to vendor-published skills validated through audit pilots (see [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md)). Each vendor maintains their own canonical content; we curate the list of which ones are worth trusting — kept current by a deterministic, billing-safe **curation engine** (nightly rot-watch + monthly discovery, observe-never-install).
+- **vs [Spec Kit](https://github.com/github/spec-kit)** (agent-agnostic SDD primitives) — spec-kit gives you `specify / plan / tasks / implement` across 30+ agents; claude-base adds what it doesn't: an Explore phase, *enforced* TDD, the audit-fix loop, path-specific rules, and hooks — Claude-Code-native. Use both: spec-kit for the primitives, claude-base for the discipline.
+- **vs the [official marketplace](https://code.claude.com/docs/en/discover-plugins)** (vendor-published single-tool skills) — the marketplace ships deep per-tool coverage; claude-base is the workflow layer + a curated, billing-safe list of *which* vendor skills to trust. They pair: foundation for the rigor, vendor skills for the depth.
 
-The foundation does NOT chase vendor freshness: a 1-maintainer project can't out-update a 6,700+ skill ecosystem refreshed daily. Instead, the skills the foundation ships either (a) capture **workflow patterns** that survive across vendor releases (TDD discipline, audit-loop orchestration, deploy-safety checklists), or (b) **point** to the canonical vendor source with a thin foundation-specific discipline overlay.
+Full positioning — comparison tables, the curation engine, and where it's heading — in [**docs/POSITIONING.md**](docs/POSITIONING.md).
 
-Two adjacent ecosystems share part of the surface area :
-
-### vs [Spec Kit](https://github.com/github/spec-kit) (GitHub, Spec-Driven Development across 30+ agents)
-
-Spec Kit is the **canonical SDD primitives toolkit** : `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, `/speckit.implement` — agent-agnostic, well-documented, batteries-included. If you need spec-driven development that works across Claude, Codex, Cursor, Copilot and 30+ other agents, **use spec-kit**.
-
-claude-base is **the opinionated discipline layer on top of (or in place of) those primitives, specifically for Claude Code**. It adds what Spec Kit does not :
-
-| | spec-kit | claude-base |
-|---|---|---|
-| Scope | Multi-agent (30+) | Claude Code-native + cross-tool via [`AGENTS.md`](./AGENTS.md) |
-| Spec → Plan → Tasks → Implement | ✓ | ✓ (different command names ; same workflow shape) |
-| Explore phase (read-before-write) | — | ✓ `/work:work-explore` |
-| TDD enforced (tests-first mandatory) | — | ✓ via `tdd-enforcement` rule + `/dev:dev-tdd` |
-| Adaptive audit-fix loop (quality score) | — | ✓ `/qa:qa-loop "score 90"` |
-| Path-specific rules (TS strict, OWASP, WCAG, perf...) | — | ✓ <!-- count:rules -->32<!-- /count --> auto-activated rules |
-| Hooks wired into `settings.json` (PostToolUse tsc+eslint, gitleaks, anti-drift) | — | ✓ |
-| Anti-drift CI strategy (`counts.json`, `audit-docs.sh` firewall) | — | ✓ |
-| Stack presets with vendor-skill pointers | — | ✓ <!-- count:presets -->11<!-- /count --> presets, 3 tiers |
-
-**They are complementary, not competing.** If you adopt SDD primitives, spec-kit is the canonical choice. If you want Claude Code with deep TDD/audit/rules baked in, claude-base ships the opinionated stack. There's no clean way to package claude-base as a spec-kit extension (the rules engine, hooks wiring, and presets system have no spec-kit equivalent) — but a project can reasonably use both : spec-kit for the multi-agent SDD primitives, claude-base for the Claude-Code-side discipline.
-
-### vs the [official Claude Code marketplace](https://code.claude.com/docs/en/discover-plugins) (vendor-published skills/plugins)
-
-For deeper coverage of **specific tools** — vendor-published skills for Terraform, Postgres, Playwright, MongoDB, observability stacks, framework-specific patterns — the marketplace and community skills ship targeted depth that goes further than what a foundation could bundle. That's the design: a foundation curates **workflow integration + a trusted list**, vendor skills curate **depth on a single tool or stack**.
-
-**Recommended pattern**
-
-```
-claude-base (workflow framework + curator)   ← Explore → TDD → Audit, anti-drift, qa-loop, hooks, rules
-       +
-vendor skills (tool-specific depth)          ← Prisma, Supabase, Playwright, Grafana, MSW, PostHog, ...
-```
-
-The foundation ships <!-- count:commands -->106<!-- /count --> commands + <!-- count:agents -->45<!-- /count --> agents + <!-- count:skills -->53<!-- /count --> skills, but most skills are **thin pointers** pairing the canonical vendor source with a few foundation-specific discipline lines (security/GDPR wraps, anti-patterns, cross-skill orchestration). What's NOT pointer-shaped is the workflow layer:
-
-> A **default install ships the core only** — both the horizontal activity domains (`biz`, `legal`, `growth`) and the stack/thematic domains (`nextjs`, `flutter`, `iac`, `observability`, …) are **opt-in modules** (`claude-base add <module>`), not part of the default catalog. There are **15 modules in total** — run `claude-base modules` to list them. The totals above are the full foundation (core + modules); a fresh project gets the smaller core slice. See [`specs/horizontal-pure-modules/`](specs/horizontal-pure-modules/).
-
-- **Workflow rigor coordinated as one experience** — TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates
-- **Anti-drift counter strategy** across the entire foundation, CI-enforced via `counts.json` + a doc drift firewall (`scripts/audit-docs.sh`)
-- **<!-- count:rules -->32<!-- /count --> path-specific rules** auto-activated by file path (TypeScript strict, OWASP defaults, WCAG, Core Web Vitals, deploy-safety)
-- **PostToolUse output rewriter** for Bash + tsc/eslint (Claude Code 2.1.121+)
-- **Integrated install + update flow** via the `claude-base` CLI
-
-**How the curator role works today**: [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md) lists <!-- count:vendorSkillsValidated -->21<!-- /count --> vendor skills validated through <!-- count:marketplaceAuditPilots -->5<!-- /count --> audit pilots, organised by stack (see the *By stack* matrix) and by domain. You install the ones matching your stack; the foundation does not bundle them (vendors handle their own distribution and updates). A deterministic, **billing-safe curation engine** keeps that list honest — a **nightly, LLM-free rot-watch** ($0 tokens) flags archived/abandoned/drifted entries and a **monthly, budget-capped discovery** proposes new candidates; both are **observe-and-propose only** (see [`docs/recipes/curation-bot-deploy.md`](./docs/recipes/curation-bot-deploy.md)).
-
-**Where this is going**: see [`specs/foundation-positioning-review/phase-6-curator-bindings.md`](./specs/foundation-positioning-review/phase-6-curator-bindings.md) — the next milestone wires preset detection to per-stack vendor-skill recommendations, surfaced in a single `claude-base init` prompt instead of leaving the curation as a homework assignment.
+> **A default install ships the core only.** The horizontal activity domains (`biz`, `legal`, `growth`) and the stack/thematic domains (`nextjs`, `flutter`, `iac`, `observability`, …) are **opt-in modules** (`claude-base add <module>`) — run `claude-base modules` to list all 15. A fresh project gets the smaller core slice. See [`specs/horizontal-pure-modules/`](specs/horizontal-pure-modules/).
 
 ## What you get on disk
 
@@ -291,7 +245,7 @@ Commands are grouped into 9 domains:
 └─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
 ```
 
-### Practical example (Web)
+### Practical example
 
 ```bash
 # 1. Explore the existing system
@@ -313,27 +267,7 @@ Commands are grouped into 9 domains:
 /work:work-pr OAuth2 Google authentication
 ```
 
-### Practical example (Mobile Flutter)
-
-```bash
-# 1. Explore the existing architecture
-/work:work-explore the feature directory layout
-
-# 2. Specify the screen (User Stories + criteria)
-/work:work-specify user profile screen
-
-# 3. Plan the implementation
-/work:work-plan user profile screen
-
-# 4. Build the widget/screen in TDD
-/dev:dev-tdd UserProfileScreen with BLoC + widget tests
-
-# 5. Mobile quality audit + fix loop
-/qa:qa-loop "score 90"
-
-# 6. Open the PR
-/work:work-pr user profile screen
-```
+The shape is identical for any stack — swap the arguments (e.g. `/dev:dev-tdd UserProfileScreen with BLoC + widget tests` for a Flutter screen). The single `/work:work-flow-feature "..."` command chains all six phases for you.
 
 ## Available Templates
 
