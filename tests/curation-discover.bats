@@ -427,3 +427,15 @@ SKILLS_DIR="$BATS_TEST_DIRNAME/../.claude/skills"
     count=$(grep -c 'issue create' "$TEST_DIR/gh.log" 2>/dev/null || true)
     [ "${count:-0}" -eq 0 ]
 }
+
+@test "discover: parses a judge verdict wrapped in markdown json fences" {
+    # Models routinely fence the JSON despite the instruction; the judge must
+    # strip fences rather than discard the verdict as unparseable (found live).
+    # \x60 = backtick — kept out of the .bats source so bats can parse the file.
+    healthy_candidate "newauthor/next-skill"
+    printf '\x60\x60\x60json\n{"neutrality":"pass","fit":5,"rationale":"fenced","borderline":false,"tokensUsed":50}\n\x60\x60\x60\n' > "$TEST_DIR/llm-response.json"
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 1 ]
+    [ "$(printf '%s' "$output" | jq -r '.proposals[0].repo')" == "newauthor/next-skill" ]
+}

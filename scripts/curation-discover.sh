@@ -180,8 +180,12 @@ Repo: $repo @ $ref
 $content
 PROMPT
 )
-    if out=$(printf '%s' "$prompt" | "${_LLM[@]}" --model "$model" 2>/dev/null) \
-        && printf '%s' "$out" | jq -e '.neutrality and (.fit != null)' >/dev/null 2>&1; then
+    out=$(printf '%s' "$prompt" | "${_LLM[@]}" --model "$model" 2>/dev/null)
+    # Models routinely wrap the JSON in ```json fences (or add stray blank lines)
+    # despite the "raw JSON only" instruction. Strip fence lines defensively so a
+    # well-formed-but-fenced verdict is NOT discarded as unparseable.
+    out=$(printf '%s' "$out" | sed -e '/^[[:space:]]*```/d')
+    if printf '%s' "$out" | jq -e '.neutrality and (.fit != null)' >/dev/null 2>&1; then
         printf '%s' "$out"
     else
         curation_warn "llm judge failed/unparseable for $repo"
