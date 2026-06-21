@@ -37,6 +37,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   not work standalone — `new-project.sh` sources sibling libraries from a local
   checkout) was replaced by the verified `install.sh` path.
 
+- **Downstream security-drift detection.** `update` advances the recorded
+  version on every run but leaves `settings.json` / `scripts/hooks/` opt-in
+  (`--settings` / `--hook-scripts`), so a project could read as up-to-date while
+  running stale, **silently inert** security hooks — the worst case being hooks
+  still on the pre-stdin `$TOOL_*` env contract (PRs #330/#331), where a hook
+  like `command-validator.sh` becomes a dead pass-through. A new shared
+  `detect_security_drift` (in `lib/common.sh`) flags legacy-contract hooks and a
+  bare `mcp__*` wildcard in `permissions.allow` (an over-broad grant; valid
+  fully-qualified `mcp__server__tool` entries are left alone). It is surfaced by
+  `doctor` (new "Security drift" section) and by an advisory `update` prints
+  after a run that left those surfaces behind, pointing at
+  `update --settings --hook-scripts --force` (the `--force` is required because a
+  diverged hook is otherwise skipped as a possible local customization). The
+  detector is guarded against false positives (it reports zero drift on the
+  foundation's own modern hooks, which read stdin yet name a `TOOL_NAME` var).
+
 ### Removed
 
 - **Removed RTK (token optimizer) from the foundation entirely.** The opt-in RTK integration
