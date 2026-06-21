@@ -188,12 +188,14 @@ ANTHROPIC_API_KEY=sk-ant-xxxxxxxx
 
 ### Wrapper + shim (`/home/ubuntu/curation-bot/`)
 
-`--tools ""` (drops ~34k cached tokens → ~98% cheaper) needs a real argv, so wrap `claude` in a tiny shim and point `CURATION_LLM_CMD` at it:
+The judge needs `claude` to emit **raw JSON**, but default `claude -p` keeps its coding-agent persona and **refuses** to ("treats it as a robustness test") → every judge call comes back unparseable and **every candidate is silently rejected**. The fix is a **`--system-prompt`** that reframes `claude` as a non-interactive data tool — this is **load-bearing**, not optional. `--tools ""` (drops ~34k cached tokens → ~98% cheaper) also needs a real argv, so wrap `claude` in a tiny shim and point `CURATION_LLM_CMD` at it:
 
 ```bash
 # claude-disco
 #!/usr/bin/env bash
-exec claude -p --tools "" --strict-mcp-config "$@"
+exec claude -p --tools "" --strict-mcp-config \
+  --system-prompt "You are a non-interactive data-processing tool. Execute the user instruction exactly and output ONLY what is asked — raw text or raw JSON, never wrapped in markdown fences, never with preamble, commentary, or refusal." \
+  "$@"
 ```
 
 ```bash
