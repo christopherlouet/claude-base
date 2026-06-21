@@ -27,8 +27,12 @@
 # Usage:
 #   curation-discover.sh [--dry-run] [--digest-dir DIR] [--budget N]
 #                        [--sources FILE] [--registry FILE] [--presets-dir DIR]
-#                        [--max-candidates N] [--fit-threshold N]
+#                        [--awaiting FILE] [--max-candidates N] [--fit-threshold N]
 #                        [--model NAME] [--escalate-model NAME] [--thresholds FILE]
+#
+# Graduation veille: a cleared proposal whose repo matches an entry in the
+# awaiting-vendors list (--awaiting) is tagged graduationFor:"dev-X" — a high-
+# confidence "ready for graduation review" signal (specs/curation-graduation-veille).
 #
 # Exit: 0 = run completed (incl. budget-exhausted / no candidates); 2 = setup error.
 # =============================================================================
@@ -46,6 +50,7 @@ source "$_DISCO_DIR/lib/curation-safety.sh"
 REGISTRY="${CURATION_REGISTRY:-$_DISCO_DIR/../.claude/curation/registry.json}"
 PRESETS_DIR="${CURATION_PRESETS_DIR:-$_DISCO_DIR/../.claude/presets}"
 SOURCES="${CURATION_SOURCES:-$_DISCO_DIR/../.claude/curation/discovery-sources.json}"
+AWAITING="${CURATION_AWAITING:-$_DISCO_DIR/../.claude/curation/awaiting-vendors.json}"
 DIGEST_DIR=""
 DRY_RUN=false
 BUDGET="${CURATION_BUDGET:-200000}"
@@ -61,6 +66,7 @@ while [ $# -gt 0 ]; do
         --digest-dir) DIGEST_DIR="${2:-}"; [ -n "$DIGEST_DIR" ] || { echo "--digest-dir requires a path" >&2; exit 2; }; shift 2 ;;
         --budget) BUDGET="${2:-}"; [ -n "$BUDGET" ] || { echo "--budget requires a number" >&2; exit 2; }; shift 2 ;;
         --sources) SOURCES="${2:-}"; [ -n "$SOURCES" ] || { echo "--sources requires a path" >&2; exit 2; }; shift 2 ;;
+        --awaiting) AWAITING="${2:-}"; [ -n "$AWAITING" ] || { echo "--awaiting requires a path" >&2; exit 2; }; shift 2 ;;
         --registry) REGISTRY="${2:-}"; [ -n "$REGISTRY" ] || { echo "--registry requires a path" >&2; exit 2; }; shift 2 ;;
         --presets-dir) PRESETS_DIR="${2:-}"; [ -n "$PRESETS_DIR" ] || { echo "--presets-dir requires a path" >&2; exit 2; }; shift 2 ;;
         --max-candidates) MAX_CANDIDATES="${2:-}"; [ -n "$MAX_CANDIDATES" ] || { echo "--max-candidates requires a number" >&2; exit 2; }; shift 2 ;;
@@ -84,6 +90,24 @@ _repo_root() {
     local owner="${s%%/*}" rest="${s#*/}" repo
     repo="${rest%%/*}"
     [ -n "$owner" ] && [ -n "$repo" ] && [ "$owner" != "$rest" ] && printf '%s/%s\n' "$owner" "$repo"
+}
+
+# _graduation_for <repo> — graduation veille (specs/curation-graduation-veille).
+# Echo the first foundationSkill in AWAITING whose matchKeywords appear (substring,
+# case-insensitive) in the repo path, else empty. LLM-free + deterministic; missing
+# AWAITING file ⟹ empty (fail-safe). Never lowers a gate — only annotates a proposal
+# that already cleared trust+safety+judge.
+_graduation_for() {
+    [ -f "$AWAITING" ] || return 0
+    local repo_lc; repo_lc=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
+    local fskill kws kw
+    while IFS=$'\t' read -r fskill kws; do
+        [ -n "$fskill" ] || continue
+        for kw in $kws; do
+            [ -n "$kw" ] || continue
+            case "$repo_lc" in *"$kw"*) printf '%s' "$fskill"; return 0 ;; esac
+        done
+    done < <(jq -r '.entries[]? | "\(.foundationSkill)\t\(.matchKeywords | join(" "))"' "$AWAITING" 2>/dev/null)
 }
 
 # known_set — repo-roots already tracked (registry records + preset recs); these
@@ -165,7 +189,7 @@ candidates=$(collect_candidates)
 n_candidates=$(printf '%s\n' "$candidates" | awk 'NF' | wc -l | tr -d ' ')
 
 spent=0
-proposed=0 rejected=0 deferred=0 moat=0
+proposed=0 rejected=0 deferred=0 moat=0 graduation=0
 proposals_arr=()
 moat_arr=()
 
@@ -218,13 +242,18 @@ if [ "$n_candidates" -gt 0 ]; then
               fit:$judge.fit, rationale:$judge.rationale}')")
     elif [ "$neutrality" = "pass" ] && [ "$fit" -ge "$FIT_THRESHOLD" ]; then
         proposed=$((proposed + 1))
+        # Graduation veille: tag if this cleared candidate fills an awaiting slot.
+        grad_for=$(_graduation_for "$repo")
+        [ -n "$grad_for" ] && graduation=$((graduation + 1))
         proposals_arr+=("$(jq -cn \
             --arg repo "$repo" --arg prov "${repo%%/*}" --arg ref "$ref" \
+            --arg gradFor "$grad_for" \
             --argjson trust "$score" --argjson safety "$screen" --argjson judge "$verdict" \
             '{repo:$repo, provenance:$prov, pinnedRef:$ref, trustTrack:"community",
               trustVerdict:$trust.verdict, safetyVerdict:$safety.verdict,
               adviceNeutrality:$judge.neutrality, fit:$judge.fit,
-              rationale:$judge.rationale}')")
+              rationale:$judge.rationale,
+              graduationFor:(if $gradFor == "" then null else $gradFor end)}')")
     else
         rejected=$((rejected + 1))
     fi
@@ -246,11 +275,11 @@ exhausted=$([ "$deferred" -gt 0 ] && echo true || echo false)
 digest=$(jq -cn \
     --arg now "$NOW" --argjson cand "$n_candidates" \
     --argjson proposed "$proposed" --argjson rejected "$rejected" --argjson deferred "$deferred" \
-    --argjson moat "$moat" \
+    --argjson moat "$moat" --argjson graduation "$graduation" \
     --argjson limit "$BUDGET" --argjson spent "$spent" --argjson exhausted "$exhausted" \
     --argjson proposals "$proposals" --argjson moatSignals "$moat_signals" \
     '{generatedAt:$now, scope:{candidates:$cand},
-      counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred, moat:$moat},
+      counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred, moat:$moat, graduation:$graduation},
       budget:{limit:$limit, spent:$spent, exhausted:$exhausted},
       proposals:$proposals, moatSignals:$moatSignals}')
 
@@ -265,6 +294,15 @@ render_markdown() {
         printf '| Repo | Provenance | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
         printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
             .[] | "| \(.repo|esc) | \(.provenance|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+        printf '\n'
+    fi
+    if [ "$graduation" -gt 0 ]; then
+        printf '## 🎓 Graduation candidates (fill a foundation awaiting-vendor slot)\n\n'
+        printf 'Cleared trust+safety+judge AND match a graduatable watch-list skill. Review for command-side graduation (specs/dev-command-vendor-graduation).\n\n'
+        printf '| Repo | Graduates | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
+        printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
+            .[] | select(.graduationFor != null) |
+            "| \(.repo|esc) | \(.graduationFor|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
         printf '\n'
     fi
     if [ "$moat" -gt 0 ]; then

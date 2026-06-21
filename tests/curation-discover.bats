@@ -290,3 +290,106 @@ healthy_candidate() {
     run_discover --digest-dir "$TEST_DIR/out" --dry-run
     [ ! -f "$TEST_DIR/out/proposals.json" ]
 }
+
+# =============================================================================
+# Graduation veille — tag a cleared candidate that fills an awaiting-vendor slot
+# (specs/curation-graduation-veille). LLM-free deterministic repo-path match.
+# =============================================================================
+
+make_awaiting() {
+    jq -cn '{version:"1.0.0", entries:[
+        {foundationSkill:"dev-flutter", tech:"Flutter", matchKeywords:["flutter"]},
+        {foundationSkill:"dev-i18n",    tech:"i18n",    matchKeywords:["lingui","next-intl"]}
+    ]}' > "$TEST_DIR/awaiting.json"
+}
+
+@test "discover: tags a cleared candidate matching an awaiting slot (graduationFor)" {
+    make_awaiting
+    healthy_candidate "acme/flutter-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"solid flutter coverage","borderline":false,"tokensUsed":50}'
+    run_discover --awaiting "$TEST_DIR/awaiting.json"
+    [ "$status" -eq 0 ]
+    [[ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 1 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.proposals[0].graduationFor')" == "dev-flutter" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.counts.graduation')" -eq 1 ]]
+}
+
+@test "discover: a cleared candidate matching no awaiting slot has graduationFor null" {
+    make_awaiting
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover --awaiting "$TEST_DIR/awaiting.json"
+    [ "$status" -eq 0 ]
+    [[ "$(printf '%s' "$output" | jq -r '.proposals[0].graduationFor')" == "null" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.counts.graduation')" -eq 0 ]]
+}
+
+@test "discover: a keyword-matching repo that FAILS a gate is never tagged (bar not lowered)" {
+    make_awaiting
+    search_items '{"items":[{"full_name":"tiny/flutter-skill"}]}'
+    gh_fixture "repos/tiny/flutter-skill" "$(repo_meta 30 '2026-06-10T00:00:00Z' false MIT)"  # 30 < 500
+    gh_fixture "repos/tiny/flutter-skill/releases/latest" '{"tag_name":"v1.0.0"}'
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","tokensUsed":50}'
+    run_discover --awaiting "$TEST_DIR/awaiting.json"
+    [[ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.counts.graduation')" -eq 0 ]]
+    [ ! -f "$TEST_DIR/llm.log" ]   # rejected pre-judge, no LLM spend
+}
+
+@test "discover: missing awaiting file is fail-safe (graduationFor null, no error)" {
+    healthy_candidate "acme/flutter-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover --awaiting "$TEST_DIR/does-not-exist.json"
+    [ "$status" -eq 0 ]
+    [[ "$(printf '%s' "$output" | jq -r '.proposals[0].graduationFor')" == "null" ]]
+}
+
+@test "discover: digest renders a Graduation candidates section" {
+    make_awaiting
+    healthy_candidate "acme/flutter-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"solid","borderline":false,"tokensUsed":50}'
+    run_discover --awaiting "$TEST_DIR/awaiting.json" --digest-dir "$TEST_DIR/out"
+    grep -qiE 'graduation' "$TEST_DIR/out/proposals.md"
+    grep -q "dev-flutter" "$TEST_DIR/out/proposals.md"
+    grep -q "acme/flutter-skill" "$TEST_DIR/out/proposals.md"
+}
+
+# =============================================================================
+# awaiting-vendors.json — machine mirror of the graduatable watch-list (US-2)
+# Validates the SHIPPED file (not a synthetic fixture).
+# =============================================================================
+
+AWAITING_FILE="$BATS_TEST_DIRNAME/../.claude/curation/awaiting-vendors.json"
+SKILLS_DIR="$BATS_TEST_DIRNAME/../.claude/skills"
+
+@test "awaiting-vendors.json: valid JSON with version + entries[]" {
+    [ -f "$AWAITING_FILE" ]
+    run jq -e '.version and (.entries | type == "array") and (.entries | length > 0)' "$AWAITING_FILE"
+    [ "$status" -eq 0 ]
+}
+
+@test "awaiting-vendors.json: every entry has foundationSkill + non-empty matchKeywords[]" {
+    run jq -e '[.entries[] | select((.foundationSkill | type != "string") or (.matchKeywords | type != "array") or (.matchKeywords | length == 0))] | length == 0' "$AWAITING_FILE"
+    [ "$status" -eq 0 ]
+}
+
+@test "awaiting-vendors.json: every foundationSkill is a real foundation resource (skill|command|agent)" {
+    # Most tool-wrappers ship as a command (or agent), not a skill dir — graduation
+    # works command-side too (cf. dev-prisma). Accept any of the three.
+    local claude_dir="$BATS_TEST_DIRNAME/../.claude"
+    while IFS= read -r fskill; do
+        [ -n "$fskill" ] || continue
+        [ -d "$claude_dir/skills/$fskill" ] && continue
+        ls "$claude_dir/commands/"*/"$fskill.md" >/dev/null 2>&1 && continue
+        ls "$claude_dir/agents/"*/"$fskill.md" >/dev/null 2>&1 && continue
+        echo "missing foundation resource: $fskill" >&2; false
+    done < <(jq -r '.entries[].foundationSkill' "$AWAITING_FILE")
+}
+
+@test "discover: tags a kubernetes repo via the SHIPPED awaiting-vendors.json (real file)" {
+    healthy_candidate "acme/helm-k8s-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"k8s coverage","borderline":false,"tokensUsed":50}'
+    run_discover   # no --awaiting => uses the shipped .claude/curation/awaiting-vendors.json
+    [ "$status" -eq 0 ]
+    [[ "$(printf '%s' "$output" | jq -r '.proposals[0].graduationFor')" == "ops-k8s" ]]
+}
