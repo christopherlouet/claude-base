@@ -304,25 +304,25 @@ render_markdown() {
     if [ "$proposed" -gt 0 ]; then
         printf '## Proposed candidates\n\n'
         printf '| Repo | Provenance | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
-        printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
-            .[] | "| \(.repo|esc) | \(.provenance|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+        printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|"); def link: "[\(.)](https://github.com/\(.))";
+            .[] | "| \(.repo|link) | \(.provenance|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
         printf '\n'
     fi
     if [ "$graduation" -gt 0 ]; then
         printf '## 🎓 Graduation candidates (fill a foundation awaiting-vendor slot)\n\n'
         printf 'Cleared trust+safety+judge AND match a graduatable watch-list skill. Review for command-side graduation (specs/dev-command-vendor-graduation).\n\n'
         printf '| Repo | Graduates | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
-        printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
+        printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|"); def link: "[\(.)](https://github.com/\(.))";
             .[] | select(.graduationFor != null) |
-            "| \(.repo|esc) | \(.graduationFor|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+            "| \(.repo|link) | \(.graduationFor|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
         printf '\n'
     fi
     if [ "$moat" -gt 0 ]; then
         printf '## ⚠️ Moat-encroachment signals (strategic — NOT graduation candidates)\n\n'
         printf 'High-trust skills covering durable workflow patterns the foundation owns. Review strategically; do not auto-adopt.\n\n'
         printf '| Repo | Provenance | Fit | Why it encroaches |\n|---|---|---|---|\n'
-        printf '%s' "$moat_signals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
-            .[] | "| \(.repo|esc) | \(.provenance|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+        printf '%s' "$moat_signals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|"); def link: "[\(.)](https://github.com/\(.))";
+            .[] | "| \(.repo|link) | \(.provenance|esc) | \(.fit|esc) | \(.rationale|esc) |"'
         printf '\n'
     fi
     if [ "$proposed" -eq 0 ] && [ "$moat" -eq 0 ]; then

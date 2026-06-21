@@ -274,6 +274,8 @@ healthy_candidate() {
     run_discover --digest-dir "$TEST_DIR/out"
     grep -q "rival/explore-plan" "$TEST_DIR/out/proposals.md"
     grep -qiE 'moat|encroach' "$TEST_DIR/out/proposals.md"
+    # repo must be a clickable link, not bare owner/repo (so the issue is reviewable)
+    grep -qF "(https://github.com/rival/explore-plan)" "$TEST_DIR/out/proposals.md"
 }
 
 @test "discover: --digest-dir writes proposals.json + proposals.md" {
