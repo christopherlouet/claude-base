@@ -26,7 +26,8 @@ setup() {
 
     cat > "$TEST_DIR/fakebin/gh" <<EOF
 #!/usr/bin/env bash
-[ "\$1" = "api" ] || { echo "fake gh: bad call \$*" >&2; exit 1; }
+echo "gh \$*" >> "$TEST_DIR/gh.log"
+if [ "\$1" != "api" ]; then exit 0; fi   # non-api (e.g. issue create) → log + succeed
 case "\$2" in
   search/repositories*) cat "$TEST_DIR/fx/search.json" 2>/dev/null || { echo "fake gh: 404 search" >&2; exit 1; } ;;
   *) f="$TEST_DIR/fx/\$(printf '%s' "\$2" | tr '/' '_')"
@@ -392,4 +393,37 @@ SKILLS_DIR="$BATS_TEST_DIRNAME/../.claude/skills"
     run_discover   # no --awaiting => uses the shipped .claude/curation/awaiting-vendors.json
     [ "$status" -eq 0 ]
     [[ "$(printf '%s' "$output" | jq -r '.proposals[0].graduationFor')" == "ops-k8s" ]]
+}
+
+# =============================================================================
+# --emit-issue: surface proposals as ONE propose-only issue (mirrors the watch)
+# =============================================================================
+
+@test "discover: --emit-issue opens an issue when there are proposals" {
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"strong fit","borderline":false,"tokensUsed":50}'
+    run_discover --emit-issue
+    [ "$status" -eq 0 ]
+    [ "$(grep -c 'issue create' "$TEST_DIR/gh.log")" -eq 1 ]
+}
+
+@test "discover: --emit-issue stays silent when nothing is proposed (no-noise)" {
+    # 30 stars < 500 community bar → rejected pre-judge → zero proposals.
+    search_items '{"items":[{"full_name":"tiny/skill"}]}'
+    gh_fixture "repos/tiny/skill" "$(repo_meta 30 '2026-06-10T00:00:00Z' false MIT)"
+    gh_fixture "repos/tiny/skill/releases/latest" '{"tag_name":"v1.0.0"}'
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","tokensUsed":50}'
+    run_discover --emit-issue
+    [ "$status" -eq 0 ]
+    count=$(grep -c 'issue create' "$TEST_DIR/gh.log" 2>/dev/null || true)
+    [ "${count:-0}" -eq 0 ]
+}
+
+@test "discover: without --emit-issue no issue is created (digest-only default)" {
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$status" -eq 0 ]
+    count=$(grep -c 'issue create' "$TEST_DIR/gh.log" 2>/dev/null || true)
+    [ "${count:-0}" -eq 0 ]
 }
