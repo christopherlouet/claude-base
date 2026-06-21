@@ -33,6 +33,10 @@ cost estimation, and risks with mitigations.
 | `/dev:dev-api` | API endpoints |
 | `/ops:ops-monitoring` | Production monitoring |
 
+## See also (vendor depth)
+
+This command stays the **neutral multi-provider** layer (choosing among Anthropic/OpenAI/Google/Mistral/Cohere — a chooser no single vendor can own without bias). For **Claude-specific** integration depth (single-call vs tool-use loop vs managed agents, streaming, prompt caching, token counting, model migration, across 8 languages), pair it with the **`claude-api`** skill — Anthropic's own, already bundled in Claude Code. See [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Anthropic — `claude-api`".
+
 ---
 
 IMPORTANT: Always use environment variables for API keys.

@@ -1,35 +1,26 @@
-# Agent DEV-MCP
+# Agent DEV-MCP (pointer)
 
 Guide for creating quality MCP (Model Context Protocol) servers.
 
-## Request context
+## Context
 $ARGUMENTS
 
-## Objective
+## Delegate to the vendor toolkit
 
-Create MCP servers that let LLMs interact with external services via well-designed
-tools. Supports Python (FastMCP) and TypeScript (MCP SDK).
+`claude-base`'s prior `dev-mcp` content is **superseded** by [`anthropics/skills` › `mcp-builder`](https://github.com/anthropics/skills/tree/main/skills/mcp-builder) — the **protocol authors' own** skill. It covers MCP server design (workflows-not-endpoints, tool annotations, input validation, actionable errors, evaluation) for both Python (FastMCP) and the Node/TS SDK, at a depth and currency a hand-maintained checklist cannot match; this command wrapped a protocol the vendor owns.
 
-## Workflow
+Install:
 
-- **Research**: Study the target API (auth, rate limiting, pagination, schemas, errors)
-- **Planning**: Define tools by priority, design for workflows (not endpoints)
-- **Implementation**: Project setup (FastMCP or MCP SDK), input validation (Pydantic/Zod), actionable errors
-- **Review**: Check structure (no duplicated code), types and validation, per-tool documentation
-- **Test**: Check syntax, build, test with timeout
-- **Evaluation**: Create 10 test questions (independent, read-only, complex, verifiable)
+```bash
+# Vendor path (verify on their README):
+npx skills add anthropics/skills
 
-## Design principles
+# Fallback — clone the canonical repo:
+git clone --depth 1 https://github.com/anthropics/skills ~/dev/vendor-skills/anthropic
+ln -s ~/dev/vendor-skills/anthropic/skills/mcp-builder ./.claude/skills/mcp-builder
+```
 
-- Workflows, not endpoints (consolidate operations)
-- Return high-signal info, not exhaustive dumps
-- Natural names (human task, not API name)
-- Actionable errors that guide toward the fix
-
-## Expected output
-
-MCP server with configuration (transport, language, target API), tools implemented
-with annotations, installation instructions and evaluation results.
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Anthropic — `mcp-builder`". Reduction rationale: [`specs/graduation-supply-audit/spec.md`](../../../specs/graduation-supply-audit/spec.md).
 
 ## Related agents
 
@@ -41,12 +32,4 @@ with annotations, installation instructions and evaluation results.
 
 ---
 
-IMPORTANT: Design for workflows, not for wrapping endpoints.
-
-YOU MUST validate all inputs with Pydantic (Python) or Zod (TypeScript).
-
-YOU MUST return actionable errors that guide the user.
-
-NEVER expose internal technical details in error messages.
-
-Think hard about real use cases before defining the tools.
+YOU MUST validate all inputs (Pydantic/Zod) and return actionable errors; NEVER expose internal technical details in error messages.

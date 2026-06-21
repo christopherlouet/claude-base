@@ -101,6 +101,48 @@
       "flags": ["command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)"]
     },
     {
+      "foundationSkill": "dev-mcp",
+      "vendorId": "anthropics/skills/mcp-builder",
+      "vendorUrl": "https://github.com/anthropics/skills/tree/main/skills/mcp-builder",
+      "pinnedRef": "57546260929473d4e0d1c1bb75297be2fdfa1949",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Anthropic",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-06-21",
+      "status": "candidate",
+      "sourceAudit": "graduation-supply-audit-2026-06-21",
+      "flags": ["command-side graduated to pointer-command 2026-06-21 REDUCE (specs/graduation-supply-audit); pinnedRef tracks anthropics/skills HEAD (mcp-builder subpath)"]
+    },
+    {
+      "foundationSkill": "dev-ai-integration",
+      "vendorId": "anthropics/skills/claude-api",
+      "vendorUrl": "https://github.com/anthropics/skills/tree/main/skills/claude-api",
+      "pinnedRef": "57546260929473d4e0d1c1bb75297be2fdfa1949",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Anthropic",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-06-21",
+      "status": "candidate",
+      "sourceAudit": "graduation-supply-audit-2026-06-21",
+      "flags": ["POINT not REDUCE: dev-ai-integration kept as the NEUTRAL multi-provider chooser; claude-api (already bundled in Claude Code) is Claude-specific depth only; pinnedRef tracks anthropics/skills HEAD (claude-api subpath)"]
+    },
+    {
+      "foundationSkill": "dev-rag",
+      "vendorId": "langchain-ai/langchain-skills/langchain-rag",
+      "vendorUrl": "https://github.com/langchain-ai/langchain-skills",
+      "pinnedRef": "v0.1.0",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "LangChain",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-06-21",
+      "status": "candidate",
+      "sourceAudit": "graduation-supply-audit-2026-06-21",
+      "flags": ["POINT not REDUCE: framework-scoped (LangChain); dev-rag kept as the framework-neutral RAG layer; no-license: repo has no root LICENSE — safety screen at pin-time"]
+    },
+    {
       "foundationSkill": "ops-database",
       "vendorId": "mongodb/agent-skills",
       "vendorUrl": "https://github.com/mongodb/agent-skills",
