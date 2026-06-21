@@ -38,7 +38,7 @@ That last command chains the 6 phases automatically: Explore → Specify → Pla
 | **Solo dev** shipping side-projects with Claude Code | preset gives you stack + workflow rigor in 30s ; no copy-pasting prompts between sessions | you barely use Claude Code yet — start with the [official docs](https://code.claude.com/docs/en/overview) first |
 | **Team lead** wanting consistent Claude Code outputs across a codebase | enforces TDD + audit-loop gates in shared `.claude/` config, anti-drift counters CI-gated | your team has already built bespoke prompts you're happy with |
 | **Educator / mentor** | the 6-phase workflow is named, teachable, and the audit-loop produces a quality score | you only need ad-hoc Claude Code use |
-| **Returning user** who tried Claude Code, found it too freeform | the dispatcher CLI is small (init / update / validate / uninstall) and the foundation is fully reversible (`claude-base uninstall`) | you prefer raw `.claude/` files without a foundation layer |
+| **Returning user** who tried Claude Code, found it too freeform | the dispatcher CLI stays small and learnable, and the foundation is fully reversible (`claude-base uninstall`) | you prefer raw `.claude/` files without a foundation layer |
 
 **You don't have to learn the <!-- count:commands -->106<!-- /count --> commands.** The mandatory workflow is 5 slash-commands: `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
 
@@ -227,7 +227,7 @@ Commands are grouped into 9 domains:
 | `dev-` | <!-- count:byDomain.dev -->16<!-- /count --> | `/dev:dev-tdd`, `/dev:dev-debug`, `/dev:dev-api`, `/dev:dev-flutter`, `/dev:dev-prisma` |
 | `qa-` | <!-- count:byDomain.qa -->13<!-- /count --> | `/qa:qa-loop`, `/qa:qa-security`, `/qa:qa-perf`, `/qa:wcag-audit`, `/qa:qa-e2e` |
 | `ops-` | <!-- count:byDomain.ops -->28<!-- /count --> | `/ops:ops-deploy`, `/ops:ops-docker`, `/ops:ops-monitoring`, `/ops:ops-k8s`, `/ops:ops-rollback` |
-| `doc-` | <!-- count:byDomain.doc -->5<!-- /count --> | `/doc:doc-onboard`, `/doc:doc-explain`, `/doc:doc-changelog`, `/doc:doc-architecture` |
+| `doc-` | <!-- count:byDomain.doc -->5<!-- /count --> | `/doc:doc-onboard`, `/doc:doc-explain`, `/doc:doc-changelog`, `/doc:doc-generate` |
 | `biz-` | <!-- count:byDomain.biz -->9<!-- /count --> | `/biz:biz-model`, `/biz:biz-mvp`, `/biz:biz-pricing`, `/biz:biz-personas` |
 | `growth-` | <!-- count:byDomain.growth -->9<!-- /count --> | `/growth:growth-landing`, `/growth:growth-seo`, `/growth:growth-cro`, `/growth:growth-analytics` |
 | `data-` | <!-- count:byDomain.data -->2<!-- /count --> | `/data:data-pipeline`, `/data:data-modeling` |
@@ -239,13 +239,14 @@ Commands are grouped into 9 domains:
 
 ## Recommended Workflow
 
+The fastest way in is the built-in orchestrator — or run the six phases yourself:
+
 ```
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
-│ EXPLORE │───▶│ SPECIFY │───▶│  PLAN   │───▶│   TDD   │───▶│  AUDIT  │───▶│ COMMIT  │
-└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
+/assistant              # guided: explains the workflow and suggests the next command
+/assistant-auto "..."   # automatic: routes your request to the right workflow
 ```
 
-### Practical example
+### Practical example (one phase at a time)
 
 ```bash
 # 1. Explore the existing system
@@ -337,25 +338,6 @@ Maintenance tools without a dispatcher alias (still callable directly from a fou
 # IDE integration (VSCode, IntelliJ, Vim/Neovim)
 ./scripts/ide.sh setup vscode
 ```
-
-## Getting started in Claude Code
-
-Once installed, the fastest way to learn the workflow is the built-in orchestrator:
-
-```
-/assistant              # guided mode: explains and suggests commands
-/assistant-auto "..."   # automatic mode: routes to the right workflow
-
-# Or follow the canonical 6-step workflow
-/work:work-explore
-/work:work-specify
-/work:work-plan
-/dev:dev-tdd
-/qa:qa-loop "score 90"
-/work:work-commit
-```
-
-See [docs/QUICKSTART.md](docs/QUICKSTART.md), [docs/CHEATSHEET.md](docs/CHEATSHEET.md) and [docs/STACK-RECIPES.md](docs/STACK-RECIPES.md) for more.
 
 ## IDE Integration
 
@@ -515,11 +497,4 @@ Detail-level docs and editorial pieces that didn't make the front-door:
 
 ### Long-term direction
 
-claude-base's irreducible value is the workflow rigor (TDD, audit-loop, anti-drift) and the path-specific rules. **Domain-specific knowledge is increasingly available as vendor-published skills/plugins** in the official Claude Code marketplace. The foundation lives alongside the marketplace, not in opposition.
-
-Four mechanisms keep it aligned with that trajectory:
-
-1. **A living curation engine** (not one-off manual audits) — a deterministic, **billing-safe** system keeps the recommended list current: a **nightly LLM-free rot-watch** ($0 tokens) flags archived / abandoned / popularity-collapse / license-change / content-drift, and a **monthly, budget-capped discovery** proposes new candidates after trust + safety + advice-neutrality gates (it also flags *moat-encroachment* as a strategic signal). **Observe-never-install** — the most it does is open a draft PR / propose-only issue. Deploy: [`docs/recipes/curation-bot-deploy.md`](./docs/recipes/curation-bot-deploy.md).
-2. **Advice-neutrality over publisher-veto** — skills are judged on whether their *advice* pushes lock-in or steers you off your stack/Claude, not on who published them; the publisher is *disclosed as provenance*. Every recommendation is **pinned** and **safety-screened** (popularity ≠ safety). Output: [`docs/recipes/recommended-vendor-skills.md`](./docs/recipes/recommended-vendor-skills.md).
-3. **Recommended vendor skills per preset** — surfaced at `claude-base init`/`update`, with recommendation **drift tracked** across updates. Manual install only; the foundation does NOT auto-install third-party code.
-4. **Trajectory-driven automation** — when most vendors are on the official marketplace, automating install becomes safe. We don't today (~21% are on the official marketplace, as of last audit) but will revisit when the ratio inverts.
+The foundation lives **alongside** the marketplace, not against it: its irreducible value is the workflow rigor + path rules, while tool-specific depth increasingly ships as vendor skills. Four mechanisms keep it aligned with that trajectory (a billing-safe curation engine, advice-neutrality over publisher-veto, per-preset recommendations with drift tracking, and trajectory-driven automation) — detailed in [**docs/POSITIONING.md**](docs/POSITIONING.md#long-term-direction).
