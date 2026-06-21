@@ -26,16 +26,35 @@ source "$_EMIT_DIR/curation-common.sh"
 # shellcheck source=scripts/lib/curation-safety.sh
 source "$_EMIT_DIR/curation-safety.sh"
 
+# _curation_gh_repo — resolve the owner/repo `gh` should target, so emission does
+# NOT depend on the caller's CWD (the deploy bot runs from / via systemd, where
+# `gh` cannot infer a repo → every create silently failed). Order: CURATION_GH_REPO
+# override, else the origin remote of this checkout. Empty on failure (caller
+# falls back to no -R, preserving the old behaviour).
+_curation_gh_repo() {
+    if [ -n "${CURATION_GH_REPO:-}" ]; then printf '%s' "$CURATION_GH_REPO"; return 0; fi
+    local url
+    url=$(git -C "$_EMIT_DIR" remote get-url origin 2>/dev/null) || return 1
+    url="${url%.git}"
+    case "$url" in
+        *github.com[:/]*) url="${url##*github.com}"; printf '%s' "${url#[:/]}" ;;
+        *) return 1 ;;
+    esac
+}
+
 # emit_issue <title> <body-file> — open ONE propose-only issue. Fail-safe.
 emit_issue() {
     local title="$1" body_file="$2"
     command -v gh >/dev/null 2>&1 || { curation_warn "gh not found; skipping issue"; return 0; }
     [ -f "$body_file" ] || { curation_warn "issue body missing: $body_file"; return 0; }
-    if gh issue create --title "$title" --body-file "$body_file" --label curation >/dev/null 2>&1; then
+    local repo; repo=$(_curation_gh_repo) || repo=""
+    local -a rflag; rflag=()
+    [ -n "$repo" ] && rflag=(-R "$repo")
+    if gh issue create ${rflag[@]+"${rflag[@]}"} --title "$title" --body-file "$body_file" --label curation >/dev/null 2>&1; then
         return 0
     fi
     # Retry without the label — a repo may not have the 'curation' label yet.
-    gh issue create --title "$title" --body-file "$body_file" >/dev/null 2>&1 \
+    gh issue create ${rflag[@]+"${rflag[@]}"} --title "$title" --body-file "$body_file" >/dev/null 2>&1 \
         || curation_warn "gh issue create failed"
     return 0
 }
@@ -161,7 +180,10 @@ emit_repin_pr() {
 
     local body_file; body_file=$(mktemp 2>/dev/null)
     _repin_pr_body "$safe" "$now" > "$body_file"
-    local args=(pr create --title "chore(curation): re-pin ${n_safe} vendor skill(s)" --body-file "$body_file")
+    local repo; repo=$(_curation_gh_repo) || repo=""
+    local args=(pr create)
+    [ -n "$repo" ] && args+=(-R "$repo")
+    args+=(--title "chore(curation): re-pin ${n_safe} vendor skill(s)" --body-file "$body_file")
     [ "$draft" = "true" ] && args+=(--draft)
     gh "${args[@]}" >/dev/null 2>&1 || curation_warn "gh pr create failed"
     rm -f "$body_file"

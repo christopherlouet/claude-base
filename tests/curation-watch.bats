@@ -462,6 +462,22 @@ EOF
     [[ "$(grep -c 'issue create' "$TEST_DIR/gh.log")" -eq 1 ]]
 }
 
+@test "watch: --emit-issue targets the repo explicitly (-R), independent of CWD" {
+    # Regression for the deploy bug: the systemd bot runs from / where `gh` cannot
+    # infer a repo, so `gh issue create` silently failed every night. The emit must
+    # pass -R <repo> (resolved via CURATION_GH_REPO or the origin remote).
+    setup_emit_fakes
+    registry_one "acme/x" "v1.0.0" authority
+    gh_fixture "repos/acme/x" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/x/releases/latest" '{"tag_name":"v1.2.0"}'
+    run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_NOW=2026-06-13 \
+        CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 CURATION_THRESHOLDS="$THRESHOLDS" \
+        CURATION_GH_REPO="acme/claude-base" \
+        bash "$WATCH" --registry "$TEST_DIR/registry.json" --presets-dir "$TEST_DIR/presets" --emit-issue
+    [ "$status" -eq 0 ]
+    grep 'issue create' "$TEST_DIR/gh.log" | grep -q -- '-R acme/claude-base'
+}
+
 @test "watch: without --emit-issue NO issue is created (silent by default)" {
     setup_emit_fakes
     registry_one "acme/x" "v1.0.0" authority
