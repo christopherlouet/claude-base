@@ -44,6 +44,7 @@ COMMANDS
     init              Install the foundation in a project
     update            Update an installed project to the current foundation version
     validate          Validate the integrity of an installed project
+    doctor            Diagnose an installed project (config, deps, security drift)
     add <module>      Install a domain module (biz, legal, growth)
     remove <module>   Remove a domain module from the project
     modules           List available modules and their installation status
@@ -149,6 +150,9 @@ main() {
             ;;
         validate)
             exec "$SCRIPTS_DIR/validate.sh" "$@"
+            ;;
+        doctor)
+            exec "$SCRIPTS_DIR/doctor.sh" "$@"
             ;;
         add)
             exec "$SCRIPTS_DIR/module.sh" add "$@"

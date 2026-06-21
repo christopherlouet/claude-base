@@ -967,3 +967,48 @@ _init_legal_only_project() {
     [ "$status" -ne 0 ]
     [[ "$output" == *"--restore"* ]] || [[ "$output" == *"argument"* ]]
 }
+
+# =============================================================================
+# Security drift advisory (#12) + --hook-scripts resync behavior
+# =============================================================================
+
+@test "update.sh warns about a legacy-contract hook left behind (no resync flag)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    mkdir -p "$TEST_DIR/proj/scripts/hooks"
+    printf '#!/usr/bin/env bash\nCMD="$TOOL_INPUT"\nexit 0\n' > "$TEST_DIR/proj/scripts/hooks/command-validator.sh"
+    run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [[ "$output" == *"Security drift"* ]]
+    [[ "$output" == *"command-validator.sh"* ]]
+    [[ "$output" == *"--hook-scripts"* ]]
+}
+
+@test "update.sh --dry-run does not emit the security-drift advisory" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    mkdir -p "$TEST_DIR/proj/scripts/hooks"
+    printf '#!/usr/bin/env bash\nCMD="$TOOL_INPUT"\nexit 0\n' > "$TEST_DIR/proj/scripts/hooks/command-validator.sh"
+    run "$UPDATE_SCRIPT" --dry-run -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Security drift detected"* ]]
+}
+
+@test "update.sh --hook-scripts without --force skips a diverged hook (drift persists)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    printf '#!/usr/bin/env bash\nCMD="$TOOL_INPUT"\nexit 0\n' > "$TEST_DIR/proj/scripts/hooks/command-validator.sh"
+    run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # A diverged hook is conservatively skipped (could be a local customization),
+    # so the legacy contract — and the advisory — remain.
+    grep -q 'TOOL_INPUT' "$TEST_DIR/proj/scripts/hooks/command-validator.sh"
+    [[ "$output" == *"Security drift detected"* ]]
+}
+
+@test "update.sh --hook-scripts --force resyncs hook scripts and clears the drift" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    printf '#!/usr/bin/env bash\nCMD="$TOOL_INPUT"\nexit 0\n' > "$TEST_DIR/proj/scripts/hooks/command-validator.sh"
+    run "$UPDATE_SCRIPT" -y --hook-scripts --force "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # --force overwrites the diverged hook with the foundation's modern version
+    # (reads stdin via jq), so the post-update advisory stays silent.
+    grep -qE 'jq |/dev/stdin' "$TEST_DIR/proj/scripts/hooks/command-validator.sh"
+    [[ "$output" != *"Security drift detected"* ]]
+}

@@ -398,6 +398,25 @@ check_foundation() {
     fi
 }
 
+check_security_drift() {
+    section "6. Security drift"
+
+    # detect_security_drift prints one finding per line and returns non-zero when
+    # the project's settings.json / hook scripts have drifted behind the
+    # foundation (e.g. hooks still on the pre-stdin TOOL_* contract → silent
+    # no-op). Warn-only: drift is a stale-config smell, not a hard failure.
+    local findings
+    if findings=$(detect_security_drift "$TARGET_DIR"); then
+        check_pass "No security drift detected"
+    else
+        local line
+        while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            check_warn "$line" "Re-sync with: claude-base update --settings --hook-scripts --force"
+        done <<< "$findings"
+    fi
+}
+
 print_summary() {
     echo ""
     separator "="
@@ -465,6 +484,7 @@ main() {
     check_claude_code
     check_project_config
     check_foundation
+    check_security_drift
 
     if [[ "$OUTPUT_FORMAT" == "json" ]]; then
         # Restore stdout and stderr, then print the JSON

@@ -148,3 +148,47 @@ teardown() {
     run "$DOCTOR_SCRIPT" "$BATS_TEST_DIRNAME/.."
     [[ "$output" == *"skill"* ]] || true
 }
+
+# =============================================================================
+# Section 6: security drift (#12)
+# =============================================================================
+
+@test "doctor.sh warns on a legacy TOOL_*-env hook in the target" {
+    create_minimal_project "$TEST_DIR"
+    mkdir -p "$TEST_DIR/scripts/hooks"
+    cat > "$TEST_DIR/scripts/hooks/command-validator.sh" <<'EOF'
+#!/usr/bin/env bash
+CMD="$TOOL_INPUT"
+exit 0
+EOF
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *"command-validator.sh"* ]]
+    [[ "$output" == *"drift"* ]] || [[ "$output" == *"Security"* ]]
+}
+
+@test "doctor.sh warns on a bare mcp__* wildcard in permissions.allow" {
+    skip_if_no_jq
+    create_minimal_project "$TEST_DIR"
+    cat > "$TEST_DIR/.claude/settings.json" <<'EOF'
+{ "permissions": { "allow": ["Read", "mcp__*"] } }
+EOF
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *"mcp-allow"* ]]
+}
+
+@test "doctor.sh reports no security drift on a clean project" {
+    skip_if_no_jq
+    create_minimal_project "$TEST_DIR"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    # Assert the explicit clean verdict, not just the (always-printed) section title.
+    [[ "$output" == *"No security drift detected"* ]]
+}
+
+@test "doctor.sh --json stays valid with the security-drift section" {
+    skip_if_no_jq
+    create_minimal_project "$TEST_DIR"
+    mkdir -p "$TEST_DIR/scripts/hooks"
+    printf '#!/usr/bin/env bash\nCMD="$TOOL_INPUT"\n' > "$TEST_DIR/scripts/hooks/x.sh"
+    run "$DOCTOR_SCRIPT" --json "$TEST_DIR"
+    echo "$output" | jq -e '.checks' > /dev/null
+}

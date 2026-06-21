@@ -1961,6 +1961,22 @@ main() {
         if [[ -n "$ACTIVE_PRESET_FILE" ]]; then
             record_recommendations_snapshot "$ACTIVE_PRESET_FILE" "$TARGET_DIR" || true
         fi
+
+        # Security drift (#12): the version stamp above always advances, but
+        # settings.json / hook scripts are opt-in (--settings / --hook-scripts),
+        # so a project can read as up-to-date while running hooks still on the
+        # pre-stdin TOOL_* contract (silent no-op). Check the POST-update state:
+        # a run that re-synced those surfaces is clean and stays silent; a
+        # default run that left them behind is warned and pointed at the flags.
+        # Advisory only — never blocks, never changes the version stamp.
+        local _drift
+        if ! _drift="$(detect_security_drift "$TARGET_DIR")"; then
+            section "Security drift detected"
+            printf '%s\n' "$_drift"
+            # --force is required: a diverged hook script is skipped as a conflict
+            # otherwise (settings.json is replaced by --settings on its own).
+            warning "settings.json / hook scripts are behind the foundation despite the version bump. Re-sync with: claude-base update --settings --hook-scripts --force"
+        fi
     fi
 }
 

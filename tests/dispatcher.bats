@@ -281,3 +281,15 @@ teardown() {
     [ "$status" -eq 0 ]
     [[ "$output" != *"new-project.sh"* ]]
 }
+
+@test "dispatcher: doctor verb forwards to doctor.sh" {
+    run "$DISPATCHER" doctor --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"USAGE"* ]] || [[ "$output" == *"iagnos"* ]]
+}
+
+@test "dispatcher: help lists the doctor verb" {
+    run "$DISPATCHER"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"doctor"* ]]
+}
