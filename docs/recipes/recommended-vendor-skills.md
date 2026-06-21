@@ -148,6 +148,55 @@ git clone --depth 1 https://github.com/apollographql/skills ~/dev/vendor-skills/
 
 ---
 
+### Anthropic — `mcp-builder` (dev-mcp graduation)
+
+**Covers**: building MCP (Model Context Protocol) servers — workflows-not-endpoints design, tool annotations, input validation, actionable errors, evaluation, for Python (FastMCP) and the Node/TS SDK.
+
+**When to install**: any project building MCP servers. The foundation's `dev-mcp` command is now a **pointer** to this skill (the protocol authors' own).
+
+**Pair with**: nothing extra — this is the canonical depth.
+
+**Install** (verify on their README):
+```bash
+npx skills add anthropics/skills
+# Fallback: git clone --depth 1 https://github.com/anthropics/skills ~/dev/vendor-skills/anthropic
+# then symlink skills/mcp-builder into ./.claude/skills/
+```
+
+**Provenance & advice-neutrality**: Anthropic (the protocol authors); runtime-neutral (Python + TS), Apache-2.0 (per-skill).
+
+---
+
+### Anthropic — `claude-api` (dev-ai-integration companion)
+
+**Covers**: Claude API integration depth — single call vs tool-use loop vs managed agents, streaming, prompt caching, token counting, model migration, across 8 languages.
+
+**When to install**: **already bundled in Claude Code** — no install needed; invoke the `claude-api` skill directly. The foundation's `dev-ai-integration` stays the **neutral multi-provider chooser** (Anthropic/OpenAI/Google/Mistral/Cohere) and points here for Claude-specific depth.
+
+**Pair with**: claude-base's `dev-ai-integration` (provider selection, rate-limit/retry, cost monitoring — provider-neutral).
+
+**Provenance & advice-neutrality**: Anthropic; Claude-specific by nature (use the neutral chooser to decide *whether* Claude fits first).
+
+---
+
+### LangChain — `langchain-rag` (dev-rag companion)
+
+**Covers**: the RAG pipeline within LangChain/LangGraph — loaders, embeddings, vector stores, retrieval.
+
+**When to install**: projects on **LangChain/LangGraph**. The foundation's `dev-rag` stays the **framework-neutral** RAG layer (chunking, embedding choice, vector-store selection, faithfulness metrics) and points here for LangChain depth. **Do NOT** treat it as framework-agnostic RAG (it is LangChain-scoped).
+
+**Pair with**: claude-base's `dev-rag` (framework-neutral pipeline + evaluation).
+
+**Install** (verify on their README):
+```bash
+git clone --depth 1 https://github.com/langchain-ai/langchain-skills ~/dev/vendor-skills/langchain
+# Symlink the langchain-rag skill into ./.claude/skills/
+```
+
+**Provenance & advice-neutrality**: LangChain (open-source, provider-agnostic framework); no root LICENSE file at pin time — track.
+
+---
+
 ### Vercel — `vercel-labs/agent-skills`
 
 **Covers**: `react-best-practices` (40+ rules across 8 categories from Vercel Engineering), View Transitions, React Composition Patterns, Web Design Guidelines, Next.js patterns.

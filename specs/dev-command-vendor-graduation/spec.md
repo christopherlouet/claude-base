@@ -84,9 +84,13 @@ foundation content — without falsely implying a vendor exists today.
 > `ops-proxmox`, `ops-opnsense`) are now in `.claude/curation/awaiting-vendors.json` (graduation
 > veille); the concept-level ones (`dev-mcp`, `dev-rag`, `dev-ai-integration`) are watchable in
 > doctrine but await a content-based matcher (repo-path keywords have too-low recall for them).
-> The **only** permanent category is the foundation's **own workflow/discipline** (TDD, audit
-> loop, Explore→Specify→Plan, verification/security) — and a vendor encroaching there is the
-> discover **moat-WARNING** signal, not a graduation.
+> There are **two** permanent (non-graduatable) categories: (1) the foundation's **own
+> workflow/discipline** (TDD, audit loop, Explore→Specify→Plan, verification/security) — a vendor
+> encroaching there is the discover **moat-WARNING**, not a graduation; and (2) a **neutral
+> multi-vendor _chooser_ layer** that arbitrates between competing vendors (`dev-auth` across
+> better-auth/Clerk/Supabase/…; `dev-ai-integration` across Anthropic/OpenAI/Google/…) — no vendor
+> can own that neutrally, so it **POINTs** to vendor depth but never fully graduates (added by
+> `specs/graduation-supply-audit`, 2026-06-21).
 
 ### P3 — Curation traceability
 

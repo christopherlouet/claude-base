@@ -33,6 +33,10 @@ vector database schema, documented pipeline and evaluation results.
 | `/ops:ops-database` | DB configuration |
 | `/qa:qa-perf` | System performance |
 
+## See also (vendor depth)
+
+This command stays the **framework-neutral** RAG layer (chunking, embeddings, vector-store choice, retrieval strategy, faithfulness metrics — independent of any one framework). If your project is on **LangChain/LangGraph**, pair it with [`langchain-ai/langchain-skills` › `langchain-rag`](https://github.com/langchain-ai/langchain-skills) — LangChain's own skill for the loaders/embeddings/vector-store pipeline. See [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"LangChain — `langchain-rag`".
+
 ---
 
 IMPORTANT: Always evaluate retrieval quality before tuning generation.

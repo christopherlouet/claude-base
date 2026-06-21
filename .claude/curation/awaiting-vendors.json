@@ -1,48 +1,62 @@
 {
-  "_comment": "Machine-readable 'graduatable watch-list': foundation resources (skill OR command OR agent) still maintained full-impl in-house because NO vendor has cleared the curation bar yet. DOCTRINE (specs/dev-command-vendor-graduation): classify by KIND, not popularity. A resource that wraps an EXTERNAL TOOL is graduatable and belongs here — popularity only changes the probability/timeline a vendor emerges, never the category (a niche tool like Proxmox is low-probability, NOT permanent). Only resources that encode the foundation's OWN workflow/discipline (TDD, audit loop, Explore->Specify->Plan, verification/security) are permanent — and a vendor encroaching there is the curation-discover.sh moat-WARNING signal, not a graduation. scripts/curation-discover.sh tags any cleared proposal whose repo path matches an entry's matchKeywords as graduationFor that foundationSkill; LLM-free, deterministic, never lowers a gate. Fragmentation is NOT a blocker: a split-tooling domain (e.g. k8s = helm+kubectl+kustomize) graduates to a '+'-joined multi-skill vendor bundle, which the registry already supports. matchKeywords are deliberately specific product/library names (precision over recall). Concept-level wrappers without a stable product name in repo paths (dev-mcp, dev-rag, dev-ai-integration) are watchable in doctrine but omitted here: repo-path keyword match has too-low recall for them (e.g. 'rag' matches 'storage') — revisit with a content-based matcher.",
-  "version": "1.0.0",
+  "_comment": "Machine-readable 'graduatable watch-list': foundation resources (skill OR command OR agent) still maintained full-impl because no vendor has cleared the curation bar yet. DOCTRINE (specs/dev-command-vendor-graduation, refined by specs/graduation-supply-audit 2026-06-21): classify by KIND, not popularity. A resource that wraps an EXTERNAL TOOL is graduatable and belongs here — niche/fragmentation only changes the probability/timeline, never the category. TWO permanent (non-graduatable) categories exist and are NOT listed here: (1) the foundation's own workflow/discipline (TDD, audit, Explore->Specify->Plan, verification/security); (2) a NEUTRAL multi-vendor CHOOSER layer that arbitrates between competing vendors (e.g. dev-auth across better-auth/Clerk/Supabase; dev-ai-integration across Anthropic/OpenAI/Google) — no vendor can own that neutrally, so it POINTs to vendor depth but never graduates. Concept-level wrappers with a known AUTHORITY target (dev-mcp->mcp-builder, dev-ai-integration->claude-api, dev-rag->langchain-rag) are NOT here either: they graduate on sight, no discovery needed. scripts/curation-discover.sh tags any cleared proposal whose repo path matches an entry's matchKeywords as graduationFor that foundationSkill; LLM-free, deterministic, never lowers a gate. currentBest/bar are the 2026-06-21 audit snapshot (advisory only).",
+  "version": "1.1.0",
   "entries": [
     {
       "foundationSkill": "dev-flutter",
       "tech": "Flutter",
       "matchKeywords": ["flutter"],
-      "graduationTrigger": "a Flutter-team or >=bar community agent-skill appears -> registry candidate -> REDUCE command, POINT agent"
-    },
-    {
-      "foundationSkill": "dev-auth",
-      "tech": "auth",
-      "matchKeywords": ["better-auth", "betterauth", "lucia-auth", "nextauth", "authjs"],
-      "graduationTrigger": "a neutral auth meta-skill of comparable breadth across better-auth/Lucia/NextAuth/Clerk/Supabase appears (else permanent)"
+      "currentBest": "vp-k/flutter-craft (~10 stars, unlicensed) — broad match but tiny; no authority supply",
+      "bar": "authority skill, OR community >=500 stars + license + breadth (widgets/state/arch/test)"
     },
     {
       "foundationSkill": "dev-i18n",
       "tech": "i18n",
       "matchKeywords": ["lingui", "i18next", "next-intl"],
-      "graduationTrigger": "a broad i18n vendor skill appears, or the pack narrows to Lingui-only -> POINT"
+      "currentBest": "lingui/skills (authority but single-library, already curated); no broad neutral i18n skill exists",
+      "bar": "a broad neutral i18n skill (i18next/formatjs org), or narrow the pack to Lingui-only -> POINT"
     },
     {
       "foundationSkill": "ops-k8s",
       "tech": "Kubernetes",
       "matchKeywords": ["kubernetes", "k8s", "helm", "kubectl", "kustomize"],
-      "graduationTrigger": "a single k8s agent-skill OR a '+'-joined bundle (helm+kubectl+kustomize) clears the bar; fragmentation is not a blocker (registry supports multi-skill vendorId). Deep-dive flagged: define the target bundle composition."
+      "currentBest": "LukasNiessen/kubernetes-skill (KubeShark, ~239 stars, neutral, broad — already covers helm+kustomize, so NO bundle needed)",
+      "bar": "KubeShark crosses ~500 stars, OR a CNCF/tool-org authority skill appears"
+    },
+    {
+      "foundationSkill": "ops-docker",
+      "tech": "Docker",
+      "matchKeywords": ["docker", "dockerfile"],
+      "currentBest": "akin-ozer/cc-devops-skills (~236 stars, neutral, covers Docker + CI in one suite)",
+      "bar": "cc-devops-skills crosses ~500 stars (would graduate ops-docker AND ops-ci together), OR Docker Inc ships a skill"
+    },
+    {
+      "foundationSkill": "ops-ci",
+      "tech": "CI/CD (GitHub Actions / GitLab CI)",
+      "matchKeywords": ["github-actions", "gitlab-ci", "devops", "cicd"],
+      "currentBest": "akin-ozer/cc-devops-skills (~236 stars, covers Actions + GitLab CI)",
+      "bar": "cc-devops-skills crosses ~500 stars, OR GitHub ships an Actions skill"
     },
     {
       "foundationSkill": "dev-neovim",
       "tech": "Neovim",
       "matchKeywords": ["neovim", "nvim"],
-      "graduationTrigger": "a Neovim agent-skill clears the bar -> graduate dev-neovim AND qa-neovim together (same tech)"
+      "currentBest": "julianobarbosa/claude-code-skills (~83 stars, broad but scoped to 'this config')",
+      "bar": "crosses ~500 stars AND reframed as a generic referent; graduate dev-neovim + qa-neovim together"
     },
     {
       "foundationSkill": "ops-proxmox",
       "tech": "Proxmox VE",
       "matchKeywords": ["proxmox"],
-      "graduationTrigger": "low-probability (niche homelab audience), NOT permanent — a Proxmox skill clearing the bar graduates it"
+      "currentBest": "basher83/lunar-claude (~21 stars) — niche, thin supply",
+      "bar": "community >=500 stars (low-probability audience, NOT permanent)"
     },
     {
       "foundationSkill": "ops-opnsense",
       "tech": "OPNsense",
       "matchKeywords": ["opnsense"],
-      "graduationTrigger": "low-probability (niche), NOT permanent — an OPNsense skill clearing the bar graduates it"
+      "currentBest": "NO-SUPPLY (2026-06-21): only MCP servers + a pre-1.0 unstable Terraform provider; no curatable skill",
+      "bar": "a stable OPNsense skill or stable TF provider appears (low-priority watch)"
     }
   ]
 }
