@@ -16,13 +16,17 @@ _A real `curl | bash` install + `claude-base init` scaffolding the foundation in
 
 ## Try it (30 seconds)
 
+**Requires:** the [Claude Code CLI](https://code.claude.com/docs/en/overview) (the `claude` command), plus `git` and `jq` on your PATH (`claude-base init` reads JSON manifests with `jq`).
+
 ```bash
 # 1. Install the foundation (clones to ~/.local/share/claude-base, symlinks to ~/.local/bin)
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
+claude-base version          # ✓ should print: claude-base v5.0.0
 
 # 2. Install into a project (auto-detects the stack, picks the right preset)
 claude-base init --preset nextjs ./my-app
 # or just: claude-base init ./existing-project   (interactive, auto-detects)
+# ✓ prints a summary of the .claude/ files written into the project
 
 # 3. Open Claude Code in the project and run the canonical workflow
 cd ./my-app && claude
@@ -40,7 +44,7 @@ That last command chains the 6 phases automatically: Explore → Specify → Pla
 | **Educator / mentor** | the 6-phase workflow is named, teachable, and the audit-loop produces a quality score | you only need ad-hoc Claude Code use |
 | **Returning user** who tried Claude Code, found it too freeform | the dispatcher CLI stays small and learnable, and the foundation is fully reversible (`claude-base uninstall`) | you prefer raw `.claude/` files without a foundation layer |
 
-**You don't have to learn the <!-- count:commands -->106<!-- /count --> commands.** The mandatory workflow is 5 slash-commands: `/work:work-explore`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
+**You don't have to learn the <!-- count:commands -->106<!-- /count --> commands.** The core loop is six slash-commands — one per phase: `/work:work-explore`, `/work:work-specify`, `/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop`, `/work:work-pr`. The rest are domain-specific (CI, a11y, payment, GDPR, etc.) and either auto-trigger via path rules or stay one slash away when relevant.
 
 ## How it compares
 
@@ -90,7 +94,7 @@ Full catalogue: [Docusaurus reference](https://christopherlouet.github.io/claude
 
 ## The 6-phase workflow in action
 
-After install, you `cd ./my-app && claude` and the foundation drives the workflow (the [top demo](#claude-base) is the real install, recorded in an isolated Docker container — reproducible, scaffolding under [`website/demo/`](./website/demo/)):
+After install, you `cd ./my-app && claude` and the foundation drives the workflow (the GIF at the top of this page is the real install, recorded in an isolated Docker container — reproducible, scaffolding under [`website/demo/`](./website/demo/)):
 
 ```
 > /work:work-flow-feature "add a /counter route with optimistic UI"
@@ -115,7 +119,7 @@ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/i
 
 This clones the foundation to `~/.local/share/claude-base` and symlinks the
 dispatcher into `~/.local/bin/claude-base`. The installer never runs as root,
-never modifies your shell rc files, and only requires `git`. After install:
+never modifies your shell rc files, and needs only `git` to run (the next step, `claude-base init`, additionally needs `jq` — see [Requirements](#try-it-30-seconds)). After install:
 
 ```bash
 claude-base init --preset fastapi ./my-api      # Python backend
