@@ -16,7 +16,7 @@ Find here the answers to the most common questions about claude-base.
 - **<!-- count:commands -->106<!-- /count --> commands** organized by domain (WORK, DEV, QA, OPS, etc.)
 - **<!-- count:agents -->45<!-- /count --> agents** specialized with isolated context
 - **<!-- count:skills -->53<!-- /count --> skills** with automatic triggering
-- **<!-- count:rules -->31<!-- /count --> rules** contextual per language
+- **<!-- count:rules -->32<!-- /count --> rules** contextual per language
 - A structured workflow: **Explore → Specify → Plan → TDD → Audit → Commit**
 
 ### What's the difference with standard Claude Code?
@@ -27,7 +27,7 @@ Find here the answers to the most common questions about claude-base.
 | Workflow | Free | Structured (Explore → Plan → TDD) |
 | Agents | No | <!-- count:agents -->45<!-- /count --> agents with isolated context |
 | Skills | No | <!-- count:skills -->53<!-- /count --> automatic skills |
-| Rules | Manual | <!-- count:rules -->31<!-- /count --> rules per language |
+| Rules | Manual | <!-- count:rules -->32<!-- /count --> rules per language |
 | Templates | No | Spec, Plan, Tasks |
 
 ### How to install claude-base?
