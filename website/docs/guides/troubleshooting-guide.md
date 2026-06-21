@@ -199,6 +199,36 @@ Add in `.claude/settings.local.json` (not committed):
 }
 ```
 
+### Security drift after an update (version bumped, hooks still stale)
+
+`claude-base update` advances the recorded version (`.claude/foundation.json`)
+on every run, but it leaves `settings.json` and `scripts/hooks/` **opt-in**
+(behind `--settings` / `--hook-scripts`) so it never clobbers local
+customizations. The side effect: a project can read as the latest version while
+still running hook scripts from an older vintage. The most dangerous case is the
+**stdin contract change** (CLI 2.1.76+): old hooks read their payload from
+`$TOOL_INPUT`/`$TOOL_NAME` env vars that are no longer set, so they **silently
+no-op** — a screen like `command-validator.sh` becomes a dead pass-through
+while still appearing wired.
+
+Detection:
+
+```bash
+claude-base doctor ./my-project   # section "6. Security drift"
+```
+
+`update` also prints a "Security drift detected" advisory at the end of a run
+that left these surfaces behind. To re-sync (overwrites diverged hook scripts
+and replaces `settings.json` — back up local hook customizations first):
+
+```bash
+claude-base update --settings --hook-scripts --force ./my-project
+```
+
+`--force` is required because a diverged hook is otherwise skipped as a possible
+local customization. An interactive `update --hook-scripts` (without `-y`) lets
+you resolve each conflict individually instead.
+
 ---
 
 ## 3. Quick diagnosis

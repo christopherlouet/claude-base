@@ -335,3 +335,113 @@ teardown() {
     [ "$status" -ne 0 ]
     [[ "$output" == *"jq"* ]]
 }
+
+# =============================================================================
+# Security drift detection (#12): legacy hook contract + invalid mcp__ allow
+# =============================================================================
+
+# Write a hook script reading tool input from the legacy TOOL_* env contract.
+_write_legacy_hook() {
+    cat > "$1" <<'EOF'
+#!/usr/bin/env bash
+# legacy: reads the payload from an environment variable, never from stdin
+CMD="$TOOL_INPUT"
+case "$CMD" in
+  *rm\ -rf*) echo "blocked"; exit 2 ;;
+esac
+exit 0
+EOF
+}
+
+# Write a hook script reading tool input from stdin via jq (modern contract).
+_write_modern_hook() {
+    cat > "$1" <<'EOF'
+#!/usr/bin/env bash
+INPUT=$(cat)
+TOOL_NAME=$(printf '%s' "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null) || exit 0
+CMD=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null) || exit 0
+exit 0
+EOF
+}
+
+@test "hook_uses_legacy_contract: true for a TOOL_*-env hook with no stdin read" {
+    _write_legacy_hook "$TEST_DIR/legacy.sh"
+    run hook_uses_legacy_contract "$TEST_DIR/legacy.sh"
+    [ "$status" -eq 0 ]
+}
+
+@test "hook_uses_legacy_contract: false for a stdin/jq hook (even one naming a TOOL_NAME var)" {
+    _write_modern_hook "$TEST_DIR/modern.sh"
+    run hook_uses_legacy_contract "$TEST_DIR/modern.sh"
+    [ "$status" -ne 0 ]
+}
+
+@test "hook_uses_legacy_contract: false for a hook that reads no tool input at all" {
+    printf '#!/usr/bin/env bash\necho hello\nexit 0\n' > "$TEST_DIR/noinput.sh"
+    run hook_uses_legacy_contract "$TEST_DIR/noinput.sh"
+    [ "$status" -ne 0 ]
+}
+
+@test "detect_security_drift: flags a legacy-contract hook in the target" {
+    mkdir -p "$TEST_DIR/scripts/hooks" "$TEST_DIR/.claude"
+    _write_legacy_hook "$TEST_DIR/scripts/hooks/command-validator.sh"
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"command-validator.sh"* ]]
+    [[ "$output" == *"hook-contract"* ]]
+}
+
+@test "detect_security_drift: flags the bare mcp__* wildcard in permissions.allow" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude"
+    cat > "$TEST_DIR/.claude/settings.json" <<'EOF'
+{ "permissions": { "allow": ["Read", "mcp__*", "Bash"] } }
+EOF
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"mcp-allow"* ]]
+    [[ "$output" == *"mcp__*"* ]]
+}
+
+@test "detect_security_drift: does NOT flag fully-qualified mcp__ grants (valid)" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude"
+    cat > "$TEST_DIR/.claude/settings.json" <<'EOF'
+{ "permissions": { "allow": ["Read", "mcp__github__create_issue", "mcp__filesystem__read_text_file"] } }
+EOF
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -eq 0 ]
+}
+
+@test "hook_uses_legacy_contract: a 'jq' mention in a COMMENT does not mask legacy drift" {
+    cat > "$TEST_DIR/sneaky.sh" <<'EOF'
+#!/usr/bin/env bash
+# we used to pipe this through jq from /dev/stdin
+CMD="$TOOL_INPUT"
+exit 0
+EOF
+    run hook_uses_legacy_contract "$TEST_DIR/sneaky.sh"
+    [ "$status" -eq 0 ]
+}
+
+@test "detect_security_drift: clean target (modern hooks, no mcp allow) returns 0" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/scripts/hooks" "$TEST_DIR/.claude"
+    _write_modern_hook "$TEST_DIR/scripts/hooks/command-validator.sh"
+    echo '{ "permissions": { "allow": ["Read", "Bash"] } }' > "$TEST_DIR/.claude/settings.json"
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -eq 0 ]
+}
+
+@test "detect_security_drift: no settings.json and no hooks dir is a silent no-op" {
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "detect_security_drift: the foundation's own current hooks report ZERO drift" {
+    # Anti-false-positive guard: the modern foundation must never flag itself
+    # (covers the base-integrity-check.sh TOOL_NAME=$(jq ...) trap).
+    run detect_security_drift "$BASE_DIR"
+    [ "$status" -eq 0 ]
+}

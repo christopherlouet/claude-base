@@ -35,7 +35,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 # bin/claude-base case @ ~line 120
 # add/remove/modules shipped by specs/foundation-modules S2
 # shellcheck disable=SC2034  # consumed by audit_verbs via is_in_array nameref
-KNOWN_VERBS=(init update validate preset add remove modules uninstall version help)
+KNOWN_VERBS=(init update validate doctor preset add remove modules uninstall version help)
 
 # scripts/new-project.sh @ lines 258-337
 # shellcheck disable=SC2034  # consumed by _audit_flags_pass via nameref

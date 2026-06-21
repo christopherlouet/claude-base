@@ -896,6 +896,81 @@ enable_error_handler() {
 }
 
 # =============================================================================
+# Security drift detection (downstream projects, #12)
+# =============================================================================
+
+# Returns 0 (true) if a hook script still reads its tool payload from the legacy
+# TOOL_* environment contract instead of stdin JSON. Since CLI 2.1.76 (foundation
+# PRs #330/#331) hooks receive their input as JSON on stdin (.tool_input.*); a
+# stale script reading $TOOL_INPUT/$TOOL_CONTENT/... silently no-ops because the
+# env var is never set — so a security hook (command-validator, gitleaks) becomes
+# a dead pass-through. We classify a script as modern as soon as it reads stdin
+# (jq / cat / /dev/stdin), which avoids false-positiving on modern scripts that
+# merely *name* a variable TOOL_NAME after parsing it from stdin.
+# Arguments: $1 - path to the hook script
+hook_uses_legacy_contract() {
+    local file="$1"
+    [ -f "$file" ] || return 1
+    # Strip comment-only lines so a stray mention in a comment can't flip the
+    # classification (a `# jq ...` note must not make a legacy hook look modern).
+    local code
+    code=$(grep -vE '^[[:space:]]*#' "$file" 2>/dev/null || true)
+    # Modern hooks read their JSON payload from stdin. Anchor on real stdin-read
+    # idioms — NOT a bare "jq" (which can sit in a comment or a string and does
+    # not by itself prove the input came from stdin).
+    if printf '%s' "$code" | grep -qE '\$\(cat\b|/dev/stdin|mapfile\b|readarray\b'; then
+        return 1
+    fi
+    # No stdin read, yet pulls the payload from a TOOL_* (or CLAUDE_TOOL_*) env
+    # var → legacy contract that will silently no-op.
+    if printf '%s' "$code" | grep -qE '\$\{?(CLAUDE_)?TOOL_(INPUT|CONTENT|FILE_PATH|FILE|NAME)\b'; then
+        return 0
+    fi
+    return 1
+}
+
+# Scans a downstream project for security configuration that has drifted behind
+# the foundation, printing one finding per line to stdout. Detects:
+#   - hook scripts still on the legacy TOOL_* env contract (silent no-op)
+#   - an mcp__* entry in permissions.allow (invalid: mcp__ wildcards don't belong
+#     in allow rules)
+# Returns 1 if any drift was found, 0 if the project is clean (or has nothing to
+# scan). Read-only; never mutates the target.
+# Arguments: $1 - target project directory
+detect_security_drift() {
+    local target="$1"
+    local count=0
+    local f
+
+    local hooks_dir="$target/scripts/hooks"
+    if [ -d "$hooks_dir" ]; then
+        for f in "$hooks_dir"/*.sh; do
+            [ -e "$f" ] || continue
+            if hook_uses_legacy_contract "$f"; then
+                printf 'hook-contract: %s reads tool input from a TOOL_* env var (pre-stdin contract) — it will silently no-op; re-sync with `update --hook-scripts --force`\n' "$(basename "$f")"
+                count=$((count + 1))
+            fi
+        done
+    fi
+
+    local settings="$target/.claude/settings.json"
+    if [ -f "$settings" ] && command_exists jq; then
+        # Only the bare "mcp__*" wildcard is flagged: it grants EVERY tool of
+        # EVERY MCP server in one rule (overly broad). Fully-qualified grants
+        # like "mcp__github__create_issue" are the normal, valid form and must
+        # NOT be flagged.
+        local rule
+        while IFS= read -r rule; do
+            [ -z "$rule" ] && continue
+            printf 'mcp-allow: bare "%s" wildcard in permissions.allow grants every MCP tool — scope it to specific mcp__server__tool entries\n' "$rule"
+            count=$((count + 1))
+        done < <(jq -r '[.permissions.allow[]? | select(. == "mcp__*")] | .[]' "$settings" 2>/dev/null || true)
+    fi
+
+    [ "$count" -eq 0 ]
+}
+
+# =============================================================================
 # Function exports for subshells
 # =============================================================================
 
@@ -910,3 +985,4 @@ export -f count_agents count_skills count_hooks count_templates show_foundation_
 export -f on_error enable_error_handler
 export -f cache_init cache_valid cache_read cache_write
 export -f clean_claude_dirs rewrite_claude_md_paths ensure_claude_md_imports
+export -f hook_uses_legacy_contract detect_security_drift

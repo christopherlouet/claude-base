@@ -58,6 +58,12 @@ paths:
 - Publish per-release `SHA256SUMS` (computed on the tagged commit so they never drift from what ships) and document the verify step; fetch the script from the **same tag** as the checksum, not from `main`.
 - Treat `curl URL | sudo sh` as a hard no — it combines unverified code with privilege escalation.
 
+## Security-config propagation (downstream drift)
+
+- A version bump is NOT a security bump: `update` advances the recorded version but leaves `settings.json` / `scripts/hooks/` opt-in, so a downstream project can run stale, inert security hooks while reading as up-to-date.
+- The worst case is a **hook contract drift**: hooks reading the old `$TOOL_*` env vars (pre-stdin) silently no-op — a screen like `command-validator.sh` becomes a dead pass-through. A bare `mcp__*` wildcard in `permissions.allow` is also flagged (over-broad: it grants every MCP tool; scope to `mcp__server__tool`).
+- Run `claude-base doctor` (section "Security drift") to detect it; re-sync with `update --settings --hook-scripts --force` (overwrites diverged hooks). The `update` advisory flags this automatically after a drifted run.
+
 ## Authentication
 
 - Hash passwords with bcrypt or argon2
