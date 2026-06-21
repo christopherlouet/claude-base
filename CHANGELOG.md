@@ -11,6 +11,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **`install.sh --ref <tag>`: release pinning.** The one-liner installer can now
+  pin to a specific tested release (e.g. `--ref v5.0.0`) instead of always
+  cloning the moving `main` tip. A pinned install **stays pinned** across
+  `--update` — it never silently jumps to `main`; pass `--ref <newtag>` to move
+  it, or `--ref main` to return to the latest. Omitting `--ref` keeps the exact
+  previous behavior (clone `main`), so existing one-liners are unaffected. The
+  pin is recorded under `.git/claude-base-ref` (so it never shows up in
+  `git status`), and `CLAUDE_BASE_REPO_URL` lets the test suite exercise the
+  clone/update paths against a local fixture repo, fully offline.
+
+### Security
+
+- **Releases now publish a `SHA256SUMS` asset, enabling verify-before-execute.**
+  `release.yml` computes the sha256 of `install.sh` and a pinned source tarball
+  on the tagged commit (so the checksums can never drift from what ships) and
+  attaches `SHA256SUMS` to the GitHub Release. The README and release notes now
+  document a **pinned + verified** install path (download the tagged `install.sh`
+  → `sha256sum --check` → run), honoring the project's own
+  `.claude/rules/security.md` "download → verify → execute" rule — which a repo
+  hook already enforces against `curl … | sh` in agent sessions. The release
+  notes' previous `curl … scripts/new-project.sh | bash` snippet (which could
+  not work standalone — `new-project.sh` sources sibling libraries from a local
+  checkout) was replaced by the verified `install.sh` path.
+
 ### Removed
 
 - **Removed RTK (token optimizer) from the foundation entirely.** The opt-in RTK integration

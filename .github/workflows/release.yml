@@ -67,19 +67,44 @@ jobs:
             echo "RELNOTES_EOF"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Compute checksums
+        run: |
+          # Checksums are computed on the tagged commit, so they can never
+          # drift from what the release actually ships. install.sh is the one
+          # entry point users pipe into a shell — publishing its sha256 lets
+          # them verify-before-execute (see .claude/rules/security.md).
+          git archive --format=tar.gz \
+            --prefix="claude-base-${GITHUB_REF_NAME}/" \
+            -o "claude-base-${GITHUB_REF_NAME}.tar.gz" HEAD
+          sha256sum install.sh "claude-base-${GITHUB_REF_NAME}.tar.gz" > SHA256SUMS
+          cat SHA256SUMS
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
+          files: |
+            SHA256SUMS
+            claude-base-*.tar.gz
           body: |
             ${{ steps.notes.outputs.body }}
 
             ## Installation
 
-            ```bash
-            git clone https://github.com/${{ github.repository }}.git
+            **Pinned + verified** (recommended) — fetch the tagged installer,
+            check it against the published `SHA256SUMS`, then run it:
 
-            # Or use the install script in your project
-            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/scripts/new-project.sh | bash
+            ```bash
+            TAG=${{ github.ref_name }}
+            curl -fsSL "https://raw.githubusercontent.com/${{ github.repository }}/$TAG/install.sh" -o install.sh
+            curl -fsSL "https://github.com/${{ github.repository }}/releases/download/$TAG/SHA256SUMS" -o SHA256SUMS
+            sha256sum --check --ignore-missing SHA256SUMS   # install.sh: OK
+            bash install.sh --ref "$TAG"
+            ```
+
+            **Quick** (latest `main`, unverified):
+
+            ```bash
+            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | bash
             ```
 
             ## Contents of this release

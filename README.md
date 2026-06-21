@@ -7,7 +7,7 @@ _Where most Claude Code setups add more agents, claude-base adds **guardrails**:
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 [![ShellCheck](https://img.shields.io/badge/ShellCheck-passing-brightgreen)](https://github.com/christopherlouet/claude-base/actions)
-[![Tests](https://img.shields.io/badge/tests-1129%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1138%20passing-brightgreen)](./tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![Documentation](https://img.shields.io/badge/docs-Docusaurus-blue)](https://christopherlouet.github.io/claude-base/)
@@ -177,6 +177,37 @@ To update the foundation later:
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash -s -- --update
 ```
 
+#### Pinning to a release (reproducible installs)
+
+The one-liner above tracks the moving `main` tip. To install a specific, tested
+release instead, pass `--ref <tag>` — still a single line:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash -s -- --ref v5.0.0
+```
+
+A pinned install **stays pinned** across `--update` (it never silently jumps to
+`main`). To move it to another release, pass `--ref <newtag>`; to return to the
+latest `main`, pass `--ref main`.
+
+#### Verify before executing (supply-chain conscious)
+
+Piping any script straight into your shell runs it unverified — our own
+[`security.md`](.claude/rules/security.md) rule says to *download → verify →
+execute*, and a hook in this repo blocks `curl … | sh` in agent sessions. Each
+tagged release publishes a `SHA256SUMS` asset, so you can honor that on install:
+
+```bash
+TAG=v5.0.0
+curl -fsSL "https://raw.githubusercontent.com/christopherlouet/claude-base/$TAG/install.sh" -o install.sh
+curl -fsSL "https://github.com/christopherlouet/claude-base/releases/download/$TAG/SHA256SUMS" -o SHA256SUMS
+sha256sum --check --ignore-missing SHA256SUMS   # must print: install.sh: OK
+bash install.sh --ref "$TAG"
+```
+
+Fetch `install.sh` from the **same tag** as the checksum (`/$TAG/`, not `/main/`)
+— the published `SHA256SUMS` covers the tagged script, not the moving tip.
+
 If `~/.local/bin` is not on your `PATH`, add it (most modern distros already do):
 
 ```bash
@@ -226,7 +257,7 @@ After `curl | bash` install, the foundation lives at `~/.local/share/claude-base
 | `docs/` | Human-maintained documentation — `QUICKSTART.md`, `CHEATSHEET.md`, `ARCHITECTURE.md`, `WORKFLOWS.md`, `STACK-RECIPES.md`, `CUSTOMIZATION.md`, `recipes/`, `reference/`, `guides/` |
 | `website/` | [Docusaurus site](https://christopherlouet.github.io/claude-base/) — `docs/` is auto-mirrored here by `npm --prefix website run generate` |
 | `specs/` | Feature specs consumed by the workflow agents (`/work:work-specify`, `/work:work-plan`) |
-| `tests/` | <!-- count:tests -->1129<!-- /count --> bats tests across <!-- count:testFiles -->45<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1138<!-- /count --> bats tests across <!-- count:testFiles -->45<!-- /count --> files |
 | `.github/workflows/` | CI : `ci.yml`, `security.yml`, `docs.yml`, `pr-check.yml`, `release.yml`, `dependabot-auto-merge.yml` |
 | `AGENTS.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `counts.json` | Project metadata |
 
@@ -468,7 +499,7 @@ The foundation ships with [bats-core](https://github.com/bats-core/bats-core) te
 
 ### Test layout
 
-<!-- count:tests -->1129<!-- /count --> bats tests across <!-- count:testFiles -->45<!-- /count --> files. A few anchors :
+<!-- count:tests -->1138<!-- /count --> bats tests across <!-- count:testFiles -->45<!-- /count --> files. A few anchors :
 
 | Area | File | Tests |
 |---|---|---|
@@ -512,7 +543,7 @@ The foundation follows [Semantic Versioning](https://semver.org/). Each release 
 
 Concrete signals rather than a self-assessment score :
 
-- <!-- count:tests -->1129<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1138<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 - Six GitHub Actions workflows (CI, security, docs, PR check, release, dependabot auto-merge) gating merges
 - Doc drift firewall (`scripts/audit-docs.sh`) catches syntactic doc drift before merge — see [PR #201](https://github.com/christopherlouet/claude-base/pull/201)
 - Counter anti-drift gate (`scripts/validate-counts.sh`) regenerated from `counts.json`
