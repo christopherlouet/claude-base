@@ -4,8 +4,6 @@ A **personal memory of lessons** that carries across **all your projects** (and 
 
 > Mechanism: the [`self-improvement`](../../.claude/rules/self-improvement.md) rule (the capture reflex) + the [`/lessons`](../../.claude/commands/lessons.md) command. The lessons themselves live only in your home directory.
 
-> **Availability:** Phase 1 ships the **capture reflex** described below — it works today, in every project. The `/lessons --bootstrap` and `/lessons --prune` modes are **forthcoming (Phase 2)**; the sections that use them are marked accordingly. Until then, lessons accrue through the in-conversation reflex, and you can prune the store by editing `~/.claude/rules/lessons.md` by hand.
-
 ## How it works
 
 - **The store** is a single file: `~/.claude/rules/lessons.md`. It is created the first time you confirm a lesson.
@@ -19,23 +17,23 @@ A **personal memory of lessons** that carries across **all your projects** (and 
 - Every lesson is **sanitized** before it is written: project names, file paths, URLs, identifiers, and secrets are stripped. A lesson is a reusable *principle*, not an incident.
 - If you sync the store (below), prefer a **private** destination.
 
-## Starting from what you already learned (bootstrap) — *Phase 2, forthcoming*
+## Starting from what you already learned (bootstrap)
 
-If you used Claude Code before this feature, your past lessons already exist as per-project `feedback` memories. A one-time backfill will propose the general, recurring ones for promotion:
+If you used Claude Code before this feature, your past lessons already exist as per-project `feedback` memories. A one-time backfill proposes the general, recurring ones for promotion:
 
 ```
-/lessons --bootstrap    # forthcoming (Phase 2)
+/lessons --bootstrap
 ```
 
 It scans your existing per-project memories and proposes candidates (each generalized, sanitized, and confirmed by you). It is a one-off action you trigger — never a background job. A brand-new user simply starts on the reflex.
 
-## Keeping it small (prune) — *Phase 2, forthcoming*
+## Keeping it small (prune)
 
 ```
-/lessons --prune    # forthcoming (Phase 2)
+/lessons --prune
 ```
 
-Will report whether the store is over budget and propose merges (near-duplicates) and drops (superseded lessons); nothing deleted without your confirmation. Until Phase 2, prune by editing `~/.claude/rules/lessons.md` directly.
+Reports whether the store is over budget and proposes merges (near-duplicates) and drops (superseded lessons); nothing deleted without your confirmation.
 
 ## Syncing across machines (bring your own transport)
 

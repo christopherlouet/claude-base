@@ -12,9 +12,49 @@ Provide an overview of the self-improvement system: which rules, counter-example
 ## Usage
 
 ```
-/lessons              # List all feedback memories for the project
+/lessons              # List all feedback memories for the project (read-only)
 /lessons <keyword>    # Filter by keyword (e.g., /lessons test, /lessons git)
+/lessons --promote    # Capture the lesson just learned into the personal store
+/lessons --bootstrap  # One-off: backfill the personal store from existing memories
+/lessons --prune      # Keep the personal store under its size budget
 ```
+
+The `--promote`, `--bootstrap`, and `--prune` modes feed the **personal
+cross-project lessons store** at `~/.claude/rules/lessons.md` (loaded into every
+project by Claude Code). They follow the [`self-improvement`](../rules/self-improvement.md)
+rule: every write is **generalized + sanitized + human-confirmed**, and the
+lessons are personal — never committed to any repo.
+
+## Modes
+
+### `--promote` (explicit capture — fallback to the reflex)
+
+For when the in-conversation reflex didn't fire but you want to keep a lesson:
+
+1. Take the lesson just learned, **generalize** it to a one-line principle and
+   **sanitize** it (strip project/company/person names, paths, URLs, identifiers,
+   verbatim snippets, secrets).
+2. Show it and ask the user to **keep / edit / discard**.
+3. On confirmation, append it to `~/.claude/rules/lessons.md` (create if absent).
+   If it can't be generalized, keep it as a local project memory instead.
+
+### `--bootstrap` (one-off backfill)
+
+Seed the store from lessons you already accumulated, so you don't start from scratch:
+
+1. Run `claude-base lessons bootstrap-scan` (lists existing `feedback` memories
+   across all your projects as `project<TAB>name<TAB>description` candidates).
+2. For each candidate, decide if it is **general/recurring** (worth applying
+   everywhere) or project-specific (skip). Generalize + sanitize the keepers.
+3. Propose the keepers and let the user confirm each; append the confirmed ones.
+   This is a one-time action — not a background job.
+
+### `--prune` (stay within budget)
+
+1. Run `claude-base lessons prune-check` (prints `OK`/`OVER size/budget` and
+   `DUP:` lines for duplicates).
+2. If `OVER` or duplicates exist, propose merges (near-duplicates) and drops
+   (superseded lessons). **Never delete without explicit confirmation.**
 
 ## Workflow
 
