@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Personal cross-project lessons referential (mechanism only).** A new global
+  `self-improvement` rule turns "lessons learned" into a human-gated reflex:
+  after a genuinely instructive moment (a multi-attempt fix, an explicit user
+  correction, or a non-obvious root cause), the assistant proposes **one**
+  generalized, **sanitized** lesson and, on confirmation, appends it to the
+  user's own `~/.claude/rules/lessons.md`. Claude Code loads that file into every
+  project automatically, so a lesson captured once is recalled everywhere — the
+  *more you use the foundation, the fewer mistakes recur*. The lessons are
+  **personal**: claude-base ships the mechanism, never the data (nothing is
+  written into any repo). The store is bounded (~2,000 chars) to stay cheap in
+  every session. Cross-machine sync is bring-your-own (private repo / Syncthing /
+  cloud-drive) — see `docs/recipes/personal-lessons-referential.md`. (Phase 1 of
+  the feature; the `/lessons --promote/--prune/--bootstrap` modes follow.)
 - **`install.sh --ref <tag>`: release pinning.** The one-liner installer can now
   pin to a specific tested release (e.g. `--ref v5.0.0`) instead of always
   cloning the moving `main` tip. A pinned install **stays pinned** across

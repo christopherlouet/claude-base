@@ -796,7 +796,7 @@ You now master Claude Code. Here's what claude-base adds on top:
 | <!-- count:commands -->106<!-- /count --> commands (`/work:*`, `/dev:*`, `/qa:*`, `/ops:*`) | Pre-written workflows for common tasks |
 | <!-- count:agents -->45<!-- /count --> specialized agents | Sub-processes for audit, security, tests, etc. |
 | <!-- count:skills -->53<!-- /count --> skills | Behaviors triggered by keywords |
-| <!-- count:rules -->31<!-- /count --> rules | Code conventions activated automatically based on the modified files |
+| <!-- count:rules -->32<!-- /count --> rules | Code conventions activated automatically based on the modified files |
 | Structured workflow | Explore → Specify → Plan → TDD → Audit → Commit |
 
 The concrete difference: instead of typing "run the tests, check coverage, fix issues, audit security, then commit", you type `/work:work-flow-feature "my feature"` and the foundation orchestrates everything.

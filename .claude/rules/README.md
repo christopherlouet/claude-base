@@ -2,7 +2,7 @@
 
 Modular rules applied automatically based on the modified files (path-specific rules).
 
-## Available rules (31)
+## Available rules (32)
 
 | Rule | Target paths | Description |
 |------|-------------|-------------|
@@ -27,6 +27,7 @@ Modular rules applied automatically based on the modified files (path-specific r
 | `ruby` | `**/*.rb`, `**/Gemfile` | Rails conventions, RSpec |
 | `rust` | `**/*.rs`, `**/Cargo.toml` | Ownership, error handling, traits |
 | `security` | `**/auth/**`, `**/api/**`, `**/middleware/**` | XSS, SQL injection, CSRF, auth |
+| `self-improvement` | _(global)_ | Personal cross-project lessons referential — human-gated capture + sanitize, stored in `~/.claude/rules/lessons.md` |
 | `service-worker` | `**/sw.js`, `**/service-worker*` | NEVER cache HTML navigations, bump cache version |
 | `base-maintenance` | `.claude/skills/**`, `.claude/agents/**`, `.claude/commands/**`, `.claude/rules/**`, `.claude/settings.json`, `scripts/hooks/**` | Sync counters, catalog, hook message when modifying the foundation |
 | `svelte` | `**/*.svelte`, `**/*.svelte.ts`, `**/svelte.config.*` | Runes (Svelte 5), SvelteKit, form actions |
@@ -52,7 +53,7 @@ When a file matches several rules (e.g., `.tsx` activates typescript + react + a
 | 6 | `testing` | Test standards |
 | 7 | `performance`, `accessibility`, `design-style` | Optimizations and best practices |
 | 8 | `api`, `lsp` | Interface conventions |
-| 9 | `research`, `deploy-safety`, `base-maintenance`, `vendor-precedence` | Process guardrails |
+| 9 | `research`, `deploy-safety`, `base-maintenance`, `vendor-precedence`, `self-improvement` | Process guardrails |
 
 ### Example: modifying `src/components/Button.tsx`
 

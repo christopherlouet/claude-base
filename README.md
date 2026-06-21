@@ -64,7 +64,7 @@ claude-base is **the opinionated discipline layer on top of (or in place of) tho
 | Explore phase (read-before-write) | — | ✓ `/work:work-explore` |
 | TDD enforced (tests-first mandatory) | — | ✓ via `tdd-enforcement` rule + `/dev:dev-tdd` |
 | Adaptive audit-fix loop (quality score) | — | ✓ `/qa:qa-loop "score 90"` |
-| Path-specific rules (TS strict, OWASP, WCAG, perf...) | — | ✓ <!-- count:rules -->31<!-- /count --> auto-activated rules |
+| Path-specific rules (TS strict, OWASP, WCAG, perf...) | — | ✓ <!-- count:rules -->32<!-- /count --> auto-activated rules |
 | Hooks wired into `settings.json` (PostToolUse tsc+eslint, gitleaks, anti-drift) | — | ✓ |
 | Anti-drift CI strategy (`counts.json`, `audit-docs.sh` firewall) | — | ✓ |
 | Stack presets with vendor-skill pointers | — | ✓ <!-- count:presets -->11<!-- /count --> presets, 3 tiers |
@@ -89,7 +89,7 @@ The foundation ships <!-- count:commands -->106<!-- /count --> commands + <!-- c
 
 - **Workflow rigor coordinated as one experience** — TDD enforcement, autonomous `qa-loop` audit-fix cycle, score-90 gates
 - **Anti-drift counter strategy** across the entire foundation, CI-enforced via `counts.json` + a doc drift firewall (`scripts/audit-docs.sh`)
-- **<!-- count:rules -->31<!-- /count --> path-specific rules** auto-activated by file path (TypeScript strict, OWASP defaults, WCAG, Core Web Vitals, deploy-safety)
+- **<!-- count:rules -->32<!-- /count --> path-specific rules** auto-activated by file path (TypeScript strict, OWASP defaults, WCAG, Core Web Vitals, deploy-safety)
 - **PostToolUse output rewriter** for Bash + tsc/eslint (Claude Code 2.1.121+)
 - **Integrated install + update flow** via the `claude-base` CLI
 
@@ -125,7 +125,7 @@ Everything is plain markdown + JSON. No daemon, no telemetry, no network access 
 | Slash commands | <!-- count:commands -->106<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
 | Sub-agents | <!-- count:agents -->45<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
 | Skills | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords in your prompts |
-| Path-specific rules | <!-- count:rules -->31<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
+| Path-specific rules | <!-- count:rules -->32<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
 | Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles ; tier breakdown in [Going deeper](#going-deeper) |
 
 Full catalogue: [Docusaurus reference](https://christopherlouet.github.io/claude-base/docs/reference) — or browse `.claude/` directly after install.
@@ -450,7 +450,7 @@ The full documentation site lives at **[https://christopherlouet.github.io/claud
 
 It covers:
 - Quick start guide
-- Catalog of <!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->45<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->31<!-- /count --> rules
+- Catalog of <!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->45<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->32<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Learning path, Extending, Team, Prompting, Troubleshooting

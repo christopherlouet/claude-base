@@ -42,7 +42,7 @@ Explore → Specify → Plan → TDD → Audit → Commit
 | **Commands** | Manual (`/name`) | `/work:work-explore` | <!-- count:commands -->106<!-- /count --> |
 | **Agents** | Via commands | Isolated autonomous sub-agents | <!-- count:agents -->45<!-- /count --> |
 | **Skills** | Automatic (keywords) | Triggers when "bug" is mentioned | <!-- count:skills -->53<!-- /count --> |
-| **Rules** | Automatic (files) | Activates when a `.tsx` is modified | <!-- count:rules -->31<!-- /count --> |
+| **Rules** | Automatic (files) | Activates when a `.tsx` is modified | <!-- count:rules -->32<!-- /count --> |
 
 **Plus a composition layer** : <!-- count:presets -->11<!-- /count --> **presets** (stack-specific bundles) on top of the 4 components, installable via `claude-base init --preset <name>`. Tier breakdown (maintainer-vouched / vendor-pointer / community-curated) and full catalogue : see [`.claude/presets/README.md`](https://github.com/christopherlouet/claude-base/blob/main/.claude/presets/README.md). A pre-detection prompt asks "What are you building?" (8 intent categories) when nothing is auto-detected — see [Quick Start](/docs/intro/quick-start) for the flow.
 

@@ -25,7 +25,7 @@ Each subdirectory contains a `SKILL.md` (with YAML frontmatter) plus optional `e
 
 Path-scoped coding rules auto-activated by file type: [`.claude/rules/`](.claude/rules/)
 
-<!-- count:rules -->31<!-- /count --> rules covering TypeScript, React, Next.js, Flutter, Go, Python, security, TDD enforcement, accessibility, performance, and more. Catalog and priority order: [`.claude/rules/README.md`](.claude/rules/README.md).
+<!-- count:rules -->32<!-- /count --> rules covering TypeScript, React, Next.js, Flutter, Go, Python, security, TDD enforcement, accessibility, performance, and more. Catalog and priority order: [`.claude/rules/README.md`](.claude/rules/README.md).
 
 ## Agents
 

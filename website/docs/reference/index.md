@@ -40,7 +40,7 @@ description: Quick reference and matrices
 | Commands | <!-- count:commands -->106<!-- /count --> | [View](/docs/commands) |
 | Agents | <!-- count:agents -->45<!-- /count --> | [View](/docs/agents) |
 | Skills | <!-- count:skills -->53<!-- /count --> | [View](/docs/skills) |
-| Rules | <!-- count:rules -->31<!-- /count --> | [View](/docs/rules) |
+| Rules | <!-- count:rules -->32<!-- /count --> | [View](/docs/rules) |
 
 ## Shortcuts
 

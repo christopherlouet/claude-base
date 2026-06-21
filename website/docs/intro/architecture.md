@@ -132,7 +132,7 @@ claude-base/
 "Make a commit" → generating-commit-messages skill activated
 ```
 
-### Rules (<!-- count:rules -->31<!-- /count -->)
+### Rules (<!-- count:rules -->32<!-- /count -->)
 
 **Rules** are rules applied by file path.
 
