@@ -373,9 +373,23 @@ SKILLS_DIR="$BATS_TEST_DIRNAME/../.claude/skills"
     [ "$status" -eq 0 ]
 }
 
-@test "awaiting-vendors.json: every foundationSkill is a real foundation skill directory" {
+@test "awaiting-vendors.json: every foundationSkill is a real foundation resource (skill|command|agent)" {
+    # Most tool-wrappers ship as a command (or agent), not a skill dir — graduation
+    # works command-side too (cf. dev-prisma). Accept any of the three.
+    local claude_dir="$BATS_TEST_DIRNAME/../.claude"
     while IFS= read -r fskill; do
         [ -n "$fskill" ] || continue
-        [ -d "$SKILLS_DIR/$fskill" ] || { echo "missing skill dir: $fskill" >&2; false; }
+        [ -d "$claude_dir/skills/$fskill" ] && continue
+        ls "$claude_dir/commands/"*/"$fskill.md" >/dev/null 2>&1 && continue
+        ls "$claude_dir/agents/"*/"$fskill.md" >/dev/null 2>&1 && continue
+        echo "missing foundation resource: $fskill" >&2; false
     done < <(jq -r '.entries[].foundationSkill' "$AWAITING_FILE")
+}
+
+@test "discover: tags a kubernetes repo via the SHIPPED awaiting-vendors.json (real file)" {
+    healthy_candidate "acme/helm-k8s-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"k8s coverage","borderline":false,"tokensUsed":50}'
+    run_discover   # no --awaiting => uses the shipped .claude/curation/awaiting-vendors.json
+    [ "$status" -eq 0 ]
+    [[ "$(printf '%s' "$output" | jq -r '.proposals[0].graduationFor')" == "ops-k8s" ]]
 }

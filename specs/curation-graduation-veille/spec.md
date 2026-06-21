@@ -48,6 +48,18 @@ this file is its **machine mirror** for the veille. `matchKeywords` are delibera
 lib names (precision over recall — `auth` alone would match `oauth`/`author`); recall depends on
 the candidate repo naming the lib, acceptable for a veille.
 
+**Doctrine (2026-06-21, user-flagged) — classify by KIND, not popularity.** A resource that
+wraps an **external tool** is graduatable; niche/fragmentation only lowers the *probability* a
+vendor emerges, never the category. So the watch-list also covers the tool-wrappers earlier
+mis-parked as "permanent niche": `ops-k8s` (k8s already scanned by the `infra` query; fragmentation
+is a non-issue — graduates to a `+`-joined bundle the registry supports), `dev-neovim`/`qa-neovim`,
+`ops-proxmox`, `ops-opnsense`. The **concept-level** wrappers `dev-mcp`/`dev-rag`/`dev-ai-integration`
+are graduatable in doctrine but **omitted** here — repo-path keyword match has too-low recall for
+them (`rag` matches `storage`); they await a content-based matcher. The **only** permanent
+category is the foundation's own workflow/discipline (a vendor there = moat-WARNING, not a
+graduation). `foundationSkill` may name a skill, **command**, or agent (most tool-wrappers ship
+as commands).
+
 ### 3.2 Discovery queries — extend `discovery-sources.json`
 
 Add three sources so the techs are actually scanned:

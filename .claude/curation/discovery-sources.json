@@ -12,6 +12,8 @@
     { "domain": "testing",  "query": "claude code skill playwright OR vitest in:name,description,readme" },
     { "domain": "flutter",  "query": "claude skill flutter in:name,description,readme" },
     { "domain": "auth",     "query": "claude code skill better-auth OR lucia OR nextauth in:name,description,readme" },
-    { "domain": "i18n",     "query": "claude skill i18n lingui OR next-intl in:name,description,readme" }
+    { "domain": "i18n",     "query": "claude skill i18n lingui OR next-intl in:name,description,readme" },
+    { "domain": "neovim",   "query": "claude skill neovim OR nvim in:name,description,readme" },
+    { "domain": "homelab",  "query": "claude skill proxmox OR opnsense in:name,description,readme" }
   ]
 }

@@ -74,9 +74,19 @@ foundation content — without falsely implying a vendor exists today.
 | `dev-i18n` (skill) | i18n libs | Spans next-intl/react-i18next/vue-i18n/formatjs/ARB; `lingui/skills` is curated but covers only Lingui (already a conditional preset recommendation). | A broad i18n vendor skill appears, or the pack narrows to Lingui-only → POINT. |
 | `dev-react-perf` (skill) | React perf | Methodology pack (re-render/CWV), not a tool-wrapper; `vercel-labs/agent-skills` is adjacent but does not own "React perf" as a tool. | — likely permanent (methodology, foundation-owned). |
 
-> **Niche, no-vendor, permanent** (recorded for completeness, *not* graduatable):
-> `dev-neovim`, `dev-mcp`, `dev-ai-integration`, `dev-rag`, `ops-proxmox`, `ops-opnsense`,
-> `ops-k8s` — too fragmented or niche for any vendor of comparable breadth to emerge.
+> **Doctrine correction (2026-06-21):** classify by **KIND, not popularity**. A resource that
+> wraps an **external tool** is *graduatable* — niche/fragmentation only lowers the *probability/
+> timeline* a vendor emerges, **never makes it permanent**. So `dev-neovim`/`qa-neovim`,
+> `ops-proxmox`, `ops-opnsense`, `ops-k8s`, `dev-mcp`, `dev-rag`, `dev-ai-integration` are all
+> tool-wrappers that **should be watched**, not parked as "permanent". (k8s "fragmentation" is a
+> non-issue: it graduates to a `+`-joined multi-skill bundle, which the registry already
+> supports.) The tool-wrappers with stable product names in repo paths (`ops-k8s`, `dev-neovim`,
+> `ops-proxmox`, `ops-opnsense`) are now in `.claude/curation/awaiting-vendors.json` (graduation
+> veille); the concept-level ones (`dev-mcp`, `dev-rag`, `dev-ai-integration`) are watchable in
+> doctrine but await a content-based matcher (repo-path keywords have too-low recall for them).
+> The **only** permanent category is the foundation's **own workflow/discipline** (TDD, audit
+> loop, Explore→Specify→Plan, verification/security) — and a vendor encroaching there is the
+> discover **moat-WARNING** signal, not a graduation.
 
 ### P3 — Curation traceability
 
