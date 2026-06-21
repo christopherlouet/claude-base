@@ -355,9 +355,24 @@ EOF
 }
 
 @test "validate-counts.sh accepts a CONTRIBUTING.md with correct inline counts" {
-    # Fake foundation: 3 commands, 2 agents, 1 skill — declare them correctly.
-    printf '# Contributing\n\n```\n  commands/    # 3 commands\n  agents/      # 2 sub-agents\n  skills/      # 1 skills\n```\n' \
+    # The -le 5 guard skips small subset numbers, so push commands above it (6)
+    # and declare the matching count — this actually exercises the accept path.
+    touch "$TEST_DIR/.claude/commands/work/cmd4.md" \
+          "$TEST_DIR/.claude/commands/work/cmd5.md" \
+          "$TEST_DIR/.claude/commands/work/cmd6.md"
+    printf '# Contributing\n\n```\n  commands/    # 6 commands\n```\n' \
         > "$TEST_DIR/CONTRIBUTING.md"
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 0 ]
+}
+
+@test "validate-counts.sh catches a drifted count even with an adjective (contextual rules)" {
+    # Fake foundation has 4 rules; "# 99 contextual rules" must still be caught
+    # despite the adjective between the number and the label.
+    printf '# Contributing\n\n```\n  rules/       # 99 contextual rules\n```\n' \
+        > "$TEST_DIR/CONTRIBUTING.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"99 rules"* ]]
+    [[ "$output" == *"canonical: 4"* ]]
 }

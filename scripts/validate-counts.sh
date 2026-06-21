@@ -355,18 +355,23 @@ scan_contributing_drift() {
 
     _contrib_check() {
         local label_re="$1" plural="$2" actual="$3"
+        # Allow an optional adjective between the number and the label, so
+        # "# 32 contextual rules" / "# 45 sub-agents" are matched, not just
+        # "# 32 rules". The adjective is [a-z-]+ (no digits), so the only number
+        # extracted is the count itself.
+        local re="#[[:space:]]*[0-9]+[[:space:]]+([a-z-]+[[:space:]]+)?(${label_re})"
         local match lineno n
         while IFS= read -r match; do
             [ -z "$match" ] && continue
             lineno="${match%%:*}"
-            n=$(printf '%s' "${match#*:}" | grep -oiE "#[[:space:]]*[0-9]+[[:space:]]+(${label_re})" | grep -oE '[0-9]+' | head -1)
+            n=$(printf '%s' "${match#*:}" | grep -oiE "$re" | grep -oE '[0-9]+' | head -1)
             [ -z "$n" ] && continue
             [ "$n" -le 5 ] && continue
             if [ "$n" != "$actual" ]; then
                 error_no_exit "CONTRIBUTING.md:${lineno} drift -> $n ${plural} (canonical: $actual)"
                 DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
             fi
-        done < <(grep -niE "#[[:space:]]*[0-9]+[[:space:]]+(${label_re})" "$contributing" 2>/dev/null)
+        done < <(grep -niE "$re" "$contributing" 2>/dev/null)
     }
 
     _contrib_check "commands?" "commands" "$ACTUAL_COMMANDS"
