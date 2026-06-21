@@ -129,3 +129,51 @@ teardown() {
     [ "$status" -eq 0 ]
     [ -z "$output" ]
 }
+
+# =============================================================================
+# Vendor-precedence hint (once-per-session) — see specs/dynamic-vendor-precedence
+# =============================================================================
+# HOME + TMPDIR are isolated via `env` (so they reach the piped hook process,
+# not just `echo`) — a real vendor skill on the host or a leftover marker can
+# never make these flaky.
+
+@test "prompt-context: emits vendor-precedence section when a vendor skill is installed" {
+    mkdir -p "$TEST_DIR/tmp" "$TEST_DIR/home" "$TEST_DIR/.claude/skills/prisma-cli"
+    run env TMPDIR="$TEST_DIR/tmp" HOME="$TEST_DIR/home" CLAUDE_PROJECT_DIR="$TEST_DIR" \
+        bash -c 'echo "{\"prompt\": \"add a model\", \"session_id\": \"s-a\"}" | "'"$HOOK_SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    ctx=$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext')
+    [[ "$ctx" == *"## Vendor skills (precedence)"* ]]
+    [[ "$ctx" == *"prisma/skills"* ]]
+    [[ "$ctx" == *"dev-prisma"* ]]
+}
+
+@test "prompt-context: vendor-precedence section is suppressed on the 2nd prompt (once per session)" {
+    mkdir -p "$TEST_DIR/tmp" "$TEST_DIR/home" "$TEST_DIR/.claude/skills/prisma-cli"
+    run env TMPDIR="$TEST_DIR/tmp" HOME="$TEST_DIR/home" CLAUDE_PROJECT_DIR="$TEST_DIR" \
+        bash -c 'echo "{\"prompt\": \"first\", \"session_id\": \"s-b\"}" | "'"$HOOK_SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    [[ "$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext')" == *"Vendor skills (precedence)"* ]]
+    # Same session_id + same TMPDIR → marker now exists → suppressed.
+    run env TMPDIR="$TEST_DIR/tmp" HOME="$TEST_DIR/home" CLAUDE_PROJECT_DIR="$TEST_DIR" \
+        bash -c 'echo "{\"prompt\": \"second\", \"session_id\": \"s-b\"}" | "'"$HOOK_SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    [[ "$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext')" != *"Vendor skills (precedence)"* ]]
+}
+
+@test "prompt-context: SKIP_VENDOR_PRECEDENCE=1 suppresses the section" {
+    mkdir -p "$TEST_DIR/tmp" "$TEST_DIR/home" "$TEST_DIR/.claude/skills/prisma-cli"
+    run env TMPDIR="$TEST_DIR/tmp" HOME="$TEST_DIR/home" CLAUDE_PROJECT_DIR="$TEST_DIR" SKIP_VENDOR_PRECEDENCE=1 \
+        bash -c 'echo "{\"prompt\": \"x\", \"session_id\": \"s-c\"}" | "'"$HOOK_SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    [[ "$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext')" != *"Vendor skills (precedence)"* ]]
+}
+
+@test "prompt-context: no vendor-precedence section when no vendor skill is installed" {
+    mkdir -p "$TEST_DIR/tmp" "$TEST_DIR/home"
+    run env TMPDIR="$TEST_DIR/tmp" HOME="$TEST_DIR/home" CLAUDE_PROJECT_DIR="$TEST_DIR" \
+        bash -c 'echo "{\"prompt\": \"add a model\", \"session_id\": \"s-d\"}" | "'"$HOOK_SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    [[ "$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext')" != *"Vendor skills (precedence)"* ]]
+    echo "$output" | jq -e . >/dev/null
+}

@@ -58,3 +58,34 @@ MANIFEST="$REPO_ROOT/scripts/lib/minimal-manifest.txt"
         fi
     fi
 }
+
+@test "manifest: ships every sibling _*.sh helper that a manifest hook sources" {
+    [ -f "$MANIFEST" ]
+
+    # For each hook .sh listed in the manifest, find sibling helper files it
+    # sources (source/. lines mentioning a _<name>.sh) and assert each helper is
+    # itself in the manifest. Generic guard so a new sourced helper cannot drift
+    # out of the minimal export (the _hook-helpers.sh case, generalised).
+    local missing=()
+    while IFS= read -r manifest_path; do
+        case "$manifest_path" in
+            scripts/hooks/*.sh) ;;
+            *) continue ;;
+        esac
+        local hook_file="$REPO_ROOT/$manifest_path"
+        [ -f "$hook_file" ] || continue
+        while IFS= read -r helper; do
+            [ -z "$helper" ] && continue
+            if ! grep -qE "^scripts/hooks/${helper}([[:space:]]|$|:)" "$MANIFEST"; then
+                missing+=("$manifest_path sources $helper (not in manifest)")
+            fi
+        done < <(grep -hoE '(source|\.)[[:space:]]+[^#]*/(_[a-zA-Z0-9-]+\.sh)' "$hook_file" 2>/dev/null \
+            | grep -oE '_[a-zA-Z0-9-]+\.sh' | sort -u)
+    done < "$MANIFEST"
+
+    if [ ${#missing[@]} -gt 0 ]; then
+        echo "Sourced helpers missing from minimal-manifest.txt:" >&2
+        printf '  - %s\n' "${missing[@]}" >&2
+        return 1
+    fi
+}

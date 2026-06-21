@@ -26,6 +26,10 @@ INPUT=$(cat 2>/dev/null || true)
 PROMPT=$(printf '%s' "$INPUT" | jq -r '.prompt // empty' 2>/dev/null) || exit 0
 [ -z "$PROMPT" ] && exit 0
 
+# Session id (for the once-per-session vendor-precedence marker); fallbacks keep
+# the marker stable when the field is absent on older CLIs.
+SESSION_ID=$(printf '%s' "$INPUT" | jq -r '.session_id // .transcript_path // empty' 2>/dev/null || true)
+
 # Trim leading whitespace then detect slash command
 TRIMMED=$(printf '%s' "$PROMPT" | sed -e 's/^[[:space:]]*//')
 case "$TRIMMED" in
@@ -105,6 +109,26 @@ if [ "${SKIP_FEEDBACK_DETECT:-0}" != "1" ]; then
     esac
 fi
 
+# Vendor-precedence hint (once per session): if a graduated vendor skill is
+# installed, nudge toward it over the foundation pointer (vendor-precedence T3).
+# Pure-shell helper, no network/jq. Opt out with SKIP_VENDOR_PRECEDENCE=1.
+VENDOR_HINT=""
+if [ "${SKIP_VENDOR_PRECEDENCE:-0}" != "1" ]; then
+    VPREC_HELPER="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_vendor-precedence-hint.sh"
+    if [ -f "$VPREC_HELPER" ]; then
+        # shellcheck source=/dev/null
+        . "$VPREC_HELPER"
+        _vprec_key=$(printf '%s' "${SESSION_ID:-$PROJECT_DIR}|$PROJECT_DIR" | cksum 2>/dev/null | cut -d' ' -f1)
+        _vprec_marker="${TMPDIR:-/tmp}/claude-base-vprec.${_vprec_key:-default}"
+        # Only suppress once we have actually shown the hint, so a vendor skill
+        # installed mid-session still surfaces the first time it appears.
+        if [ ! -e "$_vprec_marker" ]; then
+            VENDOR_HINT=$(vendor_precedence_hints "$PROJECT_DIR" "${HOME:-}" 2>/dev/null || true)
+            [ -n "$VENDOR_HINT" ] && { : > "$_vprec_marker" 2>/dev/null || true; }
+        fi
+    fi
+fi
+
 # Build context
 {
     echo "## Repo context (auto-injected)"
@@ -151,6 +175,13 @@ fi
         echo "## Self-improvement"
         echo ""
         echo "$FEEDBACK_HINT"
+    fi
+
+    if [ -n "$VENDOR_HINT" ]; then
+        echo ""
+        echo "## Vendor skills (precedence)"
+        echo ""
+        printf '%s\n' "$VENDOR_HINT"
     fi
 
     echo ""
