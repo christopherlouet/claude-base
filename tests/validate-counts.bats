@@ -326,3 +326,38 @@ EOF
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 0 ]
 }
+
+# =============================================================================
+# CONTRIBUTING.md inline-comment counts (gate-hole fix #5)
+# Counts live in a code fence (e.g. "commands/  # 128 commands"), so they can't
+# carry <!-- count --> markers and the # is not line-anchored — they escaped the
+# global scan. A targeted prose scan of CONTRIBUTING.md closes that hole.
+# =============================================================================
+
+@test "validate-counts.sh detects a drift in CONTRIBUTING.md inline comment (commands)" {
+    # Fake foundation has 3 commands; declare 99 in a fenced tree comment.
+    printf '# Contributing\n\n```\n.claude/\n  commands/    # 99 commands (source of truth)\n```\n' \
+        > "$TEST_DIR/CONTRIBUTING.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"99 commands"* ]]
+    [[ "$output" == *"canonical: 3"* ]]
+}
+
+@test "validate-counts.sh detects a drift in CONTRIBUTING.md inline comment (sub-agents)" {
+    # Fake foundation has 2 agents; declare 88 sub-agents.
+    printf '# Contributing\n\n```\n  agents/      # 88 sub-agents\n```\n' \
+        > "$TEST_DIR/CONTRIBUTING.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"88 agents"* ]]
+    [[ "$output" == *"canonical: 2"* ]]
+}
+
+@test "validate-counts.sh accepts a CONTRIBUTING.md with correct inline counts" {
+    # Fake foundation: 3 commands, 2 agents, 1 skill — declare them correctly.
+    printf '# Contributing\n\n```\n  commands/    # 3 commands\n  agents/      # 2 sub-agents\n  skills/      # 1 skills\n```\n' \
+        > "$TEST_DIR/CONTRIBUTING.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}
