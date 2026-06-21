@@ -70,7 +70,7 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
-      "flags": []
+      "flags": ["command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)"]
     },
     {
       "foundationSkill": "dev-shadcn",
@@ -98,7 +98,7 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
-      "flags": []
+      "flags": ["command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)"]
     },
     {
       "foundationSkill": "ops-database",

@@ -1,31 +1,25 @@
-# Agent DEV-PRISMA
+# Agent DEV-PRISMA (pointer)
 
 Configuration and usage of Prisma ORM.
 
-## Request context
+## Context
 $ARGUMENTS
 
-## Objective
+## Delegate to the vendor toolkit
 
-Configure Prisma ORM and implement the schema, migrations, CRUD queries,
-transactions and advanced patterns (soft delete, extensions, raw queries).
+`claude-base`'s prior `dev-prisma` content (49-line checklist) is **superseded** by [`prisma/skills`](https://github.com/prisma/skills) — Prisma's own toolkit, maintained by the Prisma team in sync with v7 (ESM-only, driver adapters, `prisma.config.ts`), covers schema, migrations, the client singleton, transactions and advanced patterns at a depth and currency a hand-maintained checklist cannot match; this command wrapped a tool the vendor owns. The sibling `dev-prisma` **skill** already graduated to this pointer.
 
-## Workflow
+Install:
 
-- Initialize Prisma (`npx prisma init`) and configure the datasource
-- Define models with relations (1:1, 1:n, n:m), indexes and naming conventions
-- Create migrations (`npx prisma migrate dev`)
-- Configure the PrismaClient singleton (avoid multiple connections in dev)
-- Implement CRUD queries (create, findMany, update, delete, upsert)
-- Add transactions for multiple operations
-- Implement aggregations (count, groupBy, aggregate)
-- Add advanced patterns if needed (soft delete, extensions, raw queries)
-- Create the seed for test data
+```bash
+# Prisma's preferred path (verify on their README):
+npx skills add prisma/skills
 
-## Expected output
+# Fallback — clone and copy:
+git clone --depth 1 https://github.com/prisma/skills ~/dev/vendor-skills/prisma
+```
 
-Prisma schema with models and relations, migrations, client singleton,
-CRUD queries and seed.
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Prisma — `prisma/skills`". Reduction rationale: [`specs/dev-command-vendor-graduation/spec.md`](../../../specs/dev-command-vendor-graduation/spec.md).
 
 ## Related agents
 
@@ -37,12 +31,4 @@ CRUD queries and seed.
 
 ---
 
-IMPORTANT: Always use the singleton in dev to avoid multiple connections.
-
-IMPORTANT: Index columns used in WHERE and ORDER BY.
-
-YOU MUST use transactions for multiple operations.
-
-NEVER expose Prisma errors directly to the user.
-
-Think hard about the schema and relations before creating migrations.
+NEVER expose Prisma errors directly to the user; use the client singleton in dev to avoid multiple connections.
