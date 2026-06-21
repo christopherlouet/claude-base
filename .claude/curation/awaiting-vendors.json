@@ -1,0 +1,24 @@
+{
+  "_comment": "Machine-readable 'graduatable watch-list': foundation skills still maintained full-impl in-house because NO vendor has cleared the curation bar yet (specs/dev-command-vendor-graduation §US-2 is the prose source of truth; this file is its machine mirror). scripts/curation-discover.sh tags any proposal whose repo path matches an entry's matchKeywords as a graduation candidate for that foundationSkill (graduationFor field). Tagging is LLM-free + deterministic and never lowers the trust/safety/judge bar. Adding/removing an entry here is the graduation-veille knob. matchKeywords are deliberately specific library names (precision over recall — 'auth' alone would match oauth/author).",
+  "version": "1.0.0",
+  "entries": [
+    {
+      "foundationSkill": "dev-flutter",
+      "tech": "Flutter",
+      "matchKeywords": ["flutter"],
+      "graduationTrigger": "a Flutter-team or >=bar community agent-skill appears -> registry candidate -> REDUCE command, POINT agent"
+    },
+    {
+      "foundationSkill": "dev-auth",
+      "tech": "auth",
+      "matchKeywords": ["better-auth", "betterauth", "lucia-auth", "nextauth", "authjs"],
+      "graduationTrigger": "a neutral auth meta-skill of comparable breadth across better-auth/Lucia/NextAuth/Clerk/Supabase appears (else permanent)"
+    },
+    {
+      "foundationSkill": "dev-i18n",
+      "tech": "i18n",
+      "matchKeywords": ["lingui", "i18next", "next-intl"],
+      "graduationTrigger": "a broad i18n vendor skill appears, or the pack narrows to Lingui-only -> POINT"
+    }
+  ]
+}
