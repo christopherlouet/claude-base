@@ -25,10 +25,14 @@
 # tokensUsed:int}.
 #
 # Usage:
-#   curation-discover.sh [--dry-run] [--digest-dir DIR] [--budget N]
+#   curation-discover.sh [--dry-run] [--emit-issue] [--digest-dir DIR] [--budget N]
 #                        [--sources FILE] [--registry FILE] [--presets-dir DIR]
 #                        [--awaiting FILE] [--max-candidates N] [--fit-threshold N]
 #                        [--model NAME] [--escalate-model NAME] [--thresholds FILE]
+#
+# --emit-issue opens ONE propose-only GitHub issue with the proposals (mirrors the
+# nightly watch; no-noise — only when there is something to review). Reuses
+# emit_issue (CWD-independent -R, fail-safe). Proposal only — never auto-adds.
 #
 # Graduation veille: a cleared proposal whose repo matches an entry in the
 # awaiting-vendors list (--awaiting) is tagged graduationFor:"dev-X" — a high-
@@ -46,6 +50,8 @@ source "$_DISCO_DIR/lib/curation-common.sh"
 source "$_DISCO_DIR/lib/trust-score.sh"
 # shellcheck source=scripts/lib/curation-safety.sh
 source "$_DISCO_DIR/lib/curation-safety.sh"
+# shellcheck source=scripts/lib/curation-emit.sh
+source "$_DISCO_DIR/lib/curation-emit.sh"
 
 REGISTRY="${CURATION_REGISTRY:-$_DISCO_DIR/../.claude/curation/registry.json}"
 PRESETS_DIR="${CURATION_PRESETS_DIR:-$_DISCO_DIR/../.claude/presets}"
@@ -53,6 +59,7 @@ SOURCES="${CURATION_SOURCES:-$_DISCO_DIR/../.claude/curation/discovery-sources.j
 AWAITING="${CURATION_AWAITING:-$_DISCO_DIR/../.claude/curation/awaiting-vendors.json}"
 DIGEST_DIR=""
 DRY_RUN=false
+EMIT_ISSUE=false
 BUDGET="${CURATION_BUDGET:-200000}"
 MAX_CANDIDATES="${CURATION_MAX_CANDIDATES:-40}"
 FIT_THRESHOLD="${CURATION_FIT_THRESHOLD:-4}"
@@ -63,6 +70,7 @@ LLM_CMD="${CURATION_LLM_CMD:-claude -p}"
 while [ $# -gt 0 ]; do
     case "$1" in
         --dry-run) DRY_RUN=true; shift ;;
+        --emit-issue) EMIT_ISSUE=true; shift ;;
         --digest-dir) DIGEST_DIR="${2:-}"; [ -n "$DIGEST_DIR" ] || { echo "--digest-dir requires a path" >&2; exit 2; }; shift 2 ;;
         --budget) BUDGET="${2:-}"; [ -n "$BUDGET" ] || { echo "--budget requires a number" >&2; exit 2; }; shift 2 ;;
         --sources) SOURCES="${2:-}"; [ -n "$SOURCES" ] || { echo "--sources requires a path" >&2; exit 2; }; shift 2 ;;
@@ -323,6 +331,20 @@ if [ -n "$DIGEST_DIR" ] && [ "$DRY_RUN" = false ]; then
     printf '%s\n' "$digest" > "$DIGEST_DIR/proposals.json"
     render_markdown > "$DIGEST_DIR/proposals.md"
     echo "[OK] discovery digest: $DIGEST_DIR/proposals.json (+ .md) — $proposed proposal(s)" >&2
+fi
+
+# --emit-issue: surface the proposals as ONE propose-only GitHub issue (mirrors
+# the watch). No-noise: only when there is something to review (proposed / moat /
+# graduation > 0). Reuses emit_issue (CWD-independent -R, fail-safe). Never auto-adds.
+if [ "$EMIT_ISSUE" = true ] && [ "$DRY_RUN" = false ] && [ $((proposed + moat + graduation)) -gt 0 ]; then
+    _disco_body=$(mktemp 2>/dev/null)
+    if [ -n "$DIGEST_DIR" ] && [ -f "$DIGEST_DIR/proposals.md" ]; then
+        cp "$DIGEST_DIR/proposals.md" "$_disco_body"
+    else
+        render_markdown > "$_disco_body"
+    fi
+    emit_issue "Curation discovery — $NOW" "$_disco_body"
+    rm -f "$_disco_body"
 fi
 printf '%s\n' "$digest"
 exit 0

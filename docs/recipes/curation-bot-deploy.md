@@ -174,24 +174,63 @@ Because it bills against the post-2026-06-15 agentic credit, it runs **monthly**
 ANTHROPIC_API_KEY=sk-ant-xxxxxxxx   # a dedicated key with a low monthly cap set in the console
 ```
 
-Wrapper `/opt/claude-base/scripts/curation-discover-run.sh`:
+Wrapper `/home/ubuntu/curation-bot/discover-run.sh` (mirrors the watch's `run.sh` — `cd` into the repo so `claude`/`git` resolve, then run from a fresh checkout):
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 REPO=/opt/claude-base
-OUT=/var/lib/curation-bot/discovery
-
+OUT=/home/ubuntu/curation-bot/discovery
 mkdir -p "$OUT"
 git -C "$REPO" fetch --quiet origin main
 git -C "$REPO" reset --hard --quiet origin/main
+cd "$REPO"   # so `gh issue create` (via --emit-issue) and `claude` resolve context
 
-# --budget caps token spend; the script stops and reports on exhaustion.
-"$REPO/scripts/curation-discover.sh" --digest-dir "$OUT" --budget 150000
-# Review $OUT/proposals.md, then open candidates manually — discovery never auto-adds.
+# --budget caps token spend; the job stops and reports on exhaustion.
+# --emit-issue opens ONE propose-only issue with the proposals (no-noise: only
+# when there is something to review). Without it the digest sits unread in $OUT.
+"$REPO/scripts/curation-discover.sh" --digest-dir "$OUT" --budget 150000 --emit-issue
+# Review the issue (or $OUT/proposals.md), then open candidates manually — discovery never auto-adds.
 ```
 
-`/etc/systemd/system/curation-discover.service` mirrors the watch service but with `EnvironmentFile=/etc/claude-base-discover.env` and `ExecStart=…/curation-discover-run.sh`; the timer uses `OnCalendar=*-*-01 04:00:00` (monthly). Keep `gh` auth available too (discovery still reads public signals). After a run, review `proposals.md` and open any candidate yourself — discovery proposes, it never installs.
+`/etc/systemd/system/curation-discover.service`:
+
+```ini
+[Unit]
+Description=Marketplace curation discovery (monthly, LLM, budget-capped)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Environment=HOME=/home/ubuntu
+EnvironmentFile=/etc/claude-base-discover.env   # the ONLY place the model key lives
+ExecStart=/home/ubuntu/curation-bot/discover-run.sh
+NoNewPrivileges=true
+PrivateTmp=true
+```
+
+`/etc/systemd/system/curation-discover.timer`:
+
+```ini
+[Unit]
+Description=Run curation discovery monthly
+
+[Timer]
+OnCalendar=*-*-01 04:00:00
+Persistent=true
+RandomizedDelaySec=1800
+
+[Install]
+WantedBy=timers.target
+```
+
+Enable: `sudo systemctl enable --now curation-discover.timer`.
+
+> **`--emit-issue` needs the same `gh` as the nightly watch**, with **`Issues: read & write`** on the fine-grained PAT — otherwise `gh issue create` fails and the proposals never surface (the exact bug fixed for the watch: emission now passes `-R`, but the **token still needs the scope**). `gh` is shared from `~/.config/gh`; the discover env file adds **only** `ANTHROPIC_API_KEY`, never the `gh` token.
+
+> **Auth note:** `claude -p` here should use a **dedicated, capped `ANTHROPIC_API_KEY`** (the env file), **not** the interactive subscription login in `~/.claude/.credentials.json` — post-2026-06-15 a headless/cron `claude -p` is metered on the agentic credit, so isolate its spend on a key with a **hard monthly cap set in the Anthropic console** (the real backstop, independent of `--budget`).
 
 > Setting a **hard monthly spend cap on the API key in the Anthropic console** is the real backstop: even if `--budget` were misconfigured, the key cannot overspend.
 
