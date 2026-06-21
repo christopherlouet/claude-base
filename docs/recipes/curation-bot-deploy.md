@@ -166,73 +166,73 @@ jq '.findingCount' /var/lib/curation-bot/digest/digest.json
 
 `scripts/curation-discover.sh` surfaces **newly-published** community skills in covered domains and proposes the ones that clear trust + safety + advice-neutrality. The trust and safety gates are LLM-free; only the advice-neutrality + fit judgment calls a model (`claude -p`, Haiku triage with escalation), under a **hard token budget** that **fails safe** — budget exhaustion defers the remaining candidates and is reported, never a silent stop or runaway spend (EF-012).
 
-Because it bills against the post-2026-06-15 agentic credit, it runs **monthly** on a **dedicated, capped API key — in its own unit with its own `EnvironmentFile`, never mixed with the nightly watch** (which must stay $0).
+It runs **monthly**, in its **own unit, never mixed with the $0 nightly watch**, under a hard `--budget` token cap.
 
-`/etc/claude-base-discover.env` (chmod 600 — the **only** place the model key lives):
+> **Billing status (verify before relying on it):** the 2026-06-15 plan to meter `claude -p` on a separate "agentic" credit was **paused on 2026-06-16** and is being reworked. As of this writing, `claude -p` counts against your **normal subscription limits** — but the policy is unstable, so confirm the current state and keep `--budget` tight.
+
+### Auth — two paths (pick by your environment)
+
+`claude -p` in `-p` (non-interactive) mode picks auth in this order: `ANTHROPIC_API_KEY` → `CLAUDE_CODE_OAUTH_TOKEN` → subscription OAuth (`~/.claude/.credentials.json`).
+
+**Path A — dedicated, capped API key (robust default for truly unattended).** A key does **not expire**; set a **hard monthly spend cap in the Anthropic console** (the real backstop, independent of `--budget`) and you can run forever without touching it. Put it in its **own** `EnvironmentFile`, never mixed with the watch:
 
 ```bash
-ANTHROPIC_API_KEY=sk-ant-xxxxxxxx   # a dedicated key with a low monthly cap set in the console
+# /etc/claude-base-discover.env  (chmod 600 — the ONLY place the model key lives)
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxx
 ```
 
-Wrapper `/home/ubuntu/curation-bot/discover-run.sh` (mirrors the watch's `run.sh` — `cd` into the repo so `claude`/`git` resolve, then run from a fresh checkout):
+**Path B — subscription login + a frequent keepalive (fine on a homelab already running `claude` jobs).** No key needed, but a subscription **OAuth access token expires (~1–2 weeks) and headless `claude -p` does NOT auto-refresh it** — it eventually returns `401` and stays broken until a human runs `claude` then `/login` **interactively** on the box. Mitigate, don't ignore:
+> - a **daily keepalive ping** (`claude -p "pong" --max-turns 1 --model haiku`) keeps the refresh token warm and **alerts you** (e.g. Telegram) the moment it 401s, so you re-login promptly;
+> - the discovery wrapper below **preflights** the same ping and **bails** on failure, so a dead token never masquerades as "0 candidates";
+> - accept that Path B needs **periodic manual `/login`** — if that's not acceptable for your cadence, use Path A.
+
+### Wrapper + shim (`/home/ubuntu/curation-bot/`)
+
+`--tools ""` (drops ~34k cached tokens → ~98% cheaper) needs a real argv, so wrap `claude` in a tiny shim and point `CURATION_LLM_CMD` at it:
 
 ```bash
+# claude-disco
+#!/usr/bin/env bash
+exec claude -p --tools "" --strict-mcp-config "$@"
+```
+
+```bash
+# discover-run.sh
 #!/usr/bin/env bash
 set -euo pipefail
-REPO=/opt/claude-base
-OUT=/home/ubuntu/curation-bot/discovery
+REPO=/opt/claude-base; BOT=/home/ubuntu/curation-bot; OUT=$BOT/discovery
 mkdir -p "$OUT"
-git -C "$REPO" fetch --quiet origin main
-git -C "$REPO" reset --hard --quiet origin/main
-cd "$REPO"   # so `gh issue create` (via --emit-issue) and `claude` resolve context
-
-# --budget caps token spend; the job stops and reports on exhaustion.
-# --emit-issue opens ONE propose-only issue with the proposals (no-noise: only
-# when there is something to review). Without it the digest sits unread in $OUT.
+git -C "$REPO" fetch --quiet origin main && git -C "$REPO" reset --hard --quiet origin/main
+cd "$REPO"
+export CURATION_LLM_CMD="$BOT/claude-disco"
+# Preflight (Path B): bail if auth is down so it can't look like "0 candidates".
+printf 'Reply with just: pong' | "$BOT/claude-disco" --model haiku --max-turns 1 2>/dev/null | grep -qi pong \
+  || { echo "preflight failed — claude auth down (run: claude then /login)"; exit 1; }
+# --emit-issue: ONE propose-only issue with the proposals (no-noise). Never auto-adds.
 "$REPO/scripts/curation-discover.sh" --digest-dir "$OUT" --budget 150000 --emit-issue
-# Review the issue (or $OUT/proposals.md), then open candidates manually — discovery never auto-adds.
 ```
 
-`/etc/systemd/system/curation-discover.service`:
+### Schedule — cron (no sudo) **or** systemd
+
+**Zero-sudo (user crontab):**
+
+```cron
+0 4 1 * * /home/ubuntu/curation-bot/discover-run.sh >> /home/ubuntu/curation-bot/discover.log 2>&1
+```
+
+**Or a systemd unit** (Path A wants `EnvironmentFile=/etc/claude-base-discover.env`; needs root to place in `/etc` + `systemctl enable`):
 
 ```ini
-[Unit]
-Description=Marketplace curation discovery (monthly, LLM, budget-capped)
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-User=ubuntu
-Environment=HOME=/home/ubuntu
-EnvironmentFile=/etc/claude-base-discover.env   # the ONLY place the model key lives
-ExecStart=/home/ubuntu/curation-bot/discover-run.sh
-NoNewPrivileges=true
-PrivateTmp=true
+# /etc/systemd/system/curation-discover.service        |  # …discover.timer
+[Service]                                               |  [Timer]
+Type=oneshot                                            |  OnCalendar=*-*-01 04:00:00
+User=ubuntu                                             |  Persistent=true
+Environment=HOME=/home/ubuntu                           |  RandomizedDelaySec=1800
+EnvironmentFile=/etc/claude-base-discover.env  # Path A  |  [Install]
+ExecStart=/home/ubuntu/curation-bot/discover-run.sh     |  WantedBy=timers.target
 ```
 
-`/etc/systemd/system/curation-discover.timer`:
-
-```ini
-[Unit]
-Description=Run curation discovery monthly
-
-[Timer]
-OnCalendar=*-*-01 04:00:00
-Persistent=true
-RandomizedDelaySec=1800
-
-[Install]
-WantedBy=timers.target
-```
-
-Enable: `sudo systemctl enable --now curation-discover.timer`.
-
-> **`--emit-issue` needs the same `gh` as the nightly watch**, with **`Issues: read & write`** on the fine-grained PAT — otherwise `gh issue create` fails and the proposals never surface (the exact bug fixed for the watch: emission now passes `-R`, but the **token still needs the scope**). `gh` is shared from `~/.config/gh`; the discover env file adds **only** `ANTHROPIC_API_KEY`, never the `gh` token.
-
-> **Auth note:** `claude -p` here should use a **dedicated, capped `ANTHROPIC_API_KEY`** (the env file), **not** the interactive subscription login in `~/.claude/.credentials.json` — post-2026-06-15 a headless/cron `claude -p` is metered on the agentic credit, so isolate its spend on a key with a **hard monthly cap set in the Anthropic console** (the real backstop, independent of `--budget`).
-
-> Setting a **hard monthly spend cap on the API key in the Anthropic console** is the real backstop: even if `--budget` were misconfigured, the key cannot overspend.
+> **`--emit-issue` needs the same `gh` as the nightly watch**, with **`Issues: read & write`** on the PAT — the emission now passes `-R` (so it works from any CWD), but the **token still needs the scope**. `gh` is shared from `~/.config/gh`; the discover env file (Path A) adds **only** `ANTHROPIC_API_KEY`, never the `gh` token.
 
 ---
 
