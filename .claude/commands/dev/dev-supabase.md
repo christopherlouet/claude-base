@@ -1,37 +1,33 @@
-# DEV-SUPABASE Agent
+# DEV-SUPABASE Agent (pointer)
 
 Configure and use Supabase as a backend (Auth, Database, Storage, Realtime, Edge Functions).
 
-## Request context
+## Context
 $ARGUMENTS
 
-## Goal
+## Delegate to the vendor toolkit
 
-Configure Supabase as a backend — authentication, CRUD, realtime, storage and edge
-functions — for whatever stack the project uses (the JS/TS `@supabase/supabase-js` client
-is the most common; `supabase-py`, `supabase_flutter` and others follow the same model).
+`claude-base`'s prior `dev-supabase` content (48-line checklist) is **superseded** by [`supabase/agent-skills`](https://github.com/supabase/agent-skills) — Supabase's own toolkit, maintained by the Supabase team in sync with the current API (Auth, DB, Edge Functions, Realtime, Storage), goes deeper than a hand-maintained checklist on a backend the vendor owns. The repo ships two skills (client patterns + Postgres best-practices). The sibling `dev-supabase` **skill** already graduated to this pointer.
 
-## Workflow
+Install:
 
-- Initialize the Supabase client for the detected stack (e.g. `@supabase/supabase-js` for web/Node, `supabase_flutter` for Flutter, `supabase-py` for Python); load the URL + anon key from environment variables
-- Configure authentication (Email/Password, OAuth Google/Apple, Magic Link, auth state listener)
-- Implement CRUD operations (select with joins, insert, update, upsert, delete, count)
-- Configure Row Level Security (RLS) on ALL tables with policies per operation
-- Handle errors (`PostgrestError`/`AuthError`) with a consistent result/Either pattern
-- Implement realtime subscriptions (channel / `onPostgresChanges`)
-- Configure storage (upload, download, signed URLs, delete)
-- Call edge functions if needed
-- Clean up subscriptions on teardown (unsubscribe / dispose)
+```bash
+# Vendor publishes via marketplace (verify on their README):
+claude plugin install supabase@supabase
 
-## Expected output
+# Fallback — clone and symlink both skills:
+git clone --depth 1 https://github.com/supabase/agent-skills ~/dev/vendor-skills/supabase
+ln -s ~/dev/vendor-skills/supabase/skills/supabase ./.claude/skills/supabase
+ln -s ~/dev/vendor-skills/supabase/skills/supabase-postgres-best-practices \
+      ./.claude/skills/supabase-postgres-best-practices
+```
 
-Supabase client initialization, authentication service, repositories with CRUD,
-Realtime and Storage services, and unit tests — idiomatic for the project's stack.
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Supabase — `supabase/agent-skills`". Reduction rationale: [`specs/dev-command-vendor-graduation/spec.md`](../../../specs/dev-command-vendor-graduation/spec.md).
 
 ## Related agents
 
-| Agent | When to use it |
-|-------|------------------|
+| Agent | Usage |
+|-------|-------|
 | `/dev:dev-api` | GraphQL/REST alternative/complement |
 | `/dev:dev-flutter` | Flutter widgets and screens (if mobile) |
 | `/ops:ops-database` | Schema design |
@@ -39,10 +35,4 @@ Realtime and Storage services, and unit tests — idiomatic for the project's st
 
 ---
 
-IMPORTANT: NEVER expose the `service_role` key in client-side code.
-
-YOU MUST enable RLS on every table with appropriate policies.
-
-NEVER disable RLS in production, even temporarily.
-
-Think hard about RLS policies - they are your last line of defense.
+YOU MUST enable RLS on every table with appropriate policies; NEVER expose the `service_role` key in client-side code or disable RLS in production.
