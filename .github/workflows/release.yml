@@ -22,7 +22,7 @@ jobs:
         uses: bats-core/bats-action@4.0.0
 
       - name: Run tests
-        run: bats tests/*.bats
+        run: ./scripts/test.sh
 
       - name: Validate
         run: |
