@@ -6,10 +6,11 @@ A **personal memory of lessons** that carries across **all your projects** (and 
 
 ## How it works
 
-- **The store** is a single file: `~/.claude/rules/lessons.md`. It is created the first time you confirm a lesson.
+- **The store** is a single file: `~/.claude/rules/lessons.md`. It is created the first time you confirm a lesson. Each lesson is a one-line `- ` bullet, optionally grouped under a `## Topic` heading so the file stays readable as it grows.
 - **Recall is automatic.** Claude Code loads everything under `~/.claude/rules/` into *every* project session, so a lesson you confirm once is in context everywhere — no import, no command.
 - **Capture is a human-gated reflex.** After a genuinely instructive moment (a fix that took several attempts, an explicit correction from you, a non-obvious root cause), the assistant proposes **one** short, generalized, sanitized lesson and asks you to keep / edit / discard it. Nothing is stored without your confirmation.
-- **It stays small.** The store is loaded into every session, so it is bounded (~2,000 characters / ~15–20 lessons). When it fills up, you are prompted to prune.
+- **Recurring mistakes are counted, not duplicated.** If the same lesson comes up again, you are offered to bump a `(seen N times)` marker on the existing line instead of adding a second copy — so the most-repeated lessons are easy to spot and prioritize.
+- **It stays small.** The store is loaded into every session, so it is bounded (~2,000 characters / ~15–20 lessons). When it fills up, you are prompted to prune (`/lessons --prune` reports over-budget, duplicates, and the most-repeated lessons).
 
 ## Privacy
 

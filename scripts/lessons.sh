@@ -13,8 +13,13 @@
 #   prune-check    [STORE] [BUDGET] Check the lessons store against a byte budget;
 #                                   prints "OK size/budget" or "OVER size/budget"
 #                                   (non-zero), plus "DUP: <line>" for duplicate
-#                                   lesson lines. STORE defaults to
-#                                   ~/.claude/rules/lessons.md, BUDGET to 2000.
+#                                   lessons and "RECUR N: <line>" for lessons that
+#                                   carry a "(seen N times)" recurrence marker.
+#                                   Section-aware: "## " topic headings are never
+#                                   treated as lessons, and "foo" / "foo (seen N
+#                                   times)" dedupe to the same lesson. STORE
+#                                   defaults to ~/.claude/rules/lessons.md, BUDGET
+#                                   to 2000.
 # =============================================================================
 
 set -euo pipefail
@@ -57,12 +62,35 @@ cmd_prune_check() {
     local size=0
     [ -f "$store" ] && size=$(wc -c < "$store" | tr -d '[:space:]')
 
-    # Duplicate lesson lines (normalized: trim + lowercase), reported once each.
     if [ -f "$store" ]; then
+        # Recurrence signal (US-9): surface lessons carrying a "(seen N times)"
+        # marker so the most-repeated ones are easy to spot and prioritize.
+        local recur
+        recur=$(awk '{
+            if (match($0, /\(seen[[:space:]]+[0-9]+[[:space:]]+times\)/)) {
+                seg=substr($0, RSTART, RLENGTH); gsub(/[^0-9]/, "", seg)
+                line=$0; sub(/^[[:space:]]+/, "", line); sub(/[[:space:]]+$/, "", line)
+                printf "RECUR %s: %s\n", seg, line
+            }
+        }' "$store" || true)
+        [ -n "$recur" ] && printf '%s\n' "$recur"
+
+        # Duplicate lessons, SECTION- and RECURRENCE-aware: skip "## " topic
+        # headings (US-8 — only lessons are deduped, never headings), and
+        # normalize away the list marker and any "(seen N times)" marker so that
+        # "foo" and "foo (seen 2 times)" are the SAME lesson (the user merges
+        # them into one recurrence-bumped line). Reported once each.
         local dups
         dups=$(grep -vE '^[[:space:]]*$' "$store" \
-            | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
-            | awk '{ key=tolower($0); seen[key]++; if (seen[key]==2) print $0 }')
+            | grep -vE '^[[:space:]]*#{1,6}[[:space:]]' \
+            | awk '{
+                disp=$0; sub(/^[[:space:]]+/, "", disp); sub(/[[:space:]]+$/, "", disp)
+                key=tolower(disp)
+                sub(/^[-*+][[:space:]]+/, "", key)
+                sub(/[[:space:]]*\(seen[[:space:]]+[0-9]+[[:space:]]+times\)$/, "", key)
+                seen[key]++
+                if (seen[key]==2) print disp
+              }' || true)
         if [ -n "$dups" ]; then
             while IFS= read -r d; do
                 [ -z "$d" ] && continue
