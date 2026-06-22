@@ -259,9 +259,10 @@ EOF
     skill_count=$(ls -d "$BASE_DIR/.claude/skills/"*/ 2>/dev/null | wc -l)
     [ "$skill_count" -ge 5 ]
 
-    # Check that each skill has a README
+    # Check that each skill has its definition file (SKILL.md is the convention;
+    # README.md/index.md kept as historical fallbacks)
     for skill in "$BASE_DIR/.claude/skills/"*/; do
-        [ -f "${skill}README.md" ] || [ -f "${skill}index.md" ] || [ -f "${skill}skill.md" ] || true
+        [ -f "${skill}SKILL.md" ] || [ -f "${skill}README.md" ] || [ -f "${skill}index.md" ]
     done
 }
 
@@ -286,7 +287,7 @@ EOF
 
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/readonly"
     # Must fail or warn
-    [[ "$status" -ne 0 ]] || [[ "$output" == *"permission"* ]] || [[ "$output" == *"Permission"* ]] || true
+    [[ "$status" -ne 0 ]] || [[ "$output" == *"permission"* ]] || [[ "$output" == *"Permission"* ]]
 
     # Cleanup
     chmod 755 "$TEST_DIR/readonly"

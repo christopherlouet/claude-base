@@ -51,7 +51,8 @@ teardown() {
 
 @test "diff.sh detects an unconfigured project" {
     run "$DIFF_SCRIPT" "$TEST_DIR"
-    [[ "$output" == *".claude"* ]] || [[ "$output" == *"pas"* ]] || [[ "$output" == *"non"* ]] || true
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"No Claude configuration"* ]]
 }
 
 @test "diff.sh compares an installed project" {
@@ -72,7 +73,7 @@ teardown() {
     [ "$status" -eq 0 ]
 
     run "$DIFF_SCRIPT" "$TEST_DIR"
-    [[ "$output" == *"identique"* ]] || [[ "$output" == *"identical"* ]] || [[ "$output" == *"="* ]] || true
+    [[ "$output" == *"identique"* ]] || [[ "$output" == *"identical"* ]] || [[ "$output" == *"="* ]]
 }
 
 @test "diff.sh detects modified files" {
@@ -83,7 +84,7 @@ teardown() {
     echo "# Modification" >> "$TEST_DIR/.claude/commands/work/work-explore.md"
 
     run "$DIFF_SCRIPT" "$TEST_DIR"
-    [[ "$output" == *"modifi"* ]] || [[ "$output" == *"changed"* ]] || [[ "$output" == *"M"* ]] || true
+    [[ "$output" == *"modifi"* ]] || [[ "$output" == *"changed"* ]] || [[ "$output" == *"M"* ]]
 }
 
 # =============================================================================
@@ -109,7 +110,7 @@ teardown() {
 
     run "$DIFF_SCRIPT" --content "$TEST_DIR"
     # Should show diff content
-    [[ "$output" == *"+"* ]] || [[ "$output" == *"-"* ]] || [[ "$output" == *"Test"* ]] || true
+    [[ "$output" == *"+"* ]] || [[ "$output" == *"-"* ]] || [[ "$output" == *"Test"* ]]
 }
 
 # =============================================================================
@@ -121,5 +122,5 @@ teardown() {
     [ "$status" -eq 0 ]
 
     run "$DIFF_SCRIPT" "$TEST_DIR"
-    [[ "$output" == *"fichier"* ]] || [[ "$output" == *"file"* ]] || [[ "$output" == *"total"* ]] || true
+    [[ "$output" == *"fichier"* ]] || [[ "$output" == *"file"* ]] || [[ "$output" == *"total"* ]]
 }

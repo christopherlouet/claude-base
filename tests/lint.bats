@@ -46,7 +46,7 @@ teardown() {
     run "$LINT_SCRIPT"
     # If shellcheck is not installed, the script must report it
     if ! command -v shellcheck &>/dev/null; then
-        [[ "$output" == *"shellcheck"* ]] || [[ "$output" == *"ShellCheck"* ]] || true
+        [[ "$output" == *"shellcheck"* ]] || [[ "$output" == *"ShellCheck"* ]]
     fi
 }
 
@@ -97,7 +97,7 @@ EOF
     if command -v shellcheck &>/dev/null; then
         run "$LINT_SCRIPT" "$TEST_DIR"
         # ShellCheck should find warnings
-        [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$output" == *"SC"* ]] || true
+        [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$output" == *"SC"* ]]
     else
         skip "shellcheck not installed"
     fi
