@@ -158,3 +158,52 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"OK"* ]]
 }
+
+# =============================================================================
+# prune-check — Phase 3: topic grouping (US-8) + recurrence signal (US-9)
+# =============================================================================
+
+@test "prune-check: a grouped store with topic headings is clean (headings not lessons)" {
+    local store="$TEST_DIR/lessons.md"
+    printf -- '## Git\n- Rebase feature branches.\n\n## Testing\n- Cover edge cases.\n' > "$store"
+    run "$LESSONS" prune-check "$store" 100000
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"DUP:"* ]]
+}
+
+@test "prune-check: identical topic headings are not reported as duplicates" {
+    local store="$TEST_DIR/lessons.md"
+    # A heading repeated (e.g. after a sloppy sync merge) must not be a DUP — only
+    # lessons are deduped, never section headings.
+    printf -- '## Traps\n- First lesson.\n## Traps\n- Second lesson.\n' > "$store"
+    run "$LESSONS" prune-check "$store" 100000
+    [[ "$output" != *"DUP:"* ]]
+}
+
+@test "prune-check: a lesson and its recurrence-marked twin dedupe to one (DUP)" {
+    local store="$TEST_DIR/lessons.md"
+    # "foo" and "foo (seen N times)" are the SAME lesson — flag so the user merges
+    # them into a single recurrence-bumped line rather than keeping both.
+    printf -- '- Quote variable strips.\n- Quote variable strips. (seen 2 times)\n' > "$store"
+    run "$LESSONS" prune-check "$store" 100000
+    [[ "$output" == *"DUP:"* ]]
+    [[ "$output" == *"Quote variable strips."* ]]
+}
+
+@test "prune-check: surfaces recurrence-marked lessons with a RECUR signal" {
+    local store="$TEST_DIR/lessons.md"
+    printf -- '- A common trap. (seen 4 times)\n- A plain lesson.\n' > "$store"
+    run "$LESSONS" prune-check "$store" 100000
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"RECUR 4:"* ]]
+    [[ "$output" == *"common trap"* ]]
+}
+
+@test "prune-check: a store of only headings (no lessons) is a clean no-op" {
+    local store="$TEST_DIR/lessons.md"
+    printf -- '## Git\n## Testing\n' > "$store"
+    run "$LESSONS" prune-check "$store" 100000
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"OK"* ]]
+    [[ "$output" != *"DUP:"* ]]
+}

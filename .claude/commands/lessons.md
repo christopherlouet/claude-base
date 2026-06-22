@@ -34,9 +34,14 @@ For when the in-conversation reflex didn't fire but you want to keep a lesson:
 1. Take the lesson just learned, **generalize** it to a one-line principle and
    **sanitize** it (strip project/company/person names, paths, URLs, identifiers,
    verbatim snippets, secrets).
-2. Show it and ask the user to **keep / edit / discard**.
-3. On confirmation, append it to `~/.claude/rules/lessons.md` (create if absent).
-   If it can't be generalized, keep it as a local project memory instead.
+2. **Check for recurrence** — the store is in your context. If the same principle
+   is already stored, propose **bumping** its `(seen N times)` marker instead of
+   adding a duplicate (`(seen 2 times)` on the first repeat, then N+1).
+3. Show it and ask the user to **keep / edit / discard** (or confirm the bump).
+4. On confirmation, write to `~/.claude/rules/lessons.md` (create if absent):
+   append the new lesson as a `- ` bullet under its matching `## Topic` heading
+   (create the heading if none fits), or apply the recurrence bump. If it can't
+   be generalized, keep it as a local project memory instead.
 
 ### `--bootstrap` (one-off backfill)
 
@@ -51,10 +56,14 @@ Seed the store from lessons you already accumulated, so you don't start from scr
 
 ### `--prune` (stay within budget)
 
-1. Run `claude-base lessons prune-check` (prints `OK`/`OVER size/budget` and
-   `DUP:` lines for duplicates).
-2. If `OVER` or duplicates exist, propose merges (near-duplicates) and drops
-   (superseded lessons). **Never delete without explicit confirmation.**
+1. Run `claude-base lessons prune-check` (prints `OK`/`OVER size/budget`, `DUP:`
+   lines for duplicates — section-aware, so `## Topic` headings and a lesson's
+   `(seen N times)` twin are handled — and `RECUR N:` for the most-repeated
+   lessons).
+2. If `OVER` or duplicates exist, propose merges (near-duplicates, incl. folding
+   a duplicate into a single `(seen N times)` line) and drops (superseded
+   lessons). Surface the high-`RECUR` lessons as keepers. **Never delete without
+   explicit confirmation.**
 
 ## Workflow
 
