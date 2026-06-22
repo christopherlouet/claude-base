@@ -30,6 +30,8 @@ echo "gh \$*" >> "$TEST_DIR/gh.log"
 if [ "\$1" != "api" ]; then exit 0; fi   # non-api (e.g. issue create) → log + succeed
 case "\$2" in
   search/repositories*) cat "$TEST_DIR/fx/search.json" 2>/dev/null || { echo "fake gh: 404 search" >&2; exit 1; } ;;
+  *git/trees/*) f="$TEST_DIR/fx/\$(printf '%s' "\$2" | tr '/' '_')"
+     if [ -f "\$f" ]; then cat "\$f"; else echo '{"tree":[],"truncated":false}'; fi ;;
   *) f="$TEST_DIR/fx/\$(printf '%s' "\$2" | tr '/' '_')"
      if [ -f "\$f" ]; then cat "\$f"; else echo "fake gh: 404 \$2" >&2; exit 1; fi ;;
 esac
