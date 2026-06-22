@@ -264,7 +264,7 @@ detect_neovim() {
     DETECTED_DEPENDENCIES+=("Lua" "Neovim")
 
     if [[ "$nvim_root" != "$dir" ]]; then
-        local subdir="${nvim_root#$dir/}"
+        local subdir="${nvim_root#"$dir"/}"
         DETECTED_DEPENDENCIES+=("(config in $subdir/)")
     fi
 

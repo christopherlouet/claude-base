@@ -210,7 +210,7 @@ compare_commands() {
     if [[ -d "$base_dir" ]]; then
         while IFS= read -r f; do
             # Compute the relative path
-            local rel_path="${f#$base_dir/}"
+            local rel_path="${f#"$base_dir"/}"
             all_files+=("$rel_path")
         done < <(find "$base_dir" -name "*.md" -type f 2>/dev/null)
     fi
@@ -219,7 +219,7 @@ compare_commands() {
     if [[ -d "$local_dir" ]]; then
         while IFS= read -r f; do
             # Compute the relative path
-            local rel_path="${f#$local_dir/}"
+            local rel_path="${f#"$local_dir"/}"
             all_files+=("$rel_path")
         done < <(find "$local_dir" -name "*.md" -type f 2>/dev/null)
     fi

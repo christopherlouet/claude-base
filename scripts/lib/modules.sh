@@ -9,7 +9,8 @@
 # minimal-manifest.txt: one repo-relative path per line, # comments, empty
 # lines ignored, trailing / means directory).
 #
-# Portability: macOS bash 3.2 — no associative arrays, no readarray.
+# Portability: the foundation requires bash 4+ (see check_base_requirements in
+# common.sh); this lib still avoids associative arrays / readarray to stay simple.
 # =============================================================================
 
 # Resolve the bundles directory relative to this file, overridable for tests.
@@ -305,7 +306,8 @@ migrate_legacy_marker() {
     done < <(detect_legacy_modules "$dir")
     # Empty-safe expansion: mods can be empty (detect_legacy_modules falls back
     # to modules_default_set, which is empty since v3) — "${mods[@]}" aborts
-    # under `set -u` on bash 3.2 (macOS).
+    # under `set -u` on bash < 4.4 (empty-array expansion bug, fixed in 4.4;
+    # the foundation supports bash 4.0+, so the guard is still needed).
     write_foundation_manifest "$dir" "$version" "" ${mods[@]+"${mods[@]}"} || return 1
     rm -f "$marker"
     printf 'modules: migrated legacy version marker to .claude/foundation.json (v%s, modules: %s)\n' \
