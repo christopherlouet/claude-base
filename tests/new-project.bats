@@ -55,7 +55,7 @@ EOF
 
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Node"* ]] || [[ "$output" == *"Express"* ]] || true
+    [[ "$output" == *"Node"* ]] || [[ "$output" == *"Express"* ]]
 }
 
 @test "new-project.sh detects a React project" {
@@ -71,7 +71,7 @@ EOF
 
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"React"* ]] || true
+    [[ "$output" == *"React"* ]]
 }
 
 @test "new-project.sh detects TypeScript" {
@@ -88,7 +88,7 @@ EOF
 
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"TypeScript"* ]] || true
+    [[ "$output" == *"TypeScript"* ]]
 }
 
 @test "new-project.sh detects Python" {
@@ -97,7 +97,7 @@ EOF
 
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Python"* ]] || [[ "$output" == *"Flask"* ]] || true
+    [[ "$output" == *"Python"* ]] || [[ "$output" == *"Flask"* ]]
 }
 
 @test "new-project.sh detects Go" {
@@ -110,7 +110,7 @@ EOF
 
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Go"* ]] || true
+    [[ "$output" == *"Go"* ]]
 }
 
 # =============================================================================
@@ -187,7 +187,7 @@ EOF
 
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"CI/CD"* ]] || [[ "$output" == *"GitHub Actions"* ]] || [[ "$output" == *"Tests"* ]] || true
+    [[ "$output" == *"CI/CD"* ]] || [[ "$output" == *"GitHub Actions"* ]] || [[ "$output" == *"Tests"* ]]
 }
 
 @test "new-project.sh does not replace existing CI/CD by default" {

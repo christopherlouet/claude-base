@@ -78,7 +78,7 @@ teardown() {
 @test "test.sh offers to install bats if missing" {
     if ! command -v bats &>/dev/null; then
         run "$TEST_SCRIPT"
-        [[ "$output" == *"install"* ]] || [[ "$output" == *"bats"* ]] || true
+        [[ "$output" == *"install"* ]] || [[ "$output" == *"bats"* ]]
     else
         skip "bats already installed"
     fi

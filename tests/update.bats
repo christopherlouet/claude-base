@@ -123,7 +123,7 @@ teardown() {
 @test "update.sh fails on a non-configured project" {
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
     # Should fail or warn because no .claude
-    [[ "$status" -ne 0 ]] || [[ "$output" == *".claude"* ]] || [[ "$output" == *"non"* ]] || true
+    [[ "$status" -ne 0 ]] || [[ "$output" == *".claude"* ]] || [[ "$output" == *"non"* ]]
 }
 
 @test "update.sh works on a configured project" {
@@ -190,7 +190,7 @@ teardown() {
 
     run "$UPDATE_SCRIPT" -y "$TEST_DIR"
     # Should display something about files
-    [[ "$output" == *"fichier"* ]] || [[ "$output" == *"file"* ]] || [[ "$output" == *"OK"* ]] || true
+    [[ "$output" == *"fichier"* ]] || [[ "$output" == *"file"* ]] || [[ "$output" == *"OK"* ]]
 }
 
 # =============================================================================

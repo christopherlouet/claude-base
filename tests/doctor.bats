@@ -81,14 +81,14 @@ teardown() {
     create_minimal_project "$TEST_DIR"
 
     run "$DOCTOR_SCRIPT" "$TEST_DIR"
-    [[ "$output" == *"CLAUDE.md"* ]] || true
+    [[ "$output" == *"CLAUDE.md"* ]]
 }
 
 @test "doctor.sh detects settings.json" {
     create_minimal_project "$TEST_DIR"
 
     run "$DOCTOR_SCRIPT" "$TEST_DIR"
-    [[ "$output" == *"settings"* ]] || true
+    [[ "$output" == *"settings"* ]]
 }
 
 # =============================================================================
@@ -113,7 +113,7 @@ teardown() {
     # Verify the presence of keys
     echo "$output" | jq -e '.checks' > /dev/null 2>&1 || \
     echo "$output" | jq -e '.status' > /dev/null 2>&1 || \
-    echo "$output" | jq -e '.passed' > /dev/null 2>&1 || true
+    echo "$output" | jq -e '.passed' > /dev/null 2>&1
 }
 
 # =============================================================================
@@ -125,7 +125,7 @@ teardown() {
     # Should mention at least one optional dependency
     [[ "$output" == *"jq"* ]] || \
     [[ "$output" == *"node"* ]] || \
-    [[ "$output" == *"python"* ]] || true
+    [[ "$output" == *"python"* ]]
 }
 
 # =============================================================================
@@ -141,12 +141,12 @@ teardown() {
 
 @test "doctor.sh counts agents" {
     run "$DOCTOR_SCRIPT" "$BATS_TEST_DIRNAME/.."
-    [[ "$output" == *"agent"* ]] || [[ "$output" == *"command"* ]] || true
+    [[ "$output" == *"agent"* ]] || [[ "$output" == *"command"* ]]
 }
 
 @test "doctor.sh counts skills" {
     run "$DOCTOR_SCRIPT" "$BATS_TEST_DIRNAME/.."
-    [[ "$output" == *"skill"* ]] || true
+    [[ "$output" == *"skill"* ]]
 }
 
 # =============================================================================

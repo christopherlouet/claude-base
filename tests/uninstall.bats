@@ -141,5 +141,5 @@ teardown() {
     [ "$status" -eq 0 ]
 
     run "$UNINSTALL_SCRIPT" -y "$TEST_DIR"
-    [[ "$output" == *"supprim"* ]] || [[ "$output" == *"remov"* ]] || [[ "$output" == *"delet"* ]] || [[ "$output" == *"OK"* ]] || true
+    [[ "$output" == *"supprim"* ]] || [[ "$output" == *"remov"* ]] || [[ "$output" == *"delet"* ]] || [[ "$output" == *"OK"* ]]
 }
