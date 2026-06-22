@@ -109,7 +109,7 @@ run_lint() {
     $FIX_MODE && shellcheck_opts+=("--format=diff")
 
     for script in "${scripts[@]}"; do
-        local relative_path="${script#$BASE_DIR/}"
+        local relative_path="${script#"$BASE_DIR"/}"
         
         if shellcheck "${shellcheck_opts[@]}" "$script" 2>/dev/null; then
             success "$relative_path"

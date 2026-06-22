@@ -26,8 +26,9 @@
 # Horizontal domains (biz/legal/growth) carry no special meaning here — their
 # rejection lives in validate-presets (S3).
 #
-# Portability: macOS bash 3.2 — no associative arrays, no readarray. The hot
-# path (catalog_removal_set) resolves each item once via _resolve into the
+# Portability: the foundation requires bash 4+ (see check_base_requirements in
+# common.sh); this lib still avoids associative arrays / readarray to stay simple.
+# The hot path (catalog_removal_set) resolves each item once via _resolve into the
 # _CF_DOMAIN/_CF_NAME globals and avoids per-item subshells.
 # =============================================================================
 
