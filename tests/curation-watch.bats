@@ -21,7 +21,12 @@ setup() {
 #!/usr/bin/env bash
 [ "\$1" = "api" ] || { echo "fake gh: bad call \$*" >&2; exit 1; }
 f="$TEST_DIR/fx/\$(printf '%s' "\$2" | tr '/' '_')"
-if [ -f "\$f" ]; then cat "\$f"; else echo "fake gh: 404 \$2" >&2; exit 1; fi
+if [ -f "\$f" ]; then cat "\$f"; exit 0; fi
+# Default: git-trees lists an empty tree (no exec surface); else 404.
+case "\$2" in
+    *git/trees/*) echo '{"tree":[],"truncated":false}'; exit 0 ;;
+    *) echo "fake gh: 404 \$2" >&2; exit 1 ;;
+esac
 EOF
     chmod +x "$TEST_DIR/fakebin/gh"
 }
@@ -436,7 +441,11 @@ setup_emit_fakes() {
 echo "gh \$*" >> "$TEST_DIR/gh.log"
 if [ "\$1" = "api" ]; then
   f="$TEST_DIR/fx/\$(printf '%s' "\$2" | tr '/' '_')"
-  if [ -f "\$f" ]; then cat "\$f"; exit 0; else echo "fake gh: 404 \$2" >&2; exit 1; fi
+  if [ -f "\$f" ]; then cat "\$f"; exit 0; fi
+  case "\$2" in
+    *git/trees/*) echo '{"tree":[],"truncated":false}'; exit 0 ;;
+    *) echo "fake gh: 404 \$2" >&2; exit 1 ;;
+  esac
 fi
 exit 0
 EOF
