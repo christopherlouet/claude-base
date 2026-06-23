@@ -131,19 +131,52 @@ known_set() {
     } | while IFS= read -r v; do [ -n "$v" ] && _repo_root "$v"; done | sort -u
 }
 
-# collect_candidates — run every source query, flatten items[].full_name, dedupe,
-# drop known repos, cap. gh failures are fail-safe (that source yields nothing).
+# _LIST_RESERVED — github.com path roots that are NOT user/org repos (so a link
+# to one must never become a candidate). Pipe-joined for a single egrep.
+_LIST_RESERVED='topics|sponsors|features|about|marketplace|apps|settings|orgs|users|collections|login|join|pricing|search|explore|notifications|readme|new|site|security|enterprise|contact|customer-stories|blog'
+
+# _list_candidates <list-repo> [<path>] — fetch a curated awesome-LIST's doc
+# (default branch README.md, or <path>) and echo the owner/repo of every
+# github.com repo it links to. Reserved github paths and a self-link are
+# filtered; the extracted repos are deduped/gated downstream exactly like search
+# hits — a list SEEDS candidates, it never bypasses a gate. Fail-safe: an
+# unfetchable/empty list yields nothing.
+_list_candidates() {
+    local repo="$1" path="${2:-README.md}" body decoded
+    body=$(curation_gh_api "repos/$repo/contents/$path" 2>/dev/null) || return 0
+    decoded=$(printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null | _curation_b64decode) || return 0
+    [ -n "$decoded" ] || return 0
+    printf '%s' "$decoded" \
+        | grep -oiE 'https?://github\.com/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+' \
+        | while IFS= read -r url; do _repo_root "$url"; done \
+        | grep -viE "^($_LIST_RESERVED)/" \
+        | grep -vixF "$repo"
+}
+
+# collect_candidates — run every source (search query OR curated list), flatten to
+# owner/repo, dedupe, drop known repos, cap. Per-source failures are fail-safe
+# (that source yields nothing).
 collect_candidates() {
     local known; known=$(known_set)
-    local per q path items
+    local per src kind query repo lpath path items
     per=$(jq -r '(.perPage | numbers) // 15' "$SOURCES")
     {
-        while IFS= read -r q; do
-            [ -n "$q" ] || continue
-            path="search/repositories?q=${q// /+}&per_page=${per}&sort=stars"
-            items=$(curation_gh_api "$path" 2>/dev/null) || continue
-            printf '%s' "$items" | jq -r '.items[]?.full_name // empty' 2>/dev/null
-        done < <(jq -r '.sources[]?.query' "$SOURCES")
+        while IFS= read -r src; do
+            [ -n "$src" ] || continue
+            kind=$(printf '%s' "$src" | jq -r '.kind // "search"')
+            if [ "$kind" = "list" ]; then
+                repo=$(printf '%s' "$src" | jq -r '.repo // empty')
+                [ -n "$repo" ] || continue
+                lpath=$(printf '%s' "$src" | jq -r '.path // "README.md"')
+                _list_candidates "$repo" "$lpath"
+            else
+                query=$(printf '%s' "$src" | jq -r '.query // empty')
+                [ -n "$query" ] || continue
+                path="search/repositories?q=${query// /+}&per_page=${per}&sort=stars"
+                items=$(curation_gh_api "$path" 2>/dev/null) || continue
+                printf '%s' "$items" | jq -r '.items[]?.full_name // empty' 2>/dev/null
+            fi
+        done < <(jq -c '.sources[]?' "$SOURCES")
     } | awk 'NF' | sort -u | grep -vxF -f <(printf '%s\n' "$known") 2>/dev/null | head -n "$MAX_CANDIDATES"
 }
 
