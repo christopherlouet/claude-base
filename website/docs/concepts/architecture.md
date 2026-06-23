@@ -314,7 +314,7 @@ Cross-cutting rules (16):
 ├── migration-safety.md    # package.json, tsconfig, next.config
 ├── service-worker.md      # sw.js, service-worker*
 ├── lsp.md                 # Multi-language — LSP vs Grep
-├── research.md            # Multi-language — check native before building
+├── research.md            # Multi-language — minimal-code ladder (YAGNI), native before custom
 └── base-maintenance.md   # .claude/** — sync catalog counters
 ```
 
