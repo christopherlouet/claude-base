@@ -31,6 +31,7 @@ git log main...HEAD --oneline
 - [ ] DRY (no duplication)
 - [ ] SOLID (single responsibility)
 - [ ] Reasonable complexity
+- [ ] No over-engineering (YAGNI: no speculative options/abstraction; could a stdlib/native/one-liner replace custom code?)
 
 #### Typing (TypeScript)
 - [ ] No `any`
