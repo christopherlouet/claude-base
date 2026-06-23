@@ -618,3 +618,51 @@ EOF
     [[ "$(grep -c 'pr create' "$TEST_DIR/gh.log")" -eq 0 ]]
     grep -qE 'git (switch|checkout) main' "$TEST_DIR/git.log"
 }
+
+# =============================================================================
+# _subpaths_for_repo (#384 subpath-scoping fix) — derive the '+'-joined, deduped
+# subpaths the safety screen scopes to, from registry vendorIds + preset ids/urls.
+# =============================================================================
+
+EMIT_LIB="$BATS_TEST_DIRNAME/../scripts/lib/curation-emit.sh"
+
+@test "_subpaths_for_repo: dedups + sorts subpaths from registry vendorIds and preset ids/urls" {
+    cat > "$TEST_DIR/registry.json" <<'EOF'
+{ "records": [
+  {"vendorId":"acme/mono/cro"},
+  {"vendorId":"acme/mono/analytics"},
+  {"vendorId":"other/repo"}
+] }
+EOF
+    cat > "$TEST_DIR/presets/p.json" <<'EOF'
+{ "recommendedVendorSkills": [
+  {"id":"acme/mono/onboarding"},
+  {"url":"https://github.com/acme/mono/tree/main/landing"}
+] }
+EOF
+    run bash -c "source '$EMIT_LIB'; _subpaths_for_repo acme/mono '$TEST_DIR/registry.json' '$TEST_DIR/presets'"
+    [ "$status" -eq 0 ]
+    # alphabetical, deduped, '+'-joined; the /tree/main/ infix is stripped
+    [ "$output" = "analytics+cro+landing+onboarding" ]
+}
+
+@test "_subpaths_for_repo: empty for a repo-root skill (no subpath)" {
+    cat > "$TEST_DIR/registry.json" <<'EOF'
+{ "records": [ {"vendorId":"acme/root"} ] }
+EOF
+    run bash -c "source '$EMIT_LIB'; _subpaths_for_repo acme/root '$TEST_DIR/registry.json' '$TEST_DIR/presets'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "_subpaths_for_repo: only matches the requested repo-root" {
+    cat > "$TEST_DIR/registry.json" <<'EOF'
+{ "records": [
+  {"vendorId":"acme/mono/cro"},
+  {"vendorId":"acme/other/secret"}
+] }
+EOF
+    run bash -c "source '$EMIT_LIB'; _subpaths_for_repo acme/mono '$TEST_DIR/registry.json' '$TEST_DIR/presets'"
+    [ "$status" -eq 0 ]
+    [ "$output" = "cro" ]
+}

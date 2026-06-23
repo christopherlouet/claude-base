@@ -27,7 +27,20 @@
 # (tree unlistable), exec-file-unfetchable (a listed exec file unreadable),
 # exec-surface-truncated (more exec files than the cap; the rest went unscanned).
 #
-# API:  curation_safety_screen <owner/repo> <ref>
+# Subpath scoping: when a skill lives in a subpath of a monorepo (registry
+# vendorId / preset id like phaserjs/phaser/skills or coreyhaines31/.../cro),
+# pass the '+'-joined subpath(s) as the 3rd arg — the doc fetch AND the exec-
+# surface scan then cover ONLY those subpaths, never the whole repo. Without
+# this, a big unrelated tree elsewhere false-trips exec-surface-truncated. In
+# subpath mode a missing <subpath>/SKILL.md is NOT a flag (the doc is often
+# nested); the scoped exec-surface scan is the load-bearing signal.
+#
+# Fail-safe (EF-012): anything that cannot be confirmed safe is FLAGGED, never
+# silently passed. Reasons: content-unfetchable (no doc — root mode only),
+# exec-surface-unfetchable (tree unlistable), exec-file-unfetchable (a listed
+# exec file unreadable), exec-surface-truncated (more exec files than the cap).
+#
+# API:  curation_safety_screen <owner/repo> <ref> [<subpaths>]
 #   stdout: one JSON object {repo, ref, verdict:"pass"|"flag", reasons[]}
 #   exit:   0 always (a verdict is always produced; failures become a flag).
 #   env:    CURATION_SAFETY_MAX_FILES — exec-surface file cap (default 25).
@@ -65,15 +78,31 @@ _curation_fetch_one() {
     printf '%s' "$decoded"
 }
 
-# _curation_fetch_content <repo> <ref> — echo the decoded text of the skill's
-# primary doc (SKILL.md, else README.md) at <ref>; return non-zero if neither is
-# fetchable OR decodable.
+# _curation_fetch_content <repo> <ref> [<subpaths>] — echo the decoded text of
+# the skill's primary doc(s). With no subpaths: the repo-root SKILL.md (else
+# README.md). With subpaths ('+'-joined, the registry's multi-skill notation):
+# each subpath's own SKILL.md/README.md, concatenated — a subpath skill's doc
+# lives under the subpath, NOT at the repo root. Non-zero if nothing is fetched.
 _curation_fetch_content() {
-    local repo="$1" ref="$2" file
-    for file in SKILL.md README.md; do
-        _curation_fetch_one "$repo" "$ref" "$file" && return 0
+    local repo="$1" ref="$2" subpaths="${3:-}" file
+    if [ -z "$subpaths" ]; then
+        for file in SKILL.md README.md; do
+            _curation_fetch_one "$repo" "$ref" "$file" && return 0
+        done
+        return 1
+    fi
+    local sp out="" got=1 d sps=()
+    IFS='+' read -ra sps <<< "$subpaths" || true
+    for sp in "${sps[@]}"; do
+        [ -n "$sp" ] || continue
+        for file in SKILL.md README.md; do
+            if d=$(_curation_fetch_one "$repo" "$ref" "$sp/$file"); then
+                out+="$d"$'\n'; got=0; break
+            fi
+        done
     done
-    return 1
+    [ "$got" -eq 0 ] && printf '%s' "$out"
+    return "$got"
 }
 
 # _curation_scan_text — read text on stdin, echo (one per line) the danger
@@ -124,7 +153,7 @@ _curation_scan_text() {
 #       1 = the tree could not be listed/parsed (caller fails safe);
 #       3 = listed but capped/truncated (caller flags + scans the partial list).
 _curation_list_exec_surface() {
-    local repo="$1" ref="$2" body
+    local repo="$1" ref="$2" subpaths="${3:-}" body
     local cap="${CURATION_SAFETY_MAX_FILES:-25}"
     body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
     # A response without a .tree array (e.g. an error object) is unusable.
@@ -139,6 +168,18 @@ _curation_list_exec_surface() {
             or (.path | split("/")[-1] | (test("^settings.*\\.json$") or test("^\\.?mcp\\.json$")))
           )
         | .path')
+    # Subpath scoping (#384 fix): when the skill lives in subpath(s), keep ONLY
+    # files under them — BEFORE the cap — so an unrelated big monorepo elsewhere
+    # never false-trips exec-surface-truncated. Literal prefix match (no regex).
+    if [ -n "$subpaths" ]; then
+        local sp sps=() scoped=""
+        IFS='+' read -ra sps <<< "$subpaths" || true
+        for sp in "${sps[@]}"; do
+            [ -n "$sp" ] || continue
+            scoped+=$(printf '%s\n' "$all" | awk -v p="$sp/" 'index($0,p)==1')$'\n'
+        done
+        all=$(printf '%s' "$scoped" | grep . | sort -u || true)
+    fi
     count=$(printf '%s' "$all" | grep -c . || true)
     if [ "$truncated" = "true" ] || [ "$count" -gt "$cap" ]; then
         printf '%s\n' "$all" | grep . | head -n "$cap" || true
@@ -148,25 +189,36 @@ _curation_list_exec_surface() {
     return 0
 }
 
-# curation_safety_screen <owner/repo> <ref>
+# curation_safety_screen <owner/repo> <ref> [<subpaths>]
+# <subpaths>: optional '+'-joined subpath(s) the skill occupies in the repo
+# (e.g. "skills" or "cro+analytics"). When given, the doc fetch AND the exec-
+# surface scan are scoped to those subpaths — never the whole monorepo.
 curation_safety_screen() {
-    local repo="$1" ref="$2"
+    local repo="$1" ref="$2" subpaths="${3:-}"
     local reasons=() text r
 
-    # The primary doc must be fetchable — fail safe otherwise (unchanged EF-012).
-    if ! text=$(_curation_fetch_content "$repo" "$ref"); then
-        _curation_safety_emit "$repo" "$ref" "flag" "content-unfetchable"
-        return 0
+    # 1. Scan the primary doc. Root mode: a repo-root SKILL.md/README.md MUST be
+    # fetchable — fail safe otherwise (unchanged EF-012). Subpath mode: the doc
+    # often lives nested under the subpath (e.g. skills/<name>/SKILL.md), so a
+    # missing <subpath>/SKILL.md is NOT a failure — the scoped exec-surface scan
+    # below is the load-bearing signal; the doc is scanned best-effort if present.
+    if [ -z "$subpaths" ]; then
+        if ! text=$(_curation_fetch_content "$repo" "$ref"); then
+            _curation_safety_emit "$repo" "$ref" "flag" "content-unfetchable"
+            return 0
+        fi
+    else
+        text=$(_curation_fetch_content "$repo" "$ref" "$subpaths" || true)
     fi
-
-    # 1. Scan the primary doc (SKILL.md/README.md).
-    while IFS= read -r r; do [ -n "$r" ] && reasons+=("$r"); done \
-        < <(printf '%s' "$text" | _curation_scan_text)
+    if [ -n "$text" ]; then
+        while IFS= read -r r; do [ -n "$r" ] && reasons+=("$r"); done \
+            < <(printf '%s' "$text" | _curation_scan_text)
+    fi
 
     # 2. Scan the REAL executable surface (*.sh, settings*.json hooks, .mcp.json).
     # A benign doc must not let a hostile hook/script/MCP command through.
     local surface rc
-    surface=$(_curation_list_exec_surface "$repo" "$ref"); rc=$?
+    surface=$(_curation_list_exec_surface "$repo" "$ref" "$subpaths"); rc=$?
     if [ "$rc" -eq 1 ]; then
         # Can't confirm the surface is safe → fail safe (never silently pass).
         reasons+=("exec-surface-unfetchable")
@@ -209,10 +261,10 @@ _curation_safety_emit() {
         --args "$@"
 }
 
-# CLI: curation-safety.sh <owner/repo> <ref>
+# CLI: curation-safety.sh <owner/repo> <ref> [<subpaths>]
 if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     set -u
-    [ $# -eq 2 ] || { echo "Usage: $(basename "$0") <owner/repo> <ref>" >&2; exit 2; }
-    curation_safety_screen "$1" "$2"
+    { [ $# -eq 2 ] || [ $# -eq 3 ]; } || { echo "Usage: $(basename "$0") <owner/repo> <ref> [<subpaths>]" >&2; exit 2; }
+    curation_safety_screen "$1" "$2" "${3:-}"
     exit $?
 fi
