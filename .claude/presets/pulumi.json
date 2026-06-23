@@ -1,38 +1,35 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "pulumi",
   "displayName": "Pulumi (vendor-pointer)",
   "description": "Pointer-only preset for the Pulumi Infrastructure-as-Code framework. Surfaces the canonical Pulumi skill suite (`pulumi/agent-skills`, Apache-2.0) at install time on projects containing a `Pulumi.yaml` config — authoritative Pulumi authoring patterns + migration workflows (Terraform→Pulumi, CloudFormation→Pulumi). No foundation skill filter, no marketplace plugin, no defaults override. Pulumi is independent (no vendor-neutrality concern). See `docs/recipes/recommended-vendor-skills.md` §Pulumi and `specs/presets-vendor-pointer-tier/spec.md` for the tier semantics.",
-
   "version": "1.0.0",
   "status": "vendor-pointer",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "appliesToTypes": ["generic"],
-
+  "appliesToTypes": [
+    "generic"
+  ],
   "detect": {
     "combinator": "anyOf",
-    "files": ["Pulumi.yaml"]
+    "files": [
+      "Pulumi.yaml"
+    ]
   },
-
   "recommendedVendorSkills": [
     {
       "id": "pulumi/agent-skills",
       "url": "https://github.com/pulumi/agent-skills",
       "rationale": "Canonical Pulumi authoring patterns + migration workflows (Terraform→Pulumi, CloudFormation→Pulumi). Verified via `gh api repos/pulumi/agent-skills` on 2026-05-18 — 48★, last commit 2026-05-13, Apache-2.0, not archived. Pair with claude-base's `ops-infra-code` skill (module hierarchy, naming conventions, deploy workflow).",
       "condition": "always",
-      "pinnedRef": "43626f25e118f4e107a63772084d9ce8d185efbb",
+      "pinnedRef": "478096e94bee50903fba4b0869d1c617956ae3a4",
       "trustTrack": "authority",
       "provenance": "Pulumi",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-06-23"
     }
   ],
-
   "outOfScope": [
     "Foundation skill curation — no `foundation.skills.keep/drop` filter (vendor-pointer tier)",
     "Marketplace plugins — none bundled (vendor-pointer tier)",
@@ -40,8 +37,8 @@
     "Terraform projects — see the `antonbabenko/terraform-skill` recipe entry instead",
     "CloudFormation / CDK / Bicep / generic IaC tooling — out of this preset's scope"
   ],
-
-  "categories": ["infra-devops"],
-
+  "categories": [
+    "infra-devops"
+  ],
   "relatedPresetsWanted": []
 }

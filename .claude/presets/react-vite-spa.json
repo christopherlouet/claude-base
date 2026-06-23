@@ -1,34 +1,36 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "react-vite-spa",
   "displayName": "React Vite SPA",
   "description": "React + Vite + React Router for Single-Page Applications. Targets SPAs without SSR/RSC: client-rendered apps, PWAs, and Capacitor-wrapped mobile shells. Keeps the full frontend toolkit (shadcn, react-perf, i18n, auth, graphql) and filters out server-centric, homelab, and mobile-native skills. Not the right preset for SSR/RSC (use `nextjs`), static-content sites (use `astro`), or native mobile distribution beyond a Capacitor wrap.",
-
   "version": "1.2.0",
   "status": "maintainer-vouched",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "defaultModules": ["api-data", "frontend"],
-
-  "appliesToTypes": ["react", "fullstack"],
-
+  "defaultModules": [
+    "api-data",
+    "frontend"
+  ],
+  "appliesToTypes": [
+    "react",
+    "fullstack"
+  ],
   "detect": {
     "combinator": "allOf",
-    "files": ["vite.config.*"],
+    "files": [
+      "vite.config.*"
+    ],
     "depFiles": [
-      {"path": "package.json", "contains": "\"react-router-dom\""}
+      {
+        "path": "package.json",
+        "contains": "\"react-router-dom\""
+      }
     ]
   },
-
   "foundation": {},
-
   "marketplacePlugins": [],
-
   "recommendedVendorSkills": [
     {
       "id": "vercel-labs/agent-skills",
@@ -71,7 +73,6 @@
       "lastVerified": "2026-06-13"
     }
   ],
-
   "defaults": {
     "ci": true,
     "hooks": true,
@@ -79,7 +80,6 @@
     "docker": false,
     "designStyle": "editorial"
   },
-
   "outOfScope": [
     "Server-side rendering or React Server Components — use the `nextjs` preset",
     "Static-content / blog / marketing sites — use the `astro` preset",
@@ -88,9 +88,9 @@
     "Opinionated data-fetching library choice (TanStack Query/SWR/Apollo) — preset stays neutral",
     "Build-tool alternatives (Rollup, esbuild, Rspack, Turbopack) — Vite is the explicit target"
   ],
-
-  "categories": ["web-frontend"],
-
+  "categories": [
+    "web-frontend"
+  ],
   "relatedPresetsWanted": [
     "sveltekit",
     "vue-nuxt",

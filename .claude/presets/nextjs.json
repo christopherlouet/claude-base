@@ -1,34 +1,39 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "nextjs",
   "displayName": "Next.js full-stack",
   "description": "Next.js (App Router) + React + TypeScript. The foundation rules and workflow are kept; clearly other-stack themes (Flutter, Proxmox, OPNsense, mobile release, infra-as-code, data pipeline) are simply not opted into — they live in thematic modules this preset does not request. Bundles ZERO marketplace plugins at v1 — plugin curation is added incrementally as each one is validated in real production use, not assumed. Auth, ORM, deploy and payment patterns are decisions left to the developer; see docs/recipes/saas-monetization.md if a subscription model is needed.",
-
   "version": "1.5.0",
   "status": "maintainer-vouched",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "defaultModules": ["api-data", "frontend", "nextjs"],
-
-  "appliesToTypes": ["react", "fullstack"],
-
+  "defaultModules": [
+    "api-data",
+    "frontend",
+    "nextjs"
+  ],
+  "appliesToTypes": [
+    "react",
+    "fullstack"
+  ],
   "detect": {
     "combinator": "anyOf",
-    "files": ["next.config.js", "next.config.mjs", "next.config.ts"],
+    "files": [
+      "next.config.js",
+      "next.config.mjs",
+      "next.config.ts"
+    ],
     "depFiles": [
-      {"path": "package.json", "contains": "\"next\""}
+      {
+        "path": "package.json",
+        "contains": "\"next\""
+      }
     ]
   },
-
   "foundation": {},
-
   "marketplacePlugins": [],
-
   "recommendedVendorSkills": [
     {
       "id": "vercel-labs/agent-skills",
@@ -65,10 +70,10 @@
       "url": "https://github.com/prisma/skills",
       "rationale": "Prisma ORM patterns, especially v7 (ESM-only, driver adapters)",
       "condition": "if using Prisma",
-      "pinnedRef": "bbfa0a211375a130cb8942bf3fb419f180b96d48",
+      "pinnedRef": "6a6d97fb26d192d36e6449f1dd6c8908fc0168a1",
       "trustTrack": "authority",
       "provenance": "Prisma",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-06-23"
     },
     {
       "id": "shadcn-ui/ui (skills/shadcn)",
@@ -91,7 +96,6 @@
       "lastVerified": "2026-06-13"
     }
   ],
-
   "defaults": {
     "ci": true,
     "hooks": true,
@@ -99,16 +103,16 @@
     "docker": false,
     "designStyle": "editorial"
   },
-
   "outOfScope": [
     "Payment processing — see docs/recipes/saas-monetization.md if subscription/billing is needed",
     "Native mobile companion — use a Flutter or Swift preset (community contributions wanted)",
     "Backend in non-Node languages — see roadmap for Django, FastAPI, Rails, Laravel, etc.",
     "Vendor-specific React/Next.js patterns — pair this preset with the vendor skill at vercel-labs/agent-skills (react-best-practices) for canonical Vercel guidance; see specs/marketplace-audit/dev-skills-pilot-2026-05-05.md"
   ],
-
-  "categories": ["web-frontend", "api-backend"],
-
+  "categories": [
+    "web-frontend",
+    "api-backend"
+  ],
   "relatedPresetsWanted": [
     "astro",
     "sveltekit",

@@ -1,27 +1,26 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "phaser",
   "displayName": "Phaser (vendor-pointer)",
   "description": "Pointer-only preset for the Phaser 2D web game framework. Surfaces the vendor's canonical skill suite (`phaserjs/phaser/skills/`, 28 SKILL.md files including a v3-to-v4 migration skill, MIT) at install time. Ships zero foundation skill filter, zero marketplace plugin, and zero defaults override — the authority comes from the vendor (validated via the marketplace-audit methodology), not from maintainer production use. See `docs/recipes/recommended-vendor-skills.md` §Phaser for the recipe entry and `specs/presets-vendor-pointer-tier/spec.md` for the tier semantics.",
-
   "version": "1.0.0",
   "status": "vendor-pointer",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "appliesToTypes": ["generic"],
-
+  "appliesToTypes": [
+    "generic"
+  ],
   "detect": {
     "combinator": "anyOf",
     "depFiles": [
-      {"path": "package.json", "contains": "\"phaser\":"}
+      {
+        "path": "package.json",
+        "contains": "\"phaser\":"
+      }
     ]
   },
-
   "recommendedVendorSkills": [
     {
       "id": "phaserjs/phaser/skills",
@@ -34,7 +33,6 @@
       "lastVerified": "2026-06-13"
     }
   ],
-
   "outOfScope": [
     "Foundation skill curation — this preset deliberately ships no `foundation.skills.keep/drop` filter (vendor-pointer tier)",
     "Marketplace plugins — none bundled (vendor-pointer tier)",
@@ -43,8 +41,8 @@
     "Simpler component-based frameworks — Kaplay and Excalibur listed as adjacent options in the recipe",
     "Native mobile / desktop wrappers — out of foundation scope"
   ],
-
-  "categories": ["game-interactive-media"],
-
+  "categories": [
+    "game-interactive-media"
+  ],
   "relatedPresetsWanted": []
 }

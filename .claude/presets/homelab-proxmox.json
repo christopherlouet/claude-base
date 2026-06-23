@@ -1,40 +1,61 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "homelab-proxmox",
   "displayName": "Proxmox VE homelab",
   "description": "Proxmox VE + Terraform + Ansible + monitoring (Prometheus/Grafana). Targets sysadmins running infrastructure-as-code on a personal or small-team Proxmox cluster. Filters out app/UI/mobile-only skills (React, Next.js, Flutter, mobile-release, frontend-design, conversion optimization). Bundles ZERO marketplace plugins at v1 — Terraform-specific plugins will be added incrementally as they are validated in real production use. Rules from the foundation are path-gated (react.md activates on .tsx files only, etc.) so they remain inert on a Terraform/Ansible repo.",
-
   "version": "1.2.0",
   "status": "maintainer-vouched",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "defaultModules": ["self-hosted", "iac", "observability"],
-
-  "appliesToTypes": ["generic"],
-
+  "defaultModules": [
+    "self-hosted",
+    "iac",
+    "observability"
+  ],
+  "appliesToTypes": [
+    "generic"
+  ],
   "detect": {
     "combinator": "anyOf",
     "depFiles": [
-      {"path": "main.tf", "contains": "telmate/proxmox"},
-      {"path": "main.tf", "contains": "bpg/proxmox"},
-      {"path": "providers.tf", "contains": "telmate/proxmox"},
-      {"path": "providers.tf", "contains": "bpg/proxmox"},
-      {"path": "terraform.tf", "contains": "telmate/proxmox"},
-      {"path": "terraform.tf", "contains": "bpg/proxmox"},
-      {"path": "versions.tf", "contains": "telmate/proxmox"},
-      {"path": "versions.tf", "contains": "bpg/proxmox"}
+      {
+        "path": "main.tf",
+        "contains": "telmate/proxmox"
+      },
+      {
+        "path": "main.tf",
+        "contains": "bpg/proxmox"
+      },
+      {
+        "path": "providers.tf",
+        "contains": "telmate/proxmox"
+      },
+      {
+        "path": "providers.tf",
+        "contains": "bpg/proxmox"
+      },
+      {
+        "path": "terraform.tf",
+        "contains": "telmate/proxmox"
+      },
+      {
+        "path": "terraform.tf",
+        "contains": "bpg/proxmox"
+      },
+      {
+        "path": "versions.tf",
+        "contains": "telmate/proxmox"
+      },
+      {
+        "path": "versions.tf",
+        "contains": "bpg/proxmox"
+      }
     ]
   },
-
   "foundation": {},
-
   "marketplacePlugins": [],
-
   "recommendedVendorSkills": [
     {
       "id": "antonbabenko/terraform-skill",
@@ -51,23 +72,22 @@
       "url": "https://github.com/pulumi/agent-skills",
       "rationale": "Pulumi authoring + migration workflows (Terraform→Pulumi)",
       "condition": "if using Pulumi instead of Terraform",
-      "pinnedRef": "43626f25e118f4e107a63772084d9ce8d185efbb",
+      "pinnedRef": "478096e94bee50903fba4b0869d1c617956ae3a4",
       "trustTrack": "authority",
       "provenance": "Pulumi",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-06-23"
     },
     {
       "id": "grafana/skills",
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack for monitoring and observability",
       "condition": "if using Grafana / Prometheus stack",
-      "pinnedRef": "0198138c75512f9b2adfb27b49aebce87c3ccfdf",
+      "pinnedRef": "03c7b81fd296fc01c00e8477a0595f0e99cdef3f",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-06-23"
     }
   ],
-
   "defaults": {
     "ci": true,
     "hooks": true,
@@ -75,15 +95,14 @@
     "docker": false,
     "designStyle": "cockpit"
   },
-
   "outOfScope": [
     "Application development (use the nextjs preset or a backend-language preset)",
     "Mobile companions (use a flutter or swift preset — community contributions wanted)",
     "Cloud infrastructure beyond Proxmox/OPNsense — see roadmap for AWS, GCP, Azure presets"
   ],
-
-  "categories": ["infra-devops"],
-
+  "categories": [
+    "infra-devops"
+  ],
   "relatedPresetsWanted": [
     "homelab-truenas",
     "homelab-unraid",
