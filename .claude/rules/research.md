@@ -27,8 +27,10 @@ Apply *after* understanding the problem, top to bottom; the first rung that solv
 | 3 | Covered by the **standard library**? | Use stdlib |
 | 4 | A **native** framework/platform feature? | Use native (even if less flexible) |
 | 5 | An already-installed dependency? | Use it |
-| 6 | A one-liner? | Write the one line |
-| 7 | None of the above | Minimum viable implementation — and document why |
+| 6 | A **clear** one-liner? | Write the one line — but NEVER trade readability for fewer characters |
+| 7 | None of the above | Minimum viable implementation — readable, with its error handling and edge-case tests; document why |
+
+> **"Minimal" = fewer _things_, NOT denser code.** It means not building what isn't needed (speculative options, premature abstraction, reinvented stdlib) — it does **not** mean cramming logic into clever one-liners, skipping error handling, or dropping edge-case tests. Readability, error handling, input validation and edge-case tests are part of "done", never "extra" to be trimmed. Fewer lines that are unreadable or fragile is a REGRESSION, not a win. When in doubt, the [`testing`](testing.md), [`verification`](verification.md) and [`security`](security.md) rules win over brevity.
 
 ## Mandatory checklist before implementation
 
