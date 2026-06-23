@@ -72,6 +72,12 @@ content_fixture() {
         > "$TEST_DIR/fx/$(printf '%s' "repos/$1/contents/$3?ref=$2" | tr '/' '_')"
 }
 llm_response() { printf '%s' "$1" > "$TEST_DIR/llm-response.json"; }
+# list_fixture <list-repo> <readme-markdown> — register the list's README (served
+# at the default branch, i.e. the contents API WITHOUT ?ref=).
+list_fixture() {
+    local b64; b64=$(printf '%s' "$2" | base64 | tr -d '\n')
+    gh_fixture "repos/$1/contents/README.md" "$(jq -cn --arg c "$b64" '{content:$c, encoding:"base64"}')"
+}
 
 run_discover() {
     run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 \
@@ -160,6 +166,89 @@ healthy_candidate() {
     llm_response '{"neutrality":"pass","fit":1,"rationale":"barely related","borderline":false,"tokensUsed":40}'
     run_discover
     [[ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 0 ]]
+}
+
+# =============================================================================
+# list sources — seed candidates from a curated awesome-LIST (kind:"list")
+# A list only SEEDS candidates; the extracted repos run the SAME trust+safety+
+# judge gates as search hits. A list never bypasses a gate.
+# =============================================================================
+
+@test "discover: a list source seeds candidates from the repos it links to" {
+    search_items '{"items":[]}'
+    jq -cn '{version:"1.0.0", perPage:15, sources:[{domain:"lists", kind:"list", repo:"awesome/list"}]}' \
+        > "$TEST_DIR/sources.json"
+    list_fixture "awesome/list" '# Awesome Claude Skills
+- [Cool skill](https://github.com/newauthor/next-skill) — a great one
+'
+    gh_fixture "repos/newauthor/next-skill" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
+    gh_fixture "repos/newauthor/next-skill/releases/latest" '{"tag_name":"v1.0.0"}'
+    content_fixture "newauthor/next-skill" v1.0.0 SKILL.md "# clean skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 1 ]
+    [ "$(printf '%s' "$output" | jq -r '.proposals[0].repo')" == "newauthor/next-skill" ]
+}
+
+@test "discover: list ingestion filters non-repo github links and the list's self-link" {
+    search_items '{"items":[]}'
+    jq -cn '{version:"1.0.0", sources:[{domain:"lists", kind:"list", repo:"awesome/list"}]}' \
+        > "$TEST_DIR/sources.json"
+    list_fixture "awesome/list" '# L
+- https://github.com/topics/claude
+- https://github.com/sponsors/foo
+- https://github.com/awesome/list (the list itself)
+- [real](https://github.com/auth/real)
+'
+    gh_fixture "repos/auth/real" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
+    gh_fixture "repos/auth/real/releases/latest" '{"tag_name":"v1.0.0"}'
+    content_fixture "auth/real" v1.0.0 SKILL.md "# clean"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$status" -eq 0 ]
+    ! grep -q "repos/topics/claude" "$TEST_DIR/gh.log"
+    ! grep -q "repos/sponsors/foo" "$TEST_DIR/gh.log"
+    ! grep -q "repos/awesome/list/releases" "$TEST_DIR/gh.log"   # self never reached the trust/ref gate
+    [ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 1 ]
+    [ "$(printf '%s' "$output" | jq -r '.proposals[0].repo')" == "auth/real" ]
+}
+
+@test "discover: an unfetchable list source fails safe (run completes, no crash)" {
+    search_items '{"items":[]}'
+    jq -cn '{version:"1.0.0", sources:[{domain:"lists", kind:"list", repo:"missing/list"}]}' \
+        > "$TEST_DIR/sources.json"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","tokensUsed":10}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.scope.candidates')" -eq 0 ]
+}
+
+@test "discover: search and list sources both feed the candidate pool" {
+    search_items '{"items":[{"full_name":"s/from-search"}]}'
+    jq -cn '{version:"1.0.0", perPage:15, sources:[
+        {domain:"q", query:"claude skill"},
+        {domain:"l", kind:"list", repo:"awesome/list"}]}' > "$TEST_DIR/sources.json"
+    list_fixture "awesome/list" '- [x](https://github.com/l/from-list)'
+    for r in s/from-search l/from-list; do
+        gh_fixture "repos/$r" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
+        gh_fixture "repos/$r/releases/latest" '{"tag_name":"v1.0.0"}'
+        content_fixture "$r" v1.0.0 SKILL.md "# clean"
+    done
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.scope.candidates')" -eq 2 ]
+}
+
+@test "discovery-sources.json (shipped): list sources carry repo, search sources carry query" {
+    local f="$BATS_TEST_DIRNAME/../.claude/curation/discovery-sources.json"
+    run jq -e '(.sources | length) as $n
+        | [.sources[] | select(
+            ((.kind // "search") == "list" and (.repo | type == "string"))
+            or ((.kind // "search") == "search" and (.query | type == "string"))
+          )] | length == $n' "$f"
+    [ "$status" -eq 0 ]
 }
 
 # =============================================================================
