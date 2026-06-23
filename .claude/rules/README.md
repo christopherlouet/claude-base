@@ -23,7 +23,7 @@ Modular rules applied automatically based on the modified files (path-specific r
 | `php` | `**/*.php`, `**/composer.json` | PSR-12, Laravel, type declarations |
 | `python` | `**/*.py`, `**/pyproject.toml` | Type hints, PEP 8, async patterns |
 | `react` | `**/*.tsx`, `**/components/**`, `**/hooks/**` | Components, hooks, performance |
-| `research` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.dart`, `**/*.rs` | Check native before building custom |
+| `research` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.dart`, `**/*.rs` | Minimal-code ladder (YAGNI → reuse → stdlib → native) before custom |
 | `ruby` | `**/*.rb`, `**/Gemfile` | Rails conventions, RSpec |
 | `rust` | `**/*.rs`, `**/Cargo.toml` | Ownership, error handling, traits |
 | `security` | `**/auth/**`, `**/api/**`, `**/middleware/**` | XSS, SQL injection, CSRF, auth |

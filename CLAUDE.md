@@ -93,6 +93,7 @@ Manual workflow: `/work:work-explore` → (`/work:work-brainstorm`) → `/work:w
 - Committing without an audit (skipping the Audit phase)
 - Giant multi-feature commits
 - Tests with too many mocks
+- Over-engineering: building beyond the requirement (YAGNI — walk the `research` minimal-code ladder)
 - any everywhere in TypeScript
 - **Not giving Claude a way to verify**
 - **Vague prompts without context or examples**

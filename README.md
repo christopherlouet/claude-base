@@ -85,7 +85,7 @@ Everything is plain markdown + JSON. No daemon, no telemetry, no network access 
 | Slash commands | <!-- count:commands -->106<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
 | Sub-agents | <!-- count:agents -->45<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
 | Skills | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords in your prompts |
-| Path-specific rules | <!-- count:rules -->32<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, ...) |
+| Path-specific rules | <!-- count:rules -->32<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, YAGNI/minimal-code, ...) |
 | Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles ; tier breakdown in [Going deeper](#going-deeper) |
 
 **Learns across projects.** A personal, human-gated **lessons referential**: after a hard-won fix or a correction, claude-base proposes a generalized, sanitized one-line lesson and — on your confirmation — stores it in your own `~/.claude/rules/lessons.md`, which Claude Code loads into **every** project. A mistake made once stops recurring everywhere; run `/lessons --bootstrap` to seed it from what you already learned. The lessons stay yours — never committed to any repo. [How it works →](docs/recipes/personal-lessons-referential.md)
