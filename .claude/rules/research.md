@@ -14,7 +14,21 @@ paths:
 
 ## Principle
 
-Before implementing a custom solution, check whether the framework or tool in place already provides the functionality natively.
+Write the **least code that satisfies the requirement**. Before implementing anything custom, walk the decision ladder below and stop at the first rung that works. Over-engineering — building beyond the stated need — is a defect, not thoroughness.
+
+## Minimal-code decision ladder
+
+Apply *after* understanding the problem, top to bottom; the first rung that solves it wins. Safety is never a rung you skip — input validation, output escaping, auth, error handling and accessibility always stay.
+
+| # | Ask | If yes |
+|---|-----|--------|
+| 1 | Does this need to exist at all? (**YAGNI**) | Don't build it — confirm the requirement first |
+| 2 | Already in the codebase? | Reuse / extend the existing pattern, don't re-invent |
+| 3 | Covered by the **standard library**? | Use stdlib |
+| 4 | A **native** framework/platform feature? | Use native (even if less flexible) |
+| 5 | An already-installed dependency? | Use it |
+| 6 | A one-liner? | Write the one line |
+| 7 | None of the above | Minimum viable implementation — and document why |
 
 ## Mandatory checklist before implementation
 
@@ -33,6 +47,8 @@ Before implementing a custom solution, check whether the framework or tool in pl
 | Implementing a standard pattern (auth, i18n, upload, focal point) | STOP — check the framework's docs |
 | Writing a wrapper around an existing lib | STOP — the lib may already expose this API |
 | Reimplementing a removed feature | STOP — check why it was removed |
+| Adding an option/flag/abstraction "for the future" | STOP — YAGNI; add it when a real caller needs it |
+| Building an abstraction for a single call site | STOP — inline it; abstract on the 2nd–3rd use |
 
 ## Workflow
 
@@ -54,5 +70,7 @@ Before implementing a custom solution, check whether the framework or tool in pl
 IMPORTANT: NEVER implement a custom solution without first checking the native capabilities of the framework in use.
 
 IMPORTANT: If a native solution exists, prefer it even if it is less flexible than a custom solution.
+
+IMPORTANT: Prefer the simplest rung that works; do NOT add flexibility, options, or abstraction for hypothetical future needs (YAGNI). Generality is earned by a second real caller, not anticipated.
 
 NEVER create more than 5 files for a standard feature without having confirmed that no native solution exists.

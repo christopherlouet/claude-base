@@ -117,6 +117,7 @@ Prefer `/compact` over `/clear`: compaction keeps the essence of the context (de
 - `any` everywhere in TypeScript
 - Copy-pasting without adapting
 - Optimizing prematurely
+- Over-engineering: building beyond the stated requirement (speculative options, abstraction for one call site) — walk the `research` minimal-code ladder
 - Ignoring lint/type warnings
 - Overly ambitious sessions (15+ tasks in one session)
 - Confusing pre-existing CI errors with new errors
