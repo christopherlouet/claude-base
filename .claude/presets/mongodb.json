@@ -1,27 +1,26 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "mongodb",
   "displayName": "MongoDB (vendor-pointer)",
   "description": "Pointer-only preset for projects using the MongoDB Node.js driver. Surfaces the canonical MongoDB skill suite (`mongodb/agent-skills`, Apache-2.0) at install time on projects whose `package.json` contains `\"mongodb\":` (as a direct dependency, anchored on the JSON key terminator to disambiguate from `mongodb-memory-server`, `@types/mongodb`, `mongodb-runner`, etc.). MongoDB Inc. is independent (no vendor-neutrality concern). The ODM layer (`mongoose`) is intentionally NOT covered here — a hypothetical follow-up `mongoose` preset can ship later per the strict 1-entry detect rule (EF-005). See `docs/recipes/recommended-vendor-skills.md` §MongoDB and `specs/presets-vendor-pointer-tier/spec.md` for the tier semantics.",
-
   "version": "1.0.0",
   "status": "vendor-pointer",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "appliesToTypes": ["generic"],
-
+  "appliesToTypes": [
+    "generic"
+  ],
   "detect": {
     "combinator": "anyOf",
     "depFiles": [
-      {"path": "package.json", "contains": "\"mongodb\":"}
+      {
+        "path": "package.json",
+        "contains": "\"mongodb\":"
+      }
     ]
   },
-
   "recommendedVendorSkills": [
     {
       "id": "mongodb/agent-skills",
@@ -34,7 +33,6 @@
       "lastVerified": "2026-06-13"
     }
   ],
-
   "outOfScope": [
     "Foundation skill curation — no `foundation.skills.keep/drop` filter (vendor-pointer tier)",
     "Marketplace plugins — none bundled (vendor-pointer tier)",
@@ -43,9 +41,9 @@
     "Dev-only MongoDB utilities (`mongodb-memory-server`, `mongodb-runner`, `@types/mongodb`) — not the driver itself; these would surface as false positives without the colon-anchored substring used here",
     "Non-Node MongoDB stacks (Python `pymongo`, Go driver, Java driver) — out of this preset's scope"
   ],
-
-  "categories": ["data-database"],
-
+  "categories": [
+    "data-database"
+  ],
   "relatedPresetsWanted": [
     "mongoose"
   ]

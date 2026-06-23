@@ -1,27 +1,26 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "apollo",
   "displayName": "Apollo GraphQL Client (vendor-pointer)",
   "description": "Pointer-only preset for projects using Apollo Client. Surfaces the canonical Apollo skill suite (`apollographql/skills`, MIT) at install time on projects whose `package.json` contains `\"@apollo/client\"`. The vendor's skill suite covers Apollo Client, Apollo Server 5, Apollo Connectors, Federation 2, and Apollo Kotlin — but this preset detects on the client package (the most common entry point); server-side and Kotlin uses are listed in `outOfScope` because the strict 1-entry detect rule (EF-005) forces a choice. Server-side Apollo users still benefit from the recipe entry pointer, just not from auto-detection. Apollo GraphQL Inc. is independent (no vendor-neutrality concern). See `docs/recipes/recommended-vendor-skills.md` §Apollo GraphQL and `specs/presets-vendor-pointer-tier/spec.md` for the tier semantics.",
-
   "version": "1.0.0",
   "status": "vendor-pointer",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "appliesToTypes": ["generic"],
-
+  "appliesToTypes": [
+    "generic"
+  ],
   "detect": {
     "combinator": "anyOf",
     "depFiles": [
-      {"path": "package.json", "contains": "\"@apollo/client\""}
+      {
+        "path": "package.json",
+        "contains": "\"@apollo/client\""
+      }
     ]
   },
-
   "recommendedVendorSkills": [
     {
       "id": "apollographql/skills",
@@ -34,7 +33,6 @@
       "lastVerified": "2026-06-13"
     }
   ],
-
   "outOfScope": [
     "Foundation skill curation — no `foundation.skills.keep/drop` filter (vendor-pointer tier)",
     "Marketplace plugins — none bundled (vendor-pointer tier)",
@@ -43,9 +41,9 @@
     "Apollo Kotlin (`apollo-kotlin`) — out of scope (mobile / JVM stack, not JavaScript)",
     "Non-Apollo GraphQL stacks (Yoga, Pothos, Mercurius, Strawberry, gqlgen) — claude-base's `dev-graphql` skill covers those"
   ],
-
-  "categories": ["api-backend"],
-
+  "categories": [
+    "api-backend"
+  ],
   "relatedPresetsWanted": [
     "apollo-server"
   ]

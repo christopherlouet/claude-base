@@ -1,27 +1,26 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "playwright",
   "displayName": "Playwright (vendor-pointer)",
   "description": "Pointer-only preset for the Playwright end-to-end testing framework. Surfaces the canonical Playwright skill suite (`microsoft/playwright-cli`, Apache-2.0) at install time — authoritative API patterns updated alongside each Playwright release. No foundation skill filter, no marketplace plugin, no defaults override. Vendor-neutrality accepted **case-by-case** per the foundation policy: Microsoft owns Playwright (created 2020), the project predates the deepening OpenAI commercial relationship, and Playwright remains the de-facto standard for E2E testing. Re-evaluate if Microsoft's commercial alignment with OpenAI changes the Playwright roadmap visibly. See `docs/recipes/recommended-vendor-skills.md` §Microsoft Playwright and `specs/presets-vendor-pointer-tier/spec.md` for the tier semantics.",
-
   "version": "1.0.0",
   "status": "vendor-pointer",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "appliesToTypes": ["generic"],
-
+  "appliesToTypes": [
+    "generic"
+  ],
   "detect": {
     "combinator": "anyOf",
     "depFiles": [
-      {"path": "package.json", "contains": "\"@playwright/test\""}
+      {
+        "path": "package.json",
+        "contains": "\"@playwright/test\""
+      }
     ]
   },
-
   "recommendedVendorSkills": [
     {
       "id": "microsoft/playwright-cli",
@@ -34,7 +33,6 @@
       "lastVerified": "2026-06-13"
     }
   ],
-
   "outOfScope": [
     "Foundation skill curation — no `foundation.skills.keep/drop` filter (vendor-pointer tier)",
     "Marketplace plugins — none bundled (vendor-pointer tier)",
@@ -42,8 +40,9 @@
     "Non-Playwright E2E frameworks (Cypress, WebdriverIO, TestCafe) — out of this preset's scope; see claude-base's `qa-e2e` skill for stack-neutral patterns",
     "Unit / integration testing (Vitest, Jest, etc.) — distinct from E2E"
   ],
-
-  "categories": ["web-frontend", "api-backend"],
-
+  "categories": [
+    "web-frontend",
+    "api-backend"
+  ],
   "relatedPresetsWanted": []
 }

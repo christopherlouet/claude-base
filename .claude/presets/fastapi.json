@@ -1,35 +1,40 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "fastapi",
   "displayName": "FastAPI backend (Python async)",
   "description": "FastAPI + Pydantic + SQLAlchemy/async ORM. Targets developers building HTTP APIs, LLM-backed services, or async data ingestion endpoints in Python. The foundation rules and workflow are kept; clearly non-applicable skills are filtered out: frontend-only stacks (Next.js, Shadcn, React perf, frontend design), mobile stacks (Flutter, mobile-release), homelab-specific ops (Proxmox, OPNsense), and UI-bound QA (Chrome, design, browser E2E). Skills that ARE kept and useful for backend work include `dev-api`, `dev-auth`, `dev-graphql`, `dev-supabase` (Python SDK), `ops-database`, `ops-docker`, `ops-monitoring`, `qa-perf`, `qa-security`. Bundles ZERO marketplace plugins at v1 — Python-specific plugin curation will be added incrementally as each one is validated in real production use, not assumed.",
-
   "version": "1.1.0",
   "status": "maintainer-vouched",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "appliesToTypes": ["python", "generic"],
-
+  "appliesToTypes": [
+    "python",
+    "generic"
+  ],
   "detect": {
     "combinator": "anyOf",
     "depFiles": [
-      {"path": "requirements.txt", "contains": "fastapi"},
-      {"path": "pyproject.toml", "contains": "fastapi"},
-      {"path": "Pipfile", "contains": "fastapi"}
+      {
+        "path": "requirements.txt",
+        "contains": "fastapi"
+      },
+      {
+        "path": "pyproject.toml",
+        "contains": "fastapi"
+      },
+      {
+        "path": "Pipfile",
+        "contains": "fastapi"
+      }
     ]
   },
-
-  "defaultModules": ["api-data"],
-
+  "defaultModules": [
+    "api-data"
+  ],
   "foundation": {},
-
   "marketplacePlugins": [],
-
   "recommendedVendorSkills": [
     {
       "id": "supabase/agent-skills",
@@ -56,10 +61,10 @@
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack (Loki/Tempo/Mimir), k6 perf testing",
       "condition": "if using Grafana / observability stack",
-      "pinnedRef": "0198138c75512f9b2adfb27b49aebce87c3ccfdf",
+      "pinnedRef": "03c7b81fd296fc01c00e8477a0595f0e99cdef3f",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-06-23"
     },
     {
       "id": "antonbabenko/terraform-skill",
@@ -72,7 +77,6 @@
       "lastVerified": "2026-06-13"
     }
   ],
-
   "defaults": {
     "ci": true,
     "hooks": true,
@@ -80,7 +84,6 @@
     "docker": true,
     "designStyle": "editorial"
   },
-
   "outOfScope": [
     "Frontend rendering — pair with the nextjs preset, or community presets for Astro/SvelteKit/Vue/Nuxt when shipped",
     "Mobile / desktop apps (community contributions wanted for flutter, swift, tauri)",
@@ -89,9 +92,9 @@
     "Backends in other languages — see roadmap for Django, Flask, Rails, Spring Boot, Gin, Axum",
     "Toolchain choice (uv vs pdm vs pip, ruff vs flake8, ty vs mypy) — see docs/recipes/python-toolchain-options.md for the three documented paths and the rationale for not bundling astral@astral-sh by default"
   ],
-
-  "categories": ["api-backend"],
-
+  "categories": [
+    "api-backend"
+  ],
   "relatedPresetsWanted": [
     "django",
     "flask",

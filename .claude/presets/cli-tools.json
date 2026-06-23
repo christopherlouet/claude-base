@@ -1,26 +1,21 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "cli-tools",
   "displayName": "CLI tools / automation scripts",
   "description": "Python or Shell automation tools, GitHub API helpers, headless-friendly scripts. Targets developers building CLI utilities, dependency analyzers, code-mod tooling, or ops automation that runs in CI/cron without a UI. Filters out application/UI/mobile/infra-heavy skills (React, Next.js, Flutter, Proxmox, OPNsense, mobile-release, frontend-design, conversion optimization, UI testing). Bundles ZERO marketplace plugins at v1 — CLI-specific plugins (gh API helpers, packaging, distribution) will be added incrementally as validated. Defaults reflect headless usage (no Docker, no MCP).",
-
   "version": "1.1.0",
   "status": "maintainer-vouched",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "appliesToTypes": ["python", "generic"],
-
+  "appliesToTypes": [
+    "python",
+    "generic"
+  ],
   "foundation": {},
-
   "marketplacePlugins": [],
-
   "recommendedVendorSkills": [],
-
   "defaults": {
     "ci": true,
     "hooks": true,
@@ -28,7 +23,6 @@
     "docker": false,
     "designStyle": "terminal"
   },
-
   "outOfScope": [
     "Web application development (use the nextjs preset)",
     "Infrastructure-as-code (use the homelab-proxmox preset for homelab IaC)",
@@ -36,9 +30,9 @@
     "GUI testing patterns — CLI tools are typically tested via stdin/stdout fixtures",
     "Toolchain choice (uv vs pdm vs pip, ruff vs flake8, ty vs mypy) — see docs/recipes/python-toolchain-options.md for the three documented paths and the rationale for not bundling astral@astral-sh by default"
   ],
-
-  "categories": ["cli-automation"],
-
+  "categories": [
+    "cli-automation"
+  ],
   "relatedPresetsWanted": [
     "django",
     "fastapi",

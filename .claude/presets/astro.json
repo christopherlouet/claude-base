@@ -1,34 +1,37 @@
 {
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
-
   "name": "astro",
   "displayName": "Astro content/static-first",
   "description": "Astro + TypeScript + Content Collections. Targets developers building content-heavy sites: marketing pages, documentation sites, blogs, landing pages. Astro's islands architecture lets users mix React/Vue/Svelte/Solid components selectively, so this preset keeps the broader frontend toolkit (`dev-frontend-design`, `dev-shadcn`, `dev-react-perf`, `qa-chrome`, `qa-design`) and only filters out clearly non-applicable skills (mobile, homelab, the Next.js framework specifically). Bundles ZERO marketplace plugins at v1 — Astro-specific plugin curation will be added incrementally as each one is validated in real production use, not assumed.",
-
   "version": "1.3.0",
   "status": "maintainer-vouched",
-
   "author": {
     "name": "Chris",
     "github": "christopherlouet"
   },
-
-  "defaultModules": ["frontend"],
-
-  "appliesToTypes": ["astro", "fullstack"],
-
+  "defaultModules": [
+    "frontend"
+  ],
+  "appliesToTypes": [
+    "astro",
+    "fullstack"
+  ],
   "detect": {
     "combinator": "anyOf",
-    "files": ["astro.config.mjs", "astro.config.ts", "astro.config.js"],
+    "files": [
+      "astro.config.mjs",
+      "astro.config.ts",
+      "astro.config.js"
+    ],
     "depFiles": [
-      {"path": "package.json", "contains": "\"astro\""}
+      {
+        "path": "package.json",
+        "contains": "\"astro\""
+      }
     ]
   },
-
   "foundation": {},
-
   "marketplacePlugins": [],
-
   "recommendedVendorSkills": [
     {
       "id": "vercel-labs/agent-skills",
@@ -61,7 +64,6 @@
       "lastVerified": "2026-06-13"
     }
   ],
-
   "defaults": {
     "ci": true,
     "hooks": true,
@@ -69,7 +71,6 @@
     "docker": false,
     "designStyle": "editorial"
   },
-
   "outOfScope": [
     "Native mobile companion — use a Flutter or Swift preset (community contributions wanted)",
     "Heavy SSR/full-stack backend logic — pair with the fastapi preset for a Python API, or use the nextjs preset if you need a JS-native fullstack with extensive server logic",
@@ -78,9 +79,9 @@
     "Toolchain choice (uv vs pdm vs pip, ruff vs flake8) — Python is rarely the primary stack for Astro, but if backend services are added see docs/recipes/python-toolchain-options.md",
     "i18n library-specific patterns — for Lingui-based content sites, pair this preset with lingui/skills (the official Lingui agent skill); see specs/marketplace-audit/dev-skills-pilot-2026-05-05.md"
   ],
-
-  "categories": ["web-frontend"],
-
+  "categories": [
+    "web-frontend"
+  ],
   "relatedPresetsWanted": [
     "sveltekit",
     "vue-nuxt",

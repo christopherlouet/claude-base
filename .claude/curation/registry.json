@@ -28,7 +28,9 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
-      "flags": ["marketplace-plugin: pinnedRef tracks anthropics/claude-code HEAD (plugins/frontend-design subpath)"]
+      "flags": [
+        "marketplace-plugin: pinnedRef tracks anthropics/claude-code HEAD (plugins/frontend-design subpath)"
+      ]
     },
     {
       "foundationSkill": "dev-graphql",
@@ -56,21 +58,25 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
-      "flags": ["no-license: repo declares no SPDX license — safety screen at pin-time (EF-006)"]
+      "flags": [
+        "no-license: repo declares no SPDX license — safety screen at pin-time (EF-006)"
+      ]
     },
     {
       "foundationSkill": "dev-prisma",
       "vendorId": "prisma/skills",
       "vendorUrl": "https://github.com/prisma/skills",
-      "pinnedRef": "bbfa0a211375a130cb8942bf3fb419f180b96d48",
+      "pinnedRef": "6a6d97fb26d192d36e6449f1dd6c8908fc0168a1",
       "trustTrack": "authority",
       "trustVerdict": "pass",
       "provenance": "Prisma",
       "adviceNeutrality": "pass",
-      "lastVerified": "2026-06-13",
+      "lastVerified": "2026-06-23",
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
-      "flags": ["command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)"]
+      "flags": [
+        "command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)"
+      ]
     },
     {
       "foundationSkill": "dev-shadcn",
@@ -98,7 +104,9 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
-      "flags": ["command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)"]
+      "flags": [
+        "command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)"
+      ]
     },
     {
       "foundationSkill": "dev-mcp",
@@ -112,7 +120,9 @@
       "lastVerified": "2026-06-21",
       "status": "candidate",
       "sourceAudit": "graduation-supply-audit-2026-06-21",
-      "flags": ["command-side graduated to pointer-command 2026-06-21 REDUCE (specs/graduation-supply-audit); pinnedRef tracks anthropics/skills HEAD (mcp-builder subpath)"]
+      "flags": [
+        "command-side graduated to pointer-command 2026-06-21 REDUCE (specs/graduation-supply-audit); pinnedRef tracks anthropics/skills HEAD (mcp-builder subpath)"
+      ]
     },
     {
       "foundationSkill": "dev-ai-integration",
@@ -126,7 +136,9 @@
       "lastVerified": "2026-06-21",
       "status": "candidate",
       "sourceAudit": "graduation-supply-audit-2026-06-21",
-      "flags": ["POINT not REDUCE: dev-ai-integration kept as the NEUTRAL multi-provider chooser; claude-api (already bundled in Claude Code) is Claude-specific depth only; pinnedRef tracks anthropics/skills HEAD (claude-api subpath)"]
+      "flags": [
+        "POINT not REDUCE: dev-ai-integration kept as the NEUTRAL multi-provider chooser; claude-api (already bundled in Claude Code) is Claude-specific depth only; pinnedRef tracks anthropics/skills HEAD (claude-api subpath)"
+      ]
     },
     {
       "foundationSkill": "dev-rag",
@@ -140,7 +152,9 @@
       "lastVerified": "2026-06-21",
       "status": "candidate",
       "sourceAudit": "graduation-supply-audit-2026-06-21",
-      "flags": ["POINT not REDUCE: framework-scoped (LangChain); dev-rag kept as the framework-neutral RAG layer; no-license: repo has no root LICENSE — safety screen at pin-time"]
+      "flags": [
+        "POINT not REDUCE: framework-scoped (LangChain); dev-rag kept as the framework-neutral RAG layer; no-license: repo has no root LICENSE — safety screen at pin-time"
+      ]
     },
     {
       "foundationSkill": "ops-database",
@@ -154,18 +168,20 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "ops-skills-pilot-2026-05-06",
-      "flags": ["partial: vendor covers MongoDB; Postgres best-practices already pointed via dev-supabase"]
+      "flags": [
+        "partial: vendor covers MongoDB; Postgres best-practices already pointed via dev-supabase"
+      ]
     },
     {
       "foundationSkill": "ops-monitoring",
       "vendorId": "grafana/skills",
       "vendorUrl": "https://github.com/grafana/skills",
-      "pinnedRef": "0198138c75512f9b2adfb27b49aebce87c3ccfdf",
+      "pinnedRef": "03c7b81fd296fc01c00e8477a0595f0e99cdef3f",
       "trustTrack": "authority",
       "trustVerdict": "pass",
       "provenance": "Grafana Labs",
       "adviceNeutrality": "pass",
-      "lastVerified": "2026-06-13",
+      "lastVerified": "2026-06-23",
       "status": "candidate",
       "sourceAudit": "ops-skills-pilot-2026-05-06",
       "flags": []
@@ -174,29 +190,33 @@
       "foundationSkill": "growth-analytics",
       "vendorId": "PostHog/skills",
       "vendorUrl": "https://github.com/PostHog/skills",
-      "pinnedRef": "baeab92e82db39117e87115c9bb934bb536e2ba4",
+      "pinnedRef": "b8f87940caafa07815e8ab9650545ce89d610703",
       "trustTrack": "authority",
       "trustVerdict": "pass",
       "provenance": "PostHog",
       "adviceNeutrality": "pass",
-      "lastVerified": "2026-06-13",
+      "lastVerified": "2026-06-23",
       "status": "candidate",
       "sourceAudit": "growth-skills-pilot-2026-05-21",
-      "flags": ["partial: foundation keeps North-Star + AARRR + GDPR layer"]
+      "flags": [
+        "partial: foundation keeps North-Star + AARRR + GDPR layer"
+      ]
     },
     {
       "foundationSkill": "growth-email",
       "vendorId": "resend/resend-skills",
       "vendorUrl": "https://github.com/resend/resend-skills",
-      "pinnedRef": "0888546d6a69149c8d2402d46f395f5dddb1c720",
+      "pinnedRef": "288efc7103c8177c9019dea79cf0099bacabb81d",
       "trustTrack": "authority",
       "trustVerdict": "pass",
       "provenance": "Resend",
       "adviceNeutrality": "pass",
-      "lastVerified": "2026-06-13",
+      "lastVerified": "2026-06-23",
       "status": "candidate",
       "sourceAudit": "growth-skills-pilot-2026-05-21",
-      "flags": ["partial: foundation keeps D0/D1/D3/D7 lifecycle sequence design"]
+      "flags": [
+        "partial: foundation keeps D0/D1/D3/D7 lifecycle sequence design"
+      ]
     },
     {
       "foundationSkill": "growth-cro",
@@ -210,7 +230,9 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "growth-skills-pilot-2026-05-21",
-      "flags": ["partial: foundation keeps quantified impact numbers + paywall strategies + mobile HTML specifics"]
+      "flags": [
+        "partial: foundation keeps quantified impact numbers + paywall strategies + mobile HTML specifics"
+      ]
     },
     {
       "foundationSkill": "growth-seo",
@@ -224,7 +246,9 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "growth-skills-pilot-2026-05-21",
-      "flags": ["reduce-planned: positioning-review Wave 1 reduces foundation to a pointer — vendor materially superior"]
+      "flags": [
+        "reduce-planned: positioning-review Wave 1 reduces foundation to a pointer — vendor materially superior"
+      ]
     },
     {
       "foundationSkill": "growth-ab-test",
@@ -238,7 +262,9 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "growth-skills-pilot-2026-05-21",
-      "flags": ["reduce-planned"]
+      "flags": [
+        "reduce-planned"
+      ]
     },
     {
       "foundationSkill": "growth-cro",
@@ -252,7 +278,9 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "growth-skills-pilot-2026-05-21",
-      "flags": ["reduce-planned"]
+      "flags": [
+        "reduce-planned"
+      ]
     },
     {
       "foundationSkill": "growth-landing",
@@ -266,7 +294,9 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "growth-skills-pilot-2026-05-21",
-      "flags": ["reduce-planned"]
+      "flags": [
+        "reduce-planned"
+      ]
     },
     {
       "foundationSkill": "growth-cro",
@@ -280,7 +310,9 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "growth-skills-pilot-2026-05-21",
-      "flags": ["reduce-planned"]
+      "flags": [
+        "reduce-planned"
+      ]
     },
     {
       "foundationSkill": "growth-retention",
@@ -294,7 +326,9 @@
       "lastVerified": "2026-06-13",
       "status": "candidate",
       "sourceAudit": "growth-skills-pilot-2026-05-21",
-      "flags": ["reduce-planned"]
+      "flags": [
+        "reduce-planned"
+      ]
     }
   ]
 }
