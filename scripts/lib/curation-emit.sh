@@ -102,6 +102,42 @@ _repin_pr_body() {
     printf '\n_Draft — a maintainer must review (re-confirm the safety screen) before merge._\n'
 }
 
+# _subpaths_for_repo <owner/repo> <registry> <presets-dir> — echo the '+'-joined,
+# deduped union of subpaths (the part after owner/repo) for every registry record
+# and preset recommendation whose repo-root matches. Empty when the skill sits at
+# the repo root. Lets the pin-time safety screen scope to the skill's subpath
+# instead of scanning the whole monorepo (#384 false-truncation fix).
+_subpaths_for_repo() {
+    local want="$1" registry="$2" presets_dir="$3" id owner rest repo sub acc="" f
+    {
+        [ -f "$registry" ] && jq -r '.records[].vendorId // empty' "$registry" 2>/dev/null
+        for f in "$presets_dir"/*.json; do
+            [ -f "$f" ] || continue
+            jq -r '.recommendedVendorSkills[]? | (.id // .url) // empty' "$f" 2>/dev/null
+        done
+    } | {
+        while IFS= read -r id; do
+            [ -n "$id" ] || continue
+            case "$id" in
+                https://github.com/*) id="${id#https://github.com/}" ;;
+                http://github.com/*)  id="${id#http://github.com/}" ;;
+                *://*) continue ;;
+            esac
+            id="${id%%[?#]*}"; id="${id%/}"
+            owner="${id%%/*}"; rest="${id#*/}"
+            [ "$owner" != "$rest" ] || continue
+            repo="${rest%%/*}"
+            [ "$owner/$repo" = "$want" ] || continue
+            sub="${rest#*/}"
+            [ "$sub" = "$rest" ] && continue           # no subpath (root skill)
+            case "$sub" in tree/*) sub="${sub#tree/*/}" ;; esac   # drop /tree/<branch>/
+            [ -n "$sub" ] && acc+="${sub}+"
+        done
+        # split on '+', dedup segments, re-join with '+'
+        printf '%s' "$acc" | tr '+' '\n' | grep . | sort -u | paste -sd'+' - || true
+    }
+}
+
 # emit_repin_pr <surfaced-findings> <registry> <presets-dir> <draft-bool> <now>
 # Echoes a JSON summary {drafted:[subjects], demoted:[findings], branch?}.
 emit_repin_pr() {
@@ -118,7 +154,10 @@ emit_repin_pr() {
         [ -n "$f" ] || continue
         subj=$(printf '%s' "$f" | jq -r '.subject')
         cur=$(printf '%s' "$f" | jq -r '.currentRef')
-        screen=$(curation_safety_screen "$subj" "$cur")
+        # Scope the screen to the skill's subpath(s) — a subpath skill in a big
+        # monorepo must not be judged by the whole repo's exec surface (#384).
+        local subp; subp=$(_subpaths_for_repo "$subj" "$registry" "$presets_dir")
+        screen=$(curation_safety_screen "$subj" "$cur" "$subp")
         sv=$(printf '%s' "$screen" | jq -r '.verdict')
         if [ "$sv" = "pass" ]; then
             safe=$(jq -cn --argjson a "$safe" --argjson f "$f" '$a + [$f]')

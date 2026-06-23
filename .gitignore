@@ -62,3 +62,7 @@ website/package-lock.json
 # Installers locaux
 *.deb
 .claude/scheduled_tasks.lock
+
+# Curation engine runtime state (written by the nightly watch; per-machine, not
+# committed — running the watch locally must not dirty the tree).
+.claude/curation/watch-state.json
