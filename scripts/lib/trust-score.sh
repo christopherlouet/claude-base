@@ -31,6 +31,21 @@ _ts_rank() {
     esac
 }
 
+# _ts_has_license_file <owner/repo> — return 0 iff the repo's default-branch root
+# holds a license FILE (LICENSE/LICENCE/COPYING/UNLICENSE, any case/extension).
+# GitHub's licensee leaves .license null for a custom/non-OSS license even when
+# such a file exists (e.g. anthropics/claude-code) — this probe distinguishes
+# "license present but unclassified" from "genuinely no license". Fail SAFE: any
+# gh/jq failure returns non-zero so the caller keeps the conservative
+# missing-license flag rather than silently waving a truly licenseless repo.
+_ts_has_license_file() {
+    local repo="$1" body
+    body=$(curation_gh_api "repos/$repo/contents" 2>/dev/null) || return 1
+    printf '%s' "$body" \
+        | jq -e 'any(.[]?; (.type == "file")
+            and (.name | test("^(licen[cs]e|copying|unlicense)"; "i")))' >/dev/null 2>&1
+}
+
 # trust_score <owner/repo> <track>
 trust_score() {
     local repo="$1" track="$2"
@@ -105,13 +120,21 @@ trust_score() {
 
     # License is a soft signal (we point, never copy — EF-010). NOASSERTION means
     # a license file exists but GitHub couldn't classify it → treated as present
-    # (it is simply not in the missing-license set below). Missing license RAISES
-    # severity to missingLicenseVerdict but never lowers an existing fail/flag.
+    # (it is simply not in the missing set below). When the SPDX id is absent we
+    # cannot conclude "no license": a custom/non-OSS license also yields null. So
+    # probe for an actual license FILE — if one exists it is a present-but-
+    # unrecognized license (soft note, never blocks a re-pin); only a repo with NO
+    # license file gets the blocking missing-license flag, which RAISES severity to
+    # missingLicenseVerdict but never lowers an existing fail/flag.
     case "$license" in
         ""|NONE|null)
-            reasons+=("missing-license")
-            if [ "$(_ts_rank "$missing_lic_verdict")" -gt "$(_ts_rank "$verdict")" ]; then
-                verdict="$missing_lic_verdict"
+            if _ts_has_license_file "$repo"; then
+                reasons+=("unrecognized-license")
+            else
+                reasons+=("missing-license")
+                if [ "$(_ts_rank "$missing_lic_verdict")" -gt "$(_ts_rank "$verdict")" ]; then
+                    verdict="$missing_lic_verdict"
+                fi
             fi
             ;;
     esac

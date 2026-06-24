@@ -40,6 +40,27 @@ EOF
     chmod +x "$TEST_DIR/fakebin/gh"
 }
 
+# fake_gh_with_contents <repo-json> <contents-json> — install a path-aware fake
+# `gh`: the repo metadata call (`repos/<repo>`) returns <repo-json>, the root
+# contents listing (`repos/<repo>/contents`) returns <contents-json>. Lets a test
+# exercise the license-file fallback that fires when the SPDX id is missing.
+fake_gh_with_contents() {
+    printf '%s' "$1" > "$TEST_DIR/repo.json"
+    printf '%s' "$2" > "$TEST_DIR/contents.json"
+    cat > "$TEST_DIR/fakebin/gh" <<EOF
+#!/usr/bin/env bash
+if [ "\$1" = "api" ] && [[ "\$2" == repos/*/contents* ]]; then
+    cat "$TEST_DIR/contents.json"
+elif [ "\$1" = "api" ] && [[ "\$2" == repos/* ]]; then
+    cat "$TEST_DIR/repo.json"
+else
+    echo "fake gh: unexpected call: \$*" >&2
+    exit 1
+fi
+EOF
+    chmod +x "$TEST_DIR/fakebin/gh"
+}
+
 # fake_gh_errors — install a fake `gh` that always fails (simulates API/network
 # error or rate-limit exhaustion).
 fake_gh_errors() {
@@ -177,6 +198,67 @@ verdict_of() { printf '%s' "$1" | jq -r '.verdict'; }
     fake_gh_returns "$(repo_json 2012 100 '2026-06-03T00:00:00Z' false NOASSERTION)"
     score "person/skill" community
     [[ "$(verdict_of "$output")" == "pass" ]]
+}
+
+@test "trust_score: missing SPDX but a LICENSE file present is a soft note, passes (re-pinnable)" {
+    # A custom/non-OSS license (e.g. anthropics/claude-code) yields spdx_id=null
+    # even though a LICENSE file exists. The file-presence fallback downgrades the
+    # blocking missing-license flag to a soft, non-blocking unrecognized-license.
+    fake_gh_with_contents \
+        "$(repo_json 5000 200 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"LICENSE.md","type":"file"},{"name":"README.md","type":"file"}]'
+    score "anthropics/claude-code" authority
+    [[ "$status" -eq 0 ]]
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$output" == *"unrecognized-license"* ]]
+    [[ "$output" != *'"missing-license"'* ]]
+}
+
+@test "trust_score: license-file probe is case-insensitive and matches COPYING" {
+    fake_gh_with_contents \
+        "$(repo_json 5000 200 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"copying","type":"file"}]'
+    score "vendor/copying" community
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$output" == *"unrecognized-license"* ]]
+}
+
+@test "trust_score: missing SPDX and NO license file still flags missing-license" {
+    fake_gh_with_contents \
+        "$(repo_json 5000 200 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"README.md","type":"file"},{"name":"src","type":"dir"}]'
+    score "vendor/nolicense" authority
+    [[ "$(verdict_of "$output")" == "flag" ]]
+    [[ "$output" == *"missing-license"* ]]
+    [[ "$output" != *"unrecognized-license"* ]]
+}
+
+@test "trust_score: a directory named LICENSES does not count as a license file" {
+    fake_gh_with_contents \
+        "$(repo_json 5000 200 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"LICENSES","type":"dir"},{"name":"README.md","type":"file"}]'
+    score "vendor/licenses-dir" authority
+    [[ "$(verdict_of "$output")" == "flag" ]]
+    [[ "$output" == *"missing-license"* ]]
+}
+
+@test "trust_score: license-file probe failing falls back to missing-license (fail-safe)" {
+    # Repo metadata resolves (NONE license) but the contents listing errors — we
+    # cannot confirm a license file, so we keep the conservative blocking flag.
+    cat > "$TEST_DIR/fakebin/gh" <<EOF
+#!/usr/bin/env bash
+if [ "\$1" = "api" ] && [[ "\$2" == repos/*/contents* ]]; then
+    echo "gh: HTTP 503" >&2; exit 1
+elif [ "\$1" = "api" ] && [[ "\$2" == repos/* ]]; then
+    cat <<'JSON'
+$(repo_json 5000 200 '2026-06-10T00:00:00Z' false NONE)
+JSON
+fi
+EOF
+    chmod +x "$TEST_DIR/fakebin/gh"
+    score "vendor/probe-fails" authority
+    [[ "$(verdict_of "$output")" == "flag" ]]
+    [[ "$output" == *"missing-license"* ]]
 }
 
 @test "trust_score: reports ALL failing reasons, not just the first" {
