@@ -287,7 +287,29 @@ run_watch() {
     gh_fixture "repos/acme/x" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
     gh_fixture "repos/acme/x/releases/latest" '{"tag_name":"v1.2.0"}'
     run_watch --digest-dir "$TEST_DIR/digest"
-    grep -qE '^\| acme/x \| drift \| pass \| v1\.0\.0 \| v1\.2\.0 \| re-pin \|$' "$TEST_DIR/digest/digest.md"
+    # The "For" column carries the provenance (registry_one pins foundationSkill "x").
+    grep -qE '^\| acme/x \| x \| drift \| pass \| v1\.0\.0 \| v1\.2\.0 \| re-pin \|$' "$TEST_DIR/digest/digest.md"
+}
+
+@test "watch: the digest names the foundation skill(s) a repo is watched for (provenance)" {
+    # A custom registry with a meaningful skill name + a same-host second skill,
+    # to prove the column resolves from the registry and unions co-hosted skills.
+    jq -cn '{version:"1.0.0", records:[
+        {foundationSkill:"dev-frontend-design",
+         vendorId:"anthropics/claude-code/plugins/frontend-design",
+         vendorUrl:"https://github.com/anthropics/claude-code",
+         pinnedRef:"v1.0.0", trustTrack:"authority", trustVerdict:"pass",
+         provenance:"Anthropic", adviceNeutrality:"pass",
+         lastVerified:"2026-01-01", status:"candidate", sourceAudit:"t", flags:[]}]}' \
+        > "$TEST_DIR/registry.json"
+    gh_fixture "repos/anthropics/claude-code" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/anthropics/claude-code/releases/latest" '{"tag_name":"v1.2.0"}'
+    run_watch --digest-dir "$TEST_DIR/digest"
+    [[ "$status" -eq 0 ]]
+    # JSON finding carries the provenance...
+    [[ "$(jq -r '.findings[0].forSkills' "$TEST_DIR/digest/digest.json")" == "dev-frontend-design" ]]
+    # ...and the markdown "For" column renders it next to the subject.
+    grep -qE '^\| anthropics/claude-code \| dev-frontend-design \|' "$TEST_DIR/digest/digest.md"
 }
 
 # =============================================================================
@@ -665,4 +687,24 @@ EOF
     run bash -c "source '$EMIT_LIB'; _subpaths_for_repo acme/mono '$TEST_DIR/registry.json' '$TEST_DIR/presets'"
     [ "$status" -eq 0 ]
     [ "$output" = "cro" ]
+}
+
+@test "_skills_for_repo: unions + dedups + sorts the foundation skills pinning a repo" {
+    cat > "$TEST_DIR/registry.json" <<'EOF'
+{ "records": [
+  {"vendorId":"anthropics/skills/mcp-builder","foundationSkill":"dev-mcp"},
+  {"vendorId":"anthropics/skills/claude-api","foundationSkill":"dev-ai-integration"},
+  {"vendorId":"other/repo","foundationSkill":"dev-other"}
+] }
+EOF
+    run bash -c "source '$EMIT_LIB'; _skills_for_repo anthropics/skills '$TEST_DIR/registry.json'"
+    [ "$status" -eq 0 ]
+    [ "$output" = "dev-ai-integration,dev-mcp" ]
+}
+
+@test "_skills_for_repo: empty when only a preset (no registry record) reaches the repo" {
+    echo '{ "records": [ {"vendorId":"acme/other","foundationSkill":"x"} ] }' > "$TEST_DIR/registry.json"
+    run bash -c "source '$EMIT_LIB'; _skills_for_repo acme/preset-only '$TEST_DIR/registry.json'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
 }

@@ -138,6 +138,22 @@ _subpaths_for_repo() {
     }
 }
 
+# _skills_for_repo <owner/repo> <registry> — echo the comma-joined, deduped,
+# sorted foundation-skill name(s) that pin <owner/repo> in the registry. This is
+# the provenance answer to "why is this repo watched" — the digest renders it so
+# a row like `anthropics/claude-code` reads as serving `dev-frontend-design`
+# rather than an unexplained repo. Empty when the repo is reached ONLY via a
+# preset recommendation (those carry no foundation-skill name).
+_skills_for_repo() {
+    local want="$1" registry="$2"
+    [ -f "$registry" ] || return 0
+    jq -r --arg want "$want" '
+        .records[]
+        | select((.vendorId | split("/")[0:2] | join("/")) == $want)
+        | .foundationSkill // empty' "$registry" 2>/dev/null \
+        | grep . | sort -u | paste -sd',' - || true
+}
+
 # emit_repin_pr <surfaced-findings> <registry> <presets-dir> <draft-bool> <now>
 # Echoes a JSON summary {drafted:[subjects], demoted:[findings], branch?}.
 emit_repin_pr() {
