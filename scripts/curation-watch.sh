@@ -132,12 +132,19 @@ resolve_current_ref() {
 watch_one() {
     local repo="$1" track="$2" pinned="$3"
 
+    # Provenance: the foundation skill(s) this repo is watched FOR. Carried on the
+    # finding so the digest can explain WHY a repo is tracked (empty for a
+    # preset-only repo). Computed offline from the registry — no gh call.
+    local for_skills; for_skills=$(_skills_for_repo "$repo" "$REGISTRY")
+
     local score verdict
     if ! score=$(trust_score "$repo" "$track" 2>/dev/null); then
         # gh unavailable → fail-safe error finding; never abort the run.
         jq -cn --arg repo "$repo" --arg track "$track" --arg pinned "$pinned" \
+            --arg forSkills "$for_skills" \
             '{subject:$repo, track:$track, pinnedRef:$pinned, type:"error",
               verdict:"error", reasons:["gh-unavailable"], currentRef:null,
+              forSkills:(if $forSkills=="" then null else $forSkills end),
               proposedAction:"propose"}'
         return
     fi
@@ -170,9 +177,11 @@ watch_one() {
     printf '%s' "$score" | jq -c \
         --arg pinned "$pinned" --arg current "${current:-}" \
         --arg type "$type" --arg drift "$drift" --arg action "$action" \
+        --arg forSkills "$for_skills" \
         '{subject:.repo, track:.track, pinnedRef:$pinned,
           currentRef:(if $current=="" then null else $current end),
           drift:($drift=="true"), type:$type, verdict:.verdict, reasons:.reasons,
+          forSkills:(if $forSkills=="" then null else $forSkills end),
           stars:.stars, license:.license, ageDays:.ageDays, proposedAction:$action}'
 }
 
@@ -302,11 +311,11 @@ render_markdown() {
         printf 'No rot or drift detected. lastVerified refreshed.\n'
         return
     fi
-    printf '| Subject | Type | Verdict | Pinned | Current | Action |\n'
-    printf '|---|---|---|---|---|---|\n'
+    printf '| Subject | For | Type | Verdict | Pinned | Current | Action |\n'
+    printf '|---|---|---|---|---|---|---|\n'
     printf '%s' "$surfaced" | jq -r 'def esc: tostring | gsub("\\|"; "\\|");
         .[] |
-        "| \(.subject|esc) | \(.type|esc) | \(.verdict|esc) | \(.pinnedRef|esc) | \((.currentRef // "?")|esc) | \(.proposedAction|esc) |"'
+        "| \(.subject|esc) | \((.forSkills // "—")|esc) | \(.type|esc) | \(.verdict|esc) | \(.pinnedRef|esc) | \((.currentRef // "?")|esc) | \(.proposedAction|esc) |"'
 }
 
 # OPT-IN gh emission (Slice 3b). Runs BEFORE the file-persistence step so the
