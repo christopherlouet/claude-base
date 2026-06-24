@@ -27,7 +27,8 @@
 # Usage:
 #   curation-discover.sh [--dry-run] [--emit-issue] [--digest-dir DIR] [--budget N]
 #                        [--sources FILE] [--registry FILE] [--presets-dir DIR]
-#                        [--awaiting FILE] [--max-candidates N] [--fit-threshold N]
+#                        [--awaiting FILE] [--declined FILE] [--max-candidates N]
+#                        [--fit-threshold N]
 #                        [--model NAME] [--escalate-model NAME] [--thresholds FILE]
 #
 # --emit-issue opens ONE propose-only GitHub issue with the proposals (mirrors the
@@ -57,6 +58,7 @@ REGISTRY="${CURATION_REGISTRY:-$_DISCO_DIR/../.claude/curation/registry.json}"
 PRESETS_DIR="${CURATION_PRESETS_DIR:-$_DISCO_DIR/../.claude/presets}"
 SOURCES="${CURATION_SOURCES:-$_DISCO_DIR/../.claude/curation/discovery-sources.json}"
 AWAITING="${CURATION_AWAITING:-$_DISCO_DIR/../.claude/curation/awaiting-vendors.json}"
+DECLINED="${CURATION_DECLINED:-$_DISCO_DIR/../.claude/curation/declined-candidates.json}"
 DIGEST_DIR=""
 DRY_RUN=false
 EMIT_ISSUE=false
@@ -75,6 +77,7 @@ while [ $# -gt 0 ]; do
         --budget) BUDGET="${2:-}"; [ -n "$BUDGET" ] || { echo "--budget requires a number" >&2; exit 2; }; shift 2 ;;
         --sources) SOURCES="${2:-}"; [ -n "$SOURCES" ] || { echo "--sources requires a path" >&2; exit 2; }; shift 2 ;;
         --awaiting) AWAITING="${2:-}"; [ -n "$AWAITING" ] || { echo "--awaiting requires a path" >&2; exit 2; }; shift 2 ;;
+        --declined) DECLINED="${2:-}"; [ -n "$DECLINED" ] || { echo "--declined requires a path" >&2; exit 2; }; shift 2 ;;
         --registry) REGISTRY="${2:-}"; [ -n "$REGISTRY" ] || { echo "--registry requires a path" >&2; exit 2; }; shift 2 ;;
         --presets-dir) PRESETS_DIR="${2:-}"; [ -n "$PRESETS_DIR" ] || { echo "--presets-dir requires a path" >&2; exit 2; }; shift 2 ;;
         --max-candidates) MAX_CANDIDATES="${2:-}"; [ -n "$MAX_CANDIDATES" ] || { echo "--max-candidates requires a number" >&2; exit 2; }; shift 2 ;;
@@ -131,6 +134,17 @@ known_set() {
     } | while IFS= read -r v; do [ -n "$v" ] && _repo_root "$v"; done | sort -u
 }
 
+# declined_set — repo-roots a human REVIEWED and chose NOT to adopt (DECLINED
+# ledger): e.g. a moat-encroachment whose idea was absorbed into the foundation,
+# or an off-stack skill. Excluded from candidates exactly like known_set so a
+# standing decision is never re-surfaced (as a proposal OR a moat signal) every
+# run. Missing/empty file ⟹ nothing excluded (fail-safe, like _graduation_for).
+declined_set() {
+    [ -f "$DECLINED" ] || return 0
+    jq -r '.entries[]?.repo // empty' "$DECLINED" 2>/dev/null \
+        | while IFS= read -r v; do [ -n "$v" ] && _repo_root "$v"; done | sort -u
+}
+
 # _LIST_RESERVED — github.com path roots that are NOT user/org repos (so a link
 # to one must never become a candidate). Pipe-joined for a single egrep.
 _LIST_RESERVED='topics|sponsors|features|about|marketplace|apps|settings|orgs|users|collections|login|join|pricing|search|explore|notifications|readme|new|site|security|enterprise|contact|customer-stories|blog'
@@ -157,7 +171,8 @@ _list_candidates() {
 # owner/repo, dedupe, drop known repos, cap. Per-source failures are fail-safe
 # (that source yields nothing).
 collect_candidates() {
-    local known; known=$(known_set)
+    # Exclude both already-tracked repos AND reviewed-and-declined ones.
+    local known; known=$(printf '%s\n%s\n' "$(known_set)" "$(declined_set)" | awk 'NF' | sort -u)
     local per src kind query repo lpath path items
     per=$(jq -r '(.perPage | numbers) // 15' "$SOURCES")
     {

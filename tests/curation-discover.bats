@@ -83,7 +83,15 @@ run_discover() {
     run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 \
         CURATION_THRESHOLDS="$THRESHOLDS" CURATION_LLM_CMD="$TEST_DIR/fakebin/fakellm" \
         bash "$DISCOVER" --registry "$TEST_DIR/registry.json" --presets-dir "$TEST_DIR/presets" \
-        --sources "$TEST_DIR/sources.json" "$@"
+        --sources "$TEST_DIR/sources.json" --declined "$TEST_DIR/declined.json" "$@"
+}
+
+# declined_one <repo> <reason> — a one-entry reviewed-and-declined ledger.
+declined_one() {
+    jq -cn --arg r "$1" --arg why "$2" '
+      {version:"1.0.0", entries:[
+        {repo:$r, reason:$why, decidedAt:"2026-06-24", ref:"issue-378"}]}' \
+        > "$TEST_DIR/declined.json"
 }
 
 # A community repo that clears the trust bar (≥500★), recent, MIT, with clean
@@ -109,6 +117,38 @@ healthy_candidate() {
     [[ "$(printf '%s' "$output" | jq -r '.proposals[0].repo')" == "newauthor/next-skill" ]]
     [[ "$(printf '%s' "$output" | jq -r '.proposals[0].provenance')" == "newauthor" ]]
     [[ "$(printf '%s' "$output" | jq -r '.proposals[0].pinnedRef')" == "v1.0.0" ]]
+}
+
+@test "discover: excludes a reviewed-and-declined candidate (no re-proposal, no LLM spend)" {
+    declined_one "absorbed/ponytail-like" "moat-encroachment absorbed into the foundation rules"
+    healthy_candidate "absorbed/ponytail-like"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 0 ]]
+    [ ! -f "$TEST_DIR/llm.log" ]   # a declined repo never reaches the model
+}
+
+@test "discover: a declined candidate does NOT re-surface as a moat signal (recurrence fix)" {
+    # Even with a moat-encroaching verdict on offer, a declined repo is dropped at
+    # collection — so a standing human decision is never re-posted every run.
+    declined_one "DietrichGebert/ponytail" "absorbed into minimal-code discipline"
+    healthy_candidate "DietrichGebert/ponytail"
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"YAGNI methodology","borderline":false,"encroachesMoat":true,"tokensUsed":50}'
+    run_discover
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.moatSignals | length')" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.counts.moat')" -eq 0 ]]
+    [ ! -f "$TEST_DIR/llm.log" ]
+}
+
+@test "discover: a missing declined ledger is fail-safe (candidate still flows normally)" {
+    rm -f "$TEST_DIR/declined.json"
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"strong fit","borderline":false,"tokensUsed":50}'
+    run_discover
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 1 ]]
 }
 
 @test "discover: excludes a repo already in the registry (no re-proposal, no LLM spend)" {
