@@ -1,0 +1,13 @@
+{
+  "_comment": "Reviewed-and-declined discovery candidates — repos a human evaluated via the curation discovery digest and chose NOT to adopt as a vendor skill (e.g. a moat-encroachment whose best idea was absorbed into the foundation's own rules, or an off-stack skill). curation-discover.sh excludes these repo-roots from the candidate set (declined_set, the discovery analogue of known_set) so a standing decision is never re-surfaced — as a proposal OR a moat signal — on every run. DISTINCT from registry.json (active vendor pins), awaiting-vendors.json (graduation veille), and presets' recommendedVendorSkills[].",
+  "version": "1.0.0",
+  "entries": [
+    {
+      "repo": "DietrichGebert/ponytail",
+      "reason": "Moat-encroachment: a stack-agnostic YAGNI / minimal-code 'lazy senior dev' methodology that competes with the foundation's own workflow/discipline layer (vendor-precedence tier 2 — the foundation owns how-we-work). Its best idea was ABSORBED into .claude/rules (the 7-rung minimal-code ladder) rather than adopted as a vendor skill.",
+      "decidedAt": "2026-06-24",
+      "absorbedInto": "#391",
+      "ref": "issue-378"
+    }
+  ]
+}
