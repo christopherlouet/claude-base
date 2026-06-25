@@ -61,6 +61,35 @@ EOF
     chmod +x "$TEST_DIR/fakebin/gh"
 }
 
+# fake_gh_with_readme <repo-json> <contents-json> [readme] [plugin-json] [pkg-json]
+# Flexible path-aware fake `gh`. Serves, by exact path, the manifest endpoints
+# (`.claude-plugin/plugin.json`, `package.json`), the README, the root contents
+# listing, then the repo metadata. An omitted/empty optional source makes that
+# endpoint 404 (exit 1) so the probe falls through — exactly like the real API.
+# Branch order is specific-before-generic so the right fixture wins.
+fake_gh_with_readme() {
+    printf '%s' "$1" > "$TEST_DIR/repo.json"
+    printf '%s' "$2" > "$TEST_DIR/contents.json"
+    [ -n "${3:-}" ] && jq -cn --arg c "$(printf '%s' "$3" | base64)" '{content:$c}' > "$TEST_DIR/readme.json"
+    [ -n "${4:-}" ] && jq -cn --arg c "$(printf '%s' "$4" | base64)" '{content:$c}' > "$TEST_DIR/plugin.json"
+    [ -n "${5:-}" ] && jq -cn --arg c "$(printf '%s' "$5" | base64)" '{content:$c}' > "$TEST_DIR/pkg.json"
+    cat > "$TEST_DIR/fakebin/gh" <<EOF
+#!/usr/bin/env bash
+serve() { if [ -f "\$1" ]; then cat "\$1"; exit 0; else echo "fake gh 404: \$2" >&2; exit 1; fi; }
+if [ "\$1" = "api" ]; then
+  case "\$2" in
+    repos/*/contents/.claude-plugin/plugin.json*) serve "$TEST_DIR/plugin.json" "\$2" ;;
+    repos/*/contents/package.json*)               serve "$TEST_DIR/pkg.json" "\$2" ;;
+    repos/*/readme*)                              serve "$TEST_DIR/readme.json" "\$2" ;;
+    repos/*/contents*)                            serve "$TEST_DIR/contents.json" "\$2" ;;
+    repos/*)                                      serve "$TEST_DIR/repo.json" "\$2" ;;
+  esac
+fi
+echo "fake gh: unexpected call: \$*" >&2; exit 1
+EOF
+    chmod +x "$TEST_DIR/fakebin/gh"
+}
+
 # fake_gh_errors — install a fake `gh` that always fails (simulates API/network
 # error or rate-limit exhaustion).
 fake_gh_errors() {
@@ -231,6 +260,122 @@ verdict_of() { printf '%s' "$1" | jq -r '.verdict'; }
     [[ "$(verdict_of "$output")" == "flag" ]]
     [[ "$output" == *"missing-license"* ]]
     [[ "$output" != *"unrecognized-license"* ]]
+}
+
+@test "trust_score: missing SPDX + no LICENSE file but a README License section passes (soft note)" {
+    # vercel-labs/agent-skills (28k stars): no LICENSE file, GitHub spdx_id=null,
+    # but the README declares "## License / MIT". The README probe recognizes the
+    # declaration and downgrades the blocking missing-license to a soft note.
+    fake_gh_with_readme \
+        "$(repo_json 28000 500 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"README.md","type":"file"},{"name":"src","type":"dir"}]' \
+        '# agent-skills
+
+## License
+
+MIT'
+    score "vercel-labs/agent-skills" authority
+    [[ "$status" -eq 0 ]]
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$output" == *"readme-declared-license"* ]]
+    [[ "$output" != *'"missing-license"'* ]]
+}
+
+@test "trust_score: a LICENSE file takes precedence over the README probe" {
+    # File present -> unrecognized-license, the README is never consulted.
+    fake_gh_with_readme \
+        "$(repo_json 5000 200 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"LICENSE","type":"file"}]' \
+        '## License
+
+MIT'
+    score "vendor/file-wins" authority
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$output" == *"unrecognized-license"* ]]
+    [[ "$output" != *"readme-declared-license"* ]]
+}
+
+@test "trust_score: license in .claude-plugin/plugin.json passes (manifest probe)" {
+    # langchain-ai/langchain-skills: spdx null, no LICENSE file, no README License
+    # section — but the Claude plugin manifest declares "license": "MIT". For a
+    # Claude-skill repo the manifest is the canonical license source.
+    fake_gh_with_readme \
+        "$(repo_json 819 30 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"README.md","type":"file"},{"name":".claude-plugin","type":"dir"}]' \
+        '# langchain-skills
+
+Build RAG apps.' \
+        '{"name":"langchain","license":"MIT"}'
+    score "langchain-ai/langchain-skills" authority
+    [[ "$status" -eq 0 ]]
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$output" == *"manifest-declared-license"* ]]
+    [[ "$output" != *'"missing-license"'* ]]
+}
+
+@test "trust_score: license in package.json passes (manifest probe)" {
+    fake_gh_with_readme \
+        "$(repo_json 900 40 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"package.json","type":"file"}]' \
+        '' '' '{"name":"x","license":"Apache-2.0"}'
+    score "vendor/npm-pkg" authority
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$output" == *"manifest-declared-license"* ]]
+}
+
+@test "trust_score: manifest UNLICENSED (npm proprietary) is NOT a license" {
+    # npm's "UNLICENSED" means proprietary -> must stay flagged, not pass.
+    fake_gh_with_readme \
+        "$(repo_json 900 40 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"package.json","type":"file"}]' \
+        '' '' '{"name":"x","license":"UNLICENSED"}'
+    score "vendor/proprietary" authority
+    [[ "$(verdict_of "$output")" == "flag" ]]
+    [[ "$output" == *"missing-license"* ]]
+    [[ "$output" != *"manifest-declared-license"* ]]
+}
+
+@test "trust_score: the manifest probe takes precedence over the README probe" {
+    fake_gh_with_readme \
+        "$(repo_json 5000 200 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":".claude-plugin","type":"dir"},{"name":"README.md","type":"file"}]' \
+        '## License
+
+MIT' \
+        '{"license":"MIT"}'
+    score "vendor/both" authority
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$output" == *"manifest-declared-license"* ]]
+    [[ "$output" != *"readme-declared-license"* ]]
+}
+
+@test "trust_score: no SPDX, no file, no manifest, no README section flags missing-license" {
+    # Genuine true-negative: none of the four sources declares a license.
+    fake_gh_with_readme \
+        "$(repo_json 800 30 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"README.md","type":"file"},{"name":"src","type":"dir"}]' \
+        '# tool
+
+No licensing information anywhere here.'
+    score "vendor/genuinely-bare" authority
+    [[ "$(verdict_of "$output")" == "flag" ]]
+    [[ "$output" == *"missing-license"* ]]
+    [[ "$output" != *"manifest-declared-license"* ]]
+    [[ "$output" != *"readme-declared-license"* ]]
+}
+
+@test "trust_score: an incidental SPDX mention (no License heading) is NOT a declaration" {
+    # "MIT-licensed dependencies" in prose must not be read as the repo's license.
+    fake_gh_with_readme \
+        "$(repo_json 800 30 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"README.md","type":"file"}]' \
+        '# tool
+
+This works great with MIT-licensed dependencies and Apache projects.'
+    score "vendor/incidental" authority
+    [[ "$(verdict_of "$output")" == "flag" ]]
+    [[ "$output" == *"missing-license"* ]]
+    [[ "$output" != *"readme-declared-license"* ]]
 }
 
 @test "trust_score: a directory named LICENSES does not count as a license file" {

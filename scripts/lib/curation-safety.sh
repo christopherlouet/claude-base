@@ -50,18 +50,10 @@ _SAFETY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/curation-common.sh
 source "$_SAFETY_DIR/curation-common.sh"
 
-# _curation_b64decode — decode base64 from stdin, portable across GNU (`-d` /
-# `--decode`) and BSD/macOS (`-D`). GitHub wraps contents in newlines, which all
-# variants tolerate. The decoder's exit status is PROPAGATED (no blanket
-# swallow): a decode that fails must be visible to the caller so it can fail safe
-# rather than treat undecodable bytes as "empty = clean".
-_curation_b64decode() {
-    if printf '' | base64 --decode >/dev/null 2>&1; then
-        base64 --decode 2>/dev/null
-    else
-        base64 -D 2>/dev/null
-    fi
-}
+# _curation_b64decode — thin alias kept for this file's internal callers; the
+# portable decoder now lives once in curation-common.sh (curation_b64decode),
+# shared with the trust-score README license probe.
+_curation_b64decode() { curation_b64decode; }
 
 # _curation_fetch_one <repo> <ref> <path> — echo the decoded text of one file at
 # <ref> via the contents API (base64 body, mockable offline); return non-zero if
