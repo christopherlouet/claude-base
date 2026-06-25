@@ -46,6 +46,33 @@ _ts_has_license_file() {
             and (.name | test("^(licen[cs]e|copying|unlicense)"; "i")))' >/dev/null 2>&1
 }
 
+# _ts_manifest_license <owner/repo> — return 0 iff a structured manifest declares
+# a real license. For a Claude-skill repo the canonical source is
+# .claude-plugin/plugin.json's "license" field; package.json's "license" (string
+# or legacy {type}) is the npm equivalent. Both yield a clean SPDX id that
+# GitHub's licensee misses when no LICENSE file ships (e.g.
+# langchain-ai/langchain-skills declares "license":"MIT" only in plugin.json). We
+# accept only a recognized SPDX token, so npm's "UNLICENSED" (= proprietary) and
+# "SEE LICENSE IN …" do NOT pass. Fail SAFE on any gh/jq/decode failure.
+_ts_manifest_license() {
+    local repo="$1" mf body content lic
+    for mf in ".claude-plugin/plugin.json" "package.json"; do
+        body=$(curation_gh_api "repos/$repo/contents/$mf" 2>/dev/null) || continue
+        content=$(printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null) || continue
+        [ -n "$content" ] || continue
+        content=$(printf '%s' "$content" | curation_b64decode) || continue
+        lic=$(printf '%s' "$content" | jq -r '
+            (.license // .licence) as $l
+            | if   ($l|type) == "string" then $l
+              elif ($l|type) == "object" then ($l.type // "")
+              else "" end' 2>/dev/null) || continue
+        printf '%s' "$lic" \
+            | grep -iqE '^(MIT|Apache-2\.0|Apache 2\.0|BSD(-[0-9]-Clause)?|ISC|MPL-2\.0|GPL-[0-9].*|AGPL-[0-9].*|LGPL-[0-9].*|Unlicense|CC0.*)$' \
+            && return 0
+    done
+    return 1
+}
+
 # _ts_readme_license <owner/repo> — return 0 iff the README declares a license in
 # a dedicated section. The last resort when GitHub's SPDX id is null AND no
 # license FILE exists: a popular repo (e.g. vercel-labs/agent-skills, 28k stars)
@@ -143,16 +170,19 @@ trust_score() {
     # a license file exists but GitHub couldn't classify it → treated as present
     # (it is simply not in the missing set below). When the SPDX id is absent we
     # cannot conclude "no license": a custom/non-OSS license also yields null. So
-    # probe for an actual license FILE — if one exists it is a present-but-
-    # unrecognized license (soft note, never blocks a re-pin). Failing that, probe
-    # the README for a declared License section (a common pattern in small repos
-    # that skip a LICENSE file) — also a soft note. Only a repo with NO license
-    # file AND no README declaration gets the blocking missing-license flag, which
+    # When GitHub's SPDX id is absent, fall back through the other places a
+    # license can be declared, each a SOFT note that never blocks a re-pin:
+    # a structured manifest (.claude-plugin/plugin.json / package.json) carries a
+    # clean SPDX id; a license FILE is present-but-unclassified; a README License
+    # section is the common pattern in small repos that skip a LICENSE file. Only
+    # a repo with NONE of these gets the blocking missing-license flag, which
     # RAISES severity to missingLicenseVerdict but never lowers an existing
-    # fail/flag. Precedence: SPDX id -> license file -> README declaration.
+    # fail/flag. Precedence: SPDX id -> manifest -> license file -> README.
     case "$license" in
         ""|NONE|null)
-            if _ts_has_license_file "$repo"; then
+            if _ts_manifest_license "$repo"; then
+                reasons+=("manifest-declared-license")
+            elif _ts_has_license_file "$repo"; then
                 reasons+=("unrecognized-license")
             elif _ts_readme_license "$repo"; then
                 reasons+=("readme-declared-license")

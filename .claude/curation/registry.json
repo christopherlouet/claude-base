@@ -149,11 +149,12 @@
       "trustVerdict": "pass",
       "provenance": "LangChain",
       "adviceNeutrality": "pass",
-      "lastVerified": "2026-06-21",
+      "lastVerified": "2026-06-25",
       "status": "candidate",
       "sourceAudit": "graduation-supply-audit-2026-06-21",
       "flags": [
-        "POINT not REDUCE: framework-scoped (LangChain); dev-rag kept as the framework-neutral RAG layer; no-license: repo has no root LICENSE — safety screen at pin-time"
+        "POINT not REDUCE: framework-scoped (LangChain); dev-rag kept as the framework-neutral RAG layer",
+        "license: MIT declared in .claude-plugin/plugin.json (no LICENSE file) — recognized by the manifest license probe"
       ]
     },
     {
