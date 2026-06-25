@@ -142,8 +142,8 @@
     },
     {
       "foundationSkill": "dev-rag",
-      "vendorId": "langchain-ai/langchain-skills/langchain-rag",
-      "vendorUrl": "https://github.com/langchain-ai/langchain-skills",
+      "vendorId": "langchain-ai/langchain-skills/config/skills/langchain-rag",
+      "vendorUrl": "https://github.com/langchain-ai/langchain-skills/tree/main/config/skills/langchain-rag",
       "pinnedRef": "v0.1.0",
       "trustTrack": "authority",
       "trustVerdict": "pass",
