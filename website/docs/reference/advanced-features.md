@@ -576,6 +576,6 @@ current — observe-and-propose only, never auto-install. Two scheduled jobs:
 
 Deploy both as cron/systemd timers — the monthly job uses a **dedicated, capped API key**
 in its own env, never mixed with the $0 nightly path. See
-[`../recipes/curation-bot-deploy.md`](../recipes/curation-bot-deploy.md). Policy:
+[`docs/recipes/curation-bot-deploy.md`](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/curation-bot-deploy.md). Policy:
 advice-neutrality + provenance (not publisher-veto); foundation-vs-vendor precedence in
-[`../../.claude/rules/vendor-precedence.md`](../../.claude/rules/vendor-precedence.md).
+[`.claude/rules/vendor-precedence.md`](https://github.com/christopherlouet/claude-base/blob/main/.claude/rules/vendor-precedence.md).

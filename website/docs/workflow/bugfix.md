@@ -144,4 +144,4 @@ Fixes #789
 
 - [Debug](/docs/commands/dev/dev-debug)
 - [Hotfix](/docs/commands/ops/ops-hotfix)
-- [GitFlow Hotfix](/docs/commands/ops/ops-gitflow-hotfix)
+- [GitFlow](/docs/commands/ops/ops-gitflow)

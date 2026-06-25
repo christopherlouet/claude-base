@@ -377,7 +377,7 @@ git add -A && git commit -m "refactor: migrate orders to TypeScript"
 ## Next steps
 
 - [Tutorial 08: Proxmox Infrastructure](/docs/tutorials/proxmox-infra)
-- [qa-tech-debt agent](/docs/agents/qa-tech-debt)
+- [qa-tech-debt skill](/docs/skills/qa-tech-debt)
 - [/dev:dev-refactor command](/docs/commands/dev/dev-refactor)
 
 ---

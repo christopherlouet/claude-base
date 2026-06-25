@@ -21,7 +21,7 @@ Provide an overview of the self-improvement system: which rules, counter-example
 
 The `--promote`, `--bootstrap`, and `--prune` modes feed the **personal
 cross-project lessons store** at `~/.claude/rules/lessons.md` (loaded into every
-project by Claude Code). They follow the [`self-improvement`](../rules/self-improvement.md)
+project by Claude Code). They follow the [`self-improvement`](https://github.com/christopherlouet/claude-base/blob/main/.claude/rules/self-improvement.md)
 rule: every write is **generalized + sanitized + human-confirmed**, and the
 lessons are personal — never committed to any repo.
 

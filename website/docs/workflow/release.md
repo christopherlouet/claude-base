@@ -145,6 +145,6 @@ gh release create v2.0.0 \
 
 ## See also
 
-- [GitFlow Release](/docs/commands/ops/ops-gitflow-release)
+- [GitFlow](/docs/commands/ops/ops-gitflow)
 - [Changelog](/docs/commands/doc/doc-changelog)
 - [Audit](/docs/commands/qa/qa-audit)
