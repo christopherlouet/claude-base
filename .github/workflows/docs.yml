@@ -7,6 +7,14 @@ on:
       - 'website/**'
       - '.claude/**'
       - '.github/workflows/docs.yml'
+  # Build (but do not deploy) on PRs touching docs sources, so broken-link
+  # rot is caught at review time instead of only after merge on main.
+  pull_request:
+    paths:
+      - 'website/**'
+      - '.claude/**'
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 permissions:
@@ -51,6 +59,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=4096
 
       - name: Upload artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
           path: website/build
@@ -58,6 +67,8 @@ jobs:
   deploy:
     name: Deploy to GitHub Pages
     needs: build
+    # Never deploy from a PR — the build job above is the PR-time check.
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

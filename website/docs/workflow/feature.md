@@ -139,4 +139,4 @@ With GitFlow enabled:
 
 - [Main workflow](/docs/workflow/explore-plan-code-commit)
 - [TDD](/docs/workflow/tdd)
-- [GitFlow Feature](/docs/commands/ops/ops-gitflow-feature)
+- [GitFlow](/docs/commands/ops/ops-gitflow)

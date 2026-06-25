@@ -175,6 +175,4 @@ describe('ModuleName', () => {
 
 - [Rule tdd-enforcement](/docs/rules/tdd-enforcement) - Proactive TDD triggering
 - [Skill dev-tdd](/docs/skills/dev-tdd) - Auto-triggered skill
-- [Tests](/docs/commands/dev/dev-test)
-- [Testing Setup](/docs/commands/dev/dev-testing-setup)
-- [Coverage](/docs/commands/qa/qa-coverage)
+- [Skill qa-tech-debt](/docs/skills/qa-tech-debt) - Coverage & tech-debt analysis

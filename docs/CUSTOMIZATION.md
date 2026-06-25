@@ -76,7 +76,7 @@ This project is a B2B e-commerce application.
 > or in a subdirectory of your choice.
 >
 > **Vendor skills**: if you also opt into recommended vendor skills, the global rule
-> [`.claude/rules/vendor-precedence.md`](../.claude/rules/vendor-precedence.md) defines
+> [`.claude/rules/vendor-precedence.md`](https://github.com/christopherlouet/claude-base/blob/main/.claude/rules/vendor-precedence.md) defines
 > precedence when their advice and the foundation's conflict (foundation owns
 > security/workflow; vendor owns tool-specific API).
 

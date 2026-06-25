@@ -10,6 +10,7 @@ import {
   writeFileContent,
   ensureDir,
 } from './utils/file-scanner.js';
+import { rewriteUnsyncedRepoLinks } from './utils/rewrite-links.js';
 import {
   parseFrontmatter,
   extractFirstHeading,
@@ -72,7 +73,10 @@ function parseAgentFile(filePath: string): AgentInfo | null {
       permissionMode: data.permissionMode || 'default',
       disallowedTools: parseToolsField(data.disallowedTools as string | string[] | undefined),
       skills: Array.isArray(data.skills) ? data.skills : [],
-      content: markdownContent,
+      // Route links to unsynced repo trees (docs/recipes, specs) to GitHub —
+      // mirrors the command/skill generators; without this an agent's
+      // `](../../docs/recipes/…)` link breaks the Docusaurus build.
+      content: rewriteUnsyncedRepoLinks(markdownContent),
     };
   } catch (error) {
     console.error(`Error parsing ${filePath}:`, error);

@@ -418,7 +418,7 @@ tests/
 
 - [Tutorial 04: Flutter + Supabase](/docs/tutorials/flutter-supabase) - Mobile backend
 - [API Guide](/docs/concepts/stack-recipes) - API best practices
-- [Command /dev:dev-graphql](/docs/commands/dev/dev-graphql) - GraphQL API
+- [Skill dev-graphql](/docs/skills/dev-graphql) - GraphQL API
 
 ---
 
