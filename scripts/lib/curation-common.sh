@@ -85,6 +85,19 @@ curation_gh_api() {
     return 1
 }
 
+# curation_b64decode — decode base64 from stdin, portable across GNU (`-d` /
+# `--decode`) and BSD/macOS (`-D`). GitHub wraps contents/readme bodies in
+# newlines, which all variants tolerate. The decoder's exit status is PROPAGATED
+# (no blanket swallow): a decode that fails must be visible to the caller so it
+# can fail safe rather than treat undecodable bytes as "empty = clean".
+curation_b64decode() {
+    if printf '' | base64 --decode >/dev/null 2>&1; then
+        base64 --decode 2>/dev/null
+    else
+        base64 -D 2>/dev/null
+    fi
+}
+
 # curation_finding_json — emit one normalized finding object for a digest
 # (Slice 3 consumes these). Args: subject type evidence action.
 curation_finding_json() {

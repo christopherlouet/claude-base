@@ -46,6 +46,27 @@ _ts_has_license_file() {
             and (.name | test("^(licen[cs]e|copying|unlicense)"; "i")))' >/dev/null 2>&1
 }
 
+# _ts_readme_license <owner/repo> — return 0 iff the README declares a license in
+# a dedicated section. The last resort when GitHub's SPDX id is null AND no
+# license FILE exists: a popular repo (e.g. vercel-labs/agent-skills, 28k stars)
+# often states "## License\nMIT" in the README without shipping a LICENSE file,
+# which licensee never classifies. We require a License HEADING (an ATX
+# `#…License` line or a standalone `License` line) FOLLOWED within a few lines by
+# a known SPDX identifier — so incidental prose ("MIT-licensed dependencies") is
+# NOT mistaken for the repo's own license. Fail SAFE: any gh/jq/decode failure
+# returns non-zero so the caller keeps the conservative missing-license flag.
+_ts_readme_license() {
+    local repo="$1" body content
+    body=$(curation_gh_api "repos/$repo/readme" 2>/dev/null) || return 1
+    content=$(printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null) || return 1
+    [ -n "$content" ] || return 1
+    content=$(printf '%s' "$content" | curation_b64decode) || return 1
+    [ -n "$content" ] || return 1
+    printf '%s' "$content" \
+        | grep -iEA3 '^[[:space:]]*(#{1,6}[[:space:]]*licen[cs]e[[:space:]]*|licen[cs]e)[[:space:]]*$' 2>/dev/null \
+        | grep -iqE '(^|[^[:alnum:]-])(MIT|Apache(-| )?2(\.0)?|BSD(-[0-9]-Clause)?|ISC|MPL-2\.0|GPL-[0-9]|AGPL-[0-9]|LGPL-[0-9]|Unlicense|CC0|BSL)([^[:alnum:]-]|$)'
+}
+
 # trust_score <owner/repo> <track>
 trust_score() {
     local repo="$1" track="$2"
@@ -123,13 +144,18 @@ trust_score() {
     # (it is simply not in the missing set below). When the SPDX id is absent we
     # cannot conclude "no license": a custom/non-OSS license also yields null. So
     # probe for an actual license FILE — if one exists it is a present-but-
-    # unrecognized license (soft note, never blocks a re-pin); only a repo with NO
-    # license file gets the blocking missing-license flag, which RAISES severity to
-    # missingLicenseVerdict but never lowers an existing fail/flag.
+    # unrecognized license (soft note, never blocks a re-pin). Failing that, probe
+    # the README for a declared License section (a common pattern in small repos
+    # that skip a LICENSE file) — also a soft note. Only a repo with NO license
+    # file AND no README declaration gets the blocking missing-license flag, which
+    # RAISES severity to missingLicenseVerdict but never lowers an existing
+    # fail/flag. Precedence: SPDX id -> license file -> README declaration.
     case "$license" in
         ""|NONE|null)
             if _ts_has_license_file "$repo"; then
                 reasons+=("unrecognized-license")
+            elif _ts_readme_license "$repo"; then
+                reasons+=("readme-declared-license")
             else
                 reasons+=("missing-license")
                 if [ "$(_ts_rank "$missing_lic_verdict")" -gt "$(_ts_rank "$verdict")" ]; then

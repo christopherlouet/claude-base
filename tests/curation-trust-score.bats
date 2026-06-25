@@ -61,6 +61,32 @@ EOF
     chmod +x "$TEST_DIR/fakebin/gh"
 }
 
+# fake_gh_with_readme <repo-json> <contents-json> <readme-text> — path-aware fake
+# `gh`: adds the README endpoint (`repos/<repo>/readme`, base64-wrapped like the
+# real API) on top of the metadata + contents endpoints. Exercises the README
+# license-declaration fallback that fires when the SPDX id is missing AND no
+# license FILE exists. Branch order matters: readme/contents before the generic
+# repos/* so the specific endpoints win.
+fake_gh_with_readme() {
+    printf '%s' "$1" > "$TEST_DIR/repo.json"
+    printf '%s' "$2" > "$TEST_DIR/contents.json"
+    jq -cn --arg c "$(printf '%s' "$3" | base64)" '{content:$c}' > "$TEST_DIR/readme.json"
+    cat > "$TEST_DIR/fakebin/gh" <<EOF
+#!/usr/bin/env bash
+if [ "\$1" = "api" ] && [[ "\$2" == repos/*/readme* ]]; then
+    cat "$TEST_DIR/readme.json"
+elif [ "\$1" = "api" ] && [[ "\$2" == repos/*/contents* ]]; then
+    cat "$TEST_DIR/contents.json"
+elif [ "\$1" = "api" ] && [[ "\$2" == repos/* ]]; then
+    cat "$TEST_DIR/repo.json"
+else
+    echo "fake gh: unexpected call: \$*" >&2
+    exit 1
+fi
+EOF
+    chmod +x "$TEST_DIR/fakebin/gh"
+}
+
 # fake_gh_errors — install a fake `gh` that always fails (simulates API/network
 # error or rate-limit exhaustion).
 fake_gh_errors() {
@@ -231,6 +257,68 @@ verdict_of() { printf '%s' "$1" | jq -r '.verdict'; }
     [[ "$(verdict_of "$output")" == "flag" ]]
     [[ "$output" == *"missing-license"* ]]
     [[ "$output" != *"unrecognized-license"* ]]
+}
+
+@test "trust_score: missing SPDX + no LICENSE file but a README License section passes (soft note)" {
+    # vercel-labs/agent-skills (28k stars): no LICENSE file, GitHub spdx_id=null,
+    # but the README declares "## License / MIT". The README probe recognizes the
+    # declaration and downgrades the blocking missing-license to a soft note.
+    fake_gh_with_readme \
+        "$(repo_json 28000 500 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"README.md","type":"file"},{"name":"src","type":"dir"}]' \
+        '# agent-skills
+
+## License
+
+MIT'
+    score "vercel-labs/agent-skills" authority
+    [[ "$status" -eq 0 ]]
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$output" == *"readme-declared-license"* ]]
+    [[ "$output" != *'"missing-license"'* ]]
+}
+
+@test "trust_score: a LICENSE file takes precedence over the README probe" {
+    # File present -> unrecognized-license, the README is never consulted.
+    fake_gh_with_readme \
+        "$(repo_json 5000 200 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"LICENSE","type":"file"}]' \
+        '## License
+
+MIT'
+    score "vendor/file-wins" authority
+    [[ "$(verdict_of "$output")" == "pass" ]]
+    [[ "$output" == *"unrecognized-license"* ]]
+    [[ "$output" != *"readme-declared-license"* ]]
+}
+
+@test "trust_score: a README with NO License section still flags missing-license" {
+    # langchain-ai/langchain-skills: spdx null, no LICENSE file, no License section
+    # in the README -> the probe must NOT fabricate a license. Stays flagged.
+    fake_gh_with_readme \
+        "$(repo_json 819 30 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"README.md","type":"file"}]' \
+        '# langchain-skills
+
+Build RAG apps. No licensing information here.'
+    score "langchain-ai/langchain-skills" authority
+    [[ "$(verdict_of "$output")" == "flag" ]]
+    [[ "$output" == *"missing-license"* ]]
+    [[ "$output" != *"readme-declared-license"* ]]
+}
+
+@test "trust_score: an incidental SPDX mention (no License heading) is NOT a declaration" {
+    # "MIT-licensed dependencies" in prose must not be read as the repo's license.
+    fake_gh_with_readme \
+        "$(repo_json 800 30 '2026-06-10T00:00:00Z' false NONE)" \
+        '[{"name":"README.md","type":"file"}]' \
+        '# tool
+
+This works great with MIT-licensed dependencies and Apache projects.'
+    score "vendor/incidental" authority
+    [[ "$(verdict_of "$output")" == "flag" ]]
+    [[ "$output" == *"missing-license"* ]]
+    [[ "$output" != *"readme-declared-license"* ]]
 }
 
 @test "trust_score: a directory named LICENSES does not count as a license file" {
