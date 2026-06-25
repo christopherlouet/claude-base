@@ -181,6 +181,30 @@ _curation_list_exec_surface() {
     return 0
 }
 
+# _curation_subpaths_resolve <repo> <ref> <subpaths> — for a subpath-scoped
+# skill, verify each '+'-split subpath actually matches at least one path in the
+# repo tree at <ref>. A subpath that matches NOTHING (e.g. a registry vendorId
+# that dropped the `skills/` prefix) would make the doc + exec-surface scans
+# cover an EMPTY set, so the screen would vacuously report "clean" — the skill is
+# never inspected. Return: 0 = every subpath resolves; 2 = at least one resolves
+# to nothing; 1 = tree unfetchable (the exec-surface scan already fails safe, so
+# the caller does not double-flag). A valid collection root (e.g. phaser's
+# `skills`) matches many child paths and resolves cleanly.
+_curation_subpaths_resolve() {
+    local repo="$1" ref="$2" subpaths="$3" body paths sp sps=() missing=0
+    body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
+    printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
+    paths=$(printf '%s' "$body" | jq -r '.tree[]? | .path')
+    IFS='+' read -ra sps <<< "$subpaths" || true
+    for sp in "${sps[@]}"; do
+        [ -n "$sp" ] || continue
+        printf '%s\n' "$paths" | awk -v p="$sp/" 'index($0,p)==1{found=1} END{exit !found}' \
+            || missing=1
+    done
+    [ "$missing" -eq 1 ] && return 2
+    return 0
+}
+
 # curation_safety_screen <owner/repo> <ref> [<subpaths>]
 # <subpaths>: optional '+'-joined subpath(s) the skill occupies in the repo
 # (e.g. "skills" or "cro+analytics"). When given, the doc fetch AND the exec-
@@ -205,6 +229,17 @@ curation_safety_screen() {
     if [ -n "$text" ]; then
         while IFS= read -r r; do [ -n "$r" ] && reasons+=("$r"); done \
             < <(printf '%s' "$text" | _curation_scan_text)
+    fi
+
+    # 1b. Subpath-resolution guard: a stale/wrong subpath that matches NO path in
+    # the tree would make both scans cover an EMPTY set and the screen vacuously
+    # report "clean" — i.e. the skill is never actually inspected. Flag it so a
+    # bad pin surfaces instead of silently passing. A tree-unfetchable result is
+    # already covered by exec-surface-unfetchable below (no double-flag).
+    if [ -n "$subpaths" ]; then
+        local rrc
+        _curation_subpaths_resolve "$repo" "$ref" "$subpaths"; rrc=$?
+        [ "$rrc" -eq 2 ] && reasons+=("subpath-unresolved")
     fi
 
     # 2. Scan the REAL executable surface (*.sh, settings*.json hooks, .mcp.json).
