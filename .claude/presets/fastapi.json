@@ -61,7 +61,7 @@
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack (Loki/Tempo/Mimir), k6 perf testing",
       "condition": "if using Grafana / observability stack",
-      "pinnedRef": "03c7b81fd296fc01c00e8477a0595f0e99cdef3f",
+      "pinnedRef": "e8424d242290be2ae187a74b5fd854174f0c5411",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
       "lastVerified": "2026-06-23"

@@ -47,7 +47,7 @@
       "url": "https://claude.com/plugins/frontend-design",
       "rationale": "Anthropic's official UI design plugin (avoid generic Inter+purple aesthetic)",
       "condition": "always",
-      "pinnedRef": "ca9f6045fc90c8244f9e787fb57d54b380f9a27c",
+      "pinnedRef": "0bd954331e2dbf76024ac53b0fd997314f653e51",
       "trustTrack": "authority",
       "provenance": "Anthropic",
       "lastVerified": "2026-06-13"
