@@ -1,0 +1,121 @@
+#!/usr/bin/env bats
+
+# =============================================================================
+# Tests for scripts/sync-counts.sh — the counts self-heal used by the pre-commit
+# hook. Fully OFFLINE + hermetic: a throwaway git repo under $TEST_DIR, a fake
+# "derived" file (counts.txt), and fake regen/check commands injected via the
+# documented env seams. No node, no website, no network.
+# =============================================================================
+
+load 'test_helper'
+
+SYNC="$BASE_DIR/scripts/sync-counts.sh"
+
+setup() {
+    setup_test_dir
+    cd "$TEST_DIR"
+    git init -q
+    git config user.email t@t.t
+    git config user.name t
+    # The single tracked "derived" artifact for these tests.
+    echo "count=1" > counts.txt
+    git add counts.txt
+    git commit -qm init
+    # Fake tools live here; tests point the seams at them.
+    mkdir -p bin
+}
+
+teardown() { teardown_test_dir; }
+
+# run_sync <args...> — invoke sync-counts against the throwaway repo.
+run_sync() {
+    run env \
+        SYNC_COUNTS_ROOT="$TEST_DIR" \
+        SYNC_COUNTS_PATHS="counts.txt" \
+        SYNC_COUNTS_REGEN_CMD="${REGEN:-true}" \
+        SYNC_COUNTS_CHECK_CMD="${CHECK:-true}" \
+        bash "$SYNC" "$@"
+}
+
+# --- HEAL mode ---------------------------------------------------------------
+
+@test "heal: no drift (regen changes nothing) → exit 0, nothing staged" {
+    REGEN="true" run_sync
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"already in sync"* ]]
+    # index unchanged: no staged diff
+    git diff --cached --quiet
+}
+
+@test "heal: drift (regen rewrites the derived file) → exit 0, file staged" {
+    cat > bin/regen <<'EOF'
+#!/usr/bin/env bash
+echo "count=2" > counts.txt
+EOF
+    chmod +x bin/regen
+    REGEN="$TEST_DIR/bin/regen" run_sync
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"regenerated and staged"* ]]
+    # the regenerated derived file is now staged
+    git diff --cached --name-only | grep -qx counts.txt
+    [ "$(git show :counts.txt)" = "count=2" ]
+}
+
+@test "heal: regen fails but counts are already consistent → exit 0 (no block)" {
+    REGEN="false" CHECK="true" run_sync
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"tooling unavailable"* ]]
+}
+
+@test "heal: regen fails AND counts drifted → exit 1 (block, clear message)" {
+    REGEN="false" CHECK="false" run_sync
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"regeneration failed"* ]]
+}
+
+@test "heal: a pre-staged correct regen output is left clean → exit 0" {
+    # regen writes the SAME content already committed → no unstaged diff
+    cat > bin/regen <<'EOF'
+#!/usr/bin/env bash
+echo "count=1" > counts.txt
+EOF
+    chmod +x bin/regen
+    REGEN="$TEST_DIR/bin/regen" run_sync
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"already in sync"* ]]
+}
+
+# --- CHECK mode (read-only) --------------------------------------------------
+
+@test "check: consistent → exit 0, no regeneration, no staging" {
+    cat > bin/regen <<'EOF'
+#!/usr/bin/env bash
+echo "SHOULD NOT RUN" > counts.txt
+EOF
+    chmod +x bin/regen
+    REGEN="$TEST_DIR/bin/regen" CHECK="true" run_sync --check
+    [ "$status" -eq 0 ]
+    # regen must NOT have run in check mode
+    [ "$(git show :counts.txt)" = "count=1" ]
+    git diff --quiet -- counts.txt
+}
+
+@test "check: drift → exit 1, no mutation" {
+    CHECK="false" run_sync --check
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"out of sync"* ]]
+    git diff --cached --quiet
+}
+
+# --- CLI ---------------------------------------------------------------------
+
+@test "unknown option → exit 2" {
+    run_sync --bogus
+    [ "$status" -eq 2 ]
+}
+
+@test "--quiet suppresses the informational line on a no-op" {
+    REGEN="true" run_sync --quiet
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}

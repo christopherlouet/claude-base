@@ -1,5 +1,16 @@
 #!/usr/bin/env sh
 
+# Counts self-heal: when a commit stages a counted artifact (command / agent /
+# skill / rule / bats test), regenerate the derived count files and stage them,
+# so a stale count can never reach CI. No-op (and node-free) for every other
+# commit. See scripts/sync-counts.sh. Disable with SKIP_COUNTS_SYNC=1.
+if [ "${SKIP_COUNTS_SYNC:-0}" != "1" ]; then
+  if git diff --cached --name-only \
+       | grep -qE '^\.claude/(commands|agents|skills|rules)/|^tests/.*\.bats$'; then
+    bash scripts/sync-counts.sh --quiet || exit 1
+  fi
+fi
+
 # Run lint-staged for staged files only (requires package.json with lint-staged)
 if command -v npx >/dev/null 2>&1 && [ -f "package.json" ]; then
   npx lint-staged

@@ -120,6 +120,24 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Third-party hooks warning** | SessionStart | Warns if custom hooks are detected |
 | **CLI version probe** | SessionStart | Probes Claude Code version for the output rewriter (requires 2.1.121+). Writes `/tmp/claude-rewriter-supported` (`1` or `0`) consumed by post-edit and bash-output rewriter hooks |
 
+## Git-native hooks (`.husky/`)
+
+Distinct from the Claude Code hooks above (which live in `.claude/settings.json`):
+these are standard **git** hooks, wired via `core.hooksPath=.husky`. They run for
+**every** commit — by a human or an agent, in any tool — not only inside Claude
+Code. `scripts/hooks/setup-deps.sh` wires `core.hooksPath` on Setup (idempotent,
+and it repairs a stale absolute path left by a repo rename); for a manual clone,
+run `git config core.hooksPath .husky` once.
+
+| Hook | Action |
+|------|--------|
+| `pre-commit` → **counts self-heal** | When a commit stages a counted artifact (`.claude/{commands,agents,skills,rules}/**` or `tests/*.bats`), runs `scripts/sync-counts.sh`: regenerates the derived count files and `git add`s them, so a stale count can never reach CI. No-op (and node-free) for any other commit. Blocks only if counts drifted and regeneration is unavailable. Disable with `SKIP_COUNTS_SYNC=1`. |
+
+`scripts/sync-counts.sh` mirrors the CI **"Counts gate"**: it regenerates and
+stages the same derived path set the CI diffs (`counts.json`, `README.md`,
+`CLAUDE.md`, `docs/`, `website/docs/`, the Docusaurus config). `--check` runs the
+read-only `validate-counts.sh` instead (no regeneration, no staging).
+
 ## Output rewriter (CLI 2.1.121+)
 
 Three coordinated hooks that exploit `hookSpecificOutput.updatedToolOutput` to tighten Claude's feedback loop on PostToolUse Bash and Edit/Write events.
@@ -140,6 +158,7 @@ Migration path: existing projects must run `claude-base update -f --all <project
 |----------|-------|
 | `ALLOW_MAIN_EDIT=1` | Disable main branch protection |
 | `SKIP_PRE_COMMIT_TESTS=1` | Disable pre-commit tests |
+| `SKIP_COUNTS_SYNC=1` | Disable the git pre-commit counts self-heal (`.husky/pre-commit`) |
 | `SKIP_COMMAND_VALIDATOR=1` | Disable command security validation |
 | `SKIP_PRE_PUSH_CI=1` | Disable local pre-push CI check |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
