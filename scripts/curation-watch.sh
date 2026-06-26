@@ -14,9 +14,18 @@
 # good ref has moved beyond our pinnedRef → a newer version exists). gh failures
 # are fail-safe: the target becomes an "error" finding, the run still completes.
 #
+# It ALSO consistency-checks the graduatable watch-list (awaiting-vendors.json):
+# each entry's currentBest prose carries a license stance ("unlicensed" / a named
+# SPDX id) that humans hand-edit and that NEVER passes through the 4-source probe,
+# so it silently rots. For every entry that asserts a stance we re-probe the repo
+# (canonical trust-score cascade) and emit a "license-note" finding when the live
+# result disagrees — e.g. a stale "unlicensed" note hiding a README-declared MIT
+# (the exact false-negative that understates a candidate against a "+license" bar).
+#
 # Usage:
 #   curation-watch.sh [--dry-run] [--digest-dir DIR]
 #                     [--registry FILE] [--presets-dir DIR] [--thresholds FILE]
+#                     [--awaiting FILE]
 #   --dry-run      do not write lastVerified back to the registry
 #   --digest-dir   write digest.json + digest.md here (default: stdout JSON only)
 #
@@ -37,6 +46,7 @@ source "$_WATCH_DIR/lib/curation-emit.sh"
 
 REGISTRY="${CURATION_REGISTRY:-$_WATCH_DIR/../.claude/curation/registry.json}"
 PRESETS_DIR="${CURATION_PRESETS_DIR:-$_WATCH_DIR/../.claude/presets}"
+AWAITING="${CURATION_AWAITING:-$_WATCH_DIR/../.claude/curation/awaiting-vendors.json}"
 STATE_FILE="${CURATION_STATE:-}"
 DIGEST_DIR=""
 DRY_RUN=false
@@ -50,6 +60,7 @@ while [ $# -gt 0 ]; do
         --digest-dir) DIGEST_DIR="${2:-}"; [ -n "$DIGEST_DIR" ] || { echo "--digest-dir requires a path" >&2; exit 2; }; shift 2 ;;
         --registry) REGISTRY="${2:-}"; [ -n "$REGISTRY" ] || { echo "--registry requires a path" >&2; exit 2; }; shift 2 ;;
         --presets-dir) PRESETS_DIR="${2:-}"; [ -n "$PRESETS_DIR" ] || { echo "--presets-dir requires a path" >&2; exit 2; }; shift 2 ;;
+        --awaiting) AWAITING="${2:-}"; [ -n "$AWAITING" ] || { echo "--awaiting requires a path" >&2; exit 2; }; shift 2 ;;
         --state-file) STATE_FILE="${2:-}"; [ -n "$STATE_FILE" ] || { echo "--state-file requires a path" >&2; exit 2; }; shift 2 ;;
         --thresholds) CURATION_THRESHOLDS="${2:-}"; [ -n "$CURATION_THRESHOLDS" ] || { echo "--thresholds requires a path" >&2; exit 2; }; export CURATION_THRESHOLDS; shift 2 ;;
         --emit-issue) EMIT_ISSUE=true; shift ;;
@@ -89,6 +100,70 @@ _repo_root() {
     # take the first two slash-separated segments
     local owner="${s%%/*}"; local rest="${s#*/}"; local repo="${rest%%/*}"
     [ -n "$owner" ] && [ -n "$repo" ] && [ "$owner" != "$rest" ] && printf '%s/%s\n' "$owner" "$repo"
+}
+
+# _prose_repo <currentBest-prose> — the first owner/repo token in a watch-list
+# entry's free-text currentBest ("vp-k/flutter-craft (~10 stars, …)" → vp-k/
+# flutter-craft). Echoes nothing when the prose names no repo (e.g. "NO-SUPPLY …").
+_prose_repo() {
+    printf '%s' "$1" | grep -oE '[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+' | head -n1
+}
+
+# _prose_license_stance <currentBest-prose> — classify the license CLAIM the prose
+# makes, so the guardrail only fires on a genuine contradiction (silent entries
+# make no claim and are never flagged). A named SPDX id wins over an "unlicensed"
+# phrase, so "MIT … no LICENSE file" reads as licensed (the README declares MIT;
+# the missing FILE is incidental). Echoes: licensed | none | unknown.
+_prose_license_stance() {
+    local p="$1"
+    if printf '%s' "$p" | grep -iqE '(^|[^[:alnum:]-])(MIT|Apache(-| )?2|BSD(-[0-9]-Clause)?|ISC|MPL-2\.0|GPL-[0-9]|AGPL-[0-9]|LGPL-[0-9]|Unlicense|CC0|BSL)([^[:alnum:]-]|$)'; then
+        echo "licensed"
+    elif printf '%s' "$p" | grep -iqE 'unlicensed|no licen[cs]ed?\b|without (a )?licen[cs]e|licen[cs]e:? *none'; then
+        echo "none"
+    else
+        echo "unknown"
+    fi
+}
+
+# watch_awaiting_licenses — consistency-check the watch-list (awaiting-vendors).
+# For each entry that names a repo AND asserts a license stance, re-probe the repo
+# via the canonical trust-score cascade and emit a "license-note" finding when the
+# live result disagrees with the prose. LLM-free; fail-safe (a gh outage skips the
+# entry rather than raising a false drift alarm). Emits newline-delimited finding
+# objects on stdout (none when every note matches its probe).
+watch_awaiting_licenses() {
+    [ -f "$AWAITING" ] || return 0
+    jq -c '.entries[]?' "$AWAITING" 2>/dev/null | while IFS= read -r entry; do
+        local prose fs repo stance score reasons probe note
+        prose=$(printf '%s' "$entry" | jq -r '.currentBest // ""')
+        fs=$(printf '%s' "$entry" | jq -r '.foundationSkill // ""')
+        repo=$(_prose_repo "$prose")
+        [ -n "$repo" ] || continue
+        stance=$(_prose_license_stance "$prose")
+        [ "$stance" = "unknown" ] && continue   # no claim → nothing can drift
+        # Live probe — reuse the 4-source cascade (manifest/file/README/SPDX). A
+        # "missing-license" reason appears IFF all four sources fail.
+        score=$(trust_score "$repo" community 2>/dev/null) || continue
+        reasons=$(printf '%s' "$score" | jq -r '.reasons | join(",")')
+        if printf '%s' "$reasons" | grep -q 'missing-license'; then
+            probe="missing"
+        else
+            probe="licensed"
+        fi
+        note=""
+        if [ "$stance" = "none" ] && [ "$probe" = "licensed" ]; then
+            note="note-claims-unlicensed-but-probe-finds-license:$reasons"
+        elif [ "$stance" = "licensed" ] && [ "$probe" = "missing" ]; then
+            note="note-claims-license-but-probe-finds-none"
+        fi
+        [ -n "$note" ] || continue
+        printf '%s' "$score" | jq -c --arg fs "$fs" --arg note "$note" \
+            '{subject:.repo, track:"community", pinnedRef:"(watch-list)",
+              currentRef:null, drift:false, type:"license-note", verdict:"flag",
+              reasons:[$note], forSkills:(if $fs=="" then null else $fs end),
+              stars:.stars, license:.license, ageDays:.ageDays,
+              proposedAction:"propose"}'
+    done
 }
 
 # collect_targets — emit unique {repoRoot,track,pinnedRef} JSON objects gathered
@@ -240,6 +315,7 @@ apply_state() {
 NOW=$(curation_now)
 targets=$(collect_targets)
 n_targets=$(printf '%s' "$targets" | jq 'length')
+n_watchlist=$(jq '.entries | length' "$AWAITING" 2>/dev/null || echo 0)
 
 # Prior cross-run state (empty object on first ever run).
 if [ -f "$STATE_FILE" ]; then
@@ -274,6 +350,13 @@ while IFS= read -r t; do
     state_arr+=("$(printf '%s' "$applied" | jq -c --arg s "$subject" '{subject:$s, state:.state}')")
 done < <(printf '%s' "$targets" | jq -c '.[]')
 
+# Watch-list license-note consistency check (stateless, no cross-run folding).
+# Appended after the scored targets so its findings land in the same digest.
+while IFS= read -r af; do
+    [ -n "$af" ] || continue
+    findings_arr+=("$af")
+done < <(watch_awaiting_licenses)
+
 if [ "${#findings_arr[@]}" -gt 0 ]; then
     findings=$(printf '%s\n' "${findings_arr[@]}" | jq -s '.')
 else
@@ -293,14 +376,15 @@ new_state=$(jq -cn --arg now "$NOW" --argjson subj "$new_subjects" \
 # the operator; "clean" and standing "flag" conditions are counted but not
 # re-alarmed each run (no-noise contract).
 counts=$(printf '%s' "$findings" | jq -c 'group_by(.type) | map({(.[0].type): length}) | add // {}')
-surfaced=$(printf '%s' "$findings" | jq -c '[.[] | select(.type == "rot" or .type == "drift" or .type == "error" or .type == "collapse" or .type == "license")]')
+surfaced=$(printf '%s' "$findings" | jq -c '[.[] | select(.type == "rot" or .type == "drift" or .type == "error" or .type == "collapse" or .type == "license" or .type == "license-note")]')
 n_surfaced=$(printf '%s' "$surfaced" | jq 'length')
 
 digest=$(jq -cn \
     --arg generatedAt "$NOW" --argjson targets "$n_targets" \
+    --argjson watchlist "${n_watchlist:-0}" \
     --argjson counts "$counts" --argjson findings "$surfaced" \
-    '{generatedAt:$generatedAt, scope:{targets:$targets}, counts:$counts,
-      findingCount:($findings|length), findings:$findings}')
+    '{generatedAt:$generatedAt, scope:{targets:$targets, watchlist:$watchlist},
+      counts:$counts, findingCount:($findings|length), findings:$findings}')
 
 # render_markdown — the human-readable digest (also the issue body). Defined here
 # so the emission step below can reuse it before the file-persistence step runs.

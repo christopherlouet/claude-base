@@ -708,3 +708,87 @@ EOF
     [ "$status" -eq 0 ]
     [ -z "$output" ]
 }
+
+# =============================================================================
+# watch-list license-note consistency check (awaiting-vendors.json)
+# A currentBest's hand-edited license stance never passes the 4-source probe, so
+# it can silently rot. These tests pin the guardrail that re-probes it.
+# =============================================================================
+
+# awaiting_one <foundationSkill> <currentBest> — a one-entry awaiting-vendors file.
+awaiting_one() {
+    jq -cn --arg fs "$1" --arg cb "$2" \
+        '{version:"1.1.0", entries:[{foundationSkill:$fs, tech:"t",
+          matchKeywords:["t"], currentBest:$cb, bar:"b"}]}' \
+        > "$TEST_DIR/awaiting.json"
+}
+
+# readme_fixture <repo> <markdown> — register repos/<repo>/readme as base64 JSON.
+readme_fixture() {
+    local b64; b64=$(printf '%s' "$2" | base64 | tr -d '\n')
+    gh_fixture "repos/$1/readme" "$(jq -cn --arg c "$b64" '{content:$c}')"
+}
+
+# run_watch_wl <currentBest> [extra args] — empty registry, isolate the awaiting check.
+run_watch_wl() {
+    echo '{"version":"1.0.0","records":[]}' > "$TEST_DIR/registry.json"
+    awaiting_one "dev-flutter" "$1"; shift
+    run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_NOW=2026-06-13 \
+        CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 CURATION_THRESHOLDS="$THRESHOLDS" \
+        bash "$WATCH" --registry "$TEST_DIR/registry.json" --presets-dir "$TEST_DIR/presets" \
+        --awaiting "$TEST_DIR/awaiting.json" "$@"
+}
+
+@test "watch-list: a stale 'unlicensed' note over a README-declared MIT is flagged (false negative)" {
+    gh_fixture "repos/acme/x" "$(repo_meta 10 '2026-06-12T00:00:00Z' false NONE)"
+    readme_fixture "acme/x" "## License"$'\n'"MIT"
+    run_watch_wl "acme/x (~10 stars, unlicensed) — tiny"
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.findings[0].type')" = "license-note" ]
+    [ "$(printf '%s' "$output" | jq -r '.findings[0].subject')" = "acme/x" ]
+    [ "$(printf '%s' "$output" | jq -r '.findings[0].forSkills')" = "dev-flutter" ]
+    printf '%s' "$output" | jq -e '.findings[0].reasons[0] | test("unlicensed-but-probe-finds-license")'
+}
+
+@test "watch-list: a note claiming a license over a truly licenseless repo is flagged" {
+    gh_fixture "repos/acme/x" "$(repo_meta 600 '2026-06-12T00:00:00Z' false NONE)"
+    readme_fixture "acme/x" "# Title"$'\n'"no license here"
+    run_watch_wl "acme/x (~600 stars, MIT) — broad"
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.findings[0].type')" = "license-note" ]
+    printf '%s' "$output" | jq -e '.findings[0].reasons[0] | test("claims-license-but-probe-finds-none")'
+}
+
+@test "watch-list: a note consistent with the live probe produces NO finding (no noise)" {
+    gh_fixture "repos/acme/x" "$(repo_meta 10 '2026-06-12T00:00:00Z' false MIT)"
+    run_watch_wl "acme/x (~10 stars, MIT declared in README — no LICENSE file) — tiny"
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '[.findings[] | select(.type=="license-note")] | length')" = "0" ]
+}
+
+@test "watch-list: an entry that makes no license claim is never probed/flagged" {
+    # No fixtures at all: if it probed, trust_score would error — but unknown stance skips it.
+    run_watch_wl "acme/x (~10 stars, broad match) — tiny"
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '[.findings[] | select(.type=="license-note")] | length')" = "0" ]
+}
+
+@test "watch-list: an entry naming no repo (NO-SUPPLY) is skipped" {
+    run_watch_wl "NO-SUPPLY (2026): only MCP servers + an unstable provider; unlicensed"
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '[.findings[] | select(.type=="license-note")] | length')" = "0" ]
+}
+
+@test "watch-list: a gh outage skips the entry (fail-safe, no false drift alarm)" {
+    # 'unlicensed' note but NO repo fixture → trust_score errors → entry skipped.
+    run_watch_wl "acme/ghost (~10 stars, unlicensed) — tiny"
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '[.findings[] | select(.type=="license-note")] | length')" = "0" ]
+}
+
+@test "watch-list: the digest scope reports the watchlist size" {
+    gh_fixture "repos/acme/x" "$(repo_meta 10 '2026-06-12T00:00:00Z' false MIT)"
+    run_watch_wl "acme/x (~10 stars, MIT) — tiny"
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.scope.watchlist')" = "1" ]
+}

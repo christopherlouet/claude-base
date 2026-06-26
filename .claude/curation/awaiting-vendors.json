@@ -6,7 +6,7 @@
       "foundationSkill": "dev-flutter",
       "tech": "Flutter",
       "matchKeywords": ["flutter"],
-      "currentBest": "vp-k/flutter-craft (~10 stars, unlicensed) — broad match but tiny; no authority supply",
+      "currentBest": "vp-k/flutter-craft (~10 stars, MIT declared in README — no LICENSE file) — broad match but tiny; no authority supply",
       "bar": "authority skill, OR community >=500 stars + license + breadth (widgets/state/arch/test)"
     },
     {
