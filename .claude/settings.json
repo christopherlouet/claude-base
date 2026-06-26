@@ -194,6 +194,18 @@
             "onFailure": "block"
           }
         ]
+      },
+      {
+        "description": "Blocks editing an existing linter/formatter config (fix the code, not the rule; disable with SKIP_CONFIG_PROTECTION=1)",
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/config-protection.sh\"",
+            "timeout": 5000,
+            "onFailure": "block"
+          }
+        ]
       }
     ],
     "PostToolUse": [

@@ -104,3 +104,116 @@ run_validator() {
         | grep -vF '$(cat' || true)
     [ -z "$bad" ]
 }
+
+# --- CATEGORY 9: verification bypass (git --no-verify) ----------------------
+# Blocks bypassing the pre-commit/pre-push gates; must not touch unrelated -n.
+
+@test "command-validator: blocks git commit --no-verify" {
+    run_validator 'git commit --no-verify -m "x"'
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+}
+
+@test "command-validator: blocks git push --no-verify" {
+    run_validator "git push --no-verify"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks git commit -n (short no-verify)" {
+    run_validator 'git commit -n -m "x"'
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks --no-verify chained after git add" {
+    run_validator 'git add -A && git commit --no-verify -m x'
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: does NOT block grep -n" {
+    run_validator "grep -n foo file.txt"
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: does NOT block git log -n 5" {
+    run_validator "git log -n 5"
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: does NOT block echo -n" {
+    run_validator "echo -n hello"
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: does NOT block a commit message mentioning --no-verify" {
+    run_validator 'git commit -m "document the --no-verify flag"'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: does NOT block a commit message mentioning -n" {
+    run_validator 'git commit -m "refactor the -n option parser"'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: does NOT block a -F/heredoc commit whose body names the bypass flags" {
+    run_validator "git commit -q -F - <<'EOF'
+docs: explain the --no-verify and -n bypass flags
+EOF"
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: still blocks git push -f --no-verify (force + bypass)" {
+    run_validator "git push -f --no-verify"
+    [ "$status" -eq 2 ]
+}
+
+# flag-AFTER-message (the natural ordering) must still be caught (P0 regression).
+@test "command-validator: blocks --no-verify placed AFTER -m" {
+    run_validator 'git commit -m "wip" --no-verify'
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks -n placed AFTER -m" {
+    run_validator 'git commit -m "wip" -n'
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks --no-verify after -F <file>" {
+    run_validator "git commit -F msg.txt --no-verify"
+    [ "$status" -eq 2 ]
+}
+
+# bundled short flags (-nm = -n -m)
+@test "command-validator: blocks bundled git commit -nm" {
+    run_validator 'git commit -nm "wip"'
+    [ "$status" -eq 2 ]
+}
+
+# unambiguous abbreviation (git accepts --no-verif, --no-ver, ...)
+@test "command-validator: blocks the --no-verif abbreviation" {
+    run_validator 'git commit --no-verif -m "wip"'
+    [ "$status" -eq 2 ]
+}
+
+# -am (bundled -a -m): message value must be stripped, not scanned
+@test "command-validator: does NOT block a -am commit message mentioning the bypass" {
+    run_validator 'git commit -am "document the --no-verify and -n flags"'
+    [ "$status" -eq 0 ]
+}
+
+# Granular opt-out: SKIP_NO_VERIFY_CHECK disables ONLY category 9, keeping the
+# other 8 security categories active (unlike the blunt SKIP_COMMAND_VALIDATOR).
+@test "command-validator: SKIP_NO_VERIFY_CHECK=1 allows git commit --no-verify" {
+    local json
+    json=$(jq -n '{tool_name:"Bash", tool_input:{command:"git commit --no-verify -m x"}}')
+    printf '%s' "$json" > "$TEST_DIR/input.json"
+    run bash -c "SKIP_NO_VERIFY_CHECK=1 bash '$VALIDATOR' < '$TEST_DIR/input.json' 2>&1"
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: SKIP_NO_VERIFY_CHECK=1 still blocks other categories (rm -rf)" {
+    local json
+    json=$(jq -n '{tool_name:"Bash", tool_input:{command:"rm -rf /etc"}}')
+    printf '%s' "$json" > "$TEST_DIR/input.json"
+    run bash -c "SKIP_NO_VERIFY_CHECK=1 bash '$VALIDATOR' < '$TEST_DIR/input.json' 2>&1"
+    [ "$status" -eq 2 ]
+}

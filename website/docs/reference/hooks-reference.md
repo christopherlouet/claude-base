@@ -85,7 +85,8 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Pre-commit tests** | PreToolUse (Bash git commit) | Runs tests before a commit. Detects and repairs Husky if needed |
 | **Local pre-push CI** | PreToolUse (Bash git push) | Lint + type-check + tests before push. Disable with `SKIP_PRE_PUSH_CI=1` |
 | **Destructive ops guard** | PreToolUse (Bash) | Blocks destructive DELETE/DROP/TRUNCATE/rm without confirmation |
-| **Command validator** | PreToolUse (Bash) | Validates commands against 8 risk categories (fork bombs, pipe-to-shell, disk destruction, privilege escalation, etc.). Disable with `SKIP_COMMAND_VALIDATOR=1` |
+| **Command validator** | PreToolUse (Bash) | Validates commands against 9 risk categories (fork bombs, pipe-to-shell, disk destruction, privilege escalation, **`git --no-verify` / `commit -n` gate-bypass**, etc.). Disable all with `SKIP_COMMAND_VALIDATOR=1`, or just the no-verify block with `SKIP_NO_VERIFY_CHECK=1` |
+| **Config protection** | PreToolUse (Edit/Write/MultiEdit) | Blocks modifying an *existing* linter/formatter config (`.eslintrc*`, `eslint.config.*`, `.prettierrc*`, `biome.json`, `ruff.toml`, `.markdownlint.*`) so a failing check is fixed in the code, not silenced. Creating a config is allowed; `pyproject.toml`/`tsconfig.json` and test fixtures are exempt. Disable with `SKIP_CONFIG_PROTECTION=1` |
 | **Auto-format TS/JS** | PostToolUse (Edit/Write) | Prettier on TS/JS files |
 | **Auto-format Python** | PostToolUse (Edit/Write) | Ruff/Black on .py files |
 | **Auto-format Go** | PostToolUse (Edit/Write) | gofmt on .go files |
@@ -159,7 +160,9 @@ Migration path: existing projects must run `claude-base update -f --all <project
 | `ALLOW_MAIN_EDIT=1` | Disable main branch protection |
 | `SKIP_PRE_COMMIT_TESTS=1` | Disable pre-commit tests |
 | `SKIP_COUNTS_SYNC=1` | Disable the git pre-commit counts self-heal (`.husky/pre-commit`) |
-| `SKIP_COMMAND_VALIDATOR=1` | Disable command security validation |
+| `SKIP_COMMAND_VALIDATOR=1` | Disable ALL command security validation (every category) |
+| `SKIP_NO_VERIFY_CHECK=1` | Disable ONLY the `git --no-verify`/`-n` gate-bypass block (keeps the other 8 categories active) |
+| `SKIP_CONFIG_PROTECTION=1` | Disable the linter/formatter config-protection hook |
 | `SKIP_PRE_PUSH_CI=1` | Disable local pre-push CI check |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
 | `SKIP_PROMPT_CONTEXT=1` | Disable repo context injection on free-form prompts |
