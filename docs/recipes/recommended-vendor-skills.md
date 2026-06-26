@@ -199,11 +199,11 @@ git clone --depth 1 https://github.com/langchain-ai/langchain-skills ~/dev/vendo
 
 ### Vercel — `vercel-labs/agent-skills`
 
-**Covers**: `react-best-practices` (40+ rules across 8 categories from Vercel Engineering), View Transitions, React Composition Patterns, Web Design Guidelines, Next.js patterns.
+**Covers**: `react-best-practices` (40+ rules across 8 categories from Vercel Engineering), React Composition Patterns, React View Transitions, `deploy-to-vercel`, `vercel-optimize`, Web Design Guidelines. **React + Vercel-deploy focused — no dedicated Next.js skill** (App Router / RSC / caching stay claude-base's `dev-nextjs`).
 
-**When to install**: any project using Next.js or modern React on Vercel.
+**When to install**: any project using Next.js or modern React on Vercel — for the React layer and Vercel deploy/optimize.
 
-**Pair with**: claude-base's `dev-nextjs` and `dev-react-perf` skills (workflow patterns, deploy-safety, anti-patterns).
+**Pair with**: claude-base's `dev-nextjs` (the primary App Router / Server Components / caching reference) and `dev-react-perf` skills (workflow patterns, deploy-safety, anti-patterns).
 
 **Install** (verify on their README):
 ```bash
