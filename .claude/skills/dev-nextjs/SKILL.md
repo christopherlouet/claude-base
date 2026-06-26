@@ -309,11 +309,11 @@ NEVER expose business logic in a Route Handler without checking auth.
 
 ## See also
 
-Vercel Labs publishes their own official agent skills at [`vercel-labs/agent-skills`](https://github.com/vercel-labs/agent-skills) (maintained by Vercel Engineering, last commit 2026-05-05). The repo ships:
+Vercel Labs publishes official agent skills at [`vercel-labs/agent-skills`](https://github.com/vercel-labs/agent-skills) (maintained by Vercel Engineering). Note the repo ships **React + Vercel** skills, *not* a dedicated Next.js one:
 
-- **`react-best-practices`** — 40+ rules across 8 categories from Vercel Engineering, kept current with each Next.js release.
-- Companion skills covering View Transitions, React Composition Patterns, Web Design Guidelines.
+- **`react-best-practices`** — 40+ rules across 8 categories from Vercel Engineering.
+- Companion skills: React Composition Patterns, React View Transitions, `deploy-to-vercel`, `vercel-optimize`, Web Design Guidelines.
 
-When working on a Next.js project, install the vendor skill alongside this one. This skill captures the **opinionated workflow patterns** the foundation imposes (TDD-first, security defaults, deploy-safety, anti-patterns) independent of Vercel's evolving Next.js API surface; the vendor skill captures the canonical App Router / Server Components / caching patterns.
+Install the vendor skill alongside this one on a Next.js project: the vendor sharpens the **React layer and Vercel deploy/optimize**, while **this foundation skill stays the primary Next.js reference** — App Router, Server Components, caching/streaming, Server Actions, middleware, route handlers — plus the opinionated workflow the foundation imposes (TDD-first, security defaults, deploy-safety, anti-patterns).
 
 Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.
