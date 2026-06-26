@@ -56,5 +56,16 @@ if [ -f composer.json ] && ! [ -d vendor ]; then
   echo "✓ PHP dependencies installed"
 fi
 
+# Git hooks: wire the committed .husky/ directory so the counts self-heal
+# pre-commit actually runs. Idempotent, and it REPAIRS a stale absolute
+# core.hooksPath (e.g. left over from a repo rename) that silently disables every
+# git hook. Local-scope only; no-op outside a work tree or without .husky/.
+if [ -d .husky ] && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  if [ "$(git config --local core.hooksPath 2>/dev/null || true)" != ".husky" ]; then
+    git config --local core.hooksPath .husky
+    echo "✓ git hooks wired (core.hooksPath=.husky)"
+  fi
+fi
+
 echo "=== Setup complete ==="
 exit 0
