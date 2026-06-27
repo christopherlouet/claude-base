@@ -286,10 +286,32 @@ _scan_go() {
     ' "$f" || true
 }
 
-# Stub scanner — Phase 3 fills the per-language patterns. For now a no-op so the
-# "no stubs in our own scripts/" regression (EF-008) holds while we build the
-# hollow-test path first. NEVER emit on ambiguity.
-_scan_code_stub() { : ; }
+# Stub scanner for delivered (non-test) code. HIGH-PRECISION by design (edge-7:
+# favour not-flagging): only the unambiguous "this is not built yet" markers are
+# flagged — `raise NotImplementedError` (Python), `throw new …Error("…not
+# implemented/TODO/stub…")` (JS/TS), `panic("…not implemented/TODO/stub…")` (Go).
+# Ambiguous shapes (a `pass`-only/abstract method, a `return null` default, a real
+# error throw) are NOT flagged. An inline `substance:ignore` on the marker line or
+# the line above suppresses the finding (deliberate WIP / intended behaviour).
+_scan_code_stub() {
+    local f="$1"
+    case "$f" in
+        *.ts|*.tsx|*.js|*.jsx|*.mts|*.cts|*.py|*.go) ;;
+        *) return 0 ;;
+    esac
+    _looks_minified "$f" && return 0
+    awk -v file="$f" '
+        function is_stub(s) {
+            return s ~ /(raise[[:space:]]+NotImplemented([A-Za-z]*Error)?([^A-Za-z]|$)|throw[[:space:]]+new[[:space:]]+[A-Za-z]*Error[[:space:]]*\([^)]*([Nn]ot.?[Ii]mplement|[Uu]nimplement|TODO|FIXME|implement me|[Ss]tub)|panic[[:space:]]*\([^)]*([Nn]ot.?[Ii]mplement|[Uu]nimplement|TODO|implement me|[Ss]tub))/
+        }
+        {
+            optout = (index($0, "substance:ignore") > 0) || (index(prev, "substance:ignore") > 0)
+            if (is_stub($0) && !optout)
+                printf "%s:%d: stub: not-implemented marker in delivered code - implement or remove\n", file, NR
+            prev=$0
+        }
+    ' "$f" || true
+}
 
 # ---------------------------------------------------------------------------
 # Dispatch
@@ -345,18 +367,22 @@ _file_is_go_tests() {
 _scan_one() {
     local f="$1"
     [ -f "$f" ] || return 0
-    if [ "$MODE" != code ]; then
-        if _file_is_bats_tests "$f"; then
-            _scan_bats "$f"
-        elif _file_is_js_tests "$f" && ! _looks_minified "$f"; then
-            _scan_js "$f"
-        elif _file_is_py_tests "$f"; then
-            _scan_py "$f"
-        elif _file_is_go_tests "$f"; then
-            _scan_go "$f"
-        fi
+    local is_test=0
+    if _file_is_bats_tests "$f"; then
+        is_test=1
+        [ "$MODE" != code ] && _scan_bats "$f"
+    elif _file_is_js_tests "$f" && ! _looks_minified "$f"; then
+        is_test=1
+        [ "$MODE" != code ] && _scan_js "$f"
+    elif _file_is_py_tests "$f"; then
+        is_test=1
+        [ "$MODE" != code ] && _scan_py "$f"
+    elif _file_is_go_tests "$f"; then
+        is_test=1
+        [ "$MODE" != code ] && _scan_go "$f"
     fi
-    if [ "$MODE" != tests ]; then
+    # Stub scan only delivered (non-test) code.
+    if [ "$MODE" != tests ] && [ "$is_test" -eq 0 ]; then
         _scan_code_stub "$f"
     fi
 }

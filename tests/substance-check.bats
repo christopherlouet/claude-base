@@ -289,6 +289,65 @@ count_findings() { printf '%s\n' "$output" | grep -cE ': (no-assertion|always-tr
     [ "$(count_findings)" -eq 0 ]
 }
 
+# --- Phase 3: stub scanner (delivered, non-test code) -----------------------
+
+@test "substance-check: flags a JS not-implemented throw stub" {
+    printf '%s\n' "export function getUser(id) {" \
+        "  throw new Error('not implemented');" "}" > "$TEST_DIR/service.ts"
+    run bash "$SC" "$TEST_DIR/service.ts"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"stub"* ]]
+}
+
+@test "substance-check: flags a Python raise NotImplementedError stub" {
+    printf '%s\n' "def fetch(url):" "    raise NotImplementedError" \
+        > "$TEST_DIR/client.py"
+    run bash "$SC" "$TEST_DIR/client.py"
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"stub"* ]]
+}
+
+@test "substance-check: flags a Go panic TODO stub" {
+    printf '%s\n' "func Handle(r *Request) {" "	panic(\"TODO: implement\")" "}" \
+        > "$TEST_DIR/handler.go"
+    run bash "$SC" "$TEST_DIR/handler.go"
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"stub"* ]]
+}
+
+@test "substance-check: does NOT flag a real implementation" {
+    printf '%s\n' "export function add(a, b) {" "  return a + b;" "}" \
+        > "$TEST_DIR/math.ts"
+    run bash "$SC" "$TEST_DIR/math.ts"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# edge-7: a real error throw (not a stub marker) must NOT be flagged.
+@test "substance-check: does NOT flag a genuine error throw" {
+    printf '%s\n' "export function load(p) {" \
+        "  if (!exists(p)) throw new Error('file not found: ' + p);" \
+        "  return read(p);" "}" > "$TEST_DIR/loader.ts"
+    run bash "$SC" "$TEST_DIR/loader.ts"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# edge-7: an inline substance:ignore opt-out suppresses the stub finding.
+@test "substance-check: respects an inline substance:ignore opt-out" {
+    printf '%s\n' "export function later() {" \
+        "  throw new Error('not implemented'); // substance:ignore" "}" \
+        > "$TEST_DIR/wip.ts"
+    run bash "$SC" "$TEST_DIR/wip.ts"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# Self-application (rule #413): the repo's REAL non-test source must be stub-free.
+@test "substance-check: ZERO stub findings on the repo's own website/scripts" {
+    run bash "$SC" --code-only "$BASE_DIR/website/scripts"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
 # Self-application (rule #413): the repo's REAL node:test suite must be clean.
 @test "substance-check: ZERO findings on the repo's own website/scripts tests" {
     run bash "$SC" "$BASE_DIR/website/scripts"
