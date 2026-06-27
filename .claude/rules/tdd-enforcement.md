@@ -83,3 +83,7 @@ NEVER:
 - Propose to "test later"
 - Ignore tests to "go faster"
 - Modify the tests to make them pass (instead of fixing the code)
+- Ship a hollow test (no real assertion / always-true / skipped / empty) or a
+  stub implementation to make the suite green — coverage % does not catch these.
+  The advisory **substance gate** (`scripts/substance-check.sh`, auto-run on
+  Edit/Write) flags them; a green suite over hollow tests is not "done".

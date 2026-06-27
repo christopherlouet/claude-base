@@ -42,6 +42,7 @@ git log main...HEAD --oneline
 - [ ] Tests present and relevant
 - [ ] Edge cases covered
 - [ ] Mocks limited to I/O
+- [ ] Substance: no hollow tests / stubs — run `./scripts/substance-check.sh <changed-files>` (flags no-assertion / always-true / skipped / empty / stub; a green suite over hollow tests is not "done")
 
 #### Security
 - [ ] Inputs validated

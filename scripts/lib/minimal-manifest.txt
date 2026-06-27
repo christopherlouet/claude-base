@@ -60,6 +60,7 @@ scripts/hooks/config-protection.sh
 scripts/hooks/post-edit-typecheck-and-lint.sh
 scripts/hooks/prompt-context.sh
 scripts/hooks/setup-deps.sh
+scripts/hooks/substance-check.sh
 
 # === Documentation minimale ===
 docs/reference/best-practices.md:.claude/docs/reference/best-practices.md

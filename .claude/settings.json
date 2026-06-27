@@ -222,6 +222,18 @@
         ]
       },
       {
+        "description": "Substance gate (advisory): flags hollow tests / implementation stubs in the file just edited that coverage % won't catch. Never blocks. Disable: SKIP_SUBSTANCE_CHECK=1.",
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/substance-check.sh\"",
+            "timeout": 10000,
+            "onFailure": "ignore"
+          }
+        ]
+      },
+      {
         "description": "Auto-format TypeScript/JavaScript after modification",
         "matcher": "Edit|Write",
         "hooks": [

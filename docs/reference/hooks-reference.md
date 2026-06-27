@@ -90,6 +90,7 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Auto go mod tidy** | PostToolUse (Edit go.mod) | go mod tidy |
 | **Auto cargo check** | PostToolUse (Edit Cargo.toml) | cargo check |
 | **Coverage check** | PostToolUse (Edit test files) | Checks test coverage |
+| **Substance gate** | PostToolUse (Edit/Write/MultiEdit) | Advisory: runs `scripts/substance-check.sh` on the edited test/source file and surfaces hollow tests (no-assertion / always-true / skipped / empty) and implementation stubs (`not implemented`/`NotImplementedError`/`panic("TODO")`) that coverage % misses. Never blocks (exit 0 always). Disable: `SKIP_SUBSTANCE_CHECK=1` |
 | **Setup init** | Setup (init) | Installs dependencies on first run |
 | **Setup maintenance** | Setup (maintenance) | Periodic audit and updates |
 | **Notification permission** | Notification (permission_prompt) | Logs permission requests |
@@ -155,6 +156,7 @@ Migration path: existing projects must run `claude-base update -f --all <project
 | `SKIP_COMMAND_VALIDATOR=1` | Disable ALL command security validation (every category) |
 | `SKIP_NO_VERIFY_CHECK=1` | Disable ONLY the `git --no-verify`/`-n` gate-bypass block (keeps the other 8 categories active) |
 | `SKIP_CONFIG_PROTECTION=1` | Disable the linter/formatter config-protection hook |
+| `SKIP_SUBSTANCE_CHECK=1` | Disable the substance gate (advisory hollow-test / stub detector) |
 | `SKIP_PRE_PUSH_CI=1` | Disable local pre-push CI check |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
 | `SKIP_PROMPT_CONTEXT=1` | Disable repo context injection on free-form prompts |
