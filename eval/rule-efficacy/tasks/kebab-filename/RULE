@@ -1,0 +1,3 @@
+# Rule(s) this task targets — removed from the project for the CONTROL arm.
+# The typescript rule's File Naming table: services/utils -> kebab-case.
+.claude/rules/typescript.md
