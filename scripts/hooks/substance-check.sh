@@ -43,7 +43,7 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
 DETECTOR="$PROJECT_DIR/scripts/substance-check.sh"
 [ -x "$DETECTOR" ] || exit 0
 
-FINDINGS=$(bash "$DETECTOR" --quiet "$FILE_PATH" 2>/dev/null || true)
+FINDINGS=$(bash "$DETECTOR" --quiet -- "$FILE_PATH" 2>/dev/null || true)
 [ -z "$FINDINGS" ] && exit 0
 
 {

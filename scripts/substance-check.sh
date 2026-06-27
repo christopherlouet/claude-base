@@ -64,6 +64,10 @@ _scan_bats() {
                 if (line ~ /^[[:space:]]*$/) continue
                 if (line ~ /^[[:space:]]*[}][[:space:]]*$/) continue
                 meaningful++
+                # A pipe/chain/command-substitution tail can FAIL the test (a real
+                # check) even when the line STARTS with an inert word — never read
+                # such a line as inert. (Favours not-flagging.)
+                if (line ~ /(&&|[|;]|\$\()/) { allInert=0; continue }
                 # INERT = a line that cannot make the test fail / assert nothing.
                 if (line !~ /^[[:space:]]*(run([[:space:]]|$)|echo([[:space:]]|$)|printf([[:space:]]|$)|load([[:space:]]|$)|source([[:space:]]|$)|sleep([[:space:]]|$)|cd([[:space:]]|$)|true([[:space:]]|$)|:([[:space:]]|$)|export[[:space:]]|local[[:space:]]|declare[[:space:]]|readonly[[:space:]]|[A-Za-z_][A-Za-z0-9_]*=)/)
                     allInert=0
@@ -164,7 +168,12 @@ _scan_js() {
                 printf "%s:%d: no-assertion: runs code but asserts nothing\n", file, startline
         }
         {
-            o=gsub(/[{]/,"&",$0); c=gsub(/[}]/,"&",$0)   # raw brace counts (gsub returns count)
+            # Count braces on a copy with single-line string/template/char
+            # literals stripped, so a lone `}` inside a string cannot close the
+            # block early (strip only REMOVES braces → depth bounded, never a new
+            # false positive). Multi-line templates remain out of scope.
+            bl=$0; gsub(/"[^"]*"/,"",bl); gsub(/`[^`]*`/,"",bl); gsub(/'"'"'[^'"'"']*'"'"'/,"",bl)
+            o=gsub(/[{]/,"&",bl); c=gsub(/[}]/,"&",bl)
             if (inblock) {
                 body[n++]=$0
                 if (!braceseen && o>0) braceseen=1
@@ -268,7 +277,10 @@ _scan_go() {
                 printf "%s:%d: no-assertion: runs code but asserts nothing\n", file, startline
         }
         {
-            o=gsub(/[{]/,"&",$0); c=gsub(/[}]/,"&",$0)
+            # Strip string / raw-string / rune literals before counting braces so
+            # a `}` inside one cannot close the block early (FN-direction).
+            bl=$0; gsub(/"[^"]*"/,"",bl); gsub(/`[^`]*`/,"",bl); gsub(/'"'"'[^'"'"']*'"'"'/,"",bl)
+            o=gsub(/[{]/,"&",bl); c=gsub(/[}]/,"&",bl)
             if (inblock) {
                 body[n++]=$0
                 if (!braceseen && o>0) braceseen=1

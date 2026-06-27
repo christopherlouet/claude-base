@@ -70,6 +70,22 @@ count_findings() { printf '%s\n' "$output" | grep -cE ': (no-assertion|always-tr
     [ "$(count_findings)" -eq 0 ]
 }
 
+# A line starting with an inert word but PIPING/CHAINING into a command is a real
+# check in bats (a non-zero tail fails the test) — must not read as no-assertion.
+@test "substance-check: does NOT flag a bats @test whose check is a pipeline" {
+    printf '@test "pipe" {\n    run mycmd\n    echo "$output" | grep -q expected\n}\n' \
+        > "$TEST_DIR/pipe.bats"
+    run bash "$SC" "$TEST_DIR/pipe.bats"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+@test "substance-check: does NOT flag a bats @test chaining with &&" {
+    printf '@test "chain" {\n    cd "$dir" && [ -f result.txt ]\n}\n' \
+        > "$TEST_DIR/chain.bats"
+    run bash "$SC" "$TEST_DIR/chain.bats"
+    [ "$(count_findings)" -eq 0 ]
+}
+
 # --- fail-safe + CLI ---------------------------------------------------------
 
 @test "substance-check: unknown/unsupported file → no finding (fail-safe)" {
@@ -169,6 +185,17 @@ count_findings() { printf '%s\n' "$output" | grep -cE ': (no-assertion|always-tr
         "  expect(a + 1).toBe(b);" \
         "});" > "$TEST_DIR/table.test.ts"
     run bash "$SC" "$TEST_DIR/table.test.ts"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# An unbalanced brace inside a string literal must not close the block early and
+# hide the real assertion on a later line.
+@test "substance-check: does NOT flag a JS test with a brace inside a string" {
+    printf '%s\n' "it('handles a close brace in a string', () => {" \
+        "  const t = \"}\";" \
+        "  expect(compute(t)).toBe(42);" \
+        "});" > "$TEST_DIR/brace.test.ts"
+    run bash "$SC" "$TEST_DIR/brace.test.ts"
     [ "$(count_findings)" -eq 0 ]
 }
 
@@ -286,6 +313,14 @@ count_findings() { printf '%s\n' "$output" | grep -cE ': (no-assertion|always-tr
     printf '%s\n' "func TestAssert(t *testing.T) {" "	assert.Equal(t, 4, Add(2, 2))" "}" \
         > "$TEST_DIR/assert_test.go"
     run bash "$SC" "$TEST_DIR/assert_test.go"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# A brace inside a Go string/rune literal must not close the block early.
+@test "substance-check: does NOT flag a Go test with a brace inside a string" {
+    printf '%s\n' "func TestParse(t *testing.T) {" "	s := \"}\"" \
+        "	if Parse(s) != 0 { t.Errorf(\"bad\") }" "}" > "$TEST_DIR/brace_test.go"
+    run bash "$SC" "$TEST_DIR/brace_test.go"
     [ "$(count_findings)" -eq 0 ]
 }
 
