@@ -355,6 +355,15 @@ count_findings() { printf '%s\n' "$output" | grep -cE ': (no-assertion|always-tr
     [ "$(count_findings)" -eq 0 ]
 }
 
+# CS-006: a finding is human/agent-actionable — kind AND a non-empty hint.
+@test "substance-check: a finding carries both a kind and a corrective hint" {
+    printf '%s\n' "it('x', () => {" "  doStuff();" "});" > "$TEST_DIR/shape.test.ts"
+    run bash "$SC" --quiet "$TEST_DIR/shape.test.ts"
+    [ "$status" -eq 0 ]
+    # shape: path:line: <kind>: <non-empty hint>
+    [[ "$output" =~ shape\.test\.ts:[0-9]+:\ (no-assertion|always-true|skipped|empty|stub):\ [^[:space:]] ]]
+}
+
 @test "substance-check: --help exits 0" {
     run bash "$SC" --help
     [ "$status" -eq 0 ]
