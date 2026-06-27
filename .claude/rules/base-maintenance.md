@@ -69,6 +69,28 @@ one that caught the real bug while the unit tests stayed green:
 The "0 on our own corpus" assertion is also a **standing regression guard**: it
 fails the day a real drift appears.
 
+## New shell-script portability (macOS bash 3.2)
+
+CI runs a **macOS column** (system bash is **3.2**) alongside Linux. A new
+`scripts/**.sh` that passes on Linux (bash 5) can still fail only on macOS — and
+the failure is opaque (the script dies with no stdout; bats shows only the
+assertion line). Write defensively:
+
+- **No command-laden `${VAR:-…}` defaults.** A default like
+  `${X:-cmd && y || echo "z"}` mis-parses on bash 3.2. Build the value with plain
+  `if/elif/else` instead.
+- **No empty-array expansion under `set -u`.** `${arr[@]}` / `${arr[*]}` on an
+  empty array errors on 3.2. Use a counter + space-separated string, or drop `-u`.
+- **ASCII only in EXECUTED strings** (echoed output, test-matched text). Non-ASCII
+  (`…`, `✓`, em-dash) is fine in comments, risky in `echo`/`printf` on 3.2 locales.
+- **Never assume CI runners share your local tools.** The GitHub **macOS runner
+  ships no `shellcheck`**; a script that shells out to a tool must guard it
+  (`command -v tool >/dev/null 2>&1 || skip-with-notice`) or it fails only on macOS.
+  CI's Linux job is the authoritative run of each tool.
+
+Catch it locally: `scripts/preflight.sh` runs the foundation gates pre-push, but
+true bash-3.2 behavior only shows on the macOS CI column — keep new scripts simple.
+
 ## Files to update when adding / removing
 
 ### New command (`.claude/commands/<ns>/<cmd>.md`)
