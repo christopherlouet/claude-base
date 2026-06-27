@@ -56,6 +56,7 @@ scripts/hooks/base-integrity-check.sh
 scripts/hooks/bash-output-filter.sh
 scripts/hooks/check-cli-version.sh
 scripts/hooks/command-validator.sh
+scripts/hooks/config-protection.sh
 scripts/hooks/post-edit-typecheck-and-lint.sh
 scripts/hooks/prompt-context.sh
 scripts/hooks/setup-deps.sh

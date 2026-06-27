@@ -114,5 +114,44 @@ if echo "$CMD_LOWER" | grep -qE 'env\s*\|.*(curl|wget|nc |netcat)'; then
   exit 2
 fi
 
+# === CATEGORY 9: Verification bypass (git --no-verify) ===
+# Blocks skipping the pre-commit / pre-push gates. ADVISORY guardrail, not a hard
+# boundary: an agent can still bypass via the Bash tool (e.g. `sed -i` a hook),
+# env vars (HUSKY=0), or `git -c core.hooksPath=…` — those are outside a
+# command-string matcher's reach by design. Operates on the ORIGINAL command so
+# commit's `-F/--file` is not confused with push's `-f/--force`. Message VALUES
+# (the quoted/next token after -m/-am/--message/-F/--file, and heredoc bodies) are
+# stripped so flag text INSIDE a message is ignored, while a real flag placed
+# AFTER the message is still caught. Known v1 limits (recoverable via
+# SKIP_COMMAND_VALIDATOR=1): a rare commit MESSAGE containing a bare ' -…n… '
+# token may over-block; `--no-verify` on a non-git command chained after a git
+# push may over-block. Granular opt-out: SKIP_NO_VERIFY_CHECK=1 disables ONLY this
+# category (the other 8 stay active), for the rare legitimate bypass — unlike the
+# blunt SKIP_COMMAND_VALIDATOR=1 which drops every check.
+if [ "${SKIP_NO_VERIFY_CHECK:-0}" != "1" ] \
+   && echo "$CMD" | grep -qiE 'git[[:space:]]+([^|&;]*[[:space:]])?(commit|push)'; then
+  # Strip message VALUES only (keep trailing flags). -[a-z]*m covers -m/-am/-sm…;
+  # then long --message/--file/-F; then any heredoc body.
+  GIT_FLAGS=$(echo "$CMD" | tr '\n' ' ' \
+    | sed -E "s/[[:space:]]-[a-z]*m([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
+    | sed -E "s/[[:space:]](--message|--file|-F)([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
+    | sed -E 's/[[:space:]]<<.*$//')
+  # --no-verify, tolerating git's unambiguous-abbreviation (--no-veri, --no-ver…).
+  if echo "$GIT_FLAGS" | grep -qE '(^|[[:space:]])--no-ver[a-z]*([[:space:]=]|$)'; then
+    echo >&2 "BLOCKED: 'git --no-verify' bypasses the pre-commit/pre-push gates. Fix the failing check instead of skipping it."
+    exit 2
+  fi
+  # Short -n (no-verify) on commit only (git log -n N is a count). Standalone -n is
+  # checked on the stripped flags; a bundled cluster (-nm, -anm) is checked on the
+  # raw command because the message-strip consumes a trailing -m bundle.
+  if echo "$CMD" | grep -qiE 'git[[:space:]]+([^|&;]*[[:space:]])?commit'; then
+    if echo "$GIT_FLAGS" | grep -qE '(^|[[:space:]])-n([[:space:]]|$)' \
+       || echo "$CMD" | grep -qE '(^|[[:space:]])-[a-z]*n[a-z]+([[:space:]]|$)'; then
+      echo >&2 "BLOCKED: 'git commit -n' (no-verify) bypasses the pre-commit gate. Fix the failing check instead of skipping it."
+      exit 2
+    fi
+  fi
+fi
+
 # All checks passed
 exit 0
