@@ -1,0 +1,3 @@
+# Rule(s) this task targets — removed from the project for the CONTROL arm.
+# One .claude/rules path per line; blank lines and # comments ignored.
+.claude/rules/typescript.md

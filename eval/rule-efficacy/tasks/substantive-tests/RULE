@@ -1,0 +1,5 @@
+# Rule(s) this task targets — removed from the project for the CONTROL arm.
+# These are the rules wired to the substance gate (a green suite over hollow
+# tests is not "done"); the task measures whether they reduce hollow tests.
+.claude/rules/verification.md
+.claude/rules/tdd-enforcement.md
