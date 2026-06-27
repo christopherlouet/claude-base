@@ -86,6 +86,216 @@ count_findings() { printf '%s\n' "$output" | grep -cE ': (no-assertion|always-tr
     [ "$(count_findings)" -eq 0 ]
 }
 
+# --- Phase 2: TS/JS hollow-test scanner -------------------------------------
+# Fixtures are written into $TEST_DIR (bats temp, OUTSIDE the repo tree) so they
+# never reach the EF-008 self-scan. JS tests are recognized by a *.test.*/*.spec.*
+# name or the presence of an it()/test() call.
+
+@test "substance-check: flags a JS test with no assertion" {
+    printf '%s\n' "import { it } from 'node:test';" \
+        "it('does work', () => {" \
+        "  const x = compute();" \
+        "  doSomething(x);" \
+        "});" > "$TEST_DIR/noassert.test.ts"
+    run bash "$SC" "$TEST_DIR/noassert.test.ts"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"no-assertion"* ]]
+}
+
+@test "substance-check: flags a JS test whose only assertion is always-true" {
+    printf '%s\n' "it('tautology', () => {" \
+        "  expect(true).toBe(true);" \
+        "});" > "$TEST_DIR/taut.test.js"
+    run bash "$SC" "$TEST_DIR/taut.test.js"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"always-true"* ]]
+}
+
+@test "substance-check: flags a skipped/disabled JS test" {
+    printf '%s\n' "it.skip('later', () => {" \
+        "  expect(foo()).toBe(1);" \
+        "});" > "$TEST_DIR/skip.test.ts"
+    run bash "$SC" "$TEST_DIR/skip.test.ts"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"skipped"* ]]
+}
+
+@test "substance-check: flags an empty JS test body" {
+    printf '%s\n' "it('todo: implement', () => {" \
+        "});" > "$TEST_DIR/empty.test.ts"
+    run bash "$SC" "$TEST_DIR/empty.test.ts"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"empty"* ]]
+}
+
+# --- substantive JS tests are NOT flagged (CS-002) --------------------------
+
+@test "substance-check: does NOT flag a JS test using node:test assert" {
+    printf '%s\n' "import assert from 'node:assert/strict';" \
+        "it('computes', () => {" \
+        "  const out = fn(2);" \
+        "  assert.equal(out, 4);" \
+        "});" > "$TEST_DIR/real.test.ts"
+    run bash "$SC" "$TEST_DIR/real.test.ts"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# edge-6: not.toThrow() has no value literal but IS substantive.
+@test "substance-check: does NOT flag expect().not.toThrow()" {
+    printf '%s\n' "it('parses', () => {" \
+        "  expect(() => parse('x')).not.toThrow();" \
+        "});" > "$TEST_DIR/nothrow.test.ts"
+    run bash "$SC" "$TEST_DIR/nothrow.test.ts"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# edge-2: snapshot assertion is implicit in toMatchSnapshot().
+@test "substance-check: does NOT flag a snapshot test" {
+    printf '%s\n' "it('renders', () => {" \
+        "  expect(render()).toMatchSnapshot();" \
+        "});" > "$TEST_DIR/snap.test.ts"
+    run bash "$SC" "$TEST_DIR/snap.test.ts"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# edge-3: table-driven/parametrized — assertion lives inside it.each().
+@test "substance-check: does NOT flag a table-driven it.each test" {
+    printf '%s\n' "it.each([[1, 2], [2, 3]])('adds to %i', (a, b) => {" \
+        "  expect(a + 1).toBe(b);" \
+        "});" > "$TEST_DIR/table.test.ts"
+    run bash "$SC" "$TEST_DIR/table.test.ts"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# edge-8: a minified/bundled file is generated code — never scanned as a test,
+# even though minified identifiers like `it(` appear in it.
+@test "substance-check: does NOT scan a minified JS file (generated code)" {
+    { printf 'var it=function(){};it("x",function(){});'; \
+      for _ in $(seq 1 120); do printf 'var aaaaaaaaaa=1;'; done; printf '\n'; } \
+        > "$TEST_DIR/bundle.min.js"
+    run bash "$SC" "$TEST_DIR/bundle.min.js"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# edge-8: generated/vendored dirs (node_modules, build, dist…) are pruned.
+@test "substance-check: prunes generated dirs (node_modules) when scanning a tree" {
+    mkdir -p "$TEST_DIR/proj/node_modules/pkg"
+    printf '%s\n' "it('lib internal', () => { doStuff(); });" \
+        > "$TEST_DIR/proj/node_modules/pkg/index.test.js"
+    run bash "$SC" "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# --- Phase 2: Python hollow-test scanner ------------------------------------
+
+@test "substance-check: flags a Python test with no assertion" {
+    printf '%s\n' "def test_x():" "    y = compute()" "    use(y)" \
+        > "$TEST_DIR/test_noassert.py"
+    run bash "$SC" "$TEST_DIR/test_noassert.py"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"no-assertion"* ]]
+}
+
+@test "substance-check: flags a Python test whose only assertion is always-true" {
+    printf '%s\n' "def test_taut():" "    assert True" \
+        > "$TEST_DIR/test_taut.py"
+    run bash "$SC" "$TEST_DIR/test_taut.py"
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"always-true"* ]]
+}
+
+@test "substance-check: flags a skipped Python test (mark.skip decorator)" {
+    printf '%s\n' "@pytest.mark.skip(reason='later')" "def test_skipped():" \
+        "    assert foo() == 1" > "$TEST_DIR/test_skip.py"
+    run bash "$SC" "$TEST_DIR/test_skip.py"
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"skipped"* ]]
+}
+
+@test "substance-check: flags an empty (pass-only) Python test" {
+    printf '%s\n' "def test_todo():" "    pass" > "$TEST_DIR/test_empty.py"
+    run bash "$SC" "$TEST_DIR/test_empty.py"
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"empty"* ]]
+}
+
+@test "substance-check: does NOT flag a Python test with a real assert" {
+    printf '%s\n' "def test_real():" "    assert add(2, 2) == 4" \
+        > "$TEST_DIR/test_real.py"
+    run bash "$SC" "$TEST_DIR/test_real.py"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+@test "substance-check: does NOT flag a Python test using pytest.raises" {
+    printf '%s\n' "def test_raises():" "    with pytest.raises(ValueError):" \
+        "        parse('x')" > "$TEST_DIR/test_raises.py"
+    run bash "$SC" "$TEST_DIR/test_raises.py"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# conditional skipif is a legit env-guard (like bats skip) — NOT flagged.
+@test "substance-check: does NOT flag a conditional skipif Python test" {
+    printf '%s\n' "@pytest.mark.skipif(sys.platform == 'win32', reason='posix')" \
+        "def test_posix():" "    assert run() == 0" > "$TEST_DIR/test_skipif.py"
+    run bash "$SC" "$TEST_DIR/test_skipif.py"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# --- Phase 2: Go hollow-test scanner ----------------------------------------
+
+@test "substance-check: flags a Go test with no assertion" {
+    printf '%s\n' "func TestNoAssert(t *testing.T) {" "	x := Compute()" "	_ = x" "}" \
+        > "$TEST_DIR/noassert_test.go"
+    run bash "$SC" "$TEST_DIR/noassert_test.go"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"no-assertion"* ]]
+}
+
+@test "substance-check: flags a skipped Go test (t.Skip)" {
+    printf '%s\n' "func TestSkipped(t *testing.T) {" "	t.Skip(\"later\")" \
+        "	if got != want { t.Error(\"x\") }" "}" > "$TEST_DIR/skip_test.go"
+    run bash "$SC" "$TEST_DIR/skip_test.go"
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"skipped"* ]]
+}
+
+@test "substance-check: flags an empty Go test body" {
+    printf '%s\n' "func TestEmpty(t *testing.T) {" "}" > "$TEST_DIR/empty_test.go"
+    run bash "$SC" "$TEST_DIR/empty_test.go"
+    [ "$(count_findings)" -ge 1 ]
+    [[ "$output" == *"empty"* ]]
+}
+
+@test "substance-check: does NOT flag a Go test using t.Errorf" {
+    printf '%s\n' "func TestReal(t *testing.T) {" "	if Add(2, 2) != 4 {" \
+        "		t.Errorf(\"bad sum\")" "	}" "}" > "$TEST_DIR/real_test.go"
+    run bash "$SC" "$TEST_DIR/real_test.go"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+@test "substance-check: does NOT flag a Go test using testify assert" {
+    printf '%s\n' "func TestAssert(t *testing.T) {" "	assert.Equal(t, 4, Add(2, 2))" "}" \
+        > "$TEST_DIR/assert_test.go"
+    run bash "$SC" "$TEST_DIR/assert_test.go"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# Self-application (rule #413): the repo's REAL node:test suite must be clean.
+@test "substance-check: ZERO findings on the repo's own website/scripts tests" {
+    run bash "$SC" "$BASE_DIR/website/scripts"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
 @test "substance-check: --help exits 0" {
     run bash "$SC" --help
     [ "$status" -eq 0 ]
