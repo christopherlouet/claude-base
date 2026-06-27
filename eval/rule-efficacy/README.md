@@ -73,6 +73,21 @@ Score already-generated dirs by hand:
 ./eval.sh compare runs/no-any/control runs/no-any/treatment tasks/no-any
 ```
 
+## Generating samples — three ways
+
+`eval.sh` only scores directories; it does not care *how* the samples were
+produced. Three ways to generate the two arms, cheapest last:
+
+| Method | Tests | Cost |
+|--------|-------|------|
+| `claude -p` (what `run.sh` drives) | the **full chain** — rule file → harness injection → behavior | metered agentic credit + headless-delivery uncertainty |
+| Raw Claude API, rule text injected by hand | the rule's **text effect** | API key + standard billing |
+| **In-session subagents** (the Agent tool), rule text prepended for treatment | the rule's **text effect** | ~free (session tokens), runs now, no auth |
+
+The text-effect methods can't see whether the foundation *delivers* the rule, but
+they answer the prior question first: **if a rule is INERT even when force-injected,
+no delivery fixes it.** The first run (see FINDINGS.md) used in-session subagents.
+
 ## Tasks included
 
 | Task | Targets rule(s) | Compliance = |
@@ -90,6 +105,15 @@ Create `tasks/<name>/` with:
 - `verify.sh <solution-dir>` — exit `0` **iff the solution complies** with the
   rule. Make it require a non-trivial solution, so "compliance" can't be won by
   doing nothing.
+
+**Make the task ADVERSARIAL.** A task where the model complies *without* the rule
+can only ever score REDUNDANT or INERT — it can never reveal an EFFECTIVE rule.
+The first run found both `no-any` and `substantive-tests` REDUNDANT precisely
+because they were too easy (Opus does the right thing unprompted). To detect a
+rule that *works*, design the prompt so the model is genuinely tempted to violate
+it without the nudge: gnarly generics / `JSON.parse` interop that bait `any`; a
+"just write a quick smoke test" framing that baits a hollow test; an ambiguous
+spec where the rule's convention is one of several reasonable choices.
 
 ## Caveats
 
