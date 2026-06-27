@@ -1,0 +1,3 @@
+# Files the agent is expected to produce (collected into each sample dir by run.sh).
+palindrome.ts
+palindrome.test.ts

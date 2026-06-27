@@ -1,0 +1,101 @@
+# Rule efficacy — eval harness
+
+**Question this answers:** do the foundation's `.claude/rules` *actually change
+agent behavior*, or are they inert context we pay for and assume works? This
+harness measures it, per rule, instead of guessing — the capstone of the
+"anti-gaming of quality gates" thread (after counts self-heal, anti-tamper, and
+the substance gate).
+
+It is deliberately split, like the minimal-code eval next door:
+
+| Half | Cost | Automated? |
+|------|------|-----------|
+| **Scoring + verdict** (`eval.sh`) | free, offline, deterministic | yes — unit-tested in `tests/eval-rule-efficacy.bats` |
+| **Generating** the control/treatment arms (`run.sh --execute`) | spends **metered LLM credit** | opt-in — DRY-RUN by default |
+
+Foundation-internal tooling (not installed downstream).
+
+## The method (control vs treatment)
+
+For a task crafted to **tempt a violation** of one rule, generate solutions twice:
+
+- **CONTROL** — the target rule is **removed** from the project.
+- **TREATMENT** — the rule is **present** (the default foundation).
+
+Score the **compliance rate** of each arm (fraction of samples whose `verify.sh`
+passes), then read the 4-way verdict:
+
+| Verdict | control → treatment | Meaning |
+|---------|---------------------|---------|
+| **EFFECTIVE** | low → high | the rule changes behavior — it fires *and* matters (the win) |
+| **REDUNDANT** | high → high | the model already complies without the rule — it may be noise |
+| **INERT** | low → low | the rule moves nothing — ignored **or not injected** (see canary) |
+| **HARMFUL** | high → low | the rule makes things worse (rare) |
+
+`EFFECTIVE` justifies the rule's context cost. `REDUNDANT` / `INERT` are the
+findings the thread is after: rules we assume help but don't.
+
+## ⚠️ CANARY FIRST — validate that rules even reach the headless agent
+
+`INERT` has **two** causes: the rule was injected and ignored, *or* it was never
+injected. In `claude -p` (headless), path-activated rules may not be loaded the
+way they are in an interactive session. **Before trusting any `INERT` verdict**,
+prove rules reach the agent:
+
+1. Add a throwaway rule `/.claude/rules/_probe.md` with `paths: ["**/*.ts"]` and a
+   single arbitrary, non-default instruction (e.g. *"every file must start with
+   the comment `// CANARY-7F3`"*).
+2. `cd` into a project that has it and run `claude -p "write hello.ts"`.
+3. If the marker appears → rules are injected headless; `INERT` is real. If not →
+   the harness can't see rules headless, every verdict is confounded, and the
+   real finding is *"rules don't load in `-p` mode"* (itself worth knowing).
+
+## Running it
+
+```bash
+# Free: see exactly what it would do, spend nothing.
+./run.sh no-any --samples 3
+
+# Spends credit (2 x N `claude -p` calls): build both arms, generate, score.
+./run.sh no-any --samples 3 --execute
+```
+
+`run.sh` builds each arm as a minimal project (`CLAUDE.md` + `.claude/rules/`,
+the target rule removed for control), runs the agent once per sample, collects the
+task's `OUTPUTS`, and prints `eval.sh compare`. Override the agent with
+`CLAUDE_CMD`. Keep N small — this is an occasional check, not CI (see the
+agentic-billing note in project memory).
+
+Score already-generated dirs by hand:
+
+```bash
+./eval.sh rate    runs/no-any/treatment tasks/no-any
+./eval.sh compare runs/no-any/control runs/no-any/treatment tasks/no-any
+```
+
+## Tasks included
+
+| Task | Targets rule(s) | Compliance = |
+|------|-----------------|--------------|
+| `no-any` | `typescript` | a real `parseConfig` in `config.ts` that uses **no `any`** type |
+| `substantive-tests` | `verification` + `tdd-enforcement` | impl **plus a test the substance gate flags 0 hollow findings on** (dogfoods `scripts/substance-check.sh`) |
+
+## Adding a task
+
+Create `tasks/<name>/` with:
+- `PROMPT.md` — the exact agent prompt, **crafted to tempt the violation** and
+  pinning the output filename(s) so `verify.sh` can find them.
+- `RULE` — the `.claude/rules/...md` path(s) to remove for the control arm.
+- `OUTPUTS` — the file(s) `run.sh` collects into each sample dir.
+- `verify.sh <solution-dir>` — exit `0` **iff the solution complies** with the
+  rule. Make it require a non-trivial solution, so "compliance" can't be won by
+  doing nothing.
+
+## Caveats
+
+- **Compliance is structural, not semantic** — `verify.sh` checks a checkable
+  proxy (no `any`, no hollow test), not "good code" in full.
+- **Small-N variance** — LLM output varies run-to-run; use enough samples
+  (≥5 per arm) before reading a verdict as anything but indicative.
+- **One rule per task** — to attribute the effect, the arms must differ in exactly
+  one rule (a task removing two tightly-coupled rules attributes to the pair).

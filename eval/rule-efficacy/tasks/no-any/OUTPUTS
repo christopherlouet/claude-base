@@ -1,0 +1,2 @@
+# Files the agent is expected to produce (collected into each sample dir by run.sh).
+config.ts
