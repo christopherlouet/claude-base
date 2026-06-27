@@ -66,6 +66,7 @@ declare -A _CATEGORY_TYPES_MAP=(
 # Arguments:
 #   $1 - (optional) the option number to mark as default with a "← default"
 #        suffix. When omitted, entry 8 (other-generic) is marked.
+# shellcheck disable=SC2120  # $1 is intentionally optional (default 8)
 print_category_menu() {
     local default_choice="${1:-8}"
     local i opt

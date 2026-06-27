@@ -133,6 +133,7 @@ run `git config core.hooksPath .husky` once.
 | Hook | Action |
 |------|--------|
 | `pre-commit` → **counts self-heal** | When a commit stages a counted artifact (`.claude/{commands,agents,skills,rules}/**` or `tests/*.bats`), runs `scripts/sync-counts.sh`: regenerates the derived count files and `git add`s them, so a stale count can never reach CI. No-op (and node-free) for any other commit. Blocks only if counts drifted and regeneration is unavailable. Disable with `SKIP_COUNTS_SYNC=1`. |
+| `pre-push` → **preflight** | Runs the foundation's own CI gates locally before a push (`scripts/preflight.sh --fast`: shellcheck · `validate-counts.sh` · `manifest-hooks-coverage`), so failures surface locally instead of post-push. Mirrors `ci.yml`; `scripts/preflight.sh --full` adds the complete bats suite. Bypass once with `SKIP_PREFLIGHT=1`. |
 
 `scripts/sync-counts.sh` mirrors the CI **"Counts gate"**: it regenerates and
 stages the same derived path set the CI diffs (`counts.json`, `README.md`,
@@ -160,6 +161,7 @@ Migration path: existing projects must run `claude-base update -f --all <project
 | `ALLOW_MAIN_EDIT=1` | Disable main branch protection |
 | `SKIP_PRE_COMMIT_TESTS=1` | Disable pre-commit tests |
 | `SKIP_COUNTS_SYNC=1` | Disable the git pre-commit counts self-heal (`.husky/pre-commit`) |
+| `SKIP_PREFLIGHT=1` | Skip the git pre-push foundation gates (`.husky/pre-push` → `scripts/preflight.sh`) |
 | `SKIP_COMMAND_VALIDATOR=1` | Disable ALL command security validation (every category) |
 | `SKIP_NO_VERIFY_CHECK=1` | Disable ONLY the `git --no-verify`/`-n` gate-bypass block (keeps the other 8 categories active) |
 | `SKIP_CONFIG_PROTECTION=1` | Disable the linter/formatter config-protection hook |
