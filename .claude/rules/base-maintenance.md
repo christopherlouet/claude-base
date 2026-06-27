@@ -40,6 +40,34 @@ CI enforces this: the `ci.yml` **"Counts gate"** re-runs `generate` and fails th
 | Rules README up to date | `.claude/rules/README.md`: row + header counter | Yes if new rule |
 | Structural audit | `./scripts/audit-base.sh` | Recommended |
 | Shellcheck on new hooks | `shellcheck scripts/hooks/*.sh` | Yes |
+| Self-application test on a new guardrail/tool | Run it against the REAL foundation in a bats test (see below) | Yes — for any new hook / validator / detector / gate |
+
+## Self-application tests (every guardrail / tool)
+
+A foundation **guardrail, validator, detector, or gate** (a hook, a `scripts/*.sh`
+that inspects the repo, a drift-guard) MUST ship with a **self-application test**:
+a bats case that runs the tool against the **real foundation** (no mocks) and
+asserts the expected outcome — in addition to any fixture/fake unit tests.
+
+**Why.** Fixture/fake tests verify the *runner logic*; only running the tool on
+the real repo verifies its *behavior*. Repeatedly, the self-application test is the
+one that caught the real bug while the unit tests stayed green:
+
+- `substance-check.sh` → asserts **0 findings on the foundation's own `tests/`**
+  (caught self-false-positives: heredoc'd `@test`, bats `skip` env-guards).
+- `preflight.sh` → an integration case running the **real fast gates** on the repo
+  (caught a `shellcheck` version-drift the env-faked gate tests missed).
+- `manifest-hooks-coverage.bats` → every `settings.json` hook ships in the manifest
+  (caught the unshipped `config-protection.sh` — only in CI, before this rule).
+- `sync-counts.sh` → the pre-commit healed **its own PR's** count drift.
+
+**How.** Alongside the fakes, add ≥1 test that:
+1. runs the tool on the real repo (or the real `tests/`/`scripts/`/`.claude/`), and
+2. asserts the real result — usually "**passes / 0 findings on a clean tree**",
+3. **plus** that it is not trivially empty — it still flags a known-bad fixture.
+
+The "0 on our own corpus" assertion is also a **standing regression guard**: it
+fails the day a real drift appears.
 
 ## Files to update when adding / removing
 
@@ -92,5 +120,7 @@ IMPORTANT: A `UserPromptSubmit` or `PostToolUse` hook must always bail out quick
 IMPORTANT: The counters hardcoded in the SessionStart hook are the first thing the user sees when opening Claude Code — a wrong number gives the impression of a poorly maintained foundation.
 
 NEVER commit a script in `scripts/hooks/` without shellcheck + real-world testing.
+
+IMPORTANT: A new guardrail / validator / detector / gate MUST ship a self-application test (run it on the real foundation, assert the outcome) — fixture/fake tests alone repeatedly stayed green while the tool was broken on the real repo.
 
 NEVER duplicate counter information anywhere other than the files listed above — centralize in `validate-counts.sh` as the source of truth.
