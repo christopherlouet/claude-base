@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# Foundation pre-push gate: run claude-base's OWN CI gates locally (shellcheck,
+# doc counts, manifest-hooks drift) BEFORE pushing, so failures surface here
+# instead of in CI. Mirrors .github/workflows/ci.yml. Fast (~seconds); the full
+# bats suite is `scripts/preflight.sh --full`. Bypass once with SKIP_PREFLIGHT=1.
+# See scripts/preflight.sh.
+[ "${SKIP_PREFLIGHT:-0}" = "1" ] && exit 0
+exec bash scripts/preflight.sh --fast
