@@ -143,8 +143,11 @@ Fix rules:
 
 1. Run the full test suite
 2. Verify lint and type-check
-3. Make sure 0 regression has been introduced
-4. If regression: revert the last fix, document, move to the next
+3. Substance check: `./scripts/substance-check.sh <changed-files>` — a green suite
+   over hollow tests (no-assertion / always-true / skipped / empty) or stubs is not
+   "done"; treat a finding as a P1 unless an inline `substance:ignore` is justified
+4. Make sure 0 regression has been introduced
+5. If regression: revert the last fix, document, move to the next
 
 ## Phase 6: CHECK (stop criteria)
 

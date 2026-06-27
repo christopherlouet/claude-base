@@ -60,6 +60,13 @@ scripts/hooks/config-protection.sh
 scripts/hooks/post-edit-typecheck-and-lint.sh
 scripts/hooks/prompt-context.sh
 scripts/hooks/setup-deps.sh
+scripts/hooks/substance-check.sh
+
+# === Scripts (CLI tools referenced by shipped rules/skills/hooks) ===
+# The substance gate detector — invoked by the hook above and by the
+# verification / tdd-enforcement rules and the qa-review skill. Must ship or
+# those references are dead downstream. Drift guard: tests/manifest-hooks-coverage.bats.
+scripts/substance-check.sh
 
 # === Documentation minimale ===
 docs/reference/best-practices.md:.claude/docs/reference/best-practices.md

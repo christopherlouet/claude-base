@@ -76,6 +76,20 @@ npm run lint       # or ruff, golangci-lint
 - Validate preconditions at function entry
 - Log unexpected states without crashing
 
+### 4. Substance check (not just "green")
+
+A passing suite is evidence only if the tests assert something and the code is
+implemented — coverage % does not catch hollow tests or stubs. Run the advisory
+detector over the changed files and address what it flags (or mark intentional
+cases with an inline `substance:ignore`):
+
+```bash
+./scripts/substance-check.sh <changed-files>   # flags: no-assertion | always-true | skipped | empty | stub
+```
+
+It also runs automatically (advisory) on each Edit/Write via the **substance gate**
+hook. Disable: `SKIP_SUBSTANCE_CHECK=1`.
+
 ## Gate Function (mandatory before any completion claim)
 
 ```

@@ -35,6 +35,37 @@ MANIFEST="$REPO_ROOT/scripts/lib/minimal-manifest.txt"
     fi
 }
 
+# A shipped rule/skill/command that tells the user to run `scripts/<x>.sh` is a
+# dead reference downstream unless that script also ships. (The substance gate's
+# detector was referenced by verification/tdd-enforcement/qa-review but lived only
+# in the foundation repo — this guards that class of gap generally.)
+@test "manifest: ships every scripts/*.sh referenced by a shipped rule/skill/command" {
+    [ -f "$MANIFEST" ]
+
+    local missing=()
+    while IFS= read -r entry; do
+        case "$entry" in
+            .claude/rules/*|.claude/skills/*|.claude/commands/*|.claude/agents/*) ;;
+            *) continue ;;
+        esac
+        local src="${entry%%:*}"           # strip any SRC:DST remap
+        local target="$REPO_ROOT/$src"
+        [ -e "$target" ] || continue
+        while IFS= read -r ref; do
+            [ -z "$ref" ] && continue
+            if ! grep -qE "^${ref}([[:space:]]|$|:)" "$MANIFEST"; then
+                missing+=("$src references $ref (not in manifest)")
+            fi
+        done < <(grep -rhoE 'scripts/[a-zA-Z0-9_/-]+\.sh' "$target" 2>/dev/null | sort -u)
+    done < "$MANIFEST"
+
+    if [ ${#missing[@]} -gt 0 ]; then
+        echo "Scripts referenced by a shipped rule/skill/command but missing from minimal-manifest.txt:" >&2
+        printf '  - %s\n' "${missing[@]}" >&2
+        return 1
+    fi
+}
+
 @test "manifest: ships _hook-helpers.sh whenever a sourcing hook is shipped" {
     [ -f "$MANIFEST" ]
 
