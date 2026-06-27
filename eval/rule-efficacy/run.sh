@@ -2,17 +2,24 @@
 # =============================================================================
 # eval/rule-efficacy/run.sh — the GENERATION half of the rule-efficacy eval.
 # For a task, builds a CONTROL arm (the task's target rule REMOVED) and a
-# TREATMENT arm (rule present), runs the coding agent N times per arm, collects
-# the produced files, and prints the 4-way verdict via eval.sh.
+# TREATMENT arm (rule present), runs the generator N times per arm, collects the
+# produced files, and prints the 4-way verdict via eval.sh.
 #
-# *** THIS SPENDS METERED LLM CREDIT *** — each sample is one `claude -p` call
-# (2 arms x N samples = 2N calls). It is therefore DRY-RUN by default: it prints
-# exactly what it would do and spends nothing. Pass --execute to actually run.
+# MODEL-AGNOSTIC by design. The generator is `GEN_CMD` — ANY command that reads a
+# coding prompt as its last argument and writes the resulting file(s) into its CWD.
+# This is the whole point of the multi-LLM goal: the same harness profiles ANY
+# model, so you can build a per-model efficacy matrix (a rule REDUNDANT for one
+# model may be EFFECTIVE for another — see FINDINGS.md). Examples:
+#   GEN_CMD='claude -p --permission-mode acceptEdits'        # Claude Code (default)
+#   GEN_CMD='my-mistral-codegen'                              # any other model's CLI
+#   GEN_CMD='python gen_openai.py'                            # a thin API wrapper you write
+# The generator's output is collected from the task's OUTPUTS files.
+#
+# *** RUNNING SPENDS WHATEVER THE CONFIGURED MODEL COSTS *** (2 arms x N samples
+# = 2N generation calls). DRY-RUN by default: prints the plan, spends nothing.
+# Pass --execute to actually run.
 #
 #   run.sh <task-name> [--samples N] [--execute]
-#
-# Override the agent invocation with CLAUDE_CMD (default below). The agent must
-# be able to write files non-interactively in its CWD.
 # =============================================================================
 
 set -euo pipefail
@@ -20,7 +27,7 @@ set -euo pipefail
 SELF_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SELF_DIR/../.." && pwd)"
 EVAL="$SELF_DIR/eval.sh"
-CLAUDE_CMD="${CLAUDE_CMD:-claude -p --permission-mode acceptEdits}"
+GEN_CMD="${GEN_CMD:-claude -p --permission-mode acceptEdits}"
 
 TASK_NAME=""
 SAMPLES=3
@@ -29,7 +36,7 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --samples) SAMPLES="$2"; shift 2 ;;
         --execute) EXECUTE=1; shift ;;
-        -h|--help) sed -nE 's/^# ?//p' "$0" | sed -n '2,16p'; exit 0 ;;
+        -h|--help) sed -nE 's/^# ?//p' "$0" | sed -n '2,24p'; exit 0 ;;
         -*) echo "run.sh: unknown option: $1" >&2; exit 2 ;;
         *)  TASK_NAME="$1"; shift ;;
     esac
@@ -40,7 +47,7 @@ TASK_DIR="$SELF_DIR/tasks/$TASK_NAME"
 [ -d "$TASK_DIR" ] || { echo "run.sh: no such task: $TASK_NAME" >&2; exit 2; }
 [ -f "$TASK_DIR/PROMPT.md" ] || { echo "run.sh: task has no PROMPT.md" >&2; exit 2; }
 
-# shellcheck disable=SC2034  # used at runtime inside the eval'd agent command
+# shellcheck disable=SC2034  # used at runtime inside the eval'd generator command
 PROMPT="$(cat "$TASK_DIR/PROMPT.md")"
 # Rule files to remove for the control arm (RULE file; ignore blanks/comments).
 RULES=()
@@ -62,27 +69,29 @@ fi
 
 WORK="$SELF_DIR/runs/${TASK_NAME}"
 echo "Task:       $TASK_NAME"
-echo "Samples:    $SAMPLES per arm (control + treatment = $((2 * SAMPLES)) agent calls)"
+echo "Samples:    $SAMPLES per arm (control + treatment = $((2 * SAMPLES)) generation calls)"
 echo "Control removes rule(s): ${RULES[*]:-<none>}"
 echo "Collect outputs:         ${OUTPUTS[*]}"
 echo "Work dir:   $WORK"
-echo "Agent:      $CLAUDE_CMD"
+echo "Generator:  $GEN_CMD"
 echo
 
 if [ "$EXECUTE" -ne 1 ]; then
-    echo "DRY RUN (no credit spent). For each arm it would, per sample:"
+    echo "DRY RUN (no model called, nothing spent). For each arm it would, per sample:"
     echo "  1. build a project = CLAUDE.md + .claude/rules/ copied from the repo"
     echo "     (control: with the target rule file(s) removed)"
-    echo "  2. cd into it and run: $CLAUDE_CMD \"\$(cat $TASK_NAME/PROMPT.md)\""
+    echo "  2. cd into it and run: $GEN_CMD \"\$(cat $TASK_NAME/PROMPT.md)\""
     echo "  3. collect ${OUTPUTS[*]} into runs/$TASK_NAME/<arm>/sample-N/"
     echo "  4. score with: eval.sh compare runs/$TASK_NAME/control runs/$TASK_NAME/treatment $TASK_NAME"
     echo
-    echo "Re-run with --execute to spend the credit and produce the verdict."
+    echo "Re-run with --execute to call the generator and produce the verdict."
+    echo "Swap the model with GEN_CMD=... (see the header) to profile a different LLM."
     exit 0
 fi
 
-# --- real generation (spends credit) ----------------------------------------
-command -v claude >/dev/null 2>&1 || { echo "run.sh: claude CLI not found" >&2; exit 2; }
+# --- real generation (calls the configured model) ---------------------------
+gen_bin="${GEN_CMD%% *}"
+command -v "$gen_bin" >/dev/null 2>&1 || { echo "run.sh: generator '$gen_bin' not found (set GEN_CMD)" >&2; exit 2; }
 rm -rf "$WORK"; mkdir -p "$WORK"
 
 # build_project <dir> <arm> — a minimal foundation project (CLAUDE.md + rules).
@@ -104,7 +113,7 @@ for arm in control treatment; do
         mkdir -p "$sample"
         build_project "$proj" "$arm"
         echo "[$arm] sample $i/$SAMPLES — generating..."
-        ( cd "$proj" && eval "$CLAUDE_CMD \"\$PROMPT\"" ) >/dev/null 2>&1 || true
+        ( cd "$proj" && eval "$GEN_CMD \"\$PROMPT\"" ) >/dev/null 2>&1 || true
         for out in "${OUTPUTS[@]}"; do
             [ -f "$proj/$out" ] && cp "$proj/$out" "$sample/$out"
         done

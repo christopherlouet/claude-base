@@ -43,10 +43,22 @@ instance of the small-N caveat — see "Method notes".
 
 ## Thesis (what these runs say)
 
+> **These verdicts are Claude-specific — do not read "REDUNDANT" as "drop the rule".**
+> The redundancy is a property of *Opus's training distribution*, not of the rule.
+> A different LLM has different defaults: it may violate rules Opus never would, and
+> the 4/4 REDUNDANT picture can **invert**. If the foundation will run on **another
+> LLM** (the stated goal), the rules are **model-portability insurance** whose value
+> is realized exactly when you switch models — so the deliverable is a **rule × model
+> matrix**, re-run per target model, not a single global verdict. Run it with
+> `GEN_CMD=<that model>` (see README) before trimming anything.
+
 1. **Rule efficacy is model-dependent.** The foundation's style/convention rules
    largely encode *industry-standard best practices*. A frontier model (Opus 4.8),
    trained on that corpus, already embodies them → the rules are **REDUNDANT** for
    it. A weaker model (Haiku) violates more often → the same rule starts to **bite**.
+   A non-Claude model (different training) is where the rules most likely **earn
+   their keep** — and is untested here (the subagent `model:` override is Claude-only;
+   use `GEN_CMD` to profile an external model).
 2. **A "redundant" verdict is not "worthless".** The rule's value moves off
    behavioral-lift-on-a-strong-model onto: (a) weaker / non-Claude models, (b)
    human/team documentation & shared convention, (c) genuinely non-standard,

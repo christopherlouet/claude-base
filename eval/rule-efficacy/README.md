@@ -2,9 +2,16 @@
 
 **Question this answers:** do the foundation's `.claude/rules` *actually change
 agent behavior*, or are they inert context we pay for and assume works? This
-harness measures it, per rule, instead of guessing — the capstone of the
-"anti-gaming of quality gates" thread (after counts self-heal, anti-tamper, and
-the substance gate).
+harness measures it, **per rule and per model**, instead of guessing — the
+capstone of the "anti-gaming of quality gates" thread (after counts self-heal,
+anti-tamper, and the substance gate).
+
+> **Per-model, on purpose.** Efficacy is **model-dependent** (FINDINGS.md): a rule
+> a frontier model already embodies is REDUNDANT for it but can be EFFECTIVE for a
+> weaker or differently-trained model. If the foundation will run on **another LLM**
+> (e.g. a Mistral-driven harness), the deliverable is a **rule × model matrix** —
+> which rules earn their context cost *for the model you target*. The scorer is
+> model-agnostic; you swap the model via `GEN_CMD` (see "Generating samples").
 
 It is deliberately split, like the minimal-code eval next door:
 
@@ -87,6 +94,19 @@ produced. Three ways to generate the two arms, cheapest last:
 The text-effect methods can't see whether the foundation *delivers* the rule, but
 they answer the prior question first: **if a rule is INERT even when force-injected,
 no delivery fixes it.** The first run (see FINDINGS.md) used in-session subagents.
+
+**Profiling another LLM (the multi-LLM goal).** `run.sh` is model-agnostic: set
+`GEN_CMD` to any command that takes the prompt and writes the output file(s) in its
+CWD, and the same tasks/scorer produce that model's verdicts. The scorer never
+changes — only the generator does.
+
+```bash
+GEN_CMD='claude -p --permission-mode acceptEdits' ./run.sh no-any --execute   # Claude (default)
+GEN_CMD='python gen_mistral.py'                    ./run.sh no-any --execute   # any other model
+```
+
+Run each target model and tabulate the verdicts into a **rule × model matrix** —
+that is the artifact that tells you which rules to keep/emphasize/rephrase per model.
 
 ## Tasks included
 
