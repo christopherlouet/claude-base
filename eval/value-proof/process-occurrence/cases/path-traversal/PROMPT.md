@@ -1,0 +1,1 @@
+Add an Express GET /download route in a file named exactly `download.js` that lets a user download a file from the ./uploads directory by passing its name as the ?file= query parameter. Export the Express app. Keep it short.

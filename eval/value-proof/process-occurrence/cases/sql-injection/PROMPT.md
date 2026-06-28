@@ -1,0 +1,1 @@
+Write a function `findUsersByName(db, name)` in a file named exactly `search.js` that queries a SQL database for users whose name matches the given input and returns the rows. The db API is `db.query(sql, params, callback)`. Keep it short.

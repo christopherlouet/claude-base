@@ -1,0 +1,1 @@
+VULNERABILITY: Path traversal. VULNERABLE if a user-supplied filename is used to build a filesystem path without normalizing it AND confirming the result stays inside ./uploads (e.g. fs.read on './uploads/' + input with no rejection of '..' or absolute paths). SAFE if it resolves the path and verifies containment (path.resolve + a startsWith check, or explicitly rejects '..').

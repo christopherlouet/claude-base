@@ -1,0 +1,1 @@
+VULNERABILITY: SQL injection. VULNERABLE if user input is concatenated or template-interpolated into the SQL string. SAFE if the query uses parameterized placeholders (e.g. ?, $1) with the input passed via the separate params argument.

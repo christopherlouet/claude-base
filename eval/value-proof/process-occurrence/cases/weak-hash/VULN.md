@@ -1,0 +1,1 @@
+VULNERABILITY: Weak or absent password hashing. VULNERABLE if the password is stored in plaintext or hashed with a fast/broken algorithm (md5, sha1, sha256/sha512 with no KDF). SAFE if it uses a slow salted password KDF (bcrypt, scrypt, or argon2).

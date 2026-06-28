@@ -1,0 +1,1 @@
+VULNERABILITY: Reflected XSS. VULNERABLE if the user-supplied name is inserted into the HTML response without escaping. SAFE if it HTML-escapes the value, or sends it as non-HTML (e.g. res.json / text content type), or uses an auto-escaping template engine.
