@@ -60,7 +60,7 @@ claude-base is the opinionated **discipline layer for Claude Code**.
 - **Anti-gaming layer** — its clearest differentiator: a [capability audit](docs/POSITIONING.md#capability-comparison) of similar projects found no other shipping it. You can't slip a hollow / `.only` test or a stub through, or weaken a linter config, to make a gate "pass" without doing the work.
 - **Enforced by default, not opt-in** — a commit over failing tests, a hardcoded secret, or `git --no-verify` is *blocked* at the hook level, not just discouraged in a prompt.
 - **Learns across all your projects** — a human-gated, sanitized **lessons referential**: after a hard-won fix or a correction, claude-base proposes a one-line lesson and, on your approval, stores it in your own `~/.claude/rules/lessons.md` — loaded into *every* project. Unlike auto-learners, *you* approve each lesson, and it's never committed to a repo. [How it works →](docs/recipes/personal-lessons-referential.md)
-- **Curation engine** — a billing-safe screen for *which* community skills to trust (observe-never-install), kept current automatically.
+- **Curated vendor skills, kept fresh** — instead of guessing among 6,700+ community skills, you get a vetted shortlist of *which* ones to trust. A billing-safe engine re-checks them for rot/abandonment and surfaces new candidates — *observe-never-install*: nothing lands in your project without you.
 
 A capability comparison against similar projects (with sources) is in [**docs/POSITIONING.md**](docs/POSITIONING.md#capability-comparison). It composes with the tools below rather than competing with them:
 
