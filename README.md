@@ -48,7 +48,15 @@ That last command chains the 6 phases automatically: Explore → Specify → Pla
 
 ## How it compares
 
-claude-base is the opinionated **discipline layer for Claude Code** — it doesn't compete with the tools below, it composes with them:
+claude-base is the opinionated **discipline layer for Claude Code**.
+
+**The workflow itself is now table-stakes** — a spec → plan → implement flow ships in most serious Claude Code setups. What's rarer is that claude-base doesn't *suggest* the discipline, it **enforces it and resists gaming**:
+
+- **Enforced by default, not opt-in** — a commit with failing tests, a hardcoded secret, or `git --no-verify` is *blocked* at the hook level, not just discouraged in a prompt.
+- **Anti-gaming layer** (almost no other setup ships this) — you can't weaken a linter config, or slip a hollow / `.only` test or a stub through, to make a gate "pass" without doing the work.
+- **Curation engine + cross-project lessons** — a billing-safe screen for *which* community skills to trust, plus a personal lessons store that learns across all your projects.
+
+A capability comparison against similar projects (with sources) is in [**docs/POSITIONING.md**](docs/POSITIONING.md#capability-comparison). It composes with the tools below rather than competing with them:
 
 - **vs [Spec Kit](https://github.com/github/spec-kit)** (agent-agnostic SDD primitives) — spec-kit gives you `specify / plan / tasks / implement` across 30+ agents; claude-base adds what it doesn't: an Explore phase, *enforced* TDD, the audit-fix loop, path-specific rules, and hooks — Claude-Code-native. Use both: spec-kit for the primitives, claude-base for the discipline.
 - **vs the [official marketplace](https://code.claude.com/docs/en/discover-plugins)** (vendor-published single-tool skills) — the marketplace ships deep per-tool coverage; claude-base is the workflow layer + a curated, billing-safe list of *which* vendor skills to trust. They pair: foundation for the rigor, vendor skills for the depth.

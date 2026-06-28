@@ -9,6 +9,47 @@ The foundation does NOT chase vendor freshness: a 1-maintainer project can't out
 
 Two adjacent ecosystems share part of the surface area.
 
+## Capability comparison
+
+The structured **workflow** (explore → specify → plan → TDD → audit) is now
+table-stakes — most serious Claude Code setups ship some form of it. So it is
+**not** what differentiates claude-base from similar projects. The differentiators
+are *mechanical enforcement*, the *anti-gaming* layer, and *curation*. The matrix
+below is from a 2026-06-28 capability audit of public repos/docs.
+
+| Capability | spec-kit | SuperClaude | claude-code-templates | shinpr boilerplate | moai-adk | oh-my-claudecode | trailofbits | **claude-base** |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| Multi-phase workflow | ✓ | ✓ | ~ | ✓ | ✓ | ✓ | ~ | ✓ |
+| **Quality enforcement** (blocks commit-on-failing-tests / secret-in-content / `--no-verify`), by default | ✗ | ✗ | ~ opt-in | ~ lint only | ~ OS-safety | ~ workflow-only | ~ OS-safety | **✓** |
+| **Anti-gaming gates** (block linter-weakening / hollow-`.only`-stub tests / gate-bypass) | ✗ | ✗ | ✗ | ✗ | ~? | ✗ | ✗ (documented, not shipped) | **✓** |
+| Path-scoped rules auto-injected per file | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✓ |
+| Curation engine for community skills | ~ catalog | ✗ | ~ security-only | ✗ | ✗ | ✗ | ~ external marketplace | **✓** |
+| Cross-project lessons / memory | ✗ | ~ session | ✗ | ✗ | ~ per-project | ✓ | ✗ | ✓ |
+| Own test suite + CI | ✓ | ✓ | ✓ | ~ (tests off) | ✓ | ✓ | ✗ | ✓ |
+
+✓ present · ~ partial/opt-in/adjacent · ✗ no evidence found
+
+**Read of the matrix.**
+- **Anti-gaming is the clearest differentiator** — no audited project ships it
+  (Trail of Bits *documents* an anti-rationalization hook but does not ship it).
+- **Default, integrated quality enforcement** — several ship *pieces* (OS-safety
+  blocks, opt-in component hooks, a workflow-continuation block), but none block
+  the failing-tests / secret-in-content / `--no-verify` set by default and
+  integrated.
+- **Curation** is near-unique (one ships security-only PR scanning; one points to a
+  separately, human-reviewed marketplace).
+- The closest overlap is **oh-my-claudecode** (workflow, path-rules, cross-project
+  learning, CI) — but it lacks anti-gaming, curation, and the quality-gate set.
+
+These deterministic gates are demonstrable: the executable
+[`eval/value-proof/gate-demo`](../eval/value-proof/gate-demo/) matrix shows each one
+catching a planted violation while sparing a clean control.
+
+> **Method caveat.** The audit relied on each project's README/source (not
+> clone-and-run), so a ✗ means "no evidence found in the public config/docs", not
+> a proof of absence. Capabilities of fast-moving projects drift; corrections
+> welcome.
+
 ## vs [Spec Kit](https://github.com/github/spec-kit) (GitHub, Spec-Driven Development across 30+ agents)
 
 Spec Kit is the **canonical SDD primitives toolkit**: `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, `/speckit.implement` — agent-agnostic, well-documented, batteries-included. If you need spec-driven development that works across Claude, Codex, Cursor, Copilot and 30+ other agents, **use spec-kit**.
