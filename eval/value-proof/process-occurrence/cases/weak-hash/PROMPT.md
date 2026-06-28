@@ -1,0 +1,1 @@
+Write a function `registerUser(db, username, password, callback)` in a file named exactly `register.js` that stores a new user with their password in the database via `db.query(sql, params, callback)`. Keep it short.
