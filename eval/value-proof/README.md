@@ -37,12 +37,28 @@ catch over an **ungated** agent:
    (native Opus). Generation is model-agnostic — swap the generator, keep the
    tasks and scorer (see "Generating").
 2. Run `scripts/substance-check.sh` over each solution.
-3. A sample is **intercepted** if the gate emits ≥1 finding (a hollow test or a
-   stub that "tests pass + coverage %" would have let through).
-4. **Interception rate** = intercepted samples ÷ total samples.
+3. Score each sample on two defect signals the foundation's net would catch:
+   - **intercept** — the gate emits ≥1 finding (a hollow test or a stub that
+     "tests pass + coverage %" would have let through).
+   - **gaps** — a logic-bearing source module that **no test references at all**
+     (the dominant *complex*-app failure: "skipped testing a module", which the
+     substance gate alone can't see — no test means nothing to flag). Pure
+     type/constant files are excluded; counted only when the task asked for tests.
+4. A sample is a **process-defect** if either signal fires. The **rate** =
+   process-defect samples ÷ total.
 
-Each interception is a defect class that would otherwise have shipped — i.e. a
-unit of `P(change fails)` removed. That is the value, stated as a number.
+Each defect is a class that would otherwise have shipped — i.e. a unit of
+`P(change fails)` removed. That is the value, stated as a number.
+
+### The complexity axis (tier)
+
+Each task carries a `TIER` (`simple` | `complex`). The complex tier is
+multi-file, multi-module mini-features (a REST service, an ETL pipeline, a state
+machine), framed **neutrally** — so the comparison **simple/neutral vs
+complex/neutral** isolates the effect of complexity alone (both unbaited). If the
+foundation's value scales with complexity, the complex/neutral rate should exceed
+the simple/neutral baseline. (First run: it did not — see `FINDINGS.md`; the
+scaling, if real, lives in long-horizon work this single-shot proxy can't reach.)
 
 ### Why a spectrum of tasks (and not just baited ones)
 
@@ -85,10 +101,11 @@ convention. The first run used in-session subagents (~free, no auth).
 tasks/<name>/
   PROMPT.md   — the exact task prompt (realistic; tempting ones embed the cue)
   KIND        — "tempting" or "neutral"
+  TIER        — "simple" or "complex"
   LANG        — ts | js | py  (what the gate scans)
   OUTPUTS     — the file(s) a solution must produce
 runs/<name>/<sample>/   — generated solutions (gitignored)
-score.sh      — runs the gate over runs/, prints interception rate
+score.sh      — runs the signals over runs/, prints process-defect rate by tier
 LEDGER.md     — the deterministic-gates value record (no eval needed)
 FINDINGS.md   — the verdict, written after a run
 ```
