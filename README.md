@@ -500,7 +500,7 @@ Concrete signals rather than a self-assessment score :
 - **Deny list**: dangerous commands blocked (`rm -rf /`, `sudo`, `git push --force`)
 - **Protection hooks**: blocks edits on main/master
 - **GitHub Secret Scanning**: enabled on the public repo
-- **GitHub Code Scanning** (CodeQL): TypeScript security analysis (Default Setup, scans `website/scripts/`, `website/src/`)
+- **GitHub Code Scanning** (CodeQL): JavaScript/TypeScript security analysis (Default Setup — repo-wide)
 - **Downstream drift detection**: `claude-base doctor` (and an advisory after `claude-base update`) flags an installed project whose `settings.json` / hook scripts have fallen behind the foundation — e.g. security hooks on a stale input contract that would silently no-op — and points you at the resync command
 - **Verified install**: `install.sh --ref <tag>` pins to a released tag and each release publishes `SHA256SUMS`, so the installer can be verified before execution (see [Installation](#installation))
 
