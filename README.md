@@ -87,8 +87,7 @@ your-project/
 │   ├── skills/            # Auto-triggered on keywords
 │   ├── rules/             # Path-specific rules (TDD, security, a11y, performance)
 │   ├── presets/           # Stack-specific bundle manifests
-│   ├── output-styles/     # Output rendering styles
-│   └── templates/         # Per-stack CLAUDE.*.md scaffolds
+│   └── output-styles/     # Output rendering styles
 └── .github/               # (optional) CI workflows + pre-commit hooks
 ```
 
