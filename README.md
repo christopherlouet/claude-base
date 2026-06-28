@@ -53,6 +53,8 @@ claude-base is the opinionated **discipline layer for Claude Code** — it doesn
 - **vs [Spec Kit](https://github.com/github/spec-kit)** (agent-agnostic SDD primitives) — spec-kit gives you `specify / plan / tasks / implement` across 30+ agents; claude-base adds what it doesn't: an Explore phase, *enforced* TDD, the audit-fix loop, path-specific rules, and hooks — Claude-Code-native. Use both: spec-kit for the primitives, claude-base for the discipline.
 - **vs the [official marketplace](https://code.claude.com/docs/en/discover-plugins)** (vendor-published single-tool skills) — the marketplace ships deep per-tool coverage; claude-base is the workflow layer + a curated, billing-safe list of *which* vendor skills to trust. They pair: foundation for the rigor, vendor skills for the depth.
 
+The complete net of ~25 enforced checkpoints a bare Claude project lacks — method, security, verification, anti-gaming, audit, integrity — is catalogued in [**docs/GUARDRAILS.md**](docs/GUARDRAILS.md).
+
 Full positioning — comparison tables, the curation engine, and where it's heading — in [**docs/POSITIONING.md**](docs/POSITIONING.md).
 
 > **A default install ships the core only.** The horizontal activity domains (`biz`, `legal`, `growth`) and the stack/thematic domains (`nextjs`, `flutter`, `iac`, `observability`, …) are **opt-in modules** (`claude-base add <module>`) — run `claude-base modules` to list all 15. A fresh project gets the smaller core slice. See [`specs/horizontal-pure-modules/`](specs/horizontal-pure-modules/).
@@ -388,6 +390,7 @@ It covers:
 - **[QUICKSTART.md](docs/QUICKSTART.md)**: 5-minute getting started
 - **[CHEATSHEET.md](docs/CHEATSHEET.md)**: Command quick reference
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Commands vs Agents vs Skills vs Rules
+- **[GUARDRAILS.md](docs/GUARDRAILS.md)**: The ~25 enforced checkpoints (method, security, verification, anti-gaming, audit, integrity) a bare Claude project lacks
 - **[WORKFLOWS.md](docs/WORKFLOWS.md)**: Workflow diagrams
 - **[STACK-RECIPES.md](docs/STACK-RECIPES.md)**: Commands/agents/skills per stack (Web, Mobile, API…)
 - **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)**: Customization guide
