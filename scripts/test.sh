@@ -22,6 +22,9 @@ source "$SCRIPT_DIR/lib/common.sh"
 VERSION=$(cat "$BASE_DIR/VERSION" 2>/dev/null || echo "unknown")
 VERBOSE=false
 FILTER=""
+DRY_RUN=false
+SHARD_INDEX=""
+SHARD_TOTAL=""
 
 # =============================================================================
 # Help
@@ -44,6 +47,10 @@ ${BOLD}ARGUMENTS${NC}
 ${BOLD}OPTIONS${NC}
     -h, --help          Show this help
     -v, --verbose       Verbose mode
+    --shard I/N         Run only shard I of N (balanced by test count).
+                        Used by CI to split the suite across parallel runners.
+    --dry-run           Print the test files that would run, then exit
+                        (no bats execution). Honors --shard and FILTER.
     --install-bats      Install bats-core if missing
 
 ${BOLD}EXAMPLES${NC}
@@ -55,6 +62,9 @@ ${BOLD}EXAMPLES${NC}
 
     # Verbose mode
     $(basename "$0") -v
+
+    # Run the second of four CI shards
+    $(basename "$0") --shard 2/4
 
 ${BOLD}PREREQUISITES${NC}
     - bats-core: npm install -g bats
@@ -80,11 +90,62 @@ install_bats() {
     fi
 }
 
-run_tests() {
-    if ! command_exists bats; then
-        error "bats is not installed. Use --install-bats or install it manually."
+# Validate and split a "I/N" shard spec into SHARD_INDEX / SHARD_TOTAL.
+parse_shard() {
+    local spec="$1"
+    if [[ ! "$spec" =~ ^[0-9]+/[0-9]+$ ]]; then
+        error "Invalid --shard spec '$spec' (expected I/N, e.g. 1/4)"
     fi
+    SHARD_INDEX="${spec%/*}"
+    SHARD_TOTAL="${spec#*/}"
+    if [[ "$SHARD_TOTAL" -lt 1 || "$SHARD_INDEX" -lt 1 || "$SHARD_INDEX" -gt "$SHARD_TOTAL" ]]; then
+        error "Invalid --shard '$spec': require 1 <= I <= N and N >= 1"
+    fi
+}
 
+# Print the files belonging to shard SHARD_INDEX of SHARD_TOTAL, one per line.
+# Files are assigned greedily (heaviest-first) to the least-loaded shard, so
+# wall-clock stays balanced and the split self-rebalances as the suite grows —
+# no stored weight table to maintain. Weight = line count, which tracks real
+# runtime better than @test count (heavy-per-test files like lint/preflight
+# carry proportionally more setup lines). Deterministic across invocations:
+# every shard computes the same full assignment and emits only its own bucket.
+# bash-3.2-safe (indexed arrays only; no associative arrays).
+select_shard() {
+    local idx="$1" total="$2"
+    shift 2
+    local tab f c sorted
+    tab="$(printf '\t')"
+    sorted=$(
+        for f in "$@"; do
+            c=$(wc -l < "$f" 2>/dev/null || true)
+            c=$(printf '%s' "$c" | tr -d '[:space:]')
+            [[ -z "$c" ]] && c=0
+            printf '%s\t%s\n' "$c" "$f"
+        done | sort -t "$tab" -k1,1rn -k2,2
+    )
+
+    local i
+    local loads=()
+    for ((i = 0; i < total; i++)); do loads+=("0"); done
+
+    local cnt file min
+    while IFS="$tab" read -r cnt file; do
+        [[ -z "$file" ]] && continue
+        min=0
+        for ((i = 1; i < total; i++)); do
+            if [[ "${loads[$i]}" -lt "${loads[$min]}" ]]; then min=$i; fi
+        done
+        loads[$min]=$(( ${loads[$min]} + cnt ))
+        if [[ "$min" -eq "$(( idx - 1 ))" ]]; then
+            printf '%s\n' "$file"
+        fi
+    done <<EOF
+$sorted
+EOF
+}
+
+run_tests() {
     local test_files=()
 
     if [[ -n "$FILTER" ]]; then
@@ -99,8 +160,28 @@ run_tests() {
         test_files=("$TESTS_DIR"/*.bats)
     fi
 
+    # Reduce to the requested shard, if any.
+    if [[ -n "$SHARD_TOTAL" ]]; then
+        local sharded=()
+        while IFS= read -r line; do
+            [[ -n "$line" ]] && sharded+=("$line")
+        done < <(select_shard "$SHARD_INDEX" "$SHARD_TOTAL" "${test_files[@]}")
+        test_files=()
+        [[ ${#sharded[@]} -gt 0 ]] && test_files=("${sharded[@]}")
+    fi
+
     if [[ ${#test_files[@]} -eq 0 ]]; then
         error "No test file found"
+    fi
+
+    # Dry run: just list what would execute (used by CI/tests to inspect a shard).
+    if $DRY_RUN; then
+        printf '%s\n' "${test_files[@]}"
+        return 0
+    fi
+
+    if ! command_exists bats; then
+        error "bats is not installed. Use --install-bats or install it manually."
     fi
 
     title "Claude-Base Tests"
@@ -142,6 +223,20 @@ main() {
                 ;;
             -v|--verbose)
                 VERBOSE=true
+                shift
+                ;;
+            --dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            --shard)
+                shift
+                [[ $# -gt 0 ]] || error "--shard requires an argument (I/N, e.g. 1/4)"
+                parse_shard "$1"
+                shift
+                ;;
+            --shard=*)
+                parse_shard "${1#*=}"
                 shift
                 ;;
             --install-bats)

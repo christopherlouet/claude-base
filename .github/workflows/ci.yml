@@ -38,8 +38,12 @@ jobs:
               - '.claude/settings.json'
               - '.claude/presets/**'
 
-  lint-and-test:
-    name: Lint & Test (ubuntu-latest)
+  # Non-Bats checks: lint + documentation-count consistency. These run ONCE
+  # (the Bats suite is sharded into its own parallel matrix below), so the slow
+  # part — the Node/Docusaurus counts gate — is no longer duplicated per test
+  # batch. Fast job (~1-2 min); runs in parallel with the bats shards.
+  lint-and-counts:
+    name: Lint & Counts (ubuntu-latest)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -50,14 +54,6 @@ jobs:
         with:
           scandir: './scripts'
           severity: warning
-
-      - name: Setup Bats
-        uses: bats-core/bats-action@4.0.0
-
-      - name: Run Bats tests
-        # ./scripts/test.sh runs bats with --jobs (GNU parallel, capped at 8) —
-        # ~4x faster than serial; falls back to serial if parallel is absent.
-        run: ./scripts/test.sh
 
       - name: Validate documentation counts
         run: bash scripts/validate-counts.sh
@@ -84,14 +80,30 @@ jobs:
             exit 1
           fi
 
-      - name: Generate summary
-        if: always()
-        run: |
-          echo "## CI Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- ShellCheck: lint on \`scripts/\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Bats: see job logs for the test count" >> $GITHUB_STEP_SUMMARY
-          echo "- Counts: documentation consistency (validate-counts.sh + counts.json gate)" >> $GITHUB_STEP_SUMMARY
+  # Bats suite, sharded across parallel runners. Each shard runs a balanced
+  # subset (scripts/test.sh --shard I/N, weighted by file line count) and still
+  # parallelizes within itself via bats --jobs. N is `strategy.job-total`, so it
+  # auto-syncs with the matrix array — bump the array to add/remove shards.
+  # This is the main CI-time lever: the single-runner suite (~6-7 min) drops to
+  # the slowest shard (~2 min) since the shards run concurrently.
+  bats:
+    name: Bats (ubuntu-latest)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Bats
+        uses: bats-core/bats-action@4.0.0
+
+      - name: Run Bats tests (shard ${{ matrix.shard }}/${{ strategy.job-total }})
+        # ./scripts/test.sh runs bats with --jobs (GNU parallel, capped at 8) —
+        # ~4x faster than serial; falls back to serial if parallel is absent.
+        run: ./scripts/test.sh --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   # macOS portability check — BSD utilities (sed, awk, date, grep, base64, wc)
   # differ from GNU on Ubuntu. This column verifies ONLY what is portability-
