@@ -4,9 +4,14 @@
 
 Most Claude Code setups add more agents. claude-base adds **discipline and safety**: per-file rules, hooks, and an anti-drift CI gate. One install, auto-detects your stack — and it **learns from your mistakes across every project** so you stop repeating them.
 
+**What it takes off your plate, every session:**
+- **re-explaining your standards** — a human-gated lessons store carries them across *all* your projects, so a mistake fixed once doesn't come back;
+- **the agent "passing" its own checks** with a hollow test, a stub, or a quietly-weakened linter — the anti-gaming layer blocks that;
+- **finding it in review** — a hardcoded secret, a commit over failing tests, or a `--no-verify` bypass is stopped at the hook, before it lands.
+
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
-[![Tests](https://img.shields.io/badge/tests-1412%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1441%20passing-brightgreen)](./tests)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
@@ -48,10 +53,21 @@ That last command chains the 6 phases automatically: Explore → Specify → Pla
 
 ## How it compares
 
-claude-base is the opinionated **discipline layer for Claude Code** — it doesn't compete with the tools below, it composes with them:
+claude-base is the opinionated **discipline layer for Claude Code**.
+
+**The workflow itself is now table-stakes** — a spec → plan → implement flow ships in most serious Claude Code setups. What's rarer is that claude-base doesn't *suggest* the discipline, it **enforces it and resists gaming**:
+
+- **Anti-gaming layer** — its clearest differentiator: a [capability audit](docs/POSITIONING.md#capability-comparison) of similar projects found no other shipping it. You can't slip a hollow / `.only` test or a stub through, or weaken a linter config, to make a gate "pass" without doing the work.
+- **Enforced by default, not opt-in** — a commit over failing tests, a hardcoded secret, or `git --no-verify` is *blocked* at the hook level, not just discouraged in a prompt.
+- **Learns across all your projects** — a human-gated, sanitized **lessons referential**: after a hard-won fix or a correction, claude-base proposes a one-line lesson and, on your approval, stores it in your own `~/.claude/rules/lessons.md` — loaded into *every* project. Unlike auto-learners, *you* approve each lesson, and it's never committed to a repo. [How it works →](docs/recipes/personal-lessons-referential.md)
+- **Curated vendor skills, kept fresh** — instead of guessing among 6,700+ community skills, you get a vetted shortlist of *which* ones to trust. A billing-safe engine re-checks them for rot/abandonment and surfaces new candidates — *observe-never-install*: nothing lands in your project without you.
+
+A capability comparison against similar projects (with sources) is in [**docs/POSITIONING.md**](docs/POSITIONING.md#capability-comparison). It composes with the tools below rather than competing with them:
 
 - **vs [Spec Kit](https://github.com/github/spec-kit)** (agent-agnostic SDD primitives) — spec-kit gives you `specify / plan / tasks / implement` across 30+ agents; claude-base adds what it doesn't: an Explore phase, *enforced* TDD, the audit-fix loop, path-specific rules, and hooks — Claude-Code-native. Use both: spec-kit for the primitives, claude-base for the discipline.
 - **vs the [official marketplace](https://code.claude.com/docs/en/discover-plugins)** (vendor-published single-tool skills) — the marketplace ships deep per-tool coverage; claude-base is the workflow layer + a curated, billing-safe list of *which* vendor skills to trust. They pair: foundation for the rigor, vendor skills for the depth.
+
+The complete net of ~25 enforced checkpoints a bare Claude project lacks — method, security, verification, anti-gaming, audit, integrity — is catalogued in [**docs/GUARDRAILS.md**](docs/GUARDRAILS.md).
 
 Full positioning — comparison tables, the curation engine, and where it's heading — in [**docs/POSITIONING.md**](docs/POSITIONING.md).
 
@@ -215,7 +231,7 @@ After `curl | bash` install, the foundation lives at `~/.local/share/claude-base
 | `docs/` | Human-maintained documentation — `QUICKSTART.md`, `CHEATSHEET.md`, `ARCHITECTURE.md`, `WORKFLOWS.md`, `STACK-RECIPES.md`, `CUSTOMIZATION.md`, `recipes/`, `reference/`, `guides/` |
 | `website/` | [Docusaurus site](https://christopherlouet.github.io/claude-base/) — `docs/` is auto-mirrored here by `npm --prefix website run generate` |
 | `specs/` | Feature specs consumed by the workflow agents (`/work:work-specify`, `/work:work-plan`) |
-| `tests/` | <!-- count:tests -->1412<!-- /count --> bats tests across <!-- count:testFiles -->58<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1441<!-- /count --> bats tests across <!-- count:testFiles -->62<!-- /count --> files |
 | `.github/workflows/` | CI : `ci.yml`, `security.yml`, `docs.yml`, `pr-check.yml`, `release.yml`, `dependabot-auto-merge.yml` |
 | `AGENTS.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `counts.json` | Project metadata |
 
@@ -388,6 +404,7 @@ It covers:
 - **[QUICKSTART.md](docs/QUICKSTART.md)**: 5-minute getting started
 - **[CHEATSHEET.md](docs/CHEATSHEET.md)**: Command quick reference
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Commands vs Agents vs Skills vs Rules
+- **[GUARDRAILS.md](docs/GUARDRAILS.md)**: The ~25 enforced checkpoints (method, security, verification, anti-gaming, audit, integrity) a bare Claude project lacks
 - **[WORKFLOWS.md](docs/WORKFLOWS.md)**: Workflow diagrams
 - **[STACK-RECIPES.md](docs/STACK-RECIPES.md)**: Commands/agents/skills per stack (Web, Mobile, API…)
 - **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)**: Customization guide
@@ -427,7 +444,7 @@ The foundation ships with [bats-core](https://github.com/bats-core/bats-core) te
 
 ### Test layout
 
-<!-- count:tests -->1412<!-- /count --> bats tests across <!-- count:testFiles -->58<!-- /count --> files. A few anchors :
+<!-- count:tests -->1441<!-- /count --> bats tests across <!-- count:testFiles -->62<!-- /count --> files. A few anchors :
 
 | Area | File | Tests |
 |---|---|---|
@@ -471,7 +488,7 @@ The foundation follows [Semantic Versioning](https://semver.org/). Each release 
 
 Concrete signals rather than a self-assessment score :
 
-- <!-- count:tests -->1412<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1441<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 - Six GitHub Actions workflows (CI, security, docs, PR check, release, dependabot auto-merge) gating merges
 - Doc drift firewall (`scripts/audit-docs.sh`) catches syntactic doc drift before merge — see [PR #201](https://github.com/christopherlouet/claude-base/pull/201)
 - Counter anti-drift gate (`scripts/validate-counts.sh`) regenerated from `counts.json`

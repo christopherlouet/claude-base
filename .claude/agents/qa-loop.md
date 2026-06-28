@@ -146,8 +146,14 @@ Fix rules:
 3. Substance check: `./scripts/substance-check.sh <changed-files>` — a green suite
    over hollow tests (no-assertion / always-true / skipped / empty) or stubs is not
    "done"; treat a finding as a P1 unless an inline `substance:ignore` is justified
-4. Make sure 0 regression has been introduced
-5. If regression: revert the last fix, document, move to the next
+4. **Post-fix security re-scan (mandatory)**: re-run `qa-security` focused on ONLY the
+   files changed by the FIX phase. A fix can *introduce* a vulnerability that no
+   functional test catches — empirically, naive iterative LLM self-repair *raises*
+   critical-vulnerability rates, so "tests pass" does NOT mean "still secure". Any NEW
+   confirmed security finding is treated as a **P0** that blocks STOP and feeds the
+   next iteration. (Skip only in `--audit-only` mode, where no fix was applied.)
+5. Make sure 0 regression has been introduced
+6. If regression: revert the last fix, document, move to the next
 
 ## Phase 6: CHECK (stop criteria)
 
@@ -159,6 +165,12 @@ Fix rules:
 | Max iterations | Reached |
 | Regression | A fix broke something (emergency stop) |
 | Stagnation | Score has not increased for 2 iterations |
+
+**STOP is additionally gated on the Phase-5 post-fix security re-scan being clean.**
+Never stop the loop while a fix from the current (especially the terminal) iteration
+has not been security-re-scanned — otherwise a vulnerability introduced by the last
+fix batch ships unaudited (the loop-back only re-audits on the *next* AUDIT, which the
+terminal iteration never reaches).
 
 If STOP: produce the final report.
 If CONTINUE: go back to Phase 1 (AUDIT).
@@ -236,5 +248,8 @@ Remaining P0/P1 issues:
 - YOU MUST produce a report with scores at each iteration
 - YOU MUST commit atomically (one fix = one commit)
 - YOU MUST stop if a fix introduces a regression
+- YOU MUST re-scan the fixed files with `qa-security` before STOP (Phase 5.4) — a fix
+  loop can introduce vulnerabilities that tests do not catch; never close the loop on
+  an unaudited fix
 
 Think hard about the optimal order of fixes to maximize impact with minimal changes.

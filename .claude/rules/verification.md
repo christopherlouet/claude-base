@@ -84,7 +84,7 @@ detector over the changed files and address what it flags (or mark intentional
 cases with an inline `substance:ignore`):
 
 ```bash
-./scripts/substance-check.sh <changed-files>   # flags: no-assertion | always-true | skipped | empty | stub
+./scripts/substance-check.sh <changed-files>   # flags: no-assertion | always-true | skipped | empty | stub | focused
 ```
 
 It also runs automatically (advisory) on each Edit/Write via the **substance gate**
