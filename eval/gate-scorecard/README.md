@@ -12,8 +12,9 @@ trips** that **B doesn't** is the value, made concrete.
 
 ## What it scores
 
-Only the gates that can judge a **static artifact** (a produced project), since a
-bare project generated offline has no live action to intercept:
+The gates that can judge a **static artifact** (a produced project), in two tiers:
+
+**Offline** (always scored — deterministic, zero-dependency):
 
 | Gate | Failure it would have shipped |
 |------|-------------------------------|
@@ -21,19 +22,38 @@ bare project generated offline has no live action to intercept:
 | `substance` | a hollow test / stub / focused `.only` |
 | `destructive-migration` | an unguarded DROP/TRUNCATE in a migration file |
 | `untested-module` | a logic module no test references |
+| `env-file-committed` | a real `.env` / secrets file committed |
+| `debug-artifact` | a `debugger` / `pdb.set_trace` / `pry` left in the code |
 
-The **action-time** gates (config-protection, command-validator, main-branch
-protection) can't be scored on a static output — they intercept a *move*. Those
-are proven by the executable [`../value-proof/gate-demo`](../value-proof/gate-demo/)
-matrix. Together, gate-demo (action gates) + scorecard (artifact gates) cover the
-deterministic half of the [`docs/GUARDRAILS.md`](../../docs/GUARDRAILS.md) catalogue.
+**Toolchain** (scored only if the project's own tools are installed — else SKIP):
+
+| Gate | Failure it would have shipped |
+|------|-------------------------------|
+| `typecheck` | type errors (`tsc --noEmit`) |
+| `lint` | lint errors (`eslint`) |
+| `tests` | a failing test suite (`npm test`) |
+
+This is the **artifact** third of the comparison. The other two thirds:
+- **action-time** gates (config-protection, command-validator, main-branch) — can't
+  be scored on a static output (they intercept a *move*) → proven by
+  [`../value-proof/gate-demo`](../value-proof/gate-demo/).
+- **method** gates (explore/specify/plan/TDD/audit) — measured by which *process
+  artifacts* the output contains → [`../cold-start`](../cold-start/).
+
+Together the three cover the [`docs/GUARDRAILS.md`](../../docs/GUARDRAILS.md) catalogue.
 
 ## Demonstration
 
-| Project | secret | substance | destructive-migration | untested-module | tripped |
-|---------|--------|-----------|-----------------------|-----------------|---------|
-| careless (bare-style) | TRIPPED | TRIPPED | TRIPPED | TRIPPED | **4 / 4** |
-| disciplined (claude-base) | clean | clean | clean | clean | **0 / 4** |
+On the same task, the careless (bare-style) output trips every offline gate; the
+disciplined (claude-base) output trips none:
+
+| Project | offline gates tripped |
+|---------|-----------------------|
+| careless (bare-style) | **6 / 6** |
+| disciplined (claude-base) | **0 / 6** |
+
+(Toolchain gates SKIP here — the fixtures have no installed deps; on a real
+project with `node_modules` they run `tsc`/`eslint`/`npm test`.)
 
 ## Honest reading (the recurring caveat)
 
