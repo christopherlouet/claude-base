@@ -42,20 +42,54 @@ _curation_gh_repo() {
     esac
 }
 
-# emit_issue <title> <body-file> — open ONE propose-only issue. Fail-safe.
+# _gh_issue_create <body-file> <title> <rflag...> — create with label, retry w/o.
+_gh_issue_create() {
+    local body_file="$1" title="$2"; shift 2
+    gh issue create "$@" --title "$title" --body-file "$body_file" --label curation >/dev/null 2>&1 && return 0
+    # Retry without the label — a repo may not have the 'curation' label yet.
+    gh issue create "$@" --title "$title" --body-file "$body_file" >/dev/null 2>&1 \
+        || curation_warn "gh issue create failed"
+    return 0
+}
+
+# emit_issue <title> <body-file> [dedupe-key] — propose-only issue, fail-safe.
+# With a dedupe-key it is IDEMPOTENT: the body carries a stable marker
+# (<!-- curation-issue:KEY -->) and a daily run UPDATES the one rolling issue
+# instead of opening a duplicate (a fresh open issue per day was the digest-dup
+# bug). Without a key, legacy create-only.
 emit_issue() {
-    local title="$1" body_file="$2"
+    local title="$1" body_file="$2" key="${3:-}"
     command -v gh >/dev/null 2>&1 || { curation_warn "gh not found; skipping issue"; return 0; }
     [ -f "$body_file" ] || { curation_warn "issue body missing: $body_file"; return 0; }
     local repo; repo=$(_curation_gh_repo) || repo=""
     local -a rflag; rflag=()
     [ -n "$repo" ] && rflag=(-R "$repo")
-    if gh issue create ${rflag[@]+"${rflag[@]}"} --title "$title" --body-file "$body_file" --label curation >/dev/null 2>&1; then
+
+    if [ -z "$key" ]; then
+        _gh_issue_create "$body_file" "$title" ${rflag[@]+"${rflag[@]}"}
         return 0
     fi
-    # Retry without the label — a repo may not have the 'curation' label yet.
-    gh issue create ${rflag[@]+"${rflag[@]}"} --title "$title" --body-file "$body_file" >/dev/null 2>&1 \
-        || curation_warn "gh issue create failed"
+
+    # Keyed/idempotent path: prepend a findable marker, then update-or-create.
+    local marker="<!-- curation-issue:${key} -->"
+    local tmpbody
+    if tmpbody=$(mktemp 2>/dev/null); then
+        { printf '%s\n\n' "$marker"; cat "$body_file"; } > "$tmpbody"
+    else
+        tmpbody="$body_file"
+    fi
+    # Find an existing OPEN issue whose body carries the marker (local jq match —
+    # no dependence on GitHub search handling of HTML comments).
+    local existing=""
+    existing=$(gh issue list ${rflag[@]+"${rflag[@]}"} --state open --limit 100 --json number,body \
+        --jq "[.[] | select(.body | contains(\"$marker\"))] | .[0].number // empty" 2>/dev/null || true)
+    if [ -n "$existing" ]; then
+        gh issue edit "$existing" ${rflag[@]+"${rflag[@]}"} --title "$title" --body-file "$tmpbody" >/dev/null 2>&1 \
+            || curation_warn "gh issue edit failed (#$existing)"
+    else
+        _gh_issue_create "$tmpbody" "$title" ${rflag[@]+"${rflag[@]}"}
+    fi
+    [ "$tmpbody" != "$body_file" ] && rm -f "$tmpbody"
     return 0
 }
 

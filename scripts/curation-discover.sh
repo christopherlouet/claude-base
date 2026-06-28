@@ -395,7 +395,7 @@ if [ "$EMIT_ISSUE" = true ] && [ "$DRY_RUN" = false ] && [ $((proposed + moat + 
     else
         render_markdown > "$_disco_body"
     fi
-    emit_issue "Curation discovery — $NOW" "$_disco_body"
+    emit_issue "Curation discovery — $NOW" "$_disco_body" "discovery"
     rm -f "$_disco_body"
 fi
 printf '%s\n' "$digest"
