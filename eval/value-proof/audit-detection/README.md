@@ -9,6 +9,13 @@ Unlike the build-task harness, the ground truth here is **exact**: we *plant* th
 defects, so detection is a clean recall/precision measurement, not a judgement
 call.
 
+> **The vulnerable fixture files are NOT committed.** A security-focused project
+> shouldn't carry deliberately-exploitable source in its tree (it also trips the
+> repo's own CodeQL). Each `cases/<name>/GROUND_TRUTH.md` is the **spec** of the
+> planted defects; regenerate the rendered fixture into a scratch dir on demand
+> from that spec when you re-run the eval (e.g. for the multi-LLM column). The run
+> on record (see `FINDINGS.md`) used such generated fixtures.
+
 ## Method — recall over planted defects, 3 arms
 
 Each `cases/<name>/` ships a code file with **planted** defects and a
