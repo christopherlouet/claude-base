@@ -44,8 +44,8 @@ AUDIT (4 parallel sub-agents) → VALIDATE (false-positive filter)
 2. **VALIDATE**: 1 sub-agent per finding to confirm or reject
 3. **FILTER**: excludes nitpicks/style, keeps only high-signal P0/P1
 4. **FIX**: fix P0 then P1 with TDD, atomic commits (skipped if `--audit-only`)
-5. **VERIFY**: full tests, lint, type-check — revert on regression
-6. **CHECK**: score >= target AND 0 P0/P1 → STOP, otherwise → AUDIT
+5. **VERIFY**: full tests, lint, type-check, **+ re-run qa-security on the fixed files** (a fix can introduce a vuln that tests miss) — revert on regression
+6. **CHECK**: score >= target AND 0 P0/P1 AND the post-fix security re-scan is clean → STOP, otherwise → AUDIT
 
 ## Expected output
 
