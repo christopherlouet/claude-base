@@ -71,7 +71,8 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Session info** | SessionStart (startup) | Displays project information at startup |
 | **Check node_modules** | SessionStart (startup) | Checks that node_modules exists if package.json is present |
 | **Main protection** | PreToolUse (Edit/Write) | Blocks modifications on main/master |
-| **Secrets detection** | PreToolUse (Write/Edit) | Gitleaks checks for secrets before writing |
+| **Secrets detection** | PreToolUse (Write/Edit/MultiEdit) | Built-in zero-dependency scan blocks hardcoded provider secrets (AWS/Stripe/GitHub/Slack/Google/PEM) before writing; also runs gitleaks if installed. Placeholders ignored. Disable with `SKIP_SECRET_SCAN=1` (`scripts/hooks/secret-scan.sh`) |
+| **Destructive migration** | PreToolUse (Write/Edit/MultiEdit) | Confirm+backup reminder before destructive DDL (DROP/TRUNCATE) in a migration file — closes the gap the Bash-only destructive guard misses. Disable with `SKIP_DESTRUCTIVE_CHECK=1` (`scripts/hooks/destructive-migration.sh`) |
 | **Pre-commit tests** | PreToolUse (Bash git commit) | Runs tests before a commit. Detects and repairs Husky if needed |
 | **Local pre-push CI** | PreToolUse (Bash git push) | Lint + type-check + tests before push. Disable with `SKIP_PRE_PUSH_CI=1` |
 | **Destructive ops guard** | PreToolUse (Bash) | Blocks destructive DELETE/DROP/TRUNCATE/rm without confirmation |
@@ -156,6 +157,7 @@ Migration path: existing projects must run `claude-base update -f --all <project
 | `SKIP_COMMAND_VALIDATOR=1` | Disable ALL command security validation (every category) |
 | `SKIP_NO_VERIFY_CHECK=1` | Disable ONLY the `git --no-verify`/`-n` gate-bypass block (keeps the other 8 categories active) |
 | `SKIP_CONFIG_PROTECTION=1` | Disable the linter/formatter config-protection hook |
+| `SKIP_SECRET_SCAN=1` | Disable the built-in hardcoded-secret scan (`scripts/hooks/secret-scan.sh`) |
 | `SKIP_SUBSTANCE_CHECK=1` | Disable the substance gate (advisory hollow-test / stub detector) |
 | `SKIP_PRE_PUSH_CI=1` | Disable local pre-push CI check |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
