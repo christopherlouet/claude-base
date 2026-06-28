@@ -124,12 +124,12 @@
         ]
       },
       {
-        "description": "Detect secrets with gitleaks before writing",
-        "matcher": "Write|Edit",
+        "description": "Block hardcoded secrets before writing (built-in zero-dep scan; also runs gitleaks if present). Disable with SKIP_SECRET_SCAN=1",
+        "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_CONTENT=$(cat | jq -r \".tool_input.content // .tool_input.new_string // empty\" 2>/dev/null); if command -v gitleaks >/dev/null 2>&1 && [ -f .gitleaks.toml ]; then RESULT=$(echo \"$TOOL_CONTENT\" | gitleaks detect --no-git --pipe --config .gitleaks.toml 2>&1); if [ $? -eq 1 ]; then echo \"BLOCKED: Secret detected by gitleaks.\"; echo \"$RESULT\"; exit 2; fi; fi'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/secret-scan.sh\"",
             "timeout": 10000,
             "onFailure": "block"
           }
@@ -202,6 +202,18 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/config-protection.sh\"",
+            "timeout": 5000,
+            "onFailure": "block"
+          }
+        ]
+      },
+      {
+        "description": "Confirm+backup before destructive DDL in a migration file (DROP/TRUNCATE; disable with SKIP_DESTRUCTIVE_CHECK=1)",
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/destructive-migration.sh\"",
             "timeout": 5000,
             "onFailure": "block"
           }

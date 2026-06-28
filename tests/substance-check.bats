@@ -19,7 +19,9 @@ setup() { setup_test_dir; }
 teardown() { teardown_test_dir; }
 
 # count_findings — number of finding lines in $output.
-count_findings() { printf '%s\n' "$output" | grep -cE ': (no-assertion|always-true|skipped|empty|stub):' || true; }
+count_findings() { printf '%s\n' "$output" | grep -cE ': (no-assertion|always-true|skipped|empty|stub|focused):' || true; }
+# count only `focused` findings.
+count_focused() { printf '%s\n' "$output" | grep -cE ': focused:' || true; }
 
 # --- EF-008: zero false positives on our own suite --------------------------
 
@@ -407,4 +409,34 @@ count_findings() { printf '%s\n' "$output" | grep -cE ': (no-assertion|always-tr
 @test "substance-check: unknown flag → usage error (exit 2)" {
     run bash "$SC" --bogus
     [ "$status" -eq 2 ]
+}
+
+# --- focused-test detection (.only leaks) -----------------------------------
+
+@test "substance-check: flags describe.only as focused" {
+    cat > "$TEST_DIR/a.test.ts" <<'EOF'
+import { describe, it, expect } from "vitest";
+describe.only("suite", () => { it("x", () => expect(add(1,2)).toBe(3)); });
+EOF
+    run bash "$SC" "$TEST_DIR/a.test.ts"
+    [ "$status" -eq 0 ]
+    [ "$(count_focused)" -eq 1 ]
+}
+
+@test "substance-check: flags it.only and test.only as focused" {
+    cat > "$TEST_DIR/b.test.js" <<'EOF'
+describe("s", () => { it.only("a", () => { expect(f()).toBe(1); }); });
+test.only("b", () => { expect(g()).toBe(2); });
+EOF
+    run bash "$SC" "$TEST_DIR/b.test.js"
+    [ "$(count_focused)" -eq 2 ]
+}
+
+@test "substance-check: does NOT flag a real fit() call in a test (zero-FP)" {
+    cat > "$TEST_DIR/c.test.ts" <<'EOF'
+import { describe, it, expect } from "vitest";
+describe("curve", () => { it("fits", () => { expect(fit(data).rmse).toBeLessThan(0.1); }); });
+EOF
+    run bash "$SC" "$TEST_DIR/c.test.ts"
+    [ "$(count_focused)" -eq 0 ]
 }

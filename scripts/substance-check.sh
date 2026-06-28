@@ -8,7 +8,7 @@
 # no model). The next step in the anti-gaming-of-quality-gates thread.
 #
 # A finding prints to stdout as:   path:line: <kind>: <hint>
-#   kinds: no-assertion | always-true | skipped | empty | stub
+#   kinds: no-assertion | always-true | skipped | empty | stub | focused
 # Exit: 0 ALWAYS in advisory mode (findings are data, not failures); 2 on usage.
 #
 # FAIL-SAFE (EF-007): an unknown language, an unrecognized file, or any parse
@@ -376,6 +376,19 @@ _file_is_go_tests() {
     esac
 }
 
+# Focused-test scanner (JS/TS): a `.only` leaves the REST of the suite silently
+# unrun, so a green CI proves almost nothing — the inverse of a skipped test, and
+# just as much a gaming of the test gate. Only the unambiguous `.only` forms are
+# flagged (zero-FP: `fit(`/`fdescribe(` are omitted — a real `fit(` helper exists);
+# `it.only(`, `describe.only(`, `test.only(`, `context.only(`, `suite.only(` do not.
+_scan_focused() {
+    local f="$1"
+    grep -nE '(describe|context|it|test|suite)\.only[[:space:]]*\(' "$f" 2>/dev/null \
+        | while IFS=: read -r ln _rest; do
+            printf '%s:%s: focused: focused test (.only) silently skips the rest of the suite\n' "$f" "$ln"
+        done
+}
+
 _scan_one() {
     local f="$1"
     [ -f "$f" ] || return 0
@@ -385,7 +398,7 @@ _scan_one() {
         [ "$MODE" != code ] && _scan_bats "$f"
     elif _file_is_js_tests "$f" && ! _looks_minified "$f"; then
         is_test=1
-        [ "$MODE" != code ] && _scan_js "$f"
+        [ "$MODE" != code ] && { _scan_js "$f"; _scan_focused "$f"; }
     elif _file_is_py_tests "$f"; then
         is_test=1
         [ "$MODE" != code ] && _scan_py "$f"
