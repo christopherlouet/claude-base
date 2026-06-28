@@ -40,6 +40,11 @@ below is from a 2026-06-28 capability audit of public repos/docs.
   separately, human-reviewed marketplace).
 - The closest overlap is **oh-my-claudecode** (workflow, path-rules, cross-project
   learning, CI) — but it lacks anti-gaming, curation, and the quality-gate set.
+- **Cross-project lessons** are shared only with oh-my-claudecode — but theirs
+  *auto*-extracts skills to user scope, whereas claude-base's is a **human-gated,
+  sanitized lessons referential** (you approve each one-line lesson; it lands in
+  your own `~/.claude/rules/lessons.md`, loaded into every project, never committed).
+  Approval + sanitization are the distinction, not just "has memory".
 
 These deterministic gates are demonstrable: the executable
 [`eval/value-proof/gate-demo`](../eval/value-proof/gate-demo/) matrix shows each one
