@@ -415,7 +415,7 @@ if [ "$DRY_RUN" = false ]; then
     if [ "$EMIT_ISSUE" = true ] && [ "$n_surfaced" -gt 0 ]; then
         issue_body=$(mktemp 2>/dev/null)
         render_markdown > "$issue_body"
-        emit_issue "Curation digest — $NOW" "$issue_body"
+        emit_issue "Curation digest — $NOW" "$issue_body" "watch-digest"
         rm -f "$issue_body"
     fi
 fi
