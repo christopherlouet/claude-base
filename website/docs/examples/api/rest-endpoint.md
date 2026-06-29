@@ -655,7 +655,7 @@ describe('Articles API', () => {
 
 - `/qa:qa-security` - Security audit of the API
 - `/doc:doc-api-spec` - Generate OpenAPI spec
-- `/dev:dev-test` - Add more tests
+- `/dev:dev-tdd` - Add more tests
 
 ---
 

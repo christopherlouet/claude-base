@@ -641,7 +641,7 @@ class _StockBadge extends StatelessWidget {
 
 ## Related commands
 
-- `/dev:dev-test` - Generate widget and BLoC tests
+- `/dev:dev-tdd` - Generate widget and BLoC tests
 - `/qa:qa-mobile` - Mobile quality audit
 - `/dev:dev-supabase` - Supabase backend
 

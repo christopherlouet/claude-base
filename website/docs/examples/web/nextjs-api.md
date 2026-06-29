@@ -473,7 +473,7 @@ describe('POST /api/users', () => {
 
 ## Related commands
 
-- `/dev:dev-test` - Generate more tests
+- `/dev:dev-tdd` - Generate more tests
 - `/qa:qa-security` - API security audit
 - `/doc:doc-api-spec` - Generate OpenAPI spec
 

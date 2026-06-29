@@ -58,10 +58,10 @@ ls -la .claude/
 You should see:
 ```
 .claude/
-├── commands/      # 131 commands
-├── agents/        # 63 agents
-├── skills/        # 54 skills
-├── rules/         # 30 rules
+├── commands/      # 106 commands
+├── agents/        # 45 agents
+├── skills/        # 53 skills
+├── rules/         # 32 rules
 ├── templates/     # Spec templates
 ├── output-styles/ # Output styles
 └── settings.json  # Configuration
@@ -119,7 +119,7 @@ If exploration works, the migration succeeded.
 
 **Recommended commands**:
 - `/dev:dev-component` - Create components
-- `/dev:dev-hook` - Create hooks
+- `/dev:dev-component` - Create hooks
 - `/qa:qa-perf` - Performance audit
 
 ### Mobile Project (Flutter)

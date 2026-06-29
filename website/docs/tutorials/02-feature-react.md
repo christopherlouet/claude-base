@@ -17,7 +17,7 @@ This tutorial shows you how to create a complete React component with its hook, 
 By the end of this tutorial, you will know how to:
 - Use `/work:work-specify` to define the feature scope and acceptance criteria
 - Use `/dev:dev-component` to create a component
-- Use `/dev:dev-hook` to create a custom hook
+- Use `/dev:dev-component` to create a custom hook
 - Use `/qa:qa-loop` to audit and reach the target quality score
 - Structure a React feature professionally
 
@@ -78,7 +78,7 @@ Let's start with the hook that manages the data.
 ### Launch hook creation
 
 ```bash
-/dev:dev-hook "useUser - Hook to fetch and manage user data by ID"
+/dev:dev-component "useUser - Hook to fetch and manage user data by ID"
 ```
 
 ### Expected result
@@ -422,7 +422,7 @@ src/
 | Command | What it does |
 |---------|--------------|
 | `/work:work-specify` | Defines user stories and acceptance criteria |
-| `/dev:dev-hook` | Creates a hook with types and tests |
+| `/dev:dev-component` | Creates a hook with types and tests |
 | `/dev:dev-component` | Creates a component with tests |
 | `/qa:qa-loop` | Adaptive audit + fix loop until target score |
 

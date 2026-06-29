@@ -226,6 +226,86 @@ EOF
 }
 
 # =============================================================================
+# Category: cmdrefs — dead /domain:name command references
+# =============================================================================
+
+@test "audit-docs: rejects a removed /dev:dev-test command reference (cmdrefs)" {
+    cat > "$TEST_DIR/dead-ref.md" <<'EOF'
+# Dead ref
+
+Run `/dev:dev-test` to scaffold tests.
+EOF
+    run "$AUDIT_DOCS" --target "$TEST_DIR/dead-ref.md" --category cmdrefs
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"cmdrefs"* ]]
+    [[ "$output" == *"/dev:dev-test"* ]]
+}
+
+@test "audit-docs: accepts a live /work:work-pr command reference (cmdrefs)" {
+    cat > "$TEST_DIR/live-ref.md" <<'EOF'
+# Live ref
+
+Use `/work:work-pr` then `/qa:qa-loop "score 90"`.
+EOF
+    run "$AUDIT_DOCS" --target "$TEST_DIR/live-ref.md" --category cmdrefs
+    [ "$status" -eq 0 ]
+}
+
+@test "audit-docs: detects a dead ref regardless of context — prose, table, backticks (cmdrefs)" {
+    # Argument-ordering / embedding coverage: the same dead token must be caught
+    # whether it sits in a sentence, a markdown table cell, or inline code.
+    cat > "$TEST_DIR/dead-many.md" <<'EOF'
+# Mixed contexts
+
+Plain prose calls /qa:qa-coverage at the end.
+
+| Step | Command |
+|------|---------|
+| 1 | `/growth:growth-funnel` |
+
+Inline `/doc:doc-readme` reference.
+EOF
+    run "$AUDIT_DOCS" --target "$TEST_DIR/dead-many.md" --category cmdrefs
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"/qa:qa-coverage"* ]]
+    [[ "$output" == *"/growth:growth-funnel"* ]]
+    [[ "$output" == *"/doc:doc-readme"* ]]
+}
+
+@test "audit-docs: a subcommand-arg form /ops:ops-gitflow <action> is NOT flagged (cmdrefs)" {
+    # /ops:ops-gitflow exists; "init"/"feature" are arguments, not part of the
+    # command name. The space-separated form must resolve to the real command.
+    cat > "$TEST_DIR/gitflow-ok.md" <<'EOF'
+# Gitflow
+
+Run `/ops:ops-gitflow init` then `/ops:ops-gitflow feature start "x"`.
+EOF
+    run "$AUDIT_DOCS" --target "$TEST_DIR/gitflow-ok.md" --category cmdrefs
+    [ "$status" -eq 0 ]
+}
+
+@test "audit-docs: a concatenated /ops:ops-gitflow-feature IS flagged (cmdrefs)" {
+    cat > "$TEST_DIR/gitflow-bad.md" <<'EOF'
+# Gitflow concatenated
+
+Run `/ops:ops-gitflow-feature` to start.
+EOF
+    run "$AUDIT_DOCS" --target "$TEST_DIR/gitflow-bad.md" --category cmdrefs
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"/ops:ops-gitflow-feature"* ]]
+}
+
+@test "audit-docs: AUDIT_DOCS_SKIP_CMDREFS=1 silences the cmdrefs category (cmdrefs)" {
+    cat > "$TEST_DIR/dead-ref-skip.md" <<'EOF'
+# Dead ref skipped
+
+Run `/dev:dev-test` to scaffold tests.
+EOF
+    run env AUDIT_DOCS_SKIP_CMDREFS=1 "$AUDIT_DOCS" --target "$TEST_DIR/dead-ref-skip.md" --category cmdrefs
+    [ "$status" -eq 0 ]
+}
+
+# =============================================================================
 # Zero-FP gate (T017, EF-012) — CRITICAL
 # =============================================================================
 

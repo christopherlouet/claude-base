@@ -193,7 +193,7 @@ Provide a structured report.
 ### 3. Test
 
 ```bash
-/dev:dev-my-command "Command test"
+/dev:dev-<name> "Command test"
 ```
 
 ## Command examples

@@ -91,11 +91,11 @@ For critical bugs:
 
 ```bash
 # Hotfix with GitFlow
-/ops:ops-gitflow-hotfix start "critical-login-bug"
+/ops:ops-gitflow hotfix start "critical-login-bug"
 
 # Fix...
 
-/ops:ops-gitflow-hotfix finish "critical-login-bug"
+/ops:ops-gitflow hotfix finish "critical-login-bug"
 ```
 
 This automatically merges into `main` AND `develop`.

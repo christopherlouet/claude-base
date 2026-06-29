@@ -318,7 +318,7 @@ These files are versionable and serve as documentation.
 **Actions**:
 1. Check that the tests were passing before
 2. Run `/dev:dev-debug` to investigate
-3. Use `/qa:qa-coverage` to see the coverage
+3. Use `/qa:qa-tech-debt` to see the coverage
 
 ### The build is broken
 

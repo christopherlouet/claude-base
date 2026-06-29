@@ -5,19 +5,21 @@
 # Spec: specs/audit-docs/spec.md
 # Plan: specs/audit-docs/plan.md
 #
-# Catches 5 categories of syntactic doc drift in hand-maintained docs:
-#   1. paths   — unknown ~/X prefixes
-#   2. verbs   — unknown `claude-base <verb>` invocations
-#   3. flags   — unknown `claude-base init --<flag>` / `update --<flag>`
-#   4. scripts — references to missing ./scripts/X.sh
-#   5. npm    — unknown `npm --prefix website run <X>` scripts
+# Catches 6 categories of syntactic doc drift in hand-maintained docs:
+#   1. paths    — unknown ~/X prefixes
+#   2. verbs    — unknown `claude-base <verb>` invocations
+#   3. flags    — unknown `claude-base init --<flag>` / `update --<flag>`
+#   4. scripts  — references to missing ./scripts/X.sh
+#   5. npm      — unknown `npm --prefix website run <X>` scripts
+#   6. cmdrefs  — dead `/domain:name` slash-command references (a removed/
+#                 misspelled command that no longer maps to .claude/commands/)
 #
 # Out of scope: semantic drift, auto-fix, counter prose drift (owned by
 # validate-counts.sh), .claude/rules/* (user-project script descriptors),
 # auto-generated mirrors (website/docs/{agents,commands,skills,rules}/**).
 #
 # Allowlists are bash arrays at the top of this script — 1-line edit to extend.
-# Env-var bypass per category: AUDIT_DOCS_SKIP_{PATHS,VERBS,FLAGS,SCRIPTS,NPM}=1
+# Env-var bypass per category: AUDIT_DOCS_SKIP_{PATHS,VERBS,FLAGS,SCRIPTS,NPM,CMDREFS}=1
 # =============================================================================
 
 set -euo pipefail
@@ -78,6 +80,7 @@ SKIP_VERBS="${AUDIT_DOCS_SKIP_VERBS:-0}"
 SKIP_FLAGS="${AUDIT_DOCS_SKIP_FLAGS:-0}"
 SKIP_SCRIPTS="${AUDIT_DOCS_SKIP_SCRIPTS:-0}"
 SKIP_NPM="${AUDIT_DOCS_SKIP_NPM:-0}"
+SKIP_CMDREFS="${AUDIT_DOCS_SKIP_CMDREFS:-0}"
 
 # =============================================================================
 # CLI args
@@ -102,7 +105,7 @@ ${BOLD}DESCRIPTION${NC}
 ${BOLD}OPTIONS${NC}
     -h, --help            Show this help
     --verbose             Print extraction patterns + match counts per category
-    --category <name>     Run only one category: paths|verbs|flags|scripts|npm
+    --category <name>     Run only one category: paths|verbs|flags|scripts|npm|cmdrefs
     --target <file|dir>   Audit one file or one directory recursively
                           (default: 8 hand-maintained doc globs under \$BASE_DIR)
 
@@ -112,6 +115,7 @@ ${BOLD}ENVIRONMENT${NC}
     AUDIT_DOCS_SKIP_FLAGS=1     Skip the flags category
     AUDIT_DOCS_SKIP_SCRIPTS=1   Skip the scripts category
     AUDIT_DOCS_SKIP_NPM=1       Skip the npm category
+    AUDIT_DOCS_SKIP_CMDREFS=1   Skip the cmdrefs category
 
 ${BOLD}EXIT CODES${NC}
     0    No drift detected
@@ -140,6 +144,31 @@ if [[ -f "$BASE_DIR/website/package.json" ]] && command -v jq >/dev/null 2>&1; t
     while IFS= read -r s; do
         KNOWN_NPM_SCRIPTS+=("$s")
     done < <(jq -r '.scripts | keys[]' "$BASE_DIR/website/package.json")
+fi
+
+# =============================================================================
+# Derived allowlist: REAL_CMDS — the live slash-command tokens, from the on-disk
+# .claude/commands/ tree. A command file at <domain>/<name>.md is referenced as
+# /<domain>:<name>; a root-level <name>.md as /<name>. The cmdrefs category
+# flags any /<domain>:<name> reference NOT in this set (a removed/misspelled
+# command). Derived live so adding/removing a command never desyncs the linter.
+# (Indexed array + is_in_array — bash 3.2-safe, no associative arrays.)
+# =============================================================================
+
+REAL_CMDS=()
+REAL_DOMAINS=()   # subdirectory names — the only valid <domain> in /domain:name
+if [[ -d "$BASE_DIR/.claude/commands" ]]; then
+    while IFS= read -r f; do
+        rel="${f#"$BASE_DIR"/.claude/commands/}"
+        rel="${rel%.md}"
+        case "$rel" in
+            */*) REAL_CMDS+=("/${rel%%/*}:${rel##*/}") ;;
+            *)   REAL_CMDS+=("/$rel") ;;
+        esac
+    done < <(find "$BASE_DIR/.claude/commands" -type f -name '*.md' 2>/dev/null)
+    while IFS= read -r d; do
+        REAL_DOMAINS+=("$d")
+    done < <(find "$BASE_DIR/.claude/commands" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null)
 fi
 
 # =============================================================================
@@ -452,6 +481,55 @@ audit_npm() {
 }
 
 # =============================================================================
+# Category: cmdrefs — dead /domain:name slash-command references
+# =============================================================================
+
+audit_cmdrefs() {
+    if [[ "$SKIP_CMDREFS" = "1" ]]; then
+        info "audit_cmdrefs: skipped (AUDIT_DOCS_SKIP_CMDREFS=1)"
+        return 0
+    fi
+    [[ "$VERBOSE" = "1" ]] && info "audit_cmdrefs: scanning ${#SCOPE_FILES[@]} files against ${#REAL_CMDS[@]} live commands"
+
+    # No commands resolved (e.g. running outside a checkout) → cannot judge; bail
+    # rather than flag every reference as dead.
+    [[ ${#REAL_CMDS[@]} -eq 0 ]] && { [[ "$VERBOSE" = "1" ]] && info "audit_cmdrefs: no .claude/commands found, skipping"; return 0; }
+
+    local raw
+    # Token shape: /<domain>:<name> — lowercase domain, colon, hyphenated name.
+    # The colon disambiguates from file paths/URLs; the name must start with a
+    # letter (so http://host:3000 -> :3000 never matches). grep stops at the
+    # first space, so "/ops:ops-gitflow init" yields the real "/ops:ops-gitflow".
+    raw=$(grep -nEoH '/[a-z][a-z0-9]*:[a-z][a-z0-9-]+' "${SCOPE_FILES[@]}" 2>/dev/null || true)
+    [[ -z "$raw" ]] && return 0
+
+    local line file_part lineno token
+    while IFS= read -r line; do
+        file_part="${line%%:*}"
+        local rest="${line#*:}"   # lineno:/domain:name
+        lineno="${rest%%:*}"      # lineno
+        token="${rest#*:}"        # /domain:name (its own colon is preserved)
+
+        # Historical/point-in-time docs legitimately name since-removed commands.
+        case "$file_part" in
+            */docs/designs/*|*/specs/*) continue ;;
+        esac
+
+        # Skip non-command colon tokens that share the /x:y shape:
+        #   - URL userinfo (postgresql://user:password@…) → domain not a real domain
+        #   - literal placeholders (/domain:name) → domain not a real domain
+        #   - wildcard prefixes (/dev:dev-*, /work:work-*) → token ends in '-'
+        #     (a real command name never ends with a hyphen)
+        local domain="${token%%:*}"; domain="${domain#/}"
+        is_in_array "$domain" REAL_DOMAINS || continue
+        case "$token" in *-) continue ;; esac
+
+        is_in_array "$token" REAL_CMDS && continue
+        report_drift "$file_part" "$lineno" "cmdrefs" "dead command reference: $token"
+    done <<< "$raw"
+}
+
+# =============================================================================
 # Final report + exit
 # =============================================================================
 
@@ -480,7 +558,8 @@ if [[ -n "$SINGLE_CATEGORY" ]]; then
         flags)   audit_flags ;;
         scripts) audit_scripts ;;
         npm)     audit_npm ;;
-        *) error "Unknown category: $SINGLE_CATEGORY (expected: paths|verbs|flags|scripts|npm)"; exit 2 ;;
+        cmdrefs) audit_cmdrefs ;;
+        *) error "Unknown category: $SINGLE_CATEGORY (expected: paths|verbs|flags|scripts|npm|cmdrefs)"; exit 2 ;;
     esac
 else
     audit_paths
@@ -488,6 +567,7 @@ else
     audit_flags
     audit_scripts
     audit_npm
+    audit_cmdrefs
 fi
 
 final_report

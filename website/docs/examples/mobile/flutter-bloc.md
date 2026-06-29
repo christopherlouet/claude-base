@@ -658,7 +658,7 @@ class LoginPage extends StatelessWidget {
 
 ## Related commands
 
-- `/dev:dev-test` - Generate more tests
+- `/dev:dev-tdd` - Generate more tests
 - `/dev:dev-supabase` - Integrate with Supabase Auth
 - `/qa:qa-mobile` - Quality audit
 

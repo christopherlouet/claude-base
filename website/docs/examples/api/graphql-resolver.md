@@ -11,7 +11,7 @@ This example shows how to create professional GraphQL resolvers with Apollo Serv
 ## Command used
 
 ```bash
-/dev:dev-graphql "Create queries and mutations for users"
+/dev:dev-api "Create queries and mutations for users"
 ```
 
 ## Generated structure
@@ -571,7 +571,7 @@ mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
 
 ## Related commands
 
-- `/dev:dev-test` - Generate resolver tests
+- `/dev:dev-tdd` - Generate resolver tests
 - `/qa:qa-security` - GraphQL security audit
 - `/doc:doc-api-spec` - Schema documentation
 

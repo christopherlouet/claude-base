@@ -21,7 +21,7 @@ Idea → Validation → MVP → Launch → Growth
 | Command | Usage |
 |---------|-------|
 | `/biz:biz-model` | Business model, Lean Canvas |
-| `/biz:biz-market` | Market study |
+| `/biz:biz-competitor` | Market study |
 | `/biz:biz-personas` | User personas |
 | `/biz:biz-competitor` | Competitive analysis |
 
@@ -48,8 +48,8 @@ Idea → Validation → MVP → Launch → Growth
 | Command | Usage |
 |---------|-------|
 | `/growth:growth-analytics` | Analytics |
-| `/growth:growth-funnel` | Funnel optimization |
-| `/growth:growth-onboarding` | User journey |
+| `/growth:growth-cro` | Funnel optimization |
+| `/growth:growth-cro` | User journey |
 | `/growth:growth-email` | Email marketing |
 | `/growth:growth-retention` | Retention |
 
@@ -62,7 +62,7 @@ Idea → Validation → MVP → Launch → Growth
 /biz:biz-model "My project management SaaS"
 
 # Analyze the market
-/biz:biz-market
+/biz:biz-competitor
 
 # Define personas
 /biz:biz-personas
