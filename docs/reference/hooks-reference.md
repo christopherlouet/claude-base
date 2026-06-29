@@ -32,6 +32,10 @@ The project includes automatic hooks in `.claude/settings.json`:
 | `CwdChanged` | command | When the working directory changes |
 | `FileChanged` | command | When a file is modified |
 
+### Matcher syntax — exact match on hyphenated identifiers (CLI 2.1.195, June 2026)
+
+A `matcher` with a hyphenated identifier (e.g. an agent `code-reviewer`, a tool `mcp__brave-search`) now **exact-matches** — it previously substring-matched, which could fire unintentionally. To match all tools from a hyphenated MCP server, use an explicit pattern: `mcp__brave-search__.*`. This repo's own matchers (`Edit|Write|Bash|MultiEdit|NotebookEdit` + event names) contain no hyphens, so they are unaffected — but a downstream project matching hyphenated agent/MCP names should use the `.*` form.
+
 ## Hook Types
 
 | Type | Description |
