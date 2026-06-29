@@ -525,7 +525,7 @@ flowchart TD
 │  │             │                                                         │  │
 │  │             ▼                                                         │  │
 │  │      ┌─────────────┐                                                  │  │
-│  │      │   data-     │ Dashboards, KPIs                                 │  │
+│  │      │  growth-    │ Dashboards, KPIs                                 │  │
 │  │      │  analytics  │                                                  │  │
 │  │      └──────┬──────┘                                                  │  │
 │  │             │                                                         │  │

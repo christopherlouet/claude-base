@@ -245,7 +245,7 @@ Hooks are configured directly in the `settings.json` file:
         "hooks": [
           {
             "type": "command",
-            "command": "npx prettier --write $CLAUDE_FILE_PATH"
+            "command": "bash -c 'FILE=$(jq -r \".tool_input.file_path // empty\"); [ -n \"$FILE\" ] && npx prettier --write \"$FILE\"'"
           }
         ]
       }
@@ -284,10 +284,20 @@ Hooks are configured directly in the `settings.json` file:
 |----------|-------------|
 | `$CLAUDE_PROJECT_DIR` | Project root (equivalent to `pwd` at startup) |
 | `$CLAUDE_SESSION_ID` | Unique session identifier |
-| `$CLAUDE_FILE_PATH` | Path of the relevant file (PreToolUse/PostToolUse Edit/Write) |
-| `$CLAUDE_TOOL_NAME` | Name of the tool used |
 
-Hooks also receive the JSON payload on `stdin` (use `jq` to parse).
+Per-invocation data (the edited file, the tool name, the command) is **not** exposed as env vars — hooks receive the full JSON payload on **stdin** and parse it with `jq`:
+
+| Field (stdin JSON) | Description |
+|--------------------|-------------|
+| `.tool_name` | Name of the tool used (`Edit`, `Write`, `Bash`…) |
+| `.tool_input.file_path` | Path of the edited/written file (Edit/Write) |
+| `.tool_input.command` | The shell command (Bash) |
+| `.tool_input.content` / `.new_string` | The written/edited content |
+
+```bash
+# Read the payload once, then extract what you need
+FILE=$(jq -r '.tool_input.file_path // empty')
+```
 
 ### Behavior on failure
 
@@ -497,6 +507,6 @@ Guides the new developer through the project.
 
 ### Hooks don't trigger
 
-- Check `"enabled": true`
-- Check that the command exists
+- Check the `matcher` matches the tool (e.g. `Edit|Write`, `Bash`)
+- Check that the hook script path exists and is executable
 - Consult the Claude logs

@@ -46,17 +46,17 @@ To avoid in order to reduce pressure on the context: reading entire directories 
 
 ### MCP servers
 
-MCP servers are disabled by default in `.mcp.json`. To diagnose:
+`.mcp.json` ships **empty** (`{"mcpServers": {}}`) — no server is active by default, and there is **no per-server `enabled`/`disabled` flag**: a server is active iff its block is present in `.mcp.json`. To diagnose:
 
 ```bash
-# Check the state of MCP servers
-cat .mcp.json | grep -A3 "disabled"
+# Which servers are configured (empty {} = none active)
+cat .mcp.json
 
 # Read MCP events
 cat /tmp/claude-mcp.log
 ```
 
-To enable a server, remove `"disabled": true` or change it to `"disabled": false` in `.mcp.json`.
+To enable a server, copy its block from `.mcp.json.example` into `.mcp.json` (presence = active) and provide the referenced env vars.
 
 ---
 
@@ -268,9 +268,9 @@ THE AGENT / COMMAND DOES NOTHING
 THE HOOK DOES NOT TRIGGER
 │
 ├── Check that the script is executable
-│   └── ls -la .claude/hooks/
+│   └── ls -la scripts/hooks/
 ├── Test the script manually
-│   └── bash .claude/hooks/my-script.sh
+│   └── echo '{}' | bash scripts/hooks/my-script.sh
 ├── Check the logs
 │   └── cat /tmp/claude-sessions.log | tail -30
 └── Timeout too short?
@@ -303,10 +303,10 @@ claude --version
 cat /tmp/claude-sessions.log | head -20
 
 # Check the permissions of hook scripts
-ls -la .claude/hooks/
+ls -la scripts/hooks/
 
-# Test a specific hook independently
-bash .claude/hooks/pre-commit-tests.sh
+# Test a specific hook independently (hooks read their payload as JSON on stdin)
+echo '{"tool_input":{"command":"echo hi"}}' | bash scripts/hooks/command-validator.sh
 ```
 
 ### Inspect logs in real time
@@ -394,13 +394,13 @@ If the hooks are in an inconsistent state (permissions, modified scripts):
 
 ```bash
 # Reset hook permissions
-chmod +x .claude/hooks/*.sh
+chmod +x scripts/hooks/*.sh
 
 # Check that the content of the hooks has not been altered
-git diff .claude/hooks/
+git diff scripts/hooks/
 
 # Restore from git if necessary
-git checkout .claude/hooks/
+git checkout scripts/hooks/
 ```
 
 ### Unsolvable git conflict during TDD
@@ -468,7 +468,7 @@ Rule: prefer `/compact` over `/clear`. Compaction preserves the essentials (deci
 | Read and explore code | Low | `/effort low` |
 | Implement a standard feature | Medium | `/effort medium` |
 | Design an architecture | High | `/effort high` |
-| Critical audit, complex debug | Maximum | `/effort max` |
+| Critical audit, complex debug | Maximum | `/effort xhigh` |
 
 **Avoid expensive reads:**
 

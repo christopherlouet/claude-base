@@ -97,7 +97,7 @@ Useful for: CI/CD integration, setup scripts, notification hooks.
 
 `claude-fable-5` is Anthropic's most capable widely released model — the tier **above** Opus 4.8 for the most demanding reasoning and long-horizon autonomous work. 1M context (default and max), 128K output, same tokenizer as Opus 4.8. Pricing is **~$10/$50 per MTok — 2× Opus 4.8** — so reach for it deliberately, not as a default.
 
-Behaviourally it differs from Opus 4.8: thinking is always on (the raw chain of thought is never returned) and individual turns on hard tasks can run several minutes — plan for streaming and async check-ins. Opus 4.8 remains the documented default; Fable 5 is the costlier escalation when a task genuinely exceeds it. For the API-level caveats when building with the SDK (no `thinking:{type:"disabled"}`, no assistant prefill, refusal classifiers, 30-day data retention), see the `dev-ai-integration` agent.
+Behaviourally it differs from Opus 4.8: thinking is always on (the raw chain of thought is never returned) and individual turns on hard tasks can run several minutes — plan for streaming and async check-ins. Opus 4.8 remains the documented default; Fable 5 is the costlier escalation when a task genuinely exceeds it. For the API-level caveats when building with the SDK (no `thinking:{type:"disabled"}`, no assistant prefill, refusal classifiers, 30-day data retention), see the `dev-ai-integration` skill.
 
 ## Opus 4.8
 
@@ -209,7 +209,7 @@ Ask Claude to "create a workflow that…" and it generates a script orchestratin
 
 ## MCP Configuration
 
-MCP servers in `.mcp.json` (all disabled by default):
+`.mcp.json` ships **empty** (`{"mcpServers": {}}`) — no server is active by default. There is **no per-server `enabled` flag**: a server is active iff its block is present in `.mcp.json`. The curated catalogue ships alongside as `.mcp.json.example`. Servers you can copy from it:
 
 | Server | Usage |
 |--------|-------|
@@ -222,7 +222,7 @@ MCP servers in `.mcp.json` (all disabled by default):
 | `sentry` | Error monitoring |
 | `linear` | Project management |
 
-To enable: `"enabled": true` in `.mcp.json`. Environment variables in `.env`.
+To enable a server, copy its block from `.mcp.json.example` into `.mcp.json` (there is no `enabled` flag — presence = active). Provide the referenced environment variables in `.env`.
 
 ### MCP Channels
 

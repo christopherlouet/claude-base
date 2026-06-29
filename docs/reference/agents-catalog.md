@@ -160,9 +160,9 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 
 | Domain | Agents | Models |
 |--------|--------|--------|
-| Exploration & Doc | `work-explore`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku |
+| Workflow & Doc | `work-explore`, `work-quick`, `work-batch`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku/sonnet |
 | Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-e2e`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
-| Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration` | haiku/sonnet |
+| Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration`, `ops-cost` | haiku/sonnet |
 | Development | `dev-debug`, `dev-flutter`, `dev-document`, `dev-tdd` | haiku/sonnet (tdd, debug) |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-localization`, `growth-cro` | haiku |
 | Data | `data-pipeline` | haiku/sonnet |
@@ -172,4 +172,4 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 
 Each agent defines: `model` (haiku/sonnet/opus), `permissionMode` (plan/default), `disallowedTools`, `hooks`, `skills`.
 
-**Model distribution**: 22 haiku (trivial operations) / 34 sonnet (default) / 6 opus (critical reasoning: `qa-security`, `qa-audit`, `qa-loop`, `dev-tdd`, `dev-debug`, `dev-rag`).
+**Model distribution**: 13 haiku (trivial operations) / 27 sonnet (default) / 5 opus (critical reasoning: `qa-security`, `qa-audit`, `qa-loop`, `dev-tdd`, `dev-debug`).
