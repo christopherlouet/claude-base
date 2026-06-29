@@ -11,84 +11,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [5.1.0] - 2026-06-29
+
 ### Added
 
-- **Personal lessons referential — `/lessons` capture/recall/prune modes (Phase 2).**
-  The `/lessons` command gains `--promote` (explicit capture, fallback to the
-  reflex), `--bootstrap` (one-off backfill from existing per-project `feedback`
-  memories so you don't start from scratch), and `--prune` (keep the store under
-  budget). The deterministic parts live in a tested helper exposed as
-  `claude-base lessons` (`bootstrap-scan` lists promotable candidates across
-  `~/.claude/projects/*/memory/`; `prune-check` reports the store's size vs its
-  budget and flags duplicate lines) — the generalize/sanitize/confirm judgment
-  stays with the model, per the `self-improvement` rule. Still mechanism-only:
-  nothing is written without confirmation and lessons never enter any repo.
-- **Personal cross-project lessons referential (mechanism only).** A new global
-  `self-improvement` rule turns "lessons learned" into a human-gated reflex:
-  after a genuinely instructive moment (a multi-attempt fix, an explicit user
-  correction, or a non-obvious root cause), the assistant proposes **one**
-  generalized, **sanitized** lesson and, on confirmation, appends it to the
-  user's own `~/.claude/rules/lessons.md`. Claude Code loads that file into every
-  project automatically, so a lesson captured once is recalled everywhere — the
-  *more you use the foundation, the fewer mistakes recur*. The lessons are
-  **personal**: claude-base ships the mechanism, never the data (nothing is
-  written into any repo). The store is bounded (~2,000 chars) to stay cheap in
-  every session. Cross-machine sync is bring-your-own (private repo / Syncthing /
-  cloud-drive) — see `docs/recipes/personal-lessons-referential.md`. (Phase 1 of
-  the feature; the `/lessons --promote/--prune/--bootstrap` modes follow.)
-- **`install.sh --ref <tag>`: release pinning.** The one-liner installer can now
-  pin to a specific tested release (e.g. `--ref v5.0.0`) instead of always
-  cloning the moving `main` tip. A pinned install **stays pinned** across
-  `--update` — it never silently jumps to `main`; pass `--ref <newtag>` to move
-  it, or `--ref main` to return to the latest. Omitting `--ref` keeps the exact
-  previous behavior (clone `main`), so existing one-liners are unaffected. The
-  pin is recorded under `.git/claude-base-ref` (so it never shows up in
-  `git status`), and `CLAUDE_BASE_REPO_URL` lets the test suite exercise the
-  clone/update paths against a local fixture repo, fully offline.
+- **Substance gate — advisory anti-hollow-test / anti-stub detector.** A new `scripts/` detector plus PostToolUse wiring flags tests that assert nothing real (vacuous `|| true`, asserting a literal, no-op expectations) and stub/placeholder implementations across Bats, TS/JS, Python, and Go. It is advisory (never blocks), tuned for zero false positives on the foundation's own corpus, and is surfaced through the qa flow so "green but hollow" tests get caught before they ship. (#415)
+- **Anti-tamper guardrails — config-protection + git `no-verify` block.** Two new `PreToolUse` hooks: one warns when an agent edits the foundation's own guard surface (`settings.json` hooks, security rules) so quality gates can't be silently weakened, and one blocks `git commit/push --no-verify` (and equivalents) so the pre-commit/pre-push gates can't be bypassed in an agent session. (#410)
+- **Three value-proven safety gates: secret-scan, focused-test, destructive-migration.** New hooks that each target a failure the `eval/value-proof` triage showed the strongest models actually commit on a casual request (so they are not REDUNDANT theater): a pre-commit secret scan, a focused-test runner that exercises the files you touched, and a destructive-migration guard. Each is a deterministic check (100% catch, model-independent) a fresh project lacks. (#420)
+- **Foundation value-proof eval harness.** `eval/` instrumentation that measures *where* claude-base's value actually is — which gates and rules change outcomes versus which are inert — so the foundation can be steered by evidence rather than belief. (#419)
+- **Rule-efficacy harness — per-model measurement of whether a rule changes agent behavior.** A model-agnostic control-vs-treatment harness (`eval/rule-efficacy/`, driven via a `GEN_CMD`) that classifies each `.claude/` rule as EFFECTIVE / REDUNDANT / INERT / HARMFUL for a given model. Headline finding: efficacy is **model-dependent** — rules that read as REDUNDANT for the strongest models still correct weaker ones, so rules are portability insurance and the deliverable is a rule×model matrix. (#416)
+- **Minimal-code / YAGNI discipline — rule + eval.** A `research`-tier rule formalizes a "walk the minimal-code ladder (reuse → stdlib → native → custom) before adding code" discipline, hardened so "minimal" never means denser or more fragile, and a companion eval harness measures it on LOC + correctness + tests retained. (#391, #392, #393)
+- **Pre-push preflight — run the foundation's own CI gates locally.** A `.husky/pre-push` → `scripts/preflight.sh` step runs the same gates CI does before the push leaves your machine, closing the local↔CI parity gap that produced avoidable red builds. (#412)
+- **Personal cross-project lessons referential (mechanism only).** A new global `self-improvement` rule turns "lessons learned" into a human-gated reflex: after a genuinely instructive moment (a multi-attempt fix, an explicit user correction, or a non-obvious root cause), the assistant proposes **one** generalized, **sanitized** lesson and, on confirmation, appends it to the user's own `~/.claude/rules/lessons.md`. Claude Code loads that file into every project automatically, so a lesson captured once is recalled everywhere. The lessons are **personal**: claude-base ships the mechanism, never the data (nothing is written into any repo). The store is bounded (~2,000 chars) to stay cheap in every session; cross-machine sync is bring-your-own — see `docs/recipes/personal-lessons-referential.md`. (Phase 1) (#361)
+- **`/lessons` capture/recall/prune modes (Phase 2 + 3).** The `/lessons` command gains `--promote` (explicit capture), `--bootstrap` (one-off backfill from existing per-project memories), and `--prune` (keep the store under budget), with the deterministic parts in a tested helper exposed as `claude-base lessons` (`bootstrap-scan`, `prune-check`). Phase 3 adds **topic grouping and a recurrence signal** so the store stays scannable and the most-repeated lessons surface first. The generalize/sanitize/confirm judgment stays with the model. (#362, #385)
+- **`install.sh --ref <tag>`: release pinning.** The one-liner installer can now pin to a specific tested release (e.g. `--ref v5.0.0`) instead of always cloning the moving `main` tip. A pinned install **stays pinned** across `--update` — pass `--ref <newtag>` to move it, or `--ref main` to return to latest. Omitting `--ref` keeps the previous behavior. The pin is recorded under `.git/claude-base-ref`. (#359)
+- **Curation discovery & graduation improvements.** Discovery now mines curated awesome-lists as candidate sources (#394), suppresses candidates already reviewed and declined so the digest stops re-proposing them (#397), and tags cleared candidates that match the awaiting-vendors watch-list with `graduationFor:` so the foundation→vendor graduation loop closes itself (#371). The monthly `discover` deploy gains an `--emit-issue` mode and a complete deploy recipe (#374).
+- **Curation safety screen now scans the executable surface.** The pin-time safety screen reads `*.sh`/`*.py`/`*.js`, exec-bit files, `settings.json` hooks, and `.mcp.json` — not just docs — before a vendor skill is pinned, so a malicious or risky script can't slip through on a docs-only review. (#384)
+- **`new-project --ci-existing` flag** to drive existing-CI/CD setup non-interactively. (#356)
+- **New foundation guard rules.** A `cmdrefs` doc-drift guard that fails CI when docs/site reference commands the foundation no longer ships (#429), a rule formalizing **self-application tests** for foundation guardrails (run the guard on the real target, no mocks) (#413), and a **macOS bash-3.2 portability checklist** for new scripts (#414).
+- **Self-healing counts pre-commit.** Catalog counts are now regenerated and re-staged by a `.husky/pre-commit` step (`scripts/sync-counts.sh`) so a derived artifact can never drift into a CI-only "forgot to regenerate" failure again. (#408)
 
-### Security
+### Changed
 
-- **Releases now publish a `SHA256SUMS` asset, enabling verify-before-execute.**
-  `release.yml` computes the sha256 of `install.sh` and a pinned source tarball
-  on the tagged commit (so the checksums can never drift from what ships) and
-  attaches `SHA256SUMS` to the GitHub Release. The README and release notes now
-  document a **pinned + verified** install path (download the tagged `install.sh`
-  → `sha256sum --check` → run), honoring the project's own
-  `.claude/rules/security.md` "download → verify → execute" rule — which a repo
-  hook already enforces against `curl … | sh` in agent sessions. The release
-  notes' previous `curl … scripts/new-project.sh | bash` snippet (which could
-  not work standalone — `new-project.sh` sources sibling libraries from a local
-  checkout) was replaced by the verified `install.sh` path.
+- **Vendor graduations: stop bundling depth the tool maker owns.** `dev-mcp`, `dev-ai-integration`, and `dev-rag` were graduated to point at their canonical vendor skills (mcp-builder, bundled claude-api, langchain-rag) (#372), and `dev-prisma` + `dev-supabase` were converted to **pointer-commands** that defer to the authority vendor for tool-specific API usage (#369). The `vendor-precedence` hook also now surfaces installed-vendor precedence once per session (#370).
+- **CI: shard the Bats suite across 4 parallel runners** for faster feedback. (#401)
+- **README & docs-site overhaul.** A multi-phase README conversion tightened the hook, surfaced the lessons feature, added a Requirements + success-signals section, fixed stale CLI/command claims, relocated competitive positioning to `docs/POSITIONING.md`, and deduped examples (#364, #365, #366, #367); the docs site now publishes the QUICKSTART + CHEATSHEET pages (previously 404) (#368); plus the roadmap was updated to reflect the anti-gaming thread and park distribution (#411).
+- **Repo-hygiene quick-wins** — CI action pins, a CONTRIBUTING counts gate, and install-path consistency. (#363)
+- **Routine vendor-skill maintenance.** Several rounds of automated re-pins moved drifted vendor skills (including `anthropics/skills`) to their latest verified upstream refs. (#387, #390, #398/#399, #417/#425, #423)
 
-- **Downstream security-drift detection.** `update` advances the recorded
-  version on every run but leaves `settings.json` / `scripts/hooks/` opt-in
-  (`--settings` / `--hook-scripts`), so a project could read as up-to-date while
-  running stale, **silently inert** security hooks — the worst case being hooks
-  still on the pre-stdin `$TOOL_*` env contract (PRs #330/#331), where a hook
-  like `command-validator.sh` becomes a dead pass-through. A new shared
-  `detect_security_drift` (in `lib/common.sh`) flags legacy-contract hooks and a
-  bare `mcp__*` wildcard in `permissions.allow` (an over-broad grant; valid
-  fully-qualified `mcp__server__tool` entries are left alone). It is surfaced by
-  `doctor` (new "Security drift" section) and by an advisory `update` prints
-  after a run that left those surfaces behind, pointing at
-  `update --settings --hook-scripts --force` (the `--force` is required because a
-  diverged hook is otherwise skipped as a possible local customization). The
-  detector is guarded against false positives (it reports zero drift on the
-  foundation's own modern hooks, which read stdin yet name a `TOOL_NAME` var).
+### Fixed
+
+- **Curation correctness fixes.** Scoped the pin-time safety screen and trust scorer to each skill's actual subpath, correcting 8 stale vendor subpaths and guarding against the blind spot (#388, #403, #404); corrected the Vercel vendor-pointer that overstated Next.js coverage (#406); re-probed hand-edited watch-list license notes and fixed a stale `flutter-craft` note (#407); recognized README-declared licenses in the trust scorer to stop a class of false negatives (#400); stopped the daily false-positive on `anthropics/claude-code` and named what each repo is watched for (#396); made discovery-digest repo cells clickable (#379); made digest emission **idempotent** — update one rolling issue instead of posting a daily duplicate (#424); made the judge tolerant of JSON wrapped in markdown fences (#377); and emitted `gh` issues/PRs with an explicit `-R` so they work CWD-independently (#373).
+- **`qa-loop` re-scans security after applying fixes before it STOPs**, so a fix that introduces a vulnerability can't pass the loop (literature-backed). (#418)
+- **Documentation & test fixes.** Repaired broken links that were breaking the docs deploy (#402); fixed stale MCP/hook contracts and pre-v5 counts across foundation docs (#428); purged dead command refs from the website (paired with the #429 guard above); dropped a misleading `.claude/templates` tree line and corrected the CodeQL scope note in the README (#421, #422); made two vacuous `|| true` Bats assertions real (uncovering 2 bugs they masked) (#382); and fixed SC2295 quoting plus misleading bash-3.2 comments (#383).
 
 ### Removed
 
-- **Removed RTK (token optimizer) from the foundation entirely.** The opt-in RTK integration
-  shipped a `PreToolUse` hook (gated by `ENABLE_RTK=1`) that rewrote every Bash command via
-  `rtk rewrite` before execution. Its guards (`onFailure: ignore`, `command -v` checks) prevented
-  the *hook* from failing but not a *bad rewrite* from breaking the real command — a recurring
-  source of errors. The advertised "60–90% token savings" only cover the Bash command text (a
-  minor fraction of real token spend), and prompt caching + larger contexts have since eroded the
-  value. Net: poor risk/reward against the foundation's "reduction over features" principle.
-  **Removed:** the RTK `settings.json` hook, the `update.sh --add-hook` flag and `add_hook`
-  function (it only ever supported `rtk`, so the whole `--add-hook` mechanism is gone), and all
-  RTK documentation (best-practices, troubleshooting, advanced-features, hooks-reference,
-  team-guide, ops-cost, learning-path). The unrelated `--add-plugin` flag is unchanged.
+- **Removed RTK (token optimizer) from the foundation entirely.** The opt-in RTK integration shipped a `PreToolUse` hook (gated by `ENABLE_RTK=1`) that rewrote every Bash command via `rtk rewrite` before execution. Its guards prevented the *hook* from failing but not a *bad rewrite* from breaking the real command — a recurring source of errors — and the advertised "60–90% token savings" only covered the Bash command text, a minor fraction of real spend now further eroded by prompt caching and larger contexts. **Removed:** the RTK `settings.json` hook, the `update.sh --add-hook` flag and `add_hook` function (it only ever supported `rtk`), and all RTK documentation. The unrelated `--add-plugin` flag is unchanged. (#358)
+
+### Security
+
+- **Releases now publish a `SHA256SUMS` asset, enabling verify-before-execute.** `release.yml` computes the sha256 of `install.sh` and a pinned source tarball on the tagged commit (so the checksums can't drift from what ships) and attaches `SHA256SUMS` to the GitHub Release. The README and release notes now document a **pinned + verified** install path (download the tagged `install.sh` → `sha256sum --check` → run), honoring the project's own "download → verify → execute" rule. (#359)
+- **Downstream security-drift detection.** A shared `detect_security_drift` (in `lib/common.sh`) flags hooks still on the pre-stdin `$TOOL_*` env contract (which become silently inert pass-throughs) and a bare `mcp__*` wildcard in `permissions.allow` (an over-broad grant; valid fully-qualified `mcp__server__tool` entries are left alone). It is surfaced by `doctor` (new "Security drift" section) and by an advisory `update` prints after leaving those surfaces behind, pointing at `update --settings --hook-scripts --force`. Guarded against false positives (zero drift on the foundation's own modern hooks). (#360)
 
 ## [5.0.0] - 2026-06-20
 
