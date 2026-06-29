@@ -297,11 +297,13 @@ Constraints and conventions automatically injected based on file paths.
 
 ### File structure (<!-- count:rules -->32<!-- /count --> rules)
 
-Cross-cutting rules (16):
+Cross-cutting rules (18):
 ```
 .claude/rules/
 ├── workflow.md            # Global — Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
 ├── git.md                 # Global — Conventional Commits, branches
+├── self-improvement.md    # Global — personal cross-project lessons referential
+├── vendor-precedence.md   # Global — foundation-vs-vendor advice precedence
 ├── tdd-enforcement.md     # TS/Py/Go/Dart code — TDD mandatory
 ├── verification.md        # TS/Py/Go/Dart code — 4-phase verification
 ├── security.md            # auth/, api/, middleware/

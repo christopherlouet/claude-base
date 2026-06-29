@@ -150,26 +150,26 @@ ALLOW_MAIN_EDIT=1 claude
 The `.mcp.json` file is committed to git **empty** (`"mcpServers": {}`) — no server is active by default. There is **no per-server `enabled` flag** in the `.mcp.json` format: a server is active iff it is listed in `.mcp.json`. The curated catalogue ships alongside as **`.mcp.json.example`** (a reference file Claude does not load); each developer copies the server blocks they need into `.mcp.json` and provides the referenced env vars. Project-scoped servers prompt for approval on first use.
 
 ```json
-// .mcp.json (committed, disabled by default)
+// .mcp.json (committed empty — no server active by default)
+{
+  "mcpServers": {}
+}
+```
+
+To enable a server, copy its block from `.mcp.json.example` into `.mcp.json` (there is no `enabled` flag — a server is active iff it is listed) and provide the referenced env vars:
+
+```json
+// .mcp.json (github enabled)
 {
   "mcpServers": {
     "github": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_TOKEN": "${GITHUB_TOKEN}" },
-      "enabled": false
-    },
-    "postgres": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres"],
-      "env": { "DATABASE_URL": "${DATABASE_URL}" },
-      "enabled": false
+      "env": { "GITHUB_TOKEN": "${GITHUB_TOKEN}" }
     }
   }
 }
 ```
-
-To enable an MCP server locally without modifying the committed file, use the override in `settings.local.json`.
 
 ### Environment variables: `.env.example` pattern
 
@@ -247,7 +247,7 @@ If you want auto-propagation without committing `.claude/` wholesale, a partial-
 
 Files in `.claude/rules/` are committed to git and activate automatically based on the modified files. This is the most efficient mechanism to share code conventions without putting them in CLAUDE.md.
 
-The foundation includes 31 pre-configured rules. For a team, the most important to commit are:
+The foundation includes 32 pre-configured rules. For a team, the most important to commit are:
 
 | Rule | Automatic activation | Team usefulness |
 |------|---------------------|-----------------|
@@ -296,7 +296,7 @@ paths:
 | Plan (architecture) | `high` | Structuring decisions |
 | TDD (implementation) | `medium` | Implementation guided by tests |
 | Audit (quality) | `high` | Detection of subtle problems |
-| Complex debug | `max` | Maximum reasoning |
+| Complex debug | `xhigh` | Maximum reasoning |
 
 ### Recommended models per usage
 
@@ -566,7 +566,7 @@ Using the right effort level avoids consuming tokens unnecessarily:
 /effort low      # Reading, exploration
 /effort medium   # Standard implementation
 /effort high     # Architecture, refactoring
-/effort max      # Critical debug (Opus 4.8 only)
+/effort xhigh    # Critical debug (Opus 4.8 only)
 ```
 
 ### Typical consumption per workflow phase

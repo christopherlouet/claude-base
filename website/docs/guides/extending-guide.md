@@ -387,7 +387,7 @@ In `.claude/settings.json`, `hooks` section:
       "hooks": [
         {
           "type": "command",
-          "command": "bash -c 'if command -v sqlfluff >/dev/null 2>&1; then FILE=$(echo \"$TOOL_INPUT\" | jq -r \".path // empty\"); if [[ \"$FILE\" == *.sql ]]; then sqlfluff fix --dialect ansi \"$FILE\" 2>/dev/null && echo \"[SQL] Formatted: $FILE\"; fi; fi'",
+          "command": "bash -c 'command -v sqlfluff >/dev/null 2>&1 || exit 0; FILE=$(jq -r \".tool_input.file_path // empty\"); if [[ \"$FILE\" == *.sql ]]; then sqlfluff fix --dialect ansi \"$FILE\" 2>/dev/null && echo \"[SQL] Formatted: $FILE\"; fi'",
           "timeout": 10000,
           "onFailure": "ignore"
         }
@@ -408,7 +408,7 @@ In `.claude/settings.json`, `hooks` section:
       "hooks": [
         {
           "type": "command",
-          "command": "bash -c 'FILE=$(echo \"$TOOL_INPUT\" | jq -r \".path // empty\"); if [[ \"$FILE\" == *prod* ]] || [[ \"$FILE\" == *production* ]]; then echo \"BLOCKED: Modification of a production file detected. Use ALLOW_PROD_EDIT=1 to force.\"; if [ \"$ALLOW_PROD_EDIT\" != \"1\" ]; then exit 1; fi; fi'",
+          "command": "bash -c 'FILE=$(jq -r \".tool_input.file_path // empty\"); if [[ \"$FILE\" == *prod* ]] || [[ \"$FILE\" == *production* ]]; then echo \"BLOCKED: Modification of a production file detected. Use ALLOW_PROD_EDIT=1 to force.\"; if [ \"$ALLOW_PROD_EDIT\" != \"1\" ]; then exit 1; fi; fi'",
           "timeout": 5000,
           "onFailure": "block"
         }
@@ -609,7 +609,7 @@ A research pass on May 4, 2026 against the official plugin docs ([code.claude.co
 
 | Gap | Impact on `claude-base` |
 |---|---|
-| **Rules (`.claude/rules/`) are not a plugin component** | The 30 path-specific rules in this foundation cannot ship via plugin. Users would need to copy them manually post-install. |
+| **Rules (`.claude/rules/`) are not a plugin component** | The 28 path-specific rules in this foundation cannot ship via plugin. Users would need to copy them manually post-install. |
 | **`settings.json` scope inside plugins is limited** to `agent` and `subagentStatusLine` | Plugins cannot configure `permissions`, `env`, or top-level `hooks` for the user's session. Foundation defaults (deny lists, env, ~15 PostToolUse hooks) cannot be auto-installed. |
 | **No first-install / setup callback** | `scripts/new-project.sh` (the foundation orchestrator) has no equivalent. A plugin user gets skills/agents/commands immediately but no workspace setup. |
 

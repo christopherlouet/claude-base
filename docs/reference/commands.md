@@ -82,8 +82,8 @@ claude-base remove growth .
 claude-base modules .
 ```
 
-Available modules: `biz` (11 commands + 4 agents), `legal` (5 commands + 4 agents),
-`growth` (11 commands + 6 agents + growth-cro skill).
+Available modules: `biz` (9 commands + 4 agents), `legal` (5 commands + 4 agents),
+`growth` (9 commands + 5 agents + growth-cro skill).
 
 **Tip:** `claude-base init --preset <name>` automatically installs the preset's
 `defaultModules` set and prints a `claude-base add` hint for the rest.
