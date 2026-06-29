@@ -75,9 +75,9 @@ The orchestrator automatically detects your environment:
 
 | Indicator | Project type | Recommended commands |
 |-----------|--------------|----------------------|
-| `package.json` + React/Next/Vue | **Web Frontend** | `/dev:dev-component`, `/dev:dev-hook`, `/dev:dev-react-perf` |
+| `package.json` + React/Next/Vue | **Web Frontend** | `/dev:dev-component`, `/dev:dev-component`, `/dev:dev-react-perf` |
 | `pubspec.yaml` + Flutter | **Mobile** | `/dev:dev-flutter`, `/dev:dev-supabase`, `/qa:qa-mobile` |
-| `package.json` + Express/Fastify/NestJS | **Node API** | `/dev:dev-api`, `/dev:dev-graphql`, `/dev:dev-trpc` |
+| `package.json` + Express/Fastify/NestJS | **Node API** | `/dev:dev-api`, `/dev:dev-api`, `/dev:dev-api` |
 | `requirements.txt` / `pyproject.toml` | **Python** | `/dev:dev-api`, `/dev:dev-tdd` |
 | `go.mod` | **Go** | `/dev:dev-api`, `/dev:dev-tdd` |
 | `init.lua` / `.config/nvim` | **Neovim** | `/dev:dev-neovim`, `/qa:qa-neovim` |
@@ -221,7 +221,7 @@ User: "/assistant I want to fix a login bug"
     │    - Workflow: /work:work-flow-bugfix │
     │    - Or manual steps:               │
     │      /work:work-explore → /dev:dev-debug │
-    │      → /dev:dev-test → /work:work-pr │
+    │      → /dev:dev-tdd → /work:work-pr │
     └─────────────────────────────────────┘
          │
          ▼
@@ -303,7 +303,7 @@ User: "/assistant I want to fix a login bug"
 # Or manual workflow:
 # 1. /work:work-explore - Locate the problem
 # 2. /dev:dev-debug - Investigate the cause
-# 3. /dev:dev-test - Write a regression test
+# 3. /dev:dev-tdd - Write a regression test
 # 4. /work:work-commit - Commit the fix
 ```
 

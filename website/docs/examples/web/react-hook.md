@@ -11,7 +11,7 @@ This example shows how to create a professional custom hook with TypeScript and 
 ## Command used
 
 ```bash
-/dev:dev-hook "Create a useDebounce hook to delay updates"
+/dev:dev-component "Create a useDebounce hook to delay updates"
 ```
 
 ## Generated structure
@@ -443,7 +443,7 @@ function EmailInput({ onValidate }) {
 
 ## Related commands
 
-- `/dev:dev-test` - Add more tests
+- `/dev:dev-tdd` - Add more tests
 - `/dev:dev-component` - Create a component using this hook
 - `/doc:doc-explain` - Understand how it works
 

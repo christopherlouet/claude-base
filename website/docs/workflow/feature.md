@@ -125,12 +125,12 @@ With GitFlow enabled:
 
 ```bash
 # Create the feature branch
-/ops:ops-gitflow-feature start "notification-system"
+/ops:ops-gitflow feature start "notification-system"
 
 # Develop...
 
 # Finish the feature
-/ops:ops-gitflow-feature finish "notification-system"
+/ops:ops-gitflow feature finish "notification-system"
 ```
 
 ---

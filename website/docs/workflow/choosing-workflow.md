@@ -57,7 +57,7 @@ flowchart TD
 |-----------|----------|----------|
 | Add a feature | Feature | `/work:work-flow-feature` |
 | Fix a bug | Bugfix | `/work:work-flow-bugfix` |
-| Critical bug in prod | Hotfix | `/ops:ops-gitflow-hotfix` |
+| Critical bug in prod | Hotfix | `/ops:ops-gitflow hotfix` |
 | Prepare a version | Release | `/work:work-flow-release` |
 | Launch a product | Launch | `/work:work-flow-launch` |
 | Understand the code | Explore | `/work:work-explore` |
@@ -76,7 +76,7 @@ flowchart TD
 
 # Recommended commands
 /dev:dev-component    # Create components
-/dev:dev-hook        # Create hooks
+/dev:dev-component        # Create hooks
 /dev:dev-react-perf  # Optimize performance
 ```
 
@@ -100,7 +100,7 @@ flowchart TD
 
 # Recommended commands
 /dev:dev-api         # REST endpoints
-/dev:dev-graphql     # GraphQL API
+/dev:dev-api     # GraphQL API
 /doc:doc-api-spec    # OpenAPI documentation
 ```
 

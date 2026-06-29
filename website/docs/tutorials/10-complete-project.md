@@ -402,7 +402,7 @@ enum TaskPriority {
 ### 3.4 Document the architecture
 
 ```bash
-/doc:doc-architecture "TaskFlow architecture: Express backend, React frontend, Prisma ORM, JWT auth"
+/doc:doc-generate "TaskFlow architecture: Express backend, React frontend, Prisma ORM, JWT auth"
 ```
 
 Claude generates `docs/architecture.md` with an ASCII diagram:
@@ -1185,7 +1185,7 @@ Tag creation:
 | Spec | `/biz:biz-personas` | 2 personas (Alex, Sarah) |
 | Archi | `/work:work-plan` | `plan.md`: file structure, dependencies, risks |
 | Archi | `/ops:ops-database` | `prisma/schema.prisma` |
-| Archi | `/doc:doc-architecture` | `docs/architecture.md` with ASCII diagram |
+| Archi | `/doc:doc-generate` | `docs/architecture.md` with ASCII diagram |
 | Dev | `/dev:dev-tdd` | Tests + auth and CRUD implementation (Red/Green/Refactor cycle) |
 | Dev | `/dev:dev-api` | Documented REST endpoints |
 | Dev | `/dev:dev-component` | React components with tests |
@@ -1259,7 +1259,7 @@ TaskFlow v1.0.0 is in production. Here are the possible next steps:
 - Continuous improvement
 
 ```bash
-/qa:qa-kaizen "TaskFlow v1.0.0: identify priority PDCA improvement axes"
+/qa:qa-tech-debt "TaskFlow v1.0.0: identify priority PDCA improvement axes"
 ```
 
 ---

@@ -575,7 +575,7 @@ Read the proposed commit message. Verify that it respects the Conventional Commi
 | Clarify spec ambiguities | `/work:work-clarify` | work |
 | Plan an implementation | `/work:work-plan` | work |
 | Develop in TDD | `/dev:dev-tdd` | dev |
-| Generate tests for existing code | `/dev:dev-test` | dev |
+| Generate tests for existing code | `/dev:dev-tdd` | dev |
 | Debug a bug | `/dev:dev-debug` | dev |
 | Refactor code | `/dev:dev-refactor` | dev |
 | Create a UI component | `/dev:dev-component` | dev |
@@ -1547,8 +1547,8 @@ The body of the agent file must be minimal (30-55 lines): it orchestrates, the s
 
 | Model | Agent use case | Number in the foundation |
 |--------|-------------------|---------------------|
-| `haiku` | Exploration, documentation, standard generation, simple audits | 22 agents |
-| `sonnet` | Complex debug, security, architecture, integration | 35 agents |
+| `haiku` | Exploration, documentation, standard generation, simple audits | 13 agents |
+| `sonnet` | Complex debug, security, architecture, integration | 27 agents |
 | `opus` | Reserved for critical tasks with `/effort high` | On request |
 
 Practical rule: if the agent reads without modifying, use `haiku`. If it analyzes to propose corrections or architectural decisions, use `sonnet`.
@@ -2206,7 +2206,7 @@ The fundamental rule: never skip the **Audit** before a commit on main, and neve
 #### Continuous improvement
 
 ```bash
-/qa:qa-kaizen    # Identifies improvement patterns in your workflow
+/qa:qa-tech-debt    # Identifies improvement patterns in your workflow
 /qa:qa-audit     # Periodic full audit (security + GDPR + a11y + perf)
 /ops:ops-deps    # Vulnerabilities in dependencies
 ```

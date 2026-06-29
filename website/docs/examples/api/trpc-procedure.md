@@ -11,7 +11,7 @@ This example shows how to create professional tRPC procedures with Zod validatio
 ## Command used
 
 ```bash
-/dev:dev-trpc "Create a router for tasks with CRUD and filters"
+/dev:dev-api "Create a router for tasks with CRUD and filters"
 ```
 
 ## Generated structure
@@ -570,7 +570,7 @@ function TaskList() {
 
 ## Related commands
 
-- `/dev:dev-test` - Generate procedure tests
+- `/dev:dev-tdd` - Generate procedure tests
 - `/dev:dev-prisma` - Associated Prisma schema
 - `/qa:qa-security` - Security audit
 

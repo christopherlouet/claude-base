@@ -32,7 +32,7 @@ Pre-release checklist:
 ### 2. Create the release branch
 
 ```bash
-/ops:ops-gitflow-release start "v2.0.0"
+/ops:ops-gitflow release start "v2.0.0"
 ```
 
 ### 3. Version bump
@@ -78,7 +78,7 @@ Verify one last time:
 ### 6. Finalize the release
 
 ```bash
-/ops:ops-gitflow-release finish "v2.0.0"
+/ops:ops-gitflow release finish "v2.0.0"
 ```
 
 This:

@@ -13,7 +13,7 @@ Practical, ready-to-use examples to get started quickly with claude-base.
 | Example | Command | Description |
 |---------|---------|-------------|
 | [React Component](/docs/examples/web/react-component) | `/dev:dev-component` | Complete component with tests and stories |
-| [Custom Hook](/docs/examples/web/react-hook) | `/dev:dev-hook` | Custom hook with state management |
+| [Custom Hook](/docs/examples/web/react-hook) | `/dev:dev-component` | Custom hook with state management |
 | [Next.js API](/docs/examples/web/nextjs-api) | `/dev:dev-api` | API route with validation |
 
 ## Mobile (Flutter)
@@ -28,8 +28,8 @@ Practical, ready-to-use examples to get started quickly with claude-base.
 | Example | Command | Description |
 |---------|---------|-------------|
 | [REST Endpoint](/docs/examples/api/rest-endpoint) | `/dev:dev-api` | Complete CRUD endpoint |
-| [GraphQL Resolver](/docs/examples/api/graphql-resolver) | `/dev:dev-graphql` | Query and Mutation |
-| [tRPC Procedure](/docs/examples/api/trpc-procedure) | `/dev:dev-trpc` | Type-safe procedure |
+| [GraphQL Resolver](/docs/examples/api/graphql-resolver) | `/dev:dev-api` | Query and Mutation |
+| [tRPC Procedure](/docs/examples/api/trpc-procedure) | `/dev:dev-api` | Type-safe procedure |
 
 ## Ops (Docker/CI/Terraform/Proxmox/OPNsense)
 
@@ -47,7 +47,7 @@ Practical, ready-to-use examples to get started quickly with claude-base.
 
 1. **Copy** the code into your project
 2. **Adapt** the names and business logic
-3. **Generate the tests** with `/dev:dev-test`
+3. **Generate the tests** with `/dev:dev-tdd`
 4. **Commit** with `/work:work-commit`
 
 :::tip Generate similar code

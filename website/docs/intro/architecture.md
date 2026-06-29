@@ -20,10 +20,10 @@ graph TB
     end
 
     subgraph ".claude/"
-        CMDS[commands/<br/>131 commands]
-        AGENTS[agents/<br/>63 sub-agents]
-        SKILLS[skills/<br/>54 skills]
-        RULES[rules/<br/>30 rules]
+        CMDS[commands/<br/>106 commands]
+        AGENTS[agents/<br/>45 sub-agents]
+        SKILLS[skills/<br/>53 skills]
+        RULES[rules/<br/>32 rules]
         TPL[templates/<br/>Specs & Plans]
         SETTINGS[settings.json<br/>Hooks]
     end
@@ -48,7 +48,7 @@ graph TB
 ```
 claude-base/
 ├── .claude/
-│   ├── commands/       # 131 manual commands (/name)
+│   ├── commands/       # 106 manual commands (/name)
 │   │   ├── work/       # Main workflow
 │   │   ├── dev/        # Development
 │   │   ├── qa/         # Quality
@@ -58,9 +58,9 @@ claude-base/
 │   │   ├── growth/     # Growth
 │   │   ├── data/       # Data
 │   │   └── legal/      # Legal
-│   ├── agents/         # 63 autonomous sub-agents
-│   ├── skills/         # 54 auto-triggered skills
-│   ├── rules/          # 30 rules per technology
+│   ├── agents/         # 45 autonomous sub-agents
+│   ├── skills/         # 53 auto-triggered skills
+│   ├── rules/          # 32 rules per technology
 │   ├── templates/      # Spec/plan templates
 │   ├── output-styles/  # Output styles
 │   └── settings.json   # Configuration and hooks
