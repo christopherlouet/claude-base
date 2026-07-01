@@ -85,7 +85,9 @@ Useful for: CI/CD integration, setup scripts, notification hooks.
 
 ## Fable 5 (most capable tier)
 
-`claude-fable-5` is Anthropic's most capable widely released model — the tier **above** Opus 4.8 for the most demanding reasoning and long-horizon autonomous work. 1M context (default and max), 128K output, same tokenizer as Opus 4.8. Pricing is **~$10/$50 per MTok — 2× Opus 4.8** — so reach for it deliberately, not as a default.
+`claude-fable-5` is Anthropic's most capable model — the tier **above** Opus 4.8 for the most demanding reasoning and long-horizon autonomous work. 1M context (default and max), 128K output, same tokenizer as Opus 4.8. Pricing is **~$10/$50 per MTok — 2× Opus 4.8** — so reach for it deliberately, not as a default.
+
+> ⚠️ **Availability (June 2026):** Fable 5 / Mythos 5 access was **suspended under a US-government export-control directive** (2026-06-12, no access for foreign nationals); Anthropic disabled both for all customers and has restored access only partially (a restricted US-partner list). Treat `claude-fable-5` as **not generally available** — verify it is selectable before relying on it; **Opus 4.8 is the dependable top tier**. ([Anthropic statement](https://www.anthropic.com/news/fable-mythos-access))
 
 Behaviourally it differs from Opus 4.8: thinking is always on (the raw chain of thought is never returned) and individual turns on hard tasks can run several minutes — plan for streaming and async check-ins. Opus 4.8 remains the documented default; Fable 5 is the costlier escalation when a task genuinely exceeds it. For the API-level caveats when building with the SDK (no `thinking:{type:"disabled"}`, no assistant prefill, refusal classifiers, 30-day data retention), see the `dev-ai-integration` skill.
 
@@ -539,6 +541,30 @@ Enable in `.claude/settings.local.json` (not committed):
 | `feedbackSurveyRate` | Admin sample rate of the session quality survey (CLI 2.1.76+) |
 | `forceRemoteSettingsRefresh` | Blocks startup until remote managed settings are refreshed (policy) |
 | Theme `"Auto (match terminal)"` | Automatically follows the terminal's dark/light mode (CLI 2.1.111+) |
+| `attribution.sessionUrl` | Set `false` to omit the claude.ai session link from commits and PRs (web / Remote Control sessions) — the native toggle for the "no AI attribution in commits/PRs" convention (CLI 2.1.183, June 2026) |
+| `sandbox.credentials` | Blocks sandboxed commands from reading credential files and secret env vars — defense-in-depth for the secrets-management posture (CLI 2.1.187, June 2026) |
+| `respondToBashCommands` | Set `false` so `! <cmd>` shell-mode output is not auto-explained by the model (saves a prompt per `!` call) (CLI 2.1.186, June 2026) |
+
+### Permission parameter matching — `Tool(param:value)` (CLI 2.1.178, June 2026)
+
+`permissions.deny` / `permissions.ask` rules can now match a tool's **input parameters**, not just its name, with a `*` wildcard. This gives the foundation's security posture a finer lever than an all-or-nothing tool block:
+
+```json
+// .claude/settings.json
+{
+  "permissions": {
+    "ask": [
+      "Agent(model:opus)",        // confirm before spawning a costly Opus sub-agent
+      "Agent(isolation:remote)"   // confirm before a remote/cloud agent run
+    ],
+    "deny": [
+      "Agent(model:fable*)"        // block the (export-restricted) Fable tier outright
+    ]
+  }
+}
+```
+
+Use it to cap sub-agent cost (gate `model:opus`/`model:fable*`), to require confirmation before `isolation:worktree`/`remote` agents, or to scope any tool by a sensitive parameter. The foundation ships none of these by default (it stays cost-neutral) — they are opt-in hardening a project can add.
 
 ## LSP (Language Server Protocol)
 
