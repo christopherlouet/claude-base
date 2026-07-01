@@ -212,6 +212,25 @@ teardown() {
     [ ! -f "$TEST_DIR/.claude/commands/work/old-command.md" ]
 }
 
+@test "update.sh --clean preserves vendor skill symlinks (regression)" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Simulate an installed vendor skill: a symlink in skills/ pointing into
+    # a sibling vendor-skills/ tree (the shape `git clone` + link produces).
+    mkdir -p "$TEST_DIR/.claude/vendor-skills/acme/cool-skill"
+    echo "# vendor" > "$TEST_DIR/.claude/vendor-skills/acme/cool-skill/SKILL.md"
+    ln -s "../vendor-skills/acme/cool-skill" "$TEST_DIR/.claude/skills/cool-skill"
+    [ -L "$TEST_DIR/.claude/skills/cool-skill" ]
+
+    run "$UPDATE_SCRIPT" -y --clean "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # The vendor symlink must survive --clean and still resolve to its target.
+    [ -L "$TEST_DIR/.claude/skills/cool-skill" ]
+    [ -e "$TEST_DIR/.claude/skills/cool-skill/SKILL.md" ]
+}
+
 @test "update.sh --agents updates the agents" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
@@ -566,6 +585,25 @@ teardown() {
 
     [ "$hooks_before" = "$hooks_after" ]
     [ "$permissions_before" = "$permissions_after" ]
+}
+
+@test "update.sh --settings preserves user enabledPlugins (regression)" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+
+    # A user enabled a marketplace plugin via `claude plugin install`.
+    local tmp
+    tmp=$(mktemp)
+    jq '.enabledPlugins = {"frontend-design@claude-plugins-official": true}' \
+        "$TEST_DIR/.claude/settings.json" > "$tmp"
+    cp "$tmp" "$TEST_DIR/.claude/settings.json"
+    rm -f "$tmp"
+
+    # A forced settings overwrite must NOT silently disable the plugin.
+    run "$UPDATE_SCRIPT" -y --settings "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    [ "$(jq -r '.enabledPlugins["frontend-design@claude-plugins-official"]' \
+        "$TEST_DIR/.claude/settings.json")" = "true" ]
 }
 
 # =============================================================================
