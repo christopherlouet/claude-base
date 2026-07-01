@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **`update` no longer breaks vendor skills or disables plugins.** Two data-loss bugs in `update.sh` surfaced when updating a project that had installed recommended vendor skills: (1) `--clean` (implied by `--all`) did a bare `rm -rf` of `.claude/skills/`, deleting the vendor symlinks that wire in vendor-skills (leaving them present on disk but unreachable), and (2) a forced `settings.json` overwrite dropped the user's `enabledPlugins`, silently disabling every marketplace plugin (e.g. `frontend-design`). `--clean` now preserves symlinks (the foundation never ships any), and the settings overwrite merges the user's `enabledPlugins` back in.
+
 ## [5.1.0] - 2026-06-29
 
 ### Added

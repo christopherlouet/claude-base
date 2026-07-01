@@ -841,6 +841,43 @@ add_plugin() {
     info "Install the plugin if you have not already: claude plugin install $plugin_id"
 }
 
+# Copy the foundation settings.json over the project's while preserving the
+# user-owned keys the foundation does not manage. Currently that is
+# `enabledPlugins` (populated by `claude plugin install` / --add-plugin): a
+# wholesale overwrite would silently disable every marketplace plugin the user
+# had enabled. Safe when the project has no settings.json yet (nothing to
+# preserve) and when jq is absent (falls back to a plain copy + warning).
+copy_settings_preserving_user_keys() {
+    local src="$1"
+    local dest="$2"
+
+    # Snapshot user-owned keys from the existing project settings (if any),
+    # BEFORE the overwrite clobbers them.
+    local user_plugins=""
+    if [[ -f "$dest" ]] && command -v jq &>/dev/null; then
+        user_plugins=$(jq -c '.enabledPlugins // empty' "$dest" 2>/dev/null || true)
+    fi
+
+    copy_file "$src" "$dest"
+
+    # Re-apply the preserved plugins on top of the fresh foundation file
+    # (union; the user's entries win on conflict). copy_file already no-ops
+    # under --dry-run, so guard the merge the same way.
+    if ! $DRY_RUN && [[ -n "$user_plugins" && "$user_plugins" != "null" && "$user_plugins" != "{}" ]]; then
+        if command -v jq &>/dev/null; then
+            local tmp
+            tmp=$(safe_mktemp)
+            if jq --argjson up "$user_plugins" \
+                '.enabledPlugins = ((.enabledPlugins // {}) + $up)' "$dest" > "$tmp"; then
+                cp "$tmp" "$dest"
+            fi
+            rm -f "$tmp"
+        else
+            warning "jq not found — could not preserve enabledPlugins in settings.json"
+        fi
+    fi
+}
+
 update_settings() {
     section "Updating settings.json"
 
@@ -853,17 +890,17 @@ update_settings() {
     fi
 
     if $FORCE_UPDATE || ${NON_INTERACTIVE:-false}; then
-        copy_file "$src" "$dest"
+        copy_settings_preserving_user_keys "$src" "$dest"
         success "settings.json updated"
     elif [[ -f "$dest" ]]; then
         if confirm "Update .claude/settings.json? (recommended for this release - adds output rewriter)" "n"; then
-            copy_file "$src" "$dest"
+            copy_settings_preserving_user_keys "$src" "$dest"
             success "settings.json updated"
         else
             warning "settings.json skipped (declining may leave hook scripts unwired - rerun with --settings to enable)"
         fi
     else
-        copy_file "$src" "$dest"
+        copy_settings_preserving_user_keys "$src" "$dest"
         success "settings.json created"
     fi
 }

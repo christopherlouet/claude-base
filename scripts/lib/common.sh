@@ -784,14 +784,28 @@ clean_claude_dirs() {
     local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles" "templates")
 
     for subdir in "${dirs_to_clean[@]}"; do
-        if [[ -d "$dir/.claude/$subdir" ]]; then
-            if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} rm -rf $dir/.claude/$subdir"
-            else
-                rm -rf "$dir/.claude/$subdir"
+        local target="$dir/.claude/$subdir"
+        [[ -d "$target" ]] || continue
+
+        # Remove the foundation-owned entries but PRESERVE symlinks. Vendor
+        # skills (and any user-added wiring) are installed as symlinks into a
+        # sibling vendor-skills/ tree; the foundation never ships symlinks, so
+        # keeping them is always safe and stops --clean from silently breaking
+        # the vendor skill wiring (which a bare `rm -rf` would delete).
+        local entry
+        for entry in "$target"/* "$target"/.[!.]*; do
+            [[ -e "$entry" || -L "$entry" ]] || continue
+            if [[ -L "$entry" ]]; then
+                debug "Preserved symlink: $entry"
+                continue
             fi
-            debug "Removed: .claude/$subdir"
-        fi
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} rm -rf $entry"
+            else
+                rm -rf "$entry"
+            fi
+        done
+        debug "Cleaned: .claude/$subdir (symlinks preserved)"
     done
 
     success "Old files cleaned up"
