@@ -12,8 +12,9 @@ claude-base init --simple /path/to/your-project
 claude-base init --simple .
 ```
 
-A default install is **core-only** (work, dev, qa, ops, doc, data). The horizontal
-domains (biz, growth, legal) and platform/stack tooling are **opt-in modules**:
+A default install is **core-only** (work, dev, qa, ops, doc). The horizontal
+domains (biz, growth, legal), data engineering (the `data` domain, via the
+`data-eng` module) and platform/stack tooling are **opt-in modules**:
 
 ```bash
 claude-base modules            # list available modules + what's installed

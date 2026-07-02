@@ -126,6 +126,16 @@ teardown() {
     [[ "$output" != *"README.md: Version badge — pattern not found"* ]]
 }
 
+@test "bump-version.sh dry-run finds the README release-pin examples (no drift warning)" {
+    run "$BUMP_VERSION" 99.99.99 --dry-run
+    [[ "$status" -eq 0 ]]
+    # The self-heal for the ```bash --ref / TAG= pin snippets must keep matching
+    # the CURRENT_VERSION, else the reproducible-install examples silently rot at
+    # every release (they live inside code fences the version markers can't reach).
+    [[ "$output" != *"install --ref pin — pattern not found"* ]]
+    [[ "$output" != *"SHA256SUMS TAG pin — pattern not found"* ]]
+}
+
 @test "bump-version.sh dry-run reports a non-zero change count" {
     run "$BUMP_VERSION" 99.99.99 --dry-run
     [[ "$status" -eq 0 ]]

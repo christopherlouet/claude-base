@@ -141,6 +141,17 @@ else
 fi
 CHANGES=$((CHANGES + 1))
 
+# 1b. README "pin to a release" examples — the reproducible-install snippets
+# live inside ```bash fences, so the `<!-- version -->` marker mechanism can't
+# reach them (it would render literally in the code block). Self-heal them here
+# instead so they always point at the just-released tag; bump_file surfaces a
+# drift warning if a snippet was hand-edited and no longer matches.
+info "1b/2 README release-pin examples"
+# NB: lead the pattern with surrounding text — a pattern starting with `--` would
+# be parsed by grep as an option and silently never match.
+bump_file "$BASE_DIR/README.md" "bash -s -- --ref v$CURRENT_VERSION" "bash -s -- --ref v$NEW_VERSION" "install --ref pin"
+bump_file "$BASE_DIR/README.md" "TAG=v$CURRENT_VERSION" "TAG=v$NEW_VERSION" "SHA256SUMS TAG pin"
+
 # 2. Markdown version markers — handled by `npm --prefix website run generate`
 # Files with `<!-- version -->X.Y.Z<!-- /version -->` markers (README badge,
 # CHEATSHEET footer, quick-start, installation, learning-path, …) are kept in
