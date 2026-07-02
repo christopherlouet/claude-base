@@ -24,10 +24,12 @@ _(Fable 5 sits one tier above Opus 4.8 for the hardest long-horizon work — see
 |----------|--------|---------------|
 | Most demanding / long-horizon autonomous work | **Fable 5** (`claude-fable-5`) | Anthropic's most capable model — deepest reasoning, long-horizon agentic runs. Reach for it **deliberately**: ~$10/$50 per MTok (2× Opus 4.8) |
 | Complex tasks (default) | **Opus 4.8** | Most advanced reasoning, adaptive thinking, 1M context, `xhigh` effort |
-| Audits and analyses | **Sonnet** | Good speed/quality balance |
+| Audits, analyses, high-volume agentic work | **Sonnet** (Sonnet 5) | Near-Opus 4.8 quality at a fraction of the cost — 1M context, `$2/$10` per MTok intro through 2026-08-31 (then `$3/$15`) vs Opus `$5/$25`. Claude Code's **default model** since 2026-06-30 |
 | Simple tasks | **Haiku** | Fast for trivial operations |
 
 > **Fable 5 vs Opus 4.8:** Opus 4.8 stays the default for complex work. Fable 5 (1M context by default, 128K output, same tokenizer as Opus 4.8) is a **costlier escalation** — 2× Opus per token — for the hardest long-horizon tasks, not a drop-in replacement.
+
+> **Sonnet 5 (since 2026-06-30):** Claude Code's own default is now Sonnet 5 — the most agentic Sonnet yet, ~Opus 4.8-level on many tasks at roughly a third of the cost, with a native 1M context. The `sonnet` alias absorbs it automatically (no agent-frontmatter change). This foundation still **recommends escalating to Opus 4.8 for complex/critical work** (TDD, Audit, architecture) where the quality delta pays off, and reserving Sonnet 5 for audits, analyses, and high-volume agentic passes where its price/perf shines.
 
 > ✅ **Availability (July 2026):** Fable 5 is **generally available again**. It was briefly export-control-suspended on 2026-06-12 (no access for foreign nationals); the directive was **lifted on 2026-06-30** and Fable 5 returned to **global availability on 2026-07-01** across Claude Platform, Claude.ai, Claude Code and Claude Cowork. (Mythos 5 remains restricted to a subset of US organizations.) Opus 4.8 stays the default not for availability reasons but because Fable 5 is a **costlier, deliberate escalation** (2× Opus). ([Anthropic statement](https://www.anthropic.com/news/claude-fable-5-mythos-5))
 
