@@ -111,6 +111,12 @@ Adaptive Thinking: Claude automatically adjusts the depth of its reasoning based
 
 `xhigh` unlocks Opus 4.8's maximum reasoning (introduced as a tier in v2.1.111). Auto mode available for Max subscribers (intelligent automatic permissions). Fast mode runs on Opus 4.8 (also available on 4.7/4.6).
 
+## Sonnet 5 (default tier, since 2026-06-30)
+
+`claude-sonnet-5` is Anthropic's most agentic Sonnet yet — released 2026-06-30 and now **Claude Code's default model**. It delivers **near-Opus 4.8 quality on many agentic tasks at roughly a third of the cost**, with a **native 1M-token context**. Pricing is **`$2/$10` per MTok introductory through 2026-08-31**, then **`$3/$15`** (vs Opus 4.8 at `$5/$25`).
+
+The `sonnet` tier alias resolves to Sonnet 5 automatically, so agent `model: sonnet` frontmatter picks it up with **no change needed**. This foundation keeps **Opus 4.8 as the recommended default for complex/critical work** (TDD, Audit, architecture) — see [best-practices.md](/docs/reference/best-practices) — and uses Sonnet 5 where its price/perf wins: audits, analyses, and high-volume agentic passes.
+
 ## Checkpoint / Rewind
 
 Claude Code automatically saves the state of the code before each modification (checkpoint). To return to a previous state:
