@@ -55,6 +55,50 @@ run_validator() {
     [ "$status" -eq 2 ]
 }
 
+# --- sudo across argument orderings (a leading-only match is bypassable) -----
+
+@test "command-validator: blocks sudo chained after && " {
+    run_validator "x=1 && sudo apt install evil"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks sudo with an env-var prefix" {
+    run_validator "FOO=bar sudo systemctl poweroff"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: does NOT block the word sudo inside a string" {
+    run_validator 'echo "use sudo carefully in production"'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: does NOT block a legit env-var-prefixed command" {
+    run_validator "NODE_ENV=production npm run build"
+    [ "$status" -eq 0 ]
+}
+
+# --- protected-path deletion: bare system-tree roots (/usr /var /opt) --------
+
+@test "command-validator: blocks rm -rf of the bare /usr tree" {
+    run_validator "rm -rf /usr"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks rm -rf of the bare /var tree" {
+    run_validator "rm -rf /var"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks rm -rf of the bare /opt tree" {
+    run_validator "rm -rf /opt"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: does NOT block rm of a legit /var subdirectory" {
+    run_validator "rm -rf /var/www/html/old-build"
+    [ "$status" -eq 0 ]
+}
+
 # --- Allowing: safe commands and non-Bash tools must exit 0 -----------------
 
 @test "command-validator: allows a safe command (exit 0)" {
