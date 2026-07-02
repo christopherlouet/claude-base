@@ -1,4 +1,4 @@
-# MIGRATE Agent
+# Migrate
 
 Migration of code, dependencies or data.
 

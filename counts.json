@@ -1,10 +1,10 @@
 {
   "commands": 106,
-  "agents": 45,
+  "agents": 44,
   "skills": 53,
   "core": {
     "commands": 59,
-    "agents": 27,
+    "agents": 26,
     "skills": 39
   },
   "rules": 32,
