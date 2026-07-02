@@ -375,8 +375,8 @@ claude-base update --detect-only .      Read-only: does the project still match 
 claude-base validate .                  Check the install
 ```
 
-Default install is **core-only** (work, dev, qa, ops, doc, data). Horizontal domains and
-platform/stack tooling are opt-in modules.
+Default install is **core-only** (work, dev, qa, ops, doc). Horizontal domains, the
+`data` domain (`data-eng` module) and platform/stack tooling are opt-in modules.
 
 ## Common Scenarios
 
