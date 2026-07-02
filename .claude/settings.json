@@ -141,7 +141,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if [ \"$SKIP_PRE_COMMIT_TESTS\" = \"1\" ]; then exit 0; fi; command -v jq >/dev/null 2>&1 || exit 0; TOOL_INPUT=$(cat | jq -r \".tool_input.command // empty\" 2>/dev/null); if ! echo \"$TOOL_INPUT\" | grep -q \"git commit\"; then exit 0; fi; HUSKY_BROKEN=0; if [ -f package.json ] && grep -q \"husky\" package.json; then if [ ! -d node_modules/husky ] && [ ! -d .husky/_]; then HUSKY_BROKEN=1; echo \"[WARN] Husky configured but not installed. Installing...\"; npm install --silent 2>/dev/null; npx husky install 2>/dev/null || true; if [ ! -d node_modules/husky ]; then echo \"[WARN] Husky cannot be installed. Tests run manually.\"; fi; fi; fi; if [ -f package.json ] && grep -q \"\\\"test\\\"\" package.json; then echo \"Running tests before commit...\"; npm test 2>&1 | tail -20; if [ ${PIPESTATUS[0]} -ne 0 ]; then echo \"BLOCKED: Tests failed. Fix before committing.\"; exit 2; fi; elif [ -f pyproject.toml ] && command -v pytest >/dev/null 2>&1; then echo \"Running tests before commit...\"; pytest --tb=short -q 2>&1 | tail -20; if [ ${PIPESTATUS[0]} -ne 0 ]; then echo \"BLOCKED: Tests failed. Fix before committing.\"; exit 2; fi; elif [ -f go.mod ] && command -v go >/dev/null 2>&1; then echo \"Running tests before commit...\"; go test ./... 2>&1 | tail -20; if [ ${PIPESTATUS[0]} -ne 0 ]; then echo \"BLOCKED: Tests failed. Fix before committing.\"; exit 2; fi; fi'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/pre-commit-tests.sh\"",
             "timeout": 120000,
             "onFailure": "block"
           }
