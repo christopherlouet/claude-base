@@ -241,7 +241,7 @@ The lead will:
 
 The `claude agents` subcommand for dispatched background sessions gained per-session configuration flags: `--add-dir`, `--settings`, `--mcp-config`, `--plugin-dir`, `--permission-mode`, `--model`, `--effort`, `--dangerously-skip-permissions`. Useful when a teammate needs a different model than the lead (e.g. dispatch a Haiku worker for grep-heavy tasks while the lead stays on Opus), a tighter permission mode, or an alternate `.mcp-config`. Fast mode runs on **Opus 4.8** (also available on 4.7/4.6).
 
-For the foundation's own heaviest dispatched sessions (large multi-PR migrations, deep audits), `--model claude-fable-5` selects Anthropic's most capable model — a deliberate, costlier choice (~2× Opus 4.8). This is a per-session selection only: agent `model:` frontmatter is unchanged and there is no `fable` tier alias. **Availability (June 2026):** Fable 5 was export-control-suspended (2026-06-12) and only partially restored — verify it is selectable; otherwise Opus 4.8 is the dependable top tier.
+For the foundation's own heaviest dispatched sessions (large multi-PR migrations, deep audits), `--model claude-fable-5` selects Anthropic's most capable model — a deliberate, costlier choice (~2× Opus 4.8). This is a per-session selection only: agent `model:` frontmatter is unchanged and there is no `fable` tier alias. **Availability (July 2026):** Fable 5 is generally available again — the June export-control suspension was lifted 2026-06-30 and Fable 5 returned to global availability (incl. Claude Code) on 2026-07-01.
 
 ### Agent View (research preview)
 

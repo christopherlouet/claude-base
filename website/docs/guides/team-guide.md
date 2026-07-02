@@ -310,7 +310,7 @@ paths:
 | PR reviews in CI | Haiku | Low cost, high volume |
 | Cloud review (large PRs) | `/ultrareview` | Parallel agents in cloud |
 
-> **Running the foundation's own heavy sessions on Fable 5:** for large multi-PR migrations or deep audits of claude-base itself, dispatch the session on the strongest model with `--model claude-fable-5` (or pick it via `/model`). This is a deliberate, costlier choice (~2× Opus 4.8). Agent `model:` frontmatter is **not** changed — there is no `fable` tier alias; Fable 5 is selected per-session, not pinned to an agent. ⚠️ **Availability (June 2026):** `claude-fable-5` was export-control-suspended (2026-06-12) and is only partially restored — verify it is selectable before relying on it; otherwise stay on Opus 4.8 ([details](https://www.anthropic.com/news/fable-mythos-access)).
+> **Running the foundation's own heavy sessions on Fable 5:** for large multi-PR migrations or deep audits of claude-base itself, dispatch the session on the strongest model with `--model claude-fable-5` (or pick it via `/model`). This is a deliberate, costlier choice (~2× Opus 4.8). Agent `model:` frontmatter is **not** changed — there is no `fable` tier alias; Fable 5 is selected per-session, not pinned to an agent. ✅ **Availability (July 2026):** `claude-fable-5` is **generally available again** — the June export-control suspension was lifted 2026-06-30 and Fable 5 returned to global availability (incl. Claude Code) on 2026-07-01 ([details](https://www.anthropic.com/news/claude-fable-5-mythos-5)).
 
 ---
 
