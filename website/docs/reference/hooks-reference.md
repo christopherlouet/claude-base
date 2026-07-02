@@ -84,7 +84,7 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 |------|-------------|--------|
 | **Session info** | SessionStart (startup) | Displays project information at startup |
 | **Check node_modules** | SessionStart (startup) | Checks that node_modules exists if package.json is present |
-| **Main protection** | PreToolUse (Edit/Write) | Blocks modifications on main/master |
+| **Main protection** | PreToolUse (Edit/Write) | Keeps edits off main/master by auto-creating a `feature/auto-<timestamp>` branch first; **blocks the edit** (exit 2) if the branch can't be created, instead of letting it land on main. Disable with `ALLOW_MAIN_EDIT=1` (`scripts/hooks/main-branch-guard.sh`) |
 | **Secrets detection** | PreToolUse (Write/Edit/MultiEdit) | Built-in zero-dependency scan blocks hardcoded provider secrets (AWS/Stripe/GitHub/Slack/Google/PEM) before writing; also runs gitleaks if installed. Placeholders ignored. Disable with `SKIP_SECRET_SCAN=1` (`scripts/hooks/secret-scan.sh`) |
 | **Destructive migration** | PreToolUse (Write/Edit/MultiEdit) | Confirm+backup reminder before destructive DDL (DROP/TRUNCATE) in a migration file — closes the gap the Bash-only destructive guard misses. Disable with `SKIP_DESTRUCTIVE_CHECK=1` (`scripts/hooks/destructive-migration.sh`) |
 | **Pre-commit tests** | PreToolUse (Bash git commit) | Runs tests before a commit. Detects and repairs Husky if needed |
