@@ -12,11 +12,11 @@ Most Claude Code setups add more agents. claude-base adds **discipline and safet
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
 <<<<<<< HEAD
-[![Tests](https://img.shields.io/badge/tests-1470%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1485%20passing-brightgreen)](./tests)
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-[![Tests](https://img.shields.io/badge/tests-1470%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1485%20passing-brightgreen)](./tests)
 =======
-[![Tests](https://img.shields.io/badge/tests-1470%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1485%20passing-brightgreen)](./tests)
 >>>>>>> 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
@@ -237,11 +237,11 @@ After `curl | bash` install, the foundation lives at `~/.local/share/claude-base
 | `website/` | [Docusaurus site](https://christopherlouet.github.io/claude-base/) — `docs/` is auto-mirrored here by `npm --prefix website run generate` |
 | `specs/` | Feature specs consumed by the workflow agents (`/work:work-specify`, `/work:work-plan`) |
 <<<<<<< HEAD
-| `tests/` | <!-- count:tests -->1470<!-- /count --> bats tests across <!-- count:testFiles -->63<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1485<!-- /count --> bats tests across <!-- count:testFiles -->64<!-- /count --> files |
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-| `tests/` | <!-- count:tests -->1470<!-- /count --> bats tests across <!-- count:testFiles -->63<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1485<!-- /count --> bats tests across <!-- count:testFiles -->64<!-- /count --> files |
 =======
-| `tests/` | <!-- count:tests -->1470<!-- /count --> bats tests across <!-- count:testFiles -->63<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1485<!-- /count --> bats tests across <!-- count:testFiles -->64<!-- /count --> files |
 >>>>>>> 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 | `.github/workflows/` | CI : `ci.yml`, `security.yml`, `docs.yml`, `pr-check.yml`, `release.yml`, `dependabot-auto-merge.yml` |
 | `AGENTS.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `counts.json` | Project metadata |
@@ -456,11 +456,11 @@ The foundation ships with [bats-core](https://github.com/bats-core/bats-core) te
 ### Test layout
 
 <<<<<<< HEAD
-<!-- count:tests -->1470<!-- /count --> bats tests across <!-- count:testFiles -->63<!-- /count --> files. A few anchors :
+<!-- count:tests -->1485<!-- /count --> bats tests across <!-- count:testFiles -->64<!-- /count --> files. A few anchors :
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-<!-- count:tests -->1470<!-- /count --> bats tests across <!-- count:testFiles -->63<!-- /count --> files. A few anchors :
+<!-- count:tests -->1485<!-- /count --> bats tests across <!-- count:testFiles -->64<!-- /count --> files. A few anchors :
 =======
-<!-- count:tests -->1470<!-- /count --> bats tests across <!-- count:testFiles -->63<!-- /count --> files. A few anchors :
+<!-- count:tests -->1485<!-- /count --> bats tests across <!-- count:testFiles -->64<!-- /count --> files. A few anchors :
 >>>>>>> 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 
 | Area | File | Tests |
@@ -506,11 +506,11 @@ The foundation follows [Semantic Versioning](https://semver.org/). Each release 
 Concrete signals rather than a self-assessment score :
 
 <<<<<<< HEAD
-- <!-- count:tests -->1470<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1485<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-- <!-- count:tests -->1470<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1485<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 =======
-- <!-- count:tests -->1470<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1485<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 >>>>>>> 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 - Six GitHub Actions workflows (CI, security, docs, PR check, release, dependabot auto-merge) gating merges
 - Doc drift firewall (`scripts/audit-docs.sh`) catches syntactic doc drift before merge — see [PR #201](https://github.com/christopherlouet/claude-base/pull/201)

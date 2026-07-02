@@ -165,7 +165,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if [ \"$SKIP_DESTRUCTIVE_CHECK\" = \"1\" ]; then exit 0; fi; command -v jq >/dev/null 2>&1 || exit 0; TOOL_INPUT=$(cat | jq -r \".tool_input.command // empty\" 2>/dev/null); CMD=$(echo \"$TOOL_INPUT\" | tr \"[:upper:]\" \"[:lower:]\"); if echo \"$CMD\" | grep -qE \"(drop table|drop database|truncate |delete from .* where 1|delete from .* without|rm -rf .*/uploads|rm -rf .*/media|rm -rf .*/storage|prisma migrate reset|prisma db push --force|--force-reset)\"; then echo \"BLOCKED: Destructive operation detected.\"; echo \"Command: $(echo \"$TOOL_INPUT\" | head -c 200)\"; echo \"Ask the user for confirmation before proceeding.\"; exit 2; fi'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/destructive-ops.sh\"",
             "timeout": 5000,
             "onFailure": "block"
           }
