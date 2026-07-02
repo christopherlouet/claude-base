@@ -14,7 +14,7 @@ Find here the answers to the most common questions about claude-base.
 
 **claude-base** is a configuration template for Claude Code that provides:
 - **<!-- count:commands -->106<!-- /count --> commands** organized by domain (WORK, DEV, QA, OPS, etc.)
-- **<!-- count:agents -->45<!-- /count --> agents** specialized with isolated context
+- **<!-- count:agents -->44<!-- /count --> agents** specialized with isolated context
 - **<!-- count:skills -->53<!-- /count --> skills** with automatic triggering
 - **<!-- count:rules -->32<!-- /count --> rules** contextual per language
 - A structured workflow: **Explore → Specify → Plan → TDD → Audit → Commit**
@@ -25,7 +25,7 @@ Find here the answers to the most common questions about claude-base.
 |--------|---------------------|--------------|
 | Commands | Basic commands | <!-- count:commands -->106<!-- /count --> specialized commands |
 | Workflow | Free | Structured (Explore → Plan → TDD) |
-| Agents | No | <!-- count:agents -->45<!-- /count --> agents with isolated context |
+| Agents | No | <!-- count:agents -->44<!-- /count --> agents with isolated context |
 | Skills | No | <!-- count:skills -->53<!-- /count --> automatic skills |
 | Rules | Manual | <!-- count:rules -->32<!-- /count --> rules per language |
 | Templates | No | Spec, Plan, Tasks |

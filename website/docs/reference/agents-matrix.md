@@ -6,7 +6,7 @@ description: Breakdown of all claude-base agents by model
 
 # Agents Matrix
 
-> **<!-- count:agents -->45<!-- /count --> sub-agents** grouped by model
+> **<!-- count:agents -->44<!-- /count --> sub-agents** grouped by model
 >
 > For the exhaustive list with per-agent tools and full descriptions, see the [Agents catalog](/docs/reference/agents-catalog) (auto-generated from `.claude/agents/`).
 

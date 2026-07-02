@@ -1,4 +1,4 @@
-# Available Agents (<!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->45<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->44<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
@@ -144,7 +144,7 @@
 | `/legal:legal-terms-of-service` | Terms of Service |
 | `/legal:legal-privacy-policy` | Privacy Policy |
 
-## Sub-Agents (<!-- count:agents -->45<!-- /count -->)
+## Sub-Agents (<!-- count:agents -->44<!-- /count -->)
 
 Claude automatically delegates to specialized agents (isolated context, restricted tools).
 
@@ -162,7 +162,7 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 |--------|--------|--------|
 | Workflow & Doc | `work-explore`, `work-quick`, `work-batch`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku/sonnet |
 | Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-e2e`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
-| Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-migration`, `ops-cost` | haiku/sonnet |
+| Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-cost` | haiku/sonnet |
 | Development | `dev-debug`, `dev-flutter`, `dev-document`, `dev-tdd` | haiku/sonnet (tdd, debug) |
 | Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-localization`, `growth-cro` | haiku |
 | Data | `data-pipeline` | haiku/sonnet |

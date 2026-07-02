@@ -227,8 +227,8 @@ load 'test_helper'
 @test "smoke: agent count matches CLAUDE.md" {
     local actual_count
     actual_count=$(find "$BASE_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-    # Must be within the expected range (50-60)
-    [ "$actual_count" -ge 45 ]
+    # Loose sanity range (the catalog trends DOWN as agents graduate/consolidate)
+    [ "$actual_count" -ge 40 ]
     [ "$actual_count" -le 70 ]
 }
 
