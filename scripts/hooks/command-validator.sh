@@ -66,7 +66,12 @@ if echo "$CMD_LOWER" | grep -qE '>\s*/dev/(sd|nvme|vd|hd|xvd)'; then
 fi
 
 # === CATEGORY 4: Privilege escalation ===
-if echo "$CMD_LOWER" | grep -qE '^sudo\s|;\s*sudo\s|\|\s*sudo\s'; then
+# Match `sudo` in COMMAND position: at the start, after a separator (; & |, so
+# && and || are covered too), optionally preceded by env-var assignments
+# (FOO=bar sudo …). A leading-only anchor was trivially bypassable via
+# `x=1 && sudo …` or an env-var prefix. The env-assignment / separator lead-in
+# keeps the word `sudo` inside a string or message from matching.
+if echo "$CMD_LOWER" | grep -qE '(^|[;&|])\s*([a-z_][a-z0-9_]*=[^[:space:]]*\s+)*sudo\s'; then
   echo >&2 "BLOCKED: Privilege escalation (sudo). Operate without root privileges."
   exit 2
 fi
@@ -95,8 +100,17 @@ if echo "$CMD_LOWER" | grep -qE 'kill\s+-9\s+(1|init|systemd)'; then
 fi
 
 # === CATEGORY 7: Protected system paths ===
+# Any-depth deletion inside a purely-system tree (no legit subdir to delete).
 if echo "$CMD_LOWER" | grep -qE 'rm\s+(-[rfRI]+\s+)*/(etc|boot|sys|proc|usr/lib|lib|sbin)\b'; then
   echo >&2 "BLOCKED: Deletion in a protected system directory."
+  exit 2
+fi
+# Whole-tree wipe of a system root that DOES hold legit subdirs (/usr /var /opt):
+# block only the bare root (`rm -rf /var`, optional trailing slash) — a real
+# subpath like /var/www/html stays allowed. Closes the gap where `rm -rf /usr`
+# slipped through while `/usr/lib` was blocked.
+if echo "$CMD_LOWER" | grep -qE 'rm\s+(-{1,2}[a-z]+\s+)*/(usr|var|opt)/?(\s|$)'; then
+  echo >&2 "BLOCKED: Deletion of a system tree root (/usr, /var or /opt)."
   exit 2
 fi
 if echo "$CMD_LOWER" | grep -qE '(chmod|chown)\s.*/(etc|boot|sys|proc|usr)\b'; then
