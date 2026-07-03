@@ -62,6 +62,7 @@ scripts/hooks/destructive-ops.sh
 scripts/hooks/main-branch-guard.sh
 scripts/hooks/post-edit-typecheck-and-lint.sh
 scripts/hooks/pre-commit-tests.sh
+scripts/hooks/pre-deploy-build.sh
 scripts/hooks/prompt-context.sh
 scripts/hooks/secret-scan.sh
 scripts/hooks/setup-deps.sh
