@@ -207,4 +207,6 @@ See the `agent-teams` skill for full documentation.
 
 ## Dispatched sessions (CLI 2.1.142+)
 
-For workloads that outgrow in-process Task sub-agents, the `claude agents` CLI dispatches background sessions with their own configuration. Flags `--add-dir`, `--settings`, `--mcp-config`, `--plugin-dir`, `--permission-mode`, `--model`, `--effort` let each dispatched session run with a tailored model/effort/permission profile. Pair with the `agent-teams` skill for coordinated multi-process work, and use Agent View (research preview) to monitor running sessions.
+For workloads that outgrow in-process Task sub-agents, the `claude agents` CLI dispatches background sessions with their own configuration. Flags `--add-dir`, `--settings`, `--mcp-config`, `--plugin-dir`, `--permission-mode`, `--model`, `--effort` let each dispatched session run with a tailored model/effort/permission profile. Pair with the `agent-teams` skill for coordinated multi-process work, and use Agent View to monitor running sessions.
+
+Since CLI 2.1.198 (July 2026), in-process Task sub-agents also **run in the background by default** — the lead keeps working while they run and is notified when each finishes, so a fan-out no longer blocks the main turn. Dispatched sessions that finish code work in a worktree now **commit, push, and open a draft PR** on their own, and fire the `Notification` hook (`agent_needs_input` / `agent_completed`) instead of stopping to ask — design the merge step around reviewing those drafts.

@@ -243,9 +243,17 @@ The `claude agents` subcommand for dispatched background sessions gained per-ses
 
 For the foundation's own heaviest dispatched sessions (large multi-PR migrations, deep audits), `--model claude-fable-5` selects Anthropic's most capable model — a deliberate, costlier choice (~2× Opus 4.8). This is a per-session selection only: agent `model:` frontmatter is unchanged and there is no `fable` tier alias. **Availability (July 2026):** Fable 5 is generally available again — the June export-control suspension was lifted 2026-06-30 and Fable 5 returned to global availability (incl. Claude Code) on 2026-07-01.
 
-### Agent View (research preview)
+### Background agents (CLI 2.1.198+, July 2026)
 
-Anthropic ships an **Agent View** (research preview, May 2026): a unified terminal dashboard that lists every running session, their current state, last responses, and a key to jump back into any of them. Complementary to the in-process Team Lead model — Agent View covers cross-process sessions that the Team Lead can't see. See the [official preview note](https://code.claude.com/docs/en/whats-new) for activation.
+Anthropic hardened dispatched background sessions:
+
+- **Draft-PR handoff.** A background agent launched from `claude agents` that finishes code work in a worktree now **commits, pushes, and opens a draft PR** on its own instead of stopping to ask. Plan for a review-the-draft step rather than a blocking hand-back.
+- **Notification hooks.** Sessions that need input or complete fire the `Notification` hook with `agent_needs_input` / `agent_completed` — wire these to drive the lead (or the human) instead of polling the roster.
+- **`/agents` wizard removed.** Create or manage sub-agents by editing `.claude/agents/` directly (the foundation's own agents live there) or by asking Claude — there is no interactive wizard anymore.
+
+### Agent View
+
+Anthropic ships an **Agent View**: a unified terminal dashboard that lists every running session, their current state, last responses, and a key to jump back into any of them. Complementary to the in-process Team Lead model — Agent View covers cross-process sessions that the Team Lead can't see. From CLI 2.1.196 it opens with a single `←` press and reflects the notification/draft-PR states above. See the [official note](https://code.claude.com/docs/en/whats-new) for activation.
 
 ## See also
 

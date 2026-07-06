@@ -2,7 +2,7 @@
 name: doc-explain
 description: Explanation of complex code. Use to understand and document code that is hard to grasp.
 tools: Read, Grep, Glob
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: ["Edit", "Write", "Bash"]
 ---
