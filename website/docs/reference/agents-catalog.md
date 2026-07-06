@@ -182,4 +182,4 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 
 Each agent defines: `model` (haiku/sonnet/opus), `permissionMode` (plan/default), `disallowedTools`, `hooks`, `skills`.
 
-**Model distribution**: 13 haiku (trivial operations) / 27 sonnet (default) / 5 opus (critical reasoning: `qa-security`, `qa-audit`, `qa-loop`, `dev-tdd`, `dev-debug`).
+**Model distribution**: 10 haiku (trivial operations) / 29 sonnet (default) / 5 opus (critical reasoning: `qa-security`, `qa-audit`, `qa-loop`, `dev-tdd`, `dev-debug`). Read-only comprehension agents (`work-explore`, `doc-onboard`, `doc-explain`) run on sonnet — matching Anthropic's June 2026 change bumping the built-in Explore agent off haiku for exploration quality.

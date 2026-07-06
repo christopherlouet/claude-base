@@ -2,7 +2,7 @@
 name: doc-onboard
 description: Discovery and understanding of a codebase. Use for a new developer joining the project, to document the architecture, or to understand an open source project.
 tools: Read, Grep, Glob
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: Edit, Write, Bash, NotebookEdit
 skills:

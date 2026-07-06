@@ -2,7 +2,7 @@
 name: work-explore
 description: Explore and analyze a codebase in read-only mode. Use to understand the code before modifying it, identify patterns and conventions, or map an architecture.
 tools: Read, Grep, Glob
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: Edit, Write, Bash, NotebookEdit
 skills:
