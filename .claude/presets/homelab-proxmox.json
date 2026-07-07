@@ -72,20 +72,20 @@
       "url": "https://github.com/pulumi/agent-skills",
       "rationale": "Pulumi authoring + migration workflows (Terraform→Pulumi)",
       "condition": "if using Pulumi instead of Terraform",
-      "pinnedRef": "478096e94bee50903fba4b0869d1c617956ae3a4",
+      "pinnedRef": "592e4da33a779ad780788c5a22f91f0d5bcb401c",
       "trustTrack": "authority",
       "provenance": "Pulumi",
-      "lastVerified": "2026-06-23"
+      "lastVerified": "2026-07-07"
     },
     {
       "id": "grafana/skills",
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack for monitoring and observability",
       "condition": "if using Grafana / Prometheus stack",
-      "pinnedRef": "e8424d242290be2ae187a74b5fd854174f0c5411",
+      "pinnedRef": "b58376284141433f0676ae47ad651955802a922b",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-06-23"
+      "lastVerified": "2026-07-07"
     }
   ],
   "defaults": {
