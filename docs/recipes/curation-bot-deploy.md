@@ -39,7 +39,7 @@ State (the `collapseStreak` / reference popularity needed for the sustained-coll
 - An authenticated `gh`. Use a **fine-grained token** scoped to this one repo with the minimum permissions:
   - **Contents: read** — required (the watch reads the registry/presets and the GitHub API).
   - **Issues: read & write** — only if you use `--emit-issue`.
-  - **Pull requests: read & write** + **Contents: write** — only if you use `--emit-pr` (it pushes a branch and opens a draft PR).
+  - **Pull requests: read & write** + **Contents: write** — required for the **recommended** `--emit-pr` auto-heal (it pushes a branch and opens a draft PR). Omit these scopes only if you deliberately run observe-only.
 
 Store the token as an environment variable for `gh` (never commit it):
 
@@ -75,11 +75,12 @@ git -C "$REPO" reset --hard --quiet origin/main
 "$REPO/scripts/curation-watch.sh" \
     --state-file "$STATE" \
     --digest-dir "$DIGEST" \
-    --emit-issue
-    # add --emit-pr to also auto-draft low-risk re-pins (needs Contents+PR write)
+    --emit-issue \
+    --emit-pr
 ```
 
 Notes:
+- **`--emit-pr` is the recommended auto-heal** (needs Contents + PR write). For every low-risk `re-pin` (a `verdict=pass` version bump) it advances the baseline `pinnedRef` in `registry.json` **and every matching preset in lockstep**, behind the pin-time safety screen, then opens a **draft** PR a human still reviews and merges. It **installs nothing** and stays `$0`/LLM-free. Without it the bot is observe-only and every benign version bump must be re-pinned by hand — recurring toil that also tends to leave `registry.json` and the preset copies diverged (the phantom-duplicate-drift failure the `validate-presets.sh` lockstep guard now blocks). Drop the flag only if you consciously want observe-only.
 - The nightly `git reset --hard origin/main` discards the watch's in-place `lastVerified` writes to `registry.json` — that is intentional and harmless (freshness bookkeeping; the digest is the durable output). The sustained-collapse **state** is preserved because it lives in `--state-file`, outside the checkout.
 - `curation-watch.sh` exits `0` on a completed run (with or without findings) and `2` only on a usage/setup error, so the timer's `OnFailure` only fires on real breakage.
 - `--emit-pr` is **draft by default**; pass `--no-draft` only if you want a ready PR.
