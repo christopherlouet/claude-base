@@ -252,10 +252,24 @@ emit_repin_pr() {
     done < <(printf '%s' "$safe" | jq -c '.[]')
 
     git add -A >/dev/null 2>&1
-    if ! git commit -m "chore(curation): re-pin ${n_safe} drifted vendor skill(s) to latest verified ref" >/dev/null 2>&1; then
-        curation_warn "nothing to commit for re-pin"
-        _restore_branch
-        jq -cn --argjson d "$demoted" '{drafted:[], demoted:$d, skipped:"no-commit"}'
+    # A commit failure here has two very different causes that both used to read
+    # the same "nothing to commit": (1) _repin_apply matched no registry/preset
+    # record → git genuinely has nothing staged; (2) there IS a change but the
+    # commit fails — almost always an unset git identity (user.name/user.email) on
+    # the bot box. Classify by the git output and surface the real error. Keep a
+    # SINGLE commit call (no extra `git diff` probe) so the mocked-git test path
+    # and the real one behave identically.
+    local _commit_err
+    if ! _commit_err=$(git commit -m "chore(curation): re-pin ${n_safe} drifted vendor skill(s) to latest verified ref" 2>&1); then
+        if printf '%s' "$_commit_err" | grep -qiF "nothing to commit"; then
+            curation_warn "re-pin produced no staged change (finding matched no registry/preset record)"
+            _restore_branch
+            jq -cn --argjson d "$demoted" '{drafted:[], demoted:$d, skipped:"no-changes"}'
+        else
+            curation_warn "re-pin commit failed (is git user.name/user.email set?): ${_commit_err}"
+            _restore_branch
+            jq -cn --argjson d "$demoted" '{drafted:[], demoted:$d, skipped:"no-commit"}'
+        fi
         return 0
     fi
     # A failed push aborts PR creation (no PR against a branch the remote lacks)
