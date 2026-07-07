@@ -169,6 +169,18 @@ watch_awaiting_licenses() {
 # collect_targets — emit unique {repoRoot,track,pinnedRef} JSON objects gathered
 # from the registry records and every preset recommendation, deduped by
 # (repoRoot,pinnedRef). gh is NOT called here.
+#
+# Attribution is REPO-LEVEL by design. When one repo backs several subpath
+# records (e.g. anthropics/skills → mcp-builder for dev-mcp AND claude-api for
+# dev-ai-integration), a drift finding lists ALL of that repo's foundation
+# skills in forSkills even if only one subpath's files changed. Pinning is
+# per-repo-ref (both records share the ref), so a re-pin advances both baselines
+# correctly regardless — the only imprecision is cosmetic (the digest can't say
+# WHICH subpath changed). Narrowing forSkills to the changed subpath would need a
+# per-drift `gh compare pinned...current` file-list call on the nightly path;
+# that gh/rate-limit cost is not justified for the current single multi-subpath
+# repo, so attribution stays repo-level intentionally (not a bug). Revisit if
+# multi-subpath repos proliferate.
 collect_targets() {
     {
         jq -c '.records[] | {repoRoot:.vendorId, track:.trustTrack, pinnedRef:.pinnedRef}' "$REGISTRY"

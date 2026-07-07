@@ -57,20 +57,20 @@
       "url": "https://github.com/shadcn-ui/ui/tree/main/skills/shadcn",
       "rationale": "shadcn/ui CLI v4, Radix + Base UI primitives, theming patterns",
       "condition": "if using shadcn/ui",
-      "pinnedRef": "shadcn@4.11.0",
+      "pinnedRef": "shadcn@4.13.0",
       "trustTrack": "authority",
       "provenance": "shadcn",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-07-07"
     },
     {
       "id": "lingui/skills",
       "url": "https://github.com/lingui/skills",
       "rationale": "Lingui i18n patterns for React (sourced from specs/marketplace-audit/dev-skills-pilot)",
       "condition": "if using Lingui for i18n",
-      "pinnedRef": "a969c9a73e8a7a12f4002372ab41650d25d8beb6",
+      "pinnedRef": "32e4ac0bbc885ef32d3171492d2f2d3956861b23",
       "trustTrack": "authority",
       "provenance": "Lingui",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-07-07"
     }
   ],
   "defaults": {
