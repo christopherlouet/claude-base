@@ -539,3 +539,33 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"[OK]"* ]]
 }
+
+# =============================================================================
+# Pin lockstep (EF-005) — registry <-> preset pins must agree per repo.
+# The nightly watcher dedups drift targets by (repoRoot, pinnedRef); a repo
+# pinned to two different refs becomes two permanent drift rows in every
+# digest. These tests are the guard's self-application (real repo stays clean)
+# plus a known-bad fixture proving the detector actually fires.
+# =============================================================================
+
+@test "validate-presets: real repo passes pin lockstep (self-application)" {
+    run bash "$VALIDATE_PRESETS"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"pin lockstep (one ref per repo across registry + presets)"* ]]
+}
+
+@test "validate-presets: flags a repo pinned to divergent refs across presets" {
+    mkdir -p "$TEST_DIR/fake-presets"
+    cat > "$TEST_DIR/fake-presets/a.json" <<'EOF'
+{ "recommendedVendorSkills": [ { "id": "foo/bar", "pinnedRef": "v1.0.0" } ] }
+EOF
+    cat > "$TEST_DIR/fake-presets/b.json" <<'EOF'
+{ "recommendedVendorSkills": [ { "id": "foo/bar", "pinnedRef": "v2.0.0" } ] }
+EOF
+    export VALIDATE_PRESETS_DIR="$TEST_DIR/fake-presets"
+    run bash "$VALIDATE_PRESETS"
+    unset VALIDATE_PRESETS_DIR
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"pin lockstep — a repo is pinned to divergent refs"* ]]
+    [[ "$output" == *"foo/bar"* ]]
+}

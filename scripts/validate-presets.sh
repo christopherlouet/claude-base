@@ -34,7 +34,10 @@ set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PRESETS_DIR="$BASE_DIR/.claude/presets"
+# PRESETS_DIR is overridable (VALIDATE_PRESETS_DIR) so the pin-lockstep guard can
+# be exercised against a fixture tree in tests — mirrors curation-watch.sh's
+# --presets-dir seam. Production/default resolves to the shipped presets.
+PRESETS_DIR="${VALIDATE_PRESETS_DIR:-$BASE_DIR/.claude/presets}"
 
 # Bundle registry — single source of truth for module name validity
 # (module_exists: [a-z0-9-] syntax guard + bundle file existence).
@@ -703,6 +706,46 @@ if [ -n "$REGISTRY_FILE" ]; then
     fi
 fi
 
+# EF-005 lockstep — a repo tracked in more than one place (registry records
+# and/or preset recommendedVendorSkills) must carry a SINGLE pinnedRef
+# everywhere. The nightly watcher (scripts/curation-watch.sh) dedups drift
+# targets by (repoRoot, pinnedRef); a repo pinned to two different refs
+# therefore splits into two permanent, never-clearing drift rows in every
+# digest. This guard fails fast on such a divergence so a partial re-pin
+# (registry bumped, preset copy forgotten — the exact cause of the #427
+# duplicate rows) can never be committed. repoRoot = owner/repo (first two
+# path segments), mirroring curation-watch.sh:_repo_root; non-github
+# marketplace URLs are skipped (the watcher cannot dedup them either).
+validate_pin_lockstep() {
+    local registry="$1"; shift
+    local rr='def reporoot:(sub("^https?://github\\.com/";""))|if test("://") then empty else . end|(split("?")[0])|(split("#")[0])|split("/")|select(length>=2 and (.[0]|length>0) and (.[1]|length>0))|.[0:2]|join("/");'
+    local pairs
+    pairs=$(
+        {
+            [ -f "$registry" ] && jq -r "$rr"'.records[]? | (.vendorId|reporoot) as $r | "\($r)\t\(.pinnedRef)"' "$registry" 2>/dev/null
+            local f
+            for f in "$@"; do
+                [ -f "$f" ] || continue
+                jq -r "$rr"'.recommendedVendorSkills[]? | ((.url // .id)|reporoot) as $r | "\($r)\t\(.pinnedRef)"' "$f" 2>/dev/null
+            done
+        } | grep -v '^[[:space:]]*$' | sort -u
+    )
+    local dup_roots
+    dup_roots=$(printf '%s\n' "$pairs" | cut -f1 | sort | uniq -d)
+    if [ -z "$dup_roots" ]; then
+        $QUIET || echo "[OK]    pin lockstep (one ref per repo across registry + presets)"
+        return 0
+    fi
+    echo "[FAIL]  pin lockstep — a repo is pinned to divergent refs (EF-005):"
+    local r
+    while IFS= read -r r; do
+        [ -n "$r" ] || continue
+        echo "        - $r pinned to:"
+        printf '%s\n' "$pairs" | awk -F'\t' -v root="$r" '$1==root {print "            " $2}'
+    done <<< "$dup_roots"
+    return 1
+}
+
 for f in "${FILES[@]}"; do
     if validate_one "$f"; then
         pass=$((pass + 1))
@@ -712,21 +755,25 @@ for f in "${FILES[@]}"; do
     fi
 done
 
-# Full-dir run also validates the shipped canonicalVendor registry, when present.
+# Full-dir run also validates the shipped canonicalVendor registry, when present,
+# and enforces registry<->preset pin lockstep across the whole set.
 registry_fail=0
+lockstep_fail=0
 if [ -z "$SINGLE_FILE" ]; then
     DEFAULT_REGISTRY="$BASE_DIR/.claude/curation/registry.json"
     if [ -f "$DEFAULT_REGISTRY" ]; then
         validate_registry "$DEFAULT_REGISTRY" || registry_fail=1
     fi
+    validate_pin_lockstep "$DEFAULT_REGISTRY" "${FILES[@]}" || lockstep_fail=1
 fi
 
 echo ""
-if [ "$fail" -eq 0 ] && [ "$registry_fail" -eq 0 ]; then
+if [ "$fail" -eq 0 ] && [ "$registry_fail" -eq 0 ] && [ "$lockstep_fail" -eq 0 ]; then
     $QUIET || echo "[OK] $pass preset(s) valid"
     exit 0
 else
     [ "$fail" -gt 0 ] && echo "[FAIL] $fail preset(s) invalid out of $((pass + fail))"
     [ "$registry_fail" -gt 0 ] && echo "[FAIL] registry invalid"
+    [ "$lockstep_fail" -gt 0 ] && echo "[FAIL] pin lockstep violated"
     exit 1
 fi

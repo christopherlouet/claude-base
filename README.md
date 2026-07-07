@@ -14,42 +14,42 @@ Most Claude Code setups add more agents. claude-base adds **discipline and safet
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 ||||||| parent of c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 =======
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 >>>>>>> c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
 =======
 <<<<<<< HEAD
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 <<<<<<< HEAD
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 =======
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 =======
 <<<<<<< HEAD
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 =======
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 ||||||| parent of c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 =======
-[![Tests](https://img.shields.io/badge/tests-1505%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1507%20passing-brightgreen)](./tests)
 >>>>>>> c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
 >>>>>>> 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
@@ -273,42 +273,42 @@ After `curl | bash` install, the foundation lives at `~/.local/share/claude-base
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 ||||||| parent of c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 =======
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 >>>>>>> c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
 =======
 <<<<<<< HEAD
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 <<<<<<< HEAD
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 =======
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 =======
 <<<<<<< HEAD
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 =======
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 ||||||| parent of c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 =======
-| `tests/` | <!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files |
 >>>>>>> c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
 >>>>>>> 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 | `.github/workflows/` | CI : `ci.yml`, `security.yml`, `docs.yml`, `pr-check.yml`, `release.yml`, `dependabot-auto-merge.yml` |
@@ -526,42 +526,42 @@ The foundation ships with [bats-core](https://github.com/bats-core/bats-core) te
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 ||||||| parent of c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 =======
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 >>>>>>> c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
 =======
 <<<<<<< HEAD
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 <<<<<<< HEAD
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 =======
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 =======
 <<<<<<< HEAD
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 =======
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 ||||||| parent of c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 =======
-<!-- count:tests -->1505<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
+<!-- count:tests -->1507<!-- /count --> bats tests across <!-- count:testFiles -->67<!-- /count --> files. A few anchors :
 >>>>>>> c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
 >>>>>>> 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 
@@ -610,42 +610,42 @@ Concrete signals rather than a self-assessment score :
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 ||||||| parent of c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 =======
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 >>>>>>> c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
 =======
 <<<<<<< HEAD
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 ||||||| parent of 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 <<<<<<< HEAD
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 =======
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 =======
 <<<<<<< HEAD
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 ||||||| parent of ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 =======
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 >>>>>>> ecd11657 (fix(security): extract main-branch guard to a tested hook, block when auto-branch fails)
 ||||||| parent of c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 =======
-- <!-- count:tests -->1505<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1507<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 >>>>>>> c0b47976 (fix(security): extract pre-commit-tests gate to a tested hook (fix .husky path typo))
 >>>>>>> 352648b4 (fix(security): close sudo and rm-protected-path bypasses in command-validator)
 - Six GitHub Actions workflows (CI, security, docs, PR check, release, dependabot auto-merge) gating merges
