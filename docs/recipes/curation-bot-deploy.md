@@ -39,7 +39,7 @@ State (the `collapseStreak` / reference popularity needed for the sustained-coll
 - An authenticated `gh`. Use a **fine-grained token** scoped to this one repo with the minimum permissions:
   - **Contents: read** — required (the watch reads the registry/presets and the GitHub API).
   - **Issues: read & write** — only if you use `--emit-issue`.
-  - **Pull requests: read & write** + **Contents: write** — required for the **recommended** `--emit-pr` auto-heal (it pushes a branch and opens a draft PR). Omit these scopes only if you deliberately run observe-only.
+  - **Pull requests: read & write** + **Contents: read & write** — required for the **recommended** `--emit-pr` auto-heal (it pushes a branch and opens a draft PR). Omit these scopes only if you deliberately run observe-only.
 
 Store the token as an environment variable for `gh` (never commit it):
 
@@ -49,6 +49,20 @@ GH_TOKEN=github_pat_xxxxxxxxxxxxxxxxxxxxx
 ```
 
 `gh` reads `GH_TOKEN` automatically. No other secret is needed — there is **no model key** in the nightly path.
+
+**If you use `--emit-pr`, two one-time setups are also required** (the auto-heal commits, pushes a branch, and opens a PR — all three fail silently without these):
+
+```bash
+# 1. Let git push authenticate with the gh token (installs gh as the git
+#    credential helper) — without it `git push` fails with a 403 / "could not
+#    read Username", and the re-pin PR is skipped.
+gh auth setup-git
+
+# 2. A git identity for the commit — without it `git commit` fails and the run
+#    reports it could not commit the re-pin.
+git config --global user.name  "curation-bot"
+git config --global user.email "curation-bot@users.noreply.github.com"
+```
 
 ---
 
@@ -71,6 +85,12 @@ mkdir -p "$(dirname "$STATE")" "$DIGEST"
 # tree that --emit-pr requires; the external --state-file is what survives it.
 git -C "$REPO" fetch --quiet origin main
 git -C "$REPO" reset --hard --quiet origin/main
+
+# REQUIRED for --emit-pr: run from inside the repo. The re-pin auto-heal
+# commits against the CURRENT working directory, so a wrapper that invokes the
+# script by absolute path without cd'ing in first makes it skip with
+# "not a git repo". Harmless for observe-only runs.
+cd "$REPO"
 
 "$REPO/scripts/curation-watch.sh" \
     --state-file "$STATE" \
