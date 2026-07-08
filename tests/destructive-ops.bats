@@ -84,6 +84,50 @@ run_guard() {
     [ "$status" -eq 0 ]
 }
 
+# --- False-block regressions: a payload that NAMES a verb is not the op -------
+
+@test "destructive-ops: does NOT block a commit whose MESSAGE mentions DROP TABLE" {
+    run_guard 'git commit -m "docs: explain the DROP TABLE migration"'
+    [ "$status" -eq 0 ]
+}
+
+@test "destructive-ops: does NOT block coreutils truncate (a file, not SQL TRUNCATE)" {
+    run_guard 'truncate -s 0 build.log'
+    [ "$status" -eq 0 ]
+}
+
+@test "destructive-ops: does NOT block a MULTI-LINE commit message naming DROP TABLE" {
+    run_guard $'git commit -m "fix: guard against a\naccidental DROP TABLE in prod"'
+    [ "$status" -eq 0 ]
+}
+
+@test "destructive-ops: still blocks a real verb on a line AFTER a -- comment" {
+    run_guard $'psql -c \'DELETE FROM t -- cleanup\nDROP TABLE audit\''
+    [ "$status" -eq 2 ]
+}
+
+@test "destructive-ops: does NOT block a multi-line DELETE that has a real WHERE" {
+    run_guard $'DELETE FROM users\nWHERE id = 5'
+    [ "$status" -eq 0 ]
+}
+
+# --- Bypass closures: irregular whitespace / comment smuggling ----------------
+
+@test "destructive-ops: blocks DROP TABLE with irregular whitespace" {
+    run_guard "psql -c 'DROP  TABLE users'"
+    [ "$status" -eq 2 ]
+}
+
+@test "destructive-ops: blocks an unscoped DELETE hidden behind a -- where comment" {
+    run_guard "psql -c 'DELETE FROM users -- where id=5'"
+    [ "$status" -eq 2 ]
+}
+
+@test "destructive-ops: still blocks a real SQL TRUNCATE TABLE" {
+    run_guard "psql -c 'TRUNCATE TABLE users'"
+    [ "$status" -eq 2 ]
+}
+
 @test "destructive-ops: non-Bash tool (no command) → exit 0" {
     printf '%s' '{"tool_name":"Read","tool_input":{"file_path":"x"}}' > "$TEST_DIR/input.json"
     run bash -c "bash '$GUARD' < '$TEST_DIR/input.json' 2>&1"

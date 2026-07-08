@@ -35,21 +35,41 @@ fi
 
 CMD_LOWER=$(printf '%s' "$CMD" | tr '[:upper:]' '[:lower:]')
 
+# Build the SCAN string the matchers run against, in this order:
+#   1. Strip SQL line-comments introduced by "-- " (dash-dash-SPACE) PER LINE so
+#      a commented-out "where" cannot fake a scope on an unscoped DELETE, while a
+#      "--flag" (dash-dash-LETTER) and a verb on a LATER line both survive.
+#   2. Flatten newlines to spaces so a multi-line construct is one line for the
+#      value-strip and WHERE tests (a multi-line DELETE's WHERE is now adjacent).
+#   3. Strip message VALUES (the quoted/next token after -m/-am/--message) so a
+#      commit message that merely NAMES a verb ("explain the DROP TABLE
+#      migration", even across lines) is not treated as the operation itself
+#      (mirrors command-validator.sh's message-stripping).
+SCAN=$(printf '%s' "$CMD_LOWER" \
+  | sed -E 's/--[[:space:]].*$//' \
+  | tr '\n' ' ' \
+  | sed -E "s/[[:space:]]-[a-z]*m([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
+  | sed -E "s/[[:space:]]--message([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g")
+
 DESTRUCTIVE=0
 
 # Explicit destructive verbs, unsafe resets, and data-directory wipes.
-if printf '%s' "$CMD_LOWER" | grep -qE '(drop table|drop database|truncate |rm -rf .*/uploads|rm -rf .*/media|rm -rf .*/storage|prisma migrate reset|prisma db push --force|--force-reset)'; then
+# - drop/truncate use [[:space:]]+ so `DROP  TABLE` (irregular whitespace) can't slip past.
+# - `truncate[[:space:]]+[^-[:space:]]` matches SQL `TRUNCATE [TABLE] name` but NOT
+#   coreutils `truncate -s 0 file` (a flag, i.e. a dash, follows the command).
+if printf '%s' "$SCAN" | grep -qE '(drop[[:space:]]+table|drop[[:space:]]+database|truncate[[:space:]]+[^-[:space:]]|rm -rf .*/uploads|rm -rf .*/media|rm -rf .*/storage|prisma migrate reset|prisma db push --force|--force-reset)'; then
   DESTRUCTIVE=1
 fi
 
 # DELETE FROM without a scoping WHERE (full-table wipe), or a tautological
-# `WHERE 1=1`. A real `delete from t where <col>…` is left untouched. The
-# space/paren-anchored WHERE test is robust to quotes and statement terminators
-# (`delete from t;`, `delete from t'`), which a single table-name regex is not.
-if printf '%s' "$CMD_LOWER" | grep -qE 'delete[[:space:]]+from[[:space:]]'; then
-  if printf '%s' "$CMD_LOWER" | grep -qE 'where[[:space:]]+1[[:space:]]*(=|;|$)'; then
+# `WHERE 1=1`. A real `delete from t where <col>…` is left untouched. The WHERE
+# test accepts a clause at line start ((^|space)) so a multi-line statement
+# (`DELETE FROM t\nWHERE …`) is not misread as unscoped, and runs on the
+# comment-stripped SCAN so a `-- where` comment cannot fake the scope.
+if printf '%s' "$SCAN" | grep -qE 'delete[[:space:]]+from[[:space:]]'; then
+  if printf '%s' "$SCAN" | grep -qE 'where[[:space:]]+1[[:space:]]*(=|;|$)'; then
     DESTRUCTIVE=1
-  elif ! printf '%s' "$CMD_LOWER" | grep -qE '[[:space:]]where([[:space:]]|\()'; then
+  elif ! printf '%s' "$SCAN" | grep -qE '(^|[[:space:]])where([[:space:]]|\()'; then
     DESTRUCTIVE=1
   fi
 fi

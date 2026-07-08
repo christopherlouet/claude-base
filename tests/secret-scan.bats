@@ -56,6 +56,14 @@ payload() { jq -n --arg c "$1" '{tool_input:{content:$c}}'; }
     [ "$status" -eq 0 ]
 }
 
+@test "blocks a real secret even when a placeholder word sits elsewhere on the line" {
+    # Same-line smuggle: appending "// example" must NOT quiet the gate — the
+    # placeholder check applies to the matched SECRET VALUE, not the whole line.
+    local a="AKIA"; a="${a}1234567890ABCDEF"
+    run bash "$HOOK" <<<"$(payload "const k = \"$a\"; // see example.com")"
+    [ "$status" -eq 2 ]
+}
+
 @test "allows ordinary code (zero false positive)" {
     run bash "$HOOK" <<<"$(payload 'export function add(a, b) { return a + b; }')"
     [ "$status" -eq 0 ]

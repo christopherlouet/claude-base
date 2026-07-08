@@ -50,8 +50,11 @@ hit_label=""
 hit_line=""
 while IFS=$'\t' read -r label regex; do
     [ -n "$label" ] || continue
-    # Find a matching line that is NOT a self-declared placeholder.
-    match=$(printf '%s' "$CONTENT" | grep -nE "$regex" 2>/dev/null | grep -vE "$PLACEHOLDER" | head -n1 || true)
+    # Extract the matched SECRET VALUE (-o), then drop it only if the value
+    # ITSELF is a self-declared placeholder (e.g. AKIA…EXAMPLE). Keying on the
+    # whole line let a real key slip through behind a same-line "// example"
+    # comment — the placeholder word must be part of the secret, not elsewhere.
+    match=$(printf '%s' "$CONTENT" | grep -oE "$regex" 2>/dev/null | grep -vE "$PLACEHOLDER" | head -n1 || true)
     if [ -n "$match" ]; then
         hit_label="$label"
         hit_line="$match"

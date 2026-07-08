@@ -20,7 +20,11 @@ set -u
 command -v jq >/dev/null 2>&1 || exit 0
 
 CMD=$(cat | jq -r '.tool_input.command // empty' 2>/dev/null || true)
-printf '%s' "$CMD" | grep -q "git commit" || exit 0
+# Fire only on an actual `git … commit` at command position, tolerating global
+# options (`git -c core.hooksPath=… commit`, `git -C dir commit`). A plain
+# substring match both over-blocked read-only commands (`git log --grep "git
+# commit"`) and MISSED the `git -c … commit` bypass form.
+printf '%s' "$CMD" | grep -qE '(^|[;&|])[[:space:]]*git([[:space:]]+-[a-zA-Z]+([[:space:]]+[^[:space:]]+)?)*[[:space:]]+commit([[:space:]]|$)' || exit 0
 
 # Husky (JS): if configured but not installed, try to repair so the project's
 # own git hooks still run. Best-effort — never fatal.
