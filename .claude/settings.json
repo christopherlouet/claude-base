@@ -196,6 +196,18 @@
         ]
       },
       {
+        "description": "Blocks a Bash write (>, tee, sed -i) to a lint/format config, a secrets file, or a tracked file on main (disable with SKIP_BASH_WRITE_GUARD=1)",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/bash-write-guard.sh\"",
+            "timeout": 5000,
+            "onFailure": "block"
+          }
+        ]
+      },
+      {
         "description": "Blocks editing an existing linter/formatter config (fix the code, not the rule; disable with SKIP_CONFIG_PROTECTION=1)",
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [

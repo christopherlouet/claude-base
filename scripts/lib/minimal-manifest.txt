@@ -51,9 +51,11 @@
 # fresh --minimal installs end up with hooks pointing at missing files.
 # Drift guard: tests/manifest-hooks-coverage.bats.
 scripts/hooks/_hook-helpers.sh
+scripts/hooks/_sensitive-paths.sh
 scripts/hooks/_vendor-precedence-hint.sh
 scripts/hooks/base-integrity-check.sh
 scripts/hooks/bash-output-filter.sh
+scripts/hooks/bash-write-guard.sh
 scripts/hooks/check-cli-version.sh
 scripts/hooks/command-validator.sh
 scripts/hooks/config-protection.sh
