@@ -77,6 +77,44 @@ payload() { jq -n --arg c "$1" '{tool_input:{content:$c}}'; }
     [ "$status" -eq 0 ]
 }
 
+# --- gitleaks defense-in-depth branch -----------------------------------------
+# The hook keys the block on gitleaks' EXIT CODE, never on its log text. A clean
+# gitleaks run prints "INF no leaks found" (contains the substring "leak"); the
+# previous `grep -qiE 'secret|leak|finding'` false-blocked EVERY edit in any
+# project with gitleaks + a .gitleaks.toml. These shim gitleaks on PATH to pin
+# the contract: exit 0 = allow, exit 1 = block, any other error = fail OPEN.
+
+# Write a fake `gitleaks` that consumes stdin, prints $1 on stderr, exits $2.
+_fake_gitleaks() { # <dir> <stderr-line> <exit-code>
+    mkdir -p "$1/bin"
+    { printf '#!/usr/bin/env bash\ncat >/dev/null 2>&1 || true\n'
+      printf 'echo %q >&2\nexit %s\n' "$2" "$3"; } > "$1/bin/gitleaks"
+    chmod +x "$1/bin/gitleaks"
+    : > "$1/.gitleaks.toml"
+}
+
+@test "gitleaks branch: a CLEAN scan does not block (no-leaks-found regression)" {
+    local d="$BATS_TEST_TMPDIR/gl-clean"; _fake_gitleaks "$d" "10:23AM INF no leaks found" 0
+    cd "$d"
+    PATH="$d/bin:$PATH" run bash "$HOOK" <<<"$(payload 'const x = 1;')"
+    [ "$status" -eq 0 ]
+}
+
+@test "gitleaks branch: a scan that FINDS leaks blocks (exit 1)" {
+    local d="$BATS_TEST_TMPDIR/gl-leak"; _fake_gitleaks "$d" "Finding: generic-api-key at line 1" 1
+    cd "$d"
+    PATH="$d/bin:$PATH" run bash "$HOOK" <<<"$(payload 'const x = 1;')"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *gitleaks* ]]
+}
+
+@test "gitleaks branch: a tooling error (removed flag) fails OPEN, not blocks" {
+    local d="$BATS_TEST_TMPDIR/gl-err"; _fake_gitleaks "$d" "Error: unknown flag --pipe" 2
+    cd "$d"
+    PATH="$d/bin:$PATH" run bash "$HOOK" <<<"$(payload 'const x = 1;')"
+    [ "$status" -eq 0 ]
+}
+
 # Self-application (base-maintenance rule): scanning real foundation source files
 # must NOT block — a standing zero-false-positive regression guard on the repo.
 @test "self-application: real foundation scripts produce no false positive" {

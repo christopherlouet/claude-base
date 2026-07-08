@@ -7,7 +7,7 @@ permissionMode: plan
 disallowedTools: Edit, Write, NotebookEdit
 skills:
   - qa-security
-  - reviewing-code
+  - qa-review
 hooks:
   PreToolUse:
     - matcher: "Bash"
