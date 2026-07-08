@@ -24,7 +24,12 @@ set -u
 command -v jq >/dev/null 2>&1 || exit 0
 
 CMD=$(cat | jq -r '.tool_input.command // empty' 2>/dev/null || true)
-printf '%s' "$CMD" | grep -qiE 'deploy.*deploy|deploy\.sh|deploy-.*\.sh deploy' || exit 0
+# Trigger on the common deploy invocations. The previous pattern required the
+# word "deploy" TWICE (or a literal deploy.sh), so it was INERT on `npm run
+# deploy`, `vercel deploy`, `make deploy`, … — the gate silently never ran.
+# Still deliberately scoped (the build is expensive) and matches "deploy" as a
+# verb/subcommand, so `npm run build` and other non-deploy commands don't fire.
+printf '%s' "$CMD" | grep -qiE '(^|[[:space:]&|;])((npm|yarn|pnpm)[[:space:]]+(run[[:space:]]+)?deploy|(vercel|netlify|wrangler|serverless|sls|flyctl|fly|firebase|eas|kamal|dokku)[[:space:]]+([^&|;]*[[:space:]])?deploy|make[[:space:]]+([^&|;]*[[:space:]])?deploy|(\./)?deploy\.sh)' || exit 0
 
 echo "=== Pre-deploy build check ==="
 

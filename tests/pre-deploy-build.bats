@@ -89,6 +89,37 @@ EOF
     [[ "$output" != *"Pre-deploy build check"* ]]
 }
 
+# --- Trigger reach: the gate was inert on the common deploy invocations -------
+
+@test "pre-deploy-build: recognizes 'npm run deploy' as a deploy" {
+    mkdir -p "$TEST_DIR/bare"
+    run_hook_in "$TEST_DIR/bare" 'npm run deploy'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Pre-deploy build check"* ]]
+}
+
+@test "pre-deploy-build: recognizes 'vercel deploy' as a deploy" {
+    mkdir -p "$TEST_DIR/bare"
+    run_hook_in "$TEST_DIR/bare" 'vercel deploy --prod'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Pre-deploy build check"* ]]
+}
+
+@test "pre-deploy-build: a failing build blocks 'npm run deploy'" {
+    command -v npm >/dev/null 2>&1 || skip "npm not available"
+    mk_npm_project "$TEST_DIR/proj" "exit 1"
+    run_hook_in "$TEST_DIR/proj" 'npm run deploy'
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+}
+
+@test "pre-deploy-build: 'npm run build' does NOT trigger (only deploys do)" {
+    mk_npm_project "$TEST_DIR/proj" "exit 1"
+    run_hook_in "$TEST_DIR/proj" 'npm run build'
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Pre-deploy build check"* ]]
+}
+
 @test "pre-deploy-build: SKIP_PRE_DEPLOY_BUILD=1 bypasses a failing build" {
     mk_npm_project "$TEST_DIR/proj" "exit 1"
     local json
