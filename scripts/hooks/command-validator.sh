@@ -26,6 +26,9 @@ fi
 
 # Normalize: lowercase, collapse whitespace
 CMD_LOWER=$(echo "$CMD" | tr '[:upper:]' '[:lower:]' | tr -s ' ')
+# A quote-stripped copy for the protected-path checks, so a quoted target
+# (`rm -rf '/etc'`) can't slip past a regex anchored on `/etc` after the flags.
+CMD_NQ=$(printf '%s' "$CMD_LOWER" | tr -d "\"'")
 
 # === CATEGORY 1: Fork bombs and resource exhaustion ===
 if echo "$CMD_LOWER" | grep -qE ':\(\)\{.*\|.*&'; then
@@ -42,11 +45,15 @@ if echo "$CMD_LOWER" | grep -qE '(while true|for \(\(;;|yes \|)'; then
 fi
 
 # === CATEGORY 2: Dangerous pipe-to-shell patterns ===
-if echo "$CMD_LOWER" | grep -qE 'curl\s+[^|]*\|\s*(ba)?sh'; then
+# Match any interpreter after the pipe, with an optional path prefix
+# (`| /bin/sh`, `| zsh`, `| python3`). The trailing ($|[^a-z0-9]) both terminates
+# the interpreter name and stops `sh` from matching inside `shellcheck`.
+PIPE_INTERP='([^[:space:]|]*/)?(sh|bash|zsh|dash|ksh|python[0-9.]*|perl|ruby|node)($|[^a-z0-9])'
+if echo "$CMD_LOWER" | grep -qE "curl\s+[^|]*\|\s*$PIPE_INTERP"; then
   echo >&2 "BLOCKED: Pipe-to-shell detected (curl | sh). Download first, verify, then execute."
   exit 2
 fi
-if echo "$CMD_LOWER" | grep -qE 'wget\s+[^|]*\|\s*(ba)?sh'; then
+if echo "$CMD_LOWER" | grep -qE "wget\s+[^|]*\|\s*$PIPE_INTERP"; then
   echo >&2 "BLOCKED: Pipe-to-shell detected (wget | sh). Download first, verify, then execute."
   exit 2
 fi
@@ -56,7 +63,9 @@ if echo "$CMD_LOWER" | grep -qE '(mkfs|fdisk|parted|wipefs)\s'; then
   echo >&2 "BLOCKED: Disk formatting/partitioning operation detected."
   exit 2
 fi
-if echo "$CMD_LOWER" | grep -qE 'dd\s+if=.*(of=/dev|of=\s*/dev)'; then
+# Device write via of=… regardless of argument order (`dd of=/dev/sda if=…` was
+# a bypass — the previous regex required if= to appear before of=).
+if echo "$CMD_LOWER" | grep -qE 'dd\s+([^&|;]*\s)?of=\s*/dev/(sd|nvme|vd|hd|xvd|mmcblk|loop)'; then
   echo >&2 "BLOCKED: Direct write to device detected (dd)."
   exit 2
 fi
@@ -68,10 +77,12 @@ fi
 # === CATEGORY 4: Privilege escalation ===
 # Match `sudo` in COMMAND position: at the start, after a separator (; & |, so
 # && and || are covered too), optionally preceded by env-var assignments
-# (FOO=bar sudo …). A leading-only anchor was trivially bypassable via
-# `x=1 && sudo …` or an env-var prefix. The env-assignment / separator lead-in
-# keeps the word `sudo` inside a string or message from matching.
-if echo "$CMD_LOWER" | grep -qE '(^|[;&|])\s*([a-z_][a-z0-9_]*=[^[:space:]]*\s+)*sudo\s'; then
+# (FOO=bar sudo …), a wrapper command (env/command/exec/xargs/nice/… sudo …),
+# and/or an absolute path (/usr/bin/sudo). A leading-only or assignment-only
+# lead-in was bypassable via `env sudo`, `command sudo`, `xargs sudo` or
+# `/usr/bin/sudo`. The command-position anchor still keeps the word `sudo`
+# inside a string or message from matching.
+if echo "$CMD_LOWER" | grep -qE '(^|[;&|])\s*(([a-z_][a-z0-9_]*=[^[:space:]]*|command|exec|env|xargs|nice|nohup|setsid|time|stdbuf|timeout)\s+)*(/[^[:space:]]*/)?sudo(\s|$)'; then
   echo >&2 "BLOCKED: Privilege escalation (sudo). Operate without root privileges."
   exit 2
 fi
@@ -101,7 +112,10 @@ fi
 
 # === CATEGORY 7: Protected system paths ===
 # Any-depth deletion inside a purely-system tree (no legit subdir to delete).
-if echo "$CMD_LOWER" | grep -qE 'rm\s+(-[rfRI]+\s+)*/(etc|boot|sys|proc|usr/lib|lib|sbin)\b'; then
+# The flag group accepts long flags too (`rm --recursive --force /etc`), matching
+# the (usr|var|opt) check below — the short-flag-only version was bypassable.
+# Runs on the dequoted command so `rm -rf '/etc'` is caught.
+if echo "$CMD_NQ" | grep -qE 'rm\s+(-{1,2}[a-z]+\s+)*/(etc|boot|sys|proc|usr/lib|lib|sbin)\b'; then
   echo >&2 "BLOCKED: Deletion in a protected system directory."
   exit 2
 fi
@@ -109,7 +123,7 @@ fi
 # block only the bare root (`rm -rf /var`, optional trailing slash) — a real
 # subpath like /var/www/html stays allowed. Closes the gap where `rm -rf /usr`
 # slipped through while `/usr/lib` was blocked.
-if echo "$CMD_LOWER" | grep -qE 'rm\s+(-{1,2}[a-z]+\s+)*/(usr|var|opt)/?(\s|$)'; then
+if echo "$CMD_NQ" | grep -qE 'rm\s+(-{1,2}[a-z]+\s+)*/(usr|var|opt)/?(\s|$)'; then
   echo >&2 "BLOCKED: Deletion of a system tree root (/usr, /var or /opt)."
   exit 2
 fi
