@@ -17,6 +17,12 @@ set -euo pipefail
 
 [ "${SKIP_CONFIG_PROTECTION:-0}" = "1" ] && exit 0
 
+# Shared classifier (same protected-config set as bash-write-guard.sh — one
+# representation, no drift). Fail OPEN if it cannot be sourced.
+_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
+# shellcheck source=scripts/hooks/_sensitive-paths.sh
+{ [ -n "$_dir" ] && [ -f "$_dir/_sensitive-paths.sh" ] && . "$_dir/_sensitive-paths.sh"; } || exit 0
+
 INPUT=$(cat 2>/dev/null || true)
 
 # jq is the documented path. Absent jq → fail OPEN (do not block): blocking every
@@ -34,10 +40,9 @@ esac
 
 base=$(basename "$FILE")
 
-# Recognized linter/formatter config filenames (EF-003). pyproject.toml and
-# tsconfig.json are intentionally absent (out of scope v1).
-if ! printf '%s' "$base" | grep -qE \
-  '^(\.eslintrc(\.(js|cjs|mjs|json|ya?ml))?|eslint\.config\.(js|cjs|mjs|ts|mts|cts)|\.prettierrc(\.(js|cjs|mjs|json|ya?ml|toml))?|prettier\.config\.(js|cjs|mjs|ts)|biome\.jsonc?|\.?ruff\.toml|\.markdownlint\.(jsonc?|ya?ml))$'; then
+# Recognized linter/formatter config filenames (EF-003) — see _sensitive-paths.sh.
+# pyproject.toml and tsconfig.json are intentionally out of scope.
+if ! is_protected_config "$base"; then
   exit 0
 fi
 
