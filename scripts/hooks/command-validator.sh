@@ -144,40 +144,53 @@ fi
 
 # === CATEGORY 9: Verification bypass (git --no-verify) ===
 # Blocks skipping the pre-commit / pre-push gates. ADVISORY guardrail, not a hard
-# boundary: an agent can still bypass via the Bash tool (e.g. `sed -i` a hook),
-# env vars (HUSKY=0), or `git -c core.hooksPath=…` — those are outside a
-# command-string matcher's reach by design. Operates on the ORIGINAL command so
-# commit's `-F/--file` is not confused with push's `-f/--force`. Message VALUES
-# (the quoted/next token after -m/-am/--message/-F/--file, and heredoc bodies) are
-# stripped so flag text INSIDE a message is ignored, while a real flag placed
-# AFTER the message is still caught. Known v1 limits (recoverable via
-# SKIP_COMMAND_VALIDATOR=1): a rare commit MESSAGE containing a bare ' -…n… '
-# token may over-block; `--no-verify` on a non-git command chained after a git
-# push may over-block. Granular opt-out: SKIP_NO_VERIFY_CHECK=1 disables ONLY this
-# category (the other 8 stay active), for the rare legitimate bypass — unlike the
-# blunt SKIP_COMMAND_VALIDATOR=1 which drops every check.
-if [ "${SKIP_NO_VERIFY_CHECK:-0}" != "1" ] \
-   && echo "$CMD" | grep -qiE 'git[[:space:]]+([^|&;]*[[:space:]])?(commit|push)'; then
-  # Strip message VALUES only (keep trailing flags). -[a-z]*m covers -m/-am/-sm…;
-  # then long --message/--file/-F; then any heredoc body.
-  GIT_FLAGS=$(echo "$CMD" | tr '\n' ' ' \
-    | sed -E "s/[[:space:]]-[a-z]*m([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
-    | sed -E "s/[[:space:]](--message|--file|-F)([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
-    | sed -E 's/[[:space:]]<<.*$//')
-  # --no-verify, tolerating git's unambiguous-abbreviation (--no-veri, --no-ver…).
-  if echo "$GIT_FLAGS" | grep -qE '(^|[[:space:]])--no-ver[a-z]*([[:space:]=]|$)'; then
+# boundary (an agent can still bypass via the Bash tool — `sed -i` a hook,
+# HUSKY=0, …). The command is split into SEGMENTS — first joining backslash-
+# newline continuations, then splitting on newlines and shell separators
+# (; && || | &) — and ONLY the segments that are a git commit/push are
+# inspected. That way a -n/--no-verify belonging to a chained `git log -n 5`, a
+# heredoc BODY line, or hidden across a `\`-continuation is neither misattributed
+# to nor hidden from the commit. Within a segment, message VALUES (after
+# -m/-am/--message/-F/--file) are stripped so a flag NAMED in a commit message is
+# ignored while a real flag AFTER the message is still caught; and commit/push
+# must be the git SUBCOMMAND (only options may precede it) so `git log --grep
+# commit` is not mistaken for a commit. Known limit: a commit MESSAGE containing
+# a bare `-…n…` token may over-block (recoverable via SKIP_NO_VERIFY_CHECK=1).
+# Granular opt-out: SKIP_NO_VERIFY_CHECK=1 disables ONLY this category.
+case "$CMD" in *git*commit*|*git*push*) _maybe_git=1 ;; *) _maybe_git=0 ;; esac
+if [ "${SKIP_NO_VERIFY_CHECK:-0}" != "1" ] && [ "$_maybe_git" = 1 ]; then
+  # `git <options...> <subcommand>`: only tokens starting with '-' (and their
+  # non-option values) may sit between `git` and the subcommand.
+  _git_cp='git[[:space:]]+(-[^[:space:]]+[[:space:]]+([^-][^[:space:]]*[[:space:]]+)?)*(commit|push)([[:space:]]|$)'
+  _git_commit='git[[:space:]]+(-[^[:space:]]+[[:space:]]+([^-][^[:space:]]*[[:space:]]+)?)*commit([[:space:]]|$)'
+  _nv_hit=""
+  while IFS= read -r _seg; do
+    echo "$_seg" | grep -qiE "$_git_cp" || continue
+    # Strip message VALUES in this segment (keep trailing flags).
+    _segf=$(echo "$_seg" \
+      | sed -E "s/[[:space:]]-[a-z]*m([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
+      | sed -E "s/[[:space:]](--message|--file|-F)([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g")
+    # --no-verify, tolerating git's unambiguous-abbreviation (--no-veri, --no-ver…).
+    if echo "$_segf" | grep -qiE '(^|[[:space:]])--no-ver[a-z]*([[:space:]=]|$)'; then
+      _nv_hit="verify"; break
+    fi
+    # Short -n (no-verify) on commit only. Standalone -n on the stripped flags; a
+    # bundled cluster (-nm/-anm) on the raw segment (the strip eats a -m bundle).
+    if echo "$_seg" | grep -qiE "$_git_commit"; then
+      if echo "$_segf" | grep -qE '(^|[[:space:]])-n([[:space:]]|$)' \
+         || echo "$_seg" | grep -qE '(^|[[:space:]])-[a-z]*n[a-z]+([[:space:]]|$)'; then
+        _nv_hit="n"; break
+      fi
+    fi
+  done < <(printf '%s' "$CMD" \
+    | awk '{ if (sub(/\\$/,"")) printf "%s ", $0; else print }' \
+    | awk '{ gsub(/\|\||&&|;|\||&/,"\n"); print }')
+  if [ "$_nv_hit" = "verify" ]; then
     echo >&2 "BLOCKED: 'git --no-verify' bypasses the pre-commit/pre-push gates. Fix the failing check instead of skipping it."
     exit 2
-  fi
-  # Short -n (no-verify) on commit only (git log -n N is a count). Standalone -n is
-  # checked on the stripped flags; a bundled cluster (-nm, -anm) is checked on the
-  # raw command because the message-strip consumes a trailing -m bundle.
-  if echo "$CMD" | grep -qiE 'git[[:space:]]+([^|&;]*[[:space:]])?commit'; then
-    if echo "$GIT_FLAGS" | grep -qE '(^|[[:space:]])-n([[:space:]]|$)' \
-       || echo "$CMD" | grep -qE '(^|[[:space:]])-[a-z]*n[a-z]+([[:space:]]|$)'; then
-      echo >&2 "BLOCKED: 'git commit -n' (no-verify) bypasses the pre-commit gate. Fix the failing check instead of skipping it."
-      exit 2
-    fi
+  elif [ "$_nv_hit" = "n" ]; then
+    echo >&2 "BLOCKED: 'git commit -n' (no-verify) bypasses the pre-commit gate. Fix the failing check instead of skipping it."
+    exit 2
   fi
 fi
 

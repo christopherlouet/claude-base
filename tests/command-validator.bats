@@ -317,6 +317,32 @@ EOF"
     [ "$status" -eq 0 ]
 }
 
+# --- CATEGORY 9 segment-scoping: -n/--no-verify are attributed to the git
+#     commit/push SEGMENT, and continuation/heredoc constructs can't hide them --
+
+@test "command-validator: does NOT block 'git log -n 5 && git commit' (chained -n)" {
+    # The -n belongs to `git log`, not the commit — segment scoping prevents the
+    # misattribution that made this over-block.
+    run_validator 'git log -n 5 && git commit -m wip'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: does NOT block 'git log --grep commit -n 5'" {
+    # 'commit' is a search arg, not the subcommand; the -n belongs to log.
+    run_validator 'git log --grep commit -n 5'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: blocks --no-verify across a backslash line-continuation" {
+    run_validator $'git \\\ncommit --no-verify'
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks a git commit --no-verify placed after a heredoc" {
+    run_validator $'cat <<HDOC >/dev/null\nsome body text\nHDOC\ngit commit --no-verify'
+    [ "$status" -eq 2 ]
+}
+
 # Granular opt-out: SKIP_NO_VERIFY_CHECK disables ONLY category 9, keeping the
 # other 8 security categories active (unlike the blunt SKIP_COMMAND_VALIDATOR).
 @test "command-validator: SKIP_NO_VERIFY_CHECK=1 allows git commit --no-verify" {
