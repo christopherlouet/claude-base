@@ -53,6 +53,25 @@ EOF
     [[ "$output" != *"Running tests"* ]]
 }
 
+@test "pre-commit-tests: read-only 'git log --grep \"git commit\"' is not treated as a commit" {
+    # A substring matcher over-blocked this read-only command; the gate must
+    # only fire on an actual `git … commit` at command position.
+    mk_npm_project "$TEST_DIR/proj" "exit 1"
+    run_hook_in "$TEST_DIR/proj" 'git log --grep "git commit"'
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Running tests"* ]]
+}
+
+@test "pre-commit-tests: 'git -c core.hooksPath=... commit' still runs the gate (no bypass)" {
+    # A substring matcher missed this form (no literal 'git commit'), letting the
+    # commit skip the suite. The gate must still fire.
+    command -v npm >/dev/null 2>&1 || skip "npm not available"
+    mk_npm_project "$TEST_DIR/proj" "exit 1"
+    run_hook_in "$TEST_DIR/proj" 'git -c core.hooksPath=/dev/null commit -m x'
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+}
+
 @test "pre-commit-tests: SKIP_PRE_COMMIT_TESTS=1 bypasses a failing suite" {
     mk_npm_project "$TEST_DIR/proj" "exit 1"
     local json
