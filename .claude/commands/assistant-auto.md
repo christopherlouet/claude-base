@@ -34,7 +34,7 @@ Do NOT limit yourself to this table. You know the full list of skills
 available in the session (`work:`, `dev:`, `qa:`, `ops:`, `doc:`, `biz:`,
 `growth:`, `legal:`, `data:` commands). Choose the most specific one
 that matches (e.g., `dev:dev-prisma` if a Prisma schema is mentioned,
-`ops:ops-proxmox` if Proxmox infra, `dev:dev-shadcn` if shadcn/ui).
+`ops:ops-proxmox` if Proxmox infra, the `dev-shadcn` skill if shadcn/ui).
 
 ## Priority rule (conflicts)
 

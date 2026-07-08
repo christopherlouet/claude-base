@@ -70,11 +70,18 @@ if [ -n "$hit_label" ]; then
 fi
 
 # Defense in depth: if the project opted into gitleaks, run it too (richer rules).
+# Block on gitleaks' EXIT CODE, never on its log text: a CLEAN run prints
+# "INF no leaks found", whose "leak" substring would false-block EVERY edit if
+# grepped. `--exit-code 1` makes gitleaks return exactly 1 when it finds leaks;
+# any other non-zero status is a tooling error (bad/removed flag, config) and we
+# fail OPEN — the built-in scan above already covers the high-confidence secrets.
 if command -v gitleaks >/dev/null 2>&1 && [ -f .gitleaks.toml ]; then
-    result=$(printf '%s' "$CONTENT" | gitleaks detect --no-git --pipe --config .gitleaks.toml 2>&1 || true)
-    if printf '%s' "$result" | grep -qiE 'secret|leak|finding'; then
+    # Capture the status WITHOUT tripping `set -e` (a non-zero gitleaks exit in a
+    # bare `x=$(...)` assignment would abort the hook mid-scan).
+    gl_out=$(printf '%s' "$CONTENT" | gitleaks detect --no-git --pipe --redact --exit-code 1 --config .gitleaks.toml 2>&1) && gl_status=0 || gl_status=$?
+    if [ "${gl_status:-0}" -eq 1 ]; then
         echo >&2 "BLOCKED: secret detected by gitleaks."
-        echo >&2 "$result" | head -n 20
+        printf '%s\n' "$gl_out" | head -n 20 >&2
         exit 2
     fi
 fi
