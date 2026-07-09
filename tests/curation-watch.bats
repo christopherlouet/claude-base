@@ -282,6 +282,76 @@ run_watch() {
     [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
 }
 
+# =============================================================================
+# tag-FAMILY pins (monorepo publishing several packages: `pkg@1.0.0`,
+# `@acme/react@0.2.1`, ...) — drift must compare within the pin's own family,
+# never against the repo-global latest release (phantom drift every run).
+# =============================================================================
+
+@test "watch: a family tag pin is NOT flagged as drift when only ANOTHER family released" {
+    registry_one "acme/mono" "pkg@1.2.0" authority
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    # Global latest release belongs to a different package family — the exact
+    # shadcn-ui/ui phantom-drift scenario (issue #445, 2026-07-09 digest).
+    gh_fixture "repos/acme/mono/releases/latest" '{"tag_name":"@acme/react@0.2.1"}'
+    gh_fixture "repos/acme/mono/releases?per_page=100" '[
+        {"tag_name":"@acme/react@0.2.1","draft":false,"prerelease":false},
+        {"tag_name":"pkg@1.2.0","draft":false,"prerelease":false}]'
+    run_watch
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a family tag pin drifts to the latest release of ITS OWN family" {
+    registry_one "acme/mono" "pkg@1.0.0" authority
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/mono/releases?per_page=100" '[
+        {"tag_name":"@acme/react@0.2.1","draft":false,"prerelease":false},
+        {"tag_name":"pkg@1.2.0","draft":false,"prerelease":false},
+        {"tag_name":"pkg@1.0.0","draft":false,"prerelease":false}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "pkg@1.2.0" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].proposedAction')" == "re-pin" ]]
+}
+
+@test "watch: a SCOPED family pin (@scope/name@ver) resolves within its scoped family" {
+    registry_one "acme/mono" "@acme/react@0.2.0" authority
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    # Includes a same-prefix LONGER package name — must not match @acme/react.
+    gh_fixture "repos/acme/mono/releases?per_page=100" '[
+        {"tag_name":"pkg@9.9.9","draft":false,"prerelease":false},
+        {"tag_name":"@acme/react-native@1.0.0","draft":false,"prerelease":false},
+        {"tag_name":"@acme/react@0.3.0","draft":false,"prerelease":false}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "@acme/react@0.3.0" ]]
+}
+
+@test "watch: drafts and prereleases are skipped when resolving a family's latest" {
+    registry_one "acme/mono" "pkg@1.2.0" authority
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/mono/releases/latest" '{"tag_name":"pkg@2.0.0-rc.1"}'
+    gh_fixture "repos/acme/mono/releases?per_page=100" '[
+        {"tag_name":"pkg@2.0.0-rc.1","draft":false,"prerelease":true},
+        {"tag_name":"pkg@1.9.0","draft":true,"prerelease":false},
+        {"tag_name":"pkg@1.2.0","draft":false,"prerelease":false}]'
+    run_watch
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a family pin whose family no longer releases stays unresolved (no drift)" {
+    registry_one "acme/mono" "gone@1.0.0" authority
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/mono/releases/latest" '{"tag_name":"@acme/react@0.2.1"}'
+    gh_fixture "repos/acme/mono/releases?per_page=100" '[
+        {"tag_name":"@acme/react@0.2.1","draft":false,"prerelease":false}]'
+    run_watch
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
 @test "watch: --digest-dir markdown renders a complete table row for a finding" {
     registry_one "acme/x" "v1.0.0" authority
     gh_fixture "repos/acme/x" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
