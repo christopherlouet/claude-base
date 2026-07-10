@@ -197,6 +197,32 @@ emit_repin_pr() {
     n=$(printf '%s' "$repins" | jq 'length')
     [ "$n" -gt 0 ] || { echo '{"drafted":[],"demoted":[]}'; return 0; }
 
+    # Dedupe (mirrors emit_issue's rolling-issue lookup): while a previous
+    # re-pin PR is still OPEN, emitting another stacks a near-duplicate every
+    # night, and updating/closing it instead could clobber a maintainer's
+    # in-flight curation commits on its branch. So the open PR holds a lock:
+    # skip emission (the digest still reports the fresh drift set each night;
+    # the night after the open PR merges, the remaining delta emits normally).
+    # A failed lookup PROCEEDS — the worst case of an outage is the status-quo
+    # duplicate PR, never a missed re-pin (checked before the safety screens,
+    # sparing their per-finding gh calls on locked nights).
+    local lookup_repo open_count
+    lookup_repo=$(_curation_gh_repo) || lookup_repo=""
+    local lookup_args=(pr list --state open --json headRefName
+        --jq '[.[] | select(.headRefName | startswith("curation/re-pin-"))] | length')
+    [ -n "$lookup_repo" ] && lookup_args+=(-R "$lookup_repo")
+    if open_count=$(gh "${lookup_args[@]}" 2>/dev/null); then
+        case "$open_count" in
+            ''|*[!0-9]*) : ;;   # unparseable → treat as lookup failure, proceed
+            0) : ;;
+            *)
+                curation_warn "an open curation/re-pin-* PR already exists; re-pin emission skipped"
+                jq -cn '{drafted:[], demoted:[], skipped:"open-pr"}'
+                return 0
+                ;;
+        esac
+    fi
+
     # Pin-time safety gate (T303): only a drift whose NEW ref passes the content
     # screen may auto-draft; the rest are demoted to propose-only.
     local safe='[]' demoted='[]' f subj cur screen sv

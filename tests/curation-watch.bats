@@ -539,6 +539,11 @@ if [ "\$1" = "api" ]; then
     *) echo "fake gh: 404 \$2" >&2; exit 1 ;;
   esac
 fi
+# Open re-pin PR lookup: FAKE_REPIN_FAIL=1 simulates a gh outage; else the
+# count of open curation/re-pin-* PRs is FAKE_REPIN_OPEN (default 0).
+case "\$*" in
+  *"pr list"*) [ "\${FAKE_REPIN_FAIL:-}" = "1" ] && exit 1; printf '%s' "\${FAKE_REPIN_OPEN:-0}" ;;
+esac
 exit 0
 EOF
     cat > "$TEST_DIR/fakebin/git" <<EOF
@@ -628,6 +633,53 @@ EOF
     gh_fixture "repos/acme/x/releases/latest" '{"tag_name":"v1.2.0"}'
     run_watch --emit-pr --draft
     [[ "$(grep -c 'pr create' "$TEST_DIR/gh.log")" -eq 0 ]]
+}
+
+@test "watch: --emit-pr SKIPS emission while a previous re-pin PR is still open (dedupe)" {
+    setup_emit_fakes
+    registry_one "acme/x" "v1.0.0" authority
+    gh_fixture "repos/acme/x" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/x/releases/latest" '{"tag_name":"v1.2.0"}'
+    content_fixture acme/x v1.2.0 SKILL.md "# clean skill, nothing dangerous"
+    run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_NOW=2026-06-13 \
+        CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 CURATION_THRESHOLDS="$THRESHOLDS" \
+        FAKE_REPIN_OPEN=1 \
+        bash "$WATCH" --registry "$TEST_DIR/registry.json" --presets-dir "$TEST_DIR/presets" --emit-pr --draft
+    [[ "$status" -eq 0 ]]
+    # no PR, no branch, no commit, no pin bump — the open PR keeps the lock
+    [[ "$(grep -c 'pr create' "$TEST_DIR/gh.log")" -eq 0 ]]
+    [[ "$(grep -c 'switch -c\|checkout -b' "$TEST_DIR/git.log")" -eq 0 ]]
+    [[ "$(jq -r '.records[0].pinnedRef' "$TEST_DIR/registry.json")" == "v1.0.0" ]]
+}
+
+@test "watch: --emit-pr proceeds when the open-PR lookup fails (never blocks the auto-heal)" {
+    setup_emit_fakes
+    registry_one "acme/x" "v1.0.0" authority
+    gh_fixture "repos/acme/x" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/x/releases/latest" '{"tag_name":"v1.2.0"}'
+    content_fixture acme/x v1.2.0 SKILL.md "# clean skill, nothing dangerous"
+    run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_NOW=2026-06-13 \
+        CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 CURATION_THRESHOLDS="$THRESHOLDS" \
+        FAKE_REPIN_FAIL=1 \
+        bash "$WATCH" --registry "$TEST_DIR/registry.json" --presets-dir "$TEST_DIR/presets" --emit-pr --draft
+    [[ "$status" -eq 0 ]]
+    # worst case of a lookup outage = the status-quo duplicate, never a missed re-pin
+    [[ "$(grep -c 'pr create' "$TEST_DIR/gh.log")" -eq 1 ]]
+}
+
+@test "watch: the open-PR lookup targets the repo explicitly (-R) and filters open state" {
+    setup_emit_fakes
+    registry_one "acme/x" "v1.0.0" authority
+    gh_fixture "repos/acme/x" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/x/releases/latest" '{"tag_name":"v1.2.0"}'
+    content_fixture acme/x v1.2.0 SKILL.md "# clean skill, nothing dangerous"
+    run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_NOW=2026-06-13 \
+        CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 CURATION_THRESHOLDS="$THRESHOLDS" \
+        CURATION_GH_REPO="acme/claude-base" \
+        bash "$WATCH" --registry "$TEST_DIR/registry.json" --presets-dir "$TEST_DIR/presets" --emit-pr --draft
+    [[ "$status" -eq 0 ]]
+    grep 'pr list' "$TEST_DIR/gh.log" | grep -q -- '-R acme/claude-base'
+    grep 'pr list' "$TEST_DIR/gh.log" | grep -q -- '--state open'
 }
 
 @test "watch: --dry-run suppresses all emission" {
