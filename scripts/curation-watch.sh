@@ -233,6 +233,41 @@ resolve_current_ref() {
     fi
 }
 
+# _repo_has_root_record <owner/repo> <registry> <presets-dir> — true when any
+# registry record or preset recommendation watches the repo at its ROOT (no
+# subpath): the whole repo is then the skill and every change is relevant, so
+# subpath-scoped drift must not engage.
+_repo_has_root_record() {
+    local want="$1" registry="$2" presets_dir="$3" f
+    {
+        [ -f "$registry" ] && jq -r '.records[].vendorId // empty' "$registry" 2>/dev/null
+        for f in "$presets_dir"/*.json; do
+            [ -f "$f" ] || continue
+            jq -r '.recommendedVendorSkills[]? | (.id // .url) // empty' "$f" 2>/dev/null
+        done
+    } | sed -e 's#^https\{0,1\}://github.com/##' -e 's#[?\#].*$##' -e 's#/$##' \
+      | grep -qxF "$want"
+}
+
+# _drift_subpath_touched <repo> <oldRef> <newRef> <'+'-joined subpaths> — did
+# the old→new range touch any of the subpaths? Echoes yes|no|unknown. ONE
+# compare call; every unconfirmable outcome is "unknown" (treated as touched):
+# unfetchable compare, and a possibly-truncated file list (the compare API caps
+# files at 300 — an all-outside verdict on a truncated list would be a false
+# suppression). A rename is a touch on BOTH its old and new path.
+_drift_subpath_touched() {
+    local repo="$1" old="$2" new="$3" subs="$4" body
+    body=$(curation_gh_api "repos/$repo/compare/$old...$new" 2>/dev/null) || { printf 'unknown'; return; }
+    printf '%s' "$body" | jq -r --arg subs "$subs" '
+        def under($p): . == $p or startswith($p + "/");
+        ($subs | split("+")) as $S
+        | (.files // []) as $F
+        | if ($F | length) >= 300 then "unknown"
+          elif ([$F[] | .filename, (.previous_filename // empty)]
+                | any(. as $f | $S | any(. as $s | $f | under($s)))) then "yes"
+          else "no" end' 2>/dev/null || printf 'unknown'
+}
+
 # watch_one <repoRoot> <track> <pinnedRef> — emit one finding JSON object.
 watch_one() {
     local repo="$1" track="$2" pinned="$3"
@@ -259,6 +294,29 @@ watch_one() {
     current=$(resolve_current_ref "$repo" "$pinned")
     if [ -n "$current" ] && [ "$current" != "$pinned" ]; then
         drift="true"
+    fi
+
+    # Subpath-scoped drift (narrow lift of the #444 "repo-level attribution"
+    # doctrine): a sha pin on a subpath skill in a very active monorepo (e.g.
+    # anthropics/claude-code/plugins/frontend-design) re-drifts on EVERY repo
+    # commit and re-proposed a content-no-op re-pin nightly — which, since the
+    # #458 open-PR lock, would also block every other re-pin. When ALL records
+    # watching the repo are subpath-scoped, one compare call checks whether the
+    # pinned...current range touches any of those subpaths; untouched → not
+    # drift (lastVerified still refreshes). Fail-safe: root record present,
+    # unfetchable compare, or a possibly-truncated file list all keep the
+    # drift. The pin then only advances when the subpath REALLY changes — or
+    # when the accumulated repo range exceeds the compare cap (300 files),
+    # whose fail-open surfaces a baseline-advancing re-pin at bounded
+    # intervals. Tag pins are governed by release/tag-family semantics instead.
+    if [ "$drift" = "true" ] && [[ "$pinned" =~ ^[0-9a-f]{40}$ ]] \
+        && ! _repo_has_root_record "$repo" "$REGISTRY" "$PRESETS_DIR"; then
+        local scope
+        scope=$(_subpaths_for_repo "$repo" "$REGISTRY" "$PRESETS_DIR")
+        if [ -n "$scope" ] \
+            && [ "$(_drift_subpath_touched "$repo" "$pinned" "$current" "$scope")" = "no" ]; then
+            drift="false"
+        fi
     fi
 
     # Classify. Only things that need a NEW action are surfaced (see the digest

@@ -283,6 +283,104 @@ run_watch() {
 }
 
 # =============================================================================
+# subpath-scoped drift (sha pins on monorepo subpath skills, e.g.
+# anthropics/claude-code/plugins/frontend-design): a repo-level HEAD move whose
+# commits never touch the pinned subpath(s) is NOT drift — it re-proposed a
+# no-op re-pin every night. Scoped via ONE compare call, fail-safe toward drift.
+# =============================================================================
+
+OLD_SHA="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+NEW_SHA="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+
+# subpath_target <vendorId> — one-record registry pinned OLD_SHA + the repo-meta
+# and commits/HEAD fixtures that make the repo healthy and moved to NEW_SHA.
+subpath_target() {
+    registry_one "$1" "$OLD_SHA" authority
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/mono/commits/HEAD" "{\"sha\":\"$NEW_SHA\"}"
+}
+
+@test "watch: a sha-pin subpath skill is NOT drift when the compare never touches its subpath" {
+    subpath_target "acme/mono/plugins/x"
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        '{"files":[{"filename":"docs/other.md"},{"filename":"src/main.js"}]}'
+    run_watch
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a sha-pin subpath skill IS drift when a compare file falls under its subpath" {
+    subpath_target "acme/mono/plugins/x"
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        '{"files":[{"filename":"docs/other.md"},{"filename":"plugins/x/SKILL.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "$NEW_SHA" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].proposedAction')" == "re-pin" ]]
+}
+
+@test "watch: subpath prefix match is path-boundary-safe (skills != skills-extra)" {
+    subpath_target "acme/mono/skills"
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        '{"files":[{"filename":"skills-extra/f.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a '+'-joined multi-subpath record drifts when ANY of its subpaths is touched" {
+    subpath_target "acme/mono/cro+analytics"
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        '{"files":[{"filename":"analytics/SKILL.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a file RENAMED OUT of the subpath counts as touching it" {
+    subpath_target "acme/mono/skills"
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        '{"files":[{"filename":"attic/old.md","previous_filename":"skills/old.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: an unfetchable compare keeps the drift (fail-safe, never silently suppressed)" {
+    subpath_target "acme/mono/plugins/x"
+    # no compare fixture → gh 404
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a possibly-truncated compare (300 files) keeps the drift (fail-safe)" {
+    subpath_target "acme/mono/plugins/x"
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        "$(jq -cn '{files: [range(300) | {filename: "other/f\(.).md"}]}')"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a repo ALSO watched as a whole-repo record keeps repo-level drift" {
+    # Two records, same repo+pin: one subpath, one root → any repo change is
+    # relevant; the subpath filter must NOT engage.
+    jq -cn --arg p "$OLD_SHA" '{version:"1.0.0", records:[
+        {foundationSkill:"x", vendorId:"acme/mono/plugins/x",
+         vendorUrl:"https://github.com/acme/mono", pinnedRef:$p,
+         trustTrack:"authority", trustVerdict:"pass", provenance:"Acme",
+         adviceNeutrality:"pass", lastVerified:"2026-01-01", status:"candidate",
+         sourceAudit:"t", flags:[]},
+        {foundationSkill:"y", vendorId:"acme/mono",
+         vendorUrl:"https://github.com/acme/mono", pinnedRef:$p,
+         trustTrack:"authority", trustVerdict:"pass", provenance:"Acme",
+         adviceNeutrality:"pass", lastVerified:"2026-01-01", status:"candidate",
+         sourceAudit:"t", flags:[]}]}' > "$TEST_DIR/registry.json"
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/mono/commits/HEAD" "{\"sha\":\"$NEW_SHA\"}"
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        '{"files":[{"filename":"docs/other.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+# =============================================================================
 # tag-FAMILY pins (monorepo publishing several packages: `pkg@1.0.0`,
 # `@acme/react@0.2.1`, ...) — drift must compare within the pin's own family,
 # never against the repo-global latest release (phantom drift every run).
