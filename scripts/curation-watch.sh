@@ -206,10 +206,28 @@ collect_targets() {
 # UNRESOLVED (empty) rather than falling back to a sha — comparing a tag to a sha
 # would report drift on every run. Echoes the current ref, or nothing when it
 # cannot be resolved (gh failure or tag-pin-without-releases).
+#
+# Like-with-like extends to tag FAMILIES: a monorepo releases several packages
+# under distinct tag prefixes (`shadcn@4.13.0`, `@shadcn/react@0.2.1`, ...), so
+# the repo-global latest release can belong to a DIFFERENT package than the pin
+# and would report phantom drift on every run. A `<name>@<version>` pin therefore
+# resolves to the newest stable release of ITS OWN family (same `<name>@` prefix,
+# drafts/prereleases skipped — releases/latest excludes them too); a family with
+# no release in the first page stays UNRESOLVED rather than crossing families.
 resolve_current_ref() {
     local repo="$1" pinned="$2"
     if [[ "$pinned" =~ ^[0-9a-f]{40}$ ]]; then
         curation_gh_api "repos/$repo/commits/HEAD" 2>/dev/null | jq -r '.sha // empty'
+        return
+    fi
+    local family=""
+    [[ "$pinned" == *@* ]] && family="${pinned%@*}"
+    if [ -n "$family" ]; then
+        curation_gh_api "repos/$repo/releases?per_page=100" 2>/dev/null \
+            | jq -r --arg fam "$family" \
+                '[.[] | select(.draft == false and .prerelease == false)
+                      | select(.tag_name | startswith($fam + "@"))]
+                 | first.tag_name // empty'
     else
         curation_gh_api "repos/$repo/releases/latest" 2>/dev/null | jq -r '.tag_name // empty'
     fi
