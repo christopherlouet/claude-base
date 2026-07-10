@@ -27,10 +27,10 @@
       "url": "https://github.com/phaserjs/phaser/tree/master/skills",
       "rationale": "Canonical Phaser skill suite published by the vendor (28 SKILL.md files including game-setup-and-config, scenes, sprites, physics (Arcade and Matter.js), tilemaps, animations, input, particles, cameras, audio, plus a v3-to-v4 migration skill). Updated alongside each framework release.",
       "condition": "always",
-      "pinnedRef": "v4.2.0",
+      "pinnedRef": "v4.2.1",
       "trustTrack": "authority",
       "provenance": "Phaser Studio",
-      "lastVerified": "2026-06-23"
+      "lastVerified": "2026-07-10"
     }
   ],
   "outOfScope": [

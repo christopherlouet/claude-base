@@ -57,10 +57,10 @@
       "url": "https://github.com/shadcn-ui/ui/tree/main/skills/shadcn",
       "rationale": "shadcn/ui CLI v4, Radix + Base UI primitives, theming patterns",
       "condition": "if using shadcn/ui",
-      "pinnedRef": "shadcn@4.13.0",
+      "pinnedRef": "@shadcn/react@0.2.1",
       "trustTrack": "authority",
       "provenance": "shadcn",
-      "lastVerified": "2026-07-07"
+      "lastVerified": "2026-07-10"
     },
     {
       "id": "lingui/skills",
