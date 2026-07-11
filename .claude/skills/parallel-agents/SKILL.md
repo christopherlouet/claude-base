@@ -76,16 +76,16 @@ Decompose complex tasks into independent sub-tasks and run them in parallel via 
 | Task | Parallel agents | Result |
 |------|----------------|--------|
 | Full audit | `qa-security` + `qa-perf` + `wcag-audit` | Combined report |
-| Code review | `qa-review` per module/file | Issue list |
+| Code review | native `/code-review` (or `qa-claudemd` per convention scope) | Issue list |
 | Exploration | `work-explore` per functional domain | Code map |
 
 ### Development
 
 | Task | Parallel agents | Result |
 |------|----------------|--------|
-| Tests per module | `dev-test` per service | Test suite |
+| Tests per module | `dev-tdd` per service | Test suite |
 | Documentation | `doc-generate` per component | Complete docs |
-| Migration | `ops-migrate` per dependency | Complete migration |
+| Migration | `ops-deps` audit + one `dev-tdd` per dependency | Complete migration |
 
 ### Business
 

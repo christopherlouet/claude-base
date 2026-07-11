@@ -42,4 +42,4 @@ Need to mock HTTP for tests/dev?
 
 - `dev-tdd` — mocks live in test setup; this skill activates from TDD work
 - `qa-e2e` — Playwright/Cypress tests often layer MSW for deterministic stubs
-- `dev-testing-setup` — wires the global `setupServer` into vitest/jest config
+- `dev-tdd` (test-infrastructure setup) — wires the global `setupServer` into vitest/jest config

@@ -163,7 +163,7 @@ func TestUserService_Create(t *testing.T) {
 | `exploring-codebase` | Analyze an existing codebase |
 | `planning-implementation` | Define a plan before coding |
 | `test-driven-development` | TDD Red-Green-Refactor cycle |
-| `reviewing-code` | Thorough code review |
+| `qa-review` | Thorough code review |
 | `debugging-issues` | Methodical diagnosis |
 | `generating-commit-messages` | Conventional Commits |
 | `creating-pull-requests` | Complete and documented PR |

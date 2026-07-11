@@ -109,7 +109,9 @@ Adaptive Thinking: Claude automatically adjusts the depth of its reasoning based
 
 **1M token context window by default** on the Claude API, Amazon Bedrock and Vertex AI (no longer a beta opt-in). 128k output tokens, automatic Context Compaction. Reasoning is interleaved between tool calls (interleaved thinking) for agentic workflows.
 
-`xhigh` unlocks Opus 4.8's maximum reasoning (introduced as a tier in v2.1.111). Auto mode available for Max subscribers (intelligent automatic permissions). Fast mode runs on Opus 4.8 (also available on 4.7/4.6).
+`xhigh` unlocks Opus 4.8's maximum reasoning (introduced as a tier in v2.1.111). Fast mode runs on Opus 4.8 (also available on 4.7/4.6).
+
+**Auto mode (native, July 2026)** — a Claude Code permission mode where a model classifier approves/denies each tool call in place of the human (positioned as the safe alternative to `--dangerously-skip-permissions`; default-on for Bedrock/Vertex/Foundry since CLI 2.1.207). **It composes with — and does not replace — this foundation's hooks**: the classifier is probabilistic and decides *approval*, while the foundation's PreToolUse guards (command-validator, destructive-ops, config-protection, bash-write-guard…) are deterministic *class blockers* that keep running under any permission mode, auto included. Running both is defense in depth: keep the hooks even with auto mode on.
 
 ## Sonnet 5 (default tier, since 2026-06-30)
 

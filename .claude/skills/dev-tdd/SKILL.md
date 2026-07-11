@@ -9,7 +9,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
-model: sonnet
+model: opus
 argument-hint: "[feature-description]"
 ---
 

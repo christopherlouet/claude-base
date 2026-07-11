@@ -7,7 +7,7 @@ allowed-tools:
   - Grep
   - Bash
 context: fork
-model: sonnet
+model: opus
 argument-hint: "[error-description]"
 ---
 

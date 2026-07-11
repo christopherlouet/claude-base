@@ -2,7 +2,7 @@
 name: growth-localization
 description: Multi-market localization and internationalization strategy. Use to plan a product's international expansion.
 tools: Read, Grep, Glob
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: Edit, Write, NotebookEdit, Bash
 ---

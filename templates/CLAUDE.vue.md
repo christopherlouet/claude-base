@@ -261,7 +261,7 @@ describe('UserCard', () => {
 | `exploring-codebase` | Analyze an existing codebase |
 | `planning-implementation` | Define a plan before coding |
 | `test-driven-development` | TDD Red-Green-Refactor cycle |
-| `reviewing-code` | In-depth code review |
+| `qa-review` | In-depth code review |
 | `debugging-issues` | Methodical diagnosis |
 | `generating-commit-messages` | Conventional Commits |
 | `creating-pull-requests` | Complete and documented PR |
