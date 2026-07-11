@@ -258,21 +258,21 @@ if [ -z "$DEST_DIR" ]; then
   else
     # BSD tar (macOS ships libarchive tar): none of --transform/--owner/
     # --group/--mtime/--sort exist. Same guarantees by other means:
-    #  - root rename: mv inside the PRIVATE mktemp staging dir (no TOCTOU
-    #    exposure — the dir is 0700 and ours);
+    #  - root rename: mv into a FRESH private mktemp parent — never a fixed
+    #    name in the shared $TMPDIR, where concurrent exports (bats --jobs)
+    #    would collide (mv onto an existing dir NESTS instead of renaming);
     #  - fixed mtime: touch every staged entry (CCYYMMDDhhmm.SS is portable);
     #  - ownership: --uid/--gid 0 with --numeric-owner.
     # Walk order is stable on one machine, which is what the reproducibility
     # contract (two consecutive runs match) requires.
-    if [ "$name_of_staging" != "$ARCHIVE_PREFIX" ]; then
-      mv "$STAGING" "$parent_of_staging/$ARCHIVE_PREFIX"
-      STAGING="$parent_of_staging/$ARCHIVE_PREFIX"   # keep cleanup_staging accurate
-    fi
-    find "$STAGING" -exec touch -t 202401010000.00 {} +
+    bsd_parent="$(mktemp -d -t "${ARCHIVE_PREFIX}-pkg-XXXXXX")"
+    mv "$STAGING" "$bsd_parent/$ARCHIVE_PREFIX"
+    STAGING="$bsd_parent"   # cleanup_staging now removes parent + moved tree
+    find "$bsd_parent/$ARCHIVE_PREFIX" -exec touch -t 202401010000.00 {} +
     tar \
       --uid 0 --gid 0 --numeric-owner \
       -czf "$OUTPUT" \
-      -C "$parent_of_staging" "$ARCHIVE_PREFIX"
+      -C "$bsd_parent" "$ARCHIVE_PREFIX"
   fi
 
   size_bytes=$(stat -c%s "$OUTPUT" 2>/dev/null || stat -f%z "$OUTPUT")
