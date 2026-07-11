@@ -245,15 +245,35 @@ if [ -z "$DEST_DIR" ]; then
   parent_of_staging="$(dirname "$STAGING")"
   name_of_staging="$(basename "$STAGING")"
 
-  # tar --transform renames the root on the fly (no mv, no TOCTOU window).
-  # Reproducible options: uid/gid 0, fixed mtime, sort by name.
-  tar \
-    --owner=0 --group=0 --numeric-owner \
-    --mtime='2024-01-01 00:00:00 UTC' \
-    --sort=name \
-    --transform "s,^${name_of_staging},${ARCHIVE_PREFIX}," \
-    -czf "$OUTPUT" \
-    -C "$parent_of_staging" "$name_of_staging"
+  if tar --version 2>/dev/null | grep -q "GNU tar"; then
+    # GNU tar: --transform renames the root on the fly (no mv, no TOCTOU
+    # window). Reproducible options: uid/gid 0, fixed mtime, sort by name.
+    tar \
+      --owner=0 --group=0 --numeric-owner \
+      --mtime='2024-01-01 00:00:00 UTC' \
+      --sort=name \
+      --transform "s,^${name_of_staging},${ARCHIVE_PREFIX}," \
+      -czf "$OUTPUT" \
+      -C "$parent_of_staging" "$name_of_staging"
+  else
+    # BSD tar (macOS ships libarchive tar): none of --transform/--owner/
+    # --group/--mtime/--sort exist. Same guarantees by other means:
+    #  - root rename: mv inside the PRIVATE mktemp staging dir (no TOCTOU
+    #    exposure — the dir is 0700 and ours);
+    #  - fixed mtime: touch every staged entry (CCYYMMDDhhmm.SS is portable);
+    #  - ownership: --uid/--gid 0 with --numeric-owner.
+    # Walk order is stable on one machine, which is what the reproducibility
+    # contract (two consecutive runs match) requires.
+    if [ "$name_of_staging" != "$ARCHIVE_PREFIX" ]; then
+      mv "$STAGING" "$parent_of_staging/$ARCHIVE_PREFIX"
+      STAGING="$parent_of_staging/$ARCHIVE_PREFIX"   # keep cleanup_staging accurate
+    fi
+    find "$STAGING" -exec touch -t 202401010000.00 {} +
+    tar \
+      --uid 0 --gid 0 --numeric-owner \
+      -czf "$OUTPUT" \
+      -C "$parent_of_staging" "$ARCHIVE_PREFIX"
+  fi
 
   size_bytes=$(stat -c%s "$OUTPUT" 2>/dev/null || stat -f%z "$OUTPUT")
   size_kb=$((size_bytes / 1024))
