@@ -41,10 +41,10 @@
       "url": "https://github.com/supabase/agent-skills",
       "rationale": "Postgres best practices (30 rules) + Supabase Python SDK patterns",
       "condition": "if using Postgres or Supabase",
-      "pinnedRef": "v0.1.5",
+      "pinnedRef": "v0.1.6",
       "trustTrack": "authority",
       "provenance": "Supabase",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-07-11"
     },
     {
       "id": "mongodb/agent-skills",
@@ -61,10 +61,10 @@
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack (Loki/Tempo/Mimir), k6 perf testing",
       "condition": "if using Grafana / observability stack",
-      "pinnedRef": "f4c2916c50b75beb0397028cda8d4cf61003aca4",
+      "pinnedRef": "7155edc7040b23186bd25dd23a7a1b95375ff6c3",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-07-10"
+      "lastVerified": "2026-07-11"
     },
     {
       "id": "antonbabenko/terraform-skill",

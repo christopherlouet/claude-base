@@ -82,10 +82,10 @@
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack for monitoring and observability",
       "condition": "if using Grafana / Prometheus stack",
-      "pinnedRef": "f4c2916c50b75beb0397028cda8d4cf61003aca4",
+      "pinnedRef": "7155edc7040b23186bd25dd23a7a1b95375ff6c3",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-07-10"
+      "lastVerified": "2026-07-11"
     }
   ],
   "defaults": {

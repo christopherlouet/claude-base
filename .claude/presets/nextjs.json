@@ -60,20 +60,20 @@
       "url": "https://github.com/supabase/agent-skills",
       "rationale": "Auth, DB, Edge Functions, Realtime, Storage patterns + Postgres best practices",
       "condition": "if using Supabase",
-      "pinnedRef": "v0.1.5",
+      "pinnedRef": "v0.1.6",
       "trustTrack": "authority",
       "provenance": "Supabase",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-07-11"
     },
     {
       "id": "prisma/skills",
       "url": "https://github.com/prisma/skills",
       "rationale": "Prisma ORM patterns, especially v7 (ESM-only, driver adapters)",
       "condition": "if using Prisma",
-      "pinnedRef": "dc08577cacd642af075e1017f0f7fe93177b06b4",
+      "pinnedRef": "72aa5e3b6fea2cc00cefcf8a5decc84ec1d6302b",
       "trustTrack": "authority",
       "provenance": "Prisma",
-      "lastVerified": "2026-07-07"
+      "lastVerified": "2026-07-11"
     },
     {
       "id": "shadcn-ui/ui (skills/shadcn)",
