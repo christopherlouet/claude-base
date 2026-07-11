@@ -269,10 +269,14 @@ if [ -z "$DEST_DIR" ]; then
     mv "$STAGING" "$bsd_parent/$ARCHIVE_PREFIX"
     STAGING="$bsd_parent"   # cleanup_staging now removes parent + moved tree
     find "$bsd_parent/$ARCHIVE_PREFIX" -exec touch -t 202401010000.00 {} +
+    # gzip OUTSIDE tar: libarchive's builtin gzip filter stamps the CURRENT
+    # time into the gzip header, breaking two-consecutive-runs reproducibility
+    # even with identical content; `gzip -n` writes no name and no timestamp.
     tar \
       --uid 0 --gid 0 --numeric-owner \
-      -czf "$OUTPUT" \
-      -C "$bsd_parent" "$ARCHIVE_PREFIX"
+      -cf - \
+      -C "$bsd_parent" "$ARCHIVE_PREFIX" \
+      | gzip -n > "$OUTPUT"
   fi
 
   size_bytes=$(stat -c%s "$OUTPUT" 2>/dev/null || stat -f%z "$OUTPUT")
