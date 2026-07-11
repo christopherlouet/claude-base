@@ -107,6 +107,24 @@ EOF
     git diff --cached --quiet
 }
 
+# Default-wiring exercise: every other test overrides the seams, so the PRODUCTION
+# default CHECK_CMD (scripts/validate-counts.sh) and default ROOT (the real repo)
+# are never run. This case leaves them at their defaults and runs --check against
+# the REAL foundation, asserting it reports the clean tree as in sync (exit 0).
+# REGEN is not invoked in --check mode, so no npm/website is touched.
+#
+# Precondition: the working tree's counts must be in sync. During active work the
+# tree legitimately drifts (new files added before the pre-commit self-heal), so
+# skip in that case — CI runs this on a clean, counts-consistent checkout. When it
+# does run it pins the real default wiring end-to-end.
+@test "check (default validator, real repo): clean tree reports in sync (exit 0)" {
+    bash "$BASE_DIR/scripts/validate-counts.sh" >/dev/null 2>&1 \
+        || skip "working tree counts drift (mid-edit); CI runs this on a clean checkout"
+    run bash "$SYNC" --check
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"in sync"* ]]
+}
+
 # --- CLI ---------------------------------------------------------------------
 
 @test "unknown option → exit 2" {

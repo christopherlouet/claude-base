@@ -16,6 +16,10 @@ NEW_PROJECT_SCRIPT="$BATS_TEST_DIRNAME/../scripts/new-project.sh"
 
 setup() {
     setup_test_dir
+    # Stub the claude CLI so doctor's exit code reflects target health, not
+    # whether this machine has the binary (CI has none) — lets the doctor
+    # assertions below pin an exact status deterministically.
+    stub_claude_on_path
 }
 
 teardown() {
@@ -37,9 +41,9 @@ teardown() {
     run "$VALIDATE_SCRIPT" -q "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # 3. Doctor
+    # 3. Doctor — a freshly installed --simple project is healthy: exit 0.
     run "$DOCTOR_SCRIPT" "$TEST_DIR"
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]
 
     # 4. Uninstall
     run "$UNINSTALL_SCRIPT" -y "$TEST_DIR"
@@ -102,9 +106,9 @@ teardown() {
     run "$VALIDATE_SCRIPT" -q "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # Doctor must work
+    # Doctor must pass cleanly on the generated project.
     run "$DOCTOR_SCRIPT" "$TEST_DIR"
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]
 }
 
 @test "E2E: new-project with existing CI/CD suggests improvements" {
@@ -235,7 +239,7 @@ EOF
     BASE_DIR="$BATS_TEST_DIRNAME/.."
 
     run "$DOCTOR_SCRIPT" "$BASE_DIR"
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]
 }
 
 @test "E2E: All agents are present and valid" {

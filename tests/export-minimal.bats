@@ -4,7 +4,7 @@
 # Covers: manifest integrity, --minimal flag of new-project.sh, export-minimal.sh archive.
 
 setup() {
-  REPO_ROOT="$(cd "$BATS_TEST_DIRNAME/../.." && pwd)"
+  REPO_ROOT="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
   MANIFEST="$REPO_ROOT/scripts/lib/minimal-manifest.txt"
   EXPORT_SCRIPT="$REPO_ROOT/scripts/export-minimal.sh"
   NEW_PROJECT="$REPO_ROOT/scripts/new-project.sh"
