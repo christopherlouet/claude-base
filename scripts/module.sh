@@ -469,7 +469,11 @@ cmd_remove() {
             [[ "$m" == "$module_name" ]] && continue
             current_modules+=("$m")
         done < <(manifest_modules "$TARGET_DIR" 2>/dev/null || true)
-        write_foundation_manifest "$TARGET_DIR" "$version" "$preset" "${current_modules[@]}"
+        # Empty-safe expansion: removing the LAST module leaves current_modules
+        # empty, and a bare "${current_modules[@]}" aborts under `set -u` on
+        # bash < 4.4 — after the files are deleted but before the manifest is
+        # rewritten, corrupting foundation.json. Guard it (see modules.sh:311).
+        write_foundation_manifest "$TARGET_DIR" "$version" "$preset" ${current_modules[@]+"${current_modules[@]}"}
     fi
 
     echo ""

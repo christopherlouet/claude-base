@@ -279,7 +279,8 @@ audit_docs_drift() {
                 # Count each drift line as one issue
                 if [[ "$line" =~ ^[[:space:]]+.+:\[ ]] || [[ "$line" == *"[paths]"* ]] \
                    || [[ "$line" == *"[verbs]"* ]] || [[ "$line" == *"[flags]"* ]] \
-                   || [[ "$line" == *"[scripts]"* ]] || [[ "$line" == *"[npm]"* ]]; then
+                   || [[ "$line" == *"[scripts]"* ]] || [[ "$line" == *"[npm]"* ]] \
+                   || [[ "$line" == *"[cmdrefs]"* ]]; then
                     ((ISSUES++)) || true
                 fi
             done <<< "$output"

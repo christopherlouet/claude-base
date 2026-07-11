@@ -628,6 +628,37 @@ assert_bash_fixture() {
     [[ "$trimmed" != *"--- Type errors (tsc) ---"* ]]
 }
 
+# BUG 7: the eslint-output grep must use -F. A Next.js path like src/[id]/page.tsx
+# is otherwise treated as a regex ([id] = char class) and never matches its own
+# lint output, silently degrading to the coarse keyword fallback (which drops the
+# per-file header line).
+@test "Phase 3: eslint per-file grep matches a bracketed path (grep -F)" {
+    enable_rewriter
+    mkdir -p "$TEST_DIR/node_modules/.bin"
+    local file_path="$TEST_DIR/src/[id]/page.tsx"
+    # tsc must not fire (no tsconfig), so only the eslint branch is exercised.
+    {
+        echo '#!/usr/bin/env bash'
+        echo "echo \"$file_path\""
+        echo "echo \"  3:1  error  Unexpected console statement  no-console\""
+        echo 'exit 1'
+    } > "$TEST_DIR/node_modules/.bin/eslint"
+    chmod +x "$TEST_DIR/node_modules/.bin/eslint"
+    # Neutral tool_response WITHOUT the path, so the ONLY source of the bracketed
+    # path in the output is the eslint header line captured by the per-file grep.
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$file_path" "edit applied")
+    cd "$TEST_DIR"
+    local result
+    result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
+    local trimmed
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    [[ "$trimmed" == *"--- Lint errors (eslint) ---"* ]]
+    # The per-file branch (grep -F -B1 -A2) includes the header path line, which
+    # carries the bracketed path; the coarse fallback (keyword grep) would not.
+    [[ "$trimmed" == *"[id]/page.tsx"* ]]
+}
+
 @test "Phase 3: tsc + eslint both fire, sections appear in order" {
     enable_rewriter
     mkdir -p "$TEST_DIR/node_modules/.bin"

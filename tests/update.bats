@@ -59,6 +59,25 @@ teardown() {
     [ "$manifest_version" = "$expected" ]
 }
 
+# BUG 5: create_backup captured the success() log line together with the path,
+# so BACKUP_DIR held "[OK] Backup created...\n<path>" — a non-directory. The
+# summary's `[[ -d "$BACKUP_DIR" ]]` therefore always failed and the
+# "Backup available:" line never printed. create_backup must echo ONLY the path.
+@test "update.sh prints the backup path in the summary after a real update" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # The backup message reaches the user (stderr, no longer swallowed).
+    [[ "$output" == *"Backup created"* ]]
+    # The summary now resolves BACKUP_DIR as a real directory.
+    [[ "$output" == *"Backup available:"* ]]
+    # And a real backup directory exists on disk.
+    local nbackups
+    nbackups=$(find "$TEST_DIR/proj" -type d -name '*.backup.*' | wc -l | tr -d ' ')
+    [ "$nbackups" -ge 1 ]
+}
+
 @test "update.sh --dry-run does NOT modify .claude/foundation.json" {
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
     # Force an old version into the manifest

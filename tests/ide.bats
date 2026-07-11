@@ -149,6 +149,21 @@ teardown() {
     [[ "$output" == *"manquant"* ]] || [[ "$output" == *"⚠"* ]] || [[ "$output" == *"✗"* ]]
 }
 
+# BUG 4: ((issues++)) returns 1 on the 0->1 increment under set -e, killing the
+# script at the FIRST missing file. A .vscode/ that exists but is empty must
+# list ALL missing items and exit nonzero once (not die after the first).
+@test "ide.sh check vscode lists all missing items when .vscode exists but is empty" {
+    mkdir -p "$TEST_PROJECT/.vscode"
+    run "$IDE_SCRIPT" check vscode "$TEST_PROJECT"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"settings.json"* ]]
+    [[ "$output" == *"tasks.json"* ]]
+    [[ "$output" == *"extensions.json"* ]]
+    [[ "$output" == *"snippets"* ]]
+    # Reached the summary rather than dying mid-loop.
+    [[ "$output" == *"missing"* ]]
+}
+
 # =============================================================================
 # VSCode remove tests
 # =============================================================================
@@ -230,6 +245,15 @@ teardown() {
     "$IDE_SCRIPT" setup all "$TEST_PROJECT"
     run "$IDE_SCRIPT" check all "$TEST_PROJECT"
     [[ "$status" -eq 0 ]]
+}
+
+# BUG 4: check_vim had no issue counter and no return, so check_all never counted
+# a missing vim config and wrongly printed the all-complete message.
+@test "ide.sh check all does not report all-complete when vim config is missing" {
+    "$IDE_SCRIPT" setup all "$TEST_PROJECT"
+    rm -f "$TEST_PROJECT/.vimrc.claude"
+    run "$IDE_SCRIPT" check all "$TEST_PROJECT"
+    [[ "$output" != *"All IDE configurations are complete"* ]]
 }
 
 # =============================================================================

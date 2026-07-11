@@ -232,7 +232,7 @@ uninstall() {
     if [[ -d "$TARGET_DIR/.claude" ]]; then
         local cmd_count
         local skills_count
-        cmd_count=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+        cmd_count=$(find "$TARGET_DIR/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || true)
         skills_count=$(count_dirs "$TARGET_DIR/.claude/skills")
         echo "  - .claude/ ($cmd_count commands, $skills_count skills)"
         files_to_remove+=(".claude/")

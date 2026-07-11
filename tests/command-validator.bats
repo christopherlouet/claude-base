@@ -222,6 +222,17 @@ run_validator() {
     [ -z "$bad" ]
 }
 
+# BUG 8: HOOK_INPUT is an env var Claude Code never sets — hooks receive their
+# payload on stdin. Any hook still reading $HOOK_INPUT logs an empty payload.
+@test "settings.json: no hook reads the unset HOOK_INPUT env var" {
+    local settings="$BASE_DIR/.claude/settings.json"
+    [ -f "$settings" ]
+    local bad
+    bad=$(jq -r '.hooks[][]?.hooks[]?.command // empty' "$settings" \
+        | grep -F 'HOOK_INPUT' || true)
+    [ -z "$bad" ]
+}
+
 # --- CATEGORY 9: verification bypass (git --no-verify) ----------------------
 # Blocks bypassing the pre-commit/pre-push gates; must not touch unrelated -n.
 

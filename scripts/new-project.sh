@@ -392,54 +392,60 @@ analyze_existing_cicd() {
 
     # Analyze GitHub Actions
     if [[ -d "$dir/.github/workflows" ]]; then
-        local workflow_files
-        workflow_files=$(ls "$dir/.github/workflows"/*.yml "$dir/.github/workflows"/*.yaml 2>/dev/null || true)
+        # Collect workflow files into an array so paths containing spaces stay
+        # intact (a bare `ls | xargs grep` word-splits a project path like
+        # ".../my project/" and grep never sees the real files).
+        local workflow_files=()
+        local wf
+        for wf in "$dir/.github/workflows"/*.yml "$dir/.github/workflows"/*.yaml; do
+            [[ -f "$wf" ]] && workflow_files+=("$wf")
+        done
 
-        if [[ -n "$workflow_files" ]]; then
+        if [[ ${#workflow_files[@]} -gt 0 ]]; then
             # Check automated tests
-            if echo "$workflow_files" | xargs grep -l "npm test\|yarn test\|pnpm test\|bun test\|pytest\|go test\|cargo test\|mvn test" &>/dev/null; then
+            if grep -lE "npm test|yarn test|pnpm test|bun test|pytest|go test|cargo test|mvn test" "${workflow_files[@]}" &>/dev/null; then
                 present+=("Automated tests")
             else
                 missing+=("Automated tests")
             fi
 
             # Check lint
-            if echo "$workflow_files" | xargs grep -l "eslint\|npm run lint\|yarn lint\|flake8\|pylint\|golint\|clippy" &>/dev/null; then
+            if grep -lE "eslint|npm run lint|yarn lint|flake8|pylint|golint|clippy" "${workflow_files[@]}" &>/dev/null; then
                 present+=("Linting")
             else
                 missing+=("Linting")
             fi
 
             # Check security audit
-            if echo "$workflow_files" | xargs grep -l "npm audit\|snyk\|safety\|gosec\|cargo audit\|trivy" &>/dev/null; then
+            if grep -lE "npm audit|snyk|safety|gosec|cargo audit|trivy" "${workflow_files[@]}" &>/dev/null; then
                 present+=("Security audit")
             else
                 missing+=("Security audit")
             fi
 
             # Check cache
-            if echo "$workflow_files" | xargs grep -l "actions/cache" &>/dev/null; then
+            if grep -lE "actions/cache" "${workflow_files[@]}" &>/dev/null; then
                 present+=("Dependency cache")
             else
                 missing+=("Dependency cache")
             fi
 
             # Check coverage
-            if echo "$workflow_files" | xargs grep -l "codecov\|coveralls\|coverage" &>/dev/null; then
+            if grep -lE "codecov|coveralls|coverage" "${workflow_files[@]}" &>/dev/null; then
                 present+=("Coverage upload")
             else
                 missing+=("Coverage upload")
             fi
 
             # Check PR checks
-            if [[ -f "$dir/.github/workflows/pr-check.yml" ]] || echo "$workflow_files" | xargs grep -l "pull_request.*opened\|commitlint\|semantic-pull-request" &>/dev/null; then
+            if [[ -f "$dir/.github/workflows/pr-check.yml" ]] || grep -lE "pull_request.*opened|commitlint|semantic-pull-request" "${workflow_files[@]}" &>/dev/null; then
                 present+=("PR validation")
             else
                 missing+=("PR validation")
             fi
 
             # Check release automation
-            if echo "$workflow_files" | xargs grep -l "release\|changelog\|gh-release\|action-gh-release" &>/dev/null; then
+            if grep -lE "release|changelog|gh-release|action-gh-release" "${workflow_files[@]}" &>/dev/null; then
                 present+=("Automated release")
             else
                 missing+=("Automated release")
@@ -447,9 +453,9 @@ analyze_existing_cicd() {
         fi
     fi
 
-    # Store results
-    CICD_MISSING=("${missing[@]}")
-    CICD_PRESENT=("${present[@]}")
+    # Store results (empty-array-safe expansion for bash < 4.4 under set -u).
+    CICD_MISSING=(${missing[@]+"${missing[@]}"})
+    CICD_PRESENT=(${present[@]+"${present[@]}"})
 }
 
 suggest_cicd_improvements() {
@@ -2340,5 +2346,7 @@ main() {
     fi
 }
 
-# Run the script
-main "$@"
+# Run the script (only when executed directly, not when sourced by tests).
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

@@ -165,7 +165,7 @@ check_cli_version() {
         local raw_version
         raw_version=$(claude --version 2>/dev/null || echo "")
         # Extract the version number (format: "Claude Code vX.Y.Z" or "X.Y.Z")
-        CLI_LOCAL_VERSION=$(echo "$raw_version" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+        CLI_LOCAL_VERSION=$(echo "$raw_version" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)
         if [[ -z "$CLI_LOCAL_VERSION" ]]; then
             CLI_LOCAL_VERSION="unknown"
         fi
@@ -196,7 +196,7 @@ check_cli_version() {
         local response
         if response=$(curl "${curl_opts[@]}" "$GITHUB_API" 2>/dev/null); then
             # Extract tag_name from JSON
-            CLI_REMOTE_VERSION=$(echo "$response" | grep -oE '"tag_name"\s*:\s*"[^"]*"' | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+            CLI_REMOTE_VERSION=$(echo "$response" | grep -oE '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)
 
             if [[ -n "$CLI_REMOTE_VERSION" ]]; then
                 cache_write "$cache_key" "$CLI_REMOTE_VERSION"
@@ -209,7 +209,7 @@ check_cli_version() {
             fi
 
             # Extract the release URL
-            CLI_RELEASE_URL=$(echo "$response" | grep -oE '"html_url"\s*:\s*"[^"]*"' | head -1 | sed 's/"html_url"\s*:\s*"//;s/"//')
+            CLI_RELEASE_URL=$(echo "$response" | grep -oE '"html_url"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/"html_url"[[:space:]]*:[[:space:]]*"//;s/"//' || true)
         else
             CLI_STATUS="error"
             warning "Unable to reach GitHub (offline or rate limit)"
@@ -268,7 +268,7 @@ check_skills() {
         # Extract skills from the page (basic parsing)
         # Expected format: links to skills with names and descriptions
         local skills_count
-        skills_count=$(echo "$response" | grep -ciE 'skill|claude' || echo "0")
+        skills_count=$(echo "$response" | grep -ciE 'skill|claude' || true)
 
         if [[ "$skills_count" -gt 0 ]]; then
             SKILLS_STATUS="ok"

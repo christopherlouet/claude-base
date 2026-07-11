@@ -522,14 +522,14 @@ check_vscode() {
 
     if [[ ! -d "$config_dir" ]]; then
         echo -e "  ${RED}✗${NC} .vscode directory missing"
-        ((issues++))
+        ((issues++)) || true
     else
         for file in settings.json tasks.json extensions.json; do
             if [[ -f "$config_dir/$file" ]]; then
                 echo -e "  ${GREEN}✓${NC} $file"
             else
                 echo -e "  ${YELLOW}⚠${NC} $file missing"
-                ((issues++))
+                ((issues++)) || true
             fi
         done
 
@@ -537,7 +537,7 @@ check_vscode() {
             echo -e "  ${GREEN}✓${NC} claude-base.code-snippets"
         else
             echo -e "  ${YELLOW}⚠${NC} snippets missing"
-            ((issues++))
+            ((issues++)) || true
         fi
     fi
 
@@ -746,20 +746,20 @@ check_idea() {
 
     if [[ ! -d "$config_dir" ]]; then
         echo -e "  ${RED}✗${NC} .idea directory missing"
-        ((issues++))
+        ((issues++)) || true
     else
         if [[ -d "$config_dir/runConfigurations" ]]; then
             echo -e "  ${GREEN}✓${NC} Run configurations"
         else
             echo -e "  ${YELLOW}⚠${NC} Run configurations missing"
-            ((issues++))
+            ((issues++)) || true
         fi
 
         if [[ -d "$config_dir/codeStyles" ]]; then
             echo -e "  ${GREEN}✓${NC} Code style"
         else
             echo -e "  ${YELLOW}⚠${NC} Code style missing"
-            ((issues++))
+            ((issues++)) || true
         fi
     fi
 
@@ -854,13 +854,18 @@ check_vim() {
 
     info "Checking the Vim configuration..."
 
+    local issues=0
+
     if [[ -f "$dir/.vimrc.claude" ]]; then
         echo -e "  ${GREEN}✓${NC} .vimrc.claude"
         success "Vim configuration present"
     else
         echo -e "  ${YELLOW}⚠${NC} .vimrc.claude missing"
         warning "Run: ./scripts/ide.sh setup vim"
+        ((issues++)) || true
     fi
+
+    return $issues
 }
 
 remove_vim() {

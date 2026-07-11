@@ -397,12 +397,16 @@ create_backup() {
 
     if [[ -d "$TARGET_DIR/$COMMANDS_SUBDIR" ]]; then
         if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Backup → $backup_dir"
+            # Diagnostics go to stderr so stdout (captured by the caller) is
+            # ONLY the backup path — see BACKUP_DIR=$(create_backup).
+            echo -e "${DIM}[DRY-RUN]${NC} Backup → $backup_dir" >&2
             # Set BACKUP_DIR even in DRY_RUN so downstream code doesn't break
             echo "$backup_dir"
         else
             cp -r "$TARGET_DIR/$COMMANDS_SUBDIR" "$backup_dir"
-            success "Backup created: $backup_dir"
+            # Message to stderr: stdout must carry ONLY the path so the caller's
+            # BACKUP_DIR is a bare directory the summary can test with [[ -d ]].
+            success "Backup created: $backup_dir" >&2
             echo "$backup_dir"
         fi
     fi

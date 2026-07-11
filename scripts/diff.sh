@@ -224,14 +224,18 @@ compare_commands() {
         done < <(find "$local_dir" -name "*.md" -type f 2>/dev/null)
     fi
 
-    # Deduplicate and sort
+    # Deduplicate and sort (empty-array-safe expansion for bash < 4.4).
     local unique_files
-    unique_files=$(printf '%s\n' "${all_files[@]}" | sort -u)
+    unique_files=$(printf '%s\n' ${all_files[@]+"${all_files[@]}"} | sort -u)
 
-    # Compare each file
-    for rel_path in $unique_files; do
+    # Compare each file. Read line-by-line so filenames containing spaces stay
+    # intact (a bare `for x in $unique_files` word-splits them and drops the
+    # spaced entry from the report).
+    local rel_path
+    while IFS= read -r rel_path; do
+        [[ -n "$rel_path" ]] || continue
         compare_file "$base_dir/$rel_path" "$local_dir/$rel_path" "$rel_path" "commands"
-    done
+    done <<< "$unique_files"
 }
 
 compare_skills() {
@@ -257,16 +261,19 @@ compare_skills() {
         done
     fi
 
-    # Deduplicate and sort
+    # Deduplicate and sort (empty-array-safe expansion for bash < 4.4).
     local unique_skills
-    unique_skills=$(printf '%s\n' "${all_skills[@]}" | sort -u)
+    unique_skills=$(printf '%s\n' ${all_skills[@]+"${all_skills[@]}"} | sort -u)
 
-    # Compare each skill
-    for skillname in $unique_skills; do
+    # Compare each skill. Read line-by-line so skill dir names containing
+    # spaces stay intact (word-splitting would drop the spaced entry).
+    local skillname
+    while IFS= read -r skillname; do
+        [[ -n "$skillname" ]] || continue
         local base_skill="$base_dir/$skillname/SKILL.md"
         local local_skill="$local_dir/$skillname/SKILL.md"
         compare_file "$base_skill" "$local_skill" "$skillname/SKILL.md" "skills"
-    done
+    done <<< "$unique_skills"
 }
 
 compare_settings() {

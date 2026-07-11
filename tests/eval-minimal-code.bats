@@ -52,6 +52,16 @@ mk_solution() {
     [ "$(printf '%s' "$output" | jq -r '.hasTests')" = "true" ]
 }
 
+# BUG 9: `grep -cvE ... || echo 0` double-emits "0\n0" when a source file has
+# zero non-blank lines, which crashes the $((total + n)) arithmetic under set -e.
+@test "eval score: an all-blank source file yields loc 0 without a shell crash" {
+    mkdir -p "$TEST_DIR/sol"
+    printf '\n\n   \n' > "$TEST_DIR/sol/blank.js"   # only blank / whitespace lines
+    run "$EVAL" score "$TEST_DIR/sol" "$TEST_DIR/faketask"
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.loc')" = "0" ]
+}
+
 @test "eval score: correctness=fail when the task's verify rejects the solution" {
     mk_solution "$TEST_DIR/sol" 0 no 0      # wrong answer
     run "$EVAL" score "$TEST_DIR/sol" "$TEST_DIR/faketask"

@@ -49,7 +49,7 @@ _loc() {
     local dir="$1" total=0 f n
     while IFS= read -r f; do
         [ -n "$f" ] || continue
-        n=$(grep -cvE '^[[:space:]]*$' "$f" 2>/dev/null || echo 0)
+        n=$(grep -cvE '^[[:space:]]*$' "$f" 2>/dev/null || true)
         total=$((total + n))
     done < <(_source_files "$dir")
     printf '%s' "$total"
