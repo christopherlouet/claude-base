@@ -9,7 +9,7 @@ shinpr/ai-coding-project-boilerplate, moai-adk, and others).
 *engineering discipline*: an enforced Explore → Specify → Plan → TDD → Audit → Commit
 workflow, verification + safety hooks, stack-aware path-scoped rules, auto-detected
 presets, an opt-in module system, a community-skill curation engine, and a real
-(1300+) bats test suite with CI. The gap is **distribution and onboarding**, not
+(1600+) bats test suite with CI. The gap is **distribution and onboarding**, not
 capability — peers with a fraction of the engineering rigor have far more adoption
 because they are easier to discover and to start with.
 
@@ -39,6 +39,13 @@ before new features.
 > measuring whether rules actually fire, the `doctor` diagnostic, and the security
 > hardening pack. When in doubt, prefer a depth/safety item over a reach item.
 
+> **Status refresh (2026-07-11).** A 5-agent full-project analysis re-baselined this
+> roadmap: shipped items are now checked below, and a "route to stable" (functional
+> bugs, test-suite honesty, docs truth, native-reduction pointers, prevention gates)
+> was executed ahead of the next roadmap cycle. The one open STRATEGIC item carried
+> forward is the **multi-LLM eval column** (P3, rule-efficacy follow-up) — the missing
+> number behind the foundation-value question.
+
 Priorities are ordered P0 (highest leverage) → P4 (strategic bets needing a
 decision). Effort: **S** ≈ hours, **M** ≈ a few sessions, **L** ≈ multi-PR.
 *(Priority numbers reflect strategic leverage for adoption; the maintainer's
@@ -59,9 +66,8 @@ wrappers (only ~2 pointer agents, ~2 short commands) — so the audit must targe
   Finding: the surface is mostly earned (≈70% of items genuinely distinct), not bloated —
   aggressive lean-to-20 is NOT supported. Targeted consolidation yields ~110 cmd / ~48
   agents / 53 skills (−18-20 cmds, −13 passthrough agents). Sequenced into 4 waves.
-- [ ] **Decide the target** (maintainer): full targeted consolidation (4 waves) vs Wave-1-only
-  (collapse the 13 passthrough agents — safest zero-loss win). Then execute wave by wave
-  via the module-change loop (bats RED→GREEN, counts regen, one PR per wave).
+- [x] **Decide the target** (maintainer): decided AND executed — all 4 waves shipped and
+  released in v5.0.0 (2026-06-20, #335-#355): ~130→106 commands, 63→45 agents.
 - [ ] Re-run the tri-modal (command vs agent vs skill) overlap analysis interrupted
   in a prior session (carried over from the deep-analysis backlog).
 
@@ -89,7 +95,8 @@ wrappers (only ~2 pointer agents, ~2 short commands) — so the audit must targe
 
 ## P2 — Double-use features (serve both quality and adoption)
 
-- [ ] **`doctor` / health-check command** (S–M). Diagnose the installed config in the
+- [x] **`doctor` / health-check command** — shipped (`scripts/doctor.sh`, 29 checks; exit
+  semantics pinned by tests 2026-07-11). Diagnose the installed config in the
   *user's* repo: are hooks firing, is MCP wired, is settings.json sane, is the
   foundation version drifted? Would have caught the #330/#331 silent-no-op hooks bug
   AND the downstream settings drift seen on a consumer project. Demo-able, builds
@@ -104,7 +111,8 @@ gates instead of satisfying them — the foundation's safety/discipline moat):
   weakening an existing linter/formatter config; CATEGORY 9 blocks `git --no-verify`
   / `commit -n`. Advisory nudge on the agent (not a hard boundary), with a granular
   `SKIP_NO_VERIFY_CHECK` opt-out. *(source: affaan-m/ecc, verified + re-implemented.)*
-- [ ] **Stub / hollow-test substance gate** (M) — **next in this thread**. Detect
+- [x] **Stub / hollow-test substance gate** — shipped 2026-06-27 (#415: substance-check.sh
+  + PostToolUse hook + qa/rule wiring). Detect
   stubs (`throw "not implemented"`, hardcoded returns) and assertion-free tests that
   coverage % misses (a test counts as evidence only if it ran AND exercised an
   acceptance criterion). Closes the TDD-gaming hole. *(source: shinpr `runnableCheck`.)*
@@ -112,7 +120,10 @@ gates instead of satisfying them — the foundation's safety/discipline moat):
   the final message contains cop-outs ("pre-existing", "out of scope",
   problems-listed-not-fixed). *(source: trailofbits.)*
 
-- [ ] **Measure whether path-scoped rules actually fire & help** (M). Open question
+- [x] **Measure whether path-scoped rules actually fire & help** — shipped 2026-06-27
+  (#416, eval/rule-efficacy): verdict is MODEL-DEPENDENT (Opus largely redundant, Haiku
+  needs the rules) → rules are multi-LLM portability insurance. Multi-LLM eval column
+  (more samples + a non-Claude GEN_CMD) is the remaining strategic follow-up. Open question
   surfaced this session: it is unverified whether the 32 `.claude/rules/*.md`
   (`paths:` frontmatter) genuinely reach the model at edit time and change output, or
   are inert docs (sources disagree: repo README says auto-activated, an older memory
@@ -124,7 +135,7 @@ gates instead of satisfying them — the foundation's safety/discipline moat):
   `validate-counts`. *(source: claude-toolbox `plugin-graph`)*
 - [ ] **Behavioral evals for skills/agents** (M). Fixture → hidden prompt → assertions,
   graded by a sub-agent against captured output. Tests *reasoning* ("does qa-security
-  catch this injection?"), not just wiring — the one thing 1100+ structural tests
+  catch this injection?"), not just wiring — the one thing 1600+ structural tests
   don't cover. *(source: claude-toolbox `evals/`)*
 - [ ] **Security hardening pack** (S–M). Hard numeric quality limits (function length,
   complexity, params, line width, zero-warnings); supply-chain defaults (exact

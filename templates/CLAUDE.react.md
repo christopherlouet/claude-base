@@ -152,7 +152,7 @@ The following hooks are configured in `.claude/settings.json`:
 | `exploring-codebase` | "explore", "understand" | Analyze an existing codebase |
 | `planning-implementation` | "plan", "architecture" | Define a plan before coding |
 | `test-driven-development` | "TDD", "test first" | Red-Green-Refactor cycle |
-| `reviewing-code` | "review", "verify" | In-depth code review |
+| `qa-review` | "review", "verify" | In-depth code review |
 | `debugging-issues` | "debug", "bug", "error" | Methodical diagnosis |
 | `generating-commit-messages` | "commit", "message" | Conventional Commits |
 | `creating-pull-requests` | "PR", "pull request" | Complete and documented PR |

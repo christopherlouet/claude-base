@@ -2,7 +2,7 @@
 name: wcag-audit
 description: Accessibility audit based on WCAG 2.1/2.2. Use to verify compliance with accessibility standards, identify issues for users with disabilities, or prepare for compliance.
 tools: Read, Grep, Glob
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: Edit, Write, Bash, NotebookEdit
 ---

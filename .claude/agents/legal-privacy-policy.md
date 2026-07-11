@@ -2,7 +2,7 @@
 name: legal-privacy-policy
 description: GDPR privacy policy generation. Use to create or update the privacy policy.
 tools: Read, Grep, Glob, Edit, Write
-model: haiku
+model: sonnet
 permissionMode: default
 ---
 

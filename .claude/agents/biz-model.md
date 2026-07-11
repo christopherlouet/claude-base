@@ -2,7 +2,7 @@
 name: biz-model
 description: Business analysis and business model proposal. Use to define a business model, create a Lean Canvas, or evaluate the commercial viability of a project.
 tools: Read, Grep, Glob, WebSearch
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: Edit, Write, Bash, NotebookEdit
 ---

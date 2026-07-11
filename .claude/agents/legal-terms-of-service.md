@@ -2,7 +2,7 @@
 name: legal-terms-of-service
 description: Generation of Terms of Service (ToS). Use to create or update the ToS of a service.
 tools: Read, Grep, Glob, Edit, Write
-model: haiku
+model: sonnet
 permissionMode: default
 ---
 

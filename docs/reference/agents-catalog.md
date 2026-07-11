@@ -161,15 +161,15 @@ Claude automatically delegates to specialized agents (isolated context, restrict
 | Domain | Agents | Models |
 |--------|--------|--------|
 | Workflow & Doc | `work-explore`, `work-quick`, `work-batch`, `doc-onboard`, `doc-generate`, `doc-changelog`, `doc-explain` | haiku/sonnet |
-| Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-e2e`, `qa-chrome` | haiku/sonnet/**opus** (security, audit, loop) |
+| Quality & Audits | `qa-audit`, `qa-loop`, `qa-security`, `qa-perf`, `wcag-audit`, `qa-claudemd`, `qa-e2e`, `qa-chrome` | sonnet/**opus** (security, audit, loop) |
 | Operations | `ops-deps`, `ops-health`, `ops-docker`, `ops-deploy`, `ops-ci`, `ops-database`, `ops-monitoring`, `ops-infra-code`, `ops-proxmox`, `ops-opnsense`, `ops-cost` | haiku/sonnet |
-| Development | `dev-debug`, `dev-flutter`, `dev-document`, `dev-tdd` | haiku/sonnet (tdd, debug) |
-| Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-localization`, `growth-cro` | haiku |
-| Data | `data-pipeline` | haiku/sonnet |
-| Legal | `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service` | haiku/sonnet |
+| Development | `dev-debug`, `dev-flutter`, `dev-document`, `dev-tdd` | sonnet/**opus** (tdd, debug) |
+| Business & Growth | `biz-model`, `biz-competitor`, `biz-mvp`, `biz-personas`, `growth-seo`, `growth-analytics`, `growth-landing`, `growth-localization`, `growth-cro` | sonnet |
+| Data | `data-pipeline` | sonnet |
+| Legal | `legal-rgpd`, `legal-payment`, `legal-privacy-policy`, `legal-terms-of-service` | sonnet |
 
 ### Agent Configuration
 
 Each agent defines: `model` (haiku/sonnet/opus), `permissionMode` (plan/default), `disallowedTools`, `hooks`, `skills`.
 
-**Model distribution**: 10 haiku (trivial operations) / 29 sonnet (default) / 5 opus (critical reasoning: `qa-security`, `qa-audit`, `qa-loop`, `dev-tdd`, `dev-debug`). Read-only comprehension agents (`work-explore`, `doc-onboard`, `doc-explain`) run on sonnet — matching Anthropic's June 2026 change bumping the built-in Explore agent off haiku for exploration quality.
+**Model distribution**: 4 haiku (mechanical operations: `doc-changelog`, `ops-cost`, `ops-health`, `ops-deps`) / 35 sonnet (default) / 5 opus (critical reasoning: `qa-security`, `qa-audit`, `qa-loop`, `dev-tdd`, `dev-debug`). Read-only comprehension agents (`work-explore`, `doc-onboard`, `doc-explain`) run on sonnet — matching Anthropic's June 2026 change bumping the built-in Explore agent off haiku for exploration quality. Semantic analysis and legal/business drafting agents were bumped off haiku in July 2026 (2026-07-11 model-fit audit).

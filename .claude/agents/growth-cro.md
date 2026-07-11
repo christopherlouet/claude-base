@@ -2,7 +2,7 @@
 name: growth-cro
 description: Conversion rate optimization (CRO). Use to optimize conversions, improve a signup form, a checkout, a landing page, or an onboarding.
 tools: Read, Grep, Glob
-model: haiku
+model: sonnet
 permissionMode: plan
 disallowedTools: ["Edit", "Write", "Bash"]
 ---

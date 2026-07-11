@@ -7,7 +7,7 @@ allowed-tools:
   - Glob
   - Bash
 context: fork
-model: sonnet
+model: opus
 argument-hint: "[scope-or-module]"
 ---
 

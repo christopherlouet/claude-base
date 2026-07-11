@@ -467,7 +467,7 @@ ignore = { "212" }  -- Unused argument
 | `exploring-codebase` | "explore", "understand" | Analyze an existing config |
 | `planning-implementation` | "plan", "architecture" | Define a plan before modifying |
 | `test-driven-development` | "TDD", "test first" | Tests with plenary.nvim |
-| `reviewing-code` | "review", "verify" | Configuration review |
+| `qa-review` | "review", "verify" | Configuration review |
 | `debugging-issues` | "debug", "bug", "error" | Plugin diagnostics |
 | `generating-commit-messages` | "commit", "message" | Conventional Commits |
 | `creating-pull-requests` | "PR", "pull request" | Complete and documented PR |
