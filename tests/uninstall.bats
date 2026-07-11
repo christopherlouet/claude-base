@@ -118,6 +118,22 @@ teardown() {
     [ ! -f "$TEST_DIR/CLAUDE.md" ]
 }
 
+# BUG 2: .claude/ present but missing commands/ or skills/ subdirs must not
+# abort the run. `find` on a missing subdir exits 1 and, under set -e +
+# pipefail, killed the script right after the "Files to remove" header.
+@test "uninstall.sh --dry-run completes when .claude lacks commands/ and skills/" {
+    mkdir -p "$TEST_DIR/.claude"
+    echo '{}' > "$TEST_DIR/.claude/settings.json"
+    echo "# Test" > "$TEST_DIR/CLAUDE.md"
+
+    run "$UNINSTALL_SCRIPT" -y -n "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # Dry-run removes nothing.
+    [ -d "$TEST_DIR/.claude" ]
+    # The run reached the summary rather than dying at the find.
+    [[ "$output" == *".claude/"* ]]
+}
+
 # =============================================================================
 # Security tests
 # =============================================================================

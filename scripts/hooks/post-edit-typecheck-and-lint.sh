@@ -76,7 +76,7 @@ fi
 
 if [ "$RUN_ESLINT" = "1" ] && [ -x node_modules/.bin/eslint ]; then
     RAW_ESLINT=$(node_modules/.bin/eslint "$FILE_PATH" --max-warnings 0 2>&1 || true)
-    ESLINT_OUTPUT=$(printf '%s\n' "$RAW_ESLINT" | grep -B1 -A2 -e "$FILE_PATH" -e "$REL_PATH" 2>/dev/null | head -20 || true)
+    ESLINT_OUTPUT=$(printf '%s\n' "$RAW_ESLINT" | grep -F -B1 -A2 -e "$FILE_PATH" -e "$REL_PATH" 2>/dev/null | head -20 || true)
     if [ -z "$ESLINT_OUTPUT" ]; then
         ESLINT_OUTPUT=$(printf '%s\n' "$RAW_ESLINT" | grep -E '(error|warning|problem|^[[:space:]]+[0-9]+:[0-9]+)' | head -20 || true)
     fi

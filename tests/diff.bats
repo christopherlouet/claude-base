@@ -124,3 +124,20 @@ teardown() {
     run "$DIFF_SCRIPT" "$TEST_DIR"
     [[ "$output" == *"fichier"* ]] || [[ "$output" == *"file"* ]] || [[ "$output" == *"total"* ]]
 }
+
+# =============================================================================
+# Spaced filenames (regression)
+# =============================================================================
+
+@test "diff.sh reports a local-only command whose filename contains a space" {
+    # Regression: `for rel_path in $unique_files` word-splits a path like
+    # ".claude/commands/foo bar.md" so the spaced file never reaches
+    # compare_file and stays invisible in the drift report.
+    mkdir -p "$TEST_DIR/.claude/commands"
+    echo "# local only" > "$TEST_DIR/.claude/commands/foo bar.md"
+
+    run "$DIFF_SCRIPT" --deleted "$TEST_DIR"
+    # A local-only file is flagged as "deleted from the foundation"; the full
+    # spaced basename must appear in the report.
+    [[ "$output" == *"foo bar.md"* ]]
+}

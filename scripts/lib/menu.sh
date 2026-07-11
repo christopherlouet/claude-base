@@ -101,14 +101,13 @@ print_filtered_type_menu() {
     # menu — same behavior as today's flow.
     if [[ "$slug" = "other-generic" ]]; then
         print_type_menu ""
-        # Populate the filtered arrays with the full lists so the choice
-        # handler can resolve any pick.
-        local sk
-        if [[ -d "$BASE_DIR/.claude/presets" ]]; then
-            while IFS= read -r sk; do
-                _FILTERED_PRESETS+=("$(basename "$sk" .json)")
-            done < <(find "$BASE_DIR/.claude/presets" -maxdepth 2 -name "*.json" -type f 2>/dev/null | sort)
-        fi
+        # print_type_menu renders the 11 standard types (options 1..11) with
+        # no preset entries here (this branch only fires when detection found
+        # none — MATCHED_PRESETS is empty). Keep _FILTERED_PRESETS empty so
+        # apply_filtered_type_choice decodes choices 1..11 as standard types
+        # (n=0 → std_pos = choice - 1), matching the rendered menu. Populating
+        # it with on-disk presets desynced the handler from the menu and made
+        # choice 1 wrongly resolve to a preset instead of React.
         _FILTERED_STD_TYPES=("${_MENU_STD_TYPES[@]}")
         return 0
     fi

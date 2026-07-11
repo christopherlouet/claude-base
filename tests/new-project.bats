@@ -617,3 +617,41 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"claude-base add"* ]]
 }
+
+# =============================================================================
+# CI/CD analysis — path with spaces (regression)
+# =============================================================================
+
+@test "new-project.sh analyze_existing_cicd detects capabilities when the project path contains spaces" {
+    # Regression: workflow_files was piped to `xargs grep`, which word-splits
+    # a path like ".../my project/..." so grep never sees the real files and
+    # every capability is reported missing.
+    local proj="$TEST_DIR/my project"
+    mkdir -p "$proj/.github/workflows"
+    cat > "$proj/.github/workflows/ci.yml" <<'YAML'
+name: ci
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+      - run: npm test
+YAML
+
+    run env BASE_DIR="$BASE_DIR" bash -c '
+        source "$BASE_DIR/scripts/new-project.sh"
+        analyze_existing_cicd "$1"
+        printf "PRESENT:%s\n" "${CICD_PRESENT[@]-}"
+        printf "MISSING:%s\n" "${CICD_MISSING[@]-}"
+    ' _ "$proj"
+
+    [ "$status" -eq 0 ]
+    # The two capabilities the workflow declares must be classified PRESENT,
+    # each on its own line (so a substring match cannot leak from MISSING).
+    [[ "$output" == *"PRESENT:Automated tests"* ]]
+    [[ "$output" == *"PRESENT:Dependency cache"* ]]
+    [[ "$output" != *"MISSING:Automated tests"* ]]
+    [[ "$output" != *"MISSING:Dependency cache"* ]]
+}

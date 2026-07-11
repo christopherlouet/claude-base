@@ -255,22 +255,38 @@ teardown() {
 # Tests for foundation statistics
 # =============================================================================
 
-@test "count_agents counts .md files in commands" {
+# BUG 3: count_agents must count .claude/agents/*.md, NOT .claude/commands
+# (it was counting commands — 106 files — inflating every doctor/update report).
+@test "count_agents counts .md files in .claude/agents, not commands" {
     create_minimal_project
-    create_test_command "test-agent"
+    create_test_command "some-command"            # a command must NOT be counted
+    mkdir -p "$TEST_DIR/.claude/agents"
+    printf -- '---\nname: a1\n---\n' > "$TEST_DIR/.claude/agents/a1.md"
+    printf -- '---\nname: a2\n---\n' > "$TEST_DIR/.claude/agents/a2.md"
     run count_agents "$TEST_DIR"
     [ "$status" -eq 0 ]
-    [ "$output" -eq 1 ]
+    [ "$output" -eq 2 ]
 }
 
-@test "count_agents counts .md files in subdirectories" {
+@test "count_agents counts .md files in agents subdirectories" {
     create_minimal_project
-    create_test_command_in_subdir "work" "work-explore"
-    create_test_command_in_subdir "work" "work-plan"
-    create_test_command_in_subdir "dev" "dev-tdd"
+    mkdir -p "$TEST_DIR/.claude/agents/work" "$TEST_DIR/.claude/agents/dev"
+    printf -- '---\n' > "$TEST_DIR/.claude/agents/work/a.md"
+    printf -- '---\n' > "$TEST_DIR/.claude/agents/work/b.md"
+    printf -- '---\n' > "$TEST_DIR/.claude/agents/dev/c.md"
     run count_agents "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ "$output" -eq 3 ]
+}
+
+# Self-application: on the real foundation, count_agents must equal the actual
+# number of .claude/agents/*.md files (expected computed here, not hardcoded).
+@test "count_agents on the real foundation matches .claude/agents/*.md" {
+    local expected
+    expected=$(find "$BASE_DIR/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    run count_agents "$BASE_DIR"
+    [ "$status" -eq 0 ]
+    [ "$output" -eq "$expected" ]
 }
 
 @test "count_skills counts directories in skills" {

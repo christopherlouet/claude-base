@@ -457,7 +457,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[NOTIFICATION] Permission demandee: $(echo $HOOK_INPUT | head -c 200)\" >> /tmp/claude-notifications.log 2>/dev/null || true'",
+            "command": "bash -c 'echo \"[NOTIFICATION] Permission demandee: $(head -c 200)\" >> /tmp/claude-notifications.log 2>/dev/null || true'",
             "timeout": 5000,
             "async": true
           }
@@ -599,7 +599,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[PERM-DENIED] $(date +%Y-%m-%dT%H:%M:%S) $(echo \"$HOOK_INPUT\" | head -c 200)\" >> /tmp/claude-permissions.log 2>/dev/null || true'",
+            "command": "bash -c 'echo \"[PERM-DENIED] $(date +%Y-%m-%dT%H:%M:%S) $(head -c 200)\" >> /tmp/claude-permissions.log 2>/dev/null || true'",
             "timeout": 5000,
             "async": true
           }

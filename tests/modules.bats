@@ -718,6 +718,45 @@ run_module() {
 }
 
 # -----------------------------------------------------------------------
+# remove the LAST installed module → clean, empty manifest, exit 0
+# Regression: write_foundation_manifest was called with an unguarded
+# "${current_modules[@]}" — an empty array trips `set -u` on bash < 4.4
+# AFTER the files are deleted but BEFORE the manifest is rewritten, leaving
+# foundation.json still listing the removed module.
+# -----------------------------------------------------------------------
+
+@test "module remove: removing the only installed module leaves an empty module list with exit 0" {
+    setup_lean_project
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # Exactly one module recorded before removal.
+    [ "$(jq -r '.modules | length' "$TEST_DIR/.claude/foundation.json")" -eq 1 ]
+
+    run_module remove legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Manifest must be rewritten with an EMPTY module list (the removed
+    # module is gone, not still listed).
+    [ -f "$TEST_DIR/.claude/foundation.json" ]
+    [ "$(jq -r '.modules | length' "$TEST_DIR/.claude/foundation.json")" -eq 0 ]
+    run bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
+                 manifest_has_module '$TEST_DIR' legal"
+    [ "$status" -ne 0 ]
+}
+
+@test "module.sh: cmd_remove's manifest rewrite uses the empty-array guard idiom" {
+    # The runtime failure only reproduces on bash < 4.4 (empty-array + set -u),
+    # which we cannot install here — so pin the fix statically: the manifest
+    # rewrite must expand current_modules with the ${arr[@]+"${arr[@]}"} guard,
+    # never a bare "${current_modules[@]}".
+    grep -Fq 'write_foundation_manifest "$TARGET_DIR" "$version" "$preset" ${current_modules[@]+"${current_modules[@]}"}' \
+        "$REPO_ROOT_LOCAL/scripts/module.sh"
+    run grep -Fq 'write_foundation_manifest "$TARGET_DIR" "$version" "$preset" "${current_modules[@]}"' \
+        "$REPO_ROOT_LOCAL/scripts/module.sh"
+    [ "$status" -ne 0 ]
+}
+
+# -----------------------------------------------------------------------
 # dry-run — lists files to remove, writes nothing (CS-206)
 # -----------------------------------------------------------------------
 

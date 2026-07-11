@@ -61,6 +61,46 @@ teardown() {
 }
 
 # =============================================================================
+# BUG 6: personal-memory dir slug must mirror Claude Code's
+# replace(/[^a-zA-Z0-9]/g,"-"), NOT just sed 's|/|-|g'. Project paths with '_'
+# or '.' otherwise never resolve their memory dir → injection silently skipped.
+# =============================================================================
+
+@test "prompt-context: injects personal memory for a project path with '_' and '.'" {
+    local proj="$TEST_DIR/my_app.web"
+    mkdir -p "$proj"
+    local fake_home="$TEST_DIR/home"
+    # The slug Claude Code actually uses: every non-alphanumeric char -> '-'.
+    local slug
+    slug=$(printf '%s' "$proj" | sed 's|[^a-zA-Z0-9]|-|g')
+    local memdir="$fake_home/.claude/projects/$slug/memory"
+    mkdir -p "$memdir"
+    printf -- '- remember the widget quirk\n' > "$memdir/MEMORY.md"
+
+    run env HOME="$fake_home" CLAUDE_PROJECT_DIR="$proj" \
+        bash -c 'echo "{\"prompt\": \"add a users endpoint\"}" | "'"$HOOK_SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    local ctx
+    ctx=$(printf '%s' "$output" | jq -r '.hookSpecificOutput.additionalContext')
+    [[ "$ctx" == *"Personal memory"* ]]
+    [[ "$ctx" == *"remember the widget quirk"* ]]
+}
+
+@test "prompt-context: no personal-memory section when no memory dir matches" {
+    local proj="$TEST_DIR/my_app.web"
+    mkdir -p "$proj"
+    local fake_home="$TEST_DIR/home"
+    mkdir -p "$fake_home"
+
+    run env HOME="$fake_home" CLAUDE_PROJECT_DIR="$proj" \
+        bash -c 'echo "{\"prompt\": \"add a users endpoint\"}" | "'"$HOOK_SCRIPT"'"'
+    [ "$status" -eq 0 ]
+    local ctx
+    ctx=$(printf '%s' "$output" | jq -r '.hookSpecificOutput.additionalContext')
+    [[ "$ctx" != *"Personal memory"* ]]
+}
+
+# =============================================================================
 # Injected context content
 # =============================================================================
 

@@ -236,7 +236,7 @@ get_absolute_path() {
 count_files() {
     local dir="$1"
     local pattern="${2:-*}"
-    find "$dir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | wc -l | tr -d ' '
+    find "$dir" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | wc -l | tr -d ' ' || true
 }
 
 # Counts subdirectories
@@ -245,7 +245,7 @@ count_files() {
 # Return: Number of directories
 count_dirs() {
     local dir="$1"
-    find "$dir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' '
+    find "$dir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ' || true
 }
 
 # Asks the user for confirmation
@@ -650,13 +650,13 @@ section() {
 # Foundation statistics
 # =============================================================================
 
-# Counts the number of agents (.md files in commands/ and subdirectories)
+# Counts the number of agents (.md files in .claude/agents/ and subdirectories)
 # Arguments:
 #   $1 - Foundation path (optional)
 # Return: Number of agents
 count_agents() {
     local base_dir="${1:-$(get_base_dir)}"
-    find "$base_dir/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
+    find "$base_dir/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ' || true
 }
 
 # Counts the number of skills (directories in skills/)

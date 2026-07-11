@@ -86,7 +86,9 @@ fi
 
 # Personal memory (top 5 lines of MEMORY.md if present)
 MEMORY_SNIPPET=""
-MEMORY_FILE="$HOME/.claude/projects/$(printf '%s' "$PROJECT_DIR" | sed 's|/|-|g')/memory/MEMORY.md"
+# Claude Code derives the project dir name with replace(/[^a-zA-Z0-9]/g,"-"),
+# so any '.', '_' or other non-alphanumeric must map to '-' — not just '/'.
+MEMORY_FILE="$HOME/.claude/projects/$(printf '%s' "$PROJECT_DIR" | sed 's|[^a-zA-Z0-9]|-|g')/memory/MEMORY.md"
 if [ -f "$MEMORY_FILE" ]; then
     MEMORY_SNIPPET=$(head -5 "$MEMORY_FILE" 2>/dev/null | grep -E '^- ' || true)
 fi

@@ -1335,6 +1335,28 @@ EOF
     [[ "$output" == *"phaser"* ]]
 }
 
+@test "presets: other-generic filtered menu decodes choice 1 as a standard type, not a preset" {
+    # Regression: in the other/generic category the menu renders the 11
+    # standard types (1 = React) but the choice handler must NOT decode
+    # choice 1 as a preset. With _FILTERED_PRESETS populated, choice 1
+    # wrongly yielded PRESET_NAME=<first preset> and PROJECT_TYPE empty.
+    [ -f "$BASE_DIR/scripts/lib/menu.sh" ]
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/menu.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        MATCHED_PRESETS=()
+        PRESET_NAME=''
+        PROJECT_TYPE=''
+        print_filtered_type_menu 'other-generic' >/dev/null
+        apply_filtered_type_choice 1
+        echo \"PROJECT_TYPE=[\$PROJECT_TYPE] PRESET_NAME=[\$PRESET_NAME]\"
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"PROJECT_TYPE=[react]"* ]]
+    [[ "$output" == *"PRESET_NAME=[]"* ]]
+}
+
 @test "presets: apply_category_choice on empty input maps to other-generic (T012, CP1 default)" {
     [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
     run env BASE_DIR="$BASE_DIR" bash -c "
