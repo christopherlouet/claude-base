@@ -3,7 +3,7 @@ name: doc-generate
 description: Technical documentation generation. Use to create README, guides, API references, and user documentation.
 tools: Read, Grep, Glob, Edit, Write
 model: sonnet
-permissionMode: plan
+permissionMode: default
 disallowedTools: ["Bash"]
 ---
 
