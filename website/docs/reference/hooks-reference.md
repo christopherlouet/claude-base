@@ -108,6 +108,7 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Auto cargo check** | PostToolUse (Edit Cargo.toml) | cargo check |
 | **Coverage check** | PostToolUse (Edit test files) | Checks test coverage |
 | **Substance gate** | PostToolUse (Edit/Write/MultiEdit) | Advisory: runs `scripts/substance-check.sh` on the edited test/source file and surfaces hollow tests (no-assertion / always-true / skipped / empty) and implementation stubs (`not implemented`/`NotImplementedError`/`panic("TODO")`) that coverage % misses. Never blocks (exit 0 always). Disable: `SKIP_SUBSTANCE_CHECK=1` |
+| **Base integrity check** (`base-integrity-check.sh`) | PostToolUse (Edit/Write/NotebookEdit) | Advisory, foundation-repo only: when the edited file lives in `.claude/skills`/`agents`/`commands`/`rules/` or is `.claude/settings.json`, runs `validate-counts.sh` in warning mode as a reminder to sync counters / catalog / SessionStart message. Never blocks. Disable: `SKIP_BASE_INTEGRITY=1` |
 | **Setup init** | Setup (init) | Installs dependencies on first run |
 | **Setup maintenance** | Setup (maintenance) | Periodic audit and updates |
 | **Notification permission** | Notification (permission_prompt) | Logs permission requests |

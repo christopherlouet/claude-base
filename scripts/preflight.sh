@@ -55,6 +55,10 @@ else GATE_SHELLCHECK='echo "shellcheck absent - gate skipped"'; fi
 
 GATE_COUNTS="${PREFLIGHT_GATE_COUNTS:-bash scripts/validate-counts.sh}"
 
+# Conflict markers surviving in tracked files (the 2026-07-08 P0 class) —
+# instant scan, runs in --fast so it fires before every push.
+GATE_CONFLICTS="${PREFLIGHT_GATE_CONFLICTS:-bash scripts/check-conflict-markers.sh}"
+
 if [ -n "${PREFLIGHT_GATE_MANIFEST:-}" ]; then GATE_MANIFEST="$PREFLIGHT_GATE_MANIFEST"
 elif command -v bats >/dev/null 2>&1; then GATE_MANIFEST='bats tests/manifest-hooks-coverage.bats'
 else GATE_MANIFEST='echo "bats absent - gate skipped"'; fi
@@ -84,6 +88,7 @@ run_gate() {
 
 run_gate "shellcheck" "$GATE_SHELLCHECK"
 run_gate "counts"     "$GATE_COUNTS"
+run_gate "conflicts"  "$GATE_CONFLICTS"
 run_gate "manifest"   "$GATE_MANIFEST"
 [ "$MODE" = full ] && run_gate "bats (full)" "$GATE_FULL"
 
