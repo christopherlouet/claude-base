@@ -54,7 +54,9 @@ while IFS=$'\t' read -r label regex; do
     # ITSELF is a self-declared placeholder (e.g. AKIA…EXAMPLE). Keying on the
     # whole line let a real key slip through behind a same-line "// example"
     # comment — the placeholder word must be part of the secret, not elsewhere.
-    match=$(printf '%s' "$CONTENT" | grep -oE "$regex" 2>/dev/null | grep -vE "$PLACEHOLDER" | head -n1 || true)
+    # `--` before the pattern: the "Private key block" regex starts with `-----`,
+    # which grep otherwise parses as (unknown) options → exit 2, never matching.
+    match=$(printf '%s' "$CONTENT" | grep -oE -- "$regex" 2>/dev/null | grep -vE "$PLACEHOLDER" | head -n1 || true)
     if [ -n "$match" ]; then
         hit_label="$label"
         hit_line="$match"

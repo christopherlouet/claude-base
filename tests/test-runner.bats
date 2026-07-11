@@ -38,37 +38,46 @@ teardown() {
 }
 
 # =============================================================================
-# Execution tests
+# Option handling
 # =============================================================================
 
-@test "test.sh checks if bats is available" {
-    run "$TEST_SCRIPT" --check
-    # Should indicate whether bats is installed or not
-    [[ "$output" == *"bats"* ]] || [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
+@test "test.sh --help documents usage, key options, and examples" {
+    run "$TEST_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"USAGE"* ]]
+    [[ "$output" == *"OPTIONS"* ]]
+    [[ "$output" == *"--shard"* ]]
+    [[ "$output" == *"--dry-run"* ]]
+    [[ "$output" == *"--verbose"* ]]
+    [[ "$output" == *"EXAMPLES"* ]]
 }
 
-@test "test.sh can list available tests" {
-    run "$TEST_SCRIPT" --list 2>/dev/null || run "$TEST_SCRIPT" -l 2>/dev/null || true
-    # May fail if the option does not exist, but must not crash
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+@test "test.sh rejects an unknown option with exit 1 and names it" {
+    run "$TEST_SCRIPT" --nonexistent-option
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"Unknown option"* ]]
+    [[ "$output" == *"--nonexistent-option"* ]]
 }
 
 # =============================================================================
-# Option tests
+# FILTER selection (exercised via --dry-run so no bats run is required)
 # =============================================================================
 
-@test "test.sh accepts a specific test file" {
-    if command -v bats &>/dev/null; then
-        run "$TEST_SCRIPT" "$BATS_TEST_DIRNAME/common.bats"
-        [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]]
-    else
-        skip "bats not installed"
-    fi
+@test "test.sh applies a FILTER, selecting only matching test files" {
+    run "$TEST_SCRIPT" --dry-run common
+    [ "$status" -eq 0 ]
+    # Only files whose basename contains the filter are selected.
+    [[ "$output" == *"common.bats"* ]]
+    # A non-matching file must be excluded.
+    [[ "$output" != *"doctor.bats"* ]]
+    # Exactly one file matches "common".
+    [ "$(printf '%s\n' "$output" | grep -c '\.bats$')" -eq 1 ]
 }
 
-@test "test.sh --verbose increases verbosity" {
-    run "$TEST_SCRIPT" --verbose --help 2>/dev/null || run "$TEST_SCRIPT" -v --help 2>/dev/null || true
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+@test "test.sh errors with exit 1 when a FILTER matches no test file" {
+    run "$TEST_SCRIPT" --dry-run zzz-no-such-test-file
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"No test file"* ]]
 }
 
 # =============================================================================

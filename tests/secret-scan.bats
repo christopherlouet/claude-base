@@ -14,7 +14,15 @@ load 'test_helper'
 
 HOOK="$BATS_TEST_DIRNAME/../scripts/hooks/secret-scan.sh"
 
-setup() { command -v jq >/dev/null 2>&1 || skip "jq not available"; }
+setup() {
+    command -v jq >/dev/null 2>&1 || skip "jq not available"
+    # Run from a neutral cwd with no .gitleaks.toml so the hook's gitleaks
+    # defense-in-depth branch is deterministically NOT taken here — these cases
+    # exercise the built-in scan in isolation, and must pass identically whether
+    # or not the contributor has gitleaks installed. The dedicated gitleaks-branch
+    # tests below cd into their own dir (which DOES carry a .gitleaks.toml).
+    cd "$BATS_TEST_TMPDIR"
+}
 
 # build a PreToolUse payload with the given content
 payload() { jq -n --arg c "$1" '{tool_input:{content:$c}}'; }
@@ -42,6 +50,31 @@ payload() { jq -n --arg c "$1" '{tool_input:{content:$c}}'; }
     local s="https://hooks.slack.com/services/TAAAAAAAA/BBBBBBBBB/"; s="${s}abcdefghij1234567890XY"
     run bash "$HOOK" <<<"$(jq -n --arg c "$s" '{tool_input:{new_string:$c}}')"
     [ "$status" -eq 2 ]
+}
+
+@test "blocks a Slack bot token (xoxb)" {
+    local t="xoxb-"; t="${t}012345678901234567890abcdef"
+    run bash "$HOOK" <<<"$(payload "const slack = '$t';")"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"Slack token"* ]]
+}
+
+@test "blocks a Google API key (AIza)" {
+    # AIza + exactly 35 chars from [0-9A-Za-z_-]
+    local body="abcdefghijklmnopqrstuvwxyz"; body="${body}012345678"   # 26+9 = 35
+    local k="AIza"; k="${k}${body}"
+    run bash "$HOOK" <<<"$(payload "const g = \"$k\";")"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"Google"* ]]
+}
+
+@test "blocks a PRIVATE KEY block header" {
+    # Assembled from fragments so no contiguous "PRIVATE KEY" literal is committed.
+    local a="-----BEGIN RSA "; local b="PRIV"; local c="ATE KEY-----"
+    local pk="${a}${b}${c}"
+    run bash "$HOOK" <<<"$(payload "$pk")"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"Private key"* ]]
 }
 
 @test "blocks a secret inside a MultiEdit edits array" {

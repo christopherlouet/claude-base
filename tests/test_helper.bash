@@ -134,6 +134,27 @@ create_fake_foundation_repo() {
     git -C "$repo" tag v2.0.0
 }
 
+# Prepend a stub `claude` CLI to PATH so doctor.sh's "Claude Code CLI" check
+# passes deterministically. The foundation is meant to run in a claude-equipped
+# environment, but CI runners (and fresh checkouts) have no `claude` binary — so
+# doctor.sh would count that as a hard FAILURE and exit 1 on an otherwise-healthy
+# target, making its exit code environment-dependent. That non-determinism is
+# exactly why the doctor self-application tests used to accept "status in {0,1,2}".
+# Mocking an external dependency (the claude CLI) is permitted by the testing
+# rules. Must be called after setup_test_dir (needs $TEST_DIR); the PATH change is
+# confined to the current @test by bats' per-test process isolation.
+stub_claude_on_path() {
+    local bindir="$TEST_DIR/_stub_bin"
+    mkdir -p "$bindir"
+    cat > "$bindir/claude" << 'EOF'
+#!/bin/sh
+echo "2.1.0 (stub)"
+EOF
+    chmod +x "$bindir/claude"
+    PATH="$bindir:$PATH"
+    export PATH
+}
+
 # Check if gitleaks is installed
 skip_if_no_gitleaks() {
     if ! command -v gitleaks &>/dev/null; then

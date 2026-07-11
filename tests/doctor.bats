@@ -10,6 +10,10 @@ DOCTOR_SCRIPT="$BATS_TEST_DIRNAME/../scripts/doctor.sh"
 
 setup() {
     setup_test_dir
+    # Provide a stub `claude` CLI so doctor's exit code reflects the health of the
+    # TARGET, not whether this machine has the claude binary (CI has none). This
+    # makes the exit-0 assertions below deterministic across environments.
+    stub_claude_on_path
 }
 
 teardown() {
@@ -42,11 +46,11 @@ teardown() {
 # System diagnostic tests
 # =============================================================================
 
-@test "doctor.sh checks bash" {
-    run "$DOCTOR_SCRIPT" -q
-    # The script may succeed or fail depending on the environment
-    # but must run without crashing
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+@test "doctor.sh checks bash and passes on the healthy foundation" {
+    # Self-application: doctor on the foundation itself must succeed cleanly.
+    run "$DOCTOR_SCRIPT" "$BATS_TEST_DIRNAME/.."
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Bash"* ]]
 }
 
 @test "doctor.sh detects git" {
@@ -58,10 +62,12 @@ teardown() {
 # Project diagnostic tests
 # =============================================================================
 
-@test "doctor.sh works on an unconfigured project" {
+@test "doctor.sh exits 0 (warnings only, no failures) on an unconfigured project" {
+    # An empty project has no .claude/CLAUDE.md — all WARNINGS, zero FAILURES,
+    # so doctor exits 0. This pins that warnings never escalate to a failure.
     run "$DOCTOR_SCRIPT" "$TEST_DIR"
-    # Must run (may have warnings)
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Failed:"* ]]
 }
 
 @test "doctor.sh detects missing .claude" {
@@ -69,12 +75,24 @@ teardown() {
     [[ "$output" == *".claude"* ]] || [[ "$output" == *"Claude"* ]]
 }
 
-@test "doctor.sh validates a well-configured project" {
+@test "doctor.sh exits 0 on a healthy minimal project (known-good fixture)" {
     create_minimal_project "$TEST_DIR"
 
     run "$DOCTOR_SCRIPT" "$TEST_DIR"
-    # A minimal project should have fewer issues
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]
+}
+
+@test "doctor.sh exits 1 and names the problem on invalid settings.json (broken fixture)" {
+    # doctor's only fixture-triggerable FAILURE is invalid settings.json JSON
+    # (missing settings.json / .claude are warnings only). Exit code contract:
+    # CHECKS_FAILED > 0 -> exit 1, else exit 0 (there is no exit 2).
+    create_minimal_project "$TEST_DIR"
+    printf '{ this is not valid json' > "$TEST_DIR/.claude/settings.json"
+
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"settings.json"* ]]
+    [[ "$output" == *"invalid JSON"* ]]
 }
 
 @test "doctor.sh detects CLAUDE.md" {
@@ -132,11 +150,10 @@ teardown() {
 # Foundation integrity tests
 # =============================================================================
 
-@test "doctor.sh checks foundation integrity" {
-    # The foundation itself should pass the check
+@test "doctor.sh checks foundation integrity (foundation passes, exit 0)" {
+    # Self-application: the foundation itself must pass doctor with zero failures.
     run "$DOCTOR_SCRIPT" "$BATS_TEST_DIRNAME/.."
-    # May have warnings but should not crash
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]
 }
 
 @test "doctor.sh counts agents" {

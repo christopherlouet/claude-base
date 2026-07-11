@@ -19,6 +19,9 @@ DOCTOR="$BASE_DIR/scripts/doctor.sh"
 setup() {
     skip_if_no_jq
     setup_test_dir
+    # Stub the claude CLI so doctor's exit code reflects the bootstrapped
+    # project's health, not the CI runner's missing binary.
+    stub_claude_on_path
 }
 
 teardown() {
@@ -82,7 +85,7 @@ e2e_check_hooks() {
     [ "$status" -eq 0 ]
 
     run "$DOCTOR" "$target"
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]  # a cleanly bootstrapped preset must pass doctor
 
     e2e_check_hooks "$target"
 }
@@ -96,7 +99,7 @@ e2e_check_hooks() {
     [ "$status" -eq 0 ]
 
     run "$DOCTOR" "$target"
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]  # a cleanly bootstrapped preset must pass doctor
 
     e2e_check_hooks "$target"
 }
@@ -110,7 +113,7 @@ e2e_check_hooks() {
     [ "$status" -eq 0 ]
 
     run "$DOCTOR" "$target"
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]  # a cleanly bootstrapped preset must pass doctor
 
     e2e_check_hooks "$target"
 }
@@ -124,7 +127,7 @@ e2e_check_hooks() {
     [ "$status" -eq 0 ]
 
     run "$DOCTOR" "$target"
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]  # a cleanly bootstrapped preset must pass doctor
 
     e2e_check_hooks "$target"
 }
@@ -138,7 +141,7 @@ e2e_check_hooks() {
     [ "$status" -eq 0 ]
 
     run "$DOCTOR" "$target"
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]  # a cleanly bootstrapped preset must pass doctor
 
     e2e_check_hooks "$target"
 }
@@ -158,7 +161,7 @@ e2e_check_hooks() {
     [ "$status" -eq 0 ]
 
     run "$DOCTOR" "$target"
-    [[ "$status" -eq 0 ]] || [[ "$status" -eq 1 ]] || [[ "$status" -eq 2 ]]
+    [ "$status" -eq 0 ]  # a cleanly bootstrapped preset must pass doctor
 
     e2e_check_hooks "$target"
 }
