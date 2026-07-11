@@ -112,7 +112,10 @@ jobs:
   # counts gate and `npm ci` are platform-independent and already covered by the
   # ubuntu column, so they are intentionally omitted here — that npm install +
   # site generation was the slow part of this job and tested nothing macOS-
-  # specific. Runs on every push to main/develop and on PRs touching shell paths
+  # specific. Sharded like the ubuntu bats matrix: the single-runner suite was
+  # ~7 min on macOS — the whole job's cost, since the brew step rides the
+  # runner image's bottle cache (~10s) — and drops to the slowest shard (~2
+  # min). Runs on every push to main/develop and on PRs touching shell paths
   # (skipped on doc-only PRs). `continue-on-error: true` → never blocks a merge.
   lint-and-test-macos:
     name: Lint & Test (macos-latest)
@@ -120,6 +123,10 @@ jobs:
     needs: changes
     if: github.event_name == 'push' || needs.changes.outputs.shell == 'true'
     continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -135,10 +142,12 @@ jobs:
           # Put GNU grep ahead of BSD grep in PATH for subsequent steps
           echo "/opt/homebrew/opt/grep/libexec/gnubin" >> "$GITHUB_PATH"
 
-      - name: Run Bats tests
+      - name: Run Bats tests (shard ${{ matrix.shard }}/${{ strategy.job-total }})
         # ./scripts/test.sh runs bats with --jobs (GNU parallel, capped at 8) —
         # ~4x faster than serial; falls back to serial if parallel is absent.
-        run: ./scripts/test.sh
+        run: ./scripts/test.sh --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: Validate documentation counts (bash portability)
+        # Platform-portability probe, not a gate — one shard suffices.
+        if: matrix.shard == 1
         run: bash scripts/validate-counts.sh
