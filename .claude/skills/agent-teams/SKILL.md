@@ -76,28 +76,6 @@ export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        AGENT TEAM                                │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌──────────────┐                                               │
-│   │  TEAM LEAD   │ ←── You interact with the lead                │
-│   │ (coordinates)│                                               │
-│   └──────┬───────┘                                               │
-│          │                                                       │
-│          ├──── Shared Task List ────┐                             │
-│          │                          │                             │
-│    ┌─────┴─────┐  ┌──────────┐  ┌──┴───────┐                    │
-│    │ Teammate 1 │  │ Teammate 2│  │ Teammate 3│                   │
-│    │ (security) │  │ (perf)   │  │ (a11y)   │                   │
-│    └────────────┘  └──────────┘  └──────────┘                    │
-│          ↕              ↕              ↕                          │
-│       Direct messaging between agents                            │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
 | Component | Role |
 |-----------|------|
 | **Team Lead** | Main session, creates the team, coordinates the work |
@@ -105,58 +83,13 @@ export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 | **Task List** | Shared list of tasks with statuses and dependencies |
 | **Mailbox** | Messaging system for inter-agent communication |
 
-## Display modes
+## Mechanics: native docs own them
 
-| Mode | Description | Prerequisites |
-|------|-------------|---------------|
-| `in-process` | All teammates in the main terminal. Navigation: `Shift+Up/Down` | None |
-| `tmux` | Each teammate in its own tmux pane | tmux installed |
-| `auto` (default) | Split-panes if already in tmux, otherwise in-process | - |
-
-Configuration in `settings.json`:
-
-```json
-{
-  "teammateMode": "auto"
-}
-```
-
-Or via command line:
-
-```bash
-claude --teammate-mode tmux
-```
-
-## Keyboard shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| `Shift+Up/Down` | Navigate between teammates (in-process mode) |
-| `Shift+Tab` | Switch to delegate mode (lead = coordination only) |
-| `Ctrl+T` | Show/hide the task list |
-| `Enter` | Enter a teammate's session |
-| `Escape` | Interrupt a teammate's turn |
-
-## Team lifecycle
-
-```
-1. CREATE the team   → Describe the task and desired structure
-       │
-       ▼
-2. SPAWN teammates   → The lead creates the specialized agents
-       │
-       ▼
-3. COORDINATE        → Shared tasks, messaging, delegation
-       │
-       ▼
-4. SYNTHESIZE        → The lead combines the results
-       │
-       ▼
-5. SHUTDOWN          → Stop each teammate cleanly
-       │
-       ▼
-6. CLEANUP           → Clean up the team's resources
-```
+Display modes, keyboard shortcuts, the team lifecycle, and the current limitations
+are **native UI surface** — they change with the CLI and re-documenting them here
+has already drifted once (full re-sync needed at 2.1.198). See the official Agent
+Teams documentation for the current mechanics; this skill keeps only what the
+foundation adds: the decision guide, cost discipline, and the patterns below.
 
 ### Launch example
 
@@ -183,17 +116,6 @@ Delegate mode prevents the lead from implementing itself, forcing it to stay in 
 - **Explicit context**: give a detailed prompt to each teammate at spawn
 - **Plan approval**: for risky tasks, ask the lead to approve the plan before execution
 - **Regular monitoring**: check progress, redirect if needed
-
-## Known limitations
-
-| Limitation | Workaround |
-|------------|------------|
-| No resume for in-process teammates | The lead re-creates the team after `/resume` |
-| Only one team per session | Cleanup before creating a new team |
-| No nested teams | Only the lead can manage the team |
-| Fixed lead (no transfer) | The creator stays lead for the whole duration |
-| Two agents on the same file = overwrite | Split the work by file |
-| Split-panes not supported in VS Code / Windows Terminal | Use in-process mode |
 
 ## Pre-configured patterns
 
