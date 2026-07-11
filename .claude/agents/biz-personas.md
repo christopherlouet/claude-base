@@ -3,7 +3,7 @@ name: biz-personas
 description: Creation of user personas. Use to define typical customer profiles and their needs.
 tools: Read, Grep, Glob, Edit, Write
 model: sonnet
-permissionMode: plan
+permissionMode: default
 ---
 
 # Agent BIZ-PERSONAS

@@ -3,7 +3,7 @@ name: biz-mvp
 description: Definition of the MVP (Minimum Viable Product). Use to identify essential features and plan the launch.
 tools: Read, Grep, Glob, Edit, Write
 model: sonnet
-permissionMode: plan
+permissionMode: default
 ---
 
 # Agent BIZ-MVP

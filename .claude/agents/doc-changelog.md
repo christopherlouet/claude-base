@@ -3,7 +3,7 @@ name: doc-changelog
 description: Changelog maintenance following Keep a Changelog. Use to document changes between versions.
 tools: Read, Grep, Glob, Edit, Write
 model: haiku
-permissionMode: plan
+permissionMode: default
 disallowedTools: ["Bash"]
 ---
 
