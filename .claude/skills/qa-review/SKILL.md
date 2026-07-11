@@ -14,6 +14,12 @@ context: fork
 
 Identify quality, security, and maintainability issues BEFORE merge.
 
+## Native features first
+
+Claude Code ships a native **`/code-review`** that owns the review *execution*: effort levels from `low` to `max`, `--fix` to apply findings, `--comment` to post inline PR comments, and `ultra` for a multi-agent cloud review. Prefer it to run the review.
+
+**This skill's delta is the conventions the review is held to** — the checklist below (incl. the `substance-check.sh` gate native review does not run), the naming tables, and the severity taxonomy. Use them to brief or grade a native `/code-review` run, or as the manual protocol where the native command is unavailable.
+
 ## Instructions
 
 ### 1. Overview
@@ -147,8 +153,6 @@ Types:
 
 ## See also
 
-Anthropic ships an official **multi-agent code-review plugin** at [`anthropics/claude-plugins-official/plugins/code-review`](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/code-review) (18,629★, last commit 2026-05-06). It runs 4 parallel sub-agents and applies confidence scoring (default 80%). Different format from this skill (plugin vs SKILL.md) but same intent.
+The formerly-recommended official code-review *plugin* is superseded: `/code-review` is now **native in Claude Code** at multiple effort levels (incl. the multi-agent cloud `ultra` tier) — no plugin install needed. This skill keeps the checklist + conventions; the native command owns the orchestration.
 
-When working on a project where multi-agent parallel review is preferred, install the official plugin alongside this skill. This skill captures the **review checklist + workflow conventions** (security, performance, quality, atomic feedback); the plugin handles the parallel-agent orchestration. Both can coexist.
-
-Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.
+Full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/qa-skills-pilot-2026-05-06.md`.

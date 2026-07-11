@@ -14,14 +14,25 @@ context: fork
 
 ## Objective
 
-Save and transfer the context of a work session to enable efficient resumption in a later session or by another agent.
+Produce a **git-committable handoff document** (`.claude/handoff.md`) that transfers a work session's state to a *different* reader: another developer, another agent, another LLM, or a future session on another machine.
+
+## Native features first
+
+Claude Code natively covers resuming **your own** session — do not rebuild that here:
+
+| Need | Native answer |
+|------|---------------|
+| Resume my own session | `claude --resume <id>` (full context) |
+| Recap after a break or `/compact` | `/recap` |
+| Persistent preferences/decisions across sessions | auto memory (`~/.claude/memory/`) |
+
+**This skill's delta is the cross-boundary case**: native memory and `--resume` are personal and machine-local — they do not transfer to a teammate, a CI agent, another tool, or another workstation. A committed `handoff.md` does.
 
 ## When to use
 
-- End of a work session (save the state)
-- Task too complex for a single session
-- Handoff between developers/agents
-- Documentation of work in progress
+- Handoff between developers/agents/tools (the reader is NOT this session's owner)
+- Work continuing on another machine or in an environment without your `~/.claude`
+- Documentation of work in progress that must live IN the repo
 
 ## Handoff format
 
@@ -44,7 +55,6 @@ Save and transfer the context of a work session to enable efficient resumption i
 
 ### Done
 - [x] [Task 1] - [Detail]
-- [x] [Task 2] - [Detail]
 
 ### In progress
 - [ ] [Task 3] - [Current state, where it stands]
@@ -54,34 +64,28 @@ Save and transfer the context of a work session to enable efficient resumption i
 
 ### To do
 - [ ] [Task 4] - [Description]
-- [ ] [Task 5] - [Description]
 
 ## Decisions made
 
 | Decision | Reason | Rejected alternative |
 |----------|--------|---------------------|
 | [Choice 1] | [Why] | [Other option] |
-| [Choice 2] | [Why] | [Other option] |
 
 ## Key files
 
 | File | Role | State |
 |---------|------|------|
 | `src/xxx.ts` | [Description] | Modified / Created / To modify |
-| `tests/xxx.test.ts` | [Description] | Modified / Created / To create |
 
 ## Patterns and conventions discovered
 
 - [Pattern 1 from the codebase]
-- [Naming convention]
-- [Specific architecture]
 
 ## Problems encountered
 
 | Problem | Solution/Workaround | Resolved? |
 |----------|---------------------|----------|
 | [Problem 1] | [Solution] | Yes/No |
-| [Problem 2] | [Workaround] | Partial |
 
 ## Notes for the next session
 
@@ -97,40 +101,17 @@ npm test  # Check that everything passes
 ```
 ```
 
-## Handoff workflow
-
-### Save the context (end of session)
-
-```
-1. SUMMARIZE the work done
-2. LIST the modified files (`git diff --stat`)
-3. DOCUMENT the decisions made and why
-4. IDENTIFY the remaining tasks and their priority
-5. NOTE the unresolved problems
-6. WRITE the .claude/handoff.md file
-```
-
-### Resume the context (start of session)
-
-```
-1. READ the .claude/handoff.md file
-2. CHECK the repo state (`git status`, `git log`)
-3. RUN the tests to confirm the state
-4. IDENTIFY the next task to perform
-5. CONTINUE the work
-```
-
 ## Best practices
 
 - Write the handoff DURING the work, not after
 - Be specific about files and lines of code
-- Include commands to check the state
 - Document the decisions AND the reasons
 - Mention the pitfalls and workarounds discovered
+- NEVER assume the reader has this session's context, memory, or machine
 
 ## Rules
 
-- ALWAYS create a handoff before ending a complex work session
+- ALWAYS create a handoff before handing work across a person/agent/machine boundary
 - ALWAYS include the modified files and their state
 - ALWAYS document the architectural decisions
-- NEVER assume the next session will have the same context
+- For resuming YOUR OWN session, prefer the native features above — no handoff file needed

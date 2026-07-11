@@ -1,43 +1,36 @@
 # WORK-COMMIT-PUSH-PR Agent
 
-Macro: commit + push + PR in a single command, by delegating to the dedicated commands.
+Pointer: Claude Code ships a native `/commit-push-pr` that owns the commit + push + PR macro. This command adds the foundation's pre-flight gate and convention sources on top — it does not re-implement the macro.
 
 ## Context
 $ARGUMENTS
 
-## Objective
-
-Run the full delivery cycle end to end. This command is a **thin orchestrator** — it does
-not re-specify how to commit or open a PR; it chains the two commands of record and adds
-the quality gate + push between them.
-
 ## Workflow
 
-1. **Pre-flight gate** — check the repo state (`git status`, `git diff --stat`), run the
-   quality checks (tests, lint, typecheck), and verify: not on `main`/`master`, no sensitive
-   files (`.env`, secrets), no stray debug (`console.log`). Stop if anything fails.
-2. **Commit** — delegate to `/work:work-commit` (Conventional Commits message, atomic change).
-3. **Push** — `git push -u origin <branch>`.
-4. **PR** — delegate to `/work:work-pr` (documented PR: title, summary, test plan), then check
-   the CI status after creation.
+1. **Pre-flight gate (foundation delta)** — before anything ships: run the quality checks
+   (tests, lint, typecheck), verify not on `main`/`master`, no sensitive files
+   (`.env`, secrets), no stray debug (`console.log`). Stop if anything fails.
+2. **Delegate the macro to native `/commit-push-pr`** — it commits, pushes to the
+   configured remote, and opens the PR. Hold it to the foundation's conventions:
+   the commit message follows `/work:work-commit` (Conventional Commits, atomic),
+   the PR body follows `/work:work-pr` (title, summary, test plan).
+3. **Check CI status** after the PR is created.
 
 ## Expected output
 
 1. **Verification**: quality report (tests, lint, types)
-2. **PR**: URL of the created PR with full description (commit + push handled by the delegated steps)
+2. **PR**: URL of the created PR with full description
 
 ## Related agents
 
 | Agent | Usage |
 |-------|-------|
-| `/work:work-commit` | Commit step (message conventions, atomicity) — source of record |
-| `/work:work-pr` | PR step (description, test plan) — source of record |
+| `/work:work-commit` | Commit conventions (message, atomicity) — source of record |
+| `/work:work-pr` | PR conventions (description, test plan) — source of record |
 | `/qa:qa-review` | Self-review before PR |
 
 ---
 
-IMPORTANT: Always run the quality gate before commit-push-pr.
+IMPORTANT: Always run the quality gate before the native macro.
 
 NEVER commit on `main`/`master` directly, and NEVER include sensitive files (.env, secrets).
-
-The commit-message and PR conventions live in `/work:work-commit` and `/work:work-pr` — follow those, don't restate them here.
