@@ -1470,3 +1470,33 @@ _proj_cmd_count() {
     [ -d "$proj/.claude/skills/dev-tdd" ]
     [ -f "$proj/.claude/commands/work/work-plan.md" ]
 }
+
+@test "presets: ask_category prints ONLY the slug to stdout, menu to stderr (2026-07-12 regression)" {
+    [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
+    # The real caller (new-project.sh::get_project_type) does
+    #   SELECTED_CATEGORY_SLUG=$(ask_category)
+    # so ask_category's STDOUT must be EXACTLY the slug — the menu and prompt
+    # belong on stderr. Before the fix they went to stdout, so the capture was
+    # polluted with the whole menu (and the user saw nothing). This asserts the
+    # stdout capture equals the bare slug.
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        slug=\$(echo '4' | ask_category 2>/dev/null)
+        printf '%s' \"\$slug\"
+    "
+    [ "$status" -eq 0 ]
+    [ "$output" = "game-interactive-media" ]
+}
+
+@test "presets: ask_category still shows the menu on stderr (2026-07-12 regression)" {
+    [ -f "$BASE_DIR/scripts/lib/category-map.sh" ]
+    # The menu must remain visible to the user — i.e. on stderr, not swallowed.
+    run env BASE_DIR="$BASE_DIR" bash -c "
+        source '$BASE_DIR/scripts/lib/common.sh'
+        source '$BASE_DIR/scripts/lib/category-map.sh'
+        echo '4' | ask_category 2>&1 1>/dev/null
+    "
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"What are you building"* ]]
+}

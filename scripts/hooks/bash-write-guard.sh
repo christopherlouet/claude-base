@@ -4,8 +4,9 @@
 #
 # The Bash-side complement to the edit-path file-mutation guards. secret-scan,
 # config-protection and main-branch-guard only fire on Edit|Write|MultiEdit, so
-# a write routed through the Bash tool (`printf > f`, `tee f`, `sed -i f`)
-# escaped all of them. This guard inspects the WRITE TARGETS of a Bash command
+# a write routed through the Bash tool (`printf > f`, `tee f`, `sed -i`/
+# `--in-place`, `cp`/`mv`/`install` onto the file, `dd of=f`) escaped all of
+# them. This guard inspects the WRITE TARGETS of a Bash command
 # and blocks (exit 2) only for the high-value, low-false-positive cases:
 #
 #   1. an EXISTING linter/formatter config  → weakening a gate via a redirect
@@ -49,9 +50,17 @@ targets=$(
     # tee [-opts] file...
     printf '%s\n' "$CMD_UQ" | grep -oE '(^|[[:space:]|&;(])tee([[:space:]]+-[a-zA-Z]+)*([[:space:]]+[^<>|&;()]+)' \
       | sed -E 's/^.*tee([[:space:]]+-[a-zA-Z]+)*[[:space:]]+//' | tr ' ' '\n'
-    # sed -i … <file>  (best-effort: the last token of the sed invocation)
-    printf '%s\n' "$CMD_UQ" | grep -oE '(^|[[:space:]|&;(])sed[[:space:]]+[^|&;()]*-i[a-zA-Z0-9.]*[[:space:]][^|&;()]+' \
+    # sed -i / --in-place … <file>  (best-effort: last token of the invocation)
+    printf '%s\n' "$CMD_UQ" | grep -oE '(^|[[:space:]|&;(])sed[[:space:]]+[^|&;()]*(-i[a-zA-Z0-9.]*|--in-place[=a-zA-Z0-9.]*)[[:space:]][^|&;()]+' \
       | awk '{ print $NF }'
+    # cp / mv / install [opts] SRC… DEST  (DEST = last token) — the common
+    # copy verbs are just as capable of clobbering an existing .env / config.
+    printf '%s\n' "$CMD_UQ" | grep -oE '(^|[[:space:]|&;(])(cp|mv|install)([[:space:]]+-[a-zA-Z0-9=]+)*([[:space:]]+[^<>|&;()[:space:]]+)+' \
+      | awk '{ print $NF }'
+    # dd of=FILE  (device targets are handled by command-validator; this catches
+    # `dd if=/dev/zero of=.env` clobbering a plain secrets file).
+    printf '%s\n' "$CMD_UQ" | grep -oE '(^|[[:space:]])of=[^[:space:]<>|&;()]+' \
+      | sed -E 's/^[[:space:]]*of=//'
   } 2>/dev/null | sed '/^[[:space:]]*$/d'
 )
 [ -z "$targets" ] && exit 0
