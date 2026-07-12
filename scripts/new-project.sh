@@ -556,7 +556,10 @@ get_rules_for_type() {
     # regardless of language/framework. Includes deploy-safety (Docker/env files)
     # and research (check native before building custom) since these are
     # cross-cutting concerns, not stack-specific.
-    local rules=("git.md" "workflow.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "research.md" "README.md")
+    # The 4 global (path-less) rules — git, workflow, self-improvement,
+    # vendor-precedence — apply regardless of file type and must ALL ship, else
+    # the copied rules/README.md references rules absent from disk.
+    local rules=("git.md" "workflow.md" "self-improvement.md" "vendor-precedence.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "research.md" "README.md")
 
     # Rules specific to the project type
     case "$project_type" in

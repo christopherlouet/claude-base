@@ -569,3 +569,23 @@ EOF
     [[ "$output" == *"pin lockstep — a repo is pinned to divergent refs"* ]]
     [[ "$output" == *"foo/bar"* ]]
 }
+
+@test "validate-presets: flags a MARKETPLACE-URL repo pinned to divergent refs (2026-07-12)" {
+    # The reporoot key drops any non-github URL, so a marketplace plugin pinned
+    # to two refs (registry bumped, preset copy forgotten — the live #427 class)
+    # slipped the lockstep. The gate now also keys by the normalised marketplace
+    # URL, so a claude.com plugin at divergent pins is caught.
+    mkdir -p "$TEST_DIR/fake-presets"
+    cat > "$TEST_DIR/fake-presets/a.json" <<'EOF'
+{ "recommendedVendorSkills": [ { "id": "x@mkt", "url": "https://claude.com/plugins/x", "pinnedRef": "v1.0.0" } ] }
+EOF
+    cat > "$TEST_DIR/fake-presets/b.json" <<'EOF'
+{ "recommendedVendorSkills": [ { "id": "x@mkt", "url": "https://claude.com/plugins/x", "pinnedRef": "v2.0.0" } ] }
+EOF
+    export VALIDATE_PRESETS_DIR="$TEST_DIR/fake-presets"
+    run bash "$VALIDATE_PRESETS"
+    unset VALIDATE_PRESETS_DIR
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"pin lockstep — a repo is pinned to divergent refs"* ]]
+    [[ "$output" == *"claude.com/plugins/x"* ]]
+}

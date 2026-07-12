@@ -718,15 +718,21 @@ fi
 # marketplace URLs are skipped (the watcher cannot dedup them either).
 validate_pin_lockstep() {
     local registry="$1"; shift
-    local rr='def reporoot:(sub("^https?://github\\.com/";""))|if test("://") then empty else . end|(split("?")[0])|(split("#")[0])|split("/")|select(length>=2 and (.[0]|length>0) and (.[1]|length>0))|.[0:2]|join("/");'
+    # reporoot → owner/repo for a github repo (the watcher's dedup key). mktkey →
+    # a normalised full marketplace path (scheme/query/fragment/trailing-slash
+    # stripped) so a non-github plugin URL (claude.com/plugins/<x>) is a stable
+    # key too — the registry (vendorUrl) and a preset copy (url) share it, so a
+    # marketplace plugin pinned to divergent refs is caught, without collapsing
+    # distinct plugins to a common owner/repo prefix.
+    local rr='def reporoot:(sub("^https?://github\\.com/";""))|if test("://") then empty else . end|(split("?")[0])|(split("#")[0])|split("/")|select(length>=2 and (.[0]|length>0) and (.[1]|length>0))|.[0:2]|join("/");def mktkey:(sub("^https?://";""))|(split("?")[0])|(split("#")[0])|sub("/$";"");def is_marketplace:test("^https?://")and(test("github\\.com")|not);'
     local pairs
     pairs=$(
         {
-            [ -f "$registry" ] && jq -r "$rr"'.records[]? | (.vendorId|reporoot) as $r | "\($r)\t\(.pinnedRef)"' "$registry" 2>/dev/null
+            [ -f "$registry" ] && jq -r "$rr"'.records[]? | .pinnedRef as $p | ([ (.vendorId|reporoot), ((.vendorUrl // .vendorId // "")|select(is_marketplace)|mktkey) ] | unique[]) | "\(.)\t\($p)"' "$registry" 2>/dev/null
             local f
             for f in "$@"; do
                 [ -f "$f" ] || continue
-                jq -r "$rr"'.recommendedVendorSkills[]? | ((.url // .id)|reporoot) as $r | "\($r)\t\(.pinnedRef)"' "$f" 2>/dev/null
+                jq -r "$rr"'.recommendedVendorSkills[]? | .pinnedRef as $p | ([ ((.url // .id)|reporoot), ((.url // .id // "")|select(is_marketplace)|mktkey) ] | unique[]) | "\(.)\t\($p)"' "$f" 2>/dev/null
             done
         } | grep -v '^[[:space:]]*$' | sort -u
     )
