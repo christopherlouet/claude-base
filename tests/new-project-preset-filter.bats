@@ -174,3 +174,61 @@ EOF
         fi
     done
 }
+
+# ---------------------------------------------------------------------------
+# 2026-07-12 regression — the INTERACTIVE preset path (menu → create_project)
+# must apply the SAME skill/command/agent filters as run_simple_mode. Before
+# the fix, create_project only ran apply_modules_filter, so a menu-selected
+# preset installed the FULL catalog and foundation.json disagreed with disk.
+# This drives create_project directly with a preset loaded, exactly as main()'s
+# interactive branch does (load_preset + load_module_partition, then create).
+# ---------------------------------------------------------------------------
+@test "new-project-preset-filter: create_project applies the keep filter (interactive path, regression)" {
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    mkdir -p "$preset_dir"
+    cat > "$preset_dir/keep-two.json" << 'EOF'
+{
+  "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
+  "name": "keep-two",
+  "displayName": "Synthetic keep-two",
+  "description": "Synthetic preset for testing the keep filter via create_project.",
+  "version": "1.0.0",
+  "status": "community",
+  "appliesToTypes": ["any"],
+  "detect": {"combinator": "anyOf", "files": ["keep-two.marker"]},
+  "foundation": {
+    "skills": {
+      "keep": ["dev-tdd", "dev-refactor"]
+    }
+  },
+  "marketplacePlugins": [],
+  "recommendedVendorSkills": [],
+  "defaults": {"ci": false, "hooks": false, "mcp": false, "docker": false}
+}
+EOF
+
+    local proj="$TEST_DIR/proj-interactive-keep"
+    mkdir -p "$proj"
+
+    run env BASE_DIR="$BASE_DIR" proj="$proj" preset_dir="$preset_dir" bash -c '
+        source "$BASE_DIR/scripts/new-project.sh"   # source guard prevents main()
+        PROJECT_PATH="$proj"; PROJECT_TYPE="generic"; EXISTING_PROJECT=false; DRY_RUN=false
+        QUIET=true
+        INCLUDE_CICD=false; INCLUDE_HOOKS=false; INCLUDE_MCP=false; INCLUDE_DOCKER=false
+        PRESETS_DIR_OVERRIDE="$preset_dir"
+        PRESET_NAME="keep-two"
+        # mirror main()'"'"'s interactive preset branch
+        load_preset "$PRESET_NAME"
+        load_module_partition
+        create_project
+    ' >/dev/null 2>&1
+    [ "$status" -eq 0 ]
+
+    # The two kept skills survive
+    [ -d "$proj/.claude/skills/dev-tdd" ]
+    [ -d "$proj/.claude/skills/dev-refactor" ]
+    # And ONLY those two — the keep-filter removed every other skill
+    local n
+    n=$(find "$proj/.claude/skills" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
+    [ "$n" = "2" ]
+}
