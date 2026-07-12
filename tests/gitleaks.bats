@@ -26,10 +26,23 @@ teardown() {
 }
 
 @test "gitleaks validates the configuration" {
-    run gitleaks detect --config "$GITLEAKS_CONFIG" --no-git --source /dev/null 2>&1
-    # Code 0 = no secrets found (success)
-    # The config must be valid for gitleaks to run
-    [[ "$status" -eq 0 ]] || [[ "$output" != *"error"* ]]
+    # An empty dir has no secrets → exit 0. A broken .gitleaks.toml makes gitleaks
+    # error out non-zero, so a clean exit genuinely proves the config loads/runs.
+    # (The prior form passed `2>&1` as a positional argument — bats' `run` does
+    # not interpret redirections — and used an OR that could never fail: gitleaks
+    # prints capitalised "Error"/"ERRO", so the lowercase "error" test never hit.)
+    mkdir -p "$TEST_DIR/empty-src"
+    run gitleaks detect --config "$GITLEAKS_CONFIG" --no-git --source "$TEST_DIR/empty-src"
+    [ "$status" -eq 0 ]
+}
+
+@test "gitleaks: the real repo scans clean with the shipped config (self-application)" {
+    # The true regression guard: fails the day a real secret lands OR a new
+    # planted fixture is added without a path allowlist (this is the test that
+    # would have caught the 30 pre-existing findings the enforcing CI job needs
+    # gone). Working-tree scan (no history) for speed.
+    run gitleaks detect --config "$GITLEAKS_CONFIG" --no-git --source "$BATS_TEST_DIRNAME/.." --no-banner
+    [ "$status" -eq 0 ]
 }
 
 # =============================================================================

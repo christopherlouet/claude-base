@@ -166,6 +166,12 @@ paths = [
     '''\.template$''',
     '''\.md$''',
     '''\.txt$''',
+    # The gitleaks self-test deliberately embeds real-looking fake secrets to
+    # prove detection works; scanning the repo would flag its own fixtures.
+    '''tests/gitleaks\.bats$''',
+    # Foundation-shipped IaC provider templates carry placeholder / var-reference
+    # credentials by design (`secret = var.x`, "your-api-secret"), not real ones.
+    '''\.claude/templates/.*\.(tf|tfvars)$''',
     '''node_modules/''',
     '''\.git/''',
     '''dist/''',
