@@ -371,3 +371,60 @@ EOF"
     run bash -c "SKIP_NO_VERIFY_CHECK=1 bash '$VALIDATOR' < '$TEST_DIR/input.json' 2>&1"
     [ "$status" -eq 2 ]
 }
+
+# =============================================================================
+# Regression: bypasses & over-blocks found in the 2026-07-12 audit.
+# Each BLOCK case is a payload that previously exited 0 (silent bypass); each
+# ALLOW case is a benign command whose MESSAGE/query merely NAMES a trigger and
+# was previously false-blocked. Controls assert the real dangerous form still
+# blocks after the message-strip.
+# =============================================================================
+
+@test "command-validator: blocks git commit -an (trailing-n no-verify cluster)" {
+    run_validator "git commit -an -m wip"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks dd of= to a quoted device path" {
+    run_validator 'dd of="/dev/sda" if=/dev/zero'
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks redirection to a quoted block device" {
+    run_validator 'cat payload > "/dev/sda"'
+    [ "$status" -eq 2 ]
+}
+
+# --- Over-block regressions: a trigger token that is only a MESSAGE payload ---
+
+@test "command-validator: allows a commit whose message names mkfs" {
+    run_validator 'git commit -m "document mkfs usage"'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: allows git log --grep naming passwd" {
+    run_validator 'git log --grep "passwd rotation"'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: allows a commit message naming sudo" {
+    run_validator 'git commit -m "run migrations as sudo in prod"'
+    [ "$status" -eq 0 ]
+}
+
+# --- Controls: the real dangerous forms still block after the strip ----------
+
+@test "command-validator: still blocks a real mkfs command" {
+    run_validator "mkfs.ext4 /dev/sdb1"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: still blocks real sudo after the message-strip" {
+    run_validator "sudo apt install x"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: still blocks real passwd after the message-strip" {
+    run_validator "passwd root"
+    [ "$status" -eq 2 ]
+}

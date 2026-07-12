@@ -655,3 +655,14 @@ YAML
     [[ "$output" != *"MISSING:Automated tests"* ]]
     [[ "$output" != *"MISSING:Dependency cache"* ]]
 }
+
+@test "new-project.sh installs all 4 global (path-less) rules (2026-07-12 regression)" {
+    run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # The copied rules/README.md documents 4 global rules; init must ship all
+    # four, else an installed project references rules absent from disk.
+    [ -f "$TEST_DIR/.claude/rules/git.md" ]
+    [ -f "$TEST_DIR/.claude/rules/workflow.md" ]
+    [ -f "$TEST_DIR/.claude/rules/self-improvement.md" ]
+    [ -f "$TEST_DIR/.claude/rules/vendor-precedence.md" ]
+}

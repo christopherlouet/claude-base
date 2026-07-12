@@ -31,8 +31,8 @@ Claude Code uses:
 /qa:qa-security
 
 # → Claude loads commands/qa/qa-security.md (prompt)
-# → Claude delegates to agents/qa-security.md (isolated context, model: sonnet)
-# → The agent uses the security-audit skill
+# → Claude delegates to agents/qa-security.md (isolated context, model: opus)
+# → The agent uses the qa-security skill
 # → Result returned to the main context
 ```
 
@@ -175,7 +175,7 @@ Instructions for the skill...
 ### Skill example
 ```yaml
 ---
-name: test-driven-development
+name: dev-tdd
 description: TDD development with Red-Green-Refactor cycle
 allowed-tools:
   - Read
@@ -230,9 +230,9 @@ disallowedTools:
   - Write
 hooks:
   PreToolUse:
-    - command: validate.sh
+    - command: scripts/hooks/command-validator.sh
 skills:
-  - security-audit
+  - qa-security
 ---
 
 # Instructions
@@ -253,14 +253,14 @@ Instructions for the agent...
 ---
 name: qa-security
 description: OWASP Top 10 security audit
-model: sonnet
+model: opus
 permissionMode: plan
 disallowedTools:
   - Edit
   - Write
   - NotebookEdit
 skills:
-  - security-audit
+  - qa-security
 ---
 
 # QA Security Agent
@@ -454,16 +454,16 @@ All read-only, isolated contexts
 │       ▼                                                        │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │ DELEGATION → AGENT: qa-security                          │   │
-│  │ → model: sonnet                                          │   │
+│  │ → model: opus                                            │   │
 │  │ → permissionMode: plan (read-only)                       │   │
 │  │ → disallowedTools: [Edit, Write]                         │   │
-│  │ → skills: [security-audit]                               │   │
+│  │ → skills: [qa-security]                                  │   │
 │  │ → ISOLATED context                                       │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │       │                                                        │
 │       ▼                                                        │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │ SKILL: security-audit (injected into agent)              │   │
+│  │ SKILL: qa-security (injected into agent)                 │   │
 │  │ → OWASP Top 10 checklist                                 │   │
 │  │ → Vulnerability patterns                                 │   │
 │  └─────────────────────────────────────────────────────────┘   │

@@ -43,23 +43,21 @@ The **Model Context Protocol (MCP)** is an open protocol from Anthropic that all
 
 ## Configuration
 
-MCP servers are configured in `.mcp.json` at the root of the project:
+MCP servers are configured in `.mcp.json` at the root of the project. It ships empty (`{"mcpServers": {}}`); a server is active if and only if its block is present here. There is no per-server `"enabled"` flag — copy the block you want from `.mcp.json.example` into `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-filesystem", "/path/to/allowed/dir"],
-      "enabled": true
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/dir"]
     },
     "github": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-github"],
+      "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_TOKEN": "ghp_xxxx"
-      },
-      "enabled": true
+      }
     }
   }
 }
@@ -67,17 +65,17 @@ MCP servers are configured in `.mcp.json` at the root of the project:
 
 ## Available servers
 
-### Official Anthropic servers
+### Official servers
 
 | Server | Description | Package |
 |---------|-------------|---------|
-| `filesystem` | Advanced file access | `@anthropic/mcp-server-filesystem` |
-| `github` | GitHub integration | `@anthropic/mcp-server-github` |
-| `memory` | Persistent memory | `@anthropic/mcp-server-memory` |
-| `fetch` | HTTP requests | `@anthropic/mcp-server-fetch` |
-| `postgres` | PostgreSQL database | `@anthropic/mcp-server-postgres` |
-| `sqlite` | SQLite database | `@anthropic/mcp-server-sqlite` |
-| `puppeteer` | Browser automation | `@anthropic/mcp-server-puppeteer` |
+| `filesystem` | Advanced file access | `@modelcontextprotocol/server-filesystem` |
+| `github` | GitHub integration | `@modelcontextprotocol/server-github` |
+| `memory` | Persistent memory | `@modelcontextprotocol/server-memory` |
+| `fetch` | HTTP requests | `@anthropics/mcp-server-fetch` |
+| `postgres` | PostgreSQL database | `@modelcontextprotocol/server-postgres` |
+| `sqlite` | SQLite database | `@anthropics/mcp-server-sqlite` |
+| `puppeteer` | Browser automation | `@anthropics/mcp-server-puppeteer` |
 
 ### Community servers
 
@@ -100,11 +98,10 @@ Extended access to the filesystem:
       "command": "npx",
       "args": [
         "-y",
-        "@anthropic/mcp-server-filesystem",
+        "@modelcontextprotocol/server-filesystem",
         "/home/user/projects",
         "/home/user/documents"
-      ],
-      "enabled": true
+      ]
     }
   }
 }
@@ -124,11 +121,10 @@ Full integration with GitHub:
   "mcpServers": {
     "github": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-github"],
+      "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_TOKEN": "ghp_xxxxxxxxxxxx"
-      },
-      "enabled": true
+      }
     }
   }
 }
@@ -149,8 +145,7 @@ Persistent memory across sessions:
   "mcpServers": {
     "memory": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-memory"],
-      "enabled": true
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
     }
   }
 }
@@ -170,11 +165,10 @@ Connection to a PostgreSQL database:
   "mcpServers": {
     "postgres": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-postgres"],
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
       "env": {
         "DATABASE_URL": "postgresql://user:pass@localhost:5432/db"
-      },
-      "enabled": true
+      }
     }
   }
 }
@@ -194,8 +188,7 @@ External HTTP requests:
   "mcpServers": {
     "fetch": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-fetch"],
-      "enabled": true
+      "args": ["-y", "@anthropics/mcp-server-fetch"]
     }
   }
 }
@@ -215,8 +208,7 @@ Browser automation:
   "mcpServers": {
     "puppeteer": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-puppeteer"],
-      "enabled": true
+      "args": ["-y", "@anthropics/mcp-server-puppeteer"]
     }
   }
 }
@@ -240,8 +232,7 @@ Browser automation:
       "args": ["arg1", "arg2"],
       "env": {
         "VAR": "value"
-      },
-      "enabled": true
+      }
     }
   }
 }
@@ -254,44 +245,32 @@ Browser automation:
 | `command` | Command to execute | Yes |
 | `args` | Command arguments | No |
 | `env` | Environment variables | No |
-| `enabled` | Enable/disable | No (default: true) |
 
 ## Enable/Disable
 
-### Via the file
+There is no per-server `"enabled"` flag. A server is active **if and only if** its block is present in `.mcp.json`. Enabling and disabling are copy/delete operations:
+
+- **Enable** — copy the server's block from `.mcp.json.example` into the `mcpServers` object of `.mcp.json`, then provide any referenced env vars.
+- **Disable** — remove that server's block from `.mcp.json`.
+
+### Recommended configuration for claude-base
+
+`.mcp.json` ships empty so no server runs until you opt in:
 
 ```json
 {
-  "mcpServers": {
-    "github": {
-      "enabled": false  // Disabled
-    }
-  }
+  "mcpServers": {}
 }
 ```
 
-### Recommended configuration for claude-base
+To enable, for example, `filesystem`, copy its block from `.mcp.json.example`:
 
 ```json
 {
   "mcpServers": {
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-filesystem", "."],
-      "enabled": false
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-memory"],
-      "enabled": false
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-github"],
-      "env": {
-        "GITHUB_TOKEN": ""
-      },
-      "enabled": false
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
     }
   }
 }
@@ -302,7 +281,7 @@ Browser automation:
 ### Basic structure
 
 ```typescript
-import { Server } from '@anthropic/mcp-server';
+import { Server } from '@anthropics/mcp-server';
 
 const server = new Server({
   name: 'my-server',
@@ -348,16 +327,11 @@ server.start();
 2. **Restrict filesystem paths**
    ```json
    {
-     "args": ["-y", "@anthropic/mcp-server-filesystem", "/specific/path"]
+     "args": ["-y", "@modelcontextprotocol/server-filesystem", "/specific/path"]
    }
    ```
 
-3. **Disable unused servers**
-   ```json
-   {
-     "enabled": false
-   }
-   ```
+3. **Disable unused servers** — keep `.mcp.json` minimal; remove the block of any server you are not using (there is no `"enabled": false` toggle).
 
 4. **Do not commit secrets**
    ```gitignore

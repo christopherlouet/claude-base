@@ -45,15 +45,15 @@ Skills live in `.claude/skills/`, each in its own folder:
 
 ```
 .claude/skills/
-├── test-driven-development/
+├── dev-tdd/
 │   ├── SKILL.md              # Skill instructions
 │   └── examples/             # Practical examples (optional)
 │       └── example.md
-├── generating-commit-messages/
+├── work-commit/
 │   └── SKILL.md
-├── debugging-issues/
+├── dev-debug/
 │   └── SKILL.md
-├── security-audit/
+├── qa-security/
 │   └── SKILL.md
 └── ...
 ```
@@ -64,7 +64,7 @@ Skills live in `.claude/skills/`, each in its own folder:
 
 ```markdown
 ---
-name: test-driven-development
+name: dev-tdd
 description: TDD development with Red-Green-Refactor cycle
 allowed-tools:
   - Read
@@ -108,7 +108,7 @@ NEVER write more code than necessary to pass the test.
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| `name` | Skill name | `test-driven-development` |
+| `name` | Skill name | `dev-tdd` |
 | `description` | Short description | `TDD development...` |
 
 ### Optional fields
@@ -144,34 +144,36 @@ This skill activates when the user mentions:
 
 | Skill | Keywords | Action |
 |-------|----------|--------|
-| `test-driven-development` | TDD, test first | Red-Green-Refactor cycle |
-| `debugging-issues` | bug, error, debug | Systematic investigation |
-| `refactoring` | refactor, clean up | Guided refactoring |
-| `api-development` | API, endpoint, REST | API creation |
+| `dev-tdd` | TDD, test first | Red-Green-Refactor cycle |
+| `dev-debug` | bug, error, debug | Systematic investigation |
+| `dev-refactor` | refactor, clean up | Guided refactoring |
+| `dev-api` | API, endpoint, REST | API creation |
 
 ### Workflow
 
 | Skill | Keywords | Action |
 |-------|----------|--------|
-| `generating-commit-messages` | commit, message | Conventional Commits |
-| `creating-pull-requests` | PR, pull request | Structured PR |
-| `reviewing-code` | review, code review | Thorough review |
-| `exploring-codebase` | explore, understand | Code analysis |
+| `work-commit` | commit, message | Conventional Commits |
+| `work-pr` | PR, pull request | Structured PR |
+| `qa-review` | review, code review | Thorough review |
+| `work-explore` | explore, understand | Code analysis |
 
 ### Quality
 
 | Skill | Keywords | Action |
 |-------|----------|--------|
-| `security-audit` | security, OWASP | Security audit |
+| `qa-security` | security, OWASP | Security audit |
 
 ### Infrastructure
 
 | Skill | Keywords | Action |
 |-------|----------|--------|
-| `docker-containerization` | Docker, container | Containerization |
-| `ci-cd-pipeline` | CI/CD, pipeline | CI configuration |
-| `monitoring-instrumentation` | logs, metrics | Instrumentation |
-| `infrastructure-as-code` | Terraform, IaC, OpenTofu, module, Proxmox | Terraform/OpenTofu modules, Proxmox infrastructure |
+| `ops-docker` | Docker, container | Containerization |
+| `ops-ci` | CI/CD, pipeline | CI configuration |
+| `ops-monitoring` | logs, metrics | Instrumentation |
+| `ops-infra-code` | Terraform, IaC, OpenTofu, module, Proxmox | Terraform/OpenTofu modules, Proxmox infrastructure |
+
+> These tables show a handful of the skills. The foundation ships 53 skills in total — see the [skills catalog](/docs/reference/skills-catalog) for the full list.
 
 ## Skill examples
 
@@ -179,12 +181,12 @@ This skill activates when the user mentions:
 
 ```markdown
 ---
-name: generating-commit-messages
+name: work-commit
 description: Generate Conventional Commits commit messages
 context: fork
 ---
 
-# Generating Commit Messages
+# Work Commit
 
 ## Triggers
 
@@ -216,7 +218,7 @@ type(scope): description
 
 ```markdown
 ---
-name: exploring-codebase
+name: work-explore
 description: Explore and understand a codebase
 allowed-tools:
   - Read
@@ -225,7 +227,7 @@ allowed-tools:
 context: fork
 ---
 
-# Exploring Codebase
+# Work Explore
 
 ## Triggers
 

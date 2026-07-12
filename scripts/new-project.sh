@@ -556,7 +556,10 @@ get_rules_for_type() {
     # regardless of language/framework. Includes deploy-safety (Docker/env files)
     # and research (check native before building custom) since these are
     # cross-cutting concerns, not stack-specific.
-    local rules=("git.md" "workflow.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "research.md" "README.md")
+    # The 4 global (path-less) rules — git, workflow, self-improvement,
+    # vendor-precedence — apply regardless of file type and must ALL ship, else
+    # the copied rules/README.md references rules absent from disk.
+    local rules=("git.md" "workflow.md" "self-improvement.md" "vendor-precedence.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "research.md" "README.md")
 
     # Rules specific to the project type
     case "$project_type" in
@@ -1936,6 +1939,14 @@ create_project() {
 
     # Install Claude files (commands, agents, skills, rules, styles, templates)
     install_claude_files "$TARGET_DIR"
+
+    # Apply preset skill/command/agent filters — parity with run_simple_mode.
+    # The interactive menu can select a preset (load_preset runs before this in
+    # main()), and without these the menu-selected preset installed the FULL
+    # catalog while foundation.json recorded the filtered set → later drift. Both
+    # no-op when no preset is active (guard on PRESET_FILE).
+    apply_preset_filter "$TARGET_DIR"
+    apply_catalog_filters "$TARGET_DIR"
 
     # Apply module filter — remove files for modules not in defaultModules (US-5)
     apply_modules_filter "$TARGET_DIR"

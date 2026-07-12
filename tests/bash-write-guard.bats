@@ -146,3 +146,64 @@ mk_git_main() {
     run_in "$BATS_TEST_DIRNAME/.." 'npm test && echo done'
     [ "$status" -eq 0 ]
 }
+
+# =============================================================================
+# Regression: alternate write verbs found in the 2026-07-12 audit. The guard
+# used to cover only >, >>, tee and `sed -i`; sed --in-place and the copy verbs
+# clobbered a secrets file untouched. Each blocks an EXISTING .env.
+# =============================================================================
+
+@test "bash-write-guard: blocks sed --in-place on an existing secrets file" {
+    mk_proj
+    run_in "$TEST_DIR/proj" "sed --in-place 's/X/Y/' .env"
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks sed --in-place on an existing config" {
+    mk_proj
+    run_in "$TEST_DIR/proj" "sed --in-place 's/error/off/' .eslintrc.json"
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks cp onto an existing .env" {
+    mk_proj
+    echo 'LEAK=1' > "$TEST_DIR/proj/other.txt"
+    run_in "$TEST_DIR/proj" "cp other.txt .env"
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks mv onto an existing .env" {
+    mk_proj
+    echo 'LEAK=1' > "$TEST_DIR/proj/other.txt"
+    run_in "$TEST_DIR/proj" "mv other.txt .env"
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks install -m600 onto an existing .env" {
+    mk_proj
+    echo 'LEAK=1' > "$TEST_DIR/proj/other.txt"
+    run_in "$TEST_DIR/proj" "install -m600 other.txt .env"
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks dd of= onto an existing .env" {
+    mk_proj
+    run_in "$TEST_DIR/proj" "dd if=/dev/zero of=.env bs=1 count=1"
+    [ "$status" -eq 2 ]
+}
+
+# --- Controls: the same verbs onto a NON-sensitive / new target still pass ----
+
+@test "bash-write-guard: allows cp onto a normal new file" {
+    mk_proj
+    echo 'ok' > "$TEST_DIR/proj/src.txt"
+    run_in "$TEST_DIR/proj" "cp src.txt build.txt"
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: allows mv onto a normal new file" {
+    mk_proj
+    echo 'ok' > "$TEST_DIR/proj/src.txt"
+    run_in "$TEST_DIR/proj" "mv src.txt renamed.txt"
+    [ "$status" -eq 0 ]
+}

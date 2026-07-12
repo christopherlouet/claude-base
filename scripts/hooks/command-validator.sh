@@ -24,10 +24,21 @@ else
 fi
 [ -z "$CMD" ] && exit 0
 
+# Strip git message / --grep / --file VALUES (the quoted string or next token
+# after -m/-am/--message/--file/-F/--grep) BEFORE the pattern scans. A trigger
+# token that appears only as a commit-message or --grep PAYLOAD is data, never
+# executed, so it must not falsely block a benign command (`git commit -m
+# "document mkfs usage"`, `git log --grep "passwd rotation"`). This mirrors the
+# per-segment strip in Category 9 and destructive-ops.sh. Done on the raw CMD
+# (case preserved) so -F/--grep match precisely, then lowercased for the scans.
+CMD_STRIPPED=$(printf '%s' "$CMD" \
+  | sed -E "s/[[:space:]]-[A-Za-z]*m([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
+  | sed -E "s/[[:space:]](--message|--file|--grep|-F)([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g")
 # Normalize: lowercase, collapse whitespace
-CMD_LOWER=$(echo "$CMD" | tr '[:upper:]' '[:lower:]' | tr -s ' ')
+CMD_LOWER=$(printf '%s' "$CMD_STRIPPED" | tr '[:upper:]' '[:lower:]' | tr -s ' ')
 # A quote-stripped copy for the protected-path checks, so a quoted target
-# (`rm -rf '/etc'`) can't slip past a regex anchored on `/etc` after the flags.
+# (`rm -rf '/etc'`, `dd of="/dev/sda"`) can't slip past a regex anchored on the
+# path after the flags.
 CMD_NQ=$(printf '%s' "$CMD_LOWER" | tr -d "\"'")
 
 # === CATEGORY 1: Fork bombs and resource exhaustion ===
@@ -47,7 +58,9 @@ fi
 # === CATEGORY 2: Dangerous pipe-to-shell patterns ===
 # Match any interpreter after the pipe, with an optional path prefix
 # (`| /bin/sh`, `| zsh`, `| python3`). The trailing ($|[^a-z0-9]) both terminates
-# the interpreter name and stops `sh` from matching inside `shellcheck`.
+# the interpreter name and stops `sh` from matching inside `shellcheck`. Scope:
+# the plain `curl … | sh` an agent actually writes; deliberate obfuscation
+# (`\sh`, process substitution `sh <(curl …)`) is out of scope by design.
 PIPE_INTERP='([^[:space:]|]*/)?(sh|bash|zsh|dash|ksh|python[0-9.]*|perl|ruby|node)($|[^a-z0-9])'
 if echo "$CMD_LOWER" | grep -qE "curl\s+[^|]*\|\s*$PIPE_INTERP"; then
   echo >&2 "BLOCKED: Pipe-to-shell detected (curl | sh). Download first, verify, then execute."
@@ -59,17 +72,19 @@ if echo "$CMD_LOWER" | grep -qE "wget\s+[^|]*\|\s*$PIPE_INTERP"; then
 fi
 
 # === CATEGORY 3: Disk/filesystem destruction ===
-if echo "$CMD_LOWER" | grep -qE '(mkfs|fdisk|parted|wipefs)\s'; then
+# mkfs matches its filesystem-specific forms too (`mkfs.ext4`, `mkfs.vfat`), the
+# most common real invocation — the bare `mkfs\s` form missed all of them.
+if echo "$CMD_LOWER" | grep -qE '(mkfs(\.[a-z0-9]+)?|fdisk|parted|wipefs)\s'; then
   echo >&2 "BLOCKED: Disk formatting/partitioning operation detected."
   exit 2
 fi
 # Device write via of=… regardless of argument order (`dd of=/dev/sda if=…` was
 # a bypass — the previous regex required if= to appear before of=).
-if echo "$CMD_LOWER" | grep -qE 'dd\s+([^&|;]*\s)?of=\s*/dev/(sd|nvme|vd|hd|xvd|mmcblk|loop)'; then
+if echo "$CMD_NQ" | grep -qE 'dd\s+([^&|;]*\s)?of=\s*/dev/(sd|nvme|vd|hd|xvd|mmcblk|loop)'; then
   echo >&2 "BLOCKED: Direct write to device detected (dd)."
   exit 2
 fi
-if echo "$CMD_LOWER" | grep -qE '>\s*/dev/(sd|nvme|vd|hd|xvd)'; then
+if echo "$CMD_NQ" | grep -qE '>\s*/dev/(sd|nvme|vd|hd|xvd)'; then
   echo >&2 "BLOCKED: Redirection to block device detected."
   exit 2
 fi
@@ -81,7 +96,9 @@ fi
 # and/or an absolute path (/usr/bin/sudo). A leading-only or assignment-only
 # lead-in was bypassable via `env sudo`, `command sudo`, `xargs sudo` or
 # `/usr/bin/sudo`. The command-position anchor still keeps the word `sudo`
-# inside a string or message from matching.
+# inside a string or message from matching. Scope: the forms a well-meaning
+# agent types; deliberate obfuscation (`$(sudo …)`, `\sudo`) is out of scope —
+# a best-effort anti-accident guard, not an anti-evasion boundary.
 if echo "$CMD_LOWER" | grep -qE '(^|[;&|])\s*(([a-z_][a-z0-9_]*=[^[:space:]]*|command|exec|env|xargs|nice|nohup|setsid|time|stdbuf|timeout)\s+)*(/[^[:space:]]*/)?sudo(\s|$)'; then
   echo >&2 "BLOCKED: Privilege escalation (sudo). Operate without root privileges."
   exit 2
@@ -175,10 +192,15 @@ if [ "${SKIP_NO_VERIFY_CHECK:-0}" != "1" ] && [ "$_maybe_git" = 1 ]; then
       _nv_hit="verify"; break
     fi
     # Short -n (no-verify) on commit only. Standalone -n on the stripped flags; a
-    # bundled cluster (-nm/-anm) on the raw segment (the strip eats a -m bundle).
+    # bundled cluster (-nm/-anm/-an) on a QUOTE-STRIPPED copy. The cluster arm
+    # allows a TRAILING n (`-an` = -a + --no-verify) — requiring a letter AFTER n
+    # missed that reordering — but scanning the quote-stripped copy (not the raw
+    # segment) keeps a ` -n ` inside a commit MESSAGE from false-matching, since a
+    # real short-flag cluster is never quoted while message text is.
+    _segq=$(printf '%s' "$_seg" | sed -E "s/'[^']*'//g; s/\"[^\"]*\"//g")
     if echo "$_seg" | grep -qiE "$_git_commit"; then
       if echo "$_segf" | grep -qE '(^|[[:space:]])-n([[:space:]]|$)' \
-         || echo "$_seg" | grep -qE '(^|[[:space:]])-[a-z]*n[a-z]+([[:space:]]|$)'; then
+         || echo "$_segq" | grep -qE '(^|[[:space:]])-[a-z]*n[a-z]*([[:space:]]|$)'; then
         _nv_hit="n"; break
       fi
     fi
