@@ -129,12 +129,15 @@ apply_category_choice() {
 # Outputs:
 #   stdout: the selected category slug (e.g., "game-interactive-media").
 ask_category() {
-    echo ""
-    echo "What are you building?"
-    echo ""
-    print_category_menu
-    echo ""
-    echo -n "Choice [1-8] (default: 8 = Other / Generic): "
+    # The caller captures stdout via $(...), so ONLY the resulting slug may go to
+    # stdout. The menu, the question and the prompt go to stderr — otherwise they
+    # are swallowed by the capture (the user sees nothing) AND pollute the slug.
+    echo "" >&2
+    echo "What are you building?" >&2
+    echo "" >&2
+    print_category_menu >&2
+    echo "" >&2
+    echo -n "Choice [1-8] (default: 8 = Other / Generic): " >&2
     local choice
     read -r choice
     apply_category_choice "$choice"
