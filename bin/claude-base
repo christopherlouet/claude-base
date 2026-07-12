@@ -81,7 +81,7 @@ show_unknown() {
     cat >&2 <<EOF
 claude-base: unknown command '$verb'
 
-Available commands: init, update, validate, add, remove, modules, preset, uninstall, version, help
+Available commands: init, update, validate, doctor, add, remove, modules, preset, lessons, uninstall, version, help
 
 Run 'claude-base help' for full usage.
 EOF

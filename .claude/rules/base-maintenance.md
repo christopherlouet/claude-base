@@ -35,7 +35,7 @@ CI enforces this: the `ci.yml` **"Counts gate"** re-runs `generate` and fails th
 | Check | Command | Blocking |
 |-------|---------|----------|
 | Doc counters consistent | `./scripts/validate-counts.sh` | Yes |
-| SessionStart message up to date | Inspect `.claude/settings.json` (hardcoded commands / agents) | Yes if addition/removal |
+| SessionStart banner counts | None — the hook computes them dynamically (`find … \| wc -l` in `.claude/settings.json`), so they cannot drift | No |
 | Catalog up to date | Check `docs/reference/agents-catalog.md` and `docs/reference/skills-catalog.md` | Yes |
 | Rules README up to date | `.claude/rules/README.md`: row + header counter | Yes if new rule |
 | Structural audit | `./scripts/audit-base.sh` | Recommended |
@@ -139,7 +139,7 @@ IMPORTANT: NEVER push a commit that adds/removes in `.claude/` without having ru
 
 IMPORTANT: A `UserPromptSubmit` or `PostToolUse` hook must always bail out quickly (exit 0) if its dependency is missing (`jq`, `gh`, `git`). A hook that errors breaks the UX.
 
-IMPORTANT: The counters hardcoded in the SessionStart hook are the first thing the user sees when opening Claude Code — a wrong number gives the impression of a poorly maintained foundation.
+IMPORTANT: The SessionStart banner counts are the first thing the user sees when opening Claude Code. They are computed dynamically by the hook (`find … | wc -l`), so they cannot drift — do NOT reintroduce a hardcoded number there.
 
 NEVER commit a script in `scripts/hooks/` without shellcheck + real-world testing.
 
