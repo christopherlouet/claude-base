@@ -45,6 +45,9 @@ CMD_LOWER=$(printf '%s' "$CMD" | tr '[:upper:]' '[:lower:]')
 #      commit message that merely NAMES a verb ("explain the DROP TABLE
 #      migration", even across lines) is not treated as the operation itself
 #      (mirrors command-validator.sh's message-stripping).
+# Scope note: inline-comment obfuscation (`DROP/**/TABLE`) is deliberately NOT
+# defended — a well-meaning agent writes `DROP TABLE`, not the split form; this
+# is a best-effort anti-accident guard, not an anti-evasion boundary.
 SCAN=$(printf '%s' "$CMD_LOWER" \
   | sed -E 's/--[[:space:]].*$//' \
   | tr '\n' ' ' \
