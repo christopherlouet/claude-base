@@ -294,7 +294,6 @@ The shape is identical for any stack — swap the arguments (e.g. `/dev:dev-tdd 
 | Template | Language / Framework |
 |----------|---------------------|
 | `CLAUDE.react.md` | React |
-| `CLAUDE.nextjs.md` | Next.js (App Router) |
 | `CLAUDE.vue.md` | Vue.js 3 |
 | `CLAUDE.node-api.md` | Node.js API |
 | `CLAUDE.python.md` | Python |
