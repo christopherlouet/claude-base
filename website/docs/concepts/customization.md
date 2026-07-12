@@ -232,7 +232,7 @@ Hooks are configured directly in the `settings.json` file:
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then echo \"Modification blocked on $branch\"; exit 1; fi'",
+            "command": "bash -c 'branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then echo \"Modification blocked on $branch\" >&2; exit 2; fi'",
             "onFailure": "block"
           }
         ]

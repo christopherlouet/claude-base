@@ -60,3 +60,63 @@ PY
         return 1
     fi
 }
+
+# =============================================================================
+# 2026-07-12 drift guard — the hand-maintained website/docs/concepts/ pages have
+# no generator and drifted into fiction (wrong agent models, fictional skill
+# names, an "enabled" MCP flag that does not exist). These tests pin the facts
+# against the real inventory so the pages cannot silently rot again.
+# =============================================================================
+
+@test "concepts/agents.md: every model-table row matches the agent's real frontmatter model" {
+    run python3 - "$BATS_TEST_DIRNAME/.." <<'PY'
+import os, re, sys, glob
+root = sys.argv[1]
+page = os.path.join(root, "website/docs/concepts/agents.md")
+bad = []
+row = re.compile(r'^\|\s*`([a-z][a-z0-9-]+)`\s*\|\s*(haiku|sonnet|opus)\s*\|')
+for line in open(page, encoding="utf-8"):
+    m = row.match(line)
+    if not m:
+        continue
+    agent, claimed = m.group(1), m.group(2)
+    matches = glob.glob(os.path.join(root, ".claude/agents", "**", agent + ".md"), recursive=True)
+    if not matches:
+        bad.append(f"{agent}: PHANTOM (no .claude/agents/{agent}.md)")
+        continue
+    real = None
+    for ln in open(matches[0], encoding="utf-8"):
+        mm = re.match(r'^model:\s*(\S+)', ln)
+        if mm:
+            real = mm.group(1)
+            break
+    if real != claimed:
+        bad.append(f"{agent}: page says {claimed}, frontmatter says {real}")
+if bad:
+    print("\n".join(bad)); sys.exit(1)
+print("OK")
+PY
+    [ "$status" -eq 0 ] || { echo "$output"; false; }
+}
+
+@test "concepts/: no fictional (gerund) skill names survive" {
+    # These names never existed as skills; each maps to a real skill instead.
+    local fiction='reviewing-code|generating-commit-messages|creating-pull-requests|exploring-codebase|test-driven-development|debugging-issues|docker-containerization|ci-cd-pipeline|infrastructure-as-code|monitoring-instrumentation|dev-test'
+    # Exclude external URLs — an O'Reilly book title legitimately contains
+    # "test-driven-development"; only real skill-name uses should match.
+    run bash -c "grep -rnE '$fiction' '$BATS_TEST_DIRNAME/../website/docs/concepts/' | grep -v 'https\\?://' || true"
+    [ -z "$output" ] || { echo "fictional skill/agent token found:"; echo "$output"; false; }
+}
+
+@test "concepts/mcp-servers.md: no non-existent \"enabled\" flag in config examples" {
+    # The real mechanism is copy-the-block; there is no per-server enabled flag.
+    # Match only a JSON config line (indent + key at line start), NOT prose that
+    # explains the flag's absence ("there is no \"enabled\": false toggle").
+    run grep -nE '^[[:space:]]*"enabled"[[:space:]]*:' "$BATS_TEST_DIRNAME/../website/docs/concepts/mcp-servers.md"
+    [ "$status" -eq 1 ] || { echo "stray enabled config flag:"; echo "$output"; false; }
+}
+
+@test "concepts/advanced-features.md: effort levels use xhigh, not max" {
+    run grep -nE '/effort[[:space:]]+max|\bmax\b.*effort' "$BATS_TEST_DIRNAME/../website/docs/concepts/advanced-features.md"
+    [ "$status" -eq 1 ] || { echo "effort 'max' should be 'xhigh':"; echo "$output"; false; }
+}

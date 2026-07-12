@@ -21,7 +21,7 @@ Replaces the "extended thinking" toggle with 4 effort levels:
 | `low` | Simple tasks, rephrasings | $ |
 | `medium` | Standard code, moderate analyses | $$ |
 | `high` | Complex problems, deep audits | $$$ |
-| `max` | Critical tasks, architecture, advanced debugging | $$$$ |
+| `xhigh` | Critical tasks, architecture, advanced debugging | $$$$ |
 
 The model automatically adjusts its effort based on the detected complexity. It is also possible to force a level via the API:
 
@@ -32,7 +32,7 @@ const response = await anthropic.messages.create({
   thinking: {
     type: 'enabled',
     budget_tokens: 10000,  // budget for reasoning
-    effort: 'high',        // low | medium | high
+    effort: 'high',        // low | medium | high | xhigh
   },
   messages: [{ role: 'user', content: prompt }],
 });
@@ -231,7 +231,7 @@ Centralized configuration of MCP servers in `.mcp.json`:
 | `linear` | Project and issue management |
 | `notion` | Documentation and knowledge bases |
 
-To enable a server: `"enabled": true` in `.mcp.json`
+To enable a server, copy its block from `.mcp.json.example` into `.mcp.json` (which ships empty as `{"mcpServers": {}}`). There is no per-server `"enabled"` flag — a server is active if and only if it is present in `.mcp.json`.
 
 ## CLAUDE.md @imports
 

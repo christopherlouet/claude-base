@@ -22,9 +22,9 @@ A **hook** is a shell command automatically executed before (PreToolUse) or afte
 │  │ PreToolUse Hook                        │                    │
 │  │                                        │                    │
 │  │ Matcher: "Edit|Write"                  │                    │
-│  │ Command: scripts/validate.sh protect   │                    │
+│  │ Command: main-branch-guard.sh          │                    │
 │  │                                        │                    │
-│  │ → Checks we are not on main            │                    │
+│  │ → Blocks the edit (exit 2) on main     │                    │
 │  └────────────────────────────────────────┘                    │
 │              │                                                 │
 │              ▼ (if hook OK)                                    │
@@ -37,7 +37,7 @@ A **hook** is a shell command automatically executed before (PreToolUse) or afte
 │  │ PostToolUse Hook                       │                    │
 │  │                                        │                    │
 │  │ Matcher: "Edit|Write"                  │                    │
-│  │ Command: scripts/validate.sh format    │                    │
+│  │ Command: auto-format (prettier/ruff)   │                    │
 │  │                                        │                    │
 │  │ → Automatically formats the file       │                    │
 │  └────────────────────────────────────────┘                    │
@@ -47,7 +47,7 @@ A **hook** is a shell command automatically executed before (PreToolUse) or afte
 
 ## Configuration
 
-Hooks are configured in `.claude/settings.json`:
+Hooks are configured in `.claude/settings.json`. Each hook runs a **discrete script** under `scripts/hooks/` (there is no single dispatcher script) — a PreToolUse hook **blocks** the tool call by exiting with code **2**:
 
 ```json
 {
@@ -55,18 +55,32 @@ Hooks are configured in `.claude/settings.json`:
     "PreToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "scripts/validate.sh protect-main"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
+            "onFailure": "block"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "scripts/validate.sh auto-format $FILE_PATH"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh\"",
+            "onFailure": "ignore"
+          }
+        ]
       }
     ]
   }
 }
 ```
+
+> The full list of real hook scripts and events lives in [`docs/reference/hooks-reference.md`](/docs/reference/hooks-reference). The repo ships 16+ discrete scripts under `scripts/hooks/` (e.g. `main-branch-guard.sh`, `pre-commit-tests.sh`, `command-validator.sh`, `secret-scan.sh`, `config-protection.sh`, `destructive-ops.sh`, `bash-write-guard.sh`).
 
 ## Types of hooks
 
@@ -80,8 +94,9 @@ Executed **before** the tool is used.
 - Check permissions
 
 **Behavior:**
-- If the hook fails (exit code != 0), the tool is not executed
-- The error message is shown to the user
+- Exit code **2** blocks the tool: it is not executed and the hook's stderr is shown to Claude
+- Exit code **0** allows the tool; any other non-zero code surfaces an error but does **not** block
+- Blocking scripts are wired with `"onFailure": "block"` in `.claude/settings.json`
 
 ### PostToolUse
 
@@ -101,7 +116,13 @@ Executed **after** the tool is used.
 ```json
 {
   "matcher": "Edit|Write",
-  "command": "scripts/validate.sh action $FILE_PATH"
+  "hooks": [
+    {
+      "type": "command",
+      "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
+      "onFailure": "block"
+    }
+  ]
 }
 ```
 
@@ -135,28 +156,31 @@ Shell command to execute. Available variables:
     "PreToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "scripts/validate.sh protect-main"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
+            "onFailure": "block"
+          }
+        ]
       }
     ]
   }
 }
 ```
 
-`scripts/validate.sh` script:
+`scripts/hooks/main-branch-guard.sh` (a dedicated script — exits **2** to block):
 
 ```bash
 #!/bin/bash
+# scripts/hooks/main-branch-guard.sh
 
-case "$1" in
-  protect-main)
-    BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    if [[ "$BRANCH" == "main" || "$BRANCH" == "master" ]]; then
-      echo "BLOCKED: Cannot modify files on $BRANCH branch"
-      echo "Please create a feature branch first"
-      exit 1
-    fi
-    ;;
-esac
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [[ "$BRANCH" == "main" || "$BRANCH" == "master" ]]; then
+  echo "BLOCKED: Cannot modify files on $BRANCH branch" >&2
+  echo "Please create a feature branch first" >&2
+  exit 2   # exit 2 blocks the tool; exit 1 would NOT block
+fi
 ```
 
 ### Auto-format with Prettier
@@ -167,26 +191,29 @@ esac
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "scripts/validate.sh auto-format $FILE_PATH"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-format.sh\"",
+            "onFailure": "ignore"
+          }
+        ]
       }
     ]
   }
 }
 ```
 
-Script:
+`scripts/hooks/auto-format.sh` (PostToolUse reads the edited file path from the hook's stdin JSON):
 
 ```bash
 #!/bin/bash
+# scripts/hooks/auto-format.sh
 
-case "$1" in
-  auto-format)
-    FILE="$2"
-    if [[ "$FILE" =~ \.(ts|tsx|js|jsx)$ ]]; then
-      npx prettier --write "$FILE" 2>/dev/null
-    fi
-    ;;
-esac
+FILE=$(cat | jq -r '.tool_input.file_path // empty' 2>/dev/null)
+if [[ "$FILE" =~ \.(ts|tsx|js|jsx)$ ]]; then
+  npx prettier --write "$FILE" 2>/dev/null || true
+fi
 ```
 
 ### TypeScript type-check
@@ -197,26 +224,29 @@ esac
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "scripts/validate.sh typecheck $FILE_PATH"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/typecheck.sh\"",
+            "onFailure": "ignore"
+          }
+        ]
       }
     ]
   }
 }
 ```
 
-Script:
+`scripts/hooks/typecheck.sh`:
 
 ```bash
 #!/bin/bash
+# scripts/hooks/typecheck.sh
 
-case "$1" in
-  typecheck)
-    FILE="$2"
-    if [[ "$FILE" =~ \.(ts|tsx)$ ]]; then
-      npx tsc --noEmit 2>&1 | head -20
-    fi
-    ;;
-esac
+FILE=$(cat | jq -r '.tool_input.file_path // empty' 2>/dev/null)
+if [[ "$FILE" =~ \.(ts|tsx)$ ]]; then
+  npx tsc --noEmit 2>&1 | head -20 || true
+fi
 ```
 
 ### Auto-install dependencies
@@ -227,26 +257,29 @@ esac
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "scripts/validate.sh auto-install $FILE_PATH"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-install.sh\"",
+            "onFailure": "ignore"
+          }
+        ]
       }
     ]
   }
 }
 ```
 
-Script:
+`scripts/hooks/auto-install.sh`:
 
 ```bash
 #!/bin/bash
+# scripts/hooks/auto-install.sh
 
-case "$1" in
-  auto-install)
-    FILE="$2"
-    if [[ "$FILE" == *"package.json" ]]; then
-      npm install
-    fi
-    ;;
-esac
+FILE=$(cat | jq -r '.tool_input.file_path // empty' 2>/dev/null)
+if [[ "$FILE" == *"package.json" ]]; then
+  npm install
+fi
 ```
 
 ## Complete configuration
@@ -259,73 +292,56 @@ Example of a complete `.claude/settings.json`:
     "PreToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "scripts/validate.sh protect-main"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
+            "onFailure": "block"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "scripts/validate.sh auto-format $FILE_PATH"
-      },
-      {
-        "matcher": "Edit|Write",
-        "command": "scripts/validate.sh typecheck $FILE_PATH"
-      },
-      {
-        "matcher": "Edit|Write",
-        "command": "scripts/validate.sh auto-install $FILE_PATH"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-format.sh\"",
+            "onFailure": "ignore"
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/typecheck.sh\"",
+            "onFailure": "ignore"
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-install.sh\"",
+            "onFailure": "ignore"
+          }
+        ]
       }
     ]
   }
 }
 ```
 
-## Unified validation script
+## Discrete hook scripts
 
-A single script for all hooks:
+There is **no single dispatcher script**. Each hook is its own small script under `scripts/hooks/`, matched by event and tool. The repo ships **16+** of them, each with one responsibility:
 
-```bash
-#!/bin/bash
-# scripts/validate.sh
+| Script | Event | Role |
+|--------|-------|------|
+| `main-branch-guard.sh` | PreToolUse (Edit/Write) | Blocks edits on `main`/`master` (exit 2) |
+| `secret-scan.sh` | PreToolUse (Write/Edit/MultiEdit) | Blocks hardcoded secrets before writing |
+| `command-validator.sh` | PreToolUse (Bash) | Blocks risky commands across risk categories |
+| `pre-commit-tests.sh` | PreToolUse (Bash git commit) | Runs the test suite, blocks on failure |
+| `destructive-ops.sh` | PreToolUse (Bash) | Blocks destructive DB/filesystem ops |
+| `config-protection.sh` | PreToolUse (Edit/Write) | Blocks edits to existing linter/formatter configs |
+| `bash-write-guard.sh` | PreToolUse (Bash) | Blocks Bash writes to protected/secrets files |
 
-set -e
-
-case "$1" in
-  protect-main)
-    BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    if [[ "$BRANCH" == "main" || "$BRANCH" == "master" ]]; then
-      echo "BLOCKED: Cannot modify files on $BRANCH"
-      exit 1
-    fi
-    ;;
-
-  auto-format)
-    FILE="$2"
-    if [[ -n "$FILE" && "$FILE" =~ \.(ts|tsx|js|jsx)$ ]]; then
-      npx prettier --write "$FILE" 2>/dev/null || true
-    fi
-    ;;
-
-  typecheck)
-    FILE="$2"
-    if [[ -n "$FILE" && "$FILE" =~ \.(ts|tsx)$ ]]; then
-      npx tsc --noEmit 2>&1 | head -20 || true
-    fi
-    ;;
-
-  auto-install)
-    FILE="$2"
-    if [[ "$FILE" == *"package.json" ]]; then
-      npm install
-    fi
-    ;;
-
-  *)
-    echo "Unknown action: $1"
-    exit 1
-    ;;
-esac
-```
+A PreToolUse script **blocks** the tool by exiting **2** (exit 1 does **not** block); PostToolUse scripts are advisory and wired with `"onFailure": "ignore"`. See [`docs/reference/hooks-reference.md`](/docs/reference/hooks-reference) for the full, authoritative catalogue of scripts, events and environment toggles.
 
 ## Best practices
 
@@ -355,9 +371,9 @@ npx prettier --write "$FILE" 2>/dev/null || true
 For blocking PreToolUse hooks:
 
 ```bash
-echo "BLOCKED: Clear reason"
-echo "Solution: What the user needs to do"
-exit 1
+echo "BLOCKED: Clear reason" >&2
+echo "Solution: What the user needs to do" >&2
+exit 2   # exit 2 blocks the tool; exit 1 would NOT block
 ```
 
 ### 4. Precise filtering
@@ -366,8 +382,8 @@ Target only the necessary tools:
 
 ```json
 {
-  "matcher": "Edit|Write",  // Not ".*"
-  "command": "..."
+  "matcher": "Edit|Write",
+  "hooks": [{ "type": "command", "command": "..." }]
 }
 ```
 
@@ -382,8 +398,8 @@ cat .claude/settings.json | jq '.hooks'
 ### Test a hook manually
 
 ```bash
-scripts/validate.sh protect-main
-echo $?  # 0 = OK, 1 = blocked
+scripts/hooks/main-branch-guard.sh
+echo $?  # 0 = allow, 2 = blocked
 ```
 
 ### Verbose logs
