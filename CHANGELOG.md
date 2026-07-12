@@ -11,6 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [5.2.1] - 2026-07-12
+
+Audit follow-up: a second full-project analysis (2026-07-12, six parallel audit agents) surfaced a batch of guard bypasses, install-path bugs, doc fiction, and a blind gate. Every finding was reproduced live before the fix; the suite grew 1648 → 1675. Three of the audit's own recommendations were revised on measured data (see below).
+
+### Fixed
+
+- **Bash guards missed common forms and over-blocked benign commands.** `command-validator.sh`, `destructive-ops.sh` and `bash-write-guard.sh` let through the everyday forms an agent actually types (`git commit -an`, `dd of="/dev/sda"`, `mkfs.ext4`, `sed --in-place`, `cp`/`mv`/`install` onto an existing `.env`) while a trigger token quoted inside a commit message falsely blocked the command. A message-value strip fixes the false positives (and the friction of committing anything that *describes* a dangerous command); the common forms are now covered. (#469)
+- **Interactive preset install skipped its own filtering.** Choosing a preset from the type menu ran `create_project`, which applied only the module filter — the preset's skill/command/agent filters (run on the `--preset X` path) were skipped, so the full catalog installed while `foundation.json` recorded the filtered set. Also: `ask_category` wrote its menu to a captured stdout, silently disabling the category prompt. (#470)
+- **The website concept pages had drifted into fiction.** `website/docs/concepts/{agents,skills,hooks,mcp-servers,advanced-features}.md` listed a phantom `dev-test` agent, wrong agent models, non-existent gerund skill names, an `exit 1` blocking hook (blocking is `exit 2`), a non-existent MCP `"enabled"` flag, and effort `max` (it is `xhigh`). Corrected against the real inventory, with the generated `architecture`/`customization` pages fixed at their `docs/` source. A new drift guard validates every agent-model row against frontmatter. (#471)
+- **The pin-lockstep gate was blind to marketplace-URL plugins.** `frontend-design` was pinned to two different refs (registry vs three presets) — the exact partial-re-pin the gate exists to stop — yet it passed, because it keyed the registry by repo path and the presets by their `claude.com` URL. The gate now also keys by the normalised marketplace path; the presets were re-pinned. (#472)
+- **`growth-cro` had two conflicting registry records for the vendor `cro` skill** (a detailed "partial-keep" and a "reduce-planned" bundle). Resolved so the three records cover disjoint vendor skills, keeping the doc-confirmed canonical disposition. (#475)
+
+### Changed
+
+- **The gitleaks secret scan is now enforcing.** It ran with `continue-on-error: true` (zero enforcement). Removing that required first path-allowlisting 30 pre-existing benign findings (the self-test fixtures and IaC placeholder creds); the `.md`/`.txt` allowlist was kept after measuring that removing it explodes to ~600 documentation-example false positives. A self-application test now asserts the real repo scans clean. (#473)
+- **`init` now installs all four global rules.** `self-improvement.md` and `vendor-precedence.md` were documented but not shipped; installed projects referenced rules absent from disk. (#472)
+- **The runtime Bash guards are scoped to the non-adversarial threat model.** Deliberate-obfuscation checks (process substitution, escaped `sudo`/`sh`, inline-comment-split SQL) were removed: these are best-effort anti-accident guardrails, not an anti-evasion boundary, and chasing shell-escaping evasions only inflated the over-block surface. (#469)
+
+### Removed
+
+- Config hygiene: four dead `Bash(curl | bash:*)`-style deny-rules (prefix-matched, never fired — pipe-to-shell is covered by the hook), the orphan `templates/CLAUDE.nextjs.md` (no consumer), and stale "hardcoded counters" wording in `base-maintenance.md` (the SessionStart counts are computed dynamically). (#474)
+
 ## [5.2.0] - 2026-07-11
 
 The "route to stable" release: a 5-agent full-project analysis (2026-07-11) executed end-to-end in five lots — functional bugs, prevention gates, test-suite honesty, docs truth, native-reduction pointers. Every fix below was verified with a reproduction before being accepted; the test suite grew 1558 → 1648.
