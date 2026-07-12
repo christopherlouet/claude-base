@@ -29,9 +29,14 @@ jobs:
           scandir: './scripts'
           severity: warning
 
+      # Enforcing (no continue-on-error): a real secret in a non-doc file fails
+      # the job. The repo scans clean today — its only planted secrets live in
+      # tests/gitleaks.bats (the self-test) and .claude/templates/**/*.tf
+      # (placeholder IaC creds), both path-allowlisted in .gitleaks.toml. Docs
+      # (.md/.txt) stay allowlisted (removing that yields ~600 example-secret
+      # FPs); the write-time secret-scan hook covers the doc surface locally.
       - name: Gitleaks scan
         uses: gitleaks/gitleaks-action@v3
-        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: .gitleaks.toml
