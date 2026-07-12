@@ -24,7 +24,7 @@ An **agent** is a sub-process launched by Claude via the **Task tool** to execut
 │          │ ┌──────────────────────────────┐ │                  │
 │          │ │ ISOLATED context             │ │                  │
 │          │ │ Tools: Read, Grep, Glob      │ │                  │
-│          │ │ Model: sonnet                │ │                  │
+│          │ │ Model: opus                  │ │                  │
 │          │ └──────────────────────────────┘ │                  │
 │          │                                  │                  │
 │          │ [Running the audit...]           │                  │
@@ -43,7 +43,7 @@ An **agent** is a sub-process launched by Claude via the **Task tool** to execut
 |---------|-------------|
 | **Isolated context** | Does not pollute the main conversation |
 | **Restricted tools** | Limited access (read-only for audits) |
-| **Optimized model** | Haiku for simple tasks, Sonnet for complex ones |
+| **Optimized model** | Haiku for simple tasks, Sonnet for most work, Opus for the most demanding |
 | **Parallelization** | Multiple agents can run simultaneously |
 | **Specialization** | Domain-specific instructions |
 
@@ -87,7 +87,7 @@ hooks:
     - matcher: ".*"
       command: "echo 'Tool used'"
 skills:
-  - security-audit        # Skills injected into the agent
+  - qa-security           # Skills injected into the agent
 ---
 ```
 
@@ -95,7 +95,7 @@ skills:
 
 ```markdown
 ---
-model: haiku
+model: sonnet
 ---
 
 # Work-Explore Agent
@@ -134,7 +134,8 @@ Exploration report with:
 | Model | Usage | Cost | Speed |
 |-------|-------|------|-------|
 | `haiku` | Simple, fast tasks | Low | Fast |
-| `sonnet` | Complex tasks, analyses | Medium | Medium |
+| `sonnet` | Standard tasks, analyses (default) | Medium | Medium |
+| `opus` | Most demanding tasks (TDD, debug, audits) | High | Slower |
 
 ### Permission modes
 
@@ -170,18 +171,18 @@ Claude automatically delegates to agents based on context:
 
 | Agent | Model | Description |
 |-------|-------|-------------|
-| `work-explore` | haiku | Explore a codebase |
-| `doc-onboard` | haiku | Developer onboarding |
-| `doc-explain` | haiku | Explain code |
+| `work-explore` | sonnet | Explore a codebase |
+| `doc-onboard` | sonnet | Developer onboarding |
+| `doc-explain` | sonnet | Explain code |
 
 ### Quality & Audits
 
 | Agent | Model | Description |
 |-------|-------|-------------|
-| `qa-security` | sonnet | OWASP Top 10 audit |
+| `qa-security` | opus | OWASP Top 10 audit |
 | `qa-perf` | sonnet | Performance audit |
-| `wcag-audit` | haiku | Accessibility audit |
-| `qa-audit` | sonnet | Full audit |
+| `wcag-audit` | sonnet | Accessibility audit |
+| `qa-audit` | opus | Full audit |
 
 ### Operations
 
@@ -189,22 +190,22 @@ Claude automatically delegates to agents based on context:
 |-------|-------|-------------|
 | `ops-deps` | haiku | Dependency audit |
 | `ops-health` | haiku | Health check |
-| `ops-docker` | haiku | Containerization |
+| `ops-docker` | sonnet | Containerization |
 
 ### Development
 
 | Agent | Model | Description |
 |-------|-------|-------------|
-| `dev-debug` | sonnet | Bug investigation |
-| `dev-test` | haiku | Test generation |
+| `dev-debug` | opus | Bug investigation |
+| `dev-tdd` | opus | TDD (test-first) implementation |
 
 ### Business & Growth
 
 | Agent | Model | Description |
 |-------|-------|-------------|
-| `biz-model` | haiku | Business model |
-| `biz-competitor` | haiku | Competitor analysis |
-| `growth-seo` | haiku | SEO audit |
+| `biz-model` | sonnet | Business model |
+| `biz-competitor` | sonnet | Competitor analysis |
+| `growth-seo` | sonnet | SEO audit |
 
 ## Create a new agent
 
