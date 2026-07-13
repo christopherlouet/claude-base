@@ -213,11 +213,13 @@ _catalog_filter_findings() {
         esac
     done
 
-    # Unknown names — non-fatal warning (install ignores them).
+    # Unknown names — HARD failure (2026-07-12 audit, C7): a typo in a keep
+    # list silently drops the INTENDED item at install time (data loss) while
+    # a warning-only validation said OK.
     local u
     while IFS= read -r u; do
         [ -z "$u" ] && continue
-        echo "W:foundation.${catalog}: '$u' matches no known command/agent or domain (typo? ignored at install)"
+        echo "E:foundation.${catalog}: '$u' matches no known command/agent or domain (typo? a keep/drop typo silently corrupts the install set)"
     done < <(catalog_unknown_entries "$catalog" "$root" ${entries[@]+"${entries[@]}"})
 }
 
@@ -316,6 +318,20 @@ validate_one() {
             fi
         fi
     fi
+
+    # foundation.skills known-set (2026-07-12 audit, C7): every keep/drop entry
+    # must name a real skill directory (.claude/skills/<name>/). An unknown
+    # name in keep-mode silently DROPS the intended skill at install time while
+    # validation said OK — hard failure, mirroring the commands/agents rule.
+    # Syntax guard first ([a-z0-9-] only, like module_exists): "." or ".." pass
+    # a bare -d test but are traversal shapes, never skill names.
+    local skname
+    while IFS= read -r skname; do
+        [ -n "$skname" ] || continue
+        if ! [[ "$skname" =~ ^[a-z][a-z0-9-]*$ ]] || [ ! -d "$BASE_DIR/.claude/skills/$skname" ]; then
+            errs+=("foundation.skills: '$skname' matches no skill in .claude/skills/ (typo? a keep/drop typo silently corrupts the install set)")
+        fi
+    done < <(jq -r '((.foundation.skills.drop)? // [])[]?, ((.foundation.skills.keep)? // [])[]? | select(type=="string")' "$file" 2>/dev/null)
 
     # foundation.commands / foundation.agents catalog filters (US-2).
     # The helper echoes E:/W:-prefixed findings; route them to errs/warns.
@@ -724,11 +740,20 @@ validate_pin_lockstep() {
     # key too — the registry (vendorUrl) and a preset copy (url) share it, so a
     # marketplace plugin pinned to divergent refs is caught, without collapsing
     # distinct plugins to a common owner/repo prefix.
+    # NOTE: mktkey semantics are MIRRORED by _repin_apply in
+    # scripts/lib/curation-emit.sh (the bot's re-pin matcher) — keep the two
+    # normalisations in lockstep or a re-pin PR updates only one side and fails
+    # this very gate.
+    # For a MARKETPLACE record the reporoot(vendorId) key is SUPPRESSED: a
+    # subpathed vendorId (owner/repo/plugins/<x>) reduces to the shared
+    # marketplace repo root, so two distinct plugins of one marketplace repo at
+    # different (legitimate) pins would collide into one duplicate key and
+    # false-FAIL the gate. The mktkey alone couples each plugin's pins.
     local rr='def reporoot:(sub("^https?://github\\.com/";""))|if test("://") then empty else . end|(split("?")[0])|(split("#")[0])|split("/")|select(length>=2 and (.[0]|length>0) and (.[1]|length>0))|.[0:2]|join("/");def mktkey:(sub("^https?://";""))|(split("?")[0])|(split("#")[0])|sub("/$";"");def is_marketplace:test("^https?://")and(test("github\\.com")|not);'
     local pairs
     pairs=$(
         {
-            [ -f "$registry" ] && jq -r "$rr"'.records[]? | .pinnedRef as $p | ([ (.vendorId|reporoot), ((.vendorUrl // .vendorId // "")|select(is_marketplace)|mktkey) ] | unique[]) | "\(.)\t\($p)"' "$registry" 2>/dev/null
+            [ -f "$registry" ] && jq -r "$rr"'.records[]? | .pinnedRef as $p | (if ((.vendorUrl // .vendorId // "")|is_marketplace) then [ ((.vendorUrl // .vendorId)|mktkey) ] else [ (.vendorId|reporoot) ] end | unique[]) | "\(.)\t\($p)"' "$registry" 2>/dev/null
             local f
             for f in "$@"; do
                 [ -f "$f" ] || continue
@@ -766,7 +791,10 @@ done
 registry_fail=0
 lockstep_fail=0
 if [ -z "$SINGLE_FILE" ]; then
-    DEFAULT_REGISTRY="$BASE_DIR/.claude/curation/registry.json"
+    # Overridable (VALIDATE_PRESETS_REGISTRY) so the lockstep guard can be
+    # exercised against a fixture registry in tests — the registry twin of the
+    # VALIDATE_PRESETS_DIR seam above.
+    DEFAULT_REGISTRY="${VALIDATE_PRESETS_REGISTRY:-$BASE_DIR/.claude/curation/registry.json}"
     if [ -f "$DEFAULT_REGISTRY" ]; then
         validate_registry "$DEFAULT_REGISTRY" || registry_fail=1
     fi
