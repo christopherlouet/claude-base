@@ -152,11 +152,13 @@ _manifest_modules_joined() {
 # wipes them, opt-in does not re-deposit), so the migration message must NOT
 # claim they were "left in place"; it must point at re-install.
 # ---------------------------------------------------------------------------
-@test "migration: --all crossing message does not falsely claim files were kept" {
+@test "migration: --all --clean crossing message does not falsely claim files were kept" {
     local proj
     proj="$(_setup_preflip_project)"
 
-    run "$UPDATE_SCRIPT" -y --all "$proj"
+    # C2 audit: --all no longer implies --clean; the wipe path under test
+    # needs the explicit flag.
+    run "$UPDATE_SCRIPT" -y --all --clean "$proj"
     [ "$status" -eq 0 ]
     [[ "$output" != *"left in place"* ]]
     [[ "$output" == *"claude-base add"* ]]
@@ -243,10 +245,10 @@ _setup_pre_thematic_project() {
     [ -f "$proj/.claude/commands/dev/dev-flutter.md" ]
 }
 
-@test "migration: thematic --all crossing message does not claim files were kept" {
+@test "migration: thematic --all --clean crossing message does not claim files were kept" {
     local proj
     proj="$(_setup_pre_thematic_project)"
-    run "$UPDATE_SCRIPT" -y --all "$proj"
+    run "$UPDATE_SCRIPT" -y --all --clean "$proj"
     [ "$status" -eq 0 ]
     [[ "$output" != *"left in place"* ]]
     [[ "$output" == *"claude-base add"* ]]

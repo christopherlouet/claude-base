@@ -153,7 +153,7 @@ module_of_item() {
 # -----------------------------------------------------------------------------
 # Project manifest (.claude/foundation.json) — EF-204
 # Single source of truth for a project's foundation state:
-#   { "version": "...", "preset": "..."|null, "modules": [...] }
+#   { "version": "...", "preset": "..."|null, "tier": "full"|"minimal", "modules": [...] }
 # Replaces the legacy .claude/.foundation-version marker (EF-205).
 # -----------------------------------------------------------------------------
 
@@ -166,6 +166,12 @@ _manifest_path() {
 # Single jq invocation, atomic tmp+mv write: a failing jq can never leave a
 # partial manifest behind, and a non-file squatting the destination path is
 # refused instead of being silently written into.
+# Install tier (C2 audit — minimal vs full): the manifest carries a "tier"
+# field. It is NOT positional (modules are varargs); instead:
+#   - MANIFEST_TIER env, when set, wins (used by init --minimal);
+#   - else an existing manifest's tier is PRESERVED (so module add/remove and
+#     version-stamp rewrites never silently graduate a minimal install);
+#   - else it defaults to "full".
 write_foundation_manifest() {
     local dir="${1:?target dir required}" version="${2:?version required}"
     local preset="${3:-}"
@@ -177,6 +183,13 @@ write_foundation_manifest() {
             "$manifest" >&2
         return 1
     fi
+    local tier="${MANIFEST_TIER:-}"
+    if [[ -z "$tier" && -f "$manifest" ]]; then
+        tier="$(jq -r '.tier // empty' "$manifest" 2>/dev/null)" || tier=""
+    fi
+    if [[ -z "$tier" ]]; then
+        tier="full"
+    fi
     mkdir -p "$dir/.claude" || return 1
     local tmp
     tmp="$(mktemp)" || return 1
@@ -185,9 +198,11 @@ write_foundation_manifest() {
     if ! jq -n \
         --arg version "$version" \
         --arg preset_str "$preset" \
+        --arg tier "$tier" \
         --args \
         '{version: $version,
           preset: (if $preset_str == "" then null else $preset_str end),
+          tier: $tier,
           modules: ($ARGS.positional | map(select(length > 0)))}' \
         "$@" > "$tmp"; then
         rm -f "$tmp"
@@ -209,6 +224,33 @@ read_foundation_manifest() {
             "$file" >&2
         return 2
     fi
+}
+
+# manifest_tier <dir> — print the recorded install tier ("minimal" or "full").
+# Pre-tier manifests default to "full" (they were full installs by
+# construction — export-minimal never wrote a manifest before the tier field).
+# Propagates read_foundation_manifest's status (1 missing, 2 corrupted).
+manifest_tier() {
+    local json
+    json="$(read_foundation_manifest "${1:?target dir required}")" || return $?
+    jq -r '.tier // "full"' <<<"$json"
+}
+
+# set_manifest_tier <dir> <tier> — rewrite ONLY the .tier field (atomic).
+# Used by update --graduate-full to record the deliberate minimal -> full
+# conversion. Returns 1 if the manifest is missing or jq fails.
+set_manifest_tier() {
+    local dir="${1:?target dir required}" tier="${2:?tier required}"
+    local manifest
+    manifest="$(_manifest_path "$dir")"
+    [[ -f "$manifest" ]] || return 1
+    local tmp
+    tmp="$(mktemp)" || return 1
+    if ! jq --arg tier "$tier" '.tier = $tier' "$manifest" > "$tmp"; then
+        rm -f "$tmp"
+        return 1
+    fi
+    mv "$tmp" "$manifest" || { rm -f "$tmp"; return 1; }
 }
 
 # manifest_preset <dir> — print the recorded preset name, empty if null/missing.

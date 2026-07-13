@@ -298,7 +298,7 @@ teardown() {
     [ "$count" -gt 0 ]
 }
 
-@test "update.sh --all updates everything with cleanup" {
+@test "update.sh --all --clean updates everything with cleanup" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
@@ -306,7 +306,9 @@ teardown() {
     echo "# Old" > "$TEST_DIR/.claude/commands/work/obsolete.md"
     [ -f "$TEST_DIR/.claude/commands/work/obsolete.md" ]
 
-    run "$UPDATE_SCRIPT" -y --all "$TEST_DIR"
+    # C2 audit: --all no longer implies --clean — the wipe needs the
+    # explicit flag (see tests/update-clean-backup.bats for the decoupling).
+    run "$UPDATE_SCRIPT" -y --all --clean "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # The obsolete files should no longer exist
@@ -728,8 +730,9 @@ teardown() {
     "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
 
     # Foundation has N commands; inject 3 extras that don't exist in the
-    # foundation, so the count diverges. After update --clean (implicit
-    # in --all) the extras would be gone; before is N+3, after should be N.
+    # foundation, so the count diverges. After update --all --clean (the
+    # wipe needs the explicit flag since the C2 audit) the extras would be
+    # gone; before is N+3, after should be N.
     mkdir -p "$TEST_DIR/proj/.claude/commands/work"
     echo "# extra 1" > "$TEST_DIR/proj/.claude/commands/work/extra-fake-1.md"
     echo "# extra 2" > "$TEST_DIR/proj/.claude/commands/work/extra-fake-2.md"
@@ -745,7 +748,7 @@ teardown() {
     module_cmds=$(grep -h '^\.claude/commands/' "$BATS_TEST_DIRNAME/../scripts/lib/modules/"*.txt | grep -c '\.md$')
     after_count=$((full_cmds - module_cmds))
 
-    run bash -c "'$UPDATE_SCRIPT' -n -y --all '$TEST_DIR/proj' </dev/null"
+    run bash -c "'$UPDATE_SCRIPT' -n -y --all --clean '$TEST_DIR/proj' </dev/null"
     [ "$status" -eq 0 ]
     # The delta must reflect what would have happened, not the
     # untouched-in-dry-run target. before > after expected (extras would
@@ -814,7 +817,10 @@ _init_legal_only_project() {
     legal_cmd=$(bash -c "source '$_modules_lib'; module_bundle_paths legal" | grep "commands" | head -1)
     echo "# stale" > "$proj/$legal_cmd"
 
-    run "$UPDATE_SCRIPT" -y --all "$proj"
+    # C2 audit: --all no longer implies --clean, and a diverged file is
+    # conservatively skipped without --force — the wipe-redeposit refresh
+    # under test needs the explicit --clean.
+    run "$UPDATE_SCRIPT" -y --all --clean "$proj"
     [ "$status" -eq 0 ]
     # The legal file must have been restored to the foundation copy.
     diff "$BASE_DIR/$legal_cmd" "$proj/$legal_cmd"
@@ -1068,4 +1074,80 @@ _init_legal_only_project() {
     # (reads stdin via jq), so the post-update advisory stays silent.
     grep -qE 'jq |/dev/stdin' "$TEST_DIR/proj/scripts/hooks/command-validator.sh"
     [[ "$output" != *"Security drift detected"* ]]
+}
+
+# =============================================================================
+# C2 audit — install-tier coherence (minimal vs full) + substance-check shipping
+#
+# A minimal install (init --minimal) records tier "minimal" in foundation.json;
+# update must refuse to silently convert it into a full install (~177 extra
+# files). The deliberate conversion is update --graduate-full, which performs
+# the full update and rewrites the tier to "full".
+# =============================================================================
+
+@test "update.sh errors on a minimal-tier project without --graduate-full" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # Fake a minimal-tier manifest (behavior gate is the tier field, not the
+    # install path — keeps the fixture fast).
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    jq '.tier = "minimal"' "$manifest" > "$manifest.tmp" && mv "$manifest.tmp" "$manifest"
+
+    run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -ne 0 ]
+    # The refusal explains BOTH paths: minimal refresh and deliberate upgrade.
+    [[ "$output" == *"minimal"* ]]
+    [[ "$output" == *"export-minimal"* ]]
+    [[ "$output" == *"--graduate-full"* ]]
+}
+
+@test "update.sh --graduate-full converts a real minimal install to full" {
+    "$NEW_PROJECT_SCRIPT" --minimal -y "$TEST_DIR/proj" >/dev/null 2>&1
+    [ "$(jq -r '.tier' "$TEST_DIR/proj/.claude/foundation.json")" = "minimal" ]
+
+    run "$UPDATE_SCRIPT" -y --graduate-full "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    # Tier rewritten: the project is now a tracked full install.
+    [ "$(jq -r '.tier' "$TEST_DIR/proj/.claude/foundation.json")" = "full" ]
+    # And the full catalog landed (minimal ships 5 agents; full ships far more).
+    local agents
+    agents=$(find "$TEST_DIR/proj/.claude/agents" -name "*.md" -type f | wc -l | tr -d ' ')
+    [ "$agents" -gt 10 ]
+}
+
+@test "update.sh --graduate-full re-run on a full project stays green (idempotent)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    run "$UPDATE_SCRIPT" -y --graduate-full "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.tier' "$TEST_DIR/proj/.claude/foundation.json")" = "full" ]
+}
+
+@test "update.sh --help documents --graduate-full" {
+    run "$UPDATE_SCRIPT" --help
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"--graduate-full"* ]]
+}
+
+# The hook scripts/hooks/substance-check.sh requires the detector at
+# scripts/substance-check.sh and silently no-ops when it is absent — so
+# --hook-scripts (and therefore --all) must ship/refresh the detector too.
+
+@test "update.sh --hook-scripts ships scripts/substance-check.sh when absent" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    rm -f "$TEST_DIR/proj/scripts/substance-check.sh"
+
+    run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/proj/scripts/substance-check.sh" ]
+    [ -x "$TEST_DIR/proj/scripts/substance-check.sh" ]
+}
+
+@test "update.sh --hook-scripts --force refreshes a stale substance-check.sh" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    mkdir -p "$TEST_DIR/proj/scripts"
+    echo "# stale detector" > "$TEST_DIR/proj/scripts/substance-check.sh"
+
+    run "$UPDATE_SCRIPT" -y --hook-scripts --force "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    diff "$BASE_DIR/scripts/substance-check.sh" "$TEST_DIR/proj/scripts/substance-check.sh"
 }

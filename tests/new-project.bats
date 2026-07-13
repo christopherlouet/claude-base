@@ -666,3 +666,23 @@ YAML
     [ -f "$TEST_DIR/.claude/rules/self-improvement.md" ]
     [ -f "$TEST_DIR/.claude/rules/vendor-precedence.md" ]
 }
+
+# =============================================================================
+# C2 audit — simple init ships the substance-gate detector + records tier
+# =============================================================================
+
+@test "new-project.sh --simple ships scripts/substance-check.sh (substance gate alive)" {
+    # The hook scripts/hooks/substance-check.sh requires the detector at
+    # scripts/substance-check.sh and silently no-ops when absent — simple
+    # init used to copy only scripts/hooks/*.sh, leaving the gate dead.
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/scripts/substance-check.sh" ]
+    [ -x "$TEST_DIR/scripts/substance-check.sh" ]
+}
+
+@test "new-project.sh --simple records tier full in foundation.json" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.tier' "$TEST_DIR/.claude/foundation.json")" = "full" ]
+}

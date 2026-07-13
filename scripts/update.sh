@@ -55,6 +55,10 @@ UPDATE_HOOK_SCRIPTS=false
 CLEAN_BEFORE_UPDATE=false
 DETECT_ORPHANS=false
 REMOVE_ORPHANS=false
+# C2 audit — install-tier coherence: a project whose foundation.json records
+# tier "minimal" refuses a regular update (it would silently convert the
+# project into a full install). --graduate-full is the deliberate opt-in.
+GRADUATE_FULL=false
 
 # Preset-aware updates (specs/presets-update-aware/).
 # UPDATE_PRESET_NAME and UPDATE_NO_PRESET are set by parse_args from
@@ -157,7 +161,9 @@ ${BOLD}OPTIONS${NC}
     -q, --quiet         Quiet mode
     --verbose           Verbose mode (debug)
     --backup-only       Create only a backup without updating
-    --clean             Delete old files before updating
+    --clean             Delete old files before updating (wipes the managed
+                        .claude/ dirs after a full backup of all of them;
+                        combine as --all --clean for a wipe-and-replace)
     --detect-orphans    Detect files absent from the foundation (orphans)
     --remove-orphans    Remove orphan files (implies --detect-orphans)
     --settings          Also update settings.json
@@ -167,7 +173,11 @@ ${BOLD}OPTIONS${NC}
     --styles            Also update the output-styles/ directory
     --templates         Also update the templates/ directory
     --hook-scripts      Also update the scripts in scripts/hooks/ (referenced by settings.json)
-    --all               Update everything (commands, settings, skills, agents, rules, styles, templates, hook-scripts)
+    --all               Update everything (commands, settings, skills, agents, rules, styles, templates, hook-scripts).
+                        Does NOT delete anything: add --clean explicitly for a wipe-and-replace (--all --clean)
+    --graduate-full     Deliberately convert a minimal install (tier "minimal" in
+                        .claude/foundation.json) into a full install: performs the
+                        full update and records tier "full"
     --upgrade-claude-md Migrate CLAUDE.md to @imports (copies .claude/docs/reference/)
     --changelog         Show what's new in the foundation
     --restore BACKUP    Restore from a previous backup
@@ -190,6 +200,9 @@ ${BOLD}EXAMPLES${NC}
 
     # Forced update of everything
     $(basename "$0") -f --all ./my-project
+
+    # Wipe-and-replace: clean the managed dirs (full backup first), then re-copy
+    $(basename "$0") -y --all --clean ./my-project
 
     # Backup only
     $(basename "$0") --backup-only ./my-project
@@ -314,6 +327,10 @@ parse_args() {
             --hook-scripts)   UPDATE_HOOK_SCRIPTS=true; shift ;;
             --upgrade-claude-md) UPGRADE_CLAUDE_MD=true; shift ;;
             --all)
+                # C2 audit: --all means "update EVERY category" — it must NOT
+                # imply --clean. Wiping the managed dirs is destructive to
+                # user-created files and requires the explicit --clean flag
+                # (document the combo: --all --clean = wipe-and-replace).
                 UPDATE_SETTINGS=true
                 UPDATE_SKILLS=true
                 UPDATE_AGENTS=true
@@ -322,7 +339,21 @@ parse_args() {
                 UPDATE_TEMPLATES=true
                 UPDATE_HOOK_SCRIPTS=true
                 UPGRADE_CLAUDE_MD=true
-                CLEAN_BEFORE_UPDATE=true
+                shift
+                ;;
+            --graduate-full)
+                # Deliberate minimal -> full conversion (C2 audit): performs a
+                # full update (same categories as --all, no clean) and rewrites
+                # the manifest tier to "full" on success.
+                GRADUATE_FULL=true
+                UPDATE_SETTINGS=true
+                UPDATE_SKILLS=true
+                UPDATE_AGENTS=true
+                UPDATE_RULES=true
+                UPDATE_STYLES=true
+                UPDATE_TEMPLATES=true
+                UPDATE_HOOK_SCRIPTS=true
+                UPGRADE_CLAUDE_MD=true
                 shift
                 ;;
             --changelog)
@@ -392,6 +423,19 @@ parse_args() {
 # =============================================================================
 
 create_backup() {
+    # C2 audit: a --clean run wipes ALL SIX managed .claude/ dirs
+    # (clean_claude_dirs), so its backup must cover all six too — the old
+    # commands-only backup silently lost user files in skills/agents/rules/
+    # output-styles/templates. backup_claude_dirs shares the exact dir list
+    # with clean_claude_dirs and honors the same stdout-is-only-the-path
+    # contract (diagnostics on stderr).
+    if $CLEAN_BEFORE_UPDATE; then
+        backup_claude_dirs "$TARGET_DIR"
+        return
+    fi
+
+    # Non-clean runs keep the historical commands-only backup (nothing else
+    # is at wipe risk; per-file updates never delete).
     local backup_dir
     backup_dir="$TARGET_DIR/$COMMANDS_SUBDIR.backup.$(date +%Y%m%d_%H%M%S)"
 
@@ -1372,6 +1416,60 @@ update_directory() {
     success "$label: $dir_added added, $dir_updated updated, $dir_identical identical, $dir_skipped skipped"
 }
 
+# C2 audit — support scripts outside scripts/hooks/. The hook
+# scripts/hooks/substance-check.sh requires the detector at
+# $TARGET_DIR/scripts/substance-check.sh and silently no-ops when it is
+# absent, so --hook-scripts (and therefore --all) must ship/refresh it too —
+# otherwise the substance gate is dead in every non-minimal install.
+# Same per-file semantics as update_directory: absent -> add, identical ->
+# no-op, diverged -> overwrite only with --force (could be a customization).
+update_support_scripts() {
+    section "Updating support scripts"
+
+    local src="$BASE_DIR/scripts/substance-check.sh"
+    local dest="$TARGET_DIR/scripts/substance-check.sh"
+
+    if [[ ! -f "$src" ]]; then
+        warning "Source scripts/substance-check.sh not found"
+        return
+    fi
+
+    if [[ -f "$dest" ]]; then
+        if diff -q "$src" "$dest" > /dev/null 2>&1; then
+            debug "scripts/substance-check.sh: identical"
+            return
+        fi
+        if ! $FORCE_UPDATE; then
+            if $DRY_RUN; then
+                DRY_RUN_CONFLICTS+=("scripts/substance-check.sh")
+            else
+                warning "  scripts/substance-check.sh skipped (use --force to overwrite)"
+                ((SKIPPED++)) || true
+            fi
+            return
+        fi
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Update: scripts/substance-check.sh"
+            return
+        fi
+        cp "$src" "$dest"
+        chmod +x "$dest" 2>/dev/null || true
+        success "scripts/substance-check.sh updated"
+        ((UPDATED++)) || true
+        return
+    fi
+
+    if $DRY_RUN; then
+        echo -e "${DIM}[DRY-RUN]${NC} Add: scripts/substance-check.sh"
+        return
+    fi
+    mkdir -p "$TARGET_DIR/scripts"
+    cp "$src" "$dest"
+    chmod +x "$dest" 2>/dev/null || true
+    success "scripts/substance-check.sh added (new)"
+    ((ADDED++)) || true
+}
+
 
 # =============================================================================
 # CLAUDE.md upgrade
@@ -1858,6 +1956,21 @@ main() {
         exit 0
     fi
 
+    # C2 audit — install-tier coherence. A minimal install (tier "minimal"
+    # in .claude/foundation.json, written by init --minimal) must never be
+    # silently converted into a full install: a regular update would deposit
+    # the whole catalog (~177 extra files). Refuse with the two legitimate
+    # paths. Placed after the read-only/early-exit handlers (--version,
+    # --changelog, --detect-only, --restore, --add-plugin all stay available
+    # on a minimal project).
+    if [[ -f "$TARGET_DIR/.claude/foundation.json" ]]; then
+        local project_tier
+        project_tier="$(manifest_tier "$TARGET_DIR" 2>/dev/null || echo full)"
+        if [[ "$project_tier" == "minimal" ]] && ! $GRADUATE_FULL; then
+            error "this project is a MINIMAL install (tier \"minimal\" in .claude/foundation.json).\nA regular update would silently convert it into a FULL install (the whole catalog).\nPick one of the two paths:\n  - refresh the minimal install:   scripts/export-minimal.sh --dest-dir $TARGET_DIR  (or: claude-base init --minimal)\n  - convert to a full install:     re-run update with --graduate-full (records tier \"full\")"
+        fi
+    fi
+
     title "Claude Code Update"
     info "Project: $TARGET_DIR"
     $DRY_RUN && warning "Dry-run mode enabled"
@@ -1940,7 +2053,15 @@ main() {
         if $should_run; then
             case "$entry_type" in
                 settings)  update_settings ;;
-                dir)       update_directory "$arg1" "$arg2" "$arg3" ;;
+                dir)
+                    update_directory "$arg1" "$arg2" "$arg3"
+                    # The substance-gate detector lives OUTSIDE scripts/hooks/
+                    # but is required by the substance-check hook — refresh it
+                    # whenever the hook scripts themselves are refreshed.
+                    if [[ "$arg1" == "hook_scripts" ]]; then
+                        update_support_scripts
+                    fi
+                    ;;
                 claude_md) upgrade_claude_md ;;
             esac
         fi
@@ -1995,6 +2116,17 @@ main() {
     # Record the foundation version in the manifest (T1.4) — skip in dry-run
     if ! $DRY_RUN; then
         record_foundation_version "$TARGET_DIR" "$VERSION"
+        # --graduate-full: the minimal -> full conversion is now effective on
+        # disk; record it so future updates treat the project as full.
+        # (record_foundation_version preserves the existing tier, so the
+        # rewrite must be explicit.)
+        if $GRADUATE_FULL; then
+            if set_manifest_tier "$TARGET_DIR" "full"; then
+                success "Project graduated to a full install (tier \"full\" recorded)"
+            else
+                warning "could not record tier \"full\" in .claude/foundation.json"
+            fi
+        fi
         # Persist the new recommendation snapshot so the NEXT update can diff
         # against it (US-9). After record_foundation_version so the manifest exists.
         # Explicit `if` (not `&&`) so a no-preset run can't return non-zero under

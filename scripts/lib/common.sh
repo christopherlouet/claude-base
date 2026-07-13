@@ -774,6 +774,51 @@ CACHEEOF
 # Cleanup of Claude directories
 # =============================================================================
 
+# The .claude/ subdirectories managed by the foundation: the SINGLE list both
+# clean_claude_dirs (what a clean wipes) and backup_claude_dirs (what a backup
+# must therefore cover) iterate over. Keeping one list guarantees a clean can
+# never wipe a directory the backup missed.
+CLAUDE_MANAGED_SUBDIRS=("commands" "skills" "agents" "rules" "output-styles" "templates")
+
+# Backs up every managed .claude/ subdirectory of a project into a single
+# timestamped root: <dir>/.claude.backup.<ts>/<subdir>. MUST be called before
+# clean_claude_dirs — it covers exactly the directories the clean wipes.
+# Contract: stdout carries ONLY the backup root path (empty when there was
+# nothing to back up); all diagnostics go to stderr, so callers can capture
+# the path with BACKUP_ROOT=$(backup_claude_dirs ...).
+# DRY_RUN: prints the would-be path, writes nothing.
+# Arguments: $1=project directory
+backup_claude_dirs() {
+    local dir="$1"
+    local backup_root
+    backup_root="$dir/.claude.backup.$(date +%Y%m%d_%H%M%S)"
+
+    local subdir found=false
+    for subdir in "${CLAUDE_MANAGED_SUBDIRS[@]}"; do
+        if [[ -d "$dir/.claude/$subdir" ]]; then
+            found=true
+            break
+        fi
+    done
+    if ! $found; then
+        return 0
+    fi
+
+    if ${DRY_RUN:-false}; then
+        echo -e "${DIM}[DRY-RUN]${NC} Backup -> $backup_root" >&2
+        echo "$backup_root"
+        return 0
+    fi
+
+    mkdir -p "$backup_root" || return 1
+    for subdir in "${CLAUDE_MANAGED_SUBDIRS[@]}"; do
+        [[ -d "$dir/.claude/$subdir" ]] || continue
+        cp -R "$dir/.claude/$subdir" "$backup_root/$subdir" || return 1
+    done
+    success "Backup created: $backup_root" >&2
+    echo "$backup_root"
+}
+
 # Removes Claude subdirectories for clean reinstallation
 # Arguments: $1=project directory
 clean_claude_dirs() {
@@ -781,7 +826,7 @@ clean_claude_dirs() {
 
     info "Cleaning up old Claude files..."
 
-    local dirs_to_clean=("commands" "skills" "agents" "rules" "output-styles" "templates")
+    local dirs_to_clean=("${CLAUDE_MANAGED_SUBDIRS[@]}")
 
     for subdir in "${dirs_to_clean[@]}"; do
         local target="$dir/.claude/$subdir"
@@ -998,5 +1043,5 @@ export -f separator title section
 export -f count_agents count_skills count_hooks count_templates show_foundation_stats
 export -f on_error enable_error_handler
 export -f cache_init cache_valid cache_read cache_write
-export -f clean_claude_dirs rewrite_claude_md_paths ensure_claude_md_imports
+export -f clean_claude_dirs backup_claude_dirs rewrite_claude_md_paths ensure_claude_md_imports
 export -f hook_uses_legacy_contract detect_security_drift
