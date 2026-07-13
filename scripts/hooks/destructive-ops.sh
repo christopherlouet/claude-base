@@ -44,15 +44,21 @@ CMD_LOWER=$(printf '%s' "$CMD" | tr '[:upper:]' '[:lower:]')
 #   3. Strip message VALUES (the quoted/next token after -m/-am/--message) so a
 #      commit message that merely NAMES a verb ("explain the DROP TABLE
 #      migration", even across lines) is not treated as the operation itself
-#      (mirrors command-validator.sh's message-stripping).
+#      (shared strip_msg_values from _hook-helpers.sh — its bare-value arm
+#      stops at ;&| so `-m 'wip';prisma migrate reset` keeps the separator and
+#      the REAL chained command; the old inline sed ate both). Missing helper
+#      → no strip → possible over-block, never a bypass.
 # Scope note: inline-comment obfuscation (`DROP/**/TABLE`) is deliberately NOT
 # defended — a well-meaning agent writes `DROP TABLE`, not the split form; this
 # is a best-effort anti-accident guard, not an anti-evasion boundary.
+_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
+# shellcheck source=_hook-helpers.sh
+if [ -n "$_dir" ] && [ -f "$_dir/_hook-helpers.sh" ]; then . "$_dir/_hook-helpers.sh"; fi
+declare -F strip_msg_values >/dev/null 2>&1 || strip_msg_values() { printf '%s' "$1"; }
 SCAN=$(printf '%s' "$CMD_LOWER" \
   | sed -E 's/--[[:space:]].*$//' \
-  | tr '\n' ' ' \
-  | sed -E "s/[[:space:]]-[a-z]*m([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
-  | sed -E "s/[[:space:]]--message([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g")
+  | tr '\n' ' ')
+SCAN=$(strip_msg_values "$SCAN")
 
 DESTRUCTIVE=0
 

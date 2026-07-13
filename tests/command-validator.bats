@@ -428,3 +428,71 @@ EOF"
     run_validator "passwd root"
     [ "$status" -eq 2 ]
 }
+
+# --- pass-3 F1: the message strip must not eat the shell SEPARATOR ----------
+# POSIX alternation is leftmost-longest: a bare [^[:space:]]+ value arm consumed
+# `-m 'done';` INCLUDING the `;` (and `'done'&&sudo` including the next command
+# name), so every (^|[;&|])-anchored check lost its anchor and a chained
+# `git commit -m 'x'; sudo …` sailed through. These pin the fixed behavior
+# across quoting styles and flag forms.
+
+@test "command-validator: blocks sudo chained after -m 'msg'; (glued separator, single quotes)" {
+    run_validator "git commit -m 'done'; sudo make install"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+}
+
+@test "command-validator: blocks sudo chained after -m \"msg\"; (glued separator, double quotes)" {
+    run_validator 'git commit -m "done"; sudo make install'
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks sudo chained after a bare -m value; (no quotes)" {
+    run_validator "git commit -m wip; sudo make install"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks sudo chained after -F file; (glued separator)" {
+    run_validator "git commit -F /tmp/msg.txt; sudo make install"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: blocks sudo glued with && right after the -m value" {
+    run_validator "git commit -m 'done'&& sudo make install"
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: still allows a benign chained command after -m 'msg';" {
+    run_validator "git commit -m 'done'; git status"
+    [ "$status" -eq 0 ]
+}
+
+# --- pass-3 F5: a multiline -m value is data for ALL categories -------------
+# The old sed strip was line-based: an unterminated quote on line 1 leaked the
+# rest of the message into the flag/verb scans (Categories 3/7 and the known
+# Category-9 residual). The strip is now multiline-aware.
+
+@test "command-validator: multiline -m mentioning mkfs.ext4 is not blocked (Cat 3)" {
+    run_validator $'git commit -m "docs: guard notes\nmentions mkfs.ext4 formatting"'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: multiline -m mentioning rm -rf /etc is not blocked (Cat 7)" {
+    run_validator $'git commit -m "docs: notes\nexplains why rm -rf /etc is blocked"'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: multiline -m mentioning gzip -n does not trip Category 9" {
+    run_validator $'git commit -m "docs: add gzip -n note\nsecond line"'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: real --no-verify AFTER a multiline -m still blocks (Cat 9)" {
+    run_validator $'git commit -m "line one\nline two" --no-verify'
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: real sudo on the line after a multiline -m still blocks" {
+    run_validator $'git commit -m "line one\nline two"\nsudo make install'
+    [ "$status" -eq 2 ]
+}

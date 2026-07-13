@@ -64,3 +64,37 @@ hook_emit_envelope() {
     printf '%s' "$value" | jq -Rs --arg event "$event" --arg key "$key" \
         '{hookSpecificOutput: ({hookEventName: $event} + {($key): .})}'
 }
+
+# strip_msg_values <command-string>
+# Prints the string with git message / --grep / --file VALUES removed (the
+# quoted string or bare token after -m/-am/--message/-F/--file/--grep, space or
+# `=` separated). A trigger token appearing only as message PAYLOAD is data,
+# never executed, so the Bash guards must not scan it. Single canonical copy —
+# command-validator, bash-write-guard and destructive-ops all source this;
+# divergent per-guard copies are how the pass-3 F1/F3 bugs shipped.
+#
+# Implemented with bash =~ instead of sed, for two audited reasons:
+#   1. sed is line-based: a quoted value spanning NEWLINES leaked its tail into
+#      the flag/verb scans (multiline `-m` false-blocks, and the inverse — a
+#      real --no-verify after a multiline -m going UNSEEN). [^']* / [^"]* in
+#      one =~ match crosses newlines, so the whole value goes at once.
+#   2. POSIX alternation is leftmost-longest: a bare [^[:space:]]+ value arm
+#      consumed `'done';` INCLUDING the separator, un-anchoring the next
+#      command from every (^|[;&|])-anchored check (sudo-bypass). The bare arm
+#      excludes ;&| — exactly where the shell itself would end the word.
+# The FLAG token is kept and only its VALUE is dropped: Category 9 must still
+# see a `-nm`/`-anm` cluster (the n IS --no-verify) after the strip. The scan
+# is a single left-to-right pass — after each match we continue in the SUFFIX
+# only. Re-scanning the whole string would rematch the now-value-less flag and
+# swallow the NEXT token as its "value", one real flag per iteration.
+strip_msg_values() {
+    local s="$1" out="" _m _keep
+    local _re="([[:space:]](-[A-Za-z]*m|--message|--file|--grep|-F))([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:];&|]+)"
+    while [[ "$s" =~ $_re ]]; do
+        _m="${BASH_REMATCH[0]}"
+        _keep="${BASH_REMATCH[1]}"
+        out+="${s%%"$_m"*}${_keep} "
+        s=${s#*"$_m"}
+    done
+    printf '%s' "$out$s"
+}
