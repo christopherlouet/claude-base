@@ -25,9 +25,12 @@ INPUT=$(cat 2>/dev/null || true)
 # jq is the documented path. Absent jq → fail OPEN (do not block) so a missing
 # tool cannot wedge every edit; the built-in scan needs the extracted content.
 command -v jq >/dev/null 2>&1 || exit 0
+# .new_source is NotebookEdit's content field (the matcher covers NotebookEdit
+# since pass-3 — a secret written into an .ipynb cell was never scanned).
 CONTENT=$(printf '%s' "$INPUT" | jq -r '
   [ .tool_input.content // empty,
     .tool_input.new_string // empty,
+    .tool_input.new_source // empty,
     ( .tool_input.edits[]?.new_string // empty ) ] | join("\n")
 ' 2>/dev/null || true)
 [ -z "$CONTENT" ] && exit 0
