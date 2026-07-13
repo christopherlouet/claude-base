@@ -28,12 +28,22 @@ fi
 # after -m/-am/--message/--file/-F/--grep) BEFORE the pattern scans. A trigger
 # token that appears only as a commit-message or --grep PAYLOAD is data, never
 # executed, so it must not falsely block a benign command (`git commit -m
-# "document mkfs usage"`, `git log --grep "passwd rotation"`). This mirrors the
-# per-segment strip in Category 9 and destructive-ops.sh. Done on the raw CMD
-# (case preserved) so -F/--grep match precisely, then lowercased for the scans.
-CMD_STRIPPED=$(printf '%s' "$CMD" \
-  | sed -E "s/[[:space:]]-[A-Za-z]*m([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
-  | sed -E "s/[[:space:]](--message|--file|--grep|-F)([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g")
+# "document mkfs usage"`, `git log --grep "passwd rotation"`). Done on the raw
+# CMD (case preserved) so -F/--grep match precisely, then lowercased for the
+# scans. The strip lives in _hook-helpers.sh (shared with bash-write-guard and
+# destructive-ops); if the helper file is missing we fall back to NO strip —
+# message payloads may then over-block, but a missing file can never turn into
+# a silent bypass.
+_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
+# shellcheck source=_hook-helpers.sh
+if [ -n "$_dir" ] && [ -f "$_dir/_hook-helpers.sh" ]; then . "$_dir/_hook-helpers.sh"; fi
+if declare -F strip_msg_values >/dev/null 2>&1; then
+  _have_strip=1
+else
+  _have_strip=0
+  strip_msg_values() { printf '%s' "$1"; }
+fi
+CMD_STRIPPED=$(strip_msg_values "$CMD")
 # Normalize: lowercase, collapse whitespace
 CMD_LOWER=$(printf '%s' "$CMD_STRIPPED" | tr '[:upper:]' '[:lower:]' | tr -s ' ')
 # A quote-stripped copy for the protected-path checks, so a quoted target
@@ -171,8 +181,12 @@ fi
 # -m/-am/--message/-F/--file) are stripped so a flag NAMED in a commit message is
 # ignored while a real flag AFTER the message is still caught; and commit/push
 # must be the git SUBCOMMAND (only options may precede it) so `git log --grep
-# commit` is not mistaken for a commit. Known limit: a commit MESSAGE containing
-# a bare `-…n…` token may over-block (recoverable via SKIP_NO_VERIFY_CHECK=1).
+# commit` is not mistaken for a commit. The splitter runs on CMD_STRIPPED (the
+# multiline-aware global strip): a message VALUE spanning newlines is removed
+# BEFORE segmentation, so its lines can neither false-trip the -n scan nor hide
+# a real --no-verify sitting after the closing quote (both happened with the
+# old line-based strip). The per-segment strip below stays as defense in depth
+# for the no-helper fallback path.
 # Granular opt-out: SKIP_NO_VERIFY_CHECK=1 disables ONLY this category.
 case "$CMD" in *git*commit*|*git*push*) _maybe_git=1 ;; *) _maybe_git=0 ;; esac
 if [ "${SKIP_NO_VERIFY_CHECK:-0}" != "1" ] && [ "$_maybe_git" = 1 ]; then
@@ -183,10 +197,18 @@ if [ "${SKIP_NO_VERIFY_CHECK:-0}" != "1" ] && [ "$_maybe_git" = 1 ]; then
   _nv_hit=""
   while IFS= read -r _seg; do
     echo "$_seg" | grep -qiE "$_git_cp" || continue
-    # Strip message VALUES in this segment (keep trailing flags).
-    _segf=$(echo "$_seg" \
-      | sed -E "s/[[:space:]]-[a-z]*m([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
-      | sed -E "s/[[:space:]](--message|--file|-F)([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g")
+    # Message VALUES were already removed by the global multiline-aware strip
+    # when the shared helper is present; re-stripping here would misread the
+    # token AFTER a now-value-less -m (e.g. a real --no-verify) as its value
+    # and swallow it. The per-segment sed runs ONLY on the no-helper fallback
+    # path, where values are still in the segment.
+    if [ "$_have_strip" = 1 ]; then
+      _segf="$_seg"
+    else
+      _segf=$(echo "$_seg" \
+        | sed -E "s/[[:space:]]-[a-z]*m([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g" \
+        | sed -E "s/[[:space:]](--message|--file|-F)([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:]]+)//g")
+    fi
     # --no-verify, tolerating git's unambiguous-abbreviation (--no-veri, --no-ver…).
     if echo "$_segf" | grep -qiE '(^|[[:space:]])--no-ver[a-z]*([[:space:]=]|$)'; then
       _nv_hit="verify"; break
@@ -204,7 +226,7 @@ if [ "${SKIP_NO_VERIFY_CHECK:-0}" != "1" ] && [ "$_maybe_git" = 1 ]; then
         _nv_hit="n"; break
       fi
     fi
-  done < <(printf '%s' "$CMD" \
+  done < <(printf '%s' "$CMD_STRIPPED" \
     | awk '{ if (sub(/\\$/,"")) printf "%s ", $0; else print }' \
     | awk '{ gsub(/\|\||&&|;|\||&/,"\n"); print }')
   if [ "$_nv_hit" = "verify" ]; then

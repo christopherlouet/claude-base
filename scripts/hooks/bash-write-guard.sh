@@ -38,8 +38,26 @@ command -v jq >/dev/null 2>&1 || exit 0
 CMD=$(cat 2>/dev/null | jq -r '.tool_input.command // empty' 2>/dev/null || true)
 [ -z "$CMD" ] && exit 0
 
+# Strip message/--file/--grep VALUES before extraction (shared helper): a
+# commit message NAMING a file operation (`git commit -m "chore: cp
+# .env.example .env"`) is data, not a write. Missing helper → no strip →
+# possible over-block, never a bypass.
+# shellcheck source=scripts/hooks/_hook-helpers.sh
+[ -f "$_dir/_hook-helpers.sh" ] && . "$_dir/_hook-helpers.sh"
+declare -F strip_msg_values >/dev/null 2>&1 || strip_msg_values() { printf '%s' "$1"; }
+
 # Quote-stripped, newline-flattened copy for token extraction.
-CMD_UQ=$(printf '%s' "$CMD" | tr -d "\"'" | tr '\n' ' ')
+CMD_UQ=$(printf '%s' "$(strip_msg_values "$CMD")" | tr -d "\"'" | tr '\n' ' ')
+
+# Package-manager `install` subcommands (pip/npm/apt/cargo/…) are not file
+# writes: without this, the (cp|mv|install) DEST extraction below reads
+# `pip install -r requirements.txt` as a write to requirements.txt and
+# hard-blocks routine installs on main. Neutralize `[sudo] <pm> [flags]
+# install` for that ONE extractor; the coreutils `install SRC DST` (a real
+# file write) has no such prefix and still matches. Redirect/tee/sed/dd
+# extraction keeps the untouched CMD_UQ (a `pip install x > file` redirect
+# must still be seen).
+CMD_UQ_CPMV=$(printf '%s' "$CMD_UQ" | sed -E 's/(^|[[:space:]|&;(])(sudo[[:space:]]+(-[^[:space:]]+[[:space:]]+)*)?(pip[0-9]*|pipx|pipenv|npm|pnpm|yarn|bun|apt|apt-get|dnf|yum|zypper|pacman|apk|brew|port|cargo|gem|bundle|composer|poetry|uv|conda|mamba|mvn|gradle|make|cmake|go|helm|snap|flatpak|choco|winget|scoop)([[:space:]]+-[^[:space:]]+)*[[:space:]]+install([[:space:]]|$)/\1/g')
 
 # Collect write targets from redirections, tee, and sed -i.
 targets=$(
@@ -55,7 +73,8 @@ targets=$(
       | awk '{ print $NF }'
     # cp / mv / install [opts] SRC… DEST  (DEST = last token) — the common
     # copy verbs are just as capable of clobbering an existing .env / config.
-    printf '%s\n' "$CMD_UQ" | grep -oE '(^|[[:space:]|&;(])(cp|mv|install)([[:space:]]+-[a-zA-Z0-9=]+)*([[:space:]]+[^<>|&;()[:space:]]+)+' \
+    # Runs on the PM-install-neutralized copy (see CMD_UQ_CPMV above).
+    printf '%s\n' "$CMD_UQ_CPMV" | grep -oE '(^|[[:space:]|&;(])(cp|mv|install)([[:space:]]+-[a-zA-Z0-9=]+)*([[:space:]]+[^<>|&;()[:space:]]+)+' \
       | awk '{ print $NF }'
     # dd of=FILE  (device targets are handled by command-validator; this catches
     # `dd if=/dev/zero of=.env` clobbering a plain secrets file).
