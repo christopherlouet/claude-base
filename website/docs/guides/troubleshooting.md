@@ -154,8 +154,8 @@ npx prettier --version
 # Python
 ruff --version || black --version
 
-# Go
-gofmt --version
+# Go (gofmt has no --version flag; check the toolchain / the binary)
+go version && command -v gofmt
 
 # Dart
 dart format --help
@@ -167,7 +167,7 @@ Check the local configuration (`.prettierrc`, `pyproject.toml`, `.editorconfig`)
 
 ### Command validator blocking a legitimate command
 
-The `Command validator` hook analyzes 8 risk categories. Some valid commands may match a dangerous pattern.
+The `Command validator` hook analyzes 9 risk categories. Some valid commands may match a dangerous pattern.
 
 **Identify why the command is blocked:**
 

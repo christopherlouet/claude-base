@@ -501,7 +501,7 @@ Complement to `/work:work-pr`: `/work:work-pr` creates the PR, `/autofix-pr` mak
 
 Interactive lessons and animated demos to discover Claude Code's features. Useful for onboarding new users.
 
-## `/less-permission-prompts` (CLI 2.1.111+)
+## `/fewer-permission-prompts`
 
 Scans session transcripts and proposes optimized permission allowlists. Reduces the number of permission prompts without compromising security.
 

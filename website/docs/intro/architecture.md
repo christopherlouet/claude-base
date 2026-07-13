@@ -236,15 +236,11 @@ The `.mcp.json` file configures MCP (Model Context Protocol) servers:
 
 ```json
 {
-  "mcpServers": {
-    "filesystem": { "enabled": false },
-    "memory": { "enabled": false },
-    "github": { "enabled": false }
-  }
+  "mcpServers": {}
 }
 ```
 
-Enable the servers as needed to extend Claude's capabilities.
+It ships empty: a server is active if and only if its block is present (there is no per-server `enabled` flag). Copy the block of a server you need from `.mcp.json.example` to extend Claude's capabilities.
 
 ## Next steps
 
