@@ -162,3 +162,24 @@ run_guard() {
     run_guard "git status && npm run build"
     [ "$status" -eq 0 ]
 }
+
+# --- pass-3 F1 twin: the message strip must not eat the shell separator ------
+# Same leftmost-longest defect as command-validator's: `-m 'wip';prisma …`
+# was consumed including the `;` and the following command name, hiding a real
+# destructive command chained without a space.
+
+@test "destructive-ops: blocks prisma migrate reset glued after a -m value" {
+    run_guard "git commit -m 'wip';prisma migrate reset"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"CONFIRM"* || "$output" == *"BLOCKED"* ]]
+}
+
+@test "destructive-ops: blocks DROP TABLE glued after a -m value with &&" {
+    run_guard "git commit -m 'wip'&& psql -c 'DROP TABLE users'"
+    [ "$status" -eq 2 ]
+}
+
+@test "destructive-ops: still passes a message merely naming prisma migrate reset" {
+    run_guard "git commit -m 'docs: explain why prisma migrate reset is blocked'"
+    [ "$status" -eq 0 ]
+}

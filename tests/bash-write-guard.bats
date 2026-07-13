@@ -207,3 +207,95 @@ mk_git_main() {
     run_in "$TEST_DIR/proj" "mv src.txt renamed.txt"
     [ "$status" -eq 0 ]
 }
+
+# --- pass-3 F2: package-manager `install` is NOT a file write ----------------
+# The (cp|mv|install) DEST extraction read `pip install -r requirements.txt` as
+# a write to requirements.txt and hard-blocked routine installs on main. A
+# `<pm> [flags] install` subcommand must be exempt; the coreutils
+# `install SRC DST` (a real file write) must still block.
+
+# tracked requirements.txt in a main-branch repo
+mk_git_main_reqs() {
+    mk_git_main
+    (
+        cd "$TEST_DIR/repo"
+        echo 'flask' > requirements.txt
+        mkdir -p packages/foo && echo '{}' > packages/foo/package.json
+        git add requirements.txt packages
+        git -c user.email=t@e.x -c user.name=t commit -qm deps
+    )
+}
+
+@test "bash-write-guard: allows pip install -r requirements.txt on main" {
+    mk_git_main_reqs
+    run_in "$TEST_DIR/repo" "pip install -r requirements.txt"
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: allows pip install -e . on main" {
+    mk_git_main_reqs
+    run_in "$TEST_DIR/repo" "pip install -e ."
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: allows npm install of a tracked local package dir on main" {
+    mk_git_main_reqs
+    run_in "$TEST_DIR/repo" "npm install ./packages/foo"
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: allows sudo apt-get install on main" {
+    mk_git_main_reqs
+    run_in "$TEST_DIR/repo" "sudo apt-get install -y jq"
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: allows a chained cargo install after another command" {
+    mk_git_main_reqs
+    run_in "$TEST_DIR/repo" "git pull && cargo install ripgrep"
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: still blocks coreutils install onto a tracked file on main" {
+    mk_git_main
+    run_in "$TEST_DIR/repo" "install -m 755 /tmp/x tracked.txt"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+}
+
+@test "bash-write-guard: still blocks flagless coreutils install onto a tracked file" {
+    mk_git_main
+    run_in "$TEST_DIR/repo" "install /tmp/x tracked.txt"
+    [ "$status" -eq 2 ]
+}
+
+# --- pass-3 F3: message payloads are stripped before target extraction -------
+# The guard had no message-value strip (unlike command-validator since #469),
+# so a commit message NAMING a file operation was scanned as the operation.
+
+@test "bash-write-guard: allows a commit message naming cp onto .env" {
+    mk_proj
+    echo 'X=1' > "$TEST_DIR/proj/.env.example"
+    run_in "$TEST_DIR/proj" 'git commit -m "chore: cp .env.example .env"'
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: allows a commit message naming tee onto the eslint config" {
+    mk_proj
+    run_in "$TEST_DIR/proj" 'git commit -m "docs: tee .eslintrc.json is blocked"'
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: control — a real cp onto .env still blocks" {
+    mk_proj
+    echo 'X=1' > "$TEST_DIR/proj/.env.example"
+    run_in "$TEST_DIR/proj" "cp .env.example .env"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+}
+
+@test "bash-write-guard: control — a real write AFTER a -m message still blocks" {
+    mk_proj
+    run_in "$TEST_DIR/proj" 'git commit -m "safe note" && echo x > .env'
+    [ "$status" -eq 2 ]
+}
