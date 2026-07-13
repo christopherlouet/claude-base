@@ -81,7 +81,7 @@ Disable: `SKIP_PROMPT_CONTEXT=1`. An explicit slash command always short-circuit
 | Cloud review (large PR) | `/ultrareview` |
 | Autonomously converge a PR (auto-fix CI + nits) | `/autofix-pr` |
 | Session recap | `/recap` |
-| Reduce permission prompts | `/less-permission-prompts` |
+| Reduce permission prompts | `/fewer-permission-prompts` |
 
 Manual workflow: `/work:work-explore` → (`/work:work-brainstorm`) → `/work:work-specify` → `/work:work-plan` → `/dev:dev-tdd` → `/qa:qa-loop "score 90"` → `/work:work-pr`
 

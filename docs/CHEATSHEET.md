@@ -177,11 +177,19 @@
 
 ## Commands by Category (<!-- count:commands -->106<!-- /count -->)
 
-### Orchestrator (1)
+### Orchestrators (2)
 
 | Command | Usage |
 |----------|-------|
 | `/assistant` | Guide for choosing agents and workflows |
+| `/assistant-auto` | Semantic routing: picks and runs the right workflow automatically |
+
+### Utilities (2)
+
+| Command | Usage |
+|----------|-------|
+| `/git-rename` | Rename the current branch (e.g. an auto-created `feature/auto-*`) |
+| `/lessons` | List/bootstrap/prune the personal cross-project lessons store |
 
 ### WORK- : Main Workflow (15)
 

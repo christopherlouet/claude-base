@@ -428,7 +428,7 @@ git branch -m feature/descriptive-name
 | Accessibility | Claude | `/qa:wcag-audit` |
 | Performance | Claude | `/qa:qa-perf` |
 
-Recommendation: configure `claude-code-action` on GitHub so Claude automatically reviews each PR. PR templates are in `.claude/templates/`.
+Recommendation: configure `claude-code-action` on GitHub so Claude automatically reviews each PR. Ready-to-use GitHub Actions workflows are in `.claude/templates/github-actions/` (the directory also holds the plan/spec/tasks templates used by the workflow commands).
 
 ### Conflict resolution
 
@@ -470,10 +470,10 @@ To manage multiple sessions without worktrees:
 
 ```bash
 # Session dedicated to a feature
-claude --session "feature-auth"
+claude --name "feature-auth"
 
-# Session dedicated to tests
-claude --session "test-coverage"
+# Session dedicated to tests (short flag)
+claude -n "test-coverage"
 ```
 
 ### Agent teams for coordinated work
@@ -493,7 +493,7 @@ The `work-team` agent orchestrates several specialized sub-agents (dev, test, do
 | Single simple task | Standard session | `claude` |
 | Two parallel features | Git worktrees | `git worktree add` |
 | Complex multi-domain feature | Agent team | `/work:work-team` |
-| 5+ independent tasks | Worktrees + named sessions | `claude --session "name"` |
+| 5+ independent tasks | Worktrees + named sessions | `claude --name "name"` |
 | Exploration + implementation | `/compact` between phases | `/compact` |
 
 ---
@@ -532,7 +532,7 @@ gitleaks detect --no-git --source .
 | `acceptEdits` | CI pipeline, automated reviews | Accepts modifications without confirmation |
 | Explicit deny list | All team projects | Blocks defined destructive commands |
 
-The foundation's deny list blocks by default: `git push --force`, `git reset --hard`, `rm -rf`, `sudo`, `chmod 777`, `curl | bash`, and shutdown operations.
+The foundation's deny list blocks by default: `git push --force`, `git reset --hard`, `rm -rf`, `sudo`, `chmod 777`, and shutdown operations. Pipe-to-shell patterns (`curl URL | bash`) are blocked by a separate layer: the command-validator PreToolUse hook (category 2 of its 9 risk categories).
 
 ### Security checklist for team repos
 
