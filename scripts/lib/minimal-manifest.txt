@@ -33,10 +33,16 @@
 .claude/skills/dev-tdd/
 .claude/skills/qa-review/
 
-# === Rules (8) ===
+# === Rules (10) ===
+# The 4 global (path-less) rules — git, workflow, self-improvement,
+# vendor-precedence — must ALL ship (same rationale as the #472 fix in
+# new-project.sh get_rules_for_type): the shipped rules/README.md references
+# them, and a global rule missing from disk is a dead reference downstream.
 .claude/rules/README.md
 .claude/rules/workflow.md
 .claude/rules/git.md
+.claude/rules/self-improvement.md
+.claude/rules/vendor-precedence.md
 .claude/rules/tdd-enforcement.md
 .claude/rules/verification.md
 .claude/rules/testing.md

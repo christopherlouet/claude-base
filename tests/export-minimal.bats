@@ -207,3 +207,22 @@ teardown() {
   [ ! -d "$TMP_DIR/proj/.claude/commands/growth" ]
   [ ! -f "$TMP_DIR/proj/.claude/agents/biz-mvp.md" ]
 }
+
+# =============================================================================
+# C2 audit — minimal manifest ships ALL 4 global rules + tier is recorded
+# =============================================================================
+
+@test "manifest: ships all 4 global (path-less) rules" {
+  # Same class of bug as the #472 get_rules_for_type fix: the copied
+  # rules/README.md lists 4 global rules; shipping only 2 leaves dead refs.
+  grep -qE '^\.claude/rules/git\.md$' "$MANIFEST"
+  grep -qE '^\.claude/rules/workflow\.md$' "$MANIFEST"
+  grep -qE '^\.claude/rules/self-improvement\.md$' "$MANIFEST"
+  grep -qE '^\.claude/rules/vendor-precedence\.md$' "$MANIFEST"
+}
+
+@test "new-project.sh: --minimal records tier minimal in foundation.json" {
+  run "$NEW_PROJECT" --minimal -y "$TMP_DIR/proj"
+  [ "$status" -eq 0 ]
+  [ "$(jq -r '.tier' "$TMP_DIR/proj/.claude/foundation.json")" = "minimal" ]
+}

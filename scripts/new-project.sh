@@ -1206,6 +1206,21 @@ install_claude_files() {
         fi
     fi
 
+    # Ship the substance-gate detector (C2 audit). The hook
+    # scripts/hooks/substance-check.sh requires $PROJECT_DIR/scripts/
+    # substance-check.sh and silently no-ops when it is absent — copying
+    # only scripts/hooks/*.sh left the substance gate dead in every
+    # simple/preset install (the minimal manifest already ships it).
+    if [[ -f "$BASE_DIR/scripts/substance-check.sh" ]]; then
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp $BASE_DIR/scripts/substance-check.sh → $target_dir/scripts/"
+        else
+            mkdir -p "$target_dir/scripts"
+            cp "$BASE_DIR/scripts/substance-check.sh" "$target_dir/scripts/substance-check.sh"
+            chmod +x "$target_dir/scripts/substance-check.sh" 2>/dev/null || true
+        fi
+    fi
+
     success "Commands, skills, agents, rules, styles, templates, docs and hook scripts copied"
 }
 
@@ -1410,7 +1425,9 @@ run_minimal_mode() {
     # Record foundation state (US-1). Minimal installs ship no horizontal
     # module (the minimal manifest excludes biz/legal/growth) — record an
     # empty module set so validation never expects their items (EF-211).
-    write_foundation_manifest "$target_dir" "$VERSION" "" \
+    # tier "minimal" (C2 audit): marks the install so a later `update` refuses
+    # to silently convert it into a full install (--graduate-full opts in).
+    MANIFEST_TIER="minimal" write_foundation_manifest "$target_dir" "$VERSION" "" \
         || error "failed to write .claude/foundation.json in $target_dir"
 
     success "Minimal install complete in $target_dir"
@@ -1443,8 +1460,15 @@ run_simple_mode() {
     $DRY_RUN && warning "Dry-run mode enabled - no changes will be made"
     echo ""
 
-    # Clean old Claude files if the folder exists
+    # Clean old Claude files if the folder exists — with a full backup first
+    # (C2 audit): re-running init on an existing project used to wipe every
+    # managed .claude/ subdir with NO backup at all.
     if [[ -d "$target_dir/.claude" ]]; then
+        local reinit_backup
+        reinit_backup="$(backup_claude_dirs "$target_dir")"
+        if [[ -n "$reinit_backup" ]]; then
+            info "Previous .claude content backed up to: $reinit_backup"
+        fi
         clean_claude_dirs "$target_dir"
     fi
 
@@ -1932,8 +1956,15 @@ create_project() {
     debug "Target directory: $TARGET_DIR"
     $DRY_RUN && warning "Dry-run mode enabled - no changes will be made"
 
-    # Clean old Claude files if the folder exists
+    # Clean old Claude files if the folder exists — with a full backup first
+    # (C2 audit): parity with run_simple_mode, re-init must never destroy
+    # user-created files without a recovery path.
     if [[ -d "$TARGET_DIR/.claude" ]]; then
+        local reinit_backup
+        reinit_backup="$(backup_claude_dirs "$TARGET_DIR")"
+        if [[ -n "$reinit_backup" ]]; then
+            info "Previous .claude content backed up to: $reinit_backup"
+        fi
         clean_claude_dirs "$TARGET_DIR"
     fi
 
