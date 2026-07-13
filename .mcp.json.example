@@ -1,95 +1,84 @@
 {
   "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/mcp.schema.json",
-  "_comment": "Reference catalogue of MCP servers — NOT loaded by Claude Code (only .mcp.json is). To enable a server, copy its block into .mcp.json's mcpServers and provide the referenced env vars. There is no per-server 'enabled' field in the .mcp.json format: a server is active iff it is present in .mcp.json. The 'description' lines below are informational; Claude Code ignores unknown fields. Project-scoped servers prompt for approval on first use (claude mcp reset-project-choices to re-prompt).",
+  "_comment": "Reference catalogue of MCP servers — NOT loaded by Claude Code (only .mcp.json is). To enable a server, copy its block into .mcp.json's mcpServers and provide the referenced env vars. There is no per-server 'enabled' field in the .mcp.json format: a server is active iff it is present in .mcp.json. The 'description' lines below are informational; Claude Code ignores unknown fields. Project-scoped servers prompt for approval on first use (claude mcp reset-project-choices to re-prompt). Every package below is verified to exist and PINNED (npm: pkg@version via npx; PyPI: pkg==version via uvx — uvx ships with `uv`, https://docs.astral.sh/uv/). Pins are bumped deliberately, never floated: an unpinned `npx -y pkg` executes whatever was published last.",
   "mcpServers": {
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+      "args": ["-y", "@modelcontextprotocol/server-filesystem@2026.7.10", "."],
       "description": "Advanced filesystem access"
     },
     "memory": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "args": ["-y", "@modelcontextprotocol/server-memory@2026.7.4"],
       "description": "Persistent memory across sessions"
     },
     "fetch": {
-      "command": "npx",
-      "args": ["-y", "@anthropics/mcp-server-fetch"],
-      "description": "HTTP requests to external APIs"
+      "command": "uvx",
+      "args": ["mcp-server-fetch==2026.7.10"],
+      "description": "HTTP requests to external APIs (Python server — requires uv/uvx)"
     },
     "github": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "args": ["-y", "@modelcontextprotocol/server-github@2025.4.8"],
       "env": {
-        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
       },
-      "description": "GitHub integration (issues, PRs, repos)"
+      "description": "GitHub integration (issues, PRs, repos). Upstream reference server is archived but functional; GitHub's maintained alternative is their remote MCP (https://api.githubcopilot.com/mcp/) via mcp-remote"
     },
     "postgres": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres"],
-      "env": {
-        "DATABASE_URL": "${DATABASE_URL}"
-      },
-      "description": "PostgreSQL connection for queries and migrations"
+      "args": ["-y", "@modelcontextprotocol/server-postgres@0.6.2", "${DATABASE_URL}"],
+      "description": "PostgreSQL connection for read-only queries (connection string as argument)"
     },
     "sqlite": {
-      "command": "npx",
-      "args": ["-y", "@anthropics/mcp-server-sqlite", "--db-path", "./data/local.db"],
-      "description": "Local SQLite database"
+      "command": "uvx",
+      "args": ["mcp-server-sqlite==2025.4.25", "--db-path", "./data/local.db"],
+      "description": "Local SQLite database (Python server — requires uv/uvx)"
     },
     "puppeteer": {
       "command": "npx",
-      "args": ["-y", "@anthropics/mcp-server-puppeteer"],
-      "description": "Browser automation for screenshots and UI tests"
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer@2025.5.12"],
+      "description": "Browser automation for screenshots and UI tests (archived upstream but functional; Playwright MCP or Claude in Chrome are maintained alternatives)"
     },
     "sequential-thinking": {
       "command": "npx",
-      "args": ["-y", "@anthropics/mcp-server-sequential-thinking"],
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking@2026.7.4"],
       "description": "Structured step-by-step reasoning"
     },
     "slack": {
       "command": "npx",
-      "args": ["-y", "@anthropics/mcp-server-slack"],
+      "args": ["-y", "@modelcontextprotocol/server-slack@2025.4.25"],
       "env": {
         "SLACK_BOT_TOKEN": "${SLACK_BOT_TOKEN}",
         "SLACK_TEAM_ID": "${SLACK_TEAM_ID}"
       },
-      "description": "Slack integration for bug search, thread analysis, team comms (recommended by Boris Cherny)"
+      "description": "Slack integration for bug search, thread analysis, team comms (recommended by Boris Cherny; archived upstream but functional)"
     },
     "sentry": {
-      "command": "npx",
-      "args": ["-y", "@anthropics/mcp-server-sentry"],
-      "env": {
-        "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
-        "SENTRY_ORG": "${SENTRY_ORG}"
-      },
-      "description": "Sentry integration for error analysis and monitoring (recommended by Boris Cherny)"
+      "command": "uvx",
+      "args": ["mcp-server-sentry==2025.1.14", "--auth-token", "${SENTRY_AUTH_TOKEN}"],
+      "description": "Sentry integration for error analysis and monitoring (recommended by Boris Cherny; Python server — requires uv/uvx)"
     },
     "bigquery": {
       "command": "npx",
-      "args": ["-y", "@anthropics/mcp-server-bigquery"],
+      "args": ["-y", "@ergut/mcp-bigquery-server@1.0.4", "--project-id", "${BIGQUERY_PROJECT_ID}"],
       "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}",
-        "BIGQUERY_PROJECT_ID": "${BIGQUERY_PROJECT_ID}"
+        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}"
       },
-      "description": "BigQuery integration for direct analytics queries (recommended by Boris Cherny — skips writing SQL by hand)"
+      "description": "BigQuery integration for direct analytics queries (recommended by Boris Cherny — skips writing SQL by hand). Community server (ergut/mcp-bigquery-server); Google's official alternative is genai-toolbox"
     },
     "linear": {
       "command": "npx",
-      "args": ["-y", "@anthropics/mcp-server-linear"],
-      "env": {
-        "LINEAR_API_KEY": "${LINEAR_API_KEY}"
-      },
-      "description": "Linear integration for project management and issues"
+      "args": ["-y", "mcp-remote@0.1.38", "https://mcp.linear.app/sse"],
+      "description": "Linear integration via Linear's OFFICIAL hosted MCP server (OAuth on first use — no API key env var; mcp-remote bridges stdio to the remote SSE endpoint)"
     },
     "notion": {
       "command": "npx",
-      "args": ["-y", "@anthropics/mcp-server-notion"],
+      "args": ["-y", "@notionhq/notion-mcp-server@2.4.1"],
       "env": {
-        "NOTION_API_KEY": "${NOTION_API_KEY}"
+        "NOTION_TOKEN": "${NOTION_API_KEY}"
       },
-      "description": "Notion integration for docs and knowledge bases"
+      "description": "Notion integration for docs and knowledge bases (Notion's official server)"
     }
   }
 }
