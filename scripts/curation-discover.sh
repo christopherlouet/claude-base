@@ -153,12 +153,25 @@ _LIST_RESERVED='topics|sponsors|features|about|marketplace|apps|settings|orgs|us
 # (default branch README.md, or <path>) and echo the owner/repo of every
 # github.com repo it links to. Reserved github paths and a self-link are
 # filtered; the extracted repos are deduped/gated downstream exactly like search
-# hits — a list SEEDS candidates, it never bypasses a gate. Fail-safe: an
-# unfetchable/empty list yields nothing.
+# hits — a list SEEDS candidates, it never bypasses a gate.
+#
+# Return code distinguishes a genuine FETCH FAILURE from a legitimately empty
+# list, so a source that goes dark is SURFACED in the digest instead of silently
+# yielding nothing:
+#   0 — fetched OK (candidates on stdout; an empty list is still success)
+#   3 — fetch failure / unreadable (404, decode error)
+#   4 — over the contents-API 1MB cap (content:"" encoding:"none"): the list is
+#       there but unreadable via this endpoint — a distinct, actionable reason.
 _list_candidates() {
-    local repo="$1" path="${2:-README.md}" body decoded
-    body=$(curation_gh_api "repos/$repo/contents/$path" 2>/dev/null) || return 0
-    decoded=$(printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null | _curation_b64decode) || return 0
+    local repo="$1" path="${2:-README.md}" body decoded enc size
+    body=$(curation_gh_api "repos/$repo/contents/$path" 2>/dev/null) || return 3
+    enc=$(printf '%s' "$body" | jq -r '.encoding // empty' 2>/dev/null)
+    size=$(printf '%s' "$body" | jq -r '(.size | numbers) // 0' 2>/dev/null)
+    if [ "$enc" = "none" ] && [ "${size:-0}" -gt 0 ] 2>/dev/null; then
+        return 4
+    fi
+    decoded=$(printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null | _curation_b64decode) || return 3
+    # A genuinely empty (size 0) file is a valid empty list, not a failure.
     [ -n "$decoded" ] || return 0
     printf '%s' "$decoded" \
         | grep -oiE 'https?://github\.com/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+' \
@@ -168,12 +181,14 @@ _list_candidates() {
 }
 
 # collect_candidates — run every source (search query OR curated list), flatten to
-# owner/repo, dedupe, drop known repos, cap. Per-source failures are fail-safe
-# (that source yields nothing).
+# owner/repo, dedupe, drop known repos, cap. A per-source FETCH FAILURE is still
+# non-fatal (the other sources run), but the source's identifier is appended to
+# $SOURCE_FAIL_LOG (a file the caller reads) so the run SURFACES it in the digest
+# rather than presenting a shrunken candidate set as if it were complete.
 collect_candidates() {
     # Exclude both already-tracked repos AND reviewed-and-declined ones.
     local known; known=$(printf '%s\n%s\n' "$(known_set)" "$(declined_set)" | awk 'NF' | sort -u)
-    local per src kind query repo lpath path items
+    local per src kind query repo lpath path items rc
     per=$(jq -r '(.perPage | numbers) // 15' "$SOURCES")
     {
         while IFS= read -r src; do
@@ -183,13 +198,26 @@ collect_candidates() {
                 repo=$(printf '%s' "$src" | jq -r '.repo // empty')
                 [ -n "$repo" ] || continue
                 lpath=$(printf '%s' "$src" | jq -r '.path // "README.md"')
-                _list_candidates "$repo" "$lpath"
+                _list_candidates "$repo" "$lpath"; rc=$?
+                # rc 3 = unreachable/404, rc 4 = over the 1MB contents-API cap
+                # (empty content). No stderr warn — the digest field below is the
+                # surfacing channel, and a stderr line would corrupt the JSON on
+                # stdout under `run`'s merged capture. Reason string is kept
+                # human-actionable and greppable by the digest tests.
+                if [ "$rc" = 4 ]; then
+                    [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'list %s/%s (empty content — over the 1MB API cap)\n' "$repo" "$lpath" >> "$SOURCE_FAIL_LOG"
+                elif [ "$rc" != 0 ]; then
+                    [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'list %s/%s (unreachable)\n' "$repo" "$lpath" >> "$SOURCE_FAIL_LOG"
+                fi
             else
                 query=$(printf '%s' "$src" | jq -r '.query // empty')
                 [ -n "$query" ] || continue
                 path="search/repositories?q=${query// /+}&per_page=${per}&sort=stars"
-                items=$(curation_gh_api "$path" 2>/dev/null) || continue
-                printf '%s' "$items" | jq -r '.items[]?.full_name // empty' 2>/dev/null
+                if items=$(curation_gh_api "$path" 2>/dev/null); then
+                    printf '%s' "$items" | jq -r '.items[]?.full_name // empty' 2>/dev/null
+                else
+                    [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'search %s (unreachable)\n' "$(printf '%s' "$src" | jq -r '.domain // .query // "?"')" >> "$SOURCE_FAIL_LOG"
+                fi
             fi
         done < <(jq -c '.sources[]?' "$SOURCES")
     } | awk 'NF' | sort -u | grep -vxF -f <(printf '%s\n' "$known") 2>/dev/null | head -n "$MAX_CANDIDATES"
@@ -245,8 +273,18 @@ PROMPT
 # Run
 # ---------------------------------------------------------------------------
 NOW=$(curation_now)
+# Failed-source log: collect_candidates appends one line per unreachable source
+# (fail-safe — the run continues), read back afterwards so the digest reports
+# how much of the intended coverage was actually fetched.
+SOURCE_FAIL_LOG=$(mktemp 2>/dev/null || printf '')
 candidates=$(collect_candidates)
 n_candidates=$(printf '%s\n' "$candidates" | awk 'NF' | wc -l | tr -d ' ')
+sources_failed=0; sources_failed_list='[]'
+if [ -n "$SOURCE_FAIL_LOG" ] && [ -s "$SOURCE_FAIL_LOG" ]; then
+    sources_failed=$(awk 'NF' "$SOURCE_FAIL_LOG" | sort -u | wc -l | tr -d ' ')
+    sources_failed_list=$(awk 'NF' "$SOURCE_FAIL_LOG" | sort -u | jq -R . | jq -cs .)
+fi
+[ -n "$SOURCE_FAIL_LOG" ] && rm -f "$SOURCE_FAIL_LOG"
 
 spent=0
 proposed=0 rejected=0 deferred=0 moat=0 graduation=0
@@ -334,11 +372,13 @@ fi
 exhausted=$([ "$deferred" -gt 0 ] && echo true || echo false)
 digest=$(jq -cn \
     --arg now "$NOW" --argjson cand "$n_candidates" \
+    --argjson srcFailed "$sources_failed" --argjson srcFailures "$sources_failed_list" \
     --argjson proposed "$proposed" --argjson rejected "$rejected" --argjson deferred "$deferred" \
     --argjson moat "$moat" --argjson graduation "$graduation" \
     --argjson limit "$BUDGET" --argjson spent "$spent" --argjson exhausted "$exhausted" \
     --argjson proposals "$proposals" --argjson moatSignals "$moat_signals" \
     '{generatedAt:$now, scope:{candidates:$cand},
+      sourcesFailed:$srcFailed, sourceFailures:$srcFailures,
       counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred, moat:$moat, graduation:$graduation},
       budget:{limit:$limit, spent:$spent, exhausted:$exhausted},
       proposals:$proposals, moatSignals:$moatSignals}')
@@ -347,6 +387,10 @@ render_markdown() {
     printf '# Curation discovery — %s\n\n' "$NOW"
     printf -- '- Candidates: **%s** · proposed **%s** · rejected **%s** · deferred **%s**\n' \
         "$n_candidates" "$proposed" "$rejected" "$deferred"
+    if [ "$sources_failed" -gt 0 ]; then
+        printf -- '- ⚠️ Discovery **sources failed** to fetch (%s — coverage incomplete): %s\n' \
+            "$sources_failed" "$(printf '%s' "$sources_failed_list" | jq -r 'join("; ")')"
+    fi
     printf -- '- Budget: %s / %s tokens%s\n\n' "$spent" "$BUDGET" \
         "$([ "$exhausted" = true ] && echo ' — **exhausted (rest deferred)**' || echo '')"
     if [ "$proposed" -gt 0 ]; then
