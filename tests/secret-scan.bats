@@ -27,6 +27,24 @@ setup() {
 # build a PreToolUse payload with the given content
 payload() { jq -n --arg c "$1" '{tool_input:{content:$c}}'; }
 
+# --- pass-3: NotebookEdit payloads carry .new_source, not .content ----------
+# The matcher covers NotebookEdit since pass-3; without the .new_source
+# extraction a secret written into an .ipynb cell was never scanned.
+
+@test "blocks a Stripe live key written into a notebook cell (NotebookEdit)" {
+    local k="sk_live_"; k="${k}4eC39HqLyjWDarjtT1zdp7dcKLMNOPQR"
+    run bash "$HOOK" <<<"$(jq -n --arg c "stripe = '$k'" \
+        '{tool_name:"NotebookEdit", tool_input:{notebook_path:"nb.ipynb", new_source:$c}}')"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"Stripe"* ]]
+}
+
+@test "allows a clean notebook cell (NotebookEdit)" {
+    run bash "$HOOK" <<<"$(jq -n \
+        '{tool_name:"NotebookEdit", tool_input:{notebook_path:"nb.ipynb", new_source:"print(1)"}}')"
+    [ "$status" -eq 0 ]
+}
+
 @test "blocks a Stripe live secret key" {
     local k="sk_live_"; k="${k}4eC39HqLyjWDarjtT1zdp7dcKLMNOPQR"
     run bash "$HOOK" <<<"$(payload "const stripe = '$k';")"
