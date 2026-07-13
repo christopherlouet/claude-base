@@ -25,9 +25,11 @@ jobs:
         run: ./scripts/test.sh
 
       - name: Validate
+        # Enforcing: a release whose own foundation fails validate.sh must not
+        # ship. (Was `|| true` — a decorative gate; pinned by ci-workflows.bats.)
         run: |
           chmod +x scripts/*.sh
-          ./scripts/validate.sh . || true
+          ./scripts/validate.sh .
 
       - name: Read version and counts
         id: meta

@@ -50,7 +50,7 @@ done
 # if/elif (NOT a complex `${VAR:-...}` default — that mis-parses on macOS bash 3.2).
 # All overridable via env for tests.
 if [ -n "${PREFLIGHT_GATE_SHELLCHECK:-}" ]; then GATE_SHELLCHECK="$PREFLIGHT_GATE_SHELLCHECK"
-elif command -v shellcheck >/dev/null 2>&1; then GATE_SHELLCHECK='shellcheck -S warning scripts/*.sh scripts/hooks/*.sh scripts/lib/*.sh'
+elif command -v shellcheck >/dev/null 2>&1; then GATE_SHELLCHECK='shellcheck -S warning install.sh bin/claude-base scripts/*.sh scripts/hooks/*.sh scripts/lib/*.sh'
 else GATE_SHELLCHECK='echo "shellcheck absent - gate skipped"'; fi
 
 GATE_COUNTS="${PREFLIGHT_GATE_COUNTS:-bash scripts/validate-counts.sh}"

@@ -1,12 +1,17 @@
 #!/usr/bin/env sh
 
-# Counts self-heal: when a commit stages a counted artifact (command / agent /
-# skill / rule / bats test), regenerate the derived count files and stage them,
-# so a stale count can never reach CI. No-op (and node-free) for every other
-# commit. See scripts/sync-counts.sh. Disable with SKIP_COUNTS_SYNC=1.
+# Counts self-heal: when a commit stages an input the CI counts gate derives
+# from, regenerate the derived count files and stage them, so a stale count can
+# never reach CI. The trigger set must cover EVERY input generate-counts.ts /
+# sync-docs.ts read — counted resources, bats tests, presets, the marketplace
+# pilot specs, docs/ (mirrored to website/docs/), the minimal manifest and
+# VERSION. A class missing here commits cleanly locally and fails the CI
+# counts gate ("forgot to regenerate" — the top lesson of this repo). No-op
+# (and node-free) for every other commit. See scripts/sync-counts.sh.
+# Disable with SKIP_COUNTS_SYNC=1. Pinned by tests/ci-workflows.bats.
 if [ "${SKIP_COUNTS_SYNC:-0}" != "1" ]; then
   if git diff --cached --name-only \
-       | grep -qE '^\.claude/(commands|agents|skills|rules)/|^tests/.*\.bats$'; then
+       | grep -qE '^\.claude/(commands|agents|skills|rules|presets)/|^tests/.*\.bats$|^docs/|^specs/marketplace-audit/|^scripts/lib/minimal-manifest\.txt$|^VERSION$'; then
     bash scripts/sync-counts.sh --quiet || exit 1
   fi
 fi

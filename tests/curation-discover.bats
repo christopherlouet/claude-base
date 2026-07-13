@@ -291,6 +291,80 @@ healthy_candidate() {
     [ "$status" -eq 0 ]
 }
 
+@test "discovery-sources.json (shipped): the hesreallyhim list points at the RENAMED upstream CSV" {
+    # Upstream renamed THE_RESOURCES_TABLE.csv → THE_RESOURCES_TABLE_NEW.csv
+    # (old path 404s, verified live 2026-07-13); the stale path left the biggest
+    # community list silently dark.
+    local f="$BATS_TEST_DIRNAME/../.claude/curation/discovery-sources.json"
+    run jq -r '.sources[] | select(.repo == "hesreallyhim/awesome-claude-code") | .path' "$f"
+    [ "$status" -eq 0 ]
+    [ "$output" = "THE_RESOURCES_TABLE_NEW.csv" ]
+}
+
+# =============================================================================
+# sources_failed — a dark source must be VISIBLE in the digest (2026-07-12
+# audit, C7). A per-source fetch failure never aborts the run (the other
+# sources still feed the pool) but the digest must say which source failed and
+# why, instead of a silent "0 candidates from that source" forever.
+# =============================================================================
+
+@test "discover: a failed list source is surfaced in the digest while other sources still run" {
+    jq -cn '{version:"1.0.0", perPage:15, sources:[
+        {domain:"nextjs", query:"claude skill nextjs"},
+        {domain:"lists", kind:"list", repo:"missing/list"}]}' > "$TEST_DIR/sources.json"
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 1 ]   # search source still processed
+    [ "$(printf '%s' "$output" | jq -r '.sourcesFailed')" -eq 1 ]
+    [[ "$(printf '%s' "$output" | jq -r '.sourceFailures[0]')" == *"missing/list"* ]]
+}
+
+@test "discover: a >1MB list doc (content:\"\", encoding:\"none\") counts as a FAILED source, not an empty list" {
+    search_items '{"items":[]}'
+    jq -cn '{version:"1.0.0", sources:[{domain:"lists", kind:"list", repo:"big/list"}]}' \
+        > "$TEST_DIR/sources.json"
+    # The GitHub contents API silently returns content:"" encoding:"none" for a
+    # file over 1MB — that is a dark source, never "no links in the list".
+    gh_fixture "repos/big/list/contents/README.md" '{"content":"","encoding":"none","size":1500000}'
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","tokensUsed":10}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.sourcesFailed')" -eq 1 ]
+    [[ "$(printf '%s' "$output" | jq -r '.sourceFailures[0]')" == *"big/list"* ]]
+    [[ "$(printf '%s' "$output" | jq -r '.sourceFailures[0]')" == *"empty content"* ]]
+}
+
+@test "discover: a gh search failure is surfaced as a failed source (not silent)" {
+    rm -f "$TEST_DIR/fx/search.json"   # search returns 404/non-zero
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","tokensUsed":10}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.sourcesFailed')" -eq 1 ]
+    [[ "$(printf '%s' "$output" | jq -r '.sourceFailures[0]')" == *"nextjs"* ]]
+}
+
+@test "discover: sourcesFailed is 0 on a fully-healthy run" {
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.sourcesFailed')" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.sourceFailures | length')" -eq 0 ]
+}
+
+@test "discover: --digest-dir renders the failed sources in the markdown digest" {
+    jq -cn '{version:"1.0.0", perPage:15, sources:[
+        {domain:"nextjs", query:"claude skill nextjs"},
+        {domain:"lists", kind:"list", repo:"missing/list"}]}' > "$TEST_DIR/sources.json"
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover --digest-dir "$TEST_DIR/out"
+    grep -qiE 'sources? failed' "$TEST_DIR/out/proposals.md"
+    grep -q "missing/list" "$TEST_DIR/out/proposals.md"
+}
+
 # =============================================================================
 # budget cap + fail-safe (EF-012)
 # =============================================================================

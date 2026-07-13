@@ -95,8 +95,29 @@ emit_issue() {
 
 # _repin_apply <registry> <presets-dir> <repoRoot> <newRef> <now> — re-pin every
 # registry record and preset recommendation whose repo-root matches, in place.
+# Marketplace plugins: a preset copy of a marketplace plugin carries a
+# NON-github url (e.g. claude.com/plugins/<x>) that no github repo-root can
+# ever match, so preset entries are ALSO matched by the normalised marketplace
+# key (mktkey) of the subject's registry record(s) (vendorUrl). Without this,
+# a drift of such a plugin re-pins the registry only and the PR fails the
+# pin-lockstep gate. NOTE: mktkey semantics MIRROR validate_pin_lockstep in
+# scripts/validate-presets.sh — keep the two normalisations in lockstep.
 _repin_apply() {
     local registry="$1" presets_dir="$2" subj="$3" cur="$4" now="$5" tmp f
+    # Marketplace keys of the subject's registry records (empty array when the
+    # subject has none, or the registry is missing — github-only behaviour).
+    local mkeys='[]'
+    if [ -f "$registry" ]; then
+        mkeys=$(jq -c --arg s "$subj" '
+            def mktkey: sub("^https?://";"") | (split("?")[0]) | (split("#")[0]) | sub("/$";"");
+            def is_marketplace: test("^https?://") and (test("github\\.com") | not);
+            [ .records[]?
+              | select((.vendorId | split("/")[0:2] | join("/")) == $s)
+              | (.vendorUrl // "") | strings
+              | select(is_marketplace) | mktkey
+            ] | unique' "$registry" 2>/dev/null) || mkeys='[]'
+        [ -n "$mkeys" ] || mkeys='[]'
+    fi
     if [ -f "$registry" ]; then
         if tmp=$(mktemp "$(dirname "$registry")/.repin.XXXXXX" 2>/dev/null) \
             && jq --arg s "$subj" --arg ref "$cur" --arg now "$now" \
@@ -112,11 +133,18 @@ _repin_apply() {
         [ -f "$f" ] || continue
         # Match the SAME repo-root semantics the registry uses (owner/repo,
         # exact) — a substring `contains` would re-pin unrelated entries whose
-        # url/id merely contains "owner/repo" as a fragment.
+        # url/id merely contains "owner/repo" as a fragment. A marketplace
+        # entry (non-github url) matches by exact mktkey against the subject's
+        # registry marketplace keys instead (see the function comment).
         if tmp=$(mktemp "$presets_dir/.repin.XXXXXX" 2>/dev/null) \
-            && jq --arg s "$subj" --arg ref "$cur" --arg now "$now" \
+            && jq --arg s "$subj" --arg ref "$cur" --arg now "$now" --argjson mk "$mkeys" \
                 'def root($x): ($x | sub("^https?://github.com/"; "") | split("?")[0] | split("#")[0] | split("/") | .[0:2] | join("/"));
-                 (.recommendedVendorSkills[]? | select(root(.url // .id // "") == $s))
+                 def mktkey($x): ($x | sub("^https?://";"") | (split("?")[0]) | (split("#")[0]) | sub("/$";""));
+                 def is_mkt($x): ($x | test("^https?://")) and (($x | test("github\\.com")) | not);
+                 (.recommendedVendorSkills[]? | select(
+                     (.url // .id // "") as $u
+                     | (root($u) == $s)
+                       or (is_mkt($u) and (($mk | index(mktkey($u))) != null))))
                    |= (.pinnedRef = $ref | .lastVerified = $now)' \
                 "$f" > "$tmp" 2>/dev/null; then
             mv "$tmp" "$f"
@@ -208,7 +236,9 @@ emit_repin_pr() {
     # sparing their per-finding gh calls on locked nights).
     local lookup_repo open_count
     lookup_repo=$(_curation_gh_repo) || lookup_repo=""
-    local lookup_args=(pr list --state open --json headRefName
+    # --limit 100 mirrors emit_issue's rolling-issue lookup: gh's default page
+    # of 30 could miss the open lock PR on a busy repo (silent lock bypass).
+    local lookup_args=(pr list --state open --limit 100 --json headRefName
         --jq '[.[] | select(.headRefName | startswith("curation/re-pin-"))] | length')
     [ -n "$lookup_repo" ] && lookup_args+=(-R "$lookup_repo")
     if open_count=$(gh "${lookup_args[@]}" 2>/dev/null); then
