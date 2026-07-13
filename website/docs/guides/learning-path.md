@@ -82,8 +82,8 @@ At startup, you should see a message similar to:
 ```
 === Claude Code Session ===
 Version: <!-- version -->5.2.1<!-- /version -->
-Commandes: 128
-Agents: 61
+Commandes: 106
+Agents: 44
 ===========================
 ```
 
@@ -118,6 +118,7 @@ These four commands are the first to master. They work in any session, regardles
 | Low | `/effort low` | Exploration, reading files, simple tasks |
 | Medium | `/effort medium` | Standard development, fixes |
 | High | `/effort high` | Architecture, audit, complex refactoring, debug |
+| Extra high | `/effort xhigh` | Critical system architecture, advanced security audit |
 
 By default, Claude Code adjusts its level automatically. Use `/effort` to force a specific level.
 
@@ -381,11 +382,11 @@ The difference from a command:
 | Triggering | Manual (`/cmd`) | Automatic (delegation) |
 | Context | Shared with the session | Isolated (does not see the session) |
 | Tools | All available | Restricted depending on the agent |
-| Model | Same as the session | Haiku or Sonnet depending on the agent |
+| Model | Same as the session | Haiku, Sonnet, or Opus depending on the agent |
 
 Concrete example: when you type "Do a security audit", Claude automatically delegates to the `qa-security` agent. This agent:
-- Runs with the Sonnet model (optimized for this type of analysis)
-- Only has access to the Read, Grep and Glob tools (read-only, impossible to modify accidentally)
+- Runs with the Opus model (deep reasoning for this type of analysis)
+- Only has access to the Read, Grep, Glob and Bash tools (no Write/Edit — it cannot modify your files)
 - Produces a report that is reintegrated into your main conversation
 
 ```
@@ -397,8 +398,8 @@ Your conversation
       |
       v
  [qa-security agent - isolated context]
- - Model: sonnet
- - Tools: Read, Grep, Glob only
+ - Model: opus
+ - Tools: Read, Grep, Glob, Bash
  - Analyzes the code...
       |
       v
@@ -417,7 +418,7 @@ You can also invoke agents via commands:
 /work:work-explore  # Launches the work-explore agent
 ```
 
-The <!-- count:agents -->44<!-- /count --> agents are grouped into the same domains as the commands. Haiku agents (22) are used for fast and economical tasks (exploration, documentation, simple audits). Sonnet agents (35) for complex analyses (security, performance, debug, architecture).
+The <!-- count:agents -->44<!-- /count --> agents are grouped into the same domains as the commands. Haiku agents (4) are used for fast and economical tasks (health check, changelog, dependency and cost reports). Sonnet agents (35) handle most analyses (performance, architecture, business), and Opus agents (5) are reserved for the deepest reasoning (security, debug, TDD, full audits, the audit-fix loop).
 
 ---
 
@@ -427,9 +428,9 @@ A **skill** is a set of instructions that activate automatically when certain ke
 
 You do not have to do anything: skills trigger in the background. For example:
 
-- Mentioning "TDD" or "test first" activates the `test-driven-development` skill: Claude will automatically follow the Red-Green-Refactor cycle
-- Mentioning "commit" or "git commit" activates the `generating-commit-messages` skill: Claude will use the Conventional Commits format
-- Mentioning "docker" or "containerize" activates the `docker-containerization` skill: Claude will apply Docker best practices
+- Mentioning "TDD" or "test first" activates the `dev-tdd` skill: Claude will automatically follow the Red-Green-Refactor cycle
+- Mentioning "commit" or "git commit" activates the `work-commit` skill: Claude will use the Conventional Commits format
+- Mentioning "docker" or "containerize" activates the `ops-docker` skill: Claude will apply Docker best practices
 
 ```
 You: "I want to do TDD for this new service"
@@ -438,7 +439,7 @@ You: "I want to do TDD for this new service"
          Detection: "TDD" detected
                     |
                     v
-         test-driven-development skill active
+         dev-tdd skill active
                     |
                     v
          Claude automatically applies:
@@ -451,12 +452,12 @@ The main skills to know:
 
 | Skill | Trigger keywords | Induced behavior |
 |-------|----------------------|---------------------|
-| `test-driven-development` | TDD, test first, red green | Mandatory Red-Green-Refactor cycle |
-| `generating-commit-messages` | commit, git commit | Conventional Commits format |
-| `creating-pull-requests` | PR, pull request, merge | Complete PR structure |
-| `debugging-issues` | bug, error, crash, debug | Systematic investigation |
-| `security-audit` | security, OWASP, vulnerability | OWASP Top 10 audit |
-| `exploring-codebase` | explore, understand, discover | Read-only analysis |
+| `dev-tdd` | TDD, test first, red green | Mandatory Red-Green-Refactor cycle |
+| `work-commit` | commit, git commit | Conventional Commits format |
+| `work-pr` | PR, pull request, merge | Complete PR structure |
+| `dev-debug` | bug, error, crash, debug | Systematic investigation |
+| `qa-security` | security, OWASP, vulnerability | OWASP Top 10 audit |
+| `work-explore` | explore, understand, discover | Read-only analysis |
 
 ---
 
@@ -809,16 +810,16 @@ The score is calculated on several dimensions:
 
 #### Available audit types
 
-| Command | Usage | Model |
+| Command | Usage | Runs as |
 |----------|-------|--------|
-| `/qa:qa-audit` | Full read-only audit (security + perf + a11y) | sonnet |
-| `/qa:qa-loop` | Audit + autonomous fixes in a loop | sonnet |
-| `/qa:qa-review` | Quick code review, feedback without fixes | sonnet |
-| `/qa:qa-security` | OWASP Top 10 security audit only | sonnet |
-| `/qa:qa-perf` | Performance and Core Web Vitals audit | sonnet |
-| `/qa:wcag-audit` | WCAG 2.1 accessibility audit | haiku |
-| `/qa:qa-design` | UI/UX audit (100+ web design rules) | haiku |
-| `/qa:qa-tech-debt` | Technical debt identification and prioritization | haiku |
+| `/qa:qa-audit` | Full read-only audit (security + perf + a11y) | agent (opus) |
+| `/qa:qa-loop` | Audit + autonomous fixes in a loop | agent (opus) |
+| `/qa:qa-review` | Quick code review, feedback without fixes | command + skill (session model) |
+| `/qa:qa-security` | OWASP Top 10 security audit only | agent (opus) |
+| `/qa:qa-perf` | Performance and Core Web Vitals audit | agent (sonnet) |
+| `/qa:wcag-audit` | WCAG 2.1 accessibility audit | agent (sonnet) |
+| `/qa:qa-design` | UI/UX audit (100+ web design rules) | command + skill (session model) |
+| `/qa:qa-tech-debt` | Technical debt identification and prioritization | command + skill (session model) |
 
 The important distinction between these three commands:
 
@@ -940,7 +941,7 @@ SKIP_PRE_COMMIT_TESTS=1
 SKIP_PRE_PUSH_CI=1  # To bypass if CI is already failing
 ```
 
-**Command validator**: validates Bash commands against 8 risk categories: fork bombs, pipe-to-shell (`curl URL | sh`), disk destruction, privilege escalation, etc.
+**Command validator**: validates Bash commands against 9 risk categories: fork bombs, pipe-to-shell (`curl URL | sh`), disk destruction, privilege escalation, `git --no-verify` gate-bypass, etc.
 
 ```bash
 SKIP_COMMAND_VALIDATOR=1  # To bypass (use with caution)
@@ -979,7 +980,7 @@ These hooks run AFTER each successful modification. They do not block -- they im
 
 At the start of each session, several hooks run:
 
-- **Session info**: displays the project information (current branch, last commits, git status)
+- **Session info**: displays a startup banner (foundation version, number of commands and agents)
 - **Check node_modules**: warns if `package.json` exists but `node_modules` is absent
 - **Check .env**: verifies that `.env` is properly in `.gitignore`
 - **Third-party hooks warning**: warns if non-standard custom hooks are detected
@@ -1086,12 +1087,13 @@ The first implementation explores the problem. The second benefits from the lear
 
 #### Effort levels: adapting reasoning depth
 
-Claude Code supports 3 effort levels that control reasoning depth:
+Claude Code supports 4 effort levels that control reasoning depth:
 
 ```bash
 /effort low      # Exploration, reading files, formatting
 /effort medium   # Standard implementation, fixes
 /effort high     # Architecture, audit, complex refactoring, debug
+/effort xhigh    # Critical system architecture, advanced security audit
 ```
 
 Guide by workflow phase:
@@ -1527,7 +1529,7 @@ Here is the structure of the foundation's `dev-debug` agent as a real example:
 name: dev-debug
 description: Bug diagnosis and investigation.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 permissionMode: default
 skills:
   - dev-debug
@@ -1547,11 +1549,11 @@ The body of the agent file must be minimal (30-55 lines): it orchestrates, the s
 
 | Model | Agent use case | Number in the foundation |
 |--------|-------------------|---------------------|
-| `haiku` | Exploration, documentation, standard generation, simple audits | 13 agents |
-| `sonnet` | Complex debug, security, architecture, integration | 27 agents |
-| `opus` | Reserved for critical tasks with `/effort high` | On request |
+| `haiku` | Fast, cheap reporting (health check, changelog, deps, cost) | 4 agents |
+| `sonnet` | Most analyses: performance, architecture, integration, business | 35 agents |
+| `opus` | Deepest reasoning: security, debug, TDD, full audits, audit-fix loop | 5 agents |
 
-Practical rule: if the agent reads without modifying, use `haiku`. If it analyzes to propose corrections or architectural decisions, use `sonnet`.
+Practical rule: if the agent produces a simple report from cheap reads, use `haiku`. If it analyzes to propose corrections or architectural decisions, use `sonnet`. Reserve `opus` for the critical reasoning paths (security, debug, TDD, audits).
 
 #### Linking an agent to skills
 
@@ -1758,7 +1760,9 @@ The **Model Context Protocol (MCP)** allows Claude Code to interact with externa
 
 #### Configuration in .mcp.json
 
-All MCP servers are defined in `.mcp.json` at the root of the project. In the foundation, all are disabled by default (`"enabled": false`) for security:
+Active MCP servers are defined in `.mcp.json` at the root of the project. In the foundation, `.mcp.json` ships **empty** (`"mcpServers": {}`) for security: there is no per-server `enabled` flag in the `.mcp.json` format — a server is active if and only if its block is present in the file.
+
+The full catalogue of ready-to-use server blocks lives in `.mcp.json.example` (which Claude Code does not load). To activate a server, copy its block from `.mcp.json.example` into `.mcp.json`:
 
 ```json
 {
@@ -1769,16 +1773,15 @@ All MCP servers are defined in `.mcp.json` at the root of the project. In the fo
       "env": {
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
       },
-      "description": "GitHub integration (issues, PRs, repos)",
-      "enabled": false
+      "description": "GitHub integration (issues, PRs, repos)"
     }
   }
 }
 ```
 
-To activate a server, set `"enabled": true` and configure the environment variables in your `.env` (never directly in `.mcp.json`).
+Then configure the referenced environment variables in your `.env` (never directly in `.mcp.json`). To deactivate a server, remove its block.
 
-#### Available servers in the foundation
+#### Available servers in the `.mcp.json.example` catalogue
 
 | Server | Usage | Env token |
 |---------|-------|-----------|
@@ -1806,12 +1809,12 @@ With `claude --channels`, compatible servers (Slack, Sentry, Linear) can push me
 - NEVER put credentials directly in `.mcp.json`
 - Use `${VARIABLE}` to reference environment variables
 - Add `.env` to `.gitignore`
-- Only activate the servers you need
+- Only copy in the servers you need (presence = active)
 - The `.mcp.json` file is versioned in git: check its content before each commit
 
 #### Exercise: configure and use an MCP server
 
-Activate the `github` server in `.mcp.json`. Configure `GITHUB_TOKEN` in your `.env`. Test by asking Claude Code to list the open issues of your repository.
+Copy the `github` block from `.mcp.json.example` into `.mcp.json`. Configure `GITHUB_TOKEN` in your `.env`. Test by asking Claude Code to list the open issues of your repository.
 
 ---
 
@@ -1876,11 +1879,11 @@ The foundation addresses a concrete problem: by default, Claude Code starts with
 
 The three design constraints:
 
-1. **Minimalism of the base context**: the `CLAUDE.md` file only loads 175 lines per session (before optimization: 1,322 lines). Everything else is loaded on demand via `@imports`.
+1. **Minimalism of the base context**: the `CLAUDE.md` file is under 100 lines; with its two `@imports` (best practices, project structures) the base context stays under ~300 lines per session. Everything else is loaded on demand.
 
 2. **Modularity**: each building block (command, agent, skill, rule, hook) is independent and replaceable. You can remove all `growth-*` agents if you do not need them.
 
-3. **Security by default**: `.mcp.json` disables everything, hooks block `git push --force`, secret detection is enabled on each write.
+3. **Security by default**: `.mcp.json` ships empty (no MCP server active), hooks block `git push --force`, secret detection is enabled on each write.
 
 #### Commands vs Agents vs Skills: design principles
 
@@ -2038,7 +2041,7 @@ This workflow automatically runs:
 /work:work-flow-bugfix "500 error on /api/users when the email contains uppercase letters"
 ```
 
-Pipeline: debug (dev-debug) → regression test (dev-test) → fix → quick audit (qa-review) → commit (work-commit with issue reference).
+Pipeline: debug (dev-debug) → regression test (dev-tdd) → fix → quick audit (qa-review) → commit (work-commit with issue reference).
 
 #### /work:work-flow-release
 
@@ -2090,8 +2093,8 @@ The `scripts/validate.sh` script verifies the integrity of the configuration. It
 
 ```bash
 claude-base validate .              # Validate the current directory
-claude-base validate --format json  # JSON output for CI
-claude-base validate --format score # Score output only
+claude-base validate --json .       # JSON output for CI
+claude-base validate --score .      # Score output only
 ```
 
 #### Adding a command

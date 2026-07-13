@@ -266,7 +266,7 @@ flowchart TD
 │  │  ┌─────────┐        ┌─────────┐         ┌─────────┐                   │  │
 │  │  │ AGENT   │        │ AGENT   │         │ AGENT   │                   │  │
 │  │  │qa-security│       qa-perf │         │wcag-audit  │                   │  │
-│  │  │(sonnet) │        │(sonnet) │         │(sonnet) │                   │  │
+│  │  │(opus)   │        │(sonnet) │         │(sonnet) │                   │  │
 │  │  └────┬────┘        └────┬────┘         └────┬────┘                   │  │
 │  │       │                  │                   │                        │  │
 │  │       │                  │                   │                        │  │
@@ -299,7 +299,7 @@ flowchart TD
 flowchart TD
     AUDIT([/qa:qa-audit]) --> ORCHESTRATOR[Orchestrator]
 
-    ORCHESTRATOR --> SEC{{Agent qa-security<br/>sonnet}}
+    ORCHESTRATOR --> SEC{{Agent qa-security<br/>opus}}
     ORCHESTRATOR --> PERF{{Agent qa-perf<br/>sonnet}}
     ORCHESTRATOR --> A11Y{{Agent wcag-audit<br/>sonnet}}
 

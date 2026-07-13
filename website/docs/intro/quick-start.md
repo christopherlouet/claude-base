@@ -90,8 +90,8 @@ At startup you should see:
 ```
 === Claude Code Session ===
 Version: <!-- version -->5.2.1<!-- /version -->
-Commandes: 128
-Agents: 61
+Commandes: 106
+Agents: 44
 ===========================
 ```
 
