@@ -427,13 +427,16 @@ EOF
     [[ "$output" == *"defaultModules"* ]] || [[ "$output" == *"module"* ]]
 }
 
-@test "validate-presets.sh warns (non-fatal) on an unknown command name" {
+@test "validate-presets.sh rejects an unknown command name (hard failure — a keep-mode typo is data loss)" {
+    # 2026-07-12 audit (C7): unknown names were warning-only, but a typo in a
+    # keep list silently drops the INTENDED item at install time while the
+    # validator said OK. An unknown name in any keep/drop list is now fatal.
     write_valid_manifest "$TEST_DIR/x.json"
     jq '.foundation.commands = {"drop":["domain:nope","no-such-command"]}' \
         "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
     run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"WARN"* ]]
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"FAIL"* ]]
     [[ "$output" == *"nope"* ]]
     [[ "$output" == *"no-such-command"* ]]
 }
@@ -570,6 +573,49 @@ EOF
     [[ "$output" == *"foo/bar"* ]]
 }
 
+# =============================================================================
+# foundation.skills known-set (2026-07-12 audit, C7) — every keep/drop entry
+# must name a real skill dir (.claude/skills/<name>/). A typo in keep-mode
+# silently DROPS the intended skill at install time — hard failure.
+# =============================================================================
+
+@test "validate-presets.sh rejects an unknown skill name in foundation.skills.drop" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.skills = {"drop":["dev-flutter","no-such-skill"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"no-such-skill"* ]]
+}
+
+@test "validate-presets.sh rejects an unknown skill name in foundation.skills.keep (silent data loss)" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.skills = {"keep":["dev-api","dev-tdd-typo"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"dev-tdd-typo"* ]]
+}
+
+@test "validate-presets.sh accepts known skill names in foundation.skills.keep" {
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.skills = {"keep":["dev-api","qa-security"]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 0 ]
+}
+
+@test "validate-presets.sh rejects a traversal-shaped skill name (syntax guard, not just -d)" {
+    # ".." is a directory under .claude/skills/ as far as -d is concerned —
+    # the name must match the module_exists-style [a-z0-9-] syntax first.
+    write_valid_manifest "$TEST_DIR/x.json"
+    jq '.foundation.skills = {"drop":[".."]}' \
+        "$TEST_DIR/x.json" > "$TEST_DIR/x.tmp" && mv "$TEST_DIR/x.tmp" "$TEST_DIR/x.json"
+    run "$VALIDATE_PRESETS" "$TEST_DIR/x.json"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"foundation.skills"* ]]
+}
+
 @test "validate-presets: flags a MARKETPLACE-URL repo pinned to divergent refs (2026-07-12)" {
     # The reporoot key drops any non-github URL, so a marketplace plugin pinned
     # to two refs (registry bumped, preset copy forgotten — the live #427 class)
@@ -588,4 +634,62 @@ EOF
     [ "$status" -eq 1 ]
     [[ "$output" == *"pin lockstep — a repo is pinned to divergent refs"* ]]
     [[ "$output" == *"claude.com/plugins/x"* ]]
+}
+
+# mkt_record <plugin> <pin> — one fully-valid MARKETPLACE registry record whose
+# vendorId is subpathed under the marketplace repo (anthropics/claude-code).
+mkt_record() {
+    jq -cn --arg plugin "$1" --arg pin "$2" '
+        {foundationSkill:("dev-" + $plugin),
+         vendorId:("anthropics/claude-code/plugins/" + $plugin),
+         vendorUrl:("https://claude.com/plugins/" + $plugin),
+         pinnedRef:$pin, trustTrack:"authority", trustVerdict:"pass",
+         provenance:"Anthropic", adviceNeutrality:"pass",
+         lastVerified:"2026-07-12", status:"candidate"}'
+}
+
+@test "validate-presets: two marketplace plugins from ONE marketplace repo do not false-fail lockstep (2026-07-12)" {
+    # Latent P3: for a marketplace record the registry side ALSO emitted
+    # reporoot(vendorId) — a bogus github-style key ("anthropics/claude-code")
+    # shared by every plugin of that marketplace repo, so two plugins at
+    # different (legitimate) pins collided into one duplicate key and
+    # false-FAILED the gate. The reporoot key must be suppressed for
+    # marketplace records; the mktkey keeps each plugin coupled individually.
+    mkdir -p "$TEST_DIR/fake-presets"
+    write_valid_manifest "$TEST_DIR/fake-presets/ok.json"
+    jq -cn --argjson r1 "$(mkt_record frontend-design 1111111111111111111111111111111111111111)" \
+           --argjson r2 "$(mkt_record backend-design 2222222222222222222222222222222222222222)" \
+           '{version:"1.0.0", records:[$r1, $r2]}' > "$TEST_DIR/fake-registry.json"
+    export VALIDATE_PRESETS_DIR="$TEST_DIR/fake-presets"
+    export VALIDATE_PRESETS_REGISTRY="$TEST_DIR/fake-registry.json"
+    run bash "$VALIDATE_PRESETS"
+    unset VALIDATE_PRESETS_DIR VALIDATE_PRESETS_REGISTRY
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"pin lockstep"* ]]
+}
+
+@test "validate-presets: a marketplace registry pin diverging from its preset copy still FAILs (mktkey kept)" {
+    # Negative control for the reporoot suppression: the registry side must
+    # STILL emit the marketplace key, so a registry-vs-preset divergence on the
+    # SAME plugin is caught (the #472 coupling is preserved).
+    mkdir -p "$TEST_DIR/fake-presets"
+    write_valid_manifest "$TEST_DIR/fake-presets/ok.json"
+    jq '.recommendedVendorSkills = [
+          {"id":"frontend-design@claude-plugins-official",
+           "url":"https://claude.com/plugins/frontend-design",
+           "rationale":"r", "condition":"always",
+           "pinnedRef":"2222222222222222222222222222222222222222",
+           "trustTrack":"authority", "provenance":"Anthropic",
+           "lastVerified":"2026-07-12"}]' \
+        "$TEST_DIR/fake-presets/ok.json" > "$TEST_DIR/fake-presets/ok.tmp" \
+        && mv "$TEST_DIR/fake-presets/ok.tmp" "$TEST_DIR/fake-presets/ok.json"
+    jq -cn --argjson r1 "$(mkt_record frontend-design 1111111111111111111111111111111111111111)" \
+           '{version:"1.0.0", records:[$r1]}' > "$TEST_DIR/fake-registry.json"
+    export VALIDATE_PRESETS_DIR="$TEST_DIR/fake-presets"
+    export VALIDATE_PRESETS_REGISTRY="$TEST_DIR/fake-registry.json"
+    run bash "$VALIDATE_PRESETS"
+    unset VALIDATE_PRESETS_DIR VALIDATE_PRESETS_REGISTRY
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"pin lockstep — a repo is pinned to divergent refs"* ]]
+    [[ "$output" == *"claude.com/plugins/frontend-design"* ]]
 }
