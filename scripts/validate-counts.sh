@@ -236,7 +236,9 @@ echo ""
 #   - `(N) Label`     : e.g. `(54) skills available`
 #   - `**N Label**`   : e.g. `**54 skills**`
 #   - `'N Label'`     : e.g. `'131 Commands'` in TS/TSX components
-# Exclusions : CHANGELOG (history), node_modules, build, .docusaurus, memory.
+# Exclusions : CHANGELOG (history), node_modules, build, .docusaurus, memory,
+# worktrees (a parallel agent checkout under .claude/worktrees/ carries ITS
+# OWN counts — scanning it false-fails this tree's gate whenever counts differ).
 
 info "Global anti-drift scan..."
 echo ""
@@ -329,7 +331,7 @@ scan_drift() {
                 --include="*.md" --include="*.ts" --include="*.tsx" --include="*.json" \
                 --exclude-dir=node_modules --exclude-dir=.git \
                 --exclude-dir=build --exclude-dir=.docusaurus \
-                --exclude-dir=memory \
+                --exclude-dir=memory --exclude-dir=worktrees \
                 --exclude="CHANGELOG.md" \
                 "$BASE_DIR" 2>/dev/null
         )
@@ -409,7 +411,7 @@ scan_tests_drift() {
             --include="*.md" --include="*.ts" --include="*.tsx" \
             --exclude-dir=node_modules --exclude-dir=.git \
             --exclude-dir=build --exclude-dir=.docusaurus \
-            --exclude-dir=memory \
+            --exclude-dir=memory --exclude-dir=worktrees \
             --exclude="CHANGELOG.md" \
             "$BASE_DIR" 2>/dev/null
     )
@@ -439,7 +441,7 @@ scan_tests_drift() {
             --include="*.md" --include="*.ts" --include="*.tsx" \
             --exclude-dir=node_modules --exclude-dir=.git \
             --exclude-dir=build --exclude-dir=.docusaurus \
-            --exclude-dir=memory \
+            --exclude-dir=memory --exclude-dir=worktrees \
             --exclude="CHANGELOG.md" \
             "$BASE_DIR" 2>/dev/null
     )
@@ -475,6 +477,7 @@ scan_marker_drift() {
     done < <(grep -rnoE '<!-- count:[a-zA-Z]+ -->[0-9]+' \
         --include="*.md" --exclude-dir=node_modules --exclude-dir=.git \
         --exclude-dir=build --exclude-dir=.docusaurus --exclude-dir=memory \
+        --exclude-dir=worktrees \
         "$BASE_DIR" 2>/dev/null)
 }
 scan_marker_drift
@@ -498,6 +501,7 @@ scan_version_drift() {
     done < <(grep -rnoE '<!-- ?version ?-->[^<]*<!-- ?/version ?-->' \
         --include="*.md" --exclude-dir=node_modules --exclude-dir=.git \
         --exclude-dir=build --exclude-dir=.docusaurus --exclude-dir=memory \
+        --exclude-dir=worktrees \
         "$BASE_DIR" 2>/dev/null)
 }
 scan_version_drift

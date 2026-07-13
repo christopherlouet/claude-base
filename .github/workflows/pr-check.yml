@@ -2,7 +2,10 @@ name: PR Check
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    # `edited` re-runs the title/WIP gates when the title changes — without it
+    # a green check stands after the title is edited to an invalid one (the
+    # `ci:`-incident gap; the checks read only the title, so this is cheap).
+    types: [opened, edited, synchronize, reopened]
 
 # Cancel in-progress runs for the same PR
 concurrency:
