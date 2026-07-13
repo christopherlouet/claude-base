@@ -20,7 +20,9 @@ set -euo pipefail
 INPUT=$(cat 2>/dev/null || true)
 command -v jq >/dev/null 2>&1 || exit 0
 
-FILE=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null || true)
+# NotebookEdit sends .notebook_path / .new_source instead of .file_path /
+# .new_string (matcher covers NotebookEdit since pass-3).
+FILE=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // .tool_input.notebook_path // empty' 2>/dev/null || true)
 [ -z "$FILE" ] && exit 0
 
 # Scope to migration files only: a migrations/migrate path, or a versioned .sql
@@ -38,6 +40,7 @@ esac
 CONTENT=$(printf '%s' "$INPUT" | jq -r '
   [ .tool_input.content // empty,
     .tool_input.new_string // empty,
+    .tool_input.new_source // empty,
     ( .tool_input.edits[]?.new_string // empty ) ] | join("\n")
 ' 2>/dev/null || true)
 [ -z "$CONTENT" ] && exit 0

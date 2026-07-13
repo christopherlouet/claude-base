@@ -28,7 +28,9 @@ INPUT=$(cat 2>/dev/null || true)
 # jq is the documented path. Absent jq → fail OPEN (do not block): blocking every
 # edit would break normal work, and this hook is a guardrail, not a security gate.
 command -v jq >/dev/null 2>&1 || exit 0
-FILE=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // empty' 2>/dev/null || true)
+# NotebookEdit sends .notebook_path instead of .file_path (matcher covers it
+# since pass-3 — a config edited through a notebook tool must not slip past).
+FILE=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // .tool_input.notebook_path // empty' 2>/dev/null || true)
 [ -z "$FILE" ] && exit 0
 
 # A config under a test / fixture / example / dependency tree is not the
