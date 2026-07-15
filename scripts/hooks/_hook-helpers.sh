@@ -87,9 +87,25 @@ hook_emit_envelope() {
 # is a single left-to-right pass — after each match we continue in the SUFFIX
 # only. Re-scanning the whole string would rematch the now-value-less flag and
 # swallow the NEXT token as its "value", one real flag per iteration.
+#
+# Value arms mirror the SHELL's own word rules (pass-4 F1/F2 false-blocks):
+#   _q  — '…' plus the '…'\''…' apostrophe idiom. The continuation is anchored
+#         on the literal `\''` the shell itself uses, so it can only extend
+#         across quote-balanced text, never across an unquoted separator.
+#   _dq — "…" with \-escapes ("she said \"x\"" is ONE shell word).
+#   bare — unquoted token, stopping at whitespace/;&| where the shell would.
+# A quoted value may also be SQUISHED onto a short-flag cluster (`-am"msg"`,
+# no space/`=` — valid git); the bare arm stays space/`=`-separated only, so
+# the flag cluster itself (`-nm`) is never eaten as its own "value".
+# DO NOT add a `(seg)+` repetition or a lone `\\.` escape arm here: both let
+# leftmost-longest stitch segments across a REAL separator (`-m 'a'; sudo …`
+# with a later quote, or `x\\;cmd`) — the two bypass classes that killed
+# earlier drafts in RED.
 strip_msg_values() {
     local s="$1" out="" _m _keep
-    local _re="([[:space:]](-[A-Za-z]*m|--message|--file|--grep|-F))([[:space:]]+|=)('[^']*'|\"[^\"]*\"|[^[:space:];&|]+)"
+    local _q="'[^']*'(\\\\''[^']*')*"
+    local _dq='"([^"\\]|\\.)*"'
+    local _re="([[:space:]](-[A-Za-z]*m|--message|--file|--grep|-F))(([[:space:]]+|=)($_q|$_dq|[^[:space:];&|]+)|($_q|$_dq))"
     while [[ "$s" =~ $_re ]]; do
         _m="${BASH_REMATCH[0]}"
         _keep="${BASH_REMATCH[1]}"

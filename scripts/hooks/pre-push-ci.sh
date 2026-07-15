@@ -33,8 +33,11 @@ declare -F strip_msg_values >/dev/null 2>&1 || strip_msg_values() { printf '%s' 
 
 # `git [global-opts] push` in COMMAND position: start of a line/segment or
 # after ; & | — a message or --grep payload merely NAMING "git push" is data.
+# Lead-ins cover wrapper words, `VAR=…` env assignments and sudo; git itself
+# may be path-prefixed (/usr/bin/git). Terminator accepts ;&| glued to push
+# (`git push;echo done`). Misses fail OPEN (real CI still gates the branch).
 if ! printf '%s' "$(strip_msg_values "$CMD")" \
-    | grep -qE '(^|[;&|])[[:space:]]*((command|env|nohup|nice)[[:space:]]+)*git[[:space:]]+(-[^[:space:]]+[[:space:]]+([^-][^[:space:]]*[[:space:]]+)?)*push([[:space:]]|$)'; then
+    | grep -qE '(^|[;&|])[[:space:]]*((command|env|nohup|nice|sudo)[[:space:]]+|[A-Za-z_][A-Za-z0-9_]*=[^[:space:];&|]*[[:space:]]+)*([^[:space:];&|]*/)?git[[:space:]]+(-[^[:space:]]+[[:space:]]+([^-][^[:space:]]*[[:space:]]+)?)*push([[:space:]]|$|[;&|])'; then
   exit 0
 fi
 
