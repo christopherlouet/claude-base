@@ -656,7 +656,14 @@ validate_registry() {
 
             [ -n "$fs" ] || errs+=("records[$i].foundationSkill missing")
             [ -n "$vid" ] || errs+=("records[$i].vendorId missing")
-            [ -n "$vurl" ] || errs+=("records[$i].vendorUrl missing")
+            if [ -z "$vurl" ]; then
+                errs+=("records[$i].vendorUrl missing")
+            elif ! printf '%s' "$vurl" | grep -qE '^https?://'; then
+                # Pass-4: a scheme-less vendorUrl silently fails is_marketplace
+                # in BOTH the repin and pin-lockstep key derivations — the
+                # record drifts divergent forever while the gate reports OK.
+                errs+=("records[$i].vendorUrl '$vurl' must be an http(s):// URL (a scheme-less value drops out of the repin/lockstep marketplace keys)")
+            fi
             if [ -z "$pin" ]; then
                 errs+=("records[$i].pinnedRef missing (EF-005)")
             elif _is_floating_ref "$pin"; then

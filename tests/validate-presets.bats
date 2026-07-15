@@ -668,6 +668,26 @@ mkt_record() {
     [[ "$output" == *"pin lockstep"* ]]
 }
 
+# pass-4: a scheme-less vendorUrl ("claude.com/plugins/x") passes the
+# non-emptiness check but silently fails is_marketplace in BOTH the repin and
+# the lockstep key derivations — the record can drift divergent forever while
+# the gate reports OK (the exact #427 class, made permanently invisible).
+# Refuse the shape at registry validation instead.
+@test "validate-presets: registry rejects a scheme-less vendorUrl (lockstep blind spot)" {
+    mkdir -p "$TEST_DIR/fake-presets"
+    write_valid_manifest "$TEST_DIR/fake-presets/ok.json"
+    jq -cn --argjson r1 "$(mkt_record frontend-design 1111111111111111111111111111111111111111)" \
+           '{version:"1.0.0", records:[($r1 | .vendorUrl = "claude.com/plugins/frontend-design")]}' \
+        > "$TEST_DIR/fake-registry.json"
+    export VALIDATE_PRESETS_DIR="$TEST_DIR/fake-presets"
+    export VALIDATE_PRESETS_REGISTRY="$TEST_DIR/fake-registry.json"
+    run bash "$VALIDATE_PRESETS"
+    unset VALIDATE_PRESETS_DIR VALIDATE_PRESETS_REGISTRY
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"vendorUrl"* ]]
+    [[ "$output" == *"http"* ]]
+}
+
 @test "validate-presets: a marketplace registry pin diverging from its preset copy still FAILs (mktkey kept)" {
     # Negative control for the reporoot suppression: the registry side must
     # STILL emit the marketplace key, so a registry-vs-preset divergence on the

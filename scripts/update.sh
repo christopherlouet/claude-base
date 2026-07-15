@@ -161,9 +161,10 @@ ${BOLD}OPTIONS${NC}
     -q, --quiet         Quiet mode
     --verbose           Verbose mode (debug)
     --backup-only       Create only a backup without updating
-    --clean             Delete old files before updating (wipes the managed
-                        .claude/ dirs after a full backup of all of them;
-                        combine as --all --clean for a wipe-and-replace)
+    --clean             Delete old files before updating: wipes ALL managed
+                        .claude/ dirs after a full backup, so every category
+                        must be re-copied too — valid only as --all --clean
+                        (wipe-and-replace) or with every category flag
     --detect-orphans    Detect files absent from the foundation (orphans)
     --remove-orphans    Remove orphan files (implies --detect-orphans)
     --settings          Also update settings.json
@@ -416,6 +417,18 @@ parse_args() {
     if [[ -n "$UPDATE_PRESET_NAME" ]] && $UPDATE_NO_PRESET; then
         error "--preset and --no-preset are mutually exclusive"
     fi
+
+    # Pass-4 guard: --clean wipes ALL SIX managed .claude/ dirs, but a run
+    # without full category coverage re-copies only commands — the other five
+    # were left EMPTY (backup taken, live project silently broken). Refuse
+    # unless every wiped dir is also re-copied. --backup-only is exempt: it
+    # exits right after the (full) backup and never reaches the wipe.
+    if $CLEAN_BEFORE_UPDATE && ! $BACKUP_ONLY; then
+        if ! $UPDATE_SKILLS || ! $UPDATE_AGENTS || ! $UPDATE_RULES \
+            || ! $UPDATE_STYLES || ! $UPDATE_TEMPLATES; then
+            error "--clean wipes every managed .claude/ dir but this run would re-copy only some of them, leaving the rest empty.\nUse the wipe-and-replace combo:  update --all --clean\n(or pass --clean together with ALL of --skills --agents --rules --styles --templates)"
+        fi
+    fi
 }
 
 # =============================================================================
@@ -465,7 +478,8 @@ restore_backup() {
     fi
 
     if [[ ! -d "$backup_path" ]]; then
-        # List available backups
+        # List available backups — both layouts (legacy commands-only and the
+        # full .claude.backup.<ts> roots that --clean's own backup creates).
         info "Available backups:"
         local found=false
         while IFS= read -r bdir; do
@@ -473,13 +487,62 @@ restore_backup() {
                 echo "  $(basename "$bdir")"
                 found=true
             fi
-        done < <(find "$TARGET_DIR/$COMMANDS_SUBDIR".backup.* -maxdepth 0 -type d 2>/dev/null | sort -r || true)
+        done < <(find "$TARGET_DIR/$COMMANDS_SUBDIR".backup.* "$TARGET_DIR"/.claude.backup.* -maxdepth 0 -type d 2>/dev/null | sort -r || true)
 
         if ! $found; then
             info "  (no backup found)"
         fi
 
         error "Backup not found: $backup_path"
+    fi
+
+    # Detect the layout. A FULL backup root (backup_claude_dirs, used by
+    # --clean runs) holds managed-subdir children (commands/, skills/, …) and
+    # is named .claude.backup.<ts>; a legacy commands-only backup holds
+    # command namespaces directly. Pass-4 fix: the full layout used to be
+    # restored INTO .claude/commands/ (six dirs nested inside it, success
+    # reported, wiped skills/agents/rules restored nowhere).
+    local sub is_full=false
+    case "$(basename "$backup_path")" in
+        .claude.backup.*) is_full=true ;;
+    esac
+    if ! $is_full; then
+        for sub in "${CLAUDE_MANAGED_SUBDIRS[@]}"; do
+            if [[ -d "$backup_path/$sub" ]]; then
+                is_full=true
+                break
+            fi
+        done
+    fi
+
+    if $is_full; then
+        section "Restore from backup"
+        info "Source: $backup_path (full .claude backup)"
+
+        if $DRY_RUN; then
+            for sub in "${CLAUDE_MANAGED_SUBDIRS[@]}"; do
+                [[ -d "$backup_path/$sub" ]] || continue
+                echo -e "${DIM}[DRY-RUN]${NC} Restore $backup_path/$sub to $TARGET_DIR/.claude/$sub"
+            done
+            return
+        fi
+
+        # Safety backup of the CURRENT state before overwriting (same full
+        # layout, so a mistaken restore is itself restorable).
+        local safety_root
+        safety_root=$(backup_claude_dirs "$TARGET_DIR") || true
+        [[ -n "$safety_root" ]] && info "Safety backup: $safety_root"
+
+        # Restore only what the backup holds: a dir absent from the backup
+        # did not exist at backup time and is deliberately left untouched
+        # (restore never deletes beyond what it replaces).
+        for sub in "${CLAUDE_MANAGED_SUBDIRS[@]}"; do
+            [[ -d "$backup_path/$sub" ]] || continue
+            rm -rf "${TARGET_DIR:?}/.claude/${sub:?}"
+            cp -R "$backup_path/$sub" "$TARGET_DIR/.claude/$sub"
+        done
+        success "Restore completed from $(basename "$backup_path")"
+        return
     fi
 
     section "Restore from backup"
@@ -1962,11 +2025,12 @@ main() {
     # the whole catalog (~177 extra files). Refuse with the two legitimate
     # paths. Placed after the read-only/early-exit handlers (--version,
     # --changelog, --detect-only, --restore, --add-plugin all stay available
-    # on a minimal project).
+    # on a minimal project). --backup-only is also exempt (pass-4): it only
+    # writes a backup and exits — it cannot convert anything.
     if [[ -f "$TARGET_DIR/.claude/foundation.json" ]]; then
         local project_tier
         project_tier="$(manifest_tier "$TARGET_DIR" 2>/dev/null || echo full)"
-        if [[ "$project_tier" == "minimal" ]] && ! $GRADUATE_FULL; then
+        if [[ "$project_tier" == "minimal" ]] && ! $GRADUATE_FULL && ! $BACKUP_ONLY; then
             error "this project is a MINIMAL install (tier \"minimal\" in .claude/foundation.json).\nA regular update would silently convert it into a FULL install (the whole catalog).\nPick one of the two paths:\n  - refresh the minimal install:   scripts/export-minimal.sh --dest-dir $TARGET_DIR  (or: claude-base init --minimal)\n  - convert to a full install:     re-run update with --graduate-full (records tier \"full\")"
         fi
     fi

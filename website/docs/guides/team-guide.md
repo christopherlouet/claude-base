@@ -237,7 +237,7 @@ The trade-off:
 - **`project` scope** auto-propagates if `.claude/` is committed but breaks completely if `.claude/` is gitignored.
 - **`local` scope** is always per-developer, per-repo — useful for secrets but unsuitable for shared conventions.
 
-If you want auto-propagation without committing `.claude/` wholesale, a partial-gitignore pattern works: gitignore `.claude/settings.local.json` and `.claude/.foundation-version`, but commit `.claude/rules/`, `.claude/agents/`, and `.claude/commands/`. The foundation's `update` flow respects this — `--clean` only touches files it owns.
+If you want auto-propagation without committing `.claude/` wholesale, a partial-gitignore pattern works: gitignore `.claude/settings.local.json` and `.claude/.foundation-version`, but commit `.claude/rules/`, `.claude/agents/`, and `.claude/commands/`. The foundation's `update` flow respects this — it is copy-only by default, and the wipe variant (`--all --clean`) takes a full backup of every managed dir before touching anything.
 
 ---
 
