@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [5.2.2] - 2026-07-15
+
+Two analysis passes in one release. Pass 3 (2026-07-13, seven clusters #477-#483) was a third full-project audit: 6 P1 / 10 P2 / ~25 P3, including two regressions introduced by v5.2.1's own guard hardening. Pass 4 (2026-07-15, #486-#487) then applied the lesson that fresh code carries the highest bug density: a targeted adversarial review of pass 3's own merged diff — no bypasses found, four confirmed P2 false-block/data-shape bugs fixed. Every finding was reproduced live before its fix; the suite grew 1675 → 1787.
+
+### Fixed
+
+- **Two P1 regressions from the v5.2.1 guard hardening.** The message-value strip could eat a `;` separator, un-anchoring a chained `sudo` from the segment scans (bypass), and the `cp/mv/install` write-detection falsely blocked `pip install`-style commands. Both repro-verified and pinned with chained-command tests. (#477)
+- **`update --all` no longer implies `--clean`.** The combo silently wiped user-created files in every managed `.claude/` dir with a backup covering only `commands/`; wiping now requires the explicit flag and the backup covers all six dirs. Re-running `init` on an existing project backs up before cleaning too. A tier gate stops a plain `update` from silently converting a minimal install into the full catalog. (#479)
+- **The NotebookEdit guard gap is closed.** The file-mutation guards (main-branch-guard, secret-scan, config-protection, destructive-migration) matched `Edit|Write|MultiEdit` only, so a NotebookEdit on main did not auto-branch and a secret written into an `.ipynb` cell was never scanned. The pre-push local-CI gate — the last untested inline `bash -c` hook, which fired on payloads merely naming "git push" — is extracted to a tested script. (#480)
+- **`.mcp.json.example` was 9/13 phantom packages.** The `@anthropics/*` npm scope does not exist; every server block is now a real, version-pinned package (verified on npm/PyPI), with correct env var names and provenance disclosed. (#481)
+- **Curation: marketplace preset re-pins and dark sources.** A drifted marketplace plugin re-pinned the registry only (guaranteed-red draft PR); preset copies are now matched by the normalised marketplace key. Discovery sources that fail no longer vanish silently: failures surface in the digest with per-source reasons. (#482)
+- **Guides documented commands and flags that error.** Literal truth-audit of the long-form guides (TEAM, TROUBLESHOOTING, cheatsheet, learning-path): wrong CLI flags, non-existent subcommands and stale facts corrected against the real scripts and installed CLI. (#483)
+- **Pass-4 — message-strip false-blocks on common git forms.** A quoted value squished onto a short-flag cluster (`git commit -am"msg"`) and the shell quote-escape idioms (`'…'\''…'`, `"…\"…"`) leaked message text into the guard scans and false-blocked; both arms now mirror the shell's own word rules, anchored so they can never stitch across a real separator (the bypass class is pinned by tests). The pre-push gate also missed real push forms (`git push;`, `VAR=1 git push`, `sudo git push` — all fail-open). (#486)
+- **Pass-4 — `update --restore` couldn't restore the layout `--clean` itself creates.** A full `.claude.backup.<ts>` root was restored INTO `.claude/commands/` (six dirs nested, success reported, wiped skills/agents/rules restored nowhere). Full-layout backups are now detected, restored dir-by-dir after a safety backup, and listed among available backups. Standalone `--clean` — which wiped all six managed dirs but re-copied only commands — is refused without full category coverage; `--backup-only` is exempt from the minimal-tier gate. (#487)
+
+### Changed
+
+- **The CI enforcement surface is real.** `main` now has required status checks with `enforce_admins` (previously ZERO required checks — every gate was advisory); the release workflow's validate step is enforcing (`|| true` removed); shellcheck covers `install.sh` and the `claude-base` dispatcher; auto-merge enabled on the repo. (#478)
+- **`validate_registry` refuses a scheme-less `vendorUrl`.** A value like `claude.com/plugins/x` silently dropped out of both marketplace key derivations — the record could drift divergent forever while the pin-lockstep gate reported OK. (#487)
+
 ## [5.2.1] - 2026-07-12
 
 Audit follow-up: a second full-project analysis (2026-07-12, six parallel audit agents) surfaced a batch of guard bypasses, install-path bugs, doc fiction, and a blind gate. Every finding was reproduced live before the fix; the suite grew 1648 → 1675. Three of the audit's own recommendations were revised on measured data (see below).
