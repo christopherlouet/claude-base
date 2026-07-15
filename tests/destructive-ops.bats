@@ -183,3 +183,22 @@ run_guard() {
     run_guard "git commit -m 'docs: explain why prisma migrate reset is blocked'"
     [ "$status" -eq 0 ]
 }
+
+# --- pass-4 F2: shell quote-escape idioms inside a -m value ------------------
+# `'…'\''…'` (apostrophe idiom) and `"…\"…"` are ONE shell word; the tail
+# after the escaped quote must not leak into the scan and false-block.
+
+@test "destructive-ops: does NOT block an apostrophe-idiom message naming drop table" {
+    run_guard "git commit -m 'we shouldn'\\''t drop table orders'"
+    [ "$status" -eq 0 ]
+}
+
+@test "destructive-ops: does NOT block an escaped-double-quote message naming DROP TABLE" {
+    run_guard 'git commit -m "she said \"DROP TABLE users\" in the meeting"'
+    [ "$status" -eq 0 ]
+}
+
+@test "destructive-ops: apostrophe idiom cannot hide a chained destructive command" {
+    run_guard "git commit -m 'don'\\''t worry'; prisma migrate reset"
+    [ "$status" -eq 2 ]
+}

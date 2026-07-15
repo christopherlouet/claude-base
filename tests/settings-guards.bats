@@ -24,14 +24,26 @@ setup() { skip_if_no_jq; }
 GUARD_MATCHER='Edit|Write|MultiEdit|NotebookEdit'
 
 @test "settings: every PreToolUse file-mutation guard uses the canonical matcher" {
-    local guards="main-branch-guard|secret-scan|config-protection|destructive-migration|substance-check"
+    # substance-check is NOT in this family: it is a PostToolUse advisory hook
+    # (own pin below) — listing it here made the assertion dead for that name.
     run jq -r --arg want "$GUARD_MATCHER" '
         .hooks.PreToolUse[]
-        | select(.hooks[]?.command | test("main-branch-guard|secret-scan|config-protection|destructive-migration|substance-check"))
+        | select(.hooks[]?.command | test("main-branch-guard|secret-scan|config-protection|destructive-migration"))
         | select(.matcher != $want)
         | .description' "$SETTINGS"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
+}
+
+@test "settings: substance-check is a PostToolUse advisory on Edit|Write|MultiEdit" {
+    # Intentionally NO NotebookEdit: the hook reads .tool_input.file_path only,
+    # so a NotebookEdit matcher entry would be a dead trigger. This pins both
+    # the event (PostToolUse, non-blocking) and the matcher.
+    run jq -r '.hooks.PostToolUse[]
+        | select(.hooks[]?.command | test("substance-check"))
+        | .matcher' "$SETTINGS"
+    [ "$status" -eq 0 ]
+    [ "$output" = "Edit|Write|MultiEdit" ]
 }
 
 @test "settings: base-integrity PostToolUse matcher still covers NotebookEdit" {
