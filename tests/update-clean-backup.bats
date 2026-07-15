@@ -78,17 +78,53 @@ _backup_root() {
     [ -f "$backup_root/templates/my-team-template.md" ]
 }
 
-@test "update --clean (without --all) also takes the full backup" {
+# pass-4: --clean wipes ALL SIX managed dirs but a run without full category
+# coverage re-copies only commands — the other five stayed EMPTY (backup made,
+# live project silently broken). Standalone --clean is now refused.
+@test "update --clean without --all is refused and touches nothing" {
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
     echo "# my team rule" > "$TEST_DIR/proj/.claude/rules/my-team-rule.md"
 
     run "$UPDATE_SCRIPT" -y --clean "$TEST_DIR/proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"--all --clean"* ]]
+    # Refused before doing anything: user file intact, no wipe, no backup.
+    [ -f "$TEST_DIR/proj/.claude/rules/my-team-rule.md" ]
+    [ -z "$(_backup_root "$TEST_DIR/proj")" ]
+}
+
+@test "update --backup-only --clean takes a full backup without wiping (guard exempts it)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    _plant_user_files "$TEST_DIR/proj"
+
+    run "$UPDATE_SCRIPT" -y --backup-only --clean "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
 
     local backup_root
     backup_root="$(_backup_root "$TEST_DIR/proj")"
     [ -n "$backup_root" ]
     [ -f "$backup_root/rules/my-team-rule.md" ]
+    # Backup-only never wipes.
+    [ -f "$TEST_DIR/proj/.claude/rules/my-team-rule.md" ]
+}
+
+# pass-4: the minimal-tier gate sat before create_backup, so --backup-only —
+# which cannot convert anything — was refused on a minimal install.
+@test "update --backup-only works on a minimal-tier project (tier gate exempts it)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    if [ -f "$manifest" ]; then
+        jq '.tier = "minimal"' "$manifest" > "$manifest.tmp" && mv "$manifest.tmp" "$manifest"
+    else
+        echo '{"tier":"minimal"}' > "$manifest"
+    fi
+
+    run "$UPDATE_SCRIPT" -y --backup-only "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    run bash -c "ls -d '$TEST_DIR/proj/.claude/commands.backup.'* 2>/dev/null"
+    [ -n "$output" ]
+    # Still minimal afterwards.
+    [ "$(jq -r '.tier' "$TEST_DIR/proj/.claude/foundation.json")" = "minimal" ]
 }
 
 @test "update --help documents --all --clean as the wipe-and-replace combo" {

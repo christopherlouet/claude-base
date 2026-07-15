@@ -101,7 +101,13 @@ emit_issue() {
 # key (mktkey) of the subject's registry record(s) (vendorUrl). Without this,
 # a drift of such a plugin re-pins the registry only and the PR fails the
 # pin-lockstep gate. NOTE: mktkey semantics MIRROR validate_pin_lockstep in
-# scripts/validate-presets.sh — keep the two normalisations in lockstep.
+# scripts/validate-presets.sh — keep the two normalisations in lockstep,
+# INCLUDING the (.vendorUrl // .vendorId) fallback (validate_registry now
+# enforces a URL-shaped vendorUrl, so the fallback is dead on any valid
+# registry — it is kept purely so the two expressions stay textually mirrored).
+# Repin scope note: records are matched by repo-root, so every plugin of one
+# marketplace repo moves to the new ref together — result stays lockstep-
+# consistent and lands in a draft PR a maintainer reviews before merge.
 _repin_apply() {
     local registry="$1" presets_dir="$2" subj="$3" cur="$4" now="$5" tmp f
     # Marketplace keys of the subject's registry records (empty array when the
@@ -113,7 +119,7 @@ _repin_apply() {
             def is_marketplace: test("^https?://") and (test("github\\.com") | not);
             [ .records[]?
               | select((.vendorId | split("/")[0:2] | join("/")) == $s)
-              | (.vendorUrl // "") | strings
+              | (.vendorUrl // .vendorId // "") | strings
               | select(is_marketplace) | mktkey
             ] | unique' "$registry" 2>/dev/null) || mkeys='[]'
         [ -n "$mkeys" ] || mkeys='[]'

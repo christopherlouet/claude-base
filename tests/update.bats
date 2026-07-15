@@ -216,7 +216,7 @@ teardown() {
 # Tests for new options (--clean, --agents, --rules, --styles, --all)
 # =============================================================================
 
-@test "update.sh --clean removes the old files" {
+@test "update.sh --all --clean removes the old files" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
@@ -224,14 +224,15 @@ teardown() {
     echo "# Old command" > "$TEST_DIR/.claude/commands/work/old-command.md"
     [ -f "$TEST_DIR/.claude/commands/work/old-command.md" ]
 
-    run "$UPDATE_SCRIPT" -y --clean "$TEST_DIR"
+    # pass-4: --clean is only valid with full category coverage (--all --clean)
+    run "$UPDATE_SCRIPT" -y --all --clean "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # The obsolete file should no longer exist (the whole folder was recreated)
     [ ! -f "$TEST_DIR/.claude/commands/work/old-command.md" ]
 }
 
-@test "update.sh --clean preserves vendor skill symlinks (regression)" {
+@test "update.sh --all --clean preserves vendor skill symlinks (regression)" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
 
@@ -242,7 +243,7 @@ teardown() {
     ln -s "../vendor-skills/acme/cool-skill" "$TEST_DIR/.claude/skills/cool-skill"
     [ -L "$TEST_DIR/.claude/skills/cool-skill" ]
 
-    run "$UPDATE_SCRIPT" -y --clean "$TEST_DIR"
+    run "$UPDATE_SCRIPT" -y --all --clean "$TEST_DIR"
     [ "$status" -eq 0 ]
 
     # The vendor symlink must survive --clean and still resolve to its target.
@@ -1015,6 +1016,56 @@ _init_legal_only_project() {
 
     # Dry-run must not pull the sentinel into the live dir
     [ ! -f "$TEST_DIR/.claude/commands/sentinel.md" ]
+}
+
+# --- pass-4: --restore must understand the FULL .claude.backup.<ts> layout ---
+# (the layout --clean's own backup creates and advertises). restore_backup
+# restored ANY directory into .claude/commands/ only: restoring a full backup
+# nested the six managed subdirs inside commands/ and printed success, while
+# the wiped skills/agents/rules were restored nowhere.
+
+@test "update.sh --restore restores a full .claude.backup root into .claude/" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    local backup="$TEST_DIR/.claude.backup.20240101_120000"
+    mkdir -p "$backup/commands" "$backup/skills/team-skill" "$backup/rules"
+    echo "from-backup" > "$backup/commands/sentinel.md"
+    echo "from-backup" > "$backup/skills/team-skill/SKILL.md"
+    echo "from-backup" > "$backup/rules/team-rule.md"
+    mkdir -p "$TEST_DIR/.claude/rules"
+    echo "live" > "$TEST_DIR/.claude/rules/live-only.md"
+
+    run "$UPDATE_SCRIPT" -y --restore "$backup" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Every dir present in the backup is restored to its own .claude/ home…
+    [ -f "$TEST_DIR/.claude/commands/sentinel.md" ]
+    [ -f "$TEST_DIR/.claude/skills/team-skill/SKILL.md" ]
+    [ -f "$TEST_DIR/.claude/rules/team-rule.md" ]
+    # …replacing the live dir wholesale (like the legacy commands restore)…
+    [ ! -f "$TEST_DIR/.claude/rules/live-only.md" ]
+    # …and nothing gets nested inside commands/.
+    [ ! -d "$TEST_DIR/.claude/commands/commands" ]
+    [ ! -d "$TEST_DIR/.claude/commands/skills" ]
+}
+
+@test "update.sh --restore --dry-run of a full backup modifies nothing" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    local backup="$TEST_DIR/.claude.backup.20240101_120000"
+    mkdir -p "$backup/rules"
+    echo "from-backup" > "$backup/rules/team-rule.md"
+
+    run "$UPDATE_SCRIPT" -y --dry-run --restore "$backup" "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ ! -f "$TEST_DIR/.claude/rules/team-rule.md" ]
+}
+
+@test "update.sh --restore lists full backup roots among available backups" {
+    "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR" >/dev/null 2>&1
+    mkdir -p "$TEST_DIR/.claude.backup.20240101_120000/commands"
+
+    run "$UPDATE_SCRIPT" -y --restore "does-not-exist" "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *".claude.backup.20240101_120000"* ]]
 }
 
 @test "update.sh --restore errors on a non-existent backup" {

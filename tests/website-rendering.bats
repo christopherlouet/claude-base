@@ -24,7 +24,10 @@ load 'test_helper'
 import os, sys
 
 ROOT = os.environ.get('BATS_TEST_DIRNAME', '.') + '/..'
-EXCLUDE_DIRS = {'node_modules', '.docusaurus', '.git', 'build'}
+# worktrees/memory: a parallel-agent checkout under .claude/worktrees/ (or a
+# session memory dir) re-exposes the false-fail class validate-counts.sh
+# already excludes — this scan must skip them for the same reason.
+EXCLUDE_DIRS = {'node_modules', '.docusaurus', '.git', 'build', 'worktrees', 'memory'}
 EXCLUDE_FILES = {'CHANGELOG.md'}  # historical records
 
 issues = []
