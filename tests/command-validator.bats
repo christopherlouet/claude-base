@@ -328,6 +328,30 @@ EOF"
     [ "$status" -eq 0 ]
 }
 
+# --- pass-4 F1: SQUISHED short-flag+value forms (`-am"msg"`, no space/`=`) ---
+# Valid git and commonly typed; the value must be stripped exactly like the
+# spaced form, or the message text leaks into every scan and false-blocks.
+
+@test "command-validator: does NOT block a squished -am\"…\" message naming rm -rf /etc" {
+    run_validator 'git commit -am"chore: document rm -rf /etc in the runbook"'
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: does NOT block a squished -am'…' message naming the bypass" {
+    run_validator "git commit -am'document the --no-verify and -n flags'"
+    [ "$status" -eq 0 ]
+}
+
+@test "command-validator: still blocks bundled -nm in squished form" {
+    run_validator 'git commit -nm"wip"'
+    [ "$status" -eq 2 ]
+}
+
+@test "command-validator: a squished -am value cannot hide a chained sudo" {
+    run_validator 'git commit -am"wip"; sudo rm -rf /etc'
+    [ "$status" -eq 2 ]
+}
+
 # --- CATEGORY 9 segment-scoping: -n/--no-verify are attributed to the git
 #     commit/push SEGMENT, and continuation/heredoc constructs can't hide them --
 

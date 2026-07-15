@@ -61,6 +61,46 @@ mk_empty_project() { mkdir -p "$TEST_DIR/empty"; }
     [ "$status" -eq 2 ]
 }
 
+# --- pass-4 F3: real-push forms the extracted matcher used to miss ----------
+# All fail-OPEN (the local gate silently skipped), so no security impact —
+# but the convenience check must fire on the forms people actually type.
+
+@test "pre-push-ci: git push directly followed by ; still triggers" {
+    mk_red_project
+    run_in "$TEST_DIR/proj" "git push;echo done"
+    [ "$status" -eq 2 ]
+}
+
+@test "pre-push-ci: env-assignment-prefixed git push still triggers" {
+    mk_red_project
+    run_in "$TEST_DIR/proj" "GIT_TRACE=1 git push origin main"
+    [ "$status" -eq 2 ]
+}
+
+@test "pre-push-ci: env with assignment before git push still triggers" {
+    mk_red_project
+    run_in "$TEST_DIR/proj" "env FOO=1 git push"
+    [ "$status" -eq 2 ]
+}
+
+@test "pre-push-ci: absolute-path git push still triggers" {
+    mk_red_project
+    run_in "$TEST_DIR/proj" "/usr/bin/git push origin main"
+    [ "$status" -eq 2 ]
+}
+
+@test "pre-push-ci: sudo git push still triggers" {
+    mk_red_project
+    run_in "$TEST_DIR/proj" "sudo git push"
+    [ "$status" -eq 2 ]
+}
+
+@test "pre-push-ci: a message naming 'git push;' does not trigger" {
+    mk_red_project
+    run_in "$TEST_DIR/proj" "git commit -m 'docs: what git push; does'"
+    [ "$status" -eq 0 ]
+}
+
 @test "pre-push-ci: a real push in a stackless project passes (nothing to run)" {
     mk_empty_project
     run_in "$TEST_DIR/empty" "git push"
