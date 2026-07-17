@@ -24,22 +24,15 @@ command -v jq >/dev/null 2>&1 || exit 0
 CMD=$(cat 2>/dev/null | jq -r '.tool_input.command // empty' 2>/dev/null || true)
 [ -z "$CMD" ] && exit 0
 
-# Shared message-value strip; missing helper degrades to no strip (a payload
-# mentioning "git push" may then over-trigger — never the reverse).
+# Trigger detection (incl. the message-value strip so a payload NAMING
+# "git push" never runs the full local CI) lives in the harness-neutral core
+# _policy-triggers.sh (specs/agnostic-core/ core/shell split; directly tested
+# by tests/policy-triggers.bats). Missing core → no-op: misses fail OPEN, the
+# real CI still gates the branch.
 _dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
-# shellcheck source=_hook-helpers.sh
-if [ -n "$_dir" ] && [ -f "$_dir/_hook-helpers.sh" ]; then . "$_dir/_hook-helpers.sh"; fi
-declare -F strip_msg_values >/dev/null 2>&1 || strip_msg_values() { printf '%s' "$1"; }
-
-# `git [global-opts] push` in COMMAND position: start of a line/segment or
-# after ; & | — a message or --grep payload merely NAMING "git push" is data.
-# Lead-ins cover wrapper words, `VAR=…` env assignments and sudo; git itself
-# may be path-prefixed (/usr/bin/git). Terminator accepts ;&| glued to push
-# (`git push;echo done`). Misses fail OPEN (real CI still gates the branch).
-if ! printf '%s' "$(strip_msg_values "$CMD")" \
-    | grep -qE '(^|[;&|])[[:space:]]*((command|env|nohup|nice|sudo)[[:space:]]+|[A-Za-z_][A-Za-z0-9_]*=[^[:space:];&|]*[[:space:]]+)*([^[:space:];&|]*/)?git[[:space:]]+(-[^[:space:]]+[[:space:]]+([^-][^[:space:]]*[[:space:]]+)?)*push([[:space:]]|$|[;&|])'; then
-  exit 0
-fi
+# shellcheck source=_policy-triggers.sh
+if [ -n "$_dir" ] && [ -f "$_dir/_policy-triggers.sh" ]; then . "$_dir/_policy-triggers.sh"; else exit 0; fi
+is_git_push_command "$CMD" || exit 0
 
 echo "=== Pre-push CI check ==="
 FAILED=0
