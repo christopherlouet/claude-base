@@ -2,12 +2,18 @@
 # =============================================================================
 # destructive-migration.sh — PreToolUse hook (Edit|Write|MultiEdit).
 #
-# The existing destructive-ops guard scans Bash COMMANDS; it misses a destructive
-# DDL written into a MIGRATION FILE via Write/Edit (e.g. a `0002_*.sql` with a
+# The destructive-ops guard scans Bash COMMANDS; it misses a destructive DDL
+# written into a MIGRATION FILE via Write/Edit (e.g. a `0002_*.sql` with a
 # `DROP TABLE`). This closes that gap: when a migration file gains destructive
 # DDL (DROP TABLE/COLUMN/DATABASE/SCHEMA, TRUNCATE), block with a confirm+backup
 # reminder — a speed-bump, not a veto: re-run with the op acknowledged, or set
 # SKIP_DESTRUCTIVE_CHECK=1.
+#
+# Claude Code SHELL of the core/shell split (specs/agnostic-core/): the
+# migration-file scoping and DDL policy live in _policy-destructive-sql.sh
+# (shared with destructive-ops.sh). This shell reads the stdin envelope, calls
+# the core, and translates a deny into stderr + exit 2. Fail-open lineage
+# (matching the missing-jq behaviour below): a missing policy core no-ops.
 #
 # Only MIGRATION files are scanned (a numbered *.sql name or a migrations/ path),
 # so ordinary code and queries are untouched (zero false positives).
@@ -25,17 +31,15 @@ command -v jq >/dev/null 2>&1 || exit 0
 FILE=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // .tool_input.notebook_path // empty' 2>/dev/null || true)
 [ -z "$FILE" ] && exit 0
 
-# Scope to migration files only: a migrations/migrate path, or a versioned .sql
-# name (0001_x.sql, V1__x.sql, 20240101_x.sql, x.up.sql). Otherwise bail (zero-FP).
-base=$(basename "$FILE")
-is_mig=0
-case "/$FILE" in
-  */migrations/*|*/migrate/*) is_mig=1 ;;
-esac
-case "$base" in
-  [0-9]*.sql|[Vv][0-9]*__*.sql|*.up.sql) is_mig=1 ;;
-esac
-[ "$is_mig" -eq 1 ] || exit 0
+_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
+# shellcheck source=_policy-destructive-sql.sh
+if [ -n "$_dir" ] && [ -f "$_dir/_policy-destructive-sql.sh" ]; then
+  . "$_dir/_policy-destructive-sql.sh"
+else
+  exit 0
+fi
+
+is_migration_file "$FILE" || exit 0
 
 CONTENT=$(printf '%s' "$INPUT" | jq -r '
   [ .tool_input.content // empty,
@@ -45,18 +49,10 @@ CONTENT=$(printf '%s' "$INPUT" | jq -r '
 ' 2>/dev/null || true)
 [ -z "$CONTENT" ] && exit 0
 
-# Destructive DDL (case-insensitive). ALTER ... DROP COLUMN and bare DROP/TRUNCATE.
-hit=$(printf '%s' "$CONTENT" | grep -inE \
-  'drop[[:space:]]+(table|column|database|schema)|truncate[[:space:]]+(table[[:space:]]+)?[a-z_]|[[:space:]]drop[[:space:]]+column' \
-  2>/dev/null | head -n1 || true)
-
-if [ -n "$hit" ]; then
-  echo >&2 "BLOCKED: destructive DDL in a migration ($base)."
-  echo >&2 "  $(printf '%s' "$hit" | cut -c1-120)"
-  echo >&2 "Destructive migrations drop data irreversibly. Before proceeding: confirm with"
-  echo >&2 "the user, back up the affected data, and prefer an expand/contract (deprecate"
-  echo >&2 "then drop) over an in-place drop. Acknowledge, or set SKIP_DESTRUCTIVE_CHECK=1."
+# Verdict translation: deny (return 1, reason on stdout) → stderr + exit 2.
+if _reason=$(check_migration_content "$CONTENT" "$(basename "$FILE")"); then
+  exit 0
+else
+  printf '%s\n' "$_reason" >&2
   exit 2
 fi
-
-exit 0
