@@ -112,10 +112,16 @@ strip() {
     # Divergent per-guard copies are how the pass-3 F1/F3 bugs shipped. The
     # function body must exist in exactly one file; other scripts may only
     # declare the no-op fallback `strip_msg_values() { printf '%s' "$1"; }`.
+    # -F on the exclusion: the fallback text contains BRE metacharacters
+    # ($1 mid-pattern) that silently break a regex match — fixed-string is
+    # the only faithful comparison here.
+    # `|| true` keeps the substitution's status at 0 when the LAST scanned
+    # file is a clean non-match — bats' errexit would otherwise fail the
+    # assignment itself before the comparison runs.
     hits=$(grep -rl 'strip_msg_values()' "$BASE_DIR/scripts/hooks/" \
         | while IFS= read -r f; do
-            grep -v "strip_msg_values() { printf '%s' \"\$1\"; }" "$f" \
-                | grep -q 'strip_msg_values()' && echo "$f"
+            { grep -vF "strip_msg_values() { printf '%s' \"\$1\"; }" "$f" \
+                | grep -q 'strip_msg_values()' && echo "$f"; } || true
           done)
     [ "$hits" = "$BASE_DIR/scripts/hooks/_core-helpers.sh" ]
 }
