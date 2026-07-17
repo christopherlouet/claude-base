@@ -11,7 +11,7 @@ Most Claude Code setups add more agents. claude-base adds **discipline and safet
 
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
-[![Tests](https://img.shields.io/badge/tests-1848%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-1862%20passing-brightgreen)](./tests)
 [![Release](https://img.shields.io/github/v/release/christopherlouet/claude-base?label=release&color=blue)](https://github.com/christopherlouet/claude-base/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
@@ -230,7 +230,7 @@ After `curl | bash` install, the foundation lives at `~/.local/share/claude-base
 | `docs/` | Human-maintained documentation — `QUICKSTART.md`, `CHEATSHEET.md`, `ARCHITECTURE.md`, `WORKFLOWS.md`, `STACK-RECIPES.md`, `CUSTOMIZATION.md`, `recipes/`, `reference/`, `guides/` |
 | `website/` | [Docusaurus site](https://christopherlouet.github.io/claude-base/) — `docs/` is auto-mirrored here by `npm --prefix website run generate` |
 | `specs/` | Feature specs consumed by the workflow agents (`/work:work-specify`, `/work:work-plan`) |
-| `tests/` | <!-- count:tests -->1848<!-- /count --> bats tests across <!-- count:testFiles -->82<!-- /count --> files |
+| `tests/` | <!-- count:tests -->1862<!-- /count --> bats tests across <!-- count:testFiles -->83<!-- /count --> files |
 | `.github/workflows/` | CI : `ci.yml`, `security.yml`, `docs.yml`, `pr-check.yml`, `release.yml`, `dependabot-auto-merge.yml` |
 | `AGENTS.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `counts.json` | Project metadata |
 
@@ -442,7 +442,7 @@ The foundation ships with [bats-core](https://github.com/bats-core/bats-core) te
 
 ### Test layout
 
-<!-- count:tests -->1848<!-- /count --> bats tests across <!-- count:testFiles -->82<!-- /count --> files. A few anchors :
+<!-- count:tests -->1862<!-- /count --> bats tests across <!-- count:testFiles -->83<!-- /count --> files. A few anchors :
 
 | Area | File | Tests |
 |---|---|---|
@@ -486,7 +486,7 @@ The foundation follows [Semantic Versioning](https://semver.org/). Each release 
 
 Concrete signals rather than a self-assessment score :
 
-- <!-- count:tests -->1848<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
+- <!-- count:tests -->1862<!-- /count --> bats tests run on every PR (Linux + macOS), parallelised via `./scripts/test.sh`
 - Six GitHub Actions workflows (CI, security, docs, PR check, release, dependabot auto-merge) gating merges
 - Doc drift firewall (`scripts/audit-docs.sh`) catches syntactic doc drift before merge — see [PR #201](https://github.com/christopherlouet/claude-base/pull/201)
 - Counter anti-drift gate (`scripts/validate-counts.sh`) regenerated from `counts.json`
