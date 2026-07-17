@@ -5,8 +5,8 @@
 # CORE side of the core/shell split (specs/agnostic-core/): pure functions a
 # guard shell for ANY harness can source. Hard rules for this file:
 #   - functions only — no top-level commands, no stdin reads, no exits;
-#   - no harness plumbing: no .tool_input.* parsing, no hook JSON envelopes,
-#     no block exit codes, no $CLAUDE_* env vars;
+#   - no harness plumbing: no stdin-envelope field parsing, no hook JSON
+#     output, no block exit codes, no harness-specific env vars;
 #   - macOS bash 3.2 compatible (no assoc arrays, ASCII in executed strings).
 #
 # NOT a hook by itself. Do not register in settings.json.
