@@ -73,7 +73,10 @@ run_scan() {
 }
 
 @test "policy-secrets: allows a self-declared placeholder value" {
-    run_scan "aws_key = 'AKIAIOSFODNN7EXAMPLE'"
+    # Runtime-assembled like the real-shaped fixtures: even the canonical AWS
+    # docs EXAMPLE key trips gitleaks' aws-access-key-id rule as a literal.
+    local a="AKIA"; a="${a}IOSFODNN7EXAMPLE"
+    run_scan "aws_key = '$a'"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
 }
