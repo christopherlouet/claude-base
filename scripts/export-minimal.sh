@@ -48,47 +48,10 @@ validate_output_path() {
   fi
 }
 
-# Validates a manifest entry: no .., no absolute path.
-validate_manifest_entry() {
-  local entry="$1"
-  if [[ "$entry" = /* ]]; then
-    die "manifest: absolute path forbidden: $entry"
-  fi
-  if [[ "$entry" =~ (^|/)\.\.($|/) ]]; then
-    die "manifest: path traversal forbidden: $entry"
-  fi
-}
-
-# Resolves an absolute, symlink-resolved path. Portable across GNU/Linux
-# (readlink -f) and macOS/BSD (no -f flag). Uses python3 as the most
-# universally preinstalled fallback.
-resolve_path() {
-  local p="$1"
-  if command -v realpath >/dev/null 2>&1; then
-    realpath -- "$p" 2>/dev/null
-  elif readlink -f -- "$p" >/dev/null 2>&1; then
-    readlink -f -- "$p"
-  elif command -v python3 >/dev/null 2>&1; then
-    python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$p" 2>/dev/null
-  else
-    # Last resort: manual cd/pwd. Works for existing files/dirs only.
-    if [ -d "$p" ]; then
-      (cd "$p" && pwd -P)
-    elif [ -f "$p" ]; then
-      printf '%s/%s\n' "$(cd "$(dirname "$p")" && pwd -P)" "$(basename "$p")"
-    fi
-  fi
-}
-
-# Verifies that the resolved source stays under REPO_ROOT (blocks outgoing symlinks).
-assert_within_repo() {
-  local src_path="$1"
-  local resolved
-  resolved="$(cd "$REPO_ROOT" && resolve_path "$src_path" || true)"
-  if [ -z "$resolved" ] || [[ "$resolved" != "$REPO_ROOT"/* && "$resolved" != "$REPO_ROOT" ]]; then
-    die "source outside the repo (outgoing symlink?): $src_path -> ${resolved:-unresolved}"
-  fi
-}
+# Manifest validation/copy live in the shared emitter (lib/emit.sh, P2 seam):
+# the minimal export and the full install consume the same manifest grammar.
+# shellcheck source=lib/emit.sh
+. "$SCRIPT_DIR/lib/emit.sh"
 
 # =============================================================================
 # Args
@@ -179,55 +142,8 @@ fi
 # Manifest parsing + copy
 # =============================================================================
 
-count=0
-while IFS= read -r raw_line || [ -n "$raw_line" ]; do
-  line="${raw_line#"${raw_line%%[![:space:]]*}"}"
-  line="${line%"${line##*[![:space:]]}"}"
-
-  [ -z "$line" ] && continue
-  case "$line" in
-    \#*) continue ;;
-  esac
-
-  # Reject CRLF
-  line="${line%$'\r'}"
-
-  src="$line"
-  dst="$line"
-  if [[ "$line" == *:* ]]; then
-    # Reject more than one ":" to avoid smuggling an intermediate segment.
-    colons_only="${line//[^:]/}"
-    if [ "${#colons_only}" -gt 1 ]; then
-      die "manifest: more than one ':' in the line (ambiguous): $line"
-    fi
-    src="${line%%:*}"
-    dst="${line#*:}"
-  fi
-
-  validate_manifest_entry "$src"
-  validate_manifest_entry "$dst"
-
-  src_path="$REPO_ROOT/$src"
-  dst_path="$STAGING/${dst%/}"
-
-  if [ ! -e "$src_path" ]; then
-    die "manifest: path not found in the repo: $src"
-  fi
-
-  assert_within_repo "$src_path"
-
-  dst_parent="$(dirname "$dst_path")"
-  mkdir -p "$dst_parent"
-
-  if [ -d "$src_path" ]; then
-    mkdir -p "$dst_path"
-    cp -RP "$src_path/." "$dst_path/"
-  else
-    cp -P "$src_path" "$dst_path"
-  fi
-
-  count=$((count + 1))
-done < "$MANIFEST_FILE"
+emit_manifest "$MANIFEST_FILE" "$REPO_ROOT" "$STAGING"
+count=$EMIT_COUNT
 
 # Simplified CLAUDE.md (fixed template, not the repo's original)
 cp "$CLAUDE_MD_TEMPLATE" "$STAGING/CLAUDE.md"
