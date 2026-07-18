@@ -282,6 +282,22 @@ assert_allow() {
     teardown_test_dir
 }
 
+@test "policy-dc: sibling lib's no-op fallback must not fake a real strip" {
+    # Composition regression (review finding): with _core-helpers ABSENT, a
+    # sibling policy lib sourced FIRST installs the no-op strip fallback. The
+    # dangerous-commands bootstrap must still detect 'no real strip'
+    # (POLICY_HAVE_CORE_STRIP=0) so Category 9 keeps its per-segment sed —
+    # otherwise the payload class false-blocks return.
+    setup_test_dir
+    cp "$POLICY" "$BASE_DIR/scripts/hooks/_policy-triggers.sh" "$TEST_DIR/"
+    run bash -c ". '$TEST_DIR/_policy-triggers.sh'; . '$TEST_DIR/$(basename "$POLICY")'; validate_command 'git commit -m \"note: --no-verify forbidden\"'"
+    [ "$status" -eq 0 ]
+    # And a REAL late --no-verify is still caught in the same composition.
+    run bash -c ". '$TEST_DIR/_policy-triggers.sh'; . '$TEST_DIR/$(basename "$POLICY")'; validate_command 'git commit -m wip --no-verify'"
+    [ "$status" -eq 1 ]
+    teardown_test_dir
+}
+
 # --- Verdict shape -----------------------------------------------------------
 
 @test "policy-dc: deny reason is on stdout, nothing on a deny goes to stderr" {

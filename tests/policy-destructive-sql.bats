@@ -145,7 +145,3 @@ run_mig_content() {
     [ "$status" -eq 0 ]
     [ -z "$output" ]
 }
-
-@test "policy-sql: core file contains no harness plumbing" {
-    ! grep -E 'tool_input|hookSpecificOutput|CLAUDE_PROJECT_DIR|exit 2' "$POLICY"
-}

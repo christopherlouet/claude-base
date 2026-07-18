@@ -31,12 +31,6 @@ CORE="$BASE_DIR/scripts/hooks/_core-helpers.sh"
     [ "$status" -eq 0 ]
 }
 
-@test "core-helpers: contains no harness-specific plumbing (pure core)" {
-    # The core must stay sourceable by ANY harness shell: no stdin envelope
-    # fields, no hook JSON output, no Claude-Code env vars, no exit-2.
-    ! grep -E 'tool_input|hookSpecificOutput|CLAUDE_PROJECT_DIR|exit 2' "$CORE"
-}
-
 # --- strip_msg_values behavioral invariants (direct, no envelope) ------------
 
 # strip <cmd> — run strip_msg_values on a plain string, output on stdout.

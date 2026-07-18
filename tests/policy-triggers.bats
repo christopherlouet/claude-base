@@ -122,7 +122,3 @@ t_deploy() { run bash -c ". '$POLICY'; is_deploy_command \"\$1\"" _ "$1"; }
     t_deploy ""
     [ "$status" -eq 1 ]
 }
-
-@test "policy-trig: core file contains no harness plumbing" {
-    ! grep -E 'tool_input|hookSpecificOutput|CLAUDE_PROJECT_DIR|exit 2' "$POLICY"
-}

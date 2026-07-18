@@ -44,7 +44,10 @@ if [ -n "$_dir" ] && [ -f "$_dir/_policy-destructive-sql.sh" ]; then
   . "$_dir/_policy-destructive-sql.sh"
 else
   echo >&2 "BLOCKED: destructive-ops policy core missing (_policy-destructive-sql.sh)."
-  echo >&2 "Reinstall the foundation hooks (claude-base update), or set SKIP_DESTRUCTIVE_CHECK=1 to bypass."
+  echo >&2 "Run 'claude-base update' to restore the hook libs. To bypass instead, set"
+  echo >&2 "SKIP_DESTRUCTIVE_CHECK=1 in the hook environment (the \"env\" block of"
+  echo >&2 ".claude/settings.local.json) - an inline VAR=1 prefix on the command does"
+  echo >&2 "NOT reach this hook."
   exit 2
 fi
 

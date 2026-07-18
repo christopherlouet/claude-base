@@ -40,6 +40,16 @@ Preserve each guard's documented lineage — a shell for a new harness must matc
 | secret gate, migration gate | fail open (no-op) | edit-path gates must not wedge every edit on a broken install |
 | build gates | fail open (no-op) | advisory; real CI is the backstop |
 
+Two hard rules on this table:
+- **Fail-open must never be silent**: every fail-open missing-core branch prints a one-line `… DISABLED. Run 'claude-base update' to restore.` warning on stderr before exiting 0 (pinned by `tests/policy-structure.bats` degraded-mode cases).
+- **Recovery hints must be actionable**: a bypass hint must direct the user to the hook's environment (settings env block) — an inline `VAR=1` prefix on the blocked command never reaches a hook and must not be suggested.
+
+**Accepted delta vs the pre-split hooks**: the old inline hooks were self-contained — no missing file could alter their behavior. Any core/shell split necessarily loses that property; the compensations are the install-manifest closure test, the fresh-install self-application suite (`tests/policy-install.bats`), the pinned degraded modes above, and the never-silent rule.
+
+## Bootstrap rule (policy libs)
+
+Each `_policy-*.sh` opens with a bootstrap block (dir resolve, conditional source of `_core-helpers.sh`, `POLICY_HAVE_CORE_STRIP` detection) that must stay **byte-identical** across all policy libs — pinned by `tests/policy-structure.bats`. `POLICY_HAVE_CORE_STRIP` keys on `CORE_HELPERS_LOADED`, not on `declare -F` alone: a sibling lib's no-op fallback also defines the function, and mistaking it for the real strip would disable per-segment defenses (the payload false-block class).
+
 ## Environment opt-outs (portable, part of the policy surface)
 
 `SKIP_COMMAND_VALIDATOR`, `SKIP_NO_VERIFY_CHECK`, `SKIP_DESTRUCTIVE_CHECK`, `SKIP_SECRET_SCAN`, `SKIP_BASH_WRITE_GUARD`, `ALLOW_MAIN_EDIT`, `SKIP_PRE_COMMIT_TESTS`, `SKIP_PRE_PUSH_CI`, `SKIP_PRE_DEPLOY_BUILD`. Top-level SKIP checks live in shells; category-level ones (e.g. `SKIP_NO_VERIFY_CHECK`) live in cores.

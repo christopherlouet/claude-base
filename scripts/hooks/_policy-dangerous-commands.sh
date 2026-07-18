@@ -22,20 +22,25 @@
 if [ -n "${POLICY_DANGEROUS_COMMANDS_LOADED:-}" ]; then return 0 2>/dev/null || true; fi
 POLICY_DANGEROUS_COMMANDS_LOADED=1
 
+# --- policy bootstrap (keep byte-identical across _policy-*.sh; guarded by policy-structure.bats) ---
 # Shared message/--grep/--file value strip (single canonical copy in
-# _core-helpers.sh). If the helper file is missing we fall back to NO strip —
-# message payloads may then over-block, but a missing file can never turn into
-# a silent bypass. POLICY_DC_HAVE_STRIP mirrors the old _have_strip: Category 9
-# branches on it to keep its per-segment fallback strip as defense in depth.
-_pdc_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || true)
+# _core-helpers.sh). Missing helper file → no-op strip fallback: message
+# payloads may then over-block, but a missing file can never turn into a
+# silent bypass. POLICY_HAVE_CORE_STRIP keys on CORE_HELPERS_LOADED, NOT on
+# `declare -F` alone: a sibling policy lib's no-op fallback also satisfies
+# declare -F, and mistaking it for the real strip would skip the per-segment
+# defenses that assume values were really stripped (pass-3 false-block class).
+_policy_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || true)
 # shellcheck source=_core-helpers.sh
-if [ -n "$_pdc_dir" ] && [ -f "$_pdc_dir/_core-helpers.sh" ]; then . "$_pdc_dir/_core-helpers.sh"; fi
-if declare -F strip_msg_values >/dev/null 2>&1; then
-  POLICY_DC_HAVE_STRIP=1
+if [ -n "$_policy_dir" ] && [ -f "$_policy_dir/_core-helpers.sh" ]; then . "$_policy_dir/_core-helpers.sh"; fi
+# shellcheck disable=SC2034  # consumed by dangerous-commands Category 9; set in every copy so the bootstrap stays byte-identical
+if [ -n "${CORE_HELPERS_LOADED:-}" ] && declare -F strip_msg_values >/dev/null 2>&1; then
+  POLICY_HAVE_CORE_STRIP=1
 else
-  POLICY_DC_HAVE_STRIP=0
-  strip_msg_values() { printf '%s' "$1"; }
+  POLICY_HAVE_CORE_STRIP=0
+  declare -F strip_msg_values >/dev/null 2>&1 || strip_msg_values() { printf '%s' "$1"; }
 fi
+# --- end policy bootstrap ---
 
 validate_command() {
   local CMD="$1"
@@ -209,7 +214,7 @@ validate_command() {
       # token AFTER a now-value-less -m (e.g. a real --no-verify) as its value
       # and swallow it. The per-segment sed runs ONLY on the no-helper fallback
       # path, where values are still in the segment.
-      if [ "$POLICY_DC_HAVE_STRIP" = 1 ]; then
+      if [ "$POLICY_HAVE_CORE_STRIP" = 1 ]; then
         _segf="$_seg"
       else
         _segf=$(echo "$_seg" \

@@ -65,6 +65,100 @@ PORTMAP="$BASE_DIR/specs/agnostic-core/portability-map.md"
     fi
 }
 
+@test "structure: policy bootstrap block is byte-identical across the 4 policy libs" {
+    # The bootstrap (dir resolve, core source, POLICY_HAVE_CORE_STRIP) is
+    # deliberately copy-pasted — divergent copies of shared logic are the
+    # documented root cause of past guard bugs, so the copies are pinned equal.
+    local ref="" cur f
+    ref=$(sed -n '/--- policy bootstrap /,/--- end policy bootstrap ---/p' \
+        "$HOOKS_DIR/_policy-dangerous-commands.sh")
+    [ -n "$ref" ]
+    for f in _policy-destructive-sql.sh _policy-triggers.sh _policy-write-targets.sh; do
+        cur=$(sed -n '/--- policy bootstrap /,/--- end policy bootstrap ---/p' "$HOOKS_DIR/$f")
+        if [ "$cur" != "$ref" ]; then
+            echo "Bootstrap drift in $f" >&2
+            return 1
+        fi
+    done
+}
+
+# --- Degraded mode: shell shipped WITHOUT its policy core --------------------
+# New behavior introduced by the split (the old inline hooks could not lose
+# their logic to a missing file). Philosophy per guard, pinned here:
+#   security Bash guards fail CLOSED (block everything, actionable message);
+#   edit-path gates and build gates fail OPEN but must WARN on stderr.
+
+_degraded_dir() {
+    # A hooks dir holding ONLY the named shells (+ optional extra libs).
+    mkdir -p "$TEST_DIR/hooks"
+    local f
+    for f in "$@"; do cp "$HOOKS_DIR/$f" "$TEST_DIR/hooks/"; done
+}
+
+_bash_envelope() { jq -n --arg c "$1" '{tool_name:"Bash", tool_input:{command:$c}}'; }
+
+@test "degraded: command-validator without core fails CLOSED with a usable hint" {
+    command -v jq >/dev/null 2>&1 || skip "jq not available"
+    setup_test_dir; _degraded_dir command-validator.sh
+    run bash -c "printf '%s' \"\$(jq -n --arg c 'ls -la' '{tool_input:{command:\$c}}')\" | bash '$TEST_DIR/hooks/command-validator.sh' 2>&1"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"policy core missing"* ]]
+    # The hint must NOT teach the inline VAR=1 form (it never reaches a hook).
+    [[ "$output" == *"settings.local.json"* ]]
+    teardown_test_dir
+}
+
+@test "degraded: destructive-ops without core fails CLOSED" {
+    command -v jq >/dev/null 2>&1 || skip "jq not available"
+    setup_test_dir; _degraded_dir destructive-ops.sh
+    run bash -c "printf '%s' \"\$(jq -n --arg c 'ls' '{tool_input:{command:\$c}}')\" | bash '$TEST_DIR/hooks/destructive-ops.sh' 2>&1"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"policy core missing"* ]]
+    teardown_test_dir
+}
+
+@test "degraded: secret-scan without core fails OPEN but warns" {
+    command -v jq >/dev/null 2>&1 || skip "jq not available"
+    setup_test_dir; _degraded_dir secret-scan.sh
+    local a="AKIA"; a="${a}1234567890ABCDEF"
+    run bash -c "printf '%s' \"\$(jq -n --arg c \"key='$a'\" '{tool_input:{content:\$c}}')\" | bash '$TEST_DIR/hooks/secret-scan.sh' 2>&1"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"DISABLED"* ]]
+    teardown_test_dir
+}
+
+@test "degraded: destructive-migration without core fails OPEN but warns" {
+    command -v jq >/dev/null 2>&1 || skip "jq not available"
+    setup_test_dir; _degraded_dir destructive-migration.sh
+    run bash -c "printf '%s' \"\$(jq -n '{tool_input:{file_path:\"migrations/0002_x.sql\", content:\"DROP TABLE users;\"}}')\" | bash '$TEST_DIR/hooks/destructive-migration.sh' 2>&1"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"DISABLED"* ]]
+    teardown_test_dir
+}
+
+@test "degraded: bash-write-guard without write-targets core fails OPEN but warns" {
+    command -v jq >/dev/null 2>&1 || skip "jq not available"
+    setup_test_dir; _degraded_dir bash-write-guard.sh _sensitive-paths.sh
+    run bash -c "printf '%s' \"\$(jq -n '{tool_input:{command:\"echo x > .env\"}}')\" | bash '$TEST_DIR/hooks/bash-write-guard.sh' 2>&1"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"DISABLED"* ]]
+    teardown_test_dir
+}
+
+@test "degraded: the three build gates without triggers core fail OPEN but warn" {
+    command -v jq >/dev/null 2>&1 || skip "jq not available"
+    setup_test_dir
+    _degraded_dir pre-commit-tests.sh pre-push-ci.sh pre-deploy-build.sh
+    local g cmd
+    for g in "pre-commit-tests.sh:git commit -m x" "pre-push-ci.sh:git push" "pre-deploy-build.sh:npm run deploy"; do
+        cmd="${g#*:}"
+        run bash -c "printf '%s' \"\$(jq -n --arg c '$cmd' '{tool_input:{command:\$c}}')\" | bash '$TEST_DIR/hooks/${g%%:*}' 2>&1"
+        [ "$status" -eq 0 ]
+        [[ "$output" == *"DISABLED"* ]]
+    done
+    teardown_test_dir
+}
+
 @test "structure: portability map covers every hook file (and only real ones)" {
     [ -f "$PORTMAP" ]
     local f base missing=""

@@ -40,7 +40,10 @@ if [ -n "$_dir" ] && [ -f "$_dir/_policy-dangerous-commands.sh" ]; then
   . "$_dir/_policy-dangerous-commands.sh"
 else
   echo >&2 "BLOCKED: command-validator policy core missing (_policy-dangerous-commands.sh)."
-  echo >&2 "Reinstall the foundation hooks (claude-base update), or set SKIP_COMMAND_VALIDATOR=1 to bypass."
+  echo >&2 "Run 'claude-base update' to restore the hook libs. To bypass instead, set"
+  echo >&2 "SKIP_COMMAND_VALIDATOR=1 in the hook environment (the \"env\" block of"
+  echo >&2 ".claude/settings.local.json) - an inline VAR=1 prefix on the command does"
+  echo >&2 "NOT reach this hook."
   exit 2
 fi
 

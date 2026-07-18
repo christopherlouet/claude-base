@@ -26,7 +26,12 @@ CMD=$(cat | jq -r '.tool_input.command // empty' 2>/dev/null || true)
 # gate's missing-jq philosophy (the git pre-commit hook and CI back it up).
 _dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
 # shellcheck source=_policy-triggers.sh
-if [ -n "$_dir" ] && [ -f "$_dir/_policy-triggers.sh" ]; then . "$_dir/_policy-triggers.sh"; else exit 0; fi
+if [ -n "$_dir" ] && [ -f "$_dir/_policy-triggers.sh" ]; then
+  . "$_dir/_policy-triggers.sh"
+else
+  echo >&2 "[pre-commit-tests] policy core _policy-triggers.sh missing - pre-commit test gate DISABLED. Run 'claude-base update' to restore."
+  exit 0
+fi
 is_git_commit_command "$CMD" || exit 0
 
 # Husky (JS): if configured but not installed, try to repair so the project's

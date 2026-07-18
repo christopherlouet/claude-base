@@ -36,6 +36,7 @@ _dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
 if [ -n "$_dir" ] && [ -f "$_dir/_policy-destructive-sql.sh" ]; then
   . "$_dir/_policy-destructive-sql.sh"
 else
+  echo >&2 "[destructive-migration] policy core _policy-destructive-sql.sh missing - migration DDL guard DISABLED. Run 'claude-base update' to restore."
   exit 0
 fi
 

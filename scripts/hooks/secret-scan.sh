@@ -48,6 +48,7 @@ _dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
 if [ -n "$_dir" ] && [ -f "$_dir/_policy-secrets.sh" ]; then
   . "$_dir/_policy-secrets.sh"
 else
+  echo >&2 "[secret-scan] policy core _policy-secrets.sh missing - secret gate DISABLED. Run 'claude-base update' to restore."
   exit 0
 fi
 

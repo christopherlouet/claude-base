@@ -30,7 +30,12 @@ CMD=$(cat | jq -r '.tool_input.command // empty' 2>/dev/null || true)
 # advisory; the deploy pipeline's own checks remain the backstop).
 _dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
 # shellcheck source=_policy-triggers.sh
-if [ -n "$_dir" ] && [ -f "$_dir/_policy-triggers.sh" ]; then . "$_dir/_policy-triggers.sh"; else exit 0; fi
+if [ -n "$_dir" ] && [ -f "$_dir/_policy-triggers.sh" ]; then
+  . "$_dir/_policy-triggers.sh"
+else
+  echo >&2 "[pre-deploy-build] policy core _policy-triggers.sh missing - pre-deploy build gate DISABLED. Run 'claude-base update' to restore."
+  exit 0
+fi
 is_deploy_command "$CMD" || exit 0
 
 echo "=== Pre-deploy build check ==="

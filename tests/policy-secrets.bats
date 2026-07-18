@@ -110,7 +110,3 @@ run_scan() {
     run bash -c ". '$POLICY'; scan_content_with_gitleaks 'anything'"
     [ "$status" -eq 0 ]
 }
-
-@test "policy-secrets: core file contains no harness plumbing" {
-    ! grep -E 'tool_input|hookSpecificOutput|CLAUDE_PROJECT_DIR|exit 2' "$POLICY"
-}

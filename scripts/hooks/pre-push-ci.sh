@@ -31,7 +31,12 @@ CMD=$(cat 2>/dev/null | jq -r '.tool_input.command // empty' 2>/dev/null || true
 # real CI still gates the branch.
 _dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
 # shellcheck source=_policy-triggers.sh
-if [ -n "$_dir" ] && [ -f "$_dir/_policy-triggers.sh" ]; then . "$_dir/_policy-triggers.sh"; else exit 0; fi
+if [ -n "$_dir" ] && [ -f "$_dir/_policy-triggers.sh" ]; then
+  . "$_dir/_policy-triggers.sh"
+else
+  echo >&2 "[pre-push-ci] policy core _policy-triggers.sh missing - pre-push CI gate DISABLED. Run 'claude-base update' to restore."
+  exit 0
+fi
 is_git_push_command "$CMD" || exit 0
 
 echo "=== Pre-push CI check ==="

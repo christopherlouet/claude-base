@@ -43,7 +43,12 @@ _dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
 # shellcheck source=scripts/hooks/_sensitive-paths.sh
 [ -n "$_dir" ] && [ -f "$_dir/_sensitive-paths.sh" ] && . "$_dir/_sensitive-paths.sh" || exit 0
 # shellcheck source=scripts/hooks/_policy-write-targets.sh
-[ -f "$_dir/_policy-write-targets.sh" ] && . "$_dir/_policy-write-targets.sh" || exit 0
+if [ -f "$_dir/_policy-write-targets.sh" ]; then
+  . "$_dir/_policy-write-targets.sh"
+else
+  echo >&2 "[bash-write-guard] policy core _policy-write-targets.sh missing - Bash write guard DISABLED. Run 'claude-base update' to restore."
+  exit 0
+fi
 
 command -v jq >/dev/null 2>&1 || exit 0
 CMD=$(cat 2>/dev/null | jq -r '.tool_input.command // empty' 2>/dev/null || true)

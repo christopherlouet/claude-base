@@ -102,7 +102,3 @@ run_extract() {
     run_extract "npm test 2>&1"
     [ -z "$output" ]
 }
-
-@test "policy-wt: core file contains no harness plumbing" {
-    ! grep -E 'tool_input|hookSpecificOutput|CLAUDE_PROJECT_DIR|exit 2' "$POLICY"
-}

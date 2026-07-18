@@ -26,13 +26,25 @@
 if [ -n "${POLICY_TRIGGERS_LOADED:-}" ]; then return 0 2>/dev/null || true; fi
 POLICY_TRIGGERS_LOADED=1
 
-# Shared message-value strip (single canonical copy in _core-helpers.sh).
-# Missing helper → no strip → a payload mentioning "git push" may over-trigger
-# its gate — never the reverse.
-_ptr_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || true)
+# --- policy bootstrap (keep byte-identical across _policy-*.sh; guarded by policy-structure.bats) ---
+# Shared message/--grep/--file value strip (single canonical copy in
+# _core-helpers.sh). Missing helper file → no-op strip fallback: message
+# payloads may then over-block, but a missing file can never turn into a
+# silent bypass. POLICY_HAVE_CORE_STRIP keys on CORE_HELPERS_LOADED, NOT on
+# `declare -F` alone: a sibling policy lib's no-op fallback also satisfies
+# declare -F, and mistaking it for the real strip would skip the per-segment
+# defenses that assume values were really stripped (pass-3 false-block class).
+_policy_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || true)
 # shellcheck source=_core-helpers.sh
-if [ -n "$_ptr_dir" ] && [ -f "$_ptr_dir/_core-helpers.sh" ]; then . "$_ptr_dir/_core-helpers.sh"; fi
-declare -F strip_msg_values >/dev/null 2>&1 || strip_msg_values() { printf '%s' "$1"; }
+if [ -n "$_policy_dir" ] && [ -f "$_policy_dir/_core-helpers.sh" ]; then . "$_policy_dir/_core-helpers.sh"; fi
+# shellcheck disable=SC2034  # consumed by dangerous-commands Category 9; set in every copy so the bootstrap stays byte-identical
+if [ -n "${CORE_HELPERS_LOADED:-}" ] && declare -F strip_msg_values >/dev/null 2>&1; then
+  POLICY_HAVE_CORE_STRIP=1
+else
+  POLICY_HAVE_CORE_STRIP=0
+  declare -F strip_msg_values >/dev/null 2>&1 || strip_msg_values() { printf '%s' "$1"; }
+fi
+# --- end policy bootstrap ---
 
 # Fire only on an actual `git … commit` at command position, tolerating global
 # options (`git -c core.hooksPath=… commit`, `git -C dir commit`). A plain
