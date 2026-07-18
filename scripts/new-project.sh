@@ -27,6 +27,11 @@ source "$SCRIPT_DIR/lib/category-map.sh"
 source "$SCRIPT_DIR/lib/generators.sh"
 # shellcheck source=lib/preset-recommendations.sh
 source "$SCRIPT_DIR/lib/preset-recommendations.sh"
+# P2 installer seam (specs/agnostic-core/plan-p2.md): selection as data + emitter
+# shellcheck source=lib/selected-set.sh
+source "$SCRIPT_DIR/lib/selected-set.sh"
+# shellcheck source=lib/emit.sh
+source "$SCRIPT_DIR/lib/emit.sh"
 # shellcheck source=lib/docker.sh
 source "$SCRIPT_DIR/lib/docker.sh"
 
@@ -39,8 +44,7 @@ COMMANDS_DIR=".claude/commands"
 AGENTS_DIR=".claude/agents"
 SKILLS_DIR=".claude/skills"
 RULES_DIR=".claude/rules"
-STYLES_DIR=".claude/output-styles"
-TEMPLATES_DIR=".claude/templates"
+# (output-styles / templates ship via the selected-set manifest — no dir vars)
 
 # Cached counts (computed once, reused everywhere)
 _CACHED_CMD_COUNT=""
@@ -549,88 +553,10 @@ merge_cicd_workflows() {
 # Arguments:
 #   $1 - Detected project type (react, vue, node-api, python, go, flutter, etc.)
 # Output: List of rule file names to copy (one per line)
-get_rules_for_type() {
-    local project_type="$1"
-
-    # Universal rules (always copied) — applicable to all projects
-    # regardless of language/framework. Includes deploy-safety (Docker/env files)
-    # and research (check native before building custom) since these are
-    # cross-cutting concerns, not stack-specific.
-    # The 4 global (path-less) rules — git, workflow, self-improvement,
-    # vendor-precedence — apply regardless of file type and must ALL ship, else
-    # the copied rules/README.md references rules absent from disk.
-    local rules=("git.md" "workflow.md" "self-improvement.md" "vendor-precedence.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "research.md" "README.md")
-
-    # Rules specific to the project type
-    case "$project_type" in
-        react|vue|node-api|fullstack|generic)
-            rules+=("typescript.md" "react.md" "nextjs.md" "accessibility.md" "performance.md" "api.md" "design-style.md")
-            ;;
-        flutter)
-            rules+=("flutter.md" "design-style.md")
-            ;;
-        python)
-            rules+=("python.md")
-            ;;
-        go)
-            rules+=("go.md")
-            ;;
-        rust)
-            rules+=("rust.md")
-            ;;
-        java)
-            rules+=("java.md")
-            ;;
-    esac
-
-    # If type is unknown or generic, add TS/web by default (most common case)
-    if [[ "$project_type" == "generic" || -z "$project_type" ]]; then
-        rules+=("typescript.md" "react.md" "accessibility.md" "performance.md" "api.md" "design-style.md")
-    fi
-
-    # Deduplicate and return
-    printf '%s\n' "${rules[@]}" | sort -u
-}
-
-# Copy rules filtered by project type
-# Arguments:
-#   $1 - Source rules directory
-#   $2 - Target rules directory
-#   $3 - Detected project type
-copy_filtered_rules() {
-    local source_dir="$1"
-    local target_dir="$2"
-    local project_type="$3"
-
-    if [[ ! -d "$source_dir" ]]; then
-        return
-    fi
-
-    local rules_list
-    rules_list=$(get_rules_for_type "$project_type")
-    local copied=0
-    local skipped=0
-
-    while IFS= read -r rule_file; do
-        if [[ -f "$source_dir/$rule_file" ]]; then
-            if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} cp $source_dir/$rule_file → $target_dir/$rule_file"
-            else
-                cp "$source_dir/$rule_file" "$target_dir/$rule_file"
-            fi
-            ((copied++)) || true
-        fi
-    done <<< "$rules_list"
-
-    # Count rules not copied
-    local total_rules
-    total_rules=$(find "$source_dir" -name "*.md" -maxdepth 1 | wc -l)
-    skipped=$((total_rules - copied))
-
-    if [[ $skipped -gt 0 ]]; then
-        debug "Rules: $copied copied, $skipped skipped (languages not detected)"
-    fi
-}
+# get_rules_for_type moved to lib/selected-set.sh (P2 seam — single canonical
+# copy, shared with the selected-set manifest generator). The per-type rules
+# whitelist is applied through the manifest; the old copy_filtered_rules
+# per-file copier is superseded by install_selected_files below.
 
 # =============================================================================
 # Preset support (curated bundles per stack — see specs/presets/spec.md)
@@ -847,165 +773,119 @@ record_foundation_state() {
     fi
 }
 
-# apply_modules_filter — remove files belonging to modules NOT in the selected
-# set (US-5). Called after install_claude_files() when a preset declares
-# defaultModules[]. No-op when no preset is active or defaultModules is absent.
-# Arguments:
-#   $1 - Target directory (absolute path)
-apply_modules_filter() {
+# install_selected_files <target_dir> — P2 seam (specs/agnostic-core/plan-p2.md):
+# selection produces an explicit manifest (compute_selected_set, pure data —
+# preset skill/catalog filters, module partition and the per-type rules
+# whitelist are all resolved BEFORE any write), then one emitter pass copies
+# it (emit_manifest, shared with export-minimal). Replaces the old
+# copy-everything-then-delete pipeline (install_claude_files +
+# apply_preset_filter + apply_catalog_filters + apply_modules_filter).
+# Dry-run prints the manifest — dry-run ≡ real by construction (EF-007) —
+# plus the "would remove" preview lines the old filters printed.
+install_selected_files() {
     local target_dir="$1"
-    # Dry-run installs nothing, so there is nothing to filter ([[ -e ]]
-    # below would never match) — the skipped set still shows up via
-    # print_skipped_modules_hint.
-    $DRY_RUN && return 0
 
+    info "Installing Claude files..."
     load_module_partition
 
-    # Remove the bundle files of every non-selected module. When the
-    # preset declares no defaultModules (or no preset is active), the
-    # skipped set is empty and this is a no-op.
-    local mod p
-    for mod in ${SKIPPED_MODULES[@]+"${SKIPPED_MODULES[@]}"}; do
-        while IFS= read -r p; do
-            [[ -z "$p" ]] && continue
-            local full="$target_dir/$p"
-            if [[ -e "$full" ]]; then
-                if [[ "$p" == */ ]]; then
-                    rm -rf "$full"
-                else
-                    # Shared remover (lib/modules.sh): rm + drop the
-                    # parent dir once emptied — same contract as
-                    # claude-base remove.
-                    remove_bundle_file "$full"
-                fi
-            fi
-        done < <(module_bundle_paths "$mod")
-    done
-}
+    local manifest
+    manifest=$(compute_selected_set "$BASE_DIR" "${DETECTED_TYPE:-generic}")
 
-# Apply the preset's skill filter to the target installation.
-# Called after install_claude_files() has already copied every skill.
-#
-# XOR invariant: a preset declares EITHER foundation.skills.drop[] OR
-# foundation.skills.keep[], never both (validator enforces this).
-#   - drop branch: remove the explicitly listed skills.
-#   - keep branch: remove every installed skill whose top-level directory
-#     name is NOT in the keep list.
-#
-# Arguments:
-#   $1 - Target directory (absolute path)
-apply_preset_filter() {
-    local target_dir="$1"
-    [[ -z "$PRESET_FILE" ]] && return 0
-
-    # --- keep branch ---
-    if [[ ${#PRESET_SKILLS_KEEP[@]} -gt 0 ]]; then
-        local removed=0
-        local skill_name
-        while IFS= read -r skill_dir; do
-            skill_name="$(basename "$skill_dir")"
-            # Check whether skill_name is in the keep list.
-            local keep=false
-            local s
-            for s in "${PRESET_SKILLS_KEEP[@]}"; do
-                if [[ "$s" = "$skill_name" ]]; then
-                    keep=true
-                    break
-                fi
-            done
-            if ! $keep; then
-                if $DRY_RUN; then
-                    echo -e "${DIM}[DRY-RUN]${NC} rm -rf $skill_dir (keep filter: not in keep list)"
-                else
-                    rm -rf "$skill_dir"
-                fi
-                removed=$((removed + 1))
-            fi
-        done < <(find "$target_dir/.claude/skills" -maxdepth 1 -mindepth 1 -type d 2>/dev/null)
-        if [[ $removed -gt 0 ]]; then
-            debug "Preset keep-filter: $removed skill(s) removed (not in keep list)"
-        fi
+    if $DRY_RUN; then
+        local line
+        while IFS= read -r line; do
+            [[ -z "$line" ]] && continue
+            echo -e "${DIM}[DRY-RUN]${NC} install $line"
+        done <<< "$manifest"
+        _preview_filtered_out
         return 0
     fi
 
-    # --- drop branch (unchanged) ---
-    [[ ${#PRESET_SKILLS_DROP[@]} -eq 0 ]] && return 0
+    emit_manifest - "$BASE_DIR" "$target_dir" <<< "$manifest" \
+        || error "manifest emit failed"
 
-    local dropped=0
-    local skill
-    for skill in "${PRESET_SKILLS_DROP[@]}"; do
-        local skill_path="$target_dir/.claude/skills/$skill"
-        if [[ -d "$skill_path" ]]; then
-            if $DRY_RUN; then
-                echo -e "${DIM}[DRY-RUN]${NC} rm -rf $skill_path"
+    # Exec-bit post-pass: cp preserves the source mode in practice, but the
+    # emitter makes no promise (adapter-contract gotcha #3) — keep the old
+    # explicit chmod so installed hooks can never land non-executable.
+    find "$target_dir/scripts/hooks" -type f -name "*.sh" -exec chmod +x {} + 2>/dev/null || true
+    if [[ -f "$target_dir/scripts/substance-check.sh" ]]; then
+        chmod +x "$target_dir/scripts/substance-check.sh" 2>/dev/null || true
+    fi
+
+    # .mcp.env.example keeps its if-absent semantics (an idempotent transform,
+    # not a manifest copy — a manifest entry would clobber a user's file).
+    if [[ -f "$BASE_DIR/.mcp.env.example" ]] && [[ ! -f "$target_dir/.mcp.env.example" ]]; then
+        copy_file "$BASE_DIR/.mcp.env.example" "$target_dir/"
+    fi
+
+    success "Commands, skills, agents, rules, styles, templates, docs and hook scripts copied"
+}
+
+# _preview_filtered_out — dry-run companion of install_selected_files: report
+# what the selection EXCLUDED (the old filters' preview lines), computed from
+# the same pure data as the manifest. This fixes the historical under-report:
+# the old module filter returned early in dry-run and the skill keep-filter
+# previewed against a not-yet-populated tree (zero removals shown).
+_preview_filtered_out() {
+    # Catalog filters (preset.foundation.commands/agents). Module-owned items
+    # are out of the preset filter's jurisdiction (EF-309): excluded via
+    # CF_EXCLUDE_* exactly as the old _apply_one_catalog_filter did.
+    if [[ -n "$PRESET_FILE" ]]; then
+        local CF_EXCLUDE_DOMAINS CF_EXCLUDE_ITEMS
+        local catalog mode rel
+        for catalog in commands agents; do
+            if [[ "$catalog" == commands ]]; then
+                mode="$PRESET_COMMANDS_MODE"
             else
-                rm -rf "$skill_path"
+                mode="$PRESET_AGENTS_MODE"
             fi
-            dropped=$((dropped + 1))
-        fi
+            [[ -z "$mode" ]] && continue
+            # shellcheck disable=SC2034  # consumed by catalog_list_items in the lib
+            CF_EXCLUDE_DOMAINS="$(modules_list)"
+            # shellcheck disable=SC2034  # consumed by catalog_list_items in the lib
+            CF_EXCLUDE_ITEMS="$(module_owned_item_names "$catalog")"
+            if [[ "$catalog" == commands ]]; then
+                while IFS= read -r rel; do
+                    [[ -z "$rel" ]] && continue
+                    echo -e "${DIM}[DRY-RUN]${NC} catalog filter: would remove $catalog/$rel"
+                done < <(catalog_removal_set "$catalog" "$BASE_DIR/.claude/$catalog" "$mode" \
+                    ${PRESET_COMMANDS_ENTRIES[@]+"${PRESET_COMMANDS_ENTRIES[@]}"})
+            else
+                while IFS= read -r rel; do
+                    [[ -z "$rel" ]] && continue
+                    echo -e "${DIM}[DRY-RUN]${NC} catalog filter: would remove $catalog/$rel"
+                done < <(catalog_removal_set "$catalog" "$BASE_DIR/.claude/$catalog" "$mode" \
+                    ${PRESET_AGENTS_ENTRIES[@]+"${PRESET_AGENTS_ENTRIES[@]}"})
+            fi
+        done
+
+        # Skill filter preview (keep XOR drop), against the SOURCE catalog.
+        local d name k excluded
+        for d in "$BASE_DIR"/.claude/skills/*/; do
+            [[ -d "$d" ]] || continue
+            name=$(basename "$d")
+            excluded=0
+            if [[ ${#PRESET_SKILLS_KEEP[@]} -gt 0 ]]; then
+                excluded=1
+                for k in "${PRESET_SKILLS_KEEP[@]}"; do
+                    [[ "$k" == "$name" ]] && { excluded=0; break; }
+                done
+            elif [[ ${#PRESET_SKILLS_DROP[@]} -gt 0 ]]; then
+                for k in "${PRESET_SKILLS_DROP[@]}"; do
+                    [[ "$k" == "$name" ]] && { excluded=1; break; }
+                done
+            fi
+            if [[ "$excluded" -eq 1 ]]; then
+                echo -e "${DIM}[DRY-RUN]${NC} skill filter: would remove skills/$name"
+            fi
+        done
+    fi
+
+    # Skipped-module preview (previously invisible in dry-run).
+    local mod
+    for mod in ${SKIPPED_MODULES[@]+"${SKIPPED_MODULES[@]}"}; do
+        echo -e "${DIM}[DRY-RUN]${NC} module filter: skipping module $mod"
     done
-    if [[ $dropped -gt 0 ]]; then
-        debug "Preset filter: $dropped skill(s) dropped (out of stack scope)"
-    fi
-}
-
-# apply_catalog_filters — remove commands/agents excluded by the preset's
-# foundation.commands / foundation.agents filter (US-1). Delegates the
-# drop/keep + domain:<name> + EF-111 floor logic to the catalog-filter lib
-# (single source of truth, shared with update + validate). No-op when neither
-# catalog declares a filter (EF-106 byte-identical install).
-#
-# Arguments:
-#   $1 - Target directory (absolute path)
-apply_catalog_filters() {
-    local target_dir="$1"
-    [[ -z "$PRESET_FILE" ]] && return 0
-    _apply_one_catalog_filter "$target_dir" commands "$PRESET_COMMANDS_MODE" \
-        ${PRESET_COMMANDS_ENTRIES[@]+"${PRESET_COMMANDS_ENTRIES[@]}"}
-    _apply_one_catalog_filter "$target_dir" agents "$PRESET_AGENTS_MODE" \
-        ${PRESET_AGENTS_ENTRIES[@]+"${PRESET_AGENTS_ENTRIES[@]}"}
-}
-
-# _apply_one_catalog_filter <target_dir> <catalog> <mode> [entries...]
-# Resolve the removal set via catalog_removal_set and delete each item.
-# Uses the shared remove_bundle_file (lib/modules.sh) so an emptied command
-# domain dir (.claude/commands/<domain>/) is cleaned up — no hollow shell.
-_apply_one_catalog_filter() {
-    local target_dir="$1" catalog="$2" mode="$3"
-    shift 3
-    [[ -z "$mode" ]] && return 0
-    # In dry-run nothing was installed yet, so enumerate against the source
-    # foundation catalog to report what WOULD be removed; otherwise scan the
-    # populated project. Removal paths are catalog-relative either way.
-    local scan_root
-    if $DRY_RUN; then
-        scan_root="$BASE_DIR/.claude/$catalog"
-    else
-        scan_root="$target_dir/.claude/$catalog"
-    fi
-    # Module-owned items are out of the preset filter's jurisdiction — pass them
-    # as the exclusion set so a `keep` whitelist never sweeps up a module (EF-309).
-    # Two flavours: horizontal modules = whole domains (CF_EXCLUDE_DOMAINS);
-    # thematic modules (module ≠ domain, EF-402) = cross-domain items by name
-    # (CF_EXCLUDE_ITEMS). Both honored together by the lib.
-    local CF_EXCLUDE_DOMAINS CF_EXCLUDE_ITEMS
-    # shellcheck disable=SC2034  # consumed by catalog_list_items in the lib (process-sub subshell)
-    CF_EXCLUDE_DOMAINS="$(modules_list)"
-    # shellcheck disable=SC2034  # consumed by catalog_list_items in the lib (process-sub subshell)
-    CF_EXCLUDE_ITEMS="$(module_owned_item_names "$catalog")"
-    local removed=0 rel
-    while IFS= read -r rel; do
-        [[ -z "$rel" ]] && continue
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} catalog filter: would remove $catalog/$rel"
-        else
-            remove_bundle_file "$target_dir/.claude/$catalog/$rel"
-        fi
-        removed=$((removed + 1))
-    done < <(catalog_removal_set "$catalog" "$scan_root" "$mode" "$@")
-    if [[ $removed -gt 0 ]]; then
-        debug "Preset $catalog filter ($mode): $removed item(s) removed"
-    fi
 }
 
 # Install marketplace plugins listed in the preset.
@@ -1130,99 +1010,9 @@ copy_base_dir() {
     fi
 }
 
-install_claude_files() {
-    local target_dir="$1"
-
-    info "Installing Claude files..."
-
-    # Create the base structure
-    for dir in "$COMMANDS_DIR" "$SKILLS_DIR" "$AGENTS_DIR" "$RULES_DIR" "$STYLES_DIR" "$TEMPLATES_DIR"; do
-        make_dir "$target_dir/$dir"
-    done
-
-    # Copy subdirectories
-    copy_base_dir "$COMMANDS_DIR" "$target_dir" "commands"
-    copy_base_dir "$SKILLS_DIR" "$target_dir" "skills"
-    copy_base_dir "$AGENTS_DIR" "$target_dir" "agents"
-    copy_base_dir "$STYLES_DIR" "$target_dir" "output-styles"
-    copy_base_dir "$TEMPLATES_DIR" "$target_dir" "templates"
-
-    # Copy settings.json
-    copy_file "$BASE_DIR/.claude/settings.json" "$target_dir/.claude/"
-
-    # Copy rules (filtered by project type)
-    debug "Copying filtered rules for type: ${DETECTED_TYPE:-generic}..."
-    copy_filtered_rules "$BASE_DIR/$RULES_DIR" "$target_dir/$RULES_DIR" "${DETECTED_TYPE:-generic}"
-
-    # Copy docs/reference/ to .claude/docs/reference/ (required for CLAUDE.md @imports)
-    if [[ -d "$BASE_DIR/docs/reference" ]]; then
-        debug "Copying docs/reference/ to .claude/docs/reference/ (required for CLAUDE.md @imports)..."
-        make_dir "$target_dir/.claude/docs/reference"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $BASE_DIR/docs/reference/* → $target_dir/.claude/docs/reference/"
-        else
-            cp -r "$BASE_DIR/docs/reference/"* "$target_dir/.claude/docs/reference/"
-        fi
-    fi
-
-    # Copy docs/guides/ to .claude/docs/guides/
-    if [[ -d "$BASE_DIR/docs/guides" ]]; then
-        debug "Copying docs/guides/ to .claude/docs/guides/..."
-        make_dir "$target_dir/.claude/docs/guides"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp -r $BASE_DIR/docs/guides/* → $target_dir/.claude/docs/guides/"
-        else
-            cp -r "$BASE_DIR/docs/guides/"* "$target_dir/.claude/docs/guides/"
-        fi
-    fi
-
-    # Copy docs/STACK-RECIPES.md to .claude/docs/ (consolidation of the 13 legacy stack guides)
-    if [[ -f "$BASE_DIR/docs/STACK-RECIPES.md" ]]; then
-        debug "Copying docs/STACK-RECIPES.md to .claude/docs/..."
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp $BASE_DIR/docs/STACK-RECIPES.md → $target_dir/.claude/docs/"
-        else
-            cp "$BASE_DIR/docs/STACK-RECIPES.md" "$target_dir/.claude/docs/STACK-RECIPES.md"
-        fi
-    fi
-
-    # Copy .mcp.env.example if available
-    if [[ -f "$BASE_DIR/.mcp.env.example" ]] && [[ ! -f "$target_dir/.mcp.env.example" ]]; then
-        copy_file "$BASE_DIR/.mcp.env.example" "$target_dir/"
-    fi
-
-    # Copy scripts/hooks/ (referenced by settings.json)
-    # Without these scripts, the SessionStart/PreToolUse/UserPromptSubmit hooks
-    # fail silently. Counterpart of the update.sh fix (commit dcaa059).
-    if [[ -d "$BASE_DIR/scripts/hooks" ]]; then
-        debug "Copying scripts/hooks/ (required for settings.json)..."
-        make_dir "$target_dir/scripts/hooks"
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp $BASE_DIR/scripts/hooks/*.sh → $target_dir/scripts/hooks/"
-            echo -e "${DIM}[DRY-RUN]${NC} chmod +x $target_dir/scripts/hooks/*.sh"
-        else
-            cp "$BASE_DIR/scripts/hooks/"*.sh "$target_dir/scripts/hooks/" 2>/dev/null || true
-            find "$target_dir/scripts/hooks" -type f -name "*.sh" -exec chmod +x {} + 2>/dev/null || true
-        fi
-    fi
-
-    # Ship the substance-gate detector (C2 audit). The hook
-    # scripts/hooks/substance-check.sh requires $PROJECT_DIR/scripts/
-    # substance-check.sh and silently no-ops when it is absent — copying
-    # only scripts/hooks/*.sh left the substance gate dead in every
-    # simple/preset install (the minimal manifest already ships it).
-    if [[ -f "$BASE_DIR/scripts/substance-check.sh" ]]; then
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} cp $BASE_DIR/scripts/substance-check.sh → $target_dir/scripts/"
-        else
-            mkdir -p "$target_dir/scripts"
-            cp "$BASE_DIR/scripts/substance-check.sh" "$target_dir/scripts/substance-check.sh"
-            chmod +x "$target_dir/scripts/substance-check.sh" 2>/dev/null || true
-        fi
-    fi
-
-    success "Commands, skills, agents, rules, styles, templates, docs and hook scripts copied"
-}
+# install_claude_files was replaced by install_selected_files (P2 seam):
+# the copy table is now the generated manifest (lib/selected-set.sh) consumed
+# by the shared emitter (lib/emit.sh).
 
 # Install GitHub Actions
 # Arguments:
@@ -1472,17 +1262,9 @@ run_simple_mode() {
         clean_claude_dirs "$target_dir"
     fi
 
-    # Install Claude files
-    install_claude_files "$target_dir"
-
-    # Apply preset filter (drops skills listed in preset.foundation.skills.drop)
-    apply_preset_filter "$target_dir"
-
-    # Apply command/agent catalog filter (preset.foundation.commands/agents, US-1)
-    apply_catalog_filters "$target_dir"
-
-    # Apply module filter — remove files for modules not in defaultModules (US-5)
-    apply_modules_filter "$target_dir"
+    # Install Claude files — select-then-emit (P2 seam): preset skill/catalog
+    # filters and the module partition are resolved as data BEFORE any write.
+    install_selected_files "$target_dir"
 
     # Install CLAUDE.md
     install_claude_md_file "$target_dir"
@@ -1969,18 +1751,10 @@ create_project() {
     fi
 
     # Install Claude files (commands, agents, skills, rules, styles, templates)
-    install_claude_files "$TARGET_DIR"
-
-    # Apply preset skill/command/agent filters — parity with run_simple_mode.
-    # The interactive menu can select a preset (load_preset runs before this in
-    # main()), and without these the menu-selected preset installed the FULL
-    # catalog while foundation.json recorded the filtered set → later drift. Both
-    # no-op when no preset is active (guard on PRESET_FILE).
-    apply_preset_filter "$TARGET_DIR"
-    apply_catalog_filters "$TARGET_DIR"
-
-    # Apply module filter — remove files for modules not in defaultModules (US-5)
-    apply_modules_filter "$TARGET_DIR"
+    # — select-then-emit (P2 seam): preset skill/catalog filters and the module
+    # partition are resolved as data BEFORE any write (parity between the
+    # simple and interactive orchestrators is inherent: same selected set).
+    install_selected_files "$TARGET_DIR"
 
     success "Claude commands installed ($(count_commands_cached) commands, $(count_agents_cached) agents, $(count_skills_cached) skills)"
 
