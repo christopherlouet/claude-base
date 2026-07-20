@@ -798,6 +798,12 @@ install_selected_files() {
             echo -e "${DIM}[DRY-RUN]${NC} install $line"
         done <<< "$manifest"
         _preview_filtered_out
+        # Post-pass previews — the real run performs these after the emit and
+        # the dry-run must disclose every write/mode change (EF-007 spirit).
+        echo -e "${DIM}[DRY-RUN]${NC} chmod +x $target_dir/scripts/hooks/*.sh"
+        if [[ -f "$BASE_DIR/.mcp.env.example" ]] && [[ ! -f "$target_dir/.mcp.env.example" ]]; then
+            echo -e "${DIM}[DRY-RUN]${NC} cp $BASE_DIR/.mcp.env.example → $target_dir/"
+        fi
         return 0
     fi
 

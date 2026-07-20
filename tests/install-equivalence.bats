@@ -71,13 +71,17 @@ _assert_equivalence() {
     run "$NEW_PROJECT_SCRIPT" -y "$@" "$TEST_DIR/real"
     [ "$status" -eq 0 ]
 
-    # 3a. Real tree ⊆ manifest ∪ transforms
+    # 3a. Real tree ⊆ manifest ∪ transforms. The enumeration is captured to a
+    # file and asserted NON-EMPTY first: a broken cd/find would otherwise make
+    # this direction vacuously green (the swallowed-pipe-status class).
+    (cd "$TEST_DIR/real" && find . -type f | sed 's|^\./||') > "$TEST_DIR/realfiles"
+    [ -s "$TEST_DIR/realfiles" ]
     local uncovered="" rel
     while IFS= read -r rel; do
         rel="${rel#./}"
         _is_transform_artifact "$rel" && continue
         _manifest_covers "$TEST_DIR/manifest" "$rel" || uncovered="$uncovered $rel"
-    done < <(cd "$TEST_DIR/real" && find . -type f | sed 's|^\./||')
+    done < "$TEST_DIR/realfiles"
     if [ -n "$uncovered" ]; then
         echo "installed but not in the dry-run manifest:$uncovered" >&2
         return 1
@@ -108,6 +112,35 @@ _assert_equivalence() {
 
 @test "EF-007: dry-run ≡ real install (second preset, different stack)" {
     _assert_equivalence --simple --preset fastapi
+}
+
+@test "EF-007: dry-run ≡ real install (fixture preset with REAL catalog+skill filters)" {
+    # No shipped preset declares foundation filters, so without this fixture
+    # the filtered selection path (what the seam changed most) is never
+    # exercised end-to-end (review finding).
+    mkdir -p "$TEST_DIR/presets"
+    cat > "$TEST_DIR/presets/eqtest.json" <<'EOF'
+{
+  "name": "eqtest",
+  "displayName": "Equivalence fixture",
+  "detect": {},
+  "foundation": {
+    "commands": { "drop": ["domain:growth", "domain:legal"] },
+    "agents":   { "drop": ["biz-competitor"] },
+    "skills":   { "drop": ["growth-cro", "web-scraping"] }
+  },
+  "defaults": {}
+}
+EOF
+    # NOTE: --presets-dir, not the env var — the script initializes
+    # PRESETS_DIR_OVERRIDE="" at load time, clobbering any inherited value.
+    _assert_equivalence --simple --presets-dir "$TEST_DIR/presets" --preset eqtest
+    # The filter really bit: the dropped items are absent from BOTH sides.
+    ! grep -q 'commands/growth/' "$TEST_DIR/manifest"
+    [ ! -d "$TEST_DIR/real/.claude/skills/growth-cro" ]
+    [ ! -e "$TEST_DIR/real/.claude/agents/biz-competitor.md" ]
+    # And non-dropped content shipped.
+    [ -d "$TEST_DIR/real/.claude/skills/dev-tdd" ]
 }
 
 @test "EF-007 negative probe: a planted extra file IS flagged" {

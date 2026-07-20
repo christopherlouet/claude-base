@@ -122,30 +122,40 @@ _selset_catalog() {
     done < <(catalog_list_items "$catalog" "$root")
 }
 
-# _selset_skills <base> — whole-directory entries for the selected skills.
+# _selset_skill_excluded <name> — 0 if the preset skill filter excludes it.
 # PRESET_SKILLS_KEEP non-empty → keep exactly those; else drop PRESET_SKILLS_DROP.
-_selset_skills() {
-    local base="$1" d name k keep_mode=0
-    [ -d "$base/.claude/skills" ] || return 0
-    local nkeep=0
+# One test for BOTH the core enumeration and the module-bundle re-adds: the
+# old apply_preset_filter ran on every INSTALLED skill unconditionally, so a
+# selected module's skill outside the keep list was removed too — the bundle
+# loop must not bypass the filter.
+_selset_skill_excluded() {
+    local name="$1" k nkeep=0
     for k in ${PRESET_SKILLS_KEEP[@]+"${PRESET_SKILLS_KEEP[@]}"}; do nkeep=$((nkeep+1)); done
-    [ "$nkeep" -gt 0 ] && keep_mode=1
+    if [ "$nkeep" -gt 0 ]; then
+        for k in ${PRESET_SKILLS_KEEP[@]+"${PRESET_SKILLS_KEEP[@]}"}; do
+            [ "$k" = "$name" ] && return 1
+        done
+        return 0
+    fi
+    for k in ${PRESET_SKILLS_DROP[@]+"${PRESET_SKILLS_DROP[@]}"}; do
+        [ "$k" = "$name" ] && return 0
+    done
+    return 1
+}
+
+# _selset_skills <base> — whole-directory entries for the selected skills,
+# plus the top-level files of .claude/skills/ (README.md — the old
+# `cp -r skills/*` always shipped them and no filter ever removed a file).
+_selset_skills() {
+    local base="$1" d f name
+    [ -d "$base/.claude/skills" ] || return 0
+    for f in "$base"/.claude/skills/*; do
+        [ -f "$f" ] && printf '.claude/skills/%s\n' "$(basename "$f")"
+    done
     for d in "$base"/.claude/skills/*/; do
         [ -d "$d" ] || continue
         name=$(basename "$d")
-        if [ "$keep_mode" -eq 1 ]; then
-            local found=1
-            for k in ${PRESET_SKILLS_KEEP[@]+"${PRESET_SKILLS_KEEP[@]}"}; do
-                [ "$k" = "$name" ] && { found=0; break; }
-            done
-            [ "$found" -eq 0 ] || continue
-        else
-            local dropped=1
-            for k in ${PRESET_SKILLS_DROP[@]+"${PRESET_SKILLS_DROP[@]}"}; do
-                [ "$k" = "$name" ] && { dropped=0; break; }
-            done
-            [ "$dropped" -eq 0 ] && continue
-        fi
+        _selset_skill_excluded "$name" && continue
         _selset_owned_by_unselected ".claude/skills/$name" && continue
         printf '.claude/skills/%s/\n' "$name"
     done
@@ -176,11 +186,25 @@ compute_selected_set() {
         # Skills (whole directories).
         _selset_skills "$base"
 
-        # Selected module bundles, verbatim from their manifests.
-        local m p
+        # Selected module bundles. Two guards mirroring the old pipeline:
+        #   - [ -e ]: the old deletion path guarded every bundle entry with
+        #     [[ -e ]]; a stale registry entry must not hard-fail the emit;
+        #   - skill entries still pass the preset skill filter (the old
+        #     apply_preset_filter ran on every installed skill, module-owned
+        #     included — the bundle loop must not resurrect an excluded one).
+        local m p pname
         for m in ${SELECTED_MODULES[@]+"${SELECTED_MODULES[@]}"}; do
             while IFS= read -r p; do
-                [ -n "$p" ] && printf '%s\n' "$p"
+                [ -n "$p" ] || continue
+                [ -e "$base/${p%/}" ] || continue
+                case "$p" in
+                    .claude/skills/*/|.claude/skills/*)
+                        pname="${p#.claude/skills/}"
+                        pname="${pname%%/*}"
+                        [ -n "$pname" ] && _selset_skill_excluded "$pname" && continue
+                        ;;
+                esac
+                printf '%s\n' "$p"
             done < <(module_bundle_paths "$m")
         done
 

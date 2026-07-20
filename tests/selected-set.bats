@@ -124,6 +124,50 @@ run_set() {
     [[ "$output" == *".claude/skills/gamma/"* ]]
 }
 
+@test "selected-set: EF-111 floor survives a drop targeting the work domain" {
+    local base; base=$(make_fixture)
+    run_set "$base" python "PRESET_COMMANDS_MODE=drop; PRESET_COMMANDS_ENTRIES=(domain:work)"
+    # The floor (work domain) is protected: drop must not remove it.
+    [[ "$output" == *".claude/commands/work/work-explore.md"* ]]
+    [[ "$output" == *".claude/commands/work/work-plan.md"* ]]
+}
+
+@test "selected-set: top-level skills files (README.md) are listed" {
+    local base; base=$(make_fixture)
+    touch "$base/.claude/skills/README.md"
+    run_set "$base" python
+    [[ "$output" == *".claude/skills/README.md"* ]]
+}
+
+@test "selected-set: a selected module cannot resurrect a dropped skill" {
+    # Review finding: the old apply_preset_filter ran on EVERY installed skill,
+    # module-owned included — the bundle re-add must honor the filter.
+    local base; base=$(make_fixture)
+    local moddir="$TEST_DIR/modlib"
+    mkdir -p "$moddir"
+    printf '.claude/skills/beta/\n' > "$moddir/fakemod.txt"
+    run bash -c ". '$LIB'; module_bundle_paths() { cat '$moddir/fakemod.txt'; }; \
+        SELECTED_MODULES=(fakemod); PRESET_SKILLS_DROP=(beta); \
+        compute_selected_set '$base' python"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *".claude/skills/beta/"* ]]
+}
+
+@test "selected-set: a stale module bundle entry is skipped, not emitted" {
+    # emit_manifest hard-fails on a missing path; the old pipeline guarded
+    # every bundle entry with [[ -e ]] — the selection must too.
+    local base; base=$(make_fixture)
+    local moddir="$TEST_DIR/modlib2"
+    mkdir -p "$moddir"
+    printf '.claude/skills/beta/\n.claude/commands/ghost/none.md\n' > "$moddir/fakemod.txt"
+    run bash -c ". '$LIB'; module_bundle_paths() { cat '$moddir/fakemod.txt'; }; \
+        SELECTED_MODULES=(fakemod); \
+        compute_selected_set '$base' python"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *".claude/skills/beta/"* ]]
+    [[ "$output" != *"ghost"* ]]
+}
+
 @test "selected-set: output is manifest-grammar clean (no blank, at most one colon, no ..)" {
     local base; base=$(make_fixture)
     run_set "$base" python
