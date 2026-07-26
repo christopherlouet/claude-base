@@ -4,14 +4,19 @@
 #
 # Blocks destructive database / filesystem operations run via the Bash tool
 # (DROP TABLE/DATABASE, TRUNCATE, an unscoped DELETE, wiping an uploads/media/
-# storage tree, `prisma migrate reset`, …). Extracted verbatim from an inline
-# settings.json `bash -c` gate — which shipped with ZERO test coverage — and
-# hardened in two ways:
-#   1. a bare `DELETE FROM t;` / `DELETE FROM t` (no WHERE = full-table wipe)
-#      is now caught, not only the tautological `... WHERE 1=1` form;
-#   2. a missing jq no longer silently disables the guard: it falls back to
-#      scanning the raw stdin payload (fail SAFE), matching command-validator.sh
-#      (the two Bash security guards now agree on fail-closed behaviour).
+# storage tree, `prisma migrate reset`, …).
+#
+# Claude Code SHELL of the core/shell split (specs/agnostic-core/): the whole
+# destructive-DDL policy lives in _policy-destructive-sql.sh (shared with
+# destructive-migration.sh, directly tested by tests/policy-destructive-sql.bats).
+# This shell reads the stdin envelope, calls check_destructive_command, and
+# translates a deny into stderr + exit 2.
+#
+# Fail-closed lineage (matching command-validator.sh — the two Bash security
+# guards agree on fail-closed behaviour):
+#   - a missing jq falls back to scanning the raw stdin payload (extra blocks
+#     possible, never a bypass);
+#   - a missing policy core BLOCKS with a recovery hint instead of no-op'ing.
 #
 # Payload arrives on STDIN as JSON; the command is .tool_input.command.
 # Block = exit 2 with a stderr reason. Disable with SKIP_DESTRUCTIVE_CHECK=1.
@@ -33,61 +38,23 @@ else
 fi
 [ -z "$CMD" ] && exit 0
 
-CMD_LOWER=$(printf '%s' "$CMD" | tr '[:upper:]' '[:lower:]')
-
-# Build the SCAN string the matchers run against, in this order:
-#   1. Strip SQL line-comments introduced by "-- " (dash-dash-SPACE) PER LINE so
-#      a commented-out "where" cannot fake a scope on an unscoped DELETE, while a
-#      "--flag" (dash-dash-LETTER) and a verb on a LATER line both survive.
-#   2. Flatten newlines to spaces so a multi-line construct is one line for the
-#      value-strip and WHERE tests (a multi-line DELETE's WHERE is now adjacent).
-#   3. Strip message VALUES (the quoted/next token after -m/-am/--message) so a
-#      commit message that merely NAMES a verb ("explain the DROP TABLE
-#      migration", even across lines) is not treated as the operation itself
-#      (shared strip_msg_values from _hook-helpers.sh — its bare-value arm
-#      stops at ;&| so `-m 'wip';prisma migrate reset` keeps the separator and
-#      the REAL chained command; the old inline sed ate both). Missing helper
-#      → no strip → possible over-block, never a bypass.
-# Scope note: inline-comment obfuscation (`DROP/**/TABLE`) is deliberately NOT
-# defended — a well-meaning agent writes `DROP TABLE`, not the split form; this
-# is a best-effort anti-accident guard, not an anti-evasion boundary.
 _dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
-# shellcheck source=_hook-helpers.sh
-if [ -n "$_dir" ] && [ -f "$_dir/_hook-helpers.sh" ]; then . "$_dir/_hook-helpers.sh"; fi
-declare -F strip_msg_values >/dev/null 2>&1 || strip_msg_values() { printf '%s' "$1"; }
-SCAN=$(printf '%s' "$CMD_LOWER" \
-  | sed -E 's/--[[:space:]].*$//' \
-  | tr '\n' ' ')
-SCAN=$(strip_msg_values "$SCAN")
-
-DESTRUCTIVE=0
-
-# Explicit destructive verbs, unsafe resets, and data-directory wipes.
-# - drop/truncate use [[:space:]]+ so `DROP  TABLE` (irregular whitespace) can't slip past.
-# - `truncate[[:space:]]+[^-[:space:]]` matches SQL `TRUNCATE [TABLE] name` but NOT
-#   coreutils `truncate -s 0 file` (a flag, i.e. a dash, follows the command).
-if printf '%s' "$SCAN" | grep -qE '(drop[[:space:]]+table|drop[[:space:]]+database|truncate[[:space:]]+[^-[:space:]]|rm -rf .*/uploads|rm -rf .*/media|rm -rf .*/storage|prisma migrate reset|prisma db push --force|--force-reset)'; then
-  DESTRUCTIVE=1
-fi
-
-# DELETE FROM without a scoping WHERE (full-table wipe), or a tautological
-# `WHERE 1=1`. A real `delete from t where <col>…` is left untouched. The WHERE
-# test accepts a clause at line start ((^|space)) so a multi-line statement
-# (`DELETE FROM t\nWHERE …`) is not misread as unscoped, and runs on the
-# comment-stripped SCAN so a `-- where` comment cannot fake the scope.
-if printf '%s' "$SCAN" | grep -qE 'delete[[:space:]]+from[[:space:]]'; then
-  if printf '%s' "$SCAN" | grep -qE 'where[[:space:]]+1[[:space:]]*(=|;|$)'; then
-    DESTRUCTIVE=1
-  elif ! printf '%s' "$SCAN" | grep -qE '(^|[[:space:]])where([[:space:]]|\()'; then
-    DESTRUCTIVE=1
-  fi
-fi
-
-if [ "$DESTRUCTIVE" = "1" ]; then
-  echo >&2 "BLOCKED: Destructive operation detected."
-  echo >&2 "Command: $(printf '%s' "$CMD" | head -c 200)"
-  echo >&2 "Ask the user for confirmation before proceeding (or SKIP_DESTRUCTIVE_CHECK=1)."
+# shellcheck source=_policy-destructive-sql.sh
+if [ -n "$_dir" ] && [ -f "$_dir/_policy-destructive-sql.sh" ]; then
+  . "$_dir/_policy-destructive-sql.sh"
+else
+  echo >&2 "BLOCKED: destructive-ops policy core missing (_policy-destructive-sql.sh)."
+  echo >&2 "Run 'claude-base update' to restore the hook libs. To bypass instead, set"
+  echo >&2 "SKIP_DESTRUCTIVE_CHECK=1 in the hook environment (the \"env\" block of"
+  echo >&2 ".claude/settings.local.json) - an inline VAR=1 prefix on the command does"
+  echo >&2 "NOT reach this hook."
   exit 2
 fi
 
-exit 0
+# Verdict translation: deny (return 1, reason on stdout) → stderr + exit 2.
+if _reason=$(check_destructive_command "$CMD"); then
+  exit 0
+else
+  printf '%s\n' "$_reason" >&2
+  exit 2
+fi

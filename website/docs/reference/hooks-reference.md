@@ -130,6 +130,20 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Third-party hooks warning** | SessionStart | Warns if custom hooks are detected |
 | **CLI version probe** | SessionStart | Probes Claude Code version for the output rewriter (requires 2.1.121+). Writes `/tmp/claude-rewriter-supported` (`1` or `0`) consumed by post-edit and bash-output rewriter hooks |
 
+### Core/shell split (policy libs)
+
+The guard hooks are split into a **harness-neutral policy core** and a thin
+**Claude Code shell** (see `specs/agnostic-core/`): the decision logic (pattern
+tables, verdicts) lives in sourceable `scripts/hooks/_core-helpers.sh` and
+`scripts/hooks/_policy-*.sh` libs — plain string in, data verdict out (return
+0 allow / 1 deny + reason on stdout) — while the hook script itself only reads
+the stdin envelope and translates a deny into stderr + exit 2. The policy libs
+are directly tested by `tests/policy-*.bats` (no envelope), the hook scripts by
+their existing contract suites; `tests/policy-structure.bats` enforces the
+split (core purity, thin shells, manifest closure) and
+`specs/agnostic-core/portability-map.md` classifies every hook file. Do not
+register a `_*.sh` lib in `settings.json` — they are not hooks.
+
 ## Git-native hooks (`.husky/`)
 
 Distinct from the Claude Code hooks above (which live in `.claude/settings.json`):

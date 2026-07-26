@@ -20,11 +20,19 @@ set -u
 command -v jq >/dev/null 2>&1 || exit 0
 
 CMD=$(cat | jq -r '.tool_input.command // empty' 2>/dev/null || true)
-# Fire only on an actual `git … commit` at command position, tolerating global
-# options (`git -c core.hooksPath=… commit`, `git -C dir commit`). A plain
-# substring match both over-blocked read-only commands (`git log --grep "git
-# commit"`) and MISSED the `git -c … commit` bypass form.
-printf '%s' "$CMD" | grep -qE '(^|[;&|])[[:space:]]*git([[:space:]]+-[a-zA-Z]+([[:space:]]+[^[:space:]]+)?)*[[:space:]]+commit([[:space:]]|$)' || exit 0
+# Trigger detection lives in the harness-neutral core _policy-triggers.sh
+# (specs/agnostic-core/ core/shell split; directly tested by
+# tests/policy-triggers.bats). Missing core → no-op, matching this advisory
+# gate's missing-jq philosophy (the git pre-commit hook and CI back it up).
+_dir=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
+# shellcheck source=_policy-triggers.sh
+if [ -n "$_dir" ] && [ -f "$_dir/_policy-triggers.sh" ]; then
+  . "$_dir/_policy-triggers.sh"
+else
+  echo >&2 "[pre-commit-tests] policy core _policy-triggers.sh missing - pre-commit test gate DISABLED. Run 'claude-base update' to restore."
+  exit 0
+fi
+is_git_commit_command "$CMD" || exit 0
 
 # Husky (JS): if configured but not installed, try to repair so the project's
 # own git hooks still run. Best-effort — never fatal.

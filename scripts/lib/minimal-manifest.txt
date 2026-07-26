@@ -56,7 +56,13 @@
 # All scripts referenced by settings.json must ship here, otherwise
 # fresh --minimal installs end up with hooks pointing at missing files.
 # Drift guard: tests/manifest-hooks-coverage.bats.
+scripts/hooks/_core-helpers.sh
 scripts/hooks/_hook-helpers.sh
+scripts/hooks/_policy-dangerous-commands.sh
+scripts/hooks/_policy-destructive-sql.sh
+scripts/hooks/_policy-secrets.sh
+scripts/hooks/_policy-triggers.sh
+scripts/hooks/_policy-write-targets.sh
 scripts/hooks/_sensitive-paths.sh
 scripts/hooks/_vendor-precedence-hint.sh
 scripts/hooks/base-integrity-check.sh

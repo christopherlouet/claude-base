@@ -1,0 +1,9 @@
+# Commit-pinned false-positive fingerprints for the enforcing gitleaks scan
+# (gitleaks-action scans the PR commit RANGE, so a literal fixed in a later
+# commit still flags on the introducing commit). One fingerprint per line:
+# <commit>:<file>:<rule>:<line>.
+
+# PR #489: the canonical AWS docs EXAMPLE key (AKIA…EXAMPLE) appeared as a
+# placeholder-allowlist fixture in the commit introducing tests/policy-secrets.bats;
+# replaced by runtime fragment assembly in f97e6ed1 — never a real credential.
+3697baf6469ade1d54685b64f3f9d92630033c7c:tests/policy-secrets.bats:aws-access-key-id:76
