@@ -28,22 +28,20 @@ Integration: PostToolUse hooks (auto-format, type-check, lint), PreToolUse on co
 
 > "I use Opus with adaptive thinking for everything." -- Boris Cherny
 
-_(Fable 5 sits one tier above Opus 4.8 for the hardest long-horizon work — see the table below.)_
+_(Since 2026-07-24, **Opus 5** is the recommended default for complex work — near-Fable intelligence at half Fable's price.)_
 
 | Context | Model | Rationale |
 |----------|--------|---------------|
-| Most demanding / long-horizon autonomous work | **Fable 5** (`claude-fable-5`) | Anthropic's most capable model — deepest reasoning, long-horizon agentic runs. Reach for it **deliberately**: ~$10/$50 per MTok (2× Opus 4.8) |
-| Complex tasks (default) | **Opus 4.8** | Most advanced reasoning, adaptive thinking, 1M context, `xhigh` effort |
-| Audits, analyses, high-volume agentic work | **Sonnet** (Sonnet 5) | Near-Opus 4.8 quality at a fraction of the cost — 1M context, `$2/$10` per MTok intro through 2026-08-31 (then `$3/$15`) vs Opus `$5/$25`. Claude Code's **default model** since 2026-06-30 |
+| Complex tasks (default) | **Opus 5** (`claude-opus-5`) | Released 2026-07-24: within ~0.5% of Fable 5's peak scores at **half the price** (`$5/$25` per MTok — same as Opus 4.8), 1M context, configurable effort. The `opus` alias resolves to it automatically |
+| Extreme niche: the ~0.5% Fable still wins | **Fable 5** (`claude-fable-5`) | ~$10/$50 per MTok (2× Opus 5). Since Opus 5, a **rare, deliberate** choice — see the note below |
+| Audits, analyses, high-volume agentic work | **Sonnet** (Sonnet 5) | 1M context, `$2/$10` per MTok intro through 2026-08-31 (then `$3/$15`) vs Opus `$5/$25`. Claude Code's **default model** for subscription seats since 2026-06-30 |
 | Simple tasks | **Haiku** | Fast for trivial operations |
 
-> **Fable 5 vs Opus 4.8:** Opus 4.8 stays the default for complex work. Fable 5 (1M context by default, 128K output, same tokenizer as Opus 4.8) is a **costlier escalation** — 2× Opus per token — for the hardest long-horizon tasks, not a drop-in replacement.
+> **Opus 5 (since 2026-07-24):** the new default of the `opus` tier alias (no agent-frontmatter change needed). Same price as Opus 4.8 with greatly improved performance: doubles Opus 4.8 on Frontier-Bench v0.1 and outperforms Fable 5 on OSWorld 2.0 at a third of the cost. Fast mode runs on it at `$10/$50` per MTok (~2.5× speed). Opus 4.8 is not deprecated (it serves as fallback) but is no longer the recommendation. ([Announcement](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/))
 
-> **Sonnet 5 (since 2026-06-30):** Claude Code's own default is now Sonnet 5 — the most agentic Sonnet yet, ~Opus 4.8-level on many tasks at roughly a third of the cost, with a native 1M context. The `sonnet` alias absorbs it automatically (no agent-frontmatter change). This foundation still **recommends escalating to Opus 4.8 for complex/critical work** (TDD, Audit, architecture) where the quality delta pays off, and reserving Sonnet 5 for audits, analyses, and high-volume agentic passes where its price/perf shines.
+> **Fable 5 after Opus 5:** the "escalate to Fable for hard chantiers" advice is largely **obsolete** — Opus 5 lands within ~0.5% of Fable's peak at half the price, so Opus 5 absorbs the escalation role. Fable 5 remains relevant only where that last half-percent measurably matters (the hardest long-horizon autonomous runs) and there is still **no `fable` tier alias**: select it per-session via `/model` or `--model claude-fable-5`, deliberately. Availability note: Fable 5 has been generally available again since 2026-07-01 (the June export-control directive was lifted 2026-06-30; Mythos 5 stays restricted to a subset of US organizations). ([Anthropic statement](https://www.anthropic.com/news/claude-fable-5-mythos-5))
 
-> ✅ **Availability (July 2026):** Fable 5 is **generally available again**. It was briefly export-control-suspended on 2026-06-12 (no access for foreign nationals); the directive was **lifted on 2026-06-30** and Fable 5 returned to **global availability on 2026-07-01** across Claude Platform, Claude.ai, Claude Code and Claude Cowork. (Mythos 5 remains restricted to a subset of US organizations.) Opus 4.8 stays the default not for availability reasons but because Fable 5 is a **costlier, deliberate escalation** (2× Opus). ([Anthropic statement](https://www.anthropic.com/news/claude-fable-5-mythos-5))
-
-**Proactively flag the escalation.** When a session turns into a long-horizon *chantier* — a multi-PR migration, a deep audit, or a large refactor that visibly exceeds Opus 4.8's comfort zone — say so and suggest escalating the model to Fable 5 (`/model`, or relaunch with `--model claude-fable-5`). It is a deliberate, costlier choice (2× Opus) and there is **no `fable` tier alias**, so Claude cannot switch itself mid-session — surface the recommendation and let the user decide. Don't suggest it for routine work where Opus 4.8 is the right default.
+> **Sonnet 5 (since 2026-06-30):** Claude Code's own default for subscription seats — near-Opus-4.8 quality on many agentic tasks at roughly a third of the cost, native 1M context, `sonnet` alias absorbs it automatically. This foundation recommends **Opus 5 for complex/critical work** (TDD, Audit, architecture) where the quality delta pays off, and Sonnet 5 for audits, analyses, and high-volume agentic passes where its price/perf shines.
 
 ## Advanced Prompting
 
@@ -66,11 +64,11 @@ See `docs/guides/PROMPTING-GUIDE.md` for the complete guide.
 | Exploring code, reading files | `low` | No need for deep reasoning |
 | Implementing a standard feature | `medium` | Speed/quality balance |
 | Designing an architecture, audit, complex debug | `high` | Deep reasoning required |
-| Critical system architecture, advanced security audit | `xhigh` | Maximum reasoning (Opus 4.8 required) |
+| Critical system architecture, advanced security audit | `xhigh` | Maximum reasoning (Opus-class models: Opus 5 / 4.8) |
 
 Command: `/effort low`, `/effort medium`, `/effort high`, `/effort xhigh` (interactive slider).
 
-> Effort tunes reasoning depth **on the current model**; it is not a model upgrade. For the hardest long-horizon work, escalating the *model* to Fable 5 (`claude-fable-5`, ~2× Opus 4.8) is the distinct, costlier lever — see "Recommended Model" above.
+> Effort tunes reasoning depth **on the current model**; it is not a model upgrade. Since Opus 5, raising effort on Opus 5 covers almost every hard case; the Fable 5 model escalation (`claude-fable-5`, ~2× Opus 5) remains only for the rare tasks where Fable's last half-percent measurably matters — see "Recommended Model" above.
 
 ## Automatic Memory (CLI 2.1.76+)
 

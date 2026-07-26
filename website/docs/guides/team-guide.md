@@ -84,7 +84,7 @@ Examples of personal preferences:
 # Personal preferences
 
 - Preferred response language: English
-- Preferred model: claude-opus-4-8 for complex tasks
+- Preferred model: claude-opus-5 for complex tasks
 - Response format: concise, no repetition
 - My shortcuts: /w = work, /q = qa
 ```
@@ -302,15 +302,15 @@ paths:
 
 | Usage | Model | Why |
 |-------|-------|-----|
-| Hardest / long-horizon autonomous work | Fable 5 (`claude-fable-5`) | Anthropic's most capable model; ~2× Opus 4.8 cost — **deliberate** use, not a default |
-| Architecture, design | Opus 4.8 | Most advanced reasoning, 1M context, `xhigh` effort |
+| Hardest / long-horizon autonomous work (rare) | Fable 5 (`claude-fable-5`) | ~2× Opus 5 cost for ~0.5% over Opus 5's peak — **deliberate niche** use since Opus 5 |
+| Architecture, design | Opus 5 | Near-Fable reasoning at half Fable's price, 1M context, `xhigh` effort |
 | Feature implementation | Sonnet | Speed/quality balance |
 | Exploration, reading | Haiku | Fast for simple operations |
-| Security audits | Sonnet or Opus 4.8 | Detection of subtle flaws |
+| Security audits | Sonnet or Opus 5 | Detection of subtle flaws |
 | PR reviews in CI | Haiku | Low cost, high volume |
 | Cloud review (large PRs) | `/ultrareview` | Parallel agents in cloud |
 
-> **Running the foundation's own heavy sessions on Fable 5:** for large multi-PR migrations or deep audits of claude-base itself, dispatch the session on the strongest model with `--model claude-fable-5` (or pick it via `/model`). This is a deliberate, costlier choice (~2× Opus 4.8). Agent `model:` frontmatter is **not** changed — there is no `fable` tier alias; Fable 5 is selected per-session, not pinned to an agent. ✅ **Availability (July 2026):** `claude-fable-5` is **generally available again** — the June export-control suspension was lifted 2026-06-30 and Fable 5 returned to global availability (incl. Claude Code) on 2026-07-01 ([details](https://www.anthropic.com/news/claude-fable-5-mythos-5)).
+> **Running the foundation's own heavy sessions on Fable 5:** since Opus 5 (2026-07-24, within ~0.5% of Fable's peak at half the price), Opus 5 is the right pick for large migrations and deep audits too — reserve `--model claude-fable-5` (or `/model`) for the rare run where Fable's last half-percent measurably matters. Still ~2× Opus 5 cost, still no `fable` tier alias (per-session selection only, never pinned to an agent). `claude-fable-5` has been generally available since 2026-07-01 ([details](https://www.anthropic.com/news/claude-fable-5-mythos-5)).
 
 ---
 
@@ -566,7 +566,7 @@ Using the right effort level avoids consuming tokens unnecessarily:
 /effort low      # Reading, exploration
 /effort medium   # Standard implementation
 /effort high     # Architecture, refactoring
-/effort xhigh    # Critical debug (Opus 4.8 only)
+/effort xhigh    # Critical debug (Opus-class models)
 ```
 
 ### Typical consumption per workflow phase
@@ -575,7 +575,7 @@ Using the right effort level avoids consuming tokens unnecessarily:
 |-------|---------------------------|-------------------|
 | Explore (medium codebase) | 50k - 150k input | Haiku |
 | Specify (user stories) | 5k - 20k | Sonnet |
-| Plan (complex feature) | 10k - 40k | Opus 4.8 |
+| Plan (complex feature) | 10k - 40k | Opus 5 |
 | TDD (implementation) | 30k - 100k | Sonnet |
 | Quality audit | 20k - 60k | Sonnet |
 | PR review | 5k - 15k | Haiku |

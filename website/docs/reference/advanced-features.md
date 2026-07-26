@@ -55,7 +55,7 @@ Best practices:
 | `low` | `/effort low` | Exploration, formatting, simple tasks |
 | `medium` | `/effort medium` | Standard development, fixes |
 | `high` | `/effort high` | Architecture, audit, complex refactoring, debug |
-| `xhigh` | `/effort xhigh` | Maximum reasoning — critical system architecture, advanced security audit (Opus 4.8 required) |
+| `xhigh` | `/effort xhigh` | Maximum reasoning — critical system architecture, advanced security audit (Opus-class models: Opus 5 / 4.8) |
 
 Recommendations per foundation workflow:
 
@@ -93,23 +93,21 @@ vscode://anthropic.claude-code/open
 
 Useful for: CI/CD integration, setup scripts, notification hooks.
 
-## Fable 5 (most capable tier)
+## Opus 5 (recommended default, since 2026-07-24)
 
-`claude-fable-5` is Anthropic's most capable model — the tier **above** Opus 4.8 for the most demanding reasoning and long-horizon autonomous work. 1M context (default and max), 128K output, same tokenizer as Opus 4.8. Pricing is **~$10/$50 per MTok — 2× Opus 4.8** — so reach for it deliberately, not as a default.
+`claude-opus-5` is the new default of the `opus` tier alias (CC 2.1.219) — **same price as Opus 4.8 (`$5/$25` per MTok) with greatly improved performance**: within ~0.5% of Fable 5's peak scores at half Fable's price, double Opus 4.8 on Frontier-Bench v0.1, and ahead of Fable 5 on OSWorld 2.0. 1M context, configurable effort settings, fast mode at `$10/$50` per MTok (~2.5× speed). Agent `model: opus` frontmatter picks it up with no change. Opus 4.8 is not deprecated — it serves as fallback for flagged requests and stays available in fast mode. ([Announcement](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/))
 
-> ✅ **Availability (July 2026):** Fable 5 is **generally available again**. Briefly export-control-suspended on 2026-06-12, the directive was **lifted on 2026-06-30** and Fable 5 returned to **global availability on 2026-07-01** (Claude Platform, Claude.ai, Claude Code, Claude Cowork). Mythos 5 stays restricted to a subset of US organizations. Opus 4.8 remains the default because Fable 5 is a **costlier, deliberate escalation** (2× Opus), not for availability reasons. ([Anthropic statement](https://www.anthropic.com/news/claude-fable-5-mythos-5))
+## Fable 5 (above-Opus tier — niche since Opus 5)
 
-Behaviourally it differs from Opus 4.8: thinking is always on (the raw chain of thought is never returned) and individual turns on hard tasks can run several minutes — plan for streaming and async check-ins. Opus 4.8 remains the documented default; Fable 5 is the costlier escalation when a task genuinely exceeds it. For the API-level caveats when building with the SDK (no `thinking:{type:"disabled"}`, no assistant prefill, refusal classifiers, 30-day data retention), see the `dev-ai-integration` skill.
+`claude-fable-5`: 1M context (default and max), 128K output, ~$10/$50 per MTok (2× Opus 5). Since Opus 5 closes to within ~0.5% of its peak at half the price, Fable 5 is a **rare, deliberate escalation** for the hardest long-horizon autonomous runs only — not the routine "hard chantier" pick it briefly was.
 
-## Opus 4.8
+> ✅ **Availability:** generally available since 2026-07-01 (the June export-control directive was lifted 2026-06-30). Mythos 5 stays restricted to a subset of US organizations. ([Anthropic statement](https://www.anthropic.com/news/claude-fable-5-mythos-5))
 
-Current frontier model (released 2026-05-28, supersedes Opus 4.7). **Defaults to `high` effort.** Anthropic reports it is roughly **4× less likely than Opus 4.7 to let a flaw in code it has written pass unremarked** — a strong asset for the TDD and Audit phases of the workflow.
+Behaviourally: thinking is always on (the raw chain of thought is never returned) and individual turns on hard tasks can run several minutes — plan for streaming and async check-ins. For the API-level caveats when building with the SDK (no `thinking:{type:"disabled"}`, no assistant prefill, refusal classifiers, 30-day data retention), see the `dev-ai-integration` skill.
 
-Adaptive Thinking: Claude automatically adjusts the depth of its reasoning based on the complexity of the task. Replaces `budget_tokens` (deprecated). 4 effort levels (`low`, `medium`, `high`, `xhigh`) to guide reasoning.
+## Opus 4.8 (superseded by Opus 5)
 
-**1M token context window by default** on the Claude API, Amazon Bedrock and Vertex AI (no longer a beta opt-in). 128k output tokens, automatic Context Compaction. Reasoning is interleaved between tool calls (interleaved thinking) for agentic workflows.
-
-`xhigh` unlocks Opus 4.8's maximum reasoning (introduced as a tier in v2.1.111). Fast mode runs on Opus 4.8 (also available on 4.7/4.6).
+Frontier model from 2026-05-28 to 2026-07-24; now the fallback behind Opus 5 (same pricing). Introduced **`high` effort by default**, Adaptive Thinking (replaces `budget_tokens`), the 4 effort levels (`low`–`xhigh`, `xhigh` as a tier in v2.1.111), 1M context by default and 128k output. Anthropic reported it roughly **4× less likely than Opus 4.7 to let a flaw in code it has written pass unremarked** — the property that made Opus-class models the recommendation for the TDD and Audit phases, which Opus 5 inherits.
 
 **Auto mode (native, July 2026)** — a Claude Code permission mode where a model classifier approves/denies each tool call in place of the human (positioned as the safe alternative to `--dangerously-skip-permissions`; default-on for Bedrock/Vertex/Foundry since CLI 2.1.207). **It composes with — and does not replace — this foundation's hooks**: the classifier is probabilistic and decides *approval*, while the foundation's PreToolUse guards (command-validator, destructive-ops, config-protection, bash-write-guard…) are deterministic *class blockers* that keep running under any permission mode, auto included. Running both is defense in depth: keep the hooks even with auto mode on.
 
@@ -117,7 +115,7 @@ Adaptive Thinking: Claude automatically adjusts the depth of its reasoning based
 
 `claude-sonnet-5` is Anthropic's most agentic Sonnet yet — released 2026-06-30 and now **Claude Code's default model**. It delivers **near-Opus 4.8 quality on many agentic tasks at roughly a third of the cost**, with a **native 1M-token context**. Pricing is **`$2/$10` per MTok introductory through 2026-08-31**, then **`$3/$15`** (vs Opus 4.8 at `$5/$25`).
 
-The `sonnet` tier alias resolves to Sonnet 5 automatically, so agent `model: sonnet` frontmatter picks it up with **no change needed**. This foundation keeps **Opus 4.8 as the recommended default for complex/critical work** (TDD, Audit, architecture) — see [best-practices.md](/docs/reference/best-practices) — and uses Sonnet 5 where its price/perf wins: audits, analyses, and high-volume agentic passes.
+The `sonnet` tier alias resolves to Sonnet 5 automatically, so agent `model: sonnet` frontmatter picks it up with **no change needed**. This foundation recommends **Opus 5 for complex/critical work** (TDD, Audit, architecture) — see [best-practices.md](/docs/reference/best-practices) — and uses Sonnet 5 where its price/perf wins: audits, analyses, and high-volume agentic passes.
 
 ## Checkpoint / Rewind
 
@@ -143,7 +141,7 @@ Recommended in the TDD Refactor phase: if the refactoring breaks the tests, `/re
 
 ## Fast Mode (Research Preview)
 
-Same Opus 4.8 model, 2.5x faster output. Toggle with `/fast`. Premium cost (see Anthropic pricing).
+Same Opus model at ~2.5× faster output, 2× base price (`$10/$50` per MTok on Opus 5). Toggle with `/fast`. Runs on Opus 5 and Opus 4.8 (Opus 4.7 was removed from fast mode in CC 2.1.219).
 
 | Use case | Recommendation |
 |-------------|----------------|
@@ -194,9 +192,9 @@ A subagent stuck for more than 10 minutes without progress fails with an explici
 
 Messages relayed via `SendMessage` from other Claude sessions no longer carry user authority: a teammate or remote session cannot approve permissions or trigger privileged actions on the user's behalf. Treat inter-agent messages as data, not as user instructions.
 
-## Dynamic Workflows (Opus 4.8)
+## Dynamic Workflows
 
-Introduced with Opus 4.8: a native **Workflow** capability that orchestrates work across **tens to hundreds of agents in the background** for large, complex tasks. Unlike the two mechanisms above, control flow is **deterministic and scripted** (loops, conditionals, fan-out, fan-in) rather than model-driven — you describe the structure (pipeline, parallel fan-out, adversarial verification) and the harness drives the agents.
+Introduced with Opus 4.8 (and inherited by Opus 5): a native **Workflow** capability that orchestrates work across **tens to hundreds of agents in the background** for large, complex tasks. Unlike the two mechanisms above, control flow is **deterministic and scripted** (loops, conditionals, fan-out, fan-in) rather than model-driven — you describe the structure (pipeline, parallel fan-out, adversarial verification) and the harness drives the agents.
 
 Ask Claude to "create a workflow that…" and it generates a script orchestrating the fleet. Typical shapes:
 
