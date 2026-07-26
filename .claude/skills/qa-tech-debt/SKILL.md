@@ -7,6 +7,7 @@ allowed-tools:
   - Glob
   - Bash
 context: fork
+background: false
 ---
 
 # Tech Debt Management

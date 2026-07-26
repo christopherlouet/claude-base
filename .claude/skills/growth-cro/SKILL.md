@@ -8,6 +8,7 @@ allowed-tools:
   - Edit
   - Write
 context: fork
+background: false
 ---
 
 # Conversion Rate Optimization (CRO)

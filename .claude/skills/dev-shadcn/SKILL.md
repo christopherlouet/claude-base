@@ -9,6 +9,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+background: false
 ---
 
 # shadcn/ui (pointer)

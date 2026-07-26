@@ -7,6 +7,7 @@ allowed-tools:
   - Grep
   - Bash
 context: fork
+background: false
 ---
 
 # Agent Teams (Multi-Agent Orchestration)

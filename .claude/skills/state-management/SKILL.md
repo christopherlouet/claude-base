@@ -8,6 +8,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+background: false
 user-invocable: false
 ---
 

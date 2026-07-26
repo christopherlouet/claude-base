@@ -7,6 +7,7 @@ allowed-tools:
   - Grep
   - Bash
 context: fork
+background: false
 model: sonnet
 argument-hint: "[repo-paths] [--since 24h] [--summary-only]"
 ---

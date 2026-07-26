@@ -9,6 +9,7 @@ allowed-tools:
   - Grep
   - Bash
 context: fork
+background: false
 user-invocable: false
 ---
 

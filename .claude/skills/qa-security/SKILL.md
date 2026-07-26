@@ -7,6 +7,7 @@ allowed-tools:
   - Glob
   - Bash
 context: fork
+background: false
 model: opus
 argument-hint: "[scope-or-module]"
 ---

@@ -7,6 +7,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+background: false
 ---
 
 # Git Worktrees (pointer)

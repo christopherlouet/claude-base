@@ -9,6 +9,7 @@ allowed-tools:
   - Grep
   - Glob
 context: fork
+background: false
 argument-hint: "[endpoint-name]"
 ---
 

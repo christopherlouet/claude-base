@@ -8,6 +8,7 @@ allowed-tools:
   - WebFetch
   - WebSearch
 context: fork
+background: false
 ---
 
 # Web Scraping (Firecrawl-first)
