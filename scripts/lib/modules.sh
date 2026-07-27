@@ -190,6 +190,14 @@ write_foundation_manifest() {
     if [[ -z "$tier" ]]; then
         tier="full"
     fi
+    # Project type (the stack the install picked its rules for). Same
+    # non-positional mechanism as tier: MANIFEST_PROJECT_TYPE wins, else an
+    # existing value is preserved, else the key is OMITTED — absent means
+    # "legacy install, type unknown" and updates keep their old behaviour.
+    local ptype="${MANIFEST_PROJECT_TYPE:-}"
+    if [[ -z "$ptype" && -f "$manifest" ]]; then
+        ptype="$(jq -r '.projectType // empty' "$manifest" 2>/dev/null)" || ptype=""
+    fi
     mkdir -p "$dir/.claude" || return 1
     local tmp
     tmp="$(mktemp)" || return 1
@@ -199,11 +207,13 @@ write_foundation_manifest() {
         --arg version "$version" \
         --arg preset_str "$preset" \
         --arg tier "$tier" \
+        --arg ptype "$ptype" \
         --args \
         '{version: $version,
           preset: (if $preset_str == "" then null else $preset_str end),
           tier: $tier,
-          modules: ($ARGS.positional | map(select(length > 0)))}' \
+          modules: ($ARGS.positional | map(select(length > 0)))}
+         + (if $ptype == "" then {} else {projectType: $ptype} end)' \
         "$@" > "$tmp"; then
         rm -f "$tmp"
         return 1
@@ -251,6 +261,15 @@ set_manifest_tier() {
         return 1
     fi
     mv "$tmp" "$manifest" || { rm -f "$tmp"; return 1; }
+}
+
+# manifest_project_type <dir> — print the recorded stack type, empty when the
+# field is absent (legacy install predating it). Callers MUST treat empty as
+# "unknown" and fall back to their pre-existing behaviour, never as "generic".
+manifest_project_type() {
+    local json
+    json="$(read_foundation_manifest "${1:?target dir required}")" || return $?
+    jq -r '.projectType // empty' <<<"$json"
 }
 
 # manifest_preset <dir> — print the recorded preset name, empty if null/missing.

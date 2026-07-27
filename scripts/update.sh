@@ -20,6 +20,10 @@ source "$SCRIPT_DIR/lib/common.sh"
 source "$SCRIPT_DIR/lib/preset-detect.sh"
 # shellcheck source=lib/preset-recommendations.sh
 source "$SCRIPT_DIR/lib/preset-recommendations.sh"
+# shellcheck source=lib/selected-set.sh
+# The selection seam: get_rules_for_type is the SSOT install picks rules with —
+# update must apply the SAME whitelist or it silently undoes that selection.
+source "$SCRIPT_DIR/lib/selected-set.sh"
 
 # Enable error handler and check prerequisites
 enable_error_handler
@@ -82,6 +86,13 @@ ACTIVE_PRESET_KEEP_LIST=()
 CATALOG_REMOVE_COMMANDS=""
 CATALOG_REMOVE_AGENTS=""
 PRESET_FILTER_SKIPPED=0
+# Rules whitelist (newline list of rule filenames) for the project's recorded
+# stack — the SAME set install selected via get_rules_for_type. Stays EMPTY for
+# a legacy project whose manifest predates .projectType: no recorded stack means
+# no guessing, so those projects keep receiving the whole rules dir as before.
+RULES_WHITELIST=""
+RULES_FILTER_SKIPPED=0
+RULES_PROJECT_TYPE=""
 # Commands a clean update would actually deposit (every command not skipped by
 # the module or preset filter). Accumulated in update_command_file so the
 # reported "Commands: N → M" count derives from the single deposit pass — no
@@ -1242,6 +1253,32 @@ is_skill_kept() {
     return 1
 }
 
+# is_rule_excluded <rel_path>
+#
+# 0 (true) when a rule file must NOT be deposited by this update.
+# Two independent reasons:
+#   1. base-maintenance.md is foundation-internal (its paths target
+#      .claude/skills/**, scripts/hooks/** — the foundation's OWN sources). No
+#      install ever shipped it; update must not either, legacy projects
+#      included, so this check is deliberately outside the whitelist gate.
+#   2. the file is outside the recorded stack's whitelist. Only applies when a
+#      whitelist exists (RULES_WHITELIST non-empty <=> .projectType recorded);
+#      an unknown stack falls back to the pre-existing ship-everything behaviour.
+# COPY-only, like every other update filter: an already-installed rule is left
+# alone (EF-011), this only stops NEW deposits.
+is_rule_excluded() {
+    local rel="$1"
+    local name="${rel##*/}"
+
+    [[ "$name" == "base-maintenance.md" ]] && return 0
+
+    [[ -z "$RULES_WHITELIST" ]] && return 1
+    case $'\n'"$RULES_WHITELIST"$'\n' in
+        *$'\n'"$name"$'\n'*) return 1 ;;
+    esac
+    return 0
+}
+
 # Generic update for a .claude/ subdirectory
 # Uses per-file diff checking to avoid overwriting user customizations.
 # Arguments:
@@ -1341,6 +1378,19 @@ update_directory() {
                 ((dir_skipped++)) || true
                 continue
             fi
+        fi
+
+        # Stack whitelist: skip rules outside the project's recorded type (and
+        # the foundation-internal one). Keeps install's selection alive across
+        # updates instead of silently refreshing the whole rules dir.
+        if [[ "$name" = "rules" ]] && is_rule_excluded "$rel_path"; then
+            ((RULES_FILTER_SKIPPED++)) || true
+            debug "rules/$rel_path skipped (stack whitelist)"
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Skip (stack whitelist): rules/$rel_path"
+            fi
+            ((dir_skipped++)) || true
+            continue
         fi
 
         # US-3: preset agent filter — skip agents the active preset excludes
@@ -1947,6 +1997,17 @@ print_summary() {
     if [[ "$PRESET_FILTER_SKIPPED" -gt 0 ]]; then
         echo "  Filtered by preset (skipped): $PRESET_FILTER_SKIPPED command/agent file(s) excluded by '${ACTIVE_PRESET_NAME:-preset}'"
     fi
+    # Rules left out. Reported so a smaller rules dir reads as a decision, not
+    # as a missing file. Two distinct causes, never conflated: a legacy project
+    # has NO recorded stack, so its only skip is the foundation-internal rule —
+    # naming a whitelist there would describe a filter that did not run.
+    if [[ "$RULES_FILTER_SKIPPED" -gt 0 ]]; then
+        if [[ -n "$RULES_PROJECT_TYPE" ]]; then
+            echo "  Outside the project stack (skipped): $RULES_FILTER_SKIPPED rule file(s) not in the '$RULES_PROJECT_TYPE' whitelist"
+        else
+            echo "  Skipped: $RULES_FILTER_SKIPPED foundation-internal rule file(s)"
+        fi
+    fi
     echo ""
 
     if [[ -n "${BACKUP_DIR:-}" ]] && [[ -d "${BACKUP_DIR:-}" ]]; then
@@ -2000,6 +2061,16 @@ main() {
     # preset (empty when no preset / --no-preset → filter inert).
     CATALOG_REMOVE_COMMANDS="$(_catalog_remove_set commands)"
     CATALOG_REMOVE_AGENTS="$(_catalog_remove_set agents)"
+
+    # Resolve the rules whitelist from the stack recorded at install time.
+    # Absent field (legacy install) → empty whitelist → ship-everything, the
+    # behaviour those projects already have. Never inferred from detection:
+    # guessing here would change what an existing project receives.
+    RULES_PROJECT_TYPE="$(manifest_project_type "$TARGET_DIR" 2>/dev/null || true)"
+    if [[ -n "$RULES_PROJECT_TYPE" ]]; then
+        RULES_WHITELIST="$(get_rules_for_type "$RULES_PROJECT_TYPE")"
+        debug "rules whitelist resolved for recorded stack: $RULES_PROJECT_TYPE"
+    fi
 
     # Announce the active preset (silence preserves byte-identity with
     # today's update output when no preset is active — CS-006).
