@@ -134,13 +134,17 @@ _selset_catalog() {
     done < <(catalog_list_items "$catalog" "$root")
 }
 
-# _selset_skill_excluded <name> — 0 if the preset skill filter excludes it.
+# skill_excluded_by_preset <name> — 0 if the preset skill filter excludes it.
 # PRESET_SKILLS_KEEP non-empty → keep exactly those; else drop PRESET_SKILLS_DROP.
 # One test for BOTH the core enumeration and the module-bundle re-adds: the
 # old apply_preset_filter ran on every INSTALLED skill unconditionally, so a
 # selected module's skill outside the keep list was removed too — the bundle
 # loop must not bypass the filter.
-_selset_skill_excluded() {
+#
+# PUBLIC: update.sh consumes this too, so the keep/drop rule has ONE definition
+# rather than one per install/update path. Callers fill the two arrays; the
+# predicate itself is pure (no preset file read, no filesystem access).
+skill_excluded_by_preset() {
     local name="$1" k nkeep=0
     for k in ${PRESET_SKILLS_KEEP[@]+"${PRESET_SKILLS_KEEP[@]}"}; do nkeep=$((nkeep+1)); done
     if [ "$nkeep" -gt 0 ]; then
@@ -167,7 +171,7 @@ _selset_skills() {
     for d in "$base"/.claude/skills/*/; do
         [ -d "$d" ] || continue
         name=$(basename "$d")
-        _selset_skill_excluded "$name" && continue
+        skill_excluded_by_preset "$name" && continue
         _selset_owned_by_unselected ".claude/skills/$name" && continue
         printf '.claude/skills/%s/\n' "$name"
     done
@@ -213,7 +217,7 @@ compute_selected_set() {
                     .claude/skills/*/|.claude/skills/*)
                         pname="${p#.claude/skills/}"
                         pname="${pname%%/*}"
-                        [ -n "$pname" ] && _selset_skill_excluded "$pname" && continue
+                        [ -n "$pname" ] && skill_excluded_by_preset "$pname" && continue
                         ;;
                 esac
                 printf '%s\n' "$p"

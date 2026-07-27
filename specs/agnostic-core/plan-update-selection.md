@@ -81,9 +81,47 @@ join the unreachable set.
   (`react|vue|generic|node-api|fullstack|python|go|rust|java|flutter|neovim`).
   Fixing this means extending detection, not the whitelist — separate chantier.
   They are listed in the coverage guard's documented-exception set.
-- **Selection predicates still duplicated**: `is_skill_kept`, `is_skill_dropped`,
-  `is_catalog_item_filtered`, `_catalog_remove_set` in `update.sh` restate what
-  `selected-set.sh` computes. Rules were the only surface where the duplication
-  actually diverged (no shipped preset declares catalog/skill filters, so those
-  paths are latent risk, not live drift). Folding them onto the seam is the next
-  step; the parity guard above is what makes it safe to attempt.
+## Follow-up: how far the dedup actually goes
+
+The remaining duplication was measured before being touched, with three fixture
+presets driving both paths end-to-end (no shipped preset declares foundation
+filters, so nothing else exercises them):
+
+| Case | Result |
+|------|--------|
+| drop-mode catalogs + skills | install and update **agree** |
+| keep-mode catalogs + skills | **agree** |
+| keep-mode + an installed module the whitelist excludes | **agree** |
+
+That third case is the asymmetric one: update protects module-owned items from
+the preset filter's jurisdiction (`CF_EXCLUDE_DOMAINS`/`CF_EXCLUDE_ITEMS`),
+while the install-side selection instead re-adds module bundles after filtering.
+Two mechanisms, one rule — and they land on the same answer. So the duplication
+was latent risk, never live drift. All three cases are now pinned in
+`tests/install-update-parity.bats`.
+
+**Done — the skill keep/drop rule has one definition.**
+`skill_excluded_by_preset` (in the seam) is now public and consumed by both;
+`update.sh` fills the same `PRESET_SKILLS_KEEP`/`PRESET_SKILLS_DROP` arrays the
+install fills, and its `is_skill_filtered_out` is a two-line wrapper mapping a
+per-file path onto the skill name. Net −78/+50 lines in `update.sh`, and the
+three-branch keep/drop announcement loop collapses to one walk. A structure
+guard in `selected-set.bats` fails if a second copy reappears.
+
+**Deliberately NOT done — folding `update.sh` onto `compute_selected_set`.**
+Two structural mismatches make it a worse design, not a cleaner one:
+
+1. **Skip attribution.** update reports *which* module owns each skipped file
+   ("Modules not installed (skipped): legal, biz (12 files)") and prints a
+   per-reason dry-run line. A membership test against a flat manifest answers
+   "is this file in the set?" and loses the reason — a real diagnostic
+   regression for a cosmetic gain.
+2. **Legacy fallback.** update must serve projects with no recorded stack
+   (ship everything, unchanged). The seam models *a fresh install's selection*
+   and has no way to express "unknown → no filter".
+
+`_catalog_remove_set` (update) and `_selset_catalog` (seam) are likewise not
+duplicated logic: both are thin adapters over the same shared core
+(`catalog_removal_set` in `catalog-filter.sh`), differing only in where their
+inputs come from — a preset file versus pre-filled globals. Unifying the
+adapters would mean unifying the input model, i.e. mismatch 2 again.
