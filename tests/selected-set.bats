@@ -207,3 +207,83 @@ run_set() {
     done <<< "$output"
     [ "$missing" -eq 0 ]
 }
+
+# --- Rules whitelist coverage ------------------------------------------------
+#
+# The whitelist is the single gate deciding which rules reach a project. A rule
+# omitted from every arm is dead weight in the repo: it can never be installed.
+# These tests pin the arms that were silently incomplete and add a drift guard
+# so a NEWLY added rule cannot join the unreachable set unnoticed.
+
+# rules_for <type> — the whitelist of one type, one name per line.
+rules_for() {
+    bash -c ". '$LIB'; get_rules_for_type '$1'"
+}
+
+@test "rules whitelist: a vue project gets vue.md" {
+    run rules_for vue
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"vue.md"* ]]
+}
+
+@test "rules whitelist: vue.md ships ONLY to vue (not to react/python)" {
+    run rules_for react
+    [[ "$output" != *"vue.md"* ]]
+    run rules_for python
+    [[ "$output" != *"vue.md"* ]]
+}
+
+@test "rules whitelist: migration-safety.md is universal (its paths span TS, Python, Go)" {
+    local t
+    for t in react vue node-api fullstack generic flutter python go rust java; do
+        run rules_for "$t"
+        [ "$status" -eq 0 ]
+        [[ "$output" == *"migration-safety.md"* ]] || { echo "missing for type: $t" >&2; false; }
+    done
+}
+
+@test "rules whitelist: service-worker.md ships to web types only" {
+    local t
+    for t in react vue node-api fullstack generic; do
+        run rules_for "$t"
+        [[ "$output" == *"service-worker.md"* ]] || { echo "missing for web type: $t" >&2; false; }
+    done
+    for t in python go rust java flutter; do
+        run rules_for "$t"
+        [[ "$output" != *"service-worker.md"* ]] || { echo "leaked to: $t" >&2; false; }
+    done
+}
+
+@test "rules whitelist: base-maintenance.md is never shipped (foundation-internal)" {
+    local t
+    for t in react vue node-api fullstack generic flutter python go rust java neovim ""; do
+        run rules_for "$t"
+        [[ "$output" != *"base-maintenance.md"* ]] || { echo "leaked to type: '$t'" >&2; false; }
+    done
+}
+
+@test "rules whitelist: no rule is unreachable except the documented set" {
+    # Every .claude/rules/*.md must be shipped by at least ONE stack type.
+    # The exceptions are deliberate and enumerated here, so adding a rule
+    # without wiring it into an arm fails this test instead of rotting.
+    #   - base-maintenance: foundation-internal, never shipped to a project.
+    #   - astro/svelte/php/ruby/csharp: detection.sh cannot yield those types
+    #     yet, so no arm can select them (tracked separately).
+    local documented_unreachable="astro.md base-maintenance.md csharp.md php.md ruby.md svelte.md"
+
+    local reachable
+    reachable=$(for t in react vue node-api fullstack generic flutter python go rust java neovim ""; do
+        rules_for "$t"
+    done | LC_ALL=C sort -u)
+
+    local rule name unreachable=""
+    for rule in "$BASE_DIR"/.claude/rules/*.md; do
+        name=$(basename "$rule")
+        case " $documented_unreachable " in *" $name "*) continue ;; esac
+        case $'\n'"$reachable"$'\n' in
+            *$'\n'"$name"$'\n'*) ;;
+            *) unreachable="$unreachable $name" ;;
+        esac
+    done
+    [ -z "$unreachable" ] || { echo "unreachable rules (wire them into an arm, or document them):$unreachable" >&2; false; }
+}

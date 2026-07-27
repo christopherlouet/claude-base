@@ -756,6 +756,15 @@ load_module_partition() {
 #   $1 - Target directory (absolute path)
 record_foundation_state() {
     local dir="$1"
+    # Record the stack the rules whitelist was resolved for (get_rules_for_type),
+    # so `update` can honour the same selection instead of refreshing the whole
+    # rules dir and silently undoing it. Read by both branches below (the
+    # no-preset one writes the manifest through record_foundation_version).
+    # An EMPTY type still selected a whitelist: get_rules_for_type treats "" and
+    # "generic" identically (simple mode without -t). Record the effective type,
+    # else the install's own filtering would read as "legacy, unknown stack".
+    local MANIFEST_PROJECT_TYPE="${PROJECT_TYPE:-generic}"
+    export MANIFEST_PROJECT_TYPE
     if [[ -n "$PRESET_NAME" ]]; then
         load_module_partition
         write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" \

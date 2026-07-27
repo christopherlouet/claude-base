@@ -43,12 +43,24 @@ get_rules_for_type() {
     # The 4 global (path-less) rules — git, workflow, self-improvement,
     # vendor-precedence — apply regardless of file type and must ALL ship, else
     # the copied rules/README.md references rules absent from disk.
-    local rules=("git.md" "workflow.md" "self-improvement.md" "vendor-precedence.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "research.md" "README.md")
+    # migration-safety is universal for the same reason as deploy-safety: its
+    # target paths span the stacks (package.json/tsconfig/next.config AND
+    # pyproject.toml AND go.mod), so it is cross-cutting, not web-specific.
+    local rules=("git.md" "workflow.md" "self-improvement.md" "vendor-precedence.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "migration-safety.md" "research.md" "README.md")
+
+    # The web bundle — shared by every JS/TS-flavoured type. service-worker
+    # belongs here (paths: sw.js, service-worker*) and nowhere else.
+    local web_rules=("typescript.md" "react.md" "nextjs.md" "accessibility.md" "performance.md" "api.md" "design-style.md" "service-worker.md")
 
     # Rules specific to the project type
     case "$project_type" in
-        react|vue|node-api|fullstack|generic)
-            rules+=("typescript.md" "react.md" "nextjs.md" "accessibility.md" "performance.md" "api.md" "design-style.md")
+        vue)
+            # Vue gets the web bundle PLUS its own rule — omitting vue.md meant
+            # a detected Vue project never received its framework rule.
+            rules+=("${web_rules[@]}" "vue.md")
+            ;;
+        react|node-api|fullstack|generic)
+            rules+=("${web_rules[@]}")
             ;;
         flutter)
             rules+=("flutter.md" "design-style.md")
@@ -69,7 +81,7 @@ get_rules_for_type() {
 
     # If type is unknown or generic, add TS/web by default (most common case)
     if [[ "$project_type" == "generic" || -z "$project_type" ]]; then
-        rules+=("typescript.md" "react.md" "accessibility.md" "performance.md" "api.md" "design-style.md")
+        rules+=("${web_rules[@]}")
     fi
 
     # Deduplicate and return

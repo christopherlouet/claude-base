@@ -285,6 +285,59 @@ run_lib() {
     [ "$status" -ne 0 ]
 }
 
+# --- projectType: the stack the install selected its rules for ---------------
+#
+# install picks rules through get_rules_for_type; update had no way to know the
+# type, so it refreshed the WHOLE rules dir and silently undid that selection.
+# Recording the type makes the install-time decision durable. Same mechanism as
+# tier: env wins, existing value is preserved, absent = legacy (unknown).
+
+@test "manifest: projectType is recorded from MANIFEST_PROJECT_TYPE" {
+    run bash -c "source '$MODULES_LIB'; MANIFEST_PROJECT_TYPE=python write_foundation_manifest '$TEST_DIR' '2.1.0' ''"
+    [ "$status" -eq 0 ]
+    run bash -c "jq -r '.projectType' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "python" ]
+}
+
+@test "manifest: projectType is absent when never recorded (legacy-safe)" {
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" ""
+    [ "$status" -eq 0 ]
+    run bash -c "jq -r 'has(\"projectType\")' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "false" ]
+}
+
+@test "manifest: an existing projectType survives a rewrite without the env" {
+    run bash -c "source '$MODULES_LIB'; MANIFEST_PROJECT_TYPE=go write_foundation_manifest '$TEST_DIR' '2.1.0' ''"
+    [ "$status" -eq 0 ]
+    # A later module add/remove rewrites the manifest with no env set.
+    run_lib write_foundation_manifest "$TEST_DIR" "2.2.0" "" legal
+    [ "$status" -eq 0 ]
+    run bash -c "jq -r '.projectType' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "go" ]
+}
+
+@test "manifest: manifest_project_type reads it back, empty when absent" {
+    run bash -c "source '$MODULES_LIB'; MANIFEST_PROJECT_TYPE=flutter write_foundation_manifest '$TEST_DIR' '2.1.0' ''"
+    run_lib manifest_project_type "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ "$output" = "flutter" ]
+
+    rm -f "$TEST_DIR/.claude/foundation.json"
+    run_lib write_foundation_manifest "$TEST_DIR" "2.1.0" ""
+    run_lib manifest_project_type "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "manifest: record_foundation_version preserves projectType (version stamp only)" {
+    run bash -c "source '$MODULES_LIB'; MANIFEST_PROJECT_TYPE=rust write_foundation_manifest '$TEST_DIR' '2.1.0' ''"
+    [ "$status" -eq 0 ]
+    run bash -c "source '$REPO_ROOT/scripts/lib/common.sh'; record_foundation_version '$TEST_DIR' '2.9.9'"
+    [ "$status" -eq 0 ]
+    run bash -c "jq -r '.projectType' '$TEST_DIR/.claude/foundation.json'"
+    [ "$output" = "rust" ]
+}
+
 @test "manifest: read fails cleanly when manifest is missing" {
     run_lib read_foundation_manifest "$TEST_DIR"
     [ "$status" -ne 0 ]
