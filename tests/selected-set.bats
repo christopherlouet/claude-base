@@ -208,6 +208,33 @@ run_set() {
     [ "$missing" -eq 0 ]
 }
 
+# --- One definition of the skill filter --------------------------------------
+
+@test "skill filter: update.sh consumes the seam's predicate, owns no copy" {
+    local upd="$BASE_DIR/scripts/update.sh"
+    # It sources the seam and calls the shared predicate...
+    grep -q 'lib/selected-set.sh' "$upd"
+    grep -q 'skill_excluded_by_preset' "$upd"
+    # ...and no longer carries its own keep/drop implementation. A second copy
+    # is exactly how install and update drift apart on what a preset excludes.
+    ! grep -qE '^is_skill_(kept|dropped)\(\)' "$upd"
+    ! grep -q 'ACTIVE_PRESET_KEEP_LIST\|ACTIVE_PRESET_DROP_LIST' "$upd"
+}
+
+@test "skill filter: the shared predicate resolves keep-wins-over-drop" {
+    # keep non-empty wins outright: a skill in BOTH lists is kept, and one in
+    # neither is excluded. Pinned here because the rule now serves two callers.
+    run bash -c ". '$LIB'; PRESET_SKILLS_KEEP=(alpha); PRESET_SKILLS_DROP=(alpha); skill_excluded_by_preset alpha"
+    [ "$status" -ne 0 ]
+    run bash -c ". '$LIB'; PRESET_SKILLS_KEEP=(alpha); PRESET_SKILLS_DROP=(); skill_excluded_by_preset beta"
+    [ "$status" -eq 0 ]
+    run bash -c ". '$LIB'; PRESET_SKILLS_KEEP=(); PRESET_SKILLS_DROP=(beta); skill_excluded_by_preset beta"
+    [ "$status" -eq 0 ]
+    # No filter at all → nothing excluded.
+    run bash -c ". '$LIB'; PRESET_SKILLS_KEEP=(); PRESET_SKILLS_DROP=(); skill_excluded_by_preset beta"
+    [ "$status" -ne 0 ]
+}
+
 # --- Rules whitelist coverage ------------------------------------------------
 #
 # The whitelist is the single gate deciding which rules reach a project. A rule

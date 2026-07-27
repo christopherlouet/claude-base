@@ -77,9 +77,13 @@ UPDATE_DETECT_ONLY=false
 ACTIVE_PRESET_NAME=""
 ACTIVE_PRESET_FILE=""
 ACTIVE_PRESET_SOURCE=""
-ACTIVE_PRESET_DROP_LIST=()
+# Skill filter lists. Named after the seam's inputs (lib/selected-set.sh) on
+# purpose: update fills the SAME globals the install fills, so both feed one
+# shared predicate (skill_excluded_by_preset) instead of each owning a copy.
 # shellcheck disable=SC2034
-ACTIVE_PRESET_KEEP_LIST=()
+PRESET_SKILLS_DROP=()
+# shellcheck disable=SC2034
+PRESET_SKILLS_KEEP=()
 # Command/agent catalog filter (US-3) — newline lists of repo-relative paths
 # the active preset excludes, precomputed once after resolve_active_preset.
 # Empty when no preset / --no-preset (escape hatch reused for free).
@@ -583,7 +587,7 @@ restore_backup() {
 # The manifest and the bundle registry are both static during a run, so the
 # absent-module path set is computed ONCE by _load_module_filter(), then
 # _module_skip_check() is a pure-bash lookup — same pattern as
-# ACTIVE_PRESET_DROP_LIST (loaded once, array lookups per file).
+# the skill filter lists (loaded once, array lookups per file).
 # Parallel arrays (no associative arrays: macOS bash 3.2 portability).
 
 # Exact file paths owned by absent modules, with their owning module.
@@ -1067,7 +1071,7 @@ _count_dir_files() {
 #                                    - 2+ match: refuse, list, instruct
 #
 # Sets ACTIVE_PRESET_NAME / FILE / SOURCE on success, or fails loud.
-# Then calls load_active_drop_list to populate ACTIVE_PRESET_DROP_LIST.
+# Then calls load_active_drop_list to populate PRESET_SKILLS_DROP.
 resolve_active_preset() {
     if $UPDATE_NO_PRESET; then
         return 0
@@ -1164,17 +1168,17 @@ _load_skill_field() {
 # load_active_drop_list
 #
 # Reads .foundation.skills.drop[] from ACTIVE_PRESET_FILE into the global
-# ACTIVE_PRESET_DROP_LIST array. No-op if no active preset or jq is missing.
+# PRESET_SKILLS_DROP array. No-op if no active preset or jq is missing.
 load_active_drop_list() {
-    _load_skill_field '.foundation.skills.drop' ACTIVE_PRESET_DROP_LIST
+    _load_skill_field '.foundation.skills.drop' PRESET_SKILLS_DROP
 }
 
 # load_active_keep_list
 #
 # Reads .foundation.skills.keep[] from ACTIVE_PRESET_FILE into the global
-# ACTIVE_PRESET_KEEP_LIST array. No-op if no active preset or jq is missing.
+# PRESET_SKILLS_KEEP array. No-op if no active preset or jq is missing.
 load_active_keep_list() {
-    _load_skill_field '.foundation.skills.keep' ACTIVE_PRESET_KEEP_LIST
+    _load_skill_field '.foundation.skills.keep' PRESET_SKILLS_KEEP
 }
 
 # _catalog_remove_set <catalog>
@@ -1220,37 +1224,20 @@ is_catalog_item_filtered() {
     return 1
 }
 
-# is_skill_dropped <rel_path>
+# is_skill_filtered_out <rel_path>
 #
-# Returns 0 (true) when the leading directory of <rel_path> is in the active
-# preset's drop list — meaning the file should be skipped during the skills
-# copy step. Returns 1 (false) otherwise (or when no preset is active).
-is_skill_dropped() {
-    [[ "${#ACTIVE_PRESET_DROP_LIST[@]}" -eq 0 ]] && return 1
-    local rel="$1"
-    local skill_name="${rel%%/*}"
-    local s
-    for s in "${ACTIVE_PRESET_DROP_LIST[@]}"; do
-        [[ "$s" == "$skill_name" ]] && return 0
-    done
-    return 1
-}
-
-# is_skill_kept <rel_path>
+# 0 (true) when the active preset's skill filter excludes <rel_path>'s skill —
+# keep-mode: the skill is NOT whitelisted; drop-mode: the skill IS blacklisted.
 #
-# Returns 0 (true) when the keep list is EMPTY (no keep filter — no constraint)
-# OR when the leading directory of <rel_path> IS in the keep list.
-# Returns 1 (false) when the keep list is non-empty and the skill is NOT in it,
-# meaning the file should be skipped during the skills copy step.
-is_skill_kept() {
-    [[ "${#ACTIVE_PRESET_KEEP_LIST[@]}" -eq 0 ]] && return 0
+# The keep/drop RULE itself lives once, in the selection seam
+# (skill_excluded_by_preset, scripts/lib/selected-set.sh), consuming the same
+# PRESET_SKILLS_KEEP/PRESET_SKILLS_DROP arrays the install fills. This wrapper
+# only maps update's per-file view (a path like "dev-tdd/SKILL.md") onto the
+# skill NAME the predicate expects — install and update can no longer disagree
+# on what "the preset drops this skill" means.
+is_skill_filtered_out() {
     local rel="$1"
-    local skill_name="${rel%%/*}"
-    local s
-    for s in "${ACTIVE_PRESET_KEEP_LIST[@]}"; do
-        [[ "$s" == "$skill_name" ]] && return 0
-    done
-    return 1
+    skill_excluded_by_preset "${rel%%/*}"
 }
 
 # is_rule_excluded <rel_path>
@@ -1304,24 +1291,19 @@ update_directory() {
 
     # Dry-run preview of preset-filtered skills (US-5). Announces each
     # skill that the active preset will skip, once per skill.
+    # One walk over the source skills, one predicate — keep-mode and drop-mode
+    # no longer need separate announcement loops (the shared predicate resolves
+    # which one is active), and a drop entry naming a skill absent from the
+    # foundation is silently ignored as before.
     if [[ "$name" = "skills" ]] && $DRY_RUN; then
-        if [[ "${#ACTIVE_PRESET_KEEP_LIST[@]}" -gt 0 ]]; then
-            # keep-mode: announce every foundation skill NOT in the keep list.
-            local _src_skill_dir _src_skill_name
-            while IFS= read -r _src_skill_dir; do
-                _src_skill_name="$(basename "$_src_skill_dir")"
-                if ! is_skill_kept "$_src_skill_name"; then
-                    echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): $_src_skill_name"
-                fi
-            done < <(find "$src_dir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort || true)
-        elif [[ "${#ACTIVE_PRESET_DROP_LIST[@]}" -gt 0 ]]; then
-            local _drop_skill
-            for _drop_skill in "${ACTIVE_PRESET_DROP_LIST[@]}"; do
-                if [[ -d "$src_dir/$_drop_skill" ]]; then
-                    echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): $_drop_skill"
-                fi
-            done
-        fi
+        local _src_skill_dir _src_skill_name
+        while IFS= read -r _src_skill_dir; do
+            [[ -n "$_src_skill_dir" ]] || continue
+            _src_skill_name="$(basename "$_src_skill_dir")"
+            if is_skill_filtered_out "$_src_skill_name"; then
+                echo -e "${DIM}[DRY-RUN]${NC} Skip (preset filter): $_src_skill_name"
+            fi
+        done < <(find "$src_dir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort || true)
     fi
 
     local dir_updated=0
@@ -1366,18 +1348,10 @@ update_directory() {
         # keep-mode: skip when the skill is NOT in the keep list.
         # drop-mode: skip when the skill IS in the drop list.
         # COPY-only — never deletes what's already on disk (EF-011).
-        if [[ "$name" = "skills" ]]; then
-            if [[ "${#ACTIVE_PRESET_KEEP_LIST[@]}" -gt 0 ]]; then
-                if ! is_skill_kept "$rel_path"; then
-                    debug "skills/$rel_path skipped (preset keep-filter: $ACTIVE_PRESET_NAME)"
-                    ((dir_skipped++)) || true
-                    continue
-                fi
-            elif is_skill_dropped "$rel_path"; then
-                debug "skills/$rel_path skipped (preset drop-filter: $ACTIVE_PRESET_NAME)"
-                ((dir_skipped++)) || true
-                continue
-            fi
+        if [[ "$name" = "skills" ]] && is_skill_filtered_out "$rel_path"; then
+            debug "skills/$rel_path skipped (preset filter: $ACTIVE_PRESET_NAME)"
+            ((dir_skipped++)) || true
+            continue
         fi
 
         # Stack whitelist: skip rules outside the project's recorded type (and
@@ -1504,14 +1478,8 @@ update_directory() {
                 debug "$src_subdir/$rel_path skipped (module '$MODULE_SKIP_MATCH' not installed)"
                 continue
             fi
-            # Active preset filter: keep-mode or drop-mode (mirrors main copy loop).
-            if [[ "${#ACTIVE_PRESET_KEEP_LIST[@]}" -gt 0 ]]; then
-                if ! is_skill_kept "$rel_path"; then
-                    continue
-                fi
-            elif is_skill_dropped "$rel_path"; then
-                continue
-            fi
+            # Active preset filter (mirrors the main copy loop).
+            is_skill_filtered_out "$rel_path" && continue
             local dest_file="$dest_dir/$rel_path"
             local file_dest_dir
             file_dest_dir=$(dirname "$dest_file")
@@ -2053,7 +2021,7 @@ main() {
     fi
 
     # Resolve which preset (if any) governs this update run. Sets
-    # ACTIVE_PRESET_* and populates ACTIVE_PRESET_DROP_LIST. Fails fast on
+    # ACTIVE_PRESET_* and populates PRESET_SKILLS_DROP. Fails fast on
     # bogus --preset name or on multi-match without explicit override.
     resolve_active_preset
 

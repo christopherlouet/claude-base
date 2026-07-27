@@ -20,6 +20,7 @@ load 'test_helper'
 
 NEW_PROJECT_SCRIPT="$BATS_TEST_DIRNAME/../scripts/new-project.sh"
 UPDATE_SCRIPT="$BATS_TEST_DIRNAME/../scripts/update.sh"
+MODULE_SCRIPT="$BATS_TEST_DIRNAME/../scripts/module.sh"
 
 setup() {
     skip_if_no_jq
@@ -49,7 +50,10 @@ _assert_parity() {
     # Non-empty first: a broken find would make both directions vacuously green.
     [ -s "$TEST_DIR/after-install" ]
 
-    run "$UPDATE_SCRIPT" -y --all --force "$proj"
+    # PARITY_UPDATE_FLAGS: extra flags the update side needs to see the same
+    # world as the install (e.g. --presets-dir for a fixture preset).
+    run "$UPDATE_SCRIPT" -y --all --force \
+        ${PARITY_UPDATE_FLAGS[@]+"${PARITY_UPDATE_FLAGS[@]}"} "$proj"
     [ "$status" -eq 0 ]
 
     _snapshot "$proj" "$TEST_DIR/after-update"
@@ -91,6 +95,119 @@ _assert_parity() {
 @test "parity: base-maintenance.md (foundation-internal) never reaches a project" {
     _assert_parity --simple
     [ ! -f "$TEST_DIR/proj/.claude/rules/base-maintenance.md" ]
+}
+
+@test "parity: a preset's catalog and skill filters survive the update" {
+    # No SHIPPED preset declares foundation filters, so without this fixture the
+    # filtered selection path — the one where install and update each re-derive
+    # the decision from their own predicates — is never exercised end-to-end.
+    mkdir -p "$TEST_DIR/presets"
+    cat > "$TEST_DIR/presets/paritytest.json" <<'EOF'
+{
+  "name": "paritytest",
+  "displayName": "Parity fixture",
+  "detect": {},
+  "foundation": {
+    "commands": { "drop": ["domain:growth", "domain:legal"] },
+    "agents":   { "drop": ["biz-competitor"] },
+    "skills":   { "drop": ["growth-cro", "web-scraping"] }
+  },
+  "defaults": {}
+}
+EOF
+    # --presets-dir, not the env var: the scripts initialize PRESETS_DIR_OVERRIDE
+    # at load time, clobbering any inherited value.
+    PARITY_UPDATE_FLAGS=(--presets-dir "$TEST_DIR/presets")
+    _assert_parity --simple --presets-dir "$TEST_DIR/presets" --preset paritytest
+
+    # The filter really bit at install time AND was still respected afterwards.
+    [ ! -d "$TEST_DIR/proj/.claude/skills/growth-cro" ]
+    [ ! -d "$TEST_DIR/proj/.claude/skills/web-scraping" ]
+    [ ! -e "$TEST_DIR/proj/.claude/agents/biz-competitor.md" ]
+    [ ! -d "$TEST_DIR/proj/.claude/commands/growth" ]
+    # ...and non-dropped content is present (the filter was not a blanket skip).
+    [ -d "$TEST_DIR/proj/.claude/skills/dev-tdd" ]
+}
+
+@test "parity: a preset's KEEP whitelist survives the update" {
+    # keep-mode is the asymmetric case: update excludes module-owned items from
+    # the filter's jurisdiction (CF_EXCLUDE_DOMAINS/ITEMS) so a whitelist cannot
+    # drop them; the install-side selection has no such exclusion. If the two
+    # disagree, it shows up here and nowhere else.
+    mkdir -p "$TEST_DIR/presets"
+    cat > "$TEST_DIR/presets/keeptest.json" <<'EOF'
+{
+  "name": "keeptest",
+  "displayName": "Keep-mode fixture",
+  "detect": {},
+  "foundation": {
+    "commands": { "keep": ["domain:work", "domain:qa"] },
+    "agents":   { "keep": ["dev-tdd", "qa-loop"] },
+    "skills":   { "keep": ["dev-tdd", "qa-review"] }
+  },
+  "defaults": {}
+}
+EOF
+    PARITY_UPDATE_FLAGS=(--presets-dir "$TEST_DIR/presets")
+    _assert_parity --simple --presets-dir "$TEST_DIR/presets" --preset keeptest
+
+    # The whitelist bit on both sides.
+    [ -d "$TEST_DIR/proj/.claude/skills/dev-tdd" ]
+    [ ! -d "$TEST_DIR/proj/.claude/skills/growth-cro" ]
+    [ -d "$TEST_DIR/proj/.claude/commands/work" ]
+    [ ! -d "$TEST_DIR/proj/.claude/commands/doc" ]
+}
+
+@test "parity: an installed module survives a preset KEEP whitelist that excludes it" {
+    # THE asymmetric case. update excludes module-owned items from the preset
+    # filter's jurisdiction (CF_EXCLUDE_DOMAINS/ITEMS) precisely so a narrow keep
+    # whitelist cannot strip an installed module; the install-side selection
+    # instead re-adds module bundles after filtering. Two different mechanisms
+    # for one rule — this is where they would disagree. Needs a module actually
+    # installed, otherwise the branch is never reached.
+    mkdir -p "$TEST_DIR/presets"
+    cat > "$TEST_DIR/presets/modkeep.json" <<'EOF'
+{
+  "name": "modkeep",
+  "displayName": "Keep-mode + module fixture",
+  "detect": {},
+  "foundation": {
+    "commands": { "keep": ["domain:work"] },
+    "agents":   { "keep": ["dev-tdd"] },
+    "skills":   { "keep": ["dev-tdd"] }
+  },
+  "defaults": {}
+}
+EOF
+    local proj="$TEST_DIR/proj"
+    mkdir -p "$proj"
+    run "$NEW_PROJECT_SCRIPT" -y --simple \
+        --presets-dir "$TEST_DIR/presets" --preset modkeep "$proj"
+    [ "$status" -eq 0 ]
+
+    # Install the legal module: its items are NOT in any keep list.
+    run "$MODULE_SCRIPT" add legal -y --target "$proj"
+    [ "$status" -eq 0 ]
+    [ -e "$proj/.claude/commands/legal/legal-rgpd.md" ]
+
+    _snapshot "$proj" "$TEST_DIR/after-install"
+    [ -s "$TEST_DIR/after-install" ]
+
+    run "$UPDATE_SCRIPT" -y --all --force \
+        --presets-dir "$TEST_DIR/presets" "$proj"
+    [ "$status" -eq 0 ]
+
+    _snapshot "$proj" "$TEST_DIR/after-update"
+    local added removed
+    added=$(comm -13 "$TEST_DIR/after-install" "$TEST_DIR/after-update")
+    removed=$(comm -23 "$TEST_DIR/after-install" "$TEST_DIR/after-update")
+    [ -z "$added" ] || { echo "update deposited:" >&2; printf '%s\n' "$added" >&2; false; }
+    [ -z "$removed" ] || { echo "update removed:" >&2; printf '%s\n' "$removed" >&2; false; }
+
+    # The module's own items are still there — the keep whitelist has no
+    # jurisdiction over them.
+    [ -e "$proj/.claude/commands/legal/legal-rgpd.md" ]
+    [ -e "$proj/.claude/agents/legal-rgpd.md" ]
 }
 
 @test "update reports the rules it left out, naming the recorded stack" {
