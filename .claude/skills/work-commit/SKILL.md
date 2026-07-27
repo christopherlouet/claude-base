@@ -6,6 +6,7 @@ allowed-tools:
   - Read
   - Grep
 context: fork
+background: false
 disable-model-invocation: true
 ---
 

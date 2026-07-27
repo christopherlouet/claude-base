@@ -7,6 +7,7 @@ allowed-tools:
   - Grep
   - Bash
 context: fork
+background: false
 ---
 
 # Agent Teams (Multi-Agent Orchestration)
@@ -161,9 +162,9 @@ The lead will:
 
 ## Recent CLI surface (CLI 2.1.142+)
 
-The `claude agents` subcommand for dispatched background sessions gained per-session configuration flags: `--add-dir`, `--settings`, `--mcp-config`, `--plugin-dir`, `--permission-mode`, `--model`, `--effort`, `--dangerously-skip-permissions`. Useful when a teammate needs a different model than the lead (e.g. dispatch a Haiku worker for grep-heavy tasks while the lead stays on Opus), a tighter permission mode, or an alternate `.mcp-config`. Fast mode runs on **Opus 4.8** (also available on 4.7/4.6).
+The `claude agents` subcommand for dispatched background sessions gained per-session configuration flags: `--add-dir`, `--settings`, `--mcp-config`, `--plugin-dir`, `--permission-mode`, `--model`, `--effort`, `--dangerously-skip-permissions`. Useful when a teammate needs a different model than the lead (e.g. dispatch a Haiku worker for grep-heavy tasks while the lead stays on Opus), a tighter permission mode, or an alternate `.mcp-config`. Fast mode runs on **Opus 5** and Opus 4.8 (Opus 4.7 was removed from fast mode in CC 2.1.219).
 
-For the foundation's own heaviest dispatched sessions (large multi-PR migrations, deep audits), `--model claude-fable-5` selects Anthropic's most capable model — a deliberate, costlier choice (~2× Opus 4.8). This is a per-session selection only: agent `model:` frontmatter is unchanged and there is no `fable` tier alias. **Availability (July 2026):** Fable 5 is generally available again — the June export-control suspension was lifted 2026-06-30 and Fable 5 returned to global availability (incl. Claude Code) on 2026-07-01.
+For the foundation's own heaviest dispatched sessions, Opus 5 (default `opus` alias since 2026-07-24, within ~0.5% of Fable 5's peak at half the price) is the right lead model; `--model claude-fable-5` remains a deliberate niche escalation (~2× Opus 5) for the rare run where Fable's last half-percent matters. Per-session selection only: agent `model:` frontmatter is unchanged and there is no `fable` tier alias. Fable 5 has been generally available since 2026-07-01.
 
 ### Background agents (CLI 2.1.198+, July 2026)
 

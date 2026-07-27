@@ -6,6 +6,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+background: false
 disable-model-invocation: true
 ---
 

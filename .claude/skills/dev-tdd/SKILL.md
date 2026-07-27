@@ -9,6 +9,7 @@ allowed-tools:
   - Glob
   - Grep
 context: fork
+background: false
 model: opus
 argument-hint: "[feature-description]"
 ---
