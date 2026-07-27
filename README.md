@@ -156,7 +156,7 @@ The one-liner above tracks the moving `main` tip. To install a specific, tested
 release instead, pass `--ref <tag>` — still a single line:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash -s -- --ref v5.2.2
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash -s -- --ref v5.3.0
 ```
 
 A pinned install **stays pinned** across `--update` (it never silently jumps to
@@ -171,7 +171,7 @@ execute*, and a hook in this repo blocks `curl … | sh` in agent sessions. Each
 tagged release publishes a `SHA256SUMS` asset, so you can honor that on install:
 
 ```bash
-TAG=v5.2.2
+TAG=v5.3.0
 curl -fsSL "https://raw.githubusercontent.com/christopherlouet/claude-base/$TAG/install.sh" -o install.sh
 curl -fsSL "https://github.com/christopherlouet/claude-base/releases/download/$TAG/SHA256SUMS" -o SHA256SUMS
 sha256sum --check --ignore-missing SHA256SUMS   # must print: install.sh: OK
@@ -490,7 +490,7 @@ Concrete signals rather than a self-assessment score :
 - Six GitHub Actions workflows (CI, security, docs, PR check, release, dependabot auto-merge) gating merges
 - Doc drift firewall (`scripts/audit-docs.sh`) catches syntactic doc drift before merge — see [PR #201](https://github.com/christopherlouet/claude-base/pull/201)
 - Counter anti-drift gate (`scripts/validate-counts.sh`) regenerated from `counts.json`
-- Pinned versions via git tags (current : v<!-- version -->5.2.2<!-- /version -->) with full `CHANGELOG.md` in Keep-a-Changelog format
+- Pinned versions via git tags (current : v<!-- version -->5.3.0<!-- /version -->) with full `CHANGELOG.md` in Keep-a-Changelog format
 
 ### Security measures
 

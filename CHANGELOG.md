@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [5.3.0] - 2026-07-27
+
+The agnostic-core release. The foundation's decision logic is now separated from its Claude Code plumbing on both surfaces — the guard hooks (policy cores behind thin shells, #489) and the installer (select-then-emit, #491) — preparing additional harness transports without changing anything for current users: the full 1787-test baseline passed unchanged through both refactors, and the suite grew to 1955. A July news sweep (#492) then pinned the CC 2.1.218 forked-skills behavior change and refreshed the model guidance for Opus 5.
+
+### Changed
+
+- **Guard hooks split into harness-neutral policy cores + thin Claude Code shells.** The decision logic of the 8 portable guards (dangerous commands, secrets, destructive SQL ×2, bash write targets, the 3 build-gate triggers) moved verbatim into sourceable `_core-helpers.sh` / `_policy-*.sh` libs — plain string in, data verdict out — directly tested by envelope-free suites; each hook script now only reads the stdin envelope and translates a deny into stderr + exit 2. The split is documented (adapter contract, per-hook portability map) and enforced by structural tests (core purity, thin shells, manifest closure, byte-identical bootstraps). New degraded mode, pinned by tests and never silent: security guards fail closed on a missing core (with an actionable hint), gates fail open with a stderr warning. (#489)
+- **The installer is select-then-emit.** Selection (preset skill/catalog filters, module partition, per-type rules whitelist) now resolves as pure data into an explicit `SRC[:DST]` manifest consumed by one shared emitter (extracted from export-minimal), replacing the copy-everything-then-delete pipeline (~350 lines removed). `--dry-run` is truthful by construction — it prints the exact manifest the real run emits, where it previously under-reported removals (the module filter returned early; the skill keep-filter previewed zero removals) — proven both directions by an equivalence suite incl. a real-filters fixture preset and a negative probe. (#491)
+- **Model guidance: Opus 5 is the recommended default for complex work.** `claude-opus-5` (2026-07-24) matches Opus 4.8's price within ~0.5% of Fable 5's peak — half Fable's price — so the "escalate to Fable for hard chantiers" advice is retired across the docs; Fable 5 stays documented as a rare deliberate niche (no `fable` tier alias). (#492)
+
+### Fixed
+
+- **All 53 fork skills pin `background: false`.** Since Claude Code 2.1.218 a `context: fork` skill runs its subagent in the background by default — async result, narrower tool set, edits outside `/rewind` checkpoints — which broke the foundation's blocking workflow-skill model. Every skill now restores the exact pre-2.1.218 behavior; the skill-authoring guide teaches the field and frontmatter drift guards enforce it. (#492)
+- **Review-batch hardening from the two adversarial passes (20 confirmed findings).** Highlights: a sibling policy lib's no-op fallback could fake the real message-strip via `declare -F` (re-keyed on the core sentinel; would have resurrected the payload false-block class in multi-lib shells); the installer manifest silently dropped top-level `.claude/skills/` files and let a selected module resurrect a preset-excluded skill; fail-open missing-core branches now warn; recovery hints no longer suggest the inline `VAR=1` form that never reaches a hook. (#489, #491)
+
 ## [5.2.2] - 2026-07-15
 
 Two analysis passes in one release. Pass 3 (2026-07-13, seven clusters #477-#483) was a third full-project audit: 6 P1 / 10 P2 / ~25 P3, including two regressions introduced by v5.2.1's own guard hardening. Pass 4 (2026-07-15, #486-#487) then applied the lesson that fresh code carries the highest bug density: a targeted adversarial review of pass 3's own merged diff — no bypasses found, four confirmed P2 false-block/data-shape bugs fixed. Every finding was reproduced live before its fix; the suite grew 1675 → 1787.
