@@ -291,15 +291,14 @@ rules_for() {
 
 @test "rules whitelist: no rule is unreachable except the documented set" {
     # Every .claude/rules/*.md must be shipped by at least ONE stack type.
-    # The exceptions are deliberate and enumerated here, so adding a rule
-    # without wiring it into an arm fails this test instead of rotting.
+    # The exception is deliberate and enumerated here, so adding a rule without
+    # wiring it into an arm fails this test instead of rotting.
     #   - base-maintenance: foundation-internal, never shipped to a project.
-    #   - astro/svelte/php/ruby/csharp: detection.sh cannot yield those types
-    #     yet, so no arm can select them (tracked separately).
-    local documented_unreachable="astro.md base-maintenance.md csharp.md php.md ruby.md svelte.md"
+    local documented_unreachable="base-maintenance.md"
 
     local reachable
-    reachable=$(for t in react vue node-api fullstack generic flutter python go rust java neovim ""; do
+    reachable=$(for t in react vue svelte astro node-api fullstack generic flutter \
+                         python php ruby csharp go rust java neovim ""; do
         rules_for "$t"
     done | LC_ALL=C sort -u)
 

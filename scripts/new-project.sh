@@ -238,6 +238,11 @@ ${BOLD}PROJECT TYPES${NC}
     fullstack   Monorepo (Turborepo, Nx)
     flutter     Flutter / Dart (iOS, Android, Web)
     neovim      Neovim / Lua config
+    svelte      Svelte / SvelteKit
+    astro       Astro
+    php         PHP (Laravel, Symfony)
+    ruby        Ruby (Rails, Sinatra)
+    csharp      C# / .NET (ASP.NET Core)
     generic     Other / Generic
 
 ${BOLD}INSTALLED FILES${NC}
@@ -1583,26 +1588,16 @@ get_project_type() {
     if [[ $n -gt 0 ]]; then
         default_choice="1"
     else
-        case $DETECTED_TYPE in
-            react)     default_choice="1" ;;
-            vue)       default_choice="2" ;;
-            node-api)  default_choice="3" ;;
-            python)    default_choice="4" ;;
-            go)        default_choice="5" ;;
-            rust)      default_choice="6" ;;
-            java)      default_choice="7" ;;
-            fullstack) default_choice="8" ;;
-            flutter)   default_choice="9" ;;
-            neovim)    default_choice="10" ;;
-            *)         default_choice="" ;;
-        esac
+        # Derived from the menu's own type list (lib/menu.sh) — a hand-numbered
+        # copy here silently pointed at the wrong option whenever the menu grew.
+        default_choice="$(menu_type_option "$DETECTED_TYPE")"
     fi
 
     # Render the menu (sets _TYPE_MENU_TOTAL).
     print_type_menu "$default_choice"
     echo ""
 
-    local total="${_TYPE_MENU_TOTAL:-11}"
+    local total="${_TYPE_MENU_TOTAL:-${#_MENU_STD_TYPES[@]}}"
     if [[ -n "$default_choice" ]]; then
         prompt "Choice [1-$total] (default: $default_choice): "
     else

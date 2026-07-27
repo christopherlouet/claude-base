@@ -63,7 +63,7 @@ EOF
     else
         # Default scripts based on project type
         case "$PROJECT_TYPE" in
-            react|vue)
+            react|vue|svelte|astro)
                 cat >> "$output_file" << 'EOF'
 | Command | Description |
 |---------|-------------|
@@ -72,6 +72,37 @@ EOF
 | `npm run build` | Production build |
 | `npm test` | Run tests |
 | `npm run lint` | Check the code |
+EOF
+                ;;
+            php)
+                cat >> "$output_file" << 'EOF'
+| Command | Description |
+|---------|-------------|
+| `composer install` | Install dependencies |
+| `php artisan serve` | Development server (Laravel) |
+| `vendor/bin/phpunit` | Run tests |
+| `vendor/bin/php-cs-fixer fix` | Format the code |
+EOF
+                ;;
+            ruby)
+                cat >> "$output_file" << 'EOF'
+| Command | Description |
+|---------|-------------|
+| `bundle install` | Install dependencies |
+| `bin/rails server` | Development server (Rails) |
+| `bundle exec rspec` | Run tests |
+| `bundle exec rubocop` | Check the code |
+EOF
+                ;;
+            csharp)
+                cat >> "$output_file" << 'EOF'
+| Command | Description |
+|---------|-------------|
+| `dotnet restore` | Restore dependencies |
+| `dotnet run` | Run the application |
+| `dotnet test` | Run tests |
+| `dotnet build` | Compile |
+| `dotnet format` | Format the code |
 EOF
                 ;;
             python)

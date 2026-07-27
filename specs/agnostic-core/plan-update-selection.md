@@ -29,7 +29,7 @@ Auditing the arms turned up rules no type could ever select:
 | `migration-safety.md` | in no arm | universal (its target paths span `package.json`/`tsconfig`, `pyproject.toml` AND `go.mod` — cross-cutting like `deploy-safety`) |
 | `service-worker.md` | in no arm | web arm (paths: `sw.js`, `service-worker*`) |
 | `base-maintenance.md` | in no arm | stays out, deliberately — foundation-internal (targets `.claude/skills/**`, `scripts/hooks/**`) |
-| `astro/svelte/php/ruby/csharp.md` | in no arm | UNCHANGED — see the open item below |
+| `astro/svelte/php/ruby/csharp.md` | in no arm | wired later, once detection could name those stacks — see "Follow-up 2" |
 
 Order mattered: aligning update on the whitelist BEFORE fixing it would have
 removed the only channel through which a Vue project ever received `vue.md`.
@@ -76,11 +76,11 @@ join the unreachable set.
 
 ## Open items
 
-- **5 unreachable rules** (`astro`, `svelte`, `php`, `ruby`, `csharp`): no arm
-  can select them because `detection.sh` cannot yield those types
-  (`react|vue|generic|node-api|fullstack|python|go|rust|java|flutter|neovim`).
-  Fixing this means extending detection, not the whitelist — separate chantier.
-  They are listed in the coverage guard's documented-exception set.
+- ~~**5 unreachable rules**~~ — **CLOSED.** `detection.sh` now yields `astro`,
+  `svelte`, `php`, `ruby` and `csharp`, so every rule in `.claude/rules/` is
+  selectable by at least one stack type. The coverage guard's documented
+  exception list is down to `base-maintenance.md` alone. See "Follow-up 2".
+
 ## Follow-up: how far the dedup actually goes
 
 The remaining duplication was measured before being touched, with three fixture
@@ -125,3 +125,51 @@ duplicated logic: both are thin adapters over the same shared core
 (`catalog_removal_set` in `catalog-filter.sh`), differing only in where their
 inputs come from — a preset file versus pre-filled globals. Unifying the
 adapters would mean unifying the input model, i.e. mismatch 2 again.
+
+## Follow-up 2: 5 new project types (astro, svelte, php, ruby, csharp)
+
+The five rules the coverage guard listed as unreachable were unreachable for
+one reason: `detection.sh` had no type to name their stack with. Svelte was the
+clearest case — it *was* detected (`DETECTED_FRAMEWORK="Svelte"`) but mapped to
+type `generic`, so `svelte.md` could never ship to a Svelte project.
+
+Adding a first-class type touches eight places. They are listed here because
+missing one is how a type ends up half-wired:
+
+| # | Touchpoint | What it drives |
+|---|------------|----------------|
+| 1 | `lib/detection.sh` | the detector + its registration in `detect_stack` |
+| 2 | `lib/menu.sh` | `_MENU_STD_TYPES` + `_MENU_STD_LABELS` |
+| 3 | `lib/category-map.sh` | which category menus offer the type |
+| 4 | `new-project.sh` help | the documented `--type` vocabulary |
+| 5 | `new-project.sh` default choice | which menu option is pre-selected |
+| 6 | `lib/generators.sh` | the per-stack command table in a generated CLAUDE.md |
+| 7 | `lib/selected-set.sh` | the rules whitelist arm — the point of the exercise |
+| 8 | tests + counts | detection tests, menu counts, coverage guard |
+
+Two design decisions worth keeping:
+
+- **Astro is matched BEFORE react/vue.** Astro integrations pull React or Vue
+  in as island renderers, so an Astro site rendering one React component has
+  both dependencies; matching react first mislabels it.
+- **New types are appended before `generic`, not grouped by family.** Grouping
+  would have renumbered existing menu options for no user benefit. Only the
+  `generic` entry moves.
+
+Also fixed in passing: the "detected type → default menu choice" mapping was a
+hand-numbered second copy of the menu order in `new-project.sh`, which silently
+points at the wrong option whenever the menu grows. It now derives from
+`_MENU_STD_TYPES` via `menu_type_option`, and the menu tests derive their
+expected counts instead of pinning the literal 11.
+
+### Accepted debt: no CLAUDE.md template for the five new types
+
+Every other menu type has a `templates/CLAUDE.<type>.md`; these five do not, and
+fall back to the foundation's generic template — a complete, working CLAUDE.md,
+just not stack-specific. This is deliberate, not an oversight: a template
+encodes opinions about a stack's conventions, and writing five of them with no
+real project to validate against would ship speculative guidance that no test
+can contradict. The factual half (build/test/lint commands) IS covered, via the
+generators' per-type command tables.
+
+Write them per-type when a real project of that stack turns up.
