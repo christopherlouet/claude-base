@@ -67,6 +67,7 @@ KNOWN_PATH_PREFIXES=(
     "~/.claude/"                  # Claude Code user config dir
     "~/.claude.json"              # Claude Code user state file
     "~/.local/share/claude-base"  # canonical foundation install per install.sh:33
+    "~/.local/bin"                # dispatcher symlink target per install.sh:37 (DEFAULT_BIN)
     "~/dev/vendor-skills/"        # user-suggested vendor clone location
     "~/dev/"                      # broader user-dev convention
 )
@@ -188,9 +189,16 @@ enumerate_scope_files() {
             exit 2
         fi
     else
-        # Default mode: 8 hand-maintained doc globs
+        # Default mode: hand-maintained doc globs.
+        #
+        # templates/ and the two root docs are in scope because leaving them out
+        # is how a rename went unnoticed for six months: the January skill
+        # rename rotted the ten CLAUDE.md templates, and nothing scanned them.
+        # templates/ is the highest-stakes surface of all — every installed
+        # project inherits its CLAUDE.md from there.
         local globs=(
             "$BASE_DIR/docs"
+            "$BASE_DIR/templates"
             "$BASE_DIR/website/docs/intro"
             "$BASE_DIR/website/docs/concepts"
             "$BASE_DIR/website/docs/examples"
@@ -199,9 +207,18 @@ enumerate_scope_files() {
             "$BASE_DIR/website/docs/guides"
             "$BASE_DIR/website/docs/reference"
         )
-        for g in "${globs[@]}"; do
-            [[ -d "$g" ]] && find "$g" -type f -name '*.md' 2>/dev/null
-        done | sort -u
+        local files=(
+            "$BASE_DIR/README.md"
+            "$BASE_DIR/CLAUDE.md"
+        )
+        {
+            for g in "${globs[@]}"; do
+                [[ -d "$g" ]] && find "$g" -type f -name '*.md' 2>/dev/null
+            done
+            for f in "${files[@]}"; do
+                [[ -f "$f" ]] && echo "$f"
+            done
+        } | sort -u
     fi
 }
 
