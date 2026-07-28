@@ -229,6 +229,37 @@ EOF
     [[ "$output" == *"ci-existing"* ]]
 }
 
+@test "new-project.sh -t rejects a misspelled type instead of silently degrading" {
+    # `-t pyton` used to be accepted verbatim: no template matched, so the
+    # project silently came out generic -- no Python CLAUDE.md, no Python
+    # ignore block, and no message saying so.
+    run "$NEW_PROJECT_SCRIPT" -y -q -t pyton --skip-prompts "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"pyton"* ]]
+    [[ "$output" == *"python"* ]]
+}
+
+@test "new-project.sh -t accepts every documented project type" {
+    # The help's PROJECT TYPES section is the contract; flutter and neovim are
+    # real types that the -t option line forgets to list.
+    local t
+    for t in react vue node-api python go rust java fullstack flutter neovim generic; do
+        run "$NEW_PROJECT_SCRIPT" -n -y -q -t "$t" --skip-prompts "$TEST_DIR"
+        [ "$status" -eq 0 ] || {
+            printf 'type %s was rejected\n' "$t" >&2
+            return 1
+        }
+    done
+}
+
+@test "new-project.sh --preset astro still works though astro is not a -t type" {
+    # The astro preset declares appliesToTypes ["astro", ...] and feeds
+    # FORCE_TYPE from it. Validation applies to the user-supplied -t flag only;
+    # widening it to the preset-derived value would break this install.
+    run "$NEW_PROJECT_SCRIPT" -n -y -q --preset astro --skip-prompts "$TEST_DIR"
+    [ "$status" -eq 0 ]
+}
+
 @test "new-project.sh --ci-existing replace removes existing workflows and installs the foundation ones" {
     mkdir -p "$TEST_DIR/.github/workflows"
     echo "name: Custom" > "$TEST_DIR/.github/workflows/custom.yml"

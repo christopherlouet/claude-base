@@ -169,7 +169,8 @@ ${BOLD}OPTIONS${NC}
     -n, --dry-run       Simulate the install without copying anything
     -q, --quiet         Quiet mode (errors only)
     --verbose           Verbose mode (debug)
-    -t, --type TYPE     Force the project type (react, vue, node-api, python, go, rust, java, fullstack, generic)
+    -t, --type TYPE     Force the project type (see PROJECT TYPES below for the
+                        full list); an unknown value is rejected
     -p, --path PATH     Parent folder where the project will be created (default: current directory)
     --ci                Include GitHub Actions (CI/CD)
     --ci-existing MODE  Handle existing CI/CD non-interactively: keep|merge|replace
@@ -291,6 +292,16 @@ parse_args() {
                 ;;
             -t|--type)
                 FORCE_TYPE="$2"
+                # A misspelled type used to be accepted verbatim: no template
+                # matched, so the project silently came out generic. Validated
+                # here (the --ci-existing idiom) rather than on PROJECT_TYPE,
+                # because a preset legitimately feeds FORCE_TYPE a value that is
+                # not a -t type -- the astro preset declares appliesToTypes
+                # ["astro", ...] and would break under a global check.
+                case "$FORCE_TYPE" in
+                    react|vue|node-api|python|go|rust|java|fullstack|flutter|neovim|generic) ;;
+                    *) error "Invalid --type value: '$FORCE_TYPE' (expected: react, vue, node-api, python, go, rust, java, fullstack, flutter, neovim, or generic)" ;;
+                esac
                 shift 2
                 ;;
             -p|--path)
