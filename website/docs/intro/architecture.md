@@ -128,8 +128,8 @@ claude-base/
 
 **Triggering example:**
 ```
-"I want to do TDD" → test-driven-development skill activated
-"Make a commit" → generating-commit-messages skill activated
+"I want to do TDD" → dev-tdd skill activated
+"Make a commit" → work-commit skill activated
 ```
 
 ### Rules (<!-- count:rules -->32<!-- /count -->)

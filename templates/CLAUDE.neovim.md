@@ -464,13 +464,13 @@ ignore = { "212" }  -- Unused argument
 
 | Skill | Trigger | Usage |
 |-------|---------|-------|
-| `exploring-codebase` | "explore", "understand" | Analyze an existing config |
-| `planning-implementation` | "plan", "architecture" | Define a plan before modifying |
-| `test-driven-development` | "TDD", "test first" | Tests with plenary.nvim |
+| `work-explore` | "explore", "understand" | Analyze an existing config |
+| `work-plan` | "plan", "architecture" | Define a plan before modifying |
+| `dev-tdd` | "TDD", "test first" | Tests with plenary.nvim |
 | `qa-review` | "review", "verify" | Configuration review |
-| `debugging-issues` | "debug", "bug", "error" | Plugin diagnostics |
-| `generating-commit-messages` | "commit", "message" | Conventional Commits |
-| `creating-pull-requests` | "PR", "pull request" | Complete and documented PR |
+| `dev-debug` | "debug", "bug", "error" | Plugin diagnostics |
+| `work-commit` | "commit", "message" | Conventional Commits |
+| `work-pr` | "PR", "pull request" | Complete and documented PR |
 
 ## Recommended Plugins
 

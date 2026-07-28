@@ -209,10 +209,10 @@ class UserControllerIT {
 
 | Skill | Usage |
 |-------|-------|
-| `exploring-codebase` | Analyze an existing codebase |
-| `planning-implementation` | Define a plan before coding |
-| `test-driven-development` | Red-Green-Refactor TDD cycle |
+| `work-explore` | Analyze an existing codebase |
+| `work-plan` | Define a plan before coding |
+| `dev-tdd` | Red-Green-Refactor TDD cycle |
 | `qa-review` | Thorough code review |
-| `debugging-issues` | Methodical diagnosis |
-| `generating-commit-messages` | Conventional Commits |
-| `creating-pull-requests` | Complete and documented PR |
+| `dev-debug` | Methodical diagnosis |
+| `work-commit` | Conventional Commits |
+| `work-pr` | Complete and documented PR |
