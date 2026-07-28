@@ -169,7 +169,8 @@ ${BOLD}OPTIONS${NC}
     -n, --dry-run       Simulate the install without copying anything
     -q, --quiet         Quiet mode (errors only)
     --verbose           Verbose mode (debug)
-    -t, --type TYPE     Force the project type (react, vue, node-api, python, go, rust, java, fullstack, generic)
+    -t, --type TYPE     Force the project type (see PROJECT TYPES below for the
+                        full list); an unknown value is rejected
     -p, --path PATH     Parent folder where the project will be created (default: current directory)
     --ci                Include GitHub Actions (CI/CD)
     --ci-existing MODE  Handle existing CI/CD non-interactively: keep|merge|replace
@@ -291,6 +292,16 @@ parse_args() {
                 ;;
             -t|--type)
                 FORCE_TYPE="$2"
+                # A misspelled type used to be accepted verbatim: no template
+                # matched, so the project silently came out generic. Validated
+                # here (the --ci-existing idiom) rather than on PROJECT_TYPE,
+                # because a preset legitimately feeds FORCE_TYPE a value that is
+                # not a -t type -- the astro preset declares appliesToTypes
+                # ["astro", ...] and would break under a global check.
+                case "$FORCE_TYPE" in
+                    react|vue|node-api|python|go|rust|java|fullstack|flutter|neovim|generic) ;;
+                    *) error "Invalid --type value: '$FORCE_TYPE' (expected: react, vue, node-api, python, go, rust, java, fullstack, flutter, neovim, or generic)" ;;
+                esac
                 shift 2
                 ;;
             -p|--path)
@@ -1108,7 +1119,63 @@ update_gitignore_file() {
         fi
     else
         copy_file "$BASE_DIR/.gitignore" "$target_dir/"
+        append_type_gitignore "$target_dir" "${PROJECT_TYPE:-generic}"
         success ".gitignore created"
+    fi
+}
+
+# Append the language-specific ignore block for a project type.
+#
+# The seed copied above is the foundation's own .gitignore, which is
+# Node-flavoured: a `-t python` project came out ignoring node_modules/ while
+# tracking __pycache__/. This adds what the seed cannot know.
+#
+# Called ONLY on the create path. A project that already has a .gitignore
+# manages its own ignores — appending a block there would editorialise rules
+# its maintainers already made.
+#
+# Arguments:
+#   $1 - Target directory (absolute path)
+#   $2 - Resolved project type
+append_type_gitignore() {
+    local target_dir="$1"
+    local project_type="$2"
+    local block=""
+
+    case "$project_type" in
+        python)
+            block=$'# Python\n__pycache__/\n*.py[cod]\n*.egg-info/\n.venv/\nvenv/\n.pytest_cache/\n.mypy_cache/\n.ruff_cache/\n.coverage\nhtmlcov/'
+            ;;
+        go)
+            block=$'# Go\n*.exe\n*.test\n*.out\n*.so'
+            ;;
+        rust)
+            block=$'# Rust\ntarget/\n**/*.rs.bk'
+            ;;
+        java)
+            # No blanket *.jar: that would ignore gradle/wrapper/gradle-wrapper.jar,
+            # which every consumer of the repo needs in order to build.
+            block=$'# Java\n*.class\n.gradle/\nout/\n*.log'
+            ;;
+        flutter)
+            block=$'# Flutter / Dart\n.dart_tool/\n.packages\n.flutter-plugins\n.flutter-plugins-dependencies\n*.iml'
+            ;;
+        *)
+            # react / vue / node-api / fullstack / neovim / generic: the seed's
+            # Node and editor sections already cover them.
+            return 0
+            ;;
+    esac
+
+    # Idempotent: a re-run over the same target must not stack a second copy.
+    if grep -qF "${block%%$'\n'*}" "$target_dir/.gitignore" 2>/dev/null; then
+        return 0
+    fi
+
+    if ! $DRY_RUN; then
+        printf '\n%s\n' "$block" >> "$target_dir/.gitignore"
+    else
+        echo -e "${DIM}[DRY-RUN]${NC} Adding the $project_type ignore block to .gitignore"
     fi
 }
 

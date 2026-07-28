@@ -347,13 +347,13 @@ void main() {
 
 | Skill | Trigger | Usage |
 |-------|---------------|-------|
-| `exploring-codebase` | "explore", "understand" | Analyze an existing codebase |
-| `planning-implementation` | "plan", "architecture" | Define a plan before coding |
-| `test-driven-development` | "TDD", "test first" | Red-Green-Refactor cycle |
+| `work-explore` | "explore", "understand" | Analyze an existing codebase |
+| `work-plan` | "plan", "architecture" | Define a plan before coding |
+| `dev-tdd` | "TDD", "test first" | Red-Green-Refactor cycle |
 | `qa-review` | "review", "verify" | In-depth code review |
-| `debugging-issues` | "debug", "bug", "error" | Methodical diagnosis |
-| `generating-commit-messages` | "commit", "message" | Conventional Commits |
-| `creating-pull-requests` | "PR", "pull request" | Complete and documented PR |
+| `dev-debug` | "debug", "bug", "error" | Methodical diagnosis |
+| `work-commit` | "commit", "message" | Conventional Commits |
+| `work-pr` | "PR", "pull request" | Complete and documented PR |
 
 ## Recommended Dependencies
 

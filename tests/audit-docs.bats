@@ -314,3 +314,48 @@ EOF
     run "$AUDIT_DOCS"
     [ "$status" -eq 0 ]
 }
+
+# =============================================================================
+# Scope coverage — the guard's own blind spot
+# =============================================================================
+
+# PLANTED_DRIFT is removed by teardown even if an assertion aborts the test.
+PLANTED_DRIFT=""
+
+teardown_planted() {
+    [[ -n "$PLANTED_DRIFT" && -f "$PLANTED_DRIFT" ]] && rm -f "$PLANTED_DRIFT"
+    return 0
+}
+
+@test "audit-docs: a drift planted in templates/ is caught by a default run" {
+    # The default scope used to stop at docs/ and website/docs/*. That is how a
+    # 2026-01-22 skill rename rotted the ten CLAUDE.md templates unnoticed for
+    # six months: nothing scanned the surface every installed project inherits
+    # its CLAUDE.md from. Asserting the behaviour — not the source text — is
+    # what makes a future narrowing of the scope fail loudly.
+    PLANTED_DRIFT="$BASE_DIR/templates/.audit-scope-probe.md"
+    cat > "$PLANTED_DRIFT" <<'EOF'
+# Scope probe
+
+Run `./scripts/definitely-not-a-real-script.sh` to break things.
+EOF
+
+    run "$AUDIT_DOCS" --category scripts
+    teardown_planted
+
+    [ "$status" -ne 0 ]
+    printf '%s\n' "$output" | grep -q 'definitely-not-a-real-script.sh'
+}
+
+@test "audit-docs: a drift planted in README.md is caught by a default run" {
+    local backup="$TEST_DIR/README.md.bak"
+    cp "$BASE_DIR/README.md" "$backup"
+    printf '\nRun `./scripts/definitely-not-a-real-script.sh` to break things.\n' \
+        >> "$BASE_DIR/README.md"
+
+    run "$AUDIT_DOCS" --category scripts
+    cp "$backup" "$BASE_DIR/README.md"
+
+    [ "$status" -ne 0 ]
+    printf '%s\n' "$output" | grep -q 'definitely-not-a-real-script.sh'
+}

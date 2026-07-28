@@ -93,10 +93,10 @@ export interface ApiResponse<T> {
 
 | Skill | Usage |
 |-------|-------|
-| `exploring-codebase` | Analyze an existing codebase |
-| `planning-implementation` | Define a plan before coding |
-| `test-driven-development` | TDD Red-Green-Refactor cycle |
+| `work-explore` | Analyze an existing codebase |
+| `work-plan` | Define a plan before coding |
+| `dev-tdd` | TDD Red-Green-Refactor cycle |
 | `qa-review` | In-depth code review |
-| `debugging-issues` | Methodical diagnosis |
-| `generating-commit-messages` | Conventional Commits |
-| `creating-pull-requests` | Complete and documented PR |
+| `dev-debug` | Methodical diagnosis |
+| `work-commit` | Conventional Commits |
+| `work-pr` | Complete and documented PR |
