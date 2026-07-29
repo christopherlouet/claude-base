@@ -39,12 +39,19 @@ source "$SCRIPT_DIR/lib/common.sh"
 # shellcheck disable=SC2034  # consumed by audit_verbs via is_in_array nameref
 KNOWN_VERBS=(init update validate doctor lessons preset add remove modules uninstall version help)
 
-# scripts/new-project.sh @ lines 258-337
+# scripts/new-project.sh @ parse_args (lines 271-402)
+#
+# The list covered the feature flags but none of the conventional ones, so a doc
+# that correctly wrote `claude-base init --help` (or --dry-run, --version, …) was
+# reported as drift. Same allowlist-gap class as the DEFAULT_BIN prefix: the
+# finding was real, the doc was not wrong. Short forms are listed alongside their
+# long form because docs use both.
 # shellcheck disable=SC2034  # consumed by _audit_flags_pass via nameref
 KNOWN_INIT_FLAGS=(
-    --verbose --ci --hooks --mcp --docker --all --style --skip-prompts
-    --minimal --preset --presets-dir --list-presets --detect-only
+    --verbose -v --ci --ci-existing --hooks --mcp --docker --all --style
+    --skip-prompts --minimal --preset --presets-dir --list-presets --detect-only
     --yes -y --type -t --simple --install-only
+    --help -h --version --dry-run -n --quiet -q --path -p
 )
 
 # scripts/update.sh

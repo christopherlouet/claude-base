@@ -47,7 +47,7 @@ claude-base init [OPTIONS] [PATH]
 
 | Option | Description |
 |--------|-------------|
-| `-t, --type TYPE` | Project type (react, vue, node-api, python, go, flutter) |
+| `-t, --type TYPE` | Force the project type — run `claude-base init --help` for the authoritative list (an unknown value is rejected) |
 | `-n, --name NAME` | Project name |
 | `--cicd` | Include CI/CD workflows |
 | `--hooks` | Include Git hooks |

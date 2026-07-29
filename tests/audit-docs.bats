@@ -315,6 +315,36 @@ EOF
     [ "$status" -eq 0 ]
 }
 
+@test "audit-docs: KNOWN_INIT_FLAGS covers every flag init actually parses" {
+    # The allowlist is a hand-maintained copy of new-project.sh's parse_args, so
+    # it drifts silently — and a gap here does not fail loudly, it falsely
+    # reports a CORRECT doc as drift. That is how documenting `init --help`
+    # broke the firewall. Derived from parse_args so the copy cannot rot again.
+    #
+    # [[:space:]] not \s: BSD grep on macOS does not know the shorthand.
+    local parsed known flag missing=""
+    parsed=$(sed -n '/^parse_args()/,/^}/p' "$BASE_DIR/scripts/new-project.sh" \
+        | grep -oE '^[[:space:]]+(-[a-zA-Z]\|)?--?[a-z-]+(\|--?[a-z-]+)*\)' \
+        | tr -d ' )' | tr '|' '\n' | sort -u)
+
+    # An empty parse would make every assertion below vacuously true.
+    [ -n "$parsed" ]
+    printf '%s\n' "$parsed" | grep -qx -- '--type'
+
+    known=$(sed -n '/^KNOWN_INIT_FLAGS=(/,/^)/p' "$AUDIT_DOCS" \
+        | grep -oE '(^|[[:space:]])--?[a-zA-Z-]+' | tr -d ' ' | sort -u)
+    [ -n "$known" ]
+
+    for flag in $parsed; do
+        printf '%s\n' "$known" | grep -qx -- "$flag" || missing="$missing $flag"
+    done
+
+    [ -z "$missing" ] || {
+        printf 'init parses these flags but audit-docs would flag them as drift:%s\n' "$missing" >&2
+        return 1
+    }
+}
+
 # =============================================================================
 # Scope coverage — the guard's own blind spot
 # =============================================================================
