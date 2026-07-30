@@ -36,8 +36,19 @@ detect_nodejs() {
     extract_npm_scripts "$dir/package.json"
     extract_main_dependencies "$dir/package.json"
 
-    # Detect the framework
-    if grep -q '"react"' "$dir/package.json" 2>/dev/null; then
+    # Detect the framework. Astro comes FIRST: its integrations pull React or
+    # Vue in as island renderers, so matching those earlier would mislabel every
+    # Astro site that renders a single React component.
+    if grep -q '"astro"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_TYPE="astro"
+        DETECTED_FRAMEWORK="Astro"
+    elif grep -q '"svelte"' "$dir/package.json" 2>/dev/null; then
+        DETECTED_TYPE="svelte"
+        DETECTED_FRAMEWORK="Svelte"
+        if grep -q '"@sveltejs/kit"' "$dir/package.json" 2>/dev/null; then
+            DETECTED_FRAMEWORK="SvelteKit"
+        fi
+    elif grep -q '"react"' "$dir/package.json" 2>/dev/null; then
         DETECTED_TYPE="react"
         DETECTED_FRAMEWORK="React"
         if grep -q '"next"' "$dir/package.json" 2>/dev/null; then
@@ -50,11 +61,9 @@ detect_nodejs() {
             DETECTED_FRAMEWORK="Nuxt.js"
         fi
     elif grep -q '"angular"' "$dir/package.json" 2>/dev/null; then
+        # No angular.md rule ships, so generic is the honest type here.
         DETECTED_TYPE="generic"
         DETECTED_FRAMEWORK="Angular"
-    elif grep -q '"svelte"' "$dir/package.json" 2>/dev/null; then
-        DETECTED_TYPE="generic"
-        DETECTED_FRAMEWORK="Svelte"
     elif grep -q '"express"' "$dir/package.json" 2>/dev/null; then
         DETECTED_TYPE="node-api"
         DETECTED_FRAMEWORK="Express.js"
@@ -199,6 +208,90 @@ detect_java() {
     if { [[ -f "$dir/pom.xml" ]] && grep -q "spring-boot" "$dir/pom.xml" 2>/dev/null; } || \
        { [[ -f "$dir/build.gradle" ]] && grep -q "spring-boot" "$dir/build.gradle" 2>/dev/null; }; then
         DETECTED_FRAMEWORK="Spring Boot"
+    fi
+}
+
+# detect_php / detect_ruby / detect_csharp
+#
+# Same contract as the language detectors above: collect dependencies always,
+# but only CLAIM DETECTED_TYPE when nothing else did — a JS project carrying a
+# Gemfile stays a JS project. The framework is resolved into a local first so
+# an already-typed project never has its framework label overwritten.
+
+detect_php() {
+    local dir="$1"
+    [[ -f "$dir/composer.json" ]] || return 0
+
+    DETECTED_DEPENDENCIES+=("PHP")
+
+    local framework="PHP"
+    if grep -q '"laravel/framework"' "$dir/composer.json" 2>/dev/null; then
+        framework="Laravel"
+        DETECTED_DEPENDENCIES+=("Laravel")
+    elif grep -q '"symfony/' "$dir/composer.json" 2>/dev/null; then
+        framework="Symfony"
+        DETECTED_DEPENDENCIES+=("Symfony")
+    fi
+    if grep -q '"phpunit/phpunit"' "$dir/composer.json" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("PHPUnit")
+    fi
+
+    if [[ -z "$DETECTED_TYPE" ]]; then
+        DETECTED_TYPE="php"
+        DETECTED_FRAMEWORK="$framework"
+    fi
+}
+
+detect_ruby() {
+    local dir="$1"
+    [[ -f "$dir/Gemfile" ]] || return 0
+
+    DETECTED_DEPENDENCIES+=("Ruby")
+
+    local framework="Ruby"
+    if grep -qE "gem ['\"]rails['\"]" "$dir/Gemfile" 2>/dev/null; then
+        framework="Ruby on Rails"
+        DETECTED_DEPENDENCIES+=("Rails")
+    elif grep -qE "gem ['\"]sinatra['\"]" "$dir/Gemfile" 2>/dev/null; then
+        framework="Sinatra"
+        DETECTED_DEPENDENCIES+=("Sinatra")
+    fi
+    if grep -qE "gem ['\"]rspec" "$dir/Gemfile" 2>/dev/null; then
+        DETECTED_DEPENDENCIES+=("RSpec")
+    fi
+
+    if [[ -z "$DETECTED_TYPE" ]]; then
+        DETECTED_TYPE="ruby"
+        DETECTED_FRAMEWORK="$framework"
+    fi
+}
+
+detect_csharp() {
+    local dir="$1"
+
+    # A solution or any project file within two levels (src/App/App.csproj is
+    # the conventional layout, so a root-only check would miss most repos).
+    local first_proj
+    first_proj=$(find "$dir" -maxdepth 2 \( -name "*.csproj" -o -name "*.sln" \) -type f 2>/dev/null | head -n 1)
+    [[ -n "$first_proj" ]] || return 0
+
+    DETECTED_DEPENDENCIES+=("C#" ".NET")
+
+    # Web SDK marks an ASP.NET Core app. Checked file by file rather than with
+    # `find -exec grep +`, whose exit status is not a reliable "any match".
+    local framework=".NET" f
+    while IFS= read -r f; do
+        [[ -n "$f" ]] || continue
+        if grep -q 'Microsoft\.NET\.Sdk\.Web' "$f" 2>/dev/null; then
+            framework="ASP.NET Core"
+            DETECTED_DEPENDENCIES+=("ASP.NET Core")
+            break
+        fi
+    done < <(find "$dir" -maxdepth 2 -name "*.csproj" -type f 2>/dev/null)
+
+    if [[ -z "$DETECTED_TYPE" ]]; then
+        DETECTED_TYPE="csharp"
+        DETECTED_FRAMEWORK="$framework"
     fi
 }
 
@@ -358,6 +451,9 @@ detect_stack() {
     detect_go "$dir"
     detect_rust "$dir"
     detect_java "$dir"
+    detect_php "$dir"
+    detect_ruby "$dir"
+    detect_csharp "$dir"
     detect_flutter "$dir"
     detect_neovim "$dir"
     detect_database "$dir"

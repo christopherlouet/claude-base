@@ -48,14 +48,14 @@ _CATEGORY_LABELS=(
 # The "other-generic" entry lists ALL 11 standard types (regression-safe
 # fallback to the unfiltered menu per spec EF-005).
 declare -A _CATEGORY_TYPES_MAP=(
-    [web-frontend]="react vue fullstack generic"
-    [api-backend]="node-api python go rust java generic"
-    [mobile-desktop]="flutter generic"
-    [game-interactive-media]="generic"
+    [web-frontend]="react vue svelte astro fullstack generic"
+    [api-backend]="node-api python php ruby csharp go rust java generic"
+    [mobile-desktop]="flutter csharp generic"
+    [game-interactive-media]="csharp generic"
     [data-database]="python generic"
     [infra-devops]="generic"
-    [cli-automation]="python go rust generic"
-    [other-generic]="react vue node-api python go rust java fullstack flutter neovim generic"
+    [cli-automation]="python ruby go rust generic"
+    [other-generic]="react vue node-api python go rust java fullstack flutter neovim svelte astro php ruby csharp generic"
 )
 
 # print_category_menu [default_choice]

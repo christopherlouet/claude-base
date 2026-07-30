@@ -238,6 +238,11 @@ ${BOLD}PROJECT TYPES${NC}
     fullstack   Monorepo (Turborepo, Nx)
     flutter     Flutter / Dart (iOS, Android, Web)
     neovim      Neovim / Lua config
+    svelte      Svelte / SvelteKit
+    astro       Astro
+    php         PHP (Laravel, Symfony)
+    ruby        Ruby (Rails, Sinatra)
+    csharp      C# / .NET (ASP.NET Core)
     generic     Other / Generic
 
 ${BOLD}INSTALLED FILES${NC}
@@ -295,12 +300,16 @@ parse_args() {
                 # A misspelled type used to be accepted verbatim: no template
                 # matched, so the project silently came out generic. Validated
                 # here (the --ci-existing idiom) rather than on PROJECT_TYPE,
-                # because a preset legitimately feeds FORCE_TYPE a value that is
-                # not a -t type -- the astro preset declares appliesToTypes
-                # ["astro", ...] and would break under a global check.
+                # which has other feeders than this flag: a preset's
+                # appliesToTypes lands in FORCE_TYPE too, and gating the shared
+                # variable would let a preset vocabulary change break `init`.
+                # Keep this list in sync with the PROJECT TYPES help section and
+                # with detect_stack()'s DETECTED_TYPE values -- a type this
+                # rejects is a type auto-detection can never be asked to force.
                 case "$FORCE_TYPE" in
-                    react|vue|node-api|python|go|rust|java|fullstack|flutter|neovim|generic) ;;
-                    *) error "Invalid --type value: '$FORCE_TYPE' (expected: react, vue, node-api, python, go, rust, java, fullstack, flutter, neovim, or generic)" ;;
+                    react|vue|node-api|python|go|rust|java|fullstack|flutter|neovim) ;;
+                    svelte|astro|php|ruby|csharp|generic) ;;
+                    *) error "Invalid --type value: '$FORCE_TYPE' (expected: react, vue, node-api, python, go, rust, java, fullstack, flutter, neovim, svelte, astro, php, ruby, csharp, or generic)" ;;
                 esac
                 shift 2
                 ;;
@@ -1160,6 +1169,26 @@ append_type_gitignore() {
         flutter)
             block=$'# Flutter / Dart\n.dart_tool/\n.packages\n.flutter-plugins\n.flutter-plugins-dependencies\n*.iml'
             ;;
+        php)
+            # Blanket vendor/ is correct here (unlike ruby below): under
+            # Composer that path is exclusively the installed dependency tree.
+            block=$'# PHP\nvendor/\n.phpunit.result.cache\n.php-cs-fixer.cache'
+            ;;
+        ruby)
+            # vendor/bundle rather than a blanket vendor/: a Rails app can carry
+            # hand-written code under vendor/, and only the bundler install path
+            # is a build artifact.
+            block=$'# Ruby\n.bundle/\nvendor/bundle/\nlog/\ntmp/\n.byebug_history'
+            ;;
+        csharp)
+            block=$'# C# / .NET\nbin/\nobj/\n*.user\n.vs/\nTestResults/'
+            ;;
+        svelte)
+            block=$'# SvelteKit\n.svelte-kit/\n.vercel/'
+            ;;
+        astro)
+            block=$'# Astro\n.astro/'
+            ;;
         *)
             # react / vue / node-api / fullstack / neovim / generic: the seed's
             # Node and editor sections already cover them.
@@ -1583,26 +1612,16 @@ get_project_type() {
     if [[ $n -gt 0 ]]; then
         default_choice="1"
     else
-        case $DETECTED_TYPE in
-            react)     default_choice="1" ;;
-            vue)       default_choice="2" ;;
-            node-api)  default_choice="3" ;;
-            python)    default_choice="4" ;;
-            go)        default_choice="5" ;;
-            rust)      default_choice="6" ;;
-            java)      default_choice="7" ;;
-            fullstack) default_choice="8" ;;
-            flutter)   default_choice="9" ;;
-            neovim)    default_choice="10" ;;
-            *)         default_choice="" ;;
-        esac
+        # Derived from the menu's own type list (lib/menu.sh) — a hand-numbered
+        # copy here silently pointed at the wrong option whenever the menu grew.
+        default_choice="$(menu_type_option "$DETECTED_TYPE")"
     fi
 
     # Render the menu (sets _TYPE_MENU_TOTAL).
     print_type_menu "$default_choice"
     echo ""
 
-    local total="${_TYPE_MENU_TOTAL:-11}"
+    local total="${_TYPE_MENU_TOTAL:-${#_MENU_STD_TYPES[@]}}"
     if [[ -n "$default_choice" ]]; then
         prompt "Choice [1-$total] (default: $default_choice): "
     else

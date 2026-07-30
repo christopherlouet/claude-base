@@ -318,7 +318,13 @@ EOF
     run bash -c "'$NEW_PROJECT' --dry-run '$target' < '$input_file' 2>&1"
     [[ "$output" == *"Use preset: nextjs"* ]]
     [[ "$output" == *"2) React / Next.js"* ]]
-    [[ "$output" == *"Choice [1-12]"* ]]
+    # Total = the standard types plus the one preset entry. Derived, not pinned:
+    # a literal here fails on every menu addition without indicating a defect.
+    local n_std
+    n_std=$(bash -c "source '$BASE_DIR/scripts/lib/common.sh' >/dev/null 2>&1
+                     source '$BASE_DIR/scripts/lib/menu.sh'
+                     echo \${#_MENU_STD_TYPES[@]}")
+    [[ "$output" == *"Choice [1-$((n_std + 1))]"* ]]
 }
 
 @test "presets: explicit --preset suppresses the Detected stack line (EF-016)" {

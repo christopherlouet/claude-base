@@ -4,7 +4,7 @@
 # Claude-Base Type Menu Library
 # Renders the project-type menu in interactive mode and parses user choice.
 # When MATCHED_PRESETS is non-empty, the matching presets are prepended as
-# additional menu entries (one per preset) before the standard 11 type
+# additional menu entries (one per preset) before the standard type
 # options. See specs/presets-detection-and-e2e/spec.md US-4.
 # =============================================================================
 
@@ -15,7 +15,9 @@ if ! declare -f info >/dev/null 2>&1; then
 fi
 
 # Standard project types in menu order. Index 0 → option (n_presets + 1).
-_MENU_STD_TYPES=(react vue node-api python go rust java fullstack flutter neovim generic)
+# New types are APPENDED before "Other / Generic" rather than grouped by family:
+# every existing option keeps its number, so only the generic entry moves.
+_MENU_STD_TYPES=(react vue node-api python go rust java fullstack flutter neovim svelte astro php ruby csharp generic)
 _MENU_STD_LABELS=(
     "React / Next.js"
     "Vue.js"
@@ -27,21 +29,41 @@ _MENU_STD_LABELS=(
     "Fullstack (Monorepo)"
     "Flutter / Mobile"
     "Neovim / Lua"
+    "Svelte / SvelteKit"
+    "Astro"
+    "PHP / Laravel"
+    "Ruby / Rails"
+    "C# / .NET"
     "Other / Generic"
 )
+
+# menu_type_option <type> — the menu option number of a standard type when no
+# preset entries precede it, or empty for an unknown type. Derived from
+# _MENU_STD_TYPES so the "detected type → default choice" mapping cannot drift
+# from the rendered menu (it used to be a second, hand-numbered copy).
+menu_type_option() {
+    local want="$1" i
+    for ((i = 0; i < ${#_MENU_STD_TYPES[@]}; i++)); do
+        if [[ "${_MENU_STD_TYPES[$i]}" == "$want" ]]; then
+            printf '%s\n' "$((i + 1))"
+            return 0
+        fi
+    done
+    return 0
+}
 
 # print_type_menu [default_choice]
 #
 # Print the type menu to stdout. When MATCHED_PRESETS is non-empty, each
 # matching preset appears as an additional menu entry placed at the top
 # (options 1..N, where N = number of matches), visually distinguished
-# from the standard 11 type options that follow (options N+1..N+11).
+# from the standard type options that follow.
 #
 # Arguments:
 #   $1 - (optional) the option number to mark as default with a "← detected"
 #        suffix. When omitted, no option is marked.
 # Sets:
-#   _TYPE_MENU_TOTAL — total number of menu entries (n_presets + 11).
+#   _TYPE_MENU_TOTAL — total number of menu entries (n_presets + the standard type count).
 print_type_menu() {
     local default_choice="${1:-}"
     local n=${#MATCHED_PRESETS[@]}
@@ -101,10 +123,10 @@ print_filtered_type_menu() {
     # menu — same behavior as today's flow.
     if [[ "$slug" = "other-generic" ]]; then
         print_type_menu ""
-        # print_type_menu renders the 11 standard types (options 1..11) with
+        # print_type_menu renders the standard types (options 1..N_std) with
         # no preset entries here (this branch only fires when detection found
         # none — MATCHED_PRESETS is empty). Keep _FILTERED_PRESETS empty so
-        # apply_filtered_type_choice decodes choices 1..11 as standard types
+        # apply_filtered_type_choice decodes the choices as standard types
         # (n=0 → std_pos = choice - 1), matching the rendered menu. Populating
         # it with on-disk presets desynced the handler from the menu and made
         # choice 1 wrongly resolve to a preset instead of React.

@@ -239,23 +239,54 @@ EOF
     [[ "$output" == *"python"* ]]
 }
 
+# help_project_types — the type names the --help PROJECT TYPES section documents.
+# Derived, never hand-copied: a hardcoded duplicate of this list is exactly what
+# let the -t validator and the detected-type vocabulary drift apart when
+# detection gained svelte/astro/php/ruby/csharp.
+help_project_types() {
+    "$NEW_PROJECT_SCRIPT" --help 2>&1 \
+        | sed "s/$(printf '\033')\[[0-9;]*m//g" \
+        | awk '/^PROJECT TYPES$/{f=1;next} f&&/^[[:space:]]*$/{exit} f{print $1}'
+}
+
 @test "new-project.sh -t accepts every documented project type" {
-    # The help's PROJECT TYPES section is the contract; flutter and neovim are
-    # real types that the -t option line forgets to list.
-    local t
-    for t in react vue node-api python go rust java fullstack flutter neovim generic; do
+    local types t
+    types="$(help_project_types)"
+
+    # A parse that silently yields nothing would make the loop vacuously green.
+    [ -n "$types" ]
+    printf '%s\n' "$types" | grep -qx 'react'
+
+    for t in $types; do
         run "$NEW_PROJECT_SCRIPT" -n -y -q -t "$t" --skip-prompts "$TEST_DIR"
         [ "$status" -eq 0 ] || {
-            printf 'type %s was rejected\n' "$t" >&2
+            printf 'type %s is documented under PROJECT TYPES but rejected by -t\n' "$t" >&2
             return 1
         }
     done
 }
 
-@test "new-project.sh --preset astro still works though astro is not a -t type" {
-    # The astro preset declares appliesToTypes ["astro", ...] and feeds
-    # FORCE_TYPE from it. Validation applies to the user-supplied -t flag only;
-    # widening it to the preset-derived value would break this install.
+@test "new-project.sh documents every type detect_stack can return" {
+    # The other direction of the same contract: a type auto-detection assigns
+    # but the help omits is a type the user can see reported and then cannot
+    # force. Pins the five added here against a future silent narrowing.
+    local types t
+    types="$(help_project_types)"
+
+    for t in svelte astro php ruby csharp; do
+        printf '%s\n' "$types" | grep -qx "$t" || {
+            printf 'detected type %s is missing from the PROJECT TYPES help\n' "$t" >&2
+            return 1
+        }
+    done
+}
+
+@test "new-project.sh --preset astro installs (validation sits on -t, not on preset-derived FORCE_TYPE)" {
+    # A preset's appliesToTypes lands in FORCE_TYPE too. The check deliberately
+    # gates the user-supplied flag only, so a preset vocabulary that drifts from
+    # the -t list can never break an install. (astro was the standing example of
+    # a preset type that -t rejected; it became a real -t type in this change,
+    # so this now pins the install path rather than the divergence.)
     run "$NEW_PROJECT_SCRIPT" -n -y -q --preset astro --skip-prompts "$TEST_DIR"
     [ "$status" -eq 0 ]
 }

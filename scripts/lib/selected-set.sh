@@ -59,6 +59,12 @@ get_rules_for_type() {
             # a detected Vue project never received its framework rule.
             rules+=("${web_rules[@]}" "vue.md")
             ;;
+        svelte)
+            rules+=("${web_rules[@]}" "svelte.md")
+            ;;
+        astro)
+            rules+=("${web_rules[@]}" "astro.md")
+            ;;
         react|node-api|fullstack|generic)
             rules+=("${web_rules[@]}")
             ;;
@@ -76,6 +82,15 @@ get_rules_for_type() {
             ;;
         java)
             rules+=("java.md")
+            ;;
+        php)
+            rules+=("php.md")
+            ;;
+        ruby)
+            rules+=("ruby.md")
+            ;;
+        csharp)
+            rules+=("csharp.md")
             ;;
     esac
 

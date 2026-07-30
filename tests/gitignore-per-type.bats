@@ -63,6 +63,50 @@ install_as() {
     grep -qE '^\.dart_tool/$' "$TEST_DIR/.gitignore"
 }
 
+@test "gitignore: a php install ignores the composer vendor tree" {
+    install_as php
+
+    grep -qE '^vendor/$' "$TEST_DIR/.gitignore"
+}
+
+@test "gitignore: a ruby install ignores the bundler path and Rails runtime dirs" {
+    install_as ruby
+
+    grep -qE '^\.bundle/$' "$TEST_DIR/.gitignore"
+    grep -qE '^log/$' "$TEST_DIR/.gitignore"
+}
+
+@test "gitignore: the ruby block never blanket-ignores vendor/" {
+    # A Rails app can carry hand-written code under vendor/; only the bundler
+    # install path is a build artefact. Same trap as the java wrapper jar.
+    install_as ruby
+
+    ! grep -qE '^vendor/$' "$TEST_DIR/.gitignore"
+    grep -qE '^vendor/bundle/$' "$TEST_DIR/.gitignore"
+}
+
+@test "gitignore: a csharp install ignores the .NET build output" {
+    install_as csharp
+
+    grep -qE '^bin/$' "$TEST_DIR/.gitignore"
+    grep -qE '^obj/$' "$TEST_DIR/.gitignore"
+}
+
+@test "gitignore: a svelte install ignores the SvelteKit build dir" {
+    install_as svelte
+
+    grep -qE '^\.svelte-kit/$' "$TEST_DIR/.gitignore"
+    # Still a Node project: the seed's baseline must survive the appended block.
+    grep -qE '^node_modules/$' "$TEST_DIR/.gitignore"
+}
+
+@test "gitignore: an astro install ignores the astro cache" {
+    install_as astro
+
+    grep -qE '^\.astro/$' "$TEST_DIR/.gitignore"
+    grep -qE '^node_modules/$' "$TEST_DIR/.gitignore"
+}
+
 @test "gitignore: the java block never ignores the gradle wrapper jar" {
     # A blanket *.jar would ignore gradle/wrapper/gradle-wrapper.jar, which
     # every consumer must be able to clone. Blocking that is worse than the

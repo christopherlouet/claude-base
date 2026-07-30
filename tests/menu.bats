@@ -50,14 +50,50 @@ menu_run() {
 # print_type_menu — empty MATCHED_PRESETS (regression: today's behavior)
 # =============================================================================
 
-@test "menu: print_type_menu with no matched presets prints the 11 standard options as 1..11" {
+# _n_std — how many standard types the menu carries. Derived, never hardcoded:
+# these tests used to pin the literal 11 and broke as a batch the first time a
+# type was added, which says nothing about the menu being wrong.
+_n_std() {
+    bash -c "source '$BASE_DIR/scripts/lib/common.sh' >/dev/null 2>&1
+             source '$MENU_LIB'
+             echo \${#_MENU_STD_TYPES[@]}"
+}
+
+@test "menu: print_type_menu with no matched presets prints the standard options as 1..N" {
     MATCHED_PRESETS_LITERAL=""
     run menu_run print_type_menu
     [ "$status" -eq 0 ]
     [[ "$output" == *"1) React / Next.js"* ]]
     [[ "$output" == *"2) Vue.js"* ]]
-    [[ "$output" == *"11) Other / Generic"* ]]
+    [[ "$output" == *"$(_n_std)) Other / Generic"* ]]
     [[ "$output" != *"Use preset"* ]]
+}
+
+@test "menu: menu_type_option maps a type to its rendered option number" {
+    # The "detected type → default choice" mapping is derived from this, so it
+    # must agree with what print_type_menu actually renders.
+    run bash -c "source '$BASE_DIR/scripts/lib/common.sh' >/dev/null 2>&1
+                 source '$MENU_LIB'; menu_type_option react"
+    [ "$output" = "1" ]
+    run bash -c "source '$BASE_DIR/scripts/lib/common.sh' >/dev/null 2>&1
+                 source '$MENU_LIB'; menu_type_option python"
+    [ "$output" = "4" ]
+    # A newly added type resolves too — this is what a hand-numbered copy missed.
+    run bash -c "source '$BASE_DIR/scripts/lib/common.sh' >/dev/null 2>&1
+                 source '$MENU_LIB'; menu_type_option csharp"
+    [ -n "$output" ]
+    # And its number is the one the menu prints for that label.
+    MATCHED_PRESETS_LITERAL=""
+    local opt="$output"
+    run menu_run print_type_menu
+    [[ "$output" == *"$opt) C# / .NET"* ]]
+}
+
+@test "menu: menu_type_option is empty for an unknown type (no default marked)" {
+    run bash -c "source '$BASE_DIR/scripts/lib/common.sh' >/dev/null 2>&1
+                 source '$MENU_LIB'; menu_type_option cobol"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
 }
 
 @test "menu: print_type_menu with no matched presets honors default_choice marker" {
@@ -79,7 +115,7 @@ menu_run() {
     [[ "$output" == *"1) Use preset: nextjs"* ]]
     # Standard types now start at 2
     [[ "$output" == *"2) React / Next.js"* ]]
-    [[ "$output" == *"12) Other / Generic"* ]]
+    [[ "$output" == *"$(( $(_n_std) + 1 ))) Other / Generic"* ]]
 }
 
 @test "menu: print_type_menu with two matched presets places both at the top" {
@@ -88,9 +124,9 @@ menu_run() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"1) Use preset: nextjs"* ]]
     [[ "$output" == *"2) Use preset: fastapi"* ]]
-    # Standard types renumbered to 3..13
+    # Standard types renumbered, starting after the two preset entries.
     [[ "$output" == *"3) React / Next.js"* ]]
-    [[ "$output" == *"13) Other / Generic"* ]]
+    [[ "$output" == *"$(( $(_n_std) + 2 ))) Other / Generic"* ]]
 }
 
 @test "menu: print_type_menu with default_choice on a preset entry marks it" {
@@ -178,7 +214,7 @@ menu_run() {
         source '$MENU_LIB'
         MATCHED_PRESETS=()
         PROJECT_TYPE=\"\"
-        apply_type_choice 11 && echo \"TYPE=\$PROJECT_TYPE\"
+        apply_type_choice \${#_MENU_STD_TYPES[@]} && echo \"TYPE=\$PROJECT_TYPE\"
     "
     [ "$status" -eq 0 ]
     [[ "$output" == *"TYPE=generic"* ]]
