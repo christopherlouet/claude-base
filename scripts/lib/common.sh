@@ -856,16 +856,63 @@ clean_claude_dirs() {
     success "Old files cleaned up"
 }
 
+# Resolves the CLAUDE.md template for a project type.
+# Prints the template path on stdout, or nothing when the type has no dedicated
+# template (the caller then falls back to the foundation's generic CLAUDE.md).
+#
+# The mapping is DERIVED from the filesystem (templates/CLAUDE.<type>.md), not
+# from a hand-written list: adding a template is enough to wire a type, and no
+# copy of the list can rot out of sync. It used to be spelled out twice — once
+# as a guard, once as a dispatch — on the create path only, which is how simple
+# mode (and therefore every --preset install) ended up with no mapping at all.
+# Arguments:
+#   $1 - Project type (e.g. python, react, generic)
+#   $2 - Foundation root (optional, defaults to $BASE_DIR)
+claude_md_template_for_type() {
+    local project_type="${1:-}"
+    local base="${2:-${BASE_DIR:-}}"
+
+    [[ -n "$project_type" && -n "$base" ]] || return 0
+    # Types come from -t, preset files and auto-detection; keep the value a
+    # bare token so it can never walk out of templates/.
+    [[ "$project_type" =~ ^[a-z0-9-]+$ ]] || return 0
+
+    local candidate="$base/templates/CLAUDE.${project_type}.md"
+    [[ -f "$candidate" ]] && printf '%s\n' "$candidate"
+    return 0
+}
+
 # Rewrites docs/ paths to .claude/docs/ in a user project's CLAUDE.md.
 # Idempotent: applying multiple times does not break the result.
 # Also removes table lines pointing to docs/ARCHITECTURE.md or docs/WORKFLOWS.md
-# (these files are no longer copied to user projects since v1.30).
+# (these files are no longer copied to user projects since v1.30), and strips
+# the rows/lines that only make sense inside the foundation repo — a project
+# seeded from the foundation's own CLAUDE.md otherwise ships dead pointers
+# (docs/CHEATSHEET.md, website/docs/guides/learning-path.md), an install
+# command aimed at the foundation, and the foundation's own title.
+# Applied by update.sh too, so already-installed projects get repaired.
 # Arguments:
 #   $1 - Path of the CLAUDE.md to rewrite
 rewrite_claude_md_paths() {
     local claude_md="$1"
 
     [[ -f "$claude_md" ]] || return 0
+
+    # Title fallback: the directory holding the CLAUDE.md. Skipped when that
+    # directory IS the foundation checkout (it legitimately owns the title
+    # "# claude-base Project"); running update.sh over this repo must not
+    # rewrite its own header.
+    local claude_md_dir project_name safe_name
+    claude_md_dir=$(cd "$(dirname "$claude_md")" && pwd)
+
+    # Never rewrite the foundation's own CLAUDE.md. This function is destructive
+    # in place and only ever means "adapt a copy for a user project": pointed at
+    # the foundation checkout it would strip the very rows that are correct
+    # there (docs/CHEATSHEET.md, the learning path, the install command).
+    [[ -x "$claude_md_dir/bin/claude-base" ]] && return 0
+
+    project_name=$(basename "$claude_md_dir")
+    safe_name="${project_name//|/\\|}"
 
     # `-i.bak` works on both GNU sed (Linux) and BSD sed (macOS).
     # Cleanup the .bak file after the successful in-place edit.
@@ -876,7 +923,33 @@ rewrite_claude_md_paths() {
         -e 's|`docs/STACK-RECIPES\.md`|`.claude/docs/STACK-RECIPES.md`|g' \
         -e '/| Architecture |.*`docs\/ARCHITECTURE\.md`/d' \
         -e '/| Workflows visuels |.*`docs\/WORKFLOWS\.md`/d' \
+        -e '/`docs\/CHEATSHEET\.md`/d' \
+        -e '/`website\/docs\/guides\/learning-path\.md`/d' \
+        -e '/^Setup: .*claude-base init/d' \
+        -e "s|^# claude-base Project\$|# ${safe_name}|" \
         "$claude_md" && rm -f "$claude_md.bak"
+}
+
+# Seeds a user project's .gitignore from the foundation's own.
+# The foundation's .gitignore doubles as the seed, so the blocks that only
+# exist in this repo (the docs site, the curation runtime state, local
+# installers) are fenced with sentinels and dropped on the way out. Deriving
+# the exclusion from markers IN the source means a new foundation-only entry
+# added inside the fence is excluded automatically.
+# Arguments:
+#   $1 - Source .gitignore (the foundation's)
+#   $2 - Destination path
+seed_gitignore_from_foundation() {
+    local src="$1" dest="$2"
+
+    [[ -f "$src" ]] || return 0
+
+    awk '
+        /^# >>> foundation-only/ { skip = 1; next }
+        /^# <<< foundation-only/ { skip = 0; next }
+        skip { next }
+        { print }
+    ' "$src" > "$dest"
 }
 
 # Ensures the presence of the 7 canonical @imports in CLAUDE.md.
@@ -1044,4 +1117,5 @@ export -f count_agents count_skills count_hooks count_templates show_foundation_
 export -f on_error enable_error_handler
 export -f cache_init cache_valid cache_read cache_write
 export -f clean_claude_dirs backup_claude_dirs rewrite_claude_md_paths ensure_claude_md_imports
+export -f claude_md_template_for_type seed_gitignore_from_foundation
 export -f hook_uses_legacy_contract detect_security_drift
