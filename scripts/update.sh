@@ -2117,7 +2117,16 @@ main() {
         if $DRY_RUN; then
             echo -e "${DIM}[DRY-RUN]${NC} Add: CLAUDE.md"
         else
-            cp "$BASE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
+            # Honour the stack recorded in the manifest, like both install
+            # paths do — re-adding a CLAUDE.md must not hand a Python project
+            # the foundation's own (TypeScript-flavoured) file.
+            local claude_md_template
+            claude_md_template=$(claude_md_template_for_type "$RULES_PROJECT_TYPE")
+            if [[ -n "$claude_md_template" ]]; then
+                cp "$claude_md_template" "$TARGET_DIR/CLAUDE.md"
+            else
+                cp "$BASE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
+            fi
             rewrite_claude_md_paths "$TARGET_DIR/CLAUDE.md"
         fi
         success "CLAUDE.md added (absent from the project)"

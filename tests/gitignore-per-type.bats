@@ -131,6 +131,57 @@ install_as() {
     grep -qE '^\.claude/settings\.local\.json$' "$TEST_DIR/.gitignore"
 }
 
+@test "gitignore: the seed drops the foundation-only blocks" {
+    # The seed is the foundation's OWN .gitignore, which carries entries that
+    # exist nowhere but this repo: the Docusaurus site, the generated catalog
+    # mirrors, the curation engine's runtime state, local .deb installers.
+    install_as python
+
+    ! grep -q '^website/' "$TEST_DIR/.gitignore"
+    ! grep -q 'Docusaurus' "$TEST_DIR/.gitignore"
+    ! grep -q 'curation/watch-state\.json' "$TEST_DIR/.gitignore"
+    ! grep -qE '^\*\.deb$' "$TEST_DIR/.gitignore"
+}
+
+@test "gitignore: the foundation-only fence is derived, not hand-copied" {
+    # Prove the exclusion follows the markers IN the seed rather than a list
+    # kept in the installer: a new entry added inside the fence must vanish
+    # from the install without touching any script.
+    local seed="$TEST_DIR/seed.gitignore" out="$TEST_DIR/out.gitignore"
+    cat > "$seed" <<'EOF'
+node_modules/
+# >>> foundation-only (never seeded into a user project's .gitignore) >>>
+some-brand-new-foundation-artefact/
+# <<< foundation-only <<<
+.env
+EOF
+
+    seed_gitignore_from_foundation "$seed" "$out"
+
+    grep -qE '^node_modules/$' "$out"
+    grep -qE '^\.env$' "$out"
+    ! grep -q 'some-brand-new-foundation-artefact' "$out"
+    ! grep -q 'foundation-only' "$out"
+}
+
+@test "gitignore: the fence markers in the real seed are balanced" {
+    # An unclosed opening marker would silently truncate every user .gitignore
+    # from that line onwards.
+    local seed="$BATS_TEST_DIRNAME/../.gitignore"
+
+    [ "$(grep -c '^# >>> foundation-only' "$seed")" -eq \
+      "$(grep -c '^# <<< foundation-only' "$seed")" ]
+}
+
+@test "gitignore: the seed still carries the shared baseline" {
+    # Fencing must not eat the entries every project wants.
+    install_as python
+
+    grep -qE '^\.env$' "$TEST_DIR/.gitignore"
+    grep -qE '^\.idea/$' "$TEST_DIR/.gitignore"
+    grep -qE '^\.DS_Store$' "$TEST_DIR/.gitignore"
+}
+
 @test "gitignore: an existing .gitignore keeps its content and gains no type block" {
     printf '# hand written\n*.log\n' > "$TEST_DIR/.gitignore"
 

@@ -1127,7 +1127,13 @@ update_gitignore_file() {
             success ".gitignore updated"
         fi
     else
-        copy_file "$BASE_DIR/.gitignore" "$target_dir/"
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Creating .gitignore from the foundation seed"
+        else
+            # Not a raw copy: the seed carries blocks that exist only in this
+            # repo (docs site, curation runtime state, local installers).
+            seed_gitignore_from_foundation "$BASE_DIR/.gitignore" "$target_dir/.gitignore"
+        fi
         append_type_gitignore "$target_dir" "${PROJECT_TYPE:-generic}"
         success ".gitignore created"
     fi
@@ -1208,7 +1214,11 @@ append_type_gitignore() {
     fi
 }
 
-# Install CLAUDE.md (copy generic template + rewrite paths)
+# Install CLAUDE.md (type template when one exists, generic otherwise)
+# Simple mode honours PROJECT_TYPE exactly like the create path — both resolve
+# the template through claude_md_template_for_type(). Copying the foundation's
+# own CLAUDE.md unconditionally is what shipped TypeScript conventions and a
+# "# claude-base Project" title into every --simple/--preset install.
 # Arguments:
 #   $1 - Target directory (absolute path)
 install_claude_md_file() {
@@ -1217,13 +1227,19 @@ install_claude_md_file() {
     if [[ -f "$target_dir/CLAUDE.md" ]]; then
         warning "CLAUDE.md already exists, skipped"
     else
-        copy_file "$BASE_DIR/CLAUDE.md" "$target_dir/"
+        local template
+        template=$(claude_md_template_for_type "${PROJECT_TYPE:-}")
+        if [[ -n "$template" ]]; then
+            copy_file "$template" "$target_dir/CLAUDE.md"
+        else
+            copy_file "$BASE_DIR/CLAUDE.md" "$target_dir/"
+        fi
         if ! $DRY_RUN; then
             rewrite_claude_md_paths "$target_dir/CLAUDE.md"
             # Align with update.sh: ensure the 7 canonical @imports
             ensure_claude_md_imports "$target_dir/CLAUDE.md"
         fi
-        success "CLAUDE.md copied"
+        success "CLAUDE.md copied (${PROJECT_TYPE:-generic})"
     fi
 
     # Inject the design direction if specified
@@ -1863,28 +1879,13 @@ create_project() {
     if [[ ! -f "$TARGET_DIR/CLAUDE.md" ]]; then
         # Use the specific template if a type is detected
         # Smart generation is reserved for projects without a dedicated template
-        local use_template=false
-        case $PROJECT_TYPE in
-            react|vue|node-api|python|go|rust|java|fullstack|flutter|neovim)
-                use_template=true
-                ;;
-        esac
+        local template
+        template=$(claude_md_template_for_type "$PROJECT_TYPE")
 
-        if $use_template; then
+        if [[ -n "$template" ]]; then
             # Copy the template specific to the project type
             info "Configuring CLAUDE.md template..."
-            case $PROJECT_TYPE in
-                react)     copy_file "$BASE_DIR/templates/CLAUDE.react.md" "$TARGET_DIR/CLAUDE.md" ;;
-                vue)       copy_file "$BASE_DIR/templates/CLAUDE.vue.md" "$TARGET_DIR/CLAUDE.md" ;;
-                node-api)  copy_file "$BASE_DIR/templates/CLAUDE.node-api.md" "$TARGET_DIR/CLAUDE.md" ;;
-                python)    copy_file "$BASE_DIR/templates/CLAUDE.python.md" "$TARGET_DIR/CLAUDE.md" ;;
-                go)        copy_file "$BASE_DIR/templates/CLAUDE.go.md" "$TARGET_DIR/CLAUDE.md" ;;
-                rust)      copy_file "$BASE_DIR/templates/CLAUDE.rust.md" "$TARGET_DIR/CLAUDE.md" ;;
-                java)      copy_file "$BASE_DIR/templates/CLAUDE.java.md" "$TARGET_DIR/CLAUDE.md" ;;
-                fullstack) copy_file "$BASE_DIR/templates/CLAUDE.fullstack.md" "$TARGET_DIR/CLAUDE.md" ;;
-                flutter)   copy_file "$BASE_DIR/templates/CLAUDE.flutter.md" "$TARGET_DIR/CLAUDE.md" ;;
-                neovim)    copy_file "$BASE_DIR/templates/CLAUDE.neovim.md" "$TARGET_DIR/CLAUDE.md" ;;
-            esac
+            copy_file "$template" "$TARGET_DIR/CLAUDE.md"
             success "CLAUDE.md template configured (${PROJECT_TYPE})"
         elif $EXISTING_PROJECT && [[ ${#DETECTED_SCRIPTS[@]} -gt 0 || ${#DETECTED_FOLDERS[@]} -gt 0 ]]; then
             # Generate a smart CLAUDE.md for existing projects without a template
@@ -1894,14 +1895,11 @@ create_project() {
             info "Configuring CLAUDE.md template..."
             copy_file "$BASE_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md"
 
-            # Replace the project name in CLAUDE.md
-            if ! $DRY_RUN; then
-                # Escape PROJECT_NAME for safe sed substitution (use | delimiter)
-                local safe_name="${PROJECT_NAME//|/\\|}"
-                # `-i.bak` works on both GNU sed (Linux) and BSD sed (macOS).
-                sed -i.bak "s|# Projet .*|# Projet ${safe_name}|" "$TARGET_DIR/CLAUDE.md" 2>/dev/null \
-                    && rm -f "$TARGET_DIR/CLAUDE.md.bak" || true
-            fi
+            # The title and the foundation-only rows are handled by
+            # rewrite_claude_md_paths below — it runs on both install paths and
+            # on update, so there is one place and one behaviour. (The sed that
+            # used to live here matched "# Projet ", a title the foundation's
+            # CLAUDE.md stopped carrying long ago, and was a no-op.)
 
             success "CLAUDE.md template configured (${PROJECT_TYPE})"
         fi
