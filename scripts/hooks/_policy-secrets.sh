@@ -82,18 +82,20 @@ scan_content_with_gitleaks() {
     command -v gitleaks >/dev/null 2>&1 || return 0
     [ -f .gitleaks.toml ] || return 0
 
-    # `stdin` is the subcommand that actually reads the pipe. `detect --no-git
-    # --pipe` silently IGNORES --pipe and walks the working directory instead:
-    # the gate then blocked every write in any project holding a secret on disk
-    # (terraform.tfvars, .env), while reporting findings the write never
-    # contained. The shimmed tests could not see it -- their fake gitleaks
-    # ignores stdin, and a real-binary case only reproduces it from a cwd that
-    # is not empty.
+    # NO --no-git here. Combined with --pipe it makes gitleaks ignore the pipe
+    # and walk the working directory instead: the gate then blocked every write
+    # in any project holding a secret on disk (terraform.tfvars, .env), while
+    # reporting findings the write never contained. --pipe ALONE reads stdin
+    # correctly, inside a git repo or not.
+    #
+    # The `stdin` subcommand is the modern spelling and behaves identically, but
+    # it does not exist before 8.19 -- ci.yml pins 8.18.4, where it would be an
+    # unknown command, exit non-1, and silently fail this layer open.
     #
     # Capture the status WITHOUT tripping a caller's `set -e` (a non-zero
     # gitleaks exit in a bare `x=$(...)` assignment would abort mid-scan).
     local gl_out gl_status
-    gl_out=$(printf '%s' "$CONTENT" | gitleaks stdin --redact --exit-code 1 --config .gitleaks.toml 2>&1) && gl_status=0 || gl_status=$?
+    gl_out=$(printf '%s' "$CONTENT" | gitleaks detect --pipe --redact --exit-code 1 --config .gitleaks.toml 2>&1) && gl_status=0 || gl_status=$?
     if [ "${gl_status:-0}" -eq 1 ]; then
         printf '%s\n' "BLOCKED: secret detected by gitleaks."
         printf '%s\n' "$gl_out" | head -n 20

@@ -144,7 +144,12 @@ jobs:
         run: gitleaks version
 
       - name: Run gitleaks behavior tests
-        run: bats tests/gitleaks.bats
+        # secret-scan.bats rides along: its gitleaks-branch cases skip
+        # themselves in the sharded matrix (no gitleaks installed there), so the
+        # one asserting the real binary reads STDIN rather than the working
+        # directory would never actually execute. Cheap to repeat, and this is
+        # the only job where that case means anything.
+        run: bats tests/gitleaks.bats tests/secret-scan.bats
 
   # macOS portability check — BSD utilities (sed, awk, date, grep, base64, wc)
   # differ from GNU on Ubuntu. This column verifies ONLY what is portability-
