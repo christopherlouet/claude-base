@@ -174,6 +174,41 @@ _fake_gitleaks() { # <dir> <stderr-line> <exit-code>
     [ "$status" -eq 0 ]
 }
 
+# --- gitleaks branch, with the REAL binary ------------------------------------
+# The shimmed tests above pin the exit-code contract, but their fake gitleaks
+# ignores stdin — so they cannot see WHAT the real binary scans. This case runs
+# the real gitleaks from a cwd carrying a secret-bearing file, with clean
+# content on stdin: a correct invocation reads 0 findings.
+#
+# `detect --no-git --pipe` silently ignores --pipe and walks the working
+# directory instead. It then finds the neighbouring file and blocks an innocent
+# write. Any project with gitleaks, a .gitleaks.toml and a secret on disk (a
+# terraform.tfvars, a .env) can no longer write anything at all.
+@test "gitleaks branch: real binary scans STDIN, not the working directory" {
+    command -v gitleaks >/dev/null 2>&1 || skip "gitleaks not available"
+
+    local d="$BATS_TEST_TMPDIR/gl-real"
+    mkdir -p "$d"
+    # A REAL config, not the empty stub the shimmed tests use: an empty
+    # .gitleaks.toml carries zero rules, so the real binary would find nothing
+    # and the case would pass while proving nothing.
+    printf '[extend]\nuseDefault = true\n' > "$d/.gitleaks.toml"
+
+    # Neighbour file holding a detectable secret, assembled at runtime so no
+    # literal appears in this source file (same convention as above).
+    local k="ghp_"; k="${k}Xk29fQmR7bTzL4vN8sYwEc1JdHp6Ua3ZgKiO"
+    printf 'token = "%s"\n' "$k" > "$d/leaky-neighbour.txt"
+
+    cd "$d"
+    run bash "$HOOK" <<<"$(payload 'const x = 1;')"
+
+    [ "$status" -eq 0 ] || {
+        echo "an innocent write was blocked by a secret sitting NEXT TO it:"
+        echo "$output"
+        return 1
+    }
+}
+
 # Self-application (base-maintenance rule): scanning real foundation source files
 # must NOT block — a standing zero-false-positive regression guard on the repo.
 @test "self-application: real foundation scripts produce no false positive" {
