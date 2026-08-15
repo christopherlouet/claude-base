@@ -981,3 +981,84 @@ run_module() {
     [ "$(jq -r '.core.agents' "$counts")" -eq "$((full_a - ma))" ]
     [ "$(jq -r '.core.skills' "$counts")" -eq "$((full_s - ms))" ]
 }
+
+# =============================================================================
+# path_module memoisation (perf regression guard)
+#
+# History: the select-then-emit installer (#491) routes every catalog item
+# through _selset_owned_by_unselected -> path_module. path_module re-forked the
+# WHOLE registry on each call (modules_list = one basename fork per bundle +
+# sort, then module_bundle_paths per module), so an install paid ~30 forks x
+# ~200 items — 2.2s before #491, 26s after, and the bats suite 46s -> 12min.
+# #491 was validated on "all tests still pass"; nothing measured the cost, so
+# the regression shipped green. These tests measure it.
+#
+# The cache is keyed on MODULES_BUNDLES_DIR, so a caller that swaps the
+# registry (the synthetic-bundles tests do) still observes the new one.
+# =============================================================================
+
+@test "modules: path_module resolves identically on repeated calls (cache correctness)" {
+    run bash -c '
+        source "$1"
+        for i in 1 2 3; do
+            path_module ".claude/commands/biz/biz-mvp.md"
+            path_module ".claude/agents/qa-loop.md"
+            path_module "does/not/exist.md"
+        done
+    ' _ "$MODULES_LIB"
+    [ "$status" -eq 0 ]
+    # Same answer every round: an owned path resolves to its module, a core
+    # path to the empty string (printed as nothing).
+    local first
+    first=$(printf '%s\n' "$output" | head -1)
+    [ -n "$first" ]
+    [ "$(printf '%s\n' "$output" | grep -c "^$first$")" -eq 3 ]
+}
+
+@test "modules: path_module honours a swapped MODULES_BUNDLES_DIR (cache invalidation)" {
+    local dir="$TEST_DIR/bundles"
+    mkdir -p "$dir"
+    printf '%s\n' ".claude/commands/work/work-plan.md" > "$dir/synthetic.txt"
+
+    # First resolve against the REAL registry, then against the synthetic one
+    # in the same shell: a cache keyed on nothing would answer from the stale
+    # registry and miss `synthetic`.
+    run bash -c '
+        source "$1"
+        path_module ".claude/commands/work/work-plan.md"   # real: core, prints nothing
+        export MODULES_BUNDLES_DIR="$2"
+        path_module ".claude/commands/work/work-plan.md"   # synthetic: owned
+    ' _ "$MODULES_LIB" "$dir"
+    [ "$status" -eq 0 ]
+    [ "$output" = "synthetic" ]
+}
+
+@test "modules: computing the real manifest stays under budget (perf guard)" {
+    # SELF-APPLICATION: time the REAL entry point on the REAL foundation, not
+    # path_module in a loop. A loop in one shell keeps the cache warm and stays
+    # green while the shipped path is broken — which is exactly what happened:
+    # _selset_owned_by_unselected calls path_module in a COMMAND SUBSTITUTION,
+    # so each item forks a subshell that rebuilds the registry and throws the
+    # cache away. Only compute_selected_set exercises that.
+    #
+    # Uncached: ~26s. Budget 5s — loose enough for a slow/loaded runner, tight
+    # enough that per-item registry reloading cannot come back unnoticed.
+    local t0 t1 elapsed
+    t0=$EPOCHREALTIME
+    run bash -c '
+        cd "$1" || exit 1
+        export LC_ALL=C
+        BASE_DIR="$1"
+        source scripts/lib/modules.sh
+        source scripts/lib/catalog-filter.sh 2>/dev/null || true
+        source scripts/lib/selected-set.sh
+        compute_selected_set "$BASE_DIR" generic
+    ' _ "$REPO_ROOT"
+    t1=$EPOCHREALTIME
+    [ "$status" -eq 0 ]
+    # Non-trivial output: a guard that timed an empty manifest would be useless.
+    [ "$(printf '%s\n' "$output" | grep -c '^\.claude/commands/')" -gt 50 ]
+    elapsed=$(LC_ALL=C awk -v a="$t0" -v b="$t1" 'BEGIN{printf "%d", (b-a)*1000}')
+    echo "compute_selected_set on the real foundation: ${elapsed}ms (budget 5000ms)"
+    [ "$elapsed" -lt 5000 ]
+}
