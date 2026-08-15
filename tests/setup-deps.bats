@@ -32,7 +32,11 @@ teardown() { teardown_test_dir; }
     [ "$hp" = ".husky" ]
     # Never absolute — the rename-incident regression guard.
     [[ "$hp" != /* ]]
-    [[ "$output" == *"git hooks wired"* ]]
+    # The wiring is delegated to git-hooks-wire.sh (one definition, shared with
+    # the SessionStart registration); assert it announced the repair without
+    # pinning its exact prose. The behaviour itself is pinned above, and in
+    # tests/git-hooks-wire.bats.
+    [[ "$output" == *"wired to .husky"* ]]
 }
 
 @test "setup-deps: REPAIRS a stale ABSOLUTE core.hooksPath (rename incident)" {

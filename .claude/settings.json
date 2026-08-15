@@ -102,6 +102,16 @@
             "timeout": 2000
           }
         ]
+      },
+      {
+        "description": "Repair a broken core.hooksPath so the .husky pre-commit (counts self-heal) actually runs. Both ways it breaks — a fresh clone, which does not carry local config, and a repo rename leaving a stale absolute path — happen AFTER init, so the equivalent block in setup-deps.sh (Setup/init only) cannot catch them. Silent no-op unless it repairs; never touches an existing, valid hooksPath.",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/git-hooks-wire.sh\"",
+            "timeout": 2000
+          }
+        ]
       }
     ],
     "PreToolUse": [

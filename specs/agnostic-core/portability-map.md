@@ -36,7 +36,8 @@ Classification values:
 | `check-cli-version.sh` | assistant-only | probes the `claude` binary, writes the rewriter sentinel |
 | `base-integrity-check.sh` | assistant-only | foundation self-integrity (counters) |
 | `substance-check.sh` | assistant-only | wrapper around `scripts/substance-check.sh` via the harness envelope |
-| `setup-deps.sh` | assistant-only | install plumbing (`core.hooksPath`, deps) |
+| `setup-deps.sh` | assistant-only | install plumbing (deps; delegates the git wiring to `git-hooks-wire.sh`) |
+| `git-hooks-wire.sh` | **portable** | pure git/shell: repairs a broken `core.hooksPath` so the committed `.husky/` runs. No harness envelope, no stdin, no exit-2 — any transport can call it verbatim, or a plain shell can |
 
 Content categories (context for a future emitter; measured 2026-07-17):
 - **skills (53)** — SKILL.md open standard, near drop-in; ~10 carry slash-command cross-refs.
