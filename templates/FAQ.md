@@ -181,7 +181,7 @@ Claude has a 200k token context window by default (1M by default with Opus 5, Op
 
 ### What is Adaptive Thinking?
 
-Introduced with Opus 4.8 and carried by Opus 5, Adaptive Thinking replaces the "extended thinking" toggle with effort levels (`low`, `medium`, `high`, `xhigh`). The model automatically adjusts its reasoning based on the complexity of the task. This optimizes the cost/quality ratio without manual configuration. On **Fable 5** — Anthropic's most capable tier — thinking is always on and cannot be disabled; effort still controls its depth.
+Introduced with Opus 4.8 and carried by Opus 5, Adaptive Thinking replaces the "extended thinking" toggle with effort levels (`low`, `medium`, `high`, `xhigh`, `max`). The model automatically adjusts its reasoning based on the complexity of the task. This optimizes the cost/quality ratio without manual configuration. On **Fable 5** — Anthropic's most capable tier — thinking is always on and cannot be disabled; effort still controls its depth.
 
 ---
 
