@@ -84,6 +84,7 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 |------|-------------|--------|
 | **Session info** | SessionStart (startup) | Displays project information at startup |
 | **Check node_modules** | SessionStart (startup) | Checks that node_modules exists if package.json is present |
+| **Git hooks wiring** | SessionStart | Repairs a broken `core.hooksPath` so the committed `.husky/` pre-commit (the counts self-heal) actually runs. Covers the two breakages that happen *after* init and so escape `setup-deps.sh`: a **fresh clone** (local config is not cloned, `.husky/` arrives without its wiring) and a **repo rename** (a stale absolute path silently disables every hook). Silent unless it repairs, and it never takes over a `hooksPath` that points somewhere real — a deliberate `.githooks` is left alone (`scripts/hooks/git-hooks-wire.sh`) |
 | **Main protection** | PreToolUse (Edit/Write) | Keeps edits off main/master by auto-creating a `feature/auto-<timestamp>` branch first; **blocks the edit** (exit 2) if the branch can't be created, instead of letting it land on main. Disable with `ALLOW_MAIN_EDIT=1` (`scripts/hooks/main-branch-guard.sh`) |
 | **Secrets detection** | PreToolUse (Write/Edit/MultiEdit) | Built-in zero-dependency scan blocks hardcoded provider secrets (AWS/Stripe/GitHub/Slack/Google/PEM) before writing; also runs gitleaks if installed. Placeholders ignored. Disable with `SKIP_SECRET_SCAN=1` (`scripts/hooks/secret-scan.sh`) |
 | **Destructive migration** | PreToolUse (Write/Edit/MultiEdit) | Confirm+backup reminder before destructive DDL (DROP/TRUNCATE) in a migration file — closes the gap the Bash-only destructive guard misses. Disable with `SKIP_DESTRUCTIVE_CHECK=1` (`scripts/hooks/destructive-migration.sh`) |
@@ -149,9 +150,12 @@ register a `_*.sh` lib in `settings.json` — they are not hooks.
 Distinct from the Claude Code hooks above (which live in `.claude/settings.json`):
 these are standard **git** hooks, wired via `core.hooksPath=.husky`. They run for
 **every** commit — by a human or an agent, in any tool — not only inside Claude
-Code. `scripts/hooks/setup-deps.sh` wires `core.hooksPath` on Setup (idempotent,
-and it repairs a stale absolute path left by a repo rename); for a manual clone,
-run `git config core.hooksPath .husky` once.
+Code. `scripts/hooks/git-hooks-wire.sh` keeps `core.hooksPath` wired: on Setup
+(via `setup-deps.sh`) **and on every SessionStart**, because the two ways the
+wiring breaks — a fresh clone, which does not carry local config, and a repo
+rename leaving a stale absolute path — both happen after init. It is idempotent
+and silent unless it repairs. A manual `git config core.hooksPath .husky` is no
+longer needed after a clone; outside Claude Code, run the script directly.
 
 | Hook | Action |
 |------|--------|

@@ -56,15 +56,14 @@ if [ -f composer.json ] && ! [ -d vendor ]; then
   echo "✓ PHP dependencies installed"
 fi
 
-# Git hooks: wire the committed .husky/ directory so the counts self-heal
-# pre-commit actually runs. Idempotent, and it REPAIRS a stale absolute
-# core.hooksPath (e.g. left over from a repo rename) that silently disables every
-# git hook. Local-scope only; no-op outside a work tree or without .husky/.
-if [ -d .husky ] && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  if [ "$(git config --local core.hooksPath 2>/dev/null || true)" != ".husky" ]; then
-    git config --local core.hooksPath .husky
-    echo "✓ git hooks wired (core.hooksPath=.husky)"
-  fi
+# Git hooks: wire the committed .husky/ so the counts self-heal pre-commit runs.
+# Delegated to git-hooks-wire.sh — ONE definition, shared with the SessionStart
+# registration. init alone was not enough: a fresh clone (local config is not
+# cloned) and a repo rename (stale absolute path) both break the wiring AFTER
+# init, which is why the same repair also runs per session.
+_wire="$(dirname "${BASH_SOURCE[0]}")/git-hooks-wire.sh"
+if [ -f "$_wire" ]; then
+  bash "$_wire" || true
 fi
 
 echo "=== Setup complete ==="
