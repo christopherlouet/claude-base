@@ -63,11 +63,80 @@ emit_resolve_path() {
   fi
 }
 
+# --- Batched resolution cache for the outgoing-symlink guard ------------------
+# emit_assert_within_root runs once per manifest entry (~154 on a full install)
+# and each call forked realpath — the single biggest cost left in an emit. The
+# resolutions are independent, so they are computed in ONE realpath call up
+# front and looked up here.
+#
+# This is an optimisation ONLY. The cache never decides anything: a lookup miss
+# falls through to the original per-entry resolve, so the guard's verdict and —
+# just as important — the ORDER in which emit_manifest aborts are unchanged. A
+# batch that comes back the wrong length (a realpath that does not take multiple
+# operands) is discarded wholesale rather than trusted partially.
+_EMIT_RES_N=0
+_EMIT_RES_SRC=()
+_EMIT_RES_OUT=()
+_EMIT_RES_CURSOR=0
+
+_emit_resolve_reset() { _EMIT_RES_N=0; _EMIT_RES_SRC=(); _EMIT_RES_OUT=(); _EMIT_RES_CURSOR=0; }
+
+# _emit_resolve_batch <path>... — fill the cache in one realpath call.
+# Silently leaves the cache empty when batching is not possible; callers then
+# resolve per entry exactly as before.
+_emit_resolve_batch() {
+  [ "$#" -gt 0 ] || return 0
+  command -v realpath >/dev/null 2>&1 || return 0
+  local out n=0 line
+  out=$(realpath -- "$@" 2>/dev/null) || return 0
+  while IFS= read -r line; do
+    _EMIT_RES_OUT[n]="$line"
+    n=$((n + 1))
+  done <<< "$out"
+  # One output line per input, or the tool did not batch the way we assumed.
+  if [ "$n" -ne "$#" ]; then _emit_resolve_reset; return 0; fi
+  local i=0
+  for line in "$@"; do
+    _EMIT_RES_SRC[i]="$line"
+    i=$((i + 1))
+  done
+  _EMIT_RES_N="$n"
+}
+
+# _emit_resolve_lookup <path> — set _EMIT_RES_HIT to the cached resolution.
+# Returns 1 on a miss. Result travels through a variable, never stdout: a
+# command substitution here would fork per entry and give back exactly the cost
+# the batch exists to remove.
+# The cursor exploits the fact that lookups arrive in the order the cache was
+# filled; the linear scan is the correctness net, not the expected path.
+_EMIT_RES_HIT=""
+_emit_resolve_lookup() {
+  local q="$1" i
+  _EMIT_RES_HIT=""
+  if [ "$_EMIT_RES_CURSOR" -lt "$_EMIT_RES_N" ] && [ "${_EMIT_RES_SRC[_EMIT_RES_CURSOR]}" = "$q" ]; then
+    _EMIT_RES_HIT="${_EMIT_RES_OUT[_EMIT_RES_CURSOR]}"
+    _EMIT_RES_CURSOR=$((_EMIT_RES_CURSOR + 1))
+    return 0
+  fi
+  for (( i = 0; i < _EMIT_RES_N; i++ )); do
+    if [ "${_EMIT_RES_SRC[i]}" = "$q" ]; then
+      _EMIT_RES_HIT="${_EMIT_RES_OUT[i]}"
+      _EMIT_RES_CURSOR=$((i + 1))
+      return 0
+    fi
+  done
+  return 1
+}
+
 # Verifies that the resolved source stays under <src_root> (blocks outgoing symlinks).
 emit_assert_within_root() {
   local src_path="$1" src_root="$2"
   local resolved
-  resolved="$(cd "$src_root" && emit_resolve_path "$src_path" || true)"
+  if _emit_resolve_lookup "$src_path"; then
+    resolved="$_EMIT_RES_HIT"
+  else
+    resolved="$(cd "$src_root" && emit_resolve_path "$src_path" || true)"
+  fi
   if [ -z "$resolved" ] || [[ "$resolved" != "$src_root"/* && "$resolved" != "$src_root" ]]; then
     _emit_err "source outside the repo (outgoing symlink?): $src_path -> ${resolved:-unresolved}"
     return 1
@@ -87,7 +156,38 @@ emit_manifest() {
     return 1
   fi
 
+  # Buffer the manifest: it may be stdin (readable once), and the symlink-guard
+  # pre-pass below needs a second look at the same lines.
+  local _buf=() _n=0
   while IFS= read -r raw_line || [ -n "$raw_line" ]; do
+    _buf[_n]="$raw_line"
+    _n=$((_n + 1))
+  done < "$_input"
+
+  # Pre-pass: resolve every existing source in ONE realpath call. Parsing here
+  # is deliberately permissive — it collects candidates and reports nothing.
+  # Every rejection (bad entry, missing path, escaping symlink) still happens in
+  # the main loop below, in the same order as before, so a malformed manifest
+  # aborts at exactly the entry it always did.
+  _emit_resolve_reset
+  local _pre=() _pn=0 _i _l _s
+  for (( _i = 0; _i < _n; _i++ )); do
+    _l="${_buf[_i]}"
+    _l="${_l#"${_l%%[![:space:]]*}"}"
+    _l="${_l%"${_l##*[![:space:]]}"}"
+    _l="${_l%$'\r'}"
+    [ -z "$_l" ] && continue
+    case "$_l" in \#*) continue ;; esac
+    _s="${_l%%:*}"
+    _s="$src_root/${_s%/}"
+    [ -e "$_s" ] || continue
+    _pre[_pn]="$_s"
+    _pn=$((_pn + 1))
+  done
+  [ "$_pn" -gt 0 ] && _emit_resolve_batch ${_pre[@]+"${_pre[@]}"}
+
+  for (( _i = 0; _i < _n; _i++ )); do
+    raw_line="${_buf[_i]}"
     line="${raw_line#"${raw_line%%[![:space:]]*}"}"
     line="${line%"${line##*[![:space:]]}"}"
 
@@ -125,8 +225,16 @@ emit_manifest() {
 
     emit_assert_within_root "$src_path" "$src_root" || return 1
 
-    dst_parent="$(dirname "$dst_path")"
-    mkdir -p "$dst_parent"
+    # Parameter expansion, not dirname(1): this runs once per manifest entry
+    # (~154 on a full install), and a fork a time is pure overhead. `%/*` on a
+    # path with no slash yields the string unchanged, so fall back to "." the
+    # way dirname would.
+    dst_parent="${dst_path%/*}"
+    [ "$dst_parent" = "$dst_path" ] && dst_parent="."
+    # Entries share parents heavily (every .claude/commands/<ns>/*.md lands in
+    # one of a handful of dirs), so test before forking mkdir. [ -d ] is a
+    # builtin; mkdir is not.
+    [ -d "$dst_parent" ] || mkdir -p "$dst_parent"
 
     if [ -d "$src_path" ]; then
       mkdir -p "$dst_path"
@@ -136,6 +244,6 @@ emit_manifest() {
     fi
 
     EMIT_COUNT=$((EMIT_COUNT + 1))
-  done < "$_input"
+  done
   return 0
 }
